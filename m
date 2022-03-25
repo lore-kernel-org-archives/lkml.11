@@ -2,134 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A511C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 05:52:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3800C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 05:59:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356343AbiCYFxi (ORCPT
+        id S1358374AbiCYGBF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 01:53:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34894 "EHLO
+        Fri, 25 Mar 2022 02:01:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229728AbiCYFxd (ORCPT
+        with ESMTP id S241102AbiCYGBC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 01:53:33 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E5EBB82F2
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 22:51:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648187518; x=1679723518;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=GHFkE2ucb0MgAoFKijKOuZGvLHNY3B+2ApxwjopL5JE=;
-  b=d7XP9TvfJNTsffLsPOaKZW9jNhMtsI43woSh05Hwbqv1fU+JI9D7mZfz
-   lT6ppPR918B9nxZrR66mwpwc59QOYslvT4jfKh2/KGIJEjQOuqbqohYVQ
-   KxejMDvOBfwmTiYlu+5J4VL/IPfepE/tXcPPeIWa2jV8/toq+iLJelNEG
-   QkQ0wBJk8Un5zCS0Li2Ds5p/4mwPGImwKCUlyUpr0KRRMns8KagRWLxn4
-   QU908hQp15iG2ygZ+xh5xXvYy49I54JES4ZvpD1vKTPNeMVAq153OvaY0
-   bTNwPMm6lxo+zE6WntmWWsHCBbKdgzNp4sNjLzLnmEsLCqs7IKXFcma8+
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10296"; a="239164674"
-X-IronPort-AV: E=Sophos;i="5.90,209,1643702400"; 
-   d="scan'208";a="239164674"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2022 22:51:58 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,209,1643702400"; 
-   d="scan'208";a="544952158"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga007.jf.intel.com with ESMTP; 24 Mar 2022 22:51:56 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nXcrc-000LqI-7e; Fri, 25 Mar 2022 05:51:56 +0000
-Date:   Fri, 25 Mar 2022 13:50:57 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [broonie-misc:at91sam9g20ek 10/12]
- sound/soc/codecs/wm8731-spi.c:28:48: error: invalid application of 'sizeof'
- to incomplete type 'struct wm8731_priv'
-Message-ID: <202203251303.ROlxE3s7-lkp@intel.com>
+        Fri, 25 Mar 2022 02:01:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D240C55BA
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 22:59:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CCB9761A5C
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 05:59:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B05F7C340E9;
+        Fri, 25 Mar 2022 05:59:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1648187968;
+        bh=JrQ5EjduRL0JWK0cXwjRN24G4d+ZfnDmuHtrvdsmKsQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MCtZtIVeaw2WNudwa2RLG6RIBXfqsvJPXuktAV3pAG3hNTaGNmpEtF4QN5YpJi+0E
+         rMWVwi26NYDRVFznAEgveqQLpxa2HD4p799jGlpg/tdgoRygTxI+KQcoPsJkDEbbAh
+         qz2uxG/HuY/Ln6xrGHa0Z8yh8hUwyAqnxykUy8N8=
+Date:   Fri, 25 Mar 2022 06:59:25 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Tanjore Suresh <tansuresh@google.com>
+Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        linux-kernel@vger.kernel.org, trivial@kernel.org
+Subject: Re: [PATCH 1/3] driver core: Support asynchronous driver shutdown
+Message-ID: <Yj1aPdSjmTMAhTCo@kroah.com>
+References: <20220324213445.3055538-1-tansuresh@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220324213445.3055538-1-tansuresh@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/misc.git at91sam9g20ek
-head:   3924683a22e84ba06478ea4aaa775319ba02f42c
-commit: 5b7214a7b726cbf25aaebfc8a05ede8c53d04d26 [10/12] ASoC: wm8731: Factor out the I2C and SPI bus code into separate modules
-config: powerpc-allmodconfig (https://download.01.org/0day-ci/archive/20220325/202203251303.ROlxE3s7-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/broonie/misc.git/commit/?id=5b7214a7b726cbf25aaebfc8a05ede8c53d04d26
-        git remote add broonie-misc https://git.kernel.org/pub/scm/linux/kernel/git/broonie/misc.git
-        git fetch --no-tags broonie-misc at91sam9g20ek
-        git checkout 5b7214a7b726cbf25aaebfc8a05ede8c53d04d26
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=powerpc SHELL=/bin/bash sound/soc/codecs/
+On Thu, Mar 24, 2022 at 02:34:45PM -0700, Tanjore Suresh wrote:
+> --- a/include/linux/device/bus.h
+> +++ b/include/linux/device/bus.h
+> @@ -49,6 +49,14 @@ struct fwnode_handle;
+>   *		will never get called until they do.
+>   * @remove:	Called when a device removed from this bus.
+>   * @shutdown:	Called at shut-down time to quiesce the device.
+> + * @shutdown_pre:	Called at the shutdown-time to start the shutdown
+> + *			process on the device. This entry point will be called
+> + *			only when the bus driver has indicated it would like
+> + *			to participate in asynchronous shutdown completion.
+> + * @shutdown_post:	Called at shutdown-time  to complete the shutdown
+> + *			process of the device. This entry point will be called
+> + *			only when the bus drive has indicated it would like to
+> + *			participate in the asynchronous shutdown completion.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Sorry, but no, this should not be needed expecially as you did not offer
+any justification or reason to do so.
 
-All errors (new ones prefixed by >>):
+Nor did you send the remaining changes in the series to me, and why
+would these be "trivial"?
 
-   sound/soc/codecs/wm8731-spi.c: In function 'wm8731_spi_probe':
->> sound/soc/codecs/wm8731-spi.c:28:48: error: invalid application of 'sizeof' to incomplete type 'struct wm8731_priv'
-      28 |         wm8731 = devm_kzalloc(&spi->dev, sizeof(*wm8731), GFP_KERNEL);
-         |                                                ^
->> sound/soc/codecs/wm8731-spi.c:34:15: error: invalid use of undefined type 'struct wm8731_priv'
-      34 |         wm8731->regmap = devm_regmap_init_spi(spi, &wm8731_regmap);
-         |               ^~
->> sound/soc/codecs/wm8731-spi.c:34:26: error: implicit declaration of function 'devm_regmap_init_spi' [-Werror=implicit-function-declaration]
-      34 |         wm8731->regmap = devm_regmap_init_spi(spi, &wm8731_regmap);
-         |                          ^~~~~~~~~~~~~~~~~~~~
->> sound/soc/codecs/wm8731-spi.c:34:53: error: 'wm8731_regmap' undeclared (first use in this function)
-      34 |         wm8731->regmap = devm_regmap_init_spi(spi, &wm8731_regmap);
-         |                                                     ^~~~~~~~~~~~~
-   sound/soc/codecs/wm8731-spi.c:34:53: note: each undeclared identifier is reported only once for each function it appears in
-   sound/soc/codecs/wm8731-spi.c:35:26: error: invalid use of undefined type 'struct wm8731_priv'
-      35 |         if (IS_ERR(wm8731->regmap)) {
-         |                          ^~
-   sound/soc/codecs/wm8731-spi.c:36:37: error: invalid use of undefined type 'struct wm8731_priv'
-      36 |                 ret = PTR_ERR(wm8731->regmap);
-         |                                     ^~
->> sound/soc/codecs/wm8731-spi.c:42:16: error: implicit declaration of function 'wm8731_init' [-Werror=implicit-function-declaration]
-      42 |         return wm8731_init(&spi->dev, wm8731);
-         |                ^~~~~~~~~~~
-   cc1: some warnings being treated as errors
+Please work with others at Google who know how to submit changes to the
+kernel first and get their review and signed-off-by on the changes
+before sending them out again.
 
+good luck!
 
-vim +28 sound/soc/codecs/wm8731-spi.c
-
-    22	
-    23	static int wm8731_spi_probe(struct spi_device *spi)
-    24	{
-    25		struct wm8731_priv *wm8731;
-    26		int ret;
-    27	
-  > 28		wm8731 = devm_kzalloc(&spi->dev, sizeof(*wm8731), GFP_KERNEL);
-    29		if (wm8731 == NULL)
-    30			return -ENOMEM;
-    31	
-    32		spi_set_drvdata(spi, wm8731);
-    33	
-  > 34		wm8731->regmap = devm_regmap_init_spi(spi, &wm8731_regmap);
-    35		if (IS_ERR(wm8731->regmap)) {
-    36			ret = PTR_ERR(wm8731->regmap);
-    37			dev_err(&spi->dev, "Failed to allocate register map: %d\n",
-    38				ret);
-    39			return ret;
-    40		}
-    41	
-  > 42		return wm8731_init(&spi->dev, wm8731);
-    43	}
-    44	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+greg k-h
