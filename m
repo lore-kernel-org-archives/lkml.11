@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6927BC3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53C3FC4707E
 	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:13:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377337AbiCYPOO (ORCPT
+        id S1377270AbiCYPOG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:14:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44528 "EHLO
+        Fri, 25 Mar 2022 11:14:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359651AbiCYPL1 (ORCPT
+        with ESMTP id S1359864AbiCYPLH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:11:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BDAD6006E;
-        Fri, 25 Mar 2022 08:08:39 -0700 (PDT)
+        Fri, 25 Mar 2022 11:11:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7644954FBD;
+        Fri, 25 Mar 2022 08:08:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FA9661C0D;
-        Fri, 25 Mar 2022 15:08:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9106FC340E9;
-        Fri, 25 Mar 2022 15:08:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D290B82833;
+        Fri, 25 Mar 2022 15:08:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9798BC340E9;
+        Fri, 25 Mar 2022 15:08:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648220917;
-        bh=RuC+1rqugxNuew2WMFrSfKADvorEHXodJr0P7fQnOpU=;
+        s=korg; t=1648220897;
+        bh=hqD+dPwNLrtazDnJ4HTJwwjM8CPwowrgBplh6HZ9cuc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K2Y62n+G+iGEMJs/mIapaAQXB6jw1HMrr1ARHNg6Iec+rCCmGYZOCPuDqaKofr3Pp
-         +0uzb3rjH0y6bo5d5lTWfiJ5d40sLzfBK9G9LB2gHq2VApo8g6b1sPll6eIhoraBL4
-         6LrmEkz7Rv6RNHrzFzQdVGylDQZIb9mjq4btKXs8=
+        b=1NgHKRuhdRJPiRVhfT1Prs4WnYH44oKHsbVnoTsBUtnr+ifbWrS7ASWgI5zFUViH6
+         hJfl4VMex5Tj0RBNUFYM7osirPr5+yKvzSuM2qZU1xsfq0rrN3Axur54AMh4d2thhC
+         ocvnuuGtqaeKJWaOLwhLGZ63z/v8IRJvmCyg2lko=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: [PATCH 5.4 25/29] crypto: qat - disable registration of algorithms
-Date:   Fri, 25 Mar 2022 16:05:05 +0100
-Message-Id: <20220325150419.309973315@linuxfoundation.org>
+        syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com,
+        Tadeusz Struk <tadeusz.struk@linaro.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.4 04/29] net: ipv6: fix skb_over_panic in __ip6_append_data
+Date:   Fri, 25 Mar 2022 16:04:44 +0100
+Message-Id: <20220325150418.713387530@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150418.585286754@linuxfoundation.org>
 References: <20220325150418.585286754@linuxfoundation.org>
@@ -50,45 +52,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+From: Tadeusz Struk <tadeusz.struk@linaro.org>
 
-commit 8893d27ffcaf6ec6267038a177cb87bcde4dd3de upstream.
+commit 5e34af4142ffe68f01c8a9acae83300f8911e20c upstream.
 
-The implementations of aead and skcipher in the QAT driver do not
-support properly requests with the CRYPTO_TFM_REQ_MAY_BACKLOG flag set.
-If the HW queue is full, the driver returns -EBUSY but does not enqueue
-the request.
-This can result in applications like dm-crypt waiting indefinitely for a
-completion of a request that was never submitted to the hardware.
+Syzbot found a kernel bug in the ipv6 stack:
+LINK: https://syzkaller.appspot.com/bug?id=205d6f11d72329ab8d62a610c44c5e7e25415580
+The reproducer triggers it by sending a crafted message via sendmmsg()
+call, which triggers skb_over_panic, and crashes the kernel:
 
-To avoid this problem, disable the registration of all crypto algorithms
-in the QAT driver by setting the number of crypto instances to 0 at
-configuration time.
+skbuff: skb_over_panic: text:ffffffff84647fb4 len:65575 put:65575
+head:ffff888109ff0000 data:ffff888109ff0088 tail:0x100af end:0xfec0
+dev:<NULL>
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Update the check that prevents an invalid packet with MTU equal
+to the fregment header size to eat up all the space for payload.
+
+The reproducer can be found here:
+LINK: https://syzkaller.appspot.com/text?tag=ReproC&x=1648c83fb00000
+
+Reported-by: syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com
+Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+Acked-by: Willem de Bruijn <willemb@google.com>
+Link: https://lore.kernel.org/r/20220310232538.1044947-1-tadeusz.struk@linaro.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/crypto/qat/qat_common/qat_crypto.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ net/ipv6/ip6_output.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/crypto/qat/qat_common/qat_crypto.c
-+++ b/drivers/crypto/qat/qat_common/qat_crypto.c
-@@ -170,6 +170,14 @@ int qat_crypto_dev_config(struct adf_acc
- 		goto err;
- 	if (adf_cfg_section_add(accel_dev, "Accelerator0"))
- 		goto err;
-+
-+	/* Temporarily set the number of crypto instances to zero to avoid
-+	 * registering the crypto algorithms.
-+	 * This will be removed when the algorithms will support the
-+	 * CRYPTO_TFM_REQ_MAY_BACKLOG flag
-+	 */
-+	instances = 0;
-+
- 	for (i = 0; i < instances; i++) {
- 		val = i;
- 		snprintf(key, sizeof(key), ADF_CY "%d" ADF_RING_BANK_NUM, i);
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -1429,8 +1429,8 @@ static int __ip6_append_data(struct sock
+ 		      sizeof(struct frag_hdr) : 0) +
+ 		     rt->rt6i_nfheader_len;
+ 
+-	if (mtu < fragheaderlen ||
+-	    ((mtu - fragheaderlen) & ~7) + fragheaderlen < sizeof(struct frag_hdr))
++	if (mtu <= fragheaderlen ||
++	    ((mtu - fragheaderlen) & ~7) + fragheaderlen <= sizeof(struct frag_hdr))
+ 		goto emsgsize;
+ 
+ 	maxfraglen = ((mtu - fragheaderlen) & ~7) + fragheaderlen -
 
 
