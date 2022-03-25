@@ -2,68 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62A3FC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 21:11:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93016C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 21:13:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233328AbiCYVMl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 17:12:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59282 "EHLO
+        id S233333AbiCYVOz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 17:14:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231745AbiCYVMi (ORCPT
+        with ESMTP id S233233AbiCYVOv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 17:12:38 -0400
-Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AD731FF412;
-        Fri, 25 Mar 2022 14:11:03 -0700 (PDT)
-Received: by mail-oi1-f174.google.com with SMTP id w127so9487607oig.10;
-        Fri, 25 Mar 2022 14:11:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=wXvBLN2YPI/f+mwgNpVUSPw3vc7vaslW8j6BkDAkPkw=;
-        b=5yVFPYFVS/tIzDi0a9ZxGo5qJfpMOsEpodTqe7HVQb77GpyQCti0jT0NIGDNA6LoHQ
-         dFxli7rK6VXnwjqNRNpg3zv9vACIdfHArhvWNPVqzkmTwQ73au+ylEfD8om8qsbnHK1e
-         cWYXuMzNMn9dIy2kceK1oEKCUrfI3ms9KfHkkERZa/1/jit65VYQxOI6mIgukZYxg4A4
-         m+DFGPEvPpSPDjCf0jwoMdd8ytTrbQ3a2IPgOsifuv+pDSx92qPLZtwlaGVb/v+2gpCm
-         mD/PFOkeUvHKJS5AcwgyA7JL0M92TfScdHrbqUUnkQcBUgjXAsOpot69l1dg80bpHyq9
-         815g==
-X-Gm-Message-State: AOAM533lqbX31IXv5s0k3N2/ktd4BN8dUKh90tQhnh3SkBsWq4XoBLf3
-        u6nz2qIeuer8z7SChl1oow==
-X-Google-Smtp-Source: ABdhPJz/WMdnAOINviqJND5zDMeL1o27zVTXARwz/Cw5GDE6nIi94HXm4B8MMoxqz03bNIsAqu/rNQ==
-X-Received: by 2002:a05:6808:9b9:b0:2ef:7562:1586 with SMTP id e25-20020a05680809b900b002ef75621586mr6372651oig.261.1648242662763;
-        Fri, 25 Mar 2022 14:11:02 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id c26-20020a4ae25a000000b0031c268c5436sm3028104oot.16.2022.03.25.14.11.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Mar 2022 14:11:01 -0700 (PDT)
-Received: (nullmailer pid 460214 invoked by uid 1000);
-        Fri, 25 Mar 2022 21:11:01 -0000
-Date:   Fri, 25 Mar 2022 16:11:01 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Olivier Dautricourt <olivier.dautricourt@orolia.com>
-Cc:     Vinod Koul <vkoul@kernel.org>, devicetree@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, dmaengine@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Stefan Roese <sr@denx.de>
-Subject: Re: [PATCH 2/2] dt-bindings: altr,msgdma: update my email address
-Message-ID: <Yj4v5c3nTdOhgyU7@robh.at.kernel.org>
-References: <85c4174fa162bd946ccf3e08dcfc9b83cfe69b5c.1647539776.git.olivier.dautricourt@orolia.com>
- <dc3decf1dae172c688017bd3ada2ad2b7d060c1e.1647539776.git.olivier.dautricourt@orolia.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <dc3decf1dae172c688017bd3ada2ad2b7d060c1e.1647539776.git.olivier.dautricourt@orolia.com>
+        Fri, 25 Mar 2022 17:14:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A99A432EEB
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 14:13:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 573CFB828FB
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 21:13:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FF56C340ED;
+        Fri, 25 Mar 2022 21:13:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1648242794;
+        bh=4/qvwLbF144DV002vGnw2JVaZn3rO4oCb6NnlPXDKRM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=N2MCE449O+Nqn5lrRgfBrtwaW18IZdu4ofPJ+Ae7OGHw+5/7RLV2pABU2kEMc0NMI
+         cYGtEESnzFEJnPq68PCsLwUntvzuQVaziKubf7t4L8OZSmDPnXKWkgWE2VfuLF24Zd
+         iYBR77U7KSbMUnhWZ7KkGeaQXm2sNhgZdMAwIuwY=
+Date:   Fri, 25 Mar 2022 14:13:12 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Andrey Konovalov <andreyknvl@gmail.com>
+Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vlastimil Babka <vbabka@suse.cz>, andrey.konovalov@linux.dev,
+        Marco Elver <elver@google.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Evgenii Stepanov <eugenis@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andrey Konovalov <andreyknvl@google.com>
+Subject: Re: [PATCH v6 27/39] kasan, mm: only define
+ ___GFP_SKIP_KASAN_POISON with HW_TAGS
+Message-Id: <20220325141312.b71069800f279445749e79f5@linux-foundation.org>
+In-Reply-To: <CA+fCnZeG5DbxcnER1yWkJ50605_4E1xPtgeTEsSEc89qUg4w6g@mail.gmail.com>
+References: <cover.1643047180.git.andreyknvl@google.com>
+        <44e5738a584c11801b2b8f1231898918efc8634a.1643047180.git.andreyknvl@google.com>
+        <63704e10-18cf-9a82-cffb-052c6046ba7d@suse.cz>
+        <YjsaaQo5pqmGdBaY@linutronix.de>
+        <CA+fCnZeG5DbxcnER1yWkJ50605_4E1xPtgeTEsSEc89qUg4w6g@mail.gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 17 Mar 2022 18:56:56 +0100, Olivier Dautricourt wrote:
-> This email should now be used to contact me.
-> 
-> Signed-off-by: Olivier Dautricourt <olivier.dautricourt@orolia.com>
-> ---
->  Documentation/devicetree/bindings/dma/altr,msgdma.yaml | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
+On Wed, 23 Mar 2022 14:36:29 +0100 Andrey Konovalov <andreyknvl@gmail.com> wrote:
 
-Acked-by: Rob Herring <robh@kernel.org>
+> If my suggestion sounds good, Andrew, could you directly apply the
+> changes? They are needed for these 3 patches:
+> 
+> kasan, page_alloc: allow skipping memory init for HW_TAGS
+> kasan, page_alloc: allow skipping unpoisoning for HW_TAGS
+> kasan, mm: only define ___GFP_SKIP_KASAN_POISON with HW_TAGS
+> 
+> As these depend on each other, I can't send separate patches that can
+> be folded for all 3.
+
+It's all upstream now, so please send along a fixup patch.
