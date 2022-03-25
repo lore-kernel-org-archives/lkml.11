@@ -2,164 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7050DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:08:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCF82C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:08:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356717AbiCYPJn (ORCPT
+        id S1347583AbiCYPJt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:09:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36798 "EHLO
+        Fri, 25 Mar 2022 11:09:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359823AbiCYPIF (ORCPT
+        with ESMTP id S1359842AbiCYPII (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:08:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9B0CDA08C;
-        Fri, 25 Mar 2022 08:06:26 -0700 (PDT)
+        Fri, 25 Mar 2022 11:08:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADBE1DA095;
+        Fri, 25 Mar 2022 08:06:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6A31CB828FD;
-        Fri, 25 Mar 2022 15:06:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D5F7C340E9;
-        Fri, 25 Mar 2022 15:06:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 42C2261749;
+        Fri, 25 Mar 2022 15:06:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5545AC340E9;
+        Fri, 25 Mar 2022 15:06:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648220784;
-        bh=uD6uTbeDquRq+y7iuvesdrXvoxryN+ZU0QBCk/fsDvA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=zlF4qQioY5QWEj46euQYGL+BW9Exxx9kJn6qvaL/jUHIaX6TupOzZ9oVsO9Og1FPw
-         20SN4OyV0w+30HsEKdQFz15c+mUajxrjNAgBQ0RomtX0p0CVwhBBxQaJrd1GM1T784
-         HNFSM39vm9qiIcc6wnblaWbhJwbD5YeRDCV3cWSk=
+        s=korg; t=1648220789;
+        bh=rZYusjfb3gz+7z1tKySj1cpQTUDkBfeQKEgE337HKzA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ymCJc3ydzU86VKBW5wk0GXcpygQIvJmVh+H6zA/i7qqcJ+WfSqb2ZBtRgTG27vFlx
+         fXAFbsD1nA3z2gP4Alx3HVQu0HDuujxk50CvN2x1R5hx4luYYHuXP55trM1APwRazG
+         RT8bYqRsOT8jEWRbFZjUQ7BwY6UpeN9btRhmKUHU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 4.14 00/17] 4.14.274-rc1 review
-Date:   Fri, 25 Mar 2022 16:04:34 +0100
-Message-Id: <20220325150416.756136126@linuxfoundation.org>
+        stable@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 4.19 10/20] ALSA: usb-audio: Add mute TLV for playback volumes on RODE NT-USB
+Date:   Fri, 25 Mar 2022 16:04:48 +0100
+Message-Id: <20220325150417.307731222@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
+In-Reply-To: <20220325150417.010265747@linuxfoundation.org>
+References: <20220325150417.010265747@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.274-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-4.14.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 4.14.274-rc1
-X-KernelTest-Deadline: 2022-03-27T15:04+00:00
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 4.14.274 release.
-There are 17 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: Lars-Peter Clausen <lars@metafoo.de>
 
-Responses should be made by Sun, 27 Mar 2022 15:04:08 +0000.
-Anything received after that time might be too late.
+commit 0f306cca42fe879694fb5e2382748c43dc9e0196 upstream.
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.274-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.14.y
-and the diffstat can be found below.
+For the RODE NT-USB the lowest Playback mixer volume setting mutes the
+audio output. But it is not reported as such causing e.g. PulseAudio to
+accidentally mute the device when selecting a low volume.
 
-thanks,
+Fix this by applying the existing quirk for this kind of issue when the
+device is detected.
 
-greg k-h
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220311201400.235892-1-lars@metafoo.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ sound/usb/mixer_quirks.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
--------------
-Pseudo-Shortlog of commits:
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 4.14.274-rc1
-
-Linus Lüssing <ll@simonwunderlich.de>
-    mac80211: fix potential double free on mesh join
-
-Giovanni Cabiddu <giovanni.cabiddu@intel.com>
-    crypto: qat - disable registration of algorithms
-
-Werner Sembach <wse@tuxedocomputers.com>
-    ACPI: video: Force backlight native for Clevo NL5xRU and NL5xNU
-
-Maximilian Luz <luzmaximilian@gmail.com>
-    ACPI: battery: Add device HID and quirk for Microsoft Surface Go 3
-
-Mark Cilissen <mark@yotsuba.nl>
-    ACPI / x86: Work around broken XSDT on Advantech DAC-BJ01 board
-
-Pablo Neira Ayuso <pablo@netfilter.org>
-    netfilter: nf_tables: initialize registers in nft_do_chain()
-
-Stephane Graber <stgraber@ubuntu.com>
-    drivers: net: xgene: Fix regression in CRC stripping
-
-Giacomo Guiduzzi <guiduzzi.giacomo@gmail.com>
-    ALSA: pci: fix reading of swapped values from pcmreg in AC97 codec
-
-Jonathan Teh <jonathan.teh@outlook.com>
-    ALSA: cmipci: Restore aux vol on suspend/resume
-
-Lars-Peter Clausen <lars@metafoo.de>
-    ALSA: usb-audio: Add mute TLV for playback volumes on RODE NT-USB
-
-Takashi Iwai <tiwai@suse.de>
-    ALSA: pcm: Add stream lock during PCM reset ioctl operations
-
-Eric Dumazet <edumazet@google.com>
-    llc: fix netdevice reference leaks in llc_ui_bind()
-
-Chuansheng Liu <chuansheng.liu@intel.com>
-    thermal: int340x: fix memory leak in int3400_notify()
-
-Oliver Graute <oliver.graute@kococonnector.com>
-    staging: fbtft: fb_st7789v: reset display before initialization
-
-Steffen Klassert <steffen.klassert@secunet.com>
-    esp: Fix possible buffer overflow in ESP transformation
-
-Tadeusz Struk <tadeusz.struk@linaro.org>
-    net: ipv6: fix skb_over_panic in __ip6_append_data
-
-Jordy Zomer <jordy@pwning.systems>
-    nfc: st21nfca: Fix potential buffer overflows in EVT_TRANSACTION
-
-
--------------
-
-Diffstat:
-
- Makefile                                          |  4 +-
- arch/x86/kernel/acpi/boot.c                       | 24 ++++++++
- drivers/acpi/battery.c                            | 12 ++++
- drivers/acpi/video_detect.c                       | 75 +++++++++++++++++++++++
- drivers/crypto/qat/qat_common/qat_crypto.c        |  8 +++
- drivers/net/ethernet/apm/xgene/xgene_enet_main.c  | 12 ++--
- drivers/nfc/st21nfca/se.c                         | 10 +++
- drivers/staging/fbtft/fb_st7789v.c                |  2 +
- drivers/thermal/int340x_thermal/int3400_thermal.c |  4 ++
- include/net/esp.h                                 |  2 +
- include/net/sock.h                                |  3 +
- net/core/sock.c                                   |  3 -
- net/ipv4/esp4.c                                   |  5 ++
- net/ipv6/esp6.c                                   |  5 ++
- net/ipv6/ip6_output.c                             |  4 +-
- net/llc/af_llc.c                                  |  8 +++
- net/mac80211/cfg.c                                |  3 -
- net/netfilter/nf_tables_core.c                    |  2 +-
- sound/core/pcm_native.c                           |  4 ++
- sound/pci/ac97/ac97_codec.c                       |  4 +-
- sound/pci/cmipci.c                                |  3 +-
- sound/usb/mixer_quirks.c                          |  7 ++-
- 22 files changed, 181 insertions(+), 23 deletions(-)
+--- a/sound/usb/mixer_quirks.c
++++ b/sound/usb/mixer_quirks.c
+@@ -1997,9 +1997,10 @@ void snd_usb_mixer_fu_apply_quirk(struct
+ 		if (unitid == 7 && cval->control == UAC_FU_VOLUME)
+ 			snd_dragonfly_quirk_db_scale(mixer, cval, kctl);
+ 		break;
+-	/* lowest playback value is muted on C-Media devices */
+-	case USB_ID(0x0d8c, 0x000c):
+-	case USB_ID(0x0d8c, 0x0014):
++	/* lowest playback value is muted on some devices */
++	case USB_ID(0x0d8c, 0x000c): /* C-Media */
++	case USB_ID(0x0d8c, 0x0014): /* C-Media */
++	case USB_ID(0x19f7, 0x0003): /* RODE NT-USB */
+ 		if (strstr(kctl->id.name, "Playback"))
+ 			cval->min_mute = 1;
+ 		break;
 
 
