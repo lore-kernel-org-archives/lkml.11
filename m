@@ -2,273 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 846A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 09:11:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E640C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 09:12:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356398AbiCYJND (ORCPT
+        id S1356458AbiCYJNe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 05:13:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53186 "EHLO
+        Fri, 25 Mar 2022 05:13:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356321AbiCYJNC (ORCPT
+        with ESMTP id S245149AbiCYJNd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 05:13:02 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8430ECF485;
-        Fri, 25 Mar 2022 02:11:27 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KPxCk3hfkzcc7J;
-        Fri, 25 Mar 2022 17:11:14 +0800 (CST)
-Received: from localhost.localdomain (10.175.103.91) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 25 Mar 2022 17:11:25 +0800
-From:   Wei Li <liwei391@huawei.com>
-To:     <acme@kernel.org>, <mark.rutland@arm.com>,
-        <alexander.shishkin@linux.intel.com>, <jolsa@redhat.com>,
-        <namhyung@kernel.org>
-CC:     <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <rui.xiang@huawei.com>, <guohanjun@huawei.com>
-Subject: [PATCH v2] perf tools: Enhance the matching of sub-commands
-Date:   Fri, 25 Mar 2022 17:20:32 +0800
-Message-ID: <20220325092032.2956161-1-liwei391@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 25 Mar 2022 05:13:33 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E02ACF483;
+        Fri, 25 Mar 2022 02:11:59 -0700 (PDT)
+Received: from mail-wr1-f53.google.com ([209.85.221.53]) by
+ mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1M597q-1nWZWT3NFU-0019g0; Fri, 25 Mar 2022 10:11:57 +0100
+Received: by mail-wr1-f53.google.com with SMTP id r7so8851426wrc.0;
+        Fri, 25 Mar 2022 02:11:57 -0700 (PDT)
+X-Gm-Message-State: AOAM5330E7tVEe7klAHzU35seyNOgkR7kSSWIO9CjV5Wsd5lZF0lu/HA
+        R2j0qLyrt7/v+jWkunZ8i083AyX0gprN4czaYNg=
+X-Google-Smtp-Source: ABdhPJzlSwDWgsgZpeRugVuvy428D1qgQK8pZuiKTRIYi9OSl8H4ndqwB0mRzcaYHlfTvLPePtNJpSY9MHEOxziK+P8=
+X-Received: by 2002:a5d:66ca:0:b0:203:fb72:a223 with SMTP id
+ k10-20020a5d66ca000000b00203fb72a223mr7999785wrw.12.1648199517413; Fri, 25
+ Mar 2022 02:11:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+References: <20220323175920.93155-1-singh.kuldeep87k@gmail.com>
+ <20220324023904.h2qfxzxlznggbsyr@vireshk-i7> <20220324062547.GA15504@9a2d8922b8f1>
+ <20220325015849.sazvlevnvdqj5z42@vireshk-i7>
+In-Reply-To: <20220325015849.sazvlevnvdqj5z42@vireshk-i7>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Fri, 25 Mar 2022 10:11:41 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a0Q8eOTeRmd5-G8rNCKAcH+4HReCsOAGKd4Vq30C9TaEA@mail.gmail.com>
+Message-ID: <CAK8P3a0Q8eOTeRmd5-G8rNCKAcH+4HReCsOAGKd4Vq30C9TaEA@mail.gmail.com>
+Subject: Re: [PATCH v2] ARM: dts: spear13xx: Update SPI dma properties
+To:     Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     Kuldeep Singh <singh.kuldeep87k@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Viresh Kumar <vireshk@kernel.org>,
+        Shiraz Hashim <shiraz.linux.kernel@gmail.com>,
+        SoC Team <soc@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:KK521CCvDxK0Z7Twh5nGXKg+ZVj/4+ilIiLkkLJMHPDknwqKe0H
+ JYbuSGtA5NBRsH4PLE25G26CR+0SplfR5HMQ7HX/G8IA1X8Zi5zsgUJB+qGXGC+1Onrxley
+ R/YxbSXEa13Ycdp6qsRKrbf1v+5HjCRQX81gIVA4Dq3u31Gl9GNZotQC7uCOtmWfeBHXU9b
+ efVA89nR/i22IG+azzkuQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:w/+L8lfuVZs=:DCKxVX5SyQJV2SIwGnXTDm
+ /dWBJcS8KIoC92+6wotEEkxV7YqjLg+QBU6wKenhTdnKkOAtt3r4adi2CNEXfhrCQ5PqCpr3Q
+ DXS8/N6nq80zu2A10VFc6gf4puHQC+2Hw+bUd3LaiNtxE2l0ispZqqKFJ/v00t+j23PpjEdlu
+ /xF9u/N5UKEkDuZiDeZjeG7Q+RBqH6pp/hJ0kbmav1tf+9rvERrfr+sTDinLcRQ4VyePkEzKg
+ AtxuWldRGe7iMNdNgOGBQmI7ysTFkCZqMuo+irgWIb6c0VpUUILkEkbViT2RxsLoJ/vfA1b3+
+ 7OEVvJV1lr+1OZD1w+NI0MR4xr3fbt1V/7LXEpyVbllkY/5UNuTavnxZMt+ay0iM/RFBKjR21
+ PcmXylt3Wzg0HPLxd+t6PQYHU/skO9A39VJMHYj4BGzRzispdy+1Kj77msYh/I+8Psg/KlmPU
+ FBtOGaOhDqtPMui+R+mABzRqnZdzf0aPxFuJlV25xkmPBbJvL/ZMeNoHqPsqWIKb5Ccldz7bV
+ rXkXE5xGW+07MzRMlrxENX+h71O0YLWg4eqzkpTk8iJsntjIvRYZMqCLt0q4hLRftPNlMQJxM
+ z+F6d6bDVCMuG3j6mEZ9tgSuJUh3CzB1eGpxp89kMO1kMwVjHGW/xAtVE+Iy7VhA8Qtd0MyiL
+ fhkh7RNO/7wv5AVwLXfxIbHPTWm5C96ASydVmGzq3W6A+fxWxGWg4CNGDyIrwM8xGrAE=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We support short command 'rec*' for 'record' and 'rep*' for 'report' in
-lots of sub-commands, but the matching is not quite strict currnetly.
+On Fri, Mar 25, 2022 at 2:58 AM Viresh Kumar <viresh.kumar@linaro.org> wrote:
+> On 24-03-22, 11:55, Kuldeep Singh wrote:
+> > Fixed order of values is important in case of properties like
+> > compatibles etc. In case of dma-names, yes order shouldn't matter here.
+> >
+> > This patch is more of appeasing dtbs_check warning rather than fixing
+> > something.
+>
+> Exactly my point. We have seen similar type of issues with other tools, like
+> coccinelle, earlier and such patches were rejected as the kernel was just fine
+> and tooling needs to be fixed.
+>
+> > It's safe to go with this patch.
+> > I am not sure if there's a provision to exclude dma-names from fix
+> > ordering checks. Rob can help here in providing better insights.
 
-It may be puzzling sometime, like we mis-type a 'recport' to report but
-it will perform 'record' in fact without any message.
+I think it's a question of the scale of the warnings: my understanding is that
+there are only a handful of dts files that trigger the warning at all, and it
+would be rather hard to change the tooling around this. Since the proposed
+dts change is clearly harmless, I don't mind applying it.
 
-To fix this, add a check to ensure that the short cmd is valid prefix
-of the real command.
+Kuldeep, you have probably looked at all dts files in the kernel, can you
+say how many of them are affected by the dma property reordering?
 
-Signed-off-by: Wei Li <liwei391@huawei.com>
----
- tools/perf/builtin-c2c.c       | 5 +++--
- tools/perf/builtin-kmem.c      | 2 +-
- tools/perf/builtin-kvm.c       | 9 +++++----
- tools/perf/builtin-lock.c      | 5 +++--
- tools/perf/builtin-mem.c       | 5 +++--
- tools/perf/builtin-sched.c     | 4 ++--
- tools/perf/builtin-script.c    | 4 ++--
- tools/perf/builtin-stat.c      | 4 ++--
- tools/perf/builtin-timechart.c | 3 ++-
- 9 files changed, 23 insertions(+), 18 deletions(-)
-
-diff --git a/tools/perf/builtin-c2c.c b/tools/perf/builtin-c2c.c
-index 77dd4afacca4..04110ac9c956 100644
---- a/tools/perf/builtin-c2c.c
-+++ b/tools/perf/builtin-c2c.c
-@@ -44,6 +44,7 @@
- #include "../perf.h"
- #include "pmu.h"
- #include "pmu-hybrid.h"
-+#include "string2.h"
- 
- struct c2c_hists {
- 	struct hists		hists;
-@@ -3025,9 +3026,9 @@ int cmd_c2c(int argc, const char **argv)
- 	if (!argc)
- 		usage_with_options(c2c_usage, c2c_options);
- 
--	if (!strncmp(argv[0], "rec", 3)) {
-+	if (strlen(argv[0]) > 2 && strstarts("record", argv[0])) {
- 		return perf_c2c__record(argc, argv);
--	} else if (!strncmp(argv[0], "rep", 3)) {
-+	} else if (strlen(argv[0]) > 2 && strstarts("report", argv[0])) {
- 		return perf_c2c__report(argc, argv);
- 	} else {
- 		usage_with_options(c2c_usage, c2c_options);
-diff --git a/tools/perf/builtin-kmem.c b/tools/perf/builtin-kmem.c
-index 99d7ff9a8eff..ebfab2ca1702 100644
---- a/tools/perf/builtin-kmem.c
-+++ b/tools/perf/builtin-kmem.c
-@@ -1946,7 +1946,7 @@ int cmd_kmem(int argc, const char **argv)
- 			kmem_page = 1;
- 	}
- 
--	if (!strncmp(argv[0], "rec", 3)) {
-+	if (strlen(argv[0]) > 2 && strstarts("record", argv[0])) {
- 		symbol__init(NULL);
- 		return __cmd_record(argc, argv);
- 	}
-diff --git a/tools/perf/builtin-kvm.c b/tools/perf/builtin-kvm.c
-index c6f352ee57e6..953cb8127a17 100644
---- a/tools/perf/builtin-kvm.c
-+++ b/tools/perf/builtin-kvm.c
-@@ -24,6 +24,7 @@
- #include "util/ordered-events.h"
- #include "util/kvm-stat.h"
- #include "ui/ui.h"
-+#include "util/string2.h"
- 
- #include <sys/prctl.h>
- #ifdef HAVE_TIMERFD_SUPPORT
-@@ -1500,10 +1501,10 @@ static int kvm_cmd_stat(const char *file_name, int argc, const char **argv)
- 		goto perf_stat;
- 	}
- 
--	if (!strncmp(argv[1], "rec", 3))
-+	if (strlen(argv[1]) > 2 && strstarts("record", argv[1]))
- 		return kvm_events_record(&kvm, argc - 1, argv + 1);
- 
--	if (!strncmp(argv[1], "rep", 3))
-+	if (strlen(argv[1]) > 2 && strstarts("report", argv[1]))
- 		return kvm_events_report(&kvm, argc - 1 , argv + 1);
- 
- #ifdef HAVE_TIMERFD_SUPPORT
-@@ -1631,9 +1632,9 @@ int cmd_kvm(int argc, const char **argv)
- 		}
- 	}
- 
--	if (!strncmp(argv[0], "rec", 3))
-+	if (strlen(argv[0]) > 2 && strstarts("record", argv[0]))
- 		return __cmd_record(file_name, argc, argv);
--	else if (!strncmp(argv[0], "rep", 3))
-+	else if (strlen(argv[0]) > 2 && strstarts("report", argv[0]))
- 		return __cmd_report(file_name, argc, argv);
- 	else if (!strncmp(argv[0], "diff", 4))
- 		return cmd_diff(argc, argv);
-diff --git a/tools/perf/builtin-lock.c b/tools/perf/builtin-lock.c
-index d70131b7b1b1..24d402e84022 100644
---- a/tools/perf/builtin-lock.c
-+++ b/tools/perf/builtin-lock.c
-@@ -18,6 +18,7 @@
- #include "util/session.h"
- #include "util/tool.h"
- #include "util/data.h"
-+#include "util/string2.h"
- 
- #include <sys/types.h>
- #include <sys/prctl.h>
-@@ -997,9 +998,9 @@ int cmd_lock(int argc, const char **argv)
- 	if (!argc)
- 		usage_with_options(lock_usage, lock_options);
- 
--	if (!strncmp(argv[0], "rec", 3)) {
-+	if (strlen(argv[0]) > 2 && strstarts("record", argv[0])) {
- 		return __cmd_record(argc, argv);
--	} else if (!strncmp(argv[0], "report", 6)) {
-+	} else if (strlen(argv[0]) > 2 && strstarts("report", argv[0])) {
- 		trace_handler = &report_lock_ops;
- 		if (argc) {
- 			argc = parse_options(argc, argv,
-diff --git a/tools/perf/builtin-mem.c b/tools/perf/builtin-mem.c
-index fcf65a59bea2..9e435fd23503 100644
---- a/tools/perf/builtin-mem.c
-+++ b/tools/perf/builtin-mem.c
-@@ -20,6 +20,7 @@
- #include "util/symbol.h"
- #include "util/pmu.h"
- #include "util/pmu-hybrid.h"
-+#include "util/string2.h"
- #include <linux/err.h>
- 
- #define MEM_OPERATION_LOAD	0x1
-@@ -496,9 +497,9 @@ int cmd_mem(int argc, const char **argv)
- 			mem.input_name = "perf.data";
- 	}
- 
--	if (!strncmp(argv[0], "rec", 3))
-+	if (strlen(argv[0]) > 2 && strstarts("record", argv[0]))
- 		return __cmd_record(argc, argv, &mem);
--	else if (!strncmp(argv[0], "rep", 3))
-+	else if (strlen(argv[0]) > 2 && strstarts("report", argv[0]))
- 		return report_events(argc, argv, &mem);
- 	else
- 		usage_with_options(mem_usage, mem_options);
-diff --git a/tools/perf/builtin-sched.c b/tools/perf/builtin-sched.c
-index 72d446de9c60..646bd938927a 100644
---- a/tools/perf/builtin-sched.c
-+++ b/tools/perf/builtin-sched.c
-@@ -3561,7 +3561,7 @@ int cmd_sched(int argc, const char **argv)
- 	if (!strcmp(argv[0], "script"))
- 		return cmd_script(argc, argv);
- 
--	if (!strncmp(argv[0], "rec", 3)) {
-+	if (strlen(argv[0]) > 2 && strstarts("record", argv[0])) {
- 		return __cmd_record(argc, argv);
- 	} else if (!strncmp(argv[0], "lat", 3)) {
- 		sched.tp_handler = &lat_ops;
-@@ -3581,7 +3581,7 @@ int cmd_sched(int argc, const char **argv)
- 		sched.tp_handler = &map_ops;
- 		setup_sorting(&sched, latency_options, latency_usage);
- 		return perf_sched__map(&sched);
--	} else if (!strncmp(argv[0], "rep", 3)) {
-+	} else if (strlen(argv[0]) > 2 && strstarts("replay", argv[0])) {
- 		sched.tp_handler = &replay_ops;
- 		if (argc) {
- 			argc = parse_options(argc, argv, replay_options, replay_usage, 0);
-diff --git a/tools/perf/builtin-script.c b/tools/perf/builtin-script.c
-index 23bc0fb5a381..e3f23a508aed 100644
---- a/tools/perf/builtin-script.c
-+++ b/tools/perf/builtin-script.c
-@@ -3842,13 +3842,13 @@ int cmd_script(int argc, const char **argv)
- 	if (symbol__validate_sym_arguments())
- 		return -1;
- 
--	if (argc > 1 && !strncmp(argv[0], "rec", strlen("rec"))) {
-+	if (argc > 1 && strlen(argv[0]) > 2 && strstarts("record", argv[0])) {
- 		rec_script_path = get_script_path(argv[1], RECORD_SUFFIX);
- 		if (!rec_script_path)
- 			return cmd_record(argc, argv);
- 	}
- 
--	if (argc > 1 && !strncmp(argv[0], "rep", strlen("rep"))) {
-+	if (argc > 1 && strlen(argv[0]) > 2 && strstarts("report", argv[0])) {
- 		rep_script_path = get_script_path(argv[1], REPORT_SUFFIX);
- 		if (!rep_script_path) {
- 			fprintf(stderr,
-diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
-index 3f98689dd687..b33c92d00681 100644
---- a/tools/perf/builtin-stat.c
-+++ b/tools/perf/builtin-stat.c
-@@ -2271,11 +2271,11 @@ int cmd_stat(int argc, const char **argv)
- 	} else
- 		stat_config.csv_sep = DEFAULT_SEPARATOR;
- 
--	if (argc && !strncmp(argv[0], "rec", 3)) {
-+	if (argc && strlen(argv[0]) > 2 && strstarts("record", argv[0])) {
- 		argc = __cmd_record(argc, argv);
- 		if (argc < 0)
- 			return -1;
--	} else if (argc && !strncmp(argv[0], "rep", 3))
-+	} else if (argc && strlen(argv[0]) > 2 && strstarts("report", argv[0]))
- 		return __cmd_report(argc, argv);
- 
- 	interval = stat_config.interval;
-diff --git a/tools/perf/builtin-timechart.c b/tools/perf/builtin-timechart.c
-index 43bf4d67edb0..afce731cec16 100644
---- a/tools/perf/builtin-timechart.c
-+++ b/tools/perf/builtin-timechart.c
-@@ -35,6 +35,7 @@
- #include "util/tool.h"
- #include "util/data.h"
- #include "util/debug.h"
-+#include "util/string2.h"
- #include <linux/err.h>
- 
- #ifdef LACKS_OPEN_MEMSTREAM_PROTOTYPE
-@@ -1983,7 +1984,7 @@ int cmd_timechart(int argc, const char **argv)
- 		return -1;
- 	}
- 
--	if (argc && !strncmp(argv[0], "rec", 3)) {
-+	if (argc && strlen(argv[0]) > 2 && strstarts("record", argv[0])) {
- 		argc = parse_options(argc, argv, timechart_record_options,
- 				     timechart_record_usage,
- 				     PARSE_OPT_STOP_AT_NON_OPTION);
--- 
-2.25.1
-
+         Arnd
