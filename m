@@ -2,109 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CECF7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:15:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AD11C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:24:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229479AbiCYTRM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:17:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56142 "EHLO
+        id S229481AbiCYTZu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:25:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiCYTRI (ORCPT
+        with ESMTP id S229457AbiCYTZt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:17:08 -0400
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB0961D4C3B
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 11:57:32 -0700 (PDT)
-Received: by mail-ej1-f49.google.com with SMTP id yy13so17152684ejb.2
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 11:57:32 -0700 (PDT)
+        Fri, 25 Mar 2022 15:25:49 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEC4D3DFD05
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 11:57:42 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id yy13so17156449ejb.2
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 11:57:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EgGZKxsD9TLt3F67gvL7glAxKY5LH/ALHfbJS10Unqo=;
-        b=Ifi0U+jMvGYK0BTqlDqJD7wDJnEG/YfUGRvZzfRr8j43WKraDG3cCjf0FFuimZ9VSg
-         Z0g9+NcUuKem/himXNWFu4jQmCzk/SXJEhcY5eS/wYwMyvOJB4gmBU/F0T+ou6Dqjoci
-         oWVtYazkM++O6R/PwREQdtdeDirieoe3APP1o=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xVjY+0+WQdrpFP0Z4+mXCq1mql+ycXs6eG3CZHDrAmU=;
+        b=lojiQifx8p87NyqVcH+S1qS6PCpqH5hv3kq4ooLqiFC6LxWDa9UgXn8DlfDAioSt1j
+         KSAuBaTunUxouxmXWo2+15PDH/VN/ieCBsBJjuXFbc2xfnfwVCtSGvaagNNpTDQGdZgE
+         GP918nP4FtvgObAnrg127i02SvnAsUwXRs55MBrgGN+iQOAb1f6li/1MjBa9/AIbQjcl
+         mgniBgRiqj/I+/X+mqlQZ3Yf4r8wOKWKwWOdxvUj92XMj6UjWxYclsnxsu9WGd2BMtBK
+         AKM5VkfdFaGTir6C62aKUl6BF7HJFlvGSMaTZIWstEg+TiHsrgU4JcvQ7X03/T8g0qeI
+         4+HA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EgGZKxsD9TLt3F67gvL7glAxKY5LH/ALHfbJS10Unqo=;
-        b=gbrCxMO9l9JAdJWCfVZ7jlvM89LRmg26J1aT1OqIdzUZUfOpClaYefpgzZdLnSGHwA
-         C5thdC43n/gKaPPmuMi3oUS/lb8SgwRSxQE9k1MyqPtzynyALhVSjTs22GXt163tB9JC
-         GE63QN+z9Jjm2kZhLHQMWkpiYXTao3EDbj5fGF3o5brsJzDpx2m2hLJOAsP5McufiFL+
-         SXZvlsf7qEc8S+vzAz0FPGLzyHgRsunlfa+jZYGGxy0zt+FEL4+g8AzIvsEIuUUaMs+v
-         VPrD2HYgA0VI83iohHJtyrMS1fqHSs0725CHA/GbZyAZElS42cg91p3q5ifDrmsCjNTB
-         I8vw==
-X-Gm-Message-State: AOAM533IRhYYe5VAkOV1enC3DYRNSp8Fc+CEIvGe2J7tpxX572Z46/Cm
-        e/xKUR3UL94tXyd0Yu08KK9rUopys9IlcxumGjw=
-X-Google-Smtp-Source: ABdhPJwHcTy3Fgl+pukjWcZLVRMAHX+/sntk6i8XX7BvNEOehsXJuSjI5+3ljg7EKfNqhlkISwX/7Q==
-X-Received: by 2002:a05:6512:3402:b0:448:970:c3a5 with SMTP id i2-20020a056512340200b004480970c3a5mr8596688lfr.576.1648233989281;
-        Fri, 25 Mar 2022 11:46:29 -0700 (PDT)
-Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com. [209.85.208.179])
-        by smtp.gmail.com with ESMTPSA id w22-20020a2e9996000000b00249824260f8sm773699lji.25.2022.03.25.11.46.26
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Mar 2022 11:46:27 -0700 (PDT)
-Received: by mail-lj1-f179.google.com with SMTP id s25so11450137lji.5
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 11:46:26 -0700 (PDT)
-X-Received: by 2002:a2e:6f17:0:b0:248:124:9c08 with SMTP id
- k23-20020a2e6f17000000b0024801249c08mr9323690ljc.506.1648233985657; Fri, 25
- Mar 2022 11:46:25 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xVjY+0+WQdrpFP0Z4+mXCq1mql+ycXs6eG3CZHDrAmU=;
+        b=2TabadfczzJhLbkVOQcbqhv4hAk0N4f42xQoNQQIIae082Hj4G2O68zK/qfqF7Tucx
+         aRPjXYm5GCcE5oy+q6xwLWU2gvEl69mV0yTkt7fzXwKV207vAiKFrUeX4x4OlqmtVKgx
+         6tVwr/TcqxyqyGcjfwrOZRCJyNNcd+SrrDhSV/quYh++EeKX3m1RQJNrzBlvkRDR8+mY
+         QA9AzkWWWcR/DVGfwsaJcvyc1MUQDbYkqz9/TV2F11wN2wmK3049U/d8afqSjgQdJsen
+         iMyCEkgrCW1TCtyTl+6cusNZ7wqjrIswc02SM39kXc1BjkKEGpSQf2XI2mT2kNL7L1H9
+         e3ng==
+X-Gm-Message-State: AOAM5317fvUMnPGwHt8WygVOJdsM8rxZETsNPfa6NKQxq8/O/LaWwNBD
+        m7t2JB5hvu1mEAKXi4TwzEDYfkmZT+E=
+X-Google-Smtp-Source: ABdhPJxAEnH5lsTxK0dwzXh9eTKtgIhBWkNU0rp0Ctj3hfRmVeqJzFqWeVIH6b285IubNGFGBU7ROg==
+X-Received: by 2002:ac2:57d4:0:b0:448:2cba:6c86 with SMTP id k20-20020ac257d4000000b004482cba6c86mr8667977lfo.201.1648230681400;
+        Fri, 25 Mar 2022 10:51:21 -0700 (PDT)
+Received: from inno-pc.lan (88-115-161-74.elisa-laajakaista.fi. [88.115.161.74])
+        by smtp.gmail.com with ESMTPSA id h18-20020a056512339200b0044a2e5b94afsm777155lfg.56.2022.03.25.10.51.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Mar 2022 10:51:20 -0700 (PDT)
+From:   Zhi Wang <zhi.wang.linux@gmail.com>
+X-Google-Original-From: Zhi Wang <zhi.a.wang@intel.com>
+To:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Cc:     Zhi Wang <zhi.a.wang@intel.com>
+Subject: [PATCH v7 0/3] Refactor GVT-g MMIO tracking table and handlers
+Date:   Fri, 25 Mar 2022 13:51:13 -0400
+Message-Id: <20220325175116.167097-1-zhi.a.wang@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <1812355.tdWV9SEqCh@natalenko.name> <CAHk-=wiwz+Z2MaP44h086jeniG-OpK3c=FywLsCwXV7Crvadrg@mail.gmail.com>
- <27b5a287-7a33-9a8b-ad6d-04746735fb0c@arm.com> <CAHk-=wip7TCD_+2STTepuEZvGMg6wcz+o=kyFUvHjuKziTMixw@mail.gmail.com>
- <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com> <20220324190216.0efa067f.pasic@linux.ibm.com>
- <20220325163204.GB16426@lst.de> <87y20x7vaz.fsf@toke.dk> <e077b229-c92b-c9a6-3581-61329c4b4a4b@arm.com>
-In-Reply-To: <e077b229-c92b-c9a6-3581-61329c4b4a4b@arm.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 25 Mar 2022 11:46:09 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgKF5GfLXyVGDQDifh0MpMccDdmBvJBG3dt2+idCa5DzQ@mail.gmail.com>
-Message-ID: <CAHk-=wgKF5GfLXyVGDQDifh0MpMccDdmBvJBG3dt2+idCa5DzQ@mail.gmail.com>
-Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
- ath9k-based AP
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
-        Christoph Hellwig <hch@lst.de>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Olha Cherevyk <olha.cherevyk@gmail.com>,
-        iommu <iommu@lists.linux-foundation.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 11:42 AM Robin Murphy <robin.murphy@arm.com> wrote:
->
-> Note that the current code is already a violation of the DMA
-> API (because the device keeps writing even when it doesn't have
-> ownership), so there's not a very strong argument in that regard.
+To support the new mdev interfaces and the re-factor patches from
+Christoph, which moves the GVT-g code into a dedicated module, the GVT-g
+initialization path has to be separated into two phases:
 
-See my other email. I actually think that the ath9k code is 100%
-correct, adn it's the dma-mapping code that is in violation of the
-rules.
+a) Early initialization.
 
-And a big part of the problem - I think - is that the rules are so
-badly documented and not explicitly listed.
+The early initialization of GVT requires to be done when loading i915.
+Mostly it's because the initial clean HW state needs to be saved before
+i915 touches the HW.
 
-I think my list of three different sync cases (not just two! It's not
-just about whether to sync for the CPU or the device, it's also about
-what direction the data itself is taking) is correct.
+b) Late initalization.
 
-But maybe I'm wrong.
+This phases of initalization will setup the rest components of GVT-g,
+which can be done later when the dedicated module is being loaded.
 
-I really want people to think about this, because right now my gut
-feel is that commit aa6f8dcbab47 was just absolutely incorrect.
+To initialize the GVT-g MMIO tracking table in the early initalization
+stage, which will be done in i915, the GVT-g MMIO tracking table needs
+to be sperated accordingly and moved into i915.
 
-              Linus
+v7:
+
+- Keep the marcos of device generation in GVT-g. (Christoph, Jani)
+
+v6:
+
+- Move the mmio_table.c into i915. (Christoph)
+- Keep init_device_info and related structures in GVT-g. (Christoph)
+- Refine the callbacks of the iterator. (Christoph)
+- Move the flags of MMIO register defination to GVT-g. (Chrsitoph)
+- Move the mmio block handling to GVT-g.
+
+v5:
+
+- Re-design the mmio table framework. (Christoph)
+
+v4:
+
+- Fix the errors of patch checking scripts.
+
+v3:
+
+- Fix the errors when CONFIG_DRM_I915_WERROR is turned on. (Jani)
+
+v2:
+
+- Implement a mmio table instead of generating it by marco in i915. (Jani)
+
+Zhi Wang (3):
+  i915/gvt: Separate the MMIO tracking table from GVT-g
+  i915/gvt: Save the initial HW state snapshot in i915
+  i915/gvt: Use the initial HW state snapshot saved in i915
+
+ drivers/gpu/drm/i915/Makefile               |    2 +-
+ drivers/gpu/drm/i915/gvt/firmware.c         |   25 +-
+ drivers/gpu/drm/i915/gvt/gvt.h              |    3 +-
+ drivers/gpu/drm/i915/gvt/handlers.c         | 1031 ++-------------
+ drivers/gpu/drm/i915/gvt/mmio.h             |    1 -
+ drivers/gpu/drm/i915/gvt/reg.h              |    9 +-
+ drivers/gpu/drm/i915/i915_drv.h             |    2 +
+ drivers/gpu/drm/i915/intel_gvt.c            |   92 +-
+ drivers/gpu/drm/i915/intel_gvt.h            |   21 +
+ drivers/gpu/drm/i915/intel_gvt_mmio_table.c | 1308 +++++++++++++++++++
+ 10 files changed, 1577 insertions(+), 917 deletions(-)
+ create mode 100644 drivers/gpu/drm/i915/intel_gvt_mmio_table.c
+
+-- 
+2.25.1
+
