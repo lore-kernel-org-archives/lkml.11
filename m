@@ -2,80 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E898FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 23:48:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 309BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 23:52:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229527AbiCYXtl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 19:49:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43234 "EHLO
+        id S229580AbiCYXxn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 19:53:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiCYXth (ORCPT
+        with ESMTP id S229449AbiCYXxl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 19:49:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B52532ED5;
-        Fri, 25 Mar 2022 16:48:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE7B861301;
-        Fri, 25 Mar 2022 23:48:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 683BEC004DD;
-        Fri, 25 Mar 2022 23:48:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648252082;
-        bh=bVEYqWWkC9PUJo4OJT2wRbEodCot5lPTmYZu9YU7slA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Yd83BjBbgktdVSBUEbRBbyN2eOw+1tRty3i4i3FzoeKokmvmLqiTKPtyP2e3EbxDB
-         FUyWG09HtVB/GeZikT7q2ipGpztQqMssQKRJF4DO8ulZjqLyx8Um6aXo4ZdPobv88E
-         +OenpS4Ay28G8qLHT8wcpGVCJeJrK6uYbYoCYTQz4dnDQeCLQo6F5/HnPLaKDbAhj9
-         BHsv+XCrwk8aQjId0IKIKRHJw0MzAPLgLT1Ycllt4XDW+kBqVMUXfZt1coPagb4zhO
-         VB2/HVqKQCUxpkjz2A6DQLC3fH7/313wV0hzoYjROVHrPyHg98w/xVHs+0cvP0iYSH
-         +v9TgvTOVtHsw==
-Date:   Fri, 25 Mar 2022 16:48:00 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mukesh Savaliya <msavaliy@codeaurora.org>,
-        Akash Asthana <akashast@codeaurora.org>,
-        Bayi Cheng <bayi.cheng@mediatek.com>,
-        Chuanhong Guo <gch981213@gmail.com>,
-        Min Guo <min.guo@mediatek.com>, netdev@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-usb@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Fix missing '/schemas' in $ref paths
-Message-ID: <20220325164800.3c7f1c71@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220325215652.525383-1-robh@kernel.org>
-References: <20220325215652.525383-1-robh@kernel.org>
+        Fri, 25 Mar 2022 19:53:41 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3926F10782B
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 16:52:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648252326; x=1679788326;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=77IUHLSyPMt7K3a2k8emt6dcESsi45dDNViiOz+hWtM=;
+  b=gu6vyRKCLdXBl/RwbIWacyvvqR0mE/zdAL0LXz1zo9bosOeqvMbxNiAN
+   5wOkyKWHhbzPTvf9ggc1eguRslAfIHk4/BqvbXOfpfKGXrL22/y1b3D5Y
+   bWXUk+/SBKgjifFzYDQkvjfZBeG6Sumf0iAiFEbfDeK5uNsih6soFxv+T
+   xqrOf2YCDliqNsfRvXpkwo4IBtVLDKyphGZqV7/kUTZT28nutCr9hwVf5
+   npS9i/14Eal1tC+T1MXNuY2BRps5Hi4E7fz2TNCgbL52GWRq0XdkjZAgy
+   AD2Vjmk3o8N+IMCpbZKXg7gmfevwC95+YONY1ASEwoaqYnIKj5i+lTifa
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10297"; a="321930136"
+X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
+   d="scan'208";a="321930136"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2022 16:52:05 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
+   d="scan'208";a="648425289"
+Received: from skl-02.jf.intel.com ([10.54.74.28])
+  by fmsmga002.fm.intel.com with ESMTP; 25 Mar 2022 16:52:05 -0700
+From:   Tim Chen <tim.c.chen@linux.intel.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Ingo Molnar <mingo@elte.hu>, Juri Lelli <juri.lelli@redhat.com>
+Cc:     Tim Chen <tim.c.chen@linux.intel.com>,
+        Yu Chen <yu.c.chen@intel.com>,
+        Walter Mack <walter.mack@intel.com>,
+        Mel Gorman <mgorman@suse.de>, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] sched/fair: Fix starvation caused by task migration 
+Date:   Fri, 25 Mar 2022 15:54:15 -0700
+Message-Id: <cover.1648228023.git.tim.c.chen@linux.intel.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 25 Mar 2022 16:56:52 -0500 Rob Herring wrote:
-> Absolute paths in $ref should always begin with '/schemas'. The tools
-> mostly work with it omitted, but for correctness the path should be
-> everything except the hostname as that is taken from the schema's $id
-> value. This scheme is defined in the json-schema spec.
-> 
-> Cc: Hector Martin <marcan@marcan.st>
-> Cc: Sven Peter <sven@svenpeter.dev>
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Vivien Didelot <vivien.didelot@gmail.com>
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
-> Cc: Vladimir Oltean <olteanv@gmail.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
+Walter Mack noticed during stress testing on 2 socket Sapphire Rapids
+system, there were anomalies where tasks were starved for more
+than 70 secs before getting scheduled.
 
-Acked-by: Jakub Kicinski <kuba@kernel.org>
+The stress test scenario is an extreme case where about 50 threads
+per CPU are started on each core.  Then each thread hops from
+one core to another continuously.
+
+We discussed this issue with Peter Z., who narrowed
+things down to problem with vruntime setting of a migrated
+task being too out of sync with the tasks on the target run queue.
+
+Peter suggested the following two patches that did fix
+the starvation anomalies that Walter saw.
+
+Yu Chen also kicked the patches into our 0-day test infrastructure to
+check for regressions.  The performance changes of note are below:
+
+5.15        Throughput    5.15+patchest  Test
+	    Changes       
+4634070      -7.5%        4285823        stress-ng.sigsuspend.ops_per_sec
+  29934     +37.0%          41006        aim7.jobs-per-min
+
+Stress-ng sigsuspend is the worst affected.  But for most workloads,
+they are not negatively impacted.  In fact, we saw 37% improvement
+in Aim7 due to these patches.
+
+Tim
+
+Peter Zijlstra (1):
+  sched/fair: Don't rely on ->exec_start for migration
+
+Peter Zijlstra (Intel) (1):
+  sched/fair: Simple runqueue order on migrate
+
+ include/linux/sched.h   |  1 +
+ kernel/sched/fair.c     | 37 +++++++++++++++++++++++++++++++++----
+ kernel/sched/features.h |  2 ++
+ 3 files changed, 36 insertions(+), 4 deletions(-)
+
+-- 
+2.32.0
+
