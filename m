@@ -2,106 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BFB0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 04:29:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABE48C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 04:34:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358203AbiCYEbH (ORCPT
+        id S1353841AbiCYEfi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 00:31:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57700 "EHLO
+        Fri, 25 Mar 2022 00:35:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356765AbiCYEbE (ORCPT
+        with ESMTP id S231523AbiCYEfe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 00:31:04 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ADA9A147D
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 21:29:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648182570; x=1679718570;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Vz2sASJO+qCZDekvkLGguImZppYnyBsLDN4sX2+KMAI=;
-  b=oEmF0c9L/WiLRQyhfV2pIYa44/MiC5v0OcDuyGScI0u6eBQAaZZ3cQdj
-   G9NuKKZjqmnF+LZYPa5KiGVkPs2WLDWuzAou0EAL/eG0Gh5Ar9ofd3osd
-   WgHaSIxm4ILUCG9iLNvyTCLO4i/L+klre2LJGqTnxdVPJBjqjFpRSck3X
-   Fb7k4eCcXzLofvjihVX3JaIFDf3pRXr6rKCylHhAVWGKjV8E7RKUK5REK
-   NImN4Aq4MbBRCrmrpCtVp0rhsAI7IH1Y8GrruAU8Ey+tWGZi/MXvxvpSi
-   q5Ip+IAo/C2fsoTwG0lKxpMxmoI4bBuZ5dKUybP2331bgrwMYIU7ElkdO
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10296"; a="344988907"
-X-IronPort-AV: E=Sophos;i="5.90,209,1643702400"; 
-   d="scan'208";a="344988907"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2022 21:29:30 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,209,1643702400"; 
-   d="scan'208";a="520066486"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 24 Mar 2022 21:29:29 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nXbZo-000LnH-Fk; Fri, 25 Mar 2022 04:29:28 +0000
-Date:   Fri, 25 Mar 2022 12:28:42 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [agd5f:amd-staging-drm-next 1307/1318]
- drivers/gpu/drm/amd/amdgpu/amdgpu_vm_pt.c:628: warning: expecting prototype
- for amdgpu_vm_free_table(). Prototype was for amdgpu_vm_pt_free() instead
-Message-ID: <202203251221.2xwHTw12-lkp@intel.com>
+        Fri, 25 Mar 2022 00:35:34 -0400
+Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0580AC064;
+        Thu, 24 Mar 2022 21:34:00 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=hsiangkao@linux.alibaba.com;NM=1;PH=DS;RN=15;SR=0;TI=SMTPD_---0V87hnAX_1648182834;
+Received: from B-P7TQMD6M-0146.local(mailfrom:hsiangkao@linux.alibaba.com fp:SMTPD_---0V87hnAX_1648182834)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 25 Mar 2022 12:33:56 +0800
+Date:   Fri, 25 Mar 2022 12:33:53 +0800
+From:   Gao Xiang <hsiangkao@linux.alibaba.com>
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Huang Jianan <huangjianan@oppo.com>,
+        Chia-Wei Wang <chiawei_wang@aspeedtech.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Amit Kucheria <amitk@kernel.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] Documentation/ABI: sysfs-fs-erofs: Fix Sphinx errors
+Message-ID: <Yj1GMaQN/W+kpT6e@B-P7TQMD6M-0146.local>
+References: <20220324165918.22005-1-hdegoede@redhat.com>
+ <20220324165918.22005-4-hdegoede@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220324165918.22005-4-hdegoede@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://gitlab.freedesktop.org/agd5f/linux.git amd-staging-drm-next
-head:   97c2bccc87d3d7bc08400c3d3773c327492a0f3d
-commit: 59f2ef3cadef58fdee8d794bf28fc31b9613dc47 [1307/1318] drm/amdgpu: separate VM PT handling into amdgpu_vm_pt.c
-config: mips-allyesconfig (https://download.01.org/0day-ci/archive/20220325/202203251221.2xwHTw12-lkp@intel.com/config)
-compiler: mips-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        git remote add agd5f https://gitlab.freedesktop.org/agd5f/linux.git
-        git fetch --no-tags agd5f amd-staging-drm-next
-        git checkout 59f2ef3cadef58fdee8d794bf28fc31b9613dc47
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=mips SHELL=/bin/bash drivers/gpu/drm/amd/amdgpu/
+On Thu, Mar 24, 2022 at 05:59:18PM +0100, Hans de Goede wrote:
+> Fix the following warnings from "make htmldocs":
+> 
+> Documentation/ABI/testing/sysfs-fs-erofs:10:
+>   ERROR: Unexpected indentation.
+>   WARNING: Block quote ends without a blank line; unexpected unindent.
+> 
+> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Thanks!
 
-All warnings (new ones prefixed by >>):
+Acked-by: Gao Xiang <hsiangkao@linux.alibaba.com>
 
->> drivers/gpu/drm/amd/amdgpu/amdgpu_vm_pt.c:628: warning: expecting prototype for amdgpu_vm_free_table(). Prototype was for amdgpu_vm_pt_free() instead
+Thanks,
+Gao Xiang
 
-
-vim +628 drivers/gpu/drm/amd/amdgpu/amdgpu_vm_pt.c
-
-   621	
-   622	/**
-   623	 * amdgpu_vm_free_table - fre one PD/PT
-   624	 *
-   625	 * @entry: PDE to free
-   626	 */
-   627	static void amdgpu_vm_pt_free(struct amdgpu_vm_bo_base *entry)
- > 628	{
-   629		struct amdgpu_bo *shadow;
-   630	
-   631		if (!entry->bo)
-   632			return;
-   633		shadow = amdgpu_bo_shadowed(entry->bo);
-   634		entry->bo->vm_bo = NULL;
-   635		list_del(&entry->vm_status);
-   636		amdgpu_bo_unref(&shadow);
-   637		amdgpu_bo_unref(&entry->bo);
-   638	}
-   639	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> ---
+>  Documentation/ABI/testing/sysfs-fs-erofs | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-fs-erofs b/Documentation/ABI/testing/sysfs-fs-erofs
+> index 05482374a741..bb4681a01811 100644
+> --- a/Documentation/ABI/testing/sysfs-fs-erofs
+> +++ b/Documentation/ABI/testing/sysfs-fs-erofs
+> @@ -9,8 +9,9 @@ Description:	Shows all enabled kernel features.
+>  What:		/sys/fs/erofs/<disk>/sync_decompress
+>  Date:		November 2021
+>  Contact:	"Huang Jianan" <huangjianan@oppo.com>
+> -Description:	Control strategy of sync decompression
+> +Description:	Control strategy of sync decompression:
+> +
+>  		- 0 (default, auto): enable for readpage, and enable for
+> -				     readahead on atomic contexts only,
+> +		  readahead on atomic contexts only.
+>  		- 1 (force on): enable for readpage and readahead.
+>  		- 2 (force off): disable for all situations.
+> -- 
+> 2.35.1
