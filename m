@@ -2,94 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91580C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 14:39:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 444E3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 14:43:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357986AbiCYOkx (ORCPT
+        id S1359317AbiCYOpQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 10:40:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51238 "EHLO
+        Fri, 25 Mar 2022 10:45:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240425AbiCYOku (ORCPT
+        with ESMTP id S1345538AbiCYOpM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 10:40:50 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D33197284;
-        Fri, 25 Mar 2022 07:39:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648219156; x=1679755156;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=tGQr/XMGpfYl5XaqM3UKSbUCHx+0u+K3rYHZ2t5R3DI=;
-  b=evd/wI+SK65lFqBE/Yh8z4VrwSl7AT6BT7A2AIDpVCq36clmesmTdLM/
-   20wIADQUmRGE03YxJClcaP08ica/YsAR1nfy2uoDNeZQ+zUh7hzZXbLdq
-   XN44LK35VTLdOpUT9MTAXY57yCoonr+szin4Y49H6fMAgRLncatFn6wsO
-   cOa2br72kT3bgUE1uFrYwCRuJzXgCdCXxy9FwTmDHa14/F7S0/bGVpY4X
-   PFWk89UlogebOo0V17zjLpLgumzfi6SKs/DmgQrwZQiXuPIb7DD47IG04
-   bqjGVb+366+SKMMHIj2MthPzdktQLXEGVQMmYOQzyR5q+1eS4Ix8eK7Qy
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10296"; a="240800603"
-X-IronPort-AV: E=Sophos;i="5.90,209,1643702400"; 
-   d="scan'208";a="240800603"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2022 07:39:13 -0700
-X-IronPort-AV: E=Sophos;i="5.90,209,1643702400"; 
-   d="scan'208";a="650256948"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2022 07:39:09 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nXl5F-006RgT-8c;
-        Fri, 25 Mar 2022 16:38:33 +0200
-Date:   Fri, 25 Mar 2022 16:38:32 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Len Brown <lenb@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 8/9] i2c: mux: pinctrl: remove CONFIG_OF dependency
- and use fwnode API
-Message-ID: <Yj3T6Is9kJYLrPiC@smile.fi.intel.com>
-References: <20220325113148.588163-1-clement.leger@bootlin.com>
- <20220325113148.588163-9-clement.leger@bootlin.com>
+        Fri, 25 Mar 2022 10:45:12 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AF9C53E11
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 07:43:36 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id bq8so1851919ejb.10
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 07:43:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QdaepbbRGWYsyaL2QkmSp7WtYYHThf/iqjZK0d+zPJ8=;
+        b=dm/pO7aCRa1CzlKVqD1bJ4Ls9HUp9fNlvHw4n7CxSpTF7W9hnwFyoz95R0sfBwDHb2
+         nAiu29CamPcQ9qjyahRRfHuzw+Hv1a35ANlR1cNzxRtsdrS2BULx5xJ6pkQhcm+9GrA+
+         BSwDnimM+mRblUqWKImuZnAJxdpMBCGEQhCIc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QdaepbbRGWYsyaL2QkmSp7WtYYHThf/iqjZK0d+zPJ8=;
+        b=i+c5J13XcxoJVXOXnEYlhdaBd3CDqeMp2YYeZcvrk7/9gIUHf3B+CQFhRLG6m7xATI
+         Zu4mQ7vLsHs3I6UfZgjOPB7yxwliVYcb+Ez61JNZwglDfpRslzZw6Ov9Y/TGT3wfNrmX
+         nPXzUTMuUpyfVn1iA3jPY71AHJebfi15jCzGXmUhnE4xh1xGlSmJPJx2eKaGtZ+wwbMA
+         z7Tc5d7HTi7zaAMSCGEtgPUgAdPd7A3JK4FSfKVyEZc45iAds7nv3QQUCfRfLgDABXXH
+         duC06/5N0t2HYZ72PxaMMnFTmB3Hz0QLL1r3kyj/SIFWHqsRVy40HNfozHyRGCCfKtjX
+         Exdw==
+X-Gm-Message-State: AOAM530xlprFr9BnEFiNqULd4Uf/GndWZx2Go1kgZ47GKhw0rsWMdonl
+        Fh/NLltmykbnCYQNMLAfx3xIOopOIt0FxrAv4BY=
+X-Google-Smtp-Source: ABdhPJzEP6tJGJX+NXks7rFAKrQXe0zHM+L1EDh54J1LhKpDFsrI26ATa3MiBikuKIT/Jf3t8dGGmw==
+X-Received: by 2002:a17:906:2991:b0:6cc:fc18:f10c with SMTP id x17-20020a170906299100b006ccfc18f10cmr11840304eje.744.1648219414541;
+        Fri, 25 Mar 2022 07:43:34 -0700 (PDT)
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com. [209.85.221.48])
+        by smtp.gmail.com with ESMTPSA id do8-20020a170906c10800b006dfe4d1edc6sm2416877ejc.61.2022.03.25.07.43.33
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Mar 2022 07:43:33 -0700 (PDT)
+Received: by mail-wr1-f48.google.com with SMTP id b19so11148261wrh.11
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 07:43:33 -0700 (PDT)
+X-Received: by 2002:a5d:4491:0:b0:203:f63a:e89b with SMTP id
+ j17-20020a5d4491000000b00203f63ae89bmr9410635wrq.342.1648219413124; Fri, 25
+ Mar 2022 07:43:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220325113148.588163-9-clement.leger@bootlin.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <1648217145-725-1-git-send-email-quic_vnivarth@quicinc.com>
+In-Reply-To: <1648217145-725-1-git-send-email-quic_vnivarth@quicinc.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Fri, 25 Mar 2022 07:43:20 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=X2mF45Fsi+2eSRPfUKa9LCmYSkv8E586aGxPTxC0JsWw@mail.gmail.com>
+Message-ID: <CAD=FV=X2mF45Fsi+2eSRPfUKa9LCmYSkv8E586aGxPTxC0JsWw@mail.gmail.com>
+Subject: Re: [PATCH V2] arm64: dts: qcom: sc7280-idp: Configure cts sleep
+ pinctrl to bias-bus-hold
+To:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        quic_msavaliy@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 12:31:47PM +0100, Clément Léger wrote:
-> In order to use i2c muxes with all types of nodes, switch to fwnode
-> API. The fwnode layer will allow to use this with both device_node and
-> software_node.
-> 
-> This commits is simply replacing the use of "of_" prefixed functions
-> with there fwnode equivalent.
+Hi,
 
-What I meant by splitting to the patches is to be able to have first patch of
-a such split to be independent of this series. And I believe one or two (if
-you split to more logical pieces) may be done this way, means we have already
-available APIs.
+On Fri, Mar 25, 2022 at 7:06 AM Vijaya Krishna Nivarthi
+<quic_vnivarth@quicinc.com> wrote:
+>
+> WLAN rail was leaking power during RBSC/sleep even after turning BT off.
+> Change sleep pinctrl configuration to handle same.
+>
+> Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+> ---
+> v2: used bias-bus-hold as per review comments
+> v1: intial patch used bias-disable
+> ---
+>  arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 
--- 
-With Best Regards,
-Andy Shevchenko
+No objections from me now. ...but we should probably be changing _all_
+of them? ...and by "all" I mean _both_ the sleep and wake state of the
+pins and this config across all the devices. In the very least all the
+sc7280 ones, but maybe even the sc7180 ones.
 
+$ git grep "Configure a pull-down on CTS" -- arch/arm64/boot/dts
+arch/arm64/boot/dts/qcom/sc7180-idp.dts:                 * Configure a
+pull-down on CTS to match the pull of
+arch/arm64/boot/dts/qcom/sc7180-idp.dts:                         *
+Configure a pull-down on CTS to match the pull of
+arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi:            * Configure a
+pull-down on CTS to match the pull of
+arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi:                    *
+Configure a pull-down on CTS to match the pull of
+arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r0.dts:      *
+Configure a pull-down on CTS to match the pull of
+arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r0.dts:
+  * Configure a pull-down on CTS to match the pull of
+arch/arm64/boot/dts/qcom/sc7280-idp.dtsi:        * Configure a
+pull-down on CTS to match the pull of
+arch/arm64/boot/dts/qcom/sc7280-idp.dtsi:                * Configure a
+pull-down on CTS to match the pull of
+arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi:     /* Configure a
+pull-down on CTS to match the pull of the Bluetooth module. */
+arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi:              * Configure a
+pull-down on CTS to match the pull of
 
+-Doug
