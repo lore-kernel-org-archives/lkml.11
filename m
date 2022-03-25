@@ -2,59 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 718D1C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 16:49:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99A17C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 16:49:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376976AbiCYQug (ORCPT
+        id S1376994AbiCYQvJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 12:50:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34502 "EHLO
+        Fri, 25 Mar 2022 12:51:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376956AbiCYQue (ORCPT
+        with ESMTP id S1376979AbiCYQvE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 12:50:34 -0400
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C95FF53E23
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 09:48:59 -0700 (PDT)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 4AA1668B05; Fri, 25 Mar 2022 17:48:56 +0100 (CET)
-Date:   Fri, 25 Mar 2022 17:48:56 +0100
-From:   Christoph Hellwig <hch@lst.de>
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Christoph Hellwig <hch@lst.de>, Baoquan He <bhe@redhat.com>,
-        John Donnelly <john.p.donnelly@oracle.com>,
-        David Hildenbrand <david@redhat.com>, linux-mm@kvack.org,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] dma/pool: do not complain if DMA pool is not allocated
-Message-ID: <20220325164856.GA16800@lst.de>
-References: <20220325122559.14251-1-mhocko@kernel.org> <Yj28gjonUa9+0yae@dhcp22.suse.cz>
+        Fri, 25 Mar 2022 12:51:04 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A8BFC12C4;
+        Fri, 25 Mar 2022 09:49:30 -0700 (PDT)
+Received: from imap1.suse-dmz.suse.de (imap1.suse-dmz.suse.de [192.168.254.73])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 2B58D1F38D;
+        Fri, 25 Mar 2022 16:49:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1648226969; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=6ivythEboEDbL7GPUWVELN/Jqdcen7CCuBCXMVaFSDQ=;
+        b=dQjzWZf/421J0weNpwn9VYr6iqOVox3dhJuq7mBRiGWhM20NwS/n8X4GL/TfLi8tGzH4OS
+        tE4o8gKIILZD3dsTIbkehKJy5YcbcRV7SgZUDxOnUqtIiIbZHdfpC/Sv6jmNrP14tJBzjU
+        jJOuRBMFFLtsTl+Ha1JsIOlX/JPAdd8=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1648226969;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=6ivythEboEDbL7GPUWVELN/Jqdcen7CCuBCXMVaFSDQ=;
+        b=j4eG4F/BjRwQEejDcI5RXqzomGXrEGN2SQgLJgqvO3kd6Du5DYYIbPBFlMWTK7S/ELtAzH
+        b4If7RigS0rPcBDA==
+Received: from imap1.suse-dmz.suse.de (imap1.suse-dmz.suse.de [192.168.254.73])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap1.suse-dmz.suse.de (Postfix) with ESMTPS id B49C31392B;
+        Fri, 25 Mar 2022 16:49:28 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap1.suse-dmz.suse.de with ESMTPSA
+        id LfP+KJjyPWJdQAAAGKfGzw
+        (envelope-from <lhenriques@suse.de>); Fri, 25 Mar 2022 16:49:28 +0000
+Received: from localhost (brahms.olymp [local])
+        by brahms.olymp (OpenSMTPD) with ESMTPA id 453f7812;
+        Fri, 25 Mar 2022 16:49:49 +0000 (UTC)
+From:   =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
+To:     Jeff Layton <jlayton@kernel.org>, Xiubo Li <xiubli@redhat.com>,
+        Ilya Dryomov <idryomov@gmail.com>
+Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
+Subject: [PATCH] ceph: support legacy v1 encryption policy keysetup
+Date:   Fri, 25 Mar 2022 16:49:47 +0000
+Message-Id: <20220325164947.22062-1-lhenriques@suse.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yj28gjonUa9+0yae@dhcp22.suse.cz>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 01:58:42PM +0100, Michal Hocko wrote:
-> Dang, I have just realized that I have misread the boot log and it has
-> turned out that a674e48c5443 is covering my situation because the
-> allocation failure message says:
->
-> Node 0 DMA free:0kB boost:0kB min:0kB low:0kB high:0kB reserved_highatomic:0KB active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB writepending:0kB present:636kB managed:0kB mlocked:0kB bounce:0kB free_pcp:0kB local_pcp:0kB free_cma:0kB
+fstests make use of legacy keysetup where the key description uses a
+filesystem-specific prefix.  Add this ceph-specific prefix to the
+fscrypt_operations data structure.
 
-As in your report is from a kernel that does not have a674e48c5443
-yet?
+Signed-off-by: Luís Henriques <lhenriques@suse.de>
+---
+ fs/ceph/crypto.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> 
-> I thought there are only few pages in the managed by the DMA zone. This
-> is still theoretically possible so I think __GFP_NOWARN makes sense here
-> but it would require to change the patch description.
-> 
-> Is this really worth it?
-
-In general I think for kernels where we need the pool and can't allocate
-it, a warning is very useful.  We just shouldn't spew it when there is
-no need for the pool to start with.
+diff --git a/fs/ceph/crypto.c b/fs/ceph/crypto.c
+index c2e28ae54323..2a8f95885e7d 100644
+--- a/fs/ceph/crypto.c
++++ b/fs/ceph/crypto.c
+@@ -77,6 +77,7 @@ static const union fscrypt_policy *ceph_get_dummy_policy(struct super_block *sb)
+ }
+ 
+ static struct fscrypt_operations ceph_fscrypt_ops = {
++	.key_prefix		= "ceph:",
+ 	.get_context		= ceph_crypt_get_context,
+ 	.set_context		= ceph_crypt_set_context,
+ 	.get_dummy_policy	= ceph_get_dummy_policy,
