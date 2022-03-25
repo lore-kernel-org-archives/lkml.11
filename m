@@ -2,367 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB85CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 09:59:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C042DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 10:02:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358601AbiCYKAy (ORCPT
+        id S1358592AbiCYKDu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 06:00:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58082 "EHLO
+        Fri, 25 Mar 2022 06:03:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230496AbiCYKAt (ORCPT
+        with ESMTP id S237056AbiCYKDq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 06:00:49 -0400
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam08on2088.outbound.protection.outlook.com [40.107.102.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47ED66EB0B
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 02:59:14 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LmjwsKD5n9KG8pkP5+lwmD43GdfnomP9mYhNVF/sZtgw4lYrr6YIe4KPmbR0pplB9AwjVkoOqEVYOo0HaDOxBSxtJUpdSmEbn6NaUMgdAPJA9j+hFWKX/gLEKwUd3jOOd84ornADReWbAPx23CExKSI6D7QM9gE1NzveNfnPmHPvyQsi/r/MrfUtkcV9PUb3UuROzX0Zprbcf5iaVkFdYU5RaKOXBFo9fhFZiPLjKUH8rFhAR6eIE0gvtjngMG6Chgsff4rugfC8aehxQI2TPl6237MRmqdw0ipwfzqW85AtapQnr3mUhQZg80VVAD/k6t2MXS8CutMqzzbe8CA5gA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=i/B3jQF8dNsY90tHebMoi1oT1PauhoZZpuzD9zVyd8c=;
- b=lmGUyHcTJ5KoJP7s5YIEv2QGQFoPX9SmGsB8JH4aWZGl2JLaUZZzwx9+/UiRPvcAJ1BlTLdQq08SW9aBa5OjmFgxpMsLEJgSzrcJ6+3TdYZ9UwFDdpNYWRCliauYRrf4dDn6SWG3L9TSYrF23ziVY7FDbOVqtZ4uwb/26p5XpXDk9B4qmtMZ7/GdNdA4FfGS0sk264xqVPW2ZMmjuw9jETmUWPimMq1CHIXG5K/ubheU8rpaCyGw35DZ3v9b+ks9HE4Xl1INHOVvCVgVWZyhT/fnKr5PZ6tmE6OERAPQO17xz1w6J81iwZz2HpjCqfKfZEg0878v/jTQhIiaqBcnVQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=i/B3jQF8dNsY90tHebMoi1oT1PauhoZZpuzD9zVyd8c=;
- b=y3TMqueyCIQHn1leTxCju98nOMnOPdCpnw9TRz4L2P4mUSr071buaveWElZZW8a2jh7/msjA7uxT+CHF8Pa66sMKsXxT2PSBm93/4b4rvkPIEaTpqxIU9mK8kCX6xGCQPr/LElmgOyia4jntQolMz6aiQvz0+1ujqvfL+Me2JYs=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from BN8PR12MB3587.namprd12.prod.outlook.com (2603:10b6:408:43::13)
- by BY5PR12MB3650.namprd12.prod.outlook.com (2603:10b6:a03:1a3::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.15; Fri, 25 Mar
- 2022 09:59:09 +0000
-Received: from BN8PR12MB3587.namprd12.prod.outlook.com
- ([fe80::404f:1fc8:9f4c:f185]) by BN8PR12MB3587.namprd12.prod.outlook.com
- ([fe80::404f:1fc8:9f4c:f185%6]) with mapi id 15.20.5102.017; Fri, 25 Mar 2022
- 09:59:09 +0000
-Message-ID: <de28a847-82cd-9571-a445-d1fdd5b79f63@amd.com>
-Date:   Fri, 25 Mar 2022 10:59:03 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 3/25] drm/amdgpu: Disable ABM when AC mode
-Content-Language: en-US
-To:     "Lin, Tsung-hua (Ryan)" <Tsung-hua.Lin@amd.com>,
-        "Wentland, Harry" <Harry.Wentland@amd.com>,
-        "Li, Sun peng (Leo)" <Sunpeng.Li@amd.com>,
-        "Deucher, Alexander" <Alexander.Deucher@amd.com>,
-        "David1.Zhou@amd.com" <David1.Zhou@amd.com>,
-        "airlied@linux.ie" <airlied@linux.ie>,
-        "seanpaul@chromium.org" <seanpaul@chromium.org>,
-        "bas@basnieuwenhuizen.nl" <bas@basnieuwenhuizen.nl>,
-        "Kazlauskas, Nicholas" <Nicholas.Kazlauskas@amd.com>,
-        "sashal@kernel.org" <sashal@kernel.org>,
-        "markyacoub@google.com" <markyacoub@google.com>,
-        "victorchengchi.lu@amd.com" <victorchengchi.lu@amd.com>,
-        "ching-shih.li@amd.corp-partner.google.com" 
-        <ching-shih.li@amd.corp-partner.google.com>,
-        "Siqueira, Rodrigo" <Rodrigo.Siqueira@amd.com>,
-        "ddavenport@chromium.org" <ddavenport@chromium.org>,
-        "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Li, Leon" <Leon.Li@amd.com>
-References: <20220325040515.4073706-1-tsung-hua.lin@amd.com>
- <2125c5b2-b377-076a-4177-d5ef482eb657@amd.com>
- <DM6PR12MB44177923FF4E05331A7B727FB21A9@DM6PR12MB4417.namprd12.prod.outlook.com>
- <26042d92-0fb7-fadb-140e-b633f2979632@amd.com>
- <Yj2QKsKet4/pHvvX@phenom.ffwll.local>
-From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
-In-Reply-To: <Yj2QKsKet4/pHvvX@phenom.ffwll.local>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: AM6PR02CA0023.eurprd02.prod.outlook.com
- (2603:10a6:20b:6e::36) To BN8PR12MB3587.namprd12.prod.outlook.com
- (2603:10b6:408:43::13)
+        Fri, 25 Mar 2022 06:03:46 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CD7ACFBA3
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 03:02:12 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id jx9so7102012pjb.5
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 03:02:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=a9wI0zrpHRmLcU6l6ReXG7FlwJwxzTl2kn8IaeujIKc=;
+        b=AWQTz4Pau2/UbzV0gD4UDl72E2iQJSZearFX+Hzbp0itLTqdtNkCkWEy7/DS7WJoLj
+         2BXrDCAFbVhEXn05+g2CnB3aWbBCHT5UpacQfi+eZlhRmP/7g+8ieGH474Yk+aGYfOgd
+         r12IaTjcr3vz/rbtEDNCZaWzJmqPCQmplrdhemho8/ghm8wxjm8cfFvEcOLGEMdPgr3E
+         ko+IoEIagPDlJBcMHNZWuy35xGp0OCauWpOgsr1FlgQgREyRCk38P1sy/v/uMFs9gI/j
+         8KaX32JNUsbUabLJPjCxvhCKhGO6cwDI9bqYqpi/IHJV53kkZ4TTn780VTImrclxq/60
+         3XqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=a9wI0zrpHRmLcU6l6ReXG7FlwJwxzTl2kn8IaeujIKc=;
+        b=p9v6B1v99McM7Ia4glSfx3kMY3Q4EmvBWDECUMeIgPR7almPxC/+AqLljDwT8ST8h+
+         iteYATy17ViPLP7teK+LoJCmuqm2tlACZJ0Cvo3ARQ9MD7lt75U8wP1gBPhmO4llfL2V
+         feS2zhazwNLaRnK9CRwUAw6YuOhzzJBw+5Fja+XDMQBJt1e/qlqBS0elgC2DVtH6jDf0
+         eb0ebGf7IAZ7tnaCWAGjuPuRywclJxA49DRTiyzuUb26yQhF/O3QRS7B00Uu4Y02//l3
+         eDK3KKlwSC4SMEUl8wm+unU5/02HrpGsfIHPxXioc8qV3xUxYw5lY0IYZNQjk4NYIFup
+         bHSg==
+X-Gm-Message-State: AOAM530eMLSVqNPwZ3tkGwyyTPycbqBUQHvlVPdneiqdGTyWdw1I137M
+        HbSQ27KPJDz41pMJeOxEF1jf
+X-Google-Smtp-Source: ABdhPJxPvoeFfAo6RUxJOiaJWZrNziwqKzEQooxzqe4kW7GIjHjATC/oOEFynNN+CJ2IUuMOlUKfdQ==
+X-Received: by 2002:a17:902:9a02:b0:14f:2d93:92f4 with SMTP id v2-20020a1709029a0200b0014f2d9392f4mr11061794plp.160.1648202531847;
+        Fri, 25 Mar 2022 03:02:11 -0700 (PDT)
+Received: from thinkpad ([27.111.75.218])
+        by smtp.gmail.com with ESMTPSA id f21-20020a056a00239500b004fb02a7a45bsm3062961pfc.214.2022.03.25.03.02.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Mar 2022 03:02:11 -0700 (PDT)
+Date:   Fri, 25 Mar 2022 15:32:04 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Frank Li <Frank.Li@nxp.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        linux-pci@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 22/25] dmaengine: dw-edma: Replace chip ID number with
+ device name
+Message-ID: <20220325100204.GJ4675@thinkpad>
+References: <20220324014836.19149-1-Sergey.Semin@baikalelectronics.ru>
+ <20220324014836.19149-23-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 742b1ce7-6520-4569-f0da-08da0e461b4c
-X-MS-TrafficTypeDiagnostic: BY5PR12MB3650:EE_
-X-Microsoft-Antispam-PRVS: <BY5PR12MB3650C47541E6C8A062F66F67831A9@BY5PR12MB3650.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Eh4+y5feH8BMpflqpffj8mTrdWn3J/aN+taQTL0YoKgXq7vwnXjoPuEbEzhcOUZV3Xtv9C7PIwF7NByyJ6hOwPvdtr2mkfovpXuuWAvXM3rcKPbcd5U7gBZfctXtM095W89aPsM8atF4/Tgt0DSY1vMkb0nnSefaw+YlhG5B2Q7G44ClrOHFqLRhViMwLGv2LL6CK5MMgD7LFNktuMuTzcTBpBW2F0/lKdYb6d2Cc14ZuHo7IC/Ohpeh65qmgkHFlDkChcM4G3UdTBsQPXHEsf5BPeN7ZGIW9YG4VBlJZSgcE/lrje315gKmVgrC+BpcGrSJpKEsux04QRR5TK4Jt/oo0Q57mbCO5Js1WEO873t4OOlLFL/b/MFPu4fyN5rb/Cb8JZoRlPjgPZX3D+xMhj5bmNQxDEB10eE7uj0ZoSV9E9NCKg5v4suVNVC471ZCnxeGANn9Pwq45Rz0hhLlnUp2NchhRysVzNMnxUvUvvcaAL9OH5XdifU1z35mc8ubZzglLwuXvSHOFXnUspcZck9A6HD/SlV6yKdngqQKVrMY3eweskijIscc6BEYYsgaumhmOyhrydMk08xgBQcp5LBZvM3MSe7Ik6FiS230rCK1pHLszwMf84y1B8zrtr2aFwPVXV3/MiL//zMcS7ARtUDYWFAUWH4MJAIGD0cTabdhEvt/quQy0+E6UTNPC5y+Xx/8auHbZ0aDpz2lKd/g37LpzTdE7XcezxzKBqX2jpBZ0V1g5BEdaQsUbIuPxKRJ
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3587.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66476007)(316002)(6636002)(8676002)(66946007)(6512007)(83380400001)(66556008)(186003)(36756003)(6486002)(86362001)(53546011)(31696002)(6506007)(6666004)(508600001)(26005)(2616005)(110136005)(8936002)(921005)(2906002)(7416002)(31686004)(38100700002)(66574015)(5660300002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bE1vRnJCMnpCZ3dTU0VIb20xc3BMdDB3SnY2Y296VWczOFBQMnhLRjdqaFVN?=
- =?utf-8?B?WHFIaCtldml5UGJjc1F4VTZkR0dXMXdBakFzYUdUWm9JKy83Y1k1MlNPNW9n?=
- =?utf-8?B?d3FaYWpPKzliKy9lenZGVHhMalBJZHlVdFUrVXpudHJNaThQSGFwTHpPM1cx?=
- =?utf-8?B?bXZYUGUzWkJsUGVKcGdvNEU2TU8wMklEaEtSZzlJS2haOTdQL3YvNFU5UjZD?=
- =?utf-8?B?TlBGSFZDdi84V1E0dkxnNU1YaEF1aWVlaHZIRkM1RS93a2h1TkRjckhQRVBX?=
- =?utf-8?B?ZjhqYUk0UlFZeitLcW9kR2xrb2lobkhvVlpoL1RIMEZOT2VoSlpSL05YTk4x?=
- =?utf-8?B?aFpmSFdmQkZSdW43L0NFekpxUDlUU29oZkZDNTAwclJLY1VPM0lNZm94TTZX?=
- =?utf-8?B?cnhabGc2SHp1TGJmYXJob2JmZ0Q2N0dzK2t5MDNmN1k0eWJjbFFaOUhjREFu?=
- =?utf-8?B?a09nWlJuaW9yMTd0Y1JmUUkwVVFWemN0R25SUHdTZWY1d0JFM3JjdUg4TTdw?=
- =?utf-8?B?MlVvWUc5eE11RWdlNGdPUFBhMkRyN1pvOW1hSkNpUVBmdlk5bjYxdE9CeXZD?=
- =?utf-8?B?Q0tjS0wzbHpIWDhua1VHMkxIbncxbWloSkhtNWpkK29hbVQwVlBsTEVjSUt1?=
- =?utf-8?B?cDF4YzIzK3d4a2I2QTZmSExHNytDa3loNXhDUk5GWHJTMWg3V3owUVJ2Nmg5?=
- =?utf-8?B?V0RteDR6eXVGK1NGRXZCOG5QQVQ3MmFLL0tzdEdRRExOVTQzcmpNZVMySnQr?=
- =?utf-8?B?Tkd5d0xBNUxhcDJxRUMwYVhubW9UbEdpT1FGMnJYTTQ4Q204dWpZUmM0cXVh?=
- =?utf-8?B?bmxnemw1b1RhYlFnTnJ3V0ZoTDVXUnM0ZDd0Z0REeE1iYU5mR3FpMkhlU1ZP?=
- =?utf-8?B?MTR5U0hQT0hqR3RNVVYvUXhITjlrWVYvbUJMOXJBK2lnRXVFa3ZCM3RHVTB1?=
- =?utf-8?B?cTZ1bk0vcWZiMDdHOWlXRHpEQlJOMFMyd0Z4UEp6WnpEQy9YaWJvZ2RCRTlQ?=
- =?utf-8?B?Ryt4enFyVW14czhYT2RDbzI3RytUUU5pY01ZQ2QrVk83a2tzdjRUdFRjanZE?=
- =?utf-8?B?OHg4Q0JFVlZpR3BDZVpNanZiZldjdVA4d0pBWHVrdjNITWhXUlA1QkZhWlJT?=
- =?utf-8?B?UmtMWnAvNkNmb1JWeEdoLzVucEx2Wi9lM1JHblQyVXJHREZueUgrUytvYjVr?=
- =?utf-8?B?V3BsdzBRN3JBUTBNY1ZSazBwS1JwY1VDRWZmLzVsWGJvditwckZva2RvOWxi?=
- =?utf-8?B?YW1QQitweE9IUng0N0xPdzNZQ2FLcGdTT2N2YkhQSG11M3dJTXQwUU9SODFJ?=
- =?utf-8?B?MTJWL2Yyam9HN29GeVNIa1VPdzVvZHpwNFJ4Nnpvaytzd0Y0M2hKSU1FYzhF?=
- =?utf-8?B?bmtGdGhhZ3NMenZzV3U1TzJieVhFZVRmWWI0OHZOQjUzUGM3WFAyYldQUUZT?=
- =?utf-8?B?cmJhR1o1QitmcUN6a1d1RysrSGxwZ0R3ZzhXSlRhMFNqK2EwUjNldUhpd2NH?=
- =?utf-8?B?bTdraFdQQnJiNWROWDZ1SytmTFg2cWZ0ZmxsWXpDR08xd2ROVjFNSnlFcGVi?=
- =?utf-8?B?aTJ6dFM1STZpeFN5WjZmVXYrUDlQTXEzMGpXS2x2dlFtN0VzbUdEZlFpZDJj?=
- =?utf-8?B?NUpvRDMxK2I3K3QxUHBuNG9FdjdSZDA5RkdzV1pCdmFnejkyZHMxYWk5Tm9s?=
- =?utf-8?B?TkpMZmFCQ3dEVzhCdHBpVWI5anJXNXdCd0lUYlRPalU0QXYraWRjMmcycnkz?=
- =?utf-8?B?TVhQYzVJTW1va0N1QmdFYUE2eFN3dGpDc3hEejRwMjQ5YjVXbm8rTHhCQVlV?=
- =?utf-8?B?RDloK1VveEFaWFhTQnJUSmdUVTZtRFdwNWNHemxndDNxNDl6K3JzUlJFdU9U?=
- =?utf-8?B?SG1EUXJ2bkloRjBUOVlsZWNNcERIdlFMUUN6MTBYQUpjTk5rUUpzTVpVc1Ri?=
- =?utf-8?Q?/QAWTI+NKuM90rRlxvFUmoMSloro9BD/?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 742b1ce7-6520-4569-f0da-08da0e461b4c
-X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB3587.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Mar 2022 09:59:09.7529
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: eAchzqexkm+qiwoNZsjM87gfrGNwTp2y5/mZTISVoe2X7gURX3ZtujIA6wgWZL3u
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3650
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220324014836.19149-23-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 25.03.22 um 10:49 schrieb Daniel Vetter:
-> On Fri, Mar 25, 2022 at 08:22:29AM +0100, Christian König wrote:
->> Hi Ryan,
->>
->> we should try to avoid that and if it isn't possible at least use some
->> constant like ACPI_AC_CLASS.
->>
->> Could be that the information isn't available otherwise. Alex should know
->> more about that.
-> I wonder whether we shouldn't need a more dedicated notification from acpi
-> for power supply events instead of stitching this together ourselves. At
-> least this kind of stuff feels more into the policy/tuning territory where
-> a bit more careful interfaces might be good instead of just "hey there's
-> this very funny acpi protocol we just have to take part in to not upset
-> the hw/fw".
+On Thu, Mar 24, 2022 at 04:48:33AM +0300, Serge Semin wrote:
+> Using some abstract number as the DW eDMA chip identifier isn't really
+> practical. First of all there can be more than one DW eDMA controller on
+> the platform some of them can be detected as the PCIe end-points, some of
+> them can be embedded into the DW PCIe Root Port/End-point controllers.
+> Seeing some abstract number in for instance IRQ handlers list doesn't give
+> a notion regarding their reference to the particular DMA controller.
+> Secondly current DW eDMA chip id implementation doesn't provide the
+> multi-eDMA platforms support for same reason of possibly having eDMA
+> detected on different system buses. At the same time re-implementing
+> something ida-based won't give much benefits especially seeing the DW eDMA
+> chip ID is only used in the IRQ request procedure. So to speak in order to
+> preserve the code simplicity and get to have the multi-eDMA platforms
+> support let's just use the parental device name to create the DW eDMA
+> controller name.
+> 
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> ---
+>  drivers/dma/dw-edma/dw-edma-core.c | 3 ++-
+>  drivers/dma/dw-edma/dw-edma-core.h | 2 +-
+>  drivers/dma/dw-edma/dw-edma-pcie.c | 1 -
+>  include/linux/dma/edma.h           | 1 -
+>  4 files changed, 3 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/dma/dw-edma/dw-edma-core.c b/drivers/dma/dw-edma/dw-edma-core.c
+> index dbe1119fd1d2..72a51970bfba 100644
+> --- a/drivers/dma/dw-edma/dw-edma-core.c
+> +++ b/drivers/dma/dw-edma/dw-edma-core.c
+> @@ -970,7 +970,8 @@ int dw_edma_probe(struct dw_edma_chip *chip)
+>  	if (!dw->chan)
+>  		return -ENOMEM;
+>  
+> -	snprintf(dw->name, sizeof(dw->name), "dw-edma-core:%d", chip->id);
+> +	snprintf(dw->name, sizeof(dw->name), "dw-edma-core:%s",
+> +		 dev_name(chip->dev));
+>  
+>  	/* Disable eDMA, only to establish the ideal initial conditions */
+>  	dw_edma_v0_core_off(dw);
+> diff --git a/drivers/dma/dw-edma/dw-edma-core.h b/drivers/dma/dw-edma/dw-edma-core.h
+> index 980adb079182..dc25798d4ba9 100644
+> --- a/drivers/dma/dw-edma/dw-edma-core.h
+> +++ b/drivers/dma/dw-edma/dw-edma-core.h
+> @@ -96,7 +96,7 @@ struct dw_edma_irq {
+>  };
+>  
+>  struct dw_edma {
+> -	char				name[20];
+> +	char				name[30];
 
-That is pretty much my thinking as well.
+I'm not sure if this length is sufficient. Other than this,
 
-A quick grep shows that both amdgpu, radeon, nouveau and i915 all parse 
-the same information with self defined macros and strcmp(). That's not 
-really the way we usually do stuff like this.
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-Ideally the ACPI layer in the core kernel would parse the information 
-and give it as enum or flags to the drivers instead.
+Thanks,
+Mani
 
-At bare minimum we should move all the ACPI_AC_CLASS, ACPI_VIDEO_CLASS 
-and raw strings into a common place to start with.
-
-Regards,
-Christian.
-
-> -Daniel
->
->> Regards,
->> Christian.
->>
->> Am 25.03.22 um 08:09 schrieb Lin, Tsung-hua (Ryan):
->>> [AMD Official Use Only]
->>>
->>> Hi Christian,
->>>
->>> There is already a string comparison in the same function. I just reference that to port this solution.
->>>
->>>
->>>
->>> #define ACPI_AC_CLASS           "ac_adapter"
->>>
->>>
->>> static int amdgpu_acpi_event(struct notifier_block *nb,
->>> 			     unsigned long val,
->>> 			     void *data)
->>> {
->>> 	struct amdgpu_device *adev = container_of(nb, struct amdgpu_device, acpi_nb);
->>> 	struct acpi_bus_event *entry = (struct acpi_bus_event *)data;
->>>
->>> +	if (strcmp(entry->device_class, "battery") == 0) {
->>> +		adev->pm.ac_power = power_supply_is_system_supplied() > 0;
->>> +	}
->>>
->>> 	if (strcmp(entry->device_class, ACPI_AC_CLASS) == 0) {      <-------------------here!
->>> 		if (power_supply_is_system_supplied() > 0)
->>> 			DRM_DEBUG_DRIVER("pm: AC\n");
->>> 		else
->>> 			DRM_DEBUG_DRIVER("pm: DC\n");
->>>
->>> 		amdgpu_pm_acpi_event_handler(adev);
->>> 	}
->>>
->>> 	/* Check for pending SBIOS requests */
->>> 	return amdgpu_atif_handler(adev, entry);
->>> }
->>>
->>> Thanks,
->>> Ryan Lin.
->>>
->>> -----Original Message-----
->>> From: Koenig, Christian <Christian.Koenig@amd.com>
->>> Sent: Friday, March 25, 2022 2:58 PM
->>> To: Lin, Tsung-hua (Ryan) <Tsung-hua.Lin@amd.com>; Wentland, Harry <Harry.Wentland@amd.com>; Li, Sun peng (Leo) <Sunpeng.Li@amd.com>; Deucher, Alexander <Alexander.Deucher@amd.com>; David1.Zhou@amd.com; airlied@linux.ie; daniel@ffwll.ch; seanpaul@chromium.org; bas@basnieuwenhuizen.nl; Kazlauskas, Nicholas <Nicholas.Kazlauskas@amd.com>; sashal@kernel.org; markyacoub@google.com; victorchengchi.lu@amd.com; ching-shih.li@amd.corp-partner.google.com; Siqueira, Rodrigo <Rodrigo.Siqueira@amd.com>; ddavenport@chromium.org; amd-gfx@lists.freedesktop.org; dri-devel@lists.freedesktop.org; linux-kernel@vger.kernel.org; Li, Leon <Leon.Li@amd.com>
->>> Subject: Re: [PATCH v2 3/25] drm/amdgpu: Disable ABM when AC mode
->>>
->>> Am 25.03.22 um 05:05 schrieb Ryan Lin:
->>>> Disable ABM feature when the system is running on AC mode to get the
->>>> more perfect contrast of the display.
->>>>
->>>> Signed-off-by: Ryan Lin <tsung-hua.lin@amd.com>
->>>>
->>>> ---
->>>>     drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c      |  4 ++
->>>>     drivers/gpu/drm/amd/amdgpu/amdgpu_device.c    |  1 +
->>>>     drivers/gpu/drm/amd/display/dc/dce/dmub_abm.c | 58 ++++++++++++-------
->>>>     drivers/gpu/drm/amd/pm/inc/amdgpu_dpm.h       |  1 +
->>>>     4 files changed, 42 insertions(+), 22 deletions(-)
->>>>
->>>> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
->>>> b/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
->>>> index c560c1ab62ecb..bc8bb9aad2e36 100644
->>>> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
->>>> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
->>>> @@ -822,6 +822,10 @@ static int amdgpu_acpi_event(struct notifier_block *nb,
->>>>     	struct amdgpu_device *adev = container_of(nb, struct amdgpu_device, acpi_nb);
->>>>     	struct acpi_bus_event *entry = (struct acpi_bus_event *)data;
->>>> +	if (strcmp(entry->device_class, "battery") == 0) {
->>> String comparison in a hot path is not something we usually like to see in the kernel.
->>>
->>> Isn't there any other way to detect that? Like a flag or similar?
->>>
->>> Regards,
->>> Christian.
->>>
->>>> +		adev->pm.ac_power = power_supply_is_system_supplied() > 0;
->>>> +	}
->>>> +
->>>>     	if (strcmp(entry->device_class, ACPI_AC_CLASS) == 0) {
->>>>     		if (power_supply_is_system_supplied() > 0)
->>>>     			DRM_DEBUG_DRIVER("pm: AC\n");
->>>> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
->>>> b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
->>>> index abfcc1304ba0c..3a0afe7602727 100644
->>>> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
->>>> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
->>>> @@ -3454,6 +3454,7 @@ int amdgpu_device_init(struct amdgpu_device
->>>> *adev,
->>>>     	adev->gfx.gfx_off_req_count = 1;
->>>>     	adev->pm.ac_power = power_supply_is_system_supplied() > 0;
->>>> +	adev->pm.old_ac_power = true;
->>>>     	atomic_set(&adev->throttling_logging_enabled, 1);
->>>>     	/*
->>>> diff --git a/drivers/gpu/drm/amd/display/dc/dce/dmub_abm.c
->>>> b/drivers/gpu/drm/amd/display/dc/dce/dmub_abm.c
->>>> index 54a1408c8015c..478a734b66926 100644
->>>> --- a/drivers/gpu/drm/amd/display/dc/dce/dmub_abm.c
->>>> +++ b/drivers/gpu/drm/amd/display/dc/dce/dmub_abm.c
->>>> @@ -23,6 +23,8 @@
->>>>      *
->>>>      */
->>>> +#include <linux/power_supply.h>
->>>> +#include "amdgpu.h"
->>>>     #include "dmub_abm.h"
->>>>     #include "dce_abm.h"
->>>>     #include "dc.h"
->>>> @@ -51,6 +53,7 @@
->>>>     #define DISABLE_ABM_IMMEDIATELY 255
->>>> +extern uint amdgpu_dm_abm_level;
->>>>     static void dmub_abm_enable_fractional_pwm(struct dc_context *dc)
->>>>     {
->>>> @@ -117,28 +120,6 @@ static void dmub_abm_init(struct abm *abm, uint32_t backlight)
->>>>     	dmub_abm_enable_fractional_pwm(abm->ctx);
->>>>     }
->>>> -static unsigned int dmub_abm_get_current_backlight(struct abm *abm)
->>>> -{
->>>> -	struct dce_abm *dce_abm = TO_DMUB_ABM(abm);
->>>> -	unsigned int backlight = REG_READ(BL1_PWM_CURRENT_ABM_LEVEL);
->>>> -
->>>> -	/* return backlight in hardware format which is unsigned 17 bits, with
->>>> -	 * 1 bit integer and 16 bit fractional
->>>> -	 */
->>>> -	return backlight;
->>>> -}
->>>> -
->>>> -static unsigned int dmub_abm_get_target_backlight(struct abm *abm) -{
->>>> -	struct dce_abm *dce_abm = TO_DMUB_ABM(abm);
->>>> -	unsigned int backlight = REG_READ(BL1_PWM_TARGET_ABM_LEVEL);
->>>> -
->>>> -	/* return backlight in hardware format which is unsigned 17 bits, with
->>>> -	 * 1 bit integer and 16 bit fractional
->>>> -	 */
->>>> -	return backlight;
->>>> -}
->>>> -
->>>>     static bool dmub_abm_set_level(struct abm *abm, uint32_t level)
->>>>     {
->>>>     	union dmub_rb_cmd cmd;
->>>> @@ -148,6 +129,9 @@ static bool dmub_abm_set_level(struct abm *abm, uint32_t level)
->>>>     	int edp_num;
->>>>     	uint8_t panel_mask = 0;
->>>> +	if (power_supply_is_system_supplied() > 0)
->>>> +		level = 0;
->>>> +
->>>>     	get_edp_links(dc->dc, edp_links, &edp_num);
->>>>     	for (i = 0; i < edp_num; i++) {
->>>> @@ -170,6 +154,36 @@ static bool dmub_abm_set_level(struct abm *abm, uint32_t level)
->>>>     	return true;
->>>>     }
->>>> +static unsigned int dmub_abm_get_current_backlight(struct abm *abm) {
->>>> +	struct dce_abm *dce_abm = TO_DMUB_ABM(abm);
->>>> +	unsigned int backlight = REG_READ(BL1_PWM_CURRENT_ABM_LEVEL);
->>>> +	struct dc_context *dc = abm->ctx;
->>>> +	struct amdgpu_device *adev = dc->driver_context;
->>>> +
->>>> +	if (adev->pm.ac_power != adev->pm.old_ac_power) {
->>>> +		dmub_abm_set_level(abm, amdgpu_dm_abm_level);
->>>> +		adev->pm.ac_power = power_supply_is_system_supplied() > 0;
->>>> +		adev->pm.old_ac_power = adev->pm.ac_power;
->>>> +	}
->>>> +
->>>> +	/* return backlight in hardware format which is unsigned 17 bits, with
->>>> +	 * 1 bit integer and 16 bit fractional
->>>> +	 */
->>>> +	return backlight;
->>>> +}
->>>> +
->>>> +static unsigned int dmub_abm_get_target_backlight(struct abm *abm) {
->>>> +	struct dce_abm *dce_abm = TO_DMUB_ABM(abm);
->>>> +	unsigned int backlight = REG_READ(BL1_PWM_TARGET_ABM_LEVEL);
->>>> +
->>>> +	/* return backlight in hardware format which is unsigned 17 bits, with
->>>> +	 * 1 bit integer and 16 bit fractional
->>>> +	 */
->>>> +	return backlight;
->>>> +}
->>>> +
->>>>     static bool dmub_abm_init_config(struct abm *abm,
->>>>     	const char *src,
->>>>     	unsigned int bytes,
->>>> diff --git a/drivers/gpu/drm/amd/pm/inc/amdgpu_dpm.h
->>>> b/drivers/gpu/drm/amd/pm/inc/amdgpu_dpm.h
->>>> index f6e0e7d8a0077..de459411a0e83 100644
->>>> --- a/drivers/gpu/drm/amd/pm/inc/amdgpu_dpm.h
->>>> +++ b/drivers/gpu/drm/amd/pm/inc/amdgpu_dpm.h
->>>> @@ -445,6 +445,7 @@ struct amdgpu_pm {
->>>>     	uint32_t                smu_prv_buffer_size;
->>>>     	struct amdgpu_bo        *smu_prv_buffer;
->>>>     	bool ac_power;
->>>> +	bool old_ac_power;
->>>>     	/* powerplay feature */
->>>>     	uint32_t pp_feature;
-
+>  
+>  	struct dma_device		dma;
+>  
+> diff --git a/drivers/dma/dw-edma/dw-edma-pcie.c b/drivers/dma/dw-edma/dw-edma-pcie.c
+> index f530bacfd716..3f9dadc73854 100644
+> --- a/drivers/dma/dw-edma/dw-edma-pcie.c
+> +++ b/drivers/dma/dw-edma/dw-edma-pcie.c
+> @@ -222,7 +222,6 @@ static int dw_edma_pcie_probe(struct pci_dev *pdev,
+>  
+>  	/* Data structure initialization */
+>  	chip->dev = dev;
+> -	chip->id = pdev->devfn;
+>  
+>  	chip->mf = vsec_data.mf;
+>  	chip->nr_irqs = nr_irqs;
+> diff --git a/include/linux/dma/edma.h b/include/linux/dma/edma.h
+> index 5cc87cfdd685..241c5a97ddf4 100644
+> --- a/include/linux/dma/edma.h
+> +++ b/include/linux/dma/edma.h
+> @@ -73,7 +73,6 @@ enum dw_edma_map_format {
+>   */
+>  struct dw_edma_chip {
+>  	struct device		*dev;
+> -	int			id;
+>  	int			nr_irqs;
+>  	const struct dw_edma_core_ops   *ops;
+>  	u32			flags;
+> -- 
+> 2.35.1
+> 
