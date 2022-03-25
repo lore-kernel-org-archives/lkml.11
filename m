@@ -2,265 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EB8CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 09:39:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDCB6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 09:42:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243872AbiCYJkh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 05:40:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33856 "EHLO
+        id S1354228AbiCYJnz (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 05:43:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357821AbiCYJk2 (ORCPT
+        with ESMTP id S238038AbiCYJny (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 05:40:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52C5217A94;
-        Fri, 25 Mar 2022 02:38:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4908B827EA;
-        Fri, 25 Mar 2022 09:38:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BD0FC340F3;
-        Fri, 25 Mar 2022 09:38:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648201131;
-        bh=5YHL3Hjh0AaP8CgfCJ3QGpsdMmryF5kIFHovdhn9HfY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OiM4yd6tg6q6H5STDROUzynP0iPHUdSSKJb30alpn6LEUf3nLBFkXlM5elNtTxlv3
-         fX6+Ca+3H9QUZI0fIjYQqWiGsMXCsldd/6QUzIeZ6UmTvHneTTQ0fxZed1hqQldnlC
-         dq7BlOuBkAS/Jdgo+Y58itGrGZR2T6s9R57mkfH4LskVMJ41ZN++tG2V7LV2/19Y2g
-         xknI9HE4WEXPzsbz5McixT0Df5PkrdGZcXqqgoWU6dRH4zMqj+7eyCkzoU44vjHxxL
-         gi6hAkP1St1+4Mlz+6iNZXTOzatgZs0li0Pu7TQ3t6wB/GKKigbw+FuyJqxYHzEsNy
-         Dz+i1xaxkVb6Q==
-Received: by pali.im (Postfix)
-        id 050147DD; Fri, 25 Mar 2022 10:38:51 +0100 (CET)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 4/4] PCI: mvebu: Add support for sending Set_Slot_Power_Limit message
-Date:   Fri, 25 Mar 2022 10:38:27 +0100
-Message-Id: <20220325093827.4983-5-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220325093827.4983-1-pali@kernel.org>
-References: <20220325093827.4983-1-pali@kernel.org>
+        Fri, 25 Mar 2022 05:43:54 -0400
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A35BFCFB9F;
+        Fri, 25 Mar 2022 02:42:20 -0700 (PDT)
+Received: by mail-wr1-f52.google.com with SMTP id w21so5512665wra.2;
+        Fri, 25 Mar 2022 02:42:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Mv/wktd0MiTPurZvNCq9/NVpUlYQaKwOEmwVOKawM1Q=;
+        b=Vl0Bw2NL7e1rLaWINJTQmscFSqqhS2J7QFNdVOkqzQv6yfwZbfaFxsapI3FrQtr9bX
+         gdI8ZWJjARQT/xvx15sHd9AnpR5+MklpTMKNVZFWDU3UZnYzSLaySMFfc5RF71Dei16t
+         kAWE1P99ePFWnD9wPsEZa54gZYTmcS2KBHcjUC20wbo7PUeCMIHgedAi+ZnasQNEHvvu
+         mX3DR98GbSbANS+ASSNf43s++xKV3nijTBhqFI1JshIlnT7eyYKNG2gHyFxS7y7Scwxh
+         3w0ELv+fD0ZprU6Oh6R5CmXcyWCFWqwRYKG+IC8TY4LzQzwvFjXiQeX9rzwIKMgUg4L/
+         trYg==
+X-Gm-Message-State: AOAM530U6x6ogUrb97Y9i0CqYs3mYLEfSu00bZxeSZlIxc++LN1SHslq
+        YZpvMN1jw/ilzsPEYXIVSSX/7GP1+GE=
+X-Google-Smtp-Source: ABdhPJwDQWNbx8m6n5MIkKm8A6NiapcIqq1+P+KqRozpVOHCJGLoRiizS45ezbGVsjsgmIAdKqO2xw==
+X-Received: by 2002:adf:f192:0:b0:203:e38f:afa1 with SMTP id h18-20020adff192000000b00203e38fafa1mr8495069wro.120.1648201339061;
+        Fri, 25 Mar 2022 02:42:19 -0700 (PDT)
+Received: from [192.168.0.158] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.googlemail.com with ESMTPSA id g10-20020adfe40a000000b00203eb3551f0sm6520028wrm.117.2022.03.25.02.42.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Mar 2022 02:42:18 -0700 (PDT)
+Message-ID: <ca18fa50-f63b-8131-07a2-8c44daed9f26@kernel.org>
+Date:   Fri, 25 Mar 2022 10:42:17 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] arm64: tegra: Enable hda node for P3737 + P3701
+Content-Language: en-US
+To:     Mohan Kumar D <mkumard@nvidia.com>, robh+dt@kernel.org,
+        krzk+dt@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        thierry.reding@gmail.com, jonathanh@nvidia.com
+References: <20220325072141.28597-1-mkumard@nvidia.com>
+ <f35537de-6352-e6db-b4a6-17b1ab96deda@kernel.org>
+ <32e425be-5d78-e1e0-6ec4-70ea21895e15@nvidia.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <32e425be-5d78-e1e0-6ec4-70ea21895e15@nvidia.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If DT supplies the 'slot-power-limit-milliwatt' property, program
-the value in the Slot Power Limit in the Slot Capabilities register
-and program the Root Port to send a Set_Slot_Power_Limit Message
-when the Link transitions to DL_Up.
+On 25/03/2022 10:31, Mohan Kumar D wrote:
+> 
+> On 3/25/2022 12:56 PM, Krzysztof Kozlowski wrote:
+>> External email: Use caution opening links or attachments
+>>
+>>
+>> On 25/03/2022 08:21, Mohan Kumar wrote:
+>>> Add iommus property for hda and enable the node for P3737 + P3701
+>>> platform.
+>>>
+>>> Signed-off-by: Mohan Kumar <mkumard@nvidia.com>
+>>> ---
+>>>   arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts | 1 +
+>>>   arch/arm64/boot/dts/nvidia/tegra234.dtsi                      | 1 +
+>>>   2 files changed, 2 insertions(+)
+>>>
+>>> diff --git a/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts b/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts
+>>> index 34d6a01ee1c6..156d5d95fde7 100644
+>>> --- a/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts
+>>> +++ b/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts
+>>> @@ -1751,6 +1751,7 @@
+>>>
+>>>                hda@3510000 {
+>>>                        nvidia,model = "NVIDIA Jetson AGX Orin HDA";
+>>> +                     status = "okay";
+>> Nodes are enabled by default. Why do you need this?
+> hda node status is set to "disabled" by default in soc dts file 
+> tegra234.dtsi. The enable is controlled by platform specific dts files.
 
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
----
-Changes in v2:
-* Fix handling of slot power limit with scale x1.0 (0x00 value)
-* Use FIELD_PREP instead of _SHIFT macros
-* Changed commit message to Bjorn's suggestion
-* Changed comments in the code to match PCIe spec
-* Preserve user settings of PCI_EXP_SLTCTL_ASPL_DISABLE bit
----
- drivers/pci/controller/pci-mvebu.c | 96 ++++++++++++++++++++++++++++--
- 1 file changed, 91 insertions(+), 5 deletions(-)
+Oh, surprise... why do you override nodes with full path? This is
+error-prone and makes any changes (like node name fixing) difficult.
+This should be overridden by label.
 
-diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
-index a75d2b9196f9..26ae7c29fece 100644
---- a/drivers/pci/controller/pci-mvebu.c
-+++ b/drivers/pci/controller/pci-mvebu.c
-@@ -8,6 +8,7 @@
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/pci.h>
-+#include <linux/bitfield.h>
- #include <linux/clk.h>
- #include <linux/delay.h>
- #include <linux/gpio.h>
-@@ -66,6 +67,12 @@
- #define  PCIE_STAT_BUS                  0xff00
- #define  PCIE_STAT_DEV                  0x1f0000
- #define  PCIE_STAT_LINK_DOWN		BIT(0)
-+#define PCIE_SSPL_OFF		0x1a0c
-+#define  PCIE_SSPL_VALUE_SHIFT		0
-+#define  PCIE_SSPL_VALUE_MASK		GENMASK(7, 0)
-+#define  PCIE_SSPL_SCALE_SHIFT		8
-+#define  PCIE_SSPL_SCALE_MASK		GENMASK(9, 8)
-+#define  PCIE_SSPL_ENABLE		BIT(16)
- #define PCIE_RC_RTSTA		0x1a14
- #define PCIE_DEBUG_CTRL         0x1a60
- #define  PCIE_DEBUG_SOFT_RESET		BIT(20)
-@@ -111,6 +118,8 @@ struct mvebu_pcie_port {
- 	struct mvebu_pcie_window iowin;
- 	u32 saved_pcie_stat;
- 	struct resource regs;
-+	u8 slot_power_limit_value;
-+	u8 slot_power_limit_scale;
- 	struct irq_domain *intx_irq_domain;
- 	raw_spinlock_t irq_lock;
- 	int intx_irq;
-@@ -239,7 +248,7 @@ static void mvebu_pcie_setup_wins(struct mvebu_pcie_port *port)
- 
- static void mvebu_pcie_setup_hw(struct mvebu_pcie_port *port)
- {
--	u32 ctrl, lnkcap, cmd, dev_rev, unmask;
-+	u32 ctrl, lnkcap, cmd, dev_rev, unmask, sspl;
- 
- 	/* Setup PCIe controller to Root Complex mode. */
- 	ctrl = mvebu_readl(port, PCIE_CTRL_OFF);
-@@ -292,6 +301,20 @@ static void mvebu_pcie_setup_hw(struct mvebu_pcie_port *port)
- 	/* Point PCIe unit MBUS decode windows to DRAM space. */
- 	mvebu_pcie_setup_wins(port);
- 
-+	/*
-+	 * Program Root Port to automatically send Set_Slot_Power_Limit
-+	 * PCIe Message when changing status from Dl_Down to Dl_Up and valid
-+	 * slot power limit was specified.
-+	 */
-+	sspl = mvebu_readl(port, PCIE_SSPL_OFF);
-+	sspl &= ~(PCIE_SSPL_VALUE_MASK | PCIE_SSPL_SCALE_MASK | PCIE_SSPL_ENABLE);
-+	if (port->slot_power_limit_value) {
-+		sspl |= port->slot_power_limit_value << PCIE_SSPL_VALUE_SHIFT;
-+		sspl |= port->slot_power_limit_scale << PCIE_SSPL_SCALE_SHIFT;
-+		sspl |= PCIE_SSPL_ENABLE;
-+	}
-+	mvebu_writel(port, sspl, PCIE_SSPL_OFF);
-+
- 	/* Mask all interrupt sources. */
- 	mvebu_writel(port, ~PCIE_INT_ALL_MASK, PCIE_INT_UNMASK_OFF);
- 
-@@ -628,9 +651,23 @@ mvebu_pci_bridge_emul_pcie_conf_read(struct pci_bridge_emul *bridge,
- 			  (PCI_EXP_LNKSTA_DLLLA << 16) : 0);
- 		break;
- 
--	case PCI_EXP_SLTCTL:
--		*value = PCI_EXP_SLTSTA_PDS << 16;
-+	case PCI_EXP_SLTCTL: {
-+		u16 slotsta = le16_to_cpu(bridge->pcie_conf.slotsta);
-+		u32 val = 0;
-+		/*
-+		 * When slot power limit was not specified in DT then
-+		 * ASPL_DISABLE bit is stored only in emulated config space.
-+		 * Otherwise reflect status of PCIE_SSPL_ENABLE bit in HW.
-+		 */
-+		if (!port->slot_power_limit_value)
-+			val |= slotctl & PCI_EXP_SLTCTL_ASPL_DISABLE;
-+		else if (!(mvebu_readl(port, PCIE_SSPL_OFF) & PCIE_SSPL_ENABLE))
-+			val |= PCI_EXP_SLTCTL_ASPL_DISABLE;
-+		/* This callback is 32-bit and in high bits is slot status. */
-+		val |= slotsta << 16;
-+		*value = val;
- 		break;
-+	}
- 
- 	case PCI_EXP_RTSTA:
- 		*value = mvebu_readl(port, PCIE_RC_RTSTA);
-@@ -774,6 +811,22 @@ mvebu_pci_bridge_emul_pcie_conf_write(struct pci_bridge_emul *bridge,
- 		mvebu_writel(port, new, PCIE_CAP_PCIEXP + PCI_EXP_LNKCTL);
- 		break;
- 
-+	case PCI_EXP_SLTCTL:
-+		/*
-+		 * Allow to change PCIE_SSPL_ENABLE bit only when slot power
-+		 * limit was specified in DT and configured into HW.
-+		 */
-+		if ((mask & PCI_EXP_SLTCTL_ASPL_DISABLE) &&
-+		    port->slot_power_limit_value) {
-+			u32 sspl = mvebu_readl(port, PCIE_SSPL_OFF);
-+			if (new & PCI_EXP_SLTCTL_ASPL_DISABLE)
-+				sspl &= ~PCIE_SSPL_ENABLE;
-+			else
-+				sspl |= PCIE_SSPL_ENABLE;
-+			mvebu_writel(port, sspl, PCIE_SSPL_OFF);
-+		}
-+		break;
-+
- 	case PCI_EXP_RTSTA:
- 		/*
- 		 * PME Status bit in Root Status Register (PCIE_RC_RTSTA)
-@@ -868,8 +921,26 @@ static int mvebu_pci_bridge_emul_init(struct mvebu_pcie_port *port)
- 	/*
- 	 * Older mvebu hardware provides PCIe Capability structure only in
- 	 * version 1. New hardware provides it in version 2.
-+	 * Enable slot support which is emulated.
- 	 */
--	bridge->pcie_conf.cap = cpu_to_le16(pcie_cap_ver);
-+	bridge->pcie_conf.cap = cpu_to_le16(pcie_cap_ver | PCI_EXP_FLAGS_SLOT);
-+
-+	/*
-+	 * Set Presence Detect State bit permanently as there is no support for
-+	 * unplugging PCIe card from the slot. Assume that PCIe card is always
-+	 * connected in slot.
-+	 *
-+	 * Set physical slot number to port+1 as mvebu ports are indexed from
-+	 * zero and zero value is reserved for ports within the same silicon
-+	 * as Root Port which is not mvebu case.
-+	 *
-+	 * Also set correct slot power limit.
-+	 */
-+	bridge->pcie_conf.slotcap = cpu_to_le32(
-+		FIELD_PREP(PCI_EXP_SLTCAP_SPLV, port->slot_power_limit_value) |
-+		FIELD_PREP(PCI_EXP_SLTCAP_SPLS, port->slot_power_limit_scale) |
-+		FIELD_PREP(PCI_EXP_SLTCAP_PSN, port->port+1));
-+	bridge->pcie_conf.slotsta = cpu_to_le16(PCI_EXP_SLTSTA_PDS);
- 
- 	bridge->subsystem_vendor_id = ssdev_id & 0xffff;
- 	bridge->subsystem_id = ssdev_id >> 16;
-@@ -1191,6 +1262,7 @@ static int mvebu_pcie_parse_port(struct mvebu_pcie *pcie,
- {
- 	struct device *dev = &pcie->pdev->dev;
- 	enum of_gpio_flags flags;
-+	u32 slot_power_limit;
- 	int reset_gpio, ret;
- 	u32 num_lanes;
- 
-@@ -1291,6 +1363,15 @@ static int mvebu_pcie_parse_port(struct mvebu_pcie *pcie,
- 		port->reset_gpio = gpio_to_desc(reset_gpio);
- 	}
- 
-+	slot_power_limit = of_pci_get_slot_power_limit(child,
-+				&port->slot_power_limit_value,
-+				&port->slot_power_limit_scale);
-+	if (slot_power_limit)
-+		dev_info(dev, "%s: Slot power limit %u.%uW\n",
-+			 port->name,
-+			 slot_power_limit / 1000,
-+			 (slot_power_limit / 100) % 10);
-+
- 	port->clk = of_clk_get_by_name(child, NULL);
- 	if (IS_ERR(port->clk)) {
- 		dev_err(dev, "%s: cannot get clock\n", port->name);
-@@ -1587,7 +1668,7 @@ static int mvebu_pcie_remove(struct platform_device *pdev)
- {
- 	struct mvebu_pcie *pcie = platform_get_drvdata(pdev);
- 	struct pci_host_bridge *bridge = pci_host_bridge_from_priv(pcie);
--	u32 cmd;
-+	u32 cmd, sspl;
- 	int i;
- 
- 	/* Remove PCI bus with all devices. */
-@@ -1624,6 +1705,11 @@ static int mvebu_pcie_remove(struct platform_device *pdev)
- 		/* Free config space for emulated root bridge. */
- 		pci_bridge_emul_cleanup(&port->bridge);
- 
-+		/* Disable sending Set_Slot_Power_Limit PCIe Message. */
-+		sspl = mvebu_readl(port, PCIE_SSPL_OFF);
-+		sspl &= ~(PCIE_SSPL_VALUE_MASK | PCIE_SSPL_SCALE_MASK | PCIE_SSPL_ENABLE);
-+		mvebu_writel(port, sspl, PCIE_SSPL_OFF);
-+
- 		/* Disable and clear BARs and windows. */
- 		mvebu_pcie_disable_wins(port);
- 
--- 
-2.20.1
 
+Best regards,
+Krzysztof
