@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B71BFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:19:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43452C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:19:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359850AbiCYPU6 (ORCPT
+        id S1349640AbiCYPVC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:20:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44640 "EHLO
+        Fri, 25 Mar 2022 11:21:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376435AbiCYPM7 (ORCPT
+        with ESMTP id S1376383AbiCYPMy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:12:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 286D2652FC;
-        Fri, 25 Mar 2022 08:09:41 -0700 (PDT)
+        Fri, 25 Mar 2022 11:12:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D5721100;
+        Fri, 25 Mar 2022 08:09:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EA1DF61C11;
-        Fri, 25 Mar 2022 15:09:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0274C340E9;
-        Fri, 25 Mar 2022 15:09:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2EB7E61C57;
+        Fri, 25 Mar 2022 15:09:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36B4AC340E9;
+        Fri, 25 Mar 2022 15:09:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648220980;
-        bh=PqcOjKsdakPKA5/vVG+F6cn+MgRgtv9RKNhlRz2Ugow=;
+        s=korg; t=1648220974;
+        bh=S655+/TOkgBq2b+fnss+9CSPFKLgZVxJuqz9Z4XrAR8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YPgxUwN/mRB8PddjZTmG3122vGVSD6wnQCb9XmDEMGl6G8sPqVne9pbnMVZiEgDiS
-         Gn6suU9WvDMeZtNnb2fmAaiVYK6AWy2S+HlUqyiOhsaO4GSXVkv2SDl9SSaFK+kQO0
-         DyhIEFUetuv7GPTPo4WV/ohkgks23wkI+rnlNO70=
+        b=KmyS7f4QinrT+BLW6v6U2rXCiVmNokWehassMK6I5XLY0ycXRAr2KR/jO2hgeEdvx
+         spA94ApfvYRRKOYKRNPoEKjZE6Zh1HbecTqV4S8Xm7vK1hTbRfYcqKLbdp6AMRTnlT
+         vkgGjNftGOSSZbTzbRDMPhm+3wtBRDZTCjvfj49k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        stable@vger.kernel.org, Jaroslav Kysela <perex@perex.cz>,
         Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.10 24/38] ALSA: usb-audio: Add mute TLV for playback volumes on RODE NT-USB
-Date:   Fri, 25 Mar 2022 16:05:08 +0100
-Message-Id: <20220325150420.446579289@linuxfoundation.org>
+Subject: [PATCH 5.10 22/38] ALSA: pcm: Fix races among concurrent prealloc proc writes
+Date:   Fri, 25 Mar 2022 16:05:06 +0100
+Message-Id: <20220325150420.390954234@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150419.757836392@linuxfoundation.org>
 References: <20220325150419.757836392@linuxfoundation.org>
@@ -49,41 +49,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lars-Peter Clausen <lars@metafoo.de>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit 0f306cca42fe879694fb5e2382748c43dc9e0196 upstream.
+commit 69534c48ba8ce552ce383b3dfdb271ffe51820c3 upstream.
 
-For the RODE NT-USB the lowest Playback mixer volume setting mutes the
-audio output. But it is not reported as such causing e.g. PulseAudio to
-accidentally mute the device when selecting a low volume.
+We have no protection against concurrent PCM buffer preallocation
+changes via proc files, and it may potentially lead to UAF or some
+weird problem.  This patch applies the PCM open_mutex to the proc
+write operation for avoiding the racy proc writes and the PCM stream
+open (and further operations).
 
-Fix this by applying the existing quirk for this kind of issue when the
-device is detected.
-
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220311201400.235892-1-lars@metafoo.de
+Reviewed-by: Jaroslav Kysela <perex@perex.cz>
+Link: https://lore.kernel.org/r/20220322170720.3529-5-tiwai@suse.de
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/usb/mixer_quirks.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ sound/core/pcm_memory.c |   11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
---- a/sound/usb/mixer_quirks.c
-+++ b/sound/usb/mixer_quirks.c
-@@ -3135,9 +3135,10 @@ void snd_usb_mixer_fu_apply_quirk(struct
- 		if (unitid == 7 && cval->control == UAC_FU_VOLUME)
- 			snd_dragonfly_quirk_db_scale(mixer, cval, kctl);
- 		break;
--	/* lowest playback value is muted on C-Media devices */
--	case USB_ID(0x0d8c, 0x000c):
--	case USB_ID(0x0d8c, 0x0014):
-+	/* lowest playback value is muted on some devices */
-+	case USB_ID(0x0d8c, 0x000c): /* C-Media */
-+	case USB_ID(0x0d8c, 0x0014): /* C-Media */
-+	case USB_ID(0x19f7, 0x0003): /* RODE NT-USB */
- 		if (strstr(kctl->id.name, "Playback"))
- 			cval->min_mute = 1;
- 		break;
+--- a/sound/core/pcm_memory.c
++++ b/sound/core/pcm_memory.c
+@@ -164,19 +164,20 @@ static void snd_pcm_lib_preallocate_proc
+ 	size_t size;
+ 	struct snd_dma_buffer new_dmab;
+ 
++	mutex_lock(&substream->pcm->open_mutex);
+ 	if (substream->runtime) {
+ 		buffer->error = -EBUSY;
+-		return;
++		goto unlock;
+ 	}
+ 	if (!snd_info_get_line(buffer, line, sizeof(line))) {
+ 		snd_info_get_str(str, line, sizeof(str));
+ 		size = simple_strtoul(str, NULL, 10) * 1024;
+ 		if ((size != 0 && size < 8192) || size > substream->dma_max) {
+ 			buffer->error = -EINVAL;
+-			return;
++			goto unlock;
+ 		}
+ 		if (substream->dma_buffer.bytes == size)
+-			return;
++			goto unlock;
+ 		memset(&new_dmab, 0, sizeof(new_dmab));
+ 		new_dmab.dev = substream->dma_buffer.dev;
+ 		if (size > 0) {
+@@ -185,7 +186,7 @@ static void snd_pcm_lib_preallocate_proc
+ 					   substream->dma_buffer.dev.dev,
+ 					   size, &new_dmab) < 0) {
+ 				buffer->error = -ENOMEM;
+-				return;
++				goto unlock;
+ 			}
+ 			substream->buffer_bytes_max = size;
+ 		} else {
+@@ -197,6 +198,8 @@ static void snd_pcm_lib_preallocate_proc
+ 	} else {
+ 		buffer->error = -EINVAL;
+ 	}
++ unlock:
++	mutex_unlock(&substream->pcm->open_mutex);
+ }
+ 
+ static inline void preallocate_info_init(struct snd_pcm_substream *substream)
 
 
