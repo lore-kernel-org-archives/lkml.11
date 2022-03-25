@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86F15C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 12:23:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A02E6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 12:23:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359055AbiCYMZC (ORCPT
+        id S1359025AbiCYMZG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 08:25:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38456 "EHLO
+        Fri, 25 Mar 2022 08:25:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359049AbiCYMYo (ORCPT
+        with ESMTP id S1359053AbiCYMYt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 08:24:44 -0400
-Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20E29D5EB2;
-        Fri, 25 Mar 2022 05:22:50 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=18;SR=0;TI=SMTPD_---0V89Vk7G_1648210965;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V89Vk7G_1648210965)
+        Fri, 25 Mar 2022 08:24:49 -0400
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41584D64E7;
+        Fri, 25 Mar 2022 05:22:57 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R341e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=18;SR=0;TI=SMTPD_---0V89aFuG_1648210971;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V89aFuG_1648210971)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 25 Mar 2022 20:22:46 +0800
+          Fri, 25 Mar 2022 20:22:52 +0800
 From:   Jeffle Xu <jefflexu@linux.alibaba.com>
 To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
         chao@kernel.org, linux-erofs@lists.ozlabs.org
@@ -30,9 +30,9 @@ Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
         eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
         luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
         fannaihao@baidu.com
-Subject: [PATCH v6 14/22] erofs: add erofs_fscache_read_folios() helper
-Date:   Fri, 25 Mar 2022 20:22:15 +0800
-Message-Id: <20220325122223.102958-15-jefflexu@linux.alibaba.com>
+Subject: [PATCH v6 18/22] erofs: implement fscache-based data read for inline layout
+Date:   Fri, 25 Mar 2022 20:22:19 +0800
+Message-Id: <20220325122223.102958-19-jefflexu@linux.alibaba.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220325122223.102958-1-jefflexu@linux.alibaba.com>
 References: <20220325122223.102958-1-jefflexu@linux.alibaba.com>
@@ -42,71 +42,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add erofs_fscache_read_folios() helper reading from fscache. It supports
-on-demand read semantics. That is, it will make the backend prepare for
-the data when cache miss. Once data ready, it will reinitiate a read
-from the cache.
+This patch implements the data plane of reading data from bootstrap blob
+file over fscache for inline layout.
 
-This helper can then be used to implement .readpage()/.readahead() of
-on-demand read semantics.
-
-Besides also add erofs_fscache_read_folio() wrapper helper.
+For the heading non-inline part, the data plane for non-inline layout is
+resued, while only the tail packing part needs special handling.
 
 Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
 ---
- fs/erofs/fscache.c | 39 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 39 insertions(+)
+ fs/erofs/fscache.c | 45 +++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 43 insertions(+), 2 deletions(-)
 
 diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
-index 30383d9adb62..6a55f7b5f883 100644
+index 4a9a4e60c15d..d75958470645 100644
 --- a/fs/erofs/fscache.c
 +++ b/fs/erofs/fscache.c
-@@ -7,6 +7,45 @@
+@@ -74,8 +74,9 @@ static int erofs_fscache_readpage_noinline(struct folio *folio,
+ {
+ 	struct fscache_cookie *cookie = map->m_fscache->cookie;
+ 	/*
+-	 * 1) For FLAT_PLAIN layout, the output map.m_la shall be equal to o_la,
+-	 * and the output map.m_pa is exactly the physical address of o_la.
++	 * 1) For FLAT_PLAIN and FLAT_INLINE (the heading non tail packing part)
++	 * layout, the output map.m_la shall be equal to o_la, and the output
++	 * map.m_pa is exactly the physical address of o_la.
+ 	 * 2) For CHUNK_BASED layout, the output map.m_la is rounded down to the
+ 	 * nearest chunk boundary, and the output map.m_pa is actually the
+ 	 * physical address of this chunk boundary. So we need to recalculate
+@@ -86,6 +87,42 @@ static int erofs_fscache_readpage_noinline(struct folio *folio,
+ 	return erofs_fscache_read_folio(cookie, folio, start);
+ }
  
- static struct fscache_volume *volume;
- 
-+/*
-+ * erofs_fscache_read_folios - Read data from fscache.
-+ *
-+ * Fill the read data into page cache described by @start/len, which shall be
-+ * both aligned with PAGE_SIZE. @pstart describes the corresponding physical
-+ * start address in the cache file.
-+ */
-+static int erofs_fscache_read_folios(struct fscache_cookie *cookie,
-+				     struct address_space *mapping,
-+				     loff_t start, size_t len,
-+				     loff_t pstart)
++static int erofs_fscache_readpage_inline(struct folio *folio,
++					 struct erofs_map_blocks *map)
 +{
-+	struct netfs_cache_resources cres;
-+	struct iov_iter iter;
-+	int ret;
++	struct inode *inode = folio_file_mapping(folio)->host;
++	struct super_block *sb = inode->i_sb;
++	struct erofs_buf buf = __EROFS_BUF_INITIALIZER;
++	erofs_blk_t blknr;
++	size_t offset, len;
++	void *src, *dst;
 +
-+	memset(&cres, 0, sizeof(cres));
++	/*
++	 * For inline (tail packing) layout, the offset may be non-zero, which
++	 * can be calculated from corresponding physical address directly.
++	 * Currently only flat layout supports inline (FLAT_INLINE), and the
++	 * output map.m_pa is exactly the physical address of o_la in this case.
++	 */
++	offset = erofs_blkoff(map->m_pa);
++	blknr = erofs_blknr(map->m_pa);
++	len = map->m_llen;
 +
-+	ret = fscache_begin_read_operation(&cres, cookie);
-+	if (ret)
-+		return ret;
++	src = erofs_read_metabuf(&buf, sb, blknr, EROFS_KMAP);
++	if (IS_ERR(src))
++		return PTR_ERR(src);
 +
-+	iov_iter_xarray(&iter, READ, &mapping->i_pages, start, len);
++	DBG_BUGON(folio_size(folio) != PAGE_SIZE);
 +
-+	ret = fscache_read(&cres, pstart, &iter,
-+			   NETFS_READ_HOLE_ONDEMAND, NULL, NULL);
++	dst = kmap(folio_page(folio, 0));
++	memcpy(dst, src + offset, len);
++	memset(dst + len, 0, PAGE_SIZE - len);
++	kunmap(folio_page(folio, 0));
 +
-+	fscache_end_operation(&cres);
-+	return ret;
++	erofs_put_metabuf(&buf);
++
++	return 0;
 +}
 +
-+static inline int erofs_fscache_read_folio(struct fscache_cookie *cookie,
-+					   struct folio *folio, loff_t pstart)
-+{
-+	return erofs_fscache_read_folios(cookie, folio_file_mapping(folio),
-+					 folio_pos(folio), folio_size(folio),
-+					 pstart);
-+}
-+
- static const struct address_space_operations erofs_fscache_blob_aops = {
- };
+ static int erofs_fscache_do_readpage(struct folio *folio)
+ {
+ 	struct inode *inode = folio_file_mapping(folio)->host;
+@@ -116,8 +153,12 @@ static int erofs_fscache_do_readpage(struct folio *folio)
+ 	if (ret)
+ 		return ret;
  
++	if (map.m_flags & EROFS_MAP_META)
++		return erofs_fscache_readpage_inline(folio, &map);
++
+ 	switch (vi->datalayout) {
+ 	case EROFS_INODE_FLAT_PLAIN:
++	case EROFS_INODE_FLAT_INLINE:
+ 	case EROFS_INODE_CHUNK_BASED:
+ 		return erofs_fscache_readpage_noinline(folio, &map);
+ 	default:
 -- 
 2.27.0
 
