@@ -2,114 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16AC3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 02:10:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DF4AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 02:10:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357735AbiCYCMF (ORCPT
+        id S1354067AbiCYCMZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 22:12:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48918 "EHLO
+        Thu, 24 Mar 2022 22:12:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357703AbiCYCLv (ORCPT
+        with ESMTP id S1353106AbiCYCMN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 22:11:51 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0602FA6E3F;
-        Thu, 24 Mar 2022 19:06:49 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KPlm92dXVzfZmJ;
-        Fri, 25 Mar 2022 10:05:13 +0800 (CST)
-Received: from [10.174.179.211] (10.174.179.211) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 25 Mar 2022 10:06:47 +0800
-Subject: Re: [PATCH RESEND 1/2] perf string: Add strcmp_prefix()
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-CC:     <mark.rutland@arm.com>, <alexander.shishkin@linux.intel.com>,
-        <jolsa@redhat.com>, <namhyung@kernel.org>,
-        <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <rui.xiang@huawei.com>, <guohanjun@huawei.com>
-References: <20220318092245.2700489-1-liwei391@huawei.com>
- <20220318092245.2700489-2-liwei391@huawei.com> <Yjo+MdJaauraN6eX@kernel.org>
-From:   "liwei (GF)" <liwei391@huawei.com>
-Message-ID: <da8c82ac-3895-f4ef-9887-dae9ba80787a@huawei.com>
-Date:   Fri, 25 Mar 2022 10:06:47 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        Thu, 24 Mar 2022 22:12:13 -0400
+Received: from out203-205-251-80.mail.qq.com (out203-205-251-80.mail.qq.com [203.205.251.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6B94A995C;
+        Thu, 24 Mar 2022 19:09:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1648174141;
+        bh=qFJ1QKKq9b1Aw/+2U+A/f4XMNjTre/xqecawonGmicU=;
+        h=From:To:Cc:Subject:Date;
+        b=c4eJk01iY7sxKK5+q9z5Wb8vUpugjzSujVMUFUpn2cm39Q+090n0pehB94FOVIlnE
+         xtxUuIcpO/DEKB2yiWkMYtH/mLCo304dMCICUtrl0Zsmp2qmadYFFjjeLbbaPIjJXU
+         ejp1uiu801+OwKMi/6tbrpMkzfI3LH5rnFKJJrb4=
+Received: from localhost.localdomain ([43.227.136.188])
+        by newxmesmtplogicsvrsza7.qq.com (NewEsmtp) with SMTP
+        id 2390880F; Fri, 25 Mar 2022 10:08:57 +0800
+X-QQ-mid: xmsmtpt1648174137ts0bx8q70
+Message-ID: <tencent_6A5CCC9FB9221C4A1414E1534A3DFFC62008@qq.com>
+X-QQ-XMAILINFO: NkHKfw09D6j8lE/Tdyw2QdmN7BJTJJjH0Xf57GpNlk+aLRpaqo9Tnc8vn9EBQE
+         uvvSIu0IG7AIMyM9syJpW+UFUsF0XzpelbwexNj+dRaQz1b+wEbZLcV33BnfV3ZFaYdb4SAN6BA7
+         DHVnEuGP7p/4MKiGIY03JT6ORxftcQPmsq97w0UR/2dhN3yosWyqvCW200Tv8YgLgABBZ8ziYr1S
+         Wq/q0ILL9wyolxRXjgkKNRjifi5xYFD5ZksOFU5m89G6/hT12dA5F8y4IcFRzJ3qiWXlEtvZvPL7
+         EVp6sSa1Qz1kz5CQ0Qrc954Nb9JGHJwRJzzJiih2Ez/5rRiQ5Aovou33zGKiACdln7iUKbGnRMcs
+         vafYTT7VRn9cWMVhSy0qDJ/sekeKDfZ05TrkTUBWOhIIPe5WtmX/UAthmVPgXhSvH/2tkRHpitB9
+         Eu5273yxRzQV8l73jZ6UVkB0roovZqrfwCgESGaxRrJzX6qCiZIe+YAtnTf+/epRg4ggoWgVt67U
+         /N/vZRWgJcnikZUaA7vbWqOyTpspDruICg7QqYKn2uUFWacjcjNFSrmGYDnXgdSHwQd+7qDofgHv
+         rtq5SiFsctWlsIz/3qhQcVZ9qr+L5urfyY2MbiMzp6PO2aQlEzJX1yWr0FHzvKoJsSI05NJegCHV
+         4GK5jq8UwNr+Op+55VIup7WnfkLnW8DPmqQ13yvGZS/EUHUt8QOk/sgOCyyvHDw5t6DDQeZywoOW
+         n+tmWbesNhLRv+7HiW2GENUQHOgsE0JWXw3JBJzWF1HWShUTXP3kBPsWS90Xxr0KnKtu1DMAby+d
+         cFZ0sCjF099qShf5pJWNN7/u4fQPNXAfd9Efw7Lj3Vb8KEeFV387Afij9QnDyL7Yky8oSWAc9sE+
+         FaubL/NuDy+bzfGv4mvkkxb8Gr5w77SVzxLU3c6x4wRcmUXQqiuYPEiWZB1a3NFNS1zZHCt5WZ
+From:   xkernel.wang@foxmail.com
+To:     agross@kernel.org, bjorn.andersson@linaro.org, joro@8bytes.org,
+        will@kernel.org
+Cc:     linux-arm-msm@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org,
+        Xiaoke Wang <xkernel.wang@foxmail.com>
+Subject: [PATCH] iommu/msm: add a check for the return of kzalloc()
+Date:   Fri, 25 Mar 2022 10:08:01 +0800
+X-OQ-MSGID: <20220325020801.3301-1-xkernel.wang@foxmail.com>
 MIME-Version: 1.0
-In-Reply-To: <Yjo+MdJaauraN6eX@kernel.org>
-Content-Type: text/plain; charset="gbk"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.211]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
+kzalloc() is a memory allocation function which can return NULL when
+some internal memory errors happen. So it is better to check it to
+prevent potential wrong memory access.
 
-On 2022/3/23 5:22, Arnaldo Carvalho de Melo wrote:
-> Em Fri, Mar 18, 2022 at 05:22:44PM +0800, Wei Li escreveu:
->> Add a helper to check whether a string has the given prefix.
->> This function is stolen from fs/xattr.c
-> 
-> Can't you use strstarts()? See tools/include/linux/string.h.
-> 
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+---
+ drivers/iommu/msm_iommu.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Sorry, i haven't known that before, will use strstarts() in v2.
-
-Thanks,
-Wei
-
->  
->> Signed-off-by: Wei Li <liwei391@huawei.com>
->> ---
->>  tools/perf/util/string.c  | 17 +++++++++++++++++
->>  tools/perf/util/string2.h |  1 +
->>  2 files changed, 18 insertions(+)
->>
->> diff --git a/tools/perf/util/string.c b/tools/perf/util/string.c
->> index f6d90cdd9225..0ed3e2d0b70f 100644
->> --- a/tools/perf/util/string.c
->> +++ b/tools/perf/util/string.c
->> @@ -209,6 +209,23 @@ int strtailcmp(const char *s1, const char *s2)
->>  	return 0;
->>  }
->>  
->> +/**
->> + * strcmp_prefix - check string for given prefix
->> + * @str: the target string to check
->> + * @prefix: the given prefix to match
->> + *
->> + * Return the rest string in @str if @str has the given @prefix, return NULL
->> + * otherwise.
->> + */
->> +const char *strcmp_prefix(const char *str, const char *prefix)
->> +{
->> +	while (*prefix && *str == *prefix) {
->> +		str++;
->> +		prefix++;
->> +	}
->> +	return *prefix ? NULL : str;
->> +}
->> +
->>  char *asprintf_expr_inout_ints(const char *var, bool in, size_t nints, int *ints)
->>  {
->>  	/*
->> diff --git a/tools/perf/util/string2.h b/tools/perf/util/string2.h
->> index 56c30fef9682..58929ad928f7 100644
->> --- a/tools/perf/util/string2.h
->> +++ b/tools/perf/util/string2.h
->> @@ -20,6 +20,7 @@ static inline bool strisglob(const char *str)
->>  	return strpbrk(str, "*?[") != NULL;
->>  }
->>  int strtailcmp(const char *s1, const char *s2);
->> +const char *strcmp_prefix(const char *str, const char *prefix);
->>  
->>  char *asprintf_expr_inout_ints(const char *var, bool in, size_t nints, int *ints);
->>  
->> -- 
->> 2.25.1
-> 
+diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+index 3a38352..697ad63 100644
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -597,6 +597,10 @@ static void insert_iommu_master(struct device *dev,
+ 
+ 	if (list_empty(&(*iommu)->ctx_list)) {
+ 		master = kzalloc(sizeof(*master), GFP_ATOMIC);
++		if (!master) {
++			dev_err(dev, "Failed to allocate iommu_master\n");
++			return;
++		}
+ 		master->of_node = dev->of_node;
+ 		list_add(&master->list, &(*iommu)->ctx_list);
+ 		dev_iommu_priv_set(dev, master);
+-- 
