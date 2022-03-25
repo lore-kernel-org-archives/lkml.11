@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 474DFC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:17:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51BABC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:18:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356632AbiCYPT2 (ORCPT
+        id S1359691AbiCYPTf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:19:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44552 "EHLO
+        Fri, 25 Mar 2022 11:19:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359757AbiCYPL7 (ORCPT
+        with ESMTP id S1359745AbiCYPL7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 25 Mar 2022 11:11:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C71F6213C;
-        Fri, 25 Mar 2022 08:08:58 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1EE76212D;
+        Fri, 25 Mar 2022 08:08:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4C15B828F8;
-        Fri, 25 Mar 2022 15:08:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46899C340EE;
-        Fri, 25 Mar 2022 15:08:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 450C7B828FF;
+        Fri, 25 Mar 2022 15:08:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E212C340E9;
+        Fri, 25 Mar 2022 15:08:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648220923;
-        bh=SVs/MDBEHmX4AFKO+lofJLERkRv8iBI4VzwShn13ZOA=;
+        s=korg; t=1648220932;
+        bh=oS2+FX1hOPSs/yE8RCapV7w0uAE9PcbhOhmwfMkzaDw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M2W83UIIoCGiDdW6RyeScDH8jGmESkoiKYv5e+nA5KFC+fzy3ukriXlyWQVaAqgGX
-         nulpCFclXTiqdOclkpqzVwWqGFiZMJzs7EMQFYrBCmMXk0t4WEZ5D3XRm8d4Mc9tJs
-         c/x5bkK/iaEFINE/cJJgsdVz1Re1/Dyq7n4w1tx0=
+        b=I6xipgwEsyvsTg71lB1P7PBPjoBA+4h+bSSktaLeJ9NrFKbEUbudpEFEFwB7Ty049
+         BWiKl09smGsifusNopxCeftjp8Zl4h3ifeE63fwZ0Vmb2vyKOO28/ZDzNHQ8bSRnDt
+         n8F7xCat/aoK6mhJBFE6hJJ7YTHvY2mX/1pecyfk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Matthias Kretschmer <mathias.kretschmer@fit.fraunhofer.de>,
-        =?UTF-8?q?Linus=20L=C3=BCssing?= <ll@simonwunderlich.de>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 5.4 27/29] mac80211: fix potential double free on mesh join
-Date:   Fri, 25 Mar 2022 16:05:07 +0100
-Message-Id: <20220325150419.366701718@linuxfoundation.org>
+        stable@vger.kernel.org, Werner Sembach <wse@tuxedocomputers.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.4 24/29] ACPI: video: Force backlight native for Clevo NL5xRU and NL5xNU
+Date:   Fri, 25 Mar 2022 16:05:04 +0100
+Message-Id: <20220325150419.281560868@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150418.585286754@linuxfoundation.org>
 References: <20220325150418.585286754@linuxfoundation.org>
@@ -51,80 +49,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Lüssing <ll@simonwunderlich.de>
+From: Werner Sembach <wse@tuxedocomputers.com>
 
-commit 4a2d4496e15ea5bb5c8e83b94ca8ca7fb045e7d3 upstream.
+commit c844d22fe0c0b37dc809adbdde6ceb6462c43acf upstream.
 
-While commit 6a01afcf8468 ("mac80211: mesh: Free ie data when leaving
-mesh") fixed a memory leak on mesh leave / teardown it introduced a
-potential memory corruption caused by a double free when rejoining the
-mesh:
+Clevo NL5xRU and NL5xNU/TUXEDO Aura 15 Gen1 and Gen2 have both a working
+native and video interface. However the default detection mechanism first
+registers the video interface before unregistering it again and switching
+to the native interface during boot. This results in a dangling SBIOS
+request for backlight change for some reason, causing the backlight to
+switch to ~2% once per boot on the first power cord connect or disconnect
+event. Setting the native interface explicitly circumvents this buggy
+behaviour by avoiding the unregistering process.
 
-  ieee80211_leave_mesh()
-  -> kfree(sdata->u.mesh.ie);
-  ...
-  ieee80211_join_mesh()
-  -> copy_mesh_setup()
-     -> old_ie = ifmsh->ie;
-     -> kfree(old_ie);
-
-This double free / kernel panics can be reproduced by using wpa_supplicant
-with an encrypted mesh (if set up without encryption via "iw" then
-ifmsh->ie is always NULL, which avoids this issue). And then calling:
-
-  $ iw dev mesh0 mesh leave
-  $ iw dev mesh0 mesh join my-mesh
-
-Note that typically these commands are not used / working when using
-wpa_supplicant. And it seems that wpa_supplicant or wpa_cli are going
-through a NETDEV_DOWN/NETDEV_UP cycle between a mesh leave and mesh join
-where the NETDEV_UP resets the mesh.ie to NULL via a memcpy of
-default_mesh_setup in cfg80211_netdev_notifier_call, which then avoids
-the memory corruption, too.
-
-The issue was first observed in an application which was not using
-wpa_supplicant but "Senf" instead, which implements its own calls to
-nl80211.
-
-Fixing the issue by removing the kfree()'ing of the mesh IE in the mesh
-join function and leaving it solely up to the mesh leave to free the
-mesh IE.
-
-Cc: stable@vger.kernel.org
-Fixes: 6a01afcf8468 ("mac80211: mesh: Free ie data when leaving mesh")
-Reported-by: Matthias Kretschmer <mathias.kretschmer@fit.fraunhofer.de>
-Signed-off-by: Linus Lüssing <ll@simonwunderlich.de>
-Tested-by: Mathias Kretschmer <mathias.kretschmer@fit.fraunhofer.de>
-Link: https://lore.kernel.org/r/20220310183513.28589-1-linus.luessing@c0d3.blue
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
+Cc: All applicable <stable@vger.kernel.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/mac80211/cfg.c |    3 ---
- 1 file changed, 3 deletions(-)
+ drivers/acpi/video_detect.c |   75 ++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 75 insertions(+)
 
---- a/net/mac80211/cfg.c
-+++ b/net/mac80211/cfg.c
-@@ -1949,13 +1949,11 @@ static int copy_mesh_setup(struct ieee80
- 		const struct mesh_setup *setup)
- {
- 	u8 *new_ie;
--	const u8 *old_ie;
- 	struct ieee80211_sub_if_data *sdata = container_of(ifmsh,
- 					struct ieee80211_sub_if_data, u.mesh);
+--- a/drivers/acpi/video_detect.c
++++ b/drivers/acpi/video_detect.c
+@@ -372,6 +372,81 @@ static const struct dmi_system_id video_
+ 		DMI_MATCH(DMI_BOARD_NAME, "BA51_MV"),
+ 		},
+ 	},
++	/*
++	 * Clevo NL5xRU and NL5xNU/TUXEDO Aura 15 Gen1 and Gen2 have both a
++	 * working native and video interface. However the default detection
++	 * mechanism first registers the video interface before unregistering
++	 * it again and switching to the native interface during boot. This
++	 * results in a dangling SBIOS request for backlight change for some
++	 * reason, causing the backlight to switch to ~2% once per boot on the
++	 * first power cord connect or disconnect event. Setting the native
++	 * interface explicitly circumvents this buggy behaviour, by avoiding
++	 * the unregistering process.
++	 */
++	{
++	.callback = video_detect_force_native,
++	.ident = "Clevo NL5xRU",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
++		DMI_MATCH(DMI_BOARD_NAME, "NL5xRU"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "Clevo NL5xRU",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "SchenkerTechnologiesGmbH"),
++		DMI_MATCH(DMI_BOARD_NAME, "NL5xRU"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "Clevo NL5xRU",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "Notebook"),
++		DMI_MATCH(DMI_BOARD_NAME, "NL5xRU"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "Clevo NL5xRU",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
++		DMI_MATCH(DMI_BOARD_NAME, "AURA1501"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "Clevo NL5xRU",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
++		DMI_MATCH(DMI_BOARD_NAME, "EDUBOOK1502"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "Clevo NL5xNU",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
++		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "Clevo NL5xNU",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "SchenkerTechnologiesGmbH"),
++		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "Clevo NL5xNU",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "Notebook"),
++		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
++		},
++	},
  
- 	/* allocate information elements */
- 	new_ie = NULL;
--	old_ie = ifmsh->ie;
- 
- 	if (setup->ie_len) {
- 		new_ie = kmemdup(setup->ie, setup->ie_len,
-@@ -1965,7 +1963,6 @@ static int copy_mesh_setup(struct ieee80
- 	}
- 	ifmsh->ie_len = setup->ie_len;
- 	ifmsh->ie = new_ie;
--	kfree(old_ie);
- 
- 	/* now copy the rest of the setup parameters */
- 	ifmsh->mesh_id_len = setup->mesh_id_len;
+ 	/*
+ 	 * Desktops which falsely report a backlight and which our heuristics
 
 
