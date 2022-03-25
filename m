@@ -2,50 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71CF8C46467
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 041ECC4707E
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377756AbiCYPdz (ORCPT
+        id S1378206AbiCYPe3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:33:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38906 "EHLO
+        Fri, 25 Mar 2022 11:34:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377265AbiCYPYA (ORCPT
+        with ESMTP id S1377769AbiCYPYe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:24:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16F5AE615D;
-        Fri, 25 Mar 2022 08:17:40 -0700 (PDT)
+        Fri, 25 Mar 2022 11:24:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C8CE9CAD;
+        Fri, 25 Mar 2022 08:18:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 604FF60A1B;
-        Fri, 25 Mar 2022 15:17:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DACB4C340E9;
-        Fri, 25 Mar 2022 15:17:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1B19DB82865;
+        Fri, 25 Mar 2022 15:18:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C1A1C340E9;
+        Fri, 25 Mar 2022 15:18:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221458;
-        bh=ZGqHvFAw8zYFl5sKx0Vfl0zk5smIKUztTYJffKlRplU=;
+        s=korg; t=1648221534;
+        bh=cY3QIpW2D4KX7XX/R14DX1lJxfIyyyG9vhbRQdQJrds=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IDTe1Dh/1TXT3b5oN5AUy0XX0hEohF/NgWiY578DGU5WsXUm1V4UHsRee8ATaR3Cr
-         +8EPbMQbZksyXx3UybqzX3RvQrAZ/2d9aAdvuG1CkhoQPDJRYl5JK5jxomvurBGUlf
-         L4ZsdPQzRNdEJYE/OaKV3iBrqrUz/C6cIdVRCoek=
+        b=cRaqjliqIMQ2gj97QIE3o3ditRJwtMmME+U9/RqIcKyrnpuu6y5Mw/YeIcwIO6AVz
+         nt4vTjjR9dWanyIk8xamGImGjGVAZgbj2mEEWdlKYJVhi3w1mR26RSN/mVPAghi0bX
+         A4GJfMxlmOvYGKq8gTg2YuB1CUyxqE4fA3i38kew=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tim Murray <timmurray@google.com>,
-        Joel Fernandes <joelaf@google.com>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        "Uladzislau Rezki (Sony)" <urezki@gmail.com>,
-        Todd Kjos <tkjos@google.com>,
-        Sandeep Patil <sspatil@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>
-Subject: [PATCH 5.16 31/37] rcu: Dont deboost before reporting expedited quiescent state
-Date:   Fri, 25 Mar 2022 16:14:41 +0100
-Message-Id: <20220325150420.936440042@linuxfoundation.org>
+        stable@vger.kernel.org, Helmut Grohne <helmut@subdivi.de>,
+        Ismael Ferreras Morezuelas <swyterzone@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>
+Subject: [PATCH 5.17 02/39] Bluetooth: btusb: Add another Realtek 8761BU
+Date:   Fri, 25 Mar 2022 16:14:17 +0100
+Message-Id: <20220325150420.317434612@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220325150420.046488912@linuxfoundation.org>
-References: <20220325150420.046488912@linuxfoundation.org>
+In-Reply-To: <20220325150420.245733653@linuxfoundation.org>
+References: <20220325150420.245733653@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,63 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul E. McKenney <paulmck@kernel.org>
+From: Helmut Grohne <helmut@subdivi.de>
 
-commit 10c535787436d62ea28156a4b91365fd89b5a432 upstream.
+commit 6dfbe29f45fb0bde29213dbd754a79e8bfc6ecef upstream.
 
-Currently rcu_preempt_deferred_qs_irqrestore() releases rnp->boost_mtx
-before reporting the expedited quiescent state.  Under heavy real-time
-load, this can result in this function being preempted before the
-quiescent state is reported, which can in turn prevent the expedited grace
-period from completing.  Tim Murray reports that the resulting expedited
-grace periods can take hundreds of milliseconds and even more than one
-second, when they should normally complete in less than a millisecond.
+This device is sometimes wrapped with a label "EDUP".
 
-This was fine given that there were no particular response-time
-constraints for synchronize_rcu_expedited(), as it was designed
-for throughput rather than latency.  However, some users now need
-sub-100-millisecond response-time constratints.
+T:  Bus=01 Lev=02 Prnt=02 Port=02 Cnt=03 Dev#=107 Spd=12   MxCh= 0
+D:  Ver= 1.10 Cls=e0(wlcon) Sub=01 Prot=01 MxPS=64 #Cfgs=  1
+P:  Vendor=2550 ProdID=8761 Rev= 2.00
+S:  Manufacturer=Realtek
+S:  Product=Bluetooth Radio
+S:  SerialNumber=00E04C239987
+C:* #Ifs= 2 Cfg#= 1 Atr=e0 MxPwr=500mA
+I:* If#= 0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=1ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS=  64 Ivl=0ms
+E:  Ad=82(I) Atr=02(Bulk) MxPS=  64 Ivl=0ms
+I:* If#= 1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=   0 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=   0 Ivl=1ms
+I:  If#= 1 Alt= 1 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=   9 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=   9 Ivl=1ms
+I:  If#= 1 Alt= 2 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  17 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  17 Ivl=1ms
+I:  If#= 1 Alt= 3 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  25 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  25 Ivl=1ms
+I:  If#= 1 Alt= 4 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  33 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  33 Ivl=1ms
+I:  If#= 1 Alt= 5 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  49 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  49 Ivl=1ms
 
-This patch therefore follows Neeraj's suggestion (seconded by Tim and
-by Uladzislau Rezki) of simply reversing the two operations.
-
-Reported-by: Tim Murray <timmurray@google.com>
-Reported-by: Joel Fernandes <joelaf@google.com>
-Reported-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
-Reviewed-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
-Reviewed-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
-Tested-by: Tim Murray <timmurray@google.com>
-Cc: Todd Kjos <tkjos@google.com>
-Cc: Sandeep Patil <sspatil@google.com>
-Cc: <stable@vger.kernel.org> # 5.4.x
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Signed-off-by: Helmut Grohne <helmut@subdivi.de>
+Link: https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1955351
+Cc: Ismael Ferreras Morezuelas <swyterzone@gmail.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/rcu/tree_plugin.h |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/bluetooth/btusb.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/kernel/rcu/tree_plugin.h
-+++ b/kernel/rcu/tree_plugin.h
-@@ -554,16 +554,16 @@ rcu_preempt_deferred_qs_irqrestore(struc
- 			raw_spin_unlock_irqrestore_rcu_node(rnp, flags);
- 		}
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -482,6 +482,8 @@ static const struct usb_device_id blackl
+ 	/* Additional Realtek 8761BU Bluetooth devices */
+ 	{ USB_DEVICE(0x0b05, 0x190e), .driver_info = BTUSB_REALTEK |
+ 	  					     BTUSB_WIDEBAND_SPEECH },
++	{ USB_DEVICE(0x2550, 0x8761), .driver_info = BTUSB_REALTEK |
++						     BTUSB_WIDEBAND_SPEECH },
  
--		/* Unboost if we were boosted. */
--		if (IS_ENABLED(CONFIG_RCU_BOOST) && drop_boost_mutex)
--			rt_mutex_futex_unlock(&rnp->boost_mtx.rtmutex);
--
- 		/*
- 		 * If this was the last task on the expedited lists,
- 		 * then we need to report up the rcu_node hierarchy.
- 		 */
- 		if (!empty_exp && empty_exp_now)
- 			rcu_report_exp_rnp(rnp, true);
-+
-+		/* Unboost if we were boosted. */
-+		if (IS_ENABLED(CONFIG_RCU_BOOST) && drop_boost_mutex)
-+			rt_mutex_futex_unlock(&rnp->boost_mtx.rtmutex);
- 	} else {
- 		local_irq_restore(flags);
- 	}
+ 	/* Additional Realtek 8821AE Bluetooth devices */
+ 	{ USB_DEVICE(0x0b05, 0x17dc), .driver_info = BTUSB_REALTEK },
 
 
