@@ -2,143 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A3ADC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:43:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B564C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:43:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231532AbiCYTof (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:44:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36180 "EHLO
+        id S231558AbiCYToi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:44:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232225AbiCYTnc (ORCPT
+        with ESMTP id S232146AbiCYTna (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:43:32 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 06B34160FDF;
-        Fri, 25 Mar 2022 12:14:27 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A898413D5;
-        Fri, 25 Mar 2022 12:14:26 -0700 (PDT)
-Received: from [10.57.41.19] (unknown [10.57.41.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1A5C93F73D;
-        Fri, 25 Mar 2022 12:14:23 -0700 (PDT)
-Message-ID: <a1829f4a-d916-c486-ac49-2c6dff77521a@arm.com>
-Date:   Fri, 25 Mar 2022 19:14:20 +0000
+        Fri, 25 Mar 2022 15:43:30 -0400
+Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E058221DF19
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:14:18 -0700 (PDT)
+Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-d6ca46da48so9003630fac.12
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:14:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=xroX1x4vfWAmQcD+WNgrxfLEz2UKk5daAF8OyyDV8E8=;
+        b=LJQQCAmCZbfr9l5xxCdJzKz9F2magsaYfevnAZwZb6BtU/lljkhMhmUruElbPWYRSR
+         UuwlW2K9uhj32EZUX+jrinNLGbg1tBPVN9RDjfXYvASNzVt9uw82q3EKkfMw06N70Ev+
+         xS+sjEFeKchM9iGxTV5hgnfiOpi+elsMNkFWw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=xroX1x4vfWAmQcD+WNgrxfLEz2UKk5daAF8OyyDV8E8=;
+        b=8N6etz7jOK0Rgl3lfSITPa0Dkdm1gocGpMnopiF8vp6U+w1FOINt9bMMTRxPJgomin
+         Okinhq7AR8nX/bxI3XkJAPlX95NoQ0YQRp/pX6H/6KS1gQCm2R7ZgPCne6peYnJKbJck
+         IwwImO8g4jT69UsYuRk2vHAhpKmUgUpOqzpRlvFRWYP9W7WIqgKs+r0c09P+EKu6bSgX
+         fX3xKB7OnzHzMiXjUmM2r0k60Bm3v0HMB2KCa61/epfvc6hJbbhZRMq+6e5oSyzajs1G
+         6JFO7EGfQvGFFWYyjJ28CCp9pOwwL3SVEwF3yMY45uW3QPPy4JkWJ/JOEYs+DvhHt1Ko
+         eb8Q==
+X-Gm-Message-State: AOAM533wGJ6B+ydauE4cagpUT8Q8VBdB54igCRWGcTQyzehZtY+dt7U3
+        pJUfWw+Qh0697W0dpSK+YwSQKXvGCH7bokSKxuOeNXvMwe8=
+X-Google-Smtp-Source: ABdhPJxFnDvR+8O0qWhbA9VKyiH4QLwRIWZOGlc8HRnYIjqHnb6Nw0UGNH22srX4kIJMdYZuAU+YRhSRuizdqD+7dKY=
+X-Received: by 2002:aca:bd41:0:b0:2ec:ff42:814f with SMTP id
+ n62-20020acabd41000000b002ecff42814fmr6007460oif.63.1648231322654; Fri, 25
+ Mar 2022 11:02:02 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Fri, 25 Mar 2022 13:02:02 -0500
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
- ath9k-based AP
-Content-Language: en-GB
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Maxime Bizon <mbizon@freebox.fr>
-Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@toke.dk>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Olha Cherevyk <olha.cherevyk@gmail.com>,
-        iommu <iommu@lists.linux-foundation.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable <stable@vger.kernel.org>
-References: <1812355.tdWV9SEqCh@natalenko.name>
- <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
- <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
- <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com> <878rsza0ih.fsf@toke.dk>
- <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
- <20220324163132.GB26098@lst.de>
- <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com> <871qyr9t4e.fsf@toke.dk>
- <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
- <31434708dcad126a8334c99ee056dcce93e507f1.camel@freebox.fr>
- <CAHk-=wippum+MksdY7ixMfa3i1sZ+nxYPWLLpVMNyXCgmiHbBQ@mail.gmail.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <CAHk-=wippum+MksdY7ixMfa3i1sZ+nxYPWLLpVMNyXCgmiHbBQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <1648209491-30165-2-git-send-email-quic_c_skakit@quicinc.com>
+References: <1648209491-30165-1-git-send-email-quic_c_skakit@quicinc.com> <1648209491-30165-2-git-send-email-quic_c_skakit@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Fri, 25 Mar 2022 13:02:02 -0500
+Message-ID: <CAE-0n523f-aAUkj1SUscNgw_Gh=mP8JfXV4u_hNeFhqtfr_Fgg@mail.gmail.com>
+Subject: Re: [PATCH V8 1/7] dt-bindings: mfd: pm8008: Modify the compatible as
+ per driver
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Satya Priya <quic_c_skakit@quicinc.com>
+Cc:     Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Das Srinagesh <gurus@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_collinsd@quicinc.com,
+        quic_subbaram@quicinc.com, quic_jprakash@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-03-25 18:30, Linus Torvalds wrote:
-> On Fri, Mar 25, 2022 at 3:25 AM Maxime Bizon <mbizon@freebox.fr> wrote:
->>
->> In the non-cache-coherent scenario, and assuming dma_map() did an
->> initial cache invalidation, you can write this:
-> 
-> .. but the problem is that the dma mapping code is supposed to just
-> work, and the driver isn't supposed to know or care whether dma is
-> coherent or not, or using bounce buffers or not.
-> 
-> And currently it doesn't work.
-> 
-> Because what that ath9k driver does is "natural", but it's wrong for
-> the bounce buffer case.
-> 
-> And I think the problem is squarely on the dma-mapping side for two reasons:
-> 
->   (a) this used to work, now it doesn't, and it's unclear how many
-> other drivers are affected
-> 
->   (b) the dma-mapping naming and calling conventions are horrible and
-> actively misleading
-> 
-> That (a) is a big deal. The reason the ath9k issue was found quickly
-> is very likely *NOT* because ath9k is the only thing affected. No,
-> it's because ath9k is relatively common.
-> 
-> Just grep for dma_sync_single_for_device() and ask yourself: how many
-> of those other drivers have you ever even HEARD of, much less be able
-> to test?
-> 
-> And that's just one "dma_sync" function. Admittedly it's likely one of
-> the more common ones, but still..
-> 
-> Now, (b) is why I think driver nufgt get this so wrong - or, in this
-> case, possibly the dma-mapping code itself.
-> 
-> The naming - and even the documentation(!!!) - implies that what ath9k
-> does IS THE RIGHT THING TO DO.
-> 
-> The documentation clearly states:
-> 
->    "Before giving the memory to the device, dma_sync_single_for_device() needs
->     to be called, and before reading memory written by the device,
->     dma_sync_single_for_cpu(), just like for streaming DMA mappings that are
->     reused"
+Quoting Satya Priya (2022-03-25 04:58:05)
+> Modify the compatible string as per the pm8008 mfd driver.
+> Add reset-gpios property and make interrupts and interrupt-cells
+> as optional properties, they are not strictly required and may
+> cause yaml compilation errors when not added in the DT files.
 
-Except that's documentation for the non-coherent allocation API, rather 
-than the streaming API in question here. I'll refrain from commenting on 
-having at least 3 DMA APIs, with the same set of sync functions serving 
-two of them, and just stand back a safe distance...
+Does it have an interrupt controller inside? If so, the properties
+should be present even if the driver isn't using them.
 
+>
+> Also, change the node name in example to match with the
+> pm8008_infra DT node.
+>
+> Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
+> ---
+> Changes in V5:
+>  - Remove compatible for regulators node.
+>  - Move supply nodes of the regulators to chip level.
+>
+> Changes in V6:
+>  - No changes.
+>
+> Changes in V7:
+>  - Removed the intermediate regulators node and added ldos
+>    directly under mfd node.
+>
+> Changes in V8:
+>  - Change the compatible as per driver, remove interrupts from required
+>    properties, add reset-gpios and move regulators to separate binding.
+>
+>  Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml | 15 ++++++++++-----
+>  1 file changed, 10 insertions(+), 5 deletions(-)
+>
+> diff --git a/Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml b/Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml
+> index ec3138c..12431ea 100644
+> --- a/Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml
+> +++ b/Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml
+> @@ -16,7 +16,7 @@ description: |
+>
+>  properties:
+>    compatible:
+> -    const: qcom,pm8008
+> +    const: qcom,pm8008-infra
 
+Why is the compatible being replaced with -infra postfix?
 
+>
+>    reg:
+>      description:
+> @@ -44,6 +44,10 @@ properties:
+>    "#size-cells":
+>      const: 0
+>
+> +  reset-gpios:
+> +    description: |
+> +      Specifies the GPIO to be toggled to bring pm8008 chip out of reset.
 
-Anyway, the appropriate part of that document is probably:
+Remove description. Add maxItems: 1
 
-   "You must do this:
+> +
+>  patternProperties:
+>    "^gpio@[0-9a-f]+$":
+>      type: object
+> @@ -88,10 +92,8 @@ patternProperties:
+>  required:
+>    - compatible
+>    - reg
+> -  - interrupts
+>    - "#address-cells"
+>    - "#size-cells"
+> -  - "#interrupt-cells"
 
-    - Before reading values that have been written by DMA from the device
-      (use the DMA_FROM_DEVICE direction)"
+Should reset-gpios be required? I'd expect this patch to be adding
+reset-gpios and making it required and that's about it. Given that
+there isn't a DT using this compatible upstream so far it looks like we
+don't need to do anything like worry about backwards compatibility.
 
-I'm not saying it constitutes *good* documentation, but I would note how 
-it says "have been written", and not "are currently being written". 
-Similarly from the HOWTO:
+>
+>  additionalProperties: false
+>
+> @@ -99,11 +101,12 @@ examples:
+>    - |
+>      #include <dt-bindings/mfd/qcom-pm8008.h>
+>      #include <dt-bindings/interrupt-controller/irq.h>
+> +    #include <dt-bindings/gpio/gpio.h>
+>      qupv3_se13_i2c {
+>        #address-cells = <1>;
+>        #size-cells = <0>;
+> -      pm8008i@8 {
+> -        compatible = "qcom,pm8008";
+> +      pm8008_infra: pmic@8 {
 
-    "If you need to use the same streaming DMA region multiple times and
-     touch the data in between the DMA transfers, the buffer needs to be
-     synced properly..."
+Remove unused phandle.
 
-Note "between the DMA transfers", and not "during the DMA transfers". 
-The fundamental assumption of the streaming API is that only one thing 
-is ever accessing the mapping at any given time, which is what the whole 
-notion of ownership is about.
-
-Thanks,
-Robin.
+> +        compatible = "qcom,pm8008-infra";
+>          reg = <0x8>;
+>          #address-cells = <1>;
+>          #size-cells = <0>;
+> @@ -113,6 +116,8 @@ examples:
+>          interrupt-parent = <&tlmm>;
+>          interrupts = <32 IRQ_TYPE_EDGE_RISING>;
+>
+> +        reset-gpios = <&pm8350c_gpios 4 GPIO_ACTIVE_HIGH>;
+> +
+>          pm8008_gpios: gpio@c000 {
+>            compatible = "qcom,pm8008-gpio", "qcom,spmi-gpio";
+>            reg = <0xc000>;
+> --
+> 2.7.4
+>
