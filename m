@@ -2,128 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F1D0C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 11:19:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F162C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 11:21:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355377AbiCYLVR (ORCPT
+        id S1355568AbiCYLXP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 07:21:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48054 "EHLO
+        Fri, 25 Mar 2022 07:23:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346207AbiCYLVM (ORCPT
+        with ESMTP id S1346207AbiCYLXN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 07:21:12 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 583EA5A08E;
-        Fri, 25 Mar 2022 04:19:38 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: adalessandro)
-        with ESMTPSA id 87AE11F4614E
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1648207177;
-        bh=sKCePReqp4ZJymOSI9J4lq/V8FQUX26+JNamqgOmKYw=;
-        h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
-        b=lv5yRVc2k0I/c7KDjggKiXuVEGwwpOMPNMal8CNUvBFOrMrqLbUStd9sfpti2XuWw
-         GxU0GJtnL1xMlub9WQk9bTsjtARZ/Ymf7AwFc6HD9G6C51OuCKYkdA/HJUWVFQFEA/
-         GS+UTABwBtCVTu3JM5neiu02qw5FlfH9Gl3J3xkgw9FwDbqWi3RADA2Qw3ysHkSQQk
-         RWXdpD8UBFHGt3il4TVA6xk/YQzpJhUvzrTows798nBsQZtBK/eN34Vaw6EzZwFThw
-         787bqLLkZkRgRKoIeUBTL3ypMt+slpfdmWzph9LzMjkRpG6KIuXqoAFG4fGTwhQ5rW
-         YVxjUdgARBZmA==
-Message-ID: <c08cd648-f42c-b8f6-41a5-172fdb47d27e@collabora.com>
-Date:   Fri, 25 Mar 2022 08:19:26 -0300
+        Fri, 25 Mar 2022 07:23:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 93B8BD1CF6
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 04:21:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648207298;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=AC31SmN1xrzT0hiknezp8tHe0XvYdjbL43hI7yRc6I8=;
+        b=U+OzrecbIctU+oX/yEHfk+7YooKluIfGHsAPYge6vtYOUMRQHKkhlwqmHDmZwaH+Kz786j
+        5sqNG++b9BetkikkTlLWicHoImn0ZJyigcdHfqXMmfIfHd02Idw1e/YU2vRCr0c/gw2edO
+        +PY8ckMN4w9+jLyKeiNas0sQ/IeOa8Q=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-562-_EBgUc80P5SeVp4mVLTefg-1; Fri, 25 Mar 2022 07:21:37 -0400
+X-MC-Unique: _EBgUc80P5SeVp4mVLTefg-1
+Received: by mail-ed1-f72.google.com with SMTP id w8-20020a50d788000000b00418e6810364so4708346edi.13
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 04:21:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=AC31SmN1xrzT0hiknezp8tHe0XvYdjbL43hI7yRc6I8=;
+        b=MuLf/i+1p4ciJ6p19FDOrj+Ej0ecDC0ViGStY6A4JPfVepU5LRdr97lhWtqlb+TQxA
+         9kcQevnCY2DITdzisVhqn1AJG5coxDslFFradeihwfC2p1W4oZnT1s+OHfv1pj2iiIow
+         avKqhR0tHb7/xbqQ5oNX+JswVnK8+vdRFTEV3Lk2Vs0rgh5hQQ9lrhdNfZK1fFI1CUTI
+         IY1UgnxsnC3fdF03zf/kZ+KZ3o1nJty760fyha/LaykGvwz5clyUcDelT9sIXutJSBSo
+         /aFu1yqehboJ+zt+/+yCuRvAUplxRg6He8IEHHzsbAUy8ebHZqGIQPu7ST02mbhW+6P1
+         iV+Q==
+X-Gm-Message-State: AOAM530WgQqGWe3cbfcqg5DbbLsP908gaySiY1dCb/o4lZRzPbw5LRL8
+        yGC0xW9KjI1a+XcJx/EH9I9ijpSUN8JH9EcD4bujrH8bM3uY2jFXnlDgZjqT2Zg38WBqX221FVM
+        AG7p4LOxXskCcD++Ho6HTNUhx
+X-Received: by 2002:a17:907:7242:b0:6da:b561:d523 with SMTP id ds2-20020a170907724200b006dab561d523mr10829006ejc.118.1648207296180;
+        Fri, 25 Mar 2022 04:21:36 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyRaH3RiGK52JWiLBhsoZq6pW8PFaiUxhuzhlAvmuh/6hiXDyLkGAYLCfXeBTG6ECKMXpWD8A==
+X-Received: by 2002:a17:907:7242:b0:6da:b561:d523 with SMTP id ds2-20020a170907724200b006dab561d523mr10828983ejc.118.1648207295973;
+        Fri, 25 Mar 2022 04:21:35 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:1c09:f536:3de6:228c? ([2001:b07:6468:f312:1c09:f536:3de6:228c])
+        by smtp.googlemail.com with ESMTPSA id i10-20020aa7dd0a000000b00419286d4824sm2688498edv.40.2022.03.25.04.21.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Mar 2022 04:21:35 -0700 (PDT)
+Message-ID: <78e3f054-829e-b00d-6c65-9ae622f301df@redhat.com>
+Date:   Fri, 25 Mar 2022 12:21:28 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v2 2/2] arm64: dts: imx8mn-bsh-smm-s2pro: Add
- tlv320aic31xx audio card node
+ Thunderbird/91.4.0
+Subject: Re: [FYI PATCH] Revert "KVM: x86/mmu: Zap only TDP MMU leafs in
+ kvm_zap_gfn_range()"
 Content-Language: en-US
-From:   Ariel D'Alessandro <ariel.dalessandro@collabora.com>
-To:     Fabio Estevam <festevam@gmail.com>
-Cc:     Linux-ALSA <alsa-devel@alsa-project.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Sascha Hauer <kernel@pengutronix.de>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Michael Trimarchi <michael@amarulasolutions.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>
-References: <20220210134049.32576-1-ariel.dalessandro@collabora.com>
- <20220210134049.32576-2-ariel.dalessandro@collabora.com>
- <CAOMZO5DuB4d1243H46d1=heiNiz+pQVkjrGU+zV_r3GFKRTZfQ@mail.gmail.com>
- <d748d03d-4e9c-50a5-6c9e-089ec44a2540@collabora.com>
-In-Reply-To: <d748d03d-4e9c-50a5-6c9e-089ec44a2540@collabora.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Sean Christopherson <sean.j.christopherson@intel.com>
+References: <20220318164833.2745138-1-pbonzini@redhat.com>
+ <d6367754-7782-7c29-e756-ac02dbd4520b@redhat.com>
+ <Yj0FYSC2sT4k/ELl@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <Yj0FYSC2sT4k/ELl@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Fabio,
+On 3/25/22 00:57, Sean Christopherson wrote:
+> Can I have 1-2 weeks to try and root cause and fix the underlying issue before
+> sending reverts to Linus?  I really don't want to paper over a TLB flushing bug
+> or an off-by-one bug, and I really, really don't want to end up with another
+> scenario where KVM zaps everything just because.
 
-On 3/17/22 15:47, Ariel D'Alessandro wrote:
-> Hi Fabio,
-> 
-> On 3/10/22 09:29, Fabio Estevam wrote:
->> Hi Ariel,
->>
->> On Thu, Feb 10, 2022 at 10:41 AM Ariel D'Alessandro
->> <ariel.dalessandro@collabora.com> wrote:
->>
->>> +&i2c2 {
->>> +       clock-frequency = <400000>;
->>> +       pinctrl-names = "default";
->>> +       pinctrl-0 = <&pinctrl_i2c2>;
->>> +       status = "okay";
->>> +
->>> +       codec: tlv320dac3101@18 {
->>> +               #sound-dai-cells = <0>;
->>> +               compatible = "ti,tlv320dac3101";
->>> +               pinctrl-names = "default";
->>> +               pinctrl-0 = <&pinctrl_dac_rst>;
->>> +               reg = <0x18>;
->>> +
->>> +               ai31xx-micbias-vg = <MICBIAS_AVDDV>;
->>> +
->>> +               HPVDD-supply = <&buck4_reg>;
->>> +               SPRVDD-supply = <&vdd_input>;
->>> +               SPLVDD-supply = <&vdd_input>;
->>> +               AVDD-supply = <&buck4_reg>;
->>> +               IOVDD-supply = <&buck4_reg>;
->>> +               DVDD-supply = <&buck5_reg>;
->>> +               reset-gpios = <&gpio1 6 GPIO_ACTIVE_LOW>;
->>> +
->>> +               clocks = <&clk IMX8MN_CLK_SAI3_ROOT>;
->>> +               clock-names = "mclk";
->>
->> The clocks and clock-names properties are not documented in the codec bindings.
->>
->> Also, the driver does not use call clk_get() on this mclk clock.
->>
->> You should drop the clocks and clock-names properties.
-> 
-> The sound card driver is calling clk_get() on the codec's clock. See
-> sound/soc/fsl/fsl-asoc-card.c:
-> 
->     /* Get the MCLK rate only, and leave it controlled by CODEC drivers */
->     if (codec_dev) {
->         struct clk *codec_clk = clk_get(codec_dev, NULL);
-> 
->         if (!IS_ERR(codec_clk)) {
->             priv->codec_priv.mclk_freq = clk_get_rate(codec_clk);
->             clk_put(codec_clk);
->         }
->     }
+Well, too late...  I didn't want to send a pull request that was broken, 
+and Mingwei provided a convincing reason for the breakage.
 
-Do you have any other comments on this one? Otherwise, could you perhaps
-ack this patch? See latest version:
-  [PATCH v4] arm64: dts: imx8mn-bsh-smm-s2pro: Add tlv320aic31xx audio
-card node
+Paolo
 
-Thanks
-Ariel
