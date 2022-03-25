@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57C84C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 20:07:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BC08C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 20:07:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232031AbiCYUI6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 16:08:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55036 "EHLO
+        id S231979AbiCYUJE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 16:09:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232341AbiCYUH5 (ORCPT
+        with ESMTP id S232378AbiCYUH6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 16:07:57 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC2F42B18C;
-        Fri, 25 Mar 2022 13:04:14 -0700 (PDT)
+        Fri, 25 Mar 2022 16:07:58 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 576F7140A2;
+        Fri, 25 Mar 2022 13:04:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648238654; x=1679774654;
+  t=1648238661; x=1679774661;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=KugfsYLZVZCrCzDcruBf/OOyAOySyQSAT5HxYxx99mU=;
-  b=U7XyWDFQwnE7PBjzw5HFxoj7PZhgdUNwMu/x3mWe3ran6G5TJ4rYQzfc
-   7TxoCgZJO0fKCZBA8uXL0ul+U5m28s2b8Nk0pRveXKNsk3+6UkzCttwzh
-   HeXBjTK/1YZ5kK1AUG+XRQBrO6L6NO8pYU5rZQINOu39oqlEfj/5ENqVB
-   Fg+Orp2Y0Z78PZfYlAvOZHDVp7AdcWJm6hVOo0SbcA4Fm3bb2hS3hsrBu
-   f6NOJibfi2nNrKMDfEufPBkfRHOMsmLi9fn/+fSnz0OE0aRYL0GeawT6L
-   B5QDoJT8tJ5N2wu/3YCNltnMxyC7SKvz8g3MKjD5k5gxXQsYgeESNwrlj
+  bh=5sK09O1uc6ZSl4vR7vWfGqwrFgZiRRMtY41JRk11RA8=;
+  b=OUGP2dgAzHx2mlnynnamky6jCGR7RzWYyBGar7D6VHIMcz+ScXrm6ZV9
+   4i2oxRs5CR6bW3BqUr6RCDWEPOnwydn1V+heVZGPcc0AmIA2eI2IXYzCb
+   SlJ1Oyt2ZN30OoxZhPKDw09f4W1+3m7UR35UL3tOHQc+lgwPBfK6/57zJ
+   Dl6Jevm1RbJnEtd5H+EYCAFr2T6/YEZP/j8+k5odIIWZT5DgWjH50bPBX
+   yLiy0/mLLZK+F90mfJnkgGesbbXFmmwR2SxqRBQ8vQcPWjc5Wz119JUd4
+   ZV6gRjukVA+phUDlATCf325/L5CdyuQtAPj5MJdpTFcT7UpOAw2NRfA8X
    A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10297"; a="256283599"
+X-IronPort-AV: E=McAfee;i="6200,9189,10297"; a="345146243"
 X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
-   d="scan'208";a="256283599"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2022 13:04:14 -0700
+   d="scan'208";a="345146243"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2022 13:04:21 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
-   d="scan'208";a="584576733"
+   d="scan'208";a="602159418"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga001.jf.intel.com with ESMTP; 25 Mar 2022 13:04:09 -0700
+  by fmsmga008.fm.intel.com with ESMTP; 25 Mar 2022 13:04:16 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 80AEB73; Fri, 25 Mar 2022 22:04:30 +0200 (EET)
+        id 98EFD217; Fri, 25 Mar 2022 22:04:30 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Gregory CLEMENT <gregory.clement@bootlin.com>,
@@ -59,9 +59,9 @@ Cc:     Neil Armstrong <narmstrong@baylibre.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         Alexandre Torgue <alexandre.torgue@foss.st.com>,
         Bartosz Golaszewski <brgl@bgdev.pl>
-Subject: [PATCH v1 2/5] pinctrl: stm32: Replace custom code by gpiochip_count() call
-Date:   Fri, 25 Mar 2022 22:03:35 +0200
-Message-Id: <20220325200338.54270-2-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 4/5] pinctrl: meson: Replace custom code by gpiochip_count() call
+Date:   Fri, 25 Mar 2022 22:03:37 +0200
+Message-Id: <20220325200338.54270-4-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325200338.54270-1-andriy.shevchenko@linux.intel.com>
 References: <20220325200338.54270-1-andriy.shevchenko@linux.intel.com>
@@ -77,35 +77,68 @@ custom code by gpiochip_count() call.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/pinctrl/stm32/pinctrl-stm32.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/pinctrl/meson/pinctrl-meson.c | 28 ++++++++++++---------------
+ 1 file changed, 12 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/pinctrl/stm32/pinctrl-stm32.c b/drivers/pinctrl/stm32/pinctrl-stm32.c
-index 9ed764731570..d4bbeec82c1f 100644
---- a/drivers/pinctrl/stm32/pinctrl-stm32.c
-+++ b/drivers/pinctrl/stm32/pinctrl-stm32.c
-@@ -1423,7 +1423,8 @@ int stm32_pctl_probe(struct platform_device *pdev)
- 	struct device *dev = &pdev->dev;
- 	struct stm32_pinctrl *pctl;
- 	struct pinctrl_pin_desc *pins;
--	int i, ret, hwlock_id, banks = 0;
-+	int i, ret, hwlock_id;
-+	unsigned int banks;
+diff --git a/drivers/pinctrl/meson/pinctrl-meson.c b/drivers/pinctrl/meson/pinctrl-meson.c
+index 49851444a6e3..7db70d4e214a 100644
+--- a/drivers/pinctrl/meson/pinctrl-meson.c
++++ b/drivers/pinctrl/meson/pinctrl-meson.c
+@@ -49,6 +49,7 @@
+ #include <linux/pinctrl/pinctrl.h>
+ #include <linux/pinctrl/pinmux.h>
+ #include <linux/platform_device.h>
++#include <linux/property.h>
+ #include <linux/regmap.h>
+ #include <linux/seq_file.h>
  
- 	if (!np)
- 		return -EINVAL;
-@@ -1513,10 +1514,7 @@ int stm32_pctl_probe(struct platform_device *pdev)
- 		return PTR_ERR(pctl->pctl_dev);
- 	}
+@@ -662,27 +663,22 @@ static struct regmap *meson_map_resource(struct meson_pinctrl *pc,
+ 	return devm_regmap_init_mmio(pc->dev, base, &meson_regmap_config);
+ }
  
--	for_each_available_child_of_node(np, child)
--		if (of_property_read_bool(child, "gpio-controller"))
--			banks++;
+-static int meson_pinctrl_parse_dt(struct meson_pinctrl *pc,
+-				  struct device_node *node)
++static int meson_pinctrl_parse_dt(struct meson_pinctrl *pc)
+ {
+-	struct device_node *np, *gpio_np = NULL;
++	struct device_node *gpio_np;
++	unsigned int chips;
+ 
+-	for_each_child_of_node(node, np) {
+-		if (!of_find_property(np, "gpio-controller", NULL))
+-			continue;
+-		if (gpio_np) {
+-			dev_err(pc->dev, "multiple gpio nodes\n");
+-			of_node_put(np);
+-			return -EINVAL;
+-		}
+-		gpio_np = np;
+-	}
 -
-+	banks = gpiochip_count(dev);
- 	if (!banks) {
- 		dev_err(dev, "at least one GPIO bank is required\n");
+-	if (!gpio_np) {
++	chips = gpiochip_count(pc->dev);
++	if (!chips) {
+ 		dev_err(pc->dev, "no gpio node found\n");
  		return -EINVAL;
+ 	}
++	if (chips > 1) {
++		dev_err(pc->dev, "multiple gpio nodes\n");
++		return -EINVAL;
++	}
+ 
++	gpio_np = to_of_node(device_get_named_child_node(pc->dev, "gpio-controller"));
+ 	pc->of_node = gpio_np;
+ 
+ 	pc->reg_mux = meson_map_resource(pc, gpio_np, "mux");
+@@ -751,7 +747,7 @@ int meson_pinctrl_probe(struct platform_device *pdev)
+ 	pc->dev = dev;
+ 	pc->data = (struct meson_pinctrl_data *) of_device_get_match_data(dev);
+ 
+-	ret = meson_pinctrl_parse_dt(pc, dev->of_node);
++	ret = meson_pinctrl_parse_dt(pc);
+ 	if (ret)
+ 		return ret;
+ 
 -- 
 2.35.1
 
