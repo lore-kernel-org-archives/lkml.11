@@ -2,1926 +2,463 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D09F2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 10:11:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE44C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 10:11:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358813AbiCYKMc convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 06:12:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33490 "EHLO
+        id S233050AbiCYKMi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 06:12:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358699AbiCYKL2 (ORCPT
+        with ESMTP id S1358749AbiCYKLq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 06:11:28 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 023535749A;
-        Fri, 25 Mar 2022 03:09:51 -0700 (PDT)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22P75K9a016713;
-        Fri, 25 Mar 2022 10:09:06 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f0t9e4w5b-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 25 Mar 2022 10:09:05 +0000
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22P9sUJc022874;
-        Fri, 25 Mar 2022 10:09:05 GMT
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f0t9e4w48-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 25 Mar 2022 10:09:04 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22P9xIMC023167;
-        Fri, 25 Mar 2022 10:09:02 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma05fra.de.ibm.com with ESMTP id 3ew6t9k122-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 25 Mar 2022 10:09:01 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22PA8xQF43516232
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 25 Mar 2022 10:08:59 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1934452054;
-        Fri, 25 Mar 2022 10:08:59 +0000 (GMT)
-Received: from smtp.tlslab.ibm.com (unknown [9.101.4.1])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with SMTP id 5E7025204E;
-        Fri, 25 Mar 2022 10:08:58 +0000 (GMT)
-Received: from yukon.ibmuc.com (unknown [9.171.95.248])
-        by smtp.tlslab.ibm.com (Postfix) with ESMTP id 9A5BC220158;
-        Fri, 25 Mar 2022 11:08:56 +0100 (CET)
-From:   =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>
-To:     linux-spi@vger.kernel.org, linux-mtd@lists.infradead.org
-Cc:     Mark Brown <broonie@kernel.org>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-aspeed@lists.ozlabs.org, Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>,
-        Tao Ren <rentao.bupt@gmail.com>
-Subject: [PATCH v4 03/11] spi: spi-mem: Convert Aspeed SMC driver to spi-mem
-Date:   Fri, 25 Mar 2022 11:08:41 +0100
-Message-Id: <20220325100849.2019209-4-clg@kaod.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220325100849.2019209-1-clg@kaod.org>
-References: <20220325100849.2019209-1-clg@kaod.org>
+        Fri, 25 Mar 2022 06:11:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 21CD659A4C
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 03:10:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648203005;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=k0jqsVbX60+VUARl2y4TzlW1QtEmIS0iRtfDVTvnvlw=;
+        b=NAy5gzVK2wbd2o/uPrIrxQNOVCfmVu1G0ktxL68myt1QEyRWvxnN9oYd9qQBm6VBYKFP+h
+        E5wy9cDPofIWtSrhGOn/Q1bA9RWI+SCvbRTze/ltSEPZFI+8FAG5fAX6FKXnCfdAxnC3Ua
+        s8MyMRqxIO7W3o30iSZYrsq24rcfj5g=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-83-VyPc_59aPbmvJPRKnekXmg-1; Fri, 25 Mar 2022 06:10:03 -0400
+X-MC-Unique: VyPc_59aPbmvJPRKnekXmg-1
+Received: by mail-wm1-f70.google.com with SMTP id 12-20020a05600c24cc00b0038c6caa95f7so2532485wmu.4
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 03:10:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=k0jqsVbX60+VUARl2y4TzlW1QtEmIS0iRtfDVTvnvlw=;
+        b=iymhHnvx+BW0zFNGdNKwMctxblkJXlskqHDpbIs+xX0Pj/Z8TTOemWTaR0glbU/uqQ
+         GLdisgWBzxa1APFUEbEw3VGpgjpM0+kz0M+4ZBr7LUgKk4rniJ2xs3fOjjSVqGefMCu8
+         Vi6GPPG+BkBMGXZOlnyKiUBpt0VAb8w6Ax2JxPaaqiDcKfXXSU7zUZlfSyZ/tIBOgYUJ
+         bmDV0gtSeBmREHPHlXN2BebIzKdRXUB1Fhkg9NBW7nOA+AIc+mCSD4iY9ibF7/nK1bF/
+         Mk+tLaap3Cz+UahtiudIii2tQidSs83WDIJ9EbLTn5wu6pBu2oSrxiNICRNZWI3wdzzd
+         5LOw==
+X-Gm-Message-State: AOAM533z7ZbeGGyK8PBZFz2VsxMmxFHgNn45JT1LiGWJ5YE+OFz657UK
+        gO7nwvkGerIDoktTgiFmjDYurRKL0UVhAKuzuuiFgP4nNAlA2IlSEGYj1utZN1TJvaYjiBuMEdt
+        Ccpu1pr1rO41GTDwEw5yW2vBe
+X-Received: by 2002:a1c:4d08:0:b0:38c:57ee:f087 with SMTP id o8-20020a1c4d08000000b0038c57eef087mr9087849wmh.56.1648203002273;
+        Fri, 25 Mar 2022 03:10:02 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz8ilsFegibYkLXQNTr0a7B82oUu+6oinOh/1R9nyPoQHtlTjVlcq99Uz1C+KPGzRSUoBepiQ==
+X-Received: by 2002:a1c:4d08:0:b0:38c:57ee:f087 with SMTP id o8-20020a1c4d08000000b0038c57eef087mr9087821wmh.56.1648203001910;
+        Fri, 25 Mar 2022 03:10:01 -0700 (PDT)
+Received: from redhat.com ([2.55.151.118])
+        by smtp.gmail.com with ESMTPSA id z12-20020a5d4d0c000000b002057d6f7053sm4703842wrt.47.2022.03.25.03.09.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Mar 2022 03:10:01 -0700 (PDT)
+Date:   Fri, 25 Mar 2022 06:09:57 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     virtualization <virtualization@lists.linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Keir Fraser <keirf@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Subject: Re:
+Message-ID: <20220325060659-mutt-send-email-mst@kernel.org>
+References: <Yj1hkpyUqJE9sQ2p@redhat.com>
+ <CACGkMEunsuWhn+aB2dM7noU257M9JV6jDjkQXLyOA+GjEoz_iw@mail.gmail.com>
+ <20220325050947-mutt-send-email-mst@kernel.org>
+ <CACGkMEvioAVMmB+ab2xXB2YPECtwi1J55u8mRRk9-JAjFSZ8vg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: wclFZfTC9pGbfbWpTw5o7IHAFVX7GsKD
-X-Proofpoint-ORIG-GUID: 7k5ulIWVsp-ZC7JvsWpt-LBWWZIAuyHS
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-25_02,2022-03-24_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 phishscore=0
- spamscore=0 priorityscore=1501 suspectscore=0 mlxlogscore=999
- impostorscore=0 mlxscore=0 lowpriorityscore=0 clxscore=1034 bulkscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203250057
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CACGkMEvioAVMmB+ab2xXB2YPECtwi1J55u8mRRk9-JAjFSZ8vg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This SPI driver adds support for the Aspeed static memory controllers
-of the AST2600, AST2500 and AST2400 SoCs using the spi-mem interface.
+On Fri, Mar 25, 2022 at 05:20:19PM +0800, Jason Wang wrote:
+> On Fri, Mar 25, 2022 at 5:10 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> >
+> > On Fri, Mar 25, 2022 at 03:52:00PM +0800, Jason Wang wrote:
+> > > On Fri, Mar 25, 2022 at 2:31 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > > >
+> > > > Bcc:
+> > > > Subject: Re: [PATCH 3/3] virtio: harden vring IRQ
+> > > > Message-ID: <20220325021422-mutt-send-email-mst@kernel.org>
+> > > > Reply-To:
+> > > > In-Reply-To: <f7046303-7d7d-e39f-3c71-3688126cc812@redhat.com>
+> > > >
+> > > > On Fri, Mar 25, 2022 at 11:04:08AM +0800, Jason Wang wrote:
+> > > > >
+> > > > > 在 2022/3/24 下午7:03, Michael S. Tsirkin 写道:
+> > > > > > On Thu, Mar 24, 2022 at 04:40:04PM +0800, Jason Wang wrote:
+> > > > > > > This is a rework on the previous IRQ hardening that is done for
+> > > > > > > virtio-pci where several drawbacks were found and were reverted:
+> > > > > > >
+> > > > > > > 1) try to use IRQF_NO_AUTOEN which is not friendly to affinity managed IRQ
+> > > > > > >     that is used by some device such as virtio-blk
+> > > > > > > 2) done only for PCI transport
+> > > > > > >
+> > > > > > > In this patch, we tries to borrow the idea from the INTX IRQ hardening
+> > > > > > > in the reverted commit 080cd7c3ac87 ("virtio-pci: harden INTX interrupts")
+> > > > > > > by introducing a global irq_soft_enabled variable for each
+> > > > > > > virtio_device. Then we can to toggle it during
+> > > > > > > virtio_reset_device()/virtio_device_ready(). A synchornize_rcu() is
+> > > > > > > used in virtio_reset_device() to synchronize with the IRQ handlers. In
+> > > > > > > the future, we may provide config_ops for the transport that doesn't
+> > > > > > > use IRQ. With this, vring_interrupt() can return check and early if
+> > > > > > > irq_soft_enabled is false. This lead to smp_load_acquire() to be used
+> > > > > > > but the cost should be acceptable.
+> > > > > > Maybe it should be but is it? Can't we use synchronize_irq instead?
+> > > > >
+> > > > >
+> > > > > Even if we allow the transport driver to synchornize through
+> > > > > synchronize_irq() we still need a check in the vring_interrupt().
+> > > > >
+> > > > > We do something like the following previously:
+> > > > >
+> > > > >         if (!READ_ONCE(vp_dev->intx_soft_enabled))
+> > > > >                 return IRQ_NONE;
+> > > > >
+> > > > > But it looks like a bug since speculative read can be done before the check
+> > > > > where the interrupt handler can't see the uncommitted setup which is done by
+> > > > > the driver.
+> > > >
+> > > > I don't think so - if you sync after setting the value then
+> > > > you are guaranteed that any handler running afterwards
+> > > > will see the new value.
+> > >
+> > > The problem is not disabled but the enable.
+> >
+> > So a misbehaving device can lose interrupts? That's not a problem at all
+> > imo.
+> 
+> It's the interrupt raised before setting irq_soft_enabled to true:
+> 
+> CPU 0 probe) driver specific setup (not commited)
+> CPU 1 IRQ handler) read the uninitialized variable
+> CPU 0 probe) set irq_soft_enabled to true
+> CPU 1 IRQ handler) read irq_soft_enable as true
+> CPU 1 IRQ handler) use the uninitialized variable
+> 
+> Thanks
 
- * AST2600 Firmware SPI Memory Controller (FMC)
-   . BMC firmware
-   . 3 chip select pins (CE0 ~ CE2)
-   . Only supports SPI type flash memory
-   . different segment register interface
-   . single, dual and quad mode.
+Yea, it hurts if you do it.  So do not do it then ;).
 
- * AST2600 SPI Flash Controller (SPI1 and SPI2)
-   . host firmware
-   . 2 chip select pins (CE0 ~ CE1)
-   . different segment register interface
-   . single, dual and quad mode.
+irq_soft_enabled (I think driver_ok or status is a better name)
+should be initialized to false *before* irq is requested.
 
- * AST2500 Firmware SPI Memory Controller (FMC)
-   . BMC firmware
-   . 3 chip select pins (CE0 ~ CE2)
-   . supports SPI type flash memory (CE0-CE1)
-   . CE2 can be of NOR type flash but this is not supported by the driver
-   . single, dual mode.
+And requesting irq commits all memory otherwise all drivers would be
+broken, if it doesn't it just needs to be fixed, not worked around in
+virtio.
 
- * AST2500 SPI Flash Controller (SPI1 and SPI2)
-   . host firmware
-   . 2 chip select pins (CE0 ~ CE1)
-   . single, dual mode.
 
- * AST2400 New Static Memory Controller (also referred as FMC)
-   . BMC firmware
-   . New register set
-   . 5 chip select pins (CE0 ∼ CE4)
-   . supports NOR flash, NAND flash and SPI flash memory.
-   . single, dual and quad mode.
-
-Each controller has a memory range on which flash devices contents are
-mapped. Each device is assigned a window that can be changed at bootime
-with the Segment Address Registers.
-
-Each SPI flash device can then be accessed in two modes: Command and
-User. When in User mode, SPI transfers are initiated with accesses to
-the memory segment of a device. When in Command mode, memory
-operations on the memory segment of a device generate SPI commands
-automatically using a Control Register for the settings.
-
-This initial patch adds support for User mode. Command mode needs a little
-more work to check that the memory window on the AHB bus fits the device
-size. It will come later when support for direct mapping is added.
-
-Single and dual mode RX transfers are supported. Other types than SPI
-are not supported.
-
-Reviewed-by: Joel Stanley <joel@jms.id.au>
-Tested-by: Joel Stanley <joel@jms.id.au>
-Tested-by: Tao Ren <rentao.bupt@gmail.com>
-Signed-off-by: Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>
-Signed-off-by: Cédric Le Goater <clg@kaod.org>
----
- drivers/mtd/spi-nor/controllers/aspeed-smc.c  | 910 ------------------
- drivers/spi/spi-aspeed-smc.c                  | 709 ++++++++++++++
- .../devicetree/bindings/mtd/aspeed-smc.txt    |  51 -
- MAINTAINERS                                   |   1 +
- drivers/mtd/spi-nor/controllers/Kconfig       |  10 -
- drivers/mtd/spi-nor/controllers/Makefile      |   1 -
- drivers/spi/Kconfig                           |  11 +
- drivers/spi/Makefile                          |   1 +
- 8 files changed, 722 insertions(+), 972 deletions(-)
- delete mode 100644 drivers/mtd/spi-nor/controllers/aspeed-smc.c
- create mode 100644 drivers/spi/spi-aspeed-smc.c
- delete mode 100644 Documentation/devicetree/bindings/mtd/aspeed-smc.txt
-
-diff --git a/drivers/mtd/spi-nor/controllers/aspeed-smc.c b/drivers/mtd/spi-nor/controllers/aspeed-smc.c
-deleted file mode 100644
-index 7225870e8b18..000000000000
---- a/drivers/mtd/spi-nor/controllers/aspeed-smc.c
-+++ /dev/null
-@@ -1,910 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0-or-later
--/*
-- * ASPEED Static Memory Controller driver
-- *
-- * Copyright (c) 2015-2016, IBM Corporation.
-- */
--
--#include <linux/bug.h>
--#include <linux/device.h>
--#include <linux/io.h>
--#include <linux/module.h>
--#include <linux/mutex.h>
--#include <linux/mtd/mtd.h>
--#include <linux/mtd/partitions.h>
--#include <linux/mtd/spi-nor.h>
--#include <linux/of.h>
--#include <linux/of_platform.h>
--#include <linux/sizes.h>
--#include <linux/sysfs.h>
--
--#define DEVICE_NAME	"aspeed-smc"
--
--/*
-- * The driver only support SPI flash
-- */
--enum aspeed_smc_flash_type {
--	smc_type_nor  = 0,
--	smc_type_nand = 1,
--	smc_type_spi  = 2,
--};
--
--struct aspeed_smc_chip;
--
--struct aspeed_smc_info {
--	u32 maxsize;		/* maximum size of chip window */
--	u8 nce;			/* number of chip enables */
--	bool hastype;		/* flash type field exists in config reg */
--	u8 we0;			/* shift for write enable bit for CE0 */
--	u8 ctl0;		/* offset in regs of ctl for CE0 */
--
--	void (*set_4b)(struct aspeed_smc_chip *chip);
--};
--
--static void aspeed_smc_chip_set_4b_spi_2400(struct aspeed_smc_chip *chip);
--static void aspeed_smc_chip_set_4b(struct aspeed_smc_chip *chip);
--
--static const struct aspeed_smc_info fmc_2400_info = {
--	.maxsize = 64 * 1024 * 1024,
--	.nce = 5,
--	.hastype = true,
--	.we0 = 16,
--	.ctl0 = 0x10,
--	.set_4b = aspeed_smc_chip_set_4b,
--};
--
--static const struct aspeed_smc_info spi_2400_info = {
--	.maxsize = 64 * 1024 * 1024,
--	.nce = 1,
--	.hastype = false,
--	.we0 = 0,
--	.ctl0 = 0x04,
--	.set_4b = aspeed_smc_chip_set_4b_spi_2400,
--};
--
--static const struct aspeed_smc_info fmc_2500_info = {
--	.maxsize = 256 * 1024 * 1024,
--	.nce = 3,
--	.hastype = true,
--	.we0 = 16,
--	.ctl0 = 0x10,
--	.set_4b = aspeed_smc_chip_set_4b,
--};
--
--static const struct aspeed_smc_info spi_2500_info = {
--	.maxsize = 128 * 1024 * 1024,
--	.nce = 2,
--	.hastype = false,
--	.we0 = 16,
--	.ctl0 = 0x10,
--	.set_4b = aspeed_smc_chip_set_4b,
--};
--
--enum aspeed_smc_ctl_reg_value {
--	smc_base,		/* base value without mode for other commands */
--	smc_read,		/* command reg for (maybe fast) reads */
--	smc_write,		/* command reg for writes */
--	smc_max,
--};
--
--struct aspeed_smc_controller;
--
--struct aspeed_smc_chip {
--	int cs;
--	struct aspeed_smc_controller *controller;
--	void __iomem *ctl;			/* control register */
--	void __iomem *ahb_base;			/* base of chip window */
--	u32 ahb_window_size;			/* chip mapping window size */
--	u32 ctl_val[smc_max];			/* control settings */
--	enum aspeed_smc_flash_type type;	/* what type of flash */
--	struct spi_nor nor;
--};
--
--struct aspeed_smc_controller {
--	struct device *dev;
--
--	struct mutex mutex;			/* controller access mutex */
--	const struct aspeed_smc_info *info;	/* type info of controller */
--	void __iomem *regs;			/* controller registers */
--	void __iomem *ahb_base;			/* per-chip windows resource */
--	u32 ahb_window_size;			/* full mapping window size */
--
--	struct aspeed_smc_chip *chips[];	/* pointers to attached chips */
--};
--
--/*
-- * SPI Flash Configuration Register (AST2500 SPI)
-- *     or
-- * Type setting Register (AST2500 FMC).
-- * CE0 and CE1 can only be of type SPI. CE2 can be of type NOR but the
-- * driver does not support it.
-- */
--#define CONFIG_REG			0x0
--#define CONFIG_DISABLE_LEGACY		BIT(31) /* 1 */
--
--#define CONFIG_CE2_WRITE		BIT(18)
--#define CONFIG_CE1_WRITE		BIT(17)
--#define CONFIG_CE0_WRITE		BIT(16)
--
--#define CONFIG_CE2_TYPE			BIT(4) /* AST2500 FMC only */
--#define CONFIG_CE1_TYPE			BIT(2) /* AST2500 FMC only */
--#define CONFIG_CE0_TYPE			BIT(0) /* AST2500 FMC only */
--
--/*
-- * CE Control Register
-- */
--#define CE_CONTROL_REG			0x4
--
--/*
-- * CEx Control Register
-- */
--#define CONTROL_AAF_MODE		BIT(31)
--#define CONTROL_IO_MODE_MASK		GENMASK(30, 28)
--#define CONTROL_IO_DUAL_DATA		BIT(29)
--#define CONTROL_IO_DUAL_ADDR_DATA	(BIT(29) | BIT(28))
--#define CONTROL_IO_QUAD_DATA		BIT(30)
--#define CONTROL_IO_QUAD_ADDR_DATA	(BIT(30) | BIT(28))
--#define CONTROL_CE_INACTIVE_SHIFT	24
--#define CONTROL_CE_INACTIVE_MASK	GENMASK(27, \
--					CONTROL_CE_INACTIVE_SHIFT)
--/* 0 = 16T ... 15 = 1T   T=HCLK */
--#define CONTROL_COMMAND_SHIFT		16
--#define CONTROL_DUMMY_COMMAND_OUT	BIT(15)
--#define CONTROL_IO_DUMMY_HI		BIT(14)
--#define CONTROL_IO_DUMMY_HI_SHIFT	14
--#define CONTROL_CLK_DIV4		BIT(13) /* others */
--#define CONTROL_IO_ADDRESS_4B		BIT(13) /* AST2400 SPI */
--#define CONTROL_RW_MERGE		BIT(12)
--#define CONTROL_IO_DUMMY_LO_SHIFT	6
--#define CONTROL_IO_DUMMY_LO		GENMASK(7, \
--						CONTROL_IO_DUMMY_LO_SHIFT)
--#define CONTROL_IO_DUMMY_MASK		(CONTROL_IO_DUMMY_HI | \
--					 CONTROL_IO_DUMMY_LO)
--#define CONTROL_IO_DUMMY_SET(dummy)				 \
--	(((((dummy) >> 2) & 0x1) << CONTROL_IO_DUMMY_HI_SHIFT) | \
--	 (((dummy) & 0x3) << CONTROL_IO_DUMMY_LO_SHIFT))
--
--#define CONTROL_CLOCK_FREQ_SEL_SHIFT	8
--#define CONTROL_CLOCK_FREQ_SEL_MASK	GENMASK(11, \
--						CONTROL_CLOCK_FREQ_SEL_SHIFT)
--#define CONTROL_LSB_FIRST		BIT(5)
--#define CONTROL_CLOCK_MODE_3		BIT(4)
--#define CONTROL_IN_DUAL_DATA		BIT(3)
--#define CONTROL_CE_STOP_ACTIVE_CONTROL	BIT(2)
--#define CONTROL_COMMAND_MODE_MASK	GENMASK(1, 0)
--#define CONTROL_COMMAND_MODE_NORMAL	0
--#define CONTROL_COMMAND_MODE_FREAD	1
--#define CONTROL_COMMAND_MODE_WRITE	2
--#define CONTROL_COMMAND_MODE_USER	3
--
--#define CONTROL_KEEP_MASK						\
--	(CONTROL_AAF_MODE | CONTROL_CE_INACTIVE_MASK | CONTROL_CLK_DIV4 | \
--	 CONTROL_CLOCK_FREQ_SEL_MASK | CONTROL_LSB_FIRST | CONTROL_CLOCK_MODE_3)
--
--/*
-- * The Segment Register uses a 8MB unit to encode the start address
-- * and the end address of the mapping window of a flash SPI slave :
-- *
-- *        | byte 1 | byte 2 | byte 3 | byte 4 |
-- *        +--------+--------+--------+--------+
-- *        |  end   |  start |   0    |   0    |
-- */
--#define SEGMENT_ADDR_REG0		0x30
--#define SEGMENT_ADDR_START(_r)		((((_r) >> 16) & 0xFF) << 23)
--#define SEGMENT_ADDR_END(_r)		((((_r) >> 24) & 0xFF) << 23)
--#define SEGMENT_ADDR_VALUE(start, end)					\
--	(((((start) >> 23) & 0xFF) << 16) | ((((end) >> 23) & 0xFF) << 24))
--#define SEGMENT_ADDR_REG(controller, cs)	\
--	((controller)->regs + SEGMENT_ADDR_REG0 + (cs) * 4)
--
--/*
-- * In user mode all data bytes read or written to the chip decode address
-- * range are transferred to or from the SPI bus. The range is treated as a
-- * fifo of arbitratry 1, 2, or 4 byte width but each write has to be aligned
-- * to its size. The address within the multiple 8kB range is ignored when
-- * sending bytes to the SPI bus.
-- *
-- * On the arm architecture, as of Linux version 4.3, memcpy_fromio and
-- * memcpy_toio on little endian targets use the optimized memcpy routines
-- * that were designed for well behavied memory storage. These routines
-- * have a stutter if the source and destination are not both word aligned,
-- * once with a duplicate access to the source after aligning to the
-- * destination to a word boundary, and again with a duplicate access to
-- * the source when the final byte count is not word aligned.
-- *
-- * When writing or reading the fifo this stutter discards data or sends
-- * too much data to the fifo and can not be used by this driver.
-- *
-- * While the low level io string routines that implement the insl family do
-- * the desired accesses and memory increments, the cross architecture io
-- * macros make them essentially impossible to use on a memory mapped address
-- * instead of a a token from the call to iomap of an io port.
-- *
-- * These fifo routines use readl and friends to a constant io port and update
-- * the memory buffer pointer and count via explicit code. The final updates
-- * to len are optimistically suppressed.
-- */
--static int aspeed_smc_read_from_ahb(void *buf, void __iomem *src, size_t len)
--{
--	size_t offset = 0;
--
--	if (IS_ALIGNED((uintptr_t)src, sizeof(uintptr_t)) &&
--	    IS_ALIGNED((uintptr_t)buf, sizeof(uintptr_t))) {
--		ioread32_rep(src, buf, len >> 2);
--		offset = len & ~0x3;
--		len -= offset;
--	}
--	ioread8_rep(src, (u8 *)buf + offset, len);
--	return 0;
--}
--
--static int aspeed_smc_write_to_ahb(void __iomem *dst, const void *buf,
--				   size_t len)
--{
--	size_t offset = 0;
--
--	if (IS_ALIGNED((uintptr_t)dst, sizeof(uintptr_t)) &&
--	    IS_ALIGNED((uintptr_t)buf, sizeof(uintptr_t))) {
--		iowrite32_rep(dst, buf, len >> 2);
--		offset = len & ~0x3;
--		len -= offset;
--	}
--	iowrite8_rep(dst, (const u8 *)buf + offset, len);
--	return 0;
--}
--
--static inline u32 aspeed_smc_chip_write_bit(struct aspeed_smc_chip *chip)
--{
--	return BIT(chip->controller->info->we0 + chip->cs);
--}
--
--static void aspeed_smc_chip_check_config(struct aspeed_smc_chip *chip)
--{
--	struct aspeed_smc_controller *controller = chip->controller;
--	u32 reg;
--
--	reg = readl(controller->regs + CONFIG_REG);
--
--	if (reg & aspeed_smc_chip_write_bit(chip))
--		return;
--
--	dev_dbg(controller->dev, "config write is not set ! @%p: 0x%08x\n",
--		controller->regs + CONFIG_REG, reg);
--	reg |= aspeed_smc_chip_write_bit(chip);
--	writel(reg, controller->regs + CONFIG_REG);
--}
--
--static void aspeed_smc_start_user(struct spi_nor *nor)
--{
--	struct aspeed_smc_chip *chip = nor->priv;
--	u32 ctl = chip->ctl_val[smc_base];
--
--	/*
--	 * When the chip is controlled in user mode, we need write
--	 * access to send the opcodes to it. So check the config.
--	 */
--	aspeed_smc_chip_check_config(chip);
--
--	ctl |= CONTROL_COMMAND_MODE_USER |
--		CONTROL_CE_STOP_ACTIVE_CONTROL;
--	writel(ctl, chip->ctl);
--
--	ctl &= ~CONTROL_CE_STOP_ACTIVE_CONTROL;
--	writel(ctl, chip->ctl);
--}
--
--static void aspeed_smc_stop_user(struct spi_nor *nor)
--{
--	struct aspeed_smc_chip *chip = nor->priv;
--
--	u32 ctl = chip->ctl_val[smc_read];
--	u32 ctl2 = ctl | CONTROL_COMMAND_MODE_USER |
--		CONTROL_CE_STOP_ACTIVE_CONTROL;
--
--	writel(ctl2, chip->ctl);	/* stop user CE control */
--	writel(ctl, chip->ctl);		/* default to fread or read mode */
--}
--
--static int aspeed_smc_prep(struct spi_nor *nor)
--{
--	struct aspeed_smc_chip *chip = nor->priv;
--
--	mutex_lock(&chip->controller->mutex);
--	return 0;
--}
--
--static void aspeed_smc_unprep(struct spi_nor *nor)
--{
--	struct aspeed_smc_chip *chip = nor->priv;
--
--	mutex_unlock(&chip->controller->mutex);
--}
--
--static int aspeed_smc_read_reg(struct spi_nor *nor, u8 opcode, u8 *buf,
--			       size_t len)
--{
--	struct aspeed_smc_chip *chip = nor->priv;
--
--	aspeed_smc_start_user(nor);
--	aspeed_smc_write_to_ahb(chip->ahb_base, &opcode, 1);
--	aspeed_smc_read_from_ahb(buf, chip->ahb_base, len);
--	aspeed_smc_stop_user(nor);
--	return 0;
--}
--
--static int aspeed_smc_write_reg(struct spi_nor *nor, u8 opcode, const u8 *buf,
--				size_t len)
--{
--	struct aspeed_smc_chip *chip = nor->priv;
--
--	aspeed_smc_start_user(nor);
--	aspeed_smc_write_to_ahb(chip->ahb_base, &opcode, 1);
--	aspeed_smc_write_to_ahb(chip->ahb_base, buf, len);
--	aspeed_smc_stop_user(nor);
--	return 0;
--}
--
--static void aspeed_smc_send_cmd_addr(struct spi_nor *nor, u8 cmd, u32 addr)
--{
--	struct aspeed_smc_chip *chip = nor->priv;
--	__be32 temp;
--	u32 cmdaddr;
--
--	switch (nor->addr_width) {
--	default:
--		WARN_ONCE(1, "Unexpected address width %u, defaulting to 3\n",
--			  nor->addr_width);
--		fallthrough;
--	case 3:
--		cmdaddr = addr & 0xFFFFFF;
--		cmdaddr |= cmd << 24;
--
--		temp = cpu_to_be32(cmdaddr);
--		aspeed_smc_write_to_ahb(chip->ahb_base, &temp, 4);
--		break;
--	case 4:
--		temp = cpu_to_be32(addr);
--		aspeed_smc_write_to_ahb(chip->ahb_base, &cmd, 1);
--		aspeed_smc_write_to_ahb(chip->ahb_base, &temp, 4);
--		break;
--	}
--}
--
--static ssize_t aspeed_smc_read_user(struct spi_nor *nor, loff_t from,
--				    size_t len, u_char *read_buf)
--{
--	struct aspeed_smc_chip *chip = nor->priv;
--	int i;
--	u8 dummy = 0xFF;
--
--	aspeed_smc_start_user(nor);
--	aspeed_smc_send_cmd_addr(nor, nor->read_opcode, from);
--	for (i = 0; i < chip->nor.read_dummy / 8; i++)
--		aspeed_smc_write_to_ahb(chip->ahb_base, &dummy, sizeof(dummy));
--
--	aspeed_smc_read_from_ahb(read_buf, chip->ahb_base, len);
--	aspeed_smc_stop_user(nor);
--	return len;
--}
--
--static ssize_t aspeed_smc_write_user(struct spi_nor *nor, loff_t to,
--				     size_t len, const u_char *write_buf)
--{
--	struct aspeed_smc_chip *chip = nor->priv;
--
--	aspeed_smc_start_user(nor);
--	aspeed_smc_send_cmd_addr(nor, nor->program_opcode, to);
--	aspeed_smc_write_to_ahb(chip->ahb_base, write_buf, len);
--	aspeed_smc_stop_user(nor);
--	return len;
--}
--
--static int aspeed_smc_unregister(struct aspeed_smc_controller *controller)
--{
--	struct aspeed_smc_chip *chip;
--	int n;
--
--	for (n = 0; n < controller->info->nce; n++) {
--		chip = controller->chips[n];
--		if (chip)
--			mtd_device_unregister(&chip->nor.mtd);
--	}
--
--	return 0;
--}
--
--static int aspeed_smc_remove(struct platform_device *dev)
--{
--	return aspeed_smc_unregister(platform_get_drvdata(dev));
--}
--
--static const struct of_device_id aspeed_smc_matches[] = {
--	{ .compatible = "aspeed,ast2400-fmc", .data = &fmc_2400_info },
--	{ .compatible = "aspeed,ast2400-spi", .data = &spi_2400_info },
--	{ .compatible = "aspeed,ast2500-fmc", .data = &fmc_2500_info },
--	{ .compatible = "aspeed,ast2500-spi", .data = &spi_2500_info },
--	{ }
--};
--MODULE_DEVICE_TABLE(of, aspeed_smc_matches);
--
--/*
-- * Each chip has a mapping window defined by a segment address
-- * register defining a start and an end address on the AHB bus. These
-- * addresses can be configured to fit the chip size and offer a
-- * contiguous memory region across chips. For the moment, we only
-- * check that each chip segment is valid.
-- */
--static void __iomem *aspeed_smc_chip_base(struct aspeed_smc_chip *chip,
--					  struct resource *res)
--{
--	struct aspeed_smc_controller *controller = chip->controller;
--	u32 offset = 0;
--	u32 reg;
--
--	if (controller->info->nce > 1) {
--		reg = readl(SEGMENT_ADDR_REG(controller, chip->cs));
--
--		if (SEGMENT_ADDR_START(reg) >= SEGMENT_ADDR_END(reg))
--			return NULL;
--
--		offset = SEGMENT_ADDR_START(reg) - res->start;
--	}
--
--	return controller->ahb_base + offset;
--}
--
--static u32 aspeed_smc_ahb_base_phy(struct aspeed_smc_controller *controller)
--{
--	u32 seg0_val = readl(SEGMENT_ADDR_REG(controller, 0));
--
--	return SEGMENT_ADDR_START(seg0_val);
--}
--
--static u32 chip_set_segment(struct aspeed_smc_chip *chip, u32 cs, u32 start,
--			    u32 size)
--{
--	struct aspeed_smc_controller *controller = chip->controller;
--	void __iomem *seg_reg;
--	u32 seg_oldval, seg_newval, ahb_base_phy, end;
--
--	ahb_base_phy = aspeed_smc_ahb_base_phy(controller);
--
--	seg_reg = SEGMENT_ADDR_REG(controller, cs);
--	seg_oldval = readl(seg_reg);
--
--	/*
--	 * If the chip size is not specified, use the default segment
--	 * size, but take into account the possible overlap with the
--	 * previous segment
--	 */
--	if (!size)
--		size = SEGMENT_ADDR_END(seg_oldval) - start;
--
--	/*
--	 * The segment cannot exceed the maximum window size of the
--	 * controller.
--	 */
--	if (start + size > ahb_base_phy + controller->ahb_window_size) {
--		size = ahb_base_phy + controller->ahb_window_size - start;
--		dev_warn(chip->nor.dev, "CE%d window resized to %dMB",
--			 cs, size >> 20);
--	}
--
--	end = start + size;
--	seg_newval = SEGMENT_ADDR_VALUE(start, end);
--	writel(seg_newval, seg_reg);
--
--	/*
--	 * Restore default value if something goes wrong. The chip
--	 * might have set some bogus value and we would loose access
--	 * to the chip.
--	 */
--	if (seg_newval != readl(seg_reg)) {
--		dev_err(chip->nor.dev, "CE%d window invalid", cs);
--		writel(seg_oldval, seg_reg);
--		start = SEGMENT_ADDR_START(seg_oldval);
--		end = SEGMENT_ADDR_END(seg_oldval);
--		size = end - start;
--	}
--
--	dev_info(chip->nor.dev, "CE%d window [ 0x%.8x - 0x%.8x ] %dMB",
--		 cs, start, end, size >> 20);
--
--	return size;
--}
--
--/*
-- * The segment register defines the mapping window on the AHB bus and
-- * it needs to be configured depending on the chip size. The segment
-- * register of the following CE also needs to be tuned in order to
-- * provide a contiguous window across multiple chips.
-- *
-- * This is expected to be called in increasing CE order
-- */
--static u32 aspeed_smc_chip_set_segment(struct aspeed_smc_chip *chip)
--{
--	struct aspeed_smc_controller *controller = chip->controller;
--	u32 ahb_base_phy, start;
--	u32 size = chip->nor.mtd.size;
--
--	/*
--	 * Each controller has a chip size limit for direct memory
--	 * access
--	 */
--	if (size > controller->info->maxsize)
--		size = controller->info->maxsize;
--
--	/*
--	 * The AST2400 SPI controller only handles one chip and does
--	 * not have segment registers. Let's use the chip size for the
--	 * AHB window.
--	 */
--	if (controller->info == &spi_2400_info)
--		goto out;
--
--	/*
--	 * The AST2500 SPI controller has a HW bug when the CE0 chip
--	 * size reaches 128MB. Enforce a size limit of 120MB to
--	 * prevent the controller from using bogus settings in the
--	 * segment register.
--	 */
--	if (chip->cs == 0 && controller->info == &spi_2500_info &&
--	    size == SZ_128M) {
--		size = 120 << 20;
--		dev_info(chip->nor.dev,
--			 "CE%d window resized to %dMB (AST2500 HW quirk)",
--			 chip->cs, size >> 20);
--	}
--
--	ahb_base_phy = aspeed_smc_ahb_base_phy(controller);
--
--	/*
--	 * As a start address for the current segment, use the default
--	 * start address if we are handling CE0 or use the previous
--	 * segment ending address
--	 */
--	if (chip->cs) {
--		u32 prev = readl(SEGMENT_ADDR_REG(controller, chip->cs - 1));
--
--		start = SEGMENT_ADDR_END(prev);
--	} else {
--		start = ahb_base_phy;
--	}
--
--	size = chip_set_segment(chip, chip->cs, start, size);
--
--	/* Update chip base address on the AHB bus */
--	chip->ahb_base = controller->ahb_base + (start - ahb_base_phy);
--
--	/*
--	 * Now, make sure the next segment does not overlap with the
--	 * current one we just configured, even if there is no
--	 * available chip. That could break access in Command Mode.
--	 */
--	if (chip->cs < controller->info->nce - 1)
--		chip_set_segment(chip, chip->cs + 1, start + size, 0);
--
--out:
--	if (size < chip->nor.mtd.size)
--		dev_warn(chip->nor.dev,
--			 "CE%d window too small for chip %dMB",
--			 chip->cs, (u32)chip->nor.mtd.size >> 20);
--
--	return size;
--}
--
--static void aspeed_smc_chip_enable_write(struct aspeed_smc_chip *chip)
--{
--	struct aspeed_smc_controller *controller = chip->controller;
--	u32 reg;
--
--	reg = readl(controller->regs + CONFIG_REG);
--
--	reg |= aspeed_smc_chip_write_bit(chip);
--	writel(reg, controller->regs + CONFIG_REG);
--}
--
--static void aspeed_smc_chip_set_type(struct aspeed_smc_chip *chip, int type)
--{
--	struct aspeed_smc_controller *controller = chip->controller;
--	u32 reg;
--
--	chip->type = type;
--
--	reg = readl(controller->regs + CONFIG_REG);
--	reg &= ~(3 << (chip->cs * 2));
--	reg |= chip->type << (chip->cs * 2);
--	writel(reg, controller->regs + CONFIG_REG);
--}
--
--/*
-- * The first chip of the AST2500 FMC flash controller is strapped by
-- * hardware, or autodetected, but other chips need to be set. Enforce
-- * the 4B setting for all chips.
-- */
--static void aspeed_smc_chip_set_4b(struct aspeed_smc_chip *chip)
--{
--	struct aspeed_smc_controller *controller = chip->controller;
--	u32 reg;
--
--	reg = readl(controller->regs + CE_CONTROL_REG);
--	reg |= 1 << chip->cs;
--	writel(reg, controller->regs + CE_CONTROL_REG);
--}
--
--/*
-- * The AST2400 SPI flash controller does not have a CE Control
-- * register. It uses the CE0 control register to set 4Byte mode at the
-- * controller level.
-- */
--static void aspeed_smc_chip_set_4b_spi_2400(struct aspeed_smc_chip *chip)
--{
--	chip->ctl_val[smc_base] |= CONTROL_IO_ADDRESS_4B;
--	chip->ctl_val[smc_read] |= CONTROL_IO_ADDRESS_4B;
--}
--
--static int aspeed_smc_chip_setup_init(struct aspeed_smc_chip *chip,
--				      struct resource *res)
--{
--	struct aspeed_smc_controller *controller = chip->controller;
--	const struct aspeed_smc_info *info = controller->info;
--	u32 reg, base_reg;
--
--	/*
--	 * Always turn on the write enable bit to allow opcodes to be
--	 * sent in user mode.
--	 */
--	aspeed_smc_chip_enable_write(chip);
--
--	/* The driver only supports SPI type flash */
--	if (info->hastype)
--		aspeed_smc_chip_set_type(chip, smc_type_spi);
--
--	/*
--	 * Configure chip base address in memory
--	 */
--	chip->ahb_base = aspeed_smc_chip_base(chip, res);
--	if (!chip->ahb_base) {
--		dev_warn(chip->nor.dev, "CE%d window closed", chip->cs);
--		return -EINVAL;
--	}
--
--	/*
--	 * Get value of the inherited control register. U-Boot usually
--	 * does some timing calibration on the FMC chip, so it's good
--	 * to keep them. In the future, we should handle calibration
--	 * from Linux.
--	 */
--	reg = readl(chip->ctl);
--	dev_dbg(controller->dev, "control register: %08x\n", reg);
--
--	base_reg = reg & CONTROL_KEEP_MASK;
--	if (base_reg != reg) {
--		dev_dbg(controller->dev,
--			"control register changed to: %08x\n",
--			base_reg);
--	}
--	chip->ctl_val[smc_base] = base_reg;
--
--	/*
--	 * Retain the prior value of the control register as the
--	 * default if it was normal access mode. Otherwise start with
--	 * the sanitized base value set to read mode.
--	 */
--	if ((reg & CONTROL_COMMAND_MODE_MASK) ==
--	    CONTROL_COMMAND_MODE_NORMAL)
--		chip->ctl_val[smc_read] = reg;
--	else
--		chip->ctl_val[smc_read] = chip->ctl_val[smc_base] |
--			CONTROL_COMMAND_MODE_NORMAL;
--
--	dev_dbg(controller->dev, "default control register: %08x\n",
--		chip->ctl_val[smc_read]);
--	return 0;
--}
--
--static int aspeed_smc_chip_setup_finish(struct aspeed_smc_chip *chip)
--{
--	struct aspeed_smc_controller *controller = chip->controller;
--	const struct aspeed_smc_info *info = controller->info;
--	u32 cmd;
--
--	if (chip->nor.addr_width == 4 && info->set_4b)
--		info->set_4b(chip);
--
--	/* This is for direct AHB access when using Command Mode. */
--	chip->ahb_window_size = aspeed_smc_chip_set_segment(chip);
--
--	/*
--	 * base mode has not been optimized yet. use it for writes.
--	 */
--	chip->ctl_val[smc_write] = chip->ctl_val[smc_base] |
--		chip->nor.program_opcode << CONTROL_COMMAND_SHIFT |
--		CONTROL_COMMAND_MODE_WRITE;
--
--	dev_dbg(controller->dev, "write control register: %08x\n",
--		chip->ctl_val[smc_write]);
--
--	/*
--	 * TODO: Adjust clocks if fast read is supported and interpret
--	 * SPI NOR flags to adjust controller settings.
--	 */
--	if (chip->nor.read_proto == SNOR_PROTO_1_1_1) {
--		if (chip->nor.read_dummy == 0)
--			cmd = CONTROL_COMMAND_MODE_NORMAL;
--		else
--			cmd = CONTROL_COMMAND_MODE_FREAD;
--	} else {
--		dev_err(chip->nor.dev, "unsupported SPI read mode\n");
--		return -EINVAL;
--	}
--
--	chip->ctl_val[smc_read] |= cmd |
--		CONTROL_IO_DUMMY_SET(chip->nor.read_dummy / 8);
--
--	dev_dbg(controller->dev, "base control register: %08x\n",
--		chip->ctl_val[smc_read]);
--	return 0;
--}
--
--static const struct spi_nor_controller_ops aspeed_smc_controller_ops = {
--	.prepare = aspeed_smc_prep,
--	.unprepare = aspeed_smc_unprep,
--	.read_reg = aspeed_smc_read_reg,
--	.write_reg = aspeed_smc_write_reg,
--	.read = aspeed_smc_read_user,
--	.write = aspeed_smc_write_user,
--};
--
--static int aspeed_smc_setup_flash(struct aspeed_smc_controller *controller,
--				  struct device_node *np, struct resource *r)
--{
--	const struct spi_nor_hwcaps hwcaps = {
--		.mask = SNOR_HWCAPS_READ |
--			SNOR_HWCAPS_READ_FAST |
--			SNOR_HWCAPS_PP,
--	};
--	const struct aspeed_smc_info *info = controller->info;
--	struct device *dev = controller->dev;
--	struct device_node *child;
--	unsigned int cs;
--	int ret = -ENODEV;
--
--	for_each_available_child_of_node(np, child) {
--		struct aspeed_smc_chip *chip;
--		struct spi_nor *nor;
--		struct mtd_info *mtd;
--
--		/* This driver does not support NAND or NOR flash devices. */
--		if (!of_device_is_compatible(child, "jedec,spi-nor"))
--			continue;
--
--		ret = of_property_read_u32(child, "reg", &cs);
--		if (ret) {
--			dev_err(dev, "Couldn't not read chip select.\n");
--			break;
--		}
--
--		if (cs >= info->nce) {
--			dev_err(dev, "Chip select %d out of range.\n",
--				cs);
--			ret = -ERANGE;
--			break;
--		}
--
--		if (controller->chips[cs]) {
--			dev_err(dev, "Chip select %d already in use by %s\n",
--				cs, dev_name(controller->chips[cs]->nor.dev));
--			ret = -EBUSY;
--			break;
--		}
--
--		chip = devm_kzalloc(controller->dev, sizeof(*chip), GFP_KERNEL);
--		if (!chip) {
--			ret = -ENOMEM;
--			break;
--		}
--
--		chip->controller = controller;
--		chip->ctl = controller->regs + info->ctl0 + cs * 4;
--		chip->cs = cs;
--
--		nor = &chip->nor;
--		mtd = &nor->mtd;
--
--		nor->dev = dev;
--		nor->priv = chip;
--		spi_nor_set_flash_node(nor, child);
--		nor->controller_ops = &aspeed_smc_controller_ops;
--
--		ret = aspeed_smc_chip_setup_init(chip, r);
--		if (ret)
--			break;
--
--		/*
--		 * TODO: Add support for Dual and Quad SPI protocols
--		 * attach when board support is present as determined
--		 * by of property.
--		 */
--		ret = spi_nor_scan(nor, NULL, &hwcaps);
--		if (ret)
--			break;
--
--		ret = aspeed_smc_chip_setup_finish(chip);
--		if (ret)
--			break;
--
--		ret = mtd_device_register(mtd, NULL, 0);
--		if (ret)
--			break;
--
--		controller->chips[cs] = chip;
--	}
--
--	if (ret) {
--		of_node_put(child);
--		aspeed_smc_unregister(controller);
--	}
--
--	return ret;
--}
--
--static int aspeed_smc_probe(struct platform_device *pdev)
--{
--	struct device_node *np = pdev->dev.of_node;
--	struct device *dev = &pdev->dev;
--	struct aspeed_smc_controller *controller;
--	const struct of_device_id *match;
--	const struct aspeed_smc_info *info;
--	struct resource *res;
--	int ret;
--
--	match = of_match_device(aspeed_smc_matches, &pdev->dev);
--	if (!match || !match->data)
--		return -ENODEV;
--	info = match->data;
--
--	controller = devm_kzalloc(&pdev->dev,
--				  struct_size(controller, chips, info->nce),
--				  GFP_KERNEL);
--	if (!controller)
--		return -ENOMEM;
--	controller->info = info;
--	controller->dev = dev;
--
--	mutex_init(&controller->mutex);
--	platform_set_drvdata(pdev, controller);
--
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	controller->regs = devm_ioremap_resource(dev, res);
--	if (IS_ERR(controller->regs))
--		return PTR_ERR(controller->regs);
--
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
--	controller->ahb_base = devm_ioremap_resource(dev, res);
--	if (IS_ERR(controller->ahb_base))
--		return PTR_ERR(controller->ahb_base);
--
--	controller->ahb_window_size = resource_size(res);
--
--	ret = aspeed_smc_setup_flash(controller, np, res);
--	if (ret)
--		dev_err(dev, "Aspeed SMC probe failed %d\n", ret);
--
--	return ret;
--}
--
--static struct platform_driver aspeed_smc_driver = {
--	.probe = aspeed_smc_probe,
--	.remove = aspeed_smc_remove,
--	.driver = {
--		.name = DEVICE_NAME,
--		.of_match_table = aspeed_smc_matches,
--	}
--};
--
--module_platform_driver(aspeed_smc_driver);
--
--MODULE_DESCRIPTION("ASPEED Static Memory Controller Driver");
--MODULE_AUTHOR("Cedric Le Goater <clg@kaod.org>");
--MODULE_LICENSE("GPL v2");
-diff --git a/drivers/spi/spi-aspeed-smc.c b/drivers/spi/spi-aspeed-smc.c
-new file mode 100644
-index 000000000000..997ec2e45118
---- /dev/null
-+++ b/drivers/spi/spi-aspeed-smc.c
-@@ -0,0 +1,709 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * ASPEED FMC/SPI Memory Controller Driver
-+ *
-+ * Copyright (c) 2015-2022, IBM Corporation.
-+ * Copyright (c) 2020, ASPEED Corporation.
-+ */
-+
-+#include <linux/clk.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_platform.h>
-+#include <linux/platform_device.h>
-+#include <linux/spi/spi.h>
-+#include <linux/spi/spi-mem.h>
-+
-+#define DEVICE_NAME "spi-aspeed-smc"
-+
-+/* Type setting Register */
-+#define CONFIG_REG			0x0
-+#define   CONFIG_TYPE_SPI		0x2
-+
-+/* CE Control Register */
-+#define CE_CTRL_REG			0x4
-+
-+/* CEx Control Register */
-+#define CE0_CTRL_REG			0x10
-+#define   CTRL_IO_MODE_MASK		GENMASK(30, 28)
-+#define   CTRL_IO_SINGLE_DATA	        0x0
-+#define   CTRL_IO_DUAL_DATA		BIT(29)
-+#define   CTRL_IO_QUAD_DATA		BIT(30)
-+#define   CTRL_COMMAND_SHIFT		16
-+#define   CTRL_IO_DUMMY_SET(dummy)					\
-+	(((((dummy) >> 2) & 0x1) << 14) | (((dummy) & 0x3) << 6))
-+#define   CTRL_CE_STOP_ACTIVE		BIT(2)
-+#define   CTRL_IO_MODE_CMD_MASK		GENMASK(1, 0)
-+#define   CTRL_IO_MODE_NORMAL		0x0
-+#define   CTRL_IO_MODE_READ		0x1
-+#define   CTRL_IO_MODE_WRITE		0x2
-+#define   CTRL_IO_MODE_USER		0x3
-+
-+#define   CTRL_IO_CMD_MASK		0xf0ff40c3
-+
-+/* CEx Address Decoding Range Register */
-+#define CE0_SEGMENT_ADDR_REG		0x30
-+
-+enum aspeed_spi_ctl_reg_value {
-+	ASPEED_SPI_BASE,
-+	ASPEED_SPI_READ,
-+	ASPEED_SPI_WRITE,
-+	ASPEED_SPI_MAX,
-+};
-+
-+struct aspeed_spi;
-+
-+struct aspeed_spi_chip {
-+	struct aspeed_spi	*aspi;
-+	u32			 cs;
-+	void __iomem		*ctl;
-+	void __iomem		*ahb_base;
-+	u32			 ahb_window_size;
-+	u32			 ctl_val[ASPEED_SPI_MAX];
-+	u32			 clk_freq;
-+};
-+
-+struct aspeed_spi_data {
-+	u32	ctl0;
-+	u32	max_cs;
-+	bool	hastype;
-+	u32	mode_bits;
-+	u32	we0;
-+
-+	u32 (*segment_start)(struct aspeed_spi *aspi, u32 reg);
-+	u32 (*segment_end)(struct aspeed_spi *aspi, u32 reg);
-+	u32 (*segment_reg)(struct aspeed_spi *aspi, u32 start, u32 end);
-+};
-+
-+#define ASPEED_SPI_MAX_NUM_CS	5
-+
-+struct aspeed_spi {
-+	const struct aspeed_spi_data	*data;
-+
-+	void __iomem		*regs;
-+	void __iomem		*ahb_base;
-+	u32			 ahb_base_phy;
-+	u32			 ahb_window_size;
-+	struct device		*dev;
-+
-+	struct clk		*clk;
-+	u32			 clk_freq;
-+
-+	struct aspeed_spi_chip	 chips[ASPEED_SPI_MAX_NUM_CS];
-+};
-+
-+static u32 aspeed_spi_get_io_mode(const struct spi_mem_op *op)
-+{
-+	switch (op->data.buswidth) {
-+	case 1:
-+		return CTRL_IO_SINGLE_DATA;
-+	case 2:
-+		return CTRL_IO_DUAL_DATA;
-+	case 4:
-+		return CTRL_IO_QUAD_DATA;
-+	default:
-+		return CTRL_IO_SINGLE_DATA;
-+	}
-+}
-+
-+static void aspeed_spi_set_io_mode(struct aspeed_spi_chip *chip, u32 io_mode)
-+{
-+	u32 ctl;
-+
-+	if (io_mode > 0) {
-+		ctl = readl(chip->ctl) & ~CTRL_IO_MODE_MASK;
-+		ctl |= io_mode;
-+		writel(ctl, chip->ctl);
-+	}
-+}
-+
-+static void aspeed_spi_start_user(struct aspeed_spi_chip *chip)
-+{
-+	u32 ctl = chip->ctl_val[ASPEED_SPI_BASE];
-+
-+	ctl |= CTRL_IO_MODE_USER | CTRL_CE_STOP_ACTIVE;
-+	writel(ctl, chip->ctl);
-+
-+	ctl &= ~CTRL_CE_STOP_ACTIVE;
-+	writel(ctl, chip->ctl);
-+}
-+
-+static void aspeed_spi_stop_user(struct aspeed_spi_chip *chip)
-+{
-+	u32 ctl = chip->ctl_val[ASPEED_SPI_READ] |
-+		CTRL_IO_MODE_USER | CTRL_CE_STOP_ACTIVE;
-+
-+	writel(ctl, chip->ctl);
-+
-+	/* Restore defaults */
-+	writel(chip->ctl_val[ASPEED_SPI_READ], chip->ctl);
-+}
-+
-+static int aspeed_spi_read_from_ahb(void *buf, void __iomem *src, size_t len)
-+{
-+	size_t offset = 0;
-+
-+	if (IS_ALIGNED((uintptr_t)src, sizeof(uintptr_t)) &&
-+	    IS_ALIGNED((uintptr_t)buf, sizeof(uintptr_t))) {
-+		ioread32_rep(src, buf, len >> 2);
-+		offset = len & ~0x3;
-+		len -= offset;
-+	}
-+	ioread8_rep(src, (u8 *)buf + offset, len);
-+	return 0;
-+}
-+
-+static int aspeed_spi_write_to_ahb(void __iomem *dst, const void *buf, size_t len)
-+{
-+	size_t offset = 0;
-+
-+	if (IS_ALIGNED((uintptr_t)dst, sizeof(uintptr_t)) &&
-+	    IS_ALIGNED((uintptr_t)buf, sizeof(uintptr_t))) {
-+		iowrite32_rep(dst, buf, len >> 2);
-+		offset = len & ~0x3;
-+		len -= offset;
-+	}
-+	iowrite8_rep(dst, (const u8 *)buf + offset, len);
-+	return 0;
-+}
-+
-+static void aspeed_spi_send_cmd_addr(struct aspeed_spi_chip *chip, u8 addr_nbytes,
-+				     u64 offset, u32 opcode)
-+{
-+	struct aspeed_spi *aspi = chip->aspi;
-+	__be32 temp;
-+	u32 cmdaddr;
-+
-+	switch (addr_nbytes) {
-+	default:
-+		dev_warn_once(aspi->dev, "Unexpected address width %u, defaulting to 3",
-+			      addr_nbytes);
-+		fallthrough;
-+	case 3:
-+		cmdaddr = offset & 0xFFFFFF;
-+		cmdaddr |= opcode << 24;
-+
-+		temp = cpu_to_be32(cmdaddr);
-+		aspeed_spi_write_to_ahb(chip->ahb_base, &temp, 4);
-+		break;
-+	case 4:
-+		temp = cpu_to_be32(offset);
-+		aspeed_spi_write_to_ahb(chip->ahb_base, &opcode, 1);
-+		aspeed_spi_write_to_ahb(chip->ahb_base, &temp, 4);
-+		break;
-+	}
-+}
-+
-+static int aspeed_spi_read_reg(struct aspeed_spi_chip *chip,
-+			       const struct spi_mem_op *op)
-+{
-+	aspeed_spi_start_user(chip);
-+	aspeed_spi_write_to_ahb(chip->ahb_base, &op->cmd.opcode, 1);
-+	aspeed_spi_read_from_ahb(op->data.buf.in,
-+				 chip->ahb_base, op->data.nbytes);
-+	aspeed_spi_stop_user(chip);
-+	return 0;
-+}
-+
-+static int aspeed_spi_write_reg(struct aspeed_spi_chip *chip,
-+				const struct spi_mem_op *op)
-+{
-+	aspeed_spi_start_user(chip);
-+	aspeed_spi_write_to_ahb(chip->ahb_base, &op->cmd.opcode, 1);
-+	aspeed_spi_write_to_ahb(chip->ahb_base, op->data.buf.out,
-+				op->data.nbytes);
-+	aspeed_spi_stop_user(chip);
-+	return 0;
-+}
-+
-+static ssize_t aspeed_spi_read_user(struct aspeed_spi_chip *chip,
-+				    const struct spi_mem_op *op,
-+				    u64 offset, size_t len, void *buf)
-+{
-+	int io_mode = aspeed_spi_get_io_mode(op);
-+	u8 dummy = 0xFF;
-+	int i;
-+
-+	aspeed_spi_start_user(chip);
-+	aspeed_spi_send_cmd_addr(chip, op->addr.nbytes, offset, op->cmd.opcode);
-+	if (op->dummy.buswidth && op->dummy.nbytes) {
-+		for (i = 0; i < op->dummy.nbytes / op->dummy.buswidth; i++)
-+			aspeed_spi_write_to_ahb(chip->ahb_base, &dummy,	sizeof(dummy));
-+	}
-+
-+	aspeed_spi_set_io_mode(chip, io_mode);
-+
-+	aspeed_spi_read_from_ahb(buf, chip->ahb_base, len);
-+	aspeed_spi_stop_user(chip);
-+	return 0;
-+}
-+
-+static ssize_t aspeed_spi_write_user(struct aspeed_spi_chip *chip,
-+				     const struct spi_mem_op *op)
-+{
-+	aspeed_spi_start_user(chip);
-+	aspeed_spi_send_cmd_addr(chip, op->addr.nbytes, op->addr.val, op->cmd.opcode);
-+	aspeed_spi_write_to_ahb(chip->ahb_base, op->data.buf.out, op->data.nbytes);
-+	aspeed_spi_stop_user(chip);
-+	return 0;
-+}
-+
-+/* support for 1-1-1, 1-1-2 or 1-1-4 */
-+static bool aspeed_spi_supports_op(struct spi_mem *mem, const struct spi_mem_op *op)
-+{
-+	if (op->cmd.buswidth > 1)
-+		return false;
-+
-+	if (op->addr.nbytes != 0) {
-+		if (op->addr.buswidth > 1 || op->addr.nbytes > 4)
-+			return false;
-+	}
-+
-+	if (op->dummy.nbytes != 0) {
-+		if (op->dummy.buswidth > 1 || op->dummy.nbytes > 7)
-+			return false;
-+	}
-+
-+	if (op->data.nbytes != 0 && op->data.buswidth > 4)
-+		return false;
-+
-+	return spi_mem_default_supports_op(mem, op);
-+}
-+
-+static int do_aspeed_spi_exec_op(struct spi_mem *mem, const struct spi_mem_op *op)
-+{
-+	struct aspeed_spi *aspi = spi_controller_get_devdata(mem->spi->master);
-+	struct aspeed_spi_chip *chip = &aspi->chips[mem->spi->chip_select];
-+	u32 addr_mode, addr_mode_backup;
-+	u32 ctl_val;
-+	int ret = 0;
-+
-+	dev_dbg(aspi->dev,
-+		"CE%d %s OP %#x mode:%d.%d.%d.%d naddr:%#x ndummies:%#x len:%#x",
-+		chip->cs, op->data.dir == SPI_MEM_DATA_IN ? "read" : "write",
-+		op->cmd.opcode, op->cmd.buswidth, op->addr.buswidth,
-+		op->dummy.buswidth, op->data.buswidth,
-+		op->addr.nbytes, op->dummy.nbytes, op->data.nbytes);
-+
-+	addr_mode = readl(aspi->regs + CE_CTRL_REG);
-+	addr_mode_backup = addr_mode;
-+
-+	ctl_val = chip->ctl_val[ASPEED_SPI_BASE];
-+	ctl_val &= ~CTRL_IO_CMD_MASK;
-+
-+	ctl_val |= op->cmd.opcode << CTRL_COMMAND_SHIFT;
-+
-+	/* 4BYTE address mode */
-+	if (op->addr.nbytes) {
-+		if (op->addr.nbytes == 4)
-+			addr_mode |= (0x11 << chip->cs);
-+		else
-+			addr_mode &= ~(0x11 << chip->cs);
-+	}
-+
-+	if (op->dummy.buswidth && op->dummy.nbytes)
-+		ctl_val |= CTRL_IO_DUMMY_SET(op->dummy.nbytes / op->dummy.buswidth);
-+
-+	if (op->data.nbytes != 0) {
-+		if (op->data.buswidth)
-+			ctl_val |= aspeed_spi_get_io_mode(op);
-+	}
-+
-+	if (op->data.dir == SPI_MEM_DATA_OUT)
-+		ctl_val |= CTRL_IO_MODE_WRITE;
-+	else
-+		ctl_val |= CTRL_IO_MODE_READ;
-+
-+	if (addr_mode != addr_mode_backup)
-+		writel(addr_mode, aspi->regs + CE_CTRL_REG);
-+	writel(ctl_val, chip->ctl);
-+
-+	if (op->data.dir == SPI_MEM_DATA_IN) {
-+		if (!op->addr.nbytes)
-+			ret = aspeed_spi_read_reg(chip, op);
-+		else
-+			ret = aspeed_spi_read_user(chip, op, op->addr.val,
-+						   op->data.nbytes, op->data.buf.in);
-+	} else {
-+		if (!op->addr.nbytes)
-+			ret = aspeed_spi_write_reg(chip, op);
-+		else
-+			ret = aspeed_spi_write_user(chip, op);
-+	}
-+
-+	/* Restore defaults */
-+	if (addr_mode != addr_mode_backup)
-+		writel(addr_mode_backup, aspi->regs + CE_CTRL_REG);
-+	writel(chip->ctl_val[ASPEED_SPI_READ], chip->ctl);
-+	return ret;
-+}
-+
-+static int aspeed_spi_exec_op(struct spi_mem *mem, const struct spi_mem_op *op)
-+{
-+	int ret;
-+
-+	ret = do_aspeed_spi_exec_op(mem, op);
-+	if (ret)
-+		dev_err(&mem->spi->dev, "operation failed: %d\n", ret);
-+	return ret;
-+}
-+
-+static const char *aspeed_spi_get_name(struct spi_mem *mem)
-+{
-+	struct aspeed_spi *aspi = spi_controller_get_devdata(mem->spi->master);
-+	struct device *dev = aspi->dev;
-+
-+	return devm_kasprintf(dev, GFP_KERNEL, "%s.%d", dev_name(dev), mem->spi->chip_select);
-+}
-+
-+struct aspeed_spi_window {
-+	u32 cs;
-+	u32 offset;
-+	u32 size;
-+};
-+
-+static void aspeed_spi_get_windows(struct aspeed_spi *aspi,
-+				   struct aspeed_spi_window windows[ASPEED_SPI_MAX_NUM_CS])
-+{
-+	const struct aspeed_spi_data *data = aspi->data;
-+	u32 reg_val;
-+	u32 cs;
-+
-+	for (cs = 0; cs < aspi->data->max_cs; cs++) {
-+		reg_val = readl(aspi->regs + CE0_SEGMENT_ADDR_REG + cs * 4);
-+		windows[cs].cs = cs;
-+		windows[cs].size = data->segment_end(aspi, reg_val) -
-+			data->segment_start(aspi, reg_val);
-+		windows[cs].offset = cs ? windows[cs - 1].offset + windows[cs - 1].size : 0;
-+		dev_vdbg(aspi->dev, "CE%d offset=0x%.8x size=0x%x\n", cs,
-+			 windows[cs].offset, windows[cs].size);
-+	}
-+}
-+
-+/*
-+ * On the AST2600, some CE windows are closed by default at reset but
-+ * U-Boot should open all.
-+ */
-+static int aspeed_spi_chip_set_default_window(struct aspeed_spi_chip *chip)
-+{
-+	struct aspeed_spi *aspi = chip->aspi;
-+	struct aspeed_spi_window windows[ASPEED_SPI_MAX_NUM_CS] = { 0 };
-+	struct aspeed_spi_window *win = &windows[chip->cs];
-+
-+	aspeed_spi_get_windows(aspi, windows);
-+
-+	chip->ahb_base = aspi->ahb_base + win->offset;
-+	chip->ahb_window_size = win->size;
-+
-+	dev_dbg(aspi->dev, "CE%d default window [ 0x%.8x - 0x%.8x ] %dMB",
-+		chip->cs, aspi->ahb_base_phy + win->offset,
-+		aspi->ahb_base_phy + win->offset + win->size - 1,
-+		win->size >> 20);
-+
-+	return chip->ahb_window_size ? 0 : -1;
-+}
-+
-+static const struct spi_controller_mem_ops aspeed_spi_mem_ops = {
-+	.supports_op = aspeed_spi_supports_op,
-+	.exec_op = aspeed_spi_exec_op,
-+	.get_name = aspeed_spi_get_name,
-+};
-+
-+static void aspeed_spi_chip_set_type(struct aspeed_spi *aspi, unsigned int cs, int type)
-+{
-+	u32 reg;
-+
-+	reg = readl(aspi->regs + CONFIG_REG);
-+	reg &= ~(0x3 << (cs * 2));
-+	reg |= type << (cs * 2);
-+	writel(reg, aspi->regs + CONFIG_REG);
-+}
-+
-+static void aspeed_spi_chip_enable(struct aspeed_spi *aspi, unsigned int cs, bool enable)
-+{
-+	u32 we_bit = BIT(aspi->data->we0 + cs);
-+	u32 reg = readl(aspi->regs + CONFIG_REG);
-+
-+	if (enable)
-+		reg |= we_bit;
-+	else
-+		reg &= ~we_bit;
-+	writel(reg, aspi->regs + CONFIG_REG);
-+}
-+
-+static int aspeed_spi_setup(struct spi_device *spi)
-+{
-+	struct aspeed_spi *aspi = spi_controller_get_devdata(spi->master);
-+	const struct aspeed_spi_data *data = aspi->data;
-+	unsigned int cs = spi->chip_select;
-+	struct aspeed_spi_chip *chip = &aspi->chips[cs];
-+
-+	chip->aspi = aspi;
-+	chip->cs = cs;
-+	chip->ctl = aspi->regs + data->ctl0 + cs * 4;
-+
-+	/* The driver only supports SPI type flash */
-+	if (data->hastype)
-+		aspeed_spi_chip_set_type(aspi, cs, CONFIG_TYPE_SPI);
-+
-+	if (aspeed_spi_chip_set_default_window(chip) < 0) {
-+		dev_warn(aspi->dev, "CE%d window invalid", cs);
-+		return -EINVAL;
-+	}
-+
-+	aspeed_spi_chip_enable(aspi, cs, true);
-+
-+	chip->ctl_val[ASPEED_SPI_BASE] = CTRL_CE_STOP_ACTIVE | CTRL_IO_MODE_USER;
-+
-+	dev_dbg(aspi->dev, "CE%d setup done\n", cs);
-+	return 0;
-+}
-+
-+static void aspeed_spi_cleanup(struct spi_device *spi)
-+{
-+	struct aspeed_spi *aspi = spi_controller_get_devdata(spi->master);
-+	unsigned int cs = spi->chip_select;
-+
-+	aspeed_spi_chip_enable(aspi, cs, false);
-+
-+	dev_dbg(aspi->dev, "CE%d cleanup done\n", cs);
-+}
-+
-+static void aspeed_spi_enable(struct aspeed_spi *aspi, bool enable)
-+{
-+	int cs;
-+
-+	for (cs = 0; cs < aspi->data->max_cs; cs++)
-+		aspeed_spi_chip_enable(aspi, cs, enable);
-+}
-+
-+static int aspeed_spi_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	const struct aspeed_spi_data *data;
-+	struct spi_controller *ctlr;
-+	struct aspeed_spi *aspi;
-+	struct resource *res;
-+	int ret;
-+
-+	data = of_device_get_match_data(&pdev->dev);
-+	if (!data)
-+		return -ENODEV;
-+
-+	ctlr = devm_spi_alloc_master(dev, sizeof(*aspi));
-+	if (!ctlr)
-+		return -ENOMEM;
-+
-+	aspi = spi_controller_get_devdata(ctlr);
-+	platform_set_drvdata(pdev, aspi);
-+	aspi->data = data;
-+	aspi->dev = dev;
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	aspi->regs = devm_ioremap_resource(dev, res);
-+	if (IS_ERR(aspi->regs)) {
-+		dev_err(dev, "missing AHB register window\n");
-+		return PTR_ERR(aspi->regs);
-+	}
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
-+	aspi->ahb_base = devm_ioremap_resource(dev, res);
-+	if (IS_ERR(aspi->ahb_base)) {
-+		dev_err(dev, "missing AHB mapping window\n");
-+		return PTR_ERR(aspi->ahb_base);
-+	}
-+
-+	aspi->ahb_window_size = resource_size(res);
-+	aspi->ahb_base_phy = res->start;
-+
-+	aspi->clk = devm_clk_get(&pdev->dev, NULL);
-+	if (IS_ERR(aspi->clk)) {
-+		dev_err(dev, "missing clock\n");
-+		return PTR_ERR(aspi->clk);
-+	}
-+
-+	aspi->clk_freq = clk_get_rate(aspi->clk);
-+	if (!aspi->clk_freq) {
-+		dev_err(dev, "invalid clock\n");
-+		return -EINVAL;
-+	}
-+
-+	ret = clk_prepare_enable(aspi->clk);
-+	if (ret) {
-+		dev_err(dev, "can not enable the clock\n");
-+		return ret;
-+	}
-+
-+	/* IRQ is for DMA, which the driver doesn't support yet */
-+
-+	ctlr->mode_bits = SPI_RX_DUAL | SPI_TX_DUAL | data->mode_bits;
-+	ctlr->bus_num = pdev->id;
-+	ctlr->mem_ops = &aspeed_spi_mem_ops;
-+	ctlr->setup = aspeed_spi_setup;
-+	ctlr->cleanup = aspeed_spi_cleanup;
-+	ctlr->num_chipselect = data->max_cs;
-+	ctlr->dev.of_node = dev->of_node;
-+
-+	ret = devm_spi_register_controller(dev, ctlr);
-+	if (ret) {
-+		dev_err(&pdev->dev, "spi_register_controller failed\n");
-+		goto disable_clk;
-+	}
-+	return 0;
-+
-+disable_clk:
-+	clk_disable_unprepare(aspi->clk);
-+	return ret;
-+}
-+
-+static int aspeed_spi_remove(struct platform_device *pdev)
-+{
-+	struct aspeed_spi *aspi = platform_get_drvdata(pdev);
-+
-+	aspeed_spi_enable(aspi, false);
-+	clk_disable_unprepare(aspi->clk);
-+	return 0;
-+}
-+
-+/*
-+ * AHB mappings
-+ */
-+
-+/*
-+ * The Segment Registers of the AST2400 and AST2500 use a 8MB unit.
-+ * The address range is encoded with absolute addresses in the overall
-+ * mapping window.
-+ */
-+static u32 aspeed_spi_segment_start(struct aspeed_spi *aspi, u32 reg)
-+{
-+	return ((reg >> 16) & 0xFF) << 23;
-+}
-+
-+static u32 aspeed_spi_segment_end(struct aspeed_spi *aspi, u32 reg)
-+{
-+	return ((reg >> 24) & 0xFF) << 23;
-+}
-+
-+static u32 aspeed_spi_segment_reg(struct aspeed_spi *aspi, u32 start, u32 end)
-+{
-+	return (((start >> 23) & 0xFF) << 16) | (((end >> 23) & 0xFF) << 24);
-+}
-+
-+/*
-+ * The Segment Registers of the AST2600 use a 1MB unit. The address
-+ * range is encoded with offsets in the overall mapping window.
-+ */
-+
-+#define AST2600_SEG_ADDR_MASK 0x0ff00000
-+
-+static u32 aspeed_spi_segment_ast2600_start(struct aspeed_spi *aspi,
-+					    u32 reg)
-+{
-+	u32 start_offset = (reg << 16) & AST2600_SEG_ADDR_MASK;
-+
-+	return aspi->ahb_base_phy + start_offset;
-+}
-+
-+static u32 aspeed_spi_segment_ast2600_end(struct aspeed_spi *aspi,
-+					  u32 reg)
-+{
-+	u32 end_offset = reg & AST2600_SEG_ADDR_MASK;
-+
-+	/* segment is disabled */
-+	if (!end_offset)
-+		return aspi->ahb_base_phy;
-+
-+	return aspi->ahb_base_phy + end_offset + 0x100000;
-+}
-+
-+static u32 aspeed_spi_segment_ast2600_reg(struct aspeed_spi *aspi,
-+					  u32 start, u32 end)
-+{
-+	/* disable zero size segments */
-+	if (start == end)
-+		return 0;
-+
-+	return ((start & AST2600_SEG_ADDR_MASK) >> 16) |
-+		((end - 1) & AST2600_SEG_ADDR_MASK);
-+}
-+
-+/*
-+ * Platform definitions
-+ */
-+static const struct aspeed_spi_data ast2400_fmc_data = {
-+	.max_cs	       = 5,
-+	.hastype       = true,
-+	.we0	       = 16,
-+	.ctl0	       = CE0_CTRL_REG,
-+	.segment_start = aspeed_spi_segment_start,
-+	.segment_end   = aspeed_spi_segment_end,
-+	.segment_reg   = aspeed_spi_segment_reg,
-+};
-+
-+static const struct aspeed_spi_data ast2500_fmc_data = {
-+	.max_cs	       = 3,
-+	.hastype       = true,
-+	.we0	       = 16,
-+	.ctl0	       = CE0_CTRL_REG,
-+	.segment_start = aspeed_spi_segment_start,
-+	.segment_end   = aspeed_spi_segment_end,
-+	.segment_reg   = aspeed_spi_segment_reg,
-+};
-+
-+static const struct aspeed_spi_data ast2500_spi_data = {
-+	.max_cs	       = 2,
-+	.hastype       = false,
-+	.we0	       = 16,
-+	.ctl0	       = CE0_CTRL_REG,
-+	.segment_start = aspeed_spi_segment_start,
-+	.segment_end   = aspeed_spi_segment_end,
-+	.segment_reg   = aspeed_spi_segment_reg,
-+};
-+
-+static const struct aspeed_spi_data ast2600_fmc_data = {
-+	.max_cs	       = 3,
-+	.hastype       = false,
-+	.mode_bits     = SPI_RX_QUAD | SPI_RX_QUAD,
-+	.we0	       = 16,
-+	.ctl0	       = CE0_CTRL_REG,
-+	.segment_start = aspeed_spi_segment_ast2600_start,
-+	.segment_end   = aspeed_spi_segment_ast2600_end,
-+	.segment_reg   = aspeed_spi_segment_ast2600_reg,
-+};
-+
-+static const struct aspeed_spi_data ast2600_spi_data = {
-+	.max_cs	       = 2,
-+	.hastype       = false,
-+	.mode_bits     = SPI_RX_QUAD | SPI_RX_QUAD,
-+	.we0	       = 16,
-+	.ctl0	       = CE0_CTRL_REG,
-+	.segment_start = aspeed_spi_segment_ast2600_start,
-+	.segment_end   = aspeed_spi_segment_ast2600_end,
-+	.segment_reg   = aspeed_spi_segment_ast2600_reg,
-+};
-+
-+static const struct of_device_id aspeed_spi_matches[] = {
-+	{ .compatible = "aspeed,ast2400-fmc", .data = &ast2400_fmc_data },
-+	{ .compatible = "aspeed,ast2500-fmc", .data = &ast2500_fmc_data },
-+	{ .compatible = "aspeed,ast2500-spi", .data = &ast2500_spi_data },
-+	{ .compatible = "aspeed,ast2600-fmc", .data = &ast2600_fmc_data },
-+	{ .compatible = "aspeed,ast2600-spi", .data = &ast2600_spi_data },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, aspeed_spi_matches);
-+
-+static struct platform_driver aspeed_spi_driver = {
-+	.probe			= aspeed_spi_probe,
-+	.remove			= aspeed_spi_remove,
-+	.driver	= {
-+		.name		= DEVICE_NAME,
-+		.of_match_table = aspeed_spi_matches,
-+	}
-+};
-+
-+module_platform_driver(aspeed_spi_driver);
-+
-+MODULE_DESCRIPTION("ASPEED Static Memory Controller Driver");
-+MODULE_AUTHOR("Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>");
-+MODULE_AUTHOR("Cedric Le Goater <clg@kaod.org>");
-+MODULE_LICENSE("GPL v2");
-diff --git a/Documentation/devicetree/bindings/mtd/aspeed-smc.txt b/Documentation/devicetree/bindings/mtd/aspeed-smc.txt
-deleted file mode 100644
-index 49f6528ef547..000000000000
---- a/Documentation/devicetree/bindings/mtd/aspeed-smc.txt
-+++ /dev/null
-@@ -1,51 +0,0 @@
--* Aspeed Firmware Memory controller
--* Aspeed SPI Flash Memory Controller
--
--The Firmware Memory Controller in the Aspeed AST2500 SoC supports
--three chip selects, two of which are always of SPI type and the third
--can be SPI or NOR type flash. These bindings only describe SPI.
--
--The two SPI flash memory controllers in the AST2500 each support two
--chip selects.
--
--Required properties:
--  - compatible : Should be one of
--	"aspeed,ast2400-fmc" for the AST2400 Firmware Memory Controller
--	"aspeed,ast2400-spi" for the AST2400 SPI Flash memory Controller
--	"aspeed,ast2500-fmc" for the AST2500 Firmware Memory Controller
--	"aspeed,ast2500-spi" for the AST2500 SPI flash memory controllers
--
--  - reg : the first contains the control register location and length,
--          the second contains the memory window mapping address and length
--  - #address-cells : must be 1 corresponding to chip select child binding
--  - #size-cells : must be 0 corresponding to chip select child binding
--
--Optional properties:
--  - interrupts : Should contain the interrupt for the dma device if an
--    FMC
--
--The child nodes are the SPI flash modules which must have a compatible
--property as specified in bindings/mtd/jedec,spi-nor.txt
--
--Optionally, the child node can contain properties for SPI mode (may be
--ignored):
--  - spi-max-frequency - max frequency of spi bus
--
--
--Example:
--fmc: fmc@1e620000 {
--	compatible = "aspeed,ast2500-fmc";
--	reg = < 0x1e620000 0x94
--		0x20000000 0x02000000 >;
--	#address-cells = <1>;
--	#size-cells = <0>;
--	interrupts = <19>;
--	flash@0 {
--		reg = < 0 >;
--		compatible = "jedec,spi-nor";
--		/* spi-max-frequency = <>; */
--		/* m25p,fast-read; */
--		#address-cells = <1>;
--		#size-cells = <1>;
--	};
--};
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 7d5f81dcd837..f4605689f41c 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -3029,6 +3029,7 @@ L:	openbmc@lists.ozlabs.org (moderated for non-subscribers)
- L:	linux-spi@vger.kernel.org
- S:	Maintained
- F:	Documentation/devicetree/bindings/spi/aspeed,ast2600-fmc.yaml
-+F:	drivers/spi/spi-aspeed-smc.c
- 
- ASPEED VIDEO ENGINE DRIVER
- M:	Eddie James <eajames@linux.ibm.com>
-diff --git a/drivers/mtd/spi-nor/controllers/Kconfig b/drivers/mtd/spi-nor/controllers/Kconfig
-index 50f4f3484d42..ca45dcd3ffe8 100644
---- a/drivers/mtd/spi-nor/controllers/Kconfig
-+++ b/drivers/mtd/spi-nor/controllers/Kconfig
-@@ -1,14 +1,4 @@
- # SPDX-License-Identifier: GPL-2.0-only
--config SPI_ASPEED_SMC
--	tristate "Aspeed flash controllers in SPI mode"
--	depends on ARCH_ASPEED || COMPILE_TEST
--	depends on HAS_IOMEM && OF
--	help
--	  This enables support for the Firmware Memory controller (FMC)
--	  in the Aspeed AST2500/AST2400 SoCs when attached to SPI NOR chips,
--	  and support for the SPI flash memory controller (SPI) for
--	  the host firmware. The implementation only supports SPI NOR.
--
- config SPI_HISI_SFC
- 	tristate "Hisilicon FMC SPI NOR Flash Controller(SFC)"
- 	depends on ARCH_HISI || COMPILE_TEST
-diff --git a/drivers/mtd/spi-nor/controllers/Makefile b/drivers/mtd/spi-nor/controllers/Makefile
-index 6e2a1dc68466..0b8e1d530913 100644
---- a/drivers/mtd/spi-nor/controllers/Makefile
-+++ b/drivers/mtd/spi-nor/controllers/Makefile
-@@ -1,4 +1,3 @@
- # SPDX-License-Identifier: GPL-2.0
--obj-$(CONFIG_SPI_ASPEED_SMC)	+= aspeed-smc.o
- obj-$(CONFIG_SPI_HISI_SFC)	+= hisi-sfc.o
- obj-$(CONFIG_SPI_NXP_SPIFI)	+= nxp-spifi.o
-diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
-index 31a2cef3790c..9f6679cb0f78 100644
---- a/drivers/spi/Kconfig
-+++ b/drivers/spi/Kconfig
-@@ -101,6 +101,17 @@ config SPI_ARMADA_3700
- 	  This enables support for the SPI controller present on the
- 	  Marvell Armada 3700 SoCs.
- 
-+config SPI_ASPEED_SMC
-+	tristate "Aspeed flash controllers in SPI mode"
-+	depends on ARCH_ASPEED || COMPILE_TEST
-+	depends on OF
-+	help
-+	  This enables support for the Firmware Memory controller (FMC)
-+	  in the Aspeed AST2600, AST2500 and AST2400 SoCs when attached
-+	  to SPI NOR chips, and support for the SPI flash memory
-+	  controller (SPI) for the host firmware. The implementation
-+	  only supports SPI NOR.
-+
- config SPI_ATMEL
- 	tristate "Atmel SPI Controller"
- 	depends on ARCH_AT91 || COMPILE_TEST
-diff --git a/drivers/spi/Makefile b/drivers/spi/Makefile
-index 3aa28ed3f761..1566388b96ae 100644
---- a/drivers/spi/Makefile
-+++ b/drivers/spi/Makefile
-@@ -19,6 +19,7 @@ obj-$(CONFIG_SPI_ALTERA_CORE)		+= spi-altera-core.o
- obj-$(CONFIG_SPI_ALTERA_DFL)		+= spi-altera-dfl.o
- obj-$(CONFIG_SPI_AR934X)		+= spi-ar934x.o
- obj-$(CONFIG_SPI_ARMADA_3700)		+= spi-armada-3700.o
-+obj-$(CONFIG_SPI_ASPEED_SMC)		+= spi-aspeed-smc.o
- obj-$(CONFIG_SPI_ATMEL)			+= spi-atmel.o
- obj-$(CONFIG_SPI_ATMEL_QUADSPI)		+= atmel-quadspi.o
- obj-$(CONFIG_SPI_AT91_USART)		+= spi-at91-usart.o
--- 
-2.34.1
+> >
+> > > We use smp_store_relase()
+> > > to make sure the driver commits the setup before enabling the irq. It
+> > > means the read needs to be ordered as well in vring_interrupt().
+> > >
+> > > >
+> > > > Although I couldn't find anything about this in memory-barriers.txt
+> > > > which surprises me.
+> > > >
+> > > > CC Paul to help make sure I'm right.
+> > > >
+> > > >
+> > > > >
+> > > > > >
+> > > > > > > To avoid breaking legacy device which can send IRQ before DRIVER_OK, a
+> > > > > > > module parameter is introduced to enable the hardening so function
+> > > > > > > hardening is disabled by default.
+> > > > > > Which devices are these? How come they send an interrupt before there
+> > > > > > are any buffers in any queues?
+> > > > >
+> > > > >
+> > > > > I copied this from the commit log for 22b7050a024d7
+> > > > >
+> > > > > "
+> > > > >
+> > > > >     This change will also benefit old hypervisors (before 2009)
+> > > > >     that send interrupts without checking DRIVER_OK: previously,
+> > > > >     the callback could race with driver-specific initialization.
+> > > > > "
+> > > > >
+> > > > > If this is only for config interrupt, I can remove the above log.
+> > > >
+> > > >
+> > > > This is only for config interrupt.
+> > >
+> > > Ok.
+> > >
+> > > >
+> > > > >
+> > > > > >
+> > > > > > > Note that the hardening is only done for vring interrupt since the
+> > > > > > > config interrupt hardening is already done in commit 22b7050a024d7
+> > > > > > > ("virtio: defer config changed notifications"). But the method that is
+> > > > > > > used by config interrupt can't be reused by the vring interrupt
+> > > > > > > handler because it uses spinlock to do the synchronization which is
+> > > > > > > expensive.
+> > > > > > >
+> > > > > > > Signed-off-by: Jason Wang <jasowang@redhat.com>
+> > > > > >
+> > > > > > > ---
+> > > > > > >   drivers/virtio/virtio.c       | 19 +++++++++++++++++++
+> > > > > > >   drivers/virtio/virtio_ring.c  |  9 ++++++++-
+> > > > > > >   include/linux/virtio.h        |  4 ++++
+> > > > > > >   include/linux/virtio_config.h | 25 +++++++++++++++++++++++++
+> > > > > > >   4 files changed, 56 insertions(+), 1 deletion(-)
+> > > > > > >
+> > > > > > > diff --git a/drivers/virtio/virtio.c b/drivers/virtio/virtio.c
+> > > > > > > index 8dde44ea044a..85e331efa9cc 100644
+> > > > > > > --- a/drivers/virtio/virtio.c
+> > > > > > > +++ b/drivers/virtio/virtio.c
+> > > > > > > @@ -7,6 +7,12 @@
+> > > > > > >   #include <linux/of.h>
+> > > > > > >   #include <uapi/linux/virtio_ids.h>
+> > > > > > > +static bool irq_hardening = false;
+> > > > > > > +
+> > > > > > > +module_param(irq_hardening, bool, 0444);
+> > > > > > > +MODULE_PARM_DESC(irq_hardening,
+> > > > > > > +          "Disalbe IRQ software processing when it is not expected");
+> > > > > > > +
+> > > > > > >   /* Unique numbering for virtio devices. */
+> > > > > > >   static DEFINE_IDA(virtio_index_ida);
+> > > > > > > @@ -220,6 +226,15 @@ static int virtio_features_ok(struct virtio_device *dev)
+> > > > > > >    * */
+> > > > > > >   void virtio_reset_device(struct virtio_device *dev)
+> > > > > > >   {
+> > > > > > > + /*
+> > > > > > > +  * The below synchronize_rcu() guarantees that any
+> > > > > > > +  * interrupt for this line arriving after
+> > > > > > > +  * synchronize_rcu() has completed is guaranteed to see
+> > > > > > > +  * irq_soft_enabled == false.
+> > > > > > News to me I did not know synchronize_rcu has anything to do
+> > > > > > with interrupts. Did not you intend to use synchronize_irq?
+> > > > > > I am not even 100% sure synchronize_rcu is by design a memory barrier
+> > > > > > though it's most likely is ...
+> > > > >
+> > > > >
+> > > > > According to the comment above tree RCU version of synchronize_rcu():
+> > > > >
+> > > > > """
+> > > > >
+> > > > >  * RCU read-side critical sections are delimited by rcu_read_lock()
+> > > > >  * and rcu_read_unlock(), and may be nested.  In addition, but only in
+> > > > >  * v5.0 and later, regions of code across which interrupts, preemption,
+> > > > >  * or softirqs have been disabled also serve as RCU read-side critical
+> > > > >  * sections.  This includes hardware interrupt handlers, softirq handlers,
+> > > > >  * and NMI handlers.
+> > > > > """
+> > > > >
+> > > > > So interrupt handlers are treated as read-side critical sections.
+> > > > >
+> > > > > And it has the comment for explain the barrier:
+> > > > >
+> > > > > """
+> > > > >
+> > > > >  * Note that this guarantee implies further memory-ordering guarantees.
+> > > > >  * On systems with more than one CPU, when synchronize_rcu() returns,
+> > > > >  * each CPU is guaranteed to have executed a full memory barrier since
+> > > > >  * the end of its last RCU read-side critical section whose beginning
+> > > > >  * preceded the call to synchronize_rcu().  In addition, each CPU having
+> > > > > """
+> > > > >
+> > > > > So on SMP it provides a full barrier. And for UP/tiny RCU we don't need the
+> > > > > barrier, if the interrupt come after WRITE_ONCE() it will see the
+> > > > > irq_soft_enabled as false.
+> > > > >
+> > > >
+> > > > You are right. So then
+> > > > 1. I do not think we need load_acquire - why is it needed? Just
+> > > >    READ_ONCE should do.
+> > >
+> > > See above.
+> > >
+> > > > 2. isn't synchronize_irq also doing the same thing?
+> > >
+> > >
+> > > Yes, but it requires a config ops since the IRQ knowledge is transport specific.
+> > >
+> > > >
+> > > >
+> > > > > >
+> > > > > > > +  */
+> > > > > > > + WRITE_ONCE(dev->irq_soft_enabled, false);
+> > > > > > > + synchronize_rcu();
+> > > > > > > +
+> > > > > > >           dev->config->reset(dev);
+> > > > > > >   }
+> > > > > > >   EXPORT_SYMBOL_GPL(virtio_reset_device);
+> > > > > > Please add comment explaining where it will be enabled.
+> > > > > > Also, we *really* don't need to synch if it was already disabled,
+> > > > > > let's not add useless overhead to the boot sequence.
+> > > > >
+> > > > >
+> > > > > Ok.
+> > > > >
+> > > > >
+> > > > > >
+> > > > > >
+> > > > > > > @@ -427,6 +442,10 @@ int register_virtio_device(struct virtio_device *dev)
+> > > > > > >           spin_lock_init(&dev->config_lock);
+> > > > > > >           dev->config_enabled = false;
+> > > > > > >           dev->config_change_pending = false;
+> > > > > > > + dev->irq_soft_check = irq_hardening;
+> > > > > > > +
+> > > > > > > + if (dev->irq_soft_check)
+> > > > > > > +         dev_info(&dev->dev, "IRQ hardening is enabled\n");
+> > > > > > >           /* We always start by resetting the device, in case a previous
+> > > > > > >            * driver messed it up.  This also tests that code path a little. */
+> > > > > > one of the points of hardening is it's also helpful for buggy
+> > > > > > devices. this flag defeats the purpose.
+> > > > >
+> > > > >
+> > > > > Do you mean:
+> > > > >
+> > > > > 1) we need something like config_enable? This seems not easy to be
+> > > > > implemented without obvious overhead, mainly the synchronize with the
+> > > > > interrupt handlers
+> > > >
+> > > > But synchronize is only on tear-down path. That is not critical for any
+> > > > users at the moment, even less than probe.
+> > >
+> > > I meant if we have vq->irq_pending, we need to call vring_interrupt()
+> > > in the virtio_device_ready() and synchronize the IRQ handlers with
+> > > spinlock or others.
+> > >
+> > > >
+> > > > > 2) enable this by default, so I don't object, but this may have some risk
+> > > > > for old hypervisors
+> > > >
+> > > >
+> > > > The risk if there's a driver adding buffers without setting DRIVER_OK.
+> > >
+> > > Probably not, we have devices that accept random inputs from outside,
+> > > net, console, input etc. I've done a round of audits of the Qemu
+> > > codes. They look all fine since day0.
+> > >
+> > > > So with this approach, how about we rename the flag "driver_ok"?
+> > > > And then add_buf can actually test it and BUG_ON if not there  (at least
+> > > > in the debug build).
+> > >
+> > > This looks like a hardening of the driver in the core instead of the
+> > > device. I think it can be done but in a separate series.
+> > >
+> > > >
+> > > > And going down from there, how about we cache status in the
+> > > > device? Then we don't need to keep re-reading it every time,
+> > > > speeding boot up a tiny bit.
+> > >
+> > > I don't fully understand here, actually spec requires status to be
+> > > read back for validation in many cases.
+> > >
+> > > Thanks
+> > >
+> > > >
+> > > > >
+> > > > > >
+> > > > > > > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+> > > > > > > index 962f1477b1fa..0170f8c784d8 100644
+> > > > > > > --- a/drivers/virtio/virtio_ring.c
+> > > > > > > +++ b/drivers/virtio/virtio_ring.c
+> > > > > > > @@ -2144,10 +2144,17 @@ static inline bool more_used(const struct vring_virtqueue *vq)
+> > > > > > >           return vq->packed_ring ? more_used_packed(vq) : more_used_split(vq);
+> > > > > > >   }
+> > > > > > > -irqreturn_t vring_interrupt(int irq, void *_vq)
+> > > > > > > +irqreturn_t vring_interrupt(int irq, void *v)
+> > > > > > >   {
+> > > > > > > + struct virtqueue *_vq = v;
+> > > > > > > + struct virtio_device *vdev = _vq->vdev;
+> > > > > > >           struct vring_virtqueue *vq = to_vvq(_vq);
+> > > > > > > + if (!virtio_irq_soft_enabled(vdev)) {
+> > > > > > > +         dev_warn_once(&vdev->dev, "virtio vring IRQ raised before DRIVER_OK");
+> > > > > > > +         return IRQ_NONE;
+> > > > > > > + }
+> > > > > > > +
+> > > > > > >           if (!more_used(vq)) {
+> > > > > > >                   pr_debug("virtqueue interrupt with no work for %p\n", vq);
+> > > > > > >                   return IRQ_NONE;
+> > > > > > > diff --git a/include/linux/virtio.h b/include/linux/virtio.h
+> > > > > > > index 5464f398912a..957d6ad604ac 100644
+> > > > > > > --- a/include/linux/virtio.h
+> > > > > > > +++ b/include/linux/virtio.h
+> > > > > > > @@ -95,6 +95,8 @@ dma_addr_t virtqueue_get_used_addr(struct virtqueue *vq);
+> > > > > > >    * @failed: saved value for VIRTIO_CONFIG_S_FAILED bit (for restore)
+> > > > > > >    * @config_enabled: configuration change reporting enabled
+> > > > > > >    * @config_change_pending: configuration change reported while disabled
+> > > > > > > + * @irq_soft_check: whether or not to check @irq_soft_enabled
+> > > > > > > + * @irq_soft_enabled: callbacks enabled
+> > > > > > >    * @config_lock: protects configuration change reporting
+> > > > > > >    * @dev: underlying device.
+> > > > > > >    * @id: the device type identification (used to match it with a driver).
+> > > > > > > @@ -109,6 +111,8 @@ struct virtio_device {
+> > > > > > >           bool failed;
+> > > > > > >           bool config_enabled;
+> > > > > > >           bool config_change_pending;
+> > > > > > > + bool irq_soft_check;
+> > > > > > > + bool irq_soft_enabled;
+> > > > > > >           spinlock_t config_lock;
+> > > > > > >           spinlock_t vqs_list_lock; /* Protects VQs list access */
+> > > > > > >           struct device dev;
+> > > > > > > diff --git a/include/linux/virtio_config.h b/include/linux/virtio_config.h
+> > > > > > > index dafdc7f48c01..9c1b61f2e525 100644
+> > > > > > > --- a/include/linux/virtio_config.h
+> > > > > > > +++ b/include/linux/virtio_config.h
+> > > > > > > @@ -174,6 +174,24 @@ static inline bool virtio_has_feature(const struct virtio_device *vdev,
+> > > > > > >           return __virtio_test_bit(vdev, fbit);
+> > > > > > >   }
+> > > > > > > +/*
+> > > > > > > + * virtio_irq_soft_enabled: whether we can execute callbacks
+> > > > > > > + * @vdev: the device
+> > > > > > > + */
+> > > > > > > +static inline bool virtio_irq_soft_enabled(const struct virtio_device *vdev)
+> > > > > > > +{
+> > > > > > > + if (!vdev->irq_soft_check)
+> > > > > > > +         return true;
+> > > > > > > +
+> > > > > > > + /*
+> > > > > > > +  * Read irq_soft_enabled before reading other device specific
+> > > > > > > +  * data. Paried with smp_store_relase() in
+> > > > > > paired
+> > > > >
+> > > > >
+> > > > > Will fix.
+> > > > >
+> > > > > Thanks
+> > > > >
+> > > > >
+> > > > > >
+> > > > > > > +  * virtio_device_ready() and WRITE_ONCE()/synchronize_rcu() in
+> > > > > > > +  * virtio_reset_device().
+> > > > > > > +  */
+> > > > > > > + return smp_load_acquire(&vdev->irq_soft_enabled);
+> > > > > > > +}
+> > > > > > > +
+> > > > > > >   /**
+> > > > > > >    * virtio_has_dma_quirk - determine whether this device has the DMA quirk
+> > > > > > >    * @vdev: the device
+> > > > > > > @@ -236,6 +254,13 @@ void virtio_device_ready(struct virtio_device *dev)
+> > > > > > >           if (dev->config->enable_cbs)
+> > > > > > >                     dev->config->enable_cbs(dev);
+> > > > > > > + /*
+> > > > > > > +  * Commit the driver setup before enabling the virtqueue
+> > > > > > > +  * callbacks. Paried with smp_load_acuqire() in
+> > > > > > > +  * virtio_irq_soft_enabled()
+> > > > > > > +  */
+> > > > > > > + smp_store_release(&dev->irq_soft_enabled, true);
+> > > > > > > +
+> > > > > > >           BUG_ON(status & VIRTIO_CONFIG_S_DRIVER_OK);
+> > > > > > >           dev->config->set_status(dev, status | VIRTIO_CONFIG_S_DRIVER_OK);
+> > > > > > >   }
+> > > > > > > --
+> > > > > > > 2.25.1
+> > > >
+> >
 
