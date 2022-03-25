@@ -2,47 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0F5CC43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:13:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40055C43219
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:13:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354308AbiCYPPR (ORCPT
+        id S1356355AbiCYPP0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:15:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44620 "EHLO
+        Fri, 25 Mar 2022 11:15:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359857AbiCYPMC (ORCPT
+        with ESMTP id S1359846AbiCYPMC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 25 Mar 2022 11:12:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BD7662A2F;
-        Fri, 25 Mar 2022 08:09:01 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D38262A1C;
+        Fri, 25 Mar 2022 08:09:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D57B7B82904;
-        Fri, 25 Mar 2022 15:08:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23280C340F4;
-        Fri, 25 Mar 2022 15:08:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5080761C12;
+        Fri, 25 Mar 2022 15:08:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 580F5C340E9;
+        Fri, 25 Mar 2022 15:08:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648220926;
-        bh=bLyHvRHuwpHkVvuattikF0PH4TZTbUXMmVmmup3vp7E=;
+        s=korg; t=1648220934;
+        bh=HpMrrT0iEqnIkxkuVO3eAOfoFuIkIZpb3NvXqQMPGJE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c/qUIwmzbcEDQLlpZ4Nm+diQd+jGIEoqRFYNK8zzZZD21jAJviDBy2tIsumPdYWrU
-         Ktv6PIj4cpw66QZgPQ0uXSi4SVj4UMt3kH3UDtKn5XDa8nRO3G6Q8m6PbjDxcEIcoD
-         q1bRqJZV6tjowZtSj00E8EGRHUvvC9V3WLJakW1E=
+        b=NelvXkk/pwHHcLHMNUWdxoflb9HA4e1IltpowvJVYPHOWf1uUqx/XTE3UxdVv7d43
+         2oCdEYOGNBt1KSbMnTffRJKSutgrMr1X+BdC8/ahnU4YqleXUIjHFymUv5rpQbg4s8
+         PzXvC9lciLlbmmgwdozTq/ETYwh9Pp0/+kdV1g8A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        James Bottomley <James.Bottomley@HansenPartnership.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Subject: [PATCH 5.4 28/29] tpm: use try_get_ops() in tpm-space.c
-Date:   Fri, 25 Mar 2022 16:05:08 +0100
-Message-Id: <20220325150419.395229464@linuxfoundation.org>
+        stable@vger.kernel.org, Jordy Zomer <jordy@pwning.systems>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Denis Efremov <denis.e.efremov@oracle.com>
+Subject: [PATCH 5.10 01/38] nfc: st21nfca: Fix potential buffer overflows in EVT_TRANSACTION
+Date:   Fri, 25 Mar 2022 16:04:45 +0100
+Message-Id: <20220325150419.802038266@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220325150418.585286754@linuxfoundation.org>
-References: <20220325150418.585286754@linuxfoundation.org>
+In-Reply-To: <20220325150419.757836392@linuxfoundation.org>
+References: <20220325150419.757836392@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,51 +53,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Bottomley <James.Bottomley@HansenPartnership.com>
+From: Jordy Zomer <jordy@pwning.systems>
 
-commit fb5abce6b2bb5cb3d628aaa63fa821da8c4600f9 upstream.
+commit 4fbcc1a4cb20fe26ad0225679c536c80f1648221 upstream.
 
-As part of the series conversion to remove nested TPM operations:
+It appears that there are some buffer overflows in EVT_TRANSACTION.
+This happens because the length parameters that are passed to memcpy
+come directly from skb->data and are not guarded in any way.
 
-https://lore.kernel.org/all/20190205224723.19671-1-jarkko.sakkinen@linux.intel.com/
-
-exposure of the chip->tpm_mutex was removed from much of the upper
-level code.  In this conversion, tpm2_del_space() was missed.  This
-didn't matter much because it's usually called closely after a
-converted operation, so there's only a very tiny race window where the
-chip can be removed before the space flushing is done which causes a
-NULL deref on the mutex.  However, there are reports of this window
-being hit in practice, so fix this by converting tpm2_del_space() to
-use tpm_try_get_ops(), which performs all the teardown checks before
-acquring the mutex.
-
-Cc: stable@vger.kernel.org # 5.4.x
-Signed-off-by: James Bottomley <James.Bottomley@HansenPartnership.com>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Jordy Zomer <jordy@pwning.systems>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Denis Efremov <denis.e.efremov@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/tpm/tpm2-space.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/nfc/st21nfca/se.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
---- a/drivers/char/tpm/tpm2-space.c
-+++ b/drivers/char/tpm/tpm2-space.c
-@@ -58,12 +58,12 @@ int tpm2_init_space(struct tpm_space *sp
+--- a/drivers/nfc/st21nfca/se.c
++++ b/drivers/nfc/st21nfca/se.c
+@@ -320,6 +320,11 @@ int st21nfca_connectivity_event_received
+ 			return -ENOMEM;
  
- void tpm2_del_space(struct tpm_chip *chip, struct tpm_space *space)
- {
--	mutex_lock(&chip->tpm_mutex);
--	if (!tpm_chip_start(chip)) {
+ 		transaction->aid_len = skb->data[1];
 +
-+	if (tpm_try_get_ops(chip) == 0) {
- 		tpm2_flush_sessions(chip, space);
--		tpm_chip_stop(chip);
-+		tpm_put_ops(chip);
- 	}
--	mutex_unlock(&chip->tpm_mutex);
++		/* Checking if the length of the AID is valid */
++		if (transaction->aid_len > sizeof(transaction->aid))
++			return -EINVAL;
 +
- 	kfree(space->context_buf);
- 	kfree(space->session_buf);
- }
+ 		memcpy(transaction->aid, &skb->data[2],
+ 		       transaction->aid_len);
+ 
+@@ -329,6 +334,11 @@ int st21nfca_connectivity_event_received
+ 			return -EPROTO;
+ 
+ 		transaction->params_len = skb->data[transaction->aid_len + 3];
++
++		/* Total size is allocated (skb->len - 2) minus fixed array members */
++		if (transaction->params_len > ((skb->len - 2) - sizeof(struct nfc_evt_transaction)))
++			return -EINVAL;
++
+ 		memcpy(transaction->params, skb->data +
+ 		       transaction->aid_len + 4, transaction->params_len);
+ 
 
 
