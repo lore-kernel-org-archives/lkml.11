@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D853C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:10:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9618C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:10:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359832AbiCYPMA (ORCPT
+        id S1344220AbiCYPMH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:12:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36582 "EHLO
+        Fri, 25 Mar 2022 11:12:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376257AbiCYPIO (ORCPT
+        with ESMTP id S1359866AbiCYPIM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:08:14 -0400
+        Fri, 25 Mar 2022 11:08:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8246A774E;
-        Fri, 25 Mar 2022 08:06:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5592DD95F3;
+        Fri, 25 Mar 2022 08:06:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C6DA861C11;
-        Fri, 25 Mar 2022 15:06:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACF40C340EE;
-        Fri, 25 Mar 2022 15:06:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E484061BF7;
+        Fri, 25 Mar 2022 15:06:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8246C340EE;
+        Fri, 25 Mar 2022 15:06:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648220798;
-        bh=nlE5/yk8Wh13HMpIBgKjw5YvNTdmuJ9LRCKl5GPXncI=;
+        s=korg; t=1648220795;
+        bh=0t6rOqqnZ4dHupbcVnNiXxZOIEusOi5qLvPWJONBqH8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VQa9u5m/McqvzyQi0dKeTRLlkE75Uk1cfTuqVCdswtM0/ucGTwZOxb9YPq7v77GZH
-         ChHo3Hj928H2rN5RGcrYalVeTQkqAVXbpKdjPUGxniRPdkgRR/BA2b1L3UjaJzeV/o
-         7yICQC21RlsIG2hICoaf1N2jQor3sfGrxHSNo5v0=
+        b=G/FjwV59Y0O28E+MzXfUvnPXESbcBTwfS3TCwTrQLH3kfqTqE2dELjk+AEs7Kgmn7
+         vz5hjAaDjBkyLqdyfGiSpxTnImLeXESbnb8NCcaHYNG1UCVQtsqPyq04lLfouE/XLc
+         VJn/fvU225lfZcqZuSWILNMvAWnA6a+NuOcOfuz4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephane Graber <stgraber@ubuntu.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.19 13/20] drivers: net: xgene: Fix regression in CRC stripping
-Date:   Fri, 25 Mar 2022 16:04:51 +0100
-Message-Id: <20220325150417.394482706@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Giacomo Guiduzzi <guiduzzi.giacomo@gmail.com>,
+        Paolo Valente <paolo.valente@linaro.org>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 4.19 12/20] ALSA: pci: fix reading of swapped values from pcmreg in AC97 codec
+Date:   Fri, 25 Mar 2022 16:04:50 +0100
+Message-Id: <20220325150417.365246197@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150417.010265747@linuxfoundation.org>
 References: <20220325150417.010265747@linuxfoundation.org>
@@ -49,57 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephane Graber <stgraber@ubuntu.com>
+From: Giacomo Guiduzzi <guiduzzi.giacomo@gmail.com>
 
-commit e9e6faeafaa00da1851bcf47912b0f1acae666b4 upstream.
+commit 17aaf0193392cb3451bf0ac75ba396ec4cbded6e upstream.
 
-All packets on ingress (except for jumbo) are terminated with a 4-bytes
-CRC checksum. It's the responsability of the driver to strip those 4
-bytes. Unfortunately a change dating back to March 2017 re-shuffled some
-code and made the CRC stripping code effectively dead.
+Tests 72 and 78 for ALSA in kselftest fail due to reading
+inconsistent values from some devices on a VirtualBox
+Virtual Machine using the snd_intel8x0 driver for the AC'97
+Audio Controller device.
+Taking for example test number 72, this is what the test reports:
+"Surround Playback Volume.0 expected 1 but read 0, is_volatile 0"
+"Surround Playback Volume.1 expected 0 but read 1, is_volatile 0"
+These errors repeat for each value from 0 to 31.
 
-This change re-orders that part a bit such that the datalen is
-immediately altered if needed.
+Taking a look at these error messages it is possible to notice
+that the written values are read back swapped.
+When the write is performed, these values are initially stored in
+an array used to sanity-check them and write them in the pcmreg
+array. To write them, the two one-byte values are packed together
+in a two-byte variable through bitwise operations: the first
+value is shifted left by one byte and the second value is stored in the
+right byte through a bitwise OR. When reading the values back,
+right shifts are performed to retrieve the previously stored
+bytes. These shifts are executed in the wrong order, thus
+reporting the values swapped as shown above.
 
-Fixes: 4902a92270fb ("drivers: net: xgene: Add workaround for errata 10GE_8/ENET_11")
-Cc: stable@vger.kernel.org
-Signed-off-by: Stephane Graber <stgraber@ubuntu.com>
-Tested-by: Stephane Graber <stgraber@ubuntu.com>
-Link: https://lore.kernel.org/r/20220322224205.752795-1-stgraber@ubuntu.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+This patch fixes this mistake by reversing the read
+operations' order.
+
+Signed-off-by: Giacomo Guiduzzi <guiduzzi.giacomo@gmail.com>
+Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220322200653.15862-1-guiduzzi.giacomo@gmail.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/apm/xgene/xgene_enet_main.c |   12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ sound/pci/ac97/ac97_codec.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/apm/xgene/xgene_enet_main.c
-+++ b/drivers/net/ethernet/apm/xgene/xgene_enet_main.c
-@@ -707,6 +707,12 @@ static int xgene_enet_rx_frame(struct xg
- 	buf_pool->rx_skb[skb_index] = NULL;
- 
- 	datalen = xgene_enet_get_data_len(le64_to_cpu(raw_desc->m1));
-+
-+	/* strip off CRC as HW isn't doing this */
-+	nv = GET_VAL(NV, le64_to_cpu(raw_desc->m0));
-+	if (!nv)
-+		datalen -= 4;
-+
- 	skb_put(skb, datalen);
- 	prefetch(skb->data - NET_IP_ALIGN);
- 	skb->protocol = eth_type_trans(skb, ndev);
-@@ -728,12 +734,8 @@ static int xgene_enet_rx_frame(struct xg
- 		}
- 	}
- 
--	nv = GET_VAL(NV, le64_to_cpu(raw_desc->m0));
--	if (!nv) {
--		/* strip off CRC as HW isn't doing this */
--		datalen -= 4;
-+	if (!nv)
- 		goto skip_jumbo;
--	}
- 
- 	slots = page_pool->slots - 1;
- 	head = page_pool->head;
+--- a/sound/pci/ac97/ac97_codec.c
++++ b/sound/pci/ac97/ac97_codec.c
+@@ -958,8 +958,8 @@ static int snd_ac97_ad18xx_pcm_get_volum
+ 	int codec = kcontrol->private_value & 3;
+ 	
+ 	mutex_lock(&ac97->page_mutex);
+-	ucontrol->value.integer.value[0] = 31 - ((ac97->spec.ad18xx.pcmreg[codec] >> 0) & 31);
+-	ucontrol->value.integer.value[1] = 31 - ((ac97->spec.ad18xx.pcmreg[codec] >> 8) & 31);
++	ucontrol->value.integer.value[0] = 31 - ((ac97->spec.ad18xx.pcmreg[codec] >> 8) & 31);
++	ucontrol->value.integer.value[1] = 31 - ((ac97->spec.ad18xx.pcmreg[codec] >> 0) & 31);
+ 	mutex_unlock(&ac97->page_mutex);
+ 	return 0;
+ }
 
 
