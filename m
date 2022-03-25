@@ -2,72 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 752EAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:42:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A438C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:43:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231254AbiCYTo2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:44:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42512 "EHLO
+        id S231494AbiCYToc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:44:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231640AbiCYTnL (ORCPT
+        with ESMTP id S231786AbiCYTnT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:43:11 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 508F2204AB6;
-        Fri, 25 Mar 2022 12:17:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=6slMIQlhEqm87aKxVQg6SnauUicp81NuO6xcMEdN73M=; b=BP
-        SO9Ml0OnSkpW7WifUh6kWImgj8T0kfL25nez69TyGP1u6AZ+EAy6L9s0T3rV+1/8WTNkvKECPLwKk
-        IK4c6S6fuKHNY1mGqxZH+GTViqoEKp98xLkHZauahf6tvvKvNL2Yb6K75ZrvMZWXtsfNs8WzfBjsS
-        GdpZlNEQCGuAJ9c=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nXopM-00Cg15-MW; Fri, 25 Mar 2022 19:38:24 +0100
-Date:   Fri, 25 Mar 2022 19:38:24 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [net-next 1/5] net: mdio: fwnode: add fwnode_mdiobus_register()
-Message-ID: <Yj4MIIu7Qtvv25Fs@lunn.ch>
-References: <20220325172234.1259667-1-clement.leger@bootlin.com>
- <20220325172234.1259667-2-clement.leger@bootlin.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220325172234.1259667-2-clement.leger@bootlin.com>
+        Fri, 25 Mar 2022 15:43:19 -0400
+Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 408143E983D;
+        Fri, 25 Mar 2022 12:17:03 -0700 (PDT)
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-dacc470e03so9036016fac.5;
+        Fri, 25 Mar 2022 12:17:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=TD21QR0lMMXUO0nMDIjOEtGgypHb96HYAdoM26wDIGs=;
+        b=Kawmhyol/R7LaoFp/f4ylvTPV4fSXjgAM8+vi/6h2/Qe9TTxRs7JIskH2WahJPQOBB
+         SJThg9Iz8uSpArJ1cIR+wOSvDuhiGXWSOXh4VsEIdnDklfDPxz4fFz6uvACXpofPcIeH
+         NmvI3xYkBo6u6rGmSWlpJ5GVIL6HMLCOpbdenOXDNiGjazFG9Zf4eHfwtTjMmzHuGAKu
+         F4/Srdj6JWVSO0lrzWcimlS3UQcX5z3D8O+ZxIi/APyHh7JaKBKW9K2cj9E3a/uV7osc
+         k1mfTFNy5MKgxM7uuWjqCc3MHrllFgXPih4pYow8yZJDC40DsHJ0hqYGyQOY+1u8pysQ
+         adgA==
+X-Gm-Message-State: AOAM5338MAkNLlTofiN94UdNWJkwFssMxCYishZfQOYNf828+2lmkeHc
+        qiAi/JAzxPGWxZ0VSxvV0Dtl9AM84Q==
+X-Google-Smtp-Source: ABdhPJxRhOXEGGu66qd3lltmMOUhaUE/Q4GESm8rEHbUQJkl8rylAaxB9T48w92FhlgVax8cPtc3MA==
+X-Received: by 2002:a54:480b:0:b0:2ef:8e00:155b with SMTP id j11-20020a54480b000000b002ef8e00155bmr7912769oij.164.1648233804356;
+        Fri, 25 Mar 2022 11:43:24 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id k4-20020a9d4b84000000b005b2310ebdffsm3052644otf.54.2022.03.25.11.43.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Mar 2022 11:43:23 -0700 (PDT)
+Received: (nullmailer pid 210218 invoked by uid 1000);
+        Fri, 25 Mar 2022 18:43:22 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Guillaume Ranquet <granquet@baylibre.com>
+Cc:     deller@gmx.de, linux-fbdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        vkoul@kernel.org, jitao.shi@mediatek.com, mripard@kernel.org,
+        matthias.bgg@gmail.com, kishon@ti.com,
+        linux-phy@lists.infradead.org, airlied@linux.ie,
+        markyacoub@google.com, chunfeng.yun@mediatek.com,
+        robh+dt@kernel.org, Markus Schneider-Pargmann <msp@baylibre.com>,
+        dri-devel@lists.freedesktop.org, ck.hu@mediatek.com,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        angelogioacchino.delregno@collabora.com, chunkuang.hu@kernel.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        tzimmermann@suse.de, p.zabel@pengutronix.de,
+        maarten.lankhorst@linux.intel.com, daniel@ffwll.ch
+In-Reply-To: <20220325171511.23493-3-granquet@baylibre.com>
+References: <20220325171511.23493-1-granquet@baylibre.com> <20220325171511.23493-3-granquet@baylibre.com>
+Subject: Re: [PATCH 02/22] dt-bindings: mediatek,dp: Add Display Port binding
+Date:   Fri, 25 Mar 2022 13:43:22 -0500
+Message-Id: <1648233802.138910.210217.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 06:22:30PM +0100, Clément Léger wrote:
-> In order to support software node description transparently, add fwnode
-> support with fwnode_mdiobus_register(). This function behaves exactly
-> like of_mdiobus_register() function but using the fwnode node agnostic
-> API. This support might also be used to merge ACPI mdiobus support
-> which is quite similar to the fwnode one.
+On Fri, 25 Mar 2022 18:14:51 +0100, Guillaume Ranquet wrote:
+> From: Markus Schneider-Pargmann <msp@baylibre.com>
 > 
-> Some part such as the whitelist matching are kept exclusively for OF
-> nodes since it uses an of_device_id struct and seems tightly coupled
-> with OF. Other parts are generic and will allow to move the existing
-> OF support on top of this fwnode version.
+> This controller is present on several mediatek hardware. Currently
+> mt8195 and mt8395 have this controller without a functional difference,
+> so only one compatible field is added.
+> 
+> The controller can have two forms, as a normal display port and as an
+> embedded display port.
+> 
+> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../display/mediatek/mediatek,dp.yaml         | 97 +++++++++++++++++++
+>  1 file changed, 97 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,dp.yaml
+> 
 
-Does fwnode have any documentation? How does a developer know what
-properties can be passed? Should you be adding a
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Documentation/fwnode/bindings/net/mdio.yaml ?
+yamllint warnings/errors:
 
-	Andrew
+dtschema/dtc warnings/errors:
+Documentation/devicetree/bindings/display/mediatek/mediatek,dp.example.dts:24:18: fatal error: dt-bindings/power/mt8195-power.h: No such file or directory
+   24 |         #include <dt-bindings/power/mt8195-power.h>
+      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+make[1]: *** [scripts/Makefile.lib:378: Documentation/devicetree/bindings/display/mediatek/mediatek,dp.example.dt.yaml] Error 1
+make[1]: *** Waiting for unfinished jobs....
+make: *** [Makefile:1398: dt_binding_check] Error 2
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/1609494
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
