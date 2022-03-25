@@ -2,100 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB8D1C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:50:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AEE6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:50:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231576AbiCYTwQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:52:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39306 "EHLO
+        id S231866AbiCYTwb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:52:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231549AbiCYTvt (ORCPT
+        with ESMTP id S231689AbiCYTwQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:51:49 -0400
-Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9A8114F11D
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:37:22 -0700 (PDT)
-Received: by mail-il1-x129.google.com with SMTP id 14so1194700ily.11
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:37:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=r+I5kgyO1tHgpBki5iRD8MjPGB+7NsBMCsnuZBuuE14=;
-        b=MqzuSUS0yr/bPjYga/LEvUUNISlNPEafGymcHkHdDo8eBX7GHuzf6g/+kmf1KtFnxZ
-         bTDwiRZWThL8Xi79vFyjF5gbvRgB1jkq42i+mjP3YSVt2Xw310TWdk6Rzk6jKRAdeDfZ
-         aQEhrHQGJCIvIk+EpnbENPp1prNGxCxUVBwzA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=r+I5kgyO1tHgpBki5iRD8MjPGB+7NsBMCsnuZBuuE14=;
-        b=iGEmo1FBA6gyZu9hHrHs+yzFSKj2h+FslHd1ea+EX/lGZk880s3BvyCgxd7vnpk4wD
-         hcYe2pTQQtqtcT+rdFVoBR3g4Tn8FQfCRxEqHJxJ7DrrWMaVz7nkkbfllHKa+3xnub35
-         Zz90llXSQLSI/QNb0FAPmCCygloIeZxQrwuKdulMwSMXc5GsEeTSTwRCZ8DfqcajOXID
-         CVEhKoWz1oKxAkKBPkxGWtuN3OLn1Lt8R7A0fzlA6zZU89RpMdFdjZM2tg4N+vG+lDcb
-         y60tj1Oato+NN0lLPgWZDkGPoStqQ+OziaAASicLpl+rWzG9EX61qpIoaTNp1H0dvQX4
-         Lz1Q==
-X-Gm-Message-State: AOAM53280w+QsSSUvf2UcbszRX7KMlEhS4QshkyHSzIkb/j5NC7FuhlL
-        G0hsmTnuDnLawQh0FsmBxsy6fg==
-X-Google-Smtp-Source: ABdhPJxOiBqtQQ67WxLOxsMZLU4xmrMIRljTj398xq62z9MSAACWfwac6+zmpEx65WXMd4V0g5PdDg==
-X-Received: by 2002:a92:d09:0:b0:2c3:f141:848b with SMTP id 9-20020a920d09000000b002c3f141848bmr137372iln.230.1648237042167;
-        Fri, 25 Mar 2022 12:37:22 -0700 (PDT)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id d14-20020a056602184e00b00649673c175asm3449967ioi.25.2022.03.25.12.37.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Mar 2022 12:37:21 -0700 (PDT)
-Subject: Re: [PATCH 1/2] selftests/harness: Run TEARDOWN for ASSERT failures
-To:     Kees Cook <keescook@chromium.org>, shuah@kernel.org
-Cc:     Andy Lutomirski <luto@amacapital.net>,
-        Will Drewry <wad@chromium.org>,
-        linux-kselftest@vger.kernel.org,
-        Willem de Bruijn <willemb@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220324231907.1363887-1-keescook@chromium.org>
- <20220324231907.1363887-2-keescook@chromium.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <f705c381-cbe6-0862-e10f-44f2afdef24d@linuxfoundation.org>
-Date:   Fri, 25 Mar 2022 13:37:20 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Fri, 25 Mar 2022 15:52:16 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F1D17B8AB;
+        Fri, 25 Mar 2022 12:37:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=+YSGzMp9SBuqTEcUN1kImZMU6TG8MWr4+adML0IsDwo=; b=NNUVZcwrNcGvZqy+FtCK+vjHK1
+        rGuWH6snGdJqekmk4+kkJzT56eR4JXYWoV1Nf3dHY290fUeHpSPOdUuTzo2Q7oIO7jh/jRev7qE9J
+        ToiSYUW+8thZXi3GzQlflUF9VcBYHkDAPqmRDkVW1Lz6KME2HQGPqdd1RL3rzVGLVBB4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nXpkn-00CgP5-1I; Fri, 25 Mar 2022 20:37:45 +0100
+Date:   Fri, 25 Mar 2022 20:37:45 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Meng Tang <tangmeng@uniontech.com>
+Cc:     stas.yakovlev@gmail.com, kvalo@kernel.org, kuba@kernel.org,
+        pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ipw2200: Fix permissions setted by DEVICE_ATTR
+Message-ID: <Yj4aCUlGY12VvuI/@lunn.ch>
+References: <20220325074141.17446-1-tangmeng@uniontech.com>
 MIME-Version: 1.0
-In-Reply-To: <20220324231907.1363887-2-keescook@chromium.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220325074141.17446-1-tangmeng@uniontech.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/24/22 5:19 PM, Kees Cook wrote:
-> The kselftest test harness has traditionally not run the registered
-> TEARDOWN handler when a test encountered an ASSERT. This creates
-> unexpected situations and tests need to be very careful about using
-> ASSERT, which seems a needless hurdle for test writers.
+On Fri, Mar 25, 2022 at 03:41:41PM +0800, Meng Tang wrote:
+> Because xcode_version and rtc only implement the show function
+> and do not provide the store function, so ucode_version and rtc
+> only need the read permission, not need the write permission more.
 > 
-> Because of the harness's design for optional failure handlers, the
-> original implementation of ASSERT used an abort() to immediately
-> stop execution, but that meant the context for running teardown was
-> lost. Instead, use setjmp/longjmp so that teardown can be done.
+> So, remove the write permission from xcode_version and rtc.
 > 
+> Signed-off-by: Meng Tang <tangmeng@uniontech.com>
+> ---
+>  drivers/net/wireless/intel/ipw2x00/ipw2200.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/intel/ipw2x00/ipw2200.c b/drivers/net/wireless/intel/ipw2x00/ipw2200.c
+> index 6830e88c4ed6..fa4f38d54d0a 100644
+> --- a/drivers/net/wireless/intel/ipw2x00/ipw2200.c
+> +++ b/drivers/net/wireless/intel/ipw2x00/ipw2200.c
+> @@ -1578,7 +1578,7 @@ static ssize_t show_ucode_version(struct device *d,
+>  	return sprintf(buf, "0x%08x\n", tmp);
+>  }
+>  
+> -static DEVICE_ATTR(ucode_version, 0644, show_ucode_version, NULL);
+> +static DEVICE_ATTR(ucode_version, 0444, show_ucode_version, NULL);
 
-Thanks for the patch. The change look good to me.
+DEVICE_ATTR_RO() exists to make this more obvious. But it looks like
+you would need to rename the show_ucode_version() to
+ucode_version_show() in order to use it.
 
-> Failed SETUP routines continue to not be followed by TEARDOWN, though.
-
-Does this mean failed setup() routines have to handle TEARDOWN? What
-are guidelines to follow for setup() failures?
-
-Can you add a bit more detail on what you meant by " Failed SETUP
-routines continue to not be followed by TEARDOWN, though".
-
-With that:
-
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-
-thanks,
--- Shuah
+     Andrew
