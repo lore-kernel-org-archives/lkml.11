@@ -2,96 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2A9FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:47:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83FB0C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:47:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231163AbiCYTtY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:49:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36130 "EHLO
+        id S231577AbiCYTt3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:49:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231653AbiCYTrq (ORCPT
+        with ESMTP id S232691AbiCYTsp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:47:46 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D9521753AF
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:30:45 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id v2-20020a7bcb42000000b0037b9d960079so9599732wmj.0
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:30:45 -0700 (PDT)
+        Fri, 25 Mar 2022 15:48:45 -0400
+Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EB09220FD8
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:32:07 -0700 (PDT)
+Received: by mail-qv1-xf2e.google.com with SMTP id a5so7028039qvx.1
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:32:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:organization:in-reply-to:content-transfer-encoding;
-        bh=4au4HQJoqTVH7QuLfTG0ctyg44Z9i1a4JMpNhX3HXmE=;
-        b=fHaI5D6OllN0BflSbbgRLyRyoFi34rIUMZTPyE+6vre/pNCfg/y6/Hu/vsRiqRgDjo
-         nLfNjlhpv5j+4EHsWTCq+g85rIB7CPeMArzmGXer2e0cXNVxVtgFdttB7JdGUZ1Gw+tz
-         G/a9fEmSsa7MrfkHt5apOHfDkt4Rnu/OAhCqKw3UoXBuEEJpc0MniybM/pQ2h6vEhpln
-         3Ys8iW6T+xfrKN9yBM1s7MTyv+GZkJ0E36sgSUcPenLbcL79FW5aiOL55DgDTCphx5ye
-         GoNw2zFKY21asbuaxzIqfufo3XDO8NhSfRrWmRFqeQCOzL/aYIjUMYGRA4m8X3hIPcQM
-         movg==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=WDLVL2CBtTtmZ03hvae7Gda3UiodG88S9fzgPpRXpvw=;
+        b=OiWmJSqsd56fJnsMw7vy14nT7y4RqvdUDtzT0hRVl8eJM8j+kwYhzyKSXtH1X0btj+
+         gF6iVne9zsezOcHNXAWwuNmE+7+4oXfeQ3zzCnBO1EMiKA0V4JaqdB1fUHTpBZyfP16f
+         mv5riwoU/Uzt2nQrsxTceBnO5Q8peVyJiIhNvjpN/r8ZKS/IRxBoZAY4eQgLXM1yU1wf
+         RuyTp3+5TNjAhKRzpedRkXInlLXr+vIIQN8Ju/9g6WcTI/Q1Gx2gMlDHTgUo7q67SlIA
+         XglOP+lMKdSyY9n3ZWaZDOe94rZRoU4QCqE3q5wD7lW1aIZ4E8iuhVq7n2Jf9qIqBUb6
+         mz9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=4au4HQJoqTVH7QuLfTG0ctyg44Z9i1a4JMpNhX3HXmE=;
-        b=NXYiklvnwdYybySwOd3pd18inS7Sp/6qVAmIIT6bBXKJK8YYR/bDosyU2QQILsKMzB
-         904OD87AizRbNxQK/MnrPmWLsZFT2e3Ym5EQDL0KFLl6dFHRe5qbYttYtV1BZOL+RYmq
-         wFeuke2Fyt8ImcdOnsFUC+bb5R0O91eU4DCHZBTkjxfPSSZPp4zh699FsOkfFR+UY809
-         OL1y1Dy3AWAZW51Sq8MPZBWr6zlVAuw6VVyrTBYyDhwOh3ZIPIj0mshTRbe7R9QnXOgw
-         +KwxooF0azXjWnuZheTC/I8E2czv9+6brFfo7ZKKXsb3AdC4ge+80vEvutfmaTs0Pxln
-         yfXA==
-X-Gm-Message-State: AOAM530Ne5rKYA6nw8154owRVv3q9CTO8wSRBWcXEqEyOAe8Pjv3AAzF
-        PqvxH2Mu7iyrdY/XrvfyzO9odPId+AL6F4Ml
-X-Google-Smtp-Source: ABdhPJz/V+jMzW2tGs/g4V4RP3QBLNrE9pk5MgdSkzns2BmU5yeIbnWkFVw5TIqLNLr7zmOsb7wWwQ==
-X-Received: by 2002:a05:600c:19ca:b0:38c:a190:9a0f with SMTP id u10-20020a05600c19ca00b0038ca1909a0fmr20524715wmq.57.1648229643918;
-        Fri, 25 Mar 2022 10:34:03 -0700 (PDT)
-Received: from ?IPV6:2001:861:44c0:66c0:d3b0:47bd:8485:31cd? ([2001:861:44c0:66c0:d3b0:47bd:8485:31cd])
-        by smtp.gmail.com with ESMTPSA id 7-20020a05600c028700b0038cc9bfe6a4sm4734266wmk.37.2022.03.25.10.34.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Mar 2022 10:34:03 -0700 (PDT)
-Message-ID: <394573e1-0786-75ef-65fa-4b75d57714f2@baylibre.com>
-Date:   Fri, 25 Mar 2022 18:34:02 +0100
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WDLVL2CBtTtmZ03hvae7Gda3UiodG88S9fzgPpRXpvw=;
+        b=J8Rr9zzmkHRN91ThANvJspQ+SgKlE7yXNqyrJ8tzTY0do4D+d3x+5j8kCC/yWgyqeu
+         KGnA70iXsjWb9hTMU/9N/Sc/Ygm64r+9GGHnoDFb4nB20bmpUoBu7ey+KnGJgSIhQeUj
+         4P+YuM0z+nD9/ulZJD84ChrbEWgotBLcgSI8HmL89leQtf6WHuMGLdc6R0bZzTthkouz
+         Ekue1b23WI5FlyMVlas62lLIXnmz3wCZj1sMOtTK+uMY/lCLqCaXWEFlCYYwEGE2367p
+         PGowOHj1RYX18EvAT20lbNASKekSu6gYTJhOf5bnnTHlp7rBf0cGWKTv7HyZi/YHqe60
+         wlOg==
+X-Gm-Message-State: AOAM533/wScyHy/XAM3B+AzUldDDaJfN8XjG7WIG5Rweg77NOIquCESe
+        mCjVNmwy58HD6MlO9LXxHWNblkpwoPRQ8g==
+X-Google-Smtp-Source: ABdhPJx4UuZpPPNTjdIKS58siaD7XKd04M0BmM0IvWb3s03mLNTfP7MWSWNilRuPWBWICiRC4ete5Q==
+X-Received: by 2002:a05:6a00:98e:b0:4fb:1162:b2a5 with SMTP id u14-20020a056a00098e00b004fb1162b2a5mr4155395pfg.12.1648228956842;
+        Fri, 25 Mar 2022 10:22:36 -0700 (PDT)
+Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
+        by smtp.gmail.com with ESMTPSA id 16-20020a17090a005000b001c7511dc31esm6674946pjb.41.2022.03.25.10.22.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Mar 2022 10:22:35 -0700 (PDT)
+Date:   Fri, 25 Mar 2022 11:22:33 -0600
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     "S.J. Wang" <shengjiu.wang@nxp.com>
+Cc:     "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
+        "linux-remoteproc@vger.kernel.org" <linux-remoteproc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "shengjiu.wang@gmail.com" <shengjiu.wang@gmail.com>
+Subject: Re: [PATCH] remoteproc: core: Remove state checking before changing
+ state
+Message-ID: <20220325172233.GB3576184@p14s>
+References: <PAXPR04MB9089EC1B959187335D00953BE31A9@PAXPR04MB9089.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 0/3] arm64: meson: update dts for JetHub devices
-Content-Language: en-US
-To:     Vyacheslav Bocharov <adeep@lexina.in>,
-        Kevin Hilman <khilman@baylibre.com>,
-        linux-amlogic@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-References: <20220325165501.81551-1-adeep@lexina.in>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-Organization: Baylibre
-In-Reply-To: <20220325165501.81551-1-adeep@lexina.in>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <PAXPR04MB9089EC1B959187335D00953BE31A9@PAXPR04MB9089.eurprd04.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Fri, Mar 25, 2022 at 03:44:20AM +0000, S.J. Wang wrote:
+> Hi
+> 
+> > >
+> > > There is no mutex protecting of these state checking, which can't
+> > > garantee there is no another instance is trying to do same operation.
+> > >
+> > > The reference counter rproc->power is used to manage state changing
+> > > and there is mutex protection in each operation function for multi
+> > > instance case.
+> > >
+> > > So remove this state checking in rproc_cdev_write() and state_store(),
+> > > just let reference counter rproc->power to manage the behaviors.
+> > >
+> > > Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+> > > ---
+> > >  drivers/remoteproc/remoteproc_cdev.c  | 11 -----------
+> > > drivers/remoteproc/remoteproc_sysfs.c | 11 -----------
+> > >  2 files changed, 22 deletions(-)
+> > >
+> > > diff --git a/drivers/remoteproc/remoteproc_cdev.c
+> > > b/drivers/remoteproc/remoteproc_cdev.c
+> > > index 906ff3c4dfdd..687f205fd70a 100644
+> > > --- a/drivers/remoteproc/remoteproc_cdev.c
+> > > +++ b/drivers/remoteproc/remoteproc_cdev.c
+> > > @@ -32,21 +32,10 @@ static ssize_t rproc_cdev_write(struct file *filp,
+> > const char __user *buf, size_
+> > >                 return -EFAULT;
+> > >
+> > >         if (!strncmp(cmd, "start", len)) {
+> > > -               if (rproc->state == RPROC_RUNNING ||
+> > > -                   rproc->state == RPROC_ATTACHED)
+> > > -                       return -EBUSY;
+> > > -
+> > >                 ret = rproc_boot(rproc);
+> > >         } else if (!strncmp(cmd, "stop", len)) {
+> > > -               if (rproc->state != RPROC_RUNNING &&
+> > > -                   rproc->state != RPROC_ATTACHED)
+> > > -                       return -EINVAL;
+> > > -
+> > >                 ret = rproc_shutdown(rproc);
+> > >         } else if (!strncmp(cmd, "detach", len)) {
+> > > -               if (rproc->state != RPROC_ATTACHED)
+> > > -                       return -EINVAL;
+> > > -
+> > >                 ret = rproc_detach(rproc);
+> > >         } else {
+> > >                 dev_err(&rproc->dev, "Unrecognized option\n"); diff
+> > > --git a/drivers/remoteproc/remoteproc_sysfs.c
+> > > b/drivers/remoteproc/remoteproc_sysfs.c
+> > > index 51a04bc6ba7a..8c7ea8922638 100644
+> > > --- a/drivers/remoteproc/remoteproc_sysfs.c
+> > > +++ b/drivers/remoteproc/remoteproc_sysfs.c
+> > > @@ -194,23 +194,12 @@ static ssize_t state_store(struct device *dev,
+> > >         int ret = 0;
+> > >
+> > >         if (sysfs_streq(buf, "start")) {
+> > > -               if (rproc->state == RPROC_RUNNING ||
+> > > -                   rproc->state == RPROC_ATTACHED)
+> > > -                       return -EBUSY;
+> > > -
+> > 
+> > As per my previous comment the above conditions need to be moved into
+> > rproc_boot().
+> > 
+> > >                 ret = rproc_boot(rproc);
+> > >                 if (ret)
+> > >                         dev_err(&rproc->dev, "Boot failed: %d\n", ret);
+> > >         } else if (sysfs_streq(buf, "stop")) {
+> > > -               if (rproc->state != RPROC_RUNNING &&
+> > > -                   rproc->state != RPROC_ATTACHED)
+> > > -                       return -EINVAL;
+> > > -
+> > >                 ret = rproc_shutdown(rproc);
+> > >         } else if (sysfs_streq(buf, "detach")) {
+> > > -               if (rproc->state != RPROC_ATTACHED)
+> > > -                       return -EINVAL;
+> > > -
+> > 
+> > This patch should have been part of a patch series with your other work sent
+> > on March 18th[1].
+> > 
+> > Thanks,
+> > Mathieu
+> > 
+> > [1]. [PATCH] remoteproc: core: check rproc->power value before decreasing
+> > it
+> > 
+> 
+> Thanks for the comments.
+> I still have one question, if there are two instances independently to 'start'
+> 'stop' remoteproc, for example:
+> 
+> Instance1: echo start > /sys/class/remoteproc/remoteproc0/state
+> Instance2: echo start > /sys/class/remoteproc/remoteproc0/state
+> 
+> ...
+> 
+> Instance2: echo stop > /sys/class/remoteproc/remoteproc0/state
+> ...
+> Instance1: echo stop > /sys/class/remoteproc/remoteproc0/state
+> 
+> When instance2 'stop' the remoteproc, then instance1 will be impacted for
+> It still needs the service from remoteproc.
+> 
+> That's why I just removed of the checking state, didn't move them to
+> rproc_boot()/rproc_shutdown()/rproc_detach(). And in order to utilize
+> the reference counter (rproc->power) to handle the multi-instance case.
 
-On 25/03/2022 17:54, Vyacheslav Bocharov wrote:
-> Update dts for JetHub H1:
-> - add bluetooth node for RTL8822CS uart port
-> 
-> Update dts for JetHub D1:
-> - add ZigBee serial alias (ttyAML2) for backward compatibility
-> - update voltage regulators and SDIO config to match board's reference design
-> 
-> Vyacheslav Bocharov (3):
->    arm64: meson: add to dts for JetHub H1 bluetooth node
->    arm64: meson: dts: update dts for JetHub D1
->    arm64: meson: fix sdio in dts for JetHub D1
-> 
->   .../amlogic/meson-axg-jethome-jethub-j100.dts   | 17 +++++++++++++----
->   .../meson-gxl-s905w-jethome-jethub-j80.dts      |  5 +++++
->   2 files changed, 18 insertions(+), 4 deletions(-)
-> 
+Thanks for the exta information, now I understand the problem.  The above should
+be part of the changelog.
 
-Can you add Fixes: tag in all patches so they get backported ?
+There are two problems here:
+
+1) Dealing with race conditions when checking the state of a remote processor.
+2) Properly dealing with the remote processor's reference count.
+
+For the first one, state checks control the remote processor state machine and
+can't simply be removed.  They have to be brought inside the mutex lock in order
+to avoid race conditions when multiple users interact with the remote processor.
+
+For the second one, moving the rproc->state checks inside the mutex lock in
+rproc_shutdown() and rproc_detach() will work with the rproc->power check.
+
+The problem is with rproc_boot().  For (at least) two years now we have lost
+the capability to increase the rproc->power reference count from sysfs and the
+cdev interface due to the rproc-state checks in state_store() and
+rproc_cdev_write().  I think that should be corrected but it will introduce a
+user space visible change, which needs to be treated carefully.
+
+With the above in mind, please send a patchset that includes one patch that
+removes the rproc->state checks from the "start" command in state_store() and
+rproc_cdev_write().  The other patch should move the rproc->state checks for the
+"stop" and "detach" command inside rproc_shutdown() and rproc_detach().
+
+With that we can start a discussion on the best way to proceed.
 
 Thanks,
-Neil
+Mathieu
+
+> 
+> 
+> Best regards
+> Wang Shengjiu
