@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB6BAC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA4F2C3527A
 	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377912AbiCYPeO (ORCPT
+        id S1377848AbiCYPeL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:34:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58742 "EHLO
+        Fri, 25 Mar 2022 11:34:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377548AbiCYPYQ (ORCPT
+        with ESMTP id S1377481AbiCYPYM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:24:16 -0400
+        Fri, 25 Mar 2022 11:24:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F1F16A048;
-        Fri, 25 Mar 2022 08:18:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0C3627B08;
+        Fri, 25 Mar 2022 08:18:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A1D860AB7;
-        Fri, 25 Mar 2022 15:18:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 667D7C340E9;
-        Fri, 25 Mar 2022 15:18:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AFE1D60A1B;
+        Fri, 25 Mar 2022 15:18:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF2B1C340E9;
+        Fri, 25 Mar 2022 15:18:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221492;
-        bh=RtcrWv71LawqW2gb4kXuopo9Py0Hrh53bhUlN+ns+ms=;
+        s=korg; t=1648221484;
+        bh=JCOVLHohscIa00QIH1ZFiQHu3Zt5Fac47pp88wkyeaI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0v3k+Y2r4774wkYZRDJm+KcLWPElMtfg0nkkIICRBtPEYjJ2jbrvYL0HR3JSimA0/
-         xipdqWmfK3K073YyhROKaN3XDAZ2FTWSk5pMnsltgjfF7PmmeNBhezH/UEmJZXMQB8
-         VqEF59nTC84kEp6Dg50xyNxx6Ah5y51Wv5Yo7KI4=
+        b=Wzuzrd1mMtm6ShMlINRBcSejd/ky1INO+WpnL597n+3Aq8vqPwGy8k1qoRH37Z/jo
+         FGwL+YE0ZbPfKX04Yvpjn6tGgcogSsYuR4OESVchG6gwF2fmviLViBr0hSLRC+q3vy
+         rWgiwDltRZrVFnBJFgjyoE4HdpxfW3qWjr+gBoyM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.16 23/37] netfilter: nf_tables: validate registers coming from userspace.
-Date:   Fri, 25 Mar 2022 16:14:33 +0100
-Message-Id: <20220325150420.707230869@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Giacomo Guiduzzi <guiduzzi.giacomo@gmail.com>,
+        Paolo Valente <paolo.valente@linaro.org>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.16 20/37] ALSA: pci: fix reading of swapped values from pcmreg in AC97 codec
+Date:   Fri, 25 Mar 2022 16:14:30 +0100
+Message-Id: <20220325150420.623331887@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150420.046488912@linuxfoundation.org>
 References: <20220325150420.046488912@linuxfoundation.org>
@@ -48,71 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Giacomo Guiduzzi <guiduzzi.giacomo@gmail.com>
 
-commit 6e1acfa387b9ff82cfc7db8cc3b6959221a95851 upstream.
+commit 17aaf0193392cb3451bf0ac75ba396ec4cbded6e upstream.
 
-Bail out in case userspace uses unsupported registers.
+Tests 72 and 78 for ALSA in kselftest fail due to reading
+inconsistent values from some devices on a VirtualBox
+Virtual Machine using the snd_intel8x0 driver for the AC'97
+Audio Controller device.
+Taking for example test number 72, this is what the test reports:
+"Surround Playback Volume.0 expected 1 but read 0, is_volatile 0"
+"Surround Playback Volume.1 expected 0 but read 1, is_volatile 0"
+These errors repeat for each value from 0 to 31.
 
-Fixes: 49499c3e6e18 ("netfilter: nf_tables: switch registers to 32 bit addressing")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Taking a look at these error messages it is possible to notice
+that the written values are read back swapped.
+When the write is performed, these values are initially stored in
+an array used to sanity-check them and write them in the pcmreg
+array. To write them, the two one-byte values are packed together
+in a two-byte variable through bitwise operations: the first
+value is shifted left by one byte and the second value is stored in the
+right byte through a bitwise OR. When reading the values back,
+right shifts are performed to retrieve the previously stored
+bytes. These shifts are executed in the wrong order, thus
+reporting the values swapped as shown above.
+
+This patch fixes this mistake by reversing the read
+operations' order.
+
+Signed-off-by: Giacomo Guiduzzi <guiduzzi.giacomo@gmail.com>
+Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220322200653.15862-1-guiduzzi.giacomo@gmail.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_api.c |   22 +++++++++++++++++-----
- 1 file changed, 17 insertions(+), 5 deletions(-)
+ sound/pci/ac97/ac97_codec.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -9208,17 +9208,23 @@ int nft_parse_u32_check(const struct nla
+--- a/sound/pci/ac97/ac97_codec.c
++++ b/sound/pci/ac97/ac97_codec.c
+@@ -938,8 +938,8 @@ static int snd_ac97_ad18xx_pcm_get_volum
+ 	int codec = kcontrol->private_value & 3;
+ 	
+ 	mutex_lock(&ac97->page_mutex);
+-	ucontrol->value.integer.value[0] = 31 - ((ac97->spec.ad18xx.pcmreg[codec] >> 0) & 31);
+-	ucontrol->value.integer.value[1] = 31 - ((ac97->spec.ad18xx.pcmreg[codec] >> 8) & 31);
++	ucontrol->value.integer.value[0] = 31 - ((ac97->spec.ad18xx.pcmreg[codec] >> 8) & 31);
++	ucontrol->value.integer.value[1] = 31 - ((ac97->spec.ad18xx.pcmreg[codec] >> 0) & 31);
+ 	mutex_unlock(&ac97->page_mutex);
+ 	return 0;
  }
- EXPORT_SYMBOL_GPL(nft_parse_u32_check);
- 
--static unsigned int nft_parse_register(const struct nlattr *attr)
-+static unsigned int nft_parse_register(const struct nlattr *attr, u32 *preg)
- {
- 	unsigned int reg;
- 
- 	reg = ntohl(nla_get_be32(attr));
- 	switch (reg) {
- 	case NFT_REG_VERDICT...NFT_REG_4:
--		return reg * NFT_REG_SIZE / NFT_REG32_SIZE;
-+		*preg = reg * NFT_REG_SIZE / NFT_REG32_SIZE;
-+		break;
-+	case NFT_REG32_00...NFT_REG32_15:
-+		*preg = reg + NFT_REG_SIZE / NFT_REG32_SIZE - NFT_REG32_00;
-+		break;
- 	default:
--		return reg + NFT_REG_SIZE / NFT_REG32_SIZE - NFT_REG32_00;
-+		return -ERANGE;
- 	}
-+
-+	return 0;
- }
- 
- /**
-@@ -9260,7 +9266,10 @@ int nft_parse_register_load(const struct
- 	u32 reg;
- 	int err;
- 
--	reg = nft_parse_register(attr);
-+	err = nft_parse_register(attr, &reg);
-+	if (err < 0)
-+		return err;
-+
- 	err = nft_validate_register_load(reg, len);
- 	if (err < 0)
- 		return err;
-@@ -9315,7 +9324,10 @@ int nft_parse_register_store(const struc
- 	int err;
- 	u32 reg;
- 
--	reg = nft_parse_register(attr);
-+	err = nft_parse_register(attr, &reg);
-+	if (err < 0)
-+		return err;
-+
- 	err = nft_validate_register_store(ctx, reg, data, type, len);
- 	if (err < 0)
- 		return err;
 
 
