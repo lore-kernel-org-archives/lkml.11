@@ -2,115 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 473D0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FC50C35294
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378563AbiCYPfC (ORCPT
+        id S1378606AbiCYPfM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:35:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49744 "EHLO
+        Fri, 25 Mar 2022 11:35:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378884AbiCYP0A (ORCPT
+        with ESMTP id S1377745AbiCYPYc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:26:00 -0400
-Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE4CA6542D;
-        Fri, 25 Mar 2022 08:24:24 -0700 (PDT)
-Received: by mail-qv1-xf2d.google.com with SMTP id kl29so6467926qvb.2;
-        Fri, 25 Mar 2022 08:24:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=enC4Cm+VFbMXJ8ZY/YefPUBsSjow27Oy9HPQpG1Rb48=;
-        b=ACrIBionqSd/X6CKhpsW/3KWWBv+AQcW1cxaymUjdMARjWL8SmgP0GEnEsBCNL5RVC
-         fMNUcitspAP6r5FV360aMEy5nPmT2FucG1cYyQcolMW/nCLo4gI/DnmzNQN8Exjfe3gg
-         IPiP98sy+i44dBw6flJIZ8DaTJKgRYAEHSGFfuY0qNf2yatCdMgpSjhHbcJrvZYEFM5r
-         WoTkoW0z4Q8YPwsv+7qOFhLDaus5BHshWUuMra/JzT2QWAsr7Ge4zlFOtIvXUxexue9P
-         dhMsBIrznUZuk7MLHrK1wtBs7MpBCx1vN+URf3+muTPXIypmxlExuR3e/6V0q3EfrN/z
-         4uMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=enC4Cm+VFbMXJ8ZY/YefPUBsSjow27Oy9HPQpG1Rb48=;
-        b=LfuhV2YohWU72OeYV0cLjD1Ya21ZRbP2UA6z066SroI1FF7jAz8mwrjsHd2foJV0fE
-         6U6nLfku7TfSvRS3WuSAmkpyM+lbADw100DiR7oFZdSqcK0afL8ida5+XQ5h0Sge9vxV
-         tgRIMTo5z3EnwijCHVMuhW4lkYPCZ5TFu+ki6C05F+mpZv/AZiMZjcO/443ClvrXwGUq
-         nWaEIJPEhlQty07Hh8uP8clmXCOMa7aBmq+Nre4cMlaLl2Vj514HizcujR+QOyESYmqD
-         xGBpksMw0C6m9FQ7xOjZTUQElaMTwsFIGDk0NSrpXHIsa1DTRe4ReLX6RgPYnPDKuXc5
-         LCJA==
-X-Gm-Message-State: AOAM533DGzDVA3QBeOfgCA1FiuWillgDCqmJ51zjEzE4X8L6L0kjLDnT
-        9WIOgvR5vK6iLKV/kk6BijA=
-X-Google-Smtp-Source: ABdhPJwcFW7IuU2aDnnWZG2xVtc3QsgNnIq+THxh/PTZSZpAQDxVb1uGYe++SdRidNjxvcwGmijVMw==
-X-Received: by 2002:a05:6214:20a5:b0:440:f648:997d with SMTP id 5-20020a05621420a500b00440f648997dmr9582604qvd.130.1648221864117;
-        Fri, 25 Mar 2022 08:24:24 -0700 (PDT)
-Received: from [192.168.1.145] ([207.188.167.132])
-        by smtp.gmail.com with ESMTPSA id k1-20020ac85fc1000000b002e1c6420790sm5742466qta.40.2022.03.25.08.24.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Mar 2022 08:24:23 -0700 (PDT)
-Message-ID: <019b1a59-7531-75cf-3b86-d2798ca9823a@gmail.com>
-Date:   Fri, 25 Mar 2022 16:24:20 +0100
+        Fri, 25 Mar 2022 11:24:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFF5CE9976;
+        Fri, 25 Mar 2022 08:18:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E34360C86;
+        Fri, 25 Mar 2022 15:18:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 963E4C340E9;
+        Fri, 25 Mar 2022 15:18:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1648221532;
+        bh=cm0RYyJQcXqUnVI7HNk8immc7/DDIPAlvRgVNobGzO0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=cSWRVqgflFWDcR2w/bUMrZ074JRi+/tl6y0uhxMsgxQhERVm7GRoDUCBzQbT6Bciq
+         mizAyWqS/5UwBvZ+pkS8M2QrgiG1tCGt+ABAaSNZbuvYqc0RGm1YWP8IVB1oj/7kAo
+         ruI4O+i/4QSwxYiNZFdkWOle+khLtZsmCx8KfL9s=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Stephane Graber <stgraber@ubuntu.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.17 19/39] drivers: net: xgene: Fix regression in CRC stripping
+Date:   Fri, 25 Mar 2022 16:14:34 +0100
+Message-Id: <20220325150420.793222251@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220325150420.245733653@linuxfoundation.org>
+References: <20220325150420.245733653@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v4 17/22] arm64: dts: mt8192: Add dpi node
-Content-Language: en-US
-To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Ryder Lee <ryder.lee@kernel.org>,
-        Hui Liu <hui.liu@mediatek.com>
-References: <20220318144534.17996-1-allen-kh.cheng@mediatek.com>
- <20220318144534.17996-18-allen-kh.cheng@mediatek.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220318144534.17996-18-allen-kh.cheng@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Stephane Graber <stgraber@ubuntu.com>
+
+commit e9e6faeafaa00da1851bcf47912b0f1acae666b4 upstream.
+
+All packets on ingress (except for jumbo) are terminated with a 4-bytes
+CRC checksum. It's the responsability of the driver to strip those 4
+bytes. Unfortunately a change dating back to March 2017 re-shuffled some
+code and made the CRC stripping code effectively dead.
+
+This change re-orders that part a bit such that the datalen is
+immediately altered if needed.
+
+Fixes: 4902a92270fb ("drivers: net: xgene: Add workaround for errata 10GE_8/ENET_11")
+Cc: stable@vger.kernel.org
+Signed-off-by: Stephane Graber <stgraber@ubuntu.com>
+Tested-by: Stephane Graber <stgraber@ubuntu.com>
+Link: https://lore.kernel.org/r/20220322224205.752795-1-stgraber@ubuntu.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/ethernet/apm/xgene/xgene_enet_main.c |   12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+--- a/drivers/net/ethernet/apm/xgene/xgene_enet_main.c
++++ b/drivers/net/ethernet/apm/xgene/xgene_enet_main.c
+@@ -696,6 +696,12 @@ static int xgene_enet_rx_frame(struct xg
+ 	buf_pool->rx_skb[skb_index] = NULL;
+ 
+ 	datalen = xgene_enet_get_data_len(le64_to_cpu(raw_desc->m1));
++
++	/* strip off CRC as HW isn't doing this */
++	nv = GET_VAL(NV, le64_to_cpu(raw_desc->m0));
++	if (!nv)
++		datalen -= 4;
++
+ 	skb_put(skb, datalen);
+ 	prefetch(skb->data - NET_IP_ALIGN);
+ 	skb->protocol = eth_type_trans(skb, ndev);
+@@ -717,12 +723,8 @@ static int xgene_enet_rx_frame(struct xg
+ 		}
+ 	}
+ 
+-	nv = GET_VAL(NV, le64_to_cpu(raw_desc->m0));
+-	if (!nv) {
+-		/* strip off CRC as HW isn't doing this */
+-		datalen -= 4;
++	if (!nv)
+ 		goto skip_jumbo;
+-	}
+ 
+ 	slots = page_pool->slots - 1;
+ 	head = page_pool->head;
 
 
-On 18/03/2022 15:45, Allen-KH Cheng wrote:
-> Add dpi node for mt8192 SoC.
-> 
-> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-> ---
->   arch/arm64/boot/dts/mediatek/mt8192.dtsi | 11 +++++++++++
->   1 file changed, 11 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> index 71ad3adeed51..a77d405dd508 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> @@ -1236,6 +1236,17 @@
->   			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
->   		};
->   
-> +		dpi0: dpi@14016000 {
-> +			compatible = "mediatek,mt8192-dpi";
-> +			reg = <0 0x14016000 0 0x1000>;
-> +			interrupts = <GIC_SPI 270 IRQ_TYPE_LEVEL_HIGH 0>;
-> +			clocks = <&mmsys CLK_MM_DPI_DPI0>,
-> +				 <&mmsys CLK_MM_DISP_DPI0>,
-> +				 <&apmixedsys CLK_APMIXED_TVDPLL>;
-> +			clock-names = "pixel", "engine", "pll";
-> +			status = "disabled";
-
-We are missing the output port node here.
-
-Regards,
-Matthias
-
-> +		};
-> +
->   		iommu0: m4u@1401d000 {
->   			compatible = "mediatek,mt8192-m4u";
->   			reg = <0 0x1401d000 0 0x1000>;
