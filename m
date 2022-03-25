@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 767F5C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:30:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0720BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:30:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376559AbiCYPbd (ORCPT
+        id S1376480AbiCYPbh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:31:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42594 "EHLO
+        Fri, 25 Mar 2022 11:31:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378078AbiCYPYw (ORCPT
+        with ESMTP id S1378109AbiCYPYz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:24:52 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91419E29FA;
-        Fri, 25 Mar 2022 08:19:43 -0700 (PDT)
+        Fri, 25 Mar 2022 11:24:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D0DCE29E7;
+        Fri, 25 Mar 2022 08:19:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 473A6CE2A47;
-        Fri, 25 Mar 2022 15:19:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5901CC340E9;
-        Fri, 25 Mar 2022 15:19:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9402DB827B7;
+        Fri, 25 Mar 2022 15:19:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A95AC340E9;
+        Fri, 25 Mar 2022 15:19:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221580;
-        bh=bOkJy+mMiLrQcWXHlmJVF/rdsYha53wcln9168+rGTw=;
+        s=korg; t=1648221586;
+        bh=Ps4W+b+eC5ZRAYJ16sYEl3So8ElWlylTyF575j+r5FY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hgUPev4CNqM+RC+kZakxY4+8foeywbMbwIhqvKGgOoRuOC+0Nam/ceI4ypLCSzWiy
-         LH0jrCKv/3IZMVWAwIfS8K0dW8grBPsHDuUAqO0CEpq6a37BluxrGQ313Y4DPVzwHa
-         6uwh3NR5LXGeKI3RjbNiBpO9MufKspLa231CQfEI=
+        b=ZU6c3FTKeJjgX7f/SDeNYbAJUAKprpQVLKhlc6aoP32+AiKfkftnF4t+s7cjdi8MK
+         mSWQs4sZ4L01lVrUl35jvw9x0d/bg7jnOwsMLMHgzg+bhsP2GYWy12v2NyKQaunnI2
+         Y/b1WikVuOUu3Zt6JCSuCEtpy48OZ88TryhpmS7Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Palmer <daniel@0x0f.com>,
-        Arnaud POULIQUEN <arnaud.pouliquen@st.com>,
-        Takashi Iwai <tiwai@suse.de>,
-        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.17 04/39] ASoC: sti: Fix deadlock via snd_pcm_stop_xrun() call
-Date:   Fri, 25 Mar 2022 16:14:19 +0100
-Message-Id: <20220325150420.373358174@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Reza Jahanbakhshi <reza.jahanbakhshi@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.17 06/39] ALSA: usb-audio: add mapping for new Corsair Virtuoso SE
+Date:   Fri, 25 Mar 2022 16:14:21 +0100
+Message-Id: <20220325150420.428931809@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150420.245733653@linuxfoundation.org>
 References: <20220325150420.245733653@linuxfoundation.org>
@@ -52,74 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Reza Jahanbakhshi <reza.jahanbakhshi@gmail.com>
 
-commit 455c5653f50e10b4f460ef24e99f0044fbe3401c upstream.
+commit cd94df1795418056a19ff4cb44eadfc18ac99a57 upstream.
 
-This is essentially a revert of the commit dc865fb9e7c2 ("ASoC: sti:
-Use snd_pcm_stop_xrun() helper"), which converted the manual
-snd_pcm_stop() calls with snd_pcm_stop_xrun().
+New device id for Corsair Virtuoso SE RGB Wireless that currently is not
+in the mixer_map. This entry in the mixer_map is necessary in order to
+label its mixer appropriately and allow userspace to pick the correct
+volume controls. For instance, my own Corsair Virtuoso SE RGB Wireless
+headset has this new ID and consequently, the sidetone and volume are not
+ working correctly without this change.
+> sudo lsusb -v | grep -i corsair
+Bus 007 Device 011: ID 1b1c:0a40 Corsair CORSAIR VIRTUOSO SE Wireless Gam
+  idVendor           0x1b1c Corsair
+  iManufacturer           1 Corsair
+  iProduct                2 CORSAIR VIRTUOSO SE Wireless Gaming Headset
 
-The commit above introduced a deadlock as snd_pcm_stop_xrun() itself
-takes the PCM stream lock while the caller already holds it.  Since
-the conversion was done only for consistency reason and the open-call
-with snd_pcm_stop() to the XRUN state is a correct usage, let's revert
-the commit back as the fix.
-
-Fixes: dc865fb9e7c2 ("ASoC: sti: Use snd_pcm_stop_xrun() helper")
-Reported-by: Daniel Palmer <daniel@0x0f.com>
-Cc: Arnaud POULIQUEN <arnaud.pouliquen@st.com>
+Signed-off-by: Reza Jahanbakhshi <reza.jahanbakhshi@gmail.com>
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220315091319.3351522-1-daniel@0x0f.com
+Link: https://lore.kernel.org/r/20220304212303.195949-1-reza.jahanbakhshi@gmail.com
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Reviewed-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-Link: https://lore.kernel.org/r/20220315164158.19804-1-tiwai@suse.de
-Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/sti/uniperif_player.c |    6 +++---
- sound/soc/sti/uniperif_reader.c |    2 +-
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ sound/usb/mixer_maps.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
---- a/sound/soc/sti/uniperif_player.c
-+++ b/sound/soc/sti/uniperif_player.c
-@@ -91,7 +91,7 @@ static irqreturn_t uni_player_irq_handle
- 			SET_UNIPERIF_ITM_BCLR_FIFO_ERROR(player);
- 
- 			/* Stop the player */
--			snd_pcm_stop_xrun(player->substream);
-+			snd_pcm_stop(player->substream, SNDRV_PCM_STATE_XRUN);
- 		}
- 
- 		ret = IRQ_HANDLED;
-@@ -105,7 +105,7 @@ static irqreturn_t uni_player_irq_handle
- 		SET_UNIPERIF_ITM_BCLR_DMA_ERROR(player);
- 
- 		/* Stop the player */
--		snd_pcm_stop_xrun(player->substream);
-+		snd_pcm_stop(player->substream, SNDRV_PCM_STATE_XRUN);
- 
- 		ret = IRQ_HANDLED;
- 	}
-@@ -138,7 +138,7 @@ static irqreturn_t uni_player_irq_handle
- 		dev_err(player->dev, "Underflow recovery failed\n");
- 
- 		/* Stop the player */
--		snd_pcm_stop_xrun(player->substream);
-+		snd_pcm_stop(player->substream, SNDRV_PCM_STATE_XRUN);
- 
- 		ret = IRQ_HANDLED;
- 	}
---- a/sound/soc/sti/uniperif_reader.c
-+++ b/sound/soc/sti/uniperif_reader.c
-@@ -65,7 +65,7 @@ static irqreturn_t uni_reader_irq_handle
- 	if (unlikely(status & UNIPERIF_ITS_FIFO_ERROR_MASK(reader))) {
- 		dev_err(reader->dev, "FIFO error detected\n");
- 
--		snd_pcm_stop_xrun(reader->substream);
-+		snd_pcm_stop(reader->substream, SNDRV_PCM_STATE_XRUN);
- 
- 		ret = IRQ_HANDLED;
- 	}
+--- a/sound/usb/mixer_maps.c
++++ b/sound/usb/mixer_maps.c
+@@ -543,6 +543,16 @@ static const struct usbmix_ctl_map usbmi
+ 		.map = bose_soundlink_map,
+ 	},
+ 	{
++		/* Corsair Virtuoso SE Latest (wired mode) */
++		.id = USB_ID(0x1b1c, 0x0a3f),
++		.map = corsair_virtuoso_map,
++	},
++	{
++		/* Corsair Virtuoso SE Latest (wireless mode) */
++		.id = USB_ID(0x1b1c, 0x0a40),
++		.map = corsair_virtuoso_map,
++	},
++	{
+ 		/* Corsair Virtuoso SE (wired mode) */
+ 		.id = USB_ID(0x1b1c, 0x0a3d),
+ 		.map = corsair_virtuoso_map,
 
 
