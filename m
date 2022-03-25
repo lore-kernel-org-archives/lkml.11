@@ -2,137 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC857C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:38:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40046C4167B
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:39:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230385AbiCYTk2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:40:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47718 "EHLO
+        id S230470AbiCYTke (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:40:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231349AbiCYTh7 (ORCPT
+        with ESMTP id S231565AbiCYTiK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:37:59 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 993C0249C5C
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:21:09 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id c2so7176025pga.10
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:21:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=kZES9xIl6k9PvYS5MDCMcxY5BJubJIUmZOtDfDfAejs=;
-        b=G+VoHJsNN0ri/JzciH09IIMeE8UG5JI8cQ0Bi+n1qzT1U7e2FvdiZW70FLIX5LIbWI
-         svKvAmULBod057SqPwM+zCt9dYAp0E7Nh0JdjhTVG9zloKwBg15BPF4N174Yjl2eHqiU
-         Eja1GhgO6IYA3dYuZDm+hULboBb7ImzDwWP6ibLR81BotK0HFhHcQr7eqjGNAn/6QD8N
-         cf3yzF+3aj0A8W19SK7cffVZxlCEmuIOwoRdtYQx1DJA7VekL91I6RjMb0Ay0tlkCc4q
-         TOsdigNz7PpG5hQeE8+H3j5DcskDvPL6O6GKWgx8Ks4UFW60VUyt5A1nr+QDjQ5DAiRd
-         1Ocg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kZES9xIl6k9PvYS5MDCMcxY5BJubJIUmZOtDfDfAejs=;
-        b=qBWIMCE1b+6F9zvKyL7j0iX4wrVbafegDSn9Ho5aouJltw5TjNPUhQoTHdjk41FM9g
-         BWjIaXarW6/+VwePK8KkCeX6piA2cUQ9lqzlm5A0Vb9o4VJHg1pqI5MAbppz5bj9d75a
-         XrORPhDya0EWuNe3c9r8+YWHKJOYjZ/Ehj4qqt1BrUNuXeHfqKUeMniPQVvp/cqltxe8
-         Pyhj4vky3nGo9fiEwUBmpyyPNtAxAjJB7NubdnlmpVSIc8mdMDaIwja2FWBCHN/9nWK0
-         bJWNOdM+UqVtAN+oC4/HytPjHRP05OJMu75X46QKnJLqICTWYJdqzBTfo+auxplT4uO5
-         LM+g==
-X-Gm-Message-State: AOAM533fh3++WN0eJR6FoJTXaK5CPsTpGL4iZ/7dIkiCQxn9qfzKgrok
-        HIpi/gBlE+UOuhMK7GA7+Grq8vnUTT7H
-X-Google-Smtp-Source: ABdhPJxHEq9AiqyZOMWbqRFWmAZeorLFYNmf9U/rZ0ZkWmXSwUxDnbhzMAiXTxAo6JhPvOvZ4DYL7w==
-X-Received: by 2002:a63:77ca:0:b0:386:25a5:5ed with SMTP id s193-20020a6377ca000000b0038625a505edmr649866pgc.30.1648231848826;
-        Fri, 25 Mar 2022 11:10:48 -0700 (PDT)
-Received: from thinkpad ([117.193.209.11])
-        by smtp.gmail.com with ESMTPSA id b16-20020a056a000cd000b004fadb6f0290sm7420435pfv.11.2022.03.25.11.10.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Mar 2022 11:10:48 -0700 (PDT)
-Date:   Fri, 25 Mar 2022 23:40:42 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc:     Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Frank Li <Frank.Li@nxp.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        linux-pci@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 23/25] dmaengine: dw-edma: Bypass dma-ranges mapping for
- the local setup
-Message-ID: <20220325181042.GA12218@thinkpad>
-References: <20220324014836.19149-1-Sergey.Semin@baikalelectronics.ru>
- <20220324014836.19149-24-Sergey.Semin@baikalelectronics.ru>
+        Fri, 25 Mar 2022 15:38:10 -0400
+Received: from mail.efficios.com (mail.efficios.com [167.114.26.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96F692706F5;
+        Fri, 25 Mar 2022 12:21:01 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 02BF73F93FE;
+        Fri, 25 Mar 2022 15:21:01 -0400 (EDT)
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id Di5e2I5kUZyI; Fri, 25 Mar 2022 15:21:00 -0400 (EDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 6E1EF3F92E5;
+        Fri, 25 Mar 2022 15:21:00 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 6E1EF3F92E5
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
+        s=default; t=1648236060;
+        bh=WR3Gmf/g+LB/7o/or7cSc4Y88IAWlkjH9PpLE8VVLaQ=;
+        h=Date:From:To:Message-ID:MIME-Version;
+        b=WQ/bewDeVF0QbGYWBAcb47YoEj34JqimRhogL3W5LhkDNBi4q2vuU/6JG8RSKwBKU
+         Pj5jQ3Yz06F+XfXlDaR+Dpfwvn+m+WIkea3ma5GAj3bGbTvCPZSEje2pllv+K3okLf
+         BqEX9zQcU5wgxehR7SanQ+9qSlWS/L2yV85pBXukEr+UEI8t+qlRw7rl/Ca6wikFhy
+         jyQDHeidd9UZM3zX4MAuNZ6kpbr50xViOv4nT/YmSpoI/OZwyw0CLYnBQyMvMaDptT
+         U1gzOQSSM7mhK9iPY3bURdO/v/dVscm6j7xECJiuPmCW67wVgN2bbBSMGwNxFJTbkv
+         pudVSMJ5BAkqQ==
+X-Virus-Scanned: amavisd-new at efficios.com
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id SN81cawGgHhn; Fri, 25 Mar 2022 15:21:00 -0400 (EDT)
+Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
+        by mail.efficios.com (Postfix) with ESMTP id 49FFA3F962D;
+        Fri, 25 Mar 2022 15:21:00 -0400 (EDT)
+Date:   Fri, 25 Mar 2022 15:21:00 -0400 (EDT)
+From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To:     lttng-dev@lists.lttng.org,
+        diamon-discuss@lists.linuxfoundation.org,
+        linux-trace-users@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Cc:     lwn <lwn@lwn.net>
+Message-ID: <298059821.194836.1648236060140.JavaMail.zimbra@efficios.com>
+Subject: [RELEASE] LTTng-UST 2.13.2 and 2.12.4 (Linux user-space tracer)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220324014836.19149-24-Sergey.Semin@baikalelectronics.ru>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [167.114.26.124]
+X-Mailer: Zimbra 8.8.15_GA_4203 (ZimbraWebClient - FF98 (Linux)/8.8.15_GA_4232)
+Thread-Index: /XuRM8m30UNxv1/uEfXFqpcCoOViXw==
+Thread-Topic: LTTng-UST 2.13.2 and 2.12.4 (Linux user-space tracer)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 04:48:34AM +0300, Serge Semin wrote:
-> DW eDMA doesn't perform any translation of the traffic generated on the
-> CPU/Application side. It just generates read/write AXI-bus requests with
-> the specified addresses. But in case if the dma-ranges DT-property is
-> specified for a platform device node, Linux will use it to map the CPU
-> memory regions into the DMAable bus ranges. This isn't what we want for
-> the eDMA embedded into the locally accessed DW PCIe Root Port and
-> End-point. In order to work that around let's set the chan_dma_dev flag
-> for each DW eDMA channel thus forcing the client drivers to getting a
-> custom dma-ranges-less parental device for the mappings.
-> 
-> Note it will only work for the client drivers using the
-> dmaengine_get_dma_device() method to get the parental DMA device.
-> 
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> ---
->  drivers/dma/dw-edma/dw-edma-core.c | 15 +++++++++++++++
->  1 file changed, 15 insertions(+)
-> 
-> diff --git a/drivers/dma/dw-edma/dw-edma-core.c b/drivers/dma/dw-edma/dw-edma-core.c
-> index 72a51970bfba..ca5cd7c99571 100644
-> --- a/drivers/dma/dw-edma/dw-edma-core.c
-> +++ b/drivers/dma/dw-edma/dw-edma-core.c
-> @@ -716,6 +716,21 @@ static int dw_edma_alloc_chan_resources(struct dma_chan *dchan)
->  	if (chan->status != EDMA_ST_IDLE)
->  		return -EBUSY;
->  
-> +	/* Bypass the dma-ranges based memory regions mapping since the
-> +	 * inbound iATU only affects the traffic incoming from the
-> +	 * PCIe bus.
-> +	 */
+Hi,
 
-Bypass the dma-ranges based memory regions mapping since eDMA doesn't do any
-address translation for the CPU address?
+This is a stable release announcement for the LTTng-UST project. LTTng-UST
+is a tracer for Linux user-space applications. The respective versions are
+2.13.2 and 2.12.4.
 
-Other than this,
+The most important change introduced in these releases is the implementation
+of a LTTng-UST Log4j 2.x log appender. Note that in the context of
+CVE-2021-45046 [2], LTTng-UST per-se is not affected because it does not
+use Log4j for its own logging, but rather implements a log appender (a log
+"sink").
 
-Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Here are the noteworthy changes:
+
+In both 2.13.2 and 2.12.4:
+
+* Add a Log4j 2.x Java agent
+
+    Before those releases, LTTng-UST only implemented a Log4j 1.x appender.
+    Considering that Log4j 1.x has been unmaintained since 2015 [1], and that
+    a range of Log4j 2.x versions are affected by the critical vulnerability
+    CVE-2021-45046, allowing Log4j users which use LTTng-UST as a log appender
+    to upgrade from Log4j 1.x to an up-to-date 2.x is very much relevant,
+    thus explaining why this new feature is introduced in LTTng-UST stable
+    releases.
+
+    This adds a new agent to the LTTng-UST Java agents suite supporting the
+    Log4j 2.x logging backend.
+
+    This backport differs from the master branch for the
+    '--enable-java-agent-all' option won't select this new agent since we
+    wanted to avoid introducing a new dependency in existing configurations.
+
+    The name of the new agent jar file is "lttng-ust-agent-log4j2.jar".
+    It will be installed in the arch-agnostic "$prefix/share/java" path
+    e.g: "/usr/share/java".
+    
+    It uses the same jni library "liblttng-ust-log4j-jni.so" as the Log4j 1.x agent.
+    
+    The agent was designed as a mostly drop-in replacement for applications
+    upgrading from Log4j 1.x to 2.x. It requires no modification to the
+    tracing configuration as it uses the same domain "-l / LOG4J" and the
+    loglevels integer representations are converted to the Log4j 1.x values
+    (excluding custom loglevels).
+
+* Fix: concurrent exec(2) file descriptor leak
+
+    If exec(2) is executed by the application concurrently with LTTng-UST
+    listener threads between the creation of a file descriptor with
+    socket(2), recvmsg(2), or pipe(2) and call to fcntl(3) FD_CLOEXEC, those
+    file descriptors will stay open after the exec, which is not intended.
+    
+    As a consequence, shared memory files for ring buffers can stay present
+    on the file system for long-running traced processes.
+
+    Rather than fcntl(2) FD_CLOEXEC to make sure the file descriptors are
+    closed on exec immediately upon their creation.
+
+Noteworthy specifically in 2.13.2:
+
+* Fix: sample discarded events count before reserve
+
+    Sampling the discarded events count in the buffer_end callback is done
+    out of order, and may therefore include increments performed by following
+    events (in following packets) if the thread doing the end-of-packet
+    event write is preempted for a long time.
+    
+    Sampling the event discarded counts before reserving space for the last
+    event in a packet, and keeping this as part of the private ring buffer
+    context, should fix this race.
+
+    This fix is only part of the 2.13 stable branch and not backported to
+    2.12 because the lib ring buffer code used to implement this fix did not
+    exist in 2.12. Given that the impact of this bug is only imprecision of
+    discarded event reporting in corner-case scenarios (small impact, rare
+    occurrence), the complexity of implementing this fix in 2.12 is not justified.
+    The effect of this issue is that the lttng-tools
+    tests/regression/tools/streaming/test_high_throughput_limits test is flaky.
+
+Feedback is welcome!
 
 Thanks,
-Mani
 
-> +	if (chan->dw->chip->flags & DW_EDMA_CHIP_LOCAL) {
-> +		dchan->dev->chan_dma_dev = true;
-> +
-> +		dchan->dev->device.dma_coherent = chan->dw->chip->dev->dma_coherent;
-> +		dma_coerce_mask_and_coherent(&dchan->dev->device,
-> +					     dma_get_mask(chan->dw->chip->dev));
-> +		dchan->dev->device.dma_parms = chan->dw->chip->dev->dma_parms;
-> +	} else {
-> +		dchan->dev->chan_dma_dev = false;
-> +	}
-> +
->  	pm_runtime_get(chan->dw->chip->dev);
->  
->  	return 0;
-> -- 
-> 2.35.1
-> 
+Mathieu
+
+[1] https://blogs.apache.org/foundation/entry/apache_logging_services_project_announces
+[2] https://www.cve.org/CVERecord?id=CVE-2021-45046
+
+Project website: https://lttng.org
+Documentation: https://lttng.org/docs
+Download link: https://lttng.org/download
+
+-- 
+Mathieu Desnoyers
+EfficiOS Inc.
+http://www.efficios.com
