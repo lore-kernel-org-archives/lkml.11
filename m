@@ -2,98 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53477C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 16:36:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9002C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 16:38:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376830AbiCYQi2 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 12:38:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60940 "EHLO
+        id S245562AbiCYQkE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 12:40:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239020AbiCYQi1 (ORCPT
+        with ESMTP id S243097AbiCYQkB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 12:38:27 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D88DE6210D
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 09:36:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648226212; x=1679762212;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=8u6M+Dp7AiifeVlYkXZK/xg5RToRNGkPuFZ6N1+i/dc=;
-  b=ddvSHFAwpntmHQ9GwTdvfjaUymv9WMMErbZPj6oRJL626sCiJJqYUpGE
-   CQzERsZHYuFUS9SEHAcABZpusPOajLTrk99Bzgui5/T8oG+Unor6RCJDy
-   1NhV5b7oZ0URVJZApfshb2eLNjoG2pHf39+qqql3SMgfEvzKmDLMwY7OB
-   Q7cnqCUFZF6N/qB8yqEmMzj3pCgw5c07Jz455b/i+BL0rMu9U4NYiswYa
-   yTNKf3GOiAbjZvgxLI86mEd0uG44l0bff/+pO2ry0xChmciDTvaxaWovf
-   dwhV27E/lofriplh8MMvnNQYxRXeac75YIr1HY20gH+xDu/ZXhmXAYI/P
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10297"; a="283547287"
-X-IronPort-AV: E=Sophos;i="5.90,209,1643702400"; 
-   d="scan'208";a="283547287"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2022 09:35:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,209,1643702400"; 
-   d="scan'208";a="520257175"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 25 Mar 2022 09:35:36 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nXmuV-000MNu-P0; Fri, 25 Mar 2022 16:35:35 +0000
-Date:   Sat, 26 Mar 2022 00:35:14 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Marcello Sylvester Bauer <sylv@sylv.io>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>
-Subject: drivers/hwmon/pmbus/xdpe12284.c:127:36: warning: unused variable
- 'xdpe122_reg_desc'
-Message-ID: <202203260059.nMMU6fdT-lkp@intel.com>
+        Fri, 25 Mar 2022 12:40:01 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B577321801;
+        Fri, 25 Mar 2022 09:38:22 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id 5so14318991lfp.1;
+        Fri, 25 Mar 2022 09:38:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0333UXko0p5skH7Gomva2kccUTt68Iz1OddCSPNf2js=;
+        b=jQgYuAem9ZYHlkccaCCJhjCW8khFDISSGHhsexNPblMgnhrPWV6cZ+LP1hWfT23Y2y
+         5XdcS34yhn+TTIdoXcW5n37aTxJrhg9KmsliYM6buKG7yHueuBWcc6ubWkcZECq7RgR8
+         uPrXcQ77KZEUNpiPyTNybauYdgNaJTXYWT99kJhv69uzeRMiiRvbw7VssZYC1APWkwWZ
+         NAi5JIW+JeT2wgnVsg2/HAxg/+sGpub5ezabhgD5XKOyMQvjJZmGBMstEoT9HeSw99Fv
+         VBiidvdDQ4IzS90KBbe2aAMrHgZFzjwdlC38Vvs2TvyHhRahzVgeViBLOqlDDuVDzPfq
+         NKZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0333UXko0p5skH7Gomva2kccUTt68Iz1OddCSPNf2js=;
+        b=79CvEfiISFdRKBTu/IKjoW1rnvKt42io+RyVYdXTOHkoHv6etbNRQvOHXBAMsund/T
+         +siMbwiYw86Dx/UNSvcvmRxvyseS5FVSo3ptpulfgPmd5yhSYCs7oTbtOXkoK5KKgYTc
+         wr3D+O3uN8ZSEtfUeWKMrVbUq2wO8v0ZX+TZ/4/Nmoq9r/5jq/P9MCJzGwVQXBlMnbAg
+         Vc2EpYK1F0eoyVzJLhYfqCaM5Cjlm4PP1TQxA/wEgeG6T9lrTg9J/GRnE9d/arxZvX+b
+         bQM3S3g2b87HhwWqNr7REXYWM6kd1uuWVBQFgseAHEh3ztCKRw8cX6S3/FTSgjmCyp+r
+         EWaw==
+X-Gm-Message-State: AOAM533ABP5KROJNUYsYKSFFFZQk8RETe67ODyw4gfmRFhxbUyZlt+Qq
+        TV93UdldLx4iCdWSgk2zHwM=
+X-Google-Smtp-Source: ABdhPJx8pJ6C1WooGaA1yRgGm+J6PwJoe8pUYUfcN8+tFB+qD+JiAjBTgkW/Y57geIMTolesj2+now==
+X-Received: by 2002:a05:6512:68d:b0:44a:cc2:78b5 with SMTP id t13-20020a056512068d00b0044a0cc278b5mr8057577lfe.43.1648226300542;
+        Fri, 25 Mar 2022 09:38:20 -0700 (PDT)
+Received: from localhost.localdomain ([94.103.225.225])
+        by smtp.gmail.com with ESMTPSA id i14-20020a198c4e000000b0044a279d25d2sm755352lfj.244.2022.03.25.09.38.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Mar 2022 09:38:20 -0700 (PDT)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     pbonzini@redhat.com, seanjc@google.com, vkuznets@redhat.com,
+        wanpengli@tencent.com, jmattson@google.com
+Cc:     x86@kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+717ed82268812a643b28@syzkaller.appspotmail.com
+Subject: [RFC PATCH] KVM: x86/mmu: fix general protection fault in kvm_mmu_uninit_tdp_mmu
+Date:   Fri, 25 Mar 2022 19:38:15 +0300
+Message-Id: <20220325163815.3514-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   34af78c4e616c359ed428d79fe4758a35d2c5473
-commit: f53bfe4d698430bd602c37042db4021dc2603b8d hwmon: (xdpe12284) Add regulator support
-date:   3 weeks ago
-config: hexagon-randconfig-r041-20220325 (https://download.01.org/0day-ci/archive/20220326/202203260059.nMMU6fdT-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0f6d9501cf49ce02937099350d08f20c4af86f3d)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f53bfe4d698430bd602c37042db4021dc2603b8d
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout f53bfe4d698430bd602c37042db4021dc2603b8d
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/hwmon/pmbus/
+Syzbot reported GPF in kvm_mmu_uninit_tdp_mmu(), which is caused by
+passing NULL pointer to flush_workqueue().
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+tdp_mmu_zap_wq is allocated via alloc_workqueue() which may fail. There
+is no error hanling and kvm_mmu_uninit_tdp_mmu() return value is simply
+ignored. Even all kvm_*_init_vm() functions are void, so the easiest
+solution is to check that tdp_mmu_zap_wq is valid pointer before passing
+it somewhere.
 
-All warnings (new ones prefixed by >>):
+Fixes: 22b94c4b63eb ("KVM: x86/mmu: Zap invalidated roots via asynchronous worker")
+Reported-and-tested-by: syzbot+717ed82268812a643b28@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
+ arch/x86/kvm/mmu/tdp_mmu.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
->> drivers/hwmon/pmbus/xdpe12284.c:127:36: warning: unused variable 'xdpe122_reg_desc' [-Wunused-const-variable]
-   static const struct regulator_desc xdpe122_reg_desc[] = {
-                                      ^
-   1 warning generated.
-
-
-vim +/xdpe122_reg_desc +127 drivers/hwmon/pmbus/xdpe12284.c
-
-   126	
- > 127	static const struct regulator_desc xdpe122_reg_desc[] = {
-   128		PMBUS_REGULATOR("vout", 0),
-   129		PMBUS_REGULATOR("vout", 1),
-   130	};
-   131	
-
+diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+index e7e7876251b3..b3e8ff7ac5b0 100644
+--- a/arch/x86/kvm/mmu/tdp_mmu.c
++++ b/arch/x86/kvm/mmu/tdp_mmu.c
+@@ -48,8 +48,10 @@ void kvm_mmu_uninit_tdp_mmu(struct kvm *kvm)
+ 	if (!kvm->arch.tdp_mmu_enabled)
+ 		return;
+ 
+-	flush_workqueue(kvm->arch.tdp_mmu_zap_wq);
+-	destroy_workqueue(kvm->arch.tdp_mmu_zap_wq);
++	if (kvm->arch.tdp_mmu_zap_wq) {
++		flush_workqueue(kvm->arch.tdp_mmu_zap_wq);
++		destroy_workqueue(kvm->arch.tdp_mmu_zap_wq);
++	}
+ 
+ 	WARN_ON(!list_empty(&kvm->arch.tdp_mmu_pages));
+ 	WARN_ON(!list_empty(&kvm->arch.tdp_mmu_roots));
+@@ -119,9 +121,11 @@ static void tdp_mmu_zap_root_work(struct work_struct *work)
+ 
+ static void tdp_mmu_schedule_zap_root(struct kvm *kvm, struct kvm_mmu_page *root)
+ {
+-	root->tdp_mmu_async_data = kvm;
+-	INIT_WORK(&root->tdp_mmu_async_work, tdp_mmu_zap_root_work);
+-	queue_work(kvm->arch.tdp_mmu_zap_wq, &root->tdp_mmu_async_work);
++	if (kvm->arch.tdp_mmu_zap_wq) {
++		root->tdp_mmu_async_data = kvm;
++		INIT_WORK(&root->tdp_mmu_async_work, tdp_mmu_zap_root_work);
++		queue_work(kvm->arch.tdp_mmu_zap_wq, &root->tdp_mmu_async_work);
++	}
+ }
+ 
+ static inline bool kvm_tdp_root_mark_invalid(struct kvm_mmu_page *page)
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1
+
