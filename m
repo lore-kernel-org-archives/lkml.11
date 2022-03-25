@@ -2,95 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BCECC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 17:29:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C45BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 17:29:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233349AbiCYRbH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 13:31:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35084 "EHLO
+        id S231404AbiCYRbQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 13:31:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232093AbiCYRaj (ORCPT
+        with ESMTP id S232069AbiCYRaj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 25 Mar 2022 13:30:39 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4C0960D87
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 10:28:45 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id w7so14525455lfd.6
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 10:28:45 -0700 (PDT)
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD68660CC7
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 10:28:44 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id r64so4835711wmr.4
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 10:28:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nTY6GWR33LHIYWWg3yO+Y770hJAr0sFM8vC8Hv97/Ho=;
-        b=GTDYFnJ644kX2MgLtEY12KufCCj4yd/pS8r3hmYl3rs0CyI13At6qv069iToU8EJCn
-         SuaIaEQOqSO+6hJN9H72YJVHpZ14Vi6pCeucZweYUhIsb3243hF3vwcX84SXcCZDGsCO
-         5ZHnaXRtLKQgaTtZv/R8DB79i1EpD7Opusb1w=
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=NwaCkEqFprXU1DDLFh3M1rthbSN4qp5btRr4op3u7Dg=;
+        b=7+559TLX/pioNdz1OStNbK5yndhEtZqY7oRe7DN3eda0eZGYiKl7cuYaeNKN9wfO5+
+         2EVK0jBa2hpoOb2M+o3xC/kOAzMg/p+jLHr312Zr2oqH6JbHqm+hS0jQcfW0c+YDN8rM
+         dNwh2bYxcWpeEsblHgYn2R1bpZ19mfs3/U4hWWoo7Wo7+84TzrDVVqpDeGEnrLDFEpjk
+         2MIuXtJk4s9pmQxwXc8scdaoDXiunsLCYjovDLxlFSyYMOCef2wAm3klalE9kmryA4fr
+         VbeoPziB2NXy+FW+t5+ArlEH8rbXlxr6pn15lJkU+4OhelKVwl/1pvER4s+xO1KjM2TV
+         YgYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nTY6GWR33LHIYWWg3yO+Y770hJAr0sFM8vC8Hv97/Ho=;
-        b=r5bWxt2xMTgqMdZV3dKZWudZYP0FSSVrDP4KQ6nFysUV86zEEu1P9qHt0aOYgLFUnC
-         wKC5o556IwJIwYUyp/LJpi+S0EuR1Dk6WV8OSBxaZfrlWOn6BTF0tbhsEsdOZKygI3EC
-         yOtNuZxPDt2DcRt9wnqirF4gHN7+lX+FtPMOam9mkCJG6z0xLlXzBEMn92gJO4FvOY93
-         VJFFC7MQ1S5pXhNZ7kigAsX4EvjSc8sshXlYIv0inrtb8hKTHNvg2/7RmoVKMR8ITdYn
-         jIETXv6BnpzVhQX/yiV8dy+6Gda6uF3FioPcFQK8czEha+EBhZExTHMFo4y2A13pUZNX
-         Ui6g==
-X-Gm-Message-State: AOAM533WZQGHxDAlAcrPdaeFH3qk6l1tGwV7Yxd3SQOOL9kHyfMmQ+Os
-        XC8Y4oiBJfJLlxKl++3/AK1/rWLxSw0I/svX1pA=
-X-Google-Smtp-Source: ABdhPJwlA9k8rSgNej3OgmcwYJG0l0KMVNUwXkCt9y5tYOA4c/YC8lwUUH/xv49s5XkcmrB47E/PCg==
-X-Received: by 2002:a2e:bf12:0:b0:249:3a3b:e91a with SMTP id c18-20020a2ebf12000000b002493a3be91amr8967919ljr.343.1648228704836;
-        Fri, 25 Mar 2022 10:18:24 -0700 (PDT)
-Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com. [209.85.208.172])
-        by smtp.gmail.com with ESMTPSA id h14-20020a056512338e00b0044a1d49f459sm764607lfg.227.2022.03.25.10.18.22
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Mar 2022 10:18:23 -0700 (PDT)
-Received: by mail-lj1-f172.google.com with SMTP id g24so11157998lja.7
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 10:18:22 -0700 (PDT)
-X-Received: by 2002:a2e:9b10:0:b0:247:f28c:ffd3 with SMTP id
- u16-20020a2e9b10000000b00247f28cffd3mr8705328lji.152.1648228702287; Fri, 25
- Mar 2022 10:18:22 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=NwaCkEqFprXU1DDLFh3M1rthbSN4qp5btRr4op3u7Dg=;
+        b=6bWIQBmwni7z2QuJ1zHZbUfFriAkR0BA5sCf6xwFobhA0DmhydSmHvvYD8fh2VtgYC
+         71WyXGqobNj8CwkYNcoJtjwNp+J2KftbMZNMVgF5qirF8+fbl1Apsf2XpDNi6saugKkU
+         w1MEAd1Ch8Yglh1s7TPxpl3zuS3g7auwGazm+EzmIR1J0PFQsHZwoTbqAU81N6dfE+tZ
+         R2AnChewPxbJvZr0Thhb/vV+ApqE5UcNsQ6C1A/rvxH62+M4dTtYhcNtfHdo8jMbm1Xm
+         LKIH4jxWOBQFEVt311hUQ94ELNaB13cGTWdnwUo2y21Sb+aWLDZE3mg6+pQ6/Jqx5vWf
+         S2UQ==
+X-Gm-Message-State: AOAM531J0Z7h2hzPURIvKImn5FH1jgbBhYeuFHLap9FJ3wN1aZ2QTnt5
+        Wl0p4tiDNTc43meca+vAgFjn9RwpI0wsBg==
+X-Google-Smtp-Source: ABdhPJxEd+5sCQHRN5kY92E454qYqOoufquWOJKPEAnY7ClBAak5cOcqSUJO3F8SRwH3b790AmcVyA==
+X-Received: by 2002:a05:600c:3b1e:b0:38c:da9f:9309 with SMTP id m30-20020a05600c3b1e00b0038cda9f9309mr7351158wms.9.1648228637535;
+        Fri, 25 Mar 2022 10:17:17 -0700 (PDT)
+Received: from localhost.localdomain (2a02-8440-6240-cc41-3074-96af-9642-0003.rev.sfr.net. [2a02:8440:6240:cc41:3074:96af:9642:3])
+        by smtp.gmail.com with ESMTPSA id p16-20020a5d6390000000b00203ffebddf3sm7547464wru.99.2022.03.25.10.17.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Mar 2022 10:17:17 -0700 (PDT)
+From:   Guillaume Ranquet <granquet@baylibre.com>
+To:     chunkuang.hu@kernel.org, p.zabel@pengutronix.de, airlied@linux.ie,
+        daniel@ffwll.ch, robh+dt@kernel.org,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, matthias.bgg@gmail.com,
+        chunfeng.yun@mediatek.com, kishon@ti.com, vkoul@kernel.org,
+        deller@gmx.de, ck.hu@mediatek.com, jitao.shi@mediatek.com,
+        angelogioacchino.delregno@collabora.com
+Cc:     dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-phy@lists.infradead.org, linux-fbdev@vger.kernel.org,
+        markyacoub@google.com
+Subject: [PATCH 16/22] drm/meditek: dpi: Add matrix_sel helper
+Date:   Fri, 25 Mar 2022 18:15:05 +0100
+Message-Id: <20220325171511.23493-17-granquet@baylibre.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220325171511.23493-1-granquet@baylibre.com>
+References: <20220325171511.23493-1-granquet@baylibre.com>
 MIME-Version: 1.0
-References: <20220325131348.3995-1-andriy.shevchenko@linux.intel.com>
-In-Reply-To: <20220325131348.3995-1-andriy.shevchenko@linux.intel.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 25 Mar 2022 10:18:06 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgLZC4d-JjoDyJ-0_JNX+nOnkTQdTGKvOE3fBVNvAq-xw@mail.gmail.com>
-Message-ID: <CAHk-=wgLZC4d-JjoDyJ-0_JNX+nOnkTQdTGKvOE3fBVNvAq-xw@mail.gmail.com>
-Subject: Re: [PATCH v1 1/1] Makefile.extrawarn: Turn off -Werror when extra
- warnings are enabled
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 6:13 AM Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
->
-> +#
-> +# Turn off -Werror when extra warnings are enabled
-> +#
-> +ifneq ($(KBUILD_EXTRA_WARN),)
-> +       KBUILD_CFLAGS += -Wno-error
-> +endif
+Add a mtk_dpi_matrix_sel() helper to update the DPI_MATRIX_SET
+register depending on the color format.
 
-NAK.
+Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+---
+ drivers/gpu/drm/mediatek/mtk_dpi.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-If you enabled CONFIG_WERROR, then you get CONFIG_WERROR.
+diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
+index 8198d3cf23ac..82f97c687652 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dpi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+@@ -385,6 +385,25 @@ static void mtk_dpi_config_disable_edge(struct mtk_dpi *dpi)
+ 		mtk_dpi_mask(dpi, dpi->conf->reg_h_fre_con, 0, EDGE_SEL_EN);
+ }
+ 
++static void mtk_dpi_matrix_sel(struct mtk_dpi *dpi, enum mtk_dpi_out_color_format format)
++{
++	u32 matrix_sel = 0;
++
++	switch (format) {
++	case MTK_DPI_COLOR_FORMAT_YCBCR_422:
++	case MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL:
++	case MTK_DPI_COLOR_FORMAT_YCBCR_444:
++	case MTK_DPI_COLOR_FORMAT_YCBCR_444_FULL:
++	case MTK_DPI_COLOR_FORMAT_XV_YCC:
++		if (dpi->mode.hdisplay <= 720)
++			matrix_sel = 0x2;
++		break;
++	default:
++		break;
++	}
++	mtk_dpi_mask(dpi, DPI_MATRIX_SET, matrix_sel, INT_MATRIX_SEL_MASK);
++}
++
+ static void mtk_dpi_config_color_format(struct mtk_dpi *dpi,
+ 					enum mtk_dpi_out_color_format format)
+ {
+@@ -392,6 +411,7 @@ static void mtk_dpi_config_color_format(struct mtk_dpi *dpi,
+ 	    (format == MTK_DPI_COLOR_FORMAT_YCBCR_444_FULL)) {
+ 		mtk_dpi_config_yuv422_enable(dpi, false);
+ 		mtk_dpi_config_csc_enable(dpi, true);
++		mtk_dpi_matrix_sel(dpi, format);
+ 		if (dpi->conf->swap_input_support)
+ 			mtk_dpi_config_swap_input(dpi, false);
+ 		mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_BGR);
+@@ -399,6 +419,7 @@ static void mtk_dpi_config_color_format(struct mtk_dpi *dpi,
+ 		   (format == MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL)) {
+ 		mtk_dpi_config_yuv422_enable(dpi, true);
+ 		mtk_dpi_config_csc_enable(dpi, true);
++		mtk_dpi_matrix_sel(dpi, format);
+ 		if (dpi->conf->swap_input_support)
+ 			mtk_dpi_config_swap_input(dpi, true);
+ 		mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_RGB);
+-- 
+2.34.1
 
-If you enabled W=1, then you get extra warnings.
-
-If you enabled both, then you get extra warnings and they are errors.
-
-This patch is just stupid.
-
-              Linus
