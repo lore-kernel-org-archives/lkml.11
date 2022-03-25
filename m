@@ -2,161 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90969C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:24:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20596C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:24:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229519AbiCYT0C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:26:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56938 "EHLO
+        id S229654AbiCYT0T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:26:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229498AbiCYTZ4 (ORCPT
+        with ESMTP id S229459AbiCYT0O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:25:56 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 012071D3069;
-        Fri, 25 Mar 2022 11:57:45 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id d134so4759423ybc.13;
-        Fri, 25 Mar 2022 11:57:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pMUdB3zlB3HAdVOnuQq2xqrqNwClgzIqakPQ1O+ryLU=;
-        b=opPwPmQ9CLhSVpFfpRo/PnBU7bPVVHAPFJ1+x8z+qQd0hmCRkVKbvsaSiLtGvH7hri
-         KWFRk2+QKbwa5BOQlXx+GWWjBEs1LVcfK5smQaCJNcIGlwdaJYAJbEQc4O8YDF2FK8dp
-         FkmMTQxcnTuAXTULYRJT9c4v5g6IwTAoAsUpRgZCPr0gevfsCeeumVtaYvdcvYILjzc9
-         ndggUmwBaFt70j4xy/UwL3Q+87A2iGWXSQYBhYfxxDuiIjjQNmcOWvR5iMOEM5RiIttx
-         62+yd1ghBGIlWjr2ABqMozfiBbKKF4+Ro7YbzVDTcuC3Ty9FOj7vlzjp+BxfckRZTD+3
-         m7rA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pMUdB3zlB3HAdVOnuQq2xqrqNwClgzIqakPQ1O+ryLU=;
-        b=VsA1ytTjw03d8z+WiVrjboVkBunHQ9QhSQp8Zvxfjjfg60llg1Ftfy9XDO8X631M15
-         u7Dpvtzu/bybMv5NybIldkdSnqtedH59xaHWiQr+p2WGnFSEGrQMYBNCpHIIU9B1gT7B
-         4bA6VmP2hdIi+ulwABf0p0ek6q+ZvrR4Ur7JG9Ro5sG6c4JA7DecPJUnalKW3+iiiCGn
-         UNoTtZrAgGPu6tLIG1pvkf6UrDEuCa2vaw/g/AArfd+w4F9M7fx1TPctmv9HUE1aFpPH
-         Zu3BtWo+oMqqmFAYf71bMX1jG/5LvyNswT2xAH+nUszTZQKuDjb1Azg97b858tlxn1AV
-         gj6g==
-X-Gm-Message-State: AOAM533DvDixNK+cVIXEXOD8C5lTKDiU2ienZyGJJsH5+TjFf4q7gWxa
-        FqQKwtfd7WBUw/aLt4Fvw+kBHN1r3fchW7f69KIs/RMV
-X-Google-Smtp-Source: ABdhPJz9mZFBCIieZ8fOD5eJ9gyxfBvi/T2xMJdphBpSLz3OJ7s5HzF8ZMV1+EakSTtbiCrhnz4gCLq2e2SfDREHghk=
-X-Received: by 2002:a05:6902:1009:b0:634:674f:ef16 with SMTP id
- w9-20020a056902100900b00634674fef16mr12320198ybt.459.1648234215466; Fri, 25
- Mar 2022 11:50:15 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220325033028.1.I67f8ad854ac2f48701902bfb34d6e2070011b779@changeid>
-In-Reply-To: <20220325033028.1.I67f8ad854ac2f48701902bfb34d6e2070011b779@changeid>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Fri, 25 Mar 2022 11:50:04 -0700
-Message-ID: <CABBYNZKF1Ye6D130XgaFmqN6JAssf78-FaQh_AEkwigy8qaVjw@mail.gmail.com>
-Subject: Re: [PATCH] Bluetooth: fix dangling sco_conn and use-after-free in sco_sock_timeout
-To:     Ying Hsu <yinghsu@chromium.org>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        ChromeOS Bluetooth Upstreaming 
-        <chromeos-bluetooth-upstreaming@chromium.org>,
-        Joseph Hwang <josephsih@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        Fri, 25 Mar 2022 15:26:14 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9A473E635C
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 11:58:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648234706; x=1679770706;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ST07gu5uVi9Q0WMMaJSNfrCmn5RgIPW07ex0MrMvoDs=;
+  b=EWjvI+VyUI7XOLakPHp02yVJTNmhgK9Wr+tFKYbFnLKNEs/MmHXxMQ8M
+   PECq5d+/9k/fuvWTsFVFAT+uJFIoZ/ytFnw2SvS47nS7BTiYyaTtZEND8
+   SRwahG9UHsIH4BbeNQW3vUhCq9GabBi9+mKwJc2hECE6rOOkurcooqLTS
+   0ctOsjiPTkyIViVbkg3BlhGLCOTrbe6HqU/aV8zAoIV5aSldDYf+JUBHY
+   iYt207v3of+ftPBz8N6AD+Hb+lKU46ep1HWkkg0zykjOrnn0g2lCu9EN6
+   Z+7eO47a1x5SpP/23EiF+DBKyg/sKBYZHVBLcyPjPj3MqCyr0RqmYT/Kq
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10297"; a="258402482"
+X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
+   d="scan'208";a="258402482"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2022 10:53:57 -0700
+X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
+   d="scan'208";a="617202377"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2022 10:53:54 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@intel.com>)
+        id 1nXo7i-006WiB-KH;
+        Fri, 25 Mar 2022 19:53:18 +0200
+Date:   Fri, 25 Mar 2022 19:53:18 +0200
+From:   Andy Shevchenko <andriy.shevchenko@intel.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [GIT PULL] locking changes for v5.18
+Message-ID: <Yj4BjjCFGMjhzKk+@smile.fi.intel.com>
+References: <YjhdcJB4FaLfsoyO@gmail.com>
+ <CAHk-=wjS6ptr5=JqmmyEb_qTjDz_68+S=h1o1bL1fEyArVOymA@mail.gmail.com>
+ <YjpLiKRUIB4TGJm0@zn.tnic>
+ <CAHk-=wifoM9VOp-55OZCRcO9MnqQ109UTuCiXeZ-eyX_JcNVGg@mail.gmail.com>
+ <Yj2qZT6gdRYpkSIR@smile.fi.intel.com>
+ <CAHk-=wgaxDHAhxBkU_mVE5uw5po+qvzy4jgK8Q82rgi7XqZfiA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wgaxDHAhxBkU_mVE5uw5po+qvzy4jgK8Q82rgi7XqZfiA@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Ying,
+On Fri, Mar 25, 2022 at 10:29:21AM -0700, Linus Torvalds wrote:
+> On Fri, Mar 25, 2022 at 4:42 AM Andy Shevchenko
+> <andriy.shevchenko@intel.com> wrote:
+> >
+> > What about old one? I have already complained in the early discussion that
+> > `make W=1 ...` is broken by this change.
+> 
+> So that is REALLY D*MN EASY TO FIX.
+> 
+> If you use W=1, and don't want WERROR, then don't *do* that then.
+> 
+> End of story.
+> 
+> But that's on _you_. Not on the build system. If you use W=1 and
+> WERROR together, you get exactly what you asked for. It might even be
+> what you wanted, if you want to go through the warnings/errors as you
+> encounter them, instead of building everything.
+> 
+> And that's why I refuse to take the completely broken "strip out one
+> or the other automatically" change.
+> 
+> It's a perfectly valid combination to enable both.
+> 
+> But more importantly, -Werror is more important than W=1. So if
+> anything should be disabled, it's W=1.
+> 
+> Side note: that would be trivial to just have in the Kconfig files if
+> W=1 was just a config option.
+> 
+> Do something like
+> 
+>      config EXTRA_ERRORS
+>          int "Add extra compiler errors" if EXPERT
+>          depends on !WERROR
+>          range 0-2
+>          default 0
+> 
+> but note again: WERROR should be the thing that controls this and
+> should be on by default, not the other way around.
+> 
+> If you want EXTRA_ERRORS, you should not only be CONFIG_EXPERT, you
+> should also have to manually disable WERROR that *normal* people
+> should have on by default.
 
-On Thu, Mar 24, 2022 at 8:31 PM Ying Hsu <yinghsu@chromium.org> wrote:
->
-> Connecting the same socket twice consecutively in sco_sock_connect()
-> could lead to a race condition where two sco_conn objects are created
-> but only one is associated with the socket. If the socket is closed
-> before the SCO connection is established, the timer associated with the
-> dangling sco_conn object won't be canceled. As the sock object is being
-> freed, the use-after-free problem happens when the timer callback
-> function sco_sock_timeout() accesses the socket. Here's the call trace:
->
-> dump_stack+0x107/0x163
-> ? refcount_inc+0x1c/
-> print_address_description.constprop.0+0x1c/0x47e
-> ? refcount_inc+0x1c/0x7b
-> kasan_report+0x13a/0x173
-> ? refcount_inc+0x1c/0x7b
-> check_memory_region+0x132/0x139
-> refcount_inc+0x1c/0x7b
-> sco_sock_timeout+0xb2/0x1ba
-> process_one_work+0x739/0xbd1
-> ? cancel_delayed_work+0x13f/0x13f
-> ? __raw_spin_lock_init+0xf0/0xf0
-> ? to_kthread+0x59/0x85
-> worker_thread+0x593/0x70e
-> kthread+0x346/0x35a
-> ? drain_workqueue+0x31a/0x31a
-> ? kthread_bind+0x4b/0x4b
-> ret_from_fork+0x1f/0x30
->
-> Signed-off-by: Ying Hsu <yinghsu@chromium.org>
-> Reviewed-by: Joseph Hwang <josephsih@chromium.org>
-> ---
-> Tested this commit using a C reproducer on qemu-x86_64 for 8 hours.
-
-We should probably add a link or something to the reproducer then, was
-it syzbot? It does have some instructions on how to link its issues.
-
->  net/bluetooth/sco.c | 21 +++++++++++++--------
->  1 file changed, 13 insertions(+), 8 deletions(-)
->
-> diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
-> index 8eabf41b2993..380c63194736 100644
-> --- a/net/bluetooth/sco.c
-> +++ b/net/bluetooth/sco.c
-> @@ -574,19 +574,24 @@ static int sco_sock_connect(struct socket *sock, struct sockaddr *addr, int alen
->             addr->sa_family != AF_BLUETOOTH)
->                 return -EINVAL;
->
-> -       if (sk->sk_state != BT_OPEN && sk->sk_state != BT_BOUND)
-> -               return -EBADFD;
-> +       lock_sock(sk);
-> +       if (sk->sk_state != BT_OPEN && sk->sk_state != BT_BOUND) {
-> +               err = -EBADFD;
-> +               goto done;
-> +       }
->
-> -       if (sk->sk_type != SOCK_SEQPACKET)
-> -               return -EINVAL;
-> +       if (sk->sk_type != SOCK_SEQPACKET) {
-> +               err = -EINVAL;
-> +               goto done;
-> +       }
->
->         hdev = hci_get_route(&sa->sco_bdaddr, &sco_pi(sk)->src, BDADDR_BREDR);
-> -       if (!hdev)
-> -               return -EHOSTUNREACH;
-> +       if (!hdev) {
-> +               err = -EHOSTUNREACH;
-> +               goto done;
-> +       }
->         hci_dev_lock(hdev);
->
-> -       lock_sock(sk);
-> -
-
-Also are we sure we are not introducing a locking hierarchy problem
-here? Previously we had hci_dev_lock then sock_lock now it is the
-opposite, or perhaps we never want to have them at the same time?
-
->         /* Set destination address and psm */
->         bacpy(&sco_pi(sk)->dst, &sa->sco_bdaddr);
->
-> --
-> 2.35.1.1021.g381101b075-goog
->
-
+I have got your point, thanks!
 
 -- 
-Luiz Augusto von Dentz
+With Best Regards,
+Andy Shevchenko
+
+
