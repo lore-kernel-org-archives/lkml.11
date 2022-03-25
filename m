@@ -2,260 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88479C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:39:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D19CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:39:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231305AbiCYTlH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:41:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41960 "EHLO
+        id S231351AbiCYTlL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:41:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233409AbiCYTjz (ORCPT
+        with ESMTP id S232339AbiCYTit (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:39:55 -0400
-Received: from mail-oa1-x49.google.com (mail-oa1-x49.google.com [IPv6:2001:4860:4864:20::49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF9AE1546AB
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:12:25 -0700 (PDT)
-Received: by mail-oa1-x49.google.com with SMTP id 586e51a60fabf-d71a106c50so1434376fac.17
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:12:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=Ls9it47eZWinX53APMUqdqAduomURMCMA1XbEoHFGsQ=;
-        b=jf7zMllek1mo+Nas3aa4rEhx43ZQ1waGsvpYfvNgwEiwCCAWoS9SZnLaJXQkmWB2M+
-         6ADBWCg++Y/FrbEy+5C39/gGLqcx4snlS9RYWJ/YGs3g5cvd3LI37DJwtxQaZrgvfsIK
-         DvPSTDXUlEcNrYFmc342Iei4ddki3i5mmID22YQNV1R2nOMGPMCxIwsMy8+VCjmW1WoK
-         11vn7pIxU1GZdIUQWGjR0RiLjnaMUHdJLeEZDc7rkurcAaVlTDWLpuwtdaO89njTL0TV
-         nAzkGxoPuCWzeOpRkJsR2dSBMbJCs3QsocLwAqkbEAcMh1p1+uXBZocYUtA08DLgKHTg
-         Y5xw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=Ls9it47eZWinX53APMUqdqAduomURMCMA1XbEoHFGsQ=;
-        b=AVw3iV1V/PsV9+1JHZgCl+bTc7n0BeYMRWzVaneynDLiUl219qk7sn6nLvmlyMTmvt
-         7jY6qpwoVvK1/YU4UsOgUWgxv25DaWLITodIf9tFoVnXZhHOK4GqrOOK+kooLDZ4PTUk
-         xBFt3lj2z5/w/jKjLGD3E817LhvS6JSzbdqorTGTfshvxjVZtGI8YDdVdD3Axrj53kvy
-         rxJM5YJvN5hTs1eoJ3k1Ck4IJ3e7ZTclE3QqHcUovms9hp6y61OysxRbaiWVaxevx1xE
-         I9F7d1CBt+gxG1E7lcoXHHvPb3H9wAyWJd4LXu/anEpXOo+obljVGIS5fPC1OBW4Rrhi
-         5/0Q==
-X-Gm-Message-State: AOAM531S9XAjW8yg0aCIL3SqkkF06GnsV+WyO1Isiuz5JlAGhNdy+Iyk
-        DTf65snMFFo5EZjpbMOVOsgy8GmyA1GD
-X-Google-Smtp-Source: ABdhPJz4caM2/r37eNH0kp8MNsyvhq+I0iaYEcSsuTjltPrYwKcYHAUtmqHXJObuMsBQf4dmQ6rBvqb9FmsD
-X-Received: from rajat2.mtv.corp.google.com ([2620:15c:202:201:4cfc:6eaf:38d8:46d6])
- (user=rajatja job=sendgmr) by 2002:a81:36cf:0:b0:2e5:2597:a026 with SMTP id
- d198-20020a8136cf000000b002e52597a026mr12243252ywa.301.1648233976396; Fri, 25
- Mar 2022 11:46:16 -0700 (PDT)
-Date:   Fri, 25 Mar 2022 11:46:09 -0700
-In-Reply-To: <20220325184609.4059963-1-rajatja@google.com>
-Message-Id: <20220325184609.4059963-2-rajatja@google.com>
-Mime-Version: 1.0
-References: <20220325184609.4059963-1-rajatja@google.com>
-X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
-Subject: [PATCH v5 2/2] PCI: Rename pci_dev->untrusted to pci_dev->untrusted_dma
-From:   Rajat Jain <rajatja@google.com>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, linux-pci@vger.kernel.org,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Rajat Jain <rajatxjain@gmail.com>,
-        Dmitry Torokhov <dtor@google.com>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Pavel Machek <pavel@denx.de>,
-        "Oliver O'Halloran" <oohall@gmail.com>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        iommu@lists.linux-foundation.org
-Cc:     Rajat Jain <rajatja@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 25 Mar 2022 15:38:49 -0400
+Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39D8F201685;
+        Fri, 25 Mar 2022 12:19:30 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:35::5f6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id 87BCD2C3;
+        Fri, 25 Mar 2022 19:19:29 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 87BCD2C3
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1648235969; bh=rLID/xNAEJ7ec3akw3YJ2DoeesZts3MivbTechASTOI=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=BykFmEVv2MW90pAu9Yhi7BCRMlYGxp8zxUabPv0KmxuJUSLErsWzhSGinMgR9rSgp
+         CtqBtvbCI6Wrs4QKyZwrXNCZ2t6Y/2VKMsXCeLS1KmNhKdHEEWQClGmh+UXNb2Tl19
+         DMUTygQWJgAjS2TUBg+Cv0GeE4E0b3tK8PdbANsE+hJ0YYygOOuaNyUSgFEur2X3UT
+         jpd52D6MIJvpQJ2aTbwHE4YeaApLNzEBsw8zvShw9GI5aH3lHPkCfiaVbu3Oag9+qi
+         zEPV453ybpe9Jue6Qt+kToWS2FkXeuv/H93pILKOnX7xl4V7zs+UmtTO6PygzoVNJG
+         jTGn2sQ/NYejg==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/4] scripts/get_feat.pl: allow output the parsed
+ file names
+In-Reply-To: <a924b46a80d750d808c28a27adffaa5d5a983e5c.1648216561.git.mchehab@kernel.org>
+References: <cover.1648216561.git.mchehab@kernel.org>
+ <a924b46a80d750d808c28a27adffaa5d5a983e5c.1648216561.git.mchehab@kernel.org>
+Date:   Fri, 25 Mar 2022 13:19:28 -0600
+Message-ID: <874k3lg7r3.fsf@meer.lwn.net>
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rename the field to make it more clear, that the device can execute DMA
-attacks on the system, and thus the system may need protection from
-such attacks from this device.
+Mauro Carvalho Chehab <mchehab@kernel.org> writes:
 
-No functional change intended.
+> Such output could be helpful while debugging it, but its main
+> goal is to tell kernel_feat.py about what files were used
+> by the script. Thie way, kernel_feat.py can add those as
+> documentation dependencies.
+>
+> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 
-Signed-off-by: Rajat Jain <rajatja@google.com>
-Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
----
-v5: Use "untrusted_dma" as property name, based on feedback.
-    Reorder the patches in the series.
-v4: Initial version, created based on comments on other patch
+So I think these are worth getting into 5.18, but I do have one question:
 
- drivers/iommu/dma-iommu.c   | 6 +++---
- drivers/iommu/intel/iommu.c | 2 +-
- drivers/iommu/iommu.c       | 2 +-
- drivers/pci/ats.c           | 2 +-
- drivers/pci/pci-acpi.c      | 2 +-
- drivers/pci/pci.c           | 2 +-
- drivers/pci/probe.c         | 8 ++++----
- drivers/pci/quirks.c        | 2 +-
- include/linux/pci.h         | 5 +++--
- 9 files changed, 16 insertions(+), 15 deletions(-)
+> @@ -95,6 +97,10 @@ sub parse_feat {
+>  	return if ($file =~ m,($prefix)/arch-support.txt,);
+>  	return if (!($file =~ m,arch-support.txt$,));
+>  
+> +	if ($enable_fname) {
+> +		printf "#define FILE %s\n", abs_path($file);
+> +	}
+> +
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index d85d54f2b549..7cbe300fe907 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -497,14 +497,14 @@ static int iova_reserve_iommu_regions(struct device *dev,
- 	return ret;
- }
- 
--static bool dev_is_untrusted(struct device *dev)
-+static bool dev_has_untrusted_dma(struct device *dev)
- {
--	return dev_is_pci(dev) && to_pci_dev(dev)->untrusted;
-+	return dev_is_pci(dev) && to_pci_dev(dev)->untrusted_dma;
- }
- 
- static bool dev_use_swiotlb(struct device *dev)
- {
--	return IS_ENABLED(CONFIG_SWIOTLB) && dev_is_untrusted(dev);
-+	return IS_ENABLED(CONFIG_SWIOTLB) && dev_has_untrusted_dma(dev);
- }
- 
- /**
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 92fea3fbbb11..9246b7c9ab46 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -5570,7 +5570,7 @@ intel_iommu_enable_nesting(struct iommu_domain *domain)
-  */
- static bool risky_device(struct pci_dev *pdev)
- {
--	if (pdev->untrusted) {
-+	if (pdev->untrusted_dma) {
- 		pci_info(pdev,
- 			 "Skipping IOMMU quirk for dev [%04X:%04X] on untrusted PCI link\n",
- 			 pdev->vendor, pdev->device);
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 8b86406b7162..79fb66af2e68 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1522,7 +1522,7 @@ static int iommu_get_def_domain_type(struct device *dev)
- {
- 	const struct iommu_ops *ops = dev->bus->iommu_ops;
- 
--	if (dev_is_pci(dev) && to_pci_dev(dev)->untrusted)
-+	if (dev_is_pci(dev) && to_pci_dev(dev)->untrusted_dma)
- 		return IOMMU_DOMAIN_DMA;
- 
- 	if (ops->def_domain_type)
-diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-index c967ad6e2626..477c16ba9341 100644
---- a/drivers/pci/ats.c
-+++ b/drivers/pci/ats.c
-@@ -42,7 +42,7 @@ bool pci_ats_supported(struct pci_dev *dev)
- 	if (!dev->ats_cap)
- 		return false;
- 
--	return (dev->untrusted == 0);
-+	return (dev->untrusted_dma == 0);
- }
- EXPORT_SYMBOL_GPL(pci_ats_supported);
- 
-diff --git a/drivers/pci/pci-acpi.c b/drivers/pci/pci-acpi.c
-index 378e05096c52..1d5a284c3661 100644
---- a/drivers/pci/pci-acpi.c
-+++ b/drivers/pci/pci-acpi.c
-@@ -1362,7 +1362,7 @@ static void pci_acpi_check_for_dma_protection(struct pci_dev *dev)
- 		return;
- 
- 	if (val)
--		dev->untrusted = 1;
-+		dev->untrusted_dma = 1;
- }
- 
- void pci_acpi_setup(struct device *dev, struct acpi_device *adev)
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 9ecce435fb3f..1fb0eb8646c8 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -958,7 +958,7 @@ static void pci_std_enable_acs(struct pci_dev *dev)
- 	ctrl |= (cap & PCI_ACS_UF);
- 
- 	/* Enable Translation Blocking for external devices and noats */
--	if (pci_ats_disabled() || dev->external_facing || dev->untrusted)
-+	if (pci_ats_disabled() || dev->external_facing || dev->untrusted_dma)
- 		ctrl |= (cap & PCI_ACS_TB);
- 
- 	pci_write_config_word(dev, pos + PCI_ACS_CTRL, ctrl);
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index 17a969942d37..d2a9b26fcede 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -1587,7 +1587,7 @@ static void set_pcie_thunderbolt(struct pci_dev *dev)
- 		dev->is_thunderbolt = 1;
- }
- 
--static void set_pcie_untrusted(struct pci_dev *dev)
-+static void pci_set_untrusted_dma(struct pci_dev *dev)
- {
- 	struct pci_dev *parent;
- 
-@@ -1596,8 +1596,8 @@ static void set_pcie_untrusted(struct pci_dev *dev)
- 	 * untrusted as well.
- 	 */
- 	parent = pci_upstream_bridge(dev);
--	if (parent && (parent->untrusted || parent->external_facing))
--		dev->untrusted = true;
-+	if (parent && (parent->untrusted_dma || parent->external_facing))
-+		dev->untrusted_dma = true;
- }
- 
- static void pci_set_removable(struct pci_dev *dev)
-@@ -1862,7 +1862,7 @@ int pci_setup_device(struct pci_dev *dev)
- 	/* Need to have dev->cfg_size ready */
- 	set_pcie_thunderbolt(dev);
- 
--	set_pcie_untrusted(dev);
-+	pci_set_untrusted_dma(dev);
- 
- 	/* "Unknown power state" */
- 	dev->current_state = PCI_UNKNOWN;
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 5f46fed01e6c..7ca3c2cdfb20 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -5134,7 +5134,7 @@ static int pci_quirk_enable_intel_spt_pch_acs(struct pci_dev *dev)
- 	ctrl |= (cap & PCI_ACS_CR);
- 	ctrl |= (cap & PCI_ACS_UF);
- 
--	if (pci_ats_disabled() || dev->external_facing || dev->untrusted)
-+	if (pci_ats_disabled() || dev->external_facing || dev->untrusted_dma)
- 		ctrl |= (cap & PCI_ACS_TB);
- 
- 	pci_write_config_dword(dev, pos + INTEL_SPT_ACS_CTRL, ctrl);
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 678fecdf6b81..b7c5fede0b93 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -444,13 +444,14 @@ struct pci_dev {
- 	unsigned int	shpc_managed:1;		/* SHPC owned by shpchp */
- 	unsigned int	is_thunderbolt:1;	/* Thunderbolt controller */
- 	/*
--	 * Devices marked being untrusted are the ones that can potentially
-+	 * Devices marked with untrusted_dma are the ones that can potentially
- 	 * execute DMA attacks and similar. They are typically connected
- 	 * through external ports such as Thunderbolt but not limited to
- 	 * that. When an IOMMU is enabled they should be getting full
- 	 * mappings to make sure they cannot access arbitrary memory.
- 	 */
--	unsigned int	untrusted:1;
-+	unsigned int	untrusted_dma:1;
-+
- 	/*
- 	 * Info from the platform, e.g., ACPI or device tree, may mark a
- 	 * device as "external-facing".  An external-facing device is
--- 
-2.35.1.1021.g381101b075-goog
+Why do you output the file names in this format?  This isn't input to
+the C preprocessor, so the #define just seems strange.  What am I
+missing here?
 
+Thanks,
+
+jon
