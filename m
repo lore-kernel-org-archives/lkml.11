@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB8FBC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3C4EC433FE
 	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378089AbiCYPeW (ORCPT
+        id S1378242AbiCYPeb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:34:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42864 "EHLO
+        Fri, 25 Mar 2022 11:34:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377625AbiCYPYX (ORCPT
+        with ESMTP id S1377966AbiCYPYp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:24:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7252DD96F;
-        Fri, 25 Mar 2022 08:18:22 -0700 (PDT)
+        Fri, 25 Mar 2022 11:24:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 987BBEACAC;
+        Fri, 25 Mar 2022 08:19:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6422EB827DC;
-        Fri, 25 Mar 2022 15:18:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAA52C340E9;
-        Fri, 25 Mar 2022 15:18:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D127260AD0;
+        Fri, 25 Mar 2022 15:19:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7912C340EE;
+        Fri, 25 Mar 2022 15:19:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221501;
-        bh=5rCFA85s5S+qiRWrhD5HCF9nWwgiP1x6tSx3WyKd6t0=;
+        s=korg; t=1648221566;
+        bh=Y5pIaoEdFTFs9L/tDgexSz2P1Acwz8ZcBhY5B8L0/Ds=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lehHPUHPcM2HmzqfuaBuAqp0rjeyuAchPpG3rbdnQZRo3Y4jXTymeLF6wJ2skA1Qr
-         JBWqV2y0zSzQikKr5JhbANkkl18yzLIegx7pm4P6V49oAcTi53qvvBjvwOgX3pJyjT
-         HLVx3D21dLs3ZpeuWmcX5/JPPDj4xHgW+EpgxlLI=
+        b=edbYk9AxBbTTTzMvrC3gpODfVB4+14WNAoW2b0xt0/ujDKEyZuPFyrBgc/Fi19Jvm
+         VNIF7lDcIp9Tnlmb4MxZTd/X1ZqPaHPTO4TVdRFf4pwUf/InRA4UsxxF6P0w0ajywN
+         An7KLIbtu2N9eY3ed2M3Fv70pTjZq9CnCVgbEqyQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.16 16/37] ALSA: pcm: Fix races among concurrent prealloc proc writes
-Date:   Fri, 25 Mar 2022 16:14:26 +0100
-Message-Id: <20220325150420.511592283@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        =?UTF-8?q?=E8=B5=B5=E5=AD=90=E8=BD=A9?= <beraphin@gmail.com>,
+        Stoyan Manolov <smanolov@suse.de>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.17 03/39] llc: fix netdevice reference leaks in llc_ui_bind()
+Date:   Fri, 25 Mar 2022 16:14:18 +0100
+Message-Id: <20220325150420.345250175@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220325150420.046488912@linuxfoundation.org>
-References: <20220325150420.046488912@linuxfoundation.org>
+In-Reply-To: <20220325150420.245733653@linuxfoundation.org>
+References: <20220325150420.245733653@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,68 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 69534c48ba8ce552ce383b3dfdb271ffe51820c3 upstream.
+commit 764f4eb6846f5475f1244767d24d25dd86528a4a upstream.
 
-We have no protection against concurrent PCM buffer preallocation
-changes via proc files, and it may potentially lead to UAF or some
-weird problem.  This patch applies the PCM open_mutex to the proc
-write operation for avoiding the racy proc writes and the PCM stream
-open (and further operations).
+Whenever llc_ui_bind() and/or llc_ui_autobind()
+took a reference on a netdevice but subsequently fail,
+they must properly release their reference
+or risk the infamous message from unregister_netdevice()
+at device dismantle.
 
-Cc: <stable@vger.kernel.org>
-Reviewed-by: Jaroslav Kysela <perex@perex.cz>
-Link: https://lore.kernel.org/r/20220322170720.3529-5-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+unregister_netdevice: waiting for eth0 to become free. Usage count = 3
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: 赵子轩 <beraphin@gmail.com>
+Reported-by: Stoyan Manolov <smanolov@suse.de>
+Link: https://lore.kernel.org/r/20220323004147.1990845-1-eric.dumazet@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/core/pcm_memory.c |   11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ net/llc/af_llc.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/sound/core/pcm_memory.c
-+++ b/sound/core/pcm_memory.c
-@@ -163,19 +163,20 @@ static void snd_pcm_lib_preallocate_proc
- 	size_t size;
- 	struct snd_dma_buffer new_dmab;
- 
-+	mutex_lock(&substream->pcm->open_mutex);
- 	if (substream->runtime) {
- 		buffer->error = -EBUSY;
--		return;
-+		goto unlock;
- 	}
- 	if (!snd_info_get_line(buffer, line, sizeof(line))) {
- 		snd_info_get_str(str, line, sizeof(str));
- 		size = simple_strtoul(str, NULL, 10) * 1024;
- 		if ((size != 0 && size < 8192) || size > substream->dma_max) {
- 			buffer->error = -EINVAL;
--			return;
-+			goto unlock;
- 		}
- 		if (substream->dma_buffer.bytes == size)
--			return;
-+			goto unlock;
- 		memset(&new_dmab, 0, sizeof(new_dmab));
- 		new_dmab.dev = substream->dma_buffer.dev;
- 		if (size > 0) {
-@@ -189,7 +190,7 @@ static void snd_pcm_lib_preallocate_proc
- 					 substream->pcm->card->number, substream->pcm->device,
- 					 substream->stream ? 'c' : 'p', substream->number,
- 					 substream->pcm->name, size);
--				return;
-+				goto unlock;
- 			}
- 			substream->buffer_bytes_max = size;
- 		} else {
-@@ -201,6 +202,8 @@ static void snd_pcm_lib_preallocate_proc
- 	} else {
- 		buffer->error = -EINVAL;
- 	}
-+ unlock:
-+	mutex_unlock(&substream->pcm->open_mutex);
+--- a/net/llc/af_llc.c
++++ b/net/llc/af_llc.c
+@@ -311,6 +311,10 @@ static int llc_ui_autobind(struct socket
+ 	sock_reset_flag(sk, SOCK_ZAPPED);
+ 	rc = 0;
+ out:
++	if (rc) {
++		dev_put_track(llc->dev, &llc->dev_tracker);
++		llc->dev = NULL;
++	}
+ 	return rc;
  }
  
- static inline void preallocate_info_init(struct snd_pcm_substream *substream)
+@@ -408,6 +412,10 @@ static int llc_ui_bind(struct socket *so
+ out_put:
+ 	llc_sap_put(sap);
+ out:
++	if (rc) {
++		dev_put_track(llc->dev, &llc->dev_tracker);
++		llc->dev = NULL;
++	}
+ 	release_sock(sk);
+ 	return rc;
+ }
 
 
