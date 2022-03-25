@@ -2,138 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50F77C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 17:18:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE2FBC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 17:18:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240808AbiCYRTy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 13:19:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37374 "EHLO
+        id S233119AbiCYRT6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 13:19:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358591AbiCYRTl (ORCPT
+        with ESMTP id S239782AbiCYRTs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 13:19:41 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCD1CECC5E
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 10:17:58 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id r64so4820442wmr.4
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 10:17:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=7cdghCtZILOuy6wyiUAMSm10nHZvUCEwy3CxnJnpQ3E=;
-        b=Ekml532Q4VM1H61d92wIWfxKoSe5qC68hUPuRiJ3utWbOHHL5xxnrBy7NlgYLLrxXF
-         NTu3kCRSo859RS36c8hHfLfzjM0xwpTLhkPCnp58ejKXGViwoaxLpTlORp9RmiUAifXW
-         OwZRIkinfqA7QR0sTfS5bnOASfOR8QYtWpOkcbfZ1+9sJKESfv4H5HAe3tiQjVmoDouF
-         y4KTvE10pO1b1l1AhbRfA29ayxjlNJgR1gWpgJR2b5g0lUazF4lpIfMOVUOew1v2xhAD
-         SzmwIQUFGVVbFSDYENnz6Thfe+BR9R/UmkE3pNJDxt90WUP63GrBqY8PbscluUB9Gn86
-         wAvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=7cdghCtZILOuy6wyiUAMSm10nHZvUCEwy3CxnJnpQ3E=;
-        b=28WvJEak5KQfQ4pei1I/n6r2dSuAra5CaKzSXpOSwCHQfvveo84zB1LoPpU5Fwlds7
-         cnMpC0rfaMnKP5fD7T3Byim8hr2TM1cPeq/CXCUfmvbd2Ahl7+YEvu7sWuW53uRDupC6
-         xF6PIDeMyS097xgZEAD1Jh9kvPoAtQKqzLgkjxFoK8HiYMGATrM7M4i5f8zraAmL+dx8
-         SrSc5LYBAzN9KnK25EnG+1i//Pjqj3Nn/bXV1SqwWwX59KfQu+vPIcGSgUhB2zdzg08R
-         hhtBga/lsOyqVLEY9REQaC9a8vv6S0gPwzlpOeaVY7XI0Gv6PtqIYZgCBwoL8GADy5PG
-         DHzA==
-X-Gm-Message-State: AOAM531U49muYTZpStifVf3iZSe9YIDDDckkLKbyIpgktVaLcakEuXrT
-        xBdM020PcesbMQE3GbPnn4N//w==
-X-Google-Smtp-Source: ABdhPJygjHdeyF3kmbF552zf4Ig1oFkDJy8o4evJu6in/pkAYt6kS4J5LF/XYpeLn+lvNZV9cbY90Q==
-X-Received: by 2002:a1c:cc11:0:b0:389:e8aa:ad4b with SMTP id h17-20020a1ccc11000000b00389e8aaad4bmr10622380wmb.79.1648228628310;
-        Fri, 25 Mar 2022 10:17:08 -0700 (PDT)
-Received: from localhost.localdomain (2a02-8440-6240-cc41-3074-96af-9642-0003.rev.sfr.net. [2a02:8440:6240:cc41:3074:96af:9642:3])
-        by smtp.gmail.com with ESMTPSA id p16-20020a5d6390000000b00203ffebddf3sm7547464wru.99.2022.03.25.10.17.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Mar 2022 10:17:07 -0700 (PDT)
-From:   Guillaume Ranquet <granquet@baylibre.com>
-To:     chunkuang.hu@kernel.org, p.zabel@pengutronix.de, airlied@linux.ie,
-        daniel@ffwll.ch, robh+dt@kernel.org,
-        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        tzimmermann@suse.de, matthias.bgg@gmail.com,
-        chunfeng.yun@mediatek.com, kishon@ti.com, vkoul@kernel.org,
-        deller@gmx.de, ck.hu@mediatek.com, jitao.shi@mediatek.com,
-        angelogioacchino.delregno@collabora.com
-Cc:     dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-phy@lists.infradead.org, linux-fbdev@vger.kernel.org,
-        markyacoub@google.com
-Subject: [PATCH 12/22] drm/mediatek: dpi: move swap_shift to SoC config
-Date:   Fri, 25 Mar 2022 18:15:01 +0100
-Message-Id: <20220325171511.23493-13-granquet@baylibre.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220325171511.23493-1-granquet@baylibre.com>
-References: <20220325171511.23493-1-granquet@baylibre.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Fri, 25 Mar 2022 13:19:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81DCFEACAC;
+        Fri, 25 Mar 2022 10:18:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 235A6B82989;
+        Fri, 25 Mar 2022 17:18:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E78C6C36AE5;
+        Fri, 25 Mar 2022 17:18:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648228683;
+        bh=J5SHTUx7HbCLDFysMvr2N/lRGQ6+lBAK1iOylvgyXR4=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=q9Fe3+Cw29OGNQviwwcD7/zd1KgnQtvZzaMhfueqABLsz0WEVDM0Hc4z/c+aOIq6V
+         sQa5cBfdri9hNYGU4GaWWRCwM9j4CyTKFc79IsBZPfW4OCEuUkEqsqDKkCyI4WPncW
+         vMFYsug00KJrWLw5WrEhnFhQp+6+kVe1jcDcNmLi7D8Cnx+oWfdfNgV1amEuxFmU+W
+         Q3km4MpUxjoS/g+LEOFV9XRY2Ywqs9ekKZH2mD6UjyPOGM+YpXh/MIi1zPiUpQLxD8
+         3WA13qpuusCUdijBtfWN1mWF2c7VDZvo0J2gXezHfab3V+/hfLF1WZ1n3fEhTBdWBo
+         /+xORhphKcf3w==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D4338E6BBCA;
+        Fri, 25 Mar 2022 17:18:03 +0000 (UTC)
+Subject: Re: [GIT PULL] s390 patches for the 5.18 merge window
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <your-ad-here.call-01648224608-ext-2557@work.hours>
+References: <your-ad-here.call-01648224608-ext-2557@work.hours>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <your-ad-here.call-01648224608-ext-2557@work.hours>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/s390/linux.git tags/s390-5.18-1
+X-PR-Tracked-Commit-Id: c65f677b62d6180cc174e06f953f7fe860adf6d1
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: d710d370c4911e83da5d2bc43d4a2c3b56bd27e7
+Message-Id: <164822868386.13188.3044651117362946813.pr-tracker-bot@kernel.org>
+Date:   Fri, 25 Mar 2022 17:18:03 +0000
+To:     Vasily Gorbik <gor@linux.ibm.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add flexibility by moving the swap shift value to SoC specific config
+The pull request you sent on Fri, 25 Mar 2022 17:10:08 +0100:
 
-Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
----
- drivers/gpu/drm/mediatek/mtk_dpi.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+> git://git.kernel.org/pub/scm/linux/kernel/git/s390/linux.git tags/s390-5.18-1
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
-index 6eeda222a973..6d4d8c6ec47d 100644
---- a/drivers/gpu/drm/mediatek/mtk_dpi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
-@@ -131,6 +131,7 @@ struct mtk_dpi_conf {
- 	u32 dimension_mask;
- 	/* HSIZE and VSIZE mask (no shift) */
- 	u32 hvsize_mask;
-+	u32 channel_swap_shift;
- 	const struct mtk_dpi_yc_limit *limit;
- };
- 
-@@ -349,7 +350,8 @@ static void mtk_dpi_config_channel_swap(struct mtk_dpi *dpi,
- 		break;
- 	}
- 
--	mtk_dpi_mask(dpi, DPI_OUTPUT_SETTING, val << CH_SWAP, CH_SWAP_MASK);
-+	mtk_dpi_mask(dpi, DPI_OUTPUT_SETTING, val << dpi->conf->channel_swap_shift,
-+		     CH_SWAP_MASK);
- }
- 
- static void mtk_dpi_config_yuv422_enable(struct mtk_dpi *dpi, bool enable)
-@@ -821,6 +823,7 @@ static const struct mtk_dpi_conf mt8173_conf = {
- 	.swap_input_support = true,
- 	.dimension_mask = HPW_MASK,
- 	.hvsize_mask = HSIZE_MASK,
-+	.channel_swap_shift = CH_SWAP,
- 	.limit = &mtk_dpi_limit,
- };
- 
-@@ -835,6 +838,7 @@ static const struct mtk_dpi_conf mt2701_conf = {
- 	.swap_input_support = true,
- 	.dimension_mask = HPW_MASK,
- 	.hvsize_mask = HSIZE_MASK,
-+	.channel_swap_shift = CH_SWAP,
- 	.limit = &mtk_dpi_limit,
- };
- 
-@@ -848,6 +852,7 @@ static const struct mtk_dpi_conf mt8183_conf = {
- 	.swap_input_support = true,
- 	.dimension_mask = HPW_MASK,
- 	.hvsize_mask = HSIZE_MASK,
-+	.channel_swap_shift = CH_SWAP,
- 	.limit = &mtk_dpi_limit,
- };
- 
-@@ -861,6 +866,7 @@ static const struct mtk_dpi_conf mt8192_conf = {
- 	.swap_input_support = true,
- 	.dimension_mask = HPW_MASK,
- 	.hvsize_mask = HSIZE_MASK,
-+	.channel_swap_shift = CH_SWAP,
- 	.limit = &mtk_dpi_limit,
- };
- 
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/d710d370c4911e83da5d2bc43d4a2c3b56bd27e7
+
+Thank you!
+
 -- 
-2.34.1
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
