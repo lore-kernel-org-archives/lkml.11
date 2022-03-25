@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77C2BC43219
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:27:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C248C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:27:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376846AbiCYP2F (ORCPT
+        id S1376884AbiCYP2L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:28:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40546 "EHLO
+        Fri, 25 Mar 2022 11:28:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376978AbiCYPXg (ORCPT
+        with ESMTP id S1376983AbiCYPXg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 25 Mar 2022 11:23:36 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C94E6A889B;
-        Fri, 25 Mar 2022 08:17:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ABD4AC05A;
+        Fri, 25 Mar 2022 08:17:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E671660DE3;
-        Fri, 25 Mar 2022 15:17:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03BF2C340E9;
-        Fri, 25 Mar 2022 15:17:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BB9360C7E;
+        Fri, 25 Mar 2022 15:17:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DE72C340E9;
+        Fri, 25 Mar 2022 15:17:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221424;
-        bh=lDlR75JvmdZGL+svX2rl8FjKN1R23T2mQOr7DGXMt1M=;
+        s=korg; t=1648221429;
+        bh=sBRSy/K4NYbEkSC5pIhpeUNtZ96qOrHsEIsb0xOoY5Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y9RIekzx0Rw6X61LG+cyBvEzLIDWdMN6iLOfu7A8ZkL54nprYIjwZetOX86qtr/sS
-         /xkkv0a/iO6oD3TJHl/ygZY0u4Iv6eR9L2iQr2RBITikHU4YJIChUM0bAuyOUlNZp/
-         jSyGhka2a2YhyWgHVA2h7NCOBrPoNrcUPwLzIPzM=
+        b=TnPGXRWFWxr6x+FgtwYNAprVQXbk5HJDwv9nLkB6CMpP870Pe7K1C1oxNQcAPo7Ww
+         O2vhDzeTMhW9ZeCHRnVQvO/VndjqNeeauzY21g1UOXNH8P2tuw9m5Ofmc+OH9gdoLb
+         nFyuESVoSOLYkSRBbhvgAEiV3kFoZMvfJAnv9jGs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Reza Jahanbakhshi <reza.jahanbakhshi@gmail.com>,
+        stable@vger.kernel.org, Tim Crawford <tcrawford@system76.com>,
         Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.16 05/37] ALSA: usb-audio: add mapping for new Corsair Virtuoso SE
-Date:   Fri, 25 Mar 2022 16:14:15 +0100
-Message-Id: <20220325150420.203130693@linuxfoundation.org>
+Subject: [PATCH 5.16 07/37] ALSA: hda/realtek: Add quirk for Clevo NP50PNJ
+Date:   Fri, 25 Mar 2022 16:14:17 +0100
+Message-Id: <20220325150420.259119064@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150420.046488912@linuxfoundation.org>
 References: <20220325150420.046488912@linuxfoundation.org>
@@ -50,49 +49,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Reza Jahanbakhshi <reza.jahanbakhshi@gmail.com>
+From: Tim Crawford <tcrawford@system76.com>
 
-commit cd94df1795418056a19ff4cb44eadfc18ac99a57 upstream.
+commit 9cb727506704b5323998047789fc871e64a6aa14 upstream.
 
-New device id for Corsair Virtuoso SE RGB Wireless that currently is not
-in the mixer_map. This entry in the mixer_map is necessary in order to
-label its mixer appropriately and allow userspace to pick the correct
-volume controls. For instance, my own Corsair Virtuoso SE RGB Wireless
-headset has this new ID and consequently, the sidetone and volume are not
- working correctly without this change.
-> sudo lsusb -v | grep -i corsair
-Bus 007 Device 011: ID 1b1c:0a40 Corsair CORSAIR VIRTUOSO SE Wireless Gam
-  idVendor           0x1b1c Corsair
-  iManufacturer           1 Corsair
-  iProduct                2 CORSAIR VIRTUOSO SE Wireless Gaming Headset
+Fixes headset detection on Clevo NP50PNJ.
 
-Signed-off-by: Reza Jahanbakhshi <reza.jahanbakhshi@gmail.com>
+Signed-off-by: Tim Crawford <tcrawford@system76.com>
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220304212303.195949-1-reza.jahanbakhshi@gmail.com
+Link: https://lore.kernel.org/r/20220307193229.5141-1-tcrawford@system76.com
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/usb/mixer_maps.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/sound/usb/mixer_maps.c
-+++ b/sound/usb/mixer_maps.c
-@@ -537,6 +537,16 @@ static const struct usbmix_ctl_map usbmi
- 		.map = corsair_virtuoso_map,
- 	},
- 	{
-+		/* Corsair Virtuoso SE Latest (wired mode) */
-+		.id = USB_ID(0x1b1c, 0x0a3f),
-+		.map = corsair_virtuoso_map,
-+	},
-+	{
-+		/* Corsair Virtuoso SE Latest (wireless mode) */
-+		.id = USB_ID(0x1b1c, 0x0a40),
-+		.map = corsair_virtuoso_map,
-+	},
-+	{
- 		/* Corsair Virtuoso (wireless mode) */
- 		.id = USB_ID(0x1b1c, 0x0a42),
- 		.map = corsair_virtuoso_map,
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -8949,6 +8949,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x1558, 0x8561, "Clevo NH[57][0-9][ER][ACDH]Q", ALC269_FIXUP_HEADSET_MIC),
+ 	SND_PCI_QUIRK(0x1558, 0x8562, "Clevo NH[57][0-9]RZ[Q]", ALC269_FIXUP_DMIC),
+ 	SND_PCI_QUIRK(0x1558, 0x8668, "Clevo NP50B[BE]", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
++	SND_PCI_QUIRK(0x1558, 0x866d, "Clevo NP5[05]PN[HJK]", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x867d, "Clevo NP7[01]PN[HJK]", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x8680, "Clevo NJ50LU", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x8686, "Clevo NH50[CZ]U", ALC256_FIXUP_MIC_NO_PRESENCE_AND_RESUME),
 
 
