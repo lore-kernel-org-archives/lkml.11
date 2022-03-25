@@ -2,100 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21376C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 10:59:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AD5DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 11:00:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353149AbiCYLB0 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 07:01:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52062 "EHLO
+        id S243420AbiCYLBh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 07:01:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243420AbiCYLBY (ORCPT
+        with ESMTP id S1353174AbiCYLBc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 07:01:24 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 242C2BF003;
-        Fri, 25 Mar 2022 03:59:51 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id D5B831F7AE;
-        Fri, 25 Mar 2022 10:59:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1648205989; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=V6tPqgzCb9zg9WADmlRJi4ubhrh85zcKZfitkRteJEc=;
-        b=Fl64pbvzri2ql+VIJYK/EkRry3sifm/+KDJt92c9AHrWo41fW+sr17QEALHzahpeEYcSYX
-        BBb9YhfXp+RUu3ruIsBPFRy5/KymjIzBLkKQdW51/iMJVD6rUKGS6rwlVL47eHW/zdWHaS
-        ikS8rXhvqEsM92gBP5fCR/O7N/Yukt4=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1648205989;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=V6tPqgzCb9zg9WADmlRJi4ubhrh85zcKZfitkRteJEc=;
-        b=feCy0wnHg5d0Am4EuSbi+3Sf4OxxFvX66S2Q5fKwxGWKBMcjIc8eSXpYzr5OoB2HWW9EPx
-        N9K2RDVf9U5OqoCw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id BA71B1332D;
-        Fri, 25 Mar 2022 10:59:49 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id w2gCLKWgPWKeLgAAMHmgww
-        (envelope-from <chrubis@suse.cz>); Fri, 25 Mar 2022 10:59:49 +0000
-Date:   Fri, 25 Mar 2022 12:02:09 +0100
-From:   Cyril Hrubis <chrubis@suse.cz>
-To:     Miklos Szeredi <miklos@szeredi.hu>
-Cc:     Theodore Ts'o <tytso@mit.edu>,
-        Christian Brauner <brauner@kernel.org>,
-        Miklos Szeredi <mszeredi@redhat.com>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Linux API <linux-api@vger.kernel.org>,
-        linux-man <linux-man@vger.kernel.org>,
-        LSM <linux-security-module@vger.kernel.org>,
-        Karel Zak <kzak@redhat.com>, Ian Kent <raven@themaw.net>,
-        David Howells <dhowells@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Christian Brauner <christian@brauner.io>,
-        Amir Goldstein <amir73il@gmail.com>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>
-Subject: Re: [RFC PATCH] getvalues(2) prototype
-Message-ID: <Yj2hMRrY7i7OSGqH@yuki>
-References: <20220322192712.709170-1-mszeredi@redhat.com>
- <20220323114215.pfrxy2b6vsvqig6a@wittgenstein>
- <CAJfpegsCKEx41KA1S2QJ9gX9BEBG4_d8igA0DT66GFH2ZanspA@mail.gmail.com>
- <YjudB7XARLlRtBiR@mit.edu>
- <CAJfpegtiRx6jRFUuPeXDxwJpBhYn0ekKkwYbGowUehGZkqVmAw@mail.gmail.com>
+        Fri, 25 Mar 2022 07:01:32 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77E19BF039
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 03:59:58 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id r13so10325551wrr.9
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 03:59:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=QUuvuWx0AHdHxhKcNG871JJ4v7rlpXrie/P5Lhm5m3E=;
+        b=rGvEAxAvCYzcX7kzi5ONuWblQJjvcGKUJLNhXM8ImX3ZWHD9ozycr9q5EbHg+WIfKc
+         PZDJ5dFDCFmDzOjV7ZzTJps88Lhj8mGKcfJm5qjALFkwuN4XL6WITfIjN6r5Fx17LHm2
+         RD7UxuVkbTW7X9LCXng6KYG/TwgzfhnVjo698VKCIhBj/fMe3RAOme41Gqs1ncRjkUX9
+         5/YuMdDqCgYg7AssNh3jVevbeeJ0q/jxpYhMQYQR4l4+Iymax0W0+mYbt3sRqYfcS0z2
+         jqnSiiuSSEn/Nk0BPf2iNW7O8sKgSeGu8RMukM32dRUZlascCHPOrsuB4d0Qb/IbMsiG
+         15mw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:content-transfer-encoding;
+        bh=QUuvuWx0AHdHxhKcNG871JJ4v7rlpXrie/P5Lhm5m3E=;
+        b=OACVNhqO9Jv7/SCc0kWvFLTLSOFnHc/xLIe6otIRCJBegu2W37UA73gDJpm2YLOfH3
+         Ty9Y58D1FXIg64C8QKPT3kFypE8eyDMuj4Q30/WdIh7FXQ1lHEzjraL7LTSVmi/8H+Va
+         TGGaGiIACk4nTXsBB4+OE/+PQvYf9tMtfIiWU0HopYzVNBxYniafA7PAQJfnrOUVSzt+
+         RUK081wp8oYvx1A1XirfhC6YOLOt3bx8O6H8O/k3OGmasfcT91PW9ifIKOPwoOc9wnq9
+         KIvvtYclODlFBgRtZUDgEO5T8XNby1IceJ0UUm0bqOtrwk6NrGasyudqqjescsaNF7lD
+         /Asw==
+X-Gm-Message-State: AOAM533z3TzqNYA9VjsQHvjlwGd69i8vcSeN90NmlES9+C6LOhsqqCu3
+        VZqpD1xiyn79ayDJKF6bIpK/vYG7ARApig==
+X-Google-Smtp-Source: ABdhPJwPJck71gv8SQqBQj01bgk7FX/y+SqznA2Ju0ewPebQcJEY89Z0oEkDGjw7zvjHDYjNzUfMcg==
+X-Received: by 2002:a5d:40c8:0:b0:205:2a3b:c2c with SMTP id b8-20020a5d40c8000000b002052a3b0c2cmr8510219wrq.13.1648205996880;
+        Fri, 25 Mar 2022 03:59:56 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id g16-20020a05600c4ed000b0038ceb0b21b4sm1003997wmq.24.2022.03.25.03.59.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Mar 2022 03:59:56 -0700 (PDT)
+Date:   Fri, 25 Mar 2022 10:59:54 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: [GIT PULL] Backlight for v5.18
+Message-ID: <Yj2gqnIk6HY5WyKo@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CAJfpegtiRx6jRFUuPeXDxwJpBhYn0ekKkwYbGowUehGZkqVmAw@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi!
-> > If so, have you benchmarked lsof using this new interface?
-> 
-> Not yet.  Looked yesterday at both lsof and procps source code, and
-> both are pretty complex and not easy to plug in a new interface.   But
-> I've not yet given up...
+Good morning Linus,
 
-Looking at lsof it seems to use fopen() and fgets() to parse various
-proc files. I doubt that we can make the parsing singificantly faster
-without completely rewriting the internals.
+The following changes since commit e783362eb54cd99b2cac8b3a9aeac942e6f6ac07:
 
-As for procps the readproc.c has file2str() function that does copy
-whole proc files into a buffer with open() - read() - close(). It may be
-reasonably easy to hook the new systall there and it will probably make
-ps and top slightly faster.
+  Linux 5.17-rc1 (2022-01-23 10:12:53 +0200)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/lee/backlight.git backlight-next-5.18
+
+for you to fetch changes up to 023a8830a62846e1cecc8da07e00c801dd0d7598:
+
+  backlight: backlight: Slighly simplify devm_of_find_backlight() (2022-03-08 10:47:28 +0000)
+
+----------------------------------------------------------------
+ - New Device Support
+   - Add support for PM6150L to Qualcomm WLED
+
+ - Fix-ups
+   - Use kcalloc() to avoid open-coding; pwm_bl
+   - Device Tree changes (inc. YAML conversion); qcom-wled
+   - Cleanup or simplify code; backlight
+
+----------------------------------------------------------------
+Christophe JAILLET (2):
+      backlight: pwm_bl: Avoid open coded arithmetic in memory allocation
+      backlight: backlight: Slighly simplify devm_of_find_backlight()
+
+Luca Weiss (2):
+      dt-bindings: backlight: qcom-wled: Add PM6150L compatible
+      backlight: qcom-wled: Add PM6150L compatible
+
+ .../devicetree/bindings/leds/backlight/qcom-wled.yaml          |  1 +
+ drivers/video/backlight/backlight.c                            | 10 ++++------
+ drivers/video/backlight/pwm_bl.c                               |  9 ++++-----
+ drivers/video/backlight/qcom-wled.c                            |  1 +
+ 4 files changed, 10 insertions(+), 11 deletions(-)
 
 -- 
-Cyril Hrubis
-chrubis@suse.cz
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
