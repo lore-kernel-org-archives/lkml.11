@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58C25C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 12:22:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44B24C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 12:22:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358960AbiCYMYH (ORCPT
+        id S1358974AbiCYMYJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 08:24:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38158 "EHLO
+        Fri, 25 Mar 2022 08:24:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352849AbiCYMYG (ORCPT
+        with ESMTP id S1358958AbiCYMYH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 08:24:06 -0400
-Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 083E8D4479;
+        Fri, 25 Mar 2022 08:24:07 -0400
+Received: from out199-6.us.a.mail.aliyun.com (out199-6.us.a.mail.aliyun.com [47.90.199.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4484DD447A;
         Fri, 25 Mar 2022 05:22:31 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=18;SR=0;TI=SMTPD_---0V89qQzr_1648210947;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V89qQzr_1648210947)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=18;SR=0;TI=SMTPD_---0V89zY0V_1648210945;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V89zY0V_1648210945)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 25 Mar 2022 20:22:28 +0800
+          Fri, 25 Mar 2022 20:22:26 +0800
 From:   Jeffle Xu <jefflexu@linux.alibaba.com>
 To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
         chao@kernel.org, linux-erofs@lists.ozlabs.org
@@ -30,9 +30,9 @@ Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
         eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
         luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
         fannaihao@baidu.com
-Subject: [PATCH v6 02/22] cachefiles: extract write routine
-Date:   Fri, 25 Mar 2022 20:22:03 +0800
-Message-Id: <20220325122223.102958-3-jefflexu@linux.alibaba.com>
+Subject: [PATCH v6 01/22] fscache: export fscache_end_operation()
+Date:   Fri, 25 Mar 2022 20:22:02 +0800
+Message-Id: <20220325122223.102958-2-jefflexu@linux.alibaba.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220325122223.102958-1-jefflexu@linux.alibaba.com>
 References: <20220325122223.102958-1-jefflexu@linux.alibaba.com>
@@ -42,163 +42,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Extract the generic routine of writing data to cache files, and make it
-generally available.
+Export fscache_end_operation() to avoid code duplication.
 
-This will be used by the following patch implementing on-demand read
-mode. Since it's called inside cachefiles module in this case, make the
-interface generic and unrelated to netfs_cache_resources.
-
-It is worth nothing that, ki->inval_counter is not initialized after
-this cleanup. It shall not make any visible difference, since
-inval_counter is no longer used in the write completion routine, i.e.
-cachefiles_write_complete().
+Besides, considering the paired fscache_begin_read_operation() is
+already exported, it shall make sense to also export
+fscache_end_operation().
 
 Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
+Reviewed-by: Liu Bo <bo.liu@linux.alibaba.com>
 ---
- fs/cachefiles/internal.h | 10 +++++++
- fs/cachefiles/io.c       | 61 +++++++++++++++++++++++-----------------
- 2 files changed, 45 insertions(+), 26 deletions(-)
+ fs/fscache/internal.h   | 11 -----------
+ fs/nfs/fscache.c        |  8 --------
+ include/linux/fscache.h | 14 ++++++++++++++
+ 3 files changed, 14 insertions(+), 19 deletions(-)
 
-diff --git a/fs/cachefiles/internal.h b/fs/cachefiles/internal.h
-index c793d33b0224..e80673d0ab97 100644
---- a/fs/cachefiles/internal.h
-+++ b/fs/cachefiles/internal.h
-@@ -201,6 +201,16 @@ extern void cachefiles_put_object(struct cachefiles_object *object,
-  */
- extern bool cachefiles_begin_operation(struct netfs_cache_resources *cres,
- 				       enum fscache_want_state want_state);
-+extern int __cachefiles_prepare_write(struct cachefiles_object *object,
-+				      struct file *file,
-+				      loff_t *_start, size_t *_len,
-+				      bool no_space_allocated_yet);
-+extern int __cachefiles_write(struct cachefiles_object *object,
-+			      struct file *file,
-+			      loff_t start_pos,
-+			      struct iov_iter *iter,
-+			      netfs_io_terminated_t term_func,
-+			      void *term_func_priv);
- 
- /*
-  * key.c
-diff --git a/fs/cachefiles/io.c b/fs/cachefiles/io.c
-index 753986ea1583..8dbc1eb254a3 100644
---- a/fs/cachefiles/io.c
-+++ b/fs/cachefiles/io.c
-@@ -278,36 +278,33 @@ static void cachefiles_write_complete(struct kiocb *iocb, long ret)
- /*
-  * Initiate a write to the cache.
-  */
--static int cachefiles_write(struct netfs_cache_resources *cres,
--			    loff_t start_pos,
--			    struct iov_iter *iter,
--			    netfs_io_terminated_t term_func,
--			    void *term_func_priv)
-+int __cachefiles_write(struct cachefiles_object *object,
-+		       struct file *file,
-+		       loff_t start_pos,
-+		       struct iov_iter *iter,
-+		       netfs_io_terminated_t term_func,
-+		       void *term_func_priv)
- {
--	struct cachefiles_object *object;
- 	struct cachefiles_cache *cache;
- 	struct cachefiles_kiocb *ki;
- 	struct inode *inode;
--	struct file *file;
- 	unsigned int old_nofs;
--	ssize_t ret = -ENOBUFS;
-+	ssize_t ret;
- 	size_t len = iov_iter_count(iter);
- 
--	if (!fscache_wait_for_operation(cres, FSCACHE_WANT_WRITE))
--		goto presubmission_error;
- 	fscache_count_write();
--	object = cachefiles_cres_object(cres);
- 	cache = object->volume->cache;
--	file = cachefiles_cres_file(cres);
- 
- 	_enter("%pD,%li,%llx,%zx/%llx",
- 	       file, file_inode(file)->i_ino, start_pos, len,
- 	       i_size_read(file_inode(file)));
- 
--	ret = -ENOMEM;
- 	ki = kzalloc(sizeof(struct cachefiles_kiocb), GFP_KERNEL);
--	if (!ki)
--		goto presubmission_error;
-+	if (!ki) {
-+		if (term_func)
-+			term_func(term_func_priv, -ENOMEM, false);
-+		return -ENOMEM;
-+	}
- 
- 	refcount_set(&ki->ki_refcnt, 2);
- 	ki->iocb.ki_filp	= file;
-@@ -316,7 +313,6 @@ static int cachefiles_write(struct netfs_cache_resources *cres,
- 	ki->iocb.ki_hint	= ki_hint_validate(file_write_hint(file));
- 	ki->iocb.ki_ioprio	= get_current_ioprio();
- 	ki->object		= object;
--	ki->inval_counter	= cres->inval_counter;
- 	ki->start		= start_pos;
- 	ki->len			= len;
- 	ki->term_func		= term_func;
-@@ -371,11 +367,24 @@ static int cachefiles_write(struct netfs_cache_resources *cres,
- 	cachefiles_put_kiocb(ki);
- 	_leave(" = %zd", ret);
- 	return ret;
-+}
- 
--presubmission_error:
--	if (term_func)
--		term_func(term_func_priv, ret, false);
--	return ret;
-+static int cachefiles_write(struct netfs_cache_resources *cres,
-+			    loff_t start_pos,
-+			    struct iov_iter *iter,
-+			    netfs_io_terminated_t term_func,
-+			    void *term_func_priv)
-+{
-+	if (!fscache_wait_for_operation(cres, FSCACHE_WANT_WRITE)) {
-+		if (term_func)
-+			term_func(term_func_priv, -ENOBUFS, false);
-+		return -ENOBUFS;
-+	}
-+
-+	return __cachefiles_write(cachefiles_cres_object(cres),
-+				  cachefiles_cres_file(cres),
-+				  start_pos, iter,
-+				  term_func, term_func_priv);
+diff --git a/fs/fscache/internal.h b/fs/fscache/internal.h
+index f121c21590dc..ed1c9ed737f2 100644
+--- a/fs/fscache/internal.h
++++ b/fs/fscache/internal.h
+@@ -70,17 +70,6 @@ static inline void fscache_see_cookie(struct fscache_cookie *cookie,
+ 			     where);
  }
  
+-/*
+- * io.c
+- */
+-static inline void fscache_end_operation(struct netfs_cache_resources *cres)
+-{
+-	const struct netfs_cache_ops *ops = fscache_operation_valid(cres);
+-
+-	if (ops)
+-		ops->end_operation(cres);
+-}
+-
  /*
-@@ -486,13 +495,12 @@ static enum netfs_read_source cachefiles_prepare_read(struct netfs_read_subreque
- /*
-  * Prepare for a write to occur.
+  * main.c
   */
--static int __cachefiles_prepare_write(struct netfs_cache_resources *cres,
--				      loff_t *_start, size_t *_len, loff_t i_size,
--				      bool no_space_allocated_yet)
-+int __cachefiles_prepare_write(struct cachefiles_object *object,
-+			       struct file *file,
-+			       loff_t *_start, size_t *_len,
-+			       bool no_space_allocated_yet)
- {
--	struct cachefiles_object *object = cachefiles_cres_object(cres);
- 	struct cachefiles_cache *cache = object->volume->cache;
--	struct file *file = cachefiles_cres_file(cres);
- 	loff_t start = *_start, pos;
- 	size_t len = *_len, down;
- 	int ret;
-@@ -579,7 +587,8 @@ static int cachefiles_prepare_write(struct netfs_cache_resources *cres,
+diff --git a/fs/nfs/fscache.c b/fs/nfs/fscache.c
+index cfe901650ab0..39654ca72d3d 100644
+--- a/fs/nfs/fscache.c
++++ b/fs/nfs/fscache.c
+@@ -249,14 +249,6 @@ void nfs_fscache_release_file(struct inode *inode, struct file *filp)
  	}
+ }
  
- 	cachefiles_begin_secure(cache, &saved_cred);
--	ret = __cachefiles_prepare_write(cres, _start, _len, i_size,
-+	ret = __cachefiles_prepare_write(object, cachefiles_cres_file(cres),
-+					 _start, _len,
- 					 no_space_allocated_yet);
- 	cachefiles_end_secure(cache, saved_cred);
- 	return ret;
+-static inline void fscache_end_operation(struct netfs_cache_resources *cres)
+-{
+-	const struct netfs_cache_ops *ops = fscache_operation_valid(cres);
+-
+-	if (ops)
+-		ops->end_operation(cres);
+-}
+-
+ /*
+  * Fallback page reading interface.
+  */
+diff --git a/include/linux/fscache.h b/include/linux/fscache.h
+index 296c5f1d9f35..d2430da8aa67 100644
+--- a/include/linux/fscache.h
++++ b/include/linux/fscache.h
+@@ -456,6 +456,20 @@ int fscache_begin_read_operation(struct netfs_cache_resources *cres,
+ 	return -ENOBUFS;
+ }
+ 
++/**
++ * fscache_end_operation - End the read operation for the netfs lib
++ * @cres: The cache resources for the read operation
++ *
++ * Clean up the resources at the end of the read request.
++ */
++static inline void fscache_end_operation(struct netfs_cache_resources *cres)
++{
++	const struct netfs_cache_ops *ops = fscache_operation_valid(cres);
++
++	if (ops)
++		ops->end_operation(cres);
++}
++
+ /**
+  * fscache_read - Start a read from the cache.
+  * @cres: The cache resources to use
 -- 
 2.27.0
 
