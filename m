@@ -2,131 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AD11C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:24:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B112C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:24:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229481AbiCYTZu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:25:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56510 "EHLO
+        id S229490AbiCYTZ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:25:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbiCYTZt (ORCPT
+        with ESMTP id S229491AbiCYTZw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:25:49 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEC4D3DFD05
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 11:57:42 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id yy13so17156449ejb.2
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 11:57:42 -0700 (PDT)
+        Fri, 25 Mar 2022 15:25:52 -0400
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39DA33E06C6;
+        Fri, 25 Mar 2022 11:57:45 -0700 (PDT)
+Received: by mail-oi1-x22e.google.com with SMTP id t21so4252240oie.11;
+        Fri, 25 Mar 2022 11:57:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xVjY+0+WQdrpFP0Z4+mXCq1mql+ycXs6eG3CZHDrAmU=;
-        b=lojiQifx8p87NyqVcH+S1qS6PCpqH5hv3kq4ooLqiFC6LxWDa9UgXn8DlfDAioSt1j
-         KSAuBaTunUxouxmXWo2+15PDH/VN/ieCBsBJjuXFbc2xfnfwVCtSGvaagNNpTDQGdZgE
-         GP918nP4FtvgObAnrg127i02SvnAsUwXRs55MBrgGN+iQOAb1f6li/1MjBa9/AIbQjcl
-         mgniBgRiqj/I+/X+mqlQZ3Yf4r8wOKWKwWOdxvUj92XMj6UjWxYclsnxsu9WGd2BMtBK
-         AKM5VkfdFaGTir6C62aKUl6BF7HJFlvGSMaTZIWstEg+TiHsrgU4JcvQ7X03/T8g0qeI
-         4+HA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ayOYjTZU6HmufvMH+uKYpu/1dCIaQ5A33lYHz9+DMm4=;
+        b=X+FNOez4egUGi+RaEDC5o5ifCxnPeAfq9cKoQQXRcF/X2s6qCcDabfodEZqtqP/0od
+         lcKDpg5zdyKA0VfQxajowo2N9HrIRQBF1bBCnHD2DkeibXkuGPEgOt/UZGMsOcCk0gYL
+         Prm8lhECgBMpAltiHAWJIMm2YO91CQDkFYQssH6ntOXpAWz4JChc3Gb4CrUDQmh5uvsS
+         P3yCPBbSUoWo5SXyWtNxbVV/B8OxseinYxnd6EcJk/8egWfeCX2KLAKfdZXFur5oZWIf
+         ol1ErG6sBtdoxsbv6c1zkZOtjZNrrYbybeS6kSTlU0snIT+/4aXoexhXhIMNsG1rQt7p
+         SV+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xVjY+0+WQdrpFP0Z4+mXCq1mql+ycXs6eG3CZHDrAmU=;
-        b=2TabadfczzJhLbkVOQcbqhv4hAk0N4f42xQoNQQIIae082Hj4G2O68zK/qfqF7Tucx
-         aRPjXYm5GCcE5oy+q6xwLWU2gvEl69mV0yTkt7fzXwKV207vAiKFrUeX4x4OlqmtVKgx
-         6tVwr/TcqxyqyGcjfwrOZRCJyNNcd+SrrDhSV/quYh++EeKX3m1RQJNrzBlvkRDR8+mY
-         QA9AzkWWWcR/DVGfwsaJcvyc1MUQDbYkqz9/TV2F11wN2wmK3049U/d8afqSjgQdJsen
-         iMyCEkgrCW1TCtyTl+6cusNZ7wqjrIswc02SM39kXc1BjkKEGpSQf2XI2mT2kNL7L1H9
-         e3ng==
-X-Gm-Message-State: AOAM5317fvUMnPGwHt8WygVOJdsM8rxZETsNPfa6NKQxq8/O/LaWwNBD
-        m7t2JB5hvu1mEAKXi4TwzEDYfkmZT+E=
-X-Google-Smtp-Source: ABdhPJxAEnH5lsTxK0dwzXh9eTKtgIhBWkNU0rp0Ctj3hfRmVeqJzFqWeVIH6b285IubNGFGBU7ROg==
-X-Received: by 2002:ac2:57d4:0:b0:448:2cba:6c86 with SMTP id k20-20020ac257d4000000b004482cba6c86mr8667977lfo.201.1648230681400;
-        Fri, 25 Mar 2022 10:51:21 -0700 (PDT)
-Received: from inno-pc.lan (88-115-161-74.elisa-laajakaista.fi. [88.115.161.74])
-        by smtp.gmail.com with ESMTPSA id h18-20020a056512339200b0044a2e5b94afsm777155lfg.56.2022.03.25.10.51.20
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ayOYjTZU6HmufvMH+uKYpu/1dCIaQ5A33lYHz9+DMm4=;
+        b=GlIXq6Gb1BKDxXo2c8Pwq6YifU1LlF0FfjVvYUes8NAdJUzzNgHPScZrjtwL2rZPLZ
+         w8g5ibhSPXl2D+lWrX1XU3Ip8DQM6h3hE4k9D36tKDBJzjYn3JDyBEqpYtOMFFclLrIw
+         mY8fUJR2Eyie1YIWCnb7gMt3bFlzU+65U9z8afQ3n6epCraCHBhKQgLkrj6jeuKBA90Y
+         /EKe5qPIGQYd8i8rPfw+EEEnrSykhy2BiezzqU7YminyZevn8HX4xZr8jE5G+CtkDtPQ
+         A954rnE8i6NMWHwZ3PJF0D55XRBFSphOlWR5oaX3DbTVA4BNEWKyJI7LRK/4p9oqB61g
+         wrmg==
+X-Gm-Message-State: AOAM533whwhD8LJdQAT6YmxpwMjY1X+EvLsHVQvOIAg8Na1nO4VyZkPR
+        bzoVcaliqR26dIdjgreoz9ydjxRc+OQ=
+X-Google-Smtp-Source: ABdhPJw3p6wgf3puKfvwDvOdglHa/WYaO+uhShtAN0fwz7BRG4eEy82IN781iCaO/bIGRTwjoMTc+w==
+X-Received: by 2002:a17:90b:33cd:b0:1c6:5db5:5ff9 with SMTP id lk13-20020a17090b33cd00b001c65db55ff9mr14110308pjb.197.1648229912288;
+        Fri, 25 Mar 2022 10:38:32 -0700 (PDT)
+Received: from 9a2d8922b8f1 ([122.161.51.18])
+        by smtp.gmail.com with ESMTPSA id pi2-20020a17090b1e4200b001c7b15928e0sm6737763pjb.23.2022.03.25.10.38.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Mar 2022 10:51:20 -0700 (PDT)
-From:   Zhi Wang <zhi.wang.linux@gmail.com>
-X-Google-Original-From: Zhi Wang <zhi.a.wang@intel.com>
-To:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Cc:     Zhi Wang <zhi.a.wang@intel.com>
-Subject: [PATCH v7 0/3] Refactor GVT-g MMIO tracking table and handlers
-Date:   Fri, 25 Mar 2022 13:51:13 -0400
-Message-Id: <20220325175116.167097-1-zhi.a.wang@intel.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 25 Mar 2022 10:38:32 -0700 (PDT)
+Date:   Fri, 25 Mar 2022 23:08:26 +0530
+From:   Kuldeep Singh <singh.kuldeep87k@gmail.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Viresh Kumar <viresh.kumar@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Viresh Kumar <vireshk@kernel.org>,
+        Shiraz Hashim <shiraz.linux.kernel@gmail.com>,
+        SoC Team <soc@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] ARM: dts: spear13xx: Update SPI dma properties
+Message-ID: <20220325173826.GA70042@9a2d8922b8f1>
+References: <20220323175920.93155-1-singh.kuldeep87k@gmail.com>
+ <20220324023904.h2qfxzxlznggbsyr@vireshk-i7>
+ <20220324062547.GA15504@9a2d8922b8f1>
+ <20220325015849.sazvlevnvdqj5z42@vireshk-i7>
+ <CAK8P3a0Q8eOTeRmd5-G8rNCKAcH+4HReCsOAGKd4Vq30C9TaEA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a0Q8eOTeRmd5-G8rNCKAcH+4HReCsOAGKd4Vq30C9TaEA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To support the new mdev interfaces and the re-factor patches from
-Christoph, which moves the GVT-g code into a dedicated module, the GVT-g
-initialization path has to be separated into two phases:
+On Fri, Mar 25, 2022 at 10:11:41AM +0100, Arnd Bergmann wrote:
+> On Fri, Mar 25, 2022 at 2:58 AM Viresh Kumar <viresh.kumar@linaro.org> wrote:
+> > On 24-03-22, 11:55, Kuldeep Singh wrote:
+> > > Fixed order of values is important in case of properties like
+> > > compatibles etc. In case of dma-names, yes order shouldn't matter here.
+> > >
+> > > This patch is more of appeasing dtbs_check warning rather than fixing
+> > > something.
+> >
+> > Exactly my point. We have seen similar type of issues with other tools, like
+> > coccinelle, earlier and such patches were rejected as the kernel was just fine
+> > and tooling needs to be fixed.
+> >
+> > > It's safe to go with this patch.
+> > > I am not sure if there's a provision to exclude dma-names from fix
+> > > ordering checks. Rob can help here in providing better insights.
+> 
+> I think it's a question of the scale of the warnings: my understanding is that
+> there are only a handful of dts files that trigger the warning at all, and it
+> would be rather hard to change the tooling around this. Since the proposed
+> dts change is clearly harmless, I don't mind applying it.
+> 
+> Kuldeep, you have probably looked at all dts files in the kernel, can you
+> say how many of them are affected by the dma property reordering?
 
-a) Early initialization.
+I have checked spi-pl022.yaml as of now and this was the only one which
+was affected with dma ordering.
 
-The early initialization of GVT requires to be done when loading i915.
-Mostly it's because the initial clean HW state needs to be saved before
-i915 touches the HW.
+For all dts files, I can definitely give a try and will come up with
+some numbers. Please note, there are still bindings left to be converted
+to yaml format, so won't be able to catch those cases.
 
-b) Late initalization.
-
-This phases of initalization will setup the rest components of GVT-g,
-which can be done later when the dedicated module is being loaded.
-
-To initialize the GVT-g MMIO tracking table in the early initalization
-stage, which will be done in i915, the GVT-g MMIO tracking table needs
-to be sperated accordingly and moved into i915.
-
-v7:
-
-- Keep the marcos of device generation in GVT-g. (Christoph, Jani)
-
-v6:
-
-- Move the mmio_table.c into i915. (Christoph)
-- Keep init_device_info and related structures in GVT-g. (Christoph)
-- Refine the callbacks of the iterator. (Christoph)
-- Move the flags of MMIO register defination to GVT-g. (Chrsitoph)
-- Move the mmio block handling to GVT-g.
-
-v5:
-
-- Re-design the mmio table framework. (Christoph)
-
-v4:
-
-- Fix the errors of patch checking scripts.
-
-v3:
-
-- Fix the errors when CONFIG_DRM_I915_WERROR is turned on. (Jani)
-
-v2:
-
-- Implement a mmio table instead of generating it by marco in i915. (Jani)
-
-Zhi Wang (3):
-  i915/gvt: Separate the MMIO tracking table from GVT-g
-  i915/gvt: Save the initial HW state snapshot in i915
-  i915/gvt: Use the initial HW state snapshot saved in i915
-
- drivers/gpu/drm/i915/Makefile               |    2 +-
- drivers/gpu/drm/i915/gvt/firmware.c         |   25 +-
- drivers/gpu/drm/i915/gvt/gvt.h              |    3 +-
- drivers/gpu/drm/i915/gvt/handlers.c         | 1031 ++-------------
- drivers/gpu/drm/i915/gvt/mmio.h             |    1 -
- drivers/gpu/drm/i915/gvt/reg.h              |    9 +-
- drivers/gpu/drm/i915/i915_drv.h             |    2 +
- drivers/gpu/drm/i915/intel_gvt.c            |   92 +-
- drivers/gpu/drm/i915/intel_gvt.h            |   21 +
- drivers/gpu/drm/i915/intel_gvt_mmio_table.c | 1308 +++++++++++++++++++
- 10 files changed, 1577 insertions(+), 917 deletions(-)
- create mode 100644 drivers/gpu/drm/i915/intel_gvt_mmio_table.c
-
--- 
-2.25.1
-
+- Kuldeep
