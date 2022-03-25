@@ -2,36 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EBABC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 11:07:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB88EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 11:07:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243092AbiCYLI5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 07:08:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41410 "EHLO
+        id S1355436AbiCYLJG (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 07:09:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354529AbiCYLIf (ORCPT
+        with ESMTP id S1355645AbiCYLIk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 07:08:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08546D1CFB;
-        Fri, 25 Mar 2022 04:06:50 -0700 (PDT)
+        Fri, 25 Mar 2022 07:08:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9347D3AE9;
+        Fri, 25 Mar 2022 04:06:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5188FB82806;
-        Fri, 25 Mar 2022 11:06:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B0C7C340F3;
-        Fri, 25 Mar 2022 11:06:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2320A6178C;
+        Fri, 25 Mar 2022 11:06:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E217EC340F1;
+        Fri, 25 Mar 2022 11:06:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648206408;
-        bh=t/O8cKjwHQh1uBjrQkcfkl1HO3IEV+qbNVuAxz7p+6g=;
+        s=k20201202; t=1648206416;
+        bh=S+sF0esp8Umt1yhMYOtmyMs/wCedYRLmZEuS17CPoQA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pxDDuM2kxpV4QoEe6zBRzfmB209N6E8xq9wQsQuQiabxNQdrUJUNtGLj0knVpM69d
-         c30YS8iJML0Mw3CHRHSbPhzF+xAcrama8C1X4tu7UBVojfYWCo5wb4iMQk/lX8O0s1
-         6yNNw4Kjcjuxe78sxnFO9S6Nj+8Chw+3xlo8+jt0LSl3kgLcX3NB1f2wGxObsoKpld
-         ehwbW80uldzNl0T8hwRBE/jhzpG9bW+oUEXgJVGUuGNfCeqOtFQ2q37xXO26+d8qo4
-         rfdLwbvSq+eunuILTDuUtJqIlHJWBBxCt+tY6SdJVkw42+EqRupFpXhQlids3DOaux
-         psAod9yTPOiUg==
+        b=n3XePISJWBD6eQNnOczvY6wJAyVKAwHARhZBtI4lSF/DHFL8pHldGDnWfwm7mK50z
+         5XoP4QLNeyrSPV6Mk5mvTSPuecCaSvC2dPfbheOvwy+I+XVWM509US1avzFvCoeL1L
+         JYC8udc/C1/wTfzII2wuFTPW4fflJKEz/SThXzkdpR5v9/+i7bQLHFq0mswe7ReDMo
+         eHcS2xXTM6fiIO/KH4hXmK8RiijCSWVWr6pp9l+WPmP6q1RDdIYNHRKzogqimewuul
+         8BIP/6RyYvYjgWYn1rIi18E5zUsvwT0kjg/TyHUL6B9FqAiNVHHvC1TBtZHI8UpQrt
+         kv8ZhgMgFBXBA==
 From:   Vinod Koul <vkoul@kernel.org>
 To:     Rob Clark <robdclark@gmail.com>
 Cc:     linux-arm-msm@vger.kernel.org,
@@ -44,9 +45,9 @@ Cc:     linux-arm-msm@vger.kernel.org,
         linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
         freedreno@lists.freedesktop.org,
         Abhinav Kumar <quic_abhinavk@quicinc.com>
-Subject: [PATCH v5 09/13] drm/msm: Add missing num_dspp field documentation
-Date:   Fri, 25 Mar 2022 16:35:52 +0530
-Message-Id: <20220325110556.275490-10-vkoul@kernel.org>
+Subject: [PATCH v5 11/13] drm/msm/disp/dpu1: Add DSC support in RM
+Date:   Fri, 25 Mar 2022 16:35:54 +0530
+Message-Id: <20220325110556.275490-12-vkoul@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220325110556.275490-1-vkoul@kernel.org>
 References: <20220325110556.275490-1-vkoul@kernel.org>
@@ -56,27 +57,157 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Somehow documentation for num_dspp was missed, so add that
+This add the bits in RM to enable the DSC blocks
 
 Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
 Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
- drivers/gpu/drm/msm/msm_drv.h | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.h |  1 +
+ drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c  | 56 +++++++++++++++++++++++++
+ drivers/gpu/drm/msm/disp/dpu1/dpu_rm.h  |  1 +
+ 3 files changed, 58 insertions(+)
 
-diff --git a/drivers/gpu/drm/msm/msm_drv.h b/drivers/gpu/drm/msm/msm_drv.h
-index e7a312edfe67..6425a42e997c 100644
---- a/drivers/gpu/drm/msm/msm_drv.h
-+++ b/drivers/gpu/drm/msm/msm_drv.h
-@@ -102,6 +102,7 @@ enum msm_event_wait {
-  * @num_lm:       number of layer mixers used
-  * @num_enc:      number of compression encoder blocks used
-  * @num_intf:     number of interfaces the panel is mounted on
-+ * @num_dspp:     number of dspp blocks used
-  */
- struct msm_display_topology {
- 	u32 num_lm;
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.h
+index 2d385b4b7f5e..8f2fb667b05c 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.h
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.h
+@@ -146,6 +146,7 @@ struct dpu_global_state {
+ 	uint32_t ctl_to_enc_id[CTL_MAX - CTL_0];
+ 	uint32_t intf_to_enc_id[INTF_MAX - INTF_0];
+ 	uint32_t dspp_to_enc_id[DSPP_MAX - DSPP_0];
++	uint32_t dsc_to_enc_id[DSC_MAX - DSC_0];
+ };
+ 
+ struct dpu_global_state
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c
+index f9c83d6e427a..fbb24bb2b998 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c
+@@ -11,6 +11,7 @@
+ #include "dpu_hw_intf.h"
+ #include "dpu_hw_dspp.h"
+ #include "dpu_hw_merge3d.h"
++#include "dpu_hw_dsc.h"
+ #include "dpu_encoder.h"
+ #include "dpu_trace.h"
+ 
+@@ -75,6 +76,14 @@ int dpu_rm_destroy(struct dpu_rm *rm)
+ 			dpu_hw_intf_destroy(hw);
+ 		}
+ 	}
++	for (i = 0; i < ARRAY_SIZE(rm->dsc_blks); i++) {
++		struct dpu_hw_dsc *hw;
++
++		if (rm->dsc_blks[i]) {
++			hw = to_dpu_hw_dsc(rm->dsc_blks[i]);
++			dpu_hw_dsc_destroy(hw);
++		}
++	}
+ 
+ 	return 0;
+ }
+@@ -221,6 +230,19 @@ int dpu_rm_init(struct dpu_rm *rm,
+ 		rm->dspp_blks[dspp->id - DSPP_0] = &hw->base;
+ 	}
+ 
++	for (i = 0; i < cat->dsc_count; i++) {
++		struct dpu_hw_dsc *hw;
++		const struct dpu_dsc_cfg *dsc = &cat->dsc[i];
++
++		hw = dpu_hw_dsc_init(dsc->id, mmio, cat);
++		if (IS_ERR_OR_NULL(hw)) {
++			rc = PTR_ERR(hw);
++			DPU_ERROR("failed dsc object creation: err %d\n", rc);
++			goto fail;
++		}
++		rm->dsc_blks[dsc->id - DSC_0] = &hw->base;
++	}
++
+ 	return 0;
+ 
+ fail:
+@@ -476,6 +498,7 @@ static int _dpu_rm_reserve_intf(
+ 	}
+ 
+ 	global_state->intf_to_enc_id[idx] = enc_id;
++
+ 	return 0;
+ }
+ 
+@@ -500,6 +523,28 @@ static int _dpu_rm_reserve_intf_related_hw(
+ 	return ret;
+ }
+ 
++static int _dpu_rm_reserve_dsc(struct dpu_rm *rm,
++			       struct dpu_global_state *global_state,
++			       struct drm_encoder *enc,
++			       const struct msm_display_topology *top)
++{
++	int num_dsc = top->num_dsc;
++	int i;
++
++	/* check if DSC required are allocated or not */
++	for (i = 0; i < num_dsc; i++) {
++		if (global_state->dsc_to_enc_id[i]) {
++			DPU_ERROR("DSC %d is already allocated\n", i);
++			return -EIO;
++		}
++	}
++
++	for (i = 0; i < num_dsc; i++)
++		global_state->dsc_to_enc_id[i] = enc->base.id;
++
++	return 0;
++}
++
+ static int _dpu_rm_make_reservation(
+ 		struct dpu_rm *rm,
+ 		struct dpu_global_state *global_state,
+@@ -526,6 +571,10 @@ static int _dpu_rm_make_reservation(
+ 	if (ret)
+ 		return ret;
+ 
++	ret  = _dpu_rm_reserve_dsc(rm, global_state, enc, &reqs->topology);
++	if (ret)
++		return ret;
++
+ 	return ret;
+ }
+ 
+@@ -567,6 +616,8 @@ void dpu_rm_release(struct dpu_global_state *global_state,
+ 		ARRAY_SIZE(global_state->ctl_to_enc_id), enc->base.id);
+ 	_dpu_rm_clear_mapping(global_state->intf_to_enc_id,
+ 		ARRAY_SIZE(global_state->intf_to_enc_id), enc->base.id);
++	_dpu_rm_clear_mapping(global_state->dsc_to_enc_id,
++		ARRAY_SIZE(global_state->dsc_to_enc_id), enc->base.id);
+ }
+ 
+ int dpu_rm_reserve(
+@@ -640,6 +691,11 @@ int dpu_rm_get_assigned_resources(struct dpu_rm *rm,
+ 		hw_to_enc_id = global_state->dspp_to_enc_id;
+ 		max_blks = ARRAY_SIZE(rm->dspp_blks);
+ 		break;
++	case DPU_HW_BLK_DSC:
++		hw_blks = rm->dsc_blks;
++		hw_to_enc_id = global_state->dsc_to_enc_id;
++		max_blks = ARRAY_SIZE(rm->dsc_blks);
++		break;
+ 	default:
+ 		DPU_ERROR("blk type %d not managed by rm\n", type);
+ 		return 0;
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.h
+index 1f12c8d5b8aa..278d2a510b80 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.h
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.h
+@@ -30,6 +30,7 @@ struct dpu_rm {
+ 	struct dpu_hw_blk *intf_blks[INTF_MAX - INTF_0];
+ 	struct dpu_hw_blk *dspp_blks[DSPP_MAX - DSPP_0];
+ 	struct dpu_hw_blk *merge_3d_blks[MERGE_3D_MAX - MERGE_3D_0];
++	struct dpu_hw_blk *dsc_blks[DSC_MAX - DSC_0];
+ 
+ 	uint32_t lm_max_width;
+ };
 -- 
 2.34.1
 
