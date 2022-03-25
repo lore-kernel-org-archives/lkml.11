@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DA2CC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:31:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B311C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:31:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376724AbiCYPcn (ORCPT
+        id S1345780AbiCYPcs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:32:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42676 "EHLO
+        Fri, 25 Mar 2022 11:32:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377410AbiCYPYI (ORCPT
+        with ESMTP id S1377655AbiCYPYZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:24:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 499C56A00C;
-        Fri, 25 Mar 2022 08:17:54 -0700 (PDT)
+        Fri, 25 Mar 2022 11:24:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9855AE7F77;
+        Fri, 25 Mar 2022 08:18:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3698B827E0;
-        Fri, 25 Mar 2022 15:17:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B0EDC340E9;
-        Fri, 25 Mar 2022 15:17:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D67460AB7;
+        Fri, 25 Mar 2022 15:18:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C4BCC340E9;
+        Fri, 25 Mar 2022 15:18:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221472;
-        bh=xdY4I81YJ/lcJTydX2z5QiXTyr0xfg7lp1PlCRneQis=;
+        s=korg; t=1648221506;
+        bh=TQCFjAhdsKyZ7yg+szFGHHnNbG43OsViEk8ESlBL1dU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v8Sd2/2nwdaMGsNsa6ClJORRy87QQOju/x1S1xzBwx+cil2iSAfGggIuoiTgKKCaF
-         KkdUu97uc5ppXE1odVEjavtOZ1LaSG4fnln+bPEW2hCL2z03vhU5tnnufvEvYAPqLU
-         tfP9zutNI9T6o698oGa+MyfGjKjKbYryqIr4AkJk=
+        b=CS86dL2fzQzV48FX8IdOJimkb6FNvmEgmBQLJoPBD7EOcJxb7itLHL3cdisnGLJKR
+         XIjkw/dx/wBMRcnlkrs3gmsGnSkBe5221pYs4b7netQg3lYid/D0OMbDW0AdBi30QL
+         N0C4fb6DzK26DbseJBBI02uMzfvZeUow7ddk1IUU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        stable@vger.kernel.org, Jason Zheng <jasonzheng2004@gmail.com>,
         Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.16 18/37] ALSA: usb-audio: Add mute TLV for playback volumes on RODE NT-USB
-Date:   Fri, 25 Mar 2022 16:14:28 +0100
-Message-Id: <20220325150420.567067829@linuxfoundation.org>
+Subject: [PATCH 5.17 10/39] ALSA: hda/realtek: Add quirk for ASUS GA402
+Date:   Fri, 25 Mar 2022 16:14:25 +0100
+Message-Id: <20220325150420.539947560@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220325150420.046488912@linuxfoundation.org>
-References: <20220325150420.046488912@linuxfoundation.org>
+In-Reply-To: <20220325150420.245733653@linuxfoundation.org>
+References: <20220325150420.245733653@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,41 +49,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lars-Peter Clausen <lars@metafoo.de>
+From: Jason Zheng <jasonzheng2004@gmail.com>
 
-commit 0f306cca42fe879694fb5e2382748c43dc9e0196 upstream.
+commit b7557267c233b55d8e8d7ba4c68cf944fe2ec02c upstream.
 
-For the RODE NT-USB the lowest Playback mixer volume setting mutes the
-audio output. But it is not reported as such causing e.g. PulseAudio to
-accidentally mute the device when selecting a low volume.
+ASUS GA402 requires a workaround to manage the routing of its 4 speakers
+like the other ASUS models. Add a corresponding quirk entry to fix it.
 
-Fix this by applying the existing quirk for this kind of issue when the
-device is detected.
-
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Jason Zheng <jasonzheng2004@gmail.com>
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220311201400.235892-1-lars@metafoo.de
+Link: https://lore.kernel.org/r/20220313092216.29858-1-jasonzheng2004@gmail.com
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/usb/mixer_quirks.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/sound/usb/mixer_quirks.c
-+++ b/sound/usb/mixer_quirks.c
-@@ -3362,9 +3362,10 @@ void snd_usb_mixer_fu_apply_quirk(struct
- 		if (unitid == 7 && cval->control == UAC_FU_VOLUME)
- 			snd_dragonfly_quirk_db_scale(mixer, cval, kctl);
- 		break;
--	/* lowest playback value is muted on C-Media devices */
--	case USB_ID(0x0d8c, 0x000c):
--	case USB_ID(0x0d8c, 0x0014):
-+	/* lowest playback value is muted on some devices */
-+	case USB_ID(0x0d8c, 0x000c): /* C-Media */
-+	case USB_ID(0x0d8c, 0x0014): /* C-Media */
-+	case USB_ID(0x19f7, 0x0003): /* RODE NT-USB */
- 		if (strstr(kctl->id.name, "Playback"))
- 			cval->min_mute = 1;
- 		break;
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -9020,6 +9020,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x1043, 0x1e51, "ASUS Zephyrus M15", ALC294_FIXUP_ASUS_GU502_PINS),
+ 	SND_PCI_QUIRK(0x1043, 0x1e8e, "ASUS Zephyrus G15", ALC289_FIXUP_ASUS_GA401),
+ 	SND_PCI_QUIRK(0x1043, 0x1f11, "ASUS Zephyrus G14", ALC289_FIXUP_ASUS_GA401),
++	SND_PCI_QUIRK(0x1043, 0x1d42, "ASUS Zephyrus G14 2022", ALC289_FIXUP_ASUS_GA401),
+ 	SND_PCI_QUIRK(0x1043, 0x16b2, "ASUS GU603", ALC289_FIXUP_ASUS_GA401),
+ 	SND_PCI_QUIRK(0x1043, 0x3030, "ASUS ZN270IE", ALC256_FIXUP_ASUS_AIO_GPIO2),
+ 	SND_PCI_QUIRK(0x1043, 0x831a, "ASUS P901", ALC269_FIXUP_STEREO_DMIC),
 
 
