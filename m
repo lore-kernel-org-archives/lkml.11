@@ -2,165 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F188C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 20:53:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 544AEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 20:57:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232410AbiCYUz3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 16:55:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48006 "EHLO
+        id S232439AbiCYU7T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 16:59:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232400AbiCYUz1 (ORCPT
+        with ESMTP id S232386AbiCYU7R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 16:55:27 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39BEE42EF4
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 13:53:52 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id pv16so17684730ejb.0
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 13:53:52 -0700 (PDT)
+        Fri, 25 Mar 2022 16:59:17 -0400
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6014CB9192;
+        Fri, 25 Mar 2022 13:57:42 -0700 (PDT)
+Received: by mail-oi1-x22f.google.com with SMTP id b188so9437281oia.13;
+        Fri, 25 Mar 2022 13:57:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qTyIfzc6eWn8tPRbJvu4pItLGCLIkdX7GJakm9zDrl8=;
-        b=gm5AHFVvThRrK7sA/BQ6fJ/iDwpQq6O0/7tOPWKWfF0gNOKqop2SvIcH4r/OClE48L
-         VFW0eVhGjvjiyVqrrrPg6Q1OkP1qou04a5ugVipBYO9VTlVyEcQ7kokZzVjAoN7pS1Ch
-         +u+3DjL5YncJtUcCyN3Ju5WCdBaFHsUNObffo=
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=uzAuqtwkm46GspJerldWifZpeS2uUUcdgFDDV4iF0Yc=;
+        b=kCPIJahkmzOtz09iL0VBxsl721inkNgOH3ZtvZsKBaopkIMxhCt9wXBCVZYMOlR09o
+         NJPOZusdSDjEUe1v1RHURtfLqkJdx3KH4JphrNnOXpWQEU96pRFb1VqPwVgAvJxtdEpG
+         bopMeVKGXfzygIfBVJOPU5wPvbIk6pW02zSNwJrXOqVnKl17SVYljisZiwRj1uSUCgDu
+         dQ0OCgdtwemBhxEYLAz4q8qK1XAix5DlRTSObG3pXdeNz7Czed057mimeD8qSS8xYrNI
+         qtA0mmZaonjBAf6+nYub+v08IcolTB1yB9z8WdlukM8astVozXDIy9Sva2nvkMUQ8a+j
+         R/+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qTyIfzc6eWn8tPRbJvu4pItLGCLIkdX7GJakm9zDrl8=;
-        b=Wd5dPjmT3gZbcrDX5/uasFfaok6hHzSRbso203SIro/Bca1X8Dv1rGkB6ooybawBi3
-         Y6ELiIMLsLiyEzqfPMvJsrGLhzOW6tCy8c8PNmg4xGe3EGzaWhj1TacuH/iKc2pKudz9
-         0fXLLklbnhtLADDDDdBEgtbhKLSgeaBnBN3jqW/DhkepAVni1jgZQJwpfOUyafo4mp5j
-         krpYEFzmtGhSC3iR0IB+oAS2wvF3qQIcCxw9tDL1xOW5n9Js+rGzKDKDPCr4QLzhBfq/
-         I1zRgpShwx0be6HJksijf1FhL3d95rTMPFNkVCRMkWQWNL7A/8vfHtnYbeO0ue3Fhv7h
-         mXbg==
-X-Gm-Message-State: AOAM5301hHjAw1MbDpcPJ2TcDN1Hx+aZLG26EzwlimYEzpeX6IgZ7J7o
-        5DBmYT4F/zYTvf2/z8a10MOepFW8d2rBZg2TxVU=
-X-Google-Smtp-Source: ABdhPJyNBS0A97O5n1FjdRUbFzgDiVU6WLvPDroUQUQKD5ZSxZSQWRGT61hVePaV/V5pKzFgo2IUIw==
-X-Received: by 2002:a17:907:6296:b0:6da:745b:7b40 with SMTP id nd22-20020a170907629600b006da745b7b40mr13965423ejc.750.1648241630464;
-        Fri, 25 Mar 2022 13:53:50 -0700 (PDT)
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com. [209.85.221.43])
-        by smtp.gmail.com with ESMTPSA id k12-20020aa7c38c000000b0041939d9ccd0sm3309169edq.81.2022.03.25.13.53.49
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Mar 2022 13:53:50 -0700 (PDT)
-Received: by mail-wr1-f43.google.com with SMTP id j18so12352054wrd.6
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 13:53:49 -0700 (PDT)
-X-Received: by 2002:ac2:4203:0:b0:448:8053:d402 with SMTP id
- y3-20020ac24203000000b004488053d402mr9094484lfh.687.1648241278691; Fri, 25
- Mar 2022 13:47:58 -0700 (PDT)
-MIME-Version: 1.0
-References: <1812355.tdWV9SEqCh@natalenko.name> <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
- <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
- <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com> <878rsza0ih.fsf@toke.dk>
- <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
- <20220324163132.GB26098@lst.de> <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com>
- <871qyr9t4e.fsf@toke.dk> <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
- <31434708dcad126a8334c99ee056dcce93e507f1.camel@freebox.fr>
- <CAHk-=wippum+MksdY7ixMfa3i1sZ+nxYPWLLpVMNyXCgmiHbBQ@mail.gmail.com> <298f4f9ccad7c3308d3a1fd8b4b4740571305204.camel@sipsolutions.net>
-In-Reply-To: <298f4f9ccad7c3308d3a1fd8b4b4740571305204.camel@sipsolutions.net>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 25 Mar 2022 13:47:42 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whXAan2ExANMryPSFaBWeyzikPi+fPUseMoVhQAxR7cEA@mail.gmail.com>
-Message-ID: <CAHk-=whXAan2ExANMryPSFaBWeyzikPi+fPUseMoVhQAxR7cEA@mail.gmail.com>
-Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
- ath9k-based AP
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     Maxime Bizon <mbizon@freebox.fr>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Kalle Valo <kvalo@kernel.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=uzAuqtwkm46GspJerldWifZpeS2uUUcdgFDDV4iF0Yc=;
+        b=5QRPida1CkAgPqKxYDPKyL5AGhpcay0D+8HmNO1SiTxFjHLGzciUSujfDLHosbKlfd
+         zm5SDNDpVkJmbx7jD0C0S9bOIXJQnm2kSnEiLr7l3zdLpsBBgPoOonkLbq8aYh3BJnmg
+         VHr+x8edA+RZsGRc7ln88aUpaD2GJ+rjHu9F4L+kE+OeozN/AbmA0ZVK18Spazjmf9Xx
+         nBgY3BJbW1WtsznTEeGdT0iG3kw7WWgTbRntca7wlEhgNTtJmwcHVi+oNrehikxM9Fn8
+         6lBzI/2Y+QACUDIK9ppyWitE7EfRkl3HDu3cXR598XIj65/1mHZgHhFlz6L5QMPY81ec
+         Ug+g==
+X-Gm-Message-State: AOAM531UEaLP8RW8fgjXG1OS7+xE9CF9wSgX20T8r+CpKsZIV8JvzoV6
+        pvK4jOOaSF4hPHk8SI1k3Qk=
+X-Google-Smtp-Source: ABdhPJy7ZXjFFrHR0aVM76ZkWCenQp0VXu5AZMjydR1p7at00cvcj9FndX4+x8BsGzBlg9+btiJKDA==
+X-Received: by 2002:a05:6808:1485:b0:2dc:d320:ce57 with SMTP id e5-20020a056808148500b002dcd320ce57mr6621661oiw.298.1648241861726;
+        Fri, 25 Mar 2022 13:57:41 -0700 (PDT)
+Received: from t14s.localdomain ([179.232.121.194])
+        by smtp.gmail.com with ESMTPSA id v8-20020a05683018c800b005cb39fc3e15sm3129743ote.13.2022.03.25.13.57.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Mar 2022 13:57:41 -0700 (PDT)
+Received: by t14s.localdomain (Postfix, from userid 1000)
+        id 2F1001D1F05; Fri, 25 Mar 2022 17:57:39 -0300 (-03)
+Date:   Fri, 25 Mar 2022 17:57:39 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Jakob Koschel <jakobkoschel@gmail.com>
+Cc:     Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Olha Cherevyk <olha.cherevyk@gmail.com>,
-        iommu <iommu@lists.linux-foundation.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Paolo Abeni <pabeni@redhat.com>, linux-sctp@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mike Rapoport <rppt@kernel.org>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>
+Subject: Re: [PATCH] sctp: replace usage of found with dedicated list
+ iterator variable
+Message-ID: <Yj4sw30tZ8DRG5qT@t14s.localdomain>
+References: <20220324072257.62674-1-jakobkoschel@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220324072257.62674-1-jakobkoschel@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 1:38 PM Johannes Berg <johannes@sipsolutions.net> wrote:
->
-> >  (2) The CPU now wants to see any state written by the device since
-> > the last sync
-> >
-> >     This is "dma_sync_single_for_cpu(DMA_FROM_DEVICE)".
-> >
-> >     A bounce-buffer implementation needs to copy *from* the bounce buffer.
-> >
-> >     A cache-coherent implementation needs to do nothing.
-> >
-> >     A non-coherent implementation maybe needs to do nothing (ie it
-> > assumes that previous ops have flushed the cache, and just accessing
-> > the data will bring the rigth thing back into it). Or it could just
-> > flush the cache.
->
-> Doesn't that just need to *invalidate* the cache, rather than *flush*
-> it?
+On Thu, Mar 24, 2022 at 08:22:57AM +0100, Jakob Koschel wrote:
+> To move the list iterator variable into the list_for_each_entry_*()
+> macro in the future it should be avoided to use the list iterator
+> variable after the loop body.
+> 
+> To *never* use the list iterator variable after the loop it was
+> concluded to use a separate iterator variable instead of a
+> found boolean [1].
+> 
+> This removes the need to use a found variable and simply checking if
+> the variable was set, can determine if the break/goto was hit.
+> 
+> Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/
+> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 
-Yes.  I should have been more careful.
-
-That said, I think "invalidate without writeback" is a really
-dangerous operation (it can generate some *really* hard to debug
-memory state), so on the whole I think you should always strive to
-just do "flush-and-invalidate".
-
-If the core has support for "invalidate clean cache lines only", then
-that's possibly a good alternative.
-
-> >   A non-coherent implementation needs to flush the cache again, bot
-> > not necessarily do a writeback-flush if there is some cheaper form
-> > (assuming it does nothing in the "CPU now wants to see any state" case
-> > because it depends on the data not having been in the caches)
->
-> And similarly here, it would seem that the implementation can't _flush_
-> the cache as the device might be writing concurrently (which it does in
-> fact do in the ath9k case), but it must invalidate the cache?
-
-Right, again, when I said "flush" I really should have said "invalidate".
-
-> I'm not sure about the (2) case, but here it seems fairly clear cut that
-> if you have a cache, don't expect the CPU to write to the buffer (as
-> evidenced by DMA_FROM_DEVICE), you wouldn't want to write out the cache
-> to DRAM?
-
-See above: I'd *really* want to avoid a pure "invalidate cacheline"
-model. The amount of debug issues that can cause is not worth it.
-
-So please flush-and-invalidate, or invalidate-non-dirty, but not just
-"invalidate".
-
-> Then, however, we need to define what happens if you pass
-> DMA_BIDIRECTIONAL to the sync_for_cpu() and sync_for_device() functions,
-> which adds two more cases? Or maybe we eventually just think that's not
-> valid at all, since you have to specify how you're (currently?) using
-> the buffer, which can't be DMA_BIDIRECTIONAL?
-
-Ugh. Do we actually have cases that do it? That sounds really odd for
-a "sync" operation. It sounds very reasonable for _allocating_ DMA,
-but for syncing I'm left scratching my head what the semantics would
-be.
-
-But yes, if we do and people come up with semantics for it, those
-semantics should be clearly documented.
-
-And if we don't - or people can't come up with semantics for it - we
-should actively warn about it and not have some code that does odd
-things that we don't know what they mean.
-
-But it sounds like you agree with my analysis, just not with some of
-my bad/incorrect word choices.
-
-            Linus
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
