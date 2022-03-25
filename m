@@ -2,98 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5EADC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:58:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9085C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:59:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232004AbiCYUAM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 16:00:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53580 "EHLO
+        id S232047AbiCYUAo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 16:00:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231938AbiCYT7z (ORCPT
+        with ESMTP id S232019AbiCYUAg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:59:55 -0400
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42FD227381E;
-        Fri, 25 Mar 2022 12:49:57 -0700 (PDT)
-Received: from relay6-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::226])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id E3AF7C75D4;
-        Fri, 25 Mar 2022 17:26:19 +0000 (UTC)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 038D8C0005;
-        Fri, 25 Mar 2022 17:24:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1648229043;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FRdaf3QubwalLgacUcstEdzO4ExbwqJKpfZxmAqvKtk=;
-        b=W5e1McTTjEWKYFTx3lHvohtMmUPM9fZXTmJ6wra32uO5GEMUv358WeMWxqV3GEvkhn8SoB
-        Tg4yK8/yc1gSbaUYenNc5xR1eA9WO+IqqM1of4KlJmg6bFLIMRLpfwdNSlSeE+hIichm6u
-        ZveyiQJdTtzBmitmnpFwNdXO0S2vLEcGlnxPX0Yxkh03hBl4Kkpg0NDhMM3EhebiPmduFQ
-        bXa4ExaWUF9b1m+yI04xkkkBOyM4dGBCfrfqjkpExuA8Bgz/9sQVgeLYosNoG4zAQQ150C
-        OCALX4Vz/yAt9zoh8/Fxx8vEli7kWWyMDMeyrICVdqhLghfbyej5r6LPippfdQ==
-From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-Subject: [net-next 5/5] net: mdio: mscc-miim: use fwnode_mdiobus_register()
-Date:   Fri, 25 Mar 2022 18:22:34 +0100
-Message-Id: <20220325172234.1259667-6-clement.leger@bootlin.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220325172234.1259667-1-clement.leger@bootlin.com>
-References: <20220325172234.1259667-1-clement.leger@bootlin.com>
+        Fri, 25 Mar 2022 16:00:36 -0400
+Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58105203A5C
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:50:13 -0700 (PDT)
+Received: by mail-ot1-x336.google.com with SMTP id i11-20020a9d4a8b000000b005cda3b9754aso6231062otf.12
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:50:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ofQyyG4WMeOqTiRCxXPOTx0/Wivov5xRx7qheRvM/dU=;
+        b=BTLrQc+pAf4GklQAuYbgpvaE5IYRRYpws9LxKmgbafhhKqWOaBUlZ1kY/PXDiEpsMq
+         IEPQ3wqmWivLAUs2jTzh1qeNenL6XV9D70b0I+pAEtuxNCS/BVaFrYeETTfp1FhkSq/H
+         HZRyRj7J2wnOX45stHVB7hpDU5NLeFcL5MyzE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ofQyyG4WMeOqTiRCxXPOTx0/Wivov5xRx7qheRvM/dU=;
+        b=fvCZV/PSrzASJsQSsYsLGAUNJB+ehd4BPbezoX8QjUvhJiZqxRzG8wts1doECQrTbT
+         KB29/H9Q12AV5o/fGUqHjjKKs3QV212JhzPNJzPxcYmo0Onked6HVJBOxevK1Uygf/Oz
+         R3Ft9oa6kKXD9c9m2xSLk1YTU5z7od/WGjg4crmzpHQC0tokHR9XGj5g7Swua60CtcKq
+         bps6lhzKchHIcApmYFOJdsozdTfSMG3iqtWi1idiANFlABmTCVZit4Ia3p+B55/rafeK
+         G45BWIfuRVW2O6xxgUZNli/cpLwc3JNGp2FSk4sppBj9W7bKDfeY663Iu5wD8plvGFfH
+         EVSg==
+X-Gm-Message-State: AOAM531c7j2ahxdEbRUPa/ZstJfDyjZ9Cr4pXPf7/nbtmwirAb+TDb8E
+        DxJ+l0vb9u3nbW1Y3YK0kI498w==
+X-Google-Smtp-Source: ABdhPJwP3eYIiKNUU8RG4VjsD8Eaq3hNhzdfy5M2puZwXKfZ42MjKCjobbrF6RFOi5BsoaaUw58PxA==
+X-Received: by 2002:a9d:67d4:0:b0:5b2:2644:7696 with SMTP id c20-20020a9d67d4000000b005b226447696mr5224826otn.322.1648237810859;
+        Fri, 25 Mar 2022 12:50:10 -0700 (PDT)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id r129-20020acac187000000b002ef358c6e0esm3198399oif.49.2022.03.25.12.50.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Mar 2022 12:50:10 -0700 (PDT)
+Subject: Re: [PATCH 1/2] selftests: fix header dependency for pid_namespace
+ selftests
+To:     Axel Rasmussen <axelrasmussen@google.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        llvm@lists.linux.dev, Shuah Khan <skhan@linuxfoundation.org>
+References: <20220324223929.1893741-1-axelrasmussen@google.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <8fc440d2-2278-b554-3f56-18daa47aef85@linuxfoundation.org>
+Date:   Fri, 25 Mar 2022 13:50:09 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220324223929.1893741-1-axelrasmussen@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use fwnode_mdiobus_register() to be compatible with devices described
-with fwnode.
+On 3/24/22 4:39 PM, Axel Rasmussen wrote:
+> The way the test target was defined before, when building with clang we
+> get a command line like this:
+> 
+> clang -Wall -Werror -g -I../../../../usr/include/ \
+> 	regression_enomem.c ../pidfd/pidfd.h  -o regression_enomem
+> 
+> This yields an error, because clang thinks we want to produce both a *.o
+> file, as well as a precompiled header:
+> 
+> clang: error: cannot specify -o when generating multiple output files
+> 
+> gcc, for whatever reason, doesn't exhibit the same behavior which I
+> suspect is why the problem wasn't noticed before.
+> 
 
-Signed-off-by: Clément Léger <clement.leger@bootlin.com>
----
- drivers/net/mdio/mdio-mscc-miim.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Thank you fixing this.
 
-diff --git a/drivers/net/mdio/mdio-mscc-miim.c b/drivers/net/mdio/mdio-mscc-miim.c
-index c483ba67c21f..ea79421fcfd4 100644
---- a/drivers/net/mdio/mdio-mscc-miim.c
-+++ b/drivers/net/mdio/mdio-mscc-miim.c
-@@ -7,12 +7,12 @@
-  */
- 
- #include <linux/bitops.h>
-+#include <linux/fwnode_mdio.h>
- #include <linux/io.h>
- #include <linux/iopoll.h>
- #include <linux/kernel.h>
- #include <linux/mdio/mdio-mscc-miim.h>
- #include <linux/module.h>
--#include <linux/of_mdio.h>
- #include <linux/phy.h>
- #include <linux/platform_device.h>
- #include <linux/property.h>
-@@ -288,7 +288,7 @@ static int mscc_miim_probe(struct platform_device *pdev)
- 	if (!miim->info)
- 		return -EINVAL;
- 
--	ret = of_mdiobus_register(bus, pdev->dev.of_node);
-+	ret = fwnode_mdiobus_register(bus, dev_fwnode(&pdev->dev));
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "Cannot register MDIO bus (%d)\n", ret);
- 		return ret;
--- 
-2.34.1
+> This can be fixed simply by using the LOCAL_HDRS infrastructure the
+> selftests lib.mk provides. It does the right think and marks the target
+> as depending on the header (so if the header changes, we rebuild), but
+> it filters the header out of the compiler command line, so we don't get
+> the error described above.
+> 
+> Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
+> ---
+>   tools/testing/selftests/pid_namespace/Makefile | 6 +++---
+>   1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/pid_namespace/Makefile b/tools/testing/selftests/pid_namespace/Makefile
+> index dcaefa224ca0..edafaca1aeb3 100644
+> --- a/tools/testing/selftests/pid_namespace/Makefile
+> +++ b/tools/testing/selftests/pid_namespace/Makefile
+> @@ -1,8 +1,8 @@
+>   # SPDX-License-Identifier: GPL-2.0
+>   CFLAGS += -g -I../../../../usr/include/
+>   
+> -TEST_GEN_PROGS := regression_enomem
+> +TEST_GEN_PROGS = regression_enomem
+>   
+> -include ../lib.mk
+> +LOCAL_HDRS += $(selfdir)/pidfd/pidfd.h
+>   
+> -$(OUTPUT)/regression_enomem: regression_enomem.c ../pidfd/pidfd.h
+> +include ../lib.mk
+> 
 
+Will apply this for Linux 5.18-rc2
+
+thanks,
+-- Shuah
