@@ -2,46 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49A2FC43219
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 215F8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377971AbiCYPeR (ORCPT
+        id S1378022AbiCYPeT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:34:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42680 "EHLO
+        Fri, 25 Mar 2022 11:34:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377585AbiCYPYR (ORCPT
+        with ESMTP id S1377610AbiCYPYW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:24:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D7F3DFF8A;
-        Fri, 25 Mar 2022 08:18:19 -0700 (PDT)
+        Fri, 25 Mar 2022 11:24:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52CA1E7F6F;
+        Fri, 25 Mar 2022 08:18:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D0CC360ABA;
-        Fri, 25 Mar 2022 15:18:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2DE1C340E9;
-        Fri, 25 Mar 2022 15:18:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 61F8AB827E0;
+        Fri, 25 Mar 2022 15:18:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1860C340E9;
+        Fri, 25 Mar 2022 15:18:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221498;
-        bh=yQdpvEhL5AoioDf0png7mIvxiUMoS5mudv/r7pfJOUc=;
+        s=korg; t=1648221504;
+        bh=8SAhyuG4jGlA+wi+EXKjrX7dlF5Y3pT/GEqS0lcPxAM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vjESTfk+NUpuWF4/Y8wq6uJQLbupcswoi9S/uX4u5sxXAAf62MrnI9a7VSHA66k2A
-         wRYSswCqkLuKxWPl9Mm1hWNs7Hbnqc7R5mw4+cLq4lSWsqGl3KUQFwa9QxruFsSZXa
-         jtOvHQnQD+yqOLIjSxJa5xtxaI0ztzQum5g1rvfE=
+        b=iWfEHWargdGxtuWArZzPjj4uX3/8mvcvcIpJ4hoZmd/6ze5pd0xu1UZvIS0M6/c6N
+         JnM9IkUOweNldmg08u6jAIXt5qv2jfxJpJl+W1FE01PVSEl++FBcZ/pdWApMXIbEMW
+         Z+7ssAn89Jfwd3JImPHTgHcCwl4ABzAqmH4Qs/gA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maximilian Luz <luzmaximilian@gmail.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.16 25/37] ACPI: battery: Add device HID and quirk for Microsoft Surface Go 3
-Date:   Fri, 25 Mar 2022 16:14:35 +0100
-Message-Id: <20220325150420.764126922@linuxfoundation.org>
+        stable@vger.kernel.org, Jarkko Sakkinen <jarkko@kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        linux-integrity@vger.kernel.org, Tadeusz Struk <tstruk@gmail.com>,
+        Tadeusz Struk <tadeusz.struk@linaro.org>
+Subject: [PATCH 5.17 01/39] tpm: Fix error handling in async work
+Date:   Fri, 25 Mar 2022 16:14:16 +0100
+Message-Id: <20220325150420.289936517@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220325150420.046488912@linuxfoundation.org>
-References: <20220325150420.046488912@linuxfoundation.org>
+In-Reply-To: <20220325150420.245733653@linuxfoundation.org>
+References: <20220325150420.245733653@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,53 +53,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maximilian Luz <luzmaximilian@gmail.com>
+From: Tadeusz Struk <tstruk@gmail.com>
 
-commit 7dacee0b9efc8bd061f097b1a8d4daa6591af0c6 upstream.
+commit 2e8e4c8f6673247e22efc7985ce5497accd16f88 upstream.
 
-For some reason, the Microsoft Surface Go 3 uses the standard ACPI
-interface for battery information, but does not use the standard PNP0C0A
-HID. Instead it uses MSHW0146 as identifier. Add that ID to the driver
-as this seems to work well.
+When an invalid (non existing) handle is used in a TPM command,
+that uses the resource manager interface (/dev/tpmrm0) the resource
+manager tries to load it from its internal cache, but fails and
+the tpm_dev_transmit returns an -EINVAL error to the caller.
+The existing async handler doesn't handle these error cases
+currently and the condition in the poll handler never returns
+mask with EPOLLIN set.
+The result is that the poll call blocks and the application gets stuck
+until the user_read_timer wakes it up after 120 sec.
+Change the tpm_dev_async_work function to handle error conditions
+returned from tpm_dev_transmit they are also reflected in the poll mask
+and a correct error code could passed back to the caller.
 
-Additionally, the power state is not updated immediately after the AC
-has been (un-)plugged, so add the respective quirk for that.
+Cc: Jarkko Sakkinen <jarkko@kernel.org>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: <linux-integrity@vger.kernel.org>
+Cc: <stable@vger.kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
 
-Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
-Cc: All applicable <stable@vger.kernel.org>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: 9e1b74a63f77 ("tpm: add support for nonblocking operation")
+Tested-by: Jarkko Sakkinen<jarkko@kernel.org>
+Signed-off-by: Tadeusz Struk <tstruk@gmail.com>
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Cc: Tadeusz Struk <tadeusz.struk@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/battery.c |   12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/char/tpm/tpm-dev-common.c |    8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
---- a/drivers/acpi/battery.c
-+++ b/drivers/acpi/battery.c
-@@ -60,6 +60,10 @@ MODULE_PARM_DESC(cache_time, "cache time
- 
- static const struct acpi_device_id battery_device_ids[] = {
- 	{"PNP0C0A", 0},
+--- a/drivers/char/tpm/tpm-dev-common.c
++++ b/drivers/char/tpm/tpm-dev-common.c
+@@ -69,7 +69,13 @@ static void tpm_dev_async_work(struct wo
+ 	ret = tpm_dev_transmit(priv->chip, priv->space, priv->data_buffer,
+ 			       sizeof(priv->data_buffer));
+ 	tpm_put_ops(priv->chip);
+-	if (ret > 0) {
 +
-+	/* Microsoft Surface Go 3 */
-+	{"MSHW0146", 0},
-+
- 	{"", 0},
- };
- 
-@@ -1177,6 +1181,14 @@ static const struct dmi_system_id bat_dm
- 			DMI_MATCH(DMI_PRODUCT_VERSION, "ThinkPad"),
- 		},
- 	},
-+	{
-+		/* Microsoft Surface Go 3 */
-+		.callback = battery_notification_delay_quirk,
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "Surface Go 3"),
-+		},
-+	},
- 	{},
- };
- 
++	/*
++	 * If ret is > 0 then tpm_dev_transmit returned the size of the
++	 * response. If ret is < 0 then tpm_dev_transmit failed and
++	 * returned an error code.
++	 */
++	if (ret != 0) {
+ 		priv->response_length = ret;
+ 		mod_timer(&priv->user_read_timer, jiffies + (120 * HZ));
+ 	}
 
 
