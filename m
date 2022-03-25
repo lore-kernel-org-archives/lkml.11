@@ -2,45 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94F80C35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78E34C4707F
 	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:13:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376589AbiCYPNJ (ORCPT
+        id S1377411AbiCYPOS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:13:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43826 "EHLO
+        Fri, 25 Mar 2022 11:14:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359751AbiCYPJ0 (ORCPT
+        with ESMTP id S1376279AbiCYPL2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:09:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B9C8D9EAC;
-        Fri, 25 Mar 2022 08:07:22 -0700 (PDT)
+        Fri, 25 Mar 2022 11:11:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7560B60A9E;
+        Fri, 25 Mar 2022 08:08:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7081961C16;
-        Fri, 25 Mar 2022 15:07:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80400C340E9;
-        Fri, 25 Mar 2022 15:07:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 13ED3B828FB;
+        Fri, 25 Mar 2022 15:08:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E157C340E9;
+        Fri, 25 Mar 2022 15:08:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648220841;
-        bh=2X/K4MSH7ZZ4y6OlqIljkiSvs87cao4yDt948RfwvFY=;
+        s=korg; t=1648220920;
+        bh=BXyf7OtulamChKRKRXcqzIpXtRFjF8WGvhONiq7Tb/E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D6hS6kNZwY4TkG1fu9q2cCp83i5gBPmkDNC4JfscQIAn4lUblhZhd/Ycwlc0RuMWa
-         ihtbQZMet3aydiQLySBFUxS+om7dLu8rh3ZfPMOY8I+jotpaAd1yRptt/B48Xk9zYk
-         tX6KFfmerDmP81IqiHREFr4zqt9s1HXpwA6UqGe8=
+        b=fXSIVFcWBWqJnN5cfo4fazNTYuYoqHddjJnw3/aOlOOtQbwjMlY6hQ0w13IvfKul5
+         hrTE5XU1d05N8ZG1DnTEhW0eV5+by8PtefdM9dTzMa5joDCYThf/2tQme0ZvaPad5o
+         0Prl2wr9DrI3U8CXer5sTW3xGk0EbB88+26b5d4k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 4.19 09/20] ALSA: pcm: Add stream lock during PCM reset ioctl operations
-Date:   Fri, 25 Mar 2022 16:04:47 +0100
-Message-Id: <20220325150417.278924779@linuxfoundation.org>
+        stable@vger.kernel.org, Tim Murray <timmurray@google.com>,
+        Joel Fernandes <joelaf@google.com>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        "Uladzislau Rezki (Sony)" <urezki@gmail.com>,
+        Todd Kjos <tkjos@google.com>,
+        Sandeep Patil <sspatil@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Subject: [PATCH 5.4 26/29] rcu: Dont deboost before reporting expedited quiescent state
+Date:   Fri, 25 Mar 2022 16:05:06 +0100
+Message-Id: <20220325150419.337871326@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220325150417.010265747@linuxfoundation.org>
-References: <20220325150417.010265747@linuxfoundation.org>
+In-Reply-To: <20220325150418.585286754@linuxfoundation.org>
+References: <20220325150418.585286754@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,53 +54,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Paul E. McKenney <paulmck@kernel.org>
 
-commit 1f68915b2efd0d6bfd6e124aa63c94b3c69f127c upstream.
+commit 10c535787436d62ea28156a4b91365fd89b5a432 upstream.
 
-snd_pcm_reset() is a non-atomic operation, and it's allowed to run
-during the PCM stream running.  It implies that the manipulation of
-hw_ptr and other parameters might be racy.
+Currently rcu_preempt_deferred_qs_irqrestore() releases rnp->boost_mtx
+before reporting the expedited quiescent state.  Under heavy real-time
+load, this can result in this function being preempted before the
+quiescent state is reported, which can in turn prevent the expedited grace
+period from completing.  Tim Murray reports that the resulting expedited
+grace periods can take hundreds of milliseconds and even more than one
+second, when they should normally complete in less than a millisecond.
 
-This patch adds the PCM stream lock at appropriate places in
-snd_pcm_*_reset() actions for covering that.
+This was fine given that there were no particular response-time
+constraints for synchronize_rcu_expedited(), as it was designed
+for throughput rather than latency.  However, some users now need
+sub-100-millisecond response-time constratints.
 
-Cc: <stable@vger.kernel.org>
-Reviewed-by: Jaroslav Kysela <perex@perex.cz>
-Link: https://lore.kernel.org/r/20220322171325.4355-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+This patch therefore follows Neeraj's suggestion (seconded by Tim and
+by Uladzislau Rezki) of simply reversing the two operations.
+
+Reported-by: Tim Murray <timmurray@google.com>
+Reported-by: Joel Fernandes <joelaf@google.com>
+Reported-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
+Reviewed-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
+Reviewed-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
+Tested-by: Tim Murray <timmurray@google.com>
+Cc: Todd Kjos <tkjos@google.com>
+Cc: Sandeep Patil <sspatil@google.com>
+Cc: <stable@vger.kernel.org> # 5.4.x
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/core/pcm_native.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ kernel/rcu/tree_plugin.h |    9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
---- a/sound/core/pcm_native.c
-+++ b/sound/core/pcm_native.c
-@@ -1648,21 +1648,25 @@ static int snd_pcm_do_reset(struct snd_p
- 	int err = substream->ops->ioctl(substream, SNDRV_PCM_IOCTL1_RESET, NULL);
- 	if (err < 0)
- 		return err;
-+	snd_pcm_stream_lock_irq(substream);
- 	runtime->hw_ptr_base = 0;
- 	runtime->hw_ptr_interrupt = runtime->status->hw_ptr -
- 		runtime->status->hw_ptr % runtime->period_size;
- 	runtime->silence_start = runtime->status->hw_ptr;
- 	runtime->silence_filled = 0;
-+	snd_pcm_stream_unlock_irq(substream);
- 	return 0;
- }
+--- a/kernel/rcu/tree_plugin.h
++++ b/kernel/rcu/tree_plugin.h
+@@ -523,16 +523,17 @@ rcu_preempt_deferred_qs_irqrestore(struc
+ 			raw_spin_unlock_irqrestore_rcu_node(rnp, flags);
+ 		}
  
- static void snd_pcm_post_reset(struct snd_pcm_substream *substream, int state)
- {
- 	struct snd_pcm_runtime *runtime = substream->runtime;
-+	snd_pcm_stream_lock_irq(substream);
- 	runtime->control->appl_ptr = runtime->status->hw_ptr;
- 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK &&
- 	    runtime->silence_size > 0)
- 		snd_pcm_playback_silence(substream, ULONG_MAX);
-+	snd_pcm_stream_unlock_irq(substream);
- }
- 
- static const struct action_ops snd_pcm_action_reset = {
+-		/* Unboost if we were boosted. */
+-		if (IS_ENABLED(CONFIG_RCU_BOOST) && drop_boost_mutex)
+-			rt_mutex_futex_unlock(&rnp->boost_mtx);
+-
+ 		/*
+ 		 * If this was the last task on the expedited lists,
+ 		 * then we need to report up the rcu_node hierarchy.
+ 		 */
+ 		if (!empty_exp && empty_exp_now)
+ 			rcu_report_exp_rnp(rnp, true);
++
++		/* Unboost if we were boosted. */
++		if (IS_ENABLED(CONFIG_RCU_BOOST) && drop_boost_mutex)
++			rt_mutex_futex_unlock(&rnp->boost_mtx);
++
+ 	} else {
+ 		local_irq_restore(flags);
+ 	}
 
 
