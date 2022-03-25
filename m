@@ -2,104 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB5EBC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:17:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ABE0C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:17:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348946AbiCYPRn (ORCPT
+        id S1355264AbiCYPSo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:17:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43804 "EHLO
+        Fri, 25 Mar 2022 11:18:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376979AbiCYPNt (ORCPT
+        with ESMTP id S1377402AbiCYPOR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:13:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B4D9DCE10;
-        Fri, 25 Mar 2022 08:10:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E6D7261C0D;
-        Fri, 25 Mar 2022 15:10:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8D5FC36AE2;
-        Fri, 25 Mar 2022 15:10:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221045;
-        bh=cm0RYyJQcXqUnVI7HNk8immc7/DDIPAlvRgVNobGzO0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MsTrHbToBdnU6kVNSGA4P/9rYWqJmjQhKOU31eyto79ssCD5vvClNLdbWc8OGzMgn
-         AqKBOYfPLkr9bkveblLNPmR1xvxEixq/x/FaaxLgAIAE15jhFb2eo7y4IATjIj96oH
-         S6e0qD27scbyVAoHKy1VI3tEP0o3dLJJ3K2tYH0U=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephane Graber <stgraber@ubuntu.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.10 27/38] drivers: net: xgene: Fix regression in CRC stripping
-Date:   Fri, 25 Mar 2022 16:05:11 +0100
-Message-Id: <20220325150420.530097424@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220325150419.757836392@linuxfoundation.org>
-References: <20220325150419.757836392@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Fri, 25 Mar 2022 11:14:17 -0400
+Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [IPv6:2001:4b98:dc4:8::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F185583B0;
+        Fri, 25 Mar 2022 08:12:17 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 3892020001E;
+        Fri, 25 Mar 2022 15:12:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1648221134;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=eAt+TBAfengvsI3opJRvj5GMA9ByOtG9TQG+M6MuH4E=;
+        b=CaBSjKEDovabjcw3Z4WagEYRSCZbtxPBvJ/sFLGjWvvpemYnV934wMAsR13Evys2twwsAS
+        pPrfqvdQeersxQhABxBUygfrm1/JlkQWjv2zLmgo4Y8g6gJ9dYBO9eJmwL2jSJGGmk1Vvw
+        TqYdSqP5NGbAHF1mHiPNtrmorTLkVSc1fQeS4jVvynj/dht+CqR/gu3o7cdcDOK93UIQBl
+        GjhB2/IOhUK9N4wG45hKI56wAy1GgaS55PpURQPr8rL+hw+53OpwrvRhhuHgZ8cLFDXgeD
+        xMsBL2/UYK1hrVWoA/qfQoo38Y45zL3GtdnqTLGoZ177mTC0xI173zB30ahPcQ==
+Date:   Fri, 25 Mar 2022 16:10:52 +0100
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Len Brown <lenb@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Allan Nielsen <allan.nielsen@microchip.com>,
+        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 4/9] device property: add
+ fwnode_property_read_string_index()
+Message-ID: <20220325161052.3ae6dd30@fixe.home>
+In-Reply-To: <Yj3S0g9kaykY6S+A@smile.fi.intel.com>
+References: <20220325113148.588163-1-clement.leger@bootlin.com>
+        <20220325113148.588163-5-clement.leger@bootlin.com>
+        <Yj3S0g9kaykY6S+A@smile.fi.intel.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephane Graber <stgraber@ubuntu.com>
+Le Fri, 25 Mar 2022 16:33:54 +0200,
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> a =C3=A9crit :
 
-commit e9e6faeafaa00da1851bcf47912b0f1acae666b4 upstream.
+> On Fri, Mar 25, 2022 at 12:31:43PM +0100, Cl=C3=A9ment L=C3=A9ger wrote:
+> > Add fwnode_property_read_string_index() function which allows to
+> > retrieve a single string from an array by its index. This function is
+> > the equivalent of of_property_read_string_index() but for fwnode
+> > support. =20
+>=20
+> ...
+>=20
+> > +	ret =3D fwnode_call_int_op(fwnode, property_read_string_array, propna=
+me,
+> > +				 string, 1, index);
+> > +	if (ret =3D=3D -EINVAL && !IS_ERR_OR_NULL(fwnode) &&
+> > +	    !IS_ERR_OR_NULL(fwnode->secondary))
+> > +		ret =3D fwnode_call_int_op(fwnode->secondary,
+> > +					 property_read_string_array, propname,
+> > +					 string, 1, index); =20
+>=20
+> This is not fully correct. See [1] for the details.
+> I hope to send the new version just after the merge window ends.
+>=20
+> [1]: https://lore.kernel.org/lkml/20220308123712.18613-1-andriy.shevchenk=
+o@linux.intel.com/
+>=20
 
-All packets on ingress (except for jumbo) are terminated with a 4-bytes
-CRC checksum. It's the responsability of the driver to strip those 4
-bytes. Unfortunately a change dating back to March 2017 re-shuffled some
-code and made the CRC stripping code effectively dead.
+Ok, I think we can wait for your patch to be applied in that case.
 
-This change re-orders that part a bit such that the datalen is
-immediately altered if needed.
-
-Fixes: 4902a92270fb ("drivers: net: xgene: Add workaround for errata 10GE_8/ENET_11")
-Cc: stable@vger.kernel.org
-Signed-off-by: Stephane Graber <stgraber@ubuntu.com>
-Tested-by: Stephane Graber <stgraber@ubuntu.com>
-Link: https://lore.kernel.org/r/20220322224205.752795-1-stgraber@ubuntu.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/ethernet/apm/xgene/xgene_enet_main.c |   12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
-
---- a/drivers/net/ethernet/apm/xgene/xgene_enet_main.c
-+++ b/drivers/net/ethernet/apm/xgene/xgene_enet_main.c
-@@ -696,6 +696,12 @@ static int xgene_enet_rx_frame(struct xg
- 	buf_pool->rx_skb[skb_index] = NULL;
- 
- 	datalen = xgene_enet_get_data_len(le64_to_cpu(raw_desc->m1));
-+
-+	/* strip off CRC as HW isn't doing this */
-+	nv = GET_VAL(NV, le64_to_cpu(raw_desc->m0));
-+	if (!nv)
-+		datalen -= 4;
-+
- 	skb_put(skb, datalen);
- 	prefetch(skb->data - NET_IP_ALIGN);
- 	skb->protocol = eth_type_trans(skb, ndev);
-@@ -717,12 +723,8 @@ static int xgene_enet_rx_frame(struct xg
- 		}
- 	}
- 
--	nv = GET_VAL(NV, le64_to_cpu(raw_desc->m0));
--	if (!nv) {
--		/* strip off CRC as HW isn't doing this */
--		datalen -= 4;
-+	if (!nv)
- 		goto skip_jumbo;
--	}
- 
- 	slots = page_pool->slots - 1;
- 	head = page_pool->head;
-
-
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
