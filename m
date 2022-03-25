@@ -2,121 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4C74C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 20:06:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85E01C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 20:06:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231904AbiCYUHl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 16:07:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52194 "EHLO
+        id S231575AbiCYUHp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 16:07:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232064AbiCYUH1 (ORCPT
+        with ESMTP id S232155AbiCYUHb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 16:07:27 -0400
-Received: from 2.mo582.mail-out.ovh.net (2.mo582.mail-out.ovh.net [46.105.76.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6459A4CD55
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 13:03:05 -0700 (PDT)
-Received: from player693.ha.ovh.net (unknown [10.110.103.132])
-        by mo582.mail-out.ovh.net (Postfix) with ESMTP id E1FB024C1B
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 16:25:24 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player693.ha.ovh.net (Postfix) with ESMTPSA id 4EAC428C06071;
-        Fri, 25 Mar 2022 16:25:19 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-107S001dc4f81cd-8fd0-4ac5-9c7a-b78267933b18,
-                    1702D5D0C6B5DF16716081994498F990499A02DA) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Cc:     patches@opensource.cirrus.com, Wolfram Sang <wsa@kernel.org>,
-        linux-kernel@vger.kernel.org, Stephen Kitt <steve@sk2.org>
-Subject: [PATCH] ASoC: wm*: use i2c_match_id and simple i2c probe
-Date:   Fri, 25 Mar 2022 17:25:15 +0100
-Message-Id: <20220325162515.1204107-1-steve@sk2.org>
-X-Mailer: git-send-email 2.27.0
+        Fri, 25 Mar 2022 16:07:31 -0400
+Received: from meesny.iki.fi (meesny.iki.fi [IPv6:2001:67c:2b0:1c1::201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 641BE4578A;
+        Fri, 25 Mar 2022 13:03:05 -0700 (PDT)
+Received: from [172.16.24.240] (73-55.dynamonet.fi [85.134.55.73])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: tmb)
+        by meesny.iki.fi (Postfix) with ESMTPSA id 8632D20034;
+        Fri, 25 Mar 2022 19:36:47 +0200 (EET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi; s=meesny;
+        t=1648229807;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1+FRaduQeESmuKYRTCT5Rbst5a/a4/BE0qFe/49USy8=;
+        b=F1rCdqG1z0iNOaQZucwBXfLcgd2p4lS2q5UhMmEZhIAWbGEE+0+e9De543m+3YpkfIHbfv
+        7XiGmosOOjGb2/CUVqxMORazvhR9rEwmWtHIOpKPWDhblEl6857m67THRT5LPOURlCslp6
+        ykGSTrr3Yru1iZ3S9spoCIPNO7TEpwo=
+Message-ID: <60a29ef1-b433-3832-d052-50ce834ba916@iki.fi>
+Date:   Fri, 25 Mar 2022 19:36:46 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 17074272088474289798
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudehuddgkeekucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeetgedugfelkeeikeetgeegteevfeeufeetuefgudeiiedthfehtdeffeekvdeffeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrheileefrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 5.10 11/38] swiotlb: rework "fix info leak with
+ DMA_FROM_DEVICE"
+Content-Language: en-US
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        stable <stable@vger.kernel.org>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Christoph Hellwig <hch@lst.de>
+References: <20220325150419.757836392@linuxfoundation.org>
+ <20220325150420.085364078@linuxfoundation.org>
+ <CAHk-=wiaeZKiEk87Sms1sy53m8tT3UCLOoeUBnX1c_1dZ78WjQ@mail.gmail.com>
+From:   Thomas Backlund <tmb@iki.fi>
+In-Reply-To: <CAHk-=wiaeZKiEk87Sms1sy53m8tT3UCLOoeUBnX1c_1dZ78WjQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+ARC-Authentication-Results: i=1;
+        ORIGINATING;
+        auth=pass smtp.auth=tmb smtp.mailfrom=tmb@iki.fi
+ARC-Seal: i=1; s=meesny; d=iki.fi; t=1648229807; a=rsa-sha256; cv=none;
+        b=Y7dv7WoPZWY41Y2TwKwqFxB33dMnbguDMN2cc+pNMXRP0Hfs19D4qPauJlRLU16s9DEtkf
+        abvFdhVBjz3ef7yaLbGNqnLvyLbcOYoMrxVBS3YaY/muJQpPg9lGkkNiYUzpDk0rqwnwak
+        70WQsxDB8ho94MEYOK6QtmDczjReWJ8=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi;
+        s=meesny; t=1648229807;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1+FRaduQeESmuKYRTCT5Rbst5a/a4/BE0qFe/49USy8=;
+        b=SNL5W8dwAHaHxa/Ryo4spcZ9xEABDZPVZl65SghvKMpcQM0ox2cDKiTCP/I3xWRl3M8Kkb
+        DmZUxDhhTFBTpdow/nMZIVi/0nh553DNVpenLpiYK96aIS3rdreUpfsI8fmwaeBPV6ZU1j
+        CzhV7CNWHc1aQT45nTrW02AWztyJE20=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As part of the ongoing i2c transition to the simple probe
-("probe_new"), this patch uses i2c_match_id to retrieve the
-driver_data for the probed device. The id parameter is thus no longer
-necessary and the simple probe can be used instead.
+Den 2022-03-25 kl. 19:08, skrev Linus Torvalds:
+> On Fri, Mar 25, 2022 at 8:09 AM Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+>>
+>> From: Halil Pasic <pasic@linux.ibm.com>
+>>
+>> commit aa6f8dcbab473f3a3c7454b74caa46d36cdc5d13 upstream.
+> 
+> This one causes a regression on at least some wireless drivers
+> (ath9k). There's some active discussion about it, maybe it gets
+> reverted, maybe there are other options.
+> 
+> There's an ath9k patch that fixes the problem, so if this patch goes
+> into the stable tree the ath9k fix will follow.
+> 
+> But it might be a good idea to simply hold off on this patch a bit,
+> because that ath9k patch hasn't actually landed yet, there's some
+> discussion about it all, and it's not clear that other drivers might
+> not have the same issue.
+> 
+> So I'm not NAK'ing this patch from stable, but I also don't think it's
+> timing-critical, and it might be a good idea to delay it for a week or
+> two to both wait for the ath9k patch and to see if something else
+> comes up.
+> 
+>                Linus
+> 
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
----
- sound/soc/codecs/wm8904.c | 9 ++++++---
- sound/soc/codecs/wm8985.c | 8 +++++---
- 2 files changed, 11 insertions(+), 6 deletions(-)
 
-diff --git a/sound/soc/codecs/wm8904.c b/sound/soc/codecs/wm8904.c
-index a02a77fef360..04bb8e392497 100644
---- a/sound/soc/codecs/wm8904.c
-+++ b/sound/soc/codecs/wm8904.c
-@@ -2162,8 +2162,9 @@ static const struct of_device_id wm8904_of_match[] = {
- MODULE_DEVICE_TABLE(of, wm8904_of_match);
- #endif
- 
--static int wm8904_i2c_probe(struct i2c_client *i2c,
--			    const struct i2c_device_id *id)
-+static const struct i2c_device_id wm8904_i2c_id[];
-+
-+static int wm8904_i2c_probe(struct i2c_client *i2c)
- {
- 	struct wm8904_priv *wm8904;
- 	unsigned int val;
-@@ -2197,6 +2198,8 @@ static int wm8904_i2c_probe(struct i2c_client *i2c,
- 			return -EINVAL;
- 		wm8904->devtype = (enum wm8904_type)match->data;
- 	} else {
-+		const struct i2c_device_id *id =
-+			i2c_match_id(wm8904_i2c_id, i2c);
- 		wm8904->devtype = id->driver_data;
- 	}
- 
-@@ -2328,7 +2331,7 @@ static struct i2c_driver wm8904_i2c_driver = {
- 		.name = "wm8904",
- 		.of_match_table = of_match_ptr(wm8904_of_match),
- 	},
--	.probe =    wm8904_i2c_probe,
-+	.probe_new = wm8904_i2c_probe,
- 	.id_table = wm8904_i2c_id,
- };
- 
-diff --git a/sound/soc/codecs/wm8985.c b/sound/soc/codecs/wm8985.c
-index a7e01106fbc0..cf2c32eac773 100644
---- a/sound/soc/codecs/wm8985.c
-+++ b/sound/soc/codecs/wm8985.c
-@@ -1167,10 +1167,12 @@ static struct spi_driver wm8985_spi_driver = {
- #endif
- 
- #if IS_ENABLED(CONFIG_I2C)
--static int wm8985_i2c_probe(struct i2c_client *i2c,
--			    const struct i2c_device_id *id)
-+static const struct i2c_device_id wm8985_i2c_id[];
-+
-+static int wm8985_i2c_probe(struct i2c_client *i2c)
- {
- 	struct wm8985_priv *wm8985;
-+	const struct i2c_device_id *id = i2c_match_id(wm8985_i2c_id, i2c);
- 	int ret;
- 
- 	wm8985 = devm_kzalloc(&i2c->dev, sizeof *wm8985, GFP_KERNEL);
-@@ -1205,7 +1207,7 @@ static struct i2c_driver wm8985_i2c_driver = {
- 	.driver = {
- 		.name = "wm8985",
- 	},
--	.probe = wm8985_i2c_probe,
-+	.probe_new = wm8985_i2c_probe,
- 	.id_table = wm8985_i2c_id
- };
- #endif
--- 
-2.27.0
+As it has already landed in 5.15.29 and 5.16.15 it should IMHO 
+preferably be reverted in those trees too to get them back to working 
+state...
 
+
+--
+Thomas
