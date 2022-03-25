@@ -2,71 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3635C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:52:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79F27C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:52:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231484AbiCYTx7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:53:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35892 "EHLO
+        id S231785AbiCYTyE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:54:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231876AbiCYTwl (ORCPT
+        with ESMTP id S232717AbiCYTxk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:52:41 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED86720095D;
-        Fri, 25 Mar 2022 12:38:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=u6K+7R1pK5zP+BGmPEHsLn6FbAvQwD9eSfF4itZFiuo=; b=EWFFJDi/JWX0UQZymV8VNrBzaU
-        /S4VJYVDGFd0nX8ADN0WGBOQd83IFpHQ6R1erZ05Oqkef1QmDedMCtvhpx0hvOCHF3tX9mYFuH95C
-        qNp1atu20cyUcuWwUSk798riaQFGErs+xqdvO1zYFiHEaFy9kZELwcC3XI8vk6JQgeRlreV3Grebb
-        hWq1rySXL3L8zVnwMyLO7fW536DzEr+bIY01OUg2/cZVcAN+aZ3bc5OMYRHvsMCy4vCjT1C+dPphh
-        CFWqwvRB3MyfDPyhWdqLz+XZFTSxh6J6FruWR1eBCeeIxUm31qj4NJ+KqrTqL5JxRqBRql4s894Dc
-        P6PPNtSQ==;
-Received: from [179.225.152.33] (helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1nXplq-000589-A9; Fri, 25 Mar 2022 20:38:50 +0100
-Message-ID: <34e5d700-7ff4-666f-9404-1fe3fe1abc7f@igalia.com>
-Date:   Fri, 25 Mar 2022 16:38:33 -0300
+        Fri, 25 Mar 2022 15:53:40 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62CF726EC8C
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:40:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648237231; x=1679773231;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=jInU92ALuYd6pU9oOkeB8Xo6OXwF6ae4kwHZusQjiIM=;
+  b=VmGJbdfqhxDjFua5THeVN+a/FOWku+SPqhlXGZOJxCWmvq1SK/BvFA0L
+   oScZIf3EbkHmvNdVVf5a7r27q/QrwAqf7XON/CnjIDtIpfzPCtbO9R0LR
+   fMsqn1HevfP5QwvsJj+P58bRGZjmk5FJFojHbhWclXSDQwIis9H1rdnbO
+   KyNHFT95u62iMBRCggDuvNhbBoJ8qdW1cXcXqboWpgFnEjHuWSIB5Hg4c
+   UQNAgeHmmvUyPpRJvIOuDE91VhT5j6gfzRkB/+iVGA1XSyuy7PMh7E2JR
+   Qxm/nm1GNs5pxZyka2T18H98Gkb7FEwbp8exawFPiX0ag2a2gipZ4XEzR
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10297"; a="321888017"
+X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
+   d="scan'208";a="321888017"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2022 11:44:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
+   d="scan'208";a="648352387"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga002.fm.intel.com with ESMTP; 25 Mar 2022 11:44:53 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 1A5BC11E; Fri, 25 Mar 2022 20:45:14 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Detlev Casanova <detlev.casanova@collabora.com>,
+        Mark Brown <broonie@kernel.org>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/1] regulator/rpi-panel-attiny: Get rid of duplicate of_node assignment
+Date:   Fri, 25 Mar 2022 20:45:08 +0200
+Message-Id: <20220325184508.45670-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] Documentation: Fix duplicate statement about
- raw_spinlock_t type
-Content-Language: en-US
-To:     Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, kernel@gpiccoli.net,
-        Thomas Gleixner <tglx@linutronix.de>
-References: <20220321144133.49804-1-gpiccoli@igalia.com>
- <87r16peslf.fsf@meer.lwn.net>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <87r16peslf.fsf@meer.lwn.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25/03/2022 16:32, Jonathan Corbet wrote:
-> "Guilherme G. Piccoli" <gpiccoli@igalia.com> writes:
-> [...]
-> For future reference, a far better changelog would have been something
-> like:
-> 
-> 	Remove the duplicated sentence from locktypes.rst
-> 
-> Thanks,
-> 
-> jon
+GPIO library does copy the of_node from the parent device of
+the GPIO chip, there is no need to repeat this in the individual
+drivers. Remove these assignment all at once.
 
-Thanks Jon, and feel free to change that when applying in case you
-prefer, it's a good choice of words, better than mine.
-Cheers,
+For the details one may look into the of_gpio_dev_init() implementation.
 
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/regulator/rpi-panel-attiny-regulator.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Guilherme
+diff --git a/drivers/regulator/rpi-panel-attiny-regulator.c b/drivers/regulator/rpi-panel-attiny-regulator.c
+index f7df0f4b2f87..fa8706a352ce 100644
+--- a/drivers/regulator/rpi-panel-attiny-regulator.c
++++ b/drivers/regulator/rpi-panel-attiny-regulator.c
+@@ -364,7 +364,6 @@ static int attiny_i2c_probe(struct i2c_client *i2c,
+ 	state->gc.parent = &i2c->dev;
+ 	state->gc.label = i2c->name;
+ 	state->gc.owner = THIS_MODULE;
+-	state->gc.of_node = i2c->dev.of_node;
+ 	state->gc.base = -1;
+ 	state->gc.ngpio = NUM_GPIO;
+ 
+-- 
+2.35.1
+
