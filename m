@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C83CAC43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B962CC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378644AbiCYPfR (ORCPT
+        id S1378659AbiCYPfU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:35:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60242 "EHLO
+        Fri, 25 Mar 2022 11:35:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377730AbiCYPYc (ORCPT
+        with ESMTP id S1377688AbiCYPY1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:24:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76C74E0981;
-        Fri, 25 Mar 2022 08:18:45 -0700 (PDT)
+        Fri, 25 Mar 2022 11:24:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3EC8E7F74;
+        Fri, 25 Mar 2022 08:18:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF465B82903;
-        Fri, 25 Mar 2022 15:18:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C21CC340E9;
-        Fri, 25 Mar 2022 15:18:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CF3760A1B;
+        Fri, 25 Mar 2022 15:18:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 258BAC340E9;
+        Fri, 25 Mar 2022 15:18:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221523;
-        bh=eFk4yBqvqHtTCOCzmb/fgcCnEPRbmh7FkU299JE65bc=;
+        s=korg; t=1648221512;
+        bh=rrWqd7n1HnCx08aNN7+eWFvJM9W2CYPP36O3U7lJ3H4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UWs7FddSy8S89qmiERgQSNIgBPgEx3A0BclPzeF4FpeiHhB1p2YWxnwWd3aLuna7z
-         B+Yyki8d4+KTtZGikl2aJNJUXWNZeC6jGUwMSBXBeUKRp8p+t1OIQIcZBmRkk+/wA5
-         0mhKRKZpK6tdH8bxsLh0RKy8TumpA7XHm2JlIM7o=
+        b=oqj9+nwY5kT3EvtLJj9pn9/vdAbY8xmEmRfDC6mWIAmBhiugVurEduR8GwxTBdu2Y
+         A7ZhiKRsoq3HY3wixxhcTznxO8ZtTnQoOsQSr0+7XrtVeq0GpqCZlwBDw394/KWeNG
+         ES+bboNixxn/6XIVM1VNjkTl50ZpRDupmyfPz/UY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        stable@vger.kernel.org, Jaroslav Kysela <perex@perex.cz>,
         Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.17 16/39] ALSA: usb-audio: Add mute TLV for playback volumes on RODE NT-USB
-Date:   Fri, 25 Mar 2022 16:14:31 +0100
-Message-Id: <20220325150420.708309299@linuxfoundation.org>
+Subject: [PATCH 5.17 12/39] ALSA: pcm: Fix races among concurrent read/write and buffer changes
+Date:   Fri, 25 Mar 2022 16:14:27 +0100
+Message-Id: <20220325150420.596152299@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150420.245733653@linuxfoundation.org>
 References: <20220325150420.245733653@linuxfoundation.org>
@@ -49,41 +49,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lars-Peter Clausen <lars@metafoo.de>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit 0f306cca42fe879694fb5e2382748c43dc9e0196 upstream.
+commit dca947d4d26dbf925a64a6cfb2ddbc035e831a3d upstream.
 
-For the RODE NT-USB the lowest Playback mixer volume setting mutes the
-audio output. But it is not reported as such causing e.g. PulseAudio to
-accidentally mute the device when selecting a low volume.
+In the current PCM design, the read/write syscalls (as well as the
+equivalent ioctls) are allowed before the PCM stream is running, that
+is, at PCM PREPARED state.  Meanwhile, we also allow to re-issue
+hw_params and hw_free ioctl calls at the PREPARED state that may
+change or free the buffers, too.  The problem is that there is no
+protection against those mix-ups.
 
-Fix this by applying the existing quirk for this kind of issue when the
-device is detected.
+This patch applies the previously introduced runtime->buffer_mutex to
+the read/write operations so that the concurrent hw_params or hw_free
+call can no longer interfere during the operation.  The mutex is
+unlocked before scheduling, so we don't take it too long.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220311201400.235892-1-lars@metafoo.de
+Reviewed-by: Jaroslav Kysela <perex@perex.cz>
+Link: https://lore.kernel.org/r/20220322170720.3529-3-tiwai@suse.de
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/usb/mixer_quirks.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ sound/core/pcm_lib.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/sound/usb/mixer_quirks.c
-+++ b/sound/usb/mixer_quirks.c
-@@ -3360,9 +3360,10 @@ void snd_usb_mixer_fu_apply_quirk(struct
- 		if (unitid == 7 && cval->control == UAC_FU_VOLUME)
- 			snd_dragonfly_quirk_db_scale(mixer, cval, kctl);
- 		break;
--	/* lowest playback value is muted on C-Media devices */
--	case USB_ID(0x0d8c, 0x000c):
--	case USB_ID(0x0d8c, 0x0014):
-+	/* lowest playback value is muted on some devices */
-+	case USB_ID(0x0d8c, 0x000c): /* C-Media */
-+	case USB_ID(0x0d8c, 0x0014): /* C-Media */
-+	case USB_ID(0x19f7, 0x0003): /* RODE NT-USB */
- 		if (strstr(kctl->id.name, "Playback"))
- 			cval->min_mute = 1;
- 		break;
+--- a/sound/core/pcm_lib.c
++++ b/sound/core/pcm_lib.c
+@@ -1906,9 +1906,11 @@ static int wait_for_avail(struct snd_pcm
+ 		if (avail >= runtime->twake)
+ 			break;
+ 		snd_pcm_stream_unlock_irq(substream);
++		mutex_unlock(&runtime->buffer_mutex);
+ 
+ 		tout = schedule_timeout(wait_time);
+ 
++		mutex_lock(&runtime->buffer_mutex);
+ 		snd_pcm_stream_lock_irq(substream);
+ 		set_current_state(TASK_INTERRUPTIBLE);
+ 		switch (runtime->status->state) {
+@@ -2219,6 +2221,7 @@ snd_pcm_sframes_t __snd_pcm_lib_xfer(str
+ 
+ 	nonblock = !!(substream->f_flags & O_NONBLOCK);
+ 
++	mutex_lock(&runtime->buffer_mutex);
+ 	snd_pcm_stream_lock_irq(substream);
+ 	err = pcm_accessible_state(runtime);
+ 	if (err < 0)
+@@ -2310,6 +2313,7 @@ snd_pcm_sframes_t __snd_pcm_lib_xfer(str
+ 	if (xfer > 0 && err >= 0)
+ 		snd_pcm_update_state(substream, runtime);
+ 	snd_pcm_stream_unlock_irq(substream);
++	mutex_unlock(&runtime->buffer_mutex);
+ 	return xfer > 0 ? (snd_pcm_sframes_t)xfer : err;
+ }
+ EXPORT_SYMBOL(__snd_pcm_lib_xfer);
 
 
