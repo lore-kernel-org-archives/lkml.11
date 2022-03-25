@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22567C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:20:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CD60C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:20:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376425AbiCYPWL (ORCPT
+        id S1356362AbiCYPWR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:22:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36312 "EHLO
+        Fri, 25 Mar 2022 11:22:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376266AbiCYPT0 (ORCPT
+        with ESMTP id S1352300AbiCYPTf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:19:26 -0400
+        Fri, 25 Mar 2022 11:19:35 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8EE1DFFA9;
-        Fri, 25 Mar 2022 08:15:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39AE3E098D;
+        Fri, 25 Mar 2022 08:15:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A7E0960AC7;
-        Fri, 25 Mar 2022 15:15:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DE44C340E9;
-        Fri, 25 Mar 2022 15:15:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 81EDD60AD6;
+        Fri, 25 Mar 2022 15:15:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 671F3C340EE;
+        Fri, 25 Mar 2022 15:15:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221319;
-        bh=gp++YkMIsw/KZrl9yQMpWARrfRqXAx+5PgIOyaJUvSQ=;
+        s=korg; t=1648221324;
+        bh=cm0RYyJQcXqUnVI7HNk8immc7/DDIPAlvRgVNobGzO0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lI7iqwsFQB+eUiWAL5D1mRR8Nvlcbqt0bI1ze3drXlQAwSzgMXBYpOPLZB2BAo7k3
-         19cDT0jHyO82Bi6nUmJ/t8o1iams/hkuEl+gH4CwYAJKF14ipRjmaGFsfiqGK/LmCJ
-         9H3dcJw9XTAqwWCW0bAH5120kZbSzaylfNrZ5qQg=
+        b=i92cHtrPrMOFL6vZX24hqCwgmSYUBRTjs4EJ/IsWyGTecK5OkdEYf9UZ3EUgUkS+F
+         jacgu3GvW8jhcyyF6gwqqrfB4T1CSic4PUNt9lHHiXZUvoKI9vV7YpVxA60HO5hDOq
+         XWOZNqyA/COxi/EHnzlEWj9xtSWEriCsrgGZr7DQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com,
-        Tadeusz Struk <tadeusz.struk@linaro.org>,
-        Willem de Bruijn <willemb@google.com>,
+        stable@vger.kernel.org, Stephane Graber <stgraber@ubuntu.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 02/37] net: ipv6: fix skb_over_panic in __ip6_append_data
-Date:   Fri, 25 Mar 2022 16:14:03 +0100
-Message-Id: <20220325150420.005360898@linuxfoundation.org>
+Subject: [PATCH 5.15 21/37] drivers: net: xgene: Fix regression in CRC stripping
+Date:   Fri, 25 Mar 2022 16:14:22 +0100
+Message-Id: <20220325150420.540161348@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150419.931802116@linuxfoundation.org>
 References: <20220325150419.931802116@linuxfoundation.org>
@@ -52,47 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tadeusz Struk <tadeusz.struk@linaro.org>
+From: Stephane Graber <stgraber@ubuntu.com>
 
-commit 5e34af4142ffe68f01c8a9acae83300f8911e20c upstream.
+commit e9e6faeafaa00da1851bcf47912b0f1acae666b4 upstream.
 
-Syzbot found a kernel bug in the ipv6 stack:
-LINK: https://syzkaller.appspot.com/bug?id=205d6f11d72329ab8d62a610c44c5e7e25415580
-The reproducer triggers it by sending a crafted message via sendmmsg()
-call, which triggers skb_over_panic, and crashes the kernel:
+All packets on ingress (except for jumbo) are terminated with a 4-bytes
+CRC checksum. It's the responsability of the driver to strip those 4
+bytes. Unfortunately a change dating back to March 2017 re-shuffled some
+code and made the CRC stripping code effectively dead.
 
-skbuff: skb_over_panic: text:ffffffff84647fb4 len:65575 put:65575
-head:ffff888109ff0000 data:ffff888109ff0088 tail:0x100af end:0xfec0
-dev:<NULL>
+This change re-orders that part a bit such that the datalen is
+immediately altered if needed.
 
-Update the check that prevents an invalid packet with MTU equal
-to the fregment header size to eat up all the space for payload.
-
-The reproducer can be found here:
-LINK: https://syzkaller.appspot.com/text?tag=ReproC&x=1648c83fb00000
-
-Reported-by: syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com
-Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
-Acked-by: Willem de Bruijn <willemb@google.com>
-Link: https://lore.kernel.org/r/20220310232538.1044947-1-tadeusz.struk@linaro.org
+Fixes: 4902a92270fb ("drivers: net: xgene: Add workaround for errata 10GE_8/ENET_11")
+Cc: stable@vger.kernel.org
+Signed-off-by: Stephane Graber <stgraber@ubuntu.com>
+Tested-by: Stephane Graber <stgraber@ubuntu.com>
+Link: https://lore.kernel.org/r/20220322224205.752795-1-stgraber@ubuntu.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv6/ip6_output.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/apm/xgene/xgene_enet_main.c |   12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1476,8 +1476,8 @@ static int __ip6_append_data(struct sock
- 		      sizeof(struct frag_hdr) : 0) +
- 		     rt->rt6i_nfheader_len;
+--- a/drivers/net/ethernet/apm/xgene/xgene_enet_main.c
++++ b/drivers/net/ethernet/apm/xgene/xgene_enet_main.c
+@@ -696,6 +696,12 @@ static int xgene_enet_rx_frame(struct xg
+ 	buf_pool->rx_skb[skb_index] = NULL;
  
--	if (mtu < fragheaderlen ||
--	    ((mtu - fragheaderlen) & ~7) + fragheaderlen < sizeof(struct frag_hdr))
-+	if (mtu <= fragheaderlen ||
-+	    ((mtu - fragheaderlen) & ~7) + fragheaderlen <= sizeof(struct frag_hdr))
- 		goto emsgsize;
+ 	datalen = xgene_enet_get_data_len(le64_to_cpu(raw_desc->m1));
++
++	/* strip off CRC as HW isn't doing this */
++	nv = GET_VAL(NV, le64_to_cpu(raw_desc->m0));
++	if (!nv)
++		datalen -= 4;
++
+ 	skb_put(skb, datalen);
+ 	prefetch(skb->data - NET_IP_ALIGN);
+ 	skb->protocol = eth_type_trans(skb, ndev);
+@@ -717,12 +723,8 @@ static int xgene_enet_rx_frame(struct xg
+ 		}
+ 	}
  
- 	maxfraglen = ((mtu - fragheaderlen) & ~7) + fragheaderlen -
+-	nv = GET_VAL(NV, le64_to_cpu(raw_desc->m0));
+-	if (!nv) {
+-		/* strip off CRC as HW isn't doing this */
+-		datalen -= 4;
++	if (!nv)
+ 		goto skip_jumbo;
+-	}
+ 
+ 	slots = page_pool->slots - 1;
+ 	head = page_pool->head;
 
 
