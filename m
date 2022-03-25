@@ -2,129 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EE02C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 11:22:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E8B0C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 11:24:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355632AbiCYLXg (ORCPT
+        id S1355645AbiCYLZq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 07:23:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53038 "EHLO
+        Fri, 25 Mar 2022 07:25:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345635AbiCYLXe (ORCPT
+        with ESMTP id S238578AbiCYLZn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 07:23:34 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A58FD3AD1
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 04:22:01 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id EB67F1F7AC;
-        Fri, 25 Mar 2022 11:21:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1648207319; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=+LamZ0geDTfpNVX97DRjW3uLcqzqtDRSg1gttDr+Okw=;
-        b=3cr8H6ITaU4bWdYmGl635Er+pwxS2FwDPLsw+b78jPwGV2uTXlzuNP++/ez4ZizqHu/VrI
-        JIW8gaTs7mKn6MZ8kPf4LKmc+q4uL2FbNwPjOyy6oZdHrHIvuclyHSACe7xuaity9z3dFy
-        9Hu595qMzYnoCYeEkYgyC2109sEWbn4=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1648207319;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=+LamZ0geDTfpNVX97DRjW3uLcqzqtDRSg1gttDr+Okw=;
-        b=ezwOuBFzEpFQ8R9PPMYNXOQKDxvU8i0DUnZ6RJk6cMvtpxvhn55JB8Z0ZCgUSmC4SIZh+0
-        rTD4QjUX6KuAZ7Bw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9C2421332D;
-        Fri, 25 Mar 2022 11:21:59 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id GWOLJNelPWKfOQAAMHmgww
-        (envelope-from <pvorel@suse.cz>); Fri, 25 Mar 2022 11:21:59 +0000
-From:   Petr Vorel <pvorel@suse.cz>
-To:     linux-kernel@vger.kernel.org
-Cc:     Petr Vorel <pvorel@suse.cz>,
-        Christian Brauner <christian@brauner.io>,
-        Alexey Gladkov <legion@kernel.org>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Vasily Averin <vvs@virtuozzo.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 1/1] ns: Move MAX_PID_NS_LEVEL to ns_common.h, reuse it
-Date:   Fri, 25 Mar 2022 12:21:27 +0100
-Message-Id: <20220325112127.18026-1-pvorel@suse.cz>
-X-Mailer: git-send-email 2.35.1
+        Fri, 25 Mar 2022 07:25:43 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0FD970CE4
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 04:24:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1648207445;
+        bh=BdXWivSq5GlXvd3nq8851jS/bg73TKqNgmm9MNsH8Gk=;
+        h=X-UI-Sender-Class:Subject:From:To:Cc:Date:In-Reply-To:References;
+        b=f6mVd1+ulo7Iuu25wuaQ9r8ZotOvxGfZkV4m5CdWHAbvwY7ij+zSwrKFS2paqKLSi
+         LMBBe4zzdslT2lrm4SW4D2e9xXIOmsMdwyDwVwSEgpvrMy3BUWfn5060pb5GeqWeI/
+         ePeft1WoakMNjguGrRfh8SY0lhTQDfNpTqzlYKnM=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from homer.fritz.box ([185.191.219.67]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MplXp-1npz6e0MI9-00qCFF; Fri, 25
+ Mar 2022 12:24:05 +0100
+Message-ID: <7e69287265bf6dd2e775afab73cbbf5ff3647257.camel@gmx.de>
+Subject: Re: new ltp memcg gripe bisects to b67bf49ce7aa ("post mm/munlock:
+ delete FOLL_MLOCK and FOLL_POPULATE")
+From:   Mike Galbraith <efault@gmx.de>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Hugh Dickins <hughd@google.com>
+Date:   Fri, 25 Mar 2022 12:24:04 +0100
+In-Reply-To: <969a2030a492f3cecdb7d0095478f1b779c643c3.camel@gmx.de>
+References: <969a2030a492f3cecdb7d0095478f1b779c643c3.camel@gmx.de>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:kaETVRfvE/N0qmqG8u292jAZ1RQKoCeuuhRgNRYuGI0xSsnmnmf
+ gd27mKQgPVVLBierfa2oDekEcsY2+ZVTjZh25tUkEunrS1KEaCaenS0PaZKyiseGquNzNaE
+ 1YRPfYoGT/p5DcY+V4hclR8OevuwNK8q/BxldZ38YbWPX5MP1n6gSHvJ9zWOQfxu3NmQgCr
+ DqqQlmnwtfy6U2msRrmDw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:ZUD0R0ex5AY=:+6uSCF+/rjYpVjMwtz4uoI
+ qh2Cid/KExfVEqOF8goTdoCDKxVGZchQOJDiqrhDPIPNY8WYqttsyerHb40B6rZ4YScFlEnXL
+ 37EVAupezcQ76YgtGEbt/7wFG3zKkRfH0pKYeO+ZO/Ne3qt1A0Ca9oQMfDPUlLv1ugrqcLL7O
+ a9Y7/uc+hAca2Q1uohOe8g7tPfLrOTFz4y/4H2PZUwX5bBEtBCFc5rbriRBd6xEe2qJgbyg0W
+ LhJx4yWp2OnEMvUYYrD8JLoTQzigyK76OX4nyopgSkcjIUlL0XL6ksO6otzcVVFB0qEryFGZ6
+ nd8yTBiiiZa5d8JCzToLTgvPC82YV6ERHARfcQVeGzI0P8UunKzKXFSjHtoeI40OkBE4uEVKZ
+ dpOJP2GAOyYHc84CWJevOuJ9msrispzzXnH/gtl5ehrB1l3fyt+sXaRmHPUwFSo8xguOsC4v+
+ 2M1pfyfOM1X9sXOxVnnhlLVmwQUqOArjKckJBlHI8sVPiaPoeq2hH7xsSxJ32u4EcS5rInYbs
+ wzx6SJHKlxgo9BWYj0vUIPDjCbryM9IgYhNbsjj/Um0uRydyypAJTAKh++PtMn7eFiEehQWNT
+ mdjppdyDf+3IhnqqpdKlbh9tHxZzJYnDEHXuBMDliWdQ6WhaFbAVqosuy0tEjkIF+d3pCHl9g
+ llUKIxbVGKXn32kWIJJ5mJR9t3aF1PTKqGWJViGmCEdJ1aMyEgYfIHA6MnALPpbn4djsOYGsP
+ cjF7c5dnNBeQQxTQcbDJPfiAvmEY4e52PRFHegWIQXwsSNMSq1+JBLx8HBFogYkl76QOVsDDr
+ mBE5wYoq6hXbA7U07p8dJcDTjyuqyEsNsGjTHHrIkIIZiDHEQP5sH9bPAKTwsVbnTA5Ws1dfg
+ /Oi9V2xiXbdP2RgMLmSYqNP5oS50AB1v5+Yy8hD87dhuHGgqCcK2yL19Id1S7e5d3auy61rLP
+ 6YJKb3zcHA54uCUFTyy9X3a3ClQUem3MXk9ebJ9F491ed59JsD/egsAQzMhTRxC0gIRoRwnmT
+ Hy53EC9SXdWA/kUxymhYWhsRMLR5hxfTSTqtzScDEAWZes3vrZPw2Cp7puvvpr6RqQ==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move MAX_PID_NS_LEVEL to ns_common.h and reuse it in check in
-user_namespace.c.
+On Fri, 2022-03-25 at 11:32 +0100, Mike Galbraith wrote:
+>
+> I wanted to verify with a revert on top of 85c7000fda00, but while the
+> revert patch applied, the result didn't boot.=C2=A0 Config is full distr=
+o.
 
-Signed-off-by: Petr Vorel <pvorel@suse.cz>
----
-Hi Christian, all,
+Actually, with the second build bandaid (ahem) fixed up to really
+really build, revert patch (seemingly) validates the bisection.  All
+memcg tests are again green.
 
-I don't see putting MAX_PID_NS_LEVEL into ns_common.h as an elegant
-solution but IMHO better than use a hardwired number or redefinition in
-user_namespace.h.
-
-Kind regards,
-Petr
-
- include/linux/ns_common.h     | 3 +++
- include/linux/pid_namespace.h | 3 ---
- kernel/user_namespace.c       | 2 +-
- 3 files changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/include/linux/ns_common.h b/include/linux/ns_common.h
-index 0f1d024bd958..173fab9dadf7 100644
---- a/include/linux/ns_common.h
-+++ b/include/linux/ns_common.h
-@@ -4,6 +4,9 @@
- 
- #include <linux/refcount.h>
- 
-+/* MAX_PID_NS_LEVEL is needed for limiting size of 'struct pid' */
-+#define MAX_PID_NS_LEVEL 32
-+
- struct proc_ns_operations;
- 
- struct ns_common {
-diff --git a/include/linux/pid_namespace.h b/include/linux/pid_namespace.h
-index 07481bb87d4e..f814068012d0 100644
---- a/include/linux/pid_namespace.h
-+++ b/include/linux/pid_namespace.h
-@@ -11,9 +11,6 @@
- #include <linux/ns_common.h>
- #include <linux/idr.h>
- 
--/* MAX_PID_NS_LEVEL is needed for limiting size of 'struct pid' */
--#define MAX_PID_NS_LEVEL 32
--
- struct fs_pin;
- 
- struct pid_namespace {
-diff --git a/kernel/user_namespace.c b/kernel/user_namespace.c
-index 5481ba44a8d6..6ea6e263403d 100644
---- a/kernel/user_namespace.c
-+++ b/kernel/user_namespace.c
-@@ -87,7 +87,7 @@ int create_user_ns(struct cred *new)
- 	int ret, i;
- 
- 	ret = -ENOSPC;
--	if (parent_ns->level > 32)
-+	if (parent_ns->level > MAX_PID_NS_LEVEL)
- 		goto fail;
- 
- 	ucounts = inc_user_namespaces(parent_ns, owner);
--- 
-2.35.1
-
+	-Mike
