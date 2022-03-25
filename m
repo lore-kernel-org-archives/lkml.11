@@ -2,21 +2,22 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F22D7C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 04:17:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D07EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 04:17:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241100AbiCYESd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 00:18:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56926 "EHLO
+        id S1358193AbiCYESj (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 00:18:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355876AbiCYESS (ORCPT
+        with ESMTP id S1356447AbiCYESS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 25 Mar 2022 00:18:18 -0400
 Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 910FDC626E;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C44FC6272;
         Thu, 24 Mar 2022 21:16:44 -0700 (PDT)
 Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 22P43Zb8035813;
+        by twspam01.aspeedtech.com with ESMTP id 22P43ZwR035811;
         Fri, 25 Mar 2022 12:03:35 +0800 (GMT-8)
         (envelope-from dylan_hung@aspeedtech.com)
 Received: from DylanHung-PC.aspeed.com (192.168.2.216) by TWMBX02.aspeed.com
@@ -31,9 +32,9 @@ To:     <robh+dt@kernel.org>, <joel@jms.id.au>, <andrew@aj.id.au>,
         <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
         <netdev@vger.kernel.org>
 CC:     <BMC-SW@aspeedtech.com>
-Subject: [PATCH v3 3/3] ARM: dts: aspeed: add reset properties into MDIO nodes
-Date:   Fri, 25 Mar 2022 12:14:51 +0800
-Message-ID: <20220325041451.894-4-dylan_hung@aspeedtech.com>
+Subject: [PATCH v3 2/3] net: mdio: add reset control for Aspeed MDIO
+Date:   Fri, 25 Mar 2022 12:14:50 +0800
+Message-ID: <20220325041451.894-3-dylan_hung@aspeedtech.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220325041451.894-1-dylan_hung@aspeedtech.com>
 References: <20220325041451.894-1-dylan_hung@aspeedtech.com>
@@ -44,55 +45,76 @@ X-Originating-IP: [192.168.2.216]
 X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
  (192.168.0.24)
 X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 22P43Zb8035813
+X-MAIL: twspam01.aspeedtech.com 22P43ZwR035811
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add reset control properties into MDIO nodes.  The 4 MDIO controllers in
-AST2600 SOC share one reset control bit SCU50[3].
+Add reset assertion/deassertion for Aspeed MDIO.  There are 4 MDIO
+controllers embedded in Aspeed AST2600 SOC and share one reset control
+register SCU50[3].  To work with old DT blobs which don't have the reset
+property, devm_reset_control_get_optional_shared is used in this change.
 
 Signed-off-by: Dylan Hung <dylan_hung@aspeedtech.com>
+Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
 ---
- arch/arm/boot/dts/aspeed-g6.dtsi | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/mdio/mdio-aspeed.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/aspeed-g6.dtsi b/arch/arm/boot/dts/aspeed-g6.dtsi
-index c32e87fad4dc..ab20ea8d829d 100644
---- a/arch/arm/boot/dts/aspeed-g6.dtsi
-+++ b/arch/arm/boot/dts/aspeed-g6.dtsi
-@@ -181,6 +181,7 @@ mdio0: mdio@1e650000 {
- 			status = "disabled";
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_mdio1_default>;
-+			resets = <&syscon ASPEED_RESET_MII>;
- 		};
+diff --git a/drivers/net/mdio/mdio-aspeed.c b/drivers/net/mdio/mdio-aspeed.c
+index e2273588c75b..1afb58ccc524 100644
+--- a/drivers/net/mdio/mdio-aspeed.c
++++ b/drivers/net/mdio/mdio-aspeed.c
+@@ -3,6 +3,7 @@
  
- 		mdio1: mdio@1e650008 {
-@@ -191,6 +192,7 @@ mdio1: mdio@1e650008 {
- 			status = "disabled";
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_mdio2_default>;
-+			resets = <&syscon ASPEED_RESET_MII>;
- 		};
+ #include <linux/bitfield.h>
+ #include <linux/delay.h>
++#include <linux/reset.h>
+ #include <linux/iopoll.h>
+ #include <linux/mdio.h>
+ #include <linux/module.h>
+@@ -37,6 +38,7 @@
  
- 		mdio2: mdio@1e650010 {
-@@ -201,6 +203,7 @@ mdio2: mdio@1e650010 {
- 			status = "disabled";
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_mdio3_default>;
-+			resets = <&syscon ASPEED_RESET_MII>;
- 		};
+ struct aspeed_mdio {
+ 	void __iomem *base;
++	struct reset_control *reset;
+ };
  
- 		mdio3: mdio@1e650018 {
-@@ -211,6 +214,7 @@ mdio3: mdio@1e650018 {
- 			status = "disabled";
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_mdio4_default>;
-+			resets = <&syscon ASPEED_RESET_MII>;
- 		};
+ static int aspeed_mdio_read(struct mii_bus *bus, int addr, int regnum)
+@@ -120,6 +122,12 @@ static int aspeed_mdio_probe(struct platform_device *pdev)
+ 	if (IS_ERR(ctx->base))
+ 		return PTR_ERR(ctx->base);
  
- 		mac0: ftgmac@1e660000 {
++	ctx->reset = devm_reset_control_get_optional_shared(&pdev->dev, NULL);
++	if (IS_ERR(ctx->reset))
++		return PTR_ERR(ctx->reset);
++
++	reset_control_deassert(ctx->reset);
++
+ 	bus->name = DRV_NAME;
+ 	snprintf(bus->id, MII_BUS_ID_SIZE, "%s%d", pdev->name, pdev->id);
+ 	bus->parent = &pdev->dev;
+@@ -129,6 +137,7 @@ static int aspeed_mdio_probe(struct platform_device *pdev)
+ 	rc = of_mdiobus_register(bus, pdev->dev.of_node);
+ 	if (rc) {
+ 		dev_err(&pdev->dev, "Cannot register MDIO bus!\n");
++		reset_control_assert(ctx->reset);
+ 		return rc;
+ 	}
+ 
+@@ -139,7 +148,11 @@ static int aspeed_mdio_probe(struct platform_device *pdev)
+ 
+ static int aspeed_mdio_remove(struct platform_device *pdev)
+ {
+-	mdiobus_unregister(platform_get_drvdata(pdev));
++	struct mii_bus *bus = (struct mii_bus *)platform_get_drvdata(pdev);
++	struct aspeed_mdio *ctx = bus->priv;
++
++	reset_control_assert(ctx->reset);
++	mdiobus_unregister(bus);
+ 
+ 	return 0;
+ }
 -- 
 2.25.1
 
