@@ -2,104 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3D49C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 20:46:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 201D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 20:52:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232434AbiCYUsI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 16:48:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49930 "EHLO
+        id S232388AbiCYUxy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 16:53:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232420AbiCYUsH (ORCPT
+        with ESMTP id S232328AbiCYUxt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 16:48:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90EC817E1D
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 13:46:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E68F861D61
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 20:46:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0282C004DD;
-        Fri, 25 Mar 2022 20:46:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1648241191;
-        bh=LQFKt10LSmaGE3MEo4zcNZRff2M+N1aNeUHBztWpOKU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=RQR4hHILpnUkhfu7+xcMiRIk0v6yjyvIksOfM5LPSTaUIq8cNLk0oV//EXe/qB4TA
-         wb6Xx6B86gAcULNcU2IBwbfuhjAyTB7Mqxmu/jC1WIUVC69FLplcSGiCgEkUrF5sHC
-         Vz/3RusidENiid01E61425EVB8K4qKlLLgEfFkyQ=
-Date:   Fri, 25 Mar 2022 13:46:29 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     andrey.konovalov@linux.dev
-Cc:     Marco Elver <elver@google.com>,
-        Alexander Potapenko <glider@google.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev@googlegroups.com, Mark Rutland <mark.rutland@arm.com>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Evgenii Stepanov <eugenis@google.com>,
-        Florian Mayer <fmayer@google.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrey Konovalov <andreyknvl@google.com>
-Subject: Re: [PATCH v2 1/4] stacktrace: add interface based on shadow call
- stack
-Message-Id: <20220325134629.99699c921bb8c8db413e8e35@linux-foundation.org>
-In-Reply-To: <21e3e20ea58e242e3c82c19abbfe65b579e0e4b8.1648049113.git.andreyknvl@google.com>
-References: <cover.1648049113.git.andreyknvl@google.com>
-        <21e3e20ea58e242e3c82c19abbfe65b579e0e4b8.1648049113.git.andreyknvl@google.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Fri, 25 Mar 2022 16:53:49 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13CDD506F0
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 13:52:14 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id o6so11801536ljp.3
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 13:52:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XL7fBu7OlctI0zNy/cRZjH1z0Pexf4s0Ro6kC1bg2Jk=;
+        b=AjRN4k8UeL2cFoATtOl9IzjPGEPyOHgc88Tmu//hjPBbsK3rLRCNQdg2851c1HEIPC
+         xKcH0Ukwii4dYTVeW4/2KYbdP/m0owF7DP4+ATYYsLWBiEKXu27Z/3nvqHCpqgkpX5hl
+         KSqxiPB/26Mci+r/n2Q0/Qd+UvhHfRz3ATDek=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XL7fBu7OlctI0zNy/cRZjH1z0Pexf4s0Ro6kC1bg2Jk=;
+        b=jL8e+GD2Tg3UiEf6mzVrcQv0rhL4ho0SDU0XQvnAnC10HGEIfn7Nu8jesidCy5LN9M
+         aDT0CCCSORXdeWrUltzQ1Nf/A7XraN/JU7Mpy6IeQ6+c70oTf/FjNfXW01BKyahOPqmv
+         Ly7qNXePSVnVl2mwSQ+eCddFVlZgUmFC6YjtvqkrTkO4X0I5LVta0P90eDnM3azy1ezD
+         KkERvhCNZqPOGcVBNzl2SQ4X4r2fDPZnMnm3oXh/UCf+uFcO/FeEzNGp8bw5vtCwsD2g
+         etMbOmxX9wG5U0Pos+lQWwHVN1lQwtHTaE1Kq0dqbzrWmXzVTJEZuXRbVlT6ZFX7SD/H
+         Xz0Q==
+X-Gm-Message-State: AOAM5306AR8vEvinG6dZCpmBV+7kQS0vX/m12s17z6o7WwQS2MUmXobH
+        AVhvT144aFuVzPnB8wYUbNDmZJ0hWESeYnkldV4=
+X-Google-Smtp-Source: ABdhPJzdMLH+eHzBthtECbnvhHdsAYbhdYeUhAn++P+J2B/tJlOvoVwZFfJ17dUzZMpp/Cvz66eEdA==
+X-Received: by 2002:a2e:87d4:0:b0:249:a34a:2532 with SMTP id v20-20020a2e87d4000000b00249a34a2532mr9698635ljj.328.1648241532140;
+        Fri, 25 Mar 2022 13:52:12 -0700 (PDT)
+Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com. [209.85.167.46])
+        by smtp.gmail.com with ESMTPSA id w15-20020a05651c118f00b0024957c859dbsm803950ljo.50.2022.03.25.13.52.11
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Mar 2022 13:52:11 -0700 (PDT)
+Received: by mail-lf1-f46.google.com with SMTP id bu29so15389597lfb.0
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 13:52:11 -0700 (PDT)
+X-Received: by 2002:ac2:4f92:0:b0:448:7eab:c004 with SMTP id
+ z18-20020ac24f92000000b004487eabc004mr9360717lfs.27.1648241531008; Fri, 25
+ Mar 2022 13:52:11 -0700 (PDT)
+MIME-Version: 1.0
+References: <YjtZAvQnshp1pZIh@zn.tnic> <CAHk-=wgXbSa8yq8Dht8at+gxb_idnJ7X5qWZQWRBN4_CUPr=eQ@mail.gmail.com>
+ <Yj4orVIbqcyTQcY7@zn.tnic>
+In-Reply-To: <Yj4orVIbqcyTQcY7@zn.tnic>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Fri, 25 Mar 2022 13:51:54 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whR6pCHwvAWQKZ88D1hBuRJsV66ucEnybBiOHskoPsPxQ@mail.gmail.com>
+Message-ID: <CAHk-=whR6pCHwvAWQKZ88D1hBuRJsV66ucEnybBiOHskoPsPxQ@mail.gmail.com>
+Subject: Re: [GIT PULL] RAS updates for 5.18
+To:     Borislav Petkov <bp@suse.de>
+Cc:     x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 23 Mar 2022 16:32:52 +0100 andrey.konovalov@linux.dev wrote:
-
-> From: Andrey Konovalov <andreyknvl@google.com>
-> 
-> Add a new interface stack_trace_save_shadow() for collecting stack traces
-> by copying frames from the Shadow Call Stack.
-> 
-> Collecting stack traces this way is significantly faster: boot time
-> of a defconfig build with KASAN enabled gets descreased by ~30%.
-> 
-> The few patches following this one add an implementation of
-> stack_trace_save_shadow() for arm64.
-> 
-> The implementation of the added interface is not meant to use
-> stack_trace_consume_fn to avoid making a function call for each
-> collected frame to further improve performance.
-> 
-> ...
+On Fri, Mar 25, 2022 at 1:40 PM Borislav Petkov <bp@suse.de> wrote:
 >
-> @@ -108,4 +111,16 @@ static inline int stack_trace_save_tsk_reliable(struct task_struct *tsk,
->  }
->  #endif
->  
-> +#if defined(CONFIG_STACKTRACE) && defined(CONFIG_HAVE_SHADOW_STACKTRACE)
-> +int stack_trace_save_shadow(unsigned long *store, unsigned int size,
-> +			    unsigned int skipnr);
-> +#else
-> +static inline int stack_trace_save_shadow(unsigned long *store,
-> +					  unsigned int size,
-> +					  unsigned int skipnr)
-> +{
-> +	return -ENOSYS;
-> +}
-> +#endif
+> If I try to make it do a --ff, it still does a merge commit:
 
-checkpatch sayeth "WARNING: ENOSYS means 'invalid syscall nr' and
-nothing else".
+Oh, they indeed aren't fast-forwards of each other, they just looked
+superficially that way to me because when I did my
 
-checkpatch also picked up a typo in a changelog.  Useful thing to run,
-is checkpatch.
+   gitk ORIG_HEAD..
 
+after merging, the fact that I had already merged everything else in
+both of those branches.
 
+So never mind. It wasn't a pointless fast-forward merge, it's just
+that neither of those branches had anything new in them as far as I
+was concerned any more.
+
+              Linus
