@@ -2,98 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9CEDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 04:02:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7402C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 04:16:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347589AbiCYEEC (ORCPT
+        id S1354812AbiCYESD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 00:04:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49044 "EHLO
+        Fri, 25 Mar 2022 00:18:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232001AbiCYED4 (ORCPT
+        with ESMTP id S1348284AbiCYER7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 00:03:56 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE50CC55BF
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 21:02:23 -0700 (PDT)
-Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id A57D13F17A
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 04:02:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1648180942;
-        bh=HKJrrEY1caDaQR7fQn155PNfxwpc0Tf0D5pTcclyisE=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=PQfMVX4uKj+xJP3XlxIVrcgkqPQIPjYM4hrVjBOEFARmiYeaxnbqKjfnvN1BhJVdS
-         Gtr1spqIyhWU2BbL66j94XM9bxUGhVtlakfTe+oENXZMIkfKPy0jAB4PuFrn+FJYO6
-         xp0XGEOEbSqG52zmuwNLKPXs+9LLTNQ9hb3s7wOOC8KHsyvrHDMH2u4i7NWJq1dbcD
-         cyzRvPH/7Fg22d9WPq6KJcDVK0z26jX5pVWUUfS6U0cAxqRIvHdrSfMlwpaHSQML7L
-         D4Eb3rNfnveG0TTTFoewnycOwY90oD1/DqQUN9gx+Bv0Uo0X/6wV2VCnKkKviKQT/5
-         FAahpizKwN6NQ==
-Received: by mail-oi1-f199.google.com with SMTP id 9-20020aca1009000000b002d9a9f48c79so3817959oiq.0
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 21:02:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HKJrrEY1caDaQR7fQn155PNfxwpc0Tf0D5pTcclyisE=;
-        b=0rDqqSfs2EusZ1Ky/qWWSpE1QUsK3FRLeMaGR7M1DRjgFwf3Ij/jTdxLmb8FIYyp4D
-         11Yr608cNLl5MotXE+HW310LBFxs3pnJ3y4FoLEyPYE9D1falIUjIWblK7/9rbcG1RAY
-         S5FmwCVYCT1f99OGbrcx5Nh0NGlsChEGGciPkZeyDNweJoL3DymVgy7b8fUszMlULlkB
-         4jA3s50WUIOIT/uhqL1QZtGMA6K2gsvTQ2FRquuIAqtHsxo4kzoYwZq0GF79adc5lTbj
-         3uiM+UNfrR5V9hj+YvfvTmadO9X/BrXcFM4wMy12C7xAna7FVucvvkV7X+a+mdRm7E6O
-         YaUw==
-X-Gm-Message-State: AOAM5326SDXs4w504/nA5HlvRqHsnktB4uDtGkDj1/BJ2l5nAxyWIqH8
-        r2TmhafFS7ZPprMRpIpkcNTnTX1h+I5+q3Gy9Z2nm3chJGraGD0d3tBU212JjXqyy2v0ukTlZsA
-        IFnoCN3+PSLGOr5iIGEu1yY9gTJC0F4uHqvtWM+9eSP/HJgf16ygY0v/1yQ==
-X-Received: by 2002:a05:6870:8182:b0:dd:cffa:9c29 with SMTP id k2-20020a056870818200b000ddcffa9c29mr4129462oae.82.1648180941006;
-        Thu, 24 Mar 2022 21:02:21 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw19v/fBmujiTN/FbIgCV0Ax4/u+DQ+UpfqJcD0b+4aMAH4mU14/pYOv4glKf5PUc/WrOsn21CTEKscgWwH/98=
-X-Received: by 2002:a05:6870:8182:b0:dd:cffa:9c29 with SMTP id
- k2-20020a056870818200b000ddcffa9c29mr4129450oae.82.1648180940751; Thu, 24 Mar
- 2022 21:02:20 -0700 (PDT)
+        Fri, 25 Mar 2022 00:17:59 -0400
+Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68CBCC6255;
+        Thu, 24 Mar 2022 21:16:25 -0700 (PDT)
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
+        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
+        id 1nXbN6-0003Na-0k; Fri, 25 Mar 2022 15:16:21 +1100
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 25 Mar 2022 16:16:20 +1200
+Date:   Fri, 25 Mar 2022 16:16:19 +1200
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     QintaoShen <unSimple1993@163.com>
+Cc:     davem@davemloft.net, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org, unSimple1993@163.com
+Subject: Re: [PATCH v1] crypto: stm32: Check for NULL return of
+ kmalloc_array()
+Message-ID: <Yj1CE0IPS+JB9V8I@gondor.apana.org.au>
 MIME-Version: 1.0
-References: <20220318024216.42204-1-chris.chiu@canonical.com> <b764c724-9481-09ed-8dd5-a0ebeb0f8a25@reto-schneider.ch>
-In-Reply-To: <b764c724-9481-09ed-8dd5-a0ebeb0f8a25@reto-schneider.ch>
-From:   Chris Chiu <chris.chiu@canonical.com>
-Date:   Fri, 25 Mar 2022 12:02:10 +0800
-Message-ID: <CABTNMG2TUKxZL=3RJYGYLeu3-3-G-G_SMdcWHuVHUDepPVgSNQ@mail.gmail.com>
-Subject: Re: [PATCH v2 0/2] rtl8xxxu: Fill up more TX information
-To:     Reto Schneider <code@reto-schneider.ch>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kvalo@kernel.org,
-        Jes.Sorensen@gmail.com, davem@davemloft.net, kuba@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1648114692-11175-1-git-send-email-unSimple1993@163.com>
+X-Newsgroups: apana.lists.os.linux.cryptoapi,apana.lists.os.linux.kernel
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 12:32 AM Reto Schneider <code@reto-schneider.ch> wrote:
->
->
-> On 18.03.22 03:42, Chris Chiu wrote:
-> > The antenna information is missing in rtl8xxxu and txrate is NULL
-> > in 8188cu and 8192cu. Fill up the missing information for iw
-> > commands.
-> >
-> > Chris Chiu (2):
-> >    rtl8xxxu: feed antenna information for cfg80211
-> >    rtl8xxxu: fill up txrate info for gen1 chips
-> >
-> >   .../wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 75 +++++++++++++++++++
-> >   1 file changed, 75 insertions(+)
-> >
->
-> Those two patches applied to most recent master
-> (v5.17-4443-ged4643521e6a) do not compile as rtl8xxxu_legacy_ratetable[]
-> and rtl8xxxu_desc_to_mcsrate() are defined twice.
->
-> Kind regards,
-> Reto
+QintaoShen <unSimple1993@163.com> wrote:
+> As the potential failure of memory allocation, kmalloc_array() may return
+> NULL and lead to NULL pointer dereference because of the usage of 'rctx->hw_context'.
+> 
+> Therefore, it is better to check the return value of kmalloc_array().
+> 
+> Signed-off-by: QintaoShen <unSimple1993@163.com>
+> ---
+> drivers/crypto/stm32/stm32-hash.c | 3 ++-
+> 1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/crypto/stm32/stm32-hash.c b/drivers/crypto/stm32/stm32-hash.c
+> index d33006d..f1a1a13 100644
+> --- a/drivers/crypto/stm32/stm32-hash.c
+> +++ b/drivers/crypto/stm32/stm32-hash.c
+> @@ -970,7 +970,8 @@ static int stm32_hash_export(struct ahash_request *req, void *out)
+>        rctx->hw_context = kmalloc_array(3 + HASH_CSR_REGISTER_NUMBER,
+>                                         sizeof(u32),
+>                                         GFP_KERNEL);
+> -
+> +       if (!rctx->hw_context)
+> +               return -ENOMEM;
 
-Thanks for pointing this out. I'll fix it in v3.
+This patch introduces a runtime PM imbalance.  Please fix.
 
-Chris
+Thanks,
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
