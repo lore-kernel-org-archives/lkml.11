@@ -2,164 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E870C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:26:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF11CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:26:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229720AbiCYT2G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:28:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58484 "EHLO
+        id S229759AbiCYT2J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:28:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229660AbiCYT1p (ORCPT
+        with ESMTP id S229702AbiCYT1r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:27:45 -0400
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80071.outbound.protection.outlook.com [40.107.8.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A3861E7455
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:01:04 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hhgkUEDLFT0JwjjxlopEAqvxNjj1d1GTOc0aS+DkH+pYS3H6sCIbESX84bFf8blA4WGWupQFkCc0tgmGxZMJsQX8Af6TgpNXT1PoeLDvX5WkC+ZNUi/pgkG9CxN2Ig5rZbdnZSLT0wQQoSA5DXGHzY4/FSkv6LJo5bGFYq/P20gAgeQllRiMze9UYJeGnZP0Th/pxyR0MbrCqKEIDIFYirrxSBLLgonv+I3qD2rfcdKIUm0X4zd6iZ69zZmgKQH+WIErHyG9SChdkfVU4SMtOeZnlCnEkoI3nYGZ7e3rpNKnA1VJ2aWTY0gkjHQcaV91BBj2Mz0/m1s1kgAbv69ULg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Uuo1zVcLO6qnNvqnWO2cJrfH7oiZRRdbkWDItyuumt4=;
- b=k/ZB+leWb7bXjs5m+9u8Aru5DCIlTgpYGDDMhU3S0b8nZqdLshZCBRE0Mp9EgcF810lGmugDPbpn1YnFjJIx0CDgAW41SHyftZMa/CWCrF2C0qNG02/3V8Nd2UfYLway3HrqoUk1bjpzEyw6vThcG53Vp5UONewG3ThEmP64SgjAHSGhJcbK29RS5Rjk1GTaFg/cVvNM+1cEKEQXNLbXB/X56UbtbzFASuN7Jh3mu4EUd35MaFebDdIpVLjBDhzbUh6jIwkfPUrpSDGinsn2PDKm1l+OIJ/bhBqvYhbETMNAjHPIJvqzThM7ypoNVPoS2RU0Pd+7+LRK0Uc2XgqnnA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=de.bosch.com; dmarc=pass action=none header.from=de.bosch.com;
- dkim=pass header.d=de.bosch.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=de.bosch.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Uuo1zVcLO6qnNvqnWO2cJrfH7oiZRRdbkWDItyuumt4=;
- b=CHsz9+Gs/txaxrd6AgSwb2vB+yLtrr1tJ/eqNu5suAX7J4i9e5ANpA7+7z26J9Cx14WSuiwC3Gr+OZvxkup/EDp/xkXkAHLLNlGH+vFtXz3Mfn/5W6KgnA11tQkv65BVPrW1WVb4bzQsA5Qcfwc4bMzV9lUKlLjS0s4IU01srQo=
-Received: from PAXPR10MB5405.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:28b::9)
- by VI1PR10MB2511.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:803:87::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.18; Fri, 25 Mar
- 2022 18:01:50 +0000
-Received: from PAXPR10MB5405.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::c0cf:c5:42b:c61]) by PAXPR10MB5405.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::c0cf:c5:42b:c61%9]) with mapi id 15.20.5102.017; Fri, 25 Mar 2022
- 18:01:50 +0000
-From:   "Jonas Mark (BT-FIR/ENG1-Grb)" <Mark.Jonas@de.bosch.com>
-To:     Philipp Zabel <p.zabel@pengutronix.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-CC:     "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "RUAN Tingquan (BT-FIR/ENG1-Zhu)" <Tingquan.Ruan@cn.bosch.com>,
-        "Jonas Mark (BT-FIR/ENG1-Grb)" <Mark.Jonas@de.bosch.com>
-Subject: AW: [PATCH] gpu: ipu-v3: Fix dev_dbg frequency output
-Thread-Topic: [PATCH] gpu: ipu-v3: Fix dev_dbg frequency output
-Thread-Index: AQHYHDV1Q6HWKEJY1UC+dT9O++/HWqyWZr8AgDpEOTA=
-Date:   Fri, 25 Mar 2022 18:01:50 +0000
-Message-ID: <PAXPR10MB54052ECFB1CDADEDD073CF0AAD1A9@PAXPR10MB5405.EURPRD10.PROD.OUTLOOK.COM>
-References: <20220207151411.5009-1-mark.jonas@de.bosch.com>
- <89a08ce1cdb1cf0b4d46b916e7107eca0796ca9d.camel@pengutronix.de>
-In-Reply-To: <89a08ce1cdb1cf0b4d46b916e7107eca0796ca9d.camel@pengutronix.de>
-Accept-Language: en-US
-Content-Language: de-DE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=de.bosch.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 695b8c8a-ed84-4864-a1dd-08da0e898930
-x-ms-traffictypediagnostic: VI1PR10MB2511:EE_
-x-microsoft-antispam-prvs: <VI1PR10MB2511BA503D29420285279576AD1A9@VI1PR10MB2511.EURPRD10.PROD.OUTLOOK.COM>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ufeZQ/0SZ0OTbhD0wh0kY2Td5if5U8zoElm3xyKAGHSSjqCk9gwtzLleyhOsjjXNDp3KsAs6khaRVWfCZAm4u+euEcUVeDoJlCYMorrH57Nyw0dhTN2uwR75IskDiS7b/GCIkDN8G5CkkPYqXMB6GOFw6i94UxYL8oY10+KMdjvleuSZloBmVG9U/oKNdE/GMSZXs2wlpgNxqNNFKveDSZ5a3QUNNVb78IdRX3kf1We0qXK60FFs9Ah/o9S4QcGIDlXZlwvVPvHXn0Wcr5QOlNwla6vpyt6zctcSf40TFSNeeE5epZJVPWXOvbaqQNQZoYso1UPT6frC9QpLL+9jSoy0qnnogYNZS8wsF9Ewfldv4DmAg0+yo1yzO298+jLu7930V9NdiPUaOrku12vlfy/UdflKC8NS3S8eupIcj7u2vOIauLS7ld1r2q/MNKUYwWmhDiNK2/yp4PV15t8j4I7txlHZDP7S7Tam4RreffqNVprslP6hvZ317qipVom5gsJh9DkbKZ91rl14iiLuUcyAAdrRvPMQqQrewNJzfQBMgtTUoGwYQlkpH7tINbb5RCUFJHIO+Og7U/wmOLD8eF61rRgmiJ8zNE1ebxGHAty62Ayby3vblS/q9CI4d6cpc0uqUj0CkW2jCyn6JPePIMLNGgztlEYheucpgXPM7/lczWJ84ItsnSkxXX9kLzyRhUfGZLzThYOle6ArUGB3vg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR10MB5405.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66476007)(66946007)(83380400001)(66556008)(8936002)(8676002)(52536014)(4326008)(76116006)(316002)(64756008)(55016003)(186003)(26005)(9686003)(6506007)(82960400001)(508600001)(7696005)(71200400001)(2906002)(107886003)(66446008)(33656002)(38070700005)(122000001)(86362001)(110136005)(5660300002)(54906003)(38100700002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?bWdqUTRHSnZyalVIVUNnMUxwT0RYYzloMnJENktiSTdGTHhKVHpkTEJnZEhO?=
- =?utf-8?B?Zlh4a1U0bENTUGlzQXlhejZRMno4WTJtUWtydlpnK3prL3RtUGpsMU0xdElZ?=
- =?utf-8?B?QkhvZFB6VjdnREpFb3NCTmJKMzRaMWxsU0tzSDRxemJXVnVCN1cvbjQza204?=
- =?utf-8?B?ejBqUG90S2xZbUorb2E3WjNwbmkxOG5ZRVNsZHptZXFkbVZWSWxCOEtqY3lG?=
- =?utf-8?B?NzNTc21XZk1iNHorMFFOQVorMjJmZ3l4T2RaM1VFVGpNd2J4M2c5UjViNUNI?=
- =?utf-8?B?N2hvWktvWCtDaVBXZ2huRDF5WSt0UENxbkNXcDlvS252Y2JITG9ZQjd2NjBI?=
- =?utf-8?B?aGpqaXQrdVA2VkZVTWlxZjVyMjdmZXRUZDFPMkxpc29IcVRXOVMzOEx4RTlU?=
- =?utf-8?B?eHR3UW41cGRMNHduQnplOTlod2JJN2p3ZkVtQVpKQ0hNVTRuaDA0VFRDVERs?=
- =?utf-8?B?NEx1b0hWa05UL0l1YWpOei9iVW5jQUJ4TkFaSlN5TGkxWjJSdy9zZHVNUFRZ?=
- =?utf-8?B?WnVHalpCUmk2WlBYbElhSEp6eG5GWlAwVzlJdzZ4Ty9scE9ZVVRTS2tKZDc1?=
- =?utf-8?B?UkQ5LzZJWkVqUWRqeHJWbzVLZXVKY1pvc0hlZGVUMCtVWWpCei95TXBnY2J5?=
- =?utf-8?B?azE3Vi9ZTzc5R0tLRVNHWDJwNEc4V1dObUxrUGEwN1RCL3hvL0xuZ0htdm1C?=
- =?utf-8?B?UXJFRHE4aUVFb01KRm9Od3hUM1FPMkR4a2xucXYrb3gwWG50eDc0SEUvNkRM?=
- =?utf-8?B?NVFOVWszMnc1Z2g5dXh2VEEzanhzY2dpL09hK000SDh2YzNrOTVQdTQ2ekZl?=
- =?utf-8?B?MU40SEcrNy9HY3JmTnc0WDFmLzVJOWV3L1hjanV4aTY4TVFZSDQvM3hHd2Rs?=
- =?utf-8?B?SEJIL1Y3UDFOY1E5VU00NnJrN1dZY3dDbkVudjNsZkV6NVdUdmhNNm90R0pO?=
- =?utf-8?B?K1hoODJ4aDVKdHFjZU5nU2MwbEI1QUQwWVNxd0pNYm1ZdThoWXY1ZzU2My9j?=
- =?utf-8?B?dHFraWxhbFJOL2g5dUhZc2hrWWRDSFEvNEI4bWZaMzFFbWluaDJaYmMzTkQ2?=
- =?utf-8?B?blltNzdxZjZ6REdqdHVWcitmV3hUZ216VDc5L2Q1VFlyRjBlL0hqcHY4L1VP?=
- =?utf-8?B?cm5vaWNBSFI4bldBdDdId3ZEUzlwZ0F0dFNCOFlyRyt3WUJNdWtQUmp6M01K?=
- =?utf-8?B?RklzblVxTGpkRGE1RHF2MGhXeU5VTDliL3pPQ2R2R3docFd0N2w3VjJjZmMz?=
- =?utf-8?B?dFBNYmxEeVhSeE9kNHRsdjVrcnh2LzB1YXYzUnhjUFNwYjRjMzVpMWxQdFlS?=
- =?utf-8?B?OXlwU3ZpYzRRVDk3dGRjQXBLdVI3RGxtT00wK0wvc1RacmZkYUMvYjYwT2pP?=
- =?utf-8?B?dVpIVG1DbGViUkI3ckJWVFVyVWJXaUlCRm5ySjdwQUZzVjhPVFJvdHl0amtU?=
- =?utf-8?B?eWdVZk1IbWhTZGVsaTl3R3hSQXVGSHhWTVRocmlrQXk5dmMzYnFxTVdiTFRR?=
- =?utf-8?B?UDlnODB3aDJMREljb3N3UGp5bjdXZ0JYL0pUbkt0UTBrb29rb0lXc3BjaVpm?=
- =?utf-8?B?VEYxZEo4QytIRFgrZzV6ZlRzOThyMVNVZzJKWDYrRFl5QjVjSzRSd0Y2ek96?=
- =?utf-8?B?N1VMN1o5a1J2a1NjbVRNZWdRTm9jV1NjdGZVYnRXOW9GVmJ0VzNzWmVjampK?=
- =?utf-8?B?SElMRXpRVW9XRVFjYyt4WUsrU3l2U05WaUQvSUpKZ1MremRqNnloR01CU0Qy?=
- =?utf-8?B?K1dyZHIrdzl3R0pBRlpxbkVGb1E2RlVYMHBVL1N6SWEvU2dhc0t4SGlUYWJR?=
- =?utf-8?B?QlA2T0hnTDF5Y0UycXRwWnNpZlc3enQ1TU5lMjdEemZDSkdEazdvRm00N2ls?=
- =?utf-8?B?ZUVaUWVjeDJlcm5WWHpNUzR3cUthOGJsSnV3eWZEVGtXYkJSRWR5RVpjODU1?=
- =?utf-8?Q?J+zIHuArak0kgWN0Vh/xJA6jZmIojvTi?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Fri, 25 Mar 2022 15:27:47 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 881C118C0FC
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:01:08 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id b19so12034901wrh.11
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:01:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=g3YdE7NZj+L8Dg/chDHlwxEN35uclyYb0VXoHTgKIhw=;
+        b=MMT0HILFjBkL/NOsKp9IJ2Rcg0Ta+95vRvNWBYWrlOSIdSS/HBuue+mPjlkij71azQ
+         0P5eB1ylgJXrA8wISBW3MIEOQq9V8kTIOutdu1YyPl/RMmywWucplv9XzAl5Sofyu2NZ
+         lcwi7kD1rUgaG48Ae5QuxCsXmr7Z/uB140i8qGVBqcVUTHKyG7HKBkKYESJoaGwgzq68
+         1s6A5DrtAJAdS2gEUk1lYvC1sZJlg1dpf8QKwCvEYFMZRf+w683AQkn6WnStAT09ta9A
+         fhVdJsfPydEoaCh1FmvyfMkAS6pIKS5EA6lHAzFT+DWHuqKlMgrxCEXVqreNKQzRlsNV
+         1RLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=g3YdE7NZj+L8Dg/chDHlwxEN35uclyYb0VXoHTgKIhw=;
+        b=Apc7tM77gFjks3tkK1ZXhvn6KxW6wbaNoNRO7rJQf/J5AC1PQIoRdtQh27ak8Grc70
+         wi3Enwhsn/D3WraXmAEYrZwSNzhkwk18cE2yrGis4V9ARu24cvvZo+dFz6Ic802hYns8
+         8dzBiEfr1u9WhVBkiZvzYFg+0Qjun8wsjLKwoe6KzdXN55tDKhtHViopoc56Tc8vj0Td
+         SCvtm+R+gJI4KBoSNaRBGmQWBxguWdTotwjbXlEqSbwZT2Zvm2/yiC/r7h77AxwuYnZp
+         JnsdubONDgMW/fFa3qyQdlu5j+iNw8OzEOdM5y3V5chpf6k27JdmFiAC/TH2u10pJV3S
+         qPrw==
+X-Gm-Message-State: AOAM531JyiNw0CEu+XtdSZ3V/Q+gDRJW8TQq55AoRpktiec9WEjiXG5/
+        HkVYATSDormQglgt8A49DBZk0DV9mHY=
+X-Google-Smtp-Source: ABdhPJxqowdRvF8TpUgcla2uBNcWJcEpAgGvAQuP7q304zfdYLSVQZkvDg8CUxZ2rV0DY8768r2NlQ==
+X-Received: by 2002:ac2:4c8a:0:b0:44a:3271:dc3b with SMTP id d10-20020ac24c8a000000b0044a3271dc3bmr8382480lfl.83.1648230791199;
+        Fri, 25 Mar 2022 10:53:11 -0700 (PDT)
+Received: from inno-pc.lan (88-115-161-74.elisa-laajakaista.fi. [88.115.161.74])
+        by smtp.gmail.com with ESMTPSA id z17-20020ac24191000000b004483a4d9a3esm775738lfh.152.2022.03.25.10.53.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Mar 2022 10:53:10 -0700 (PDT)
+From:   Zhi Wang <zhi.wang.linux@gmail.com>
+X-Google-Original-From: Zhi Wang <zhi.a.wang@intel.com>
+To:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        intel-gfx@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org
+Cc:     Zhi Wang <zhi.a.wang@intel.com>, Christoph Hellwig <hch@lst.de>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Vivi Rodrigo <rodrigo.vivi@intel.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>
+Subject: [PATCH v7 3/3] i915/gvt: Use the initial HW state snapshot saved in i915
+Date:   Fri, 25 Mar 2022 13:52:51 -0400
+Message-Id: <20220325175251.167164-3-zhi.a.wang@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220325175251.167164-1-zhi.a.wang@intel.com>
+References: <20220325175251.167164-1-zhi.a.wang@intel.com>
 MIME-Version: 1.0
-X-OriginatorOrg: de.bosch.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PAXPR10MB5405.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 695b8c8a-ed84-4864-a1dd-08da0e898930
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Mar 2022 18:01:50.0707
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 0ae51e19-07c8-4e4b-bb6d-648ee58410f4
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: zbuxcir3zMNDhOl2kaLEQkcxuJeYuElTQ1hhgzZthRLi9ZxZ0Mbk8/qIkuVeYROaK4lTiefXJzk+C/VXwclCTQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR10MB2511
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGksDQoNCj4gPiBUaGlzIGNvbW1pdCBjb3JyZWN0cyB0aGUgcHJpbnRpbmcgb2YgdGhlIElQVSBj
-bG9jayBlcnJvciBwZXJjZW50YWdlIGlmDQo+ID4gaXQgaXMgYmV0d2VlbiAtMC4xJSB0byAtMC45
-JS4gRm9yIGV4YW1wbGUsIGlmIHRoZSBwaXhlbCBjbG9jaw0KPiA+IHJlcXVlc3RlZCBpcyAyNy4y
-IE1IeiBidXQgb25seSAyNy4wIE1IeiBjYW4gYmUgYWNoaWV2ZWQgdGhlIGRldmlhdGlvbiBpcyAt
-DQo+IDAuOCUuDQo+ID4gQnV0IHRoZSBmaXhlZCBwb2ludCBtYXRoIGhhZCBhIGZsYXcgYW5kIGNh
-bGN1bGF0ZWQgZXJyb3Igb2YgMC4yJS4NCj4gPg0KPiA+IEJlZm9yZToNCj4gPiDCoCBDbG9ja3M6
-IElQVSAyNzAwMDAwMDBIeiBESSAyNDcxNjY2N0h6IE5lZWRlZCAyNzIwMDAwMEh6DQo+ID4gwqAg
-SVBVIGNsb2NrIGNhbiBnaXZlIDI3MDAwMDAwIHdpdGggZGl2aWRlciAxMCwgZXJyb3IgMC4yJQ0K
-PiA+IMKgIFdhbnQgMjcyMDAwMDBIeiBJUFUgMjcwMDAwMDAwSHogREkgMjQ3MTY2NjdIeiB1c2lu
-ZyBJUFUsDQo+IDI3MDAwMDAwSHoNCj4gPg0KPiA+IEFmdGVyOg0KPiA+IMKgIENsb2NrczogSVBV
-IDI3MDAwMDAwMEh6IERJIDI0NzE2NjY3SHogTmVlZGVkIDI3MjAwMDAwSHoNCj4gPiDCoCBJUFUg
-Y2xvY2sgY2FuIGdpdmUgMjcwMDAwMDAgd2l0aCBkaXZpZGVyIDEwLCBlcnJvciAtMC44JQ0KPiA+
-IMKgIFdhbnQgMjcyMDAwMDBIeiBJUFUgMjcwMDAwMDAwSHogREkgMjQ3MTY2NjdIeiB1c2luZyBJ
-UFUsDQo+IDI3MDAwMDAwSHoNCj4gPg0KPiA+IFNpZ25lZC1vZmYtYnk6IExlbyBSdWFuIDx0aW5n
-cXVhbi5ydWFuQGNuLmJvc2NoLmNvbT4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBNYXJrIEpvbmFzIDxt
-YXJrLmpvbmFzQGRlLmJvc2NoLmNvbT4NCj4gPiAtLS0NCj4gPiDCoGRyaXZlcnMvZ3B1L2lwdS12
-My9pcHUtZGkuYyB8IDUgKysrLS0NCj4gPiDCoDEgZmlsZSBjaGFuZ2VkLCAzIGluc2VydGlvbnMo
-KyksIDIgZGVsZXRpb25zKC0pDQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvaXB1
-LXYzL2lwdS1kaS5jIGIvZHJpdmVycy9ncHUvaXB1LXYzL2lwdS1kaS5jDQo+ID4gaW5kZXggYjRh
-MzFkNTA2ZmNjLi43NGVjYTY4ODkxYWQgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9ncHUvaXB1
-LXYzL2lwdS1kaS5jDQo+ID4gKysrIGIvZHJpdmVycy9ncHUvaXB1LXYzL2lwdS1kaS5jDQo+ID4g
-QEAgLTQ1MSw4ICs0NTEsOSBAQCBzdGF0aWMgdm9pZCBpcHVfZGlfY29uZmlnX2Nsb2NrKHN0cnVj
-dCBpcHVfZGkgKmRpLA0KPiA+DQo+ID4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBl
-cnJvciA9IHJhdGUgLyAoc2lnLT5tb2RlLnBpeGVsY2xvY2sgLyAxMDAwKTsNCj4gPg0KPiA+IC3C
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBkZXZfZGJnKGRpLT5pcHUtPmRldiwgIsKgIElQ
-VSBjbG9jayBjYW4gZ2l2ZSAlbHUgd2l0aA0KPiA+IGRpdmlkZXIgJXUsIGVycm9yICVkLiV1JSVc
-biIsDQo+ID4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBy
-YXRlLCBkaXYsIChzaWduZWQpKGVycm9yIC0gMTAwMCkgLyAxMCwgZXJyb3INCj4gPiAlIDEwKTsN
-Cj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgZGV2X2RiZyhkaS0+aXB1LT5kZXYs
-ICLCoCBJUFUgY2xvY2sgY2FuIGdpdmUgJWx1IHdpdGgNCj4gPiArZGl2aWRlciAldSwgZXJyb3Ig
-JWMlZC4lZCUlXG4iLA0KPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgcmF0ZSwgZGl2LCBlcnJvciA8IDEwMDAgPyAnLScgOiAnKycsDQo+ID4gK8KgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBhYnMoZXJyb3IgLSAxMDAw
-KSAvIDEwLCBhYnMoZXJyb3IgLSAxMDAwKSAlDQo+ID4gKzEwKTsNCj4gPg0KPiA+IMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgLyogQWxsb3cgYSAxJSBlcnJvciAqLw0KPiA+IMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgaWYgKGVycm9yIDwgMTAxMCAmJiBlcnJvciA+PSA5
-OTApIHsNCj4gDQo+IFJvdW5kaW5nIChhbHdheXMgZG93bikgaXMgc3RpbGwgYSBiaXQgdW5pbnR1
-aXRpdmUsIGJ1dCB0aGlzIGNlcnRhaW5seSBpbXByb3Zlcw0KPiB0aGluZ3MuDQo+IA0KPiBSZXZp
-ZXdlZC1ieTogUGhpbGlwcCBaYWJlbCA8cC56YWJlbEBwZW5ndXRyb25peC5kZT4NCg0KV2hhdCBh
-cmUgdGhlIGNoYW5jZXMgb2YgZ2V0dGluZyB0aGlzIHBhdGNoIGludG8gNS4xOD8NCg0KQ2FuIEkg
-ZG8gc29tZXRoaW5nIHRvIHN1cHBvcnQgdGhlIHByb2Nlc3M/DQoNCkNoZWVycywNCk1hcmsNCg==
+The code of saving initial HW state snapshot has been moved into i915.
+Let the GVT-g core logic use that snapshot.
+
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Jani Nikula <jani.nikula@linux.intel.com>
+Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Cc: Vivi Rodrigo <rodrigo.vivi@intel.com>
+Cc: Zhenyu Wang <zhenyuw@linux.intel.com>
+Cc: Zhi Wang <zhi.a.wang@intel.com>
+Signed-off-by: Zhi Wang <zhi.a.wang@intel.com>
+---
+ drivers/gpu/drm/i915/gvt/firmware.c | 25 +++++++++----------------
+ 1 file changed, 9 insertions(+), 16 deletions(-)
+
+diff --git a/drivers/gpu/drm/i915/gvt/firmware.c b/drivers/gpu/drm/i915/gvt/firmware.c
+index 1a8274a3f4b1..54fe442238c6 100644
+--- a/drivers/gpu/drm/i915/gvt/firmware.c
++++ b/drivers/gpu/drm/i915/gvt/firmware.c
+@@ -66,22 +66,16 @@ static struct bin_attribute firmware_attr = {
+ 	.mmap = NULL,
+ };
+ 
+-static int mmio_snapshot_handler(struct intel_gvt *gvt, u32 offset, void *data)
+-{
+-	*(u32 *)(data + offset) = intel_uncore_read_notrace(gvt->gt->uncore,
+-							    _MMIO(offset));
+-	return 0;
+-}
+-
+ static int expose_firmware_sysfs(struct intel_gvt *gvt)
+ {
+ 	struct intel_gvt_device_info *info = &gvt->device_info;
+-	struct pci_dev *pdev = to_pci_dev(gvt->gt->i915->drm.dev);
++	struct drm_i915_private *i915 = gvt->gt->i915;
++	struct pci_dev *pdev = to_pci_dev(i915->drm.dev);
+ 	struct gvt_firmware_header *h;
+ 	void *firmware;
+ 	void *p;
+ 	unsigned long size, crc32_start;
+-	int i, ret;
++	int ret;
+ 
+ 	size = sizeof(*h) + info->mmio_size + info->cfg_space_size;
+ 	firmware = vzalloc(size);
+@@ -99,17 +93,16 @@ static int expose_firmware_sysfs(struct intel_gvt *gvt)
+ 
+ 	p = firmware + h->cfg_space_offset;
+ 
+-	for (i = 0; i < h->cfg_space_size; i += 4)
+-		pci_read_config_dword(pdev, i, p + i);
+-
+-	memcpy(gvt->firmware.cfg_space, p, info->cfg_space_size);
++	memcpy(gvt->firmware.cfg_space, i915->vgpu.initial_cfg_space,
++	       info->cfg_space_size);
++	memcpy(p, gvt->firmware.cfg_space, info->cfg_space_size);
+ 
+ 	p = firmware + h->mmio_offset;
+ 
+-	/* Take a snapshot of hw mmio registers. */
+-	intel_gvt_for_each_tracked_mmio(gvt, mmio_snapshot_handler, p);
++	memcpy(gvt->firmware.mmio, i915->vgpu.initial_mmio,
++	       info->mmio_size);
+ 
+-	memcpy(gvt->firmware.mmio, p, info->mmio_size);
++	memcpy(p, gvt->firmware.mmio, info->mmio_size);
+ 
+ 	crc32_start = offsetof(struct gvt_firmware_header, crc32) + 4;
+ 	h->crc32 = crc32_le(0, firmware + crc32_start, size - crc32_start);
+-- 
+2.25.1
+
