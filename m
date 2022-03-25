@@ -2,207 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9323BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 17:13:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F5DBC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 17:13:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230081AbiCYRPI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 13:15:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47982 "EHLO
+        id S230291AbiCYRPQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 13:15:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233371AbiCYRO6 (ORCPT
+        with ESMTP id S1347560AbiCYRPD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 13:14:58 -0400
-Received: from 1.mo575.mail-out.ovh.net (1.mo575.mail-out.ovh.net [46.105.41.146])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE21C3467B
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 10:13:22 -0700 (PDT)
-Received: from player789.ha.ovh.net (unknown [10.109.138.52])
-        by mo575.mail-out.ovh.net (Postfix) with ESMTP id 414C521B3E
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 16:55:13 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player789.ha.ovh.net (Postfix) with ESMTPSA id D329128CEF96E;
-        Fri, 25 Mar 2022 16:55:06 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-100R00332e83cac-f456-466e-9f3b-ffe79ad02fc6,
-                    1702D5D0C6B5DF16716081994498F990499A02DA) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Lars-Peter Clausen <lars@metafoo.de>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
-        Stephen Kitt <steve@sk2.org>
-Subject: [PATCH] ASoC: ad1*, ada*, ssm*: use i2c_match_id and simple i2c probe
-Date:   Fri, 25 Mar 2022 17:54:52 +0100
-Message-Id: <20220325165452.1212975-1-steve@sk2.org>
-X-Mailer: git-send-email 2.27.0
+        Fri, 25 Mar 2022 13:15:03 -0400
+Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89E593CFD2;
+        Fri, 25 Mar 2022 10:13:28 -0700 (PDT)
+Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2d07ae0b1c4so89460957b3.11;
+        Fri, 25 Mar 2022 10:13:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=4p0X/XeCE266vSwVQNBGK11tvaUj7yQyARoxG+v1mAo=;
+        b=eXVXBuCHvv4Vq88Lxjrm0KjehjMvkIEGi/FnXBa/K9rJxso24l2l4EcQAYwmOnha2d
+         YPSm0QTAVkozSxCsZWSJIypqKkn2IfS1j4h/YSHlVKwj1p1la9DcioQyqVPWK+/Tu3RK
+         5s3US5NY8BT6cfZhLSe9manwsCEyrNAZhjKzHJwt+ubHEVbc961N0jVtA9zqIehRDn6r
+         fs4Fe97WtUlqrKIw9NQsuB83dzU4AqoQiFuVKtvFJzUpgHwxp4dnjYpD3hGhVi11cCTQ
+         z286bOjZwqf0KBtMS2gFU2jmm5dhgARV4U8MY2lkBP6b0Z9VsBFHq3zVafVluH+7gVMx
+         trEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=4p0X/XeCE266vSwVQNBGK11tvaUj7yQyARoxG+v1mAo=;
+        b=zYrX8EY+LF+b655TS8ShzPB7XX6BXpLLaQzSdFOvQL6NxN4pY6CPe2ijkHXmhfafsn
+         jdjVNAYsXa93MYQmG6zgbmH5eTAX3BJ1r6+fCnErqRMt/jfGjOoJjy59go+58ygDlWpt
+         AwLrgx4LQT8xhMElb1U4ZwR/e8JLFSXg/j0sJzE+cYBGGURomlcdL6bo18uDT0kzmpEE
+         xLb5f1VpZS2sgWF9Myh8fQTS5x1Vv5JEE/d+xgsIin/nE18vuKR0dd1/bfzKIEbYHoGm
+         /F86/T8Vx7GBZVdSX3pnoQvoYXii7oEz5VDhUS11Ixwo96JPIIxPZ2jbU0CF01pq1bJg
+         Gdew==
+X-Gm-Message-State: AOAM533LstyYSrVK4Iv/iQISCk3INW9xUTe3kiGjVwH9Gi3y7PcuSCzV
+        2Q+duxsVCb8Os95laxiEBLyvJL6mjJYsn2ZH24g=
+X-Google-Smtp-Source: ABdhPJzjB7PTxvBD0TAF3d9twe9l0NUAc0TZ7HIZSfe/oYnJRznZKrt2Dj0TtyR66WE033Ds67wGpvl2pPMG8RC++UQ=
+X-Received: by 2002:a0d:c0c7:0:b0:2e5:bf19:2698 with SMTP id
+ b190-20020a0dc0c7000000b002e5bf192698mr11970702ywd.119.1648228407794; Fri, 25
+ Mar 2022 10:13:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 17577830821228611206
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudehuddgleehucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeetgedugfelkeeikeetgeegteevfeeufeetuefgudeiiedthfehtdeffeekvdeffeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejkeelrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
+References: <PAXPR04MB9186D7B361F9FFE56A0AE69C88039@PAXPR04MB9186.eurprd04.prod.outlook.com>
+ <CA+V-a8t2=MRObzdjHM9OUE8LzQXqoiLo-T+D3i1fLAOaneESpw@mail.gmail.com> <PAXPR04MB91866AB1474C9F9F2CB15B7A88039@PAXPR04MB9186.eurprd04.prod.outlook.com>
+In-Reply-To: <PAXPR04MB91866AB1474C9F9F2CB15B7A88039@PAXPR04MB9186.eurprd04.prod.outlook.com>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Fri, 25 Mar 2022 17:13:02 +0000
+Message-ID: <CA+V-a8u-KQSdTFNDKYJBL=1c2xtDraVAyqeNtTT-eFMWjYBtKQ@mail.gmail.com>
+Subject: Re: [EXT] Re: [RFC PATCH 0/5] PCIe EPF support for internal DMAC
+ handling and driver update for R-Car PCIe EP to support DMAC
+To:     Kishon Vijay Abraham I <kishon@ti.com>
+Cc:     Frank Li <frank.li@nxp.com>, Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Marek Vasut <marek.vasut+renesas@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Rob Herring <robh@kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As part of the ongoing i2c transition to the simple probe
-("probe_new"), this patch uses i2c_match_id to retrieve the
-driver_data for the probed device. The id parameter is thus no longer
-necessary and the simple probe can be used instead.
+Hi Kishon,
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
----
- sound/soc/codecs/ad193x-i2c.c   | 6 +++---
- sound/soc/codecs/adau1761-i2c.c | 8 +++++---
- sound/soc/codecs/adau1781-i2c.c | 8 +++++---
- sound/soc/codecs/adau1977-i2c.c | 8 +++++---
- sound/soc/codecs/ssm2602-i2c.c  | 8 +++++---
- 5 files changed, 23 insertions(+), 15 deletions(-)
+On Wed, Mar 2, 2022 at 6:28 PM Frank Li <frank.li@nxp.com> wrote:
+>
+>
+>
+> > -----Original Message-----
+> > From: Lad, Prabhakar <prabhakar.csengg@gmail.com>
+> > Sent: Wednesday, March 2, 2022 11:18 AM
+> > To: Frank Li <frank.li@nxp.com>
+> > Cc: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>; Lad Prabh=
+akar
+> > <prabhakar.mahadev-lad.rj@bp.renesas.com>; Kishon Vijay Abraham I
+> > <kishon@ti.com>; Bjorn Helgaas <bhelgaas@google.com>; Lorenzo Pieralisi
+> > <lorenzo.pieralisi@arm.com>; Krzysztof Wilczy=C5=84ski <kw@linux.com>; =
+Arnd
+> > Bergmann <arnd@arndb.de>; Greg Kroah-Hartman <gregkh@linuxfoundation.or=
+g>;
+> > Marek Vasut <marek.vasut+renesas@gmail.com>; Yoshihiro Shimoda
+> > <yoshihiro.shimoda.uh@renesas.com>; Rob Herring <robh@kernel.org>; linu=
+x-
+> > pci <linux-pci@vger.kernel.org>; Linux-Renesas <linux-renesas-
+> > soc@vger.kernel.org>; LKML <linux-kernel@vger.kernel.org>; Biju Das
+> > <biju.das.jz@bp.renesas.com>
+> > Subject: [EXT] Re: [RFC PATCH 0/5] PCIe EPF support for internal DMAC
+> > handling and driver update for R-Car PCIe EP to support DMAC
+> >
+> > Caution: EXT Email
+> >
+> > Hi Frank,
+> >
+> > On Wed, Mar 2, 2022 at 3:42 PM Frank Li <frank.li@nxp.com> wrote:
+> > >
+> > >
+> > >
+> > > > -----Original Message-----
+> > > > From: Lad, Prabhakar <prabhakar.csengg@gmail.com>
+> > > > Sent: Thursday, February 10, 2022 3:24 AM
+> > > > To: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> > > > Cc: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>; Kishon
+> > Vijay
+> > > > Abraham I <kishon@ti.com>; Bjorn Helgaas <bhelgaas@google.com>; Lor=
+enzo
+> > > > Pieralisi <lorenzo.pieralisi@arm.com>; Krzysztof Wilczy=C5=84ski
+> > <kw@linux.com>;
+> > > > Arnd Bergmann <arnd@arndb.de>; Greg Kroah-Hartman
+> > > > <gregkh@linuxfoundation.org>; Marek Vasut
+> > <marek.vasut+renesas@gmail.com>;
+> > > > Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>; Rob Herring
+> > > > <robh@kernel.org>; linux-pci <linux-pci@vger.kernel.org>; Linux-Ren=
+esas
+> > > > <linux-renesas-soc@vger.kernel.org>; LKML <linux-
+> > kernel@vger.kernel.org>;
+> > > > Biju Das <biju.das.jz@bp.renesas.com>
+> > > > Subject: [EXT] Re: [RFC PATCH 0/5] PCIe EPF support for internal DM=
+AC
+> > > > handling and driver update for R-Car PCIe EP to support DMAC
+> > >
+> > > I use standard DMA engine API to implement Designware PCIE EP embedde=
+d
+> > DMA support.
+> > > Please check
+> > https://eur01.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Flor=
+e.kern
+> > el.org%2Fall%2F20220302032646.3793-3-
+> > Frank.Li%40nxp.com%2FT%2F&amp;data=3D04%7C01%7Cfrank.li%40nxp.com%7C0e2=
+e5fe8f
+> > d224076afb208d9fc70aa16%7C686ea1d3bc2b4c6fa92cd99c5c301635%7C0%7C0%7C63=
+7818
+> > 383096028914%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMz=
+IiLC
+> > JBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=3DDCDX%2BYEVFsPOE6ZWzwrMx=
+k1Fjlk
+> > ZA%2FEPGmhQSHuPB2c%3D&amp;reserved=3D0
+> > >
+> > Thank you for the link. The Designware PCIE EP is implemented as a DMA
+> > engine driver so it's convenient to use the DMA engine API, whereas
+> > the R-Car PCIe-EP is implemented as an actual PCIe EP [0].
+>
+> My means, needn't add new interface pci_epf_internal_dmac_xfr at epc/epf.
+> Your R-Car PCI-EP DMA part can implement as a dma engine driver like desi=
+gnware.
+>
+> So EP functional driver use the same method to operate DMA regardless
+> EP controller type.
+>
+With this approach all the PCIe controllers supporting internal dmac
+will have to be added as a DMA driver.
 
-diff --git a/sound/soc/codecs/ad193x-i2c.c b/sound/soc/codecs/ad193x-i2c.c
-index 3d509a65e4ca..4cb8d87f9011 100644
---- a/sound/soc/codecs/ad193x-i2c.c
-+++ b/sound/soc/codecs/ad193x-i2c.c
-@@ -20,10 +20,10 @@ static const struct i2c_device_id ad193x_id[] = {
- };
- MODULE_DEVICE_TABLE(i2c, ad193x_id);
- 
--static int ad193x_i2c_probe(struct i2c_client *client,
--			    const struct i2c_device_id *id)
-+static int ad193x_i2c_probe(struct i2c_client *client)
- {
- 	struct regmap_config config;
-+	const struct i2c_device_id *id = i2c_match_id(ad193x_id, client);
- 
- 	config = ad193x_regmap_config;
- 	config.val_bits = 8;
-@@ -38,7 +38,7 @@ static struct i2c_driver ad193x_i2c_driver = {
- 	.driver = {
- 		.name = "ad193x",
- 	},
--	.probe    = ad193x_i2c_probe,
-+	.probe_new = ad193x_i2c_probe,
- 	.id_table = ad193x_id,
- };
- module_i2c_driver(ad193x_i2c_driver);
-diff --git a/sound/soc/codecs/adau1761-i2c.c b/sound/soc/codecs/adau1761-i2c.c
-index c8fce37e5cfa..0683caf86aea 100644
---- a/sound/soc/codecs/adau1761-i2c.c
-+++ b/sound/soc/codecs/adau1761-i2c.c
-@@ -14,10 +14,12 @@
- 
- #include "adau1761.h"
- 
--static int adau1761_i2c_probe(struct i2c_client *client,
--	const struct i2c_device_id *id)
-+static const struct i2c_device_id adau1761_i2c_ids[];
-+
-+static int adau1761_i2c_probe(struct i2c_client *client)
- {
- 	struct regmap_config config;
-+	const struct i2c_device_id *id = i2c_match_id(adau1761_i2c_ids, client);
- 
- 	config = adau1761_regmap_config;
- 	config.val_bits = 8;
-@@ -59,7 +61,7 @@ static struct i2c_driver adau1761_i2c_driver = {
- 		.name = "adau1761",
- 		.of_match_table = of_match_ptr(adau1761_i2c_dt_ids),
- 	},
--	.probe = adau1761_i2c_probe,
-+	.probe_new = adau1761_i2c_probe,
- 	.remove = adau1761_i2c_remove,
- 	.id_table = adau1761_i2c_ids,
- };
-diff --git a/sound/soc/codecs/adau1781-i2c.c b/sound/soc/codecs/adau1781-i2c.c
-index 1c476429ad99..e046de0ebcc7 100644
---- a/sound/soc/codecs/adau1781-i2c.c
-+++ b/sound/soc/codecs/adau1781-i2c.c
-@@ -14,10 +14,12 @@
- 
- #include "adau1781.h"
- 
--static int adau1781_i2c_probe(struct i2c_client *client,
--	const struct i2c_device_id *id)
-+static const struct i2c_device_id adau1781_i2c_ids[];
-+
-+static int adau1781_i2c_probe(struct i2c_client *client)
- {
- 	struct regmap_config config;
-+	const struct i2c_device_id *id = i2c_match_id(adau1781_i2c_ids, client);
- 
- 	config = adau1781_regmap_config;
- 	config.val_bits = 8;
-@@ -55,7 +57,7 @@ static struct i2c_driver adau1781_i2c_driver = {
- 		.name = "adau1781",
- 		.of_match_table = of_match_ptr(adau1781_i2c_dt_ids),
- 	},
--	.probe = adau1781_i2c_probe,
-+	.probe_new = adau1781_i2c_probe,
- 	.remove = adau1781_i2c_remove,
- 	.id_table = adau1781_i2c_ids,
- };
-diff --git a/sound/soc/codecs/adau1977-i2c.c b/sound/soc/codecs/adau1977-i2c.c
-index 82a49c85d536..9f137a0634d5 100644
---- a/sound/soc/codecs/adau1977-i2c.c
-+++ b/sound/soc/codecs/adau1977-i2c.c
-@@ -14,10 +14,12 @@
- 
- #include "adau1977.h"
- 
--static int adau1977_i2c_probe(struct i2c_client *client,
--	const struct i2c_device_id *id)
-+static const struct i2c_device_id adau1977_i2c_ids[];
-+
-+static int adau1977_i2c_probe(struct i2c_client *client)
- {
- 	struct regmap_config config;
-+	const struct i2c_device_id *id = i2c_match_id(adau1977_i2c_ids, client);
- 
- 	config = adau1977_regmap_config;
- 	config.val_bits = 8;
-@@ -40,7 +42,7 @@ static struct i2c_driver adau1977_i2c_driver = {
- 	.driver = {
- 		.name = "adau1977",
- 	},
--	.probe = adau1977_i2c_probe,
-+	.probe_new = adau1977_i2c_probe,
- 	.id_table = adau1977_i2c_ids,
- };
- module_i2c_driver(adau1977_i2c_driver);
-diff --git a/sound/soc/codecs/ssm2602-i2c.c b/sound/soc/codecs/ssm2602-i2c.c
-index afab81383d3a..3c85772901f5 100644
---- a/sound/soc/codecs/ssm2602-i2c.c
-+++ b/sound/soc/codecs/ssm2602-i2c.c
-@@ -13,15 +13,17 @@
- 
- #include "ssm2602.h"
- 
-+static const struct i2c_device_id ssm2602_i2c_id[];
-+
- /*
-  * ssm2602 2 wire address is determined by GPIO5
-  * state during powerup.
-  *    low  = 0x1a
-  *    high = 0x1b
-  */
--static int ssm2602_i2c_probe(struct i2c_client *client,
--			     const struct i2c_device_id *id)
-+static int ssm2602_i2c_probe(struct i2c_client *client)
- {
-+	const struct i2c_device_id *id = i2c_match_id(ssm2602_i2c_id, client);
- 	return ssm2602_probe(&client->dev, id->driver_data,
- 		devm_regmap_init_i2c(client, &ssm2602_regmap_config));
- }
-@@ -47,7 +49,7 @@ static struct i2c_driver ssm2602_i2c_driver = {
- 		.name = "ssm2602",
- 		.of_match_table = ssm2602_of_match,
- 	},
--	.probe = ssm2602_i2c_probe,
-+	.probe_new = ssm2602_i2c_probe,
- 	.id_table = ssm2602_i2c_id,
- };
- module_i2c_driver(ssm2602_i2c_driver);
--- 
-2.27.0
+Could you please provide some feedback on the above?
 
+Sorry this mail is not in chain to my orignal patch series. My orignal
+series can be found at [0]
+
+[0] https://patchwork.kernel.org/project/linux-renesas-soc/cover/2022012619=
+5043.28376-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
+
+Cheers,
+Prabhakar
