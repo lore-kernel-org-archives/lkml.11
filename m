@@ -2,97 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1E8CC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 20:12:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 517F3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 20:15:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231937AbiCYUN7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 16:13:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48430 "EHLO
+        id S232022AbiCYUR1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 16:17:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231592AbiCYUN4 (ORCPT
+        with ESMTP id S231962AbiCYUR0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 16:13:56 -0400
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4583446177
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 13:12:21 -0700 (PDT)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2e5e176e1b6so94186017b3.13
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 13:12:21 -0700 (PDT)
+        Fri, 25 Mar 2022 16:17:26 -0400
+Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C245739154
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 13:15:51 -0700 (PDT)
+Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-2e64a6b20eeso94502427b3.3
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 13:15:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=YT2o1xxdFf9OVHBJJGoL9aS2UVDgV96wgaPQnf59u3A=;
-        b=iUDT/G3LEcGf/5tagjP8eFjsGsyOBph1oCwiAU9SRpn47LJA8MWoC2ZnwxrjbSPjMm
-         NMgbwZLb++g0JJFq9rSNRDfuiuAAY8Rb8mEl15bFUi/1axDz0mqVDBjWIOF7rWkJktPB
-         GVLthy7ZRekp5ux4Y2DFI5hfRTVn6an7IoJvpEJSJ/9e6g+VV6/TIh6v+e0YKsPg/ANl
-         u9+Q/qattDvEkHp5i6SesaOU1SOYG0BE3BKYCSAklaOO+5ljSccec5A3gP/LLOHHRLHW
-         2IrIx4x8ygD2EPSpIa9BNu8dVIUcFM2jbwLpeByGektKecBFHNoOwvOwoDpGWDgslNFr
-         atGA==
+        bh=vtp7+nDUHbkUKPJ586tHhPQHIGkVxn40OpnwYxUR31I=;
+        b=etfZ2To2AkmbDwdMb4CemT9IGY7lkeRqGgVivTwjfOQJoN9U9bZ5skarGYOO2Oq8I0
+         W85wxZ8MPSLmLidAYZCd3XG0GDfGOSJKpINCippQRZGUf7Nv9cZTqf84DSWa+YPREmgF
+         jJqjj7mlo2YiKvw3yAeMF21Nuy5X7hyehxeuuPotXyAenAXf0nNM4RHRLc8YQTULVjPA
+         FqvoJtQBRtjgVLv8zsO/m3D+DMyKzHyOdMJjXEHhIrWlkoWzla+aDSLA07y0aDgRaEER
+         CNMkNERYLMkcuoRK5l4y2xUCEszmqCFGPSwPFGBQV9Ds1A1YLeewOIjQAM+4kGkM0z4M
+         IPBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=YT2o1xxdFf9OVHBJJGoL9aS2UVDgV96wgaPQnf59u3A=;
-        b=Wr1c65/3SGRXsWPMPKpl7oNkX4MlJfKq6p8+dFku1D3CitBsXs8eRJdxOSfNk2Ts2W
-         vHZdvkZrYIm0AYt66/ckxoA/al4udeby3iPMiPMmtkw3VbHGyca8ZC5UO6QYWULc3Vrk
-         9N20e+h7uRYaoXzZSfvgaevM+OXNT8cntsK3ISBpJjRo/dAfx4NfCBIG6Ev7m1ftWgoH
-         T2CU8OuMRVbxtHckEe7as/NzbUIIKhwVQQdWeQsHmutlvpt5JW7pcEn0QfX9xRzUVAQ7
-         KLPs/vrPwI/o5B3YJQ+iO+2Ryak4aii/vJ6TNF8DVjeN3gm8NM1KXdz9UPXm5L3zspgH
-         ve7w==
-X-Gm-Message-State: AOAM533skAaUGYritmsB4KRrioFyzdg/ZDkmxxVje0IZB5Eo1DmhvClT
-        zJaQmpAsGQPF3f8bMgA1MHMfjJPYP6xSH1v1IaUhtQ==
-X-Google-Smtp-Source: ABdhPJxUBffdaPMdxHWCaYq0Qr6rteF2S4TUamYdP1nuniOmrgv1lq5txO6UeJxGVYZr0OiLkvNRfbesOoqWq1bIo24=
-X-Received: by 2002:a81:164a:0:b0:2e6:8e4b:7487 with SMTP id
- 71-20020a81164a000000b002e68e4b7487mr12654258yww.437.1648239140546; Fri, 25
- Mar 2022 13:12:20 -0700 (PDT)
+        bh=vtp7+nDUHbkUKPJ586tHhPQHIGkVxn40OpnwYxUR31I=;
+        b=WoN2/rULwhjqytIlftjAMipov/LRNI/VTdh+I34BKD/Xh8E99R6l2mMfEAKTM15Iqu
+         QKUsPGvdY8nRyKXC37O21et7/XbQzs3atvCl9Kc8wcgAYhfCZrUcapxHa2g0HL5X7dYm
+         +gvOF06dgQkDAKyBMA1qJs4tUlp8oitJf0XQ5FWGoKbj3OLf+Nig8DTK9PNFvd1uWcGM
+         iGRXBC7iCFW1BqLiV4Jn6Y+VkX8h7iTInSV4l1sQ74mpGFpq5Kxl9zlA9AF/HUCCnrmw
+         tNfrSL0qOH2FqDoodaznPCMg8mkx5boK0OOqzzvvrkooGER4MpNhMxqpJMQulbiKs95z
+         tc2A==
+X-Gm-Message-State: AOAM532x9oxhI6XevPm8SlD5nrT982n3vUA4k79W/yZxnqMytIgiPDnj
+        5BUqFMsZcsC6gEzdQ4Z1kEP3V+PpaBinYUurm0Li+A==
+X-Google-Smtp-Source: ABdhPJx9wqjoJz3ZPG5WcmFuaeeOXO7mos5GYyBTpymriLoOeZj41vkwrTWS/8NtQ2pgHGEGQWw5VikpO324lYovgig=
+X-Received: by 2002:a81:1182:0:b0:2dc:4e58:da41 with SMTP id
+ 124-20020a811182000000b002dc4e58da41mr12592447ywr.268.1648239351038; Fri, 25
+ Mar 2022 13:15:51 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220304135134.47827-1-yann.gautier@foss.st.com>
- <20220304135134.47827-2-yann.gautier@foss.st.com> <CACRpkdYQz+-im3n-r0_8RKL7so2bHS=aZobty4BbzixmPzms-Q@mail.gmail.com>
- <0bc53018-fce4-4104-fa47-6e60d2367d69@foss.st.com>
-In-Reply-To: <0bc53018-fce4-4104-fa47-6e60d2367d69@foss.st.com>
+References: <20220325074450.3228840-1-zhengbin13@huawei.com>
+In-Reply-To: <20220325074450.3228840-1-zhengbin13@huawei.com>
 From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Fri, 25 Mar 2022 21:12:09 +0100
-Message-ID: <CACRpkdYMWXEX6dpT0aUrCrFd-8-U35OG9Zmpkfty=zMH=mQqbA@mail.gmail.com>
-Subject: Re: [PATCH 1/3] dt-bindings: mmc: mmci: add a property to disable DMA LLI
-To:     Yann Gautier <yann.gautier@foss.st.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Christophe Kerello <christophe.kerello@foss.st.com>,
-        Ludovic Barre <ludovic.barre@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Marek Vasut <marex@denx.de>, kernel@dh-electronics.com,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Grzegorz Szymaszek <gszymaszek@short.pl>
+Date:   Fri, 25 Mar 2022 21:15:39 +0100
+Message-ID: <CACRpkdYHKq+aSHzm6wG3ETwob69gmmjFT5UV7EXL0rDxe4ZQ=Q@mail.gmail.com>
+Subject: Re: [PATCH -next] pinctrl: nuvoton: wpcm450: Fix build error without OF
+To:     Zheng Bin <zhengbin13@huawei.com>
+Cc:     j.neuschaefer@gmx.net, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, tangyizhou@huawei.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 9:26 AM Yann Gautier <yann.gautier@foss.st.com> wrote:
+On Fri, Mar 25, 2022 at 8:30 AM Zheng Bin <zhengbin13@huawei.com> wrote:
 
-> The STM32 variant uses an internal DMA, and the DMA functions are in its
-> dedicated file. So I was planning to do the same as what is done in
-> meson-gx-mmc.c: using a bounce buffer to copy from/to in case DMA
-> constraints are not fulfilled. Not sure it can help for Ux500.
+> If OF is not set, bulding fails:
 >
-> Ulf, before I send my new series (although it is not ready yet), would
-> you be OK with the bounce buffer idea?
+> drivers/pinctrl/nuvoton/pinctrl-wpcm450.o: In function `wpcm450_dt_node_to_map':
+> pinctrl-wpcm450.c:(.text+0x404): undefined reference to `pinconf_generic_dt_node_to_map'
+>
+> Make PINCTRL_WPCM450 depends on OF to fix this.
+>
+> Fixes: a1d1e0e3d80a ("pinctrl: nuvoton: Add driver for WPCM450")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
 
-Would it not be better if the bounce buffer is something available
-for all MMCI variants and not restricted to the STM32 DMA add-on?
-
-What I'm thinking is that this is a problem with the MMCI hardware
-rather than with the DMA hardware, so the problem kind of gets
-fixed in the wrong place if the bounce buffer is in the DMA add-on
-code.
-
-Maybe this is how you fixed it in later patches, I'll take a look.
+Patch applied, thanks for fixing this so quickly Zheng!
 
 Yours,
 Linus Walleij
