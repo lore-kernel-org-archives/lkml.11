@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BFA1C43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:27:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AF07C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:27:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377237AbiCYP2f (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:28:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60410 "EHLO
+        id S237046AbiCYP2k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 11:28:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377093AbiCYPXr (ORCPT
+        with ESMTP id S1377201AbiCYPX4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:23:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08778E541A;
-        Fri, 25 Mar 2022 08:17:23 -0700 (PDT)
+        Fri, 25 Mar 2022 11:23:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DEDEDE0BA;
+        Fri, 25 Mar 2022 08:17:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9921BB827DC;
-        Fri, 25 Mar 2022 15:17:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E728BC340F3;
-        Fri, 25 Mar 2022 15:17:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 208B160F13;
+        Fri, 25 Mar 2022 15:17:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3066EC340EE;
+        Fri, 25 Mar 2022 15:17:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221441;
-        bh=ZL+8ydCMGRKhWsfFAPutnN1aOnRs3fe+7ylbkThUBKE=;
+        s=korg; t=1648221452;
+        bh=bYSefRWEQBGZ6V7g4qvKgTV4xvV30nsyFbO/KZhTytQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X+Hl4cTnn/TZvlAIv5m6iO/Mbob13xWxjpWZwj/HnV1ZJw5h8tXx7E8VT2G7aJf6V
-         SPDQwAh88ZTZYF4UhoTVLSls5Q4hgPuXXfsNniuhiMGlKdLYpvFh/JZ5QcQuv2/9pE
-         4H973lBfTPTRw2rF1aexEOQ+7ErQkqy6mMYqW2rQ=
+        b=FP7SFj4lVyFtyifP4GkAXiCdjs3MUYda8OpUGuluTIiHw0zwd2kBRvaB9Brphbkii
+         ewXYNKXsXyYyzcpj+eC7E5D76LqawWnefpyRU28QjGKEzXfM9NxuM2eRYgpSiDxcX3
+         owMdY98ieTKO44V3vF/jyntrvu3qjoZAHAbYySDs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.16 17/37] ALSA: pcm: Add stream lock during PCM reset ioctl operations
-Date:   Fri, 25 Mar 2022 16:14:27 +0100
-Message-Id: <20220325150420.538975999@linuxfoundation.org>
+        stable@vger.kernel.org, Wen Gong <wgong@codeaurora.org>,
+        Brian Norris <briannorris@chromium.org>,
+        Kalle Valo <quic_kvalo@quicinc.com>
+Subject: [PATCH 5.16 29/37] Revert "ath: add support for special 0x0 regulatory domain"
+Date:   Fri, 25 Mar 2022 16:14:39 +0100
+Message-Id: <20220325150420.878755867@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150420.046488912@linuxfoundation.org>
 References: <20220325150420.046488912@linuxfoundation.org>
@@ -49,54 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Brian Norris <briannorris@chromium.org>
 
-commit 1f68915b2efd0d6bfd6e124aa63c94b3c69f127c upstream.
+commit 1ec7ed5163c70a0d040150d2279f932c7e7c143f upstream.
 
-snd_pcm_reset() is a non-atomic operation, and it's allowed to run
-during the PCM stream running.  It implies that the manipulation of
-hw_ptr and other parameters might be racy.
+This reverts commit 2dc016599cfa9672a147528ca26d70c3654a5423.
 
-This patch adds the PCM stream lock at appropriate places in
-snd_pcm_*_reset() actions for covering that.
+Users are reporting regressions in regulatory domain detection and
+channel availability.
 
+The problem this was trying to resolve was fixed in firmware anyway:
+
+    QCA6174 hw3.0: sdio-4.4.1: add firmware.bin_WLAN.RMH.4.4.1-00042
+    https://github.com/kvalo/ath10k-firmware/commit/4d382787f0efa77dba40394e0bc604f8eff82552
+
+Link: https://bbs.archlinux.org/viewtopic.php?id=254535
+Link: http://lists.infradead.org/pipermail/ath10k/2020-April/014871.html
+Link: http://lists.infradead.org/pipermail/ath10k/2020-May/015152.html
+Link: https://lore.kernel.org/all/1c160dfb-6ccc-b4d6-76f6-4364e0adb6dd@reox.at/
+Fixes: 2dc016599cfa ("ath: add support for special 0x0 regulatory domain")
 Cc: <stable@vger.kernel.org>
-Reviewed-by: Jaroslav Kysela <perex@perex.cz>
-Link: https://lore.kernel.org/r/20220322171325.4355-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Cc: Wen Gong <wgong@codeaurora.org>
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20200527165718.129307-1-briannorris@chromium.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/core/pcm_native.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/wireless/ath/regd.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
---- a/sound/core/pcm_native.c
-+++ b/sound/core/pcm_native.c
-@@ -1851,11 +1851,13 @@ static int snd_pcm_do_reset(struct snd_p
- 	int err = snd_pcm_ops_ioctl(substream, SNDRV_PCM_IOCTL1_RESET, NULL);
- 	if (err < 0)
- 		return err;
-+	snd_pcm_stream_lock_irq(substream);
- 	runtime->hw_ptr_base = 0;
- 	runtime->hw_ptr_interrupt = runtime->status->hw_ptr -
- 		runtime->status->hw_ptr % runtime->period_size;
- 	runtime->silence_start = runtime->status->hw_ptr;
- 	runtime->silence_filled = 0;
-+	snd_pcm_stream_unlock_irq(substream);
- 	return 0;
- }
+--- a/drivers/net/wireless/ath/regd.c
++++ b/drivers/net/wireless/ath/regd.c
+@@ -667,14 +667,14 @@ ath_regd_init_wiphy(struct ath_regulator
  
-@@ -1863,10 +1865,12 @@ static void snd_pcm_post_reset(struct sn
- 			       snd_pcm_state_t state)
+ /*
+  * Some users have reported their EEPROM programmed with
+- * 0x8000 or 0x0 set, this is not a supported regulatory
+- * domain but since we have more than one user with it we
+- * need a solution for them. We default to 0x64, which is
+- * the default Atheros world regulatory domain.
++ * 0x8000 set, this is not a supported regulatory domain
++ * but since we have more than one user with it we need
++ * a solution for them. We default to 0x64, which is the
++ * default Atheros world regulatory domain.
+  */
+ static void ath_regd_sanitize(struct ath_regulatory *reg)
  {
- 	struct snd_pcm_runtime *runtime = substream->runtime;
-+	snd_pcm_stream_lock_irq(substream);
- 	runtime->control->appl_ptr = runtime->status->hw_ptr;
- 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK &&
- 	    runtime->silence_size > 0)
- 		snd_pcm_playback_silence(substream, ULONG_MAX);
-+	snd_pcm_stream_unlock_irq(substream);
- }
- 
- static const struct action_ops snd_pcm_action_reset = {
+-	if (reg->current_rd != COUNTRY_ERD_FLAG && reg->current_rd != 0)
++	if (reg->current_rd != COUNTRY_ERD_FLAG)
+ 		return;
+ 	printk(KERN_DEBUG "ath: EEPROM regdomain sanitized\n");
+ 	reg->current_rd = 0x64;
 
 
