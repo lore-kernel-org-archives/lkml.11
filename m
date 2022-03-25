@@ -2,132 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE8E2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 02:30:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37724C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 02:33:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357776AbiCYCcT (ORCPT
+        id S1355120AbiCYCen (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 22:32:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51448 "EHLO
+        Thu, 24 Mar 2022 22:34:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357738AbiCYCcK (ORCPT
+        with ESMTP id S1357767AbiCYCek (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 22:32:10 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46E7AB7160;
-        Thu, 24 Mar 2022 19:30:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648175437; x=1679711437;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=iedGPOCULJcEPMdGPip/uvztNGO9WqgsgV67R6Hlq9k=;
-  b=cntP+OX+5XBtCoGPslSDe84cWHNEPMVJTnZJBfGdCBvQmHVTPAXfdX0+
-   qYvzH+z75OYo9c5hzr32nNySZQ7c6q+VlPpCNvwlUut84b6NxfURtYnV+
-   il5XXSMrGRos868I62R3CB7xShQ3rKNCOrZhQxv7CPPoz9NUs77TqlLK7
-   i76YZ7ybnlsmujAFPIttNjGYrzOU3en0eqx+Yln1VKxdrLbxklyrx40Rj
-   Zq79shHvpSeXJXYQoFqnX1AVtOENeSTI09Z4GNXNB1A3zpUC9eK8F2dsD
-   mn7NuUo79w25nEBW8/F3fVT8OP/+jn/WWihrTeKqyOwtBNt7oW37Cqhv2
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10296"; a="321733683"
-X-IronPort-AV: E=Sophos;i="5.90,209,1643702400"; 
-   d="scan'208";a="321733683"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2022 19:30:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,209,1643702400"; 
-   d="scan'208";a="693531282"
-Received: from chang-linux-3.sc.intel.com ([172.25.112.114])
-  by fmsmga001.fm.intel.com with ESMTP; 24 Mar 2022 19:30:35 -0700
-From:   "Chang S. Bae" <chang.seok.bae@intel.com>
-To:     linux-kernel@vger.kernel.org, x86@kernel.org,
-        linux-pm@vger.kernel.org
-Cc:     tglx@linutronix.de, dave.hansen@linux.intel.com,
-        peterz@infradead.org, bp@alien8.de, rafael@kernel.org,
-        ravi.v.shankar@intel.com, chang.seok.bae@intel.com
-Subject: [PATCH v3 2/3] x86/fpu: Add a helper to prepare AMX state for low-power CPU idle
-Date:   Thu, 24 Mar 2022 19:22:18 -0700
-Message-Id: <20220325022219.829-3-chang.seok.bae@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220325022219.829-1-chang.seok.bae@intel.com>
-References: <20220325022219.829-1-chang.seok.bae@intel.com>
+        Thu, 24 Mar 2022 22:34:40 -0400
+Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83297B97;
+        Thu, 24 Mar 2022 19:33:06 -0700 (PDT)
+Received: by mail-qt1-x832.google.com with SMTP id z19so2265181qtw.2;
+        Thu, 24 Mar 2022 19:33:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uzUtMlMUd1IXg+EKJtmTFQNZsOnG6D5eD7yULBI8dvw=;
+        b=JqvlNDn2FGsVLxshI49rQ+8zQjmV89cfIwMG6WLgc9rkFhQ7kczF3p7rqZ4SphexL8
+         LkEsswGZeer8mdy4BOs9AXKSjRg06TTgI828nSfBDkgwkqa/o8pqF8ZiMTHQV1jqFUwb
+         abxzYHb6NrflWjIVlq6PYhWmVlajQoZvVbvHPOU0XQewW7iwkRtiUAKJ6eaBl9UiJG2E
+         CpkffWI7CLnmdrBCjabz2wWi7lPvuAitpfHce7NkXY9bm0rb6DiO80igTaLCixx68uKH
+         SvDvBZm5p/yF+sJ/AGctV1K/JoHgoV2AmLkKzeYrxj+tStqfczK898qNVtAmRkxPFblw
+         fn6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uzUtMlMUd1IXg+EKJtmTFQNZsOnG6D5eD7yULBI8dvw=;
+        b=yad5BcfwHNlsqEB4ihP2yYu7CkWzd0LqWrhI3bLM3LbjjEVtWQ3TMqRyqOpWtH+SE4
+         CUTArm/kpsbjeilXX2v7cjtzPIWyFAh12492pc0LmfuuAG9GboyCusByUuwl0Yb9QuNz
+         v3UmIrePXRfuMJ376vjNnVTjMOLn6QN4kjYu2WYPTDTUwSKDSaQl+nWqmpKvs/HgYiYJ
+         DbVJHdkIekhWaF4QuWzB132AHXhd79rsT1QNUIdE6+crOfKzCFvg1HI+K0ddgngvkEDc
+         JTmcnihaI+sg+tPDYXqGtGzdqAoMrdKM+rhJJ+AbvKfMMZCjN8JlxwMAzUZ9C6BkR0wy
+         WfzA==
+X-Gm-Message-State: AOAM5318EYwKdxOo6/3hCIMRnIbMTi4mldtFqf4uq1Hhh639UNm498pQ
+        RXOsCGeG7ow04mocnG+AbzIztSZFRPo=
+X-Google-Smtp-Source: ABdhPJzQ3PUnzsxZdnMKw5Qj23LChpDBlCowbS14v1EqvGtqh73fIXHOuvTwUwzLfVukpX5sYfGpig==
+X-Received: by 2002:a05:622a:14d1:b0:2e2:3242:4c25 with SMTP id u17-20020a05622a14d100b002e232424c25mr7277904qtx.1.1648175585647;
+        Thu, 24 Mar 2022 19:33:05 -0700 (PDT)
+Received: from auth1-smtp.messagingengine.com (auth1-smtp.messagingengine.com. [66.111.4.227])
+        by smtp.gmail.com with ESMTPSA id j8-20020a05622a038800b002e236535929sm3842533qtx.32.2022.03.24.19.33.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Mar 2022 19:33:04 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailauth.nyi.internal (Postfix) with ESMTP id 194C527C0054;
+        Thu, 24 Mar 2022 22:33:02 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Thu, 24 Mar 2022 22:33:03 -0400
+X-ME-Sender: <xms:3ik9Ypvdqv_uGpMjICCQXhfuzSD-AyFUYJakRCFUiGU-Ud4_zFKdnA>
+    <xme:3ik9Yie5s1t_yYmwlDMMoH8v6gmsUoBtTmKV95qk4PFREEfoJPaZMTszJ6Ic99ORO
+    cfwSKQ1kelSSfaSRQ>
+X-ME-Received: <xmr:3ik9Ysw3M_2s3khE3eL0yAh4nKlrkUmX_Jhpxrfmy0PRIspKjzLZnLJIQ7k>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudehtddggeegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpeeuohhquhhnucfh
+    vghnghcuoegsohhquhhnrdhfvghnghesghhmrghilhdrtghomheqnecuggftrfgrthhtvg
+    hrnhepieeuveejleehudetfeevfeelgfejteefhedvkedukefggedugefhudfhteevjedu
+    necuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtne
+    curfgrrhgrmhepmhgrihhlfhhrohhmpegsohhquhhnodhmvghsmhhtphgruhhthhhpvghr
+    shhonhgrlhhithihqdeiledvgeehtdeigedqudejjeekheehhedvqdgsohhquhhnrdhfvg
+    hngheppehgmhgrihhlrdgtohhmsehfihigmhgvrdhnrghmvg
+X-ME-Proxy: <xmx:3ik9YgN242_uLUZFLBJfO7e2AJHJDIfsDV-FgzkfKYFA67f2F07xvA>
+    <xmx:3ik9Yp-156D7sqj8Y4JznM08mqQUum6I3JbDx3Ky3BzAHsRSlwfFWg>
+    <xmx:3ik9YgXLT4FhNU5kcfRP5kC9llAr6SpIzvJstK8JYF3_MMRADhsDFw>
+    <xmx:3ik9YoYdHuZS38_YfzZck1WcZ67L1Xa-63s6gI2p21KYSUAVoV-InQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 24 Mar 2022 22:33:02 -0400 (EDT)
+From:   Boqun Feng <boqun.feng@gmail.com>
+To:     Wei Liu <wei.liu@kernel.org>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        linux-hyperv@vger.kernel.org,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        David Hildenbrand <david@redhat.com>,
+        linux-kernel@vger.kernel.org, Boqun Feng <boqun.feng@gmail.com>
+Subject: [PATCH v2 0/2] Drivers: hv: balloon: Temporary fixes for ARM64
+Date:   Fri, 25 Mar 2022 10:32:10 +0800
+Message-Id: <20220325023212.1570049-1-boqun.feng@gmail.com>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a CPU enters an idle state, non-initialized states left in large
-registers may be the cause of preventing deeper low-power states.
+v1: https://lore.kernel.org/lkml/20220223131548.2234326-1-boqun.feng@gmail.com/
 
-The new helper ensures the AMX state is initialized to make the CPU
-ready for low-power states. It will be used by the intel idle driver.
+Changes since v1:
 
-Signed-off-by: Chang S. Bae <chang.seok.bae@intel.com>
-Cc: x86@kernel.org
-Cc: linux-kernel@vger.kernel.org
----
-Changes from v2:
-* Check the feature flag instead of fpu_state_size_dynamic() (Dave Hansen).
+*	Wording changes suggested by Michael Kelley.
 
-Changes from v1:
-* Check the dynamic state flag first, to avoid #UD with XGETBV(1).
----
- arch/x86/include/asm/fpu/api.h       |  2 ++
- arch/x86/include/asm/special_insns.h |  9 +++++++++
- arch/x86/kernel/fpu/core.c           | 13 +++++++++++++
- 3 files changed, 24 insertions(+)
+Since Hyper-V always uses 4k pages, hv_balloon has some difficulties
+working on ARM64 with larger pages[1]. Besides the memory hot add
+messages of Hyper-V doesn't have the information of NUMA node id of the
+added memory range, and ARM64 currently doesn't provide the conversion
+from a physical address to a node id, as a result the hv_balloon driver
+couldn't handle hot add properly when there are more than one NUMA node.
 
-diff --git a/arch/x86/include/asm/fpu/api.h b/arch/x86/include/asm/fpu/api.h
-index c83b3020350a..df48912fd1c8 100644
---- a/arch/x86/include/asm/fpu/api.h
-+++ b/arch/x86/include/asm/fpu/api.h
-@@ -165,4 +165,6 @@ static inline bool fpstate_is_confidential(struct fpu_guest *gfpu)
- struct task_struct;
- extern long fpu_xstate_prctl(struct task_struct *tsk, int option, unsigned long arg2);
- 
-+extern void fpu_idle_fpregs(void);
-+
- #endif /* _ASM_X86_FPU_API_H */
-diff --git a/arch/x86/include/asm/special_insns.h b/arch/x86/include/asm/special_insns.h
-index 68c257a3de0d..d434fbaeb3ff 100644
---- a/arch/x86/include/asm/special_insns.h
-+++ b/arch/x86/include/asm/special_insns.h
-@@ -294,6 +294,15 @@ static inline int enqcmds(void __iomem *dst, const void *src)
- 	return 0;
- }
- 
-+static inline void tile_release(void)
-+{
-+	/*
-+	 * Instruction opcode for TILERELEASE; supported in binutils
-+	 * version >= 2.36.
-+	 */
-+	asm volatile(".byte 0xc4, 0xe2, 0x78, 0x49, 0xc0");
-+}
-+
- #endif /* __KERNEL__ */
- 
- #endif /* _ASM_X86_SPECIAL_INSNS_H */
-diff --git a/arch/x86/kernel/fpu/core.c b/arch/x86/kernel/fpu/core.c
-index 8dea01ffc5c1..3507609e22d7 100644
---- a/arch/x86/kernel/fpu/core.c
-+++ b/arch/x86/kernel/fpu/core.c
-@@ -847,3 +847,16 @@ int fpu__exception_code(struct fpu *fpu, int trap_nr)
- 	 */
- 	return 0;
- }
-+
-+/*
-+ * Initialize register state that may prevent from entering low-power idle.
-+ * This function will be invoked from the cpuidle driver only when needed.
-+ */
-+void fpu_idle_fpregs(void)
-+{
-+	if (cpu_feature_enabled(X86_FEATURE_XGETBV1) &&
-+	    (xfeatures_in_use() & XFEATURE_MASK_XTILE)) {
-+		tile_release();
-+		fpregs_deactivate(&current->thread.fpu);
-+	}
-+}
+Among these issues, post_status() is easy to fix, while the unballoon
+issue and the hot-add issue requires more discussion. To make the
+hv_balloon driver work at the best effort, this patchset fixes the
+post_status() and temporarily disable the balloon and hot-add
+accordingly.
+
+Looking forwards to comments and suggestions.
+
+Regards,
+Boqun
+
+[1]: https://lore.kernel.org/lkml/20220105165028.1343706-1-vkuznets@redhat.com/
+
+*** BLURB HERE ***
+
+Boqun Feng (2):
+  Drivers: hv: balloon: Support status report for larger page sizes
+  Drivers: hv: balloon: Disable balloon and hot-add accordingly
+
+ drivers/hv/hv_balloon.c | 49 ++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 44 insertions(+), 5 deletions(-)
+
 -- 
-2.17.1
+2.35.1
 
