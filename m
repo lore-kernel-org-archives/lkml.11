@@ -2,142 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BC08C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 20:07:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15465C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 20:08:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231979AbiCYUJE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 16:09:04 -0400
+        id S232145AbiCYUJ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 16:09:56 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232378AbiCYUH6 (ORCPT
+        with ESMTP id S232408AbiCYUJp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 16:07:58 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 576F7140A2;
-        Fri, 25 Mar 2022 13:04:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648238661; x=1679774661;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=5sK09O1uc6ZSl4vR7vWfGqwrFgZiRRMtY41JRk11RA8=;
-  b=OUGP2dgAzHx2mlnynnamky6jCGR7RzWYyBGar7D6VHIMcz+ScXrm6ZV9
-   4i2oxRs5CR6bW3BqUr6RCDWEPOnwydn1V+heVZGPcc0AmIA2eI2IXYzCb
-   SlJ1Oyt2ZN30OoxZhPKDw09f4W1+3m7UR35UL3tOHQc+lgwPBfK6/57zJ
-   Dl6Jevm1RbJnEtd5H+EYCAFr2T6/YEZP/j8+k5odIIWZT5DgWjH50bPBX
-   yLiy0/mLLZK+F90mfJnkgGesbbXFmmwR2SxqRBQ8vQcPWjc5Wz119JUd4
-   ZV6gRjukVA+phUDlATCf325/L5CdyuQtAPj5MJdpTFcT7UpOAw2NRfA8X
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10297"; a="345146243"
-X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
-   d="scan'208";a="345146243"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2022 13:04:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
-   d="scan'208";a="602159418"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga008.fm.intel.com with ESMTP; 25 Mar 2022 13:04:16 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 98EFD217; Fri, 25 Mar 2022 22:04:30 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Fabien Dessenne <fabien.dessenne@foss.st.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Cc:     Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>
-Subject: [PATCH v1 4/5] pinctrl: meson: Replace custom code by gpiochip_count() call
-Date:   Fri, 25 Mar 2022 22:03:37 +0200
-Message-Id: <20220325200338.54270-4-andriy.shevchenko@linux.intel.com>
+        Fri, 25 Mar 2022 16:09:45 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A36543AFA
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 13:07:48 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id u22so7316221pfg.6
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 13:07:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3knZRWWujkRahNIIybfg/CGJU8bv3OrwffFxGrAdCik=;
+        b=bVBePrcqsOxc0Xyz3wyYaw4zq1odh0jKeWdTDhjAX6DDqqtVCeNuAdyE+JjSwIigmV
+         AFj4zT4SGtUfotWWWAtvib+UJSd9Eh5XA6yZwfYGZ7QxWCM0iZe6T+IYoAYevoK4NswG
+         0l/s2odil/62sBOTDEhEzLP9xp9Qes9SV9vztRduyWOqH9xtGFL1wz9au9qyCHiNNJBM
+         AiT5A9XofI8tnjOLuUOnljMbZ1Qoj/YCGuU3djfH++p95F0t9X0MvekDpdygb/97nqS4
+         RGARwAp6QM/Ijh8Rxbnsbeiz6S+eMYQRFgtfQvjJomOwFDFosfnVAbLXMm/s2p5HciKU
+         7nlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3knZRWWujkRahNIIybfg/CGJU8bv3OrwffFxGrAdCik=;
+        b=azqIhh57l+eFU5bQamACA4S4296MmtAcb/xt3JVT4fkgLu38sEOs/81zrT64Jz5u32
+         2OU3IrKF2OjQVrFhYJkd2MpNl3zBa/stNOfeF8P1q5xU6Etp5J/jLn1FvCpdd+5AgdgQ
+         rbamPhWBbPT9hgFBdbGdsMG30hLpOsMByjQ3B1VqpGeTr3kd7AFLque4zX7qx4UfrSDQ
+         MymZW3Qb09/pCBOXyZ9HOX25Wl86y2Dn/JhWFsyO7auxAE86oWmQ7r1QSpg2RqX5jqdz
+         iLNRJkdsmhCIE/sD5T4uprWbnPJztcAsD16+XwSZeNbjlb9VYjCzF45guI+e2y2REfCF
+         Yysg==
+X-Gm-Message-State: AOAM531rJJHslTcepzD/UeScArB7hhxsSyGa1jGJ0NTAEinyIr19uRAn
+        AbEPeOrJ7uGMU0HrQ1Ri+075Nw==
+X-Google-Smtp-Source: ABdhPJyzAPS3+sLo/07obtP9q9XmA2zPmwQJeLOzFav+trIQjghYy+nwnz3fXxpmsS0XPCok58gCVA==
+X-Received: by 2002:a63:5020:0:b0:382:4781:7f4c with SMTP id e32-20020a635020000000b0038247817f4cmr968505pgb.230.1648238864561;
+        Fri, 25 Mar 2022 13:07:44 -0700 (PDT)
+Received: from localhost.localdomain ([223.233.78.42])
+        by smtp.gmail.com with ESMTPSA id j23-20020a17090ae61700b001c6bb352763sm6643590pjy.52.2022.03.25.13.07.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Mar 2022 13:07:43 -0700 (PDT)
+From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
+To:     netdev@vger.kernel.org
+Cc:     bhupesh.sharma@linaro.org, bhupesh.linux@gmail.com,
+        vkoul@kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, linux-arm-msm@vger.kernel.org,
+        bjorn.andersson@linaro.org, Rob Herring <robh@kernel.org>
+Subject: [PATCH v4 net-next 1/1] dt-bindings: net: qcom,ethqos: Document SM8150 SoC compatible
+Date:   Sat, 26 Mar 2022 01:37:31 +0530
+Message-Id: <20220325200731.1585554-1-bhupesh.sharma@linaro.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220325200338.54270-1-andriy.shevchenko@linux.intel.com>
-References: <20220325200338.54270-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since we have generic function to count GPIO controller nodes
-under given device, there is no need to open code it. Replace
-custom code by gpiochip_count() call.
+From: Vinod Koul <vkoul@kernel.org>
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+SM8150 has an ethernet controller and it needs a different
+configuration, so add a new compatible for this.
+
+Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+[bhsharma: Massage the commit log]
+Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
 ---
- drivers/pinctrl/meson/pinctrl-meson.c | 28 ++++++++++++---------------
- 1 file changed, 12 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/pinctrl/meson/pinctrl-meson.c b/drivers/pinctrl/meson/pinctrl-meson.c
-index 49851444a6e3..7db70d4e214a 100644
---- a/drivers/pinctrl/meson/pinctrl-meson.c
-+++ b/drivers/pinctrl/meson/pinctrl-meson.c
-@@ -49,6 +49,7 @@
- #include <linux/pinctrl/pinctrl.h>
- #include <linux/pinctrl/pinmux.h>
- #include <linux/platform_device.h>
-+#include <linux/property.h>
- #include <linux/regmap.h>
- #include <linux/seq_file.h>
+Changes since v3:
+-----------------
+- v3 can be seen here: https://lore.kernel.org/lkml/20220303084824.284946-4-bhupesh.sharma@linaro.org/T/
+- Bjorn requested that this patch be sent to networking list separately,
+  so that patch can be easily reviewed and merged.
+
+ Documentation/devicetree/bindings/net/qcom,ethqos.txt | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/net/qcom,ethqos.txt b/Documentation/devicetree/bindings/net/qcom,ethqos.txt
+index fcf5035810b5..1f5746849a71 100644
+--- a/Documentation/devicetree/bindings/net/qcom,ethqos.txt
++++ b/Documentation/devicetree/bindings/net/qcom,ethqos.txt
+@@ -7,7 +7,9 @@ This device has following properties:
  
-@@ -662,27 +663,22 @@ static struct regmap *meson_map_resource(struct meson_pinctrl *pc,
- 	return devm_regmap_init_mmio(pc->dev, base, &meson_regmap_config);
- }
+ Required properties:
  
--static int meson_pinctrl_parse_dt(struct meson_pinctrl *pc,
--				  struct device_node *node)
-+static int meson_pinctrl_parse_dt(struct meson_pinctrl *pc)
- {
--	struct device_node *np, *gpio_np = NULL;
-+	struct device_node *gpio_np;
-+	unsigned int chips;
+-- compatible: Should be qcom,qcs404-ethqos"
++- compatible: Should be one of:
++		"qcom,qcs404-ethqos"
++		"qcom,sm8150-ethqos"
  
--	for_each_child_of_node(node, np) {
--		if (!of_find_property(np, "gpio-controller", NULL))
--			continue;
--		if (gpio_np) {
--			dev_err(pc->dev, "multiple gpio nodes\n");
--			of_node_put(np);
--			return -EINVAL;
--		}
--		gpio_np = np;
--	}
--
--	if (!gpio_np) {
-+	chips = gpiochip_count(pc->dev);
-+	if (!chips) {
- 		dev_err(pc->dev, "no gpio node found\n");
- 		return -EINVAL;
- 	}
-+	if (chips > 1) {
-+		dev_err(pc->dev, "multiple gpio nodes\n");
-+		return -EINVAL;
-+	}
- 
-+	gpio_np = to_of_node(device_get_named_child_node(pc->dev, "gpio-controller"));
- 	pc->of_node = gpio_np;
- 
- 	pc->reg_mux = meson_map_resource(pc, gpio_np, "mux");
-@@ -751,7 +747,7 @@ int meson_pinctrl_probe(struct platform_device *pdev)
- 	pc->dev = dev;
- 	pc->data = (struct meson_pinctrl_data *) of_device_get_match_data(dev);
- 
--	ret = meson_pinctrl_parse_dt(pc, dev->of_node);
-+	ret = meson_pinctrl_parse_dt(pc);
- 	if (ret)
- 		return ret;
+ - reg: Address and length of the register set for the device
  
 -- 
 2.35.1
