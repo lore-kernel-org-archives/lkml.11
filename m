@@ -2,101 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 902E8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 16:50:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D8E8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 16:50:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377017AbiCYQwI (ORCPT
+        id S1377019AbiCYQw1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 12:52:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41612 "EHLO
+        Fri, 25 Mar 2022 12:52:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377002AbiCYQwB (ORCPT
+        with ESMTP id S1348043AbiCYQwZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 12:52:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AF51DC12D9
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 09:50:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648227025;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=tEjq/KiPSXWL3MlMEJXSJIy04cv7r0dUWkKt5cvZ2AM=;
-        b=Q0WcPgGtVyIb26freMtM8HpSfPBhxea9YZiWrOSUUtEMaLAIx5k+UAjsw4uZG/PIXNkDGe
-        trC8kj/4+J0TO85wjiFj2DzC6TdnuAdmcLOF6c8uhbgLJ0Snx+1o5zM+HV7dgZFSlaincC
-        nQphILrC1ULFsf8z88fYO2vF5R25vuw=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-550-Fcw94tinPSiUbTqCFHsBTw-1; Fri, 25 Mar 2022 12:50:18 -0400
-X-MC-Unique: Fcw94tinPSiUbTqCFHsBTw-1
-Received: by mail-ed1-f69.google.com with SMTP id u13-20020a50a40d000000b00419028f7f96so5244392edb.21
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 09:50:18 -0700 (PDT)
+        Fri, 25 Mar 2022 12:52:25 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26829E43A3
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 09:50:51 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id bi12so16570924ejb.3
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 09:50:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=94PEXMIFvyyJQFPubb1Xaa+0LbyxHkePHlhp9zj/Z+g=;
+        b=SjSMuLWWBMRDZCZAYqkZjt8DVD1lMxcnTQ0pRcoYE6pc5KA03fRjaO+NG5JnARI9G0
+         FdIxBtqN2SuWVe3DEw0nVislGa6FeRILBe77MlmD72/jA9e8G3JD5rKHwo6BJ0bvdI0A
+         HSMzQ+1ZTMcraGaMFyqLA5koHqo6CEQtOaaRg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=tEjq/KiPSXWL3MlMEJXSJIy04cv7r0dUWkKt5cvZ2AM=;
-        b=RImQ5tA3hHNgL/u2m/XbUDbpYaA+54wrq5GFcqYGYqfMzSXyA0+uFnumAflEd04+Xr
-         EI/Q9KLeIc/CFrWg9INYVj618GCXSv6b/1TxaR+FDyMgq1JGWMWSYYjuJbR+sG+hS+VX
-         Yr2Q5cwBifDH2kxIvtWq9+57nTB61a4cdg+VH40cMlVDkcLr05dgiJcxcOVO3nHnY+q4
-         DH2Xd4ia4XGtZYGYHq3J+tBpzviCJ7pq7H/J/d427dDiV08DAUB8WVrrzQelS7qi/ILR
-         b3ZNF8lMOnwAgVD5KsUPRgmB5gOzWtO0YZUjkQ1RQnQGlX0OwWLF+8AM5s7KUCT1ojNK
-         MNLQ==
-X-Gm-Message-State: AOAM531C3cLhaoJQkBatt8h13xS6hLG6xvTMszWUeInqCOpvdrC5Canf
-        b9PY3lVJ1i5BVO5DOW78goxBf5TAWUzG/eRobyzxJ8AKmYXIcMkuwusER3rqEJwwa5YC0guGt9v
-        RFgr8GZ0io16eGYIQZ+uh4cdS
-X-Received: by 2002:aa7:cc96:0:b0:410:b9ac:241 with SMTP id p22-20020aa7cc96000000b00410b9ac0241mr14368991edt.246.1648227017509;
-        Fri, 25 Mar 2022 09:50:17 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxtI7/PWnIA3ZNXxg4nfFvrZQa1n7rQsKtbxPki/ewcdN3qvWtTFHO7bqVxVhCh9We4XHqzJw==
-X-Received: by 2002:aa7:cc96:0:b0:410:b9ac:241 with SMTP id p22-20020aa7cc96000000b00410b9ac0241mr14368975edt.246.1648227017312;
-        Fri, 25 Mar 2022 09:50:17 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:1c09:f536:3de6:228c? ([2001:b07:6468:f312:1c09:f536:3de6:228c])
-        by smtp.googlemail.com with ESMTPSA id hs12-20020a1709073e8c00b006dfd8074d27sm2501958ejc.79.2022.03.25.09.50.15
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=94PEXMIFvyyJQFPubb1Xaa+0LbyxHkePHlhp9zj/Z+g=;
+        b=5g4oQGsl+gAH92zB2Mm/aUZHYCBCcQbOf47UOZWqzqGnTLuAYUs64eb0vWKee4vj55
+         wMSRamwT8W0fpP+Hi6/pPNnZb3D0GJA1tUNH35TUD0HsOx9zdr5kwDZZVA2siB8Uoeii
+         uiKvj8oXg93MaWmduT6F0jEXbwRV5XITOe8zGY6STqWDdeyfrRX3Y/CHrvj/J3qtA+GZ
+         FTV6E+iKLPihUg2Nv/UCbdrbzZecv5k0url+Lo0hRoCJYVgDRojJDW62VmuPtH2953eF
+         9V9UwIuziag/krVflC/XQdvkaZYWOVxag2QKksoaoUDxT4oL76I7RjZeCLcUY6nOKZkd
+         RWsg==
+X-Gm-Message-State: AOAM533P8Xxnfwu81CRANLWLVfKnavtrQMYRx9M2ASj/sUztPLBYeCPt
+        YodR1/Fgj2zJ14rcHBL31peAIe+eNlTbNgwqPA4=
+X-Google-Smtp-Source: ABdhPJz9usoF+oPi+AwWbMps8TM43STudVkIavyZ4DbrjkPuiMyqw/ApsGTJhN86+c2vCor1R869jg==
+X-Received: by 2002:a17:907:d28:b0:6e0:996c:7e53 with SMTP id gn40-20020a1709070d2800b006e0996c7e53mr5529429ejc.658.1648227049404;
+        Fri, 25 Mar 2022 09:50:49 -0700 (PDT)
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com. [209.85.128.42])
+        by smtp.gmail.com with ESMTPSA id bd12-20020a056402206c00b00418c9bf71cbsm3025510edb.68.2022.03.25.09.50.48
+        for <linux-kernel@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Mar 2022 09:50:16 -0700 (PDT)
-Message-ID: <53cc074f-350f-5fa8-1ee4-c33921f17cb1@redhat.com>
-Date:   Fri, 25 Mar 2022 17:50:14 +0100
+        Fri, 25 Mar 2022 09:50:49 -0700 (PDT)
+Received: by mail-wm1-f42.google.com with SMTP id l9-20020a05600c4f0900b0038ccd1b8642so2888563wmq.0
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 09:50:48 -0700 (PDT)
+X-Received: by 2002:a05:600c:3c8a:b0:389:cf43:eaf6 with SMTP id
+ bg10-20020a05600c3c8a00b00389cf43eaf6mr10706474wmb.199.1648226737471; Fri, 25
+ Mar 2022 09:45:37 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [RFC PATCH] KVM: x86/mmu: fix general protection fault in
- kvm_mmu_uninit_tdp_mmu
-Content-Language: en-US
-To:     Pavel Skripkin <paskripkin@gmail.com>, seanjc@google.com,
-        vkuznets@redhat.com, wanpengli@tencent.com, jmattson@google.com
-Cc:     x86@kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzbot+717ed82268812a643b28@syzkaller.appspotmail.com
-References: <20220325163815.3514-1-paskripkin@gmail.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220325163815.3514-1-paskripkin@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <1647452154-16361-1-git-send-email-quic_sbillaka@quicinc.com>
+ <1647452154-16361-6-git-send-email-quic_sbillaka@quicinc.com>
+ <CAE-0n50dmA0ETgNvaBGs+XmGu+r=6RbfbmnHqXAFqUBGjVGDvg@mail.gmail.com> <MW4PR02MB718688EF42698851322BBF6DE11A9@MW4PR02MB7186.namprd02.prod.outlook.com>
+In-Reply-To: <MW4PR02MB718688EF42698851322BBF6DE11A9@MW4PR02MB7186.namprd02.prod.outlook.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Fri, 25 Mar 2022 09:45:25 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=X7yHoC=7Fj24AjkGwgKvTL6qYfW+yPRstF5j6qt1Lw_Q@mail.gmail.com>
+Message-ID: <CAD=FV=X7yHoC=7Fj24AjkGwgKvTL6qYfW+yPRstF5j6qt1Lw_Q@mail.gmail.com>
+Subject: Re: [PATCH v5 5/9] drm/msm/dp: Add eDP support via aux_bus
+To:     "Sankeerth Billakanti (QUIC)" <quic_sbillaka@quicinc.com>
+Cc:     Stephen Boyd <swboyd@chromium.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "freedreno@lists.freedesktop.org" <freedreno@lists.freedesktop.org>,
+        "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "robdclark@gmail.com" <robdclark@gmail.com>,
+        "seanpaul@chromium.org" <seanpaul@chromium.org>,
+        quic_kalyant <quic_kalyant@quicinc.com>,
+        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
+        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
+        "agross@kernel.org" <agross@kernel.org>,
+        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+        "sean@poorly.run" <sean@poorly.run>,
+        "airlied@linux.ie" <airlied@linux.ie>,
+        "daniel@ffwll.ch" <daniel@ffwll.ch>,
+        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
+        "sam@ravnborg.org" <sam@ravnborg.org>,
+        "dmitry.baryshkov@linaro.org" <dmitry.baryshkov@linaro.org>,
+        quic_vproddut <quic_vproddut@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/25/22 17:38, Pavel Skripkin wrote:
-> Syzbot reported GPF in kvm_mmu_uninit_tdp_mmu(), which is caused by
-> passing NULL pointer to flush_workqueue().
-> 
-> tdp_mmu_zap_wq is allocated via alloc_workqueue() which may fail. There
-> is no error hanling and kvm_mmu_uninit_tdp_mmu() return value is simply
-> ignored. Even all kvm_*_init_vm() functions are void, so the easiest
-> solution is to check that tdp_mmu_zap_wq is valid pointer before passing
-> it somewhere.
+Hi,
 
-Thanks for the analysis, but not scheduling the work item in 
-tdp_mmu_schedule_zap_root is broken; you can't just let the roots 
-survive (KVM uses its own workqueue because it needs to work item to 
-complete has to flush it before kvm_mmu_zap_all_fast returns).
+On Fri, Mar 25, 2022 at 7:11 AM Sankeerth Billakanti (QUIC)
+<quic_sbillaka@quicinc.com> wrote:
+>
+> > > @@ -114,10 +114,12 @@ struct drm_bridge *dp_bridge_init(struct
+> > msm_dp *dp_display, struct drm_device *
+> > >         bridge->funcs = &dp_bridge_ops;
+> > >         bridge->type = dp_display->connector_type;
+> > >
+> > > -       bridge->ops =
+> > > -               DRM_BRIDGE_OP_DETECT |
+> > > -               DRM_BRIDGE_OP_HPD |
+> > > -               DRM_BRIDGE_OP_MODES;
+> > > +       if (bridge->type == DRM_MODE_CONNECTOR_DisplayPort) {
+> >
+> > Why can't eDP have bridge ops that are the same?
+> >
+>
+> eDP needs to be reported as always connected. Whichever bridge is setting these ops flags should provide the ops.
+> The farthest bridge from the encoder with the ops flag set should implement the ops.
+> drm_bridge_connector_detect  reports always connected for eDP. So, we don't need DRM_BRIDGE_OP_DETECT
+> eDP panel bridge will add DRM_BRIDGE_OP_MODES in drm_panel_bridge_add_typed and will call panel_edp_get_modes.
+> As we are not supporting HPD for EDP, we are not setting the HPD ops flag.
 
-I'll fix it properly by propagating the error up to kvm_mmu_init_vm and 
-kvm_arch_init_vm,
+Right. It's Expected that eDP and DP would have different ops. If we
+define "detect" and "HPD" as whether the display is _physically_
+connected, not the status of the poorly-named eDP "HPD" pin, then eDP
+is _supposed_ to be considered always connected and thus would never
+support DETECT / HPD.
 
-Thanks,
+...and right that the panel is expected to handle the modes.
 
-Paolo
+This matches how things have been progressing in Laurent's patches
+(taken over by Kieran) to add full DP support to sn65dsi86. For
+instance:
 
+https://lore.kernel.org/r/20220317131250.1481275-3-kieran.bingham+renesas@ideasonboard.com/
+https://lore.kernel.org/r/20220317131250.1481275-4-kieran.bingham+renesas@ideasonboard.com/
+
+-Doug
