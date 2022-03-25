@@ -2,69 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B59AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 11:01:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 074DEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 11:02:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353389AbiCYLDH (ORCPT
+        id S1353468AbiCYLDp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 07:03:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57238 "EHLO
+        Fri, 25 Mar 2022 07:03:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353832AbiCYLC6 (ORCPT
+        with ESMTP id S1353378AbiCYLDn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 07:02:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8A521C4E0E
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 04:01:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648206084;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cyh9GNwkSeiWX8VVWJet6cmrStrv1Y1BhHYKMAKCy08=;
-        b=djp5XNqFQfJvL9jvcJIBR71HYiBGzr7Bef+oNNFSL3RayS1xJGYRc6n3SvhfUzqMZ42rWQ
-        qWqi31U6SfpEiyg1x8Tn1881cblUBfT/uTeA2JnuoUEsrsKhnh0KD/2mAp5Ztx3CHiOq8X
-        ivRiHIV2lwGeE9bq6qIf02p9BtLpwVs=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-507-Tkd3vQDpNSWCXk7xQWt1eg-1; Fri, 25 Mar 2022 07:01:21 -0400
-X-MC-Unique: Tkd3vQDpNSWCXk7xQWt1eg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6EBA7899ED2;
-        Fri, 25 Mar 2022 11:01:18 +0000 (UTC)
-Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2C1152166BB3;
-        Fri, 25 Mar 2022 11:01:06 +0000 (UTC)
-From:   Paolo Bonzini <pbonzini@redhat.com>
-To:     Jon Kohler <jon@nutanix.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] KVM: x86: optimize PKU branching in kvm_load_{guest|host}_xsave_state
-Date:   Fri, 25 Mar 2022 07:01:00 -0400
-Message-Id: <20220325110100.2954008-1-pbonzini@redhat.com>
-In-Reply-To: <20220324004439.6709-1-jon@nutanix.com>
-References: 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+        Fri, 25 Mar 2022 07:03:43 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A350D081B
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 04:02:09 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id r13so14594502ejd.5
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 04:02:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fairphone.com; s=fair;
+        h=mime-version:content-transfer-encoding:date:message-id:cc:subject
+         :from:to:in-reply-to;
+        bh=0sU49Qn/ULUU8j1SeL39Iuenz7n14QMmEpvv6BRFE48=;
+        b=oCBZvdYXhfbMyHnPwSOjsv3H9DnbkhfYlhAVfgdV5NKoMeH7Zwv0zeXD1RgBmzOGjs
+         xZg0bNa8V9DCV1D77fUSyqGh3+zs2agY+7q5FF8O2f9tXa6SsIHX1eono4PzCH8+5mh4
+         NbfUhSTBuXv6GdiT8GaOvEDRd39qg0QKDrr3PS/b2SswF2h7f33+1JbY+XuuA8dAYzWh
+         aIoFpeoVwl9hatV7HvjIuDkZ1Fy+AgBxAyNPLU2cAdpKzUCo8hU4d/H/u7RrQjeMVJir
+         uK6mG07ZmPKfqulMCtev9f75JIn73OHoxQ+sFf0FfF5GzFQCQRT/3o1XZ0blU6XrHZSB
+         SjmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:content-transfer-encoding:date
+         :message-id:cc:subject:from:to:in-reply-to;
+        bh=0sU49Qn/ULUU8j1SeL39Iuenz7n14QMmEpvv6BRFE48=;
+        b=le3xoDGFs5Xxp5KJZRdxTmkhd5sM9U0ZOWgKOfqaMti41+w+L4dzO32sntpuwydfSa
+         CwmLiXAHIOJByVk+CnX4mMMzF033ZufAvlW5E3QAF0FwmtLRncuGWWheZQqB9yoxJz6g
+         YdXhKn0Gp7QmqKgunJ4G+CXW700SDNdNkHZpnU1j1BEohHMx8ObxsxOT2ydtK04OvvcF
+         QGl/0b6sJGYC41+fcbiwXcbAZ+DcbGmOXFWmqDTFcT6EBW3prWVK8rS6Bmk+175yHZzr
+         lWWePYrNXCsWoE33Wyak2GAdMktEawOdM6aP6RINxoHDJceNxZynyHE171pdL8Vn4no1
+         jzBQ==
+X-Gm-Message-State: AOAM533eAm3VX6shbe7qt5ilpJlXcSO5uc+ZYA55YJVIGfLKXx5TcVem
+        xqDgynYdQrDqrhqXQVmdRQmcqA==
+X-Google-Smtp-Source: ABdhPJzP6mkhIuV1yLeKOLlJouj/OJgm3LgLVbahYZyJgrA1mgTfai4dO7C860RHTP2kMmtBW82dqw==
+X-Received: by 2002:a17:906:e28a:b0:6d6:e2e9:d39d with SMTP id gg10-20020a170906e28a00b006d6e2e9d39dmr10848821ejb.2.1648206127884;
+        Fri, 25 Mar 2022 04:02:07 -0700 (PDT)
+Received: from localhost (144-178-202-138.static.ef-service.nl. [144.178.202.138])
+        by smtp.gmail.com with ESMTPSA id d4-20020a1709067a0400b006d6e3ca9f71sm2183995ejo.198.2022.03.25.04.02.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Mar 2022 04:02:07 -0700 (PDT)
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date:   Fri, 25 Mar 2022 12:02:06 +0100
+Message-Id: <CISWB5OO4TSD.1YIUVDSVYSIF0@otso>
+Cc:     <Luca.Boccassi@microsoft.com>, <darrick.wong@oracle.com>,
+        <dsterba@suse.com>, <hubcap@omnibond.com>, <jack@suse.cz>,
+        <jlayton@kernel.org>, <kernel-team@android.com>,
+        <linux-fsdevel@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-security-module@vger.kernel.org>,
+        <linux-unionfs@vger.kernel.org>, <paulmoore@microsoft.com>,
+        <salyzyn@android.com>, <sds@tycho.nsa.gov>,
+        <selinux@vger.kernel.org>
+Subject: Re: [PATCH v19 1/4] Add flags option to get xattr method paired to
+ __vfs_getxattr
+From:   "Luca Weiss" <luca.weiss@fairphone.com>
+To:     <dvander@google.com>
+In-Reply-To: <20211117015806.2192263-2-dvander@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Queued, thanks.
+Hi David,
 
-Paolo
+this patch doesn't compile with CONFIG_SECURITY=3Dn:
 
+./include/linux/security.h: In function 'security_inode_need_killpriv':
+./include/linux/security.h:893:40: error: passing argument 1 of 'cap_inode_=
+need_killpriv' from incompatible pointer type [-Werror=3Dincompatible-point=
+er-types]
+  893 |         return cap_inode_need_killpriv(dentry);
+      |                                        ^~~~~~
+      |                                        |
+      |                                        struct dentry *
+./include/linux/security.h:153:52: note: expected 'struct user_namespace *'=
+ but argument is of type 'struct dentry *'
+  153 | int cap_inode_need_killpriv(struct user_namespace *mnt_userns,
+      |                             ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
 
+I applied the patch on linux-next tag next-20220318, but the relevant part
+doesn't seem to have changed lately.
+
+Regards
+Luca
