@@ -2,81 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2823C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:52:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EBB0C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:52:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231901AbiCYTyK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:54:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34288 "EHLO
+        id S231872AbiCYTy2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:54:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232621AbiCYTxg (ORCPT
+        with ESMTP id S231754AbiCYTyQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:53:36 -0400
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69736266B58
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:40:14 -0700 (PDT)
-Received: by mail-oi1-x22c.google.com with SMTP id o64so9247357oib.7
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:40:14 -0700 (PDT)
+        Fri, 25 Mar 2022 15:54:16 -0400
+Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 289032325EA
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:41:31 -0700 (PDT)
+Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-de3f2a19c8so9121555fac.1
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:41:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:user-agent:references:in-reply-to:mime-version:date:message-id
          :subject:to:cc;
-        bh=0hR6detCmXtBfWRoT9BJ6sxe7MY2tS62yTtZv+WfRSk=;
-        b=Seytbq0ydpKuf4R/CyPUY/RawpIlqEaJ4Z0EZqfX6FmGs61zB80vlRBAsUDj1kurSS
-         kWxzjhd1LDWsx5tyTheiAPEzLqnhJHL+zL1NLYXJuC5XBF3HBRYm7mseDe7dao7SPQG7
-         jav5tOdvRThgw1uB1iC1x91aXdcyrIWWjnb9E=
+        bh=UsVgeYfaJ509Tslgy60qrERiqqOcqL3jk0p30JmJkWQ=;
+        b=hhlRnUQXbyBJmzhAL+CM/0K5cZ1aybx8S1kxzmMXQQ4jS6mL1MILd20jSy8DtFbZHZ
+         tuiUZm+wRRIEudV/r9pD63VU89MvND8veQkiyC4DYFenrNwPvhByBOwC13TA9CwbQoZ/
+         jGyLtzGYZlTMgGGCNq7KOzeYzg399O6i2BX+1n0HlxBLm5I1XYjCgzyXuCuVBqmvEyAP
+         Obn9n0SJjJ7Dlyj5c+00dybeH9tzrLGeCLK7O+mUw9yTJ/J9CxTNS1DxTor3+3TbHX21
+         6dvmswhw1vgSH8FA6KcEemRrApsTi9zOTOVWSQ5cLXC0uTq8h0Ji3+mG+HcpDEdXStN1
+         ZkBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=0hR6detCmXtBfWRoT9BJ6sxe7MY2tS62yTtZv+WfRSk=;
-        b=Z+1k8jhgjvq/yG5f3JYBqc2j0/LCqFegcWojWRCjFscSBCoayjcSfEYLIpPHZi+5X6
-         W0mrLEfa4EjZA1N6v+rmsMtf4w0+9UYYdWB8pcHdpNW+eP8bRLRxXJmjRWzv1mo7PVON
-         vsWP6yPOYdOSZXei8HN6fdYlyL1kL57LhRtrr6Gp9VFZ4504NO21iEsJRJ/NHOOOhG4i
-         xnJus4IZp5BlDXo1w33tNaAPCffkVB6ZZT9ygdCp9R3/yBSdZsOVrBg6FhYoskeywB96
-         ilxTUpBfPWN2uSu9LjsrC0zSuDGaEZxh5XB9dmRkRguPgo8ambfPKRf2xZMIUGv+V580
-         wxvA==
-X-Gm-Message-State: AOAM531n7dlYFY+xaazuWTe+kyNR99IXC+fcV3iTyjkajxHDP6blxpyK
-        3usrrXbNZQ6FmzFuJldiSFfJgvdGgkT29tOlSRqkNkHIZV8=
-X-Google-Smtp-Source: ABdhPJwbK62nqj0K16SlmWCuvK8uzSLq7hC1YqLJsKiKUskGxk5vQgX1QjEjgxJTRooFAFH89FdqEOTUmOxG2mp0o10=
-X-Received: by 2002:aca:bd41:0:b0:2ec:ff42:814f with SMTP id
- n62-20020acabd41000000b002ecff42814fmr5947337oif.63.1648230185963; Fri, 25
- Mar 2022 10:43:05 -0700 (PDT)
+        h=x-gm-message-state:from:user-agent:references:in-reply-to
+         :mime-version:date:message-id:subject:to:cc;
+        bh=UsVgeYfaJ509Tslgy60qrERiqqOcqL3jk0p30JmJkWQ=;
+        b=idQG2YX1FfI+3wTaerXxe2yW+JQa783OM515BWn+l238XoujHVdsQ5Fy5NR9kSKsYQ
+         j303y2ZDp3hA3hZGbr9+xkb12OpgH9VwnKaJeuDr55Z50qA9/UgJqN8K4R9OEhhHWFz6
+         eqks2PfDmY1Q2gtP6KwLrX9R6bxl3gFqvLkX27xUEJTYOuPgB3QajtQSGcU31ghsIcZP
+         bbsbt7DkyW5aKSUxaKpATCd6JgrP7RFJlZn9hOdO8h3vhVYbNzGW0sJeBY8RqIhIoxlY
+         GcXi6QcjBkgdqVKK5XQgKANTOiTOi1khgfXv5RfgrE8FdR/4Z4RSZEIHdc7dEWXXCEIH
+         dRHg==
+X-Gm-Message-State: AOAM531OQTVw/LN4R81qzG3MxRLNuQaPhmGh8bj7UKq/Ltj/Bsc89Jz+
+        goFopc9tjY9wvlv0wjcTOlVr9t+/G40ULg1HehCj6QbkFhA=
+X-Google-Smtp-Source: ABdhPJw5cZK8/9EAx8SjjCkfF2UirJgUYGr8gfKiuxQmwCyGvJA58RP/M318o7Lu6s72crly3nL6u8xwlk9WEs9kfFQ=
+X-Received: by 2002:a05:6870:d191:b0:dd:a91e:82dc with SMTP id
+ a17-20020a056870d19100b000dda91e82dcmr9542770oac.248.1648230822908; Fri, 25
+ Mar 2022 10:53:42 -0700 (PDT)
 Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Fri, 25 Mar 2022 12:43:05 -0500
+ HTTPREST; Fri, 25 Mar 2022 12:53:42 -0500
+From:   Guillaume Ranquet <granquet@baylibre.com>
+User-Agent: meli 0.7.2
+References: <20220325171511.23493-1-granquet@baylibre.com>
+In-Reply-To: <20220325171511.23493-1-granquet@baylibre.com>
 MIME-Version: 1.0
-In-Reply-To: <1648209491-30165-7-git-send-email-quic_c_skakit@quicinc.com>
-References: <1648209491-30165-1-git-send-email-quic_c_skakit@quicinc.com> <1648209491-30165-7-git-send-email-quic_c_skakit@quicinc.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Fri, 25 Mar 2022 12:43:05 -0500
-Message-ID: <CAE-0n50ApgiYbxHbU072s5-QLAmEppjDH9brKbfHja7hiue4xA@mail.gmail.com>
-Subject: Re: [PATCH V8 6/7] arm64: dts: qcom: pm8008-regulators: Add base dts
- file for pm8008 regulators
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Satya Priya <quic_c_skakit@quicinc.com>
-Cc:     Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Das Srinagesh <gurus@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_collinsd@quicinc.com,
-        quic_subbaram@quicinc.com, quic_jprakash@quicinc.com
+Date:   Fri, 25 Mar 2022 12:53:42 -0500
+Message-ID: <CABnWg9tJvCJrFCFR1Ax_M4gPaqhqS94kCkzmfb-naCh_S36vEg@mail.gmail.com>
+Subject: Re: [PATCH 00/22] drm/mediatek: Add mt8195 DisplayPort driver
+To:     angelogioacchino.delregno@collabora.com, chunkuang.hu@kernel.org,
+        p.zabel@pengutronix.de, airlied@linux.ie, daniel@ffwll.ch,
+        robh+dt@kernel.org, maarten.lankhorst@linux.intel.com,
+        mripard@kernel.org, tzimmermann@suse.de, matthias.bgg@gmail.com,
+        chunfeng.yun@mediatek.com, kishon@ti.com, vkoul@kernel.org,
+        deller@gmx.de, ck.hu@mediatek.com, jitao.shi@mediatek.com
+Cc:     dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-phy@lists.infradead.org, linux-fbdev@vger.kernel.org,
+        markyacoub@google.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Satya Priya (2022-03-25 04:58:10)
-> Add base DTS file for pm8008 regulators with 7 ldo nodes.
+On Fri, 25 Mar 2022 18:14, Guillaume Ranquet <granquet@baylibre.com> wrote:
+>this series is built around the DisplayPort driver. The dpi/dpintf
+>driver and the added helper functions are required for the DisplayPort
+>driver to work.
 >
-> Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
-> ---
-> Changes in V8:
->  - Previously added pm8008 dtsi file is split into 2 files, one for infra
->    and other for regulators.
+>This v9 is not quite ready yet, as project constraints forces me to
+>publish v9 this week, I'm sorry if it's not standard practice.
+>
+>Moreover, it is still un-tested on a recent kernel.
+>The integration kernel we are using is still based on 5.10... but we
+>are actively working on bringing up a mt8195 integration branch on 5.17.
+>The patches have been rebased on top of next-20220301 and have been
+>tested to build sucessfully (no functional testing).
+>
+>Changes from v8:
+>- The DP-Phy now has its own dt-bindings and now shares a regmap using the
+>  syscon facility with the DP driver.
+>- hot plug detection has been removed from the Embedded Display Port.
+>  patch and moved to the patch adding External Display Port support.
+>- started working on better error handling for the mtk_dp driver.
+>- rebased on linux-next.
+>- removal of tvd pll clocks re-introduced by mistake.
+>- various coding style fixes.
+>
+>Things that are in my todolist for v10:
+>- fixing the train_handler in the mtk_dp driver, as I haven't been able
+>  to reproduce locally (hopefully migrating to running the tests on a
+>  more recent kernel will help)
+>- explaining the various sleep/delays introduced in the drivers
+>- explaining some of the differences between mt8195 and "legacy"
+>- retrieve CK/DE support from panel driver instead of hardcoding it into
+>  the dpi driver.
+>- better error handling/reporting in mtk_dp
+>- look into re-implementing mtk_dp_aux_transfer() using drm_dp_dpcd_read and
+>  drm_dp_dpcd_write as suggested by Rex.
+>
+>Older revisions:
+>RFC - https://lore.kernel.org/linux-mediatek/20210816192523.1739365-1-msp@baylibre.com/
+>v1  - https://lore.kernel.org/linux-mediatek/20210906193529.718845-1-msp@baylibre.com/
+>v2  - https://lore.kernel.org/linux-mediatek/20210920084424.231825-1-msp@baylibre.com/
+>v3  - https://lore.kernel.org/linux-mediatek/20211001094443.2770169-1-msp@baylibre.com/
+>v4  - https://lore.kernel.org/linux-mediatek/20211011094624.3416029-1-msp@baylibre.com/
+>v5  - https://lore.kernel.org/all/20211021092707.3562523-1-msp@baylibre.com/
+>v6  - https://lore.kernel.org/linux-mediatek/20211110130623.20553-1-granquet@baylibre.com/
+>v7  - https://lore.kernel.org/linux-mediatek/20211217150854.2081-1-granquet@baylibre.com/
+>v8  - https://lore.kernel.org/linux-mediatek/20220218145437.18563-1-granquet@baylibre.com/
+>
+>Functional dependencies are:
+>- Add Mediatek Soc DRM (vdosys0) support for mt8195
+>  https://lore.kernel.org/all/20211026155911.17651-1-jason-jh.lin@mediatek.com/
+>- Add MediaTek SoC DRM (vdosys1) support for mt8195
+>  https://lore.kernel.org/all/20211029075203.17093-1-nancy.lin@mediatek.com/
+>
+>Guillaume Ranquet (15):
+>  dt-bindings: mediatek,dp_phy: Add Display Port PHY binding
+>  drm/edid: Convert cea_sad helper struct to kernelDoc
+>  drm/edid: Add cea_sad helpers for freq/length
+>  drm/mediatek: dpi: move dpi limits to SoC config
+>  drm/mediatek: dpi: implement a CK/DE pol toggle in SoC config
+>  drm/mediatek: dpi: implement a swap_input toggle in SoC config
+>  drm/mediatek: dpi: move dimension mask to SoC config
+>  drm/mediatek: dpi: move hvsize_mask to SoC config
+>  drm/mediatek: dpi: move swap_shift to SoC config
+>  drm/mediatek: dpi: move the yuv422_en_bit to SoC config
+>  drm/mediatek: dpi: move the csc_enable bit to SoC config
+>  drm/mediatek: dpi: Add dpintf support
+>  drm/meditek: dpi: Add matrix_sel helper
+>  drm/mediatek: Add mt8195 External DisplayPort support
+>  drm/mediatek: DP audio support for mt8195
+>
+>Jitao Shi (2):
+>  drm/mediatek: add hpd debounce
+>  drm/mediatek: change the aux retries times when receiving AUX_DEFER
+>
+>Markus Schneider-Pargmann (5):
+>  dt-bindings: mediatek,dpi: Add DP_INTF compatible
+>  dt-bindings: mediatek,dp: Add Display Port binding
+>  video/hdmi: Add audio_infoframe packing for DP
+>  phy: phy-mtk-dp: Add driver for DP phy
+>  drm/mediatek: Add mt8195 Embedded DisplayPort driver
+>
+> .../display/mediatek/mediatek,dp.yaml         |   97 +
+> .../display/mediatek/mediatek,dpi.yaml        |   11 +-
+> .../bindings/phy/mediatek,dp-phy.yaml         |   43 +
+> MAINTAINERS                                   |    1 +
+> drivers/gpu/drm/drm_edid.c                    |   74 +
+> drivers/gpu/drm/mediatek/Kconfig              |    8 +
+> drivers/gpu/drm/mediatek/Makefile             |    2 +
+> drivers/gpu/drm/mediatek/mtk_dp.c             | 3204 +++++++++++++++++
+> drivers/gpu/drm/mediatek/mtk_dp_reg.h         |  568 +++
+> drivers/gpu/drm/mediatek/mtk_dpi.c            |  222 +-
+> drivers/gpu/drm/mediatek/mtk_dpi_regs.h       |   38 +
+> drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c   |    8 +
+> drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h   |    1 +
+> drivers/gpu/drm/mediatek/mtk_drm_drv.c        |    6 +-
+> drivers/gpu/drm/mediatek/mtk_drm_drv.h        |    1 +
+> drivers/phy/mediatek/Kconfig                  |    8 +
+> drivers/phy/mediatek/Makefile                 |    1 +
+> drivers/phy/mediatek/phy-mtk-dp.c             |  202 ++
+> drivers/video/hdmi.c                          |   82 +-
+> include/drm/dp/drm_dp_helper.h                |    2 +
+> include/drm/drm_edid.h                        |   25 +-
+> include/linux/hdmi.h                          |    7 +-
+> include/linux/soc/mediatek/mtk-mmsys.h        |    3 +-
+> 23 files changed, 4541 insertions(+), 73 deletions(-)
+> create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,dp.yaml
+> create mode 100644 Documentation/devicetree/bindings/phy/mediatek,dp-phy.yaml
+> create mode 100644 drivers/gpu/drm/mediatek/mtk_dp.c
+> create mode 100644 drivers/gpu/drm/mediatek/mtk_dp_reg.h
+> create mode 100644 drivers/phy/mediatek/phy-mtk-dp.c
+>
+>--
+>2.34.1
+>
 
-Does pm8008 come in one package that gets soldered down on the board? If
-so, this should be one file instead of two, i.e. pm8008.dtsi. We don't
-make a -regulators dtsi file for other pmics.
+This is actually v9.
+Please ignore these as I will resend the patches properly tagged as v9.
+
+Sorry for the inconveniance,
+Guillaume.
