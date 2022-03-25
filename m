@@ -2,47 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37BBAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:19:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75B5FC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:19:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376477AbiCYPVQ (ORCPT
+        id S1376491AbiCYPVT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:21:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44618 "EHLO
+        Fri, 25 Mar 2022 11:21:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376270AbiCYPMf (ORCPT
+        with ESMTP id S241212AbiCYPSj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:12:35 -0400
+        Fri, 25 Mar 2022 11:18:39 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 069EB60A80;
-        Fri, 25 Mar 2022 08:09:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 650CBDCE0A;
+        Fri, 25 Mar 2022 08:14:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9871AB82902;
-        Fri, 25 Mar 2022 15:09:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0330C340EE;
-        Fri, 25 Mar 2022 15:09:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2080DB828FF;
+        Fri, 25 Mar 2022 15:14:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B466C340E9;
+        Fri, 25 Mar 2022 15:14:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648220949;
-        bh=x4K2PXqXinFMwHW5hfD/9uxSzwlabe/0LDz0rUIMlks=;
+        s=korg; t=1648221281;
+        bh=HpMrrT0iEqnIkxkuVO3eAOfoFuIkIZpb3NvXqQMPGJE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bPYL+LLgyGj6SIkD8nDoSGpkscf7SdtX9HDexNRVJUcG7uCRYzSR8W9BwOOhMTF+j
-         2ueYKadE2UOIM5ufgwzLSezFkGtjDohPLs83FB/rBYXOy9jpf2Dy6FAWCXBvexsgvh
-         7zI7tpxcQAEY0jrwqh74c/dsIJK22kat4smu1qAA=
+        b=JmdpcYmyce3El+X4IbpcLyVQcG++biL38eRcfNH5LMcLfR+DUwdCy0PqNVBTPr241
+         Hblm/Hg81PoXYaO2h6i0zcoPEPk13aguTqBZRsx7RTYLAx2PA6IoAeOMDl2jYruyq6
+         VPr0UcjtDxOxmd0gQvYdAm/Jvt6HfL6yGkcbKGQE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Reza Jahanbakhshi <reza.jahanbakhshi@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.10 14/38] ALSA: usb-audio: add mapping for new Corsair Virtuoso SE
-Date:   Fri, 25 Mar 2022 16:04:58 +0100
-Message-Id: <20220325150420.169232960@linuxfoundation.org>
+        stable@vger.kernel.org, Jordy Zomer <jordy@pwning.systems>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Denis Efremov <denis.e.efremov@oracle.com>
+Subject: [PATCH 5.15 01/37] nfc: st21nfca: Fix potential buffer overflows in EVT_TRANSACTION
+Date:   Fri, 25 Mar 2022 16:14:02 +0100
+Message-Id: <20220325150419.977239798@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220325150419.757836392@linuxfoundation.org>
-References: <20220325150419.757836392@linuxfoundation.org>
+In-Reply-To: <20220325150419.931802116@linuxfoundation.org>
+References: <20220325150419.931802116@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,49 +53,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Reza Jahanbakhshi <reza.jahanbakhshi@gmail.com>
+From: Jordy Zomer <jordy@pwning.systems>
 
-commit cd94df1795418056a19ff4cb44eadfc18ac99a57 upstream.
+commit 4fbcc1a4cb20fe26ad0225679c536c80f1648221 upstream.
 
-New device id for Corsair Virtuoso SE RGB Wireless that currently is not
-in the mixer_map. This entry in the mixer_map is necessary in order to
-label its mixer appropriately and allow userspace to pick the correct
-volume controls. For instance, my own Corsair Virtuoso SE RGB Wireless
-headset has this new ID and consequently, the sidetone and volume are not
- working correctly without this change.
-> sudo lsusb -v | grep -i corsair
-Bus 007 Device 011: ID 1b1c:0a40 Corsair CORSAIR VIRTUOSO SE Wireless Gam
-  idVendor           0x1b1c Corsair
-  iManufacturer           1 Corsair
-  iProduct                2 CORSAIR VIRTUOSO SE Wireless Gaming Headset
+It appears that there are some buffer overflows in EVT_TRANSACTION.
+This happens because the length parameters that are passed to memcpy
+come directly from skb->data and are not guarded in any way.
 
-Signed-off-by: Reza Jahanbakhshi <reza.jahanbakhshi@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220304212303.195949-1-reza.jahanbakhshi@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Jordy Zomer <jordy@pwning.systems>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Denis Efremov <denis.e.efremov@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/usb/mixer_maps.c |   10 ++++++++++
+ drivers/nfc/st21nfca/se.c |   10 ++++++++++
  1 file changed, 10 insertions(+)
 
---- a/sound/usb/mixer_maps.c
-+++ b/sound/usb/mixer_maps.c
-@@ -543,6 +543,16 @@ static const struct usbmix_ctl_map usbmi
- 		.map = scms_usb3318_map,
- 	},
- 	{
-+		/* Corsair Virtuoso SE Latest (wired mode) */
-+		.id = USB_ID(0x1b1c, 0x0a3f),
-+		.map = corsair_virtuoso_map,
-+	},
-+	{
-+		/* Corsair Virtuoso SE Latest (wireless mode) */
-+		.id = USB_ID(0x1b1c, 0x0a40),
-+		.map = corsair_virtuoso_map,
-+	},
-+	{
- 		.id = USB_ID(0x30be, 0x0101), /*  Schiit Hel */
- 		.ignore_ctl_error = 1,
- 	},
+--- a/drivers/nfc/st21nfca/se.c
++++ b/drivers/nfc/st21nfca/se.c
+@@ -320,6 +320,11 @@ int st21nfca_connectivity_event_received
+ 			return -ENOMEM;
+ 
+ 		transaction->aid_len = skb->data[1];
++
++		/* Checking if the length of the AID is valid */
++		if (transaction->aid_len > sizeof(transaction->aid))
++			return -EINVAL;
++
+ 		memcpy(transaction->aid, &skb->data[2],
+ 		       transaction->aid_len);
+ 
+@@ -329,6 +334,11 @@ int st21nfca_connectivity_event_received
+ 			return -EPROTO;
+ 
+ 		transaction->params_len = skb->data[transaction->aid_len + 3];
++
++		/* Total size is allocated (skb->len - 2) minus fixed array members */
++		if (transaction->params_len > ((skb->len - 2) - sizeof(struct nfc_evt_transaction)))
++			return -EINVAL;
++
+ 		memcpy(transaction->params, skb->data +
+ 		       transaction->aid_len + 4, transaction->params_len);
+ 
 
 
