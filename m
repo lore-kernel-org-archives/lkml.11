@@ -2,81 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ACC0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 10:35:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74F05C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 10:35:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358908AbiCYKgb (ORCPT
+        id S1358915AbiCYKhP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 06:36:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44660 "EHLO
+        Fri, 25 Mar 2022 06:37:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356758AbiCYKg3 (ORCPT
+        with ESMTP id S244163AbiCYKhK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 06:36:29 -0400
-Received: from out162-62-57-137.mail.qq.com (out162-62-57-137.mail.qq.com [162.62.57.137])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A51AFB6D3C
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 03:34:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1648204489;
-        bh=r7MTF35xCe4CtzCMUlH4AuHMMOLVBgWolF8Nu+I39t8=;
-        h=From:To:Cc:Subject:Date;
-        b=e5FazAwFDmuHogT0CQVByFlmkgCsCWPZOYvLaqVkODR8iSQM+ZIW+uWrPh07cMBdx
-         AhuJQm/5tZyIIaG/zy14Zf5bkR8yRmz3tqmyo1pA22krd2DY/HHdQqwNGe3SREpJ1V
-         iK792qqeD4GB2gG4PeupWvBhtbHu5qzljXm7B+KA=
-Received: from localhost.localdomain ([218.197.153.188])
-        by newxmesmtplogicsvrszc11.qq.com (NewEsmtp) with SMTP
-        id 6DFA0EBB; Fri, 25 Mar 2022 18:27:31 +0800
-X-QQ-mid: xmsmtpt1648204051tp1m08xmo
-Message-ID: <tencent_C0622B5C4209E83F1C6495D926979F239D05@qq.com>
-X-QQ-XMAILINFO: OOWntbL6xj16UYjmDCYdk3zdV6AkUlVJYVXvFXwyqwiwhHIj+QucYg/rjcEuOt
-         YO7j/eprBmyc4h2c06wgdcYMWSep4SXwq7n+QGxdcp6ICsFbd9yTBd2y9WzUKB2YwYvs/h8Mu+NF
-         3O/awHA4MLl1CeBeM8HFfgPZWH4/vqzvwiDrMgaZ1iu7C+gGmhfen9xCWY78+E9vsdumUiwchXp4
-         mJ73wtlnQeZQVQvB0aU6xAs+7niZUpJswpFFx/U+6co38r4urXkGPe7qIJSEtptS8cCk3XI76bTp
-         GBE+6cG8pXUfIhIIY9a7UwUFabdQ/611P/rXY4ZbxNXiy8imWSu0q73DKFp1Msl/Pa6B+f5RKrac
-         sSm5Px8sotmHtHcqLRGQL365aXb8G3bBusnZsNdweoK6RnKfba5j1ExXohhWM3FWaZVb01iUwIjO
-         pT0uKiE2iQVbdhmVfWnzg2WAg+6AXI+v+dsz4HXd4ir0CpdQyG4Mib4UAQ2w64jYH+G2tUmzeiO9
-         9N+Ovt6E8HcR0Tgr/s+oXNSDCJh9CgsVSGZnTQUqi93ePXrydTOfbWsoZ0bm/3w7cdnlXn6pNOF9
-         40+wNNghlHZdV0tlfWByU4qL02Q62qlEokvhYrJA08qEVbWsPgtdDnFlY2pEOyogx28ge0OdJ2+m
-         uVRokNyTXZOSXJFejgBRQH3MwBIxrMvlEuN81q5FUuHsBCfxmqKB3NrQcjYDGNjsWOA7q/UFbbU8
-         0RgF7ducb3U9hMY0DCyV5rs3grDP+0m82+2Fxk+Bgc47ZWsWcTGnKI23eMDlfDInZFmuP8CXDGfo
-         3F5LJfdBoqKuPXyuapA6uM02us/UpXvP6ex3EJV25oaVzPNcIvty5n3vPl95GMhOiXT+jqXPdXYX
-         uhv4HuJcsBQ3Sq8KD4AmLy27zc0kW4D6QVRKYYc1Ma8FrYOrL8GxLkNokTZ7YcnIA0Tdh2vAxPmH
-         erom5GfnM=
-From:   xkernel.wang@foxmail.com
-To:     mturquette@baylibre.com, sboyd@kernel.org
-Cc:     linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xiaoke Wang <xkernel.wang@foxmail.com>
-Subject: [PATCH] clk: pxa: add a check for the return value of kzalloc()
-Date:   Fri, 25 Mar 2022 18:27:20 +0800
-X-OQ-MSGID: <20220325102720.4155-1-xkernel.wang@foxmail.com>
+        Fri, 25 Mar 2022 06:37:10 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 87CBBB6D33;
+        Fri, 25 Mar 2022 03:35:36 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 382B2D6E;
+        Fri, 25 Mar 2022 03:35:36 -0700 (PDT)
+Received: from e120937-lin (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AA3ED3F73D;
+        Fri, 25 Mar 2022 03:35:34 -0700 (PDT)
+Date:   Fri, 25 Mar 2022 10:35:28 +0000
+From:   Cristian Marussi <cristian.marussi@arm.com>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     David Collins <quic_collinsd@quicinc.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        Subbaraman Narayanamurthy <quic_subbaram@quicinc.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Mike Tipton <quic_mdtipton@quicinc.com>
+Subject: Re: [PATCH v2 0/2] regulator: scmi: add support for registering SCMI
+ regulators by name
+Message-ID: <Yj2a8OqLxmLYpOGT@e120937-lin>
+References: <cover.1647909090.git.quic_collinsd@quicinc.com>
+ <Yjm1wpcMZsZJJCuy@bogus>
+ <eb03037b-e7c2-ea23-0bdb-27924ed54fa7@quicinc.com>
+ <Yjyo+Xk0txZs4T/Z@sirena.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yjyo+Xk0txZs4T/Z@sirena.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+On Thu, Mar 24, 2022 at 05:23:05PM +0000, Mark Brown wrote:
+> On Tue, Mar 22, 2022 at 06:12:33PM -0700, David Collins wrote:
+> 
+> > Another problem is that, as with regulators, ID numbers could
+> > unknowingly get out of sync between the platform and the agent.  Using
+> > clock domain names for referencing fixes both issues.  This can be
+> 
+> This is just saying that the hard coded IDs that the firmware and kernel
+> use to communicate can get out of sync which is true no matter if those
+> IDs are strings or if they're numerical, either way it's an ABI which
+> can be broken.
+> 
+> > > If the IDs are correct like the names, it is guaranteed. I see this
+> > > ID vs name is more for some maintenance convenience because somewhere
+> > > something else needs to changes or moved away from existing way of
+> > > maintenance.
+> 
+> > How do you quantify an ID number to physical regulator mapping as
+> > "correct"?  What happens if the mapping must be changed on the SCMI
+> > platform side (e.g. a PMIC was added or removed, or the order that
+> > regulators are listed in needs to change)?  If the SCMI agent is blindly
+> 
+> The whole point with the numbers being an ABI is that things must never
+> be renumbered, just as if names are used the names can't be changed.  If
+> the numbering is changing that just sounds like bugs on the platform
+> side.  There's an implicit assumption in what you've written above that
+> implementation details of the firmware should affect the IDs presented
+> through SCMI which simply shouldn't be true, and indeed if the firmware
+> can assign fixed strings it can just as well assign fixed numbers.
 
-kzalloc() is a memory allocation function which can return NULL when
-some internal memory errors happen. So it is better to check it to
-prevent potential wrong memory access.
+Could not agree more with Mark here...I think all the problem boils down
+really to reduce maintenance burdain on the backend SCMI server as Sudeep
+hinted previusly in this thread, which I am not saying is not a valid
+concern, but maybe this is not the best way to address it.
 
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
----
- drivers/clk/pxa/clk-pxa.c | 2 ++
- 1 file changed, 2 insertions(+)
+My understanding, correct me if I'm wrong, is that the scenario here is one
+of a backend SCMI server fw that indeed potentially manages a greater number
+of resources (regulators,clocks...etc) than the ones effectively assigned to
+a single OSPM agent (real or virtual), so that you have, say, 100 resources
+and you are going to assign a different set of, say, 10 resources (maybe
+overlapping) to each different OSPM SCMI agent running in a guest: as a
+consequence you want to avoid to remap on the backend at build or
+run-time this different set of 10 resources into the 0-9 set, but instead
+serve these 10 different resources IDentified as they are in the backend
+(say Guest1: 0-9 G2:05-14 G3:1,2,20,24-30) and then match by name in
+the guest so that, say, "regulator_MAIN" is the well known regulator
+for all Guests but really it could be ID 0 or 05 or 20 in the real
+physical backend depending on which OSPM is askng (and similar kind of
+issues in a non virtualized platform which instead has to share the same
+FW between different versions of the HW)
 
-diff --git a/drivers/clk/pxa/clk-pxa.c b/drivers/clk/pxa/clk-pxa.c
-index cfc79f9..d0df104 100644
---- a/drivers/clk/pxa/clk-pxa.c
-+++ b/drivers/clk/pxa/clk-pxa.c
-@@ -102,6 +102,8 @@ int __init clk_pxa_cken_init(const struct desc_clk_cken *clks, int nb_clks)
- 
- 	for (i = 0; i < nb_clks; i++) {
- 		pxa_clk = kzalloc(sizeof(*pxa_clk), GFP_KERNEL);
-+		if (!pxa_clk)
-+			continue;
- 		pxa_clk->is_in_low_power = clks[i].is_in_low_power;
- 		pxa_clk->lp = clks[i].lp;
- 		pxa_clk->hp = clks[i].hp;
--- 
+Is my understanding correct ?
+
+Beside these concerns expressed by Sudeep and Mark, talking specifically
+about the series, I see that in V2 you introduce a common binding with
+a very general 'scmi-domain-name' to be used in the above scenario with
+regulators, but then you also talk about the possible need to employ this
+scheme with other resources (clocks), so I was wondering, if this is the
+case and if this can fly despite the above concerns,  if it was not better
+to address this in a more general way at the SCMI core level, introducing
+some sort of common method to be able to query a resource by name from
+any SCMI driver no matter which protocol is used (perf/voltage/clock),
+like as an example:
+
+ void *.get_resource_by_node(struct scmi_protocol_handle *ph,
+ 			     struct device_node *np);
+
+used in scmi-regulators to retrieve a voltage domain info by number OR
+name transparently as:
+
+    vinfo = handle->get_resource_by_node(ph, np)
+
+so that all the logic you added in scmi-regulator to search DT and map
+resources can be buried in the core SCMI and shared between all drivers
+that can optionally use it.
+
+...this will require a bit of more work in the SCMI core on my side of
+course :D ...
+
+Thanks,
+Cristian
