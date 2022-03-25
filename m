@@ -2,71 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE2FBC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 17:18:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CE0CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 17:19:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233119AbiCYRT6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 13:19:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39226 "EHLO
+        id S239423AbiCYRUw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 13:20:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239782AbiCYRTs (ORCPT
+        with ESMTP id S234622AbiCYRUs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 13:19:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81DCFEACAC;
-        Fri, 25 Mar 2022 10:18:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 235A6B82989;
-        Fri, 25 Mar 2022 17:18:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E78C6C36AE5;
-        Fri, 25 Mar 2022 17:18:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648228683;
-        bh=J5SHTUx7HbCLDFysMvr2N/lRGQ6+lBAK1iOylvgyXR4=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=q9Fe3+Cw29OGNQviwwcD7/zd1KgnQtvZzaMhfueqABLsz0WEVDM0Hc4z/c+aOIq6V
-         sQa5cBfdri9hNYGU4GaWWRCwM9j4CyTKFc79IsBZPfW4OCEuUkEqsqDKkCyI4WPncW
-         vMFYsug00KJrWLw5WrEhnFhQp+6+kVe1jcDcNmLi7D8Cnx+oWfdfNgV1amEuxFmU+W
-         Q3km4MpUxjoS/g+LEOFV9XRY2Ywqs9ekKZH2mD6UjyPOGM+YpXh/MIi1zPiUpQLxD8
-         3WA13qpuusCUdijBtfWN1mWF2c7VDZvo0J2gXezHfab3V+/hfLF1WZ1n3fEhTBdWBo
-         /+xORhphKcf3w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D4338E6BBCA;
-        Fri, 25 Mar 2022 17:18:03 +0000 (UTC)
-Subject: Re: [GIT PULL] s390 patches for the 5.18 merge window
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <your-ad-here.call-01648224608-ext-2557@work.hours>
-References: <your-ad-here.call-01648224608-ext-2557@work.hours>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <your-ad-here.call-01648224608-ext-2557@work.hours>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/s390/linux.git tags/s390-5.18-1
-X-PR-Tracked-Commit-Id: c65f677b62d6180cc174e06f953f7fe860adf6d1
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: d710d370c4911e83da5d2bc43d4a2c3b56bd27e7
-Message-Id: <164822868386.13188.3044651117362946813.pr-tracker-bot@kernel.org>
-Date:   Fri, 25 Mar 2022 17:18:03 +0000
-To:     Vasily Gorbik <gor@linux.ibm.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
+        Fri, 25 Mar 2022 13:20:48 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6DC4ECC73
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 10:19:07 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id i67-20020a1c3b46000000b0038ce25c870dso1296565wma.1
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 10:19:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=FaQcjw0Oe/ViCTTuFvcZ5DbpUtBdonZ5NoR4+x/b/mM=;
+        b=q02Yc/wGGHipHe+rqcIDczhkFTYBkCXNRcjEaizSrgSJSQk0FcBIVTvhOBAQ+15RPF
+         15EnZCNGxO/rh/t5Bptvfr1UKzXfH3o68t/uFyTZbvYxkGCMctksAnUHZdxSj6Ssx5sb
+         ZsWpd8V9SvZbYNVChxVyeCUJ1TvEnvNTUnKALgOwqoqKibmVvTN23VqehQN+Rnws1taU
+         e6bjFfjYSBVPOjRfsB/M7W8aQ1HW6ebobxCF4cGm+oqbJb7cgl9u0ZJRn9I4Hx3sQou+
+         pxi5mHjGkSf3wzIrzRLNklRbUzIyhq4YyxCGLnejv93i9TXyu3b5oP/AMswNQWByss5V
+         sCOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=FaQcjw0Oe/ViCTTuFvcZ5DbpUtBdonZ5NoR4+x/b/mM=;
+        b=ylJFYZ1rILshXkmGrqP3dLA5UDhR6Ne06MSPO6wytJZaQHRrGo6GEpG/AZ14l60mVp
+         P3qpbZkm5aiDnF1nOmrd0y8Dq3gNWAbIHLhjGZDB/9qwyZKS7OXY7+xDuS/+FkpYEJwo
+         ANEdr7OqyAKMn+sZBn/ZyTbQz0FjVhTVHEc7ezq9W7lC63+/JnsEM/iI8rpuVcc8Jn7m
+         4jUMnDjNXuIH2SlAmsG/jlFkY+eL6L1UWi3z4SRQyouiexxHFVkO2XTM6UPWQ+gDYTKR
+         2XZupa8x0p2h9Icbqez4vih5n8eiFLl5i/VEYeMz8PhBqbjTiRPRFeeGuw3WdJZ4kUIJ
+         Ikvg==
+X-Gm-Message-State: AOAM531q7aqbmsmARLTcYd94ARTIuGczSqDGLuEbyva6qFtm8JX/zE88
+        fvveAAdQ9qKkpKzIUb3WMbSipg==
+X-Google-Smtp-Source: ABdhPJwePYYbDEL3jskId8G6Vh/wDKonckD8/zRMt2PuaJN41Er7Io1HePBcu1Tfj+Zb+ttXKPbZcw==
+X-Received: by 2002:a05:600c:3ac7:b0:38b:f9c6:27b8 with SMTP id d7-20020a05600c3ac700b0038bf9c627b8mr10822009wms.75.1648228630495;
+        Fri, 25 Mar 2022 10:17:10 -0700 (PDT)
+Received: from localhost.localdomain (2a02-8440-6240-cc41-3074-96af-9642-0003.rev.sfr.net. [2a02:8440:6240:cc41:3074:96af:9642:3])
+        by smtp.gmail.com with ESMTPSA id p16-20020a5d6390000000b00203ffebddf3sm7547464wru.99.2022.03.25.10.17.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Mar 2022 10:17:10 -0700 (PDT)
+From:   Guillaume Ranquet <granquet@baylibre.com>
+To:     chunkuang.hu@kernel.org, p.zabel@pengutronix.de, airlied@linux.ie,
+        daniel@ffwll.ch, robh+dt@kernel.org,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, matthias.bgg@gmail.com,
+        chunfeng.yun@mediatek.com, kishon@ti.com, vkoul@kernel.org,
+        deller@gmx.de, ck.hu@mediatek.com, jitao.shi@mediatek.com,
+        angelogioacchino.delregno@collabora.com
+Cc:     dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-phy@lists.infradead.org, linux-fbdev@vger.kernel.org,
+        markyacoub@google.com
+Subject: [PATCH 13/22] drm/mediatek: dpi: move the yuv422_en_bit to SoC config
+Date:   Fri, 25 Mar 2022 18:15:02 +0100
+Message-Id: <20220325171511.23493-14-granquet@baylibre.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220325171511.23493-1-granquet@baylibre.com>
+References: <20220325171511.23493-1-granquet@baylibre.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 25 Mar 2022 17:10:08 +0100:
+Add flexibility by moving the yuv422 en bit to SoC specific config
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/s390/linux.git tags/s390-5.18-1
+Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ drivers/gpu/drm/mediatek/mtk_dpi.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/d710d370c4911e83da5d2bc43d4a2c3b56bd27e7
-
-Thank you!
-
+diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
+index 6d4d8c6ec47d..40254cd9d168 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dpi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+@@ -132,6 +132,7 @@ struct mtk_dpi_conf {
+ 	/* HSIZE and VSIZE mask (no shift) */
+ 	u32 hvsize_mask;
+ 	u32 channel_swap_shift;
++	u32 yuv422_en_bit;
+ 	const struct mtk_dpi_yc_limit *limit;
+ };
+ 
+@@ -356,7 +357,8 @@ static void mtk_dpi_config_channel_swap(struct mtk_dpi *dpi,
+ 
+ static void mtk_dpi_config_yuv422_enable(struct mtk_dpi *dpi, bool enable)
+ {
+-	mtk_dpi_mask(dpi, DPI_CON, enable ? YUV422_EN : 0, YUV422_EN);
++	mtk_dpi_mask(dpi, DPI_CON, enable ? dpi->conf->yuv422_en_bit : 0,
++		     dpi->conf->yuv422_en_bit);
+ }
+ 
+ static void mtk_dpi_config_csc_enable(struct mtk_dpi *dpi, bool enable)
+@@ -824,6 +826,7 @@ static const struct mtk_dpi_conf mt8173_conf = {
+ 	.dimension_mask = HPW_MASK,
+ 	.hvsize_mask = HSIZE_MASK,
+ 	.channel_swap_shift = CH_SWAP,
++	.yuv422_en_bit = YUV422_EN,
+ 	.limit = &mtk_dpi_limit,
+ };
+ 
+@@ -839,6 +842,7 @@ static const struct mtk_dpi_conf mt2701_conf = {
+ 	.dimension_mask = HPW_MASK,
+ 	.hvsize_mask = HSIZE_MASK,
+ 	.channel_swap_shift = CH_SWAP,
++	.yuv422_en_bit = YUV422_EN,
+ 	.limit = &mtk_dpi_limit,
+ };
+ 
+@@ -853,6 +857,7 @@ static const struct mtk_dpi_conf mt8183_conf = {
+ 	.dimension_mask = HPW_MASK,
+ 	.hvsize_mask = HSIZE_MASK,
+ 	.channel_swap_shift = CH_SWAP,
++	.yuv422_en_bit = YUV422_EN,
+ 	.limit = &mtk_dpi_limit,
+ };
+ 
+@@ -867,6 +872,7 @@ static const struct mtk_dpi_conf mt8192_conf = {
+ 	.dimension_mask = HPW_MASK,
+ 	.hvsize_mask = HSIZE_MASK,
+ 	.channel_swap_shift = CH_SWAP,
++	.yuv422_en_bit = YUV422_EN,
+ 	.limit = &mtk_dpi_limit,
+ };
+ 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.34.1
+
