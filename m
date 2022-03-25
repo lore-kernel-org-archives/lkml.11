@@ -2,101 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C661DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:42:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 752EAC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:42:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230306AbiCYToX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:44:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42416 "EHLO
+        id S231254AbiCYTo2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:44:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232262AbiCYTne (ORCPT
+        with ESMTP id S231640AbiCYTnL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:43:34 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DF79223209;
-        Fri, 25 Mar 2022 12:14:31 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1648235669;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=HY7hmvosRsrWcoJ7IfSk5DODxbeSrNZv4cuKe9J3RJ8=;
-        b=baJT4Mi746IscqfQX5IvSvx5jV2kXy13AhZA1/bT7pbmjaNalkX7SeeKIN+931mPdTUNJj
-        ceRZWeb/xtwGe9eeCxxdz9jwWOilAPaptfHPxEPlGZwVxN1Y9gbka87tlYPPC3dJGzNpbD
-        uqcIqaIPEkRnR4iMovDQYb0UX+wZXijhqXJTxHuxcbNFZ+C7N8q0Lj6iRRAg1p42zOzF42
-        9BA3kiEtJTgEBol/ak22g7XIsigCBo7vhQaGiBRRyHJ5iWHWScWF+Ld1JPJ3wVbF04FcpQ
-        JnpO/IJorxxLrDafBHIxh6DeaPgmlU3Fxlr+ODo5adeqLuOfuE9Dg6U7cZXv+w==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1648235669;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=HY7hmvosRsrWcoJ7IfSk5DODxbeSrNZv4cuKe9J3RJ8=;
-        b=1bGtsbx48IfJh0tyu9AqnQ3hZYbnfn1sHjxW9kvDApf/N098cIou1RZ1NHFEOExFKzVxWv
-        qNowS2+WL2A//SAg==
-To:     kernel test robot <oliver.sang@intel.com>,
-        Artem Savkov <asavkov@redhat.com>
-Cc:     0day robot <lkp@intel.com>, Josh Poimboeuf <jpoimboe@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
-        netdev@vger.kernel.org, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        Artem Savkov <asavkov@redhat.com>
-Subject: Re: [timer]  d41e0719d5:
- UBSAN:shift-out-of-bounds_in_lib/flex_proportions.c
-In-Reply-To: <20220325073827.GB8478@xsang-OptiPlex-9020>
-References: <20220325073827.GB8478@xsang-OptiPlex-9020>
-Date:   Fri, 25 Mar 2022 20:14:27 +0100
-Message-ID: <87k0chhmjw.ffs@tglx>
+        Fri, 25 Mar 2022 15:43:11 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 508F2204AB6;
+        Fri, 25 Mar 2022 12:17:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=6slMIQlhEqm87aKxVQg6SnauUicp81NuO6xcMEdN73M=; b=BP
+        SO9Ml0OnSkpW7WifUh6kWImgj8T0kfL25nez69TyGP1u6AZ+EAy6L9s0T3rV+1/8WTNkvKECPLwKk
+        IK4c6S6fuKHNY1mGqxZH+GTViqoEKp98xLkHZauahf6tvvKvNL2Yb6K75ZrvMZWXtsfNs8WzfBjsS
+        GdpZlNEQCGuAJ9c=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nXopM-00Cg15-MW; Fri, 25 Mar 2022 19:38:24 +0100
+Date:   Fri, 25 Mar 2022 19:38:24 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Allan Nielsen <allan.nielsen@microchip.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [net-next 1/5] net: mdio: fwnode: add fwnode_mdiobus_register()
+Message-ID: <Yj4MIIu7Qtvv25Fs@lunn.ch>
+References: <20220325172234.1259667-1-clement.leger@bootlin.com>
+ <20220325172234.1259667-2-clement.leger@bootlin.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220325172234.1259667-2-clement.leger@bootlin.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25 2022 at 15:38, kernel test robot wrote:
-> [   42.401895][    C0] UBSAN: shift-out-of-bounds in lib/flex_proportions.c:80:20
-> [   42.410963][    C0] shift exponent -1007885658 is negative
+On Fri, Mar 25, 2022 at 06:22:30PM +0100, Clément Léger wrote:
+> In order to support software node description transparently, add fwnode
+> support with fwnode_mdiobus_register(). This function behaves exactly
+> like of_mdiobus_register() function but using the fwnode node agnostic
+> API. This support might also be used to merge ACPI mdiobus support
+> which is quite similar to the fwnode one.
+> 
+> Some part such as the whitelist matching are kept exclusively for OF
+> nodes since it uses an of_device_id struct and seems tightly coupled
+> with OF. Other parts are generic and will allow to move the existing
+> OF support on top of this fwnode version.
 
-Cute.
+Does fwnode have any documentation? How does a developer know what
+properties can be passed? Should you be adding a
 
-> [   42.416462][    C0] CPU: 0 PID: 330 Comm: sed Tainted: G          I       5.17.0-rc6-00027-gd41e0719d576 #1
-> [   42.426240][    C0] Hardware name: Dell Inc. OptiPlex 7040/0Y7WYT, BIOS 1.1.1 10/07/2015
-> [   42.434363][    C0] Call Trace:
-> [   42.437516][    C0]  <TASK>
-> [ 42.440319][ C0] dump_stack_lvl (lib/dump_stack.c:107) 
-> [ 42.444699][ C0] ubsan_epilogue (lib/ubsan.c:152) 
-> [ 42.448985][ C0] __ubsan_handle_shift_out_of_bounds.cold (lib/ubsan.c:330) 
-> [ 42.455618][ C0] ? cpumask_next (lib/cpumask.c:23) 
-> [ 42.459996][ C0] ? __percpu_counter_sum (lib/percpu_counter.c:138) 
-> [ 42.465248][ C0] fprop_new_period.cold (lib/flex_proportions.c:80 (discriminator 1)) 
-> [ 42.470224][ C0] writeout_period (mm/page-writeback.c:623) 
+Documentation/fwnode/bindings/net/mdio.yaml ?
 
-So it seems a timer fired early. Which then makes writeout_period() go south:
-
-	int miss_periods = (jiffies - dom->period_time) / VM_COMPLETIONS_PERIOD_LEN;
-
-If jiffies < dom->period_time the result is a very large negative
-number.
-
-This happens because of:
-
-> @@ -67,7 +67,8 @@ struct timer_list {
->  #define TIMER_DEFERRABLE	0x00080000
->  #define TIMER_PINNED		0x00100000
->  #define TIMER_IRQSAFE		0x00200000
-> -#define TIMER_INIT_FLAGS	(TIMER_DEFERRABLE | TIMER_PINNED | TIMER_IRQSAFE)
-> +#define TIMER_UPPER_BOUND	0x00400000
-> +#define TIMER_INIT_FLAGS	(TIMER_DEFERRABLE | TIMER_PINNED | TIMER_IRQSAFE | TIMER_UPPER_BOUND)
-> #define TIMER_ARRAYSHIFT	22
-> #define TIMER_ARRAYMASK		0xFFC00000
-
-TIMER_UPPER_BOUND steals a bit from the ARRAYMASK. So if the timer is
-armed and the stored arraymask happens to have bit 22 set, then on the
-next arming of the timer it will be treated as upper bound timer,
-expires early and all hell breaks lose. The same can happen the other
-way round. So I really have to ask how this ever "worked".
-
-Thanks,
-
-        tglx
+	Andrew
