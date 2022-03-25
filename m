@@ -2,120 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3CF2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:18:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0885EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:18:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356393AbiCYPTr (ORCPT
+        id S1376309AbiCYPTy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:19:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34808 "EHLO
+        Fri, 25 Mar 2022 11:19:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377495AbiCYPOq (ORCPT
+        with ESMTP id S1376337AbiCYPMv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:14:46 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 526B8E21
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 08:13:05 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id w4so8301575ply.13
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 08:13:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=F5PY9X/jp0F4AgxSPkBkfgIyJrI2tyNfex9j4AupEbk=;
-        b=HmQuyS8md0PfvL+aGN85J4Lkm/vGXCQvpc/ISSNkxX1kjJOFD2GzH4dbWHzLnxrcZn
-         yejEeN+M5vd+milk5coOyyjZ68MwLLgzzJKbhoaom7SDa5J4ghXvBrZYlhJA4C12gSS3
-         ombiTcVWYo3Pt9IyuBui81rxtprixViYxTsGjgaESz+SsRhYdhL6s1vSo1o05VNBo9xH
-         Y0Irgux8iAjuKv5u6ZhQUD5AjEou4BHpcxIuyEsGFeRvFhsyOgcAKp6Qfan50PKOmkQP
-         +rEY9ZuRtlqIAfRSSXUuMQvagsHqrnMclgtwjm7W+27EwS8StEzUUZqy/U3xN4iVKkvd
-         68dw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=F5PY9X/jp0F4AgxSPkBkfgIyJrI2tyNfex9j4AupEbk=;
-        b=AvU3rpuINd0FhmWq050GAOj6ZV+edMSnJf/AfW3Cgq6bao1HERe3IDRCx018tIQnqG
-         J7JRydZNuti+2SGXQuDu95FLHlqHf04KhCaUtUSRea81rQroDRlGlHRIvJAF46hKIDod
-         +b1vMtMfevFMxyyG7P5u8a2CkEI0xy1cm19OCcRJQW/YeMKx1GGi9lRtKLkqWaUlZnAX
-         Mlhd7gx8izQD5Qxjuk7TprQkgXKatkV94Sd6bAUlHRrmr16YcSZAwRhNaVMz6nKBMwoe
-         QKCXdRg1y/AlTJMCQVVowDdjs4ufRHD9wKZS0VB8vK768dRjDe98+dfCzS+eypNAirBN
-         Hgog==
-X-Gm-Message-State: AOAM533tIipz24SJnDggvx4E20DiobZCB2NyS43rLZ3sRpS8CnPfq5SA
-        tfeC7Qw7nhU8QvpPDiy/Iji7/S3B9CUmVA==
-X-Google-Smtp-Source: ABdhPJwc/sVCV5MbQy209QJPcZg2mXqaNy4LQDF1x6hrbgePnG/Gd8+vwGXUaI/HJC0PUMslKFcNPg==
-X-Received: by 2002:a17:903:1205:b0:151:8ae9:93ea with SMTP id l5-20020a170903120500b001518ae993eamr12288183plh.37.1648221184638;
-        Fri, 25 Mar 2022 08:13:04 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id r1-20020a63b101000000b00380989bcb1bsm5682437pgf.5.2022.03.25.08.13.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Mar 2022 08:13:03 -0700 (PDT)
-Date:   Fri, 25 Mar 2022 15:13:00 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Mingwei Zhang <mizhang@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>, kvm <kvm@vger.kernel.org>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        David Hildenbrand <david@redhat.com>,
-        David Matlack <dmatlack@google.com>,
-        Ben Gardon <bgardon@google.com>
-Subject: Re: [PATCH v4 18/30] KVM: x86/mmu: Zap only TDP MMU leafs in
- kvm_zap_gfn_range()
-Message-ID: <Yj3b/IhXU9eutjoS@google.com>
-References: <20220303193842.370645-1-pbonzini@redhat.com>
- <20220303193842.370645-19-pbonzini@redhat.com>
- <CAL715WJc3QdFe4gkbefW5zHPaYZfErG9vQmOLsbXz=kbaB-6uw@mail.gmail.com>
+        Fri, 25 Mar 2022 11:12:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 939FE652F3;
+        Fri, 25 Mar 2022 08:09:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5BA4DB828FF;
+        Fri, 25 Mar 2022 15:09:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A37AAC340E9;
+        Fri, 25 Mar 2022 15:09:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1648220952;
+        bh=8AYGYPvF+h4SUWeZ8xlGcPRxQ8Ip9yjUh5xO1V/Iwf0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DbUV5plk1956NbkXFvgEboniNjS7PJUB7/t9p+45xuf2D4kbwnZuYa5Qwp/pKtLjt
+         LAhdWfLVdSYrimNGJnytYMtgTqBqg1W4Tij07On3afH0hC6NNbp8wfdk/AVOMhDEcv
+         FDn1jLVEUcFa8B5/sQPmLR3nmOU58XlMLa1SBjEA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Tim Crawford <tcrawford@system76.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.10 15/38] ALSA: hda/realtek: Add quirk for Clevo NP70PNJ
+Date:   Fri, 25 Mar 2022 16:04:59 +0100
+Message-Id: <20220325150420.196900083@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220325150419.757836392@linuxfoundation.org>
+References: <20220325150419.757836392@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAL715WJc3QdFe4gkbefW5zHPaYZfErG9vQmOLsbXz=kbaB-6uw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Mar 13, 2022, Mingwei Zhang wrote:
-> On Thu, Mar 3, 2022 at 11:39 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
-> > @@ -898,13 +879,13 @@ static bool zap_gfn_range(struct kvm *kvm, struct kvm_mmu_page *root,
-> >   * SPTEs have been cleared and a TLB flush is needed before releasing the
-> >   * MMU lock.
-> >   */
-> > -bool __kvm_tdp_mmu_zap_gfn_range(struct kvm *kvm, int as_id, gfn_t start,
-> > -                                gfn_t end, bool can_yield, bool flush)
-> > +bool kvm_tdp_mmu_zap_leafs(struct kvm *kvm, int as_id, gfn_t start, gfn_t end,
-> > +                          bool can_yield, bool flush)
-> >  {
-> >         struct kvm_mmu_page *root;
-> >
-> >         for_each_tdp_mmu_root_yield_safe(kvm, root, as_id)
-> > -               flush = zap_gfn_range(kvm, root, start, end, can_yield, flush);
-> > +               flush = tdp_mmu_zap_leafs(kvm, root, start, end, can_yield, false);
-> 
-> hmm, I think we might have to be very careful here. If we only zap
-> leafs, then there could be side effects. For instance, the code in
-> disallowed_hugepage_adjust() may not work as intended. If you check
-> the following condition in arch/x86/kvm/mmu/mmu.c:2918
-> 
-> if (cur_level > PG_LEVEL_4K &&
->     cur_level == fault->goal_level &&
->     is_shadow_present_pte(spte) &&
->     !is_large_pte(spte)) {
-> 
-> If we previously use 4K mappings in this range due to various reasons
-> (dirty logging etc), then afterwards, we zap the range. Then the guest
-> touches a 4K and now we should map the range with whatever the maximum
-> level we can for the guest.
-> 
-> However, if we just zap only the leafs, then when the code comes to
-> the above location, is_shadow_present_pte(spte) will return true,
-> since the spte is a non-leaf (say a regular PMD entry). The whole if
-> statement will be true, then we never allow remapping guest memory
-> with huge pages.
+From: Tim Crawford <tcrawford@system76.com>
 
-But that's at worst a performance issue, and arguably working as intended.  The
-zap in this case is never due to the _guest_ unmapping the pfn, so odds are good
-the guest will want to map back in the same pfns with the same permissions.
-Zapping shadow pages so that the guest can maybe create a hugepage may end up
-being a lot of extra work for no benefit.  Or it may be a net positive.  Either
-way, it's not a functional issue.
+commit 0c20fce13e6e111463e3a15ce3cf6713fe518388 upstream.
+
+Fixes headset detection on Clevo NP70PNJ.
+
+Signed-off-by: Tim Crawford <tcrawford@system76.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220304170840.3351-1-tcrawford@system76.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -8884,6 +8884,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x1558, 0x8561, "System76 Gazelle (gaze14)", ALC269_FIXUP_HEADSET_MIC),
+ 	SND_PCI_QUIRK(0x1558, 0x8562, "Clevo NH[5|7][0-9]RZ[Q]", ALC269_FIXUP_DMIC),
+ 	SND_PCI_QUIRK(0x1558, 0x8668, "Clevo NP50B[BE]", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
++	SND_PCI_QUIRK(0x1558, 0x867d, "Clevo NP7[01]PN[HJK]", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x8680, "Clevo NJ50LU", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x8686, "Clevo NH50[CZ]U", ALC256_FIXUP_MIC_NO_PRESENCE_AND_RESUME),
+ 	SND_PCI_QUIRK(0x1558, 0x8a20, "Clevo NH55DCQ-Y", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+
+
