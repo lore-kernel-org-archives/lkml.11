@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 561BCC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:05:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31FD2C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:05:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359498AbiCYPHW (ORCPT
+        id S1359545AbiCYPH1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:07:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34232 "EHLO
+        Fri, 25 Mar 2022 11:07:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359518AbiCYPHB (ORCPT
+        with ESMTP id S1359571AbiCYPHC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:07:01 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F13B1D9EB6;
-        Fri, 25 Mar 2022 08:05:19 -0700 (PDT)
+        Fri, 25 Mar 2022 11:07:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DCDDD9E83;
+        Fri, 25 Mar 2022 08:05:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6F9D5CE2A4D;
-        Fri, 25 Mar 2022 15:05:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BB23C340EE;
-        Fri, 25 Mar 2022 15:05:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BB0061BED;
+        Fri, 25 Mar 2022 15:05:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84761C340E9;
+        Fri, 25 Mar 2022 15:05:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648220716;
-        bh=UqsmNB3MGUm9F2hcODQq0vKd0GEvegVF20uiRTemZ7g=;
+        s=korg; t=1648220725;
+        bh=0t6rOqqnZ4dHupbcVnNiXxZOIEusOi5qLvPWJONBqH8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J8ecOTqcB56hkDSydmMC8+W/n66rMm1uAcuyiZcKtLhx25/I3DjPAgFZ+EMcaVdAc
-         Cmt8KDAZu0D5sMu5VU9TNtHD374Ic95kj6cXewjx4MCOAxPmePp+EntcZEnv5MKczJ
-         T+x2KOcxXmX8RK/XJWRU4OWBkg3eowJ61KaBrAl8=
+        b=NMSR32jgmlCpE1bk5LwTFRwB3VCRWCGGVyqvs587/EWe429lHXH/m4XOJc8CdRq0g
+         TMtt9fAe8H9nOm2F3+MsQPmXEkhOEvcXxVyqxJH8bwn2px9wnHmtPjhKJqV/zNHkmq
+         Jlk2H8MEy7jRmaHDT6jBtbubvbdjQMU4LkeXd6j4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jaroslav Kysela <perex@perex.cz>,
+        stable@vger.kernel.org,
+        Giacomo Guiduzzi <guiduzzi.giacomo@gmail.com>,
+        Paolo Valente <paolo.valente@linaro.org>,
         Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 4.9 05/14] ALSA: pcm: Add stream lock during PCM reset ioctl operations
-Date:   Fri, 25 Mar 2022 16:04:33 +0100
-Message-Id: <20220325150415.857136189@linuxfoundation.org>
+Subject: [PATCH 4.9 08/14] ALSA: pci: fix reading of swapped values from pcmreg in AC97 codec
+Date:   Fri, 25 Mar 2022 16:04:36 +0100
+Message-Id: <20220325150415.945058012@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150415.694544076@linuxfoundation.org>
 References: <20220325150415.694544076@linuxfoundation.org>
@@ -49,53 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Giacomo Guiduzzi <guiduzzi.giacomo@gmail.com>
 
-commit 1f68915b2efd0d6bfd6e124aa63c94b3c69f127c upstream.
+commit 17aaf0193392cb3451bf0ac75ba396ec4cbded6e upstream.
 
-snd_pcm_reset() is a non-atomic operation, and it's allowed to run
-during the PCM stream running.  It implies that the manipulation of
-hw_ptr and other parameters might be racy.
+Tests 72 and 78 for ALSA in kselftest fail due to reading
+inconsistent values from some devices on a VirtualBox
+Virtual Machine using the snd_intel8x0 driver for the AC'97
+Audio Controller device.
+Taking for example test number 72, this is what the test reports:
+"Surround Playback Volume.0 expected 1 but read 0, is_volatile 0"
+"Surround Playback Volume.1 expected 0 but read 1, is_volatile 0"
+These errors repeat for each value from 0 to 31.
 
-This patch adds the PCM stream lock at appropriate places in
-snd_pcm_*_reset() actions for covering that.
+Taking a look at these error messages it is possible to notice
+that the written values are read back swapped.
+When the write is performed, these values are initially stored in
+an array used to sanity-check them and write them in the pcmreg
+array. To write them, the two one-byte values are packed together
+in a two-byte variable through bitwise operations: the first
+value is shifted left by one byte and the second value is stored in the
+right byte through a bitwise OR. When reading the values back,
+right shifts are performed to retrieve the previously stored
+bytes. These shifts are executed in the wrong order, thus
+reporting the values swapped as shown above.
 
+This patch fixes this mistake by reversing the read
+operations' order.
+
+Signed-off-by: Giacomo Guiduzzi <guiduzzi.giacomo@gmail.com>
+Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
 Cc: <stable@vger.kernel.org>
-Reviewed-by: Jaroslav Kysela <perex@perex.cz>
-Link: https://lore.kernel.org/r/20220322171325.4355-1-tiwai@suse.de
+Link: https://lore.kernel.org/r/20220322200653.15862-1-guiduzzi.giacomo@gmail.com
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/core/pcm_native.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ sound/pci/ac97/ac97_codec.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/sound/core/pcm_native.c
-+++ b/sound/core/pcm_native.c
-@@ -1489,21 +1489,25 @@ static int snd_pcm_do_reset(struct snd_p
- 	int err = substream->ops->ioctl(substream, SNDRV_PCM_IOCTL1_RESET, NULL);
- 	if (err < 0)
- 		return err;
-+	snd_pcm_stream_lock_irq(substream);
- 	runtime->hw_ptr_base = 0;
- 	runtime->hw_ptr_interrupt = runtime->status->hw_ptr -
- 		runtime->status->hw_ptr % runtime->period_size;
- 	runtime->silence_start = runtime->status->hw_ptr;
- 	runtime->silence_filled = 0;
-+	snd_pcm_stream_unlock_irq(substream);
+--- a/sound/pci/ac97/ac97_codec.c
++++ b/sound/pci/ac97/ac97_codec.c
+@@ -958,8 +958,8 @@ static int snd_ac97_ad18xx_pcm_get_volum
+ 	int codec = kcontrol->private_value & 3;
+ 	
+ 	mutex_lock(&ac97->page_mutex);
+-	ucontrol->value.integer.value[0] = 31 - ((ac97->spec.ad18xx.pcmreg[codec] >> 0) & 31);
+-	ucontrol->value.integer.value[1] = 31 - ((ac97->spec.ad18xx.pcmreg[codec] >> 8) & 31);
++	ucontrol->value.integer.value[0] = 31 - ((ac97->spec.ad18xx.pcmreg[codec] >> 8) & 31);
++	ucontrol->value.integer.value[1] = 31 - ((ac97->spec.ad18xx.pcmreg[codec] >> 0) & 31);
+ 	mutex_unlock(&ac97->page_mutex);
  	return 0;
  }
- 
- static void snd_pcm_post_reset(struct snd_pcm_substream *substream, int state)
- {
- 	struct snd_pcm_runtime *runtime = substream->runtime;
-+	snd_pcm_stream_lock_irq(substream);
- 	runtime->control->appl_ptr = runtime->status->hw_ptr;
- 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK &&
- 	    runtime->silence_size > 0)
- 		snd_pcm_playback_silence(substream, ULONG_MAX);
-+	snd_pcm_stream_unlock_irq(substream);
- }
- 
- static const struct action_ops snd_pcm_action_reset = {
 
 
