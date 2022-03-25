@@ -2,50 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B950C43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:13:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6224C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:13:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376459AbiCYPNB (ORCPT
+        id S1376376AbiCYPMx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:13:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43494 "EHLO
+        Fri, 25 Mar 2022 11:12:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359775AbiCYPJb (ORCPT
+        with ESMTP id S1359819AbiCYPKN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:09:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01A88DAFC1;
-        Fri, 25 Mar 2022 08:07:28 -0700 (PDT)
+        Fri, 25 Mar 2022 11:10:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5B8DDA09A;
+        Fri, 25 Mar 2022 08:07:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7468361C14;
-        Fri, 25 Mar 2022 15:07:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 817B2C340EE;
-        Fri, 25 Mar 2022 15:07:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 78159B828FF;
+        Fri, 25 Mar 2022 15:07:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D64AFC340E9;
+        Fri, 25 Mar 2022 15:07:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648220847;
-        bh=hfnD0IaVDMjKW0Z+paPYvWTlpQ/2eeOa5et+T8s/UdA=;
+        s=korg; t=1648220871;
+        bh=bOkJy+mMiLrQcWXHlmJVF/rdsYha53wcln9168+rGTw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nBEVldzuJFWX49glc1RUoygNY59zQPboL39suj9piJZ/b8etD4MJAoO+S9ZnxYmgU
-         xwmjxLH1DROPgkCGz1W/VZLauzvAEwMep8GW+ExJC+ox3dB6AFH0Gv2lF/AWzSZogJ
-         9+yuLmq1dwsYvEFqxtxIo3ZQxZ52RFrCKbl16XBI=
+        b=ktBmv4rS1qIt3366RuBR5GqpowpF/YPir9Si8YG6ipjBLiSJPh9s9NkWbCA9DpUyf
+         TaXzB214bnUGcIDBwJUSiAq6cWsfNtfey5BVRdOc1ttOL4EHhsA+p4lYDZJKHgkDLj
+         GT0L1HK47jWwXSh7XbwpR6whyKWCMVsEl1ovDukI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        "J. Bruce Fields" <bfields@redhat.com>,
-        Khazhy Kumykov <khazhy@google.com>
-Subject: [PATCH 5.4 01/29] nfsd: cleanup nfsd_file_lru_dispose()
-Date:   Fri, 25 Mar 2022 16:04:41 +0100
-Message-Id: <20220325150418.629382640@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Palmer <daniel@0x0f.com>,
+        Arnaud POULIQUEN <arnaud.pouliquen@st.com>,
+        Takashi Iwai <tiwai@suse.de>,
+        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.4 17/29] ASoC: sti: Fix deadlock via snd_pcm_stop_xrun() call
+Date:   Fri, 25 Mar 2022 16:04:57 +0100
+Message-Id: <20220325150419.082981181@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150418.585286754@linuxfoundation.org>
 References: <20220325150418.585286754@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -53,57 +52,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trondmy@gmail.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit 36ebbdb96b694dd9c6b25ad98f2bbd263d022b63 upstream.
+commit 455c5653f50e10b4f460ef24e99f0044fbe3401c upstream.
 
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: J. Bruce Fields <bfields@redhat.com>
-Cc: Khazhy Kumykov <khazhy@google.com>
+This is essentially a revert of the commit dc865fb9e7c2 ("ASoC: sti:
+Use snd_pcm_stop_xrun() helper"), which converted the manual
+snd_pcm_stop() calls with snd_pcm_stop_xrun().
+
+The commit above introduced a deadlock as snd_pcm_stop_xrun() itself
+takes the PCM stream lock while the caller already holds it.  Since
+the conversion was done only for consistency reason and the open-call
+with snd_pcm_stop() to the XRUN state is a correct usage, let's revert
+the commit back as the fix.
+
+Fixes: dc865fb9e7c2 ("ASoC: sti: Use snd_pcm_stop_xrun() helper")
+Reported-by: Daniel Palmer <daniel@0x0f.com>
+Cc: Arnaud POULIQUEN <arnaud.pouliquen@st.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220315091319.3351522-1-daniel@0x0f.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Reviewed-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+Link: https://lore.kernel.org/r/20220315164158.19804-1-tiwai@suse.de
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfsd/filecache.c |   13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ sound/soc/sti/uniperif_player.c |    6 +++---
+ sound/soc/sti/uniperif_reader.c |    2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
---- a/fs/nfsd/filecache.c
-+++ b/fs/nfsd/filecache.c
-@@ -260,8 +260,6 @@ nfsd_file_do_unhash(struct nfsd_file *nf
- 		nfsd_reset_boot_verifier(net_generic(nf->nf_net, nfsd_net_id));
- 	--nfsd_file_hashtbl[nf->nf_hashval].nfb_count;
- 	hlist_del_rcu(&nf->nf_node);
--	if (!list_empty(&nf->nf_lru))
--		list_lru_del(&nfsd_file_lru, &nf->nf_lru);
- 	atomic_long_dec(&nfsd_filecache_count);
- }
+--- a/sound/soc/sti/uniperif_player.c
++++ b/sound/soc/sti/uniperif_player.c
+@@ -91,7 +91,7 @@ static irqreturn_t uni_player_irq_handle
+ 			SET_UNIPERIF_ITM_BCLR_FIFO_ERROR(player);
  
-@@ -270,6 +268,8 @@ nfsd_file_unhash(struct nfsd_file *nf)
- {
- 	if (test_and_clear_bit(NFSD_FILE_HASHED, &nf->nf_flags)) {
- 		nfsd_file_do_unhash(nf);
-+		if (!list_empty(&nf->nf_lru))
-+			list_lru_del(&nfsd_file_lru, &nf->nf_lru);
- 		return true;
- 	}
- 	return false;
-@@ -406,15 +406,14 @@ out_skip:
- static void
- nfsd_file_lru_dispose(struct list_head *head)
- {
--	while(!list_empty(head)) {
--		struct nfsd_file *nf = list_first_entry(head,
--				struct nfsd_file, nf_lru);
--		list_del_init(&nf->nf_lru);
-+	struct nfsd_file *nf;
-+
-+	list_for_each_entry(nf, head, nf_lru) {
- 		spin_lock(&nfsd_file_hashtbl[nf->nf_hashval].nfb_lock);
- 		nfsd_file_do_unhash(nf);
- 		spin_unlock(&nfsd_file_hashtbl[nf->nf_hashval].nfb_lock);
--		nfsd_file_put_noref(nf);
- 	}
-+	nfsd_file_dispose_list(head);
- }
+ 			/* Stop the player */
+-			snd_pcm_stop_xrun(player->substream);
++			snd_pcm_stop(player->substream, SNDRV_PCM_STATE_XRUN);
+ 		}
  
- static unsigned long
+ 		ret = IRQ_HANDLED;
+@@ -105,7 +105,7 @@ static irqreturn_t uni_player_irq_handle
+ 		SET_UNIPERIF_ITM_BCLR_DMA_ERROR(player);
+ 
+ 		/* Stop the player */
+-		snd_pcm_stop_xrun(player->substream);
++		snd_pcm_stop(player->substream, SNDRV_PCM_STATE_XRUN);
+ 
+ 		ret = IRQ_HANDLED;
+ 	}
+@@ -138,7 +138,7 @@ static irqreturn_t uni_player_irq_handle
+ 		dev_err(player->dev, "Underflow recovery failed\n");
+ 
+ 		/* Stop the player */
+-		snd_pcm_stop_xrun(player->substream);
++		snd_pcm_stop(player->substream, SNDRV_PCM_STATE_XRUN);
+ 
+ 		ret = IRQ_HANDLED;
+ 	}
+--- a/sound/soc/sti/uniperif_reader.c
++++ b/sound/soc/sti/uniperif_reader.c
+@@ -65,7 +65,7 @@ static irqreturn_t uni_reader_irq_handle
+ 	if (unlikely(status & UNIPERIF_ITS_FIFO_ERROR_MASK(reader))) {
+ 		dev_err(reader->dev, "FIFO error detected\n");
+ 
+-		snd_pcm_stop_xrun(reader->substream);
++		snd_pcm_stop(reader->substream, SNDRV_PCM_STATE_XRUN);
+ 
+ 		ret = IRQ_HANDLED;
+ 	}
 
 
