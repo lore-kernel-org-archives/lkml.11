@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D612C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:19:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1978CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:19:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376470AbiCYPVH (ORCPT
+        id S1376340AbiCYPVL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:21:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44816 "EHLO
+        Fri, 25 Mar 2022 11:21:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376356AbiCYPMv (ORCPT
+        with ESMTP id S1376343AbiCYPMv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 25 Mar 2022 11:12:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75C6413D76;
-        Fri, 25 Mar 2022 08:09:31 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2912652F4;
+        Fri, 25 Mar 2022 08:09:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 26C20B828F8;
-        Fri, 25 Mar 2022 15:09:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CE88C340E9;
-        Fri, 25 Mar 2022 15:09:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 65DE361BE9;
+        Fri, 25 Mar 2022 15:09:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73FB0C340E9;
+        Fri, 25 Mar 2022 15:09:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648220968;
-        bh=tnLkXIXuSNDabdjWsHyEMEvhpKFf5TCf644Vn+A74JA=;
+        s=korg; t=1648220954;
+        bh=jlorWXW1SRZsvZAyHVc1AQcda/Cgl2duBOAaNJ3Crjs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h45ZF3wLdgiUEVqJgNryaxC0sbDOg34pFKMIRAd9pWKCz+FbWSuAkWzlS/HoC/EjC
-         4dNz+Hjy0TyLey7OhsP0r4rbJSQ0Y9InfgjKmkauGdQ5nDN8PczTAtIF4ReCWjIxcY
-         UBw0WWws+0cQNbpDTT7uirwrzpC98d5CVY0hRJhk=
+        b=zYN7xQTx9fYkPB6RwXePabo+ucKWjYCwWc+uq2/C+DqnOVGGe1mvJb/RgEpAzjumr
+         cnAtLEgeI2sGuEbtsiQkPIZP7DoVbF/F/4yt5pFABr5jSpAbyNX1Q131N62f/mbt2C
+         m2TK3CJR5EsV99ypXjB0EVX6H4s94F8Z/KEcHQXI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jaroslav Kysela <perex@perex.cz>,
+        stable@vger.kernel.org, Tim Crawford <tcrawford@system76.com>,
         Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.10 20/38] ALSA: pcm: Fix races among concurrent read/write and buffer changes
-Date:   Fri, 25 Mar 2022 16:05:04 +0100
-Message-Id: <20220325150420.335498459@linuxfoundation.org>
+Subject: [PATCH 5.10 16/38] ALSA: hda/realtek: Add quirk for Clevo NP50PNJ
+Date:   Fri, 25 Mar 2022 16:05:00 +0100
+Message-Id: <20220325150420.224602786@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150419.757836392@linuxfoundation.org>
 References: <20220325150419.757836392@linuxfoundation.org>
@@ -49,60 +49,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Tim Crawford <tcrawford@system76.com>
 
-commit dca947d4d26dbf925a64a6cfb2ddbc035e831a3d upstream.
+commit 9cb727506704b5323998047789fc871e64a6aa14 upstream.
 
-In the current PCM design, the read/write syscalls (as well as the
-equivalent ioctls) are allowed before the PCM stream is running, that
-is, at PCM PREPARED state.  Meanwhile, we also allow to re-issue
-hw_params and hw_free ioctl calls at the PREPARED state that may
-change or free the buffers, too.  The problem is that there is no
-protection against those mix-ups.
+Fixes headset detection on Clevo NP50PNJ.
 
-This patch applies the previously introduced runtime->buffer_mutex to
-the read/write operations so that the concurrent hw_params or hw_free
-call can no longer interfere during the operation.  The mutex is
-unlocked before scheduling, so we don't take it too long.
-
+Signed-off-by: Tim Crawford <tcrawford@system76.com>
 Cc: <stable@vger.kernel.org>
-Reviewed-by: Jaroslav Kysela <perex@perex.cz>
-Link: https://lore.kernel.org/r/20220322170720.3529-3-tiwai@suse.de
+Link: https://lore.kernel.org/r/20220307193229.5141-1-tcrawford@system76.com
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/core/pcm_lib.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/sound/core/pcm_lib.c
-+++ b/sound/core/pcm_lib.c
-@@ -1871,9 +1871,11 @@ static int wait_for_avail(struct snd_pcm
- 		if (avail >= runtime->twake)
- 			break;
- 		snd_pcm_stream_unlock_irq(substream);
-+		mutex_unlock(&runtime->buffer_mutex);
- 
- 		tout = schedule_timeout(wait_time);
- 
-+		mutex_lock(&runtime->buffer_mutex);
- 		snd_pcm_stream_lock_irq(substream);
- 		set_current_state(TASK_INTERRUPTIBLE);
- 		switch (runtime->status->state) {
-@@ -2167,6 +2169,7 @@ snd_pcm_sframes_t __snd_pcm_lib_xfer(str
- 
- 	nonblock = !!(substream->f_flags & O_NONBLOCK);
- 
-+	mutex_lock(&runtime->buffer_mutex);
- 	snd_pcm_stream_lock_irq(substream);
- 	err = pcm_accessible_state(runtime);
- 	if (err < 0)
-@@ -2254,6 +2257,7 @@ snd_pcm_sframes_t __snd_pcm_lib_xfer(str
- 	if (xfer > 0 && err >= 0)
- 		snd_pcm_update_state(substream, runtime);
- 	snd_pcm_stream_unlock_irq(substream);
-+	mutex_unlock(&runtime->buffer_mutex);
- 	return xfer > 0 ? (snd_pcm_sframes_t)xfer : err;
- }
- EXPORT_SYMBOL(__snd_pcm_lib_xfer);
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -8884,6 +8884,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x1558, 0x8561, "System76 Gazelle (gaze14)", ALC269_FIXUP_HEADSET_MIC),
+ 	SND_PCI_QUIRK(0x1558, 0x8562, "Clevo NH[5|7][0-9]RZ[Q]", ALC269_FIXUP_DMIC),
+ 	SND_PCI_QUIRK(0x1558, 0x8668, "Clevo NP50B[BE]", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
++	SND_PCI_QUIRK(0x1558, 0x866d, "Clevo NP5[05]PN[HJK]", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x867d, "Clevo NP7[01]PN[HJK]", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x8680, "Clevo NJ50LU", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1558, 0x8686, "Clevo NH50[CZ]U", ALC256_FIXUP_MIC_NO_PRESENCE_AND_RESUME),
 
 
