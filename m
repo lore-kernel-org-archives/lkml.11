@@ -2,72 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 908A8C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 07:29:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A69CC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 07:30:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350026AbiCYHba (ORCPT
+        id S1352116AbiCYHbm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 03:31:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52290 "EHLO
+        Fri, 25 Mar 2022 03:31:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348234AbiCYHb2 (ORCPT
+        with ESMTP id S1348234AbiCYHbj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 03:31:28 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39B53BF035;
-        Fri, 25 Mar 2022 00:29:54 -0700 (PDT)
-Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KPttB1rvxz8wyk;
-        Fri, 25 Mar 2022 15:25:54 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by kwepemi500015.china.huawei.com
- (7.221.188.92) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 25 Mar
- 2022 15:29:51 +0800
-From:   Zheng Bin <zhengbin13@huawei.com>
-To:     <linus.walleij@linaro.org>, <j.neuschaefer@gmx.net>,
-        <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <zhengbin13@huawei.com>, <tangyizhou@huawei.com>
-Subject: [PATCH -next] pinctrl: nuvoton: wpcm450: Fix build error without OF
-Date:   Fri, 25 Mar 2022 15:44:50 +0800
-Message-ID: <20220325074450.3228840-1-zhengbin13@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Fri, 25 Mar 2022 03:31:39 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F7B6BF510;
+        Fri, 25 Mar 2022 00:30:05 -0700 (PDT)
+Received: from kwepemi100022.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KPtym50JZzcbs1;
+        Fri, 25 Mar 2022 15:29:52 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi100022.china.huawei.com (7.221.188.126) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 25 Mar 2022 15:30:03 +0800
+Received: from [10.174.176.73] (10.174.176.73) by
+ kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 25 Mar 2022 15:30:03 +0800
+Subject: Re: [PATCH RFC -next 0/3] improve fairness for sbitmap waitqueues
+To:     <axboe@kernel.dk>, <ming.lei@redhat.com>,
+        <andriy.shevchenko@linux.intel.com>, <john.garry@huawei.com>,
+        <bvanassche@acm.org>
+CC:     <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <yi.zhang@huawei.com>
+References: <20220318082505.3025427-1-yukuai3@huawei.com>
+From:   "yukuai (C)" <yukuai3@huawei.com>
+Message-ID: <d91e88e0-cd40-1670-2542-390dd4fb5ddf@huawei.com>
+Date:   Fri, 25 Mar 2022 15:30:02 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
+In-Reply-To: <20220318082505.3025427-1-yukuai3@huawei.com>
+Content-Type: text/plain; charset="gbk"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.73]
 X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemi500015.china.huawei.com (7.221.188.92)
+ kwepemm600009.china.huawei.com (7.193.23.164)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If OF is not set, bulding fails:
+friendly ping ...
 
-drivers/pinctrl/nuvoton/pinctrl-wpcm450.o: In function `wpcm450_dt_node_to_map':
-pinctrl-wpcm450.c:(.text+0x404): undefined reference to `pinconf_generic_dt_node_to_map'
-
-Make PINCTRL_WPCM450 depends on OF to fix this.
-
-Fixes: a1d1e0e3d80a ("pinctrl: nuvoton: Add driver for WPCM450")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
----
- drivers/pinctrl/nuvoton/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/pinctrl/nuvoton/Kconfig b/drivers/pinctrl/nuvoton/Kconfig
-index b48d32912bef..852b0d0eb08e 100644
---- a/drivers/pinctrl/nuvoton/Kconfig
-+++ b/drivers/pinctrl/nuvoton/Kconfig
-@@ -3,6 +3,7 @@
- config PINCTRL_WPCM450
- 	tristate "Pinctrl and GPIO driver for Nuvoton WPCM450"
- 	depends on ARCH_WPCM450 || COMPILE_TEST
-+	depends on OF
- 	select PINMUX
- 	select PINCONF
- 	select GENERIC_PINCONF
---
-2.31.1
-
+ÔÚ 2022/03/18 16:25, Yu Kuai Ð´µÀ:
+> During some io test, I found that waitqueues can be extremly unbalanced,
+> especially when tags are little.
+> 
+> For example:
+> test cmd: nr_requests is set to 64, and queue_depth is set to 32
+> [global]
+> filename=/dev/sdh
+> ioengine=libaio
+> direct=1
+> allow_mounted_write=0
+> group_reporting
+> 
+> [test]
+> rw=randwrite
+> bs=4k
+> numjobs=512
+> iodepth=2
+> 
+> With patch 1 applied, I observe the following status:
+> ws_active=484
+> ws={
+>          {.wait_cnt=8, .waiters_cnt=117},
+>          {.wait_cnt=8, .waiters_cnt=59},
+>          {.wait_cnt=8, .waiters_cnt=76},
+>          {.wait_cnt=8, .waiters_cnt=0},
+>          {.wait_cnt=5, .waiters_cnt=24},
+>          {.wait_cnt=8, .waiters_cnt=12},
+>          {.wait_cnt=8, .waiters_cnt=21},
+>          {.wait_cnt=8, .waiters_cnt=175},
+> }
+> 
+> 'waiters_cnt' means how many threads are waitng for tags in the 'ws',
+> and such extremely unbalanced status is very frequent. After reading the
+> sbitmap code, I found there are two situations that might cause the
+> problem:
+> 
+> 1) blk_mq_get_tag() can call 'bt_wait_ptr()' while the threads might get
+> tag successfully before going to wait. - patch 2
+> 
+> 2) After a 'ws' is woken up, following blk_mq_put_tag() might wake up
+> the same 'ws' again instead of the next one. - patch 3
+> 
+> I'm not sure if the unbalanced status is really a *problem* and need to
+> be fixed, this patchset is just to improve fairness and not a thorough
+> fix. Any comments and suggestions are welcome.
+> 
+> Yu Kuai (3):
+>    sbitmap: record the number of waiters for each waitqueue
+>    blk-mq: call 'bt_wait_ptr()' later in blk_mq_get_tag()
+>    sbitmap: improve the fairness of waitqueues' wake up
+> 
+>   block/blk-mq-tag.c      |  6 ++---
+>   include/linux/sbitmap.h |  5 ++++
+>   lib/sbitmap.c           | 57 ++++++++++++++++++++++-------------------
+>   3 files changed, 39 insertions(+), 29 deletions(-)
+> 
