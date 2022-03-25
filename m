@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21547C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:20:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07911C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:20:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376485AbiCYPWD (ORCPT
+        id S1376526AbiCYPV6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:22:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38846 "EHLO
+        Fri, 25 Mar 2022 11:21:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376269AbiCYPT0 (ORCPT
+        with ESMTP id S1376261AbiCYPT0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 25 Mar 2022 11:19:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A98C0DFF99;
-        Fri, 25 Mar 2022 08:15:21 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B92C7DFFB7;
+        Fri, 25 Mar 2022 08:15:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C348760ABA;
-        Fri, 25 Mar 2022 15:15:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5079C340E9;
-        Fri, 25 Mar 2022 15:15:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 55920B82909;
+        Fri, 25 Mar 2022 15:15:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB029C340EE;
+        Fri, 25 Mar 2022 15:15:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221313;
-        bh=xdY4I81YJ/lcJTydX2z5QiXTyr0xfg7lp1PlCRneQis=;
+        s=korg; t=1648221316;
+        bh=sq5WssQkekeNhIRdj80ObkCH723gqNTyRCRfMku8noY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hUFs6Ngwmu9viLPtH7sU51pcexAo7+4P2Kvd8va/wuOf1iXv4Oa5gD0/F7gNls9D3
-         zbzOqqpabZuxDXT6OcIMBfmGHdKZYO1L66B2+dlt51pswxC+yMiicxnjLhKg1Elrmi
-         ZXJIAXu1fzYOl/n2gcE9yikfAUdL2DZ+4YT0wdsQ=
+        b=mdYQ9TzIDtYnWo96hRankGmji/Stzm75A3GXPMsWuvrTa/TOdqSxl8wVctqKRCqLq
+         QX+sRcVg5Pezllg62iqvOo/qouqGjBfSie3TcVFVa1TLQfjludiBWHWu0HVz6JfGM7
+         nln/Gbncov4MKAQFPfJt/DU4C4w4SX4zFWpewqSY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        stable@vger.kernel.org, Jonathan Teh <jonathan.teh@outlook.com>,
         Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 18/37] ALSA: usb-audio: Add mute TLV for playback volumes on RODE NT-USB
-Date:   Fri, 25 Mar 2022 16:14:19 +0100
-Message-Id: <20220325150420.454812029@linuxfoundation.org>
+Subject: [PATCH 5.15 19/37] ALSA: cmipci: Restore aux vol on suspend/resume
+Date:   Fri, 25 Mar 2022 16:14:20 +0100
+Message-Id: <20220325150420.483361315@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150419.931802116@linuxfoundation.org>
 References: <20220325150419.931802116@linuxfoundation.org>
@@ -49,41 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lars-Peter Clausen <lars@metafoo.de>
+From: Jonathan Teh <jonathan.teh@outlook.com>
 
-commit 0f306cca42fe879694fb5e2382748c43dc9e0196 upstream.
+commit c14231cc04337c2c2a937db084af342ce704dbde upstream.
 
-For the RODE NT-USB the lowest Playback mixer volume setting mutes the
-audio output. But it is not reported as such causing e.g. PulseAudio to
-accidentally mute the device when selecting a low volume.
+Save and restore CM_REG_AUX_VOL instead of register 0x24 twice on
+suspend/resume.
 
-Fix this by applying the existing quirk for this kind of issue when the
-device is detected.
+Tested on CMI8738LX.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Fixes: cb60e5f5b2b1 ("[ALSA] cmipci - Add PM support")
+Signed-off-by: Jonathan Teh <jonathan.teh@outlook.com>
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220311201400.235892-1-lars@metafoo.de
+Link: https://lore.kernel.org/r/DBAPR04MB7366CB3EA9C8521C35C56E8B920E9@DBAPR04MB7366.eurprd04.prod.outlook.com
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/usb/mixer_quirks.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ sound/pci/cmipci.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/sound/usb/mixer_quirks.c
-+++ b/sound/usb/mixer_quirks.c
-@@ -3362,9 +3362,10 @@ void snd_usb_mixer_fu_apply_quirk(struct
- 		if (unitid == 7 && cval->control == UAC_FU_VOLUME)
- 			snd_dragonfly_quirk_db_scale(mixer, cval, kctl);
- 		break;
--	/* lowest playback value is muted on C-Media devices */
--	case USB_ID(0x0d8c, 0x000c):
--	case USB_ID(0x0d8c, 0x0014):
-+	/* lowest playback value is muted on some devices */
-+	case USB_ID(0x0d8c, 0x000c): /* C-Media */
-+	case USB_ID(0x0d8c, 0x0014): /* C-Media */
-+	case USB_ID(0x19f7, 0x0003): /* RODE NT-USB */
- 		if (strstr(kctl->id.name, "Playback"))
- 			cval->min_mute = 1;
- 		break;
+--- a/sound/pci/cmipci.c
++++ b/sound/pci/cmipci.c
+@@ -298,7 +298,6 @@ MODULE_PARM_DESC(joystick_port, "Joystic
+ #define CM_MICGAINZ		0x01	/* mic boost */
+ #define CM_MICGAINZ_SHIFT	0
+ 
+-#define CM_REG_MIXER3		0x24
+ #define CM_REG_AUX_VOL		0x26
+ #define CM_VAUXL_MASK		0xf0
+ #define CM_VAUXR_MASK		0x0f
+@@ -3267,7 +3266,7 @@ static int snd_cmipci_probe(struct pci_d
+  */
+ static const unsigned char saved_regs[] = {
+ 	CM_REG_FUNCTRL1, CM_REG_CHFORMAT, CM_REG_LEGACY_CTRL, CM_REG_MISC_CTRL,
+-	CM_REG_MIXER0, CM_REG_MIXER1, CM_REG_MIXER2, CM_REG_MIXER3, CM_REG_PLL,
++	CM_REG_MIXER0, CM_REG_MIXER1, CM_REG_MIXER2, CM_REG_AUX_VOL, CM_REG_PLL,
+ 	CM_REG_CH0_FRAME1, CM_REG_CH0_FRAME2,
+ 	CM_REG_CH1_FRAME1, CM_REG_CH1_FRAME2, CM_REG_EXT_MISC,
+ 	CM_REG_INT_STATUS, CM_REG_INT_HLDCLR, CM_REG_FUNCTRL0,
 
 
