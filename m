@@ -2,132 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D8E8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 16:50:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29566C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 16:52:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377019AbiCYQw1 (ORCPT
+        id S1355991AbiCYQxh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 12:52:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43338 "EHLO
+        Fri, 25 Mar 2022 12:53:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348043AbiCYQwZ (ORCPT
+        with ESMTP id S241225AbiCYQxf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 12:52:25 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26829E43A3
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 09:50:51 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id bi12so16570924ejb.3
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 09:50:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=94PEXMIFvyyJQFPubb1Xaa+0LbyxHkePHlhp9zj/Z+g=;
-        b=SjSMuLWWBMRDZCZAYqkZjt8DVD1lMxcnTQ0pRcoYE6pc5KA03fRjaO+NG5JnARI9G0
-         FdIxBtqN2SuWVe3DEw0nVislGa6FeRILBe77MlmD72/jA9e8G3JD5rKHwo6BJ0bvdI0A
-         HSMzQ+1ZTMcraGaMFyqLA5koHqo6CEQtOaaRg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=94PEXMIFvyyJQFPubb1Xaa+0LbyxHkePHlhp9zj/Z+g=;
-        b=5g4oQGsl+gAH92zB2Mm/aUZHYCBCcQbOf47UOZWqzqGnTLuAYUs64eb0vWKee4vj55
-         wMSRamwT8W0fpP+Hi6/pPNnZb3D0GJA1tUNH35TUD0HsOx9zdr5kwDZZVA2siB8Uoeii
-         uiKvj8oXg93MaWmduT6F0jEXbwRV5XITOe8zGY6STqWDdeyfrRX3Y/CHrvj/J3qtA+GZ
-         FTV6E+iKLPihUg2Nv/UCbdrbzZecv5k0url+Lo0hRoCJYVgDRojJDW62VmuPtH2953eF
-         9V9UwIuziag/krVflC/XQdvkaZYWOVxag2QKksoaoUDxT4oL76I7RjZeCLcUY6nOKZkd
-         RWsg==
-X-Gm-Message-State: AOAM533P8Xxnfwu81CRANLWLVfKnavtrQMYRx9M2ASj/sUztPLBYeCPt
-        YodR1/Fgj2zJ14rcHBL31peAIe+eNlTbNgwqPA4=
-X-Google-Smtp-Source: ABdhPJz9usoF+oPi+AwWbMps8TM43STudVkIavyZ4DbrjkPuiMyqw/ApsGTJhN86+c2vCor1R869jg==
-X-Received: by 2002:a17:907:d28:b0:6e0:996c:7e53 with SMTP id gn40-20020a1709070d2800b006e0996c7e53mr5529429ejc.658.1648227049404;
-        Fri, 25 Mar 2022 09:50:49 -0700 (PDT)
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com. [209.85.128.42])
-        by smtp.gmail.com with ESMTPSA id bd12-20020a056402206c00b00418c9bf71cbsm3025510edb.68.2022.03.25.09.50.48
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Mar 2022 09:50:49 -0700 (PDT)
-Received: by mail-wm1-f42.google.com with SMTP id l9-20020a05600c4f0900b0038ccd1b8642so2888563wmq.0
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 09:50:48 -0700 (PDT)
-X-Received: by 2002:a05:600c:3c8a:b0:389:cf43:eaf6 with SMTP id
- bg10-20020a05600c3c8a00b00389cf43eaf6mr10706474wmb.199.1648226737471; Fri, 25
- Mar 2022 09:45:37 -0700 (PDT)
+        Fri, 25 Mar 2022 12:53:35 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77709C12C2;
+        Fri, 25 Mar 2022 09:52:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=cPXI5QeuTULG9j4cx1a19QqWrwb7jb28krf+MnTbuWc=; b=a7zRRuEeeYE6dBkAWaXIuqwuds
+        U62BNMi+T60gNXHOFW8sWRHaYet9RyMVTwcd1nc/iMUu7jFROexr5T6IquNr3YVoDEnK/r+ZeVFjh
+        os7xKznL35YjNBZwVbkl7mVjtexSluDgO52MrTmk1q7D6njtsSK1VBixCcoQ25Y7VJ7fjUx0SE94p
+        juEctRAcGAaLGVPytek1ib2OU1RYKKr2SR0/XXH5hc57LuYefu3bSAUyft7JHAHXqD6V3ThT4+QvL
+        C76m07bJvIQ9sLKA/N0DiOvtDZjw/ne3vUks1sb20PdKeWKFFFY88VeTAOIWBv6oeZSqhFj4k2MIb
+        we8cTiVA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nXn9l-004S23-Iu; Fri, 25 Mar 2022 16:51:21 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 3A8863002BF;
+        Fri, 25 Mar 2022 17:51:19 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 21A932057F80B; Fri, 25 Mar 2022 17:51:19 +0100 (CET)
+Date:   Fri, 25 Mar 2022 17:51:19 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>, x86@kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        kernel-janitors@vger.kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Jiri Olsa <jolsa@kernel.org>, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH bpf-next v2 0/4] kprobes: rethook: x86: Replace kretprobe
+ trampoline with rethook
+Message-ID: <Yj3zB2n7Hy0DhkU+@hirez.programming.kicks-ass.net>
+References: <164821817332.2373735.12048266953420821089.stgit@devnote2>
+ <Yj3VAsgGA9zJvxgs@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-References: <1647452154-16361-1-git-send-email-quic_sbillaka@quicinc.com>
- <1647452154-16361-6-git-send-email-quic_sbillaka@quicinc.com>
- <CAE-0n50dmA0ETgNvaBGs+XmGu+r=6RbfbmnHqXAFqUBGjVGDvg@mail.gmail.com> <MW4PR02MB718688EF42698851322BBF6DE11A9@MW4PR02MB7186.namprd02.prod.outlook.com>
-In-Reply-To: <MW4PR02MB718688EF42698851322BBF6DE11A9@MW4PR02MB7186.namprd02.prod.outlook.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Fri, 25 Mar 2022 09:45:25 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=X7yHoC=7Fj24AjkGwgKvTL6qYfW+yPRstF5j6qt1Lw_Q@mail.gmail.com>
-Message-ID: <CAD=FV=X7yHoC=7Fj24AjkGwgKvTL6qYfW+yPRstF5j6qt1Lw_Q@mail.gmail.com>
-Subject: Re: [PATCH v5 5/9] drm/msm/dp: Add eDP support via aux_bus
-To:     "Sankeerth Billakanti (QUIC)" <quic_sbillaka@quicinc.com>
-Cc:     Stephen Boyd <swboyd@chromium.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "freedreno@lists.freedesktop.org" <freedreno@lists.freedesktop.org>,
-        "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "robdclark@gmail.com" <robdclark@gmail.com>,
-        "seanpaul@chromium.org" <seanpaul@chromium.org>,
-        quic_kalyant <quic_kalyant@quicinc.com>,
-        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
-        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
-        "agross@kernel.org" <agross@kernel.org>,
-        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
-        "sean@poorly.run" <sean@poorly.run>,
-        "airlied@linux.ie" <airlied@linux.ie>,
-        "daniel@ffwll.ch" <daniel@ffwll.ch>,
-        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
-        "sam@ravnborg.org" <sam@ravnborg.org>,
-        "dmitry.baryshkov@linaro.org" <dmitry.baryshkov@linaro.org>,
-        quic_vproddut <quic_vproddut@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yj3VAsgGA9zJvxgs@hirez.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Fri, Mar 25, 2022 at 03:43:15PM +0100, Peter Zijlstra wrote:
+> On Fri, Mar 25, 2022 at 11:22:53PM +0900, Masami Hiramatsu wrote:
+> 
+> > Masami Hiramatsu (3):
+> >       kprobes: Use rethook for kretprobe if possible
+> >       rethook: kprobes: x86: Replace kretprobe with rethook on x86
+> >       x86,kprobes: Fix optprobe trampoline to generate complete pt_regs
+> > 
+> > Peter Zijlstra (1):
+> >       Subject: x86,rethook: Fix arch_rethook_trampoline() to generate a complete pt_regs
+> 
+> You fat-fingered the subject there ^
+> 
+> Other than that:
+> 
+> Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> 
+> Hopefully the ftrace return trampoline can also be switched over..
 
-On Fri, Mar 25, 2022 at 7:11 AM Sankeerth Billakanti (QUIC)
-<quic_sbillaka@quicinc.com> wrote:
->
-> > > @@ -114,10 +114,12 @@ struct drm_bridge *dp_bridge_init(struct
-> > msm_dp *dp_display, struct drm_device *
-> > >         bridge->funcs = &dp_bridge_ops;
-> > >         bridge->type = dp_display->connector_type;
-> > >
-> > > -       bridge->ops =
-> > > -               DRM_BRIDGE_OP_DETECT |
-> > > -               DRM_BRIDGE_OP_HPD |
-> > > -               DRM_BRIDGE_OP_MODES;
-> > > +       if (bridge->type == DRM_MODE_CONNECTOR_DisplayPort) {
-> >
-> > Why can't eDP have bridge ops that are the same?
-> >
->
-> eDP needs to be reported as always connected. Whichever bridge is setting these ops flags should provide the ops.
-> The farthest bridge from the encoder with the ops flag set should implement the ops.
-> drm_bridge_connector_detect  reports always connected for eDP. So, we don't need DRM_BRIDGE_OP_DETECT
-> eDP panel bridge will add DRM_BRIDGE_OP_MODES in drm_panel_bridge_add_typed and will call panel_edp_get_modes.
-> As we are not supporting HPD for EDP, we are not setting the HPD ops flag.
+Urgh, allnoconfig doesn't build because..
 
-Right. It's Expected that eDP and DP would have different ops. If we
-define "detect" and "HPD" as whether the display is _physically_
-connected, not the status of the poorly-named eDP "HPD" pin, then eDP
-is _supposed_ to be considered always connected and thus would never
-support DETECT / HPD.
-
-...and right that the panel is expected to handle the modes.
-
-This matches how things have been progressing in Laurent's patches
-(taken over by Kieran) to add full DP support to sn65dsi86. For
-instance:
-
-https://lore.kernel.org/r/20220317131250.1481275-3-kieran.bingham+renesas@ideasonboard.com/
-https://lore.kernel.org/r/20220317131250.1481275-4-kieran.bingham+renesas@ideasonboard.com/
-
--Doug
+diff --git a/kernel/Makefile b/kernel/Makefile
+index 56f4ee97f328..471d71935e90 100644
+--- a/kernel/Makefile
++++ b/kernel/Makefile
+@@ -108,6 +108,7 @@ obj-$(CONFIG_TRACING) += trace/
+ obj-$(CONFIG_TRACE_CLOCK) += trace/
+ obj-$(CONFIG_RING_BUFFER) += trace/
+ obj-$(CONFIG_TRACEPOINTS) += trace/
++obj-$(CONFIG_RETHOOK) += trace/
+ obj-$(CONFIG_IRQ_WORK) += irq_work.o
+ obj-$(CONFIG_CPU_PM) += cpu_pm.o
+ obj-$(CONFIG_BPF) += bpf/
