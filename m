@@ -2,166 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25927C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 23:26:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E34FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 23:31:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234212AbiCYX2A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 19:28:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46894 "EHLO
+        id S234224AbiCYXce (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 19:32:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234199AbiCYX1y (ORCPT
+        with ESMTP id S234184AbiCYXcc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 19:27:54 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D0BB4A3F0;
-        Fri, 25 Mar 2022 16:26:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648250778; x=1679786778;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=XkoxMwHd9gW4bb7hINhoqrJqu4OqA0ycYEJM8nkG41Y=;
-  b=M7SEuDo02qJ92C1ljlz5RJHBSPVtnvmGGUEqquHcbAKADXfTTXlhLjoW
-   sAuUC1XAoHiFbkMA4V9bHVrk5t85kEJxHxWwYudV6n4kIEiJ6yH6TE98X
-   JDkNVbN+F7v7IUXIjw8y5aiTjbqGOvO26TCSCNo+3MG4BRnfowYtf9dfS
-   u0iOZhFoSa6L8UhBgxdrSDqy5khDVsTEffeUAOz2KS/PJgxPM4CQ8AVuz
-   YKelimFVjq8Skyfvma7v7vF2ITzVdcTDeOju5eSJKOk7BZpW4ZY4bnNIJ
-   vbqFIKdFzNLNvtMZBHJPo+IPG8up9EFhcWAzQdKSH21TZ7lr6HT8t/Y4k
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10297"; a="283615523"
-X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
-   d="scan'208";a="283615523"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2022 16:26:16 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
-   d="scan'208";a="553371036"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by fmsmga007.fm.intel.com with ESMTP; 25 Mar 2022 16:26:11 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nXtJq-000Mii-Nz; Fri, 25 Mar 2022 23:26:10 +0000
-Date:   Sat, 26 Mar 2022 07:25:58 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jeffle Xu <jefflexu@linux.alibaba.com>, dhowells@redhat.com,
-        linux-cachefs@redhat.com, xiang@kernel.org, chao@kernel.org,
-        linux-erofs@lists.ozlabs.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
-        willy@infradead.org, linux-fsdevel@vger.kernel.org,
-        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
-        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
-        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
-        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
-        fannaihao@baidu.com
-Subject: Re: [PATCH v6 03/22] cachefiles: notify user daemon with anon_fd
- when looking up cookie
-Message-ID: <202203260720.uA5o7k5w-lkp@intel.com>
-References: <20220325122223.102958-4-jefflexu@linux.alibaba.com>
+        Fri, 25 Mar 2022 19:32:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1A41B864;
+        Fri, 25 Mar 2022 16:30:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5526EB82A33;
+        Fri, 25 Mar 2022 23:30:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3DDEC2BBE4;
+        Fri, 25 Mar 2022 23:30:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648251055;
+        bh=OH+mVAFkcKa9HVSf2zoUkEM/gONJr7udXBOVy2JElJ8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=FB6fxz+2X35s/ByuDfwm+v6X+mHQaWKQultjwxpw9ND0636dzUgPqJS/NOi4qdMf0
+         JYx+cAhOtn0Wdp+iGMCHsqH0ESw+hzDcRUNDZAJB2Gdfjsw1qPP36XQWkYSya3Qsry
+         MgKe8ePNakUuk3k+R1y2OCqB1oEZnAo+WuDFDaLH1qhZAOz15shLjuh5I66xrQ3Ldr
+         FOgVRxo6llCzAYawiG/L7qzpddh0yQvcvBnoD8o/pbSWieY1Rg0vvVUE/L6QNkzY3X
+         fol2431Whi+BpDrT69UJjoIhJirrX4tKsmiSNC+xd6v4IxjwZhuxuVPsW53vwfzQoN
+         io4hsdmGH2Z/A==
+Date:   Sat, 26 Mar 2022 00:30:50 +0100
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     Jonathan Corbet <corbet@lwn.net>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/4] scripts/get_feat.pl: allow output the parsed
+ file names
+Message-ID: <20220326003050.50750c75@coco.lan>
+In-Reply-To: <20220326002109.2cda0402@coco.lan>
+References: <cover.1648216561.git.mchehab@kernel.org>
+        <a924b46a80d750d808c28a27adffaa5d5a983e5c.1648216561.git.mchehab@kernel.org>
+        <874k3lg7r3.fsf@meer.lwn.net>
+        <20220326002109.2cda0402@coco.lan>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220325122223.102958-4-jefflexu@linux.alibaba.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jeffle,
+Em Sat, 26 Mar 2022 00:21:09 +0100
+Mauro Carvalho Chehab <mchehab@kernel.org> escreveu:
 
-Thank you for the patch! Yet something to improve:
+> Em Fri, 25 Mar 2022 13:19:28 -0600
+> Jonathan Corbet <corbet@lwn.net> escreveu:
+> 
+> > Mauro Carvalho Chehab <mchehab@kernel.org> writes:
+> >   
+> > > Such output could be helpful while debugging it, but its main
+> > > goal is to tell kernel_feat.py about what files were used
+> > > by the script. Thie way, kernel_feat.py can add those as
+> > > documentation dependencies.
+> > >
+> > > Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>    
+> > 
+> > So I think these are worth getting into 5.18,   
+> 
+> Yeah, agreed.
+> 
+> > but I do have one question:
+> >   
+> > > @@ -95,6 +97,10 @@ sub parse_feat {
+> > >  	return if ($file =~ m,($prefix)/arch-support.txt,);
+> > >  	return if (!($file =~ m,arch-support.txt$,));
+> > >  
+> > > +	if ($enable_fname) {
+> > > +		printf "#define FILE %s\n", abs_path($file);
+> > > +	}
+> > > +    
+> > 
+> > Why do you output the file names in this format?  This isn't input to
+> > the C preprocessor, so the #define just seems strange.  What am I
+> > missing here?  
+> 
+> Well, I didn't think much about that... I just ended using a way that is
+> already used on get_abi.pl, and was originally imported from kernel-doc :-)
+> 
+> It could be using whatever other tag, but I would keep those three scripts 
+> using a similar markup string for file names and line numbers:
+> 
+> scripts/get_abi.pl:
+>     printf "#define LINENO %s%s#%s\n\n", $prefix, $file[0], $data{$what}->{line_no};
+> 
+> scripts/kernel-doc:
+>     print "#define LINENO " . $lineno . "\n";
 
-[auto build test ERROR on trondmy-nfs/linux-next]
-[also build test ERROR on rostedt-trace/for-next linus/master v5.17]
-[cannot apply to xiang-erofs/dev-test dhowells-fs/fscache-next next-20220325]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Btw, maybe we could replace them tree with a Sphinx comment, like:
 
-url:    https://github.com/0day-ci/linux/commits/Jeffle-Xu/fscache-erofs-fscache-based-on-demand-read-semantics/20220325-203555
-base:   git://git.linux-nfs.org/projects/trondmy/linux-nfs.git linux-next
-config: i386-randconfig-a002 (https://download.01.org/0day-ci/archive/20220326/202203260720.uA5o7k5w-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0f6d9501cf49ce02937099350d08f20c4af86f3d)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/ec8aa2f84eb47244377e4b822dd77d82ee54714a
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Jeffle-Xu/fscache-erofs-fscache-based-on-demand-read-semantics/20220325-203555
-        git checkout ec8aa2f84eb47244377e4b822dd77d82ee54714a
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash fs/
+get_feat.pl:
+	.. FILE <file_name>
+kernel-doc:
+	.. LINE <line_number>
+get_abi.pl:
+	.. FILE_LINE <file_name>:<line_number>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+(or something similar)
 
-All error/warnings (new ones prefixed by >>):
+Just let me know what you prefer and I can take care of the needed
+changes on this patch and, if it is the case, writing the extra patches
+in order to use the same model on kernel-doc and get_abi.pl.
 
-   In file included from fs/cachefiles/cache.c:11:
->> fs/cachefiles/internal.h:285:9: warning: no previous prototype for function 'cachefiles_ondemand_daemon_read' [-Wmissing-prototypes]
-   ssize_t cachefiles_ondemand_daemon_read(struct cachefiles_cache *cache,
-           ^
-   fs/cachefiles/internal.h:285:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   ssize_t cachefiles_ondemand_daemon_read(struct cachefiles_cache *cache,
-   ^
-   static 
-   1 warning generated.
---
->> ld.lld: error: duplicate symbol: cachefiles_ondemand_daemon_read
-   >>> defined at internal.h:287 (fs/cachefiles/internal.h:287)
-   >>> fs/cachefiles/cache.o:(cachefiles_ondemand_daemon_read)
-   >>> defined at internal.h:287 (fs/cachefiles/internal.h:287)
-   >>> fs/cachefiles/daemon.o:(.text+0x0)
---
->> ld.lld: error: duplicate symbol: cachefiles_ondemand_daemon_read
-   >>> defined at internal.h:287 (fs/cachefiles/internal.h:287)
-   >>> fs/cachefiles/cache.o:(cachefiles_ondemand_daemon_read)
-   >>> defined at internal.h:287 (fs/cachefiles/internal.h:287)
-   >>> fs/cachefiles/interface.o:(.text+0x0)
---
->> ld.lld: error: duplicate symbol: cachefiles_ondemand_daemon_read
-   >>> defined at internal.h:287 (fs/cachefiles/internal.h:287)
-   >>> fs/cachefiles/cache.o:(cachefiles_ondemand_daemon_read)
-   >>> defined at internal.h:287 (fs/cachefiles/internal.h:287)
-   >>> fs/cachefiles/io.o:(.text+0x0)
---
->> ld.lld: error: duplicate symbol: cachefiles_ondemand_daemon_read
-   >>> defined at internal.h:287 (fs/cachefiles/internal.h:287)
-   >>> fs/cachefiles/cache.o:(cachefiles_ondemand_daemon_read)
-   >>> defined at internal.h:287 (fs/cachefiles/internal.h:287)
-   >>> fs/cachefiles/key.o:(.text+0x0)
---
->> ld.lld: error: duplicate symbol: cachefiles_ondemand_daemon_read
-   >>> defined at internal.h:287 (fs/cachefiles/internal.h:287)
-   >>> fs/cachefiles/cache.o:(cachefiles_ondemand_daemon_read)
-   >>> defined at internal.h:287 (fs/cachefiles/internal.h:287)
-   >>> fs/cachefiles/main.o:(.text+0x38C0)
---
->> ld.lld: error: duplicate symbol: cachefiles_ondemand_daemon_read
-   >>> defined at internal.h:287 (fs/cachefiles/internal.h:287)
-   >>> fs/cachefiles/cache.o:(cachefiles_ondemand_daemon_read)
-   >>> defined at internal.h:287 (fs/cachefiles/internal.h:287)
-   >>> fs/cachefiles/namei.o:(.text+0x0)
---
->> ld.lld: error: duplicate symbol: cachefiles_ondemand_daemon_read
-   >>> defined at internal.h:287 (fs/cachefiles/internal.h:287)
-   >>> fs/cachefiles/cache.o:(cachefiles_ondemand_daemon_read)
-   >>> defined at internal.h:287 (fs/cachefiles/internal.h:287)
-   >>> fs/cachefiles/security.o:(.text+0x0)
---
->> ld.lld: error: duplicate symbol: cachefiles_ondemand_daemon_read
-   >>> defined at internal.h:287 (fs/cachefiles/internal.h:287)
-   >>> fs/cachefiles/cache.o:(cachefiles_ondemand_daemon_read)
-   >>> defined at internal.h:287 (fs/cachefiles/internal.h:287)
-   >>> fs/cachefiles/volume.o:(.text+0x0)
---
->> ld.lld: error: duplicate symbol: cachefiles_ondemand_daemon_read
-   >>> defined at internal.h:287 (fs/cachefiles/internal.h:287)
-   >>> fs/cachefiles/cache.o:(cachefiles_ondemand_daemon_read)
-   >>> defined at internal.h:287 (fs/cachefiles/internal.h:287)
-   >>> fs/cachefiles/xattr.o:(.text+0x0)
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks,
+Mauro
