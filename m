@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E2D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:09:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5CDBC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:10:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239363AbiCYPL0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:11:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36584 "EHLO
+        id S1376296AbiCYPLc (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 11:11:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359635AbiCYPHm (ORCPT
+        with ESMTP id S1359692AbiCYPHv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:07:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFD58DA0AC;
-        Fri, 25 Mar 2022 08:05:51 -0700 (PDT)
+        Fri, 25 Mar 2022 11:07:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6F64DA6E1;
+        Fri, 25 Mar 2022 08:06:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54830B828FA;
-        Fri, 25 Mar 2022 15:05:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A307BC340E9;
-        Fri, 25 Mar 2022 15:05:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 53C9961749;
+        Fri, 25 Mar 2022 15:06:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B5D7C340E9;
+        Fri, 25 Mar 2022 15:06:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648220749;
-        bh=N6vwkSNiAupxcI7UazzCb8LR9f1mJCzrDjlRy+SPIZw=;
+        s=korg; t=1648220760;
+        bh=b3wLxvBN8R6Bi6X4L+bptNebRNxT1fSpfIUs4tO0WkI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k3XNn44D+tXgA9Z1ZvyMeGoMPJGome2IcCfMz1p5aEsfSUK6Wc+/tt81wGfC2sJSS
-         MbRlVLBe61MCel27CMNbUN/ZkQtUtLcuwzXjw7BXx7twWXGseY/bLJkGfC3gbVCbG/
-         4lNcbnSqfdspDwLjBaZuU7CMGkshN5stxglK6EQg=
+        b=W5pZNVJzNm+lbXzZ9TeHCVkKXwd9rxLbmx/7JNiDqfg2qePDNccPB37A1BJX34oAi
+         VLARiUwYuxJ1JxuPJNAC4tJXpzGnB89MJ/rzWXj4qwDOm3a3v64rbFIaeGoFNqHvuS
+         x6c0iOxOMKgyiMD6Nr8Fyk96ZW20YRgDKDt8myAo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maximilian Luz <luzmaximilian@gmail.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 4.14 14/17] ACPI: battery: Add device HID and quirk for Microsoft Surface Go 3
-Date:   Fri, 25 Mar 2022 16:04:48 +0100
-Message-Id: <20220325150417.177656495@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com,
+        Tadeusz Struk <tadeusz.struk@linaro.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.14 02/17] net: ipv6: fix skb_over_panic in __ip6_append_data
+Date:   Fri, 25 Mar 2022 16:04:36 +0100
+Message-Id: <20220325150416.831293702@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150416.756136126@linuxfoundation.org>
 References: <20220325150416.756136126@linuxfoundation.org>
@@ -48,53 +52,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maximilian Luz <luzmaximilian@gmail.com>
+From: Tadeusz Struk <tadeusz.struk@linaro.org>
 
-commit 7dacee0b9efc8bd061f097b1a8d4daa6591af0c6 upstream.
+commit 5e34af4142ffe68f01c8a9acae83300f8911e20c upstream.
 
-For some reason, the Microsoft Surface Go 3 uses the standard ACPI
-interface for battery information, but does not use the standard PNP0C0A
-HID. Instead it uses MSHW0146 as identifier. Add that ID to the driver
-as this seems to work well.
+Syzbot found a kernel bug in the ipv6 stack:
+LINK: https://syzkaller.appspot.com/bug?id=205d6f11d72329ab8d62a610c44c5e7e25415580
+The reproducer triggers it by sending a crafted message via sendmmsg()
+call, which triggers skb_over_panic, and crashes the kernel:
 
-Additionally, the power state is not updated immediately after the AC
-has been (un-)plugged, so add the respective quirk for that.
+skbuff: skb_over_panic: text:ffffffff84647fb4 len:65575 put:65575
+head:ffff888109ff0000 data:ffff888109ff0088 tail:0x100af end:0xfec0
+dev:<NULL>
 
-Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
-Cc: All applicable <stable@vger.kernel.org>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Update the check that prevents an invalid packet with MTU equal
+to the fregment header size to eat up all the space for payload.
+
+The reproducer can be found here:
+LINK: https://syzkaller.appspot.com/text?tag=ReproC&x=1648c83fb00000
+
+Reported-by: syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com
+Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+Acked-by: Willem de Bruijn <willemb@google.com>
+Link: https://lore.kernel.org/r/20220310232538.1044947-1-tadeusz.struk@linaro.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/battery.c |   12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ net/ipv6/ip6_output.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/acpi/battery.c
-+++ b/drivers/acpi/battery.c
-@@ -89,6 +89,10 @@ enum acpi_battery_files {
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -1321,8 +1321,8 @@ static int __ip6_append_data(struct sock
+ 		      sizeof(struct frag_hdr) : 0) +
+ 		     rt->rt6i_nfheader_len;
  
- static const struct acpi_device_id battery_device_ids[] = {
- 	{"PNP0C0A", 0},
-+
-+	/* Microsoft Surface Go 3 */
-+	{"MSHW0146", 0},
-+
- 	{"", 0},
- };
+-	if (mtu < fragheaderlen ||
+-	    ((mtu - fragheaderlen) & ~7) + fragheaderlen < sizeof(struct frag_hdr))
++	if (mtu <= fragheaderlen ||
++	    ((mtu - fragheaderlen) & ~7) + fragheaderlen <= sizeof(struct frag_hdr))
+ 		goto emsgsize;
  
-@@ -1183,6 +1187,14 @@ static const struct dmi_system_id bat_dm
- 			DMI_MATCH(DMI_PRODUCT_NAME, "Aspire V5-573G"),
- 		},
- 	},
-+	{
-+		/* Microsoft Surface Go 3 */
-+		.callback = battery_notification_delay_quirk,
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "Surface Go 3"),
-+		},
-+	},
- 	{},
- };
- 
+ 	maxfraglen = ((mtu - fragheaderlen) & ~7) + fragheaderlen -
 
 
