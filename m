@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7897BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:07:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CE6BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:07:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238273AbiCYPJN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:09:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37988 "EHLO
+        id S1359623AbiCYPJT (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 11:09:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359676AbiCYPHu (ORCPT
+        with ESMTP id S1359716AbiCYPHx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:07:50 -0400
+        Fri, 25 Mar 2022 11:07:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10C03DA6D2;
-        Fri, 25 Mar 2022 08:05:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 839F6DA6FC;
+        Fri, 25 Mar 2022 08:06:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FD2061BAD;
-        Fri, 25 Mar 2022 15:05:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65710C340EE;
-        Fri, 25 Mar 2022 15:05:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DADD61BAD;
+        Fri, 25 Mar 2022 15:06:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B984C340EE;
+        Fri, 25 Mar 2022 15:06:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648220757;
-        bh=f4H2JhhW9Loa7LpqKv/YREuv+jY8WMt0ZAla2LtzshI=;
+        s=korg; t=1648220763;
+        bh=v9JXWRff/E4uOFUY3/SZRxRqFUoYyP8wGxuStZmOvK8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FYGrP3lfLuF5cfm55AGZoUhEsWTH/Rggu94Pb2kb8+4433Kl+6MvY5kbaDtmBWuM1
-         +rRttlGT4mHuJ/7ymTqxJQvWVKwRE4u7QhVnGQ5kZ5qvQBMCXdtSa6tj1h+AaM3Z7a
-         DC0TP2wLPOpzOhNUMwKvqFQg8qv/M5BD6DO/swwI=
+        b=lk6pH9KMnTkowuES1kZZXwkOHVnomMJG08W6g7/cQeF2SYFyh+A8DYeFLJNvAyHbe
+         XhfOf2VAeKLNZDBJ+E346LK2KMH4GFQ7udAx/ZLYXUdIFLkDg68+E5dcmLtsfQwr8+
+         WRHsvkGlpvV6cgDkanb9/L0XMrC8Q7algUXgAfew=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Matthias Kretschmer <mathias.kretschmer@fit.fraunhofer.de>,
-        =?UTF-8?q?Linus=20L=C3=BCssing?= <ll@simonwunderlich.de>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 4.14 17/17] mac80211: fix potential double free on mesh join
-Date:   Fri, 25 Mar 2022 16:04:51 +0100
-Message-Id: <20220325150417.262035632@linuxfoundation.org>
+        stable@vger.kernel.org, valis <sec@valis.email>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Vaibhav Rustagi <vaibhavrustagi@google.com>
+Subject: [PATCH 4.14 03/17] esp: Fix possible buffer overflow in ESP transformation
+Date:   Fri, 25 Mar 2022 16:04:37 +0100
+Message-Id: <20220325150416.860998316@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150416.756136126@linuxfoundation.org>
 References: <20220325150416.756136126@linuxfoundation.org>
@@ -50,80 +50,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Lüssing <ll@simonwunderlich.de>
+From: Steffen Klassert <steffen.klassert@secunet.com>
 
-commit 4a2d4496e15ea5bb5c8e83b94ca8ca7fb045e7d3 upstream.
+commit ebe48d368e97d007bfeb76fcb065d6cfc4c96645 upstream.
 
-While commit 6a01afcf8468 ("mac80211: mesh: Free ie data when leaving
-mesh") fixed a memory leak on mesh leave / teardown it introduced a
-potential memory corruption caused by a double free when rejoining the
-mesh:
+The maximum message size that can be send is bigger than
+the  maximum site that skb_page_frag_refill can allocate.
+So it is possible to write beyond the allocated buffer.
 
-  ieee80211_leave_mesh()
-  -> kfree(sdata->u.mesh.ie);
-  ...
-  ieee80211_join_mesh()
-  -> copy_mesh_setup()
-     -> old_ie = ifmsh->ie;
-     -> kfree(old_ie);
+Fix this by doing a fallback to COW in that case.
 
-This double free / kernel panics can be reproduced by using wpa_supplicant
-with an encrypted mesh (if set up without encryption via "iw" then
-ifmsh->ie is always NULL, which avoids this issue). And then calling:
+v2:
 
-  $ iw dev mesh0 mesh leave
-  $ iw dev mesh0 mesh join my-mesh
+Avoid get get_order() costs as suggested by Linus Torvalds.
 
-Note that typically these commands are not used / working when using
-wpa_supplicant. And it seems that wpa_supplicant or wpa_cli are going
-through a NETDEV_DOWN/NETDEV_UP cycle between a mesh leave and mesh join
-where the NETDEV_UP resets the mesh.ie to NULL via a memcpy of
-default_mesh_setup in cfg80211_netdev_notifier_call, which then avoids
-the memory corruption, too.
-
-The issue was first observed in an application which was not using
-wpa_supplicant but "Senf" instead, which implements its own calls to
-nl80211.
-
-Fixing the issue by removing the kfree()'ing of the mesh IE in the mesh
-join function and leaving it solely up to the mesh leave to free the
-mesh IE.
-
-Cc: stable@vger.kernel.org
-Fixes: 6a01afcf8468 ("mac80211: mesh: Free ie data when leaving mesh")
-Reported-by: Matthias Kretschmer <mathias.kretschmer@fit.fraunhofer.de>
-Signed-off-by: Linus Lüssing <ll@simonwunderlich.de>
-Tested-by: Mathias Kretschmer <mathias.kretschmer@fit.fraunhofer.de>
-Link: https://lore.kernel.org/r/20220310183513.28589-1-linus.luessing@c0d3.blue
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Fixes: cac2661c53f3 ("esp4: Avoid skb_cow_data whenever possible")
+Fixes: 03e2a30f6a27 ("esp6: Avoid skb_cow_data whenever possible")
+Reported-by: valis <sec@valis.email>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Vaibhav Rustagi <vaibhavrustagi@google.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/mac80211/cfg.c |    3 ---
- 1 file changed, 3 deletions(-)
+ include/net/esp.h  |    2 ++
+ include/net/sock.h |    3 +++
+ net/core/sock.c    |    3 ---
+ net/ipv4/esp4.c    |    5 +++++
+ net/ipv6/esp6.c    |    5 +++++
+ 5 files changed, 15 insertions(+), 3 deletions(-)
 
---- a/net/mac80211/cfg.c
-+++ b/net/mac80211/cfg.c
-@@ -1811,13 +1811,11 @@ static int copy_mesh_setup(struct ieee80
- 		const struct mesh_setup *setup)
- {
- 	u8 *new_ie;
--	const u8 *old_ie;
- 	struct ieee80211_sub_if_data *sdata = container_of(ifmsh,
- 					struct ieee80211_sub_if_data, u.mesh);
+--- a/include/net/esp.h
++++ b/include/net/esp.h
+@@ -4,6 +4,8 @@
  
- 	/* allocate information elements */
- 	new_ie = NULL;
--	old_ie = ifmsh->ie;
+ #include <linux/skbuff.h>
  
- 	if (setup->ie_len) {
- 		new_ie = kmemdup(setup->ie, setup->ie_len,
-@@ -1827,7 +1825,6 @@ static int copy_mesh_setup(struct ieee80
++#define ESP_SKB_FRAG_MAXSIZE (PAGE_SIZE << SKB_FRAG_PAGE_ORDER)
++
+ struct ip_esp_hdr;
+ 
+ static inline struct ip_esp_hdr *ip_esp_hdr(const struct sk_buff *skb)
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -2438,4 +2438,7 @@ extern int sysctl_optmem_max;
+ extern __u32 sysctl_wmem_default;
+ extern __u32 sysctl_rmem_default;
+ 
++/* On 32bit arches, an skb frag is limited to 2^15 */
++#define SKB_FRAG_PAGE_ORDER	get_order(32768)
++
+ #endif	/* _SOCK_H */
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2193,9 +2193,6 @@ static void sk_leave_memory_pressure(str
  	}
- 	ifmsh->ie_len = setup->ie_len;
- 	ifmsh->ie = new_ie;
--	kfree(old_ie);
+ }
  
- 	/* now copy the rest of the setup parameters */
- 	ifmsh->mesh_id_len = setup->mesh_id_len;
+-/* On 32bit arches, an skb frag is limited to 2^15 */
+-#define SKB_FRAG_PAGE_ORDER	get_order(32768)
+-
+ /**
+  * skb_page_frag_refill - check that a page_frag contains enough room
+  * @sz: minimum size of the fragment we want to get
+--- a/net/ipv4/esp4.c
++++ b/net/ipv4/esp4.c
+@@ -257,6 +257,7 @@ int esp_output_head(struct xfrm_state *x
+ 	struct page *page;
+ 	struct sk_buff *trailer;
+ 	int tailen = esp->tailen;
++	unsigned int allocsz;
+ 
+ 	/* this is non-NULL only with UDP Encapsulation */
+ 	if (x->encap) {
+@@ -266,6 +267,10 @@ int esp_output_head(struct xfrm_state *x
+ 			return err;
+ 	}
+ 
++	allocsz = ALIGN(skb->data_len + tailen, L1_CACHE_BYTES);
++	if (allocsz > ESP_SKB_FRAG_MAXSIZE)
++		goto cow;
++
+ 	if (!skb_cloned(skb)) {
+ 		if (tailen <= skb_tailroom(skb)) {
+ 			nfrags = 1;
+--- a/net/ipv6/esp6.c
++++ b/net/ipv6/esp6.c
+@@ -223,6 +223,11 @@ int esp6_output_head(struct xfrm_state *
+ 	struct page *page;
+ 	struct sk_buff *trailer;
+ 	int tailen = esp->tailen;
++	unsigned int allocsz;
++
++	allocsz = ALIGN(skb->data_len + tailen, L1_CACHE_BYTES);
++	if (allocsz > ESP_SKB_FRAG_MAXSIZE)
++		goto cow;
+ 
+ 	if (!skb_cloned(skb)) {
+ 		if (tailen <= skb_tailroom(skb)) {
 
 
