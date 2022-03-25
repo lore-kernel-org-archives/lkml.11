@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B311C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:31:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2607EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345780AbiCYPcs (ORCPT
+        id S1355456AbiCYPcu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:32:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42592 "EHLO
+        Fri, 25 Mar 2022 11:32:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377655AbiCYPYZ (ORCPT
+        with ESMTP id S1376342AbiCYPWH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:24:25 -0400
+        Fri, 25 Mar 2022 11:22:07 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9855AE7F77;
-        Fri, 25 Mar 2022 08:18:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1AC06C93F;
+        Fri, 25 Mar 2022 08:16:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D67460AB7;
-        Fri, 25 Mar 2022 15:18:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C4BCC340E9;
-        Fri, 25 Mar 2022 15:18:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AD54360AE0;
+        Fri, 25 Mar 2022 15:15:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4069C340E9;
+        Fri, 25 Mar 2022 15:15:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221506;
-        bh=TQCFjAhdsKyZ7yg+szFGHHnNbG43OsViEk8ESlBL1dU=;
+        s=korg; t=1648221354;
+        bh=PVvpZe0gwx7cCv7/Tokda8oeLwGKuYAWw5qH3QerL9w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CS86dL2fzQzV48FX8IdOJimkb6FNvmEgmBQLJoPBD7EOcJxb7itLHL3cdisnGLJKR
-         XIjkw/dx/wBMRcnlkrs3gmsGnSkBe5221pYs4b7netQg3lYid/D0OMbDW0AdBi30QL
-         N0C4fb6DzK26DbseJBBI02uMzfvZeUow7ddk1IUU=
+        b=Qvn/GrczFNU1b47SvZkOXh61ieUfwNDdAGOx3/9kAIP9dSJurGaCfe1PwLf4rhPMH
+         tV1DeHtmUmy/Z9F1baJTCSsIeNNwwLKGyOrI4gDEgMllE/eTJcbSOhwyk4RIBi9DRu
+         UTrc1UZFRMafB3nDwK9gSAy5/zcNCnx/DIRL7IgM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jason Zheng <jasonzheng2004@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.17 10/39] ALSA: hda/realtek: Add quirk for ASUS GA402
-Date:   Fri, 25 Mar 2022 16:14:25 +0100
-Message-Id: <20220325150420.539947560@linuxfoundation.org>
+        stable@vger.kernel.org, Roberto Sassu <roberto.sassu@huawei.com>,
+        syzbot+e9072e90624a31dfa85f@syzkaller.appspotmail.com,
+        Gerd Hoffmann <kraxel@redhat.com>
+Subject: [PATCH 5.15 30/37] drm/virtio: Ensure that objs is not NULL in virtio_gpu_array_put_free()
+Date:   Fri, 25 Mar 2022 16:14:31 +0100
+Message-Id: <20220325150420.791591767@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220325150420.245733653@linuxfoundation.org>
-References: <20220325150420.245733653@linuxfoundation.org>
+In-Reply-To: <20220325150419.931802116@linuxfoundation.org>
+References: <20220325150419.931802116@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,31 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason Zheng <jasonzheng2004@gmail.com>
+From: Roberto Sassu <roberto.sassu@huawei.com>
 
-commit b7557267c233b55d8e8d7ba4c68cf944fe2ec02c upstream.
+commit 6b79f96f4a23846516e5e6e4dd37fc06f43a60dd upstream.
 
-ASUS GA402 requires a workaround to manage the routing of its 4 speakers
-like the other ASUS models. Add a corresponding quirk entry to fix it.
+If virtio_gpu_object_shmem_init() fails (e.g. due to fault injection, as it
+happened in the bug report by syzbot), virtio_gpu_array_put_free() could be
+called with objs equal to NULL.
 
-Signed-off-by: Jason Zheng <jasonzheng2004@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220313092216.29858-1-jasonzheng2004@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Ensure that objs is not NULL in virtio_gpu_array_put_free(), or otherwise
+return from the function.
+
+Cc: stable@vger.kernel.org # 5.13.x
+Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+Reported-by: syzbot+e9072e90624a31dfa85f@syzkaller.appspotmail.com
+Fixes: 377f8331d0565 ("drm/virtio: fix possible leak/unlock virtio_gpu_object_array")
+Link: http://patchwork.freedesktop.org/patch/msgid/20211213183122.838119-1-roberto.sassu@huawei.com
+Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/virtio/virtgpu_gem.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -9020,6 +9020,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x1043, 0x1e51, "ASUS Zephyrus M15", ALC294_FIXUP_ASUS_GU502_PINS),
- 	SND_PCI_QUIRK(0x1043, 0x1e8e, "ASUS Zephyrus G15", ALC289_FIXUP_ASUS_GA401),
- 	SND_PCI_QUIRK(0x1043, 0x1f11, "ASUS Zephyrus G14", ALC289_FIXUP_ASUS_GA401),
-+	SND_PCI_QUIRK(0x1043, 0x1d42, "ASUS Zephyrus G14 2022", ALC289_FIXUP_ASUS_GA401),
- 	SND_PCI_QUIRK(0x1043, 0x16b2, "ASUS GU603", ALC289_FIXUP_ASUS_GA401),
- 	SND_PCI_QUIRK(0x1043, 0x3030, "ASUS ZN270IE", ALC256_FIXUP_ASUS_AIO_GPIO2),
- 	SND_PCI_QUIRK(0x1043, 0x831a, "ASUS P901", ALC269_FIXUP_STEREO_DMIC),
+--- a/drivers/gpu/drm/virtio/virtgpu_gem.c
++++ b/drivers/gpu/drm/virtio/virtgpu_gem.c
+@@ -248,6 +248,9 @@ void virtio_gpu_array_put_free(struct vi
+ {
+ 	u32 i;
+ 
++	if (!objs)
++		return;
++
+ 	for (i = 0; i < objs->nents; i++)
+ 		drm_gem_object_put(objs->objs[i]);
+ 	virtio_gpu_array_free(objs);
 
 
