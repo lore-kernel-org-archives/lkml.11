@@ -2,68 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E130C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 21:07:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62A3FC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 21:11:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233197AbiCYVJG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 17:09:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42088 "EHLO
+        id S233328AbiCYVMl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 17:12:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233279AbiCYVIn (ORCPT
+        with ESMTP id S231745AbiCYVMi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 17:08:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4D3C1EDA37
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 14:07:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 48E3361D7D
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 21:07:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AE3D3C36AE3;
-        Fri, 25 Mar 2022 21:07:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648242426;
-        bh=PA3+t8bHQ4uRnyUhnP9UF+rTF5VsNaPbiks0yzerpns=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=p9wSJ78p9ahqj40iwWnBgDnqR/6LkLdZnqSCDtuB3xrddh5npx6QPSTNBE9q/wO/I
-         IDOLthfqf1FeWMhGhAtc7p7Eg2qqGQRSXVs+1HbJjXn+5XHXB3TI/8FIA8bmNAqXWd
-         0Y68T5/BLRi+iLlGRbR6KULiCdIXGWzZ0/pQ+6LDa6NXYnja9M3b8AVx1eV5KQkz5y
-         abn/3a6lsAf2dKhYhtazlnkpYfIdSnxsZhCKCP20q3tOKeISMHGdHUfNicbYRgTPoS
-         7BZovh4tEZ0BGbIE1XzWsy7w1MeuDbw7WOQWdc61NDsfAOIOQeIorOSb6N2v3nAjsp
-         TS6Zb/jFfBKBw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9C5AAE7BB0B;
-        Fri, 25 Mar 2022 21:07:06 +0000 (UTC)
-Subject: Re: [GIT PULL] Backlight for v5.18
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <Yj2gqnIk6HY5WyKo@google.com>
-References: <Yj2gqnIk6HY5WyKo@google.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <Yj2gqnIk6HY5WyKo@google.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/lee/backlight.git backlight-next-5.18
-X-PR-Tracked-Commit-Id: 023a8830a62846e1cecc8da07e00c801dd0d7598
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 46f538bf2404ee9c32648deafb886f49144bfd5e
-Message-Id: <164824242663.8431.1930325632927035855.pr-tracker-bot@kernel.org>
-Date:   Fri, 25 Mar 2022 21:07:06 +0000
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        Fri, 25 Mar 2022 17:12:38 -0400
+Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AD731FF412;
+        Fri, 25 Mar 2022 14:11:03 -0700 (PDT)
+Received: by mail-oi1-f174.google.com with SMTP id w127so9487607oig.10;
+        Fri, 25 Mar 2022 14:11:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wXvBLN2YPI/f+mwgNpVUSPw3vc7vaslW8j6BkDAkPkw=;
+        b=5yVFPYFVS/tIzDi0a9ZxGo5qJfpMOsEpodTqe7HVQb77GpyQCti0jT0NIGDNA6LoHQ
+         dFxli7rK6VXnwjqNRNpg3zv9vACIdfHArhvWNPVqzkmTwQ73au+ylEfD8om8qsbnHK1e
+         cWYXuMzNMn9dIy2kceK1oEKCUrfI3ms9KfHkkERZa/1/jit65VYQxOI6mIgukZYxg4A4
+         m+DFGPEvPpSPDjCf0jwoMdd8ytTrbQ3a2IPgOsifuv+pDSx92qPLZtwlaGVb/v+2gpCm
+         mD/PFOkeUvHKJS5AcwgyA7JL0M92TfScdHrbqUUnkQcBUgjXAsOpot69l1dg80bpHyq9
+         815g==
+X-Gm-Message-State: AOAM533lqbX31IXv5s0k3N2/ktd4BN8dUKh90tQhnh3SkBsWq4XoBLf3
+        u6nz2qIeuer8z7SChl1oow==
+X-Google-Smtp-Source: ABdhPJz/WMdnAOINviqJND5zDMeL1o27zVTXARwz/Cw5GDE6nIi94HXm4B8MMoxqz03bNIsAqu/rNQ==
+X-Received: by 2002:a05:6808:9b9:b0:2ef:7562:1586 with SMTP id e25-20020a05680809b900b002ef75621586mr6372651oig.261.1648242662763;
+        Fri, 25 Mar 2022 14:11:02 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id c26-20020a4ae25a000000b0031c268c5436sm3028104oot.16.2022.03.25.14.11.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Mar 2022 14:11:01 -0700 (PDT)
+Received: (nullmailer pid 460214 invoked by uid 1000);
+        Fri, 25 Mar 2022 21:11:01 -0000
+Date:   Fri, 25 Mar 2022 16:11:01 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Olivier Dautricourt <olivier.dautricourt@orolia.com>
+Cc:     Vinod Koul <vkoul@kernel.org>, devicetree@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, dmaengine@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Stefan Roese <sr@denx.de>
+Subject: Re: [PATCH 2/2] dt-bindings: altr,msgdma: update my email address
+Message-ID: <Yj4v5c3nTdOhgyU7@robh.at.kernel.org>
+References: <85c4174fa162bd946ccf3e08dcfc9b83cfe69b5c.1647539776.git.olivier.dautricourt@orolia.com>
+ <dc3decf1dae172c688017bd3ada2ad2b7d060c1e.1647539776.git.olivier.dautricourt@orolia.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <dc3decf1dae172c688017bd3ada2ad2b7d060c1e.1647539776.git.olivier.dautricourt@orolia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 25 Mar 2022 10:59:54 +0000:
+On Thu, 17 Mar 2022 18:56:56 +0100, Olivier Dautricourt wrote:
+> This email should now be used to contact me.
+> 
+> Signed-off-by: Olivier Dautricourt <olivier.dautricourt@orolia.com>
+> ---
+>  Documentation/devicetree/bindings/dma/altr,msgdma.yaml | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/lee/backlight.git backlight-next-5.18
-
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/46f538bf2404ee9c32648deafb886f49144bfd5e
-
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Acked-by: Rob Herring <robh@kernel.org>
