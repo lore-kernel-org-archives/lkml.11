@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B39C4C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C8EEC4321E
 	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378725AbiCYPfh (ORCPT
+        id S1378521AbiCYPew (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:35:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34164 "EHLO
+        Fri, 25 Mar 2022 11:34:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376822AbiCYPX1 (ORCPT
+        with ESMTP id S1378210AbiCYPZG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:23:27 -0400
+        Fri, 25 Mar 2022 11:25:06 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CB7EE1247;
-        Fri, 25 Mar 2022 08:16:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F43CECC45;
+        Fri, 25 Mar 2022 08:20:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D11C60DE3;
-        Fri, 25 Mar 2022 15:16:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F75DC340E9;
-        Fri, 25 Mar 2022 15:16:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D425460A1B;
+        Fri, 25 Mar 2022 15:20:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E96CC340E9;
+        Fri, 25 Mar 2022 15:20:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221409;
-        bh=8SAhyuG4jGlA+wi+EXKjrX7dlF5Y3pT/GEqS0lcPxAM=;
+        s=korg; t=1648221601;
+        bh=KGWqAfAdKSffU84AalZsu8UzUhsZ2LveHgjrw61I36I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L9IjlYw3W0l28TqXxJCl7XRnXwPhNaZTgt9JFUkZ2vaQ+yTAtzZKt+5jkJCQAtucE
-         GRusRpJrUMHOaDVybkiSR+Eh2RrNQIId5jatdIWEPttOjKQ+TL1DQOQMT1q5PLOxJW
-         LdnhGHAxHXzQpfwzQBhIFLvGDHfsHyD+UiUPVBlc=
+        b=EWv8JCtGE/m+SwsgZsLbu0mT5s0Fjk78b1Aw4Ok93sfk52juMCKXgocAvPaPI3jdi
+         YY9R5mYSrG1/v5SGFJ3M6Wl0XuWkx9+h2dO0IoMZDG3OshvL2tDz5K3lg+3pcXGBr2
+         k/NMOhj91ge/YPhIfOb8bdSXowSFGpG/2g82+FYk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jarkko Sakkinen <jarkko@kernel.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        linux-integrity@vger.kernel.org, Tadeusz Struk <tstruk@gmail.com>,
-        Tadeusz Struk <tadeusz.struk@linaro.org>
-Subject: [PATCH 5.16 14/37] tpm: Fix error handling in async work
-Date:   Fri, 25 Mar 2022 16:14:24 +0100
-Message-Id: <20220325150420.455042317@linuxfoundation.org>
+        stable@vger.kernel.org, Jason Gunthorpe <jgg@ziepe.ca>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Stefan Berger <stefanb@linux.ibm.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>
+Subject: [PATCH 5.17 35/39] tpm: fix reference counting for struct tpm_chip
+Date:   Fri, 25 Mar 2022 16:14:50 +0100
+Message-Id: <20220325150421.249474748@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220325150420.046488912@linuxfoundation.org>
-References: <20220325150420.046488912@linuxfoundation.org>
+In-Reply-To: <20220325150420.245733653@linuxfoundation.org>
+References: <20220325150420.245733653@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,56 +52,273 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tadeusz Struk <tstruk@gmail.com>
+From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
 
-commit 2e8e4c8f6673247e22efc7985ce5497accd16f88 upstream.
+commit 7e0438f83dc769465ee663bb5dcf8cc154940712 upstream.
 
-When an invalid (non existing) handle is used in a TPM command,
-that uses the resource manager interface (/dev/tpmrm0) the resource
-manager tries to load it from its internal cache, but fails and
-the tpm_dev_transmit returns an -EINVAL error to the caller.
-The existing async handler doesn't handle these error cases
-currently and the condition in the poll handler never returns
-mask with EPOLLIN set.
-The result is that the poll call blocks and the application gets stuck
-until the user_read_timer wakes it up after 120 sec.
-Change the tpm_dev_async_work function to handle error conditions
-returned from tpm_dev_transmit they are also reflected in the poll mask
-and a correct error code could passed back to the caller.
+The following sequence of operations results in a refcount warning:
 
-Cc: Jarkko Sakkinen <jarkko@kernel.org>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: <linux-integrity@vger.kernel.org>
-Cc: <stable@vger.kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
+1. Open device /dev/tpmrm.
+2. Remove module tpm_tis_spi.
+3. Write a TPM command to the file descriptor opened at step 1.
 
-Fixes: 9e1b74a63f77 ("tpm: add support for nonblocking operation")
-Tested-by: Jarkko Sakkinen<jarkko@kernel.org>
-Signed-off-by: Tadeusz Struk <tstruk@gmail.com>
+------------[ cut here ]------------
+WARNING: CPU: 3 PID: 1161 at lib/refcount.c:25 kobject_get+0xa0/0xa4
+refcount_t: addition on 0; use-after-free.
+Modules linked in: tpm_tis_spi tpm_tis_core tpm mdio_bcm_unimac brcmfmac
+sha256_generic libsha256 sha256_arm hci_uart btbcm bluetooth cfg80211 vc4
+brcmutil ecdh_generic ecc snd_soc_core crc32_arm_ce libaes
+raspberrypi_hwmon ac97_bus snd_pcm_dmaengine bcm2711_thermal snd_pcm
+snd_timer genet snd phy_generic soundcore [last unloaded: spi_bcm2835]
+CPU: 3 PID: 1161 Comm: hold_open Not tainted 5.10.0ls-main-dirty #2
+Hardware name: BCM2711
+[<c0410c3c>] (unwind_backtrace) from [<c040b580>] (show_stack+0x10/0x14)
+[<c040b580>] (show_stack) from [<c1092174>] (dump_stack+0xc4/0xd8)
+[<c1092174>] (dump_stack) from [<c0445a30>] (__warn+0x104/0x108)
+[<c0445a30>] (__warn) from [<c0445aa8>] (warn_slowpath_fmt+0x74/0xb8)
+[<c0445aa8>] (warn_slowpath_fmt) from [<c08435d0>] (kobject_get+0xa0/0xa4)
+[<c08435d0>] (kobject_get) from [<bf0a715c>] (tpm_try_get_ops+0x14/0x54 [tpm])
+[<bf0a715c>] (tpm_try_get_ops [tpm]) from [<bf0a7d6c>] (tpm_common_write+0x38/0x60 [tpm])
+[<bf0a7d6c>] (tpm_common_write [tpm]) from [<c05a7ac0>] (vfs_write+0xc4/0x3c0)
+[<c05a7ac0>] (vfs_write) from [<c05a7ee4>] (ksys_write+0x58/0xcc)
+[<c05a7ee4>] (ksys_write) from [<c04001a0>] (ret_fast_syscall+0x0/0x4c)
+Exception stack(0xc226bfa8 to 0xc226bff0)
+bfa0:                   00000000 000105b4 00000003 beafe664 00000014 00000000
+bfc0: 00000000 000105b4 000103f8 00000004 00000000 00000000 b6f9c000 beafe684
+bfe0: 0000006c beafe648 0001056c b6eb6944
+---[ end trace d4b8409def9b8b1f ]---
+
+The reason for this warning is the attempt to get the chip->dev reference
+in tpm_common_write() although the reference counter is already zero.
+
+Since commit 8979b02aaf1d ("tpm: Fix reference count to main device") the
+extra reference used to prevent a premature zero counter is never taken,
+because the required TPM_CHIP_FLAG_TPM2 flag is never set.
+
+Fix this by moving the TPM 2 character device handling from
+tpm_chip_alloc() to tpm_add_char_device() which is called at a later point
+in time when the flag has been set in case of TPM2.
+
+Commit fdc915f7f719 ("tpm: expose spaces via a device link /dev/tpmrm<n>")
+already introduced function tpm_devs_release() to release the extra
+reference but did not implement the required put on chip->devs that results
+in the call of this function.
+
+Fix this by putting chip->devs in tpm_chip_unregister().
+
+Finally move the new implementation for the TPM 2 handling into a new
+function to avoid multiple checks for the TPM_CHIP_FLAG_TPM2 flag in the
+good case and error cases.
+
+Cc: stable@vger.kernel.org
+Fixes: fdc915f7f719 ("tpm: expose spaces via a device link /dev/tpmrm<n>")
+Fixes: 8979b02aaf1d ("tpm: Fix reference count to main device")
+Co-developed-by: Jason Gunthorpe <jgg@ziepe.ca>
+Signed-off-by: Jason Gunthorpe <jgg@ziepe.ca>
+Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Tested-by: Stefan Berger <stefanb@linux.ibm.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
 Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
-Cc: Tadeusz Struk <tadeusz.struk@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/tpm/tpm-dev-common.c |    8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/char/tpm/tpm-chip.c   |   46 +++++------------------------
+ drivers/char/tpm/tpm.h        |    2 +
+ drivers/char/tpm/tpm2-space.c |   65 ++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 75 insertions(+), 38 deletions(-)
 
---- a/drivers/char/tpm/tpm-dev-common.c
-+++ b/drivers/char/tpm/tpm-dev-common.c
-@@ -69,7 +69,13 @@ static void tpm_dev_async_work(struct wo
- 	ret = tpm_dev_transmit(priv->chip, priv->space, priv->data_buffer,
- 			       sizeof(priv->data_buffer));
- 	tpm_put_ops(priv->chip);
--	if (ret > 0) {
+--- a/drivers/char/tpm/tpm-chip.c
++++ b/drivers/char/tpm/tpm-chip.c
+@@ -274,14 +274,6 @@ static void tpm_dev_release(struct devic
+ 	kfree(chip);
+ }
+ 
+-static void tpm_devs_release(struct device *dev)
+-{
+-	struct tpm_chip *chip = container_of(dev, struct tpm_chip, devs);
+-
+-	/* release the master device reference */
+-	put_device(&chip->dev);
+-}
+-
+ /**
+  * tpm_class_shutdown() - prepare the TPM device for loss of power.
+  * @dev: device to which the chip is associated.
+@@ -344,7 +336,6 @@ struct tpm_chip *tpm_chip_alloc(struct d
+ 	chip->dev_num = rc;
+ 
+ 	device_initialize(&chip->dev);
+-	device_initialize(&chip->devs);
+ 
+ 	chip->dev.class = tpm_class;
+ 	chip->dev.class->shutdown_pre = tpm_class_shutdown;
+@@ -352,39 +343,20 @@ struct tpm_chip *tpm_chip_alloc(struct d
+ 	chip->dev.parent = pdev;
+ 	chip->dev.groups = chip->groups;
+ 
+-	chip->devs.parent = pdev;
+-	chip->devs.class = tpmrm_class;
+-	chip->devs.release = tpm_devs_release;
+-	/* get extra reference on main device to hold on
+-	 * behalf of devs.  This holds the chip structure
+-	 * while cdevs is in use.  The corresponding put
+-	 * is in the tpm_devs_release (TPM2 only)
+-	 */
+-	if (chip->flags & TPM_CHIP_FLAG_TPM2)
+-		get_device(&chip->dev);
+-
+ 	if (chip->dev_num == 0)
+ 		chip->dev.devt = MKDEV(MISC_MAJOR, TPM_MINOR);
+ 	else
+ 		chip->dev.devt = MKDEV(MAJOR(tpm_devt), chip->dev_num);
+ 
+-	chip->devs.devt =
+-		MKDEV(MAJOR(tpm_devt), chip->dev_num + TPM_NUM_DEVICES);
+-
+ 	rc = dev_set_name(&chip->dev, "tpm%d", chip->dev_num);
+ 	if (rc)
+ 		goto out;
+-	rc = dev_set_name(&chip->devs, "tpmrm%d", chip->dev_num);
+-	if (rc)
+-		goto out;
+ 
+ 	if (!pdev)
+ 		chip->flags |= TPM_CHIP_FLAG_VIRTUAL;
+ 
+ 	cdev_init(&chip->cdev, &tpm_fops);
+-	cdev_init(&chip->cdevs, &tpmrm_fops);
+ 	chip->cdev.owner = THIS_MODULE;
+-	chip->cdevs.owner = THIS_MODULE;
+ 
+ 	rc = tpm2_init_space(&chip->work_space, TPM2_SPACE_BUFFER_SIZE);
+ 	if (rc) {
+@@ -396,7 +368,6 @@ struct tpm_chip *tpm_chip_alloc(struct d
+ 	return chip;
+ 
+ out:
+-	put_device(&chip->devs);
+ 	put_device(&chip->dev);
+ 	return ERR_PTR(rc);
+ }
+@@ -445,14 +416,9 @@ static int tpm_add_char_device(struct tp
+ 	}
+ 
+ 	if (chip->flags & TPM_CHIP_FLAG_TPM2 && !tpm_is_firmware_upgrade(chip)) {
+-		rc = cdev_device_add(&chip->cdevs, &chip->devs);
+-		if (rc) {
+-			dev_err(&chip->devs,
+-				"unable to cdev_device_add() %s, major %d, minor %d, err=%d\n",
+-				dev_name(&chip->devs), MAJOR(chip->devs.devt),
+-				MINOR(chip->devs.devt), rc);
+-			return rc;
+-		}
++		rc = tpm_devs_add(chip);
++		if (rc)
++			goto err_del_cdev;
+ 	}
+ 
+ 	/* Make the chip available. */
+@@ -460,6 +426,10 @@ static int tpm_add_char_device(struct tp
+ 	idr_replace(&dev_nums_idr, chip, chip->dev_num);
+ 	mutex_unlock(&idr_lock);
+ 
++	return 0;
++
++err_del_cdev:
++	cdev_device_del(&chip->cdev, &chip->dev);
+ 	return rc;
+ }
+ 
+@@ -654,7 +624,7 @@ void tpm_chip_unregister(struct tpm_chip
+ 		hwrng_unregister(&chip->hwrng);
+ 	tpm_bios_log_teardown(chip);
+ 	if (chip->flags & TPM_CHIP_FLAG_TPM2 && !tpm_is_firmware_upgrade(chip))
+-		cdev_device_del(&chip->cdevs, &chip->devs);
++		tpm_devs_remove(chip);
+ 	tpm_del_char_device(chip);
+ }
+ EXPORT_SYMBOL_GPL(tpm_chip_unregister);
+--- a/drivers/char/tpm/tpm.h
++++ b/drivers/char/tpm/tpm.h
+@@ -234,6 +234,8 @@ int tpm2_prepare_space(struct tpm_chip *
+ 		       size_t cmdsiz);
+ int tpm2_commit_space(struct tpm_chip *chip, struct tpm_space *space, void *buf,
+ 		      size_t *bufsiz);
++int tpm_devs_add(struct tpm_chip *chip);
++void tpm_devs_remove(struct tpm_chip *chip);
+ 
+ void tpm_bios_log_setup(struct tpm_chip *chip);
+ void tpm_bios_log_teardown(struct tpm_chip *chip);
+--- a/drivers/char/tpm/tpm2-space.c
++++ b/drivers/char/tpm/tpm2-space.c
+@@ -574,3 +574,68 @@ out:
+ 	dev_err(&chip->dev, "%s: error %d\n", __func__, rc);
+ 	return rc;
+ }
++
++/*
++ * Put the reference to the main device.
++ */
++static void tpm_devs_release(struct device *dev)
++{
++	struct tpm_chip *chip = container_of(dev, struct tpm_chip, devs);
++
++	/* release the master device reference */
++	put_device(&chip->dev);
++}
++
++/*
++ * Remove the device file for exposed TPM spaces and release the device
++ * reference. This may also release the reference to the master device.
++ */
++void tpm_devs_remove(struct tpm_chip *chip)
++{
++	cdev_device_del(&chip->cdevs, &chip->devs);
++	put_device(&chip->devs);
++}
++
++/*
++ * Add a device file to expose TPM spaces. Also take a reference to the
++ * main device.
++ */
++int tpm_devs_add(struct tpm_chip *chip)
++{
++	int rc;
++
++	device_initialize(&chip->devs);
++	chip->devs.parent = chip->dev.parent;
++	chip->devs.class = tpmrm_class;
 +
 +	/*
-+	 * If ret is > 0 then tpm_dev_transmit returned the size of the
-+	 * response. If ret is < 0 then tpm_dev_transmit failed and
-+	 * returned an error code.
++	 * Get extra reference on main device to hold on behalf of devs.
++	 * This holds the chip structure while cdevs is in use. The
++	 * corresponding put is in the tpm_devs_release.
 +	 */
-+	if (ret != 0) {
- 		priv->response_length = ret;
- 		mod_timer(&priv->user_read_timer, jiffies + (120 * HZ));
- 	}
++	get_device(&chip->dev);
++	chip->devs.release = tpm_devs_release;
++	chip->devs.devt = MKDEV(MAJOR(tpm_devt), chip->dev_num + TPM_NUM_DEVICES);
++	cdev_init(&chip->cdevs, &tpmrm_fops);
++	chip->cdevs.owner = THIS_MODULE;
++
++	rc = dev_set_name(&chip->devs, "tpmrm%d", chip->dev_num);
++	if (rc)
++		goto err_put_devs;
++
++	rc = cdev_device_add(&chip->cdevs, &chip->devs);
++	if (rc) {
++		dev_err(&chip->devs,
++			"unable to cdev_device_add() %s, major %d, minor %d, err=%d\n",
++			dev_name(&chip->devs), MAJOR(chip->devs.devt),
++			MINOR(chip->devs.devt), rc);
++		goto err_put_devs;
++	}
++
++	return 0;
++
++err_put_devs:
++	put_device(&chip->devs);
++
++	return rc;
++}
 
 
