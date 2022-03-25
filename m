@@ -2,100 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9813CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 16:06:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA40CC43219
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 16:06:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359567AbiCYQHe (ORCPT
+        id S1376684AbiCYQHr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 12:07:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40542 "EHLO
+        Fri, 25 Mar 2022 12:07:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345725AbiCYQHc (ORCPT
+        with ESMTP id S1376788AbiCYQHn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 12:07:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09F00A1446;
-        Fri, 25 Mar 2022 09:05:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B50E1B82974;
-        Fri, 25 Mar 2022 16:05:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E02AC340E9;
-        Fri, 25 Mar 2022 16:05:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648224355;
-        bh=fhC4bXh2eJtZu7iYl9Lsy7SbOpvc29RlsKAkP1IIsdA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YYKwIzD72zQ0fpu2yy34OTzoHAiZCgxuWxBtmzHfwP9Rdy1i6GYK86QKO92L7rfJs
-         f5JjFXzvs+emwKp5570hEIgqs4FnIF0mBleru/8clA6L/FrxAXMN2aA9+oGbj6Zx7p
-         gidU7a1Vr6yTIUzFQ7sV0UgXko2PbpWSViI0T3sj0jSQBDBb3qTPAvCuw9XliP3ceL
-         4ePytYPTY6rqQGPKQ1LQtn9LpQLazGOYKi7P4TKWFCKJFpzVySD9C3TSDAYXjR2OeT
-         5OFDQg/y4W0yDOIwq52ZxeuXK7yLYuoPCy55jrpRiFTqkiE3SAX7V7jXuWrE1gC3Yc
-         N+KYhyMmocdQw==
-Date:   Fri, 25 Mar 2022 16:05:50 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     ChiYuan Huang <u0084500@gmail.com>,
+        Fri, 25 Mar 2022 12:07:43 -0400
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D353DADD4C;
+        Fri, 25 Mar 2022 09:06:03 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 22A2120017;
+        Fri, 25 Mar 2022 16:05:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1648224362;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OmLCCG+BLT1iz0t7B8XkvPihtZK0nCtLSKmw6H7JeSY=;
+        b=jdDyuNnMEmgkeUFI2N7CJss/jqgouRRA1Igq+hum5gfUlrEFmhXzpb8hN8So6b5rnwTFvQ
+        MHBsBaoKLqGTnSh0zHXblsx3zoEwqLeyn3cpfe882FyhTNeEu4X6vOlnNsvIaKJYkwwtmo
+        o8Po3UonYgE2uqjEEkf6PIranKPc5Ag2bcWbSg1bEgweCM805edyN0JIelzZEUM+/qeVO9
+        uiS9eX0LRfd5LL73s1t221Zw39QU3rzkXy1dF0fsd+x8kXyw8jXxRWJAE/16HUTK8doCFJ
+        10RzkslJGcH6pHDtQOmVIkPJZQytZQddSpYW2bC61urYiGhakwQZJqVWyFQ4oQ==
+Date:   Fri, 25 Mar 2022 17:04:39 +0100
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
         Rob Herring <robh+dt@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        cy_huang <cy_huang@richtek.com>, gene_chen@richtek.com,
-        lkml <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>
-Subject: Re: [PATCH 2/2] regulator: rt5759: Add support for Richtek RT5759
- DCDC converter
-Message-ID: <Yj3oXuijuZY1gG9X@sirena.org.uk>
-References: <1648170401-6351-1-git-send-email-u0084500@gmail.com>
- <1648170401-6351-3-git-send-email-u0084500@gmail.com>
- <d2b431f8-9197-4a42-4ee2-4e771e20e0aa@kernel.org>
- <CADiBU39RGQj1-+yK18mZf3MR78KACKqb2kAxkCFKGXKpJ6Nqxw@mail.gmail.com>
- <e4a15ceb-c013-96be-48d1-e65267400463@kernel.org>
- <CADiBU3-gwsh5v1NLUYr_ovXwpUxQqgR61f-Jpc3G-zHs_yV4uw@mail.gmail.com>
- <03999953-77c5-0272-7477-ab8a069b3671@kernel.org>
- <CADiBU38zYM1Rw2inTJ_Pu2eWKKqp2Ybb-_+JUJfxfmLNu=kYvw@mail.gmail.com>
- <cf67f944-47a7-f3b5-9d83-f0f51dc4e954@kernel.org>
+        Frank Rowand <frowand.list@gmail.com>,
+        Len Brown <lenb@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Allan Nielsen <allan.nielsen@microchip.com>,
+        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 6/9] i2c: fwnode: add
+ fwnode_find_i2c_adapter_by_node()
+Message-ID: <20220325170439.75ce012d@fixe.home>
+In-Reply-To: <Yj3mO/Co/RdlZnV+@smile.fi.intel.com>
+References: <20220325113148.588163-1-clement.leger@bootlin.com>
+        <20220325113148.588163-7-clement.leger@bootlin.com>
+        <Yj3TSBEY/P7d8XJj@smile.fi.intel.com>
+        <20220325160927.30e5aef8@fixe.home>
+        <Yj3mO/Co/RdlZnV+@smile.fi.intel.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="FyeLtCK448S2Vosh"
-Content-Disposition: inline
-In-Reply-To: <cf67f944-47a7-f3b5-9d83-f0f51dc4e954@kernel.org>
-X-Cookie: Man and wife make one fool.
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Le Fri, 25 Mar 2022 17:56:43 +0200,
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> a =C3=A9crit :
 
---FyeLtCK448S2Vosh
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> >=20
+> > Can't tell, I would not want to introduce some behavior wrt to parent
+> > node for ACPI since it was not done this way. Might works in 99% of the
+> > case though.
+> >=20
+> > If ok with that, I can drop it. =20
+>=20
+> Let's ask Mika and Jarkko if they know more on this. I think Mika was the
+> one who introduced that (sorry, if I'm mistaken, haven't looked at the hi=
+story
+> carefully).
+>=20
+> P.S. Interesting enough that Mika is listed as I2C ACPI maintainer and his
+> email is not in the Cc. Please, check how you form Cc list for this series
+> and include all parties next time.
 
-On Fri, Mar 25, 2022 at 04:55:25PM +0100, Krzysztof Kozlowski wrote:
+I'm using get_maintainers.pl which does not return Mika nor Jarkko. I
+was using --nogit which probably ruled out some contributors but not
+them apparently.
 
-> You mention board, some of_device_get_match_data() so you talk about
-> runtime. maybe_unused is not about runtime. It is about build time.
-
-> The code you sent cannot have this structure unused. If you think
-> otherwise, please provide argument, but not about runtime (again). You
-> can for example build it without OF and see...
-
-If you use of_match_ptr() in the struct device (which is good practice,
-didn't check if this driver does it) then that causes the ID table to be
-unreferenced as of_match_ptr() compiles to NULL when !OF.
-
---FyeLtCK448S2Vosh
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmI96F0ACgkQJNaLcl1U
-h9D/CAf+NQmx/kuUdae96H9OhmXGbxXfUXbnPvenj1QKOJxlJQ6LmrI0ClU7AlPN
-v7kWfVwLCL3lZmctPJVUf+XrNfn8l1EdxkQnvJ/uLamh/i7cFMToeBPhBHA7fK8H
-8N7gcAEQF7AA4ZKIouGAfvIDS3wLMeihb+5+98/FmEkXZfWBMhdwwTl2YlVZrlEe
-NEN0qtRjB1iTw0pqHQlHIdHe2owIwQU4vQG3v2jJ1IbLrFBrEzkBK0GxJ+E0QnXp
-iUp2yvbX9ZnI9SyOQyEJRT1y8KOAHvXbp3uSKI/xT0+PqOS07fe2Mypam5BNeZ0o
-AQGRgYqiwqC+Je61b002unlhRPK6Jg==
-=OqSO
------END PGP SIGNATURE-----
-
---FyeLtCK448S2Vosh--
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
