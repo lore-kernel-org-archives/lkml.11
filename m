@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31FD2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:05:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FD8FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:06:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359545AbiCYPH1 (ORCPT
+        id S1359546AbiCYPHb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:07:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34256 "EHLO
+        Fri, 25 Mar 2022 11:07:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359571AbiCYPHC (ORCPT
+        with ESMTP id S1359499AbiCYPHC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 25 Mar 2022 11:07:02 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DCDDD9E83;
-        Fri, 25 Mar 2022 08:05:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5748CDA08E;
+        Fri, 25 Mar 2022 08:05:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BB0061BED;
-        Fri, 25 Mar 2022 15:05:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84761C340E9;
-        Fri, 25 Mar 2022 15:05:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EBAD61BEA;
+        Fri, 25 Mar 2022 15:05:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7608C340E9;
+        Fri, 25 Mar 2022 15:05:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648220725;
-        bh=0t6rOqqnZ4dHupbcVnNiXxZOIEusOi5qLvPWJONBqH8=;
+        s=korg; t=1648220723;
+        bh=eeDPAwcoY8N0TfcJ04RFJhyGvp6+YCtxjdYvhmHECKo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NMSR32jgmlCpE1bk5LwTFRwB3VCRWCGGVyqvs587/EWe429lHXH/m4XOJc8CdRq0g
-         TMtt9fAe8H9nOm2F3+MsQPmXEkhOEvcXxVyqxJH8bwn2px9wnHmtPjhKJqV/zNHkmq
-         Jlk2H8MEy7jRmaHDT6jBtbubvbdjQMU4LkeXd6j4=
+        b=RbnQ3gWUQIuNN+NZBbK8zX2GGE8DpZagOpHkHAMM19QS6wRIyWlSMCptHcKpKkieb
+         B/+cpgZOmc6ppRxE+IJrIbqg/RpR/ITBUD96+nj1Md5uqgMG3x5jeRcpLg66JjteOu
+         vVEIL6XdDMY8LDTGrndmrtysd5Kfi7W+6j4D9JSA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Giacomo Guiduzzi <guiduzzi.giacomo@gmail.com>,
-        Paolo Valente <paolo.valente@linaro.org>,
+        stable@vger.kernel.org, Jonathan Teh <jonathan.teh@outlook.com>,
         Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 4.9 08/14] ALSA: pci: fix reading of swapped values from pcmreg in AC97 codec
-Date:   Fri, 25 Mar 2022 16:04:36 +0100
-Message-Id: <20220325150415.945058012@linuxfoundation.org>
+Subject: [PATCH 4.9 07/14] ALSA: cmipci: Restore aux vol on suspend/resume
+Date:   Fri, 25 Mar 2022 16:04:35 +0100
+Message-Id: <20220325150415.916396628@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150415.694544076@linuxfoundation.org>
 References: <20220325150415.694544076@linuxfoundation.org>
@@ -51,56 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Giacomo Guiduzzi <guiduzzi.giacomo@gmail.com>
+From: Jonathan Teh <jonathan.teh@outlook.com>
 
-commit 17aaf0193392cb3451bf0ac75ba396ec4cbded6e upstream.
+commit c14231cc04337c2c2a937db084af342ce704dbde upstream.
 
-Tests 72 and 78 for ALSA in kselftest fail due to reading
-inconsistent values from some devices on a VirtualBox
-Virtual Machine using the snd_intel8x0 driver for the AC'97
-Audio Controller device.
-Taking for example test number 72, this is what the test reports:
-"Surround Playback Volume.0 expected 1 but read 0, is_volatile 0"
-"Surround Playback Volume.1 expected 0 but read 1, is_volatile 0"
-These errors repeat for each value from 0 to 31.
+Save and restore CM_REG_AUX_VOL instead of register 0x24 twice on
+suspend/resume.
 
-Taking a look at these error messages it is possible to notice
-that the written values are read back swapped.
-When the write is performed, these values are initially stored in
-an array used to sanity-check them and write them in the pcmreg
-array. To write them, the two one-byte values are packed together
-in a two-byte variable through bitwise operations: the first
-value is shifted left by one byte and the second value is stored in the
-right byte through a bitwise OR. When reading the values back,
-right shifts are performed to retrieve the previously stored
-bytes. These shifts are executed in the wrong order, thus
-reporting the values swapped as shown above.
+Tested on CMI8738LX.
 
-This patch fixes this mistake by reversing the read
-operations' order.
-
-Signed-off-by: Giacomo Guiduzzi <guiduzzi.giacomo@gmail.com>
-Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
+Fixes: cb60e5f5b2b1 ("[ALSA] cmipci - Add PM support")
+Signed-off-by: Jonathan Teh <jonathan.teh@outlook.com>
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220322200653.15862-1-guiduzzi.giacomo@gmail.com
+Link: https://lore.kernel.org/r/DBAPR04MB7366CB3EA9C8521C35C56E8B920E9@DBAPR04MB7366.eurprd04.prod.outlook.com
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/ac97/ac97_codec.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/pci/cmipci.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/sound/pci/ac97/ac97_codec.c
-+++ b/sound/pci/ac97/ac97_codec.c
-@@ -958,8 +958,8 @@ static int snd_ac97_ad18xx_pcm_get_volum
- 	int codec = kcontrol->private_value & 3;
- 	
- 	mutex_lock(&ac97->page_mutex);
--	ucontrol->value.integer.value[0] = 31 - ((ac97->spec.ad18xx.pcmreg[codec] >> 0) & 31);
--	ucontrol->value.integer.value[1] = 31 - ((ac97->spec.ad18xx.pcmreg[codec] >> 8) & 31);
-+	ucontrol->value.integer.value[0] = 31 - ((ac97->spec.ad18xx.pcmreg[codec] >> 8) & 31);
-+	ucontrol->value.integer.value[1] = 31 - ((ac97->spec.ad18xx.pcmreg[codec] >> 0) & 31);
- 	mutex_unlock(&ac97->page_mutex);
- 	return 0;
- }
+--- a/sound/pci/cmipci.c
++++ b/sound/pci/cmipci.c
+@@ -315,7 +315,6 @@ MODULE_PARM_DESC(joystick_port, "Joystic
+ #define CM_MICGAINZ		0x01	/* mic boost */
+ #define CM_MICGAINZ_SHIFT	0
+ 
+-#define CM_REG_MIXER3		0x24
+ #define CM_REG_AUX_VOL		0x26
+ #define CM_VAUXL_MASK		0xf0
+ #define CM_VAUXR_MASK		0x0f
+@@ -3323,7 +3322,7 @@ static void snd_cmipci_remove(struct pci
+  */
+ static unsigned char saved_regs[] = {
+ 	CM_REG_FUNCTRL1, CM_REG_CHFORMAT, CM_REG_LEGACY_CTRL, CM_REG_MISC_CTRL,
+-	CM_REG_MIXER0, CM_REG_MIXER1, CM_REG_MIXER2, CM_REG_MIXER3, CM_REG_PLL,
++	CM_REG_MIXER0, CM_REG_MIXER1, CM_REG_MIXER2, CM_REG_AUX_VOL, CM_REG_PLL,
+ 	CM_REG_CH0_FRAME1, CM_REG_CH0_FRAME2,
+ 	CM_REG_CH1_FRAME1, CM_REG_CH1_FRAME2, CM_REG_EXT_MISC,
+ 	CM_REG_INT_STATUS, CM_REG_INT_HLDCLR, CM_REG_FUNCTRL0,
 
 
