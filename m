@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D608CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:21:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86AE9C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:21:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376505AbiCYPWk (ORCPT
+        id S1376570AbiCYPWr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:22:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37610 "EHLO
+        Fri, 25 Mar 2022 11:22:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376406AbiCYPU2 (ORCPT
+        with ESMTP id S1376424AbiCYPU2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 25 Mar 2022 11:20:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7DB4E29F4;
-        Fri, 25 Mar 2022 08:15:44 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBDF2E29FC;
+        Fri, 25 Mar 2022 08:15:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 166D960ACA;
-        Fri, 25 Mar 2022 15:15:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FB32C340F5;
-        Fri, 25 Mar 2022 15:15:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CE7FCB82865;
+        Fri, 25 Mar 2022 15:15:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E38DC340E9;
+        Fri, 25 Mar 2022 15:15:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221307;
-        bh=RWXkZ+zWgph1cSfGePSXGgZMA8rOQMKE8iT4s726B48=;
+        s=korg; t=1648221339;
+        bh=Ugr3Tis7R5v9mJReP/aoaxVEShg8W48rXk635+mcSrM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=otM5k3E6du9ZBlmYtgZXKEpODXVEVv+ogqkYdjlQ1m2ZZthjioHxlcl1Y12YBHDcr
-         rxUDjB8tUxoHEXlKWnDGwB7eEf+J2wiZbX+EX6Xk0u2UlcxLcMIalmxu0xJp872aHQ
-         xfbu0i4VG3WdtrymYGjnMHY5wylXTQav5sNDEPL0=
+        b=w7tYT3F6FgDfO68DCtO5PI870n83yU9KRCa2pPW7Q9PMCgRWiPIGm0/kEvspR3EEK
+         W6jfOPvfEv1nVWnBfeKouO8g8I3A7hlUvOs1IYKj/8vcBgoFYKcoQiz8h0WxoK/iuU
+         eNgyLp7prHIzCaVuGTRPDruNWq5vCkkKD7twS5kM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 16/37] ALSA: pcm: Fix races among concurrent prealloc proc writes
-Date:   Fri, 25 Mar 2022 16:14:17 +0100
-Message-Id: <20220325150420.398181124@linuxfoundation.org>
+        stable@vger.kernel.org, Werner Sembach <wse@tuxedocomputers.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.15 26/37] ACPI: video: Force backlight native for Clevo NL5xRU and NL5xNU
+Date:   Fri, 25 Mar 2022 16:14:27 +0100
+Message-Id: <20220325150420.679985772@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150419.931802116@linuxfoundation.org>
 References: <20220325150419.931802116@linuxfoundation.org>
@@ -49,68 +49,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Werner Sembach <wse@tuxedocomputers.com>
 
-commit 69534c48ba8ce552ce383b3dfdb271ffe51820c3 upstream.
+commit c844d22fe0c0b37dc809adbdde6ceb6462c43acf upstream.
 
-We have no protection against concurrent PCM buffer preallocation
-changes via proc files, and it may potentially lead to UAF or some
-weird problem.  This patch applies the PCM open_mutex to the proc
-write operation for avoiding the racy proc writes and the PCM stream
-open (and further operations).
+Clevo NL5xRU and NL5xNU/TUXEDO Aura 15 Gen1 and Gen2 have both a working
+native and video interface. However the default detection mechanism first
+registers the video interface before unregistering it again and switching
+to the native interface during boot. This results in a dangling SBIOS
+request for backlight change for some reason, causing the backlight to
+switch to ~2% once per boot on the first power cord connect or disconnect
+event. Setting the native interface explicitly circumvents this buggy
+behaviour by avoiding the unregistering process.
 
-Cc: <stable@vger.kernel.org>
-Reviewed-by: Jaroslav Kysela <perex@perex.cz>
-Link: https://lore.kernel.org/r/20220322170720.3529-5-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
+Cc: All applicable <stable@vger.kernel.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/core/pcm_memory.c |   11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ drivers/acpi/video_detect.c |   75 ++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 75 insertions(+)
 
---- a/sound/core/pcm_memory.c
-+++ b/sound/core/pcm_memory.c
-@@ -158,19 +158,20 @@ static void snd_pcm_lib_preallocate_proc
- 	size_t size;
- 	struct snd_dma_buffer new_dmab;
+--- a/drivers/acpi/video_detect.c
++++ b/drivers/acpi/video_detect.c
+@@ -409,6 +409,81 @@ static const struct dmi_system_id video_
+ 		DMI_MATCH(DMI_PRODUCT_NAME, "GA503"),
+ 		},
+ 	},
++	/*
++	 * Clevo NL5xRU and NL5xNU/TUXEDO Aura 15 Gen1 and Gen2 have both a
++	 * working native and video interface. However the default detection
++	 * mechanism first registers the video interface before unregistering
++	 * it again and switching to the native interface during boot. This
++	 * results in a dangling SBIOS request for backlight change for some
++	 * reason, causing the backlight to switch to ~2% once per boot on the
++	 * first power cord connect or disconnect event. Setting the native
++	 * interface explicitly circumvents this buggy behaviour, by avoiding
++	 * the unregistering process.
++	 */
++	{
++	.callback = video_detect_force_native,
++	.ident = "Clevo NL5xRU",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
++		DMI_MATCH(DMI_BOARD_NAME, "NL5xRU"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "Clevo NL5xRU",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "SchenkerTechnologiesGmbH"),
++		DMI_MATCH(DMI_BOARD_NAME, "NL5xRU"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "Clevo NL5xRU",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "Notebook"),
++		DMI_MATCH(DMI_BOARD_NAME, "NL5xRU"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "Clevo NL5xRU",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
++		DMI_MATCH(DMI_BOARD_NAME, "AURA1501"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "Clevo NL5xRU",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
++		DMI_MATCH(DMI_BOARD_NAME, "EDUBOOK1502"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "Clevo NL5xNU",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
++		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "Clevo NL5xNU",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "SchenkerTechnologiesGmbH"),
++		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "Clevo NL5xNU",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "Notebook"),
++		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
++		},
++	},
  
-+	mutex_lock(&substream->pcm->open_mutex);
- 	if (substream->runtime) {
- 		buffer->error = -EBUSY;
--		return;
-+		goto unlock;
- 	}
- 	if (!snd_info_get_line(buffer, line, sizeof(line))) {
- 		snd_info_get_str(str, line, sizeof(str));
- 		size = simple_strtoul(str, NULL, 10) * 1024;
- 		if ((size != 0 && size < 8192) || size > substream->dma_max) {
- 			buffer->error = -EINVAL;
--			return;
-+			goto unlock;
- 		}
- 		if (substream->dma_buffer.bytes == size)
--			return;
-+			goto unlock;
- 		memset(&new_dmab, 0, sizeof(new_dmab));
- 		new_dmab.dev = substream->dma_buffer.dev;
- 		if (size > 0) {
-@@ -183,7 +184,7 @@ static void snd_pcm_lib_preallocate_proc
- 					 substream->pcm->card->number, substream->pcm->device,
- 					 substream->stream ? 'c' : 'p', substream->number,
- 					 substream->pcm->name, size);
--				return;
-+				goto unlock;
- 			}
- 			substream->buffer_bytes_max = size;
- 		} else {
-@@ -195,6 +196,8 @@ static void snd_pcm_lib_preallocate_proc
- 	} else {
- 		buffer->error = -EINVAL;
- 	}
-+ unlock:
-+	mutex_unlock(&substream->pcm->open_mutex);
- }
- 
- static inline void preallocate_info_init(struct snd_pcm_substream *substream)
+ 	/*
+ 	 * Desktops which falsely report a backlight and which our heuristics
 
 
