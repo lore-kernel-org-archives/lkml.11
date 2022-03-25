@@ -2,65 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A862DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 02:33:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAA01C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 02:33:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357798AbiCYCev (ORCPT
+        id S1347240AbiCYCey (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 22:34:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54232 "EHLO
+        Thu, 24 Mar 2022 22:34:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357773AbiCYCen (ORCPT
+        with ESMTP id S1357782AbiCYCeo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 22:34:43 -0400
-Received: from mail.meizu.com (edge05.meizu.com [157.122.146.251])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A09ACD5
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 19:33:07 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail12.meizu.com
- (172.16.1.108) with Microsoft SMTP Server (TLS) id 14.3.487.0; Fri, 25 Mar
- 2022 10:33:06 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Fri, 25 Mar
- 2022 10:33:05 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     <haren@us.ibm.com>
-CC:     <linux-kernel@vger.kernel.org>, Haowen Bai <baihaowen@meizu.com>
-Subject: [PATCH] lib: 842: Fix pointer dereferenced before checking
-Date:   Fri, 25 Mar 2022 10:33:03 +0800
-Message-ID: <1648175583-2045-1-git-send-email-baihaowen@meizu.com>
-X-Mailer: git-send-email 2.7.4
+        Thu, 24 Mar 2022 22:34:44 -0400
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F7C0CD6;
+        Thu, 24 Mar 2022 19:33:07 -0700 (PDT)
+Received: by mail-qk1-x735.google.com with SMTP id b189so5031216qkf.11;
+        Thu, 24 Mar 2022 19:33:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Vw/ACGTLfd24TEwOsMtKP4JjvUnmGhYZJwx+5xNDMTo=;
+        b=aTFV1PR6CO4w0h+dPvEkd94PPa5+MUuVTFoV2GN6oOUNO1CE6g4mQCQa9qxVo61907
+         hktftE9csq6AtkHwwvFp10OR0ijgnn2yRpCXTk6Mmz8J+uV4FIU8pAz1ScaigtQZ3eEn
+         ZH3C2ihv8yDLtzyPKgbW7m9MEaRPUanFV6HipTzAcjVXsa2cTqR5n5NDK+LsqCg45OBe
+         H+7n5+WgTVIEKZP7jgpcTiZ3QIQrVgX6coZ9OXQdvJvDyvMVSsr1XPj/lIhi9C7EHYqC
+         RgGnlhDfqr8PBXZif7l9+2tK2XxGJsY9soT4sDTXEUrdwqa43HNNeHzBMMLUJm9tCGp7
+         EdkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Vw/ACGTLfd24TEwOsMtKP4JjvUnmGhYZJwx+5xNDMTo=;
+        b=QPgI0fygTXPyVLaEYhex2UOiZ4N0Tv5X+chASHm6SOlziM9QHfPnzLeJsSSocUx6zU
+         AR8H3abmtkOl1Q/TMyKHKo7V9zCcQyk301ttj254h4NHTFab+1uGgOdGWrWqFSIyFVNL
+         UPNnvXLiMk5y3wzA4UEJDarGdIZdbTz2EAXxg/dEfrkFMt2mGSr5AkeHoUnbgKBqocKv
+         EVH7RpMT2SVYhE/F99gdwTLQPVF4DtuwvYHIBPTxjFTFk30NIeA7Ard4XFzIPL3GYmW0
+         iYGqC+YfpRrnrKXTwm9yQ0fShOnOWLsRbYxOn6bt9eyjTIdn5rQQ21Z4D9GJkMa0elsl
+         GgIg==
+X-Gm-Message-State: AOAM532J0Wf+S7j7z+ht88/4nm0foh0EpPQjViU7flNI3AnSLhGKzkkL
+        ME5d4KFnehefWcD5qqAMI3Q=
+X-Google-Smtp-Source: ABdhPJwVZhPntslu4pfq0kZWLhN5okKsenhhKKE3cL+8rlT/JWxJfPbEdlo2o8CtuJ7/kX6wvCHKrg==
+X-Received: by 2002:a05:620a:b43:b0:67d:942c:2e03 with SMTP id x3-20020a05620a0b4300b0067d942c2e03mr5427638qkg.303.1648175586629;
+        Thu, 24 Mar 2022 19:33:06 -0700 (PDT)
+Received: from auth1-smtp.messagingengine.com (auth1-smtp.messagingengine.com. [66.111.4.227])
+        by smtp.gmail.com with ESMTPSA id y15-20020a05622a004f00b002e1aaa1738dsm4009736qtw.12.2022.03.24.19.33.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Mar 2022 19:33:05 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailauth.nyi.internal (Postfix) with ESMTP id 7C3F827C005A;
+        Thu, 24 Mar 2022 22:33:04 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Thu, 24 Mar 2022 22:33:04 -0400
+X-ME-Sender: <xms:4Ck9YuoLSbL5dk9QkvnUArqaZwfIEa-2yxIJEAnmb9cU-XrCItStKA>
+    <xme:4Ck9YspqfLnNKMxbCtpmg4bttywSADezJUHV9Jfv3xNLbU33EEszBCa7nr43sj3Ks
+    TtC06xB7edpIXrj0A>
+X-ME-Received: <xmr:4Ck9YjNMg1f9wfEjkeAW5z0waZ-Ha407geaAb8PLUtCABAJy4PkEeMqUrLE>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudehtddggeefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpeeuohhquhhn
+    ucfhvghnghcuoegsohhquhhnrdhfvghnghesghhmrghilhdrtghomheqnecuggftrfgrth
+    htvghrnhephedvveetfefgiedutedtfeevvddvleekjeeuffffleeguefhhfejteekieeu
+    ueelnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepsg
+    hoqhhunhdomhgvshhmthhprghuthhhphgvrhhsohhnrghlihhthidqieelvdeghedtieeg
+    qddujeejkeehheehvddqsghoqhhunhdrfhgvnhhgpeepghhmrghilhdrtghomhesfhhigi
+    hmvgdrnhgrmhgv
+X-ME-Proxy: <xmx:4Ck9Yt6vRPfZt87GeH8RMfORf2_cF35rIKn9I54HZh7BHs1v3oYcgQ>
+    <xmx:4Ck9Yt4ZLN-yVQXYHOi7Dvmnpcdr40jBeSeIYYiSXnycF1hVswli5g>
+    <xmx:4Ck9YtgTk4KyY5qOXjfhwBz8CvQmvt_atgxzgl4BidWQ1RQs5dtNPw>
+    <xmx:4Ck9YiGEfV_D2YMGZAbNScl6KuQpTYjFOXbaWj6mBPgaY1m0MPv8RA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 24 Mar 2022 22:33:03 -0400 (EDT)
+From:   Boqun Feng <boqun.feng@gmail.com>
+To:     Wei Liu <wei.liu@kernel.org>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        linux-hyperv@vger.kernel.org,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        David Hildenbrand <david@redhat.com>,
+        linux-kernel@vger.kernel.org, Boqun Feng <boqun.feng@gmail.com>
+Subject: [PATCH v2 1/2] Drivers: hv: balloon: Support status report for larger page sizes
+Date:   Fri, 25 Mar 2022 10:32:11 +0800
+Message-Id: <20220325023212.1570049-2-boqun.feng@gmail.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220325023212.1570049-1-boqun.feng@gmail.com>
+References: <20220325023212.1570049-1-boqun.feng@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-125.meizu.com (172.16.1.125) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pointer t is dereferencing comp_ops[c] before c is being
- bound checked. Fix this by assigning comp_ops[c] to t only if
-c is safy, otherwise just NULL.
+DM_STATUS_REPORT expects the numbers of pages in the unit of 4k pages
+(HV_HYP_PAGE) instead of guest pages, so to make it work when guest page
+sizes are larger than 4k, convert the numbers of guest pages into the
+numbers of HV_HYP_PAGEs.
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+Note that the numbers of guest pages are still used for tracing because
+tracing is internal to the guest kernel.
+
+Reported-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
 ---
- lib/842/842_compress.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/hv/hv_balloon.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-diff --git a/lib/842/842_compress.c b/lib/842/842_compress.c
-index c02baa4..6ff6973 100644
---- a/lib/842/842_compress.c
-+++ b/lib/842/842_compress.c
-@@ -222,7 +222,7 @@ static int add_bits(struct sw842_param *p, u64 d, u8 n)
- static int add_template(struct sw842_param *p, u8 c)
- {
- 	int ret, i, b = 0;
--	u8 *t = comp_ops[c];
-+	u8 *t = c < OPS_MAX ? comp_ops[c] : NULL;
- 	bool inv = false;
+diff --git a/drivers/hv/hv_balloon.c b/drivers/hv/hv_balloon.c
+index f2d05bff4245..062156b88a87 100644
+--- a/drivers/hv/hv_balloon.c
++++ b/drivers/hv/hv_balloon.c
+@@ -17,6 +17,7 @@
+ #include <linux/slab.h>
+ #include <linux/kthread.h>
+ #include <linux/completion.h>
++#include <linux/count_zeros.h>
+ #include <linux/memory_hotplug.h>
+ #include <linux/memory.h>
+ #include <linux/notifier.h>
+@@ -1130,6 +1131,7 @@ static void post_status(struct hv_dynmem_device *dm)
+ 	struct dm_status status;
+ 	unsigned long now = jiffies;
+ 	unsigned long last_post = last_post_time;
++	unsigned long num_pages_avail, num_pages_committed;
  
- 	if (c >= OPS_MAX)
+ 	if (pressure_report_delay > 0) {
+ 		--pressure_report_delay;
+@@ -1154,16 +1156,21 @@ static void post_status(struct hv_dynmem_device *dm)
+ 	 * num_pages_onlined) as committed to the host, otherwise it can try
+ 	 * asking us to balloon them out.
+ 	 */
+-	status.num_avail = si_mem_available();
+-	status.num_committed = vm_memory_committed() +
++	num_pages_avail = si_mem_available();
++	num_pages_committed = vm_memory_committed() +
+ 		dm->num_pages_ballooned +
+ 		(dm->num_pages_added > dm->num_pages_onlined ?
+ 		 dm->num_pages_added - dm->num_pages_onlined : 0) +
+ 		compute_balloon_floor();
+ 
+-	trace_balloon_status(status.num_avail, status.num_committed,
++	trace_balloon_status(num_pages_avail, num_pages_committed,
+ 			     vm_memory_committed(), dm->num_pages_ballooned,
+ 			     dm->num_pages_added, dm->num_pages_onlined);
++
++	/* Convert numbers of pages into numbers of HV_HYP_PAGEs. */
++	status.num_avail = num_pages_avail * NR_HV_HYP_PAGES_IN_PAGE;
++	status.num_committed = num_pages_committed * NR_HV_HYP_PAGES_IN_PAGE;
++
+ 	/*
+ 	 * If our transaction ID is no longer current, just don't
+ 	 * send the status. This can happen if we were interrupted
 -- 
-2.7.4
+2.35.1
 
