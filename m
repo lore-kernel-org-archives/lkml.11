@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7693CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:27:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63DF2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:28:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376721AbiCYP33 (ORCPT
+        id S1359405AbiCYP3e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:29:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54192 "EHLO
+        Fri, 25 Mar 2022 11:29:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377540AbiCYPYQ (ORCPT
+        with ESMTP id S1377556AbiCYPYQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 25 Mar 2022 11:24:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 851A1654AC;
-        Fri, 25 Mar 2022 08:18:12 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F17AADD68;
+        Fri, 25 Mar 2022 08:18:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 19452B828FF;
-        Fri, 25 Mar 2022 15:18:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81F89C340E9;
-        Fri, 25 Mar 2022 15:18:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E45060A1B;
+        Fri, 25 Mar 2022 15:18:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E7A4C340E9;
+        Fri, 25 Mar 2022 15:18:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221489;
-        bh=YOKp3do8vELpQwkoJRceq2v3z9rJ/hm84CFhL8nDedI=;
+        s=korg; t=1648221495;
+        bh=wbVzCmsC9GRDSscRfLJ+281cXygqPHZB/gvOOdKZGuM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rGqWsmB3qtw0eEkhN32Ey40inxMtAxOB2J3dXColTxZ0wk8UzNhBTnHSGMThyqLBw
-         o2EbWdgx7cbyVFPtWQAwZQoSdHq8ld1r9Bty4HioEkxvWUiQW1HmCNo/0tvz22jlei
-         1p1yi7vtYpK9PsCfyuEmACviNPORxT3WF7i5iulo=
+        b=sZfKKp5pgB+nv6D/J6RJ1hSykcFJO/b4xk8W6OGdLBhEeveZjQRiXv5UegLGXIZYl
+         BRvW9J2nI/g0TDPCg0eR26b+5qyB7eKJRBQb7gIThwQ7pZGrjCdBiRvh/RSfbyyToM
+         SOV2li4Sv6Dr/O3zMshJmHYjqt1G5r4WBKAerHA8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.16 22/37] netfilter: nf_tables: initialize registers in nft_do_chain()
-Date:   Fri, 25 Mar 2022 16:14:32 +0100
-Message-Id: <20220325150420.679540216@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Cilissen <mark@yotsuba.nl>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.16 24/37] ACPI / x86: Work around broken XSDT on Advantech DAC-BJ01 board
+Date:   Fri, 25 Mar 2022 16:14:34 +0100
+Message-Id: <20220325150420.735456228@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150420.046488912@linuxfoundation.org>
 References: <20220325150420.046488912@linuxfoundation.org>
@@ -48,29 +50,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Mark Cilissen <mark@yotsuba.nl>
 
-commit 4c905f6740a365464e91467aa50916555b28213d upstream.
+commit e702196bf85778f2c5527ca47f33ef2e2fca8297 upstream.
 
-Initialize registers to avoid stack leak into userspace.
+On this board the ACPI RSDP structure points to both a RSDT and an XSDT,
+but the XSDT points to a truncated FADT. This causes all sorts of trouble
+and usually a complete failure to boot after the following error occurs:
 
-Fixes: 96518518cc41 ("netfilter: add nftables")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+  ACPI Error: Unsupported address space: 0x20 (*/hwregs-*)
+  ACPI Error: AE_SUPPORT, Unable to initialize fixed events (*/evevent-*)
+  ACPI: Unable to start ACPI Interpreter
+
+This leaves the ACPI implementation in such a broken state that subsequent
+kernel subsystem initialisations go wrong, resulting in among others
+mismapped PCI memory, SATA and USB enumeration failures, and freezes.
+
+As this is an older embedded platform that will likely never see any BIOS
+updates to address this issue and its default shipping OS only complies to
+ACPI 1.0, work around this by forcing `acpi=rsdt`. This patch, applied on
+top of Linux 5.10.102, was confirmed on real hardware to fix the issue.
+
+Signed-off-by: Mark Cilissen <mark@yotsuba.nl>
+Cc: All applicable <stable@vger.kernel.org>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_core.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kernel/acpi/boot.c |   24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
---- a/net/netfilter/nf_tables_core.c
-+++ b/net/netfilter/nf_tables_core.c
-@@ -162,7 +162,7 @@ nft_do_chain(struct nft_pktinfo *pkt, vo
- 	struct nft_rule *const *rules;
- 	const struct nft_rule *rule;
- 	const struct nft_expr *expr, *last;
--	struct nft_regs regs;
-+	struct nft_regs regs = {};
- 	unsigned int stackptr = 0;
- 	struct nft_jumpstack jumpstack[NFT_JUMP_STACK_SIZE];
- 	bool genbit = READ_ONCE(net->nft.gencursor);
+--- a/arch/x86/kernel/acpi/boot.c
++++ b/arch/x86/kernel/acpi/boot.c
+@@ -1328,6 +1328,17 @@ static int __init disable_acpi_pci(const
+ 	return 0;
+ }
+ 
++static int __init disable_acpi_xsdt(const struct dmi_system_id *d)
++{
++	if (!acpi_force) {
++		pr_notice("%s detected: force use of acpi=rsdt\n", d->ident);
++		acpi_gbl_do_not_use_xsdt = TRUE;
++	} else {
++		pr_notice("Warning: DMI blacklist says broken, but acpi XSDT forced\n");
++	}
++	return 0;
++}
++
+ static int __init dmi_disable_acpi(const struct dmi_system_id *d)
+ {
+ 	if (!acpi_force) {
+@@ -1451,6 +1462,19 @@ static const struct dmi_system_id acpi_d
+ 		     DMI_MATCH(DMI_PRODUCT_NAME, "TravelMate 360"),
+ 		     },
+ 	 },
++	/*
++	 * Boxes that need ACPI XSDT use disabled due to corrupted tables
++	 */
++	{
++	 .callback = disable_acpi_xsdt,
++	 .ident = "Advantech DAC-BJ01",
++	 .matches = {
++		     DMI_MATCH(DMI_SYS_VENDOR, "NEC"),
++		     DMI_MATCH(DMI_PRODUCT_NAME, "Bearlake CRB Board"),
++		     DMI_MATCH(DMI_BIOS_VERSION, "V1.12"),
++		     DMI_MATCH(DMI_BIOS_DATE, "02/01/2011"),
++		     },
++	 },
+ 	{}
+ };
+ 
 
 
