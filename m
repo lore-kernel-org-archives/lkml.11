@@ -2,81 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1741CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 17:14:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD090C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 17:15:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244854AbiCYRQY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 13:16:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52982 "EHLO
+        id S1349192AbiCYRRK (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 13:17:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235664AbiCYRQU (ORCPT
+        with ESMTP id S229808AbiCYRRH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 13:16:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35E93E72AA
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 10:14:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CF4CB61A9D
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 17:14:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C9F3C2BBE4;
-        Fri, 25 Mar 2022 17:14:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648228485;
-        bh=sIUMKnGt0Oc3vXoWstY5PCIQUuyykpTlBcByYVqY0AM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QX/CO/bxhuYiRf0fl5GFzY96i+4tmdy9ELfRPlNtGeuioJJnYYaHpvVOCSj15ma/6
-         +00Lezzf18Obfb/b94opkB3XCYEvt92DGagWakVhus/jkXTBZ1FgpEOfXUZYDUVEmh
-         9wPeFhuWQFxlld37jkMa3BYOEK1UCtQlPc1GRMGz4iLUyvRFduiROVet1dTjFJaUFo
-         iIN7+fqPF0z++ZdBMrLflQ/QItrPtsEaWnqeIOAAeuBjjen20e4dB7XrV6RsxQVH6n
-         qBbXfrmXUxoEHh985gVlIbmWEsxRFPYP1wGru29WSg6gq/ii57TET7BXmt27y6HIBC
-         DMGU3zoINPTwA==
-Date:   Fri, 25 Mar 2022 17:14:40 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Stephen Kitt <steve@sk2.org>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>, patches@opensource.cirrus.com,
-        Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ASoC: wm*: use simple i2c probe function
-Message-ID: <Yj34gLRxhmXD1Y5B@sirena.org.uk>
-References: <20220325162439.1203870-1-steve@sk2.org>
+        Fri, 25 Mar 2022 13:17:07 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79E04E7F56
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 10:15:33 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id z12so662616lfu.10
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 10:15:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=j61R5L89u+/vfXXexWezMtO01q4KBgFfkSQElj7/TZs=;
+        b=bXxcEdoQ56AMcT9jO4mrCLjfMCMwff7lkz1uyivOhsc1yVQywFalef59YfGE+40Ib/
+         AvHTYwxImBGmO4Ft12aNmlHycRr7AUduqbdV6LHsmJuV/SmEUJm28rTySzOe4/2Z0R8o
+         vPpd9hHe8xTR+nRcALipQSmiYly4gC1NcO6w4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=j61R5L89u+/vfXXexWezMtO01q4KBgFfkSQElj7/TZs=;
+        b=688iyNLCMG2LF6yDwdjZPF0I/MUe3WxDgeGzurIap396gsWTz8n42QbqLOGKA1jxcr
+         6ZM1ra46Og6ov/Lctvm9LIHoL6Jj92wpLSkFAAPlJ3fF8mM+vjdvoZcoyocrOOYvU5vK
+         Ancb1/G42vhUF+11Pw9avHDv8+6UJcf0L+OSbWluNLVkp+LGvDojHVDu7kcKnSXiawCH
+         Wq7rt4PDq2KVRn5JMrO8D571+VDuXXMTP/NCgYuxR48mmF0EkTpzM+ww/zz6UBb0meE1
+         NglsON4cT80DtVsy3PlSVJqEHwr/3or6u84WKdS5Gh8USBlAVKQN3h2EQomg/Ei8cj9L
+         fE6g==
+X-Gm-Message-State: AOAM533jAextvXWi3lwNmAMv4jUaAr3IxA3BKxMobC1jBXHrq6mA8xYW
+        +HnA6wVbe9QXx6OlwcYdLnsPadheyesXpvWTxiM=
+X-Google-Smtp-Source: ABdhPJylM/T9xqRRwcUqh2mI0GZGWqbjVNgMEp440YPHlAMruCU5YZGp0hNikaBGGkXfTDF5ZPHHEQ==
+X-Received: by 2002:ac2:4315:0:b0:448:2bb9:f11d with SMTP id l21-20020ac24315000000b004482bb9f11dmr8361583lfh.212.1648228531509;
+        Fri, 25 Mar 2022 10:15:31 -0700 (PDT)
+Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com. [209.85.208.171])
+        by smtp.gmail.com with ESMTPSA id d20-20020ac241d4000000b004484fcc5d2csm766388lfi.36.2022.03.25.10.15.29
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Mar 2022 10:15:30 -0700 (PDT)
+Received: by mail-lj1-f171.google.com with SMTP id r22so11167574ljd.4
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 10:15:29 -0700 (PDT)
+X-Received: by 2002:a2e:9b10:0:b0:247:f28c:ffd3 with SMTP id
+ u16-20020a2e9b10000000b00247f28cffd3mr8695253lji.152.1648228529533; Fri, 25
+ Mar 2022 10:15:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="mZXNND7REWmn/zfc"
-Content-Disposition: inline
-In-Reply-To: <20220325162439.1203870-1-steve@sk2.org>
-X-Cookie: Man and wife make one fool.
+References: <20220325171059.111208-1-jcmvbkbc@gmail.com>
+In-Reply-To: <20220325171059.111208-1-jcmvbkbc@gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Fri, 25 Mar 2022 10:15:13 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wiBTJccj3i5u1LQ5JtUvdmgcG40HNT+XSOyGxCa3Gtc5w@mail.gmail.com>
+Message-ID: <CAHk-=wiBTJccj3i5u1LQ5JtUvdmgcG40HNT+XSOyGxCa3Gtc5w@mail.gmail.com>
+Subject: Re: [PULL v2 00/18] xtensa updates for v5.18
+To:     Max Filippov <jcmvbkbc@gmail.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:TENSILICA XTENSA PORT (xtensa)" 
+        <linux-xtensa@linux-xtensa.org>, Chris Zankel <chris@zankel.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Mar 25, 2022 at 10:11 AM Max Filippov <jcmvbkbc@gmail.com> wrote:
+>
+>   https://github.com/jcmvbkbc/linux-xtensa.git tags/xtensa-20220325
 
---mZXNND7REWmn/zfc
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Oh, I had already taken the "git@github.com" one and fixed it up
+manually, but thanks for re-sending anyway ;)
 
-On Fri, Mar 25, 2022 at 05:24:39PM +0100, Stephen Kitt wrote:
-> The i2c probe functions here don't use the id information provided in
-> their second argument, so the single-parameter i2c probe function
-> ("probe_new") can be used instead.
-
-This is going to generate conflicts with other pending and more
-substantial patches for wm8731 - please resubmit after those have been
-applied, or split up into finer grained patches so the rest can go.
-
---mZXNND7REWmn/zfc
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmI9+H8ACgkQJNaLcl1U
-h9AGuAf/YJd1705c1FWe1k3HyTnSJjwxsssaICO4bhNG/E4puONzf7FX6B07XE0H
-b1pVNpR8bvFQ4gOM+hKydkTIZTD/GMUfRY1rhxO8kt4+/ZzynWccPvdq1PMug0KG
-FJcaiGGulHsVNxI60oZAMaIO+UNrfMOJ3yOu4Si7Ttj6+jU1ZtSn1t8R+apOMn8S
-RnNYP8nLucSdSiDUe8KKKNAYIbZbF9YefFd6SwUef7ZP2V7o4LX1dr0NzovSUtd5
-ZsxZmh3afUsz4Ifh2cmFuL54MZT09ozQ7KSKVwJvrfEHuN7DZjoC7z17PzQNfgzD
-mlUvu4ADqtd8NzZvRJ7se3m2FhiRWA==
-=Dxux
------END PGP SIGNATURE-----
-
---mZXNND7REWmn/zfc--
+                 Linus
