@@ -2,67 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 228BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 07:29:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 908A8C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 07:29:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348001AbiCYHbX (ORCPT
+        id S1350026AbiCYHba (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 03:31:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51578 "EHLO
+        Fri, 25 Mar 2022 03:31:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237022AbiCYHbU (ORCPT
+        with ESMTP id S1348234AbiCYHb2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 03:31:20 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF631BF01C;
-        Fri, 25 Mar 2022 00:29:46 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KPtwn6bMSzfZvx;
-        Fri, 25 Mar 2022 15:28:09 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 25 Mar 2022 15:29:44 +0800
-Received: from [10.174.176.73] (10.174.176.73) by
- kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 25 Mar 2022 15:29:43 +0800
-Subject: Re: [PATCH 0/3] optimizations for io accounting
-To:     <axboe@kernel.dk>, <mpatocka@redhat.com>, <snitzer@redhat.com>
-CC:     <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <yi.zhang@huawei.com>
-References: <20220317112653.1019490-1-yukuai3@huawei.com>
-From:   "yukuai (C)" <yukuai3@huawei.com>
-Message-ID: <29eab4a3-10de-0ea3-cbcc-7031aa394cb2@huawei.com>
-Date:   Fri, 25 Mar 2022 15:29:42 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Fri, 25 Mar 2022 03:31:28 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39B53BF035;
+        Fri, 25 Mar 2022 00:29:54 -0700 (PDT)
+Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KPttB1rvxz8wyk;
+        Fri, 25 Mar 2022 15:25:54 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by kwepemi500015.china.huawei.com
+ (7.221.188.92) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 25 Mar
+ 2022 15:29:51 +0800
+From:   Zheng Bin <zhengbin13@huawei.com>
+To:     <linus.walleij@linaro.org>, <j.neuschaefer@gmx.net>,
+        <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <zhengbin13@huawei.com>, <tangyizhou@huawei.com>
+Subject: [PATCH -next] pinctrl: nuvoton: wpcm450: Fix build error without OF
+Date:   Fri, 25 Mar 2022 15:44:50 +0800
+Message-ID: <20220325074450.3228840-1-zhengbin13@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-In-Reply-To: <20220317112653.1019490-1-yukuai3@huawei.com>
-Content-Type: text/plain; charset="gbk"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.176.73]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600009.china.huawei.com (7.193.23.164)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemi500015.china.huawei.com (7.221.188.92)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-friently ping ...
+If OF is not set, bulding fails:
 
-ÔÚ 2022/03/17 19:26, Yu Kuai Ð´µÀ:
-> Yu Kuai (3):
->    block: don't show disk stats if io accounting is disabled
->    block: factor out common code for part_stat_show() and
->      diskstats_show()
->    block: update nsecs[] in part_stat_show() and diskstats_show()
-> 
->   block/bdev.c              |   2 +
->   block/blk-mq.c            |  63 +++++++++++++++-
->   block/blk-mq.h            |   2 +
->   block/genhd.c             | 154 ++++++++++++++++++--------------------
->   include/linux/blk-mq.h    |   2 +
->   include/linux/blk_types.h |   5 ++
->   6 files changed, 146 insertions(+), 82 deletions(-)
-> 
+drivers/pinctrl/nuvoton/pinctrl-wpcm450.o: In function `wpcm450_dt_node_to_map':
+pinctrl-wpcm450.c:(.text+0x404): undefined reference to `pinconf_generic_dt_node_to_map'
+
+Make PINCTRL_WPCM450 depends on OF to fix this.
+
+Fixes: a1d1e0e3d80a ("pinctrl: nuvoton: Add driver for WPCM450")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
+---
+ drivers/pinctrl/nuvoton/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/pinctrl/nuvoton/Kconfig b/drivers/pinctrl/nuvoton/Kconfig
+index b48d32912bef..852b0d0eb08e 100644
+--- a/drivers/pinctrl/nuvoton/Kconfig
++++ b/drivers/pinctrl/nuvoton/Kconfig
+@@ -3,6 +3,7 @@
+ config PINCTRL_WPCM450
+ 	tristate "Pinctrl and GPIO driver for Nuvoton WPCM450"
+ 	depends on ARCH_WPCM450 || COMPILE_TEST
++	depends on OF
+ 	select PINMUX
+ 	select PINCONF
+ 	select GENERIC_PINCONF
+--
+2.31.1
+
