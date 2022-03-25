@@ -2,145 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8EA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:37:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1F7CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:37:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376551AbiCYPfo (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:35:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54078 "EHLO
+        id S245383AbiCYPi7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 11:38:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376708AbiCYP14 (ORCPT
+        with ESMTP id S1376984AbiCYPiN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:27:56 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B72F86CA57;
-        Fri, 25 Mar 2022 08:25:40 -0700 (PDT)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22PEcQHe018886;
-        Fri, 25 Mar 2022 15:25:17 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=pp1;
- bh=wtZ7yK/0CRnLGQyyfEq04PkrYcuVIqNGBRYNpsmm4LU=;
- b=EK9KlqWRtK9jemIaBWXPSfVTRv7USZwJCT2m7UkMY4Fbqu1mZPPCfOO3KX6LaME2tqtY
- SCJSJ99+VNvyQNplV6DpxQ8ZR6IWEGAAds16W1nmTaf8MqUbsID0FMXHhdGLi5Jses/0
- t9MFw6avPEyLFxSeXEGpjX7V3EtJ2RhHM/n9AgH49GMInB2hLRNZb0kSRe9EDnDYihtq
- 16LcTVMK9lmYQLG6vKMqdFQ1h8vYzlN4bZgDET3/Pl1fXf+8A1cr8jP4/aesY+Yy1NnB
- RRmf1dUNIW2zY+kdFDM5Zd7T6okZbG7oohnxKAfHoS0VUC/Czwnuyv+DJKHhKmPuRZhc Kw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f0kax5t98-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 25 Mar 2022 15:25:16 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22PF4OYI008470;
-        Fri, 25 Mar 2022 15:25:16 GMT
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f0kax5t8f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 25 Mar 2022 15:25:16 +0000
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22PFN9xa018376;
-        Fri, 25 Mar 2022 15:25:14 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma06fra.de.ibm.com with ESMTP id 3ew6ej3kf7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 25 Mar 2022 15:25:14 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22PFDNU850856374
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 25 Mar 2022 15:13:23 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BB1014C040;
-        Fri, 25 Mar 2022 15:25:11 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B44944C044;
-        Fri, 25 Mar 2022 15:25:10 +0000 (GMT)
-Received: from li-e979b1cc-23ba-11b2-a85c-dfd230f6cf82 (unknown [9.171.85.1])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with SMTP;
-        Fri, 25 Mar 2022 15:25:10 +0000 (GMT)
-Date:   Fri, 25 Mar 2022 16:25:08 +0100
-From:   Halil Pasic <pasic@linux.ibm.com>
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Christoph Hellwig <hch@lst.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4?= =?UTF-8?B?cmdlbnNlbg==?= 
-        <toke@toke.dk>, Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Olha Cherevyk <olha.cherevyk@gmail.com>,
-        iommu <iommu@lists.linux-foundation.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable <stable@vger.kernel.org>,
-        Halil Pasic <pasic@linux.ibm.com>
-Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
- ath9k-based AP
-Message-ID: <20220325162508.3273e0db.pasic@linux.ibm.com>
-In-Reply-To: <20220324190216.0efa067f.pasic@linux.ibm.com>
-References: <1812355.tdWV9SEqCh@natalenko.name>
-        <CAHk-=wiwz+Z2MaP44h086jeniG-OpK3c=FywLsCwXV7Crvadrg@mail.gmail.com>
-        <27b5a287-7a33-9a8b-ad6d-04746735fb0c@arm.com>
-        <CAHk-=wip7TCD_+2STTepuEZvGMg6wcz+o=kyFUvHjuKziTMixw@mail.gmail.com>
-        <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
-        <20220324190216.0efa067f.pasic@linux.ibm.com>
-Organization: IBM
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+        Fri, 25 Mar 2022 11:38:13 -0400
+Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D502642EEB;
+        Fri, 25 Mar 2022 08:34:57 -0700 (PDT)
+Received: by mail-pl1-f169.google.com with SMTP id x2so8402190plm.7;
+        Fri, 25 Mar 2022 08:34:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=bbdgCmNtwzY2RLS376ybn/+3eTx3HqJcLP+kZSbonms=;
+        b=II646205Fe+H3Uj8+9+hWRuf7OkHp8NB6cGfzmJJqCmPoVZ1dA7ashLKAn+t2uT6qi
+         AGvNAmVfA/4tLXYU2AglDOyxUgwcEFmizD12oucdJfhJdiFtKwk50qsPTHQGCQ0ZDUPj
+         Iw9LCvM+BdnHeycV7y3ZRkdkH/qBvc3fba4DKZk+scOsrr2txuSaiHOCGD4xhBMdBIYU
+         rn+6sjH7dVjFlJp32GTumNR3JWDx7sgRdmz1R5b4701nVNjfEyQYEYZwib2UC47auEWC
+         r1sWCHBgiW2eQwsI0bcAhQgCppD/5IbjIYx/tBDnSg2Oq11mkE18BtJjqAH5o0VIC225
+         0YhA==
+X-Gm-Message-State: AOAM531bCEUEh9lVsrVR8vAKYr7iKhmqtC8xhXZhGRmg24QMNNvqCqAW
+        RNtaIYGimXfallenJFqS17v0eP52pz0=
+X-Google-Smtp-Source: ABdhPJylDRG/b4rWwQqiSjQYi+msf7VHn9E4kX9F42tOQD4859a6He0M7PZWCvqJkgeYBJhkGx0RPQ==
+X-Received: by 2002:a17:902:db0f:b0:154:665e:af75 with SMTP id m15-20020a170902db0f00b00154665eaf75mr12089337plx.147.1648222497062;
+        Fri, 25 Mar 2022 08:34:57 -0700 (PDT)
+Received: from ?IPV6:2601:647:4000:d7:feaa:14ff:fe9d:6dbd? ([2601:647:4000:d7:feaa:14ff:fe9d:6dbd])
+        by smtp.gmail.com with ESMTPSA id k18-20020a056a00135200b004fb18fc6c78sm2880862pfu.31.2022.03.25.08.34.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Mar 2022 08:34:56 -0700 (PDT)
+Message-ID: <e3654323-1880-d7b9-fba6-59b387b6fa77@acm.org>
+Date:   Fri, 25 Mar 2022 08:34:54 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: xAmGyw1lgESr16IrNUtiGC-eJnDwcDex
-X-Proofpoint-GUID: 71FqG_G0CuPRDUQFTyfziAzEYfbIJLzg
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-25_04,2022-03-24_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 bulkscore=0
- mlxlogscore=899 priorityscore=1501 phishscore=0 lowpriorityscore=0
- impostorscore=0 clxscore=1015 spamscore=0 suspectscore=0 malwarescore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203250084
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2] scsi: ufs: unipro: add to define HS-Gear5 mode
+Content-Language: en-US
+To:     SEO HOYOUNG <hy50.seo@samsung.com>, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, alim.akhtar@samsung.com,
+        avri.altman@wdc.com, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, beanhuo@micron.com,
+        asutoshd@codeaurora.org, cang@codeaurora.org,
+        bhoon95.kim@samsung.com, kwmad.kim@samsung.com
+References: <sc.suh@samsung.com;>
+ <CGME20220325082858epcas2p41c0918b1cacce09eaa5f7ffe84d9f994@epcas2p4.samsung.com>
+ <20220324201410.59187-1-hy50.seo@samsung.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <20220324201410.59187-1-hy50.seo@samsung.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 24 Mar 2022 19:02:16 +0100
-Halil Pasic <pasic@linux.ibm.com> wrote:
+On 3/24/22 13:14, SEO HOYOUNG wrote:
+> diff --git a/drivers/scsi/ufs/unipro.h b/drivers/scsi/ufs/unipro.h
+> index 8e9e486a4f7b..0d2131e1f027 100644
+> --- a/drivers/scsi/ufs/unipro.h
+> +++ b/drivers/scsi/ufs/unipro.h
+> @@ -231,6 +231,7 @@ enum ufs_hs_gear_tag {
+>   	UFS_HS_G2,		/* HS Gear 2 */
+>   	UFS_HS_G3,		/* HS Gear 3 */
+>   	UFS_HS_G4,		/* HS Gear 4 */
+> +	UFS_HS_G5,		/* HS Gear 5 */
+>   };
 
-> > I'll admit I still never quite grasped the reason for also adding the 
-> > override to swiotlb_sync_single_for_device() in aa6f8dcbab47, but I 
-> > think by that point we were increasingly tired and confused and starting 
-> > to second-guess ourselves (well, I was, at least).  
-> 
-> I raised the question, do we need to do the same for
-> swiotlb_sync_single_for_device(). Did that based on my understanding of the
-> DMA API documentation. I had the following scenario in mind
-> 
-> SWIOTLB without the snyc_single:
->                                   Memory      Bounce buffer      Owner
-> --------------------------------------------------------------------------
-> start                             12345678    xxxxxxxx             C
-> dma_map(DMA_FROM_DEVICE)          12345678 -> 12345678             C->D
-> device writes partial data        12345678    12ABC678 <- ABC      D
-> sync_for_cpu(DMA_FROM_DEVICE)     12ABC678 <- 12ABC678             D->C
-> cpu modifies buffer               66666666    12ABC678             C
-> sync_for_device(DMA_FROM_DEVICE)  66666666    12ABC678             C->D
-> device writes partial data        66666666    1EFGC678 <-EFG       D
-> dma_unmap(DMA_FROM_DEVICE)        1EFGC678 <- 1EFGC678             D->C
-> 
-> Legend: in Owner column C stands for cpu and D for device.
-> 
-> Without swiotlb, I believe we should have arrived at 6EFG6666. To get the
-> same result, IMHO, we need to do a sync in sync_for_device().
-> And aa6f8dcbab47 is an imperfect solution to that (because of size).
-> 
+Where is the code that uses this new constant?
 
-@Robin, Christoph: Do we consider this a valid scenario?
+Thanks,
 
-Regards,
-Halil
+Bart.
