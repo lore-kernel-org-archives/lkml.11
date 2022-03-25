@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C200AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 21:35:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 298FCC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 21:35:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233498AbiCYVhM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 17:37:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60936 "EHLO
+        id S233509AbiCYVhS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 17:37:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233439AbiCYVhE (ORCPT
+        with ESMTP id S233443AbiCYVhE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 25 Mar 2022 17:37:04 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37B8D4AE10;
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B7EE4AE3A;
         Fri, 25 Mar 2022 14:35:28 -0700 (PDT)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 69EE1223EA;
-        Fri, 25 Mar 2022 22:35:25 +0100 (CET)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 8DD54223F0;
+        Fri, 25 Mar 2022 22:35:26 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1648244125;
+        t=1648244126;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=bWBsiGXBmlYd0EaKgmARKG3hBGZ0ztGZamwzdx+gZPM=;
-        b=pSlCgaFUXFdyGbiNVbxf1PY2f/5CA3uJi7GkcuqK13SU9Gf86votoFRFu1fZPjzvSzi2lm
-        E1mvXQ0UIgictW/yeZTyoCDe9+m7O2s9XJipX3edvaa/qs4BCCsgfFvB2JdJd037iNNpUA
-        4EcrAomZdjk2LWX4HQk3OMPR4osbBoI=
+        bh=HO3BNNMiGWEE7yu4esdw667t4cALNEKNqcbKGS1w0kw=;
+        b=SBUdBNid1b83ipDQWD3bS9UHVF4AToC2TN4ACVgrOfhu9qdnI5Ch+vGjGua3qvYvluuyKW
+        YtvPWMDx088UgmjFpkyHE6xwpJM8CeAWvbpmzp5Jq5+jCCtaQ45ujrNn4shxjY8dvS4j9v
+        m6yrOzLR4OI3PE2piUGrVvNXZqNHZpM=
 From:   Michael Walle <michael@walle.cc>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -43,9 +43,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Florian Fainelli <f.fainelli@gmail.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH RFC net-next v2 1/8] net: phy: mscc-miim: reject clause 45 register accesses
-Date:   Fri, 25 Mar 2022 22:35:11 +0100
-Message-Id: <20220325213518.2668832-2-michael@walle.cc>
+Subject: [PATCH RFC net-next v2 3/8] net: phy: add error checks in __phy_mmd_indirect() and export it
+Date:   Fri, 25 Mar 2022 22:35:13 +0100
+Message-Id: <20220325213518.2668832-4-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220325213518.2668832-1-michael@walle.cc>
 References: <20220325213518.2668832-1-michael@walle.cc>
@@ -55,42 +55,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The driver doesn't support clause 45 register access yet, but doesn't
-check if the access is a c45 one either. This leads to spurious register
-reads and writes. Add the check.
+Add missing error checks and export it so it can be reused. Rename the
+function to have the common "phy_" prefix.
 
-Fixes: 542671fe4d86 ("net: phy: mscc-miim: Add MDIO driver")
 Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- drivers/net/mdio/mdio-mscc-miim.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/phy/phy-core.c | 34 ++++++++++++++++++++++++++--------
+ include/linux/phy.h        |  2 ++
+ 2 files changed, 28 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/mdio/mdio-mscc-miim.c b/drivers/net/mdio/mdio-mscc-miim.c
-index c483ba67c21f..582969751b4c 100644
---- a/drivers/net/mdio/mdio-mscc-miim.c
-+++ b/drivers/net/mdio/mdio-mscc-miim.c
-@@ -102,6 +102,9 @@ static int mscc_miim_read(struct mii_bus *bus, int mii_id, int regnum)
- 	u32 val;
- 	int ret;
+diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
+index 2001f3329133..dd9b6b64757d 100644
+--- a/drivers/net/phy/phy-core.c
++++ b/drivers/net/phy/phy-core.c
+@@ -437,19 +437,37 @@ int phy_speed_down_core(struct phy_device *phydev)
+ 	return 0;
+ }
  
-+	if (regnum & MII_ADDR_C45)
-+		return -EOPNOTSUPP;
+-static void mmd_phy_indirect(struct mii_bus *bus, int phy_addr, int devad,
+-			     u16 regnum)
++/**
++ * __phy_mmd_indirect - prepare an indirect C45 register access
++ *
++ * @bus: the target MII bus
++ * @phy_addr: PHY address on the MII bus
++ * @devad: The target MMD (0..31)
++ * @regnum: The target register on the MMD (0..65535)
++ *
++ * Prepare an indirect C45 read or write transfer using the MII_MMD_CTRL and
++ * MII_MMD_DATA registers in C22 space.
++ */
++int __phy_mmd_indirect(struct mii_bus *bus, int phy_addr, int devad,
++		       u16 regnum)
+ {
++	int ret;
 +
- 	ret = mscc_miim_wait_pending(bus);
- 	if (ret)
- 		goto out;
-@@ -145,6 +148,9 @@ static int mscc_miim_write(struct mii_bus *bus, int mii_id,
- 	struct mscc_miim_dev *miim = bus->priv;
- 	int ret;
+ 	/* Write the desired MMD Devad */
+-	__mdiobus_write(bus, phy_addr, MII_MMD_CTRL, devad);
++	ret = __mdiobus_write(bus, phy_addr, MII_MMD_CTRL, devad);
++	if (ret)
++		return ret;
  
-+	if (regnum & MII_ADDR_C45)
-+		return -EOPNOTSUPP;
-+
- 	ret = mscc_miim_wait_pending(bus);
- 	if (ret < 0)
- 		goto out;
+ 	/* Write the desired MMD register address */
+-	__mdiobus_write(bus, phy_addr, MII_MMD_DATA, regnum);
++	ret = __mdiobus_write(bus, phy_addr, MII_MMD_DATA, regnum);
++	if (ret)
++		return ret;
+ 
+ 	/* Select the Function : DATA with no post increment */
+-	__mdiobus_write(bus, phy_addr, MII_MMD_CTRL,
+-			devad | MII_MMD_CTRL_NOINCR);
++	return __mdiobus_write(bus, phy_addr, MII_MMD_CTRL,
++			       devad | MII_MMD_CTRL_NOINCR);
+ }
++EXPORT_SYMBOL(__phy_mmd_indirect);
+ 
+ /**
+  * __phy_read_mmd - Convenience function for reading a register
+@@ -476,7 +494,7 @@ int __phy_read_mmd(struct phy_device *phydev, int devad, u32 regnum)
+ 		struct mii_bus *bus = phydev->mdio.bus;
+ 		int phy_addr = phydev->mdio.addr;
+ 
+-		mmd_phy_indirect(bus, phy_addr, devad, regnum);
++		__phy_mmd_indirect(bus, phy_addr, devad, regnum);
+ 
+ 		/* Read the content of the MMD's selected register */
+ 		val = __mdiobus_read(bus, phy_addr, MII_MMD_DATA);
+@@ -532,7 +550,7 @@ int __phy_write_mmd(struct phy_device *phydev, int devad, u32 regnum, u16 val)
+ 		struct mii_bus *bus = phydev->mdio.bus;
+ 		int phy_addr = phydev->mdio.addr;
+ 
+-		mmd_phy_indirect(bus, phy_addr, devad, regnum);
++		__phy_mmd_indirect(bus, phy_addr, devad, regnum);
+ 
+ 		/* Write the data into MMD's selected register */
+ 		__mdiobus_write(bus, phy_addr, MII_MMD_DATA, val);
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 36ca2b5c2253..c81c209d4abd 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -1110,6 +1110,8 @@ int phy_read_mmd(struct phy_device *phydev, int devad, u32 regnum);
+ 	__ret; \
+ })
+ 
++int __phy_mmd_indirect(struct mii_bus *bus, int phy_addr, int devad,
++		       u16 regnum);
+ /*
+  * __phy_read_mmd - Convenience function for reading a register
+  * from an MMD on a given PHY.
 -- 
 2.30.2
 
