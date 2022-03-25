@@ -2,176 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27B3EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 23:52:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A6F7C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 23:53:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229665AbiCYXxx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 19:53:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58982 "EHLO
+        id S229704AbiCYXyv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 19:54:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229620AbiCYXxs (ORCPT
+        with ESMTP id S229611AbiCYXys (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 19:53:48 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 108AF10BBDB
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 16:52:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648252331; x=1679788331;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=jsVPk/AP3tfYmFM+PdRlupq5b+ybr1R0V4Pies6bYIo=;
-  b=FG1JkPVl7+7oWcN0B9fqNhvzkXzMSoSiTmFkb/sqbf3TeTTHON5FeWV9
-   Nz6yVl4t46gR2cAcoW8Ci0WYhTLu7bYVJF49NdYIpiJdquyJq0hdIr6j9
-   V48kfAsfu0vWn7FA6DwspN8GzkYAlfAs7LC2I2z7g9P7/CXBtctDGHDRW
-   8uTE0oxl+FvLVXQDqJIXvQa8OaifMeA+1mdAR1QHl2fekjEGpspQXm5CH
-   1Hw1Ijt/xo253JvN6IczMZM6YXO0FvTClwTmJTN08a10OrajwI7SnAuKs
-   VsVCkoOz+aKztp+PyLLJACv+nyvJK4vJkgMrLEXwzomgpC2Y5rdBdhBtt
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10297"; a="321930161"
-X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
-   d="scan'208";a="321930161"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2022 16:52:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
-   d="scan'208";a="648425297"
-Received: from skl-02.jf.intel.com ([10.54.74.28])
-  by fmsmga002.fm.intel.com with ESMTP; 25 Mar 2022 16:52:10 -0700
-From:   Tim Chen <tim.c.chen@linux.intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Ingo Molnar <mingo@elte.hu>, Juri Lelli <juri.lelli@redhat.com>
-Cc:     Yu Chen <yu.c.chen@intel.com>, Walter Mack <walter.mack@intel.com>,
-        Mel Gorman <mgorman@suse.de>, linux-kernel@vger.kernel.org,
-        Tim Chen <tim.c.chen@linux.intel.com>
-Subject: [PATCH 2/2] sched/fair: Simple runqueue order on migrate
-Date:   Fri, 25 Mar 2022 15:54:17 -0700
-Message-Id: <f59f1dfeec4692e7a373cc810168912a2d2f8f3c.1648228023.git.tim.c.chen@linux.intel.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <cover.1648228023.git.tim.c.chen@linux.intel.com>
-References: <cover.1648228023.git.tim.c.chen@linux.intel.com>
+        Fri, 25 Mar 2022 19:54:48 -0400
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72BE94C419
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 16:53:13 -0700 (PDT)
+Received: by mail-lj1-x235.google.com with SMTP id s25so12212542lji.5
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 16:53:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8qXoYUkt8E2evKFcvqOeWBKlnnitRNfoGnLZMz+10kE=;
+        b=OQdleKS9jBYFLVrrzj4DPCHf4gaVpqu58/EC7lxApoPXr60nb+ziM2552oK9jW2c/B
+         ivMOHtTRyaNpW+GG34OG94pTLknSvunFjCnhWMHxD8gtHegvxPSYW/YhHuoNyH70mfCv
+         TBchSbI1uBUcfH/frw4Xb1ROxPqwy2a8vYWETNL9+9tviD1tVELp3+7ceCGRqtDWRCKW
+         30mwS4Zfjo8suRFiY0SHvhTiNbKnjmF7AMUuDTMYhwcIpvgsmh76Mbkn6djR4TWVLXAt
+         tQ+Z3py7JogTT/kJ9bWxb/epg1pqGhkFEIA2LhxON0krn941lj5JLcyI18LtZawHPxdB
+         yFeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8qXoYUkt8E2evKFcvqOeWBKlnnitRNfoGnLZMz+10kE=;
+        b=yFiSRW4fPJU3yCSK5FZWGJFU9RUbyy3CAjSTCwgMvhEY/omVB5t8dgKdQUeviV+Hmp
+         iHv/yId/usYAKcfIm+SDUNcm9Af80ZgufExge212ZLdSu3IWfUtOY9mLR/BPeIyF6MJU
+         ed2ARHxubnuMxkzPwo0WgCnaSJmoJG2Bu0fVUHGb71p/MgmezqwCKLM/y7em09+9csyi
+         pwMCUswOdRcDrBrBwp8VN0d466vzpcfq2XnYJAfVqPl8w9ibHW8Oa/KGi1/OWVwQhTdM
+         7q9XPaVt+FCepLcQHJhn1WSEJE7OeBZSVjmegwDBlzkpjFwgs3PaxkStQRNA8zbuA8to
+         uxuw==
+X-Gm-Message-State: AOAM5319aFMxrdXZfLyk74lznGF5k4RysBw70UiEDN6ksYL5vqf+POdF
+        PasQ6Sed2uoRsh/AA2T4cbMEmLLGYWzFOjkxCu1FFQ==
+X-Google-Smtp-Source: ABdhPJwTe3Jp4SsjbZ7FweW8j9HWkbFTY486qkS/Kbpu0+fJ9ImPAalJ2s7OU1fGNaHABBqHEZ1wUH92EdTp4sQMfTc=
+X-Received: by 2002:a05:651c:988:b0:24a:c21f:7057 with SMTP id
+ b8-20020a05651c098800b0024ac21f7057mr1127843ljq.16.1648252391586; Fri, 25 Mar
+ 2022 16:53:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220325233125.413634-1-vipinsh@google.com>
+In-Reply-To: <20220325233125.413634-1-vipinsh@google.com>
+From:   David Matlack <dmatlack@google.com>
+Date:   Fri, 25 Mar 2022 16:52:45 -0700
+Message-ID: <CALzav=e6W2VSp=btmqTpQJ=3bH+Bw3D8sLApkTTvMMKAnw_LAw@mail.gmail.com>
+Subject: Re: [PATCH] KVM: x86/mmu: Speed up slot_rmap_walk_next for sparsely
+ populated rmaps
+To:     Vipin Sharma <vipinsh@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm list <kvm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Peter Zijlstra (Intel)" <peterz@infradead.org>
+On Fri, Mar 25, 2022 at 4:31 PM Vipin Sharma <vipinsh@google.com> wrote:
+>
+> Avoid calling handlers on empty rmap entries and skip to the next non
+> empty rmap entry.
+>
+> Empty rmap entries are noop in handlers.
+>
+> Signed-off-by: Vipin Sharma <vipinsh@google.com>
+> Suggested-by: Sean Christopherson <seanjc@google.com>
+> Change-Id: I8abf0f4d82a2aae4c5d58b80bcc17ffc30785ffc
 
-From: Peter Zijlstra (Intel) <peterz@infradead.org>
+nit: Omit Change-Id tags from upstream commits.
 
-There's a number of problems with SMP migration of fair tasks, but
-basically it boils down to a task not receiving equal service on each
-runqueue (consider the trivial 3 tasks 2 cpus infeasible weight
-scenario).
+> ---
+>  arch/x86/kvm/mmu/mmu.c | 9 ++++++---
+>  1 file changed, 6 insertions(+), 3 deletions(-)
+>
+> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> index 51671cb34fb6..f296340803ba 100644
+> --- a/arch/x86/kvm/mmu/mmu.c
+> +++ b/arch/x86/kvm/mmu/mmu.c
+> @@ -1499,11 +1499,14 @@ static bool slot_rmap_walk_okay(struct slot_rmap_walk_iterator *iterator)
+>         return !!iterator->rmap;
+>  }
+>
+> -static void slot_rmap_walk_next(struct slot_rmap_walk_iterator *iterator)
+> +static noinline void
 
-Fully solving that with vruntime placement is 'hard', not least
-because a task might be very under-services on a busy runqueue and
-would need to be placed so far left on the new runqueue that it would
-significantly impact latency on the existing tasks.
+What is the reason to add noinline?
 
-Instead do minimal / basic placement instead; when moving to a less
-busy queue place at the front of the queue to receive time sooner.
-When moving to a busier queue, place at the end of the queue to
-receive time later.
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Tim Chen <tim.c.chen@linux.intel.com>
-Tested-by: Chen Yu <yu.c.chen@intel.com>
-Tested-by: Walter Mack <walter.mack@intel.com>
----
- kernel/sched/fair.c     | 33 +++++++++++++++++++++++++++++----
- kernel/sched/features.h |  2 ++
- 2 files changed, 31 insertions(+), 4 deletions(-)
-
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 2498e97804fd..c5d2cb3a8f42 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -4223,6 +4223,27 @@ place_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int initial)
- 	se->vruntime = max_vruntime(se->vruntime, vruntime);
- }
- 
-+static void place_entity_migrate(struct cfs_rq *cfs_rq, struct sched_entity *se)
-+{
-+	if (!sched_feat(PLACE_MIGRATE))
-+		return;
-+
-+	if (cfs_rq->nr_running < se->migrated) {
-+		/*
-+		 * Migrated to a shorter runqueue, go first because
-+		 * we were under-served on the old runqueue.
-+		 */
-+		se->vruntime = cfs_rq->min_vruntime;
-+		return;
-+	}
-+
-+	/*
-+	 * Migrated to a longer runqueue, go last because
-+	 * we got over-served on the old runqueue.
-+	 */
-+	se->vruntime = cfs_rq->min_vruntime + sched_vslice(cfs_rq, se);
-+}
-+
- static void check_enqueue_throttle(struct cfs_rq *cfs_rq);
- 
- static inline bool cfs_bandwidth_used(void);
-@@ -4296,6 +4317,8 @@ enqueue_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
- 
- 	if (flags & ENQUEUE_WAKEUP)
- 		place_entity(cfs_rq, se, 0);
-+	else if (se->migrated)
-+		place_entity_migrate(cfs_rq, se);
- 
- 	check_schedstat_required();
- 	update_stats_enqueue_fair(cfs_rq, se, flags);
-@@ -6930,6 +6953,7 @@ static void detach_entity_cfs_rq(struct sched_entity *se);
-  */
- static void migrate_task_rq_fair(struct task_struct *p, int new_cpu)
- {
-+	struct sched_entity *se = &p->se;
- 	/*
- 	 * As blocked tasks retain absolute vruntime the migration needs to
- 	 * deal with this by subtracting the old and adding the new
-@@ -6962,7 +6986,7 @@ static void migrate_task_rq_fair(struct task_struct *p, int new_cpu)
- 		 * rq->lock and can modify state directly.
- 		 */
- 		lockdep_assert_rq_held(task_rq(p));
--		detach_entity_cfs_rq(&p->se);
-+		detach_entity_cfs_rq(se);
- 
- 	} else {
- 		/*
-@@ -6973,14 +6997,15 @@ static void migrate_task_rq_fair(struct task_struct *p, int new_cpu)
- 		 * wakee task is less decayed, but giving the wakee more load
- 		 * sounds not bad.
- 		 */
--		remove_entity_load_avg(&p->se);
-+		remove_entity_load_avg(se);
- 	}
- 
- 	/* Tell new CPU we are migrated */
--	p->se.avg.last_update_time = 0;
-+	se->avg.last_update_time = 0;
- 
- 	/* We have migrated, no longer consider this task hot */
--	p->se.migrated = 1;
-+	for_each_sched_entity(se)
-+		se->migrated = READ_ONCE(cfs_rq_of(se)->nr_running) + !se->on_rq;
- 
- 	update_scan_period(p, new_cpu);
- }
-diff --git a/kernel/sched/features.h b/kernel/sched/features.h
-index 1cf435bbcd9c..681c84fd062c 100644
---- a/kernel/sched/features.h
-+++ b/kernel/sched/features.h
-@@ -100,3 +100,5 @@ SCHED_FEAT(LATENCY_WARN, false)
- 
- SCHED_FEAT(ALT_PERIOD, true)
- SCHED_FEAT(BASE_SLICE, true)
-+
-+SCHED_FEAT(PLACE_MIGRATE, true)
--- 
-2.32.0
-
+> +slot_rmap_walk_next(struct slot_rmap_walk_iterator *iterator)
+>  {
+> -       if (++iterator->rmap <= iterator->end_rmap) {
+> +       while (++iterator->rmap <= iterator->end_rmap) {
+>                 iterator->gfn += (1UL << KVM_HPAGE_GFN_SHIFT(iterator->level));
+> -               return;
+> +
+> +               if (iterator->rmap->val)
+> +                       return;
+>         }
+>
+>         if (++iterator->level > iterator->end_level) {
+>
+> base-commit: c9b8fecddb5bb4b67e351bbaeaa648a6f7456912
+> --
+> 2.35.1.1021.g381101b075-goog
+>
