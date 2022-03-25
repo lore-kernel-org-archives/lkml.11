@@ -2,155 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FB58C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 09:02:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C45B6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 09:02:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356118AbiCYJDg (ORCPT
+        id S1356176AbiCYJES (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 05:03:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56924 "EHLO
+        Fri, 25 Mar 2022 05:04:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229940AbiCYJDd (ORCPT
+        with ESMTP id S229940AbiCYJER (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 05:03:33 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CA428CD332;
-        Fri, 25 Mar 2022 02:01:59 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7090412FC;
-        Fri, 25 Mar 2022 02:01:59 -0700 (PDT)
-Received: from [10.57.22.201] (unknown [10.57.22.201])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B77173F66F;
-        Fri, 25 Mar 2022 02:01:57 -0700 (PDT)
-Message-ID: <c881de5f-5a1e-19ff-0ae6-f68032c79f03@arm.com>
-Date:   Fri, 25 Mar 2022 09:01:55 +0000
+        Fri, 25 Mar 2022 05:04:17 -0400
+Received: from mxout03.lancloud.ru (mxout03.lancloud.ru [45.84.86.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2DD8CD339
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 02:02:32 -0700 (PDT)
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout03.lancloud.ru D590C20A83DE
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH v1] soc: bcm: Check for NULL return of devm_kzalloc()
+To:     QintaoShen <unSimple1993@163.com>, <f.fainelli@gmail.com>
+CC:     <bcm-kernel-feedback-list@broadcom.com>,
+        <linux-mips@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <1648110940-4684-1-git-send-email-unSimple1993@163.com>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <0f5e77e9-3c2c-396d-636b-1b7153007fe5@omp.ru>
+Date:   Fri, 25 Mar 2022 12:02:28 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2] thermal: devfreq_cooling: use local ops instead of
- global ops
+In-Reply-To: <1648110940-4684-1-git-send-email-unSimple1993@163.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-To:     Kant Fan <kant@allwinnertech.com>
-Cc:     amitk@kernel.org, rui.zhang@intel.com, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        allwinner-opensource-support@allwinnertech.com,
-        stable@vger.kernel.org, rafael@kernel.org,
-        daniel.lezcano@linaro.org, ionela.voinescu@arm.com
-References: <20220325073030.91919-1-kant@allwinnertech.com>
-From:   Lukasz Luba <lukasz.luba@arm.com>
-In-Reply-To: <20220325073030.91919-1-kant@allwinnertech.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kant,
+Hello!
 
-On 3/25/22 07:30, Kant Fan wrote:
-> Fix access illegal address problem in following condition:
-> There are muti devfreq cooling devices in system, some of them has
-> em model but other does not, energy model ops such as state2power will
-> append to global devfreq_cooling_ops when the cooling device with
-> em model register. It makes the cooling device without em model
-> also use devfreq_cooling_ops after appending when register later by
-> of_devfreq_cooling_register_power() or of_devfreq_cooling_register().
+   s/return/result/ in the subject.
+
+On 3/24/22 11:35 AM, QintaoShen wrote:
+
+> As the potential failuer of allocation, devm_kzalloc() may return NULL.
+> Then the 'pd->pmb' and the follow lines of code may bring null pointer dereference.
+
+   Following.
+
+> Therefore, it is better to check the return value of devm_kzalloc() to avoid this confusion.
 > 
-> IPA governor regards the cooling devices without em model as a power actor
-> because they also have energy model ops, and will access illegal address
-> at dfc->em_pd when execute cdev->ops->get_requested_power,
-> cdev->ops->state2power or cdev->ops->power2state.
-> 
-> Fixes: 615510fe13bd2 ("thermal: devfreq_cooling: remove old power model and use EM")
-> Cc: stable@vger.kernel.org # 5.13+
-> Signed-off-by: Kant Fan <kant@allwinnertech.com>
+> Signed-off-by: QintaoShen <unSimple1993@163.com>
 > ---
->   drivers/thermal/devfreq_cooling.c | 25 ++++++++++++++++++-------
->   1 file changed, 18 insertions(+), 7 deletions(-)
+>  drivers/soc/bcm/bcm63xx/bcm-pmb.c | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> diff --git a/drivers/thermal/devfreq_cooling.c b/drivers/thermal/devfreq_cooling.c
-> index 4310cb342a9f..d38a80adec73 100644
-> --- a/drivers/thermal/devfreq_cooling.c
-> +++ b/drivers/thermal/devfreq_cooling.c
-> @@ -358,21 +358,28 @@ of_devfreq_cooling_register_power(struct device_node *np, struct devfreq *df,
->   	struct thermal_cooling_device *cdev;
->   	struct device *dev = df->dev.parent;
->   	struct devfreq_cooling_device *dfc;
-> +	struct thermal_cooling_device_ops *ops;
->   	char *name;
->   	int err, num_opps;
->   
-> -	dfc = kzalloc(sizeof(*dfc), GFP_KERNEL);
-> -	if (!dfc)
-> +	ops = kmemdup(&devfreq_cooling_ops, sizeof(*ops), GFP_KERNEL);
-> +	if (!ops)
->   		return ERR_PTR(-ENOMEM);
->   
-> +	dfc = kzalloc(sizeof(*dfc), GFP_KERNEL);
-> +	if (!dfc) {
-> +		err = -ENOMEM;
-> +		goto free_ops;
-> +	}
-> +
->   	dfc->devfreq = df;
->   
->   	dfc->em_pd = em_pd_get(dev);
->   	if (dfc->em_pd) {
-> -		devfreq_cooling_ops.get_requested_power =
-> +		ops->get_requested_power =
->   			devfreq_cooling_get_requested_power;
-> -		devfreq_cooling_ops.state2power = devfreq_cooling_state2power;
-> -		devfreq_cooling_ops.power2state = devfreq_cooling_power2state;
-> +		ops->state2power = devfreq_cooling_state2power;
-> +		ops->power2state = devfreq_cooling_power2state;
->   
->   		dfc->power_ops = dfc_power;
->   
-> @@ -407,8 +414,7 @@ of_devfreq_cooling_register_power(struct device_node *np, struct devfreq *df,
->   	if (!name)
->   		goto remove_qos_req;
->   
-> -	cdev = thermal_of_cooling_device_register(np, name, dfc,
-> -						  &devfreq_cooling_ops);
-> +	cdev = thermal_of_cooling_device_register(np, name, dfc, ops);
->   	kfree(name);
->   
->   	if (IS_ERR(cdev)) {
-> @@ -429,6 +435,8 @@ of_devfreq_cooling_register_power(struct device_node *np, struct devfreq *df,
->   	kfree(dfc->freq_table);
->   free_dfc:
->   	kfree(dfc);
-> +free_ops:
-> +	kfree(ops);
->   
->   	return ERR_PTR(err);
->   }
-> @@ -510,11 +518,13 @@ EXPORT_SYMBOL_GPL(devfreq_cooling_em_register);
->   void devfreq_cooling_unregister(struct thermal_cooling_device *cdev)
->   {
->   	struct devfreq_cooling_device *dfc;
-> +	const struct thermal_cooling_device_ops *ops;
->   	struct device *dev;
->   
->   	if (IS_ERR_OR_NULL(cdev))
->   		return;
->   
-> +	ops = cdev->ops;
->   	dfc = cdev->devdata;
->   	dev = dfc->devfreq->dev.parent;
->   
-> @@ -525,5 +535,6 @@ void devfreq_cooling_unregister(struct thermal_cooling_device *cdev)
->   
->   	kfree(dfc->freq_table);
->   	kfree(dfc);
-> +	kfree(ops);
->   }
->   EXPORT_SYMBOL_GPL(devfreq_cooling_unregister);
+> diff --git a/drivers/soc/bcm/bcm63xx/bcm-pmb.c b/drivers/soc/bcm/bcm63xx/bcm-pmb.c
+> index 7bbe46e..55bf389 100644
+> --- a/drivers/soc/bcm/bcm63xx/bcm-pmb.c
+> +++ b/drivers/soc/bcm/bcm63xx/bcm-pmb.c
+> @@ -311,6 +311,8 @@ static int bcm_pmb_probe(struct platform_device *pdev)
+>  
+>  	for (e = table; e->name; e++) {
+>  		struct bcm_pmb_pm_domain *pd = devm_kzalloc(dev, sizeof(*pd), GFP_KERNEL);
 
+   Please keep an empty line after declaration.
 
-Thank you for updating it, LGTM
+> +		if (!pd)
+> +			return -ENOMEM;
+>  
+>  		pd->pmb = pmb;
+>  		pd->data = e;
 
-Reviewed-by: Lukasz Luba <lukasz.luba@arm.com>
-
-Regards,
-Lukasz
+MBR, Sergey
