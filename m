@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07911C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:20:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22567C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:20:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376526AbiCYPV6 (ORCPT
+        id S1376425AbiCYPWL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:21:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36892 "EHLO
+        Fri, 25 Mar 2022 11:22:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376261AbiCYPT0 (ORCPT
+        with ESMTP id S1376266AbiCYPT0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 25 Mar 2022 11:19:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B92C7DFFB7;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8EE1DFFA9;
         Fri, 25 Mar 2022 08:15:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 55920B82909;
-        Fri, 25 Mar 2022 15:15:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB029C340EE;
-        Fri, 25 Mar 2022 15:15:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A7E0960AC7;
+        Fri, 25 Mar 2022 15:15:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DE44C340E9;
+        Fri, 25 Mar 2022 15:15:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221316;
-        bh=sq5WssQkekeNhIRdj80ObkCH723gqNTyRCRfMku8noY=;
+        s=korg; t=1648221319;
+        bh=gp++YkMIsw/KZrl9yQMpWARrfRqXAx+5PgIOyaJUvSQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mdYQ9TzIDtYnWo96hRankGmji/Stzm75A3GXPMsWuvrTa/TOdqSxl8wVctqKRCqLq
-         QX+sRcVg5Pezllg62iqvOo/qouqGjBfSie3TcVFVa1TLQfjludiBWHWu0HVz6JfGM7
-         nln/Gbncov4MKAQFPfJt/DU4C4w4SX4zFWpewqSY=
+        b=lI7iqwsFQB+eUiWAL5D1mRR8Nvlcbqt0bI1ze3drXlQAwSzgMXBYpOPLZB2BAo7k3
+         19cDT0jHyO82Bi6nUmJ/t8o1iams/hkuEl+gH4CwYAJKF14ipRjmaGFsfiqGK/LmCJ
+         9H3dcJw9XTAqwWCW0bAH5120kZbSzaylfNrZ5qQg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan Teh <jonathan.teh@outlook.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 19/37] ALSA: cmipci: Restore aux vol on suspend/resume
-Date:   Fri, 25 Mar 2022 16:14:20 +0100
-Message-Id: <20220325150420.483361315@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com,
+        Tadeusz Struk <tadeusz.struk@linaro.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 02/37] net: ipv6: fix skb_over_panic in __ip6_append_data
+Date:   Fri, 25 Mar 2022 16:14:03 +0100
+Message-Id: <20220325150420.005360898@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150419.931802116@linuxfoundation.org>
 References: <20220325150419.931802116@linuxfoundation.org>
@@ -49,43 +52,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Teh <jonathan.teh@outlook.com>
+From: Tadeusz Struk <tadeusz.struk@linaro.org>
 
-commit c14231cc04337c2c2a937db084af342ce704dbde upstream.
+commit 5e34af4142ffe68f01c8a9acae83300f8911e20c upstream.
 
-Save and restore CM_REG_AUX_VOL instead of register 0x24 twice on
-suspend/resume.
+Syzbot found a kernel bug in the ipv6 stack:
+LINK: https://syzkaller.appspot.com/bug?id=205d6f11d72329ab8d62a610c44c5e7e25415580
+The reproducer triggers it by sending a crafted message via sendmmsg()
+call, which triggers skb_over_panic, and crashes the kernel:
 
-Tested on CMI8738LX.
+skbuff: skb_over_panic: text:ffffffff84647fb4 len:65575 put:65575
+head:ffff888109ff0000 data:ffff888109ff0088 tail:0x100af end:0xfec0
+dev:<NULL>
 
-Fixes: cb60e5f5b2b1 ("[ALSA] cmipci - Add PM support")
-Signed-off-by: Jonathan Teh <jonathan.teh@outlook.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/DBAPR04MB7366CB3EA9C8521C35C56E8B920E9@DBAPR04MB7366.eurprd04.prod.outlook.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Update the check that prevents an invalid packet with MTU equal
+to the fregment header size to eat up all the space for payload.
+
+The reproducer can be found here:
+LINK: https://syzkaller.appspot.com/text?tag=ReproC&x=1648c83fb00000
+
+Reported-by: syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com
+Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+Acked-by: Willem de Bruijn <willemb@google.com>
+Link: https://lore.kernel.org/r/20220310232538.1044947-1-tadeusz.struk@linaro.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/cmipci.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ net/ipv6/ip6_output.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/sound/pci/cmipci.c
-+++ b/sound/pci/cmipci.c
-@@ -298,7 +298,6 @@ MODULE_PARM_DESC(joystick_port, "Joystic
- #define CM_MICGAINZ		0x01	/* mic boost */
- #define CM_MICGAINZ_SHIFT	0
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -1476,8 +1476,8 @@ static int __ip6_append_data(struct sock
+ 		      sizeof(struct frag_hdr) : 0) +
+ 		     rt->rt6i_nfheader_len;
  
--#define CM_REG_MIXER3		0x24
- #define CM_REG_AUX_VOL		0x26
- #define CM_VAUXL_MASK		0xf0
- #define CM_VAUXR_MASK		0x0f
-@@ -3267,7 +3266,7 @@ static int snd_cmipci_probe(struct pci_d
-  */
- static const unsigned char saved_regs[] = {
- 	CM_REG_FUNCTRL1, CM_REG_CHFORMAT, CM_REG_LEGACY_CTRL, CM_REG_MISC_CTRL,
--	CM_REG_MIXER0, CM_REG_MIXER1, CM_REG_MIXER2, CM_REG_MIXER3, CM_REG_PLL,
-+	CM_REG_MIXER0, CM_REG_MIXER1, CM_REG_MIXER2, CM_REG_AUX_VOL, CM_REG_PLL,
- 	CM_REG_CH0_FRAME1, CM_REG_CH0_FRAME2,
- 	CM_REG_CH1_FRAME1, CM_REG_CH1_FRAME2, CM_REG_EXT_MISC,
- 	CM_REG_INT_STATUS, CM_REG_INT_HLDCLR, CM_REG_FUNCTRL0,
+-	if (mtu < fragheaderlen ||
+-	    ((mtu - fragheaderlen) & ~7) + fragheaderlen < sizeof(struct frag_hdr))
++	if (mtu <= fragheaderlen ||
++	    ((mtu - fragheaderlen) & ~7) + fragheaderlen <= sizeof(struct frag_hdr))
+ 		goto emsgsize;
+ 
+ 	maxfraglen = ((mtu - fragheaderlen) & ~7) + fragheaderlen -
 
 
