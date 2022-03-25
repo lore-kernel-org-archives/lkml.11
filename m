@@ -2,72 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEE23C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:58:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5EADC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:58:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231771AbiCYT7n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:59:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55810 "EHLO
+        id S232004AbiCYUAM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 16:00:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231909AbiCYT7b (ORCPT
+        with ESMTP id S231938AbiCYT7z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:59:31 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F74B2C1155
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:48:50 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1648237699;
+        Fri, 25 Mar 2022 15:59:55 -0400
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42FD227381E;
+        Fri, 25 Mar 2022 12:49:57 -0700 (PDT)
+Received: from relay6-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::226])
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id E3AF7C75D4;
+        Fri, 25 Mar 2022 17:26:19 +0000 (UTC)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 038D8C0005;
+        Fri, 25 Mar 2022 17:24:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1648229043;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=6emZs1CfnbX39mIA+PHTwRbSSCV7fyUlvgeieLB7mgE=;
-        b=aauP/id25Ij1DYcfQqQEpPx+Llzb8HJKO9CYtrSr77iBzrMUo2wNcl7Cgy3OKdwTJaiEIG
-        R1gtkogQ9xtAOpj2tanlLICnZVQId2J7dT2/XLioARKvxgtxohmku/SnkzFNkAM8jnm7RZ
-        VrGME9JkWCDU8kuNXfVZ9QemUuqyV0+xOEosxehIi1YN+WllpQ8llEYXdc635RRGLFWLnc
-        y7NhkAY49E44RuKLt3pWWelIOD4YAC7AiGpmMUx2IlcA3KvH1+b3oTgcAhmseuQausQcMJ
-        Ngyd8yFanNJuBup6bQ0RRu3o76/pgQkahLQtZ7F3DGqJyp70r47pWjZDF+nBxA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1648237699;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=6emZs1CfnbX39mIA+PHTwRbSSCV7fyUlvgeieLB7mgE=;
-        b=RB3sQ3ZoWTLz7ZlDVfHE3wdXQyUzSmLzy95tXQ066YvsSSiahi23VD/PrWCmVbgHUWmHYj
-        t/XuLHM9n1ha/3Cw==
-To:     Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>
-Cc:     geert+renesas@glider.be, linux-kernel@vger.kernel.org,
-        yamamoto.rei@jp.fujitsu.com
-Subject: Re: [PATCH] hrtimer: Remove a warning message in hrtimer_interrupt()
-In-Reply-To: <20220224092848.3755-1-yamamoto.rei@jp.fujitsu.com>
-References: <20211224023924.91851-1-yamamoto.rei@jp.fujitsu.com>
- <20220224092848.3755-1-yamamoto.rei@jp.fujitsu.com>
-Date:   Fri, 25 Mar 2022 20:48:18 +0100
-Message-ID: <87h77lhkzh.ffs@tglx>
+        bh=FRdaf3QubwalLgacUcstEdzO4ExbwqJKpfZxmAqvKtk=;
+        b=W5e1McTTjEWKYFTx3lHvohtMmUPM9fZXTmJ6wra32uO5GEMUv358WeMWxqV3GEvkhn8SoB
+        Tg4yK8/yc1gSbaUYenNc5xR1eA9WO+IqqM1of4KlJmg6bFLIMRLpfwdNSlSeE+hIichm6u
+        ZveyiQJdTtzBmitmnpFwNdXO0S2vLEcGlnxPX0Yxkh03hBl4Kkpg0NDhMM3EhebiPmduFQ
+        bXa4ExaWUF9b1m+yI04xkkkBOyM4dGBCfrfqjkpExuA8Bgz/9sQVgeLYosNoG4zAQQ150C
+        OCALX4Vz/yAt9zoh8/Fxx8vEli7kWWyMDMeyrICVdqhLghfbyej5r6LPippfdQ==
+From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Allan Nielsen <allan.nielsen@microchip.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+Subject: [net-next 5/5] net: mdio: mscc-miim: use fwnode_mdiobus_register()
+Date:   Fri, 25 Mar 2022 18:22:34 +0100
+Message-Id: <20220325172234.1259667-6-clement.leger@bootlin.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220325172234.1259667-1-clement.leger@bootlin.com>
+References: <20220325172234.1259667-1-clement.leger@bootlin.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24 2022 at 18:28, Rei Yamamoto wrote:
-> It seems the warning message in hrtimer_interrupt() has
-> no an intention.
-> The required action for the warning message in hrtimer_interrupt() 
-> is not clear.
+Use fwnode_mdiobus_register() to be compatible with devices described
+with fwnode.
 
-The required action is to figure out why the hrtimer interrupt is
-looping for a long time.
+Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+---
+ drivers/net/mdio/mdio-mscc-miim.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> Remove this message not to confuse user.
-
-No. This message is interesting because as a consequence of an overly
-long hrtimer interrupt the hrtimer interrupt will be deferred so tasks
-can make progress. That means for the time of deferral there will be no
-hrtimers fire, which is confusing if the message is removed because you
-cannot figure out the reason.
-
-Thanks,
-
-        tglx
+diff --git a/drivers/net/mdio/mdio-mscc-miim.c b/drivers/net/mdio/mdio-mscc-miim.c
+index c483ba67c21f..ea79421fcfd4 100644
+--- a/drivers/net/mdio/mdio-mscc-miim.c
++++ b/drivers/net/mdio/mdio-mscc-miim.c
+@@ -7,12 +7,12 @@
+  */
+ 
+ #include <linux/bitops.h>
++#include <linux/fwnode_mdio.h>
+ #include <linux/io.h>
+ #include <linux/iopoll.h>
+ #include <linux/kernel.h>
+ #include <linux/mdio/mdio-mscc-miim.h>
+ #include <linux/module.h>
+-#include <linux/of_mdio.h>
+ #include <linux/phy.h>
+ #include <linux/platform_device.h>
+ #include <linux/property.h>
+@@ -288,7 +288,7 @@ static int mscc_miim_probe(struct platform_device *pdev)
+ 	if (!miim->info)
+ 		return -EINVAL;
+ 
+-	ret = of_mdiobus_register(bus, pdev->dev.of_node);
++	ret = fwnode_mdiobus_register(bus, dev_fwnode(&pdev->dev));
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "Cannot register MDIO bus (%d)\n", ret);
+ 		return ret;
+-- 
+2.34.1
 
