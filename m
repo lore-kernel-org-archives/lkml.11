@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80C30C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:07:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D924C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:07:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359642AbiCYPJ1 (ORCPT
+        id S1359675AbiCYPJa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:09:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36888 "EHLO
+        Fri, 25 Mar 2022 11:09:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359752AbiCYPH5 (ORCPT
+        with ESMTP id S1359778AbiCYPIC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:07:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4DF7D9E97;
-        Fri, 25 Mar 2022 08:06:11 -0700 (PDT)
+        Fri, 25 Mar 2022 11:08:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E756D95EC;
+        Fri, 25 Mar 2022 08:06:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 68773B828FE;
-        Fri, 25 Mar 2022 15:06:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD7C8C340EE;
-        Fri, 25 Mar 2022 15:06:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C10561BAD;
+        Fri, 25 Mar 2022 15:06:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14A70C340E9;
+        Fri, 25 Mar 2022 15:06:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648220769;
-        bh=+Bck+oqadetc/ypnfJb7a+kmjT2OvdYPhUZbeT+Pew0=;
+        s=korg; t=1648220772;
+        bh=bfIWFb0ybUOQVhIIC+9w4qMZPczwc+SHltuVhsYoZ+M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LS3zTlCzJTdB3i188mNIVyF7y96wtOIDjRIndvbthADZ2uDElscU+is4ObciovQvv
-         GAb/kRbsSuUl7hJLPHkIaCutl51KhEMn/LFd5llDw3WvzobbO5uVz/GIVlfR7ljd5U
-         QJ1wuDcoq+k9iQRcb/qvTYWhR2sN3DudQkIZLUmY=
+        b=APJq1QDhFZEia54q1SaBs3+jvrAqRnSRnfl7+/TQdAG2kdu08KP4uNYYmgi4ByLi3
+         b6HJgQYLksYv38BtGs9MALUpjhj6KREId4pTGbZolpCLjwX/9XCYwMUYax7l8qS1+q
+         T90l6Shx+PuxP5Wfcwnmaa/Jy+ZLw8V3eZgDipKs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chuansheng Liu <chuansheng.liu@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 4.14 05/17] thermal: int340x: fix memory leak in int3400_notify()
-Date:   Fri, 25 Mar 2022 16:04:39 +0100
-Message-Id: <20220325150416.918907418@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        =?UTF-8?q?=E8=B5=B5=E5=AD=90=E8=BD=A9?= <beraphin@gmail.com>,
+        Stoyan Manolov <smanolov@suse.de>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.14 06/17] llc: fix netdevice reference leaks in llc_ui_bind()
+Date:   Fri, 25 Mar 2022 16:04:40 +0100
+Message-Id: <20220325150416.948512863@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150416.756136126@linuxfoundation.org>
 References: <20220325150416.756136126@linuxfoundation.org>
@@ -50,54 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuansheng Liu <chuansheng.liu@intel.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 3abea10e6a8f0e7804ed4c124bea2d15aca977c8 upstream.
+commit 764f4eb6846f5475f1244767d24d25dd86528a4a upstream.
 
-It is easy to hit the below memory leaks in my TigerLake platform:
+Whenever llc_ui_bind() and/or llc_ui_autobind()
+took a reference on a netdevice but subsequently fail,
+they must properly release their reference
+or risk the infamous message from unregister_netdevice()
+at device dismantle.
 
-unreferenced object 0xffff927c8b91dbc0 (size 32):
-  comm "kworker/0:2", pid 112, jiffies 4294893323 (age 83.604s)
-  hex dump (first 32 bytes):
-    4e 41 4d 45 3d 49 4e 54 33 34 30 30 20 54 68 65  NAME=INT3400 The
-    72 6d 61 6c 00 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b a5  rmal.kkkkkkkkkk.
-  backtrace:
-    [<ffffffff9c502c3e>] __kmalloc_track_caller+0x2fe/0x4a0
-    [<ffffffff9c7b7c15>] kvasprintf+0x65/0xd0
-    [<ffffffff9c7b7d6e>] kasprintf+0x4e/0x70
-    [<ffffffffc04cb662>] int3400_notify+0x82/0x120 [int3400_thermal]
-    [<ffffffff9c8b7358>] acpi_ev_notify_dispatch+0x54/0x71
-    [<ffffffff9c88f1a7>] acpi_os_execute_deferred+0x17/0x30
-    [<ffffffff9c2c2c0a>] process_one_work+0x21a/0x3f0
-    [<ffffffff9c2c2e2a>] worker_thread+0x4a/0x3b0
-    [<ffffffff9c2cb4dd>] kthread+0xfd/0x130
-    [<ffffffff9c201c1f>] ret_from_fork+0x1f/0x30
+unregister_netdevice: waiting for eth0 to become free. Usage count = 3
 
-Fix it by calling kfree() accordingly.
-
-Fixes: 38e44da59130 ("thermal: int3400_thermal: process "thermal table changed" event")
-Signed-off-by: Chuansheng Liu <chuansheng.liu@intel.com>
-Cc: 4.14+ <stable@vger.kernel.org> # 4.14+
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-[sudip: change in old path]
-Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: 赵子轩 <beraphin@gmail.com>
+Reported-by: Stoyan Manolov <smanolov@suse.de>
+Link: https://lore.kernel.org/r/20220323004147.1990845-1-eric.dumazet@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/thermal/int340x_thermal/int3400_thermal.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ net/llc/af_llc.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/drivers/thermal/int340x_thermal/int3400_thermal.c
-+++ b/drivers/thermal/int340x_thermal/int3400_thermal.c
-@@ -223,6 +223,10 @@ static void int3400_notify(acpi_handle h
- 		thermal_prop[4] = NULL;
- 		kobject_uevent_env(&priv->thermal->device.kobj, KOBJ_CHANGE,
- 				thermal_prop);
-+		kfree(thermal_prop[0]);
-+		kfree(thermal_prop[1]);
-+		kfree(thermal_prop[2]);
-+		kfree(thermal_prop[3]);
- 		break;
- 	default:
- 		dev_err(&priv->adev->dev, "Unsupported event [0x%x]\n", event);
+--- a/net/llc/af_llc.c
++++ b/net/llc/af_llc.c
+@@ -311,6 +311,10 @@ static int llc_ui_autobind(struct socket
+ 	sock_reset_flag(sk, SOCK_ZAPPED);
+ 	rc = 0;
+ out:
++	if (rc) {
++		dev_put(llc->dev);
++		llc->dev = NULL;
++	}
+ 	return rc;
+ }
+ 
+@@ -410,6 +414,10 @@ static int llc_ui_bind(struct socket *so
+ out_put:
+ 	llc_sap_put(sap);
+ out:
++	if (rc) {
++		dev_put(llc->dev);
++		llc->dev = NULL;
++	}
+ 	release_sock(sk);
+ 	return rc;
+ }
 
 
