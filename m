@@ -2,324 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 817A2C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 22:43:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 956ECC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 22:57:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234069AbiCYWpU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 18:45:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57468 "EHLO
+        id S234083AbiCYW7O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 18:59:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234041AbiCYWpC (ORCPT
+        with ESMTP id S234071AbiCYW7M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 18:45:02 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CA0220DB07
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 15:43:09 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id b13so5777904pfv.0
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 15:43:09 -0700 (PDT)
+        Fri, 25 Mar 2022 18:59:12 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A097338DBD;
+        Fri, 25 Mar 2022 15:57:36 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id o3-20020a17090a3d4300b001c6bc749227so9764558pjf.1;
+        Fri, 25 Mar 2022 15:57:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=squareup.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=jqh6sVdp1QNdef0TaRnHkoz6TaCGKRLisQhlRNqKNdE=;
-        b=J9OYEA95zADk4mGY62qLSTH7GDOQ84HGZTI8Yw2Aoul431sS72uLgIQaTuM5mFle2T
-         VR2ohCtbumAOC62fTe0/FqASWwvhzhDj9gh24JR1oZf/nwCaJPsmFLXmnZMSppiBnYJV
-         Xg8kAyIuqvMoUUq8SYk7ZO6pMtI2G8aufYdbA=
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=T/H9zB8PAl0HAulWpdroY7dfqIUxKQJYXCSXrYVzijc=;
+        b=Ra6jAb6UlR4nOFojKTm+HdHRLBKlIcHxv9mW7jPrtW4RU1ITyM4c6J57tjyNJLQVz+
+         gHvLlBHx4o/i/K4uNHIkTOgpA3gJ7H2FyMrPL5i3jysrzN36use1/cF3ofm/MHA9p/kM
+         0Il0J6nrjKjh59ihDt9s9As8n3cWx1ZJ6zdBC1EyOOmtTf260tZ1RcVKCME3qHjvKtvn
+         OqjfYT5i+ErOORmuitt4yuhJpJVDHJ7JlvNjeXggN8uktCigys3gOnVtNiGDKn61bdJI
+         O6R4jimGIO8xy3adOoAE8hlEF5uYiYv6X/JYyycigNuvfoy65juhIPCMBQFXnvTWQz5g
+         jB5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=jqh6sVdp1QNdef0TaRnHkoz6TaCGKRLisQhlRNqKNdE=;
-        b=3rsiFGeVC8kHjWPlYAwi1efYRLWI/UDtl6PNvrN+tsXZ+cPgIqQ5AS7l968aE0+pct
-         cq1mv3MRnL2E1fRIo7cF2f/vr+w51UCGMP1TryZ3OSdn8hOuO69SYW0SiQWzo1ydfkW7
-         JbBnkN5HSAUPM/e5gUkc9roGalr0SoIrfynAwzB8TWLSAq0wAv1u5paEhaF5NqDMZpUb
-         xPUoN9EALfLekLSMVJjzskku9sqTVyQCUg4uo3l4WyAJEStA3i2An2FiggkH8HTrOOSG
-         8mQpHc4FDENrRRCSdievX+W7AtOC5iPxoAKmxDGtDfSePGWakdZV2uWv5fSdR6B73jIw
-         8FdA==
-X-Gm-Message-State: AOAM533XKvLns5gUgDbTBALiEz5ZLazQh5dypyzXxr+Ivwq4lxGWw+a2
-        7zrdtNxtUXC9IbI44PqLbU5opw==
-X-Google-Smtp-Source: ABdhPJzO+tqQkk1lyJXSaNtAe0r2SBPzZrsp5rAxeROgSHna7fotYSlnGaZdg1b0jU4Usj9/8IZJig==
-X-Received: by 2002:aa7:9f9c:0:b0:4fa:7ffa:7cc7 with SMTP id z28-20020aa79f9c000000b004fa7ffa7cc7mr11718129pfr.43.1648248189210;
-        Fri, 25 Mar 2022 15:43:09 -0700 (PDT)
-Received: from localhost ([135.84.132.160])
-        by smtp.gmail.com with UTF8SMTPSA id v13-20020a17090a088d00b001c64d30fa8bsm10689200pjc.1.2022.03.25.15.43.07
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=T/H9zB8PAl0HAulWpdroY7dfqIUxKQJYXCSXrYVzijc=;
+        b=CPYR2z8YdSNhC1Mh+M+6ko0XFD6NzsQtCn4gIBJycR7lZ84+f1DydL1vKMYZQ3W+D/
+         fb5dfF0Shvd5PGbY6bRpFqflighqt88gLvodt+GBSCDtjM+KHQtUy+KjBcQNZEsjKqGA
+         cD322d3aUI18c4DIzDgMSnaLuM6KbLYs+q+rXBXYHpx230NY9BJSMRgJ7DMcxyOmdGhC
+         r5e7qC5QxV+4GOV44kiOmrmO5cx01IbIW4R795b6pHjiAUJeoH74YaHAwq1tQVc+oiXe
+         P2lUushKo9Mkxc8h96WYm96GAJIcHuypQ0gMqq4Jzfqe8LfmFWCQHbsqrmkM74eAjyNq
+         h9Mw==
+X-Gm-Message-State: AOAM533ALQpH1lCggoX7CN3nGvxLQC8X6cnfQoJhIpQesZVwBZtYNSNg
+        9zNKvAdApjs17iLbNAWPtyw=
+X-Google-Smtp-Source: ABdhPJz42bbf3ert1/RONH+7Y75irVdGlCG2UGTTUprJ9ZEIDixv14y45n086LTqjjLjhFgCWR4Y/A==
+X-Received: by 2002:a17:902:d88f:b0:155:e660:b769 with SMTP id b15-20020a170902d88f00b00155e660b769mr2400112plz.36.1648249056103;
+        Fri, 25 Mar 2022 15:57:36 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id on12-20020a17090b1d0c00b001c7a548e4efsm7925361pjb.54.2022.03.25.15.57.09
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Mar 2022 15:43:08 -0700 (PDT)
-From:   Edmond Gagnon <egagnon@squareup.com>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Edmond Gagnon <egagnon@squareup.com>,
-        Benjamin Li <benl@squareup.com>, Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, wcn36xx@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v4] wcn36xx: Implement tx_rate reporting
-Date:   Fri, 25 Mar 2022 17:42:12 -0500
-Message-Id: <20220325224212.159690-1-egagnon@squareup.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220323214533.1951791-1-egagnon@squareup.com>
-References: <20220323214533.1951791-1-egagnon@squareup.com>
+        Fri, 25 Mar 2022 15:57:35 -0700 (PDT)
+Message-ID: <b23ed7f1-007d-47e2-df33-b82cf6e2e700@gmail.com>
+Date:   Fri, 25 Mar 2022 15:57:01 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 5.10 00/38] 5.10.109-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220325150419.757836392@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220325150419.757836392@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, the driver reports a tx_rate of 6.0 MBit/s no matter the true
-rate:
+On 3/25/22 08:04, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.10.109 release.
+> There are 38 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Sun, 27 Mar 2022 15:04:08 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.109-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-root@linaro-developer:~# iw wlan0 link
-Connected to 6c:f3:7f:eb:9b:92 (on wlan0)
-        SSID: SQ-DEVICETEST
-        freq: 5200
-        RX: 4141 bytes (32 packets)
-        TX: 2082 bytes (15 packets)
-        signal: -77 dBm
-        rx bitrate: 135.0 MBit/s MCS 6 40MHz short GI
-        tx bitrate: 6.0 MBit/s
+On ARCH_BRCMSTB, using 32-bit and 64-bit ARM kernels:
 
-        bss flags:      short-slot-time
-        dtim period:    1
-        beacon int:     100
-
-This patch requests HAL_GLOBAL_CLASS_A_STATS_INFO via a hal_get_stats
-firmware message and reports it via ieee80211_ops::sta_statistics.
-
-root@linaro-developer:~# iw wlan0 link
-Connected to 6c:f3:7f:eb:73:b2 (on wlan0)
-        SSID: SQ-DEVICETEST
-        freq: 5700
-        RX: 26788094 bytes (19859 packets)
-        TX: 1101376 bytes (12119 packets)
-        signal: -75 dBm
-        rx bitrate: 135.0 MBit/s MCS 6 40MHz short GI
-        tx bitrate: 108.0 MBit/s VHT-MCS 5 40MHz VHT-NSS 1
-
-        bss flags:      short-slot-time
-        dtim period:    1
-        beacon int:     100
-
-Tested on MSM8939 with WCN3680B running firmware CNSS-PR-2-0-1-2-c1-00083,
-and verified by sniffing frames over the air with Wireshark to ensure the
-MCS indices match.
-
-Signed-off-by: Edmond Gagnon <egagnon@squareup.com>
-Reviewed-by: Benjamin Li <benl@squareup.com>
----
-
-Changes in v4:
- - Shortened very long line in smd.c
- - Fixed every checkpatch issue I could find:
-	scripts/checkpatch.pl --strict
-		0001-wcn36xx-Implement-tx_rate-reporting.patch
-	total: 0 errors, 0 warnings, 0 checks, 156 lines checked
-Changes in v3:
- - Refactored to report tx_rate via ieee80211_ops::sta_statistics
- - Dropped get_sta_index patch
- - Addressed style comments
-Changes in v2:
- - Refactored to use existing wcn36xx_hal_get_stats_{req,rsp}_msg structs.
- - Added more notes about testing.
- - Reduced reporting interval to 3000msec.
- - Assorted type and memory safety fixes.
- - Make wcn36xx_smd_get_stats friendlier to future message implementors.
-
- drivers/net/wireless/ath/wcn36xx/hal.h  |  7 ++-
- drivers/net/wireless/ath/wcn36xx/main.c | 16 +++++++
- drivers/net/wireless/ath/wcn36xx/smd.c  | 57 +++++++++++++++++++++++++
- drivers/net/wireless/ath/wcn36xx/smd.h  |  2 +
- drivers/net/wireless/ath/wcn36xx/txrx.c | 29 +++++++++++++
- drivers/net/wireless/ath/wcn36xx/txrx.h |  1 +
- 6 files changed, 111 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/ath/wcn36xx/hal.h b/drivers/net/wireless/ath/wcn36xx/hal.h
-index 2a1db9756fd5..46a49f0a51b3 100644
---- a/drivers/net/wireless/ath/wcn36xx/hal.h
-+++ b/drivers/net/wireless/ath/wcn36xx/hal.h
-@@ -2626,7 +2626,12 @@ enum tx_rate_info {
- 	HAL_TX_RATE_SGI = 0x8,
- 
- 	/* Rate with Long guard interval */
--	HAL_TX_RATE_LGI = 0x10
-+	HAL_TX_RATE_LGI = 0x10,
-+
-+	/* VHT rates */
-+	HAL_TX_RATE_VHT20  = 0x20,
-+	HAL_TX_RATE_VHT40  = 0x40,
-+	HAL_TX_RATE_VHT80  = 0x80,
- };
- 
- struct ani_global_class_a_stats_info {
-diff --git a/drivers/net/wireless/ath/wcn36xx/main.c b/drivers/net/wireless/ath/wcn36xx/main.c
-index b545d4b2b8c4..fc76b090c39f 100644
---- a/drivers/net/wireless/ath/wcn36xx/main.c
-+++ b/drivers/net/wireless/ath/wcn36xx/main.c
-@@ -1400,6 +1400,21 @@ static int wcn36xx_get_survey(struct ieee80211_hw *hw, int idx,
- 	return 0;
- }
- 
-+static void wcn36xx_sta_statistics(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
-+				   struct ieee80211_sta *sta, struct station_info *sinfo)
-+{
-+	struct wcn36xx *wcn;
-+	u8 sta_index;
-+	int status = 0;
-+
-+	wcn = hw->priv;
-+	sta_index = get_sta_index(vif, wcn36xx_sta_to_priv(sta));
-+	status = wcn36xx_smd_get_stats(wcn, sta_index, HAL_GLOBAL_CLASS_A_STATS_INFO, sinfo);
-+
-+	if (status)
-+		wcn36xx_err("wcn36xx_smd_get_stats failed\n");
-+}
-+
- static const struct ieee80211_ops wcn36xx_ops = {
- 	.start			= wcn36xx_start,
- 	.stop			= wcn36xx_stop,
-@@ -1423,6 +1438,7 @@ static const struct ieee80211_ops wcn36xx_ops = {
- 	.set_rts_threshold	= wcn36xx_set_rts_threshold,
- 	.sta_add		= wcn36xx_sta_add,
- 	.sta_remove		= wcn36xx_sta_remove,
-+	.sta_statistics		= wcn36xx_sta_statistics,
- 	.ampdu_action		= wcn36xx_ampdu_action,
- #if IS_ENABLED(CONFIG_IPV6)
- 	.ipv6_addr_change	= wcn36xx_ipv6_addr_change,
-diff --git a/drivers/net/wireless/ath/wcn36xx/smd.c b/drivers/net/wireless/ath/wcn36xx/smd.c
-index caeb68901326..a2188b41e308 100644
---- a/drivers/net/wireless/ath/wcn36xx/smd.c
-+++ b/drivers/net/wireless/ath/wcn36xx/smd.c
-@@ -2627,6 +2627,62 @@ int wcn36xx_smd_del_ba(struct wcn36xx *wcn, u16 tid, u8 direction, u8 sta_index)
- 	return ret;
- }
- 
-+int wcn36xx_smd_get_stats(struct wcn36xx *wcn, u8 sta_index, u32 stats_mask,
-+			  struct station_info *sinfo)
-+{
-+	struct wcn36xx_hal_stats_req_msg msg_body;
-+	struct wcn36xx_hal_stats_rsp_msg *rsp;
-+	void *rsp_body;
-+	int ret = 0;
-+
-+	if (stats_mask & ~HAL_GLOBAL_CLASS_A_STATS_INFO) {
-+		wcn36xx_err("stats_mask 0x%x contains unimplemented types\n",
-+			    stats_mask);
-+		return -EINVAL;
-+	}
-+
-+	mutex_lock(&wcn->hal_mutex);
-+	INIT_HAL_MSG(msg_body, WCN36XX_HAL_GET_STATS_REQ);
-+
-+	msg_body.sta_id = sta_index;
-+	msg_body.stats_mask = stats_mask;
-+
-+	PREPARE_HAL_BUF(wcn->hal_buf, msg_body);
-+
-+	ret = wcn36xx_smd_send_and_wait(wcn, msg_body.header.len);
-+	if (ret) {
-+		wcn36xx_err("sending hal_get_stats failed\n");
-+		goto out;
-+	}
-+
-+	ret = wcn36xx_smd_rsp_status_check(wcn->hal_buf, wcn->hal_rsp_len);
-+	if (ret) {
-+		wcn36xx_err("hal_get_stats response failed err=%d\n", ret);
-+		goto out;
-+	}
-+
-+	rsp = (struct wcn36xx_hal_stats_rsp_msg *)wcn->hal_buf;
-+	rsp_body = (wcn->hal_buf + sizeof(struct wcn36xx_hal_stats_rsp_msg));
-+
-+	if (rsp->stats_mask != stats_mask) {
-+		wcn36xx_err("stats_mask 0x%x differs from requested 0x%x\n",
-+			    rsp->stats_mask, stats_mask);
-+		goto out;
-+	}
-+
-+	if (rsp->stats_mask & HAL_GLOBAL_CLASS_A_STATS_INFO) {
-+		struct ani_global_class_a_stats_info *stats_info = rsp_body;
-+
-+		wcn36xx_process_tx_rate(stats_info, &sinfo->txrate);
-+		sinfo->filled |= BIT_ULL(NL80211_STA_INFO_TX_BITRATE);
-+		rsp_body += sizeof(struct ani_global_class_a_stats_info);
-+	}
-+out:
-+	mutex_unlock(&wcn->hal_mutex);
-+
-+	return ret;
-+}
-+
- static int wcn36xx_smd_trigger_ba_rsp(void *buf, int len, struct add_ba_info *ba_info)
- {
- 	struct wcn36xx_hal_trigger_ba_rsp_candidate *candidate;
-@@ -3316,6 +3372,7 @@ int wcn36xx_smd_rsp_process(struct rpmsg_device *rpdev,
- 	case WCN36XX_HAL_ADD_BA_SESSION_RSP:
- 	case WCN36XX_HAL_ADD_BA_RSP:
- 	case WCN36XX_HAL_DEL_BA_RSP:
-+	case WCN36XX_HAL_GET_STATS_RSP:
- 	case WCN36XX_HAL_TRIGGER_BA_RSP:
- 	case WCN36XX_HAL_UPDATE_CFG_RSP:
- 	case WCN36XX_HAL_JOIN_RSP:
-diff --git a/drivers/net/wireless/ath/wcn36xx/smd.h b/drivers/net/wireless/ath/wcn36xx/smd.h
-index 957cfa87fbde..3fd598ac2a27 100644
---- a/drivers/net/wireless/ath/wcn36xx/smd.h
-+++ b/drivers/net/wireless/ath/wcn36xx/smd.h
-@@ -138,6 +138,8 @@ int wcn36xx_smd_add_ba_session(struct wcn36xx *wcn,
- int wcn36xx_smd_add_ba(struct wcn36xx *wcn, u8 session_id);
- int wcn36xx_smd_del_ba(struct wcn36xx *wcn, u16 tid, u8 direction, u8 sta_index);
- int wcn36xx_smd_trigger_ba(struct wcn36xx *wcn, u8 sta_index, u16 tid, u16 *ssn);
-+int wcn36xx_smd_get_stats(struct wcn36xx *wcn, u8 sta_index, u32 stats_mask,
-+			  struct station_info *sinfo);
- 
- int wcn36xx_smd_update_cfg(struct wcn36xx *wcn, u32 cfg_id, u32 value);
- 
-diff --git a/drivers/net/wireless/ath/wcn36xx/txrx.c b/drivers/net/wireless/ath/wcn36xx/txrx.c
-index df749b114568..8da3955995b6 100644
---- a/drivers/net/wireless/ath/wcn36xx/txrx.c
-+++ b/drivers/net/wireless/ath/wcn36xx/txrx.c
-@@ -699,3 +699,32 @@ int wcn36xx_start_tx(struct wcn36xx *wcn,
- 
- 	return ret;
- }
-+
-+void wcn36xx_process_tx_rate(struct ani_global_class_a_stats_info *stats, struct rate_info *info)
-+{
-+	/* tx_rate is in units of 500kbps; mac80211 wants them in 100kbps */
-+	if (stats->tx_rate_flags & HAL_TX_RATE_LEGACY)
-+		info->legacy = stats->tx_rate * 5;
-+
-+	info->flags = 0;
-+	info->mcs = stats->mcs_index;
-+	info->nss = 1;
-+
-+	if (stats->tx_rate_flags & (HAL_TX_RATE_HT20 | HAL_TX_RATE_HT40))
-+		info->flags |= RATE_INFO_FLAGS_MCS;
-+
-+	if (stats->tx_rate_flags & (HAL_TX_RATE_VHT20 | HAL_TX_RATE_VHT40 | HAL_TX_RATE_VHT80))
-+		info->flags |= RATE_INFO_FLAGS_VHT_MCS;
-+
-+	if (stats->tx_rate_flags & HAL_TX_RATE_SGI)
-+		info->flags |= RATE_INFO_FLAGS_SHORT_GI;
-+
-+	if (stats->tx_rate_flags & (HAL_TX_RATE_HT20 | HAL_TX_RATE_VHT20))
-+		info->bw = RATE_INFO_BW_20;
-+
-+	if (stats->tx_rate_flags & (HAL_TX_RATE_HT40 | HAL_TX_RATE_VHT40))
-+		info->bw = RATE_INFO_BW_40;
-+
-+	if (stats->tx_rate_flags & HAL_TX_RATE_VHT80)
-+		info->bw = RATE_INFO_BW_80;
-+}
-diff --git a/drivers/net/wireless/ath/wcn36xx/txrx.h b/drivers/net/wireless/ath/wcn36xx/txrx.h
-index b54311ffde9c..fb0d6cabd52b 100644
---- a/drivers/net/wireless/ath/wcn36xx/txrx.h
-+++ b/drivers/net/wireless/ath/wcn36xx/txrx.h
-@@ -164,5 +164,6 @@ int  wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb);
- int wcn36xx_start_tx(struct wcn36xx *wcn,
- 		     struct wcn36xx_sta *sta_priv,
- 		     struct sk_buff *skb);
-+void wcn36xx_process_tx_rate(struct ani_global_class_a_stats_info *stats, struct rate_info *info);
- 
- #endif	/* _TXRX_H_ */
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.25.1
-
+Florian
