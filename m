@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34986C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:25:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6D68C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:25:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376666AbiCYPXD (ORCPT
+        id S1376686AbiCYPXP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:23:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57780 "EHLO
+        Fri, 25 Mar 2022 11:23:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376270AbiCYPVR (ORCPT
+        with ESMTP id S1376500AbiCYPV0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:21:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 907A3E338B;
-        Fri, 25 Mar 2022 08:16:00 -0700 (PDT)
+        Fri, 25 Mar 2022 11:21:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C330E33B2;
+        Fri, 25 Mar 2022 08:16:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39DEEB82903;
-        Fri, 25 Mar 2022 15:15:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CAB7C340F4;
-        Fri, 25 Mar 2022 15:15:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0475260AD8;
+        Fri, 25 Mar 2022 15:16:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16197C340E9;
+        Fri, 25 Mar 2022 15:16:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221356;
-        bh=ZGqHvFAw8zYFl5sKx0Vfl0zk5smIKUztTYJffKlRplU=;
+        s=korg; t=1648221362;
+        bh=GZNRNiIoyZEXnjgDRCav5syAkpR7quuVouyygIjFUaE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S5jFVyvk7Xpa9laMGrjqoGkVSavZbsG/ecyhvQJyippC5TNnAgVUZ4xQ61T2ZQ5PZ
-         4s2mqa8+rQdKoE8kI1HM8hNvgVbz55FNbqTm+WMEct4oZ3aZEv+GFn4WD58+tYMDPH
-         S5/jOMOYcq1XXEOq4NWhNpnkb6Eodklidzs2PGas=
+        b=qILMMad5jQ7oNNtwZsj5ipPoz4QDokP9wQJwSbUa4I7Mm8/6YIBbgqydngVw6VjcV
+         a8C6bkoHPlTpBCPltrA0hCxf1bKQB47IiqBHtbeHIjWSyxFZdHM3XHTGT1LYAq9bSR
+         diJ7X5lZNxDa0mRMdOg/KxNxPROY4W/P2twdzqoY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tim Murray <timmurray@google.com>,
-        Joel Fernandes <joelaf@google.com>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        "Uladzislau Rezki (Sony)" <urezki@gmail.com>,
-        Todd Kjos <tkjos@google.com>,
-        Sandeep Patil <sspatil@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>
-Subject: [PATCH 5.15 31/37] rcu: Dont deboost before reporting expedited quiescent state
-Date:   Fri, 25 Mar 2022 16:14:32 +0100
-Message-Id: <20220325150420.820554308@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Matthias Kretschmer <mathias.kretschmer@fit.fraunhofer.de>,
+        =?UTF-8?q?Linus=20L=C3=BCssing?= <ll@simonwunderlich.de>,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: [PATCH 5.15 33/37] mac80211: fix potential double free on mesh join
+Date:   Fri, 25 Mar 2022 16:14:34 +0100
+Message-Id: <20220325150420.878913166@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150419.931802116@linuxfoundation.org>
 References: <20220325150419.931802116@linuxfoundation.org>
@@ -54,63 +51,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul E. McKenney <paulmck@kernel.org>
+From: Linus Lüssing <ll@simonwunderlich.de>
 
-commit 10c535787436d62ea28156a4b91365fd89b5a432 upstream.
+commit 4a2d4496e15ea5bb5c8e83b94ca8ca7fb045e7d3 upstream.
 
-Currently rcu_preempt_deferred_qs_irqrestore() releases rnp->boost_mtx
-before reporting the expedited quiescent state.  Under heavy real-time
-load, this can result in this function being preempted before the
-quiescent state is reported, which can in turn prevent the expedited grace
-period from completing.  Tim Murray reports that the resulting expedited
-grace periods can take hundreds of milliseconds and even more than one
-second, when they should normally complete in less than a millisecond.
+While commit 6a01afcf8468 ("mac80211: mesh: Free ie data when leaving
+mesh") fixed a memory leak on mesh leave / teardown it introduced a
+potential memory corruption caused by a double free when rejoining the
+mesh:
 
-This was fine given that there were no particular response-time
-constraints for synchronize_rcu_expedited(), as it was designed
-for throughput rather than latency.  However, some users now need
-sub-100-millisecond response-time constratints.
+  ieee80211_leave_mesh()
+  -> kfree(sdata->u.mesh.ie);
+  ...
+  ieee80211_join_mesh()
+  -> copy_mesh_setup()
+     -> old_ie = ifmsh->ie;
+     -> kfree(old_ie);
 
-This patch therefore follows Neeraj's suggestion (seconded by Tim and
-by Uladzislau Rezki) of simply reversing the two operations.
+This double free / kernel panics can be reproduced by using wpa_supplicant
+with an encrypted mesh (if set up without encryption via "iw" then
+ifmsh->ie is always NULL, which avoids this issue). And then calling:
 
-Reported-by: Tim Murray <timmurray@google.com>
-Reported-by: Joel Fernandes <joelaf@google.com>
-Reported-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
-Reviewed-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
-Reviewed-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
-Tested-by: Tim Murray <timmurray@google.com>
-Cc: Todd Kjos <tkjos@google.com>
-Cc: Sandeep Patil <sspatil@google.com>
-Cc: <stable@vger.kernel.org> # 5.4.x
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+  $ iw dev mesh0 mesh leave
+  $ iw dev mesh0 mesh join my-mesh
+
+Note that typically these commands are not used / working when using
+wpa_supplicant. And it seems that wpa_supplicant or wpa_cli are going
+through a NETDEV_DOWN/NETDEV_UP cycle between a mesh leave and mesh join
+where the NETDEV_UP resets the mesh.ie to NULL via a memcpy of
+default_mesh_setup in cfg80211_netdev_notifier_call, which then avoids
+the memory corruption, too.
+
+The issue was first observed in an application which was not using
+wpa_supplicant but "Senf" instead, which implements its own calls to
+nl80211.
+
+Fixing the issue by removing the kfree()'ing of the mesh IE in the mesh
+join function and leaving it solely up to the mesh leave to free the
+mesh IE.
+
+Cc: stable@vger.kernel.org
+Fixes: 6a01afcf8468 ("mac80211: mesh: Free ie data when leaving mesh")
+Reported-by: Matthias Kretschmer <mathias.kretschmer@fit.fraunhofer.de>
+Signed-off-by: Linus Lüssing <ll@simonwunderlich.de>
+Tested-by: Mathias Kretschmer <mathias.kretschmer@fit.fraunhofer.de>
+Link: https://lore.kernel.org/r/20220310183513.28589-1-linus.luessing@c0d3.blue
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/rcu/tree_plugin.h |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ net/mac80211/cfg.c |    3 ---
+ 1 file changed, 3 deletions(-)
 
---- a/kernel/rcu/tree_plugin.h
-+++ b/kernel/rcu/tree_plugin.h
-@@ -554,16 +554,16 @@ rcu_preempt_deferred_qs_irqrestore(struc
- 			raw_spin_unlock_irqrestore_rcu_node(rnp, flags);
- 		}
+--- a/net/mac80211/cfg.c
++++ b/net/mac80211/cfg.c
+@@ -2110,14 +2110,12 @@ static int copy_mesh_setup(struct ieee80
+ 		const struct mesh_setup *setup)
+ {
+ 	u8 *new_ie;
+-	const u8 *old_ie;
+ 	struct ieee80211_sub_if_data *sdata = container_of(ifmsh,
+ 					struct ieee80211_sub_if_data, u.mesh);
+ 	int i;
  
--		/* Unboost if we were boosted. */
--		if (IS_ENABLED(CONFIG_RCU_BOOST) && drop_boost_mutex)
--			rt_mutex_futex_unlock(&rnp->boost_mtx.rtmutex);
--
- 		/*
- 		 * If this was the last task on the expedited lists,
- 		 * then we need to report up the rcu_node hierarchy.
- 		 */
- 		if (!empty_exp && empty_exp_now)
- 			rcu_report_exp_rnp(rnp, true);
-+
-+		/* Unboost if we were boosted. */
-+		if (IS_ENABLED(CONFIG_RCU_BOOST) && drop_boost_mutex)
-+			rt_mutex_futex_unlock(&rnp->boost_mtx.rtmutex);
- 	} else {
- 		local_irq_restore(flags);
+ 	/* allocate information elements */
+ 	new_ie = NULL;
+-	old_ie = ifmsh->ie;
+ 
+ 	if (setup->ie_len) {
+ 		new_ie = kmemdup(setup->ie, setup->ie_len,
+@@ -2127,7 +2125,6 @@ static int copy_mesh_setup(struct ieee80
  	}
+ 	ifmsh->ie_len = setup->ie_len;
+ 	ifmsh->ie = new_ie;
+-	kfree(old_ie);
+ 
+ 	/* now copy the rest of the setup parameters */
+ 	ifmsh->mesh_id_len = setup->mesh_id_len;
 
 
