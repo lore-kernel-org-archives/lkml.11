@@ -2,107 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F20EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:38:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71DBEC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:38:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231164AbiCYTht (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:37:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41662 "EHLO
+        id S230186AbiCYTkY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:40:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230459AbiCYTh1 (ORCPT
+        with ESMTP id S230162AbiCYThk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:37:27 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E953203A5E
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:21:54 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id t25so14969040lfg.7
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:21:53 -0700 (PDT)
+        Fri, 25 Mar 2022 15:37:40 -0400
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F26E5185476
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:22:07 -0700 (PDT)
+Received: by mail-oi1-x232.google.com with SMTP id b188so9177706oia.13
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:22:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4MqmH9CCCrUKFAq5y+I/qeK/sNikgDEGLg2VH+hZ/B8=;
-        b=EEYCtzdxDwF4pZQoFLQy5R1bkbtIioQJ+didZOsq+7BOWsBdCAqNeXRuHlQHbxjkxI
-         6ZpgNOxAuZZNbggkh7Po3d0QcOFG1glqGOPQvM9m9QhMt25NNyLu1evDrcAPEgux5s6f
-         doW8iQM9agqh0IgmvQNxMRNQkwdp7w1AkhPq4=
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:user-agent:references:in-reply-to:mime-version:date:message-id
+         :subject:to:cc;
+        bh=30HnVT2o3reQZo63OrltbI+OfYNP2j0YqcMmacNl+p0=;
+        b=o7VUwpdrsAT9+dZRq7E7nbHA3vtSO4Zb3PikloQPss2pIBW60nVaMdcLkclXCSfOnk
+         qc7wr65NRit/egcPCcwnvIO1UkzmSY6Y4QT+lq1OOvJ5uabY/EGOmhBRly02/Mg0Cezp
+         ADk7WZJvqIptO8KeNhkNBRwb+TooeHesT6NVl7QZNmU5Vsvb8u5YtnNiGq3u5Egwe0fN
+         dPHULLWMtNyj61PdB0ANxfFH34zk8E0/W84nklF85pqL4wjLOG8XC7d4JDJSLB6nlSDD
+         i8SPNdLnNQI4Ydr1SM02AlPjMlttGqx++wFQJU+uRQhxQDjY1dtGeMBTNX+6OJaPgCz0
+         +ymQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4MqmH9CCCrUKFAq5y+I/qeK/sNikgDEGLg2VH+hZ/B8=;
-        b=ov2y5Mova7OKvx1eVg2wyTjQhRQP7+fJeyX3+UnrumiTaXp9cOoTwyj6ZC1w660dbg
-         aycqKKTVtUHuYkRcirgkDw38PKcV42TbtTR1c+J2ry+eychGODcqCF2e/S5eajLGCyfP
-         iQs/Hr/2oiLxXZFqttou6uZnkS8F4j82EwyxiS1AenDTgqu6he2WIlYi1ASq1oliaHF+
-         qL6qSMEPCyGQmxkXUc39Vr2339+81ynMhb3FRJuMH6/uMBd6PV71sTOTGbbI+y18FijR
-         O5aV5dw8YbX7920Kw6ZtX/j55zPiOH1IssbtTuB3eMWvULpX+V940PQnhPk1+ZKTSa93
-         Th8A==
-X-Gm-Message-State: AOAM530RVtsR7ZMCZmnduuNtMAKihg9Zvtju7I3m46oO/VOH0SStHIlh
-        K2icLN89F//QLwlLnLfjvfP93AKZ7hZcOb2oyNQ=
-X-Google-Smtp-Source: ABdhPJxNG1ohd5we/7hcyRSNdNdEuVpIFa7qluLH1i+2BgLIKgZUT6oGtoKg1hmUNkaR4bGYSlD5mw==
-X-Received: by 2002:ac2:5f4d:0:b0:448:7d37:5838 with SMTP id 13-20020ac25f4d000000b004487d375838mr9036236lfz.419.1648236112053;
-        Fri, 25 Mar 2022 12:21:52 -0700 (PDT)
-Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com. [209.85.167.41])
-        by smtp.gmail.com with ESMTPSA id i16-20020a198c50000000b0044a2580a2d3sm799165lfj.156.2022.03.25.12.21.50
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Mar 2022 12:21:51 -0700 (PDT)
-Received: by mail-lf1-f41.google.com with SMTP id bu29so15067520lfb.0
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:21:50 -0700 (PDT)
-X-Received: by 2002:ac2:4203:0:b0:448:8053:d402 with SMTP id
- y3-20020ac24203000000b004488053d402mr8851909lfh.687.1648236109737; Fri, 25
- Mar 2022 12:21:49 -0700 (PDT)
+        h=x-gm-message-state:from:user-agent:references:in-reply-to
+         :mime-version:date:message-id:subject:to:cc;
+        bh=30HnVT2o3reQZo63OrltbI+OfYNP2j0YqcMmacNl+p0=;
+        b=O8xRlQRIS8E7seTGjqUk4T/+cKG5hFTU5ywUkKqrlFrYBDZXl7Z0zBSv8ZCMFfInc/
+         IF2Fvtu4tjjJZiQtAP/WEafPoZaRUlr4dQ904nwMo5f3AobFah7BZRSYP3syenkG9oqk
+         gcohmOnMNMcAYMBBRzXknnHG+TnBs/cmMsvhr4h06csiFVeHA8+7f0up7LLhUl+D0QwU
+         Bs5NjRjfQ1f7E4KxUEVsUEIhKxSyU7j2dxx7hAqDxulkco+JFo1JOa0rnr9PoJZeVOqi
+         42lIq3UXekyk8ev0ZDN2GBbQu/zJl4quTC3gqvVNtvhOVNtlQRT7kIN/B/Co1CcgGg4c
+         1CKw==
+X-Gm-Message-State: AOAM532pBsU4oMz5C5Q33uyBOrz9kHiaQmXbzc4/FPwndLYRDdaqYJaM
+        7cHfpfYs+JvNZZqUkPdEjjPtlexQGZ/kAbUstJFhrWmorhQ=
+X-Google-Smtp-Source: ABdhPJzkv3FApupEr6ZcvHiyizzGLadsyrPXz2DnM470Hnd1ln6bsvI6D5r0lg6iZSsst6EnF/KlN2WTBVJUE+zMqsQ=
+X-Received: by 2002:aca:1712:0:b0:2ec:e1a4:1ad1 with SMTP id
+ j18-20020aca1712000000b002ece1a41ad1mr10538652oii.78.1648230216155; Fri, 25
+ Mar 2022 10:43:36 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Fri, 25 Mar 2022 12:43:35 -0500
+From:   Guillaume Ranquet <granquet@baylibre.com>
+User-Agent: meli 0.7.2
+References: <20220325171511.23493-1-granquet@baylibre.com> <20220325171511.23493-2-granquet@baylibre.com>
+ <8baedbe6-eb60-02b4-a6b8-fe3abc566335@kernel.org>
+In-Reply-To: <8baedbe6-eb60-02b4-a6b8-fe3abc566335@kernel.org>
 MIME-Version: 1.0
-References: <1812355.tdWV9SEqCh@natalenko.name> <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
- <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
- <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com> <878rsza0ih.fsf@toke.dk>
- <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
- <20220324163132.GB26098@lst.de> <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com>
- <871qyr9t4e.fsf@toke.dk> <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
- <31434708dcad126a8334c99ee056dcce93e507f1.camel@freebox.fr>
- <CAHk-=wippum+MksdY7ixMfa3i1sZ+nxYPWLLpVMNyXCgmiHbBQ@mail.gmail.com> <a1829f4a-d916-c486-ac49-2c6dff77521a@arm.com>
-In-Reply-To: <a1829f4a-d916-c486-ac49-2c6dff77521a@arm.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 25 Mar 2022 12:21:33 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whpKDePfUoKmvJhSNbWcHFY5e7Uq5qEypD=R14+66DNvQ@mail.gmail.com>
-Message-ID: <CAHk-=whpKDePfUoKmvJhSNbWcHFY5e7Uq5qEypD=R14+66DNvQ@mail.gmail.com>
-Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
- ath9k-based AP
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     Maxime Bizon <mbizon@freebox.fr>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Olha Cherevyk <olha.cherevyk@gmail.com>,
-        iommu <iommu@lists.linux-foundation.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable <stable@vger.kernel.org>
+Date:   Fri, 25 Mar 2022 12:43:35 -0500
+Message-ID: <CABnWg9s3vmpCFFai_BMjagqHehk2vbP0ST_tfWvOxmtubPm14g@mail.gmail.com>
+Subject: Re: [PATCH 01/22] dt-bindings: mediatek,dpi: Add DP_INTF compatible
+To:     Krzysztof Kozlowski <krzk@kernel.org>,
+        angelogioacchino.delregno@collabora.com, chunkuang.hu@kernel.org,
+        p.zabel@pengutronix.de, airlied@linux.ie, daniel@ffwll.ch,
+        robh+dt@kernel.org, maarten.lankhorst@linux.intel.com,
+        mripard@kernel.org, tzimmermann@suse.de, matthias.bgg@gmail.com,
+        chunfeng.yun@mediatek.com, kishon@ti.com, vkoul@kernel.org,
+        deller@gmx.de, ck.hu@mediatek.com, jitao.shi@mediatek.com
+Cc:     dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-phy@lists.infradead.org, linux-fbdev@vger.kernel.org,
+        markyacoub@google.com,
+        Markus Schneider-Pargmann <msp@baylibre.com>,
+        Rob Herring <robh@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 12:14 PM Robin Murphy <robin.murphy@arm.com> wrote:
+On Fri, 25 Mar 2022 18:31, Krzysztof Kozlowski <krzk@kernel.org> wrote:
+>On 25/03/2022 18:14, Guillaume Ranquet wrote:
+>> From: Markus Schneider-Pargmann <msp@baylibre.com>
+>>
+>> DP_INTF is similar to DPI but does not have the exact same feature set
+>> or register layouts.
+>>
+>> DP_INTF is the sink of the display pipeline that is connected to the
+>> DisplayPort controller and encoder unit. It takes the same clocks as
+>> DPI.
+>>
+>> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+>> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+>> Reviewed-by: Rob Herring <robh@kernel.org>
 >
-> Note "between the DMA transfers", and not "during the DMA transfers".
-> The fundamental assumption of the streaming API is that only one thing
-> is ever accessing the mapping at any given time, which is what the whole
-> notion of ownership is about.
+>This is v1, how did you get Rob's review already?
+>
 
-Well, but that ignores reality.
+Because this is not v1... I'm not really good at this... this is actually v9...
+I just didn't pay attention enough before sending the series.
 
-Any documentation that ignores the "CPU will want to see the
-intermediate state" is by definition garbage, because that is clearly
-a simple fact.
+What's the standard thing to do? resend with the proper versionning?
 
-We don't write documentation for fantasy.
+Sorry for the confusion,
+Guillaume.
 
-            Linus
+>> ---
+>>  .../bindings/display/mediatek/mediatek,dpi.yaml       | 11 ++++++-----
+>>  1 file changed, 6 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
+>> index dd2896a40ff0..53acf9a84f7f 100644
+>> --- a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
+>> +++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
+>> @@ -4,16 +4,16 @@
+>>  $id: http://devicetree.org/schemas/display/mediatek/mediatek,dpi.yaml#
+>>  $schema: http://devicetree.org/meta-schemas/core.yaml#
+>>
+>> -title: mediatek DPI Controller Device Tree Bindings
+>> +title: mediatek DPI/DP_INTF Controller Device Tree Bindings
+>
+>While at it, remove "Device Tree Bindings". It's about hardware.
+>
+>
+>Please also rebase your tree as you use my old email address.
+>
+>Best regards,
+>Krzysztof
