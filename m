@@ -2,135 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 829B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 17:29:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BCECC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 17:29:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233209AbiCYRaz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 13:30:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58962 "EHLO
+        id S233349AbiCYRbH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 13:31:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244521AbiCYR3e (ORCPT
+        with ESMTP id S232093AbiCYRaj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 13:29:34 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32327FD6F1
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 10:28:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648229280; x=1679765280;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=/GPGUJn4ZLfGpZmv/+3m8wflE0f7VIHwXcWQByrjsFQ=;
-  b=MmCZXNPSwe+2hekXVtQgEBWlohRXcZL55c9+TYhljTEyWxLjiGwXWC7S
-   81bWoaL0Sv3kjehBFbnjZDZ8wftvfVut5yDeee5eFagd0YV4QuEoTyjM2
-   2R9Qs9UwsuoOsJckffVndujp8Br7P8kq0L9Uyqrp++i8PV+6ldWsllnzM
-   +aVfmzyvdyYfUKNNMaH7kfLyA0kfBzR7CwHAtDBprNDu7Dn31aEyHpMDx
-   NLD3/FxBcBTavHQc46JeV98wC2PI6niqq9u6lW6EqwID2Ac4OhETib0V9
-   WYFGhWSQEQ0SeV5xCVZNC5e0MESHlkLB52YUoiWPktwZqZgTM1X48scYE
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10297"; a="246163783"
-X-IronPort-AV: E=Sophos;i="5.90,209,1643702400"; 
-   d="scan'208";a="246163783"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2022 10:27:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,209,1643702400"; 
-   d="scan'208";a="584532516"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 25 Mar 2022 10:27:57 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nXnjA-000MPz-Hj; Fri, 25 Mar 2022 17:27:56 +0000
-Date:   Sat, 26 Mar 2022 01:27:08 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dan Carpenter <error27@gmail.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>
-Subject: include/linux/sunrpc/xdr.h:734:10: warning: result of comparison of
- constant 4611686018427387903 with expression of type '__u32' (aka 'unsigned
- int') is always false
-Message-ID: <202203260009.5SM2MiP9-lkp@intel.com>
+        Fri, 25 Mar 2022 13:30:39 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4C0960D87
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 10:28:45 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id w7so14525455lfd.6
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 10:28:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nTY6GWR33LHIYWWg3yO+Y770hJAr0sFM8vC8Hv97/Ho=;
+        b=GTDYFnJ644kX2MgLtEY12KufCCj4yd/pS8r3hmYl3rs0CyI13At6qv069iToU8EJCn
+         SuaIaEQOqSO+6hJN9H72YJVHpZ14Vi6pCeucZweYUhIsb3243hF3vwcX84SXcCZDGsCO
+         5ZHnaXRtLKQgaTtZv/R8DB79i1EpD7Opusb1w=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nTY6GWR33LHIYWWg3yO+Y770hJAr0sFM8vC8Hv97/Ho=;
+        b=r5bWxt2xMTgqMdZV3dKZWudZYP0FSSVrDP4KQ6nFysUV86zEEu1P9qHt0aOYgLFUnC
+         wKC5o556IwJIwYUyp/LJpi+S0EuR1Dk6WV8OSBxaZfrlWOn6BTF0tbhsEsdOZKygI3EC
+         yOtNuZxPDt2DcRt9wnqirF4gHN7+lX+FtPMOam9mkCJG6z0xLlXzBEMn92gJO4FvOY93
+         VJFFC7MQ1S5pXhNZ7kigAsX4EvjSc8sshXlYIv0inrtb8hKTHNvg2/7RmoVKMR8ITdYn
+         jIETXv6BnpzVhQX/yiV8dy+6Gda6uF3FioPcFQK8czEha+EBhZExTHMFo4y2A13pUZNX
+         Ui6g==
+X-Gm-Message-State: AOAM533WZQGHxDAlAcrPdaeFH3qk6l1tGwV7Yxd3SQOOL9kHyfMmQ+Os
+        XC8Y4oiBJfJLlxKl++3/AK1/rWLxSw0I/svX1pA=
+X-Google-Smtp-Source: ABdhPJwlA9k8rSgNej3OgmcwYJG0l0KMVNUwXkCt9y5tYOA4c/YC8lwUUH/xv49s5XkcmrB47E/PCg==
+X-Received: by 2002:a2e:bf12:0:b0:249:3a3b:e91a with SMTP id c18-20020a2ebf12000000b002493a3be91amr8967919ljr.343.1648228704836;
+        Fri, 25 Mar 2022 10:18:24 -0700 (PDT)
+Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com. [209.85.208.172])
+        by smtp.gmail.com with ESMTPSA id h14-20020a056512338e00b0044a1d49f459sm764607lfg.227.2022.03.25.10.18.22
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Mar 2022 10:18:23 -0700 (PDT)
+Received: by mail-lj1-f172.google.com with SMTP id g24so11157998lja.7
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 10:18:22 -0700 (PDT)
+X-Received: by 2002:a2e:9b10:0:b0:247:f28c:ffd3 with SMTP id
+ u16-20020a2e9b10000000b00247f28cffd3mr8705328lji.152.1648228702287; Fri, 25
+ Mar 2022 10:18:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220325131348.3995-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220325131348.3995-1-andriy.shevchenko@linux.intel.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Fri, 25 Mar 2022 10:18:06 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgLZC4d-JjoDyJ-0_JNX+nOnkTQdTGKvOE3fBVNvAq-xw@mail.gmail.com>
+Message-ID: <CAHk-=wgLZC4d-JjoDyJ-0_JNX+nOnkTQdTGKvOE3fBVNvAq-xw@mail.gmail.com>
+Subject: Re: [PATCH v1 1/1] Makefile.extrawarn: Turn off -Werror when extra
+ warnings are enabled
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   34af78c4e616c359ed428d79fe4758a35d2c5473
-commit: 23a9dbbe0faf124fc4c139615633b9d12a3a89ef NFSD: prevent integer overflow on 32 bit systems
-date:   10 days ago
-config: x86_64-randconfig-a012 (https://download.01.org/0day-ci/archive/20220326/202203260009.5SM2MiP9-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0f6d9501cf49ce02937099350d08f20c4af86f3d)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=23a9dbbe0faf124fc4c139615633b9d12a3a89ef
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 23a9dbbe0faf124fc4c139615633b9d12a3a89ef
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash net/sunrpc/auth_gss/
+On Fri, Mar 25, 2022 at 6:13 AM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+>
+> +#
+> +# Turn off -Werror when extra warnings are enabled
+> +#
+> +ifneq ($(KBUILD_EXTRA_WARN),)
+> +       KBUILD_CFLAGS += -Wno-error
+> +endif
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+NAK.
 
-All warnings (new ones prefixed by >>):
+If you enabled CONFIG_WERROR, then you get CONFIG_WERROR.
 
-   In file included from net/sunrpc/auth_gss/gss_generic_token.c:37:
-   In file included from include/linux/sunrpc/sched.h:19:
->> include/linux/sunrpc/xdr.h:734:10: warning: result of comparison of constant 4611686018427387903 with expression of type '__u32' (aka 'unsigned int') is always false [-Wtautological-constant-out-of-range-compare]
-           if (len > SIZE_MAX / sizeof(*p))
-               ~~~ ^ ~~~~~~~~~~~~~~~~~~~~~
-   1 warning generated.
+If you enabled W=1, then you get extra warnings.
 
+If you enabled both, then you get extra warnings and they are errors.
 
-vim +734 include/linux/sunrpc/xdr.h
+This patch is just stupid.
 
-   712	
-   713	/**
-   714	 * xdr_stream_decode_uint32_array - Decode variable length array of integers
-   715	 * @xdr: pointer to xdr_stream
-   716	 * @array: location to store the integer array or NULL
-   717	 * @array_size: number of elements to store
-   718	 *
-   719	 * Return values:
-   720	 *   On success, returns number of elements stored in @array
-   721	 *   %-EBADMSG on XDR buffer overflow
-   722	 *   %-EMSGSIZE if the size of the array exceeds @array_size
-   723	 */
-   724	static inline ssize_t
-   725	xdr_stream_decode_uint32_array(struct xdr_stream *xdr,
-   726			__u32 *array, size_t array_size)
-   727	{
-   728		__be32 *p;
-   729		__u32 len;
-   730		ssize_t retval;
-   731	
-   732		if (unlikely(xdr_stream_decode_u32(xdr, &len) < 0))
-   733			return -EBADMSG;
- > 734		if (len > SIZE_MAX / sizeof(*p))
-   735			return -EBADMSG;
-   736		p = xdr_inline_decode(xdr, len * sizeof(*p));
-   737		if (unlikely(!p))
-   738			return -EBADMSG;
-   739		if (array == NULL)
-   740			return len;
-   741		if (len <= array_size) {
-   742			if (len < array_size)
-   743				memset(array+len, 0, (array_size-len)*sizeof(*array));
-   744			array_size = len;
-   745			retval = len;
-   746		} else
-   747			retval = -EMSGSIZE;
-   748		for (; array_size > 0; p++, array++, array_size--)
-   749			*array = be32_to_cpup(p);
-   750		return retval;
-   751	}
-   752	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+              Linus
