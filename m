@@ -2,122 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20596C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:24:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9835C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:24:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229654AbiCYT0T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:26:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56880 "EHLO
+        id S229522AbiCYT0X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:26:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbiCYT0O (ORCPT
+        with ESMTP id S229520AbiCYT0R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:26:14 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9A473E635C
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 11:58:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648234706; x=1679770706;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ST07gu5uVi9Q0WMMaJSNfrCmn5RgIPW07ex0MrMvoDs=;
-  b=EWjvI+VyUI7XOLakPHp02yVJTNmhgK9Wr+tFKYbFnLKNEs/MmHXxMQ8M
-   PECq5d+/9k/fuvWTsFVFAT+uJFIoZ/ytFnw2SvS47nS7BTiYyaTtZEND8
-   SRwahG9UHsIH4BbeNQW3vUhCq9GabBi9+mKwJc2hECE6rOOkurcooqLTS
-   0ctOsjiPTkyIViVbkg3BlhGLCOTrbe6HqU/aV8zAoIV5aSldDYf+JUBHY
-   iYt207v3of+ftPBz8N6AD+Hb+lKU46ep1HWkkg0zykjOrnn0g2lCu9EN6
-   Z+7eO47a1x5SpP/23EiF+DBKyg/sKBYZHVBLcyPjPj3MqCyr0RqmYT/Kq
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10297"; a="258402482"
-X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
-   d="scan'208";a="258402482"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2022 10:53:57 -0700
-X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
-   d="scan'208";a="617202377"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2022 10:53:54 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@intel.com>)
-        id 1nXo7i-006WiB-KH;
-        Fri, 25 Mar 2022 19:53:18 +0200
-Date:   Fri, 25 Mar 2022 19:53:18 +0200
-From:   Andy Shevchenko <andriy.shevchenko@intel.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [GIT PULL] locking changes for v5.18
-Message-ID: <Yj4BjjCFGMjhzKk+@smile.fi.intel.com>
-References: <YjhdcJB4FaLfsoyO@gmail.com>
- <CAHk-=wjS6ptr5=JqmmyEb_qTjDz_68+S=h1o1bL1fEyArVOymA@mail.gmail.com>
- <YjpLiKRUIB4TGJm0@zn.tnic>
- <CAHk-=wifoM9VOp-55OZCRcO9MnqQ109UTuCiXeZ-eyX_JcNVGg@mail.gmail.com>
- <Yj2qZT6gdRYpkSIR@smile.fi.intel.com>
- <CAHk-=wgaxDHAhxBkU_mVE5uw5po+qvzy4jgK8Q82rgi7XqZfiA@mail.gmail.com>
+        Fri, 25 Mar 2022 15:26:17 -0400
+Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE6EE2A1299;
+        Fri, 25 Mar 2022 11:58:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1648234717; x=1679770717;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=sP6GOjaZB5ZelmcgJTjP90zeki4v/xwCLzFSvg0IkWM=;
+  b=KlcwtdrOQF5Bwpz/DfMc3Xst1yP00HXatNDDRf7GG3J1BbjC1FflpgMf
+   Wsz/DmoZVP53WEjUfy1r9j10i675+LFIDaEWr6ddYVF/b0DEIDcId/ZG5
+   hsskWUy93/bgQylSGATerh1dA7PIFV+xzOjbqKjnIQjFqUhgovNpBayWt
+   0=;
+X-IronPort-AV: E=Sophos;i="5.90,211,1643673600"; 
+   d="scan'208";a="189252095"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1d-b48bc93b.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-6001.iad6.amazon.com with ESMTP; 25 Mar 2022 18:58:36 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1d-b48bc93b.us-east-1.amazon.com (Postfix) with ESMTPS id 4D930C09C0;
+        Fri, 25 Mar 2022 18:58:35 +0000 (UTC)
+Received: from EX13D02UWB002.ant.amazon.com (10.43.161.160) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.32; Fri, 25 Mar 2022 18:58:34 +0000
+Received: from EX13MTAUEA001.ant.amazon.com (10.43.61.82) by
+ EX13D02UWB002.ant.amazon.com (10.43.161.160) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.32; Fri, 25 Mar 2022 18:58:34 +0000
+Received: from dev-dsk-alisaidi-1d-b9a0e636.us-east-1.amazon.com
+ (172.19.181.128) by mail-relay.amazon.com (10.43.61.243) with Microsoft SMTP
+ Server id 15.0.1497.32 via Frontend Transport; Fri, 25 Mar 2022 18:58:34
+ +0000
+Received: by dev-dsk-alisaidi-1d-b9a0e636.us-east-1.amazon.com (Postfix, from userid 5131138)
+        id 1352D2569; Fri, 25 Mar 2022 18:58:33 +0000 (UTC)
+From:   Ali Saidi <alisaidi@amazon.com>
+To:     <acme@kernel.org>
+CC:     <Nick.Forrington@arm.com>, <alexander.shishkin@linux.intel.com>,
+        <alisaidi@amazon.com>, <andrew.kilroy@arm.com>,
+        <benh@kernel.crashing.org>, <german.gomez@arm.com>,
+        <james.clark@arm.com>, <john.garry@huawei.com>, <jolsa@kernel.org>,
+        <kjain@linux.ibm.com>, <leo.yan@linaro.org>,
+        <lihuafei1@huawei.com>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
+        <mark.rutland@arm.com>, <mathieu.poirier@linaro.org>,
+        <mingo@redhat.com>, <namhyung@kernel.org>, <peterz@infradead.org>,
+        <will@kernel.org>
+Subject: Re: [PATCH v4 1/4] tools: arm64: Import cputype.h
+Date:   Fri, 25 Mar 2022 18:58:28 +0000
+Message-ID: <20220325185828.25461-1-alisaidi@amazon.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <Yj4McMHsxtJ3PfKk@kernel.org>
+References: <Yj4McMHsxtJ3PfKk@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wgaxDHAhxBkU_mVE5uw5po+qvzy4jgK8Q82rgi7XqZfiA@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 10:29:21AM -0700, Linus Torvalds wrote:
-> On Fri, Mar 25, 2022 at 4:42 AM Andy Shevchenko
-> <andriy.shevchenko@intel.com> wrote:
+
+Hi Arnaldo,
+
+On Fri, 25 Mar 2022 18:39:44 -0000, Arnaldo Carvalho de Melo wrote:
+> Em Thu, Mar 24, 2022 at 06:33:20PM +0000, Ali Saidi escreveu:
+> > Bring-in the kernel's arch/arm64/include/asm/cputype.h into tools/
+> > for arm64 to make use of all the core-type definitions in perf.
 > >
-> > What about old one? I have already complained in the early discussion that
-> > `make W=1 ...` is broken by this change.
+> > Replace sysreg.h with the version already imported into tools/.
 > 
-> So that is REALLY D*MN EASY TO FIX.
-> 
-> If you use W=1, and don't want WERROR, then don't *do* that then.
-> 
-> End of story.
-> 
-> But that's on _you_. Not on the build system. If you use W=1 and
-> WERROR together, you get exactly what you asked for. It might even be
-> what you wanted, if you want to go through the warnings/errors as you
-> encounter them, instead of building everything.
-> 
-> And that's why I refuse to take the completely broken "strip out one
-> or the other automatically" change.
-> 
-> It's a perfectly valid combination to enable both.
-> 
-> But more importantly, -Werror is more important than W=1. So if
-> anything should be disabled, it's W=1.
-> 
-> Side note: that would be trivial to just have in the Kconfig files if
-> W=1 was just a config option.
-> 
-> Do something like
-> 
->      config EXTRA_ERRORS
->          int "Add extra compiler errors" if EXPERT
->          depends on !WERROR
->          range 0-2
->          default 0
-> 
-> but note again: WERROR should be the thing that controls this and
-> should be on by default, not the other way around.
-> 
-> If you want EXTRA_ERRORS, you should not only be CONFIG_EXPERT, you
-> should also have to manually disable WERROR that *normal* people
-> should have on by default.
+> You forgot to add it to tools/perf/check-headers.sh so that we get
+> notificed when the original file in the kernel sources gets updated, so
+> that we can check if this needs any tooling adjustments.
 
-I have got your point, thanks!
+Sorry.
 
--- 
-With Best Regards,
-Andy Shevchenko
+> ⬢[acme@toolbox perf]$ diff -u tools/arch/arm64/include/asm/cputype.h arch/arm64/include/asm/cputype.h
+> --- tools/arch/arm64/include/asm/cputype.h	2022-03-25 15:29:41.185173403 -0300
+> +++ arch/arm64/include/asm/cputype.h	2022-03-22 17:52:10.881311839 -0300
+> @@ -170,7 +170,7 @@
+> 
+>  #ifndef __ASSEMBLY__
+> 
+> -#include "sysreg.h"
+> +#include <asm/sysreg.h>
+> 
+>  #define read_cpuid(reg)			read_sysreg_s(SYS_ ## reg)
+> 
+> ⬢[acme@toolbox perf]$
+> 
+> 
+> I'll add the entry together with the waiver for this specific
+> difference.
 
+Thank you! 
+
+It looks like it's been missed several times:
+% find  tools/arch/arm64 -type f
+tools/arch/arm64/include/uapi/asm/unistd.h
+tools/arch/arm64/include/uapi/asm/bpf_perf_event.h
+tools/arch/arm64/include/uapi/asm/kvm.h
+tools/arch/arm64/include/uapi/asm/mman.h
+tools/arch/arm64/include/uapi/asm/perf_regs.h
+tools/arch/arm64/include/uapi/asm/bitsperlong.h
+tools/arch/arm64/include/asm/barrier.h
+tools/arch/arm64/include/asm/cputype.h
+tools/arch/arm64/include/asm/sysreg.h
+
+% grep arm64 tools/perf/check-headers.sh
+arch/arm64/include/uapi/asm/perf_regs.h
+arch/arm64/include/uapi/asm/kvm.h
+arch/arm64/include/uapi/asm/unistd.h
+
+
+Thanks,
+Ali
 
