@@ -2,107 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64047C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 01:20:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C5B2C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 01:22:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357246AbiCYBWF (ORCPT
+        id S1357252AbiCYBXi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 21:22:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39780 "EHLO
+        Thu, 24 Mar 2022 21:23:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240712AbiCYBWD (ORCPT
+        with ESMTP id S229578AbiCYBXg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 21:22:03 -0400
-Received: from nksmu.kylinos.cn (mailgw.kylinos.cn [123.150.8.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A6E860CFE
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 18:20:30 -0700 (PDT)
-X-UUID: f2e9e587d0b344779316483ce14ebf00-20220324
-X-GW-Reason: 11101
-X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HNeS6uumcgOimgeWuoeaguA==
-X-Content-Feature: ica/max.line-size 74
-        audit/email.address 1
-        meta/cnt.alert 1
-X-UUID: f2e9e587d0b344779316483ce14ebf00-20220324
-Received: from cs2c.com.cn [(172.17.111.24)] by nksmu.kylinos.cn
-        (envelope-from <liucong2@kylinos.cn>)
-        (Generic MTA)
-        with ESMTP id 1781606887; Thu, 24 Mar 2022 18:49:12 +0800
-X-ns-mid: postfix-623C4CD5-4726359750
-Received: from localhost.localdomain (unknown [172.20.12.219])
-        by cs2c.com.cn (NSMail) with ESMTPA id 2B333383C640;
-        Thu, 24 Mar 2022 10:49:57 +0000 (UTC)
-From:   Cong Liu <liucong2@kylinos.cn>
-To:     airlied@linux.ie, airlied@redhat.com, christian.koenig@amd.com,
-        kraxel@redhat.com, robin.murphy@arm.com
-Cc:     virtualization@lists.linux-foundation.org, daniel@ffwll.ch,
-        dri-devel@lists.freedesktop.org, ray.huang@amd.com,
-        spice-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Cong Liu <liucong2@kylinos.cn>
-Subject: [PATCH v2] drm/qxl: fix qxl can't use in arm64
-Date:   Thu, 24 Mar 2022 18:49:28 +0800
-Message-Id: <20220324104928.2959545-1-liucong2@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <12eba824-ee80-0aac-56ed-e13084c9cae7@amd.com>
-References: <12eba824-ee80-0aac-56ed-e13084c9cae7@amd.com>
+        Thu, 24 Mar 2022 21:23:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 373B0BD8A5;
+        Thu, 24 Mar 2022 18:22:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DEF9DB81DEA;
+        Fri, 25 Mar 2022 01:22:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D1DEC340EC;
+        Fri, 25 Mar 2022 01:22:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648171320;
+        bh=uXVMqaZn8hStgjCN0pNM4hKld0mfIcbqMA3pJnIYPY4=;
+        h=In-Reply-To:References:Subject:From:To:Date:From;
+        b=QonB3hmYM9igmCj52LQMbcAefPCtAeeP62CioWJtLf2WCSIP7BFgpfglLUXgnvy0u
+         mTDqb6Hk5pJakb9c6Vy2GiHm0RXtrNdhsBRnI2wvrrxkkAdg4RsRbNJXhLuce0z/SR
+         fkr1qO4ORBMri6/liwSEVHHwZ4JaDnFI2y121eLAxhxUGmKIBYdhhCYlUMOmi/x7Ln
+         6i1f/NcmkZK6wJHijw/3y5HAXPbcxn19/vFOPNbvTSMhMjI+a7wd4+EzrtCu2c3MJc
+         +7PafgAxGjkdpe/+jUG6Nwx90mj/VagvnHNxvRnJQd2OYK/CN4GRiuWPo+Y+f8Vm9X
+         B+YaqFWHmyqGA==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220321231548.14276-2-ansuelsmth@gmail.com>
+References: <20220321231548.14276-1-ansuelsmth@gmail.com> <20220321231548.14276-2-ansuelsmth@gmail.com>
+Subject: Re: [PATCH v6 01/18] clk: introduce clk_hw_get_index_of_parent new API
+From:   Stephen Boyd <sboyd@kernel.org>
+To:     Andy Gross <agross@kernel.org>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Thu, 24 Mar 2022 18:21:58 -0700
+User-Agent: alot/0.10
+Message-Id: <20220325012200.9D1DEC340EC@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-qxl use ioremap to map ram_header and rom, in the arm64 implementation,
-the device is mapped as DEVICE_nGnRE, it can not support unaligned
-access. and qxl is a virtual device, it can be treated more like RAM
-than actual MMIO registers. use ioremap_wc() replace it.
+Quoting Ansuel Smith (2022-03-21 16:15:31)
+> Clk can have multiple parents. Some clk may require to get the cached
+> index of other parent that are not current associated with the clk.
+> We have clk_hw_get_parent_index() that returns the index of the current
+> parent but we can't get the index of other parents of the provided clk.
+> Introduce clk_hw_get_index_of_parent() to get the cached index of the
+> parent of the provided clk. This permits a direct access of the internal
+> clk_fetch_parent_index().
+>=20
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> ---
+>  drivers/clk/clk.c            | 14 ++++++++++++++
+>  include/linux/clk-provider.h |  1 +
+>  2 files changed, 15 insertions(+)
+>=20
+> diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
+> index 8de6a22498e7..bdd70a88394c 100644
+> --- a/drivers/clk/clk.c
+> +++ b/drivers/clk/clk.c
+> @@ -1726,6 +1726,20 @@ int clk_hw_get_parent_index(struct clk_hw *hw)
+>  }
+>  EXPORT_SYMBOL_GPL(clk_hw_get_parent_index);
+> =20
+> +/**
+> + * clk_hw_get_index_of_parent - return the index of the parent clock
 
-Signed-off-by: Cong Liu <liucong2@kylinos.cn>
----
- drivers/gpu/drm/qxl/qxl_kms.c | 4 ++--
- drivers/gpu/drm/qxl/qxl_ttm.c | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+s/return/get/
 
-diff --git a/drivers/gpu/drm/qxl/qxl_kms.c b/drivers/gpu/drm/qxl/qxl_kms.c
-index 4dc5ad13f12c..a054e4a00fe8 100644
---- a/drivers/gpu/drm/qxl/qxl_kms.c
-+++ b/drivers/gpu/drm/qxl/qxl_kms.c
-@@ -165,7 +165,7 @@ int qxl_device_init(struct qxl_device *qdev,
- 		 (int)qdev->surfaceram_size / 1024,
- 		 (sb == 4) ? "64bit" : "32bit");
- 
--	qdev->rom = ioremap(qdev->rom_base, qdev->rom_size);
-+	qdev->rom = ioremap_wc(qdev->rom_base, qdev->rom_size);
- 	if (!qdev->rom) {
- 		pr_err("Unable to ioremap ROM\n");
- 		r = -ENOMEM;
-@@ -183,7 +183,7 @@ int qxl_device_init(struct qxl_device *qdev,
- 		goto rom_unmap;
- 	}
- 
--	qdev->ram_header = ioremap(qdev->vram_base +
-+	qdev->ram_header = ioremap_wc(qdev->vram_base +
- 				   qdev->rom->ram_header_offset,
- 				   sizeof(*qdev->ram_header));
- 	if (!qdev->ram_header) {
-diff --git a/drivers/gpu/drm/qxl/qxl_ttm.c b/drivers/gpu/drm/qxl/qxl_ttm.c
-index b2e33d5ba5d0..95df5750f47f 100644
---- a/drivers/gpu/drm/qxl/qxl_ttm.c
-+++ b/drivers/gpu/drm/qxl/qxl_ttm.c
-@@ -82,13 +82,13 @@ int qxl_ttm_io_mem_reserve(struct ttm_device *bdev,
- 	case TTM_PL_VRAM:
- 		mem->bus.is_iomem = true;
- 		mem->bus.offset = (mem->start << PAGE_SHIFT) + qdev->vram_base;
--		mem->bus.caching = ttm_cached;
-+		mem->bus.caching = ttm_write_combined;
- 		break;
- 	case TTM_PL_PRIV:
- 		mem->bus.is_iomem = true;
- 		mem->bus.offset = (mem->start << PAGE_SHIFT) +
- 			qdev->surfaceram_base;
--		mem->bus.caching = ttm_cached;
-+		mem->bus.caching = ttm_write_combined;
- 		break;
- 	default:
- 		return -EINVAL;
--- 
-2.25.1
+> + * @hw: clk_hw associated with the clk being consumed
+> + * @parent: clk_hw of the parent to be fetched the index of
 
+s/to be fetched/to fetch/
+
+> + *
+> + * Fetches and returns the index of parent clock provided.
+> + * Returns -EINVAL if the given parent index can't be provided.
+
+I know this is copied from clk_hw_get_parent_index, but it can be
+improved.
+
+Return: The index corresponding to @parent for @hw or -EINVAL if
+@parent isn't a possible parent of @hw.
+
+> + */
+> +int clk_hw_get_index_of_parent(struct clk_hw *hw, const struct clk_hw *p=
+arent)
+> +{
+> +       return clk_fetch_parent_index(hw->core, parent->core);
+> +}
+> +EXPORT_SYMBOL_GPL(clk_hw_get_index_of_parent);
+> +
+>  /*
+>   * Update the orphan status of @core and all its children.
+>   */
