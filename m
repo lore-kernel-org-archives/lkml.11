@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAEC5C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:15:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEAA9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:15:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356570AbiCYPRB (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:17:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43460 "EHLO
+        id S236757AbiCYPRG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 11:17:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376602AbiCYPNK (ORCPT
+        with ESMTP id S1376594AbiCYPNJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:13:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03FAB89327;
-        Fri, 25 Mar 2022 08:10:06 -0700 (PDT)
+        Fri, 25 Mar 2022 11:13:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C11AA6C4B2;
+        Fri, 25 Mar 2022 08:10:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 64D14B828F8;
-        Fri, 25 Mar 2022 15:09:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A29D1C36AE2;
-        Fri, 25 Mar 2022 15:09:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CEDAF61C57;
+        Fri, 25 Mar 2022 15:10:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7E32C340EE;
+        Fri, 25 Mar 2022 15:10:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648220998;
-        bh=8EStCMiTMJGNGHKv7g5jLqJK2FpaF8m/Jn+cIEii0YA=;
+        s=korg; t=1648221001;
+        bh=+MRoTFyqPRTcrtTBKEJBUVfJX9Jn2E243Gb2KCdfed4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KjjSAddAXMhSg9RSx8ZJZLqw/lBD0ssnFNIO8IJB0TtTYaxc5wBXFVulc6SAhNOlX
-         VSUJ1O7WqW45b79CG63c0g/YD4hxZ2yzeUL6s1CBb2+UjOXw/mjGKIKltlBW3zHmza
-         FPkRbe301MId6RQrEYhCLNbmpK4gU14XFJYjKaxo=
+        b=PWM8VJeoNdd1qmnLnJUpmFM4j7beiz3gToBAdG8L7SYQwR1QWNGpZhiXOtzb8N6oB
+         LdfDEEy4kqDwPacYepRg8rJVw9bCAqh7PMiR1gt4u27/6QsuYeqXJCpx96dxKBM2aB
+         h3voYNZZsBcUnJnM5y55HjwoSwoTtGUk2nd9z/dU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
-        "Masami Ichikawa(CIP)" <masami.ichikawa@cybertrust.co.jp>,
-        Tejun Heo <tj@kernel.org>
-Subject: [PATCH 5.10 06/38] cgroup-v1: Correct privileges check in release_agent writes
-Date:   Fri, 25 Mar 2022 16:04:50 +0100
-Message-Id: <20220325150419.944556173@linuxfoundation.org>
+        stable@vger.kernel.org, Jarkko Sakkinen <jarkko@kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        linux-integrity@vger.kernel.org, Tadeusz Struk <tstruk@gmail.com>,
+        Tadeusz Struk <tadeusz.struk@linaro.org>
+Subject: [PATCH 5.10 07/38] tpm: Fix error handling in async work
+Date:   Fri, 25 Mar 2022 16:04:51 +0100
+Message-Id: <20220325150419.972727322@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150419.757836392@linuxfoundation.org>
 References: <20220325150419.757836392@linuxfoundation.org>
@@ -51,52 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michal Koutný <mkoutny@suse.com>
+From: Tadeusz Struk <tstruk@gmail.com>
 
-commit 467a726b754f474936980da793b4ff2ec3e382a7 upstream.
+commit 2e8e4c8f6673247e22efc7985ce5497accd16f88 upstream.
 
-The idea is to check: a) the owning user_ns of cgroup_ns, b)
-capabilities in init_user_ns.
+When an invalid (non existing) handle is used in a TPM command,
+that uses the resource manager interface (/dev/tpmrm0) the resource
+manager tries to load it from its internal cache, but fails and
+the tpm_dev_transmit returns an -EINVAL error to the caller.
+The existing async handler doesn't handle these error cases
+currently and the condition in the poll handler never returns
+mask with EPOLLIN set.
+The result is that the poll call blocks and the application gets stuck
+until the user_read_timer wakes it up after 120 sec.
+Change the tpm_dev_async_work function to handle error conditions
+returned from tpm_dev_transmit they are also reflected in the poll mask
+and a correct error code could passed back to the caller.
 
-The commit 24f600856418 ("cgroup-v1: Require capabilities to set
-release_agent") got this wrong in the write handler of release_agent
-since it checked user_ns of the opener (may be different from the owning
-user_ns of cgroup_ns).
-Secondly, to avoid possibly confused deputy, the capability of the
-opener must be checked.
+Cc: Jarkko Sakkinen <jarkko@kernel.org>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: <linux-integrity@vger.kernel.org>
+Cc: <stable@vger.kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
 
-Fixes: 24f600856418 ("cgroup-v1: Require capabilities to set release_agent")
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/stable/20220216121142.GB30035@blackbody.suse.cz/
-Signed-off-by: Michal Koutný <mkoutny@suse.com>
-Reviewed-by: Masami Ichikawa(CIP) <masami.ichikawa@cybertrust.co.jp>
-Signed-off-by: Tejun Heo <tj@kernel.org>
+Fixes: 9e1b74a63f77 ("tpm: add support for nonblocking operation")
+Tested-by: Jarkko Sakkinen<jarkko@kernel.org>
+Signed-off-by: Tadeusz Struk <tstruk@gmail.com>
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Cc: Tadeusz Struk <tadeusz.struk@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/cgroup/cgroup-v1.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/char/tpm/tpm-dev-common.c |    8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
---- a/kernel/cgroup/cgroup-v1.c
-+++ b/kernel/cgroup/cgroup-v1.c
-@@ -544,6 +544,7 @@ static ssize_t cgroup_release_agent_writ
- 					  char *buf, size_t nbytes, loff_t off)
- {
- 	struct cgroup *cgrp;
-+	struct cgroup_file_ctx *ctx;
- 
- 	BUILD_BUG_ON(sizeof(cgrp->root->release_agent_path) < PATH_MAX);
- 
-@@ -551,8 +552,9 @@ static ssize_t cgroup_release_agent_writ
- 	 * Release agent gets called with all capabilities,
- 	 * require capabilities to set release agent.
- 	 */
--	if ((of->file->f_cred->user_ns != &init_user_ns) ||
--	    !capable(CAP_SYS_ADMIN))
-+	ctx = of->priv;
-+	if ((ctx->ns->user_ns != &init_user_ns) ||
-+	    !file_ns_capable(of->file, &init_user_ns, CAP_SYS_ADMIN))
- 		return -EPERM;
- 
- 	cgrp = cgroup_kn_lock_live(of->kn, false);
+--- a/drivers/char/tpm/tpm-dev-common.c
++++ b/drivers/char/tpm/tpm-dev-common.c
+@@ -70,7 +70,13 @@ static void tpm_dev_async_work(struct wo
+ 	ret = tpm_dev_transmit(priv->chip, priv->space, priv->data_buffer,
+ 			       sizeof(priv->data_buffer));
+ 	tpm_put_ops(priv->chip);
+-	if (ret > 0) {
++
++	/*
++	 * If ret is > 0 then tpm_dev_transmit returned the size of the
++	 * response. If ret is < 0 then tpm_dev_transmit failed and
++	 * returned an error code.
++	 */
++	if (ret != 0) {
+ 		priv->response_length = ret;
+ 		mod_timer(&priv->user_read_timer, jiffies + (120 * HZ));
+ 	}
 
 
