@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EDC6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:29:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01E1DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:29:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354607AbiCYPbD (ORCPT
+        id S1376616AbiCYPbJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:31:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42680 "EHLO
+        Fri, 25 Mar 2022 11:31:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377941AbiCYPYo (ORCPT
+        with ESMTP id S1377975AbiCYPYq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:24:44 -0400
+        Fri, 25 Mar 2022 11:24:46 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61BB0EAC92;
-        Fri, 25 Mar 2022 08:19:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2FBAEACA4;
+        Fri, 25 Mar 2022 08:19:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA176B82865;
-        Fri, 25 Mar 2022 15:19:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05CDAC340E9;
-        Fri, 25 Mar 2022 15:19:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 52C94B82865;
+        Fri, 25 Mar 2022 15:19:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B99D1C340E9;
+        Fri, 25 Mar 2022 15:19:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221560;
-        bh=JdQzAi/hwTPPFKOBVImriiqmuLWSX3nkNyNbJttnU+o=;
+        s=korg; t=1648221569;
+        bh=PVvpZe0gwx7cCv7/Tokda8oeLwGKuYAWw5qH3QerL9w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rw7CDsXLMYuaKqfy9eikk4WyaAxC0IeOUBLLkL2907Cpznf4sJ+w9vNdpUEiK0acq
-         vkTndj5ocrXg2Fbbwq+X/fHtTEcuhv7Oqg5mIqu1YitxKYkcum4fTdBJHJ69aQlHDP
-         m4rgpqcTdL2P3vFMXLeZNpjSQ88wadWaEpCOgWQ4=
+        b=rZoPoxTMNtHAmIUoLjnxuRT3PdBYvM267NGmipOacVW8d87PqU5d9h//BM5BDOVIu
+         TqshdoXAP96N/rekrffrJ6AguM/hLrSnZtK8EeI1I27vEQMxifG4P9nV+NOlxFiMqa
+         jIztWLEJ3GNZV4LLpIsvvLQIRRZ/VmNsXIXZ14Sg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        =?UTF-8?q?Gonzalo=20Tornar=C3=ADa?= <tornaria@cmat.edu.uy>,
-        Mateus Lemos <lemonsmateus@gmail.com>,
-        Ismael Ferreras Morezuelas <swyterzone@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>
-Subject: [PATCH 5.17 28/39] Bluetooth: btusb: Use quirk to skip HCI_FLT_CLEAR_ALL on fake CSR controllers
-Date:   Fri, 25 Mar 2022 16:14:43 +0100
-Message-Id: <20220325150421.047518443@linuxfoundation.org>
+        stable@vger.kernel.org, Roberto Sassu <roberto.sassu@huawei.com>,
+        syzbot+e9072e90624a31dfa85f@syzkaller.appspotmail.com,
+        Gerd Hoffmann <kraxel@redhat.com>
+Subject: [PATCH 5.17 30/39] drm/virtio: Ensure that objs is not NULL in virtio_gpu_array_put_free()
+Date:   Fri, 25 Mar 2022 16:14:45 +0100
+Message-Id: <20220325150421.104922740@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150420.245733653@linuxfoundation.org>
 References: <20220325150420.245733653@linuxfoundation.org>
@@ -52,123 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ismael Ferreras Morezuelas <swyterzone@gmail.com>
+From: Roberto Sassu <roberto.sassu@huawei.com>
 
-commit b3cf94c8b6b2f1a2b94825a025db291da2b151fd upstream.
+commit 6b79f96f4a23846516e5e6e4dd37fc06f43a60dd upstream.
 
-Another subset of the more recent batch of Chinese clones aren't
-specs-compliant and seem to lock up whenever they receive a
-HCI_OP_SET_EVENT_FLT with flt_type set to zero/HCI_FLT_CLEAR_ALL,
-which on Linux (until the recent HCI state-machine refactor) happened
-right at BR/EDR setup. As there are other less-straightforward ways
-of reaching those operations, this patch is still relevant.
+If virtio_gpu_object_shmem_init() fails (e.g. due to fault injection, as it
+happened in the bug report by syzbot), virtio_gpu_array_put_free() could be
+called with objs equal to NULL.
 
-So, while all the previous efforts to wrangle the herd of fake CSRs
-seem to be paying off (and these also get detected as such) we
-still need to take care of this quirk; testers seem to agree
-that these dongles tend to work well enough afterwards.
+Ensure that objs is not NULL in virtio_gpu_array_put_free(), or otherwise
+return from the function.
 
->From some cursory USB packet capture on Windows it seems like
-that driver doesn't appear to use this clear-all functionality at all.
-
-This patch was tested on some really popular AliExpress-style
-dongles, in my case marked as "V5.0". Chip markings: UG8413,
-the backside of the PCB says "USB Dangel" (sic).
-
-Here is the `hciconfig -a` output; for completeness:
-
-hci0:	Type: Primary  Bus: USB
-	BD Address: 00:1A:7D:DA:7X:XX  ACL MTU: 679:8  SCO MTU: 48:16
-	UP RUNNING PSCAN ISCAN
-	Features: 0xbf 0x3e 0x4d 0xfa 0xdb 0x3d 0x7b 0xc7
-	Packet type: DM1 DM3 DM5 DH1 DH3 DH5 HV1 HV2 HV3
-	Link policy: RSWITCH SNIFF
-	Link mode: PERIPHERAL ACCEPT
-	Name: 'CSR8510 A10.'
-	Class: 0x7c0104
-	Service Classes: Rendering, Capturing, Object Transfer, Audio, Telephony
-	Device Class: Computer, Desktop workstation
-	HCI Version: 4.0 (0x6)  Revision: 0x3120
-	LMP Version: 4.0 (0x6)  Subversion: 0x22bb
-	Manufacturer: Cambridge Silicon Radio (10)
-
-As well as the `lsusb -vv -d 0a12:0001`:
-
-ID 0a12:0001 Cambridge Silicon Radio, Ltd Bluetooth Dongle (HCI mode)
-Device Descriptor:
-  bLength                18
-  bDescriptorType         1
-  bcdUSB               2.00
-  bDeviceClass          224 Wireless
-  bDeviceSubClass         1 Radio Frequency
-  bDeviceProtocol         1 Bluetooth
-  bMaxPacketSize0        64
-  idVendor           0x0a12 Cambridge Silicon Radio, Ltd
-  idProduct          0x0001 Bluetooth Dongle (HCI mode)
-  bcdDevice           88.91
-  iManufacturer           0
-  iProduct                2 BT DONGLE10
-  iSerial                 0
-  bNumConfigurations      1
-
-Also, changed the benign dmesg print that shows up whenever the
-generic force-suspend fails from bt_dev_err to bt_dev_warn;
-it's okay and done on a best-effort basis, not a problem
-if that does not work.
-
-Also, swapped the HCI subver and LMP subver numbers for the Barrot
-in the comment, which I copied wrong the last time around.
-
-Fixes: 81cac64ba258a ("Bluetooth: Deal with USB devices that are faking CSR vendor")
-Fixes: cde1a8a992875 ("Bluetooth: btusb: Fix and detect most of the Chinese Bluetooth controllers")
-Fixes: d74e0ae7e0303 ("Bluetooth: btusb: Fix detection of some fake CSR controllers with a bcdDevice val of 0x0134")
-Fixes: 0671c0662383e ("Bluetooth: btusb: Add workaround for remote-wakeup issues with Barrot 8041a02 fake CSR controllers")
-Fixes: f4292e2faf522 ("Bluetooth: btusb: Make the CSR clone chip force-suspend workaround more generic")
-
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=60824
-Link: https://gist.github.com/nevack/6b36b82d715dc025163d9e9124840a07
-
-Cc: stable@vger.kernel.org
-Cc: Hans de Goede <hdegoede@redhat.com>
-Tested-by: Gonzalo Tornaría <tornaria@cmat.edu.uy>
-Tested-by: Mateus Lemos <lemonsmateus@gmail.com>
-Tested-by: Ismael Ferreras Morezuelas <swyterzone@gmail.com>
-Signed-off-by: Ismael Ferreras Morezuelas <swyterzone@gmail.com>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Cc: stable@vger.kernel.org # 5.13.x
+Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+Reported-by: syzbot+e9072e90624a31dfa85f@syzkaller.appspotmail.com
+Fixes: 377f8331d0565 ("drm/virtio: fix possible leak/unlock virtio_gpu_object_array")
+Link: http://patchwork.freedesktop.org/patch/msgid/20211213183122.838119-1-roberto.sassu@huawei.com
+Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/bluetooth/btusb.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/virtio/virtgpu_gem.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/bluetooth/btusb.c
-+++ b/drivers/bluetooth/btusb.c
-@@ -2045,6 +2045,8 @@ static int btusb_setup_csr(struct hci_de
- 		 */
- 		set_bit(HCI_QUIRK_BROKEN_STORED_LINK_KEY, &hdev->quirks);
- 		set_bit(HCI_QUIRK_BROKEN_ERR_DATA_REPORTING, &hdev->quirks);
-+		set_bit(HCI_QUIRK_BROKEN_FILTER_CLEAR_ALL, &hdev->quirks);
-+		set_bit(HCI_QUIRK_NO_SUSPEND_NOTIFIER, &hdev->quirks);
+--- a/drivers/gpu/drm/virtio/virtgpu_gem.c
++++ b/drivers/gpu/drm/virtio/virtgpu_gem.c
+@@ -248,6 +248,9 @@ void virtio_gpu_array_put_free(struct vi
+ {
+ 	u32 i;
  
- 		/* Clear the reset quirk since this is not an actual
- 		 * early Bluetooth 1.1 device from CSR.
-@@ -2055,7 +2057,7 @@ static int btusb_setup_csr(struct hci_de
- 		/*
- 		 * Special workaround for these BT 4.0 chip clones, and potentially more:
- 		 *
--		 * - 0x0134: a Barrot 8041a02                 (HCI rev: 0x1012 sub: 0x0810)
-+		 * - 0x0134: a Barrot 8041a02                 (HCI rev: 0x0810 sub: 0x1012)
- 		 * - 0x7558: IC markings FR3191AHAL 749H15143 (HCI rev/sub-version: 0x0709)
- 		 *
- 		 * These controllers are really messed-up.
-@@ -2084,7 +2086,7 @@ static int btusb_setup_csr(struct hci_de
- 		if (ret >= 0)
- 			msleep(200);
- 		else
--			bt_dev_err(hdev, "CSR: Failed to suspend the device for our Barrot 8041a02 receive-issue workaround");
-+			bt_dev_warn(hdev, "CSR: Couldn't suspend the device for our Barrot 8041a02 receive-issue workaround");
- 
- 		pm_runtime_forbid(&data->udev->dev);
- 
++	if (!objs)
++		return;
++
+ 	for (i = 0; i < objs->nents; i++)
+ 		drm_gem_object_put(objs->objs[i]);
+ 	virtio_gpu_array_free(objs);
 
 
