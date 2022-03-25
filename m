@@ -2,254 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FEE5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 07:15:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19D94C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 07:15:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358515AbiCYHRN (ORCPT
+        id S1357807AbiCYHRQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 03:17:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45066 "EHLO
+        Fri, 25 Mar 2022 03:17:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354764AbiCYHRJ (ORCPT
+        with ESMTP id S1358513AbiCYHRM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 03:17:09 -0400
+        Fri, 25 Mar 2022 03:17:12 -0400
 Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6937FC74B4
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 00:15:29 -0700 (PDT)
-Received: from epcas2p1.samsung.com (unknown [182.195.41.53])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220325071527epoutp04387e0f5e09567db49ae8e04a0d5d0b1f~fjl771h-O2447424474epoutp04Z
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 07:15:27 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220325071527epoutp04387e0f5e09567db49ae8e04a0d5d0b1f~fjl771h-O2447424474epoutp04Z
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30616C6EEC
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 00:15:34 -0700 (PDT)
+Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
+        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220325071532epoutp04505142b59729b2c6607bc165710f4bf6~fjmAt6Djm2450524505epoutp04K
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 07:15:32 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220325071532epoutp04505142b59729b2c6607bc165710f4bf6~fjmAt6Djm2450524505epoutp04K
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1648192527;
-        bh=0RB2zY4IjwuD60lmM1qt63nYEmpNNTM6ztbApUsUjYk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mniL/gjDFGTxbsAqMOV91tnZbFYm5Fy3/V4u8Yxp2PAQdThxOV54DhxquKzww2BG+
-         XzI8DRYfFymaQr4T0M65R3ao6OpDc1LtAhyC4khC2/LfWqSrJS/kjuA/n4P/a+wwKn
-         2aK34cfwMV3YMg6XyUMFPk2CrboqojW343mMbdFc=
-Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
-        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
-        20220325071526epcas2p161d9add0712ccdcaeb1d9f2de7e3c891~fjl7HO8aN2157021570epcas2p1j;
-        Fri, 25 Mar 2022 07:15:26 +0000 (GMT)
-Received: from epsmges2p3.samsung.com (unknown [182.195.36.97]) by
-        epsnrtp1.localdomain (Postfix) with ESMTP id 4KPtf15w8Xz4x9QF; Fri, 25 Mar
-        2022 07:15:21 +0000 (GMT)
-Received: from epcas2p3.samsung.com ( [182.195.41.55]) by
-        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
-        97.C8.25540.60C6D326; Fri, 25 Mar 2022 16:15:18 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas2p1.samsung.com (KnoxPortal) with ESMTPA id
-        20220325071517epcas2p141a5b9d75af93ec8a60f82f98063ffa4~fjlzUD8kE1679216792epcas2p1u;
-        Fri, 25 Mar 2022 07:15:17 +0000 (GMT)
+        s=mail20170921; t=1648192532;
+        bh=DrQ/XqfAqPKOeZP4otDlqik6Kn6HApn4g8RKqgPws2A=;
+        h=From:To:In-Reply-To:Subject:Date:References:From;
+        b=N9GUJ+LaDwneq/Okh83lbQkeZ4H1uF2yTTPyAVzic/aq1jkDVczdaA7Fdy/wzVbNR
+         nAxWOPjrkeyseqbsGRxH9CI3mHlUxrs71PqhnZcHy3BvE3nDX8VVJJnSh+Ba++xhuz
+         +hsRn+FXiBmgb5XuondPEUeiDlTLGSRWyT0CPQMM=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas5p4.samsung.com (KnoxPortal) with ESMTP id
+        20220325071531epcas5p48b5ae3d2e9b423dc55ef63c1f61e4e8b~fjl-_ITuJ2667226672epcas5p40;
+        Fri, 25 Mar 2022 07:15:31 +0000 (GMT)
+Received: from epsmges5p3new.samsung.com (unknown [182.195.38.175]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4KPtf75g5qz4x9Q7; Fri, 25 Mar
+        2022 07:15:27 +0000 (GMT)
+Received: from epcas5p4.samsung.com ( [182.195.41.42]) by
+        epsmges5p3new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        2C.7D.05590.D0C6D326; Fri, 25 Mar 2022 16:15:25 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas5p3.samsung.com (KnoxPortal) with ESMTPA id
+        20220325071524epcas5p30470f46df0e678811efcddb0476ec6c1~fjl5NtlRW2668926689epcas5p3y;
+        Fri, 25 Mar 2022 07:15:24 +0000 (GMT)
 Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220325071517epsmtrp214d453bfb84edc8f8eb637dceaa36696~fjlzTY8Z02572025720epsmtrp2M;
-        Fri, 25 Mar 2022 07:15:17 +0000 (GMT)
-X-AuditID: b6c32a47-02a68a80000063c4-c7-623d6c06a769
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220325071524epsmtrp12a2a3926db7fd279db2b5df40f55a1a7~fjl5MxPQw2367623676epsmtrp1B;
+        Fri, 25 Mar 2022 07:15:24 +0000 (GMT)
+X-AuditID: b6c32a4b-739ff700000015d6-57-623d6c0db7ab
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
         epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        C5.AD.29871.50C6D326; Fri, 25 Mar 2022 16:15:17 +0900 (KST)
-Received: from ubuntu (unknown [12.36.155.120]) by epsmtip1.samsung.com
+        B7.AD.29871.C0C6D326; Fri, 25 Mar 2022 16:15:24 +0900 (KST)
+Received: from alimakhtar03 (unknown [107.122.12.5]) by epsmtip2.samsung.com
         (KnoxPortal) with ESMTPA id
-        20220325071517epsmtip1f16522e58427f2ac8894fb9b5745a271~fjlzG7WWp3092930929epsmtip1N;
-        Fri, 25 Mar 2022 07:15:17 +0000 (GMT)
-Date:   Fri, 25 Mar 2022 16:13:57 +0900
-From:   Oh Eomji <eomji.oh@samsung.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        alsa-devel@alsa-project.org, Leon Romanovsky <leon@kernel.org>,
-        Pavel Skripkin <paskripkin@gmail.com>
-Subject: Re: [PATCH v1 2/3] sound: usb: Calling vendor's call-back function
- within usb audio operation.
-Message-ID: <20220325071357.GB123495@ubuntu>
+        20220325071522epsmtip2b14063f84db13edb1813998459dd3c7d~fjl3E1rx91680916809epsmtip2i;
+        Fri, 25 Mar 2022 07:15:21 +0000 (GMT)
+From:   "Alim Akhtar" <alim.akhtar@samsung.com>
+To:     "'SEO HOYOUNG'" <hy50.seo@samsung.com>,
+        <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <avri.altman@wdc.com>, <jejb@linux.ibm.com>,
+        <martin.petersen@oracle.com>, <beanhuo@micron.com>,
+        <asutoshd@codeaurora.org>, <cang@codeaurora.org>,
+        <bvanassche@acm.org>, <bhoon95.kim@samsung.com>,
+        <kwmad.kim@samsung.com>
+In-Reply-To: <20220324172113.192370-1-hy50.seo@samsung.com>
+Subject: RE: [PATCH v1] scsi: ufs: unipro: add to define HS-Gear5 mode
+Date:   Fri, 25 Mar 2022 12:45:20 +0530
+Message-ID: <063f01d84018$1871e5e0$4955b1a0$@samsung.com>
 MIME-Version: 1.0
-In-Reply-To: <YjwtDo7b/RMHr45e@kroah.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrAJsWRmVeSWpSXmKPExsWy7bCmuS5bjm2SwZ+14hZXLh5ismhevJ7N
-        YsqvpcwWl3fNYbM48Gcxm0Xnrn5Wiw3f1zI6sHts+NzE5rFz1l12j02rOtk89s9dw+6x7+0y
-        No/1W66yeHzeJBfAHpVtk5GamJJapJCal5yfkpmXbqvkHRzvHG9qZmCoa2hpYa6kkJeYm2qr
-        5OIToOuWmQN0kJJCWWJOKVAoILG4WEnfzqYov7QkVSEjv7jEVim1ICWnwLxArzgxt7g0L10v
-        L7XEytDAwMgUqDAhO2PtotWMBQvVK9Zf3sfSwLhEvouRk0NCwETi0IEe5i5GLg4hgR2MEu9X
-        TmIFSQgJfGKUOLk9DCLxjVHi0tbdbDAd726uZ4FI7GWUuPj1JwtExxNGiQWrSkBsFgFVicaF
-        h8DibED29GXbGUFsEQFjif6zs9hBmpkFbjBK7Pv0DqxIWCBTorl3GtgGXgEdiV+Nf6BsQYmT
-        M5+A1XAKaEo8+XsDqJmDQ1RAReLVwXqQORICnRwSjw+9Yoe4zkViyt4zLBC2sMSr41ug4lIS
-        n9/thfqgWOLggudQdo3E24OtUDXGErOetYMdyiyQLnH1Qh8byC4JAWWJI7dYIMJ8Eh2H/7JD
-        hHklOtqEIDqVJCY1dTJB2BISKz43QdkeEpf+72GChNUXRom+6edYJjDKz0Ly2Swk2yBsHYkF
-        uz8B2RxAtrTE8n8cEKamxPpd+gsYWVcxiqUWFOempxYbFRjD4zo5P3cTIziparnvYJzx9oPe
-        IUYmDsZDjBIczEoivPcvWycJ8aYkVlalFuXHF5XmpBYfYjQFxtNEZinR5HxgWs8riTc0sTQw
-        MTMzNDcyNTBXEuf1StmQKCSQnliSmp2aWpBaBNPHxMEp1cBkuN2O8XqLyYLNG05tvcLxIvjp
-        28UimnFH5wa65wnZtIVJvq7fbD2D672Ap4bUQbM9Wi/e7rfeHbXP9okio8gvv88GPq4HJT39
-        GJd9nyrdcb5IcP+PtMUtenZvJX2eTVE/Ufe27cCqk1smfDbi2+j2uNjr7Z6QP31JBTe+vpdw
-        elRWXiVvLFC3hbVT5u/k63wRV300vx9NT63/7nX+/Z1H7/8rBSmvsnn5gtd0+wbhS0X/JlVM
-        /S/XlpPlWaN+5OPK6oVTHm8ztrG8mrrqr5Dbgj385RNPa2+JcJ/BanDHP1z2/slj5fvmsk5P
-        l+5NFtlpWL8+x0BDnielSsb1a9b2vn13CpR2vlY5EGhy5ASvEktxRqKhFnNRcSIA7fhlWzME
-        AAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrBLMWRmVeSWpSXmKPExsWy7bCSnC5rjm2SwdZbJhZXLh5ismhevJ7N
-        YsqvpcwWl3fNYbM48Gcxm0Xnrn5Wiw3f1zI6sHts+NzE5rFz1l12j02rOtk89s9dw+6x7+0y
-        No/1W66yeHzeJBfAHsVlk5Kak1mWWqRvl8CVsez+ddaCJyoVLcv2sjQwNsh2MXJySAiYSLy7
-        uZ6li5GLQ0hgN6PElNmHmCASEhILul4zQ9jCEvdbjrBCFD1ilGh61gWWYBFQlWhceIgFxGYD
-        sqcv284IYosIGEv0n53FDtLALHCLUWJtz1ywhLBApkRz7zQ2EJtXQEfiV+MfNoipXxgldh85
-        wgiREJQ4OfMJ2FRmAS2JG/9eAp3EAWRLSyz/xwES5hTQlHjy9wY7SFhUQEXi1cH6CYyCs5A0
-        z0LSPAuheQEj8ypGydSC4tz03GLDAsO81HK94sTc4tK8dL3k/NxNjODI0NLcwbh91Qe9Q4xM
-        HIyHGCU4mJVEeO9ftk4S4k1JrKxKLcqPLyrNSS0+xCjNwaIkznuh62S8kEB6YklqdmpqQWoR
-        TJaJg1OqgemAQtDu3S71Ilfb2c9pzlIV2q2y561iutY06dN2lawXA/LjV26p7d9aN2+WIX/D
-        NMNwJ5tAV3ePmXZMdz+qrjI9+e7N49tVOvpsxhH2ubo1Fz679zVYx3/iPsl26xyHYbD6iQ2X
-        e+R+hKTVZyjuzqtYun+rlr7oY8Zdq2IEPrz5eDH74vqnWw9OaTx/JER46UJ582/L3mzNaQ2e
-        JrtnyZ2PX3sX8v9ruf3rt/P73J6GCSe6TzMUHnov+UyiXu9F/LaOhQVdr1nfRCuxx+2ad/H8
-        3ReCTs0Ss5dUcCbmd6in5Yl05p7eobQ9ooj9d+qbiu5TBZdlZQVv8/4KTdWdsuqOr9I0fflA
-        5svSaZ1uwUosxRmJhlrMRcWJAJEAHb/7AgAA
-X-CMS-MailID: 20220325071517epcas2p141a5b9d75af93ec8a60f82f98063ffa4
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQFnWDvKaMVANQKbUZJJE4NWseV9VgFQE2loAuwNqkqtj5108A==
+Content-Language: en-us
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrIJsWRmVeSWpSXmKPExsWy7bCmli5vjm2SwZ6v0hZ7206wW7z8eZXN
+        4uDDThaLr0ufsVpM+/CT2eLT+mWsFqsXP2CxWHRjG5PFzS1HWSwu75rDZtF9fQebxfLj/5gc
+        eDwuX/H2uNzXy+QxYdEBRo/v6zvYPD4+vcXi0bdlFaPH501yHu0HupkCOKKybTJSE1NSixRS
+        85LzUzLz0m2VvIPjneNNzQwMdQ0tLcyVFPISc1NtlVx8AnTdMnOArlVSKEvMKQUKBSQWFyvp
+        29kU5ZeWpCpk5BeX2CqlFqTkFJgU6BUn5haX5qXr5aWWWBkaGBiZAhUmZGccWzOZreAYb0Xz
+        n63MDYx/uLsYOTkkBEwkVtxYwtrFyMUhJLCbUaKzbTczhPOJUeLTzTlQzjdGiWcffzPDtOyf
+        dgnMFhLYyyixsFENouglo8TLbR1MIAk2AV2JHYvb2EASIgJnmSRWT1zLDpLgFLCW6JvzgKWL
+        kYNDWMBNYucdHZAwi4CqxOn/u8B6eQUsJR43tLJB2IISJ2c+YQGxmQW0JZYtfA11hILEz6fL
+        WEFsEQEniW9zrkHViEu8PHqEHWSvhMABDon1v26wQDS4SJzZ/Y4dwhaWeHV8C5QtJfGyv40d
+        5B4JAQ+JRX+kIMIZEm+Xr2eEsO0lDlyZA3Yys4CmxPpd+hCr+CR6fz9hgujklehoE4KoVpVo
+        fncVaqm0xMTublYI20Ni651f0JBexijRdriXcQKjwiwkX85C8uUsJN/MQti8gJFlFaNkakFx
+        bnpqsWmBcV5qOTy+k/NzNzGC07KW9w7GRw8+6B1iZOJgPMQowcGsJMJ7/7J1khBvSmJlVWpR
+        fnxRaU5q8SFGU2DQT2SWEk3OB2aGvJJ4QxNLAxMzMzMTS2MzQyVx3lPpGxKFBNITS1KzU1ML
+        Uotg+pg4OKUamDzXpZgYu53u8mmRXDIlNe7nNI26S07aZe/b1yUYcbzLVHo0b4l9tEDevNS0
+        n3VpER8bTq8R2aCefthzfpm+39mTT7fFfz3JMJHj0EerqQ0/Xqmdy15QadC9027uxbfLF//q
+        OG7Ff3LqIRFP183FhztaGdhnZsRFRvHnLAvPuffwaIK19xTHa7K5Ngb/3G/cuut36E5/1e1J
+        /yeu2WHDlWl708GKdbvGuwL5kO9rJrxwS5A/s/KejMPaYH+RFTM/XZStXOnfwXjC8f7BnCqb
+        efr/swoKTmXETs+7xviR+WPB5AzueM7WK/W1M3oElxyQZEpjexHEe+v1tMZ5x88I/fVfmCEq
+        nd5o4BP3aDt3vxJLcUaioRZzUXEiAKhw+OtUBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprDIsWRmVeSWpSXmKPExsWy7bCSvC5Pjm2SQe9KHou9bSfYLV7+vMpm
+        cfBhJ4vF16XPWC2mffjJbPFp/TJWi9WLH7BYLLqxjcni5pajLBaXd81hs+i+voPNYvnxf0wO
+        PB6Xr3h7XO7rZfKYsOgAo8f39R1sHh+f3mLx6NuyitHj8yY5j/YD3UwBHFFcNimpOZllqUX6
+        dglcGV9Wf2AumM5TMW9pcQPjdK4uRk4OCQETif3TLjF3MXJxCAnsZpRo793FDpGQlri+cQKU
+        LSyx8t9zdoii54wSTx/8YwFJsAnoSuxY3MYGYosI3GaSmHFOCMQWEljEKLHtWxCIzSlgLdE3
+        5wFQPQeHsICbxM47OiBhFgFVidP/dzGB2LwClhKPG1rZIGxBiZMzn4CNZxbQlnh68ymcvWzh
+        a2aIexQkfj5dxgqx1kni25xrUDXiEi+PHmGfwCg0C8moWUhGzUIyahaSlgWMLKsYJVMLinPT
+        c4sNCwzzUsv1ihNzi0vz0vWS83M3MYIjUEtzB+P2VR/0DjEycTAeYpTgYFYS4b1/2TpJiDcl
+        sbIqtSg/vqg0J7X4EKM0B4uSOO+FrpPxQgLpiSWp2ampBalFMFkmDk6pBiaLj3Grdgq2z/xa
+        eufDs9wcrmq2xo35LfXWl0794f8d/+/XxqjZhV3pc3oNdVkCVvxeOCMs4rFBpXppn8EFkyP3
+        mNx2Lb15uqut6YvmAv6S+cu0k2ykWU1lpgfNm9+i+D7+WfOLmx+9tuxsT8v9xdO2a8v8c/F9
+        B948MP8Z3/Dcdk5U1uPfF/iCfj7Sm/1IOs0z/21LV1zihI+Fjpcqqqefd73yedZ2CavWbMnQ
+        mFfL98cLtLY6rOmJvlBU8EK2QzrzTZNIb0Rl917eBcfYpIRZV2/7PulJcNje586yBV/Oc3Uu
+        y5tz88mjDP8DQYd0OsOXH1zW8/9RQFfSIYEVZlfELJNqwrLe9tX/lObWPaDEUpyRaKjFXFSc
+        CAC2QFRdLwMAAA==
+X-CMS-MailID: 20220325071524epcas5p30470f46df0e678811efcddb0476ec6c1
 X-Msg-Generator: CA
-Content-Type: multipart/mixed;
-        boundary="----Hit0D2w6tI2G2F3pksn2lDL9DCLqPArtVXtx_.FrHH4Lj9aG=_9486_"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
+Content-Type: text/plain; charset="utf-8"
+CMS-TYPE: 105P
 DLP-Filter: Pass
 X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220324081348epcas2p48d3a24dfdfd8d01e9bf350571b18ffff
-References: <1648109444-196321-1-git-send-email-eomji.oh@samsung.com>
-        <CGME20220324081348epcas2p48d3a24dfdfd8d01e9bf350571b18ffff@epcas2p4.samsung.com>
-        <1648109444-196321-3-git-send-email-eomji.oh@samsung.com>
-        <YjwtDo7b/RMHr45e@kroah.com>
+X-CMS-RootMailID: 20220325053615epcas2p25b140872340b4711d4fef4c5a4cb45f4
+References: <sc.suh@samsung.com;>
+        <CGME20220325053615epcas2p25b140872340b4711d4fef4c5a4cb45f4@epcas2p2.samsung.com>
+        <20220324172113.192370-1-hy50.seo@samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-------Hit0D2w6tI2G2F3pksn2lDL9DCLqPArtVXtx_.FrHH4Lj9aG=_9486_
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
 
-On Thu, Mar 24, 2022 at 09:34:22AM +0100, Greg Kroah-Hartman wrote:
-> On Thu, Mar 24, 2022 at 05:10:43PM +0900, Oh Eomji wrote:
-> > When a new interface is connected or removed, the call-back functions
-> > are called to transmit a command to the hardware.
-> > 
-> > Signed-off-by: Oh Eomji <eomji.oh@samsung.com>
-> > ---
-> >  sound/usb/pcm.c    | 37 +++++++++++++++++++++++++++++++++++++
-> >  sound/usb/stream.c |  2 ++
-> >  2 files changed, 39 insertions(+)
-> > 
-> > diff --git a/sound/usb/pcm.c b/sound/usb/pcm.c
-> > index cec6e91a..4bae4ba 100644
-> > --- a/sound/usb/pcm.c
-> > +++ b/sound/usb/pcm.c
-> > @@ -144,6 +144,8 @@ find_format(struct list_head *fmt_list_head, snd_pcm_format_t format,
-> >  			found = fp;
-> >  			cur_attr = attr;
-> >  		}
-> > +
-> > +		snd_vendor_set_pcm_binterval(fp, found, &cur_attr, &attr);
-> >  	}
-> >  	return found;
-> >  }
-> > @@ -434,6 +436,7 @@ static int configure_endpoints(struct snd_usb_audio *chip,
-> >  			       struct snd_usb_substream *subs)
-> >  {
-> >  	int err;
-> > +	struct usb_interface *iface;
-> >  
-> >  	if (subs->data_endpoint->need_setup) {
-> >  		/* stop any running stream beforehand */
-> > @@ -442,6 +445,13 @@ static int configure_endpoints(struct snd_usb_audio *chip,
-> >  		err = snd_usb_endpoint_configure(chip, subs->data_endpoint);
-> >  		if (err < 0)
-> >  			return err;
-> > +
-> > +		iface = usb_ifnum_to_if(chip->dev, subs->data_endpoint->iface);
-> > +		err = snd_vendor_set_pcm_intf(iface, subs->data_endpoint->iface,
-> > +				subs->data_endpoint->altsetting, subs->direction);
-> > +		if (err < 0)
-> > +			return err;
-> > +
-> >  		snd_usb_set_format_quirk(subs, subs->cur_audiofmt);
-> >  	}
-> >  
-> > @@ -616,8 +626,18 @@ static int snd_usb_pcm_prepare(struct snd_pcm_substream *substream)
-> >  	struct snd_pcm_runtime *runtime = substream->runtime;
-> >  	struct snd_usb_substream *subs = runtime->private_data;
-> >  	struct snd_usb_audio *chip = subs->stream->chip;
-> > +	struct snd_usb_endpoint *ep = subs->data_endpoint;
-> >  	int ret;
-> >  
-> > +	ret = snd_vendor_set_pcm_buf(subs->dev, subs->cur_audiofmt->iface);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	if (!subs->cur_audiofmt) {
-> > +		dev_err(&subs->dev->dev, "no format is specified\n");
-> > +		return -ENXIO;
-> > +	}
-> > +
-> >  	ret = snd_usb_lock_shutdown(chip);
-> >  	if (ret < 0)
-> >  		return ret;
-> > @@ -630,6 +650,13 @@ static int snd_usb_pcm_prepare(struct snd_pcm_substream *substream)
-> >  	if (ret < 0)
-> >  		goto unlock;
-> >  
-> > +	if (snd_vendor_get_ops()) {
-> > +		ret = snd_vendor_set_rate(ep->cur_audiofmt->iface,
-> > +				ep->cur_rate, ep->cur_audiofmt->altsetting);
-> > +		if (!ret)
-> > +			goto unlock;
-> > +	}
-> > +
-> >  	/* reset the pointer */
-> >  	subs->buffer_bytes = frames_to_bytes(runtime, runtime->buffer_size);
-> >  	subs->inflight_bytes = 0;
-> > @@ -1104,6 +1131,11 @@ static int snd_usb_pcm_open(struct snd_pcm_substream *substream)
-> >  	struct snd_usb_substream *subs = &as->substream[direction];
-> >  	int ret;
-> >  
-> > +	ret = snd_vendor_set_pcm_connection(subs->dev, SOUND_PCM_OPEN,
-> > +					    direction);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> >  	runtime->hw = snd_usb_hardware;
-> >  	/* need an explicit sync to catch applptr update in low-latency mode */
-> >  	if (direction == SNDRV_PCM_STREAM_PLAYBACK &&
-> > @@ -1137,6 +1169,11 @@ static int snd_usb_pcm_close(struct snd_pcm_substream *substream)
-> >  	struct snd_usb_substream *subs = &as->substream[direction];
-> >  	int ret;
-> >  
-> > +	ret = snd_vendor_set_pcm_connection(subs->dev, SOUND_PCM_CLOSE,
-> > +					    direction);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> >  	snd_media_stop_pipeline(subs);
-> >  
-> >  	if (!snd_usb_lock_shutdown(subs->stream->chip)) {
-> > diff --git a/sound/usb/stream.c b/sound/usb/stream.c
-> > index ceb93d7..26ca696 100644
-> > --- a/sound/usb/stream.c
-> > +++ b/sound/usb/stream.c
-> > @@ -1227,6 +1227,8 @@ static int __snd_usb_parse_audio_interface(struct snd_usb_audio *chip,
-> >  		snd_usb_init_pitch(chip, fp);
-> >  		snd_usb_init_sample_rate(chip, fp, fp->rate_max);
-> >  		usb_set_interface(chip->dev, iface_no, altno);
-> > +		if (protocol > UAC_VERSION_1)
-> 
-> Why the protocol check?  That's not documented in your changelog
-> anywhere :(
-> 
+
+>-----Original Message-----
+>From: SEO HOYOUNG =5Bmailto:hy50.seo=40samsung.com=5D
+>Sent: Thursday, March 24, 2022 10:51 PM
+>To: linux-scsi=40vger.kernel.org; linux-kernel=40vger.kernel.org;
+>alim.akhtar=40samsung.com; avri.altman=40wdc.com; jejb=40linux.ibm.com;
+>martin.petersen=40oracle.com; beanhuo=40micron.com;
+>asutoshd=40codeaurora.org; cang=40codeaurora.org; bvanassche=40acm.org;
+>bhoon95.kim=40samsung.com; kwmad.kim=40samsung.com
+>Cc: SEO HOYOUNG <hy50.seo=40samsung.com>
+>Subject: =5BPATCH v1=5D scsi: ufs: unipro: add to define HS-Gear5 mode
 >
-Hi,
-
-In kernel 5.10, set_interface is performed when the protocol is more
-than UAC_VERSION_1 in the snd_usb_init_sample_rate function.
-There was an issue here, so there is a history of adding to perform
-snd_vendor_set_interface when the protocol is more than UAC_VERSION_1.
-But I don't think I need this in kerenel 5.15, so I'll delete it.
-
-Thanks,
-Eomji Oh
-
-------Hit0D2w6tI2G2F3pksn2lDL9DCLqPArtVXtx_.FrHH4Lj9aG=_9486_
-Content-Type: text/plain; charset="utf-8"
+>UFS devices support HS-Gear5 mode with UFS4.0 spec.
+>However there is no definition of HS-Gear5.
+>So added it in unipro header
+>
+>Change-Id: Id5475005000fe66b432ab76fa3364a8c12296f7c
 
 
-------Hit0D2w6tI2G2F3pksn2lDL9DCLqPArtVXtx_.FrHH4Lj9aG=_9486_--
+Change-id should not be part of this, please run checkpatch to catch such t=
+hings
+
+>Signed-off-by: SEO HOYOUNG <hy50.seo=40samsung.com>
+>---
+> drivers/scsi/ufs/unipro.h =7C 1 +
+> 1 file changed, 1 insertion(+)
+>
+>diff --git a/drivers/scsi/ufs/unipro.h b/drivers/scsi/ufs/unipro.h index
+>8e9e486a4f7b..0d2131e1f027 100644
+>--- a/drivers/scsi/ufs/unipro.h
+>+++ b/drivers/scsi/ufs/unipro.h
+>=40=40 -231,6 +231,7 =40=40 enum ufs_hs_gear_tag =7B
+> 	UFS_HS_G2,		/* HS Gear 2 */
+> 	UFS_HS_G3,		/* HS Gear 3 */
+> 	UFS_HS_G4,		/* HS Gear 4 */
+>+	UFS_HS_G5,		/* HS Gear 5 */
+
+I don=E2=80=99t=20have=20access=20to=20UFS4.0=20spec=20yet,=20so=20not=20su=
+re=20if=20this=20is=20the=20only=20change=20required=20for=20UFS4.0=0D=0AWi=
+thout=20having=20added=20support=20for=20UFS4.0,=20just=20updating=20HS=20g=
+ear=20does=20not=20make=20much=20sense=0D=0A=0D=0A>=20=7D;=0D=0A=0D=0A>=0D=
+=0A>=20enum=20ufs_unipro_ver=20=7B=0D=0A>--=0D=0A>2.26.0=0D=0A=0D=0A=0D=0A
