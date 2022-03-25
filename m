@@ -2,115 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFC41C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:18:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C767C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:18:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376352AbiCYPUU (ORCPT
+        id S1353124AbiCYPU1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:20:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44590 "EHLO
+        Fri, 25 Mar 2022 11:20:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377068AbiCYPNx (ORCPT
+        with ESMTP id S1376888AbiCYPNm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:13:53 -0400
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE880DE096;
-        Fri, 25 Mar 2022 08:10:51 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 24EDD20013;
-        Fri, 25 Mar 2022 15:10:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1648221049;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mRSu3/wCSc0mFe5FcrRdKJwcESMddFQbMLzRELsBR8s=;
-        b=hMz7NELw0O7Eshl2v7fb3IkN3WvOyeshGV6GPeE/yPHTYYvRjZ578GsMwRojhMfu0kfX+D
-        sP30KveX3L7O/GzQOdGFTq+svSkt1sCW8XVzQ5WnsL7V0PfOXEhiLflowM5hZM2j47POuH
-        6beC1zmgcaBQnrqSgBgPO+v8wpfJvQB7m5vd/J31AJ+GAt9a+Qyeo/9xgpNrkp/CnZfIoO
-        rud839RjG+a4BQNKOsumBr1Agv3Nvl5H6XsFzt9cssfO7dtFYb4LRfLP2j0CvuCL3PLQdO
-        HssRZAKVO70ab9HM8VBv2KJzxdO5WQgyXlBf+biUKnkSG01Tax1baBX1QCkr9w==
-Date:   Fri, 25 Mar 2022 16:09:27 +0100
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Len Brown <lenb@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 6/9] i2c: fwnode: add
- fwnode_find_i2c_adapter_by_node()
-Message-ID: <20220325160927.30e5aef8@fixe.home>
-In-Reply-To: <Yj3TSBEY/P7d8XJj@smile.fi.intel.com>
-References: <20220325113148.588163-1-clement.leger@bootlin.com>
-        <20220325113148.588163-7-clement.leger@bootlin.com>
-        <Yj3TSBEY/P7d8XJj@smile.fi.intel.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Fri, 25 Mar 2022 11:13:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D72BDBD0D;
+        Fri, 25 Mar 2022 08:10:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E7EE61CC3;
+        Fri, 25 Mar 2022 15:10:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0276DC340F7;
+        Fri, 25 Mar 2022 15:10:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1648221036;
+        bh=TbviTT1gEaBSf9w3IlmduynszDOLzbE1OJdh2sS618w=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Ejxo8NdhfJUYrrD1Jojj4FtpHUEceCgREMDICZd3FJRZ3FDngnbvHlT+Kel5VaQmX
+         fgjpk4tTeAjO+J5DK9HAQzV35ZE+gTxi/a/OSxhn20qBfdyerMqCSN13JjJU1GDuST
+         hHSAR0JcHZQ18VCcil1wmv5iC0laDUrf+5NEaTWY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Tim Murray <timmurray@google.com>,
+        Joel Fernandes <joelaf@google.com>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        "Uladzislau Rezki (Sony)" <urezki@gmail.com>,
+        Todd Kjos <tkjos@google.com>,
+        Sandeep Patil <sspatil@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Subject: [PATCH 5.10 34/38] rcu: Dont deboost before reporting expedited quiescent state
+Date:   Fri, 25 Mar 2022 16:05:18 +0100
+Message-Id: <20220325150420.725344004@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220325150419.757836392@linuxfoundation.org>
+References: <20220325150419.757836392@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Fri, 25 Mar 2022 16:35:52 +0200,
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> a =C3=A9crit :
+From: Paul E. McKenney <paulmck@kernel.org>
 
-> On Fri, Mar 25, 2022 at 12:31:45PM +0100, Cl=C3=A9ment L=C3=A9ger wrote:
-> > Add fwnode_find_i2c_adapter_by_node() which allows to retrieve a i2c
-> > adapter using a fwnode. Since dev_fwnode() uses the fwnode provided by
-> > the of_node member of the device, this will also work for devices were
-> > the of_node has been set and not the fwnode field.
-> > For acpi nodes, the check for parent node is skipped since
-> > i2c_acpi_find_adapter_by_handle() does not check it and we don't want
-> > to change this behavior. =20
->=20
-> ...
->=20
-> > +#include <linux/device.h>
-> > +#include <linux/i2c.h> =20
->=20
-> Missed headers so far:
-> acpi.h
+commit 10c535787436d62ea28156a4b91365fd89b5a432 upstream.
 
-Indeed, will check that.
+Currently rcu_preempt_deferred_qs_irqrestore() releases rnp->boost_mtx
+before reporting the expedited quiescent state.  Under heavy real-time
+load, this can result in this function being preempted before the
+quiescent state is reported, which can in turn prevent the expedited grace
+period from completing.  Tim Murray reports that the resulting expedited
+grace periods can take hundreds of milliseconds and even more than one
+second, when they should normally complete in less than a millisecond.
 
->=20
-> ...
->=20
-> > +static int fwnode_dev_or_parent_node_match(struct device *dev, const v=
-oid *data)
-> > +{
-> > +	if (device_match_fwnode(dev, data))
-> > +		return 1;
-> > +
-> > +	/*
-> > +	 * For ACPI device node, the behavior is to not match the parent (see
-> > +	 *  did not checked the )
-> > +	 */ =20
->=20
-> Would it be harmful to drop this check?
+This was fine given that there were no particular response-time
+constraints for synchronize_rcu_expedited(), as it was designed
+for throughput rather than latency.  However, some users now need
+sub-100-millisecond response-time constratints.
 
-Can't tell, I would not want to introduce some behavior wrt to parent
-node for ACPI since it was not done this way. Might works in 99% of the
-case though.
+This patch therefore follows Neeraj's suggestion (seconded by Tim and
+by Uladzislau Rezki) of simply reversing the two operations.
 
-If ok with that, I can drop it.
+Reported-by: Tim Murray <timmurray@google.com>
+Reported-by: Joel Fernandes <joelaf@google.com>
+Reported-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
+Reviewed-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
+Reviewed-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
+Tested-by: Tim Murray <timmurray@google.com>
+Cc: Todd Kjos <tkjos@google.com>
+Cc: Sandeep Patil <sspatil@google.com>
+Cc: <stable@vger.kernel.org> # 5.4.x
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ kernel/rcu/tree_plugin.h |    9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+--- a/kernel/rcu/tree_plugin.h
++++ b/kernel/rcu/tree_plugin.h
+@@ -531,16 +531,17 @@ rcu_preempt_deferred_qs_irqrestore(struc
+ 			raw_spin_unlock_irqrestore_rcu_node(rnp, flags);
+ 		}
+ 
+-		/* Unboost if we were boosted. */
+-		if (IS_ENABLED(CONFIG_RCU_BOOST) && drop_boost_mutex)
+-			rt_mutex_futex_unlock(&rnp->boost_mtx);
+-
+ 		/*
+ 		 * If this was the last task on the expedited lists,
+ 		 * then we need to report up the rcu_node hierarchy.
+ 		 */
+ 		if (!empty_exp && empty_exp_now)
+ 			rcu_report_exp_rnp(rnp, true);
++
++		/* Unboost if we were boosted. */
++		if (IS_ENABLED(CONFIG_RCU_BOOST) && drop_boost_mutex)
++			rt_mutex_futex_unlock(&rnp->boost_mtx);
++
+ 	} else {
+ 		local_irq_restore(flags);
+ 	}
 
 
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
