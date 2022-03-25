@@ -2,50 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 215F8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB8FBC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378022AbiCYPeT (ORCPT
+        id S1378089AbiCYPeW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:34:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34160 "EHLO
+        Fri, 25 Mar 2022 11:34:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377610AbiCYPYW (ORCPT
+        with ESMTP id S1377625AbiCYPYX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:24:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52CA1E7F6F;
-        Fri, 25 Mar 2022 08:18:26 -0700 (PDT)
+        Fri, 25 Mar 2022 11:24:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7252DD96F;
+        Fri, 25 Mar 2022 08:18:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 61F8AB827E0;
-        Fri, 25 Mar 2022 15:18:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1860C340E9;
-        Fri, 25 Mar 2022 15:18:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6422EB827DC;
+        Fri, 25 Mar 2022 15:18:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAA52C340E9;
+        Fri, 25 Mar 2022 15:18:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221504;
-        bh=8SAhyuG4jGlA+wi+EXKjrX7dlF5Y3pT/GEqS0lcPxAM=;
+        s=korg; t=1648221501;
+        bh=5rCFA85s5S+qiRWrhD5HCF9nWwgiP1x6tSx3WyKd6t0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iWfEHWargdGxtuWArZzPjj4uX3/8mvcvcIpJ4hoZmd/6ze5pd0xu1UZvIS0M6/c6N
-         JnM9IkUOweNldmg08u6jAIXt5qv2jfxJpJl+W1FE01PVSEl++FBcZ/pdWApMXIbEMW
-         Z+7ssAn89Jfwd3JImPHTgHcCwl4ABzAqmH4Qs/gA=
+        b=lehHPUHPcM2HmzqfuaBuAqp0rjeyuAchPpG3rbdnQZRo3Y4jXTymeLF6wJ2skA1Qr
+         JBWqV2y0zSzQikKr5JhbANkkl18yzLIegx7pm4P6V49oAcTi53qvvBjvwOgX3pJyjT
+         HLVx3D21dLs3ZpeuWmcX5/JPPDj4xHgW+EpgxlLI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jarkko Sakkinen <jarkko@kernel.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        linux-integrity@vger.kernel.org, Tadeusz Struk <tstruk@gmail.com>,
-        Tadeusz Struk <tadeusz.struk@linaro.org>
-Subject: [PATCH 5.17 01/39] tpm: Fix error handling in async work
-Date:   Fri, 25 Mar 2022 16:14:16 +0100
-Message-Id: <20220325150420.289936517@linuxfoundation.org>
+        stable@vger.kernel.org, Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.16 16/37] ALSA: pcm: Fix races among concurrent prealloc proc writes
+Date:   Fri, 25 Mar 2022 16:14:26 +0100
+Message-Id: <20220325150420.511592283@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220325150420.245733653@linuxfoundation.org>
-References: <20220325150420.245733653@linuxfoundation.org>
+In-Reply-To: <20220325150420.046488912@linuxfoundation.org>
+References: <20220325150420.046488912@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -53,56 +49,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tadeusz Struk <tstruk@gmail.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit 2e8e4c8f6673247e22efc7985ce5497accd16f88 upstream.
+commit 69534c48ba8ce552ce383b3dfdb271ffe51820c3 upstream.
 
-When an invalid (non existing) handle is used in a TPM command,
-that uses the resource manager interface (/dev/tpmrm0) the resource
-manager tries to load it from its internal cache, but fails and
-the tpm_dev_transmit returns an -EINVAL error to the caller.
-The existing async handler doesn't handle these error cases
-currently and the condition in the poll handler never returns
-mask with EPOLLIN set.
-The result is that the poll call blocks and the application gets stuck
-until the user_read_timer wakes it up after 120 sec.
-Change the tpm_dev_async_work function to handle error conditions
-returned from tpm_dev_transmit they are also reflected in the poll mask
-and a correct error code could passed back to the caller.
+We have no protection against concurrent PCM buffer preallocation
+changes via proc files, and it may potentially lead to UAF or some
+weird problem.  This patch applies the PCM open_mutex to the proc
+write operation for avoiding the racy proc writes and the PCM stream
+open (and further operations).
 
-Cc: Jarkko Sakkinen <jarkko@kernel.org>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: <linux-integrity@vger.kernel.org>
 Cc: <stable@vger.kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
-
-Fixes: 9e1b74a63f77 ("tpm: add support for nonblocking operation")
-Tested-by: Jarkko Sakkinen<jarkko@kernel.org>
-Signed-off-by: Tadeusz Struk <tstruk@gmail.com>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
-Cc: Tadeusz Struk <tadeusz.struk@linaro.org>
+Reviewed-by: Jaroslav Kysela <perex@perex.cz>
+Link: https://lore.kernel.org/r/20220322170720.3529-5-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/tpm/tpm-dev-common.c |    8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ sound/core/pcm_memory.c |   11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
---- a/drivers/char/tpm/tpm-dev-common.c
-+++ b/drivers/char/tpm/tpm-dev-common.c
-@@ -69,7 +69,13 @@ static void tpm_dev_async_work(struct wo
- 	ret = tpm_dev_transmit(priv->chip, priv->space, priv->data_buffer,
- 			       sizeof(priv->data_buffer));
- 	tpm_put_ops(priv->chip);
--	if (ret > 0) {
-+
-+	/*
-+	 * If ret is > 0 then tpm_dev_transmit returned the size of the
-+	 * response. If ret is < 0 then tpm_dev_transmit failed and
-+	 * returned an error code.
-+	 */
-+	if (ret != 0) {
- 		priv->response_length = ret;
- 		mod_timer(&priv->user_read_timer, jiffies + (120 * HZ));
+--- a/sound/core/pcm_memory.c
++++ b/sound/core/pcm_memory.c
+@@ -163,19 +163,20 @@ static void snd_pcm_lib_preallocate_proc
+ 	size_t size;
+ 	struct snd_dma_buffer new_dmab;
+ 
++	mutex_lock(&substream->pcm->open_mutex);
+ 	if (substream->runtime) {
+ 		buffer->error = -EBUSY;
+-		return;
++		goto unlock;
  	}
+ 	if (!snd_info_get_line(buffer, line, sizeof(line))) {
+ 		snd_info_get_str(str, line, sizeof(str));
+ 		size = simple_strtoul(str, NULL, 10) * 1024;
+ 		if ((size != 0 && size < 8192) || size > substream->dma_max) {
+ 			buffer->error = -EINVAL;
+-			return;
++			goto unlock;
+ 		}
+ 		if (substream->dma_buffer.bytes == size)
+-			return;
++			goto unlock;
+ 		memset(&new_dmab, 0, sizeof(new_dmab));
+ 		new_dmab.dev = substream->dma_buffer.dev;
+ 		if (size > 0) {
+@@ -189,7 +190,7 @@ static void snd_pcm_lib_preallocate_proc
+ 					 substream->pcm->card->number, substream->pcm->device,
+ 					 substream->stream ? 'c' : 'p', substream->number,
+ 					 substream->pcm->name, size);
+-				return;
++				goto unlock;
+ 			}
+ 			substream->buffer_bytes_max = size;
+ 		} else {
+@@ -201,6 +202,8 @@ static void snd_pcm_lib_preallocate_proc
+ 	} else {
+ 		buffer->error = -EINVAL;
+ 	}
++ unlock:
++	mutex_unlock(&substream->pcm->open_mutex);
+ }
+ 
+ static inline void preallocate_info_init(struct snd_pcm_substream *substream)
 
 
