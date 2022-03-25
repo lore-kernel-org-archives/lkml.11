@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3C4EC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55A10C43219
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378242AbiCYPeb (ORCPT
+        id S1378493AbiCYPeu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:34:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34160 "EHLO
+        Fri, 25 Mar 2022 11:34:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377966AbiCYPYp (ORCPT
+        with ESMTP id S1378227AbiCYPZO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:24:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 987BBEACAC;
-        Fri, 25 Mar 2022 08:19:27 -0700 (PDT)
+        Fri, 25 Mar 2022 11:25:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B366ECC5A;
+        Fri, 25 Mar 2022 08:20:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D127260AD0;
-        Fri, 25 Mar 2022 15:19:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7912C340EE;
-        Fri, 25 Mar 2022 15:19:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E1D5C611FB;
+        Fri, 25 Mar 2022 15:20:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4514C340EE;
+        Fri, 25 Mar 2022 15:20:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221566;
-        bh=Y5pIaoEdFTFs9L/tDgexSz2P1Acwz8ZcBhY5B8L0/Ds=;
+        s=korg; t=1648221604;
+        bh=bLyHvRHuwpHkVvuattikF0PH4TZTbUXMmVmmup3vp7E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=edbYk9AxBbTTTzMvrC3gpODfVB4+14WNAoW2b0xt0/ujDKEyZuPFyrBgc/Fi19Jvm
-         VNIF7lDcIp9Tnlmb4MxZTd/X1ZqPaHPTO4TVdRFf4pwUf/InRA4UsxxF6P0w0ajywN
-         An7KLIbtu2N9eY3ed2M3Fv70pTjZq9CnCVgbEqyQ=
+        b=SzfWQ48fZlmtFpK064O+kt66fgj2ljc39sNHgSzDOj16YmnolNUi0Vq4YX7dOilik
+         yAEnAHZlZWHn1k3Tm3aGz6tQyX+XnlSADH6OoWBntK0u/b5L4Ls5zUIFUetpVcxULr
+         yyOA2CNLp0RapnkvKMa0bEcF4c5O/AHDnQpu6KQw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        =?UTF-8?q?=E8=B5=B5=E5=AD=90=E8=BD=A9?= <beraphin@gmail.com>,
-        Stoyan Manolov <smanolov@suse.de>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.17 03/39] llc: fix netdevice reference leaks in llc_ui_bind()
-Date:   Fri, 25 Mar 2022 16:14:18 +0100
-Message-Id: <20220325150420.345250175@linuxfoundation.org>
+        stable@vger.kernel.org,
+        James Bottomley <James.Bottomley@HansenPartnership.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>
+Subject: [PATCH 5.17 36/39] tpm: use try_get_ops() in tpm-space.c
+Date:   Fri, 25 Mar 2022 16:14:51 +0100
+Message-Id: <20220325150421.277908724@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150420.245733653@linuxfoundation.org>
 References: <20220325150420.245733653@linuxfoundation.org>
@@ -51,52 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: James Bottomley <James.Bottomley@HansenPartnership.com>
 
-commit 764f4eb6846f5475f1244767d24d25dd86528a4a upstream.
+commit fb5abce6b2bb5cb3d628aaa63fa821da8c4600f9 upstream.
 
-Whenever llc_ui_bind() and/or llc_ui_autobind()
-took a reference on a netdevice but subsequently fail,
-they must properly release their reference
-or risk the infamous message from unregister_netdevice()
-at device dismantle.
+As part of the series conversion to remove nested TPM operations:
 
-unregister_netdevice: waiting for eth0 to become free. Usage count = 3
+https://lore.kernel.org/all/20190205224723.19671-1-jarkko.sakkinen@linux.intel.com/
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: 赵子轩 <beraphin@gmail.com>
-Reported-by: Stoyan Manolov <smanolov@suse.de>
-Link: https://lore.kernel.org/r/20220323004147.1990845-1-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+exposure of the chip->tpm_mutex was removed from much of the upper
+level code.  In this conversion, tpm2_del_space() was missed.  This
+didn't matter much because it's usually called closely after a
+converted operation, so there's only a very tiny race window where the
+chip can be removed before the space flushing is done which causes a
+NULL deref on the mutex.  However, there are reports of this window
+being hit in practice, so fix this by converting tpm2_del_space() to
+use tpm_try_get_ops(), which performs all the teardown checks before
+acquring the mutex.
+
+Cc: stable@vger.kernel.org # 5.4.x
+Signed-off-by: James Bottomley <James.Bottomley@HansenPartnership.com>
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/llc/af_llc.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/char/tpm/tpm2-space.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/net/llc/af_llc.c
-+++ b/net/llc/af_llc.c
-@@ -311,6 +311,10 @@ static int llc_ui_autobind(struct socket
- 	sock_reset_flag(sk, SOCK_ZAPPED);
- 	rc = 0;
- out:
-+	if (rc) {
-+		dev_put_track(llc->dev, &llc->dev_tracker);
-+		llc->dev = NULL;
-+	}
- 	return rc;
- }
+--- a/drivers/char/tpm/tpm2-space.c
++++ b/drivers/char/tpm/tpm2-space.c
+@@ -58,12 +58,12 @@ int tpm2_init_space(struct tpm_space *sp
  
-@@ -408,6 +412,10 @@ static int llc_ui_bind(struct socket *so
- out_put:
- 	llc_sap_put(sap);
- out:
-+	if (rc) {
-+		dev_put_track(llc->dev, &llc->dev_tracker);
-+		llc->dev = NULL;
-+	}
- 	release_sock(sk);
- 	return rc;
+ void tpm2_del_space(struct tpm_chip *chip, struct tpm_space *space)
+ {
+-	mutex_lock(&chip->tpm_mutex);
+-	if (!tpm_chip_start(chip)) {
++
++	if (tpm_try_get_ops(chip) == 0) {
+ 		tpm2_flush_sessions(chip, space);
+-		tpm_chip_stop(chip);
++		tpm_put_ops(chip);
+ 	}
+-	mutex_unlock(&chip->tpm_mutex);
++
+ 	kfree(space->context_buf);
+ 	kfree(space->session_buf);
  }
 
 
