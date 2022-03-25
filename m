@@ -2,120 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADE5FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 20:52:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F188C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 20:53:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232398AbiCYUyG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 16:54:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42774 "EHLO
+        id S232410AbiCYUz3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 16:55:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232369AbiCYUyE (ORCPT
+        with ESMTP id S232400AbiCYUz1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 16:54:04 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C17C550E16;
-        Fri, 25 Mar 2022 13:52:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648241549; x=1679777549;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=P3gwNXe0u8BsPFKCZRFA9VltWIcjiuRgNKGEuiruPN4=;
-  b=EpRaQlMnz3FJSTYspef0y0Z+QDbk3Hjm8KhHZVPY4BlRHstE14+DKenD
-   +74Q2LMPMLWmiJIHJuKrD9AjYRkIlY8wTxMrNe9gTwfTGezUfk/ltzlLE
-   9i9lkhaOMJlM0EDXUnT0BEm9r/IgJK8X8ieLtcUihYVaDTMeKCN9dWqVk
-   J9NXQ2dveElqz9hAkdNNC4Wamx6DVGawZwXXW8f1J3pJkYn0TI5jW4AOv
-   3BZd9gMsifVmxCHKI3hOewBBNdXrGO3J2GlgXlPvZl4WSoE2++BtiQ6MO
-   pJAnrGilI2WelGuOfjY73R6/WzYpEZISLR5y033RA0BJlU15J6e6+g4yq
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10297"; a="238653260"
-X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
-   d="scan'208";a="238653260"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2022 13:52:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
-   d="scan'208";a="826145419"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by fmsmga005.fm.intel.com with ESMTP; 25 Mar 2022 13:52:24 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nXqv2-000Mad-9K; Fri, 25 Mar 2022 20:52:24 +0000
-Date:   Sat, 26 Mar 2022 04:52:21 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jeffle Xu <jefflexu@linux.alibaba.com>, dhowells@redhat.com,
-        linux-cachefs@redhat.com, xiang@kernel.org, chao@kernel.org,
-        linux-erofs@lists.ozlabs.org
-Cc:     kbuild-all@lists.01.org, torvalds@linux-foundation.org,
-        gregkh@linuxfoundation.org, willy@infradead.org,
-        linux-fsdevel@vger.kernel.org, joseph.qi@linux.alibaba.com,
-        bo.liu@linux.alibaba.com, tao.peng@linux.alibaba.com,
-        gerry@linux.alibaba.com, eguan@linux.alibaba.com,
-        linux-kernel@vger.kernel.org, luodaowen.backend@bytedance.com,
-        tianzichen@kuaishou.com, fannaihao@baidu.com
-Subject: Re: [PATCH v6 03/22] cachefiles: notify user daemon with anon_fd
- when looking up cookie
-Message-ID: <202203260406.Ay5o7T9U-lkp@intel.com>
-References: <20220325122223.102958-4-jefflexu@linux.alibaba.com>
+        Fri, 25 Mar 2022 16:55:27 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39BEE42EF4
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 13:53:52 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id pv16so17684730ejb.0
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 13:53:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qTyIfzc6eWn8tPRbJvu4pItLGCLIkdX7GJakm9zDrl8=;
+        b=gm5AHFVvThRrK7sA/BQ6fJ/iDwpQq6O0/7tOPWKWfF0gNOKqop2SvIcH4r/OClE48L
+         VFW0eVhGjvjiyVqrrrPg6Q1OkP1qou04a5ugVipBYO9VTlVyEcQ7kokZzVjAoN7pS1Ch
+         +u+3DjL5YncJtUcCyN3Ju5WCdBaFHsUNObffo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qTyIfzc6eWn8tPRbJvu4pItLGCLIkdX7GJakm9zDrl8=;
+        b=Wd5dPjmT3gZbcrDX5/uasFfaok6hHzSRbso203SIro/Bca1X8Dv1rGkB6ooybawBi3
+         Y6ELiIMLsLiyEzqfPMvJsrGLhzOW6tCy8c8PNmg4xGe3EGzaWhj1TacuH/iKc2pKudz9
+         0fXLLklbnhtLADDDDdBEgtbhKLSgeaBnBN3jqW/DhkepAVni1jgZQJwpfOUyafo4mp5j
+         krpYEFzmtGhSC3iR0IB+oAS2wvF3qQIcCxw9tDL1xOW5n9Js+rGzKDKDPCr4QLzhBfq/
+         I1zRgpShwx0be6HJksijf1FhL3d95rTMPFNkVCRMkWQWNL7A/8vfHtnYbeO0ue3Fhv7h
+         mXbg==
+X-Gm-Message-State: AOAM5301hHjAw1MbDpcPJ2TcDN1Hx+aZLG26EzwlimYEzpeX6IgZ7J7o
+        5DBmYT4F/zYTvf2/z8a10MOepFW8d2rBZg2TxVU=
+X-Google-Smtp-Source: ABdhPJyNBS0A97O5n1FjdRUbFzgDiVU6WLvPDroUQUQKD5ZSxZSQWRGT61hVePaV/V5pKzFgo2IUIw==
+X-Received: by 2002:a17:907:6296:b0:6da:745b:7b40 with SMTP id nd22-20020a170907629600b006da745b7b40mr13965423ejc.750.1648241630464;
+        Fri, 25 Mar 2022 13:53:50 -0700 (PDT)
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com. [209.85.221.43])
+        by smtp.gmail.com with ESMTPSA id k12-20020aa7c38c000000b0041939d9ccd0sm3309169edq.81.2022.03.25.13.53.49
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Mar 2022 13:53:50 -0700 (PDT)
+Received: by mail-wr1-f43.google.com with SMTP id j18so12352054wrd.6
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 13:53:49 -0700 (PDT)
+X-Received: by 2002:ac2:4203:0:b0:448:8053:d402 with SMTP id
+ y3-20020ac24203000000b004488053d402mr9094484lfh.687.1648241278691; Fri, 25
+ Mar 2022 13:47:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220325122223.102958-4-jefflexu@linux.alibaba.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <1812355.tdWV9SEqCh@natalenko.name> <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
+ <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
+ <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com> <878rsza0ih.fsf@toke.dk>
+ <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
+ <20220324163132.GB26098@lst.de> <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com>
+ <871qyr9t4e.fsf@toke.dk> <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
+ <31434708dcad126a8334c99ee056dcce93e507f1.camel@freebox.fr>
+ <CAHk-=wippum+MksdY7ixMfa3i1sZ+nxYPWLLpVMNyXCgmiHbBQ@mail.gmail.com> <298f4f9ccad7c3308d3a1fd8b4b4740571305204.camel@sipsolutions.net>
+In-Reply-To: <298f4f9ccad7c3308d3a1fd8b4b4740571305204.camel@sipsolutions.net>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Fri, 25 Mar 2022 13:47:42 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whXAan2ExANMryPSFaBWeyzikPi+fPUseMoVhQAxR7cEA@mail.gmail.com>
+Message-ID: <CAHk-=whXAan2ExANMryPSFaBWeyzikPi+fPUseMoVhQAxR7cEA@mail.gmail.com>
+Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
+ ath9k-based AP
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Maxime Bizon <mbizon@freebox.fr>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Olha Cherevyk <olha.cherevyk@gmail.com>,
+        iommu <iommu@lists.linux-foundation.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jeffle,
+On Fri, Mar 25, 2022 at 1:38 PM Johannes Berg <johannes@sipsolutions.net> wrote:
+>
+> >  (2) The CPU now wants to see any state written by the device since
+> > the last sync
+> >
+> >     This is "dma_sync_single_for_cpu(DMA_FROM_DEVICE)".
+> >
+> >     A bounce-buffer implementation needs to copy *from* the bounce buffer.
+> >
+> >     A cache-coherent implementation needs to do nothing.
+> >
+> >     A non-coherent implementation maybe needs to do nothing (ie it
+> > assumes that previous ops have flushed the cache, and just accessing
+> > the data will bring the rigth thing back into it). Or it could just
+> > flush the cache.
+>
+> Doesn't that just need to *invalidate* the cache, rather than *flush*
+> it?
 
-Thank you for the patch! Yet something to improve:
+Yes.  I should have been more careful.
 
-[auto build test ERROR on trondmy-nfs/linux-next]
-[also build test ERROR on rostedt-trace/for-next linus/master v5.17]
-[cannot apply to xiang-erofs/dev-test dhowells-fs/fscache-next next-20220325]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+That said, I think "invalidate without writeback" is a really
+dangerous operation (it can generate some *really* hard to debug
+memory state), so on the whole I think you should always strive to
+just do "flush-and-invalidate".
 
-url:    https://github.com/0day-ci/linux/commits/Jeffle-Xu/fscache-erofs-fscache-based-on-demand-read-semantics/20220325-203555
-base:   git://git.linux-nfs.org/projects/trondmy/linux-nfs.git linux-next
-config: csky-defconfig (https://download.01.org/0day-ci/archive/20220326/202203260406.Ay5o7T9U-lkp@intel.com/config)
-compiler: csky-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/ec8aa2f84eb47244377e4b822dd77d82ee54714a
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Jeffle-Xu/fscache-erofs-fscache-based-on-demand-read-semantics/20220325-203555
-        git checkout ec8aa2f84eb47244377e4b822dd77d82ee54714a
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=csky SHELL=/bin/bash
+If the core has support for "invalidate clean cache lines only", then
+that's possibly a good alternative.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> >   A non-coherent implementation needs to flush the cache again, bot
+> > not necessarily do a writeback-flush if there is some cheaper form
+> > (assuming it does nothing in the "CPU now wants to see any state" case
+> > because it depends on the data not having been in the caches)
+>
+> And similarly here, it would seem that the implementation can't _flush_
+> the cache as the device might be writing concurrently (which it does in
+> fact do in the ath9k case), but it must invalidate the cache?
 
-All errors (new ones prefixed by >>):
+Right, again, when I said "flush" I really should have said "invalidate".
 
-   csky-linux-ld: fs/cachefiles/daemon.o: in function `cachefiles_ondemand_daemon_read':
->> daemon.c:(.text+0x97c): multiple definition of `cachefiles_ondemand_daemon_read'; fs/cachefiles/cache.o:cache.c:(.text+0x18): first defined here
-   csky-linux-ld: fs/cachefiles/interface.o: in function `cachefiles_ondemand_daemon_read':
-   interface.c:(.text+0x1ec): multiple definition of `cachefiles_ondemand_daemon_read'; fs/cachefiles/cache.o:cache.c:(.text+0x18): first defined here
-   csky-linux-ld: fs/cachefiles/io.o: in function `cachefiles_ondemand_daemon_read':
-   io.c:(.text+0x720): multiple definition of `cachefiles_ondemand_daemon_read'; fs/cachefiles/cache.o:cache.c:(.text+0x18): first defined here
-   csky-linux-ld: fs/cachefiles/key.o: in function `cachefiles_ondemand_daemon_read':
-   key.c:(.text+0x0): multiple definition of `cachefiles_ondemand_daemon_read'; fs/cachefiles/cache.o:cache.c:(.text+0x18): first defined here
-   csky-linux-ld: fs/cachefiles/main.o: in function `cachefiles_ondemand_daemon_read':
-   main.c:(.text+0x0): multiple definition of `cachefiles_ondemand_daemon_read'; fs/cachefiles/cache.o:cache.c:(.text+0x18): first defined here
-   csky-linux-ld: fs/cachefiles/namei.o: in function `cachefiles_ondemand_daemon_read':
-   namei.c:(.text+0xf8): multiple definition of `cachefiles_ondemand_daemon_read'; fs/cachefiles/cache.o:cache.c:(.text+0x18): first defined here
-   csky-linux-ld: fs/cachefiles/security.o: in function `cachefiles_ondemand_daemon_read':
-   security.c:(.text+0x24): multiple definition of `cachefiles_ondemand_daemon_read'; fs/cachefiles/cache.o:cache.c:(.text+0x18): first defined here
-   csky-linux-ld: fs/cachefiles/volume.o: in function `cachefiles_ondemand_daemon_read':
-   volume.c:(.text+0x0): multiple definition of `cachefiles_ondemand_daemon_read'; fs/cachefiles/cache.o:cache.c:(.text+0x18): first defined here
-   csky-linux-ld: fs/cachefiles/xattr.o: in function `cachefiles_ondemand_daemon_read':
-   xattr.c:(.text+0x0): multiple definition of `cachefiles_ondemand_daemon_read'; fs/cachefiles/cache.o:cache.c:(.text+0x18): first defined here
+> I'm not sure about the (2) case, but here it seems fairly clear cut that
+> if you have a cache, don't expect the CPU to write to the buffer (as
+> evidenced by DMA_FROM_DEVICE), you wouldn't want to write out the cache
+> to DRAM?
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+See above: I'd *really* want to avoid a pure "invalidate cacheline"
+model. The amount of debug issues that can cause is not worth it.
+
+So please flush-and-invalidate, or invalidate-non-dirty, but not just
+"invalidate".
+
+> Then, however, we need to define what happens if you pass
+> DMA_BIDIRECTIONAL to the sync_for_cpu() and sync_for_device() functions,
+> which adds two more cases? Or maybe we eventually just think that's not
+> valid at all, since you have to specify how you're (currently?) using
+> the buffer, which can't be DMA_BIDIRECTIONAL?
+
+Ugh. Do we actually have cases that do it? That sounds really odd for
+a "sync" operation. It sounds very reasonable for _allocating_ DMA,
+but for syncing I'm left scratching my head what the semantics would
+be.
+
+But yes, if we do and people come up with semantics for it, those
+semantics should be clearly documented.
+
+And if we don't - or people can't come up with semantics for it - we
+should actively warn about it and not have some code that does odd
+things that we don't know what they mean.
+
+But it sounds like you agree with my analysis, just not with some of
+my bad/incorrect word choices.
+
+            Linus
