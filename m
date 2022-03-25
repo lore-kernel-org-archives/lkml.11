@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEEA3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:15:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C48BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:15:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376308AbiCYPRM (ORCPT
+        id S1351167AbiCYPRU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:17:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43446 "EHLO
+        Fri, 25 Mar 2022 11:17:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376715AbiCYPNS (ORCPT
+        with ESMTP id S1376793AbiCYPNh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:13:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1B1FBD2FF;
-        Fri, 25 Mar 2022 08:10:19 -0700 (PDT)
+        Fri, 25 Mar 2022 11:13:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C78CFDA0A6;
+        Fri, 25 Mar 2022 08:10:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 279E461B97;
-        Fri, 25 Mar 2022 15:10:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BF10C340E9;
-        Fri, 25 Mar 2022 15:10:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1CFE1B828F8;
+        Fri, 25 Mar 2022 15:10:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8748CC340E9;
+        Fri, 25 Mar 2022 15:10:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221018;
-        bh=3snGlK3kA7ZUY+R0MwdxzWSgKKQaA0DAwJcsXL42dfk=;
+        s=korg; t=1648221024;
+        bh=+kwytVMzguGqbJEWnshcYuhD13bYfH60zkWonmrOGYA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ezqu17IbjpB3Tz2lxf5Buo/Bow4ReUqmFLnVJrKwGI+GCZ9aymr5jJWYXbBxKAe8f
-         cqNVg2U0jX7BcUgQEPNWS/0HzAwHQsIdD/stgQDf6ODP2zK9ulAZM3MbRth0QUs/oU
-         Xx2j+uRQ745fksLjzwKJSrE5jRVI2XAxvtC4eZYE=
+        b=VYB9fp2W8kSrdk4dzh9zaVSK/jtTaofV4NC5mp7sC0BHf7/GqmODnaHb70WfDERrg
+         z6UEg3rLbnHAdB3/7nktTVBoJt3Ue2dEwG2+H+mYflj0t0pt/v+3c1Hjtq97VGR2sv
+         QivvzMFe/Xq+Qx+65a8Y4ejYmUmM2kgwfYd6twiA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 5.10 38/38] nds32: fix access_ok() checks in get/put_user
-Date:   Fri, 25 Mar 2022 16:05:22 +0100
-Message-Id: <20220325150420.838401496@linuxfoundation.org>
+        stable@vger.kernel.org, Maximilian Luz <luzmaximilian@gmail.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.10 30/38] ACPI: battery: Add device HID and quirk for Microsoft Surface Go 3
+Date:   Fri, 25 Mar 2022 16:05:14 +0100
+Message-Id: <20220325150420.613391882@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150419.757836392@linuxfoundation.org>
 References: <20220325150419.757836392@linuxfoundation.org>
@@ -49,75 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Maximilian Luz <luzmaximilian@gmail.com>
 
-commit 8926d88ced46700bf6117ceaf391480b943ea9f4 upstream.
+commit 7dacee0b9efc8bd061f097b1a8d4daa6591af0c6 upstream.
 
-The get_user()/put_user() functions are meant to check for
-access_ok(), while the __get_user()/__put_user() functions
-don't.
+For some reason, the Microsoft Surface Go 3 uses the standard ACPI
+interface for battery information, but does not use the standard PNP0C0A
+HID. Instead it uses MSHW0146 as identifier. Add that ID to the driver
+as this seems to work well.
 
-This broke in 4.19 for nds32, when it gained an extraneous
-check in __get_user(), but lost the check it needs in
-__put_user().
+Additionally, the power state is not updated immediately after the AC
+has been (un-)plugged, so add the respective quirk for that.
 
-Fixes: 487913ab18c2 ("nds32: Extract the checking and getting pointer to a macro")
-Cc: stable@vger.kernel.org @ v4.19+
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
+Cc: All applicable <stable@vger.kernel.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/nds32/include/asm/uaccess.h |   22 +++++++++++++++++-----
- 1 file changed, 17 insertions(+), 5 deletions(-)
+ drivers/acpi/battery.c |   12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
---- a/arch/nds32/include/asm/uaccess.h
-+++ b/arch/nds32/include/asm/uaccess.h
-@@ -70,9 +70,7 @@ static inline void set_fs(mm_segment_t f
-  * versions are void (ie, don't return a value as such).
-  */
+--- a/drivers/acpi/battery.c
++++ b/drivers/acpi/battery.c
+@@ -66,6 +66,10 @@ MODULE_PARM_DESC(cache_time, "cache time
  
--#define get_user	__get_user					\
--
--#define __get_user(x, ptr)						\
-+#define get_user(x, ptr)						\
- ({									\
- 	long __gu_err = 0;						\
- 	__get_user_check((x), (ptr), __gu_err);				\
-@@ -85,6 +83,14 @@ static inline void set_fs(mm_segment_t f
- 	(void)0;							\
- })
- 
-+#define __get_user(x, ptr)						\
-+({									\
-+	long __gu_err = 0;						\
-+	const __typeof__(*(ptr)) __user *__p = (ptr);			\
-+	__get_user_err((x), __p, (__gu_err));				\
-+	__gu_err;							\
-+})
+ static const struct acpi_device_id battery_device_ids[] = {
+ 	{"PNP0C0A", 0},
 +
- #define __get_user_check(x, ptr, err)					\
- ({									\
- 	const __typeof__(*(ptr)) __user *__p = (ptr);			\
-@@ -165,12 +171,18 @@ do {									\
- 		: "r"(addr), "i"(-EFAULT)				\
- 		: "cc")
++	/* Microsoft Surface Go 3 */
++	{"MSHW0146", 0},
++
+ 	{"", 0},
+ };
  
--#define put_user	__put_user					\
-+#define put_user(x, ptr)						\
-+({									\
-+	long __pu_err = 0;						\
-+	__put_user_check((x), (ptr), __pu_err);				\
-+	__pu_err;							\
-+})
- 
- #define __put_user(x, ptr)						\
- ({									\
- 	long __pu_err = 0;						\
--	__put_user_err((x), (ptr), __pu_err);				\
-+	__typeof__(*(ptr)) __user *__p = (ptr);				\
-+	__put_user_err((x), __p, __pu_err);				\
- 	__pu_err;							\
- })
+@@ -1171,6 +1175,14 @@ static const struct dmi_system_id bat_dm
+ 			DMI_MATCH(DMI_PRODUCT_VERSION, "ThinkPad"),
+ 		},
+ 	},
++	{
++		/* Microsoft Surface Go 3 */
++		.callback = battery_notification_delay_quirk,
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "Surface Go 3"),
++		},
++	},
+ 	{},
+ };
  
 
 
