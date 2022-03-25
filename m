@@ -2,110 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49168C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 01:42:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 559E8C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 01:43:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245200AbiCYBoJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 21:44:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48860 "EHLO
+        id S1357665AbiCYBpG (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Mar 2022 21:45:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356161AbiCYBks (ORCPT
+        with ESMTP id S1353838AbiCYBoO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 21:40:48 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D565517DF;
-        Thu, 24 Mar 2022 18:39:02 -0700 (PDT)
-Received: from kwepemi500021.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KPl7R4CLTzCrYt;
-        Fri, 25 Mar 2022 09:36:51 +0800 (CST)
-Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
- kwepemi500021.china.huawei.com (7.221.188.245) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 25 Mar 2022 09:39:00 +0800
-Received: from [10.67.111.205] (10.67.111.205) by
- kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 25 Mar 2022 09:38:59 +0800
-Subject: Re: [PATCH] perf/x86: Unify format of events sysfs show
-To:     Peter Zijlstra <peterz@infradead.org>
-CC:     <mingo@redhat.com>, <acme@kernel.org>, <mark.rutland@arm.com>,
-        <alexander.shishkin@linux.intel.com>, <jolsa@kernel.org>,
-        <namhyung@kernel.org>, <tglx@linutronix.de>, <bp@alien8.de>,
-        <dave.hansen@linux.intel.com>, <x86@kernel.org>, <hpa@zytor.com>,
-        <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20220324031957.135595-1-yangjihong1@huawei.com>
- <20220324101107.GC8939@worktop.programming.kicks-ass.net>
-From:   Yang Jihong <yangjihong1@huawei.com>
-Message-ID: <a4a0758f-b183-8244-d59c-10d31d8e0a3a@huawei.com>
-Date:   Fri, 25 Mar 2022 09:38:47 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        Thu, 24 Mar 2022 21:44:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99C3C9D4E0;
+        Thu, 24 Mar 2022 18:40:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3651660B03;
+        Fri, 25 Mar 2022 01:40:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 93275C340F1;
+        Fri, 25 Mar 2022 01:40:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648172411;
+        bh=TTxPjJs7W8LtLk1EfCkrCcPng02d30Lyk5B59DLXoDU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=KsQNfXSomoRKfq/BTfGGfOcRTRJQlBEgFVGMf34Y6id9LZra2OeGNS3WBxFHVXlkP
+         T6cC5XGcI2ZOlawUr6Cnlg7UW6c5C/rqMKmtex7hmO/zjOvJqnAuoQBJt9kxDxPpZA
+         AvkomOPNQ6+YHD6bSHlR6rBF/2El1dZJ6R4Rp2AOEC2ti6VC6L/vDM5ng/cgokyef5
+         bAd5DLfIj8mn7j0qkzmbd9tEofCK4Sium28x6P+b1I913LJ8xKVZTYW/KUXNIhNYVu
+         QzHYFLAB5Q8ejAxQEaA7QWDMUhzTxhAwmSPvz0vACz/BlIxZSlqQqobnXg7nWPF+E5
+         SLVri8qgz9zNg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 75EB1E7BB0B;
+        Fri, 25 Mar 2022 01:40:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20220324101107.GC8939@worktop.programming.kicks-ass.net>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.111.205]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600003.china.huawei.com (7.193.23.202)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] net: dsa: realtek: make interface drivers depend on
+ OF
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164817241147.12279.7223065793643464015.git-patchwork-notify@kernel.org>
+Date:   Fri, 25 Mar 2022 01:40:11 +0000
+References: <20220323124225.91763-1-alvin@pqrs.dk>
+In-Reply-To: <20220323124225.91763-1-alvin@pqrs.dk>
+To:     =?utf-8?b?QWx2aW4gxaBpcHJhZ2EgPGFsdmluQHBxcnMuZGs+?=@ci.codeaurora.org
+Cc:     linus.walleij@linaro.org, alsi@bang-olufsen.dk, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Peter,
+Hello:
 
-On 2022/3/24 18:11, Peter Zijlstra wrote:
-> On Thu, Mar 24, 2022 at 11:19:57AM +0800, Yang Jihong wrote:
->> Sysfs show formats of files in /sys/devices/cpu/events/ are not unified,
->> some end with "\n", and some do not. Modify sysfs show format of events
->> defined by EVENT_ATTR_STR to end with "\n".
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Wed, 23 Mar 2022 13:42:25 +0100 you wrote:
+> From: Alvin Šipraga <alsi@bang-olufsen.dk>
 > 
-> Did you test all the userspace that consumes these fields to make sure
-> none of them break? I suppose it's mostly perf tool, but I'm fairly sure
-> there's others out there as well.
+> The kernel test robot reported build warnings with a randconfig that
+> built realtek-{smi,mdio} without CONFIG_OF set. Since both interface
+> drivers are using OF and will not probe without, add the corresponding
+> dependency to Kconfig.
 > 
-Yes, I tested "perf record" and "perf stat" commands on my machine 
-against the modified events, and the results are as follows:
+> [...]
 
-$ perf stat -e 
-topdown-fetch-bubbles,topdown-recovery-bubbles,topdown-slots-issued,topdown-slots-retired,topdown-total-slots 
--a sleep 1
+Here is the summary with links:
+  - [net-next] net: dsa: realtek: make interface drivers depend on OF
+    https://git.kernel.org/netdev/net/c/109d899452ba
 
-  Performance counter stats for 'system wide':
-
-            2356235      topdown-fetch-bubbles     #   1211.9% frontend 
-bound
-             226132      topdown-recovery-bubbles  #    182.9% bad 
-speculation
-            1073595      topdown-slots-issued      #  -1780.4% backend bound
-             944133      topdown-slots-retired     #    485.6% retiring
-             194420      topdown-total-slots
-
-        0.987394388 seconds time elapsed
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-$ perf record -e 
-topdown-fetch-bubbles,topdown-recovery-bubbles,topdown-slots-issued,topdown-slots-retired,topdown-total-slots 
--a sleep 1
-Lowering default frequency rate from 4000 to 3000.
-Please consider tweaking /proc/sys/kernel/perf_event_max_sample_rate.
-Couldn't synthesize bpf events.
-[ perf record: Woken up 1 times to write data ]
-[ perf record: Captured and wrote 0.300 MB perf.data (2620 samples) ]
-
-$ perf evlist
-topdown-fetch-bubbles
-topdown-recovery-bubbles
-topdown-slots-issued
-topdown-slots-retired
-topdown-total-slots
-dummy:HG
-
-.
-
-
-Thanks,
-Jihong
-> .
-> 
