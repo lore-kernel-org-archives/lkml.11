@@ -2,63 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D3C6C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C371C433FE
 	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:35:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376708AbiCYPgZ (ORCPT
+        id S1346546AbiCYPgc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:36:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49342 "EHLO
+        Fri, 25 Mar 2022 11:36:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377352AbiCYPdZ (ORCPT
+        with ESMTP id S1378497AbiCYPeu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:33:25 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6A952D1E8
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 08:29:00 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id h7so14001413lfl.2
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 08:29:00 -0700 (PDT)
+        Fri, 25 Mar 2022 11:34:50 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1565D17E1E
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 08:32:13 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id g24so10783021lja.7
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 08:32:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=QPocrmqkuGYHnUVRsDZ/TbHe19zETFDOn27Vxny6QCI=;
-        b=NoKTAx+GgAdqOfHToR+2NJ4UdtSN0mm4Tiu7cxkqcQZtXSOtizFo+YQNtguTvNiTmP
-         9APy8PjqvWRslGk9feJMbBLaUCDojNH9pMCZI57GUJ//r4APse05WQqFon6BG8iThpUo
-         g8Ci2br9eGFDcFOLMRmzAyw/hWsqw7ecyDZXnilV1Ko9h1OtIZhgMZPZRRMEFRYwiWFr
-         8r2KQXyeDlTh6eqiVYp9AZpgjZB5Fnjs3hYtMrokYSLBaYCVoJiE00zqnakqCQ5N7zXi
-         oG1I/OCrDfwt8EoRs99vAdJU+hjtm59SrJNSZ4uHdN5AVtdOUrVIvE5UCittHYJeQF0s
-         NhLg==
+        bh=pqAwg5Oe0ABBOfGoX9y/4LgWIX2OVsyxY46msHc+wyg=;
+        b=ZMIqbgNe+2ITEtw+XQ2yUO5BaYaigXz5b80FzNWyJm+UO6fQ1oEwvSR/gtJR5BbIpv
+         XjzggeVYDiglIB95xRlpgMc44LMJwsLKIJV1pPRj5VO5hqc2Ev5Kbt72tNqRT+/l1sRq
+         HbQ9aF0bk4OKOF9PAcs644vbkh740F3aDjn3GtBJaHd4I/PKN8hjIK3ILPBOOXOI0N2F
+         stiDATdIDYZQWGB7fhE178uUw5DGydLPvzn6IoZ1wgTG9nTjFcHLTLGidvXHCHFJFN6z
+         TbCHt5/lopL1PYPpJ42XD4PB19Z3/46Oz4cxbw0++NGfmca4u/zPHIjiWfvRAURuZKj6
+         YtzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=QPocrmqkuGYHnUVRsDZ/TbHe19zETFDOn27Vxny6QCI=;
-        b=PASzDOI3Tc6FKYR8T9J5jj1+rp6koRIRaKnGK9+nJjFLB/Jlg5yR2ahedD18y7Vtud
-         vEX9UFWmxsJQrbns03DRnesNMk2K7R4BLU7uOSK+dmc8p5Re1Nf7z2fBZnAnQvb0A1HQ
-         SLV75hPNtQqS3nrYInOp6nq6UK8wZrmJPvc4Pn8G/hpFZ+ZSANrAyzOGqG8Y3d6xnUy7
-         52LI5Qgw5XkbAfkf4IKsE2Cuc4TNu+4+CmOUtWD+PxQTs/ax2ftINu1ZcgE//xgR0pbi
-         hskoN7BxhWFcyn2JWNcA/V9ZGgYXR9QOLy86tsaWYz1LaGQPRF8SRnNik9Do9kkzuxPJ
-         ERmA==
-X-Gm-Message-State: AOAM5333tsXinyA7ne8lJjyLtIa/iGiZ+PxNgMok88J8xjn6LpyD6FEJ
-        mj87nYDu59OYXYarLH6GZcGkLhV38BwB/LoHgDOZdQ==
-X-Google-Smtp-Source: ABdhPJwajANP/u7dvP2rPWqqB9wMD9F7TC7XMC4AiQxoD4/abx/UvRQZWo382ah99ciAEHJzTMSSX94FSkDjdVNzRRU=
-X-Received: by 2002:a05:6512:15a3:b0:44a:54eb:937e with SMTP id
- bp35-20020a05651215a300b0044a54eb937emr8040694lfb.456.1648222138745; Fri, 25
- Mar 2022 08:28:58 -0700 (PDT)
+        bh=pqAwg5Oe0ABBOfGoX9y/4LgWIX2OVsyxY46msHc+wyg=;
+        b=FgeCgeO9cSMFC52SfC9s0fuixH2n8b/EXgMXj0bwB5XfGeJ8ooOkh/plfV6a2HjWct
+         9Z3x/QsbLYq4L9TVbqCOnfBy5IW1zNIz5hABBfhIbzueh1/bn+VljdlZZmaNSOYz0kD4
+         6Uin6w/DCqoeapCkhxVIvcDSrHXBe0XFsjKb0krO64AotOLpWU4VpbJ3DGXYIJrYSIZw
+         SWaayoay1acnq7B9GheNCuWfPAjEHztpYXczQ9sTjGe0NXm0GMYtrkBBO/7SnFBJk2vA
+         mQzLaQoezxEpm4bPnWp2NvgJ95jkfI36vAVNaK988C3BHM43RPTLEUk60dJxkOoswJIA
+         oLGw==
+X-Gm-Message-State: AOAM531xYOi8dXVYHKRxR3VhvXPUuF5GVg95TnSPq1ZWBIVL6kaThdC1
+        8PwY9uDYRy3keTuC1Z1CMy5FqznBRIKTu4eIg+CQPA==
+X-Google-Smtp-Source: ABdhPJw+hSmT+YBuv+j3btvbGvxRqinB1Vxe+1MI2P+uYUf5Vx5jPhvQj0/vPsEjNIJkSTGaNx/5KFlkLKziDfWBWEI=
+X-Received: by 2002:a2e:1617:0:b0:24a:a6b4:40b2 with SMTP id
+ w23-20020a2e1617000000b0024aa6b440b2mr974521ljd.83.1648222331100; Fri, 25 Mar
+ 2022 08:32:11 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220321150214.1895231-1-pgonda@google.com> <CAA03e5HEKPxfGZ57r=intg_ogTp_JPAio36QJXqviMZM_KmvEg@mail.gmail.com>
- <CAMkAt6qbauEn1jGUYLQc6QURhCHLu7eDmzJhfHZZXN9FGbQOMA@mail.gmail.com> <CAA03e5GDyM1O6aEYcpUnTY4JLBvOqQugWzpXefD9YGEkSuALVA@mail.gmail.com>
-In-Reply-To: <CAA03e5GDyM1O6aEYcpUnTY4JLBvOqQugWzpXefD9YGEkSuALVA@mail.gmail.com>
+References: <20220325152758.335626-1-pgonda@google.com> <d0366a14-6492-d2b9-215e-2ee310d9f8ae@redhat.com>
+In-Reply-To: <d0366a14-6492-d2b9-215e-2ee310d9f8ae@redhat.com>
 From:   Peter Gonda <pgonda@google.com>
-Date:   Fri, 25 Mar 2022 09:28:47 -0600
-Message-ID: <CAMkAt6qB8GXhu0h+k1pbP_KkhvW+Edk-=zyo3zo2WdOe_qq8PA@mail.gmail.com>
-Subject: Re: [PATCH] Add KVM_EXIT_SHUTDOWN metadata for SEV-ES
-To:     Marc Orr <marcorr@google.com>
+Date:   Fri, 25 Mar 2022 09:31:59 -0600
+Message-ID: <CAMkAt6rACYqFXA_6pa9JUnx0=3vyM6PeaNkq-Yih4KM6saf6PQ@mail.gmail.com>
+Subject: Re: [PATCH v2] Add KVM_EXIT_SHUTDOWN metadata for SEV-ES
+To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     kvm list <kvm@vger.kernel.org>, Borislav Petkov <bp@alien8.de>,
         Tom Lendacky <thomas.lendacky@amd.com>,
         Brijesh Singh <brijesh.singh@amd.com>,
-        Joerg Roedel <jroedel@suse.de>,
+        Joerg Roedel <jroedel@suse.de>, Marc Orr <marcorr@google.com>,
         Sean Christopherson <seanjc@google.com>,
         LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
@@ -66,50 +65,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 1:45 PM Marc Orr <marcorr@google.com> wrote:
+On Fri, Mar 25, 2022 at 9:29 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
 >
-> On Mon, Mar 21, 2022 at 11:08 AM Peter Gonda <pgonda@google.com> wrote:
+> On 3/25/22 16:27, Peter Gonda wrote:
+> > SEV-ES guests can request termination using the GHCB's MSR protocol. See
+> > AMD's GHCB spec section '4.1.13 Termination Request'. Currently when a
+> > guest does this the userspace VMM sees an KVM_EXIT_UNKNOWN (-EVINAL)
+> > return code from KVM_RUN. By adding a KVM_EXIT_SHUTDOWN_ENTRY to kvm_run
+> > struct the userspace VMM can clear see the guest has requested a SEV-ES
+> > termination including the termination reason code set and reason code.
 > >
-> > > > diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
-> > > > index 75fa6dd268f0..5f9d37dd3f6f 100644
-> > > > --- a/arch/x86/kvm/svm/sev.c
-> > > > +++ b/arch/x86/kvm/svm/sev.c
-> > > > @@ -2735,8 +2735,13 @@ static int sev_handle_vmgexit_msr_protocol(struct vcpu_svm *svm)
-> > > >                 pr_info("SEV-ES guest requested termination: %#llx:%#llx\n",
-> > > >                         reason_set, reason_code);
-> > > >
-> > > > -               ret = -EINVAL;
-> > > > -               break;
-> > > > +               vcpu->run->exit_reason = KVM_EXIT_SHUTDOWN;
-> > > > +               vcpu->run->shutdown.reason = KVM_SHUTDOWN_SEV_TERM;
-> > > > +               vcpu->run->shutdown.ndata = 2;
-> > > > +               vcpu->run->shutdown.data[0] = reason_set;
-> > > > +               vcpu->run->shutdown.data[1] = reason_code;
-> > > > +
-> > > > +               return 0;
-> > >
-> > > Maybe I'm missing something, but don't we want to keep returning an error?
-> > >
-> > > rationale: Current behavior: return -EINVAL to userpsace, but
-> > > userpsace cannot infer where the -EINVAL came from. After this patch:
-> > > We should still return -EINVAL to userspace, but now userspace can
-> > > parse this new info in the KVM run struct to properly terminate.
-> > >
-> >
-> > I removed the error return code here since an SEV guest may request a
-> > termination due to no fault of the host at all. This is now inline
-> > with any other shutdown requested by the guest. I don't have a strong
-> > preference here but EINVAL doesn't seem correct in all cases, do
-> > others have any thoughts on this?
+> > Signed-off-by: Peter Gonda <pgonda@google.com>
+> > Cc: Paolo Bonzini <pbonzini@redhat.com>
+> > Cc: Borislav Petkov <bp@alien8.de>
+> > Cc: Tom Lendacky <thomas.lendacky@amd.com>
+> > Cc: Brijesh Singh <brijesh.singh@amd.com>
+> > Cc: Joerg Roedel <jroedel@suse.de>
+> > Cc: Marc Orr <marcorr@google.com>
+> > Cc: Sean Christopherson <seanjc@google.com>
+> > Cc: kvm@vger.kernel.org
+> > Cc: linux-kernel@vger.kernel.org
 >
-> Makes sense. Yeah, let's see if others have an opinion. Otherwise, I'm
-> fine either way. Now that you mention it, returning an error to
-> userspace when the guest triggered the self-termination, and could've
-> done so for reasons outside the host's control, is a little odd. But
-> at the same time, it's just as likely that the guest is
-> self-terminating due to a host-side error. So I guess it's not clear
-> whether returning an error here is "right" or "wrong".
+> This is missing an update to Documentation/.
+>
 
-Since no one has expressed a strong opinion have have left this part
-of the patch unchanged in the V2. Happy to revise again if people
-prefer something else.
+My mistake. I'll send another revision. Is the behavior of
+KVM_CAP_EXIT_SHUTDOWN_REASON OK? Or should we only return 1 for SEV-ES
+guests?
