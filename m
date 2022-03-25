@@ -2,165 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AE1FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:03:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 269D3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:04:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359469AbiCYPE6 (ORCPT
+        id S1359476AbiCYPG1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:04:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56380 "EHLO
+        Fri, 25 Mar 2022 11:06:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237981AbiCYPEv (ORCPT
+        with ESMTP id S1359468AbiCYPGX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:04:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A8822BE03
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 08:03:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648220593;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=p+rP9gOSBTxLRSnxe4t4T/FVsOhdBct7MjxHdJUH/ew=;
-        b=YgbVu++o7tl8kx6yVrS0SZmK/iMLoruFNZrrSU26TfP1vp7WsG72c7Gl2Zm6GAGt5rDVc7
-        HHcA4h4hrv9YhTmOMIs8Z9/f+2YXTEfyW1djs71qzPBJlXusURydHmm2Lg+5pGHFemYxhy
-        wAFekw65JicZRXzDW8Y2DujanGVrqu4=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-538-Jg31CXQ0PD6nkCL3PwKZLw-1; Fri, 25 Mar 2022 11:03:12 -0400
-X-MC-Unique: Jg31CXQ0PD6nkCL3PwKZLw-1
-Received: by mail-wr1-f70.google.com with SMTP id 15-20020adf808f000000b00203e488fa4eso2797039wrl.3
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 08:03:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=p+rP9gOSBTxLRSnxe4t4T/FVsOhdBct7MjxHdJUH/ew=;
-        b=WsNeMtuidYskgsQHmfabvro1zBQ7TyrZXCybm9oWZRnyt680YMvwt8U/95+9hXdxdQ
-         v0OQQ/G03FYvu+5DwCyxM8N4f1M55mw81V9GOJDFuBtbHDblMn7Xu3lpr9CXpKNp7zYg
-         waE5y0taYNalGpqmz6a+N23BunOqXu/I5TTDBgBzwhpK9CL4rg17GYhKQcr2DTX/ZdGv
-         tjC01XBdjj74OA+F1MJyqynxxwO7/W0WNvDMzm9erZjHwRMIo/wYGhY5xETMjG/FfjR4
-         J4fas8YKzhP5MANe6WoCh0oCVp4YgVfIK7XMW3FfRQZwJuiM22mKbngPE9wO2vw9ivHf
-         x3Sw==
-X-Gm-Message-State: AOAM533WyIaiWdC8cV9KfQxqkyJarih/UgnfX5fT7xuuUwBJwjqcK3Es
-        L3D/lh5mdjCfqIy3sbtJFZhp052RsqXvOuaueXkvT8q3pBWv1fKKPzFgWmkC7XfjB2a28AH60J6
-        umllv9rTBoxHkpSjbO/EIiVCY
-X-Received: by 2002:a5d:64af:0:b0:205:8246:8316 with SMTP id m15-20020a5d64af000000b0020582468316mr9822851wrp.624.1648220589502;
-        Fri, 25 Mar 2022 08:03:09 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwqOZTSSevUNj57oorGfuqPziU84TMmmNL5hG6gbqHrYulEEbIgY/ihiHd+9r7R8oqM5cjtBg==
-X-Received: by 2002:a5d:64af:0:b0:205:8246:8316 with SMTP id m15-20020a5d64af000000b0020582468316mr9822682wrp.624.1648220587795;
-        Fri, 25 Mar 2022 08:03:07 -0700 (PDT)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id m2-20020a056000024200b00205718e3a3csm5193603wrz.2.2022.03.25.08.03.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Mar 2022 08:03:07 -0700 (PDT)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: Re: [FYI PATCH] Revert "KVM: x86/mmu: Zap only TDP MMU leafs in
- kvm_zap_gfn_range()"
-In-Reply-To: <Yj0FYSC2sT4k/ELl@google.com>
-References: <20220318164833.2745138-1-pbonzini@redhat.com>
- <d6367754-7782-7c29-e756-ac02dbd4520b@redhat.com>
- <Yj0FYSC2sT4k/ELl@google.com>
-Date:   Fri, 25 Mar 2022 16:03:06 +0100
-Message-ID: <87r16qnkgl.fsf@redhat.com>
+        Fri, 25 Mar 2022 11:06:23 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B09EA7743;
+        Fri, 25 Mar 2022 08:04:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7F4CECE2919;
+        Fri, 25 Mar 2022 15:04:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8313DC340E9;
+        Fri, 25 Mar 2022 15:04:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1648220685;
+        bh=Ade0smQZ+bCgusLLhxdZ5bpFPwEb/r/6d9CpN5k5V98=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=bSleGilvCxrUfUEEq5nmEhNO6JgGZMC083hLBGOy2hnYbS2mzEzbZNyqprd4OKxrw
+         kDcHpp62sBDckZVlmehwtqdlyArCpfTNkchRkLIKFHwdatfayA9/KOXAxr4/qDdE5c
+         E71Q/5leYmazUJrYgc/bkB/oud2im6cOSShOkAfY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jordy Zomer <jordy@pwning.systems>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Denis Efremov <denis.e.efremov@oracle.com>
+Subject: [PATCH 4.9 01/14] nfc: st21nfca: Fix potential buffer overflows in EVT_TRANSACTION
+Date:   Fri, 25 Mar 2022 16:04:29 +0100
+Message-Id: <20220325150415.740148596@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220325150415.694544076@linuxfoundation.org>
+References: <20220325150415.694544076@linuxfoundation.org>
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sean Christopherson <seanjc@google.com> writes:
+From: Jordy Zomer <jordy@pwning.systems>
 
-...
+commit 4fbcc1a4cb20fe26ad0225679c536c80f1648221 upstream.
 
-So I went back to "KVM: x86/mmu: Zap only TDP MMU leafs in
-kvm_zap_gfn_range()" and confirmed that with the patch in place Hyper-V
-always crashes, sooner or later. With the patch reverted (as well as
-with current 'kvm/queue') it boots.
+It appears that there are some buffer overflows in EVT_TRANSACTION.
+This happens because the length parameters that are passed to memcpy
+come directly from skb->data and are not guarded in any way.
 
->
-> Actually, since this is apparently specific to kvm_zap_gfn_range(), can you add
-> printk "tracing" in update_mtrr(), kvm_post_set_cr0(), and __kvm_request_apicv_update()
-> to see what is actually triggering zaps?  Capturing the start and end GFNs would be very
-> helpful for the MTRR case.
->
-> The APICv update seems unlikely to affect only Hyper-V guests, though there is the auto
-> EOI crud.  And the other two only come into play with non-coherent DMA.  In other words,
-> figuring out exactly what sequence leads to failure should be straightforward.
+Signed-off-by: Jordy Zomer <jordy@pwning.systems>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Denis Efremov <denis.e.efremov@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/nfc/st21nfca/se.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-The tricky part here is that Hyper-V doesn't crash immediately, the
-crash is always different (if you look at the BSOD) and happens at
-different times. Crashes mention various stuff like trying to execute
-non-executable memory, ...
-
-I've added tracing you've suggested:
-- __kvm_request_apicv_update() happens only once in the very beginning.
-
-- update_mtrr() never actually reaches kvm_zap_gfn_range()
-
-- kvm_post_set_cr0() happen in early boot but the crash happen much much
-  later. E.g.:
-...
- qemu-system-x86-117525  [019] .....  4738.682954: kvm_post_set_cr0: vCPU 12 10 11
- qemu-system-x86-117525  [019] .....  4738.682997: kvm_post_set_cr0: vCPU 12 11 80000011
- qemu-system-x86-117525  [019] .....  4738.683053: kvm_post_set_cr0: vCPU 12 80000011 c0000011
- qemu-system-x86-117525  [019] .....  4738.683059: kvm_post_set_cr0: vCPU 12 c0000011 80010031
- qemu-system-x86-117526  [005] .....  4738.812107: kvm_post_set_cr0: vCPU 13 10 11
- qemu-system-x86-117526  [005] .....  4738.812148: kvm_post_set_cr0: vCPU 13 11 80000011
- qemu-system-x86-117526  [005] .....  4738.812198: kvm_post_set_cr0: vCPU 13 80000011 c0000011
- qemu-system-x86-117526  [005] .....  4738.812205: kvm_post_set_cr0: vCPU 13 c0000011 80010031
- qemu-system-x86-117527  [003] .....  4738.941004: kvm_post_set_cr0: vCPU 14 10 11
- qemu-system-x86-117527  [003] .....  4738.941107: kvm_post_set_cr0: vCPU 14 11 80000011
- qemu-system-x86-117527  [003] .....  4738.941218: kvm_post_set_cr0: vCPU 14 80000011 c0000011
- qemu-system-x86-117527  [003] .....  4738.941235: kvm_post_set_cr0: vCPU 14 c0000011 80010031
- qemu-system-x86-117528  [035] .....  4739.070338: kvm_post_set_cr0: vCPU 15 10 11
- qemu-system-x86-117528  [035] .....  4739.070428: kvm_post_set_cr0: vCPU 15 11 80000011
- qemu-system-x86-117528  [035] .....  4739.070539: kvm_post_set_cr0: vCPU 15 80000011 c0000011
- qemu-system-x86-117528  [035] .....  4739.070557: kvm_post_set_cr0: vCPU 15 c0000011 80010031
-##### CPU 8 buffer started ####
- qemu-system-x86-117528  [008] .....  4760.099532: kvm_hv_set_msr_pw: 15
-
-The debug patch for kvm_post_set_cr0() is:
-
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 4fa4d8269e5b..db7c5a05e574 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -870,6 +870,8 @@ EXPORT_SYMBOL_GPL(load_pdptrs);
+--- a/drivers/nfc/st21nfca/se.c
++++ b/drivers/nfc/st21nfca/se.c
+@@ -330,6 +330,11 @@ int st21nfca_connectivity_event_received
+ 			return -ENOMEM;
  
- void kvm_post_set_cr0(struct kvm_vcpu *vcpu, unsigned long old_cr0, unsigned long cr0)
- {
-+       trace_printk("vCPU %d %lx %lx\n", vcpu->vcpu_id, old_cr0, cr0);
+ 		transaction->aid_len = skb->data[1];
 +
-        if ((cr0 ^ old_cr0) & X86_CR0_PG) {
-                kvm_clear_async_pf_completion_queue(vcpu);
-                kvm_async_pf_hash_reset(vcpu);
-
-kvm_hv_set_msr_pw() call is when Hyper-V writes to HV_X64_MSR_CRASH_CTL
-('hv-crash' QEMU flag is needed to enable the feature). The debug patch
-is:
-
-diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
-index a32f54ab84a2..59a72f6ced99 100644
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -1391,6 +1391,7 @@ static int kvm_hv_set_msr_pw(struct kvm_vcpu *vcpu, u32 msr, u64 data,
++		/* Checking if the length of the AID is valid */
++		if (transaction->aid_len > sizeof(transaction->aid))
++			return -EINVAL;
++
+ 		memcpy(transaction->aid, &skb->data[2],
+ 		       transaction->aid_len);
  
-                        /* Send notification about crash to user space */
-                        kvm_make_request(KVM_REQ_HV_CRASH, vcpu);
-+                       trace_printk("%d\n", vcpu->vcpu_id);
-                }
-                break;
-        case HV_X64_MSR_RESET:
+@@ -339,6 +344,11 @@ int st21nfca_connectivity_event_received
+ 			return -EPROTO;
+ 
+ 		transaction->params_len = skb->data[transaction->aid_len + 3];
++
++		/* Total size is allocated (skb->len - 2) minus fixed array members */
++		if (transaction->params_len > ((skb->len - 2) - sizeof(struct nfc_evt_transaction)))
++			return -EINVAL;
++
+ 		memcpy(transaction->params, skb->data +
+ 		       transaction->aid_len + 4, transaction->params_len);
+ 
 
-So it's 20 seconds (!) between the last kvm_post_set_cr0() call and the
-crash. My (disappointing) conclusion is: the problem can be anywhere and
-Hyper-V detects it much much later.
-
--- 
-Vitaly
 
