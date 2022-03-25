@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDC36C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:30:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C02FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:30:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376878AbiCYPbn (ORCPT
+        id S1358702AbiCYPbu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:31:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60452 "EHLO
+        Fri, 25 Mar 2022 11:31:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378115AbiCYPYz (ORCPT
+        with ESMTP id S1378000AbiCYPYr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:24:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5037BEBBBD;
-        Fri, 25 Mar 2022 08:19:50 -0700 (PDT)
+        Fri, 25 Mar 2022 11:24:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06EF4E29E6;
+        Fri, 25 Mar 2022 08:19:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E163560A1B;
-        Fri, 25 Mar 2022 15:19:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EABD9C340E9;
-        Fri, 25 Mar 2022 15:19:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B404760AB7;
+        Fri, 25 Mar 2022 15:19:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87E3FC36AF4;
+        Fri, 25 Mar 2022 15:19:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221589;
-        bh=621rqw3ZWoIPqdE5MOdIGml5jUPgHCq7XU42wz/ER4k=;
+        s=korg; t=1648221572;
+        bh=3ntAaR+HTeB+hv0fFYTqvXlkop8lARm5AXfhQbKVexA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bvJUT24kUo3Jb4TikEq4UA//YkUyKiNnGALBp4DU8a5wDNOWQVE+bW7X4J9eZsNrs
-         8Qw+M0S8HJwsXLa/Oi+ngTj/zThk+sqGya/yCvS3yPDE+3j93dleUU9WGE6nk/p2Oh
-         ktoBH4SjRcNXvEg2zFVXrPqfOhoHVUK+fylUPtbM=
+        b=x+jIPmwQNTIrGFYYluPypb/kQJ+AvLZPUkT9D6bp37/gols37BP1sqk24clMrQ9nS
+         APRds97ihmUIBwlasDdMHDdCLkbQrWANfjU88/7ztJE9ghNlXySh2NR2DKG9TMmoxP
+         2GFoMy1t3fJnirhJyjAYsY8aisZbtrdGrWTPCHyg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tim Crawford <tcrawford@system76.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.17 07/39] ALSA: hda/realtek: Add quirk for Clevo NP70PNJ
-Date:   Fri, 25 Mar 2022 16:14:22 +0100
-Message-Id: <20220325150420.456687422@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org, Jan Kara <jack@suse.cz>,
+        Ritesh Harjani <riteshh@linux.ibm.com>,
+        Theodore Tso <tytso@mit.edu>,
+        syzbot+afa2ca5171d93e44b348@syzkaller.appspotmail.com
+Subject: [PATCH 5.17 31/39] jbd2: fix use-after-free of transaction_t race
+Date:   Fri, 25 Mar 2022 16:14:46 +0100
+Message-Id: <20220325150421.134448886@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150420.245733653@linuxfoundation.org>
 References: <20220325150420.245733653@linuxfoundation.org>
@@ -49,30 +51,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tim Crawford <tcrawford@system76.com>
+From: Ritesh Harjani <riteshh@linux.ibm.com>
 
-commit 0c20fce13e6e111463e3a15ce3cf6713fe518388 upstream.
+commit cc16eecae687912238ee6efbff71ad31e2bc414e upstream.
 
-Fixes headset detection on Clevo NP70PNJ.
+jbd2_journal_wait_updates() is called with j_state_lock held. But if
+there is a commit in progress, then this transaction might get committed
+and freed via jbd2_journal_commit_transaction() ->
+jbd2_journal_free_transaction(), when we release j_state_lock.
+So check for journal->j_running_transaction everytime we release and
+acquire j_state_lock to avoid use-after-free issue.
 
-Signed-off-by: Tim Crawford <tcrawford@system76.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220304170840.3351-1-tcrawford@system76.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Link: https://lore.kernel.org/r/948c2fed518ae739db6a8f7f83f1d58b504f87d0.1644497105.git.ritesh.list@gmail.com
+Fixes: 4f98186848707f53 ("jbd2: refactor wait logic for transaction updates into a common function")
+Cc: stable@kernel.org
+Reported-and-tested-by: syzbot+afa2ca5171d93e44b348@syzkaller.appspotmail.com
+Reviewed-by: Jan Kara <jack@suse.cz>
+Signed-off-by: Ritesh Harjani <riteshh@linux.ibm.com>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ fs/jbd2/transaction.c |   41 +++++++++++++++++++++++++----------------
+ 1 file changed, 25 insertions(+), 16 deletions(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -9103,6 +9103,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x1558, 0x8561, "Clevo NH[57][0-9][ER][ACDH]Q", ALC269_FIXUP_HEADSET_MIC),
- 	SND_PCI_QUIRK(0x1558, 0x8562, "Clevo NH[57][0-9]RZ[Q]", ALC269_FIXUP_DMIC),
- 	SND_PCI_QUIRK(0x1558, 0x8668, "Clevo NP50B[BE]", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
-+	SND_PCI_QUIRK(0x1558, 0x867d, "Clevo NP7[01]PN[HJK]", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x8680, "Clevo NJ50LU", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x8686, "Clevo NH50[CZ]U", ALC256_FIXUP_MIC_NO_PRESENCE_AND_RESUME),
- 	SND_PCI_QUIRK(0x1558, 0x8a20, "Clevo NH55DCQ-Y", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
+--- a/fs/jbd2/transaction.c
++++ b/fs/jbd2/transaction.c
+@@ -842,27 +842,38 @@ EXPORT_SYMBOL(jbd2_journal_restart);
+  */
+ void jbd2_journal_wait_updates(journal_t *journal)
+ {
+-	transaction_t *commit_transaction = journal->j_running_transaction;
++	DEFINE_WAIT(wait);
+ 
+-	if (!commit_transaction)
+-		return;
++	while (1) {
++		/*
++		 * Note that the running transaction can get freed under us if
++		 * this transaction is getting committed in
++		 * jbd2_journal_commit_transaction() ->
++		 * jbd2_journal_free_transaction(). This can only happen when we
++		 * release j_state_lock -> schedule() -> acquire j_state_lock.
++		 * Hence we should everytime retrieve new j_running_transaction
++		 * value (after j_state_lock release acquire cycle), else it may
++		 * lead to use-after-free of old freed transaction.
++		 */
++		transaction_t *transaction = journal->j_running_transaction;
+ 
+-	spin_lock(&commit_transaction->t_handle_lock);
+-	while (atomic_read(&commit_transaction->t_updates)) {
+-		DEFINE_WAIT(wait);
++		if (!transaction)
++			break;
+ 
++		spin_lock(&transaction->t_handle_lock);
+ 		prepare_to_wait(&journal->j_wait_updates, &wait,
+-					TASK_UNINTERRUPTIBLE);
+-		if (atomic_read(&commit_transaction->t_updates)) {
+-			spin_unlock(&commit_transaction->t_handle_lock);
+-			write_unlock(&journal->j_state_lock);
+-			schedule();
+-			write_lock(&journal->j_state_lock);
+-			spin_lock(&commit_transaction->t_handle_lock);
++				TASK_UNINTERRUPTIBLE);
++		if (!atomic_read(&transaction->t_updates)) {
++			spin_unlock(&transaction->t_handle_lock);
++			finish_wait(&journal->j_wait_updates, &wait);
++			break;
+ 		}
++		spin_unlock(&transaction->t_handle_lock);
++		write_unlock(&journal->j_state_lock);
++		schedule();
+ 		finish_wait(&journal->j_wait_updates, &wait);
++		write_lock(&journal->j_state_lock);
+ 	}
+-	spin_unlock(&commit_transaction->t_handle_lock);
+ }
+ 
+ /**
+@@ -877,8 +888,6 @@ void jbd2_journal_wait_updates(journal_t
+  */
+ void jbd2_journal_lock_updates(journal_t *journal)
+ {
+-	DEFINE_WAIT(wait);
+-
+ 	jbd2_might_wait_for_commit(journal);
+ 
+ 	write_lock(&journal->j_state_lock);
 
 
