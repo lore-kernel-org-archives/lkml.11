@@ -2,50 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75B5FC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:19:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AC64C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:19:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376491AbiCYPVT (ORCPT
+        id S1376502AbiCYPV0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:21:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36512 "EHLO
+        Fri, 25 Mar 2022 11:21:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241212AbiCYPSj (ORCPT
+        with ESMTP id S1376328AbiCYPSs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:18:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 650CBDCE0A;
-        Fri, 25 Mar 2022 08:14:55 -0700 (PDT)
+        Fri, 25 Mar 2022 11:18:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DE5FDE0B5;
+        Fri, 25 Mar 2022 08:15:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2080DB828FF;
-        Fri, 25 Mar 2022 15:14:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B466C340E9;
-        Fri, 25 Mar 2022 15:14:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E14860AC7;
+        Fri, 25 Mar 2022 15:14:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C39EC340E9;
+        Fri, 25 Mar 2022 15:14:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221281;
-        bh=HpMrrT0iEqnIkxkuVO3eAOfoFuIkIZpb3NvXqQMPGJE=;
+        s=korg; t=1648221295;
+        bh=lwiHfOehWKXv8eUEDCyQ+9klfyRweBv4MSzqlgnHU8o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JmdpcYmyce3El+X4IbpcLyVQcG++biL38eRcfNH5LMcLfR+DUwdCy0PqNVBTPr241
-         Hblm/Hg81PoXYaO2h6i0zcoPEPk13aguTqBZRsx7RTYLAx2PA6IoAeOMDl2jYruyq6
-         VPr0UcjtDxOxmd0gQvYdAm/Jvt6HfL6yGkcbKGQE=
+        b=wGyhgJdSwxNVON76LUy6hh8YmKkUzhiNxC0UOywZNRADzgSdQ19rJ/x568nHLTmq9
+         ay3nwOTZM6dCU3RJIQc5eSokXBslcYCRpJ2F/204J5mUpwdA+f7G66sQP7+C5vhRtO
+         dKtknmp6ZdbyBBQRbPBue6/zBeLiha0qnfvPfcRo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jordy Zomer <jordy@pwning.systems>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Denis Efremov <denis.e.efremov@oracle.com>
-Subject: [PATCH 5.15 01/37] nfc: st21nfca: Fix potential buffer overflows in EVT_TRANSACTION
-Date:   Fri, 25 Mar 2022 16:14:02 +0100
-Message-Id: <20220325150419.977239798@linuxfoundation.org>
+        stable@vger.kernel.org, Jason Zheng <jasonzheng2004@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.15 12/37] ALSA: hda/realtek: Add quirk for ASUS GA402
+Date:   Fri, 25 Mar 2022 16:14:13 +0100
+Message-Id: <20220325150420.285650778@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150419.931802116@linuxfoundation.org>
 References: <20220325150419.931802116@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -53,48 +49,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jordy Zomer <jordy@pwning.systems>
+From: Jason Zheng <jasonzheng2004@gmail.com>
 
-commit 4fbcc1a4cb20fe26ad0225679c536c80f1648221 upstream.
+commit b7557267c233b55d8e8d7ba4c68cf944fe2ec02c upstream.
 
-It appears that there are some buffer overflows in EVT_TRANSACTION.
-This happens because the length parameters that are passed to memcpy
-come directly from skb->data and are not guarded in any way.
+ASUS GA402 requires a workaround to manage the routing of its 4 speakers
+like the other ASUS models. Add a corresponding quirk entry to fix it.
 
-Signed-off-by: Jordy Zomer <jordy@pwning.systems>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Denis Efremov <denis.e.efremov@oracle.com>
+Signed-off-by: Jason Zheng <jasonzheng2004@gmail.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220313092216.29858-1-jasonzheng2004@gmail.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nfc/st21nfca/se.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/nfc/st21nfca/se.c
-+++ b/drivers/nfc/st21nfca/se.c
-@@ -320,6 +320,11 @@ int st21nfca_connectivity_event_received
- 			return -ENOMEM;
- 
- 		transaction->aid_len = skb->data[1];
-+
-+		/* Checking if the length of the AID is valid */
-+		if (transaction->aid_len > sizeof(transaction->aid))
-+			return -EINVAL;
-+
- 		memcpy(transaction->aid, &skb->data[2],
- 		       transaction->aid_len);
- 
-@@ -329,6 +334,11 @@ int st21nfca_connectivity_event_received
- 			return -EPROTO;
- 
- 		transaction->params_len = skb->data[transaction->aid_len + 3];
-+
-+		/* Total size is allocated (skb->len - 2) minus fixed array members */
-+		if (transaction->params_len > ((skb->len - 2) - sizeof(struct nfc_evt_transaction)))
-+			return -EINVAL;
-+
- 		memcpy(transaction->params, skb->data +
- 		       transaction->aid_len + 4, transaction->params_len);
- 
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -8866,6 +8866,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x1043, 0x1e51, "ASUS Zephyrus M15", ALC294_FIXUP_ASUS_GU502_PINS),
+ 	SND_PCI_QUIRK(0x1043, 0x1e8e, "ASUS Zephyrus G15", ALC289_FIXUP_ASUS_GA401),
+ 	SND_PCI_QUIRK(0x1043, 0x1f11, "ASUS Zephyrus G14", ALC289_FIXUP_ASUS_GA401),
++	SND_PCI_QUIRK(0x1043, 0x1d42, "ASUS Zephyrus G14 2022", ALC289_FIXUP_ASUS_GA401),
+ 	SND_PCI_QUIRK(0x1043, 0x16b2, "ASUS GU603", ALC289_FIXUP_ASUS_GA401),
+ 	SND_PCI_QUIRK(0x1043, 0x3030, "ASUS ZN270IE", ALC256_FIXUP_ASUS_AIO_GPIO2),
+ 	SND_PCI_QUIRK(0x1043, 0x831a, "ASUS P901", ALC269_FIXUP_STEREO_DMIC),
 
 
