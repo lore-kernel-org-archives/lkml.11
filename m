@@ -2,80 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E01FEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 02:03:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEAD5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 02:03:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357643AbiCYCFK (ORCPT
+        id S1357653AbiCYCF3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 22:05:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36944 "EHLO
+        Thu, 24 Mar 2022 22:05:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237272AbiCYCFI (ORCPT
+        with ESMTP id S237272AbiCYCF2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 22:05:08 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3BC26579A
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 19:03:34 -0700 (PDT)
-Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KPlhQ2tjHzfZg5;
-        Fri, 25 Mar 2022 10:01:58 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by kwepemi500015.china.huawei.com
- (7.221.188.92) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 25 Mar
- 2022 10:03:32 +0800
-From:   Zheng Bin <zhengbin13@huawei.com>
-To:     <emma@anholt.net>, <mripard@kernel.org>, <maxime@cerno.tech>,
-        <airlied@linux.ie>, <daniel@ffwll.ch>,
-        <dri-devel@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>
-CC:     <zhengbin13@huawei.com>, <tangyizhou@huawei.com>
-Subject: [PATCH v2 -next] drm/vc4: Fix build error when CONFIG_DRM_VC4=y && CONFIG_RASPBERRYPI_FIRMWARE=m
-Date:   Fri, 25 Mar 2022 10:18:31 +0800
-Message-ID: <20220325021831.2812735-1-zhengbin13@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Thu, 24 Mar 2022 22:05:28 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A15AD6D1B9;
+        Thu, 24 Mar 2022 19:03:55 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id k6so6612109plg.12;
+        Thu, 24 Mar 2022 19:03:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=e8oRVZ23KjzG/ypngzxPfcRE3bvQPKD6JKIf9Qg0x6w=;
+        b=NLa+LKKCEYhiDLBTumzp8eZ2+tl8XDRYFgi2MPSiH9gd75ab5/pWG/yxu4T55oKqy6
+         /a4BLs4P0yXKPJBCZKf5yIMwJnr76H8hnEYYDD4EwqY3RZNwgIdb14BqJYkBsh6cYAXg
+         pZ93xFc63IwBiDpYXIY5EMuzCDCb3f81o5RKFYH0fVrqpc8z4cfGHtcEio4i6Bidx+gf
+         BI2QkGwd8h9zDoYb0+JL00ctWrimYIou0Wt7Gh3K/M/oXp7VneF0XqCanJsFi4rfSzza
+         oD5uOLcDZemYA+CBf7dCg1h7/R1euOE7B6SiM0EI4FhXMzF5qV5PUTHuqcLck5tRPCmF
+         xTpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=e8oRVZ23KjzG/ypngzxPfcRE3bvQPKD6JKIf9Qg0x6w=;
+        b=wulo8WGYHrQpOL03DI1XUk5EZRMSMG4WBhyAcjQeZsEv3Aon5tfm4BzrTWClfUrNFz
+         3lSU1L9uRrCTPeENvjeYsuAm+qi5T8PFvKhp4kS20h7FnRMQ7RC9sj4BnOwLw27SOBZe
+         cPM+JvwQ/aBSE2Eyzu2eMLaEfnD6WRPHi4c1XkFHFN3aq2t+l/0oVWXlQob2Ey07wOLp
+         w65Jntg2he7y4H7iGvubD93dOc31/BmetTjhWkGzyLUmHdYb1gywX6BirPQizV340Ylf
+         2bkJ/C8qWbTOKi45Ayp29HlBVKwOYQN0Vi9F2yvExiK9Zg+xyxc2qXAaqtXCIDAOKlWa
+         DRnQ==
+X-Gm-Message-State: AOAM533RW71oi4eigTGFLzLrzMy0Sm9JQENXlCjc5TMA37BwlGTJUcFw
+        QiJcIukOlgEWFuZK6IJQmfZ1aGx9r6EuYpMQTeg=
+X-Google-Smtp-Source: ABdhPJwq8DpvjN2e8Pf+oXugqYDzTIP7B8v8DwphjndqLIDOp3YhE2LtujNv5gkKDEZy8S2luZWi2fJs8MXjEDGili0=
+X-Received: by 2002:a17:90b:4b45:b0:1c7:cc71:fdf7 with SMTP id
+ mi5-20020a17090b4b4500b001c7cc71fdf7mr5156663pjb.33.1648173835008; Thu, 24
+ Mar 2022 19:03:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemi500015.china.huawei.com (7.221.188.92)
-X-CFilter-Loop: Reflected
+References: <164800288611.1716332.7053663723617614668.stgit@devnote2>
+ <164800289923.1716332.9772144337267953560.stgit@devnote2> <YjrUxmABaohh1I8W@hirez.programming.kicks-ass.net>
+ <20220323204119.1feac1af0a1d58b8e63acd5d@kernel.org>
+In-Reply-To: <20220323204119.1feac1af0a1d58b8e63acd5d@kernel.org>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 24 Mar 2022 19:03:43 -0700
+Message-ID: <CAADnVQLfu+uDUmovM8sOJSnH=HGxMEtmjk4+nWsAR+Mdj2TTYg@mail.gmail.com>
+Subject: Re: [PATCH v13 bpf-next 1/1] rethook: x86: Add rethook x86 implementation
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        X86 ML <x86@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If CONFIG_DRM_VC4=y, CONFIG_RASPBERRYPI_FIRMWARE=m, CONFIG_COMPILE_TEST=n,
-bulding fails:
+On Wed, Mar 23, 2022 at 4:41 AM Masami Hiramatsu <mhiramat@kernel.org> wrote:
+>
+> On Wed, 23 Mar 2022 09:05:26 +0100
+> Peter Zijlstra <peterz@infradead.org> wrote:
+>
+> > On Wed, Mar 23, 2022 at 11:34:59AM +0900, Masami Hiramatsu wrote:
+> > > Add rethook for x86 implementation. Most of the code has been copied from
+> > > kretprobes on x86.
+> >
+> > Right; as said, I'm really unhappy with growing a carbon copy of this
+> > stuff instead of sharing. Can we *please* keep it a single instance?
+>
+> OK, then let me update the kprobe side too.
+>
+> > Them being basically indentical, it should be trivial to have
+> > CONFIG_KPROBE_ON_RETHOOK (or somesuch) and just share this.
+>
+> Yes, ideally it should use CONFIG_HAVE_RETHOOK since the rethook arch port
+> must be a copy of the kretprobe implementation. But for safety, I think
+> having CONFIG_KPROBE_ON_RETHOOK is a good idea until replacing all kretprobe
+> implementations.
 
-drivers/gpu/drm/vc4/vc4_drv.o: In function `vc4_drm_bind':
-vc4_drv.c:(.text+0x320): undefined reference to `rpi_firmware_get'
-vc4_drv.c:(.text+0x320): relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `rpi_firmware_get'
-vc4_drv.c:(.text+0x34c): undefined reference to `rpi_firmware_property'
-vc4_drv.c:(.text+0x34c): relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `rpi_firmware_property'
-vc4_drv.c:(.text+0x354): undefined reference to `rpi_firmware_put'
-vc4_drv.c:(.text+0x354): relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `rpi_firmware_put'
+Masami,
 
-Make DRM_VC4 depends on RASPBERRYPI_FIRMWARE || COMPILE_TEST to fix this.
-
-Fixes: c406ad5e4a85 ("drm/vc4: Notify the firmware when DRM is in charge")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
----
-v2: follow Maxime's advise, add RASPBERRYPI_FIRMWARE as an additional depends
- drivers/gpu/drm/vc4/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/gpu/drm/vc4/Kconfig b/drivers/gpu/drm/vc4/Kconfig
-index de3424fed2fc..92d74ba7c449 100644
---- a/drivers/gpu/drm/vc4/Kconfig
-+++ b/drivers/gpu/drm/vc4/Kconfig
-@@ -2,6 +2,7 @@
- config DRM_VC4
- 	tristate "Broadcom VC4 Graphics"
- 	depends on ARCH_BCM || ARCH_BCM2835 || COMPILE_TEST
-+	depends on RASPBERRYPI_FIRMWARE || COMPILE_TEST
- 	depends on DRM
- 	depends on SND && SND_SOC
- 	depends on COMMON_CLK
---
-2.31.1
-
+you're respinning this patch to combine
+arch_rethook_trampoline and __kretprobe_trampoline
+right?
