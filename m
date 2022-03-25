@@ -2,84 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79F27C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:52:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2823C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:52:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231785AbiCYTyE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:54:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56222 "EHLO
+        id S231901AbiCYTyK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:54:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232717AbiCYTxk (ORCPT
+        with ESMTP id S232621AbiCYTxg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:53:40 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62CF726EC8C
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:40:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648237231; x=1679773231;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=jInU92ALuYd6pU9oOkeB8Xo6OXwF6ae4kwHZusQjiIM=;
-  b=VmGJbdfqhxDjFua5THeVN+a/FOWku+SPqhlXGZOJxCWmvq1SK/BvFA0L
-   oScZIf3EbkHmvNdVVf5a7r27q/QrwAqf7XON/CnjIDtIpfzPCtbO9R0LR
-   fMsqn1HevfP5QwvsJj+P58bRGZjmk5FJFojHbhWclXSDQwIis9H1rdnbO
-   KyNHFT95u62iMBRCggDuvNhbBoJ8qdW1cXcXqboWpgFnEjHuWSIB5Hg4c
-   UQNAgeHmmvUyPpRJvIOuDE91VhT5j6gfzRkB/+iVGA1XSyuy7PMh7E2JR
-   Qxm/nm1GNs5pxZyka2T18H98Gkb7FEwbp8exawFPiX0ag2a2gipZ4XEzR
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10297"; a="321888017"
-X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
-   d="scan'208";a="321888017"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2022 11:44:55 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
-   d="scan'208";a="648352387"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga002.fm.intel.com with ESMTP; 25 Mar 2022 11:44:53 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 1A5BC11E; Fri, 25 Mar 2022 20:45:14 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Detlev Casanova <detlev.casanova@collabora.com>,
-        Mark Brown <broonie@kernel.org>,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/1] regulator/rpi-panel-attiny: Get rid of duplicate of_node assignment
-Date:   Fri, 25 Mar 2022 20:45:08 +0200
-Message-Id: <20220325184508.45670-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+        Fri, 25 Mar 2022 15:53:36 -0400
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69736266B58
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:40:14 -0700 (PDT)
+Received: by mail-oi1-x22c.google.com with SMTP id o64so9247357oib.7
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:40:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=0hR6detCmXtBfWRoT9BJ6sxe7MY2tS62yTtZv+WfRSk=;
+        b=Seytbq0ydpKuf4R/CyPUY/RawpIlqEaJ4Z0EZqfX6FmGs61zB80vlRBAsUDj1kurSS
+         kWxzjhd1LDWsx5tyTheiAPEzLqnhJHL+zL1NLYXJuC5XBF3HBRYm7mseDe7dao7SPQG7
+         jav5tOdvRThgw1uB1iC1x91aXdcyrIWWjnb9E=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=0hR6detCmXtBfWRoT9BJ6sxe7MY2tS62yTtZv+WfRSk=;
+        b=Z+1k8jhgjvq/yG5f3JYBqc2j0/LCqFegcWojWRCjFscSBCoayjcSfEYLIpPHZi+5X6
+         W0mrLEfa4EjZA1N6v+rmsMtf4w0+9UYYdWB8pcHdpNW+eP8bRLRxXJmjRWzv1mo7PVON
+         vsWP6yPOYdOSZXei8HN6fdYlyL1kL57LhRtrr6Gp9VFZ4504NO21iEsJRJ/NHOOOhG4i
+         xnJus4IZp5BlDXo1w33tNaAPCffkVB6ZZT9ygdCp9R3/yBSdZsOVrBg6FhYoskeywB96
+         ilxTUpBfPWN2uSu9LjsrC0zSuDGaEZxh5XB9dmRkRguPgo8ambfPKRf2xZMIUGv+V580
+         wxvA==
+X-Gm-Message-State: AOAM531n7dlYFY+xaazuWTe+kyNR99IXC+fcV3iTyjkajxHDP6blxpyK
+        3usrrXbNZQ6FmzFuJldiSFfJgvdGgkT29tOlSRqkNkHIZV8=
+X-Google-Smtp-Source: ABdhPJwbK62nqj0K16SlmWCuvK8uzSLq7hC1YqLJsKiKUskGxk5vQgX1QjEjgxJTRooFAFH89FdqEOTUmOxG2mp0o10=
+X-Received: by 2002:aca:bd41:0:b0:2ec:ff42:814f with SMTP id
+ n62-20020acabd41000000b002ecff42814fmr5947337oif.63.1648230185963; Fri, 25
+ Mar 2022 10:43:05 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Fri, 25 Mar 2022 12:43:05 -0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <1648209491-30165-7-git-send-email-quic_c_skakit@quicinc.com>
+References: <1648209491-30165-1-git-send-email-quic_c_skakit@quicinc.com> <1648209491-30165-7-git-send-email-quic_c_skakit@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Fri, 25 Mar 2022 12:43:05 -0500
+Message-ID: <CAE-0n50ApgiYbxHbU072s5-QLAmEppjDH9brKbfHja7hiue4xA@mail.gmail.com>
+Subject: Re: [PATCH V8 6/7] arm64: dts: qcom: pm8008-regulators: Add base dts
+ file for pm8008 regulators
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Satya Priya <quic_c_skakit@quicinc.com>
+Cc:     Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Das Srinagesh <gurus@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_collinsd@quicinc.com,
+        quic_subbaram@quicinc.com, quic_jprakash@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-GPIO library does copy the of_node from the parent device of
-the GPIO chip, there is no need to repeat this in the individual
-drivers. Remove these assignment all at once.
+Quoting Satya Priya (2022-03-25 04:58:10)
+> Add base DTS file for pm8008 regulators with 7 ldo nodes.
+>
+> Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
+> ---
+> Changes in V8:
+>  - Previously added pm8008 dtsi file is split into 2 files, one for infra
+>    and other for regulators.
 
-For the details one may look into the of_gpio_dev_init() implementation.
-
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/regulator/rpi-panel-attiny-regulator.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/drivers/regulator/rpi-panel-attiny-regulator.c b/drivers/regulator/rpi-panel-attiny-regulator.c
-index f7df0f4b2f87..fa8706a352ce 100644
---- a/drivers/regulator/rpi-panel-attiny-regulator.c
-+++ b/drivers/regulator/rpi-panel-attiny-regulator.c
-@@ -364,7 +364,6 @@ static int attiny_i2c_probe(struct i2c_client *i2c,
- 	state->gc.parent = &i2c->dev;
- 	state->gc.label = i2c->name;
- 	state->gc.owner = THIS_MODULE;
--	state->gc.of_node = i2c->dev.of_node;
- 	state->gc.base = -1;
- 	state->gc.ngpio = NUM_GPIO;
- 
--- 
-2.35.1
-
+Does pm8008 come in one package that gets soldered down on the board? If
+so, this should be one file instead of two, i.e. pm8008.dtsi. We don't
+make a -regulators dtsi file for other pmics.
