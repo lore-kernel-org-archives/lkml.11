@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 385DCC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:07:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E73B7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:07:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356990AbiCYPIx (ORCPT
+        id S1359632AbiCYPI6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:08:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36432 "EHLO
+        Fri, 25 Mar 2022 11:08:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359619AbiCYPHi (ORCPT
+        with ESMTP id S1359638AbiCYPHo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:07:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB8CDDA09D;
-        Fri, 25 Mar 2022 08:05:48 -0700 (PDT)
+        Fri, 25 Mar 2022 11:07:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9012DA0BA;
+        Fri, 25 Mar 2022 08:05:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6D3AFB828F8;
-        Fri, 25 Mar 2022 15:05:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DEBDC340F1;
-        Fri, 25 Mar 2022 15:05:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7237D61BAD;
+        Fri, 25 Mar 2022 15:05:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DD6BC340EE;
+        Fri, 25 Mar 2022 15:05:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648220746;
-        bh=gZbiEnHbTTXCK6xT8y02Ptf0o6I0H8OviTJ3cr3WOjA=;
+        s=korg; t=1648220751;
+        bh=66AdW8GcQDhDYieYXbj02QTCFM70zra0bL3GJGGU1Ls=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xj2V2cVRIjwa4ka8ye8373l+8H+0Z5z731G9UfiS9m1tbEhyVABxEz8IBtTyPrvpD
-         mqFmOQ0znPhMy0SvlJWw++xPQUkv0keyZrxN1ORU6jvcfadDJ4yk3c2MpJUHDljaJv
-         w8S7WS7r4NIu9OGNgaFbNkf1JmRkCNQkUDN/wiIs=
+        b=e9lvTjf0YXfogpCAfL2mCHKCM8q1nQKfpchTpeAPLEnLN7agEaEwlG9n7x7UwgdS1
+         K8L/A1fBvTILZ+dzb0K/1FNyHymioHMCw4l2mYDMDdg/Nv/sINoB5CvtOWAIGMZrcK
+         AsKZWQ3scq5sCrvPLHJd03lX8Ip2hhbvIwbotVGo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Cilissen <mark@yotsuba.nl>,
-        Hans de Goede <hdegoede@redhat.com>,
+        stable@vger.kernel.org, Werner Sembach <wse@tuxedocomputers.com>,
         "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 4.14 13/17] ACPI / x86: Work around broken XSDT on Advantech DAC-BJ01 board
-Date:   Fri, 25 Mar 2022 16:04:47 +0100
-Message-Id: <20220325150417.149072490@linuxfoundation.org>
+Subject: [PATCH 4.14 15/17] ACPI: video: Force backlight native for Clevo NL5xRU and NL5xNU
+Date:   Fri, 25 Mar 2022 16:04:49 +0100
+Message-Id: <20220325150417.205330098@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150416.756136126@linuxfoundation.org>
 References: <20220325150416.756136126@linuxfoundation.org>
@@ -50,75 +49,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Cilissen <mark@yotsuba.nl>
+From: Werner Sembach <wse@tuxedocomputers.com>
 
-commit e702196bf85778f2c5527ca47f33ef2e2fca8297 upstream.
+commit c844d22fe0c0b37dc809adbdde6ceb6462c43acf upstream.
 
-On this board the ACPI RSDP structure points to both a RSDT and an XSDT,
-but the XSDT points to a truncated FADT. This causes all sorts of trouble
-and usually a complete failure to boot after the following error occurs:
+Clevo NL5xRU and NL5xNU/TUXEDO Aura 15 Gen1 and Gen2 have both a working
+native and video interface. However the default detection mechanism first
+registers the video interface before unregistering it again and switching
+to the native interface during boot. This results in a dangling SBIOS
+request for backlight change for some reason, causing the backlight to
+switch to ~2% once per boot on the first power cord connect or disconnect
+event. Setting the native interface explicitly circumvents this buggy
+behaviour by avoiding the unregistering process.
 
-  ACPI Error: Unsupported address space: 0x20 (*/hwregs-*)
-  ACPI Error: AE_SUPPORT, Unable to initialize fixed events (*/evevent-*)
-  ACPI: Unable to start ACPI Interpreter
-
-This leaves the ACPI implementation in such a broken state that subsequent
-kernel subsystem initialisations go wrong, resulting in among others
-mismapped PCI memory, SATA and USB enumeration failures, and freezes.
-
-As this is an older embedded platform that will likely never see any BIOS
-updates to address this issue and its default shipping OS only complies to
-ACPI 1.0, work around this by forcing `acpi=rsdt`. This patch, applied on
-top of Linux 5.10.102, was confirmed on real hardware to fix the issue.
-
-Signed-off-by: Mark Cilissen <mark@yotsuba.nl>
+Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
 Cc: All applicable <stable@vger.kernel.org>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/acpi/boot.c |   24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ drivers/acpi/video_detect.c |   75 ++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 75 insertions(+)
 
---- a/arch/x86/kernel/acpi/boot.c
-+++ b/arch/x86/kernel/acpi/boot.c
-@@ -1343,6 +1343,17 @@ static int __init disable_acpi_pci(const
- 	return 0;
- }
- 
-+static int __init disable_acpi_xsdt(const struct dmi_system_id *d)
-+{
-+	if (!acpi_force) {
-+		pr_notice("%s detected: force use of acpi=rsdt\n", d->ident);
-+		acpi_gbl_do_not_use_xsdt = TRUE;
-+	} else {
-+		pr_notice("Warning: DMI blacklist says broken, but acpi XSDT forced\n");
-+	}
-+	return 0;
-+}
-+
- static int __init dmi_disable_acpi(const struct dmi_system_id *d)
- {
- 	if (!acpi_force) {
-@@ -1463,6 +1474,19 @@ static const struct dmi_system_id acpi_d
- 		     DMI_MATCH(DMI_PRODUCT_NAME, "TravelMate 360"),
- 		     },
- 	 },
+--- a/drivers/acpi/video_detect.c
++++ b/drivers/acpi/video_detect.c
+@@ -356,6 +356,81 @@ static const struct dmi_system_id video_
+ 		DMI_MATCH(DMI_BOARD_NAME, "BA51_MV"),
+ 		},
+ 	},
 +	/*
-+	 * Boxes that need ACPI XSDT use disabled due to corrupted tables
++	 * Clevo NL5xRU and NL5xNU/TUXEDO Aura 15 Gen1 and Gen2 have both a
++	 * working native and video interface. However the default detection
++	 * mechanism first registers the video interface before unregistering
++	 * it again and switching to the native interface during boot. This
++	 * results in a dangling SBIOS request for backlight change for some
++	 * reason, causing the backlight to switch to ~2% once per boot on the
++	 * first power cord connect or disconnect event. Setting the native
++	 * interface explicitly circumvents this buggy behaviour, by avoiding
++	 * the unregistering process.
 +	 */
 +	{
-+	 .callback = disable_acpi_xsdt,
-+	 .ident = "Advantech DAC-BJ01",
-+	 .matches = {
-+		     DMI_MATCH(DMI_SYS_VENDOR, "NEC"),
-+		     DMI_MATCH(DMI_PRODUCT_NAME, "Bearlake CRB Board"),
-+		     DMI_MATCH(DMI_BIOS_VERSION, "V1.12"),
-+		     DMI_MATCH(DMI_BIOS_DATE, "02/01/2011"),
-+		     },
-+	 },
- 	{}
- };
++	.callback = video_detect_force_native,
++	.ident = "Clevo NL5xRU",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
++		DMI_MATCH(DMI_BOARD_NAME, "NL5xRU"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "Clevo NL5xRU",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "SchenkerTechnologiesGmbH"),
++		DMI_MATCH(DMI_BOARD_NAME, "NL5xRU"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "Clevo NL5xRU",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "Notebook"),
++		DMI_MATCH(DMI_BOARD_NAME, "NL5xRU"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "Clevo NL5xRU",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
++		DMI_MATCH(DMI_BOARD_NAME, "AURA1501"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "Clevo NL5xRU",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
++		DMI_MATCH(DMI_BOARD_NAME, "EDUBOOK1502"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "Clevo NL5xNU",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
++		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "Clevo NL5xNU",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "SchenkerTechnologiesGmbH"),
++		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "Clevo NL5xNU",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "Notebook"),
++		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
++		},
++	},
  
+ 	/*
+ 	 * Desktops which falsely report a backlight and which our heuristics
 
 
