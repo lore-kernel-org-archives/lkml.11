@@ -2,120 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39675C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:44:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC2D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:44:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376702AbiCYPqW (ORCPT
+        id S1357301AbiCYPq0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:46:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53114 "EHLO
+        Fri, 25 Mar 2022 11:46:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377707AbiCYPnu (ORCPT
+        with ESMTP id S1376991AbiCYPmi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:43:50 -0400
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E3CE6AA62
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 08:40:06 -0700 (PDT)
-Received: by mail-oi1-x22e.google.com with SMTP id j83so8536698oih.6
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 08:40:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=KkQ3UAnjoomD8VPxDQGaMS5VaJH8YbqKgUsD/Zma4MY=;
-        b=oHx4JAwEXn6GgCr+ZlOFRzGIUkK0CECP6r/qt42JKzUphuz+H/VDiuqheZ04dJwsT6
-         307WVSAq0IA86aW/+QsuCOA9/PLxOViIUIQjxy4Q+cCT/GreOe0OKft4athJv9c7CbRR
-         DL11Z4jdKXHyL7vqWA42Tas8kFpsxN6KqL/a3ax+7bfyUVgjeyP6ACcPnw5L89o2Uh63
-         p5Z6xrr+nM/d1tEevU+Z735CzBmujtKa+aAWH3QzUsOnsoWZJ+Gu7Dw4Ml2NfQJU5An0
-         rBYjT5sGhy/N6FXFAVVNAO+EtfE0+KX0BhPQRbeux2o9xfWzR+X2ltQB9GBR0LnW2VEt
-         nC+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=KkQ3UAnjoomD8VPxDQGaMS5VaJH8YbqKgUsD/Zma4MY=;
-        b=iMjadUxEHWXSDX0H3qtCU8qXumoxslK80fNhPN18olpT09l9qtqU+ecIpOZssiuimQ
-         ntclcMOnLFD4vUfkeKGt7hLanD5kuXaphVWk/0aOaKa2+q0qwpj1E9DK+/Ms/8tFpUZ3
-         GM6kCkH/m3hCkU3OqdEjtSfF/sgapagVgVwGsMr6trBPhGK0M0N9wD2OTWy+2g77G1e+
-         zhnUl7U5C0qOfX6gX1GTotBKvj6IRSbboV0IRD5zL0p2TVZ3M/zDWNdngcc5PlCdjskm
-         oRvYKnHP99zzASKdYM3aYoL0O0m1D0+XKt5/0aysRDe+kMwECuJhkaTP0XvzzSsEgrEi
-         9fFQ==
-X-Gm-Message-State: AOAM5321qroDs1e6YDyeazI/6TD4xqJRadlY0Bf8qruabaupVBe1cf5t
-        yHn+tb6D7+jvlJO34CHc5KDA6Ewd+Q==
-X-Google-Smtp-Source: ABdhPJzj0um+If716xMiZgaCy/MNm0hDqSyOGI5g04+AFHHXshTc7Caduux5+8RXnKQ6uJXK7F9kGw==
-X-Received: by 2002:aca:6742:0:b0:2ef:7242:35de with SMTP id b2-20020aca6742000000b002ef724235demr5516422oiy.166.1648222805669;
-        Fri, 25 Mar 2022 08:40:05 -0700 (PDT)
-Received: from citadel.. (174-084-153-250.res.spectrum.com. [174.84.153.250])
-        by smtp.gmail.com with ESMTPSA id el17-20020a056870f69100b000de9672ac3csm1709566oab.52.2022.03.25.08.40.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Mar 2022 08:40:05 -0700 (PDT)
-From:   Brian Gerst <brgerst@gmail.com>
-To:     linux-kernel@vger.kernel.org, x86@kernel.org
-Cc:     Andy Lutomirski <luto@kernel.org>, Borislav Petkov <bp@alien8.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Brian Gerst <brgerst@gmail.com>
-Subject: [PATCH 1/4] x86-32: Simplify ELF_CORE_COPY_REGS
-Date:   Fri, 25 Mar 2022 11:39:50 -0400
-Message-Id: <20220325153953.162643-2-brgerst@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220325153953.162643-1-brgerst@gmail.com>
-References: <20220325153953.162643-1-brgerst@gmail.com>
+        Fri, 25 Mar 2022 11:42:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5190D4A92D
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 08:37:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F119617B1
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 15:37:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7953C340E9;
+        Fri, 25 Mar 2022 15:37:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648222640;
+        bh=z/tj9379s2brMQn0z0S3F/M1BsjmaTZ7Dhjo9GF9rsY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Uc02Fcd8vpsITGYBkaTuWcxMb3swn8zJ5k1vtS7Oqv0nOfa3FlEpj+NCBaNdntpZu
+         GAUApysYOGYkpOYvrby5Oky5Q/+CtUXik8/mIze4WQZqW1XtLd3DyaJ6FYq+cjHJHt
+         jsBX3Be+C5BmlvLSRTkZEgMXLYexaSRZA+dyAjJxTM/4e7iWofjPa9CTmT5Bt0Mzwi
+         YX/qF6NFIX3MyZ6gnzXIV5dX2IpAs1iBvqK/i/kTYIdFrK8+AhxuGvud4T/tBq2Avq
+         24jRIw5vf/mW36k1ZLCTxSeRVJ0KnpTM1EbSH+S7CkSuduUO1/71KTgxqVpVmmsQzm
+         bmOOiSey1UNVA==
+Date:   Fri, 25 Mar 2022 16:37:14 +0100
+From:   Christian Brauner <brauner@kernel.org>
+To:     Petr Vorel <pvorel@suse.cz>
+Cc:     linux-kernel@vger.kernel.org,
+        Christian Brauner <christian@brauner.io>,
+        Alexey Gladkov <legion@kernel.org>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        "Serge E . Hallyn" <serge@hallyn.com>,
+        Vasily Averin <vvs@virtuozzo.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH 1/1] ns: Move MAX_PID_NS_LEVEL to ns_common.h, reuse it
+Message-ID: <20220325153714.eau4ja6pcr2a34sh@wittgenstein>
+References: <20220325112127.18026-1-pvorel@suse.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220325112127.18026-1-pvorel@suse.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-GS is now always a user segment, so there is no difference between
-user and kernel registers.
+On Fri, Mar 25, 2022 at 12:21:27PM +0100, Petr Vorel wrote:
+> Move MAX_PID_NS_LEVEL to ns_common.h and reuse it in check in
+> user_namespace.c.
+> 
+> Signed-off-by: Petr Vorel <pvorel@suse.cz>
+> ---
+> Hi Christian, all,
+> 
+> I don't see putting MAX_PID_NS_LEVEL into ns_common.h as an elegant
+> solution but IMHO better than use a hardwired number or redefinition in
+> user_namespace.h.
 
-Signed-off-by: Brian Gerst <brgerst@gmail.com>
----
- arch/x86/include/asm/elf.h | 15 ++-------------
- 1 file changed, 2 insertions(+), 13 deletions(-)
+Hey Petr,
 
-diff --git a/arch/x86/include/asm/elf.h b/arch/x86/include/asm/elf.h
-index 29fea180a665..cb0ff1055ab1 100644
---- a/arch/x86/include/asm/elf.h
-+++ b/arch/x86/include/asm/elf.h
-@@ -116,7 +116,7 @@ extern unsigned int vdso32_enabled;
-  * now struct_user_regs, they are different)
-  */
- 
--#define ELF_CORE_COPY_REGS_COMMON(pr_reg, regs)	\
-+#define ELF_CORE_COPY_REGS(pr_reg, regs)	\
- do {						\
- 	pr_reg[0] = regs->bx;			\
- 	pr_reg[1] = regs->cx;			\
-@@ -128,6 +128,7 @@ do {						\
- 	pr_reg[7] = regs->ds;			\
- 	pr_reg[8] = regs->es;			\
- 	pr_reg[9] = regs->fs;			\
-+	savesegment(gs, pr_reg[10]);		\
- 	pr_reg[11] = regs->orig_ax;		\
- 	pr_reg[12] = regs->ip;			\
- 	pr_reg[13] = regs->cs;			\
-@@ -136,18 +137,6 @@ do {						\
- 	pr_reg[16] = regs->ss;			\
- } while (0);
- 
--#define ELF_CORE_COPY_REGS(pr_reg, regs)	\
--do {						\
--	ELF_CORE_COPY_REGS_COMMON(pr_reg, regs);\
--	pr_reg[10] = get_user_gs(regs);		\
--} while (0);
--
--#define ELF_CORE_COPY_KERNEL_REGS(pr_reg, regs)	\
--do {						\
--	ELF_CORE_COPY_REGS_COMMON(pr_reg, regs);\
--	savesegment(gs, pr_reg[10]);		\
--} while (0);
--
- #define ELF_PLATFORM	(utsname()->machine)
- #define set_personality_64bit()	do { } while (0)
- 
--- 
-2.35.1
+Weird I either deleted that message by accident or didn't get it.
 
+> 
+> Kind regards,
+> Petr
+> 
+>  include/linux/ns_common.h     | 3 +++
+>  include/linux/pid_namespace.h | 3 ---
+>  kernel/user_namespace.c       | 2 +-
+>  3 files changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/include/linux/ns_common.h b/include/linux/ns_common.h
+> index 0f1d024bd958..173fab9dadf7 100644
+> --- a/include/linux/ns_common.h
+> +++ b/include/linux/ns_common.h
+> @@ -4,6 +4,9 @@
+>  
+>  #include <linux/refcount.h>
+>  
+> +/* MAX_PID_NS_LEVEL is needed for limiting size of 'struct pid' */
+> +#define MAX_PID_NS_LEVEL 32
+
+The only two namespaces where this applies to have the same hard-coded
+limit. If you want to get rid of the raw number you should just
+introduce a generic define that expresses the limit for both pidns
+and userns. Using "MAX_PID_NS_LEVEL" in the userns case is very
+confusing. So if you wanted to do this introducing something like
+#define MAX_NS_LEVEL 32
+and using it in both places makes more sense.
+
+Christian
