@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A75FEC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:15:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAEC5C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:15:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359628AbiCYPQv (ORCPT
+        id S1356570AbiCYPRB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:16:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43446 "EHLO
+        Fri, 25 Mar 2022 11:17:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376615AbiCYPNK (ORCPT
+        with ESMTP id S1376602AbiCYPNK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 25 Mar 2022 11:13:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A59578FE75;
-        Fri, 25 Mar 2022 08:10:07 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03FAB89327;
+        Fri, 25 Mar 2022 08:10:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C9EC161C14;
-        Fri, 25 Mar 2022 15:10:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2C67C340E9;
-        Fri, 25 Mar 2022 15:10:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 64D14B828F8;
+        Fri, 25 Mar 2022 15:09:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A29D1C36AE2;
+        Fri, 25 Mar 2022 15:09:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221004;
-        bh=LKPCukz5mI/F3G1nZIQUuTWPcavXfeND0UrVMW0LUy4=;
+        s=korg; t=1648220998;
+        bh=8EStCMiTMJGNGHKv7g5jLqJK2FpaF8m/Jn+cIEii0YA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s5abQzMLMbUorWySaSZNHnC5r9r5468wHKT5ytvUyJqLNDRtCjMA7W/lagRu4K24W
-         HNo/hSL747h9Tx47j+7Oza0ngIu/Je/GUBTwpZF/9kJ4XVdXnWBJOI9pbtdujSLXl9
-         UmaMV5TyGEkCZQQAsAPnaFe8KHUPhF5MQQQmEg68=
+        b=KjjSAddAXMhSg9RSx8ZJZLqw/lBD0ssnFNIO8IJB0TtTYaxc5wBXFVulc6SAhNOlX
+         VSUJ1O7WqW45b79CG63c0g/YD4hxZ2yzeUL6s1CBb2+UjOXw/mjGKIKltlBW3zHmza
+         FPkRbe301MId6RQrEYhCLNbmpK4gU14XFJYjKaxo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Oliver Graute <oliver.graute@kococonnector.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 5.10 08/38] staging: fbtft: fb_st7789v: reset display before initialization
-Date:   Fri, 25 Mar 2022 16:04:52 +0100
-Message-Id: <20220325150420.000738493@linuxfoundation.org>
+        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
+        "Masami Ichikawa(CIP)" <masami.ichikawa@cybertrust.co.jp>,
+        Tejun Heo <tj@kernel.org>
+Subject: [PATCH 5.10 06/38] cgroup-v1: Correct privileges check in release_agent writes
+Date:   Fri, 25 Mar 2022 16:04:50 +0100
+Message-Id: <20220325150419.944556173@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150419.757836392@linuxfoundation.org>
 References: <20220325150419.757836392@linuxfoundation.org>
@@ -50,35 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Graute <oliver.graute@kococonnector.com>
+From: Michal Koutný <mkoutny@suse.com>
 
-commit b6821b0d9b56386d2bf14806f90ec401468c799f upstream.
+commit 467a726b754f474936980da793b4ff2ec3e382a7 upstream.
 
-In rare cases the display is flipped or mirrored. This was observed more
-often in a low temperature environment. A clean reset on init_display()
-should help to get registers in a sane state.
+The idea is to check: a) the owning user_ns of cgroup_ns, b)
+capabilities in init_user_ns.
 
-Fixes: ef8f317795da (staging: fbtft: use init function instead of init sequence)
+The commit 24f600856418 ("cgroup-v1: Require capabilities to set
+release_agent") got this wrong in the write handler of release_agent
+since it checked user_ns of the opener (may be different from the owning
+user_ns of cgroup_ns).
+Secondly, to avoid possibly confused deputy, the capability of the
+opener must be checked.
+
+Fixes: 24f600856418 ("cgroup-v1: Require capabilities to set release_agent")
 Cc: stable@vger.kernel.org
-Signed-off-by: Oliver Graute <oliver.graute@kococonnector.com>
-Link: https://lore.kernel.org/r/20220210085322.15676-1-oliver.graute@kococonnector.com
-[sudip: adjust context]
-Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Link: https://lore.kernel.org/stable/20220216121142.GB30035@blackbody.suse.cz/
+Signed-off-by: Michal Koutný <mkoutny@suse.com>
+Reviewed-by: Masami Ichikawa(CIP) <masami.ichikawa@cybertrust.co.jp>
+Signed-off-by: Tejun Heo <tj@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/staging/fbtft/fb_st7789v.c |    2 ++
- 1 file changed, 2 insertions(+)
+ kernel/cgroup/cgroup-v1.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/drivers/staging/fbtft/fb_st7789v.c
-+++ b/drivers/staging/fbtft/fb_st7789v.c
-@@ -82,6 +82,8 @@ enum st7789v_command {
-  */
- static int init_display(struct fbtft_par *par)
+--- a/kernel/cgroup/cgroup-v1.c
++++ b/kernel/cgroup/cgroup-v1.c
+@@ -544,6 +544,7 @@ static ssize_t cgroup_release_agent_writ
+ 					  char *buf, size_t nbytes, loff_t off)
  {
-+	par->fbtftops.reset(par);
-+
- 	/* turn off sleep mode */
- 	write_reg(par, MIPI_DCS_EXIT_SLEEP_MODE);
- 	mdelay(120);
+ 	struct cgroup *cgrp;
++	struct cgroup_file_ctx *ctx;
+ 
+ 	BUILD_BUG_ON(sizeof(cgrp->root->release_agent_path) < PATH_MAX);
+ 
+@@ -551,8 +552,9 @@ static ssize_t cgroup_release_agent_writ
+ 	 * Release agent gets called with all capabilities,
+ 	 * require capabilities to set release agent.
+ 	 */
+-	if ((of->file->f_cred->user_ns != &init_user_ns) ||
+-	    !capable(CAP_SYS_ADMIN))
++	ctx = of->priv;
++	if ((ctx->ns->user_ns != &init_user_ns) ||
++	    !file_ns_capable(of->file, &init_user_ns, CAP_SYS_ADMIN))
+ 		return -EPERM;
+ 
+ 	cgrp = cgroup_kn_lock_live(of->kn, false);
 
 
