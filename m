@@ -2,106 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AD5DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 11:00:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 358F3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 11:01:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243420AbiCYLBh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 07:01:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52608 "EHLO
+        id S1353264AbiCYLCt (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 07:02:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353174AbiCYLBc (ORCPT
+        with ESMTP id S245291AbiCYLCr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 07:01:32 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77E19BF039
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 03:59:58 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id r13so10325551wrr.9
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 03:59:58 -0700 (PDT)
+        Fri, 25 Mar 2022 07:02:47 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E52CCC527;
+        Fri, 25 Mar 2022 04:01:14 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id a1so10345253wrh.10;
+        Fri, 25 Mar 2022 04:01:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=QUuvuWx0AHdHxhKcNG871JJ4v7rlpXrie/P5Lhm5m3E=;
-        b=rGvEAxAvCYzcX7kzi5ONuWblQJjvcGKUJLNhXM8ImX3ZWHD9ozycr9q5EbHg+WIfKc
-         PZDJ5dFDCFmDzOjV7ZzTJps88Lhj8mGKcfJm5qjALFkwuN4XL6WITfIjN6r5Fx17LHm2
-         RD7UxuVkbTW7X9LCXng6KYG/TwgzfhnVjo698VKCIhBj/fMe3RAOme41Gqs1ncRjkUX9
-         5/YuMdDqCgYg7AssNh3jVevbeeJ0q/jxpYhMQYQR4l4+Iymax0W0+mYbt3sRqYfcS0z2
-         jqnSiiuSSEn/Nk0BPf2iNW7O8sKgSeGu8RMukM32dRUZlascCHPOrsuB4d0Qb/IbMsiG
-         15mw==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=bOEKS9NzaNyigA185P4is7UM4t5gP2JIN17BW0RY5+s=;
+        b=n8rS3kO8VR+Ix6NtEe5TdIXE91acMYCD3GXOqhjgWrR8mXLaWXqmXBAe1bb+H1Sf0S
+         ISnTEpWb6e+0GQRr+j5o6Q3Hy0YggpZCUG/b8pY1DV8ltR6iGU0Q1nT5dbZ8pdqBNUgd
+         MzUdatrPkqoi7qeUj637BqqU3zlghVeaaZF2UkBMjFpZiFOg2Y9Jd7BBgwMRoXHPyPZY
+         rHEHC8gkgbsNo1LaRSqVa4BEHx2S5jx0yqJwkwILxCgHHQxKGfjVvAMxvj8TCBYM5fUj
+         0wYNeAjqBITMUFoICpbHI4e0+WqH4E+j29+f+OJ4decUT88Du2y6rGrGnFP+PXt7UK44
+         PNVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:content-transfer-encoding;
-        bh=QUuvuWx0AHdHxhKcNG871JJ4v7rlpXrie/P5Lhm5m3E=;
-        b=OACVNhqO9Jv7/SCc0kWvFLTLSOFnHc/xLIe6otIRCJBegu2W37UA73gDJpm2YLOfH3
-         Ty9Y58D1FXIg64C8QKPT3kFypE8eyDMuj4Q30/WdIh7FXQ1lHEzjraL7LTSVmi/8H+Va
-         TGGaGiIACk4nTXsBB4+OE/+PQvYf9tMtfIiWU0HopYzVNBxYniafA7PAQJfnrOUVSzt+
-         RUK081wp8oYvx1A1XirfhC6YOLOt3bx8O6H8O/k3OGmasfcT91PW9ifIKOPwoOc9wnq9
-         KIvvtYclODlFBgRtZUDgEO5T8XNby1IceJ0UUm0bqOtrwk6NrGasyudqqjescsaNF7lD
-         /Asw==
-X-Gm-Message-State: AOAM533z3TzqNYA9VjsQHvjlwGd69i8vcSeN90NmlES9+C6LOhsqqCu3
-        VZqpD1xiyn79ayDJKF6bIpK/vYG7ARApig==
-X-Google-Smtp-Source: ABdhPJwPJck71gv8SQqBQj01bgk7FX/y+SqznA2Ju0ewPebQcJEY89Z0oEkDGjw7zvjHDYjNzUfMcg==
-X-Received: by 2002:a5d:40c8:0:b0:205:2a3b:c2c with SMTP id b8-20020a5d40c8000000b002052a3b0c2cmr8510219wrq.13.1648205996880;
-        Fri, 25 Mar 2022 03:59:56 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id g16-20020a05600c4ed000b0038ceb0b21b4sm1003997wmq.24.2022.03.25.03.59.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Mar 2022 03:59:56 -0700 (PDT)
-Date:   Fri, 25 Mar 2022 10:59:54 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: [GIT PULL] Backlight for v5.18
-Message-ID: <Yj2gqnIk6HY5WyKo@google.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=bOEKS9NzaNyigA185P4is7UM4t5gP2JIN17BW0RY5+s=;
+        b=cj3mGjHJvSTwmBbVFSFURy0xbrBHX/f3QeD4AhFWbBVHPTN36MT2dZQmMWDakXbJJ8
+         1ZN42/NKak7lV4aCwsRiVsc4mfW0rTDNyQgLmxyGjgZJnw7CRoFefsMLr5TtWTxuUyBs
+         jClE+ApL2m+WbtbutGctB3+qvQtVeCguR7BC/D+OmFb1W/uk476ppWIATqb3p8qik2gU
+         4FjZ9ZCBO+KEd362PKymAy+vLa5yodgfctmHFgCghjYFoqQ/mQ2TVPR4k/Z3puDyI8EE
+         J/L83JhZk+3sqGSfO2TROCEkfOMwPvQaQk3YGb5vG3tVNWnGTzjOz/WotQG5yKiT6HLS
+         MDQg==
+X-Gm-Message-State: AOAM532AZL8B+zKQI0lFILTjxSH8zDse+yaFuKQx2b3lBHeMOj7LfCwJ
+        qwQP/Lrn477j/8jDuiXdMr0=
+X-Google-Smtp-Source: ABdhPJzTS0dVAANN0EU58IyzAWEKrax/ymEZPW+QqQX8M5RfJXL9GrTasCi1E0w+5zu0fIfozf9gLQ==
+X-Received: by 2002:a5d:64cc:0:b0:205:a724:9d1a with SMTP id f12-20020a5d64cc000000b00205a7249d1amr1999689wri.177.1648206072586;
+        Fri, 25 Mar 2022 04:01:12 -0700 (PDT)
+Received: from [192.168.1.145] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id v13-20020adfe28d000000b0020375f27a5asm4914906wri.4.2022.03.25.04.01.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Mar 2022 04:01:11 -0700 (PDT)
+Message-ID: <6117f51e-d43a-40da-f5a0-7b59c09ac29e@gmail.com>
+Date:   Fri, 25 Mar 2022 12:01:10 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v4 15/22] arm64: dts: mt8192: Add H264 venc device node
+Content-Language: en-US
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Ryder Lee <ryder.lee@kernel.org>,
+        Hui Liu <hui.liu@mediatek.com>
+References: <20220318144534.17996-1-allen-kh.cheng@mediatek.com>
+ <20220318144534.17996-16-allen-kh.cheng@mediatek.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220318144534.17996-16-allen-kh.cheng@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Good morning Linus,
 
-The following changes since commit e783362eb54cd99b2cac8b3a9aeac942e6f6ac07:
 
-  Linux 5.17-rc1 (2022-01-23 10:12:53 +0200)
+On 18/03/2022 15:45, Allen-KH Cheng wrote:
+> Adds H264 venc node for mt8192 SoC.
+> 
+> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-are available in the Git repository at:
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/lee/backlight.git backlight-next-5.18
+Applied thanks
 
-for you to fetch changes up to 023a8830a62846e1cecc8da07e00c801dd0d7598:
-
-  backlight: backlight: Slighly simplify devm_of_find_backlight() (2022-03-08 10:47:28 +0000)
-
-----------------------------------------------------------------
- - New Device Support
-   - Add support for PM6150L to Qualcomm WLED
-
- - Fix-ups
-   - Use kcalloc() to avoid open-coding; pwm_bl
-   - Device Tree changes (inc. YAML conversion); qcom-wled
-   - Cleanup or simplify code; backlight
-
-----------------------------------------------------------------
-Christophe JAILLET (2):
-      backlight: pwm_bl: Avoid open coded arithmetic in memory allocation
-      backlight: backlight: Slighly simplify devm_of_find_backlight()
-
-Luca Weiss (2):
-      dt-bindings: backlight: qcom-wled: Add PM6150L compatible
-      backlight: qcom-wled: Add PM6150L compatible
-
- .../devicetree/bindings/leds/backlight/qcom-wled.yaml          |  1 +
- drivers/video/backlight/backlight.c                            | 10 ++++------
- drivers/video/backlight/pwm_bl.c                               |  9 ++++-----
- drivers/video/backlight/qcom-wled.c                            |  1 +
- 4 files changed, 10 insertions(+), 11 deletions(-)
-
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+> ---
+>   arch/arm64/boot/dts/mediatek/mt8192.dtsi | 23 +++++++++++++++++++++++
+>   1 file changed, 23 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> index 4addf6ddd86d..63893779b193 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> @@ -1336,6 +1336,29 @@
+>   			power-domains = <&spm MT8192_POWER_DOMAIN_VENC>;
+>   		};
+>   
+> +		vcodec_enc: vcodec@17020000 {
+> +			compatible = "mediatek,mt8192-vcodec-enc";
+> +			reg = <0 0x17020000 0 0x2000>;
+> +			iommus = <&iommu0 M4U_PORT_L7_VENC_RCPU>,
+> +				 <&iommu0 M4U_PORT_L7_VENC_REC>,
+> +				 <&iommu0 M4U_PORT_L7_VENC_BSDMA>,
+> +				 <&iommu0 M4U_PORT_L7_VENC_SV_COMV>,
+> +				 <&iommu0 M4U_PORT_L7_VENC_RD_COMV>,
+> +				 <&iommu0 M4U_PORT_L7_VENC_CUR_LUMA>,
+> +				 <&iommu0 M4U_PORT_L7_VENC_CUR_CHROMA>,
+> +				 <&iommu0 M4U_PORT_L7_VENC_REF_LUMA>,
+> +				 <&iommu0 M4U_PORT_L7_VENC_REF_CHROMA>,
+> +				 <&iommu0 M4U_PORT_L7_VENC_SUB_R_LUMA>,
+> +				 <&iommu0 M4U_PORT_L7_VENC_SUB_W_LUMA>;
+> +			interrupts = <GIC_SPI 309 IRQ_TYPE_LEVEL_HIGH 0>;
+> +			mediatek,scp = <&scp>;
+> +			power-domains = <&spm MT8192_POWER_DOMAIN_VENC>;
+> +			clocks = <&vencsys CLK_VENC_SET1_VENC>;
+> +			clock-names = "venc-set1";
+> +			assigned-clocks = <&topckgen CLK_TOP_VENC_SEL>;
+> +			assigned-clock-parents = <&topckgen CLK_TOP_UNIVPLL_D4>;
+> +		};
+> +
+>   		camsys: clock-controller@1a000000 {
+>   			compatible = "mediatek,mt8192-camsys";
+>   			reg = <0 0x1a000000 0 0x1000>;
