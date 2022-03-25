@@ -2,148 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9195EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 05:40:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09BFCC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 05:42:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358361AbiCYFmX (ORCPT
+        id S1358362AbiCYFni (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 01:42:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36076 "EHLO
+        Fri, 25 Mar 2022 01:43:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231767AbiCYFmQ (ORCPT
+        with ESMTP id S231767AbiCYFng (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 01:42:16 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADB2A1EEDE
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 22:40:41 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KPrXX3mNMz1GD3Q;
-        Fri, 25 Mar 2022 13:40:28 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 25 Mar 2022 13:40:39 +0800
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 25 Mar 2022 13:40:38 +0800
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-To:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Vijay Balakrishna <vijayb@linux.microsoft.com>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>
-Subject: [PATCH 1/2] arm64: mm: Do not defer reserve_crashkernel() if only ZONE_DMA32
-Date:   Fri, 25 Mar 2022 13:53:14 +0800
-Message-ID: <20220325055315.25671-1-wangkefeng.wang@huawei.com>
-X-Mailer: git-send-email 2.26.2
+        Fri, 25 Mar 2022 01:43:36 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2057.outbound.protection.outlook.com [40.107.243.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CBB45BD18;
+        Thu, 24 Mar 2022 22:42:02 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QF09CPvYqDp8s6jttaQo3nzx5pDH7Heh0GepUaWT1diRmTmh0YFwCCJIxRpW7z9VMjsi2O1eShFKu3dpbTrsyZWRIPLe50Bk+A5NIbF90IFrLR45g3nFB0M4X0/7xsFcmTaNG8e/Foh1T9QahtRW5Aik+c+zuXBxEgyIS1nSVJNkkK/p9yMYrCUi5l0lhGSrFtLoWzDs9sPM3LMxvj0rgdzBvT8NRUSbrU9UecQcn0IHqvYb0Wo06Kn9HaUUzUoPVY+nT1LMGR2Y9k3re9sI3gRCAoh+WRev/aJILVXKY4AaR5ClBn/uKGx16HBioFLsSTf7UtO9dGywmU8dLICmLA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=VakL2jyipt9kDK3hB7ZA0avAy5q3WjHxtNfz3IShezo=;
+ b=XNHfrfDIpkqndsODwACUruSgfJrRpwyYzceS5Evm+llUbqQ8e4OLFpz/Se6tRvU+479NU2xkjXa9+e/P7U/Ah7Vb2SYpN0Ezm+NVetehvbMGLO7HooDwFCHjBXo2ZAveiJcIu56kpbIiBco0Y1dNv9/4cypgzmh9CPRDwpP+FuHQY1K4g/fUQDgyDmLwSpSxje/v15cfmULaS6VRfjpzAkrvlNX4BK1HSz9jbgdVRmDhxUi8iJKzhRoQ+Ux5RHzUzYaubGI8ttvTMBqt5XHBrly33h7yGvf7frfXTFjStIwqt8iEPZqemnZ/oXPUMqWHTeeiZ29EEFaR1pORqb2AxA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VakL2jyipt9kDK3hB7ZA0avAy5q3WjHxtNfz3IShezo=;
+ b=meTI9G4y+mKyKdBveHnYWWDiYU1gqcHnEP90iW3iuX/iFhNCjzi1qg6cI8rwPh3phAoJGHm55zAT6RUiALELDQScqGF1qEL+jhedBuvYrsjfs4QMRSzic5/W5S/3AWhkcZXYjqJfo/aD5LVP48Qnt9odaimqaohh+L0WCsr1aZY=
+Received: from MW4PR04CA0109.namprd04.prod.outlook.com (2603:10b6:303:83::24)
+ by BN6PR12MB1667.namprd12.prod.outlook.com (2603:10b6:405:4::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.15; Fri, 25 Mar
+ 2022 05:42:00 +0000
+Received: from CO1NAM11FT067.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:83:cafe::dc) by MW4PR04CA0109.outlook.office365.com
+ (2603:10b6:303:83::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.18 via Frontend
+ Transport; Fri, 25 Mar 2022 05:42:00 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT067.mail.protection.outlook.com (10.13.174.212) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5102.17 via Frontend Transport; Fri, 25 Mar 2022 05:41:59 +0000
+Received: from AUS-LX-MLIMONCI.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 25 Mar
+ 2022 00:41:58 -0500
+From:   Mario Limonciello <mario.limonciello@amd.com>
+To:     Huang Rui <ray.huang@amd.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>
+CC:     "open list:AMD PSTATE DRIVER" <linux-pm@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Mario Limonciello <mario.limonciello@amd.com>
+Subject: [PATCH 0/3] Improve usability for amd-pstate
+Date:   Fri, 25 Mar 2022 00:42:25 -0500
+Message-ID: <20220325054228.5247-1-mario.limonciello@amd.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 442b59d2-6193-40b5-9e3c-08da0e222e7b
+X-MS-TrafficTypeDiagnostic: BN6PR12MB1667:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR12MB166754966BDF5F18A4482F83E21A9@BN6PR12MB1667.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: r9mdmUw8rusEdECqrtsSsTv2topJiI5TlweA8J8UeGI8ILr3iZ+zFLcjGA3c4PlQah7HuCwvF6gn6v39lE4hYCLm4Ngm2/wJeJbyLQL4kHTTrWunmdIvj4/dCeQVr9cHqeaopLbhT+ooVqkfvxW1IT3oPACv75XtsXqVWLcA2N214TAbqEOqilD5eSI1eZ2QG8j3mlcrjbpDMeIkRqzfpvYRZH1d5SHM5CaEH4FgTz6jFFcqjF3Odj5KluyDfNFnwCl6KqKWraY+hJ1YI79H6HaI+JpnFf2Cp4VXKG+y+PDM77F8b+XZc2TCqI48KUSXN3oh8/DD62Xb/Xp7AgZ33iJSklbSAOtEo53LIUoWXRkdUF/Ayz9x0zdgVwa1eAedJLLifG8/tQmC/9OQ5DrZKjWVhvz/LhSPHqgikDkEfghTaPupi4jFPPj+RtkWJfwuVniSxa5JxOfWcmw2cp4zWYadPofExGGkx2UgoJ6MrhLT37LlUAwkM6eNe9DrGa3P+aOE/NnvnMVWnf05YF3TIXSpbt2MRxl0lCVwEv7E9IqNx7oyU21a5rNTM0SYmlmwnMTcB/9m1LaPr8+NxzB/lnLcMQ2ItJ0jNkxQldDdTBorng/pBtjGG0YFQNH54t0d6aZ8fY/SGPxLmq49ALjuyL02yUMUs8JludVCP4Di4QBWqLgTIV1U7/flwiI8MBwsQdfa1tgL1rBGCTHlmTLKuA==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(40460700003)(8676002)(47076005)(4326008)(16526019)(316002)(81166007)(83380400001)(70206006)(110136005)(54906003)(70586007)(186003)(426003)(336012)(36860700001)(508600001)(1076003)(26005)(44832011)(8936002)(86362001)(82310400004)(2906002)(356005)(7696005)(36756003)(6666004)(2616005)(5660300002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Mar 2022 05:41:59.6001
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 442b59d2-6193-40b5-9e3c-08da0e222e7b
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT067.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1667
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The kernel could be benifit due to BLOCK_MAPPINGS, see commit
-031495635b46 ("arm64: Do not defer reserve_crashkernel() for
-platforms with no DMA memory zones"), if there is only with
-ZONE_DMA32, we could set arm64_dma_phys_limit to max_zone_phys(32)
-earlier in arm64_memblock_init(), then we will benifit too.
+There has recently been some news coverage about `amd-pstate` being in
+5.17, but this news also mentioned that it's a bit difficult to use.
 
-Cc: Vijay Balakrishna <vijayb@linux.microsoft.com>
-Cc: Pasha Tatashin <pasha.tatashin@soleen.com>
-Cc: Will Deacon <will@kernel.org>
-Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
----
- arch/arm64/mm/init.c | 18 ++++++++++--------
- arch/arm64/mm/mmu.c  |  6 ++----
- 2 files changed, 12 insertions(+), 12 deletions(-)
+You need to either block init calls, or compile the module into the kernel
+to force it to take precedence over acpi-cpufreq.
 
-diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-index 8ac25f19084e..9dded8779d72 100644
---- a/arch/arm64/mm/init.c
-+++ b/arch/arm64/mm/init.c
-@@ -157,14 +157,14 @@ static phys_addr_t __init max_zone_phys(unsigned int zone_bits)
- 	return min(zone_mask, memblock_end_of_DRAM() - 1) + 1;
- }
- 
-+phys_addr_t __ro_after_init dma32_phys_limit;
- static void __init zone_sizes_init(unsigned long min, unsigned long max)
- {
- 	unsigned long max_zone_pfns[MAX_NR_ZONES]  = {0};
--	unsigned int __maybe_unused acpi_zone_dma_bits;
--	unsigned int __maybe_unused dt_zone_dma_bits;
--	phys_addr_t __maybe_unused dma32_phys_limit = max_zone_phys(32);
--
- #ifdef CONFIG_ZONE_DMA
-+	unsigned int acpi_zone_dma_bits;
-+	unsigned int dt_zone_dma_bits;
-+
- 	acpi_zone_dma_bits = fls64(acpi_iort_dma_get_max_cpu_address());
- 	dt_zone_dma_bits = fls64(of_dma_get_max_cpu_address(NULL));
- 	zone_dma_bits = min3(32U, dt_zone_dma_bits, acpi_zone_dma_bits);
-@@ -173,8 +173,6 @@ static void __init zone_sizes_init(unsigned long min, unsigned long max)
- #endif
- #ifdef CONFIG_ZONE_DMA32
- 	max_zone_pfns[ZONE_DMA32] = PFN_DOWN(dma32_phys_limit);
--	if (!arm64_dma_phys_limit)
--		arm64_dma_phys_limit = dma32_phys_limit;
- #endif
- 	max_zone_pfns[ZONE_NORMAL] = max;
- 
-@@ -336,8 +334,12 @@ void __init arm64_memblock_init(void)
- 
- 	early_init_fdt_scan_reserved_mem();
- 
--	if (!IS_ENABLED(CONFIG_ZONE_DMA) && !IS_ENABLED(CONFIG_ZONE_DMA32))
-+	dma32_phys_limit = max_zone_phys(32);
-+	if (!IS_ENABLED(CONFIG_ZONE_DMA)) {
-+		if (IS_ENABLED(CONFIG_ZONE_DMA32))
-+			arm64_dma_phys_limit = dma32_phys_limit;
- 		reserve_crashkernel();
-+	}
- 
- 	high_memory = __va(memblock_end_of_DRAM() - 1) + 1;
- }
-@@ -385,7 +387,7 @@ void __init bootmem_init(void)
- 	 * request_standard_resources() depends on crashkernel's memory being
- 	 * reserved, so do it here.
- 	 */
--	if (IS_ENABLED(CONFIG_ZONE_DMA) || IS_ENABLED(CONFIG_ZONE_DMA32))
-+	if (IS_ENABLED(CONFIG_ZONE_DMA))
- 		reserve_crashkernel();
- 
- 	memblock_dump_all();
-diff --git a/arch/arm64/mm/mmu.c b/arch/arm64/mm/mmu.c
-index 626ec32873c6..23734481318a 100644
---- a/arch/arm64/mm/mmu.c
-+++ b/arch/arm64/mm/mmu.c
-@@ -529,8 +529,7 @@ static void __init map_mem(pgd_t *pgdp)
- 
- #ifdef CONFIG_KEXEC_CORE
- 	if (crash_mem_map) {
--		if (IS_ENABLED(CONFIG_ZONE_DMA) ||
--		    IS_ENABLED(CONFIG_ZONE_DMA32))
-+		if (IS_ENABLED(CONFIG_ZONE_DMA))
- 			flags |= NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS;
- 		else if (crashk_res.end)
- 			memblock_mark_nomap(crashk_res.start,
-@@ -571,8 +570,7 @@ static void __init map_mem(pgd_t *pgdp)
- 	 * through /sys/kernel/kexec_crash_size interface.
- 	 */
- #ifdef CONFIG_KEXEC_CORE
--	if (crash_mem_map &&
--	    !IS_ENABLED(CONFIG_ZONE_DMA) && !IS_ENABLED(CONFIG_ZONE_DMA32)) {
-+	if (crash_mem_map && !IS_ENABLED(CONFIG_ZONE_DMA)) {
- 		if (crashk_res.end) {
- 			__map_memblock(pgdp, crashk_res.start,
- 				       crashk_res.end + 1,
+This series aims to improve the usability of amd-pstate so that distros
+can compile as a module, but users can still use it (relatively) easily.
+
+A new module parameter is included that will force amd-pstate to take
+precedence and a module table to let it load automatically on such systems.
+
+With the patches in this series a user can make a file
+/etc/modprobe.d/amd-pstate.conf:
+
+options amd-pstate replace=1
+
+Then upon the next reboot amd-pstate should load automatically even if
+acpi-cpufreq was included on the system.
+Mario Limonciello (3):
+  cpufreq: Allow passing NULL as the argument for unregistering a driver
+  cpufreq: amd-pstate: Allow replacing existing cpufreq drivers when
+    loaded
+  cpufreq: amd-pstate: Add a module device table
+
+ drivers/cpufreq/amd-pstate.c | 19 ++++++++++++++++---
+ drivers/cpufreq/cpufreq.c    |  4 ++--
+ 2 files changed, 18 insertions(+), 5 deletions(-)
+
 -- 
-2.26.2
+2.34.1
 
