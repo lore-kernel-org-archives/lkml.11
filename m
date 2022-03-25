@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20CC6C4167B
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 00:08:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF8A4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 00:08:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356852AbiCYAJc (ORCPT
+        id S1357001AbiCYAJf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 20:09:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54416 "EHLO
+        Thu, 24 Mar 2022 20:09:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348213AbiCYAJb (ORCPT
+        with ESMTP id S1356823AbiCYAJb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 24 Mar 2022 20:09:31 -0400
 Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [202.36.163.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E14EA8EC8
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6B96BBE02
         for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 17:07:57 -0700 (PDT)
 Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id EEA742C0185;
-        Fri, 25 Mar 2022 00:07:53 +0000 (UTC)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 0D5682C0A90;
+        Fri, 25 Mar 2022 00:07:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
         s=mail181024; t=1648166874;
-        bh=+SFIg7fa1NM+TS4dHaC6vNTZ/+6jBhDgLI6tjzA8d38=;
-        h=From:To:Cc:Subject:Date:From;
-        b=ts/jmE7Rbz810AoCpY10+PncVMhVT0f9cKSm0zyN4lgXR/a/IECAbpHt1pz9CtXQ1
-         7BKfbnalfXM8c9j1maBWzDvApzSxzMFw3ei9tKmj3/6pUil/ZcsO2Fy35H/tPZmr5A
-         15sXb2sPegqzvnS6pOOb5UkTA7aiIBRIoZBjICwgpEqi9yWVD0GTX3Dib/DYZWNRc1
-         +W+1v+o8lq1Py7M8R5JGC62ySbm1x+1SiVSWfRFePp61oWwZTTaxi2XS1UTuqGDyVX
-         MY4E2QjsmGRiZwxOvx/To1jZPlHsxrY8nUNXkQRIoM5I4/ShYNU2ySM63ZFo33Xwzp
-         GZk/eWFKMuvsw==
+        bh=aYjeFGv6acnlGqYDx9smCRVPVxIhi92QWCR4UE4tuMs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=smdjxlwI8752LX6sLQi1zIRo5tZcmkNybwWGJzHl5Br688TmMAtt3noYpCJ3Q0G6n
+         BYsnSruBqzuUHz/nOtD+NmiO7FsqN+E0or9pJnrpjDAlNNsvVCUOcMUQsWPLKqeGfB
+         ul7Dxqukx5Tg01YKdSF0d4x2Gka53Nr2g6MVnt/oB8CHwBSbDT5SSEwZmmWf67bO+e
+         zBgrEbLhM6U6WzNbG94hJ1ujmks4wBhFd5H6JCn42PIuudgoRZRPFYMYnlxX01VnuC
+         jXnRtEVfKdi0+jZc8YZNTXJnWjMnjngrX3Zw2cZoEFJ1DaURDrVEhPbluOd8mGCD9m
+         2wFXIGIZ5rhTg==
 Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
-        id <B623d07d90000>; Fri, 25 Mar 2022 13:07:53 +1300
+        id <B623d07d90002>; Fri, 25 Mar 2022 13:07:53 +1300
 Received: from chrisp-dl.ws.atlnz.lc (chrisp-dl.ws.atlnz.lc [10.33.22.30])
-        by pat.atlnz.lc (Postfix) with ESMTP id 98E9213EDD7;
+        by pat.atlnz.lc (Postfix) with ESMTP id 9FB9E13EE9C;
         Fri, 25 Mar 2022 13:07:53 +1300 (NZDT)
 Received: by chrisp-dl.ws.atlnz.lc (Postfix, from userid 1030)
-        id 8DAF62A2679; Fri, 25 Mar 2022 13:07:49 +1300 (NZDT)
+        id 96AB92A2679; Fri, 25 Mar 2022 13:07:49 +1300 (NZDT)
 From:   Chris Packham <chris.packham@alliedtelesis.co.nz>
 To:     ulf.hansson@linaro.org, robh+dt@kernel.org, huziji@marvell.com,
         andrew@lunn.ch, gregory.clement@bootlin.com,
@@ -46,44 +46,50 @@ To:     ulf.hansson@linaro.org, robh+dt@kernel.org, huziji@marvell.com,
 Cc:     linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         Chris Packham <chris.packham@alliedtelesis.co.nz>
-Subject: [PATCH v3 0/3] mmc: xenon: Convert to JSON schema
-Date:   Fri, 25 Mar 2022 13:07:42 +1300
-Message-Id: <20220325000745.1708610-1-chris.packham@alliedtelesis.co.nz>
+Subject: [PATCH v3 3/3] dt-bindings: mmc: xenon: add marvell,sdhci-xenon compatible
+Date:   Fri, 25 Mar 2022 13:07:45 +1300
+Message-Id: <20220325000745.1708610-4-chris.packham@alliedtelesis.co.nz>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220325000745.1708610-1-chris.packham@alliedtelesis.co.nz>
+References: <20220325000745.1708610-1-chris.packham@alliedtelesis.co.nz>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-X-SEG-SpamProfiler-Analysis: v=2.3 cv=Cfh2G4jl c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=o8Y5sQTvuykA:10 a=gY6W4IOjc_lc-HF-ILsA:9
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=Cfh2G4jl c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=o8Y5sQTvuykA:10 a=khTjyptZaKf2Ay8TfSgA:9
 X-SEG-SpamProfiler-Score: 0
 x-atlnz-ls: pat
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series converts the xenon-sdhci-binding to JSON schema. There are so=
-me
-schema violations with the clock nodes for the existing dts. It's unclear
-whether the ap806/ap807 actually need the 2nd clock but the change that
-introduced the requirement to the old binding was fairly explicit about t=
-his
-being required for cp110 and ap806.
+The armada-37xx SoC dtsi includes this as a compatible string. Add it to
+the dt-binding.
 
-Chris Packham (3):
-  arm64: dts: marvell: Update sdhci node names to match schema
-  dt-bindings: mmc: xenon: Convert to JSON schema
-  dt-bindings: mmc: xenon: add marvell,sdhci-xenon compatible
+Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+---
 
- .../bindings/mmc/marvell,xenon-sdhci.txt      | 173 -----------
- .../bindings/mmc/marvell,xenon-sdhci.yaml     | 276 ++++++++++++++++++
- MAINTAINERS                                   |   2 +-
- arch/arm64/boot/dts/marvell/armada-37xx.dtsi  |   4 +-
- arch/arm64/boot/dts/marvell/armada-ap80x.dtsi |   2 +-
- arch/arm64/boot/dts/marvell/armada-cp11x.dtsi |   2 +-
- 6 files changed, 281 insertions(+), 178 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/mmc/marvell,xenon-s=
-dhci.txt
- create mode 100644 Documentation/devicetree/bindings/mmc/marvell,xenon-s=
-dhci.yaml
+Notes:
+    Changes in v3:
+    - new
 
+ .../devicetree/bindings/mmc/marvell,xenon-sdhci.yaml          | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/mmc/marvell,xenon-sdhci.ya=
+ml b/Documentation/devicetree/bindings/mmc/marvell,xenon-sdhci.yaml
+index 326ac3fa36b5..776bed5046fa 100644
+--- a/Documentation/devicetree/bindings/mmc/marvell,xenon-sdhci.yaml
++++ b/Documentation/devicetree/bindings/mmc/marvell,xenon-sdhci.yaml
+@@ -31,6 +31,10 @@ properties:
+           - const: marvell,armada-ap807-sdhci
+           - const: marvell,armada-ap806-sdhci
+=20
++      - items:
++          - const: marvell,armada-3700-sdhci
++          - const: marvell,sdhci-xenon
++
+   reg:
+     minItems: 1
+     maxItems: 2
 --=20
 2.35.1
 
