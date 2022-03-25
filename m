@@ -2,323 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C8EEC4321E
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB010C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378521AbiCYPew (ORCPT
+        id S1344500AbiCYPfu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:34:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57776 "EHLO
+        Fri, 25 Mar 2022 11:35:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378210AbiCYPZG (ORCPT
+        with ESMTP id S1376965AbiCYPce (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:25:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F43CECC45;
-        Fri, 25 Mar 2022 08:20:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D425460A1B;
-        Fri, 25 Mar 2022 15:20:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E96CC340E9;
-        Fri, 25 Mar 2022 15:20:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221601;
-        bh=KGWqAfAdKSffU84AalZsu8UzUhsZ2LveHgjrw61I36I=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EWv8JCtGE/m+SwsgZsLbu0mT5s0Fjk78b1Aw4Ok93sfk52juMCKXgocAvPaPI3jdi
-         YY9R5mYSrG1/v5SGFJ3M6Wl0XuWkx9+h2dO0IoMZDG3OshvL2tDz5K3lg+3pcXGBr2
-         k/NMOhj91ge/YPhIfOb8bdSXowSFGpG/2g82+FYk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jason Gunthorpe <jgg@ziepe.ca>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Stefan Berger <stefanb@linux.ibm.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Subject: [PATCH 5.17 35/39] tpm: fix reference counting for struct tpm_chip
-Date:   Fri, 25 Mar 2022 16:14:50 +0100
-Message-Id: <20220325150421.249474748@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220325150420.245733653@linuxfoundation.org>
-References: <20220325150420.245733653@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Fri, 25 Mar 2022 11:32:34 -0400
+Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9540930F
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 08:28:02 -0700 (PDT)
+Received: by mail-pf1-x449.google.com with SMTP id y27-20020aa79afb000000b004fa7883f756so4309841pfp.18
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 08:28:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=jseiWq5rrotCj6SE0FBptrsHZWDpsUi2UXSPKIK8dgk=;
+        b=qyj0I5f/xCwa7XbbOHfpc0HtWHoZJDCrm8oH5zdbf6PWdOkuMnRWCRwpmeJLFy6Pk4
+         BD9jxrgwW4DibjBjEecGiDmhKz6q4KBJt05GfIZgi02QmSSyWZTMIa5Z2ocgabwfPwRb
+         KgYR1kDmFYtPRQOAcz58wG5migaS//k4C4jcdJT3v7hK91gdAyrGlmxuHxtJmnD6pZhL
+         TWQlp+8iC2YP03AWDyWz5sUsT71gOhJv2wAUio4R9/lV8PGN2WoD7KY2T3oG3Qbl2Pkw
+         RlgtSK1l85bdwlEiiiBIqRI4ZhHNmshjH/uebn69L5DpK/w1eRU9mPm9PujE9YrVCsSg
+         iegQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=jseiWq5rrotCj6SE0FBptrsHZWDpsUi2UXSPKIK8dgk=;
+        b=U7wPr8R2dJGQzFc3yd0m4Zl7OCwFEVy7clrMON0yYgIHy2WweZE+TEj7IFRlkdMa5R
+         NTVpIhew/3OOm/dpLfnrcqxyUL5aRA+YNnu/Epq2qbZ7tA492mR13YzlMU+Xto/eX1Kp
+         tbN2NZWn8V7txoHm4FtSUBBQHsZ4wd3wCMU3SV+UtQm422rkk1PrS946qMQW7E1ZXByl
+         uaBu6xLhMjpcsfxRfEWeCkZ355R8b+PfCwrWERqeS4v8zuhZEo1ksntrOE62DGu9qUFf
+         DDVjY0ox4BGRo90gQW5RcvJiwf/VtaF0DOmfaPd1TPZKeXy75M0OLPGFgzyx3lWCAjWo
+         n88A==
+X-Gm-Message-State: AOAM532xTWsq0W5SX7Ym0/cU43Zfvq7c4EJT1oVWpKLRTu07yAprwe5q
+        sSMFGf5x0boSj92fRNeFtY5jGoto9DY=
+X-Google-Smtp-Source: ABdhPJxnHXPOftbmUzztnT/5uAtdts5+6+KWOTXoOsKFfFQLqGLDAimI3h4Cn0X0PA8ojfUlnRZuom5jMQE=
+X-Received: from pgonda1.kir.corp.google.com ([2620:15c:29:203:655c:5ed9:95b6:394a])
+ (user=pgonda job=sendgmr) by 2002:a17:90a:e545:b0:1c6:d783:6e64 with SMTP id
+ ei5-20020a17090ae54500b001c6d7836e64mr26086984pjb.222.1648222081542; Fri, 25
+ Mar 2022 08:28:01 -0700 (PDT)
+Date:   Fri, 25 Mar 2022 08:27:58 -0700
+Message-Id: <20220325152758.335626-1-pgonda@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
+Subject: [PATCH v2] Add KVM_EXIT_SHUTDOWN metadata for SEV-ES
+From:   Peter Gonda <pgonda@google.com>
+To:     kvm@vger.kernel.org
+Cc:     Peter Gonda <pgonda@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Joerg Roedel <jroedel@suse.de>, Marc Orr <marcorr@google.com>,
+        Sean Christopherson <seanjc@google.com>,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+SEV-ES guests can request termination using the GHCB's MSR protocol. See
+AMD's GHCB spec section '4.1.13 Termination Request'. Currently when a
+guest does this the userspace VMM sees an KVM_EXIT_UNKNOWN (-EVINAL)
+return code from KVM_RUN. By adding a KVM_EXIT_SHUTDOWN_ENTRY to kvm_run
+struct the userspace VMM can clear see the guest has requested a SEV-ES
+termination including the termination reason code set and reason code.
 
-commit 7e0438f83dc769465ee663bb5dcf8cc154940712 upstream.
+Signed-off-by: Peter Gonda <pgonda@google.com>
+Cc: Paolo Bonzini <pbonzini@redhat.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: Brijesh Singh <brijesh.singh@amd.com>
+Cc: Joerg Roedel <jroedel@suse.de>
+Cc: Marc Orr <marcorr@google.com>
+Cc: Sean Christopherson <seanjc@google.com>
+Cc: kvm@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 
-The following sequence of operations results in a refcount warning:
-
-1. Open device /dev/tpmrm.
-2. Remove module tpm_tis_spi.
-3. Write a TPM command to the file descriptor opened at step 1.
-
-------------[ cut here ]------------
-WARNING: CPU: 3 PID: 1161 at lib/refcount.c:25 kobject_get+0xa0/0xa4
-refcount_t: addition on 0; use-after-free.
-Modules linked in: tpm_tis_spi tpm_tis_core tpm mdio_bcm_unimac brcmfmac
-sha256_generic libsha256 sha256_arm hci_uart btbcm bluetooth cfg80211 vc4
-brcmutil ecdh_generic ecc snd_soc_core crc32_arm_ce libaes
-raspberrypi_hwmon ac97_bus snd_pcm_dmaengine bcm2711_thermal snd_pcm
-snd_timer genet snd phy_generic soundcore [last unloaded: spi_bcm2835]
-CPU: 3 PID: 1161 Comm: hold_open Not tainted 5.10.0ls-main-dirty #2
-Hardware name: BCM2711
-[<c0410c3c>] (unwind_backtrace) from [<c040b580>] (show_stack+0x10/0x14)
-[<c040b580>] (show_stack) from [<c1092174>] (dump_stack+0xc4/0xd8)
-[<c1092174>] (dump_stack) from [<c0445a30>] (__warn+0x104/0x108)
-[<c0445a30>] (__warn) from [<c0445aa8>] (warn_slowpath_fmt+0x74/0xb8)
-[<c0445aa8>] (warn_slowpath_fmt) from [<c08435d0>] (kobject_get+0xa0/0xa4)
-[<c08435d0>] (kobject_get) from [<bf0a715c>] (tpm_try_get_ops+0x14/0x54 [tpm])
-[<bf0a715c>] (tpm_try_get_ops [tpm]) from [<bf0a7d6c>] (tpm_common_write+0x38/0x60 [tpm])
-[<bf0a7d6c>] (tpm_common_write [tpm]) from [<c05a7ac0>] (vfs_write+0xc4/0x3c0)
-[<c05a7ac0>] (vfs_write) from [<c05a7ee4>] (ksys_write+0x58/0xcc)
-[<c05a7ee4>] (ksys_write) from [<c04001a0>] (ret_fast_syscall+0x0/0x4c)
-Exception stack(0xc226bfa8 to 0xc226bff0)
-bfa0:                   00000000 000105b4 00000003 beafe664 00000014 00000000
-bfc0: 00000000 000105b4 000103f8 00000004 00000000 00000000 b6f9c000 beafe684
-bfe0: 0000006c beafe648 0001056c b6eb6944
----[ end trace d4b8409def9b8b1f ]---
-
-The reason for this warning is the attempt to get the chip->dev reference
-in tpm_common_write() although the reference counter is already zero.
-
-Since commit 8979b02aaf1d ("tpm: Fix reference count to main device") the
-extra reference used to prevent a premature zero counter is never taken,
-because the required TPM_CHIP_FLAG_TPM2 flag is never set.
-
-Fix this by moving the TPM 2 character device handling from
-tpm_chip_alloc() to tpm_add_char_device() which is called at a later point
-in time when the flag has been set in case of TPM2.
-
-Commit fdc915f7f719 ("tpm: expose spaces via a device link /dev/tpmrm<n>")
-already introduced function tpm_devs_release() to release the extra
-reference but did not implement the required put on chip->devs that results
-in the call of this function.
-
-Fix this by putting chip->devs in tpm_chip_unregister().
-
-Finally move the new implementation for the TPM 2 handling into a new
-function to avoid multiple checks for the TPM_CHIP_FLAG_TPM2 flag in the
-good case and error cases.
-
-Cc: stable@vger.kernel.org
-Fixes: fdc915f7f719 ("tpm: expose spaces via a device link /dev/tpmrm<n>")
-Fixes: 8979b02aaf1d ("tpm: Fix reference count to main device")
-Co-developed-by: Jason Gunthorpe <jgg@ziepe.ca>
-Signed-off-by: Jason Gunthorpe <jgg@ziepe.ca>
-Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Tested-by: Stefan Berger <stefanb@linux.ibm.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/tpm/tpm-chip.c   |   46 +++++------------------------
- drivers/char/tpm/tpm.h        |    2 +
- drivers/char/tpm/tpm2-space.c |   65 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 75 insertions(+), 38 deletions(-)
 
---- a/drivers/char/tpm/tpm-chip.c
-+++ b/drivers/char/tpm/tpm-chip.c
-@@ -274,14 +274,6 @@ static void tpm_dev_release(struct devic
- 	kfree(chip);
- }
- 
--static void tpm_devs_release(struct device *dev)
--{
--	struct tpm_chip *chip = container_of(dev, struct tpm_chip, devs);
--
--	/* release the master device reference */
--	put_device(&chip->dev);
--}
--
- /**
-  * tpm_class_shutdown() - prepare the TPM device for loss of power.
-  * @dev: device to which the chip is associated.
-@@ -344,7 +336,6 @@ struct tpm_chip *tpm_chip_alloc(struct d
- 	chip->dev_num = rc;
- 
- 	device_initialize(&chip->dev);
--	device_initialize(&chip->devs);
- 
- 	chip->dev.class = tpm_class;
- 	chip->dev.class->shutdown_pre = tpm_class_shutdown;
-@@ -352,39 +343,20 @@ struct tpm_chip *tpm_chip_alloc(struct d
- 	chip->dev.parent = pdev;
- 	chip->dev.groups = chip->groups;
- 
--	chip->devs.parent = pdev;
--	chip->devs.class = tpmrm_class;
--	chip->devs.release = tpm_devs_release;
--	/* get extra reference on main device to hold on
--	 * behalf of devs.  This holds the chip structure
--	 * while cdevs is in use.  The corresponding put
--	 * is in the tpm_devs_release (TPM2 only)
--	 */
--	if (chip->flags & TPM_CHIP_FLAG_TPM2)
--		get_device(&chip->dev);
--
- 	if (chip->dev_num == 0)
- 		chip->dev.devt = MKDEV(MISC_MAJOR, TPM_MINOR);
- 	else
- 		chip->dev.devt = MKDEV(MAJOR(tpm_devt), chip->dev_num);
- 
--	chip->devs.devt =
--		MKDEV(MAJOR(tpm_devt), chip->dev_num + TPM_NUM_DEVICES);
--
- 	rc = dev_set_name(&chip->dev, "tpm%d", chip->dev_num);
- 	if (rc)
- 		goto out;
--	rc = dev_set_name(&chip->devs, "tpmrm%d", chip->dev_num);
--	if (rc)
--		goto out;
- 
- 	if (!pdev)
- 		chip->flags |= TPM_CHIP_FLAG_VIRTUAL;
- 
- 	cdev_init(&chip->cdev, &tpm_fops);
--	cdev_init(&chip->cdevs, &tpmrm_fops);
- 	chip->cdev.owner = THIS_MODULE;
--	chip->cdevs.owner = THIS_MODULE;
- 
- 	rc = tpm2_init_space(&chip->work_space, TPM2_SPACE_BUFFER_SIZE);
- 	if (rc) {
-@@ -396,7 +368,6 @@ struct tpm_chip *tpm_chip_alloc(struct d
- 	return chip;
- 
- out:
--	put_device(&chip->devs);
- 	put_device(&chip->dev);
- 	return ERR_PTR(rc);
- }
-@@ -445,14 +416,9 @@ static int tpm_add_char_device(struct tp
- 	}
- 
- 	if (chip->flags & TPM_CHIP_FLAG_TPM2 && !tpm_is_firmware_upgrade(chip)) {
--		rc = cdev_device_add(&chip->cdevs, &chip->devs);
--		if (rc) {
--			dev_err(&chip->devs,
--				"unable to cdev_device_add() %s, major %d, minor %d, err=%d\n",
--				dev_name(&chip->devs), MAJOR(chip->devs.devt),
--				MINOR(chip->devs.devt), rc);
--			return rc;
--		}
-+		rc = tpm_devs_add(chip);
-+		if (rc)
-+			goto err_del_cdev;
- 	}
- 
- 	/* Make the chip available. */
-@@ -460,6 +426,10 @@ static int tpm_add_char_device(struct tp
- 	idr_replace(&dev_nums_idr, chip, chip->dev_num);
- 	mutex_unlock(&idr_lock);
- 
-+	return 0;
-+
-+err_del_cdev:
-+	cdev_device_del(&chip->cdev, &chip->dev);
- 	return rc;
- }
- 
-@@ -654,7 +624,7 @@ void tpm_chip_unregister(struct tpm_chip
- 		hwrng_unregister(&chip->hwrng);
- 	tpm_bios_log_teardown(chip);
- 	if (chip->flags & TPM_CHIP_FLAG_TPM2 && !tpm_is_firmware_upgrade(chip))
--		cdev_device_del(&chip->cdevs, &chip->devs);
-+		tpm_devs_remove(chip);
- 	tpm_del_char_device(chip);
- }
- EXPORT_SYMBOL_GPL(tpm_chip_unregister);
---- a/drivers/char/tpm/tpm.h
-+++ b/drivers/char/tpm/tpm.h
-@@ -234,6 +234,8 @@ int tpm2_prepare_space(struct tpm_chip *
- 		       size_t cmdsiz);
- int tpm2_commit_space(struct tpm_chip *chip, struct tpm_space *space, void *buf,
- 		      size_t *bufsiz);
-+int tpm_devs_add(struct tpm_chip *chip);
-+void tpm_devs_remove(struct tpm_chip *chip);
- 
- void tpm_bios_log_setup(struct tpm_chip *chip);
- void tpm_bios_log_teardown(struct tpm_chip *chip);
---- a/drivers/char/tpm/tpm2-space.c
-+++ b/drivers/char/tpm/tpm2-space.c
-@@ -574,3 +574,68 @@ out:
- 	dev_err(&chip->dev, "%s: error %d\n", __func__, rc);
- 	return rc;
- }
-+
-+/*
-+ * Put the reference to the main device.
-+ */
-+static void tpm_devs_release(struct device *dev)
-+{
-+	struct tpm_chip *chip = container_of(dev, struct tpm_chip, devs);
-+
-+	/* release the master device reference */
-+	put_device(&chip->dev);
-+}
-+
-+/*
-+ * Remove the device file for exposed TPM spaces and release the device
-+ * reference. This may also release the reference to the master device.
-+ */
-+void tpm_devs_remove(struct tpm_chip *chip)
-+{
-+	cdev_device_del(&chip->cdevs, &chip->devs);
-+	put_device(&chip->devs);
-+}
-+
-+/*
-+ * Add a device file to expose TPM spaces. Also take a reference to the
-+ * main device.
-+ */
-+int tpm_devs_add(struct tpm_chip *chip)
-+{
-+	int rc;
-+
-+	device_initialize(&chip->devs);
-+	chip->devs.parent = chip->dev.parent;
-+	chip->devs.class = tpmrm_class;
-+
-+	/*
-+	 * Get extra reference on main device to hold on behalf of devs.
-+	 * This holds the chip structure while cdevs is in use. The
-+	 * corresponding put is in the tpm_devs_release.
-+	 */
-+	get_device(&chip->dev);
-+	chip->devs.release = tpm_devs_release;
-+	chip->devs.devt = MKDEV(MAJOR(tpm_devt), chip->dev_num + TPM_NUM_DEVICES);
-+	cdev_init(&chip->cdevs, &tpmrm_fops);
-+	chip->cdevs.owner = THIS_MODULE;
-+
-+	rc = dev_set_name(&chip->devs, "tpmrm%d", chip->dev_num);
-+	if (rc)
-+		goto err_put_devs;
-+
-+	rc = cdev_device_add(&chip->cdevs, &chip->devs);
-+	if (rc) {
-+		dev_err(&chip->devs,
-+			"unable to cdev_device_add() %s, major %d, minor %d, err=%d\n",
-+			dev_name(&chip->devs), MAJOR(chip->devs.devt),
-+			MINOR(chip->devs.devt), rc);
-+		goto err_put_devs;
-+	}
-+
-+	return 0;
-+
-+err_put_devs:
-+	put_device(&chip->devs);
-+
-+	return rc;
-+}
+V2
+ * Add KVM_CAP_EXIT_SHUTDOWN_REASON check for KVM_CHECK_EXTENSION.
 
+Tested by making an SEV-ES guest call sev_es_terminate() with hardcoded
+reason code set and reason code and then observing the codes from the
+userspace VMM in the kvm_run.shutdown.data fields.
+
+---
+ arch/x86/kvm/svm/sev.c   |  9 +++++++--
+ include/uapi/linux/kvm.h | 13 +++++++++++++
+ virt/kvm/kvm_main.c      |  1 +
+ 3 files changed, 21 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+index 75fa6dd268f0..5f9d37dd3f6f 100644
+--- a/arch/x86/kvm/svm/sev.c
++++ b/arch/x86/kvm/svm/sev.c
+@@ -2735,8 +2735,13 @@ static int sev_handle_vmgexit_msr_protocol(struct vcpu_svm *svm)
+ 		pr_info("SEV-ES guest requested termination: %#llx:%#llx\n",
+ 			reason_set, reason_code);
+ 
+-		ret = -EINVAL;
+-		break;
++		vcpu->run->exit_reason = KVM_EXIT_SHUTDOWN;
++		vcpu->run->shutdown.reason = KVM_SHUTDOWN_SEV_TERM;
++		vcpu->run->shutdown.ndata = 2;
++		vcpu->run->shutdown.data[0] = reason_set;
++		vcpu->run->shutdown.data[1] = reason_code;
++
++		return 0;
+ 	}
+ 	default:
+ 		/* Error, keep GHCB MSR value as-is */
+diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
+index 8616af85dc5d..017c03421c48 100644
+--- a/include/uapi/linux/kvm.h
++++ b/include/uapi/linux/kvm.h
+@@ -271,6 +271,12 @@ struct kvm_xen_exit {
+ #define KVM_EXIT_XEN              34
+ #define KVM_EXIT_RISCV_SBI        35
+ 
++/* For KVM_EXIT_SHUTDOWN */
++/* Standard VM shutdown request. No additional metadata provided. */
++#define KVM_SHUTDOWN_REQ	0
++/* SEV-ES termination request */
++#define KVM_SHUTDOWN_SEV_TERM	1
++
+ /* For KVM_EXIT_INTERNAL_ERROR */
+ /* Emulate instruction failed. */
+ #define KVM_INTERNAL_ERROR_EMULATION	1
+@@ -311,6 +317,12 @@ struct kvm_run {
+ 		struct {
+ 			__u64 hardware_exit_reason;
+ 		} hw;
++		/* KVM_EXIT_SHUTDOWN */
++		struct {
++			__u64 reason;
++			__u32 ndata;
++			__u64 data[16];
++		} shutdown;
+ 		/* KVM_EXIT_FAIL_ENTRY */
+ 		struct {
+ 			__u64 hardware_entry_failure_reason;
+@@ -1145,6 +1157,7 @@ struct kvm_ppc_resize_hpt {
+ #define KVM_CAP_PMU_CAPABILITY 212
+ #define KVM_CAP_DISABLE_QUIRKS2 213
+ #define KVM_CAP_VM_TSC_CONTROL 214
++#define KVM_CAP_EXIT_SHUTDOWN_REASON 215
+ 
+ #ifdef KVM_CAP_IRQ_ROUTING
+ 
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+index 70e05af5ebea..03b6e472f32c 100644
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -4299,6 +4299,7 @@ static long kvm_vm_ioctl_check_extension_generic(struct kvm *kvm, long arg)
+ 	case KVM_CAP_CHECK_EXTENSION_VM:
+ 	case KVM_CAP_ENABLE_CAP_VM:
+ 	case KVM_CAP_HALT_POLL:
++	case KVM_CAP_EXIT_SHUTDOWN_REASON:
+ 		return 1;
+ #ifdef CONFIG_KVM_MMIO
+ 	case KVM_CAP_COALESCED_MMIO:
+-- 
+2.35.1.1021.g381101b075-goog
 
