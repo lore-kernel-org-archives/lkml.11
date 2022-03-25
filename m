@@ -2,107 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB407C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:29:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42D08C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:29:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229964AbiCYTbJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:31:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34172 "EHLO
+        id S230048AbiCYTbU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:31:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229843AbiCYTam (ORCPT
+        with ESMTP id S229971AbiCYTax (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:30:42 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4ABF3DE8D2
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:26:40 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id s25so11570440lji.5
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:26:40 -0700 (PDT)
+        Fri, 25 Mar 2022 15:30:53 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF53C3E19EB;
+        Fri, 25 Mar 2022 12:26:44 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id gb19so8352811pjb.1;
+        Fri, 25 Mar 2022 12:26:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=SrJbbfaddWfhMen20qeE+m66y7c5UtFQj6CzeAj6OjI=;
-        b=pAIGj8V93uiAJjTlmDfKIrNSPI5B0Swb21IxwxtA2OT1fWA9xoWtkiYuFGd2YtrLzY
-         EjVkBD6B6OmrGKVrwniwjA1oOEDGBS2ZdjYabLeHtK2EfbWaVmShnewTbHkTHXrSSYL+
-         zsslkO+p6tDLQHUkKUSIEvBJmfH8l56kmYFnCYL+37Ra2wHkcGueG3Y1B2ViljRc+EuM
-         LrWrAcCel0AEqINM6IG63ovAPuQyRjmPzK5ZvYVhbdJ8sD2TPyL0OQZO3Ub+DCq6kmvZ
-         RY6L2ECQHMrKu293svlvJKkVFag++e46e2Y2UXlaiZ+38x9wz6VkDlGmuYNZuRiOv7Jz
-         +kNA==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/uC+62gh9ASaYWU9iHiRiXE2TcHkD9PeF++NwFgelTU=;
+        b=Cwz9lfwulKIVQ4+wpmRMxuxynoCcw8m8Ti1afP//R2/4U2ZZT8Kl7ei0CVWQZ6VCkm
+         g3CHirkwFWITqiH4pdpThrN4PIsxDR0+MV54mGbDE7HKADuu726EElYYiaSpnehUJ/Yf
+         oWjwAAD0EfAaHoyz5gxhs6qonctlUJ8+vMBZkxJ860iRorl7UV9gtxCnpIZ/5xKt6rU0
+         mPZT4Cff4a+Vv/4VPUZeYmVUD1pFm/bbA7ox+jpbXaVFwkOiD/VdLiKRAriyLFvYi3DZ
+         K4jLjRqTNYrNiYfzTEgYfPcbVe4YPw8/vhSqCI6Z/91lpaDHwQOpQ7aq9028GKZE4e97
+         Og9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=SrJbbfaddWfhMen20qeE+m66y7c5UtFQj6CzeAj6OjI=;
-        b=YJ1nSYa+Yqyyy6OlFs1+hrbhEpQH8fstbbg8gYVbsNzp4SGSMX+0NUpa2L40hKle49
-         67vK/gXEDbHOrxK4llAF+RaaLoh2vGfQJHa97zmSqq0W/eoXsfMIxRbVC4/f8N1NK0EW
-         /GjHRgKqM4bNgZSqxFsH3a54/996QiLOy8NEdBKlCM/KEtKS1nxtVTVgBXJJRuhep+Ae
-         qKEc/LFH8yTfu6+DVNCpMh5X2D6RMd+IqZfluZ5ao5U52/qDp5MZCWZ4ykL5qUn4UGbC
-         APxICSxomgmxoXd4vkRtn0WlVa00EUfAA9tdIM5y1xy2k9kVjQcIyGbwspX7EURmwfDf
-         zO1w==
-X-Gm-Message-State: AOAM5300remxwixRxh148ZBfMv4e5Wiw39yltCoY5TBWyBe7sSyM4a0P
-        woTloo95j/9eU+Lm2/jZmJMy3MpStaP/iD9f
-X-Google-Smtp-Source: ABdhPJwUgBLSDvNV1NlBzs98fMN9ijZv4koUdOJmoiCaJvLygneQGawLQNsV+XEZue+1J6bM2ic1iw==
-X-Received: by 2002:a05:6000:1a8d:b0:204:39fa:d21c with SMTP id f13-20020a0560001a8d00b0020439fad21cmr9858181wry.9.1648229580850;
-        Fri, 25 Mar 2022 10:33:00 -0700 (PDT)
-Received: from ?IPV6:2001:861:44c0:66c0:d3b0:47bd:8485:31cd? ([2001:861:44c0:66c0:d3b0:47bd:8485:31cd])
-        by smtp.gmail.com with ESMTPSA id 11-20020a05600c26cb00b0037ff53511f2sm8544986wmv.31.2022.03.25.10.32.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Mar 2022 10:33:00 -0700 (PDT)
-Message-ID: <e32a02a0-1f09-3038-81cb-54c632329dfa@baylibre.com>
-Date:   Fri, 25 Mar 2022 18:32:59 +0100
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/uC+62gh9ASaYWU9iHiRiXE2TcHkD9PeF++NwFgelTU=;
+        b=ctB0MFlODmnsa419bJTL1hGyt50w9PX6MlA7R56ZBUa5tF6vOujMsiJOLubPpRhnK4
+         KZweu5Q/XnzNTOr5o3hNeKQfavdHCeuDUGYmf8il38dZxFetBB2Q3uNZR1IVcStMkXpG
+         whb38Hz+Zk7CS47skOcioRiYu4WVebCM4P/MjRkY0kCL2I2o5pxP2vQGHlUFFZra95Xr
+         crQvK2Dyc8ysE52kUeoLv0jr71a6c57f2fBcoebQTIm9IU818nheWKdEg9mxeXd5S2uS
+         k8OEboSO9IBJ6YSvUDoH1J7gU5RIGDydAzLbxcIF8weXsvDd5CbMWlN/Iw/AfVDLSR+4
+         QI2Q==
+X-Gm-Message-State: AOAM530zcQxd11zSKyPMLCHovx/vtOljRBHNQuFr32bMIHNRAFVNNxRT
+        l2QvHeJf6KeYYsxdJYq6t3Q=
+X-Google-Smtp-Source: ABdhPJwyxsudip9jMrIETZZeYxy2xQNUzsuCk2CIo6WpAKYGRwHVxU66XjsX4nTQhgPQJLDB2ivM2g==
+X-Received: by 2002:a17:902:7887:b0:154:4f3f:ec54 with SMTP id q7-20020a170902788700b001544f3fec54mr13200826pll.156.1648236404001;
+        Fri, 25 Mar 2022 12:26:44 -0700 (PDT)
+Received: from 9a2d8922b8f1 ([122.161.51.18])
+        by smtp.gmail.com with ESMTPSA id m15-20020a638c0f000000b003827bfe1f5csm5878382pgd.7.2022.03.25.12.26.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Mar 2022 12:26:43 -0700 (PDT)
+Date:   Sat, 26 Mar 2022 00:56:37 +0530
+From:   Kuldeep Singh <singh.kuldeep87k@gmail.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Viresh Kumar <viresh.kumar@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Viresh Kumar <vireshk@kernel.org>,
+        Shiraz Hashim <shiraz.linux.kernel@gmail.com>,
+        SoC Team <soc@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] ARM: dts: spear13xx: Update SPI dma properties
+Message-ID: <20220325192637.GA15904@9a2d8922b8f1>
+References: <20220323175920.93155-1-singh.kuldeep87k@gmail.com>
+ <20220324023904.h2qfxzxlznggbsyr@vireshk-i7>
+ <20220324062547.GA15504@9a2d8922b8f1>
+ <20220325015849.sazvlevnvdqj5z42@vireshk-i7>
+ <CAK8P3a0Q8eOTeRmd5-G8rNCKAcH+4HReCsOAGKd4Vq30C9TaEA@mail.gmail.com>
+ <20220325173826.GA70042@9a2d8922b8f1>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 1/3] arm64: meson: add dts bluetooth node for JetHub H1
-Content-Language: en-US
-To:     Vyacheslav Bocharov <adeep@lexina.in>,
-        Kevin Hilman <khilman@baylibre.com>,
-        linux-amlogic@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Cc:     Vyacheslav Bocharov <devel@lexina.in>
-References: <20220325165501.81551-1-adeep@lexina.in>
- <20220325165501.81551-2-adeep@lexina.in>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-Organization: Baylibre
-In-Reply-To: <20220325165501.81551-2-adeep@lexina.in>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220325173826.GA70042@9a2d8922b8f1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On 25/03/2022 17:54, Vyacheslav Bocharov wrote:
-> From: Vyacheslav Bocharov <devel@lexina.in>
+On Fri, Mar 25, 2022 at 11:08:26PM +0530, Kuldeep Singh wrote:
+> On Fri, Mar 25, 2022 at 10:11:41AM +0100, Arnd Bergmann wrote:
+> > On Fri, Mar 25, 2022 at 2:58 AM Viresh Kumar <viresh.kumar@linaro.org> wrote:
+> > > On 24-03-22, 11:55, Kuldeep Singh wrote:
+> > > > Fixed order of values is important in case of properties like
+> > > > compatibles etc. In case of dma-names, yes order shouldn't matter here.
+> > > >
+> > > > This patch is more of appeasing dtbs_check warning rather than fixing
+> > > > something.
+> > >
+> > > Exactly my point. We have seen similar type of issues with other tools, like
+> > > coccinelle, earlier and such patches were rejected as the kernel was just fine
+> > > and tooling needs to be fixed.
+> > >
+> > > > It's safe to go with this patch.
+> > > > I am not sure if there's a provision to exclude dma-names from fix
+> > > > ordering checks. Rob can help here in providing better insights.
+> > 
+> > I think it's a question of the scale of the warnings: my understanding is that
+> > there are only a handful of dts files that trigger the warning at all, and it
+> > would be rather hard to change the tooling around this. Since the proposed
+> > dts change is clearly harmless, I don't mind applying it.
+> > 
+> > Kuldeep, you have probably looked at all dts files in the kernel, can you
+> > say how many of them are affected by the dma property reordering?
 > 
-> Add bluetooth node for RTL8822CS uart to JetHub H1 dts file.
+> I have checked spi-pl022.yaml as of now and this was the only one which
+> was affected with dma ordering.
 > 
-> Signed-off-by: Vyacheslav Bocharov <adeep@lexina.in>
-> ---
->   .../boot/dts/amlogic/meson-gxl-s905w-jethome-jethub-j80.dts  | 5 +++++
->   1 file changed, 5 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/amlogic/meson-gxl-s905w-jethome-jethub-j80.dts b/arch/arm64/boot/dts/amlogic/meson-gxl-s905w-jethome-jethub-j80.dts
-> index 6eafb908695f..a5ee7ed17efa 100644
-> --- a/arch/arm64/boot/dts/amlogic/meson-gxl-s905w-jethome-jethub-j80.dts
-> +++ b/arch/arm64/boot/dts/amlogic/meson-gxl-s905w-jethome-jethub-j80.dts
-> @@ -213,6 +213,11 @@ &uart_A {
->   	pinctrl-0 = <&uart_a_pins>, <&uart_a_cts_rts_pins>;
->   	pinctrl-names = "default";
->   	uart-has-rtscts;
+> For all dts files, I can definitely give a try and will come up with
+> some numbers. Please note, there are still bindings left to be converted
+> to yaml format, so won't be able to catch those cases.
 
-Please add a blank here to match other DT files.
+I checked and found below dts with dma-names warnings[1].
+spear1340, spear1310, spear13xx, fsl-ls1043a, fsl-ls1046a 
 
-> +	bluetooth {
-> +		compatible = "realtek,rtl8822cs-bt";
-> +		enable-gpios  = <&gpio GPIOX_17 GPIO_ACTIVE_HIGH>;
-> +		host-wake-gpios = <&gpio GPIOX_18 GPIO_ACTIVE_HIGH>;
-> +       };
->   };
->   
->   &uart_C {
+Yes Arnd, you were right. Very few dts are affected by dma ordering
+right now. There might be cases where nodes don't define generic names
+and thus not running required checks, still I assume the numbers will be
+very less. So, probably we can go ahead with the change.
 
+- Kuldeep
+[1]
+root@9a2d8922b8f1:~/linux/torvalds# grep "'rx' was expected" output.txt
+arch/arm/boot/dts/spear1340-evb.dt.yaml: spi@e0100000: dma-names:0: 'rx' was expected
+arch/arm/boot/dts/spear1310-evb.dt.yaml: spi@e0100000: dma-names:0: 'rx' was expected
+arch/arm/boot/dts/spear1340-evb.dt.yaml: serial@b4100000: dma-names:0: 'rx' was expected
+
+root@9a2d8922b8f1:~/linux/torvalds# grep "'rx' was expected" arm64_all
+arch/arm64/boot/dts/freescale/fsl-ls1043a-qds.dt.yaml: i2c@2180000: dma-names:0: 'rx' was expected
+arch/arm64/boot/dts/freescale/fsl-ls1043a-rdb.dt.yaml: i2c@2180000: dma-names:0: 'rx' was expected
+arch/arm64/boot/dts/freescale/fsl-ls1046a-frwy.dt.yaml: i2c@2180000: dma-names:0: 'rx' was expected
+arch/arm64/boot/dts/freescale/fsl-ls1046a-qds.dt.yaml: i2c@2180000: dma-names:0: 'rx' was expected
+arch/arm64/boot/dts/freescale/fsl-ls1046a-rdb.dt.yaml: i2c@2180000: dma-names:0: 'rx' was expected
