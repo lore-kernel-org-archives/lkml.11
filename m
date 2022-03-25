@@ -2,86 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABE48C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 04:34:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73956C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 04:34:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353841AbiCYEfi (ORCPT
+        id S1353745AbiCYEf7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 00:35:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41298 "EHLO
+        Fri, 25 Mar 2022 00:35:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231523AbiCYEfe (ORCPT
+        with ESMTP id S231523AbiCYEfx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 00:35:34 -0400
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0580AC064;
-        Thu, 24 Mar 2022 21:34:00 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=hsiangkao@linux.alibaba.com;NM=1;PH=DS;RN=15;SR=0;TI=SMTPD_---0V87hnAX_1648182834;
-Received: from B-P7TQMD6M-0146.local(mailfrom:hsiangkao@linux.alibaba.com fp:SMTPD_---0V87hnAX_1648182834)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 25 Mar 2022 12:33:56 +0800
-Date:   Fri, 25 Mar 2022 12:33:53 +0800
-From:   Gao Xiang <hsiangkao@linux.alibaba.com>
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Huang Jianan <huangjianan@oppo.com>,
-        Chia-Wei Wang <chiawei_wang@aspeedtech.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Amit Kucheria <amitk@kernel.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] Documentation/ABI: sysfs-fs-erofs: Fix Sphinx errors
-Message-ID: <Yj1GMaQN/W+kpT6e@B-P7TQMD6M-0146.local>
-References: <20220324165918.22005-1-hdegoede@redhat.com>
- <20220324165918.22005-4-hdegoede@redhat.com>
+        Fri, 25 Mar 2022 00:35:53 -0400
+Received: from mail.meizu.com (edge07.meizu.com [112.91.151.210])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BFD7C680B;
+        Thu, 24 Mar 2022 21:34:18 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail11.meizu.com
+ (172.16.1.15) with Microsoft SMTP Server (TLS) id 14.3.487.0; Fri, 25 Mar
+ 2022 12:34:11 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Fri, 25 Mar
+ 2022 12:34:10 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     <linux@roeck-us.net>, <heikki.krogerus@linux.intel.com>,
+        <gregkh@linuxfoundation.org>
+CC:     <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Haowen Bai <baihaowen@meizu.com>
+Subject: [PATCH] usb: typec: tcpm: testing array offset 'port->logbuffer_head' before use
+Date:   Fri, 25 Mar 2022 12:34:09 +0800
+Message-ID: <1648182849-9209-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220324165918.22005-4-hdegoede@redhat.com>
+Content-Type: text/plain
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-125.meizu.com (172.16.1.125) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 05:59:18PM +0100, Hans de Goede wrote:
-> Fix the following warnings from "make htmldocs":
-> 
-> Documentation/ABI/testing/sysfs-fs-erofs:10:
->   ERROR: Unexpected indentation.
->   WARNING: Block quote ends without a blank line; unexpected unindent.
-> 
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Fix possible indexing array of bound for 
+port->logbuffer[port->logbuffer_head], where port->logbuffer_head boundary
+ check happens later. so we do it before.
 
-Thanks!
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+---
+ drivers/usb/typec/tcpm/tcpm.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
 
-Acked-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+diff --git a/drivers/usb/typec/tcpm/tcpm.c b/drivers/usb/typec/tcpm/tcpm.c
+index 5fce795..541e9e4 100644
+--- a/drivers/usb/typec/tcpm/tcpm.c
++++ b/drivers/usb/typec/tcpm/tcpm.c
+@@ -591,6 +591,14 @@ static void _tcpm_log(struct tcpm_port *port, const char *fmt, va_list args)
+ 	unsigned long rem_nsec;
+ 
+ 	mutex_lock(&port->logbuffer_lock);
++
++	if (port->logbuffer_head < 0 ||
++	    port->logbuffer_head >= LOG_BUFFER_ENTRIES) {
++		dev_warn(port->dev,
++			 "Bad log buffer index %d\n", port->logbuffer_head);
++		goto abort;
++	}
++
+ 	if (!port->logbuffer[port->logbuffer_head]) {
+ 		port->logbuffer[port->logbuffer_head] =
+ 				kzalloc(LOG_BUFFER_ENTRY_SIZE, GFP_KERNEL);
+@@ -607,13 +615,6 @@ static void _tcpm_log(struct tcpm_port *port, const char *fmt, va_list args)
+ 		strcpy(tmpbuffer, "overflow");
+ 	}
+ 
+-	if (port->logbuffer_head < 0 ||
+-	    port->logbuffer_head >= LOG_BUFFER_ENTRIES) {
+-		dev_warn(port->dev,
+-			 "Bad log buffer index %d\n", port->logbuffer_head);
+-		goto abort;
+-	}
+-
+ 	if (!port->logbuffer[port->logbuffer_head]) {
+ 		dev_warn(port->dev,
+ 			 "Log buffer index %d is NULL\n", port->logbuffer_head);
+-- 
+2.7.4
 
-Thanks,
-Gao Xiang
-
-> ---
->  Documentation/ABI/testing/sysfs-fs-erofs | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-fs-erofs b/Documentation/ABI/testing/sysfs-fs-erofs
-> index 05482374a741..bb4681a01811 100644
-> --- a/Documentation/ABI/testing/sysfs-fs-erofs
-> +++ b/Documentation/ABI/testing/sysfs-fs-erofs
-> @@ -9,8 +9,9 @@ Description:	Shows all enabled kernel features.
->  What:		/sys/fs/erofs/<disk>/sync_decompress
->  Date:		November 2021
->  Contact:	"Huang Jianan" <huangjianan@oppo.com>
-> -Description:	Control strategy of sync decompression
-> +Description:	Control strategy of sync decompression:
-> +
->  		- 0 (default, auto): enable for readpage, and enable for
-> -				     readahead on atomic contexts only,
-> +		  readahead on atomic contexts only.
->  		- 1 (force on): enable for readpage and readahead.
->  		- 2 (force off): disable for all situations.
-> -- 
-> 2.35.1
