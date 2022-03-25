@@ -2,87 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42600C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 20:07:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D9C5C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 20:07:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232297AbiCYUIq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 16:08:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53384 "EHLO
+        id S232326AbiCYUIv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 16:08:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232539AbiCYUIM (ORCPT
+        with ESMTP id S232338AbiCYUH5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 16:08:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C33510FE2
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 13:04:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD12661D0A
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 20:04:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 487CDC2BBE4
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 20:04:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648238697;
-        bh=JI28cFosj0hQbiQ6cYI23TSiq2VzCwRhljqgvQDbbQ4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=GQzDytrmidWl11PE7mtefAgXudCIC5wg7deMIrHPFvoK33hiKNb2LWZpkWQFKow0x
-         Ty9B9vw7hrbJe+wp1YeescGfNE5FZw8JlVlKTonO78PDQK2mf3YsGV4oCGjoWsWT22
-         oRd3py9q+DMmyQCHf8h/xqabTxUmEpN9JkmdJbiZnlfh/9vQHfKXzR8+kNUEWUq7Kq
-         sxgPcUH4UhQ5JaiHotjc27whL2rYnSXH1w0dybOQbZrhOAsc9gsg+nSd3nlBXB5nRK
-         18cFOewREj6hRa4PJQD4fCnsD4T3NRok3824hD/mJrX+oi2AGT7l9kZhtpxdvGpPG0
-         o6TOXeVquUgQg==
-Received: by mail-ej1-f53.google.com with SMTP id a8so17388379ejc.8
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 13:04:57 -0700 (PDT)
-X-Gm-Message-State: AOAM531XNbMhd9qNEL6cfJTHfeRqr1gZ3UzgLEpxgvuaEran50DOGlma
-        UtucMMAi/ftpvgumPUGvTCL0uMzCgQ3WhRoXHQ==
-X-Google-Smtp-Source: ABdhPJxIvvSbFL4Y+P7z8qk4Jutm9EIjreGeujAgtNHussiNQ0ZYgeUd3M6mdAAI87dQAF9rWTSVQaigvBxy0g4IjHU=
-X-Received: by 2002:a17:907:1c1b:b0:6e0:6618:8ac with SMTP id
- nc27-20020a1709071c1b00b006e0661808acmr13342258ejc.82.1648238695556; Fri, 25
- Mar 2022 13:04:55 -0700 (PDT)
+        Fri, 25 Mar 2022 16:07:57 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4D942B18D;
+        Fri, 25 Mar 2022 13:04:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648238654; x=1679774654;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=s157fb9lA4a8XOSEq9n0q0pdUa5Gw9sK4n7L6BfC7jE=;
+  b=MrfDQR4SBZpLVpd9l0jHg0K3ahLikmX6eJvB2DUlbkEINw81nqp+Q414
+   2yUclt0hO4LN/WpcJ1TTe9cvCHXGSDJyeOQnt9poPvC6qNSNNCzRegFnn
+   hTdgKhIHW0o8dkT8uXKL6Cx3R2f/omlJfVy2N4ZDmQ2spX6WuveAuk1Lr
+   k/T+mcCHsMkzb5aGp0UP8NuC2Gc7fRAJ2PStf7OKd+9JRK5K6gFC5HiFQ
+   eJ234Vu2Jg3c9UnvPE685VVxbaP2QpDPQ/faXJXM6mFGvbTXFHrFVqkmA
+   JltaEOhW0I7ClVxX8YyR6M++1lG4AKVQ9iwtL0uEy4HeP1LeEEValWtWW
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10297"; a="257537296"
+X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
+   d="scan'208";a="257537296"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2022 13:04:14 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
+   d="scan'208";a="638321942"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by FMSMGA003.fm.intel.com with ESMTP; 25 Mar 2022 13:04:09 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 8C8E61C8; Fri, 25 Mar 2022 22:04:30 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Fabien Dessenne <fabien.dessenne@foss.st.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com
+Cc:     Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>
+Subject: [PATCH v1 3/5] pinctrl: renesas: Replace custom code by gpiochip_count() call
+Date:   Fri, 25 Mar 2022 22:03:36 +0200
+Message-Id: <20220325200338.54270-3-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220325200338.54270-1-andriy.shevchenko@linux.intel.com>
+References: <20220325200338.54270-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-References: <CAPM=9tytg5jd_i3z3C5Y1dii2-cgO11Gjgvaq8qoWn3CGfCreg@mail.gmail.com>
- <CAL_JsqJqb6HYN5cw7GsyFobZxFmhU-ci8w4HKQEdFsx=bC_F3w@mail.gmail.com> <CAPM=9tx+YeOCBZ0WRcSMKTyUYr5ngySratZ0K8tmRZ0rCaFf8Q@mail.gmail.com>
-In-Reply-To: <CAPM=9tx+YeOCBZ0WRcSMKTyUYr5ngySratZ0K8tmRZ0rCaFf8Q@mail.gmail.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Fri, 25 Mar 2022 15:04:43 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqJ7EN0_4qxZL55j2GOHc_D0zEeH1TS+Dp5WJA1bPdgwEQ@mail.gmail.com>
-Message-ID: <CAL_JsqJ7EN0_4qxZL55j2GOHc_D0zEeH1TS+Dp5WJA1bPdgwEQ@mail.gmail.com>
-Subject: Re: [git pull] drm for 5.18-rc1
-To:     Dave Airlie <airlied@gmail.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        LKML <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 10:01 PM Dave Airlie <airlied@gmail.com> wrote:
->
-> > FYI, this breaks the DT bindings. The relevant patches didn't get
-> > reviewed nor run thru automated testing because their encoding was
-> > 'charset=y'[1]. (While email clients seem to just ignore that
-> > encoding, patchwork and b4 do not.) linux-next is still broken and has
-> > been since Mar 2[2]. v2 of the fixes[3] have been posted since Mar 9,
-> > and still aren't in linux-next.
-> >
-> > It doesn't have to be fixed in this PR, but it needs to be fixed
-> > before rc1. Otherwise, no one can test their bindings using rc1. In
-> > general, there's no reason fixes need to wait until after rc1 as
-> > Chun-Kuang suggests[4].
->
-> With the conflicts that Linus merged, can we get this rebased onto
-> Linus merge, and submitted to him?
+Since we have generic function to count GPIO controller nodes
+under given device, there is no need to open code it. Replace
+custom code by gpiochip_count() call.
 
-I applied the series without issue on Linus' current tree aa5b537b0ecc
-("Merge tag 'riscv-for-linus-5.18-mw0' of
-git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux") and
-confirmed the binding errors are fixed. Must be some difference in
-what's in the Mediatek PR...
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/pinctrl/renesas/pinctrl-rza1.c | 17 +----------------
+ 1 file changed, 1 insertion(+), 16 deletions(-)
 
-b4 shazam -lsSt 20220309134702.9942-1-jason-jh.lin@mediatek.com
+diff --git a/drivers/pinctrl/renesas/pinctrl-rza1.c b/drivers/pinctrl/renesas/pinctrl-rza1.c
+index c1d6e9512c7a..c66e72e7dd71 100644
+--- a/drivers/pinctrl/renesas/pinctrl-rza1.c
++++ b/drivers/pinctrl/renesas/pinctrl-rza1.c
+@@ -1154,21 +1154,6 @@ static const struct pinmux_ops rza1_pinmux_ops = {
+  * RZ/A1 pin controller driver operations
+  */
+ 
+-static unsigned int rza1_count_gpio_chips(struct device_node *np)
+-{
+-	struct device_node *child;
+-	unsigned int count = 0;
+-
+-	for_each_child_of_node(np, child) {
+-		if (!of_property_read_bool(child, "gpio-controller"))
+-			continue;
+-
+-		count++;
+-	}
+-
+-	return count;
+-}
+-
+ /**
+  * rza1_parse_gpiochip() - parse and register a gpio chip and pin range
+  *
+@@ -1255,7 +1240,7 @@ static int rza1_gpio_register(struct rza1_pinctrl *rza1_pctl)
+ 	unsigned int i;
+ 	int ret;
+ 
+-	ngpiochips = rza1_count_gpio_chips(np);
++	ngpiochips = gpiochip_count(rza1_pctl->dev);
+ 	if (ngpiochips == 0) {
+ 		dev_dbg(rza1_pctl->dev, "No gpiochip registered\n");
+ 		return 0;
+-- 
+2.35.1
 
-Rob
