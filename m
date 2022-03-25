@@ -2,85 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D27EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 07:26:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 228BAC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 07:29:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346893AbiCYH2a (ORCPT
+        id S1348001AbiCYHbX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 03:28:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44114 "EHLO
+        Fri, 25 Mar 2022 03:31:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237022AbiCYH22 (ORCPT
+        with ESMTP id S237022AbiCYHbU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 03:28:28 -0400
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 525E8C681C;
-        Fri, 25 Mar 2022 00:26:55 -0700 (PDT)
-Received: by mail-ej1-f46.google.com with SMTP id yy13so13641459ejb.2;
-        Fri, 25 Mar 2022 00:26:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=a+j8iDAcqHRMjDYWdIndi1goKgpRCRF0MsuxhuhbRqA=;
-        b=7S7mj5ISCtJtBwVd8qRZeIQ9rgMKS+9UjcgpbsRecrfkgVMdgZjU+f7YjjOADto5ZZ
-         rCYWAJLCNbXXdoAIxkqudpSSjP/aZLXUsUL/g2Ac7kJm27XSp4BxCqnZp8f3Y5Xa0fam
-         pflhxjPjwNWi66uCYEbyJHJqbS9hnk6xcbesLdweoQ809zE0+edDkTUPvg1pG4y5di1T
-         rL3w8hwHTeeOrW9j3HUE2nPMIpCE9lGI2+jJwk4s1tJfulxTnptdBUZv+J44YAYCtRLx
-         f+4Xzk0yl6vB8xZyo6fmAP5mPS2jMfljLsyFSMcFcooF3imPg5xGxrP4Bi/+aU/9FPjY
-         jUbg==
-X-Gm-Message-State: AOAM532xDljUqUKO5qiBcoPbhHnAuhLHF1cHBEriURfC1jjO6A8NVQwt
-        OGNx+U3ZZcIiLVKyYLz3KhQ=
-X-Google-Smtp-Source: ABdhPJwMjuFr8s+7vPIyoto5nV0AL7QjRXt4Feurs6e4O7RNqIl6/0ns0nzEUIUnG36qMugOEqnerg==
-X-Received: by 2002:a17:907:980d:b0:6d6:f910:513a with SMTP id ji13-20020a170907980d00b006d6f910513amr9501941ejc.643.1648193213782;
-        Fri, 25 Mar 2022 00:26:53 -0700 (PDT)
-Received: from [192.168.0.158] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.googlemail.com with ESMTPSA id z6-20020a056402274600b004194fc1b7casm2526951edd.48.2022.03.25.00.26.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Mar 2022 00:26:53 -0700 (PDT)
-Message-ID: <f35537de-6352-e6db-b4a6-17b1ab96deda@kernel.org>
-Date:   Fri, 25 Mar 2022 08:26:52 +0100
+        Fri, 25 Mar 2022 03:31:20 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF631BF01C;
+        Fri, 25 Mar 2022 00:29:46 -0700 (PDT)
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KPtwn6bMSzfZvx;
+        Fri, 25 Mar 2022 15:28:09 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 25 Mar 2022 15:29:44 +0800
+Received: from [10.174.176.73] (10.174.176.73) by
+ kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 25 Mar 2022 15:29:43 +0800
+Subject: Re: [PATCH 0/3] optimizations for io accounting
+To:     <axboe@kernel.dk>, <mpatocka@redhat.com>, <snitzer@redhat.com>
+CC:     <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <yi.zhang@huawei.com>
+References: <20220317112653.1019490-1-yukuai3@huawei.com>
+From:   "yukuai (C)" <yukuai3@huawei.com>
+Message-ID: <29eab4a3-10de-0ea3-cbcc-7031aa394cb2@huawei.com>
+Date:   Fri, 25 Mar 2022 15:29:42 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] arm64: tegra: Enable hda node for P3737 + P3701
-Content-Language: en-US
-To:     Mohan Kumar <mkumard@nvidia.com>, robh+dt@kernel.org,
-        krzk+dt@kernel.org
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        thierry.reding@gmail.com, jonathanh@nvidia.com
-References: <20220325072141.28597-1-mkumard@nvidia.com>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <20220325072141.28597-1-mkumard@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20220317112653.1019490-1-yukuai3@huawei.com>
+Content-Type: text/plain; charset="gbk"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.73]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25/03/2022 08:21, Mohan Kumar wrote:
-> Add iommus property for hda and enable the node for P3737 + P3701
-> platform.
+friently ping ...
+
+ÔÚ 2022/03/17 19:26, Yu Kuai Ð´µÀ:
+> Yu Kuai (3):
+>    block: don't show disk stats if io accounting is disabled
+>    block: factor out common code for part_stat_show() and
+>      diskstats_show()
+>    block: update nsecs[] in part_stat_show() and diskstats_show()
 > 
-> Signed-off-by: Mohan Kumar <mkumard@nvidia.com>
-> ---
->  arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts | 1 +
->  arch/arm64/boot/dts/nvidia/tegra234.dtsi                      | 1 +
->  2 files changed, 2 insertions(+)
+>   block/bdev.c              |   2 +
+>   block/blk-mq.c            |  63 +++++++++++++++-
+>   block/blk-mq.h            |   2 +
+>   block/genhd.c             | 154 ++++++++++++++++++--------------------
+>   include/linux/blk-mq.h    |   2 +
+>   include/linux/blk_types.h |   5 ++
+>   6 files changed, 146 insertions(+), 82 deletions(-)
 > 
-> diff --git a/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts b/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts
-> index 34d6a01ee1c6..156d5d95fde7 100644
-> --- a/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts
-> +++ b/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts
-> @@ -1751,6 +1751,7 @@
->  
->  		hda@3510000 {
->  			nvidia,model = "NVIDIA Jetson AGX Orin HDA";
-> +			status = "okay";
-
-Nodes are enabled by default. Why do you need this?
-
-
-Best regards,
-Krzysztof
