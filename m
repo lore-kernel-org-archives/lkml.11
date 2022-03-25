@@ -2,124 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71DBEC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:38:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC857C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:38:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230186AbiCYTkY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:40:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41964 "EHLO
+        id S230385AbiCYTk2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:40:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230162AbiCYThk (ORCPT
+        with ESMTP id S231349AbiCYTh7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:37:40 -0400
-Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F26E5185476
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:22:07 -0700 (PDT)
-Received: by mail-oi1-x232.google.com with SMTP id b188so9177706oia.13
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:22:07 -0700 (PDT)
+        Fri, 25 Mar 2022 15:37:59 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 993C0249C5C
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:21:09 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id c2so7176025pga.10
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:21:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:user-agent:references:in-reply-to:mime-version:date:message-id
-         :subject:to:cc;
-        bh=30HnVT2o3reQZo63OrltbI+OfYNP2j0YqcMmacNl+p0=;
-        b=o7VUwpdrsAT9+dZRq7E7nbHA3vtSO4Zb3PikloQPss2pIBW60nVaMdcLkclXCSfOnk
-         qc7wr65NRit/egcPCcwnvIO1UkzmSY6Y4QT+lq1OOvJ5uabY/EGOmhBRly02/Mg0Cezp
-         ADk7WZJvqIptO8KeNhkNBRwb+TooeHesT6NVl7QZNmU5Vsvb8u5YtnNiGq3u5Egwe0fN
-         dPHULLWMtNyj61PdB0ANxfFH34zk8E0/W84nklF85pqL4wjLOG8XC7d4JDJSLB6nlSDD
-         i8SPNdLnNQI4Ydr1SM02AlPjMlttGqx++wFQJU+uRQhxQDjY1dtGeMBTNX+6OJaPgCz0
-         +ymQ==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=kZES9xIl6k9PvYS5MDCMcxY5BJubJIUmZOtDfDfAejs=;
+        b=G+VoHJsNN0ri/JzciH09IIMeE8UG5JI8cQ0Bi+n1qzT1U7e2FvdiZW70FLIX5LIbWI
+         svKvAmULBod057SqPwM+zCt9dYAp0E7Nh0JdjhTVG9zloKwBg15BPF4N174Yjl2eHqiU
+         Eja1GhgO6IYA3dYuZDm+hULboBb7ImzDwWP6ibLR81BotK0HFhHcQr7eqjGNAn/6QD8N
+         cf3yzF+3aj0A8W19SK7cffVZxlCEmuIOwoRdtYQx1DJA7VekL91I6RjMb0Ay0tlkCc4q
+         TOsdigNz7PpG5hQeE8+H3j5DcskDvPL6O6GKWgx8Ks4UFW60VUyt5A1nr+QDjQ5DAiRd
+         1Ocg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:user-agent:references:in-reply-to
-         :mime-version:date:message-id:subject:to:cc;
-        bh=30HnVT2o3reQZo63OrltbI+OfYNP2j0YqcMmacNl+p0=;
-        b=O8xRlQRIS8E7seTGjqUk4T/+cKG5hFTU5ywUkKqrlFrYBDZXl7Z0zBSv8ZCMFfInc/
-         IF2Fvtu4tjjJZiQtAP/WEafPoZaRUlr4dQ904nwMo5f3AobFah7BZRSYP3syenkG9oqk
-         gcohmOnMNMcAYMBBRzXknnHG+TnBs/cmMsvhr4h06csiFVeHA8+7f0up7LLhUl+D0QwU
-         Bs5NjRjfQ1f7E4KxUEVsUEIhKxSyU7j2dxx7hAqDxulkco+JFo1JOa0rnr9PoJZeVOqi
-         42lIq3UXekyk8ev0ZDN2GBbQu/zJl4quTC3gqvVNtvhOVNtlQRT7kIN/B/Co1CcgGg4c
-         1CKw==
-X-Gm-Message-State: AOAM532pBsU4oMz5C5Q33uyBOrz9kHiaQmXbzc4/FPwndLYRDdaqYJaM
-        7cHfpfYs+JvNZZqUkPdEjjPtlexQGZ/kAbUstJFhrWmorhQ=
-X-Google-Smtp-Source: ABdhPJzkv3FApupEr6ZcvHiyizzGLadsyrPXz2DnM470Hnd1ln6bsvI6D5r0lg6iZSsst6EnF/KlN2WTBVJUE+zMqsQ=
-X-Received: by 2002:aca:1712:0:b0:2ec:e1a4:1ad1 with SMTP id
- j18-20020aca1712000000b002ece1a41ad1mr10538652oii.78.1648230216155; Fri, 25
- Mar 2022 10:43:36 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Fri, 25 Mar 2022 12:43:35 -0500
-From:   Guillaume Ranquet <granquet@baylibre.com>
-User-Agent: meli 0.7.2
-References: <20220325171511.23493-1-granquet@baylibre.com> <20220325171511.23493-2-granquet@baylibre.com>
- <8baedbe6-eb60-02b4-a6b8-fe3abc566335@kernel.org>
-In-Reply-To: <8baedbe6-eb60-02b4-a6b8-fe3abc566335@kernel.org>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=kZES9xIl6k9PvYS5MDCMcxY5BJubJIUmZOtDfDfAejs=;
+        b=qBWIMCE1b+6F9zvKyL7j0iX4wrVbafegDSn9Ho5aouJltw5TjNPUhQoTHdjk41FM9g
+         BWjIaXarW6/+VwePK8KkCeX6piA2cUQ9lqzlm5A0Vb9o4VJHg1pqI5MAbppz5bj9d75a
+         XrORPhDya0EWuNe3c9r8+YWHKJOYjZ/Ehj4qqt1BrUNuXeHfqKUeMniPQVvp/cqltxe8
+         Pyhj4vky3nGo9fiEwUBmpyyPNtAxAjJB7NubdnlmpVSIc8mdMDaIwja2FWBCHN/9nWK0
+         bJWNOdM+UqVtAN+oC4/HytPjHRP05OJMu75X46QKnJLqICTWYJdqzBTfo+auxplT4uO5
+         LM+g==
+X-Gm-Message-State: AOAM533fh3++WN0eJR6FoJTXaK5CPsTpGL4iZ/7dIkiCQxn9qfzKgrok
+        HIpi/gBlE+UOuhMK7GA7+Grq8vnUTT7H
+X-Google-Smtp-Source: ABdhPJxHEq9AiqyZOMWbqRFWmAZeorLFYNmf9U/rZ0ZkWmXSwUxDnbhzMAiXTxAo6JhPvOvZ4DYL7w==
+X-Received: by 2002:a63:77ca:0:b0:386:25a5:5ed with SMTP id s193-20020a6377ca000000b0038625a505edmr649866pgc.30.1648231848826;
+        Fri, 25 Mar 2022 11:10:48 -0700 (PDT)
+Received: from thinkpad ([117.193.209.11])
+        by smtp.gmail.com with ESMTPSA id b16-20020a056a000cd000b004fadb6f0290sm7420435pfv.11.2022.03.25.11.10.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Mar 2022 11:10:48 -0700 (PDT)
+Date:   Fri, 25 Mar 2022 23:40:42 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Frank Li <Frank.Li@nxp.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        linux-pci@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 23/25] dmaengine: dw-edma: Bypass dma-ranges mapping for
+ the local setup
+Message-ID: <20220325181042.GA12218@thinkpad>
+References: <20220324014836.19149-1-Sergey.Semin@baikalelectronics.ru>
+ <20220324014836.19149-24-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-Date:   Fri, 25 Mar 2022 12:43:35 -0500
-Message-ID: <CABnWg9s3vmpCFFai_BMjagqHehk2vbP0ST_tfWvOxmtubPm14g@mail.gmail.com>
-Subject: Re: [PATCH 01/22] dt-bindings: mediatek,dpi: Add DP_INTF compatible
-To:     Krzysztof Kozlowski <krzk@kernel.org>,
-        angelogioacchino.delregno@collabora.com, chunkuang.hu@kernel.org,
-        p.zabel@pengutronix.de, airlied@linux.ie, daniel@ffwll.ch,
-        robh+dt@kernel.org, maarten.lankhorst@linux.intel.com,
-        mripard@kernel.org, tzimmermann@suse.de, matthias.bgg@gmail.com,
-        chunfeng.yun@mediatek.com, kishon@ti.com, vkoul@kernel.org,
-        deller@gmx.de, ck.hu@mediatek.com, jitao.shi@mediatek.com
-Cc:     dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-phy@lists.infradead.org, linux-fbdev@vger.kernel.org,
-        markyacoub@google.com,
-        Markus Schneider-Pargmann <msp@baylibre.com>,
-        Rob Herring <robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220324014836.19149-24-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 25 Mar 2022 18:31, Krzysztof Kozlowski <krzk@kernel.org> wrote:
->On 25/03/2022 18:14, Guillaume Ranquet wrote:
->> From: Markus Schneider-Pargmann <msp@baylibre.com>
->>
->> DP_INTF is similar to DPI but does not have the exact same feature set
->> or register layouts.
->>
->> DP_INTF is the sink of the display pipeline that is connected to the
->> DisplayPort controller and encoder unit. It takes the same clocks as
->> DPI.
->>
->> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
->> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
->> Reviewed-by: Rob Herring <robh@kernel.org>
->
->This is v1, how did you get Rob's review already?
->
+On Thu, Mar 24, 2022 at 04:48:34AM +0300, Serge Semin wrote:
+> DW eDMA doesn't perform any translation of the traffic generated on the
+> CPU/Application side. It just generates read/write AXI-bus requests with
+> the specified addresses. But in case if the dma-ranges DT-property is
+> specified for a platform device node, Linux will use it to map the CPU
+> memory regions into the DMAable bus ranges. This isn't what we want for
+> the eDMA embedded into the locally accessed DW PCIe Root Port and
+> End-point. In order to work that around let's set the chan_dma_dev flag
+> for each DW eDMA channel thus forcing the client drivers to getting a
+> custom dma-ranges-less parental device for the mappings.
+> 
+> Note it will only work for the client drivers using the
+> dmaengine_get_dma_device() method to get the parental DMA device.
+> 
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> ---
+>  drivers/dma/dw-edma/dw-edma-core.c | 15 +++++++++++++++
+>  1 file changed, 15 insertions(+)
+> 
+> diff --git a/drivers/dma/dw-edma/dw-edma-core.c b/drivers/dma/dw-edma/dw-edma-core.c
+> index 72a51970bfba..ca5cd7c99571 100644
+> --- a/drivers/dma/dw-edma/dw-edma-core.c
+> +++ b/drivers/dma/dw-edma/dw-edma-core.c
+> @@ -716,6 +716,21 @@ static int dw_edma_alloc_chan_resources(struct dma_chan *dchan)
+>  	if (chan->status != EDMA_ST_IDLE)
+>  		return -EBUSY;
+>  
+> +	/* Bypass the dma-ranges based memory regions mapping since the
+> +	 * inbound iATU only affects the traffic incoming from the
+> +	 * PCIe bus.
+> +	 */
 
-Because this is not v1... I'm not really good at this... this is actually v9...
-I just didn't pay attention enough before sending the series.
+Bypass the dma-ranges based memory regions mapping since eDMA doesn't do any
+address translation for the CPU address?
 
-What's the standard thing to do? resend with the proper versionning?
+Other than this,
 
-Sorry for the confusion,
-Guillaume.
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
->> ---
->>  .../bindings/display/mediatek/mediatek,dpi.yaml       | 11 ++++++-----
->>  1 file changed, 6 insertions(+), 5 deletions(-)
->>
->> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
->> index dd2896a40ff0..53acf9a84f7f 100644
->> --- a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
->> +++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
->> @@ -4,16 +4,16 @@
->>  $id: http://devicetree.org/schemas/display/mediatek/mediatek,dpi.yaml#
->>  $schema: http://devicetree.org/meta-schemas/core.yaml#
->>
->> -title: mediatek DPI Controller Device Tree Bindings
->> +title: mediatek DPI/DP_INTF Controller Device Tree Bindings
->
->While at it, remove "Device Tree Bindings". It's about hardware.
->
->
->Please also rebase your tree as you use my old email address.
->
->Best regards,
->Krzysztof
+Thanks,
+Mani
+
+> +	if (chan->dw->chip->flags & DW_EDMA_CHIP_LOCAL) {
+> +		dchan->dev->chan_dma_dev = true;
+> +
+> +		dchan->dev->device.dma_coherent = chan->dw->chip->dev->dma_coherent;
+> +		dma_coerce_mask_and_coherent(&dchan->dev->device,
+> +					     dma_get_mask(chan->dw->chip->dev));
+> +		dchan->dev->device.dma_parms = chan->dw->chip->dev->dma_parms;
+> +	} else {
+> +		dchan->dev->chan_dma_dev = false;
+> +	}
+> +
+>  	pm_runtime_get(chan->dw->chip->dev);
+>  
+>  	return 0;
+> -- 
+> 2.35.1
+> 
