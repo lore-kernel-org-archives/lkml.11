@@ -2,257 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C775C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 21:54:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A31EC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 21:57:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233588AbiCYVzg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 17:55:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47110 "EHLO
+        id S233641AbiCYV6g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 17:58:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233577AbiCYVze (ORCPT
+        with ESMTP id S233577AbiCYV6b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 17:55:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D106F13EB7
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 14:53:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D3EB6104F
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 21:53:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6968EC2BBE4;
-        Fri, 25 Mar 2022 21:53:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648245237;
-        bh=hruywCO7hLvpaXexVafWlwZPQ0LOjKiVRCERvjdedPE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HCdDtrBpZZY0lSYemYpu0Jk/l5VmdP37JwCdHVui8j8txCS6PV92/5dFQCEta+Rda
-         CUxQtPhI0mSu+0AUmI4ypL9f5nWYA3QOvpEoLtfwX1ZQauDnlhXac30LKVbeZLsrPs
-         vSQDKvIUYpu7q/uyshlFgw5PUSL1Ed47Fft3KeEWWTqbLJw/z4TwgQ3bIsdwY7nFa9
-         +Dgo1kKVjBgaBvzxiELNizn05p3Akwn1wNzRmN/BjsHd3HQKcbR3uiA6r5+dL3vcQp
-         /bYdKSphxjczfeE9iIcSMQS47iYlTRC9fit+0zLdkCmZy4NgT3A61ip9SRtaQHOwuj
-         o6UyaRztt//Cg==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id C731640407; Fri, 25 Mar 2022 18:53:54 -0300 (-03)
-Date:   Fri, 25 Mar 2022 18:53:54 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Stephane Eranian <eranian@google.com>
-Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
-        kim.phillips@amd.com, acme@redhat.com, jolsa@redhat.com,
-        songliubraving@fb.com, rafael@kernel.org, ravi.bangoria@amd.com,
-        sandipan.das@amd.com
-Subject: Re: [PATCH v7 11/13] perf tools: Improve IBS error handling
-Message-ID: <Yj458u2fMgyCO70i@kernel.org>
-References: <20220322221517.2510440-1-eranian@google.com>
- <20220322221517.2510440-12-eranian@google.com>
- <Yj44ICldLB6h0Mcu@kernel.org>
+        Fri, 25 Mar 2022 17:58:31 -0400
+Received: from mail-oo1-f47.google.com (mail-oo1-f47.google.com [209.85.161.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E66E237F6;
+        Fri, 25 Mar 2022 14:56:55 -0700 (PDT)
+Received: by mail-oo1-f47.google.com with SMTP id i8-20020a4a6f48000000b00324ada4b9d9so1536740oof.11;
+        Fri, 25 Mar 2022 14:56:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=07QZdweVT8s+Pmvjh4pehebYkWYellXCpkQyazdEVlM=;
+        b=sJw/ngKR1FWs4daVNO1mrysf3hbCoNILglv/IBhYayn0UTMGxIs99DuYFvp+mfXVvs
+         XWRicdvFduurnRGuxxcJG4CT9qdc/OgceQtA7V6xsn56RowfQkkyp+/LJyf0l/OSf6zm
+         yTB3m/eiARJW4ZVUmYC3zMm6J7zsshZHnFWrkrM8E7e1zlWBdZtgOnPRqYlCS6oF/C9o
+         9vIaieV9zlCJw4ntA5VkKiybQGYyecDP9XZDpORiP24g+O2/u/gqjf8pFazxVhE1n7FL
+         IhNRMvbYu3rga295TgzgeVMJbj/0jCRi8qatj9h80bbWs5cWZ0q1t3fv2oypkw9sfAHP
+         kK8g==
+X-Gm-Message-State: AOAM5324AJuewbE7PNR/RSNL7lHoEqVYUZkVCl47u66o/yWW7mmfPD18
+        wqrGJG2V7LVDqwuBAOHEnbFIhykyZg==
+X-Google-Smtp-Source: ABdhPJzBZvXkR78XCZZ9Avn8UFj380HuRR3U/MKpgPGtSQdKJX3E0Ybiwo6MLU11DIhd07X+mmSXbQ==
+X-Received: by 2002:a4a:ac01:0:b0:324:910a:5d04 with SMTP id p1-20020a4aac01000000b00324910a5d04mr4861546oon.87.1648245414547;
+        Fri, 25 Mar 2022 14:56:54 -0700 (PDT)
+Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.googlemail.com with ESMTPSA id r81-20020acaf354000000b002ecf46e8016sm3380537oih.51.2022.03.25.14.56.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Mar 2022 14:56:53 -0700 (PDT)
+From:   Rob Herring <robh@kernel.org>
+To:     devicetree@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mukesh Savaliya <msavaliy@codeaurora.org>,
+        Akash Asthana <akashast@codeaurora.org>,
+        Bayi Cheng <bayi.cheng@mediatek.com>,
+        Chuanhong Guo <gch981213@gmail.com>,
+        Min Guo <min.guo@mediatek.com>, netdev@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-usb@vger.kernel.org
+Subject: [PATCH] dt-bindings: Fix missing '/schemas' in $ref paths
+Date:   Fri, 25 Mar 2022 16:56:52 -0500
+Message-Id: <20220325215652.525383-1-robh@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yj44ICldLB6h0Mcu@kernel.org>
-X-Url:  http://acmel.wordpress.com
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Fri, Mar 25, 2022 at 06:46:08PM -0300, Arnaldo Carvalho de Melo escreveu:
-> Em Tue, Mar 22, 2022 at 03:15:15PM -0700, Stephane Eranian escreveu:
-> > From: Kim Phillips <kim.phillips@amd.com>
-> > 
-> > improve the error message returned on failed perf_event_open() on AMD when
-> > using IBS.
-> > 
-> > Output of executing 'perf record -e ibs_op// true' BEFORE this patch:
-> > 
-> > The sys_perf_event_open() syscall returned with 22 (Invalid argument)for event (ibs_op//u).
-> > /bin/dmesg | grep -i perf may provide additional information.
-> > 
-> > Output after:
-> > 
-> > AMD IBS cannot exclude kernel events.  Try running at a higher privilege level.
-> 
-> So the error message don't match up the BEFORE part, that didn't have a
-> "u" at the end, and with this patch in:
+Absolute paths in $ref should always begin with '/schemas'. The tools
+mostly work with it omitted, but for correctness the path should be
+everything except the hostname as that is taken from the schema's $id
+value. This scheme is defined in the json-schema spec.
 
-I see, the patch description doesn't mention that the BEFORE command is
-run as a NON root user, when the 'u' suffix is auto-added by perf, I'm
-ammending the comment log message with this.
+Cc: Hector Martin <marcan@marcan.st>
+Cc: Sven Peter <sven@svenpeter.dev>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Vivien Didelot <vivien.didelot@gmail.com>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Vladimir Oltean <olteanv@gmail.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Mark Brown <broonie@kernel.org>
+Cc: Chunfeng Yun <chunfeng.yun@mediatek.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Mukesh Savaliya <msavaliy@codeaurora.org>
+Cc: Akash Asthana <akashast@codeaurora.org>
+Cc: Bayi Cheng <bayi.cheng@mediatek.com>
+Cc: Chuanhong Guo <gch981213@gmail.com>
+Cc: Min Guo <min.guo@mediatek.com>
+Cc: netdev@vger.kernel.org
+Cc: linux-spi@vger.kernel.org
+Cc: linux-usb@vger.kernel.org
+Signed-off-by: Rob Herring <robh@kernel.org>
+---
+ Documentation/devicetree/bindings/arm/apple/apple,pmgr.yaml   | 2 +-
+ Documentation/devicetree/bindings/net/dsa/dsa-port.yaml       | 2 +-
+ Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml  | 2 +-
+ .../devicetree/bindings/spi/mediatek,spi-mtk-nor.yaml         | 2 +-
+ Documentation/devicetree/bindings/spi/qcom,spi-qcom-qspi.yaml | 2 +-
+ Documentation/devicetree/bindings/spi/sprd,spi-adi.yaml       | 2 +-
+ Documentation/devicetree/bindings/usb/mediatek,mtu3.yaml      | 4 ++--
+ Documentation/devicetree/bindings/usb/mediatek,musb.yaml      | 2 +-
+ 8 files changed, 9 insertions(+), 9 deletions(-)
 
-Now it reads:
-
-----------------------------------------------------------------------
-perf evsel: Improve AMD IBS (Instruction-Based Sampling) error handling messages
-
-Improve the error message returned on failed perf_event_open() on AMD
-systems when using IBS (Instruction-Based Sampling).
-
-Output of executing 'perf record -e ibs_op// true' as a non root user
-BEFORE this patch (perf will add the 'u' modifier at the end to exclude
-kernel/hypervisor sampling):
-
-  The sys_perf_event_open() syscall returned with 22 (Invalid argument)for event (ibs_op//u).
-  /bin/dmesg | grep -i perf may provide additional information.
-
-Output after:
-
-  AMD IBS can't exclude kernel events.  Try running at a higher privilege level.
-
-Output of executing 'sudo perf record -e ibs_op// true' BEFORE this patch:
-
-  Error:
-  The sys_perf_event_open() syscall returned with 22 (Invalid argument) for event (ibs_op//).
-  /bin/dmesg | grep -i perf may provide additional information.
-
-Output after:
-
-  Error:
-  Invalid event (ibs_op//) in per-thread mode, enable system wide with '-a'.
-
-Folowing the suggestion:
-
-  $ sudo perf record -a -e ibs_op// true
-  [ perf record: Woken up 1 times to write data ]
-  [ perf record: Captured and wrote 1.664 MB perf.data (194 samples) ]
-  $
-
-Signed-off-by: Kim Phillips <kim.phillips@amd.com>
-Tested-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-----------------------------------------------------------------------
-
-This is all with:
-
-[root@five ~]# uname -a
-Linux five 5.16.16-200.fc35.x86_64 #1 SMP PREEMPT Sat Mar 19 13:52:41 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux
-
-- Arnaldo
+diff --git a/Documentation/devicetree/bindings/arm/apple/apple,pmgr.yaml b/Documentation/devicetree/bindings/arm/apple/apple,pmgr.yaml
+index b6b5d3a912b3..0dc957a56d35 100644
+--- a/Documentation/devicetree/bindings/arm/apple/apple,pmgr.yaml
++++ b/Documentation/devicetree/bindings/arm/apple/apple,pmgr.yaml
+@@ -42,7 +42,7 @@ patternProperties:
+     description:
+       The individual power management domains within this controller
+     type: object
+-    $ref: /power/apple,pmgr-pwrstate.yaml#
++    $ref: /schemas/power/apple,pmgr-pwrstate.yaml#
  
->   $ git log --oneline -1
->   ca585f91ce13df4c (HEAD -> perf/core) perf evsel: Improve AMD IBS (Instruction-Based Sampling) error handling messages
->   # perf -v
->   perf version 5.17.gca585f91ce13
->   #
->   
-> On a:
-> 
->   # grep -m1 "model name" /proc/cpuinfo
->   model name	: AMD Ryzen 9 5950X 16-Core Processor
->   #
-> 
-> If I try:
-> 
->   # perf record -e ibs_op//u true
->   Error:
->   Invalid event (ibs_op//u) in per-thread mode, enable system wide with '-a'.
->   # 
-> 
-> So now if I try:
-> 
->   # perf record -a -e ibs_op//u true
->   Error:
->   AMD IBS can't exclude kernel events.  Try running at a higher privilege level.
->   #
-> 
-> So the problem is with the patch description, I'm fixing it.
-> 
-> > Output of executing 'sudo perf record -e ibs_op// true' BEFORE this patch:
-> > 
-> > Error:
-> > The sys_perf_event_open() syscall returned with 22 (Invalid argument) for event (ibs_op//).
-> > /bin/dmesg | grep -i perf may provide additional information.
-> > 
-> > Output after:
-> > 
-> > Error:
-> > AMD IBS may only be available in system-wide/per-cpu mode.  Try using -a, or -C and workload affinity
-> 
-> But this one is never reached:
-> 
-> [root@five ~]# perf record -e ibs_op// true
-> Error:
-> Invalid event (ibs_op//) in per-thread mode, enable system wide with '-a'
-> 
-> > +                             if (!evsel->core.system_wide)
-> > +                                     return scnprintf(msg, size,
-> > +     "AMD IBS may only be available in system-wide/per-cpu mode.  Try using -a, or -C and workload affinity");
-> 
-> 
-> I'm applying this to make progress, the message now provides more clues.
-> 
-> - Arnaldo
-> 
->  
-> > Signed-off-by: Kim Phillips <kim.phillips@amd.com>
-> > Cc: Arnaldo Carvalho de Melo <acme@redhat.com>
-> > Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-> > Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-> > Cc: Ian Rogers <irogers@google.com>
-> > Cc: Ingo Molnar <mingo@redhat.com>
-> > Cc: Jiri Olsa <jolsa@redhat.com>
-> > Cc: Joao Martins <joao.m.martins@oracle.com>
-> > Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-> > Cc: Mark Rutland <mark.rutland@arm.com>
-> > Cc: Michael Petlan <mpetlan@redhat.com>
-> > Cc: Namhyung Kim <namhyung@kernel.org>
-> > Cc: Peter Zijlstra <peterz@infradead.org>
-> > Cc: Robert Richter <robert.richter@amd.com>
-> > Cc: Stephane Eranian <eranian@google.com>
-> > ---
-> >  tools/perf/util/evsel.c | 25 +++++++++++++++++++++++++
-> >  1 file changed, 25 insertions(+)
-> > 
-> > diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
-> > index 14b0e7ffa2c7..e8ff7a4bd490 100644
-> > --- a/tools/perf/util/evsel.c
-> > +++ b/tools/perf/util/evsel.c
-> > @@ -2847,9 +2847,23 @@ static bool find_process(const char *name)
-> >  	return ret ? false : true;
-> >  }
-> >  
-> > +static bool is_amd(const char *arch, const char *cpuid)
-> > +{
-> > +	return arch && !strcmp("x86", arch) && cpuid && strstarts(cpuid, "AuthenticAMD");
-> > +}
-> > +
-> > +static bool is_amd_ibs(struct evsel *evsel)
-> > +{
-> > +	return evsel->core.attr.precise_ip
-> > +	    || (evsel->pmu_name && !strncmp(evsel->pmu_name, "ibs", 3));
-> > +}
-> > +
-> >  int evsel__open_strerror(struct evsel *evsel, struct target *target,
-> >  			 int err, char *msg, size_t size)
-> >  {
-> > +	struct perf_env *env = evsel__env(evsel);
-> > +	const char *arch = perf_env__arch(env);
-> > +	const char *cpuid = perf_env__cpuid(env);
-> >  	char sbuf[STRERR_BUFSIZE];
-> >  	int printed = 0, enforced = 0;
-> >  
-> > @@ -2949,6 +2963,17 @@ int evsel__open_strerror(struct evsel *evsel, struct target *target,
-> >  			return scnprintf(msg, size,
-> >  	"Invalid event (%s) in per-thread mode, enable system wide with '-a'.",
-> >  					evsel__name(evsel));
-> > +		if (is_amd(arch, cpuid)) {
-> > +			if (is_amd_ibs(evsel)) {
-> > +				if (evsel->core.attr.exclude_kernel)
-> > +					return scnprintf(msg, size,
-> > +	"AMD IBS can't exclude kernel events.  Try running at a higher privilege level.");
-> > +				if (!evsel->core.system_wide)
-> > +					return scnprintf(msg, size,
-> > +	"AMD IBS may only be available in system-wide/per-cpu mode.  Try using -a, or -C and workload affinity");
-> > +			}
-> > +		}
-> > +
-> >  		break;
-> >  	case ENODATA:
-> >  		return scnprintf(msg, size, "Cannot collect data source with the load latency event alone. "
-> > -- 
-> > 2.35.1.894.gb6a874cedc-goog
-> 
-> -- 
-> 
-> - Arnaldo
-
+ required:
+   - compatible
+diff --git a/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml b/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml
+index e60867c7c571..07a85f7b17e0 100644
+--- a/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml
++++ b/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml
+@@ -15,7 +15,7 @@ description:
+   Ethernet switch port Description
+ 
+ allOf:
+-  - $ref: "http://devicetree.org/schemas/net/ethernet-controller.yaml#"
++  - $ref: /schemas/net/ethernet-controller.yaml#
+ 
+ properties:
+   reg:
+diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml
+index a776cd37c297..95fcb43675d6 100644
+--- a/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml
++++ b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml
+@@ -103,7 +103,7 @@ patternProperties:
+                  supports up to 50MHz, up to four chip selects, programmable
+                  data path from 4 bits to 32 bits and numerous protocol
+                  variants.
+-    $ref: /spi/spi-controller.yaml#
++    $ref: /schemas/spi/spi-controller.yaml#
+ 
+     properties:
+       compatible:
+diff --git a/Documentation/devicetree/bindings/spi/mediatek,spi-mtk-nor.yaml b/Documentation/devicetree/bindings/spi/mediatek,spi-mtk-nor.yaml
+index be3cc7faed53..41e60fe4b09f 100644
+--- a/Documentation/devicetree/bindings/spi/mediatek,spi-mtk-nor.yaml
++++ b/Documentation/devicetree/bindings/spi/mediatek,spi-mtk-nor.yaml
+@@ -18,7 +18,7 @@ description: |
+   capability of this controller.
+ 
+ allOf:
+-  - $ref: /spi/spi-controller.yaml#
++  - $ref: /schemas/spi/spi-controller.yaml#
+ 
+ properties:
+   compatible:
+diff --git a/Documentation/devicetree/bindings/spi/qcom,spi-qcom-qspi.yaml b/Documentation/devicetree/bindings/spi/qcom,spi-qcom-qspi.yaml
+index 055524fe8327..5a60fba14bba 100644
+--- a/Documentation/devicetree/bindings/spi/qcom,spi-qcom-qspi.yaml
++++ b/Documentation/devicetree/bindings/spi/qcom,spi-qcom-qspi.yaml
+@@ -16,7 +16,7 @@ description: The QSPI controller allows SPI protocol communication in single,
+   as NOR flash.
+ 
+ allOf:
+-  - $ref: /spi/spi-controller.yaml#
++  - $ref: /schemas/spi/spi-controller.yaml#
+ 
+ properties:
+   compatible:
+diff --git a/Documentation/devicetree/bindings/spi/sprd,spi-adi.yaml b/Documentation/devicetree/bindings/spi/sprd,spi-adi.yaml
+index fe014020da69..a3ab1a1f1eb4 100644
+--- a/Documentation/devicetree/bindings/spi/sprd,spi-adi.yaml
++++ b/Documentation/devicetree/bindings/spi/sprd,spi-adi.yaml
+@@ -44,7 +44,7 @@ description: |
+   compatibility.
+ 
+ allOf:
+-  - $ref: /spi/spi-controller.yaml#
++  - $ref: /schemas/spi/spi-controller.yaml#
+ 
+ properties:
+   compatible:
+diff --git a/Documentation/devicetree/bindings/usb/mediatek,mtu3.yaml b/Documentation/devicetree/bindings/usb/mediatek,mtu3.yaml
+index 77db1233516e..df766f8de872 100644
+--- a/Documentation/devicetree/bindings/usb/mediatek,mtu3.yaml
++++ b/Documentation/devicetree/bindings/usb/mediatek,mtu3.yaml
+@@ -132,7 +132,7 @@ properties:
+     default: host
+ 
+   connector:
+-    $ref: /connector/usb-connector.yaml#
++    $ref: /schemas/connector/usb-connector.yaml#
+     description:
+       Connector for dual role switch, especially for "gpio-usb-b-connector"
+     type: object
+@@ -191,7 +191,7 @@ properties:
+ patternProperties:
+   "^usb@[0-9a-f]+$":
+     type: object
+-    $ref: /usb/mediatek,mtk-xhci.yaml#
++    $ref: /schemas/usb/mediatek,mtk-xhci.yaml#
+     description:
+       The xhci should be added as subnode to mtu3 as shown in the following
+       example if the host mode is enabled.
+diff --git a/Documentation/devicetree/bindings/usb/mediatek,musb.yaml b/Documentation/devicetree/bindings/usb/mediatek,musb.yaml
+index 03d62d60ce5f..11a33f9b1f17 100644
+--- a/Documentation/devicetree/bindings/usb/mediatek,musb.yaml
++++ b/Documentation/devicetree/bindings/usb/mediatek,musb.yaml
+@@ -63,7 +63,7 @@ properties:
+     maxItems: 1
+ 
+   connector:
+-    $ref: /connector/usb-connector.yaml#
++    $ref: /schemas/connector/usb-connector.yaml#
+     description: Connector for dual role switch
+     type: object
+ 
 -- 
+2.32.0
 
-- Arnaldo
