@@ -2,166 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1032C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 02:10:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A1DDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 02:11:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349838AbiCYCM3 (ORCPT
+        id S1357781AbiCYCMd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 22:12:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57860 "EHLO
+        Thu, 24 Mar 2022 22:12:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357690AbiCYCMN (ORCPT
+        with ESMTP id S1357753AbiCYCMO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 22:12:13 -0400
-Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AE47A9979
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 19:10:06 -0700 (PDT)
-Received: from epcas3p2.samsung.com (unknown [182.195.41.20])
-        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220325021002epoutp03c7eee1254da946606e66660942ee8d9d~ffbSDfDpR1934919349epoutp03N
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 02:10:02 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220325021002epoutp03c7eee1254da946606e66660942ee8d9d~ffbSDfDpR1934919349epoutp03N
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1648174202;
-        bh=JeyKg0UkfoLEj0vARb9q4+AYCvTCt6mrbg2MqfL/kXI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uXl9si+ljYQxuuKUXtf3N2SuX4CMP0Xi4L3CpQVjN7HLN41amM4HtosgOVsYmyh+q
-         oJyzZI8mYWXnm6Bn39picj/A8pVWQq//usmLfU8lBrDYHAStME8Rwb25fy8twYL6Z8
-         F0WBTgh2rQKCc0qzFOWmvpXjMYcvkhlXjlkR1MmY=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas3p1.samsung.com (KnoxPortal) with ESMTP id
-        20220325021002epcas3p1fa9cd91c170a6eb7f7978e0446e3a44a~ffbRhT3Rt0626606266epcas3p1Y;
-        Fri, 25 Mar 2022 02:10:02 +0000 (GMT)
-Received: from epcpadp3 (unknown [182.195.40.17]) by epsnrtp2.localdomain
-        (Postfix) with ESMTP id 4KPlsk1TvNz4x9QB; Fri, 25 Mar 2022 02:10:02 +0000
-        (GMT)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas2p4.samsung.com (KnoxPortal) with ESMTPA id
-        20220325020911epcas2p4740a9f85f00e78ac4c6155335835c067~ffah49VpF3135531355epcas2p4x;
-        Fri, 25 Mar 2022 02:09:11 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220325020911epsmtrp17e5a9c731c851f4cf36172abb480ae25~ffahzNoFX2722427224epsmtrp1G;
-        Fri, 25 Mar 2022 02:09:11 +0000 (GMT)
-X-AuditID: b6c32a29-41fff700000074af-22-623d24467d59
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        01.2F.29871.6442D326; Fri, 25 Mar 2022 11:09:10 +0900 (KST)
-Received: from ubuntu (unknown [12.36.155.120]) by epsmtip1.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220325020910epsmtip183e1c00a03d5f8e7aa89d3038367c02e~ffahgY4og2894728947epsmtip1V;
-        Fri, 25 Mar 2022 02:09:10 +0000 (GMT)
-Date:   Fri, 25 Mar 2022 11:07:50 +0900
-From:   Jung Daehwan <dh10.jung@samsung.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        "open list:USB XHCI DRIVER" <linux-usb@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Howard Yen <howardyen@google.com>,
-        Jack Pham <jackp@codeaurora.org>,
-        Puma Hsu <pumahsu@google.com>,
-        "J . Avila" <elavila@google.com>,
-        "chihhao . chen" <chihhao.chen@mediatek.com>, sc.suh@samsung.com,
-        cpgs@samsung.com, cpgsproxy5@samsung.com
-Subject: Re: [PATCH v1 1/4] usb: host: export symbols for xhci hooks usage
-Message-ID: <1889248251.21648174202185.JavaMail.epsvc@epcpadp3>
+        Thu, 24 Mar 2022 22:12:14 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4AB9A147B
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 19:10:25 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id x20so11544151ybi.5
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 19:10:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IKwNBEs3tASJWL7vN74tIrUm9dV+sBlNlNaJ5KwKgTs=;
+        b=cbc3BGe5+zL07UFEV9pbFjATQyTFfHkL8NRVARYGOxWmh0lxE1dNlskSSeW2JkMs2k
+         sFZgeI9XI06R2An17rGJRCrVBd+4KlMmefFE0nM82JlLERTRrgyL+1O3jRbO/hSqr9ZS
+         Pvf+cXGQaP182cb0VU8dTVUGy9z7Ic0Nmx+vQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IKwNBEs3tASJWL7vN74tIrUm9dV+sBlNlNaJ5KwKgTs=;
+        b=LvDWwcR1aUyVmJid6wKJyqEl7Z50dxnvQWWb4iBQiY+0hE4hzXN/NRF0+rO1xL21y5
+         //rP+h45TnJBcCkXSNx4mqvYF3Q29F6Z4Hp1yybGwaxEOJxN7seRC37YNE3LxE+cFsX2
+         ScUgO0dex0PZ5xqTV82Jv2bkadvtHTzI7dJ8Zk/TrhUcTF7JZH1dOxpFAzYvx6enodmz
+         nTNn6mYTJnD0nRhoZpNQ+LJ2YCNy5EDeUxPdy68YgdSBhTPbc7ZFSoAq5CNUkZ+9fUs0
+         9YzvLYkJtGI7HbhKVEYVaAPjGAZUVUy5VfG3Do6amyQEm0YZLMraaAsUQhQ3FruRiozo
+         LiSw==
+X-Gm-Message-State: AOAM530LWdmWjaJjuNLA3OcdDnYbdxxKHu2tKLDH9Uc9DYEjNVy85v/r
+        K7e7i9aA+NyW04DE3QqXUGw4ImCrW27kfUp/9yOnAw==
+X-Google-Smtp-Source: ABdhPJz3y4TlNL1JF4KJF+1yuPmc8LbezhlJz2o/4Jb79VASFUj+QoEgLFnQxvm0LwiSP+zSpCA553HDqMC/wZi0OFI=
+X-Received: by 2002:a25:3f43:0:b0:633:bdd8:4ae6 with SMTP id
+ m64-20020a253f43000000b00633bdd84ae6mr7423462yba.134.1648174224922; Thu, 24
+ Mar 2022 19:10:24 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <YjsH5Jtwd4JlXJ6g@kroah.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmpjkeLIzCtJLcpLzFFi42LZdlhJTtdNxTbJ4GCrmcWKw/MYLV4e0rTY
-        /PAKm8WTI4vYLZoXr2ezuP7nPaNF+/MLbBbnz29gt7i8aw6bxaJlrcwWzZumsFrMXKts0XX3
-        BqMDr8flvl4mjwWbSj0W73nJ5LFpVSebx/65a9g9Wk7uZ/Ho27KK0ePzJrkAjigum5TUnMyy
-        1CJ9uwSujIevpjMXvOCtuHNjNksD40GuLkZODgkBE4ntXy8xdjFycQgJ7GaUWHrsNjNEQlJi
-        6dwb7BC2sMT9liOsEEWPGCXWnVrBBpJgEVCVWPl0JyOIzSagJXHvxwmwZhEBY4n+s7PAmpkF
-        tjJL7NkcCWILC3hJ/Hz2jRXE5gWqP/Z8LxOILSTQzSzx4XkpRFxQ4uTMJywQvVoSN/69BKrh
-        ALKlJZb/4wAJcwpoSpw8dpQFJCwqoCLx6mD9BEbBWUiaZyFpnoXQvICReRWjZGpBcW56brFh
-        gWFearlecWJucWleul5yfu4mRnBUaWnuYNy+6oPeIUYmDsZDjBIczEoivPcvWycJ8aYkVlal
-        FuXHF5XmpBYfYpTmYFES573QdTJeSCA9sSQ1OzW1ILUIJsvEwSnVwNR4TeTCzFNSHSeUjmuF
-        83k9Lft2+vDG4OZcptnpGc+e7b51zm2bBDuvZZZEaX9Grd6qFw+3MmkwbW61uvE3LpLl2tkn
-        sp/OarzZ48HXOe/y7ZwJM39PXql3xf3m3gl/HpqGLF+jra1/QfQRPxfXNMUYCf89F6/dyZfI
-        3etr/4vpfX5nTfIs1UDrcLZVTEsfC9rcEC3q83p2tsXhn/8kxuu+piu+5KxyaajfNfmV9JPd
-        t/ye7BT992fWwa0phw7mzVj+yb92lseurwdyFzz0vNf22qE6fNrEe9LZj9JvX+jvVXZZInA+
-        cZHe+7Itix8UXm6uP6eZ1f46UGWb8kTLfIE2t7zF2x/U1v3uvWRv1vlLiaU4I9FQi7moOBEA
-        SbEtERkDAAA=
-X-CMS-MailID: 20220325020911epcas2p4740a9f85f00e78ac4c6155335835c067
-X-Msg-Generator: CA
-Content-Type: multipart/mixed;
-        boundary="----Hit0D2w6tI2G2F3pksn2lDL9DCLqPArtVXtx_.FrHH4Lj9aG=_602f_"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-X-CPGSPASS: Y
-X-Hop-Count: 3
-X-CMS-RootMailID: 20220304062617epcas2p2084161966aaa66d07f4c25720ec18088
-References: <1646375038-72082-1-git-send-email-dh10.jung@samsung.com>
-        <CGME20220304062617epcas2p2084161966aaa66d07f4c25720ec18088@epcas2p2.samsung.com>
-        <252651381.41646375583002.JavaMail.epsvc@epcpadp4>
-        <b33d8497-d6d5-18e2-93a9-e0564a84c1c5@kernel.org>
-        <1983025922.01648006681661.JavaMail.epsvc@epcpadp4>
-        <105eaeec-d77e-b0eb-86ad-a88c7446ca98@kernel.org>
-        <YjsH5Jtwd4JlXJ6g@kroah.com>
+References: <CABWYdi2a=Tc3dRfQ+037PG0GHKvZd5SEXJxBBbNspsrHK1zNpQ@mail.gmail.com>
+ <CABWYdi1PeNbgnM4qE001+_BzHJxQcaaY9sLOK=Y7gjqfXZO0=g@mail.gmail.com>
+ <YjA439FwajtHsahr@google.com> <YjEOiZCLBMgbw8oc@google.com>
+ <CABWYdi0jd_pG_qqAnnGK6otNNXeNoiAWtmC14Jv+tiSadJPw0w@mail.gmail.com>
+ <CABWYdi2gOzAK60gLYKx9gSoSfJRZaAjyAWm+55gLgcSKrDrP9Q@mail.gmail.com>
+ <YjTCF37cUNz9FwGi@google.com> <YjTVVxIAsnKAXjTd@google.com>
+In-Reply-To: <YjTVVxIAsnKAXjTd@google.com>
+From:   Ivan Babrou <ivan@cloudflare.com>
+Date:   Thu, 24 Mar 2022 19:10:14 -0700
+Message-ID: <CABWYdi0tgau=trCiGWULY88Wu1-=13ck8NikV0KxfDQHFCCiMA@mail.gmail.com>
+Subject: Re: zram corruption due to uninitialized do_swap_page fault
+To:     Minchan Kim <minchan@kernel.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Linux MM <linux-mm@kvack.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Nitin Gupta <ngupta@vflare.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Jens Axboe <axboe@kernel.dk>, linux-block@vger.kernel.org,
+        kernel-team <kernel-team@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-------Hit0D2w6tI2G2F3pksn2lDL9DCLqPArtVXtx_.FrHH4Lj9aG=_602f_
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
+On Fri, Mar 18, 2022 at 11:54 AM Minchan Kim <minchan@kernel.org> wrote:
+>
+> On Fri, Mar 18, 2022 at 10:32:07AM -0700, Minchan Kim wrote:
+> > On Fri, Mar 18, 2022 at 09:30:09AM -0700, Ivan Babrou wrote:
+> > > On Wed, Mar 16, 2022 at 11:26 AM Ivan Babrou <ivan@cloudflare.com> wrote:
+> > > > I'm making an internal build and will push it to some location to see
+> > > > how it behaves, but it might take a few days to get any sort of
+> > > > confidence in the results (unless it breaks immediately).
+> > > >
+> > > > I've also pushed my patch that disables SWP_SYNCHRONOUS_IO to a few
+> > > > locations yesterday to see how it fares.
+> > >
+> > > I have some updates before the weekend. There are two experimental groups:
+> > >
+> > > * My patch that removes the SWP_SYNCHRONOUS_IO flag. There are 704
+> > > machines in this group across 5 datacenters with cumulative uptime of
+> > > 916 days.
+> > > * Minchan's patch to remove swap_slot_free_notify. There are 376
+> > > machines in this group across 3 datacenters with cumulative uptime of
+> > > 240 days.
+> > >
+> > > Our machines take a couple of hours to start swapping anything after
+> > > boot, and I discounted these two hours from the cumulative uptime.
+> > >
+> > > Neither of these two groups experienced unexpected coredumps or
+> > > rocksdb corruptions.
+> > >
+> > > I think at this point it's reasonable to proceed with Minchan's patch
+> > > (including a backport).
+> >
+> > Let me cook the patch and then will post it.
+> >
+> > Thanks for the testing as well as reporting, Ivan!
+>
+> From 1ede54d46f0b1958bfc624f17fe709637ef8f12a Mon Sep 17 00:00:00 2001
+> From: Minchan Kim <minchan@kernel.org>
+> Date: Tue, 15 Mar 2022 14:14:23 -0700
+> Subject: [PATCH] mm: fix unexpected zeroed page mapping with zram swap
 
-On Wed, Mar 23, 2022 at 12:43:32PM +0100, Greg Kroah-Hartman wrote:
-> On Wed, Mar 23, 2022 at 10:41:23AM +0100, Krzysztof Kozlowski wrote:
-> > On 23/03/2022 03:58, Jung Daehwan wrote:
-> > > On Mon, Mar 07, 2022 at 10:59:06AM +0100, Krzysztof Kozlowski wrote:
-> > >> On 04/03/2022 07:23, Daehwan Jung wrote:
-> > >>> Export symbols for xhci hooks usage:
-> > >>> 	xhci_ring_free
-> > >>> 	- Allow xhci hook to free xhci_ring.
-> > >>
-> > >> Instead of copying-pasting the name of function, please explain why do
-> > >> you need these symbols exported.
-> > >>
-> > >> The "Why" is actually one of most important questions, because "what is
-> > >> this patch doing" we can easily see...
-> > >>
-> > >>>
-> > >>> 	xhci_get_slot_ctx
-> > >>> 	- Allow xhci hook to get slot_ctx from the xhci_container_ctx
-> > >>> 	  for getting the slot_ctx information to know which slot is
-> > >>> 	  offloading and compare the context in remote subsystem memory
-> > >>> 	  if needed.
-> > >>>
-> > >>
-> > >>
-> > >> Best regards,
-> > >> Krzysztof
-> > >>
-> > > 
-> > > Hi Krzysztof
-> > > 
-> > > xhci_ring_free has been removed from v3..
-> > > The reason why I want to export is for managing vendor specific ring.
-> > > I want to alloc and free vendor specific ring on specific address.
-> > > It's done with xhci hooks.
-> > 
-> > It's better, but still does not explain why these have to be exported.
-> > Please mention where are these hooks going to be. Where are they
-> > implemented. I actually expect all of these exports to be used in your
-> > patchset.
-> 
-> All exports _HAVE_ to be used by the patchset.  Otherwise it's an
-> invalid submission.
-> 
-> thanks,
-> 
-> greg k-h
-> 
-
-Yes. I removed unneeded exports on v3.
-
-Best Regards,
-Jung Daehwan
-
-------Hit0D2w6tI2G2F3pksn2lDL9DCLqPArtVXtx_.FrHH4Lj9aG=_602f_
-Content-Type: text/plain; charset="utf-8"
-
-
-------Hit0D2w6tI2G2F3pksn2lDL9DCLqPArtVXtx_.FrHH4Lj9aG=_602f_--
-
+Is there any action needed from me to make sure that this lands into
+the mm tree and eventually into stable releases?
