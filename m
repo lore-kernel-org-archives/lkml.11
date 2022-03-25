@@ -2,102 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F16A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:32:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A208CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:32:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230187AbiCYTdk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:33:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51596 "EHLO
+        id S230259AbiCYTdq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:33:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231617AbiCYTdU (ORCPT
+        with ESMTP id S231741AbiCYTdX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:33:20 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E64D1E1128;
-        Fri, 25 Mar 2022 12:25:27 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id j18so12124947wrd.6;
-        Fri, 25 Mar 2022 12:25:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Sgbjug1G1pDZEKRwaUL1TQtnWkwNkNtU3IYL1gdFP3w=;
-        b=Db2kfa5wv+R/GAy5yAWKd3ZJyWZ//HsIphCEG1Q7xsFw3DOwgACCMqx5rQ/wCZ8P/n
-         FU+pqDPCyWVFe1SO55l1OqkO2H7mILfusI0LlqczO6QF0rF+dcG6yYlZWT9YI9iN2xvb
-         SrZylMvQ8AUbFU8VR96Ho09orEblh53iE4zIY8WQhhDcek3MxJrA4+WlGlTIgJ2Ox1fo
-         24yoso/arzV8rjED72V8UCmkbyr7W5S5+tkH+SutSt7RLoGdbhbyeGCpLh3nxHneaiwE
-         DEWYg2L997w7XbinNL1PC8av4ZOXpVWGWwTGKolwEB23+ukFj9OvHe+sMoXs8RNfy7Y/
-         28/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Sgbjug1G1pDZEKRwaUL1TQtnWkwNkNtU3IYL1gdFP3w=;
-        b=dJLj7qsmlF239rgeZb2SP5If9T2D4KPo5jefpQjkk+iCerOHd1gClyIhlbtOpT66lr
-         VIojccLseaMdA0xXpTXxgQ83FzyhzjRaUQgtRwDwY8Xkst9dX3couemWmbbCa7kkGhZQ
-         ZbrIeaARsQ8+CYywJPt1lSYsH5Z+9SDe8jlPnNMo8Srdz+1lqiOdvl7es8hnWVwVSaWV
-         g8EWwIOcRaFYTiedVOyZZfKMb7voRWSTNxEQh/GSj/dscpFBL5t3Cn+xtHoUD/4YDbJY
-         N27x5nwj/QvNzHgIIAVZFKHQV3hGpKaXpsbizLmXiQ0tVnWiA6xb9jAGUvyuTG3sedza
-         Ak0g==
-X-Gm-Message-State: AOAM532MzbFkHFd7n6+Ri9mUriXxYFfZKg4r/Feh2F0OJKaUl6vXo01l
-        oNg/wovzbg8sS+n6RU9e1rqr9J2/B7c=
-X-Google-Smtp-Source: ABdhPJxcbxuTUqUJfWLwLUZezMhXUEn9uZCde44uBGEI83pW9cWU8hxCLi2F4ZA8o+fg61a9Y+FAdQ==
-X-Received: by 2002:ac2:4e71:0:b0:448:2f38:72ac with SMTP id y17-20020ac24e71000000b004482f3872acmr8810153lfs.594.1648231866812;
-        Fri, 25 Mar 2022 11:11:06 -0700 (PDT)
-Received: from [192.168.1.11] ([94.103.225.225])
-        by smtp.gmail.com with ESMTPSA id d13-20020a19384d000000b0044a20646b2bsm780687lfj.205.2022.03.25.11.11.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Mar 2022 11:11:06 -0700 (PDT)
-Message-ID: <e0e127c8-1515-2ebf-f473-acc38d60a122@gmail.com>
-Date:   Fri, 25 Mar 2022 21:11:03 +0300
+        Fri, 25 Mar 2022 15:33:23 -0400
+X-Greylist: delayed 7499 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 25 Mar 2022 12:08:19 PDT
+Received: from 7.mo575.mail-out.ovh.net (7.mo575.mail-out.ovh.net [46.105.63.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F30E165A82
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:08:19 -0700 (PDT)
+Received: from player774.ha.ovh.net (unknown [10.111.208.218])
+        by mo575.mail-out.ovh.net (Postfix) with ESMTP id BF25424DD5
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 17:51:46 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player774.ha.ovh.net (Postfix) with ESMTPSA id 6169E28B1E2F9;
+        Fri, 25 Mar 2022 17:51:41 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-99G00340880d83-d935-4bde-a67c-27e18a733d59,
+                    1702D5D0C6B5DF16716081994498F990499A02DA) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+Date:   Fri, 25 Mar 2022 18:51:34 +0100
+From:   Stephen Kitt <steve@sk2.org>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>, patches@opensource.cirrus.com,
+        Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ASoC: wm*: use simple i2c probe function
+Message-ID: <20220325185134.1096bcc6@heffalump.sk2.org>
+In-Reply-To: <Yj3+ILE03nOxbpsT@sirena.org.uk>
+References: <20220325162439.1203870-1-steve@sk2.org>
+        <Yj34gLRxhmXD1Y5B@sirena.org.uk>
+        <20220325182616.6fb6e13e@heffalump.sk2.org>
+        <Yj3+ILE03nOxbpsT@sirena.org.uk>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [RFC PATCH] KVM: x86/mmu: fix general protection fault in
- kvm_mmu_uninit_tdp_mmu
-Content-Language: en-US
-To:     Paolo Bonzini <pbonzini@redhat.com>, seanjc@google.com,
-        vkuznets@redhat.com, wanpengli@tencent.com, jmattson@google.com
-Cc:     x86@kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzbot+717ed82268812a643b28@syzkaller.appspotmail.com
-References: <20220325163815.3514-1-paskripkin@gmail.com>
- <53cc074f-350f-5fa8-1ee4-c33921f17cb1@redhat.com>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <53cc074f-350f-5fa8-1ee4-c33921f17cb1@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/EVIM78FD/YHiqgFyoMhIYaW";
+ protocol="application/pgp-signature"; micalg=pgp-sha512
+X-Ovh-Tracer-Id: 86131344199747206
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudehuddguddtiecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpeffhffvuffkjghfofggtgesghdtreerredtjeenucfhrhhomhepufhtvghphhgvnhcumfhithhtuceoshhtvghvvgesshhkvddrohhrgheqnecuggftrfgrthhtvghrnhepveelvdeufedvieevffdtueegkeevteehffdtffetleehjeekjeejudffieduteeknecukfhppedtrddtrddtrddtpdekvddrieehrddvhedrvddtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrjeejgedrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehsthgvvhgvsehskhdvrdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Paolo,
+--Sig_/EVIM78FD/YHiqgFyoMhIYaW
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On 3/25/22 19:50, Paolo Bonzini wrote:
-> On 3/25/22 17:38, Pavel Skripkin wrote:
->> Syzbot reported GPF in kvm_mmu_uninit_tdp_mmu(), which is caused by
->> passing NULL pointer to flush_workqueue().
->> 
->> tdp_mmu_zap_wq is allocated via alloc_workqueue() which may fail. There
->> is no error hanling and kvm_mmu_uninit_tdp_mmu() return value is simply
->> ignored. Even all kvm_*_init_vm() functions are void, so the easiest
->> solution is to check that tdp_mmu_zap_wq is valid pointer before passing
->> it somewhere.
-> 
-> Thanks for the analysis, but not scheduling the work item in
-> tdp_mmu_schedule_zap_root is broken; you can't just let the roots
-> survive (KVM uses its own workqueue because it needs to work item to
-> complete has to flush it before kvm_mmu_zap_all_fast returns).
-> 
+On Fri, 25 Mar 2022 17:38:40 +0000, Mark Brown <broonie@kernel.org> wrote:
 
-Ah, I see, thanks for explanation.
+> On Fri, Mar 25, 2022 at 06:26:16PM +0100, Stephen Kitt wrote:
+>=20
+> > Which tree should I check for conflicts? I=E2=80=99ve got similar patch=
+es across
+> > all the i2c-using sound/soc/codecs files, I wouldn=E2=80=99t want to wa=
+ste
+> > anyone=E2=80=99s time if I can check beforehand... =20
+>=20
+> Since we're in the merge window non-fixes patches just aren't getting
+> applied at the minute, you need to follow what's going on on the list at
+> the minute.
 
-I thought about propagating an error up to callers, but 
-kvm_mmu_uninit_tdp_mmu() returns false with config disabled, so I 
-decided to implement easiest fix w/o digging into details
+Apologies, please ignore all my patches then, I=E2=80=99ll re-submit them a=
+t a more
+convenient time.
 
-sorry about that
+Regards,
 
+Stephen
 
-With regards,
-Pavel Skripkin
+--Sig_/EVIM78FD/YHiqgFyoMhIYaW
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEnPVX/hPLkMoq7x0ggNMC9Yhtg5wFAmI+ASYACgkQgNMC9Yht
+g5wGWRAAlqQsOLE3vqJsuhfVQzmlktxRpi9LEC/7k33VgDHtQYAE/D89x2LZuEee
+oH6PcmxsExmaFQ5KxhYuvAxjjuaSwzaT3XGkTEQ2B8kXffqf7U1Ox5TmNDIDEoJw
+2bUAFwBrcSpPdpHrzK2Calu7PJr2bpxix8DwBmCVoLvZ0btJGt65luLsOiaLblcR
+yhqZKA8ZL4G55c0SxU5xSj7z+CzJBR0WRAroWrFlTjq8NWVy5FZmPF2w7DrviJ2O
+FuktTYiUz6ZyJU2oodWyPWx2NcGp7apX5vQQ6jOnr3Rxo0cQpPT31QHLx15OqXXV
+8h8N8cxVMquC/StLIwIHt9G5jwLIGRtiWYmEZnTguS99ci9RePLu7vbnoi6XjWLg
+XTbLUPj1XxM7JAQc3yTU73vx87Iqz+8wwStu7pGlkVyOinQpplQHazq1xZEctdqf
+uuFCSrtHZGMqO2oCDLO8PNhCEmKlK5oUUk/owaRmnV/3WZCeP5q7cW04ek3a//pa
+qHXQEOdpK3DTzT+Q46ItfNjFo30an5nJLJnrCoCQbOkR38pfWEvzmxL/cBHRlEUq
+72/LGrXXS/w8tQtXyLgvLXDwsGpgUI/gXAPjhMAxbiBJ5g8w/6cODWlrJABSvAdW
+yIH4ztC4wPr9AtkNwDpt9JeeP86F/8GBs9AL/WKuWTBxfoUyrtY=
+=XGZZ
+-----END PGP SIGNATURE-----
+
+--Sig_/EVIM78FD/YHiqgFyoMhIYaW--
