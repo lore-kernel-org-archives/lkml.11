@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5905BC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:27:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E806C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:27:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376946AbiCYP2P (ORCPT
+        id S1377009AbiCYP2S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:28:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34450 "EHLO
+        Fri, 25 Mar 2022 11:28:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376951AbiCYPXd (ORCPT
+        with ESMTP id S1377025AbiCYPXj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:23:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC1B9D06D;
-        Fri, 25 Mar 2022 08:17:03 -0700 (PDT)
+        Fri, 25 Mar 2022 11:23:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6ED9BD2E7;
+        Fri, 25 Mar 2022 08:17:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 575A060C86;
-        Fri, 25 Mar 2022 15:16:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D8AEC340E9;
-        Fri, 25 Mar 2022 15:16:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DC795B828F6;
+        Fri, 25 Mar 2022 15:17:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52D6DC340F3;
+        Fri, 25 Mar 2022 15:17:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221418;
-        bh=bOkJy+mMiLrQcWXHlmJVF/rdsYha53wcln9168+rGTw=;
+        s=korg; t=1648221432;
+        bh=WgkLrivE4MY8nQ0slwpeeCm7CLtn2UTdPAeDBIvyKs4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zFchtC3onO8nblxevVfGwueYpyWgIFsK3ePQxmEKrLJ/xanavqtEK70d/zBnjsKuy
-         ZkKDMQLq/Q75A99cWyPRaDj2h7gO02EA8x6cQ1oI5U4KJ4ofrB2764RJPLiLaOGM0z
-         Es+mpoFasJivkdtTJ6sZDCauS1CkVNZmD7m9Cm1k=
+        b=SeclibeOfJ4j28Qwa3aI3w0D2IblOkpWAeRXFCzVVlZaUq3GcAunYOi7s5zfgF8B1
+         Ch/Yga18dEu899InY0UzeW9xirUp4dijlIpgWRHtAy61QldQghWVqxOdhIyA0i8sQN
+         k7/hyXkvuG1ui8GejzXpflZvYWP6OPzexer38EA0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Palmer <daniel@0x0f.com>,
-        Arnaud POULIQUEN <arnaud.pouliquen@st.com>,
-        Takashi Iwai <tiwai@suse.de>,
-        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.16 03/37] ASoC: sti: Fix deadlock via snd_pcm_stop_xrun() call
-Date:   Fri, 25 Mar 2022 16:14:13 +0100
-Message-Id: <20220325150420.147141772@linuxfoundation.org>
+        stable@vger.kernel.org, huangwenhui <huangwenhuia@uniontech.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.16 08/37] ALSA: hda/realtek - Fix headset mic problem for a HP machine with alc671
+Date:   Fri, 25 Mar 2022 16:14:18 +0100
+Message-Id: <20220325150420.286957306@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150420.046488912@linuxfoundation.org>
 References: <20220325150420.046488912@linuxfoundation.org>
@@ -52,74 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: huangwenhui <huangwenhuia@uniontech.com>
 
-commit 455c5653f50e10b4f460ef24e99f0044fbe3401c upstream.
+commit 882bd07f564f97fca6e42ce6ce627ce24ce1ef5a upstream.
 
-This is essentially a revert of the commit dc865fb9e7c2 ("ASoC: sti:
-Use snd_pcm_stop_xrun() helper"), which converted the manual
-snd_pcm_stop() calls with snd_pcm_stop_xrun().
+On a HP 288 Pro G8, the front mic could not be detected.In order to
+get it working, the pin configuration needs to be set correctly, and
+the ALC671_FIXUP_HP_HEADSET_MIC2 fixup needs to be applied.
 
-The commit above introduced a deadlock as snd_pcm_stop_xrun() itself
-takes the PCM stream lock while the caller already holds it.  Since
-the conversion was done only for consistency reason and the open-call
-with snd_pcm_stop() to the XRUN state is a correct usage, let's revert
-the commit back as the fix.
-
-Fixes: dc865fb9e7c2 ("ASoC: sti: Use snd_pcm_stop_xrun() helper")
-Reported-by: Daniel Palmer <daniel@0x0f.com>
-Cc: Arnaud POULIQUEN <arnaud.pouliquen@st.com>
+Signed-off-by: huangwenhui <huangwenhuia@uniontech.com>
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220315091319.3351522-1-daniel@0x0f.com
+Link: https://lore.kernel.org/r/20220311093836.20754-1-huangwenhuia@uniontech.com
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Reviewed-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-Link: https://lore.kernel.org/r/20220315164158.19804-1-tiwai@suse.de
-Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/sti/uniperif_player.c |    6 +++---
- sound/soc/sti/uniperif_reader.c |    2 +-
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/sound/soc/sti/uniperif_player.c
-+++ b/sound/soc/sti/uniperif_player.c
-@@ -91,7 +91,7 @@ static irqreturn_t uni_player_irq_handle
- 			SET_UNIPERIF_ITM_BCLR_FIFO_ERROR(player);
- 
- 			/* Stop the player */
--			snd_pcm_stop_xrun(player->substream);
-+			snd_pcm_stop(player->substream, SNDRV_PCM_STATE_XRUN);
- 		}
- 
- 		ret = IRQ_HANDLED;
-@@ -105,7 +105,7 @@ static irqreturn_t uni_player_irq_handle
- 		SET_UNIPERIF_ITM_BCLR_DMA_ERROR(player);
- 
- 		/* Stop the player */
--		snd_pcm_stop_xrun(player->substream);
-+		snd_pcm_stop(player->substream, SNDRV_PCM_STATE_XRUN);
- 
- 		ret = IRQ_HANDLED;
- 	}
-@@ -138,7 +138,7 @@ static irqreturn_t uni_player_irq_handle
- 		dev_err(player->dev, "Underflow recovery failed\n");
- 
- 		/* Stop the player */
--		snd_pcm_stop_xrun(player->substream);
-+		snd_pcm_stop(player->substream, SNDRV_PCM_STATE_XRUN);
- 
- 		ret = IRQ_HANDLED;
- 	}
---- a/sound/soc/sti/uniperif_reader.c
-+++ b/sound/soc/sti/uniperif_reader.c
-@@ -65,7 +65,7 @@ static irqreturn_t uni_reader_irq_handle
- 	if (unlikely(status & UNIPERIF_ITS_FIFO_ERROR_MASK(reader))) {
- 		dev_err(reader->dev, "FIFO error detected\n");
- 
--		snd_pcm_stop_xrun(reader->substream);
-+		snd_pcm_stop(reader->substream, SNDRV_PCM_STATE_XRUN);
- 
- 		ret = IRQ_HANDLED;
- 	}
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -10911,6 +10911,7 @@ static const struct snd_pci_quirk alc662
+ 	SND_PCI_QUIRK(0x1028, 0x069f, "Dell", ALC668_FIXUP_DELL_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x103c, 0x1632, "HP RP5800", ALC662_FIXUP_HP_RP5800),
+ 	SND_PCI_QUIRK(0x103c, 0x873e, "HP", ALC671_FIXUP_HP_HEADSET_MIC2),
++	SND_PCI_QUIRK(0x103c, 0x885f, "HP 288 Pro G8", ALC671_FIXUP_HP_HEADSET_MIC2),
+ 	SND_PCI_QUIRK(0x1043, 0x1080, "Asus UX501VW", ALC668_FIXUP_HEADSET_MODE),
+ 	SND_PCI_QUIRK(0x1043, 0x11cd, "Asus N550", ALC662_FIXUP_ASUS_Nx50),
+ 	SND_PCI_QUIRK(0x1043, 0x129d, "Asus N750", ALC662_FIXUP_ASUS_Nx50),
 
 
