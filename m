@@ -2,147 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D6DBC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 16:04:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9813CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 16:06:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376414AbiCYQF4 (ORCPT
+        id S1359567AbiCYQHe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 12:05:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34112 "EHLO
+        Fri, 25 Mar 2022 12:07:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236383AbiCYQFw (ORCPT
+        with ESMTP id S1345725AbiCYQHc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 12:05:52 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E3BDA76E1
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 09:04:18 -0700 (PDT)
-Received: from imap1.suse-dmz.suse.de (imap1.suse-dmz.suse.de [192.168.254.73])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Fri, 25 Mar 2022 12:07:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09F00A1446;
+        Fri, 25 Mar 2022 09:05:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id A74291F7AC;
-        Fri, 25 Mar 2022 16:04:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1648224256;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ai5cculYaBCNGgkNRTrUS8pZjDUPLZBEnhlK8ay5zH4=;
-        b=XkAcMTAQrWZS6pKxT4yxgBKsP1lWNb8/BjqiHUZIvMe/LrfG4liVmm1/Ez2ES/8C6Cyraq
-        PHoS+LYh9WKPFGEYqw+nQRv5wU5CiTXrkwBHOw26xu6pB6/syYfSYJjoJUA6Og6IreoNub
-        Ta60PqnofHCaHB+urQfxh4gJR3DTciM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1648224256;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ai5cculYaBCNGgkNRTrUS8pZjDUPLZBEnhlK8ay5zH4=;
-        b=6LQc1v/PdRk3Gnnxf6oLcDFDPyoG88ZdvGtMv8bXKyXzx8gT9KWTfb2zIsxowYoF2DqrmH
-        aKsFMt6j2hLFhFAg==
-Received: from imap1.suse-dmz.suse.de (imap1.suse-dmz.suse.de [192.168.254.73])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap1.suse-dmz.suse.de (Postfix) with ESMTPS id 5762B1339C;
-        Fri, 25 Mar 2022 16:04:16 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap1.suse-dmz.suse.de with ESMTPSA
-        id gIdWEgDoPWLLLQAAGKfGzw
-        (envelope-from <pvorel@suse.cz>); Fri, 25 Mar 2022 16:04:16 +0000
-Date:   Fri, 25 Mar 2022 17:04:13 +0100
-From:   Petr Vorel <pvorel@suse.cz>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Christian Brauner <christian@brauner.io>,
-        Alexey Gladkov <legion@kernel.org>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Vasily Averin <vvs@virtuozzo.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH 1/1] ns: Move MAX_PID_NS_LEVEL to ns_common.h, reuse it
-Message-ID: <Yj3n/XdMvufIw0uZ@pevik>
-Reply-To: Petr Vorel <pvorel@suse.cz>
-References: <20220325112127.18026-1-pvorel@suse.cz>
- <87o81u88ju.fsf@email.froward.int.ebiederm.org>
+        by ams.source.kernel.org (Postfix) with ESMTPS id B50E1B82974;
+        Fri, 25 Mar 2022 16:05:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E02AC340E9;
+        Fri, 25 Mar 2022 16:05:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648224355;
+        bh=fhC4bXh2eJtZu7iYl9Lsy7SbOpvc29RlsKAkP1IIsdA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YYKwIzD72zQ0fpu2yy34OTzoHAiZCgxuWxBtmzHfwP9Rdy1i6GYK86QKO92L7rfJs
+         f5JjFXzvs+emwKp5570hEIgqs4FnIF0mBleru/8clA6L/FrxAXMN2aA9+oGbj6Zx7p
+         gidU7a1Vr6yTIUzFQ7sV0UgXko2PbpWSViI0T3sj0jSQBDBb3qTPAvCuw9XliP3ceL
+         4ePytYPTY6rqQGPKQ1LQtn9LpQLazGOYKi7P4TKWFCKJFpzVySD9C3TSDAYXjR2OeT
+         5OFDQg/y4W0yDOIwq52ZxeuXK7yLYuoPCy55jrpRiFTqkiE3SAX7V7jXuWrE1gC3Yc
+         N+KYhyMmocdQw==
+Date:   Fri, 25 Mar 2022 16:05:50 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     ChiYuan Huang <u0084500@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        cy_huang <cy_huang@richtek.com>, gene_chen@richtek.com,
+        lkml <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>
+Subject: Re: [PATCH 2/2] regulator: rt5759: Add support for Richtek RT5759
+ DCDC converter
+Message-ID: <Yj3oXuijuZY1gG9X@sirena.org.uk>
+References: <1648170401-6351-1-git-send-email-u0084500@gmail.com>
+ <1648170401-6351-3-git-send-email-u0084500@gmail.com>
+ <d2b431f8-9197-4a42-4ee2-4e771e20e0aa@kernel.org>
+ <CADiBU39RGQj1-+yK18mZf3MR78KACKqb2kAxkCFKGXKpJ6Nqxw@mail.gmail.com>
+ <e4a15ceb-c013-96be-48d1-e65267400463@kernel.org>
+ <CADiBU3-gwsh5v1NLUYr_ovXwpUxQqgR61f-Jpc3G-zHs_yV4uw@mail.gmail.com>
+ <03999953-77c5-0272-7477-ab8a069b3671@kernel.org>
+ <CADiBU38zYM1Rw2inTJ_Pu2eWKKqp2Ybb-_+JUJfxfmLNu=kYvw@mail.gmail.com>
+ <cf67f944-47a7-f3b5-9d83-f0f51dc4e954@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="FyeLtCK448S2Vosh"
 Content-Disposition: inline
-In-Reply-To: <87o81u88ju.fsf@email.froward.int.ebiederm.org>
+In-Reply-To: <cf67f944-47a7-f3b5-9d83-f0f51dc4e954@kernel.org>
+X-Cookie: Man and wife make one fool.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> Petr Vorel <pvorel@suse.cz> writes:
 
-> > Move MAX_PID_NS_LEVEL to ns_common.h and reuse it in check in
-> > user_namespace.c.
+--FyeLtCK448S2Vosh
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> What is the motivation for this change?
+On Fri, Mar 25, 2022 at 04:55:25PM +0100, Krzysztof Kozlowski wrote:
 
-> Is it just that there is a bare number in create_user_ns and that is a
-> little ugly?  Or is there something more motivating this?
+> You mention board, some of_device_get_match_data() so you talk about
+> runtime. maybe_unused is not about runtime. It is about build time.
 
-Well, nothing more than to have constant which gives some description.
+> The code you sent cannot have this structure unused. If you think
+> otherwise, please provide argument, but not about runtime (again). You
+> can for example build it without OF and see...
 
-Kind regards,
-Petr
+If you use of_match_ptr() in the struct device (which is good practice,
+didn't check if this driver does it) then that causes the ID table to be
+unreferenced as of_match_ptr() compiles to NULL when !OF.
 
-> Eric
+--FyeLtCK448S2Vosh
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
-> > Signed-off-by: Petr Vorel <pvorel@suse.cz>
-> > ---
-> > Hi Christian, all,
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmI96F0ACgkQJNaLcl1U
+h9D/CAf+NQmx/kuUdae96H9OhmXGbxXfUXbnPvenj1QKOJxlJQ6LmrI0ClU7AlPN
+v7kWfVwLCL3lZmctPJVUf+XrNfn8l1EdxkQnvJ/uLamh/i7cFMToeBPhBHA7fK8H
+8N7gcAEQF7AA4ZKIouGAfvIDS3wLMeihb+5+98/FmEkXZfWBMhdwwTl2YlVZrlEe
+NEN0qtRjB1iTw0pqHQlHIdHe2owIwQU4vQG3v2jJ1IbLrFBrEzkBK0GxJ+E0QnXp
+iUp2yvbX9ZnI9SyOQyEJRT1y8KOAHvXbp3uSKI/xT0+PqOS07fe2Mypam5BNeZ0o
+AQGRgYqiwqC+Je61b002unlhRPK6Jg==
+=OqSO
+-----END PGP SIGNATURE-----
 
-> > I don't see putting MAX_PID_NS_LEVEL into ns_common.h as an elegant
-> > solution but IMHO better than use a hardwired number or redefinition in
-> > user_namespace.h.
-
-> > Kind regards,
-> > Petr
-
-> >  include/linux/ns_common.h     | 3 +++
-> >  include/linux/pid_namespace.h | 3 ---
-> >  kernel/user_namespace.c       | 2 +-
-> >  3 files changed, 4 insertions(+), 4 deletions(-)
-
-> > diff --git a/include/linux/ns_common.h b/include/linux/ns_common.h
-> > index 0f1d024bd958..173fab9dadf7 100644
-> > --- a/include/linux/ns_common.h
-> > +++ b/include/linux/ns_common.h
-> > @@ -4,6 +4,9 @@
-
-> >  #include <linux/refcount.h>
-
-> > +/* MAX_PID_NS_LEVEL is needed for limiting size of 'struct pid' */
-> > +#define MAX_PID_NS_LEVEL 32
-> > +
-> >  struct proc_ns_operations;
-
-> >  struct ns_common {
-> > diff --git a/include/linux/pid_namespace.h b/include/linux/pid_namespace.h
-> > index 07481bb87d4e..f814068012d0 100644
-> > --- a/include/linux/pid_namespace.h
-> > +++ b/include/linux/pid_namespace.h
-> > @@ -11,9 +11,6 @@
-> >  #include <linux/ns_common.h>
-> >  #include <linux/idr.h>
-
-> > -/* MAX_PID_NS_LEVEL is needed for limiting size of 'struct pid' */
-> > -#define MAX_PID_NS_LEVEL 32
-> > -
-> >  struct fs_pin;
-
-> >  struct pid_namespace {
-> > diff --git a/kernel/user_namespace.c b/kernel/user_namespace.c
-> > index 5481ba44a8d6..6ea6e263403d 100644
-> > --- a/kernel/user_namespace.c
-> > +++ b/kernel/user_namespace.c
-> > @@ -87,7 +87,7 @@ int create_user_ns(struct cred *new)
-> >  	int ret, i;
-
-> >  	ret = -ENOSPC;
-> > -	if (parent_ns->level > 32)
-> > +	if (parent_ns->level > MAX_PID_NS_LEVEL)
-> >  		goto fail;
-
-> >  	ucounts = inc_user_namespaces(parent_ns, owner);
+--FyeLtCK448S2Vosh--
