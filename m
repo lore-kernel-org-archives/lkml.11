@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F312C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:30:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C71DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:30:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354826AbiCYPcH (ORCPT
+        id S1376659AbiCYPcN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:32:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34440 "EHLO
+        Fri, 25 Mar 2022 11:32:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378255AbiCYPZP (ORCPT
+        with ESMTP id S1378312AbiCYPZT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:25:15 -0400
+        Fri, 25 Mar 2022 11:25:19 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6247AECC72;
-        Fri, 25 Mar 2022 08:20:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530C3ECDB0;
+        Fri, 25 Mar 2022 08:20:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EE7616120E;
-        Fri, 25 Mar 2022 15:20:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 008FEC340E9;
-        Fri, 25 Mar 2022 15:20:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AB76760F06;
+        Fri, 25 Mar 2022 15:20:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACEBDC340E9;
+        Fri, 25 Mar 2022 15:20:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221607;
-        bh=eJrW6Ukr9LCgkxmA3uxYDl3On3sy31wqlS+EnIVN4dg=;
+        s=korg; t=1648221616;
+        bh=tdXfN3dVELg7WjnAzE0xfkgquffdF7QCQ8MnLKjaJPU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kRGFSHEZTO2T6znn1wkND2cY46NbH6jeYiQ/k6ulpPP37ChrINk7jDh2bjlSeuJyW
-         v3byM1/DDCqoD2Zq89hxsmlP8gawOkncnvAW3450A8OIsXMeydkSxkb9F2dA/Cla3G
-         XrL5NuqIlSN6imuY2C6cr6Ye/a2acAEmtD0yCYYE=
+        b=wlFTCII3uNLJs2cFA1DsExnD3Ayf9RQ1VNwLgMOWV952JyBbYzp6vGRGv+5FEhNXN
+         oiBH2v6jf9RHR5q85NHe2gFEXny3S08h9e7huDj3uGTpy2bCmLjAHJ6WApQiyh0EMy
+         A6taKpbvg41c90Yg01c6yc+VS/OdVGFvxFIh+6Ew=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Kalle Valo <quic_kvalo@quicinc.com>
-Subject: [PATCH 5.17 37/39] wcn36xx: Differentiate wcn3660 from wcn3620
-Date:   Fri, 25 Mar 2022 16:14:52 +0100
-Message-Id: <20220325150421.305865415@linuxfoundation.org>
+        Matthias Kretschmer <mathias.kretschmer@fit.fraunhofer.de>,
+        =?UTF-8?q?Linus=20L=C3=BCssing?= <ll@simonwunderlich.de>,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: [PATCH 5.17 34/39] mac80211: fix potential double free on mesh join
+Date:   Fri, 25 Mar 2022 16:14:49 +0100
+Message-Id: <20220325150421.220368778@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150420.245733653@linuxfoundation.org>
 References: <20220325150420.245733653@linuxfoundation.org>
@@ -51,53 +51,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+From: Linus Lüssing <ll@simonwunderlich.de>
 
-commit 98d504a82cc75840bec8e3c6ae0e4f411921962b upstream.
+commit 4a2d4496e15ea5bb5c8e83b94ca8ca7fb045e7d3 upstream.
 
-The spread of capability between the three WiFi silicon parts wcn36xx
-supports is:
+While commit 6a01afcf8468 ("mac80211: mesh: Free ie data when leaving
+mesh") fixed a memory leak on mesh leave / teardown it introduced a
+potential memory corruption caused by a double free when rejoining the
+mesh:
 
-wcn3620 - 802.11 a/b/g
-wcn3660 - 802.11 a/b/g/n
-wcn3680 - 802.11 a/b/g/n/ac
+  ieee80211_leave_mesh()
+  -> kfree(sdata->u.mesh.ie);
+  ...
+  ieee80211_join_mesh()
+  -> copy_mesh_setup()
+     -> old_ie = ifmsh->ie;
+     -> kfree(old_ie);
 
-We currently treat wcn3660 as wcn3620 thus limiting it to 2GHz channels.
-Fix this regression by ensuring we differentiate between all three parts.
+This double free / kernel panics can be reproduced by using wpa_supplicant
+with an encrypted mesh (if set up without encryption via "iw" then
+ifmsh->ie is always NULL, which avoids this issue). And then calling:
 
-Fixes: 8490987bdb9a ("wcn36xx: Hook and identify RF_IRIS_WCN3680")
+  $ iw dev mesh0 mesh leave
+  $ iw dev mesh0 mesh join my-mesh
+
+Note that typically these commands are not used / working when using
+wpa_supplicant. And it seems that wpa_supplicant or wpa_cli are going
+through a NETDEV_DOWN/NETDEV_UP cycle between a mesh leave and mesh join
+where the NETDEV_UP resets the mesh.ie to NULL via a memcpy of
+default_mesh_setup in cfg80211_netdev_notifier_call, which then avoids
+the memory corruption, too.
+
+The issue was first observed in an application which was not using
+wpa_supplicant but "Senf" instead, which implements its own calls to
+nl80211.
+
+Fixing the issue by removing the kfree()'ing of the mesh IE in the mesh
+join function and leaving it solely up to the mesh leave to free the
+mesh IE.
+
 Cc: stable@vger.kernel.org
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220125004046.4058284-1-bryan.odonoghue@linaro.org
+Fixes: 6a01afcf8468 ("mac80211: mesh: Free ie data when leaving mesh")
+Reported-by: Matthias Kretschmer <mathias.kretschmer@fit.fraunhofer.de>
+Signed-off-by: Linus Lüssing <ll@simonwunderlich.de>
+Tested-by: Mathias Kretschmer <mathias.kretschmer@fit.fraunhofer.de>
+Link: https://lore.kernel.org/r/20220310183513.28589-1-linus.luessing@c0d3.blue
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/ath/wcn36xx/main.c    |    3 +++
- drivers/net/wireless/ath/wcn36xx/wcn36xx.h |    1 +
- 2 files changed, 4 insertions(+)
+ net/mac80211/cfg.c |    3 ---
+ 1 file changed, 3 deletions(-)
 
---- a/drivers/net/wireless/ath/wcn36xx/main.c
-+++ b/drivers/net/wireless/ath/wcn36xx/main.c
-@@ -1513,6 +1513,9 @@ static int wcn36xx_platform_get_resource
- 	if (iris_node) {
- 		if (of_device_is_compatible(iris_node, "qcom,wcn3620"))
- 			wcn->rf_id = RF_IRIS_WCN3620;
-+		if (of_device_is_compatible(iris_node, "qcom,wcn3660") ||
-+		    of_device_is_compatible(iris_node, "qcom,wcn3660b"))
-+			wcn->rf_id = RF_IRIS_WCN3660;
- 		if (of_device_is_compatible(iris_node, "qcom,wcn3680"))
- 			wcn->rf_id = RF_IRIS_WCN3680;
- 		of_node_put(iris_node);
---- a/drivers/net/wireless/ath/wcn36xx/wcn36xx.h
-+++ b/drivers/net/wireless/ath/wcn36xx/wcn36xx.h
-@@ -97,6 +97,7 @@ enum wcn36xx_ampdu_state {
+--- a/net/mac80211/cfg.c
++++ b/net/mac80211/cfg.c
+@@ -2148,14 +2148,12 @@ static int copy_mesh_setup(struct ieee80
+ 		const struct mesh_setup *setup)
+ {
+ 	u8 *new_ie;
+-	const u8 *old_ie;
+ 	struct ieee80211_sub_if_data *sdata = container_of(ifmsh,
+ 					struct ieee80211_sub_if_data, u.mesh);
+ 	int i;
  
- #define RF_UNKNOWN	0x0000
- #define RF_IRIS_WCN3620	0x3620
-+#define RF_IRIS_WCN3660	0x3660
- #define RF_IRIS_WCN3680	0x3680
+ 	/* allocate information elements */
+ 	new_ie = NULL;
+-	old_ie = ifmsh->ie;
  
- static inline void buff_to_be(u32 *buf, size_t len)
+ 	if (setup->ie_len) {
+ 		new_ie = kmemdup(setup->ie, setup->ie_len,
+@@ -2165,7 +2163,6 @@ static int copy_mesh_setup(struct ieee80
+ 	}
+ 	ifmsh->ie_len = setup->ie_len;
+ 	ifmsh->ie = new_ie;
+-	kfree(old_ie);
+ 
+ 	/* now copy the rest of the setup parameters */
+ 	ifmsh->mesh_id_len = setup->mesh_id_len;
 
 
