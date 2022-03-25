@@ -2,251 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17233C3527B
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 613CFC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378444AbiCYPel (ORCPT
+        id S1378622AbiCYPfP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:34:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33112 "EHLO
+        Fri, 25 Mar 2022 11:35:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378194AbiCYPZE (ORCPT
+        with ESMTP id S1377733AbiCYPYc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:25:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F2A7ECB37;
-        Fri, 25 Mar 2022 08:19:59 -0700 (PDT)
+        Fri, 25 Mar 2022 11:24:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67135E72AE;
+        Fri, 25 Mar 2022 08:18:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 402B3B8288D;
-        Fri, 25 Mar 2022 15:19:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 664EEC36AF5;
-        Fri, 25 Mar 2022 15:19:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 015D660A1B;
+        Fri, 25 Mar 2022 15:18:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 065F9C340E9;
+        Fri, 25 Mar 2022 15:18:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221598;
-        bh=tyJYj+fpxLpvdG2p7A9uxdypB6t8FHWIm7rc35P0H9g=;
-        h=From:To:Cc:Subject:Date:From;
-        b=FmVUQLmbfDq7wZURXBgOLBvXsy891qotw8CAXQ4My7RDsOpLwMoAZclUIP8UrRJfQ
-         5pirGVENa32DWJaXWPmS2RozUV/xVBONc84I4HpTvqbm2y//j+p6IWN0IT6RKfDnTR
-         2nbaBboprBwS/faLOSPJ27IUN/F3oLS5hgk2+Gw8=
+        s=korg; t=1648221526;
+        bh=dlt1A1biLcVDgMxTU/Y7y85mBaY6WRz6rpXrh1D3VB0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Gc4oMGwu9b3SOgIM+oASxdmUHb0irdvugJ5Q8dtqu5dHJIEZzksFAQaI3DjF/Q5yQ
+         rFDhtU7VSCrEiSVsJDuSiJbsCEi+wh+cNJ4XtnGNk+8dpdq4yoq/f6oOTgrtDNOJdD
+         bEuigIJ73IJuaZSRlgFOlyVFUTbHY8V2GkZzaUR4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 5.17 00/39] 5.17.1-rc1 review
-Date:   Fri, 25 Mar 2022 16:14:15 +0100
-Message-Id: <20220325150420.245733653@linuxfoundation.org>
+        stable@vger.kernel.org, Jonathan Teh <jonathan.teh@outlook.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.17 17/39] ALSA: cmipci: Restore aux vol on suspend/resume
+Date:   Fri, 25 Mar 2022 16:14:32 +0100
+Message-Id: <20220325150420.736207240@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
+In-Reply-To: <20220325150420.245733653@linuxfoundation.org>
+References: <20220325150420.245733653@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.17.1-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-5.17.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 5.17.1-rc1
-X-KernelTest-Deadline: 2022-03-27T15:04+00:00
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 5.17.1 release.
-There are 39 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: Jonathan Teh <jonathan.teh@outlook.com>
 
-Responses should be made by Sun, 27 Mar 2022 15:04:08 +0000.
-Anything received after that time might be too late.
+commit c14231cc04337c2c2a937db084af342ce704dbde upstream.
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.17.1-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.17.y
-and the diffstat can be found below.
+Save and restore CM_REG_AUX_VOL instead of register 0x24 twice on
+suspend/resume.
 
-thanks,
+Tested on CMI8738LX.
 
-greg k-h
+Fixes: cb60e5f5b2b1 ("[ALSA] cmipci - Add PM support")
+Signed-off-by: Jonathan Teh <jonathan.teh@outlook.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/DBAPR04MB7366CB3EA9C8521C35C56E8B920E9@DBAPR04MB7366.eurprd04.prod.outlook.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ sound/pci/cmipci.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
--------------
-Pseudo-Shortlog of commits:
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 5.17.1-rc1
-
-Arnd Bergmann <arnd@arndb.de>
-    nds32: fix access_ok() checks in get/put_user
-
-Arnd Bergmann <arnd@arndb.de>
-    m68k: fix access_ok for coldfire
-
-Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-    wcn36xx: Differentiate wcn3660 from wcn3620
-
-James Bottomley <James.Bottomley@HansenPartnership.com>
-    tpm: use try_get_ops() in tpm-space.c
-
-Lino Sanfilippo <LinoSanfilippo@gmx.de>
-    tpm: fix reference counting for struct tpm_chip
-
-Linus Lüssing <ll@simonwunderlich.de>
-    mac80211: fix potential double free on mesh join
-
-Arnd Bergmann <arnd@arndb.de>
-    uaccess: fix integer overflow on access_ok()
-
-Paul E. McKenney <paulmck@kernel.org>
-    rcu: Don't deboost before reporting expedited quiescent state
-
-Ritesh Harjani <riteshh@linux.ibm.com>
-    jbd2: fix use-after-free of transaction_t race
-
-Roberto Sassu <roberto.sassu@huawei.com>
-    drm/virtio: Ensure that objs is not NULL in virtio_gpu_array_put_free()
-
-Brian Norris <briannorris@chromium.org>
-    Revert "ath: add support for special 0x0 regulatory domain"
-
-Ismael Ferreras Morezuelas <swyterzone@gmail.com>
-    Bluetooth: btusb: Use quirk to skip HCI_FLT_CLEAR_ALL on fake CSR controllers
-
-Ismael Ferreras Morezuelas <swyterzone@gmail.com>
-    Bluetooth: hci_sync: Add a new quirk to skip HCI_FLT_CLEAR_ALL
-
-Larry Finger <Larry.Finger@lwfinger.net>
-    Bluetooth: btusb: Add one more Bluetooth part for the Realtek RTL8852AE
-
-Giovanni Cabiddu <giovanni.cabiddu@intel.com>
-    crypto: qat - disable registration of algorithms
-
-Werner Sembach <wse@tuxedocomputers.com>
-    ACPI: video: Force backlight native for Clevo NL5xRU and NL5xNU
-
-Maximilian Luz <luzmaximilian@gmail.com>
-    ACPI: battery: Add device HID and quirk for Microsoft Surface Go 3
-
-Mark Cilissen <mark@yotsuba.nl>
-    ACPI / x86: Work around broken XSDT on Advantech DAC-BJ01 board
-
-Pablo Neira Ayuso <pablo@netfilter.org>
-    netfilter: nf_tables: validate registers coming from userspace.
-
-Pablo Neira Ayuso <pablo@netfilter.org>
-    netfilter: nf_tables: initialize registers in nft_do_chain()
-
-Stephane Graber <stgraber@ubuntu.com>
-    drivers: net: xgene: Fix regression in CRC stripping
-
-Giacomo Guiduzzi <guiduzzi.giacomo@gmail.com>
-    ALSA: pci: fix reading of swapped values from pcmreg in AC97 codec
-
-Jonathan Teh <jonathan.teh@outlook.com>
-    ALSA: cmipci: Restore aux vol on suspend/resume
-
-Lars-Peter Clausen <lars@metafoo.de>
-    ALSA: usb-audio: Add mute TLV for playback volumes on RODE NT-USB
-
-Takashi Iwai <tiwai@suse.de>
-    ALSA: pcm: Add stream lock during PCM reset ioctl operations
-
-Takashi Iwai <tiwai@suse.de>
-    ALSA: pcm: Fix races among concurrent prealloc proc writes
-
-Takashi Iwai <tiwai@suse.de>
-    ALSA: pcm: Fix races among concurrent prepare and hw_params/hw_free calls
-
-Takashi Iwai <tiwai@suse.de>
-    ALSA: pcm: Fix races among concurrent read/write and buffer changes
-
-Takashi Iwai <tiwai@suse.de>
-    ALSA: pcm: Fix races among concurrent hw_params and hw_free calls
-
-Jason Zheng <jasonzheng2004@gmail.com>
-    ALSA: hda/realtek: Add quirk for ASUS GA402
-
-huangwenhui <huangwenhuia@uniontech.com>
-    ALSA: hda/realtek - Fix headset mic problem for a HP machine with alc671
-
-Tim Crawford <tcrawford@system76.com>
-    ALSA: hda/realtek: Add quirk for Clevo NP50PNJ
-
-Tim Crawford <tcrawford@system76.com>
-    ALSA: hda/realtek: Add quirk for Clevo NP70PNJ
-
-Reza Jahanbakhshi <reza.jahanbakhshi@gmail.com>
-    ALSA: usb-audio: add mapping for new Corsair Virtuoso SE
-
-Takashi Iwai <tiwai@suse.de>
-    ALSA: oss: Fix PCM OSS buffer allocation overflow
-
-Takashi Iwai <tiwai@suse.de>
-    ASoC: sti: Fix deadlock via snd_pcm_stop_xrun() call
-
-Eric Dumazet <edumazet@google.com>
-    llc: fix netdevice reference leaks in llc_ui_bind()
-
-Helmut Grohne <helmut@subdivi.de>
-    Bluetooth: btusb: Add another Realtek 8761BU
-
-Tadeusz Struk <tstruk@gmail.com>
-    tpm: Fix error handling in async work
-
-
--------------
-
-Diffstat:
-
- Makefile                                         |  4 +-
- arch/csky/include/asm/uaccess.h                  |  7 +-
- arch/hexagon/include/asm/uaccess.h               | 18 ++---
- arch/m68k/include/asm/uaccess.h                  | 15 ++--
- arch/microblaze/include/asm/uaccess.h            | 19 +----
- arch/nds32/include/asm/uaccess.h                 | 22 ++++--
- arch/x86/kernel/acpi/boot.c                      | 24 ++++++
- drivers/acpi/battery.c                           | 12 +++
- drivers/acpi/video_detect.c                      | 75 ++++++++++++++++++
- drivers/bluetooth/btusb.c                        | 10 ++-
- drivers/char/tpm/tpm-chip.c                      | 46 ++---------
- drivers/char/tpm/tpm-dev-common.c                |  8 +-
- drivers/char/tpm/tpm.h                           |  2 +
- drivers/char/tpm/tpm2-space.c                    | 73 +++++++++++++++++-
- drivers/crypto/qat/qat_4xxx/adf_drv.c            |  7 ++
- drivers/crypto/qat/qat_common/qat_crypto.c       |  7 ++
- drivers/gpu/drm/virtio/virtgpu_gem.c             |  3 +
- drivers/net/ethernet/apm/xgene/xgene_enet_main.c | 12 +--
- drivers/net/wireless/ath/regd.c                  | 10 +--
- drivers/net/wireless/ath/wcn36xx/main.c          |  3 +
- drivers/net/wireless/ath/wcn36xx/wcn36xx.h       |  1 +
- fs/jbd2/transaction.c                            | 41 ++++++----
- include/net/bluetooth/hci.h                      | 10 +++
- include/sound/pcm.h                              |  1 +
- kernel/rcu/tree_plugin.h                         |  8 +-
- net/bluetooth/hci_sync.c                         | 16 ++++
- net/llc/af_llc.c                                 |  8 ++
- net/mac80211/cfg.c                               |  3 -
- net/netfilter/nf_tables_api.c                    | 22 ++++--
- net/netfilter/nf_tables_core.c                   |  2 +-
- sound/core/oss/pcm_oss.c                         | 12 ++-
- sound/core/oss/pcm_plugin.c                      |  5 +-
- sound/core/pcm.c                                 |  2 +
- sound/core/pcm_lib.c                             |  4 +
- sound/core/pcm_memory.c                          | 11 ++-
- sound/core/pcm_native.c                          | 97 +++++++++++++++---------
- sound/pci/ac97/ac97_codec.c                      |  4 +-
- sound/pci/cmipci.c                               |  3 +-
- sound/pci/hda/patch_realtek.c                    |  4 +
- sound/soc/sti/uniperif_player.c                  |  6 +-
- sound/soc/sti/uniperif_reader.c                  |  2 +-
- sound/usb/mixer_maps.c                           | 10 +++
- sound/usb/mixer_quirks.c                         |  7 +-
- 43 files changed, 475 insertions(+), 181 deletions(-)
+--- a/sound/pci/cmipci.c
++++ b/sound/pci/cmipci.c
+@@ -298,7 +298,6 @@ MODULE_PARM_DESC(joystick_port, "Joystic
+ #define CM_MICGAINZ		0x01	/* mic boost */
+ #define CM_MICGAINZ_SHIFT	0
+ 
+-#define CM_REG_MIXER3		0x24
+ #define CM_REG_AUX_VOL		0x26
+ #define CM_VAUXL_MASK		0xf0
+ #define CM_VAUXR_MASK		0x0f
+@@ -3265,7 +3264,7 @@ static int snd_cmipci_probe(struct pci_d
+  */
+ static const unsigned char saved_regs[] = {
+ 	CM_REG_FUNCTRL1, CM_REG_CHFORMAT, CM_REG_LEGACY_CTRL, CM_REG_MISC_CTRL,
+-	CM_REG_MIXER0, CM_REG_MIXER1, CM_REG_MIXER2, CM_REG_MIXER3, CM_REG_PLL,
++	CM_REG_MIXER0, CM_REG_MIXER1, CM_REG_MIXER2, CM_REG_AUX_VOL, CM_REG_PLL,
+ 	CM_REG_CH0_FRAME1, CM_REG_CH0_FRAME2,
+ 	CM_REG_CH1_FRAME1, CM_REG_CH1_FRAME2, CM_REG_EXT_MISC,
+ 	CM_REG_INT_STATUS, CM_REG_INT_HLDCLR, CM_REG_FUNCTRL0,
 
 
