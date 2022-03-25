@@ -2,68 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A610C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:55:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 596A0C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:55:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231549AbiCYT4c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:56:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33732 "EHLO
+        id S231921AbiCYT4v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:56:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231965AbiCYT4Q (ORCPT
+        with ESMTP id S231332AbiCYT4h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:56:16 -0400
+        Fri, 25 Mar 2022 15:56:37 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51D6D22BD6A;
-        Fri, 25 Mar 2022 12:44:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB21B36879A;
+        Fri, 25 Mar 2022 12:44:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E46261BB2;
-        Fri, 25 Mar 2022 17:18:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 72C46C34110;
-        Fri, 25 Mar 2022 17:18:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D07E161C12;
+        Fri, 25 Mar 2022 19:42:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 014B9C004DD;
+        Fri, 25 Mar 2022 19:42:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648228683;
-        bh=I4ZY1QiAn+JiHTDswh4ozEtAdUVk9QXS1bMoezDChkE=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=Bisfk+WqHKK46kLcQmzHi5fePegfrZ0hguwsVPEXWpKv4HYnRDQ9LoEeB857U+717
-         hPeX8NpL3t/wBx0UjTk13C6lL6SHcmpRjTlLC2U/ffvNQxXoCnffkyWwQ0awfcfCbn
-         lVyNL1kcvffUl9b3kXbrJ9s58upW4NQ3eorQhdpkXBK/1gtO1v620LovcOAc7TOzLW
-         t2L/XR/Rae5b0JQI1you860eHo10CgC8WBsoUC/v/C9GE8KlqIZ2T+DqEfVYsl0/Wc
-         XxtdZMxnnkduG0DycWYoUAHCFuSdkWg8rzgLRFUnwS0P9j21y3j3YpRFUqdFWc3p3u
-         wpuwE1U/F5J4g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5EF5CE7BB0B;
-        Fri, 25 Mar 2022 17:18:03 +0000 (UTC)
-Subject: Re: [GIT PULL] MIPS changes for v5.18
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220325144706.GA9428@alpha.franken.de>
-References: <20220325144706.GA9428@alpha.franken.de>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220325144706.GA9428@alpha.franken.de>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/mips/linux.git/ tags/mips_5.18
-X-PR-Tracked-Commit-Id: f8f9f21c7848e63133c16c899f3d84aa54eb79fe
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 9a8b3d5f71eb74b1b95927bd320b1070866a119a
-Message-Id: <164822868338.13188.17500314349084591736.pr-tracker-bot@kernel.org>
-Date:   Fri, 25 Mar 2022 17:18:03 +0000
-To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc:     torvalds@linux-foundation.org, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        s=k20201202; t=1648237356;
+        bh=7HqmVJ6NVxap9GlAmX1TBvBJ1P7rz3epiq/FKTPm9zY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=erf2kR3CM7QGTFQYsxs+kHRxt/FOSBfXnOcDqCMfrhmw89mlBvV+TR2jYpbtFDqvV
+         H60OPAhRA4aHGRY+VqIJzHnEMH/v3m/yweWiD/JnLHFUBblx/IcSdaHY0KAFecTo1H
+         wl1XbYZjnnz2KTbrgaBOsa/peQiCFwBbK1S/pTofSRsGTZLYYDlOVRSwKGnMjtybHG
+         6aelfqcl3/nvTV6VrEAxc0SHNMNbkjo0awwrXCVFAZwSxvn5PfDL5TH20OuAP5HIeh
+         o4R2zGc7LREcCzlzjCqYAZolxblHW0HOyKOXCW2qXoMeNTlfngPTjk4OlUloakvyG2
+         dM2zA/0DG6J9w==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id ABF8D40407; Fri, 25 Mar 2022 16:42:32 -0300 (-03)
+Date:   Fri, 25 Mar 2022 16:42:32 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ali Saidi <alisaidi@amazon.com>
+Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, german.gomez@arm.com,
+        leo.yan@linaro.org, benh@kernel.crashing.org,
+        Nick.Forrington@arm.com, alexander.shishkin@linux.intel.com,
+        andrew.kilroy@arm.com, james.clark@arm.com, john.garry@huawei.com,
+        jolsa@kernel.org, kjain@linux.ibm.com, lihuafei1@huawei.com,
+        mark.rutland@arm.com, mathieu.poirier@linaro.org, mingo@redhat.com,
+        namhyung@kernel.org, peterz@infradead.org, will@kernel.org
+Subject: Re: [PATCH v4 1/4] tools: arm64: Import cputype.h
+Message-ID: <Yj4bKHrmKhujZdpj@kernel.org>
+References: <20220324183323.31414-1-alisaidi@amazon.com>
+ <20220324183323.31414-2-alisaidi@amazon.com>
+ <Yj4McMHsxtJ3PfKk@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yj4McMHsxtJ3PfKk@kernel.org>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 25 Mar 2022 15:47:06 +0100:
+Em Fri, Mar 25, 2022 at 03:39:44PM -0300, Arnaldo Carvalho de Melo escreveu:
+> Em Thu, Mar 24, 2022 at 06:33:20PM +0000, Ali Saidi escreveu:
+> > Bring-in the kernel's arch/arm64/include/asm/cputype.h into tools/
+> > for arm64 to make use of all the core-type definitions in perf.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/mips/linux.git/ tags/mips_5.18
+> > Replace sysreg.h with the version already imported into tools/.
+ 
+> You forgot to add it to tools/perf/check-headers.sh so that we get
+> notificed when the original file in the kernel sources gets updated, so
+> that we can check if this needs any tooling adjustments.
+ 
+> I'll add the entry together with the waiver for this specific
+> difference.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/9a8b3d5f71eb74b1b95927bd320b1070866a119a
+This:
 
-Thank you!
+diff --git a/tools/perf/check-headers.sh b/tools/perf/check-headers.sh
+index 30ecf3a0f68b6830..6ee44b18c6b57cf1 100755
+--- a/tools/perf/check-headers.sh
++++ b/tools/perf/check-headers.sh
+@@ -146,6 +146,7 @@ done
+ check arch/x86/lib/memcpy_64.S        '-I "^EXPORT_SYMBOL" -I "^#include <asm/export.h>" -I"^SYM_FUNC_START\(_LOCAL\)*(memcpy_\(erms\|orig\))"'
+ check arch/x86/lib/memset_64.S        '-I "^EXPORT_SYMBOL" -I "^#include <asm/export.h>" -I"^SYM_FUNC_START\(_LOCAL\)*(memset_\(erms\|orig\))"'
+ check arch/x86/include/asm/amd-ibs.h  '-I "^#include [<\"]\(asm/\)*msr-index.h"'
++check arch/arm64/include/asm/cputype.h '-I "^#include [<\"]\(asm/\)*sysreg.h"'
+ check include/uapi/asm-generic/mman.h '-I "^#include <\(uapi/\)*asm-generic/mman-common\(-tools\)*.h>"'
+ check include/uapi/linux/mman.h       '-I "^#include <\(uapi/\)*asm/mman.h>"'
+ check include/linux/build_bug.h       '-I "^#\(ifndef\|endif\)\( \/\/\)* static_assert$"'
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+
+Cheers,
+
+- Arnaldo
