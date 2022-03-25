@@ -2,121 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72796C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:27:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6604AC4167B
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:28:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229624AbiCYT3R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:29:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58500 "EHLO
+        id S229937AbiCYT3j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:29:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229773AbiCYT2e (ORCPT
+        with ESMTP id S229773AbiCYT3T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:28:34 -0400
-Received: from mail.efficios.com (mail.efficios.com [167.114.26.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 472521EC9B7;
-        Fri, 25 Mar 2022 12:02:33 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id A00793F928D;
-        Fri, 25 Mar 2022 14:37:33 -0400 (EDT)
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id o23C3DmGDikb; Fri, 25 Mar 2022 14:37:33 -0400 (EDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 1AAED3F928C;
-        Fri, 25 Mar 2022 14:37:33 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 1AAED3F928C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
-        s=default; t=1648233453;
-        bh=mwGMi7DQv+rIpXzPKYAh0aILg4rx7+9wE3psHKG8Ox8=;
-        h=Date:From:To:Message-ID:MIME-Version;
-        b=FFq8Id9RI4B+MAqAqNdDDT49nMdWQGHbMV0Vh81Wg8rKc9vZ6RZeZRvU25frcTrlI
-         IyZmFRltt6UDeUjQzOL3MQYFy+oMO2AUv/LZQgMcQ2sQf+WaACwOW+EEA0t53znUPJ
-         OQKikP7noZV+XcsnJ0YD27DpE5H+Bgx+lFohmuGJwsHiHXfCTaqUYrAS8ZFzRdO83J
-         4WTXE0UBk5xoZX3QREMglFPX0FmwYEA2ov/H6fLRx3Y8p1xLr+CcaM1aOSl59yGIQu
-         FJxS1qNl0VG9p4EoelXanXI2mIrp8AdNGKa1JIBYXR2VQsoOWNS2LujOnHu+WgdVYd
-         JDtdtWtGzDu9A==
-X-Virus-Scanned: amavisd-new at efficios.com
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id Rmp3GDtL7f2D; Fri, 25 Mar 2022 14:37:33 -0400 (EDT)
-Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
-        by mail.efficios.com (Postfix) with ESMTP id 0CDB93F8FCC;
-        Fri, 25 Mar 2022 14:37:33 -0400 (EDT)
-Date:   Fri, 25 Mar 2022 14:37:32 -0400 (EDT)
-From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-To:     lttng-dev@lists.lttng.org,
-        diamon-discuss@lists.linuxfoundation.org,
-        linux-trace-users@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Message-ID: <1722467374.194740.1648233452935.JavaMail.zimbra@efficios.com>
-Subject: [RELEASE] LTTng-modules 2.13.3 and 2.12.8 (Linux kernel tracer)
+        Fri, 25 Mar 2022 15:29:19 -0400
+Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 428ED27D575;
+        Fri, 25 Mar 2022 12:03:32 -0700 (PDT)
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 67BAC1C0BC7; Fri, 25 Mar 2022 19:40:09 +0100 (CET)
+Date:   Fri, 25 Mar 2022 19:40:08 +0100
+From:   Pavel Machek <pavel@denx.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 4.19 00/20] 4.19.237-rc1 review
+Message-ID: <20220325184008.GD14194@duo.ucw.cz>
+References: <20220325150417.010265747@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [167.114.26.124]
-X-Mailer: Zimbra 8.8.15_GA_4203 (ZimbraWebClient - FF98 (Linux)/8.8.15_GA_4232)
-Thread-Index: FdzCaxNCbhjFfBx2k4zpzfddPUUTBg==
-Thread-Topic: LTTng-modules 2.13.3 and 2.12.8 (Linux kernel tracer)
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="AbQceqfdZEv+FvjW"
+Content-Disposition: inline
+In-Reply-To: <20220325150417.010265747@linuxfoundation.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
 
-This is a stable release announcement for the LTTng kernel tracer for the
-stable 2.12 and 2.13 branches. The releases are respectively 2.12.8 and 2.13.3.
+--AbQceqfdZEv+FvjW
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-In the 2.13.3 release, two fixes are worth mentioning:
+Hi!
 
-* Fix: lttng ABI: lttng_counter_ioctl() tainted scalar
+> This is the start of the stable review cycle for the 4.19.237 release.
+> There are 20 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 
-    The counter aggregate, clear and read functions (used for error reporting of
-    the event notification feature) use a userspace-controlled "number_dimensions"
-    argument as loop boundary.
+CIP testing did not find any problems here:
 
-    This ABI is only accessible from the root user, which limits the practical impact
-    of this bug.
+https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/tree/linux-=
+4.19.y
 
-* Fix: sample discarded events count before reserve
+Tested-by: Pavel Machek (CIP) <pavel@denx.de>
 
-    Sampling the discarded events count in the buffer_end callback is done
-    out of order, and may therefore include increments performed by following
-    events (in following packets) if the thread doing the end-of-packet
-    event write is interrupted for a long time.
-    
-    Sampling the event discarded counts before reserving space for the last
-    event in a packet, and keeping this as part of the private ring buffer
-    context, should fix this race.
-    
-    In lttng-modules, this scenario would only happen if an interrupt
-    handler produces many events, when nested over an event between its
-    reserve and commit. Note that if lttng-modules supports faultable
-    tracepoints in the future, this may become more easy to trigger due to
-    preemption.
+Best regards,
+                                                                Pavel
 
-    This fix is only part of the 2.13 stable branch and not backported to
-    2.12 because the lib ring buffer code used to implement this fix did not
-    exist in 2.12. Given that the impact of this bug is only imprecision of
-    discarded event reporting in corner-case scenarios (small impact, rare
-    occurrence), the complexity of implementing this fix in 2.12 is not justified.
-    The effect of this issue is that the lttng-tools
-    tests/regression/tools/streaming/test_high_throughput_limits test is flaky.
+--=20
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
 
-In the 2.12.8 release, a series of commits introduce support for the 5.17 Linux kernel.
-The 2.13 stable branch already supported that kernel in the prior releases.
+--AbQceqfdZEv+FvjW
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Feedback is welcome!
+-----BEGIN PGP SIGNATURE-----
 
-Thanks,
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYj4MiAAKCRAw5/Bqldv6
+8sqQAJ4t/QK75NUUC18YsygwDr/YVdKf9QCfaAsxEq9d3xzOwK7WOsrhtDYilL0=
+=H5mS
+-----END PGP SIGNATURE-----
 
-Mathieu
-
-Project website: https://lttng.org
-Documentation: https://lttng.org/docs
-Download link: https://lttng.org/download
-
-
--- 
-Mathieu Desnoyers
-EfficiOS Inc.
-http://www.efficios.com
+--AbQceqfdZEv+FvjW--
