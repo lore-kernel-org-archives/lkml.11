@@ -2,122 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9085C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:59:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 821E3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:59:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232047AbiCYUAo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 16:00:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55316 "EHLO
+        id S231799AbiCYUAr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 16:00:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232019AbiCYUAg (ORCPT
+        with ESMTP id S231982AbiCYUAg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 25 Mar 2022 16:00:36 -0400
-Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58105203A5C
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:50:13 -0700 (PDT)
-Received: by mail-ot1-x336.google.com with SMTP id i11-20020a9d4a8b000000b005cda3b9754aso6231062otf.12
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:50:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ofQyyG4WMeOqTiRCxXPOTx0/Wivov5xRx7qheRvM/dU=;
-        b=BTLrQc+pAf4GklQAuYbgpvaE5IYRRYpws9LxKmgbafhhKqWOaBUlZ1kY/PXDiEpsMq
-         IEPQ3wqmWivLAUs2jTzh1qeNenL6XV9D70b0I+pAEtuxNCS/BVaFrYeETTfp1FhkSq/H
-         HZRyRj7J2wnOX45stHVB7hpDU5NLeFcL5MyzE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ofQyyG4WMeOqTiRCxXPOTx0/Wivov5xRx7qheRvM/dU=;
-        b=fvCZV/PSrzASJsQSsYsLGAUNJB+ehd4BPbezoX8QjUvhJiZqxRzG8wts1doECQrTbT
-         KB29/H9Q12AV5o/fGUqHjjKKs3QV212JhzPNJzPxcYmo0Onked6HVJBOxevK1Uygf/Oz
-         R3Ft9oa6kKXD9c9m2xSLk1YTU5z7od/WGjg4crmzpHQC0tokHR9XGj5g7Swua60CtcKq
-         bps6lhzKchHIcApmYFOJdsozdTfSMG3iqtWi1idiANFlABmTCVZit4Ia3p+B55/rafeK
-         G45BWIfuRVW2O6xxgUZNli/cpLwc3JNGp2FSk4sppBj9W7bKDfeY663Iu5wD8plvGFfH
-         EVSg==
-X-Gm-Message-State: AOAM531c7j2ahxdEbRUPa/ZstJfDyjZ9Cr4pXPf7/nbtmwirAb+TDb8E
-        DxJ+l0vb9u3nbW1Y3YK0kI498w==
-X-Google-Smtp-Source: ABdhPJwP3eYIiKNUU8RG4VjsD8Eaq3hNhzdfy5M2puZwXKfZ42MjKCjobbrF6RFOi5BsoaaUw58PxA==
-X-Received: by 2002:a9d:67d4:0:b0:5b2:2644:7696 with SMTP id c20-20020a9d67d4000000b005b226447696mr5224826otn.322.1648237810859;
-        Fri, 25 Mar 2022 12:50:10 -0700 (PDT)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id r129-20020acac187000000b002ef358c6e0esm3198399oif.49.2022.03.25.12.50.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Mar 2022 12:50:10 -0700 (PDT)
-Subject: Re: [PATCH 1/2] selftests: fix header dependency for pid_namespace
- selftests
-To:     Axel Rasmussen <axelrasmussen@google.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        llvm@lists.linux.dev, Shuah Khan <skhan@linuxfoundation.org>
-References: <20220324223929.1893741-1-axelrasmussen@google.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <8fc440d2-2278-b554-3f56-18daa47aef85@linuxfoundation.org>
-Date:   Fri, 25 Mar 2022 13:50:09 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 966671D12CC;
+        Fri, 25 Mar 2022 12:50:09 -0700 (PDT)
+Received: from relay6-d.mail.gandi.net (unknown [217.70.183.198])
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id A6C1BC40FF;
+        Fri, 25 Mar 2022 17:25:18 +0000 (UTC)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id E3243C000B;
+        Fri, 25 Mar 2022 17:23:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1648229038;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Nl8WMSvcwN7OCquYKapv0FX+joP41LnWWci1eueukjc=;
+        b=TZ5NDpZCO6Q2m1d2604X4LIfhH3+aDXJrcg35i09OMJgV8obMHwZ83RNnIFPW69xwO3xo6
+        2vKEzdkcmYO8+Yd+0TY/EUFqii2DlpA+AxzoIC/r7K5sZMZFVVL6ddneZKxOlhQCNV6hSI
+        dOTzy8iZAf4j3kAQsBd9wcLs+ziutM5GA98xJ8VjRhL0dU1ZoByzS4yIPN6qaopcEk7WXQ
+        4bG/E1MTzQlM7DBUnzhw7NW6OQKBhatka6Bl8hces0INoUxLdpWgHR0crbRyezglOMCpOb
+        ByPKV6WcOQExB4jLgbobIqruo07fUyYtnjxm1T3q6Tas5YdC/a3jgKbwM1w96w==
+From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Allan Nielsen <allan.nielsen@microchip.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+Subject: [net-next 0/5] add fwnode based mdiobus registration
+Date:   Fri, 25 Mar 2022 18:22:29 +0100
+Message-Id: <20220325172234.1259667-1-clement.leger@bootlin.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-In-Reply-To: <20220324223929.1893741-1-axelrasmussen@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/24/22 4:39 PM, Axel Rasmussen wrote:
-> The way the test target was defined before, when building with clang we
-> get a command line like this:
-> 
-> clang -Wall -Werror -g -I../../../../usr/include/ \
-> 	regression_enomem.c ../pidfd/pidfd.h  -o regression_enomem
-> 
-> This yields an error, because clang thinks we want to produce both a *.o
-> file, as well as a precompiled header:
-> 
-> clang: error: cannot specify -o when generating multiple output files
-> 
-> gcc, for whatever reason, doesn't exhibit the same behavior which I
-> suspect is why the problem wasn't noticed before.
-> 
+In order to allow the mdiobus to be used completely with fwnode and
+continue to add fwnode support. This series adds
+fwnode_mdiobus_register() which allows to register a MDIO bus with a
+fwnode_handle. This support also works with device-tree and thus allows
+to integrate of_mdobus_register on top of fwnode support.
 
-Thank you fixing this.
+ACPI acpi_mdiobus_register() function seems similar enough with
+fwnode_mdiobus_register() to be integrated into that later one and thus
+remove ACPI specific registration, keeping only the fwnode one for all
+types of node. I'm not able to test that specific part so I did not do
+it in this series.
 
-> This can be fixed simply by using the LOCAL_HDRS infrastructure the
-> selftests lib.mk provides. It does the right think and marks the target
-> as depending on the header (so if the header changes, we rebuild), but
-> it filters the header out of the compiler command line, so we don't get
-> the error described above.
-> 
-> Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
-> ---
->   tools/testing/selftests/pid_namespace/Makefile | 6 +++---
->   1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/pid_namespace/Makefile b/tools/testing/selftests/pid_namespace/Makefile
-> index dcaefa224ca0..edafaca1aeb3 100644
-> --- a/tools/testing/selftests/pid_namespace/Makefile
-> +++ b/tools/testing/selftests/pid_namespace/Makefile
-> @@ -1,8 +1,8 @@
->   # SPDX-License-Identifier: GPL-2.0
->   CFLAGS += -g -I../../../../usr/include/
->   
-> -TEST_GEN_PROGS := regression_enomem
-> +TEST_GEN_PROGS = regression_enomem
->   
-> -include ../lib.mk
-> +LOCAL_HDRS += $(selfdir)/pidfd/pidfd.h
->   
-> -$(OUTPUT)/regression_enomem: regression_enomem.c ../pidfd/pidfd.h
-> +include ../lib.mk
-> 
+This series is a subset of the one that was first submitted as a larger
+series to add swnode support [1]. In this one, it will be focused on
+fwnode support only since it seems to have reach a consensus that
+adding fwnode to subsystems makes sense.
 
-Will apply this for Linux 5.18-rc2
+Additional information:
 
-thanks,
--- Shuah
+The device I'm trying to support is a PCIe card that uses a lan9662
+SoC. This card is meant to be used an ethernet switch with 2 x RJ45
+ports and 2 x 10G SFPs. The lan966x SoCs can be used in two different
+ways:
+
+ - It can run Linux by itself, on ARM64 cores included in the SoC. This
+   use-case of the lan966x is currently being upstreamed, using a
+   traditional Device Tree representation of the lan996x HW blocks [1]
+   A number of drivers for the different IPs of the SoC have already
+   been merged in upstream Linux.
+
+ - It can be used as a PCIe endpoint, connected to a separate platform
+   that acts as the PCIe root complex. In this case, all the devices
+   that are embedded on this SoC are exposed through PCIe BARs and the
+   ARM64 cores of the SoC are not used. Since this is a PCIe card, it
+   can be plugged on any platform, of any architecture supporting PCIe.
+
+The goal if this work is to allow OF based drivers to be reused with
+software nodes by supporting fwnode in multiple subsystems.
+
+[1] https://lore.kernel.org/netdev/YhPSkz8+BIcdb72R@smile.fi.intel.com/T/
+
+fwnode_i2c_only
+
+Clément Léger (5):
+  net: mdio: fwnode: add fwnode_mdiobus_register()
+  net: mdio: of: use fwnode_mdiobus_* functions
+  net: mdiobus: fwnode: avoid calling of_* functions with non OF nodes
+  net: mdiobus: fwnode: allow phy device registration with non OF nodes
+  net: mdio: mscc-miim: use fwnode_mdiobus_register()
+
+ drivers/net/mdio/fwnode_mdio.c    | 214 +++++++++++++++++++++++++++++-
+ drivers/net/mdio/mdio-mscc-miim.c |   4 +-
+ drivers/net/mdio/of_mdio.c        | 187 +-------------------------
+ include/linux/fwnode_mdio.h       |  13 ++
+ 4 files changed, 229 insertions(+), 189 deletions(-)
+
+-- 
+2.34.1
+
