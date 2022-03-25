@@ -2,100 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC2D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:44:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A91B3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:44:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357301AbiCYPq0 (ORCPT
+        id S1376801AbiCYPqb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:46:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50884 "EHLO
+        Fri, 25 Mar 2022 11:46:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376991AbiCYPmi (ORCPT
+        with ESMTP id S1377958AbiCYPoS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:42:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5190D4A92D
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 08:37:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F119617B1
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 15:37:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7953C340E9;
-        Fri, 25 Mar 2022 15:37:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648222640;
-        bh=z/tj9379s2brMQn0z0S3F/M1BsjmaTZ7Dhjo9GF9rsY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Uc02Fcd8vpsITGYBkaTuWcxMb3swn8zJ5k1vtS7Oqv0nOfa3FlEpj+NCBaNdntpZu
-         GAUApysYOGYkpOYvrby5Oky5Q/+CtUXik8/mIze4WQZqW1XtLd3DyaJ6FYq+cjHJHt
-         jsBX3Be+C5BmlvLSRTkZEgMXLYexaSRZA+dyAjJxTM/4e7iWofjPa9CTmT5Bt0Mzwi
-         YX/qF6NFIX3MyZ6gnzXIV5dX2IpAs1iBvqK/i/kTYIdFrK8+AhxuGvud4T/tBq2Avq
-         24jRIw5vf/mW36k1ZLCTxSeRVJ0KnpTM1EbSH+S7CkSuduUO1/71KTgxqVpVmmsQzm
-         bmOOiSey1UNVA==
-Date:   Fri, 25 Mar 2022 16:37:14 +0100
-From:   Christian Brauner <brauner@kernel.org>
-To:     Petr Vorel <pvorel@suse.cz>
-Cc:     linux-kernel@vger.kernel.org,
-        Christian Brauner <christian@brauner.io>,
-        Alexey Gladkov <legion@kernel.org>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Vasily Averin <vvs@virtuozzo.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH 1/1] ns: Move MAX_PID_NS_LEVEL to ns_common.h, reuse it
-Message-ID: <20220325153714.eau4ja6pcr2a34sh@wittgenstein>
-References: <20220325112127.18026-1-pvorel@suse.cz>
+        Fri, 25 Mar 2022 11:44:18 -0400
+Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C91685584
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 08:42:43 -0700 (PDT)
+Received: by mail-ot1-x331.google.com with SMTP id d15-20020a9d72cf000000b005cda54187c3so5763901otk.2
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 08:42:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=y+mMvimQyRReQzRmfPyQugpTb6KG//ze5sefX1RwzhQ=;
+        b=KEOJLdQ4cdEZxgsF3zBF9Ye2G1hZitw7712GCu1+psLG5lYYcqVhFc3hVFweWwrEjY
+         oTyog9ZPYy6+sCLYPHGjl5LLTwwUIerWjM1jmd/9HknBXGXgjbD+KSVyGL+15zqKKIzQ
+         pGQNjZGXzEDOM9g2mdBcqdMsb7hHunZ9kdYBg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=y+mMvimQyRReQzRmfPyQugpTb6KG//ze5sefX1RwzhQ=;
+        b=Rcyz4UcUNDVw+Z8w/F4yhxtTsSM1FAVVim8KuOPjMHjMXfx0SNpZ8SbMg7rQITnmUO
+         bS/qsVokDjyeR8wZ/+Q1FxgNowiycr6q39jMAgU+ZbCBerZbccizGNX6X6B0N2vduUTt
+         W+1ARte7UZ/hhmH0V5izn8LCMQ3/E2ZVj2LVSv361d0VcVszlSRbfH+PB6iBi8lvQU0A
+         VSipVKWQXt0uo8CwVD+US30JVz2W4OrbXZ/QNh4+5miBSNmUVGr9Jchvy9eGJZThAHXW
+         ZMqp4GuNWGSyd+WxYhh4OkgQOwrbYMCjsbUN+ZRYEVIJzQP+NfNWuMlIoKTPViwuDudq
+         y7uA==
+X-Gm-Message-State: AOAM531MAJShARj4e17g38DcNCHi6hnjNY4Ljsl7RTWrmJrswdaD0J2k
+        iWHc4OKsayg8Cl/dUmdmEC/5t0i71qnE7F/l3iSGpw==
+X-Google-Smtp-Source: ABdhPJwJ5Gq+nN3wnkjwmbTENOeA32A+fUspgT2HrNlzuSrTrJWLFo0Sp9DqVPbF7c9Pm2B0FHJmuD0002UbyLd9osA=
+X-Received: by 2002:a05:6830:61b:b0:5cc:e44:7dc3 with SMTP id
+ w27-20020a056830061b00b005cc0e447dc3mr4431819oti.159.1648222963153; Fri, 25
+ Mar 2022 08:42:43 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Fri, 25 Mar 2022 10:42:42 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220325112127.18026-1-pvorel@suse.cz>
+In-Reply-To: <20220325081100.1.I9f06fec63b978699fe62591fec9e5ac31bb3a69d@changeid>
+References: <20220325081100.1.I9f06fec63b978699fe62591fec9e5ac31bb3a69d@changeid>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Fri, 25 Mar 2022 10:42:42 -0500
+Message-ID: <CAE-0n50hUGbH7_khhbsg3fbX_MCK0gEoStk-3xoUzje_a1=KQQ@mail.gmail.com>
+Subject: Re: [PATCH] arm64: dts: qcom: sc7280-herobrine: Audio codec wants
+ 1.8V, not 1.62V
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>
+Cc:     Matthias Kaehlcke <mka@chromium.org>,
+        Judy Hsiao <judyhsiao@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 12:21:27PM +0100, Petr Vorel wrote:
-> Move MAX_PID_NS_LEVEL to ns_common.h and reuse it in check in
-> user_namespace.c.
-> 
-> Signed-off-by: Petr Vorel <pvorel@suse.cz>
+Quoting Douglas Anderson (2022-03-25 08:11:05)
+> The L2C rail on herobrine boards is intended to go to the audio
+> codec. Let's override the 1.62V specified in the qcard.dtsi file to be
+> 1.8V.
+>
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
 > ---
-> Hi Christian, all,
-> 
-> I don't see putting MAX_PID_NS_LEVEL into ns_common.h as an elegant
-> solution but IMHO better than use a hardwired number or redefinition in
-> user_namespace.h.
 
-Hey Petr,
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
 
-Weird I either deleted that message by accident or didn't get it.
+>
+>  arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+>
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+> index dc17f2079695..c2075f3e7c4b 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+> @@ -339,6 +339,16 @@ keyboard_backlight: keyboard-backlight {
+>  ts_avdd:      &pp3300_left_in_mlb {};
+>  vreg_edp_3p3: &pp3300_left_in_mlb {};
+>
+> +/* Regulator overrides from Qcard */
 
-> 
-> Kind regards,
-> Petr
-> 
->  include/linux/ns_common.h     | 3 +++
->  include/linux/pid_namespace.h | 3 ---
->  kernel/user_namespace.c       | 2 +-
->  3 files changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/include/linux/ns_common.h b/include/linux/ns_common.h
-> index 0f1d024bd958..173fab9dadf7 100644
-> --- a/include/linux/ns_common.h
-> +++ b/include/linux/ns_common.h
-> @@ -4,6 +4,9 @@
->  
->  #include <linux/refcount.h>
->  
-> +/* MAX_PID_NS_LEVEL is needed for limiting size of 'struct pid' */
-> +#define MAX_PID_NS_LEVEL 32
+This one isn't in ALL CAPS? :)
 
-The only two namespaces where this applies to have the same hard-coded
-limit. If you want to get rid of the raw number you should just
-introduce a generic define that expresses the limit for both pidns
-and userns. Using "MAX_PID_NS_LEVEL" in the userns case is very
-confusing. So if you wanted to do this introducing something like
-#define MAX_NS_LEVEL 32
-and using it in both places makes more sense.
-
-Christian
+> +
+> +/*
+> + * Herobrine boards only use l2c to power an external audio codec (like
+> + * alc5682) and we want that to be at 1.8V, not at some slightly lower voltage.
+> + */
+> +&vreg_l2c_1p8 {
+> +       regulator-min-microvolt = <1800000>;
+> +};
+> +
+>  /* ADDITIONS TO NODES DEFINED IN PARENT DEVICE TREE FILES */
