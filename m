@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55A10C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FA4CC433EF
 	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378493AbiCYPeu (ORCPT
+        id S1378363AbiCYPeh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:34:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42866 "EHLO
+        Fri, 25 Mar 2022 11:34:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378227AbiCYPZO (ORCPT
+        with ESMTP id S1377916AbiCYPYm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:25:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B366ECC5A;
-        Fri, 25 Mar 2022 08:20:05 -0700 (PDT)
+        Fri, 25 Mar 2022 11:24:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2F44EAC8E;
+        Fri, 25 Mar 2022 08:19:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E1D5C611FB;
-        Fri, 25 Mar 2022 15:20:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4514C340EE;
-        Fri, 25 Mar 2022 15:20:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 10E9060AB7;
+        Fri, 25 Mar 2022 15:19:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F9D8C340E9;
+        Fri, 25 Mar 2022 15:19:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221604;
-        bh=bLyHvRHuwpHkVvuattikF0PH4TZTbUXMmVmmup3vp7E=;
+        s=korg; t=1648221557;
+        bh=T3HgFM18vk7D6Ic08cOMwNAPMz3pNeri0STbdvJnGX8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SzfWQ48fZlmtFpK064O+kt66fgj2ljc39sNHgSzDOj16YmnolNUi0Vq4YX7dOilik
-         yAEnAHZlZWHn1k3Tm3aGz6tQyX+XnlSADH6OoWBntK0u/b5L4Ls5zUIFUetpVcxULr
-         yyOA2CNLp0RapnkvKMa0bEcF4c5O/AHDnQpu6KQw=
+        b=AD1RQS6GnSBYCKgdPSRYTnn3b9cj7dI4TmtI41RULHebyS9LIzoNoLoO4pvHy5Pw+
+         yYWpV26Z32pzWjkPGlSY6UCBetlPSdWCv+0XdSk+O1sXsmPgOt+nBTC1HgROmGYo8h
+         qmrCCxb0ILJiIJr+H8skzxu4ZcwSVhmsGUiPi+HM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        James Bottomley <James.Bottomley@HansenPartnership.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Subject: [PATCH 5.17 36/39] tpm: use try_get_ops() in tpm-space.c
-Date:   Fri, 25 Mar 2022 16:14:51 +0100
-Message-Id: <20220325150421.277908724@linuxfoundation.org>
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Ismael Ferreras Morezuelas <swyterzone@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>
+Subject: [PATCH 5.17 27/39] Bluetooth: hci_sync: Add a new quirk to skip HCI_FLT_CLEAR_ALL
+Date:   Fri, 25 Mar 2022 16:14:42 +0100
+Message-Id: <20220325150421.019666191@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150420.245733653@linuxfoundation.org>
 References: <20220325150420.245733653@linuxfoundation.org>
@@ -50,51 +50,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Bottomley <James.Bottomley@HansenPartnership.com>
+From: Ismael Ferreras Morezuelas <swyterzone@gmail.com>
 
-commit fb5abce6b2bb5cb3d628aaa63fa821da8c4600f9 upstream.
+commit 0eaecfb2e4814d51ab172df3823e35d7c488b6d2 upstream.
 
-As part of the series conversion to remove nested TPM operations:
+Some controllers have problems with being sent a command to clear
+all filtering. While the HCI code does not unconditionally
+send a clear-all anymore at BR/EDR setup (after the state machine
+refactor), there might be more ways of hitting these codepaths
+in the future as the kernel develops.
 
-https://lore.kernel.org/all/20190205224723.19671-1-jarkko.sakkinen@linux.intel.com/
-
-exposure of the chip->tpm_mutex was removed from much of the upper
-level code.  In this conversion, tpm2_del_space() was missed.  This
-didn't matter much because it's usually called closely after a
-converted operation, so there's only a very tiny race window where the
-chip can be removed before the space flushing is done which causes a
-NULL deref on the mutex.  However, there are reports of this window
-being hit in practice, so fix this by converting tpm2_del_space() to
-use tpm_try_get_ops(), which performs all the teardown checks before
-acquring the mutex.
-
-Cc: stable@vger.kernel.org # 5.4.x
-Signed-off-by: James Bottomley <James.Bottomley@HansenPartnership.com>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Cc: stable@vger.kernel.org
+Cc: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Ismael Ferreras Morezuelas <swyterzone@gmail.com>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/tpm/tpm2-space.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ include/net/bluetooth/hci.h |   10 ++++++++++
+ net/bluetooth/hci_sync.c    |   16 ++++++++++++++++
+ 2 files changed, 26 insertions(+)
 
---- a/drivers/char/tpm/tpm2-space.c
-+++ b/drivers/char/tpm/tpm2-space.c
-@@ -58,12 +58,12 @@ int tpm2_init_space(struct tpm_space *sp
+--- a/include/net/bluetooth/hci.h
++++ b/include/net/bluetooth/hci.h
+@@ -255,6 +255,16 @@ enum {
+ 	 * during the hdev->setup vendor callback.
+ 	 */
+ 	HCI_QUIRK_BROKEN_READ_TRANSMIT_POWER,
++
++	/* When this quirk is set, HCI_OP_SET_EVENT_FLT requests with
++	 * HCI_FLT_CLEAR_ALL are ignored and event filtering is
++	 * completely avoided. A subset of the CSR controller
++	 * clones struggle with this and instantly lock up.
++	 *
++	 * Note that devices using this must (separately) disable
++	 * runtime suspend, because event filtering takes place there.
++	 */
++	HCI_QUIRK_BROKEN_FILTER_CLEAR_ALL,
+ };
  
- void tpm2_del_space(struct tpm_chip *chip, struct tpm_space *space)
- {
--	mutex_lock(&chip->tpm_mutex);
--	if (!tpm_chip_start(chip)) {
+ /* HCI device flags */
+--- a/net/bluetooth/hci_sync.c
++++ b/net/bluetooth/hci_sync.c
+@@ -2806,6 +2806,9 @@ static int hci_set_event_filter_sync(str
+ 	if (!hci_dev_test_flag(hdev, HCI_BREDR_ENABLED))
+ 		return 0;
+ 
++	if (test_bit(HCI_QUIRK_BROKEN_FILTER_CLEAR_ALL, &hdev->quirks))
++		return 0;
 +
-+	if (tpm_try_get_ops(chip) == 0) {
- 		tpm2_flush_sessions(chip, space);
--		tpm_chip_stop(chip);
-+		tpm_put_ops(chip);
- 	}
--	mutex_unlock(&chip->tpm_mutex);
+ 	memset(&cp, 0, sizeof(cp));
+ 	cp.flt_type = flt_type;
+ 
+@@ -2826,6 +2829,13 @@ static int hci_clear_event_filter_sync(s
+ 	if (!hci_dev_test_flag(hdev, HCI_EVENT_FILTER_CONFIGURED))
+ 		return 0;
+ 
++	/* In theory the state machine should not reach here unless
++	 * a hci_set_event_filter_sync() call succeeds, but we do
++	 * the check both for parity and as a future reminder.
++	 */
++	if (test_bit(HCI_QUIRK_BROKEN_FILTER_CLEAR_ALL, &hdev->quirks))
++		return 0;
 +
- 	kfree(space->context_buf);
- 	kfree(space->session_buf);
+ 	return hci_set_event_filter_sync(hdev, HCI_FLT_CLEAR_ALL, 0x00,
+ 					 BDADDR_ANY, 0x00);
  }
+@@ -4825,6 +4835,12 @@ static int hci_update_event_filter_sync(
+ 	if (!hci_dev_test_flag(hdev, HCI_BREDR_ENABLED))
+ 		return 0;
+ 
++	/* Some fake CSR controllers lock up after setting this type of
++	 * filter, so avoid sending the request altogether.
++	 */
++	if (test_bit(HCI_QUIRK_BROKEN_FILTER_CLEAR_ALL, &hdev->quirks))
++		return 0;
++
+ 	/* Always clear event filter when starting */
+ 	hci_clear_event_filter_sync(hdev);
+ 
 
 
