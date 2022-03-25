@@ -2,156 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CC0EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:31:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D460C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:31:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230220AbiCYTce (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:32:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51118 "EHLO
+        id S230159AbiCYTci (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:32:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230215AbiCYTcP (ORCPT
+        with ESMTP id S230238AbiCYTcS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:32:15 -0400
-Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C67122A62C3
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:26:21 -0700 (PDT)
-Received: by mail-qk1-x736.google.com with SMTP id i65so6753637qkd.7
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:26:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=a4k5sbPFB7Mgl39AqQajFxJ0WncwlBA+vY/pc2FuGuQ=;
-        b=NaH2YRifYfDOG4sLSe0nOlUcBAytVbGgd1dX2oDX9irhwrBzW3zXOEyrge/eyRxfRS
-         +ytcCYlHxdMLqvznjTf/DU2HIvH7li4oTgm6km69bBf5tvMweS8XAmKeDSPbBC74dvHF
-         GMeFD+uwwaczOaa/lJn2DLIme+h1M/05vUfEiy4aTJkg9PUMnuXxOHO0DuNGTQ+1aWya
-         pmlNSAdaBg1oV7pOQWVta4FYSKNUlsSAc8jUx8Roix8YcMUOk7bi2KZ2+WX2UNcjuO9w
-         NPBqYKRO0R5oGK94F7/gbS710rqdeBXy0SP1Rf3CkwIk3kgNWF4i/wKEGP7I5Uj8mfwB
-         0VMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=a4k5sbPFB7Mgl39AqQajFxJ0WncwlBA+vY/pc2FuGuQ=;
-        b=0wcmVO0LMrjlTB4FL7ZGFc03mE8aQDWprd6EsqmsFdSlxi79MuKOWSRpcYaVk1KDgT
-         yyZVXOU5Q9YH2OOWH6dqBtpUkGVwQD1Lu5og/lNF7VfsJofM11DOv1wcbwZTjvac0q+a
-         l3Zav0WGA5olKWy/g3x8edm8XtJZRLzqUJmlDJVxZbmuhroDL7Mo02LyFlXx4CQSvy+h
-         heOdL6OeRI9tQxxf3Scr4lDrVjQS7suYAqns8aRyCwjmtIZBNLVMxlgCV+4f1QrPm4ZC
-         0rL2jXpjJwE4DYGdhcjoUtrURNhoS0p9vLzxL2JQjzOti1FFuflDJx7K3zf7WT04inUV
-         yizw==
-X-Gm-Message-State: AOAM533OboSDliOe8GLTxVlDAsaKRSN4/q4bae5HbJGwyd22/F7kyduF
-        GxG6CdcpT4dP3YVyu2RiZonc7LrtNBdhow==
-X-Google-Smtp-Source: ABdhPJzNAr7bQJxiSmbWztajQP3dB8GgZrrjaaoBs3KvGJKV1qPJ15NyR+3vAKW+TAjxFr9sWXz30w==
-X-Received: by 2002:ac8:58c4:0:b0:2e1:cdbb:50da with SMTP id u4-20020ac858c4000000b002e1cdbb50damr10793954qta.334.1648232261827;
-        Fri, 25 Mar 2022 11:17:41 -0700 (PDT)
-Received: from ziepe.ca ([206.223.160.26])
-        by smtp.gmail.com with ESMTPSA id t13-20020a05622a148d00b002e22f105099sm5932262qtx.21.2022.03.25.11.17.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Mar 2022 11:17:41 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1nXoVH-0065Gp-Ql; Fri, 25 Mar 2022 15:17:39 -0300
-Date:   Fri, 25 Mar 2022 15:17:39 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     mpenttil@redhat.com
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        apopple@nvidia.com, jhubbard@nvidia.com, rcampbell@nvidia.com,
-        vbabka@suse.cz
-Subject: Re: [PATCH v5] mm/hmm/test: use char dev with struct device to get
- device node
-Message-ID: <20220325181739.GL64706@ziepe.ca>
-References: <20220322043543.18424-1-mpenttil@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220322043543.18424-1-mpenttil@redhat.com>
+        Fri, 25 Mar 2022 15:32:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 314FA213508;
+        Fri, 25 Mar 2022 12:07:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D4CAB829A6;
+        Fri, 25 Mar 2022 19:06:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1BD04C340EE;
+        Fri, 25 Mar 2022 19:06:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648235218;
+        bh=X08yVSMd8t7AOB7xu0DRbRp3VD4q5j0IOg81yugkmus=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=ribhI93LiCbFDJToqS0/f/KZSaIO+A8Yh4ofBnGCC0TLaZO/jUz1fgaVGaoaJaFOX
+         jjfdCvKCG93Dd889dyTXGXtJQpthts7ZkgAn+rdoq5Y0+CJlRQGnYjrqYd2gt9Dd5+
+         4thGoMcBYUeT3Xvcd7XWVFArwSobjUBzawgft3Sr6GLcPHPXCjVOkdcu6IMoBW+KfD
+         Ysa7UUbJTh06yYVwJ4avPbA7Z5HWPlJjjTWBI0zfSaUXlXTORd2YH5QQU3FVZ2ADkK
+         wSyLlBSu1AsdyQGRvnMc4zxDQn8O0ysZtcRmtE8MKHrAdDxgRDP1amBF4Rb2qQ5Cs5
+         0kwzKpMTo8uUA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 08FD2E6BBCA;
+        Fri, 25 Mar 2022 19:06:58 +0000 (UTC)
+Subject: Re: [GIT PULL] Kbuild -std=gnu11 updates for v5.17-rc1
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <CAK7LNAQ2HET1QHG17m1vdCGMoRm6Lj=sAe+cj2Via_LHx3xBPg@mail.gmail.com>
+References: <CAK7LNAQ2HET1QHG17m1vdCGMoRm6Lj=sAe+cj2Via_LHx3xBPg@mail.gmail.com>
+X-PR-Tracked-List-Id: <linux-kbuild.vger.kernel.org>
+X-PR-Tracked-Message-Id: <CAK7LNAQ2HET1QHG17m1vdCGMoRm6Lj=sAe+cj2Via_LHx3xBPg@mail.gmail.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.git kbuild-gnu11-v5.18
+X-PR-Tracked-Commit-Id: 1e24078113ae69c741cb1b03375a9f1490db7308
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 50560ce6a0bdab2fc37384c52aa02c7043909d2c
+Message-Id: <164823521802.3609.14455240159425041368.pr-tracker-bot@kernel.org>
+Date:   Fri, 25 Mar 2022 19:06:58 +0000
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 06:35:43AM +0200, mpenttil@redhat.com wrote:
-> From: Mika Penttilä <mpenttil@redhat.com>
-> 
-> HMM selftests use an in-kernel pseudo device to emulate device private
-> memory. The pseudo device registers a major device range for two pseudo
-> device instances. User space has a script that reads /proc/devices in
-> order to find the assigned major number, and sends that to mknod(1),
-> once for each node.
-> 
-> Change this to properly use cdev and struct device APIs.
-> 
-> Delete the /proc/devices parsing from the user-space test script, now
-> that it is unnecessary.
-> 
-> Also, deleted an unused field in struct dmirror_device: devmem.
-> 
-> Signed-off-by: Mika Penttilä <mpenttil@redhat.com>
-> Reviewed-by: John Hubbard <jhubbard@nvidia.com>
-> Cc: Alistair Popple <apopple@nvidia.com>
-> Cc: Ralph Campbell <rcampbell@nvidia.com>
-> Cc: Jason Gunthorpe <jgg@ziepe.ca>
-> Cc: Vlastimil Babka <vbabka@suse.cz>
-> v5:
->         - fix whitespace
->         . delete unused structure field     
-> v4:
->         - fix commit log
-> v3:
->         - use cdev_device_add() instead of miscdevice
-> v2:
->         - Cleanups per review comments from John Hubbard
->         - Added Tested-by and Ccs
-> 
->  lib/test_hmm.c                         | 18 ++++++++++++++----
->  tools/testing/selftests/vm/test_hmm.sh |  6 ------
->  2 files changed, 14 insertions(+), 10 deletions(-)
-> 
-> diff --git a/lib/test_hmm.c b/lib/test_hmm.c
-> index 767538089a62..3c7f2a92b09e 100644
-> +++ b/lib/test_hmm.c
-> @@ -29,11 +29,17 @@
->  
->  #include "test_hmm_uapi.h"
->  
-> -#define DMIRROR_NDEVICES		2
->  #define DMIRROR_RANGE_FAULT_TIMEOUT	1000
->  #define DEVMEM_CHUNK_SIZE		(256 * 1024 * 1024U)
->  #define DEVMEM_CHUNKS_RESERVE		16
->  
-> +static const char *dmirror_device_names[] = {
-> +	"hmm_dmirror0",
-> +	"hmm_dmirror1"
-> +};
-> +
-> +#define DMIRROR_NDEVICES ARRAY_SIZE(dmirror_device_names)
-> +
->  static const struct dev_pagemap_ops dmirror_devmem_ops;
->  static const struct mmu_interval_notifier_ops dmirror_min_ops;
->  static dev_t dmirror_dev;
-> @@ -83,7 +89,7 @@ struct dmirror_chunk {
->   */
->  struct dmirror_device {
->  	struct cdev		cdevice;
-> -	struct hmm_devmem	*devmem;
-> +	struct device		device;
->  
->  	unsigned int		devmem_capacity;
->  	unsigned int		devmem_count;
-> @@ -1225,7 +1231,11 @@ static int dmirror_device_init(struct dmirror_device *mdevice, int id)
->  
->  	cdev_init(&mdevice->cdevice, &dmirror_fops);
->  	mdevice->cdevice.owner = THIS_MODULE;
-> -	ret = cdev_add(&mdevice->cdevice, dev, 1);
-> +	device_initialize(&mdevice->device);
-> +	dev_set_name(&mdevice->device, "%s", dmirror_device_names[id]);
+The pull request you sent on Fri, 25 Mar 2022 11:37:37 +0900:
 
-Just 
-	dev_set_name(&mdevice->device, "hmm_dmirror%u", id);
+> git://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.git kbuild-gnu11-v5.18
 
-No need for an array
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/50560ce6a0bdab2fc37384c52aa02c7043909d2c
 
-Also check for error
+Thank you!
 
-Jason
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
