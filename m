@@ -2,72 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AEE6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:50:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39DFFC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:51:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231866AbiCYTwb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:52:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38446 "EHLO
+        id S231551AbiCYTwn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:52:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231689AbiCYTwQ (ORCPT
+        with ESMTP id S231778AbiCYTw0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:52:16 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F1D17B8AB;
-        Fri, 25 Mar 2022 12:37:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=+YSGzMp9SBuqTEcUN1kImZMU6TG8MWr4+adML0IsDwo=; b=NNUVZcwrNcGvZqy+FtCK+vjHK1
-        rGuWH6snGdJqekmk4+kkJzT56eR4JXYWoV1Nf3dHY290fUeHpSPOdUuTzo2Q7oIO7jh/jRev7qE9J
-        ToiSYUW+8thZXi3GzQlflUF9VcBYHkDAPqmRDkVW1Lz6KME2HQGPqdd1RL3rzVGLVBB4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nXpkn-00CgP5-1I; Fri, 25 Mar 2022 20:37:45 +0100
-Date:   Fri, 25 Mar 2022 20:37:45 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Meng Tang <tangmeng@uniontech.com>
-Cc:     stas.yakovlev@gmail.com, kvalo@kernel.org, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ipw2200: Fix permissions setted by DEVICE_ATTR
-Message-ID: <Yj4aCUlGY12VvuI/@lunn.ch>
-References: <20220325074141.17446-1-tangmeng@uniontech.com>
+        Fri, 25 Mar 2022 15:52:26 -0400
+Received: from 9.mo584.mail-out.ovh.net (9.mo584.mail-out.ovh.net [46.105.40.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D07011F0C97
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:38:11 -0700 (PDT)
+Received: from player696.ha.ovh.net (unknown [10.111.208.144])
+        by mo584.mail-out.ovh.net (Postfix) with ESMTP id 3B79D2032A
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 17:13:01 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player696.ha.ovh.net (Postfix) with ESMTPSA id 846491E9E3715;
+        Fri, 25 Mar 2022 17:12:54 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-107S001b4973733-a1dc-4256-830c-89df02ef1730,
+                    1702D5D0C6B5DF16716081994498F990499A02DA) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Support Opensource <support.opensource@diasemi.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     patches@opensource.cirrus.com, Wolfram Sang <wsa@kernel.org>,
+        linux-kernel@vger.kernel.org, Stephen Kitt <steve@sk2.org>
+Subject: [PATCH] ASoC: da[79]*: use simple i2c probe function
+Date:   Fri, 25 Mar 2022 18:12:43 +0100
+Message-Id: <20220325171243.1218003-1-steve@sk2.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220325074141.17446-1-tangmeng@uniontech.com>
+Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 17878446097844110982
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudehuddgleekucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeetgedugfelkeeikeetgeegteevfeeufeetuefgudeiiedthfehtdeffeekvdeffeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrheileeirdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 03:41:41PM +0800, Meng Tang wrote:
-> Because xcode_version and rtc only implement the show function
-> and do not provide the store function, so ucode_version and rtc
-> only need the read permission, not need the write permission more.
-> 
-> So, remove the write permission from xcode_version and rtc.
-> 
-> Signed-off-by: Meng Tang <tangmeng@uniontech.com>
-> ---
->  drivers/net/wireless/intel/ipw2x00/ipw2200.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/intel/ipw2x00/ipw2200.c b/drivers/net/wireless/intel/ipw2x00/ipw2200.c
-> index 6830e88c4ed6..fa4f38d54d0a 100644
-> --- a/drivers/net/wireless/intel/ipw2x00/ipw2200.c
-> +++ b/drivers/net/wireless/intel/ipw2x00/ipw2200.c
-> @@ -1578,7 +1578,7 @@ static ssize_t show_ucode_version(struct device *d,
->  	return sprintf(buf, "0x%08x\n", tmp);
->  }
->  
-> -static DEVICE_ATTR(ucode_version, 0644, show_ucode_version, NULL);
-> +static DEVICE_ATTR(ucode_version, 0444, show_ucode_version, NULL);
+The i2c probe functions here don't use the id information provided in
+their second argument, so the single-parameter i2c probe function
+("probe_new") can be used instead.
 
-DEVICE_ATTR_RO() exists to make this more obvious. But it looks like
-you would need to rename the show_ucode_version() to
-ucode_version_show() in order to use it.
+This avoids scanning the identifier tables during probes.
 
-     Andrew
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+---
+ sound/soc/codecs/da7210.c | 5 ++---
+ sound/soc/codecs/da7213.c | 5 ++---
+ sound/soc/codecs/da7219.c | 5 ++---
+ sound/soc/codecs/da732x.c | 5 ++---
+ sound/soc/codecs/da9055.c | 5 ++---
+ 5 files changed, 10 insertions(+), 15 deletions(-)
+
+diff --git a/sound/soc/codecs/da7210.c b/sound/soc/codecs/da7210.c
+index 8af344b2fdbf..3fa3042e4424 100644
+--- a/sound/soc/codecs/da7210.c
++++ b/sound/soc/codecs/da7210.c
+@@ -1206,8 +1206,7 @@ static const struct regmap_config da7210_regmap_config_i2c = {
+ 	.cache_type = REGCACHE_RBTREE,
+ };
+ 
+-static int da7210_i2c_probe(struct i2c_client *i2c,
+-			    const struct i2c_device_id *id)
++static int da7210_i2c_probe(struct i2c_client *i2c)
+ {
+ 	struct da7210_priv *da7210;
+ 	int ret;
+@@ -1250,7 +1249,7 @@ static struct i2c_driver da7210_i2c_driver = {
+ 	.driver = {
+ 		.name = "da7210",
+ 	},
+-	.probe		= da7210_i2c_probe,
++	.probe_new	= da7210_i2c_probe,
+ 	.id_table	= da7210_i2c_id,
+ };
+ #endif
+diff --git a/sound/soc/codecs/da7213.c b/sound/soc/codecs/da7213.c
+index 3ab89387b4e6..2e645dc60eda 100644
+--- a/sound/soc/codecs/da7213.c
++++ b/sound/soc/codecs/da7213.c
+@@ -1946,8 +1946,7 @@ static const char *da7213_supply_names[DA7213_NUM_SUPPLIES] = {
+ 	[DA7213_SUPPLY_VDDIO] = "VDDIO",
+ };
+ 
+-static int da7213_i2c_probe(struct i2c_client *i2c,
+-			    const struct i2c_device_id *id)
++static int da7213_i2c_probe(struct i2c_client *i2c)
+ {
+ 	struct da7213_priv *da7213;
+ 	int i, ret;
+@@ -2040,7 +2039,7 @@ static struct i2c_driver da7213_i2c_driver = {
+ 		.acpi_match_table = ACPI_PTR(da7213_acpi_match),
+ 		.pm = &da7213_pm,
+ 	},
+-	.probe		= da7213_i2c_probe,
++	.probe_new	= da7213_i2c_probe,
+ 	.id_table	= da7213_i2c_id,
+ };
+ 
+diff --git a/sound/soc/codecs/da7219.c b/sound/soc/codecs/da7219.c
+index 13009d08b09a..a28d3601b932 100644
+--- a/sound/soc/codecs/da7219.c
++++ b/sound/soc/codecs/da7219.c
+@@ -2649,8 +2649,7 @@ static const struct snd_soc_component_driver soc_component_dev_da7219 = {
+  * I2C layer
+  */
+ 
+-static int da7219_i2c_probe(struct i2c_client *i2c,
+-			    const struct i2c_device_id *id)
++static int da7219_i2c_probe(struct i2c_client *i2c)
+ {
+ 	struct device *dev = &i2c->dev;
+ 	struct da7219_priv *da7219;
+@@ -2705,7 +2704,7 @@ static struct i2c_driver da7219_i2c_driver = {
+ 		.of_match_table = of_match_ptr(da7219_of_match),
+ 		.acpi_match_table = ACPI_PTR(da7219_acpi_match),
+ 	},
+-	.probe		= da7219_i2c_probe,
++	.probe_new	= da7219_i2c_probe,
+ 	.remove		= da7219_i2c_remove,
+ 	.id_table	= da7219_i2c_id,
+ };
+diff --git a/sound/soc/codecs/da732x.c b/sound/soc/codecs/da732x.c
+index 42d6a3fc3af5..f14cddf23f42 100644
+--- a/sound/soc/codecs/da732x.c
++++ b/sound/soc/codecs/da732x.c
+@@ -1506,8 +1506,7 @@ static const struct snd_soc_component_driver soc_component_dev_da732x = {
+ 	.non_legacy_dai_naming	= 1,
+ };
+ 
+-static int da732x_i2c_probe(struct i2c_client *i2c,
+-			    const struct i2c_device_id *id)
++static int da732x_i2c_probe(struct i2c_client *i2c)
+ {
+ 	struct da732x_priv *da732x;
+ 	unsigned int reg;
+@@ -1562,7 +1561,7 @@ static struct i2c_driver da732x_i2c_driver = {
+ 	.driver		= {
+ 		.name	= "da7320",
+ 	},
+-	.probe		= da732x_i2c_probe,
++	.probe_new	= da732x_i2c_probe,
+ 	.remove		= da732x_i2c_remove,
+ 	.id_table	= da732x_i2c_id,
+ };
+diff --git a/sound/soc/codecs/da9055.c b/sound/soc/codecs/da9055.c
+index a9676b261129..9d8c8adc5d76 100644
+--- a/sound/soc/codecs/da9055.c
++++ b/sound/soc/codecs/da9055.c
+@@ -1473,8 +1473,7 @@ static const struct regmap_config da9055_regmap_config = {
+ 	.cache_type = REGCACHE_RBTREE,
+ };
+ 
+-static int da9055_i2c_probe(struct i2c_client *i2c,
+-			    const struct i2c_device_id *id)
++static int da9055_i2c_probe(struct i2c_client *i2c)
+ {
+ 	struct da9055_priv *da9055;
+ 	struct da9055_platform_data *pdata = dev_get_platdata(&i2c->dev);
+@@ -1533,7 +1532,7 @@ static struct i2c_driver da9055_i2c_driver = {
+ 		.name = "da9055-codec",
+ 		.of_match_table = of_match_ptr(da9055_of_match),
+ 	},
+-	.probe		= da9055_i2c_probe,
++	.probe_new	= da9055_i2c_probe,
+ 	.id_table	= da9055_i2c_id,
+ };
+ 
+-- 
+2.27.0
+
