@@ -2,112 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20EE3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 10:34:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ACC0C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 10:35:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358065AbiCYKgH (ORCPT
+        id S1358908AbiCYKgb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 06:36:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42038 "EHLO
+        Fri, 25 Mar 2022 06:36:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242067AbiCYKfy (ORCPT
+        with ESMTP id S1356758AbiCYKg3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 06:35:54 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A490BA8EDA;
-        Fri, 25 Mar 2022 03:34:19 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1C9C71570;
-        Fri, 25 Mar 2022 03:34:19 -0700 (PDT)
-Received: from [10.57.41.19] (unknown [10.57.41.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 519613F73D;
-        Fri, 25 Mar 2022 03:34:17 -0700 (PDT)
-Message-ID: <5ae774b7-f888-f201-d77d-0ab0cf0faed3@arm.com>
-Date:   Fri, 25 Mar 2022 10:34:13 +0000
+        Fri, 25 Mar 2022 06:36:29 -0400
+Received: from out162-62-57-137.mail.qq.com (out162-62-57-137.mail.qq.com [162.62.57.137])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A51AFB6D3C
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 03:34:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1648204489;
+        bh=r7MTF35xCe4CtzCMUlH4AuHMMOLVBgWolF8Nu+I39t8=;
+        h=From:To:Cc:Subject:Date;
+        b=e5FazAwFDmuHogT0CQVByFlmkgCsCWPZOYvLaqVkODR8iSQM+ZIW+uWrPh07cMBdx
+         AhuJQm/5tZyIIaG/zy14Zf5bkR8yRmz3tqmyo1pA22krd2DY/HHdQqwNGe3SREpJ1V
+         iK792qqeD4GB2gG4PeupWvBhtbHu5qzljXm7B+KA=
+Received: from localhost.localdomain ([218.197.153.188])
+        by newxmesmtplogicsvrszc11.qq.com (NewEsmtp) with SMTP
+        id 6DFA0EBB; Fri, 25 Mar 2022 18:27:31 +0800
+X-QQ-mid: xmsmtpt1648204051tp1m08xmo
+Message-ID: <tencent_C0622B5C4209E83F1C6495D926979F239D05@qq.com>
+X-QQ-XMAILINFO: OOWntbL6xj16UYjmDCYdk3zdV6AkUlVJYVXvFXwyqwiwhHIj+QucYg/rjcEuOt
+         YO7j/eprBmyc4h2c06wgdcYMWSep4SXwq7n+QGxdcp6ICsFbd9yTBd2y9WzUKB2YwYvs/h8Mu+NF
+         3O/awHA4MLl1CeBeM8HFfgPZWH4/vqzvwiDrMgaZ1iu7C+gGmhfen9xCWY78+E9vsdumUiwchXp4
+         mJ73wtlnQeZQVQvB0aU6xAs+7niZUpJswpFFx/U+6co38r4urXkGPe7qIJSEtptS8cCk3XI76bTp
+         GBE+6cG8pXUfIhIIY9a7UwUFabdQ/611P/rXY4ZbxNXiy8imWSu0q73DKFp1Msl/Pa6B+f5RKrac
+         sSm5Px8sotmHtHcqLRGQL365aXb8G3bBusnZsNdweoK6RnKfba5j1ExXohhWM3FWaZVb01iUwIjO
+         pT0uKiE2iQVbdhmVfWnzg2WAg+6AXI+v+dsz4HXd4ir0CpdQyG4Mib4UAQ2w64jYH+G2tUmzeiO9
+         9N+Ovt6E8HcR0Tgr/s+oXNSDCJh9CgsVSGZnTQUqi93ePXrydTOfbWsoZ0bm/3w7cdnlXn6pNOF9
+         40+wNNghlHZdV0tlfWByU4qL02Q62qlEokvhYrJA08qEVbWsPgtdDnFlY2pEOyogx28ge0OdJ2+m
+         uVRokNyTXZOSXJFejgBRQH3MwBIxrMvlEuN81q5FUuHsBCfxmqKB3NrQcjYDGNjsWOA7q/UFbbU8
+         0RgF7ducb3U9hMY0DCyV5rs3grDP+0m82+2Fxk+Bgc47ZWsWcTGnKI23eMDlfDInZFmuP8CXDGfo
+         3F5LJfdBoqKuPXyuapA6uM02us/UpXvP6ex3EJV25oaVzPNcIvty5n3vPl95GMhOiXT+jqXPdXYX
+         uhv4HuJcsBQ3Sq8KD4AmLy27zc0kW4D6QVRKYYc1Ma8FrYOrL8GxLkNokTZ7YcnIA0Tdh2vAxPmH
+         erom5GfnM=
+From:   xkernel.wang@foxmail.com
+To:     mturquette@baylibre.com, sboyd@kernel.org
+Cc:     linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xiaoke Wang <xkernel.wang@foxmail.com>
+Subject: [PATCH] clk: pxa: add a check for the return value of kzalloc()
+Date:   Fri, 25 Mar 2022 18:27:20 +0800
+X-OQ-MSGID: <20220325102720.4155-1-xkernel.wang@foxmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH devicetree 00/10] Do something about ls-extirq
- interrupt-map breakage
-Content-Language: en-GB
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Marc Zyngier <maz@kernel.org>
-Cc:     "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>, Leo Li <leoyang.li@nxp.com>,
-        Biwen Li <biwen.li@nxp.com>, "Z.Q. Hou" <zhiqiang.hou@nxp.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>
-References: <20211214013800.2703568-1-vladimir.oltean@nxp.com>
- <87ilvrk1r0.wl-maz@kernel.org> <20211214095853.4emzycaxkuqr4tun@skbuf>
- <87czlzjxmz.wl-maz@kernel.org> <20220324171041.t5yoocinj6gizcc7@skbuf>
- <87lewz5kr5.wl-maz@kernel.org> <20220324173405.nusk6247ouvek46y@skbuf>
- <87k0cj5io4.wl-maz@kernel.org> <20220324190904.boo2izjc3mym2wkh@skbuf>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220324190904.boo2izjc3mym2wkh@skbuf>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-03-24 19:09, Vladimir Oltean wrote:
-> On Thu, Mar 24, 2022 at 06:06:51PM +0000, Marc Zyngier wrote:
->>> I was just raising this as what I thought would be a simple and
->>> non-controversial counter example to your remark "If you change something,
->>> you *must* guarantee forward *and* backward compatibility."
->>
->> If you change something *in the binding*, which was implicit in the
->> context, and makes no sense out of context.
->>
->>> Practically speaking, what has happened is that the board DT appeared in
->>> kernel N, the ls-extirq driver in kernel N+1, and the DT was updated to
->>> enable PHY interrupts in kernel N+2. That DT update practically broke
->>> kernel N from running correctly on DTs taken from kernel N+2 onwards.
->>> This is the observable behavior, we can find as many justifications for
->>> it as we wish.
->>
->> Well, you can also argue that the DT was broken at N and N+1 for not
->> describing the HW correctly and completely. No binding has changed
->> here. Your DT was incomplete, and someone fixed it for you.
->>
->> We can argue this things forever and a half. I've laid down the ground
->> rules for the stuff I maintain. If you're not happy with this, you can
->> fix it by either removing the NXP hardware from the tree, or taking
->> over from me as the irqchip maintainer. I'd be perfectly happy with
->> any (and even more, with both) of these outcomes.
-> 
-> Ok, my intention wasn't to inflame you even though the way in which I
-> presented the problem might have suggested otherwise.
-> 
-> With my developer hat I still don't agree with you even with the
-> additional clarification you've made that you were referring only to
-> bindings and not to any and all DT changes. The reason being that the DT
-> blob is a whole, and it doesn't matter if there's a regression because
-> of a binding change or something else, you still need to be prepared to
-> update it, sometimes in lockstep with the kernel, like it or not.
-> 
-> But as a user, I just wanted to get an opinion from you what can we do
-> to deal better with this situation: optional interrupt provided by
-> device with missing driver, which of_irq_get() doesn't seem to understand.
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-FWIW, of_irq_get() absolutely understands how to handle a missing IRQ 
-provider driver; it returns -EPROBE_DEFER. If a caller considers the IRQ 
-optional, then it's up to that caller to decide how long to keep waiting 
-for the provider to appear until giving up and carrying on without it. 
-If your phy driver is making the dumb decision to wait for ever for 
-something which isn't critical, then you're free to fix it, or perhaps 
-even propose for of_irq_get() to opt in to the 
-driver_deferred_probe_check_state() mechanism if you believe it's a 
-sufficiently general case.
+kzalloc() is a memory allocation function which can return NULL when
+some internal memory errors happen. So it is better to check it to
+prevent potential wrong memory access.
 
-If a new DT with an additional new property (either on an existing 
-machine, or on a completely new machine which has the property from the 
-start) exposes a bug in a driver, that's unfortunate, but it is entirely 
-irrelevant to the ABI implications of changing the interpretation of an 
-existing property.
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+---
+ drivers/clk/pxa/clk-pxa.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Robin.
+diff --git a/drivers/clk/pxa/clk-pxa.c b/drivers/clk/pxa/clk-pxa.c
+index cfc79f9..d0df104 100644
+--- a/drivers/clk/pxa/clk-pxa.c
++++ b/drivers/clk/pxa/clk-pxa.c
+@@ -102,6 +102,8 @@ int __init clk_pxa_cken_init(const struct desc_clk_cken *clks, int nb_clks)
+ 
+ 	for (i = 0; i < nb_clks; i++) {
+ 		pxa_clk = kzalloc(sizeof(*pxa_clk), GFP_KERNEL);
++		if (!pxa_clk)
++			continue;
+ 		pxa_clk->is_in_low_power = clks[i].is_in_low_power;
+ 		pxa_clk->lp = clks[i].lp;
+ 		pxa_clk->hp = clks[i].hp;
+-- 
