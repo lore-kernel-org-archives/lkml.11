@@ -2,290 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90982C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 06:58:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CA5CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 07:00:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356422AbiCYHAG (ORCPT
+        id S1357421AbiCYHBl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 03:00:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55638 "EHLO
+        Fri, 25 Mar 2022 03:01:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354451AbiCYHAB (ORCPT
+        with ESMTP id S1354451AbiCYHBj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 03:00:01 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2076.outbound.protection.outlook.com [40.107.220.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36D7135DF7
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 23:58:27 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=H/S3LMHUas/Fj19fS93S+zCD9p5/glHVyP08YCJlhGvSODTntPXQcNBXpGm1LqoVSBRP7qZVOndyDIp/doQIibFbBmeVijTev+6vHhlOrppq7pvzAd63I+rJiw3aNa05j30u+M44pxSTluMXiRXMtDQh84dq4tnOSHcjgH3asTlKjdQBke4pBzJrEkr2fmleWmXdolEAUkO/A8B+P4zDldH8poK8tjP7oTCcoSrdYQ2ulVxG54jOkewqZPaZjUxQr/vtezXszK7S5rrecES9DJOpp097hh4/lxC6T6AuSYLnDI2zM+/GDx83Mh9+oB7o6HMpz7JpdzTMhZhzwRfrMg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JCGYO3Bura0e2tky5kDzaxkj+p0yfec8xezurPKAmTs=;
- b=TuI1Eqr8E1UQMv2DEWuBd/33ulaqLfxKhbZzSIrsDcc3qqe64xz8FLFI6tiIdZVrcS6MEpR+jFHAp53eP2qyQQacaZPDmmOULvOg6P+uB+wISBoIk6KSSJTt0KvC5QG+eqHH24L3k/aEJ8hhvnmKwREif6pCnyd9noRzmjux+lhWQj99FxS+/Dnjww+0wmul/OJaW3uJh0KUsBq80Lfe8OI3EnjAkiuwbSYLD2fOQvaVkuM4p3z7H5hR4C1Cr/0IzOsI0JgeBfBPirDclHv01f016cU+1FgXVzpZnCNL0j10/tYEdvFW6SJd8DiVHMkhjdenIUs521xA8jkB/FEIgQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JCGYO3Bura0e2tky5kDzaxkj+p0yfec8xezurPKAmTs=;
- b=A8FrB4dd+lfs7wfWcyRVLAgq4JSbOyzs3jggKffznBhbaz/T6H4yeu5z1Rk94WLmKPz/bnx/1YVMoKsyQd2A8B4un7lDjRhb/Ysjd0ZMq4vCzfd8ILvgIX9uGSc+Zvew+DazT7cbTYYF+6GEE5zdJpIMilbAjlhmikCpBXzXdvo=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from BN8PR12MB3587.namprd12.prod.outlook.com (2603:10b6:408:43::13)
- by BY5PR12MB3794.namprd12.prod.outlook.com (2603:10b6:a03:1aa::28) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.17; Fri, 25 Mar
- 2022 06:58:21 +0000
-Received: from BN8PR12MB3587.namprd12.prod.outlook.com
- ([fe80::404f:1fc8:9f4c:f185]) by BN8PR12MB3587.namprd12.prod.outlook.com
- ([fe80::404f:1fc8:9f4c:f185%6]) with mapi id 15.20.5102.017; Fri, 25 Mar 2022
- 06:58:20 +0000
-Message-ID: <2125c5b2-b377-076a-4177-d5ef482eb657@amd.com>
-Date:   Fri, 25 Mar 2022 07:58:10 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 3/25] drm/amdgpu: Disable ABM when AC mode
-Content-Language: en-US
-To:     Ryan Lin <tsung-hua.lin@amd.com>, harry.wentland@amd.com,
-        sunpeng.li@amd.com, alexander.deucher@amd.com, David1.Zhou@amd.com,
-        airlied@linux.ie, daniel@ffwll.ch, seanpaul@chromium.org,
-        bas@basnieuwenhuizen.nl, nicholas.kazlauskas@amd.com,
-        sashal@kernel.org, markyacoub@google.com,
-        victorchengchi.lu@amd.com,
-        ching-shih.li@amd.corp-partner.google.com,
-        Rodrigo.Siqueira@amd.com, ddavenport@chromium.org,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, leon.li@amd.com
-References: <20220325040515.4073706-1-tsung-hua.lin@amd.com>
-From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
-In-Reply-To: <20220325040515.4073706-1-tsung-hua.lin@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AM7PR02CA0012.eurprd02.prod.outlook.com
- (2603:10a6:20b:100::22) To BN8PR12MB3587.namprd12.prod.outlook.com
- (2603:10b6:408:43::13)
+        Fri, 25 Mar 2022 03:01:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A648566AD9
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 00:00:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648191604;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JsouGytxzF/421Vl9Qb6fg1tOCzthwpBsJFvMy8Q+wg=;
+        b=ezKQ6yhj8jQfIwyxa22AuxH2yX53x3umoGFaWq/MmKHeWx7JPOozH/jTvfMOD6SekjCgU0
+        ccn4wbE4L1qeUhS23aH9wo+adIb/ayPVgbTpfJ8ey00MIUrNMchFrSzV68sgZGnhnqbR3h
+        XegtQssCv9sBOOvKMlU/pmXKNlnRZzU=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-607-NPp4tiUiMC6YdeRmVNPoEg-1; Fri, 25 Mar 2022 03:00:01 -0400
+X-MC-Unique: NPp4tiUiMC6YdeRmVNPoEg-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A6BB0802803;
+        Fri, 25 Mar 2022 07:00:00 +0000 (UTC)
+Received: from [10.72.12.33] (ovpn-12-33.pek2.redhat.com [10.72.12.33])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id C32A454B976;
+        Fri, 25 Mar 2022 06:59:55 +0000 (UTC)
+Reply-To: Gavin Shan <gshan@redhat.com>
+Subject: Re: [PATCH v5 18/22] KVM: arm64: Support SDEI ioctl commands on VM
+To:     Oliver Upton <oupton@google.com>
+Cc:     kvmarm@lists.cs.columbia.edu, maz@kernel.org,
+        linux-kernel@vger.kernel.org, eauger@redhat.com,
+        shan.gavin@gmail.com, Jonathan.Cameron@huawei.com,
+        pbonzini@redhat.com, vkuznets@redhat.com, will@kernel.org
+References: <20220322080710.51727-1-gshan@redhat.com>
+ <20220322080710.51727-19-gshan@redhat.com> <YjtYuk+Jx1dFPQQ9@google.com>
+From:   Gavin Shan <gshan@redhat.com>
+Message-ID: <eae10132-a02d-b341-bdf5-be1b2096be4c@redhat.com>
+Date:   Fri, 25 Mar 2022 14:59:52 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.0
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c920c1f7-0b35-411d-9e0b-08da0e2cd8ce
-X-MS-TrafficTypeDiagnostic: BY5PR12MB3794:EE_
-X-Microsoft-Antispam-PRVS: <BY5PR12MB3794291FF3BA333ED109C251831A9@BY5PR12MB3794.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: iJHd6nJaYBlxT9O7rm8CS/CFOs8XyPns1mdgOJz0VdxHF2DhyaHJWuJdwH3JPdF8ABM+oKoindWQQKjcgoGaaYpvddjGby07QjzPWcLy3qpeABjKw2TbOkkfqRqXPa9Q6Q1283xOlXSsOp80Oa1xo2c+qV0KO/PcBcBFwIWRCQupHWJpduLw41t2kKqD/wx0KChHAODJvbvSK/pBRfa2nTzC5nVHDSC6rFGmNrSOIrZEleD93fWYLr9jVyIvkNzuc3L8eKwrJ2nFm/gPYJ8W4MIOao6eVwHsu28PVo9D1htuyFSlKODrn3ynj5ZlLn5qsIXEz/AqFRmp86OmIqy9BUmUEc/SHzH4+eP1SF5cKBwd2i/CLs8zkbY4lP1Ej170czsq8e0yJklqmCGHeR1Ppq7HtIzquS/+E4lyyIOysvhI8g9RJXE5bJ0rAmt51T+F4rnNWQSqo2XlGrT1eZHnr68If5BolqZhtIxLUivw4e3OKKRZUlVFl4c9EO6fVXTP5Mp3cdaRPasS3wqyWTaAMZNfcZ5ZOoucnlqHlFU++4Qbzs+MyqhCAuPAHMO3SyltStg7V7J9HxYZW4WAVVTBsPYMe4ACY4CsQqYN1bJHX3KXRhZ+2qYbU/ZOQBE+CaDdDKighKwAlwy/Y10yUBJzfvT2pLYxNl10GGlSTvZEbn9+2EiTVjaz17WrD3vTO2yf2xtUpQMkQJ7xF4IGJ6+KESY90nLVEi2t2cDw3BH3QShU4vn6uvHauu5NgTKPnDwr+BW8FWPLH8gdZdngZbP65w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3587.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(86362001)(66946007)(8676002)(66556008)(31686004)(6512007)(31696002)(66476007)(2906002)(5660300002)(26005)(316002)(7416002)(6486002)(186003)(36756003)(508600001)(83380400001)(921005)(6636002)(38100700002)(6666004)(2616005)(6506007)(8936002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZVU3aWgxOW1ONU5yVWRSY3hrQ1JtM2phb04yWnhmd0ZUeFlGK3hSQ2VscFhN?=
- =?utf-8?B?SlR6T2ZLSGlkcldROURSdFZMcEEyalZsV3RaUTBwczM0NzdpdkZyOWlHU0Uz?=
- =?utf-8?B?czVKajNHZDhhZ3RRL3pXcFNHOHFZd0c3YUVCaXRoWlNrdzdhb0M2WGdFWXZP?=
- =?utf-8?B?dVVwN0I5cmxpWUZxaHhScTRISzdCd21ENk1RVkpQYW9BSU1QNCtEU05EajFr?=
- =?utf-8?B?bG9BMmVMNFlpejhCeUM4U2kvdmlIMDBaMUduZlMxODlsS1lZRlpLdUFwRG9I?=
- =?utf-8?B?U3BRblRmRDVhemhwNmtZcG5BUFV0ZytOTGlJUmgwSUd2ZDMzaHJDWm85Y203?=
- =?utf-8?B?UVMrdkV2RHc3Nm5kcWQ2TmNUVm1TVEw0ZTVBSVh6U3dldVFpMDY5NzNEVXFL?=
- =?utf-8?B?S2ZpZ0dhNjVWcXRqMkZ0TVo2cmt5cW5iQkRLY0VKUHZhbDBWV1MrVHdJNTZP?=
- =?utf-8?B?cjdEcjAzQTFpOFVMaTMxQnBDTGcyQkUvS3NLODlGbHZML1NNbEdRLzBVVGw1?=
- =?utf-8?B?SXZnckUzVXhsNmtVQnUvNU9VbTJabUpJK3ZMd1pWZnpINjFqMkM0dnVKWHdF?=
- =?utf-8?B?RDB4REU0U05menYwbGx5Z3RPcnA3VWY0M0dzWFhHQkoyemQ1VmRIaERlTVFI?=
- =?utf-8?B?NE02Uk1xU1ZNaTFKTWw1b21GS0pyZjhURWh4RUtONUNSamgyUENoMmFJL2Nw?=
- =?utf-8?B?VGY4M1d0OXhRSko2dHFhNWM4bE9BcitLVCtUQ1RkWWhxamxtY1FOcG1pQjY4?=
- =?utf-8?B?WWlkRzdJODFnQWFvcXBsL1BXTWswWmp0YVFxQ1A1aU1SZzVSSUgrUEREck1E?=
- =?utf-8?B?d00veEd2dWZzS1hLYkFzeW9pTVN4VEhQRFF4VmNBVEw1ZGxoamYwTEx5b25N?=
- =?utf-8?B?NHhjRkV4NHJHRDJEbllSbUxUV1ZEK0NyeVFXR3Y4blFKT3U1K2VKU0JjRE5m?=
- =?utf-8?B?T3BZQjYyTnN5UVg3YWFFdXJHWUZPR2c5Y1ZCcWhJNnZiTUlpQW1YOUNGZ1dx?=
- =?utf-8?B?NzlPMjZUQTZXbnNPRU1nTlF0UHFnMjJjV2RsY2RWbG4vMWNtK0piNEY5cXJV?=
- =?utf-8?B?NTQ2eHZOaFcrUm9GSDdQaitLSm80eUhIa0o4YzU1NnVWeUI5OEpHWEhxenBy?=
- =?utf-8?B?MXZlbXV5NE5VQlFmZC9vVjMyRHN2SFFpdUhyL3NEYlFSMFJueU5RdVVDZytq?=
- =?utf-8?B?TGFKN2I1d2E1bkJnZkVYZ0Q0YW9nOHpuTTZmZWFuSzM0NzRxOGNtRjhXdFNZ?=
- =?utf-8?B?VmxWdGdLaWpvVXBFOTRPbkRXR2FSeFJndTRVVndEdnU5Tk5tNTEvV052QzJG?=
- =?utf-8?B?SE84b3loejFsMnhHWStObUVJRVhURlFLb1p1QmgxcHEyZ3dhY3dzN2tZUVdP?=
- =?utf-8?B?NHZXOHR1b29iWDhyMkNFMERGK2x4VXkwemR2bnBNV3l1T00rRzc0bGs3VDVm?=
- =?utf-8?B?ZU9yellGcFh2ZUh0TjBLeTZnQlpDSWFpcWxSb0g1cTVOMlVCM0MxcEJOeWhX?=
- =?utf-8?B?QzdoalNNUFJIYmRIREFMeEFRa2ErRk5VVWtzcERYeW9WdDdRTm9Qck5JS1ky?=
- =?utf-8?B?QUJNYnN5UlMxdHk5bFBSZlpvcThCemFFTkhTeVF5a2NoS2hDYzRwU09KOHlu?=
- =?utf-8?B?cEN1SFZKbjVOZStNb2Q0MDgxUnhqcjgvZ2xDb29RNWtEMkM5eE0yVjNocm5E?=
- =?utf-8?B?TmFFRHhja0c0dS9TM0tlUlliTjMvWHlCVEx5TGdZdFlPU1dnQk1rRHZjc2sr?=
- =?utf-8?B?YWIrclFlSXhBYnBkMUxkZU1PdFVIS0QvekNGV1JnbFNNT0R6VGdONWNCVmlM?=
- =?utf-8?B?aUxQTVR2cVZxTlJ5Y0FDNTNDQkk2SlJnT3ZzRHBGRUNsb1hFWThGQmV1N2dp?=
- =?utf-8?B?NFVRbkE0LzllKzdRdzhKSS9KZmJHWVVEcm9kOTVGWUFHL2phVTMrTVpFOGZk?=
- =?utf-8?B?NHRlQ1A4MmJxSEF3TDFEZ3FGZEwwRFJWSVNSV2FEQy8wZHR5Tk5Zd09ZNk9y?=
- =?utf-8?B?MU84TDNTenBob1RxWDdtVXpvNXZjZTB5cFBIVlBhRUZRa3Nid0tkZ1dlcTFh?=
- =?utf-8?B?eW9BbUdTYk1XU3pJWHRqWHlWaDNYVER0SnNLTjVnNGY4YjZ3SUgxMGJQOHNQ?=
- =?utf-8?B?Zlg5emVYc2VvOTVmdE4wc0hoU1RPL3VrQ3BKc29vb1pwMERTME1FSFJOUlVq?=
- =?utf-8?B?ZS9SMThrNnJJZm9Pbk0zNS93TGZIcktJak0rdUdNdXVrMVlUV21tb1FlS0hj?=
- =?utf-8?B?eWlvMElJOEtPZmFBMXJwUGM1UG9YeFNnV2ZnblNqdGVQUGt6bHNwVk5lS3Yv?=
- =?utf-8?B?NXhrUzNYWUVvSm43RURqaU9DSWlPVnBOcStIbjlDeTk4UjBacVNjdz09?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c920c1f7-0b35-411d-9e0b-08da0e2cd8ce
-X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB3587.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Mar 2022 06:58:20.7147
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9i7SkFahVMssI8iobMqNUchJpVpGBx5WXrTMvIuzk7ixdnZ1xiv4fkkWvzMq+3me
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3794
+In-Reply-To: <YjtYuk+Jx1dFPQQ9@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 25.03.22 um 05:05 schrieb Ryan Lin:
-> Disable ABM feature when the system is running on AC mode to get
-> the more perfect contrast of the display.
->
-> Signed-off-by: Ryan Lin <tsung-hua.lin@amd.com>
->
-> ---
->   drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c      |  4 ++
->   drivers/gpu/drm/amd/amdgpu/amdgpu_device.c    |  1 +
->   drivers/gpu/drm/amd/display/dc/dce/dmub_abm.c | 58 ++++++++++++-------
->   drivers/gpu/drm/amd/pm/inc/amdgpu_dpm.h       |  1 +
->   4 files changed, 42 insertions(+), 22 deletions(-)
->
-> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
-> index c560c1ab62ecb..bc8bb9aad2e36 100644
-> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
-> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
-> @@ -822,6 +822,10 @@ static int amdgpu_acpi_event(struct notifier_block *nb,
->   	struct amdgpu_device *adev = container_of(nb, struct amdgpu_device, acpi_nb);
->   	struct acpi_bus_event *entry = (struct acpi_bus_event *)data;
->   
-> +	if (strcmp(entry->device_class, "battery") == 0) {
+Hi Oliver,
 
-String comparison in a hot path is not something we usually like to see 
-in the kernel.
+On 3/24/22 1:28 AM, Oliver Upton wrote:
+> On Tue, Mar 22, 2022 at 04:07:06PM +0800, Gavin Shan wrote:
+>> This supports ioctl commands on VM to manage the various objects.
+>> It's primarily used by VMM to accomplish migration. The ioctl
+>> commands introduced by this are highlighted as below:
+>>
+>>     * KVM_SDEI_CMD_GET_VERSION
+>>       Retrieve the version of current implementation. It's different
+>>       from the version of the followed SDEI specification. This version
+>>       is used to indicates what functionalities documented in the SDEI
+>>       specification have been supported or not supported.
+> 
+> Don't we need a way to set the version as well? KVM is very much
+> responsible for upholding ABI of older specs. So, if a VMM and guest
+> expect SDEI v1.1, we can't just forcibly raise it to something else
+> during a migration.
+> 
+> The PSCI implementation is a great example of how KVM has grown its
+> implementation in line with a specification, all the while preserving
+> backwards compatibility.
+> 
 
-Isn't there any other way to detect that? Like a flag or similar?
+The only information feed by VMM is the exposed events. The events
+can't be registered from guest kernel, and raised from host to guest
+kernel until it's exposed by VMM. Besides, the exposed events will
+be defined staticly in host/KVM as we discussed on PATCH[02/22]. We
+also discussed to eliminate those ioctl commands. So I think we needn't
+to add KVM_SDEI_CMD_SET_VERSION. Further more, the version is only a
+concern to host itself if the migration can be done through the
+firmware pseudo system registers since the migration compatibility
+is the only concern to VMM (QEMU).
 
-Regards,
-Christian.
+Yes, Currently, 0.1/0.2/1.0 versions are supported by PSCI. 0.1 is
+picked until VMM asks for 0.2 and 1.0 explicitly. However, it seems
+QEMU isn't using 1.0 PSCI yet and maybe more patch is needed to enable
+it.
 
-> +		adev->pm.ac_power = power_supply_is_system_supplied() > 0;
-> +	}
-> +
->   	if (strcmp(entry->device_class, ACPI_AC_CLASS) == 0) {
->   		if (power_supply_is_system_supplied() > 0)
->   			DRM_DEBUG_DRIVER("pm: AC\n");
-> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-> index abfcc1304ba0c..3a0afe7602727 100644
-> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-> @@ -3454,6 +3454,7 @@ int amdgpu_device_init(struct amdgpu_device *adev,
->   
->   	adev->gfx.gfx_off_req_count = 1;
->   	adev->pm.ac_power = power_supply_is_system_supplied() > 0;
-> +	adev->pm.old_ac_power = true;
->   
->   	atomic_set(&adev->throttling_logging_enabled, 1);
->   	/*
-> diff --git a/drivers/gpu/drm/amd/display/dc/dce/dmub_abm.c b/drivers/gpu/drm/amd/display/dc/dce/dmub_abm.c
-> index 54a1408c8015c..478a734b66926 100644
-> --- a/drivers/gpu/drm/amd/display/dc/dce/dmub_abm.c
-> +++ b/drivers/gpu/drm/amd/display/dc/dce/dmub_abm.c
-> @@ -23,6 +23,8 @@
->    *
->    */
->   
-> +#include <linux/power_supply.h>
-> +#include "amdgpu.h"
->   #include "dmub_abm.h"
->   #include "dce_abm.h"
->   #include "dc.h"
-> @@ -51,6 +53,7 @@
->   #define DISABLE_ABM_IMMEDIATELY 255
->   
->   
-> +extern uint amdgpu_dm_abm_level;
->   
->   static void dmub_abm_enable_fractional_pwm(struct dc_context *dc)
->   {
-> @@ -117,28 +120,6 @@ static void dmub_abm_init(struct abm *abm, uint32_t backlight)
->   	dmub_abm_enable_fractional_pwm(abm->ctx);
->   }
->   
-> -static unsigned int dmub_abm_get_current_backlight(struct abm *abm)
-> -{
-> -	struct dce_abm *dce_abm = TO_DMUB_ABM(abm);
-> -	unsigned int backlight = REG_READ(BL1_PWM_CURRENT_ABM_LEVEL);
-> -
-> -	/* return backlight in hardware format which is unsigned 17 bits, with
-> -	 * 1 bit integer and 16 bit fractional
-> -	 */
-> -	return backlight;
-> -}
-> -
-> -static unsigned int dmub_abm_get_target_backlight(struct abm *abm)
-> -{
-> -	struct dce_abm *dce_abm = TO_DMUB_ABM(abm);
-> -	unsigned int backlight = REG_READ(BL1_PWM_TARGET_ABM_LEVEL);
-> -
-> -	/* return backlight in hardware format which is unsigned 17 bits, with
-> -	 * 1 bit integer and 16 bit fractional
-> -	 */
-> -	return backlight;
-> -}
-> -
->   static bool dmub_abm_set_level(struct abm *abm, uint32_t level)
->   {
->   	union dmub_rb_cmd cmd;
-> @@ -148,6 +129,9 @@ static bool dmub_abm_set_level(struct abm *abm, uint32_t level)
->   	int edp_num;
->   	uint8_t panel_mask = 0;
->   
-> +	if (power_supply_is_system_supplied() > 0)
-> +		level = 0;
-> +
->   	get_edp_links(dc->dc, edp_links, &edp_num);
->   
->   	for (i = 0; i < edp_num; i++) {
-> @@ -170,6 +154,36 @@ static bool dmub_abm_set_level(struct abm *abm, uint32_t level)
->   	return true;
->   }
->   
-> +static unsigned int dmub_abm_get_current_backlight(struct abm *abm)
-> +{
-> +	struct dce_abm *dce_abm = TO_DMUB_ABM(abm);
-> +	unsigned int backlight = REG_READ(BL1_PWM_CURRENT_ABM_LEVEL);
-> +	struct dc_context *dc = abm->ctx;
-> +	struct amdgpu_device *adev = dc->driver_context;
-> +
-> +	if (adev->pm.ac_power != adev->pm.old_ac_power) {
-> +		dmub_abm_set_level(abm, amdgpu_dm_abm_level);
-> +		adev->pm.ac_power = power_supply_is_system_supplied() > 0;
-> +		adev->pm.old_ac_power = adev->pm.ac_power;
-> +	}
-> +
-> +	/* return backlight in hardware format which is unsigned 17 bits, with
-> +	 * 1 bit integer and 16 bit fractional
-> +	 */
-> +	return backlight;
-> +}
-> +
-> +static unsigned int dmub_abm_get_target_backlight(struct abm *abm)
-> +{
-> +	struct dce_abm *dce_abm = TO_DMUB_ABM(abm);
-> +	unsigned int backlight = REG_READ(BL1_PWM_TARGET_ABM_LEVEL);
-> +
-> +	/* return backlight in hardware format which is unsigned 17 bits, with
-> +	 * 1 bit integer and 16 bit fractional
-> +	 */
-> +	return backlight;
-> +}
-> +
->   static bool dmub_abm_init_config(struct abm *abm,
->   	const char *src,
->   	unsigned int bytes,
-> diff --git a/drivers/gpu/drm/amd/pm/inc/amdgpu_dpm.h b/drivers/gpu/drm/amd/pm/inc/amdgpu_dpm.h
-> index f6e0e7d8a0077..de459411a0e83 100644
-> --- a/drivers/gpu/drm/amd/pm/inc/amdgpu_dpm.h
-> +++ b/drivers/gpu/drm/amd/pm/inc/amdgpu_dpm.h
-> @@ -445,6 +445,7 @@ struct amdgpu_pm {
->   	uint32_t                smu_prv_buffer_size;
->   	struct amdgpu_bo        *smu_prv_buffer;
->   	bool ac_power;
-> +	bool old_ac_power;
->   	/* powerplay feature */
->   	uint32_t pp_feature;
->   
+>>     * KVM_SDEI_CMD_GET_EXPOSED_EVENT_COUNT
+>>       Return the total count of exposed events.
+>>
+>>     * KVM_SDEI_CMD_GET_EXPOSED_EVENT
+>>     * KVM_SDEI_CMD_SET_EXPOSED_EVENT
+>>       Get or set exposed event
+>>
+>>     * KVM_SDEI_CMD_GET_REGISTERED_EVENT_COUNT
+>>       Return the total count of registered events.
+>>
+>>     * KVM_SDEI_CMD_GET_REGISTERED_EVENT
+>>     * KVM_SDEI_CMD_SET_REGISTERED_EVENT
+>>       Get or set registered event.
+> 
+> Any new UAPI needs to be documented in Documentation/virt/kvm/api.rst
+> 
+> Additionally, we desperately need a better, generic way to save/restore
+> VM scoped state. IMO, we should only be adding ioctls if we are
+> affording userspace a meaningful interface. Every save/restore pair of
+> ioctls winds up wasting precious ioctl numbers and requires userspace
+> take a change to read/write an otherwise opaque value.
+> 
+> Marc had made some suggestions in this area already that Raghavendra
+> experimented with [1], and I think its time to meaningfully consider
+> our options. Basically, KVM_GET_REG_LIST needs to convey whether a
+> particular register is VM or vCPU state. We only need to save/restore a
+> VM state register once. That way, userspace doesn't have to care about
+> the underlying data and the next piece of VM state that comes along
+> doesn't require an ioctl nr nor VMM participation.
+> 
+> [1]: http://lore.kernel.org/r/20220224172559.4170192-3-rananta@google.com
+> 
+
+Thanks for the pointer to Raghavendra's series. The firmware pseudo
+system registers have been classified into VM and VCPU scoped in the
+series. I think it fits the SDEI migration requirements very well.
+The shared events can even be migrated through the VM scoped firmware
+pseudo system registers. However, I don't plan to support it in next
+revision (v6) as currently needed events are all private. I may
+spend more time to go through Raghavendra's series later.
+
+Thanks,
+Gavin
 
