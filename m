@@ -2,87 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFC6EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:48:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13C75C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:48:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231665AbiCYTtm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:49:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45372 "EHLO
+        id S231501AbiCYTts (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:49:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232546AbiCYTsd (ORCPT
+        with ESMTP id S232594AbiCYTsh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:48:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71CA0346312
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:32:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C3ED4B82986
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 17:38:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45B1FC2BBE4;
-        Fri, 25 Mar 2022 17:38:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648229925;
-        bh=lMfQQHJSljYuxE4cWyvnLSyQhpQFvvqxez6l2UoiILc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LXO0kbAi9YV0i4KAHnZSQ7PNdc/hFlr6ecAW50bDzvLTp4pfEvs6Mv9L5tSH+Otc6
-         5hHsz13jPz8Sinm43M9fExV0hgRp/6AV6RK5ZqWq394b87prWblcL1uv3fxWCKWG4I
-         nKknMmtQUIA0mUZvhts44bXLis/qOMJo4zDEs91k/aFyRGVsokDf/dBe848VXbYNId
-         +vR0o7K1XmwmudV8qJjWSCOPhBVVPBi1KhDP0rR7dsQ0wxHEtx3n9yGe4w+d49td56
-         TpILt7vyYh3ZiBJHcn4rmMaxYy/bCPyZS4XW8c3Ul1/6KqVh/42F/ObqVWrEqegWwE
-         S7t9QujovoEgg==
-Date:   Fri, 25 Mar 2022 17:38:40 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Stephen Kitt <steve@sk2.org>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>, patches@opensource.cirrus.com,
-        Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ASoC: wm*: use simple i2c probe function
-Message-ID: <Yj3+ILE03nOxbpsT@sirena.org.uk>
-References: <20220325162439.1203870-1-steve@sk2.org>
- <Yj34gLRxhmXD1Y5B@sirena.org.uk>
- <20220325182616.6fb6e13e@heffalump.sk2.org>
+        Fri, 25 Mar 2022 15:48:37 -0400
+Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F38B223840;
+        Fri, 25 Mar 2022 12:32:07 -0700 (PDT)
+Received: by mail-lf1-f48.google.com with SMTP id m3so14989808lfj.11;
+        Fri, 25 Mar 2022 12:32:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=fRup0HhTI1fItvOnWgW1apl6hJ+hovK5wDJd4/CJEws=;
+        b=m12DW7F/KxegR9D+RbcCP/FsyoJqn1Q7vDwxkuPbGaUo5off6jkMbcu78TeXgKUBvc
+         nvUePxxPS8Nk1bTnvF5NkmnugZI4gK6EzQhqq9PltfE8PaEA5gZeJTKD39t/bN3qtV3E
+         kAfqnHxiJB69bcbAbwa6JjiSTvA19v/qbggObr+ZPb/qHJp1WsGRp5EGD/KP1vtLNvZS
+         b7VqPKfNVqIrcI7H7s9mPujpfNwUD0d9fsRdBzgJHVHtIjWarnyBePlfcCILlSdIQo0M
+         8Tx1YUiJQX7y8xlWcyg8ke+ssl0B2SbUC5fewGcW2U/cjElpqLs00ljkZPm/FaKmfaX6
+         o3PA==
+X-Gm-Message-State: AOAM530Ka7v6Y+qBNa95EqZ6u1qT273UFhi6g7prrflumBp1YtMB4e9y
+        5UiMyZ9STRGPB1w9hZ8Mp3X9t5l+gdOeDw==
+X-Google-Smtp-Source: ABdhPJxBJl5W6RwFQAyh8otMltwQxLkSdlG8+OGsciwzNPCea5FQXhEojfuAMY1CBRj+1zzaCrkF1w==
+X-Received: by 2002:a50:d84c:0:b0:418:f176:79df with SMTP id v12-20020a50d84c000000b00418f17679dfmr14200983edj.353.1648229500341;
+        Fri, 25 Mar 2022 10:31:40 -0700 (PDT)
+Received: from [192.168.0.162] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.googlemail.com with ESMTPSA id c12-20020a05640227cc00b004192114e521sm3209328ede.60.2022.03.25.10.31.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Mar 2022 10:31:39 -0700 (PDT)
+Message-ID: <8baedbe6-eb60-02b4-a6b8-fe3abc566335@kernel.org>
+Date:   Fri, 25 Mar 2022 18:31:38 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="HVd1G76h0EUh0VTO"
-Content-Disposition: inline
-In-Reply-To: <20220325182616.6fb6e13e@heffalump.sk2.org>
-X-Cookie: Man and wife make one fool.
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 01/22] dt-bindings: mediatek,dpi: Add DP_INTF compatible
+Content-Language: en-US
+To:     Guillaume Ranquet <granquet@baylibre.com>, chunkuang.hu@kernel.org,
+        p.zabel@pengutronix.de, airlied@linux.ie, daniel@ffwll.ch,
+        robh+dt@kernel.org, maarten.lankhorst@linux.intel.com,
+        mripard@kernel.org, tzimmermann@suse.de, matthias.bgg@gmail.com,
+        chunfeng.yun@mediatek.com, kishon@ti.com, vkoul@kernel.org,
+        deller@gmx.de, ck.hu@mediatek.com, jitao.shi@mediatek.com,
+        angelogioacchino.delregno@collabora.com
+Cc:     dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-phy@lists.infradead.org, linux-fbdev@vger.kernel.org,
+        markyacoub@google.com,
+        Markus Schneider-Pargmann <msp@baylibre.com>,
+        Rob Herring <robh@kernel.org>
+References: <20220325171511.23493-1-granquet@baylibre.com>
+ <20220325171511.23493-2-granquet@baylibre.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <20220325171511.23493-2-granquet@baylibre.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 25/03/2022 18:14, Guillaume Ranquet wrote:
+> From: Markus Schneider-Pargmann <msp@baylibre.com>
+> 
+> DP_INTF is similar to DPI but does not have the exact same feature set
+> or register layouts.
+> 
+> DP_INTF is the sink of the display pipeline that is connected to the
+> DisplayPort controller and encoder unit. It takes the same clocks as
+> DPI.
+> 
+> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
 
---HVd1G76h0EUh0VTO
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This is v1, how did you get Rob's review already?
 
-On Fri, Mar 25, 2022 at 06:26:16PM +0100, Stephen Kitt wrote:
+> ---
+>  .../bindings/display/mediatek/mediatek,dpi.yaml       | 11 ++++++-----
+>  1 file changed, 6 insertions(+), 5 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
+> index dd2896a40ff0..53acf9a84f7f 100644
+> --- a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
+> +++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
+> @@ -4,16 +4,16 @@
+>  $id: http://devicetree.org/schemas/display/mediatek/mediatek,dpi.yaml#
+>  $schema: http://devicetree.org/meta-schemas/core.yaml#
+>  
+> -title: mediatek DPI Controller Device Tree Bindings
+> +title: mediatek DPI/DP_INTF Controller Device Tree Bindings
 
-> Which tree should I check for conflicts? I=E2=80=99ve got similar patches=
- across all
-> the i2c-using sound/soc/codecs files, I wouldn=E2=80=99t want to waste an=
-yone=E2=80=99s time
-> if I can check beforehand...
+While at it, remove "Device Tree Bindings". It's about hardware.
 
-Since we're in the merge window non-fixes patches just aren't getting
-applied at the minute, you need to follow what's going on on the list at
-the minute.
 
---HVd1G76h0EUh0VTO
-Content-Type: application/pgp-signature; name="signature.asc"
+Please also rebase your tree as you use my old email address.
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmI9/iAACgkQJNaLcl1U
-h9CWlAf/eK/4nW5raHE7nirfRcMMlfZgjUgl5RY5AEn9SEkrI7CecFVA6z5CNVPq
-D1Y2DyszCVBkyNf92p0gM4KRCj7gwIyF6A+FqIZbAreCd8jzmBb1781QOSAB/lu8
-kmKjvgcpkSASd7oRF2RSvuzhLQ9ccju7MHUfJu6AgrhJa4zYuK/vX4z5d7Xi1Fny
-xUkP2WeRy3nkvRHw1PI/h4707OVJMhHX9opnWza4RUsiv0ymDQ3bOCf7qoeeET7W
-/sU6wOx1aUfI6/w7f+qcQkCYVkd+J+JM28+mx3Vd8eFhI2AczeS2rkGG80tp3el9
-zT7a9rQ2P8RYQ/UbBbCJn0uO+xof7Q==
-=N3wA
------END PGP SIGNATURE-----
-
---HVd1G76h0EUh0VTO--
+Best regards,
+Krzysztof
