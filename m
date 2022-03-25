@@ -2,88 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 171E4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 01:44:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60ADBC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 01:46:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357607AbiCYBpp (ORCPT
+        id S1344322AbiCYBrg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 21:45:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40276 "EHLO
+        Thu, 24 Mar 2022 21:47:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357579AbiCYBox (ORCPT
+        with ESMTP id S1357619AbiCYBr0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 21:44:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FBFE9D4F8;
-        Thu, 24 Mar 2022 18:40:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 022C4B82729;
-        Fri, 25 Mar 2022 01:40:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8BEA5C340EE;
-        Fri, 25 Mar 2022 01:40:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648172411;
-        bh=3v2bd6rKVB2eCYg9MW6NP9HAxCJIVx1Ix0gW27bXTbs=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Z8oHpxcysqv0ZHS7Qow49u0f8/Z0gMF0jBlFvbuy4Do4CBp0pAmWXc0T2MfaXsTw3
-         WDGAkLRm22rGwCZ+qUpu0A2Bd2x/q61j9gAlkwMKzrm3WCZvMlLD/YRw3HEQiMYWid
-         smUsHqQfQquHt09xxGZ+K0Iw+lZxbGSCrY0tGrYKrBDr2AxYiVa0mspqIgbfelXyiL
-         2WRxYrm7YlSR1kPeuC2OAWY/1hzXSchM64rBzrtoQneCOyWioGkAAxeMK2scri8WTU
-         P2/Nh/w3i4gXkfz1D/kb878/WAJYe8emOwEjwlIFzX/MuwwWAjrXNPt3DV1TaAoDeL
-         V5G+sM2MtOObA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6B87BF0383F;
-        Fri, 25 Mar 2022 01:40:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Thu, 24 Mar 2022 21:47:26 -0400
+Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97D609A991;
+        Thu, 24 Mar 2022 18:44:20 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V87ClCa_1648172657;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0V87ClCa_1648172657)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 25 Mar 2022 09:44:18 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     rafael@kernel.org
+Cc:     pavel@ucw.cz, len.brown@intel.com, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH -next] kernel/power: Fix some kernel-doc comments
+Date:   Fri, 25 Mar 2022 09:44:15 +0800
+Message-Id: <20220325014415.110740-1-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v3 0/3] vsock/virtio: enable VQs early on probe and finish
- the setup before using them
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164817241143.12279.13966814935964027710.git-patchwork-notify@kernel.org>
-Date:   Fri, 25 Mar 2022 01:40:11 +0000
-References: <20220323173625.91119-1-sgarzare@redhat.com>
-In-Reply-To: <20220323173625.91119-1-sgarzare@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, mst@redhat.com,
-        asias@redhat.com, arseny.krasnov@kaspersky.com,
-        stefanha@redhat.com, pabeni@redhat.com,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        davem@davemloft.net
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Add parameter description in alloc_rtree_node()  kernel-doc
+comment and fix several inconsistent function name descriptions.
 
-This series was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Remove some warnings found by running scripts/kernel-doc,
+which is caused by using 'make W=1'.
 
-On Wed, 23 Mar 2022 18:36:22 +0100 you wrote:
-> The first patch fixes a virtio-spec violation. The other two patches
-> complete the driver configuration before using the VQs in the probe.
-> 
-> The patch order should simplify backporting in stable branches.
-> 
-> v3:
-> - re-ordered the patch to improve bisectability [MST]
-> 
-> [...]
+kernel/power/snapshot.c:438: warning: Function parameter or member
+'gfp_mask' not described in 'alloc_rtree_node'
+kernel/power/snapshot.c:438: warning: Function parameter or member
+'safe_needed' not described in 'alloc_rtree_node'
+kernel/power/snapshot.c:438: warning: Function parameter or member 'ca'
+not described in 'alloc_rtree_node'
+kernel/power/snapshot.c:438: warning: Function parameter or member
+'list' not described in 'alloc_rtree_node'
+kernel/power/snapshot.c:916: warning: expecting prototype for
+memory_bm_rtree_next_pfn(). Prototype was for memory_bm_next_pfn()
+instead
+kernel/power/snapshot.c:1947: warning: expecting prototype for
+alloc_highmem_image_pages(). Prototype was for alloc_highmem_pages()
+instead
+kernel/power/snapshot.c:2230: warning: expecting prototype for load
+header(). Prototype was for load_header() instead
 
-Here is the summary with links:
-  - [net,v3,1/3] vsock/virtio: initialize vdev->priv before using VQs
-    https://git.kernel.org/netdev/net/c/4b5f1ad5566a
-  - [net,v3,2/3] vsock/virtio: read the negotiated features before using VQs
-    https://git.kernel.org/netdev/net/c/c1011c0b3a9c
-  - [net,v3,3/3] vsock/virtio: enable VQs early on probe
-    https://git.kernel.org/netdev/net/c/88704454ef8b
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+---
+ kernel/power/snapshot.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-You are awesome, thank you!
+diff --git a/kernel/power/snapshot.c b/kernel/power/snapshot.c
+index 330d49937692..89c8f9df9fdc 100644
+--- a/kernel/power/snapshot.c
++++ b/kernel/power/snapshot.c
+@@ -427,6 +427,12 @@ struct memory_bitmap {
+ 
+ /**
+  * alloc_rtree_node - Allocate a new node and add it to the radix tree.
++ * @gfp_mask: GFP mask for the allocation.
++ * @safe_needed: Get pages that were not used before hibernation
++ *		 (restore only)
++ * @ca: used for allocating small objects out of a linked list of pages
++ *	called 'the chain'.
++ * @list: the inner node or leave of Radix Tree to add.
+  *
+  * This function is used to allocate inner nodes as well as the
+  * leave nodes of the radix tree. It also adds the node to the
+@@ -902,7 +908,7 @@ static bool rtree_next_node(struct memory_bitmap *bm)
+ }
+ 
+ /**
+- * memory_bm_rtree_next_pfn - Find the next set bit in a memory bitmap.
++ * memory_bm_next_pfn - Find the next set bit in a memory bitmap.
+  * @bm: Memory bitmap.
+  *
+  * Starting from the last returned position this function searches for the next
+@@ -1937,7 +1943,7 @@ static inline int get_highmem_buffer(int safe_needed)
+ }
+ 
+ /**
+- * alloc_highmem_image_pages - Allocate some highmem pages for the image.
++ * alloc_highmem_pages - Allocate some highmem pages for the image.
+  *
+  * Try to allocate as many pages as needed, but if the number of free highmem
+  * pages is less than that, allocate them all.
+@@ -2224,7 +2230,7 @@ static int check_header(struct swsusp_info *info)
+ }
+ 
+ /**
+- * load header - Check the image header and copy the data from it.
++ * load_header - Check the image header and copy the data from it.
+  */
+ static int load_header(struct swsusp_info *info)
+ {
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.20.1.7.g153144c
 
