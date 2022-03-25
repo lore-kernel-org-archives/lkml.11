@@ -2,78 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F189C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 08:29:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D029C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 08:33:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354957AbiCYIa5 (ORCPT
+        id S1355131AbiCYIer (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 04:30:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32774 "EHLO
+        Fri, 25 Mar 2022 04:34:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355049AbiCYIau (ORCPT
+        with ESMTP id S1347783AbiCYIep (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 04:30:50 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6494417E14
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 01:29:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=Q+wJi6qwvOm1r3gx4t9QFKOneXZsav/Fvj23R1aQp1A=; b=Cb9OzTZsoQFeB0Qh57eumaahAN
-        UsWCGhjolARqgAGvSrwVVQlUkb/kxCyMWCXU9X0AFcbgLFo6bYhrWT4X1+/U08cEiWQ+blRQGz2o2
-        8GPd55VmAOqLxleQ6EPox6CgPeItPDH+WAAbS2t98Zp++vaLh647UmcuXq+ZUsWexBwYG/9UAhg8C
-        uooivwsK5TS9E9zWP+qL6yJSObiBbII4gv8ci38iiiMPyLvbyL3aBkVq0OvQT/bFQRj9wGhvvKwqn
-        6h3L3Ue6cFrasGf1AtHHVLhQrcjODGLevcdVamB5MxeJBNw7Ch3SaUTsPFaKCEtKdT3cEHFWWHGOR
-        xyLG0DbQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nXfJZ-004K0e-6l; Fri, 25 Mar 2022 08:28:57 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 7843D9862A6; Fri, 25 Mar 2022 09:28:55 +0100 (CET)
-Date:   Fri, 25 Mar 2022 09:28:55 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Stephane Eranian <eranian@google.com>
-Cc:     linux-kernel@vger.kernel.org, kim.phillips@amd.com,
-        acme@redhat.com, jolsa@redhat.com, songliubraving@fb.com,
-        rafael@kernel.org, ravi.bangoria@amd.com, Sandipan.Das@amd.com
-Subject: Re: [PATCH v7 00/13] perf/x86/amd: Add AMD Fam19h Branch Sampling
- support
-Message-ID: <20220325082855.GL8939@worktop.programming.kicks-ass.net>
-References: <20220322221517.2510440-1-eranian@google.com>
- <20220324145902.GG8939@worktop.programming.kicks-ass.net>
- <CABPqkBTVFNOW0Y-suYVRjf07aBC41gEw1m4Ym78sR39BRzLDcQ@mail.gmail.com>
+        Fri, 25 Mar 2022 04:34:45 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB1BB17041
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 01:33:11 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id o6-20020a17090a9f8600b001c6562049d9so7636905pjp.3
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 01:33:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=2vwrQNfNFnmUwYH0dlT3PEmHOLC7uVtwRjd3bwzS04k=;
+        b=V8rwhr26dlZa9x4wMUV5jggdmXlskZVpyJshD464GTPpfdwQ/rz6qLWvk5OLpHdQpw
+         il7WcwQT+51VCqU/GPvXrd2QP5yIkznMp+MwFKlKpkGxlfRWZA5jHHeGXf7+hVKwH26u
+         KxjltpxtpOg9ZsHmoKZq3PxRPH30nQfPWiQcx3P1RadSzuFcTF3ZcKFsSKW9sDRA0VuH
+         LXSqAJvSawPP9PmH6Uj1f2tl/648yS7WjeNmOZM94i7Txa4KClNMxctXYsI2cSH++8Bo
+         m/vJmTWmxU0kSqURHoVi9b4cPygywW/6Y809OATZUIDAvDgmvEMExVEgJMiv/QmkDEks
+         Sz2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2vwrQNfNFnmUwYH0dlT3PEmHOLC7uVtwRjd3bwzS04k=;
+        b=Sr9mFvbcbzWFItBgvBo39b3Zc+KWKHX1XS7W5lKiUV0vlu+4zNWF31NUVk8RvQvbT/
+         3Lbe5mHHjI3rbXy/ijon7uvS3OK6X01errKNdgb9YM+Wa/UMj97evZUg7W7FDHWm6wHm
+         dEKE6/0bpwC8BwL0tW/CWCb/d9WPY+vA0E+SWsNpSjVzv+0NwyT5r8t3C+7byvQJl+Bx
+         BPOmdRJaTfvlANoX4+WLgV2Kp52McepuXTeqIqd2Bw0ODYFJa2jcJ4Xc0omOF/qzva0X
+         f7HmK6BDpqvq72NBOnhJFz7EybAR1kfmj9QCBu0IKRHchiiduL5UQ7H1kYZa7QVzLu6E
+         cQRg==
+X-Gm-Message-State: AOAM532hh2GH/LMDT0fB5KDtpzN0LWbfNO/Fg9FZpYJ82engl5yiwyv3
+        2THkLCsDxnnaagfB8O+fi5r3
+X-Google-Smtp-Source: ABdhPJyqazmKZeq5C8bGQY4LGvQk1xi6h457kGB/Ke4kT3F22nZtMc4jl/KV3981qsN49JKVGnlLfQ==
+X-Received: by 2002:a17:902:d2d1:b0:154:45d2:a05d with SMTP id n17-20020a170902d2d100b0015445d2a05dmr10367179plc.74.1648197191383;
+        Fri, 25 Mar 2022 01:33:11 -0700 (PDT)
+Received: from thinkpad ([27.111.75.218])
+        by smtp.gmail.com with ESMTPSA id z23-20020a056a001d9700b004fa8f24702csm5060773pfw.85.2022.03.25.01.33.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Mar 2022 01:33:11 -0700 (PDT)
+Date:   Fri, 25 Mar 2022 14:03:05 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Frank Li <Frank.Li@nxp.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        linux-pci@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 21/25] dmaengine: dw-edma: Drop DT-region allocation
+Message-ID: <20220325083305.GI4675@thinkpad>
+References: <20220324014836.19149-1-Sergey.Semin@baikalelectronics.ru>
+ <20220324014836.19149-22-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CABPqkBTVFNOW0Y-suYVRjf07aBC41gEw1m4Ym78sR39BRzLDcQ@mail.gmail.com>
+In-Reply-To: <20220324014836.19149-22-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 10:31:38PM -0700, Stephane Eranian wrote:
-> On Thu, Mar 24, 2022 at 7:59 AM Peter Zijlstra <peterz@infradead.org> wrote:
-> >
-> > On Tue, Mar 22, 2022 at 03:15:04PM -0700, Stephane Eranian wrote:
-> > > V7 makes the following changes:
-> > >    - rebased to 5.17-rc8
-> > >    - Restrict BRS to be used only with RETIRED_TAKEN_BRANCH event in order to
-> > >      avoid adding more skid to other events in case that are monitored
-> > >      concurrently
-> > >    - fixed bugs in the perf tool enhanced error handling for IBS and BRS
-> >
-> > But afaict you failed to pick up the build fixes I did in my tree :/ Let
-> > me try and be careful preserving those while munging this in.
+On Thu, Mar 24, 2022 at 04:48:32AM +0300, Serge Semin wrote:
+> There is no point in allocating an additional memory for the data target
+> regions passed then to the client drivers. Just use the already available
+> structures defined in the dw_edma_chip instance.
 > 
-> Sorry. I missed that. I can resubmit if you prefer.
+> Note these regions are unused in normal circumstances since they are
+> specific to the case of eDMA being embedded into the DW PCIe End-point and
+> having it's CSRs accessible over a End-point' BAR. This case is only known
+> to be implemented as a part of the Synopsys PCIe EndPoint IP prototype
+> kit.
+> 
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 
-Nah, fixed it up again.. Even converted to static_call() this time.
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-Could you please test this branch?
+Thanks,
+Mani
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/log/?h=perf/amd
-
-I've since done more Changelog edits, and I should do a comment with the
-static_call_mod() usage, but I think this ought to work.
-
-At least it now actually builds...
+> ---
+>  drivers/dma/dw-edma/dw-edma-core.c | 21 ++++-----------------
+>  1 file changed, 4 insertions(+), 17 deletions(-)
+> 
+> diff --git a/drivers/dma/dw-edma/dw-edma-core.c b/drivers/dma/dw-edma/dw-edma-core.c
+> index bc530f0a2468..dbe1119fd1d2 100644
+> --- a/drivers/dma/dw-edma/dw-edma-core.c
+> +++ b/drivers/dma/dw-edma/dw-edma-core.c
+> @@ -744,7 +744,6 @@ static void dw_edma_free_chan_resources(struct dma_chan *dchan)
+>  static int dw_edma_channel_setup(struct dw_edma_chip *chip, u32 wr_alloc,
+>  				 u32 rd_alloc)
+>  {
+> -	struct dw_edma_region *dt_region;
+>  	struct device *dev = chip->dev;
+>  	struct dw_edma *dw = chip->dw;
+>  	struct dw_edma_chan *chan;
+> @@ -761,12 +760,6 @@ static int dw_edma_channel_setup(struct dw_edma_chip *chip, u32 wr_alloc,
+>  	for (i = 0; i < ch_cnt; i++) {
+>  		chan = &dw->chan[i];
+>  
+> -		dt_region = devm_kzalloc(dev, sizeof(*dt_region), GFP_KERNEL);
+> -		if (!dt_region)
+> -			return -ENOMEM;
+> -
+> -		chan->vc.chan.private = dt_region;
+> -
+>  		chan->dw = dw;
+>  
+>  		if (i < dw->wr_ch_cnt) {
+> @@ -814,17 +807,11 @@ static int dw_edma_channel_setup(struct dw_edma_chip *chip, u32 wr_alloc,
+>  			 chan->msi.data);
+>  
+>  		chan->vc.desc_free = vchan_free_desc;
+> -		vchan_init(&chan->vc, dma);
+> +		chan->vc.chan.private = chan->dir == EDMA_DIR_WRITE ?
+> +					&dw->chip->dt_region_wr[chan->id] :
+> +					&dw->chip->dt_region_rd[chan->id];
+>  
+> -		if (chan->dir == EDMA_DIR_WRITE) {
+> -			dt_region->paddr = chip->dt_region_wr[chan->id].paddr;
+> -			dt_region->vaddr = chip->dt_region_wr[chan->id].vaddr;
+> -			dt_region->sz = chip->dt_region_wr[chan->id].sz;
+> -		} else {
+> -			dt_region->paddr = chip->dt_region_rd[chan->id].paddr;
+> -			dt_region->vaddr = chip->dt_region_rd[chan->id].vaddr;
+> -			dt_region->sz = chip->dt_region_rd[chan->id].sz;
+> -		}
+> +		vchan_init(&chan->vc, dma);
+>  
+>  		dw_edma_v0_core_device_config(chan);
+>  	}
+> -- 
+> 2.35.1
+> 
