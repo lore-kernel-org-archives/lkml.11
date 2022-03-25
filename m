@@ -2,92 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29DFBC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:39:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7747EC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:42:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231420AbiCYTlc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:41:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44616 "EHLO
+        id S231446AbiCYTnj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:43:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233542AbiCYTkN (ORCPT
+        with ESMTP id S231788AbiCYTnT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:40:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBE7120A94D
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:12:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A7F8B8298A
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 17:56:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 249F9C340EE;
-        Fri, 25 Mar 2022 17:56:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648230987;
-        bh=pLArRgRsH2EGhfVE6MeFscj0eSZASGF8z0GoIq7ugYc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=L1LWF+eOQTUzrHG1KfI/4gZHgCC92fuWtiO1qgy5pZx0AzwGdJY0BF3k5FMIai43y
-         iWjnlX9c4HtN5bHNyfMyRmTgB2c3YeL92UBYzJyW/0XDWS+Kff3LIp46L0y1rUtR+s
-         LFTbHwGqaUXmClbvdr/4lwiWEMQIvA44c+gAOjnjD40czXXhGfqu/1NfqewOx4rFjm
-         81wyRzP1s2MJfCHwN1Unt+glDgwjjDvgh+v2N0Fp/YrWIrFggp2oBB40XPAV6cvANE
-         6FOQS/HTYnYvqQ1TB+3FJff2kb5YlTwuI/IiXbwHHnFUkwvN982yi32Qh5frsBVmdT
-         g+kW0ALf7/HgQ==
-Date:   Fri, 25 Mar 2022 17:56:22 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Stephen Kitt <steve@sk2.org>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>, patches@opensource.cirrus.com,
-        Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ASoC: wm*: use simple i2c probe function
-Message-ID: <Yj4CRpNDiOr6PNbP@sirena.org.uk>
-References: <20220325162439.1203870-1-steve@sk2.org>
- <Yj34gLRxhmXD1Y5B@sirena.org.uk>
- <20220325182616.6fb6e13e@heffalump.sk2.org>
- <Yj3+ILE03nOxbpsT@sirena.org.uk>
- <20220325185134.1096bcc6@heffalump.sk2.org>
+        Fri, 25 Mar 2022 15:43:19 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F063EAD18;
+        Fri, 25 Mar 2022 12:17:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=v7v9I64jtbh4TvILDFhQKVP7yzYLEAb3hBx5zd1jBgk=; b=qJ
+        Nki9/HJ6HtCe6zXtg8ayKilPjuF58wc8vBEXSdpC9DDWIluWBvaeLgp/sF41TQryIwHkd0cLOwlGZ
+        r9et8GZE9gvEN9IF5bcZLOrpU5T4KNnKbjWFan2hr3J8d5J/Lu87wcgN1Dt0I6ATxcuazCpAG2NrJ
+        18/FfBvFM3gLd/M=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nXojt-00CfzC-FU; Fri, 25 Mar 2022 19:32:45 +0100
+Date:   Fri, 25 Mar 2022 19:32:45 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Allan Nielsen <allan.nielsen@microchip.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [net-next 2/5] net: mdio: of: use fwnode_mdiobus_* functions
+Message-ID: <Yj4KzQPeVUxZEn0k@lunn.ch>
+References: <20220325172234.1259667-1-clement.leger@bootlin.com>
+ <20220325172234.1259667-3-clement.leger@bootlin.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="mrlMwcEKYmDD2vj8"
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220325185134.1096bcc6@heffalump.sk2.org>
-X-Cookie: Man and wife make one fool.
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220325172234.1259667-3-clement.leger@bootlin.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Mar 25, 2022 at 06:22:31PM +0100, Clément Léger wrote:
+> Now that fwnode support has been added and implements the same behavior
+> expected by device-tree parsing
 
---mrlMwcEKYmDD2vj8
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The problem is, we cannot actually see that. There is no side by side
+comparison which makes it clear it has the same behaviour.
 
-On Fri, Mar 25, 2022 at 06:51:34PM +0100, Stephen Kitt wrote:
-> On Fri, 25 Mar 2022 17:38:40 +0000, Mark Brown <broonie@kernel.org> wrote:
+Please see if something like this will work:
 
-> > Since we're in the merge window non-fixes patches just aren't getting
-> > applied at the minute, you need to follow what's going on on the list at
-> > the minute.
+1/4: copy drivers/net/mdio/of_mdio.c to drivers/net/mdio/fwnode_mdio.c
+2/4: Delete from fwnode_mdio.c the bits you don't need, like the whitelist
+3/4: modify what is left of fwnode_mdio.c to actually use fwnode.
+4/4: Rework of_mdio.c to use the code in fwnode_mdio.c
 
-> Apologies, please ignore all my patches then, I=E2=80=99ll re-submit them=
- at a more
-> convenient time.
+The 3/4 should make it clear it has the same behaviour, because we can
+see what you have actually changed.
 
-There's no harm in them if nobody else is doing anything at the same
-time, it's just that a mechanical cleanup like this is going to get
-dropped in favour of essentially anything else if it causes conflicts.
+FYI: net-next is closed at the moment, so you need to post RFC
+patches.
 
---mrlMwcEKYmDD2vj8
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmI+AkYACgkQJNaLcl1U
-h9AFBwf/R7FSkqFzZcQbfL+qxuPAxc5MJL5ZYuM4UIQfnmgsrcmF+5oGNPDXlyRQ
-MsHO38S+3Rh3G7CczwPXNs+49BEnjnHrbp4U10A3BuPQB/0E3KojWsbcPgAzzsGW
-uZo0/jJU3RtLtCOIwbQR8A7qRNH+t1WB4jM4ja+tX+jyeiN79MBZQd8V+AECZjsB
-UkIBEOaExTCukJL+fNSzkZEsIqLRw+08Zf7tLQXZv022SFf1srA8EYpYlwECDw7W
-awLZ+vSSuzm+lmknauGbAXT0ShxUwLNCi4dqSIYfMVNPx29M68MshHM6jpX6Lq1b
-FLQEZLj/oLBTqeR1sBs2CCnOzeiNlw==
-=Yvog
------END PGP SIGNATURE-----
-
---mrlMwcEKYmDD2vj8--
+    Andrew
