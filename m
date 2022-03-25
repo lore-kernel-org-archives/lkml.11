@@ -2,284 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70336C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 13:44:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA7E5C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 13:44:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357857AbiCYNpi (ORCPT
+        id S1357979AbiCYNqW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 09:45:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49486 "EHLO
+        Fri, 25 Mar 2022 09:46:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352215AbiCYNpf (ORCPT
+        with ESMTP id S1352215AbiCYNqS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 09:45:35 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07A846AA42
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 06:44:00 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id h11so10378013ljb.2
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 06:43:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=M9Tm4YxQwe4aPulFdqEfH8uaxTYzCbz7JGZKqUZvnD4=;
-        b=NBACmQUXkma1m7ugOtDRytdg7Arbv8MOiQLYCet7nEH64kPMgNTPsTtWAfiM9gjdxZ
-         ulEdaqmfGbmR8YoozumfDedYaLYYYk/xefsq1HWcxO86wrItNcdgsFVQYJl4A1G4uoXm
-         8wnIt0Frf4Y1Wj81+gcN7wU+lYGz2JvKl4qrKf1Qn3spm+xSFAJYZuuR8M2nxNJLdDsV
-         VStjXNnoR0YPD1ihAb0eiTNgWSwM0Ntsm2gB2aqBRfPv+6mK8f4Mlj/gIsbHQHk3ynTd
-         L25jHOyim39RgTXj1uTwxBHnB3U1EtC3JM1Mj/8Q53vs4/cL+pyBqPBtgSk/sWTcLQli
-         3rRQ==
+        Fri, 25 Mar 2022 09:46:18 -0400
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A66866230;
+        Fri, 25 Mar 2022 06:44:43 -0700 (PDT)
+Received: by mail-wr1-f46.google.com with SMTP id u16so10960331wru.4;
+        Fri, 25 Mar 2022 06:44:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=M9Tm4YxQwe4aPulFdqEfH8uaxTYzCbz7JGZKqUZvnD4=;
-        b=ytzSTN2wy/vbpVREsJMmjr1KZu8+5UYwkLxvXiBFV4YyAQjIBfCPgu9102CEmmxnei
-         w5h+tNzYYkf4QGj+vRy1aijUC6/aBKmdZGH8+NMHcRTcxHOVnZ9HgSl0ZE7TFmp5Um57
-         jxnVCqGkHIjwa13Fp+9dQQkg6Ewu+27EtEo5mWUFvD3DxIQWrULLhLEXhPk3LASuIfLO
-         8zDnX+EynMT1KSySw1/oDNTwnBPup4s/GbXIluwiaJsBmgMu2+4KVpYsP5Y30NMCby15
-         LrjJyAotH36bbn4iVGiMbpsUz7tvqb3k07Ir90Af5mTlEdjaImN3ifO+7fsYktd5C38O
-         OhDA==
-X-Gm-Message-State: AOAM530wySJezPWkQgMYNaRi+I1HXqpu5zj2bWEy4+5X+hthQ0BNLIuE
-        rm532hZgtmbdCg2iGT3MY+uEF6sHEkP4IGDoIr/HMA==
-X-Google-Smtp-Source: ABdhPJzMNaUzR2GiYr0TB5pZPwI8Et0pbwjXFfuQyNMJ6j6tcsEE8FLK5s1Y6jip3TvUjzvr+FlZXLwg0GV+RHntrc4=
-X-Received: by 2002:a05:651c:90a:b0:249:5d82:fe9c with SMTP id
- e10-20020a05651c090a00b002495d82fe9cmr8294406ljq.300.1648215838345; Fri, 25
- Mar 2022 06:43:58 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=kl2Li9Z++CqTUC0lFLJ2VWDkw/259+VgBxfob6qn0zM=;
+        b=z1MTAtIH2+7E8+Lcw0A8nK0YRQjl/BmfoxANv+FNRy7PA5A/OYSXsmFTld3inzNGB5
+         9JjZaIyqGOg/83/mYMN9yrx9jkrltygH+Hd0LPvIz+8EyCn5nJq9Wn3Xd+7tYVOixRM6
+         +S5gsa4bmTQLZ0DiMF+Hj2hY3vSw7m08IhuH4e7UOr1sAqIsxSi5pJ2jowYaUxAxjMVM
+         HILY59TKB/phILU4nrNAu+69/Qbq6wFf9V2ZOOgKXEj1T1sLYuufkM/ZcCWYfsMg4VqY
+         hic7/GI4lXJ+9TCGk7sZraCF/h14Pzzksab8vyKFHahgVoMRnFvpB6U0j0tz17Nz+agD
+         fH3Q==
+X-Gm-Message-State: AOAM533i6TlFh5AxbsAbHD5tpLf0L0fB330Ka4KORBLxHnr9Alq3ok9p
+        zIuA1LD1cH9I/oxLRwJlF74=
+X-Google-Smtp-Source: ABdhPJyY3wUgcYloufU4hlto44Bj2E0GeWFQeH2zowBSPUGINM50QEh6VWnApasWISFuX5BW6KsdRA==
+X-Received: by 2002:adf:eb89:0:b0:1e4:b8f4:da74 with SMTP id t9-20020adfeb89000000b001e4b8f4da74mr9603386wrn.408.1648215882150;
+        Fri, 25 Mar 2022 06:44:42 -0700 (PDT)
+Received: from [10.100.102.14] (85.65.206.129.dynamic.barak-online.net. [85.65.206.129])
+        by smtp.gmail.com with ESMTPSA id e8-20020a056000178800b00203da3bb4d2sm5945955wrg.41.2022.03.25.06.44.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Mar 2022 06:44:40 -0700 (PDT)
+Message-ID: <b7b5106a-9c0d-db49-00ab-234756955de8@grimberg.me>
+Date:   Fri, 25 Mar 2022 16:44:37 +0300
 MIME-Version: 1.0
-References: <20220317111944.116148-1-yann.gautier@foss.st.com>
- <20220317111944.116148-3-yann.gautier@foss.st.com> <CAPDyKFqzzKgLHWiy26QW0hvM9kZEATS_c2mXkTuGiFpPaW8YKw@mail.gmail.com>
- <668661ca-271b-9a4f-6482-62f1b0190bb2@foss.st.com>
-In-Reply-To: <668661ca-271b-9a4f-6482-62f1b0190bb2@foss.st.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Fri, 25 Mar 2022 14:43:21 +0100
-Message-ID: <CAPDyKFr3YGd4mytykFMAtESMg9fsRaAKZo5CHBN4hrUa8ekE8g@mail.gmail.com>
-Subject: Re: [PATCH 2/2] mmc: mmci: stm32: use a buffer for unaligned DMA requests
-To:     Yann Gautier <yann.gautier@foss.st.com>
-Cc:     Christophe Kerello <christophe.kerello@foss.st.com>,
-        Ludovic Barre <ludovic.barre@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-mmc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 2/3] nvme-tcp: support specifying the
+ congestion-control
+Content-Language: en-US
+To:     Mingbao Sun <sunmingbao@tom.com>
+Cc:     Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        tyler.sun@dell.com, ping.gan@dell.com, yanxiu.cai@dell.com,
+        libin.zhang@dell.com, ao.sun@dell.com
+References: <20220311103414.8255-1-sunmingbao@tom.com>
+ <20220311103414.8255-2-sunmingbao@tom.com>
+ <7121e4be-0e25-dd5f-9d29-0fb02cdbe8de@grimberg.me>
+ <20220325201123.00002f28@tom.com>
+From:   Sagi Grimberg <sagi@grimberg.me>
+In-Reply-To: <20220325201123.00002f28@tom.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 24 Mar 2022 at 17:23, Yann Gautier <yann.gautier@foss.st.com> wrote:
->
-> On 3/24/22 12:55, Ulf Hansson wrote:
-> > On Thu, 17 Mar 2022 at 12:19, Yann Gautier <yann.gautier@foss.st.com> wrote:
-> >>
-> >> In SDIO mode, the sg list for requests can be unaligned with what the
-> >> STM32 SDMMC internal DMA can support. In that case, instead of failing,
-> >> use a temporary bounce buffer to copy from/to the sg list.
-> >> This buffer is limited to 1MB. But for that we need to also limit
-> >> max_req_size to 1MB. It has not shown any throughput penalties for
-> >> SD-cards or eMMC.
-> >>
-> >> Signed-off-by: Yann Gautier <yann.gautier@foss.st.com>
-> >> ---
-> >>   drivers/mmc/host/mmci_stm32_sdmmc.c | 80 +++++++++++++++++++++++------
-> >>   1 file changed, 63 insertions(+), 17 deletions(-)
-> >>
-> >> diff --git a/drivers/mmc/host/mmci_stm32_sdmmc.c b/drivers/mmc/host/mmci_stm32_sdmmc.c
-> >> index 4566d7fc9055..a4414e32800f 100644
-> >> --- a/drivers/mmc/host/mmci_stm32_sdmmc.c
-> >> +++ b/drivers/mmc/host/mmci_stm32_sdmmc.c
-> >> @@ -43,6 +43,9 @@ struct sdmmc_lli_desc {
-> >>   struct sdmmc_idma {
-> >>          dma_addr_t sg_dma;
-> >>          void *sg_cpu;
-> >> +       dma_addr_t bounce_dma_addr;
-> >> +       void *bounce_buf;
-> >> +       bool use_bounce_buffer;
-> >>   };
-> >>
-> >>   struct sdmmc_dlyb {
-> >> @@ -54,6 +57,7 @@ struct sdmmc_dlyb {
-> >>   static int sdmmc_idma_validate_data(struct mmci_host *host,
-> >>                                      struct mmc_data *data)
-> >>   {
-> >> +       struct sdmmc_idma *idma = host->dma_priv;
-> >>          struct scatterlist *sg;
-> >>          int i;
-> >>
-> >> @@ -61,21 +65,23 @@ static int sdmmc_idma_validate_data(struct mmci_host *host,
-> >>           * idma has constraints on idmabase & idmasize for each element
-> >>           * excepted the last element which has no constraint on idmasize
-> >>           */
-> >> +       idma->use_bounce_buffer = false;
-> >>          for_each_sg(data->sg, sg, data->sg_len - 1, i) {
-> >>                  if (!IS_ALIGNED(sg->offset, sizeof(u32)) ||
-> >>                      !IS_ALIGNED(sg->length, SDMMC_IDMA_BURST)) {
-> >> -                       dev_err(mmc_dev(host->mmc),
-> >> +                       dev_dbg(mmc_dev(host->mmc),
-> >>                                  "unaligned scatterlist: ofst:%x length:%d\n",
-> >>                                  data->sg->offset, data->sg->length);
-> >> -                       return -EINVAL;
-> >> +                       idma->use_bounce_buffer = true;
-> >> +                       return 0;
-> >>                  }
-> >>          }
-> >>
-> >>          if (!IS_ALIGNED(sg->offset, sizeof(u32))) {
-> >> -               dev_err(mmc_dev(host->mmc),
-> >> +               dev_dbg(mmc_dev(host->mmc),
-> >>                          "unaligned last scatterlist: ofst:%x length:%d\n",
-> >>                          data->sg->offset, data->sg->length);
-> >> -               return -EINVAL;
-> >> +               idma->use_bounce_buffer = true;
-> >>          }
-> >>
-> >>          return 0;
-> >> @@ -84,18 +90,29 @@ static int sdmmc_idma_validate_data(struct mmci_host *host,
-> >>   static int _sdmmc_idma_prep_data(struct mmci_host *host,
-> >>                                   struct mmc_data *data)
-> >>   {
-> >> -       int n_elem;
-> >> +       struct sdmmc_idma *idma = host->dma_priv;
-> >>
-> >> -       n_elem = dma_map_sg(mmc_dev(host->mmc),
-> >> -                           data->sg,
-> >> -                           data->sg_len,
-> >> -                           mmc_get_dma_dir(data));
-> >> +       if (idma->use_bounce_buffer) {
-> >> +               if (data->flags & MMC_DATA_WRITE) {
-> >> +                       unsigned int xfer_bytes = data->blksz * data->blocks;
-> >>
-> >> -       if (!n_elem) {
-> >> -               dev_err(mmc_dev(host->mmc), "dma_map_sg failed\n");
-> >> -               return -EINVAL;
-> >> -       }
-> >> +                       sg_copy_to_buffer(data->sg, data->sg_len,
-> >> +                                         idma->bounce_buf, xfer_bytes);
-> >> +                       dma_wmb();
-> >> +               }
-> >> +       } else {
-> >> +               int n_elem;
-> >> +
-> >> +               n_elem = dma_map_sg(mmc_dev(host->mmc),
-> >> +                                   data->sg,
-> >> +                                   data->sg_len,
-> >> +                                   mmc_get_dma_dir(data));
-> >>
-> >> +               if (!n_elem) {
-> >> +                       dev_err(mmc_dev(host->mmc), "dma_map_sg failed\n");
-> >> +                       return -EINVAL;
-> >> +               }
-> >> +       }
-> >>          return 0;
-> >>   }
-> >>
-> >> @@ -112,8 +129,19 @@ static int sdmmc_idma_prep_data(struct mmci_host *host,
-> >>   static void sdmmc_idma_unprep_data(struct mmci_host *host,
-> >>                                     struct mmc_data *data, int err)
-> >>   {
-> >> -       dma_unmap_sg(mmc_dev(host->mmc), data->sg, data->sg_len,
-> >> -                    mmc_get_dma_dir(data));
-> >> +       struct sdmmc_idma *idma = host->dma_priv;
-> >> +
-> >> +       if (idma->use_bounce_buffer) {
-> >> +               if (data->flags & MMC_DATA_READ) {
-> >> +                       unsigned int xfer_bytes = data->blksz * data->blocks;
-> >> +
-> >> +                       sg_copy_from_buffer(data->sg, data->sg_len,
-> >> +                                           idma->bounce_buf, xfer_bytes);
-> >> +               }
-> >> +       } else {
-> >> +               dma_unmap_sg(mmc_dev(host->mmc), data->sg, data->sg_len,
-> >> +                            mmc_get_dma_dir(data));
-> >> +       }
-> >>   }
-> >>
-> >>   static int sdmmc_idma_setup(struct mmci_host *host)
-> >> @@ -137,6 +165,16 @@ static int sdmmc_idma_setup(struct mmci_host *host)
-> >>                  host->mmc->max_segs = SDMMC_LLI_BUF_LEN /
-> >>                          sizeof(struct sdmmc_lli_desc);
-> >>                  host->mmc->max_seg_size = host->variant->stm32_idmabsize_mask;
-> >> +
-> >> +               host->mmc->max_req_size = SZ_1M;
-> >> +               idma->bounce_buf = dmam_alloc_coherent(dev,
-> >> +                                                      host->mmc->max_req_size,
-> >> +                                                      &idma->bounce_dma_addr,
-> >> +                                                      GFP_KERNEL);
-> >> +               if (!idma->bounce_buf) {
-> >> +                       dev_err(dev, "Unable to map allocate DMA bounce buffer.\n");
-> >> +                       return -ENOMEM;
-> >
-> Hi Ulf,
->
-> > If we fail to allocate the 1M bounce buffer, then we end up always
-> > using a PIO based mode, right?
-> >
-> > Perhaps we can allow the above allocation to fail, but then limit us
-> > to use DMA only when the buffers are properly aligned? Would that
-> > work?
-> >
-> We have never supported PIO mode with STM32 variant.
-> We only support DMA single buffer or DMA LLI.
-> As we cannot have DMA LLI for unaligned access, we'll default to single
-> mode.
 
-Right, I was looking at the legacy variant, which uses PIO as
-fallback. Sorry for my ignorance.
 
-> If allocation fails, it then won't work.
+On 3/25/22 15:11, Mingbao Sun wrote:
+>> 1. Can you please provide your measurements that support your claims?
+> 
+> Yes. I would provide a series of the testing result.
+> In the bottom of this mail, I would provide the first one.
+> 
+>>
+>> 2. Can you please provide a real, existing use-case where this provides
+>> true, measureable value? And more specifically, please clarify how the
+>> use-case needs a local tuning for nvme-tcp that would not hold for
+>> other tcp streams that are running on the host (and vice-versa).
+>>
+> 
+> As for the use-case.
+> I think multiple NVMe/TCP hosts simultaneously write data to a single target
+> is a much common use-case.
+> And this patchset just addresses the performance issue of this use-case.
 
-Right, but that's only part of the issue, I think.
+Thanks Mingbao,
 
-> Maybe we shouldn't fail here, and just check idma->bounce_buf in
-> validate data function. If buffer is not allocated, we just return
-> -EINVAL as it was done before.
+Long email, haven't read it all yet.
 
-Yes, something along those lines. However, there is another problem
-too, which is that the allocation will be done for each instance of
-the host that is probed. In all cases but the SDIO case, this would be
-a waste, right?
+But this doesn't answer my specific question. I was asking why should
+the tcp congestion be controlled locally to nvme. You could just as
+easily change these knobs via sysctl and achieve the expected result
+that dctcp handles congestion better than cubic (which was not even
+testing nvme btw).
 
-Perhaps we should manage the allocation in the validate function too
-(de-allocation should be handled at ->remove()). In this way, the
-buffer will only be allocated when it's actually needed. Yes, it would
-add a latency while serving the *first* request that has unaligned
-buffers, but I guess we can live with that?
+As I said, TCP can be tuned in various ways, congestion being just one
+of them. I'm sure you can find a workload where rmem/wmem will make
+a difference.
 
->
-> Best regards,
-> Yann
+In addition, based on my knowledge, application specific TCP level
+tuning (like congestion) is not really a common thing to do. So why in
+nvme-tcp?
 
-Kind regards
-Uffe
-
->
-> >> +               }
-> >>          } else {
-> >>                  host->mmc->max_segs = 1;
-> >>                  host->mmc->max_seg_size = host->mmc->max_req_size;
-> >> @@ -154,8 +192,16 @@ static int sdmmc_idma_start(struct mmci_host *host, unsigned int *datactrl)
-> >>          struct scatterlist *sg;
-> >>          int i;
-> >>
-> >> -       if (!host->variant->dma_lli || data->sg_len == 1) {
-> >> -               writel_relaxed(sg_dma_address(data->sg),
-> >> +       if (!host->variant->dma_lli || data->sg_len == 1 ||
-> >> +           idma->use_bounce_buffer) {
-> >> +               u32 dma_addr;
-> >> +
-> >> +               if (idma->use_bounce_buffer)
-> >> +                       dma_addr = idma->bounce_dma_addr;
-> >> +               else
-> >> +                       dma_addr = sg_dma_address(data->sg);
-> >> +
-> >> +               writel_relaxed(dma_addr,
-> >>                                 host->base + MMCI_STM32_IDMABASE0R);
-> >>                  writel_relaxed(MMCI_STM32_IDMAEN,
-> >>                                 host->base + MMCI_STM32_IDMACTRLR);
-> >
-> > Kind regards
-> > Uffe
->
+So to me at least, it is not clear why we should add it to the driver.
