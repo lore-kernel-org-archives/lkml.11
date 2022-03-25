@@ -2,95 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C19FDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 17:28:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D024C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 17:29:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231270AbiCYRaS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 13:30:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59268 "EHLO
+        id S229661AbiCYRad (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 13:30:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245046AbiCYR3n (ORCPT
+        with ESMTP id S239646AbiCYR2u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 13:29:43 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 960F61020
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 10:28:07 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id r22so11209794ljd.4
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 10:28:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yIMApoDu0cSTb9UHBH+0bGiaMNz8inAICwvHUwG31uM=;
-        b=fImwDEmarxWlMb6gMb1DB3uyeS0b4STGPcZKODQdrNUIGD5G9Kqoh0FWkcCAPqbziQ
-         HIDiJvpOAZ/Hvsyijyg/cAIgAtvr9nzllE3BZOBmRvLYdvbfnrL0+xcorU8NV97pFVmz
-         6HjdVE2BWnwep3mBHwh1GU9827E94rVX0KV9s=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yIMApoDu0cSTb9UHBH+0bGiaMNz8inAICwvHUwG31uM=;
-        b=EnXfrDKCz2EpL5S85Tzf85Fk5uLExkaJhYpAn1MfcOfvFVdSQT0EAuGc+o9+mCj6Wk
-         mVxR/7Zb32eGGjS9TLiL9ZxxO33/BYbgeddQfgA6iWhR0Oah5/LDdCH8YgPt2AlWb6L4
-         B+fYE48VMlMuBo+5x57fH2W3UxBMev0i5Xvmo3WBZHJT4bG+NoKnHOKBI5T0gOssbHA5
-         tMAMtHGXEDaTLpNBxHbwAKcpm0xDSlbdFvTY+BzwSRHKiFIbWIAXYfPuzbX1rKKnvVVY
-         VsXI1PfsD24CmB7sWBTmIQ1TzesUc2R0r+DsxXHajmeDbaDvxdRd9Q+cT0Oh8vcQzzk9
-         gAQg==
-X-Gm-Message-State: AOAM533N06HbC/JbwZmz1YkXwxpCotD3Mont/lp1F1+uo5VgAlsaqC6Y
-        b4d5i/IhWXFxS7yv+WH6BV7ESiUYTd5Fpb+2IYg=
-X-Google-Smtp-Source: ABdhPJxTnDLMKEu9PxHqWuQS3ZgJNLV3IJlZxH8BzaEn2xjj98lEIG/7/7EMAmhfgvAaQQAalxVyUg==
-X-Received: by 2002:a05:6512:1387:b0:44a:2d7b:adca with SMTP id p7-20020a056512138700b0044a2d7badcamr8592038lfa.680.1648228834334;
-        Fri, 25 Mar 2022 10:20:34 -0700 (PDT)
-Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com. [209.85.208.176])
-        by smtp.gmail.com with ESMTPSA id p9-20020a056512312900b0044a5312dcbcsm766983lfd.89.2022.03.25.10.20.32
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Mar 2022 10:20:33 -0700 (PDT)
-Received: by mail-lj1-f176.google.com with SMTP id q5so11162810ljb.11
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 10:20:32 -0700 (PDT)
-X-Received: by 2002:a2e:a5c4:0:b0:249:9ec3:f2b with SMTP id
- n4-20020a2ea5c4000000b002499ec30f2bmr8829088ljp.358.1648228831778; Fri, 25
- Mar 2022 10:20:31 -0700 (PDT)
+        Fri, 25 Mar 2022 13:28:50 -0400
+Received: from 8.mo584.mail-out.ovh.net (8.mo584.mail-out.ovh.net [188.165.33.112])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D02ABFD6CC
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 10:27:12 -0700 (PDT)
+Received: from player774.ha.ovh.net (unknown [10.111.172.147])
+        by mo584.mail-out.ovh.net (Postfix) with ESMTP id B17CB24FC2
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 17:26:28 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player774.ha.ovh.net (Postfix) with ESMTPSA id 4971828B1BB84;
+        Fri, 25 Mar 2022 17:26:23 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-99G00356359f32-029d-4eac-a7f9-d434de905eee,
+                    1702D5D0C6B5DF16716081994498F990499A02DA) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+Date:   Fri, 25 Mar 2022 18:26:16 +0100
+From:   Stephen Kitt <steve@sk2.org>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>, patches@opensource.cirrus.com,
+        Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ASoC: wm*: use simple i2c probe function
+Message-ID: <20220325182616.6fb6e13e@heffalump.sk2.org>
+In-Reply-To: <Yj34gLRxhmXD1Y5B@sirena.org.uk>
+References: <20220325162439.1203870-1-steve@sk2.org>
+        <Yj34gLRxhmXD1Y5B@sirena.org.uk>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220325131348.3995-1-andriy.shevchenko@linux.intel.com> <CAK7LNAR9HS7LK5D-07i8_tFcwd=uiHEFu05n0t_UuFZExcfBpw@mail.gmail.com>
-In-Reply-To: <CAK7LNAR9HS7LK5D-07i8_tFcwd=uiHEFu05n0t_UuFZExcfBpw@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 25 Mar 2022 10:20:15 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wjGsKD=DYgYqYUDzGKT8BOPLhqebw2YB6PCuZenE3qEzA@mail.gmail.com>
-Message-ID: <CAHk-=wjGsKD=DYgYqYUDzGKT8BOPLhqebw2YB6PCuZenE3qEzA@mail.gmail.com>
-Subject: Re: [PATCH v1 1/1] Makefile.extrawarn: Turn off -Werror when extra
- warnings are enabled
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/LGYoqigLMFV5fNGYgZ/d6BA";
+ protocol="application/pgp-signature"; micalg=pgp-sha512
+X-Ovh-Tracer-Id: 18105596405216544390
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudehuddguddtudcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpeffhffvuffkjghfofggtgesghdtreerredtjeenucfhrhhomhepufhtvghphhgvnhcumfhithhtuceoshhtvghvvgesshhkvddrohhrgheqnecuggftrfgrthhtvghrnhepveelvdeufedvieevffdtueegkeevteehffdtffetleehjeekjeejudffieduteeknecukfhppedtrddtrddtrddtpdekvddrieehrddvhedrvddtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrjeejgedrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehsthgvvhgvsehskhdvrdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 7:35 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
-> WERROR should not be enabled for regular builds.
+--Sig_/LGYoqigLMFV5fNGYgZ/d6BA
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-No.
+On Fri, 25 Mar 2022 17:14:40 +0000, Mark Brown <broonie@kernel.org> wrote:
 
-WERROR should be on for regular builds.
+> On Fri, Mar 25, 2022 at 05:24:39PM +0100, Stephen Kitt wrote:
+> > The i2c probe functions here don't use the id information provided in
+> > their second argument, so the single-parameter i2c probe function
+> > ("probe_new") can be used instead. =20
+>=20
+> This is going to generate conflicts with other pending and more
+> substantial patches for wm8731 - please resubmit after those have been
+> applied, or split up into finer grained patches so the rest can go.
 
-It's W=1 that is questionable. It enables warnings that are often
-false positives, and if you use W=1 (and particularly W=2) then that's
-_your_ problem.
+Ah right, I=E2=80=99ll re-submit without wm8731.
 
-W=1 is most definitely not "regular builds". It's only for people who
-want to deal with crazy compiler warnings.
+Which tree should I check for conflicts? I=E2=80=99ve got similar patches a=
+cross all
+the i2c-using sound/soc/codecs files, I wouldn=E2=80=99t want to waste anyo=
+ne=E2=80=99s time
+if I can check beforehand...
 
-I want WERROR on as widely as possible, because I'm really sick and
-tired of developers not noticing when they add warnings because they
-did a "regular build"
+Regards,
 
-Stop this idiocy where you think warnings are acceptable.
+Stephen
 
-                Linus
+--Sig_/LGYoqigLMFV5fNGYgZ/d6BA
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEnPVX/hPLkMoq7x0ggNMC9Yhtg5wFAmI9+zgACgkQgNMC9Yht
+g5wFGA/8CemT4b+V9V3cnh/mh1h/rRO+sWTc4MiLmIYyNKN93uWgIPna3Mg5QLgX
+Oe/or0EWwQ7U0W74gHwd8KElvxYndmweePAegyu5tTtosmG1WMk3l9JzinNzoKjk
+IX4Ql8dFYMeyIYEu9ozdePh+oiJDDz9nsMlLdVnjWN+v4ceFSIpYwjQcui8eTkCe
+bnsquWR3l4vuIMsHbRmG0Pj6S7fI8ddIyvjvfhRyYLwHxGfIHjZQPOqIIdAvkYWx
+pacw7lkfen4zwrNcVkxA5RXvmDq78WzX9tz0WuAniMzDuix/UdEQTwzW6XnIyla/
+cFb2RCkE3lDK8ngRZm9aaG6Z26/glujZnY/2T5wiBkYjTiJmDiH9QMObO28RLouZ
+PneOtlTVubin4jZK4IoCQcGZbB0FM5/1zb1zzjfDVgiD8A2qXoTzSqcGJ1wz3iHt
+5w/7eo4CKi0ar2Q3DNdjTQN0kLrjS/y0tZJghM+1aYu2mlarkHx4j3uTC/QEXwst
+EwxtRMcEbb/DKaMuyPrWg8TxxyFSugLHJrug+8hDvuYMl6YoKTAy93bHNccrpSu5
+t0Y9lHIYJr+vlbM3D1BxrgNj7oAsS3PH8ivHW/vqcUbwMmMPmeJjgxjt0u1XFnGQ
+T76ocvCh/ZoGnXKxduQBU31I7jMaBp/noc38PAYjOkAZ/tcvyZo=
+=/huU
+-----END PGP SIGNATURE-----
+
+--Sig_/LGYoqigLMFV5fNGYgZ/d6BA--
