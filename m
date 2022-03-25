@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33294C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:14:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5549C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:15:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359762AbiCYPQa (ORCPT
+        id S1359636AbiCYPQh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:16:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43448 "EHLO
+        Fri, 25 Mar 2022 11:16:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376432AbiCYPM7 (ORCPT
+        with ESMTP id S1376514AbiCYPND (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:12:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D31E76549F;
-        Fri, 25 Mar 2022 08:09:40 -0700 (PDT)
+        Fri, 25 Mar 2022 11:13:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9311C60A92;
+        Fri, 25 Mar 2022 08:09:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CBCA4B82902;
-        Fri, 25 Mar 2022 15:09:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17EC2C340E9;
-        Fri, 25 Mar 2022 15:09:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F143361BE9;
+        Fri, 25 Mar 2022 15:09:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03E56C340E9;
+        Fri, 25 Mar 2022 15:09:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648220977;
-        bh=9ax6MD5Lk7So5sstpseYMFybcIUfjEdKIUcAbbj6wxY=;
+        s=korg; t=1648220983;
+        bh=LmmrKrcXWHF0nmGwHPYoy284TsAUKyF8yO/u+Sn9jiI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=enMFVYQrDgE/LrbImk1w+qFiPhZM15Fj1iFrxMBV9PIf54SV9HA222z2jf//+toF/
-         RZJbvuTA1JvCvcu5weFuWtUDIbNi3jwvW++XSHBDq0hvc46Wx7nYFuBBziCxEIYqUo
-         2wpEVqsEHiqyI0/k1Yf/jXbov1OAxfFqPAgfrM5Y=
+        b=v66yXUL133djfNytB2a8zTCSvEtdG41sow9teFO7Do8rbgb30YWQYea7T6QnPXkoI
+         R2GxiZcG6CJPV+uR5ACQe6eIKZOIFDXtTdsPWJPrvsQgCpHLNurVfKaA7RZrMT9Wep
+         yeZFA7G/hCMQUPJeozqK+IwGbmJIEZwTt2ZhymzU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jaroslav Kysela <perex@perex.cz>,
+        stable@vger.kernel.org, Jonathan Teh <jonathan.teh@outlook.com>,
         Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.10 23/38] ALSA: pcm: Add stream lock during PCM reset ioctl operations
-Date:   Fri, 25 Mar 2022 16:05:07 +0100
-Message-Id: <20220325150420.418632828@linuxfoundation.org>
+Subject: [PATCH 5.10 25/38] ALSA: cmipci: Restore aux vol on suspend/resume
+Date:   Fri, 25 Mar 2022 16:05:09 +0100
+Message-Id: <20220325150420.474525569@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150419.757836392@linuxfoundation.org>
 References: <20220325150419.757836392@linuxfoundation.org>
@@ -49,54 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Jonathan Teh <jonathan.teh@outlook.com>
 
-commit 1f68915b2efd0d6bfd6e124aa63c94b3c69f127c upstream.
+commit c14231cc04337c2c2a937db084af342ce704dbde upstream.
 
-snd_pcm_reset() is a non-atomic operation, and it's allowed to run
-during the PCM stream running.  It implies that the manipulation of
-hw_ptr and other parameters might be racy.
+Save and restore CM_REG_AUX_VOL instead of register 0x24 twice on
+suspend/resume.
 
-This patch adds the PCM stream lock at appropriate places in
-snd_pcm_*_reset() actions for covering that.
+Tested on CMI8738LX.
 
+Fixes: cb60e5f5b2b1 ("[ALSA] cmipci - Add PM support")
+Signed-off-by: Jonathan Teh <jonathan.teh@outlook.com>
 Cc: <stable@vger.kernel.org>
-Reviewed-by: Jaroslav Kysela <perex@perex.cz>
-Link: https://lore.kernel.org/r/20220322171325.4355-1-tiwai@suse.de
+Link: https://lore.kernel.org/r/DBAPR04MB7366CB3EA9C8521C35C56E8B920E9@DBAPR04MB7366.eurprd04.prod.outlook.com
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/core/pcm_native.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ sound/pci/cmipci.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/sound/core/pcm_native.c
-+++ b/sound/core/pcm_native.c
-@@ -1850,11 +1850,13 @@ static int snd_pcm_do_reset(struct snd_p
- 	int err = snd_pcm_ops_ioctl(substream, SNDRV_PCM_IOCTL1_RESET, NULL);
- 	if (err < 0)
- 		return err;
-+	snd_pcm_stream_lock_irq(substream);
- 	runtime->hw_ptr_base = 0;
- 	runtime->hw_ptr_interrupt = runtime->status->hw_ptr -
- 		runtime->status->hw_ptr % runtime->period_size;
- 	runtime->silence_start = runtime->status->hw_ptr;
- 	runtime->silence_filled = 0;
-+	snd_pcm_stream_unlock_irq(substream);
- 	return 0;
- }
+--- a/sound/pci/cmipci.c
++++ b/sound/pci/cmipci.c
+@@ -302,7 +302,6 @@ MODULE_PARM_DESC(joystick_port, "Joystic
+ #define CM_MICGAINZ		0x01	/* mic boost */
+ #define CM_MICGAINZ_SHIFT	0
  
-@@ -1862,10 +1864,12 @@ static void snd_pcm_post_reset(struct sn
- 			       snd_pcm_state_t state)
- {
- 	struct snd_pcm_runtime *runtime = substream->runtime;
-+	snd_pcm_stream_lock_irq(substream);
- 	runtime->control->appl_ptr = runtime->status->hw_ptr;
- 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK &&
- 	    runtime->silence_size > 0)
- 		snd_pcm_playback_silence(substream, ULONG_MAX);
-+	snd_pcm_stream_unlock_irq(substream);
- }
- 
- static const struct action_ops snd_pcm_action_reset = {
+-#define CM_REG_MIXER3		0x24
+ #define CM_REG_AUX_VOL		0x26
+ #define CM_VAUXL_MASK		0xf0
+ #define CM_VAUXR_MASK		0x0f
+@@ -3291,7 +3290,7 @@ static void snd_cmipci_remove(struct pci
+  */
+ static const unsigned char saved_regs[] = {
+ 	CM_REG_FUNCTRL1, CM_REG_CHFORMAT, CM_REG_LEGACY_CTRL, CM_REG_MISC_CTRL,
+-	CM_REG_MIXER0, CM_REG_MIXER1, CM_REG_MIXER2, CM_REG_MIXER3, CM_REG_PLL,
++	CM_REG_MIXER0, CM_REG_MIXER1, CM_REG_MIXER2, CM_REG_AUX_VOL, CM_REG_PLL,
+ 	CM_REG_CH0_FRAME1, CM_REG_CH0_FRAME2,
+ 	CM_REG_CH1_FRAME1, CM_REG_CH1_FRAME2, CM_REG_EXT_MISC,
+ 	CM_REG_INT_STATUS, CM_REG_INT_HLDCLR, CM_REG_FUNCTRL0,
 
 
