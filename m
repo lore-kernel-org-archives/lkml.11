@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFD2DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:29:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 767F5C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:30:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376759AbiCYPb2 (ORCPT
+        id S1376559AbiCYPbd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:31:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38940 "EHLO
+        Fri, 25 Mar 2022 11:31:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378079AbiCYPYw (ORCPT
+        with ESMTP id S1378078AbiCYPYw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 25 Mar 2022 11:24:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91478E9C9D;
-        Fri, 25 Mar 2022 08:19:44 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91419E29FA;
+        Fri, 25 Mar 2022 08:19:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 115FC61451;
-        Fri, 25 Mar 2022 15:19:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 230ACC340E9;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 473A6CE2A47;
         Fri, 25 Mar 2022 15:19:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5901CC340E9;
+        Fri, 25 Mar 2022 15:19:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221583;
-        bh=+K+8ORVeew4aVIzDkKIXqrFRlhb+qisqa78eUU2k22Q=;
+        s=korg; t=1648221580;
+        bh=bOkJy+mMiLrQcWXHlmJVF/rdsYha53wcln9168+rGTw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gNPhcHgfccp89JLuxc1OoVgIT8v67q5Jy4RII3gkjuztxcKeAO7Y1FvtO8l+qnVmt
-         9BKy10rNVA6rJssklHYSy7z2GWj6mqdUReuZb22Iji9ivpFM2uNmBSZSApprPHNXGh
-         JFnkhNzzLSN9LNpg+qVLJelbwb9joLzCw+rnLgxk=
+        b=hgUPev4CNqM+RC+kZakxY4+8foeywbMbwIhqvKGgOoRuOC+0Nam/ceI4ypLCSzWiy
+         LH0jrCKv/3IZMVWAwIfS8K0dW8grBPsHDuUAqO0CEpq6a37BluxrGQ313Y4DPVzwHa
+         6uwh3NR5LXGeKI3RjbNiBpO9MufKspLa231CQfEI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+72732c532ac1454eeee9@syzkaller.appspotmail.com,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.17 05/39] ALSA: oss: Fix PCM OSS buffer allocation overflow
-Date:   Fri, 25 Mar 2022 16:14:20 +0100
-Message-Id: <20220325150420.401576412@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Palmer <daniel@0x0f.com>,
+        Arnaud POULIQUEN <arnaud.pouliquen@st.com>,
+        Takashi Iwai <tiwai@suse.de>,
+        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.17 04/39] ASoC: sti: Fix deadlock via snd_pcm_stop_xrun() call
+Date:   Fri, 25 Mar 2022 16:14:19 +0100
+Message-Id: <20220325150420.373358174@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150420.245733653@linuxfoundation.org>
 References: <20220325150420.245733653@linuxfoundation.org>
@@ -53,81 +54,72 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Takashi Iwai <tiwai@suse.de>
 
-commit efb6402c3c4a7c26d97c92d70186424097b6e366 upstream.
+commit 455c5653f50e10b4f460ef24e99f0044fbe3401c upstream.
 
-We've got syzbot reports hitting INT_MAX overflow at vmalloc()
-allocation that is called from snd_pcm_plug_alloc().  Although we
-apply the restrictions to input parameters, it's based only on the
-hw_params of the underlying PCM device.  Since the PCM OSS layer
-allocates a temporary buffer for the data conversion, the size may
-become unexpectedly large when more channels or higher rates is given;
-in the reported case, it went over INT_MAX, hence it hits WARN_ON().
+This is essentially a revert of the commit dc865fb9e7c2 ("ASoC: sti:
+Use snd_pcm_stop_xrun() helper"), which converted the manual
+snd_pcm_stop() calls with snd_pcm_stop_xrun().
 
-This patch is an attempt to avoid such an overflow and an allocation
-for too large buffers.  First off, it adds the limit of 1MB as the
-upper bound for period bytes.  This must be large enough for all use
-cases, and we really don't want to handle a larger temporary buffer
-than this size.  The size check is performed at two places, where the
-original period bytes is calculated and where the plugin buffer size
-is calculated.
+The commit above introduced a deadlock as snd_pcm_stop_xrun() itself
+takes the PCM stream lock while the caller already holds it.  Since
+the conversion was done only for consistency reason and the open-call
+with snd_pcm_stop() to the XRUN state is a correct usage, let's revert
+the commit back as the fix.
 
-In addition, the driver uses array_size() and array3_size() for
-multiplications to catch overflows for the converted period size and
-buffer bytes.
-
-Reported-by: syzbot+72732c532ac1454eeee9@syzkaller.appspotmail.com
-Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: dc865fb9e7c2 ("ASoC: sti: Use snd_pcm_stop_xrun() helper")
+Reported-by: Daniel Palmer <daniel@0x0f.com>
+Cc: Arnaud POULIQUEN <arnaud.pouliquen@st.com>
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/00000000000085b1b305da5a66f3@google.com
-Link: https://lore.kernel.org/r/20220318082036.29699-1-tiwai@suse.de
+Link: https://lore.kernel.org/r/20220315091319.3351522-1-daniel@0x0f.com
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Reviewed-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+Link: https://lore.kernel.org/r/20220315164158.19804-1-tiwai@suse.de
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/core/oss/pcm_oss.c    |   12 ++++++++----
- sound/core/oss/pcm_plugin.c |    5 ++++-
- 2 files changed, 12 insertions(+), 5 deletions(-)
+ sound/soc/sti/uniperif_player.c |    6 +++---
+ sound/soc/sti/uniperif_reader.c |    2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
---- a/sound/core/oss/pcm_oss.c
-+++ b/sound/core/oss/pcm_oss.c
-@@ -774,6 +774,11 @@ static int snd_pcm_oss_period_size(struc
+--- a/sound/soc/sti/uniperif_player.c
++++ b/sound/soc/sti/uniperif_player.c
+@@ -91,7 +91,7 @@ static irqreturn_t uni_player_irq_handle
+ 			SET_UNIPERIF_ITM_BCLR_FIFO_ERROR(player);
  
- 	if (oss_period_size < 16)
- 		return -EINVAL;
-+
-+	/* don't allocate too large period; 1MB period must be enough */
-+	if (oss_period_size > 1024 * 1024)
-+		return -ENOMEM;
-+
- 	runtime->oss.period_bytes = oss_period_size;
- 	runtime->oss.period_frames = 1;
- 	runtime->oss.periods = oss_periods;
-@@ -1043,10 +1048,9 @@ static int snd_pcm_oss_change_params_loc
- 			goto failure;
+ 			/* Stop the player */
+-			snd_pcm_stop_xrun(player->substream);
++			snd_pcm_stop(player->substream, SNDRV_PCM_STATE_XRUN);
+ 		}
+ 
+ 		ret = IRQ_HANDLED;
+@@ -105,7 +105,7 @@ static irqreturn_t uni_player_irq_handle
+ 		SET_UNIPERIF_ITM_BCLR_DMA_ERROR(player);
+ 
+ 		/* Stop the player */
+-		snd_pcm_stop_xrun(player->substream);
++		snd_pcm_stop(player->substream, SNDRV_PCM_STATE_XRUN);
+ 
+ 		ret = IRQ_HANDLED;
  	}
- #endif
--	oss_period_size *= oss_frame_size;
--
--	oss_buffer_size = oss_period_size * runtime->oss.periods;
--	if (oss_buffer_size < 0) {
-+	oss_period_size = array_size(oss_period_size, oss_frame_size);
-+	oss_buffer_size = array_size(oss_period_size, runtime->oss.periods);
-+	if (oss_buffer_size <= 0) {
- 		err = -EINVAL;
- 		goto failure;
+@@ -138,7 +138,7 @@ static irqreturn_t uni_player_irq_handle
+ 		dev_err(player->dev, "Underflow recovery failed\n");
+ 
+ 		/* Stop the player */
+-		snd_pcm_stop_xrun(player->substream);
++		snd_pcm_stop(player->substream, SNDRV_PCM_STATE_XRUN);
+ 
+ 		ret = IRQ_HANDLED;
  	}
---- a/sound/core/oss/pcm_plugin.c
-+++ b/sound/core/oss/pcm_plugin.c
-@@ -62,7 +62,10 @@ static int snd_pcm_plugin_alloc(struct s
- 	width = snd_pcm_format_physical_width(format->format);
- 	if (width < 0)
- 		return width;
--	size = frames * format->channels * width;
-+	size = array3_size(frames, format->channels, width);
-+	/* check for too large period size once again */
-+	if (size > 1024 * 1024)
-+		return -ENOMEM;
- 	if (snd_BUG_ON(size % 8))
- 		return -ENXIO;
- 	size /= 8;
+--- a/sound/soc/sti/uniperif_reader.c
++++ b/sound/soc/sti/uniperif_reader.c
+@@ -65,7 +65,7 @@ static irqreturn_t uni_reader_irq_handle
+ 	if (unlikely(status & UNIPERIF_ITS_FIFO_ERROR_MASK(reader))) {
+ 		dev_err(reader->dev, "FIFO error detected\n");
+ 
+-		snd_pcm_stop_xrun(reader->substream);
++		snd_pcm_stop(reader->substream, SNDRV_PCM_STATE_XRUN);
+ 
+ 		ret = IRQ_HANDLED;
+ 	}
 
 
