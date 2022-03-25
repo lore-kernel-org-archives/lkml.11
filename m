@@ -2,116 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4EE8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:44:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39675C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:44:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353044AbiCYPqS (ORCPT
+        id S1376702AbiCYPqW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:46:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51910 "EHLO
+        Fri, 25 Mar 2022 11:46:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376866AbiCYPm4 (ORCPT
+        with ESMTP id S1377707AbiCYPnu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:42:56 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7609F4E39B
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 08:37:38 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id r13so16122826ejd.5
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 08:37:38 -0700 (PDT)
+        Fri, 25 Mar 2022 11:43:50 -0400
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E3CE6AA62
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 08:40:06 -0700 (PDT)
+Received: by mail-oi1-x22e.google.com with SMTP id j83so8536698oih.6
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 08:40:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sVXyeJLQaPleAsE4xWQz3np+Niuze6dxAZHYr1Wct+4=;
-        b=A5/97bwfYRjPIVOIqkBxzsjhMzQ/rGlnKClHV1xmnO+2gq/7tb5w5ttE0wyxwwLCla
-         V/qm1YR+Qk36qFn9QaJJvOUIcMLK70S8laRhwQZrkeqcLFGhSkoAfAw3/A4h5S/AoA0g
-         6h00Lhno6VPvPos4VDhS4HeBErO1zCp82DH58=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=KkQ3UAnjoomD8VPxDQGaMS5VaJH8YbqKgUsD/Zma4MY=;
+        b=oHx4JAwEXn6GgCr+ZlOFRzGIUkK0CECP6r/qt42JKzUphuz+H/VDiuqheZ04dJwsT6
+         307WVSAq0IA86aW/+QsuCOA9/PLxOViIUIQjxy4Q+cCT/GreOe0OKft4athJv9c7CbRR
+         DL11Z4jdKXHyL7vqWA42Tas8kFpsxN6KqL/a3ax+7bfyUVgjeyP6ACcPnw5L89o2Uh63
+         p5Z6xrr+nM/d1tEevU+Z735CzBmujtKa+aAWH3QzUsOnsoWZJ+Gu7Dw4Ml2NfQJU5An0
+         rBYjT5sGhy/N6FXFAVVNAO+EtfE0+KX0BhPQRbeux2o9xfWzR+X2ltQB9GBR0LnW2VEt
+         nC+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sVXyeJLQaPleAsE4xWQz3np+Niuze6dxAZHYr1Wct+4=;
-        b=QYpJEHlxKOxAwJnzmerj5okzKPusxhKyv/3Gp7xvbXenb7OiI89QZDH3XbGfe+ORgC
-         CXOqfSQeI8lq1M0ha3voFmGMnmpxLwQtg+xHWZYes/+GXpbCurhcpKuF5+/ldplxY/S5
-         +1gGnLPgkuBoHF2dHein0db5ImtAslj+aB41tw4Wax2bbNubhONvxuk5DHqPmSpnMEzS
-         1tCrMnbKX+3yE8rgOF1xmi3/JpE7sYoVFrkUOaQCbQStpgMJlXPMzcZMgajxXEP8jw+L
-         ua+9Pl5g4ePFRPkIHW7KwUQ49sww1GJgG6fVp1c5M4IsUWcx5oY6QKWiFnRi4sG9yDkv
-         o+Lw==
-X-Gm-Message-State: AOAM532bCSYdSCwulV5h5J6SdFdxrnJsz/oxRPtOuileHqd0VpylbJKv
-        +KTYDD3eOUCN67Lml7KEGiyJK4lZZWn/nglm
-X-Google-Smtp-Source: ABdhPJy9kM1JXfS+pJvAhZqXXlgXpVq5WRR24K47Pk8ctl4wKDxuq6jiD5H5CB5EFPqci67judJ0Vg==
-X-Received: by 2002:a17:907:6d9d:b0:6da:7d4c:287f with SMTP id sb29-20020a1709076d9d00b006da7d4c287fmr11703177ejc.741.1648222654514;
-        Fri, 25 Mar 2022 08:37:34 -0700 (PDT)
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com. [209.85.218.43])
-        by smtp.gmail.com with ESMTPSA id qb10-20020a1709077e8a00b006dfedd50ce3sm2465038ejc.143.2022.03.25.08.37.32
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Mar 2022 08:37:33 -0700 (PDT)
-Received: by mail-ej1-f43.google.com with SMTP id qx21so16081274ejb.13
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 08:37:32 -0700 (PDT)
-X-Received: by 2002:a17:906:58d2:b0:6da:b635:fbf3 with SMTP id
- e18-20020a17090658d200b006dab635fbf3mr11889111ejs.40.1648222652438; Fri, 25
- Mar 2022 08:37:32 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=KkQ3UAnjoomD8VPxDQGaMS5VaJH8YbqKgUsD/Zma4MY=;
+        b=iMjadUxEHWXSDX0H3qtCU8qXumoxslK80fNhPN18olpT09l9qtqU+ecIpOZssiuimQ
+         ntclcMOnLFD4vUfkeKGt7hLanD5kuXaphVWk/0aOaKa2+q0qwpj1E9DK+/Ms/8tFpUZ3
+         GM6kCkH/m3hCkU3OqdEjtSfF/sgapagVgVwGsMr6trBPhGK0M0N9wD2OTWy+2g77G1e+
+         zhnUl7U5C0qOfX6gX1GTotBKvj6IRSbboV0IRD5zL0p2TVZ3M/zDWNdngcc5PlCdjskm
+         oRvYKnHP99zzASKdYM3aYoL0O0m1D0+XKt5/0aysRDe+kMwECuJhkaTP0XvzzSsEgrEi
+         9fFQ==
+X-Gm-Message-State: AOAM5321qroDs1e6YDyeazI/6TD4xqJRadlY0Bf8qruabaupVBe1cf5t
+        yHn+tb6D7+jvlJO34CHc5KDA6Ewd+Q==
+X-Google-Smtp-Source: ABdhPJzj0um+If716xMiZgaCy/MNm0hDqSyOGI5g04+AFHHXshTc7Caduux5+8RXnKQ6uJXK7F9kGw==
+X-Received: by 2002:aca:6742:0:b0:2ef:7242:35de with SMTP id b2-20020aca6742000000b002ef724235demr5516422oiy.166.1648222805669;
+        Fri, 25 Mar 2022 08:40:05 -0700 (PDT)
+Received: from citadel.. (174-084-153-250.res.spectrum.com. [174.84.153.250])
+        by smtp.gmail.com with ESMTPSA id el17-20020a056870f69100b000de9672ac3csm1709566oab.52.2022.03.25.08.40.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Mar 2022 08:40:05 -0700 (PDT)
+From:   Brian Gerst <brgerst@gmail.com>
+To:     linux-kernel@vger.kernel.org, x86@kernel.org
+Cc:     Andy Lutomirski <luto@kernel.org>, Borislav Petkov <bp@alien8.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Brian Gerst <brgerst@gmail.com>
+Subject: [PATCH 1/4] x86-32: Simplify ELF_CORE_COPY_REGS
+Date:   Fri, 25 Mar 2022 11:39:50 -0400
+Message-Id: <20220325153953.162643-2-brgerst@gmail.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220325153953.162643-1-brgerst@gmail.com>
+References: <20220325153953.162643-1-brgerst@gmail.com>
 MIME-Version: 1.0
-References: <20220325022337.10893-1-hbh25y@gmail.com>
-In-Reply-To: <20220325022337.10893-1-hbh25y@gmail.com>
-From:   Ricardo Ribalda <ribalda@chromium.org>
-Date:   Fri, 25 Mar 2022 16:37:21 +0100
-X-Gmail-Original-Message-ID: <CANiDSCuprLdo0i2VE3Vhe=t9cSYwW_Czvyyps=nOqLmrWn_uJA@mail.gmail.com>
-Message-ID: <CANiDSCuprLdo0i2VE3Vhe=t9cSYwW_Czvyyps=nOqLmrWn_uJA@mail.gmail.com>
-Subject: Re: [PATCH v2] media: uvc_video: fix bit overflow in uvc_probe_video
-To:     Hangyu Hua <hbh25y@gmail.com>
-Cc:     laurent.pinchart@ideasonboard.com, mchehab@kernel.org,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 25 Mar 2022 at 16:34, Hangyu Hua <hbh25y@gmail.com> wrote:
->
-> probe->dwMaxPayloadTransferSize is a 32bit value, but bandwidth is 16bit. This
-> may lead to a bit overflow.
->
-> Fix this by using probe->dwMaxPayloadTransferSize directly.
->
-> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Reviewed-by: Ricardo Ribalda <ribalda@chromium.org>
-> ---
->
-> v2:
-> Use probe->dwMaxPayloadTransferSize directly instead of changing temporary
-> variable.
->
->  drivers/media/usb/uvc/uvc_video.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
->
-> diff --git a/drivers/media/usb/uvc/uvc_video.c b/drivers/media/usb/uvc/uvc_video.c
-> index 1b4cc934109e..e016f88bdf96 100644
-> --- a/drivers/media/usb/uvc/uvc_video.c
-> +++ b/drivers/media/usb/uvc/uvc_video.c
-> @@ -383,7 +383,6 @@ int uvc_probe_video(struct uvc_streaming *stream,
->         struct uvc_streaming_control *probe)
->  {
->         struct uvc_streaming_control probe_min, probe_max;
-> -       u16 bandwidth;
->         unsigned int i;
->         int ret;
->
-> @@ -421,8 +420,7 @@ int uvc_probe_video(struct uvc_streaming *stream,
->                 if (stream->intf->num_altsetting == 1)
->                         break;
->
-> -               bandwidth = probe->dwMaxPayloadTransferSize;
-> -               if (bandwidth <= stream->maxpsize)
-> +               if (probe->dwMaxPayloadTransferSize <= stream->maxpsize)
->                         break;
->
->                 if (stream->dev->quirks & UVC_QUIRK_PROBE_MINMAX) {
-> --
-> 2.25.1
->
+GS is now always a user segment, so there is no difference between
+user and kernel registers.
 
+Signed-off-by: Brian Gerst <brgerst@gmail.com>
+---
+ arch/x86/include/asm/elf.h | 15 ++-------------
+ 1 file changed, 2 insertions(+), 13 deletions(-)
 
+diff --git a/arch/x86/include/asm/elf.h b/arch/x86/include/asm/elf.h
+index 29fea180a665..cb0ff1055ab1 100644
+--- a/arch/x86/include/asm/elf.h
++++ b/arch/x86/include/asm/elf.h
+@@ -116,7 +116,7 @@ extern unsigned int vdso32_enabled;
+  * now struct_user_regs, they are different)
+  */
+ 
+-#define ELF_CORE_COPY_REGS_COMMON(pr_reg, regs)	\
++#define ELF_CORE_COPY_REGS(pr_reg, regs)	\
+ do {						\
+ 	pr_reg[0] = regs->bx;			\
+ 	pr_reg[1] = regs->cx;			\
+@@ -128,6 +128,7 @@ do {						\
+ 	pr_reg[7] = regs->ds;			\
+ 	pr_reg[8] = regs->es;			\
+ 	pr_reg[9] = regs->fs;			\
++	savesegment(gs, pr_reg[10]);		\
+ 	pr_reg[11] = regs->orig_ax;		\
+ 	pr_reg[12] = regs->ip;			\
+ 	pr_reg[13] = regs->cs;			\
+@@ -136,18 +137,6 @@ do {						\
+ 	pr_reg[16] = regs->ss;			\
+ } while (0);
+ 
+-#define ELF_CORE_COPY_REGS(pr_reg, regs)	\
+-do {						\
+-	ELF_CORE_COPY_REGS_COMMON(pr_reg, regs);\
+-	pr_reg[10] = get_user_gs(regs);		\
+-} while (0);
+-
+-#define ELF_CORE_COPY_KERNEL_REGS(pr_reg, regs)	\
+-do {						\
+-	ELF_CORE_COPY_REGS_COMMON(pr_reg, regs);\
+-	savesegment(gs, pr_reg[10]);		\
+-} while (0);
+-
+ #define ELF_PLATFORM	(utsname()->machine)
+ #define set_personality_64bit()	do { } while (0)
+ 
 -- 
-Ricardo Ribalda
+2.35.1
+
