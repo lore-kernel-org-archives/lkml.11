@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A78CCC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:09:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E2D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:09:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359786AbiCYPLT (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:11:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36686 "EHLO
+        id S239363AbiCYPL0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 11:11:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359585AbiCYPHN (ORCPT
+        with ESMTP id S1359635AbiCYPHm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:07:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C85B9D9E9D;
-        Fri, 25 Mar 2022 08:05:37 -0700 (PDT)
+        Fri, 25 Mar 2022 11:07:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFD58DA0AC;
+        Fri, 25 Mar 2022 08:05:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6463861BFA;
-        Fri, 25 Mar 2022 15:05:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FFABC340F1;
-        Fri, 25 Mar 2022 15:05:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 54830B828FA;
+        Fri, 25 Mar 2022 15:05:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A307BC340E9;
+        Fri, 25 Mar 2022 15:05:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648220736;
-        bh=0t6rOqqnZ4dHupbcVnNiXxZOIEusOi5qLvPWJONBqH8=;
+        s=korg; t=1648220749;
+        bh=N6vwkSNiAupxcI7UazzCb8LR9f1mJCzrDjlRy+SPIZw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V8p+VYpnpS1sBTStAhcyr05bzqJhLUvRw1p64WHygUdjbt9ZMRWEnNI1VlMVBhdbi
-         mmZ/jUxvboIvVn3d+UtsK7Oj8pdgHYFWitABE9x/6GOuRDZEegQ+5Gyzt6jJprxf+V
-         Vc0aPZy+QhCIhMmhDqJbrotib7futl5CGYzxF9PA=
+        b=k3XNn44D+tXgA9Z1ZvyMeGoMPJGome2IcCfMz1p5aEsfSUK6Wc+/tt81wGfC2sJSS
+         MbRlVLBe61MCel27CMNbUN/ZkQtUtLcuwzXjw7BXx7twWXGseY/bLJkGfC3gbVCbG/
+         4lNcbnSqfdspDwLjBaZuU7CMGkshN5stxglK6EQg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Giacomo Guiduzzi <guiduzzi.giacomo@gmail.com>,
-        Paolo Valente <paolo.valente@linaro.org>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 4.14 10/17] ALSA: pci: fix reading of swapped values from pcmreg in AC97 codec
-Date:   Fri, 25 Mar 2022 16:04:44 +0100
-Message-Id: <20220325150417.063328337@linuxfoundation.org>
+        stable@vger.kernel.org, Maximilian Luz <luzmaximilian@gmail.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 4.14 14/17] ACPI: battery: Add device HID and quirk for Microsoft Surface Go 3
+Date:   Fri, 25 Mar 2022 16:04:48 +0100
+Message-Id: <20220325150417.177656495@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150416.756136126@linuxfoundation.org>
 References: <20220325150416.756136126@linuxfoundation.org>
@@ -51,56 +48,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Giacomo Guiduzzi <guiduzzi.giacomo@gmail.com>
+From: Maximilian Luz <luzmaximilian@gmail.com>
 
-commit 17aaf0193392cb3451bf0ac75ba396ec4cbded6e upstream.
+commit 7dacee0b9efc8bd061f097b1a8d4daa6591af0c6 upstream.
 
-Tests 72 and 78 for ALSA in kselftest fail due to reading
-inconsistent values from some devices on a VirtualBox
-Virtual Machine using the snd_intel8x0 driver for the AC'97
-Audio Controller device.
-Taking for example test number 72, this is what the test reports:
-"Surround Playback Volume.0 expected 1 but read 0, is_volatile 0"
-"Surround Playback Volume.1 expected 0 but read 1, is_volatile 0"
-These errors repeat for each value from 0 to 31.
+For some reason, the Microsoft Surface Go 3 uses the standard ACPI
+interface for battery information, but does not use the standard PNP0C0A
+HID. Instead it uses MSHW0146 as identifier. Add that ID to the driver
+as this seems to work well.
 
-Taking a look at these error messages it is possible to notice
-that the written values are read back swapped.
-When the write is performed, these values are initially stored in
-an array used to sanity-check them and write them in the pcmreg
-array. To write them, the two one-byte values are packed together
-in a two-byte variable through bitwise operations: the first
-value is shifted left by one byte and the second value is stored in the
-right byte through a bitwise OR. When reading the values back,
-right shifts are performed to retrieve the previously stored
-bytes. These shifts are executed in the wrong order, thus
-reporting the values swapped as shown above.
+Additionally, the power state is not updated immediately after the AC
+has been (un-)plugged, so add the respective quirk for that.
 
-This patch fixes this mistake by reversing the read
-operations' order.
-
-Signed-off-by: Giacomo Guiduzzi <guiduzzi.giacomo@gmail.com>
-Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220322200653.15862-1-guiduzzi.giacomo@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
+Cc: All applicable <stable@vger.kernel.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/ac97/ac97_codec.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/acpi/battery.c |   12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
---- a/sound/pci/ac97/ac97_codec.c
-+++ b/sound/pci/ac97/ac97_codec.c
-@@ -958,8 +958,8 @@ static int snd_ac97_ad18xx_pcm_get_volum
- 	int codec = kcontrol->private_value & 3;
- 	
- 	mutex_lock(&ac97->page_mutex);
--	ucontrol->value.integer.value[0] = 31 - ((ac97->spec.ad18xx.pcmreg[codec] >> 0) & 31);
--	ucontrol->value.integer.value[1] = 31 - ((ac97->spec.ad18xx.pcmreg[codec] >> 8) & 31);
-+	ucontrol->value.integer.value[0] = 31 - ((ac97->spec.ad18xx.pcmreg[codec] >> 8) & 31);
-+	ucontrol->value.integer.value[1] = 31 - ((ac97->spec.ad18xx.pcmreg[codec] >> 0) & 31);
- 	mutex_unlock(&ac97->page_mutex);
- 	return 0;
- }
+--- a/drivers/acpi/battery.c
++++ b/drivers/acpi/battery.c
+@@ -89,6 +89,10 @@ enum acpi_battery_files {
+ 
+ static const struct acpi_device_id battery_device_ids[] = {
+ 	{"PNP0C0A", 0},
++
++	/* Microsoft Surface Go 3 */
++	{"MSHW0146", 0},
++
+ 	{"", 0},
+ };
+ 
+@@ -1183,6 +1187,14 @@ static const struct dmi_system_id bat_dm
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "Aspire V5-573G"),
+ 		},
+ 	},
++	{
++		/* Microsoft Surface Go 3 */
++		.callback = battery_notification_delay_quirk,
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "Surface Go 3"),
++		},
++	},
+ 	{},
+ };
+ 
 
 
