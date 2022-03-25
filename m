@@ -2,51 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87FF9C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 14:05:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB28FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 14:05:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359294AbiCYOHC (ORCPT
+        id S1359302AbiCYOHH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 10:07:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50322 "EHLO
+        Fri, 25 Mar 2022 10:07:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359264AbiCYOGx (ORCPT
+        with ESMTP id S1359279AbiCYOGz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 10:06:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53AC4D8F4B;
-        Fri, 25 Mar 2022 07:05:19 -0700 (PDT)
+        Fri, 25 Mar 2022 10:06:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5F4DD8F4A;
+        Fri, 25 Mar 2022 07:05:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E551D61AFB;
-        Fri, 25 Mar 2022 14:05:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4396AC340F5;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7F618B82833;
+        Fri, 25 Mar 2022 14:05:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AC19C340E9;
         Fri, 25 Mar 2022 14:05:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1648217118;
-        bh=WUbC8iv4z1FG3/dSJ3crKi1kvQQgoCPRCCQlmTdH6fM=;
+        bh=InqS59/swCZqQjPOSQ38Dh01/JCHMdXS9AaJZgOmLnQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VrsvSUsJfXJ8qBH/DFssjDNCvUv3ZrJdlq+jA6yYU4rWDt89hoIdFF4g8HB2vBZHa
-         eyBPxVIirW6iquG4DcAOQfqwY3v6Z8GviMCJy6ZHPtMFx/cASuarYLBZxjNuOgef5m
-         +FTXX3EGNh5/hmPxg9SgM6MaamOiw4d0t2n5LzGzSmSqJQPB6SkYbGzhrfecPSohux
-         iP+32gh8wEyWzEiBxlzkGi8yZlVuMM6GCV0oFJqedt7VEP159hVAoYZ5wJ0YEBZk0r
-         ezG3jjX4ylfFONrr3NKS6dtm4W+6JohqdgcpNm+/2Ub7rDpzoxNKobI8hyeZbWnsTN
-         346I1xwlWUzEg==
+        b=b4e5qt1x2Z36b6bGLw/xt748snta88/BzOap/WiIJHUEK3WrGtWreQOunZTrqrcvz
+         Uf6m9caxu4tWMNgeW7AvweqKRJYzKZD/MA7Cd2CH4Gnn+xwq1o0DEBpzXTI51H2Hqn
+         tzZejZUUxGrmvtIgbeRNhNJB0yPhUeupaKt82gT6P/rpe5tDY1oD9GWm4M9OifbtpG
+         xkHfqM/M0Pwr2MyU35ekzRu1J9mSuby0JARxCEdKrUS+CwN+u6J51Fpnf+2ON+/Hwg
+         skKJw9BnvcG3DHzzzvVyP5pvzL2yFJinRYwYeNKsUV4de7Yp8UPnfca0HUjU2fs1+i
+         72MLQ+uwaxTmg==
 Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
         (envelope-from <mchehab@kernel.org>)
-        id 1nXkZ1-00Axz1-Rb; Fri, 25 Mar 2022 15:05:15 +0100
+        id 1nXkZ1-00Axyt-O2; Fri, 25 Mar 2022 15:05:15 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
         Jonathan Corbet <corbet@lwn.net>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         "Hans de Goede" <hdegoede@redhat.com>,
         "Stephen Rothwell" <sfr@canb.auug.org.au>,
-        Randy Dunlap <rdunlap@infradead.org>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/4] docs: kernel_feat.py: add build dependencies
-Date:   Fri, 25 Mar 2022 15:05:13 +0100
-Message-Id: <c4684a9a6ddd59e894b3f2776044f713b53ee9ca.1648216561.git.mchehab@kernel.org>
+Subject: [PATCH v2 1/4] scripts/get_feat.pl: allow output the parsed file names
+Date:   Fri, 25 Mar 2022 15:05:11 +0100
+Message-Id: <a924b46a80d750d808c28a27adffaa5d5a983e5c.1648216561.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1648216561.git.mchehab@kernel.org>
 References: <cover.1648216561.git.mchehab@kernel.org>
@@ -56,9 +55,10 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ensure that the feature files will be regenerated if any
-changes happen at the Documentation/features files that were
-processed by gen_feat.pl.
+Such output could be helpful while debugging it, but its main
+goal is to tell kernel_feat.py about what files were used
+by the script. Thie way, kernel_feat.py can add those as
+documentation dependencies.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
@@ -66,54 +66,52 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH v2 0/4] at: https://lore.kernel.org/all/cover.1648216561.git.mchehab@kernel.org/
 
- Documentation/sphinx/kernel_feat.py | 20 ++++++++++++++++++--
- 1 file changed, 18 insertions(+), 2 deletions(-)
+ scripts/get_feat.pl | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/Documentation/sphinx/kernel_feat.py b/Documentation/sphinx/kernel_feat.py
-index 8138d69a6987..6b40ac1806bb 100644
---- a/Documentation/sphinx/kernel_feat.py
-+++ b/Documentation/sphinx/kernel_feat.py
-@@ -33,6 +33,7 @@ u"""
+diff --git a/scripts/get_feat.pl b/scripts/get_feat.pl
+index 457712355676..b7154cf60c1d 100755
+--- a/scripts/get_feat.pl
++++ b/scripts/get_feat.pl
+@@ -13,6 +13,7 @@ my $man;
+ my $debug;
+ my $arch;
+ my $feat;
++my $enable_fname;
  
- import codecs
- import os
-+import re
- import subprocess
- import sys
+ my $basename = abs_path($0);
+ $basename =~ s,/[^/]+$,/,;
+@@ -31,6 +32,7 @@ GetOptions(
+ 	'arch=s' => \$arch,
+ 	'feat=s' => \$feat,
+ 	'feature=s' => \$feat,
++	"enable-fname" => \$enable_fname,
+ 	man => \$man
+ ) or pod2usage(2);
  
-@@ -82,7 +83,7 @@ class KernelFeat(Directive):
+@@ -95,6 +97,10 @@ sub parse_feat {
+ 	return if ($file =~ m,($prefix)/arch-support.txt,);
+ 	return if (!($file =~ m,arch-support.txt$,));
  
-         env = doc.settings.env
-         cwd = path.dirname(doc.current_source)
--        cmd = "get_feat.pl rest --dir "
-+        cmd = "get_feat.pl rest --enable-fname --dir "
-         cmd += self.arguments[0]
- 
-         if len(self.arguments) > 1:
-@@ -102,7 +103,22 @@ class KernelFeat(Directive):
-         shell_env["srctree"] = srctree
- 
-         lines = self.runCmd(cmd, shell=True, cwd=cwd, env=shell_env)
--        nodeList = self.nestedParse(lines, fname)
++	if ($enable_fname) {
++		printf "#define FILE %s\n", abs_path($file);
++	}
 +
-+        line_regex = re.compile("^#define FILE (\S+)$")
-+
-+        out_lines = ""
-+
-+        for line in lines.split("\n"):
-+            match = line_regex.search(line)
-+            if match:
-+                fname = match.group(1)
-+
-+                # Add the file to Sphinx build dependencies
-+                env.note_dependency(os.path.abspath(fname))
-+            else:
-+                out_lines += line + "\n"
-+
-+        nodeList = self.nestedParse(out_lines, fname)
-         return nodeList
+ 	my $subsys = "";
+ 	$subsys = $2 if ( m,.*($prefix)/([^/]+).*,);
  
-     def runCmd(self, cmd, **kwargs):
+@@ -580,6 +586,11 @@ Output features for a single specific feature.
+ Changes the location of the Feature files. By default, it uses
+ the Documentation/features directory.
+ 
++=item B<--enable-fname>
++
++Prints the file name of the feature files. This can be used in order to
++track dependencies during documentation build.
++
+ =item B<--debug>
+ 
+ Put the script in verbose mode, useful for debugging. Can be called multiple
 -- 
 2.35.1
 
