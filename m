@@ -2,301 +2,541 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2629C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 20:58:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4339FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 20:58:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232447AbiCYU7f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 16:59:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33812 "EHLO
+        id S232458AbiCYVAB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 17:00:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232386AbiCYU7c (ORCPT
+        with ESMTP id S232386AbiCYU75 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 16:59:32 -0400
-Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2343EC1CA4;
-        Fri, 25 Mar 2022 13:57:58 -0700 (PDT)
-Received: by mail-oi1-f178.google.com with SMTP id b188so9437957oia.13;
-        Fri, 25 Mar 2022 13:57:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=z3+VYS4xPKT3Sdf1b5joxnxd0SFj54uCndKadNW/2TQ=;
-        b=alsNOtEYnPq51OIwzwksQL5OL4D7RAIqHjytQCHh4RfD4kDekk7whhtGuX8W3ZaEYT
-         jb20JwnbRji2HoEYpBleSOhPHA9k7Nl2BOckUos5xTlvJTYYYVcoVghvAhoZctIEGvvi
-         3jlQhnaH4n7RNF9NR4bw9fT/iIii1mvWFU5vrGmTF+scM3DEMa5EEsHzJWDrkld0SU+0
-         +Xzq6GLWGQUt9GaCrYBYFc7qVs448Z3j8FN28KB1uZSjsBWfFPHRVyu93mmHIgFcSceF
-         RXyoOS3BL4It3C0k8tkZu96fSru9xuo7TzL5RAA8VEgPmcmAnAR34nibmLYGmibPWABJ
-         6wcQ==
-X-Gm-Message-State: AOAM5324K7jTOoolCHa+fS7/1VM3K4ydJMhErX/WLoTb0UOb2si1O8Ep
-        fi4Ao3lcuQNKE+EClo24GQ==
-X-Google-Smtp-Source: ABdhPJwLuU1JxQeKfah2HDqtMt+U2DBPVvJlDyCn8tEkegt99JV81lgo622mxvcu3Tz1W8W7/F0Z4Q==
-X-Received: by 2002:a05:6808:10cb:b0:2da:88e4:e352 with SMTP id s11-20020a05680810cb00b002da88e4e352mr10265878ois.159.1648241877400;
-        Fri, 25 Mar 2022 13:57:57 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id u16-20020a056808151000b002f734da0881sm857728oiw.57.2022.03.25.13.57.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Mar 2022 13:57:56 -0700 (PDT)
-Received: (nullmailer pid 437457 invoked by uid 1000);
-        Fri, 25 Mar 2022 20:57:55 -0000
-Date:   Fri, 25 Mar 2022 15:57:55 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Irui Wang <irui.wang@mediatek.com>
-Cc:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Tzung-Bi Shih <tzungbi@chromium.org>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tomasz Figa <tfiga@google.com>,
-        angelogioacchino.delregno@collabora.com,
-        Yong Wu <yong.wu@mediatek.com>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Maoguang Meng <maoguang.meng@mediatek.com>,
-        Longfei Wang <longfei.wang@mediatek.com>,
-        Yunfei Dong <yunfei.dong@mediatek.com>,
-        Fritz Koenig <frkoenig@chromium.org>,
-        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        srv_heupstream@mediatek.com, linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-Subject: Re: [PATCH v3, 03/10] dt-bindings: media: mtk-vcodec: Adds encoder
- cores dt-bindings for mt8195
-Message-ID: <Yj4s0zcHxz3U3wlc@robh.at.kernel.org>
-References: <20220317082230.23622-1-irui.wang@mediatek.com>
- <20220317082230.23622-4-irui.wang@mediatek.com>
+        Fri, 25 Mar 2022 16:59:57 -0400
+X-Greylist: delayed 16729 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 25 Mar 2022 13:58:19 PDT
+Received: from 11.mo582.mail-out.ovh.net (11.mo582.mail-out.ovh.net [188.165.38.119])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63B4EE29F4
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 13:58:18 -0700 (PDT)
+Received: from player797.ha.ovh.net (unknown [10.108.1.121])
+        by mo582.mail-out.ovh.net (Postfix) with ESMTP id 6591E24EAF
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 17:07:55 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player797.ha.ovh.net (Postfix) with ESMTPSA id EA50424B7C4F9;
+        Fri, 25 Mar 2022 17:07:46 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-101G0047b81cd7d-ade9-4cf8-ac91-229b08354cb4,
+                    1702D5D0C6B5DF16716081994498F990499A02DA) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     James Schulman <james.schulman@cirrus.com>,
+        David Rhodes <david.rhodes@cirrus.com>,
+        Lucas Tanure <tanureal@opensource.cirrus.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     patches@opensource.cirrus.com, Wolfram Sang <wsa@kernel.org>,
+        linux-kernel@vger.kernel.org, Stephen Kitt <steve@sk2.org>
+Subject: [PATCH] ASoC: cs*: use simple i2c probe function
+Date:   Fri, 25 Mar 2022 18:07:34 +0100
+Message-Id: <20220325170734.1216018-1-steve@sk2.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220317082230.23622-4-irui.wang@mediatek.com>
+Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 17792314756315121286
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudehuddgleejucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeetgedugfelkeeikeetgeegteevfeeufeetuefgudeiiedthfehtdeffeekvdeffeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejleejrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 04:22:23PM +0800, Irui Wang wrote:
-> Adds encoder cores dt-bindings for mt8195.
+The i2c probe functions here don't use the id information provided in
+their second argument, so the single-parameter i2c probe function
+("probe_new") can be used instead.
 
-Why?
+This avoids scanning the identifier tables during probes.
 
-> 
-> Signed-off-by: Irui Wang <irui.wang@mediatek.com>
-> ---
->  .../media/mediatek,vcodec-encoder-core.yaml   | 181 ++++++++++++++++++
->  .../media/mediatek,vcodec-encoder.yaml        |   1 -
->  2 files changed, 181 insertions(+), 1 deletion(-)
->  create mode 100644 Documentation/devicetree/bindings/media/mediatek,vcodec-encoder-core.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder-core.yaml b/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder-core.yaml
-> new file mode 100644
-> index 000000000000..fcfb48900c76
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder-core.yaml
-> @@ -0,0 +1,181 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +
-> +%YAML 1.2
-> +---
-> +$id: "http://devicetree.org/schemas/media/mediatek,vcodec-encoder-core.yaml#"
-> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-> +
-> +title: Mediatek Video Encoder Accelerator With Multi Core
-> +
-> +maintainers:
-> +  - Irui Wang <irui.wang@mediatek.com>
-> +
-> +description: |
-> +  Mediatek Video Encode is the video encode hardware present in Mediatek
-> +  SoCs which supports high resolution encoding functionalities. Required
-> +  parent and child device node.
-> +
-> +properties:
-> +  compatible:
-> +    items:
-> +      - enum:
-> +          - mediatek,mt8195-vcodec-enc
-> +
-> +  mediatek,scp:
-> +    $ref: /schemas/types.yaml#/definitions/phandle
-> +    description: |
-> +      The node of system control processor (SCP), using
-> +      the remoteproc & rpmsg framework.
-> +
-> +  mediatek,venc-multi-core:
-> +    type: boolean
-> +    description: |
-> +      Indicates whether the encoder has multiple cores or not.
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+---
+ sound/soc/codecs/cs35l32.c     | 5 ++---
+ sound/soc/codecs/cs35l33.c     | 5 ++---
+ sound/soc/codecs/cs35l34.c     | 5 ++---
+ sound/soc/codecs/cs35l35.c     | 5 ++---
+ sound/soc/codecs/cs35l36.c     | 5 ++---
+ sound/soc/codecs/cs35l41-i2c.c | 5 ++---
+ sound/soc/codecs/cs4234.c      | 4 ++--
+ sound/soc/codecs/cs4265.c      | 5 ++---
+ sound/soc/codecs/cs4270.c      | 5 ++---
+ sound/soc/codecs/cs4271-i2c.c  | 5 ++---
+ sound/soc/codecs/cs42l42.c     | 5 ++---
+ sound/soc/codecs/cs42l51-i2c.c | 5 ++---
+ sound/soc/codecs/cs42l52.c     | 5 ++---
+ sound/soc/codecs/cs42l56.c     | 5 ++---
+ sound/soc/codecs/cs42l73.c     | 5 ++---
+ sound/soc/codecs/cs42xx8-i2c.c | 5 ++---
+ sound/soc/codecs/cs43130.c     | 5 ++---
+ sound/soc/codecs/cs4341.c      | 5 ++---
+ sound/soc/codecs/cs4349.c      | 5 ++---
+ sound/soc/codecs/cs53l30.c     | 5 ++---
+ 20 files changed, 40 insertions(+), 59 deletions(-)
 
-Isn't this implied by how many child nodes you have?
+diff --git a/sound/soc/codecs/cs35l32.c b/sound/soc/codecs/cs35l32.c
+index 933e3d627e5f..badfc55bc5fa 100644
+--- a/sound/soc/codecs/cs35l32.c
++++ b/sound/soc/codecs/cs35l32.c
+@@ -346,8 +346,7 @@ static int cs35l32_handle_of_data(struct i2c_client *i2c_client,
+ 	return 0;
+ }
+ 
+-static int cs35l32_i2c_probe(struct i2c_client *i2c_client,
+-				       const struct i2c_device_id *id)
++static int cs35l32_i2c_probe(struct i2c_client *i2c_client)
+ {
+ 	struct cs35l32_private *cs35l32;
+ 	struct cs35l32_platform_data *pdata =
+@@ -576,7 +575,7 @@ static struct i2c_driver cs35l32_i2c_driver = {
+ 		   .of_match_table = cs35l32_of_match,
+ 		   },
+ 	.id_table = cs35l32_id,
+-	.probe = cs35l32_i2c_probe,
++	.probe_new = cs35l32_i2c_probe,
+ 	.remove = cs35l32_i2c_remove,
+ };
+ 
+diff --git a/sound/soc/codecs/cs35l33.c b/sound/soc/codecs/cs35l33.c
+index 2a6f5e46d031..47dc0f6d90a2 100644
+--- a/sound/soc/codecs/cs35l33.c
++++ b/sound/soc/codecs/cs35l33.c
+@@ -1116,8 +1116,7 @@ static int cs35l33_of_get_pdata(struct device *dev,
+ 	return 0;
+ }
+ 
+-static int cs35l33_i2c_probe(struct i2c_client *i2c_client,
+-				       const struct i2c_device_id *id)
++static int cs35l33_i2c_probe(struct i2c_client *i2c_client)
+ {
+ 	struct cs35l33_private *cs35l33;
+ 	struct cs35l33_pdata *pdata = dev_get_platdata(&i2c_client->dev);
+@@ -1286,7 +1285,7 @@ static struct i2c_driver cs35l33_i2c_driver = {
+ 
+ 		},
+ 	.id_table = cs35l33_id,
+-	.probe = cs35l33_i2c_probe,
++	.probe_new = cs35l33_i2c_probe,
+ 	.remove = cs35l33_i2c_remove,
+ 
+ };
+diff --git a/sound/soc/codecs/cs35l34.c b/sound/soc/codecs/cs35l34.c
+index ed678241c22b..50d509a06071 100644
+--- a/sound/soc/codecs/cs35l34.c
++++ b/sound/soc/codecs/cs35l34.c
+@@ -994,8 +994,7 @@ static const char * const cs35l34_core_supplies[] = {
+ 	"VP",
+ };
+ 
+-static int cs35l34_i2c_probe(struct i2c_client *i2c_client,
+-			      const struct i2c_device_id *id)
++static int cs35l34_i2c_probe(struct i2c_client *i2c_client)
+ {
+ 	struct cs35l34_private *cs35l34;
+ 	struct cs35l34_platform_data *pdata =
+@@ -1217,7 +1216,7 @@ static struct i2c_driver cs35l34_i2c_driver = {
+ 
+ 		},
+ 	.id_table = cs35l34_id,
+-	.probe = cs35l34_i2c_probe,
++	.probe_new = cs35l34_i2c_probe,
+ 	.remove = cs35l34_i2c_remove,
+ 
+ };
+diff --git a/sound/soc/codecs/cs35l35.c b/sound/soc/codecs/cs35l35.c
+index 961a3e07e70f..6b70afb70a67 100644
+--- a/sound/soc/codecs/cs35l35.c
++++ b/sound/soc/codecs/cs35l35.c
+@@ -1466,8 +1466,7 @@ static const struct reg_sequence cs35l35_errata_patch[] = {
+ 	{ 0x7F, 0x00 },
+ };
+ 
+-static int cs35l35_i2c_probe(struct i2c_client *i2c_client,
+-			      const struct i2c_device_id *id)
++static int cs35l35_i2c_probe(struct i2c_client *i2c_client)
+ {
+ 	struct cs35l35_private *cs35l35;
+ 	struct device *dev = &i2c_client->dev;
+@@ -1658,7 +1657,7 @@ static struct i2c_driver cs35l35_i2c_driver = {
+ 		.of_match_table = cs35l35_of_match,
+ 	},
+ 	.id_table = cs35l35_id,
+-	.probe = cs35l35_i2c_probe,
++	.probe_new = cs35l35_i2c_probe,
+ 	.remove = cs35l35_i2c_remove,
+ };
+ 
+diff --git a/sound/soc/codecs/cs35l36.c b/sound/soc/codecs/cs35l36.c
+index d83c1b318c1c..cc5e80222916 100644
+--- a/sound/soc/codecs/cs35l36.c
++++ b/sound/soc/codecs/cs35l36.c
+@@ -1700,8 +1700,7 @@ static const struct reg_sequence cs35l36_revb0_errata_patch[] = {
+ 	{ CS35L36_TESTKEY_CTRL, CS35L36_TEST_LOCK2 },
+ };
+ 
+-static int cs35l36_i2c_probe(struct i2c_client *i2c_client,
+-			      const struct i2c_device_id *id)
++static int cs35l36_i2c_probe(struct i2c_client *i2c_client)
+ {
+ 	struct cs35l36_private *cs35l36;
+ 	struct device *dev = &i2c_client->dev;
+@@ -1947,7 +1946,7 @@ static struct i2c_driver cs35l36_i2c_driver = {
+ 		.of_match_table = cs35l36_of_match,
+ 	},
+ 	.id_table = cs35l36_id,
+-	.probe = cs35l36_i2c_probe,
++	.probe_new = cs35l36_i2c_probe,
+ 	.remove = cs35l36_i2c_remove,
+ };
+ module_i2c_driver(cs35l36_i2c_driver);
+diff --git a/sound/soc/codecs/cs35l41-i2c.c b/sound/soc/codecs/cs35l41-i2c.c
+index faad5c638cb8..86d866aeb680 100644
+--- a/sound/soc/codecs/cs35l41-i2c.c
++++ b/sound/soc/codecs/cs35l41-i2c.c
+@@ -29,8 +29,7 @@ static const struct i2c_device_id cs35l41_id_i2c[] = {
+ 
+ MODULE_DEVICE_TABLE(i2c, cs35l41_id_i2c);
+ 
+-static int cs35l41_i2c_probe(struct i2c_client *client,
+-			     const struct i2c_device_id *id)
++static int cs35l41_i2c_probe(struct i2c_client *client)
+ {
+ 	struct cs35l41_private *cs35l41;
+ 	struct device *dev = &client->dev;
+@@ -91,7 +90,7 @@ static struct i2c_driver cs35l41_i2c_driver = {
+ 		.acpi_match_table = ACPI_PTR(cs35l41_acpi_match),
+ 	},
+ 	.id_table	= cs35l41_id_i2c,
+-	.probe		= cs35l41_i2c_probe,
++	.probe_new	= cs35l41_i2c_probe,
+ 	.remove		= cs35l41_i2c_remove,
+ };
+ 
+diff --git a/sound/soc/codecs/cs4234.c b/sound/soc/codecs/cs4234.c
+index 20126cc675b1..b44939166e5d 100644
+--- a/sound/soc/codecs/cs4234.c
++++ b/sound/soc/codecs/cs4234.c
+@@ -731,7 +731,7 @@ static int cs4234_powerup(struct cs4234 *cs4234)
+ 	return 0;
+ }
+ 
+-static int cs4234_i2c_probe(struct i2c_client *i2c_client, const struct i2c_device_id *id)
++static int cs4234_i2c_probe(struct i2c_client *i2c_client)
+ {
+ 	struct cs4234 *cs4234;
+ 	struct device *dev = &i2c_client->dev;
+@@ -908,7 +908,7 @@ static struct i2c_driver cs4234_i2c_driver = {
+ 		.pm = &cs4234_pm,
+ 		.of_match_table = cs4234_of_match,
+ 	},
+-	.probe =	cs4234_i2c_probe,
++	.probe_new =	cs4234_i2c_probe,
+ 	.remove =	cs4234_i2c_remove,
+ };
+ module_i2c_driver(cs4234_i2c_driver);
+diff --git a/sound/soc/codecs/cs4265.c b/sound/soc/codecs/cs4265.c
+index 4415fb364d4d..86bfa8d5ec78 100644
+--- a/sound/soc/codecs/cs4265.c
++++ b/sound/soc/codecs/cs4265.c
+@@ -568,8 +568,7 @@ static const struct regmap_config cs4265_regmap = {
+ 	.cache_type = REGCACHE_RBTREE,
+ };
+ 
+-static int cs4265_i2c_probe(struct i2c_client *i2c_client,
+-			     const struct i2c_device_id *id)
++static int cs4265_i2c_probe(struct i2c_client *i2c_client)
+ {
+ 	struct cs4265_private *cs4265;
+ 	int ret;
+@@ -653,7 +652,7 @@ static struct i2c_driver cs4265_i2c_driver = {
+ 		.of_match_table = cs4265_of_match,
+ 	},
+ 	.id_table = cs4265_id,
+-	.probe =    cs4265_i2c_probe,
++	.probe_new = cs4265_i2c_probe,
+ 	.remove =   cs4265_i2c_remove,
+ };
+ 
+diff --git a/sound/soc/codecs/cs4270.c b/sound/soc/codecs/cs4270.c
+index 2d239e983a83..07cac01f87bd 100644
+--- a/sound/soc/codecs/cs4270.c
++++ b/sound/soc/codecs/cs4270.c
+@@ -677,8 +677,7 @@ static int cs4270_i2c_remove(struct i2c_client *i2c_client)
+  * This function is called whenever the I2C subsystem finds a device that
+  * matches the device ID given via a prior call to i2c_add_driver().
+  */
+-static int cs4270_i2c_probe(struct i2c_client *i2c_client,
+-	const struct i2c_device_id *id)
++static int cs4270_i2c_probe(struct i2c_client *i2c_client)
+ {
+ 	struct cs4270_private *cs4270;
+ 	unsigned int val;
+@@ -765,7 +764,7 @@ static struct i2c_driver cs4270_i2c_driver = {
+ 		.of_match_table = cs4270_of_match,
+ 	},
+ 	.id_table = cs4270_id,
+-	.probe = cs4270_i2c_probe,
++	.probe_new = cs4270_i2c_probe,
+ 	.remove = cs4270_i2c_remove,
+ };
+ 
+diff --git a/sound/soc/codecs/cs4271-i2c.c b/sound/soc/codecs/cs4271-i2c.c
+index 0a174236f573..0e8a7cf0da50 100644
+--- a/sound/soc/codecs/cs4271-i2c.c
++++ b/sound/soc/codecs/cs4271-i2c.c
+@@ -11,8 +11,7 @@
+ #include <sound/soc.h>
+ #include "cs4271.h"
+ 
+-static int cs4271_i2c_probe(struct i2c_client *client,
+-			     const struct i2c_device_id *id)
++static int cs4271_i2c_probe(struct i2c_client *client)
+ {
+ 	struct regmap_config config;
+ 
+@@ -35,7 +34,7 @@ static struct i2c_driver cs4271_i2c_driver = {
+ 		.name = "cs4271",
+ 		.of_match_table = of_match_ptr(cs4271_dt_ids),
+ 	},
+-	.probe = cs4271_i2c_probe,
++	.probe_new = cs4271_i2c_probe,
+ 	.id_table = cs4271_i2c_id,
+ };
+ module_i2c_driver(cs4271_i2c_driver);
+diff --git a/sound/soc/codecs/cs42l42.c b/sound/soc/codecs/cs42l42.c
+index 43d98bdb5b5b..8019921f9cca 100644
+--- a/sound/soc/codecs/cs42l42.c
++++ b/sound/soc/codecs/cs42l42.c
+@@ -2040,8 +2040,7 @@ static int cs42l42_handle_device_data(struct device *dev,
+ 	return 0;
+ }
+ 
+-static int cs42l42_i2c_probe(struct i2c_client *i2c_client,
+-				       const struct i2c_device_id *id)
++static int cs42l42_i2c_probe(struct i2c_client *i2c_client)
+ {
+ 	struct cs42l42_private *cs42l42;
+ 	int ret, i, devid;
+@@ -2240,7 +2239,7 @@ static struct i2c_driver cs42l42_i2c_driver = {
+ 		.acpi_match_table = ACPI_PTR(cs42l42_acpi_match),
+ 		},
+ 	.id_table = cs42l42_id,
+-	.probe = cs42l42_i2c_probe,
++	.probe_new = cs42l42_i2c_probe,
+ 	.remove = cs42l42_i2c_remove,
+ };
+ 
+diff --git a/sound/soc/codecs/cs42l51-i2c.c b/sound/soc/codecs/cs42l51-i2c.c
+index 70260e0a8f09..2dec18ae2918 100644
+--- a/sound/soc/codecs/cs42l51-i2c.c
++++ b/sound/soc/codecs/cs42l51-i2c.c
+@@ -19,8 +19,7 @@ static struct i2c_device_id cs42l51_i2c_id[] = {
+ };
+ MODULE_DEVICE_TABLE(i2c, cs42l51_i2c_id);
+ 
+-static int cs42l51_i2c_probe(struct i2c_client *i2c,
+-			     const struct i2c_device_id *id)
++static int cs42l51_i2c_probe(struct i2c_client *i2c)
+ {
+ 	struct regmap_config config;
+ 
+@@ -44,7 +43,7 @@ static struct i2c_driver cs42l51_i2c_driver = {
+ 		.of_match_table = cs42l51_of_match,
+ 		.pm = &cs42l51_pm_ops,
+ 	},
+-	.probe = cs42l51_i2c_probe,
++	.probe_new = cs42l51_i2c_probe,
+ 	.remove = cs42l51_i2c_remove,
+ 	.id_table = cs42l51_i2c_id,
+ };
+diff --git a/sound/soc/codecs/cs42l52.c b/sound/soc/codecs/cs42l52.c
+index 80161151b3f2..9b182b585be4 100644
+--- a/sound/soc/codecs/cs42l52.c
++++ b/sound/soc/codecs/cs42l52.c
+@@ -1086,8 +1086,7 @@ static const struct regmap_config cs42l52_regmap = {
+ 	.cache_type = REGCACHE_RBTREE,
+ };
+ 
+-static int cs42l52_i2c_probe(struct i2c_client *i2c_client,
+-			     const struct i2c_device_id *id)
++static int cs42l52_i2c_probe(struct i2c_client *i2c_client)
+ {
+ 	struct cs42l52_private *cs42l52;
+ 	struct cs42l52_platform_data *pdata = dev_get_platdata(&i2c_client->dev);
+@@ -1226,7 +1225,7 @@ static struct i2c_driver cs42l52_i2c_driver = {
+ 		.of_match_table = cs42l52_of_match,
+ 	},
+ 	.id_table = cs42l52_id,
+-	.probe =    cs42l52_i2c_probe,
++	.probe_new = cs42l52_i2c_probe,
+ };
+ 
+ module_i2c_driver(cs42l52_i2c_driver);
+diff --git a/sound/soc/codecs/cs42l56.c b/sound/soc/codecs/cs42l56.c
+index 3cf8a0b4478c..2c4e09b43199 100644
+--- a/sound/soc/codecs/cs42l56.c
++++ b/sound/soc/codecs/cs42l56.c
+@@ -1167,8 +1167,7 @@ static int cs42l56_handle_of_data(struct i2c_client *i2c_client,
+ 	return 0;
+ }
+ 
+-static int cs42l56_i2c_probe(struct i2c_client *i2c_client,
+-			     const struct i2c_device_id *id)
++static int cs42l56_i2c_probe(struct i2c_client *i2c_client)
+ {
+ 	struct cs42l56_private *cs42l56;
+ 	struct cs42l56_platform_data *pdata =
+@@ -1350,7 +1349,7 @@ static struct i2c_driver cs42l56_i2c_driver = {
+ 		.of_match_table = cs42l56_of_match,
+ 	},
+ 	.id_table = cs42l56_id,
+-	.probe =    cs42l56_i2c_probe,
++	.probe_new = cs42l56_i2c_probe,
+ 	.remove =   cs42l56_i2c_remove,
+ };
+ 
+diff --git a/sound/soc/codecs/cs42l73.c b/sound/soc/codecs/cs42l73.c
+index 018463f34e12..5a9166289f36 100644
+--- a/sound/soc/codecs/cs42l73.c
++++ b/sound/soc/codecs/cs42l73.c
+@@ -1274,8 +1274,7 @@ static const struct regmap_config cs42l73_regmap = {
+ 	.use_single_write = true,
+ };
+ 
+-static int cs42l73_i2c_probe(struct i2c_client *i2c_client,
+-			     const struct i2c_device_id *id)
++static int cs42l73_i2c_probe(struct i2c_client *i2c_client)
+ {
+ 	struct cs42l73_private *cs42l73;
+ 	struct cs42l73_platform_data *pdata = dev_get_platdata(&i2c_client->dev);
+@@ -1386,7 +1385,7 @@ static struct i2c_driver cs42l73_i2c_driver = {
+ 		   .of_match_table = cs42l73_of_match,
+ 		   },
+ 	.id_table = cs42l73_id,
+-	.probe = cs42l73_i2c_probe,
++	.probe_new = cs42l73_i2c_probe,
+ 
+ };
+ 
+diff --git a/sound/soc/codecs/cs42xx8-i2c.c b/sound/soc/codecs/cs42xx8-i2c.c
+index 0214e3ab9da0..cb06a06d48b0 100644
+--- a/sound/soc/codecs/cs42xx8-i2c.c
++++ b/sound/soc/codecs/cs42xx8-i2c.c
+@@ -17,8 +17,7 @@
+ 
+ #include "cs42xx8.h"
+ 
+-static int cs42xx8_i2c_probe(struct i2c_client *i2c,
+-			     const struct i2c_device_id *id)
++static int cs42xx8_i2c_probe(struct i2c_client *i2c)
+ {
+ 	int ret = cs42xx8_probe(&i2c->dev,
+ 			devm_regmap_init_i2c(i2c, &cs42xx8_regmap_config));
+@@ -51,7 +50,7 @@ static struct i2c_driver cs42xx8_i2c_driver = {
+ 		.pm = &cs42xx8_pm,
+ 		.of_match_table = cs42xx8_of_match,
+ 	},
+-	.probe = cs42xx8_i2c_probe,
++	.probe_new = cs42xx8_i2c_probe,
+ 	.remove = cs42xx8_i2c_remove,
+ 	.id_table = cs42xx8_i2c_id,
+ };
+diff --git a/sound/soc/codecs/cs43130.c b/sound/soc/codecs/cs43130.c
+index 44b20c1ef851..e38552a961ef 100644
+--- a/sound/soc/codecs/cs43130.c
++++ b/sound/soc/codecs/cs43130.c
+@@ -2418,8 +2418,7 @@ static int cs43130_handle_device_data(struct i2c_client *i2c_client,
+ 	return 0;
+ }
+ 
+-static int cs43130_i2c_probe(struct i2c_client *client,
+-			     const struct i2c_device_id *id)
++static int cs43130_i2c_probe(struct i2c_client *client)
+ {
+ 	struct cs43130_private *cs43130;
+ 	int ret;
+@@ -2702,7 +2701,7 @@ static struct i2c_driver cs43130_i2c_driver = {
+ 		.pm             = &cs43130_runtime_pm,
+ 	},
+ 	.id_table	= cs43130_i2c_id,
+-	.probe		= cs43130_i2c_probe,
++	.probe_new	= cs43130_i2c_probe,
+ 	.remove		= cs43130_i2c_remove,
+ };
+ 
+diff --git a/sound/soc/codecs/cs4341.c b/sound/soc/codecs/cs4341.c
+index 29d05e32d341..8ac043f1aae0 100644
+--- a/sound/soc/codecs/cs4341.c
++++ b/sound/soc/codecs/cs4341.c
+@@ -225,8 +225,7 @@ static int cs4341_probe(struct device *dev)
+ }
+ 
+ #if IS_ENABLED(CONFIG_I2C)
+-static int cs4341_i2c_probe(struct i2c_client *i2c,
+-			    const struct i2c_device_id *id)
++static int cs4341_i2c_probe(struct i2c_client *i2c)
+ {
+ 	struct cs4341_priv *cs4341;
+ 
+@@ -260,7 +259,7 @@ static struct i2c_driver cs4341_i2c_driver = {
+ 		.name = "cs4341-i2c",
+ 		.of_match_table = of_match_ptr(cs4341_dt_ids),
+ 	},
+-	.probe = cs4341_i2c_probe,
++	.probe_new = cs4341_i2c_probe,
+ 	.id_table = cs4341_i2c_id,
+ };
+ #endif
+diff --git a/sound/soc/codecs/cs4349.c b/sound/soc/codecs/cs4349.c
+index 786c69a8ec4a..4ec4bed9ee08 100644
+--- a/sound/soc/codecs/cs4349.c
++++ b/sound/soc/codecs/cs4349.c
+@@ -278,8 +278,7 @@ static const struct regmap_config cs4349_regmap = {
+ 	.cache_type		= REGCACHE_RBTREE,
+ };
+ 
+-static int cs4349_i2c_probe(struct i2c_client *client,
+-				      const struct i2c_device_id *id)
++static int cs4349_i2c_probe(struct i2c_client *client)
+ {
+ 	struct cs4349_private *cs4349;
+ 	int ret;
+@@ -382,7 +381,7 @@ static struct i2c_driver cs4349_i2c_driver = {
+ 		.pm = &cs4349_runtime_pm,
+ 	},
+ 	.id_table	= cs4349_i2c_id,
+-	.probe		= cs4349_i2c_probe,
++	.probe_new	= cs4349_i2c_probe,
+ 	.remove		= cs4349_i2c_remove,
+ };
+ 
+diff --git a/sound/soc/codecs/cs53l30.c b/sound/soc/codecs/cs53l30.c
+index f2087bd38dbc..703545273900 100644
+--- a/sound/soc/codecs/cs53l30.c
++++ b/sound/soc/codecs/cs53l30.c
+@@ -918,8 +918,7 @@ static struct regmap_config cs53l30_regmap = {
+ 	.use_single_write = true,
+ };
+ 
+-static int cs53l30_i2c_probe(struct i2c_client *client,
+-			     const struct i2c_device_id *id)
++static int cs53l30_i2c_probe(struct i2c_client *client)
+ {
+ 	const struct device_node *np = client->dev.of_node;
+ 	struct device *dev = &client->dev;
+@@ -1125,7 +1124,7 @@ static struct i2c_driver cs53l30_i2c_driver = {
+ 		.pm = &cs53l30_runtime_pm,
+ 	},
+ 	.id_table = cs53l30_id,
+-	.probe = cs53l30_i2c_probe,
++	.probe_new = cs53l30_i2c_probe,
+ 	.remove = cs53l30_i2c_remove,
+ };
+ 
+-- 
+2.27.0
 
-> +
-> +  iommus:
-> +    minItems: 1
-> +    maxItems: 32
-
-You really have up to 32 IOMMUs?
-
-> +    description: |
-> +      List of the hardware port in respective IOMMU block for current Socs.
-> +      Refer to bindings/iommu/mediatek,iommu.yaml.
-> +
-> +  dma-ranges:
-> +    maxItems: 1
-> +    description: |
-> +      Describes the physical address space of IOMMU maps to memory.
-> +
-> +  "#address-cells":
-> +    const: 2
-> +
-> +  "#size-cells":
-> +    const: 2
-> +
-> +  ranges: true
-> +
-> +# Required child node:
-> +patternProperties:
-> +  "^venc-core@[0-9a-f]+$":
-> +    type: object
-> +    description: |
-> +      The video encoder core device node which should be added as subnodes to
-> +      the main venc node.
-> +
-> +    properties:
-> +      compatible:
-> +        items:
-> +         - const: mediatek,mtk-venc-core
-> +
-> +      reg:
-> +        maxItems: 1
-> +
-> +      mediatek,core-id:
-> +        $ref: /schemas/types.yaml#/definitions/uint32
-> +        description: |
-> +          Current encoder core id.
-
-What is this for and what does its value correspond to in the h/w. We 
-generally don't do made up indices in DT.
-
-> +
-> +      iommus:
-> +        minItems: 1
-> +        maxItems: 32
-> +        description: |
-> +          List of the hardware port in respective IOMMU block for current Socs.
-> +          Refer to bindings/iommu/mediatek,iommu.yaml.
-> +
-> +      interrupts:
-> +        maxItems: 1
-> +
-> +      clocks:
-> +        maxItems: 1
-> +
-> +      clock-names:
-> +        maxItems: 1
-> +
-> +      power-domains:
-> +        maxItems: 1
-> +
-> +    required:
-> +      - compatible
-> +      - reg
-> +      - mediatek,core-id
-> +      - iommus
-> +      - interrupts
-> +      - clocks
-> +      - clock-names
-> +      - assigned-clocks
-> +      - assigned-clock-parents
-> +      - power-domains
-> +
-> +    additionalProperties: false
-> +
-> +required:
-> +  - compatible
-> +  - mediatek,scp
-> +  - iommus
-> +  - dma-ranges
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    #include <dt-bindings/memory/mt8195-memory-port.h>
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    #include <dt-bindings/clock/mt8195-clk.h>
-> +    #include <dt-bindings/power/mt8195-power.h>
-> +
-> +    soc {
-> +        #address-cells = <2>;
-> +        #size-cells = <2>;
-> +
-> +        venc {
-> +            compatible = "mediatek,mt8195-vcodec-enc";
-> +            mediatek,scp = <&scp>;
-> +            mediatek,venc-multi-core;
-> +            iommus = <&iommu_vdo M4U_PORT_L19_VENC_RCPU>;
-> +            #address-cells = <2>;
-> +            #size-cells = <2>;
-> +            ranges;
-> +            dma-ranges = <0x1 0x0 0x0 0x40000000 0x0 0xfff00000>;
-> +
-> +            venc-core@1a020000 {
-> +                compatible = "mediatek,mtk-venc-core";
-> +                reg = <0 0x1a020000 0 0x10000>;
-> +                mediatek,core-id = <0>;
-> +                iommus = <&iommu_vdo M4U_PORT_L19_VENC_RCPU>,
-> +                         <&iommu_vdo M4U_PORT_L19_VENC_REC>,
-> +                         <&iommu_vdo M4U_PORT_L19_VENC_BSDMA>,
-> +                         <&iommu_vdo M4U_PORT_L19_VENC_SV_COMV>,
-> +                         <&iommu_vdo M4U_PORT_L19_VENC_RD_COMV>,
-> +                         <&iommu_vdo M4U_PORT_L19_VENC_CUR_LUMA>,
-> +                         <&iommu_vdo M4U_PORT_L19_VENC_CUR_CHROMA>,
-> +                         <&iommu_vdo M4U_PORT_L19_VENC_REF_LUMA>,
-> +                         <&iommu_vdo M4U_PORT_L19_VENC_REF_CHROMA>;
-> +                interrupts = <GIC_SPI 341 IRQ_TYPE_LEVEL_HIGH 0>;
-> +                clocks = <&vencsys CLK_VENC_VENC>;
-> +                clock-names = "clk_venc";
-> +                assigned-clocks = <&topckgen CLK_TOP_VENC>;
-> +                assigned-clock-parents = <&topckgen CLK_TOP_UNIVPLL_D4>;
-> +                power-domains = <&spm MT8195_POWER_DOMAIN_VENC>;
-> +            };
-> +
-> +            venc-core@1b020000 {
-> +                compatible = "mediatek,mtk-venc-core";
-> +                reg = <0 0x1b020000 0 0x10000>;
-> +                mediatek,core-id = <1>;
-> +                iommus = <&iommu_vpp M4U_PORT_L20_VENC_RCPU>,
-> +                         <&iommu_vpp M4U_PORT_L20_VENC_REC>,
-> +                         <&iommu_vpp M4U_PORT_L20_VENC_BSDMA>,
-> +                         <&iommu_vpp M4U_PORT_L20_VENC_SV_COMV>,
-> +                         <&iommu_vpp M4U_PORT_L20_VENC_RD_COMV>,
-> +                         <&iommu_vpp M4U_PORT_L20_VENC_CUR_LUMA>,
-> +                         <&iommu_vpp M4U_PORT_L20_VENC_CUR_CHROMA>,
-> +                         <&iommu_vpp M4U_PORT_L20_VENC_REF_LUMA>,
-> +                         <&iommu_vpp M4U_PORT_L20_VENC_REF_CHROMA>;
-> +                interrupts = <GIC_SPI 346 IRQ_TYPE_LEVEL_HIGH 0>;
-> +                clocks = <&vencsys_core1 CLK_VENC_CORE1_VENC>;
-> +                clock-names = "clk_venc_core1";
-> +                assigned-clocks = <&topckgen CLK_TOP_VENC>;
-> +                assigned-clock-parents = <&topckgen CLK_TOP_UNIVPLL_D4>;
-> +                power-domains = <&spm MT8195_POWER_DOMAIN_VENC_CORE1>;
-> +            };
-> +        };
-> +    };
-> diff --git a/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml b/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
-> index e7b65a91c92c..0530a694bcbe 100644
-> --- a/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
-> +++ b/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
-> @@ -21,7 +21,6 @@ properties:
->        - mediatek,mt8173-vcodec-enc
->        - mediatek,mt8183-vcodec-enc
->        - mediatek,mt8192-vcodec-enc
-> -      - mediatek,mt8195-vcodec-enc
->  
->    reg:
->      maxItems: 1
-> -- 
-> 2.18.0
-> 
-> 
