@@ -2,80 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 280D9C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 473D0C433F5
 	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378550AbiCYPe6 (ORCPT
+        id S1378563AbiCYPfC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:34:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42864 "EHLO
+        Fri, 25 Mar 2022 11:35:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378670AbiCYPZp (ORCPT
+        with ESMTP id S1378884AbiCYP0A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:25:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4002EF787;
-        Fri, 25 Mar 2022 08:21:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4E09DB8288D;
-        Fri, 25 Mar 2022 15:21:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E106C340E9;
-        Fri, 25 Mar 2022 15:21:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648221663;
-        bh=NdSDfG51M7eTZ8GzzJ2lDj0tjAGkdduj45sf3JOH5ps=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YfL2IVScbUlIXNnfv1+9KgI1OYvvhbxF7KgnJovSL3B1EknL20h6aMsuGOqO24ZlX
-         XBOry4N595eZP2ip1Scg4h2FIrlA9AF3d70x2TKM0X2Ji6eStkHU1J2CeWLg91Sc5A
-         vOPM/RwTBZQU1lM4LnPy5J8eBjAshjtmKzOZTZNhKE2Nd2b/lVPuJyH5EEYQdPZYR3
-         VS1RPeBeatk9hgfCMv5OQk9GLbKV0+TSrmtBO7vy7LJHRk6KYo9Cu+pjPnaGZFZdTq
-         kR8TiLxbH2W3n/f9+6bRsGxmGkjE9Iy+RdKv6J9IVi+yLruGGZHyesgTlsf2Uz5Qog
-         qFLv8Gxr1KStQ==
-Date:   Fri, 25 Mar 2022 16:20:58 +0100
-From:   Christian Brauner <brauner@kernel.org>
-To:     Axel Rasmussen <axelrasmussen@google.com>
-Cc:     Shuah Khan <shuah@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH 1/2] selftests: fix header dependency for pid_namespace
- selftests
-Message-ID: <20220325152058.rjrfzrojufn5ba2p@wittgenstein>
-References: <20220324223929.1893741-1-axelrasmussen@google.com>
+        Fri, 25 Mar 2022 11:26:00 -0400
+Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE4CA6542D;
+        Fri, 25 Mar 2022 08:24:24 -0700 (PDT)
+Received: by mail-qv1-xf2d.google.com with SMTP id kl29so6467926qvb.2;
+        Fri, 25 Mar 2022 08:24:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=enC4Cm+VFbMXJ8ZY/YefPUBsSjow27Oy9HPQpG1Rb48=;
+        b=ACrIBionqSd/X6CKhpsW/3KWWBv+AQcW1cxaymUjdMARjWL8SmgP0GEnEsBCNL5RVC
+         fMNUcitspAP6r5FV360aMEy5nPmT2FucG1cYyQcolMW/nCLo4gI/DnmzNQN8Exjfe3gg
+         IPiP98sy+i44dBw6flJIZ8DaTJKgRYAEHSGFfuY0qNf2yatCdMgpSjhHbcJrvZYEFM5r
+         WoTkoW0z4Q8YPwsv+7qOFhLDaus5BHshWUuMra/JzT2QWAsr7Ge4zlFOtIvXUxexue9P
+         dhMsBIrznUZuk7MLHrK1wtBs7MpBCx1vN+URf3+muTPXIypmxlExuR3e/6V0q3EfrN/z
+         4uMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=enC4Cm+VFbMXJ8ZY/YefPUBsSjow27Oy9HPQpG1Rb48=;
+        b=LfuhV2YohWU72OeYV0cLjD1Ya21ZRbP2UA6z066SroI1FF7jAz8mwrjsHd2foJV0fE
+         6U6nLfku7TfSvRS3WuSAmkpyM+lbADw100DiR7oFZdSqcK0afL8ida5+XQ5h0Sge9vxV
+         tgRIMTo5z3EnwijCHVMuhW4lkYPCZ5TFu+ki6C05F+mpZv/AZiMZjcO/443ClvrXwGUq
+         nWaEIJPEhlQty07Hh8uP8clmXCOMa7aBmq+Nre4cMlaLl2Vj514HizcujR+QOyESYmqD
+         xGBpksMw0C6m9FQ7xOjZTUQElaMTwsFIGDk0NSrpXHIsa1DTRe4ReLX6RgPYnPDKuXc5
+         LCJA==
+X-Gm-Message-State: AOAM533DGzDVA3QBeOfgCA1FiuWillgDCqmJ51zjEzE4X8L6L0kjLDnT
+        9WIOgvR5vK6iLKV/kk6BijA=
+X-Google-Smtp-Source: ABdhPJwcFW7IuU2aDnnWZG2xVtc3QsgNnIq+THxh/PTZSZpAQDxVb1uGYe++SdRidNjxvcwGmijVMw==
+X-Received: by 2002:a05:6214:20a5:b0:440:f648:997d with SMTP id 5-20020a05621420a500b00440f648997dmr9582604qvd.130.1648221864117;
+        Fri, 25 Mar 2022 08:24:24 -0700 (PDT)
+Received: from [192.168.1.145] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id k1-20020ac85fc1000000b002e1c6420790sm5742466qta.40.2022.03.25.08.24.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Mar 2022 08:24:23 -0700 (PDT)
+Message-ID: <019b1a59-7531-75cf-3b86-d2798ca9823a@gmail.com>
+Date:   Fri, 25 Mar 2022 16:24:20 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220324223929.1893741-1-axelrasmussen@google.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v4 17/22] arm64: dts: mt8192: Add dpi node
+Content-Language: en-US
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Ryder Lee <ryder.lee@kernel.org>,
+        Hui Liu <hui.liu@mediatek.com>
+References: <20220318144534.17996-1-allen-kh.cheng@mediatek.com>
+ <20220318144534.17996-18-allen-kh.cheng@mediatek.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220318144534.17996-18-allen-kh.cheng@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 03:39:28PM -0700, Axel Rasmussen wrote:
-> The way the test target was defined before, when building with clang we
-> get a command line like this:
-> 
-> clang -Wall -Werror -g -I../../../../usr/include/ \
-> 	regression_enomem.c ../pidfd/pidfd.h  -o regression_enomem
-> 
-> This yields an error, because clang thinks we want to produce both a *.o
-> file, as well as a precompiled header:
-> 
-> clang: error: cannot specify -o when generating multiple output files
-> 
-> gcc, for whatever reason, doesn't exhibit the same behavior which I
-> suspect is why the problem wasn't noticed before.
-> 
-> This can be fixed simply by using the LOCAL_HDRS infrastructure the
-> selftests lib.mk provides. It does the right think and marks the target
-> as depending on the header (so if the header changes, we rebuild), but
-> it filters the header out of the compiler command line, so we don't get
-> the error described above.
-> 
-> Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
-> ---
 
-Looks good,
-Reviewed-by: Christian Brauner <brauner@kernel.org>
+
+On 18/03/2022 15:45, Allen-KH Cheng wrote:
+> Add dpi node for mt8192 SoC.
+> 
+> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+> ---
+>   arch/arm64/boot/dts/mediatek/mt8192.dtsi | 11 +++++++++++
+>   1 file changed, 11 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> index 71ad3adeed51..a77d405dd508 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> @@ -1236,6 +1236,17 @@
+>   			power-domains = <&spm MT8192_POWER_DOMAIN_DISP>;
+>   		};
+>   
+> +		dpi0: dpi@14016000 {
+> +			compatible = "mediatek,mt8192-dpi";
+> +			reg = <0 0x14016000 0 0x1000>;
+> +			interrupts = <GIC_SPI 270 IRQ_TYPE_LEVEL_HIGH 0>;
+> +			clocks = <&mmsys CLK_MM_DPI_DPI0>,
+> +				 <&mmsys CLK_MM_DISP_DPI0>,
+> +				 <&apmixedsys CLK_APMIXED_TVDPLL>;
+> +			clock-names = "pixel", "engine", "pll";
+> +			status = "disabled";
+
+We are missing the output port node here.
+
+Regards,
+Matthias
+
+> +		};
+> +
+>   		iommu0: m4u@1401d000 {
+>   			compatible = "mediatek,mt8192-m4u";
+>   			reg = <0 0x1401d000 0 0x1000>;
