@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F2F8C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:09:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A78CCC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:09:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353302AbiCYPLM (ORCPT
+        id S1359786AbiCYPLT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:11:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44552 "EHLO
+        Fri, 25 Mar 2022 11:11:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359714AbiCYPJZ (ORCPT
+        with ESMTP id S1359585AbiCYPHN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:09:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FACEDA6D1;
-        Fri, 25 Mar 2022 08:07:17 -0700 (PDT)
+        Fri, 25 Mar 2022 11:07:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C85B9D9E9D;
+        Fri, 25 Mar 2022 08:05:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5B5D61C11;
-        Fri, 25 Mar 2022 15:07:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8702EC340E9;
-        Fri, 25 Mar 2022 15:07:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6463861BFA;
+        Fri, 25 Mar 2022 15:05:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FFABC340F1;
+        Fri, 25 Mar 2022 15:05:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648220836;
-        bh=bOkJy+mMiLrQcWXHlmJVF/rdsYha53wcln9168+rGTw=;
+        s=korg; t=1648220736;
+        bh=0t6rOqqnZ4dHupbcVnNiXxZOIEusOi5qLvPWJONBqH8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A6SdPMGfp1lybz/CbABklehqtYnuH3h+OqEGviqbssroPlA+BuSDuzB2Lwzns1lRY
-         1EeoiynucHkXG6ExfdfKZeoIR9nTQKYhY3D0AzJjsof9htsPW2paP2uJPgLAYnxfL7
-         kxdPwe0T8cePFG8hH4Ug7hrpypMbrEg75OLBbLio=
+        b=V8p+VYpnpS1sBTStAhcyr05bzqJhLUvRw1p64WHygUdjbt9ZMRWEnNI1VlMVBhdbi
+         mmZ/jUxvboIvVn3d+UtsK7Oj8pdgHYFWitABE9x/6GOuRDZEegQ+5Gyzt6jJprxf+V
+         Vc0aPZy+QhCIhMmhDqJbrotib7futl5CGYzxF9PA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Palmer <daniel@0x0f.com>,
-        Arnaud POULIQUEN <arnaud.pouliquen@st.com>,
-        Takashi Iwai <tiwai@suse.de>,
-        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 4.19 07/20] ASoC: sti: Fix deadlock via snd_pcm_stop_xrun() call
-Date:   Fri, 25 Mar 2022 16:04:45 +0100
-Message-Id: <20220325150417.223100297@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Giacomo Guiduzzi <guiduzzi.giacomo@gmail.com>,
+        Paolo Valente <paolo.valente@linaro.org>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 4.14 10/17] ALSA: pci: fix reading of swapped values from pcmreg in AC97 codec
+Date:   Fri, 25 Mar 2022 16:04:44 +0100
+Message-Id: <20220325150417.063328337@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220325150417.010265747@linuxfoundation.org>
-References: <20220325150417.010265747@linuxfoundation.org>
+In-Reply-To: <20220325150416.756136126@linuxfoundation.org>
+References: <20220325150416.756136126@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,74 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Giacomo Guiduzzi <guiduzzi.giacomo@gmail.com>
 
-commit 455c5653f50e10b4f460ef24e99f0044fbe3401c upstream.
+commit 17aaf0193392cb3451bf0ac75ba396ec4cbded6e upstream.
 
-This is essentially a revert of the commit dc865fb9e7c2 ("ASoC: sti:
-Use snd_pcm_stop_xrun() helper"), which converted the manual
-snd_pcm_stop() calls with snd_pcm_stop_xrun().
+Tests 72 and 78 for ALSA in kselftest fail due to reading
+inconsistent values from some devices on a VirtualBox
+Virtual Machine using the snd_intel8x0 driver for the AC'97
+Audio Controller device.
+Taking for example test number 72, this is what the test reports:
+"Surround Playback Volume.0 expected 1 but read 0, is_volatile 0"
+"Surround Playback Volume.1 expected 0 but read 1, is_volatile 0"
+These errors repeat for each value from 0 to 31.
 
-The commit above introduced a deadlock as snd_pcm_stop_xrun() itself
-takes the PCM stream lock while the caller already holds it.  Since
-the conversion was done only for consistency reason and the open-call
-with snd_pcm_stop() to the XRUN state is a correct usage, let's revert
-the commit back as the fix.
+Taking a look at these error messages it is possible to notice
+that the written values are read back swapped.
+When the write is performed, these values are initially stored in
+an array used to sanity-check them and write them in the pcmreg
+array. To write them, the two one-byte values are packed together
+in a two-byte variable through bitwise operations: the first
+value is shifted left by one byte and the second value is stored in the
+right byte through a bitwise OR. When reading the values back,
+right shifts are performed to retrieve the previously stored
+bytes. These shifts are executed in the wrong order, thus
+reporting the values swapped as shown above.
 
-Fixes: dc865fb9e7c2 ("ASoC: sti: Use snd_pcm_stop_xrun() helper")
-Reported-by: Daniel Palmer <daniel@0x0f.com>
-Cc: Arnaud POULIQUEN <arnaud.pouliquen@st.com>
+This patch fixes this mistake by reversing the read
+operations' order.
+
+Signed-off-by: Giacomo Guiduzzi <guiduzzi.giacomo@gmail.com>
+Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220315091319.3351522-1-daniel@0x0f.com
+Link: https://lore.kernel.org/r/20220322200653.15862-1-guiduzzi.giacomo@gmail.com
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Reviewed-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-Link: https://lore.kernel.org/r/20220315164158.19804-1-tiwai@suse.de
-Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/sti/uniperif_player.c |    6 +++---
- sound/soc/sti/uniperif_reader.c |    2 +-
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ sound/pci/ac97/ac97_codec.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/sound/soc/sti/uniperif_player.c
-+++ b/sound/soc/sti/uniperif_player.c
-@@ -91,7 +91,7 @@ static irqreturn_t uni_player_irq_handle
- 			SET_UNIPERIF_ITM_BCLR_FIFO_ERROR(player);
- 
- 			/* Stop the player */
--			snd_pcm_stop_xrun(player->substream);
-+			snd_pcm_stop(player->substream, SNDRV_PCM_STATE_XRUN);
- 		}
- 
- 		ret = IRQ_HANDLED;
-@@ -105,7 +105,7 @@ static irqreturn_t uni_player_irq_handle
- 		SET_UNIPERIF_ITM_BCLR_DMA_ERROR(player);
- 
- 		/* Stop the player */
--		snd_pcm_stop_xrun(player->substream);
-+		snd_pcm_stop(player->substream, SNDRV_PCM_STATE_XRUN);
- 
- 		ret = IRQ_HANDLED;
- 	}
-@@ -138,7 +138,7 @@ static irqreturn_t uni_player_irq_handle
- 		dev_err(player->dev, "Underflow recovery failed\n");
- 
- 		/* Stop the player */
--		snd_pcm_stop_xrun(player->substream);
-+		snd_pcm_stop(player->substream, SNDRV_PCM_STATE_XRUN);
- 
- 		ret = IRQ_HANDLED;
- 	}
---- a/sound/soc/sti/uniperif_reader.c
-+++ b/sound/soc/sti/uniperif_reader.c
-@@ -65,7 +65,7 @@ static irqreturn_t uni_reader_irq_handle
- 	if (unlikely(status & UNIPERIF_ITS_FIFO_ERROR_MASK(reader))) {
- 		dev_err(reader->dev, "FIFO error detected\n");
- 
--		snd_pcm_stop_xrun(reader->substream);
-+		snd_pcm_stop(reader->substream, SNDRV_PCM_STATE_XRUN);
- 
- 		ret = IRQ_HANDLED;
- 	}
+--- a/sound/pci/ac97/ac97_codec.c
++++ b/sound/pci/ac97/ac97_codec.c
+@@ -958,8 +958,8 @@ static int snd_ac97_ad18xx_pcm_get_volum
+ 	int codec = kcontrol->private_value & 3;
+ 	
+ 	mutex_lock(&ac97->page_mutex);
+-	ucontrol->value.integer.value[0] = 31 - ((ac97->spec.ad18xx.pcmreg[codec] >> 0) & 31);
+-	ucontrol->value.integer.value[1] = 31 - ((ac97->spec.ad18xx.pcmreg[codec] >> 8) & 31);
++	ucontrol->value.integer.value[0] = 31 - ((ac97->spec.ad18xx.pcmreg[codec] >> 8) & 31);
++	ucontrol->value.integer.value[1] = 31 - ((ac97->spec.ad18xx.pcmreg[codec] >> 0) & 31);
+ 	mutex_unlock(&ac97->page_mutex);
+ 	return 0;
+ }
 
 
