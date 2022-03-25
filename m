@@ -2,390 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 816D8C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 04:44:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD5B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 04:46:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354547AbiCYEpb (ORCPT
+        id S1353543AbiCYErh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 00:45:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35834 "EHLO
+        Fri, 25 Mar 2022 00:47:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358279AbiCYEpJ (ORCPT
+        with ESMTP id S236696AbiCYErd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 00:45:09 -0400
-Received: from esa9.hc1455-7.c3s2.iphmx.com (esa9.hc1455-7.c3s2.iphmx.com [139.138.36.223])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 765C969487;
-        Thu, 24 Mar 2022 21:43:23 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6200,9189,10296"; a="55449200"
-X-IronPort-AV: E=Sophos;i="5.90,209,1643641200"; 
-   d="scan'208";a="55449200"
-Received: from unknown (HELO oym-r3.gw.nic.fujitsu.com) ([210.162.30.91])
-  by esa9.hc1455-7.c3s2.iphmx.com with ESMTP; 25 Mar 2022 13:43:20 +0900
-Received: from oym-m2.gw.nic.fujitsu.com (oym-nat-oym-m2.gw.nic.fujitsu.com [192.168.87.59])
-        by oym-r3.gw.nic.fujitsu.com (Postfix) with ESMTP id 2E8F5CA247;
-        Fri, 25 Mar 2022 13:43:19 +0900 (JST)
-Received: from oym-om3.fujitsu.com (oym-om3.o.css.fujitsu.com [10.85.58.163])
-        by oym-m2.gw.nic.fujitsu.com (Postfix) with ESMTP id 5F0AF141AB;
-        Fri, 25 Mar 2022 13:43:18 +0900 (JST)
-Received: from localhost.localdomain (bakeccha.fct.css.fujitsu.com [10.126.195.136])
-        by oym-om3.fujitsu.com (Postfix) with ESMTP id 28763403F02E6;
-        Fri, 25 Mar 2022 13:43:18 +0900 (JST)
-From:   Shunsuke Nakamura <nakamura.shun@fujitsu.com>
-To:     peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
-        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
-        jolsa@redhat.com, namhyung@kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
-Subject: [RFC PATCH v2 4/7] libperf: Introduce perf_{evsel, evlist}__open_opt with extensible struct opts
-Date:   Fri, 25 Mar 2022 13:38:26 +0900
-Message-Id: <20220325043829.224045-5-nakamura.shun@fujitsu.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220325043829.224045-1-nakamura.shun@fujitsu.com>
-References: <20220325043829.224045-1-nakamura.shun@fujitsu.com>
+        Fri, 25 Mar 2022 00:47:33 -0400
+Received: from gateway24.websitewelcome.com (gateway24.websitewelcome.com [192.185.51.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04411C6EC8
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 21:45:56 -0700 (PDT)
+Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
+        by gateway24.websitewelcome.com (Postfix) with ESMTP id 7A7C9C30
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 23:45:56 -0500 (CDT)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id XbpknDZMpdx86Xbpknulgk; Thu, 24 Mar 2022 23:45:56 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=ychwoWq+jKWXscmOpK+qKFx885JOQlK6rLw3cnAAJtU=; b=n8PNSaX442ga68s56glkIFM2tw
+        BPwaHBRnYvPChM9shQYkg2+QJ9xzPTsL4IlQ76Bjm9vxQ2xxLjScMndy8q+Lj8M5+e9d2LQHHqhAs
+        2SI7HUXWc7TGIFhR93GM5SbRe1Cr1/PRXzVNhugMDgfkCsPMmL93oCMaNXavXvTvDpz+OHi7LXgu1
+        5GdhsmTkiZsKEoRnovXblriXzXV+z9ybmI7gvamptfT+zayNTVPK5YxZPCbmvf+nsQ7xn9QElM8Sn
+        LDLgTNuD5PiqALk6AVGPrOT04M7YS3Pi5H1bFvwIYFL82tKbRSz/JPWpYG6lGmpBwGKA4WppaL5za
+        Ct9UvLrg==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54468)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nXbpk-000lJ4-1e; Fri, 25 Mar 2022 04:45:56 +0000
+Message-ID: <86b338ea-2c6c-a06f-c935-30e2ebdd37ea@roeck-us.net>
+Date:   Thu, 24 Mar 2022 21:45:54 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] usb: typec: tcpm: testing array offset
+ 'port->logbuffer_head' before use
+Content-Language: en-US
+To:     Haowen Bai <baihaowen@meizu.com>, heikki.krogerus@linux.intel.com,
+        gregkh@linuxfoundation.org
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1648182849-9209-1-git-send-email-baihaowen@meizu.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <1648182849-9209-1-git-send-email-baihaowen@meizu.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nXbpk-000lJ4-1e
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54468
+X-Source-Auth: linux@roeck-us.net
+X-Email-Count: 1
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce perf_{evsel, evlist}__open_opt with extensible structure opts.
-The mechanism of the extensible structure opts imitates
-tools/lib/bpf/libbpf.h. This allows the user to set the open_flags
-specified in perf_event_open and a signal handler to receive overflow
-notifications for sampling events.
+On 3/24/22 21:34, Haowen Bai wrote:
+> Fix possible indexing array of bound for
+> port->logbuffer[port->logbuffer_head], where port->logbuffer_head boundary
+>   check happens later. so we do it before.
+> 
+> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+> ---
+>   drivers/usb/typec/tcpm/tcpm.c | 15 ++++++++-------
+>   1 file changed, 8 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/usb/typec/tcpm/tcpm.c b/drivers/usb/typec/tcpm/tcpm.c
+> index 5fce795..541e9e4 100644
+> --- a/drivers/usb/typec/tcpm/tcpm.c
+> +++ b/drivers/usb/typec/tcpm/tcpm.c
+> @@ -591,6 +591,14 @@ static void _tcpm_log(struct tcpm_port *port, const char *fmt, va_list args)
+>   	unsigned long rem_nsec;
+>   
+>   	mutex_lock(&port->logbuffer_lock);
+> +
+> +	if (port->logbuffer_head < 0 ||
+> +	    port->logbuffer_head >= LOG_BUFFER_ENTRIES) {
+> +		dev_warn(port->dev,
+> +			 "Bad log buffer index %d\n", port->logbuffer_head);
+> +		goto abort;
+> +	}
+> +
+>   	if (!port->logbuffer[port->logbuffer_head]) {
+>   		port->logbuffer[port->logbuffer_head] =
+>   				kzalloc(LOG_BUFFER_ENTRY_SIZE, GFP_KERNEL);
+> @@ -607,13 +615,6 @@ static void _tcpm_log(struct tcpm_port *port, const char *fmt, va_list args)
+>   		strcpy(tmpbuffer, "overflow");
+>   	}
+>   
+> -	if (port->logbuffer_head < 0 ||
+> -	    port->logbuffer_head >= LOG_BUFFER_ENTRIES) {
+> -		dev_warn(port->dev,
+> -			 "Bad log buffer index %d\n", port->logbuffer_head);
+> -		goto abort;
+> -	}
+> -
+>   	if (!port->logbuffer[port->logbuffer_head]) {
+>   		dev_warn(port->dev,
+>   			 "Log buffer index %d is NULL\n", port->logbuffer_head);
 
-Signed-off-by: Shunsuke Nakamura <nakamura.shun@fujitsu.com>
----
- tools/lib/perf/Documentation/libperf.txt |  14 +++
- tools/lib/perf/evlist.c                  |  20 +++++
- tools/lib/perf/evsel.c                   | 105 +++++++++++++++++++++++
- tools/lib/perf/include/perf/evlist.h     |   3 +
- tools/lib/perf/include/perf/evsel.h      |  26 ++++++
- tools/lib/perf/internal.h                |  44 ++++++++++
- tools/lib/perf/libperf.map               |   2 +
- 7 files changed, 214 insertions(+)
+One could argue that the check is unnecessary and can be removed as it can be proven
+that it logbuffer_head always in the range of [0, LOG_BUFFER_ENTRIES - 1]. Moving
+the check, however, does not add any value unless you can _prove_ that it needs to
+be moved, ie that logbuffer_head can be observed to be < 0 or >= LOG_BUFFER_ENTRIES.
+I think that is quite unlikely.
 
-diff --git a/tools/lib/perf/Documentation/libperf.txt b/tools/lib/perf/Documentation/libperf.txt
-index ae55e62fc4ce..700c1ce15159 100644
---- a/tools/lib/perf/Documentation/libperf.txt
-+++ b/tools/lib/perf/Documentation/libperf.txt
-@@ -131,6 +131,20 @@ SYNOPSIS
-           };
-   };
- 
-+  struct perf_evsel_open_opts {
-+          /* size of this struct, for forward/backward compatibility */
-+          size_t sz;
-+
-+          unsigned long open_flags;       /* perf_event_open flags */
-+          int flags;                      /* fcntl flags */
-+          unsigned int signal;
-+          int owner_type;
-+          struct sigaction *sig;
-+  };
-+  #define perf_evsel_open_opts__last_field sig
-+
-+  #define LIBPERF_OPTS(TYPE, NAME, ...)
-+
-   struct perf_evsel *perf_evsel__new(struct perf_event_attr *attr);
-   void perf_evsel__delete(struct perf_evsel *evsel);
-   int perf_evsel__open(struct perf_evsel *evsel, struct perf_cpu_map *cpus,
-diff --git a/tools/lib/perf/evlist.c b/tools/lib/perf/evlist.c
-index 9a770bfdc804..6f136905d249 100644
---- a/tools/lib/perf/evlist.c
-+++ b/tools/lib/perf/evlist.c
-@@ -666,3 +666,23 @@ void perf_evlist__set_leader(struct perf_evlist *evlist)
- 		__perf_evlist__set_leader(&evlist->entries, first);
- 	}
- }
-+
-+int perf_evlist__open_opts(struct perf_evlist *evlist,
-+			   struct perf_evsel_open_opts *opts)
-+{
-+	struct perf_evsel *evsel;
-+	int err;
-+
-+	perf_evlist__for_each_entry(evlist, evsel) {
-+		err = perf_evsel__open_opts(evsel, evsel->cpus,
-+					    evsel->threads, opts);
-+		if (err < 0)
-+			goto out_err;
-+	}
-+
-+	return 0;
-+
-+out_err:
-+	perf_evlist__close(evlist);
-+	return err;
-+}
-diff --git a/tools/lib/perf/evsel.c b/tools/lib/perf/evsel.c
-index b17842581dea..db9b7274feb5 100644
---- a/tools/lib/perf/evsel.c
-+++ b/tools/lib/perf/evsel.c
-@@ -1,4 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
-+#ifndef _GNU_SOURCE
-+#define _GNU_SOURCE
-+#endif
- #include <errno.h>
- #include <unistd.h>
- #include <sys/syscall.h>
-@@ -16,8 +19,12 @@
- #include <internal/lib.h>
- #include <linux/string.h>
- #include <sys/ioctl.h>
-+#include <signal.h>
-+#include <fcntl.h>
-+#include <sys/types.h>
- #include <sys/mman.h>
- #include <asm/bug.h>
-+#include "internal.h"
- 
- void perf_evsel__init(struct perf_evsel *evsel, struct perf_event_attr *attr,
- 		      int idx)
-@@ -511,3 +518,101 @@ void perf_counts_values__scale(struct perf_counts_values *count,
- 	if (pscaled)
- 		*pscaled = scaled;
- }
-+
-+static int perf_evsel__run_fcntl(struct perf_evsel *evsel,
-+				 unsigned int cmd, unsigned long arg,
-+				 int cpu_map_idx)
-+{
-+	int thread;
-+
-+	for (thread = 0; thread < xyarray__max_y(evsel->fd); thread++) {
-+		int err;
-+		int *fd = FD(evsel, cpu_map_idx, thread);
-+
-+		if (!fd || *fd < 0)
-+			return -1;
-+
-+		err = fcntl(*fd, cmd, arg);
-+
-+		if (err)
-+			return err;
-+	}
-+
-+	return 0;
-+}
-+
-+static int perf_evsel__set_signal_handler(struct perf_evsel *evsel,
-+					  struct perf_evsel_open_opts *opts)
-+{
-+	unsigned int flags;
-+	unsigned int signal;
-+	struct f_owner_ex owner;
-+	struct sigaction *sig;
-+	int cpu_map_idx;
-+	int err = 0;
-+
-+	flags = OPTS_GET(opts, flags, (O_RDWR | O_NONBLOCK | O_ASYNC));
-+	signal = OPTS_GET(opts, signal, SIGIO);
-+	owner.type = OPTS_GET(opts, owner_type, F_OWNER_PID);
-+	sig = OPTS_GET(opts, sig, NULL);
-+
-+	if (flags == 0 && signal == 0 && !owner.type == 0 && sig == 0)
-+		return err;
-+
-+	err = sigaction(signal, sig, NULL);
-+	if (err)
-+		return err;
-+
-+	switch (owner.type) {
-+	case F_OWNER_PID:
-+		owner.pid = getpid();
-+		break;
-+	case F_OWNER_TID:
-+		owner.pid = syscall(SYS_gettid);
-+		break;
-+	case F_OWNER_PGRP:
-+	default:
-+		return -1;
-+	}
-+
-+	for (cpu_map_idx = 0; cpu_map_idx < xyarray__max_x(evsel->fd); cpu_map_idx++) {
-+		err = perf_evsel__run_fcntl(evsel, F_SETFL, flags, cpu_map_idx);
-+		if (err)
-+			return err;
-+
-+		err = perf_evsel__run_fcntl(evsel, F_SETSIG, signal, cpu_map_idx);
-+		if (err)
-+			return err;
-+
-+		err = perf_evsel__run_fcntl(evsel, F_SETOWN_EX,
-+					    (unsigned long)&owner, cpu_map_idx);
-+		if (err)
-+			return err;
-+	}
-+
-+	return err;
-+}
-+
-+int perf_evsel__open_opts(struct perf_evsel *evsel, struct perf_cpu_map *cpus,
-+			  struct perf_thread_map *threads,
-+			  struct perf_evsel_open_opts *opts)
-+{
-+	int err = 0;
-+
-+	if (!OPTS_VALID(opts, perf_evsel_open_opts)) {
-+		err = -EINVAL;
-+		return err;
-+	}
-+
-+	evsel->open_flags = OPTS_GET(opts, open_flags, 0);
-+
-+	err = perf_evsel__open(evsel, cpus, threads);
-+	if (err)
-+		return err;
-+
-+	err = perf_evsel__set_signal_handler(evsel, opts);
-+	if (err)
-+		return err;
-+
-+	return err;
-+}
-diff --git a/tools/lib/perf/include/perf/evlist.h b/tools/lib/perf/include/perf/evlist.h
-index 9ca399d49bb4..6eff1e9b3481 100644
---- a/tools/lib/perf/include/perf/evlist.h
-+++ b/tools/lib/perf/include/perf/evlist.h
-@@ -9,6 +9,7 @@ struct perf_evlist;
- struct perf_evsel;
- struct perf_cpu_map;
- struct perf_thread_map;
-+struct perf_evsel_open_opts;
- 
- LIBPERF_API void perf_evlist__add(struct perf_evlist *evlist,
- 				  struct perf_evsel *evsel);
-@@ -47,4 +48,6 @@ LIBPERF_API struct perf_mmap *perf_evlist__next_mmap(struct perf_evlist *evlist,
- 	     (pos) = perf_evlist__next_mmap((evlist), (pos), overwrite))
- 
- LIBPERF_API void perf_evlist__set_leader(struct perf_evlist *evlist);
-+LIBPERF_API int perf_evlist__open_opts(struct perf_evlist *evlist,
-+				       struct perf_evsel_open_opts *opts);
- #endif /* __LIBPERF_EVLIST_H */
-diff --git a/tools/lib/perf/include/perf/evsel.h b/tools/lib/perf/include/perf/evsel.h
-index 360ced734add..ecf30bc6303f 100644
---- a/tools/lib/perf/include/perf/evsel.h
-+++ b/tools/lib/perf/include/perf/evsel.h
-@@ -5,6 +5,7 @@
- #include <stdint.h>
- #include <perf/core.h>
- #include <stdbool.h>
-+#include <signal.h>
- #include <linux/types.h>
- 
- struct perf_evsel;
-@@ -23,6 +24,27 @@ struct perf_counts_values {
- 	};
- };
- 
-+struct perf_evsel_open_opts {
-+	/* size of this struct, for forward/backward compatibility */
-+	size_t sz;
-+
-+	unsigned long open_flags;	/* perf_event_open flags */
-+	int flags;			/* fcntl flags */
-+	unsigned int signal;
-+	int owner_type;
-+	struct sigaction *sig;
-+};
-+#define perf_evsel_open_opts__last_field sig
-+
-+#define LIBPERF_OPTS(TYPE, NAME, ...)			\
-+	struct TYPE NAME = ({				\
-+		memset(&NAME, 0, sizeof(struct TYPE));	\
-+		(struct TYPE) {				\
-+			.sz = sizeof(struct TYPE),	\
-+			__VA_ARGS__			\
-+		};					\
-+	})
-+
- LIBPERF_API struct perf_evsel *perf_evsel__new(struct perf_event_attr *attr);
- LIBPERF_API void perf_evsel__delete(struct perf_evsel *evsel);
- LIBPERF_API int perf_evsel__open(struct perf_evsel *evsel, struct perf_cpu_map *cpus,
-@@ -48,5 +70,9 @@ LIBPERF_API struct perf_thread_map *perf_evsel__threads(struct perf_evsel *evsel
- LIBPERF_API struct perf_event_attr *perf_evsel__attr(struct perf_evsel *evsel);
- LIBPERF_API void perf_counts_values__scale(struct perf_counts_values *count,
- 					   bool scale, __s8 *pscaled);
-+LIBPERF_API int perf_evsel__open_opts(struct perf_evsel *evsel,
-+				      struct perf_cpu_map *cpus,
-+				      struct perf_thread_map *threads,
-+				      struct perf_evsel_open_opts *opts);
- 
- #endif /* __LIBPERF_EVSEL_H */
-diff --git a/tools/lib/perf/internal.h b/tools/lib/perf/internal.h
-index 2c27e158de6b..637bf6793c26 100644
---- a/tools/lib/perf/internal.h
-+++ b/tools/lib/perf/internal.h
-@@ -20,4 +20,48 @@ do {                            \
- #define pr_debug2(fmt, ...)     __pr(LIBPERF_DEBUG2, fmt, ##__VA_ARGS__)
- #define pr_debug3(fmt, ...)     __pr(LIBPERF_DEBUG3, fmt, ##__VA_ARGS__)
- 
-+static inline bool libperf_is_mem_zeroed(const char *p, ssize_t len)
-+{
-+	while (len > 0) {
-+		if (*p)
-+			return false;
-+		p++;
-+		len--;
-+	}
-+	return true;
-+}
-+
-+static inline bool libperf_validate_opts(const char *opts,
-+					 size_t opts_sz, size_t user_sz,
-+					 const char *type_name)
-+{
-+	if (user_sz < sizeof(size_t)) {
-+		pr_warning("%s size (%zu) is too small\n", type_name, user_sz);
-+		return false;
-+	}
-+	if (!libperf_is_mem_zeroed(opts + opts_sz, (ssize_t)user_sz - opts_sz)) {
-+		pr_warning("%s has non-zero extra bytes\n", type_name);
-+		return false;
-+	}
-+	return true;
-+}
-+
-+# define offsetofend(TYPE, FIELD) \
-+	(offsetof(TYPE, FIELD) + sizeof(((TYPE *)0)->FIELD))
-+
-+#define OPTS_VALID(opts, type)							\
-+	(!(opts) || libperf_validate_opts((const char *)opts,			\
-+					  offsetofend(struct type,		\
-+						      type##__last_field),	\
-+						(opts)->sz, #type))
-+#define OPTS_HAS(opts, field) \
-+	((opts) && opts->sz >= offsetofend(typeof(*(opts)), field))
-+#define OPTS_GET(opts, field, fallback_value) \
-+	(OPTS_HAS(opts, field) ? (opts)->field : fallback_value)
-+#define OPTS_SET(opts, field, value)		\
-+	do {					\
-+		if (OPTS_HAS(opts, field))	\
-+			(opts)->field = value;	\
-+	} while (0)
-+
- #endif /* __LIBPERF_INTERNAL_H */
-diff --git a/tools/lib/perf/libperf.map b/tools/lib/perf/libperf.map
-index ab0f44e9bb57..534614fbbb26 100644
---- a/tools/lib/perf/libperf.map
-+++ b/tools/lib/perf/libperf.map
-@@ -24,6 +24,7 @@ LIBPERF_0.0.1 {
- 		perf_evsel__enable;
- 		perf_evsel__disable;
- 		perf_evsel__open;
-+		perf_evsel__open_opts;
- 		perf_evsel__close;
- 		perf_evsel__mmap;
- 		perf_evsel__munmap;
-@@ -39,6 +40,7 @@ LIBPERF_0.0.1 {
- 		perf_evlist__new;
- 		perf_evlist__delete;
- 		perf_evlist__open;
-+		perf_evlist__open_opts;
- 		perf_evlist__close;
- 		perf_evlist__enable;
- 		perf_evlist__disable;
--- 
-2.25.1
-
+Guenter
