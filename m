@@ -2,115 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E25F2C3527E
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 280D9C4707F
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378130AbiCYPe0 (ORCPT
+        id S1378550AbiCYPe6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:34:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42878 "EHLO
+        Fri, 25 Mar 2022 11:34:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377717AbiCYPYb (ORCPT
+        with ESMTP id S1378670AbiCYPZp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:24:31 -0400
+        Fri, 25 Mar 2022 11:25:45 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCBEAE997B;
-        Fri, 25 Mar 2022 08:18:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4002EF787;
+        Fri, 25 Mar 2022 08:21:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 43CBDB827E0;
-        Fri, 25 Mar 2022 15:18:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9FB3C340E9;
-        Fri, 25 Mar 2022 15:18:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221518;
-        bh=5rCFA85s5S+qiRWrhD5HCF9nWwgiP1x6tSx3WyKd6t0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pf5ynpztNPajD5NCLBcpO3hsCwpQQnU3KodKwghorRDqsGIY8JCKhtPkhCP7cLhfe
-         sJbLAfk2hNjpCngogW779r3N6Z08izbiWwLcTrOYywFb7viTFOg20pUqtsFDsXSrYA
-         yxMt/8/vTH/wvK5ZfyjZrldCYP3qthcyU9By6/eA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.17 14/39] ALSA: pcm: Fix races among concurrent prealloc proc writes
-Date:   Fri, 25 Mar 2022 16:14:29 +0100
-Message-Id: <20220325150420.652238669@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220325150420.245733653@linuxfoundation.org>
-References: <20220325150420.245733653@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4E09DB8288D;
+        Fri, 25 Mar 2022 15:21:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E106C340E9;
+        Fri, 25 Mar 2022 15:21:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648221663;
+        bh=NdSDfG51M7eTZ8GzzJ2lDj0tjAGkdduj45sf3JOH5ps=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YfL2IVScbUlIXNnfv1+9KgI1OYvvhbxF7KgnJovSL3B1EknL20h6aMsuGOqO24ZlX
+         XBOry4N595eZP2ip1Scg4h2FIrlA9AF3d70x2TKM0X2Ji6eStkHU1J2CeWLg91Sc5A
+         vOPM/RwTBZQU1lM4LnPy5J8eBjAshjtmKzOZTZNhKE2Nd2b/lVPuJyH5EEYQdPZYR3
+         VS1RPeBeatk9hgfCMv5OQk9GLbKV0+TSrmtBO7vy7LJHRk6KYo9Cu+pjPnaGZFZdTq
+         kR8TiLxbH2W3n/f9+6bRsGxmGkjE9Iy+RdKv6J9IVi+yLruGGZHyesgTlsf2Uz5Qog
+         qFLv8Gxr1KStQ==
+Date:   Fri, 25 Mar 2022 16:20:58 +0100
+From:   Christian Brauner <brauner@kernel.org>
+To:     Axel Rasmussen <axelrasmussen@google.com>
+Cc:     Shuah Khan <shuah@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH 1/2] selftests: fix header dependency for pid_namespace
+ selftests
+Message-ID: <20220325152058.rjrfzrojufn5ba2p@wittgenstein>
+References: <20220324223929.1893741-1-axelrasmussen@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220324223929.1893741-1-axelrasmussen@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+On Thu, Mar 24, 2022 at 03:39:28PM -0700, Axel Rasmussen wrote:
+> The way the test target was defined before, when building with clang we
+> get a command line like this:
+> 
+> clang -Wall -Werror -g -I../../../../usr/include/ \
+> 	regression_enomem.c ../pidfd/pidfd.h  -o regression_enomem
+> 
+> This yields an error, because clang thinks we want to produce both a *.o
+> file, as well as a precompiled header:
+> 
+> clang: error: cannot specify -o when generating multiple output files
+> 
+> gcc, for whatever reason, doesn't exhibit the same behavior which I
+> suspect is why the problem wasn't noticed before.
+> 
+> This can be fixed simply by using the LOCAL_HDRS infrastructure the
+> selftests lib.mk provides. It does the right think and marks the target
+> as depending on the header (so if the header changes, we rebuild), but
+> it filters the header out of the compiler command line, so we don't get
+> the error described above.
+> 
+> Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
+> ---
 
-commit 69534c48ba8ce552ce383b3dfdb271ffe51820c3 upstream.
-
-We have no protection against concurrent PCM buffer preallocation
-changes via proc files, and it may potentially lead to UAF or some
-weird problem.  This patch applies the PCM open_mutex to the proc
-write operation for avoiding the racy proc writes and the PCM stream
-open (and further operations).
-
-Cc: <stable@vger.kernel.org>
-Reviewed-by: Jaroslav Kysela <perex@perex.cz>
-Link: https://lore.kernel.org/r/20220322170720.3529-5-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- sound/core/pcm_memory.c |   11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
-
---- a/sound/core/pcm_memory.c
-+++ b/sound/core/pcm_memory.c
-@@ -163,19 +163,20 @@ static void snd_pcm_lib_preallocate_proc
- 	size_t size;
- 	struct snd_dma_buffer new_dmab;
- 
-+	mutex_lock(&substream->pcm->open_mutex);
- 	if (substream->runtime) {
- 		buffer->error = -EBUSY;
--		return;
-+		goto unlock;
- 	}
- 	if (!snd_info_get_line(buffer, line, sizeof(line))) {
- 		snd_info_get_str(str, line, sizeof(str));
- 		size = simple_strtoul(str, NULL, 10) * 1024;
- 		if ((size != 0 && size < 8192) || size > substream->dma_max) {
- 			buffer->error = -EINVAL;
--			return;
-+			goto unlock;
- 		}
- 		if (substream->dma_buffer.bytes == size)
--			return;
-+			goto unlock;
- 		memset(&new_dmab, 0, sizeof(new_dmab));
- 		new_dmab.dev = substream->dma_buffer.dev;
- 		if (size > 0) {
-@@ -189,7 +190,7 @@ static void snd_pcm_lib_preallocate_proc
- 					 substream->pcm->card->number, substream->pcm->device,
- 					 substream->stream ? 'c' : 'p', substream->number,
- 					 substream->pcm->name, size);
--				return;
-+				goto unlock;
- 			}
- 			substream->buffer_bytes_max = size;
- 		} else {
-@@ -201,6 +202,8 @@ static void snd_pcm_lib_preallocate_proc
- 	} else {
- 		buffer->error = -EINVAL;
- 	}
-+ unlock:
-+	mutex_unlock(&substream->pcm->open_mutex);
- }
- 
- static inline void preallocate_info_init(struct snd_pcm_substream *substream)
-
-
+Looks good,
+Reviewed-by: Christian Brauner <brauner@kernel.org>
