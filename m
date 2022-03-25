@@ -2,130 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3DD3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:16:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFC5CC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:17:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347470AbiCYPRi (ORCPT
+        id S1376404AbiCYPRv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:17:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44640 "EHLO
+        Fri, 25 Mar 2022 11:17:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376930AbiCYPNq (ORCPT
+        with ESMTP id S1377375AbiCYPOQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:13:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86A34DCA9C;
-        Fri, 25 Mar 2022 08:10:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A5B7AB82889;
-        Fri, 25 Mar 2022 15:10:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F14B4C340F6;
-        Fri, 25 Mar 2022 15:10:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221039;
-        bh=e30E1qyhApEMmdwQ8tSTzlTGF5Bw5t9mN/4JtSAI1ko=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Eq0QNSAh1oQjNNkHBMzuknsjpNseVVBXl5ipk23l6k3cagy4r1D0WgRBYWU9k4xzF
-         GtHMEOkKK4bdO/4kvji/5/8/Sod/Kphc/91yLepNr7Cu8USEjU8M8YLOgng2865Hvj
-         BEy5AhDnU5BOOJux+i5zb4BgLYAKRh8T1F+8GyRo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Matthias Kretschmer <mathias.kretschmer@fit.fraunhofer.de>,
-        =?UTF-8?q?Linus=20L=C3=BCssing?= <ll@simonwunderlich.de>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 5.10 35/38] mac80211: fix potential double free on mesh join
-Date:   Fri, 25 Mar 2022 16:05:19 +0100
-Message-Id: <20220325150420.754198987@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220325150419.757836392@linuxfoundation.org>
-References: <20220325150419.757836392@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Fri, 25 Mar 2022 11:14:16 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D587E652D7
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 08:11:50 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id o13so6660728pgc.12
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 08:11:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AA0RIphE1PJLLtUanm5oTog2K49TCs//CGuoWg4e8Hs=;
+        b=hzanffi7zrkFiMc7YDN8omOPXMSW+M0ZOEfvqWuXPxCrcNdflUTtNYfzG6eR5hMpsr
+         CWFF/nfWfOH0KtxqtX+80udGtxAKFMABFLKwqvI+U1QD2fFIYpTf3QyyKOQ8SSJilGmI
+         0x/CLU0IR8aNmQdf2uzRTG/1wjrnmeaeG7eBg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AA0RIphE1PJLLtUanm5oTog2K49TCs//CGuoWg4e8Hs=;
+        b=bGZFIa7zLF56WEmcKKvNj5x26yfXbOhGvXOXoDL0+G9HP7/SXBgaVDi3+VKZFpcLf9
+         HmolKqTN03u/t4MX9+H3anpqyVHfBUx+gmVLB0zuyjL9vd01MgM6csNZVSTmhExZ8VU7
+         vKYYT0iTsJMurPc1mpaRaO9pjSf/DWy9aMIZzuyt0d4KJAJT4EMElyt3xQ8HXtnWiKSq
+         mzhScIu3fm3D+Hp/XLJLWQIaJgFiawjhQQ+3q/E/1cYht+3Wjh1oesCdf48XFWh8pcnN
+         7FTdJ5qDjcKCRMKiRBStoJBQnnO2tPwYpmugxOlgK5vLeoDP6H6XEzefr/ymJB+7MCpj
+         P1/w==
+X-Gm-Message-State: AOAM5318rQdPmRbnBAsWcSoXv1rHc6Ql0G84gSM0hYveCamMaaZaWYru
+        Ud3flP1IJd1zdaN6FJvT//aDfw==
+X-Google-Smtp-Source: ABdhPJz3TexA8bi1jVv6urswawRRrftx4duACSg9G5izC8NbIevfzzjsI+39mHC+vogvBFcZz2ffvg==
+X-Received: by 2002:a05:6a00:9a7:b0:4fa:ebe8:a4b3 with SMTP id u39-20020a056a0009a700b004faebe8a4b3mr9621244pfg.11.1648221110411;
+        Fri, 25 Mar 2022 08:11:50 -0700 (PDT)
+Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:c95f:cacc:f8c:e361])
+        by smtp.gmail.com with ESMTPSA id o15-20020a17090a168f00b001bf66741097sm6399479pja.16.2022.03.25.08.11.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Mar 2022 08:11:49 -0700 (PDT)
+From:   Douglas Anderson <dianders@chromium.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Matthias Kaehlcke <mka@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Judy Hsiao <judyhsiao@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] arm64: dts: qcom: sc7280-herobrine: Audio codec wants 1.8V, not 1.62V
+Date:   Fri, 25 Mar 2022 08:11:05 -0700
+Message-Id: <20220325081100.1.I9f06fec63b978699fe62591fec9e5ac31bb3a69d@changeid>
+X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Lüssing <ll@simonwunderlich.de>
+The L2C rail on herobrine boards is intended to go to the audio
+codec. Let's override the 1.62V specified in the qcard.dtsi file to be
+1.8V.
 
-commit 4a2d4496e15ea5bb5c8e83b94ca8ca7fb045e7d3 upstream.
-
-While commit 6a01afcf8468 ("mac80211: mesh: Free ie data when leaving
-mesh") fixed a memory leak on mesh leave / teardown it introduced a
-potential memory corruption caused by a double free when rejoining the
-mesh:
-
-  ieee80211_leave_mesh()
-  -> kfree(sdata->u.mesh.ie);
-  ...
-  ieee80211_join_mesh()
-  -> copy_mesh_setup()
-     -> old_ie = ifmsh->ie;
-     -> kfree(old_ie);
-
-This double free / kernel panics can be reproduced by using wpa_supplicant
-with an encrypted mesh (if set up without encryption via "iw" then
-ifmsh->ie is always NULL, which avoids this issue). And then calling:
-
-  $ iw dev mesh0 mesh leave
-  $ iw dev mesh0 mesh join my-mesh
-
-Note that typically these commands are not used / working when using
-wpa_supplicant. And it seems that wpa_supplicant or wpa_cli are going
-through a NETDEV_DOWN/NETDEV_UP cycle between a mesh leave and mesh join
-where the NETDEV_UP resets the mesh.ie to NULL via a memcpy of
-default_mesh_setup in cfg80211_netdev_notifier_call, which then avoids
-the memory corruption, too.
-
-The issue was first observed in an application which was not using
-wpa_supplicant but "Senf" instead, which implements its own calls to
-nl80211.
-
-Fixing the issue by removing the kfree()'ing of the mesh IE in the mesh
-join function and leaving it solely up to the mesh leave to free the
-mesh IE.
-
-Cc: stable@vger.kernel.org
-Fixes: 6a01afcf8468 ("mac80211: mesh: Free ie data when leaving mesh")
-Reported-by: Matthias Kretschmer <mathias.kretschmer@fit.fraunhofer.de>
-Signed-off-by: Linus Lüssing <ll@simonwunderlich.de>
-Tested-by: Mathias Kretschmer <mathias.kretschmer@fit.fraunhofer.de>
-Link: https://lore.kernel.org/r/20220310183513.28589-1-linus.luessing@c0d3.blue
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
 ---
- net/mac80211/cfg.c |    3 ---
- 1 file changed, 3 deletions(-)
 
---- a/net/mac80211/cfg.c
-+++ b/net/mac80211/cfg.c
-@@ -2076,14 +2076,12 @@ static int copy_mesh_setup(struct ieee80
- 		const struct mesh_setup *setup)
- {
- 	u8 *new_ie;
--	const u8 *old_ie;
- 	struct ieee80211_sub_if_data *sdata = container_of(ifmsh,
- 					struct ieee80211_sub_if_data, u.mesh);
- 	int i;
- 
- 	/* allocate information elements */
- 	new_ie = NULL;
--	old_ie = ifmsh->ie;
- 
- 	if (setup->ie_len) {
- 		new_ie = kmemdup(setup->ie, setup->ie_len,
-@@ -2093,7 +2091,6 @@ static int copy_mesh_setup(struct ieee80
- 	}
- 	ifmsh->ie_len = setup->ie_len;
- 	ifmsh->ie = new_ie;
--	kfree(old_ie);
- 
- 	/* now copy the rest of the setup parameters */
- 	ifmsh->mesh_id_len = setup->mesh_id_len;
+ arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+index dc17f2079695..c2075f3e7c4b 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+@@ -339,6 +339,16 @@ keyboard_backlight: keyboard-backlight {
+ ts_avdd:      &pp3300_left_in_mlb {};
+ vreg_edp_3p3: &pp3300_left_in_mlb {};
+ 
++/* Regulator overrides from Qcard */
++
++/*
++ * Herobrine boards only use l2c to power an external audio codec (like
++ * alc5682) and we want that to be at 1.8V, not at some slightly lower voltage.
++ */
++&vreg_l2c_1p8 {
++	regulator-min-microvolt = <1800000>;
++};
++
+ /* ADDITIONS TO NODES DEFINED IN PARENT DEVICE TREE FILES */
+ 
+ ap_i2c_tpm: &i2c14 {
+-- 
+2.35.1.1021.g381101b075-goog
 
