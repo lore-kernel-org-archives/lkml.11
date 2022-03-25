@@ -2,179 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39DFFC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:51:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60387C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:51:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231551AbiCYTwn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:52:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41040 "EHLO
+        id S231676AbiCYTws (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:52:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231778AbiCYTw0 (ORCPT
+        with ESMTP id S231837AbiCYTwa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:52:26 -0400
-Received: from 9.mo584.mail-out.ovh.net (9.mo584.mail-out.ovh.net [46.105.40.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D07011F0C97
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:38:11 -0700 (PDT)
-Received: from player696.ha.ovh.net (unknown [10.111.208.144])
-        by mo584.mail-out.ovh.net (Postfix) with ESMTP id 3B79D2032A
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 17:13:01 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player696.ha.ovh.net (Postfix) with ESMTPSA id 846491E9E3715;
-        Fri, 25 Mar 2022 17:12:54 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-107S001b4973733-a1dc-4256-830c-89df02ef1730,
-                    1702D5D0C6B5DF16716081994498F990499A02DA) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Support Opensource <support.opensource@diasemi.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Cc:     patches@opensource.cirrus.com, Wolfram Sang <wsa@kernel.org>,
-        linux-kernel@vger.kernel.org, Stephen Kitt <steve@sk2.org>
-Subject: [PATCH] ASoC: da[79]*: use simple i2c probe function
-Date:   Fri, 25 Mar 2022 18:12:43 +0100
-Message-Id: <20220325171243.1218003-1-steve@sk2.org>
-X-Mailer: git-send-email 2.27.0
+        Fri, 25 Mar 2022 15:52:30 -0400
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D73C91B2554
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:38:30 -0700 (PDT)
+Received: by mail-io1-xd2a.google.com with SMTP id z6so10123468iot.0
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:38:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=B1H5Bn5zB+2EQAYZDW062F7qRVzIqQ3ckJZTUfKRN5g=;
+        b=chk0CiCTbcE4uO7RQ1G59TqpKWpIxHG6DIR9pjQFpI/etF9j+l/CP1JFnCw+kk/Wq/
+         gdTvnNfq9k0g6yeFoOJ+0gFJrlOVUcGuKUb8fWAbJznpo5nEZFK+zywQuEHR4UKQhSJm
+         eCvNqrThL/5nLYerLn7wd5lPJ6RHC+fHrhYEg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=B1H5Bn5zB+2EQAYZDW062F7qRVzIqQ3ckJZTUfKRN5g=;
+        b=Jg0icTOU9x07Iydyyq3xUfuKIOI9fbN/Ggzxup9TbhQy0cZ2mGuF2FoqeenFfSIsgp
+         6o8FbJcWp6lhjWjEX2eldHJDYIDuXlToJFoDPfHz4XX3tw8lQYbKnLy1T68NuIIZJEcU
+         oiSP6Zvw2FoO8NZMoOcNSq7pqW0jUnXJbAFQzBfPJ4NWMXjrY0Tlpsg/56CToZlYvhZR
+         Sb9vfNiFnq1tWAR4psSoAfGBxMZGWMkpSUdJIJvJbd5aLGfXdJpSpYeAyl2pbEzrac4w
+         bcr7FF2/u95XQ+aHMqk7n6uI+G/toIQDPM9j+S/72+/JXMGEYKmFdpDKPP8UOsxsYwyd
+         kyeA==
+X-Gm-Message-State: AOAM531JEJHbx2LSWlOzpzAP9uDWy/rHQF0nEW0LCvqmHh5SyACSCBNv
+        ZOu8pDBbiUhiwZs45BT0rLnzIw==
+X-Google-Smtp-Source: ABdhPJywFUvntSkZpaimF0xybFkRMJr+LY8cOt53D5SrLtG0eK5pUM6VVXw1uoYMUd+z/F98LcRAcw==
+X-Received: by 2002:a02:cb0e:0:b0:321:34d7:a47f with SMTP id j14-20020a02cb0e000000b0032134d7a47fmr6839149jap.50.1648237110269;
+        Fri, 25 Mar 2022 12:38:30 -0700 (PDT)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id m8-20020a92d708000000b002c6381d9144sm3327088iln.59.2022.03.25.12.38.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Mar 2022 12:38:30 -0700 (PDT)
+Subject: Re: [PATCH 2/2] selftests/harness: Pass variant to teardown
+To:     Kees Cook <keescook@chromium.org>, shuah@kernel.org
+Cc:     Willem de Bruijn <willemb@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Will Drewry <wad@chromium.org>, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-hardening@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220324231907.1363887-1-keescook@chromium.org>
+ <20220324231907.1363887-3-keescook@chromium.org>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <d333a8d2-9100-4dc5-8780-1f96106da187@linuxfoundation.org>
+Date:   Fri, 25 Mar 2022 13:38:29 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 17878446097844110982
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudehuddgleekucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeetgedugfelkeeikeetgeegteevfeeufeetuefgudeiiedthfehtdeffeekvdeffeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrheileeirdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
+In-Reply-To: <20220324231907.1363887-3-keescook@chromium.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The i2c probe functions here don't use the id information provided in
-their second argument, so the single-parameter i2c probe function
-("probe_new") can be used instead.
+On 3/24/22 5:19 PM, Kees Cook wrote:
+> From: Willem de Bruijn <willemb@google.com>
+> 
+> FIXTURE_VARIANT data is passed to FIXTURE_SETUP and TEST_F as "variant".
+> 
+> In some cases, the variant will change the setup, such that expectations
+> also change on teardown. Also pass variant to FIXTURE_TEARDOWN.
+> 
+> The new FIXTURE_TEARDOWN logic is identical to that in FIXTURE_SETUP,
+> right above.
+> 
+> Signed-off-by: Willem de Bruijn <willemb@google.com>
+> Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+> Acked-by: Kees Cook <keescook@chromium.org>
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> Link: https://lore.kernel.org/r/20201210231010.420298-1-willemdebruijn.kernel@gmail.com
+> ---
+>   tools/testing/selftests/kselftest_harness.h | 12 +++++++-----
+>   1 file changed, 7 insertions(+), 5 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/kselftest_harness.h b/tools/testing/selftests/kselftest_harness.h
+> index bef08f824eb5..f5cb5fd1d974 100644
+> --- a/tools/testing/selftests/kselftest_harness.h
+> +++ b/tools/testing/selftests/kselftest_harness.h
+> @@ -291,7 +291,9 @@
+>   #define FIXTURE_TEARDOWN(fixture_name) \
+>   	void fixture_name##_teardown( \
+>   		struct __test_metadata __attribute__((unused)) *_metadata, \
+> -		FIXTURE_DATA(fixture_name) __attribute__((unused)) *self)
+> +		FIXTURE_DATA(fixture_name) __attribute__((unused)) *self, \
+> +		const FIXTURE_VARIANT(fixture_name) \
+> +			__attribute__((unused)) *variant)
+>   
+>   /**
+>    * FIXTURE_VARIANT() - Optionally called once per fixture
+> @@ -306,9 +308,9 @@
+>    *       ...
+>    *     };
+>    *
+> - * Defines type of constant parameters provided to FIXTURE_SETUP() and TEST_F()
+> - * as *variant*. Variants allow the same tests to be run with different
+> - * arguments.
+> + * Defines type of constant parameters provided to FIXTURE_SETUP(), TEST_F() and
+> + * FIXTURE_TEARDOWN as *variant*. Variants allow the same tests to be run with
+> + * different arguments.
+>    */
+>   #define FIXTURE_VARIANT(fixture_name) struct _fixture_variant_##fixture_name
+>   
+> @@ -391,7 +393,7 @@
+>   			fixture_name##_##test_name(_metadata, &self, variant->data); \
+>   		} \
+>   		if (_metadata->setup_completed) \
+> -			fixture_name##_teardown(_metadata, &self); \
+> +			fixture_name##_teardown(_metadata, &self, variant->data); \
+>   		__test_check_assert(_metadata); \
+>   	} \
+>   	static struct __test_metadata \
+> 
 
-This avoids scanning the identifier tables during probes.
+Looks good to me.
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
----
- sound/soc/codecs/da7210.c | 5 ++---
- sound/soc/codecs/da7213.c | 5 ++---
- sound/soc/codecs/da7219.c | 5 ++---
- sound/soc/codecs/da732x.c | 5 ++---
- sound/soc/codecs/da9055.c | 5 ++---
- 5 files changed, 10 insertions(+), 15 deletions(-)
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
 
-diff --git a/sound/soc/codecs/da7210.c b/sound/soc/codecs/da7210.c
-index 8af344b2fdbf..3fa3042e4424 100644
---- a/sound/soc/codecs/da7210.c
-+++ b/sound/soc/codecs/da7210.c
-@@ -1206,8 +1206,7 @@ static const struct regmap_config da7210_regmap_config_i2c = {
- 	.cache_type = REGCACHE_RBTREE,
- };
- 
--static int da7210_i2c_probe(struct i2c_client *i2c,
--			    const struct i2c_device_id *id)
-+static int da7210_i2c_probe(struct i2c_client *i2c)
- {
- 	struct da7210_priv *da7210;
- 	int ret;
-@@ -1250,7 +1249,7 @@ static struct i2c_driver da7210_i2c_driver = {
- 	.driver = {
- 		.name = "da7210",
- 	},
--	.probe		= da7210_i2c_probe,
-+	.probe_new	= da7210_i2c_probe,
- 	.id_table	= da7210_i2c_id,
- };
- #endif
-diff --git a/sound/soc/codecs/da7213.c b/sound/soc/codecs/da7213.c
-index 3ab89387b4e6..2e645dc60eda 100644
---- a/sound/soc/codecs/da7213.c
-+++ b/sound/soc/codecs/da7213.c
-@@ -1946,8 +1946,7 @@ static const char *da7213_supply_names[DA7213_NUM_SUPPLIES] = {
- 	[DA7213_SUPPLY_VDDIO] = "VDDIO",
- };
- 
--static int da7213_i2c_probe(struct i2c_client *i2c,
--			    const struct i2c_device_id *id)
-+static int da7213_i2c_probe(struct i2c_client *i2c)
- {
- 	struct da7213_priv *da7213;
- 	int i, ret;
-@@ -2040,7 +2039,7 @@ static struct i2c_driver da7213_i2c_driver = {
- 		.acpi_match_table = ACPI_PTR(da7213_acpi_match),
- 		.pm = &da7213_pm,
- 	},
--	.probe		= da7213_i2c_probe,
-+	.probe_new	= da7213_i2c_probe,
- 	.id_table	= da7213_i2c_id,
- };
- 
-diff --git a/sound/soc/codecs/da7219.c b/sound/soc/codecs/da7219.c
-index 13009d08b09a..a28d3601b932 100644
---- a/sound/soc/codecs/da7219.c
-+++ b/sound/soc/codecs/da7219.c
-@@ -2649,8 +2649,7 @@ static const struct snd_soc_component_driver soc_component_dev_da7219 = {
-  * I2C layer
-  */
- 
--static int da7219_i2c_probe(struct i2c_client *i2c,
--			    const struct i2c_device_id *id)
-+static int da7219_i2c_probe(struct i2c_client *i2c)
- {
- 	struct device *dev = &i2c->dev;
- 	struct da7219_priv *da7219;
-@@ -2705,7 +2704,7 @@ static struct i2c_driver da7219_i2c_driver = {
- 		.of_match_table = of_match_ptr(da7219_of_match),
- 		.acpi_match_table = ACPI_PTR(da7219_acpi_match),
- 	},
--	.probe		= da7219_i2c_probe,
-+	.probe_new	= da7219_i2c_probe,
- 	.remove		= da7219_i2c_remove,
- 	.id_table	= da7219_i2c_id,
- };
-diff --git a/sound/soc/codecs/da732x.c b/sound/soc/codecs/da732x.c
-index 42d6a3fc3af5..f14cddf23f42 100644
---- a/sound/soc/codecs/da732x.c
-+++ b/sound/soc/codecs/da732x.c
-@@ -1506,8 +1506,7 @@ static const struct snd_soc_component_driver soc_component_dev_da732x = {
- 	.non_legacy_dai_naming	= 1,
- };
- 
--static int da732x_i2c_probe(struct i2c_client *i2c,
--			    const struct i2c_device_id *id)
-+static int da732x_i2c_probe(struct i2c_client *i2c)
- {
- 	struct da732x_priv *da732x;
- 	unsigned int reg;
-@@ -1562,7 +1561,7 @@ static struct i2c_driver da732x_i2c_driver = {
- 	.driver		= {
- 		.name	= "da7320",
- 	},
--	.probe		= da732x_i2c_probe,
-+	.probe_new	= da732x_i2c_probe,
- 	.remove		= da732x_i2c_remove,
- 	.id_table	= da732x_i2c_id,
- };
-diff --git a/sound/soc/codecs/da9055.c b/sound/soc/codecs/da9055.c
-index a9676b261129..9d8c8adc5d76 100644
---- a/sound/soc/codecs/da9055.c
-+++ b/sound/soc/codecs/da9055.c
-@@ -1473,8 +1473,7 @@ static const struct regmap_config da9055_regmap_config = {
- 	.cache_type = REGCACHE_RBTREE,
- };
- 
--static int da9055_i2c_probe(struct i2c_client *i2c,
--			    const struct i2c_device_id *id)
-+static int da9055_i2c_probe(struct i2c_client *i2c)
- {
- 	struct da9055_priv *da9055;
- 	struct da9055_platform_data *pdata = dev_get_platdata(&i2c->dev);
-@@ -1533,7 +1532,7 @@ static struct i2c_driver da9055_i2c_driver = {
- 		.name = "da9055-codec",
- 		.of_match_table = of_match_ptr(da9055_of_match),
- 	},
--	.probe		= da9055_i2c_probe,
-+	.probe_new	= da9055_i2c_probe,
- 	.id_table	= da9055_i2c_id,
- };
- 
--- 
-2.27.0
+thanks,
+-- Shuah
 
