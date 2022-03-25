@@ -2,66 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21E74C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 21:07:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AED5AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 21:07:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233276AbiCYVIk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 17:08:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41202 "EHLO
+        id S233270AbiCYVIr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 17:08:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232883AbiCYVIf (ORCPT
+        with ESMTP id S232900AbiCYVIl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 17:08:35 -0400
+        Fri, 25 Mar 2022 17:08:41 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCB131EC611;
-        Fri, 25 Mar 2022 14:07:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9629E1EDA12
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 14:07:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A53861D41;
-        Fri, 25 Mar 2022 21:07:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D3701C004DD;
-        Fri, 25 Mar 2022 21:06:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CCFE61D41
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 21:07:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 80A96C004DD;
+        Fri, 25 Mar 2022 21:07:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648242419;
-        bh=M/x6qBkGqzdDZYrnIYl79Nsx6Wan8hcfIryiBqOzO5I=;
+        s=k20201202; t=1648242425;
+        bh=bC9Ftyp9RHD2jrv8YnVFShS/c5vA288ID0S4/5MZ4XI=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=oHTSL0AdIkf9Cv+im8pwOXhCHYfDd7iF6VUUF6PhPG9X+Ck5X5Q5VIjhLv5SBkNg2
-         es/EFrb6Nqdee5TZSpakjscXF4Ag7I09NDeejSHNuj7rEw4woWybTIGVKtIAwZhSi5
-         GR+yBVPJE81rKIAJa5t3OfdkXXv37C9b7fMJNbjOX1JNrhwe5jxA/nfJm8dPD/pHhb
-         HG2oq0Ox1eBwZbY+9Oirlgmpg0EZY6s1SBwzjUQMB2pB8Z++jiorirbTXP2RRRRnha
-         zYfa5t8HLmSuBAtZZSRbxK+ZvW/sHzfD1nurD2PC1ipMGNE8F2fJI3PHccY8K5oOA0
-         VjL65qBv1FhGA==
+        b=gnqZxZODoqgSXnuTheTZ8FsaUDxBMNmQJ8s9uK3NRPUNsdVgbu+H7IfFx0CPLgpoO
+         +qXWN1YSLEjJWWnmghS4aAqEFiYcuQ/ElCzLTd/g1tUnmUyRTP8rZEjjwZRz/bgauG
+         7/TUgFgTqdT9L64A3bCsjpZkFmRztmUDIozasbRQ6Ou9Bz7RJypC5Fhk8ER4IjligC
+         +xb/di6bp5cJy7qSSJR9jjscFYM1riUKi/T7ndNIpRt2NFxCWWOsw6vcJ4i9+wNYCQ
+         ANy79ePhnJv0lSMiUwB4M+ezT90ybZm0k04nUqMBWJ/8yOXCsYBI/UXXKyRsdZcRt8
+         C0Q8/k7v0wlMg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C118BE7BB0B;
-        Fri, 25 Mar 2022 21:06:59 +0000 (UTC)
-Subject: Re: [GIT PULL] PCI changes for v5.18
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 67ABBE6BBCA;
+        Fri, 25 Mar 2022 21:07:05 +0000 (UTC)
+Subject: Re: [GIT PULL] HID for 5.18
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220323211743.GA1372301@bhelgaas>
-References: <20220323211743.GA1372301@bhelgaas>
-X-PR-Tracked-List-Id: <linux-pci.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220323211743.GA1372301@bhelgaas>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git tags/pci-v5.18-changes
-X-PR-Tracked-Commit-Id: 611f841830aa5723ea67682628bd214cbc18df41
+In-Reply-To: <nycvar.YFH.7.76.2203231015060.24795@cbobk.fhfr.pm>
+References: <nycvar.YFH.7.76.2203231015060.24795@cbobk.fhfr.pm>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <nycvar.YFH.7.76.2203231015060.24795@cbobk.fhfr.pm>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/hid/hid.git for-linus
+X-PR-Tracked-Commit-Id: b146dbbd3bc61678165f3de7904ab613865385ba
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 148a650476955705482dd57e7ffcf105d8b65440
-Message-Id: <164824241978.8431.17098189777835562632.pr-tracker-bot@kernel.org>
-Date:   Fri, 25 Mar 2022 21:06:59 +0000
-To:     Bjorn Helgaas <helgaas@kernel.org>
+X-PR-Merge-Commit-Id: 5e206459f670b579da9b7861a0f3ce3b989a68b6
+Message-Id: <164824242542.8431.17371449925077373260.pr-tracker-bot@kernel.org>
+Date:   Fri, 25 Mar 2022 21:07:05 +0000
+To:     Jiri Kosina <jikos@kernel.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+        linux-kernel@vger.kernel.org,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Wed, 23 Mar 2022 16:17:43 -0500:
+The pull request you sent on Wed, 23 Mar 2022 10:18:39 +0100 (CET):
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git tags/pci-v5.18-changes
+> git://git.kernel.org/pub/scm/linux/kernel/git/hid/hid.git for-linus
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/148a650476955705482dd57e7ffcf105d8b65440
+https://git.kernel.org/torvalds/c/5e206459f670b579da9b7861a0f3ce3b989a68b6
 
 Thank you!
 
