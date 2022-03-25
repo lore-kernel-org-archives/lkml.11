@@ -2,191 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED95AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 13:21:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63A9FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 13:21:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353170AbiCYNWo (ORCPT
+        id S1354194AbiCYNXX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 09:22:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49198 "EHLO
+        Fri, 25 Mar 2022 09:23:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244397AbiCYNWl (ORCPT
+        with ESMTP id S244397AbiCYNXT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 09:22:41 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4348AC681C;
-        Fri, 25 Mar 2022 06:21:07 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id r13so15324344ejd.5;
-        Fri, 25 Mar 2022 06:21:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=0pL0SFW/VbdIjcDSz7GHVSOjw0PfFoW5o+bJeK2Eo/k=;
-        b=p5ek65fEXaibJJw/nxq2rFr0PEZPQkaW3jTcX1PkHYu+rzPyyiGMngFGtgCNXyuDgB
-         AJJCi2TlCduNnvAajMoekwO4oPQccc949RpyXLXMloOX4tAD4G2X6WSZfoZHDGpkGVka
-         rtIMynGUDDe3dY1ree2Ys76bObqMv9DUCBC/EV69h8tcP4ARTCL2paK4gmMUyPbRWRGc
-         fTLjyq2Zq/rEiiPEK/YAJWQqprlN/yXlIfuwk0Dgq0iSpRVJfUNi4uwBjFPuo+rtLoLA
-         AYDwq8dmFkkddeIYoaFbHi/YaWoZHOQtPe6ICLwTw3lZik8pGH93Bs67z27fmtwzZf+L
-         COIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0pL0SFW/VbdIjcDSz7GHVSOjw0PfFoW5o+bJeK2Eo/k=;
-        b=rNPMjwqz653OOlX/6t/zRGeZ61/IHHT/BIZE11tRX/n2PT7aqLVNG8/W8MU4qwUMyv
-         c4lLdJJdkel4kazpfeM5R6ZzZO7vkS0OZPjc9Ni+MMXZS2vktSSoAbSAZ2PgbVmowr27
-         +1cryhyEncmiwo6Drr0P7SBw9NWhCbH9rRbBC7tVyxaQWYmhdWwx8NYWPV60P9/FBoYF
-         HB9yCx3ulo9VzlfidNTWCiUWSj7gfSoOprPoRcLV0N18MqyVEDSnbf/9vHb//Q7j5cJW
-         JDPcKQNC2ML44277i/R5929339BfAY7ojGjmMo3mQ/MQxwPL4rIwfA2ac/6Kwb0+wEs4
-         G7wA==
-X-Gm-Message-State: AOAM530bEhVX96Wxifb+FlKFftW7qgCooJ714I9ygp4FoRwqkzPlcbak
-        IT26lch86IWXXECgc1Q8yA8=
-X-Google-Smtp-Source: ABdhPJz3JQH9XZyLh6+2uEuDL/azYKeHuPbl/EAv4KFW+iTtd53aBJUzQNDa6a3bUHd2QGpDXroEBQ==
-X-Received: by 2002:a17:906:58cd:b0:6df:f5f8:3037 with SMTP id e13-20020a17090658cd00b006dff5f83037mr11599501ejs.531.1648214465632;
-        Fri, 25 Mar 2022 06:21:05 -0700 (PDT)
-Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id c4-20020a170906340400b006d077e850b5sm2320178ejb.23.2022.03.25.06.21.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Mar 2022 06:21:04 -0700 (PDT)
-Date:   Fri, 25 Mar 2022 15:21:02 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Hans Schultz <schultz.hans@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 2/4] net: switchdev: add support for
- offloading of fdb locked flag
-Message-ID: <20220325132102.bss26plrk4sifby2@skbuf>
-References: <20220317093902.1305816-3-schultz.hans+netdev@gmail.com>
- <86o81whmwv.fsf@gmail.com>
- <20220323123534.i2whyau3doq2xdxg@skbuf>
- <86wngkbzqb.fsf@gmail.com>
- <20220323144304.4uqst3hapvzg3ej6@skbuf>
- <86lewzej4n.fsf@gmail.com>
- <20220324110959.t4hqale35qbrakdu@skbuf>
- <86v8w3vbk4.fsf@gmail.com>
- <20220324142749.la5til4ys6zva4uf@skbuf>
- <86czia1ned.fsf@gmail.com>
+        Fri, 25 Mar 2022 09:23:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2EE46D1118
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 06:21:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648214505;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=jHB6BR0YbApCBzRoAgSeCurDpGlWHsYv9gOGQx13pb0=;
+        b=HCtojQUB79HM6YbTwbR9LXuhMfUxK94cVsRieafH0p+yr3K6gnRp5pu/YYp04MXtqRorX4
+        Hnl6XYSWPA/9qZNVRX529DkS9HllXLaS4XVzi+1ma2wpXlmwRp2tbq/daEbIslaj92ds6U
+        ANh7DBdp0JrV9PHXOutdOVAKYnDnY+0=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-654-pQDQAainO_GMcwUfculRtg-1; Fri, 25 Mar 2022 09:21:43 -0400
+X-MC-Unique: pQDQAainO_GMcwUfculRtg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 772D3866DF1;
+        Fri, 25 Mar 2022 13:21:43 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.194.62])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7FA622166B16;
+        Fri, 25 Mar 2022 13:21:41 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/3] KVM: x86: Prefent NULL prointer dereference in kvm_irq_delivery_to_apic_fast()
+Date:   Fri, 25 Mar 2022 14:21:37 +0100
+Message-Id: <20220325132140.25650-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <86czia1ned.fsf@gmail.com>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 08:50:34AM +0100, Hans Schultz wrote:
-> On tor, mar 24, 2022 at 16:27, Vladimir Oltean <olteanv@gmail.com> wrote:
-> > On Thu, Mar 24, 2022 at 12:23:39PM +0100, Hans Schultz wrote:
-> >> On tor, mar 24, 2022 at 13:09, Vladimir Oltean <olteanv@gmail.com> wrote:
-> >> > On Thu, Mar 24, 2022 at 11:32:08AM +0100, Hans Schultz wrote:
-> >> >> On ons, mar 23, 2022 at 16:43, Vladimir Oltean <olteanv@gmail.com> wrote:
-> >> >> > On Wed, Mar 23, 2022 at 01:49:32PM +0100, Hans Schultz wrote:
-> >> >> >> >> Does someone have an idea why there at this point is no option to add a
-> >> >> >> >> dynamic fdb entry?
-> >> >> >> >> 
-> >> >> >> >> The fdb added entries here do not age out, while the ATU entries do
-> >> >> >> >> (after 5 min), resulting in unsynced ATU vs fdb.
-> >> >> >> >
-> >> >> >> > I think the expectation is to use br_fdb_external_learn_del() if the
-> >> >> >> > externally learned entry expires. The bridge should not age by itself
-> >> >> >> > FDB entries learned externally.
-> >> >> >> >
-> >> >> >> 
-> >> >> >> It seems to me that something is missing then?
-> >> >> >> My tests using trafgen that I gave a report on to Lunn generated massive
-> >> >> >> amounts of fdb entries, but after a while the ATU was clean and the fdb
-> >> >> >> was still full of random entries...
-> >> >> >
-> >> >> > I'm no longer sure where you are, sorry..
-> >> >> > I think we discussed that you need to enable ATU age interrupts in order
-> >> >> > to keep the ATU in sync with the bridge FDB? Which means either to
-> >> >> > delete the locked FDB entries from the bridge when they age out in the
-> >> >> > ATU, or to keep refreshing locked ATU entries.
-> >> >> > So it seems that you're doing neither of those 2 things if you end up
-> >> >> > with bridge FDB entries which are no longer in the ATU.
-> >> >> 
-> >> >> Any idea why G2 offset 5 ATUAgeIntEn (bit 10) is set? There is no define
-> >> >> for it, so I assume it is something default?
-> >> >
-> >> > No idea, but I can confirm that the out-of-reset value I see for
-> >> > MV88E6XXX_G2_SWITCH_MGMT on 6190 and 6390 is 0x400. It's best not to
-> >> > rely on any reset defaults though.
-> >> 
-> >> I see no age out interrupts, even though the ports Age Out Int is on
-> >> (PAV bit 14) on the locked port, and the ATU entries do age out (HoldAt1
-> >> is off). Any idea why that can be?
-> >> 
-> >> I combination with this I think it would be nice to have an ability to
-> >> set the AgeOut time even though it is not per port but global.
-> >
-> > Sorry, I just don't know. Looking at the documentation for IntOnAgeOut,
-> > I see it says that for an ATU entry to trigger an age out interrupt, the
-> > port it's associated with must have IntOnAgeOut set.
-> > But your locked ATU entries aren't associated with any port, they have
-> > DPV=0, right? So will they never trigger any age out interrupt according
-> > to this? I'm not clear.
-> 
-> I think that's absolutely right. That leaves two options. Either "port
-> 10" if it has IntOnAgeOut setting, or the reason why I wrote my comments
-> in this part of the code, that it should be able to add a dynamic entry
-> in the bridge module from the driver.
+Syzkaller found the following crash:
 
-I'm sorry, I wasn't fully aware of the implications of the fact that
-your 'locked' FDB entries have a DPV of all zeroes in hardware.
-Practically, this means that while the locked bridge FDB entry is
-associated with a bridge port, the ATU entry is associated with no port.
+general protection fault, probably for non-canonical address
+0xdffffc0000000013: 0000 [#1] PREEMPT SMP KASAN NOPTI
+KASAN: null-ptr-deref in range [0x0000000000000098-0x000000000000009f]
+CPU: 1 PID: 679 Comm: syz-executor210 Not tainted 5.17.0-rc8 #6
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+1.10.2-1ubuntu1~cloud0 04/01/2014
+RIP: 0010:kvm_irq_delivery_to_apic_fast+0x3dd/0x670 arch/x86/kvm/lapic.c:995
+...
+Call Trace:
+ <TASK>
+ kvm_irq_delivery_to_apic+0xb8/0x860 arch/x86/kvm/irq_comm.c:54
+ synic_set_irq+0x169/0x340 arch/x86/kvm/hyperv.c:463
+ synic_deliver_msg arch/x86/kvm/hyperv.c:770 [inline]
+ stimer_send_msg arch/x86/kvm/hyperv.c:793 [inline]
+ stimer_expiration arch/x86/kvm/hyperv.c:817 [inline]
+ kvm_hv_process_stimers+0xe85/0x1210 arch/x86/kvm/hyperv.c:849
+ vcpu_enter_guest+0x37cb/0x4070 arch/x86/kvm/x86.c:9947
+ vcpu_run arch/x86/kvm/x86.c:10261 [inline]
+...
 
-In turn, the hardware cannot ever true detect station migrations,
-because it doesn't know which port this station migrates _from_ (you're
-not telling it that). Every packet with this MAC SA is a station
-migration, in effect, which you (for good reason) choose to ignore to
-avoid denial of service.
+The immediate issue is that kvm_irq_delivery_to_apic_fast() dereferences
+'src' while in some cases it can be NULL. A sentinel against this is added
+in PATCH2 of the series, however, the condition should not happen in the
+first place. synic_set_irq() should not call kvm_irq_delivery_to_apic() with
+'shorthand = APIC_DEST_SELF' and 'vcpu->arch.apic == NULL' and this is also
+'fixed' by PATCH1. The root cause of the problem, however, is that VMM was
+allowed to  enable Hyper-V synthetic timer when IRQ chip wasn't created.
+This is fixed by PATCH3.
 
-Mark the locked (DPV=0) ATU entry as static, and you'll keep your CPU
-clean of any ATU miss or member violation of this MAC SA. Read this as
-"you'll need to call IT to ask them to remove it". Undesirable IMHO.
+Vitaly Kuznetsov (3):
+  KVM: x86: Check lapic_in_kernel() before attempting to set a SynIC irq
+  KVM: x86: Avoid theoretical NULL pointer dereference in
+    kvm_irq_delivery_to_apic_fast()
+  KVM: x86: Forbid VMM to set SYNIC/STIMER MSRs when SynIC wasn't
+    activated
 
-Mark the locked entry as non-static, and the entry will eventually
-expire, with no interrupt to signal that - because any ATU age interrupt,
-as mentioned, is fundamentally linked to a port.
+ arch/x86/kvm/hyperv.c | 12 +++++++++---
+ arch/x86/kvm/lapic.c  |  4 ++++
+ 2 files changed, 13 insertions(+), 3 deletions(-)
 
-You see this as a negative, and you're looking for ways to inform the
-bridge driver that the locked FDB entry went away. But you aren't
-looking at this the right way, I think. Making the mv88e6xxx driver
-remove the locked FDB entry from the bridge seems like a non-goal now.
+-- 
+2.35.1
 
-If you'd cache the locked ATU entry in the mv88e6xxx driver, and you'd
-notify switchdev only if the entry is new to the cache, then you'd
-actually still achieve something major. Yes, the bridge FDB will contain
-locked FDB entries that aren't in the ATU. But that's because your
-printer has been silent for X seconds. The policy for the printer still
-hasn't changed, as far as the mv88e6xxx, or bridge, software drivers are
-concerned. If the unauthorized printer says something again after the
-locked ATU entry expires, the mv88e6xxx driver will find its MAC SA
-in the cache of denied addresses, and reload the ATU. What this achieves
-is that the number of ATU violation interrupts isn't proportional to the
-number of packets sent by the printer, but with the ageing time you
-configure for this ATU entry. You should be able to play with an
-entry->state in the range of 1 -> 7 and get a good compromise between
-responsiveness on station migrations and number of ATU interrupts to
-service once the locked ATU entry is invalidated. In my opinion even the
-quickest-to-expire entry->state of 1 is way better than letting every
-packet spam the CPU. And you can always keep your cached locked ATU
-entry in sync with the port that triggered the violation interrupt, and
-figure out station migrations in software this way.
-
-I hope I understood the hardware behavior correctly, I don't have any
-direct experience with 802.1X as I mentioned, and only limited and
-non-expert experience with Marvell hardware. This is just my
-interpretation of some random documentation I found online.
