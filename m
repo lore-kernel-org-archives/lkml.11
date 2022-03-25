@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDEA3C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F044FC433FE
 	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359266AbiCYPfj (ORCPT
+        id S1376916AbiCYPdG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:35:39 -0400
+        Fri, 25 Mar 2022 11:33:06 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376762AbiCYPXY (ORCPT
+        with ESMTP id S1376481AbiCYPWH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:23:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D3556E4C1;
-        Fri, 25 Mar 2022 08:16:44 -0700 (PDT)
+        Fri, 25 Mar 2022 11:22:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F19576C93E;
+        Fri, 25 Mar 2022 08:16:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2747FB828F6;
-        Fri, 25 Mar 2022 15:16:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CB42C340E9;
-        Fri, 25 Mar 2022 15:16:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E356660AC7;
+        Fri, 25 Mar 2022 15:15:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2196C340E9;
+        Fri, 25 Mar 2022 15:15:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221380;
-        bh=bOkJy+mMiLrQcWXHlmJVF/rdsYha53wcln9168+rGTw=;
+        s=korg; t=1648221351;
+        bh=8SAhyuG4jGlA+wi+EXKjrX7dlF5Y3pT/GEqS0lcPxAM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l/6aEbU4C1HdAWX7EQZj21MKQEAkCF00gNMAf4hQ3RyJ6m+/4fmZJAPje487qXcNa
-         nqSqi0wCJwICRtFZ9yL/HrucNkQrTmIGS+mpS9A+nYapnPBSsZBQDipWGwHVITN9L2
-         t05atTGStYCvkxTto2MNIPBPt/Th3nqFelXA2bHQ=
+        b=iJUZy+2WU8dtSMP2C5xmLA0BGHxWfHz5XAPnpuWaChasnD2g1tnhutslxgNyMEdnj
+         y/P54SE6axNhwPGT67A7AWmbiTSAL2zmvRPyRXE3q0QDEfNPV9G01nyFUXTBFfO/WM
+         lEt/R8S2dRnz5fU/51Dlam46f69JhmPQ0C0lpotw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Palmer <daniel@0x0f.com>,
-        Arnaud POULIQUEN <arnaud.pouliquen@st.com>,
-        Takashi Iwai <tiwai@suse.de>,
-        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.15 06/37] ASoC: sti: Fix deadlock via snd_pcm_stop_xrun() call
-Date:   Fri, 25 Mar 2022 16:14:07 +0100
-Message-Id: <20220325150420.118201741@linuxfoundation.org>
+        stable@vger.kernel.org, Jarkko Sakkinen <jarkko@kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        linux-integrity@vger.kernel.org, Tadeusz Struk <tstruk@gmail.com>,
+        Tadeusz Struk <tadeusz.struk@linaro.org>
+Subject: [PATCH 5.15 03/37] tpm: Fix error handling in async work
+Date:   Fri, 25 Mar 2022 16:14:04 +0100
+Message-Id: <20220325150420.033358998@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150419.931802116@linuxfoundation.org>
 References: <20220325150419.931802116@linuxfoundation.org>
@@ -52,74 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Tadeusz Struk <tstruk@gmail.com>
 
-commit 455c5653f50e10b4f460ef24e99f0044fbe3401c upstream.
+commit 2e8e4c8f6673247e22efc7985ce5497accd16f88 upstream.
 
-This is essentially a revert of the commit dc865fb9e7c2 ("ASoC: sti:
-Use snd_pcm_stop_xrun() helper"), which converted the manual
-snd_pcm_stop() calls with snd_pcm_stop_xrun().
+When an invalid (non existing) handle is used in a TPM command,
+that uses the resource manager interface (/dev/tpmrm0) the resource
+manager tries to load it from its internal cache, but fails and
+the tpm_dev_transmit returns an -EINVAL error to the caller.
+The existing async handler doesn't handle these error cases
+currently and the condition in the poll handler never returns
+mask with EPOLLIN set.
+The result is that the poll call blocks and the application gets stuck
+until the user_read_timer wakes it up after 120 sec.
+Change the tpm_dev_async_work function to handle error conditions
+returned from tpm_dev_transmit they are also reflected in the poll mask
+and a correct error code could passed back to the caller.
 
-The commit above introduced a deadlock as snd_pcm_stop_xrun() itself
-takes the PCM stream lock while the caller already holds it.  Since
-the conversion was done only for consistency reason and the open-call
-with snd_pcm_stop() to the XRUN state is a correct usage, let's revert
-the commit back as the fix.
-
-Fixes: dc865fb9e7c2 ("ASoC: sti: Use snd_pcm_stop_xrun() helper")
-Reported-by: Daniel Palmer <daniel@0x0f.com>
-Cc: Arnaud POULIQUEN <arnaud.pouliquen@st.com>
+Cc: Jarkko Sakkinen <jarkko@kernel.org>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: <linux-integrity@vger.kernel.org>
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220315091319.3351522-1-daniel@0x0f.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Reviewed-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-Link: https://lore.kernel.org/r/20220315164158.19804-1-tiwai@suse.de
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
+
+Fixes: 9e1b74a63f77 ("tpm: add support for nonblocking operation")
+Tested-by: Jarkko Sakkinen<jarkko@kernel.org>
+Signed-off-by: Tadeusz Struk <tstruk@gmail.com>
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Cc: Tadeusz Struk <tadeusz.struk@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/sti/uniperif_player.c |    6 +++---
- sound/soc/sti/uniperif_reader.c |    2 +-
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/char/tpm/tpm-dev-common.c |    8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
---- a/sound/soc/sti/uniperif_player.c
-+++ b/sound/soc/sti/uniperif_player.c
-@@ -91,7 +91,7 @@ static irqreturn_t uni_player_irq_handle
- 			SET_UNIPERIF_ITM_BCLR_FIFO_ERROR(player);
- 
- 			/* Stop the player */
--			snd_pcm_stop_xrun(player->substream);
-+			snd_pcm_stop(player->substream, SNDRV_PCM_STATE_XRUN);
- 		}
- 
- 		ret = IRQ_HANDLED;
-@@ -105,7 +105,7 @@ static irqreturn_t uni_player_irq_handle
- 		SET_UNIPERIF_ITM_BCLR_DMA_ERROR(player);
- 
- 		/* Stop the player */
--		snd_pcm_stop_xrun(player->substream);
-+		snd_pcm_stop(player->substream, SNDRV_PCM_STATE_XRUN);
- 
- 		ret = IRQ_HANDLED;
- 	}
-@@ -138,7 +138,7 @@ static irqreturn_t uni_player_irq_handle
- 		dev_err(player->dev, "Underflow recovery failed\n");
- 
- 		/* Stop the player */
--		snd_pcm_stop_xrun(player->substream);
-+		snd_pcm_stop(player->substream, SNDRV_PCM_STATE_XRUN);
- 
- 		ret = IRQ_HANDLED;
- 	}
---- a/sound/soc/sti/uniperif_reader.c
-+++ b/sound/soc/sti/uniperif_reader.c
-@@ -65,7 +65,7 @@ static irqreturn_t uni_reader_irq_handle
- 	if (unlikely(status & UNIPERIF_ITS_FIFO_ERROR_MASK(reader))) {
- 		dev_err(reader->dev, "FIFO error detected\n");
- 
--		snd_pcm_stop_xrun(reader->substream);
-+		snd_pcm_stop(reader->substream, SNDRV_PCM_STATE_XRUN);
- 
- 		ret = IRQ_HANDLED;
+--- a/drivers/char/tpm/tpm-dev-common.c
++++ b/drivers/char/tpm/tpm-dev-common.c
+@@ -69,7 +69,13 @@ static void tpm_dev_async_work(struct wo
+ 	ret = tpm_dev_transmit(priv->chip, priv->space, priv->data_buffer,
+ 			       sizeof(priv->data_buffer));
+ 	tpm_put_ops(priv->chip);
+-	if (ret > 0) {
++
++	/*
++	 * If ret is > 0 then tpm_dev_transmit returned the size of the
++	 * response. If ret is < 0 then tpm_dev_transmit failed and
++	 * returned an error code.
++	 */
++	if (ret != 0) {
+ 		priv->response_length = ret;
+ 		mod_timer(&priv->user_read_timer, jiffies + (120 * HZ));
  	}
 
 
