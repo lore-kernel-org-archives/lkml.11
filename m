@@ -2,89 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5CC1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:36:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F20EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:38:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230054AbiCYThb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:37:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54584 "EHLO
+        id S231164AbiCYTht (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:37:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230508AbiCYThG (ORCPT
+        with ESMTP id S230459AbiCYTh1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:37:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4E5F262D6D
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:22:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C6AB161C27
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 18:27:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 096C2C2BBE4;
-        Fri, 25 Mar 2022 18:27:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648232874;
-        bh=uEuqD9UvUKQGZ5mLxpFhYM+SebgYEYrddzKoHyc3KGo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Tj2efp5+JqoJjev0O8XlYBWxGQ+eXsQBnPDtW5+oHbAnW3LPFA1UdZxK/wwszxFdJ
-         8F7S/vq1DHxNLHP0i/boJCxE3ANUBP+AYlNXr4tH5TpXa2sESIvQ5Y13C1MwlGdVkm
-         65lLE2BTXF6qqc/p2fu/UsOuT/anhKL7+2yD9ZUz+LH4uiWfU68fUiG1uZJ+TqP7PI
-         8CGwZtG9+T+E/j/pOzFOCDZo7Tg+B3SjmjgaccfSMoAHXXojecASbl4691YLe4scB5
-         RgyfwGHw9rji/U93GHFVYgVLYNKpDhGme7TkR3P0Zcj03SHadVjB/0r2YsyYZY3Y2d
-         3Jb6/KJYQgZrw==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 28F9940407; Fri, 25 Mar 2022 15:27:52 -0300 (-03)
-Date:   Fri, 25 Mar 2022 15:27:52 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Stephane Eranian <eranian@google.com>
-Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
-        kim.phillips@amd.com, acme@redhat.com, jolsa@redhat.com,
-        songliubraving@fb.com, rafael@kernel.org, ravi.bangoria@amd.com,
-        sandipan.das@amd.com
-Subject: Re: [PATCH v7 10/13] perf tools: fix NULL point in evsel__env()
-Message-ID: <Yj4JqAimNd1INLjB@kernel.org>
-References: <20220322221517.2510440-1-eranian@google.com>
- <20220322221517.2510440-11-eranian@google.com>
+        Fri, 25 Mar 2022 15:37:27 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E953203A5E
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:21:54 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id t25so14969040lfg.7
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:21:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4MqmH9CCCrUKFAq5y+I/qeK/sNikgDEGLg2VH+hZ/B8=;
+        b=EEYCtzdxDwF4pZQoFLQy5R1bkbtIioQJ+didZOsq+7BOWsBdCAqNeXRuHlQHbxjkxI
+         6ZpgNOxAuZZNbggkh7Po3d0QcOFG1glqGOPQvM9m9QhMt25NNyLu1evDrcAPEgux5s6f
+         doW8iQM9agqh0IgmvQNxMRNQkwdp7w1AkhPq4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4MqmH9CCCrUKFAq5y+I/qeK/sNikgDEGLg2VH+hZ/B8=;
+        b=ov2y5Mova7OKvx1eVg2wyTjQhRQP7+fJeyX3+UnrumiTaXp9cOoTwyj6ZC1w660dbg
+         aycqKKTVtUHuYkRcirgkDw38PKcV42TbtTR1c+J2ry+eychGODcqCF2e/S5eajLGCyfP
+         iQs/Hr/2oiLxXZFqttou6uZnkS8F4j82EwyxiS1AenDTgqu6he2WIlYi1ASq1oliaHF+
+         qL6qSMEPCyGQmxkXUc39Vr2339+81ynMhb3FRJuMH6/uMBd6PV71sTOTGbbI+y18FijR
+         O5aV5dw8YbX7920Kw6ZtX/j55zPiOH1IssbtTuB3eMWvULpX+V940PQnhPk1+ZKTSa93
+         Th8A==
+X-Gm-Message-State: AOAM530RVtsR7ZMCZmnduuNtMAKihg9Zvtju7I3m46oO/VOH0SStHIlh
+        K2icLN89F//QLwlLnLfjvfP93AKZ7hZcOb2oyNQ=
+X-Google-Smtp-Source: ABdhPJxNG1ohd5we/7hcyRSNdNdEuVpIFa7qluLH1i+2BgLIKgZUT6oGtoKg1hmUNkaR4bGYSlD5mw==
+X-Received: by 2002:ac2:5f4d:0:b0:448:7d37:5838 with SMTP id 13-20020ac25f4d000000b004487d375838mr9036236lfz.419.1648236112053;
+        Fri, 25 Mar 2022 12:21:52 -0700 (PDT)
+Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com. [209.85.167.41])
+        by smtp.gmail.com with ESMTPSA id i16-20020a198c50000000b0044a2580a2d3sm799165lfj.156.2022.03.25.12.21.50
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Mar 2022 12:21:51 -0700 (PDT)
+Received: by mail-lf1-f41.google.com with SMTP id bu29so15067520lfb.0
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:21:50 -0700 (PDT)
+X-Received: by 2002:ac2:4203:0:b0:448:8053:d402 with SMTP id
+ y3-20020ac24203000000b004488053d402mr8851909lfh.687.1648236109737; Fri, 25
+ Mar 2022 12:21:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220322221517.2510440-11-eranian@google.com>
-X-Url:  http://acmel.wordpress.com
+References: <1812355.tdWV9SEqCh@natalenko.name> <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
+ <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
+ <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com> <878rsza0ih.fsf@toke.dk>
+ <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
+ <20220324163132.GB26098@lst.de> <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com>
+ <871qyr9t4e.fsf@toke.dk> <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
+ <31434708dcad126a8334c99ee056dcce93e507f1.camel@freebox.fr>
+ <CAHk-=wippum+MksdY7ixMfa3i1sZ+nxYPWLLpVMNyXCgmiHbBQ@mail.gmail.com> <a1829f4a-d916-c486-ac49-2c6dff77521a@arm.com>
+In-Reply-To: <a1829f4a-d916-c486-ac49-2c6dff77521a@arm.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Fri, 25 Mar 2022 12:21:33 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whpKDePfUoKmvJhSNbWcHFY5e7Uq5qEypD=R14+66DNvQ@mail.gmail.com>
+Message-ID: <CAHk-=whpKDePfUoKmvJhSNbWcHFY5e7Uq5qEypD=R14+66DNvQ@mail.gmail.com>
+Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
+ ath9k-based AP
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     Maxime Bizon <mbizon@freebox.fr>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Olha Cherevyk <olha.cherevyk@gmail.com>,
+        iommu <iommu@lists.linux-foundation.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Tue, Mar 22, 2022 at 03:15:14PM -0700, Stephane Eranian escreveu:
-> evsel_env() cannot return NULL. In case evsel->evlist->env is NULL default
-> to perf_env. Fixes crashes in evsel__open_strerror()
-> 
-> Signed-off-by: Ravi Bangoria <ravi.bangoria@amd.com>
-> Reviewed-by: Stephane Eranian <eranian@google.com>
+On Fri, Mar 25, 2022 at 12:14 PM Robin Murphy <robin.murphy@arm.com> wrote:
+>
+> Note "between the DMA transfers", and not "during the DMA transfers".
+> The fundamental assumption of the streaming API is that only one thing
+> is ever accessing the mapping at any given time, which is what the whole
+> notion of ownership is about.
 
-I have this already in from a patch by Kim Phillips.
+Well, but that ignores reality.
 
-- Arnaldo
+Any documentation that ignores the "CPU will want to see the
+intermediate state" is by definition garbage, because that is clearly
+a simple fact.
 
-> ---
->  tools/perf/util/evsel.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
-> index 22d3267ce294..14b0e7ffa2c7 100644
-> --- a/tools/perf/util/evsel.c
-> +++ b/tools/perf/util/evsel.c
-> @@ -2965,7 +2965,7 @@ int evsel__open_strerror(struct evsel *evsel, struct target *target,
->  
->  struct perf_env *evsel__env(struct evsel *evsel)
->  {
-> -	if (evsel && evsel->evlist)
-> +	if (evsel && evsel->evlist && evsel->evlist->env)
->  		return evsel->evlist->env;
->  	return &perf_env;
->  }
-> -- 
-> 2.35.1.894.gb6a874cedc-goog
+We don't write documentation for fantasy.
 
--- 
-
-- Arnaldo
+            Linus
