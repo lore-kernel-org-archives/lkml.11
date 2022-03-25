@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12F0EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 12:24:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E04AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 12:24:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359080AbiCYM0D (ORCPT
+        id S1359029AbiCYM0N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 08:26:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38464 "EHLO
+        Fri, 25 Mar 2022 08:26:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358987AbiCYMYP (ORCPT
+        with ESMTP id S1359116AbiCYMYw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 08:24:15 -0400
-Received: from out199-14.us.a.mail.aliyun.com (out199-14.us.a.mail.aliyun.com [47.90.199.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 427D9D5561;
-        Fri, 25 Mar 2022 05:22:39 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=18;SR=0;TI=SMTPD_---0V89qR-b_1648210953;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V89qR-b_1648210953)
+        Fri, 25 Mar 2022 08:24:52 -0400
+Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22108D760E;
+        Fri, 25 Mar 2022 05:23:02 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=18;SR=0;TI=SMTPD_---0V89rBrD_1648210975;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V89rBrD_1648210975)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 25 Mar 2022 20:22:34 +0800
+          Fri, 25 Mar 2022 20:22:55 +0800
 From:   Jeffle Xu <jefflexu@linux.alibaba.com>
 To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
         chao@kernel.org, linux-erofs@lists.ozlabs.org
@@ -30,9 +30,9 @@ Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
         eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
         luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
         fannaihao@baidu.com
-Subject: [PATCH v6 06/22] cachefiles: enable on-demand read mode
-Date:   Fri, 25 Mar 2022 20:22:07 +0800
-Message-Id: <20220325122223.102958-7-jefflexu@linux.alibaba.com>
+Subject: [PATCH v6 20/22] erofs: implement fscache-based data read for data blobs
+Date:   Fri, 25 Mar 2022 20:22:21 +0800
+Message-Id: <20220325122223.102958-21-jefflexu@linux.alibaba.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220325122223.102958-1-jefflexu@linux.alibaba.com>
 References: <20220325122223.102958-1-jefflexu@linux.alibaba.com>
@@ -42,48 +42,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable on-demand read mode by adding an optional parameter to the "bind"
-command.
-
-On-demand mode will be turned on when this parameter is "ondemand", i.e.
-"bind ondemand". Otherwise cachefiles will work in the original mode.
+Implements the data plane of reading data from data blob file over
+fscache.
 
 Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
 ---
- fs/cachefiles/daemon.c | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ fs/erofs/data.c     |  3 +++
+ fs/erofs/fscache.c  | 15 +++++++++++++--
+ fs/erofs/internal.h |  1 +
+ 3 files changed, 17 insertions(+), 2 deletions(-)
 
-diff --git a/fs/cachefiles/daemon.c b/fs/cachefiles/daemon.c
-index 91b88a499737..2c38c5361bda 100644
---- a/fs/cachefiles/daemon.c
-+++ b/fs/cachefiles/daemon.c
-@@ -741,11 +741,6 @@ static int cachefiles_daemon_bind(struct cachefiles_cache *cache, char *args)
- 	    cache->brun_percent  >= 100)
- 		return -ERANGE;
+diff --git a/fs/erofs/data.c b/fs/erofs/data.c
+index b4571bea93d5..b9a05de3c3b2 100644
+--- a/fs/erofs/data.c
++++ b/fs/erofs/data.c
+@@ -206,6 +206,7 @@ int erofs_map_dev(struct super_block *sb, struct erofs_map_dev *map)
+ 	map->m_bdev = sb->s_bdev;
+ 	map->m_daxdev = EROFS_SB(sb)->dax_dev;
+ 	map->m_dax_part_off = EROFS_SB(sb)->dax_part_off;
++	map->m_fscache = EROFS_SB(sb)->bootstrap;
  
--	if (*args) {
--		pr_err("'bind' command doesn't take an argument\n");
--		return -EINVAL;
--	}
--
- 	if (!cache->rootdirname) {
- 		pr_err("No cache directory specified\n");
- 		return -EINVAL;
-@@ -757,6 +752,14 @@ static int cachefiles_daemon_bind(struct cachefiles_cache *cache, char *args)
- 		return -EBUSY;
- 	}
- 
-+	if (IS_ENABLED(CONFIG_CACHEFILES_ONDEMAND) &&
-+	    !strcmp(args, "ondemand")) {
-+		set_bit(CACHEFILES_ONDEMAND_MODE, &cache->flags);
-+	} else if (*args) {
-+		pr_err("'bind' command doesn't take an argument\n");
-+		return -EINVAL;
-+	}
+ 	if (map->m_deviceid) {
+ 		down_read(&devs->rwsem);
+@@ -217,6 +218,7 @@ int erofs_map_dev(struct super_block *sb, struct erofs_map_dev *map)
+ 		map->m_bdev = dif->bdev;
+ 		map->m_daxdev = dif->dax_dev;
+ 		map->m_dax_part_off = dif->dax_part_off;
++		map->m_fscache = dif->blob;
+ 		up_read(&devs->rwsem);
+ 	} else if (devs->extra_devices) {
+ 		down_read(&devs->rwsem);
+@@ -234,6 +236,7 @@ int erofs_map_dev(struct super_block *sb, struct erofs_map_dev *map)
+ 				map->m_bdev = dif->bdev;
+ 				map->m_daxdev = dif->dax_dev;
+ 				map->m_dax_part_off = dif->dax_part_off;
++				map->m_fscache = dif->blob;
+ 				break;
+ 			}
+ 		}
+diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
+index d75958470645..cbb39657615e 100644
+--- a/fs/erofs/fscache.c
++++ b/fs/erofs/fscache.c
+@@ -63,9 +63,20 @@ static int erofs_fscache_readpage_blob(struct file *data, struct page *page)
+ static inline int erofs_fscache_get_map(struct erofs_map_blocks *map,
+ 					struct super_block *sb)
+ {
+-	struct erofs_sb_info *sbi = EROFS_SB(sb);
++	struct erofs_map_dev mdev;
++	int ret;
 +
- 	/* Make sure we have copies of the tag string */
- 	if (!cache->tag) {
- 		/*
++	mdev = (struct erofs_map_dev) {
++		.m_deviceid = map->m_deviceid,
++		.m_pa = map->m_pa,
++	};
++
++	ret = erofs_map_dev(sb, &mdev);
++	if (ret)
++		return ret;
+ 
+-	map->m_fscache	= sbi->bootstrap;
++	map->m_fscache	= mdev.m_fscache;
++	map->m_pa	= mdev.m_pa;
+ 	return 0;
+ }
+ 
+diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
+index 94a118caf580..cea08f12a2c3 100644
+--- a/fs/erofs/internal.h
++++ b/fs/erofs/internal.h
+@@ -487,6 +487,7 @@ struct erofs_map_dev {
+ 	struct block_device *m_bdev;
+ 	struct dax_device *m_daxdev;
+ 	u64 m_dax_part_off;
++	struct erofs_fscache *m_fscache;
+ 
+ 	erofs_off_t m_pa;
+ 	unsigned int m_deviceid;
 -- 
 2.27.0
 
