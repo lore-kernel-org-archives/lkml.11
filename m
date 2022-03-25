@@ -2,179 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72D95C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 10:34:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20EE3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 10:34:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358900AbiCYKf7 (ORCPT
+        id S1358065AbiCYKgH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 06:35:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42018 "EHLO
+        Fri, 25 Mar 2022 06:36:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237250AbiCYKfy (ORCPT
+        with ESMTP id S242067AbiCYKfy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 25 Mar 2022 06:35:54 -0400
-X-Greylist: delayed 530 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 25 Mar 2022 03:34:17 PDT
-Received: from ns.iliad.fr (ns.iliad.fr [212.27.33.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2479A88B1;
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A490BA8EDA;
+        Fri, 25 Mar 2022 03:34:19 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1C9C71570;
+        Fri, 25 Mar 2022 03:34:19 -0700 (PDT)
+Received: from [10.57.41.19] (unknown [10.57.41.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 519613F73D;
         Fri, 25 Mar 2022 03:34:17 -0700 (PDT)
-Received: from ns.iliad.fr (localhost [127.0.0.1])
-        by ns.iliad.fr (Postfix) with ESMTP id 498C720383;
-        Fri, 25 Mar 2022 11:25:25 +0100 (CET)
-Received: from sakura (freebox.vlq16.iliad.fr [213.36.7.13])
-        by ns.iliad.fr (Postfix) with ESMTP id 3BA7320338;
-        Fri, 25 Mar 2022 11:25:25 +0100 (CET)
-Message-ID: <31434708dcad126a8334c99ee056dcce93e507f1.camel@freebox.fr>
-Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
- ath9k-based AP
-From:   Maxime Bizon <mbizon@freebox.fr>
-Reply-To: mbizon@freebox.fr
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@toke.dk>
-Cc:     Robin Murphy <robin.murphy@arm.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Olha Cherevyk <olha.cherevyk@gmail.com>,
-        iommu <iommu@lists.linux-foundation.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable <stable@vger.kernel.org>
-Date:   Fri, 25 Mar 2022 11:25:25 +0100
-In-Reply-To: <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
-References: <1812355.tdWV9SEqCh@natalenko.name>
-         <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
-         <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
-         <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com> <878rsza0ih.fsf@toke.dk>
-         <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
-         <20220324163132.GB26098@lst.de>
-         <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com> <871qyr9t4e.fsf@toke.dk>
-         <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
-Organization: Freebox
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-Mime-Version: 1.0
+Message-ID: <5ae774b7-f888-f201-d77d-0ab0cf0faed3@arm.com>
+Date:   Fri, 25 Mar 2022 10:34:13 +0000
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH devicetree 00/10] Do something about ls-extirq
+ interrupt-map breakage
+Content-Language: en-GB
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Marc Zyngier <maz@kernel.org>
+Cc:     "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>, Leo Li <leoyang.li@nxp.com>,
+        Biwen Li <biwen.li@nxp.com>, "Z.Q. Hou" <zhiqiang.hou@nxp.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>
+References: <20211214013800.2703568-1-vladimir.oltean@nxp.com>
+ <87ilvrk1r0.wl-maz@kernel.org> <20211214095853.4emzycaxkuqr4tun@skbuf>
+ <87czlzjxmz.wl-maz@kernel.org> <20220324171041.t5yoocinj6gizcc7@skbuf>
+ <87lewz5kr5.wl-maz@kernel.org> <20220324173405.nusk6247ouvek46y@skbuf>
+ <87k0cj5io4.wl-maz@kernel.org> <20220324190904.boo2izjc3mym2wkh@skbuf>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220324190904.boo2izjc3mym2wkh@skbuf>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: ClamAV using ClamSMTP ; ns.iliad.fr ; Fri Mar 25 11:25:25 2022 +0100 (CET)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On Thu, 2022-03-24 at 12:26 -0700, Linus Torvalds wrote:
-
+On 2022-03-24 19:09, Vladimir Oltean wrote:
+> On Thu, Mar 24, 2022 at 06:06:51PM +0000, Marc Zyngier wrote:
+>>> I was just raising this as what I thought would be a simple and
+>>> non-controversial counter example to your remark "If you change something,
+>>> you *must* guarantee forward *and* backward compatibility."
+>>
+>> If you change something *in the binding*, which was implicit in the
+>> context, and makes no sense out of context.
+>>
+>>> Practically speaking, what has happened is that the board DT appeared in
+>>> kernel N, the ls-extirq driver in kernel N+1, and the DT was updated to
+>>> enable PHY interrupts in kernel N+2. That DT update practically broke
+>>> kernel N from running correctly on DTs taken from kernel N+2 onwards.
+>>> This is the observable behavior, we can find as many justifications for
+>>> it as we wish.
+>>
+>> Well, you can also argue that the DT was broken at N and N+1 for not
+>> describing the HW correctly and completely. No binding has changed
+>> here. Your DT was incomplete, and someone fixed it for you.
+>>
+>> We can argue this things forever and a half. I've laid down the ground
+>> rules for the stuff I maintain. If you're not happy with this, you can
+>> fix it by either removing the NXP hardware from the tree, or taking
+>> over from me as the irqchip maintainer. I'd be perfectly happy with
+>> any (and even more, with both) of these outcomes.
 > 
-> It's actually very natural in that situation to flush the caches from
-> the CPU side again. And so dma_sync_single_for_device() is a fairly
-> reasonable thing to do in that situation.
+> Ok, my intention wasn't to inflame you even though the way in which I
+> presented the problem might have suggested otherwise.
 > 
+> With my developer hat I still don't agree with you even with the
+> additional clarification you've made that you were referring only to
+> bindings and not to any and all DT changes. The reason being that the DT
+> blob is a whole, and it doesn't matter if there's a regression because
+> of a binding change or something else, you still need to be prepared to
+> update it, sometimes in lockstep with the kernel, like it or not.
+> 
+> But as a user, I just wanted to get an opinion from you what can we do
+> to deal better with this situation: optional interrupt provided by
+> device with missing driver, which of_irq_get() doesn't seem to understand.
 
-In the non-cache-coherent scenario, and assuming dma_map() did an
-initial cache invalidation, you can write this:
+FWIW, of_irq_get() absolutely understands how to handle a missing IRQ 
+provider driver; it returns -EPROBE_DEFER. If a caller considers the IRQ 
+optional, then it's up to that caller to decide how long to keep waiting 
+for the provider to appear until giving up and carrying on without it. 
+If your phy driver is making the dumb decision to wait for ever for 
+something which isn't critical, then you're free to fix it, or perhaps 
+even propose for of_irq_get() to opt in to the 
+driver_deferred_probe_check_state() mechanism if you believe it's a 
+sufficiently general case.
 
-rx_buffer_complete_1(buf)
-{
-	invalidate_cache(buf, size)
-	if (!is_ready(buf))
-		return;
-	<proceed with receive>
-}
+If a new DT with an additional new property (either on an existing 
+machine, or on a completely new machine which has the property from the 
+start) exposes a bug in a driver, that's unfortunate, but it is entirely 
+irrelevant to the ABI implications of changing the interpretation of an 
+existing property.
 
-or 
-
-rx_buffer_complete_2(buf)
-{
-	if (!is_ready(buf)) {
-		invalidate_cache(buf, size)
-		return;
-	}
-	<proceed with receive>
-}
-
-The latter is preferred for performance because dma_map() did the
-initial invalidate.
-
-Of course you could write:
-
-rx_buffer_complete_3(buf)
-{
-	invalidate_cache(buf, size)
-	if
-(!is_ready(buf)) {
-		invalidate_cache(buf, size)
-		return;
-	}
-	
-<proceed with receive>
-}
-
-
-but it's a waste of CPU cycles
-
-So I'd be very cautious assuming sync_for_cpu() and sync_for_device()
-are both doing invalidation in existing implementation of arch DMA ops,
-implementers may have taken some liberty around DMA-API to avoid
-unnecessary cache operation (not to blame them).
-
-
-For example looking at arch/arm/mm/dma-mapping.c, for DMA_FROM_DEVICE
-
-sync_single_for_device()
-  => __dma_page_cpu_to_dev()
-    => dma_cache_maint_page(op=dmac_map_area)
-      => cpu_cache.dma_map_area()
-
-sync_single_for_cpu()
-  => __dma_page_dev_to_cpu()
-    =>
-__dma_page_cpu_to_dev(op=dmac_unmap_area)
-      =>
-cpu_cache.dma_unmap_area()
-
-dma_map_area() always does cache invalidate.
-
-But for a couple of CPU variant, dma_unmap_area() is a noop, so
-sync_for_cpu() does nothing.
-
-Toke's patch will break ath9k on those platforms (mostly silent
-breakage, rx corruption leading to bad performance)
-
-
-> There's a fair number of those dma_sync_single_for_device() things
-> all over. Could we find mis-uses and warn about them some way? It
-> seems to be a very natural thing to do in this context, but bounce
-> buffering does make them very fragile.
-
-At least in network drivers, there are at least two patterns:
-
-1) The issue at hand, hardware mixing rx_status and data inside the
-same area. Usually very old hardware, very quick grep in network
-drivers only revealed slicoss.c. Probably would have gone unnoticed if
-ath9k hardware wasn't so common.
-
-
-2) The very common "copy break" pattern. If a received packet is
-smaller than a certain threshold, the driver rx path is changed to do:
-
- sync_for_cpu()
- alloc_small_skb()
- memcpy(small_skb, rx_buffer_data)
- sync_for_device()
-
-Original skb is left in the hardware, this reduces memory wasted.
-
-This pattern is completely valid wrt DMA-API, the buffer is always
-either owned by CPU or device.
-
-
--- 
-Maxime
-
-
-
+Robin.
