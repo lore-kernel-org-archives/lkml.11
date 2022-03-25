@@ -2,85 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9E65C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:35:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B5D0C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:35:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230084AbiCYThY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:37:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41948 "EHLO
+        id S229574AbiCYTh2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:37:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230446AbiCYThD (ORCPT
+        with ESMTP id S230504AbiCYThG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:37:03 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20E2126B58F;
-        Fri, 25 Mar 2022 12:22:38 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id h7so15002000lfl.2;
-        Fri, 25 Mar 2022 12:22:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pba7oP54HKPv7rvuNO3mNof6XZxbJlFCeC12aVk0OXE=;
-        b=kwIy6IhFaTatHujym71oQXoxz+i5Xr8B7K7YXVjy1gWItwQ1opyNXXop+NF1l9aJS2
-         pzBuo/+uA+LVAHR7nDUHFvICyPEkZ5t7syk2ZuOaS7m2Mhdn8I7uWQwDMiytYwtx+dnW
-         Zrip7Uc9q8qylF3mmXJJ+lZ+eyGquAs2dzXvNQIw/kUzydliK7pTPRqacmCh2QCWsfVw
-         B4wEh4olQWOvguJc6sjgqw/DQMKhigcRZqXRct8WeVARTzM9aHsLpSdblReheJTC4CD3
-         PT3t4+JjyC1uk5V3Rt/F7wyMs4ycsC9sMLnMKQGTo5aQ8vWxNy7B4ddve8rl0HY5ie8p
-         EkCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pba7oP54HKPv7rvuNO3mNof6XZxbJlFCeC12aVk0OXE=;
-        b=FtLduTcWyoRpEBgIoQY5R2gusk+DwRlTKtW/wkFKYQejtLOXq3C+8YzhIlFOKhDITD
-         3da0+DXo2LPwwyD3IomYqKLKdzJUPacf/PP4MLOp//dhr9QaerMMolMIw8skzY9XHH4r
-         wwkus+fl+VOk+mC5HAd8YGhrpHjmQzQp7HRtNhOzz07yUdrjfZ73RgrbojiZpYxztBiX
-         fMwRXsWHoGcOt0TbYWPq1CuJeaMgg1USifG0hN7FfXZrheSQHel+NyhEcuAkkSD2hyke
-         6eTjutADloEdHtS07JYqMsZEfM79CheilIg+F+H1ZBAm0Wl5F2GTgPomPTFwk7aWyag0
-         V3AQ==
-X-Gm-Message-State: AOAM533KMjo8i0gRBu8blQH0bVc97Wg6fyKQlnKQaBPXdDWSoNhDVfgN
-        C4F7VCh15Ps68+otRQ5qCBwpQ3aL0dLj91eXxBn+bkm/PZM=
-X-Google-Smtp-Source: ABdhPJyclTqv78QfqPyJNZ2heKEpBQldstQKfe7AytnXqGbW0MlwSUx+GbZJS/LQVwYd/cNvFYeDK7a3b4Kgh/hCK04=
-X-Received: by 2002:a17:906:9751:b0:6e0:5cdd:cabf with SMTP id
- o17-20020a170906975100b006e05cddcabfmr13358276ejy.38.1648232337047; Fri, 25
- Mar 2022 11:18:57 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220324162904.530140-1-steve@sk2.org>
-In-Reply-To: <20220324162904.530140-1-steve@sk2.org>
-From:   Max Filippov <jcmvbkbc@gmail.com>
-Date:   Fri, 25 Mar 2022 11:18:45 -0700
-Message-ID: <CAMo8Bf+vk+mkEAAQCirw7cdCFXx4wq7yxkM0tSP8PvpCaaacMw@mail.gmail.com>
-Subject: Re: [PATCH] clk: use simple i2c probe function
-To:     Stephen Kitt <steve@sk2.org>
-Cc:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
+        Fri, 25 Mar 2022 15:37:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C229D262D61
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:22:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 107F161C2F
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 18:26:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A865C2BBE4;
+        Fri, 25 Mar 2022 18:26:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648232796;
+        bh=Yv5kugbiA+mRs3zFVL6eQ1YikXvFcsnugzO/02LilQE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QrN/QO2Vcrz8iMwlWpwFaM0KVbTn1FAetMcvMtkj8CyVqkIQvEk1KXym5fc4uMz4l
+         JjW2blfCkc7uIIzHsPuYPeHL94LNdtLzMN1NZzvGRdFoRTVNRNwdt5oDJ0UEaRGLxq
+         yKhA+6DP2jFVSdKIE4nh2xvCwn0gIxGDjI59J3L/zH0irrEyDAA4RFO0VVD8vsLi9B
+         i6KWPHKTDjcMF5dPZXpF8fC+gFVcR8gkUntz3Ptfa8rvSBLQONeWfV/hNcSXvBeDL+
+         I8Sp2fla1+YEFK1pFvqXbAsksnYcM2qyxY2pBfki+aLhQMVxTJ5JqHr/8jcJWmCHEc
+         2r9+sxmaCf+bQ==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id D572D40407; Fri, 25 Mar 2022 15:26:32 -0300 (-03)
+Date:   Fri, 25 Mar 2022 15:26:32 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Namhyung Kim <namhyung@kernel.org>
+Cc:     Jiri Olsa <jolsa@redhat.com>, Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
         LKML <linux-kernel@vger.kernel.org>,
-        Wolfram Sang <wsa@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Andi Kleen <ak@linux.intel.com>,
+        Ian Rogers <irogers@google.com>
+Subject: Re: [PATCH 1/3] perf lock: Add --synth=no option for record
+Message-ID: <Yj4JWOeiRUy4jlGd@kernel.org>
+References: <20220323230259.288494-1-namhyung@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220323230259.288494-1-namhyung@kernel.org>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 9:29 AM Stephen Kitt <steve@sk2.org> wrote:
->
-> The i2c probe functions here don't use the id information provided in
-> their second argument, so the single-parameter i2c probe function
-> ("probe_new") can be used instead.
->
-> This avoids scanning the identifier tables during probes.
->
-> Signed-off-by: Stephen Kitt <steve@sk2.org>
-> ---
->  drivers/clk/clk-cdce706.c   | 5 ++---
->  drivers/clk/clk-cs2000-cp.c | 5 ++---
->  drivers/clk/clk-max9485.c   | 5 ++---
->  drivers/clk/clk-si514.c     | 5 ++---
->  drivers/clk/clk-si5341.c    | 5 ++---
->  5 files changed, 10 insertions(+), 15 deletions(-)
+Em Wed, Mar 23, 2022 at 04:02:57PM -0700, Namhyung Kim escreveu:
+> The perf lock command has nothing to symbolize and lock names come
+> from the tracepoint.  Moreover, kernel symbols are available even the
+> --synth=no option is given.
+> 
+> This will reduce the startup time by avoiding unnecessary synthesis.
 
-Reviewed-by: Max Filippov <jcmvbkbc@gmail.com>
+Thanks, applied the series.
+
+- Arnaldo
+
+ 
+> Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+> ---
+>  tools/perf/builtin-lock.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/tools/perf/builtin-lock.c b/tools/perf/builtin-lock.c
+> index 57b9ebd7118a..1ebff88bc5ba 100644
+> --- a/tools/perf/builtin-lock.c
+> +++ b/tools/perf/builtin-lock.c
+> @@ -990,7 +990,7 @@ static int __cmd_report(bool display_info)
+>  static int __cmd_record(int argc, const char **argv)
+>  {
+>  	const char *record_args[] = {
+> -		"record", "-R", "-m", "1024", "-c", "1",
+> +		"record", "-R", "-m", "1024", "-c", "1", "--synth", "no",
+>  	};
+>  	unsigned int rec_argc, i, j, ret;
+>  	const char **rec_argv;
+> -- 
+> 2.35.1.894.gb6a874cedc-goog
 
 -- 
-Thanks.
--- Max
+
+- Arnaldo
