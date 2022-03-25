@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFDABC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDEA3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378708AbiCYPfc (ORCPT
+        id S1359266AbiCYPfj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:35:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34386 "EHLO
+        Fri, 25 Mar 2022 11:35:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376823AbiCYPX1 (ORCPT
+        with ESMTP id S1376762AbiCYPXY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:23:27 -0400
+        Fri, 25 Mar 2022 11:23:24 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B047C155;
-        Fri, 25 Mar 2022 08:16:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D3556E4C1;
+        Fri, 25 Mar 2022 08:16:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BDF13B827E0;
-        Fri, 25 Mar 2022 15:16:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DCE9C340E9;
-        Fri, 25 Mar 2022 15:16:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2747FB828F6;
+        Fri, 25 Mar 2022 15:16:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CB42C340E9;
+        Fri, 25 Mar 2022 15:16:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221386;
-        bh=lDlR75JvmdZGL+svX2rl8FjKN1R23T2mQOr7DGXMt1M=;
+        s=korg; t=1648221380;
+        bh=bOkJy+mMiLrQcWXHlmJVF/rdsYha53wcln9168+rGTw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gC0JnHTtyhWkd9J5IVv+yku981lPJowuJhTFZflNPpiaP+VKStBpZ+BjbT9lkrmso
-         VWCFulqsnUNrAH9JSGgmEOKhxNeGXevDEqC5CsxUt20c32Fe3nmUwhf+0Zmx4j80lM
-         HW2E9lWiHFpqycivszfvKHNByQh8nCUR0ioazYB8=
+        b=l/6aEbU4C1HdAWX7EQZj21MKQEAkCF00gNMAf4hQ3RyJ6m+/4fmZJAPje487qXcNa
+         nqSqi0wCJwICRtFZ9yL/HrucNkQrTmIGS+mpS9A+nYapnPBSsZBQDipWGwHVITN9L2
+         t05atTGStYCvkxTto2MNIPBPt/Th3nqFelXA2bHQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Reza Jahanbakhshi <reza.jahanbakhshi@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 08/37] ALSA: usb-audio: add mapping for new Corsair Virtuoso SE
-Date:   Fri, 25 Mar 2022 16:14:09 +0100
-Message-Id: <20220325150420.174306541@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Palmer <daniel@0x0f.com>,
+        Arnaud POULIQUEN <arnaud.pouliquen@st.com>,
+        Takashi Iwai <tiwai@suse.de>,
+        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.15 06/37] ASoC: sti: Fix deadlock via snd_pcm_stop_xrun() call
+Date:   Fri, 25 Mar 2022 16:14:07 +0100
+Message-Id: <20220325150420.118201741@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150419.931802116@linuxfoundation.org>
 References: <20220325150419.931802116@linuxfoundation.org>
@@ -50,49 +52,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Reza Jahanbakhshi <reza.jahanbakhshi@gmail.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit cd94df1795418056a19ff4cb44eadfc18ac99a57 upstream.
+commit 455c5653f50e10b4f460ef24e99f0044fbe3401c upstream.
 
-New device id for Corsair Virtuoso SE RGB Wireless that currently is not
-in the mixer_map. This entry in the mixer_map is necessary in order to
-label its mixer appropriately and allow userspace to pick the correct
-volume controls. For instance, my own Corsair Virtuoso SE RGB Wireless
-headset has this new ID and consequently, the sidetone and volume are not
- working correctly without this change.
-> sudo lsusb -v | grep -i corsair
-Bus 007 Device 011: ID 1b1c:0a40 Corsair CORSAIR VIRTUOSO SE Wireless Gam
-  idVendor           0x1b1c Corsair
-  iManufacturer           1 Corsair
-  iProduct                2 CORSAIR VIRTUOSO SE Wireless Gaming Headset
+This is essentially a revert of the commit dc865fb9e7c2 ("ASoC: sti:
+Use snd_pcm_stop_xrun() helper"), which converted the manual
+snd_pcm_stop() calls with snd_pcm_stop_xrun().
 
-Signed-off-by: Reza Jahanbakhshi <reza.jahanbakhshi@gmail.com>
+The commit above introduced a deadlock as snd_pcm_stop_xrun() itself
+takes the PCM stream lock while the caller already holds it.  Since
+the conversion was done only for consistency reason and the open-call
+with snd_pcm_stop() to the XRUN state is a correct usage, let's revert
+the commit back as the fix.
+
+Fixes: dc865fb9e7c2 ("ASoC: sti: Use snd_pcm_stop_xrun() helper")
+Reported-by: Daniel Palmer <daniel@0x0f.com>
+Cc: Arnaud POULIQUEN <arnaud.pouliquen@st.com>
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220304212303.195949-1-reza.jahanbakhshi@gmail.com
+Link: https://lore.kernel.org/r/20220315091319.3351522-1-daniel@0x0f.com
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Reviewed-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+Link: https://lore.kernel.org/r/20220315164158.19804-1-tiwai@suse.de
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/usb/mixer_maps.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ sound/soc/sti/uniperif_player.c |    6 +++---
+ sound/soc/sti/uniperif_reader.c |    2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
---- a/sound/usb/mixer_maps.c
-+++ b/sound/usb/mixer_maps.c
-@@ -537,6 +537,16 @@ static const struct usbmix_ctl_map usbmi
- 		.map = corsair_virtuoso_map,
- 	},
- 	{
-+		/* Corsair Virtuoso SE Latest (wired mode) */
-+		.id = USB_ID(0x1b1c, 0x0a3f),
-+		.map = corsair_virtuoso_map,
-+	},
-+	{
-+		/* Corsair Virtuoso SE Latest (wireless mode) */
-+		.id = USB_ID(0x1b1c, 0x0a40),
-+		.map = corsair_virtuoso_map,
-+	},
-+	{
- 		/* Corsair Virtuoso (wireless mode) */
- 		.id = USB_ID(0x1b1c, 0x0a42),
- 		.map = corsair_virtuoso_map,
+--- a/sound/soc/sti/uniperif_player.c
++++ b/sound/soc/sti/uniperif_player.c
+@@ -91,7 +91,7 @@ static irqreturn_t uni_player_irq_handle
+ 			SET_UNIPERIF_ITM_BCLR_FIFO_ERROR(player);
+ 
+ 			/* Stop the player */
+-			snd_pcm_stop_xrun(player->substream);
++			snd_pcm_stop(player->substream, SNDRV_PCM_STATE_XRUN);
+ 		}
+ 
+ 		ret = IRQ_HANDLED;
+@@ -105,7 +105,7 @@ static irqreturn_t uni_player_irq_handle
+ 		SET_UNIPERIF_ITM_BCLR_DMA_ERROR(player);
+ 
+ 		/* Stop the player */
+-		snd_pcm_stop_xrun(player->substream);
++		snd_pcm_stop(player->substream, SNDRV_PCM_STATE_XRUN);
+ 
+ 		ret = IRQ_HANDLED;
+ 	}
+@@ -138,7 +138,7 @@ static irqreturn_t uni_player_irq_handle
+ 		dev_err(player->dev, "Underflow recovery failed\n");
+ 
+ 		/* Stop the player */
+-		snd_pcm_stop_xrun(player->substream);
++		snd_pcm_stop(player->substream, SNDRV_PCM_STATE_XRUN);
+ 
+ 		ret = IRQ_HANDLED;
+ 	}
+--- a/sound/soc/sti/uniperif_reader.c
++++ b/sound/soc/sti/uniperif_reader.c
+@@ -65,7 +65,7 @@ static irqreturn_t uni_reader_irq_handle
+ 	if (unlikely(status & UNIPERIF_ITS_FIFO_ERROR_MASK(reader))) {
+ 		dev_err(reader->dev, "FIFO error detected\n");
+ 
+-		snd_pcm_stop_xrun(reader->substream);
++		snd_pcm_stop(reader->substream, SNDRV_PCM_STATE_XRUN);
+ 
+ 		ret = IRQ_HANDLED;
+ 	}
 
 
