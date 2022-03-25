@@ -2,80 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D8A7C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 13:45:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DE41C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 13:46:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358313AbiCYNqt (ORCPT
+        id S1358158AbiCYNsV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 09:46:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54074 "EHLO
+        Fri, 25 Mar 2022 09:48:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358158AbiCYNqq (ORCPT
+        with ESMTP id S1353996AbiCYNsR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 09:46:46 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADCF2D0804;
-        Fri, 25 Mar 2022 06:45:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648215911; x=1679751911;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=hq160nSx3cYf3Gi4P+MNKgWZRgkFDiVQtZz9POH7o20=;
-  b=K5leJEbC+WKuQfzpxMqvwd18Hq7EQ8yU1Ky3E/ZKhhKAljERI0l0h7fM
-   7hbfR97XXfQTuklpOMG1OWglneZsRNZFktXP32W2e5NiP2Wgz8ade5TKb
-   qB5bSbGuK1jk+1LmdbNxGY9gR/ic/0tBGSl9JGNlO2wgi7QYkQvJtUEQf
-   0L7Goy1vdYyxCafnVoVo0ZVkF3sNLW7JSpZhUb9PkHWHl95D8blxZinwY
-   HQVkHEicZXmx+nUmYFn4Eg7Vn3OX00zhIF86MoLw8EpH22+iL7GIaBEuq
-   DYoTpqCKpWX+1FBBl9mYshmGGIVbwM71Hsz0J7V91F3eWCsJzrqjQ91bx
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10296"; a="258351087"
-X-IronPort-AV: E=Sophos;i="5.90,209,1643702400"; 
-   d="scan'208";a="258351087"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2022 06:45:11 -0700
-X-IronPort-AV: E=Sophos;i="5.90,209,1643702400"; 
-   d="scan'208";a="545084694"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2022 06:45:10 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nXkF1-006QGm-1O;
-        Fri, 25 Mar 2022 15:44:35 +0200
-Date:   Fri, 25 Mar 2022 15:44:34 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 1/4] spidev: Do not use atomic bit operations when
- allocating minor
-Message-ID: <Yj3HQtndH8HHqpvK@smile.fi.intel.com>
-References: <20220323140215.2568-1-andriy.shevchenko@linux.intel.com>
- <Yj25Mp2Ai0jKQtN3@smile.fi.intel.com>
- <Yj3DG+d96RnZ25ON@sirena.org.uk>
+        Fri, 25 Mar 2022 09:48:17 -0400
+Received: from out199-1.us.a.mail.aliyun.com (out199-1.us.a.mail.aliyun.com [47.90.199.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D7177004D;
+        Fri, 25 Mar 2022 06:46:42 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R501e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=hsiangkao@linux.alibaba.com;NM=1;PH=DS;RN=19;SR=0;TI=SMTPD_---0V8A2H-n_1648215995;
+Received: from B-P7TQMD6M-0146.local(mailfrom:hsiangkao@linux.alibaba.com fp:SMTPD_---0V8A2H-n_1648215995)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 25 Mar 2022 21:46:37 +0800
+Date:   Fri, 25 Mar 2022 21:46:35 +0800
+From:   Gao Xiang <hsiangkao@linux.alibaba.com>
+To:     Jeffle Xu <jefflexu@linux.alibaba.com>
+Cc:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
+        chao@kernel.org, linux-erofs@lists.ozlabs.org,
+        gregkh@linuxfoundation.org, fannaihao@baidu.com,
+        tao.peng@linux.alibaba.com, willy@infradead.org,
+        linux-kernel@vger.kernel.org, tianzichen@kuaishou.com,
+        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
+        linux-fsdevel@vger.kernel.org, luodaowen.backend@bytedance.com,
+        eguan@linux.alibaba.com, gerry@linux.alibaba.com,
+        torvalds@linux-foundation.org
+Subject: Re: [Linux-cachefs] [PATCH v6 13/22] erofs: add anonymous inode
+ managing page cache of blob file
+Message-ID: <Yj3HuzncvkkwWBvD@B-P7TQMD6M-0146.local>
+Mail-Followup-To: Jeffle Xu <jefflexu@linux.alibaba.com>,
+        dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
+        chao@kernel.org, linux-erofs@lists.ozlabs.org,
+        gregkh@linuxfoundation.org, fannaihao@baidu.com,
+        tao.peng@linux.alibaba.com, willy@infradead.org,
+        linux-kernel@vger.kernel.org, tianzichen@kuaishou.com,
+        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
+        linux-fsdevel@vger.kernel.org, luodaowen.backend@bytedance.com,
+        eguan@linux.alibaba.com, gerry@linux.alibaba.com,
+        torvalds@linux-foundation.org
+References: <20220325122223.102958-1-jefflexu@linux.alibaba.com>
+ <20220325122223.102958-14-jefflexu@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <Yj3DG+d96RnZ25ON@sirena.org.uk>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20220325122223.102958-14-jefflexu@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 01:26:51PM +0000, Mark Brown wrote:
-> On Fri, Mar 25, 2022 at 02:44:34PM +0200, Andy Shevchenko wrote:
-> > On Wed, Mar 23, 2022 at 04:02:12PM +0200, Andy Shevchenko wrote:
-
-...
-
-> > Shall I resend the series without this patch, or can you apply the rest
-> > if you have no comments / objections?
+On Fri, Mar 25, 2022 at 08:22:14PM +0800, Jeffle Xu wrote:
+> Introduce one anonymous inode for managing page cache of corresponding
+> blob file. Then erofs could read directly from the address space of the
+> anonymous inode when cache hit.
 > 
-> I've already queued the rest.
+> Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
+> ---
+>  fs/erofs/fscache.c  | 41 ++++++++++++++++++++++++++++++++++++++++-
+>  fs/erofs/internal.h |  7 +++++--
+>  2 files changed, 45 insertions(+), 3 deletions(-)
+> 
+> diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
+> index 73235fd43bf6..30383d9adb62 100644
+> --- a/fs/erofs/fscache.c
+> +++ b/fs/erofs/fscache.c
+> @@ -7,6 +7,9 @@
+>  
+>  static struct fscache_volume *volume;
+>  
+> +static const struct address_space_operations erofs_fscache_blob_aops = {
+> +};
+> +
+>  static int erofs_fscache_init_cookie(struct erofs_fscache *ctx, char *path)
+>  {
+>  	struct fscache_cookie *cookie;
+> @@ -31,6 +34,29 @@ static inline void erofs_fscache_cleanup_cookie(struct erofs_fscache *ctx)
+>  	ctx->cookie = NULL;
+>  }
+>  
+> +static int erofs_fscache_get_inode(struct erofs_fscache *ctx,
+> +				   struct super_block *sb)
 
-Thanks!
+I think it can be folded as well.
 
--- 
-With Best Regards,
-Andy Shevchenko
+> +{
+> +	struct inode *const inode = new_inode(sb);
+> +
+> +	if (!inode)
+> +		return -ENOMEM;
+> +
+> +	set_nlink(inode, 1);
+> +	inode->i_size = OFFSET_MAX;
+> +	inode->i_mapping->a_ops = &erofs_fscache_blob_aops;
+> +	mapping_set_gfp_mask(inode->i_mapping, GFP_NOFS);
+> +
+> +	ctx->inode = inode;
+> +	return 0;
+> +}
+> +
+> +static inline void erofs_fscache_put_inode(struct erofs_fscache *ctx)
 
+Ditto.
 
+> +{
+> +	iput(ctx->inode);
+> +	ctx->inode = NULL;
+> +}
+> +
+>  /*
+>   * erofs_fscache_get - create an fscache context for blob file
+>   * @sb:		superblock
+> @@ -38,7 +64,8 @@ static inline void erofs_fscache_cleanup_cookie(struct erofs_fscache *ctx)
+>   *
+>   * Return: fscache context on success, ERR_PTR() on failure.
+>   */
+> -struct erofs_fscache *erofs_fscache_get(struct super_block *sb, char *path)
+> +struct erofs_fscache *erofs_fscache_get(struct super_block *sb, char *path,
+> +					bool need_inode)
+>  {
+>  	struct erofs_fscache *ctx;
+>  	int ret;
+> @@ -53,7 +80,18 @@ struct erofs_fscache *erofs_fscache_get(struct super_block *sb, char *path)
+>  		goto err;
+>  	}
+>  
+> +	if (need_inode) {
+> +		ret = erofs_fscache_get_inode(ctx, sb);
+> +		if (ret) {
+> +			erofs_err(sb, "failed to get anonymous inode");
+
+				       failed to get fscache inode of [path].
+
+Thanks,
+Gao Xiang
