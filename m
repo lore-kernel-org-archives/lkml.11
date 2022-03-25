@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FBBBC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 21:35:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43C6BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 21:35:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233522AbiCYVhX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 17:37:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60938 "EHLO
+        id S233454AbiCYVh3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 17:37:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233441AbiCYVhE (ORCPT
+        with ESMTP id S233444AbiCYVhF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 17:37:04 -0400
+        Fri, 25 Mar 2022 17:37:05 -0400
 Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37BEB4AE18;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF7024D240;
         Fri, 25 Mar 2022 14:35:28 -0700 (PDT)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 39CE5223EF;
+        by ssl.serverraum.org (Postfix) with ESMTPSA id E4167223F6;
         Fri, 25 Mar 2022 22:35:26 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1648244126;
+        t=1648244127;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=27yngU6sVEBTcgQiRJF+lH0cl/M6IIi4+XryN4/LJm0=;
-        b=c95fINXdR1vegJ6ASBWLXnERZBU/hlTGtisKwNbgl+QdxB+lFGMSykyUpYcvKpTJ1z924J
-        vm+ey71g+ew/bUQ1fvys3rJBFgPp9bD+i9fnc76EgWpJG6oEcrMm4c4tQDayBDqaL9/mUz
-        5iw/baY8DPQuNl/DiC7F7b6Xtxe5tX0=
+        bh=c+IHVZ2wDiBsBATZdF0ZEbYHHJLaJMi9OlfJjiVvU+c=;
+        b=UWUS3cDhZ5byMLen9kWjBe53/FNH0m9x+5iM8NOIo3CEG1Us5KSxUgHChlsdgTxTBqKBX+
+        V5n7iprNTPUTHJtLQOJ8Sq8Oo39cfQ1ZYAr/vCeJdWo/3rxNw2kYDDE/WjXx6Bu8vM2GbQ
+        DDYWOp5a3VGj8LjwZf6YtbJrWFn1fMQ=
 From:   Michael Walle <michael@walle.cc>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -43,9 +43,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Florian Fainelli <f.fainelli@gmail.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH RFC net-next v2 2/8] net: phy: mscc-miim: add probe_capabilities
-Date:   Fri, 25 Mar 2022 22:35:12 +0100
-Message-Id: <20220325213518.2668832-3-michael@walle.cc>
+Subject: [PATCH RFC net-next v2 4/8] net: phy: add error handling for __phy_{read,write}_mmd
+Date:   Fri, 25 Mar 2022 22:35:14 +0100
+Message-Id: <20220325213518.2668832-5-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220325213518.2668832-1-michael@walle.cc>
 References: <20220325213518.2668832-1-michael@walle.cc>
@@ -55,27 +55,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The driver is currently only capable of doing c22 accesses. Add the
-corresponding probe_capabilities.
+Now that __phy_mmd_indirect() returns an error code, check it and
+additionally check the error code of the last read or write access.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- drivers/net/mdio/mdio-mscc-miim.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/phy/phy-core.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/mdio/mdio-mscc-miim.c b/drivers/net/mdio/mdio-mscc-miim.c
-index 582969751b4c..c9efcfa2a1ce 100644
---- a/drivers/net/mdio/mdio-mscc-miim.c
-+++ b/drivers/net/mdio/mdio-mscc-miim.c
-@@ -225,6 +225,7 @@ int mscc_miim_setup(struct device *dev, struct mii_bus **pbus, const char *name,
- 	bus->read = mscc_miim_read;
- 	bus->write = mscc_miim_write;
- 	bus->reset = mscc_miim_reset;
-+	bus->probe_capabilities = MDIOBUS_C22;
- 	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-mii", dev_name(dev));
- 	bus->parent = dev;
+diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
+index dd9b6b64757d..2a300c58d1e5 100644
+--- a/drivers/net/phy/phy-core.c
++++ b/drivers/net/phy/phy-core.c
+@@ -493,8 +493,11 @@ int __phy_read_mmd(struct phy_device *phydev, int devad, u32 regnum)
+ 	} else {
+ 		struct mii_bus *bus = phydev->mdio.bus;
+ 		int phy_addr = phydev->mdio.addr;
++		int ret;
  
+-		__phy_mmd_indirect(bus, phy_addr, devad, regnum);
++		ret = __phy_mmd_indirect(bus, phy_addr, devad, regnum);
++		if (ret)
++			return ret;
+ 
+ 		/* Read the content of the MMD's selected register */
+ 		val = __mdiobus_read(bus, phy_addr, MII_MMD_DATA);
+@@ -550,12 +553,12 @@ int __phy_write_mmd(struct phy_device *phydev, int devad, u32 regnum, u16 val)
+ 		struct mii_bus *bus = phydev->mdio.bus;
+ 		int phy_addr = phydev->mdio.addr;
+ 
+-		__phy_mmd_indirect(bus, phy_addr, devad, regnum);
++		ret = __phy_mmd_indirect(bus, phy_addr, devad, regnum);
++		if (ret)
++			return ret;
+ 
+ 		/* Write the data into MMD's selected register */
+-		__mdiobus_write(bus, phy_addr, MII_MMD_DATA, val);
+-
+-		ret = 0;
++		ret = __mdiobus_write(bus, phy_addr, MII_MMD_DATA, val);
+ 	}
+ 	return ret;
+ }
 -- 
 2.30.2
 
