@@ -2,93 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C371C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:35:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8EA2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:37:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346546AbiCYPgc (ORCPT
+        id S1376551AbiCYPfo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:36:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49686 "EHLO
+        Fri, 25 Mar 2022 11:35:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378497AbiCYPeu (ORCPT
+        with ESMTP id S1376708AbiCYP14 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:34:50 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1565D17E1E
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 08:32:13 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id g24so10783021lja.7
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 08:32:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pqAwg5Oe0ABBOfGoX9y/4LgWIX2OVsyxY46msHc+wyg=;
-        b=ZMIqbgNe+2ITEtw+XQ2yUO5BaYaigXz5b80FzNWyJm+UO6fQ1oEwvSR/gtJR5BbIpv
-         XjzggeVYDiglIB95xRlpgMc44LMJwsLKIJV1pPRj5VO5hqc2Ev5Kbt72tNqRT+/l1sRq
-         HbQ9aF0bk4OKOF9PAcs644vbkh740F3aDjn3GtBJaHd4I/PKN8hjIK3ILPBOOXOI0N2F
-         stiDATdIDYZQWGB7fhE178uUw5DGydLPvzn6IoZ1wgTG9nTjFcHLTLGidvXHCHFJFN6z
-         TbCHt5/lopL1PYPpJ42XD4PB19Z3/46Oz4cxbw0++NGfmca4u/zPHIjiWfvRAURuZKj6
-         YtzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pqAwg5Oe0ABBOfGoX9y/4LgWIX2OVsyxY46msHc+wyg=;
-        b=FgeCgeO9cSMFC52SfC9s0fuixH2n8b/EXgMXj0bwB5XfGeJ8ooOkh/plfV6a2HjWct
-         9Z3x/QsbLYq4L9TVbqCOnfBy5IW1zNIz5hABBfhIbzueh1/bn+VljdlZZmaNSOYz0kD4
-         6Uin6w/DCqoeapCkhxVIvcDSrHXBe0XFsjKb0krO64AotOLpWU4VpbJ3DGXYIJrYSIZw
-         SWaayoay1acnq7B9GheNCuWfPAjEHztpYXczQ9sTjGe0NXm0GMYtrkBBO/7SnFBJk2vA
-         mQzLaQoezxEpm4bPnWp2NvgJ95jkfI36vAVNaK988C3BHM43RPTLEUk60dJxkOoswJIA
-         oLGw==
-X-Gm-Message-State: AOAM531xYOi8dXVYHKRxR3VhvXPUuF5GVg95TnSPq1ZWBIVL6kaThdC1
-        8PwY9uDYRy3keTuC1Z1CMy5FqznBRIKTu4eIg+CQPA==
-X-Google-Smtp-Source: ABdhPJw+hSmT+YBuv+j3btvbGvxRqinB1Vxe+1MI2P+uYUf5Vx5jPhvQj0/vPsEjNIJkSTGaNx/5KFlkLKziDfWBWEI=
-X-Received: by 2002:a2e:1617:0:b0:24a:a6b4:40b2 with SMTP id
- w23-20020a2e1617000000b0024aa6b440b2mr974521ljd.83.1648222331100; Fri, 25 Mar
- 2022 08:32:11 -0700 (PDT)
+        Fri, 25 Mar 2022 11:27:56 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B72F86CA57;
+        Fri, 25 Mar 2022 08:25:40 -0700 (PDT)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22PEcQHe018886;
+        Fri, 25 Mar 2022 15:25:17 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=wtZ7yK/0CRnLGQyyfEq04PkrYcuVIqNGBRYNpsmm4LU=;
+ b=EK9KlqWRtK9jemIaBWXPSfVTRv7USZwJCT2m7UkMY4Fbqu1mZPPCfOO3KX6LaME2tqtY
+ SCJSJ99+VNvyQNplV6DpxQ8ZR6IWEGAAds16W1nmTaf8MqUbsID0FMXHhdGLi5Jses/0
+ t9MFw6avPEyLFxSeXEGpjX7V3EtJ2RhHM/n9AgH49GMInB2hLRNZb0kSRe9EDnDYihtq
+ 16LcTVMK9lmYQLG6vKMqdFQ1h8vYzlN4bZgDET3/Pl1fXf+8A1cr8jP4/aesY+Yy1NnB
+ RRmf1dUNIW2zY+kdFDM5Zd7T6okZbG7oohnxKAfHoS0VUC/Czwnuyv+DJKHhKmPuRZhc Kw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3f0kax5t98-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 25 Mar 2022 15:25:16 +0000
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22PF4OYI008470;
+        Fri, 25 Mar 2022 15:25:16 GMT
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3f0kax5t8f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 25 Mar 2022 15:25:16 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22PFN9xa018376;
+        Fri, 25 Mar 2022 15:25:14 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma06fra.de.ibm.com with ESMTP id 3ew6ej3kf7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 25 Mar 2022 15:25:14 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22PFDNU850856374
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 25 Mar 2022 15:13:23 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BB1014C040;
+        Fri, 25 Mar 2022 15:25:11 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B44944C044;
+        Fri, 25 Mar 2022 15:25:10 +0000 (GMT)
+Received: from li-e979b1cc-23ba-11b2-a85c-dfd230f6cf82 (unknown [9.171.85.1])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with SMTP;
+        Fri, 25 Mar 2022 15:25:10 +0000 (GMT)
+Date:   Fri, 25 Mar 2022 16:25:08 +0100
+From:   Halil Pasic <pasic@linux.ibm.com>
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Christoph Hellwig <hch@lst.de>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4?= =?UTF-8?B?cmdlbnNlbg==?= 
+        <toke@toke.dk>, Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Olha Cherevyk <olha.cherevyk@gmail.com>,
+        iommu <iommu@lists.linux-foundation.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable <stable@vger.kernel.org>,
+        Halil Pasic <pasic@linux.ibm.com>
+Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
+ ath9k-based AP
+Message-ID: <20220325162508.3273e0db.pasic@linux.ibm.com>
+In-Reply-To: <20220324190216.0efa067f.pasic@linux.ibm.com>
+References: <1812355.tdWV9SEqCh@natalenko.name>
+        <CAHk-=wiwz+Z2MaP44h086jeniG-OpK3c=FywLsCwXV7Crvadrg@mail.gmail.com>
+        <27b5a287-7a33-9a8b-ad6d-04746735fb0c@arm.com>
+        <CAHk-=wip7TCD_+2STTepuEZvGMg6wcz+o=kyFUvHjuKziTMixw@mail.gmail.com>
+        <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
+        <20220324190216.0efa067f.pasic@linux.ibm.com>
+Organization: IBM
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-References: <20220325152758.335626-1-pgonda@google.com> <d0366a14-6492-d2b9-215e-2ee310d9f8ae@redhat.com>
-In-Reply-To: <d0366a14-6492-d2b9-215e-2ee310d9f8ae@redhat.com>
-From:   Peter Gonda <pgonda@google.com>
-Date:   Fri, 25 Mar 2022 09:31:59 -0600
-Message-ID: <CAMkAt6rACYqFXA_6pa9JUnx0=3vyM6PeaNkq-Yih4KM6saf6PQ@mail.gmail.com>
-Subject: Re: [PATCH v2] Add KVM_EXIT_SHUTDOWN metadata for SEV-ES
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     kvm list <kvm@vger.kernel.org>, Borislav Petkov <bp@alien8.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Joerg Roedel <jroedel@suse.de>, Marc Orr <marcorr@google.com>,
-        Sean Christopherson <seanjc@google.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: xAmGyw1lgESr16IrNUtiGC-eJnDwcDex
+X-Proofpoint-GUID: 71FqG_G0CuPRDUQFTyfziAzEYfbIJLzg
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-25_04,2022-03-24_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 bulkscore=0
+ mlxlogscore=899 priorityscore=1501 phishscore=0 lowpriorityscore=0
+ impostorscore=0 clxscore=1015 spamscore=0 suspectscore=0 malwarescore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203250084
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 9:29 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
->
-> On 3/25/22 16:27, Peter Gonda wrote:
-> > SEV-ES guests can request termination using the GHCB's MSR protocol. See
-> > AMD's GHCB spec section '4.1.13 Termination Request'. Currently when a
-> > guest does this the userspace VMM sees an KVM_EXIT_UNKNOWN (-EVINAL)
-> > return code from KVM_RUN. By adding a KVM_EXIT_SHUTDOWN_ENTRY to kvm_run
-> > struct the userspace VMM can clear see the guest has requested a SEV-ES
-> > termination including the termination reason code set and reason code.
-> >
-> > Signed-off-by: Peter Gonda <pgonda@google.com>
-> > Cc: Paolo Bonzini <pbonzini@redhat.com>
-> > Cc: Borislav Petkov <bp@alien8.de>
-> > Cc: Tom Lendacky <thomas.lendacky@amd.com>
-> > Cc: Brijesh Singh <brijesh.singh@amd.com>
-> > Cc: Joerg Roedel <jroedel@suse.de>
-> > Cc: Marc Orr <marcorr@google.com>
-> > Cc: Sean Christopherson <seanjc@google.com>
-> > Cc: kvm@vger.kernel.org
-> > Cc: linux-kernel@vger.kernel.org
->
-> This is missing an update to Documentation/.
->
+On Thu, 24 Mar 2022 19:02:16 +0100
+Halil Pasic <pasic@linux.ibm.com> wrote:
 
-My mistake. I'll send another revision. Is the behavior of
-KVM_CAP_EXIT_SHUTDOWN_REASON OK? Or should we only return 1 for SEV-ES
-guests?
+> > I'll admit I still never quite grasped the reason for also adding the 
+> > override to swiotlb_sync_single_for_device() in aa6f8dcbab47, but I 
+> > think by that point we were increasingly tired and confused and starting 
+> > to second-guess ourselves (well, I was, at least).  
+> 
+> I raised the question, do we need to do the same for
+> swiotlb_sync_single_for_device(). Did that based on my understanding of the
+> DMA API documentation. I had the following scenario in mind
+> 
+> SWIOTLB without the snyc_single:
+>                                   Memory      Bounce buffer      Owner
+> --------------------------------------------------------------------------
+> start                             12345678    xxxxxxxx             C
+> dma_map(DMA_FROM_DEVICE)          12345678 -> 12345678             C->D
+> device writes partial data        12345678    12ABC678 <- ABC      D
+> sync_for_cpu(DMA_FROM_DEVICE)     12ABC678 <- 12ABC678             D->C
+> cpu modifies buffer               66666666    12ABC678             C
+> sync_for_device(DMA_FROM_DEVICE)  66666666    12ABC678             C->D
+> device writes partial data        66666666    1EFGC678 <-EFG       D
+> dma_unmap(DMA_FROM_DEVICE)        1EFGC678 <- 1EFGC678             D->C
+> 
+> Legend: in Owner column C stands for cpu and D for device.
+> 
+> Without swiotlb, I believe we should have arrived at 6EFG6666. To get the
+> same result, IMHO, we need to do a sync in sync_for_device().
+> And aa6f8dcbab47 is an imperfect solution to that (because of size).
+> 
+
+@Robin, Christoph: Do we consider this a valid scenario?
+
+Regards,
+Halil
