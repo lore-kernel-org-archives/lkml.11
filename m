@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C248C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:27:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5905BC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:27:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376884AbiCYP2L (ORCPT
+        id S1376946AbiCYP2P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:28:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42592 "EHLO
+        Fri, 25 Mar 2022 11:28:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376983AbiCYPXg (ORCPT
+        with ESMTP id S1376951AbiCYPXd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:23:36 -0400
+        Fri, 25 Mar 2022 11:23:33 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ABD4AC05A;
-        Fri, 25 Mar 2022 08:17:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC1B9D06D;
+        Fri, 25 Mar 2022 08:17:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BB9360C7E;
-        Fri, 25 Mar 2022 15:17:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DE72C340E9;
-        Fri, 25 Mar 2022 15:17:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 575A060C86;
+        Fri, 25 Mar 2022 15:16:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D8AEC340E9;
+        Fri, 25 Mar 2022 15:16:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221429;
-        bh=sBRSy/K4NYbEkSC5pIhpeUNtZ96qOrHsEIsb0xOoY5Q=;
+        s=korg; t=1648221418;
+        bh=bOkJy+mMiLrQcWXHlmJVF/rdsYha53wcln9168+rGTw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TnPGXRWFWxr6x+FgtwYNAprVQXbk5HJDwv9nLkB6CMpP870Pe7K1C1oxNQcAPo7Ww
-         O2vhDzeTMhW9ZeCHRnVQvO/VndjqNeeauzY21g1UOXNH8P2tuw9m5Ofmc+OH9gdoLb
-         nFyuESVoSOLYkSRBbhvgAEiV3kFoZMvfJAnv9jGs=
+        b=zFchtC3onO8nblxevVfGwueYpyWgIFsK3ePQxmEKrLJ/xanavqtEK70d/zBnjsKuy
+         ZkKDMQLq/Q75A99cWyPRaDj2h7gO02EA8x6cQ1oI5U4KJ4ofrB2764RJPLiLaOGM0z
+         Es+mpoFasJivkdtTJ6sZDCauS1CkVNZmD7m9Cm1k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tim Crawford <tcrawford@system76.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.16 07/37] ALSA: hda/realtek: Add quirk for Clevo NP50PNJ
-Date:   Fri, 25 Mar 2022 16:14:17 +0100
-Message-Id: <20220325150420.259119064@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Palmer <daniel@0x0f.com>,
+        Arnaud POULIQUEN <arnaud.pouliquen@st.com>,
+        Takashi Iwai <tiwai@suse.de>,
+        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.16 03/37] ASoC: sti: Fix deadlock via snd_pcm_stop_xrun() call
+Date:   Fri, 25 Mar 2022 16:14:13 +0100
+Message-Id: <20220325150420.147141772@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150420.046488912@linuxfoundation.org>
 References: <20220325150420.046488912@linuxfoundation.org>
@@ -49,30 +52,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tim Crawford <tcrawford@system76.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit 9cb727506704b5323998047789fc871e64a6aa14 upstream.
+commit 455c5653f50e10b4f460ef24e99f0044fbe3401c upstream.
 
-Fixes headset detection on Clevo NP50PNJ.
+This is essentially a revert of the commit dc865fb9e7c2 ("ASoC: sti:
+Use snd_pcm_stop_xrun() helper"), which converted the manual
+snd_pcm_stop() calls with snd_pcm_stop_xrun().
 
-Signed-off-by: Tim Crawford <tcrawford@system76.com>
+The commit above introduced a deadlock as snd_pcm_stop_xrun() itself
+takes the PCM stream lock while the caller already holds it.  Since
+the conversion was done only for consistency reason and the open-call
+with snd_pcm_stop() to the XRUN state is a correct usage, let's revert
+the commit back as the fix.
+
+Fixes: dc865fb9e7c2 ("ASoC: sti: Use snd_pcm_stop_xrun() helper")
+Reported-by: Daniel Palmer <daniel@0x0f.com>
+Cc: Arnaud POULIQUEN <arnaud.pouliquen@st.com>
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220307193229.5141-1-tcrawford@system76.com
+Link: https://lore.kernel.org/r/20220315091319.3351522-1-daniel@0x0f.com
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Reviewed-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+Link: https://lore.kernel.org/r/20220315164158.19804-1-tiwai@suse.de
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ sound/soc/sti/uniperif_player.c |    6 +++---
+ sound/soc/sti/uniperif_reader.c |    2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -8949,6 +8949,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x1558, 0x8561, "Clevo NH[57][0-9][ER][ACDH]Q", ALC269_FIXUP_HEADSET_MIC),
- 	SND_PCI_QUIRK(0x1558, 0x8562, "Clevo NH[57][0-9]RZ[Q]", ALC269_FIXUP_DMIC),
- 	SND_PCI_QUIRK(0x1558, 0x8668, "Clevo NP50B[BE]", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
-+	SND_PCI_QUIRK(0x1558, 0x866d, "Clevo NP5[05]PN[HJK]", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x867d, "Clevo NP7[01]PN[HJK]", ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x8680, "Clevo NJ50LU", ALC293_FIXUP_SYSTEM76_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1558, 0x8686, "Clevo NH50[CZ]U", ALC256_FIXUP_MIC_NO_PRESENCE_AND_RESUME),
+--- a/sound/soc/sti/uniperif_player.c
++++ b/sound/soc/sti/uniperif_player.c
+@@ -91,7 +91,7 @@ static irqreturn_t uni_player_irq_handle
+ 			SET_UNIPERIF_ITM_BCLR_FIFO_ERROR(player);
+ 
+ 			/* Stop the player */
+-			snd_pcm_stop_xrun(player->substream);
++			snd_pcm_stop(player->substream, SNDRV_PCM_STATE_XRUN);
+ 		}
+ 
+ 		ret = IRQ_HANDLED;
+@@ -105,7 +105,7 @@ static irqreturn_t uni_player_irq_handle
+ 		SET_UNIPERIF_ITM_BCLR_DMA_ERROR(player);
+ 
+ 		/* Stop the player */
+-		snd_pcm_stop_xrun(player->substream);
++		snd_pcm_stop(player->substream, SNDRV_PCM_STATE_XRUN);
+ 
+ 		ret = IRQ_HANDLED;
+ 	}
+@@ -138,7 +138,7 @@ static irqreturn_t uni_player_irq_handle
+ 		dev_err(player->dev, "Underflow recovery failed\n");
+ 
+ 		/* Stop the player */
+-		snd_pcm_stop_xrun(player->substream);
++		snd_pcm_stop(player->substream, SNDRV_PCM_STATE_XRUN);
+ 
+ 		ret = IRQ_HANDLED;
+ 	}
+--- a/sound/soc/sti/uniperif_reader.c
++++ b/sound/soc/sti/uniperif_reader.c
+@@ -65,7 +65,7 @@ static irqreturn_t uni_reader_irq_handle
+ 	if (unlikely(status & UNIPERIF_ITS_FIFO_ERROR_MASK(reader))) {
+ 		dev_err(reader->dev, "FIFO error detected\n");
+ 
+-		snd_pcm_stop_xrun(reader->substream);
++		snd_pcm_stop(reader->substream, SNDRV_PCM_STATE_XRUN);
+ 
+ 		ret = IRQ_HANDLED;
+ 	}
 
 
