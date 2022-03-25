@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDDAEC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F290C43219
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376803AbiCYPc5 (ORCPT
+        id S1377312AbiCYPdW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:32:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45130 "EHLO
+        Fri, 25 Mar 2022 11:33:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376544AbiCYPWA (ORCPT
+        with ESMTP id S1376701AbiCYPXV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:22:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79626E3880;
-        Fri, 25 Mar 2022 08:16:15 -0700 (PDT)
+        Fri, 25 Mar 2022 11:23:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F00E7E43A5;
+        Fri, 25 Mar 2022 08:16:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9BFF4B827DC;
-        Fri, 25 Mar 2022 15:15:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1600DC340EE;
-        Fri, 25 Mar 2022 15:15:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FA9A60C86;
+        Fri, 25 Mar 2022 15:16:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FD24C340E9;
+        Fri, 25 Mar 2022 15:16:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221345;
-        bh=WrWSpHQKs2LWw4pFtyVYqhrUO6MaZemAfI/UgjZvB6o=;
+        s=korg; t=1648221369;
+        bh=yuUSz68aOhzq2mnbWXAa7CBZWDwyxRgOvpg4peMbCJ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lNlh5JdsaihqtCRNpA8fRRM2eVR5XeNogKENhcDbY4FCE6eudAfa/g8jWYNtwaOxl
-         NUp/WGilMbvoxWxQ3JkK0dVv+OwqnsTlqaa2Mftdbki3PV8eoTq1uE5ywAta9LPYWu
-         idxztWTSVBRscbhOPY8zSk5fqxwmarPvmG+QSulI=
+        b=eEofc9IzIPE0SBC8KCN4ChpWnXb1eWlchseL5yrxPoK20ltfCwcQUuHxORakHEG+U
+         RQnwmGOQKqNC83oRJdMxOcji58QdR8TkUSiRMFiRnlJubHRAqHt+5iZoTZ8AKN21UU
+         Yzeom1D8dv7WqmR9um6yp6itVVmaMQEOv9m1s9tw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Larry Finger <Larry.Finger@lwfinger.net>,
-        Marcel Holtmann <marcel@holtmann.org>
-Subject: [PATCH 5.15 28/37] Bluetooth: btusb: Add one more Bluetooth part for the Realtek RTL8852AE
-Date:   Fri, 25 Mar 2022 16:14:29 +0100
-Message-Id: <20220325150420.736013212@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Kalle Valo <quic_kvalo@quicinc.com>
+Subject: [PATCH 5.15 35/37] wcn36xx: Differentiate wcn3660 from wcn3620
+Date:   Fri, 25 Mar 2022 16:14:36 +0100
+Message-Id: <20220325150420.936637650@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150419.931802116@linuxfoundation.org>
 References: <20220325150419.931802116@linuxfoundation.org>
@@ -49,65 +51,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Larry Finger <Larry.Finger@lwfinger.net>
+From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 
-commit 2e7b4a328ed6ea57d22853939e69bc86c560996d upstream.
+commit 98d504a82cc75840bec8e3c6ae0e4f411921962b upstream.
 
-This Realtek device has both wifi and BT components. The latter reports
-a USB ID of 0bda:2852, which is not in the table.
+The spread of capability between the three WiFi silicon parts wcn36xx
+supports is:
 
-BT device description in /sys/kernel/debug/usb/devices contains the following entries:
+wcn3620 - 802.11 a/b/g
+wcn3660 - 802.11 a/b/g/n
+wcn3680 - 802.11 a/b/g/n/ac
 
-T: Bus=01 Lev=01 Prnt=01 Port=03 Cnt=02 Dev#= 3 Spd=12 MxCh= 0
-D: Ver= 1.00 Cls=e0(wlcon) Sub=01 Prot=01 MxPS=64 #Cfgs= 1
-P: Vendor=0bda ProdID=2852 Rev= 0.00
-S: Manufacturer=Realtek
-S: Product=Bluetooth Radio
-S: SerialNumber=00e04c000001
-C:* #Ifs= 2 Cfg#= 1 Atr=e0 MxPwr=500mA
-I:* If#= 0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E: Ad=81(I) Atr=03(Int.) MxPS= 16 Ivl=1ms
-E: Ad=02(O) Atr=02(Bulk) MxPS= 64 Ivl=0ms
-E: Ad=82(I) Atr=02(Bulk) MxPS= 64 Ivl=0ms
-I:* If#= 1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E: Ad=03(O) Atr=01(Isoc) MxPS= 0 Ivl=1ms
-E: Ad=83(I) Atr=01(Isoc) MxPS= 0 Ivl=1ms
-I: If#= 1 Alt= 1 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E: Ad=03(O) Atr=01(Isoc) MxPS= 9 Ivl=1ms
-E: Ad=83(I) Atr=01(Isoc) MxPS= 9 Ivl=1ms
-I: If#= 1 Alt= 2 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E: Ad=03(O) Atr=01(Isoc) MxPS= 17 Ivl=1ms
-E: Ad=83(I) Atr=01(Isoc) MxPS= 17 Ivl=1ms
-I: If#= 1 Alt= 3 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E: Ad=03(O) Atr=01(Isoc) MxPS= 25 Ivl=1ms
-E: Ad=83(I) Atr=01(Isoc) MxPS= 25 Ivl=1ms
-I: If#= 1 Alt= 4 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E: Ad=03(O) Atr=01(Isoc) MxPS= 33 Ivl=1ms
-E: Ad=83(I) Atr=01(Isoc) MxPS= 33 Ivl=1ms
-I: If#= 1 Alt= 5 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E: Ad=03(O) Atr=01(Isoc) MxPS= 49 Ivl=1ms
-E: Ad=83(I) Atr=01(Isoc) MxPS= 49 Ivl=1ms
+We currently treat wcn3660 as wcn3620 thus limiting it to 2GHz channels.
+Fix this regression by ensuring we differentiate between all three parts.
 
-The missing USB_ID was reported by user trius65 at https://github.com/lwfinger/rtw89/issues/122
-
-Signed-off-by: Larry Finger <Larry.Finger@lwfinger.net>
+Fixes: 8490987bdb9a ("wcn36xx: Hook and identify RF_IRIS_WCN3680")
 Cc: stable@vger.kernel.org
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220125004046.4058284-1-bryan.odonoghue@linaro.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/bluetooth/btusb.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/wireless/ath/wcn36xx/main.c    |    3 +++
+ drivers/net/wireless/ath/wcn36xx/wcn36xx.h |    1 +
+ 2 files changed, 4 insertions(+)
 
---- a/drivers/bluetooth/btusb.c
-+++ b/drivers/bluetooth/btusb.c
-@@ -404,6 +404,8 @@ static const struct usb_device_id blackl
- 						     BTUSB_WIDEBAND_SPEECH },
+--- a/drivers/net/wireless/ath/wcn36xx/main.c
++++ b/drivers/net/wireless/ath/wcn36xx/main.c
+@@ -1474,6 +1474,9 @@ static int wcn36xx_platform_get_resource
+ 	if (iris_node) {
+ 		if (of_device_is_compatible(iris_node, "qcom,wcn3620"))
+ 			wcn->rf_id = RF_IRIS_WCN3620;
++		if (of_device_is_compatible(iris_node, "qcom,wcn3660") ||
++		    of_device_is_compatible(iris_node, "qcom,wcn3660b"))
++			wcn->rf_id = RF_IRIS_WCN3660;
+ 		if (of_device_is_compatible(iris_node, "qcom,wcn3680"))
+ 			wcn->rf_id = RF_IRIS_WCN3680;
+ 		of_node_put(iris_node);
+--- a/drivers/net/wireless/ath/wcn36xx/wcn36xx.h
++++ b/drivers/net/wireless/ath/wcn36xx/wcn36xx.h
+@@ -97,6 +97,7 @@ enum wcn36xx_ampdu_state {
  
- 	/* Realtek 8852AE Bluetooth devices */
-+	{ USB_DEVICE(0x0bda, 0x2852), .driver_info = BTUSB_REALTEK |
-+						     BTUSB_WIDEBAND_SPEECH },
- 	{ USB_DEVICE(0x0bda, 0xc852), .driver_info = BTUSB_REALTEK |
- 						     BTUSB_WIDEBAND_SPEECH },
- 	{ USB_DEVICE(0x0bda, 0x385a), .driver_info = BTUSB_REALTEK |
+ #define RF_UNKNOWN	0x0000
+ #define RF_IRIS_WCN3620	0x3620
++#define RF_IRIS_WCN3660	0x3660
+ #define RF_IRIS_WCN3680	0x3680
+ 
+ static inline void buff_to_be(u32 *buf, size_t len)
 
 
