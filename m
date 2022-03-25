@@ -2,242 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DDEAC4167D
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CB5AC41535
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377555AbiCYPdi (ORCPT
+        id S1377678AbiCYPdq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:33:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35110 "EHLO
+        Fri, 25 Mar 2022 11:33:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377075AbiCYPXq (ORCPT
+        with ESMTP id S1377136AbiCYPXt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:23:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E8F3DAFC0;
-        Fri, 25 Mar 2022 08:17:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1845860AB7;
-        Fri, 25 Mar 2022 15:17:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA200C340E9;
-        Fri, 25 Mar 2022 15:17:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221438;
-        bh=BK4vWCycXlXaMUrK507C/CqZd4QuZIUX1PAKBxDAt7Q=;
-        h=From:To:Cc:Subject:Date:From;
-        b=YBlX9q6TQvTlUIxcIlqim7NavLXPwjD6kRMAtyPPeTgNCgINApugi5N7zhp/3iyY/
-         uFGSlgOkmCGiKU8VL76MEGksTvG06vV9FCUFLtohAlrwPGWvW1ytkjQCFxmB5A355K
-         PzGV/cpkSN71RHrSeIDp5OotlF9nrv/sTDZPC6og=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 5.16 00/37] 5.16.18-rc1 review
-Date:   Fri, 25 Mar 2022 16:14:10 +0100
-Message-Id: <20220325150420.046488912@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.18-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-5.16.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 5.16.18-rc1
-X-KernelTest-Deadline: 2022-03-27T15:04+00:00
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Fri, 25 Mar 2022 11:23:49 -0400
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C9B3DCE07;
+        Fri, 25 Mar 2022 08:17:25 -0700 (PDT)
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 22PFCcBg022474;
+        Fri, 25 Mar 2022 10:12:38 -0500
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 22PFCcbT022473;
+        Fri, 25 Mar 2022 10:12:38 -0500
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Fri, 25 Mar 2022 10:12:38 -0500
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Nathan Chancellor <nathan@kernel.org>, x86-ml <x86@kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        linux-toolchains@vger.kernel.org
+Subject: Re: clang memcpy calls
+Message-ID: <20220325151238.GB614@gate.crashing.org>
+References: <YjxTt3pFIcV3lt8I@zn.tnic> <CAKwvOdkw0Bbm+=ZyViXQhBE1L6uSbvkstHJuHpQ21tzJRftgAw@mail.gmail.com> <Yj2yYFloadFobRPx@lakrids> <Yj3OEI+WHV/A5uf8@hirez.programming.kicks-ass.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yj3OEI+WHV/A5uf8@hirez.programming.kicks-ass.net>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 5.16.18 release.
-There are 37 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+Hi!
 
-Responses should be made by Sun, 27 Mar 2022 15:04:08 +0000.
-Anything received after that time might be too late.
+On Fri, Mar 25, 2022 at 03:13:36PM +0100, Peter Zijlstra wrote:
+> 
+> +linux-toolchains
+> 
+> On Fri, Mar 25, 2022 at 12:15:28PM +0000, Mark Rutland wrote:
+> > On Thu, Mar 24, 2022 at 11:43:46AM -0700, Nick Desaulniers wrote:
+> > > On Thu, Mar 24, 2022 at 4:19 AM Borislav Petkov <bp@alien8.de> wrote:
+> > > > The issue is that clang generates a memcpy() call when a struct copy
+> > > > happens:
+> > > >
+> > > >         if (regs != eregs)
+> > > >                 *regs = *eregs;
+> > > 
+> > > Specifically, this is copying one struct pt_regs to another. It looks
+> > > like the sizeof struct pt_regs is just large enough to have clang emit
+> > > the libcall.
+> > > https://godbolt.org/z/scx6aa8jq
+> > > Otherwise clang will also use rep; movsq; when -mno-sse -O2 is set and
+> > > the structs are below ARBITRARY_THRESHOLD.  Should ARBITRARY_THRESHOLD
+> > > be raised so that we continue to inline the memcpy? *shrug*
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.18-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
-and the diffstat can be found below.
+I win't talk for LLVM, of course...  all of what I'll write here is
+assuming LLVM copied the GCC requirement that memcpy is the standard
+function, even if freestanding (and also memmove, memset, memcmp).
 
-thanks,
+It is valid to replace any call to memcpy with some open-coded machine
+code, or conversely, insert calls to memcpy wherever its semantics are
+wanted.
 
-greg k-h
+> > > As Mark said in the sibling reply; I don't know of general ways to
+> > > inhibit libcall optimizations on the level you're looking for, short
+> > > of heavy handy methods of disabling optimizations entirely.  There's
+> > > games that can be played with -fno-builtin-*, but they're not super
+> > > portable, and I think there's a handful of *blessed* functions that
+> > > must exist in any env, freestanding or not: memcpy, memmove, memset,
+> > > and memcmp for which you cannot yet express "these do not exist."
 
--------------
-Pseudo-Shortlog of commits:
+The easy, fool-proof, and correct way to prevent a function ending in
+a sibling call is to simply not let it end in a call at all.  The best
+way I know to do that is insert
+  asm("");
+right before the end of the function.
 
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 5.16.18-rc1
+> > a) The compiler expects the out-of-line implementations of functions
+> >    ARE NOT instrumented by address-sanitizer.
+> > 
+> >    If this is the case, then it's legitimate for the compiler to call
+> >    these functions anywhere, and we should NOT instrument the kernel
+> >    implementations of these. If the compiler wants those instrumented it
+> >    needs to add the instrumentation in the caller.
 
-Arnd Bergmann <arnd@arndb.de>
-    nds32: fix access_ok() checks in get/put_user
+The compiler isn't assuming anything about asan.  The compiler generates
+its code without any consideration of what asan will or will not do.
+The burden of making things work is on asan.
 
-Arnd Bergmann <arnd@arndb.de>
-    m68k: fix access_ok for coldfire
+It is legitimate to call (or not call!) memcpy anywhere.  memcpy always
+is __builtin_memcpy, which either or not does a function call.
 
-Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-    wcn36xx: Differentiate wcn3660 from wcn3620
+> >    AFAICT The two options for the compiler here are:
+> > 
+> >    1) Always inline an uninstrumented form of the function in this case
+> > 
+> >    2) Have distinct instrumented/uninstrumented out-of-line
+> >       implementations, and call the uninstrumented form in this case.
 
-James Bottomley <James.Bottomley@HansenPartnership.com>
-    tpm: use try_get_ops() in tpm-space.c
+The compiler should not do anything differently here if it uses asan.
+The address sanitizer and the memcpy function implementation perhaps
+have to cooperate somehow, or asan needs more smarts.  This needs to
+happen no matter what, to support other things calling memcpy, say,
+assembler code.
 
-Linus Lüssing <ll@simonwunderlich.de>
-    mac80211: fix potential double free on mesh join
+> > So from those examples it seems GCC falls into bucket (a), and assumes the
+> > blessed functions ARE NOT instrumented.
 
-Arnd Bergmann <arnd@arndb.de>
-    uaccess: fix integer overflow on access_ok()
+No, it doesn't show GCC assumes anything.  No testing of this kind can
+show anything alike.
 
-Paul E. McKenney <paulmck@kernel.org>
-    rcu: Don't deboost before reporting expedited quiescent state
+> > I think something has to change on the compiler side here (e.g. as per
+> > options above), and we should align GCC and clang on the same
+> > approach...
 
-Roberto Sassu <roberto.sassu@huawei.com>
-    drm/virtio: Ensure that objs is not NULL in virtio_gpu_array_put_free()
+GCC *requires* memcpy to be the standard memcpy always (i.e. to have the
+standard-specified semantics).  This means that it will have the same
+semantics as __builtin_memcpy always, and either or not be a call to an
+external function.  It can also create calls to it out of thin air.
 
-Brian Norris <briannorris@chromium.org>
-    Revert "ath: add support for special 0x0 regulatory domain"
-
-Larry Finger <Larry.Finger@lwfinger.net>
-    Bluetooth: btusb: Add one more Bluetooth part for the Realtek RTL8852AE
-
-Giovanni Cabiddu <giovanni.cabiddu@intel.com>
-    crypto: qat - disable registration of algorithms
-
-Werner Sembach <wse@tuxedocomputers.com>
-    ACPI: video: Force backlight native for Clevo NL5xRU and NL5xNU
-
-Maximilian Luz <luzmaximilian@gmail.com>
-    ACPI: battery: Add device HID and quirk for Microsoft Surface Go 3
-
-Mark Cilissen <mark@yotsuba.nl>
-    ACPI / x86: Work around broken XSDT on Advantech DAC-BJ01 board
-
-Pablo Neira Ayuso <pablo@netfilter.org>
-    netfilter: nf_tables: validate registers coming from userspace.
-
-Pablo Neira Ayuso <pablo@netfilter.org>
-    netfilter: nf_tables: initialize registers in nft_do_chain()
-
-Stephane Graber <stgraber@ubuntu.com>
-    drivers: net: xgene: Fix regression in CRC stripping
-
-Giacomo Guiduzzi <guiduzzi.giacomo@gmail.com>
-    ALSA: pci: fix reading of swapped values from pcmreg in AC97 codec
-
-Jonathan Teh <jonathan.teh@outlook.com>
-    ALSA: cmipci: Restore aux vol on suspend/resume
-
-Lars-Peter Clausen <lars@metafoo.de>
-    ALSA: usb-audio: Add mute TLV for playback volumes on RODE NT-USB
-
-Takashi Iwai <tiwai@suse.de>
-    ALSA: pcm: Add stream lock during PCM reset ioctl operations
-
-Takashi Iwai <tiwai@suse.de>
-    ALSA: pcm: Fix races among concurrent prealloc proc writes
-
-Takashi Iwai <tiwai@suse.de>
-    ALSA: pcm: Fix races among concurrent prepare and hw_params/hw_free calls
-
-Tadeusz Struk <tstruk@gmail.com>
-    tpm: Fix error handling in async work
-
-Tadeusz Struk <tadeusz.struk@linaro.org>
-    net: ipv6: fix skb_over_panic in __ip6_append_data
-
-Jordy Zomer <jordy@pwning.systems>
-    nfc: st21nfca: Fix potential buffer overflows in EVT_TRANSACTION
-
-Takashi Iwai <tiwai@suse.de>
-    ALSA: pcm: Fix races among concurrent read/write and buffer changes
-
-Takashi Iwai <tiwai@suse.de>
-    ALSA: pcm: Fix races among concurrent hw_params and hw_free calls
-
-Jason Zheng <jasonzheng2004@gmail.com>
-    ALSA: hda/realtek: Add quirk for ASUS GA402
-
-huangwenhui <huangwenhuia@uniontech.com>
-    ALSA: hda/realtek - Fix headset mic problem for a HP machine with alc671
-
-Tim Crawford <tcrawford@system76.com>
-    ALSA: hda/realtek: Add quirk for Clevo NP50PNJ
-
-Tim Crawford <tcrawford@system76.com>
-    ALSA: hda/realtek: Add quirk for Clevo NP70PNJ
-
-Reza Jahanbakhshi <reza.jahanbakhshi@gmail.com>
-    ALSA: usb-audio: add mapping for new Corsair Virtuoso SE
-
-Takashi Iwai <tiwai@suse.de>
-    ALSA: oss: Fix PCM OSS buffer allocation overflow
-
-Takashi Iwai <tiwai@suse.de>
-    ASoC: sti: Fix deadlock via snd_pcm_stop_xrun() call
-
-Eric Dumazet <edumazet@google.com>
-    llc: fix netdevice reference leaks in llc_ui_bind()
-
-Helmut Grohne <helmut@subdivi.de>
-    Bluetooth: btusb: Add another Realtek 8761BU
+All of this has been true for thirty years, and it won't change today
+either.
 
 
--------------
-
-Diffstat:
-
- Makefile                                         |  4 +-
- arch/csky/include/asm/uaccess.h                  |  7 +-
- arch/hexagon/include/asm/uaccess.h               | 18 ++---
- arch/m68k/include/asm/uaccess.h                  | 15 ++--
- arch/microblaze/include/asm/uaccess.h            | 19 +----
- arch/nds32/include/asm/uaccess.h                 | 22 ++++--
- arch/x86/kernel/acpi/boot.c                      | 24 ++++++
- drivers/acpi/battery.c                           | 12 +++
- drivers/acpi/video_detect.c                      | 75 ++++++++++++++++++
- drivers/bluetooth/btusb.c                        |  4 +
- drivers/char/tpm/tpm-dev-common.c                |  8 +-
- drivers/char/tpm/tpm2-space.c                    |  8 +-
- drivers/crypto/qat/qat_4xxx/adf_drv.c            |  7 ++
- drivers/crypto/qat/qat_common/qat_crypto.c       |  7 ++
- drivers/gpu/drm/virtio/virtgpu_gem.c             |  3 +
- drivers/net/ethernet/apm/xgene/xgene_enet_main.c | 12 +--
- drivers/net/wireless/ath/regd.c                  | 10 +--
- drivers/net/wireless/ath/wcn36xx/main.c          |  3 +
- drivers/net/wireless/ath/wcn36xx/wcn36xx.h       |  1 +
- drivers/nfc/st21nfca/se.c                        | 10 +++
- include/sound/pcm.h                              |  1 +
- kernel/rcu/tree_plugin.h                         |  8 +-
- net/ipv6/ip6_output.c                            |  4 +-
- net/llc/af_llc.c                                 |  8 ++
- net/mac80211/cfg.c                               |  3 -
- net/netfilter/nf_tables_api.c                    | 22 ++++--
- net/netfilter/nf_tables_core.c                   |  2 +-
- sound/core/oss/pcm_oss.c                         | 12 ++-
- sound/core/oss/pcm_plugin.c                      |  5 +-
- sound/core/pcm.c                                 |  2 +
- sound/core/pcm_lib.c                             |  4 +
- sound/core/pcm_memory.c                          | 11 ++-
- sound/core/pcm_native.c                          | 97 +++++++++++++++---------
- sound/pci/ac97/ac97_codec.c                      |  4 +-
- sound/pci/cmipci.c                               |  3 +-
- sound/pci/hda/patch_realtek.c                    |  4 +
- sound/soc/sti/uniperif_player.c                  |  6 +-
- sound/soc/sti/uniperif_reader.c                  |  2 +-
- sound/usb/mixer_maps.c                           | 10 +++
- sound/usb/mixer_quirks.c                         |  7 +-
- 40 files changed, 357 insertions(+), 127 deletions(-)
-
-
+Segher
