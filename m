@@ -2,67 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05602C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 02:24:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A11BCC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 02:30:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357722AbiCYC0Y (ORCPT
+        id S1357739AbiCYCcL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Mar 2022 22:26:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35380 "EHLO
+        Thu, 24 Mar 2022 22:32:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242818AbiCYC0W (ORCPT
+        with ESMTP id S242818AbiCYCcJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Mar 2022 22:26:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37D83B715C;
-        Thu, 24 Mar 2022 19:24:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E786BB81D87;
-        Fri, 25 Mar 2022 02:24:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D24AC340EC;
-        Fri, 25 Mar 2022 02:24:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648175087;
-        bh=W0F2Z3p5WAM8fTBOKDMDZFzxM3rAnJKqt6oovefK64k=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=gBARd777s6T2nNiwInnDZ80Vh4r6FjUzoGC7yk++50o/cO70nzX6bIf0NRqqQ5GQI
-         hj6NJffEd0K45pOEiibjPGCNPM0O11VxCw79ZN/AQTw3vU3wqfakyZtA6ZAvc/ulhR
-         zXMXwI3d50W4ADQ2GGYc7HM2QRpJzfP83FbJEGZ821MaSSfX8Cc9k8uxtigI1DOkDp
-         ZrT/uRRCDRS1Y9p9MnMeFFsA37JlHCIVk1D5MiXq7Frd2Kx22URXzrUv8URL6nEPFT
-         1TxHpc8sBCkUTEgjWj/IalfDag5ZE6N/gK1faPBu0x+6mGWI+OTpgarcu6Ga1xIpjG
-         OVa9Uo+m7z/NQ==
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220301190400.1644150-1-robh@kernel.org>
-References: <20220301190400.1644150-1-robh@kernel.org>
-Subject: Re: [PATCH] dt-bindings: clock: renesas: Make example 'clocks' parsable
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Rob Herring <robh@kernel.org>
-Date:   Thu, 24 Mar 2022 19:24:45 -0700
-User-Agent: alot/0.10
-Message-Id: <20220325022447.9D24AC340EC@smtp.kernel.org>
+        Thu, 24 Mar 2022 22:32:09 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19563B6E45;
+        Thu, 24 Mar 2022 19:30:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648175436; x=1679711436;
+  h=from:to:cc:subject:date:message-id;
+  bh=UvEWWF7X10dCTVo/eglip4ty3sbfJC5IVaGkQMFf0Ms=;
+  b=mOjIjFsJswnBDlIOAkNiMJBU5gXEIvWOJOHSVmU3SvTZDMMjkD3negDu
+   UdzQfe8WUZ4KAgnOg5dbTbCj3qbjUmDZ6PInCsfDqz5sle2J6NCRkobgE
+   rOrKq4cNYJBWLMAvIdIIGvtlGFdCHLBUa5gMr+Jjsjwoj53ELw+ccRxdJ
+   xquGp+L1u7KXANaq4toEti2U1F4LBLDQ+rUXTDFq7ATE2dkqAe5tFIqsQ
+   ksS5oqp3AgROswavcSnJHRdzE536YGtUd98cSsmN/pzyMoaN/06cWvxOH
+   Xs65UTh9GCbsNR+zw/3rf+7ogVDDmWf0oRN5M6fSPLU/0tmrFrNj2n5VK
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10296"; a="321733681"
+X-IronPort-AV: E=Sophos;i="5.90,209,1643702400"; 
+   d="scan'208";a="321733681"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2022 19:30:35 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,209,1643702400"; 
+   d="scan'208";a="693531275"
+Received: from chang-linux-3.sc.intel.com ([172.25.112.114])
+  by fmsmga001.fm.intel.com with ESMTP; 24 Mar 2022 19:30:35 -0700
+From:   "Chang S. Bae" <chang.seok.bae@intel.com>
+To:     linux-kernel@vger.kernel.org, x86@kernel.org,
+        linux-pm@vger.kernel.org
+Cc:     tglx@linutronix.de, dave.hansen@linux.intel.com,
+        peterz@infradead.org, bp@alien8.de, rafael@kernel.org,
+        ravi.v.shankar@intel.com, chang.seok.bae@intel.com
+Subject: [PATCH v3 0/3] x86/fpu: Make AMX state ready for CPU idle
+Date:   Thu, 24 Mar 2022 19:22:16 -0700
+Message-Id: <20220325022219.829-1-chang.seok.bae@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Rob Herring (2022-03-01 11:03:59)
-> 'clocks' in the example is not parsable with the 0 phandle value
-> because the number of #clock-cells is unknown in the previous entry.
-> Solve this by adding the clock provider node. Only 'cpg_clocks' is
-> needed as the examples are built with fixups which can be used to
-> identify phandles.
->=20
-> This is in preparation to support schema validation on .dtb files.
->=20
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
+Changes from v2 [1]:
+* Secure XCR0 accessors from the compiler reordering issue (Dave Hansen).
+* Check the feature flag instead of fpu_state_size_dynamic() (Dave Hansen).
+* Remove the meaningless backslash (Rafael Wysocki).
 
-Applied to clk-next
+Note the two changes this series wants are now in the mainline:
+* the opcode for TILERELEASE [2] and
+* the C-state table for Sapphire Rapids [3]
+
+The series on top of the above is available here:
+  git://github.com/intel/amx-linux.git tilerelease
+
+Thanks,
+Chang
+
+[1]: https://lore.kernel.org/lkml/20220309223431.26560-1-chang.seok.bae@intel.com/
+[2]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/arch?id=9dd94df75b30eca03ed2151dd5bbc152a6f19abf
+[3]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/arch?id=9edf3c0ffef0ec1bed8300315852b5c6a0997130
+
+Chang S. Bae (3):
+  x86/fpu: Make XCR0 accessors immune to unwanted compiler reordering
+  x86/fpu: Add a helper to prepare AMX state for low-power CPU idle
+  intel_idle: Add a new flag to initialize the AMX state
+
+ arch/x86/include/asm/fpu/api.h       |  2 ++
+ arch/x86/include/asm/fpu/xcr.h       |  8 ++++++--
+ arch/x86/include/asm/special_insns.h |  9 +++++++++
+ arch/x86/kernel/fpu/core.c           | 13 +++++++++++++
+ drivers/idle/intel_idle.c            | 18 ++++++++++++++++--
+ 5 files changed, 46 insertions(+), 4 deletions(-)
+
+-- 
+2.17.1
+
