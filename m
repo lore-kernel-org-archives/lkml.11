@@ -2,75 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7747EC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:42:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA428C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:42:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231446AbiCYTnj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:43:39 -0400
+        id S230312AbiCYTnn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:43:43 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231788AbiCYTnT (ORCPT
+        with ESMTP id S232084AbiCYTn3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:43:19 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F063EAD18;
-        Fri, 25 Mar 2022 12:17:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=v7v9I64jtbh4TvILDFhQKVP7yzYLEAb3hBx5zd1jBgk=; b=qJ
-        Nki9/HJ6HtCe6zXtg8ayKilPjuF58wc8vBEXSdpC9DDWIluWBvaeLgp/sF41TQryIwHkd0cLOwlGZ
-        r9et8GZE9gvEN9IF5bcZLOrpU5T4KNnKbjWFan2hr3J8d5J/Lu87wcgN1Dt0I6ATxcuazCpAG2NrJ
-        18/FfBvFM3gLd/M=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nXojt-00CfzC-FU; Fri, 25 Mar 2022 19:32:45 +0100
-Date:   Fri, 25 Mar 2022 19:32:45 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [net-next 2/5] net: mdio: of: use fwnode_mdiobus_* functions
-Message-ID: <Yj4KzQPeVUxZEn0k@lunn.ch>
-References: <20220325172234.1259667-1-clement.leger@bootlin.com>
- <20220325172234.1259667-3-clement.leger@bootlin.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220325172234.1259667-3-clement.leger@bootlin.com>
+        Fri, 25 Mar 2022 15:43:29 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1555321BC7A
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:14:08 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2dc7bdd666fso67221137b3.7
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:14:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=woMjFLNUegNjbJ51x62lvW6UbmQA+Ba7zyUjvkY6YYA=;
+        b=pPUMCEvf8BZ62Y/c+W1qNInLop6JGyWd784jOQMkj1CbDHqg6py/a0QUTHIl90KdK9
+         w8p+a0V9OwXTGRp2ndKsQIWc5a+N8W0cnnGZFdPvIxrlF1S6agDjEDnrq+kop7VArS9W
+         RbYNWRUOGzcuxrBV4L2CC5m9He2upt/Ljn2rs9gmG3kXrsXyBQMYXRw3Gbsg1t4Arnqw
+         Vz5BauwAV3zM0pm0GHPutIyIuVDPFsGPQzM4SkLsQISvm66TNi9ybfRXySbc8zm/ozK8
+         dVwdJktR7GmW3rsxUBUyM3bSBrBGyKaXWu9kydtN+Kk/btVZUC8+M9kY4J9l0j+/DcQR
+         l9Qg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=woMjFLNUegNjbJ51x62lvW6UbmQA+Ba7zyUjvkY6YYA=;
+        b=TcqPamEcb6pAeifRGrcNTvAxmjPbiH3AxDAqrjiUZ4rUs2rTIojCXP/5p4MF6i5ZvZ
+         gUuKeWuf1aqvEk3sk7r0Bibc7pAzmQw1G8MWnbljSibhtZYknpHz7TivMz0JZC5E6243
+         NEkzKKgPLNYqS9wM5j2a9VjWtNsbNEMc9BXp2lTd/JQxdC5s4nQTJMpJ3YrHhMMgqXjn
+         i++6+CTFITMnWNwQKKLAjsQr+vyJHOlstXiKc0jxiwvNfwa4JCn///oXaInSmQOmXtMz
+         GCAUbMF+jbQAyTFML9N2en4In0kJYI9qxHIgedKqhw7XXCyz0JfRoDePwrSjM1OA3j+/
+         61rg==
+X-Gm-Message-State: AOAM533hLh+/d0EQWMp+1Xlqlr3FU4j9BRtnsgUymlRBYpAtQg9XMGn4
+        eodzaF9ALdGmjW0pNs1NAGEVEAGmsKtK
+X-Google-Smtp-Source: ABdhPJyRS7LP7fvCaSt0TldDrztqH9QfayLTVY7BMeLHgtTzqTb9UkZpPGUKvtovyGUbBIdo731RsDJISrP1
+X-Received: from rajat2.mtv.corp.google.com ([2620:15c:202:201:4cfc:6eaf:38d8:46d6])
+ (user=rajatja job=sendgmr) by 2002:a81:94d:0:b0:2e5:b91a:195b with SMTP id
+ 74-20020a81094d000000b002e5b91a195bmr12106133ywj.44.1648233973993; Fri, 25
+ Mar 2022 11:46:13 -0700 (PDT)
+Date:   Fri, 25 Mar 2022 11:46:08 -0700
+Message-Id: <20220325184609.4059963-1-rajatja@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
+Subject: [PATCH v5 1/2] PCI: ACPI: Support Microsoft's "DmaProperty"
+From:   Rajat Jain <rajatja@google.com>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, linux-pci@vger.kernel.org,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Rajat Jain <rajatxjain@gmail.com>,
+        Dmitry Torokhov <dtor@google.com>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Pavel Machek <pavel@denx.de>,
+        "Oliver O'Halloran" <oohall@gmail.com>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        iommu@lists.linux-foundation.org
+Cc:     Rajat Jain <rajatja@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 06:22:31PM +0100, Clément Léger wrote:
-> Now that fwnode support has been added and implements the same behavior
-> expected by device-tree parsing
+The "DmaProperty" is supported and documented by Microsoft here:
+https://docs.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports
+They use this property for DMA protection:
+https://docs.microsoft.com/en-us/windows/security/information-protection/kernel-dma-protection-for-thunderbolt
 
-The problem is, we cannot actually see that. There is no side by side
-comparison which makes it clear it has the same behaviour.
+Support the "DmaProperty" with the same semantics. This is useful for
+internal PCI devices that do not hang off a PCIe rootport, but offer
+an attack surface for DMA attacks (e.g. internal network devices).
 
-Please see if something like this will work:
+Signed-off-by: Rajat Jain <rajatja@google.com>
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+---
+v5: * Reorder the patches in the series
+v4: * Add the GUID. 
+    * Update the comment and commitlog.
+v3: * Use Microsoft's documented property "DmaProperty"
+    * Resctrict to ACPI only
 
-1/4: copy drivers/net/mdio/of_mdio.c to drivers/net/mdio/fwnode_mdio.c
-2/4: Delete from fwnode_mdio.c the bits you don't need, like the whitelist
-3/4: modify what is left of fwnode_mdio.c to actually use fwnode.
-4/4: Rework of_mdio.c to use the code in fwnode_mdio.c
+ drivers/acpi/property.c |  3 +++
+ drivers/pci/pci-acpi.c  | 16 ++++++++++++++++
+ 2 files changed, 19 insertions(+)
 
-The 3/4 should make it clear it has the same behaviour, because we can
-see what you have actually changed.
+diff --git a/drivers/acpi/property.c b/drivers/acpi/property.c
+index d0986bda2964..20603cacc28d 100644
+--- a/drivers/acpi/property.c
++++ b/drivers/acpi/property.c
+@@ -48,6 +48,9 @@ static const guid_t prp_guids[] = {
+ 	/* Storage device needs D3 GUID: 5025030f-842f-4ab4-a561-99a5189762d0 */
+ 	GUID_INIT(0x5025030f, 0x842f, 0x4ab4,
+ 		  0xa5, 0x61, 0x99, 0xa5, 0x18, 0x97, 0x62, 0xd0),
++	/* DmaProperty for PCI devices GUID: 70d24161-6dd5-4c9e-8070-705531292865 */
++	GUID_INIT(0x70d24161, 0x6dd5, 0x4c9e,
++		  0x80, 0x70, 0x70, 0x55, 0x31, 0x29, 0x28, 0x65),
+ };
+ 
+ /* ACPI _DSD data subnodes GUID: dbb8e3e6-5886-4ba6-8795-1319f52a966b */
+diff --git a/drivers/pci/pci-acpi.c b/drivers/pci/pci-acpi.c
+index 1f15ab7eabf8..378e05096c52 100644
+--- a/drivers/pci/pci-acpi.c
++++ b/drivers/pci/pci-acpi.c
+@@ -1350,12 +1350,28 @@ static void pci_acpi_set_external_facing(struct pci_dev *dev)
+ 		dev->external_facing = 1;
+ }
+ 
++static void pci_acpi_check_for_dma_protection(struct pci_dev *dev)
++{
++	u8 val;
++
++	/*
++	 * Property also used by Microsoft Windows for same purpose,
++	 * (to implement DMA protection from a device, using the IOMMU).
++	 */
++	if (device_property_read_u8(&dev->dev, "DmaProperty", &val))
++		return;
++
++	if (val)
++		dev->untrusted = 1;
++}
++
+ void pci_acpi_setup(struct device *dev, struct acpi_device *adev)
+ {
+ 	struct pci_dev *pci_dev = to_pci_dev(dev);
+ 
+ 	pci_acpi_optimize_delay(pci_dev, adev->handle);
+ 	pci_acpi_set_external_facing(pci_dev);
++	pci_acpi_check_for_dma_protection(pci_dev);
+ 	pci_acpi_add_edr_notifier(pci_dev);
+ 
+ 	pci_acpi_add_pm_notifier(adev, pci_dev);
+-- 
+2.35.1.1021.g381101b075-goog
 
-FYI: net-next is closed at the moment, so you need to post RFC
-patches.
-
-    Andrew
