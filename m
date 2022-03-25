@@ -2,140 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3062BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:35:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9E65C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 19:35:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230468AbiCYThE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 15:37:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42818 "EHLO
+        id S230084AbiCYThY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 15:37:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230407AbiCYTgb (ORCPT
+        with ESMTP id S230446AbiCYThD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 15:36:31 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5640273806
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:23:20 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id h4so12102246wrc.13
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 12:23:20 -0700 (PDT)
+        Fri, 25 Mar 2022 15:37:03 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20E2126B58F;
+        Fri, 25 Mar 2022 12:22:38 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id h7so15002000lfl.2;
+        Fri, 25 Mar 2022 12:22:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:organization:in-reply-to:content-transfer-encoding;
-        bh=j/qujzbOuESO1PpbNdCPI/EIyCvZoY0MDDUpDJ3vHQ8=;
-        b=uP0lqXFXhzYKz5P+7JgxvfcuieaiSaPuf6FKbYTRS1nnhh5/8/waCnRzHNJ5x1Yoco
-         zrYA3C9C4XMNhUA0WzVXJEE9gIATswTBPhmTD65WwKR6UUnzz1sNLe7SafOd9hTnAjyj
-         EN7M8SBexFuEDWPP4mZhkEfBBCfpBXiHi987yqTmx+nRBmrr0h/P+eRB+ItIAulBYAMh
-         //HJtcs2GloFlcIVy/N+Nf3IJnY79DhNMDKHFr5hhFZMbrDN9bQIsWc2sFd+/H4CjDRp
-         pUx/FIe2HcWc3iq5Gotf0CRIXxWN5azSG+FZEr5zreXnY+WzOhk1Mqiw79g7lgL2tw/K
-         7gBQ==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pba7oP54HKPv7rvuNO3mNof6XZxbJlFCeC12aVk0OXE=;
+        b=kwIy6IhFaTatHujym71oQXoxz+i5Xr8B7K7YXVjy1gWItwQ1opyNXXop+NF1l9aJS2
+         pzBuo/+uA+LVAHR7nDUHFvICyPEkZ5t7syk2ZuOaS7m2Mhdn8I7uWQwDMiytYwtx+dnW
+         Zrip7Uc9q8qylF3mmXJJ+lZ+eyGquAs2dzXvNQIw/kUzydliK7pTPRqacmCh2QCWsfVw
+         B4wEh4olQWOvguJc6sjgqw/DQMKhigcRZqXRct8WeVARTzM9aHsLpSdblReheJTC4CD3
+         PT3t4+JjyC1uk5V3Rt/F7wyMs4ycsC9sMLnMKQGTo5aQ8vWxNy7B4ddve8rl0HY5ie8p
+         EkCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=j/qujzbOuESO1PpbNdCPI/EIyCvZoY0MDDUpDJ3vHQ8=;
-        b=mR1Xgl/cjzWakckAXeMR1EaaINaDdS5NgcLu9/id5ukLew8naVrG/Gx/yarXv2fnaB
-         78Qv9dgEpnxW/PL/JOczDP1O80wPU0p+z+TJRgUkE1KE4a7s/jcTCl73tg630DRGVvga
-         I3tPLIGQqZ/R4/1qrPtPogHKPjfnrGPhBDRPWI720fJMgglkz5RnU1bPTQV0JLBuysdN
-         bhUV5JRfl6LbQ+duhiiGr3JzHMLOqk4zpACr/Ar47gHPOOVpWvdOenxj3kxyH3NoaOLW
-         57aw3eL4rQznLZApFkX5/KkYqE5Lwh1NQCN8oe3xACrYTQeXP1KgpNFjoL2mhI6mPmRH
-         r5Jg==
-X-Gm-Message-State: AOAM5328zIbi3b1Gzfj0soGkjw63fepV6o/TpjqaKQQ2mswHP/+gQhlK
-        ihUxg6nCxobstmH6bzPY3DVOns6aVYVMTPH2
-X-Google-Smtp-Source: ABdhPJxWqVuvY3ZRZ1JUHUDqORUP0Rmjzvw0CFxpJIL8aXbTr9PeJxwL33wgu5gJe3wFMd27QXw06A==
-X-Received: by 2002:a05:6000:1379:b0:203:ee50:45ad with SMTP id q25-20020a056000137900b00203ee5045admr10011117wrz.268.1648229609490;
-        Fri, 25 Mar 2022 10:33:29 -0700 (PDT)
-Received: from ?IPV6:2001:861:44c0:66c0:d3b0:47bd:8485:31cd? ([2001:861:44c0:66c0:d3b0:47bd:8485:31cd])
-        by smtp.gmail.com with ESMTPSA id t9-20020a05600c198900b0038cb8b38f9fsm8602540wmq.21.2022.03.25.10.33.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Mar 2022 10:33:29 -0700 (PDT)
-Message-ID: <934c32f1-5fc3-7b38-3fee-0c75de928302@baylibre.com>
-Date:   Fri, 25 Mar 2022 18:33:28 +0100
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pba7oP54HKPv7rvuNO3mNof6XZxbJlFCeC12aVk0OXE=;
+        b=FtLduTcWyoRpEBgIoQY5R2gusk+DwRlTKtW/wkFKYQejtLOXq3C+8YzhIlFOKhDITD
+         3da0+DXo2LPwwyD3IomYqKLKdzJUPacf/PP4MLOp//dhr9QaerMMolMIw8skzY9XHH4r
+         wwkus+fl+VOk+mC5HAd8YGhrpHjmQzQp7HRtNhOzz07yUdrjfZ73RgrbojiZpYxztBiX
+         fMwRXsWHoGcOt0TbYWPq1CuJeaMgg1USifG0hN7FfXZrheSQHel+NyhEcuAkkSD2hyke
+         6eTjutADloEdHtS07JYqMsZEfM79CheilIg+F+H1ZBAm0Wl5F2GTgPomPTFwk7aWyag0
+         V3AQ==
+X-Gm-Message-State: AOAM533KMjo8i0gRBu8blQH0bVc97Wg6fyKQlnKQaBPXdDWSoNhDVfgN
+        C4F7VCh15Ps68+otRQ5qCBwpQ3aL0dLj91eXxBn+bkm/PZM=
+X-Google-Smtp-Source: ABdhPJyclTqv78QfqPyJNZ2heKEpBQldstQKfe7AytnXqGbW0MlwSUx+GbZJS/LQVwYd/cNvFYeDK7a3b4Kgh/hCK04=
+X-Received: by 2002:a17:906:9751:b0:6e0:5cdd:cabf with SMTP id
+ o17-20020a170906975100b006e05cddcabfmr13358276ejy.38.1648232337047; Fri, 25
+ Mar 2022 11:18:57 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 3/3] arm64: meson: update SDIO in dts for JetHub D1
-Content-Language: en-US
-To:     Vyacheslav Bocharov <adeep@lexina.in>,
-        Kevin Hilman <khilman@baylibre.com>,
-        linux-amlogic@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-References: <20220325165501.81551-1-adeep@lexina.in>
- <20220325165501.81551-4-adeep@lexina.in>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-Organization: Baylibre
-In-Reply-To: <20220325165501.81551-4-adeep@lexina.in>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220324162904.530140-1-steve@sk2.org>
+In-Reply-To: <20220324162904.530140-1-steve@sk2.org>
+From:   Max Filippov <jcmvbkbc@gmail.com>
+Date:   Fri, 25 Mar 2022 11:18:45 -0700
+Message-ID: <CAMo8Bf+vk+mkEAAQCirw7cdCFXx4wq7yxkM0tSP8PvpCaaacMw@mail.gmail.com>
+Subject: Re: [PATCH] clk: use simple i2c probe function
+To:     Stephen Kitt <steve@sk2.org>
+Cc:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Wolfram Sang <wsa@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On 25/03/2022 17:55, Vyacheslav Bocharov wrote:
-> Fix the dts to match board's reference design:
-> - update vddio_boot regulator to 3.3v (Wi-Fi SDIO module)
-> - add vccq_1v8 regulator with 1.8v for eMMC SDIO
-> 
-> In the first revision of JetHub D1 the vccq_1v8 regulator was 3.3v.
-> All installed eMMC modules were tested to work in HS200 mode at 3.3v
-> supply voltage. In the next revisions of the board eMMC will be
-> powered with 1.8v according to the standard.
-> 
-> Signed-off-by: Vyacheslav Bocharov <adeep@lexina.in>
+On Thu, Mar 24, 2022 at 9:29 AM Stephen Kitt <steve@sk2.org> wrote:
+>
+> The i2c probe functions here don't use the id information provided in
+> their second argument, so the single-parameter i2c probe function
+> ("probe_new") can be used instead.
+>
+> This avoids scanning the identifier tables during probes.
+>
+> Signed-off-by: Stephen Kitt <steve@sk2.org>
 > ---
->   .../dts/amlogic/meson-axg-jethome-jethub-j100.dts | 15 ++++++++++++---
->   1 file changed, 12 insertions(+), 3 deletions(-)
-> 
-> diff --git a/arch/arm64/boot/dts/amlogic/meson-axg-jethome-jethub-j100.dts b/arch/arm64/boot/dts/amlogic/meson-axg-jethome-jethub-j100.dts
-> index 66c1eeba8f48..bc00d672a357 100644
-> --- a/arch/arm64/boot/dts/amlogic/meson-axg-jethome-jethub-j100.dts
-> +++ b/arch/arm64/boot/dts/amlogic/meson-axg-jethome-jethub-j100.dts
-> @@ -81,12 +81,22 @@ vddio_ao18: regulator-vddio_ao18 {
->   	vddio_boot: regulator-vddio_boot {
->   		compatible = "regulator-fixed";
->   		regulator-name = "VDDIO_BOOT";
-> +		regulator-min-microvolt = <3300000>;
-> +		regulator-max-microvolt = <3300000>;
-> +		vin-supply = <&vddao_3v3>;
-> +		regulator-always-on;
-> +	};
-> +
-> +	vccq_1v8: regulator-vccq_1v8 {
-> +		compatible = "regulator-fixed";
-> +		regulator-name = "VCCQ_1V8";
->   		regulator-min-microvolt = <1800000>;
->   		regulator-max-microvolt = <1800000>;
->   		vin-supply = <&vddao_3v3>;
->   		regulator-always-on;
->   	};
->   
-> +
->   	usb_pwr: regulator-usb_pwr {
->   		compatible = "regulator-fixed";
->   		regulator-name = "USB_PWR";
-> @@ -248,8 +258,7 @@ &sd_emmc_b {
->   
->   	bus-width = <4>;
->   	cap-sd-highspeed;
-> -	sd-uhs-sdr104;
-> -	max-frequency = <200000000>;
-> +	max-frequency = <50000000>;
+>  drivers/clk/clk-cdce706.c   | 5 ++---
+>  drivers/clk/clk-cs2000-cp.c | 5 ++---
+>  drivers/clk/clk-max9485.c   | 5 ++---
+>  drivers/clk/clk-si514.c     | 5 ++---
+>  drivers/clk/clk-si5341.c    | 5 ++---
+>  5 files changed, 10 insertions(+), 15 deletions(-)
 
-This changes should be in a separate commit
+Reviewed-by: Max Filippov <jcmvbkbc@gmail.com>
 
->   	non-removable;
->   	disable-wp;
->   
-> @@ -282,7 +291,7 @@ &sd_emmc_c {
->   	mmc-pwrseq = <&emmc_pwrseq>;
->   
->   	vmmc-supply = <&vcc_3v3>;
-> -	vqmmc-supply = <&vddio_boot>;
-> +	vqmmc-supply = <&vccq_1v8>;
->   };
->   
->   /* UART Bluetooth */
-
+-- 
+Thanks.
+-- Max
