@@ -2,111 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA7E5C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 13:44:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 427EBC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 13:45:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357979AbiCYNqW (ORCPT
+        id S1352215AbiCYNqf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 09:46:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52246 "EHLO
+        Fri, 25 Mar 2022 09:46:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352215AbiCYNqS (ORCPT
+        with ESMTP id S1356987AbiCYNqZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 09:46:18 -0400
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A66866230;
-        Fri, 25 Mar 2022 06:44:43 -0700 (PDT)
-Received: by mail-wr1-f46.google.com with SMTP id u16so10960331wru.4;
-        Fri, 25 Mar 2022 06:44:43 -0700 (PDT)
+        Fri, 25 Mar 2022 09:46:25 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0242670935
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 06:44:51 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id j15so15433066eje.9
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 06:44:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gOz+6Jxgi4s/aMhrYK7cy8+f432CABX9+S0xakAnHqY=;
+        b=N3uhTkSoAhpdcH0K9ce+7Zd2W0nvWZhX9pG5rSFFU8rLbtBT/XC1CXLSlH+1vk9kzu
+         4mlDtldSOeRHo6HikkOr3+q33eoqytnVuzi8kEmzL6qRHtCfkXWX7sFUeP5bTxxGwvDF
+         1w8JeKXKER0xIkg+HAXcPJZqJCJXg1T2ErHwQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=kl2Li9Z++CqTUC0lFLJ2VWDkw/259+VgBxfob6qn0zM=;
-        b=z1MTAtIH2+7E8+Lcw0A8nK0YRQjl/BmfoxANv+FNRy7PA5A/OYSXsmFTld3inzNGB5
-         9JjZaIyqGOg/83/mYMN9yrx9jkrltygH+Hd0LPvIz+8EyCn5nJq9Wn3Xd+7tYVOixRM6
-         +S5gsa4bmTQLZ0DiMF+Hj2hY3vSw7m08IhuH4e7UOr1sAqIsxSi5pJ2jowYaUxAxjMVM
-         HILY59TKB/phILU4nrNAu+69/Qbq6wFf9V2ZOOgKXEj1T1sLYuufkM/ZcCWYfsMg4VqY
-         hic7/GI4lXJ+9TCGk7sZraCF/h14Pzzksab8vyKFHahgVoMRnFvpB6U0j0tz17Nz+agD
-         fH3Q==
-X-Gm-Message-State: AOAM533i6TlFh5AxbsAbHD5tpLf0L0fB330Ka4KORBLxHnr9Alq3ok9p
-        zIuA1LD1cH9I/oxLRwJlF74=
-X-Google-Smtp-Source: ABdhPJyY3wUgcYloufU4hlto44Bj2E0GeWFQeH2zowBSPUGINM50QEh6VWnApasWISFuX5BW6KsdRA==
-X-Received: by 2002:adf:eb89:0:b0:1e4:b8f4:da74 with SMTP id t9-20020adfeb89000000b001e4b8f4da74mr9603386wrn.408.1648215882150;
-        Fri, 25 Mar 2022 06:44:42 -0700 (PDT)
-Received: from [10.100.102.14] (85.65.206.129.dynamic.barak-online.net. [85.65.206.129])
-        by smtp.gmail.com with ESMTPSA id e8-20020a056000178800b00203da3bb4d2sm5945955wrg.41.2022.03.25.06.44.38
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gOz+6Jxgi4s/aMhrYK7cy8+f432CABX9+S0xakAnHqY=;
+        b=u87ucjxY6yBWmJpmb5771y8JkSGdY46MaRCl9oPbZBWTBxIICIkgTAJJ7NmExwzlPw
+         hBN3T4d25MrQFiwDjtOtY1onqywACYKSLnLnw6QXwRYr3TLOZcgfkmqmbiPzGGoAHyOX
+         E1i/hhw4l2DxRrTon3oIs6KW+oHpCqZvojMI4a+FAHIRxcWMCAe37B8/tqxUyF47wd9c
+         uscFZgRtZ979Z7VOJXyQRWn8Seo4fcqO6/nAMyNI3bBqgw3XaFeP0O0PNVGyLtTtWhA9
+         gGnXE/Jk7rDax1EatEA1GaphydtOmgbYVW+NfLe0qdYg3ZEwEzJjV0W4zJw3MJ1zmEAY
+         Sz4A==
+X-Gm-Message-State: AOAM5315bsQ7xwI//v4ukN0o/Zz8+PNCGhis4qUjyWMPToQcLB0/qjJn
+        yl+1/t76kbCvlC69EJIXQYxZRlWEotdChvPy
+X-Google-Smtp-Source: ABdhPJznYpEe4YiEhKCtQGJJoqXCxQQWZuhI7X1Sg9xabSoUHTgNexZAv3nlsNsp5+V9z2CAsnAL5g==
+X-Received: by 2002:a17:906:af6b:b0:6df:83a9:67db with SMTP id os11-20020a170906af6b00b006df83a967dbmr11962191ejb.222.1648215889238;
+        Fri, 25 Mar 2022 06:44:49 -0700 (PDT)
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com. [209.85.221.46])
+        by smtp.gmail.com with ESMTPSA id dm11-20020a170907948b00b006cf488e72e3sm2327514ejc.25.2022.03.25.06.44.46
+        for <linux-kernel@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Mar 2022 06:44:40 -0700 (PDT)
-Message-ID: <b7b5106a-9c0d-db49-00ab-234756955de8@grimberg.me>
-Date:   Fri, 25 Mar 2022 16:44:37 +0300
+        Fri, 25 Mar 2022 06:44:47 -0700 (PDT)
+Received: by mail-wr1-f46.google.com with SMTP id b19so10919159wrh.11
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 06:44:46 -0700 (PDT)
+X-Received: by 2002:adf:fc47:0:b0:203:dda1:4311 with SMTP id
+ e7-20020adffc47000000b00203dda14311mr9264199wrs.301.1648215886319; Fri, 25
+ Mar 2022 06:44:46 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 2/3] nvme-tcp: support specifying the
- congestion-control
-Content-Language: en-US
-To:     Mingbao Sun <sunmingbao@tom.com>
-Cc:     Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        tyler.sun@dell.com, ping.gan@dell.com, yanxiu.cai@dell.com,
-        libin.zhang@dell.com, ao.sun@dell.com
-References: <20220311103414.8255-1-sunmingbao@tom.com>
- <20220311103414.8255-2-sunmingbao@tom.com>
- <7121e4be-0e25-dd5f-9d29-0fb02cdbe8de@grimberg.me>
- <20220325201123.00002f28@tom.com>
-From:   Sagi Grimberg <sagi@grimberg.me>
-In-Reply-To: <20220325201123.00002f28@tom.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <1647452154-16361-1-git-send-email-quic_sbillaka@quicinc.com>
+ <1647452154-16361-3-git-send-email-quic_sbillaka@quicinc.com>
+ <CAD=FV=XM1njMY63SCC3yNoA9Uvu+_3xLGkC5OWoLjR-0KnmhWg@mail.gmail.com> <MW4PR02MB7186E881ABC0620E0A62154EE11A9@MW4PR02MB7186.namprd02.prod.outlook.com>
+In-Reply-To: <MW4PR02MB7186E881ABC0620E0A62154EE11A9@MW4PR02MB7186.namprd02.prod.outlook.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Fri, 25 Mar 2022 06:44:33 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=VWaMx9UsXTktjd3Ryo3g0-XY2N9oCNz_kQoJN6gzKAoA@mail.gmail.com>
+Message-ID: <CAD=FV=VWaMx9UsXTktjd3Ryo3g0-XY2N9oCNz_kQoJN6gzKAoA@mail.gmail.com>
+Subject: Re: [PATCH v5 2/9] arm64: dts: qcom: sc7280: Add support for eDP
+ panel on CRD
+To:     "Sankeerth Billakanti (QUIC)" <quic_sbillaka@quicinc.com>
+Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Rob Clark <robdclark@gmail.com>,
+        Sean Paul <seanpaul@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        quic_kalyant <quic_kalyant@quicinc.com>,
+        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
+        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
+        Andy Gross <agross@kernel.org>,
+        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        "dmitry.baryshkov@linaro.org" <dmitry.baryshkov@linaro.org>,
+        quic_vproddut <quic_vproddut@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi,
 
+On Fri, Mar 25, 2022 at 6:41 AM Sankeerth Billakanti (QUIC)
+<quic_sbillaka@quicinc.com> wrote:
+>
+> > -----Original Message-----
+> > From: Doug Anderson <dianders@chromium.org>
+> > Sent: Friday, March 18, 2022 10:51 PM
+> > To: Sankeerth Billakanti (QUIC) <quic_sbillaka@quicinc.com>
+> > Cc: dri-devel <dri-devel@lists.freedesktop.org>; linux-arm-msm <linux-arm-
+> > msm@vger.kernel.org>; freedreno <freedreno@lists.freedesktop.org>;
+> > LKML <linux-kernel@vger.kernel.org>; open list:OPEN FIRMWARE AND
+> > FLATTENED DEVICE TREE BINDINGS <devicetree@vger.kernel.org>; Rob Clark
+> > <robdclark@gmail.com>; Sean Paul <seanpaul@chromium.org>; Stephen
+> > Boyd <swboyd@chromium.org>; quic_kalyant <quic_kalyant@quicinc.com>;
+> > Abhinav Kumar (QUIC) <quic_abhinavk@quicinc.com>; Kuogee Hsieh (QUIC)
+> > <quic_khsieh@quicinc.com>; Andy Gross <agross@kernel.org>;
+> > bjorn.andersson@linaro.org; Rob Herring <robh+dt@kernel.org>;
+> > krzk+dt@kernel.org; Sean Paul <sean@poorly.run>; David Airlie
+> > <airlied@linux.ie>; Daniel Vetter <daniel@ffwll.ch>; Thierry Reding
+> > <thierry.reding@gmail.com>; Sam Ravnborg <sam@ravnborg.org>;
+> > dmitry.baryshkov@linaro.org; quic_vproddut <quic_vproddut@quicinc.com>
+> > Subject: Re: [PATCH v5 2/9] arm64: dts: qcom: sc7280: Add support for eDP
+> > panel on CRD
+> >
+> > Hi,
+> >
+> > On Wed, Mar 16, 2022 at 10:36 AM Sankeerth Billakanti
+> > <quic_sbillaka@quicinc.com> wrote:
+> > >
+> > > Enable support for eDP interface via aux_bus on CRD platform.
+> > >
+> > > Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+> > > ---
+> > >
+> > > Changes in v5:
+> > >   - Change the order of patches
+> > >   - Remove the backlight nodes
+> > >   - Remove the bias setting
+> > >   - Fix compilation issue
+> > >   - Model VREG_EDP_BP for backlight power
+> > >
+> > > Changes in v4:
+> > >   - Create new patch for name changes
+> > >   - Remove output-low
+> > >
+> > > Changes in v3:
+> > >   - Sort the nodes alphabetically
+> > >   - Use - instead of _ as node names
+> > >   - Place the backlight and panel nodes under root
+> > >   - Change the name of edp_out to mdss_edp_out
+> > >   - Change the names of regulator nodes
+> > >   - Delete unused properties in the board file
+> > >
+> > >
+> > > Changes in v2:
+> > >   - Sort node references alphabetically
+> > >   - Improve readability
+> > >   - Move the pwm pinctrl to pwm node
+> > >   - Move the regulators to root
+> > >   - Define backlight power
+> > >   - Remove dummy regulator node
+> > >   - Cleanup pinctrl definitions
+> > >
+> > >  arch/arm64/boot/dts/qcom/sc7280-crd.dts | 93
+> > > +++++++++++++++++++++++++++++++++
+> > >  1 file changed, 93 insertions(+)
+> >
+> > At a high level, I'd expect your patch to be based upon Matthias's series, AKA
+> > the 4 patches from:
+> >
+> > https://lore.kernel.org/r/20220316172814.v1.1.I2deda8f2cd6adfbb525a97d8f
+> > ee008a8477b7b0e@changeid/
+> >
+> > I'll leave it up to you about whether you care to support eDP on the old
+> > CRD1/2 or just on CRD3. Personally I'd think CRD3 would be enough.
+> >
+> > Then, I'd expect your patch to mostly incorporate
+> > <https://crrev.com/c/3379844>, though that patch was written before aux-
+> > bus support so the panel would need to go in a different place.
+> >
+> > Stephen already gave some comments and basing on Matthias's patches will
+> > be a pretty big change, so I probably won't comment lots more.
+> >
+> >
+>
+> I rebased my change on top of Matthias's changes now. We are discussing about the qcard changes internally to understand the way ahead.
+> I believe all my current changes are localized to the crd-r3 files only for the qyalcomm crd3.1
+>
+> I want to have a different series for c and dt changes to expedite review process. May I separate the c changes from this series?
 
-On 3/25/22 15:11, Mingbao Sun wrote:
->> 1. Can you please provide your measurements that support your claims?
-> 
-> Yes. I would provide a series of the testing result.
-> In the bottom of this mail, I would provide the first one.
-> 
->>
->> 2. Can you please provide a real, existing use-case where this provides
->> true, measureable value? And more specifically, please clarify how the
->> use-case needs a local tuning for nvme-tcp that would not hold for
->> other tcp streams that are running on the host (and vice-versa).
->>
-> 
-> As for the use-case.
-> I think multiple NVMe/TCP hosts simultaneously write data to a single target
-> is a much common use-case.
-> And this patchset just addresses the performance issue of this use-case.
+I'd have no problems with that. They go into different trees and if it
+makes it easier to get a new version of the driver out while you're
+figuring out what to do about the dts then I'd say let's do it.
 
-Thanks Mingbao,
-
-Long email, haven't read it all yet.
-
-But this doesn't answer my specific question. I was asking why should
-the tcp congestion be controlled locally to nvme. You could just as
-easily change these knobs via sysctl and achieve the expected result
-that dctcp handles congestion better than cubic (which was not even
-testing nvme btw).
-
-As I said, TCP can be tuned in various ways, congestion being just one
-of them. I'm sure you can find a workload where rmem/wmem will make
-a difference.
-
-In addition, based on my knowledge, application specific TCP level
-tuning (like congestion) is not really a common thing to do. So why in
-nvme-tcp?
-
-So to me at least, it is not clear why we should add it to the driver.
+-Doug
