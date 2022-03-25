@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23ABBC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49A2FC43219
 	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377442AbiCYPd2 (ORCPT
+        id S1377971AbiCYPeR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:33:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60350 "EHLO
+        Fri, 25 Mar 2022 11:34:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376894AbiCYPXa (ORCPT
+        with ESMTP id S1377585AbiCYPYR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:23:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FD4D92D3D;
-        Fri, 25 Mar 2022 08:16:57 -0700 (PDT)
+        Fri, 25 Mar 2022 11:24:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D7F3DFF8A;
+        Fri, 25 Mar 2022 08:18:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E1837B827B7;
-        Fri, 25 Mar 2022 15:16:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43260C340E9;
-        Fri, 25 Mar 2022 15:16:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D0CC360ABA;
+        Fri, 25 Mar 2022 15:18:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2DE1C340E9;
+        Fri, 25 Mar 2022 15:18:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221397;
-        bh=q4yisZHCankKIcaEBoaOV+QCs/SEnOGaAYxROdpfo3g=;
+        s=korg; t=1648221498;
+        bh=yQdpvEhL5AoioDf0png7mIvxiUMoS5mudv/r7pfJOUc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x6selMHBkKUnfnXN3P9Q7c8WR5OtG+tDjEVNXKf5vF/7ZDez6T1sStsJgEu4DSvGU
-         mpTAieW/ArriGD5YC3iruDW/aU53CjdPx4+14fwCwKEcf8dM5VG9WQdSqSCdbGspsj
-         FTerypWyGn8MWlW0s+nbXaSKGP81uvQYxHza7MM8=
+        b=vjESTfk+NUpuWF4/Y8wq6uJQLbupcswoi9S/uX4u5sxXAAf62MrnI9a7VSHA66k2A
+         wRYSswCqkLuKxWPl9Mm1hWNs7Hbnqc7R5mw4+cLq4lSWsqGl3KUQFwa9QxruFsSZXa
+         jtOvHQnQD+yqOLIjSxJa5xtxaI0ztzQum5g1rvfE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hu Jiahui <kirin.say@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.16 10/37] ALSA: pcm: Fix races among concurrent hw_params and hw_free calls
-Date:   Fri, 25 Mar 2022 16:14:20 +0100
-Message-Id: <20220325150420.342932007@linuxfoundation.org>
+        stable@vger.kernel.org, Maximilian Luz <luzmaximilian@gmail.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.16 25/37] ACPI: battery: Add device HID and quirk for Microsoft Surface Go 3
+Date:   Fri, 25 Mar 2022 16:14:35 +0100
+Message-Id: <20220325150420.764126922@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150420.046488912@linuxfoundation.org>
 References: <20220325150420.046488912@linuxfoundation.org>
@@ -49,179 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Maximilian Luz <luzmaximilian@gmail.com>
 
-commit 92ee3c60ec9fe64404dc035e7c41277d74aa26cb upstream.
+commit 7dacee0b9efc8bd061f097b1a8d4daa6591af0c6 upstream.
 
-Currently we have neither proper check nor protection against the
-concurrent calls of PCM hw_params and hw_free ioctls, which may result
-in a UAF.  Since the existing PCM stream lock can't be used for
-protecting the whole ioctl operations, we need a new mutex to protect
-those racy calls.
+For some reason, the Microsoft Surface Go 3 uses the standard ACPI
+interface for battery information, but does not use the standard PNP0C0A
+HID. Instead it uses MSHW0146 as identifier. Add that ID to the driver
+as this seems to work well.
 
-This patch introduced a new mutex, runtime->buffer_mutex, and applies
-it to both hw_params and hw_free ioctl code paths.  Along with it, the
-both functions are slightly modified (the mmap_count check is moved
-into the state-check block) for code simplicity.
+Additionally, the power state is not updated immediately after the AC
+has been (un-)plugged, so add the respective quirk for that.
 
-Reported-by: Hu Jiahui <kirin.say@gmail.com>
-Cc: <stable@vger.kernel.org>
-Reviewed-by: Jaroslav Kysela <perex@perex.cz>
-Link: https://lore.kernel.org/r/20220322170720.3529-2-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
+Cc: All applicable <stable@vger.kernel.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/sound/pcm.h     |    1 
- sound/core/pcm.c        |    2 +
- sound/core/pcm_native.c |   61 ++++++++++++++++++++++++++++++------------------
- 3 files changed, 42 insertions(+), 22 deletions(-)
+ drivers/acpi/battery.c |   12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
---- a/include/sound/pcm.h
-+++ b/include/sound/pcm.h
-@@ -398,6 +398,7 @@ struct snd_pcm_runtime {
- 	wait_queue_head_t tsleep;	/* transfer sleep */
- 	struct fasync_struct *fasync;
- 	bool stop_operating;		/* sync_stop will be called */
-+	struct mutex buffer_mutex;	/* protect for buffer changes */
+--- a/drivers/acpi/battery.c
++++ b/drivers/acpi/battery.c
+@@ -60,6 +60,10 @@ MODULE_PARM_DESC(cache_time, "cache time
  
- 	/* -- private section -- */
- 	void *private_data;
---- a/sound/core/pcm.c
-+++ b/sound/core/pcm.c
-@@ -969,6 +969,7 @@ int snd_pcm_attach_substream(struct snd_
- 	init_waitqueue_head(&runtime->tsleep);
- 
- 	runtime->status->state = SNDRV_PCM_STATE_OPEN;
-+	mutex_init(&runtime->buffer_mutex);
- 
- 	substream->runtime = runtime;
- 	substream->private_data = pcm->private_data;
-@@ -1002,6 +1003,7 @@ void snd_pcm_detach_substream(struct snd
- 	} else {
- 		substream->runtime = NULL;
- 	}
-+	mutex_destroy(&runtime->buffer_mutex);
- 	kfree(runtime);
- 	put_pid(substream->pid);
- 	substream->pid = NULL;
---- a/sound/core/pcm_native.c
-+++ b/sound/core/pcm_native.c
-@@ -672,33 +672,40 @@ static int snd_pcm_hw_params_choose(stru
- 	return 0;
- }
- 
-+#if IS_ENABLED(CONFIG_SND_PCM_OSS)
-+#define is_oss_stream(substream)	((substream)->oss.oss)
-+#else
-+#define is_oss_stream(substream)	false
-+#endif
+ static const struct acpi_device_id battery_device_ids[] = {
+ 	{"PNP0C0A", 0},
 +
- static int snd_pcm_hw_params(struct snd_pcm_substream *substream,
- 			     struct snd_pcm_hw_params *params)
- {
- 	struct snd_pcm_runtime *runtime;
--	int err, usecs;
-+	int err = 0, usecs;
- 	unsigned int bits;
- 	snd_pcm_uframes_t frames;
++	/* Microsoft Surface Go 3 */
++	{"MSHW0146", 0},
++
+ 	{"", 0},
+ };
  
- 	if (PCM_RUNTIME_CHECK(substream))
- 		return -ENXIO;
- 	runtime = substream->runtime;
-+	mutex_lock(&runtime->buffer_mutex);
- 	snd_pcm_stream_lock_irq(substream);
- 	switch (runtime->status->state) {
- 	case SNDRV_PCM_STATE_OPEN:
- 	case SNDRV_PCM_STATE_SETUP:
- 	case SNDRV_PCM_STATE_PREPARED:
-+		if (!is_oss_stream(substream) &&
-+		    atomic_read(&substream->mmap_count))
-+			err = -EBADFD;
- 		break;
- 	default:
--		snd_pcm_stream_unlock_irq(substream);
--		return -EBADFD;
-+		err = -EBADFD;
-+		break;
- 	}
- 	snd_pcm_stream_unlock_irq(substream);
--#if IS_ENABLED(CONFIG_SND_PCM_OSS)
--	if (!substream->oss.oss)
--#endif
--		if (atomic_read(&substream->mmap_count))
--			return -EBADFD;
-+	if (err)
-+		goto unlock;
- 
- 	snd_pcm_sync_stop(substream, true);
- 
-@@ -786,16 +793,21 @@ static int snd_pcm_hw_params(struct snd_
- 	if (usecs >= 0)
- 		cpu_latency_qos_add_request(&substream->latency_pm_qos_req,
- 					    usecs);
--	return 0;
-+	err = 0;
-  _error:
--	/* hardware might be unusable from this time,
--	   so we force application to retry to set
--	   the correct hardware parameter settings */
--	snd_pcm_set_state(substream, SNDRV_PCM_STATE_OPEN);
--	if (substream->ops->hw_free != NULL)
--		substream->ops->hw_free(substream);
--	if (substream->managed_buffer_alloc)
--		snd_pcm_lib_free_pages(substream);
-+	if (err) {
-+		/* hardware might be unusable from this time,
-+		 * so we force application to retry to set
-+		 * the correct hardware parameter settings
-+		 */
-+		snd_pcm_set_state(substream, SNDRV_PCM_STATE_OPEN);
-+		if (substream->ops->hw_free != NULL)
-+			substream->ops->hw_free(substream);
-+		if (substream->managed_buffer_alloc)
-+			snd_pcm_lib_free_pages(substream);
-+	}
-+ unlock:
-+	mutex_unlock(&runtime->buffer_mutex);
- 	return err;
- }
- 
-@@ -835,26 +847,31 @@ static int do_hw_free(struct snd_pcm_sub
- static int snd_pcm_hw_free(struct snd_pcm_substream *substream)
- {
- 	struct snd_pcm_runtime *runtime;
--	int result;
-+	int result = 0;
- 
- 	if (PCM_RUNTIME_CHECK(substream))
- 		return -ENXIO;
- 	runtime = substream->runtime;
-+	mutex_lock(&runtime->buffer_mutex);
- 	snd_pcm_stream_lock_irq(substream);
- 	switch (runtime->status->state) {
- 	case SNDRV_PCM_STATE_SETUP:
- 	case SNDRV_PCM_STATE_PREPARED:
-+		if (atomic_read(&substream->mmap_count))
-+			result = -EBADFD;
- 		break;
- 	default:
--		snd_pcm_stream_unlock_irq(substream);
--		return -EBADFD;
-+		result = -EBADFD;
-+		break;
- 	}
- 	snd_pcm_stream_unlock_irq(substream);
--	if (atomic_read(&substream->mmap_count))
--		return -EBADFD;
-+	if (result)
-+		goto unlock;
- 	result = do_hw_free(substream);
- 	snd_pcm_set_state(substream, SNDRV_PCM_STATE_OPEN);
- 	cpu_latency_qos_remove_request(&substream->latency_pm_qos_req);
-+ unlock:
-+	mutex_unlock(&runtime->buffer_mutex);
- 	return result;
- }
+@@ -1177,6 +1181,14 @@ static const struct dmi_system_id bat_dm
+ 			DMI_MATCH(DMI_PRODUCT_VERSION, "ThinkPad"),
+ 		},
+ 	},
++	{
++		/* Microsoft Surface Go 3 */
++		.callback = battery_notification_delay_quirk,
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "Surface Go 3"),
++		},
++	},
+ 	{},
+ };
  
 
 
