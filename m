@@ -2,139 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CE0CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 17:19:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C19FDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 17:28:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239423AbiCYRUw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 13:20:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44188 "EHLO
+        id S231270AbiCYRaS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 13:30:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234622AbiCYRUs (ORCPT
+        with ESMTP id S245046AbiCYR3n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 13:20:48 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6DC4ECC73
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 10:19:07 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id i67-20020a1c3b46000000b0038ce25c870dso1296565wma.1
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 10:19:07 -0700 (PDT)
+        Fri, 25 Mar 2022 13:29:43 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 960F61020
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 10:28:07 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id r22so11209794ljd.4
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 10:28:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=FaQcjw0Oe/ViCTTuFvcZ5DbpUtBdonZ5NoR4+x/b/mM=;
-        b=q02Yc/wGGHipHe+rqcIDczhkFTYBkCXNRcjEaizSrgSJSQk0FcBIVTvhOBAQ+15RPF
-         15EnZCNGxO/rh/t5Bptvfr1UKzXfH3o68t/uFyTZbvYxkGCMctksAnUHZdxSj6Ssx5sb
-         ZsWpd8V9SvZbYNVChxVyeCUJ1TvEnvNTUnKALgOwqoqKibmVvTN23VqehQN+Rnws1taU
-         e6bjFfjYSBVPOjRfsB/M7W8aQ1HW6ebobxCF4cGm+oqbJb7cgl9u0ZJRn9I4Hx3sQou+
-         pxi5mHjGkSf3wzIrzRLNklRbUzIyhq4YyxCGLnejv93i9TXyu3b5oP/AMswNQWByss5V
-         sCOA==
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yIMApoDu0cSTb9UHBH+0bGiaMNz8inAICwvHUwG31uM=;
+        b=fImwDEmarxWlMb6gMb1DB3uyeS0b4STGPcZKODQdrNUIGD5G9Kqoh0FWkcCAPqbziQ
+         HIDiJvpOAZ/Hvsyijyg/cAIgAtvr9nzllE3BZOBmRvLYdvbfnrL0+xcorU8NV97pFVmz
+         6HjdVE2BWnwep3mBHwh1GU9827E94rVX0KV9s=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=FaQcjw0Oe/ViCTTuFvcZ5DbpUtBdonZ5NoR4+x/b/mM=;
-        b=ylJFYZ1rILshXkmGrqP3dLA5UDhR6Ne06MSPO6wytJZaQHRrGo6GEpG/AZ14l60mVp
-         P3qpbZkm5aiDnF1nOmrd0y8Dq3gNWAbIHLhjGZDB/9qwyZKS7OXY7+xDuS/+FkpYEJwo
-         ANEdr7OqyAKMn+sZBn/ZyTbQz0FjVhTVHEc7ezq9W7lC63+/JnsEM/iI8rpuVcc8Jn7m
-         4jUMnDjNXuIH2SlAmsG/jlFkY+eL6L1UWi3z4SRQyouiexxHFVkO2XTM6UPWQ+gDYTKR
-         2XZupa8x0p2h9Icbqez4vih5n8eiFLl5i/VEYeMz8PhBqbjTiRPRFeeGuw3WdJZ4kUIJ
-         Ikvg==
-X-Gm-Message-State: AOAM531q7aqbmsmARLTcYd94ARTIuGczSqDGLuEbyva6qFtm8JX/zE88
-        fvveAAdQ9qKkpKzIUb3WMbSipg==
-X-Google-Smtp-Source: ABdhPJwePYYbDEL3jskId8G6Vh/wDKonckD8/zRMt2PuaJN41Er7Io1HePBcu1Tfj+Zb+ttXKPbZcw==
-X-Received: by 2002:a05:600c:3ac7:b0:38b:f9c6:27b8 with SMTP id d7-20020a05600c3ac700b0038bf9c627b8mr10822009wms.75.1648228630495;
-        Fri, 25 Mar 2022 10:17:10 -0700 (PDT)
-Received: from localhost.localdomain (2a02-8440-6240-cc41-3074-96af-9642-0003.rev.sfr.net. [2a02:8440:6240:cc41:3074:96af:9642:3])
-        by smtp.gmail.com with ESMTPSA id p16-20020a5d6390000000b00203ffebddf3sm7547464wru.99.2022.03.25.10.17.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Mar 2022 10:17:10 -0700 (PDT)
-From:   Guillaume Ranquet <granquet@baylibre.com>
-To:     chunkuang.hu@kernel.org, p.zabel@pengutronix.de, airlied@linux.ie,
-        daniel@ffwll.ch, robh+dt@kernel.org,
-        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        tzimmermann@suse.de, matthias.bgg@gmail.com,
-        chunfeng.yun@mediatek.com, kishon@ti.com, vkoul@kernel.org,
-        deller@gmx.de, ck.hu@mediatek.com, jitao.shi@mediatek.com,
-        angelogioacchino.delregno@collabora.com
-Cc:     dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-phy@lists.infradead.org, linux-fbdev@vger.kernel.org,
-        markyacoub@google.com
-Subject: [PATCH 13/22] drm/mediatek: dpi: move the yuv422_en_bit to SoC config
-Date:   Fri, 25 Mar 2022 18:15:02 +0100
-Message-Id: <20220325171511.23493-14-granquet@baylibre.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220325171511.23493-1-granquet@baylibre.com>
-References: <20220325171511.23493-1-granquet@baylibre.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yIMApoDu0cSTb9UHBH+0bGiaMNz8inAICwvHUwG31uM=;
+        b=EnXfrDKCz2EpL5S85Tzf85Fk5uLExkaJhYpAn1MfcOfvFVdSQT0EAuGc+o9+mCj6Wk
+         mVxR/7Zb32eGGjS9TLiL9ZxxO33/BYbgeddQfgA6iWhR0Oah5/LDdCH8YgPt2AlWb6L4
+         B+fYE48VMlMuBo+5x57fH2W3UxBMev0i5Xvmo3WBZHJT4bG+NoKnHOKBI5T0gOssbHA5
+         tMAMtHGXEDaTLpNBxHbwAKcpm0xDSlbdFvTY+BzwSRHKiFIbWIAXYfPuzbX1rKKnvVVY
+         VsXI1PfsD24CmB7sWBTmIQ1TzesUc2R0r+DsxXHajmeDbaDvxdRd9Q+cT0Oh8vcQzzk9
+         gAQg==
+X-Gm-Message-State: AOAM533N06HbC/JbwZmz1YkXwxpCotD3Mont/lp1F1+uo5VgAlsaqC6Y
+        b4d5i/IhWXFxS7yv+WH6BV7ESiUYTd5Fpb+2IYg=
+X-Google-Smtp-Source: ABdhPJxTnDLMKEu9PxHqWuQS3ZgJNLV3IJlZxH8BzaEn2xjj98lEIG/7/7EMAmhfgvAaQQAalxVyUg==
+X-Received: by 2002:a05:6512:1387:b0:44a:2d7b:adca with SMTP id p7-20020a056512138700b0044a2d7badcamr8592038lfa.680.1648228834334;
+        Fri, 25 Mar 2022 10:20:34 -0700 (PDT)
+Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com. [209.85.208.176])
+        by smtp.gmail.com with ESMTPSA id p9-20020a056512312900b0044a5312dcbcsm766983lfd.89.2022.03.25.10.20.32
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Mar 2022 10:20:33 -0700 (PDT)
+Received: by mail-lj1-f176.google.com with SMTP id q5so11162810ljb.11
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 10:20:32 -0700 (PDT)
+X-Received: by 2002:a2e:a5c4:0:b0:249:9ec3:f2b with SMTP id
+ n4-20020a2ea5c4000000b002499ec30f2bmr8829088ljp.358.1648228831778; Fri, 25
+ Mar 2022 10:20:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220325131348.3995-1-andriy.shevchenko@linux.intel.com> <CAK7LNAR9HS7LK5D-07i8_tFcwd=uiHEFu05n0t_UuFZExcfBpw@mail.gmail.com>
+In-Reply-To: <CAK7LNAR9HS7LK5D-07i8_tFcwd=uiHEFu05n0t_UuFZExcfBpw@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Fri, 25 Mar 2022 10:20:15 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjGsKD=DYgYqYUDzGKT8BOPLhqebw2YB6PCuZenE3qEzA@mail.gmail.com>
+Message-ID: <CAHk-=wjGsKD=DYgYqYUDzGKT8BOPLhqebw2YB6PCuZenE3qEzA@mail.gmail.com>
+Subject: Re: [PATCH v1 1/1] Makefile.extrawarn: Turn off -Werror when extra
+ warnings are enabled
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add flexibility by moving the yuv422 en bit to SoC specific config
+On Fri, Mar 25, 2022 at 7:35 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
+> WERROR should not be enabled for regular builds.
 
-Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/gpu/drm/mediatek/mtk_dpi.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+No.
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
-index 6d4d8c6ec47d..40254cd9d168 100644
---- a/drivers/gpu/drm/mediatek/mtk_dpi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
-@@ -132,6 +132,7 @@ struct mtk_dpi_conf {
- 	/* HSIZE and VSIZE mask (no shift) */
- 	u32 hvsize_mask;
- 	u32 channel_swap_shift;
-+	u32 yuv422_en_bit;
- 	const struct mtk_dpi_yc_limit *limit;
- };
- 
-@@ -356,7 +357,8 @@ static void mtk_dpi_config_channel_swap(struct mtk_dpi *dpi,
- 
- static void mtk_dpi_config_yuv422_enable(struct mtk_dpi *dpi, bool enable)
- {
--	mtk_dpi_mask(dpi, DPI_CON, enable ? YUV422_EN : 0, YUV422_EN);
-+	mtk_dpi_mask(dpi, DPI_CON, enable ? dpi->conf->yuv422_en_bit : 0,
-+		     dpi->conf->yuv422_en_bit);
- }
- 
- static void mtk_dpi_config_csc_enable(struct mtk_dpi *dpi, bool enable)
-@@ -824,6 +826,7 @@ static const struct mtk_dpi_conf mt8173_conf = {
- 	.dimension_mask = HPW_MASK,
- 	.hvsize_mask = HSIZE_MASK,
- 	.channel_swap_shift = CH_SWAP,
-+	.yuv422_en_bit = YUV422_EN,
- 	.limit = &mtk_dpi_limit,
- };
- 
-@@ -839,6 +842,7 @@ static const struct mtk_dpi_conf mt2701_conf = {
- 	.dimension_mask = HPW_MASK,
- 	.hvsize_mask = HSIZE_MASK,
- 	.channel_swap_shift = CH_SWAP,
-+	.yuv422_en_bit = YUV422_EN,
- 	.limit = &mtk_dpi_limit,
- };
- 
-@@ -853,6 +857,7 @@ static const struct mtk_dpi_conf mt8183_conf = {
- 	.dimension_mask = HPW_MASK,
- 	.hvsize_mask = HSIZE_MASK,
- 	.channel_swap_shift = CH_SWAP,
-+	.yuv422_en_bit = YUV422_EN,
- 	.limit = &mtk_dpi_limit,
- };
- 
-@@ -867,6 +872,7 @@ static const struct mtk_dpi_conf mt8192_conf = {
- 	.dimension_mask = HPW_MASK,
- 	.hvsize_mask = HSIZE_MASK,
- 	.channel_swap_shift = CH_SWAP,
-+	.yuv422_en_bit = YUV422_EN,
- 	.limit = &mtk_dpi_limit,
- };
- 
--- 
-2.34.1
+WERROR should be on for regular builds.
 
+It's W=1 that is questionable. It enables warnings that are often
+false positives, and if you use W=1 (and particularly W=2) then that's
+_your_ problem.
+
+W=1 is most definitely not "regular builds". It's only for people who
+want to deal with crazy compiler warnings.
+
+I want WERROR on as widely as possible, because I'm really sick and
+tired of developers not noticing when they add warnings because they
+did a "regular build"
+
+Stop this idiocy where you think warnings are acceptable.
+
+                Linus
