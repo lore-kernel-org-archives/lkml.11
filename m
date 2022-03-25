@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A25A3C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82D6DC35274
 	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 15:34:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377829AbiCYPeG (ORCPT
+        id S1377796AbiCYPd7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 11:34:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42866 "EHLO
+        Fri, 25 Mar 2022 11:33:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377341AbiCYPYF (ORCPT
+        with ESMTP id S1377313AbiCYPYD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 11:24:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73C35E6C5D;
-        Fri, 25 Mar 2022 08:17:48 -0700 (PDT)
+        Fri, 25 Mar 2022 11:24:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D33B3E617F;
+        Fri, 25 Mar 2022 08:17:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D308D60F13;
-        Fri, 25 Mar 2022 15:17:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6028C340E9;
-        Fri, 25 Mar 2022 15:17:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F043CB82865;
+        Fri, 25 Mar 2022 15:17:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40202C340E9;
+        Fri, 25 Mar 2022 15:17:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648221467;
-        bh=bLyHvRHuwpHkVvuattikF0PH4TZTbUXMmVmmup3vp7E=;
+        s=korg; t=1648221461;
+        bh=IINwPm1bqspPgPbPUx/hYBYPSojwwZV9QAGEwMdrTTc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pvF6L+QcgsONNIR1IawW9a7IJ6ZkQ+tzrf48mQPSw+MNPl9cXtZ3wYboGNJg/MCzi
-         xRG0jf5FCln4UdG5eDzEXDjHYVv0kaN6+pj8Dg/YidYRWMUkQSJ91SyB1EulIKqT6J
-         bT+2vfVDyBFaT3Qf4YUCgkBv98eq8pGdZv51e+/M=
+        b=qQwSw33N8LNEwAILOvtPD31yp+Kba9LIE5+LFrpGJJ31h58NqkCsZcmrm015zPL7n
+         yTrZM3lUuBH4cZCrztEHpOvCHvddANaaIFcuGNwisZS5rph5lwrs2+55NXKMLXiuQ8
+         bmMpzZlPi4hS7U9fYW/+dx6t211+SbXDUShtgrKI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        James Bottomley <James.Bottomley@HansenPartnership.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Subject: [PATCH 5.16 34/37] tpm: use try_get_ops() in tpm-space.c
-Date:   Fri, 25 Mar 2022 16:14:44 +0100
-Message-Id: <20220325150421.022289955@linuxfoundation.org>
+        stable@vger.kernel.org, David Laight <David.Laight@aculab.com>,
+        Christoph Hellwig <hch@lst.de>, Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 5.16 32/37] uaccess: fix integer overflow on access_ok()
+Date:   Fri, 25 Mar 2022 16:14:42 +0100
+Message-Id: <20220325150420.965492022@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220325150420.046488912@linuxfoundation.org>
 References: <20220325150420.046488912@linuxfoundation.org>
@@ -50,51 +49,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Bottomley <James.Bottomley@HansenPartnership.com>
+From: Arnd Bergmann <arnd@arndb.de>
 
-commit fb5abce6b2bb5cb3d628aaa63fa821da8c4600f9 upstream.
+commit 222ca305c9fd39e5ed8104da25c09b2b79a516a8 upstream.
 
-As part of the series conversion to remove nested TPM operations:
+Three architectures check the end of a user access against the
+address limit without taking a possible overflow into account.
+Passing a negative length or another overflow in here returns
+success when it should not.
 
-https://lore.kernel.org/all/20190205224723.19671-1-jarkko.sakkinen@linux.intel.com/
+Use the most common correct implementation here, which optimizes
+for a constant 'size' argument, and turns the common case into a
+single comparison.
 
-exposure of the chip->tpm_mutex was removed from much of the upper
-level code.  In this conversion, tpm2_del_space() was missed.  This
-didn't matter much because it's usually called closely after a
-converted operation, so there's only a very tiny race window where the
-chip can be removed before the space flushing is done which causes a
-NULL deref on the mutex.  However, there are reports of this window
-being hit in practice, so fix this by converting tpm2_del_space() to
-use tpm_try_get_ops(), which performs all the teardown checks before
-acquring the mutex.
-
-Cc: stable@vger.kernel.org # 5.4.x
-Signed-off-by: James Bottomley <James.Bottomley@HansenPartnership.com>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Cc: stable@vger.kernel.org
+Fixes: da551281947c ("csky: User access")
+Fixes: f663b60f5215 ("microblaze: Fix uaccess_ok macro")
+Fixes: 7567746e1c0d ("Hexagon: Add user access functions")
+Reported-by: David Laight <David.Laight@aculab.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/tpm/tpm2-space.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/csky/include/asm/uaccess.h       |    7 +++----
+ arch/hexagon/include/asm/uaccess.h    |   18 +++++++++---------
+ arch/microblaze/include/asm/uaccess.h |   19 ++++---------------
+ 3 files changed, 16 insertions(+), 28 deletions(-)
 
---- a/drivers/char/tpm/tpm2-space.c
-+++ b/drivers/char/tpm/tpm2-space.c
-@@ -58,12 +58,12 @@ int tpm2_init_space(struct tpm_space *sp
+--- a/arch/csky/include/asm/uaccess.h
++++ b/arch/csky/include/asm/uaccess.h
+@@ -3,14 +3,13 @@
+ #ifndef __ASM_CSKY_UACCESS_H
+ #define __ASM_CSKY_UACCESS_H
  
- void tpm2_del_space(struct tpm_chip *chip, struct tpm_space *space)
+-#define user_addr_max() \
+-	(uaccess_kernel() ? KERNEL_DS.seg : get_fs().seg)
++#define user_addr_max() (current_thread_info()->addr_limit.seg)
+ 
+ static inline int __access_ok(unsigned long addr, unsigned long size)
  {
--	mutex_lock(&chip->tpm_mutex);
--	if (!tpm_chip_start(chip)) {
-+
-+	if (tpm_try_get_ops(chip) == 0) {
- 		tpm2_flush_sessions(chip, space);
--		tpm_chip_stop(chip);
-+		tpm_put_ops(chip);
- 	}
--	mutex_unlock(&chip->tpm_mutex);
-+
- 	kfree(space->context_buf);
- 	kfree(space->session_buf);
+-	unsigned long limit = current_thread_info()->addr_limit.seg;
++	unsigned long limit = user_addr_max();
+ 
+-	return ((addr < limit) && ((addr + size) < limit));
++	return (size <= limit) && (addr <= (limit - size));
  }
+ #define __access_ok __access_ok
+ 
+--- a/arch/hexagon/include/asm/uaccess.h
++++ b/arch/hexagon/include/asm/uaccess.h
+@@ -25,17 +25,17 @@
+  * Returns true (nonzero) if the memory block *may* be valid, false (zero)
+  * if it is definitely invalid.
+  *
+- * User address space in Hexagon, like x86, goes to 0xbfffffff, so the
+- * simple MSB-based tests used by MIPS won't work.  Some further
+- * optimization is probably possible here, but for now, keep it
+- * reasonably simple and not *too* slow.  After all, we've got the
+- * MMU for backup.
+  */
++#define uaccess_kernel() (get_fs().seg == KERNEL_DS.seg)
++#define user_addr_max() (uaccess_kernel() ? ~0UL : TASK_SIZE)
+ 
+-#define __access_ok(addr, size) \
+-	((get_fs().seg == KERNEL_DS.seg) || \
+-	(((unsigned long)addr < get_fs().seg) && \
+-	  (unsigned long)size < (get_fs().seg - (unsigned long)addr)))
++static inline int __access_ok(unsigned long addr, unsigned long size)
++{
++	unsigned long limit = TASK_SIZE;
++
++	return (size <= limit) && (addr <= (limit - size));
++}
++#define __access_ok __access_ok
+ 
+ /*
+  * When a kernel-mode page fault is taken, the faulting instruction
+--- a/arch/microblaze/include/asm/uaccess.h
++++ b/arch/microblaze/include/asm/uaccess.h
+@@ -39,24 +39,13 @@
+ 
+ # define uaccess_kernel()	(get_fs().seg == KERNEL_DS.seg)
+ 
+-static inline int access_ok(const void __user *addr, unsigned long size)
++static inline int __access_ok(unsigned long addr, unsigned long size)
+ {
+-	if (!size)
+-		goto ok;
++	unsigned long limit = user_addr_max();
+ 
+-	if ((get_fs().seg < ((unsigned long)addr)) ||
+-			(get_fs().seg < ((unsigned long)addr + size - 1))) {
+-		pr_devel("ACCESS fail at 0x%08x (size 0x%x), seg 0x%08x\n",
+-			(__force u32)addr, (u32)size,
+-			(u32)get_fs().seg);
+-		return 0;
+-	}
+-ok:
+-	pr_devel("ACCESS OK at 0x%08x (size 0x%x), seg 0x%08x\n",
+-			(__force u32)addr, (u32)size,
+-			(u32)get_fs().seg);
+-	return 1;
++	return (size <= limit) && (addr <= (limit - size));
+ }
++#define access_ok(addr, size) __access_ok((unsigned long)addr, size)
+ 
+ # define __FIXUP_SECTION	".section .fixup,\"ax\"\n"
+ # define __EX_TABLE_SECTION	".section __ex_table,\"a\"\n"
 
 
