@@ -2,65 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE303C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 16:32:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D36B2C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 16:35:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376822AbiCYQdo (ORCPT
+        id S1357214AbiCYQhb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 12:33:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48090 "EHLO
+        Fri, 25 Mar 2022 12:37:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241341AbiCYQdm (ORCPT
+        with ESMTP id S1343957AbiCYQh2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 12:33:42 -0400
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D47DB48B;
-        Fri, 25 Mar 2022 09:32:08 -0700 (PDT)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id EBAC468B05; Fri, 25 Mar 2022 17:32:04 +0100 (CET)
-Date:   Fri, 25 Mar 2022 17:32:04 +0100
-From:   Christoph Hellwig <hch@lst.de>
-To:     Halil Pasic <pasic@linux.ibm.com>
-Cc:     Robin Murphy <robin.murphy@arm.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Christoph Hellwig <hch@lst.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@toke.dk>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Olha Cherevyk <olha.cherevyk@gmail.com>,
-        iommu <iommu@lists.linux-foundation.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable <stable@vger.kernel.org>
-Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
- ath9k-based AP
-Message-ID: <20220325163204.GB16426@lst.de>
-References: <1812355.tdWV9SEqCh@natalenko.name> <CAHk-=wiwz+Z2MaP44h086jeniG-OpK3c=FywLsCwXV7Crvadrg@mail.gmail.com> <27b5a287-7a33-9a8b-ad6d-04746735fb0c@arm.com> <CAHk-=wip7TCD_+2STTepuEZvGMg6wcz+o=kyFUvHjuKziTMixw@mail.gmail.com> <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com> <20220324190216.0efa067f.pasic@linux.ibm.com>
+        Fri, 25 Mar 2022 12:37:28 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D29A60A9D
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 09:35:52 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id b15so6855468pfm.5
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 09:35:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=59DdM1OMuwdp9CVjs5LMT5Vj5xWvhECtRS/Ocfq4B1Q=;
+        b=OeMJ6CesmRYIII7XnopnggyoVqEsoanvgZspmVWHcn13nBPGB61sUAt+1nIikJT28a
+         U++VArf8YYxy97kp3clOgRBNCBNKz+8Cw58RCRUc2U4nCXH60c0AEw46or+Ii0MUpxgG
+         bSZ19ACwHJW+vwpKiPF+kOqklysC4UlrjdANGlKSd6Uq50wQRVRhFDI4fBH1B9HdG9FV
+         ZLsZNRC7IXcfLR2n/XtzvsqEw/pLP3Cpn0M5v4PqMpMC34z7hQakWZuNOycLT/kmsPrS
+         pJMhFcxrMvgwMb5A1r8xya+HKXppRXthH0d+6R3fheVMRflJxyqXR5DHGPpqVVqbOIhe
+         OTkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=59DdM1OMuwdp9CVjs5LMT5Vj5xWvhECtRS/Ocfq4B1Q=;
+        b=QxE/KTdy8cqfDA1Ak70VRAt3egc0SYOWRByp7YzFdkE+w/vGkjSI3C25b/DdOaUar5
+         ptDa892+o+7+ZnPlmu5/8XRbx3MDDHkmzTE/mItPJGLCvwkN/wHjFZ35ToQbcWCLTm9M
+         nniPng1kwRTGG0S+9Ssh4nNaIFO2zygEZAUhH3TqsZxbi+BWoQzxeWSVb8QIpu56JVq/
+         uVXypB/sReKIjpc/yGnEdzCH4BmTjuJZ+uy1WxE3JVUw4hpEPCvxrtRxFlx0VWN8B81u
+         3HU8ZZQawqSUBbu4SYY7Kr8aaDLYmo0pRNVWJV0evovonKSCRKs7ZkBrp9O3J6XF+TVc
+         0Fxw==
+X-Gm-Message-State: AOAM531sChmvmtnxe92TEoD8k3Rwk2ibyhuhGRuJqLIl4nZycgTMHPLC
+        efNSMuGfKDot2OChdDWsC+RGSg==
+X-Google-Smtp-Source: ABdhPJyRd0wOThIIONBwFapt4DjMaBqvYAaaNG1ntcedGtasnkDrMUT40oNbvBljkaaV3CvasQwthg==
+X-Received: by 2002:a05:6a00:16cd:b0:4e1:366:7ee8 with SMTP id l13-20020a056a0016cd00b004e103667ee8mr10889715pfc.9.1648226151493;
+        Fri, 25 Mar 2022 09:35:51 -0700 (PDT)
+Received: from localhost.localdomain ([223.233.78.42])
+        by smtp.gmail.com with ESMTPSA id j6-20020a17090a588600b001c699d77503sm6264948pji.2.2022.03.25.09.35.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Mar 2022 09:35:51 -0700 (PDT)
+From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
+To:     linux-arm-msm@vger.kernel.org
+Cc:     bhupesh.sharma@linaro.org, bhupesh.linux@gmail.com,
+        agross@kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, robh+dt@kernel.org,
+        bjorn.andersson@linaro.org
+Subject: [PATCH v4 0/2] Add ethernet dts nodes for Qualcomm SA8155p-ADP board
+Date:   Fri, 25 Mar 2022 22:05:35 +0530
+Message-Id: <20220325163537.1579969-1-bhupesh.sharma@linaro.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220324190216.0efa067f.pasic@linux.ibm.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 07:02:16PM +0100, Halil Pasic wrote:
-> > If 
-> > ddbd89deb7d3 alone turns out to work OK then I'd be inclined to try a 
-> > partial revert of just that one hunk.
-> >
-> 
-> I'm not against being pragmatic and doing the partial revert. But as
-> explained above, I do believe for correctness of swiotlb we ultimately
-> do need that change. So if the revert is the short term solution,
-> what should be our mid-term road-map?
+Changes since v3:
+-----------------
+- v3 can be seen here: https://lore.kernel.org/lkml/20220303084824.284946-4-bhupesh.sharma@linaro.org/T/
+- Bjorn has accepted a couple of patches from v3 already, so drop them
+  from this v4 version.
+- Dropped the EMAC GDSC quirk patch from this series, as Bjorn has
+  already submitted a fix via [1].
+- Keep only 'linux-arm-msm specific dts' patches in this subset, so that
+  they can be easily reviewed and merged.
 
-Unless I'm misunderstanding this thread we found the bug in ath9k
-and have a fix for that now?
+Changes since v2:
+-----------------
+- v2 can be seen here: https://lore.kernel.org/linux-arm-msm/20220302110508.69053-1-bhupesh.sharma@linaro.org/T
+- Fixed review comments from Dmitry - created a new [PATCH 2/6]
+  to fix some identation issues with sm8150 gcc driver.
+
+Changes since v1:
+-----------------
+- v1 can be seen here: https://lore.kernel.org/netdev/20220126221725.710167-1-bhupesh.sharma@linaro.org/t/
+- Fixed review comments from Bjorn - broke the v1 series into two
+  separate series - one each for 'net' tree and 'arm clock/dts' tree
+  - so as to ease review of the same from the respective maintainers.
+- This series is intended for the 'arm msm clock/dts' tree.
+- Other changes:
+  - Dropped [PATCH 7/8] from v1.
+  - Added more background on the emac gdsc issue, requiring it to be in
+    ALWAYS_ON state in [PATCH 5/5].
+  - Collected Ack from Rob for [PATCH 1/5].
+  - Broke down v1's [PATCH 3/8] into 3 separate patches (one each for emac,
+    pci and ufs gdsc defines) - one of which is carried as [PATCH 2/5]
+    in this series, which is used to enable emac GDSC.
+
+The SA8155p-ADP board supports on-board ethernet (Gibabit Interface),
+with support for both RGMII and RMII buses.
+
+This patchset adds the support for the same.
+
+Note that this patchset is based on an earlier sent patchset
+for adding PDC controller support on SM8150 (see [2]).
+
+[1]. https://lore.kernel.org/lkml/YjxkNzJMGt0f2XYF@kroah.com/T/
+[2]. https://lore.kernel.org/linux-arm-msm/20220226184028.111566-1-bhupesh.sharma@linaro.org/T/
+
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+
+Vinod Koul (2):
+  arm64: dts: qcom: sm8150: add ethernet node
+  arm64: dts: qcom: sa8155p-adp: Enable ethernet node
+
+ arch/arm64/boot/dts/qcom/sa8155p-adp.dts | 146 +++++++++++++++++++++++
+ arch/arm64/boot/dts/qcom/sm8150.dtsi     |  27 +++++
+ 2 files changed, 173 insertions(+)
+
+-- 
+2.35.1
+
