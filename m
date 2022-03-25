@@ -2,114 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09E4BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 08:56:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28E64C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 08:58:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351525AbiCYI6C (ORCPT
+        id S1356064AbiCYJAS convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 04:58:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45030 "EHLO
+        Fri, 25 Mar 2022 05:00:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229940AbiCYI57 (ORCPT
+        with ESMTP id S229940AbiCYJAQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 04:57:59 -0400
-Received: from out203-205-221-205.mail.qq.com (out203-205-221-205.mail.qq.com [203.205.221.205])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1998CD321
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 01:56:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1648198581;
-        bh=DgLAnYgqjoM4AGSmu3Sc6+ngc8WyuI9dDOEV/Xp0GDY=;
-        h=From:To:Cc:Subject:Date;
-        b=Y+jcMMOY3yb/9VPHBubyBshdnPAe+XQmJ1yhT52uEE9Fm7szyoiPl9dMpsu3zDObi
-         tVmA+EHaZcOCuJu/6sEfVmb8i1/G0QxLBpMXY1oygO8Gtp4Bvc16e2x40gTutoGKRz
-         LS70+zv/6EC2zXDXPJYffoKDNwI2gxBhn/yXs+Io=
-Received: from localhost.localdomain ([218.197.153.188])
-        by newxmesmtplogicsvrszc11.qq.com (NewEsmtp) with SMTP
-        id E0F8E616; Fri, 25 Mar 2022 16:56:15 +0800
-X-QQ-mid: xmsmtpt1648198575tr71poz2m
-Message-ID: <tencent_1D9E7394538085872BE9FD6780483137E70A@qq.com>
-X-QQ-XMAILINFO: NQR8mRxMnur9+4HHGI5DBsw11FVsz9FqPSQt4NfwIwKTIa/TEmwAEoWffMfTS9
-         6mQPgPCzRKkTXdfKK5A/b5bddX6a/8pLe+oGAO6tgN8xJdbouFE/D3ICYynyVFtVVFHTDNmWAwQF
-         3d9hdo+MzrPNvkGjUyad1+bgEQ0H0jgn/ixA940rReW+kH6V1jRopguw6BmWgummK9Lt5CyEOPOw
-         3IaqVlgP1qQPvFp7PmAnIChv2ChFb/Od9pcTwkso0KPraMqL0z4LtKDpa4gcS9v0dUryZqJp2OkA
-         G8d/rXhEyMdB16SsECYUzVVpC83NHPttTBiDHME81zpGbNelWWyv6Zgwbh5dQpKWkiBh0T8mzBdr
-         wuNERk2CEoQIc1y3dVlc6nOr6/Hik+t+AZ7mfzuage5O4LfHi7Sf9RQMIZRxkY9SjQ0PxJHIm+oy
-         oQjgOacNfpwwin1hBrtO07yaPtt29oY5aqv+mV4rCGz287ymmR7lL9CyEEnOL1XAJDRtBuFSF0vi
-         qOUiEKSFN5E33hwBRpW+zJR1paR1XHGjRpeEjNfw23j0J38NCA7Db7VoaTqkmJoTAkCcmqVvmXYF
-         uPT/j320DYscqlDTA2KcEXyhLSM0te4+oQGWBst4Ky3uTzN+04+PKWP90Y0bp9QdAyS6LIiMQYsI
-         tGKxoucmdbp3XDfzuG3LQardQLf93pWe13HgnAsuxmQ8FttbZwTRidDNJXCb+L6Ux+0YMY5bDCvG
-         MGFUtDqMCp5VAigOEUy/DNbRXDQyR0tPTv1ZMNJKc0B05wmgTtMMyNTpzBcLUM0OhTzN2wV0W77g
-         u09knU6bm6jK+Eok/mKCDHSmoKMQdNv2fRqm7G9TYP375HfyAN2jV9RV65xPmuP6xZUNee0VHAtf
-         BaCXkhSbH/OpvburTa3CYcc8KqiTOYUmil8aDdpBF5r/WxK6/rtulM3HNDsZiCnOr8Mw+qN9iGqp
-         iRRbtAUcA=
-From:   xkernel.wang@foxmail.com
-To:     andrew@lunn.ch, gregory.clement@bootlin.com,
-        sebastian.hesselbarth@gmail.com
-Cc:     linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Xiaoke Wang <xkernel.wang@foxmail.com>
-Subject: [PATCH] ARM: mvebu: check the validation of memory allocation
-Date:   Fri, 25 Mar 2022 16:55:18 +0800
-X-OQ-MSGID: <20220325085518.4016-1-xkernel.wang@foxmail.com>
+        Fri, 25 Mar 2022 05:00:16 -0400
+X-Greylist: delayed 447 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 25 Mar 2022 01:58:41 PDT
+Received: from mail.sysgo.com (mail.sysgo.com [IPv6:2a01:4f8:fff0:cf:2::25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A40D3377FE
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 01:58:41 -0700 (PDT)
+From:   Matthias Welwarsky <matthias.welwarsky@sysgo.com>
+To:     linux-kernel@vger.kernel.org
+Subject: x86, possible bug in __memmove() alternatives patching
+Date:   Fri, 25 Mar 2022 09:51:09 +0100
+Message-ID: <3422754.iIbC2pHGDl@linux-3513>
+Organization: SYSGO GmbH
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="iso-8859-1"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+Hi list,
 
-kzalloc() and kstrdup() are memory allocation functions which can return
-NULL when some internal memory errors happen. So it is better to check
-the return value of them to prevent potential wrong memory access or
-memory leak.
+I've come across an odd behavior that I'm not sure whether it counts as a bug.
+I'm working on an x86 hypervisor at the moment and there was an odd problem 
+with a linux guest system dying during booting, but only on an intel NUC11 
+(i3-1115G4). It booted normally on any other system I tested on.
 
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
----
- arch/arm/mach-mvebu/board-v7.c  | 8 ++++++++
- arch/arm/mach-mvebu/coherency.c | 6 ++++++
- 2 files changed, 14 insertions(+)
+The guest was usin kernel version 5.10.89.
 
-diff --git a/arch/arm/mach-mvebu/board-v7.c b/arch/arm/mach-mvebu/board-v7.c
-index d2df5ef..86d1f4e 100644
---- a/arch/arm/mach-mvebu/board-v7.c
-+++ b/arch/arm/mach-mvebu/board-v7.c
-@@ -128,11 +128,19 @@ static void __init i2c_quirk(void)
- 		struct property *new_compat;
- 
- 		new_compat = kzalloc(sizeof(*new_compat), GFP_KERNEL);
-+		if (!new_compat)
-+			continue;
- 
- 		new_compat->name = kstrdup("compatible", GFP_KERNEL);
- 		new_compat->length = sizeof("marvell,mv78230-a0-i2c");
- 		new_compat->value = kstrdup("marvell,mv78230-a0-i2c",
- 						GFP_KERNEL);
-+		if (!new_compat->name || !new_compat->value) {
-+			kfree(new_compat->name);
-+			kfree(new_compat->value);
-+			kfree(new_compat);
-+			continue;
-+		}
- 
- 		of_update_property(np, new_compat);
- 	}
-diff --git a/arch/arm/mach-mvebu/coherency.c b/arch/arm/mach-mvebu/coherency.c
-index 49e3c8d..eb6b349 100644
---- a/arch/arm/mach-mvebu/coherency.c
-+++ b/arch/arm/mach-mvebu/coherency.c
-@@ -194,7 +194,13 @@ static void __init armada_375_380_coherency_init(struct device_node *np)
- 		struct property *p;
- 
- 		p = kzalloc(sizeof(*p), GFP_KERNEL);
-+		if (!p)
-+			continue;
- 		p->name = kstrdup("arm,io-coherent", GFP_KERNEL);
-+		if (!p->name) {
-+			kfree(p);
-+			continue;
-+		}
- 		of_add_property(cache_dn, p);
- 	}
- }
--- 
+Now, the reason eventually turned out to be __memmove() getting broken when 
+applying the alternatives. The CPU on the NUC11 has the FSRM feature, which 
+enables a particular alternative in __memmove(). However, the code assumes 
+that the ERMS feature is always present with FSRM, otherwise the function gets 
+broken. Of course this is normally the case, a CPU without ERMS would never 
+advertise FSRM.
+
+However: in the function early_intel_setup(), the ERMS feature might get 
+cleared depending on the IA32_MISC_ENABLE MSR: if fast string operations are 
+disabled through this MSR, X86_FEATURE_ERMS is removed from the available set, 
+but X86_FEATURE_FSRM is not removed.
+
+Now, the hypervisor I'm working on emulates this MSR and in the particular 
+case, fast string ops were reported as disabled, leading to the above 
+mentioned inconsistency in __memmove().
+
+The Intel SDM doesn't go into any details if disabling fast string ops through 
+IA32_MISC_ENABLE will also clear FSRM from cpuid leaf 7, but I think that's 
+not relevant for the linux kernel anyway because cpuid is parsed before MSRs 
+are evaluated.
+
+I know it's is probably a very rare case and Intel recommends having fast 
+string ops enabled, hence the question: would this be considered a bug in the 
+kernel that should be fixed? A potential fix could be to clear FSRM together 
+with ERMS depending on IA32_MISC_ENABLE.
+
+
+Mit freundlichen Grüßen/Best regards,
+
+Matthias Welwarsky
+Project Engineer
+
+SYSGO GmbH
+Office Mainz
+Am Pfaffenstein 8 / D-55270 Klein-Winternheim / Germany
+Phone: +49-6136-9948-0 / Fax: +49-6136-9948-10
+E-mail: matthias.welwarsky@sysgo.com
+_________________________________________________________________________________
+Web: https://www.sysgo.com
+Blog: https://www.sysgo.com/blog
+Events: https://www.sysgo.com/events
+Newsletter: https://www.sysgo.com/newsletter
+_________________________________________________________________________________
+Handelsregister/Commercial Registry: HRB Mainz 90 HRB 48884 
+Geschäftsführung/Managing Directors: Etienne Butery (CEO), Kai Sablotny (COO) 
+USt-Id-Nr./VAT-Id-No.: DE 149062328 
+
+The protection of your personal data is important to us. Under the following 
+link 
+you can see the information in accordance with article 13 GDPR: 
+https://www.sysgo.com/privacy_policy
+
+
