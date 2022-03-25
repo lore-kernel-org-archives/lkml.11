@@ -2,106 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAB07C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 06:53:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F03BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Mar 2022 06:58:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354321AbiCYGzb (ORCPT
+        id S1354923AbiCYHAD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 02:55:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44900 "EHLO
+        Fri, 25 Mar 2022 03:00:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234014AbiCYGz3 (ORCPT
+        with ESMTP id S234014AbiCYHAA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 02:55:29 -0400
-Received: from out203-205-221-245.mail.qq.com (out203-205-221-245.mail.qq.com [203.205.221.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70D02C6EEA
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Mar 2022 23:53:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1648191229;
-        bh=KyfDYuZlOud34xC5PeB1bPk8SOiyjLWVQ6XNyU6zcuM=;
-        h=From:To:Cc:Subject:Date;
-        b=u2IwAWStUWigIzz0gn1mNXM9ykZFDtmsYQztn+Re02iNh2nYEeubFtJwssaMD0c12
-         kjYXlgbGqo+1X+nvAalsXtO213e3n6queZvUoZdzuI1F2OXYEgymGykxvszZGd9B9U
-         0slWyPwaS4ZGyOmu9sPKFLLMpabcdnP4iLkXNSCI=
-Received: from localhost.localdomain ([43.227.138.48])
-        by newxmesmtplogicsvrszc7.qq.com (NewEsmtp) with SMTP
-        id D6D89CBC; Fri, 25 Mar 2022 14:53:45 +0800
-X-QQ-mid: xmsmtpt1648191225ts6uid6wf
-Message-ID: <tencent_B489FA9F0FC49CF92A77916394E225DC4705@qq.com>
-X-QQ-XMAILINFO: OAowhIcaKHQtPXWdO4wkBCJvekfxca3W1oG0B9TDCCyoO+bNkGXvDFOiHR8+tZ
-         S9AksxOhlHow5bc8oKJmfY3EzGiGhp1bML+x+oWcHgb9BdPmlT4234XRgmAKNJqXjSUMkxlXnqtj
-         vucucTuNuPiDPwXdgwWHnX/CXltenSkFRMwlqaUiPUAYMbVxRyjdBB7EOzAuOj7LHQq4DF3bpulK
-         SGkSFzUHjj5KEF8QBs3oayzbG1OLEjQCF97AHQhRDrv9Bjco7yp3HRepuaEP1083BYdLzqjRhLsc
-         4w24qHqeQoduzE5ocEcU20UhDD9v8Bbfmq5t5gTDpAKabMSKgBdQDrNw4F84mglFroBvNJZQtVoq
-         J7YTy0uzirdp449ecmgMsU04Uq7WzhZqwaMr0J/wV0+eiCZI1uoNjXBjVUM7sBEC2G5XsKZeC/D2
-         pylw8w2QvYtQYajMhk6vU3eEWx8Du+OwyCiNkB1P0hAVZvYtxKkFWezxOGHHqj6U9NrJbxZVOds8
-         Tqmqmb6D0KX83OXI4qwkDF9dAIWHbIWppaPvd8hD2MtdekllcGHKGbhVVv6KnAj7uo9UYSK/Uklq
-         1FA+u9eX2hIPvpJcQC8s7Rse44plvqdqGneTuCy9acA1O2g2ujwD3pMV7a7AmyBZxW0JPBR8hlUh
-         LEJ67NMmPNsvrKiZBL/1IEL5at2zgbx3LrVgl79IYd1i7umAZXLWnqGwKdP13bD1vwNSpfsWdmm2
-         z6wYgpsfmOwKhhPYcPbyjYChHYmGjmBHTXbiVzXrflLrk8dwPNLYvw22yeMWo9/IvbFF8jtyM/3R
-         3t5vSoCjWIiZr2KcVzcCNT3dcDO0sn2aaIQBL+wylMH0Vsh5R4UoYQvS4vvyGl5dH7efV2gioN1Y
-         +L3LTRYYOibYSsSgZBh8t/oduIl8n8dqbVjkggvNUaxfAhEiZdiVPlkn9i5Js8Zuq/bpBofb/U
-From:   xkernel.wang@foxmail.com
-To:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        gregkh@linuxfoundation.org
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Xiaoke Wang <xkernel.wang@foxmail.com>
-Subject: [PATCH] staging: r8188eu: check the return value of kzalloc()
-Date:   Fri, 25 Mar 2022 14:53:30 +0800
-X-OQ-MSGID: <20220325065330.3852-1-xkernel.wang@foxmail.com>
+        Fri, 25 Mar 2022 03:00:00 -0400
+Received: from mail-vk1-xa34.google.com (mail-vk1-xa34.google.com [IPv6:2607:f8b0:4864:20::a34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3CE535DED;
+        Thu, 24 Mar 2022 23:58:25 -0700 (PDT)
+Received: by mail-vk1-xa34.google.com with SMTP id w189so3755972vke.10;
+        Thu, 24 Mar 2022 23:58:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=bZQjBiTCWibkRDP7e4BTH2l7xdqhYCGD2WZveNtlQNY=;
+        b=qNO1EB3ivsl79XhRFIYQFVbfyN/Gc9nWCh3/WvbAdUtfCY9pxrPkjKGrZLec5wXd8e
+         AB9ycniZgHSF+sfW2BFLR8847waNpRCgKia2kqXx0DKQCdpWbrcchMShM5yBGWdyjLw0
+         zhBIcKxfNcU5JpxG/OFXGB+2yrGK2BQIs7DYqWCOzzDdC7CPIsw5ArXX861JQo6QRyVT
+         PejoSgM02fSUg4CA/gTQGq6xm/kdPyJp7CyVkc5MoloR05WRQkGqJ21ykwh0ck4nQa+n
+         mCqrRw908pMbGtT5cbIQO+o5RItxHGxmvwvIGCxjRqQcfvfXlUttMtrgz9P46UPoplKw
+         gRAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=bZQjBiTCWibkRDP7e4BTH2l7xdqhYCGD2WZveNtlQNY=;
+        b=TusMgOC/XC/BUC76rXptUD+J1RyZxyFuBRsyRgPsrqWwfyjoJ5e4+76meWvQ3U0Mp+
+         4uvSzUpqLyYy0YMwmA1BXEZoErlg6Px52GVgKzQXd2+lz3iCryrN+UPN9c8JUGulqJpq
+         1kWOS0Iw6aklBCwHcJtXaVUiP7dn2VOZKjDQPKbvYke3OP/fXtFrfs1faabfl0p3rxKm
+         nJYphy9CDA2xPFQ8wIdkxfFvNKEayyqdCAd0i24HhRAYVCOWhlS6woS9rA7zKGZlHpxf
+         I2+GLrdoRElkKpxaZk5/Hsbn9Y4y8Al0kkbIRk+GXosJbXMzH92vOJZXzXWxp/ZOyV/W
+         +gbA==
+X-Gm-Message-State: AOAM530UkfEf9BxZ7YU6q8tHjuTR059KEEfyuk8nBan0d57Jd796X/n4
+        hb5QUMPNrFejResuxJ4LPS4WeWdZ+rX4jumUoo1q+kvqssc=
+X-Google-Smtp-Source: ABdhPJxMtjRqxgyytDOkIzCPeFWfNw6IFKXnJmecl8iaw6rO8VmfvUP268d+qLGxOyDDChQeggSRaiDld12/O67kuTA=
+X-Received: by 2002:a05:6122:1311:b0:338:39b4:2cf5 with SMTP id
+ e17-20020a056122131100b0033839b42cf5mr4441424vkp.9.1648191504736; Thu, 24 Mar
+ 2022 23:58:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220324071301.60228-1-jakobkoschel@gmail.com>
+In-Reply-To: <20220324071301.60228-1-jakobkoschel@gmail.com>
+From:   Hyunchul Lee <hyc.lee@gmail.com>
+Date:   Fri, 25 Mar 2022 15:58:13 +0900
+Message-ID: <CANFS6banUM8ycVyjTz2rHQCbNFttX6HkDHo-2eEwAei9XEu1XQ@mail.gmail.com>
+Subject: Re: [PATCH] ksmbd: replace usage of found with dedicated list
+ iterator variable
+To:     Jakob Koschel <jakobkoschel@gmail.com>
+Cc:     Namjae Jeon <linkinjeon@kernel.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steve French <sfrench@samba.org>,
+        linux-cifs <linux-cifs@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+Reviewed-by: Hyunchul Lee <hyc.lee@gmail.com>
 
-kzalloc() is a memory allocation function which can return NULL when
-some internal memory errors happen. So it is better to check the return
-of it to prevent potential wrong memory access.
+2022=EB=85=84 3=EC=9B=94 24=EC=9D=BC (=EB=AA=A9) =EC=98=A4=ED=9B=84 4:13, J=
+akob Koschel <jakobkoschel@gmail.com>=EB=8B=98=EC=9D=B4 =EC=9E=91=EC=84=B1:
 
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
----
- drivers/staging/r8188eu/core/rtw_p2p.c  | 2 ++
- drivers/staging/r8188eu/core/rtw_xmit.c | 6 ++++++
- 2 files changed, 8 insertions(+)
+>
+> To move the list iterator variable into the list_for_each_entry_*()
+> macro in the future it should be avoided to use the list iterator
+> variable after the loop body.
+>
+> To *never* use the list iterator variable after the loop it was
+> concluded to use a separate iterator variable instead of a
+> found boolean [1].
+>
+> This removes the need to use a found variable and simply checking if
+> the variable was set, can determine if the break/goto was hit.
+>
+> Link: https://lore.kernel.org/all/CAHk-=3DwgRr_D8CB-D9Kg-c=3DEHreAsk5SqXP=
+wr9Y7k9sA6cWXJ6w@mail.gmail.com/
+> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+> ---
+>  fs/ksmbd/smb2pdu.c | 21 ++++++++++-----------
+>  1 file changed, 10 insertions(+), 11 deletions(-)
+>
+> diff --git a/fs/ksmbd/smb2pdu.c b/fs/ksmbd/smb2pdu.c
+> index 67e8e28e3fc3..be9606b9a944 100644
+> --- a/fs/ksmbd/smb2pdu.c
+> +++ b/fs/ksmbd/smb2pdu.c
+> @@ -6618,8 +6618,7 @@ int smb2_cancel(struct ksmbd_work *work)
+>         struct ksmbd_conn *conn =3D work->conn;
+>         struct smb2_hdr *hdr =3D smb2_get_msg(work->request_buf);
+>         struct smb2_hdr *chdr;
+> -       struct ksmbd_work *cancel_work =3D NULL;
+> -       int canceled =3D 0;
+> +       struct ksmbd_work *cancel_work =3D NULL, *iter;
+>         struct list_head *command_list;
+>
+>         ksmbd_debug(SMB, "smb2 cancel called on mid %llu, async flags 0x%=
+x\n",
+> @@ -6629,11 +6628,11 @@ int smb2_cancel(struct ksmbd_work *work)
+>                 command_list =3D &conn->async_requests;
+>
+>                 spin_lock(&conn->request_lock);
+> -               list_for_each_entry(cancel_work, command_list,
+> +               list_for_each_entry(iter, command_list,
+>                                     async_request_entry) {
+> -                       chdr =3D smb2_get_msg(cancel_work->request_buf);
+> +                       chdr =3D smb2_get_msg(iter->request_buf);
+>
+> -                       if (cancel_work->async_id !=3D
+> +                       if (iter->async_id !=3D
+>                             le64_to_cpu(hdr->Id.AsyncId))
+>                                 continue;
+>
+> @@ -6641,7 +6640,7 @@ int smb2_cancel(struct ksmbd_work *work)
+>                                     "smb2 with AsyncId %llu cancelled com=
+mand =3D 0x%x\n",
+>                                     le64_to_cpu(hdr->Id.AsyncId),
+>                                     le16_to_cpu(chdr->Command));
+> -                       canceled =3D 1;
+> +                       cancel_work =3D iter;
+>                         break;
+>                 }
+>                 spin_unlock(&conn->request_lock);
+> @@ -6649,24 +6648,24 @@ int smb2_cancel(struct ksmbd_work *work)
+>                 command_list =3D &conn->requests;
+>
+>                 spin_lock(&conn->request_lock);
+> -               list_for_each_entry(cancel_work, command_list, request_en=
+try) {
+> -                       chdr =3D smb2_get_msg(cancel_work->request_buf);
+> +               list_for_each_entry(iter, command_list, request_entry) {
+> +                       chdr =3D smb2_get_msg(iter->request_buf);
+>
+>                         if (chdr->MessageId !=3D hdr->MessageId ||
+> -                           cancel_work =3D=3D work)
+> +                           iter =3D=3D work)
+>                                 continue;
+>
+>                         ksmbd_debug(SMB,
+>                                     "smb2 with mid %llu cancelled command=
+ =3D 0x%x\n",
+>                                     le64_to_cpu(hdr->MessageId),
+>                                     le16_to_cpu(chdr->Command));
+> -                       canceled =3D 1;
+> +                       cancel_work =3D iter;
+>                         break;
+>                 }
+>                 spin_unlock(&conn->request_lock);
+>         }
+>
+> -       if (canceled) {
+> +       if (cancel_work) {
+>                 cancel_work->state =3D KSMBD_WORK_CANCELLED;
+>                 if (cancel_work->cancel_fn)
+>                         cancel_work->cancel_fn(cancel_work->cancel_argv);
+>
+> base-commit: f443e374ae131c168a065ea1748feac6b2e76613
+> --
+> 2.25.1
+>
 
-diff --git a/drivers/staging/r8188eu/core/rtw_p2p.c b/drivers/staging/r8188eu/core/rtw_p2p.c
-index e2b6cf2..503c4a5 100644
---- a/drivers/staging/r8188eu/core/rtw_p2p.c
-+++ b/drivers/staging/r8188eu/core/rtw_p2p.c
-@@ -35,6 +35,8 @@ static u32 go_add_group_info_attr(struct wifidirect_info *pwdinfo, u8 *pbuf)
- 	DBG_88E("%s\n", __func__);
- 
- 	pdata_attr = kzalloc(MAX_P2P_IE_LEN, GFP_KERNEL);
-+	if (!pdata_attr)
-+		return 0;
- 
- 	pstart = pdata_attr;
- 	pcur = pdata_attr;
-diff --git a/drivers/staging/r8188eu/core/rtw_xmit.c b/drivers/staging/r8188eu/core/rtw_xmit.c
-index 46fe62c..1696272 100644
---- a/drivers/staging/r8188eu/core/rtw_xmit.c
-+++ b/drivers/staging/r8188eu/core/rtw_xmit.c
-@@ -180,6 +180,10 @@ s32	_rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter)
- 	pxmitpriv->free_xmit_extbuf_cnt = num_xmit_extbuf;
- 
- 	rtw_alloc_hwxmits(padapter);
-+	if (!pxmitpriv->hwxmits) {
-+		res = _FAIL;
-+		goto exit;
-+	}
- 	rtw_init_hwxmits(pxmitpriv->hwxmits, pxmitpriv->hwxmit_entry);
- 
- 	for (i = 0; i < 4; i++)
-@@ -1524,6 +1528,8 @@ void rtw_alloc_hwxmits(struct adapter *padapter)
- 	pxmitpriv->hwxmit_entry = HWXMIT_ENTRY;
- 
- 	pxmitpriv->hwxmits = kzalloc(sizeof(struct hw_xmit) * pxmitpriv->hwxmit_entry, GFP_KERNEL);
-+	if (!pxmitpriv->hwxmits)
-+		return;
- 
- 	hwxmits = pxmitpriv->hwxmits;
- 
--- 
+
+--
+Thanks,
+Hyunchul
