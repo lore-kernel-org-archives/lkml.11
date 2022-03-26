@@ -2,51 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3949CC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 10:27:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEFC6C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 10:28:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232114AbiCZK3d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 06:29:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54310 "EHLO
+        id S232634AbiCZK3h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 06:29:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232540AbiCZK3G (ORCPT
+        with ESMTP id S232539AbiCZK3G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 26 Mar 2022 06:29:06 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B27F55BD;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E3565D5C3;
         Sat, 26 Mar 2022 03:27:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DEE7EB803F1;
+        by ams.source.kernel.org (Postfix) with ESMTPS id CC5EFB802C3;
         Sat, 26 Mar 2022 10:27:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79409C2BBE4;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D1A0C340EE;
         Sat, 26 Mar 2022 10:27:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1648290447;
-        bh=o9c+IInErQpOAwntbwHfaT1J5iPpxLk5tRtpR93Le08=;
+        bh=fCUCDroTYXYqWyLmO/RKepuGt/+Ob6vZ/0OEXNI48dc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l6UPQkpP18rB1ORZ3Pbg4YA9yl/Tp/GNYjzgOsyPhpBjSLe8EBIrpKC3QLxtQqDqO
-         7CKGLserdlk2jN3oD5b82gyqYjuR1UTrZ1xKoYyfv6cvdqRH4h+9LmXD1cavbg+/5J
-         5+//98a4m3gzjmrtgJO1w5yEMlPkRzy8PydbO1Pvv+NrTY2WdLfcHfHQ3wcES4EXu+
-         Zx+JPedWul3mTD+34SbzNYpHY+6I39DttErwQPQevAWGPNZQNLO2e93VELF1T+2bpy
-         7eaXNcWRmcUJh8f2GaqggbcFKGIxEqI0pxm9uW6tK+1O+Px0elJgZPzccMKyrWFDEX
-         TXipT+Fgbk/Ow==
+        b=rOn18vpF92boutfkaYVD/c+vPT9O1nXmghUBSb3aUkzl+ZF2+8cXkabG0nKqvg9p1
+         cwMpZ8koUid5xCsgO/5yeyZUe2/ipOzBiVC0pdD850PeDgvVfD5J/HzKswBWiq7G9f
+         PyXLq/JVFtFwpOIYI/8vHJ1PHcXoeGbtVdX49t72mienTt35Qukui5lU4Ii1uTLYD0
+         kgKP/8qgK2O4DJ3I3Q6UDIyElESTA8horrFgXOC6yHr8pyScM0PnO//31D5ZjwGJHg
+         //1ZeelDVSI14zc8yuS9DqFDZG6EVTFrYAKqSd1r17DgQOtCsuOiRIQ6PCD4YcLK9t
+         Kr/4cuoU+8AqQ==
 Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
         (envelope-from <mchehab@kernel.org>)
-        id 1nY3dl-00Co0k-87; Sat, 26 Mar 2022 11:27:25 +0100
+        id 1nY3dl-00Co0U-20; Sat, 26 Mar 2022 11:27:25 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
         Jonathan Corbet <corbet@lwn.net>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         "Hans de Goede" <hdegoede@redhat.com>,
         "Stephen Rothwell" <sfr@canb.auug.org.au>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v3 5/6] scripts/get_abi: change the file/line number meta info
-Date:   Sat, 26 Mar 2022 11:27:23 +0100
-Message-Id: <125ffd31fbc77ad9eee4d6906e1830b8162fa6ca.1648290305.git.mchehab@kernel.org>
+Subject: [PATCH v3 1/6] scripts/get_feat.pl: allow output the parsed file names
+Date:   Sat, 26 Mar 2022 11:27:19 +0100
+Message-Id: <11b438ee01e00c866f5ea197d6aecc26e9f86945.1648290305.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1648290305.git.mchehab@kernel.org>
 References: <cover.1648290305.git.mchehab@kernel.org>
@@ -56,15 +54,10 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to make it more standard and ReST compatible,
-change the meta-tag used with --enable-lineno from:
-
-	#define LINENO
-
-to
-	.. LINENO
-
-In practice, no functional changes.
+Such output could be helpful while debugging it, but its main
+goal is to tell kernel_feat.py about what files were used
+by the script. Thie way, kernel_feat.py can add those as
+documentation dependencies.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
@@ -72,45 +65,52 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH v3 0/6] at: https://lore.kernel.org/all/cover.1648290305.git.mchehab@kernel.org/
 
- Documentation/sphinx/kernel_abi.py | 2 +-
- scripts/get_abi.pl                 | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ scripts/get_feat.pl | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/Documentation/sphinx/kernel_abi.py b/Documentation/sphinx/kernel_abi.py
-index efab9b14a9f5..b5feb5b1d905 100644
---- a/Documentation/sphinx/kernel_abi.py
-+++ b/Documentation/sphinx/kernel_abi.py
-@@ -138,7 +138,7 @@ class KernelCmd(Directive):
-                 code_block += "\n    " + l
-             lines = code_block + "\n\n"
+diff --git a/scripts/get_feat.pl b/scripts/get_feat.pl
+index 457712355676..76cfb96b59b6 100755
+--- a/scripts/get_feat.pl
++++ b/scripts/get_feat.pl
+@@ -13,6 +13,7 @@ my $man;
+ my $debug;
+ my $arch;
+ my $feat;
++my $enable_fname;
  
--        line_regex = re.compile("^#define LINENO (\S+)\#([0-9]+)$")
-+        line_regex = re.compile("^\.\. LINENO (\S+)\#([0-9]+)$")
-         ln = 0
-         n = 0
-         f = fname
-diff --git a/scripts/get_abi.pl b/scripts/get_abi.pl
-index 7437e19ba3ac..1389db76cff3 100755
---- a/scripts/get_abi.pl
-+++ b/scripts/get_abi.pl
-@@ -327,7 +327,7 @@ sub output_rest {
- 		my @filepath = split / /, $data{$what}->{filepath};
+ my $basename = abs_path($0);
+ $basename =~ s,/[^/]+$,/,;
+@@ -31,6 +32,7 @@ GetOptions(
+ 	'arch=s' => \$arch,
+ 	'feat=s' => \$feat,
+ 	'feature=s' => \$feat,
++	"enable-fname" => \$enable_fname,
+ 	man => \$man
+ ) or pod2usage(2);
  
- 		if ($enable_lineno) {
--			printf "#define LINENO %s%s#%s\n\n",
-+			printf ".. LINENO %s%s#%s\n\n",
- 			       $prefix, $file[0],
- 			       $data{$what}->{line_no};
- 		}
-@@ -1023,7 +1023,7 @@ logic (B<--no-rst-source>).
+@@ -95,6 +97,10 @@ sub parse_feat {
+ 	return if ($file =~ m,($prefix)/arch-support.txt,);
+ 	return if (!($file =~ m,arch-support.txt$,));
  
- =item B<--enable-lineno>
++	if ($enable_fname) {
++		printf ".. FILE %s\n", abs_path($file);
++	}
++
+ 	my $subsys = "";
+ 	$subsys = $2 if ( m,.*($prefix)/([^/]+).*,);
  
--Enable output of #define LINENO lines.
-+Enable output of .. LINENO lines.
+@@ -580,6 +586,11 @@ Output features for a single specific feature.
+ Changes the location of the Feature files. By default, it uses
+ the Documentation/features directory.
  
- =item B<--debug> I<debug level>
++=item B<--enable-fname>
++
++Prints the file name of the feature files. This can be used in order to
++track dependencies during documentation build.
++
+ =item B<--debug>
  
+ Put the script in verbose mode, useful for debugging. Can be called multiple
 -- 
 2.35.1
 
