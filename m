@@ -2,87 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08984C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 12:19:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC215C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 12:24:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232850AbiCZMU4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 08:20:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44994 "EHLO
+        id S232868AbiCZM0D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 08:26:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232803AbiCZMUx (ORCPT
+        with ESMTP id S232803AbiCZM0B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 08:20:53 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9B53267FBC;
-        Sat, 26 Mar 2022 05:19:17 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id j8so582954pll.11;
-        Sat, 26 Mar 2022 05:19:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=j8I12NKE7GCwX8ETG3CanhqtlnJT2sKn53KmOxi+4XY=;
-        b=bSZJch7t2yV7xvunKHliffwHi0kgRM4RBdIHp0/YuigY3ucme/UBMr3lglwkLFgyGf
-         BtcqoOXdOeL33hSUooLhnEqM1Z3+T+SSl2iVA8Yno6997S7IX7DGoPcvD1ILGPf4cvSq
-         ZC0HHjVRpvUEbu2olU0mDY78cFc59lcJ1L5ezPPHWOwVGcfo4I2oo+2DMCgheYB8S660
-         uDVY2HW4Ux6GTJGdNACAnyng/RsB1EthurHnfvJo8cKn95vknAIoJmlFVaThcfIvZebn
-         kvbq/nv77Q6D2IWwiSMJWeqsBdUdDnKlRM21AMNaKP6YJi+/TrWZWV2yzo7WRHMCw9d+
-         CTrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=j8I12NKE7GCwX8ETG3CanhqtlnJT2sKn53KmOxi+4XY=;
-        b=3MditiNyfaT8uC5Yfgu/pq01sK+b15cVQ/mKhzhjV0BHiSK/SmpZ9Wl8Y9oxv2FQoy
-         waDMO4mjrPhKl+PphTHs4HMLgQ0Hso/LWZTgMWFQuIp43vglwGMFZlDL+1FYgnZ0Z/zE
-         HDOuxzj9uaU6UNUTfGXLlA7tvBQqzt7BHGC49h5OF5VBjTK2wLyI6jE3Weg/oiywbpOE
-         jDvhqqtxi9CpfyJo32brLc85yfGe5X1Va/kpLaBog8l/NAdkt7ssC+5gsq1EZT8wqIHm
-         jojmnA3FNykKWM8gbjGGVLwQz9pihLqD51UxLvb+bGrYNHJ88sVFBppbNlW5VE+UeR20
-         sEIA==
-X-Gm-Message-State: AOAM530zAfXzOWBIK4Xnrodo1lFtgx9EVAs5PKT0czY5IJ+CvnX2XBw0
-        tsL6HgTylaWaK7KTsFBmq7c=
-X-Google-Smtp-Source: ABdhPJzFrGoZVEDskdXJHd55VGwfJbiTBCtGCwWHMCIEHMdZRvA6boe5ySvpR2OV+C+Zc1+EXPhJhg==
-X-Received: by 2002:a17:902:c948:b0:154:1e4f:9837 with SMTP id i8-20020a170902c94800b001541e4f9837mr16391540pla.115.1648297157221;
-        Sat, 26 Mar 2022 05:19:17 -0700 (PDT)
-Received: from [192.168.43.80] (subs03-180-214-233-24.three.co.id. [180.214.233.24])
-        by smtp.gmail.com with ESMTPSA id a11-20020a056a000c8b00b004fade889fb3sm10805098pfv.18.2022.03.26.05.19.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 26 Mar 2022 05:19:16 -0700 (PDT)
-Message-ID: <b584a068-e0bd-bf61-a622-6b081a4a30a5@gmail.com>
-Date:   Sat, 26 Mar 2022 19:19:11 +0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 5.17 00/39] 5.17.1-rc1 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-References: <20220325150420.245733653@linuxfoundation.org>
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-In-Reply-To: <20220325150420.245733653@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Sat, 26 Mar 2022 08:26:01 -0400
+X-Greylist: delayed 455 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 26 Mar 2022 05:24:15 PDT
+Received: from mail-m17637.qiye.163.com (mail-m17637.qiye.163.com [59.111.176.37])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99B4211987A;
+        Sat, 26 Mar 2022 05:24:15 -0700 (PDT)
+Received: from localhost.localdomain (unknown [58.22.7.114])
+        by mail-m17637.qiye.163.com (Hmail) with ESMTPA id BD5AE98029A;
+        Sat, 26 Mar 2022 20:16:37 +0800 (CST)
+From:   Sugar Zhang <sugar.zhang@rock-chips.com>
+To:     vkoul@kernel.org
+Cc:     Sugar Zhang <sugar.zhang@rock-chips.com>,
+        Huibin Hong <huibin.hong@rock-chips.com>,
+        dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] dmaengine: pl330: Fix unbalanced runtime PM
+Date:   Sat, 26 Mar 2022 20:16:28 +0800
+Message-Id: <1648296988-45745-1-git-send-email-sugar.zhang@rock-chips.com>
+X-Mailer: git-send-email 2.7.4
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
+        kWDxoPAgseWUFZKDYvK1lXWShZQUlKS0tKN1dZLVlBSVdZDwkaFQgSH1lBWUMZTh1WSkxOSBhLTE
+        ofTh5CVRMBExYaEhckFA4PWVdZFhoPEhUdFFlBWU9LSFVKSktISkNVS1kG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OU06Ejo5FD4DLxY1IT40HBYe
+        NjkaCR9VSlVKTU9DSUJNQkJDSkhDVTMWGhIXVQgOHBoJVQETGhUcOwkUGBBWGBMSCwhVGBQWRVlX
+        WRILWUFZTkNVSUlVTFVKSk9ZV1kIAVlBSE9CTTcG
+X-HM-Tid: 0a7fc628340ed992kuwsbd5ae98029a
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25/03/22 22.14, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.17.1 release.
-> There are 39 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
+This driver use runtime PM autosuspend mechanism to manager clk.
 
-Successfully cross-compiled for arm64 (bcm2711_defconfig, gcc 10.2.0)
-and powerpc (ps3_defconfig, gcc 11.2.0).
+  pm_runtime_use_autosuspend(&adev->dev);
+  pm_runtime_set_autosuspend_delay(&adev->dev, PL330_AUTOSUSPEND_DELAY);
 
-Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
+So, after ref count reached to zero, it will enter suspend
+after the delay time elapsed.
 
+The unbalanced PM:
+
+* May cause dmac the next start failed.
+* May cause dmac read unexpected state.
+* May cause dmac stall if power down happen at the middle of the transfer.
+  e.g. may lose ack from AXI bus and stall.
+
+Considering the following situation:
+
+      DMA TERMINATE               TASKLET ROUTINE
+            |                            |
+            |                       issue_pending
+            |                            |
+            |                     pch->active = true
+            |                       pm_runtime_get
+  pm_runtime_put(if active)              |
+    pch->active = false                  |
+            |                      work_list empty
+            |                            |
+            |                     pm_runtime_put(force)
+            |                            |
+
+At this point, it's unbalanced(1 get / 2 put).
+
+After this patch:
+
+      DMA TERMINATE               TASKLET ROUTINE
+            |                            |
+            |                       issue_pending
+            |                            |
+            |                     pch->active = true
+            |                       pm_runtime_get
+  pm_runtime_put(if active)              |
+    pch->active = false                  |
+            |                      work_list empty
+            |                            |
+            |                   pm_runtime_put(if active)
+            |                            |
+
+Now, it's balanced(1 get / 1 put).
+
+Fixes:
+commit 5c9e6c2b2ba3 ("dmaengine: pl330: Fix runtime PM support for terminated transfers")
+commit ae43b3289186 ("ARM: 8202/1: dmaengine: pl330: Add runtime Power Management support v12")
+
+Signed-off-by: Huibin Hong <huibin.hong@rock-chips.com>
+Signed-off-by: Sugar Zhang <sugar.zhang@rock-chips.com>
+---
+
+ drivers/dma/pl330.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/dma/pl330.c b/drivers/dma/pl330.c
+index 858400e..ccd430e 100644
+--- a/drivers/dma/pl330.c
++++ b/drivers/dma/pl330.c
+@@ -2084,7 +2084,7 @@ static void pl330_tasklet(struct tasklet_struct *t)
+ 		spin_lock(&pch->thread->dmac->lock);
+ 		_stop(pch->thread);
+ 		spin_unlock(&pch->thread->dmac->lock);
+-		power_down = true;
++		power_down = pch->active;
+ 		pch->active = false;
+ 	} else {
+ 		/* Make sure the PL330 Channel thread is active */
 -- 
-An old man doll... just what I always wanted! - Clara
+2.7.4
+
