@@ -2,81 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78C1AC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 00:29:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40E97C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 00:32:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229703AbiCZAbP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 20:31:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35994 "EHLO
+        id S229706AbiCZAdg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 20:33:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiCZAbM (ORCPT
+        with ESMTP id S229448AbiCZAdd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 20:31:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B2F3130C10;
-        Fri, 25 Mar 2022 17:29:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C0C56B82A72;
-        Sat, 26 Mar 2022 00:29:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAB47C2BBE4;
-        Sat, 26 Mar 2022 00:29:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648254574;
-        bh=poGETAG+DQJ31NcrGPl7LcOyeM6AhqeGMqyfZs2gRLI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=epZOOWmcpDs0p9MOFj+cVMezAqejQAfLPEtWKpR0plyEvjeKH0kv7EHTIcKWwbTvy
-         bEMygfnBxIVJHkoaDhzo5Z+z1YFFa5hJVjcxerb3/f943HfDUAjbiw/65dvZrNPU7G
-         J5CMm9lDDJX8hF/wv9b7tQRQu+v0I/Yi0yytsJN862Gyg3501bbUo44a5YDP/ytRt+
-         EiSTq3kd7aaOxShfvfP5BuTWfXdZVAdyibXX07AoUvFfwhMKWpVz2PtNDSvP6+TbE8
-         1WaUkG41bs8RLlU2g3uSlVW4LTs/+y2LH3uLfLUfuXinUttHQ00rL+2DfDiVQt0Sv7
-         QD/fNp7kzVDng==
-Date:   Fri, 25 Mar 2022 19:38:43 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH][next] iwlwifi: fw: Replace zero-length arrays with
- flexible-array members
-Message-ID: <20220326003843.GA2602091@embeddedor>
-References: <20220216195015.GA904148@embeddedor>
- <202202161235.2FB20E6A5@keescook>
+        Fri, 25 Mar 2022 20:33:33 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0B0D21C05D
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 17:31:57 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id g24so12270103lja.7
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 17:31:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=w7nzRz+ku1xVPbthIr1h39WQkWceMAxSsziZ479N8l8=;
+        b=T9smYeqdyIJTv6bWc//YVfgGAAsxoJ1B2JntMbZoPtAgrdrB3YMq0Okkl/hpg7UGmf
+         7GoNIAta8CxY6NI6vnKrTPhKXJaYYW3Xr93Irer2PFiQTfwxOwLggMk9dsT+jYHaDVDA
+         R3wNPAnOAk/NIvNd9yDEtLQezX8xzKR7Q9qHDmDio9lLTYhhBFQhgHn6F19BEWgA6TJV
+         wNzWudL98d9oXkJpcEIWpxjWwLkrMch8ZDbLx074TGiQB0o+M26pC9/fhAyHTQ8EYJTa
+         t1kdAsEyS3A/LgDNfYXbXjuHgx7GH4ZDk9hAXGMSWbL/vkC8L4BmNoAAJLRXdQ7uVTpV
+         rJ8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=w7nzRz+ku1xVPbthIr1h39WQkWceMAxSsziZ479N8l8=;
+        b=6+9JLEQdRnclYCf2NPROKYSvDS1T35AIg5mvEqtEmqViA3fthYkjp2OfSYfCAJPWoM
+         DidMNoqIwKrNi5DAeuJYvaPEoK5fFV9vX1XEA5nSetWvff/lLRpjcjFmC8JxB86Ur2gb
+         OQ3xLbuUBLQd0DozEBr3E5wDrpK3tnUrNJD3fVd6V+LV4ngfLHPFjQQ8meeOyWAbhfhK
+         dM235kl9btMJtO/Pq1c86zX6Z+eVk21ZYUp7Nk2iclLcSBMszP/VpjqmUz/Dz7y6XAdJ
+         fe8LMz188GN1DtfvDV6LenfyIz6DVK20Z9xWNe6z2R87khdWZHaGiwl250YrSkg33+y2
+         Y1AA==
+X-Gm-Message-State: AOAM53175NPZ9/VSoU4pV9IYRaOgFXho4z+MR6sFJWnKkk2xpwW7W0Br
+        Nq41oGsRAsIAWdYt5r9+KeyuTYU5k4790Q16eNlNAA==
+X-Google-Smtp-Source: ABdhPJxJX22CS6ZYAgZkVPhd+qpK+eO9wSNpPsFs7fZEtjWujgCv/T4rt0TjJSfvJsUAjbLFf6XXQYAic3y8VVgdfdg=
+X-Received: by 2002:a2e:a881:0:b0:249:6f85:d4a4 with SMTP id
+ m1-20020a2ea881000000b002496f85d4a4mr10145003ljq.231.1648254715708; Fri, 25
+ Mar 2022 17:31:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <202202161235.2FB20E6A5@keescook>
+References: <20220325233125.413634-1-vipinsh@google.com> <CALzav=e6W2VSp=btmqTpQJ=3bH+Bw3D8sLApkTTvMMKAnw_LAw@mail.gmail.com>
+In-Reply-To: <CALzav=e6W2VSp=btmqTpQJ=3bH+Bw3D8sLApkTTvMMKAnw_LAw@mail.gmail.com>
+From:   Vipin Sharma <vipinsh@google.com>
+Date:   Fri, 25 Mar 2022 17:31:19 -0700
+Message-ID: <CAHVum0dOfJ5HuscNq0tA6BnUJK34v4CPCTkD4piHc7FObZOsng@mail.gmail.com>
+Subject: Re: [PATCH] KVM: x86/mmu: Speed up slot_rmap_walk_next for sparsely
+ populated rmaps
+To:     David Matlack <dmatlack@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm list <kvm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 12:35:14PM -0800, Kees Cook wrote:
-> On Wed, Feb 16, 2022 at 01:50:15PM -0600, Gustavo A. R. Silva wrote:
-> > There is a regular need in the kernel to provide a way to declare
-> > having a dynamically sized set of trailing elements in a structure.
-> > Kernel code should always use “flexible array members”[1] for these
-> > cases. The older style of one-element or zero-length arrays should
-> > no longer be used[2].
-> > 
-> > [1] https://en.wikipedia.org/wiki/Flexible_array_member
-> > [2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
-> > 
-> > Link: https://github.com/KSPP/linux/issues/78
-> > Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-> 
-> Reviewed-by: Kees Cook <keescook@chromium.org>
+On Fri, Mar 25, 2022 at 4:53 PM David Matlack <dmatlack@google.com> wrote:
+>
+> On Fri, Mar 25, 2022 at 4:31 PM Vipin Sharma <vipinsh@google.com> wrote:
+> >
+> > Avoid calling handlers on empty rmap entries and skip to the next non
+> > empty rmap entry.
+> >
+> > Empty rmap entries are noop in handlers.
+> >
+> > Signed-off-by: Vipin Sharma <vipinsh@google.com>
+> > Suggested-by: Sean Christopherson <seanjc@google.com>
+> > Change-Id: I8abf0f4d82a2aae4c5d58b80bcc17ffc30785ffc
+>
+> nit: Omit Change-Id tags from upstream commits.
 
-Hi all,
+Thanks for catching it.
 
-Friendly ping: can someone take this, please?
+>
+> > ---
+> >  arch/x86/kvm/mmu/mmu.c | 9 ++++++---
+> >  1 file changed, 6 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> > index 51671cb34fb6..f296340803ba 100644
+> > --- a/arch/x86/kvm/mmu/mmu.c
+> > +++ b/arch/x86/kvm/mmu/mmu.c
+> > @@ -1499,11 +1499,14 @@ static bool slot_rmap_walk_okay(struct slot_rmap_walk_iterator *iterator)
+> >         return !!iterator->rmap;
+> >  }
+> >
+> > -static void slot_rmap_walk_next(struct slot_rmap_walk_iterator *iterator)
+> > +static noinline void
+>
+> What is the reason to add noinline?
 
-...I can take this in my -next tree in the meantime.
-
-Thanks
---
-Gustavo
+My understanding is that since this method is called from
+__always_inline methods, noinline will avoid gcc inlining the
+slot_rmap_walk_next in those functions and generate smaller code.
