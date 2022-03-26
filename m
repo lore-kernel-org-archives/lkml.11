@@ -2,489 +2,219 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4896AC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 11:48:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2A13C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 11:53:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232770AbiCZLtw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 07:49:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43006 "EHLO
+        id S232784AbiCZLyx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 07:54:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231550AbiCZLtt (ORCPT
+        with ESMTP id S230338AbiCZLys (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 07:49:49 -0400
-Received: from mail-vs1-xe34.google.com (mail-vs1-xe34.google.com [IPv6:2607:f8b0:4864:20::e34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 769B054BEE;
-        Sat, 26 Mar 2022 04:48:10 -0700 (PDT)
-Received: by mail-vs1-xe34.google.com with SMTP id v206so10937843vsv.2;
-        Sat, 26 Mar 2022 04:48:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=0357D2656UqVu+SigEjrjLvK0gyy4ZPxAxjcYc40Zyg=;
-        b=gkR9i45V4b44i7GD8hJ/uSI3yMSrPJD74UNN2AkKju2fcF93JCUh0SXgUGEl19yaxM
-         pZ5+V/h2PiLDrWTAo7DrC8IFvHYEOQj1ZmucCk3v3ZeJfy34DJfmxuJ0W3Yf5p2GHxXd
-         K6OcN01WPt67WWikQCllAmE0mwbq8orN0A+DKhPAh5r7Z/H5qay08WEbeTte7Z6+Lldq
-         2/abHVXjYRs3UT452OpU900lISBZHh7TZv0nWRcVapUzUDxgfRunWSE2++f8PIOnTjXr
-         oeNdBZ3ru/gYUmrEd8Wu9n8x2iVnmswPf65cC7dgqNIuEcSn8UXZtd963wHCljvrYcx7
-         Foog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=0357D2656UqVu+SigEjrjLvK0gyy4ZPxAxjcYc40Zyg=;
-        b=5Awfsqm/6Ks74MZuB7tjVbP2bwWnE+f/dO76HvD9B9qD/A7WYXI5Gtm4VdEWcIK9t0
-         tFEE6YuWaS0p3gw6cArAjkFEvFpcuSTvGsrre24fzdShZMTMIqh9tDWyTzkN0WmhN+/e
-         8vsf8LkiIfweJ02Sf9OthvQ3KGWa9dwbd3VkMtFUUY+N+vOrHbifXwjsnRhAuis8saB4
-         p9BlwTCKSfgYEcPzc5qSAsQaRFSbU/YVHjl5KPYfOONEacTpvk0YQkss2MOqb/wvQcC0
-         IKDXmIDJypNqw8UBgwSZFBcBD6zvpQxpkj+BoGQbb3G1ZHQYLM2JgKfi4OH7gGL/ojaz
-         LcIw==
-X-Gm-Message-State: AOAM531CKaD4wLFXKPe6vhwxhTjheOjcCzylmv5/Pf4kjiKgPqO2cwB5
-        8CNg0PCtFdvJH/4iTeXQmLGgLuCPQNZgiZHlAoA=
-X-Google-Smtp-Source: ABdhPJzjIvvZ2bcyj9RQgKt5WYOWrV3j+6/s0p/JcKHqxNJbc3n95gh3jRkTR0rSAmL47itMrZcHXHiAfoBBLeCBYHU=
-X-Received: by 2002:a05:6102:41a9:b0:320:c372:e79f with SMTP id
- cd41-20020a05610241a900b00320c372e79fmr6755002vsb.86.1648295289522; Sat, 26
- Mar 2022 04:48:09 -0700 (PDT)
-MIME-Version: 1.0
-References: <CAAZOf27PHWxdZifZpQYfTHb3h=qk22jRc6-A2LvBkLTR6xNOKg@mail.gmail.com>
-In-Reply-To: <CAAZOf27PHWxdZifZpQYfTHb3h=qk22jRc6-A2LvBkLTR6xNOKg@mail.gmail.com>
-From:   David Kahurani <k.kahurani@gmail.com>
-Date:   Sat, 26 Mar 2022 14:47:58 +0300
-Message-ID: <CAAZOf24Gux0bfS-QGgjcd93NpcpxeA5xU5n2k+EhhyphJo-Mmg@mail.gmail.com>
-Subject: Re: [syzbot] KMSAN: uninit-value in ax88179_led_setting
-To:     davem@davemloft.net, jgg@ziepe.ca, kuba@kernel.org,
+        Sat, 26 Mar 2022 07:54:48 -0400
+Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01olkn2056.outbound.protection.outlook.com [40.92.52.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECE78280C02;
+        Sat, 26 Mar 2022 04:53:11 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=k6LFBtbaX3zq62+RbvVpsbxNiv/+u549AQGY4PLaZ2qmaVBwlPg6GHTjRVB0+uQ5n2uWdy5ssX3Y1vQbF+z+vn/vdzKj29FoMxGqJJPUgTEiHntZiQ7Yt18elWksUl6xo0WshaWHqSKPKxiRRQLGp8w2/vYK7RzBvj9xTDl14N/Q82FnBPeEQROaiX/hMMsWcwdVLCM4jvLk+eIqTHQDIVN7kXLTTmbTPmHSz0CUoQWpBQGHqDRIx2DKoqFKMm3Rl4RvIO8rcrS5oJ7/l+72Vang1notB9I/I86ycdzAbp3Dt5ovlAG5sARfbKiBPh1z9lkZL+viBVVfToy4rD0WYQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=bECebAFmMLdZAQcUx9tEkI1yMPp55kWCKSjoebiyLKY=;
+ b=c8MDDaN3tdZoQQvvW12yMh4qWkzRGR/y6eNe4K4C3yhFp3wVeFfpC3fbLHzs5k6+XX3liA9xlwIqxYSUrxaM8UIWH35Phxex+bqQuvOYx0lcu3F12DA+PTrQr4Zls0d18VGCEfygwiKvdpGTj/+kyjhOtZn6ghstqqQl2JMLt+7jpeD9ypuSYjt4PRNw9c4IT7hkwaMfVgDKldJt3521e3TUr40JmU7LN5yKxp22UD0d4jOKqipakwgVaCvuq11ilJ5VAyanz66a54WPtJR9F7k71L41Ktx4JSxfWXw7hegaoHTGFgpr2r0z+XUH0v/bOB2XJgtpcwSzq7CgFDeiGQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bECebAFmMLdZAQcUx9tEkI1yMPp55kWCKSjoebiyLKY=;
+ b=q2ivSCkVd91+VR/Yp0V1Limsix/kGok4noy2ph9xi2snGu6nd7LTUHoOKGIqrt2DJhO8xzVvcmULuiecD3DBDZ7TiOmkF67LXhcbEDWOZllqND6nG5IKW5HXb49g0bPLsRpCLi0NVfl6GE+6YMzzXeWtawtvlfO5ULcd53650RX+UvfK2iBGPaR6G6kB7Z7Bv0GbNCMhqm5ppWLqPrnX9vCeAkNT8IiIvFVkIJziB9o3IZAtW8JJm7iMA7jl7lBF3UsVCGEhdk00bTXGXjT9FN4uLKiR2i1QaPg2Tr0NPwK1UTj8b0E4Uv98iB/+0bZ+4cc/et86o4IJtDNQG4XIhA==
+Received: from TYZPR01MB3935.apcprd01.prod.exchangelabs.com
+ (2603:1096:400:8::7) by SEZPR01MB4303.apcprd01.prod.exchangelabs.com
+ (2603:1096:101:40::6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.19; Sat, 26 Mar
+ 2022 11:53:07 +0000
+Received: from TYZPR01MB3935.apcprd01.prod.exchangelabs.com
+ ([fe80::8dd1:e105:311a:ce51]) by TYZPR01MB3935.apcprd01.prod.exchangelabs.com
+ ([fe80::8dd1:e105:311a:ce51%3]) with mapi id 15.20.5102.022; Sat, 26 Mar 2022
+ 11:53:06 +0000
+Message-ID: <TYZPR01MB3935D1963BFD458E85412E4DF81B9@TYZPR01MB3935.apcprd01.prod.exchangelabs.com>
+Subject: [ PATCH ] Documentation: fixed doc-build warnings
+From:   kushagra765@outlook.com
+To:     linux-doc@vger.kernel.org, corbet@lwn.net
+Cc:     maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch,
+        balbi@kernel.org, gregkh@linuxfoundation.org, dhowells@redhat.com,
+        arnd@arndb.de, mcgrof@kernel.org, akpm@linux-foundation.org,
+        viro@zeniv.linux.org.uk, dri-devel@lists.freedesktop.org,
         linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, phil@philpotter.co.uk,
-        syzkaller-bugs@googlegroups.com,
-        syzbot+d3dbdf31fbe9d8f5f311@syzkaller.appspotmail.com,
-        arnd@arndb.de
+        linux-cachefs@redhat.com
+Date:   Sat, 26 Mar 2022 17:22:55 +0530
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5-0ubuntu1 
+Content-Transfer-Encoding: 7bit
+X-TMN:  [a/aKdxfKdbxXCxC4LG8d4rkf3FOqm/28MeRsBjj/rQA=]
+X-ClientProxiedBy: BM1PR01CA0086.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:b00:1::26) To TYZPR01MB3935.apcprd01.prod.exchangelabs.com
+ (2603:1096:400:8::7)
+X-Microsoft-Original-Message-ID: <eeb064c760454aee4faf4c7bb08381d2065b0ceb.camel@outlook.com>
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: fc1d3b77-875d-4d90-552e-08da0f1f310f
+X-MS-TrafficTypeDiagnostic: SEZPR01MB4303:EE_
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: dvJTQ08deoDJoOp4hhK81arpUgTUWwNZep2NKTyWXf1S6ssKLGecJmjn8tH/kzpFWrCj1cMftTpmMpMJigTXZ35UfYMhRmKHfVyvVfLoHiIh6yiLfpK7GQ0zTfOEWlIj/o+AWyaDqmVFfR8ZWnRcvqqIbPX/glIAE2ctP+8Wqm+PHq5m/ohLd2o/WMZm6X1Ow2yipWdTlSfIwNrXoy3OC+concHPu0j17bkEdha1opSv2Qf51664yD0z80SVtcotbq0eguYS4ppY23NCRw2gHIg2TrBEyA78Zi04GWcROID8Z7bBzX0SIZaZhw5Vst0Pz9x1X22Uz4dFp2ay/gLRxubAN6xkBNdyO6DOjNvRIZClTSbQalkiHt8P4GbYUznOrlePKixRTKSpF6Gtsc8R6F7XMoug8EFZSYqKdhkL7V8I33iI1FNcSJkrgTv3G1zMIz+CvwsiJmjjGkdutk2BOYVXvdpiPEqUFJrhupVgfam7WlLxyxJ5S9s7ypTr9xq4fL0Ns1MGuGjsxgBwi22ZNC26MeR7QMifnafuHIyLYOfPjT/7u9aoY5o1QgkUh5LavByK265HoWthOsUG1OokMQ==
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SUVHV3RVb1VCWHBpR1NUd3dWL2s4NnJiZWNGbFd4OWFlalY0ZklGdDF6V2lz?=
+ =?utf-8?B?Q3phVnIzVisxQnh4dDhlYXNhNXVOdlhDckpoS21aTXRyNDM0d3I5dFA2a3ZX?=
+ =?utf-8?B?UkhxcEx4cGZ3aGxSRnJGRDByVzJpUkwzMmtzaUdMWXR1N0lkd1gxQXQ1eEZl?=
+ =?utf-8?B?ZGZCZEs0MkJ2TXU0bCtialZ2VmNkbmpRNS9mQXRvZS9NWGVCNkUzMjRaMFhC?=
+ =?utf-8?B?OHd6VG85TVpPUEh2ckJmUjlsT3pmMng0VHJVU2ovWEJzMi9zVkd6RXR6MFBY?=
+ =?utf-8?B?WDBzVXF6cVExVVFyZkJWYll1ZzdFbVFGVlJ0TzhwVU9RVkdwMm1QZG9iTnlK?=
+ =?utf-8?B?d3BQL1F0ZElLdC9CcG44SHpWcGtJb1NnVGJmMnBhRU8vVEJvUUZBRjNya2lS?=
+ =?utf-8?B?OGo3SnhXZGRXTWRzeXZOMVVVNDErMy9Kek9sMG84Z2dCTXlvU2ZxbWt0K1Zv?=
+ =?utf-8?B?Q3cyTm9lcks2bDBCVjJ6bitWZlIyMzdXOTMrZjQ0Zm4yWXAzbU12ZmNFdlZi?=
+ =?utf-8?B?eGFqcnpnUnlBWi91RXJLMjdhOVc4ZzZTbXprUVpDdThMdUQvZHN1N00veHB6?=
+ =?utf-8?B?eDd1RlhIL21xSzYrN1dwVmtGeVV4T1J5YWROdVVBL1ZrTlZEckpGWjJmQVlY?=
+ =?utf-8?B?WVVUL2R6bFQ0TnBUMS91OFMwYmZIZ1pkS1RvakpNREY4OVRCdk81aHJNOS8r?=
+ =?utf-8?B?N2ZTdzhoblVOeVJVL1YwZlZCNmw3dCtJN1dGVzZCVW81TzBma08xTFZHNlU4?=
+ =?utf-8?B?ZklkMCtmZmNwbXNRbkJTamErRnJFaWp3a1Bpd01Tc0J1MGROTGkzdjlpNTFw?=
+ =?utf-8?B?Ni9TdlFtNEhoSmZhL25lUk9EMXFjczdCSnpUd2pOT3Jab0doTTRjYkRTbEdT?=
+ =?utf-8?B?ZEtjKzk3QzVZUEoyME9SRDFMeG1UVTVlaWxURnpIRmlVUFVnZ2M5T1JvV2hH?=
+ =?utf-8?B?bXkrL280YjNXN3FKczBldjk0Rm9XQUwraXlWWWRaTnBFc2RlNTlsdURzR001?=
+ =?utf-8?B?UVZmcjVwMWlqNkxvNlVsUnZMVDZwcXVDVlhsZ3R4akVPby9FWVp6UVp1RGJz?=
+ =?utf-8?B?NTYvRTk0bWYweHE4amQxUENTY3hMb29lazJtdU1sNk5pb3diNkx6RVp3MTJZ?=
+ =?utf-8?B?OHFObEJMZ3MxY2pOaFlURmhGMFU4cUViTzZzRWhCTlBnWi9CcTdMM1ZEM3Bj?=
+ =?utf-8?B?bXFZelBjTlUyZHNEZWtFRzRGQ0tKNkc0VEg3Q285d1V0Vk1QdUJ1TERTL1Bv?=
+ =?utf-8?B?RzM2UHhqTyt6TXBJbHkzTGJPUEcxdnQ3RlJ3WFZ1S1BKaDJ0NWFIczlKWmtj?=
+ =?utf-8?B?RWVxaUtQTktOTGhYMGNvUFJQNmx5dnlMVHd4dFVUWUZZV1RkcWJ4RkVZSmpJ?=
+ =?utf-8?B?Q2VxWG9xVS9LT201dU0wQkkwdng2SEIzNUxUUnR2ejJ0UjdxZ0I1MWhwOEpj?=
+ =?utf-8?B?Y3Y1eFJFTFh4VVdMVlZsQU9kTnlEcklXQlNzRDl0WC9lVkNtM05Kb1ZpVWNK?=
+ =?utf-8?B?WkpSemxxaTY4aGFtU2RlWWMvODk3RGVmM043WXl6eC9qcWZCQVp6SFJuMnI5?=
+ =?utf-8?B?VTNrbDNSYXV4a1U0bmtRZVk1MnR6VUJMVzhGcEk3dVdBMjBzWmN0cEUzZmM5?=
+ =?utf-8?B?UTJzTkVmNWFEWmc3dWR4ZTlVSk1DQ096M3k1Sk5VT1VQRnN4WUdJdUJDRWFG?=
+ =?utf-8?B?TmowNG5Kcnd4WGlscjdnRkhTTnNValV3VW5xNit4NFhCV2NKQTBHWE1XWUE4?=
+ =?utf-8?B?dWRyTkk0c3d3MzdRcE5FL1FUYjR1ZjhQcGFTaTBkeDNzUCtkTE1hVUEzOGww?=
+ =?utf-8?B?amdndnFtT2cxUml1SFM1ZCtzMG1aODZldW1sczlod3ZCQnUrck1wTjM2UldM?=
+ =?utf-8?B?eEFVOE1IMFA0QUtqZ0FvMXRYeUNJeE5RWmRzZHN1NFBuOUZWNHNjZDRxS0Fl?=
+ =?utf-8?Q?Y1thZ5rdMunFQgpbXRr+rwBW5iqc0Af0?=
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fc1d3b77-875d-4d90-552e-08da0f1f310f
+X-MS-Exchange-CrossTenant-AuthSource: TYZPR01MB3935.apcprd01.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Mar 2022 11:53:06.9255
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SEZPR01MB4303
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Same here. My apologies.
+From 9a9918b051d5709b5e14ca8afa29f3ef644b8688 Mon Sep 17 00:00:00 2001
+From: Kushagra Verma <kushagra765@outlook.com>
+Date: Sat, 26 Mar 2022 16:43:15 +0530
+Subject: [PATCH] Documentation: fixed doc-build warnings
 
-On Sat, Mar 26, 2022 at 2:28 PM David Kahurani <k.kahurani@gmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following issue on:
->
-> HEAD commit: 85cfd6e539bd kmsan: core: delete kmsan_gup_pgd_range()
-> git tree: https://github.com/google/kmsan.git master
-> console output: https://syzkaller.appspot.com/x/log.txt?x=12d6c53c700000
-> kernel config: https://syzkaller.appspot.com/x/.config?x=b9807dd5b044fd7a
-> dashboard link: https://syzkaller.appspot.com/bug?extid=d3dbdf31fbe9d8f5f311
-> compiler: clang version 14.0.0 (/usr/local/google/src/llvm-git-monorepo 2b554920f11c8b763cd9ed9003f4e19b919b8e1f), GNU ld (GNU Binutils for Debian) 2.35.2
->
-> Based off a previous patch to fix a similar issue.
-> -------------------------
->
-> From: David Kahurani <k.kahurani@gmail.com>
-> Date: Sat, 26 Mar 2022 14:19:47 +0300
-> Subject: [PATCH] net: ax88179: add proper error handling of usb read errors
->
-> ax88179_178a 2-1:0.35 (unnamed net_device) (uninitialized): Failed to read reg index 0x0001: -71
-> ax88179_178a 2-1:0.35 (unnamed net_device) (uninitialized): Failed to read reg index 0x0002: -71
-> =====================================================
-> BUG: KMSAN: uninit-value in ax88179_check_eeprom drivers/net/usb/ax88179_178a.c:1074 [inline]
-> BUG: KMSAN: uninit-value in ax88179_led_setting+0x884/0x30b0 drivers/net/usb/ax88179_178a.c:1168
->  ax88179_check_eeprom drivers/net/usb/ax88179_178a.c:1074 [inline]
->  ax88179_led_setting+0x884/0x30b0 drivers/net/usb/ax88179_178a.c:1168
->  ax88179_bind+0xe75/0x1990 drivers/net/usb/ax88179_178a.c:1411
->  usbnet_probe+0x1284/0x4140 drivers/net/usb/usbnet.c:1747
->  usb_probe_interface+0xf19/0x1600 drivers/usb/core/driver.c:396
->  really_probe+0x67d/0x1510 drivers/base/dd.c:596
->  __driver_probe_device+0x3e9/0x530 drivers/base/dd.c:751
->  driver_probe_device drivers/base/dd.c:781 [inline]
->  __device_attach_driver+0x79f/0x1120 drivers/base/dd.c:898
->  bus_for_each_drv+0x2d6/0x3f0 drivers/base/bus.c:427
->  __device_attach+0x593/0x8e0 drivers/base/dd.c:969
->  device_initial_probe+0x4a/0x60 drivers/base/dd.c:1016
->  bus_probe_device+0x17b/0x3e0 drivers/base/bus.c:487
->  device_add+0x1d3e/0x2400 drivers/base/core.c:3394
->  usb_set_configuration+0x37e9/0x3ed0 drivers/usb/core/message.c:2170
->  usb_generic_driver_probe+0x13c/0x300 drivers/usb/core/generic.c:238
->  usb_probe_device+0x309/0x570 drivers/usb/core/driver.c:293
->  really_probe+0x67d/0x1510 drivers/base/dd.c:596
->  __driver_probe_device+0x3e9/0x530 drivers/base/dd.c:751
->  driver_probe_device drivers/base/dd.c:781 [inline]
->  __device_attach_driver+0x79f/0x1120 drivers/base/dd.c:898
->  bus_for_each_drv+0x2d6/0x3f0 drivers/base/bus.c:427
->  __device_attach+0x593/0x8e0 drivers/base/dd.c:969
->  device_initial_probe+0x4a/0x60 drivers/base/dd.c:1016
->  bus_probe_device+0x17b/0x3e0 drivers/base/bus.c:487
->  device_add+0x1d3e/0x2400 drivers/base/core.c:3394
->  usb_new_device+0x1b8e/0x2950 drivers/usb/core/hub.c:2563
->  hub_port_connect drivers/usb/core/hub.c:5353 [inline]
->  hub_port_connect_change drivers/usb/core/hub.c:5497 [inline]
->  port_event drivers/usb/core/hub.c:5643 [inline]
->  hub_event+0x5ad2/0x8910 drivers/usb/core/hub.c:5725
->  process_one_work+0xdb9/0x1820 kernel/workqueue.c:2298
->  process_scheduled_works kernel/workqueue.c:2361 [inline]
->  worker_thread+0x1735/0x21f0 kernel/workqueue.c:2447
->  kthread+0x721/0x850 kernel/kthread.c:327
->  ret_from_fork+0x1f/0x30
->
-> Local variable eeprom.i created at:
->  ax88179_check_eeprom drivers/net/usb/ax88179_178a.c:1045 [inline]
->  ax88179_led_setting+0x2e2/0x30b0 drivers/net/usb/ax88179_178a.c:1168
->  ax88179_bind+0xe75/0x1990 drivers/net/usb/ax88179_178a.c:1411
->
-> CPU: 1 PID: 13457 Comm: kworker/1:0 Not tainted 5.16.0-rc5-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Workqueue: usb_hub_wq hub_event
-> =====================================================
->
-> Signed-off-by: David Kahurani <k.kahurani@gmail.com>
-> Reported-by: syzbot+d3dbdf31fbe9d8f5f311@syzkaller.appspotmail.com
-> ---
->  drivers/net/usb/ax88179_178a.c | 181 +++++++++++++++++++++++++++------
->  1 file changed, 152 insertions(+), 29 deletions(-)
->
-> diff --git a/drivers/net/usb/ax88179_178a.c b/drivers/net/usb/ax88179_178a.c
-> index a31098981..932e21a65 100644
-> --- a/drivers/net/usb/ax88179_178a.c
-> +++ b/drivers/net/usb/ax88179_178a.c
-> @@ -224,9 +224,12 @@ static int __ax88179_write_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
->   ret = fn(dev, cmd, USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
->   value, index, data, size);
->
-> - if (unlikely(ret < 0))
-> + if (unlikely(ret < size)) {
-> +        ret = ret < 0 ? ret : -ENODATA;
-> +
->   netdev_warn(dev->net, "Failed to write reg index 0x%04x: %d\n",
->      index, ret);
-> + }
->
->   return ret;
->  }
-> @@ -290,8 +293,8 @@ static int ax88179_write_cmd_nopm(struct usbnet *dev, u8 cmd, u16 value,
->   return ret;
->  }
->
-> -static int ax88179_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
-> -    u16 size, void *data)
-> +static int __must_check ax88179_read_cmd(struct usbnet *dev, u8 cmd, u16 value,
-> +                                         u16 index, u16 size, void *data)
->  {
->   int ret;
->
-> @@ -354,8 +357,15 @@ static int ax88179_mdio_read(struct net_device *netdev, int phy_id, int loc)
->  {
->   struct usbnet *dev = netdev_priv(netdev);
->   u16 res;
-> + int ret;
-> +
-> + ret = ax88179_read_cmd(dev, AX_ACCESS_PHY, phy_id, (__u16)loc, 2, &res);
-> +
-> + if (ret < 0){
-> + netdev_dbg(dev->net, "Failed to read PHY_ID: %d\n", ret);
-> + return ret;
-> + }
->
-> - ax88179_read_cmd(dev, AX_ACCESS_PHY, phy_id, (__u16)loc, 2, &res);
->   return res;
->  }
->
-> @@ -951,23 +961,45 @@ static int
->  ax88179_set_features(struct net_device *net, netdev_features_t features)
->  {
->   u8 tmp;
-> + int ret;
->   struct usbnet *dev = netdev_priv(net);
->   netdev_features_t changed = net->features ^ features;
->
->   if (changed & NETIF_F_IP_CSUM) {
-> - ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_TXCOE_CTL, 1, 1, &tmp);
-> + ret = ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_TXCOE_CTL,
-> +       1, 1, &tmp);
-> + if (ret < 0){
-> + netdev_dbg(dev->net, "Failed to read TXCOE_CTL: %d\n",
-> +   ret);
-> + return ret;
-> + }
-> +
->   tmp ^= AX_TXCOE_TCP | AX_TXCOE_UDP;
->   ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_TXCOE_CTL, 1, 1, &tmp);
->   }
->
->   if (changed & NETIF_F_IPV6_CSUM) {
-> - ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_TXCOE_CTL, 1, 1, &tmp);
-> + ret = ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_TXCOE_CTL,
-> +       1, 1, &tmp);
-> + if (ret < 0){
-> + netdev_dbg(dev->net, "Failed to read TXCOE_CTL: %d\n",
-> +   ret);
-> + return ret;
-> + }
-> +
->   tmp ^= AX_TXCOE_TCPV6 | AX_TXCOE_UDPV6;
->   ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_TXCOE_CTL, 1, 1, &tmp);
->   }
->
->   if (changed & NETIF_F_RXCSUM) {
-> - ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_RXCOE_CTL, 1, 1, &tmp);
-> + ret = ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_RXCOE_CTL,
-> +       1, 1, &tmp);
-> + if (ret < 0){
-> + netdev_dbg(dev->net, "Failed to read TXCOE_CTL: %d\n",
-> +   ret);
-> + return ret;
-> + }
-> +
->   tmp ^= AX_RXCOE_IP | AX_RXCOE_TCP | AX_RXCOE_UDP |
->         AX_RXCOE_TCPV6 | AX_RXCOE_UDPV6;
->   ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_RXCOE_CTL, 1, 1, &tmp);
-> @@ -980,19 +1012,36 @@ static int ax88179_change_mtu(struct net_device *net, int new_mtu)
->  {
->   struct usbnet *dev = netdev_priv(net);
->   u16 tmp16;
-> + int ret;
->
->   net->mtu = new_mtu;
->   dev->hard_mtu = net->mtu + net->hard_header_len;
->
->   if (net->mtu > 1500) {
-> - ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_MEDIUM_STATUS_MODE,
-> - 2, 2, &tmp16);
-> + ret = ax88179_read_cmd(dev, AX_ACCESS_MAC,
-> +       AX_MEDIUM_STATUS_MODE,
-> +       2, 2, &tmp16);
-> + if (ret < 0){
-> + netdev_dbg(dev->net,
-> +   "Failed to read MEDIUM_STATUS_MODE %d\n",
-> +   ret);
-> + return ret;
-> + }
-> +
->   tmp16 |= AX_MEDIUM_JUMBO_EN;
->   ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_MEDIUM_STATUS_MODE,
->    2, 2, &tmp16);
->   } else {
-> - ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_MEDIUM_STATUS_MODE,
-> - 2, 2, &tmp16);
-> + ret = ax88179_read_cmd(dev, AX_ACCESS_MAC,
-> +               AX_MEDIUM_STATUS_MODE,
-> +       2, 2, &tmp16);
-> + if (ret < 0){
-> + netdev_dbg(dev->net,
-> +   "Failed to read MEDIUM_STATUS_MODE %d\n",
-> +   ret);
-> + return ret;
-> + }
-> +
->   tmp16 &= ~AX_MEDIUM_JUMBO_EN;
->   ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_MEDIUM_STATUS_MODE,
->    2, 2, &tmp16);
-> @@ -1045,6 +1094,7 @@ static int ax88179_check_eeprom(struct usbnet *dev)
->   u8 i, buf, eeprom[20];
->   u16 csum, delay = HZ / 10;
->   unsigned long jtimeout;
-> + int ret;
->
->   /* Read EEPROM content */
->   for (i = 0; i < 6; i++) {
-> @@ -1060,8 +1110,15 @@ static int ax88179_check_eeprom(struct usbnet *dev)
->
->   jtimeout = jiffies + delay;
->   do {
-> - ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_SROM_CMD,
-> - 1, 1, &buf);
-> +    ret = ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_SROM_CMD,
-> +   1, 1, &buf);
-> +
-> +    if (ret < 0) {
-> +    netdev_dbg(dev->net,
-> +       "Failed to read SROM_CMD: %d\n",
-> +               ret);
-> +    return ret;
-> +    }
->
->   if (time_after(jiffies, jtimeout))
->   return -EINVAL;
-> @@ -1149,12 +1206,19 @@ static int ax88179_convert_old_led(struct usbnet *dev, u16 *ledvalue)
->
->  static int ax88179_led_setting(struct usbnet *dev)
->  {
-> + int ret;
->   u8 ledfd, value = 0;
->   u16 tmp, ledact, ledlink, ledvalue = 0, delay = HZ / 10;
->   unsigned long jtimeout;
->
->   /* Check AX88179 version. UA1 or UA2*/
-> - ax88179_read_cmd(dev, AX_ACCESS_MAC, GENERAL_STATUS, 1, 1, &value);
-> + ret = ax88179_read_cmd(dev, AX_ACCESS_MAC, GENERAL_STATUS, 1, 1, &value);
-> +
-> + if (ret < 0){
-> + netdev_dbg(dev->net, "Failed to read GENERAL_STATUS: %d\n",
-> +   ret);
-> + return ret;
-> + }
->
->   if (!(value & AX_SECLD)) { /* UA1 */
->   value = AX_GPIO_CTRL_GPIO3EN | AX_GPIO_CTRL_GPIO2EN |
-> @@ -1178,20 +1242,40 @@ static int ax88179_led_setting(struct usbnet *dev)
->
->   jtimeout = jiffies + delay;
->   do {
-> - ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_SROM_CMD,
-> - 1, 1, &value);
-> + ret = ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_SROM_CMD,
-> +       1, 1, &value);
-> + if (ret < 0){
-> + netdev_dbg(dev->net,
-> +   "Failed to read SROM_CMD: %d\n",
-> +   ret);
-> + return ret;
-> + }
->
->   if (time_after(jiffies, jtimeout))
->   return -EINVAL;
->
->   } while (value & EEP_BUSY);
->
-> - ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_SROM_DATA_HIGH,
-> + ret = ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_SROM_DATA_HIGH,
->   1, 1, &value);
-> + if (ret < 0){
-> + netdev_dbg(dev->net, "Failed to read SROM_DATA_HIGH: %d\n",
-> +   ret);
-> + return ret;
-> + }
-> +
-> +
->   ledvalue = (value << 8);
->
-> - ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_SROM_DATA_LOW,
-> - 1, 1, &value);
-> + ret = ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_SROM_DATA_LOW,
-> +       1, 1, &value);
-> +
-> + if (ret < 0) {
-> + netdev_dbg(dev->net, "Failed to read SROM_DATA_LOW: %d",
-> +   ret);
-> + return ret;
-> + }
-> +
->   ledvalue |= value;
->
->   /* load internal ROM for defaule setting */
-> @@ -1213,12 +1297,22 @@ static int ax88179_led_setting(struct usbnet *dev)
->   ax88179_write_cmd(dev, AX_ACCESS_PHY, AX88179_PHY_ID,
->    GMII_PHYPAGE, 2, &tmp);
->
-> - ax88179_read_cmd(dev, AX_ACCESS_PHY, AX88179_PHY_ID,
-> - GMII_LED_ACT, 2, &ledact);
-> + ret = ax88179_read_cmd(dev, AX_ACCESS_PHY, AX88179_PHY_ID,
-> +       GMII_LED_ACT, 2, &ledact);
-> +
-> + if (ret < 0){
-> + netdev_dbg(dev->net, "Failed to read PHY_ID: %d", ret);
-> + return ret;
-> + }
->
-> - ax88179_read_cmd(dev, AX_ACCESS_PHY, AX88179_PHY_ID,
-> + ret = ax88179_read_cmd(dev, AX_ACCESS_PHY, AX88179_PHY_ID,
->   GMII_LED_LINK, 2, &ledlink);
->
-> + if (ret < 0){
-> + netdev_dbg(dev->net, "Failed to read PHY_ID: %d", ret);
-> + return ret;
-> + }
-> +
->   ledact &= GMII_LED_ACTIVE_MASK;
->   ledlink &= GMII_LED_LINK_MASK;
->
-> @@ -1295,6 +1389,7 @@ static int ax88179_led_setting(struct usbnet *dev)
->  static void ax88179_get_mac_addr(struct usbnet *dev)
->  {
->   u8 mac[ETH_ALEN];
-> + int ret;
->
->   memset(mac, 0, sizeof(mac));
->
-> @@ -1303,8 +1398,12 @@ static void ax88179_get_mac_addr(struct usbnet *dev)
->   netif_dbg(dev, ifup, dev->net,
->    "MAC address read from device tree");
->   } else {
-> - ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_NODE_ID, ETH_ALEN,
-> + ret = ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_NODE_ID, ETH_ALEN,
->   ETH_ALEN, mac);
-> +
-> + if (ret < 0)
-> + netdev_dbg(dev->net, "Failed to read NODE_ID: %d", ret);
-> +
->   netif_dbg(dev, ifup, dev->net,
->    "MAC address read from ASIX chip");
->   }
-> @@ -1572,6 +1671,7 @@ static int ax88179_link_reset(struct usbnet *dev)
->   u16 mode, tmp16, delay = HZ / 10;
->   u32 tmp32 = 0x40000000;
->   unsigned long jtimeout;
-> + int ret;
->
->   jtimeout = jiffies + delay;
->   while (tmp32 & 0x40000000) {
-> @@ -1581,7 +1681,13 @@ static int ax88179_link_reset(struct usbnet *dev)
->    &ax179_data->rxctl);
->
->   /*link up, check the usb device control TX FIFO full or empty*/
-> - ax88179_read_cmd(dev, 0x81, 0x8c, 0, 4, &tmp32);
-> + ret = ax88179_read_cmd(dev, 0x81, 0x8c, 0, 4, &tmp32);
-> +
-> + if (ret < 0) {
-> + netdev_dbg(dev->net, "Failed to read TX FIFO: %d\n",
-> +   ret);
-> + return ret;
-> + }
->
->   if (time_after(jiffies, jtimeout))
->   return 0;
-> @@ -1590,11 +1696,21 @@ static int ax88179_link_reset(struct usbnet *dev)
->   mode = AX_MEDIUM_RECEIVE_EN | AX_MEDIUM_TXFLOW_CTRLEN |
->         AX_MEDIUM_RXFLOW_CTRLEN;
->
-> - ax88179_read_cmd(dev, AX_ACCESS_MAC, PHYSICAL_LINK_STATUS,
-> - 1, 1, &link_sts);
-> + ret = ax88179_read_cmd(dev, AX_ACCESS_MAC, PHYSICAL_LINK_STATUS,
-> +       1, 1, &link_sts);
-> +
-> + if (ret < 0){
-> + netdev_dbg(dev->net, "Failed to read LINK_STATUS: %d", ret);
-> + return ret;
-> + }
->
-> - ax88179_read_cmd(dev, AX_ACCESS_PHY, AX88179_PHY_ID,
-> - GMII_PHY_PHYSR, 2, &tmp16);
-> + ret = ax88179_read_cmd(dev, AX_ACCESS_PHY, AX88179_PHY_ID,
-> +       GMII_PHY_PHYSR, 2, &tmp16);
-> +
-> + if (ret < 0){
-> + netdev_dbg(dev->net, "Failed to read PHY_ID: %d\n", ret);
-> + return ret;
-> + }
->
->   if (!(tmp16 & GMII_PHY_PHYSR_LINK)) {
->   return 0;
-> @@ -1732,9 +1848,16 @@ static int ax88179_reset(struct usbnet *dev)
->  static int ax88179_stop(struct usbnet *dev)
->  {
->   u16 tmp16;
-> + int ret;
->
-> - ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_MEDIUM_STATUS_MODE,
-> + ret = ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_MEDIUM_STATUS_MODE,
->   2, 2, &tmp16);
-> +
-> + if (ret < 0){
-> + netdev_dbg(dev->net, "Failed to read STATUS_MODE: %d\n", ret);
-> + return ret;
-> + }
-> +
->   tmp16 &= ~AX_MEDIUM_RECEIVE_EN;
->   ax88179_write_cmd(dev, AX_ACCESS_MAC, AX_MEDIUM_STATUS_MODE,
->    2, 2, &tmp16);
-> --
-> 2.25.1
+   This patch fixes the following (and 2 other) doc-build warnings:
+      1. ./include/linux/dcache.h:308: warning: expecting prototype for dget, dget_dlock(). Prototype was for dget_dlock() instead
+
+      2. ./include/linux/fscache.h:268: warning: Excess function parameter 'object' description in 'fscache_use_cookie'
+
+      3 ./include/linux/fscache.h:285: warning: Excess function parameter 'object' description in 'fscache_unuse_cookie'
+
+      4. ./drivers/gpu/drm/drm_format_helper.c:640: warning: Excess function parameter 'src' description in 'drm_fb_xrgb8888_to_mono_reversed'
+
+Signed-off-by: Kushagra Verma <kushagra765@outlook.com>
+---
+ drivers/gpu/drm/drm_format_helper.c | 1 -
+ drivers/usb/dwc3/core.c             | 1 -
+ drivers/usb/dwc3/gadget.c           | 3 +--
+ include/linux/dcache.h              | 2 +-
+ include/linux/fscache.h             | 2 --
+ 5 files changed, 2 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/gpu/drm/drm_format_helper.c b/drivers/gpu/drm/drm_format_helper.c
+index bc0f49773868..d753b34950c9 100644
+--- a/drivers/gpu/drm/drm_format_helper.c
++++ b/drivers/gpu/drm/drm_format_helper.c
+@@ -624,7 +624,6 @@ static void drm_fb_gray8_to_mono_reversed_line(u8 *dst, const u8 *src, unsigned
+  * drm_fb_xrgb8888_to_mono_reversed - Convert XRGB8888 to reversed monochrome
+  * @dst: reversed monochrome destination buffer
+  * @dst_pitch: Number of bytes between two consecutive scanlines within dst
+- * @src: XRGB8888 source buffer
+  * @fb: DRM framebuffer
+  * @clip: Clip rectangle area to copy
+  *
+diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
+index f4c09951b517..63e2ccbb7c33 100644
+--- a/drivers/usb/dwc3/core.c
++++ b/drivers/usb/dwc3/core.c
+@@ -343,7 +343,6 @@ static void dwc3_frame_length_adjustment(struct dwc3 *dwc)
+  *		from the default, this will set clock period in DWC3_GUCTL
+  *		register.
+  * @dwc: Pointer to our controller context structure
+- * @ref_clk_per: reference clock period in ns
+  */
+ static void dwc3_ref_clk_period(struct dwc3 *dwc)
+ {
+diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
+index a0c883f19a41..ee98004434df 100644
+--- a/drivers/usb/dwc3/gadget.c
++++ b/drivers/usb/dwc3/gadget.c
+@@ -660,7 +660,6 @@ static void dwc3_stop_active_transfer(struct dwc3_ep *dep, bool force,
+ /**
+  * dwc3_gadget_calc_tx_fifo_size - calculates the txfifo size value
+  * @dwc: pointer to the DWC3 context
+- * @nfifos: number of fifos to calculate for
+  *
+  * Calculates the size value based on the equation below:
+  *
+@@ -693,7 +692,7 @@ static int dwc3_gadget_calc_tx_fifo_size(struct dwc3 *dwc, int mult)
+ }
+ 
+ /**
+- * dwc3_gadget_clear_tx_fifo_size - Clears txfifo allocation
++ * dwc3_gadget_clear_tx_fifos - Clears txfifo allocation
+  * @dwc: pointer to the DWC3 context
+  *
+  * Iterates through all the endpoint registers and clears the previous txfifo
+diff --git a/include/linux/dcache.h b/include/linux/dcache.h
+index f5bba51480b2..fa35ac489a42 100644
+--- a/include/linux/dcache.h
++++ b/include/linux/dcache.h
+@@ -297,7 +297,7 @@ extern char *dentry_path(const struct dentry *, char *, int);
+ /* Allocation counts.. */
+ 
+ /**
+- *	dget, dget_dlock -	get a reference to a dentry
++ *	dget_dlock - get a reference to a dentry
+  *	@dentry: dentry to get a reference to
+  *
+  *	Given a dentry or %NULL pointer increment the reference count
+diff --git a/include/linux/fscache.h b/include/linux/fscache.h
+index d44ff747a657..9e29494241ea 100644
+--- a/include/linux/fscache.h
++++ b/include/linux/fscache.h
+@@ -256,7 +256,6 @@ struct fscache_cookie *fscache_acquire_cookie(struct fscache_volume *volume,
+ 
+ /**
+  * fscache_use_cookie - Request usage of cookie attached to an object
+- * @object: Object description
+  * @will_modify: If cache is expected to be modified locally
+  *
+  * Request usage of the cookie attached to an object.  The caller should tell
+@@ -272,7 +271,6 @@ static inline void fscache_use_cookie(struct fscache_cookie *cookie,
+ 
+ /**
+  * fscache_unuse_cookie - Cease usage of cookie attached to an object
+- * @object: Object description
+  * @aux_data: Updated auxiliary data (or NULL)
+  * @object_size: Revised size of the object (or NULL)
+  *
+-- 
+2.25.1
+
+
