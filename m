@@ -2,81 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A17E7C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 18:50:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 623CCC4332F
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 18:55:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234252AbiCZSwB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 14:52:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60438 "EHLO
+        id S234070AbiCZS5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 14:57:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232003AbiCZSvv (ORCPT
+        with ESMTP id S231740AbiCZS5P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 14:51:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F6A2369FB;
-        Sat, 26 Mar 2022 11:50:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47EE1B80B86;
-        Sat, 26 Mar 2022 18:50:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B58F0C340ED;
-        Sat, 26 Mar 2022 18:50:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648320610;
-        bh=Wqw4eQuViEzG4+yfG4QJHnYoM5iKeaKNB4G1IP3GJmI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=cdhxYo+QdLZRWafxS14zZ3iKCxSJjXGixUDqYZNEcOX0gTDC5Du96oSSQsYzi15MY
-         dGQLz83hhjvOZGrHMPLXxkMJ52b0TF/JyPbFxCG08F9hGOonGOCBcq+nayWsy6tjUL
-         nBULx3KKBhIezCgfL92wVML4CvDU/PQvuJdaRez+2poYUyg5xFeWInUXlVj3qFQikB
-         13qXhyWIeoDQvymy/3CYYRHpdse2WeJ3JZpCqB33yOjID80PdFFj+olDQDewnP1/Fa
-         RLgXNLDlMj1SBqjoovWvAgVpptqfYwDUZX2VfnCQYTm4YkjytcL+pb44EGUaF24HGU
-         UvHoFDosTNvwg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9B717F03847;
-        Sat, 26 Mar 2022 18:50:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Sat, 26 Mar 2022 14:57:15 -0400
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67C63241B69;
+        Sat, 26 Mar 2022 11:55:38 -0700 (PDT)
+Received: by mail-oi1-x22e.google.com with SMTP id 12so11626132oix.12;
+        Sat, 26 Mar 2022 11:55:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=od8p5pl2U97jeU4B5zrg7n+5mCzeV+pC/ksqgi0ZrCg=;
+        b=FLgjPZbpsRgixevsWBrkzNi6JX+0JOdLVae2WiE33dW2CYOkn5xqbMkUlVUP8W2wu7
+         GkxJRlQBc9JikV5LxxH776y/rCGduf9iWPHNwF2JwC98xLaDJOBMG8veU5JxGQ7nOAvJ
+         m/+JrXhLeGunBEipRoADOWS5rGjDCc6Gz4IggFgtvunK5yE88pyhHsgbZfGiHbN0KDJE
+         NB8NTlDVtPBrxk4PUIVxhTUnFKrA8WccJDTDtm7JqRWvIiRfCooKnwEhY3aTmayCwMpQ
+         V3hyLVfO0DlGQFzspBvlHmqHXQ6R9+E5kFXKetAYpzKWkBQUTmJFethoAMM1paiNI8zm
+         YaGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=od8p5pl2U97jeU4B5zrg7n+5mCzeV+pC/ksqgi0ZrCg=;
+        b=r4k/ZLMSm2hGaZp0BJolxckS67SFML0s78RsE+8NiRJtTIJjiR7iTUcsPn2boAz2Vv
+         ybz7IlRpirjSR8WbZcmDUi67Wcdi/CEzM6IC75FzjbT5nPLL5uTrMwJ4OsKlNa4JEuV7
+         6kdnURfSa8SzqlfjT2hUHF2o46YRSK/+FU7aTVgoSqiwpoHmYmttls0pWSo8pEGumHfo
+         VJahmxfnNxAiHJtGzGQEfZkToklM6Hkq7P71exK6vCC8vpz1uiMqqs26cOr8wMZflN/v
+         PWEstBAt2MWu3qzuSeCYUKmLcIwynnKFScUNbwqPhMENULFQvDB4S2ey95MG6cdsR2IG
+         iviA==
+X-Gm-Message-State: AOAM530nuM0l5w3i2NKx96h5mNEYhFz/NwcMZWQRJgsZ9MFzEF3DaqbJ
+        oDO63FLHbDAVpIwc7lRXkd8=
+X-Google-Smtp-Source: ABdhPJwENpqHi0yoebC6ynBYdoBH1ZAUKF4tDj7px8PfwrXlpK2apNGv6Udv3OPe7ze8luScmr+hMg==
+X-Received: by 2002:a05:6808:118c:b0:2d4:4194:70db with SMTP id j12-20020a056808118c00b002d4419470dbmr8444758oil.93.1648320937799;
+        Sat, 26 Mar 2022 11:55:37 -0700 (PDT)
+Received: from [192.168.1.103] (cpe-24-31-246-181.kc.res.rr.com. [24.31.246.181])
+        by smtp.gmail.com with ESMTPSA id k4-20020a9d4b84000000b005b2310ebdffsm4697502otf.54.2022.03.26.11.55.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 26 Mar 2022 11:55:37 -0700 (PDT)
+Sender: Larry Finger <larry.finger@gmail.com>
+Message-ID: <f7bb9164-2f66-8985-5771-5f31ee5740b7@lwfinger.net>
+Date:   Sat, 26 Mar 2022 13:55:33 -0500
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 21/22] rtw89: Replace comments with C99 initializers
+Content-Language: en-US
+To:     =?UTF-8?Q?Benjamin_St=c3=bcrz?= <benni@stuerz.xyz>, andrew@lunn.ch
+Cc:     sebastian.hesselbarth@gmail.com, gregory.clement@bootlin.com,
+        linux@armlinux.org.uk, linux@simtec.co.uk, krzk@kernel.org,
+        alim.akhtar@samsung.com, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com,
+        robert.moore@intel.com, rafael.j.wysocki@intel.com,
+        lenb@kernel.org, 3chas3@gmail.com, laforge@gnumonks.org,
+        arnd@arndb.de, gregkh@linuxfoundation.org, mchehab@kernel.org,
+        tony.luck@intel.com, james.morse@arm.com, rric@kernel.org,
+        linus.walleij@linaro.org, brgl@bgdev.pl,
+        mike.marciniszyn@cornelisnetworks.com,
+        dennis.dalessandro@cornelisnetworks.com, jgg@ziepe.ca,
+        pali@kernel.org, dmitry.torokhov@gmail.com, isdn@linux-pingi.de,
+        benh@kernel.crashing.org, fbarrat@linux.ibm.com, ajd@linux.ibm.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        nico@fluxnic.net, loic.poulain@linaro.org, kvalo@kernel.org,
+        pkshih@realtek.com, bhelgaas@google.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, linux-ia64@vger.kernel.org,
+        linux-acpi@vger.kernel.org, devel@acpica.org,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-edac@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-input@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-media@vger.kernel.org,
+        wcn36xx@lists.infradead.org, linux-wireless@vger.kernel.org,
+        linux-pci@vger.kernel.org
+References: <20220326165909.506926-1-benni@stuerz.xyz>
+ <20220326165909.506926-21-benni@stuerz.xyz>
+From:   Larry Finger <Larry.Finger@lwfinger.net>
+In-Reply-To: <20220326165909.506926-21-benni@stuerz.xyz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] qlcnic: dcb: default to returning -EOPNOTSUPP
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164832061063.28772.2120074851105666171.git-patchwork-notify@kernel.org>
-Date:   Sat, 26 Mar 2022 18:50:10 +0000
-References: <20220326172003.2906474-1-trix@redhat.com>
-In-Reply-To: <20220326172003.2906474-1-trix@redhat.com>
-To:     Tom Rix <trix@redhat.com>
-Cc:     shshaikh@marvell.com, manishc@marvell.com, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, nathan@kernel.org,
-        ndesaulniers@google.com, sucheta.chakraborty@qlogic.com,
-        GR-Linux-NIC-Dev@marvell.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Sat, 26 Mar 2022 10:20:03 -0700 you wrote:
-> From: Tom Rix <trix@redhat.com>
+On 3/26/22 11:59, Benjamin Stürz wrote:
+> This replaces comments with C99's designated
+> initializers because the kernel supports them now.
 > 
-> Clang static analysis reports this issue
-> qlcnic_dcb.c:382:10: warning: Assigned value is
->   garbage or undefined
->   mbx_out = *val;
->           ^ ~~~~
+> Signed-off-by: Benjamin Stürz <benni@stuerz.xyz>
+> ---
+>   drivers/net/wireless/realtek/rtw89/coex.c | 40 +++++++++++------------
+>   1 file changed, 20 insertions(+), 20 deletions(-)
 > 
-> [...]
+> diff --git a/drivers/net/wireless/realtek/rtw89/coex.c b/drivers/net/wireless/realtek/rtw89/coex.c
+> index 684583955511..3c83a0bfb120 100644
+> --- a/drivers/net/wireless/realtek/rtw89/coex.c
+> +++ b/drivers/net/wireless/realtek/rtw89/coex.c
+> @@ -97,26 +97,26 @@ static const struct rtw89_btc_fbtc_slot s_def[] = {
+>   };
+>   
+>   static const u32 cxtbl[] = {
+> -	0xffffffff, /* 0 */
+> -	0xaaaaaaaa, /* 1 */
+> -	0x55555555, /* 2 */
+> -	0x66555555, /* 3 */
+> -	0x66556655, /* 4 */
+> -	0x5a5a5a5a, /* 5 */
+> -	0x5a5a5aaa, /* 6 */
+> -	0xaa5a5a5a, /* 7 */
+> -	0x6a5a5a5a, /* 8 */
+> -	0x6a5a5aaa, /* 9 */
+> -	0x6a5a6a5a, /* 10 */
+> -	0x6a5a6aaa, /* 11 */
+> -	0x6afa5afa, /* 12 */
+> -	0xaaaa5aaa, /* 13 */
+> -	0xaaffffaa, /* 14 */
+> -	0xaa5555aa, /* 15 */
+> -	0xfafafafa, /* 16 */
+> -	0xffffddff, /* 17 */
+> -	0xdaffdaff, /* 18 */
+> -	0xfafadafa  /* 19 */
+> +	[0]  = 0xffffffff,
+> +	[1]  = 0xaaaaaaaa,
+> +	[2]  = 0x55555555,
+> +	[3]  = 0x66555555,
+> +	[4]  = 0x66556655,
+> +	[5]  = 0x5a5a5a5a,
+> +	[6]  = 0x5a5a5aaa,
+> +	[7]  = 0xaa5a5a5a,
+> +	[8]  = 0x6a5a5a5a,
+> +	[9]  = 0x6a5a5aaa,
+> +	[10] = 0x6a5a6a5a,
+> +	[11] = 0x6a5a6aaa,
+> +	[12] = 0x6afa5afa,
+> +	[13] = 0xaaaa5aaa,
+> +	[14] = 0xaaffffaa,
+> +	[15] = 0xaa5555aa,
+> +	[16] = 0xfafafafa,
+> +	[17] = 0xffffddff,
+> +	[18] = 0xdaffdaff,
+> +	[19] = 0xfafadafa
+>   };
+>   
+>   struct rtw89_btc_btf_tlv {
 
-Here is the summary with links:
-  - qlcnic: dcb: default to returning -EOPNOTSUPP
-    https://git.kernel.org/netdev/net/c/1521db37f0d4
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Is this change really necessary? Yes, the entries must be ordered; however, the 
+comment carries that information at very few extra characters. To me, this patch 
+looks like unneeded source churn. One other concern is that this driver is 
+backported to older kernels and older compilers by several distros. Will this 
+change require adding extra conditional statements to the source used in these 
+applications?
 
+Larry
 
