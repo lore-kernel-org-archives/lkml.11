@@ -2,115 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F093DC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 09:55:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69929C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 09:56:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232295AbiCZJ5a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 05:57:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52174 "EHLO
+        id S232333AbiCZJ6U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 05:58:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbiCZJ53 (ORCPT
+        with ESMTP id S230028AbiCZJ6O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 05:57:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F20B2D5;
-        Sat, 26 Mar 2022 02:55:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A1CCAB80171;
-        Sat, 26 Mar 2022 09:55:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF376C340E8;
-        Sat, 26 Mar 2022 09:55:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648288550;
-        bh=9IneiZNLzEZanYVZtHa+eeAHI02Z5SLRz6bDCNPUHSU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XWuFHpykcaXFspA4hULJtVeAkD08kr9E2WTF3KdVoW8nGskkjJzhfDIjfnSNiY0Dk
-         +5yl06dvJNF07RRTkc917veBwbW7/G4TFdN00pE5sFdi+q1ma8pA/uA1nSTVRKWo2t
-         5RgwH0WqttYLMLM2zUpBbx9KOoxHIvHSnl/atDQo=
-Date:   Sat, 26 Mar 2022 10:55:47 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     Rob Clark <robdclark@chromium.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: Re: [PATCH 5.17 00/39] 5.17.1-rc1 review
-Message-ID: <Yj7jI6uEtZDC5mQS@kroah.com>
-References: <20220325150420.245733653@linuxfoundation.org>
- <CA+G9fYtayz_X5tjiCT4gWZNNG=O-zx6-GTLgtqH855RoYw_5xw@mail.gmail.com>
+        Sat, 26 Mar 2022 05:58:14 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02BBF1EAD7;
+        Sat, 26 Mar 2022 02:56:37 -0700 (PDT)
+Received: from kwepemi100012.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KQZ7l66fSzfZVs;
+        Sat, 26 Mar 2022 17:54:59 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ kwepemi100012.china.huawei.com (7.221.188.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Sat, 26 Mar 2022 17:56:35 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Sat, 26 Mar 2022 17:56:34 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
+        <chenhao288@hisilicon.com>
+Subject: [PATCH net 1/6] net: hns3: fix ethtool tx copybreak buf size indicating not aligned issue
+Date:   Sat, 26 Mar 2022 17:51:00 +0800
+Message-ID: <20220326095105.54075-2-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220326095105.54075-1-huangguangbin2@huawei.com>
+References: <20220326095105.54075-1-huangguangbin2@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+G9fYtayz_X5tjiCT4gWZNNG=O-zx6-GTLgtqH855RoYw_5xw@mail.gmail.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 26, 2022 at 10:24:39AM +0530, Naresh Kamboju wrote:
-> On Fri, 25 Mar 2022 at 20:50, Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > This is the start of the stable review cycle for the 5.17.1 release.
-> > There are 39 patches in this series, all will be posted as a response
-> > to this one.  If anyone has any issues with these being applied, please
-> > let me know.
-> >
-> > Responses should be made by Sun, 27 Mar 2022 15:04:08 +0000.
-> > Anything received after that time might be too late.
-> >
-> > The whole patch series can be found in one patch at:
-> >         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.17.1-rc1.gz
-> > or in the git tree and branch at:
-> >         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.17.y
-> > and the diffstat can be found below.
-> >
-> > thanks,
-> >
-> > greg k-h
-> 
-> arm64 qcom db410c device crashed [1]
-> 
-> [   10.823905] Internal error: Oops: 96000004 [#1] PREEMPT SMP
-> [   10.876029] CPU: 1 PID: 193 Comm: kworker/1:2 Not tainted 5.17.1-rc1 #1
-> [   10.876047] Hardware name: Qualcomm Technologies, Inc. APQ 8016 SBC (DT)
-> [   10.876054] Workqueue: pm pm_runtime_work
-> [   10.876076] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-> [   10.876087] pc : hrtimer_active+0x14/0x80
-> [   10.876102] lr : hrtimer_cancel+0x28/0x70
-> 
-> 
-> The following patch fixes the problem.
-> 
-> >From 05afd57f4d34602a652fdaf58e0a2756b3c20fd4 Mon Sep 17 00:00:00 2001
-> From: Rob Clark <robdclark@chromium.org>
-> Date: Tue, 8 Mar 2022 10:48:44 -0800
-> Subject: drm/msm/gpu: Fix crash on devices without devfreq support (v2)
-> 
-> Avoid going down devfreq paths on devices where devfreq is not
-> initialized.
-> 
-> v2: Change has_devfreq() logic [Dmitry]
-> 
-> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-> Reported-by: Anders Roxell <anders.roxell@linaro.org>
-> Signed-off-by: Rob Clark <robdclark@chromium.org>
-> Fixes: 6aa89ae1fb04 ("drm/msm/gpu: Cancel idle/boost work on suspend")
-> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> Link: https://lore.kernel.org/r/20220308184844.1121029-1-robdclark@gmail.com
-> ---
->  drivers/gpu/drm/msm/msm_gpu_devfreq.c | 30 +++++++++++++++++++++++++-----
->  1 file changed, 25 insertions(+), 5 deletions(-)
-> 
-> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-> 
+From: Hao Chen <chenhao288@hisilicon.com>
 
-Now queued up, but note, this problem was already present in 5.17.0,
-right?
+When use ethtoool set tx copybreak buf size to a large value
+which causes order exceeding 10 or memory is not enough,
+it causes allocating tx copybreak buffer failed and print
+"the active tx spare buf is 0, not enabled tx spare buffer",
+however, use --get-tunable parameter query tx copybreak buf
+size and it indicates setting value not 0.
 
-thanks,
+So, it's necessary to change the print value from setting
+value to 0.
 
-greg k-h
+Set kinfo.tx_spare_buf_size to 0 when set tx copybreak buf size failed.
+
+Fixes: e445f08af2b1 ("net: hns3: add support to set/get tx copybreak buf size via ethtool for hns3 driver")
+Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+---
+ .../net/ethernet/hisilicon/hns3/hns3_enet.c   | 20 +++++++++++--------
+ .../ethernet/hisilicon/hns3/hns3_ethtool.c    |  3 ++-
+ 2 files changed, 14 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+index 0b8a73c40b12..16137238ddbf 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+@@ -1028,13 +1028,12 @@ static bool hns3_can_use_tx_sgl(struct hns3_enet_ring *ring,
+ 
+ static void hns3_init_tx_spare_buffer(struct hns3_enet_ring *ring)
+ {
++	u32 alloc_size = ring->tqp->handle->kinfo.tx_spare_buf_size;
+ 	struct hns3_tx_spare *tx_spare;
+ 	struct page *page;
+-	u32 alloc_size;
+ 	dma_addr_t dma;
+ 	int order;
+ 
+-	alloc_size = ring->tqp->handle->kinfo.tx_spare_buf_size;
+ 	if (!alloc_size)
+ 		return;
+ 
+@@ -1044,30 +1043,35 @@ static void hns3_init_tx_spare_buffer(struct hns3_enet_ring *ring)
+ 	if (!tx_spare) {
+ 		/* The driver still work without the tx spare buffer */
+ 		dev_warn(ring_to_dev(ring), "failed to allocate hns3_tx_spare\n");
+-		return;
++		goto devm_kzalloc_error;
+ 	}
+ 
+ 	page = alloc_pages_node(dev_to_node(ring_to_dev(ring)),
+ 				GFP_KERNEL, order);
+ 	if (!page) {
+ 		dev_warn(ring_to_dev(ring), "failed to allocate tx spare pages\n");
+-		devm_kfree(ring_to_dev(ring), tx_spare);
+-		return;
++		goto alloc_pages_error;
+ 	}
+ 
+ 	dma = dma_map_page(ring_to_dev(ring), page, 0,
+ 			   PAGE_SIZE << order, DMA_TO_DEVICE);
+ 	if (dma_mapping_error(ring_to_dev(ring), dma)) {
+ 		dev_warn(ring_to_dev(ring), "failed to map pages for tx spare\n");
+-		put_page(page);
+-		devm_kfree(ring_to_dev(ring), tx_spare);
+-		return;
++		goto dma_mapping_error;
+ 	}
+ 
+ 	tx_spare->dma = dma;
+ 	tx_spare->buf = page_address(page);
+ 	tx_spare->len = PAGE_SIZE << order;
+ 	ring->tx_spare = tx_spare;
++	return;
++
++dma_mapping_error:
++	put_page(page);
++alloc_pages_error:
++	devm_kfree(ring_to_dev(ring), tx_spare);
++devm_kzalloc_error:
++	ring->tqp->handle->kinfo.tx_spare_buf_size = 0;
+ }
+ 
+ /* Use hns3_tx_spare_space() to make sure there is enough buffer
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+index 6469238ae090..ae30dbe7ef52 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+@@ -1818,7 +1818,8 @@ static int hns3_set_tunable(struct net_device *netdev,
+ 		old_tx_spare_buf_size = h->kinfo.tx_spare_buf_size;
+ 		new_tx_spare_buf_size = *(u32 *)data;
+ 		ret = hns3_set_tx_spare_buf_size(netdev, new_tx_spare_buf_size);
+-		if (ret) {
++		if (ret ||
++		    (!priv->ring->tx_spare && new_tx_spare_buf_size != 0)) {
+ 			int ret1;
+ 
+ 			netdev_warn(netdev,
+-- 
+2.33.0
+
