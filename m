@@ -2,34 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09D5DC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19D8FC4332F
 	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 19:24:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234682AbiCZTZr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 15:25:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55926 "EHLO
+        id S234716AbiCZTZz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 15:25:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234091AbiCZTZj (ORCPT
+        with ESMTP id S234434AbiCZTZj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 26 Mar 2022 15:25:39 -0400
 Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42C7D32983;
-        Sat, 26 Mar 2022 12:24:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0DEB33E31;
+        Sat, 26 Mar 2022 12:24:02 -0700 (PDT)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 446CC22246;
-        Sat, 26 Mar 2022 20:23:59 +0100 (CET)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id D9FBE223F0;
+        Sat, 26 Mar 2022 20:24:00 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1648322639;
+        t=1648322640;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=U1ALIM523p8MqRPqP+ugG3tBGGFZ31pckruL6+qSD2I=;
-        b=oF8vTnEabgoC+nwYoxSucgQqWZCsS618tKBCeW+k+R2xWnBmiA6uPjG2eKDqQAabxLP+ZG
-        85GY+aOtFFMr1w09twyikBIvhCeB2myFKrpkYFshWBMtiy2zZGH6ql35W+tAjX3a95mz/B
-        pJpDHOykJRDZY45BiMo3Lcv1HiAb5rc=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ngZOER/c529YUL1r4pFNa98rLmtvDnqoQWaU7g07B4E=;
+        b=ejiI+BDJS+hPUaz11Qoy54uC28GOGZLRZFUwqZFfHnXYbWNeKBHJHcV3Wm4RqJCkYDaI3D
+        7OYBzzcxx7b6+JPMqGmbMsgBJpCXuLEqS555T1e72fnduAUe1u5r6hfXxivBWZUH/zm8Mi
+        SWYnRnbSBc+rFthVg9zByHZygt2ctvg=
 From:   Michael Walle <michael@walle.cc>
 To:     Jean Delvare <jdelvare@suse.com>,
         Guenter Roeck <linux@roeck-us.net>,
@@ -37,53 +38,86 @@ To:     Jean Delvare <jdelvare@suse.com>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>
 Cc:     linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
-Subject: [PATCH v1 0/4] hwmon: add lan9668 driver
-Date:   Sat, 26 Mar 2022 20:23:43 +0100
-Message-Id: <20220326192347.2940747-1-michael@walle.cc>
+Subject: [PATCH v1 3/4] dt-bindings: hwmon: add Microchip LAN966x bindings
+Date:   Sat, 26 Mar 2022 20:23:46 +0100
+Message-Id: <20220326192347.2940747-4-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220326192347.2940747-1-michael@walle.cc>
+References: <20220326192347.2940747-1-michael@walle.cc>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a temperature and fan controller driver for the Microchip LAN9668 SoC.
+Add a binding for the temperature sensor and the fan controller on the
+Microchip LAN966x family.
 
-The temperature sensor uses a polynomial to calculate the actual
-temperature. Fortunately, the bt1-pvt already has such a calculation.
-It seems that the LAN9668 uses the same Analog Bits sensor as the
-BT1 although with a different characteristic. To be able to reuse the
-code move it to lib/ as it seems pretty generic to calculate any
-polynomial using integers only, which might also be used by other parts
-of the kernel. Another option might be to move the code to hwmon-poly.c,
-I'm not sure. Thoughts?
-
-I also plan on submitting patches to add temperature sensor support for
-the GPYxxx and LAN8814 PHYs which also use polynomial_calc().
-
-The last two patches adds the actual driver and the dt-binding for it.
-
-Michael Walle (4):
-  lib: add generic polynomial calculation
-  hwmon: (bt1-pvt) use generic polynomial functions
-  dt-bindings: hwmon: add Microchip LAN966x bindings
-  hwmon: add driver for the Microchip LAN966x SoC
-
- .../bindings/hwmon/microchip,lan966x.yaml     |  53 +++
- drivers/hwmon/Kconfig                         |  12 +
- drivers/hwmon/Makefile                        |   1 +
- drivers/hwmon/bt1-pvt.c                       |  50 +--
- drivers/hwmon/lan966x-hwmon.c                 | 384 ++++++++++++++++++
- include/linux/polynomial.h                    |  35 ++
- lib/Kconfig                                   |   3 +
- lib/Makefile                                  |   2 +
- lib/polynomial.c                              |  95 +++++
- 9 files changed, 598 insertions(+), 37 deletions(-)
+Signed-off-by: Michael Walle <michael@walle.cc>
+---
+ .../bindings/hwmon/microchip,lan966x.yaml     | 53 +++++++++++++++++++
+ 1 file changed, 53 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/hwmon/microchip,lan966x.yaml
- create mode 100644 drivers/hwmon/lan966x-hwmon.c
- create mode 100644 include/linux/polynomial.h
- create mode 100644 lib/polynomial.c
 
+diff --git a/Documentation/devicetree/bindings/hwmon/microchip,lan966x.yaml b/Documentation/devicetree/bindings/hwmon/microchip,lan966x.yaml
+new file mode 100644
+index 000000000000..390dd6755ff5
+--- /dev/null
++++ b/Documentation/devicetree/bindings/hwmon/microchip,lan966x.yaml
+@@ -0,0 +1,53 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/hwmon/microchip,lan966x.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Microchip LAN966x Hardware Monitor
++
++maintainers:
++  - Michael Walle <michael@walle.cc>
++
++description: |
++  Microchip LAN966x temperature monitor and fan controller
++
++properties:
++  compatible:
++    enum:
++      - microchip,lan9668-hwmon
++
++  reg:
++    items:
++      - description: PVT registers
++      - description: FAN registers
++
++  reg-names:
++    items:
++      - const: pvt
++      - const: fan
++
++  clocks:
++    maxItems: 1
++
++  '#thermal-sensor-cells':
++    const: 0
++
++required:
++  - compatible
++  - reg
++  - reg-names
++  - clocks
++
++additionalProperties: false
++
++examples:
++  - |
++    hwmon: hwmon@e2010180 {
++        compatible = "microchip,lan9668-hwmon";
++        reg = <0xe2010180 0xc>,
++              <0xe20042a8 0xc>;
++        reg-names = "pvt", "fan";
++        clocks = <&sys_clk>;
++        #thermal-sensor-cells = <0>;
++    };
 -- 
 2.30.2
 
