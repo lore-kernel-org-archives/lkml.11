@@ -2,148 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8AABC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 06:42:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB5BAC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 06:46:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231401AbiCZGoO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 02:44:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49442 "EHLO
+        id S231643AbiCZGsL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 02:48:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230061AbiCZGoG (ORCPT
+        with ESMTP id S230061AbiCZGsH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 02:44:06 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB3A417FD0C
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 23:42:29 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id w7so5624689pfu.11
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 23:42:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DzmW1EwXib0HEBL5ioOFxuUKPvj/IW7QJoaVVg8+xH0=;
-        b=k94K+4orcgP8kDrhyw/hF4hSopr8E4xGvyHDrqmV3/AETXXKBicOS4bD6VEdw0a1rk
-         fhuEs9Biymqy6AHdhF5pzSmXa5ciGqejQRnrQLgx+SNgTm/KSr+Q2OPuHqp9haPiNsxN
-         wWrIRxjQUk6PDVquYpGEneQwQulpcj2oVxdyE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DzmW1EwXib0HEBL5ioOFxuUKPvj/IW7QJoaVVg8+xH0=;
-        b=CG9lVnsQ8S6zHSGLfdnTFzAlWco+HzLyx8mZUsyiXBpcfH5t68RxIgA57ZdL6OCJYm
-         /P81JRHfQIMHZMPm2b7+mXTGkdIUyQsTKrKsxEGFbaU9g9kAfDR7gQSg71Y1jQwX3Lj1
-         CACxr+VgthjZwKqU20Umx7tgKSoIF7eeBGeGkOt12kkW5v3BPe8OSyNtshBbesajd26o
-         8CpmiBnE1Fm07rPEm+p/YxFdeS+ZRyi2nvCTOBuhZorGFeV4ytz4v/wqsO2yiba9KshZ
-         TCKRqbZ7d06VovPA9iObqIpH5hnxiWza7qCcqJAu4Mlz3ObxrusQdm917cY1kLX+GBXk
-         URqA==
-X-Gm-Message-State: AOAM5304jma/q01H5CoxkefmBkubeyQsyrsUYtISVKVrRBs7Nqril0re
-        YdOHlh+Hs+eQ4Z5uWJiiijkLjg==
-X-Google-Smtp-Source: ABdhPJwXINhn4isrhWwq6UFZEvwUcMk+1i2H2+Yb705ZRLHFhy/5zUzg6kvPyFIyPtyDuoEF4KjUNQ==
-X-Received: by 2002:a05:6a00:98e:b0:4fb:1162:b2a5 with SMTP id u14-20020a056a00098e00b004fb1162b2a5mr6604055pfg.12.1648276949326;
-        Fri, 25 Mar 2022 23:42:29 -0700 (PDT)
-Received: from localhost (0.223.81.34.bc.googleusercontent.com. [34.81.223.0])
-        by smtp.gmail.com with UTF8SMTPSA id d80-20020a621d53000000b004fae1119955sm8960061pfd.213.2022.03.25.23.42.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Mar 2022 23:42:29 -0700 (PDT)
-From:   Ying Hsu <yinghsu@chromium.org>
-To:     marcel@holtmann.org
-Cc:     chromeos-bluetooth-upstreaming@chromium.org,
-        Ying Hsu <yinghsu@chromium.org>,
-        syzbot+2bef95d3ab4daa10155b@syzkaller.appspotmail.com,
-        Joseph Hwang <josephsih@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH] Bluetooth: fix dangling sco_conn and use-after-free in sco_sock_timeout
-Date:   Sat, 26 Mar 2022 06:35:17 +0000
-Message-Id: <20220326063415.1.I67f8ad854ac2f48701902bfb34d6e2070011b779@changeid>
-X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
+        Sat, 26 Mar 2022 02:48:07 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 774062220C1
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 23:46:31 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KQTy147rbz1GCwq;
+        Sat, 26 Mar 2022 14:46:17 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Sat, 26 Mar 2022 14:46:29 +0800
+Subject: Re: [PATCH v3] mm/mempolicy: fix mpol_new leak in
+ shared_policy_replace
+To:     Andrew Morton <akpm@linux-foundation.org>
+CC:     <mhocko@suse.com>, <kosaki.motohiro@jp.fujitsu.com>,
+        <mgorman@suse.de>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220322104345.36379-1-linmiaohe@huawei.com>
+ <20220325172907.57dd381b746563be5dc77097@linux-foundation.org>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <c8625168-4a40-1f6c-47b1-2c9194d3d4b3@huawei.com>
+Date:   Sat, 26 Mar 2022 14:46:28 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220325172907.57dd381b746563be5dc77097@linux-foundation.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Connecting the same socket twice consecutively in sco_sock_connect()
-could lead to a race condition where two sco_conn objects are created
-but only one is associated with the socket. If the socket is closed
-before the SCO connection is established, the timer associated with the
-dangling sco_conn object won't be canceled. As the sock object is being
-freed, the use-after-free problem happens when the timer callback
-function sco_sock_timeout() accesses the socket. Here's the call trace:
+On 2022/3/26 8:29, Andrew Morton wrote:
+> On Tue, 22 Mar 2022 18:43:45 +0800 Miaohe Lin <linmiaohe@huawei.com> wrote:
+> 
+>> If mpol_new is allocated but not used in restart loop, mpol_new will be
+>> freed via mpol_put before returning to the caller.  But refcnt is not
+>> initialized yet, so mpol_put could not do the right things and might leak
+>> the unused mpol_new. This would happen if mempolicy was updated on the
+>> shared shmem file while the sp->lock has been dropped during the memory
+>> allocation.
+>>
+>> This issue could be triggered easily with the below code snippet if there
+>> are many processes doing the below work at the same time:
+>>
+>>   shmid = shmget((key_t)5566, 1024 * PAGE_SIZE, 0666|IPC_CREAT);
+>>   shm = shmat(shmid, 0, 0);
+>>   loop many times {
+>>     mbind(shm, 1024 * PAGE_SIZE, MPOL_LOCAL, mask, maxnode, 0);
+>>     mbind(shm + 128 * PAGE_SIZE, 128 * PAGE_SIZE, MPOL_DEFAULT, mask,
+>>           maxnode, 0);
+>>   }
+>>
+>> ...
+>>
+>> --- a/mm/mempolicy.c
+>> +++ b/mm/mempolicy.c
+>> @@ -2733,6 +2733,7 @@ static int shared_policy_replace(struct shared_policy *sp, unsigned long start,
+>>  	mpol_new = kmem_cache_alloc(policy_cache, GFP_KERNEL);
+>>  	if (!mpol_new)
+>>  		goto err_out;
+>> +	refcount_set(&mpol_new->refcnt, 1);
+>>  	goto restart;
+>>  }
+> 
+> Two other sites in this file do
+> 
+> 	atomic_set(&policy->refcnt, 1);
+> 
+> 
+> Could we please instead have a little helper function which does the
+> kmem_cache_alloc()+refcount_set()?> .
 
-dump_stack+0x107/0x163
-? refcount_inc+0x1c/
-print_address_description.constprop.0+0x1c/0x47e
-? refcount_inc+0x1c/0x7b
-kasan_report+0x13a/0x173
-? refcount_inc+0x1c/0x7b
-check_memory_region+0x132/0x139
-refcount_inc+0x1c/0x7b
-sco_sock_timeout+0xb2/0x1ba
-process_one_work+0x739/0xbd1
-? cancel_delayed_work+0x13f/0x13f
-? __raw_spin_lock_init+0xf0/0xf0
-? to_kthread+0x59/0x85
-worker_thread+0x593/0x70e
-kthread+0x346/0x35a
-? drain_workqueue+0x31a/0x31a
-? kthread_bind+0x4b/0x4b
-ret_from_fork+0x1f/0x30
+There are usecases like below:
 
-Link: https://syzkaller.appspot.com/bug?extid=2bef95d3ab4daa10155b
-Reported-by: syzbot+2bef95d3ab4daa10155b@syzkaller.appspotmail.com
-Fixes: e1dee2c1de2b ("Bluetooth: fix repeated calls to sco_sock_kill")
-Signed-off-by: Ying Hsu <yinghsu@chromium.org>
-Reviewed-by: Joseph Hwang <josephsih@chromium.org>
----
-Tested this commit using a C reproducer on qemu-x86_64 for 8 hours.
+	struct mempolicy *new = kmem_cache_alloc(policy_cache, GFP_KERNEL);
+	*new = *old;
+	^^^^^^^^^^^^
+	refcount_set(&new->refcnt, 1);
 
- net/bluetooth/sco.c | 21 +++++++++++++--------
- 1 file changed, 13 insertions(+), 8 deletions(-)
+If we use helper function to do kmem_cache_alloc()+refcount_set() above, separate
+refcount_set(&new->refcnt, 1) is still needed as old is copied to new and overwrites
+the refcnt field. So that little helper function might not work. Or am I miss something?
 
-diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
-index 8eabf41b2993..380c63194736 100644
---- a/net/bluetooth/sco.c
-+++ b/net/bluetooth/sco.c
-@@ -574,19 +574,24 @@ static int sco_sock_connect(struct socket *sock, struct sockaddr *addr, int alen
- 	    addr->sa_family != AF_BLUETOOTH)
- 		return -EINVAL;
- 
--	if (sk->sk_state != BT_OPEN && sk->sk_state != BT_BOUND)
--		return -EBADFD;
-+	lock_sock(sk);
-+	if (sk->sk_state != BT_OPEN && sk->sk_state != BT_BOUND) {
-+		err = -EBADFD;
-+		goto done;
-+	}
- 
--	if (sk->sk_type != SOCK_SEQPACKET)
--		return -EINVAL;
-+	if (sk->sk_type != SOCK_SEQPACKET) {
-+		err = -EINVAL;
-+		goto done;
-+	}
- 
- 	hdev = hci_get_route(&sa->sco_bdaddr, &sco_pi(sk)->src, BDADDR_BREDR);
--	if (!hdev)
--		return -EHOSTUNREACH;
-+	if (!hdev) {
-+		err = -EHOSTUNREACH;
-+		goto done;
-+	}
- 	hci_dev_lock(hdev);
- 
--	lock_sock(sk);
--
- 	/* Set destination address and psm */
- 	bacpy(&sco_pi(sk)->dst, &sa->sco_bdaddr);
- 
--- 
-2.35.1.1021.g381101b075-goog
+Many thanks.
+
+> 
 
