@@ -2,127 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78225C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 01:29:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2009C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 01:41:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229761AbiCZBb0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 21:31:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47122 "EHLO
+        id S229933AbiCZBnY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 21:43:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiCZBbX (ORCPT
+        with ESMTP id S229456AbiCZBnW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 21:31:23 -0400
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EB9D65D22;
-        Fri, 25 Mar 2022 18:29:48 -0700 (PDT)
-Received: by mail-qk1-x735.google.com with SMTP id 85so7286228qkm.9;
-        Fri, 25 Mar 2022 18:29:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=0DdVLSUcC07GOA7YCsdp/ReN/FeYz9xl0dhfJXTph2Y=;
-        b=NYGDT1hpkwAmj4qNgRwTVfk/nDGVn7ICfXt11j7tqy1L2Qg6LSZi8sZmKfMfI77yT2
-         U3j7UPKGJfdXv+JQBHL/teQOYC8R4XmnCjT6b1Xye9cuLGIGQUcaa2pKDHXVGHI06IZG
-         7LUph476kAay71Z5SlaAZtc4tVof6JuDqCFOsOlcoDVwHB3dykuM6jA5GFiKxAMncXks
-         x25+i7ohNfL7koiEv5JM0N2ZjYSszZ0dpFC2R7KiNywxTZBYIGsNyZK+UhjN7UK9LHS2
-         iIKYGAaOb8jcrrVhz2hPt7DHQrvF3JtReG1zT6akS1+dZUQ5ppZDV6WoYb/dFMVbL8rg
-         gQ0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0DdVLSUcC07GOA7YCsdp/ReN/FeYz9xl0dhfJXTph2Y=;
-        b=m9jgoiqW3LNPjcea089lzG7dHZBr5QpILSZAaVPCnaFE/frewKJAN5QaFmplowXW8c
-         sGTAK36jhKgUC+SNnlwu8HL56SuodW6zqfIySRapjtjcrpk5ih5K/NahQW8E7HowslZp
-         9hoJD+2e5vKVM5Ohdzn+E0JIZX2x5USx+OXhPYdua0e1i8irtRm9ysISbKLnTkzcK3Xz
-         tTP8wtUAJQinLJi2QRYME8YoUsFFwsoAuy7P02Iqru0vXTZZ4Hntx6VrS4yKS4eB2Mon
-         //5PVoOdjF7Uj7Dt5dqigkdrBPaqv1jLrfQjTuSfEX3CroE1y9E0gMmtcZ/D2gGIMe8l
-         513w==
-X-Gm-Message-State: AOAM5302MIDYY7x3Fm1quD1SpjCt3G4uUrFhkyMd8HuaSwDW4lvai9kA
-        LE/zBLzPwYqHFURRNh2erB8=
-X-Google-Smtp-Source: ABdhPJxwSYziXTXZa6eWMGSDKJEcAKSR4zyp/bDDcexpV7c+glHyWVK+7ttSr1PQSnpunzQvgNDJTA==
-X-Received: by 2002:a37:6784:0:b0:67b:32b3:ba71 with SMTP id b126-20020a376784000000b0067b32b3ba71mr9105252qkc.595.1648258187600;
-        Fri, 25 Mar 2022 18:29:47 -0700 (PDT)
-Received: from localhost ([98.242.65.5])
-        by smtp.gmail.com with ESMTPSA id t67-20020ae9df46000000b006809a144ac1sm4329977qkf.99.2022.03.25.18.29.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Mar 2022 18:29:47 -0700 (PDT)
-Date:   Fri, 25 Mar 2022 18:29:45 -0700
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Mark Brown <broonie@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 1/4] spidev: Do not use atomic bit operations when
- allocating minor
-Message-ID: <Yj5siWiBVKUgtbxz@yury-laptop>
-References: <20220323140215.2568-1-andriy.shevchenko@linux.intel.com>
- <YjtNJe4Pgp3WIwOa@sirena.org.uk>
- <YjtXbDyCWZxKnf4Y@smile.fi.intel.com>
- <YjtvsYs+x3LRaLVP@sirena.org.uk>
- <Yjw4yjgordnSo+7M@smile.fi.intel.com>
- <YjyAFNYpDjSQnIN1@sirena.org.uk>
- <CAHp75VdFjYepcQ82e4WgNP2nQMk6O_xOALkG1yHxWPbYuHTXHA@mail.gmail.com>
+        Fri, 25 Mar 2022 21:43:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D6A12DC0;
+        Fri, 25 Mar 2022 18:41:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 96F0361917;
+        Sat, 26 Mar 2022 01:41:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB6BAC004DD;
+        Sat, 26 Mar 2022 01:41:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648258906;
+        bh=jGW6PmBImEhptd1gLKtaCQuGjGNEySz4ZTmfr35uDDo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=WOoSOxA7eJ5a2mSatazhUFrvSoihLmhSyReNqGit9f/GcWRVva/v1hsFislZCcvHm
+         tuYJnVgbexMaxODUx+v+5uweMEVu2bZDL2gP037u7297bkqVtGEY7SabVtrIhWlnid
+         g8MrsWm0ZrMlp2k1DIYsQZDSbRWurNMLwe3+mvJwV5eQ3tiDi0DRweNgkX8iTLf9f2
+         J7IQ+QpAjHVU+p8o5EoiZGj/lKd5yG/BznDQ//S7FRNEblI19fOZrlgVMT9lwsf0pw
+         LDCsP2DwPAYQL0bc2HrPafUGlnLySv6lO7dhqiUEPOybIWjg5fZHOrfzANR9YGSZTs
+         Z0cPEpuIq7hAg==
+Date:   Fri, 25 Mar 2022 18:41:45 -0700
+From:   "Darrick J. Wong" <djwong@kernel.org>
+To:     Andreas Gruenbacher <agruenba@redhat.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        cluster-devel <cluster-devel@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Christoph Hellwig <hch@lst.de>
+Subject: Re: [GIT PULL] fs/iomap: Fix buffered write page prefaulting
+Message-ID: <20220326014145.GE8182@magnolia>
+References: <20220325143701.144731-1-agruenba@redhat.com>
+ <20220326000337.GD8182@magnolia>
+ <CAHc6FU6ys6gQjqpT-p0b+9pRzQPGemvviAMJNgBvmXaM27k7jA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHp75VdFjYepcQ82e4WgNP2nQMk6O_xOALkG1yHxWPbYuHTXHA@mail.gmail.com>
+In-Reply-To: <CAHc6FU6ys6gQjqpT-p0b+9pRzQPGemvviAMJNgBvmXaM27k7jA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 01:09:36PM +0200, Andy Shevchenko wrote:
-> On Thu, Mar 24, 2022 at 10:48 PM Mark Brown <broonie@kernel.org> wrote:
-> > On Thu, Mar 24, 2022 at 11:24:26AM +0200, Andy Shevchenko wrote:
-> > > On Wed, Mar 23, 2022 at 07:06:25PM +0000, Mark Brown wrote:
+On Sat, Mar 26, 2022 at 01:22:17AM +0100, Andreas Gruenbacher wrote:
+> On Sat, Mar 26, 2022 at 1:03 AM Darrick J. Wong <djwong@kernel.org> wrote:
+> > On Fri, Mar 25, 2022 at 03:37:01PM +0100, Andreas Gruenbacher wrote:
+> > > Hello Linus,
+> > >
+> > > please consider pulling the following fix, which I've forgotten to send
+> > > in the previous merge window.  I've only improved the patch description
+> > > since.
+> > >
+> > > Thank you very much,
+> > > Andreas
+> > >
+> > > The following changes since commit 42eb8fdac2fc5d62392dcfcf0253753e821a97b0:
+> > >
+> > >   Merge tag 'gfs2-v5.16-rc2-fixes' of git://git.kernel.org/pub/scm/linux/kernel/git/gfs2/linux-gfs2 (2021-11-17 15:55:07 -0800)
+> > >
+> > > are available in the Git repository at:
+> > >
+> > >   https://git.kernel.org/pub/scm/linux/kernel/git/gfs2/linux-gfs2.git tags/write-page-prefaulting
+> > >
+> > > for you to fetch changes up to 631f871f071746789e9242e514ab0f49067fa97a:
+> > >
+> > >   fs/iomap: Fix buffered write page prefaulting (2022-03-25 15:14:03 +0100)
 > >
-> > > > Yes, it's not needed but what meaningful harm does it do?
-> >
-> > > There are basically two points:
-> >
-> > > 1) in one driver the additional lock may not be influential, but
-> > >    if many drivers will do the same, it will block CPUs for no
-> > >    purpose;
-> >
-> > > 2) derived from the above, if one copies'n'pastes the code, esp.
-> > >    using spin locks, it may become an unneeded code and performance
-> > >    degradation.
-> >
-> > I think if these are serious issues they need to be addressed in the API
-> > so that code doing the fancy unlocked stuff that needs atomicity is the
-> > code that has the __ and looks like it's doing something tricky and
-> > peering into internals.
+> > When was this sent to fsdevel for public consideration?  The last time I
+> > saw any patches related to prefaulting in iomap was November.
 > 
-> I believe the issue you mainly pointed out is the __ in the name of
-> the APIs, since it's case by case when you need one or the other. In
-> case of spidev we need non-atomic versions, in case of, e.g.,
-> drivers/dma/dw/core.c we need atomic, because spin locks used there do
-> not (and IIRC may not) cover some cases where the bit operations are
-> used against same bitmap.
+> On November 23, exact same patch:
 > 
-> Perhaps we might add the aliases as clear_bit_nonatomic() et al. Yury,
-> what do you think?
+> https://lore.kernel.org/linux-fsdevel/20211123151812.361624-1-agruenba@redhat.com/
 
-We already have bitmap_clear(addr, nr, 1), which would call
-__clear_bit() without any overhead. So, I think we'd encourage people
-to switch to bitmap_{set,clear} where it makes sense, i.e. where the
-object is a real bitmap, not a thing like flags. We can even invent
-bitmap_set_bit(addr, nr) if needed.
+Ah, ok, so I just missed it then.  Sorry about that, I seem to suck as
+maintainer more and more by the day. :( :(
 
-What really concerns me is that our atomic bit operations are not
-really atomic. If bitmap doesn't fit into a single word, different
-threads may read/write different parts of such bitmap concurrently. 
+(Hey, at least you got the other maintainer to RVB it...)
 
-Another thing is that we have no atomic versions for functions like
-bitmap_empty(), which means that atomic part of bitmap API cannot be
-mixed with non-atomic part.
+--D
 
-This means that atomic ops are most probably used wider than it worth.
-I don't know how many useless atomic bitmap ops we have, I also don't
-know how to estimate the excessive pressure on cache subsystem generated
-by this useless clear/set_bit() traffic. 
-
-Thanks,
-Yury
+> Andreas
+> 
