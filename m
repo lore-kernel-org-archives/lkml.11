@@ -2,62 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E9ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 19:30:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02C94C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 19:40:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234739AbiCZTbz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 15:31:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55580 "EHLO
+        id S234744AbiCZTmQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 15:42:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231851AbiCZTbx (ORCPT
+        with ESMTP id S229724AbiCZTmP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 15:31:53 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD31532052
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 12:30:16 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id e16so18508484lfc.13
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 12:30:16 -0700 (PDT)
+        Sat, 26 Mar 2022 15:42:15 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F43712E149
+        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 12:40:38 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id d5so18574808lfj.9
+        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 12:40:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linux-foundation.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=FfLtMPKWOgtbixf5r664NcyfUg09ely2U/JmDYjA8BY=;
-        b=F+3ZVjB7BCSCLcZtwiPvR46BWAJVWdiaN3i439/aLf4lD0vcChmXZbsSzeMY76YnAP
-         RENdKWXQ/ux4mV+RSnrCv9PyYnLL2iFG+BKvgFzACMUl6/c2Z2wMhjk96WLCFrW6tOyb
-         ViEQgfC6S4WqObuYEM6u9bBkGdgNiFF6lCkqQ=
+        bh=Eo+NI/ZY6vwsGX0YbjboRUexcl2mfDPwhfiG8UnYnwk=;
+        b=BnS1v48fprKmSRXFjcrnsMCOkSZvYZQKHkA3LVRLp/DQnYYFla62uXIfXJRAbLMigi
+         bFCZxlifzHg0dE0dAEH4xtBlMhLSpHZdPD89nlH9F7pdl3UwkeWWhnSQ/WTlG5C7cq9x
+         p3SeW6+eqS57A/bUxi4swECZhDIttG9TD9X6Y=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=FfLtMPKWOgtbixf5r664NcyfUg09ely2U/JmDYjA8BY=;
-        b=rgCvg5O7fCwB3vF56b4Dlrl2uqUWp9HQpB4oExrsti9Kaw3cHVlp4UV+OoC87+kIFB
-         VNvVDMxDHrA0ndFvX6+7Y6NkPYT97yvzmv6lvOt1oggSN4CauI1F0InRoIOzoy2Scayq
-         c3FLa8RmOd6mIoSRZNVpax4cyMeuaczOLFkmFad8TBS5tWkFFI9OOgeSRUgBi9XVVbdK
-         zlDge+VvpYdtWv7to7DnSCYgoeRr8jkomWvszG3Mry4ZEiPF5RsiNgYx3x2P3dmUbR3h
-         QgAEsIHGFczIlEdu/ER/hd4SAtzrenaNT3lAuJmYdNmt009cdIj8NimvrQ0gKAnKlpIV
-         b3AA==
-X-Gm-Message-State: AOAM533Vv24EBRcy5KO20MjJ3jisJl7fRX8QAYt5YrNT9Wf3f8ToxLiN
-        WPh7BnTKfjfvP5CPhF6jnm4kG0JP2Vsbfrgh08E=
-X-Google-Smtp-Source: ABdhPJzJ3e2jfkWDwn+DzxHjScOxJWUV9rVa+G5F6TOVbzZIij06b5j5gVbzdstSR3t0GL8rZI9peA==
-X-Received: by 2002:a19:9201:0:b0:443:c317:98ff with SMTP id u1-20020a199201000000b00443c31798ffmr12926860lfd.331.1648323014857;
-        Sat, 26 Mar 2022 12:30:14 -0700 (PDT)
-Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com. [209.85.167.41])
-        by smtp.gmail.com with ESMTPSA id f38-20020a0565123b2600b0044a75d9de78sm606927lfv.163.2022.03.26.12.30.13
+        bh=Eo+NI/ZY6vwsGX0YbjboRUexcl2mfDPwhfiG8UnYnwk=;
+        b=VAqgvHV+Vp35xBdDDqS4Z2YJory5WzvQ3CTS0YWc7CP7T2qAoNZiyne4ZzSJnLTF/8
+         gRSE4EjpWtEWpnLp3VKuEuQBVdvv+tw3oQz6vQ7dXvpqGmI3GiHWwmrpzZ7Fz5L9FVxY
+         nKdBZThpCmVFUnjnFgfG36fFUtBEAmQIf3rU6tBDLjvz5s13Obh0yeSTahMF+nXsXTtK
+         iPHcHFck2JJRVrQzms1Subx4Xk+nCWBOf3/d4cjtErd1grswVxiUtKWNzHKjA8Jqyw5+
+         ltLmRp/lWlr4wdVQmn7Nqau5i9ZvqUfvv6joq6qpDnVUuS0UxtR3tyNZubkLQ/3wFc0+
+         O1jQ==
+X-Gm-Message-State: AOAM5307J4y2H6buVT1FFQ/R4LsIm+Dagd5A4e20/Y3izTIqByuvt1KB
+        PuYYO6da40vQGTvmeNsSGcglSwbu2w3RXhruXa0=
+X-Google-Smtp-Source: ABdhPJx7BuXLdNeQ5k7WyoxV5/MGZerTWFe8l6G5YV+hRrmgVlPf3yVs7OYn+GGUHVavzSc3BVmeHw==
+X-Received: by 2002:a05:6512:3c92:b0:448:392d:af85 with SMTP id h18-20020a0565123c9200b00448392daf85mr12826114lfv.511.1648323636219;
+        Sat, 26 Mar 2022 12:40:36 -0700 (PDT)
+Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com. [209.85.167.43])
+        by smtp.gmail.com with ESMTPSA id h7-20020ac25d67000000b0044836d7c475sm1147556lft.147.2022.03.26.12.40.35
         for <linux-kernel@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 26 Mar 2022 12:30:14 -0700 (PDT)
-Received: by mail-lf1-f41.google.com with SMTP id d5so18550219lfj.9
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 12:30:13 -0700 (PDT)
+        Sat, 26 Mar 2022 12:40:35 -0700 (PDT)
+Received: by mail-lf1-f43.google.com with SMTP id bq24so2636403lfb.5
+        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 12:40:35 -0700 (PDT)
 X-Received: by 2002:ac2:4203:0:b0:448:8053:d402 with SMTP id
- y3-20020ac24203000000b004488053d402mr12850936lfh.687.1648323013613; Sat, 26
- Mar 2022 12:30:13 -0700 (PDT)
+ y3-20020ac24203000000b004488053d402mr12881072lfh.687.1648323634830; Sat, 26
+ Mar 2022 12:40:34 -0700 (PDT)
 MIME-Version: 1.0
-References: <202203251443.9BBADFD98@keescook>
-In-Reply-To: <202203251443.9BBADFD98@keescook>
+References: <202203251443.9BBADFD98@keescook> <CAHk-=wjeGc-BjkDWTYkXzyQu-vf9EEujuT-6=U7Od0DvCUfb8w@mail.gmail.com>
+In-Reply-To: <CAHk-=wjeGc-BjkDWTYkXzyQu-vf9EEujuT-6=U7Od0DvCUfb8w@mail.gmail.com>
 From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sat, 26 Mar 2022 12:29:57 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wjeGc-BjkDWTYkXzyQu-vf9EEujuT-6=U7Od0DvCUfb8w@mail.gmail.com>
-Message-ID: <CAHk-=wjeGc-BjkDWTYkXzyQu-vf9EEujuT-6=U7Od0DvCUfb8w@mail.gmail.com>
+Date:   Sat, 26 Mar 2022 12:40:18 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wid1da7CONOA4ia++vKe5pCFda6gwdafjFP4HXJQcjcsA@mail.gmail.com>
+Message-ID: <CAHk-=wid1da7CONOA4ia++vKe5pCFda6gwdafjFP4HXJQcjcsA@mail.gmail.com>
 Subject: Re: [GIT PULL] FORTIFY_SOURCE updates for v5.18-rc1
 To:     Kees Cook <keescook@chromium.org>
 Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
@@ -71,30 +71,17 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 3:03 PM Kees Cook <keescook@chromium.org> wrote:
+On Sat, Mar 26, 2022 at 12:29 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
 >
-> It looks like all the dependent trees with related buffer fixes have been
-> merged (I was waiting for the scsi tree to get pulled). This has been
-> in -next for almost 2 development cycles, and I did overnight build
-> testing merged against your tree under the following combinations,
-> with no new warnings (there is one Clang 14+ specific issue in
-> drivers/net/ethernet/huawei/hinic that we're still tracking down as a
-> likely compiler regression[1]):
+> Because if all the compiler issues and warnings have been sorted out,
+> it sounds to me like the compile-time side could/should be done
+> unconditionally if there are no runtime downsides.
 
-So how much of this is _completely_ compile-time?
+.. or do the existing compiler warnings for the builtins already cover
+all cases, and the only reason the fortify-source code has
+compile-time warnings is that the option takes over the builtins?
 
-Right now it looks to me like FORTIFY_SOURCE ends up doing two things
+So maybe there's no upside to the fortify-source code for that case?
 
- - added runtime checking based on compile-time sizes
-
- - compile-time errors
-
-How hard would it be to separate the two issues out?
-
-Because if all the compiler issues and warnings have been sorted out,
-it sounds to me like the compile-time side could/should be done
-unconditionally if there are no runtime downsides.
-
-Hmm?
-
-                Linus
+              Linus
