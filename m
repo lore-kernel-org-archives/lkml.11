@@ -2,121 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25EA7C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 06:28:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE13FC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 06:31:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231849AbiCZGaM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 02:30:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56772 "EHLO
+        id S231465AbiCZGdO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 02:33:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231586AbiCZG3z (ORCPT
+        with ESMTP id S230025AbiCZGdL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 02:29:55 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A32BE171EE5;
-        Fri, 25 Mar 2022 23:27:47 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KQTXP3XcCzcbQS;
-        Sat, 26 Mar 2022 14:27:33 +0800 (CST)
-Received: from dggpemm500014.china.huawei.com (7.185.36.153) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Sat, 26 Mar 2022 14:27:45 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- dggpemm500014.china.huawei.com (7.185.36.153) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Sat, 26 Mar 2022 14:27:44 +0800
-From:   Wupeng Ma <mawupeng1@huawei.com>
-To:     <akpm@linux-foundation.org>, <catalin.marinas@arm.com>,
-        <will@kernel.org>, <corbet@lwn.net>
-CC:     <ardb@kernel.org>, <tglx@linutronix.de>, <mingo@redhat.com>,
-        <bp@alien8.de>, <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        <hpa@zyccr.com>, <dvhart@infradead.org>, <andy@infradead.org>,
-        <rppt@kernel.org>, <paulmck@kernel.org>, <peterz@infradead.org>,
-        <jroedel@suse.de>, <songmuchun@bytedance.com>, <macro@orcam.me.uk>,
-        <frederic@kernel.org>, <W_Armin@gmx.de>, <john.garry@huawei.com>,
-        <seanjc@google.com>, <tsbogend@alpha.franken.de>,
-        <anshuman.khandual@arm.com>, <chenhuacai@kernel.org>,
-        <david@redhat.com>, <gpiccoli@igalia.com>, <mark.rutland@arm.com>,
-        <wangkefeng.wang@huawei.com>, <mawupeng1@huawei.com>,
-        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-efi@vger.kernel.org>, <linux-ia64@vger.kernel.org>,
-        <platform-driver-x86@vger.kernel.org>, <linux-mm@kvack.org>
-Subject: [PATCH 9/9] ia64/efi: Code simplification in efi_init
-Date:   Sat, 26 Mar 2022 14:46:32 +0800
-Message-ID: <20220326064632.131637-10-mawupeng1@huawei.com>
-X-Mailer: git-send-email 2.18.0.huawei.25
-In-Reply-To: <20220326064632.131637-1-mawupeng1@huawei.com>
-References: <20220326064632.131637-1-mawupeng1@huawei.com>
+        Sat, 26 Mar 2022 02:33:11 -0400
+Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88D3A2E68F
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 23:31:34 -0700 (PDT)
+Received: by mail-qt1-x82e.google.com with SMTP id t7so8239922qta.10
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 23:31:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PTLKNJ1HHVa/CC/OMIeEXrqEsVbWaZOp7AFQBATXJDQ=;
+        b=lUQtPiSM3Sqlxdd43fL+DfdNXAvAAY1bKNTHEfSflmKVRuwGdp6JHLhjUjDv6nQq+g
+         0/+YIxlNQvlXokJXnrkraDIf4Q9elqAoG4z+oUBHynRN61oKnnJ3Z9oHJQKmMoCclCE3
+         Jt9kSWDc+ZfmZRkWINyz0I50DPIYgmEScNspI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PTLKNJ1HHVa/CC/OMIeEXrqEsVbWaZOp7AFQBATXJDQ=;
+        b=DrB1+Wh6GkIZQN/uMp9b5lvqYSSW3G6bQ8nzxjVQuzLPSJTEDMccu6wHIhxIELJDUJ
+         3zZnb5JHHi/Mi/CzRJaNQItbN8dMh5rORetB55ZnL+8JUlrURmSM4oPReTmIzFC1Fo7k
+         zXKKIeeN4KEgK/d2nY7xtXx1IsCpfZS7wCYG+y7pb07BN/uCLGY4ira6y21PkSX+7gvj
+         gXbxx4i5tcPBrIKnP4DradMuhtxN2OcvyyAWTjJ+9/WrnLM3l3xZj+hXMaMtxpcE2vmh
+         9XO4bviSHaZEbHw6uw42bvOW1rvIa5MTzN4BepwV1+qpY56aOgzDQIoC4wj3ldQCSihG
+         EeYg==
+X-Gm-Message-State: AOAM533QyWAZv16tVtRmn11n9k32cWnOJNkPAorUpRwyvwhIlF6gW0z2
+        2cLdOE6+UdcOxmx1is7iDlix//AwviTYELoV83lcsA==
+X-Google-Smtp-Source: ABdhPJyNXpv93V1BfrqoR6BPPZvt8TozB6bISb7ecXAcBKX5At5yoq8MUmWtanB+ci+O2oyb/CoairlaOa698avJc2c=
+X-Received: by 2002:ac8:7ee3:0:b0:2e1:a508:c500 with SMTP id
+ r3-20020ac87ee3000000b002e1a508c500mr12523470qtc.117.1648276293617; Fri, 25
+ Mar 2022 23:31:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500014.china.huawei.com (7.185.36.153)
-X-CFilter-Loop: Reflected
+References: <20220325033028.1.I67f8ad854ac2f48701902bfb34d6e2070011b779@changeid>
+ <CABBYNZKF1Ye6D130XgaFmqN6JAssf78-FaQh_AEkwigy8qaVjw@mail.gmail.com>
+In-Reply-To: <CABBYNZKF1Ye6D130XgaFmqN6JAssf78-FaQh_AEkwigy8qaVjw@mail.gmail.com>
+From:   Ying Hsu <yinghsu@chromium.org>
+Date:   Sat, 26 Mar 2022 14:31:22 +0800
+Message-ID: <CADwQ6b6cCrKGfS-zhh5KnSNdxm_n_krwpZ=s68WYdoJ-XCHH-Q@mail.gmail.com>
+Subject: Re: [PATCH] Bluetooth: fix dangling sco_conn and use-after-free in sco_sock_timeout
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        ChromeOS Bluetooth Upstreaming 
+        <chromeos-bluetooth-upstreaming@chromium.org>,
+        Joseph Hwang <josephsih@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ma Wupeng <mawupeng1@huawei.com>
+Hi Luiz,
 
-Since efi_print_memmap() was made public, print EFI memory map in
-efi_init() can be simplified by using efi_print_memmap().
+I compiled and ran the c-reproducer:
+https://syzkaller.appspot.com/x/repro.c?x=152b93e8700000
+I will add relevant links in the commit message. Thanks for the reminder.
 
-Signed-off-by: Ma Wupeng <mawupeng1@huawei.com>
----
- arch/ia64/kernel/efi.c | 37 +------------------------------------
- 1 file changed, 1 insertion(+), 36 deletions(-)
+While fixing the use-after-free problem , I also found a possible
+deadlock in sco_sock_connect() and sco_sock_getsockopt() :
+sco_sock_connect() {
+  hci_dev_lock(hdev);
+  lock_sock(sk);
+}
 
-diff --git a/arch/ia64/kernel/efi.c b/arch/ia64/kernel/efi.c
-index 31149e41f9be..4b8209b8797d 100644
---- a/arch/ia64/kernel/efi.c
-+++ b/arch/ia64/kernel/efi.c
-@@ -557,42 +557,7 @@ efi_init (void)
- 
- #if EFI_DEBUG
- 	/* print EFI memory map: */
--	{
--		efi_memory_desc_t *md;
--		void *p;
--		unsigned int i;
--
--		for (i = 0, p = efi_map_start; p < efi_map_end;
--		     ++i, p += efi_desc_size)
--		{
--			const char *unit;
--			unsigned long size;
--			char buf[64];
--
--			md = p;
--			size = md->num_pages << EFI_PAGE_SHIFT;
--
--			if ((size >> 40) > 0) {
--				size >>= 40;
--				unit = "TB";
--			} else if ((size >> 30) > 0) {
--				size >>= 30;
--				unit = "GB";
--			} else if ((size >> 20) > 0) {
--				size >>= 20;
--				unit = "MB";
--			} else {
--				size >>= 10;
--				unit = "KB";
--			}
--
--			printk("mem%02d: %s "
--			       "range=[0x%016llx-0x%016llx) (%4lu%s)\n",
--			       i, efi_md_typeattr_format(buf, sizeof(buf), md),
--			       md->phys_addr,
--			       md->phys_addr + efi_md_size(md), size, unit);
--		}
--	}
-+	efi_print_memmap();
- #endif
- 
- 	efi_map_pal_code();
--- 
-2.18.0.huawei.25
+sco_sock_getsockopt() {
+  lock_sock(sk);
+  case BT_CODEC:
+    hci_dev_lock(hdev);
+}
 
+So, adjusting the locking order in sco_sock_connect() can also avoid
+the possible deadlock.
+
+Ying
+
+On Sat, Mar 26, 2022 at 2:50 AM Luiz Augusto von Dentz
+<luiz.dentz@gmail.com> wrote:
+>
+> Hi Ying,
+>
+> On Thu, Mar 24, 2022 at 8:31 PM Ying Hsu <yinghsu@chromium.org> wrote:
+> >
+> > Connecting the same socket twice consecutively in sco_sock_connect()
+> > could lead to a race condition where two sco_conn objects are created
+> > but only one is associated with the socket. If the socket is closed
+> > before the SCO connection is established, the timer associated with the
+> > dangling sco_conn object won't be canceled. As the sock object is being
+> > freed, the use-after-free problem happens when the timer callback
+> > function sco_sock_timeout() accesses the socket. Here's the call trace:
+> >
+> > dump_stack+0x107/0x163
+> > ? refcount_inc+0x1c/
+> > print_address_description.constprop.0+0x1c/0x47e
+> > ? refcount_inc+0x1c/0x7b
+> > kasan_report+0x13a/0x173
+> > ? refcount_inc+0x1c/0x7b
+> > check_memory_region+0x132/0x139
+> > refcount_inc+0x1c/0x7b
+> > sco_sock_timeout+0xb2/0x1ba
+> > process_one_work+0x739/0xbd1
+> > ? cancel_delayed_work+0x13f/0x13f
+> > ? __raw_spin_lock_init+0xf0/0xf0
+> > ? to_kthread+0x59/0x85
+> > worker_thread+0x593/0x70e
+> > kthread+0x346/0x35a
+> > ? drain_workqueue+0x31a/0x31a
+> > ? kthread_bind+0x4b/0x4b
+> > ret_from_fork+0x1f/0x30
+> >
+> > Signed-off-by: Ying Hsu <yinghsu@chromium.org>
+> > Reviewed-by: Joseph Hwang <josephsih@chromium.org>
+> > ---
+> > Tested this commit using a C reproducer on qemu-x86_64 for 8 hours.
+>
+> We should probably add a link or something to the reproducer then, was
+> it syzbot? It does have some instructions on how to link its issues.
+>
+> >  net/bluetooth/sco.c | 21 +++++++++++++--------
+> >  1 file changed, 13 insertions(+), 8 deletions(-)
+> >
+> > diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+> > index 8eabf41b2993..380c63194736 100644
+> > --- a/net/bluetooth/sco.c
+> > +++ b/net/bluetooth/sco.c
+> > @@ -574,19 +574,24 @@ static int sco_sock_connect(struct socket *sock, struct sockaddr *addr, int alen
+> >             addr->sa_family != AF_BLUETOOTH)
+> >                 return -EINVAL;
+> >
+> > -       if (sk->sk_state != BT_OPEN && sk->sk_state != BT_BOUND)
+> > -               return -EBADFD;
+> > +       lock_sock(sk);
+> > +       if (sk->sk_state != BT_OPEN && sk->sk_state != BT_BOUND) {
+> > +               err = -EBADFD;
+> > +               goto done;
+> > +       }
+> >
+> > -       if (sk->sk_type != SOCK_SEQPACKET)
+> > -               return -EINVAL;
+> > +       if (sk->sk_type != SOCK_SEQPACKET) {
+> > +               err = -EINVAL;
+> > +               goto done;
+> > +       }
+> >
+> >         hdev = hci_get_route(&sa->sco_bdaddr, &sco_pi(sk)->src, BDADDR_BREDR);
+> > -       if (!hdev)
+> > -               return -EHOSTUNREACH;
+> > +       if (!hdev) {
+> > +               err = -EHOSTUNREACH;
+> > +               goto done;
+> > +       }
+> >         hci_dev_lock(hdev);
+> >
+> > -       lock_sock(sk);
+> > -
+>
+> Also are we sure we are not introducing a locking hierarchy problem
+> here? Previously we had hci_dev_lock then sock_lock now it is the
+> opposite, or perhaps we never want to have them at the same time?
+>
+> >         /* Set destination address and psm */
+> >         bacpy(&sco_pi(sk)->dst, &sa->sco_bdaddr);
+> >
+> > --
+> > 2.35.1.1021.g381101b075-goog
+> >
+>
+>
+> --
+> Luiz Augusto von Dentz
