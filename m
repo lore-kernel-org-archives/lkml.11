@@ -2,152 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7273C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 19:25:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5673C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 19:26:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234680AbiCZT0o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 15:26:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33432 "EHLO
+        id S234698AbiCZT2Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 15:28:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234520AbiCZT0n (ORCPT
+        with ESMTP id S233850AbiCZT2N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 15:26:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 85B4F15A216
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 12:25:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648322699;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=ykDXlOPk2TFsdn08fWycm9GIyujKbG9G/UkGWmpaTzI=;
-        b=Xt43SD9KF2LDdjwItAtOn784ezA4hYi/twLdTJAAMc/gAdYG8lveFHuZwbcZGdoF4kkLjG
-        u4Sp8B3w/PFlmQn6Yd95JYqXXe/VqO5C3rqcVBQabFn9Zn0d0R+ipZ6q6t7XE/F4GORkVW
-        nklNsPv2hnJc7gSMsPTgorJtB4tw45E=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-526-oeAXl-NHMieoVII-hdpfHg-1; Sat, 26 Mar 2022 15:24:58 -0400
-X-MC-Unique: oeAXl-NHMieoVII-hdpfHg-1
-Received: by mail-qv1-f72.google.com with SMTP id h18-20020a05621402f200b00440cedaa9a2so8332110qvu.17
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 12:24:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ykDXlOPk2TFsdn08fWycm9GIyujKbG9G/UkGWmpaTzI=;
-        b=4sKCgMq3Gmj/AkWZS7542KsPABpKx9kbmeYHvZhoCGmEyvoVSjWAYM77wGJ4DCreKR
-         95HooetYdSX6eC2SfpZaAKBU0H2VgISGlkfhhWmmLvi4e0xSHJQKb0y1mzbspYK4tLBQ
-         /Ixt8NOHRDAtZ+q5rKxXqEqZULV6K1UCTvu8XoUjBASFUr2qjkihWqTE4oif2pfND8w+
-         HpyAjdMvd64NWlrX6SMWkUXerYEyhTPgLB0CeS9QZxM2qnVci968yuwleihMjcSj1qdW
-         k6e0DPqyGFa24w64YWJIvxKG+7nT9DDAALKEX+4OWZV3RRKXzGNxXAA6FrCJB/Xu6veS
-         A42w==
-X-Gm-Message-State: AOAM530NfNqFWPBznHzKLqS1q/6KsGF2G1DK81uUw4RMSDNDra3LG+A5
-        kYM9+rvv01YNh1FFAA2Gsd0UdeWlKA8BgFSxH4Hbf4xrwBizCPO4FAXGGWEYlJm1Hm1nQIaXG4H
-        gCyqc3ERFyzunRbvX0FeDdT7e
-X-Received: by 2002:a05:620a:1539:b0:67d:45f2:f5bd with SMTP id n25-20020a05620a153900b0067d45f2f5bdmr11127658qkk.313.1648322697790;
-        Sat, 26 Mar 2022 12:24:57 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz5Bbhbe4fNmCCiw0bHclSMqD4b5ogUJimIEaOAuMXEpuJ39XeDHBrgaI1Pk8q6ZmT7kZe2ug==
-X-Received: by 2002:a05:620a:1539:b0:67d:45f2:f5bd with SMTP id n25-20020a05620a153900b0067d45f2f5bdmr11127653qkk.313.1648322697470;
-        Sat, 26 Mar 2022 12:24:57 -0700 (PDT)
-Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id b17-20020a05622a021100b002e1f86db385sm8064691qtx.68.2022.03.26.12.24.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 26 Mar 2022 12:24:56 -0700 (PDT)
-From:   trix@redhat.com
-To:     mchehab@kernel.org, sakari.ailus@linux.intel.com,
-        gregkh@linuxfoundation.org, nathan@kernel.org,
-        ndesaulniers@google.com, hverkuil-cisco@xs4all.nl, vrzh@vrzh.net,
-        tomi.valkeinen@ideasonboard.com
-Cc:     linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] media: staging: atomisp: rework reading the id and revision values
-Date:   Sat, 26 Mar 2022 12:18:53 -0700
-Message-Id: <20220326191853.2914552-1-trix@redhat.com>
-X-Mailer: git-send-email 2.26.3
+        Sat, 26 Mar 2022 15:28:13 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB3D457498;
+        Sat, 26 Mar 2022 12:26:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1648322775;
+        bh=BhYwGJesufnhB1BugiBJY7l8WrEGuEqC2mGAreqhWuE=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=DMR8XN6EnCWR38zGCa+LYRE1rVwuxxtXvGENMiZk/YAVBHNEotdDmRKfvNRJM4vzd
+         1wQ3qnDliXLXTTE+oQvtPfZtR5LLcOI0ig77GsaImVznnzOPaeSrmKp+v/KpS8cFzv
+         SFgyJtFqoKLCi2Kh+IPV5cRigY0dX+qpZ1CW+Mx8=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from esprimo-mx.users.agdsn.de ([141.30.226.129]) by mail.gmx.net
+ (mrgmx104 [212.227.17.168]) with ESMTPSA (Nemesis) id
+ 1M1Ygt-1nVABI0X6J-0034Md; Sat, 26 Mar 2022 20:26:15 +0100
+From:   Armin Wolf <W_Armin@gmx.de>
+To:     pali@kernel.org
+Cc:     jdelvare@suse.com, linux@roeck-us.net, linux-hwmon@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [RFC] hwmon: (dell_smm) Add cooling device support
+Date:   Sat, 26 Mar 2022 20:25:09 +0100
+Message-Id: <20220326192509.23175-1-W_Armin@gmx.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:XNw4w5M70AJchJrK8wKkebOiS3TxRSb0azt4ds2uX4w3jAmQv+k
+ 0o6JtT7HnaI0itW31f1ABeovugR/pcg+pON3VWjbRmKNqi5DtIioUszO3qjZfHOT2kZS6sb
+ aAzEAvsZdUwEbNumQYciugjkx6b2qQmYON+hFGeUXV2nsF3hsAiFgwvnoPmtKhvrpPD5Njq
+ IAqWZsSG27W2xmk11+aKQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:B132diyDJ4A=:0ujCpCgsjuRQf/LUXKrs9C
+ 8N5xrD9xD2H6HwEDEE9V28N4TehDnkl0UYvAl6uIc/yAY7ETeYCs9KG+/cLo+6DKRQ+7wYPy8
+ AYnevOnYEKyaMLfYuNwAcwFIMuGK11zz9HDLN2sVCrEsyAMFxgnIImAsu7PfeFGKHRjXy6TOS
+ 44V9DCx0WticGTbnXWUZtlP/5H4BSdUx9B36ulWRJ63n4n3g3UCnWV7LvaN/IhAeP5I+Lm9id
+ z68wItR59tkdtTXyqTxbfDafPqF1S842nM9pYc7TUFQfaydlzUmk7hjK8wQxNXR2EyEmTkkX/
+ F+uCV06sN+8Ujp8pzA6Un8J/xsE/zT/poLJzODHeHrWh9cfoykfDrM0VfAk3H3Qm5ZCHE6H1g
+ rPteKghBpLvNMxSt0z0Lfa4ss7JBO+awZwWmCDH2KO5NARPn7svqsyfZm2l8Be5XUK8oF0+Bt
+ hUhVHI+GVPoiWXqlI0fShcosg41YU4IGspPFUOkK0EPD4baBta1VxWBXTkN6BLGfCZBXwLTd+
+ zhlfX5vCDO1MPrhdHuwDGaGG1W1SpkI25Xt7GmUaT2pYNMrt5WR0l5mSK1MeEUOe81dUla8fX
+ TSR9ZSj/kuZ97KnVxE1T/PfcDcuATx/EdNr4QdwevLNs5wwoFUJJsd43LKzIjUajl9Nc6rpjo
+ S3c8gO/WTqTAgJCGZ04W2NdNa48pZA3u8aQyHDtNU0Qcx8ETWPLmEa+IS2UDrbjc3O8ejHXS8
+ OGoFEL+e5k0YdMEFCu/e/ONjE2ZXWvS089nM47XVUSwrflZAXbziJZ/4/o6RVzZdoA++QdxkW
+ 1V1mkSACAjHNryOka6xoKS3qHCRrvsoXJdRb+vSUkR/T1AonWiETGb2Uy5KXDG4LlVxEUwoUC
+ TXCIqFRROu1O3k+hzS/hgpOkr230XR9l+g+lCbwzWc6PjprfxuS191oGGCL0BxHXZfB81pOGG
+ dgL3QaO5XRXAjQFLmT7/lyUndhiZSia4F+N1naGs+jrdVY3MlLxv4uj6IawZO+NAn1ilChtCW
+ Wg/VnN+jSiTPos/Lg/TU9eiWG2LiIp95Mb+QsQn9udvUqdmrA4JJUsJku5KmH96inaYrgW6rq
+ vLkLt5vNlAs42Y=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+Until now, only the temperature sensors where exported thru
+the thermal subsystem. Export the fans as "dell-smm-fan" too
+to make them available as cooling devices. This could be a
+potential successor of the nonstandard procfs interface
+currently provided by the driver.
+Also update Documentation.
 
-Clang static analysis reports this representative issue
-atomisp-ov2722.c:920:3: warning: 3rd function call
-  argument is an uninitialized value
-  dev_err(&client->dev, "sensor_id_high = 0x%x\n", high);
-  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Signed-off-by: Armin Wolf <W_Armin@gmx.de>
+=2D--
+ Documentation/hwmon/dell-smm-hwmon.rst |  7 +++
+ drivers/hwmon/dell-smm-hwmon.c         | 68 ++++++++++++++++++++++++--
+ 2 files changed, 72 insertions(+), 3 deletions(-)
 
-high and low are only set when ov2722_read_reg() is successful.
-Reporting the high value when there is an error is not
-meaningful.  The later read for low is not checked.  high
-and low are or-ed together and checked against a non zero
-value.
+diff --git a/Documentation/hwmon/dell-smm-hwmon.rst b/Documentation/hwmon/=
+dell-smm-hwmon.rst
+index d3323a96665d..da07e39935f1 100644
+=2D-- a/Documentation/hwmon/dell-smm-hwmon.rst
++++ b/Documentation/hwmon/dell-smm-hwmon.rst
+@@ -86,6 +86,13 @@ probe the BIOS on your machine and discover the appropr=
+iate codes.
 
-Remove the unneeded error reporting for high.  Initialize
-high and low to 0 and use the id check to determine if
-the reads were successful
+ Again, when you find new codes, we'd be happy to have your patches!
 
-The later read for revision is not checked.  If it
-fails the old high value will be used and the revision
-will be misreported.
++``thermal`` interface
++---------------------------
++
++The driver also exports the fans as thermal cooling devices with
++``type`` set to ``dell-smm-fan``. This allows for easy fan control
++using one of the thermal governors.
++
+ Module parameters
+ -----------------
 
-Since the revision is only reported and not checked or
-stored it is not necessary to return if the read with
-successful.  This makes the ret variable unnecessary
-so remove it.
+diff --git a/drivers/hwmon/dell-smm-hwmon.c b/drivers/hwmon/dell-smm-hwmon=
+.c
+index 84cb1ede7bc0..fb2c70875c0a 100644
+=2D-- a/drivers/hwmon/dell-smm-hwmon.c
++++ b/drivers/hwmon/dell-smm-hwmon.c
+@@ -29,6 +29,7 @@
+ #include <linux/seq_file.h>
+ #include <linux/string.h>
+ #include <linux/smp.h>
++#include <linux/thermal.h>
+ #include <linux/types.h>
+ #include <linux/uaccess.h>
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- .../media/atomisp/i2c/atomisp-ov2722.c        | 20 ++++++++-----------
- 1 file changed, 8 insertions(+), 12 deletions(-)
+@@ -80,6 +81,11 @@ struct dell_smm_data {
+ 	int *fan_nominal_speed[DELL_SMM_NO_FANS];
+ };
 
-diff --git a/drivers/staging/media/atomisp/i2c/atomisp-ov2722.c b/drivers/staging/media/atomisp/i2c/atomisp-ov2722.c
-index da98094d7094a..d5d099ac1b707 100644
---- a/drivers/staging/media/atomisp/i2c/atomisp-ov2722.c
-+++ b/drivers/staging/media/atomisp/i2c/atomisp-ov2722.c
-@@ -906,22 +906,17 @@ static int ov2722_get_fmt(struct v4l2_subdev *sd,
- static int ov2722_detect(struct i2c_client *client)
++struct dell_smm_cooling_data {
++	u8 fan_num;
++	struct dell_smm_data *data;
++};
++
+ MODULE_AUTHOR("Massimo Dal Zotto (dz@debian.org)");
+ MODULE_AUTHOR("Pali Roh=C3=A1r <pali@kernel.org>");
+ MODULE_DESCRIPTION("Dell laptop SMM BIOS hwmon driver");
+@@ -638,9 +644,50 @@ static void __init i8k_init_procfs(struct device *dev=
+)
+
+ #endif
+
+-/*
+- * Hwmon interface
+- */
++static int dell_smm_get_max_state(struct thermal_cooling_device *dev, uns=
+igned long *state)
++{
++	struct dell_smm_cooling_data *cdata =3D dev->devdata;
++
++	*state =3D cdata->data->i8k_fan_max;
++
++	return 0;
++}
++
++static int dell_smm_get_cur_state(struct thermal_cooling_device *dev, uns=
+igned long *state)
++{
++	struct dell_smm_cooling_data *cdata =3D dev->devdata;
++	int ret;
++
++	ret =3D i8k_get_fan_speed(cdata->data, cdata->fan_num);
++	if (ret < 0)
++		return ret;
++
++	*state =3D ret;
++
++	return 0;
++}
++
++static int dell_smm_set_cur_state(struct thermal_cooling_device *dev, uns=
+igned long state)
++{
++	struct dell_smm_cooling_data *cdata =3D dev->devdata;
++	struct dell_smm_data *data =3D cdata->data;
++	int ret;
++
++	if (state > data->i8k_fan_max)
++		return -EINVAL;
++
++	mutex_lock(&data->i8k_mutex);
++	ret =3D i8k_set_fan(data, cdata->fan_num, (int)state);
++	mutex_unlock(&data->i8k_mutex);
++
++	return ret;
++}
++
++static const struct thermal_cooling_device_ops dell_smm_cooling_ops =3D {
++	.get_max_state =3D dell_smm_get_max_state,
++	.get_cur_state =3D dell_smm_get_cur_state,
++	.set_cur_state =3D dell_smm_set_cur_state,
++};
+
+ static umode_t dell_smm_is_visible(const void *drvdata, enum hwmon_sensor=
+_types type, u32 attr,
+ 				   int channel)
+@@ -944,6 +991,8 @@ static const struct hwmon_chip_info dell_smm_chip_info=
+ =3D {
+ static int __init dell_smm_init_hwmon(struct device *dev)
  {
- 	struct i2c_adapter *adapter = client->adapter;
--	u16 high, low;
--	int ret;
-+	u16 high = 0, low = 0;
- 	u16 id;
- 	u8 revision;
- 
- 	if (!i2c_check_functionality(adapter, I2C_FUNC_I2C))
- 		return -ENODEV;
- 
--	ret = ov2722_read_reg(client, OV2722_8BIT,
--			      OV2722_SC_CMMN_CHIP_ID_H, &high);
--	if (ret) {
--		dev_err(&client->dev, "sensor_id_high = 0x%x\n", high);
--		return -ENODEV;
--	}
--	ret = ov2722_read_reg(client, OV2722_8BIT,
--			      OV2722_SC_CMMN_CHIP_ID_L, &low);
-+	ov2722_read_reg(client, OV2722_8BIT,
-+			OV2722_SC_CMMN_CHIP_ID_H, &high);
-+	ov2722_read_reg(client, OV2722_8BIT,
-+			OV2722_SC_CMMN_CHIP_ID_L, &low);
- 	id = (high << 8) | low;
- 
- 	if ((id != OV2722_ID) && (id != OV2720_ID)) {
-@@ -929,8 +924,9 @@ static int ov2722_detect(struct i2c_client *client)
- 		return -ENODEV;
- 	}
- 
--	ret = ov2722_read_reg(client, OV2722_8BIT,
--			      OV2722_SC_CMMN_SUB_ID, &high);
-+	high = 0;
-+	ov2722_read_reg(client, OV2722_8BIT,
-+			OV2722_SC_CMMN_SUB_ID, &high);
- 	revision = (u8)high & 0x0f;
- 
- 	dev_dbg(&client->dev, "sensor_revision = 0x%x\n", revision);
--- 
-2.26.3
+ 	struct dell_smm_data *data =3D dev_get_drvdata(dev);
++	struct thermal_cooling_device *cdev;
++	struct dell_smm_cooling_data *cdata;
+ 	struct device *dell_smm_hwmon_dev;
+ 	int state, err;
+ 	u8 i;
+@@ -967,6 +1016,19 @@ static int __init dell_smm_init_hwmon(struct device =
+*dev)
+ 			continue;
+
+ 		data->fan[i] =3D true;
++
++		/* the cooling device it not critical, ignore failures */
++		cdata =3D devm_kmalloc(dev, sizeof(*cdata), GFP_KERNEL);
++		if (cdata) {
++			cdata->fan_num =3D i;
++			cdata->data =3D data;
++			cdev =3D devm_thermal_of_cooling_device_register(dev, NULL, "dell-smm-=
+fan",
++								       cdata,
++								       &dell_smm_cooling_ops);
++			if (IS_ERR(cdev))
++				devm_kfree(dev, cdata);
++		}
++
+ 		data->fan_nominal_speed[i] =3D devm_kmalloc_array(dev, data->i8k_fan_ma=
+x + 1,
+ 								sizeof(*data->fan_nominal_speed[i]),
+ 								GFP_KERNEL);
+=2D-
+2.30.2
 
