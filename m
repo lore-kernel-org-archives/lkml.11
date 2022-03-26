@@ -2,71 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1AB9C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 01:11:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14561C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 01:16:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229968AbiCZBNQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 21:13:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60678 "EHLO
+        id S230010AbiCZBSF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 21:18:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiCZBNP (ORCPT
+        with ESMTP id S230028AbiCZBSE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 21:13:15 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B03FC170D97;
-        Fri, 25 Mar 2022 18:11:39 -0700 (PDT)
-Received: from kwepemi100025.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KQLTN49pKzCrC1;
-        Sat, 26 Mar 2022 09:09:28 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- kwepemi100025.china.huawei.com (7.221.188.158) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 26 Mar 2022 09:11:37 +0800
-Received: from [10.174.176.73] (10.174.176.73) by
- kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Sat, 26 Mar 2022 09:11:37 +0800
-Subject: Re: [PATCH 2/3] block: factor out common code for part_stat_show()
- and diskstats_show()
-To:     Christoph Hellwig <hch@infradead.org>
-CC:     <axboe@kernel.dk>, <mpatocka@redhat.com>, <snitzer@redhat.com>,
-        <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <yi.zhang@huawei.com>
-References: <20220317112653.1019490-1-yukuai3@huawei.com>
- <20220317112653.1019490-3-yukuai3@huawei.com>
- <Yj2BTUIEooYX/IaA@infradead.org>
-From:   "yukuai (C)" <yukuai3@huawei.com>
-Message-ID: <c6a80995-7af9-3daa-9d5b-ba73f75788be@huawei.com>
-Date:   Sat, 26 Mar 2022 09:11:36 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Fri, 25 Mar 2022 21:18:04 -0400
+Received: from mail-vk1-xa2c.google.com (mail-vk1-xa2c.google.com [IPv6:2607:f8b0:4864:20::a2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAACE1960A1
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 18:16:27 -0700 (PDT)
+Received: by mail-vk1-xa2c.google.com with SMTP id m84so5121488vke.1
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 18:16:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sWh9Ea2SfYQLuMecAvYHl1bg2ANjarcukEX42J9T3Q4=;
+        b=Fw839jtTa+ujk4jaMx/ShkgCxzwfRNSxWAk1ruX8Ob/eJXDJFBhPGjXAAk+FVw/2LD
+         1kkvuDrQPXXVn+rumYNup3U6BtAAPWRoyhFcg0kO3hsunKH3VxtyTHPCFebKfCeW/CFk
+         QILcrPPXH7kIgjswUfQses1yTPTfPXbFXZZbnzzoLdyCofXYJ8VIlebS43mnBqVPD9k0
+         b6b5YwV40H+IPneGBDe0iuP3KmBalqQVuKTK4vUJ0NEf4u254ahc8xuxGXT97hG1V9q5
+         ft+V2omAMeXN+Ts1DHIoUOI9fawa+p36cwhJJno0y+ZmyXkVneFIfwc50mgyA3ckVAxI
+         K41Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sWh9Ea2SfYQLuMecAvYHl1bg2ANjarcukEX42J9T3Q4=;
+        b=q2u2zXFXtUDaHmy9pcPsYjTIweKD30o/fj9DgrI23X5WU8YWpNHWSETyKnSIKyaFdW
+         DfMU9qOTVICm9o8fPk+EI4lX/g7+TdgokAMg2UshqjrcF6reLF3zD0uBX8gHhS1g4TW6
+         9M0SWoFrUebnDgJLKx/yBn0Jr3Ss9/BfnjNbbVaXDaGvMHSkvm46/AtNTRxro6xKSIYF
+         JzdXkZ8uvdk3mVtTJc3nkVdyQHnWK58Ts2mltFzB9NJPQ7LunLx7NjkzswLHdmkLsjnC
+         glZZCtYulBAV17uiQnRcwvte0+hEf5yreshl3HuhqAy31lp8kTBII6lDlFVFvrbfWfg3
+         KB1g==
+X-Gm-Message-State: AOAM530y+Pew4GMXPyjgBLBIVd9DwxCu4W/1LrPKjGuakgDgjDMV++Uz
+        ZXFeflcTCGQTmqn8atM8RKkCvWk2jTv2wCnaE8RrFA==
+X-Google-Smtp-Source: ABdhPJzsZZY01w8F9FI02pR0G+qwcUxzDSqfau5PVajQtOT0uIUI+36L5FVD4NKAgdVasVtVUjzFr849CtqouiU0xZc=
+X-Received: by 2002:a1f:a9cb:0:b0:33e:d145:85f0 with SMTP id
+ s194-20020a1fa9cb000000b0033ed14585f0mr6593027vke.7.1648257386623; Fri, 25
+ Mar 2022 18:16:26 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <Yj2BTUIEooYX/IaA@infradead.org>
-Content-Type: text/plain; charset="gbk"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.176.73]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600009.china.huawei.com (7.193.23.164)
-X-CFilter-Loop: Reflected
+References: <20220326010003.3155137-1-yuzhao@google.com> <CAHk-=wjp=jEhjvD9GPnHfuV5Kc1=rUnf84b_qscLJ8fkY74u3Q@mail.gmail.com>
+In-Reply-To: <CAHk-=wjp=jEhjvD9GPnHfuV5Kc1=rUnf84b_qscLJ8fkY74u3Q@mail.gmail.com>
+From:   Yu Zhao <yuzhao@google.com>
+Date:   Fri, 25 Mar 2022 19:16:15 -0600
+Message-ID: <CAOUHufbqum18T4kZ=d_hMehz=N=3iSuNfGrLof5tB8kjGkk8yw@mail.gmail.com>
+Subject: Re: [page-reclaim] Re: [GIT PULL] Multi-gen LRU for 5.18-rc1
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Andi Kleen <ak@linux.intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Barry Song <baohua@kernel.org>,
+        Brian Geffon <bgeffon@google.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Donald Carr <d@chaos-reins.com>,
+        Hillf Danton <hdanton@sina.com>,
+        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Rik van Riel <riel@surriel.com>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Sofia Trinh <sofia.trinh@edi.works>,
+        Steven Barrett <steven@liquorix.net>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        Ying Huang <ying.huang@intel.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Kernel Page Reclaim v2 <page-reclaim@google.com>,
+        "the arch/x86 maintainers" <x86@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ÔÚ 2022/03/25 16:46, Christoph Hellwig Ð´µÀ:
-> On Thu, Mar 17, 2022 at 07:26:52PM +0800, Yu Kuai wrote:
->> part_stat_show() and diskstats_show() are very similar, just factor out
->> common code.
-> 
-> Well, it doesn't really "factor" much, but creates a big and pretty
-> unmaintainble macro.  I don't really see the benefit here.
+On Fri, Mar 25, 2022 at 7:07 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> On Fri, Mar 25, 2022 at 6:00 PM Yu Zhao <yuzhao@google.com> wrote:
+> >
+> > This is more of an option than a request for 5.18. I'm sending it to
+> > you directly because, in my judgement, it's now as ready as it'll ever
+> > be.
+>
+> So I do expect to merge this, but I don't think it has been in
+> linux-next, has it?
 
-Hi,
-
-Thanks for your advice, I'll remove this patch.
-
-BTW, do you have any suggestion about patch 3 ?
-
-Thanks,
-Kuai
-> .
-> 
+No. I could ask Stephen to see if he is willing to take this series. I
+was hoping to go through Andrew since his tree is what most MM
+developers test. I haven't heard from Andrew, so I assume he has no
+strong opinion and I don't want to put him in a different position.
