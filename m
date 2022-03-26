@@ -2,53 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5469C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 21:37:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33FDEC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 21:39:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235487AbiCZVip convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 17:38:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58168 "EHLO
+        id S235491AbiCZVlW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 17:41:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229646AbiCZVim (ORCPT
+        with ESMTP id S234795AbiCZVlU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 17:38:42 -0400
-X-Greylist: delayed 136 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 26 Mar 2022 14:37:03 PDT
-Received: from smtprelay03.ispgateway.de (smtprelay03.ispgateway.de [80.67.18.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A121610E1;
-        Sat, 26 Mar 2022 14:37:03 -0700 (PDT)
-Received: from [80.82.223.85] (helo=mail.piie.net)
-        by smtprelay03.ispgateway.de with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <peter@piie.net>)
-        id 1nYE3a-0001fZ-Kq; Sat, 26 Mar 2022 22:34:46 +0100
+        Sat, 26 Mar 2022 17:41:20 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0555E647A;
+        Sat, 26 Mar 2022 14:39:41 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2a02:3030:b:56bb:fa6d:7c35:3706:d2b9])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: sebastianfricke)
+        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 9D0C91F44384;
+        Sat, 26 Mar 2022 21:39:39 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1648330779;
+        bh=slQoeK6b6StFtm2hZoQBdtzcrLQJWl5fg+7Pyg1mb9s=;
+        h=From:To:Cc:Subject:Date:From;
+        b=XP3jTwnq2dQ4WFzePRR5BCQvg6TQoPKzJAd3jhwVxaFIR9j5DhGq3qVlsB2ZNjBSR
+         m2zwaXKzALymE2rJ2uj3vcki3LGKGJqBzL/X0nFjGN6dpuJ0cTAGbouQDAWIxfkYjF
+         tL7WK6SrngyGm7SFqHK/qTEBToKwMpO+Ce/yHwUCvhw+6FOG38EzIaKeHkpDHjECEP
+         BHDpRHEgucQHFN1xKFtCDcAw5UuD84tiyJvrBLRzsR6rXpCf/sbLWVttRjjgu8L4LE
+         D2Lq/oQJHntAEjuBwE7o5WrcPlczL+L2+xUF7WHgfO2in8Xf0y4Ekir0PXpYmfmvXr
+         UNgv3GS6sU4vQ==
+From:   Sebastian Fricke <sebastian.fricke@collabora.com>
+To:     linux-media@vger.kernel.org
+Cc:     acourbot@chromium.org, tfiga@chromium.org,
+        hverkuil-cisco@xs4all.nl,
+        Sebastian Fricke <sebastian.fricke@collabora.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        linux-staging@lists.linux.dev (open list:STAGING SUBSYSTEM),
+        linux-arm-kernel@lists.infradead.org (moderated list:ARM/Allwinner
+        sunXi SoC support),
+        linux-sunxi@lists.linux.dev (open list:ARM/Allwinner sunXi SoC support),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [RFC PATCH v2 0/2] HEVC enhancements
+Date:   Sat, 26 Mar 2022 22:39:25 +0100
+Message-Id: <20220326213927.103680-1-sebastian.fricke@collabora.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Date:   Sat, 26 Mar 2022 21:34:42 +0000
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8BIT
-X-Mailer: RainLoop/1.16.0
-From:   "=?utf-8?B?UGV0ZXIgS8Okc3RsZQ==?=" <peter@piie.net>
-Message-ID: <74c2ef3d81f12516f508af014027ec46@piie.net>
-Subject: Re: [PATCH] platform/x86: acerhdf: Cleanup str_starts_with()
-To:     "Wei Li" <liwei391@huawei.com>,
-        "Hans de Goede" <hdegoede@redhat.com>,
-        "Mark Gross" <markgross@kernel.org>
-Cc:     platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
-        rui.xiang@huawei.com
-In-Reply-To: <20220326020249.3266561-1-liwei391@huawei.com>
-References: <20220326020249.3266561-1-liwei391@huawei.com>
-X-Df-Sender: cGV0ZXJAcGlpZS5uZXQ=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-26. März 2022 02:53, "Wei Li" <liwei391@huawei.com> schrieb:
+While reading the definitions for codecs, I felt that the definition
+list could be appended with the term used in HEVC. This makes the list
+more complete from my point of view, but I see that this is a slippery
+slope as we surely don't want to add every term from every codec (Thus
+the RFC).
 
-> Since there is already a generic function strstarts() that check if a
-> string starts with a given prefix, cleanup str_starts_with().
-> 
-> Signed-off-by: Wei Li <liwei391@huawei.com>
+Secondly, I renamed the H265 identifier found in the cedrus driver to
+HEVC. The idea here is mainly to align it with the other drivers like
+Hantro and RkVDEC, but also with the goal of using one identifier within
+the source tree (to simply searching for the term and also for less
+confusion).
 
-Acked-by: Peter Kästle <peter@piie.net>
+Changes since V1:
+- Kernel test robot reported some variables that had not replaced, I
+changed those.
 
-[...]
+Sebastian Fricke (2):
+  media: docs-rst: Append HEVC specific term
+  staging: media: cedrus: Rename H265 to HEVC
+
+ .../userspace-api/media/v4l/dev-decoder.rst   |   8 +-
+ drivers/staging/media/sunxi/cedrus/Makefile   |   2 +-
+ drivers/staging/media/sunxi/cedrus/cedrus.c   |  30 +-
+ drivers/staging/media/sunxi/cedrus/cedrus.h   |  14 +-
+ .../staging/media/sunxi/cedrus/cedrus_dec.c   |  10 +-
+ .../cedrus/{cedrus_h265.c => cedrus_hevc.c}   | 438 +++++++++---------
+ .../staging/media/sunxi/cedrus/cedrus_regs.h  | 394 ++++++++--------
+ .../staging/media/sunxi/cedrus/cedrus_video.c |   4 +-
+ 8 files changed, 453 insertions(+), 447 deletions(-)
+ rename drivers/staging/media/sunxi/cedrus/{cedrus_h265.c => cedrus_hevc.c} (53%)
+
+-- 
+2.25.1
+
