@@ -2,137 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43AFBC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 03:31:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4278C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 03:37:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231149AbiCZDcj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 23:32:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48844 "EHLO
+        id S231176AbiCZDiW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 23:38:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231133AbiCZDcf (ORCPT
+        with ESMTP id S231167AbiCZDiT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 23:32:35 -0400
-Received: from conssluserg-05.nifty.com (conssluserg-05.nifty.com [210.131.2.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE328DE0A7
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 20:30:59 -0700 (PDT)
-Received: from mail-pj1-f49.google.com (mail-pj1-f49.google.com [209.85.216.49]) (authenticated)
-        by conssluserg-05.nifty.com with ESMTP id 22Q3UdRF027625
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 12:30:40 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com 22Q3UdRF027625
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1648265440;
-        bh=hcWzCSwwaaOnPjwZuCSlVECdBgJ7xvG53geI2HQp454=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=oPxsG49jJG5r9cpWFszCpbw2wYbZFh/HwJ4DMktg6h4gXblIoH+XhO/Q8ZfTLqAG6
-         A2KIHTFNlayKz+I2Keoaan5mzN6cnmb+xsa5uoEmDWqa8gTPhqNUkGeag6784h5O10
-         bSG/5vqCLEdqLaX3eRClwdQ6eY+7epoRnj++yxO5Z/w9EUZzP4+vXm2QuhWJdnKwJW
-         sS7HX/bPa/3MOXFjt5CvNPTPhA3TcLPNB7HjRmuK2dFNTF01ihGXnxo9VBn+fAJ2/X
-         4aYlPWliXoXDi0Un8J0ftB+7f0aDbfp0iuxS3lUElu/pyts7WN/r5EWwqNfY5hQ0wc
-         cDZ/SJjIRL+hQ==
-X-Nifty-SrcIP: [209.85.216.49]
-Received: by mail-pj1-f49.google.com with SMTP id o3-20020a17090a3d4300b001c6bc749227so10304985pjf.1
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 20:30:40 -0700 (PDT)
-X-Gm-Message-State: AOAM530W2vKIuTdOqoMIqfy96PfSt3sDwv9gmHeoiAhnC/hZ7qrUFp6+
-        a124UEpeSbYmja42aTTjC9sSzePX1XgfD+Dr6Bw=
-X-Google-Smtp-Source: ABdhPJzPiJ4wuq5I5vyWDDF4VazaFgz2oC0/yz1qrcvL5oYYIMrDwPI9TS+4dEALJynnf23/xwJ3hzO02Sl/05U1NWU=
-X-Received: by 2002:a17:902:b183:b0:14f:c266:20d5 with SMTP id
- s3-20020a170902b18300b0014fc26620d5mr15102742plr.136.1648265439319; Fri, 25
- Mar 2022 20:30:39 -0700 (PDT)
+        Fri, 25 Mar 2022 23:38:19 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E68912AA3
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 20:36:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648265802; x=1679801802;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=bCujQqhYMKtXE2ll9Gols0NHfO28OjNd368vrG5VwSU=;
+  b=EI4xOFEMRQDrCrUAT5o09exs7yBYraLpwWsRxA6OQrNGenjPv16KzqEL
+   kk4ATq4Fwp6relsfbM+sVzLU5F/SgFh9X5wNSxpBeHIbWak3iQF4tRHyU
+   WL7ev0OEW+mdhS7UqoEoEG68JXHytSCM1PePEULpEJYY4VHHG4DAd0ov5
+   aIrBPzwBw32Ekn25skFgCm63eMipZoh7xQ/CSjo0Yw6BBwPiMVKC28spR
+   7efYtcAQjo19I0PEfesUp94ulgGRo83P/tCSE3TiJOvwVMhcASjlSDFlr
+   vQp6dIYA4pZPXa5/eGs1G2TjHGP/s31E6r36sd0itend9yUl0jUtFqXXr
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10297"; a="283634600"
+X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
+   d="scan'208";a="283634600"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2022 20:36:38 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
+   d="scan'208";a="650439881"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga004.jf.intel.com with ESMTP; 25 Mar 2022 20:36:37 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nXxEC-000MxB-D6; Sat, 26 Mar 2022 03:36:36 +0000
+Date:   Sat, 26 Mar 2022 11:35:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: fs/io_uring.c:5879:68: sparse: sparse: incorrect type in initializer
+ (different base types)
+Message-ID: <202203261121.c6ITctBO-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220322173547.677760-1-nathan@kernel.org>
-In-Reply-To: <20220322173547.677760-1-nathan@kernel.org>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Sat, 26 Mar 2022 12:29:55 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAT8TcDy=iKaWZ7_+MbT84vOVEBzHxJY8Bx54Ju5fur8-w@mail.gmail.com>
-Message-ID: <CAK7LNAT8TcDy=iKaWZ7_+MbT84vOVEBzHxJY8Bx54Ju5fur8-w@mail.gmail.com>
-Subject: Re: [PATCH] um: Fix filtering '-mno-global-merge'
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        David Gow <davidgow@google.com>, linux-um@lists.infradead.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 23, 2022 at 2:39 AM Nathan Chancellor <nathan@kernel.org> wrote:
->
-> When booting a clang compiled UML kernel, the kernel panics when trying
-> to run init:
->
->   wait_stub_done : failed to wait for SIGTRAP, pid = 651294, n = 651294, errno = 0, status = 0xb7f
->   Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
->
-> After the commit in Fixes, many flags from KBUILD_CFLAGS do not appear
-> in USER_CFLAGS, likely due to USER_CFLAGS initially being a recursive
-> variable ("VAR =") then being switched to a simple ("VAR :=") variable.
-> For example, diffing arch/x86/um/.ptrace_user.o.cmd shows flags such as
-> '-Os' and '-fno-delete-null-pointer-checks' getting dropped, which both
-> impact code generation.
->
-> Rework the filtering to use filter-out instead of patsubst, which allows
-> all the patterns that USER_CFLAGS cares about to be excluded in one
-> command and ensures all flags from KBUILD_CFLAGS are transferred over to
-> USER_CFLAGS properly, which resolves the boot issue noted above.
->
-> Fixes: 6580c5c18fb3 ("um: clang: Strip out -mno-global-merge from USER_CFLAGS")
-> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   52d543b5497cf31d6baeb0bcfe5a5474c3238578
+commit: 81459350d581e958ee9c6e76031f77333881c23c io_uring: cache req->apoll->events in req->cflags
+date:   9 days ago
+config: i386-randconfig-s001 (https://download.01.org/0day-ci/archive/20220326/202203261121.c6ITctBO-lkp@intel.com/config)
+compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=81459350d581e958ee9c6e76031f77333881c23c
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 81459350d581e958ee9c6e76031f77333881c23c
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
 
+sparse warnings: (new ones prefixed by >>)
+   fs/io_uring.c: note: in included file (through include/trace/trace_events.h, include/trace/define_trace.h, include/trace/events/io_uring.h):
+   include/trace/events/io_uring.h:488:1: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int [usertype] op_flags @@     got restricted __kernel_rwf_t const [usertype] rw_flags @@
+   include/trace/events/io_uring.h:488:1: sparse:     expected unsigned int [usertype] op_flags
+   include/trace/events/io_uring.h:488:1: sparse:     got restricted __kernel_rwf_t const [usertype] rw_flags
+   fs/io_uring.c: note: in included file (through include/trace/perf.h, include/trace/define_trace.h, include/trace/events/io_uring.h):
+   include/trace/events/io_uring.h:488:1: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int [usertype] op_flags @@     got restricted __kernel_rwf_t const [usertype] rw_flags @@
+   include/trace/events/io_uring.h:488:1: sparse:     expected unsigned int [usertype] op_flags
+   include/trace/events/io_uring.h:488:1: sparse:     got restricted __kernel_rwf_t const [usertype] rw_flags
+   fs/io_uring.c:3389:24: sparse: sparse: incorrect type in return expression (different address spaces) @@     expected void [noderef] __user * @@     got struct io_buffer *[assigned] kbuf @@
+   fs/io_uring.c:3389:24: sparse:     expected void [noderef] __user *
+   fs/io_uring.c:3389:24: sparse:     got struct io_buffer *[assigned] kbuf
+   fs/io_uring.c:5041:14: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct file *file @@     got struct file [noderef] __rcu * @@
+   fs/io_uring.c:5041:14: sparse:     expected struct file *file
+   fs/io_uring.c:5041:14: sparse:     got struct file [noderef] __rcu *
+>> fs/io_uring.c:5879:68: sparse: sparse: incorrect type in initializer (different base types) @@     expected restricted __poll_t [usertype] _key @@     got unsigned int [usertype] cflags @@
+   fs/io_uring.c:5879:68: sparse:     expected restricted __poll_t [usertype] _key
+   fs/io_uring.c:5879:68: sparse:     got unsigned int [usertype] cflags
+   fs/io_uring.c:5881:47: sparse: sparse: restricted __poll_t degrades to integer
+   fs/io_uring.c:5885:52: sparse: sparse: restricted __poll_t degrades to integer
+   fs/io_uring.c:5886:71: sparse: sparse: restricted __poll_t degrades to integer
+   fs/io_uring.c:5886:65: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected restricted __poll_t [usertype] val @@     got unsigned int @@
+   fs/io_uring.c:5886:65: sparse:     expected restricted __poll_t [usertype] val
+   fs/io_uring.c:5886:65: sparse:     got unsigned int
+   fs/io_uring.c:5886:52: sparse: sparse: incorrect type in initializer (different base types) @@     expected restricted __poll_t [usertype] mask @@     got unsigned short @@
+   fs/io_uring.c:5886:52: sparse:     expected restricted __poll_t [usertype] mask
+   fs/io_uring.c:5886:52: sparse:     got unsigned short
+   fs/io_uring.c:5890:71: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected signed int [usertype] res @@     got restricted __poll_t [usertype] mask @@
+   fs/io_uring.c:5890:71: sparse:     expected signed int [usertype] res
+   fs/io_uring.c:5890:71: sparse:     got restricted __poll_t [usertype] mask
+   fs/io_uring.c:5921:66: sparse: sparse: restricted __poll_t degrades to integer
+   fs/io_uring.c:5921:55: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected restricted __poll_t [usertype] val @@     got unsigned int @@
+   fs/io_uring.c:5921:55: sparse:     expected restricted __poll_t [usertype] val
+   fs/io_uring.c:5921:55: sparse:     got unsigned int
+   fs/io_uring.c:5999:45: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected int events @@     got restricted __poll_t [usertype] events @@
+   fs/io_uring.c:5999:45: sparse:     expected int events
+   fs/io_uring.c:5999:45: sparse:     got restricted __poll_t [usertype] events
+   fs/io_uring.c:6030:40: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected int mask @@     got restricted __poll_t [usertype] mask @@
+   fs/io_uring.c:6030:40: sparse:     expected int mask
+   fs/io_uring.c:6030:40: sparse:     got restricted __poll_t [usertype] mask
+   fs/io_uring.c:6030:50: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected int events @@     got restricted __poll_t [usertype] events @@
+   fs/io_uring.c:6030:50: sparse:     expected int events
+   fs/io_uring.c:6030:50: sparse:     got restricted __poll_t [usertype] events
+   fs/io_uring.c:6117:24: sparse: sparse: incorrect type in return expression (different base types) @@     expected int @@     got restricted __poll_t [assigned] [usertype] mask @@
+   fs/io_uring.c:6117:24: sparse:     expected int
+   fs/io_uring.c:6117:24: sparse:     got restricted __poll_t [assigned] [usertype] mask
+   fs/io_uring.c:6134:40: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected int mask @@     got restricted __poll_t [assigned] [usertype] mask @@
+   fs/io_uring.c:6134:40: sparse:     expected int mask
+   fs/io_uring.c:6134:40: sparse:     got restricted __poll_t [assigned] [usertype] mask
+   fs/io_uring.c:6134:50: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected int events @@     got restricted __poll_t [usertype] events @@
+   fs/io_uring.c:6134:50: sparse:     expected int events
+   fs/io_uring.c:6134:50: sparse:     got restricted __poll_t [usertype] events
+   fs/io_uring.c:6145:47: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected int events @@     got restricted __poll_t [usertype] events @@
+   fs/io_uring.c:6145:47: sparse:     expected int events
+   fs/io_uring.c:6145:47: sparse:     got restricted __poll_t [usertype] events
+   fs/io_uring.c:6170:25: sparse: sparse: restricted __poll_t degrades to integer
+   fs/io_uring.c:6170:48: sparse: sparse: incorrect type in initializer (different base types) @@     expected restricted __poll_t [usertype] mask @@     got unsigned int @@
+   fs/io_uring.c:6170:48: sparse:     expected restricted __poll_t [usertype] mask
+   fs/io_uring.c:6170:48: sparse:     got unsigned int
+   fs/io_uring.c:6179:22: sparse: sparse: invalid assignment: |=
+   fs/io_uring.c:6179:22: sparse:    left side has type restricted __poll_t
+   fs/io_uring.c:6179:22: sparse:    right side has type int
+   fs/io_uring.c:6184:30: sparse: sparse: invalid assignment: &=
+   fs/io_uring.c:6184:30: sparse:    left side has type restricted __poll_t
+   fs/io_uring.c:6184:30: sparse:    right side has type int
+   fs/io_uring.c:6186:22: sparse: sparse: invalid assignment: |=
+   fs/io_uring.c:6186:22: sparse:    left side has type restricted __poll_t
+   fs/io_uring.c:6186:22: sparse:    right side has type int
+   fs/io_uring.c:6209:33: sparse: sparse: incorrect type in argument 5 (different base types) @@     expected int mask @@     got restricted __poll_t [usertype] mask @@
+   fs/io_uring.c:6209:33: sparse:     expected int mask
+   fs/io_uring.c:6209:33: sparse:     got restricted __poll_t [usertype] mask
+   fs/io_uring.c:6209:50: sparse: sparse: incorrect type in argument 6 (different base types) @@     expected int events @@     got restricted __poll_t [usertype] events @@
+   fs/io_uring.c:6209:50: sparse:     expected int events
+   fs/io_uring.c:6209:50: sparse:     got restricted __poll_t [usertype] events
+   fs/io_uring.c:6290:24: sparse: sparse: invalid assignment: |=
+   fs/io_uring.c:6290:24: sparse:    left side has type unsigned int
+   fs/io_uring.c:6290:24: sparse:    right side has type restricted __poll_t
+   fs/io_uring.c:6291:65: sparse: sparse: restricted __poll_t degrades to integer
+   fs/io_uring.c:6291:29: sparse: sparse: restricted __poll_t degrades to integer
+   fs/io_uring.c:6291:38: sparse: sparse: incorrect type in return expression (different base types) @@     expected restricted __poll_t @@     got unsigned int @@
+   fs/io_uring.c:6291:38: sparse:     expected restricted __poll_t
+   fs/io_uring.c:6291:38: sparse:     got unsigned int
+>> fs/io_uring.c:6343:21: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int [usertype] cflags @@     got restricted __poll_t [usertype] events @@
+   fs/io_uring.c:6343:21: sparse:     expected unsigned int [usertype] cflags
+   fs/io_uring.c:6343:21: sparse:     got restricted __poll_t [usertype] events
+   fs/io_uring.c:6381:43: sparse: sparse: invalid assignment: &=
+   fs/io_uring.c:6381:43: sparse:    left side has type restricted __poll_t
+   fs/io_uring.c:6381:43: sparse:    right side has type int
+   fs/io_uring.c:6382:62: sparse: sparse: restricted __poll_t degrades to integer
+   fs/io_uring.c:6382:43: sparse: sparse: invalid assignment: |=
+   fs/io_uring.c:6382:43: sparse:    left side has type restricted __poll_t
+   fs/io_uring.c:6382:43: sparse:    right side has type unsigned int
+   fs/io_uring.c:2406:17: sparse: sparse: context imbalance in 'handle_prev_tw_list' - different lock contexts for basic block
+   fs/io_uring.c:8569:9: sparse: sparse: context imbalance in 'io_sq_thread_unpark' - wrong count at exit
+   fs/io_uring.c:8580:9: sparse: sparse: context imbalance in 'io_sq_thread_park' - wrong count at exit
 
-Can we remove -mno-global-merge entirely?
+vim +5879 fs/io_uring.c
 
-
-61163efae02040f66a95 was a very old commit,
-without enough explanation.
-
-Shall we remove  -mno-global-merge, and do compile-tests.
-If we are hit by problems for arm/arm64, we can re-add it.
-
-
-
-
-
-
-
-
-
-> ---
->  arch/um/Makefile | 6 +-----
->  1 file changed, 1 insertion(+), 5 deletions(-)
->
-> diff --git a/arch/um/Makefile b/arch/um/Makefile
-> index 320b09cd513c..d202f501e9e1 100644
-> --- a/arch/um/Makefile
-> +++ b/arch/um/Makefile
-> @@ -70,15 +70,11 @@ KBUILD_CFLAGS += $(CFLAGS) $(CFLAGS-y) -D__arch_um__ \
->
->  KBUILD_AFLAGS += $(ARCH_INCLUDE)
->
-> -USER_CFLAGS = $(patsubst $(KERNEL_DEFINES),,$(patsubst -I%,,$(KBUILD_CFLAGS))) \
-> +USER_CFLAGS = $(filter-out $(KERNEL_DEFINES) -I% -mno-global-merge,$(KBUILD_CFLAGS)) \
->                 $(ARCH_INCLUDE) $(MODE_INCLUDE) $(filter -I%,$(CFLAGS)) \
->                 -D_FILE_OFFSET_BITS=64 -idirafter $(srctree)/include \
->                 -idirafter $(objtree)/include -D__KERNEL__ -D__UM_HOST__
->
-> -ifdef CONFIG_CC_IS_CLANG
-> -USER_CFLAGS := $(patsubst -mno-global-merge,,$(USER_CFLAGS))
-> -endif
-> -
->  #This will adjust *FLAGS accordingly to the platform.
->  include $(srctree)/$(ARCH_DIR)/Makefile-os-$(OS)
->
->
-> base-commit: 82017457957a550d7d00dde419435dd74a890887
-> --
-> 2.35.1
->
-
+  5850	
+  5851	/*
+  5852	 * All poll tw should go through this. Checks for poll events, manages
+  5853	 * references, does rewait, etc.
+  5854	 *
+  5855	 * Returns a negative error on failure. >0 when no action require, which is
+  5856	 * either spurious wakeup or multishot CQE is served. 0 when it's done with
+  5857	 * the request, then the mask is stored in req->result.
+  5858	 */
+  5859	static int io_poll_check_events(struct io_kiocb *req)
+  5860	{
+  5861		struct io_ring_ctx *ctx = req->ctx;
+  5862		struct io_poll_iocb *poll = io_poll_get_single(req);
+  5863		int v;
+  5864	
+  5865		/* req->task == current here, checking PF_EXITING is safe */
+  5866		if (unlikely(req->task->flags & PF_EXITING))
+  5867			io_poll_mark_cancelled(req);
+  5868	
+  5869		do {
+  5870			v = atomic_read(&req->poll_refs);
+  5871	
+  5872			/* tw handler should be the owner, and so have some references */
+  5873			if (WARN_ON_ONCE(!(v & IO_POLL_REF_MASK)))
+  5874				return 0;
+  5875			if (v & IO_POLL_CANCEL_FLAG)
+  5876				return -ECANCELED;
+  5877	
+  5878			if (!req->result) {
+> 5879				struct poll_table_struct pt = { ._key = req->cflags };
+  5880	
+  5881				req->result = vfs_poll(req->file, &pt) & req->cflags;
+  5882			}
+  5883	
+  5884			/* multishot, just fill an CQE and proceed */
+  5885			if (req->result && !(req->cflags & EPOLLONESHOT)) {
+  5886				__poll_t mask = mangle_poll(req->result & poll->events);
+  5887				bool filled;
+  5888	
+  5889				spin_lock(&ctx->completion_lock);
+  5890				filled = io_fill_cqe_aux(ctx, req->user_data, mask,
+  5891							 IORING_CQE_F_MORE);
+  5892				io_commit_cqring(ctx);
+  5893				spin_unlock(&ctx->completion_lock);
+  5894				if (unlikely(!filled))
+  5895					return -ECANCELED;
+  5896				io_cqring_ev_posted(ctx);
+  5897				io_add_napi(req->file, ctx);
+  5898			} else if (req->result) {
+  5899				return 0;
+  5900			}
+  5901	
+  5902			/*
+  5903			 * Release all references, retry if someone tried to restart
+  5904			 * task_work while we were executing it.
+  5905			 */
+  5906		} while (atomic_sub_return(v & IO_POLL_REF_MASK, &req->poll_refs));
+  5907	
+  5908		return 1;
+  5909	}
+  5910	
 
 -- 
-Best Regards
-Masahiro Yamada
+0-DAY CI Kernel Test Service
+https://01.org/lkp
