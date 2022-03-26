@@ -2,94 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF9A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 09:47:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E228C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 09:53:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232242AbiCZJtK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 05:49:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52380 "EHLO
+        id S232268AbiCZJyr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 05:54:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231936AbiCZJtG (ORCPT
+        with ESMTP id S231936AbiCZJyl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 05:49:06 -0400
-Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 807FD24B0B0
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 02:47:29 -0700 (PDT)
-Received: by mail-qv1-xf31.google.com with SMTP id f3so8067406qvz.10
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 02:47:29 -0700 (PDT)
+        Sat, 26 Mar 2022 05:54:41 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE937270850
+        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 02:53:04 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id r13so19625057ejd.5
+        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 02:53:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+B7SpbgCMQv+5yCcAkjFJyzQjT6pt2NifXC9lsW5qSg=;
-        b=NpmAWev/N16WKN4wld338PxVITBO9RaPVr/AiJWR/Tpk9ZkmS65sp3fXy0PbruDj8p
-         691+5dReWc86SJbwzkI+aj7N3j3vLHifW8nm4a2Mwr5yuRZd+lEvEntSTk2snA/V/weH
-         wdPKT7DqRgJ9qtW0JSmbG4iPJvDUyNnWeEIwJd3ufYL9Mb6taDLp+l8m9bD4JK3dcGws
-         eNwbVWO+HJOSqTzgED/jzC7gKX7ioVzzEqFSliuvsueHkLlg8XXcK+pRDdxKJZZU+jHc
-         3yjmU3t5xnZUyTgplbkiMcFu93/ufnnA8FQIx4DFKjCq+LTxz2FvaouRvipzm8F5VPpr
-         wtXQ==
+        h=date:from:to:cc:subject:message-id:reply-to:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=8L+jZ6rI/hIaqFsPeBM/h2Qk4gIWDXElqI2aBslvgOU=;
+        b=SCqvsxxSW3gGPttWOvSTtYuI9OT7OCiGiE7N8ZtZm5NAzkYY4s+72pHHncAcXj1yRR
+         sSAW7OmmITT1Ds8wtTbJyVr4QB6tC/GrYCqApRU8WPJJvjdN+tBHBnwabhFpAROZVgX6
+         ZCJqP5FNiQ7SMvKgLTd+Jz4ryTjEldt7GxKR3h23qSEMaVBXnVIwImn/VJIS56qfAafZ
+         VFs+gCyftJkdks1jiYZWA95jYD47DL8HWDGKfBx3h8cj7MjvrEVhOEF8116nCl6LJ56/
+         U4pPbCE22HJEzWsu8gJE82tCSSOntoeDJcjYtPbmQcJz2wBInTX90SbJ5S4K7lOo7K1I
+         NjUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+B7SpbgCMQv+5yCcAkjFJyzQjT6pt2NifXC9lsW5qSg=;
-        b=ASaqLTpo58BJIEBFIPxsvy30pH73l2q7zERcxa8hTQGUxV1EJDyR/1XXgRU0gWRl1A
-         sqdH/0wi0PKH7iTUG3Wn1lbR7tVznGgAsuU4LQCou3ZQqMAFKAVor4Gxp1NigweBe+Zl
-         u4nV2TJqqG8GvFeK7HWIycaavErvWjVgZdIiRl9omE7tpFkydBuOu+ohy0ckn9RVBL1n
-         IgXlYdkjlZt5Dwjoyuq2I4Dt82PN80GVK4r8aPOS7iWY0TXMEPSQ79lqpm/YsOg2DoWL
-         XeDbEuuGhf6CiaGUsAdBCSjSDWJx0fDIWmNhL8Ee25o86rKtNvWLo7dqBdjyihQZVH2Q
-         CTMQ==
-X-Gm-Message-State: AOAM530eI1gCM+bmiSpNANnnHSPAsqNaZ+Qi1VjiQVkei8p2nwWl0MLR
-        qlhFrLj8QElx9i1NEwvEYx3Pn4yM8Tg=
-X-Google-Smtp-Source: ABdhPJwUVUU6ZzOzYMIyAP6uywRdMOZDfIGhQ81kHZ34vcxcfN8gQN0bMTTGr8IUCHG+3kTs5+Is/g==
-X-Received: by 2002:a05:6214:2428:b0:441:5f62:b8c4 with SMTP id gy8-20020a056214242800b004415f62b8c4mr12716057qvb.21.1648288048361;
-        Sat, 26 Mar 2022 02:47:28 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id y17-20020a05622a121100b002e0702457b2sm7106246qtx.20.2022.03.26.02.47.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 26 Mar 2022 02:47:27 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: yang.yang29@zte.com.cn
-To:     paul@paul-moore.com, eparis@redhat.com, linux-audit@redhat.com
-Cc:     linux-kernel@vger.kernel.org, Yang Yang <yang.yang29@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] audit: do a quick exit when syscall number is invalid
-Date:   Sat, 26 Mar 2022 09:46:55 +0000
-Message-Id: <20220326094654.2361956-1-yang.yang29@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:reply-to
+         :references:mime-version:content-disposition:in-reply-to:user-agent;
+        bh=8L+jZ6rI/hIaqFsPeBM/h2Qk4gIWDXElqI2aBslvgOU=;
+        b=OHQynX5E9hm3k00FIXuRv3LiZkHY3X1kKm+5ziEg1sMP0auUMyjPTITu81ZrTcBMSV
+         P3ZtEq/JR8XsPC0aIPHMAYjckttjdloiVNiA9VMyXayGPYpr052CD5qxGj1DRMFCrBd7
+         QA1mYegmxhTkvAnY0yN8Ccu0Q1DnMYw1zIF00mWSB1RQ1o3iA4cSET6yZgb0bznwS8JR
+         qi59pA0p40xWNblQqrsjZYTa+HzjGL/6y60mnAe04M3O/n8pYPatcA5CAgRHOG4nieMk
+         jjPoXoYee8ioDRHRYgWEaUcJTEzm9FdqsX1KrOnOZf0bof4URdQrDsmGsrPxXYh0LgTa
+         CQEw==
+X-Gm-Message-State: AOAM531u2DnQVGyN5fGZui7PSLHaxB2w9gdczOJvfkfhFSwFfKBch0Qh
+        tZTsJI1G5txTBFeSQLFcXAk=
+X-Google-Smtp-Source: ABdhPJyel+2W1F9MiFIusEjOPauBJVIXeiF7/mY+EVCEVRWKgT32rmtJ9FuDIYdDVyJH0jLs+qYH/g==
+X-Received: by 2002:a17:906:a20c:b0:6ce:a87e:5013 with SMTP id r12-20020a170906a20c00b006cea87e5013mr15833751ejy.379.1648288383284;
+        Sat, 26 Mar 2022 02:53:03 -0700 (PDT)
+Received: from localhost ([185.92.221.13])
+        by smtp.gmail.com with ESMTPSA id v5-20020a50c405000000b004161123bf7asm3847227edf.67.2022.03.26.02.53.02
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Sat, 26 Mar 2022 02:53:02 -0700 (PDT)
+Date:   Sat, 26 Mar 2022 09:53:02 +0000
+From:   Wei Yang <richard.weiyang@gmail.com>
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     akpm@linux-foundation.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mm/mremap: use helper mlock_future_check
+Message-ID: <20220326095302.n2jcsgjfjt7mwkkz@master>
+Reply-To: Wei Yang <richard.weiyang@gmail.com>
+References: <20220322112004.27380-1-linmiaohe@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220322112004.27380-1-linmiaohe@huawei.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yang <yang.yang29@zte.com.cn>
+On Tue, Mar 22, 2022 at 07:20:04PM +0800, Miaohe Lin wrote:
+>Use helper mlock_future_check to check whether it's safe to resize the
+>locked_vm to simplify the code. Minor readability improvement.
+>
+>Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 
-Userspace may use syscall with invalid syscall number by calling
-syscall(syscall_num,..). For example we found openSSH may use
-syscall with syscall number is -1 in some case. When that happens
-we better do a quick handle no need to gohead.
+Reviewed-by: Wei Yang <richard.weiyang@gmail.com>
 
-Signed-off-by: Yang Yang <yang.yang29@zte.com.cn>
-Reported-by: Zeal Robot <zealci@zte.com.cn>
----
- kernel/auditsc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/kernel/auditsc.c b/kernel/auditsc.c
-index ea2ee1181921..806cd57d7f20 100644
---- a/kernel/auditsc.c
-+++ b/kernel/auditsc.c
-@@ -2077,7 +2077,8 @@ void __audit_syscall_exit(int success, long return_code)
- 	struct audit_context *context = audit_context();
- 
- 	if (!context || context->dummy ||
--	    context->context != AUDIT_CTX_SYSCALL)
-+	    context->context != AUDIT_CTX_SYSCALL ||
-+	    unlikely(context->major < 0 || context->major > NR_syscalls))
- 		goto out;
- 
- 	/* this may generate CONFIG_CHANGE records */
 -- 
-2.25.1
-
+Wei Yang
+Help you, Help me
