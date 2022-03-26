@@ -2,165 +2,364 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D68E2C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 00:15:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 195D7C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 00:20:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230289AbiCZAQu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 20:16:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60194 "EHLO
+        id S230360AbiCZAWK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 20:22:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230097AbiCZAQs (ORCPT
+        with ESMTP id S230304AbiCZAWG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 20:16:48 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A8D205968
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 17:15:12 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id c2so7685427pga.10
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 17:15:12 -0700 (PDT)
+        Fri, 25 Mar 2022 20:22:06 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1207025588
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 17:20:27 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2d07ae11467so72287777b3.12
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 17:20:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=FQC7h1s3zGX5GsUNU5SzN2ybagH0IG2NIZcge3j4zR8=;
-        b=cX0k5vpCCINgqk/XWr7uhcEBno8PpNyK3xCVWey4nAgzH3x7TjTqPgtCnn9eNmOtOx
-         dj598b5tiak3WM/RgD6OXJrvcb+VwYMN6vypMLGvDGpYIXXwRvBABhhfBiVnMvYrVcKs
-         ZrbczYRTRW3kq4Jkt2hIqtPAMfdsDQsbLHEwrvNktQUgobgH0TWAytBeMbWW+M/19MPE
-         JcmyfRTUncHfaNXhjXVukeFEnrMAFHG17jB4+AnmxRb+7HrNj9M+2mbEZBejg/rTMRAz
-         09kqtCu5DNd1KwmQdqmUvEz3h7rehEviLOISQtWWiNzafgH2q+AbVobcRhFg4l+AjbAs
-         3srQ==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=hgvJZIq6FS59H45AI6EmsqKDugmfm6LlItsBv/JFTKg=;
+        b=XRzUUSHf+YAUSaDgRQ8JutoOAursgJZYWQT4fnYk4+S+oLW3OXnK9W1SacJXTpbkM8
+         eyttJtrYR852bSmDHY7K8PGwiKVwvc4h6c4ZSz2vXFGzrAuTPwYZmvNnoHFwy3c4FsnR
+         dTbihGKz19CI+i/GwE5Th9UmE4xvygS3MWbW9PRbX5BvA3kVOS4+6aHzOVmvVwoFQK1P
+         Pk44XQqD0/32V+HfErRigUaf23EfFeQTOTDXv7IxOOUJKArrtR+9gTYNpPKJtF8FlkMc
+         rgF8AW9hbZnmS0c9RevuV7HnhE0Txsi0c90sD7KXDMr9ttDUQgmcxtYpVAv3W4mWHbZs
+         jJeA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=FQC7h1s3zGX5GsUNU5SzN2ybagH0IG2NIZcge3j4zR8=;
-        b=z/HLLQTEdigC6rwH5ZUWs165ORQBtuKzykPxI1tFNakrERWkYt/FamUX5FhVEZ+0jM
-         7f/LYDKWaz99rmQyK/4VlqfporFY/KO1yvUwY+gXga+Diss1yxRRDfUMtsW1/I3g570B
-         mfqs5TRFyY8DBxeKu2PIdRVx0oBD4x/dD9vW6iOWOqf0TXo9hF1O3epldICyqtyHz6TO
-         PtPG5nEL116FS69QX/SoI8m16oRlmaSDG5Hm/abwAsWYd4h2vWiba0mMa5Xf/mLcswok
-         E3BOfkvf4Qw/85j6EKppGpF8jahvENZuxtaEwsdcMMWXckNrCdVstxkYMZVowzTUK6b7
-         O6Qg==
-X-Gm-Message-State: AOAM531TsLvjoPbHQnokvf4UveWz4hpHbr9mNLMU+ipjKWtwcQji0rhu
-        sKM6pMf04nvj0oWlH48cF6duwg==
-X-Google-Smtp-Source: ABdhPJz7Zd+S4ualUAy9FGz5K65CXMsHQ4ZW4z+SUIX3w3/c+14i5OyEW+DZJt0AjOPrSGJeheWkSQ==
-X-Received: by 2002:a63:742:0:b0:382:2684:dd41 with SMTP id 63-20020a630742000000b003822684dd41mr1611016pgh.38.1648253711595;
-        Fri, 25 Mar 2022 17:15:11 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id l23-20020a17090a071700b001c67a95e7fbsm6987733pjl.47.2022.03.25.17.15.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Mar 2022 17:15:10 -0700 (PDT)
-Date:   Sat, 26 Mar 2022 00:15:07 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Jon Kohler <jon@nutanix.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] KVM: x86: optimize PKU branching in
- kvm_load_{guest|host}_xsave_state
-Message-ID: <Yj5bCw0q5n4ZgSuU@google.com>
-References: <20220324004439.6709-1-jon@nutanix.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220324004439.6709-1-jon@nutanix.com>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=hgvJZIq6FS59H45AI6EmsqKDugmfm6LlItsBv/JFTKg=;
+        b=nBcsgFAswNV6dXi+8VpEoxG1ELYD4M3J3R6oi+J787GvnKrj4FqjslJ/Ao04aXl4Ax
+         Yc/duvtxzeiBG9qnZY0wGHIJRTdtW90rnOz/fvVcBxRu97W/Rn+FMaWWcW9/7zEbivnh
+         Uej8/3EaaVUlcXU4j4FCF0dIfbgX+yhJeJjjPavGcJW+k24VBC2TNRab78IeQnp/MQTL
+         IxkygAmy0AjF58T3CEBwLlqXMFPhPOFq0/ITseIfJ/d1Ldg10y8dfUwv9hLTd8j2Wn9W
+         sOFU8DDR3mBdMKBHLTae3fB6R+wF0dP2Zq38eR8X7e0YMqby7nDPSHEiH42zjW55Y81K
+         ay8A==
+X-Gm-Message-State: AOAM530Q+kBuYv4uT29WP3VWuTgE0umwQYZfuQWvuuZxBAWQI3Cz5OgQ
+        EUOYFhs0GbG8xPhzI/jfAsS+APMWGnuGWA==
+X-Google-Smtp-Source: ABdhPJzGhQ9wIzZAJ/3GfJX/cyWEUhzgA5Vw8K+D6EBJTjqlICZUaHIXKxPtYGN1vUaCdPTqwho0NJF8EYj6bQ==
+X-Received: from dlatypov.svl.corp.google.com ([2620:15c:2cd:202:be84:4a49:e731:f1fa])
+ (user=dlatypov job=sendgmr) by 2002:a05:6902:114b:b0:634:6f24:afc2 with SMTP
+ id p11-20020a056902114b00b006346f24afc2mr13264298ybu.229.1648254026339; Fri,
+ 25 Mar 2022 17:20:26 -0700 (PDT)
+Date:   Fri, 25 Mar 2022 17:20:13 -0700
+In-Reply-To: <20220326002013.483394-1-dlatypov@google.com>
+Message-Id: <20220326002013.483394-2-dlatypov@google.com>
+Mime-Version: 1.0
+References: <20220326002013.483394-1-dlatypov@google.com>
+X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
+Subject: [PATCH v2 2/2] kunit: split resource API impl from test.c into new resource.c
+From:   Daniel Latypov <dlatypov@google.com>
+To:     brendanhiggins@google.com, davidgow@google.com
+Cc:     linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
+        linux-kselftest@vger.kernel.org, skhan@linuxfoundation.org,
+        Daniel Latypov <dlatypov@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 23, 2022, Jon Kohler wrote:
-> kvm_load_{guest|host}_xsave_state handles xsave on vm entry and exit,
-> part of which is managing memory protection key state. The latest
-> arch.pkru is updated with a rdpkru, and if that doesn't match the base
-> host_pkru (which about 70% of the time), we issue a __write_pkru.
-> 
-> To improve performance, implement the following optimizations:
->  1. Reorder if conditions prior to wrpkru in both
->     kvm_load_{guest|host}_xsave_state.
-> 
->     Flip the ordering of the || condition so that XFEATURE_MASK_PKRU is
->     checked first, which when instrumented in our environment appeared
->     to be always true and less overall work than kvm_read_cr4_bits.
+We've split out the declarations from include/kunit/test.h into
+resource.h.
+This patch splits out the definitions as well for consistency.
 
-If it's always true, then it should be checked last, not first.  And if
-kvm_read_cr4_bits() is more expensive then we should address that issue, not
-try to micro-optimize this stuff.  X86_CR4_PKE can't be guest-owned, and so
-kvm_read_cr4_bits() should be optimized down to:
+A side effect of this is git blame won't properly track history by
+default, users need to run
+$ git blame -L ,1 -C13 lib/kunit/resource.c
 
-	return vcpu->arch.cr4 & X86_CR4_PKE;
+Signed-off-by: Daniel Latypov <dlatypov@google.com>
+---
+ lib/kunit/Makefile   |   1 +
+ lib/kunit/resource.c | 126 +++++++++++++++++++++++++++++++++++++++++++
+ lib/kunit/test.c     | 116 +--------------------------------------
+ 3 files changed, 128 insertions(+), 115 deletions(-)
+ create mode 100644 lib/kunit/resource.c
 
-If the compiler isn't smart enough to do that on its own then we should rework
-kvm_read_cr4_bits() as that will benefit multiple code paths.
+diff --git a/lib/kunit/Makefile b/lib/kunit/Makefile
+index c49f4ffb6273..29aff6562b42 100644
+--- a/lib/kunit/Makefile
++++ b/lib/kunit/Makefile
+@@ -1,6 +1,7 @@
+ obj-$(CONFIG_KUNIT) +=			kunit.o
+ 
+ kunit-objs +=				test.o \
++					resource.o \
+ 					string-stream.o \
+ 					assert.o \
+ 					try-catch.o \
+diff --git a/lib/kunit/resource.c b/lib/kunit/resource.c
+new file mode 100644
+index 000000000000..b8bced246217
+--- /dev/null
++++ b/lib/kunit/resource.c
+@@ -0,0 +1,126 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * KUnit resource API for test managed resources (allocations, etc.).
++ *
++ * Copyright (C) 2022, Google LLC.
++ * Author: Daniel Latypov <dlatypov@google.com>
++ */
++
++#include <kunit/resource.h>
++#include <kunit/test.h>
++#include <linux/kref.h>
++
++/*
++ * Used for static resources and when a kunit_resource * has been created by
++ * kunit_alloc_resource().  When an init function is supplied, @data is passed
++ * into the init function; otherwise, we simply set the resource data field to
++ * the data value passed in.
++ */
++int kunit_add_resource(struct kunit *test,
++		       kunit_resource_init_t init,
++		       kunit_resource_free_t free,
++		       struct kunit_resource *res,
++		       void *data)
++{
++	int ret = 0;
++	unsigned long flags;
++
++	res->free = free;
++	kref_init(&res->refcount);
++
++	if (init) {
++		ret = init(res, data);
++		if (ret)
++			return ret;
++	} else {
++		res->data = data;
++	}
++
++	spin_lock_irqsave(&test->lock, flags);
++	list_add_tail(&res->node, &test->resources);
++	/* refcount for list is established by kref_init() */
++	spin_unlock_irqrestore(&test->lock, flags);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(kunit_add_resource);
++
++int kunit_add_named_resource(struct kunit *test,
++			     kunit_resource_init_t init,
++			     kunit_resource_free_t free,
++			     struct kunit_resource *res,
++			     const char *name,
++			     void *data)
++{
++	struct kunit_resource *existing;
++
++	if (!name)
++		return -EINVAL;
++
++	existing = kunit_find_named_resource(test, name);
++	if (existing) {
++		kunit_put_resource(existing);
++		return -EEXIST;
++	}
++
++	res->name = name;
++
++	return kunit_add_resource(test, init, free, res, data);
++}
++EXPORT_SYMBOL_GPL(kunit_add_named_resource);
++
++struct kunit_resource *kunit_alloc_and_get_resource(struct kunit *test,
++						    kunit_resource_init_t init,
++						    kunit_resource_free_t free,
++						    gfp_t internal_gfp,
++						    void *data)
++{
++	struct kunit_resource *res;
++	int ret;
++
++	res = kzalloc(sizeof(*res), internal_gfp);
++	if (!res)
++		return NULL;
++
++	ret = kunit_add_resource(test, init, free, res, data);
++	if (!ret) {
++		/*
++		 * bump refcount for get; kunit_resource_put() should be called
++		 * when done.
++		 */
++		kunit_get_resource(res);
++		return res;
++	}
++	return NULL;
++}
++EXPORT_SYMBOL_GPL(kunit_alloc_and_get_resource);
++
++void kunit_remove_resource(struct kunit *test, struct kunit_resource *res)
++{
++	unsigned long flags;
++
++	spin_lock_irqsave(&test->lock, flags);
++	list_del(&res->node);
++	spin_unlock_irqrestore(&test->lock, flags);
++	kunit_put_resource(res);
++}
++EXPORT_SYMBOL_GPL(kunit_remove_resource);
++
++int kunit_destroy_resource(struct kunit *test, kunit_resource_match_t match,
++			   void *match_data)
++{
++	struct kunit_resource *res = kunit_find_resource(test, match,
++							 match_data);
++
++	if (!res)
++		return -ENOENT;
++
++	kunit_remove_resource(test, res);
++
++	/* We have a reference also via _find(); drop it. */
++	kunit_put_resource(res);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(kunit_destroy_resource);
++
+diff --git a/lib/kunit/test.c b/lib/kunit/test.c
+index 3bca3bf5c15b..0f66c13d126e 100644
+--- a/lib/kunit/test.c
++++ b/lib/kunit/test.c
+@@ -6,10 +6,10 @@
+  * Author: Brendan Higgins <brendanhiggins@google.com>
+  */
+ 
++#include <kunit/resource.h>
+ #include <kunit/test.h>
+ #include <kunit/test-bug.h>
+ #include <linux/kernel.h>
+-#include <linux/kref.h>
+ #include <linux/moduleparam.h>
+ #include <linux/sched/debug.h>
+ #include <linux/sched.h>
+@@ -592,120 +592,6 @@ void __kunit_test_suites_exit(struct kunit_suite **suites)
+ }
+ EXPORT_SYMBOL_GPL(__kunit_test_suites_exit);
+ 
+-/*
+- * Used for static resources and when a kunit_resource * has been created by
+- * kunit_alloc_resource().  When an init function is supplied, @data is passed
+- * into the init function; otherwise, we simply set the resource data field to
+- * the data value passed in.
+- */
+-int kunit_add_resource(struct kunit *test,
+-		       kunit_resource_init_t init,
+-		       kunit_resource_free_t free,
+-		       struct kunit_resource *res,
+-		       void *data)
+-{
+-	int ret = 0;
+-	unsigned long flags;
+-
+-	res->free = free;
+-	kref_init(&res->refcount);
+-
+-	if (init) {
+-		ret = init(res, data);
+-		if (ret)
+-			return ret;
+-	} else {
+-		res->data = data;
+-	}
+-
+-	spin_lock_irqsave(&test->lock, flags);
+-	list_add_tail(&res->node, &test->resources);
+-	/* refcount for list is established by kref_init() */
+-	spin_unlock_irqrestore(&test->lock, flags);
+-
+-	return ret;
+-}
+-EXPORT_SYMBOL_GPL(kunit_add_resource);
+-
+-int kunit_add_named_resource(struct kunit *test,
+-			     kunit_resource_init_t init,
+-			     kunit_resource_free_t free,
+-			     struct kunit_resource *res,
+-			     const char *name,
+-			     void *data)
+-{
+-	struct kunit_resource *existing;
+-
+-	if (!name)
+-		return -EINVAL;
+-
+-	existing = kunit_find_named_resource(test, name);
+-	if (existing) {
+-		kunit_put_resource(existing);
+-		return -EEXIST;
+-	}
+-
+-	res->name = name;
+-
+-	return kunit_add_resource(test, init, free, res, data);
+-}
+-EXPORT_SYMBOL_GPL(kunit_add_named_resource);
+-
+-struct kunit_resource *kunit_alloc_and_get_resource(struct kunit *test,
+-						    kunit_resource_init_t init,
+-						    kunit_resource_free_t free,
+-						    gfp_t internal_gfp,
+-						    void *data)
+-{
+-	struct kunit_resource *res;
+-	int ret;
+-
+-	res = kzalloc(sizeof(*res), internal_gfp);
+-	if (!res)
+-		return NULL;
+-
+-	ret = kunit_add_resource(test, init, free, res, data);
+-	if (!ret) {
+-		/*
+-		 * bump refcount for get; kunit_resource_put() should be called
+-		 * when done.
+-		 */
+-		kunit_get_resource(res);
+-		return res;
+-	}
+-	return NULL;
+-}
+-EXPORT_SYMBOL_GPL(kunit_alloc_and_get_resource);
+-
+-void kunit_remove_resource(struct kunit *test, struct kunit_resource *res)
+-{
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(&test->lock, flags);
+-	list_del(&res->node);
+-	spin_unlock_irqrestore(&test->lock, flags);
+-	kunit_put_resource(res);
+-}
+-EXPORT_SYMBOL_GPL(kunit_remove_resource);
+-
+-int kunit_destroy_resource(struct kunit *test, kunit_resource_match_t match,
+-			   void *match_data)
+-{
+-	struct kunit_resource *res = kunit_find_resource(test, match,
+-							 match_data);
+-
+-	if (!res)
+-		return -ENOENT;
+-
+-	kunit_remove_resource(test, res);
+-
+-	/* We have a reference also via _find(); drop it. */
+-	kunit_put_resource(res);
+-
+-	return 0;
+-}
+-EXPORT_SYMBOL_GPL(kunit_destroy_resource);
+-
+ struct kunit_kmalloc_array_params {
+ 	size_t n;
+ 	size_t size;
+-- 
+2.35.1.1021.g381101b075-goog
 
->     For kvm_load_guest_xsave_state, hoist arch.pkru != host_pkru ahead
->     one position. When instrumented, I saw this be true roughly ~70% of
->     the time vs the other conditions which were almost always true.
->     With this change, we will avoid 3rd condition check ~30% of the time.
-
-If the guest uses PKRU...  If PKRU is used by the host but not the guest, the
-early comparison is pure overhead because it will almost always be true (guest
-will be zero, host will non-zero), 
-
->  2. Wrap PKU sections with CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS,
->     as if the user compiles out this feature, we should not have
->     these branches at all.
-
-Not that it really matters, since static_cpu_has() will patch out all the branches,
-and in practice who cares about a JMP or NOP(s)?  But...
-
-#ifdeffery is the wrong way to handle this.  Replace static_cpu_has() with
-cpu_feature_enabled(); that'll boil down to a '0' and omit all the code when
-CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS=n, without the #ifdef ugliness.
-
-> Signed-off-by: Jon Kohler <jon@nutanix.com>
-> ---
->  arch/x86/kvm/x86.c | 14 +++++++++-----
->  1 file changed, 9 insertions(+), 5 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index 6db3a506b402..2b00123a5d50 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -950,11 +950,13 @@ void kvm_load_guest_xsave_state(struct kvm_vcpu *vcpu)
->  			wrmsrl(MSR_IA32_XSS, vcpu->arch.ia32_xss);
->  	}
-> 
-> +#ifdef CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS
->  	if (static_cpu_has(X86_FEATURE_PKU) &&
-> -	    (kvm_read_cr4_bits(vcpu, X86_CR4_PKE) ||
-> -	     (vcpu->arch.xcr0 & XFEATURE_MASK_PKRU)) &&
-> -	    vcpu->arch.pkru != vcpu->arch.host_pkru)
-> +	    vcpu->arch.pkru != vcpu->arch.host_pkru &&
-> +	    ((vcpu->arch.xcr0 & XFEATURE_MASK_PKRU) ||
-> +	     kvm_read_cr4_bits(vcpu, X86_CR4_PKE)))
->  		write_pkru(vcpu->arch.pkru);
-> +#endif /* CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS */
->  }
->  EXPORT_SYMBOL_GPL(kvm_load_guest_xsave_state);
-> 
-> @@ -963,13 +965,15 @@ void kvm_load_host_xsave_state(struct kvm_vcpu *vcpu)
->  	if (vcpu->arch.guest_state_protected)
->  		return;
-> 
-> +#ifdef CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS
->  	if (static_cpu_has(X86_FEATURE_PKU) &&
-> -	    (kvm_read_cr4_bits(vcpu, X86_CR4_PKE) ||
-> -	     (vcpu->arch.xcr0 & XFEATURE_MASK_PKRU))) {
-> +	    ((vcpu->arch.xcr0 & XFEATURE_MASK_PKRU) ||
-> +	     kvm_read_cr4_bits(vcpu, X86_CR4_PKE))) {
->  		vcpu->arch.pkru = rdpkru();
->  		if (vcpu->arch.pkru != vcpu->arch.host_pkru)
->  			write_pkru(vcpu->arch.host_pkru);
->  	}
-> +#endif /* CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS */
-> 
->  	if (kvm_read_cr4_bits(vcpu, X86_CR4_OSXSAVE)) {
-> 
-> --
-> 2.30.1 (Apple Git-130)
-> 
