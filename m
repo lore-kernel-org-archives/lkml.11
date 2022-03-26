@@ -2,91 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 020DDC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 07:25:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DD6CC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 07:27:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231821AbiCZH1O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 03:27:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58584 "EHLO
+        id S231845AbiCZH2p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 03:28:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229499AbiCZH1M (ORCPT
+        with ESMTP id S231389AbiCZH2m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 03:27:12 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD2E2DD8
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 00:25:35 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 22Q7PLXa017135;
-        Sat, 26 Mar 2022 02:25:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1648279521;
-        bh=Hv7YXBe/2Y0lpaGXGu39vfIikytNrKb6clLyKYiPggU=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=tLFm8MjbdrQDDUzjlnMHvoS+Azkt1QBJcjYrv2pVqa//9QjEKRWlayS4KoHCikB7I
-         JZCvr0nZO4prSu9xORsevEDlOGpaUySCTy8SBnzz2G3dMIFbl1SqKnaVIo2IP8t+vt
-         f0Ne2omzh1YqnTHfKoeVsjGDZoCRp7pZbPRFYGe4=
-Received: from DLEE102.ent.ti.com (dlee102.ent.ti.com [157.170.170.32])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 22Q7PLTA001882
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Sat, 26 Mar 2022 02:25:21 -0500
-Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE102.ent.ti.com
- (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Sat, 26
- Mar 2022 02:25:21 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE108.ent.ti.com
- (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Sat, 26 Mar 2022 02:25:20 -0500
-Received: from [10.250.235.115] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 22Q7PHMk018492;
-        Sat, 26 Mar 2022 02:25:18 -0500
-Message-ID: <7f160e8f-f3a3-33ff-3471-72978d0b34bc@ti.com>
-Date:   Sat, 26 Mar 2022 12:55:17 +0530
+        Sat, 26 Mar 2022 03:28:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C270D21805;
+        Sat, 26 Mar 2022 00:26:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6E3E5B80E61;
+        Sat, 26 Mar 2022 07:26:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60363C340ED;
+        Sat, 26 Mar 2022 07:26:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648279607;
+        bh=xirFoJbRJSlOuSaLCipr97c50u9T+OQDwkkYd9o/BbY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RWUI0Z7zSaQzKUsR5q66Gy6XhKBH1SLdTrTJlAyKfnYD3ZBheK47uqVTFrjbl3aZ0
+         lmZkVYEgXUJFuDKm6s7TaFEmvCDkJ0iksda7/Ybt3ogQ6E/nG77EwpO1mbyqzTftkS
+         0f4l6mHvS9XR/kF7NKJzjmM/nc3M1GhDTnrSZZt7x2UizatXUCECv/3Fp8q5V4fP9W
+         stdd2L3Y6Y3/4uNeTYI8pgXp9apWfAPBg6v4w476hpD/j96mnowK9KsR+8eN/4kTJ2
+         vjWbN8fNDAsJVnFZVSYvkezZDI2EPw1uJtdYsvu627+umEivNWSzeB/oE8K1vzWerQ
+         1mqb2oQnmBLnw==
+Date:   Sat, 26 Mar 2022 15:18:25 +0800
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Atish Kumar Patra <atishp@rivosinc.com>
+Cc:     "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Atish Patra <atishp@atishpatra.org>,
+        Anup Patel <anup@brainfault.org>,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH v3 0/6] Provide a fraemework for RISC-V ISA extensions
+Message-ID: <Yj6+QZUgrzA9UK/J@xhacker>
+References: <20220215090211.911366-1-atishp@rivosinc.com>
+ <YgvNSeUekqEVS1yE@xhacker>
+ <CAHBxVyF65jC_wvxcD6bueqpCY8-Kbahu1yxsSoBmO1s15dGkSQ@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] soc: ti: replace usage of found with dedicated list
- iterator variable
-Content-Language: en-US
-To:     Jakob Koschel <jakobkoschel@gmail.com>, Nishanth Menon <nm@ti.com>
-CC:     Santosh Shilimkar <ssantosh@kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-References: <20220324072503.63244-1-jakobkoschel@gmail.com>
-From:   Vignesh Raghavendra <vigneshr@ti.com>
-In-Reply-To: <20220324072503.63244-1-jakobkoschel@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAHBxVyF65jC_wvxcD6bueqpCY8-Kbahu1yxsSoBmO1s15dGkSQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 24/03/22 12:55 pm, Jakob Koschel wrote:
-> To move the list iterator variable into the list_for_each_entry_*()
-> macro in the future it should be avoided to use the list iterator
-> variable after the loop body.
+On Tue, Feb 15, 2022 at 11:06:24AM -0800, Atish Kumar Patra wrote:
+> On Tue, Feb 15, 2022 at 8:04 AM Jisheng Zhang <jszhang@kernel.org> wrote:
+> >
+> > On Tue, Feb 15, 2022 at 01:02:05AM -0800, Atish Patra wrote:
+> > > This series implements a generic framework to parse multi-letter ISA
+> > > extensions. This series is based on Tsukasa's v3 isa extension improvement
+> > > series[1]. I have fixed few bugs and improved comments from that series
+> > > (PATCH1-3). I have not used PATCH 4 from that series as we are not using
+> > > ISA extension versioning as of now. We can add that later if required.
+> > >
+> > > PATCH 4 allows the probing of multi-letter extensions via a macro.
+> > > It continues to use the common isa extensions between all the harts.
+> > > Thus hetergenous hart systems will only see the common ISA extensions.
+> > >
+> > > PATCH 6 improves the /proc/cpuinfo interface for the available ISA extensions
+> > > via /proc/cpuinfo.
+> > >
+> > > Here is the example output of /proc/cpuinfo:
+> > > (with debug patches in Qemu and Linux kernel)
+> > >
+> > > / # cat /proc/cpuinfo
+> > > processor     : 0
+> > > hart          : 0
+> > > isa           : rv64imafdcsu
+> > > isa-ext               : sstc,sscofpmf
+> > > mmu           : sv48
+> > >
+> > > processor     : 1
+> > > hart          : 1
+> > > isa           : rv64imafdcsu
+> > > isa-ext               : sstc,sscofpmf
+> > > mmu           : sv48
+> > >
+> > > processor     : 2
+> > > hart          : 2
+> > > isa           : rv64imafdcsu
+> > > isa-ext               : sstc,sscofpmf
+> > > mmu           : sv48
+> > >
+> > > processor     : 3
+> > > hart          : 3
+> > > isa           : rv64imafdcsu
+> > > isa-ext               : sstc,sscofpmf
+> > > mmu           : sv48
+> > >
+> > > Anybody adding support for any new multi-letter extensions should add an
+> > > entry to the riscv_isa_ext_id and the isa extension array.
+> > > E.g. The patch[2] adds the support for various ISA extensions.
+> >
+> > Hi Atish,
+> >
+> > Thanks for this series. I'm thinking cpu features VS ISA extenstions.
+> > I'm converting the sv48 to static key:
+> > https://lore.kernel.org/linux-riscv/20220125165036.987-1-jszhang@kernel.org/
+> >
+> > Previously, I thought the SV48 as a cpu feature, and there will be
+> > more and more cpu features, so I implemented an unified static key
+> > mechanism for CPU features. But after reading this series, I think
+> > I may need to rebase(even reimplement) the above patch to your series.
+> > But I'm a bit confused by CPU features VS ISA extenstions now:
+> >
+> > 1. Is cpu feature  == ISA extension?
+> >
+> > 2. Is SV48 considered as ISA extension?
+> > If yes, now SV48 or not is determined during runtime, but current ISA
+> > extensions seem parsed from DT. So how to support those ISA extensions
+> > which can be determined during runtime?
+> >
+> > Could you please share your thought?
+> >
 > 
-> To *never* use the list iterator variable after the loop it was
-> concluded to use a separate iterator variable instead of a
-> found boolean [1].
+> Here are my two cents:
 > 
-> This removes the need to use a found variable and simply checking if
-> the variable was set, can determine if the break/goto was hit.
+> I think the cpu feature is a superset of the ISA extension.
+> cpu feature != ISA extension.
 > 
-> Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/
-> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-> ---
+> While all ISA extensions are cpu features, all CPU features may not be
+> an ISA extension.
+> e.g. sv48 is not a ISA extension but F/D are (used to set the
+> cpu_hwcap_fpu static key)
+> 
+> Moreover, not all cpu feature/ISA extension requires a static key.
+> e.g SSTC extension will require a static key because the check has to
+> happen in the hot path.
+> However, sscofpmf extension don't need a static key as the check
+> happens only one time during boot.
+> 
+> We should keep these two separate but a common static framework would
+> be very useful.
+> 
+> Here is the flow that I have in my mind.
+> 1. All ISA extensions will be parsed through riscv,isa DT property
+> 2. Any supported/enabled extension will be set in riscv_isa bitmap
+> 3. Any extension requiring a static key will invoke the cpus_set_cap.
+> 
+> cpus_set_cap will be invoked from a different code path that uses a
+> static key for a specific ISA
+> extension or a CPU feature.
+> 
+> The only problem I see here is that we have to set a bit in both
+> cpu_hwcaps & riscv_isa bitmap.
+> We also have to define the value of that bit for any extension
+> requiring a static key twice as well.
+> 
+> I think that should be okay. But I would like to hear what everybody
+> else thinks as well.
+> 
 
-Reviewed-by: Vignesh Raghavendra <vigneshr@ti.com>
-
-[...]
-
-Regards
-Vignesh
+Thank Atish's input. I notice that SV57 support is merged, I'll
+send a new version to apply static mechanism to both SV48 and SV57
+once rc1 is released.
