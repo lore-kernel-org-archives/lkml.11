@@ -2,142 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 374CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 06:39:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DCA0C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 06:40:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231585AbiCZGki (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 02:40:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38248 "EHLO
+        id S231597AbiCZGmB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 02:42:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230143AbiCZGke (ORCPT
+        with ESMTP id S231283AbiCZGlx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 02:40:34 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B62710FE7;
-        Fri, 25 Mar 2022 23:38:57 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KQTlh0CLlzfZKb;
-        Sat, 26 Mar 2022 14:37:20 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
- (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Sat, 26 Mar
- 2022 14:38:55 +0800
-From:   Ye Bin <yebin10@huawei.com>
-To:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
-        <linux-ext4@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <jack@suse.cz>,
-        <lczerner@redhat.com>, Ye Bin <yebin10@huawei.com>
-Subject: [PATCH -next] ext4: fix warning in ext4_handle_inode_extension
-Date:   Sat, 26 Mar 2022 14:53:51 +0800
-Message-ID: <20220326065351.761952-1-yebin10@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Sat, 26 Mar 2022 02:41:53 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D37C13A
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 23:40:16 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id t11so17524614ybi.6
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 23:40:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=dOzwhJyzRkh873kWXrwFFU98UINOxha+ssjImeuuWo0=;
+        b=IwSZ+wnlfqfcXBAUyo/4qRqEJU6g+2OvNpjwjosGZAMbHJMQwSRTdIPL4nTBksvjDv
+         3qT5Mj2jW7MdQfOjyUH8Cy4R3uFamergjuRyRUnaVWwdSmEAUTkaOJOR+1sZABuwG+1P
+         IOvO19fyLgi/R+o6RUuKlU+doO+JydKD615XqLZKqBaLktegKq41S8vUFfZIY/hEBdhO
+         0aPGrks027kuqm4LlUgJ1Wgu+JGUB8Uz9K7FBqwjhcGXVuY1FjhZXoXD9YXNQ+ZZcT3s
+         i7yMw1+DcmZt7YP0fh8FQVydkIKlYxCbjxiUAvoEz0rpsecN6Ky/h682d4/AOAmeUYjI
+         DDfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=dOzwhJyzRkh873kWXrwFFU98UINOxha+ssjImeuuWo0=;
+        b=0KYBgeteFo+th3+ZgL1hfVpcXC037A9ZQP16a5BMO+jlWLTvvIadCNi0Hx/oS0HrXG
+         udAM/eQKx866wXpG8YWqxOUoO9CRo33Ykc8uwIzahCDVncgcOHA7Dzh+ICX1FJtDdAoW
+         Hqy1SD/9ElS6E1oQ8i/79aFz/xlpgNyQdBBWGlSDDwWDrR9eI9fhKcYVuTEv7/I9xG2w
+         t1DBAxocxEKnugiD7d2FdcsfG7zmfbflwDV3ZagRge4WrWF1dhH723DN5ghKoSfP8jtl
+         HFxqr20xHiPd+0rfMLQvbp/0swUpsQGP1YCY/L+ASKZ//WRIfpE7Edkoa2xKBpvkjQjv
+         71qw==
+X-Gm-Message-State: AOAM5333j1qczckQd2/IrUKvqb2k3Mnn4mOwOdNsHb6PDhD0qOLEBHZA
+        fWzBRYihF7dJmTdLUkvZfFU+TgZDpPpv3TFtMZJdxw==
+X-Google-Smtp-Source: ABdhPJygcLFxa+YpCKtDHjwPpF9hbbn3TFmvpi9vY3jhE66N+zVYAiBtPUFO8L2uxUHokpCWYx1/H5QjmcNm1IxeXAA=
+X-Received: by 2002:a25:42c9:0:b0:634:1a46:e5c1 with SMTP id
+ p192-20020a2542c9000000b006341a46e5c1mr14433984yba.474.1648276815086; Fri, 25
+ Mar 2022 23:40:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
+References: <20220325150419.931802116@linuxfoundation.org>
+In-Reply-To: <20220325150419.931802116@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Sat, 26 Mar 2022 12:10:04 +0530
+Message-ID: <CA+G9fYutvyS3wny2WhdkxVmpvEJjgsZuW9vug5eCWc=378+Gig@mail.gmail.com>
+Subject: Re: [PATCH 5.15 00/37] 5.15.32-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We got issue as follows:
-EXT4-fs error (device loop0) in ext4_reserve_inode_write:5741: Out of memory
-EXT4-fs error (device loop0): ext4_setattr:5462: inode #13: comm syz-executor.0: mark_inode_dirty error
-EXT4-fs error (device loop0) in ext4_setattr:5519: Out of memory
-EXT4-fs error (device loop0): ext4_ind_map_blocks:595: inode #13: comm syz-executor.0: Can't allocate blocks for non-extent mapped inodes with bigalloc
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 4361 at fs/ext4/file.c:301 ext4_file_write_iter+0x11c9/0x1220
-Modules linked in:
-CPU: 1 PID: 4361 Comm: syz-executor.0 Not tainted 5.10.0+ #1
-RIP: 0010:ext4_file_write_iter+0x11c9/0x1220
-RSP: 0018:ffff924d80b27c00 EFLAGS: 00010282
-RAX: ffffffff815a3379 RBX: 0000000000000000 RCX: 000000003b000000
-RDX: ffff924d81601000 RSI: 00000000000009cc RDI: 00000000000009cd
-RBP: 000000000000000d R08: ffffffffbc5a2c6b R09: 0000902e0e52a96f
-R10: ffff902e2b7c1b40 R11: ffff902e2b7c1b40 R12: 000000000000000a
-R13: 0000000000000001 R14: ffff902e0e52aa10 R15: ffffffffffffff8b
-FS:  00007f81a7f65700(0000) GS:ffff902e3bc80000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffffffff600400 CR3: 000000012db88001 CR4: 00000000003706e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- do_iter_readv_writev+0x2e5/0x360
- do_iter_write+0x112/0x4c0
- do_pwritev+0x1e5/0x390
- __x64_sys_pwritev2+0x7e/0xa0
- do_syscall_64+0x37/0x50
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
+On Fri, 25 Mar 2022 at 20:44, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.15.32 release.
+> There are 37 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Sun, 27 Mar 2022 15:04:08 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
+5.15.32-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-5.15.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Above issue may happen as follows:
-Assume
-inode.i_size=4096
-EXT4_I(inode)->i_disksize=4096
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-step 1: set inode->i_isize = 8192
-ext4_setattr
-  if (attr->ia_size != inode->i_size)
-    EXT4_I(inode)->i_disksize = attr->ia_size;
-    rc = ext4_mark_inode_dirty
-       ext4_reserve_inode_write
-          ext4_get_inode_loc
-            __ext4_get_inode_loc
-              sb_getblk --> return -ENOMEM
-   ...
-   if (!error)  ->will not update i_size
-     i_size_write(inode, attr->ia_size);
-Now:
-inode.i_size=4096
-EXT4_I(inode)->i_disksize=8192
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-step 2: Direct write 4096 bytes
-ext4_file_write_iter
- ext4_dio_write_iter
-   iomap_dio_rw ->return error
- if (extend)
-   ext4_handle_inode_extension
-     WARN_ON_ONCE(i_size_read(inode) < EXT4_I(inode)->i_disksize);
-->Then trigger warning.
+## Build
+* kernel: 5.15.32-rc1
+* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
+rc.git
+* git branch: linux-5.15.y
+* git commit: 6b524190f92f3150d5305eaad0c35fdc063a965f
+* git describe: v5.15.31-38-g6b524190f92f
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.15.y/build/v5.15=
+.31-38-g6b524190f92f
 
-To solve above issue, if mark inode dirty failed in ext4_setattr just
-set 'EXT4_I(inode)->i_disksize' with old value.
+## Test Regressions (compared to v5.15.30-33-gca23d8a1f1ca)
+No test regressions found.
 
-Signed-off-by: Ye Bin <yebin10@huawei.com>
----
- fs/ext4/inode.c | 4 ++++
- 1 file changed, 4 insertions(+)
+## Metric Regressions (compared to v5.15.30-33-gca23d8a1f1ca)
+No metric regressions found.
 
-diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
-index 90fd6f7b6209..8adf1f802f6c 100644
---- a/fs/ext4/inode.c
-+++ b/fs/ext4/inode.c
-@@ -5384,6 +5384,7 @@ int ext4_setattr(struct user_namespace *mnt_userns, struct dentry *dentry,
- 	if (attr->ia_valid & ATTR_SIZE) {
- 		handle_t *handle;
- 		loff_t oldsize = inode->i_size;
-+		loff_t old_disksize;
- 		int shrink = (attr->ia_size < inode->i_size);
- 
- 		if (!(ext4_test_inode_flag(inode, EXT4_INODE_EXTENTS))) {
-@@ -5455,6 +5456,7 @@ int ext4_setattr(struct user_namespace *mnt_userns, struct dentry *dentry,
- 					inode->i_sb->s_blocksize_bits);
- 
- 			down_write(&EXT4_I(inode)->i_data_sem);
-+			old_disksize = EXT4_I(inode)->i_disksize;
- 			EXT4_I(inode)->i_disksize = attr->ia_size;
- 			rc = ext4_mark_inode_dirty(handle, inode);
- 			if (!error)
-@@ -5466,6 +5468,8 @@ int ext4_setattr(struct user_namespace *mnt_userns, struct dentry *dentry,
- 			 */
- 			if (!error)
- 				i_size_write(inode, attr->ia_size);
-+			else
-+				EXT4_I(inode)->i_disksize = old_disksize;
- 			up_write(&EXT4_I(inode)->i_data_sem);
- 			ext4_journal_stop(handle);
- 			if (error)
--- 
-2.31.1
+## Test Fixes (compared to v5.15.30-33-gca23d8a1f1ca)
+No test fixes found.
 
+## Metric Fixes (compared to v5.15.30-33-gca23d8a1f1ca)
+No metric fixes found.
+
+## Test result summary
+total: 107180, pass: 90309, fail: 988, skip: 14719, xfail: 1164
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 291 total, 291 passed, 0 failed
+* arm64: 41 total, 41 passed, 0 failed
+* dragonboard-410c: 1 total, 1 passed, 0 failed
+* hi6220-hikey: 1 total, 1 passed, 0 failed
+* i386: 40 total, 40 passed, 0 failed
+* juno-r2: 1 total, 1 passed, 0 failed
+* mips: 37 total, 37 passed, 0 failed
+* parisc: 12 total, 12 passed, 0 failed
+* powerpc: 60 total, 54 passed, 6 failed
+* riscv: 27 total, 22 passed, 5 failed
+* s390: 21 total, 21 passed, 0 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x15: 1 total, 1 passed, 0 failed
+* x86: 1 total, 1 passed, 0 failed
+* x86_64: 41 total, 41 passed, 0 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kselftest-
+* kselftest-android
+* kselftest-arm64
+* kselftest-bpf
+* kselftest-breakpoints
+* kselftest-ca[
+* kselftest-capabilities
+* kselftest-cgroup
+* kselftest-clone3
+* kselftest-core
+* kselftest-cpu-hotplug
+* kselftest-cpufreq
+* kselftest-drivers
+* kselftest-efivarfs
+* kselftest-filesystems
+* kselftest-firmware
+* kselftest-fpu
+* kselftest-futex
+* kselftest-gpio
+* kselftest-intel_pstate
+* kselftest-ipc
+* kselftest-ir
+* kselftest-kcmp
+* kselftest-kexec
+* kselftest-kvm
+* kselftest-lib
+* kselftest-livepatch
+* kselftest-membarrier
+* kselftest-memfd
+* kselftest-memory-hotplug
+* kselftest-mincore
+* kselftest-mount
+* kselftest-mqueue
+* kselftest-net
+* kselftest-netfilter
+* kselftest-nsfs
+* kselftest-openat2
+* kselftest-pid_namespace
+* kselftest-pidfd
+* kselftest-proc
+* kselftest-pstore
+* kselftest-ptrace
+* kselftest-rseq
+* kselftest-rtc
+* kselftest-seccomp
+* kselftest-sigaltstack
+* kselftest-size
+* kselftest-splice
+* kselftest-static_keys
+* kselftest-sync
+* kselftest-sysctl
+* kselftest-tc-testing
+* kselftest-timens
+* kselftest-timers
+* kselftest-tmpfs
+* kselftest-tpm2
+* kselftest-user
+* kselftest-vm
+* kselftest-x86
+* kselftest-zram
+* kunit
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* linux-log-parser
+* ltp-cap_bounds-tests
+* ltp-commands-tests
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps-tests
+* ltp-fs-tests
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple-tests
+* ltp-fsx-tests
+* ltp-hugetlb-tests
+* ltp-io-tests
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits-tests
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* perf
+* perf/Zstd-perf.data-compression
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
