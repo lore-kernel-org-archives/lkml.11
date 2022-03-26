@@ -2,83 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A43DC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 00:50:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E6C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 00:59:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229583AbiCZAvj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 20:51:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58470 "EHLO
+        id S229666AbiCZBAi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 21:00:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbiCZAvh (ORCPT
+        with ESMTP id S229451AbiCZBAg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 20:51:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C4AF16AA70;
-        Fri, 25 Mar 2022 17:50:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 246C5617B3;
-        Sat, 26 Mar 2022 00:50:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C5A3C34110;
-        Sat, 26 Mar 2022 00:50:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648255801;
-        bh=MYZG7zfX7Wzo958+0h/Wy9Ix42WgtYW+LXSflItPzk8=;
-        h=In-Reply-To:References:From:Date:Subject:To:Cc:From;
-        b=XchYimBZwdZB5p5U7RiixY+PxT65BlaoRTMsg6MXGAb1/kq/bRCVWRYrjX7y+milv
-         Hr3UCJKSqD9/7xdKHu4ifuXdvv8SzldzeTAzcvJcbEKdSVBtVvlGlhd5EZQ/Sz1/NE
-         zm//eONkZE4u3MdtPJooAGbocxHttraeGgJeY0r76WPlam3qTheNaAS0hLkc93B+fm
-         joN/yIKLaibhmtc72TTXDlMelQcTXxqwcb5ruKeqyCMXBXD3Tbj0JJjA1HJGb8OzcA
-         S6tXbdSqMHw6D/xQ7uRzcjHmZ+Ty/wavSrDkID+RS3TWqibXF/myg5CDpGjNFMtCwE
-         TDcUysGGSpBMA==
-Received: by mail-wr1-f45.google.com with SMTP id h4so12825909wrc.13;
-        Fri, 25 Mar 2022 17:50:01 -0700 (PDT)
-X-Gm-Message-State: AOAM530AyUXT6/UEUKMCexlT4mrZuV0wjHeL9qwv+jsYelt3CdpYJmum
-        XplW3nJ6xZCdWCwVnzgP3xNG/mMvPDkm22H5cRc=
-X-Google-Smtp-Source: ABdhPJzx6Be34R/RBppR3AjlSMr0dsY5yWSn48LeN5Uc7ypQxsIidxFpk4R2pjzeBWnUe94iXrqE0XVQLLKRK09WFOw=
-X-Received: by 2002:a05:6000:1184:b0:203:ff46:1d72 with SMTP id
- g4-20020a056000118400b00203ff461d72mr11488471wrx.165.1648255799658; Fri, 25
- Mar 2022 17:49:59 -0700 (PDT)
+        Fri, 25 Mar 2022 21:00:36 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE9C91C12D;
+        Fri, 25 Mar 2022 17:59:00 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id q5so12317927ljb.11;
+        Fri, 25 Mar 2022 17:59:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=BVtfYYgl1UiY9NrkHOYeYSomk3TpHw4O37jlKHosSiU=;
+        b=Th9DNt97HzvoKHP8lH45GNLnuJWlG0caZKOIXgV3PiZr0pI5BTWn00IwtBcJZoHFVv
+         D3josQ3GamCEloX40jBWStzTLse6JA9jkernLs/Pm0a5FQ16dvmn1lX62EPxgCVA5WvQ
+         KQ6qAMogJY/qDEvsXxD4qXlqCyOiatjkDyN3+Dk1tzkh31FDn/pE4YOV8dF6XUl0jO8X
+         ymEP1CAF2vkbLk3TWpQQix1UBtuEHlYKJK0TBrRQqPt6AbyLE685AkmhEBF5Wta+EOw0
+         wsjZLxdctv0mk0s4BVlODtxqtPCZaxKF92OOKpIQKGzYIGx62SE73/uZ/lvJYj5rdoTN
+         HbtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=BVtfYYgl1UiY9NrkHOYeYSomk3TpHw4O37jlKHosSiU=;
+        b=k1PJV1pwdTPqNYe3Mlde2wAD/dK3+E3znyuvFJo55+K4YqChchT48uFSiFl9+zbUfy
+         IEc7UlOiP0Lek/D/4Suru0xyIO2/5zBGEzs9HajbcJ/dkusSJcguv1WH3IRK8dF+GCse
+         mQVRqurhBTHBZZjLvn8+/KDxRuOejLEuAm2DAKKS4aTXDGmPzrZL4BUpxij2DR8lZv6J
+         CdfP0O32BnznJ1k8F33XuFmD45X723qRMf18ktVDAGiC0BjYVMv+TFr1M+BDtBdUgGa9
+         9u7Ais2b2zYMsCMqTiNYuZNdPbQkWkD7546qEcBLJvAXbG4FFrKFOJZrCV/762msNWk8
+         xreQ==
+X-Gm-Message-State: AOAM5304SNhBCAz4R3FCejm67OGXVOI7gVNW7Lb2wzNVcuc3x7NtpDPf
+        iTd2HUs1fb1Lm2B10RLZOJFau5jz3S4bLlrjva8=
+X-Google-Smtp-Source: ABdhPJwW9UYq9zgWfSnh4zwUD8aTy+59ByBfInkR0bCYS67gQfGldlsfbRMYnds5gKIUKX9uhK3nhMWBwkPjtw3HM/w=
+X-Received: by 2002:a05:651c:1192:b0:246:1d6b:d323 with SMTP id
+ w18-20020a05651c119200b002461d6bd323mr10255003ljo.360.1648256338971; Fri, 25
+ Mar 2022 17:58:58 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 2002:a05:6000:2c1:0:0:0:0 with HTTP; Fri, 25 Mar 2022 17:49:58
- -0700 (PDT)
-In-Reply-To: <20220324071301.60228-1-jakobkoschel@gmail.com>
-References: <20220324071301.60228-1-jakobkoschel@gmail.com>
-From:   Namjae Jeon <linkinjeon@kernel.org>
-Date:   Sat, 26 Mar 2022 09:49:58 +0900
-X-Gmail-Original-Message-ID: <CAKYAXd8Kthuw+=VsGWMCYE4McX3JBarwf4p4UPH7czhkS=u6Bw@mail.gmail.com>
-Message-ID: <CAKYAXd8Kthuw+=VsGWMCYE4McX3JBarwf4p4UPH7czhkS=u6Bw@mail.gmail.com>
-Subject: Re: [PATCH] ksmbd: replace usage of found with dedicated list
- iterator variable
-To:     Jakob Koschel <jakobkoschel@gmail.com>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steve French <sfrench@samba.org>,
-        Hyunchul Lee <hyc.lee@gmail.com>, linux-cifs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Mike Rapoport <rppt@kernel.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
+References: <1648170401-6351-1-git-send-email-u0084500@gmail.com>
+ <1648170401-6351-3-git-send-email-u0084500@gmail.com> <d2b431f8-9197-4a42-4ee2-4e771e20e0aa@kernel.org>
+ <CADiBU39RGQj1-+yK18mZf3MR78KACKqb2kAxkCFKGXKpJ6Nqxw@mail.gmail.com>
+ <e4a15ceb-c013-96be-48d1-e65267400463@kernel.org> <CADiBU3-gwsh5v1NLUYr_ovXwpUxQqgR61f-Jpc3G-zHs_yV4uw@mail.gmail.com>
+ <03999953-77c5-0272-7477-ab8a069b3671@kernel.org> <CADiBU38zYM1Rw2inTJ_Pu2eWKKqp2Ybb-_+JUJfxfmLNu=kYvw@mail.gmail.com>
+ <cf67f944-47a7-f3b5-9d83-f0f51dc4e954@kernel.org> <Yj3oXuijuZY1gG9X@sirena.org.uk>
+ <d2f220ae-c62c-a7f7-23cc-c33956c2eeaf@kernel.org>
+In-Reply-To: <d2f220ae-c62c-a7f7-23cc-c33956c2eeaf@kernel.org>
+From:   ChiYuan Huang <u0084500@gmail.com>
+Date:   Sat, 26 Mar 2022 08:58:47 +0800
+Message-ID: <CADiBU3-3QLi5PVUymk_VCbF+-uVSqjoP9jLGL+R=PQ-S=Y=_AA@mail.gmail.com>
+Subject: Re: [PATCH 2/2] regulator: rt5759: Add support for Richtek RT5759
+ DCDC converter
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     Mark Brown <broonie@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        cy_huang <cy_huang@richtek.com>, gene_chen@richtek.com,
+        lkml <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-2022-03-24 16:13 GMT+09:00, Jakob Koschel <jakobkoschel@gmail.com>:
-> To move the list iterator variable into the list_for_each_entry_*()
-> macro in the future it should be avoided to use the list iterator
-> variable after the loop body.
+Krzysztof Kozlowski <krzk@kernel.org> =E6=96=BC 2022=E5=B9=B43=E6=9C=8826=
+=E6=97=A5 =E9=80=B1=E5=85=AD =E4=B8=8A=E5=8D=8812:08=E5=AF=AB=E9=81=93=EF=
+=BC=9A
 >
-> To *never* use the list iterator variable after the loop it was
-> concluded to use a separate iterator variable instead of a
-> found boolean [1].
+> On 25/03/2022 17:05, Mark Brown wrote:
+> > On Fri, Mar 25, 2022 at 04:55:25PM +0100, Krzysztof Kozlowski wrote:
+> >
+> >> You mention board, some of_device_get_match_data() so you talk about
+> >> runtime. maybe_unused is not about runtime. It is about build time.
+> >
+> >> The code you sent cannot have this structure unused. If you think
+> >> otherwise, please provide argument, but not about runtime (again). You
+> >> can for example build it without OF and see...
+> >
+> > If you use of_match_ptr() in the struct device (which is good practice,
+> > didn't check if this driver does it) then that causes the ID table to b=
+e
+> > unreferenced as of_match_ptr() compiles to NULL when !OF.
 >
-> This removes the need to use a found variable and simply checking if
-> the variable was set, can determine if the break/goto was hit.
+> Yep, then the case is obvious, but the driver does not use it.
 >
-> Link:
-> https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/
-> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-Acked-by: Namjae Jeon <linkinjeon@kernel.org>
+> +static struct i2c_driver rt5759_driver =3D {
+> +       .driver =3D {
+> +               .name =3D "rt5759",
+> +               .of_match_table =3D rt5759_device_table,
+>
+> Therefore the of_device_id cannot be unused, so __maybe_unused is not
+> correct. This can be fixed in two different ways, which we did not
+> discuss yet...
+>
+As my past experience, '__maybe_unused' must be added to fix W=3D1 build
+warning when OF=3Dn
+You can refer to the below link.
+https://lore.kernel.org/lkml/1598234713-8532-1-git-send-email-u0084500@gmai=
+l.com/
 
-Thanks!
+And it's based on 'of_match_ptr' is used.
+
+I tried to remove only __maybe_unused and build with x86 config  that
+CONFIG_OF=3Dn.
+There's no warning or error message when compiling the rt5759 source code.
+
+If so, I will remove only '__maybe_unused'.
+May I ask whether 'of_match_ptr'  need to be added or not?
+
+> Best regards,
+> Krzysztof
