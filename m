@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E010C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 18:35:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FC8DC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 18:36:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234572AbiCZSgx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 14:36:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54326 "EHLO
+        id S234584AbiCZSiM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 14:38:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234209AbiCZSgu (ORCPT
+        with ESMTP id S232939AbiCZSiL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 14:36:50 -0400
+        Sat, 26 Mar 2022 14:38:11 -0400
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 601BE1EEF2
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 11:35:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B73B438197;
+        Sat, 26 Mar 2022 11:36:34 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2a02:3030:b:56bb:4cb:3227:231:99f8])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: sebastianfricke)
-        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id A6FA11F44FBF;
-        Sat, 26 Mar 2022 18:35:10 +0000 (GMT)
+        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 69D8D1F44FBF;
+        Sat, 26 Mar 2022 18:36:33 +0000 (GMT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1648319710;
-        bh=Yjl46ueIb8FFOE6LTpGiYGQrCe+XfsGRJYwSzV+wGB4=;
+        s=mail; t=1648319793;
+        bh=0LbIskzUpKi13BEPgM5TnTSCxgDUwO8aXIcFBWj7xRE=;
         h=From:To:Cc:Subject:Date:From;
-        b=jwPvrKO+8Bji2v6cwz+sxa4KmWJgjaeLsupN01ijooDIOyvMN4hzHpfLJJ1CDYGJr
-         kvn/jLVOrZ3VCM+3IlgSoFr1HbGa4ZIJE/LgF1Uepqo6PCDSosuwF9jkjFq91Nm4VF
-         Z4awMbpz44LyFq2WqyY5kSCauD08V1Wy5OaY0VbbC9ejFdtA5n/eFbiLy5H1Lqp6Sn
-         l4r9JWTiXRe7/NEAf1ztEmiugEms6BMgGcM7W0+6hj5Q5trUlVsI6KW4cP/V3YOszO
-         t3e9t711npz2pKT4LUYnBDujC6HhPPOqUkget9o4U/Awcy2py+O92jj7PIYAcgd/pT
-         E+FWnr6NBssAw==
+        b=cAIrxgy2Y+0pcqgObdaDi6S0q5QsLxN6WptKxFirODn0OlleztAfRQL1HWkmOmr2z
+         DZIXz3mk/A9w7J+R+EjTBLJ0JVsFkPXg63k1ZpKl0i5kTs6UZHBt9s8b6nMnXU4tRl
+         WkVAcejKbsExYRxGpZ9Yw/hpoxEmF54oRyAIBeUQotAT7FX0BoVUUJ+WNHWXNLEInn
+         hL08afOr4lkDHh66HfTDYsuOt5QCjWrjfj2eIlJ3ip4jxgZV4Esq2s7Nh7Czzxtmkc
+         q+Wk/p20kp8qJEHCRPnQ/yADOOmn+hat2awVsNGESa2lRdVuSsXA53Dzvh81xlWmVn
+         sQTeMEKjxXbsA==
 From:   Sebastian Fricke <sebastian.fricke@collabora.com>
-To:     linux-rockchip@lists.infradead.org
+To:     linux-media@vger.kernel.org
 Cc:     Sebastian Fricke <sebastian.fricke@collabora.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Elaine Zhang <zhangqing@rock-chips.com>,
-        Johan Jonker <jbx6244@gmail.com>,
-        linux-arm-kernel@lists.infradead.org (moderated list:ARM/Rockchip SoC
-        support), linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] soc: rockchip: pm_domains: Fix typo in comment
-Date:   Sat, 26 Mar 2022 19:34:50 +0100
-Message-Id: <20220326183451.66115-1-sebastian.fricke@collabora.com>
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-rockchip@lists.infradead.org (open list:HANTRO VPU CODEC DRIVER),
+        linux-staging@lists.linux.dev (open list:STAGING SUBSYSTEM),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] staging: media: hantro: Fix typos
+Date:   Sat, 26 Mar 2022 19:36:03 +0100
+Message-Id: <20220326183603.66797-1-sebastian.fricke@collabora.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -49,30 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-s/eject devices form power domain/eject devices from the power domain/
+Fix typos in comments within the Hantro driver.
 
 Signed-off-by: Sebastian Fricke <sebastian.fricke@collabora.com>
 ---
- drivers/soc/rockchip/pm_domains.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/staging/media/hantro/hantro_g2_hevc_dec.c | 2 +-
+ drivers/staging/media/hantro/hantro_hevc.c        | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/soc/rockchip/pm_domains.c b/drivers/soc/rockchip/pm_domains.c
-index 0868b7d406fb..1b029e494274 100644
---- a/drivers/soc/rockchip/pm_domains.c
-+++ b/drivers/soc/rockchip/pm_domains.c
-@@ -1068,9 +1068,9 @@ static struct platform_driver rockchip_pm_domain_driver = {
- 		.name   = "rockchip-pm-domain",
- 		.of_match_table = rockchip_pm_domain_dt_match,
- 		/*
--		 * We can't forcibly eject devices form power domain,
--		 * so we can't really remove power domains once they
--		 * were added.
-+		 * We can't forcibly eject devices from the power
-+		 * domain, so we can't really remove power domains
-+		 * once they were added.
- 		 */
- 		.suppress_bind_attrs = true,
- 	},
+diff --git a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+index c524af41baf5..c0645e335fc9 100644
+--- a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
++++ b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+@@ -406,7 +406,7 @@ static int set_ref(struct hantro_ctx *ctx)
+ 
+ 	set_ref_pic_list(ctx);
+ 
+-	/* We will only keep the references picture that are still used */
++	/* We will only keep the reference pictures that are still used */
+ 	ctx->hevc_dec.ref_bufs_used = 0;
+ 
+ 	/* Set up addresses of DPB buffers */
+diff --git a/drivers/staging/media/hantro/hantro_hevc.c b/drivers/staging/media/hantro/hantro_hevc.c
+index b49a41d7ae91..9c351f7fe6bd 100644
+--- a/drivers/staging/media/hantro/hantro_hevc.c
++++ b/drivers/staging/media/hantro/hantro_hevc.c
+@@ -59,7 +59,7 @@ dma_addr_t hantro_hevc_get_ref_buf(struct hantro_ctx *ctx,
+ 	struct hantro_hevc_dec_hw_ctx *hevc_dec = &ctx->hevc_dec;
+ 	int i;
+ 
+-	/* Find the reference buffer in already know ones */
++	/* Find the reference buffer in already known ones */
+ 	for (i = 0;  i < NUM_REF_PICTURES; i++) {
+ 		if (hevc_dec->ref_bufs_poc[i] == poc) {
+ 			hevc_dec->ref_bufs_used |= 1 << i;
 -- 
 2.25.1
 
