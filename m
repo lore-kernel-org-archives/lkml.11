@@ -2,106 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBB87C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 12:34:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE7A9C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 12:36:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232937AbiCZMft (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 08:35:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49352 "EHLO
+        id S232942AbiCZMiR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 08:38:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231702AbiCZMfo (ORCPT
+        with ESMTP id S231126AbiCZMiP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 08:35:44 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10BB52980D;
-        Sat, 26 Mar 2022 05:34:08 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id t13so7345814pgn.8;
-        Sat, 26 Mar 2022 05:34:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=jgkmVRw33cX5eU3+HJbr4zgKWyD0n7D37hzktMfdhRM=;
-        b=DbFGbOoqdtTpEFBDkVze6Lp/tTALmrnhxWDULMi76rKyHrftlo7jj+T2P/4h/T6doG
-         Obk7lBd/Ztc37QBx4pY//rzuMFqUmchdXq6Q/3il0AfKC9FV8xSmAJbF1Ydxuxjx80DV
-         FP1pz0MrVC+NFjr97wRL8erfvF/C1O+RTEsFYIDayyyLOJPIZx1alKx+ZmAwrmxU+ly1
-         TPbFanlZsyynNMgB0zb3P7InMzD90wWucO4fM+ocURmq+5fDWJeAXLt4++fV0NDjv0CJ
-         8lpJDxt3CLdS0AO3mCc4xlwdnlar/FrUMWH9JcvpC6obcrTFPw9UxsoxzHNwDKU13GcD
-         DqcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=jgkmVRw33cX5eU3+HJbr4zgKWyD0n7D37hzktMfdhRM=;
-        b=tfaONmWHFZF18CY5VyLswLmpHadjb1fqtsmhpG6SdtvPgAqWtv3yoSBoA61W/AJmwU
-         KZDoh+9rmd92N9o2UOinjWeoVXSg/ORJ4Vn2ieVEScgoDqVu7iE6T4l6AwsTddWls8ZR
-         kQLFlMasS0sCg3FfvcsOfg3e0NhqBZf2tqYG+hIJI8YgolA0udRaVlVNmEyAWERwPlsT
-         lgqJ0rfTPLXNEoA86zar6laWJl6RPTtS3L8M8sN50W+Hk4QFbVZ2fe7Zqe6R86WPquOp
-         RF6MdfwVAzFAjrHlOlC9u23qHxI7oqulIWiAUsY4WUOREixVqrWZJZbPb4lZtSYWB4bC
-         qc2A==
-X-Gm-Message-State: AOAM53368tf7dIlddvjTd9RvvdrQUqKtgneLeRWeQHiQSmngNyZyeu4E
-        eeHhHR/XcZSiMzdj/WtCa3PXbVDz0LuqsRsE
-X-Google-Smtp-Source: ABdhPJyigG8laCdXxJmEZ3HnYdsBnKLPIxi++ETu/SyYvTGzrUNNtCDHw/Mdaat1zkh1M2y+VIIDpQ==
-X-Received: by 2002:a65:6a46:0:b0:37f:ef34:7b8e with SMTP id o6-20020a656a46000000b0037fef347b8emr3226414pgu.503.1648298047274;
-        Sat, 26 Mar 2022 05:34:07 -0700 (PDT)
-Received: from ubuntu.mate (subs32-116-206-28-2.three.co.id. [116.206.28.2])
-        by smtp.gmail.com with ESMTPSA id k62-20020a17090a4cc400b001c7ea7f487asm4872920pjh.39.2022.03.26.05.34.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 26 Mar 2022 05:34:06 -0700 (PDT)
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     linux-doc@vger.kernel.org
-Cc:     Bagas Sanjaya <bagasdotme@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Akira Yokosawa <akiyks@gmail.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/2] Documentation: sphinx: replace "Introduction" chapter heading with page title
-Date:   Sat, 26 Mar 2022 19:33:38 +0700
-Message-Id: <20220326123337.642536-3-bagasdotme@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220326123337.642536-1-bagasdotme@gmail.com>
-References: <20220326123337.642536-1-bagasdotme@gmail.com>
+        Sat, 26 Mar 2022 08:38:15 -0400
+Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B92B72980D;
+        Sat, 26 Mar 2022 05:36:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        Content-ID:Content-Description;
+        bh=e2bXraZC1MZ6r0WNb+kmC83YHU78suKj4HNBRd+g+tU=; b=W4O09IqdLN4E6xqnWRKpC0vaSF
+        XBVEVG4v7m2iYMczRlDpSC92tbckxn/5SWO1xk7ThFI8/K0l2DtxCJ27OGHi9PRGYa0a8Y8Ofciza
+        /sRsfq5044BOjqWD/HMTWQfljLMze3UL/03/bnyUsPHXpNVREUeh5D3RRBreveMcDYirPlcSyq4+L
+        zVUQrRYeQJKZ7DMca+7JPKMUSd30xBjB6hzXYcJYXjH0G+01oC915R0LFNQYHWqWvLFj2HcfmJRPj
+        b0bIqhNmg3TmTra6BwyeMvgJY7eTvLuhaOpqh1680y0S7oGWR5HBa/qThLBk/gKKiKfr5b6qwOWHo
+        BGHueX9XDF7EyclhrnoEVlfzqW9MN/kpakkFcQEoOBt6C3gG1xWL4pF+l8mmQPw14blyyrNN76/el
+        BZJpUgCCKhHjwMw3uXGJE0mYwN8uKk8yTshtp0Ge648P6f34Ru1HVrx7TVtU6vT5B1AIsHQif+wnD
+        Gpyg5rg8P6dSKGyUJFuOs+R1ozCdwGCJR6uzwhcKoBhLv3nrikLpBUNDVfpU0eaHy5nPte9ZJm+i6
+        Fi3Jev5d05ri95PtcnBrFqwAOwHPQ9UiHwCKzH9/IpoPEssbpQ+t8kyCEZv7lQC0OKzSHWuYTqrCr
+        jXzrEJN7QcgO4ZXQM2poUlUV+nwLtzDowWlRZJSss=;
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+To:     asmadeus@codewreck.org
+Cc:     David Kahurani <k.kahurani@gmail.com>, davem@davemloft.net,
+        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        lucho@ionkov.net, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        v9fs-developer@lists.sourceforge.net,
+        syzbot+5e28cdb7ebd0f2389ca4@syzkaller.appspotmail.com
+Subject: Re: [syzbot] WARNING in p9_client_destroy
+Date:   Sat, 26 Mar 2022 13:36:31 +0100
+Message-ID: <2582025.XdajAv7fHn@silver>
+In-Reply-To: <Yj8F6sQzx6Bvy+aZ@codewreck.org>
+References: <CAAZOf26g-L2nSV-Siw6mwWQv1nv6on8c0fWqB4bKmX73QAFzow@mail.gmail.com>
+ <3597833.OkAhqpS0b6@silver> <Yj8F6sQzx6Bvy+aZ@codewreck.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace first chapter heading ("Introduction") with page title named
-"Using Sphinx for kernel documentation". This way, the first-level TOC
-for doc-guide contains title instead of chapter headings for this page.
+On Samstag, 26. M=E4rz 2022 13:24:10 CET asmadeus@codewreck.org wrote:
+> Christian Schoenebeck wrote on Sat, Mar 26, 2022 at 12:48:26PM +0100:
+> > [...]
+> >=20
+> > > Signed-off-by: David Kahurani <k.kahurani@gmail.com>
+> > > Reported-by: syzbot+5e28cdb7ebd0f2389ca4@syzkaller.appspotmail.com
+>=20
+> Looks good to me - it's pretty much what I'd have done if I hadn't
+> forgotten!
+> It doesn't strike me as anything critical and I don't have anything else
+> for this cycle so I'll just queue it in -next for now, and submit it
+> at the start of the 5.19 cycle in ~2months.
 
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Cc: Jens Axboe <axboe@kernel.dk>
-Cc: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc: Akira Yokosawa <akiyks@gmail.com>
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
----
- Documentation/doc-guide/sphinx.rst | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+BTW, another issue that I am seeing for a long time affects the fs-cache: W=
+hen
+I use cache=3Dmmap then things seem to be harmless, I periodically see mess=
+ages
+like these, but that's about it:
 
-diff --git a/Documentation/doc-guide/sphinx.rst b/Documentation/doc-guide/sphinx.rst
-index bb36f18ae9ac3e..2ff1ab4158d48e 100644
---- a/Documentation/doc-guide/sphinx.rst
-+++ b/Documentation/doc-guide/sphinx.rst
-@@ -1,7 +1,8 @@
- .. _sphinxdoc:
- 
--Introduction
--============
-+=====================================
-+Using Sphinx for kernel documentation
-+=====================================
- 
- The Linux kernel uses `Sphinx`_ to generate pretty documentation from
- `reStructuredText`_ files under ``Documentation``. To build the documentation in
--- 
-An old man doll... just what I always wanted! - Clara
+[90763.435562] FS-Cache: Duplicate cookie detected
+[90763.436514] FS-Cache: O-cookie c=3D00dcb42f [p=3D00000003 fl=3D216 nc=3D=
+0 na=3D0]
+[90763.437795] FS-Cache: O-cookie d=3D0000000000000000{?} n=3D0000000000000=
+000
+[90763.440096] FS-Cache: O-key=3D[8] 'a7ab2c0000000000'
+[90763.441656] FS-Cache: N-cookie c=3D00dcb4a7 [p=3D00000003 fl=3D2 nc=3D0 =
+na=3D1]
+[90763.446753] FS-Cache: N-cookie d=3D000000005b583d5a{9p.inode} n=3D000000=
+00212184fb
+[90763.448196] FS-Cache: N-key=3D[8] 'a7ab2c0000000000'
+
+The real trouble starts when I use cache=3Dloose though, in this case I get=
+ all
+sorts of misbehaviours from time to time, especially complaining about inva=
+lid
+file descriptors.
+
+Any clues?
+
+Best regards,
+Christian Schoenebeck
+
 
