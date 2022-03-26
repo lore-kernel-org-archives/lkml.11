@@ -2,172 +2,334 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC85C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 12:37:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5365C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 12:40:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232967AbiCZMi5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 08:38:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37952 "EHLO
+        id S232954AbiCZMm0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 08:42:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231126AbiCZMiy (ORCPT
+        with ESMTP id S230241AbiCZMmZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 08:38:54 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6ABAE09B6;
-        Sat, 26 Mar 2022 05:37:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648298238; x=1679834238;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=2qNhWmWOmaV+zWM8jy09FHg0w+HKEVvZwyYHcKgSC8Q=;
-  b=X03IYnbGpccpyxjrIC3IUFr+exE2UUkTeG6fNyTaEZJvw6+A/bQplN5L
-   vlvA0JjtEGNjEAK/iO/oVuZrKuO+HnU2/+bBNMP/XBN/ZMk1KC2axTAZc
-   r9YUjcUelet/m3cnLeBz1oBMysbVBCcupPQ1R2Sz9o6Zm6AfMJVSr+qqH
-   uivbm5N2evC3jBsPLi73C9im95ae94vhUiqqNV9zgpRg4J4hX0pxgfkxU
-   e4P33lu/WOg2nhb8steAv4ie80IUTDcpIM4EEs14FqJv8f3PaEpaw7xXL
-   7cNgPa9fvGgsa5aEMXuym1fR729Syguw66My4MxzOfN1HUEkOcLrP3eSA
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10297"; a="321971161"
-X-IronPort-AV: E=Sophos;i="5.90,213,1643702400"; 
-   d="scan'208";a="321971161"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2022 05:37:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,213,1643702400"; 
-   d="scan'208";a="520488065"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 26 Mar 2022 05:37:15 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nY5fP-000NMv-5B; Sat, 26 Mar 2022 12:37:15 +0000
-Date:   Sat, 26 Mar 2022 20:36:25 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Aleksa Savic <savicaleksa83@gmail.com>, linux-hwmon@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] hwmon: (aquacomputer_d5next) Add support for
- Aquacomputer Octo
-Message-ID: <202203262032.UaIhk6RY-lkp@intel.com>
-References: <20220326101250.8076-1-savicaleksa83@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220326101250.8076-1-savicaleksa83@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Sat, 26 Mar 2022 08:42:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F08AE389B;
+        Sat, 26 Mar 2022 05:40:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7FF5EB800C1;
+        Sat, 26 Mar 2022 12:40:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1774BC2BBE4;
+        Sat, 26 Mar 2022 12:40:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648298445;
+        bh=NBvhNJ6OwdC+PLttaMeman09+lJUmtjWko0YBDL9cNI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BA5fD82MIu31oSalp4pc/P71HJaINmQJfU8noyMtrZJbfz4X5SMaElrp+vwzJZeMS
+         bufh4IqDM1nGF1ZpFvvPh0TcgQxrBVLvBVMQZ3QjB/UeFVbrudvWtIL+GYX/UylTQH
+         vzHdpPduLJWYyKEnrCqV6LT+pLd5JAzq6nv0X0vA8p4DBPHVGc7scyEhIHguXWqJ92
+         AkzbeZii9ZudG87XNLOuX0OhNNoGQMT0VOi2A7ZJ3ect2uTJ9fOzqISGk2BuclqzMy
+         iFaGW61A3O0y201TDpzefPldNi1ac1M3+a2YF1YPY0Ek7ATg6ZnOUIcWbKqrlY9s35
+         SXOaQUPkdANTQ==
+Date:   Sat, 26 Mar 2022 21:40:40 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Padmanabha Srinivasaiah <treasure4paddy@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v2 2/3] bootconfig: Support embedding a bootconfig file
+ in kernel
+Message-Id: <20220326214040.07d4c8b99d7b83229509340d@kernel.org>
+In-Reply-To: <CAK7LNAQKrybg7iAzPowqG5SuT6r5Y0v++96CKppM1=Ob4FG+bg@mail.gmail.com>
+References: <164724890153.731226.1478494969800777757.stgit@devnote2>
+        <164724892075.731226.14103557516176115189.stgit@devnote2>
+        <20220316191649.GA11547@pswork>
+        <20220318101445.fdb151efe58c6c3a1c572500@kernel.org>
+        <CAK7LNAQKrybg7iAzPowqG5SuT6r5Y0v++96CKppM1=Ob4FG+bg@mail.gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Aleksa,
+On Sat, 26 Mar 2022 11:34:45 +0900
+Masahiro Yamada <masahiroy@kernel.org> wrote:
 
-I love your patch! Perhaps something to improve:
+> On Fri, Mar 18, 2022 at 10:14 AM Masami Hiramatsu <mhiramat@kernel.org> wrote:
+> >
+> > On Wed, 16 Mar 2022 20:16:49 +0100
+> > Padmanabha Srinivasaiah <treasure4paddy@gmail.com> wrote:
+> >
+> > > Hello Masami Hiramatsu,
+> > >
+> > > On Mon, Mar 14, 2022 at 06:08:41PM +0900, Masami Hiramatsu wrote:
+> > > > This allows kernel developer to embed a default bootconfig file in
+> > > > the kernel instead of embedding it in the initrd. This will be good
+> > > > for who are using the kernel without initrd, or who needs a default
+> > > > bootconfigs.
+> > > > This needs to set two kconfigs: CONFIG_EMBED_BOOT_CONFIG=y and set
+> > > > the file path to CONFIG_EMBED_BOOT_CONFIG_FILE.
+> > > >
+> > > > Note that you still need 'bootconfig' command line option to load the
+> > > > embedded bootconfig. Also if you boot using an initrd with a different
+> > > > bootconfig, the kernel will use the bootconfig in the initrd, instead
+> > > > of the default bootconfig.
+> > > >
+> > > > Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
+> > > > ---
+> > > >  include/linux/bootconfig.h |   10 ++++++++++
+> > > >  init/Kconfig               |   21 +++++++++++++++++++++
+> > > >  init/main.c                |   13 ++++++++-----
+> > > >  lib/.gitignore             |    1 +
+> > > >  lib/Makefile               |   12 ++++++++++++
+> > > >  lib/bootconfig.c           |   23 +++++++++++++++++++++++
+> > > >  6 files changed, 75 insertions(+), 5 deletions(-)
+> > > >
+> > > > diff --git a/include/linux/bootconfig.h b/include/linux/bootconfig.h
+> > > > index a4665c7ab07c..5dbda5e3e9bb 100644
+> > > > --- a/include/linux/bootconfig.h
+> > > > +++ b/include/linux/bootconfig.h
+> > > > @@ -289,4 +289,14 @@ int __init xbc_get_info(int *node_size, size_t *data_size);
+> > > >  /* XBC cleanup data structures */
+> > > >  void __init xbc_exit(void);
+> > > >
+> > > > +/* XBC embedded bootconfig data in kernel */
+> > > > +#ifdef CONFIG_EMBED_BOOT_CONFIG
+> > > > +char * __init xbc_get_embedded_bootconfig(size_t *size);
+> > > > +#else
+> > > > +static inline char *xbc_get_embedded_bootconfig(size_t *size)
+> > > > +{
+> > > > +   return NULL;
+> > > > +}
+> > > > +#endif
+> > > > +
+> > > >  #endif
+> > > > diff --git a/init/Kconfig b/init/Kconfig
+> > > > index e9119bf54b1f..70440804874d 100644
+> > > > --- a/init/Kconfig
+> > > > +++ b/init/Kconfig
+> > > > @@ -1357,6 +1357,27 @@ config BOOT_CONFIG
+> > > >
+> > > >       If unsure, say Y.
+> > > >
+> > > > +config EMBED_BOOT_CONFIG
+> > > > +   bool "Embed bootconfig file in the kernel"
+> > > > +   depends on BOOT_CONFIG
+> > > > +   default n
+> > > > +   help
+> > > > +     Embed a bootconfig file given by EMBED_BOOT_CONFIG_FILE in the
+> > > > +     kernel. Usually, the bootconfig file is loaded with the initrd
+> > > > +     image. But if the system doesn't support initrd, this option will
+> > > > +     help you by embedding a bootconfig file while building the kernel.
+> > > > +
+> > > > +     If unsure, say N.
+> > > > +
+> > > > +config EMBED_BOOT_CONFIG_FILE
+> > > > +   string "Embedded bootconfig file path"
+> > > > +   default ""
+> > > > +   depends on EMBED_BOOT_CONFIG
+> > > > +   help
+> > > > +     Specify a bootconfig file which will be embedded to the kernel.
+> > > > +     This bootconfig will be used if there is no initrd or no other
+> > > > +     bootconfig in the initrd.
+> > > > +
+> > > >  choice
+> > > >     prompt "Compiler optimization level"
+> > > >     default CC_OPTIMIZE_FOR_PERFORMANCE
+> > > > diff --git a/init/main.c b/init/main.c
+> > > > index 421050be5039..3803bf2e22ea 100644
+> > > > --- a/init/main.c
+> > > > +++ b/init/main.c
+> > > > @@ -265,7 +265,7 @@ static int __init loglevel(char *str)
+> > > >  early_param("loglevel", loglevel);
+> > > >
+> > > >  #ifdef CONFIG_BLK_DEV_INITRD
+> > > > -static void * __init get_boot_config_from_initrd(u32 *_size)
+> > > > +static void * __init get_boot_config_from_initrd(size_t *_size)
+> > > >  {
+> > > >     u32 size, csum;
+> > > >     char *data;
+> > > > @@ -411,12 +411,15 @@ static void __init setup_boot_config(void)
+> > > >     static char tmp_cmdline[COMMAND_LINE_SIZE] __initdata;
+> > > >     const char *msg;
+> > > >     int pos;
+> > > > -   u32 size;
+> > > > +   size_t size;
+> > > >     char *data, *err;
+> > > >     int ret;
+> > > >
+> > > >     /* Cut out the bootconfig data even if we have no bootconfig option */
+> > > >     data = get_boot_config_from_initrd(&size);
+> > > > +   /* If there is no bootconfig in initrd, try embedded one. */
+> > > > +   if (!data)
+> > > > +           data = xbc_get_embedded_bootconfig(&size);
+> > > >
+> > > >     strlcpy(tmp_cmdline, boot_command_line, COMMAND_LINE_SIZE);
+> > > >     err = parse_args("bootconfig", tmp_cmdline, NULL, 0, 0, 0, NULL,
+> > > > @@ -435,8 +438,8 @@ static void __init setup_boot_config(void)
+> > > >     }
+> > > >
+> > > >     if (size >= XBC_DATA_MAX) {
+> > > > -           pr_err("bootconfig size %d greater than max size %d\n",
+> > > > -                   size, XBC_DATA_MAX);
+> > > > +           pr_err("bootconfig size %ld greater than max size %d\n",
+> > > > +                   (long)size, XBC_DATA_MAX);
+> > > >             return;
+> > > >     }
+> > > >
+> > > > @@ -449,7 +452,7 @@ static void __init setup_boot_config(void)
+> > > >                             msg, pos);
+> > > >     } else {
+> > > >             xbc_get_info(&ret, NULL);
+> > > > -           pr_info("Load bootconfig: %d bytes %d nodes\n", size, ret);
+> > > > +           pr_info("Load bootconfig: %ld bytes %d nodes\n", (long)size, ret);
+> > > >             /* keys starting with "kernel." are passed via cmdline */
+> > > >             extra_command_line = xbc_make_cmdline("kernel");
+> > > >             /* Also, "init." keys are init arguments */
+> > > > diff --git a/lib/.gitignore b/lib/.gitignore
+> > > > index e5e217b8307b..30a2a5db7033 100644
+> > > > --- a/lib/.gitignore
+> > > > +++ b/lib/.gitignore
+> > > > @@ -6,3 +6,4 @@
+> > > >  /oid_registry_data.c
+> > > >  /test_fortify.log
+> > > >  /test_fortify/*.log
+> > > > +/default.bconf
+> > > > diff --git a/lib/Makefile b/lib/Makefile
+> > > > index 300f569c626b..8183785ee99d 100644
+> > > > --- a/lib/Makefile
+> > > > +++ b/lib/Makefile
+> > > > @@ -279,6 +279,18 @@ $(foreach file, $(libfdt_files), \
+> > > >     $(eval CFLAGS_$(file) = -I $(srctree)/scripts/dtc/libfdt))
+> > > >  lib-$(CONFIG_LIBFDT) += $(libfdt_files)
+> > > >
+> > > > +ifeq ($(CONFIG_EMBED_BOOT_CONFIG),y)
+> > > > +# Since the specified bootconfig file can be switched, we forcibly update the
+> > > > +# default.bconf file always.
+> > > > +$(obj)/default.bconf: FORCE
+> > > > +   $(call cmd,defbconf)
+> > > > +
+> > > > +quiet_cmd_defbconf = GEN     $@
+> > > > +      cmd_defbconf = cat < /dev/null $(CONFIG_EMBED_BOOT_CONFIG_FILE) > $@
+> > > > +clean-files        += default.bconf
+> > > > +$(obj)/bootconfig.o: $(obj)/default.bconf
+> > > > +endif
+> > > > +
+> > > >  lib-$(CONFIG_BOOT_CONFIG) += bootconfig.o
+> > > >
+> > > >  obj-$(CONFIG_RBTREE_TEST) += rbtree_test.o
+> > > > diff --git a/lib/bootconfig.c b/lib/bootconfig.c
+> > > > index 74f3201ab8e5..3a3bf3a208e3 100644
+> > > > --- a/lib/bootconfig.c
+> > > > +++ b/lib/bootconfig.c
+> > > > @@ -12,6 +12,29 @@
+> > > >  #include <linux/kernel.h>
+> > > >  #include <linux/memblock.h>
+> > > >  #include <linux/string.h>
+> > > > +
+> > > > +#ifdef CONFIG_EMBED_BOOT_CONFIG
+> > > > +asm (
+> > > > +"  .pushsection .init.data, \"aw\"                 \n"
+> > > > +"  .global embedded_bootconfig_data                \n"
+> > > > +"embedded_bootconfig_data:                         \n"
+> > > > +"  .incbin \"lib/default.bconf\"                   \n"
+> > > > +"  .global embedded_bootconfig_data_end            \n"
+> > > > +"embedded_bootconfig_data_end:                             \n"
+> > > > +"  .popsection                                     \n"
+> > > > +);
+> > > > +
+> > > > +extern __visible char embedded_bootconfig_data[];
+> > > > +extern __visible char embedded_bootconfig_data_end[];
+> > > > +
+> > > > +char * __init xbc_get_embedded_bootconfig(size_t *size)
+> > > > +{
+> > > > +   *size = embedded_bootconfig_data_end - embedded_bootconfig_data;
+> > > > +   return (*size) ? embedded_bootconfig_data : NULL;
+> > > > +}
+> > > > +
+> > > > +#endif
+> > > > +
+> > > >  #else /* !__KERNEL__ */
+> > > >  /*
+> > > >   * NOTE: This is only for tools/bootconfig, because tools/bootconfig will
+> > > >
+> > >
+> > > Thanks tested the implemation, it works as expected.
+> >
+> > Great!
+> >
+> > >
+> > > Also noted that a change in default.bconf requries a clean build, is it
+> > > expected behaviour?
+> >
+> > default.bconf will be always updated if CONFIG_EMBED_BOOT_CONFIG=y. So you can
+> > do incremental build. (I tested it with the incremental build environment)
+> 
+> 
+> 
+> 
+> So, default.bconf is always re-generated,
+> causing bootconfig.o to be always rebuilt,
+> causing vmlinux to be always rebuilt.
+> 
+> This is absolutely unacceptable.
+> 
+> If you do not change the source tree at all,
+> the incremental build must be really quick,
+> simply doing nothing.
+> 
+> You can check how $(obj)/config_data
+> avoids the unneeded timestamp update.
 
-[auto build test WARNING on groeck-staging/hwmon-next]
-[also build test WARNING on next-20220325]
-[cannot apply to v5.17]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+OK, thanks for the information! Let me check to learn how I can avoid
+rebuilding it. I also found the Documentation/kbuild/makefile.rst,
+which is very helpful! I'll update the patch.
 
-url:    https://github.com/0day-ci/linux/commits/Aleksa-Savic/hwmon-aquacomputer_d5next-Add-support-for-Aquacomputer-Octo/20220326-181328
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/groeck/linux-staging.git hwmon-next
-config: i386-randconfig-a002 (https://download.01.org/0day-ci/archive/20220326/202203262032.UaIhk6RY-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0f6d9501cf49ce02937099350d08f20c4af86f3d)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/ffb6d76f23a93a5875a427d03dc6a67538277e19
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Aleksa-Savic/hwmon-aquacomputer_d5next-Add-support-for-Aquacomputer-Octo/20220326-181328
-        git checkout ffb6d76f23a93a5875a427d03dc6a67538277e19
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/hwmon/
+> 
+> 
+> 
+> BTW, it is already possible to embed kernel parameters
+> into the kernel.
+> Is this another implementation of CONFIG_CMDLINE?
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Yes, it is the bootconfig version of the CONFIG_CMDLINE.
+Since some boot-time tracing feature depends on the bootconfig (those can
+not be set via kernel cmdline), we need this feature for those features
+on non-initrd boot system.
 
-All warnings (new ones prefixed by >>):
-
->> drivers/hwmon/aquacomputer_d5next.c:420:3: warning: unannotated fall-through between switch labels [-Wimplicit-fallthrough]
-                   default:
-                   ^
-   drivers/hwmon/aquacomputer_d5next.c:420:3: note: insert 'break;' to avoid fall-through
-                   default:
-                   ^
-                   break; 
-   drivers/hwmon/aquacomputer_d5next.c:489:3: warning: unannotated fall-through between switch labels [-Wimplicit-fallthrough]
-                   default:
-                   ^
-   drivers/hwmon/aquacomputer_d5next.c:489:3: note: insert 'break;' to avoid fall-through
-                   default:
-                   ^
-                   break; 
-   drivers/hwmon/aquacomputer_d5next.c:698:2: warning: unannotated fall-through between switch labels [-Wimplicit-fallthrough]
-           default:
-           ^
-   drivers/hwmon/aquacomputer_d5next.c:698:2: note: insert 'break;' to avoid fall-through
-           default:
-           ^
-           break; 
-   3 warnings generated.
+Thank you!
 
 
-vim +420 drivers/hwmon/aquacomputer_d5next.c
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> > Thank you,
+> >
+> > >
+> > > Thanks and Regards,
+> > > Padmanabha.S
+> >
+> >
+> > --
+> > Masami Hiramatsu <mhiramat@kernel.org>
+> 
+> 
+> 
+> -- 
+> Best Regards
+> Masahiro Yamada
 
-   389	
-   390	static int aqc_read(struct device *dev, enum hwmon_sensor_types type, u32 attr,
-   391			    int channel, long *val)
-   392	{
-   393		int ret;
-   394		struct aqc_data *priv = dev_get_drvdata(dev);
-   395	
-   396		if (time_after(jiffies, priv->updated + STATUS_UPDATE_INTERVAL))
-   397			return -ENODATA;
-   398	
-   399		switch (type) {
-   400		case hwmon_temp:
-   401			if (priv->temp_input[channel] == -ENODATA)
-   402				return -ENODATA;
-   403	
-   404			*val = priv->temp_input[channel];
-   405			break;
-   406		case hwmon_fan:
-   407			*val = priv->speed_input[channel];
-   408			break;
-   409		case hwmon_power:
-   410			*val = priv->power_input[channel];
-   411			break;
-   412		case hwmon_pwm:
-   413			switch (priv->kind) {
-   414			case octo:
-   415				ret = aqc_get_ctrl_val(priv, octo_ctrl_fan_offsets[channel]);
-   416				if (ret < 0)
-   417					return ret;
-   418	
-   419				*val = aqc_percent_to_pwm(ret);
- > 420			default:
-   421				break;
-   422			}
-   423			break;
-   424		case hwmon_in:
-   425			*val = priv->voltage_input[channel];
-   426			break;
-   427		case hwmon_curr:
-   428			*val = priv->current_input[channel];
-   429			break;
-   430		default:
-   431			return -EOPNOTSUPP;
-   432		}
-   433	
-   434		return 0;
-   435	}
-   436	
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Masami Hiramatsu <mhiramat@kernel.org>
