@@ -2,94 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3211FC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 19:15:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87518C41535
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 19:24:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234314AbiCZTQx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 15:16:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48960 "EHLO
+        id S234668AbiCZTZm convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 15:25:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234184AbiCZTQu (ORCPT
+        with ESMTP id S233620AbiCZTZi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 15:16:50 -0400
-Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0294F5C84D;
-        Sat, 26 Mar 2022 12:15:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1648322113; x=1679858113;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=1qVgAAwGius5rPbM23I010ii9ouqb5CWP42FZkdIMuk=;
-  b=EYocjRGcBS/rd+9P46PAS1/+tcr9poT3XCVtQA6qEwTxDyl9Yn4WwpS6
-   DhiD3e8ybbdx4o50rB3Sm9jKa8Z197WNSWff2WgMkosuuscQlA6OGYC7d
-   Q4XCTRdKJIROuUpXuIn18I5KhTrMjaQlc3AYRJGa+w2VKWQcm6m6DOMx+
-   0=;
-X-IronPort-AV: E=Sophos;i="5.90,213,1643673600"; 
-   d="scan'208";a="189390323"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1d-54a073b7.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6001.iad6.amazon.com with ESMTP; 26 Mar 2022 19:15:12 +0000
-Received: from EX13MTAUWC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1d-54a073b7.us-east-1.amazon.com (Postfix) with ESMTPS id AA33C9765A;
-        Sat, 26 Mar 2022 19:15:06 +0000 (UTC)
-Received: from EX13D02UWC004.ant.amazon.com (10.43.162.236) by
- EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
- id 15.0.1497.32; Sat, 26 Mar 2022 19:15:02 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
- EX13D02UWC004.ant.amazon.com (10.43.162.236) with Microsoft SMTP Server (TLS)
- id 15.0.1497.32; Sat, 26 Mar 2022 19:15:01 +0000
-Received: from dev-dsk-alisaidi-1d-b9a0e636.us-east-1.amazon.com
- (172.19.181.128) by mail-relay.amazon.com (10.43.60.234) with Microsoft SMTP
- Server id 15.0.1497.32 via Frontend Transport; Sat, 26 Mar 2022 19:15:01
- +0000
-Received: by dev-dsk-alisaidi-1d-b9a0e636.us-east-1.amazon.com (Postfix, from userid 5131138)
-        id 1534917E0; Sat, 26 Mar 2022 19:15:00 +0000 (UTC)
-From:   Ali Saidi <alisaidi@amazon.com>
-To:     <leo.yan@linaro.org>
-CC:     <Nick.Forrington@arm.com>, <acme@kernel.org>,
-        <alexander.shishkin@linux.intel.com>, <alisaidi@amazon.com>,
-        <andrew.kilroy@arm.com>, <benh@kernel.crashing.org>,
-        <german.gomez@arm.com>, <james.clark@arm.com>,
-        <john.garry@huawei.com>, <jolsa@kernel.org>, <kjain@linux.ibm.com>,
-        <lihuafei1@huawei.com>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-        <mark.rutland@arm.com>, <mathieu.poirier@linaro.org>,
-        <mingo@redhat.com>, <namhyung@kernel.org>, <peterz@infradead.org>,
-        <will@kernel.org>
-Subject: Re: [PATCH v4 4/4] perf mem: Support HITM for when mem_lvl_num is any
-Date:   Sat, 26 Mar 2022 19:14:54 +0000
-Message-ID: <20220326191454.15084-1-alisaidi@amazon.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220326062303.GC20556@leoy-ThinkPad-X240s>
-References: <20220326062303.GC20556@leoy-ThinkPad-X240s>
+        Sat, 26 Mar 2022 15:25:38 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C45D43207F;
+        Sat, 26 Mar 2022 12:24:00 -0700 (PDT)
+Received: from mail-lf1-f49.google.com ([209.85.167.49]) by
+ mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MrhLu-1ntDVC3m0C-00nf9d; Sat, 26 Mar 2022 20:23:59 +0100
+Received: by mail-lf1-f49.google.com with SMTP id p10so12670836lfa.12;
+        Sat, 26 Mar 2022 12:23:58 -0700 (PDT)
+X-Gm-Message-State: AOAM533bmgyf9gtICHhD4uX3bpHPI/aYdc1Wjn6Ki5JXbMOATEGat/Y+
+        Gy1rG/hWj2yhVg3daMun/t2j8RkW6hPx3SLZkuY=
+X-Google-Smtp-Source: ABdhPJxx8NCR/u6qmXzG17FP9feBwegQPJsf9Aqi/l68ye4U4vfPlOZSED7ECKkFvKmT885cCFviGMxdRBsqoooKkLU=
+X-Received: by 2002:a5d:6505:0:b0:205:9a98:e184 with SMTP id
+ x5-20020a5d6505000000b002059a98e184mr11258676wru.317.1648322627645; Sat, 26
+ Mar 2022 12:23:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <20220326165909.506926-1-benni@stuerz.xyz>
+In-Reply-To: <20220326165909.506926-1-benni@stuerz.xyz>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Sat, 26 Mar 2022 20:23:31 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a1e57mNUQgronhwrsXsuQW9sZYxCktKij7NwsieBWiGmw@mail.gmail.com>
+Message-ID: <CAK8P3a1e57mNUQgronhwrsXsuQW9sZYxCktKij7NwsieBWiGmw@mail.gmail.com>
+Subject: Re: [PATCH 01/22] orion5x: Replace comments with C99 initializers
+To:     =?UTF-8?Q?Benjamin_St=C3=BCrz?= <benni@stuerz.xyz>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Simtec Linux Team <linux@simtec.co.uk>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Robert Moore <robert.moore@intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Len Brown <lenb@kernel.org>, Chas Williams <3chas3@gmail.com>,
+        Harald Welte <laforge@gnumonks.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        gregkh <gregkh@linuxfoundation.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        mike.marciniszyn@cornelisnetworks.com,
+        dennis.dalessandro@cornelisnetworks.com,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Karsten Keil <isdn@linux-pingi.de>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Frederic Barrat <fbarrat@linux.ibm.com>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
+        Nicolas Pitre <nico@fluxnic.net>, loic.poulain@linaro.org,
+        kvalo@kernel.org, Pkshih <pkshih@realtek.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/SAMSUNG EXYNOS ARM ARCHITECTURES" 
+        <linux-samsung-soc@vger.kernel.org>, linux-ia64@vger.kernel.org,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        "open list:ACPI COMPONENT ARCHITECTURE (ACPICA)" <devel@acpica.org>,
+        linux-atm-general@lists.sourceforge.net,
+        Networking <netdev@vger.kernel.org>, linux-edac@vger.kernel.org,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        wcn36xx@lists.infradead.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Provags-ID: V03:K1:9figIUnCgtvaf/cKMq2S8Mrl7ngptWVGWjzOtUo3hOJ8JuZUqXf
+ uGJHsYnWe/msKkwufx5cx8GjLMtmeUa4P0UGqi2U5Ehg8teMr5a6CVVLi/oFydUeqagKVDu
+ 3Vvsy5IH4R2SidR4u3VseNYZpAa9Csqs9tqhrAAeU9/eoVB7bNuRhKsZXmCiVLDG5heinbb
+ Fo2pPNQpCoAlPoGAryzUw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:RlqtZ8kYXZg=:weygU+7tyLUDVksTpjS8e5
+ HMK6a3RwJ4pP/DourG9N6pv/FKqMEGI+hY/rz9ZEkyBfPdVkwMhwkf75UAwHmKUqLiIJ4X16S
+ fERCRgYWtzpSZo5S/1ir1vo+pLydwh5/vJoO4jjki7XDP0mVHb7VcMLUH2KMcATjZEQpBxP5/
+ Le8AXBRQbX0WX4mu1jAQQRUngcl6lVuJ1N0hdMcMMHSV1FjZjnUpBcy6TF8sTFzV/Ku2/DO86
+ XJGfxC0muugsEI3U+JUJGN+eBjFzkg6xS1u57ZMaauo4ALrhTdEi+PO7YxjVvscnqa1Pkx3bI
+ 16XQ0Vt5urqXFfb7WPiNmvS0VF9EYpjL/2Xbi4Ygx4oMcluDFY7y/lgjRWqamPp5v6/mV5Joi
+ hMFe6szOl0BsDPOXMuLdYmXUlkAnsFzL3m/3DhYUko5pP9kD4lRW6ea769aI3pTKOhWQ1/WhZ
+ 2sBRqCre4vFTPxO7FLmbuDIDrgW8YS7mJfyh2dBxfL5qfG0KLCKLLuhoxy2PF86/ZpkzKkSSY
+ TnWCjOoGCAe/Tp+NXlEZ0HKO2mTfVq/vc26d/9rCKENTUPCDGml73zyXYdOoOeXYI97YXlrHH
+ 1/yZ+w9fQMQ4GVXmNtdmjsQTA6+8u8Mfj/oAsvjhc/7Du7Kx+nKd+VVT5m3SLPrK1qC+Oo9ns
+ WO5HxobIpnBO2OVQOgap63NODBQtF5TxKHN5sX6NRJBG24d7dV5t3kW93fmrf+2QNq3W8hLTs
+ xyTuMkuS7qKlerszk+X0tFneKJO4KuUui7P+wsIrahl5OwoahacsFleLfRqSV3i5DFizM/1rv
+ k1jFyA4vTU3aAlFBb3cj/2kYzyHcjB0KWr8wUwgz2924c1/53s=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 26 Mar 2022 22:23:03 +0000, Leo Yan wrote:
-> On Thu, Mar 24, 2022 at 06:33:23PM +0000, Ali Saidi wrote:
-> > For loads that hit in a the LLC snoop filter and are fulfilled from a
-> > higher level cache on arm64 Neoverse cores, it's not usually clear what
-> > the true level of the cache the data came from (i.e. a transfer from a
-> > core could come from it's L1 or L2). Instead of making an assumption of
-> > where the line came from, add support for incrementing HITM if the
-> > source is CACHE_ANY.A
-[snip]
-> 
-> This might break the memory profiling result for x86, see file
-> arch/x86/events/intel/ds.c:
-> 
->   97 void __init intel_pmu_pebs_data_source_skl(bool pmem)
->   98 {
->   99         u64 pmem_or_l4 = pmem ? LEVEL(PMEM) : LEVEL(L4);
->   ...
->  105         pebs_data_source[0x0d] = OP_LH | LEVEL(ANY_CACHE) | REM | P(SNOOP, HITM);
->  106 }
-> 
+On Sat, Mar 26, 2022 at 5:58 PM Benjamin Stürz <benni@stuerz.xyz> wrote:
+>
+> This replaces comments with C99's designated
+> initializers because the kernel supports them now.
 
-Thanks for catching this Leo, I'll add your fix.
+The change looks fine, but the comment looks misplaced, as enum initializers
+are not c99 feature. Also, the named array and struct intializers have been
+supported by gnu89 for a long time and widely used in the kernel, so it's
+not a recent change even for the others.
 
-Ali
+Also,
+
+      Arnd
