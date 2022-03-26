@@ -2,110 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C079C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 06:41:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8AABC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 06:42:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231610AbiCZGm6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 02:42:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45508 "EHLO
+        id S231401AbiCZGoO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 02:44:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231592AbiCZGmz (ORCPT
+        with ESMTP id S230061AbiCZGoG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 02:42:55 -0400
-Received: from qproxy2-pub.mail.unifiedlayer.com (qproxy2-pub.mail.unifiedlayer.com [69.89.16.161])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09909132
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 23:41:17 -0700 (PDT)
-Received: from gproxy1-pub.mail.unifiedlayer.com (gproxy1-pub.mail.unifiedlayer.com [69.89.25.95])
-        by qproxy2.mail.unifiedlayer.com (Postfix) with ESMTP id 7B9FD80283E9
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 06:41:16 +0000 (UTC)
-Received: from cmgw13.mail.unifiedlayer.com (unknown [10.0.90.128])
-        by progateway3.mail.pro1.eigbox.com (Postfix) with ESMTP id D2BE710048169
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 06:41:15 +0000 (UTC)
-Received: from box5620.bluehost.com ([162.241.219.59])
-        by cmsmtp with ESMTP
-        id Y06tnxLagY8ycY06tnZDcA; Sat, 26 Mar 2022 06:41:15 +0000
-X-Authority-Reason: nr=8
-X-Authority-Analysis: v=2.4 cv=ff9od2cF c=1 sm=1 tr=0 ts=623eb58b
- a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
- a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
- a=o8Y5sQTvuykA:10:nop_rcvd_month_year
- a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
- a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
- a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
-        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
-        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ho3lN4efa1ErN8Op6qUXYY1ye3jj9bWtAwnyjpE5a7g=; b=VavedxWl36XWECeEpp1FHlKlFG
-        CuD2vhqgyI5TZEH3mNcASDX75NZFr18QP47k94i6BJiTa8Se29sT+gQQxk1hnrJdT4R0Baj6an7iE
-        vTnDr5BaAjma97DEVQhKJaZyb;
-Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:34312 helo=[10.0.1.48])
-        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <re@w6rz.net>)
-        id 1nY06s-0022eA-I9; Sat, 26 Mar 2022 00:41:14 -0600
-Subject: Re: [PATCH 5.15 00/37] 5.15.32-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-References: <20220325150419.931802116@linuxfoundation.org>
-In-Reply-To: <20220325150419.931802116@linuxfoundation.org>
-From:   Ron Economos <re@w6rz.net>
-Message-ID: <3edf9e3d-61eb-7a0f-50a6-eed0a623b970@w6rz.net>
-Date:   Fri, 25 Mar 2022 23:41:12 -0700
-User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Sat, 26 Mar 2022 02:44:06 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB3A417FD0C
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 23:42:29 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id w7so5624689pfu.11
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 23:42:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DzmW1EwXib0HEBL5ioOFxuUKPvj/IW7QJoaVVg8+xH0=;
+        b=k94K+4orcgP8kDrhyw/hF4hSopr8E4xGvyHDrqmV3/AETXXKBicOS4bD6VEdw0a1rk
+         fhuEs9Biymqy6AHdhF5pzSmXa5ciGqejQRnrQLgx+SNgTm/KSr+Q2OPuHqp9haPiNsxN
+         wWrIRxjQUk6PDVquYpGEneQwQulpcj2oVxdyE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DzmW1EwXib0HEBL5ioOFxuUKPvj/IW7QJoaVVg8+xH0=;
+        b=CG9lVnsQ8S6zHSGLfdnTFzAlWco+HzLyx8mZUsyiXBpcfH5t68RxIgA57ZdL6OCJYm
+         /P81JRHfQIMHZMPm2b7+mXTGkdIUyQsTKrKsxEGFbaU9g9kAfDR7gQSg71Y1jQwX3Lj1
+         CACxr+VgthjZwKqU20Umx7tgKSoIF7eeBGeGkOt12kkW5v3BPe8OSyNtshBbesajd26o
+         8CpmiBnE1Fm07rPEm+p/YxFdeS+ZRyi2nvCTOBuhZorGFeV4ytz4v/wqsO2yiba9KshZ
+         TCKRqbZ7d06VovPA9iObqIpH5hnxiWza7qCcqJAu4Mlz3ObxrusQdm917cY1kLX+GBXk
+         URqA==
+X-Gm-Message-State: AOAM5304jma/q01H5CoxkefmBkubeyQsyrsUYtISVKVrRBs7Nqril0re
+        YdOHlh+Hs+eQ4Z5uWJiiijkLjg==
+X-Google-Smtp-Source: ABdhPJwXINhn4isrhWwq6UFZEvwUcMk+1i2H2+Yb705ZRLHFhy/5zUzg6kvPyFIyPtyDuoEF4KjUNQ==
+X-Received: by 2002:a05:6a00:98e:b0:4fb:1162:b2a5 with SMTP id u14-20020a056a00098e00b004fb1162b2a5mr6604055pfg.12.1648276949326;
+        Fri, 25 Mar 2022 23:42:29 -0700 (PDT)
+Received: from localhost (0.223.81.34.bc.googleusercontent.com. [34.81.223.0])
+        by smtp.gmail.com with UTF8SMTPSA id d80-20020a621d53000000b004fae1119955sm8960061pfd.213.2022.03.25.23.42.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Mar 2022 23:42:29 -0700 (PDT)
+From:   Ying Hsu <yinghsu@chromium.org>
+To:     marcel@holtmann.org
+Cc:     chromeos-bluetooth-upstreaming@chromium.org,
+        Ying Hsu <yinghsu@chromium.org>,
+        syzbot+2bef95d3ab4daa10155b@syzkaller.appspotmail.com,
+        Joseph Hwang <josephsih@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH] Bluetooth: fix dangling sco_conn and use-after-free in sco_sock_timeout
+Date:   Sat, 26 Mar 2022 06:35:17 +0000
+Message-Id: <20220326063415.1.I67f8ad854ac2f48701902bfb34d6e2070011b779@changeid>
+X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - box5620.bluehost.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - w6rz.net
-X-BWhitelist: no
-X-Source-IP: 73.162.232.9
-X-Source-L: No
-X-Exim-ID: 1nY06s-0022eA-I9
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:34312
-X-Source-Auth: re@w6rz.net
-X-Email-Count: 2
-X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
-X-Local-Domain: yes
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/25/22 8:14 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.32 release.
-> There are 37 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Sun, 27 Mar 2022 15:04:08 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.32-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+Connecting the same socket twice consecutively in sco_sock_connect()
+could lead to a race condition where two sco_conn objects are created
+but only one is associated with the socket. If the socket is closed
+before the SCO connection is established, the timer associated with the
+dangling sco_conn object won't be canceled. As the sock object is being
+freed, the use-after-free problem happens when the timer callback
+function sco_sock_timeout() accesses the socket. Here's the call trace:
 
-Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
+dump_stack+0x107/0x163
+? refcount_inc+0x1c/
+print_address_description.constprop.0+0x1c/0x47e
+? refcount_inc+0x1c/0x7b
+kasan_report+0x13a/0x173
+? refcount_inc+0x1c/0x7b
+check_memory_region+0x132/0x139
+refcount_inc+0x1c/0x7b
+sco_sock_timeout+0xb2/0x1ba
+process_one_work+0x739/0xbd1
+? cancel_delayed_work+0x13f/0x13f
+? __raw_spin_lock_init+0xf0/0xf0
+? to_kthread+0x59/0x85
+worker_thread+0x593/0x70e
+kthread+0x346/0x35a
+? drain_workqueue+0x31a/0x31a
+? kthread_bind+0x4b/0x4b
+ret_from_fork+0x1f/0x30
 
-Tested-by: Ron Economos <re@w6rz.net>
+Link: https://syzkaller.appspot.com/bug?extid=2bef95d3ab4daa10155b
+Reported-by: syzbot+2bef95d3ab4daa10155b@syzkaller.appspotmail.com
+Fixes: e1dee2c1de2b ("Bluetooth: fix repeated calls to sco_sock_kill")
+Signed-off-by: Ying Hsu <yinghsu@chromium.org>
+Reviewed-by: Joseph Hwang <josephsih@chromium.org>
+---
+Tested this commit using a C reproducer on qemu-x86_64 for 8 hours.
+
+ net/bluetooth/sco.c | 21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
+
+diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+index 8eabf41b2993..380c63194736 100644
+--- a/net/bluetooth/sco.c
++++ b/net/bluetooth/sco.c
+@@ -574,19 +574,24 @@ static int sco_sock_connect(struct socket *sock, struct sockaddr *addr, int alen
+ 	    addr->sa_family != AF_BLUETOOTH)
+ 		return -EINVAL;
+ 
+-	if (sk->sk_state != BT_OPEN && sk->sk_state != BT_BOUND)
+-		return -EBADFD;
++	lock_sock(sk);
++	if (sk->sk_state != BT_OPEN && sk->sk_state != BT_BOUND) {
++		err = -EBADFD;
++		goto done;
++	}
+ 
+-	if (sk->sk_type != SOCK_SEQPACKET)
+-		return -EINVAL;
++	if (sk->sk_type != SOCK_SEQPACKET) {
++		err = -EINVAL;
++		goto done;
++	}
+ 
+ 	hdev = hci_get_route(&sa->sco_bdaddr, &sco_pi(sk)->src, BDADDR_BREDR);
+-	if (!hdev)
+-		return -EHOSTUNREACH;
++	if (!hdev) {
++		err = -EHOSTUNREACH;
++		goto done;
++	}
+ 	hci_dev_lock(hdev);
+ 
+-	lock_sock(sk);
+-
+ 	/* Set destination address and psm */
+ 	bacpy(&sco_pi(sk)->dst, &sa->sco_bdaddr);
+ 
+-- 
+2.35.1.1021.g381101b075-goog
 
