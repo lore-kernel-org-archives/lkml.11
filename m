@@ -2,88 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4557FC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 00:29:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78C1AC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 00:29:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229652AbiCZAap (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 20:30:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34054 "EHLO
+        id S229703AbiCZAbP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 20:31:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiCZAao (ORCPT
+        with ESMTP id S229456AbiCZAbM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 20:30:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33A43EA75F
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 17:29:09 -0700 (PDT)
+        Fri, 25 Mar 2022 20:31:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B2F3130C10;
+        Fri, 25 Mar 2022 17:29:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC2ED617B3
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 00:29:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1C29C2BBE4;
-        Sat, 26 Mar 2022 00:29:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1648254548;
-        bh=AnJgnpPYiCm5oGyGAtaAtR44bfRlNgR5d1iIOGU/Fh4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=wluuJcBvB4K5JpO4od1HeDpdOd4INTC11C7xHzJZF7N0ZtWak2j1uXHelhzQC26bR
-         Xdp5n+iQBdyeu4Anen+QGCjCF+/IbIgpk1L0yj2yj3YI/2HAKiuS+rUFwPbcvIx+iC
-         Dybf4+chRqkGiZRRBrRFatwAP3JU+8vf4mreejYE=
-Date:   Fri, 25 Mar 2022 17:29:07 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     <mhocko@suse.com>, <kosaki.motohiro@jp.fujitsu.com>,
-        <mgorman@suse.de>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3] mm/mempolicy: fix mpol_new leak in
- shared_policy_replace
-Message-Id: <20220325172907.57dd381b746563be5dc77097@linux-foundation.org>
-In-Reply-To: <20220322104345.36379-1-linmiaohe@huawei.com>
-References: <20220322104345.36379-1-linmiaohe@huawei.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        by ams.source.kernel.org (Postfix) with ESMTPS id C0C56B82A72;
+        Sat, 26 Mar 2022 00:29:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAB47C2BBE4;
+        Sat, 26 Mar 2022 00:29:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648254574;
+        bh=poGETAG+DQJ31NcrGPl7LcOyeM6AhqeGMqyfZs2gRLI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=epZOOWmcpDs0p9MOFj+cVMezAqejQAfLPEtWKpR0plyEvjeKH0kv7EHTIcKWwbTvy
+         bEMygfnBxIVJHkoaDhzo5Z+z1YFFa5hJVjcxerb3/f943HfDUAjbiw/65dvZrNPU7G
+         J5CMm9lDDJX8hF/wv9b7tQRQu+v0I/Yi0yytsJN862Gyg3501bbUo44a5YDP/ytRt+
+         EiSTq3kd7aaOxShfvfP5BuTWfXdZVAdyibXX07AoUvFfwhMKWpVz2PtNDSvP6+TbE8
+         1WaUkG41bs8RLlU2g3uSlVW4LTs/+y2LH3uLfLUfuXinUttHQ00rL+2DfDiVQt0Sv7
+         QD/fNp7kzVDng==
+Date:   Fri, 25 Mar 2022 19:38:43 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Luca Coelho <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH][next] iwlwifi: fw: Replace zero-length arrays with
+ flexible-array members
+Message-ID: <20220326003843.GA2602091@embeddedor>
+References: <20220216195015.GA904148@embeddedor>
+ <202202161235.2FB20E6A5@keescook>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <202202161235.2FB20E6A5@keescook>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 22 Mar 2022 18:43:45 +0800 Miaohe Lin <linmiaohe@huawei.com> wrote:
-
-> If mpol_new is allocated but not used in restart loop, mpol_new will be
-> freed via mpol_put before returning to the caller.  But refcnt is not
-> initialized yet, so mpol_put could not do the right things and might leak
-> the unused mpol_new. This would happen if mempolicy was updated on the
-> shared shmem file while the sp->lock has been dropped during the memory
-> allocation.
+On Wed, Feb 16, 2022 at 12:35:14PM -0800, Kees Cook wrote:
+> On Wed, Feb 16, 2022 at 01:50:15PM -0600, Gustavo A. R. Silva wrote:
+> > There is a regular need in the kernel to provide a way to declare
+> > having a dynamically sized set of trailing elements in a structure.
+> > Kernel code should always use “flexible array members”[1] for these
+> > cases. The older style of one-element or zero-length arrays should
+> > no longer be used[2].
+> > 
+> > [1] https://en.wikipedia.org/wiki/Flexible_array_member
+> > [2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
+> > 
+> > Link: https://github.com/KSPP/linux/issues/78
+> > Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 > 
-> This issue could be triggered easily with the below code snippet if there
-> are many processes doing the below work at the same time:
-> 
->   shmid = shmget((key_t)5566, 1024 * PAGE_SIZE, 0666|IPC_CREAT);
->   shm = shmat(shmid, 0, 0);
->   loop many times {
->     mbind(shm, 1024 * PAGE_SIZE, MPOL_LOCAL, mask, maxnode, 0);
->     mbind(shm + 128 * PAGE_SIZE, 128 * PAGE_SIZE, MPOL_DEFAULT, mask,
->           maxnode, 0);
->   }
-> 
-> ...
->
-> --- a/mm/mempolicy.c
-> +++ b/mm/mempolicy.c
-> @@ -2733,6 +2733,7 @@ static int shared_policy_replace(struct shared_policy *sp, unsigned long start,
->  	mpol_new = kmem_cache_alloc(policy_cache, GFP_KERNEL);
->  	if (!mpol_new)
->  		goto err_out;
-> +	refcount_set(&mpol_new->refcnt, 1);
->  	goto restart;
->  }
+> Reviewed-by: Kees Cook <keescook@chromium.org>
 
-Two other sites in this file do
+Hi all,
 
-	atomic_set(&policy->refcnt, 1);
+Friendly ping: can someone take this, please?
 
+...I can take this in my -next tree in the meantime.
 
-Could we please instead have a little helper function which does the
-kmem_cache_alloc()+refcount_set()?
+Thanks
+--
+Gustavo
