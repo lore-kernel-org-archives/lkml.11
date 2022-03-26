@@ -2,70 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69D87C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 08:15:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24856C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 08:21:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232097AbiCZIR2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 04:17:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50400 "EHLO
+        id S232053AbiCZIXJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 04:23:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230032AbiCZIRY (ORCPT
+        with ESMTP id S230032AbiCZIXG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 04:17:24 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E4D81FF23E;
-        Sat, 26 Mar 2022 01:15:48 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KQWvQ3CF3zfZgW;
-        Sat, 26 Mar 2022 16:14:10 +0800 (CST)
-Received: from huawei.com (10.175.112.208) by kwepemi500013.china.huawei.com
- (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Sat, 26 Mar
- 2022 16:15:45 +0800
-From:   Zheng Yongjun <zhengyongjun3@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <lars.povlsen@microchip.com>, <Steen.Hegelund@microchip.com>,
-        <UNGLinuxDriver@microchip.com>
-Subject: [PATCH] net: sparx5: switchdev: fix possible NULL pointer dereference
-Date:   Sat, 26 Mar 2022 08:12:39 +0000
-Message-ID: <20220326081239.9168-1-zhengyongjun3@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Sat, 26 Mar 2022 04:23:06 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 224D82013E8
+        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 01:21:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648282890; x=1679818890;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=fKP51Hr9tTThF36GJpjm8KGyUOWXgbSRjqfQB448bOI=;
+  b=SAXD+uQmv0NjffNlgnyC2jU31AOUJyiP8ZGdPVBVl6iwqgnktkcHA5nt
+   MTe4kJ9wlJQ0aDY3e6ozpEYSQaK6waTuKQiYxRoEMJN6DHjTBeCylp4JO
+   vkXsGOLVLo++1PR0XrM9e2X8wyhrW+NYPYV1MNxSOm0H8jgJd5F585z/V
+   gpOFiGJP3IbrdppoV0cR3gmaNEaFuKN9NdkAEHENkmt7bnG6tX9l/uMYI
+   2jp2LYaDV7B7FWzNGScUpaAOaDehx9LwVsxbhCTMxJyYJzpzPkYGAZCeY
+   +qGhAjJtGowygNjSAQqZMTOFSNXAeCAPyU9ceG5AWCT3yYiK944cYP8Yx
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10297"; a="283648734"
+X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
+   d="scan'208";a="283648734"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2022 01:21:29 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
+   d="scan'208";a="516777196"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga002.jf.intel.com with ESMTP; 26 Mar 2022 01:21:28 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nY1fr-000NBo-Hp; Sat, 26 Mar 2022 08:21:27 +0000
+Date:   Sat, 26 Mar 2022 16:21:17 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Bart Van Assche <bvanassche@acm.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [bvanassche:ufs-for-next-2022-03-25 32/32]
+ drivers/scsi/ufs-drivers/ufs-hisi.c:560:34: warning: unused variable
+ 'ufs_hisi_of_match'
+Message-ID: <202203261643.I7AyxLDj-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.208]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemi500013.china.huawei.com (7.221.188.120)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the possible failure of the allocation, devm_kzalloc() may return NULL
-pointer.
-Therefore, it should be better to check the 'db' in order to prevent
-the dereference of NULL pointer.
+Hi Bart,
 
-Fixes: 10615907e9b51 ("net: sparx5: switchdev: adding frame DMA functionality")
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
----
- drivers/net/ethernet/microchip/sparx5/sparx5_fdma.c | 2 ++
- 1 file changed, 2 insertions(+)
+First bad commit (maybe != root cause):
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_fdma.c b/drivers/net/ethernet/microchip/sparx5/sparx5_fdma.c
-index 7436f62fa152..174ad95e746a 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_fdma.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_fdma.c
-@@ -420,6 +420,8 @@ static int sparx5_fdma_tx_alloc(struct sparx5 *sparx5)
- 			db_hw->dataptr = phys;
- 			db_hw->status = 0;
- 			db = devm_kzalloc(sparx5->dev, sizeof(*db), GFP_KERNEL);
-+			if (!db)
-+				return -ENOMEM;
- 			db->cpu_addr = cpu_addr;
- 			list_add_tail(&db->list, &tx->db_list);
- 		}
+tree:   https://github.com/bvanassche/linux ufs-for-next-2022-03-25
+head:   976ba17fe820846e56fb154b1ae35f5d90be192b
+commit: 976ba17fe820846e56fb154b1ae35f5d90be192b [32/32] scsi: ufs: Split the drivers/scsi/ufs directory
+config: hexagon-randconfig-r005-20220325 (https://download.01.org/0day-ci/archive/20220326/202203261643.I7AyxLDj-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0f6d9501cf49ce02937099350d08f20c4af86f3d)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/bvanassche/linux/commit/976ba17fe820846e56fb154b1ae35f5d90be192b
+        git remote add bvanassche https://github.com/bvanassche/linux
+        git fetch --no-tags bvanassche ufs-for-next-2022-03-25
+        git checkout 976ba17fe820846e56fb154b1ae35f5d90be192b
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/scsi/ufs-drivers/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/scsi/ufs-drivers/ufs-hisi.c:560:34: warning: unused variable 'ufs_hisi_of_match' [-Wunused-const-variable]
+   static const struct of_device_id ufs_hisi_of_match[] = {
+                                    ^
+   1 warning generated.
+
+
+vim +/ufs_hisi_of_match +560 drivers/scsi/ufs-drivers/ufs-hisi.c
+
+653fcb07d95eda5 drivers/scsi/ufs/ufs-hisi.c Manivannan Sadhasivam 2019-01-05  559  
+653fcb07d95eda5 drivers/scsi/ufs/ufs-hisi.c Manivannan Sadhasivam 2019-01-05 @560  static const struct of_device_id ufs_hisi_of_match[] = {
+653fcb07d95eda5 drivers/scsi/ufs/ufs-hisi.c Manivannan Sadhasivam 2019-01-05  561  	{ .compatible = "hisilicon,hi3660-ufs", .data = &ufs_hba_hi3660_vops },
+653fcb07d95eda5 drivers/scsi/ufs/ufs-hisi.c Manivannan Sadhasivam 2019-01-05  562  	{ .compatible = "hisilicon,hi3670-ufs", .data = &ufs_hba_hi3670_vops },
+653fcb07d95eda5 drivers/scsi/ufs/ufs-hisi.c Manivannan Sadhasivam 2019-01-05  563  	{},
+653fcb07d95eda5 drivers/scsi/ufs/ufs-hisi.c Manivannan Sadhasivam 2019-01-05  564  };
+653fcb07d95eda5 drivers/scsi/ufs/ufs-hisi.c Manivannan Sadhasivam 2019-01-05  565  
+
+:::::: The code at line 560 was first introduced by commit
+:::::: 653fcb07d95eda58b72a5e715230b582c4d6d69e scsi: ufs: Add HI3670 SoC UFS driver support
+
+:::::: TO: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+:::::: CC: Martin K. Petersen <martin.petersen@oracle.com>
+
 -- 
-2.17.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
