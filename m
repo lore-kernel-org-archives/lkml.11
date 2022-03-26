@@ -2,94 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A57FFC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 01:54:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06592C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 01:56:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230158AbiCZBzT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 21:55:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33550 "EHLO
+        id S230172AbiCZB6T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 21:58:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230143AbiCZBzQ (ORCPT
+        with ESMTP id S230080AbiCZB6S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 21:55:16 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FB5B972C2;
-        Fri, 25 Mar 2022 18:53:41 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KQMPs3W3KzCrDl;
-        Sat, 26 Mar 2022 09:51:29 +0800 (CST)
-Received: from localhost.localdomain (10.175.103.91) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Sat, 26 Mar 2022 09:53:38 +0800
-From:   Wei Li <liwei391@huawei.com>
-To:     Peter Kaestle <peter@piie.net>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>
-CC:     <platform-driver-x86@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <rui.xiang@huawei.com>
-Subject: [PATCH] platform/x86: acerhdf: Cleanup str_starts_with()
-Date:   Sat, 26 Mar 2022 10:02:49 +0800
-Message-ID: <20220326020249.3266561-1-liwei391@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 25 Mar 2022 21:58:18 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8842C1C9B;
+        Fri, 25 Mar 2022 18:56:38 -0700 (PDT)
+X-UUID: 13a92cc6e8ee4622a5c2a0918b44ec45-20220326
+X-UUID: 13a92cc6e8ee4622a5c2a0918b44ec45-20220326
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <jianjun.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1780893580; Sat, 26 Mar 2022 09:56:28 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Sat, 26 Mar 2022 09:56:27 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sat, 26 Mar 2022 09:56:26 +0800
+Message-ID: <2ceb84aec51252cfb254525900480cc380fc2c03.camel@mediatek.com>
+Subject: Re: [PATCH v4 2/2] phy: mediatek: Add PCIe PHY driver
+From:   Jianjun Wang <jianjun.wang@mediatek.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "Chen-Yu Tsai" <wenst@chromium.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>
+CC:     Wei-Shun Chang <weishunc@google.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-phy@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <rex-bc.chen@mediatek.com>,
+        <randy.wu@mediatek.com>, <jieyy.yang@mediatek.com>,
+        <chuanjia.liu@mediatek.com>, <qizhong.cheng@mediatek.com>,
+        <jian.yang@mediatek.com>
+Date:   Sat, 26 Mar 2022 09:56:26 +0800
+In-Reply-To: <be06e57d-302e-e641-a134-c45ea89a6a6b@collabora.com>
+References: <20220323065608.27426-1-jianjun.wang@mediatek.com>
+         <20220323065608.27426-3-jianjun.wang@mediatek.com>
+         <be06e57d-302e-e641-a134-c45ea89a6a6b@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since there is already a generic function strstarts() that check if a
-string starts with a given prefix, cleanup str_starts_with().
+On Fri, 2022-03-25 at 15:15 +0100, AngeloGioacchino Del Regno wrote:
+> Il 23/03/22 07:56, Jianjun Wang ha scritto:
+> > Add PCIe GEN3 PHY driver support on MediaTek chipsets.
+> > 
+> > Signed-off-by: Jianjun Wang <jianjun.wang@mediatek.com>
+> > ---
+> >   drivers/phy/mediatek/Kconfig        |  11 ++
+> >   drivers/phy/mediatek/Makefile       |   1 +
+> >   drivers/phy/mediatek/phy-mtk-pcie.c | 272
+> > ++++++++++++++++++++++++++++
+> >   3 files changed, 284 insertions(+)
+> >   create mode 100644 drivers/phy/mediatek/phy-mtk-pcie.c
+> > 
+> 
+> ..snip..
+> 
+> > diff --git a/drivers/phy/mediatek/phy-mtk-pcie.c
+> > b/drivers/phy/mediatek/phy-mtk-pcie.c
+> > new file mode 100644
+> > index 000000000000..44a2ad8d324e
+> > --- /dev/null
+> > +++ b/drivers/phy/mediatek/phy-mtk-pcie.c
+> > @@ -0,0 +1,272 @@
+> 
+> ..snip..
+> 
+> > +/**
+> > + * struct mtk_pcie_phy - PCIe phy driver main structure
+> > + * @dev: pointer to device
+> > + * @phy: pointer to generic phy
+> > + * @sif_base: IO mapped register base address of system interface
+> > + * @data: pointer to SoC dependent data
+> > + * @sw_efuse_en: software eFuse enable status
+> > + * @efuse_glb_intr: internal resistor selection of TX bias current
+> > data
+> > + * @efuse: pointer to eFues data for each lane
+> 
+> Oops! There's a typo! "eFues" => "eFuse"
+> 
+> After fixing this typo,
+> 
+> Reviewed-by: AngeloGioacchino Del Regno <
+> angelogioacchino.delregno@collabora.com>
 
-Signed-off-by: Wei Li <liwei391@huawei.com>
----
- drivers/platform/x86/acerhdf.c | 21 +++------------------
- 1 file changed, 3 insertions(+), 18 deletions(-)
+Thanks!
 
-diff --git a/drivers/platform/x86/acerhdf.c b/drivers/platform/x86/acerhdf.c
-index 6b8b3ab8db48..3c589437b41e 100644
---- a/drivers/platform/x86/acerhdf.c
-+++ b/drivers/platform/x86/acerhdf.c
-@@ -584,21 +584,6 @@ static struct platform_driver acerhdf_driver = {
- 	.remove = acerhdf_remove,
- };
- 
--/* checks if str begins with start */
--static int str_starts_with(const char *str, const char *start)
--{
--	unsigned long str_len = 0, start_len = 0;
--
--	str_len = strlen(str);
--	start_len = strlen(start);
--
--	if (str_len >= start_len &&
--			!strncmp(str, start, start_len))
--		return 1;
--
--	return 0;
--}
--
- /* check hardware */
- static int __init acerhdf_check_hardware(void)
- {
-@@ -651,9 +636,9 @@ static int __init acerhdf_check_hardware(void)
- 		 * check if actual hardware BIOS vendor, product and version
- 		 * IDs start with the strings of BIOS table entry
- 		 */
--		if (str_starts_with(vendor, bt->vendor) &&
--				str_starts_with(product, bt->product) &&
--				str_starts_with(version, bt->version)) {
-+		if (strstarts(vendor, bt->vendor) &&
-+				strstarts(product, bt->product) &&
-+				strstarts(version, bt->version)) {
- 			found = 1;
- 			break;
- 		}
--- 
-2.25.1
+> 
+> P.S.: Many thanks for the kerneldoc documentation!!!!
+> 
+> > + */
+> > +struct mtk_pcie_phy {
+> > +	struct device *dev;
+> > +	struct phy *phy;
+> > +	void __iomem *sif_base;
+> > +	const struct mtk_pcie_phy_data *data;
+> > +
+> > +	bool sw_efuse_en;
+> > +	u32 efuse_glb_intr;
+> > +	struct mtk_pcie_lane_efuse *efuse;
+> > +};
+> 
+> 
 
