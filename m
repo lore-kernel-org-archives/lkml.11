@@ -2,81 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3ABBC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 18:39:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 068ECC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 18:41:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234625AbiCZSlQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 14:41:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44530 "EHLO
+        id S234626AbiCZSnP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 14:43:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234626AbiCZSlN (ORCPT
+        with ESMTP id S232199AbiCZSnN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 14:41:13 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00FA631927;
-        Sat, 26 Mar 2022 11:39:36 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2a02:3030:b:56bb:4cb:3227:231:99f8])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: sebastianfricke)
-        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 602761F44FBF;
-        Sat, 26 Mar 2022 18:39:35 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1648319975;
-        bh=N0eR8mQkTGSS6+NrbKu8JzCIBdyNKMH/EWIJqHhJrCg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YKAHeVLH9T1B5iP85pQaGoLYfhGAtcVL5GU4OnL8Pyaqyg1jv2eWu65jEladStW99
-         c0uBM4qeLc0qYrF0gZFxXN1dcQDm2CxcQNwd+TyvKmiIf94FaF67FKc8oa8/HOT3IA
-         ZgolhcNSa3pUZD8g5ShY35j1LSjbjG2ae7RkLRwW+dofQFjm43dYeGtYwaqlUj1bPW
-         wu+HAXPGkA1m0I4HAxZkApzBYKcXZhx7hgNV8hhaDMi3KD7Iml7IiWqHxwfa1oFf5A
-         QpwkPajMmY3SImVi1gQySsTmzHIy6t/ZRcAU/Mqw+Eq1oFqNq1Gpxb9fpHWTuynQTE
-         XWY4xa8Og1aCQ==
-From:   Sebastian Fricke <sebastian.fricke@collabora.com>
-To:     linux-media@vger.kernel.org
-Cc:     Sebastian Fricke <sebastian.fricke@collabora.com>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-rockchip@lists.infradead.org (open list:HANTRO VPU CODEC DRIVER),
-        linux-staging@lists.linux.dev (open list:STAGING SUBSYSTEM),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] staging: media: rkvdec: Update TODO list
-Date:   Sat, 26 Mar 2022 19:37:17 +0100
-Message-Id: <20220326183715.67332-2-sebastian.fricke@collabora.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220326183715.67332-1-sebastian.fricke@collabora.com>
-References: <20220326183715.67332-1-sebastian.fricke@collabora.com>
+        Sat, 26 Mar 2022 14:43:13 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE39458387
+        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 11:41:36 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id bn33so14182342ljb.6
+        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 11:41:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=je98ykY3vsH8qDn25IW7eQYaUsod4iWZw+6FMsszdYQ=;
+        b=cY/i8NkOXIGpbugW/kXT/lHU/6KoHURxtydz8kA95dAKXv2dKSirRf5cna3Zz4aQE+
+         3zUrMCb8X6oIozpmPaWm2GuBQkB5p7v5BNoSLeNAqcrF06WOFYpSLhQLT9RJ7kcNoToA
+         /byaS8f5DiCBA3c9IENt3HgD+FLD9/VL6yCSc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=je98ykY3vsH8qDn25IW7eQYaUsod4iWZw+6FMsszdYQ=;
+        b=Cy1a5qiS6mmKnFX4AAjdEKm/aVsjiLvcqW3Eis8mZq0EmXA7Gi0yP+oealMz0dFA7E
+         pXtxuO0G5VAuCMtxJMOTqByE8iy50npo272OPzSKk7lXydHiK8z0E7oOCHANj7rzn7FV
+         yd95eAgwjNlyKskO5eYo1Omg4FeNOAkN/ZVVivm9FAOoYBQbHBdIxXVgZj6H/SnTl1xa
+         9I+Ukq41pI8nw9BGQAX8HVPyy8jAIDcomhb0JfH6VmFSsfrHXstQaWI+Zi+WYNAtOpeA
+         aSPgIW9bGQRYrCX7Z/xnyUgdaY7O8zXpGAvQc1K1iQCV4+5pnWCkmxITk3uMLWxfDhgL
+         DGeA==
+X-Gm-Message-State: AOAM5318xJK45kn7WHkvctSgoyUJ7fz0NgRfD2QhiUzl9hgFiOcYhCE8
+        3HG1Plki9Ho18Mxv8LtnXSJLi0SbMO91udIczWs=
+X-Google-Smtp-Source: ABdhPJylVVmpaUkleG9tXewEDLKhVLcqR6nSPXJStEVINZt7LFseQiNV/f6NGvvnp/8kJXNaa6itfw==
+X-Received: by 2002:a2e:86ca:0:b0:24a:c44a:aa3b with SMTP id n10-20020a2e86ca000000b0024ac44aaa3bmr3306773ljj.290.1648320094728;
+        Sat, 26 Mar 2022 11:41:34 -0700 (PDT)
+Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com. [209.85.167.54])
+        by smtp.gmail.com with ESMTPSA id n20-20020a19ef14000000b0044a212f7845sm1134757lfh.118.2022.03.26.11.41.33
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 26 Mar 2022 11:41:34 -0700 (PDT)
+Received: by mail-lf1-f54.google.com with SMTP id 5so18450413lfp.1
+        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 11:41:33 -0700 (PDT)
+X-Received: by 2002:a19:e048:0:b0:448:2caa:7ed2 with SMTP id
+ g8-20020a19e048000000b004482caa7ed2mr13185867lfj.449.1648320093080; Sat, 26
+ Mar 2022 11:41:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220325150419.757836392@linuxfoundation.org> <20220325150420.085364078@linuxfoundation.org>
+ <CAHk-=wiaeZKiEk87Sms1sy53m8tT3UCLOoeUBnX1c_1dZ78WjQ@mail.gmail.com> <Yj7oXgoCdhWAwFQt@kroah.com>
+In-Reply-To: <Yj7oXgoCdhWAwFQt@kroah.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sat, 26 Mar 2022 11:41:17 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgeOrhN_Gznm80==STG1pEbqLMCaZZoeQzZu=NN9GOTgw@mail.gmail.com>
+Message-ID: <CAHk-=wgeOrhN_Gznm80==STG1pEbqLMCaZZoeQzZu=NN9GOTgw@mail.gmail.com>
+Subject: Re: [PATCH 5.10 11/38] swiotlb: rework "fix info leak with DMA_FROM_DEVICE"
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        stable <stable@vger.kernel.org>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Christoph Hellwig <hch@lst.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-VP9 support has been added to the driver by f25709c4ff15.
-And the VP9 uABI was merged with b88dbe38dca8.
+On Sat, Mar 26, 2022 at 3:18 AM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:"
+>
+> Yes, I've been watching that thread.  This change is already in 5.15 and
+> 5.16 kernels, and does solve one known security issue, so it's a tough
+> call.
 
-The remaining codec that keeps this driver in staging is HEVC.
-Update the TODO list accordingly.
+If you're following that thread, you'll have seen that I've reverted
+it, and I actually think the security argument was bogus - the whole
+commit was due to a misunderstanding of the actual direction of the
+data transfer.
 
-Signed-off-by: Sebastian Fricke <sebastian.fricke@collabora.com>
----
- drivers/staging/media/rkvdec/TODO | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+But hey, maybe I'm wrong. The only truly uncontested fact is that it
+broke the ath9k driver.
 
-diff --git a/drivers/staging/media/rkvdec/TODO b/drivers/staging/media/rkvdec/TODO
-index e0f0f12f0ac5..2c0779383276 100644
---- a/drivers/staging/media/rkvdec/TODO
-+++ b/drivers/staging/media/rkvdec/TODO
-@@ -1,6 +1,6 @@
--* Support for VP9 is planned for this driver.
-+* Support for HEVC is planned for this driver.
- 
--  Given the V4L controls for those CODECs will be part of
-+  Given the V4L controls for that CODEC will be part of
-   the uABI, it will be required to have the driver in staging.
- 
-   For this reason, we are keeping this driver in staging for now.
--- 
-2.25.1
-
+           Linus
