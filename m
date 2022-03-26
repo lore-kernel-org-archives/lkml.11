@@ -2,105 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB5BAC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 06:46:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 811D3C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 06:59:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231643AbiCZGsL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 02:48:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34214 "EHLO
+        id S231658AbiCZHAl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 03:00:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230061AbiCZGsH (ORCPT
+        with ESMTP id S231340AbiCZHAi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 02:48:07 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 774062220C1
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 23:46:31 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KQTy147rbz1GCwq;
-        Sat, 26 Mar 2022 14:46:17 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Sat, 26 Mar 2022 14:46:29 +0800
-Subject: Re: [PATCH v3] mm/mempolicy: fix mpol_new leak in
- shared_policy_replace
-To:     Andrew Morton <akpm@linux-foundation.org>
-CC:     <mhocko@suse.com>, <kosaki.motohiro@jp.fujitsu.com>,
-        <mgorman@suse.de>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220322104345.36379-1-linmiaohe@huawei.com>
- <20220325172907.57dd381b746563be5dc77097@linux-foundation.org>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <c8625168-4a40-1f6c-47b1-2c9194d3d4b3@huawei.com>
-Date:   Sat, 26 Mar 2022 14:46:28 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Sat, 26 Mar 2022 03:00:38 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85BE8237D7
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 23:59:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648277942; x=1679813942;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=pv9J0nX7QXZsyvuogfLKn3Ox66ThIHnRddtjZO0oGmA=;
+  b=mzxyEkbIJ+9P+HqXnWrd7OhS45NE4h2Ey5vnxmNPhPc24IgHrxaQHlhn
+   Bx0R6+80TFlXqJM0qI6kkscgNfcdSP06vaj8/LhmXsnBCWHLjH2IuWPRM
+   GoC8HZ0XA3ndz9bNWlbec+wk99QZf6kvA3My7K7yx2ut/XxS4cqAXWQW3
+   6JCp6cHBM96k/5UXPRAq162Z1OYOPKGdo50jezHZ09TME25EA9T5KPOsg
+   lbcappyp8HtBY02ZV1NftYFEBvGJJkw9ZQ70xO1vVevjj1X3xqGUzfNIu
+   +d9Fq0iJ5r4yecEJS0fzD919/qgXpkVy7GK3pza4/1VIqgJtJjACj8cjh
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10297"; a="321955842"
+X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
+   d="scan'208";a="321955842"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2022 23:59:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
+   d="scan'208";a="516766456"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga002.jf.intel.com with ESMTP; 25 Mar 2022 23:59:00 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nY0O3-000N6G-CQ; Sat, 26 Mar 2022 06:58:59 +0000
+Date:   Sat, 26 Mar 2022 14:58:43 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Daniel Vetter <daniel.vetter@ffwll.ch>
+Subject: [drm-misc:for-linux-next 2/3]
+ drivers/dma-buf/st-dma-fence-unwrap.c:125:13: warning: variable 'err' set
+ but not used
+Message-ID: <202203261449.ZA8GwHFt-lkp@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20220325172907.57dd381b746563be5dc77097@linux-foundation.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/3/26 8:29, Andrew Morton wrote:
-> On Tue, 22 Mar 2022 18:43:45 +0800 Miaohe Lin <linmiaohe@huawei.com> wrote:
-> 
->> If mpol_new is allocated but not used in restart loop, mpol_new will be
->> freed via mpol_put before returning to the caller.  But refcnt is not
->> initialized yet, so mpol_put could not do the right things and might leak
->> the unused mpol_new. This would happen if mempolicy was updated on the
->> shared shmem file while the sp->lock has been dropped during the memory
->> allocation.
->>
->> This issue could be triggered easily with the below code snippet if there
->> are many processes doing the below work at the same time:
->>
->>   shmid = shmget((key_t)5566, 1024 * PAGE_SIZE, 0666|IPC_CREAT);
->>   shm = shmat(shmid, 0, 0);
->>   loop many times {
->>     mbind(shm, 1024 * PAGE_SIZE, MPOL_LOCAL, mask, maxnode, 0);
->>     mbind(shm + 128 * PAGE_SIZE, 128 * PAGE_SIZE, MPOL_DEFAULT, mask,
->>           maxnode, 0);
->>   }
->>
->> ...
->>
->> --- a/mm/mempolicy.c
->> +++ b/mm/mempolicy.c
->> @@ -2733,6 +2733,7 @@ static int shared_policy_replace(struct shared_policy *sp, unsigned long start,
->>  	mpol_new = kmem_cache_alloc(policy_cache, GFP_KERNEL);
->>  	if (!mpol_new)
->>  		goto err_out;
->> +	refcount_set(&mpol_new->refcnt, 1);
->>  	goto restart;
->>  }
-> 
-> Two other sites in this file do
-> 
-> 	atomic_set(&policy->refcnt, 1);
-> 
-> 
-> Could we please instead have a little helper function which does the
-> kmem_cache_alloc()+refcount_set()?> .
+tree:   git://anongit.freedesktop.org/drm/drm-misc for-linux-next
+head:   519f490db07e1a539490612f376487f61e48e39c
+commit: 64a8f92fd783e750cdb81af75942dcd53bbf61bd [2/3] dma-buf: add dma_fence_unwrap v2
+config: powerpc-randconfig-m031-20220326 (https://download.01.org/0day-ci/archive/20220326/202203261449.ZA8GwHFt-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        git remote add drm-misc git://anongit.freedesktop.org/drm/drm-misc
+        git fetch --no-tags drm-misc for-linux-next
+        git checkout 64a8f92fd783e750cdb81af75942dcd53bbf61bd
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=powerpc SHELL=/bin/bash drivers/dma-buf/
 
-There are usecases like below:
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-	struct mempolicy *new = kmem_cache_alloc(policy_cache, GFP_KERNEL);
-	*new = *old;
-	^^^^^^^^^^^^
-	refcount_set(&new->refcnt, 1);
+All warnings (new ones prefixed by >>):
 
-If we use helper function to do kmem_cache_alloc()+refcount_set() above, separate
-refcount_set(&new->refcnt, 1) is still needed as old is copied to new and overwrites
-the refcnt field. So that little helper function might not work. Or am I miss something?
+   drivers/dma-buf/st-dma-fence-unwrap.c: In function 'unwrap_array':
+>> drivers/dma-buf/st-dma-fence-unwrap.c:125:13: warning: variable 'err' set but not used [-Wunused-but-set-variable]
+     125 |         int err = 0;
+         |             ^~~
+   drivers/dma-buf/st-dma-fence-unwrap.c: In function 'unwrap_chain':
+   drivers/dma-buf/st-dma-fence-unwrap.c:167:13: warning: variable 'err' set but not used [-Wunused-but-set-variable]
+     167 |         int err = 0;
+         |             ^~~
+   drivers/dma-buf/st-dma-fence-unwrap.c: In function 'unwrap_chain_array':
+   drivers/dma-buf/st-dma-fence-unwrap.c:209:13: warning: variable 'err' set but not used [-Wunused-but-set-variable]
+     209 |         int err = 0;
+         |             ^~~
 
-Many thanks.
 
-> 
+vim +/err +125 drivers/dma-buf/st-dma-fence-unwrap.c
 
+   120	
+   121	static int unwrap_array(void *arg)
+   122	{
+   123		struct dma_fence *fence, *f1, *f2, *array;
+   124		struct dma_fence_unwrap iter;
+ > 125		int err = 0;
+   126	
+   127		f1 = mock_fence();
+   128		if (!f1)
+   129			return -ENOMEM;
+   130	
+   131		f2 = mock_fence();
+   132		if (!f2) {
+   133			dma_fence_put(f1);
+   134			return -ENOMEM;
+   135		}
+   136	
+   137		array = mock_array(2, f1, f2);
+   138		if (!array)
+   139			return -ENOMEM;
+   140	
+   141		dma_fence_unwrap_for_each(fence, &iter, array) {
+   142			if (fence == f1) {
+   143				f1 = NULL;
+   144			} else if (fence == f2) {
+   145				f2 = NULL;
+   146			} else {
+   147				pr_err("Unexpected fence!\n");
+   148				err = -EINVAL;
+   149			}
+   150		}
+   151	
+   152		if (f1 || f2) {
+   153			pr_err("Not all fences seen!\n");
+   154			err = -EINVAL;
+   155		}
+   156	
+   157		dma_fence_signal(f1);
+   158		dma_fence_signal(f2);
+   159		dma_fence_put(array);
+   160		return 0;
+   161	}
+   162	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
