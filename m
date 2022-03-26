@@ -2,167 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D495EC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 12:24:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F00D4C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 12:24:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232883AbiCZM0G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 08:26:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60308 "EHLO
+        id S232896AbiCZM0R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 08:26:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232839AbiCZM0C (ORCPT
+        with ESMTP id S230494AbiCZM0N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 08:26:02 -0400
-X-Greylist: delayed 2149 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 26 Mar 2022 05:24:23 PDT
-Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8FDD292BA5;
-        Sat, 26 Mar 2022 05:24:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-        Content-ID:Content-Description;
-        bh=b0sF/A2IXGzEeoocXOZUQN9bsOEvXQ00kZXmIDoPRs4=; b=BJyl8HmOzQiMTLOhn5wjezhvx1
-        kcJwGQBhQ0RsAi3o4q5EQXjsCC9Etc2FMQVYaTFVOF85HQRcM/6MqRPDXDeviO8X0xu4zjb6+rmIA
-        /nfNxKKKs5et0k6GEfXuFf7Dnf7LtxUQiFskLPkXHmIzcmQQtcAlwCz3jQuCZcP6yV8JXhPoKED+v
-        sXHdSoqPfnm0668gdFg29rV8eG0hYxxG/ubhFLOHysUO/YJsLAjOsmTMZAORz5djXybKHwylIGODG
-        DXyue+hWVclZ3eJ7bXWMeZHeuEbB/udPl+9MTG2rCTsr4QZXs9IHO4Tpk+y5O80lKXcT2127PprdL
-        Vbw0LeTkiLDtC+1WOoTL2hw2Nh+6mPdXHVr+g9hXfICSwJHhTu3ltADk5s8IZ+IKL3+WjqKVAZmKz
-        nUn7lFBr4qpHPn86JdzT+NebaNdW5xKyi30O9WPjNt4OzoH4R0bY5OabPg3RLI6es2v7v7O6c/fsN
-        2yZgK4y88Cqf1jWSjhFA2aavZ+aMvM+GLnL8atfERgJsqzPrknZh0p7JcX5W5XKKxWATn8qEpJWq5
-        bG4Mlv6Wt4cIwSo4DAtDJQHzj9PA+w8FpQrcKnxnO52T2gG8VESiBJLf3FRhAzcqrD8BYjykqZnkz
-        vxGTI3bOhHqqaQZbcaUk6fmy71KWj3dhwycCQcl40=;
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-To:     David Kahurani <k.kahurani@gmail.com>
-Cc:     davem@davemloft.net, ericvh@gmail.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, lucho@ionkov.net,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        Sat, 26 Mar 2022 08:26:13 -0400
+Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44594292BB4;
+        Sat, 26 Mar 2022 05:24:36 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id CB5B4C021; Sat, 26 Mar 2022 13:24:33 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1648297473; bh=J+rWcnu8yF7moh054Aw+8XHr3g7eD83siDQ/MkyTBjI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fMGFh1uJbcJcldQgmnJxIll8S+FwMV8Yav7DYp0Ttu8UGPN0eWvmzuI3WXZmxJDed
+         KcNdXofmrYQdnymnzjU/Xltw6xG8gZ08wTHYsJ2ko+Kvr9I6nPHIq8WAs+BZFV/fgx
+         ngpduVyNJvXiDcX5Bx1LQaDboa/g6T6Uyv/XxR6Uu5dyi+6uiQEk5nR+0l9KGxB6NL
+         0tlEUOE1841SaECbJ1VnWOItVEiFqcpBpZe1ReTj8SqCocJqd0GnLgkmPviq1maSNx
+         L8Lmds4tH7eovs/GPa//YYaes9YGnhKLgMLXd6wSJWp18ODxDqUusJsmd5eRFTyr0G
+         AnojQo6SajdHg==
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id C07DCC009;
+        Sat, 26 Mar 2022 13:24:29 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1648297472; bh=J+rWcnu8yF7moh054Aw+8XHr3g7eD83siDQ/MkyTBjI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bp2S0TjOym2RriaIq4Q1XLf+Az7nE22NgnsSp9Ixsfwed0OtIMB2UrLt2wm+8Cxfd
+         y/2CPT2Ah6NIRetxdVwix0c0l7Ava30y1r9eXbhIztXaFF93xDJqVh8Ay9NuVXtDqC
+         FKZ12TmjWf7EvNH0A3ZPR+tHbwsnrfy05WGCYeWe3Epdokk43fIQC4YjpM2/nOu8hG
+         Z5hboCFi/GSpfu8hJfkgol0EeL4axCfzEvGTfBKTLuj3KBm5rSOd9oOedhr4yko8pV
+         1OyLgdx9e3ErzM+pPBStOFFNor9sU/FMwqKjsHTPbG9Bq1CdVfDf1FWkt0j1u9WvwF
+         thne8LKrDEvxg==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 1cc6f6ba;
+        Sat, 26 Mar 2022 12:24:25 +0000 (UTC)
+Date:   Sat, 26 Mar 2022 21:24:10 +0900
+From:   asmadeus@codewreck.org
+To:     Christian Schoenebeck <linux_oss@crudebyte.com>
+Cc:     David Kahurani <k.kahurani@gmail.com>, davem@davemloft.net,
+        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        lucho@ionkov.net, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
         v9fs-developer@lists.sourceforge.net,
-        syzbot+5e28cdb7ebd0f2389ca4@syzkaller.appspotmail.com,
-        asmadeus@codewreck.org
+        syzbot+5e28cdb7ebd0f2389ca4@syzkaller.appspotmail.com
 Subject: Re: [syzbot] WARNING in p9_client_destroy
-Date:   Sat, 26 Mar 2022 12:48:26 +0100
-Message-ID: <3597833.OkAhqpS0b6@silver>
-In-Reply-To: <CAAZOf26g-L2nSV-Siw6mwWQv1nv6on8c0fWqB4bKmX73QAFzow@mail.gmail.com>
+Message-ID: <Yj8F6sQzx6Bvy+aZ@codewreck.org>
 References: <CAAZOf26g-L2nSV-Siw6mwWQv1nv6on8c0fWqB4bKmX73QAFzow@mail.gmail.com>
+ <3597833.OkAhqpS0b6@silver>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <3597833.OkAhqpS0b6@silver>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Donnerstag, 24. M=E4rz 2022 13:13:25 CET David Kahurani wrote:
-> On Monday, February 28, 2022 at 4:38:57 AM UTC+3 asmadeus@codewreck.org
->=20
-> wrote:
-> > syzbot wrote on Sun, Feb 27, 2022 at 04:53:29PM -0800:
-> > > kmem_cache_destroy 9p-fcall-cache: Slab cache still has objects when
-> > > called from p9_client_destroy+0x213/0x370 net/9p/client.c:1100
-> >=20
-> > hmm, there is no previous "Packet with tag %d has still references"
-> > (sic) message, so this is probably because p9_tag_cleanup only relies on
-> > rcu read lock for consistency, so even if the connection has been closed
-> > above (clnt->trans_mode->close) there could have been a request sent
-> > (=3D tag added) just before that which isn't visible on the destroying
-> > side?
-> >=20
-> > I guess adding an rcu_barrier() is what makes most sense here to protect
-> > this case?
-> > I'll send a patch in the next few days unless it was a stupid idea.
->=20
-> Looking at this brought me to the same conclusion.
->=20
-> ---------------------
->=20
-> From cd5a11207a140004bf55005fac7f7e4cec2fd075 Mon Sep 17 00:00:00 2001
-> From: David Kahurani <k.kahurani@gmail.com>
-> Date: Thu, 24 Mar 2022 15:00:23 +0300
-> Subject: [PATCH] net/9p: Flush any delayed rce free
->=20
-> As is best practice
->=20
-> kmem_cache_destroy 9p-fcall-cache: Slab cache still has objects when call=
-ed
-> from p9_client_destroy+0x213/0x370 net/9p/client.c:1100
-> WARNING: CPU: 1 PID: 3701 at mm/slab_common.c:502 kmem_cache_destroy
-> mm/slab_common.c:502 [inline]
-> WARNING: CPU: 1 PID: 3701 at mm/slab_common.c:502
-> kmem_cache_destroy+0x13b/0x140 mm/slab_common.c:490
-> Modules linked in:
-> CPU: 1 PID: 3701 Comm: syz-executor.3 Not tainted
-> 5.17.0-rc5-syzkaller-00021-g23d04328444a #0
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2=
-014
-> RIP: 0010:kmem_cache_destroy mm/slab_common.c:502 [inline]
-> RIP: 0010:kmem_cache_destroy+0x13b/0x140 mm/slab_common.c:490
-> Code: da a8 0e 48 89 ee e8 44 6e 15 00 eb c1 c3 48 8b 55 58 48 c7 c6 60 cd
-> b6 89 48 c7 c7 30 83 3a 8b 48 8b 4c 24 18 e8 9b 30 60 07 <0f> 0b eb a0 90
-> 41 55 49 89 d5 41 54 49 89 f4 55 48 89 fd 53 48 83
-> RSP: 0018:ffffc90002767cf0 EFLAGS: 00010282
-> RAX: 0000000000000000 RBX: 1ffff920004ecfa5 RCX: 0000000000000000
-> RDX: ffff88801e56a280 RSI: ffffffff815f4b38 RDI: fffff520004ecf90
-> RBP: ffff888020ba8b00 R08: 0000000000000000 R09: 0000000000000000
-> R10: ffffffff815ef1ce R11: 0000000000000000 R12: 0000000000000001
-> R13: ffffc90002767d68 R14: dffffc0000000000 R15: 0000000000000000
-> FS:  00005555561b0400(0000) GS:ffff88802ca00000(0000) knlGS:0000000000000=
-000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000555556ead708 CR3: 0000000068b97000 CR4: 0000000000150ef0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->  <TASK>
->  p9_client_destroy+0x213/0x370 net/9p/client.c:1100
->  v9fs_session_close+0x45/0x2d0 fs/9p/v9fs.c:504
->  v9fs_kill_super+0x49/0x90 fs/9p/vfs_super.c:226
->  deactivate_locked_super+0x94/0x160 fs/super.c:332
->  deactivate_super+0xad/0xd0 fs/super.c:363
->  cleanup_mnt+0x3a2/0x540 fs/namespace.c:1173
->  task_work_run+0xdd/0x1a0 kernel/task_work.c:164
->  tracehook_notify_resume include/linux/tracehook.h:188 [inline]
->  exit_to_user_mode_loop kernel/entry/common.c:175 [inline]
->  exit_to_user_mode_prepare+0x27e/0x290 kernel/entry/common.c:207
->  __syscall_exit_to_user_mode_work kernel/entry/common.c:289 [inline]
->  syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:300
->  do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
->  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> RIP: 0033:0x7f5ff63ed4c7
-> Code: ff ff ff f7 d8 64 89 01 48 83 c8 ff c3 66 0f 1f 44 00 00 31 f6 e9 09
-> 00 00 00 66 0f 1f 84 00 00 00 00 00 b8 a6 00 00 00 0f 05 <48> 3d 01 f0 ff
-> ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007fff01862e98 EFLAGS: 00000246 ORIG_RAX: 00000000000000a6
-> RAX: 0000000000000000 RBX: 0000000000000000 RCX: 00007f5ff63ed4c7
-> RDX: 00007fff01862f6c RSI: 000000000000000a RDI: 00007fff01862f60
-> RBP: 00007fff01862f60 R08: 00000000ffffffff R09: 00007fff01862d30
-> R10: 00005555561b18b3 R11: 0000000000000246 R12: 00007f5ff64451ea
-> R13: 00007fff01864020 R14: 00005555561b1810 R15: 00007fff01864060
->  </TASK>
->=20
-> Signed-off-by: David Kahurani <k.kahurani@gmail.com>
-> Reported-by: syzbot+5e28cdb7ebd0f2389ca4@syzkaller.appspotmail.com
+Christian Schoenebeck wrote on Sat, Mar 26, 2022 at 12:48:26PM +0100:
+> [...]
+>
+> > Signed-off-by: David Kahurani <k.kahurani@gmail.com>
+> > Reported-by: syzbot+5e28cdb7ebd0f2389ca4@syzkaller.appspotmail.com
 
-I'm not absolutely sure that this will really fix this issue, but it seems =
-to=20
-be a good idea to add a rcu_barrier() call here nevertheless.
+Looks good to me - it's pretty much what I'd have done if I hadn't
+forgotten!
+It doesn't strike me as anything critical and I don't have anything else
+for this cycle so I'll just queue it in -next for now, and submit it
+at the start of the 5.19 cycle in ~2months.
 
-Reviewed-by: Christian Schoenebeck <linux_oss@crudebyte.com>
+> I'm not absolutely sure that this will really fix this issue, but it seems to 
+> be a good idea to add a rcu_barrier() call here nevertheless.
 
-> ---
->  net/9p/client.c | 1 +
->  1 file changed, 1 insertion(+)
->=20
-> diff --git a/net/9p/client.c b/net/9p/client.c
-> index 8bba0d9cf..67c51913a 100644
-> --- a/net/9p/client.c
-> +++ b/net/9p/client.c
-> @@ -1097,6 +1097,7 @@ void p9_client_destroy(struct p9_client *clnt)
->=20
->   p9_tag_cleanup(clnt);
->=20
-> + rcu_barrier();
->   kmem_cache_destroy(clnt->fcall_cache);
->   kfree(clnt);
->  }
+Yeah, I'm not really sure either but this is the only idea I have given
+the debug code doesn't list anything left in the cache, and David came
+to the same conclusion :/
 
+Can't hurt though, so let's try and see if syzbot complains
+again. Thanks for the review!
 
-
-
+-- 
+Dominique
