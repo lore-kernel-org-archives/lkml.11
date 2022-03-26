@@ -2,87 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22503C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 07:06:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE599C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 07:09:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231739AbiCZHHe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 03:07:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41324 "EHLO
+        id S231750AbiCZHLN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 03:11:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230024AbiCZHHb (ORCPT
+        with ESMTP id S230024AbiCZHLK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 03:07:31 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8DFF249C7C;
-        Sat, 26 Mar 2022 00:05:55 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id n18so10364847plg.5;
-        Sat, 26 Mar 2022 00:05:55 -0700 (PDT)
+        Sat, 26 Mar 2022 03:11:10 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 167FA26D124
+        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 00:09:35 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id bc27so8191591pgb.4
+        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 00:09:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=IuLPzOFcPfRBD9YvtrSpiynaCCbnkp8ViJ4z5qQgTW0=;
-        b=MFguf+LwUrhR3LwewKznkaJvWfeqcdf4V9ngOl4LF7gFuwlQO3PBw67XNoQVrPDfpt
-         08wiuaLCvgEbCuPqz7y1o/wxMSmr3AzVlFb7qDs+N0N0iybBENH7TfFhTqF7KKixiWVt
-         lLfjefDh1/0/J2Jg1RBZe2OxbmNut4WTt9HedNE2qOLOhrjNIRh3mKUsx1zzLK6cJhzV
-         UT2DN68XPWXVVucDS6Z9JgBpPRS7Y0Z7d9lc3nQ6xnRiQ8gdFrH1cg8f2Fdi6PGp1x9w
-         xhbggsQhd/lt94VnTVcFzcb4ZQ3b5SgbtkDfTrcmO2iHLKlGstACjfcvMaIat5Cmeluz
-         xrUg==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aY7Qm3duZzz4/ANMI52LqTxkdMO5YlOW9+CWZKbNUDQ=;
+        b=I05Mab032aTpoTeimJ2ZOfF1xo8R9P0uXq5lBgIRm+2ywDCJ7TRBiojiTa2Sl4OyrW
+         ENUppUa56EY/52pmYjwVkvLFtLbIrXRiqjns6jQiDFovrx+lkvG4JwIweL0YU8mdQjko
+         42818OZdanjVU+H50AQcXJKz2sx+o0LKLoabM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=IuLPzOFcPfRBD9YvtrSpiynaCCbnkp8ViJ4z5qQgTW0=;
-        b=vI6KQLkoOV8yaM6gD5SnxdOIcfUVD4KlRNa/ctnVoNVb6PhKg55h0J0gBXTttyMDuK
-         K75FFG1peNl6a+Hw8GiskDqhm5Mp8gEyGAe4cexmqpIrEtUMZYgNZEjmgY074Jsu+RzE
-         lkcoTa1fLCS4RTs8btuO+fsO75MCUL1rO1yiqkDVSHf3lnZGsmqQ1+5QDEfQa0HeXheY
-         33SFB704hmpvojBQEvIMtuEpsO9x3MKVJQtXreB2sKYmu6Da5vRLZZGDhr7KK/yGbd3z
-         Qx41+jv7MTrA+Hte2bHNHOuZ+kg/y9pyOyCEdrUNchYeiyS6cu7z3o4st/ZNHkkqEcax
-         PydA==
-X-Gm-Message-State: AOAM530KmBPPir1+rR/43hCNl7wNt7h3ogwd/IUxMC/Bq+LbGaPuFSwF
-        Zbn45P9NyFech/X6HzHWW80=
-X-Google-Smtp-Source: ABdhPJyPP9DqkOvlbagWD3+S8fA8Jau2A5WoiwJCclODGS/tOiMv0HsIpP7TE9p5BYtq7h6+oCYiFA==
-X-Received: by 2002:a17:90b:1b12:b0:1c7:6f5d:d7e8 with SMTP id nu18-20020a17090b1b1200b001c76f5dd7e8mr24990608pjb.154.1648278355165;
-        Sat, 26 Mar 2022 00:05:55 -0700 (PDT)
-Received: from [192.168.43.80] (subs03-180-214-233-83.three.co.id. [180.214.233.83])
-        by smtp.gmail.com with ESMTPSA id p16-20020a056a000b5000b004faed463907sm8350042pfo.0.2022.03.26.00.05.50
+        bh=aY7Qm3duZzz4/ANMI52LqTxkdMO5YlOW9+CWZKbNUDQ=;
+        b=2YlNK0LCsxwU5lB/EWiq0ZRG7F88GgCkchK45VN3Fr6cl8QVXzWMEH9SwSTgwQSVGb
+         r5KYYVCh5rcmOr63MgchwHH5H9EewiH2o6lMx9WTTgfv2VrO9SZ6VddxYSbTDlvI6pqA
+         U7x8OQF16GpJaabxVNjieswIVYGR1cHEfaumfBpOAKU95P4cSzj3Iw2lq4k+ry9y6JHo
+         UU1EtFCfgJ5XkyXEwnjh9QPjroJ4PUC0jgSnDLk2BqGdXtRf0A7Z8z9WdaZ1HQUOgLDb
+         e2XUXqvmfFhc56a5bgxmj8aUpUKlH9ykTDy8EOoCPkwzKwh9proxnMG50SSo3sxwUiXP
+         hFwA==
+X-Gm-Message-State: AOAM533madUaGSM1Mphu3k6WV6BSXq3wXOznxMzWg7/aAVIgkcGQZn7o
+        OoGqrTrHZ2HT6UPth1biFC/kjg==
+X-Google-Smtp-Source: ABdhPJxLT1yAk+YxicpfYCc3ehIfT2Bhk4TwGg5YlmuZKXxtcXZhn3FYsvFWkuU6byOwpgW5/SuX6g==
+X-Received: by 2002:a05:6a00:815:b0:4fb:e46:511c with SMTP id m21-20020a056a00081500b004fb0e46511cmr7185978pfk.54.1648278574592;
+        Sat, 26 Mar 2022 00:09:34 -0700 (PDT)
+Received: from localhost (0.223.81.34.bc.googleusercontent.com. [34.81.223.0])
+        by smtp.gmail.com with UTF8SMTPSA id j6-20020a17090a588600b001c699d77503sm7565679pji.2.2022.03.26.00.09.31
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 26 Mar 2022 00:05:54 -0700 (PDT)
-Message-ID: <2b3af5d1-8233-45a6-7a44-a19f7010cd6b@gmail.com>
-Date:   Sat, 26 Mar 2022 14:05:48 +0700
+        Sat, 26 Mar 2022 00:09:33 -0700 (PDT)
+From:   Ying Hsu <yinghsu@chromium.org>
+To:     marcel@holtmann.org
+Cc:     chromeos-bluetooth-upstreaming@chromium.org,
+        Ying Hsu <yinghsu@chromium.org>,
+        syzbot+2bef95d3ab4daa10155b@syzkaller.appspotmail.com,
+        Joseph Hwang <josephsih@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH v2] Bluetooth: fix dangling sco_conn and use-after-free in sco_sock_timeout
+Date:   Sat, 26 Mar 2022 07:09:28 +0000
+Message-Id: <20220326070853.v2.1.I67f8ad854ac2f48701902bfb34d6e2070011b779@changeid>
+X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 5.10 00/38] 5.10.109-rc1 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-References: <20220325150419.757836392@linuxfoundation.org>
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-In-Reply-To: <20220325150419.757836392@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25/03/22 22.04, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.109 release.
-> There are 38 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
+Connecting the same socket twice consecutively in sco_sock_connect()
+could lead to a race condition where two sco_conn objects are created
+but only one is associated with the socket. If the socket is closed
+before the SCO connection is established, the timer associated with the
+dangling sco_conn object won't be canceled. As the sock object is being
+freed, the use-after-free problem happens when the timer callback
+function sco_sock_timeout() accesses the socket. Here's the call trace:
 
-Successfully cross-compiled for arm64 (bcm2711_defconfig, gcc 10.2.0) and
-powerpc (ps3_defconfig, gcc 11.2.0).
+dump_stack+0x107/0x163
+? refcount_inc+0x1c/
+print_address_description.constprop.0+0x1c/0x47e
+? refcount_inc+0x1c/0x7b
+kasan_report+0x13a/0x173
+? refcount_inc+0x1c/0x7b
+check_memory_region+0x132/0x139
+refcount_inc+0x1c/0x7b
+sco_sock_timeout+0xb2/0x1ba
+process_one_work+0x739/0xbd1
+? cancel_delayed_work+0x13f/0x13f
+? __raw_spin_lock_init+0xf0/0xf0
+? to_kthread+0x59/0x85
+worker_thread+0x593/0x70e
+kthread+0x346/0x35a
+? drain_workqueue+0x31a/0x31a
+? kthread_bind+0x4b/0x4b
+ret_from_fork+0x1f/0x30
 
-Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
+Link: https://syzkaller.appspot.com/bug?extid=2bef95d3ab4daa10155b
+Reported-by: syzbot+2bef95d3ab4daa10155b@syzkaller.appspotmail.com
+Fixes: e1dee2c1de2b ("Bluetooth: fix repeated calls to sco_sock_kill")
+Signed-off-by: Ying Hsu <yinghsu@chromium.org>
+Reviewed-by: Joseph Hwang <josephsih@chromium.org>
+---
+Tested this commit using a C reproducer on qemu-x86_64 for 8 hours.
 
+Changes in v2:
+- Adding Link, Reported-by, and Fixes tags in comment.
+
+ net/bluetooth/sco.c | 21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
+
+diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+index 8eabf41b2993..380c63194736 100644
+--- a/net/bluetooth/sco.c
++++ b/net/bluetooth/sco.c
+@@ -574,19 +574,24 @@ static int sco_sock_connect(struct socket *sock, struct sockaddr *addr, int alen
+ 	    addr->sa_family != AF_BLUETOOTH)
+ 		return -EINVAL;
+ 
+-	if (sk->sk_state != BT_OPEN && sk->sk_state != BT_BOUND)
+-		return -EBADFD;
++	lock_sock(sk);
++	if (sk->sk_state != BT_OPEN && sk->sk_state != BT_BOUND) {
++		err = -EBADFD;
++		goto done;
++	}
+ 
+-	if (sk->sk_type != SOCK_SEQPACKET)
+-		return -EINVAL;
++	if (sk->sk_type != SOCK_SEQPACKET) {
++		err = -EINVAL;
++		goto done;
++	}
+ 
+ 	hdev = hci_get_route(&sa->sco_bdaddr, &sco_pi(sk)->src, BDADDR_BREDR);
+-	if (!hdev)
+-		return -EHOSTUNREACH;
++	if (!hdev) {
++		err = -EHOSTUNREACH;
++		goto done;
++	}
+ 	hci_dev_lock(hdev);
+ 
+-	lock_sock(sk);
+-
+ 	/* Set destination address and psm */
+ 	bacpy(&sco_pi(sk)->dst, &sa->sco_bdaddr);
+ 
 -- 
-An old man doll... just what I always wanted! - Clara
+2.35.1.1021.g381101b075-goog
+
