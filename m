@@ -2,113 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14561C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 01:16:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78726C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 01:21:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230010AbiCZBSF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 21:18:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50204 "EHLO
+        id S230051AbiCZBWe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 21:22:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230028AbiCZBSE (ORCPT
+        with ESMTP id S229772AbiCZBWb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 21:18:04 -0400
-Received: from mail-vk1-xa2c.google.com (mail-vk1-xa2c.google.com [IPv6:2607:f8b0:4864:20::a2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAACE1960A1
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 18:16:27 -0700 (PDT)
-Received: by mail-vk1-xa2c.google.com with SMTP id m84so5121488vke.1
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 18:16:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sWh9Ea2SfYQLuMecAvYHl1bg2ANjarcukEX42J9T3Q4=;
-        b=Fw839jtTa+ujk4jaMx/ShkgCxzwfRNSxWAk1ruX8Ob/eJXDJFBhPGjXAAk+FVw/2LD
-         1kkvuDrQPXXVn+rumYNup3U6BtAAPWRoyhFcg0kO3hsunKH3VxtyTHPCFebKfCeW/CFk
-         QILcrPPXH7kIgjswUfQses1yTPTfPXbFXZZbnzzoLdyCofXYJ8VIlebS43mnBqVPD9k0
-         b6b5YwV40H+IPneGBDe0iuP3KmBalqQVuKTK4vUJ0NEf4u254ahc8xuxGXT97hG1V9q5
-         ft+V2omAMeXN+Ts1DHIoUOI9fawa+p36cwhJJno0y+ZmyXkVneFIfwc50mgyA3ckVAxI
-         K41Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sWh9Ea2SfYQLuMecAvYHl1bg2ANjarcukEX42J9T3Q4=;
-        b=q2u2zXFXtUDaHmy9pcPsYjTIweKD30o/fj9DgrI23X5WU8YWpNHWSETyKnSIKyaFdW
-         DfMU9qOTVICm9o8fPk+EI4lX/g7+TdgokAMg2UshqjrcF6reLF3zD0uBX8gHhS1g4TW6
-         9M0SWoFrUebnDgJLKx/yBn0Jr3Ss9/BfnjNbbVaXDaGvMHSkvm46/AtNTRxro6xKSIYF
-         JzdXkZ8uvdk3mVtTJc3nkVdyQHnWK58Ts2mltFzB9NJPQ7LunLx7NjkzswLHdmkLsjnC
-         glZZCtYulBAV17uiQnRcwvte0+hEf5yreshl3HuhqAy31lp8kTBII6lDlFVFvrbfWfg3
-         KB1g==
-X-Gm-Message-State: AOAM530y+Pew4GMXPyjgBLBIVd9DwxCu4W/1LrPKjGuakgDgjDMV++Uz
-        ZXFeflcTCGQTmqn8atM8RKkCvWk2jTv2wCnaE8RrFA==
-X-Google-Smtp-Source: ABdhPJzsZZY01w8F9FI02pR0G+qwcUxzDSqfau5PVajQtOT0uIUI+36L5FVD4NKAgdVasVtVUjzFr849CtqouiU0xZc=
-X-Received: by 2002:a1f:a9cb:0:b0:33e:d145:85f0 with SMTP id
- s194-20020a1fa9cb000000b0033ed14585f0mr6593027vke.7.1648257386623; Fri, 25
- Mar 2022 18:16:26 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220326010003.3155137-1-yuzhao@google.com> <CAHk-=wjp=jEhjvD9GPnHfuV5Kc1=rUnf84b_qscLJ8fkY74u3Q@mail.gmail.com>
-In-Reply-To: <CAHk-=wjp=jEhjvD9GPnHfuV5Kc1=rUnf84b_qscLJ8fkY74u3Q@mail.gmail.com>
-From:   Yu Zhao <yuzhao@google.com>
-Date:   Fri, 25 Mar 2022 19:16:15 -0600
-Message-ID: <CAOUHufbqum18T4kZ=d_hMehz=N=3iSuNfGrLof5tB8kjGkk8yw@mail.gmail.com>
-Subject: Re: [page-reclaim] Re: [GIT PULL] Multi-gen LRU for 5.18-rc1
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Andi Kleen <ak@linux.intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Barry Song <baohua@kernel.org>,
-        Brian Geffon <bgeffon@google.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
+        Fri, 25 Mar 2022 21:22:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2104D2A5AA6;
+        Fri, 25 Mar 2022 18:20:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C14DAB82AE1;
+        Sat, 26 Mar 2022 01:20:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A733C2BBE4;
+        Sat, 26 Mar 2022 01:20:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648257653;
+        bh=2jM6K8HMj5gWuZKaREeuXsW8X1XXJcDu7VTZ4Gfp0is=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=EO9MI3ehZHiOLQMcJlTwchKS/p6Js2NZFbXf9joprxQs2P7hTMp7d8aCULfgYESZi
+         MPKtKXrKqC4eMF09Q5BzgI5G0PuwAbCHZuXf6vukcDkFPi1neEtTRKSIC2ktmPj6lk
+         Hmaa5kdihagorvJ9LOpt/ARO1Mt90Gt4r+3nJZOIy10MTZdw8n8Y266Qylk6TqxNkv
+         C5hY4uFuSNC6dzMFVSNCtU+2TSVekU2WAh7tSraXu/SqKSLaGd9P6K2uUnztveQbtQ
+         rL2bQHFET5z9uY3A7uu3qRtt/phHpvfcqCUcK2TYswijun2rxOK7C13EDPV9rl8Dhs
+         Fax3QgG8o77lg==
+Date:   Sat, 26 Mar 2022 10:20:47 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>, x86@kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
         Dave Hansen <dave.hansen@linux.intel.com>,
-        Donald Carr <d@chaos-reins.com>,
-        Hillf Danton <hdanton@sina.com>,
-        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Rik van Riel <riel@surriel.com>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Kernel Page Reclaim v2 <page-reclaim@google.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        kernel-janitors@vger.kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Jiri Olsa <jolsa@kernel.org>, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH bpf-next v2 0/4] kprobes: rethook: x86: Replace
+ kretprobe trampoline with rethook
+Message-Id: <20220326102047.61c095c112e0add6876446e2@kernel.org>
+In-Reply-To: <Yj3zB2n7Hy0DhkU+@hirez.programming.kicks-ass.net>
+References: <164821817332.2373735.12048266953420821089.stgit@devnote2>
+        <Yj3VAsgGA9zJvxgs@hirez.programming.kicks-ass.net>
+        <Yj3zB2n7Hy0DhkU+@hirez.programming.kicks-ass.net>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 7:07 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> On Fri, Mar 25, 2022 at 6:00 PM Yu Zhao <yuzhao@google.com> wrote:
-> >
-> > This is more of an option than a request for 5.18. I'm sending it to
-> > you directly because, in my judgement, it's now as ready as it'll ever
-> > be.
->
-> So I do expect to merge this, but I don't think it has been in
-> linux-next, has it?
+On Fri, 25 Mar 2022 17:51:19 +0100
+Peter Zijlstra <peterz@infradead.org> wrote:
 
-No. I could ask Stephen to see if he is willing to take this series. I
-was hoping to go through Andrew since his tree is what most MM
-developers test. I haven't heard from Andrew, so I assume he has no
-strong opinion and I don't want to put him in a different position.
+> On Fri, Mar 25, 2022 at 03:43:15PM +0100, Peter Zijlstra wrote:
+> > On Fri, Mar 25, 2022 at 11:22:53PM +0900, Masami Hiramatsu wrote:
+> > 
+> > > Masami Hiramatsu (3):
+> > >       kprobes: Use rethook for kretprobe if possible
+> > >       rethook: kprobes: x86: Replace kretprobe with rethook on x86
+> > >       x86,kprobes: Fix optprobe trampoline to generate complete pt_regs
+> > > 
+> > > Peter Zijlstra (1):
+> > >       Subject: x86,rethook: Fix arch_rethook_trampoline() to generate a complete pt_regs
+> > 
+> > You fat-fingered the subject there ^
+> > 
+> > Other than that:
+> > 
+> > Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> > 
+> > Hopefully the ftrace return trampoline can also be switched over..
+> 
+> Urgh, allnoconfig doesn't build because..
+> 
+> diff --git a/kernel/Makefile b/kernel/Makefile
+> index 56f4ee97f328..471d71935e90 100644
+> --- a/kernel/Makefile
+> +++ b/kernel/Makefile
+> @@ -108,6 +108,7 @@ obj-$(CONFIG_TRACING) += trace/
+>  obj-$(CONFIG_TRACE_CLOCK) += trace/
+>  obj-$(CONFIG_RING_BUFFER) += trace/
+>  obj-$(CONFIG_TRACEPOINTS) += trace/
+> +obj-$(CONFIG_RETHOOK) += trace/
+>  obj-$(CONFIG_IRQ_WORK) += irq_work.o
+>  obj-$(CONFIG_CPU_PM) += cpu_pm.o
+>  obj-$(CONFIG_BPF) += bpf/
+
+Oops, thanks for pointing out!
+
+
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
