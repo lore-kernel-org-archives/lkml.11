@@ -2,214 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D042C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 17:10:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B27A6C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 17:20:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234407AbiCZRLm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 13:11:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50172 "EHLO
+        id S234180AbiCZRWH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 13:22:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233979AbiCZRKi (ORCPT
+        with ESMTP id S232824AbiCZRWB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 13:10:38 -0400
-Received: from stuerz.xyz (stuerz.xyz [IPv6:2001:19f0:5:15da:5400:3ff:fecc:7379])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10C9F35844;
-        Sat, 26 Mar 2022 10:08:58 -0700 (PDT)
-Received: by stuerz.xyz (Postfix, from userid 114)
-        id 85B86FBAD8; Sat, 26 Mar 2022 16:59:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=stuerz.xyz; s=mail;
-        t=1648313990; bh=hqrYFkjwHXr5MkCmTzW0zUtSYcfIlAH4M2viTmK+ce0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NzOHGekHcRWuZ4H68rapfZbBmrqB6nsbrdOPjNSxt7h8WkRUT3D2lLjIJFRTIjfB3
-         UgMiATq5eTVCXaOy2UZ2vJ94sDqSpZePYoniDGtML1oJyKaOnSog2nTRNdmus4huu1
-         dNKNTHK/s44qXlrlWpPs4xe6WlRq0YWiRCCsHRsQRt+Dztdk6urqW44lP7OYdLe1nd
-         iApLmLF5sd4XynYeSD7WhPsr05da2DKHrbLaeFnaE6APUcbkLSfnhSQ4vENwGp/qDb
-         WIwfu6P9XdEyQtoiou9yk/fZ3gXOw5RrBCJBTphGCihX/Wg4bVDJOMPD5bWY31k1dT
-         anoDgWlgp+dAg==
-Received: from benni-fedora.. (unknown [IPv6:2a02:8109:a100:1a48:ff0:ef2f:d4da:17d8])
-        by stuerz.xyz (Postfix) with ESMTPSA id B4FD6FB7D4;
-        Sat, 26 Mar 2022 16:59:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=stuerz.xyz; s=mail;
-        t=1648313987; bh=hqrYFkjwHXr5MkCmTzW0zUtSYcfIlAH4M2viTmK+ce0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yJm8jOOpo7o5bJ/jnyWMMwZCEz0cp1ONDyucFrcaUR3MF3mVAicBbi+RDh7CMUk6b
-         AyDPTwmRpd0XtTVVibZYv+GFO17TD/etO65ImQn1AFDB5Rst93WnLmQ26aVc+7IYzp
-         +7kCFMqaTfUdoa765GsRs1bJ96ZWZETiepQrT7wGEtCCoxWejua9HAQCyk7dJKJh5O
-         wuVo1XTIDTYs6bomi740IDuPOKzsYRmpgM59T/cdggq6jN4J+vjL83NtQNKgUJ1zre
-         LWEzOV5Of6i4tJhdHMgudanVzcnBxhgC4dyUDk7gJTZs+N6Hn6Ykq5e3pYup83HrRK
-         SBOFExwpFzDQA==
-From:   =?UTF-8?q?Benjamin=20St=C3=BCrz?= <benni@stuerz.xyz>
-To:     andrew@lunn.ch
-Cc:     sebastian.hesselbarth@gmail.com, gregory.clement@bootlin.com,
-        linux@armlinux.org.uk, linux@simtec.co.uk, krzk@kernel.org,
-        alim.akhtar@samsung.com, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com,
-        robert.moore@intel.com, rafael.j.wysocki@intel.com,
-        lenb@kernel.org, 3chas3@gmail.com, laforge@gnumonks.org,
-        arnd@arndb.de, gregkh@linuxfoundation.org, mchehab@kernel.org,
-        tony.luck@intel.com, james.morse@arm.com, rric@kernel.org,
-        linus.walleij@linaro.org, brgl@bgdev.pl,
-        mike.marciniszyn@cornelisnetworks.com,
-        dennis.dalessandro@cornelisnetworks.com, jgg@ziepe.ca,
-        pali@kernel.org, dmitry.torokhov@gmail.com, isdn@linux-pingi.de,
-        benh@kernel.crashing.org, fbarrat@linux.ibm.com, ajd@linux.ibm.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        nico@fluxnic.net, loic.poulain@linaro.org, kvalo@kernel.org,
-        pkshih@realtek.com, bhelgaas@google.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org, linux-ia64@vger.kernel.org,
-        linux-acpi@vger.kernel.org, devel@acpica.org,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-edac@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-input@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-media@vger.kernel.org,
-        wcn36xx@lists.infradead.org, linux-wireless@vger.kernel.org,
-        linux-pci@vger.kernel.org,
-        =?UTF-8?q?Benjamin=20St=C3=BCrz?= <benni@stuerz.xyz>
-Subject: [PATCH 04/22] x86: Replace comments with C99 initializers
-Date:   Sat, 26 Mar 2022 17:58:51 +0100
-Message-Id: <20220326165909.506926-4-benni@stuerz.xyz>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220326165909.506926-1-benni@stuerz.xyz>
-References: <20220326165909.506926-1-benni@stuerz.xyz>
+        Sat, 26 Mar 2022 13:22:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4C65649277
+        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 10:20:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648315215;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=0gPCasSItm4Ex2ZMUQbF4T4OAP0GG+ryCRQM09Api5o=;
+        b=glkaJGPiWzyjR+c5dYxaf7j5OHemLfbkYVXTbD0Kp8Tv1YLjKa3fKRY3WnCwdq0ah66Fkr
+        nnYa5VX1q58sBKYXo7gGxiFnUZyMoanFxNqB9Z4VT7QcegSOUWmLG/3XjWqDoLjJkGjo9s
+        4+VWf5NgjYoJevR+6xDs9bKH9oUkN8Y=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-613-tHt1O-SaMF-QG0CUVOhqMQ-1; Sat, 26 Mar 2022 13:20:14 -0400
+X-MC-Unique: tHt1O-SaMF-QG0CUVOhqMQ-1
+Received: by mail-qt1-f197.google.com with SMTP id f3-20020ac84983000000b002e22396acfbso8340906qtq.18
+        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 10:20:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0gPCasSItm4Ex2ZMUQbF4T4OAP0GG+ryCRQM09Api5o=;
+        b=7iskP5km6E8fuGvryZa8gcreqdisDC6RT113uvaTvSXeuVuf+hr8rdMCm0lPHM6ZIq
+         CitFOpZEVwaue6v1KkflxOmhXDUIbTG8cJPSm5qytCuJ0SMumahXI0CAi6AeyXZ8FTrE
+         AQCKGf8k1rOoVuw3UbAVehdQj+7sc+BVtIrD4PZkUbVwM0Ef6opNZTsckP7K4bM6WCv1
+         wsmr38dccNsXjexYABcmnW8d21HklDVQ8ttD13va7i8q0CC1d49meyaMFHms3oz0yAPi
+         k1hrAR3MQxgYUBIVASsXMFlhVq+oIY1+NOvuXCZc8Y26uO49OpPHoNA7zIyVuXKx7Yw3
+         DL2Q==
+X-Gm-Message-State: AOAM531FAiw6vsmbvfXrVb0LJ0vLLkefPOt2mQnGh8DQnPeYjXivKfBg
+        v2gV0Hp0h8JigbdeXuKyIRrPXALJBRl7Bo2SPALeYaif1K7WjMldM8c70v58JnEzkN+2R67TYQg
+        DWlIupN8VkHSxdREAz72UwLPd
+X-Received: by 2002:a05:620a:4047:b0:67d:6729:b241 with SMTP id i7-20020a05620a404700b0067d6729b241mr10750093qko.151.1648315213274;
+        Sat, 26 Mar 2022 10:20:13 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy7zW54pmYavrU4oBp5rsLnr4D2xBrbgGeijtC31l8eEaKfEuQDANgOphYIqyt4r41K+AKekA==
+X-Received: by 2002:a05:620a:4047:b0:67d:6729:b241 with SMTP id i7-20020a05620a404700b0067d6729b241mr10750077qko.151.1648315213068;
+        Sat, 26 Mar 2022 10:20:13 -0700 (PDT)
+Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id t13-20020a05622a148d00b002e22f105099sm8462282qtx.21.2022.03.26.10.20.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 26 Mar 2022 10:20:12 -0700 (PDT)
+From:   trix@redhat.com
+To:     shshaikh@marvell.com, manishc@marvell.com, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, nathan@kernel.org,
+        ndesaulniers@google.com, sucheta.chakraborty@qlogic.com
+Cc:     GR-Linux-NIC-Dev@marvell.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] qlcnic: dcb: default to returning -EOPNOTSUPP
+Date:   Sat, 26 Mar 2022 10:20:03 -0700
+Message-Id: <20220326172003.2906474-1-trix@redhat.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This replaces comments with C99's designated
-initializers because the kernel supports them now.
+From: Tom Rix <trix@redhat.com>
 
-Signed-off-by: Benjamin Stürz <benni@stuerz.xyz>
+Clang static analysis reports this issue
+qlcnic_dcb.c:382:10: warning: Assigned value is
+  garbage or undefined
+  mbx_out = *val;
+          ^ ~~~~
+
+val is set in the qlcnic_dcb_query_hw_capability() wrapper.
+If there is no query_hw_capability op in dcp, success is
+returned without setting the val.
+
+For this and similar wrappers, return -EOPNOTSUPP.
+
+Fixes: 14d385b99059 ("qlcnic: dcb: Query adapter DCB capabilities.")
+Signed-off-by: Tom Rix <trix@redhat.com>
 ---
- arch/x86/include/asm/kgdb.h   | 80 +++++++++++++++++------------------
- arch/x86/kernel/cpu/mtrr/if.c | 14 +++---
- 2 files changed, 47 insertions(+), 47 deletions(-)
+ drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/include/asm/kgdb.h b/arch/x86/include/asm/kgdb.h
-index aacaf2502bd2..a9161e2f8b63 100644
---- a/arch/x86/include/asm/kgdb.h
-+++ b/arch/x86/include/asm/kgdb.h
-@@ -25,52 +25,52 @@
-  */
- #ifdef CONFIG_X86_32
- enum regnames {
--	GDB_AX,			/* 0 */
--	GDB_CX,			/* 1 */
--	GDB_DX,			/* 2 */
--	GDB_BX,			/* 3 */
--	GDB_SP,			/* 4 */
--	GDB_BP,			/* 5 */
--	GDB_SI,			/* 6 */
--	GDB_DI,			/* 7 */
--	GDB_PC,			/* 8 also known as eip */
--	GDB_PS,			/* 9 also known as eflags */
--	GDB_CS,			/* 10 */
--	GDB_SS,			/* 11 */
--	GDB_DS,			/* 12 */
--	GDB_ES,			/* 13 */
--	GDB_FS,			/* 14 */
--	GDB_GS,			/* 15 */
-+	GDB_AX = 0,
-+	GDB_CX = 1,
-+	GDB_DX = 2,
-+	GDB_BX = 3,
-+	GDB_SP = 4,
-+	GDB_BP = 5,
-+	GDB_SI = 6,
-+	GDB_DI = 7,
-+	GDB_PC = 8,			/* also known as eip */
-+	GDB_PS = 9,			/* also known as eflags */
-+	GDB_CS = 10,
-+	GDB_SS = 11,
-+	GDB_DS = 12,
-+	GDB_ES = 13,
-+	GDB_FS = 14,
-+	GDB_GS = 15,
- };
- #define GDB_ORIG_AX		41
- #define DBG_MAX_REG_NUM		16
- #define NUMREGBYTES		((GDB_GS+1)*4)
- #else /* ! CONFIG_X86_32 */
- enum regnames {
--	GDB_AX,			/* 0 */
--	GDB_BX,			/* 1 */
--	GDB_CX,			/* 2 */
--	GDB_DX,			/* 3 */
--	GDB_SI,			/* 4 */
--	GDB_DI,			/* 5 */
--	GDB_BP,			/* 6 */
--	GDB_SP,			/* 7 */
--	GDB_R8,			/* 8 */
--	GDB_R9,			/* 9 */
--	GDB_R10,		/* 10 */
--	GDB_R11,		/* 11 */
--	GDB_R12,		/* 12 */
--	GDB_R13,		/* 13 */
--	GDB_R14,		/* 14 */
--	GDB_R15,		/* 15 */
--	GDB_PC,			/* 16 */
--	GDB_PS,			/* 17 */
--	GDB_CS,			/* 18 */
--	GDB_SS,			/* 19 */
--	GDB_DS,			/* 20 */
--	GDB_ES,			/* 21 */
--	GDB_FS,			/* 22 */
--	GDB_GS,			/* 23 */
-+	GDB_AX   =  0,
-+	GDB_BX   =  1,
-+	GDB_CX   =  2,
-+	GDB_DX   =  3,
-+	GDB_SI   =  4,
-+	GDB_DI   =  5,
-+	GDB_BP   =  6,
-+	GDB_SP   =  7,
-+	GDB_R8   =  8,
-+	GDB_R9   =  9,
-+	GDB_R10  = 10,
-+	GDB_R11  = 11,
-+	GDB_R12  = 12,
-+	GDB_R13  = 13,
-+	GDB_R14  = 14,
-+	GDB_R15  = 15,
-+	GDB_PC   = 16,			/* also known as eip */
-+	GDB_PS   = 17,			/* also known as eflags */
-+	GDB_CS   = 18,
-+	GDB_SS   = 19,
-+	GDB_DS   = 20,
-+	GDB_ES   = 21,
-+	GDB_FS   = 22,
-+	GDB_GS   = 23,
- };
- #define GDB_ORIG_AX		57
- #define DBG_MAX_REG_NUM		24
-diff --git a/arch/x86/kernel/cpu/mtrr/if.c b/arch/x86/kernel/cpu/mtrr/if.c
-index a5c506f6da7f..7664a672f414 100644
---- a/arch/x86/kernel/cpu/mtrr/if.c
-+++ b/arch/x86/kernel/cpu/mtrr/if.c
-@@ -18,13 +18,13 @@
+diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h
+index 5d79ee4370bcd..7519773eaca6e 100644
+--- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h
++++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h
+@@ -51,7 +51,7 @@ static inline int qlcnic_dcb_get_hw_capability(struct qlcnic_dcb *dcb)
+ 	if (dcb && dcb->ops->get_hw_capability)
+ 		return dcb->ops->get_hw_capability(dcb);
  
- static const char *const mtrr_strings[MTRR_NUM_TYPES] =
- {
--	"uncachable",		/* 0 */
--	"write-combining",	/* 1 */
--	"?",			/* 2 */
--	"?",			/* 3 */
--	"write-through",	/* 4 */
--	"write-protect",	/* 5 */
--	"write-back",		/* 6 */
-+	[0] = "uncachable",
-+	[1] = "write-combining",
-+	[2] = "?",
-+	[3] = "?",
-+	[4] = "write-through",
-+	[5] = "write-protect",
-+	[6] = "write-back",
- };
+-	return 0;
++	return -EOPNOTSUPP;
+ }
  
- const char *mtrr_attrib_to_str(int x)
+ static inline void qlcnic_dcb_free(struct qlcnic_dcb *dcb)
+@@ -65,7 +65,7 @@ static inline int qlcnic_dcb_attach(struct qlcnic_dcb *dcb)
+ 	if (dcb && dcb->ops->attach)
+ 		return dcb->ops->attach(dcb);
+ 
+-	return 0;
++	return -EOPNOTSUPP;
+ }
+ 
+ static inline int
+@@ -74,7 +74,7 @@ qlcnic_dcb_query_hw_capability(struct qlcnic_dcb *dcb, char *buf)
+ 	if (dcb && dcb->ops->query_hw_capability)
+ 		return dcb->ops->query_hw_capability(dcb, buf);
+ 
+-	return 0;
++	return -EOPNOTSUPP;
+ }
+ 
+ static inline void qlcnic_dcb_get_info(struct qlcnic_dcb *dcb)
+@@ -89,7 +89,7 @@ qlcnic_dcb_query_cee_param(struct qlcnic_dcb *dcb, char *buf, u8 type)
+ 	if (dcb && dcb->ops->query_cee_param)
+ 		return dcb->ops->query_cee_param(dcb, buf, type);
+ 
+-	return 0;
++	return -EOPNOTSUPP;
+ }
+ 
+ static inline int qlcnic_dcb_get_cee_cfg(struct qlcnic_dcb *dcb)
+@@ -97,7 +97,7 @@ static inline int qlcnic_dcb_get_cee_cfg(struct qlcnic_dcb *dcb)
+ 	if (dcb && dcb->ops->get_cee_cfg)
+ 		return dcb->ops->get_cee_cfg(dcb);
+ 
+-	return 0;
++	return -EOPNOTSUPP;
+ }
+ 
+ static inline void qlcnic_dcb_aen_handler(struct qlcnic_dcb *dcb, void *msg)
 -- 
-2.35.1
+2.26.3
 
