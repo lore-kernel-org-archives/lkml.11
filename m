@@ -2,71 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FDF4C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 08:07:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C65CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 08:09:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232030AbiCZIJa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 04:09:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48000 "EHLO
+        id S232035AbiCZIKg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 04:10:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232019AbiCZIJY (ORCPT
+        with ESMTP id S229742AbiCZIKc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 04:09:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 193E232EF2;
-        Sat, 26 Mar 2022 01:07:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BAC4DB8006F;
-        Sat, 26 Mar 2022 08:07:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A69E8C34116;
-        Sat, 26 Mar 2022 08:07:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648282065;
-        bh=aXm+/EMiPGTBOXkMG0o+LiBNARi0puGc3dM/fhCENmI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d36AEMRsvicEHBnWgOclYD5tgBL4i/mWby4t9DVwnBmyBsXxBJa19rkyueP2W33n5
-         bvChsNzAbGWodlxH87GZhd4t/R896m4jWAVbvi+1JrgqPGwDCG6lEIzQ1R/BnlRfjW
-         Q5zKF+o0U8BMAw5l8tXsA8QcOPkbVhfCSVl26rjtJUcGRrh1dLktHQu7XziQqfO8TT
-         xarn8ifj5LpOen3bcVejgs5zBNdoVDdfX7O7zMybknAkpiGs3cIrCXa2x1GgZEn54O
-         +7smnn3ICeJfdkNcXPQuvfRf82y8UL5sd+0uFWSi2eR9e5yMDOOnNtPrUJ/GenJvvD
-         K49rIvqXucf3A==
-From:   Roger Quadros <rogerq@kernel.org>
-To:     miquel.raynal@bootlin.com, robh+dt@kernel.org
-Cc:     krzk@kernel.org, richard@nod.at, vigneshr@ti.com, kishon@ti.com,
-        nm@ti.com, linux-mtd@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Roger Quadros <rogerq@kernel.org>
-Subject: [PATCH v3 3/3] mtd: rawnand: omap_elm: Add compatible for AM64 ELM
-Date:   Sat, 26 Mar 2022 10:07:26 +0200
-Message-Id: <20220326080726.30372-4-rogerq@kernel.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220326080726.30372-1-rogerq@kernel.org>
-References: <20220326080726.30372-1-rogerq@kernel.org>
+        Sat, 26 Mar 2022 04:10:32 -0400
+Received: from m12-12.163.com (m12-12.163.com [220.181.12.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D2681393F0;
+        Sat, 26 Mar 2022 01:08:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=j21A406LuZH2VcNGPx
+        2U8V/L22keGEarWkTFzGFG/vQ=; b=TPR7DKpRgj5qfu24gIBM26o3VUe/d09F85
+        rCagLSLHYDeiwWpMDtI7w7txymO6bpBeh6Yu4MZ7SoxEnFXRt+1Y20ZYH7uyhPQF
+        fZyySVza6YHNeBgfhDZUVS1w0Uo/pehW6H4z5rgnaUVn5Kb2jvtNfwPXZQafD3NP
+        /JHUDV1PU=
+Received: from localhost.localdomain.localdomain (unknown [36.111.64.85])
+        by smtp8 (Coremail) with SMTP id DMCowACHE2wvxj5iXbnXBw--.5014S2;
+        Sat, 26 Mar 2022 15:52:23 +0800 (CST)
+From:   daihuaigang129@163.com
+To:     colyli@suse.de, kent.overstreet@gmail.com
+Cc:     linux-bcache@vger.kernel.org, linux-kernel@vger.kernel.org,
+        daihuaigang <daihuaigang129@163.com>
+Subject: [PATCH v1] mmc: core: fix AB-BA deadlock between cache register and cache_set_free
+Date:   Sat, 26 Mar 2022 15:52:07 +0800
+Message-Id: <1648281127-9389-1-git-send-email-daihuaigang129@163.com>
+X-Mailer: git-send-email 1.8.3.1
+X-CM-TRANSID: DMCowACHE2wvxj5iXbnXBw--.5014S2
+X-Coremail-Antispam: 1Uf129KBjvdXoW7GFy5JFyxZw45tw4rWF45KFg_yoWfKFX_uF
+        WxXFyIg3yrKr1Ygr13CayfZ3yqvF1q9an3XFWIyrnxAa45WFnFkryfZr18Z34rZa1SkFnx
+        Gr1vkF1F93W8KjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUUD7aUUUUUU==
+X-Originating-IP: [36.111.64.85]
+X-CM-SenderInfo: xgdlx3pdljt0jjrsmqqrwthudrp/1tbiNBfPMlaD-NpCoAAAsP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The AM64 SoC has the Error Locator Module. Add compatible id for it.
+From: daihuaigang <daihuaigang129@163.com>
 
-Signed-off-by: Roger Quadros <rogerq@kernel.org>
+fix AB-BA deadlock between cache register and cache_set_free.
+
+Signed-off-by: daihuaigang <daihuaigang129@163.com>
 ---
- drivers/mtd/nand/raw/omap_elm.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/md/bcache/super.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/mtd/nand/raw/omap_elm.c b/drivers/mtd/nand/raw/omap_elm.c
-index db105d9b560c..aa7f49c3f372 100644
---- a/drivers/mtd/nand/raw/omap_elm.c
-+++ b/drivers/mtd/nand/raw/omap_elm.c
-@@ -550,6 +550,7 @@ static SIMPLE_DEV_PM_OPS(elm_pm_ops, elm_suspend, elm_resume);
- #ifdef CONFIG_OF
- static const struct of_device_id elm_of_match[] = {
- 	{ .compatible = "ti,am3352-elm" },
-+	{ .compatible = "ti,am64-elm" },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, elm_of_match);
+diff --git a/drivers/md/bcache/super.c b/drivers/md/bcache/super.c
+index bf3de14..f17953c 100644
+--- a/drivers/md/bcache/super.c
++++ b/drivers/md/bcache/super.c
+@@ -1690,10 +1690,8 @@ static void cache_set_free(struct closure *cl)
+ 	if (ca) {
+ 		ca->set = NULL;
+ 		c->cache = NULL;
+-		kobject_put(&ca->kobj);
+ 	}
+ 
+-
+ 	if (c->moving_gc_wq)
+ 		destroy_workqueue(c->moving_gc_wq);
+ 	bioset_exit(&c->bio_split);
+@@ -1704,6 +1702,8 @@ static void cache_set_free(struct closure *cl)
+ 
+ 	list_del(&c->list);
+ 	mutex_unlock(&bch_register_lock);
++	if (ca)
++		kobject_put(&ca->kobj);
+ 
+ 	pr_info("Cache set %pU unregistered\n", c->set_uuid);
+ 	wake_up(&unregister_wait);
 -- 
-2.17.1
+1.8.3.1
 
