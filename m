@@ -2,137 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FFCCC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 02:27:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4355FC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 02:28:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230225AbiCZC31 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 22:29:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52102 "EHLO
+        id S230342AbiCZC3t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 22:29:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229697AbiCZC3Y (ORCPT
+        with ESMTP id S230138AbiCZC3q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 22:29:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A858A1760D5;
-        Fri, 25 Mar 2022 19:27:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5EDCCB82B07;
-        Sat, 26 Mar 2022 02:27:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 188B7C004DD;
-        Sat, 26 Mar 2022 02:27:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648261666;
-        bh=GPBnrR38vldcM8pzwaRlh5Fu/HDIL2hc4on8+T36Er8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rI1w6cxa/iWXTDaYiPp+zlEqF/mtuZP77a/hESaNLrYovCEKe6tK6AHa9c6JKZuBj
-         1pIzbj2rRc4Qrf61oZDUW6EJNz5VJFiaFDf2SqNRR7oYJAUkQ3CYtcMKtpT5eEYsdz
-         AskptYEDy056t5SZNwoS8ta2kwij+myxmx3uoD0CuxzX6PMOlZ0aeBu+Vz4qiP5aI/
-         yTw30lhaZJLSQpEu1AD+KUdf6VnduH3dIVa/XJLWGx8grukC9qARqR8DLrESnoHa+G
-         g3Wopd3Lgtee3JaQ9xOfaGtr586ayQxik2ex5XNtGKiE1tzIZieIWJqDMqwexu0el6
-         S162RJgIqV9VQ==
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>, x86@kernel.org,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        kernel-janitors@vger.kernel.org,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next v3 4/4] x86,kprobes: Fix optprobe trampoline to generate complete pt_regs
-Date:   Sat, 26 Mar 2022 11:27:40 +0900
-Message-Id: <164826166027.2455864.14759128090648961900.stgit@devnote2>
+        Fri, 25 Mar 2022 22:29:46 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C56E2220C5;
+        Fri, 25 Mar 2022 19:28:09 -0700 (PDT)
+X-UUID: 0adf9d8589ff4711be27d94dc01043d5-20220326
+X-UUID: 0adf9d8589ff4711be27d94dc01043d5-20220326
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <jianjun.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1867167796; Sat, 26 Mar 2022 10:28:03 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Sat, 26 Mar 2022 10:28:02 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sat, 26 Mar 2022 10:28:01 +0800
+From:   Jianjun Wang <jianjun.wang@mediatek.com>
+To:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>
+CC:     Wei-Shun Chang <weishunc@google.com>,
+        Jianjun Wang <jianjun.wang@mediatek.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-phy@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <rex-bc.chen@mediatek.com>,
+        <randy.wu@mediatek.com>, <jieyy.yang@mediatek.com>,
+        <chuanjia.liu@mediatek.com>, <qizhong.cheng@mediatek.com>,
+        <jian.yang@mediatek.com>
+Subject: [PATCH v5 0/2] phy: mediatek: Add PCIe PHY driver
+Date:   Sat, 26 Mar 2022 10:27:26 +0800
+Message-ID: <20220326022728.2969-1-jianjun.wang@mediatek.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <164826160914.2455864.505359679001055158.stgit@devnote2>
-References: <164826160914.2455864.505359679001055158.stgit@devnote2>
-User-Agent: StGit/0.19
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently the optprobe trampoline template code ganerate an
-almost complete pt_regs on-stack, everything except regs->ss.
-The 'regs->ss' points to the top of stack, which is not a
-valid segment decriptor.
+These series patches add support for PCIe PHY driver on MediaTek chipsets.
 
-As same as the rethook does, complete the job by also pushing ss.
+Changes in v5:
+1. Fix typo in kerneldoc: "eFues" => "eFuse".
 
-Suggested-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
----
- arch/x86/kernel/kprobes/opt.c |   25 ++++++++++++++++---------
- 1 file changed, 16 insertions(+), 9 deletions(-)
+Changes in v4:
+1. Fix no return when calling dev_err_probe.
 
-diff --git a/arch/x86/kernel/kprobes/opt.c b/arch/x86/kernel/kprobes/opt.c
-index b4a54a52aa59..e6b8c5362b94 100644
---- a/arch/x86/kernel/kprobes/opt.c
-+++ b/arch/x86/kernel/kprobes/opt.c
-@@ -106,7 +106,8 @@ asm (
- 			".global optprobe_template_entry\n"
- 			"optprobe_template_entry:\n"
- #ifdef CONFIG_X86_64
--			/* We don't bother saving the ss register */
-+			"       pushq $" __stringify(__KERNEL_DS) "\n"
-+			/* Save the 'sp - 8', this will be fixed later. */
- 			"	pushq %rsp\n"
- 			"	pushfq\n"
- 			".global optprobe_template_clac\n"
-@@ -121,14 +122,17 @@ asm (
- 			".global optprobe_template_call\n"
- 			"optprobe_template_call:\n"
- 			ASM_NOP5
--			/* Move flags to rsp */
-+			/* Copy 'regs->flags' into 'regs->ss'. */
- 			"	movq 18*8(%rsp), %rdx\n"
--			"	movq %rdx, 19*8(%rsp)\n"
-+			"	movq %rdx, 20*8(%rsp)\n"
- 			RESTORE_REGS_STRING
--			/* Skip flags entry */
--			"	addq $8, %rsp\n"
-+			/* Skip 'regs->flags' and 'regs->sp'. */
-+			"	addq $16, %rsp\n"
-+			/* And pop flags register from 'regs->ss'. */
- 			"	popfq\n"
- #else /* CONFIG_X86_32 */
-+			"	pushl %ss\n"
-+			/* Save the 'sp - 4', this will be fixed later. */
- 			"	pushl %esp\n"
- 			"	pushfl\n"
- 			".global optprobe_template_clac\n"
-@@ -142,12 +146,13 @@ asm (
- 			".global optprobe_template_call\n"
- 			"optprobe_template_call:\n"
- 			ASM_NOP5
--			/* Move flags into esp */
-+			/* Copy 'regs->flags' into 'regs->ss'. */
- 			"	movl 14*4(%esp), %edx\n"
--			"	movl %edx, 15*4(%esp)\n"
-+			"	movl %edx, 16*4(%esp)\n"
- 			RESTORE_REGS_STRING
--			/* Skip flags entry */
--			"	addl $4, %esp\n"
-+			/* Skip 'regs->flags' and 'regs->sp'. */
-+			"	addl $8, %esp\n"
-+			/* And pop flags register from 'regs->ss'. */
- 			"	popfl\n"
- #endif
- 			".global optprobe_template_end\n"
-@@ -179,6 +184,8 @@ optimized_callback(struct optimized_kprobe *op, struct pt_regs *regs)
- 		kprobes_inc_nmissed_count(&op->kp);
- 	} else {
- 		struct kprobe_ctlblk *kcb = get_kprobe_ctlblk();
-+		/* Adjust stack pointer */
-+		regs->sp += sizeof(long);
- 		/* Save skipped registers */
- 		regs->cs = __KERNEL_CS;
- #ifdef CONFIG_X86_32
+Changes in v3:
+1. Add introductions for structure members;
+2. Add SoC dependent data;
+3. Dynamically allocate efuse data;
+4. Check return value if it's an -EPROBE_DEFER.
+
+Changes in v2:
+1. Add specific compatible name;
+2. Read NVMEM data at probe time;
+3. Fix typos.
+
+Jianjun Wang (2):
+  dt-bindings: phy: mediatek: Add YAML schema for PCIe PHY
+  phy: mediatek: Add PCIe PHY driver
+
+ .../bindings/phy/mediatek,pcie-phy.yaml       |  75 +++++
+ drivers/phy/mediatek/Kconfig                  |  11 +
+ drivers/phy/mediatek/Makefile                 |   1 +
+ drivers/phy/mediatek/phy-mtk-pcie.c           | 272 ++++++++++++++++++
+ 4 files changed, 359 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/phy/mediatek,pcie-phy.yaml
+ create mode 100644 drivers/phy/mediatek/phy-mtk-pcie.c
+
+-- 
+2.18.0
 
