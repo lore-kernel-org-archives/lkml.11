@@ -2,77 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50D50C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 08:14:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69D87C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 08:15:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232082AbiCZIP7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 04:15:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44756 "EHLO
+        id S232097AbiCZIR2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 04:17:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231317AbiCZIPz (ORCPT
+        with ESMTP id S230032AbiCZIRY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 04:15:55 -0400
-Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 422D41CABD3;
-        Sat, 26 Mar 2022 01:14:19 -0700 (PDT)
-Received: by mail-ej1-f51.google.com with SMTP id p15so19361808ejc.7;
-        Sat, 26 Mar 2022 01:14:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=T8ebr2iFGoh7ryNOjBQ98YHXu8uvdUYMxvGrKpFpiQU=;
-        b=dpOqmcq7OTfTzp+vXSbWmrrPoyRh9tuAzAd3nhLaq/plb3IyK772zhhBvZj/mhLOpz
-         ylGlVK/NFISLKdLcc/57ruZrfHb73iI/tvNe/B7zytyoX3smRfGInIiPKX2zSMZffh1f
-         lYLylJZnJIqC9G9nc40+mIbrtcCe3gZc/AT3UIAy+LdGqwN1znny/YwHFcHYGC8WUS3m
-         CVadlzuPRPCrywOyi/+OSJMYCR/6/qt5KkJuH8mBovvhLsc9u4LIZi07RJ7BL+BoZ9hf
-         4nBjycQmuYPQwIQmXS5dfNQUO+XJu2CWgRkteUtzxrdl0tMswi0uIegaRYhqRaaXB3rG
-         w7kQ==
-X-Gm-Message-State: AOAM530GGv8m2fT/r7ocGSp43VXPqSk6q0yX1Y+MTqtqDpOFGgfvtGc+
-        RTLHlcmnVglTbuz21odHMgJOwJ1fRcfRMw==
-X-Google-Smtp-Source: ABdhPJziycJCmOI8ifnO12TtKmV3cON6H184IhBIaccU6Xwb1dxUxQjhgncFsXLalZs3koHg4AKxDg==
-X-Received: by 2002:a17:906:58d3:b0:6da:bdb2:2727 with SMTP id e19-20020a17090658d300b006dabdb22727mr15838125ejs.549.1648282457756;
-        Sat, 26 Mar 2022 01:14:17 -0700 (PDT)
-Received: from [192.168.0.162] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.googlemail.com with ESMTPSA id hp12-20020a1709073e0c00b006e02924bf20sm3265161ejc.117.2022.03.26.01.14.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 26 Mar 2022 01:14:17 -0700 (PDT)
-Message-ID: <c1e9175e-e33d-ec51-4d9a-ce5c441a0ba4@kernel.org>
-Date:   Sat, 26 Mar 2022 09:14:16 +0100
+        Sat, 26 Mar 2022 04:17:24 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E4D81FF23E;
+        Sat, 26 Mar 2022 01:15:48 -0700 (PDT)
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KQWvQ3CF3zfZgW;
+        Sat, 26 Mar 2022 16:14:10 +0800 (CST)
+Received: from huawei.com (10.175.112.208) by kwepemi500013.china.huawei.com
+ (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Sat, 26 Mar
+ 2022 16:15:45 +0800
+From:   Zheng Yongjun <zhengyongjun3@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <lars.povlsen@microchip.com>, <Steen.Hegelund@microchip.com>,
+        <UNGLinuxDriver@microchip.com>
+Subject: [PATCH] net: sparx5: switchdev: fix possible NULL pointer dereference
+Date:   Sat, 26 Mar 2022 08:12:39 +0000
+Message-ID: <20220326081239.9168-1-zhengyongjun3@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 2/3] dt-bindings: mtd: ti,elm: Add support for AM64 ELM
-Content-Language: en-US
-To:     Roger Quadros <rogerq@kernel.org>, miquel.raynal@bootlin.com,
-        robh+dt@kernel.org
-Cc:     richard@nod.at, vigneshr@ti.com, kishon@ti.com, nm@ti.com,
-        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220326080726.30372-1-rogerq@kernel.org>
- <20220326080726.30372-3-rogerq@kernel.org>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <20220326080726.30372-3-rogerq@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.208]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemi500013.china.huawei.com (7.221.188.120)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 26/03/2022 09:07, Roger Quadros wrote:
-> TI's AM64 SoC has the Error Locator Module. Add compatible and
-> related properties to support ELM on AM64 SoC.
-> 
-> Signed-off-by: Roger Quadros <rogerq@kernel.org>
-> ---
->  .../devicetree/bindings/mtd/ti,elm.yaml       | 24 +++++++++++++++++++
->  1 file changed, 24 insertions(+)
-> 
+As the possible failure of the allocation, devm_kzalloc() may return NULL
+pointer.
+Therefore, it should be better to check the 'db' in order to prevent
+the dereference of NULL pointer.
 
+Fixes: 10615907e9b51 ("net: sparx5: switchdev: adding frame DMA functionality")
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+---
+ drivers/net/ethernet/microchip/sparx5/sparx5_fdma.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_fdma.c b/drivers/net/ethernet/microchip/sparx5/sparx5_fdma.c
+index 7436f62fa152..174ad95e746a 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_fdma.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_fdma.c
+@@ -420,6 +420,8 @@ static int sparx5_fdma_tx_alloc(struct sparx5 *sparx5)
+ 			db_hw->dataptr = phys;
+ 			db_hw->status = 0;
+ 			db = devm_kzalloc(sparx5->dev, sizeof(*db), GFP_KERNEL);
++			if (!db)
++				return -ENOMEM;
+ 			db->cpu_addr = cpu_addr;
+ 			list_add_tail(&db->list, &tx->db_list);
+ 		}
+-- 
+2.17.1
 
-
-Best regards,
-Krzysztof
