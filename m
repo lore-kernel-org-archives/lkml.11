@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEBAEC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 18:50:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 826D8C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 18:50:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233538AbiCZSvx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 14:51:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60328 "EHLO
+        id S233767AbiCZSv5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 14:51:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229920AbiCZSvu (ORCPT
+        with ESMTP id S230214AbiCZSvu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 26 Mar 2022 14:51:50 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E1F8369FB;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E25836B42;
         Sat, 26 Mar 2022 11:50:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1490EB80B84;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3E743B80B62;
         Sat, 26 Mar 2022 18:50:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A2C98C340F3;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id AAC5BC34100;
         Sat, 26 Mar 2022 18:50:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1648320610;
-        bh=An/i1g5oXYjt2a1ViSlXAPzVxWsKvxZ9XRyMCj3S2C0=;
+        bh=O472JlvnQA8JnZoBwCaY5bBYhzerKOAsSju1d4d8O8I=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=KVLvFrJL8OY5a6wBnkpK28z7rYc2KJUE3PRQ7MFDyTKiqzMOCvA85pMJcm0PIXwgW
-         gKdjrx0Rju03WOhg9SYIz/ERGsINsE5PnUP8mjMuLN8Qfdf4QJkxh5YdgpyZFsPxzY
-         ow+tuUzDsBnCFaGZOPSodR8NWh5MfW58bpru73nZIn6mymg5eStN0MXAR9s+D3UUJH
-         Vxqxas4l1hLpi1zB9u4/Ro1n0ES5I/qLu/Oc8v5fGGFVgy3f43j1+RCZl4QkeO0IWW
-         heUZ22jdVRbLjcZS0116wo3xDh4ri6iovl7ZkF1gZjbHaUbHRrYe9la3WFFiLFEllS
-         AnK+o/m1omPNA==
+        b=SKXthjNL3jvu/Elwa6CgqNl74Y9zAurz6MXJh7GFweySKwCitgdm/253XO0rWgmHx
+         f/I/S8+mPtnWl9Q9FXqnb0SQBA59G8d5zqVs7PM2iLlHdNekjjCVS66tZGq7PiI3pF
+         AtSrZwUgWzG71lxuJwrlSKdju+k3lAqCCvic3qI9SxPnC/x12/NfnoDgGicDMTXhsQ
+         SC9/WBBBHttUB8yg6a5ud7cMf/Qwfvl+qhU4yXjUBEOKRJUYcqhKHCQPpl61hENuGz
+         CDLuf+jlwaBjqLcgTf49Bj5f7NRCMmliNvnSvDVJNnoIpya44GEGEQD8cX+J+Rcdg/
+         H6hCFpotpUUmQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 874A2E6D402;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 919ABF03848;
         Sat, 26 Mar 2022 18:50:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net V2] net/x25: Fix null-ptr-deref caused by x25_disconnect
+Subject: Re: [PATCH] net: sparx5: switchdev: fix possible NULL pointer dereference
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164832061055.28772.13748131132872742265.git-patchwork-notify@kernel.org>
+Message-Id: <164832061059.28772.15281468495699037087.git-patchwork-notify@kernel.org>
 Date:   Sat, 26 Mar 2022 18:50:10 +0000
-References: <20220326104346.91790-1-duoming@zju.edu.cn>
-In-Reply-To: <20220326104346.91790-1-duoming@zju.edu.cn>
-To:     Duoming Zhou <duoming@zju.edu.cn>
-Cc:     linux-x25@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ms@dev.tdt.de, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, tanxin.ctf@gmail.com,
-        xiyuyang19@fudan.edu.cn, linma@zju.edu.cn
+References: <20220326081239.9168-1-zhengyongjun3@huawei.com>
+In-Reply-To: <20220326081239.9168-1-zhengyongjun3@huawei.com>
+To:     Zheng Yongjun <zhengyongjun3@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        lars.povlsen@microchip.com, Steen.Hegelund@microchip.com,
+        UNGLinuxDriver@microchip.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -58,25 +58,20 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Sat, 26 Mar 2022 18:43:46 +0800 you wrote:
-> When the link layer is terminating, x25->neighbour will be set to NULL
-> in x25_disconnect(). As a result, it could cause null-ptr-deref bugs in
-> x25_sendmsg(),x25_recvmsg() and x25_connect(). One of the bugs is
-> shown below.
+On Sat, 26 Mar 2022 08:12:39 +0000 you wrote:
+> As the possible failure of the allocation, devm_kzalloc() may return NULL
+> pointer.
+> Therefore, it should be better to check the 'db' in order to prevent
+> the dereference of NULL pointer.
 > 
->     (Thread 1)                 |  (Thread 2)
-> x25_link_terminated()          | x25_recvmsg()
->  x25_kill_by_neigh()           |  ...
->   x25_disconnect()             |  lock_sock(sk)
->    ...                         |  ...
->    x25->neighbour = NULL //(1) |
->    ...                         |  x25->neighbour->extended //(2)
+> Fixes: 10615907e9b51 ("net: sparx5: switchdev: adding frame DMA functionality")
+> Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,V2] net/x25: Fix null-ptr-deref caused by x25_disconnect
-    https://git.kernel.org/netdev/net/c/7781607938c8
+  - net: sparx5: switchdev: fix possible NULL pointer dereference
+    https://git.kernel.org/netdev/net/c/0906f3a3df07
 
 You are awesome, thank you!
 -- 
