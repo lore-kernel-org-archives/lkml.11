@@ -2,115 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C776C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 17:08:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F31CAC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 17:09:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232910AbiCZRKc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 13:10:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49502 "EHLO
+        id S234274AbiCZRKo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 13:10:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231444AbiCZRK3 (ORCPT
+        with ESMTP id S231444AbiCZRKd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 13:10:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 72BA134BB5
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 10:08:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648314530;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KsSrWIqPfk2quPBaJHDrYcj65RLxmIBGnRe4ZxcsCNw=;
-        b=PjRmjovcDZQraxJXKnXu+frKkd5Yia4dRMvnWlbLTJjyxGNC/3BoDhhJKmDXhGpHxt7Jso
-        3+RQPlSM7UbNOt0JPwE6IpvJpEaKjEcm9A+MHNqLvONdzuuMe+kF/MNnG5WLFA/Sf7q6+3
-        MuOUpwD9UNmx3u5YBDUonkj38u4s94c=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-524-Qdyjc7XaOHK_YOP420utHQ-1; Sat, 26 Mar 2022 13:08:48 -0400
-X-MC-Unique: Qdyjc7XaOHK_YOP420utHQ-1
-Received: by mail-qt1-f199.google.com with SMTP id l19-20020a05622a175300b002e1a85b5b52so8329174qtk.21
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 10:08:48 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=KsSrWIqPfk2quPBaJHDrYcj65RLxmIBGnRe4ZxcsCNw=;
-        b=n5JhruE3Bm0822txXRZwNCpYhxVTew6nwPCPDCQsg+SfCnJyqP3PLeZ7COwCjbzZLL
-         l4rmnKa2NyL3R421GC3poPK1rFvqOxAVyyepfVZBj0XZYwqqAZevwmyzCziaLJ1xj5tX
-         xpNrQHkOviD3dXlkH8LIyTA3XRnc34z/eWg9oaFz/RV1okYHxKjJYAq18cEquQopLYnh
-         VfNCybtdXWB76yfD96gWWCzwhzYnsIEHQ9G5JldjlxYlXwRgUQRVNtZMCQW3+5mlf7Ix
-         7Eibk14cdGjBZRAp8npmgW+fnEe1hpsfClvjHblUkP46x9RPDMIJRfadngxg//yN+Ks4
-         Dd0Q==
-X-Gm-Message-State: AOAM530bUo2ioaot3bsxoZ6DG6otPGWiAx9TzVL9gXsMhuChelZo3r/h
-        fjEnqAazrQJkMAqnesiYIxEbmnYU1WsfcgTvLQntNtVtNKUicCNHYsMVBe+iBP4egHqFwnRmn8N
-        TQ8vjGI6uWXNg83BxcMi7K/8S
-X-Received: by 2002:ac8:5e10:0:b0:2e1:cb3e:bb87 with SMTP id h16-20020ac85e10000000b002e1cb3ebb87mr14884470qtx.4.1648314528093;
-        Sat, 26 Mar 2022 10:08:48 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxcTdcjSdnI+5liW0mpIFMK4UfyXML3yGh5wbmKsyzyWMx+AMLApJvYOFeehZbXiBNRUQclpQ==
-X-Received: by 2002:ac8:5e10:0:b0:2e1:cb3e:bb87 with SMTP id h16-20020ac85e10000000b002e1cb3ebb87mr14884462qtx.4.1648314527854;
-        Sat, 26 Mar 2022 10:08:47 -0700 (PDT)
-Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id r17-20020a05620a299100b00680b43004bfsm3273144qkp.45.2022.03.26.10.08.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 26 Mar 2022 10:08:47 -0700 (PDT)
-Subject: Re: [PATCH v2 4/5] fpga: Use tab instead of spaces for indentation
-To:     Nava kishore Manne <nava.manne@xilinx.com>, mdf@kernel.org,
-        hao.wu@intel.com, yilun.xu@intel.com, michal.simek@xilinx.com,
-        linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, git@xilinx.com
-References: <20220322082202.2007321-1-nava.manne@xilinx.com>
- <20220322082202.2007321-5-nava.manne@xilinx.com>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <f8929af9-daa4-2111-1dff-edbf1f2041e7@redhat.com>
-Date:   Sat, 26 Mar 2022 10:08:44 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Sat, 26 Mar 2022 13:10:33 -0400
+Received: from stuerz.xyz (stuerz.xyz [IPv6:2001:19f0:5:15da:5400:3ff:fecc:7379])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD9E134B8C;
+        Sat, 26 Mar 2022 10:08:33 -0700 (PDT)
+Received: by stuerz.xyz (Postfix, from userid 114)
+        id 4334DFBAD9; Sat, 26 Mar 2022 16:59:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=stuerz.xyz; s=mail;
+        t=1648313984; bh=ZCCwstaS3e/RzElmSk6N8DZfvChsgUHfiTuyAGHFjIM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RPrzs+/yoGLnF5i8FE3eP1X0LDAI6HjUCl2gNtzUox5BXq2E1eLaG0a2oQDUzahaT
+         0gGMlEffJt46pJtPLai9sWEfLeEJc0ZkiLQjl90z5wXqO39WLPgg9P+0nGqQNlR+VE
+         nN7gNlVMnnHiadIwoB2jopKAwOZtVz0o85E4m/s4GSh1J5gAC64U4qmHByU3ZdIsMl
+         IQbRWXqcM6M7A5NNiREXc9fr7WuFT0PCxZW7As8ThOCY/cbVQwoBBfePDkYKijEZRF
+         iwxxu2W006Baw3aUGRDQonw5DwZWwCTof+YKKK+wmLsQVqfDYizYB9X3tcxZjF3fCS
+         k/mkV/dFzcSbw==
+Received: from benni-fedora.. (unknown [IPv6:2a02:8109:a100:1a48:ff0:ef2f:d4da:17d8])
+        by stuerz.xyz (Postfix) with ESMTPSA id 2881DFB7D1;
+        Sat, 26 Mar 2022 16:59:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=stuerz.xyz; s=mail;
+        t=1648313980; bh=ZCCwstaS3e/RzElmSk6N8DZfvChsgUHfiTuyAGHFjIM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=xIsbMOdfU0Q/V/noYBJTvzmENKQwr3xdCDopx+KQ13tTLqAWk3SM6OL4hiv3VVsu4
+         LZ2+4qV891SizwSAbA9RFdif7Xad8663beBH5K2j13NhHE07xQeDfsOgSqxr/C+za+
+         MSb5j7oij2Jd7DfXjOZjPMiCw0Ou7lQ4TQyPva2bjbz9+bFlJyFVO1bNqQWmVvfeza
+         iheYS8PB8/Na2CaDqA8T7AYheNWnter0biMGLVSYWwaNejld2sHcJuTOq8NLUVbkAH
+         b42QbHz9DPMRS79rba+4qCccBHmJTdFEI0D+LYmCJFkFlO8Nbwc3qJr+SwfiHZOfvp
+         PvjA7XiPr1hCQ==
+From:   =?UTF-8?q?Benjamin=20St=C3=BCrz?= <benni@stuerz.xyz>
+To:     andrew@lunn.ch
+Cc:     sebastian.hesselbarth@gmail.com, gregory.clement@bootlin.com,
+        linux@armlinux.org.uk, linux@simtec.co.uk, krzk@kernel.org,
+        alim.akhtar@samsung.com, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com,
+        robert.moore@intel.com, rafael.j.wysocki@intel.com,
+        lenb@kernel.org, 3chas3@gmail.com, laforge@gnumonks.org,
+        arnd@arndb.de, gregkh@linuxfoundation.org, mchehab@kernel.org,
+        tony.luck@intel.com, james.morse@arm.com, rric@kernel.org,
+        linus.walleij@linaro.org, brgl@bgdev.pl,
+        mike.marciniszyn@cornelisnetworks.com,
+        dennis.dalessandro@cornelisnetworks.com, jgg@ziepe.ca,
+        pali@kernel.org, dmitry.torokhov@gmail.com, isdn@linux-pingi.de,
+        benh@kernel.crashing.org, fbarrat@linux.ibm.com, ajd@linux.ibm.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        nico@fluxnic.net, loic.poulain@linaro.org, kvalo@kernel.org,
+        pkshih@realtek.com, bhelgaas@google.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, linux-ia64@vger.kernel.org,
+        linux-acpi@vger.kernel.org, devel@acpica.org,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-edac@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-input@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-media@vger.kernel.org,
+        wcn36xx@lists.infradead.org, linux-wireless@vger.kernel.org,
+        linux-pci@vger.kernel.org,
+        =?UTF-8?q?Benjamin=20St=C3=BCrz?= <benni@stuerz.xyz>
+Subject: [PATCH 03/22] ia64: Replace comments with C99 initializers
+Date:   Sat, 26 Mar 2022 17:58:50 +0100
+Message-Id: <20220326165909.506926-3-benni@stuerz.xyz>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220326165909.506926-1-benni@stuerz.xyz>
+References: <20220326165909.506926-1-benni@stuerz.xyz>
 MIME-Version: 1.0
-In-Reply-To: <20220322082202.2007321-5-nava.manne@xilinx.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This replaces comments with C99's designated
+initializers because the kernel supports them now.
 
-On 3/22/22 1:22 AM, Nava kishore Manne wrote:
-> Trivial fix.
+Signed-off-by: Benjamin Stürz <benni@stuerz.xyz>
+---
+ arch/ia64/kernel/kprobes.c | 64 +++++++++++++++++++-------------------
+ 1 file changed, 32 insertions(+), 32 deletions(-)
 
-This is not descriptive.
-
-Improve the commit log to explain the issue and solution.
-
-Tom
-
->
-> Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
-> ---
-> Changes for v2:
-> 		-None.
->
->   drivers/fpga/Makefile | 6 +++---
->   1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/fpga/Makefile b/drivers/fpga/Makefile
-> index 0bff783d1b61..5935b3d0abd5 100644
-> --- a/drivers/fpga/Makefile
-> +++ b/drivers/fpga/Makefile
-> @@ -18,9 +18,9 @@ obj-$(CONFIG_FPGA_MGR_TS73XX)		+= ts73xx-fpga.o
->   obj-$(CONFIG_FPGA_MGR_XILINX_SPI)	+= xilinx-spi.o
->   obj-$(CONFIG_FPGA_MGR_ZYNQ_FPGA)	+= zynq-fpga.o
->   obj-$(CONFIG_FPGA_MGR_ZYNQMP_FPGA)	+= zynqmp-fpga.o
-> -obj-$(CONFIG_FPGA_MGR_VERSAL_FPGA)      += versal-fpga.o
-> -obj-$(CONFIG_ALTERA_PR_IP_CORE)         += altera-pr-ip-core.o
-> -obj-$(CONFIG_ALTERA_PR_IP_CORE_PLAT)    += altera-pr-ip-core-plat.o
-> +obj-$(CONFIG_FPGA_MGR_VERSAL_FPGA)	+= versal-fpga.o
-> +obj-$(CONFIG_ALTERA_PR_IP_CORE)		+= altera-pr-ip-core.o
-> +obj-$(CONFIG_ALTERA_PR_IP_CORE_PLAT)	+= altera-pr-ip-core-plat.o
->   
->   # FPGA Bridge Drivers
->   obj-$(CONFIG_FPGA_BRIDGE)		+= fpga-bridge.o
+diff --git a/arch/ia64/kernel/kprobes.c b/arch/ia64/kernel/kprobes.c
+index 1a7bab1c5d7c..2d6a9388201e 100644
+--- a/arch/ia64/kernel/kprobes.c
++++ b/arch/ia64/kernel/kprobes.c
+@@ -29,38 +29,38 @@ struct kretprobe_blackpoint kretprobe_blacklist[] = {{NULL, NULL}};
+ 
+ enum instruction_type {A, I, M, F, B, L, X, u};
+ static enum instruction_type bundle_encoding[32][3] = {
+-  { M, I, I },				/* 00 */
+-  { M, I, I },				/* 01 */
+-  { M, I, I },				/* 02 */
+-  { M, I, I },				/* 03 */
+-  { M, L, X },				/* 04 */
+-  { M, L, X },				/* 05 */
+-  { u, u, u },  			/* 06 */
+-  { u, u, u },  			/* 07 */
+-  { M, M, I },				/* 08 */
+-  { M, M, I },				/* 09 */
+-  { M, M, I },				/* 0A */
+-  { M, M, I },				/* 0B */
+-  { M, F, I },				/* 0C */
+-  { M, F, I },				/* 0D */
+-  { M, M, F },				/* 0E */
+-  { M, M, F },				/* 0F */
+-  { M, I, B },				/* 10 */
+-  { M, I, B },				/* 11 */
+-  { M, B, B },				/* 12 */
+-  { M, B, B },				/* 13 */
+-  { u, u, u },  			/* 14 */
+-  { u, u, u },  			/* 15 */
+-  { B, B, B },				/* 16 */
+-  { B, B, B },				/* 17 */
+-  { M, M, B },				/* 18 */
+-  { M, M, B },				/* 19 */
+-  { u, u, u },  			/* 1A */
+-  { u, u, u },  			/* 1B */
+-  { M, F, B },				/* 1C */
+-  { M, F, B },				/* 1D */
+-  { u, u, u },  			/* 1E */
+-  { u, u, u },  			/* 1F */
++	[0x00] = { M, I, I },
++	[0x01] = { M, I, I },
++	[0x02] = { M, I, I },
++	[0x03] = { M, I, I },
++	[0x04] = { M, L, X },
++	[0x05] = { M, L, X },
++	[0x06] = { u, u, u },
++	[0x07] = { u, u, u },
++	[0x08] = { M, M, I },
++	[0x09] = { M, M, I },
++	[0x0A] = { M, M, I },
++	[0x0B] = { M, M, I },
++	[0x0C] = { M, F, I },
++	[0x0D] = { M, F, I },
++	[0x0E] = { M, M, F },
++	[0x0F] = { M, M, F },
++	[0x10] = { M, I, B },
++	[0x11] = { M, I, B },
++	[0x12] = { M, B, B },
++	[0x13] = { M, B, B },
++	[0x14] = { u, u, u },
++	[0x15] = { u, u, u },
++	[0x16] = { B, B, B },
++	[0x17] = { B, B, B },
++	[0x18] = { M, M, B },
++	[0x19] = { M, M, B },
++	[0x1A] = { u, u, u },
++	[0x1B] = { u, u, u },
++	[0x1C] = { M, F, B },
++	[0x1D] = { M, F, B },
++	[0x1E] = { u, u, u },
++	[0x1F] = { u, u, u },
+ };
+ 
+ /* Insert a long branch code */
+-- 
+2.35.1
 
