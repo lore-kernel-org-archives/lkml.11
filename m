@@ -2,80 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C65CFC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 08:09:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E502FC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 08:09:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232035AbiCZIKg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 04:10:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51918 "EHLO
+        id S232043AbiCZILD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 04:11:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229742AbiCZIKc (ORCPT
+        with ESMTP id S229556AbiCZIK6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 04:10:32 -0400
-Received: from m12-12.163.com (m12-12.163.com [220.181.12.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D2681393F0;
-        Sat, 26 Mar 2022 01:08:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=j21A406LuZH2VcNGPx
-        2U8V/L22keGEarWkTFzGFG/vQ=; b=TPR7DKpRgj5qfu24gIBM26o3VUe/d09F85
-        rCagLSLHYDeiwWpMDtI7w7txymO6bpBeh6Yu4MZ7SoxEnFXRt+1Y20ZYH7uyhPQF
-        fZyySVza6YHNeBgfhDZUVS1w0Uo/pehW6H4z5rgnaUVn5Kb2jvtNfwPXZQafD3NP
-        /JHUDV1PU=
-Received: from localhost.localdomain.localdomain (unknown [36.111.64.85])
-        by smtp8 (Coremail) with SMTP id DMCowACHE2wvxj5iXbnXBw--.5014S2;
-        Sat, 26 Mar 2022 15:52:23 +0800 (CST)
-From:   daihuaigang129@163.com
-To:     colyli@suse.de, kent.overstreet@gmail.com
-Cc:     linux-bcache@vger.kernel.org, linux-kernel@vger.kernel.org,
-        daihuaigang <daihuaigang129@163.com>
-Subject: [PATCH v1] mmc: core: fix AB-BA deadlock between cache register and cache_set_free
-Date:   Sat, 26 Mar 2022 15:52:07 +0800
-Message-Id: <1648281127-9389-1-git-send-email-daihuaigang129@163.com>
-X-Mailer: git-send-email 1.8.3.1
-X-CM-TRANSID: DMCowACHE2wvxj5iXbnXBw--.5014S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7GFy5JFyxZw45tw4rWF45KFg_yoWfKFX_uF
-        WxXFyIg3yrKr1Ygr13CayfZ3yqvF1q9an3XFWIyrnxAa45WFnFkryfZr18Z34rZa1SkFnx
-        Gr1vkF1F93W8KjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUUD7aUUUUUU==
-X-Originating-IP: [36.111.64.85]
-X-CM-SenderInfo: xgdlx3pdljt0jjrsmqqrwthudrp/1tbiNBfPMlaD-NpCoAAAsP
+        Sat, 26 Mar 2022 04:10:58 -0400
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 024354F9CB
+        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 01:09:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648282162; x=1679818162;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=5Lo509evF0DkyV9oy2CvXO7pUDHwBMp/BuZnKCZ3CFY=;
+  b=GQbTKsTjgbcb2mccGZz4+4S81qaG7J5JZOZY/dLzegeg0fRcx4aWvbMi
+   EgnETC3MyoNM5pAt4yTuHV0sFDy6f3x2gsG2ykOFX1oYsak+jUSCS1yIm
+   C9YDB7F/c9A2Vh5Y9pXsbKciAXZ5reYlf0CVEJ+pHU01z+JSrPvw7nb08
+   oliRqGiif2HUqwO345JYKdtDvG28exm3V6AJB5K27UE8B9R042r20/0wL
+   AM7V1cvrieXDR5/1/bKi3hXqQmxtWL591hqAbbRgi0P9Ju2E/5lb2MVUk
+   ODofB0ZWkWcnq7eVYo1QYRtcwRFUgdg56Z6IU5X6Y7cLbQZwK6eV/UbC6
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10297"; a="319471312"
+X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
+   d="scan'208";a="319471312"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2022 01:09:22 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
+   d="scan'208";a="718463852"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga005.jf.intel.com with ESMTP; 26 Mar 2022 01:09:20 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nY1U7-000NAr-Ow; Sat, 26 Mar 2022 08:09:19 +0000
+Date:   Sat, 26 Mar 2022 16:09:00 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Andi Kleen <ak@linux.intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+Subject: [PATCH] swiotlb: fix alloc_cast.cocci warnings
+Message-ID: <20220326080900.GA72334@bd57dd6d74fb>
+References: <202203261644.zQlZ2Jw4-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202203261644.zQlZ2Jw4-lkp@intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: daihuaigang <daihuaigang129@163.com>
+From: kernel test robot <lkp@intel.com>
 
-fix AB-BA deadlock between cache register and cache_set_free.
+kernel/dma/swiotlb.c:433:15-33: WARNING: casting value returned by memory allocation function to (struct io_tlb_area *) is useless.
 
-Signed-off-by: daihuaigang <daihuaigang129@163.com>
+ Remove casting the values returned by memory allocation functions
+ like kmalloc, kzalloc, kmem_cache_alloc, kmem_cache_zalloc etc.
+
+Semantic patch information:
+ This makes an effort to find cases of casting of values returned by
+ kmalloc, kzalloc, kcalloc, kmem_cache_alloc, kmem_cache_zalloc,
+ kmem_cache_alloc_node, kmalloc_node and kzalloc_node and removes
+ the casting as it is not required. The result in the patch case may
+ need some reformatting.
+
+Generated by: scripts/coccinelle/api/alloc/alloc_cast.cocci
+
+Fixes: 4ab45cefa80f ("swiotlb: Split up single swiotlb lock")
+CC: Andi Kleen <ak@linux.intel.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: kernel test robot <lkp@intel.com>
 ---
- drivers/md/bcache/super.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/md/bcache/super.c b/drivers/md/bcache/super.c
-index bf3de14..f17953c 100644
---- a/drivers/md/bcache/super.c
-+++ b/drivers/md/bcache/super.c
-@@ -1690,10 +1690,8 @@ static void cache_set_free(struct closure *cl)
- 	if (ca) {
- 		ca->set = NULL;
- 		c->cache = NULL;
--		kobject_put(&ca->kobj);
+tree:   https://github.com/intel/tdx.git guest-rebased
+head:   4c095660b91dbdd18042456e395af0deeef93485
+commit: 4ab45cefa80f97ba2bdc31226523c891832d1080 [65/83] swiotlb: Split up single swiotlb lock
+:::::: branch date: 13 hours ago
+:::::: commit date: 3 days ago
+
+ kernel/dma/swiotlb.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -430,7 +430,7 @@ swiotlb_late_init_with_tbl(char *tlb, un
+ 		return -ENOMEM;
  	}
  
--
- 	if (c->moving_gc_wq)
- 		destroy_workqueue(c->moving_gc_wq);
- 	bioset_exit(&c->bio_split);
-@@ -1704,6 +1702,8 @@ static void cache_set_free(struct closure *cl)
- 
- 	list_del(&c->list);
- 	mutex_unlock(&bch_register_lock);
-+	if (ca)
-+		kobject_put(&ca->kobj);
- 
- 	pr_info("Cache set %pU unregistered\n", c->set_uuid);
- 	wake_up(&unregister_wait);
--- 
-1.8.3.1
-
+-	mem->areas = (struct io_tlb_area *)kcalloc(num_areas,
++	mem->areas = kcalloc(num_areas,
+ 						   sizeof(struct io_tlb_area),
+ 						   GFP_KERNEL);
+ 	if (!mem->areas) {
