@@ -2,129 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE6E6C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 00:36:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A43DC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 00:50:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229794AbiCZAiY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Mar 2022 20:38:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35996 "EHLO
+        id S229583AbiCZAvj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Mar 2022 20:51:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229493AbiCZAiW (ORCPT
+        with ESMTP id S229451AbiCZAvh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Mar 2022 20:38:22 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 111EC24059B
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 17:36:47 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id bt26so15933377lfb.3
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 17:36:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lcshdobGzILllMY3zNpnZ3Ex5ohCbZSLroaY3F9W/JA=;
-        b=dTex8E2DlnTcTjb24xecx3Rs17SSDlOTb2q2dyGoe4UMrbGwJxoqMFipPFX1dMVeta
-         WXHrs1YXfFuOjUXiXABz7YSdikeLsyKoFKm9th2ytRWjAyczdZsos502VTEaIp/Z+TxG
-         Bge3mQs/tQgKvKYn5r8VcKJQjSjngfGK4Akfw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lcshdobGzILllMY3zNpnZ3Ex5ohCbZSLroaY3F9W/JA=;
-        b=hbhLLtyRJxweIIEKzWdbfoyuFLb5EJR8Q/VFo8GoA0hYWUGq8LDM0L1LfuO9kOrrQS
-         eeEHn48Ag5r61ebXxrPQV61zsMrJaagTDtaSIVoa5lTnk1zq8sq5sp7tcKQoGD4bjDBE
-         7eQKWnIbwt4BQpjf3MrkYMdg769g4rYTrI5NWG6POawzsP5OPZoB/W20Ui4sYdDgwix+
-         62n/EPeADnSBTKuRS/mPem0v4l64tVkc1pfmcgjBjkOvZKGYYw/YywneDEKPd8qqoARL
-         emd97uiM2psCqHbsOryEQv8J/w26/iik9WPtnEmCR7nON4B/4qBy9ZrDlqZFF1G90fbt
-         X58A==
-X-Gm-Message-State: AOAM532l2FwWWGjoVv45gMLwkvoPIbhUXAp6Wr2nQ1pCYpL3dJgNCVxB
-        j6lFQ+PVsrjlvE+nikFv7E7hkSIf//6oCOyO9Pk=
-X-Google-Smtp-Source: ABdhPJyrczGHBHi7+nwL6nj76K4sT4vLcQA2u0GAWMRJypPfclFhwiFrVG+4T7YZ3KbgZ720RcIG8w==
-X-Received: by 2002:a19:d61a:0:b0:43f:1a03:21ee with SMTP id n26-20020a19d61a000000b0043f1a0321eemr10085350lfg.152.1648255005038;
-        Fri, 25 Mar 2022 17:36:45 -0700 (PDT)
-Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com. [209.85.208.181])
-        by smtp.gmail.com with ESMTPSA id j11-20020a056512108b00b0044a23c1e679sm868943lfg.18.2022.03.25.17.36.43
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Mar 2022 17:36:44 -0700 (PDT)
-Received: by mail-lj1-f181.google.com with SMTP id c15so12274746ljr.9
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Mar 2022 17:36:43 -0700 (PDT)
-X-Received: by 2002:a2e:a5c4:0:b0:249:9ec3:f2b with SMTP id
- n4-20020a2ea5c4000000b002499ec30f2bmr10061179ljp.358.1648255003631; Fri, 25
- Mar 2022 17:36:43 -0700 (PDT)
+        Fri, 25 Mar 2022 20:51:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C4AF16AA70;
+        Fri, 25 Mar 2022 17:50:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 246C5617B3;
+        Sat, 26 Mar 2022 00:50:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C5A3C34110;
+        Sat, 26 Mar 2022 00:50:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648255801;
+        bh=MYZG7zfX7Wzo958+0h/Wy9Ix42WgtYW+LXSflItPzk8=;
+        h=In-Reply-To:References:From:Date:Subject:To:Cc:From;
+        b=XchYimBZwdZB5p5U7RiixY+PxT65BlaoRTMsg6MXGAb1/kq/bRCVWRYrjX7y+milv
+         Hr3UCJKSqD9/7xdKHu4ifuXdvv8SzldzeTAzcvJcbEKdSVBtVvlGlhd5EZQ/Sz1/NE
+         zm//eONkZE4u3MdtPJooAGbocxHttraeGgJeY0r76WPlam3qTheNaAS0hLkc93B+fm
+         joN/yIKLaibhmtc72TTXDlMelQcTXxqwcb5ruKeqyCMXBXD3Tbj0JJjA1HJGb8OzcA
+         S6tXbdSqMHw6D/xQ7uRzcjHmZ+Ty/wavSrDkID+RS3TWqibXF/myg5CDpGjNFMtCwE
+         TDcUysGGSpBMA==
+Received: by mail-wr1-f45.google.com with SMTP id h4so12825909wrc.13;
+        Fri, 25 Mar 2022 17:50:01 -0700 (PDT)
+X-Gm-Message-State: AOAM530AyUXT6/UEUKMCexlT4mrZuV0wjHeL9qwv+jsYelt3CdpYJmum
+        XplW3nJ6xZCdWCwVnzgP3xNG/mMvPDkm22H5cRc=
+X-Google-Smtp-Source: ABdhPJzx6Be34R/RBppR3AjlSMr0dsY5yWSn48LeN5Uc7ypQxsIidxFpk4R2pjzeBWnUe94iXrqE0XVQLLKRK09WFOw=
+X-Received: by 2002:a05:6000:1184:b0:203:ff46:1d72 with SMTP id
+ g4-20020a056000118400b00203ff461d72mr11488471wrx.165.1648255799658; Fri, 25
+ Mar 2022 17:49:59 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220325172036.3f8f619e@gandalf.local.home>
-In-Reply-To: <20220325172036.3f8f619e@gandalf.local.home>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 25 Mar 2022 17:36:27 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wjTL=vz2PC7=dFZVrT=9nuBtZ21j_qT8e=yHvVuXvhCdg@mail.gmail.com>
-Message-ID: <CAHk-=wjTL=vz2PC7=dFZVrT=9nuBtZ21j_qT8e=yHvVuXvhCdg@mail.gmail.com>
-Subject: Re: [PATCH] virtio: Workaround fix for hard hang on guest using fifos
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>, Amit Shah <amit@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        virtualization@lists.linux-foundation.org
+Received: by 2002:a05:6000:2c1:0:0:0:0 with HTTP; Fri, 25 Mar 2022 17:49:58
+ -0700 (PDT)
+In-Reply-To: <20220324071301.60228-1-jakobkoschel@gmail.com>
+References: <20220324071301.60228-1-jakobkoschel@gmail.com>
+From:   Namjae Jeon <linkinjeon@kernel.org>
+Date:   Sat, 26 Mar 2022 09:49:58 +0900
+X-Gmail-Original-Message-ID: <CAKYAXd8Kthuw+=VsGWMCYE4McX3JBarwf4p4UPH7czhkS=u6Bw@mail.gmail.com>
+Message-ID: <CAKYAXd8Kthuw+=VsGWMCYE4McX3JBarwf4p4UPH7czhkS=u6Bw@mail.gmail.com>
+Subject: Re: [PATCH] ksmbd: replace usage of found with dedicated list
+ iterator variable
+To:     Jakob Koschel <jakobkoschel@gmail.com>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steve French <sfrench@samba.org>,
+        Hyunchul Lee <hyc.lee@gmail.com>, linux-cifs@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Mike Rapoport <rppt@kernel.org>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 2:20 PM Steven Rostedt <rostedt@goodmis.org> wrote:
+2022-03-24 16:13 GMT+09:00, Jakob Koschel <jakobkoschel@gmail.com>:
+> To move the list iterator variable into the list_for_each_entry_*()
+> macro in the future it should be avoided to use the list iterator
+> variable after the loop body.
 >
-> With the updates to change the size being passed in the splice from
-> page_size to pipe_size, this never finished (it would copy around a meg or
-> so). And stopped. When I killed the agent-fifo task on the guest, the guest
-> hung hard.
+> To *never* use the list iterator variable after the loop it was
+> concluded to use a separate iterator variable instead of a
+> found boolean [1].
+>
+> This removes the need to use a found variable and simply checking if
+> the variable was set, can determine if the break/goto was hit.
+>
+> Link:
+> https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/
+> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+Acked-by: Namjae Jeon <linkinjeon@kernel.org>
 
-Without knowing (or really caring) at all how virtqueue works, this
-sounds very much like the classic pipe deadlock where two processes
-communicate over a pair of pipes, sending each other commands, and
-replying to each other with status updates.
-
-And you absolutely cannot do that if one side can possibly want to up
-fill the whole pipe.
-
-Deadlock:
-
- - process A is trying to send data to process B (on 'pipe_A'), and
-blocks because the pipe is full
-
- - process B is reads the data and everything is fine, and A gets to continue
-
- - but then process B sends some stratus update the other way (on
-'pipe_B' - you can't use the same pipe for bidirectional, it's why you
-use a pair of pipes or a socketpair) and waits for the result.
-
- - now A and B are both waiting for each other - A is waiting for B to
-empty the big bunch of data it's sending, and B is waiting for the
-result for the (small) command it sent.
-
-and neither makes any progress.
-
-You can find several mentions of these kinds of problems by just
-googling for "bidirectional pipe deadlock" or similar.
-
-The solution is invariably to either
-
- (a) make sure that nobody writes even remotely close to enough data
-to fill a pipe before reading the other pipe (you can still fill up a
-pipe, but at least somebody is always going to succeed and make
-progress and do the read to make progress).
-
- (b) make sure everybody who writes to a pipe will use nonblocking IO
-(and is willing to do reads in between to satisfy the other end).
-
-That first case is basically what one of the PIPE_BUF guarantees is
-all about (the other one is the atomicity it guarantees, ie you can
-write a "command packet" and be guaranteed that readers will see it
-without data mixed in from other writes).
-
-I have no idea what your client/agent does and how it interacts with
-the virtio pipes, but it really _sounds_ like a very similar issue,
-where it used to work (because PIPE_BUF) and now no longer does
-(because pipe filled).
-
-And that virtio_console __send_control_msg() pattern very much sounds
-like a "send data and wait for ACK" behavior of "process B".
-
-              Linus
+Thanks!
