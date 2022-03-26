@@ -2,87 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 068ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 18:41:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94E03C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 18:42:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234626AbiCZSnP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 14:43:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52988 "EHLO
+        id S234641AbiCZSoV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 14:44:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232199AbiCZSnN (ORCPT
+        with ESMTP id S231451AbiCZSoT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 14:43:13 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE39458387
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 11:41:36 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id bn33so14182342ljb.6
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 11:41:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=je98ykY3vsH8qDn25IW7eQYaUsod4iWZw+6FMsszdYQ=;
-        b=cY/i8NkOXIGpbugW/kXT/lHU/6KoHURxtydz8kA95dAKXv2dKSirRf5cna3Zz4aQE+
-         3zUrMCb8X6oIozpmPaWm2GuBQkB5p7v5BNoSLeNAqcrF06WOFYpSLhQLT9RJ7kcNoToA
-         /byaS8f5DiCBA3c9IENt3HgD+FLD9/VL6yCSc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=je98ykY3vsH8qDn25IW7eQYaUsod4iWZw+6FMsszdYQ=;
-        b=Cy1a5qiS6mmKnFX4AAjdEKm/aVsjiLvcqW3Eis8mZq0EmXA7Gi0yP+oealMz0dFA7E
-         pXtxuO0G5VAuCMtxJMOTqByE8iy50npo272OPzSKk7lXydHiK8z0E7oOCHANj7rzn7FV
-         yd95eAgwjNlyKskO5eYo1Omg4FeNOAkN/ZVVivm9FAOoYBQbHBdIxXVgZj6H/SnTl1xa
-         9I+Ukq41pI8nw9BGQAX8HVPyy8jAIDcomhb0JfH6VmFSsfrHXstQaWI+Zi+WYNAtOpeA
-         aSPgIW9bGQRYrCX7Z/xnyUgdaY7O8zXpGAvQc1K1iQCV4+5pnWCkmxITk3uMLWxfDhgL
-         DGeA==
-X-Gm-Message-State: AOAM5318xJK45kn7WHkvctSgoyUJ7fz0NgRfD2QhiUzl9hgFiOcYhCE8
-        3HG1Plki9Ho18Mxv8LtnXSJLi0SbMO91udIczWs=
-X-Google-Smtp-Source: ABdhPJylVVmpaUkleG9tXewEDLKhVLcqR6nSPXJStEVINZt7LFseQiNV/f6NGvvnp/8kJXNaa6itfw==
-X-Received: by 2002:a2e:86ca:0:b0:24a:c44a:aa3b with SMTP id n10-20020a2e86ca000000b0024ac44aaa3bmr3306773ljj.290.1648320094728;
-        Sat, 26 Mar 2022 11:41:34 -0700 (PDT)
-Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com. [209.85.167.54])
-        by smtp.gmail.com with ESMTPSA id n20-20020a19ef14000000b0044a212f7845sm1134757lfh.118.2022.03.26.11.41.33
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 26 Mar 2022 11:41:34 -0700 (PDT)
-Received: by mail-lf1-f54.google.com with SMTP id 5so18450413lfp.1
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 11:41:33 -0700 (PDT)
-X-Received: by 2002:a19:e048:0:b0:448:2caa:7ed2 with SMTP id
- g8-20020a19e048000000b004482caa7ed2mr13185867lfj.449.1648320093080; Sat, 26
- Mar 2022 11:41:33 -0700 (PDT)
+        Sat, 26 Mar 2022 14:44:19 -0400
+X-Greylist: delayed 442 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 26 Mar 2022 11:42:42 PDT
+Received: from mailscanner01.zoner.fi (mailscanner01.zoner.fi [84.34.166.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78BFD97BBA
+        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 11:42:42 -0700 (PDT)
+Received: from www25.zoner.fi (www25.zoner.fi [84.34.147.45])
+        by mailscanner01.zoner.fi (Postfix) with ESMTPS id 273F841556;
+        Sat, 26 Mar 2022 20:35:17 +0200 (EET)
+Received: from mail.zoner.fi ([84.34.147.244])
+        by www25.zoner.fi with esmtp (Exim 4.95)
+        (envelope-from <lasse.collin@tukaani.org>)
+        id 1nYBFt-0003zZ-1o;
+        Sat, 26 Mar 2022 20:35:17 +0200
+Date:   Sat, 26 Mar 2022 20:35:16 +0200
+From:   Lasse Collin <lasse.collin@tukaani.org>
+To:     Jubin Zhong <zhongjubin@huawei.com>
+Cc:     <akpm@linux-foundation.org>, <liaohua4@huawei.com>,
+        <linux-kernel@vger.kernel.org>, <wangfangpeng1@huawei.com>
+Subject: Re: [PATCH v2] kbuild: Enable armthumb BCJ filter for Thumb-2
+ kernel
+Message-ID: <20220326203516.1ddb6492@kaneli>
+In-Reply-To: <1647834017-23673-1-git-send-email-zhongjubin@huawei.com>
+References: <20211121233722.708131a8@kaneli>
+        <1647834017-23673-1-git-send-email-zhongjubin@huawei.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220325150419.757836392@linuxfoundation.org> <20220325150420.085364078@linuxfoundation.org>
- <CAHk-=wiaeZKiEk87Sms1sy53m8tT3UCLOoeUBnX1c_1dZ78WjQ@mail.gmail.com> <Yj7oXgoCdhWAwFQt@kroah.com>
-In-Reply-To: <Yj7oXgoCdhWAwFQt@kroah.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sat, 26 Mar 2022 11:41:17 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgeOrhN_Gznm80==STG1pEbqLMCaZZoeQzZu=NN9GOTgw@mail.gmail.com>
-Message-ID: <CAHk-=wgeOrhN_Gznm80==STG1pEbqLMCaZZoeQzZu=NN9GOTgw@mail.gmail.com>
-Subject: Re: [PATCH 5.10 11/38] swiotlb: rework "fix info leak with DMA_FROM_DEVICE"
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        stable <stable@vger.kernel.org>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Christoph Hellwig <hch@lst.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 26, 2022 at 3:18 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:"
->
-> Yes, I've been watching that thread.  This change is already in 5.15 and
-> 5.16 kernels, and does solve one known security issue, so it's a tough
-> call.
+On 2022-03-21 Jubin Zhong wrote:
+> >On 2021-11-20 Jubin Zhong wrote:  
+> >> xz_wrap.sh use $SRCARCH to detect the BCJ filter. However,
+> >> assigning arm BCJ filter to Thumb-2 kernel is not optimal. In my
+> >> case, about 5% decrease of image size is observed with armthumb
+> >> BCJ filter:
+> >> 
+> >> Test results:
+> >>   hardware:      QEMU emulator version 3.1.0
+> >>   config:        vexpress_defconfig with THUMB2_KERNEL & KERNEL_XZ
+> >> on
+> >>   arm BCJ:       4029808
+> >>   armthumb BCJ:  3827280
+> >> 
+> >> Choose armthumb BCJ filter for Thumb-2 kernel to make smaller
+> >> images.
+> >> 
+> >> Signed-off-by: Jubin Zhong <zhongjubin@huawei.com>  
+> 
+> >I still didn't test it but it looks good to me.  
+> 
+> Hi, this patch is not accepted into the kernel mainline yet.
+> Please let me know if there is any problem with the patch, thanks.
 
-If you're following that thread, you'll have seen that I've reverted
-it, and I actually think the security argument was bogus - the whole
-commit was due to a misunderstanding of the actual direction of the
-data transfer.
+I see no replies and don't know what could be wrong. So perhaps you
+could resend it with my Acked-by.
 
-But hey, maybe I'm wrong. The only truly uncontested fact is that it
-broke the ath9k driver.
-
-           Linus
+-- 
+Lasse Collin
