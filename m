@@ -2,100 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4631EC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 11:40:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0278EC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Mar 2022 11:46:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232730AbiCZLmR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 07:42:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37760 "EHLO
+        id S232742AbiCZLrs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 07:47:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232715AbiCZLmP (ORCPT
+        with ESMTP id S232715AbiCZLrr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 07:42:15 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBB134F476;
-        Sat, 26 Mar 2022 04:40:38 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id b43so8801982ljr.10;
-        Sat, 26 Mar 2022 04:40:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FMCXUD4zN8cbLx2oPee1gYgI6Vkubs2/OUjrvABtL2c=;
-        b=RRQjx24ZJ+sPw0EsS4j2ufpttvcuSB2yfC+8tRvDJTNpiojfnfkLGEgveGVHRIjNTV
-         sa1vjrow+35r1SevZpWaifxAYerZhfwt/vWQfA4H29iGFZqHB8BrZsxIVuJt2sVGe4E3
-         iSFSVbKWcy/xc1z6NvuzyC0trCVzL0YLHez64adCxB57vpi75TlYSu/BvU3ldoYtISJm
-         sgyHxOqnWOD06u9dXrUiqNAHk+R4ZE92URYJGVCQHI+cJjKyOOhzhoRgXFDfo5KOyaXY
-         81q/RGFZYEULQWaJ7vb0AMZ+9LvH9WWjCFoLs6Iv4bBRyyPHXS7FjRaOk7N97n0y5QAr
-         O1Kg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FMCXUD4zN8cbLx2oPee1gYgI6Vkubs2/OUjrvABtL2c=;
-        b=2kCuLTv4FQ7Ya0S6lSTsNWOmZ61IW9SVl3EX2vIR1HpX5eBODAIWZY7AXwgtFMnK97
-         fZS+OsfRayO1WgvDB0Rm2FMIyqYSZY82AXCRpLweWKwngWUhidNlk3jGNlUaB5ieNs6C
-         rSCWvFXhAiyjjCDyyHNda4Zitro8jDgg3qaCQkfZ626hyROrXG4AhhXcObBXb6vCNQ6L
-         I5yRQW0ks4qTt/OQR7ygLOxLTvCPyo6uBZP3Lc20ivuuaasj3w2sdaBAPhOiwhkKJkWo
-         uKcneVv4C9lKELlskwM96UPHj2p2oprjn4/lED2MWN/JUnZGU3vIPQ1zAoXSzrZCYVZU
-         lZ2w==
-X-Gm-Message-State: AOAM532AAqTGbAcP+XI2ILARLuAQxauvm3JyJGOsIEwy7ivuVc5rl0oP
-        yzTkCD/QATolGpjZ/9FtlB8=
-X-Google-Smtp-Source: ABdhPJx5E4HdGJ9e+XJC4t2MkkRqddhTZnzGjarstCoz0Pqv4OSoqk8vpIDnH4C2Es/0hM9Ljz/6AQ==
-X-Received: by 2002:a05:651c:124a:b0:249:5eae:745e with SMTP id h10-20020a05651c124a00b002495eae745emr11733019ljh.296.1648294837194;
-        Sat, 26 Mar 2022 04:40:37 -0700 (PDT)
-Received: from localhost.localdomain (95-31-172-65.broadband.corbina.ru. [95.31.172.65])
-        by smtp.gmail.com with ESMTPSA id l4-20020a2e9084000000b00244cb29e3e4sm1015213ljg.133.2022.03.26.04.40.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 26 Mar 2022 04:40:34 -0700 (PDT)
-From:   Fedor Pchelkin <aissur0002@gmail.com>
-To:     Alexander Viro <viro@zeniv.linux.org.uk>
-Cc:     Fedor Pchelkin <aissur0002@gmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>
-Subject: [PATCH 4/4] file: Fix file descriptor leak in copy_fd_bitmaps()
-Date:   Sat, 26 Mar 2022 14:40:09 +0300
-Message-Id: <20220326114009.1690-1-aissur0002@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Sat, 26 Mar 2022 07:47:47 -0400
+Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01olkn2033.outbound.protection.outlook.com [40.92.53.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F338C5044D;
+        Sat, 26 Mar 2022 04:46:09 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kWqhRkXSo+oP3qbWI3cR2rlScWAm7rfFjVdlYSk5XuVHwL12Yba30n3UCv+0K1MCC1mwyLxuNfGReovY4lbghLMPaxnAuCzA+SiYJU/PG8e/PAviC3+nxnQfpFYGrGdY79MTcfL2cT95Nga9MccQnPzfobjJPHl/husQNjnOKMPqtyZrkiSd9ykaeFU9Bv4jScLcfZJvm+vrMOU/a4zttgFE1UIE2SeNmSplY/ddJp2cu+KCp1qv/kambLADwAT5HWiUvDlADVSh3eRvMbdoNYAbclM+rbQbikQ7AeVN2tQpXPuiRxjNWnRA2BTgP6htM0TXCLlyE8V0k0tLpc9SFg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=iyKrp7I82f3wYzsbQR/1Jeu1cFgJoa6hSbBVeuarAhw=;
+ b=BvFw5UxNDqBhKPc1RMKVtTyQDbOCxrp6du/oQ6tLwWQxFlpGg+2P5VORgvgZzxU0ZwFk1ylwx9Jiy1k0iEs6OxcdaTuFsb9V13gnYBXCqtmzWknqJCXsi7b5ePPpO4i8s1CMirFb8ry8avemo8JCsmj8/9SdQ2tj9bdVXv1YSUka0dZ3mU2/BxuCqF6h+ejsY/9sday2waVN69s1a5oITY98eqL2Mk5bJIOuGiCyInGWLcf34x7MOhf+MxTTCfiWysgByV9SCTzJdPD3P6fzfAxpr5/1DmCe7gwZqLFy/sxC/iGaBzQhIlq+I1M2nkZoOu/N5SxpTJsz6rmd/WGc+g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iyKrp7I82f3wYzsbQR/1Jeu1cFgJoa6hSbBVeuarAhw=;
+ b=hjxvWUn6bGhMky47CgB0umFijQNAN7lN22XPrTNgSWeOGyjstQF86/fsj8SwvmjLgVzqpSBwpi3k/A0+sy7L0UAxOPurmapEnJ9lXubwa9XV8syaTkJ+oM/F4d6voT94cUVOCQm3DKh2YaYN1sCS/parmjeaw8dKlIMb1IEp55bGIFii8CJNtMPxklThbFpXpXSXOaB+XTkEkDZzo58Bk5ugvGcKJoWiI9aoo7RjI2voH/QM5IZWP3/QZvAuAbSkyzDvtGNszsRcZHNsJBtdEoOEVG8Orq1nzi1G+j24m10Ncc0mPNd8w0JP62CZtQl0tFmCZ67XvHYgZIDFpEjgSQ==
+Received: from TYZPR01MB3935.apcprd01.prod.exchangelabs.com
+ (2603:1096:400:8::7) by SG2PR01MB2061.apcprd01.prod.exchangelabs.com
+ (2603:1096:3:21::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.22; Sat, 26 Mar
+ 2022 11:46:03 +0000
+Received: from TYZPR01MB3935.apcprd01.prod.exchangelabs.com
+ ([fe80::8dd1:e105:311a:ce51]) by TYZPR01MB3935.apcprd01.prod.exchangelabs.com
+ ([fe80::8dd1:e105:311a:ce51%3]) with mapi id 15.20.5102.022; Sat, 26 Mar 2022
+ 11:46:03 +0000
+Message-ID: <TYZPR01MB39356D38FACC73ACB99B47BEF81B9@TYZPR01MB3935.apcprd01.prod.exchangelabs.com>
+Subject: [ PATCH ] Documentation: fixed some doc-build warnings
+From:   kushagra765@outlook.com
+To:     linux-doc@vger.kernel.org, corbet@lwn.net
+Cc:     maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch,
+        balbi@kernel.org, gregkh@linuxfoundation.org, dhowells@redhat.com,
+        mcgrof@kernel.org, viro@zeniv.linux.org.uk,
+        akpm@linux-foundation.org, arnd@arndb.de,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-cachefs@redhat.com
+Date:   Sat, 26 Mar 2022 17:15:50 +0530
+Content-Type: text/plain
+User-Agent: Evolution 3.36.5-0ubuntu1 
+Content-Transfer-Encoding: base64
+X-TMN:  [2essGCoMYUavK24/KHylj7OZS/k1rlk3giwXyI4m6gM=]
+X-ClientProxiedBy: BM1PR01CA0081.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:b00:1::21) To TYZPR01MB3935.apcprd01.prod.exchangelabs.com
+ (2603:1096:400:8::7)
+X-Microsoft-Original-Message-ID: <2f72251802e01eb81e5ef71e16b55f71728a0a5b.camel@outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 939fb3c8-71c9-4d2f-39b7-08da0f1e346e
+X-MS-TrafficTypeDiagnostic: SG2PR01MB2061:EE_
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: CY46gVzwVdWJBqm9rKtymP4igUWXQfhNJDKoKpItVrrYmwAHBrXKPxArzjSQLhZh5XIuZe1LMzkEGCU26r6RRMHmAGLp+heXXCyLP2aErN5ql9PBhlHNTaJa63m3XCexYgDpk852uNtfF4laLhq2GOUVOhOJYC28fDrv9ANhQTE4yJ32rhvhrMLsi/vdS93C+7/SObqNPWE7Q/UbY4QXi3DjiFKw2cXs8y/4I+fPAXMV8uJa1RiH9bB2ApeLjvJ2pYBKmIJnb81XlQ7mN7PrOP36Y1JbyE7SARum28kqrIOYj9qLohft29c+VL9b1Qc5
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?60JgILX2rR0fqEQ8P/HL0e8Oo7D9h11fb762lcww7FwPQ27Qr4kh2+JVlyy1?=
+ =?us-ascii?Q?wdPv0htp0dFd50Rnmb+D4Jpt0fIS0yZVSN0o1nKcTdlrf+RcxMXU5Y7SH7Ap?=
+ =?us-ascii?Q?6PnYq16gk4/j8zmH4mx2PGfBQWqrnJXqANFOvHQ+cxkcQM7Lb8/iWIo0htIe?=
+ =?us-ascii?Q?KXOPY68zUoL6UMzmCpgIsEU/rR23uyP+c7PcpZsQ3qE2PSTe3PeMaS0pOJWw?=
+ =?us-ascii?Q?/m03Hb7MkKR8oThVEqtKbl8yF4ri82BR+vQiTXt5AV4RYetfZzxjtxjO1v/Z?=
+ =?us-ascii?Q?qQ8lhpJSTG+m/Rwv+qkqjPi7y2040X8PN416e74Y+AytoWVpuJlevfuiu1MF?=
+ =?us-ascii?Q?EkeagogTN0BwBy1iIOsP08mOpWKrfDs8TH+xT7AzWQuj7UU7kb0dxEW8yesQ?=
+ =?us-ascii?Q?fCTfDvmHvfeYjb2G6KyIUxS7W+Sb9F63VXH8kz72/xGCWEeBXvXwTe1HHBdT?=
+ =?us-ascii?Q?bd1WnJmiHVL6YwNocVuS6FD8DMjC/R4q3FvW/9XWHCYNB0jLGJgoAoxK4tiF?=
+ =?us-ascii?Q?mukaYpQoxxhBqOFZSlV1Jkt4Pm1Wzd0vE55qTKlSiWRfiVX8QmCD+Pklpn48?=
+ =?us-ascii?Q?Ik2NUlrDMG2Fzhd2TZ5MOInHUele1LbI4eFjJ/8Iga9iWqbj+VfkiV97H1eF?=
+ =?us-ascii?Q?OwY+uDZwLSWUCtACCuyKP/iw4Hn4x6iOr60iP0Z10Bpduu3e7yT2pJ6RGWUR?=
+ =?us-ascii?Q?AamkSszZAJDJoXS5fo29WXjmd1ljECjhMB05gmHc6vWERMgVbKe6q2AXc2QD?=
+ =?us-ascii?Q?MbO8RVayZCGgRyPZfUFZ5fEiXXeRYOulYSLVBxE1of4+DZfPf7OaJpxTkvS1?=
+ =?us-ascii?Q?KfzFox9hbmq2crifs7jhUgsLCL2tCSa//PkURvBM1ZbDz41BgdAoHbIcOJ7Q?=
+ =?us-ascii?Q?Ghk+cd1KzRUJgQjtFV+3gG8wtpL3FYsbGa/ETZpHkoa4BR4+q8mExBKCQRQB?=
+ =?us-ascii?Q?uyyni0ZbAqxiexj53dOJoyF6W49X3RRWOYMdRw3l486J60eldcMuht7qFXlj?=
+ =?us-ascii?Q?qBZl71UbJZqgBo3QTF+fn5A7lKdUQwOtv87cGoAoX5EwL6VlhxPGQUNADpAz?=
+ =?us-ascii?Q?JEDzyBmbbZvRpIAb25ZaGQNOAwXq5q2Dxv5lcSAigmfPnno5ABuMHT6qRUfn?=
+ =?us-ascii?Q?eG5dFoT+aCKGlU2tIKwQ8AKBlRMuH3M1ZzbrM68mvtHIhMWTlSVPWgurZY6F?=
+ =?us-ascii?Q?diGJOGQbLZGV12+rYz1AqqejGRFoJ1cJS/5rodxrG/phDNb5jWeBhDHi8v/B?=
+ =?us-ascii?Q?UPdU2Rq9yiiu8KD7dx67hxFzMKBIc99Lf0G+llFhnhIwgxVInndz8bksJ/qF?=
+ =?us-ascii?Q?ThUdoZY1G/JDGV/vphjo6IRVr9AtHyUAavVs2DKtyx9NgDlw62WeqoYVbEYN?=
+ =?us-ascii?Q?/qaykQjntHLcpZ1whmVM4+Zd41uh4x5fNdq6USo7Iagx5wrddpHWIjuadZz8?=
+ =?us-ascii?Q?h470LTZX0aUNLD12ze1nYsx4KV97tx1G?=
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 939fb3c8-71c9-4d2f-39b7-08da0f1e346e
+X-MS-Exchange-CrossTenant-AuthSource: TYZPR01MB3935.apcprd01.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Mar 2022 11:46:03.3482
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SG2PR01MB2061
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If count argument in copy_fd_bitmaps() is not a multiple of
-BITS_PER_BYTE, then one byte is lost and is not used in further
-manipulations with cpy value in memcpy() and memset()
-causing a leak. The leak was introduced with close_range() call
-using CLOSE_RANGE_UNSHARE flag.
+DQo=
 
-The patch suggests implementing an indicator (named add_byte)
-of count being multiple of BITS_PER_BYTE and adding it to the
-cpy value.
-
-Found by Syzkaller (https://github.com/google/syzkaller).
-
-Signed-off-by: Fedor Pchelkin <aissur0002@gmail.com>
-Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
----
- fs/file.c | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/fs/file.c b/fs/file.c
-index 3ef1479df203..3c64a6423604 100644
---- a/fs/file.c
-+++ b/fs/file.c
-@@ -56,10 +56,8 @@ static void copy_fd_bitmaps(struct fdtable *nfdt, struct fdtable *ofdt,
- {
- 	unsigned int cpy, set;
- 	unsigned int add_byte = 0;
--	
- 	if (count % BITS_PER_BYTE != 0)
- 		add_byte = 1;
--	
- 	cpy = count / BITS_PER_BYTE + add_byte;
- 	set = (nfdt->max_fds - count) / BITS_PER_BYTE;
- 	memcpy(nfdt->open_fds, ofdt->open_fds, cpy);
--- 
-2.25.1
 
