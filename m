@@ -2,101 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29DE1C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 05:28:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AE1FC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 05:31:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235064AbiC0F3k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 01:29:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53252 "EHLO
+        id S235087AbiC0Fdc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 01:33:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235030AbiC0F3c (ORCPT
+        with ESMTP id S233643AbiC0Fd0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 01:29:32 -0400
-Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA78441FB4
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 22:27:54 -0700 (PDT)
-Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-2d07ae0b1c4so118493477b3.11
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 22:27:54 -0700 (PDT)
+        Sun, 27 Mar 2022 01:33:26 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92C4EB85C;
+        Sat, 26 Mar 2022 22:31:48 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id f3so8585679pfe.2;
+        Sat, 26 Mar 2022 22:31:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YgicqkCAvKN3gU0TpIKb4dIuI5ODIxLQrQ5+n0JgnmE=;
-        b=jlGIuagyuKA21DL3+KdYHrYYfkokePE6pXILsVDiB+4HHTDI1p7HME4hzVEcno/3dS
-         PELGTjLfGCih+cQ86kYVUHStNAWvNF5mYRH4fngt23A5ZvyXar7InfP5+ZAHO/Nq7GF9
-         cHyLrBaA1xgBp5Ae4ok/YUDJp7XQ8ZNiwS0x2VbUEOLPB6bU1lSH/BzjNpwGcN2GXH+p
-         0z5kkfW5v40Vxikp9SyJm8LiL03mUk+EQwljGFAGaTWyk7WpDyVXyXPrhRfkbZQ/7f5z
-         2psHl3yMYvkz0UycClNrJUyPA1WJNBuekLf8cUTKHbvc5NrJUbiPUU1Ia4r9oPlcF+x4
-         XHYg==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=T9ii1s/vDDaD1QA64Ks3s/bvtYbdmXDV59Ucnc6x+8M=;
+        b=KDf55Yv5mpN2AkGspc9VfaKo0K2v900aUEgARfmtbxGdDUL6QXuvltflUnnxq9PkHt
+         YhW79cDOHms4RxghCJ1odTS3nROpbDTpCnIHmpQ0gIsgSaHGWxR/Ajl+aqYrON7uxevK
+         ZGbYyFQdZtH7S4orjIPps5iSgN/1w/8COOndrIemkzpS5iGeY6Fm3KpBjqrdsFfrOFVL
+         iSwc8hN81KgS13LzY0muEQDppdLDaOI63J4hYMNlhm9atCWo8og4mXVlxxKGPjLdU3uY
+         AHyqFXZQ4LoJ/FMpl6b2E4O6S3ZOb0KN+Y0yfnQw2Quy7wUbvzjmRUDB+CJNT8rRFKQ8
+         lbZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YgicqkCAvKN3gU0TpIKb4dIuI5ODIxLQrQ5+n0JgnmE=;
-        b=WxepPSU8WiLuf/z94rzoaR1WG9VyxD068swQrYRyesj/0DUe5dAhRbnhBrMfatFKKo
-         dwvrt1IIVUPZbdAQCMStQwsqpRF/mSTebhWQveCEavMYAYE20gwLJxfGC98N83yq7Sp9
-         stwqjJcXH3j56bBO4Ljm6PwL8PRqUn+SpfNmGirditWvDUsjL3+x3qO3MB/UucTm7kIN
-         xed0k87rqYpkeRFIp/G07m7l+iNIPSfSYwXoHBL2vNQ0+QuR4zqBOO/KcWWsN0WgfCiF
-         gdjKbkXWcwCI6wJc23u5YdpfQbJIExgctazlszZ66H3IwTbk7chPlt6dsOh/eQAwyww0
-         BQEA==
-X-Gm-Message-State: AOAM532ty72H0zB/RG1XxGUiNfg0WhlIB9oqtVitp2n9mxX6EvNmQdMx
-        iCiAcw8dMWVkg/qQ3a40NyXVwD2+kHo35JiUIIza2U2HmzhTmA==
-X-Google-Smtp-Source: ABdhPJzzw/OngC7HG5Wt2z+m+5FYq1dMSef73+ak3m/Hhj9AvMAbNI0CwKPblL14NNRYzbZHr/r8zjL9kRIOPHKj/7o=
-X-Received: by 2002:a81:5dd6:0:b0:2d6:3041:12e0 with SMTP id
- r205-20020a815dd6000000b002d6304112e0mr19445727ywb.331.1648358873967; Sat, 26
- Mar 2022 22:27:53 -0700 (PDT)
-MIME-Version: 1.0
-References: <000000000000cabcb505dae9e577@google.com> <CAMZfGtUG9GSRSp6fQ6AD6MFemX9ZS=XYWFceMPjVH7LATamUKg@mail.gmail.com>
- <CAHk-=wii1peDbW+eZipUnLmU_STXx6Vm30PiQnjhfUmgYrSd+Q@mail.gmail.com>
-In-Reply-To: <CAHk-=wii1peDbW+eZipUnLmU_STXx6Vm30PiQnjhfUmgYrSd+Q@mail.gmail.com>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Sun, 27 Mar 2022 13:27:17 +0800
-Message-ID: <CAMZfGtWzk2+yJd0vHWvokknBhWVfyauRZBvxbkFoDsngOK8MzA@mail.gmail.com>
-Subject: Re: [syzbot] general protection fault in list_lru_add
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     syzbot <syzbot+f8c45ccc7d5d45fc5965@syzkaller.appspotmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=T9ii1s/vDDaD1QA64Ks3s/bvtYbdmXDV59Ucnc6x+8M=;
+        b=F5/jbsKZ/4/1tqdELFTFzsYjcQwtEXSDCF6aAEIhxOfbVlihlIh9FRr5bY5AaLvTc2
+         4nVeZh0Su6xMX8eiAhqTcp02ilb1sxJkW66Ez9fasVJaa3W0lBsida+GdJ6FgOC0ngd6
+         YVeRCdr7FdDrrdILXgj+OAx2/LnMDfUNHpFMf8EQlV0+KI91jzrUU7K5xhbiWyoEgQTB
+         BL0G/vIGoT2AfphhsLlFTosCGK4Js7MzhMENT4+NN4NalFcFrk3WbcPKxo/kKf90RvPx
+         Df4078bIkpPsFMpKp/ulVDUk56aYoaqQjxlmnBwe88uTmMi9+ZTeEkATydsPZlJtbvTT
+         IhEQ==
+X-Gm-Message-State: AOAM531dCsEDdeNY6/vjZ6atO9qo2JJzbZaOvIROU8cesxhsedY+e0Zb
+        LRFs0Wm3EJEQ8kWT/71Djy4=
+X-Google-Smtp-Source: ABdhPJzkzp7Reb+gYTSiszuRxap2P3TtfajgbjK+Rluk16gl1IRBjl55f5DmGDmjeshiq0mHS3yx2A==
+X-Received: by 2002:a05:6a00:849:b0:4fb:1112:c19f with SMTP id q9-20020a056a00084900b004fb1112c19fmr10667773pfk.74.1648359108089;
+        Sat, 26 Mar 2022 22:31:48 -0700 (PDT)
+Received: from localhost.localdomain ([115.220.243.108])
+        by smtp.googlemail.com with ESMTPSA id f15-20020a056a001acf00b004fb2ad05521sm3894539pfv.215.2022.03.26.22.31.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 26 Mar 2022 22:31:47 -0700 (PDT)
+From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
+To:     bskeggs@redhat.com
+Cc:     kherbst@redhat.com, lyude@redhat.com, airlied@linux.ie,
+        daniel@ffwll.ch, linux@roeck-us.net,
+        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>, stable@vger.kernel.org
+Subject: [PATCH] device: fix missing check on list iterator
+Date:   Sun, 27 Mar 2022 13:31:39 +0800
+Message-Id: <20220327053139.2572-1-xiam0nd.tong@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 26, 2022 at 4:29 AM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> On Fri, Mar 25, 2022 at 2:52 AM Muchun Song <songmuchun@bytedance.com> wrote:
-> >
-> > We can see that we put the dentry (ffff88807ebda0f8) into
-> > the list_lru (ffff888011bd47f0). But we do not allocate struct
-> > list_lru_one for the memcg (ffff88801c530000).  Then it panics.
->
-> Hmm.
->
-> Looking at memcg_slab_pre_alloc_hook(), I note that it will return
-> success without doing the LRU checking for several cases.
->
-> So since you can reproduce the problem, I would suggest you add some
-> debug code to __d_alloc() that prints out something big if it gets a
-> dentry but you can't look up the list_lru_one() for that dentry.
->
-> Hmm?
->
-> The only other situation I can think of is if dentry->d_sb were to
-> change during the dentry lifetime, but I don't think that can happen.
-> The only assignment I can find with "git grep" is that
->
->         dentry->d_sb = sb;
->
-> in __d_alloc(), and while it's possible my grep pattern was bogus, it
-> sounds unlikely.
->
+The bug is here:
+	lo = pstate->base.domain[domain->name];
 
-I have found the root cause, it was caused by kfence. Here is
-the fix patch [1].
+The list iterator 'pstate' will point to a bogus position containing
+HEAD if the list is empty or no element is found. This case should
+be checked before any use of the iterator, otherwise it will lead
+to a invalid memory access.
 
-[1] https://lore.kernel.org/all/20220327051853.57647-1-songmuchun@bytedance.com/
+To fix this bug, add an check. Use a new value 'iter' as the list
+iterator, while use the old value 'pstate' as a dedicated variable
+to point to the found element.
 
-Thanks.
+Cc: stable@vger.kernel.org
+Fixes: 9838366c1597d ("drm/nouveau/device: initial control object class, with pstate control methods")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+---
+ drivers/gpu/drm/nouveau/nvkm/engine/device/ctrl.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/gpu/drm/nouveau/nvkm/engine/device/ctrl.c b/drivers/gpu/drm/nouveau/nvkm/engine/device/ctrl.c
+index ce774579c89d..6b768635e8ba 100644
+--- a/drivers/gpu/drm/nouveau/nvkm/engine/device/ctrl.c
++++ b/drivers/gpu/drm/nouveau/nvkm/engine/device/ctrl.c
+@@ -72,7 +72,7 @@ nvkm_control_mthd_pstate_attr(struct nvkm_control *ctrl, void *data, u32 size)
+ 	} *args = data;
+ 	struct nvkm_clk *clk = ctrl->device->clk;
+ 	const struct nvkm_domain *domain;
+-	struct nvkm_pstate *pstate;
++	struct nvkm_pstate *pstate = NULL, *iter;
+ 	struct nvkm_cstate *cstate;
+ 	int i = 0, j = -1;
+ 	u32 lo, hi;
+@@ -103,11 +103,16 @@ nvkm_control_mthd_pstate_attr(struct nvkm_control *ctrl, void *data, u32 size)
+ 		return -EINVAL;
+ 
+ 	if (args->v0.state != NVIF_CONTROL_PSTATE_ATTR_V0_STATE_CURRENT) {
+-		list_for_each_entry(pstate, &clk->states, head) {
+-			if (i++ == args->v0.state)
++		list_for_each_entry(iter, &clk->states, head) {
++			if (i++ == args->v0.state) {
++				pstate = iter;
+ 				break;
++			}
+ 		}
+ 
++		if (!pstate)
++			return -EINVAL;
++
+ 		lo = pstate->base.domain[domain->name];
+ 		hi = lo;
+ 		list_for_each_entry(cstate, &pstate->list, head) {
+-- 
+2.17.1
+
