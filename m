@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99079C4332F
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 22:41:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A61E0C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 22:41:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236983AbiC0Wmw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 18:42:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45088 "EHLO
+        id S237025AbiC0Wm5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 18:42:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236967AbiC0Wml (ORCPT
+        with ESMTP id S236992AbiC0Wmt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 18:42:41 -0400
+        Sun, 27 Mar 2022 18:42:49 -0400
 Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2208A32EE4
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 15:41:02 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id r7so7383814wmq.2
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 15:41:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DE2932EE0
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 15:41:09 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id r190-20020a1c2bc7000000b0038a1013241dso7549363wmr.1
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 15:41:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=graxiB3o84XyCC7lA2maMSkd/oPaEWkbPJi06+8HrGM=;
-        b=r276EMn6zYOdOurbfLe4hTRsvPqjJ/2liozB0/GajoOCtk1J38A1eXxAi87dELVHFD
-         jIQad/T6yVHNCs7qRdvU6KW2IEyi1AWz8KyQEywyebq4HY/9BJFwTCiNkdkLPIEsiPJD
-         +w+czgAeDkc1zhxT4f2tnVyx4V6d+RaQUV5Lf8A7mu7kmxBeqo+WCqrODKJVAwAMnsuo
-         hAAvAbqojV0T4mnVTyGB9ZrF0Oy9Yw/R/ee65LQi9TJ+qiYGxrn1GbVFs4HrKsBP0XZ+
-         xCriJojzWxi28tJ/jyCCo1A4PxZCAO8GHCX9ikODFPaxGMkQMYaDYbamr+XP2FZvjPLG
-         OrGg==
+        bh=Z/mBHvQzSlohdP6Aa3Rj5t3X9njBtjqppDVlQdCmxfc=;
+        b=uDwk50NcowpDmiiig5D5KoExCVBP9dtKr4oMYEL5y+w47W6ODg8bxGhrkVSziniVx6
+         KdqKVGRnk43Ns9Z49XS8JplOj1GNPqGVCY0f4ofKPmpVsUS+p6Y0qWheTYdscZP5Erh8
+         BJ8elRCo0p9TQLKc88H1EV9Vtgdyw5h42QH7bEQreprjKWUZlBWqR3oQEAWhY4l2aNGU
+         I36NrU+CrEfcqnOx+xNIQAm7jui/9HwmBFw2gc5UcNRSmQkHw9AhhXWVQeAVGiYNSq07
+         h7D8yjdT2yC0f4SSImjI5sEEo5kP4CDZhHiLuiXCMe0YvW0LfNQTweiuXUBRrwqc4fjz
+         JVWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=graxiB3o84XyCC7lA2maMSkd/oPaEWkbPJi06+8HrGM=;
-        b=4GQZ1lfT1OJtSoMcEZWVCaORyp1elelZXDeUVFbT+Tlr+9mwRxxdgVGJO3VUlPUVaj
-         Jyz7oT8PXRNyOpaYLl9sYLi9QLCMapUO40g9ewicqrehr5ZLSgvsQpynhOCbZpH0rzeh
-         G9zL/yMWLdORwyq9C46jAft9EzxNXvcls2O+w/BKkUo8kNSFvSRltsVYdtQrprY3VIiR
-         phBpWH1HM2Ddg21NU+uLqDrgXTNjIiJJk6CpCUakDh/4zmctw76BTzGE8EjbeRrGeT3P
-         r6sC8hP92hA4ayPJ5x1DGGlEiGppeIH89p4v5+SFmFtoUheq0QiiEGACI0N8gqsjB+Ef
-         Y05A==
-X-Gm-Message-State: AOAM533FaFd2AqFBXL36OWbVuNhuk7wwk401rmxREe96rTLHI6GTxS4B
-        o/Tq3WSYMUNDNLM7xjr19DFc6Q==
-X-Google-Smtp-Source: ABdhPJzmOb9kMHIpbXvEe4FnZF+xfzcnwPgNHy2cJoFNqGghwOq+6/DhG8aiOft/DjBGhLjfRHk3Sw==
-X-Received: by 2002:a05:600c:2192:b0:38c:8b45:ecf5 with SMTP id e18-20020a05600c219200b0038c8b45ecf5mr22498565wme.85.1648420860620;
-        Sun, 27 Mar 2022 15:41:00 -0700 (PDT)
+        bh=Z/mBHvQzSlohdP6Aa3Rj5t3X9njBtjqppDVlQdCmxfc=;
+        b=0s7Lya4LME+uccrSwQ1U+X8YJuPu8NaTCpaYGLHm+ElgboKaIoQ/GvNBIoy93npvF0
+         Qp6ZplJBcUz/D102aOx843NIFIQgmfLWiWVMBAOaBdWHbKdo5moVo0Y+4SwnLSxcPL1l
+         mar1A5xK2NmQh24MsM7zovgRD8edukMhBqBFT2AoHx5imntuEZTgKmH1CgqHaI5M6Ifm
+         FfWlIDB3G9aQE8wgpIWI+tx6k6V3C3aTzzN+hOOrtljhKTZjYqEo9tF1vvBLYj8RfYum
+         ju8QH8G+YI2K+2X0xXhqMnAnRWKNWhvrBkUV70lMWL/zwkztk7irfE5nlerTmIojVx7I
+         pRWA==
+X-Gm-Message-State: AOAM531n9EMld99uMsBag59Fc55mlQNnS9Bf+rHoFg7/+IDjTAw2NUNV
+        AnZ++04iFKlUD5UPcZh6C2qFcQ==
+X-Google-Smtp-Source: ABdhPJxNYXubx5H8LBVmt0f7mCTFFoj4zUm0CYeyJDI5pNaNgLUfdrNtru5TsPaeR9Zke0Gr6vmFoA==
+X-Received: by 2002:a7b:c382:0:b0:388:2e76:49ed with SMTP id s2-20020a7bc382000000b003882e7649edmr22002083wmj.195.1648420867783;
+        Sun, 27 Mar 2022 15:41:07 -0700 (PDT)
 Received: from localhost.localdomain (2a02-8440-6341-357e-3074-96af-9642-0002.rev.sfr.net. [2a02:8440:6341:357e:3074:96af:9642:2])
-        by smtp.gmail.com with ESMTPSA id v5-20020adfe4c5000000b001edc1e5053esm10400867wrm.82.2022.03.27.15.40.58
+        by smtp.gmail.com with ESMTPSA id v5-20020adfe4c5000000b001edc1e5053esm10400867wrm.82.2022.03.27.15.41.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Mar 2022 15:41:00 -0700 (PDT)
+        Sun, 27 Mar 2022 15:41:07 -0700 (PDT)
 From:   Guillaume Ranquet <granquet@baylibre.com>
 To:     airlied@linux.ie, angelogioacchino.delregno@collabora.com,
         chunfeng.yun@mediatek.com, chunkuang.hu@kernel.org,
@@ -61,9 +61,9 @@ Cc:     devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
         linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
         linux-phy@lists.infradead.org, markyacoub@google.com,
         Markus Schneider-Pargmann <msp@baylibre.com>
-Subject: [PATCH v9 02/22] dt-bindings: mediatek,dp: Add Display Port binding
-Date:   Mon, 28 Mar 2022 00:39:07 +0200
-Message-Id: <20220327223927.20848-3-granquet@baylibre.com>
+Subject: [PATCH v9 06/22] video/hdmi: Add audio_infoframe packing for DP
+Date:   Mon, 28 Mar 2022 00:39:11 +0200
+Message-Id: <20220327223927.20848-7-granquet@baylibre.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220327223927.20848-1-granquet@baylibre.com>
 References: <20220327223927.20848-1-granquet@baylibre.com>
@@ -75,126 +75,184 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Markus Schneider-Pargmann <msp@baylibre.com>
 
-This controller is present on several mediatek hardware. Currently
-mt8195 and mt8395 have this controller without a functional difference,
-so only one compatible field is added.
+Similar to HDMI, DP uses audio infoframes as well which are structured
+very similar to the HDMI ones.
 
-The controller can have two forms, as a normal display port and as an
-embedded display port.
+This patch adds a helper function to pack the HDMI audio infoframe for
+DP, called hdmi_audio_infoframe_pack_for_dp().
+hdmi_audio_infoframe_pack_only() is split into two parts. One of them
+packs the payload only and can be used for HDMI and DP.
 
 Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
 Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
 ---
- .../display/mediatek/mediatek,dp.yaml         | 100 ++++++++++++++++++
- 1 file changed, 100 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,dp.yaml
+ drivers/video/hdmi.c           | 82 ++++++++++++++++++++++++++--------
+ include/drm/dp/drm_dp_helper.h |  2 +
+ include/linux/hdmi.h           |  7 ++-
+ 3 files changed, 71 insertions(+), 20 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,dp.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,dp.yaml
-new file mode 100644
-index 000000000000..802cc406c72b
---- /dev/null
-+++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,dp.yaml
-@@ -0,0 +1,100 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/display/mediatek/mediatek,dp.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/video/hdmi.c b/drivers/video/hdmi.c
+index 947be761dfa4..5f50237554ed 100644
+--- a/drivers/video/hdmi.c
++++ b/drivers/video/hdmi.c
+@@ -21,6 +21,7 @@
+  * DEALINGS IN THE SOFTWARE.
+  */
+ 
++#include <drm/dp/drm_dp_helper.h>
+ #include <linux/bitops.h>
+ #include <linux/bug.h>
+ #include <linux/errno.h>
+@@ -381,12 +382,34 @@ static int hdmi_audio_infoframe_check_only(const struct hdmi_audio_infoframe *fr
+  *
+  * Returns 0 on success or a negative error code on failure.
+  */
+-int hdmi_audio_infoframe_check(struct hdmi_audio_infoframe *frame)
++int hdmi_audio_infoframe_check(const struct hdmi_audio_infoframe *frame)
+ {
+ 	return hdmi_audio_infoframe_check_only(frame);
+ }
+ EXPORT_SYMBOL(hdmi_audio_infoframe_check);
+ 
++static void
++hdmi_audio_infoframe_pack_payload(const struct hdmi_audio_infoframe *frame,
++				  u8 *buffer)
++{
++	u8 channels;
 +
-+title: Mediatek Display Port Controller
++	if (frame->channels >= 2)
++		channels = frame->channels - 1;
++	else
++		channels = 0;
 +
-+maintainers:
-+  - CK Hu <ck.hu@mediatek.com>
-+  - Jitao shi <jitao.shi@mediatek.com>
++	buffer[0] = ((frame->coding_type & 0xf) << 4) | (channels & 0x7);
++	buffer[1] = ((frame->sample_frequency & 0x7) << 2) |
++		 (frame->sample_size & 0x3);
++	buffer[2] = frame->coding_type_ext & 0x1f;
++	buffer[3] = frame->channel_allocation;
++	buffer[4] = (frame->level_shift_value & 0xf) << 3;
 +
-+description: |
-+  Device tree bindings for the Mediatek (embedded) Display Port controller
-+  present on some Mediatek SoCs.
++	if (frame->downmix_inhibit)
++		buffer[4] |= BIT(7);
++}
 +
-+properties:
-+  compatible:
-+    items:
-+      - const: mediatek,mt8195-dp-tx
-+      - const: syscon
+ /**
+  * hdmi_audio_infoframe_pack_only() - write HDMI audio infoframe to binary buffer
+  * @frame: HDMI audio infoframe
+@@ -404,7 +427,6 @@ EXPORT_SYMBOL(hdmi_audio_infoframe_check);
+ ssize_t hdmi_audio_infoframe_pack_only(const struct hdmi_audio_infoframe *frame,
+ 				       void *buffer, size_t size)
+ {
+-	unsigned char channels;
+ 	u8 *ptr = buffer;
+ 	size_t length;
+ 	int ret;
+@@ -420,28 +442,13 @@ ssize_t hdmi_audio_infoframe_pack_only(const struct hdmi_audio_infoframe *frame,
+ 
+ 	memset(buffer, 0, size);
+ 
+-	if (frame->channels >= 2)
+-		channels = frame->channels - 1;
+-	else
+-		channels = 0;
+-
+ 	ptr[0] = frame->type;
+ 	ptr[1] = frame->version;
+ 	ptr[2] = frame->length;
+ 	ptr[3] = 0; /* checksum */
+ 
+-	/* start infoframe payload */
+-	ptr += HDMI_INFOFRAME_HEADER_SIZE;
+-
+-	ptr[0] = ((frame->coding_type & 0xf) << 4) | (channels & 0x7);
+-	ptr[1] = ((frame->sample_frequency & 0x7) << 2) |
+-		 (frame->sample_size & 0x3);
+-	ptr[2] = frame->coding_type_ext & 0x1f;
+-	ptr[3] = frame->channel_allocation;
+-	ptr[4] = (frame->level_shift_value & 0xf) << 3;
+-
+-	if (frame->downmix_inhibit)
+-		ptr[4] |= BIT(7);
++	hdmi_audio_infoframe_pack_payload(frame,
++					  ptr + HDMI_INFOFRAME_HEADER_SIZE);
+ 
+ 	hdmi_infoframe_set_checksum(buffer, length);
+ 
+@@ -479,6 +486,43 @@ ssize_t hdmi_audio_infoframe_pack(struct hdmi_audio_infoframe *frame,
+ }
+ EXPORT_SYMBOL(hdmi_audio_infoframe_pack);
+ 
++/**
++ * hdmi_audio_infoframe_pack_for_dp - Pack a HDMI Audio infoframe for DisplayPort
++ *
++ * @frame:      HDMI Audio infoframe
++ * @sdp:        secondary data packet for display port. This is filled with the
++ * appropriate: data
++ * @dp_version: Display Port version to be encoded in the header
++ *
++ * Packs a HDMI Audio Infoframe to be sent over Display Port. This function
++ * fills the secondary data packet to be used for Display Port.
++ *
++ * Return: Number of total written bytes or a negative errno on failure.
++ */
++ssize_t
++hdmi_audio_infoframe_pack_for_dp(const struct hdmi_audio_infoframe *frame,
++				 struct dp_sdp *sdp, u8 dp_version)
++{
++	int ret;
 +
-+  reg:
-+    maxItems: 1
++	ret = hdmi_audio_infoframe_check(frame);
++	if (ret)
++		return ret;
 +
-+  interrupts:
-+    maxItems: 1
++	memset(sdp->db, 0, sizeof(sdp->db));
 +
-+  clocks:
-+    items:
-+      - description: faxi clock
++	/* Secondary-data packet header */
++	sdp->sdp_header.HB0 = 0;
++	sdp->sdp_header.HB1 = frame->type;
++	sdp->sdp_header.HB2 = DP_SDP_AUDIO_INFOFRAME_HB2;
++	sdp->sdp_header.HB3 = (dp_version & 0x3f) << 2;
 +
-+  clock-names:
-+    items:
-+      - const: faxi
++	hdmi_audio_infoframe_pack_payload(frame, sdp->db);
 +
-+  phys:
-+    maxItems: 1
++	return frame->length + 4;
++}
++EXPORT_SYMBOL(hdmi_audio_infoframe_pack_for_dp);
 +
-+  phy-names:
-+    items:
-+      - const: dp
+ /**
+  * hdmi_vendor_infoframe_init() - initialize an HDMI vendor infoframe
+  * @frame: HDMI vendor infoframe
+diff --git a/include/drm/dp/drm_dp_helper.h b/include/drm/dp/drm_dp_helper.h
+index 51e02cf75277..d4adb479263e 100644
+--- a/include/drm/dp/drm_dp_helper.h
++++ b/include/drm/dp/drm_dp_helper.h
+@@ -1576,6 +1576,8 @@ int drm_dp_bw_code_to_link_rate(u8 link_bw);
+ #define DP_SDP_VSC_EXT_CEA		0x21 /* DP 1.4 */
+ /* 0x80+ CEA-861 infoframe types */
+ 
++#define DP_SDP_AUDIO_INFOFRAME_HB2	0x1b
 +
-+  power-domains:
-+    maxItems: 1
+ /**
+  * struct dp_sdp_header - DP secondary data packet header
+  * @HB0: Secondary Data Packet ID
+diff --git a/include/linux/hdmi.h b/include/linux/hdmi.h
+index c8ec982ff498..2f4dcc8d060e 100644
+--- a/include/linux/hdmi.h
++++ b/include/linux/hdmi.h
+@@ -336,7 +336,12 @@ ssize_t hdmi_audio_infoframe_pack(struct hdmi_audio_infoframe *frame,
+ 				  void *buffer, size_t size);
+ ssize_t hdmi_audio_infoframe_pack_only(const struct hdmi_audio_infoframe *frame,
+ 				       void *buffer, size_t size);
+-int hdmi_audio_infoframe_check(struct hdmi_audio_infoframe *frame);
++int hdmi_audio_infoframe_check(const struct hdmi_audio_infoframe *frame);
 +
-+  ports:
-+    $ref: /schemas/graph.yaml#/properties/ports
-+    properties:
-+      port@0:
-+        $ref: /schemas/graph.yaml#/properties/port
-+        description: Input endpoint of the controller, usually dp_intf
-+
-+      port@1:
-+        $ref: /schemas/graph.yaml#/properties/port
-+        description: Output endpoint of the controller
-+
-+    required:
-+      - port@0
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - ports
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/power/mt8195-power.h>
-+    edp_tx: edisplay-port-tx@1c500000 {
-+        compatible = "mediatek,mt8195-dp-tx","syscon";
-+        reg = <0 0x1c500000 0 0x8000>;
-+        interrupts = <GIC_SPI 676 IRQ_TYPE_LEVEL_HIGH 0>;
-+        power-domains = <&spm MT8195_POWER_DOMAIN_EPD_TX>;
-+        pinctrl-names = "default";
-+        pinctrl-0 = <&edp_pin>;
-+        phys = <&dp_phy>;
-+        phy-names = "dp";
-+
-+        ports {
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            port@0 {
-+                reg = <0>;
-+                edp_in: endpoint {
-+                    remote-endpoint = <&dp_intf0_out>;
-+                };
-+            };
-+            port@1 {
-+                reg = <1>;
-+                edp_out: endpoint {
-+                    remote-endpoint = <&panel_in>;
-+                };
-+            };
-+        };
-+    };
++struct dp_sdp;
++ssize_t
++hdmi_audio_infoframe_pack_for_dp(const struct hdmi_audio_infoframe *frame,
++				 struct dp_sdp *sdp, u8 dp_version);
+ 
+ enum hdmi_3d_structure {
+ 	HDMI_3D_STRUCTURE_INVALID = -1,
 -- 
 2.34.1
 
