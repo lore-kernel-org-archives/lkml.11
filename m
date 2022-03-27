@@ -2,141 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C76EC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 17:52:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2862CC43217
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 17:57:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236188AbiC0Rtj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 13:49:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46354 "EHLO
+        id S236237AbiC0R4O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 13:56:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235083AbiC0Rth (ORCPT
+        with ESMTP id S236208AbiC0R4M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 13:49:37 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C68E13DF1
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 10:47:58 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id p10so15303473lfa.12
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 10:47:58 -0700 (PDT)
+        Sun, 27 Mar 2022 13:56:12 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42971BF41
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 10:54:33 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id 17so16391793ljw.8
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 10:54:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linux-foundation.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=o1iDTaw6udoeWxS0P3g37FT6qwmikziMFuHY85TzLms=;
-        b=QXev/0HctMbQHJBBNg+vNKoiZgjxrbVRSPl69GoL4dHj0DM3HKnB8D6M9SfRxR7oye
-         ZjtoNDJsE178zhG1uAUpIv6gx7j2hqmmr9e61yPEb/ijmDJDrw7sxwJYVDWTMob0rc0O
-         16xoprFxcmNSQ9AF+YH9lSIXRpizPi37FJt/Y=
+        bh=9RRo28ZJgxNtm0LxGk4jcyTDu6M+7JuDAPmhILttShY=;
+        b=CQHKZ1HJv46CMKFC/9NHyeb8GX2/NuT7YFjHLDpMxUzWDIZMf+tV2ISipfQrhQK4jK
+         IHPXlZC8p8e0aSUutE9AXbCI0I9GILAy9avHD3w0cQZ907uc67pmTfI8ojN5DFOXvUXA
+         +DbZUf+cv84PYxC9stg+YgliFWxMQe1Y/V0QQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=o1iDTaw6udoeWxS0P3g37FT6qwmikziMFuHY85TzLms=;
-        b=MxXmgzf0qrVVepcB7VIgc1BP8a2dK6BFecHJ7dN5aWsxYf7mj90NLqPgjJbRf53R7d
-         b5LKnEGMSbim+iZRA7fAFFAPSnKNguDyAgvVqYKM4y6AHXjn+vAwjxQ0uj6zOdEPJF8T
-         reAdrnj8LlMajV2aM8XqRHl+4dAVCk70il5yP1IrL1PSX4qmhbDBm8gHPrAybv1fFidM
-         WR5ZDEHAfojYR3JwgblErMV47g4+jSiLLxZfX7ZCegA1lBq+WJtx+CIpSOSHykAiSG5D
-         xcy79maRVOAaFLxuO1xMvJuMHx3Uh3myaSSl4IgvGdTvnUBE8Mi1Ti5lU/x2jSyB1r8x
-         +2Fw==
-X-Gm-Message-State: AOAM533PkpafUGVV8+zEa3EtlBABpe2lW6TNJtKce4zuppNqAMRAf+zY
-        2sDM3WO4PTPQC9sdDSG+T5B6/GRalgsh3CpEn68=
-X-Google-Smtp-Source: ABdhPJzGkOC8uJbA+kk3Opg7yZN437E+8XGHnK7aLiazRjMgUlp3l64iLFdAUSXz8+hA3OEvT719mA==
-X-Received: by 2002:a05:6512:34d0:b0:44a:6d14:5019 with SMTP id w16-20020a05651234d000b0044a6d145019mr12636660lfr.632.1648403276151;
-        Sun, 27 Mar 2022 10:47:56 -0700 (PDT)
-Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com. [209.85.208.180])
-        by smtp.gmail.com with ESMTPSA id a13-20020a195f4d000000b00443a5302315sm1416166lfj.30.2022.03.27.10.47.54
+        bh=9RRo28ZJgxNtm0LxGk4jcyTDu6M+7JuDAPmhILttShY=;
+        b=UEz8MbKjsIV4PepcaMRJRgUWbV1Yu7QE733zyLjnF7AB3SVf2RMQZ5+ImJmKDF1OC0
+         Ry8N/B0cYo2MIOQRW06iGFjLudAxpMLDe9zj9Np0Hsn1KuHEE+BmYVRPBud2GJ1ZWvZm
+         9b0NbRfQqdmnj2pGdcWqJPG7beq6/CYWk3k2W/FFpM/g0OUKUOo1iEBpgaKB87S+nTMv
+         um06iYte/aGGMbUX5e6CHWJTyP8SeDI+oHsGm0GQWLFMwtQVNA+ECu5lMkKO2lmBlxDA
+         aKbvgQ4Iz+Wk/atDr7jYKQAyJcpUMZ881eRKEMeD23z5zpGcxGR/oiPl/8OIojBMek5x
+         ld3A==
+X-Gm-Message-State: AOAM530or0a/fWy7PUJv7Uvtu8O5khUEB8LOHWAlORCOXPNVjf7Ycg6L
+        dCv5nRsfZ3ttpXUyYMenCmNqW9JLG/dS4i7M/vA=
+X-Google-Smtp-Source: ABdhPJwbL2wXyCg3JZTdB4yh3W2EgR9GhKvB1DxV+pF58taxNx7I9DJRzYEUyg6GtX/6OSKYOl6NjQ==
+X-Received: by 2002:a2e:7217:0:b0:249:85ef:ae99 with SMTP id n23-20020a2e7217000000b0024985efae99mr16847424ljc.407.1648403671242;
+        Sun, 27 Mar 2022 10:54:31 -0700 (PDT)
+Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com. [209.85.208.175])
+        by smtp.gmail.com with ESMTPSA id d22-20020a194f16000000b0044a72c26c97sm944672lfb.150.2022.03.27.10.54.29
         for <linux-kernel@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 27 Mar 2022 10:47:55 -0700 (PDT)
-Received: by mail-lj1-f180.google.com with SMTP id q14so16352318ljc.12
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 10:47:54 -0700 (PDT)
-X-Received: by 2002:a2e:9b10:0:b0:247:f28c:ffd3 with SMTP id
- u16-20020a2e9b10000000b00247f28cffd3mr16448428lji.152.1648403274197; Sun, 27
- Mar 2022 10:47:54 -0700 (PDT)
+        Sun, 27 Mar 2022 10:54:30 -0700 (PDT)
+Received: by mail-lj1-f175.google.com with SMTP id q14so16364571ljc.12
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 10:54:29 -0700 (PDT)
+X-Received: by 2002:a2e:9041:0:b0:24a:ce83:dcb4 with SMTP id
+ n1-20020a2e9041000000b0024ace83dcb4mr2136622ljg.291.1648403669304; Sun, 27
+ Mar 2022 10:54:29 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220326152646.GT8939@worktop.programming.kicks-ass.net>
- <CAHk-=whhG15HiqR+WM5M2mMy9F17yVdT8_M0ra0tGJS+5ibrdw@mail.gmail.com> <20220327082217.GU8939@worktop.programming.kicks-ass.net>
-In-Reply-To: <20220327082217.GU8939@worktop.programming.kicks-ass.net>
+References: <20220327173316.315-1-kbusch@kernel.org> <CAHk-=whktuOOGYoNC=pAVX3KOMo4AD8dFsVdD_CAesMqef_9JQ@mail.gmail.com>
+In-Reply-To: <CAHk-=whktuOOGYoNC=pAVX3KOMo4AD8dFsVdD_CAesMqef_9JQ@mail.gmail.com>
 From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sun, 27 Mar 2022 10:47:38 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whzW56xChey=k+9KeK_NFxWLfZrt5UWvVjTxYbHLP1Nwg@mail.gmail.com>
-Message-ID: <CAHk-=whzW56xChey=k+9KeK_NFxWLfZrt5UWvVjTxYbHLP1Nwg@mail.gmail.com>
-Subject: Re: [GIT PULL] x86/core for 5.18
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     "the arch/x86 maintainers" <x86@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>
+Date:   Sun, 27 Mar 2022 10:54:13 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjrNHfwp4BM_xXNfoix4YSgkSZJ-Tq_R9NiFLqL1v0dHw@mail.gmail.com>
+Message-ID: <CAHk-=wjrNHfwp4BM_xXNfoix4YSgkSZJ-Tq_R9NiFLqL1v0dHw@mail.gmail.com>
+Subject: Re: [PATCH] block: move lower_48_bits() to block
+To:     Keith Busch <kbusch@kernel.org>
+Cc:     linux-block <linux-block@vger.kernel.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Mar 27, 2022 at 1:22 AM Peter Zijlstra <peterz@infradead.org> wrote:
+On Sun, Mar 27, 2022 at 10:53 AM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
 >
-> Duh! I pushed the tag to the wrong repo (peterz/queue.git)... I just
-> pushed it out to tip/tip/git as well, so hopefully it should all work
-> now.
+> Because admittedly the 21st century has been all that great so far,
 
-Thanks, looks good.
+ *hasn't
 
-There's a few merges that don't have good explanations ("avoid
-conflicts" really is not an explanation on its own), but those weren't
-actually yours.
+Duh.
 
-Looking around, the only other thing I notice is that the CC_HAS_IBT
-conditional is horrendously unreadable.
-
-There is no reason to make a Kconfig option use one single expression
-from hell, when the Kconfig language is designed to be able to do so
-much better.
-
-That
-
-       def_bool ((CC_IS_GCC && $(cc-option, -fcf-protection=branch
--mindirect-branch-register)) || \
-                 (CC_IS_CLANG && CLANG_VERSION >= 140000)) && \
-                 $(as-instr,endbr64)
-
-really is pretty horrendous. Yeah, we have other examples ot those
-kinds of horrible expressions (*cough*KCSAN*cough*), but wouldn't it
-be much nicer to just write those things legibly.
-
-And it's nice to see the comments about _why_ some particular compiler
-checks are done, but when it's all part of one very complicated thing
-it's not exactly easy to read or understand.
-
-I've obviously already pulled it (you should have seen the
-pr-tracker-bot reply), but I really think it should have been written
-in a much more straight-forward and obvious manner, something like:
-
-  # work around https://gcc.gnu.org/bugzilla/show_bug.cgi?id=93654
-  config GCC_HAS_IBT
-        def_bool y
-        depends on CC_IS_GCC
-        depends on $(cc-option, -fcf-protection=branch
--mindirect-branch-register)
-
-  # Clang/LLVM >= 14
-  # https://github.com/llvm/llvm-project/commit/e0b89df2e0f0130881bf6c39bf31d7f6aac00e0f
-  # https://github.com/llvm/llvm-project/commit/dfcf69770bc522b9e411c66454934a37c1f35332
-  config CLANG_HAS_IBT
-        def_bool y
-        depends on CC_IS_CLANG && CLANG_VERSION >= 140000
-
-  # binutils >= 2.29 for 'endbr64' instruction
-  config CC_HAS_IBT
-        def_bool y
-        depends on GCC_HAS_IBT || CLANG_HAS_IBT
-        depends on $(as-instr,endbr64)
-
-instead (ok, using "AS_HAS_IBT" and "LD_HAS_IBT" to clarify all
-_those_ tests too would probably have been even more legible, but I
-got bored).
-
-The above suggested Kconfig snippet is entirely untested, and meant
-purely as a "look, you can split these expressions up to be more
-legible".
-
-The actual *code* seems to be nicely abstracted out, which is why I
-then reacted to that Kconfig mess.
-
-           Linus
+             Linus
