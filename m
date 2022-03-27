@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A93E6C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 14:44:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF352C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 15:03:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235764AbiC0Op4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 10:45:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44796 "EHLO
+        id S235761AbiC0PEo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 11:04:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231444AbiC0Opz (ORCPT
+        with ESMTP id S229518AbiC0PEl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 10:45:55 -0400
+        Sun, 27 Mar 2022 11:04:41 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B95AA6558;
-        Sun, 27 Mar 2022 07:44:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D94BD24F16;
+        Sun, 27 Mar 2022 08:03:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 48EDE6102C;
-        Sun, 27 Mar 2022 14:44:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13A5DC340EC;
-        Sun, 27 Mar 2022 14:44:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7678B61000;
+        Sun, 27 Mar 2022 15:03:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9439CC340EC;
+        Sun, 27 Mar 2022 15:03:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648392254;
-        bh=KaaMBLWHobctIZkx9Oel+yUjiNjl6Gc2pcQei+x3+ME=;
+        s=k20201202; t=1648393381;
+        bh=e2KjtE5biO6qvO0Ppa5lM6lFh/vgjHDznklgdcn7Kz8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KS/65AzesUTLsBp+XxUP1m9uj9heIV9TAaN7regkUeinj+GIlaecsUQYrLiGP7mBC
-         GM2HzaELMVFqvwCRVopXDnRrgDzXVRoJRwJ7YT9ScorO1Fm0QHtksrYgNUoejadIt2
-         j4+wTOP7WlHwxQeBYMrToomF4rdFX1IrcCyFlx7mlIIUnqnC0uta9LCMHecaWE+0UN
-         joibO2ShmjF9U0STZ36Rn6bQyP9TlFdzi12xmxF3pD3jd7F21PDgM3XHAHx5Kstiq9
-         MAT5v6WDEIfz21zYMnTelf0JnyDJ4YHSc8NeLmr2aIIyzkkK35yI5sev15RoNBe96a
-         52azvuz+4S3aQ==
-Date:   Sun, 27 Mar 2022 15:51:47 +0100
+        b=S/wdiQp1Mp/6up6oqK/8Q/pLdtNvY3mzc+SVYr3Nyv4+va6P8CAQFCx+UUDptuk0X
+         SFlYBbjXKfp+gZAw9oaupfDBXlaV3p++1rkiscRFoP7xSr5U5cZhgPET8c61YgKQ9F
+         cnH5CXsUXh0g8S1ePsJT6LWYXGHiANJx4bL+bkRTsx3XLuHrNrcTxmUftww/qYRX8Z
+         fHouUiA0lMKU/f3w2CVKdvTD8zlzBJqvOUkvrKkR63pQg0vEtMMFa9ZFQZZ39Si/la
+         I7KL48MLZsk/xD06H7UFUF8Od0wvVHgdo/R9TLnw756ADasihyMgFFPkNVoTU/qqUc
+         4SNunSOste4SQ==
+Date:   Sun, 27 Mar 2022 16:10:35 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, Gwendal Grignou <gwendal@chromium.org>
-Subject: Re: [PATCH v2] iio:proximity:sx9324: Fix hardware gain read/write
-Message-ID: <20220327155147.52e898b4@jic23-huawei>
-In-Reply-To: <20220324222928.874522-1-swboyd@chromium.org>
-References: <20220324222928.874522-1-swboyd@chromium.org>
+To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+Cc:     <alexandru.tachici@analog.com>, <linux-iio@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 0/6] iio: adc: ad_sigma_delta: Add sequencer support
+Message-ID: <20220327161035.77427c93@jic23-huawei>
+In-Reply-To: <20220322213002.00004ca2@Huawei.com>
+References: <20220322105029.86389-1-alexandru.tachici@analog.com>
+        <20220322213002.00004ca2@Huawei.com>
 X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -49,112 +50,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 24 Mar 2022 15:29:28 -0700
-Stephen Boyd <swboyd@chromium.org> wrote:
+On Tue, 22 Mar 2022 21:30:02 +0000
+Jonathan Cameron <Jonathan.Cameron@Huawei.com> wrote:
 
-> There are four possible gain values according to 'sx9324_gain_vals[]':
+> On Tue, 22 Mar 2022 12:50:23 +0200
+> <alexandru.tachici@analog.com> wrote:
 > 
-> 	1, 2, 4, and 8
+> > From: Alexandru Tachici <alexandru.tachici@analog.com>  
 > 
-> The values are off by one when writing and reading the register. The
-> bits should be set according to this equation:
+> Hi Alexandru,
 > 
-> 	ilog2(<gain>) + 1
+> I just took another look at this and I'm happy with it.
+> Will leave it on list for a few more days for others to
+> take a look though before I queue it up.
 > 
-> so that a gain of 8 is 0x3 in the register field and a gain of 4 is 0x2
-> in the register field, etc
+Applied to the togreg branch of iio.git though I won't push
+that out, other than as testing, until I can rebase on rc1.
 
-Example seems wrong... 
+Thanks,
 
-ilog2(8) + 1 = 3 + 1 = 0x4
-ilog2(4) + 1 = 2 + 1 = 0x3
-ilog2(2) + 1 = 1 + 1 = 0x2
-ilog2(1) + 1 = 0 + 1 = 0x1
-                       0x0 reserved.
-
-or have I misunderstood?
-
->. Note that a gain of 0 is reserved per the
-> datasheet. The default gain (SX9324_REG_PROX_CTRL0_GAIN_1) is also
-> wrong. It should be 0x1 << 3, i.e. 0x8, not 0x80 which is setting the
-> reserved bit 7.
+Jonathan
+ 
+> Thanks,
 > 
-> Fix this all up to properly handle the hardware gain and return errors
-> for invalid settings.
+> Jonathan
 > 
-> Fixes: 4c18a890dff8 ("iio:proximity:sx9324: Add SX9324 support")
-> Cc: Gwendal Grignou <gwendal@chromium.org>
-> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-> ---
+> > 
+> > Some sigma-delta chips support sampling of multiple
+> > channels in continuous mode.
+> > 
+> > When the operating with more than one channel enabled,
+> > the channel sequencer cycles through the enabled channels
+> > in sequential order, from first channel to the last one.
+> > If a channel is disabled, it is skipped by the sequencer.
+> > 
+> > If more than one channel is used in continuous mode,
+> > instruct the device to append the status to the SPI transfer
+> > (1 extra byte) every time we receive a sample.
+> > All sigma-delta chips possessing a sampling sequencer have
+> > this ability. Inside the status register there will be
+> > the number of the converted channel. In this way, even
+> > if the CPU won't keep up with the sampling rate, it won't
+> > send to userspace wrong channel samples.
+> > 
+> > 1. Removed the 1 byte .shift from channel spec in AD7124,
+> > it confuses userspace apps (no need to shift right).
+> > 
+> > 2. Add update_scan_mode to AD7124, it is required in order
+> > to enable/disable multiple channels at once
+> > 
+> > 3. Add update_scan_mode to AD7192, it is required in order
+> > to enable/disable multiple channels at once
+> > 
+> > 4. Add sequencer support for sigma_delta library.
+> > 
+> > 5. Add sigma_delta_info values and callbacks for sequencer
+> > support in AD7124.
+> > 
+> > 6. Add sigma_delta_info values and callbacks for sequencer
+> > support in AD7192.
+> > 
+> > Alexandru Tachici (5):
+> >   iio: adc: ad7124: Remove shift from scan_type
+> >   iio: adc: ad7124: Add update_scan_mode
+> >   iio: adc: ad7192: Add update_scan_mode
+> >   iio: adc: ad7124: add sequencer support
+> >   iio: adc: ad7192: add sequencer support
+> > 
+> > Lars-Peter Clausen (1):
+> >   iio: adc: ad_sigma_delta: Add sequencer support
+> > 
+> > Changelog V2 -> V3:
+> >   - ad_sd_buffer_postenable(), aligned (slot * storagebits) to 8 bytes
+> >   - devm_krealloc instead of krealloc for samples_buf in ad_sd_buffer_postenable()
+> >   - in ad_sigma_delta_append_status, check return value before setting .status_appended
+> >   - iio: adc: ad_sigma_delta: Add sequencer support: added explanations on
+> >   desynchronization checking and recovery
+> >   - in ad7124_append_status() modify st->adc_control after write has taken place without errors
+> >   - in ad7124_update_scan_mode() take cfg mutex only once instead of every time a
+> >   set_channel happens
+> >   - in ad7192_disable_all() modify st->conf after write taken place without errors
+> >   - in ad7192_append_status() modify st->mode after write taken place without errors
+> > 
+> >  drivers/iio/adc/ad7124.c               |  86 ++++++++++++++-
+> >  drivers/iio/adc/ad7192.c               |  64 ++++++++++-
+> >  drivers/iio/adc/ad_sigma_delta.c       | 143 +++++++++++++++++++++++--
+> >  include/linux/iio/adc/ad_sigma_delta.h |  38 +++++++
+> >  4 files changed, 315 insertions(+), 16 deletions(-)
+> > 
+> > --
+> > 2.25.1  
 > 
-> Changes from v1 (https://lore.kernel.org/r/)20220318204808.3404542-1-swboyd@chromium.org:
->  * Reject invalid settings
->  * Fix default value
->  * More commit text details
-> 
->  drivers/iio/proximity/sx9324.c | 26 +++++++++++++++++++++-----
->  1 file changed, 21 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iio/proximity/sx9324.c b/drivers/iio/proximity/sx9324.c
-> index 0d9bbbb50cb4..6e90917e3e36 100644
-> --- a/drivers/iio/proximity/sx9324.c
-> +++ b/drivers/iio/proximity/sx9324.c
-> @@ -76,7 +76,10 @@
->  
->  #define SX9324_REG_PROX_CTRL0		0x30
->  #define SX9324_REG_PROX_CTRL0_GAIN_MASK	GENMASK(5, 3)
-> -#define SX9324_REG_PROX_CTRL0_GAIN_1		0x80
-> +#define SX9324_REG_PROX_CTRL0_GAIN_SHIFT	3
-> +#define SX9324_REG_PROX_CTRL0_GAIN_RSVD		0x0
-> +#define SX9324_REG_PROX_CTRL0_GAIN_1		0x1
-> +#define SX9324_REG_PROX_CTRL0_GAIN_8		0x4
->  #define SX9324_REG_PROX_CTRL0_RAWFILT_MASK	GENMASK(2, 0)
->  #define SX9324_REG_PROX_CTRL0_RAWFILT_1P50	0x01
->  #define SX9324_REG_PROX_CTRL1		0x31
-> @@ -379,7 +382,14 @@ static int sx9324_read_gain(struct sx_common_data *data,
->  	if (ret)
->  		return ret;
->  
-> -	*val = 1 << FIELD_GET(SX9324_REG_PROX_CTRL0_GAIN_MASK, regval);
-> +	regval = FIELD_GET(SX9324_REG_PROX_CTRL0_GAIN_MASK, regval);
-> +	if (regval)
-> +		regval--;
-> +	else if (regval == SX9324_REG_PROX_CTRL0_GAIN_RSVD ||
-> +		 regval > SX9324_REG_PROX_CTRL0_GAIN_8)
-> +		return -EINVAL;
-> +
-> +	*val = 1 << regval;
->  
->  	return IIO_VAL_INT;
->  }
-> @@ -725,8 +735,12 @@ static int sx9324_write_gain(struct sx_common_data *data,
->  	unsigned int gain, reg;
->  	int ret;
->  
-> -	gain = ilog2(val);
->  	reg = SX9324_REG_PROX_CTRL0 + chan->channel / 2;
-> +
-> +	gain = ilog2(val) + 1;
-> +	if (val <= 0 || gain > SX9324_REG_PROX_CTRL0_GAIN_8)
-> +		return -EINVAL;
-> +
->  	gain = FIELD_PREP(SX9324_REG_PROX_CTRL0_GAIN_MASK, gain);
->  
->  	mutex_lock(&data->mutex);
-> @@ -784,9 +798,11 @@ static const struct sx_common_reg_default sx9324_default_regs[] = {
->  	{ SX9324_REG_AFE_CTRL8, SX9324_REG_AFE_CTRL8_RESFILTN_4KOHM },
->  	{ SX9324_REG_AFE_CTRL9, SX9324_REG_AFE_CTRL9_AGAIN_1 },
->  
-> -	{ SX9324_REG_PROX_CTRL0, SX9324_REG_PROX_CTRL0_GAIN_1 |
-> +	{ SX9324_REG_PROX_CTRL0,
-> +		SX9324_REG_PROX_CTRL0_GAIN_1 << SX9324_REG_PROX_CTRL0_GAIN_SHIFT |
->  		SX9324_REG_PROX_CTRL0_RAWFILT_1P50 },
-> -	{ SX9324_REG_PROX_CTRL1, SX9324_REG_PROX_CTRL0_GAIN_1 |
-> +	{ SX9324_REG_PROX_CTRL1,
-> +		SX9324_REG_PROX_CTRL0_GAIN_1 << SX9324_REG_PROX_CTRL0_GAIN_SHIFT |
->  		SX9324_REG_PROX_CTRL0_RAWFILT_1P50 },
->  	{ SX9324_REG_PROX_CTRL2, SX9324_REG_PROX_CTRL2_AVGNEG_THRESH_16K },
->  	{ SX9324_REG_PROX_CTRL3, SX9324_REG_PROX_CTRL3_AVGDEB_2SAMPLES |
-> 
-> base-commit: a8ee3b32f5da6c77a5ccc0e42c2250d61ba54fe0
 
