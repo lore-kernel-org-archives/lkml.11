@@ -2,198 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F07CC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 08:58:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20F20C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 09:09:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231742AbiC0JAU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 05:00:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48938 "EHLO
+        id S231925AbiC0JLG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 05:11:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229698AbiC0JAQ (ORCPT
+        with ESMTP id S231820AbiC0JLD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 05:00:16 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB763B295;
-        Sun, 27 Mar 2022 01:58:38 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id t2so9994752pfj.10;
-        Sun, 27 Mar 2022 01:58:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=7xvsh8FIV4X8qjBnU3ZR0V0Ttcm32tPDVRGj1HnLnug=;
-        b=hXNdbJix4pJNIu2Zw42LECnSqu0TzyHbbcrJVKJZzn2sHuyavQZAd3cXnA00U+UeGu
-         8cAgWYrQQda4AS1Cgmk/l1RzymnM4xhUv1nBxDK/55+xOYrquUXTY14E8jpgPIJyaY8l
-         eHX8cvOvuRYXHwUTNMEYc8aTv5sPrIprkoKn7z8Nlyd5p5SwATk0GKOX6/ovt/aHDPOj
-         RsH7T/N82Fly7SiP92iAFmcRt4+StxLYkg/DAYtphvqcv27J1/yYfFEUWpo1xn567qvf
-         ER7UZ6PELw/ESZS08qkgsbt+WlKnvpjNS2p8Zh7ZCFI+QpNKotlXVAC1yqMu03FQssui
-         ArWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=7xvsh8FIV4X8qjBnU3ZR0V0Ttcm32tPDVRGj1HnLnug=;
-        b=Rwl+0Ys/M3hfjzH6EOuItrPO03huA2Y+L5JP7x9EFSjmnNkqUdkvoTsh92jz7IyT6r
-         ADUA8UQnTSbqiWw0K1OHWgGWdEhgdwMnI7KOUMHuHcPWYFmvGTRlkWgL7IYO1ZuZcIcB
-         4wHvhbOv9MPeIAtOKrbbpiMvZPyLxPOHOfH0gqh9a95TdLTyaPkCIvsDW/wGW/yhLHnS
-         cHb6S2Qg3OpXWEkJVVa2TtgILtmo06+4ZngifsvRzehVpuNwNuBeknsGVX2SqZVKmRv3
-         Y6GzewajotsDH/mVm71XTK92WO+3ix5JxIJ74xfx0jQSbF8LILwbNKoLm/rpj6rDLsxR
-         5TNA==
-X-Gm-Message-State: AOAM533s3VCz8MHqboRWpLat3KJxaXuBoi+WiD/5Kvg3hiVzjgHImx/D
-        oky5WkWBD440V3Na9xzaI8w=
-X-Google-Smtp-Source: ABdhPJwJbpivqpvlQVVZaanGQJI7qe/8a0VaU1hK1gJAWjlZGbY/NQWcPqZk9scKr+0fN97YM0BV9A==
-X-Received: by 2002:a65:5a0d:0:b0:381:3c1e:9aca with SMTP id y13-20020a655a0d000000b003813c1e9acamr6080914pgs.562.1648371518258;
-        Sun, 27 Mar 2022 01:58:38 -0700 (PDT)
-Received: from localhost ([115.220.243.108])
-        by smtp.gmail.com with ESMTPSA id u41-20020a056a0009a900b004fa831fb240sm12129339pfg.6.2022.03.27.01.58.37
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 27 Mar 2022 01:58:37 -0700 (PDT)
-From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
-To:     mchehab@kernel.org
-Cc:     sakari.ailus@linux.intel.com, gregkh@linuxfoundation.org,
-        hverkuil-cisco@xs4all.nl, kitakar@gmail.com,
-        alinesantanacordeiro@gmail.com, laurent.pinchart@ideasonboard.com,
-        tomi.valkeinen@ideasonboard.com, linux-media@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Xiaomeng Tong <xiam0nd.tong@gmail.com>, stable@vger.kernel.org
-Subject: [PATCH] pci: atomisp_cmd: fix three missing checks on list iterator
-Date:   Sun, 27 Mar 2022 16:58:31 +0800
-Message-Id: <20220327085831.14462-1-xiam0nd.tong@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Sun, 27 Mar 2022 05:11:03 -0400
+Received: from FRA01-MR2-obe.outbound.protection.outlook.com (mail-eopbgr90074.outbound.protection.outlook.com [40.107.9.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E759A222AF
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 02:09:22 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MlwxT4Zc+4kqSdglfcTVSe3kkbRh1kjtfsNirLU88Wy4DPRZTlRGB95QDZv8A8pFOhsSaQ1KNGyYO08H2n7exBh3UoEprIrVs7Sm3yb9rSjYRA2oTeo6NYrkw8ujRX/cHegyUgZhmdZWPTHxSDe6hO0V3MYwgHn3I/UXInUyN1LLSwCDutYU4k1FqcT1XLWA9fuQDk6XtZjQddtQ5Siu29XIWiMFylWGyn/Ar4DXMbEe81GDuMwCMJaB7RYvuZOWUw/ftBIY4QxPY5wevuYyf0Rkdc3U/y6LVEeQvgwmJNeQLxCHNcVPBVKNvNungqVdBhGGipcUsOWbZCsfW430SQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yzJrCNf+e8lzQ9rof0l96np4bfkbCJE80R7PRgvbsE0=;
+ b=Ukj2pWJ4Y/foduxlkGkg+xkNdAtXJe7zn1Lmtm79azIdKMRy+4GKmUw9792M8RIkTO80CesE4wLCZBmbJOKVdXIgyeEH8AnidMyRudz6Lh2Krr9SvyRACcs9M+Hm4rIsrZM1ODiwAudfnEZKyvmVnF/tnP58c/Vro1r4Uj8f/CEc2005s4q8rjo3S7DDoxXPQJ7jooE+jzxDTjWwGtG1cAumciAy4HxS2yIbcqstb8VEpY7k2C7KqPFpqpJ2kLTclVBPLyy085CqMTAuWWnjs2PbVByOLtujdm7sLAG+LGuzbOiLiv2q5UrTq1eGEMcWDG7/r1EHZvcX8I9NMkx+GQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=csgroup.eu; dmarc=pass action=none header.from=csgroup.eu;
+ dkim=pass header.d=csgroup.eu; arc=none
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
+ by MR1P264MB2195.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:14::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.18; Sun, 27 Mar
+ 2022 09:09:20 +0000
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::cd2f:d05d:9aa3:400d]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::cd2f:d05d:9aa3:400d%6]) with mapi id 15.20.5102.022; Sun, 27 Mar 2022
+ 09:09:20 +0000
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        "jpoimboe@redhat.com" <jpoimboe@redhat.com>
+CC:     "aik@ozlabs.ru" <aik@ozlabs.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "naveen.n.rao@linux.vnet.ibm.com" <naveen.n.rao@linux.vnet.ibm.com>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        Sathvika Vasireddy <sv@linux.ibm.com>
+Subject: Re: [RFC PATCH 3/3] objtool/mcount: Add powerpc specific functions
+Thread-Topic: [RFC PATCH 3/3] objtool/mcount: Add powerpc specific functions
+Thread-Index: AQHYOsOkMhd+XrYXYE6fzWpV8XELvKzS/yUA
+Date:   Sun, 27 Mar 2022 09:09:20 +0000
+Message-ID: <0b55f122-4760-c1ba-840a-0911cefec2ad@csgroup.eu>
+References: <20220318105140.43914-1-sv@linux.ibm.com>
+ <20220318105140.43914-4-sv@linux.ibm.com>
+ <YjR6kHq4c/rjCTpr@hirez.programming.kicks-ass.net>
+In-Reply-To: <YjR6kHq4c/rjCTpr@hirez.programming.kicks-ass.net>
+Accept-Language: fr-FR, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=csgroup.eu;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 765b9e2a-78ad-420d-dacb-08da0fd17a6b
+x-ms-traffictypediagnostic: MR1P264MB2195:EE_
+x-microsoft-antispam-prvs: <MR1P264MB2195780D0DAE374A6C7383E8ED1C9@MR1P264MB2195.FRAP264.PROD.OUTLOOK.COM>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: OPtof7R2T540kByLnu1MVqQ/oXfcarZFhz7rDXBJM8iUA6lofGV0D5gXFg3DpFFFzVGFjOko7rfPnrhIeI5RQc4wZFAWwAmTt/tcdSLna3PVj9EOeBuk7PIU12VirJbfYfWfT7OI77YnwecSMR+BeDMz1Ub/4eCvTgG8pVfQ28eBZyPaNfnK6/TffasUuFtjWI9Gnn3qH+H8oDVrBxCE7Glq/rHk2BeiTg3nMEPgAAdBKh81Ak8TUT3gpZCZvvmfaN5HpP3tbOyNSJqs8UgYXTo+W0cCZfXgg+0wm0wEdOxtzqQOfDt0tGhB4cLh056Ej0EK2OwmTJVTnaNr8NUbh2CBF1Rs2MSe9wRdE9DYwQDFeHqsnfeSn0bIRxyg0p9G/bmkQebROJbVYdKnGEN4djwBJZxUTn/XK/+WGdzpo86aa7wZ/HA5T5KFGyThBNoHZow2j+2R06PITC/TnY40+cmTXwUnJqPTK3sAyQ+WlqTESReu4SF3ucoVfiv2Occwh7j0nBlVoZzjWKb23dq+MEPofTTrnyGTPSVstc3ovCpPEiQoSeYdKtdKZ1utzecSkaWxOXnKubQxo2HuRs5SXtoTpC/kmTcwXlvlXqrQMRkaF7AhCTs4hQmxh/e0BXIgP714I7DTgHNKcIKH9k455vKafkNn+itywslmkmfIh2CDRcYLYgAun6caRIl7Qh0ttavxPCO3BpAnAOXAXG4WR5AbjuCteOHiHa7fxlSl3MywkxYk39+vvn4a3/Et6ii4XqAd4Q1TYw6+QhOfzwkj9g==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(36756003)(71200400001)(6512007)(31686004)(2906002)(316002)(86362001)(44832011)(2616005)(186003)(6506007)(91956017)(38100700002)(508600001)(110136005)(4326008)(26005)(38070700005)(76116006)(6486002)(8936002)(31696002)(8676002)(66446008)(5660300002)(122000001)(54906003)(64756008)(66476007)(66946007)(66556008)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?V2pQNjJGQW5rVUxJU1ExMWx3YmVKeGRiL2VBUjFyS0pzRzVzWHRyMngxWm81?=
+ =?utf-8?B?SnQvMWU2aXBVeEZLWkxSY3lsdlpySlVrT0RTbDJZT3RwVWFCMWpKTkoyTFYr?=
+ =?utf-8?B?ek02d0pZbDFPMDZIclE0cEt3dEg0Z3o3VzBCK0twclRoVlFhOThYTVZSSmUz?=
+ =?utf-8?B?ZThxeENYdWNSeXJkWTVZRGZrRSs4RnFqeHE5eTVOTnpjQUpZdzVUOTFTS2Zw?=
+ =?utf-8?B?RUx6akxGSEgyb1ltMnIzckZaU1lBMDY2VzZtVjkxOVoxTUROaXpVN2JrZWhv?=
+ =?utf-8?B?L3hXYUMwOXFrajVYMmRYWUNhaFJVNnRLZWlsZVhhbDd5YXRsRDdydlFVdVFI?=
+ =?utf-8?B?NkdmeUJNYWJMZUo5UVZrMDFiRFhxRmpqSW9ZSzhIVnViOS9rN25MSzQ0bGRz?=
+ =?utf-8?B?TXV1aGpDM1FtZEx2MUJyS2xwNC9aWXNiVkQ3VVBoSnlHSHNMZUlKOHh0d2FI?=
+ =?utf-8?B?R0xmSmpKV2pvSHJzYTZIUi9rSUIxNTZBMFIzSXhqVjE0UmVxdkhrazBQdEFE?=
+ =?utf-8?B?UmxSLyt4S3FJRUsxazEwcXpoNitKRlEyMEFwN0xYWVpVOVRDeDRmNW4xTkIy?=
+ =?utf-8?B?bnp4MjBlSjR1ak5veHRDRzgyNGtKdGQrVERXaEI2Yi9Dais5dHROUERZaE4r?=
+ =?utf-8?B?aUlMU1Uxd3JYRjhhMndoZDZmbDJTYmZmWElJVUprc0REY3hFOWIwa0JiUHdh?=
+ =?utf-8?B?NzEyRllwditVdEVnVDI5U1dCNndSMDhaakw2TTlJdVo1c00ydDNJM1BVNlZZ?=
+ =?utf-8?B?RzZ3bmJKY2VRZGRiSU05cXVTd04zTUtFcGFXRytEZW5laDNnNGV3dkRYaFZU?=
+ =?utf-8?B?MkgyNm0vUkFCYzJ4RFV5OTFidUZGU2hQRHRRZ3ZVVXJVT09UNHh3TGtsZUpi?=
+ =?utf-8?B?bmdhOENYVkpNSFEvamE1TVJiMHlzRXZ6N0F4ZGtxMERjeDdQUGsyOEdDYllz?=
+ =?utf-8?B?eC9hT2pybVlvQkowQVovTGFLVlRmMUdPTXB0UTc2VW1nS0RvanlYcFoxeG9B?=
+ =?utf-8?B?SHVZWSsvK0hVcHpsOTA3T0RKNC85UUp1UG1BZTZLTWpGLzRIUE1qeXBXWjBm?=
+ =?utf-8?B?bUN2Mm43emRZeEZqcG9IOEpVQUx5NnhsYnpnWXJGYmhGRll1b3dmTVF0ekdK?=
+ =?utf-8?B?cGdGL1h3ZWxralE2TnRxM3RCRkUvNjdiVW03VTF3aUpQTEF2ajVvQW5GNXNi?=
+ =?utf-8?B?VTZKMTBuMnFLcXRnOTB0bVhUZTZ6aWNML25kWitZTWFHZ0FVOG90aWJpV3gy?=
+ =?utf-8?B?djlsaUdsTmYwbFcyelpYcmZia3MrL1dVMm4xOFlHOUxpSnN3cE9iVGQyc25q?=
+ =?utf-8?B?b2pCK0U1ZTlvVnRvNXJtNVNlV2F0THQrRk5CbDQ1NlNQNytiN1R3cXQ5RnEx?=
+ =?utf-8?B?SlRudTNEMElMOXpyK3VUbDRBUmsxK2paMzZQaFMvSFIrT1hXMGxObnVMYmho?=
+ =?utf-8?B?UzVoU0U4ZzZCMk9UaW94Mm5DSURCUDlBYnRFdlQvb2QrUjFoaHAvRTF2T2wv?=
+ =?utf-8?B?ZVcyTExZeXNvUk5uMzVQajhtaTZyeUlDVXlnNkRJRUMvTkloZjI5bVE3K21a?=
+ =?utf-8?B?bUZHamhyS1owUVA1eUpSbFJSTzNvRnROSUR2RThLc0t2cllDRGVzWktYYVNm?=
+ =?utf-8?B?OE1XOW82dVpYRDg3ckFuODFLT05Kd3A3WUdNUnR4MDRDV0dlM2ZmSGZuais4?=
+ =?utf-8?B?dS9wc0JFcVBEYnBCRVI3TTlRWnJaSTlOc3lpVWxpOCs3MFl0Mit1NUhiV3pk?=
+ =?utf-8?B?c0c5VnBVUU5mTmdWeGZ2SFFVSVMvdUNzODNXKzEzNmxkRUxMdE4yem9qZHpV?=
+ =?utf-8?B?WkswS2xkdlBaaDFlcC9lOTZqakRQeXVSRW92ZDd4WUF5WTkzUTBjMmEvY0sr?=
+ =?utf-8?B?cnJFRmJUbjR1KzBDdk02NlhGdGIvWXZaMk5ubFpNc0MycFpVQ2grSWFLM0Qr?=
+ =?utf-8?B?Uy9KTFVvY0pwam5tUTNDYnBiQjdVdTFtaitwMnVibnhETVJZTjR3QWI1eTlh?=
+ =?utf-8?B?NThINXF4MGlSNitYcE1pSmZpV1dFell1djdtc1VHUGZVWUJUNXAra0Jod09r?=
+ =?utf-8?B?THZxTzRrU0ZLQ3JhWHM0MC9YbVNXUGJOSTAwWjdhM090ak40N3I5UFcrTjVa?=
+ =?utf-8?B?QWZ6bUxyL3YxTHUwaTIvdTBkU1R1bSthZzdITFh6ZVdmQVoxNUFzMnFrNXRQ?=
+ =?utf-8?B?SzJNd2hjVi9wMFVNYis1YWpqQWFNWnFrMkd6VnorRWJWcWFjUDdhR3NDSUxq?=
+ =?utf-8?B?OUNzTGFiWnFwUmhOVG1oOUE4RnJLeU5tVzM3MUdsQi9zU2t1WTIrWEgvWFd6?=
+ =?utf-8?B?eTZ5TndNaWV6bTdRdDA3M3RIREpPaVV0ajBMTXJ1NC9vd3hpY3hUWWJBUGNq?=
+ =?utf-8?Q?xOJXeEw6Aqy3P1WNGHMzKHQRV1S+nznhr+jqg?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <63755ABA4BE5CD4B89278662E8C4C80F@FRAP264.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: csgroup.eu
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 765b9e2a-78ad-420d-dacb-08da0fd17a6b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Mar 2022 09:09:20.1878
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 1sC3DinAaM0hDDPPwjNbXtbfAvL1PU+PnMNyui1H4EE159N2SCVsrx/O9h4Xk2s0fFjOJx+hrWU2qgy+1yvO345iGjjD3auqnyhmwxaVTu4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MR1P264MB2195
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The three bugs are here:
-	__func__, s3a_buf->s3a_data->exp_id);
-	__func__, md_buf->metadata->exp_id);
-	__func__, dis_buf->dis_data->exp_id);
-
-The list iterator 's3a_buf/md_buf/dis_buf' will point to a bogus
-position containing HEAD if the list is empty or no element is found.
-This case must be checked before any use of the iterator, otherwise
-it will lead to a invalid memory access.
-
-To fix this bug, add an check. Use a new variable '*_iter' as the
-list iterator, while use the old variable '*_buf' as a dedicated
-pointer to point to the found element.
-
-Cc: stable@vger.kernel.org
-Fixes: ad85094b293e4 ("Revert "media: staging: atomisp: Remove driver"")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
----
- .../staging/media/atomisp/pci/atomisp_cmd.c   | 57 ++++++++++++-------
- 1 file changed, 36 insertions(+), 21 deletions(-)
-
-diff --git a/drivers/staging/media/atomisp/pci/atomisp_cmd.c b/drivers/staging/media/atomisp/pci/atomisp_cmd.c
-index 97d5a528969b..0da0b69a4637 100644
---- a/drivers/staging/media/atomisp/pci/atomisp_cmd.c
-+++ b/drivers/staging/media/atomisp/pci/atomisp_cmd.c
-@@ -901,9 +901,9 @@ void atomisp_buf_done(struct atomisp_sub_device *asd, int error,
- 	int err;
- 	unsigned long irqflags;
- 	struct ia_css_frame *frame = NULL;
--	struct atomisp_s3a_buf *s3a_buf = NULL, *_s3a_buf_tmp;
--	struct atomisp_dis_buf *dis_buf = NULL, *_dis_buf_tmp;
--	struct atomisp_metadata_buf *md_buf = NULL, *_md_buf_tmp;
-+	struct atomisp_s3a_buf *s3a_buf = NULL, *_s3a_buf_tmp, *s3a_iter;
-+	struct atomisp_dis_buf *dis_buf = NULL, *_dis_buf_tmp, *dis_iter;
-+	struct atomisp_metadata_buf *md_buf = NULL, *_md_buf_tmp, *md_iter;
- 	enum atomisp_metadata_type md_type;
- 	struct atomisp_device *isp = asd->isp;
- 	struct v4l2_control ctrl;
-@@ -942,60 +942,75 @@ void atomisp_buf_done(struct atomisp_sub_device *asd, int error,
- 
- 	switch (buf_type) {
- 	case IA_CSS_BUFFER_TYPE_3A_STATISTICS:
--		list_for_each_entry_safe(s3a_buf, _s3a_buf_tmp,
-+		list_for_each_entry_safe(s3a_iter, _s3a_buf_tmp,
- 					 &asd->s3a_stats_in_css, list) {
--			if (s3a_buf->s3a_data ==
-+			if (s3a_iter->s3a_data ==
- 			    buffer.css_buffer.data.stats_3a) {
--				list_del_init(&s3a_buf->list);
--				list_add_tail(&s3a_buf->list,
-+				list_del_init(&s3a_iter->list);
-+				list_add_tail(&s3a_iter->list,
- 					      &asd->s3a_stats_ready);
-+				s3a_buf = s3a_iter;
- 				break;
- 			}
- 		}
- 
- 		asd->s3a_bufs_in_css[css_pipe_id]--;
- 		atomisp_3a_stats_ready_event(asd, buffer.css_buffer.exp_id);
--		dev_dbg(isp->dev, "%s: s3a stat with exp_id %d is ready\n",
--			__func__, s3a_buf->s3a_data->exp_id);
-+		if (s3a_buf)
-+			dev_dbg(isp->dev, "%s: s3a stat with exp_id %d is ready\n",
-+				__func__, s3a_buf->s3a_data->exp_id);
-+		else
-+			dev_dbg(isp->dev, "%s: s3a stat is ready with no exp_id found\n",
-+				__func__);
- 		break;
- 	case IA_CSS_BUFFER_TYPE_METADATA:
- 		if (error)
- 			break;
- 
- 		md_type = atomisp_get_metadata_type(asd, css_pipe_id);
--		list_for_each_entry_safe(md_buf, _md_buf_tmp,
-+		list_for_each_entry_safe(md_iter, _md_buf_tmp,
- 					 &asd->metadata_in_css[md_type], list) {
--			if (md_buf->metadata ==
-+			if (md_iter->metadata ==
- 			    buffer.css_buffer.data.metadata) {
--				list_del_init(&md_buf->list);
--				list_add_tail(&md_buf->list,
-+				list_del_init(&md_iter->list);
-+				list_add_tail(&md_iter->list,
- 					      &asd->metadata_ready[md_type]);
-+				md_buf = md_iter;
- 				break;
- 			}
- 		}
- 		asd->metadata_bufs_in_css[stream_id][css_pipe_id]--;
- 		atomisp_metadata_ready_event(asd, md_type);
--		dev_dbg(isp->dev, "%s: metadata with exp_id %d is ready\n",
--			__func__, md_buf->metadata->exp_id);
-+		if (md_buf)
-+			dev_dbg(isp->dev, "%s: metadata with exp_id %d is ready\n",
-+				__func__, md_buf->metadata->exp_id);
-+		else
-+			dev_dbg(isp->dev, "%s: metadata is ready with no exp_id found\n",
-+				__func__);
- 		break;
- 	case IA_CSS_BUFFER_TYPE_DIS_STATISTICS:
--		list_for_each_entry_safe(dis_buf, _dis_buf_tmp,
-+		list_for_each_entry_safe(dis_iter, _dis_buf_tmp,
- 					 &asd->dis_stats_in_css, list) {
--			if (dis_buf->dis_data ==
-+			if (dis_iter->dis_data ==
- 			    buffer.css_buffer.data.stats_dvs) {
- 				spin_lock_irqsave(&asd->dis_stats_lock,
- 						  irqflags);
--				list_del_init(&dis_buf->list);
--				list_add(&dis_buf->list, &asd->dis_stats);
-+				list_del_init(&dis_iter->list);
-+				list_add(&dis_iter->list, &asd->dis_stats);
- 				asd->params.dis_proj_data_valid = true;
- 				spin_unlock_irqrestore(&asd->dis_stats_lock,
- 						       irqflags);
-+				dis_buf = dis_iter;
- 				break;
- 			}
- 		}
- 		asd->dis_bufs_in_css--;
--		dev_dbg(isp->dev, "%s: dis stat with exp_id %d is ready\n",
--			__func__, dis_buf->dis_data->exp_id);
-+		if (dis_buf)
-+			dev_dbg(isp->dev, "%s: dis stat with exp_id %d is ready\n",
-+				__func__, dis_buf->dis_data->exp_id);
-+		else
-+			dev_dbg(isp->dev, "%s: dis stat is ready with no exp_id found\n",
-+				__func__);
- 		break;
- 	case IA_CSS_BUFFER_TYPE_VF_OUTPUT_FRAME:
- 	case IA_CSS_BUFFER_TYPE_SEC_VF_OUTPUT_FRAME:
--- 
-2.17.1
-
+SGkgUGV0ZXIsIEhpIEpvc2gNCg0KTGUgMTgvMDMvMjAyMiDDoCAxMzoyNiwgUGV0ZXIgWmlqbHN0
+cmEgYSDDqWNyaXTCoDoNCj4gT24gRnJpLCBNYXIgMTgsIDIwMjIgYXQgMDQ6MjE6NDBQTSArMDUz
+MCwgU2F0aHZpa2EgVmFzaXJlZGR5IHdyb3RlOg0KPj4gVGhpcyBwYXRjaCBhZGRzIHBvd2VycGMg
+c3BlY2lmaWMgZnVuY3Rpb25zIHJlcXVpcmVkIGZvcg0KPj4gJ29ianRvb2wgbWNvdW50JyB0byB3
+b3JrLCBhbmQgZW5hYmxlcyBtY291bnQgZm9yIHBwYy4NCj4gDQo+IEkgd291bGQgbG92ZSB0byBz
+ZWUgbW9yZSBvYmp0b29sIGVuYWJsZW1lbnQgZm9yIFBvd2VyIDotKQ0KPiANCj4gDQoNCkknbSBh
+bHNvIHZlcnkgaGFwcHkgc29tZW9uZSBzdGFydGVkIHRvIGxvb2sgYXQgaXQuDQoNCkkgdGhvdWdo
+dCBpdCB3b3VsZCBiZSBtb3JlIGRpZmZpY3VsdCB0byBnZXQgaXQgd29yayBvbiBwb3dlcnBjLg0K
+DQpJbWwgbG9va2luZyBmb3J3YXJkIHRvIGJlaW5nIGFibGUgdG8gdXNlIGl0IGFuZCBpbXBsZW1l
+bnQgSU5MSU5FIFNUQVRJQyANCkNBTExzIG9uIFBQQzMyIHRvIHN0YXJ0IHdpdGguDQoNCkknbSB3
+b25kZXJpbmcgd2hhdCBhcmUgdGhlIHBsYW5zIG9uIHlvdXIgc2lkZSBhbmQgd2hhdCB3ZSBzaG91
+bGQgd2FpdCANCmZvciBhbmQgd2hhdCB3ZSBjb3VsZCBzdGFydCB3aXRoLg0KDQpJIGNvdWxkIGRv
+IHRoZSBzYW1lIGFzIGRvbmUgYnkgU2F0aHZpa2EgZm9yIHN0YXRpYyBjYWxscywgaW4gZXh0ZW5z
+byBnZXQgDQppdCBvdXQgb2YgY2hlY2suYyBpbnRvIGEgc3RhbmRhbG9uZSBmZWF0dXJlLiBPbiB0
+aGUgb3RoZXIgaGFuZCBJIA0KdW5kZXJzdG9vZCB0aGF0IEpvc2ggaXMgYWxzbyB3b3JraW5nIGF0
+IG1ha2luZyB0aGUgZGlmZmVyZW50IGZlYXR1cmVzIG9mIA0Kb2JqdG9vbCBpbmRlcGVuZGFudCwg
+c28gc2hvdWxkIEkgd2FpdCBmb3IgdGhhdCA/IEFueSBpZGVhIG9mIHdoZW4gaXQgDQpjb21lcyBv
+dXQgPw0KDQpTZWNvbmQgcG9pbnQgaXMgdGhlIGVuZGlhbmVzcyBhbmQgMzIvNjQgc2VsZWN0aW9u
+LCBlc3BlY2lhbGx5IHdoZW4gDQpjcm9zc2J1aWxkaW5nLiBUaGVyZSBpcyBhbHJlYWR5IHNvbWUg
+c3R1ZmYgcmVnYXJkaW5nIGVuZGlhbmVzcyBiYXNlZCBvbiANCmJzd2FwX2lmX25lZWRlZCgpIGJ1
+dCB0aGF0J3MgYmFzZWQgb24gY29uc3RhbnQgc2VsZWN0aW9uIGF0IGJ1aWxkIHRpbWUgDQphbmQg
+SSBjb3VsZG4ndCBmaW5kIGFuIGVhc3kgd2F5IHRvIHNldCBpdCBjb25kaXRpb25hbHkgYmFzZWQg
+b24gdGhlIA0KdGFyZ2V0IGJlaW5nIGJ1aWx0Lg0KDQpSZWdhcmRpbmcgMzIvNjQgc2VsZWN0aW9u
+LCB0aGVyZSBpcyBhbG1vc3Qgbm90aGluZywgaXQncyBiYXNlZCBvbiB1c2luZyANCnR5cGUgJ2xv
+bmcnIHdoaWNoIG1lYW5zIHRoYXQgYXQgdGhlIHRpbWUgYmVpbmcgdGhlIHRhcmdldCBhbmQgdGhl
+IGJ1aWxkIA0KcGxhdGZvcm0gbXVzdCBib3RoIGJlIDMyIGJpdHMgb3IgNjQgYml0cy4NCg0KRm9y
+IGJvdGggY2FzZXMgKGVuZGlhbmVzcyBhbmQgMzIvNjQpIEkgdGhpbmsgdGhlIHNvbHV0aW9uIHNo
+b3VsZCANCnByb2JhYmx5IGJlIHRvIHN0YXJ0IHdpdGggdGhlIGZpbGVmb3JtYXQgb2YgdGhlIG9i
+amVjdCBmaWxlIGJlaW5nIA0KcmV3b3JrZWQgYnkgb2JqdG9vbC4NCg0KV2hhdCBhcmUgY3VycmVu
+dCB3b3JrcyBpbiBwcm9ncmVzcyBvbiBvYmp0b29sID8gU2hvdWxkIEkgd2FpdCBKb3NoJ3MgDQpj
+aGFuZ2VzIGJlZm9yZSBzdGFydGluZyBsb29raW5nIGF0IGFsbCB0aGlzID8gU2hvdWxkIEkgd2Fp
+dCBmb3IgYW55dGhpbmcgDQplbHNlID8NCg0KQ2hyaXN0b3BoZQ==
