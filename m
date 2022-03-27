@@ -2,133 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D296C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 16:16:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B9F7C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 16:18:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236004AbiC0QRz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 12:17:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53804 "EHLO
+        id S236008AbiC0QTz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 12:19:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234341AbiC0QRw (ORCPT
+        with ESMTP id S234593AbiC0QTy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 12:17:52 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB10240E68
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 09:16:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648397773; x=1679933773;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=bDJl/E6TRK92jHGFkoVLxk1asdnc05rBLkYxMQzqq4s=;
-  b=YqmjqS0b/T1rdj5u62HfdkZy9UEqaJTx7DIues0z58FeNj+cf0Na0WEf
-   D1E0psxjIBv0BqZd+3sO8QISdMiM5n4n+XhVF2fsFuqrMWLWtcS39XUVv
-   KKn54KzDfTu4LNs7pyF9ydAL9joPczVtpeXeRbd1aAPieV2pjsWMnXqnk
-   Xr2HzJNcAXfzESOW2FGFLpvZ0yQLx9wVWCnYK+Ag9FJ39ZqpW0wpUw5H3
-   KTJR9Oi2tt2lmy4YpYOPFsS4h1lOEq6dWthOqYNQXBDBtR9tlF5TJdC37
-   5NMcZkzj2htaLBdSKDgw+++fzcsOTOTw9sYk18hlk+QqLMU79sdJaXETK
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10299"; a="246349371"
-X-IronPort-AV: E=Sophos;i="5.90,215,1643702400"; 
-   d="scan'208";a="246349371"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2022 09:16:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,215,1643702400"; 
-   d="scan'208";a="562436283"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga008.jf.intel.com with ESMTP; 27 Mar 2022 09:16:12 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nYVYp-0001Dj-Jm; Sun, 27 Mar 2022 16:16:11 +0000
-Date:   Mon, 28 Mar 2022 00:15:21 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Hector Martin <marcan@marcan.st>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [asahilinux:pr/22 96/189] drivers/platform/apple/smc_core.c:202:26:
- sparse: sparse: cast to restricted __be32
-Message-ID: <202203280041.0z3zY6Vd-lkp@intel.com>
+        Sun, 27 Mar 2022 12:19:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E89F11C1F;
+        Sun, 27 Mar 2022 09:18:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 16CBD6101C;
+        Sun, 27 Mar 2022 16:18:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40A94C340EC;
+        Sun, 27 Mar 2022 16:18:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648397894;
+        bh=iHeFz+xrKE7uKuB/dUPpK+m1qKZRqb6P9qUhGKMhVc4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=UqOSShuycOk/6K5gIR8uAkzvdpgPetj2hk6s3OBeMLm/BDftz8OYYIG8w/gWWrJFR
+         ascTdifwpW950Dp/nMx9yEIpzQNd81iDPyvUIPRi9sZCO6V72wpTeteLylac7+2i5w
+         XoBYSDEGEb5mo6qPx6oTnfaACAq71k+80Ppk2XUj/uuDOSeiVoKfUQoTZQs6n6rbh+
+         +LV1rr5p9cSHw0gEFU2DCU/Lo3KS3pwfYNmnEIBn51tNBBBhtks5mCtExISx7YsX+c
+         kPC+vfHIVYRu1U14wBKcLLKUDItzB79CdP0kL0aGtMuLDqJKqWT7yOHCajLucAl3DB
+         s9H2223sIMaQQ==
+Date:   Sun, 27 Mar 2022 17:25:46 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     "Sa, Nuno" <Nuno.Sa@analog.com>
+Cc:     Wang ShaoBo <bobo.shaobowang@huawei.com>,
+        "cj.chengjian@huawei.com" <cj.chengjian@huawei.com>,
+        "liwei391@huawei.com" <liwei391@huawei.com>,
+        "Miclaus, Antoniu" <Antoniu.Miclaus@analog.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Jonathan.Cameron@huawei.com" <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH v2] iio:filter:admv8818: select REGMAP_SPI for ADMV8818
+Message-ID: <20220327172546.40497743@jic23-huawei>
+In-Reply-To: <PH0PR03MB67860473C10499C1EEED1C0A99169@PH0PR03MB6786.namprd03.prod.outlook.com>
+References: <20220320055457.254983-1-bobo.shaobowang@huawei.com>
+        <PH0PR03MB67860473C10499C1EEED1C0A99169@PH0PR03MB6786.namprd03.prod.outlook.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/AsahiLinux/linux pr/22
-head:   7ee315306d1a3b0da8cf2a53e7f55889d0e7f034
-commit: 322906b25cbf56148e4b57a6368f6d715e48b022 [96/189] platform/apple: Add new Apple Mac SMC driver
-config: arm64-randconfig-s032-20220327 (https://download.01.org/0day-ci/archive/20220328/202203280041.0z3zY6Vd-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/AsahiLinux/linux/commit/322906b25cbf56148e4b57a6368f6d715e48b022
-        git remote add asahilinux https://github.com/AsahiLinux/linux
-        git fetch --no-tags asahilinux pr/22
-        git checkout 322906b25cbf56148e4b57a6368f6d715e48b022
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm64 SHELL=/bin/bash
+On Mon, 21 Mar 2022 09:10:01 +0000
+"Sa, Nuno" <Nuno.Sa@analog.com> wrote:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> > -----Original Message-----
+> > From: Wang ShaoBo <bobo.shaobowang@huawei.com>
+> > Sent: Sunday, March 20, 2022 6:55 AM
+> > Cc: cj.chengjian@huawei.com; liwei391@huawei.com;
+> > bobo.shaobowang@huawei.com; Miclaus, Antoniu
+> > <Antoniu.Miclaus@analog.com>; Sa, Nuno <Nuno.Sa@analog.com>;
+> > linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org;
+> > jic23@kernel.org; Jonathan.Cameron@huawei.com
+> > Subject: [PATCH v2] iio:filter:admv8818: select REGMAP_SPI for
+> > ADMV8818
+> >=20
+> > [External]
+> >=20
+> > admv8818 driver needs __devm_regmap_init_spi() which is defined
+> > when CONFIG_REGMAP_SPI is set and struct regmap_config when
+> > CONFIG_REGMAP is set, so automatically select CONFIG_REGMAP_SPI
+> > which also sets CONFIG_REGMAP.
+> >=20
+> > Fixes: f34fe888ad05 ("iio:filter:admv8818: add support for ADMV8818")
+> > Signed-off-by: Wang ShaoBo <bobo.shaobowang@huawei.com>
+> > --- =20
+>=20
+> Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
+Applied to the fixes-togreg branch of iio.git but I'll not push that tree o=
+ut
+until I have had a chance to rebase on rc1.
 
+Thanks,
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/platform/apple/smc_core.c:202:26: sparse: sparse: cast to restricted __be32
+Jonathan
 
-vim +202 drivers/platform/apple/smc_core.c
+>=20
+> >  drivers/iio/filter/Kconfig | 1 +
+> >  1 file changed, 1 insertion(+)
+> >=20
+> > diff --git a/drivers/iio/filter/Kconfig b/drivers/iio/filter/Kconfig
+> > index 3ae35817ad82..a85b345ea14e 100644
+> > --- a/drivers/iio/filter/Kconfig
+> > +++ b/drivers/iio/filter/Kconfig
+> > @@ -8,6 +8,7 @@ menu "Filters"
+> >  config ADMV8818
+> >  	tristate "Analog Devices ADMV8818 High-Pass and Low-Pass
+> > Filter"
+> >  	depends on SPI && COMMON_CLK && 64BIT
+> > +	select REGMAP_SPI
+> >  	help
+> >  	  Say yes here to build support for Analog Devices ADMV8818
+> >  	  2 GHz to 18 GHz, Digitally Tunable, High-Pass and Low-Pass
+> > Filter.
+> > --
+> > 2.25.1 =20
+>=20
 
-   182	
-   183	struct apple_smc *apple_smc_probe(struct device *dev, const struct apple_smc_backend_ops *ops, void *cookie)
-   184	{
-   185		struct apple_smc *smc;
-   186		u32 count;
-   187		int ret;
-   188	
-   189		smc = devm_kzalloc(dev, sizeof(*smc), GFP_KERNEL);
-   190		if (!smc)
-   191			return ERR_PTR(-ENOMEM);
-   192	
-   193		smc->dev = dev;
-   194		smc->be_cookie = cookie;
-   195		smc->be = ops;
-   196		mutex_init(&smc->mutex);
-   197		RAW_INIT_NOTIFIER_HEAD(&smc->event_handlers);
-   198	
-   199		ret = apple_smc_read_u32(smc, SMC_KEY(#KEY), &count);
-   200		if (ret)
-   201			return ERR_PTR(dev_err_probe(dev, ret, "Failed to get key count"));
- > 202		smc->key_count = be32_to_cpu(count);
-   203	
-   204		ret = apple_smc_get_key_by_index(smc, 0, &smc->first_key);
-   205		if (ret)
-   206			return ERR_PTR(dev_err_probe(dev, ret, "Failed to get first key"));
-   207	
-   208		ret = apple_smc_get_key_by_index(smc, smc->key_count - 1, &smc->last_key);
-   209		if (ret)
-   210			return ERR_PTR(dev_err_probe(dev, ret, "Failed to get last key"));
-   211	
-   212		/* Enable notifications */
-   213		apple_smc_write_flag(smc, SMC_KEY(NTAP), 1);
-   214	
-   215		dev_info(dev, "Initialized (%d keys %p4ch..%p4ch)\n",
-   216			 smc->key_count, &smc->first_key, &smc->last_key);
-   217	
-   218		dev_set_drvdata(dev, smc);
-   219	
-   220		ret = mfd_add_devices(dev, -1, apple_smc_devs, ARRAY_SIZE(apple_smc_devs), NULL, 0, NULL);
-   221		if (ret)
-   222			return ERR_PTR(dev_err_probe(dev, ret, "Subdevice initialization failed"));
-   223	
-   224		return smc;
-   225	}
-   226	EXPORT_SYMBOL(apple_smc_probe);
-   227	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
