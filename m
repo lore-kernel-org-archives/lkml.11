@@ -2,86 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48081C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 22:16:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EFEEC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 22:21:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236872AbiC0WS1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 18:18:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44118 "EHLO
+        id S236906AbiC0WXW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 18:23:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232336AbiC0WS1 (ORCPT
+        with ESMTP id S236896AbiC0WXT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 18:18:27 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D27314EF41;
-        Sun, 27 Mar 2022 15:16:47 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id u26so14935969eda.12;
-        Sun, 27 Mar 2022 15:16:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+YqXAKsRg5NB+t2/EKrR18CcSxKRanJcc5WsAI2eJ+c=;
-        b=KHQSM9EtyCnVj/5hAoKqe+N0taL8HPZRXGxFKZSxmDxyh8ZnvNQHPM8F2R9jbP1H1Y
-         n9tdxfkj+UldMkZ/oqC9qNSPjJX9WA8mFsNRA2c8hvuMHZl/eqhQUQwkmUZlo7KkhJy+
-         2Yjwawx6/uX67adhHg8z7VcIfv6Nb15+HH02vUYEfCA36W/f2MviL/7GInQt0Llp6DDb
-         ifoktV8tjJsHH4Gs+KG2u8M2pJGDp5lORY0JzUBRTLrhF5pDgFvZiYwZD5bipKBroZiw
-         LWMfNMIP99eENLDQHRXKGVvX7NWQLrBf9/A6zmtZ48Jy1c4yN0JrW/fjQrBVXaSAsQPG
-         nLkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+YqXAKsRg5NB+t2/EKrR18CcSxKRanJcc5WsAI2eJ+c=;
-        b=dgkNR4Tl7xciL77r/ihk+k1vMQJHrWIU2+088uQJsdURYpUdjkvYDT5gdb3us1RlWX
-         RJOm6dymw8+b/cLmEByxGSLdE8TKLe3rHJaZhYyAYQye4sDq5Ff/ybVjbUYWTUJcv3xo
-         /C9NYUEAd6Vn2FF08KcAVPqEnvvpseMJNe11UvrLoVyiyco2oOFzzNhVzJXMLYAz6ry9
-         b/zIpp+9zkywjvqanEP5Za9YUSjkfgyeUWvVp/v9AQIDgDAbtpckiY31RoceY5KZW90t
-         r5gr4HB/Y9f4kkgOpWI493vyMUlO9cnYfSz27fNGoVVXQuFdhefLc+/RHcb+lgCeM3hw
-         5G2g==
-X-Gm-Message-State: AOAM531SuU9+eJRlUBXZLsFYRLpfCePfW6ykHjulEMo34watBd9dtPW1
-        f5yKktOZnh3dW+87M4N+sU6BTBk1Sv8smmxAk3hWEOUyhJs=
-X-Google-Smtp-Source: ABdhPJxiw+SGdXidWk7bAM3x5T6Bu4MVtCnAYoiQmq/+gTmPbRn7lYtP2eNXnFcu7EYEsc+FzoDTBfDTArIYTctFjQM=
-X-Received: by 2002:a05:6402:27d1:b0:419:1b02:4a04 with SMTP id
- c17-20020a05640227d100b004191b024a04mr12436901ede.218.1648419406297; Sun, 27
- Mar 2022 15:16:46 -0700 (PDT)
+        Sun, 27 Mar 2022 18:23:19 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87025E0CC
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 15:21:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648419699; x=1679955699;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=6DkAmUQZS/disVcR4AxxsxafJ4v3gjgDl0swelDO9LM=;
+  b=EkcZeICiWq+YMWa2wrwnY0peXhi8SyJK2ZuQz0tqFeozdlGxfvHr36T/
+   Q2fZ2/wsSYMQe+4rXAeoFLNA30F/f5kTnIqa4vM4k2N5MIRVjy4yJve7u
+   d1NmMIidgBagXT17jvupt+Oe2DeNum25uYG54NZURbz3EubWuo7+tfBCs
+   hlSsBsKHWuG+J6e10atttycKe9HQ84kN12zTY0vUxUQBuUEV/XoX6yKsB
+   KYNspCX0A+4TlpGrjFmFDBHsttDDNgHCKRppbmqgHhLjlGanvt5OrR/PI
+   QfBl6vyutTL4p7yYwKrwvOWT4hMh1p5lEgvVqn1r9dylv2OyF+7qcWt3R
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10299"; a="238812572"
+X-IronPort-AV: E=Sophos;i="5.90,216,1643702400"; 
+   d="scan'208";a="238812572"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2022 15:21:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,216,1643702400"; 
+   d="scan'208";a="502313173"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 27 Mar 2022 15:21:36 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nYbGS-0001TU-5r; Sun, 27 Mar 2022 22:21:36 +0000
+Date:   Mon, 28 Mar 2022 06:21:21 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Prasad Sodagudi <psodagud@codeaurora.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Yogesh Lal <quic_ylal@quicinc.com>,
+        Elliot Berman <eberman@codeaurora.org>
+Subject: [ammarfaizi2-block:google/android/kernel/common/android13-5.15
+ 1113/5558] kernel/module.c:4789:6: warning: no previous prototype for
+ function 'android_debug_for_each_module'
+Message-ID: <202203280627.cOFGvbLV-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220318204808.3404542-1-swboyd@chromium.org>
-In-Reply-To: <20220318204808.3404542-1-swboyd@chromium.org>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 28 Mar 2022 01:16:10 +0300
-Message-ID: <CAHp75Ve+SiiAM6VkiwPt95w68KEDk46vXR6ZzjOR7ZgaeZ80HA@mail.gmail.com>
-Subject: Re: [PATCH] iio:proximity:sx9324: Fix hardware gain read/write
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Gwendal Grignou <gwendal@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 19, 2022 at 5:58 AM Stephen Boyd <swboyd@chromium.org> wrote:
->
-> There are four possible gain values according to sx9324_gain_vals[]: 1,
-> 2, 4, and 8. When writing and reading the register the values are off by
-> one. The bits should be set according to this equation:
->
->         ilog2(<gain>) + 1
->
-> so that a gain of 8 is 0x3 in the register field and a gain of 4 is 0x2
-> in the register field, etc. Fix up the functions.
+Hi Prasad,
 
-...
+FYI, the error/warning still remains.
 
-> +       *val = 1 << regval;
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android13-5.15
+head:   4fa38f9405ba32011fe37e6e77bbbc770026b45d
+commit: b2df67a932b5cbd6535de9f1a6e63004992ad014 [1113/5558] ANDROID: android: Create debug_symbols driver
+config: arm64-allmodconfig (https://download.01.org/0day-ci/archive/20220328/202203280627.cOFGvbLV-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0f6d9501cf49ce02937099350d08f20c4af86f3d)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://github.com/ammarfaizi2/linux-block/commit/b2df67a932b5cbd6535de9f1a6e63004992ad014
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android13-5.15
+        git checkout b2df67a932b5cbd6535de9f1a6e63004992ad014
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash
 
-I see it's similar in the original code, but this is still problematic
-from C standard point of view, i.e. if regval = 31, the C standard
-calls it UB (Undefined Behaviour).
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> kernel/module.c:4789:6: warning: no previous prototype for function 'android_debug_for_each_module' [-Wmissing-prototypes]
+   void android_debug_for_each_module(int (*fn)(const char *mod_name, void *mod_addr, void *data),
+        ^
+   kernel/module.c:4789:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void android_debug_for_each_module(int (*fn)(const char *mod_name, void *mod_addr, void *data),
+   ^
+   static 
+   kernel/module.c:4809:6: warning: no previous prototype for function 'module_layout' [-Wmissing-prototypes]
+   void module_layout(struct module *mod,
+        ^
+   kernel/module.c:4809:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void module_layout(struct module *mod,
+   ^
+   static 
+   2 warnings generated.
+
+
+vim +/android_debug_for_each_module +4789 kernel/module.c
+
+  4787	
+  4788	#ifdef CONFIG_ANDROID_DEBUG_SYMBOLS
+> 4789	void android_debug_for_each_module(int (*fn)(const char *mod_name, void *mod_addr, void *data),
+  4790		void *data)
+  4791	{
+  4792		struct module *module;
+  4793		preempt_disable();
+  4794		list_for_each_entry_rcu(module, &modules, list) {
+  4795			if (fn(module->name, module->core_layout.base, data))
+  4796				goto out;
+  4797		}
+  4798	out:
+  4799		preempt_enable();
+  4800	}
+  4801	EXPORT_SYMBOL_NS_GPL(android_debug_for_each_module, MINIDUMP);
+  4802	#endif
+  4803	
 
 -- 
-With Best Regards,
-Andy Shevchenko
+0-DAY CI Kernel Test Service
+https://01.org/lkp
