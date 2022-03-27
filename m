@@ -2,86 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19210C4332F
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 17:57:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1F66C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 17:58:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236226AbiC0Rzp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 13:55:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32796 "EHLO
+        id S236243AbiC0SAB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 14:00:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236208AbiC0Rzm (ORCPT
+        with ESMTP id S236208AbiC0R75 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 13:55:42 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 256E5BE0C
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 10:54:03 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id c15so16377501ljr.9
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 10:54:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=20fQNXQ8IbsOge8G/055Q2flAhZSXzjgoB+iB3M/J+k=;
-        b=Jzl+rhxcvVTNobrsLj2PiaS2xlyciHyVzQ5ZXDA5dtZfTh70OS7LSI5QmWFzIHVkE7
-         gr21qqpEM8MIGcQdRuxfxPobOnK4iDRnScuwmMesvMnOhqiDRpI0Q9hEKp47FAvrgpyA
-         yd0WX6TWcBJSjYC+z2/+6d/43QOEKIk02lHtE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=20fQNXQ8IbsOge8G/055Q2flAhZSXzjgoB+iB3M/J+k=;
-        b=F+MWAcDUvxfPmIlVBm1yExylbuvLqrOXyo193kfXH+dODWI13aZGPhRV1R4qamlg/s
-         G0D5jkkwoKmJGuoxVVuoiFR/Xlvg33oJIC8BgAxXpg+IkQWfq1u4IAyUsMoHkQ1OJ4JS
-         PDgw6ZJW49wfgp6n2rOYhWZ+Hd/YKo0oHnqk2nSOqplLQ8Cd6guz5UkbyFZO0dU8JrKh
-         jgHt9vzOt/ft53S3qLz3OIQvBfMPgGGODLISpFRZYwVkCyryThy9/HkG5RTTyAE4q57Z
-         0zKbesWNRFk22gVLlOMEbqynyVSSHOBdwmMYO87XMMMjBzueJCbCxnLlYR9dzUnAt7vR
-         LLIw==
-X-Gm-Message-State: AOAM532GMtV1jseNwNShP9a9WNxz/AFYA/r1+7d/ioQyZe9aOhXHw3KW
-        CWvr45zdMHttr88CodJXJjb6RRiSGAwgR29RbMA=
-X-Google-Smtp-Source: ABdhPJwceu5eMu7wQzCelvvbVL1bKgceF3fYpPA0e43Sypwl4PLy4wa++V3uPiKXk8UuQeWVpsg+ow==
-X-Received: by 2002:a2e:bf05:0:b0:247:b233:cfba with SMTP id c5-20020a2ebf05000000b00247b233cfbamr16434283ljr.131.1648403641156;
-        Sun, 27 Mar 2022 10:54:01 -0700 (PDT)
-Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com. [209.85.167.52])
-        by smtp.gmail.com with ESMTPSA id e11-20020a2e984b000000b00249b8b68f61sm999503ljj.74.2022.03.27.10.53.59
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 27 Mar 2022 10:54:00 -0700 (PDT)
-Received: by mail-lf1-f52.google.com with SMTP id bt26so21175694lfb.3
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 10:53:59 -0700 (PDT)
-X-Received: by 2002:a19:e048:0:b0:448:2caa:7ed2 with SMTP id
- g8-20020a19e048000000b004482caa7ed2mr16752520lfj.449.1648403639277; Sun, 27
- Mar 2022 10:53:59 -0700 (PDT)
+        Sun, 27 Mar 2022 13:59:57 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3AC82DD5
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 10:58:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648403898; x=1679939898;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=/NNXenqLNixW/cbZ0QFlQUJZoB/bisBRV3IUzRk89RY=;
+  b=ZBcA2r15ZnXBffqjEFzNO5DFanlKvxDhQHSo6b7htH9Z9TLMI2WIn3r9
+   /H1PUZqwfnQM6n5rzla7KLDLpJta3vgnwdHket/4buow7A8YWM2+dKVpw
+   bm4pU56QY221VcxpnGTtNLeErk7FUjMGBPAZRn2jFg5C4jD+YVUb0XWiO
+   KBjme/u26i3EpHv9nTWKK6SfI+DGkcBfMjsRD4bNt+3dlfr98g+3GcVVS
+   TH7rOA+FQgQ1qWConjHrM9HeiC5MD3gjcHQ8YIf4rVOnvvhO9lXHWmehO
+   5Bzd+ylK9dLSqMHq5SmjC1QU50HHZhqlO83IU2zLaJtmwblEWyhdyGqo+
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10299"; a="322055657"
+X-IronPort-AV: E=Sophos;i="5.90,215,1643702400"; 
+   d="scan'208";a="322055657"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2022 10:58:18 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,215,1643702400"; 
+   d="scan'208";a="545684972"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga007.jf.intel.com with ESMTP; 27 Mar 2022 10:58:17 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nYX9c-0001IN-7x; Sun, 27 Mar 2022 17:58:16 +0000
+Date:   Mon, 28 Mar 2022 01:57:22 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hector Martin <marcan@marcan.st>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [asahilinux:pr/22 112/189]
+ drivers/cpufreq/apple-soc-cpufreq.c:53:19: error: implicit declaration of
+ function 'readq_relaxed'; did you mean 'readw_relaxed'?
+Message-ID: <202203280127.gqfnFfId-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220327173316.315-1-kbusch@kernel.org>
-In-Reply-To: <20220327173316.315-1-kbusch@kernel.org>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sun, 27 Mar 2022 10:53:42 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whktuOOGYoNC=pAVX3KOMo4AD8dFsVdD_CAesMqef_9JQ@mail.gmail.com>
-Message-ID: <CAHk-=whktuOOGYoNC=pAVX3KOMo4AD8dFsVdD_CAesMqef_9JQ@mail.gmail.com>
-Subject: Re: [PATCH] block: move lower_48_bits() to block
-To:     Keith Busch <kbusch@kernel.org>
-Cc:     linux-block <linux-block@vger.kernel.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Mar 27, 2022 at 10:33 AM <kbusch@kernel.org> wrote:
->
-> The function is not generally applicable enough to be included in the core
-> kernel header. Move it to block since it's the only subsystem using it.
+tree:   https://github.com/AsahiLinux/linux pr/22
+head:   7ee315306d1a3b0da8cf2a53e7f55889d0e7f034
+commit: 97012c133dff8f4ad7de4c8d34cf327567c8e3d8 [112/189] cpufreq: apple-soc: Add new driver to control Apple SoC CPU P-states
+config: arm-allmodconfig (https://download.01.org/0day-ci/archive/20220328/202203280127.gqfnFfId-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/AsahiLinux/linux/commit/97012c133dff8f4ad7de4c8d34cf327567c8e3d8
+        git remote add asahilinux https://github.com/AsahiLinux/linux
+        git fetch --no-tags asahilinux pr/22
+        git checkout 97012c133dff8f4ad7de4c8d34cf327567c8e3d8
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash drivers/cpufreq/
 
-Thanks.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Btw - replying on the list too, because at least last time you were on
-the participants list, I got bounces about "mailbox too large".
+All errors (new ones prefixed by >>):
 
-WTH? Are you living in some hut in the wilderness in the good old
-nineties using AOL for email?
+   drivers/cpufreq/apple-soc-cpufreq.c: In function 'apple_soc_cpufreq_get_rate':
+>> drivers/cpufreq/apple-soc-cpufreq.c:53:19: error: implicit declaration of function 'readq_relaxed'; did you mean 'readw_relaxed'? [-Werror=implicit-function-declaration]
+      53 |         u64 reg = readq_relaxed(priv->reg_base + APPLE_CLUSTER_PSTATE);
+         |                   ^~~~~~~~~~~~~
+         |                   readw_relaxed
+   In file included from drivers/cpufreq/apple-soc-cpufreq.c:20:
+   drivers/cpufreq/apple-soc-cpufreq.c: In function 'apple_soc_cpufreq_set_target':
+>> include/linux/iopoll.h:165:35: error: implicit declaration of function 'readq'; did you mean 'readl'? [-Werror=implicit-function-declaration]
+     165 |         readx_poll_timeout_atomic(readq, addr, val, cond, delay_us, timeout_us)
+         |                                   ^~~~~
+   include/linux/iopoll.h:88:25: note: in definition of macro 'read_poll_timeout_atomic'
+      88 |                 (val) = op(args); \
+         |                         ^~
+   include/linux/iopoll.h:165:9: note: in expansion of macro 'readx_poll_timeout_atomic'
+     165 |         readx_poll_timeout_atomic(readq, addr, val, cond, delay_us, timeout_us)
+         |         ^~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/cpufreq/apple-soc-cpufreq.c:71:13: note: in expansion of macro 'readq_poll_timeout_atomic'
+      71 |         if (readq_poll_timeout_atomic(priv->reg_base + APPLE_CLUSTER_PSTATE, reg,
+         |             ^~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/cpufreq/apple-soc-cpufreq.c:82:9: error: implicit declaration of function 'writeq_relaxed'; did you mean 'writel_relaxed'? [-Werror=implicit-function-declaration]
+      82 |         writeq_relaxed(reg, priv->reg_base + APPLE_CLUSTER_PSTATE);
+         |         ^~~~~~~~~~~~~~
+         |         writel_relaxed
+   cc1: some warnings being treated as errors
 
-Because admittedly the 21st century has been all that great so far,
-but at least we got rid of mailbox limits.
 
-               Linus
+vim +53 drivers/cpufreq/apple-soc-cpufreq.c
+
+    48	
+    49	static unsigned int apple_soc_cpufreq_get_rate(unsigned int cpu)
+    50	{
+    51		struct cpufreq_policy *policy = cpufreq_cpu_get_raw(cpu);
+    52		struct apple_cpu_priv *priv = policy->driver_data;
+  > 53		u64 reg = readq_relaxed(priv->reg_base + APPLE_CLUSTER_PSTATE);
+    54		unsigned int pstate = FIELD_GET(APPLE_CLUSTER_PSTATE_DESIRED1, reg);
+    55		unsigned int i;
+    56	
+    57		for (i = 0; policy->freq_table[i].frequency != CPUFREQ_TABLE_END; i++)
+    58			if (policy->freq_table[i].driver_data == pstate)
+    59				return policy->freq_table[i].frequency;
+    60	
+    61		dev_err(priv->cpu_dev, "could not find frequency for pstate %d\n", pstate);
+    62		return 0;
+    63	}
+    64	
+    65	static int apple_soc_cpufreq_set_target(struct cpufreq_policy *policy, unsigned int index)
+    66	{
+    67		struct apple_cpu_priv *priv = policy->driver_data;
+    68		unsigned int pstate = policy->freq_table[index].driver_data;
+    69		u64 reg;
+    70	
+    71		if (readq_poll_timeout_atomic(priv->reg_base + APPLE_CLUSTER_PSTATE, reg,
+    72					      !(reg & APPLE_CLUSTER_PSTATE_BUSY), 2,
+    73					      APPLE_CLUSTER_SWITCH_TIMEOUT)) {
+    74			return -EIO;
+    75		}
+    76	
+    77		reg &= ~(APPLE_CLUSTER_PSTATE_DESIRED1 | APPLE_CLUSTER_PSTATE_DESIRED2);
+    78		reg |= FIELD_PREP(APPLE_CLUSTER_PSTATE_DESIRED1, pstate);
+    79		reg |= FIELD_PREP(APPLE_CLUSTER_PSTATE_DESIRED2, pstate);
+    80		reg |= APPLE_CLUSTER_PSTATE_SET;
+    81	
+  > 82		writeq_relaxed(reg, priv->reg_base + APPLE_CLUSTER_PSTATE);
+    83	
+    84		return 0;
+    85	}
+    86	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
