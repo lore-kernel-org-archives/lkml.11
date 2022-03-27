@@ -2,128 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63356C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 16:51:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 415DEC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 16:59:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236117AbiC0Qw6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 12:52:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50590 "EHLO
+        id S236120AbiC0RBP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 13:01:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236159AbiC0Qw4 (ORCPT
+        with ESMTP id S233940AbiC0RBN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 12:52:56 -0400
-X-Greylist: delayed 126 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 27 Mar 2022 09:51:16 PDT
-Received: from out203-205-221-236.mail.qq.com (out203-205-221-236.mail.qq.com [203.205.221.236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3E253527B
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 09:51:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1648399874;
-        bh=1GEBiGQAyrtXMxo13rUvg78furDdVDIl83iCaIGMI1M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=UxfiQr0mz9T1HuyYbX+n46ZXUODxUBabu4jToUPTZ0SkYfbB31CW0OLr6r5birh7w
-         odsPk0cMxJZDmdr7VmK5kCjhcsPASW92GMo/5B5U3gHdBNEO9KyYE5C0gAoaWqiyIK
-         3Nm9gbHGRKz/k5s/JGugjZPzZ7/zzrb3fPQnLdM8=
-Received: from localhost.localdomain ([120.245.132.52])
-        by newxmesmtplogicsvrszc10.qq.com (NewEsmtp) with SMTP
-        id BEF2A844; Mon, 28 Mar 2022 00:47:47 +0800
-X-QQ-mid: xmsmtpt1648399669tvx86oryx
-Message-ID: <tencent_FF9ED8FF677BA0DB0345DFDFC7705FE3D406@qq.com>
-X-QQ-XMAILINFO: MKeP4aHkmE0NsWw2kkSuc8SEXlOwFqqZScH84Frk/w/Q56/+U7kvZr6nwmorvX
-         X+cjKN/3mmuAJ0yzoS8FmEG+NxRIc10Tu40re70XoaDn1SAc/VcPIihg6QZB9EP7BPAfrNIMveJx
-         bpVJz0HkxJWgUEF7QoJO0efZoldENGRUk1hdm6LkmYD8Oh2rqQJH3oC6Zi28lpYfWM45XoM91TN+
-         CQuwN47MNrnRnv4N9gANxSFz8XVG/J/3BkHQ4zK5vjcblHTiaNxatgcjaHoPpV9FPIuzjqXWRQZE
-         vy3M1yfkg+e8bKKhx3Dix6dNUOc/pBMERy0kLUjdsnYMHm+TWJIb9HkD6I+YDh2Ga9uMIvYGPjLP
-         yNmec/pfXI3BMs6id2CbJnMzog+X39q0PIRyAx2loShKTbLRHJQV2xEYRBTKTbMKDmIdTUNIQQkn
-         GGVTLb5T7W3AoHV481Dj/AbiPHzdxRF3EuTGRfofrz8XZ4zeHuyliclx/Q0ieMTBAN/9lYfsBO/4
-         ahApK9IJ960MpSAkkw4Kxw8kzEEiesitoJfvtoTWYX8/TnplOg48Ax6h+C84IpeVYw5DPePRCjsS
-         ktLaIJd7nZ3SotrO3bcP7kB1i0PaFPSdRUmvGGWkABrE7zxduh9nWNOuLZeaLK9hd0gWVFid74bR
-         dGZMKghMWfWhn9k5iiu7OmaXOqxJaeCNQd0X/4N5OI7SDPgjLkWA2D5hwZWYSfiC6kHG7HGNtkwG
-         CT0wnLH5eVdd51pYxwmSyfyw2qIbl801lyctwv4/1kyyKLhJ5UsaLludmIok8XW4kN9UCnnR15r+
-         AEsiBd6+ztzje+hP5/A9ppLySj3ZaItKrDCAyvL+1MzY2IVeX2IYlli7l5g6A+z9q+TdAtn1qr7e
-         UrxPCfEdECqFLJQmPSHVMlZymlAXFCGkLlI37XEl99VtUW6H01uzo2tde4m9Wgn5l9xkMUFQJfez
-         8HdmzZ860M8NIcpQou7tLY0Uuy2jqiu2hXI5N+zQyVDUsE5ZQhjg==
-From:   Chen Guanqiao <chen.chenchacha@foxmail.com>
-To:     minyard@acm.org, openipmi-developer@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org
-Cc:     Chen Guanqiao <chen.chenchacha@foxmail.com>
-Subject: [PATCH 1/3] ipmi: msghandler: Get the number of user through sysfs
-Date:   Mon, 28 Mar 2022 00:47:42 +0800
-X-OQ-MSGID: <8cf886947890bb6d4d2c8b61a96676e404423c36.1648397283.git.chen.chenchacha@foxmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1648397283.git.chen.chenchacha@foxmail.com>
-References: <cover.1648397283.git.chen.chenchacha@foxmail.com>
+        Sun, 27 Mar 2022 13:01:13 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA26F24F0D
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 09:59:33 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id p184-20020a1c29c1000000b0037f76d8b484so7186335wmp.5
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 09:59:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=GrkiYksIXcCr7YZZWEOvdXT2DA/jInP9u8Xo7/nCL0M=;
+        b=GTZ2XxQZHx/jRc8T3Lv8E/z/1GWp49b6uLzBucRMSL8INJw5DyBeUQhnVhdavWirNL
+         tmbW/itm/3LLUXpvwmVjZtWKBlaucszhH7zqf2ICmRqR+ZSLdu/uBqWj/+M5nzzzBn6U
+         nmt5JvEmbzXijPg3VkZYogg+nJGQKOML2CgpTCo5P3ARFH9+ptXLbkv9C2YmJZMXQ1iZ
+         7n8JkRVZjiFQla+jJumiLaTgmNmDSEsF47JF+ICa995EBRgvQ9R2A/0MyLBRZsMqki48
+         sYxCPujMABUPs1bSP2dlqvfbClKwfe0fuPkhxyLkX0IXqK0iAzHHK8opy/CvaDSjhehd
+         i2GA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=GrkiYksIXcCr7YZZWEOvdXT2DA/jInP9u8Xo7/nCL0M=;
+        b=d+E0nJ9ywMx3K330+ZkoMOmI+6AHcKCVN0IFf7gzbqDUxpqCeTG9q6Rr6+HDBMDCVs
+         RUeiYNcoZESLUwreHQ63K0dw3k4X8DkmKv4IwgOA3MFLS96/fwcHc87K1TuNpw+kctZh
+         H5pSafvFbj5jZF6272QqcBs+pxAe9Vw3ymRKpoASnQ0wAlhaVih2seuSF77DyhiyP7nt
+         vDVQlomL1OUpxys7t2i0FY3nKtFYz1Vebok8pNc2NPb3EPs/Vgl1Cn5dAdsWO27AiAAl
+         2TqQ3Ml8ljfO8PbWEjw12ZEWUFvignEkLqKl+n45v2XrUsC30Cje3ii9lT37XTSV1UBc
+         aQ0A==
+X-Gm-Message-State: AOAM533MeBuK16Jkd/C/20J7O9qig7rDSNlaKqqdbDOHRO+yCvd+sa1E
+        hZ4tghm3nxmvQ8iybafUBCz8qQ==
+X-Google-Smtp-Source: ABdhPJy/tdJJQlDuv4mW16c8o9cKE4bOlxZGTM69qH8mj9pl3CI+OQLQ5IbGpH33qgENVnCRDEzp4A==
+X-Received: by 2002:a7b:c77a:0:b0:38c:2c33:d8f1 with SMTP id x26-20020a7bc77a000000b0038c2c33d8f1mr29485151wmk.115.1648400372558;
+        Sun, 27 Mar 2022 09:59:32 -0700 (PDT)
+Received: from radium.lan ([88.160.162.107])
+        by smtp.gmail.com with ESMTPSA id 2-20020a1c1902000000b00380d3873d6asm9979423wmz.43.2022.03.27.09.59.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 27 Mar 2022 09:59:32 -0700 (PDT)
+From:   Fabien Parent <fparent@baylibre.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>
+Cc:     Fabien Parent <fparent@baylibre.com>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH 1/4] dt-bindings: arm64: dts: mediatek: Add mt8195-demo board
+Date:   Sun, 27 Mar 2022 18:58:34 +0200
+Message-Id: <20220327165837.3048639-2-fparent@baylibre.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220327165837.3048639-1-fparent@baylibre.com>
+References: <20220327165837.3048639-1-fparent@baylibre.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The administrator reads the user_count file corresponding the ipmi device, ipmi
-traverse all intf, and count the number of user.
+Add bindings for the MediaTek mt8195-demo board.
 
-Signed-off-by: Chen Guanqiao <chen.chenchacha@foxmail.com>
+Signed-off-by: Fabien Parent <fparent@baylibre.com>
 ---
- drivers/char/ipmi/ipmi_msghandler.c | 33 +++++++++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
+ Documentation/devicetree/bindings/arm/mediatek.yaml | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
-index c59265146e9c..e14beb51cae4 100644
---- a/drivers/char/ipmi/ipmi_msghandler.c
-+++ b/drivers/char/ipmi/ipmi_msghandler.c
-@@ -2706,6 +2706,29 @@ static int bmc_get_device_id(struct ipmi_smi *intf, struct bmc_device *bmc,
- 	return __bmc_get_device_id(intf, bmc, id, guid_set, guid, -1);
- }
- 
-+static unsigned int get_user_count(void)
-+{
-+	struct ipmi_smi *intf;
-+	int index;
-+	unsigned int total_count = 0;
-+
-+	index = srcu_read_lock(&ipmi_interfaces_srcu);
-+	list_for_each_entry_rcu(intf, &ipmi_interfaces, link) {
-+		struct ipmi_user *user;
-+		int intf_index, count = 0;
-+
-+		intf_index = srcu_read_lock(&intf->users_srcu);
-+		list_for_each_entry_rcu(user, &intf->users, link)
-+			count++;
-+		srcu_read_unlock(&intf->users_srcu, intf_index);
-+
-+		total_count += count;
-+	}
-+	srcu_read_unlock(&ipmi_interfaces_srcu, index);
-+
-+	return total_count;
-+}
-+
- static ssize_t device_id_show(struct device *dev,
- 			      struct device_attribute *attr,
- 			      char *buf)
-@@ -2875,6 +2898,15 @@ static ssize_t guid_show(struct device *dev, struct device_attribute *attr,
- }
- static DEVICE_ATTR_RO(guid);
- 
-+static ssize_t user_count_show(struct device *dev,
-+			       struct device_attribute *attr, char *buf)
-+{
-+	unsigned int user_count = get_user_count();
-+
-+	return snprintf(buf, 20, "%u\n", user_count);
-+}
-+static DEVICE_ATTR_ADMIN_RO(user_count);
-+
- static struct attribute *bmc_dev_attrs[] = {
- 	&dev_attr_device_id.attr,
- 	&dev_attr_provides_device_sdrs.attr,
-@@ -2886,6 +2918,7 @@ static struct attribute *bmc_dev_attrs[] = {
- 	&dev_attr_product_id.attr,
- 	&dev_attr_aux_firmware_revision.attr,
- 	&dev_attr_guid.attr,
-+	&dev_attr_user_count.attr,
- 	NULL
- };
- 
+diff --git a/Documentation/devicetree/bindings/arm/mediatek.yaml b/Documentation/devicetree/bindings/arm/mediatek.yaml
+index ab0593c77321..1f68afb19d81 100644
+--- a/Documentation/devicetree/bindings/arm/mediatek.yaml
++++ b/Documentation/devicetree/bindings/arm/mediatek.yaml
+@@ -131,6 +131,10 @@ properties:
+           - enum:
+               - mediatek,mt8183-evb
+           - const: mediatek,mt8183
++      - items:
++          - enum:
++              - mediatek,mt8195-demo
++          - const: mediatek,mt8195
+       - items:
+           - enum:
+               - mediatek,mt8195-evb
 -- 
-2.25.1
+2.35.1
 
