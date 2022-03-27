@@ -2,121 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0ED5C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 11:10:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1B24C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 11:17:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233139AbiC0LMI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 07:12:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57894 "EHLO
+        id S233322AbiC0LTA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 07:19:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229861AbiC0LMG (ORCPT
+        with ESMTP id S229861AbiC0LS6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 07:12:06 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48ABD37BC1
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 04:10:27 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id 123-20020a1c1981000000b0038b3616a71aso6891315wmz.4
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 04:10:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=+BzHZSvsn/H69wlmb/H6rNB8e3j/o17VqP5fAwR3vQU=;
-        b=n+TM4caOAp7aEq8To+f6jO0BS7LMe0+DMBVCErD3nIzBkOALI2ZJlInZiWkvYKLyqB
-         H+4F7iYjKqYaLj/OPPzW9gq+l/M9Z0u6a8WTTf6LH/6M+0VXHjVNWfLpj5h9WLbTDly9
-         PJkw2fhaZ+69LqpOJ+zOCsrcktLX2QSq48Td+AlXqCzNCKa9dO0WK70MfS6fKUQC9Wtk
-         +fFh+kf/2aZXUIKt7Qtoq42+r5NKVrbBQryKeKWeDT12xPt7ASgtSsTKwm8D0eA3DWUo
-         8Zs14hKV4x0VtL+2deVPC7sbA3/beiz2cDtnHAf4stM2aEO3tYUFOqpZX9yriEm4A7M+
-         Mq6A==
+        Sun, 27 Mar 2022 07:18:58 -0400
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3410C39825;
+        Sun, 27 Mar 2022 04:17:18 -0700 (PDT)
+Received: by mail-wr1-f50.google.com with SMTP id h4so16470467wrc.13;
+        Sun, 27 Mar 2022 04:17:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=+BzHZSvsn/H69wlmb/H6rNB8e3j/o17VqP5fAwR3vQU=;
-        b=S8h9S9zouqll8wo1ayRC2ONKPyiUfmVMwyvChxl1PdC8xcC/phcNj7dRqLxf+1/8hV
-         JbzgxnKQ2v51z+Na9Rwflz/EmEL8oB9Xq5uRysZTIF9r/TZu8+wpB60Z9FVm2rHzFUSI
-         qlCcrjwarQe/od2xJJDXoqBVpdbwyQHtFmcObsMs980krUzrNv94134Q0xAQaWKWk5az
-         WGD98L5gjICSrlgezEHbJv/6UpK/ncKXwFjI62lk+uo/fbhiQCqu6ra0YUa0Bxalgb31
-         7QK4xDrDTHJyQv+2QvLg1NTG3h3g3wb1XuTnCwDJwLPmHMaZGYQC4ZY4U94Z4UiyjWLp
-         0hYw==
-X-Gm-Message-State: AOAM532Hj0+44uNg9fUve1AYvVD2uc5Kz3tXZJvB+e96ChEbOEBwwUGV
-        G16IG7Ee3fTsYb7h46h54YNTeg==
-X-Google-Smtp-Source: ABdhPJzw8TxaeNM+RLDCb4Y1lZLHWqMHpKjAx9JRCVm8lX0y2gwyKrD4U6GXSV5yvfD0ii3RXeXiXw==
-X-Received: by 2002:a05:600c:1c8e:b0:38c:a386:26aa with SMTP id k14-20020a05600c1c8e00b0038ca38626aamr19308151wms.204.1648379425745;
-        Sun, 27 Mar 2022 04:10:25 -0700 (PDT)
-Received: from localhost (82-65-169-74.subs.proxad.net. [82.65.169.74])
-        by smtp.gmail.com with ESMTPSA id g6-20020a5d5406000000b001f049726044sm9577806wrv.79.2022.03.27.04.10.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Mar 2022 04:10:24 -0700 (PDT)
-References: <20220327081850.13456-1-xiam0nd.tong@gmail.com>
-User-agent: mu4e 1.6.10; emacs 27.1
-From:   Jerome Brunet <jbrunet@baylibre.com>
-To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>, lgirdwood@gmail.com,
-        broonie@kernel.org, perex@perex.cz, tiwai@suse.com,
-        narmstrong@baylibre.com, khilman@baylibre.com
-Cc:     martin.blumenstingl@googlemail.com, alsa-devel@alsa-project.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: Re: [PATCH] soc: meson: fix a missing check on list iterator
-Date:   Sun, 27 Mar 2022 13:03:14 +0200
-In-reply-to: <20220327081850.13456-1-xiam0nd.tong@gmail.com>
-Message-ID: <1jk0cf6480.fsf@starbuckisacylon.baylibre.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Yo4Qxz57xPmfJcP7ucWBN2Y163R/nwHjuNzzvflm4rU=;
+        b=CW8S7mQujMa7SA7TD5fPDu8Lzlci8oo09qDkAjITX7n7HLSNWXeFjJN9lz1rMS2G4q
+         fDYYD2tKhmoZQj+Z+fQFeKSwIu0BNreeeZH8Ku+w3INlcYhB/IRWxVVRciTkbBohmBXL
+         xMwgRkU5IyvPpupHDxXqEwIg/az7Vs08P3oXCf+hLMenZNreA4+pCfoalSoRK6Ygkkqi
+         zwhrGdefuomPuv49TSaUFEtGXiMJSMDfkj/g20O7utrs5saKQXicgaV2SimlHSxfkNle
+         NSmhdowH6dTdjpgIpWKdtxwRNm1WuHc251hieFyIbzle8eEIPzYrZnIUt5QqfdptxcaH
+         6ikA==
+X-Gm-Message-State: AOAM531ms9pHw7FW8gOm+UyzZAM6wZnQbkMy/E5a9kIf+RsmLxlZp1We
+        GXH+JB19ptNB1M9NZtc2pIUf4JQJ4AM=
+X-Google-Smtp-Source: ABdhPJz8x6R8DUBdB2seJZmTkt1ay+PlI0jnhgdDgynlwHgHCu3xzK8Nsc8tACfQh0xFCNq9DpppTQ==
+X-Received: by 2002:a05:6000:1d82:b0:203:e5cc:c19b with SMTP id bk2-20020a0560001d8200b00203e5ccc19bmr16740081wrb.553.1648379836536;
+        Sun, 27 Mar 2022 04:17:16 -0700 (PDT)
+Received: from [192.168.0.162] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.googlemail.com with ESMTPSA id w7-20020a1cf607000000b00389a5390180sm8925535wmc.25.2022.03.27.04.17.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 27 Mar 2022 04:17:15 -0700 (PDT)
+Message-ID: <015bac04-4378-b4b8-c7d1-b0e2615fbe45@kernel.org>
+Date:   Sun, 27 Mar 2022 13:17:14 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v1 3/4] dt-bindings: hwmon: add Microchip LAN966x bindings
+Content-Language: en-US
+To:     Michael Walle <michael@walle.cc>, Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220326192347.2940747-1-michael@walle.cc>
+ <20220326192347.2940747-4-michael@walle.cc>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <20220326192347.2940747-4-michael@walle.cc>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On Sun 27 Mar 2022 at 16:18, Xiaomeng Tong <xiam0nd.tong@gmail.com> wrote:
-
-> The bug is here:
-> 	*dai_name = dai->driver->name;
->
-> For for_each_component_dais(), just like list_for_each_entry,
-> the list iterator 'runtime' will point to a bogus position
-> containing HEAD if the list is empty or no element is found.
-> This case must be checked before any use of the iterator,
-> otherwise it will lead to a invalid memory access.
->
-> To fix the bug, just move the assignment into loop and return
-> 0 when element is found, otherwise return -EINVAL;
-
-Except we already checked that the id is valid and know an element will
-be be found once we enter the loop. No bug here and this patch does not
-seem necessary to me.
-
->
-> Cc: stable@vger.kernel.org
-> Fixes: 6ae9ca9ce986b ("ASoC: meson: aiu: add i2s and spdif support")
-> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+On 26/03/2022 20:23, Michael Walle wrote:
+> Add a binding for the temperature sensor and the fan controller on the
+> Microchip LAN966x family.
+> 
+> Signed-off-by: Michael Walle <michael@walle.cc>
 > ---
->  sound/soc/meson/aiu.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
->
-> diff --git a/sound/soc/meson/aiu.c b/sound/soc/meson/aiu.c
-> index d299a70db7e5..b52915c6f53b 100644
-> --- a/sound/soc/meson/aiu.c
-> +++ b/sound/soc/meson/aiu.c
-> @@ -61,14 +61,14 @@ int aiu_of_xlate_dai_name(struct snd_soc_component *component,
->  		return -EINVAL;
->  
->  	for_each_component_dais(component, dai) {
-> -		if (id == 0)
-> -			break;
-> +		if (id == 0) {
-> +			*dai_name = dai->driver->name;
-> +			return 0;
-> +		}
->  		id--;
->  	}
->  
-> -	*dai_name = dai->driver->name;
-> -
-> -	return 0;
-> +	return -EINVAL;
->  }
->  
->  static int aiu_cpu_of_xlate_dai_name(struct snd_soc_component *component,
+>  .../bindings/hwmon/microchip,lan966x.yaml     | 53 +++++++++++++++++++
+>  1 file changed, 53 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/hwmon/microchip,lan966x.yaml
+> 
 
+
+Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+
+
+Best regards,
+Krzysztof
