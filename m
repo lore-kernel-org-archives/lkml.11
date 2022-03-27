@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D6AFC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 22:42:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49DF9C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 22:42:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235210AbiC0WoB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 18:44:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45566 "EHLO
+        id S237115AbiC0WoF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 18:44:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236998AbiC0Wmq (ORCPT
+        with ESMTP id S236984AbiC0Wmp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 18:42:46 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69F0B32EE0
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 15:41:07 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id a1so17889404wrh.10
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 15:41:07 -0700 (PDT)
+        Sun, 27 Mar 2022 18:42:45 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F24BA33347
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 15:41:03 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id t11so17905145wrm.5
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 15:41:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=FFfw8+AcCO+oGSsE3C0mLYlgKyVPXn65QX6gJCkZYQ8=;
-        b=PtCrAZqRN/HnmjJXDVwdcrFJ09HL3kht6yfTyoxnzNMjZQpba9EJRCFkFBuQ0na9il
-         0AqPgXohm4+Yzcfg7GXzOd8EJiS2oq6Ig2G4UAbcnTZdxHHVrm/jD1K2ru9K3Uy6T8Rm
-         mrLa0VB1LLDeiRDpAULWfxSEPbFvHERKjcVUm/mXGTyFOufpo/UdrGL1K6zUBc6DkcjN
-         0IQ3DxKSTimhZEoDS2N4PLCnhaplQVWY4dkT3xxpwK2WU0dgonXi261cZBrPrfPmfuWg
-         NGZO4bwiUNdsGmxL1vH/cTsH67jElytW5Qro3oWtF5mb0W1ape333kLElvu8jSdqF6Jv
-         MG9Q==
+        bh=eywd7FmH0eN0jrnWKgGdeR6AnFImC306XiX8oFPZwAs=;
+        b=0r7A+Lg3dNKCPPbFiM+r2Qb3aWcF/p0TOhmyZ6fCihniTMpFEzKZY5YjYdsNTSAWqN
+         PbIOYJQJQGdEkdV8sp8l3JBhwGeBtqFwUpJ+1QeYuCz1b1wRy4SiIbO3Emgxg/KnDiSk
+         CiBOc5wGNfUwm6kxi3rSlwPV9GLoA6LojVJ8C5DoDvdw16bG4t+phKcX8xJGA5nh8o3p
+         gA/Mc8yiLl633Fcxtld3vxHXvEhzxQVlb8rSLMYG4QWMhvCZwJMR1dkzQr2M0tvIcm6u
+         DdQKBHdBDHeYvCXLr+mE3qAVoJ/8zWnxQEcQT9AOhtvxeW8nibWa2VC1ygUqee3lqp9q
+         cvYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=FFfw8+AcCO+oGSsE3C0mLYlgKyVPXn65QX6gJCkZYQ8=;
-        b=wna9lSiZHosgUzEPRbVALkuz8cAKoCOCJLsvmHTP1g+8de8HRFqx0I1ofuCsrS7qyM
-         Ed33k+vguDXo69/wIqI8HBEe/rvAU4NR4D+vCidja9FXWK5+21OaXuKeH2ySLnOippSZ
-         kL2AXJYcnosXU1lxzGmtJNJyTk3C9VayLUcbTRhHFSdL57SiP++I3XdyBl6DtA2tGF0f
-         pmzHFZGpUGF0s86NYScEnQXu3Q6TTojzMzITopMBohUHb7O/AC1scxN/mZjV2WFDCYE8
-         /NcS0gStLIwA3zu6QdeOsgSoBcCUS7+CZl/zdBhmeLLdZ3sZDWmt85yIsLsR1BE/FyKf
-         x/XQ==
-X-Gm-Message-State: AOAM532jmxt/axT+JSBZiX1Qqx7gC3iEcvhX70rmUl1bu9iiBrB76WfP
-        4eSZyMQepqisk8A2YFkeHYuniA==
-X-Google-Smtp-Source: ABdhPJz6lVJWhj+/V8WiEX6cNk9H8uTXpPe8YFLNErcslI7n6gUFl/aIC510T7p6adIYgaXEn/pjQw==
-X-Received: by 2002:a5d:4101:0:b0:205:86cb:dd1b with SMTP id l1-20020a5d4101000000b0020586cbdd1bmr19210023wrp.480.1648420865910;
-        Sun, 27 Mar 2022 15:41:05 -0700 (PDT)
+        bh=eywd7FmH0eN0jrnWKgGdeR6AnFImC306XiX8oFPZwAs=;
+        b=2kQq7mAk94x4/GcAJzqf0x9qtbJjiC/CEUoP3jKRHBqIQnsNYA8zvxmX+BQVDe6dZA
+         oV/O7rWlQBI6dLTSYPBNBjlJQw59uxnuYqvbhhqES4nWZzz4tg5uysmzlzwLRuhiu7L8
+         yAOGB8OTsNXjv46VUGLLqSbxqiez+hO9Ml1UZv6m7UZDcNHO0z3U5xza8Hhz7PFbKQTl
+         WIMBQEadg7DnaM/l/wlO8ssCJIdCKR/o5Fu/y1MQ8q6YSqXr2RqhVbLAuoflHbq7Nsh3
+         Eg/bqBoIBBFsS8qCPa2o3spdsh8/JL5w1baoLoxSuIt6d1ZQeE+CSxVm9JUG9QglpQu6
+         Fq2Q==
+X-Gm-Message-State: AOAM531tfzHpPaconrlmsznw6+wJe5/yy+MbVWL/S3B/V7nFpWlCx/Z8
+        lsF9SZMhM8V4INkpOUOOeH37VgaQTURTCg==
+X-Google-Smtp-Source: ABdhPJwVdJKuEHZkpHZx/kesrNtcrmsj08nZDeDz/JbXf7iTCc+i8rplDDOSSsSGAP4YKrlt21K5og==
+X-Received: by 2002:adf:e987:0:b0:203:d6f6:71f3 with SMTP id h7-20020adfe987000000b00203d6f671f3mr20128642wrm.82.1648420862352;
+        Sun, 27 Mar 2022 15:41:02 -0700 (PDT)
 Received: from localhost.localdomain (2a02-8440-6341-357e-3074-96af-9642-0002.rev.sfr.net. [2a02:8440:6341:357e:3074:96af:9642:2])
-        by smtp.gmail.com with ESMTPSA id v5-20020adfe4c5000000b001edc1e5053esm10400867wrm.82.2022.03.27.15.41.04
+        by smtp.gmail.com with ESMTPSA id v5-20020adfe4c5000000b001edc1e5053esm10400867wrm.82.2022.03.27.15.41.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Mar 2022 15:41:05 -0700 (PDT)
+        Sun, 27 Mar 2022 15:41:01 -0700 (PDT)
 From:   Guillaume Ranquet <granquet@baylibre.com>
 To:     airlied@linux.ie, angelogioacchino.delregno@collabora.com,
         chunfeng.yun@mediatek.com, chunkuang.hu@kernel.org,
@@ -59,11 +59,10 @@ To:     airlied@linux.ie, angelogioacchino.delregno@collabora.com,
 Cc:     devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org,
         linux-arm-kernel@lists.infradead.org, linux-fbdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-phy@lists.infradead.org, markyacoub@google.com,
-        Markus Schneider-Pargmann <msp@baylibre.com>
-Subject: [PATCH v9 05/22] drm/edid: Add cea_sad helpers for freq/length
-Date:   Mon, 28 Mar 2022 00:39:10 +0200
-Message-Id: <20220327223927.20848-6-granquet@baylibre.com>
+        linux-phy@lists.infradead.org, markyacoub@google.com
+Subject: [PATCH v9 03/22] dt-bindings: mediatek,dp_phy: Add Display Port PHY binding
+Date:   Mon, 28 Mar 2022 00:39:08 +0200
+Message-Id: <20220327223927.20848-4-granquet@baylibre.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220327223927.20848-1-granquet@baylibre.com>
 References: <20220327223927.20848-1-granquet@baylibre.com>
@@ -73,136 +72,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds two helper functions that extract the frequency and word
-length from a struct cea_sad.
+This phy controller is embedded in the Display Port Controller on mt8195 SoCs.
 
-For these helper functions new defines are added that help translate the
-'freq' and 'byte2' fields into real numbers.
-
-Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
 Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
 ---
- drivers/gpu/drm/drm_edid.c | 74 ++++++++++++++++++++++++++++++++++++++
- include/drm/drm_edid.h     | 14 ++++++++
- 2 files changed, 88 insertions(+)
+ .../bindings/phy/mediatek,dp-phy.yaml         | 43 +++++++++++++++++++
+ 1 file changed, 43 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/phy/mediatek,dp-phy.yaml
 
-diff --git a/drivers/gpu/drm/drm_edid.c b/drivers/gpu/drm/drm_edid.c
-index cc7bd58369df..eeceae4411ba 100644
---- a/drivers/gpu/drm/drm_edid.c
-+++ b/drivers/gpu/drm/drm_edid.c
-@@ -4758,6 +4758,80 @@ int drm_edid_to_speaker_allocation(struct edid *edid, u8 **sadb)
- }
- EXPORT_SYMBOL(drm_edid_to_speaker_allocation);
- 
-+/**
-+ * drm_cea_sad_get_sample_rate - Extract the sample rate from cea_sad
-+ * @sad: Pointer to the cea_sad struct
-+ *
-+ * Extracts the cea_sad frequency field and returns the sample rate in Hz.
-+ *
-+ * Return: Sample rate in Hz or a negative errno if parsing failed.
-+ */
-+int drm_cea_sad_get_sample_rate(const struct cea_sad *sad)
-+{
-+	switch (sad->freq) {
-+	case DRM_CEA_SAD_FREQ_32KHZ:
-+		return 32000;
-+	case DRM_CEA_SAD_FREQ_44KHZ:
-+		return 44100;
-+	case DRM_CEA_SAD_FREQ_48KHZ:
-+		return 48000;
-+	case DRM_CEA_SAD_FREQ_88KHZ:
-+		return 88200;
-+	case DRM_CEA_SAD_FREQ_96KHZ:
-+		return 96000;
-+	case DRM_CEA_SAD_FREQ_176KHZ:
-+		return 176400;
-+	case DRM_CEA_SAD_FREQ_192KHZ:
-+		return 192000;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+EXPORT_SYMBOL(drm_cea_sad_get_sample_rate);
+diff --git a/Documentation/devicetree/bindings/phy/mediatek,dp-phy.yaml b/Documentation/devicetree/bindings/phy/mediatek,dp-phy.yaml
+new file mode 100644
+index 000000000000..1f5ffca4e140
+--- /dev/null
++++ b/Documentation/devicetree/bindings/phy/mediatek,dp-phy.yaml
+@@ -0,0 +1,43 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (c) 2022 MediaTek
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/phy/mediatek,dp-phy.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+static bool drm_cea_sad_is_uncompressed(const struct cea_sad *sad)
-+{
-+	switch (sad->format) {
-+	case HDMI_AUDIO_CODING_TYPE_STREAM:
-+	case HDMI_AUDIO_CODING_TYPE_PCM:
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
++title: MediaTek Display Port PHY
 +
-+/**
-+ * drm_cea_sad_get_uncompressed_word_length - Extract word length
-+ * @sad: Pointer to the cea_sad struct
-+ *
-+ * Extracts the cea_sad byte2 field and returns the word length for an
-+ * uncompressed stream.
-+ *
-+ * Note: This function may only be called for uncompressed audio.
-+ *
-+ * Return: Word length in bits or a negative errno if parsing failed.
-+ */
-+int drm_cea_sad_get_uncompressed_word_length(const struct cea_sad *sad)
-+{
-+	if (!drm_cea_sad_is_uncompressed(sad)) {
-+		DRM_WARN("Unable to get the uncompressed word length for a compressed format: %u\n",
-+			 sad->format);
-+		return -EINVAL;
-+	}
++maintainers:
++  - CK Hu <ck.hu@mediatek.com>
++  - Jitao shi <jitao.shi@mediatek.com>
 +
-+	switch (sad->byte2) {
-+	case DRM_CEA_SAD_UNCOMPRESSED_WORD_16BIT:
-+		return 16;
-+	case DRM_CEA_SAD_UNCOMPRESSED_WORD_20BIT:
-+		return 20;
-+	case DRM_CEA_SAD_UNCOMPRESSED_WORD_24BIT:
-+		return 24;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+EXPORT_SYMBOL(drm_cea_sad_get_uncompressed_word_length);
++description: |
++  Device tree bindings for the Mediatek (embedded) Display Port PHY
++  present on some Mediatek SoCs.
 +
- /**
-  * drm_av_sync_delay - compute the HDMI/DP sink audio-video sync delay
-  * @connector: connector associated with the HDMI/DP sink
-diff --git a/include/drm/drm_edid.h b/include/drm/drm_edid.h
-index 5d4d840b9904..ebd00ecae205 100644
---- a/include/drm/drm_edid.h
-+++ b/include/drm/drm_edid.h
-@@ -372,6 +372,18 @@ struct cea_sad {
- 	u8 byte2;
- };
- 
-+#define DRM_CEA_SAD_FREQ_32KHZ  BIT(0)
-+#define DRM_CEA_SAD_FREQ_44KHZ  BIT(1)
-+#define DRM_CEA_SAD_FREQ_48KHZ  BIT(2)
-+#define DRM_CEA_SAD_FREQ_88KHZ  BIT(3)
-+#define DRM_CEA_SAD_FREQ_96KHZ  BIT(4)
-+#define DRM_CEA_SAD_FREQ_176KHZ BIT(5)
-+#define DRM_CEA_SAD_FREQ_192KHZ BIT(6)
++properties:
++  compatible:
++    enum:
++      - mediatek,mt8195-dp-phy
 +
-+#define DRM_CEA_SAD_UNCOMPRESSED_WORD_16BIT BIT(0)
-+#define DRM_CEA_SAD_UNCOMPRESSED_WORD_20BIT BIT(1)
-+#define DRM_CEA_SAD_UNCOMPRESSED_WORD_24BIT BIT(2)
++  mediatek,dp-syscon:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description: Phandle to the Display Port node.
 +
- struct drm_encoder;
- struct drm_connector;
- struct drm_connector_state;
-@@ -379,6 +391,8 @@ struct drm_display_mode;
- 
- int drm_edid_to_sad(struct edid *edid, struct cea_sad **sads);
- int drm_edid_to_speaker_allocation(struct edid *edid, u8 **sadb);
-+int drm_cea_sad_get_sample_rate(const struct cea_sad *sad);
-+int drm_cea_sad_get_uncompressed_word_length(const struct cea_sad *sad);
- int drm_av_sync_delay(struct drm_connector *connector,
- 		      const struct drm_display_mode *mode);
- 
++  "#phy-cells":
++    const: 0
++
++required:
++  - compatible
++  - mediatek,dp-syscon
++  - "#phy-cells"
++
++additionalProperties: false
++
++examples:
++  - |
++    dp_phy: dp-phy {
++      compatible = "mediatek,mt8195-dp-phy";
++      mediatek,dp-syscon = <&dp_tx>;
++      #phy-cells = <0>;
++    };
 -- 
 2.34.1
 
