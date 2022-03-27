@@ -2,188 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8F4AC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 16:38:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD27FC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 16:38:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236050AbiC0Qj6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 12:39:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43266 "EHLO
+        id S236061AbiC0QkV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 12:40:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236042AbiC0Qjz (ORCPT
+        with ESMTP id S236072AbiC0QkQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 12:39:55 -0400
+        Sun, 27 Mar 2022 12:40:16 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93515CE7;
-        Sun, 27 Mar 2022 09:38:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51370261C;
+        Sun, 27 Mar 2022 09:38:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 10A85B80D88;
-        Sun, 27 Mar 2022 16:38:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B3C1C340EC;
-        Sun, 27 Mar 2022 16:38:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F1E38B80D89;
+        Sun, 27 Mar 2022 16:38:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2073DC340EC;
+        Sun, 27 Mar 2022 16:38:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648399092;
-        bh=ohmr/grIdQuAq8gGll+TPucDDR6vVnZqbYEs4VnBTBE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=kLFL+JzMsK1Rvt9ZeC/RzS05s5JBkUcDEkaZVxoUlPTVoOvpwdd2Qr8ztrrjFWRyh
-         8PQfXbBiYt9H6VnF+JN28w5+u8ThhPnNi7r2iPUXhqyxY0yE27diW+QAY/zhr9OWKj
-         O0f1Ka4aGjTjimaOqpm+1G3gQHQv4/PRKVYHxAqlSi+PPyq5RGtdlrWS3yk10PGUGd
-         st7mrvXDEop0l7MIMmc5Uc3kp6LHDF1OcMn4CqoGfbcd2uDnp45zGz8Uw16aQIwu3X
-         DURhzOWPqVt4pP98mkMWnWXy7dH+EfIFklbMuSLBm5+o09kwTRTNvBUxz7sSRbkNr3
-         Jvbe9i02LdJIA==
-Date:   Sun, 27 Mar 2022 17:45:45 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Jagath Jog J <jagathjog1996@gmail.com>
-Cc:     dan@dlrobertson.com, andy.shevchenko@gmail.com,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/5] iio: accel: bma400: Add triggered buffer support
-Message-ID: <20220327174545.41a15150@jic23-huawei>
-In-Reply-To: <20220326194146.15549-4-jagathjog1996@gmail.com>
-References: <20220326194146.15549-1-jagathjog1996@gmail.com>
-        <20220326194146.15549-4-jagathjog1996@gmail.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        s=k20201202; t=1648399115;
+        bh=QAaO5L4NqAlCNulmy+O4X6kte3dGuHZtQf0q+5vG9Qo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=NaExAObnJMFh1sJitxjXppDB/9ElBotMK5GD0/eid3FDbRstW/pDNiOgJCtWb6Pqz
+         Ns+KJ2LXDiLa6ZPD1MHOTwp1+Z7NYq1NiJV9y8YzFTNPzvEIJlXMzyWTs7ihsQj82n
+         OX0TWneJKcPu8TNPQEhdnuYXjB52FCNrQbxk+9VUXEQuS5avJHDf5DRRvQUOyTahEh
+         f0vJp2ZQDbE3KCWO5aQzfkBH1C+Mh8ifZ9ZkHWtEIkupQwKERGr6naB9DouslmY5fC
+         g9pRskkbzDpoKk5Y5szo177EDOU/Nxeew1yEewo6pnVfqwlnEw4n2uRHDJKnEGQwh2
+         2MWWO/QKxm7Jw==
+Date:   Sun, 27 Mar 2022 19:38:31 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Cc:     bharat@chelsio.com, jgg@ziepe.ca, vipul@chelsio.com,
+        roland@purestorage.com, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] cxgb4: cm: fix a incorrect NULL check on list iterator
+Message-ID: <YkCTB/F4jc3DWRo8@unreal>
+References: <20220327073542.10990-1-xiam0nd.tong@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220327073542.10990-1-xiam0nd.tong@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 27 Mar 2022 01:11:44 +0530
-Jagath Jog J <jagathjog1996@gmail.com> wrote:
-
-> Added trigger buffer support to read continuous acceleration
-> data from device with data ready interrupt which is mapped
-> to INT1 pin.
+On Sun, Mar 27, 2022 at 03:35:42PM +0800, Xiaomeng Tong wrote:
+> The bug is here:
+> 	if (!pdev) {
 > 
-> Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
-Hi Jagath,
+> The list iterator value 'pdev' will *always* be set and non-NULL
+> by for_each_netdev(), so it is incorrect to assume that the
+> iterator value will be NULL if the list is empty or no element
+> found (in this case, the check 'if (!pdev)' can be bypassed as
+> it always be false unexpectly).
+> 
+> To fix the bug, use a new variable 'iter' as the list iterator,
+> while use the original variable 'pdev' as a dedicated pointer to
+> point to the found element.
 
-Just a few small things noticed on this read through.
+I don't think that the description is correct.
+We are talking about loopback interface which received packet, the pdev will always exist.
+Most likely. the check of "if (!pdev)" is to catch impossible situation where IPV6 packet
+was sent over loopback, but IPV6 is not enabled.
 
-Thanks,
+Thanks
 
-Jonathan
-
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: 830662f6f032f ("RDMA/cxgb4: Add support for active and passive open connection with IPv6 address")
+> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 > ---
->  drivers/iio/accel/Kconfig       |   2 +
->  drivers/iio/accel/bma400.h      |  10 +-
->  drivers/iio/accel/bma400_core.c | 162 ++++++++++++++++++++++++++++++--
->  drivers/iio/accel/bma400_i2c.c  |   2 +-
->  drivers/iio/accel/bma400_spi.c  |   2 +-
->  5 files changed, 168 insertions(+), 10 deletions(-)
+>  drivers/infiniband/hw/cxgb4/cm.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
 > 
-
-> diff --git a/drivers/iio/accel/bma400_core.c b/drivers/iio/accel/bma400_core.c
-> index dc273381a0a2..fa3f4b5f229f 100644
-> --- a/drivers/iio/accel/bma400_core.c
-> +++ b/drivers/iio/accel/bma400_core.c
-> @@ -11,16 +11,22 @@
->   *  - Create channel for sensor time
->   */
+> diff --git a/drivers/infiniband/hw/cxgb4/cm.c b/drivers/infiniband/hw/cxgb4/cm.c
+> index c16017f6e8db..870d8517310b 100644
+> --- a/drivers/infiniband/hw/cxgb4/cm.c
+> +++ b/drivers/infiniband/hw/cxgb4/cm.c
+> @@ -2071,7 +2071,7 @@ static int import_ep(struct c4iw_ep *ep, int iptype, __u8 *peer_ip,
+>  {
+>  	struct neighbour *n;
+>  	int err, step;
+> -	struct net_device *pdev;
+> +	struct net_device *pdev = NULL, *iter;
 >  
-> +#include <linux/bitfield.h>
->  #include <linux/bitops.h>
->  #include <linux/device.h>
-> -#include <linux/iio/iio.h>
-> -#include <linux/iio/sysfs.h>
->  #include <linux/kernel.h>
->  #include <linux/module.h>
->  #include <linux/mutex.h>
->  #include <linux/regmap.h>
->  #include <linux/regulator/consumer.h>
+>  	n = dst_neigh_lookup(dst, peer_ip);
+>  	if (!n)
+> @@ -2083,14 +2083,14 @@ static int import_ep(struct c4iw_ep *ep, int iptype, __u8 *peer_ip,
+>  		if (iptype == 4)
+>  			pdev = ip_dev_find(&init_net, *(__be32 *)peer_ip);
+>  		else if (IS_ENABLED(CONFIG_IPV6))
+> -			for_each_netdev(&init_net, pdev) {
+> +			for_each_netdev(&init_net, iter) {
+>  				if (ipv6_chk_addr(&init_net,
+>  						  (struct in6_addr *)peer_ip,
+> -						  pdev, 1))
+> +						  iter, 1)) {
+> +					pdev = iter;
+>  					break;
+> +				}
+>  			}
+> -		else
+> -			pdev = NULL;
 >  
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-
-Is iio/sysfs.h actually used?  It rarely is these days as it contains
-the infrastructure for custom attributes and we try not to use any
-of those anymore.
-
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/trigger.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +
-This reorganization of headers is good but shouldn't be in this patch.
-Add an earlier patch in the series to move the existing pair down here
-before this patch then adds the new ones.
-
-
-...
-
->  
->  static int bma400_get_temp_reg(struct bma400_data *data, int *val, int *val2)
-> @@ -659,6 +687,10 @@ static int bma400_init(struct bma400_data *data)
->  	if (ret)
->  		return ret;
->  
-> +	/* Configure INT1 pin to open drain */
-> +	ret = regmap_write(data->regmap, BMA400_INT_IO_CTRL_REG, 0x06);
-> +	if (ret)
-> +		return ret;
->  	/*
->  	 * Once the interrupt engine is supported we might use the
->  	 * data_src_reg, but for now ensure this is set to the
-> @@ -807,6 +839,33 @@ static int bma400_write_raw_get_fmt(struct iio_dev *indio_dev,
->  	}
->  }
->  
-> +static int bma400_data_rdy_trigger_set_state(struct iio_trigger *trig,
-> +					     bool state)
-> +{
-> +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
-> +	struct bma400_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	ret = regmap_update_bits(data->regmap, BMA400_INT_CONFIG0_REG,
-> +				 BMA400_INT_DRDY_MSK,
-> +				 FIELD_PREP(BMA400_INT_DRDY_MSK, state));
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_update_bits(data->regmap, BMA400_INT1_MAP_REG,
-> +				 BMA400_INT_DRDY_MSK,
-> +				 FIELD_PREP(BMA400_INT_DRDY_MSK, state));
-> +	if (ret)
-> +		return ret;
-> +
-> +	return 0;
-
-	return regmap_update_bits()...
-
-> +}
-
-...
-
-
-> +static irqreturn_t bma400_interrupt(int irq, void *private)
-> +{
-> +	struct iio_dev *indio_dev = private;
-> +	struct bma400_data *data = iio_priv(indio_dev);
-> +	irqreturn_t ret = IRQ_NONE;
-> +	__le16 status;
-> +
-> +	mutex_lock(&data->mutex);
-> +	ret = regmap_bulk_read(data->regmap, BMA400_INT_STAT0_REG, &status,
-> +			       sizeof(status));
-> +	mutex_unlock(&data->mutex);
-> +	if (ret)
-> +		return IRQ_NONE;
-> +
-> +	if (FIELD_GET(BMA400_INT_DRDY_MSK, le16_to_cpu(status))) {
-> +		iio_trigger_poll_chained(data->trig);
-> +		ret = IRQ_HANDLED;
-Preference for this style
-		return IRQ_HANDLED;
-> +	}
-> +
-return IRQ_NONE;
-and don't initialize above.
-
-> +	return ret;
-> +}
-> +
-
-
+>  		if (!pdev) {
+>  			err = -ENODEV;
+> -- 
+> 2.17.1
+> 
