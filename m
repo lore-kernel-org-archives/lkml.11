@@ -2,162 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 776CFC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 15:06:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4A01C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 15:08:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235792AbiC0PIH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 11:08:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47226 "EHLO
+        id S235799AbiC0PJq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 11:09:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbiC0PIE (ORCPT
+        with ESMTP id S229518AbiC0PJo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 11:08:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9A7DA41984
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 08:06:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648393583;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kRrEX4hnlAxo6wDrCfxKsONrmV+bOzrMHx67TeVnS8Q=;
-        b=HeN0CVClQJnZFRNtviKU7amHnlaHwuA2f3xmCdLc0oO63b1gXQpUlaHbg3FMRu2/EV0tS/
-        lgB8cDJkrzxUM/bL2dz208WY5tVTB7aDabixR7lwfOiw+w7HachyvqzPyd1hpxW2CZBR//
-        2ojBip/4A+hw7d47bMkcJZws2Qwg/Zo=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-190-rJ7w-bCtNVy_7aZ85C39BA-1; Sun, 27 Mar 2022 11:06:20 -0400
-X-MC-Unique: rJ7w-bCtNVy_7aZ85C39BA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7EE5F80281D;
-        Sun, 27 Mar 2022 15:06:17 +0000 (UTC)
-Received: from starship (unknown [10.40.194.231])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9CD081457F13;
-        Sun, 27 Mar 2022 15:06:09 +0000 (UTC)
-Message-ID: <e605082ac8361c1932bfddfe2055660c7cea5f2b.camel@redhat.com>
-Subject: Re: [PATCH 00/21] KVM: x86: Event/exception fixes and cleanups
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Oliver Upton <oupton@google.com>,
-        Peter Shier <pshier@google.com>
-Date:   Sun, 27 Mar 2022 18:06:07 +0300
-In-Reply-To: <YjzjIhyw6aqsSI7Q@google.com>
-References: <20220311032801.3467418-1-seanjc@google.com>
-         <08548cb00c4b20426e5ee9ae2432744d6fa44fe8.camel@redhat.com>
-         <YjzjIhyw6aqsSI7Q@google.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Sun, 27 Mar 2022 11:09:44 -0400
+X-Greylist: delayed 1500 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 27 Mar 2022 08:08:05 PDT
+Received: from gateway20.websitewelcome.com (gateway20.websitewelcome.com [192.185.52.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E5DB15A2B
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 08:08:05 -0700 (PDT)
+Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
+        by gateway20.websitewelcome.com (Postfix) with ESMTP id 4B241400C2EE7
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 09:22:29 -0500 (CDT)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id YTmnna9qN9AGSYTmnnP1h0; Sun, 27 Mar 2022 09:22:29 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=G/veNDzCNS5/sUVFJGizo3guRLL8pkQ0CB/O7gGvVxs=; b=EmL8qGcra7Wt23Kn0RbrN6quHi
+        J9CWPtYJEhIPgJRb0guYbe+vH7gLtxbxdq5KxZR1SEeb/j1WKvTUVEa/0ifN69o8yjv+4QVKhKcps
+        1aNwkwqofgKirE16tEjtE6h4A4XcLxRQhWKRJmArD9fE8Ts0ZAtSZBn9dFiU3k5B4mbLK0q3vEkA1
+        iIBgjiYyJ0aOC/aHbDTZY3Q4DUWDMbQi56BtouuRTeEJm9dkf/8UXQwGb2zZaer7PPJUmotpipCWk
+        Et5tlgfFS1ipzFrDJyH1XwWC9NXuEjV/5GYgihu8DzqTBPXj6HFRbBoozuLZy4+8Kb+TkLBeJcMSS
+        whTuAXMQ==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54514)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nYTmm-001lFq-Md; Sun, 27 Mar 2022 14:22:28 +0000
+Message-ID: <10cdb7dc-c210-8439-dacc-4338d3070f7f@roeck-us.net>
+Date:   Sun, 27 Mar 2022 07:22:27 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] device: fix missing check on list iterator
+Content-Language: en-US
+To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Cc:     airlied@linux.ie, bskeggs@redhat.com, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org, kherbst@redhat.com,
+        linux-kernel@vger.kernel.org, lyude@redhat.com,
+        nouveau@lists.freedesktop.org, stable@vger.kernel.org
+References: <80429172-37c6-c9ce-4df7-259bb90338a8@roeck-us.net>
+ <20220327065950.7886-1-xiam0nd.tong@gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <20220327065950.7886-1-xiam0nd.tong@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nYTmm-001lFq-Md
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54514
+X-Source-Auth: linux@roeck-us.net
+X-Email-Count: 4
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-03-24 at 21:31 +0000, Sean Christopherson wrote:
-> On Sun, Mar 13, 2022, Maxim Levitsky wrote:
-> > On Fri, 2022-03-11 at 03:27 +0000, Sean Christopherson wrote:
-> > > The main goal of this series is to fix KVM's longstanding bug of not
-> > > honoring L1's exception intercepts wants when handling an exception that
-> > > occurs during delivery of a different exception.  E.g. if L0 and L1 are
-> > > using shadow paging, and L2 hits a #PF, and then hits another #PF while
-> > > vectoring the first #PF due to _L1_ not having a shadow page for the IDT,
-> > > KVM needs to check L1's intercepts before morphing the #PF => #PF => #DF
-> > > so that the #PF is routed to L1, not injected into L2 as a #DF.
-> > > 
-> > > nVMX has hacked around the bug for years by overriding the #PF injector
-> > > for shadow paging to go straight to VM-Exit, and nSVM has started doing
-> > > the same.  The hacks mostly work, but they're incomplete, confusing, and
-> > > lead to other hacky code, e.g. bailing from the emulator because #PF
-> > > injection forced a VM-Exit and suddenly KVM is back in L1.
-> > > 
-> > > Everything leading up to that are related fixes and cleanups I encountered
-> > > along the way; some through code inspection, some through tests (I truly
-> > > thought this series was finished 10 commits and 3 days ago...).
-> > > 
-> > > Nothing in here is all that urgent; all bugs tagged for stable have been
-> > > around for multiple releases (years in most cases).
-> > > 
-> > I am just curious. Are you aware that I worked on this few months ago?
+On 3/26/22 23:59, Xiaomeng Tong wrote:
+> On Sat, 26 Mar 2022 22:38:05 -0700, Guenter Roeck <linux@roeck-us.net> wrote:
+>>> @@ -103,11 +103,16 @@ nvkm_control_mthd_pstate_attr(struct nvkm_control *ctrl, void *data, u32 size)
+>>>    		return -EINVAL;
+>>>    
+>>>    	if (args->v0.state != NVIF_CONTROL_PSTATE_ATTR_V0_STATE_CURRENT) {
+>>> -		list_for_each_entry(pstate, &clk->states, head) {
+>>> -			if (i++ == args->v0.state)
+>>> +		list_for_each_entry(iter, &clk->states, head) {
+>>> +			if (i++ == args->v0.state) {
+>>> +				pstate = iter;
+>>
+>> Is iter and the assignment really necessary ? Unless I am missing something,
+>> list_for_each_entry() always assigns pos (pstate/iter), even if the list is
+>> empty. If nothing is found, pstate would be NULL at the end, so
 > 
-> Ah, so that's why I had a feeling of deja vu when factoring out kvm_queued_exception.
-> I completely forgot about it :-/  In my defense, that was nearly a year ago[1][2], though
-> I suppose one could argue 11 == "a few" :-)
-> 
-> [1] https://lore.kernel.org/all/20210225154135.405125-1-mlevitsk@redhat.com
-> [2] https://lore.kernel.org/all/20210401143817.1030695-3-mlevitsk@redhat.com
-> 
-> > I am sure that you even reviewed some of my code back then.
-> 
-> Yep, now that I've found the threads I remember discussing the mechanics.
-> 
-> > If so, could you have had at least mentioned this and/or pinged me to continue
-> > working on this instead of re-implementing it?
-> 
-> I'm invoking Hanlon's razor[*]; I certainly didn't intended to stomp over your
-> work, I simply forgot.
-
-Thank you very much for the explanation, and I am glad that it was a honest mistake.
-
-Other than that I am actually very happy that you posted this patch series,
-as this gives more chance that this long standing issue will be fixed,
-and if your patches are better/simpler/less invasive to KVM and still address the issue, 
-I fully support using them instead of mine.
- 
-Totally agree with you about your thoughts about splitting pending/injected exception,
-I also can't say I liked my approach that much, for the same reasons you mentioned.
- 
-It is also the main reason I put the whole thing on the backlog lately, 
-because I was feeling that I am changing too much of the KVM, 
-for a relatively theoretical issue.
- 
- 
-I will review your patches, compare them to mine, and check if you or I missed something.
-
-PS:
-
-Back then, I also did an extensive review on few cases when qemu injects exceptions itself,
-which it does thankfully rarely. There are several (theoretical) issues there.
-I don't remember those details, I need to refresh my memory.
-
-AFAIK, qemu injects #MC sometimes when it gets it from the kernel in form of a signal,
-if I recall this correctly, and it also reflects back #DB, when guest debug was enabled
-(and that is the reason for some work I did in this area, like the KVM_GUESTDBG_BLOCKIRQ thing)
-
-Qemu does this without considering nested and/or pending exception/etc.
-It just kind of abuses the KVM_SET_VCPU_EVENTS for that.
-
-Best regards,
-	Maxim Levitsky
-
-
-> 
-> As for the technical aspects, looking back at your series, I strongly considered
-> taking the same approach of splitting pending vs. injected (again, without any
-> recollection of your work).  I ultimately opted to go with the "immediated morph
-> to pending VM-Exit" approach as it allows KVM to do the right thing in almost every
-> case without requiring new ABI, and even if KVM screws up, e.g. queues multiple
-> pending exceptions.  It also neatly handles one-off things like async #PF in L2.
-> 
-> However, I hadn't considered your approach, which addresses the ABI conundrum by
-> processing pending=>injected immediately after handling the VM-Exit.  I can't think
-> of any reason that wouldn't work, but I really don't like splitting the event
-> priority logic, nor do I like having two event injection sites (getting rid of the
-> extra calls to kvm_check_nested_events() is still on my wish list).  If we could go
-> back in time, I would likely vote for properly tracking injected vs. pending, but
-> since we're mostly stuck with KVM's ABI, I prefer the "immediately morph to pending
-> VM-Exit" hack over the "immediately morph to 'injected' exception" hack.
-> 
-> [*] https://en.wikipedia.org/wiki/Hanlon%27s_razor
+> the pstate will not be NULL at the end! so the assignment is necessary!
+> #define list_for_each_entry(pos, head, member)                          \
+>      for (pos = __container_of((head)->next, pos, member);               \
+>           &pos->member != (head);                                        \
+>           pos = __container_of(pos->member.next, pos, member))
 > 
 
+
+Uuh, yes, you are correct. Sorry for the noise.
+
+Guenter
 
