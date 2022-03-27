@@ -2,88 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92092C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 07:01:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D17D1C4321E
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 07:05:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235431AbiC0HBw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 03:01:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37696 "EHLO
+        id S235552AbiC0HGo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 03:06:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234989AbiC0HBq (ORCPT
+        with ESMTP id S233992AbiC0HGi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 03:01:46 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DD7B50B35;
-        Sun, 27 Mar 2022 00:00:08 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id o8so9819201pgf.9;
-        Sun, 27 Mar 2022 00:00:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=B0zrfPEDf4e6Muxcxkz/ovZxAtJjbnxgK8f96p1+0Ck=;
-        b=jGj7DxIxbQDEybCOraMIwxMI2fjdiKS80eNF0u8LceCAdpoMvK9TpKZFHj66yn/PvU
-         Y7dusyT/9mhdjtHJvQuczJa99J5CDjLO9ar+k0c6DeeN1AN9j029JnROqmo2vOGpByqa
-         nxetEzGOppd1xJWdDsm2w8SMIQc6eZ8IStMegiMf9eAJGRzSQ/w0UITMvPnEns5X5bnI
-         ahhYx79wbgHwl1uymG2X8tRrGrODU4gR8ye3rWk8Wz92cj3TgtDK0A0B4B73+JsG6nCd
-         fPNcjjI8mnMktphoDaszyRT3RvfEZgyLWO2WItjFtWrK9Xw4rkziT5GOOd6noYJw2BzK
-         /bxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=B0zrfPEDf4e6Muxcxkz/ovZxAtJjbnxgK8f96p1+0Ck=;
-        b=b0TOiyImxfPhWu/MwavVBnk57FtMUeIaKhp/zfGNqCU4N+lhzspsB0ZqoFXWLkfcLk
-         iLQDKG+RYiKzMKnlvRzcDY9izBeK1dFGOav1V/ou1eVlOjYf2jIBQ1t9I/8d5yBaWSFL
-         W68En4qmJXvi0uba6iV6Fi89eUdgAsyr2E4YWzxTS6VjPXQgTiyKE4YLEU7+iRT/O0wf
-         LQKc8xwBag33wV8WkMTNWrKvVB0OJv3PKe9IsxMS+rYTFlsauclJICFlD4G1IJ6Yaglg
-         mJw08qAnsHSMSIAnVArb9G7lfCe3Nn9fCfb96HmiS1VB1A8VbJChccKQNEIVcORaPsQr
-         JA7g==
-X-Gm-Message-State: AOAM531z2jdVpBPQcDhqHy5Kqic+h7VoXtYqURxiKX8gHhQ/fEuGDo8l
-        ywZ7zKx4WKvp1WedsBzUkFc=
-X-Google-Smtp-Source: ABdhPJywbizoZk4XOW6LYGf7wmYWM2ocTqSR5GKSGYZ8m/s7E/ivTY1Lj3nXe2pu5WnBz7Ftb5RN/A==
-X-Received: by 2002:a63:6949:0:b0:380:94ab:9333 with SMTP id e70-20020a636949000000b0038094ab9333mr5839368pgc.199.1648364407607;
-        Sun, 27 Mar 2022 00:00:07 -0700 (PDT)
-Received: from localhost ([115.220.243.108])
-        by smtp.gmail.com with ESMTPSA id u10-20020a17090a2b8a00b001c6594e5ddcsm10698140pjd.15.2022.03.27.00.00.06
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 27 Mar 2022 00:00:06 -0700 (PDT)
-From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
-To:     linux@roeck-us.net
-Cc:     airlied@linux.ie, bskeggs@redhat.com, daniel@ffwll.ch,
-        dri-devel@lists.freedesktop.org, kherbst@redhat.com,
-        linux-kernel@vger.kernel.org, lyude@redhat.com,
-        nouveau@lists.freedesktop.org, stable@vger.kernel.org,
-        xiam0nd.tong@gmail.com
-Subject: Re: [PATCH] device: fix missing check on list iterator
-Date:   Sun, 27 Mar 2022 14:59:50 +0800
-Message-Id: <20220327065950.7886-1-xiam0nd.tong@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <80429172-37c6-c9ce-4df7-259bb90338a8@roeck-us.net>
-References: <80429172-37c6-c9ce-4df7-259bb90338a8@roeck-us.net>
+        Sun, 27 Mar 2022 03:06:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 393411A4;
+        Sun, 27 Mar 2022 00:04:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BB29D60EC8;
+        Sun, 27 Mar 2022 07:04:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EF89C340EC;
+        Sun, 27 Mar 2022 07:04:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648364698;
+        bh=X/Z0U6GxGaaswFQP/q5cQDmThmBP/93x/RCyJbllhv0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KLWyEO1UbxHyNVoDNL/roXtV3ntCYrCI14DuGtZmrvURMsaENvGmBhcc+g2Hq6z55
+         pCz8tq91GZiUNxXtD3fqEWnRtwUk/l96208zjRGXFs2EG/+G48bk8zULB4LK0EyBCO
+         aWWHH+YRsiC/wOgoJRq0aI40DzEEiCr4RsfopyrJI/n/eGgI9D0pQwRi80UxYM9ku7
+         2WUBYW+VmxW0Jz1OfjOmv/4vfbdr93ZD/O/T0SKZemSzO6Zo0ZX5znzXDznONvXBDL
+         GLr1ezU2BVJR+IpBfBz929i/iI/6pQ6EsbwWjly85gGpXcS3yeJScuLR+bTihqYbI7
+         YtoQThz4uEpzA==
+Date:   Sun, 27 Mar 2022 10:04:54 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Benjamin =?iso-8859-1?Q?St=FCrz?= <benni@stuerz.xyz>
+Cc:     andrew@lunn.ch, sebastian.hesselbarth@gmail.com,
+        gregory.clement@bootlin.com, linux@armlinux.org.uk,
+        linux@simtec.co.uk, krzk@kernel.org, alim.akhtar@samsung.com,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, hpa@zytor.com, robert.moore@intel.com,
+        rafael.j.wysocki@intel.com, lenb@kernel.org, 3chas3@gmail.com,
+        laforge@gnumonks.org, arnd@arndb.de, gregkh@linuxfoundation.org,
+        mchehab@kernel.org, tony.luck@intel.com, james.morse@arm.com,
+        rric@kernel.org, linus.walleij@linaro.org, brgl@bgdev.pl,
+        mike.marciniszyn@cornelisnetworks.com,
+        dennis.dalessandro@cornelisnetworks.com, jgg@ziepe.ca,
+        pali@kernel.org, dmitry.torokhov@gmail.com, isdn@linux-pingi.de,
+        benh@kernel.crashing.org, fbarrat@linux.ibm.com, ajd@linux.ibm.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        nico@fluxnic.net, loic.poulain@linaro.org, kvalo@kernel.org,
+        pkshih@realtek.com, bhelgaas@google.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, linux-ia64@vger.kernel.org,
+        linux-acpi@vger.kernel.org, devel@acpica.org,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-edac@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-input@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-media@vger.kernel.org,
+        wcn36xx@lists.infradead.org, linux-wireless@vger.kernel.org,
+        linux-pci@vger.kernel.org
+Subject: Re: [PATCH 11/22] rdmavt: Replace comments with C99 initializers
+Message-ID: <YkAMlurdV15gNROq@unreal>
+References: <20220326165909.506926-1-benni@stuerz.xyz>
+ <20220326165909.506926-11-benni@stuerz.xyz>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220326165909.506926-11-benni@stuerz.xyz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 26 Mar 2022 22:38:05 -0700, Guenter Roeck <linux@roeck-us.net> wrote:
-> > @@ -103,11 +103,16 @@ nvkm_control_mthd_pstate_attr(struct nvkm_control *ctrl, void *data, u32 size)
-> >   		return -EINVAL;
-> >   
-> >   	if (args->v0.state != NVIF_CONTROL_PSTATE_ATTR_V0_STATE_CURRENT) {
-> > -		list_for_each_entry(pstate, &clk->states, head) {
-> > -			if (i++ == args->v0.state)
-> > +		list_for_each_entry(iter, &clk->states, head) {
-> > +			if (i++ == args->v0.state) {
-> > +				pstate = iter;
+On Sat, Mar 26, 2022 at 05:58:58PM +0100, Benjamin Stürz wrote:
+> This replaces comments with C99's designated
+> initializers because the kernel supports them now.
 > 
-> Is iter and the assignment really necessary ? Unless I am missing something,
-> list_for_each_entry() always assigns pos (pstate/iter), even if the list is
-> empty. If nothing is found, pstate would be NULL at the end, so
+> Signed-off-by: Benjamin Stürz <benni@stuerz.xyz>
+> ---
+>  drivers/infiniband/sw/rdmavt/rc.c | 62 +++++++++++++++----------------
+>  1 file changed, 31 insertions(+), 31 deletions(-)
+> 
+> diff --git a/drivers/infiniband/sw/rdmavt/rc.c b/drivers/infiniband/sw/rdmavt/rc.c
+> index 4e5d4a27633c..121b8a23ac07 100644
+> --- a/drivers/infiniband/sw/rdmavt/rc.c
+> +++ b/drivers/infiniband/sw/rdmavt/rc.c
+> @@ -10,37 +10,37 @@
+>   * Convert the AETH credit code into the number of credits.
+>   */
+>  static const u16 credit_table[31] = {
+> -	0,                      /* 0 */
+> -	1,                      /* 1 */
+> -	2,                      /* 2 */
+> -	3,                      /* 3 */
+> -	4,                      /* 4 */
+> -	6,                      /* 5 */
+> -	8,                      /* 6 */
+> -	12,                     /* 7 */
+> -	16,                     /* 8 */
+> -	24,                     /* 9 */
+> -	32,                     /* A */
+> -	48,                     /* B */
+> -	64,                     /* C */
+> -	96,                     /* D */
+> -	128,                    /* E */
+> -	192,                    /* F */
+> -	256,                    /* 10 */
+> -	384,                    /* 11 */
+> -	512,                    /* 12 */
+> -	768,                    /* 13 */
+> -	1024,                   /* 14 */
+> -	1536,                   /* 15 */
+> -	2048,                   /* 16 */
+> -	3072,                   /* 17 */
+> -	4096,                   /* 18 */
+> -	6144,                   /* 19 */
+> -	8192,                   /* 1A */
+> -	12288,                  /* 1B */
+> -	16384,                  /* 1C */
+> -	24576,                  /* 1D */
+> -	32768                   /* 1E */
+> +	[0x00] = 0,
+> +	[0x01] = 1,
+> +	[0x02] = 2,
+> +	[0x03] = 3,
+> +	[0x04] = 4,
+> +	[0x05] = 6,
+> +	[0x06] = 8,
+> +	[0x07] = 12,
+> +	[0x08] = 16,
+> +	[0x09] = 24,
+> +	[0x0A] = 32,
+> +	[0x0B] = 48,
+> +	[0x0C] = 64,
+> +	[0x0D] = 96,
+> +	[0x0E] = 128,
+> +	[0x0F] = 192,
+> +	[0x10] = 256,
+> +	[0x11] = 384,
+> +	[0x12] = 512,
+> +	[0x13] = 768,
+> +	[0x14] = 1024,
+> +	[0x15] = 1536,
+> +	[0x16] = 2048,
+> +	[0x17] = 3072,
+> +	[0x18] = 4096,
+> +	[0x19] = 6144,
+> +	[0x1A] = 8192,
+> +	[0x1B] = 12288,
+> +	[0x1C] = 16384,
+> +	[0x1D] = 24576,
+> +	[0x1E] = 32768
+>  };
 
-the pstate will not be NULL at the end! so the assignment is necessary!
-#define list_for_each_entry(pos, head, member)                          \
-    for (pos = __container_of((head)->next, pos, member);               \
-         &pos->member != (head);                                        \
-         pos = __container_of(pos->member.next, pos, member))
+I have hard time to see any value in this commit, why is this change needed?
 
---
-Xiaomeng Tong
+Thanks
+
+>  
+>  /**
+> -- 
+> 2.35.1
+> 
+> 
