@@ -2,82 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B93DC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 21:17:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 492CDC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 21:25:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236318AbiC0VSv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 17:18:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35254 "EHLO
+        id S236770AbiC0V0v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 17:26:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229878AbiC0VSs (ORCPT
+        with ESMTP id S235200AbiC0V0p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 17:18:48 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FC5BFD39;
-        Sun, 27 Mar 2022 14:17:08 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Sun, 27 Mar 2022 17:26:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9CDAE006;
+        Sun, 27 Mar 2022 14:25:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KRTDH2kRGz4xNm;
-        Mon, 28 Mar 2022 08:17:03 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1648415823;
-        bh=0kdN9zM+X1uRZiE2ZBmkfo1quRCkCUYeKbqtkLzz1B0=;
-        h=Date:From:To:Cc:Subject:From;
-        b=LKf3+c3kj8g0SY0ETjV7Bc+n2wLte4ChEjwMsFqQ1YYVgk6Kwe8FXCG4XmP5eKbRP
-         KJO/HEbahrX48Qh90NMjjbJ9pRPmhSr4g2WryMm+w/BKVsrfOV2Atkp6BfsR+aJZkx
-         4Dm9i4wn9DmqfQXaoI3dGk6iyNLsTcZoroeA8jn6zCoXCdyUuDyIFjnV68epYn/G8S
-         fnBdFE2DB904ctSr5H5Zvcm7Fm3hxt5UCpavOcUI61O3rChfBOBwWlC0tha1eUG/je
-         A6gyRYQFQt7k58DznoRKxVXRvLs4FlcqydLaODt7Ga/pcs8Yh0hCSqbiynw6NEN+D0
-         Zx29Su+LSSoIQ==
-Date:   Mon, 28 Mar 2022 08:17:02 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Steven Whitehouse <swhiteho@redhat.com>,
-        Bob Peterson <rpeterso@redhat.com>
-Cc:     Andreas Gruenbacher <agruenba@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Signed-off-by missing for commit in the gfs2 tree
-Message-ID: <20220328081702.31b8c45a@canb.auug.org.au>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/xgSwUTHL+iyg8B7fWXz/FXx";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+        by ams.source.kernel.org (Postfix) with ESMTPS id 99EE9B80D17;
+        Sun, 27 Mar 2022 21:25:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 68700C340ED;
+        Sun, 27 Mar 2022 21:25:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648416303;
+        bh=tnsKWkJhSpinbmoqCjsfA1kkYCgz24BvWKYLD0y2TYE=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=Y7IGGOlHJYU+aM05a2OsgAF+r1jF/P/yzP2wjo2Uzhskn3csR1j1Rlt/b5nUSgp0r
+         5azWc4GkNJGnkdczcLoAxMDYQLoIeCmtKukLDR7w5TlzvJ0DUg5q5V2ZXd4ct52due
+         WpV+1RozXHklctWiae/2I0I61zcDbeggmca1tgWmBXqs1XQdYbni7BfltPCMnxCxgT
+         V+8EJFkh/69IoCIju9WCg+3pNSYSbxKf1Ax6zQ7EDIfBW5bmcFBeRChRDr7jjR3nAt
+         Y7X/Ut3SIk4pR5gWXW+0xya1PQ+aUOMTNb4Ki55+M9XROzAsL3sjWaAd/FX+2c+Y1w
+         xqNshaGRW1bNw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 56E95E6D3DD;
+        Sun, 27 Mar 2022 21:25:03 +0000 (UTC)
+Subject: Re: [GIT PULL] LEDs changes for v5.18-rc1
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220326235108.GA4456@duo.ucw.cz>
+References: <20220326235108.GA4456@duo.ucw.cz>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220326235108.GA4456@duo.ucw.cz>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/pavel/linux-leds.git/ tags/leds-5.18-rc1
+X-PR-Tracked-Commit-Id: e26557a0aa68acfb705b51947b7c756401a1ab71
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: dfb0a0b715fdda25a5a1f54cb9c73e1410a868e8
+Message-Id: <164841630335.27961.6657124159573949216.pr-tracker-bot@kernel.org>
+Date:   Sun, 27 Mar 2022 21:25:03 +0000
+To:     Pavel Machek <pavel@ucw.cz>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        kernel list <linux-kernel@vger.kernel.org>,
+        jacek.anaszewski@gmail.com, linux-leds@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/xgSwUTHL+iyg8B7fWXz/FXx
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+The pull request you sent on Sun, 27 Mar 2022 00:51:08 +0100:
 
-Hi all,
+> git://git.kernel.org/pub/scm/linux/kernel/git/pavel/linux-leds.git/ tags/leds-5.18-rc1
 
-Commit
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/dfb0a0b715fdda25a5a1f54cb9c73e1410a868e8
 
-  9e349f23802b ("gfs2: Make sure FITRIM minlen is rounded up to fs block si=
-ze")
+Thank you!
 
-is missing a Signed-off-by from its committer.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/xgSwUTHL+iyg8B7fWXz/FXx
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJA1E4ACgkQAVBC80lX
-0GyTOwgAlGx1vFxpStkNSmIg8ECVICUB+K6iCf+QDxX4nQVQc8y0OIrGIusJt7fA
-5Mw6FY3DO/xTO8oo67k0U7kgksfY1z3sJTzErxDIDpdQFNWVDOgoZi7yDkBEaGuc
-bM0eENFwHaC/7RfTnxTO7zErq4GSOgC3xhgnkzgQmdj+2bubObLMKYVAxyD5A4b0
-0H17cUSmBiDH4meFWiLHsuO8TROyba73AV+O6GjYbtij/8j0AiIVyfeHI6rHgmFb
-HPLHd2f9ffoOas5mSqIK96svh0LVvdRiVqXXjkAACQCUafgQRc8+0uyGRj7kVsJi
-y0QcExc6AazupyMr7Zf/eUCPAsjxtQ==
-=9Zva
------END PGP SIGNATURE-----
-
---Sig_/xgSwUTHL+iyg8B7fWXz/FXx--
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
