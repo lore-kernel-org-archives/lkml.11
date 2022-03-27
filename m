@@ -2,53 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 750DEC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 13:30:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1437C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 13:47:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235229AbiC0Nce (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 09:32:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37394 "EHLO
+        id S235408AbiC0NtZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 09:49:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229513AbiC0Ncd (ORCPT
+        with ESMTP id S229513AbiC0NtW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 09:32:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDAFB36E2F;
-        Sun, 27 Mar 2022 06:30:54 -0700 (PDT)
+        Sun, 27 Mar 2022 09:49:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D62213E94;
+        Sun, 27 Mar 2022 06:47:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6033061016;
-        Sun, 27 Mar 2022 13:30:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37216C340EC;
-        Sun, 27 Mar 2022 13:30:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E7345B8013C;
+        Sun, 27 Mar 2022 13:47:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9D99C340EC;
+        Sun, 27 Mar 2022 13:47:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648387853;
-        bh=iueUggcwK5JXu0x796gR3JLrqk4cfY0hnskSijVeJq8=;
+        s=k20201202; t=1648388859;
+        bh=GcofGmQumimhl5OM4grJQX7kjo1GV6TWDaRRje8li8E=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dnvA2DQoQrE+adwpFzDFcsa8J6t7KSAFALrYXxSI9Xqb6YDqryhs+3Lj5BKmB9Iyf
-         cbvH+r9lmhNlytkB400sZmPb/BUC3vZV1Tl0WGFOmlj791IyN5ziLhV/Yd6gGb14bP
-         tNioc4z5GHDqayNDpZuvz2gHzA/jcqX9wOduACGGOhlaegeOK9yEZ6YgcUPmS3djpT
-         ojbA66qUs4TtVh95ZDCJCb2wwLP11RmqZs2X64ysQZVZdVeM5puYoNV6eJ+cXbVJFN
-         PzH9Eu/4cVzCaWA03gOcgM3ywuE1RgwyGOzGJ80AYajB8JNB1CykR1m20IbcqHJIVF
-         urQxpn2Zy+KYQ==
-Date:   Sun, 27 Mar 2022 14:38:20 +0100
+        b=DVQEy2ex/vXD/NWI7KoNA5kIgUAVdd5vGyP4CG3hIh7nfMTVyQeQO5Ir+jkYThHL5
+         zRVVCumoQMVF0Tpd15Gfle0lul0LGBIsjhXbGvnwgf5bs5OxhnZQeOki8CGIN8tENg
+         w0D0sobt4gRRJChRVfQeRccEX96obw2BK09zh1p2qPMuIVC+ysi+lK/KRQwPMDsQy2
+         x+8TJRrjDmH6bRtbxsm2X1MIRQh6//az54g1CusTZSE6temv6JQMqXC6u0B+zDhwMo
+         yViHnXdP8SQYrVlp+98noCPB6pP5ZdTMipSYahDM/dB6f/kCL8bgoTe1b5amVSSgPY
+         BhJwuUjk8wmag==
+Date:   Sun, 27 Mar 2022 14:55:11 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Julia Lawall <julia.lawall@inria.fr>
-Cc:     kbuild-all@lists.01.org, linux-arm-kernel@lists.infradead.org,
-        Rajnikant Bhojani <rajnikant.bhojani@xilinx.com>,
-        Michal Simek <monstr@monstr.eu>,
-        Hyun Kwon <hyun.kwon@xilinx.com>,
-        Shubhrajyoti Datta <shubhraj@xilinx.com>,
-        Jean-Francois Dagenais <jeff.dagenais@gmail.com>,
-        Olivier Dugas <dugaso@sonatest.com>,
-        Manish Narani <mnarani@xilinx.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: fix for_each_child.cocci warnings
-Message-ID: <20220327143820.45fc1d6d@jic23-huawei>
-In-Reply-To: <alpine.DEB.2.22.394.2203260927200.3141@hadrien>
-References: <alpine.DEB.2.22.394.2203260927200.3141@hadrien>
+To:     Shreeya Patel <shreeya.patel@collabora.com>
+Cc:     lars@metafoo.de, robh+dt@kernel.org, Zhigang.Shi@liteon.com,
+        krisman@collabora.com, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com, alvaro.soliverez@collabora.com
+Subject: Re: [PATCH 2/3] dt-bindings: Document ltrf216a light sensor
+ bindings
+Message-ID: <20220327145511.2d36dd10@jic23-huawei>
+In-Reply-To: <20220325103014.6597-3-shreeya.patel@collabora.com>
+References: <20220325103014.6597-1-shreeya.patel@collabora.com>
+        <20220325103014.6597-3-shreeya.patel@collabora.com>
 X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -57,47 +53,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 26 Mar 2022 09:28:12 +0100 (CET)
-Julia Lawall <julia.lawall@inria.fr> wrote:
+On Fri, 25 Mar 2022 16:00:13 +0530
+Shreeya Patel <shreeya.patel@collabora.com> wrote:
 
-> From: kernel test robot <lkp@intel.com>
+> Add devicetree bindings for ltrf216a ambient light sensor
 > 
-> For_each_child_of_node should have of_node_put() before return.
-> 
-> Generated by: scripts/coccinelle/iterators/for_each_child.cocci
-> 
-> CC: Rajnikant Bhojani <rajnikant.bhojani@xilinx.com>
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Julia Lawall <julia.lawall@inria.fr>
+> Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+Hi Shreeya,
 
-The upstream version (in IIO for now, but I'd imagine will hit Linus'
-tree in next few days) of this looks rather different (no dt code an more)
-so I suspect this fix is for a now dead branch...
+As we are making this Zhigang Shi's problem to maintain, I'm 
+looking for an ack.  Bit mean otherwise :)
+
+Except for the deprecated part this could just have gone in
+trivial-bindings.yaml.
+
+I guess you don't need it for your existing board, but best
+practice would probably include ensuring whatever supplies
+the device needs are here so that platforms that don't enable
+them by default can turn them on.
+
+Also, there is an interrupt according to the datasheet linked
+from patch 3 and that should definitely be in the binding
+even if the driver isn't using it.
 
 Jonathan
 
+
 > ---
+>  .../bindings/iio/light/liteon,ltrf216a.yaml   | 42 +++++++++++++++++++
+>  1 file changed, 42 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml
 > 
-> tree:   https://github.com/Xilinx/linux-xlnx xlnx_rebase_v5.15_LTS
-> head:   1870e0fa79a9d58c6748c34550f3ccea0b515933
-> commit: d073b83d3f8f3ba83c59f7502371b1cf9eb35e92 [541/1029] iio: adc: Add Xilinx AMS driver
-> :::::: branch date: 35 hours ago
-> :::::: commit date: 8 weeks ago
-> 
-> Please take the patch only if it's a positive warning. Thanks!
-> 
->  drivers/iio/adc/xilinx-ams.c |    1 +
->  1 file changed, 1 insertion(+)
-> 
-> --- a/drivers/iio/adc/xilinx-ams.c
-> +++ b/drivers/iio/adc/xilinx-ams.c
-> @@ -920,6 +920,7 @@ static int ams_parse_dt(struct iio_dev *
->  					      ams_channels + num_channels);
->  			if (ret < 0) {
->  				kfree(ams_channels);
-> +				of_node_put(child_node);
->  				return ret;
->  			}
-> 
+> diff --git a/Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml b/Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml
+> new file mode 100644
+> index 000000000000..275d86a0353a
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml
+> @@ -0,0 +1,42 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/light/liteon,ltrf216a.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: LTRF216A Ambient Light Sensor
+> +
+> +maintainers:
+> +  - Zhigang Shi <Zhigang.Shi@liteon.com>
+> +
+> +description: |
+> +  Ambient sensing with an i2c interface.
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - liteon,ltrf216a
+> +      - ltr,ltrf216a
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    i2c {
+> +
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        light-sensor@53 {
+> +                compatible = "ltr,ltrf216a";
+> +                reg = <0x53>;
+> +        };
+> +    };
+> +...
 
