@@ -2,107 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D2C6C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 00:49:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52E2BC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 00:50:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231579AbiC0Av0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 20:51:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51728 "EHLO
+        id S231624AbiC0AwJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Mar 2022 20:52:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231383AbiC0AvW (ORCPT
+        with ESMTP id S231383AbiC0AwG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 20:51:22 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2470AFD29;
-        Sat, 26 Mar 2022 17:49:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648342185; x=1679878185;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=dxvmqHpgoKoSM3oeOZwtiuPqLp1SG2yKyDRHdmBQRhY=;
-  b=Iqt2TuDSkkylBukBgbO192w9RKlwzfswKC3nD1Xxtmr9N9MpX9c5MvmL
-   qASsBhcTmqmSL9GTaX7QoANfxJMZ3PXMB7rj+gax8IziQ/Q09gJw7KliO
-   4QRrT2CGQs89+NhEjBggk6fxMooytIFlYobrLtzIr8NRefRdQrKT6/Olc
-   /A6FePzN5EYchQUvYGVizTdRplRPNEkCpDB+oXJx1K8ZnjkUZwRG9lzfl
-   ewRBuf7YNvCZEctqSNHnjsLIGmQEb5KW7LNtnGElRLF1SwcBFfr7nwLCI
-   dw9SHKBXXk27MXF5aDfyeobXfWkH+PBaV0mOJlOWKOvw+rZwuB5TekKJA
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10298"; a="238748202"
-X-IronPort-AV: E=Sophos;i="5.90,214,1643702400"; 
-   d="scan'208";a="238748202"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2022 17:49:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,214,1643702400"; 
-   d="scan'208";a="602403742"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by fmsmga008.fm.intel.com with ESMTP; 26 Mar 2022 17:49:42 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nYH6D-0000ZH-Ok; Sun, 27 Mar 2022 00:49:41 +0000
-Date:   Sun, 27 Mar 2022 08:49:39 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Michael Walle <michael@walle.cc>, Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-hwmon@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michael Walle <michael@walle.cc>
-Subject: Re: [PATCH v1 2/4] hwmon: (bt1-pvt) use generic polynomial functions
-Message-ID: <202203270834.xEWniPdY-lkp@intel.com>
-References: <20220326192347.2940747-3-michael@walle.cc>
+        Sat, 26 Mar 2022 20:52:06 -0400
+Received: from gateway31.websitewelcome.com (gateway31.websitewelcome.com [192.185.143.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE4C912AED
+        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 17:50:29 -0700 (PDT)
+Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
+        by gateway31.websitewelcome.com (Postfix) with ESMTP id 3AD3E52EB8
+        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 19:50:29 -0500 (CDT)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id YH6znTjWD22u3YH6znmqCS; Sat, 26 Mar 2022 19:50:29 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=In-Reply-To:Content-Type:MIME-Version:References
+        :Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding
+        :Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=T8ViQ4LT/HZVhOZ36SdMZva535S2DMq1nlWcIs7Wy94=; b=jCdjStWhTztUg/6Mu70NhRL94h
+        eSgYZ44O1ibiFdeYatiBJthnk1SUa8KLogmTHTyoWROqJrwJ3kzXUNHjBodYSRRuqa4TTzmn3R70i
+        LUHmT0eyeLj3S01Njyo029GsiwDr+vnxlsJS1S64ggkAAfnY7WxiRxKE4CUt4neHc3mAKdgTWSbc+
+        ZKsOiIhGICr5YT6G4XGl9+8xjEjaMt/jFsduNZZak6BFuVYNboeEFQVLGfmazcqSo61RkGO1q4Ju/
+        iuSeiyv3s0cnvdh0oyZzr/qvcAOX/9FmntlLti0bQuqx0z0gsXY1PyZo7qsCKrAQ8hcAUPxEsMLrI
+        GVyRz9AQ==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:57682 helo=localhost)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nYH6y-001F4o-DQ; Sun, 27 Mar 2022 00:50:28 +0000
+Date:   Sat, 26 Mar 2022 17:50:27 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 4.14 00/17] 4.14.274-rc1 review
+Message-ID: <20220327005027.GB1645909@roeck-us.net>
+References: <20220325150416.756136126@linuxfoundation.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220326192347.2940747-3-michael@walle.cc>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220325150416.756136126@linuxfoundation.org>
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nYH6y-001F4o-DQ
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:57682
+X-Source-Auth: guenter@roeck-us.net
+X-Email-Count: 25
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Michael,
+On Fri, Mar 25, 2022 at 04:04:34PM +0100, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 4.14.274 release.
+> There are 17 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Sun, 27 Mar 2022 15:04:08 +0000.
+> Anything received after that time might be too late.
+> 
 
-I love your patch! Yet something to improve:
+Build results:
+	total: 168 pass: 168 fail: 0
+Qemu test results:
+	total: 424 pass: 424 fail: 0
 
-[auto build test ERROR on groeck-staging/hwmon-next]
-[also build test ERROR on robh/for-next linus/master v5.17 next-20220325]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Tested-by: Guenter Roeck <linux@roeck-us.net>
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Michael-Walle/hwmon-add-lan9668-driver/20220327-032606
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/groeck/linux-staging.git hwmon-next
-config: ia64-allyesconfig (https://download.01.org/0day-ci/archive/20220327/202203270834.xEWniPdY-lkp@intel.com/config)
-compiler: ia64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/51d4d93c8777a757e21386aa76ccc128a6bd85af
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Michael-Walle/hwmon-add-lan9668-driver/20220327-032606
-        git checkout 51d4d93c8777a757e21386aa76ccc128a6bd85af
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=ia64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   ia64-linux-ld: drivers/hwmon/bt1-pvt.o: in function `pvt_read_data':
-   bt1-pvt.c:(.text+0xa32): undefined reference to `polynomial_calc'
-   ia64-linux-ld: drivers/hwmon/bt1-pvt.o: in function `pvt_write_limit':
-   bt1-pvt.c:(.text+0xae2): undefined reference to `polynomial_calc'
->> ia64-linux-ld: bt1-pvt.c:(.text+0xb22): undefined reference to `polynomial_calc'
-   ia64-linux-ld: drivers/hwmon/bt1-pvt.o: in function `pvt_hwmon_read':
-   bt1-pvt.c:(.text+0x2532): undefined reference to `polynomial_calc'
-   ia64-linux-ld: bt1-pvt.c:(.text+0x2732): undefined reference to `polynomial_calc'
-   ia64-linux-ld: drivers/hwmon/bt1-pvt.o:bt1-pvt.c:(.text+0x27e2): more undefined references to `polynomial_calc' follow
-   `adc3xxx_i2c_remove' referenced in section `.data' of sound/soc/codecs/tlv320adc3xxx.o: defined in discarded section `.exit.text' of sound/soc/codecs/tlv320adc3xxx.o
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Guenter
