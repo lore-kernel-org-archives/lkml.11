@@ -2,90 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3E67C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 15:59:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D520C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 16:05:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235915AbiC0QBV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 12:01:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37338 "EHLO
+        id S235945AbiC0QG5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 12:06:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233632AbiC0QBT (ORCPT
+        with ESMTP id S235603AbiC0QGw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 12:01:19 -0400
-Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 887FE40900;
-        Sun, 27 Mar 2022 08:59:40 -0700 (PDT)
-Received: by mail-qk1-x734.google.com with SMTP id v15so9645204qkg.8;
-        Sun, 27 Mar 2022 08:59:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3ZnzCFRByXntSU7k5TRZSgVAD599ZPHNRY98L+OsrQw=;
-        b=DqBfb5jIk2ktmkrV+knoXXQmcfSvVoQoTGiplm8hYemtLvRyRO0gCc9VF/3i6MWNEh
-         P3Kg5/MCveBJhKIZ5HfuscK8u1hQP20FZslvKQNhbYKkjqUjRfBbEZhOZCR5UsCZKb4I
-         rwHgIioqNxZEzAQn8z7BLR8cSQQS4WT/b+mcXAljKFnjXpWFhVWYTkHXYfaMJ/zHfbjI
-         wchaEKOaK1D0lz/vzsjvJ5vhjNm7ylxVJzdDbKcd8w+PzS4KRNTO9L2JHmoqOl+1gV8O
-         KBSFOj0Z5ThEMhqbqT/h3lX1mE96yhGdAkHgM2j5JKiKDeplMIsG77RHO7dUaOXTtZsP
-         Jmuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3ZnzCFRByXntSU7k5TRZSgVAD599ZPHNRY98L+OsrQw=;
-        b=yQnGtyQSIY06bGQSpT/9CohFA8bMiys75D2JxMvpmdcFOfE5nJ2SWfOWpI21oe3bpK
-         zhYnIjil1xFe0TLrZ+L7klBkWd1T18X0OsnuRYHmoNx1XTSrsPe7AxcGjO+bOHQpCy+i
-         WDDZsglgWxrBmlrQ27WKdy7TgifpvLgdOVw2LZTs5Mv4RgFqBMwx5PLcxH45WtFN5+3f
-         jWi3NQDRpYya+AsXZ8bmhHlFZuGo5kM7XFJ8flYQw3l9CvbKe+yQv/OrwfeVwq02NJLt
-         sCO//mdi9/c/lNjJ+QR0YUEglnm8MAjpgc2O5Y0fDqCV9dBxgdkYO+egEptNvsKEcD8r
-         Xbfg==
-X-Gm-Message-State: AOAM532wRG6WbYkgDuSUVoBgJgodfFGU9c8Fdr3EXMdtHzdQzY/qN3j2
-        R1ovfq7UPT/cqBWlLkj73b8VcBWZHcjiHYHRNEU=
-X-Google-Smtp-Source: ABdhPJxdniX0MXVep0Yv4bjS9+PKe9AQZapJOFcqCjRTA5QaiGCa9suZ8apvfMlweJa5b3areRFbKMEWvgqcTmDfwtQ=
-X-Received: by 2002:a05:620a:1a87:b0:680:cba9:ed5c with SMTP id
- bl7-20020a05620a1a8700b00680cba9ed5cmr2151933qkb.482.1648396779731; Sun, 27
- Mar 2022 08:59:39 -0700 (PDT)
+        Sun, 27 Mar 2022 12:06:52 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13B3C11C31
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 09:05:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648397114; x=1679933114;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=LnSRztbCCOlGSreYGHdBKP7iqX3ArP44md/vpKKumU0=;
+  b=gnEoyTkLcz4UxOrACyOSSQnuhiPQoeOywMlRivHeiOX8evJtjyhZodVx
+   Tdb/qQqj1EF5cnpehHy9At3b4xzB7ABLIPf06iPmWN/qEo454nvv5pQ7D
+   OsfeoQ3pxLdjGkFMbFq+srSA4VS5i66eqEp8sw5k7mVF8AzSRtM5772Bw
+   oOWz/fb5SFQOgWVXghsDigd3efsqPrZcngzAi2d9y8BpMpMH0KSs9yDkT
+   Lg3brhU4tFjic9/8suKMX+xgD1saDhdXq3XMGk59hZ1IM3sRHnc4OYDaP
+   OdAe7scdpaRfi41mcuHWGzn7/X77TCp58M+JyHqVfN+v1TQk/JbahwZo6
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10299"; a="241014015"
+X-IronPort-AV: E=Sophos;i="5.90,215,1643702400"; 
+   d="scan'208";a="241014015"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2022 09:05:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,215,1643702400"; 
+   d="scan'208";a="520723352"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 27 Mar 2022 09:05:12 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nYVOB-0001D9-C6; Sun, 27 Mar 2022 16:05:11 +0000
+Date:   Mon, 28 Mar 2022 00:05:03 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Qinglin Pan <panqinglin2020@iscas.ac.cn>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: arch/riscv/mm/init.c:782:83: warning: suggest braces around empty
+ body in an 'if' statement
+Message-ID: <202203280003.jGKBNwrv-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220327073925.11121-1-xiam0nd.tong@gmail.com>
-In-Reply-To: <20220327073925.11121-1-xiam0nd.tong@gmail.com>
-From:   Emil Velikov <emil.l.velikov@gmail.com>
-Date:   Sun, 27 Mar 2022 16:59:28 +0100
-Message-ID: <CACvgo50pK3rr5UH_FyfR1pADmPRjEawi43cAecoaz7nM5AFgBg@mail.gmail.com>
-Subject: Re: [PATCH] dispnv50: atom: fix an incorrect NULL check on list iterator
-To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Cc:     Ben Skeggs <bskeggs@redhat.com>, Karol Herbst <kherbst@redhat.com>,
-        Lyude <lyude@redhat.com>, Dave Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        ML nouveau <nouveau@lists.freedesktop.org>,
-        yangyingliang@huawei.com,
-        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
-        ML dri-devel <dri-devel@lists.freedesktop.org>,
-        "# 3.13+" <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 27 Mar 2022 at 08:39, Xiaomeng Tong <xiam0nd.tong@gmail.com> wrote:
->
-> The bug is here:
->         return encoder;
->
-> The list iterator value 'encoder' will *always* be set and non-NULL
-> by drm_for_each_encoder_mask(), so it is incorrect to assume that the
-> iterator value will be NULL if the list is empty or no element found.
-> Otherwise it will bypass some NULL checks and lead to invalid memory
-> access passing the check.
->
-> To fix this bug, just return 'encoder' when found, otherwise return
-> NULL.
->
+Hi Qinglin,
 
-Isn't this covered by the upcoming list* iterator rework [1] or is
-this another iterator glitch?
-IMHO we should be looking at fixing the implementation and not the
-hundreds of users through the kernel.
+FYI, the error/warning still remains.
 
-HTH
--Emil
-[1] https://lwn.net/Articles/887097/
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   f022814633e1c600507b3a99691b4d624c2813f0
+commit: 677b9eb8810edc6c616a699018a83e24ed0cccab riscv: mm: Prepare pt_ops helper functions for sv57
+date:   6 weeks ago
+config: riscv-rv32_defconfig (https://download.01.org/0day-ci/archive/20220328/202203280003.jGKBNwrv-lkp@intel.com/config)
+compiler: riscv32-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=677b9eb8810edc6c616a699018a83e24ed0cccab
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 677b9eb8810edc6c616a699018a83e24ed0cccab
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=riscv SHELL=/bin/bash arch/riscv/mm/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   arch/riscv/mm/init.c: In function 'create_fdt_early_page_table':
+>> arch/riscv/mm/init.c:782:83: warning: suggest braces around empty body in an 'if' statement [-Wempty-body]
+     782 |                                    (uintptr_t)early_dtb_pud, P4D_SIZE, PAGE_TABLE);
+         |                                                                                   ^
+   arch/riscv/mm/init.c:786:83: warning: suggest braces around empty body in an 'if' statement [-Wempty-body]
+     786 |                                    (uintptr_t)early_dtb_pmd, PUD_SIZE, PAGE_TABLE);
+         |                                                                                   ^
+   arch/riscv/mm/init.c: At top level:
+   arch/riscv/mm/init.c:813:13: warning: no previous prototype for 'pt_ops_set_early' [-Wmissing-prototypes]
+     813 | void __init pt_ops_set_early(void)
+         |             ^~~~~~~~~~~~~~~~
+   arch/riscv/mm/init.c:835:13: warning: no previous prototype for 'pt_ops_set_fixmap' [-Wmissing-prototypes]
+     835 | void __init pt_ops_set_fixmap(void)
+         |             ^~~~~~~~~~~~~~~~~
+   arch/riscv/mm/init.c:853:13: warning: no previous prototype for 'pt_ops_set_late' [-Wmissing-prototypes]
+     853 | void __init pt_ops_set_late(void)
+         |             ^~~~~~~~~~~~~~~
+
+
+vim +/if +782 arch/riscv/mm/init.c
+
+   764	
+   765	/*
+   766	 * Setup a 4MB mapping that encompasses the device tree: for 64-bit kernel,
+   767	 * this means 2 PMD entries whereas for 32-bit kernel, this is only 1 PGDIR
+   768	 * entry.
+   769	 */
+   770	static void __init create_fdt_early_page_table(pgd_t *pgdir, uintptr_t dtb_pa)
+   771	{
+   772	#ifndef CONFIG_BUILTIN_DTB
+   773		uintptr_t pa = dtb_pa & ~(PMD_SIZE - 1);
+   774	
+   775		create_pgd_mapping(early_pg_dir, DTB_EARLY_BASE_VA,
+   776				   IS_ENABLED(CONFIG_64BIT) ? early_dtb_pgd_next : pa,
+   777				   PGDIR_SIZE,
+   778				   IS_ENABLED(CONFIG_64BIT) ? PAGE_TABLE : PAGE_KERNEL);
+   779	
+   780		if (pgtable_l5_enabled)
+   781			create_p4d_mapping(early_dtb_p4d, DTB_EARLY_BASE_VA,
+ > 782					   (uintptr_t)early_dtb_pud, P4D_SIZE, PAGE_TABLE);
+   783	
+   784		if (pgtable_l4_enabled)
+   785			create_pud_mapping(early_dtb_pud, DTB_EARLY_BASE_VA,
+   786					   (uintptr_t)early_dtb_pmd, PUD_SIZE, PAGE_TABLE);
+   787	
+   788		if (IS_ENABLED(CONFIG_64BIT)) {
+   789			create_pmd_mapping(early_dtb_pmd, DTB_EARLY_BASE_VA,
+   790					   pa, PMD_SIZE, PAGE_KERNEL);
+   791			create_pmd_mapping(early_dtb_pmd, DTB_EARLY_BASE_VA + PMD_SIZE,
+   792					   pa + PMD_SIZE, PMD_SIZE, PAGE_KERNEL);
+   793		}
+   794	
+   795		dtb_early_va = (void *)DTB_EARLY_BASE_VA + (dtb_pa & (PMD_SIZE - 1));
+   796	#else
+   797		/*
+   798		 * For 64-bit kernel, __va can't be used since it would return a linear
+   799		 * mapping address whereas dtb_early_va will be used before
+   800		 * setup_vm_final installs the linear mapping. For 32-bit kernel, as the
+   801		 * kernel is mapped in the linear mapping, that makes no difference.
+   802		 */
+   803		dtb_early_va = kernel_mapping_pa_to_va(XIP_FIXUP(dtb_pa));
+   804	#endif
+   805	
+   806		dtb_early_pa = dtb_pa;
+   807	}
+   808	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
