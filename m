@@ -2,87 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CDEDC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 22:48:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92945C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 22:52:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233816AbiC0Wts (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 18:49:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37986 "EHLO
+        id S236738AbiC0WyK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 18:54:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229999AbiC0Wtr (ORCPT
+        with ESMTP id S229508AbiC0WyI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 18:49:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A72A41260A
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 15:48:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Sun, 27 Mar 2022 18:54:08 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 004A9338A5;
+        Sun, 27 Mar 2022 15:52:28 -0700 (PDT)
+Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 47EE860E84
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 22:48:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 387FDC340EC;
-        Sun, 27 Mar 2022 22:48:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648421286;
-        bh=JDJbDBAduWIPsFOyXVglXB/KwMzaEh2PeuQslWr4wlY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=R04snnB9ihr7timKbzEnDwzwbdxX7BEAAb5WRQK7BUI3KJVAXrARA6OTqsXcoD41b
-         x62m9/7tVs4ooKMBe9KOYZfpgyxrPDftmiagk17vTrXNgbtdhH05f9r3yC8mMJN4sV
-         zMazDFtTHI6HOokJgCu077OryLsTq4eESSdIDy03WJZnUB5iLIOvMHYHgi5M9UDMMY
-         wumBePkeX7uPqVnINvuTyQFO3MptqdJ1HGuqiIgBzeO1dzLPyXg0YTfWHzLDuvaUNA
-         9ZY/JirIuODckh1TBe5e6wOuKVjkr+8Uv6oqRId3bNSKxXNxzDULJjQZCgcYsAi2Na
-         Whi0/86coMAhA==
-Date:   Sun, 27 Mar 2022 23:48:03 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Jonathan Bakker <xc-racer2@live.ca>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>, patches@opensource.cirrus.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] regulator: wm8994: Add an off-on delay for WM8994 variant
-Message-ID: <YkDpozx+ZmSWwwH0@sirena.org.uk>
-References: <CY4PR04MB05676D46494F722485CE7551CB1C9@CY4PR04MB0567.namprd04.prod.outlook.com>
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 223E81EC01A2;
+        Mon, 28 Mar 2022 00:52:23 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1648421543;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=fXK18M0KVpIRPx1rmbaiuZ7FWqGHqgKnqmOp0B4zeeI=;
+        b=GaWshRQG9YEh7hi3v6G7o2WOoPQsxZ47PZDGD+OCVzj7XsICK71UpDRwiUZ6GlGNh9x1th
+        vkcutIyO7RY1JTUqKsQDWOiYDWHNsNCX5mgU9DdhTVFzLR3I2/8SGXkrzQE9vGrBeFXCuL
+        vwdSRMu4G1L85J4Av5rMwFN2f2n14hI=
+Date:   Mon, 28 Mar 2022 00:52:19 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Alviro Iskandar Setiawan <alviro.iskandar@gmail.com>,
+        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Yazen Ghannam <yazen.ghannam@amd.com>,
+        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, gwml@vger.gnuweeb.org, x86@kernel.org
+Subject: Re: [PATCH v5 2/2] x86/MCE/AMD: Fix memory leak when
+ `threshold_create_bank()` fails
+Message-ID: <YkDqo2eEbABbtSGY@zn.tnic>
+References: <20220310015306.445359-1-ammarfaizi2@gnuweeb.org>
+ <20220310015306.445359-3-ammarfaizi2@gnuweeb.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="RfuYbMqjCs6wiIyl"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CY4PR04MB05676D46494F722485CE7551CB1C9@CY4PR04MB0567.namprd04.prod.outlook.com>
-X-Cookie: <Omnic> another .sig addition
+In-Reply-To: <20220310015306.445359-3-ammarfaizi2@gnuweeb.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Mar 10, 2022 at 08:53:06AM +0700, Ammar Faizi wrote:
+> In mce_threshold_create_device(), if threshold_create_bank() fails, the
+> @bp will be leaked, because the call to mce_threshold_remove_device()
+> will not free the @bp. mce_threshold_remove_device() frees
+> @threshold_banks. At that point, the @bp has not been written to
+> @threshold_banks, @threshold_banks is NULL, so the call is just a nop.
+> 
+> Fix this by extracting the cleanup part into a new static function
+> _mce_threshold_remove_device(), then call it from create/remove device
+> functions.
+> 
+> Also, eliminate the "goto out_err", just early return inside the loop
+> if the creation fails.
+> 
+> Cc: Borislav Petkov <bp@alien8.de>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: stable@vger.kernel.org # v5.8+
+> Fixes: 6458de97fc15 ("x86/mce/amd: Straighten CPU hotplug path")
 
---RfuYbMqjCs6wiIyl
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+How did you decide this is the commit that this is fixing?
 
-On Sun, Mar 27, 2022 at 03:15:53PM -0700, Jonathan Bakker wrote:
+> Link: https://lore.kernel.org/lkml/9dfe087a-f941-1bc4-657d-7e7c198888ff@gnuweeb.org
 
-> =20
-> +	/* WM8994 requires an off-on delay while others do not */
-> +	if (ldo->wm8994->type =3D=3D WM8994)
-> +		wm8994_ldo_desc[id].off_on_delay =3D 36000;
+That Link tag is not needed.
 
-You shouldn't modify the description - this wouldn't work in the
-unusual situation where there were one of these devices and is a
-bad pattern to set in case someone copies this to another device
-where it's more likely there could be multiple instances.  It is
-much better to provide two descriptions and select the one which
-is needed at runtime.
+> Co-authored-by: Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
+> Signed-off-by: Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
+> Co-authored-by: Yazen Ghannam <yazen.ghannam@amd.com>
 
---RfuYbMqjCs6wiIyl
-Content-Type: application/pgp-signature; name="signature.asc"
+There's no "Co-authored-by".
 
------BEGIN PGP SIGNATURE-----
+The correct tag is described in
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJA6aIACgkQJNaLcl1U
-h9CoLwf9H+lweZrus196h+g+F+zAZQvK2650ZTzT1MQ200HmcydXwvZp/sSJ06wK
-Yt2WfBxwX0QoYn0rWcepMD0qunVJzt2W8q7Vb/NzYJ3wE/5BaZH5UKnf+GIGVA/N
-gaAhH3Iz8gYdb8Lf5GwS89pxFiOmAJarRO0OyQGOn2RzvmKWLPnLqrd2T/ek9xCv
-moa9ZjnC1LRc8t7p17DwmxRzFSk1K/UnDbERCbcnWw9TpnqZYqHWcXEmAHYUrb5y
-pX3wj6sX3sNUHOnhJFQ2e83FQWsaFoYn3xJN0xOd0MhOhW56Gu8+1cCKkfuJkoR8
-SjP9K4jVHslCIAX8fcQuqE6eTFg9tA==
-=er8D
------END PGP SIGNATURE-----
+Documentation/process/submitting-patches.rst
 
---RfuYbMqjCs6wiIyl--
+Please make sure you've read that file before sending patches.
+
+> Signed-off-by: Yazen Ghannam <yazen.ghannam@amd.com>
+> Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+> ---
+>  arch/x86/kernel/cpu/mce/amd.c | 32 +++++++++++++++++++-------------
+>  1 file changed, 19 insertions(+), 13 deletions(-)
+
+...
+
+> @@ -1350,15 +1357,14 @@ int mce_threshold_create_device(unsigned int cpu)
+>  		if (!(this_cpu_read(bank_map) & (1 << bank)))
+>  			continue;
+>  		err = threshold_create_bank(bp, cpu, bank);
+> -		if (err)
+> -			goto out_err;
+> +		if (err) {
+> +			_mce_threshold_remove_device(bp, numbanks);
+> +			return err;
+> +		}
+>  	}
+>  	this_cpu_write(threshold_banks, bp);
+
+Do I see it correctly that the publishing of the @bp pointer - i.e.,
+this line - should be moved right above the for loop?
+
+Then mce_threshold_remove_device() would properly free it in the error
+case and your patch turns into a oneliner?
+
+And then your Fixes: tag would be correct too...
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
