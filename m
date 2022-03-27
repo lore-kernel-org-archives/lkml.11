@@ -2,111 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D91DCC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 22:13:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48081C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 22:16:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236870AbiC0WPR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 18:15:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35644 "EHLO
+        id S236872AbiC0WS1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 18:18:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236863AbiC0WPQ (ORCPT
+        with ESMTP id S232336AbiC0WS1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 18:15:16 -0400
-Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 737CF49F8A;
-        Sun, 27 Mar 2022 15:13:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
-         s=20161220; h=Content-Transfer-Encoding:Content-Type:Message-ID:References:
-        In-Reply-To:Subject:Cc:To:From:Date:MIME-Version:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=pV29UjFYmfGiilWwyQNlVjFasUPj3jYxTXkmhIEc+XM=; b=BHU0kAa6aPENeSDuCOZPHe56vV
-        qpF2gdxkZMMrvTtlKbEeVlVbwiTgG6JyTb8gftMEhKrtLpNWaa+2q0BPH+65voWXa1q7NN74q6Xdk
-        th1/kUkA2/12kAlPqkbJPBL3Si86W2SSXNOyEEuh7Fp3oFnLn4XHtogu9xe0fsk6lC6HHPI+/SoWe
-        /NHJMOZOmG8fXRXW03DiEq5WOfqfZ0XQGrYz4QtaSqmmpE711w5bK9DZIDbCGu/oQ2Sk/YnoRC/E/
-        XNqvj0NZF2EzGzZSoW1oBeq1O9wY8LiKpiKXFVd2l2KSn+jaQ13cZcuNRw8ppEu2TFNTZf8SvCShR
-        WPYY8utA==;
-Received: from webng-gw.kapsi.fi ([91.232.154.200] helo=roundcube.kapsi.fi)
-        by mail.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <jyri.sarha@iki.fi>)
-        id 1nYb8V-00024d-Uh; Mon, 28 Mar 2022 01:13:23 +0300
+        Sun, 27 Mar 2022 18:18:27 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D27314EF41;
+        Sun, 27 Mar 2022 15:16:47 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id u26so14935969eda.12;
+        Sun, 27 Mar 2022 15:16:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+YqXAKsRg5NB+t2/EKrR18CcSxKRanJcc5WsAI2eJ+c=;
+        b=KHQSM9EtyCnVj/5hAoKqe+N0taL8HPZRXGxFKZSxmDxyh8ZnvNQHPM8F2R9jbP1H1Y
+         n9tdxfkj+UldMkZ/oqC9qNSPjJX9WA8mFsNRA2c8hvuMHZl/eqhQUQwkmUZlo7KkhJy+
+         2Yjwawx6/uX67adhHg8z7VcIfv6Nb15+HH02vUYEfCA36W/f2MviL/7GInQt0Llp6DDb
+         ifoktV8tjJsHH4Gs+KG2u8M2pJGDp5lORY0JzUBRTLrhF5pDgFvZiYwZD5bipKBroZiw
+         LWMfNMIP99eENLDQHRXKGVvX7NWQLrBf9/A6zmtZ48Jy1c4yN0JrW/fjQrBVXaSAsQPG
+         nLkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+YqXAKsRg5NB+t2/EKrR18CcSxKRanJcc5WsAI2eJ+c=;
+        b=dgkNR4Tl7xciL77r/ihk+k1vMQJHrWIU2+088uQJsdURYpUdjkvYDT5gdb3us1RlWX
+         RJOm6dymw8+b/cLmEByxGSLdE8TKLe3rHJaZhYyAYQye4sDq5Ff/ybVjbUYWTUJcv3xo
+         /C9NYUEAd6Vn2FF08KcAVPqEnvvpseMJNe11UvrLoVyiyco2oOFzzNhVzJXMLYAz6ry9
+         b/zIpp+9zkywjvqanEP5Za9YUSjkfgyeUWvVp/v9AQIDgDAbtpckiY31RoceY5KZW90t
+         r5gr4HB/Y9f4kkgOpWI493vyMUlO9cnYfSz27fNGoVVXQuFdhefLc+/RHcb+lgCeM3hw
+         5G2g==
+X-Gm-Message-State: AOAM531SuU9+eJRlUBXZLsFYRLpfCePfW6ykHjulEMo34watBd9dtPW1
+        f5yKktOZnh3dW+87M4N+sU6BTBk1Sv8smmxAk3hWEOUyhJs=
+X-Google-Smtp-Source: ABdhPJxiw+SGdXidWk7bAM3x5T6Bu4MVtCnAYoiQmq/+gTmPbRn7lYtP2eNXnFcu7EYEsc+FzoDTBfDTArIYTctFjQM=
+X-Received: by 2002:a05:6402:27d1:b0:419:1b02:4a04 with SMTP id
+ c17-20020a05640227d100b004191b024a04mr12436901ede.218.1648419406297; Sun, 27
+ Mar 2022 15:16:46 -0700 (PDT)
 MIME-Version: 1.0
-Date:   Mon, 28 Mar 2022 01:13:21 +0300
-From:   Jyri Sarha <jyri.sarha@iki.fi>
-To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Cc:     tomba@kernel.org, airlied@linux.ie, daniel@ffwll.ch,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: Re: [PATCH] tilcdc: tilcdc_external: fix an incorrect NULL check on
- list iterator
-In-Reply-To: <20220327061516.5076-1-xiam0nd.tong@gmail.com>
-References: <20220327061516.5076-1-xiam0nd.tong@gmail.com>
-Message-ID: <eadea5bbb40c168ee1bbf955c10979cb@iki.fi>
-X-Sender: jyri.sarha@iki.fi
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 91.232.154.200
-X-SA-Exim-Mail-From: jyri.sarha@iki.fi
-X-SA-Exim-Scanned: No (on mail.kapsi.fi); SAEximRunCond expanded to false
+References: <20220318204808.3404542-1-swboyd@chromium.org>
+In-Reply-To: <20220318204808.3404542-1-swboyd@chromium.org>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 28 Mar 2022 01:16:10 +0300
+Message-ID: <CAHp75Ve+SiiAM6VkiwPt95w68KEDk46vXR6ZzjOR7ZgaeZ80HA@mail.gmail.com>
+Subject: Re: [PATCH] iio:proximity:sx9324: Fix hardware gain read/write
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Gwendal Grignou <gwendal@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-03-27 9:15, Xiaomeng Tong wrote:
-> The bug is here:
-> 	if (!encoder) {
-> 
-> The list iterator value 'encoder' will *always* be set and non-NULL
-> by list_for_each_entry(), so it is incorrect to assume that the
-> iterator value will be NULL if the list is empty or no element
-> is found.
-> 
-> To fix the bug, use a new variable 'iter' as the list iterator,
-> while use the original variable 'encoder' as a dedicated pointer
-> to point to the found element.
-> 
-> Cc: stable@vger.kernel.org
-> Fixes: ec9eab097a500 ("drm/tilcdc: Add drm bridge support for
-> attaching drm bridge drivers")
-> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+On Sat, Mar 19, 2022 at 5:58 AM Stephen Boyd <swboyd@chromium.org> wrote:
+>
+> There are four possible gain values according to sx9324_gain_vals[]: 1,
+> 2, 4, and 8. When writing and reading the register the values are off by
+> one. The bits should be set according to this equation:
+>
+>         ilog2(<gain>) + 1
+>
+> so that a gain of 8 is 0x3 in the register field and a gain of 4 is 0x2
+> in the register field, etc. Fix up the functions.
 
-Thanks for the patch. Good catch.
+...
 
-Reviewed-by: Jyri Sarha <jyri.sarha@iki.fi>
-Tested-by: Jyri Sarha <jyri.sarha@iki.fi>
+> +       *val = 1 << regval;
 
-I'll apply this to drm-misc-next in couple of days.
+I see it's similar in the original code, but this is still problematic
+from C standard point of view, i.e. if regval = 31, the C standard
+calls it UB (Undefined Behaviour).
 
-Best regards,
-Jyri
-
-> ---
->  drivers/gpu/drm/tilcdc/tilcdc_external.c | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/tilcdc/tilcdc_external.c
-> b/drivers/gpu/drm/tilcdc/tilcdc_external.c
-> index 7594cf6e186e..3b86d002ef62 100644
-> --- a/drivers/gpu/drm/tilcdc/tilcdc_external.c
-> +++ b/drivers/gpu/drm/tilcdc/tilcdc_external.c
-> @@ -60,11 +60,13 @@ struct drm_connector
-> *tilcdc_encoder_find_connector(struct drm_device *ddev,
->  int tilcdc_add_component_encoder(struct drm_device *ddev)
->  {
->  	struct tilcdc_drm_private *priv = ddev->dev_private;
-> -	struct drm_encoder *encoder;
-> +	struct drm_encoder *encoder = NULL, *iter;
-> 
-> -	list_for_each_entry(encoder, &ddev->mode_config.encoder_list, head)
-> -		if (encoder->possible_crtcs & (1 << priv->crtc->index))
-> +	list_for_each_entry(iter, &ddev->mode_config.encoder_list, head)
-> +		if (iter->possible_crtcs & (1 << priv->crtc->index)) {
-> +			encoder = iter;
->  			break;
-> +		}
-> 
->  	if (!encoder) {
->  		dev_err(ddev->dev, "%s: No suitable encoder found\n", __func__);
+-- 
+With Best Regards,
+Andy Shevchenko
