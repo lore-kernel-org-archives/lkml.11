@@ -2,106 +2,239 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 868FAC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 16:23:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86DB4C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 16:26:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236007AbiC0QZ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 12:25:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40144 "EHLO
+        id S236021AbiC0Q14 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 12:27:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230418AbiC0QZ2 (ORCPT
+        with ESMTP id S230418AbiC0Q1y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 12:25:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF3AE4C40C;
-        Sun, 27 Mar 2022 09:23:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 90A9861090;
-        Sun, 27 Mar 2022 16:23:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1471EC340EC;
-        Sun, 27 Mar 2022 16:23:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648398228;
-        bh=YkDb6E6VtnXov8jHR1w8NK/7WAyUsl5XyV+mYViI/iE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Kf2cFa0wjjny3JaXVOXkLznTZSEzTiJG74AgLuspd+sBI6qwCUs6j+1HJZmiPVKEo
-         AQegVXVtLyP0vibmflnZhuY77ZgkvWLVe4QS1n7k+SdcWYLz4EfhinS4mdJlmLy9+N
-         zAvJCUxVDpG59aISHiO26KDh8flWqCA3ljekS4RFHUCwnCWlx9MrQUyiMKfLc+C7Zj
-         vhlvL3TDjgXdo65htGao+nYkEGyyaue5J75HM/OXp7+t1RBXHmgDSd/HdbKxtu2lUo
-         lVzSIFznum8jc0na+LePshZjhTt72aOS85Yd9JQ9+k5I9GauKgRgJHthh32klFnKtM
-         Y4Kizvk4vbRRg==
-Date:   Sun, 27 Mar 2022 17:31:20 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Jagath Jog J <jagathjog1996@gmail.com>
-Cc:     dan@dlrobertson.com, andy.shevchenko@gmail.com,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/5] iio: accel: bma400: Fix the scale min and max
- macro values
-Message-ID: <20220327173120.78fd5148@jic23-huawei>
-In-Reply-To: <20220326194146.15549-2-jagathjog1996@gmail.com>
-References: <20220326194146.15549-1-jagathjog1996@gmail.com>
-        <20220326194146.15549-2-jagathjog1996@gmail.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Sun, 27 Mar 2022 12:27:54 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08F4E50076
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 09:26:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648398375; x=1679934375;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=7i0z24uwur3pdk7vHbwoBPtRP4iokLyG04FKmo17cew=;
+  b=ChPY7USdlosJseZCmsGWlKoxEIT4ZFU5mw9hkKpyC3OTICu0wDwmPMiA
+   F1N131oK6i1tieIe7QyJ27zNgovIz3ZIfqTvx/05T8TIpxf7Rm3mSV8N7
+   lRXnSbEX+1PeJP5ZcNqQoOVl45Islry5P/iODyKwY2CfA8yA1Y51VbLs4
+   41DssaydeF1aHBH3oJb159oO78peAkTKuRuemTlY/RKXGVJTYzDrT9wlh
+   FwQxHuluoMRHaJ8x4cAWDvrvju1tYHps119yXNcD+KWBwdiCsFg3WKQUz
+   b2T1keQ9u9GeEIc0RFKerBWnKDI+LnUSJJahI0GNhj6GZXG3dKeawm7BJ
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10299"; a="258830084"
+X-IronPort-AV: E=Sophos;i="5.90,215,1643702400"; 
+   d="scan'208";a="258830084"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2022 09:26:14 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,215,1643702400"; 
+   d="scan'208";a="545671579"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga007.jf.intel.com with ESMTP; 27 Mar 2022 09:26:13 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nYViW-0001Eg-B1; Sun, 27 Mar 2022 16:26:12 +0000
+Date:   Mon, 28 Mar 2022 00:25:38 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: drivers/video/fbdev/cirrusfb.c:1852:17: sparse: sparse: incorrect
+ type in argument 1 (different address spaces)
+Message-ID: <202203280028.6JmzLLX5-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 27 Mar 2022 01:11:42 +0530
-Jagath Jog J <jagathjog1996@gmail.com> wrote:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   f022814633e1c600507b3a99691b4d624c2813f0
+commit: f68f2ff91512c199ec24883001245912afc17873 fortify: Detect struct member overflows in memcpy() at compile-time
+date:   6 weeks ago
+config: i386-randconfig-s001 (https://download.01.org/0day-ci/archive/20220328/202203280028.6JmzLLX5-lkp@intel.com/config)
+compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f68f2ff91512c199ec24883001245912afc17873
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout f68f2ff91512c199ec24883001245912afc17873
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash drivers/video/fbdev/
 
-> Changing the scale macro values to match the bma400 sensitivity
-> for 1 LSB of all the available ranges.
-> 
-> Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
-Hi Jagath,
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> ---
->  drivers/iio/accel/bma400.h | 22 ++++++++++++++++++++--
->  1 file changed, 20 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/bma400.h b/drivers/iio/accel/bma400.h
-> index c4c8d74155c2..190366debdb3 100644
-> --- a/drivers/iio/accel/bma400.h
-> +++ b/drivers/iio/accel/bma400.h
-> @@ -83,8 +83,26 @@
->  #define BMA400_ACC_ODR_MIN_WHOLE_HZ 25
->  #define BMA400_ACC_ODR_MIN_HZ       12
->  
-> -#define BMA400_SCALE_MIN            38357
-> -#define BMA400_SCALE_MAX            306864
-> +/* BMA400_SCALE_MIN macro value represents m/s^2 for 1 LSB before
-Multiline comment syntax in IIO is
-/*
- * BMA400....
 
-> + * converting to micro values for +-2g range.
-> + *
-> + * For +-2g - 1 LSB = 0.976562 milli g = 0.009576 m/s^2
-> + * For +-4g - 1 LSB = 1.953125 milli g = 0.019153 m/s^2
-> + * For +-16g - 1 LSB = 7.8125 milli g = 0.076614 m/s^2
-> + *
-> + * The raw value which is used to select the different ranges is determined
-> + * by the first bit set position from the scale value, so BMA400_SCALE_MIN
-> + * should be odd.
-> + *
-> + * Scale values for +-2g, +-4g, +-8g and +-16g is populated into bma400_scales
-> + * array by left shifting BMA400_SCALE_MIN.
-> + * eg:
-> + * To select +-2g = 9577 << 0 = raw value to write is 0.
-> + * To select +-8g = 9577 << 2 = raw value to write is 2.
-> + * To select +-16g = 9677 << 3 = raw value to write is 3.
+sparse warnings: (new ones prefixed by >>)
+>> drivers/video/fbdev/cirrusfb.c:1852:17: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got char [noderef] __iomem *screen_base @@
+   drivers/video/fbdev/cirrusfb.c:1852:17: sparse:     expected void const *
+   drivers/video/fbdev/cirrusfb.c:1852:17: sparse:     got char [noderef] __iomem *screen_base
+>> drivers/video/fbdev/cirrusfb.c:1852:17: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got char [noderef] __iomem *screen_base @@
+   drivers/video/fbdev/cirrusfb.c:1852:17: sparse:     expected void const *
+   drivers/video/fbdev/cirrusfb.c:1852:17: sparse:     got char [noderef] __iomem *screen_base
+   drivers/video/fbdev/cirrusfb.c:1852:17: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void * @@     got char [noderef] __iomem *screen_base @@
+   drivers/video/fbdev/cirrusfb.c:1852:17: sparse:     expected void *
+   drivers/video/fbdev/cirrusfb.c:1852:17: sparse:     got char [noderef] __iomem *screen_base
+--
+>> drivers/video/fbdev/geode/suspend_gx.c:30:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *gp_regs @@
+   drivers/video/fbdev/geode/suspend_gx.c:30:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/suspend_gx.c:30:9: sparse:     got void [noderef] __iomem *gp_regs
+>> drivers/video/fbdev/geode/suspend_gx.c:30:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *gp_regs @@
+   drivers/video/fbdev/geode/suspend_gx.c:30:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/suspend_gx.c:30:9: sparse:     got void [noderef] __iomem *gp_regs
+   drivers/video/fbdev/geode/suspend_gx.c:30:9: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *gp_regs @@
+   drivers/video/fbdev/geode/suspend_gx.c:30:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/suspend_gx.c:30:9: sparse:     got void [noderef] __iomem *gp_regs
+>> drivers/video/fbdev/geode/suspend_gx.c:31:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *dc_regs @@
+   drivers/video/fbdev/geode/suspend_gx.c:31:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/suspend_gx.c:31:9: sparse:     got void [noderef] __iomem *dc_regs
+>> drivers/video/fbdev/geode/suspend_gx.c:31:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *dc_regs @@
+   drivers/video/fbdev/geode/suspend_gx.c:31:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/suspend_gx.c:31:9: sparse:     got void [noderef] __iomem *dc_regs
+   drivers/video/fbdev/geode/suspend_gx.c:31:9: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *dc_regs @@
+   drivers/video/fbdev/geode/suspend_gx.c:31:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/suspend_gx.c:31:9: sparse:     got void [noderef] __iomem *dc_regs
+>> drivers/video/fbdev/geode/suspend_gx.c:32:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *vid_regs @@
+   drivers/video/fbdev/geode/suspend_gx.c:32:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/suspend_gx.c:32:9: sparse:     got void [noderef] __iomem *vid_regs
+>> drivers/video/fbdev/geode/suspend_gx.c:32:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *vid_regs @@
+   drivers/video/fbdev/geode/suspend_gx.c:32:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/suspend_gx.c:32:9: sparse:     got void [noderef] __iomem *vid_regs
+   drivers/video/fbdev/geode/suspend_gx.c:32:9: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *vid_regs @@
+   drivers/video/fbdev/geode/suspend_gx.c:32:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/suspend_gx.c:32:9: sparse:     got void [noderef] __iomem *vid_regs
+>> drivers/video/fbdev/geode/suspend_gx.c:33:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem * @@
+   drivers/video/fbdev/geode/suspend_gx.c:33:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/suspend_gx.c:33:9: sparse:     got void [noderef] __iomem *
+>> drivers/video/fbdev/geode/suspend_gx.c:33:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem * @@
+   drivers/video/fbdev/geode/suspend_gx.c:33:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/suspend_gx.c:33:9: sparse:     got void [noderef] __iomem *
+   drivers/video/fbdev/geode/suspend_gx.c:33:9: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem * @@
+   drivers/video/fbdev/geode/suspend_gx.c:33:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/suspend_gx.c:33:9: sparse:     got void [noderef] __iomem *
+--
+>> drivers/video/fbdev/geode/lxfb_ops.c:602:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *gp_regs @@
+   drivers/video/fbdev/geode/lxfb_ops.c:602:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/lxfb_ops.c:602:9: sparse:     got void [noderef] __iomem *gp_regs
+>> drivers/video/fbdev/geode/lxfb_ops.c:602:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *gp_regs @@
+   drivers/video/fbdev/geode/lxfb_ops.c:602:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/lxfb_ops.c:602:9: sparse:     got void [noderef] __iomem *gp_regs
+   drivers/video/fbdev/geode/lxfb_ops.c:602:9: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *gp_regs @@
+   drivers/video/fbdev/geode/lxfb_ops.c:602:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/lxfb_ops.c:602:9: sparse:     got void [noderef] __iomem *gp_regs
+>> drivers/video/fbdev/geode/lxfb_ops.c:603:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *dc_regs @@
+   drivers/video/fbdev/geode/lxfb_ops.c:603:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/lxfb_ops.c:603:9: sparse:     got void [noderef] __iomem *dc_regs
+>> drivers/video/fbdev/geode/lxfb_ops.c:603:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *dc_regs @@
+   drivers/video/fbdev/geode/lxfb_ops.c:603:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/lxfb_ops.c:603:9: sparse:     got void [noderef] __iomem *dc_regs
+   drivers/video/fbdev/geode/lxfb_ops.c:603:9: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *dc_regs @@
+   drivers/video/fbdev/geode/lxfb_ops.c:603:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/lxfb_ops.c:603:9: sparse:     got void [noderef] __iomem *dc_regs
+>> drivers/video/fbdev/geode/lxfb_ops.c:604:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *vp_regs @@
+   drivers/video/fbdev/geode/lxfb_ops.c:604:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/lxfb_ops.c:604:9: sparse:     got void [noderef] __iomem *vp_regs
+>> drivers/video/fbdev/geode/lxfb_ops.c:604:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *vp_regs @@
+   drivers/video/fbdev/geode/lxfb_ops.c:604:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/lxfb_ops.c:604:9: sparse:     got void [noderef] __iomem *vp_regs
+   drivers/video/fbdev/geode/lxfb_ops.c:604:9: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *vp_regs @@
+   drivers/video/fbdev/geode/lxfb_ops.c:604:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/lxfb_ops.c:604:9: sparse:     got void [noderef] __iomem *vp_regs
+>> drivers/video/fbdev/geode/lxfb_ops.c:605:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem * @@
+   drivers/video/fbdev/geode/lxfb_ops.c:605:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/lxfb_ops.c:605:9: sparse:     got void [noderef] __iomem *
+>> drivers/video/fbdev/geode/lxfb_ops.c:605:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem * @@
+   drivers/video/fbdev/geode/lxfb_ops.c:605:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/lxfb_ops.c:605:9: sparse:     got void [noderef] __iomem *
+   drivers/video/fbdev/geode/lxfb_ops.c:605:9: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem * @@
+   drivers/video/fbdev/geode/lxfb_ops.c:605:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/lxfb_ops.c:605:9: sparse:     got void [noderef] __iomem *
+   drivers/video/fbdev/geode/lxfb_ops.c:633:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem * @@
+   drivers/video/fbdev/geode/lxfb_ops.c:633:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/lxfb_ops.c:633:9: sparse:     got void [noderef] __iomem *
+   drivers/video/fbdev/geode/lxfb_ops.c:633:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem * @@
+   drivers/video/fbdev/geode/lxfb_ops.c:633:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/lxfb_ops.c:633:9: sparse:     got void [noderef] __iomem *
+   drivers/video/fbdev/geode/lxfb_ops.c:633:9: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem * @@
+   drivers/video/fbdev/geode/lxfb_ops.c:633:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/lxfb_ops.c:633:9: sparse:     got void [noderef] __iomem *
+   drivers/video/fbdev/geode/lxfb_ops.c:760:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem * @@
+   drivers/video/fbdev/geode/lxfb_ops.c:760:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/lxfb_ops.c:760:9: sparse:     got void [noderef] __iomem *
+   drivers/video/fbdev/geode/lxfb_ops.c:760:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem * @@
+   drivers/video/fbdev/geode/lxfb_ops.c:760:9: sparse:     expected void const *
+   drivers/video/fbdev/geode/lxfb_ops.c:760:9: sparse:     got void [noderef] __iomem *
+>> drivers/video/fbdev/geode/lxfb_ops.c:760:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void * @@     got void [noderef] __iomem * @@
+   drivers/video/fbdev/geode/lxfb_ops.c:760:9: sparse:     expected void *
+   drivers/video/fbdev/geode/lxfb_ops.c:760:9: sparse:     got void [noderef] __iomem *
 
-9667?
+vim +1852 drivers/video/fbdev/cirrusfb.c
 
-> + */
-> +#define BMA400_SCALE_MIN            9577
-> +#define BMA400_SCALE_MAX            76617
->  
->  #define BMA400_NUM_REGULATORS       2
->  #define BMA400_VDD_REGULATOR        0
+^1da177e4c3f415 drivers/video/cirrusfb.c Linus Torvalds 2005-04-16  1809  
+8503df65976d0f8 drivers/video/cirrusfb.c Krzysztof Helt 2007-10-16  1810  static void cirrusfb_imageblit(struct fb_info *info,
+8503df65976d0f8 drivers/video/cirrusfb.c Krzysztof Helt 2007-10-16  1811  			       const struct fb_image *image)
+^1da177e4c3f415 drivers/video/cirrusfb.c Linus Torvalds 2005-04-16  1812  {
+^1da177e4c3f415 drivers/video/cirrusfb.c Linus Torvalds 2005-04-16  1813  	struct cirrusfb_info *cinfo = info->par;
+7cade31cabec33c drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1814  	unsigned char op = (info->var.bits_per_pixel == 24) ? 0xc : 0x4;
+^1da177e4c3f415 drivers/video/cirrusfb.c Linus Torvalds 2005-04-16  1815  
+9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1816  	if (info->state != FBINFO_STATE_RUNNING)
+9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1817  		return;
+df3aafd57d590d6 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1818  	/* Alpine/SD64 does not work at 24bpp ??? */
+df3aafd57d590d6 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1819  	if (info->flags & FBINFO_HWACCEL_DISABLED || image->depth != 1)
+df3aafd57d590d6 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1820  		cfb_imageblit(info, image);
+df3aafd57d590d6 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1821  	else if ((cinfo->btype == BT_ALPINE || cinfo->btype == BT_SD64) &&
+df3aafd57d590d6 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1822  		  op == 0xc)
+^1da177e4c3f415 drivers/video/cirrusfb.c Linus Torvalds 2005-04-16  1823  		cfb_imageblit(info, image);
+9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1824  	else {
+9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1825  		unsigned size = ((image->width + 7) >> 3) * image->height;
+9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1826  		int m = info->var.bits_per_pixel;
+9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1827  		u32 fg, bg;
+9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1828  
+9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1829  		if (info->var.bits_per_pixel == 8) {
+9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1830  			fg = image->fg_color;
+9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1831  			bg = image->bg_color;
+9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1832  		} else {
+9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1833  			fg = ((u32 *)(info->pseudo_palette))[image->fg_color];
+9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1834  			bg = ((u32 *)(info->pseudo_palette))[image->bg_color];
+9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1835  		}
+7cade31cabec33c drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1836  		if (info->var.bits_per_pixel == 24) {
+7cade31cabec33c drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1837  			/* clear background first */
+7cade31cabec33c drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1838  			cirrusfb_RectFill(cinfo->regbase,
+7cade31cabec33c drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1839  					  info->var.bits_per_pixel,
+7cade31cabec33c drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1840  					  (image->dx * m) / 8, image->dy,
+7cade31cabec33c drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1841  					  (image->width * m) / 8,
+7cade31cabec33c drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1842  					  image->height,
+7cade31cabec33c drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1843  					  bg, bg,
+7cade31cabec33c drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1844  					  info->fix.line_length, 0x40);
+7cade31cabec33c drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1845  		}
+9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1846  		cirrusfb_RectFill(cinfo->regbase,
+9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1847  				  info->var.bits_per_pixel,
+9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1848  				  (image->dx * m) / 8, image->dy,
+9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1849  				  (image->width * m) / 8, image->height,
+9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1850  				  fg, bg,
+7cade31cabec33c drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1851  				  info->fix.line_length, op);
+9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31 @1852  		memcpy(info->screen_base, image->data, size);
+9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1853  	}
+^1da177e4c3f415 drivers/video/cirrusfb.c Linus Torvalds 2005-04-16  1854  }
+^1da177e4c3f415 drivers/video/cirrusfb.c Linus Torvalds 2005-04-16  1855  
 
+:::::: The code at line 1852 was first introduced by commit
+:::::: 9e848062533207130667f6eaa748549367ccbedf cirrusfb: add imageblit function
+
+:::::: TO: Krzysztof Helt <krzysztof.h1@wp.pl>
+:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
