@@ -2,123 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70ED2C4332F
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 16:15:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D296C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 16:16:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235998AbiC0QRN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 12:17:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50814 "EHLO
+        id S236004AbiC0QRz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 12:17:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234341AbiC0QRL (ORCPT
+        with ESMTP id S234341AbiC0QRw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 12:17:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 238B136B48;
-        Sun, 27 Mar 2022 09:15:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B64766106D;
-        Sun, 27 Mar 2022 16:15:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EB24C340EC;
-        Sun, 27 Mar 2022 16:15:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648397732;
-        bh=nsHF7/lCAErDCtCYXXbx66rNfi9PbiN9g5HgcBT+RqQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tr/82D5aMQfcQypRkmTPFGOf6CwP9yeBo+qVpfjjHaM6HjTqd79AMDxNS5owmhbV2
-         Ay1hZAp80QOD1XK6qQD0mYSkiKxhTrpsHX+gLue+eCQrRdkkKzCXuBpOIY46koTc40
-         WIRBkeUalOfhGSGNr3DOESAanxTUKzVfRO9jVAABuo0GnTw9R5ZdMXM5UUXJ3qhaga
-         IkRQghfcd2xI7sSCL51WNj3wI9SlGIMPVE+jAfF8Z6wuHDl5iKlNtVkxBVtqWhP7EJ
-         Q/ZYitHObfvQvJpvWBJFNoXtkqCCX+r9PDwKtZ77Mwt12TatBRIBNAHF09f+F2K5yd
-         DJT4cW//X35BA==
-Date:   Sun, 27 Mar 2022 17:23:02 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Cixi Geng <gengcixi@gmail.com>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        "baolin.wang7@gmail.com" <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>, lgirdwood@gmail.com,
-        Mark Brown <broonie@kernel.org>,
-        "=?UTF-8?B?5pyx546J?= =?UTF-8?B?5piO?= (Yuming Zhu/11457)" 
-        <yuming.zhu1@unisoc.com>, linux-iio@vger.kernel.org,
-        Devicetree List <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH V2 2/7] iio: adc: sc27xx: fix read big scale voltage not
- right
-Message-ID: <20220327172302.142ee9bd@jic23-huawei>
-In-Reply-To: <CAF12kFvPp4eVJtWD7zd=Kvx2mHQGWiy_dDOD1bvMLQgeNgBvzQ@mail.gmail.com>
-References: <20220311164628.378849-1-gengcixi@gmail.com>
-        <20220311164628.378849-3-gengcixi@gmail.com>
-        <20220320133229.6026f51a@jic23-huawei>
-        <CAF12kFvPp4eVJtWD7zd=Kvx2mHQGWiy_dDOD1bvMLQgeNgBvzQ@mail.gmail.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Sun, 27 Mar 2022 12:17:52 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB10240E68
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 09:16:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648397773; x=1679933773;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=bDJl/E6TRK92jHGFkoVLxk1asdnc05rBLkYxMQzqq4s=;
+  b=YqmjqS0b/T1rdj5u62HfdkZy9UEqaJTx7DIues0z58FeNj+cf0Na0WEf
+   D1E0psxjIBv0BqZd+3sO8QISdMiM5n4n+XhVF2fsFuqrMWLWtcS39XUVv
+   KKn54KzDfTu4LNs7pyF9ydAL9joPczVtpeXeRbd1aAPieV2pjsWMnXqnk
+   Xr2HzJNcAXfzESOW2FGFLpvZ0yQLx9wVWCnYK+Ag9FJ39ZqpW0wpUw5H3
+   KTJR9Oi2tt2lmy4YpYOPFsS4h1lOEq6dWthOqYNQXBDBtR9tlF5TJdC37
+   5NMcZkzj2htaLBdSKDgw+++fzcsOTOTw9sYk18hlk+QqLMU79sdJaXETK
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10299"; a="246349371"
+X-IronPort-AV: E=Sophos;i="5.90,215,1643702400"; 
+   d="scan'208";a="246349371"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2022 09:16:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,215,1643702400"; 
+   d="scan'208";a="562436283"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga008.jf.intel.com with ESMTP; 27 Mar 2022 09:16:12 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nYVYp-0001Dj-Jm; Sun, 27 Mar 2022 16:16:11 +0000
+Date:   Mon, 28 Mar 2022 00:15:21 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hector Martin <marcan@marcan.st>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [asahilinux:pr/22 96/189] drivers/platform/apple/smc_core.c:202:26:
+ sparse: sparse: cast to restricted __be32
+Message-ID: <202203280041.0z3zY6Vd-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 24 Mar 2022 15:36:56 +0800
-Cixi Geng <gengcixi@gmail.com> wrote:
+tree:   https://github.com/AsahiLinux/linux pr/22
+head:   7ee315306d1a3b0da8cf2a53e7f55889d0e7f034
+commit: 322906b25cbf56148e4b57a6368f6d715e48b022 [96/189] platform/apple: Add new Apple Mac SMC driver
+config: arm64-randconfig-s032-20220327 (https://download.01.org/0day-ci/archive/20220328/202203280041.0z3zY6Vd-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/AsahiLinux/linux/commit/322906b25cbf56148e4b57a6368f6d715e48b022
+        git remote add asahilinux https://github.com/AsahiLinux/linux
+        git fetch --no-tags asahilinux pr/22
+        git checkout 322906b25cbf56148e4b57a6368f6d715e48b022
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm64 SHELL=/bin/bash
 
-> Jonathan Cameron <jic23@kernel.org> =E4=BA=8E2022=E5=B9=B43=E6=9C=8820=E6=
-=97=A5=E5=91=A8=E6=97=A5 21:25=E5=86=99=E9=81=93=EF=BC=9A
-> >
-> > On Sat, 12 Mar 2022 00:46:23 +0800
-> > Cixi Geng <gengcixi@gmail.com> wrote:
-> > =20
-> > > From: Cixi Geng <cixi.geng1@unisoc.com>
-> > >
-> > > Fix wrong configuration value of SC27XX_ADC_SCALE_MASK and
-> > > SC27XX_ADC_SCALE_SHIFT by spec documetation.
-> > >
-> > > Signed-off-by: Yuming Zhu <yuming.zhu1@unisoc.com>
-> > > Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
-> > > =20
-> > No blank lines in a tag block (they break people's scripts)
-> > Also, if this is a fix, I'd expect a fixes tag. =20
-> I will add in next version
-> > =20
-> > > Reviewed-by: Baolin Wang <baolin.wang7@gmail.com>
-> > > ---
-> > >  drivers/iio/adc/sc27xx_adc.c | 4 ++--
-> > >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > >
-> > > diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_ad=
-c.c
-> > > index 00098caf6d9e..aee076c8e2b1 100644
-> > > --- a/drivers/iio/adc/sc27xx_adc.c
-> > > +++ b/drivers/iio/adc/sc27xx_adc.c
-> > > @@ -36,8 +36,8 @@
-> > >
-> > >  /* Bits and mask definition for SC27XX_ADC_CH_CFG register */
-> > >  #define SC27XX_ADC_CHN_ID_MASK               GENMASK(4, 0)
-> > > -#define SC27XX_ADC_SCALE_MASK                GENMASK(10, 8)
-> > > -#define SC27XX_ADC_SCALE_SHIFT               8
-> > > +#define SC27XX_ADC_SCALE_MASK                GENMASK(10, 9)
-> > > +#define SC27XX_ADC_SCALE_SHIFT               9 =20
-> >
-> > This driver would benefit from use of FIELD_GET() / FIELD_PREP()
-> > but that is obviously unrelated to this particular series.
-> > =20
-> the next patch in this set need to use the fixed define value
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Understood.  I was suggesting a future cleanup on top of this series
-to avoid the need for both MASK and SHIFT being defined for
-each field.  FIELD_GET/FIELD_PREP() are used to do that.
 
-What you have in this series is fine without that change.
+sparse warnings: (new ones prefixed by >>)
+>> drivers/platform/apple/smc_core.c:202:26: sparse: sparse: cast to restricted __be32
 
-Jonathan
+vim +202 drivers/platform/apple/smc_core.c
 
-> >
-> > Jonathan
-> > =20
-> > >
-> > >  /* Bits definitions for SC27XX_ADC_INT_EN registers */
-> > >  #define SC27XX_ADC_IRQ_EN            BIT(0) =20
-> > =20
+   182	
+   183	struct apple_smc *apple_smc_probe(struct device *dev, const struct apple_smc_backend_ops *ops, void *cookie)
+   184	{
+   185		struct apple_smc *smc;
+   186		u32 count;
+   187		int ret;
+   188	
+   189		smc = devm_kzalloc(dev, sizeof(*smc), GFP_KERNEL);
+   190		if (!smc)
+   191			return ERR_PTR(-ENOMEM);
+   192	
+   193		smc->dev = dev;
+   194		smc->be_cookie = cookie;
+   195		smc->be = ops;
+   196		mutex_init(&smc->mutex);
+   197		RAW_INIT_NOTIFIER_HEAD(&smc->event_handlers);
+   198	
+   199		ret = apple_smc_read_u32(smc, SMC_KEY(#KEY), &count);
+   200		if (ret)
+   201			return ERR_PTR(dev_err_probe(dev, ret, "Failed to get key count"));
+ > 202		smc->key_count = be32_to_cpu(count);
+   203	
+   204		ret = apple_smc_get_key_by_index(smc, 0, &smc->first_key);
+   205		if (ret)
+   206			return ERR_PTR(dev_err_probe(dev, ret, "Failed to get first key"));
+   207	
+   208		ret = apple_smc_get_key_by_index(smc, smc->key_count - 1, &smc->last_key);
+   209		if (ret)
+   210			return ERR_PTR(dev_err_probe(dev, ret, "Failed to get last key"));
+   211	
+   212		/* Enable notifications */
+   213		apple_smc_write_flag(smc, SMC_KEY(NTAP), 1);
+   214	
+   215		dev_info(dev, "Initialized (%d keys %p4ch..%p4ch)\n",
+   216			 smc->key_count, &smc->first_key, &smc->last_key);
+   217	
+   218		dev_set_drvdata(dev, smc);
+   219	
+   220		ret = mfd_add_devices(dev, -1, apple_smc_devs, ARRAY_SIZE(apple_smc_devs), NULL, 0, NULL);
+   221		if (ret)
+   222			return ERR_PTR(dev_err_probe(dev, ret, "Subdevice initialization failed"));
+   223	
+   224		return smc;
+   225	}
+   226	EXPORT_SYMBOL(apple_smc_probe);
+   227	
 
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
