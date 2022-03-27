@@ -2,123 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AB21C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 22:21:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDA99C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 22:22:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236916AbiC0WX0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 18:23:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54410 "EHLO
+        id S236923AbiC0WYb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 18:24:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232336AbiC0WXT (ORCPT
+        with ESMTP id S232336AbiC0WY3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 18:23:19 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA60DE0D6
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 15:21:39 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id m3so21755646lfj.11
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 15:21:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=S+XGXg2Rv7JERtxGIutirLnuoE1LsDWr7jV2Cgxp6Qg=;
-        b=gFAofLg0jrpLSfWOSn6NF8CK/5FJeiqmvdtprA+Ls1Mv6ONwz0i3nBjywYz0dzLHzf
-         W/CiYgXmm+GTA48OjFKdGNGGbYL87ct6SDyeJZPV+KZ73BJy1mRn+IXxWXx04TQZltmb
-         lX69SAdTaAFtQrCmfgUk8ezpJltZM3CTyzlaQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=S+XGXg2Rv7JERtxGIutirLnuoE1LsDWr7jV2Cgxp6Qg=;
-        b=ah+SKS5Wdd+AZk8btMr/Vb3BS3dr3HRkcZ2eqKv0oHRYrMW3XWDWRemaL+exSiozdV
-         yTgRnq8j2bmzlxA6aG6zeyWdxh2ROkA7mEnaiWo7QJ1JVKsCicaAidVGNggJhCbVIvsn
-         LVTf6QZLWN5mZx6by0KFS/4EKSbOe2gbnrL9k3pZuDSCZlvDWt6ILKgtUwt5dc0xqMen
-         Hew9xTqL4lxNga08oJbNMpND2wwl6HQTL0FIHjMy+zRjKHicR/UQ9nnjsQ2yf9yjywQ9
-         ydD599ET81EFiigcDA501jTidH2b1l1PBADgZ3YNPINGL61bnxPwPnDxeQvWvGWPY7E2
-         dyUg==
-X-Gm-Message-State: AOAM530MQdmPMViqhXC4Wy0QTIYkFSAmlIieASMsY634D+2gqvriiAHZ
-        r+sn/gsm9ncNLpPYP83TdwYLqEeOJek3cec17cU=
-X-Google-Smtp-Source: ABdhPJwB8bAi6JGmTMPTdihi/NnZybQWWgef0uGFsIpyPR313yG6ac1sru5gm/tlhnoZrVg7tk/HoQ==
-X-Received: by 2002:a05:6512:3981:b0:448:40e5:cf90 with SMTP id j1-20020a056512398100b0044840e5cf90mr16387427lfu.656.1648419697573;
-        Sun, 27 Mar 2022 15:21:37 -0700 (PDT)
-Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com. [209.85.167.50])
-        by smtp.gmail.com with ESMTPSA id s21-20020a2e9c15000000b0024917f4e911sm1522943lji.80.2022.03.27.15.21.34
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 27 Mar 2022 15:21:35 -0700 (PDT)
-Received: by mail-lf1-f50.google.com with SMTP id bu29so21881421lfb.0
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 15:21:34 -0700 (PDT)
-X-Received: by 2002:a05:6512:3ca1:b0:44a:93f1:45cf with SMTP id
- h33-20020a0565123ca100b0044a93f145cfmr2930787lfv.542.1648419694374; Sun, 27
- Mar 2022 15:21:34 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220326114009.1690-1-aissur0002@gmail.com> <CAHk-=wijnsoGpoXRvY9o-MYow_xNXxaHg5vWJ5Z3GaXiWeg+dg@mail.gmail.com>
- <CAHk-=wgiTa-Cf+CyChsSHe-zrsps=GMwsEqFE3b_cgWUjxUSmw@mail.gmail.com> <2698031.BEx9A2HvPv@fedor-zhuzhzhalka67>
-In-Reply-To: <2698031.BEx9A2HvPv@fedor-zhuzhzhalka67>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sun, 27 Mar 2022 15:21:18 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wh2Ao+OgnWSxHsJodXiLwtaUndXSkuhh9yKnA3iXyBLEA@mail.gmail.com>
-Message-ID: <CAHk-=wh2Ao+OgnWSxHsJodXiLwtaUndXSkuhh9yKnA3iXyBLEA@mail.gmail.com>
-Subject: Re: [PATCH 4/4] file: Fix file descriptor leak in copy_fd_bitmaps()
-To:     Fedor Pchelkin <aissur0002@gmail.com>
-Cc:     Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        Eric Biggers <ebiggers@kernel.org>,
+        Sun, 27 Mar 2022 18:24:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 956ABE0DC;
+        Sun, 27 Mar 2022 15:22:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2F4AEB80DD8;
+        Sun, 27 Mar 2022 22:22:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id DE491C340EC;
+        Sun, 27 Mar 2022 22:22:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648419767;
+        bh=fG8+d8sNVPS5l5FLwTfiPdWa1b3S7uWFkrHQv2LLCGk=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=TTB6S29NgVFjDHezmNMy8YEgDJvjaV30ZD9D6mW2keCwh5ufIBCsbdcIpZhpCbdRo
+         ykF9HjVAE8q+bPU8MgM3UlmGUboRvk6xmB4ua1AoSZLG5747TTWRLR5/w/uaT9tU1p
+         JNkoNs02ASBXwHusQ+WUw4Nm9aclB+n7Ftz34Ev1nWtA5fjcFH1HHUu7ejcLAnUizY
+         5ALVvUQQDwNaQtB/HpwNVeJ5hhwb5mpMWSRdpgChvxDMAziBcXnycM0yEQrEH2NbT+
+         FWxzFy+8gam/YD1iqj+BIVEPyLSErvGjOPKoyFW44h8qlHh6tjrzRi6vhujNApjysa
+         NPdkvHNdRDYcA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CA0ACE6D3DD;
+        Sun, 27 Mar 2022 22:22:47 +0000 (UTC)
+Subject: Re: [GIT PULL] Landlock fixes for v5.18
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220321115913.478505-1-mic@digikod.net>
+References: <20220321115913.478505-1-mic@digikod.net>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220321115913.478505-1-mic@digikod.net>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/mic/linux.git tags/landlock-5.18-rc1
+X-PR-Tracked-Commit-Id: aea0b9f2486da8497f35c7114b764bf55e17c7ea
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 29cbaa3e60dfe48e341a3a5ce1c2d8f3d9e9667c
+Message-Id: <164841976781.22197.3197241870362548158.pr-tracker-bot@kernel.org>
+Date:   Sun, 27 Mar 2022 22:22:47 +0000
+To:     =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>,
         Christian Brauner <brauner@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Mar 27, 2022 at 2:53 PM <aissur0002@gmail.com> wrote:
->
-> I am sorry, that was my first attempt to contribute to the kernel and
-> I messed up a little bit with the patch tag: it is actually a single,
-> standalone patch and there has been nothing posted previously.
+The pull request you sent on Mon, 21 Mar 2022 12:59:13 +0100:
 
-No problem, thanks for clarifying.
+> git://git.kernel.org/pub/scm/linux/kernel/git/mic/linux.git tags/landlock-5.18-rc1
 
-But the patch itself in that case is missing some detail, since it
-clearly doesn't apply to upstream.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/29cbaa3e60dfe48e341a3a5ce1c2d8f3d9e9667c
 
-Anyway:
+Thank you!
 
-> In few words, an error occurs while executing close_range() call with
-> CLOSE_RANGE_UNSHARE flag: in __close_range() the value of
-> max_unshare_fds (later used as max_fds in dup_fd() and copy_fd_bitmaps())
-> can be an arbitrary number.
->
->   if (max_fd >= last_fd(files_fdtable(cur_fds)))
->     max_unshare_fds = fd;
->
-> and not be a multiple of BITS_PER_LONG or BITS_PER_BYTE.
-
-Very good, that's the piece I was missing. I only looked in fs/file.c,
-and missed how that max_unshare_fds gets passed from __close_range()
-into fork.c for unshare_fd() and then back to file.c and dup_fd(). And
-then affects sane_fdtable_size().
-
-I _think_ it should be sufficient to just do something like
-
-       max_fds = ALIGN(max_fds, BITS_PER_LONG)
-
-in sane_fdtable_size(), but honestly, I haven't actually thought about
-it all that much. That's just a gut feel without really analyzing
-things - sane_fdtable_size() really should never return a value that
-isn't BITS_PER_LONG aligned.
-
-And that whole close_range() is why I added Christian Brauner to the
-participant list, though, so let's see if Christian has any comments.
-
-Christian?
-
-Btw, do you have a pointer to the syzbot report? I see the repro and
-the crashlog you attached, but it would be good to have that pointer
-to the syzbot original too.
-
-Or did you just do this by running syzkaller yourself and there is no
-external report?
-
-                 Linus
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
