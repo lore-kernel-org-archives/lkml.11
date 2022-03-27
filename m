@@ -2,239 +2,256 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86DB4C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 16:26:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25064C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 16:27:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236021AbiC0Q14 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 12:27:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47588 "EHLO
+        id S236027AbiC0Q2o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 12:28:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230418AbiC0Q1y (ORCPT
+        with ESMTP id S230418AbiC0Q2m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 12:27:54 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08F4E50076
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 09:26:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648398375; x=1679934375;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=7i0z24uwur3pdk7vHbwoBPtRP4iokLyG04FKmo17cew=;
-  b=ChPY7USdlosJseZCmsGWlKoxEIT4ZFU5mw9hkKpyC3OTICu0wDwmPMiA
-   F1N131oK6i1tieIe7QyJ27zNgovIz3ZIfqTvx/05T8TIpxf7Rm3mSV8N7
-   lRXnSbEX+1PeJP5ZcNqQoOVl45Islry5P/iODyKwY2CfA8yA1Y51VbLs4
-   41DssaydeF1aHBH3oJb159oO78peAkTKuRuemTlY/RKXGVJTYzDrT9wlh
-   FwQxHuluoMRHaJ8x4cAWDvrvju1tYHps119yXNcD+KWBwdiCsFg3WKQUz
-   b2T1keQ9u9GeEIc0RFKerBWnKDI+LnUSJJahI0GNhj6GZXG3dKeawm7BJ
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10299"; a="258830084"
-X-IronPort-AV: E=Sophos;i="5.90,215,1643702400"; 
-   d="scan'208";a="258830084"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2022 09:26:14 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,215,1643702400"; 
-   d="scan'208";a="545671579"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga007.jf.intel.com with ESMTP; 27 Mar 2022 09:26:13 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nYViW-0001Eg-B1; Sun, 27 Mar 2022 16:26:12 +0000
-Date:   Mon, 28 Mar 2022 00:25:38 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: drivers/video/fbdev/cirrusfb.c:1852:17: sparse: sparse: incorrect
- type in argument 1 (different address spaces)
-Message-ID: <202203280028.6JmzLLX5-lkp@intel.com>
+        Sun, 27 Mar 2022 12:28:42 -0400
+Received: from mail.mleia.com (mleia.com [178.79.152.223])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D000C50460;
+        Sun, 27 Mar 2022 09:27:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mleia.com; s=mail;
+        t=1648398422; bh=jVVP0iUlP0DlXFXuRsvD4l9GTzsez6QkvgD7J3RohAc=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=MLm+0493wtU0w5AGNp4Mdt4LzIQsnV2mq/n8xB1pqaDR7JKikrDnSl4aXiBj7Z7UN
+         Kw/41C3gPUabbLyNzcllMxYQ02Y3RDw/mA6HcpfdA2Afk8n9Dsu/pciVfal6UY3JvN
+         DLQpvgREaj37SBVnRxQDhC0i1mWycsasfR048qA28L/Z1emPW9RtI5WZl2LCi5Abwh
+         2VPSMyEAHk+i78BTH0otUBOzhW7bsjjPqHCjrjGimP5hGp5n9t0MeC8NZPc3oFDXfc
+         WmJb+d4+aGRMqcw8JALyolWkwz6ZQBupB2SuK+IU19R1EWyAI7LYDRh9rQDnxYjgGH
+         fFLenR9Eeji+A==
+Received: from mail.mleia.com (localhost [127.0.0.1])
+        by mail.mleia.com (Postfix) with ESMTP id 114013A2E38;
+        Sun, 27 Mar 2022 16:27:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mleia.com; s=mail;
+        t=1648398421; bh=jVVP0iUlP0DlXFXuRsvD4l9GTzsez6QkvgD7J3RohAc=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=LshbMpuF6Mc9PBPUXyNqiRWjCUSmzNiYCCgFLY70CaWSiQl21q3+RbWcvcB5CKC8y
+         FkhgdP9++a13mFTnPoHup9KEIV0CO2sWYLYOg/HEFtpDlDAM1DNzfZDwaHCzkoVP/4
+         OINUOgh3SCZeF6WS8GPoyfhoezv0xfZ+zNbAWiXzY40Eg0MMrtllYsgd815oD5n1Vz
+         rJGJ2Cmxh+K01MzUHciQiv4ywEaFeiID1O8HOdVAKL57Zi2sTM+L1Eqvj2SMN1rQup
+         BGFw07BDr4LPVVu3MhoRVtBjenHUMPbDl+nCbvtGFYWo2Wl02KLCR8PL1ThCr3iV9W
+         tn0H5LinR8S9w==
+Received: from [192.168.1.102] (88-113-46-102.elisa-laajakaista.fi [88.113.46.102])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.mleia.com (Postfix) with ESMTPSA id 898A438C4B9;
+        Sun, 27 Mar 2022 16:27:01 +0000 (UTC)
+Subject: Re: [PATCH v2 3/3] ARM: dts: lpc32xx: Update spi clock properties
+To:     Trevor Woerner <twoerner@gmail.com>
+Cc:     Robin Murphy <robin.murphy@arm.com>, Arnd Bergmann <arnd@arndb.de>,
+        Kuldeep Singh <singh.kuldeep87k@gmail.com>,
+        Olof Johansson <olof@lixom.net>, SoC Team <soc@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220311093800.18778-1-singh.kuldeep87k@gmail.com>
+ <20220311093800.18778-4-singh.kuldeep87k@gmail.com>
+ <4aae560d-d266-d0d0-136f-32891b15bc01@mleia.com>
+ <CAK8P3a3a_WXbDKN-jJUt_Wuvop0rfaUs4ytwyhogOxdtJAPx0w@mail.gmail.com>
+ <4f39f086-1932-1729-8761-d5c533356812@mleia.com>
+ <dc599cae-7245-73dc-8050-14ec6c1336b8@arm.com>
+ <f497fb65-3568-cda2-f086-2275b50daf4b@mleia.com>
+ <faea4c0c-e20b-c043-6f74-95af8177e8bd@arm.com>
+ <4a7e3d0e-f804-74a5-ef5b-206404eb9b61@mleia.com>
+ <CAHUNapQMaBZ2-yJR10Qv+Pix9BA3AGSgjBaMBB9zJTTLLOGSkg@mail.gmail.com>
+From:   Vladimir Zapolskiy <vz@mleia.com>
+Message-ID: <024f0d22-47d8-2d14-bed4-9f538a1537b3@mleia.com>
+Date:   Sun, 27 Mar 2022 19:27:00 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CAHUNapQMaBZ2-yJR10Qv+Pix9BA3AGSgjBaMBB9zJTTLLOGSkg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-49551924 
+X-CRM114-CacheID: sfid-20220327_162702_104191_3EA1195D 
+X-CRM114-Status: GOOD (  53.54  )
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   f022814633e1c600507b3a99691b4d624c2813f0
-commit: f68f2ff91512c199ec24883001245912afc17873 fortify: Detect struct member overflows in memcpy() at compile-time
-date:   6 weeks ago
-config: i386-randconfig-s001 (https://download.01.org/0day-ci/archive/20220328/202203280028.6JmzLLX5-lkp@intel.com/config)
-compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f68f2ff91512c199ec24883001245912afc17873
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout f68f2ff91512c199ec24883001245912afc17873
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash drivers/video/fbdev/
+Hi Trevor,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+On 3/27/22 5:57 AM, Trevor Woerner wrote:
+> 
+> On Tue, Mar 15, 2022 at 2:00 AM Vladimir Zapolskiy <vz@mleia.com <mailto:vz@mleia.com>> wrote:
+> 
+>     On 3/14/22 2:20 PM, Robin Murphy wrote:
+>      > On 2022-03-14 11:50, Vladimir Zapolskiy wrote:
+>      >> On 3/14/22 1:43 PM, Robin Murphy wrote:
+>      >>> On 2022-03-11 14:07, Vladimir Zapolskiy wrote:
+>      >>>> On 3/11/22 3:38 PM, Arnd Bergmann wrote:
+>      >>>>> On Fri, Mar 11, 2022 at 2:20 PM Vladimir Zapolskiy <vz@mleia.com <mailto:vz@mleia.com>>
+>      >>>>> wrote:
+>      >>>>>>
+>      >>>>>> On 3/11/22 11:38 AM, Kuldeep Singh wrote:
+>      >>>>>>> PL022 binding require two clocks to be defined but lpc platform
+>      >>>>>>> doesn't
+>      >>>>>>> comply with bindings and define only one clock i.e apb_pclk.
+>      >>>>>>>
+>      >>>>>>> Update spi clocks and clocks-names property by adding appropriate
+>      >>>>>>> clock
+>      >>>>>>> reference to make it compliant with bindings.
+>      >>>>>>>
+>      >>>>>>> CC: Vladimir Zapolskiy <vz@mleia.com <mailto:vz@mleia.com>>
+>      >>>>>>> Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com <mailto:singh.kuldeep87k@gmail.com>>
+>      >>>>>>> ---
+>      >>>>>>> v2:
+>      >>>>>>> - New patch with similar changeset
+>      >>>>>>> - Send to soc ML
+>      >>>>>>>
+>      >>>>>>>      arch/arm/boot/dts/lpc32xx.dtsi | 8 ++++----
+>      >>>>>>>      1 file changed, 4 insertions(+), 4 deletions(-)
+>      >>>>>>>
+>      >>>>>>> diff --git a/arch/arm/boot/dts/lpc32xx.dtsi
+>      >>>>>>> b/arch/arm/boot/dts/lpc32xx.dtsi
+>      >>>>>>> index c87066d6c995..30958e02d5e2 100644
+>      >>>>>>> --- a/arch/arm/boot/dts/lpc32xx.dtsi
+>      >>>>>>> +++ b/arch/arm/boot/dts/lpc32xx.dtsi
+>      >>>>>>> @@ -178,8 +178,8 @@ ssp0: spi@20084000 {
+>      >>>>>>>                                  compatible = "arm,pl022",
+>      >>>>>>> "arm,primecell";
+>      >>>>>>>                                  reg = <0x20084000 0x1000>;
+>      >>>>>>>                                  interrupts = <20
+>      >>>>>>> IRQ_TYPE_LEVEL_HIGH>;
+>      >>>>>>> -                             clocks = <&clk LPC32XX_CLK_SSP0>;
+>      >>>>>>> -                             clock-names = "apb_pclk";
+>      >>>>>>> +                             clocks = <&clk LPC32XX_CLK_SSP0>,
+>      >>>>>>> <&clk LPC32XX_CLK_SSP0>;
+>      >>>>>>> +                             clock-names = "sspclk", "apb_pclk";
+>      >>>>>>
+>      >>>>>> In fact I'm uncertain if it is the right change, could it happen that
+>      >>>>>> the commit
+>      >>>>>> cc0f6e96c4fd ("spi: dt-bindings: Convert Arm pl022 to json-schema")
+>      >>>>>> sets a wrong
+>      >>>>>> schema pattern?
+>      >>>>>
+>      >>>>> Good pointm this doesn't quite seem right: it is unlikely that the
+>      >>>>> same clock
+>      >>>>> is used for both the SPI bus and the APB bus.
+>      >>>>>
+>      >>>>>> Apparently just one clock is wanted on all observed platforms and
+>      >>>>>> cases, this
+>      >>>>>> is implicitly confirmed by clock handling in the
+>      >>>>>> drivers/spi/spi-pl022.c :
+>      >>>>>>
+>      >>>>>>            pl022->clk = devm_clk_get(&adev->dev, NULL);
+>      >>>>>>
+>      >>>>>> So, I would vote to fix the device tree bindings schema.
+>      >>>>>
+>      >>>>> Isn't this just using the wrong name? The name of the macro
+>      >>>>> LPC32XX_CLK_SSP0 might indicate that this is indeed the SPI clock
+>      >>>>> rather than the APB clock, so we only need to change clock-names
+>      >>>>> property here and leave it unchanged otherwise.
+>      >>>>
+>      >>>> Yes, the name is wrong, here I'm ready to take the blame:
+>      >>>>
+>      >>>> Fixes: 93898eb775e5 ("arm: dts: lpc32xx: add clock properties to device
+>      >>>> nodes")
+>      >>>>
+>      >>>> Noteworthy the commit above presets the same clock name to other
+>      >>>> PrimeCell
+>      >>>> controllers, namely pl110 (LCD), pl080 (DMA), pl175 (EMC) and pl18x
+>      >>>> (SD),
+>      >>>> plus this one pl022 (SSP), and all but SSP and SD are AHB slaves in
+>      >>>> fact.
+>      >>>>
+>      >>>> On LPC32xx the bus clock source and function clock source for SSP is
+>      >>>> HCLK.
+>      >>>>
+>      >>>> My guess is that the misnamed "apb_pclk" migrated into the schema from
+>      >>>> the lpc32xx.dtsi, so I'd suggest, unless some platform really needs it,
+>      >>>> firstly fix the schema by removing "apb_pclk" clock. It will leave
+>      >>>> just one
+>      >>>> clock, so "clock-names" property can be set as optional, and the drop
+>      >>>> the property from the lpc32xx.dtsi.
+>      >>>
+>      >>> No, "apb_pclk" is part of the common AMBA binding, and is required by
+>      >>> the "arm,primecell" compatible. You won't (usually) find it referenced
+>      >>> in drivers because it's dealt with by amba_get_enable_pclk() via
+>      >>> amba_probe().
+>      >>>
+>      >>
+>      >> Thank you, it explains, why "apb_pclk" is required for all PrimeCell
+>      >> controllers on the SoC. Nevertheless, in commit 93898eb775e5 it was
+>      >> misidentified with the sspclk clock, the latter one is the only clock
+>      >> explicitly utilized by the driver in 2015 and till today. Fixes in dts
+>      >> files should be preceded by a fix in the driver.
+>      >
+>      > There's nothing to fix in the driver, though. In fact it can only be
+>      > working today because the Linux driver isn't very strict and simply
+>      > assumes that the first clock entry is SSPCLK *without* considering its
+>      > name (other consumers of the binding might be stricter; I don't know),
+> 
+>     Here I'm a bit ignorant, would it be totally reliable to assume that
+>     clk_get(dev, NULL) gets the first clock from the list, and will it never
+>     happen that one day it takes e.g. the last entry?
+> 
+>     I'm kind of surprised that the asked fix in the driver meets such a
+>     resistance.
+> 
+>      > and because presumably the HCLK happens to be enabled already anyway.
+> 
+>     Yes, that's the case here.
+> 
+>      > Changing the driver behaviour would only stand to cause functional
+>      > regressions.
+>      >
+>      > There are effectively two bugs in the DTS here, firstly that it only has
+>      > one clock entry when it should have two, and secondly that the clock
+>      > entry which *is* present has the wrong name (or the wrong clock
+>      > specifier, depending on how you look at it). Kuldeep's patch merely
+>      > fixes the first one by fully describing the way it's currently working
+>      > in practice, so it's really just a choice of whether to treat "respect
+>      > the binding" and "describe the hardware correctly" as separate issues
+>      > and have a follow-up patch to correctly reference HCLK as the second
+>      > clock, or whether they're trivial enough to squash together.
+>      >
+> 
+>     The two problems in the DTS are not argued, the chosen way to correct them
+>     is questionable though. Well, I won't object to see it split into two
+>     changes, but please send them at least in one series then, so that it
+>     won't be left forgotten.
+> 
+>     --
+>     Best wishes,
+>     Vladimir
+> 
+> On the lpc32xx both the SPI and SSP peripherals are APB devices (low-speed)
+> 
+> lpc32xx-apb-peripherals.png
+> The APB devices on this SoC are driven by the PERIPH_CLK which can be
+> derived from either the HCLK or the SYSCLK.
 
+thank you for the data, I'd like to reference to Table 14, which says that
+both bus clock source and function clock source for SSP0 and SSP1 are a
+non-selectable HCLK. I'm unsure if for instance PERIPH_CLK can be set as
+a function clock source for SSPx.
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/video/fbdev/cirrusfb.c:1852:17: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got char [noderef] __iomem *screen_base @@
-   drivers/video/fbdev/cirrusfb.c:1852:17: sparse:     expected void const *
-   drivers/video/fbdev/cirrusfb.c:1852:17: sparse:     got char [noderef] __iomem *screen_base
->> drivers/video/fbdev/cirrusfb.c:1852:17: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got char [noderef] __iomem *screen_base @@
-   drivers/video/fbdev/cirrusfb.c:1852:17: sparse:     expected void const *
-   drivers/video/fbdev/cirrusfb.c:1852:17: sparse:     got char [noderef] __iomem *screen_base
-   drivers/video/fbdev/cirrusfb.c:1852:17: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void * @@     got char [noderef] __iomem *screen_base @@
-   drivers/video/fbdev/cirrusfb.c:1852:17: sparse:     expected void *
-   drivers/video/fbdev/cirrusfb.c:1852:17: sparse:     got char [noderef] __iomem *screen_base
+> lpc32xx-clock.png
+> The default on reset is for PERIPH_CLK to be derived from the SYSCLK but
+> both U-Boot and Linux run in "normal" mode, which is to say that
+> PERIPH_CLK, HCLK, ARM_CLK, and DDRAM_CLK are derived from the HCLK PLL.> 
+> There is no separate SSP clock, the SSP is driven by one clock: the
+> PERIPH_CLK (or "apb_pclk").
+
+Right, there is no separate SSP clock in sense of a bus clock, it is
+correct to get HCLK clock (or equally its child SSP clock) rate as a bus
+clock rate, and the reason for introduction of SSP0/SSP1 clocks is that
+these clocks are gated.
+
+If I'm correct above, what does it mean in connection to LPC32xx device
+tree bindings? The first or single clock source shall remain to be SSPx
+clock, either the former is "sspclk" or "apb_pclk".
+
 --
->> drivers/video/fbdev/geode/suspend_gx.c:30:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *gp_regs @@
-   drivers/video/fbdev/geode/suspend_gx.c:30:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/suspend_gx.c:30:9: sparse:     got void [noderef] __iomem *gp_regs
->> drivers/video/fbdev/geode/suspend_gx.c:30:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *gp_regs @@
-   drivers/video/fbdev/geode/suspend_gx.c:30:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/suspend_gx.c:30:9: sparse:     got void [noderef] __iomem *gp_regs
-   drivers/video/fbdev/geode/suspend_gx.c:30:9: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *gp_regs @@
-   drivers/video/fbdev/geode/suspend_gx.c:30:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/suspend_gx.c:30:9: sparse:     got void [noderef] __iomem *gp_regs
->> drivers/video/fbdev/geode/suspend_gx.c:31:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *dc_regs @@
-   drivers/video/fbdev/geode/suspend_gx.c:31:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/suspend_gx.c:31:9: sparse:     got void [noderef] __iomem *dc_regs
->> drivers/video/fbdev/geode/suspend_gx.c:31:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *dc_regs @@
-   drivers/video/fbdev/geode/suspend_gx.c:31:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/suspend_gx.c:31:9: sparse:     got void [noderef] __iomem *dc_regs
-   drivers/video/fbdev/geode/suspend_gx.c:31:9: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *dc_regs @@
-   drivers/video/fbdev/geode/suspend_gx.c:31:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/suspend_gx.c:31:9: sparse:     got void [noderef] __iomem *dc_regs
->> drivers/video/fbdev/geode/suspend_gx.c:32:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *vid_regs @@
-   drivers/video/fbdev/geode/suspend_gx.c:32:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/suspend_gx.c:32:9: sparse:     got void [noderef] __iomem *vid_regs
->> drivers/video/fbdev/geode/suspend_gx.c:32:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *vid_regs @@
-   drivers/video/fbdev/geode/suspend_gx.c:32:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/suspend_gx.c:32:9: sparse:     got void [noderef] __iomem *vid_regs
-   drivers/video/fbdev/geode/suspend_gx.c:32:9: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *vid_regs @@
-   drivers/video/fbdev/geode/suspend_gx.c:32:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/suspend_gx.c:32:9: sparse:     got void [noderef] __iomem *vid_regs
->> drivers/video/fbdev/geode/suspend_gx.c:33:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem * @@
-   drivers/video/fbdev/geode/suspend_gx.c:33:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/suspend_gx.c:33:9: sparse:     got void [noderef] __iomem *
->> drivers/video/fbdev/geode/suspend_gx.c:33:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem * @@
-   drivers/video/fbdev/geode/suspend_gx.c:33:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/suspend_gx.c:33:9: sparse:     got void [noderef] __iomem *
-   drivers/video/fbdev/geode/suspend_gx.c:33:9: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem * @@
-   drivers/video/fbdev/geode/suspend_gx.c:33:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/suspend_gx.c:33:9: sparse:     got void [noderef] __iomem *
---
->> drivers/video/fbdev/geode/lxfb_ops.c:602:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *gp_regs @@
-   drivers/video/fbdev/geode/lxfb_ops.c:602:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/lxfb_ops.c:602:9: sparse:     got void [noderef] __iomem *gp_regs
->> drivers/video/fbdev/geode/lxfb_ops.c:602:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *gp_regs @@
-   drivers/video/fbdev/geode/lxfb_ops.c:602:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/lxfb_ops.c:602:9: sparse:     got void [noderef] __iomem *gp_regs
-   drivers/video/fbdev/geode/lxfb_ops.c:602:9: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *gp_regs @@
-   drivers/video/fbdev/geode/lxfb_ops.c:602:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/lxfb_ops.c:602:9: sparse:     got void [noderef] __iomem *gp_regs
->> drivers/video/fbdev/geode/lxfb_ops.c:603:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *dc_regs @@
-   drivers/video/fbdev/geode/lxfb_ops.c:603:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/lxfb_ops.c:603:9: sparse:     got void [noderef] __iomem *dc_regs
->> drivers/video/fbdev/geode/lxfb_ops.c:603:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *dc_regs @@
-   drivers/video/fbdev/geode/lxfb_ops.c:603:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/lxfb_ops.c:603:9: sparse:     got void [noderef] __iomem *dc_regs
-   drivers/video/fbdev/geode/lxfb_ops.c:603:9: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *dc_regs @@
-   drivers/video/fbdev/geode/lxfb_ops.c:603:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/lxfb_ops.c:603:9: sparse:     got void [noderef] __iomem *dc_regs
->> drivers/video/fbdev/geode/lxfb_ops.c:604:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *vp_regs @@
-   drivers/video/fbdev/geode/lxfb_ops.c:604:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/lxfb_ops.c:604:9: sparse:     got void [noderef] __iomem *vp_regs
->> drivers/video/fbdev/geode/lxfb_ops.c:604:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *vp_regs @@
-   drivers/video/fbdev/geode/lxfb_ops.c:604:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/lxfb_ops.c:604:9: sparse:     got void [noderef] __iomem *vp_regs
-   drivers/video/fbdev/geode/lxfb_ops.c:604:9: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *vp_regs @@
-   drivers/video/fbdev/geode/lxfb_ops.c:604:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/lxfb_ops.c:604:9: sparse:     got void [noderef] __iomem *vp_regs
->> drivers/video/fbdev/geode/lxfb_ops.c:605:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem * @@
-   drivers/video/fbdev/geode/lxfb_ops.c:605:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/lxfb_ops.c:605:9: sparse:     got void [noderef] __iomem *
->> drivers/video/fbdev/geode/lxfb_ops.c:605:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem * @@
-   drivers/video/fbdev/geode/lxfb_ops.c:605:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/lxfb_ops.c:605:9: sparse:     got void [noderef] __iomem *
-   drivers/video/fbdev/geode/lxfb_ops.c:605:9: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem * @@
-   drivers/video/fbdev/geode/lxfb_ops.c:605:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/lxfb_ops.c:605:9: sparse:     got void [noderef] __iomem *
-   drivers/video/fbdev/geode/lxfb_ops.c:633:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem * @@
-   drivers/video/fbdev/geode/lxfb_ops.c:633:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/lxfb_ops.c:633:9: sparse:     got void [noderef] __iomem *
-   drivers/video/fbdev/geode/lxfb_ops.c:633:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem * @@
-   drivers/video/fbdev/geode/lxfb_ops.c:633:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/lxfb_ops.c:633:9: sparse:     got void [noderef] __iomem *
-   drivers/video/fbdev/geode/lxfb_ops.c:633:9: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem * @@
-   drivers/video/fbdev/geode/lxfb_ops.c:633:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/lxfb_ops.c:633:9: sparse:     got void [noderef] __iomem *
-   drivers/video/fbdev/geode/lxfb_ops.c:760:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem * @@
-   drivers/video/fbdev/geode/lxfb_ops.c:760:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/lxfb_ops.c:760:9: sparse:     got void [noderef] __iomem *
-   drivers/video/fbdev/geode/lxfb_ops.c:760:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem * @@
-   drivers/video/fbdev/geode/lxfb_ops.c:760:9: sparse:     expected void const *
-   drivers/video/fbdev/geode/lxfb_ops.c:760:9: sparse:     got void [noderef] __iomem *
->> drivers/video/fbdev/geode/lxfb_ops.c:760:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void * @@     got void [noderef] __iomem * @@
-   drivers/video/fbdev/geode/lxfb_ops.c:760:9: sparse:     expected void *
-   drivers/video/fbdev/geode/lxfb_ops.c:760:9: sparse:     got void [noderef] __iomem *
-
-vim +1852 drivers/video/fbdev/cirrusfb.c
-
-^1da177e4c3f415 drivers/video/cirrusfb.c Linus Torvalds 2005-04-16  1809  
-8503df65976d0f8 drivers/video/cirrusfb.c Krzysztof Helt 2007-10-16  1810  static void cirrusfb_imageblit(struct fb_info *info,
-8503df65976d0f8 drivers/video/cirrusfb.c Krzysztof Helt 2007-10-16  1811  			       const struct fb_image *image)
-^1da177e4c3f415 drivers/video/cirrusfb.c Linus Torvalds 2005-04-16  1812  {
-^1da177e4c3f415 drivers/video/cirrusfb.c Linus Torvalds 2005-04-16  1813  	struct cirrusfb_info *cinfo = info->par;
-7cade31cabec33c drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1814  	unsigned char op = (info->var.bits_per_pixel == 24) ? 0xc : 0x4;
-^1da177e4c3f415 drivers/video/cirrusfb.c Linus Torvalds 2005-04-16  1815  
-9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1816  	if (info->state != FBINFO_STATE_RUNNING)
-9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1817  		return;
-df3aafd57d590d6 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1818  	/* Alpine/SD64 does not work at 24bpp ??? */
-df3aafd57d590d6 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1819  	if (info->flags & FBINFO_HWACCEL_DISABLED || image->depth != 1)
-df3aafd57d590d6 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1820  		cfb_imageblit(info, image);
-df3aafd57d590d6 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1821  	else if ((cinfo->btype == BT_ALPINE || cinfo->btype == BT_SD64) &&
-df3aafd57d590d6 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1822  		  op == 0xc)
-^1da177e4c3f415 drivers/video/cirrusfb.c Linus Torvalds 2005-04-16  1823  		cfb_imageblit(info, image);
-9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1824  	else {
-9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1825  		unsigned size = ((image->width + 7) >> 3) * image->height;
-9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1826  		int m = info->var.bits_per_pixel;
-9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1827  		u32 fg, bg;
-9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1828  
-9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1829  		if (info->var.bits_per_pixel == 8) {
-9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1830  			fg = image->fg_color;
-9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1831  			bg = image->bg_color;
-9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1832  		} else {
-9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1833  			fg = ((u32 *)(info->pseudo_palette))[image->fg_color];
-9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1834  			bg = ((u32 *)(info->pseudo_palette))[image->bg_color];
-9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1835  		}
-7cade31cabec33c drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1836  		if (info->var.bits_per_pixel == 24) {
-7cade31cabec33c drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1837  			/* clear background first */
-7cade31cabec33c drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1838  			cirrusfb_RectFill(cinfo->regbase,
-7cade31cabec33c drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1839  					  info->var.bits_per_pixel,
-7cade31cabec33c drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1840  					  (image->dx * m) / 8, image->dy,
-7cade31cabec33c drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1841  					  (image->width * m) / 8,
-7cade31cabec33c drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1842  					  image->height,
-7cade31cabec33c drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1843  					  bg, bg,
-7cade31cabec33c drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1844  					  info->fix.line_length, 0x40);
-7cade31cabec33c drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1845  		}
-9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1846  		cirrusfb_RectFill(cinfo->regbase,
-9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1847  				  info->var.bits_per_pixel,
-9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1848  				  (image->dx * m) / 8, image->dy,
-9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1849  				  (image->width * m) / 8, image->height,
-9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1850  				  fg, bg,
-7cade31cabec33c drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1851  				  info->fix.line_length, op);
-9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31 @1852  		memcpy(info->screen_base, image->data, size);
-9e8480625332071 drivers/video/cirrusfb.c Krzysztof Helt 2009-03-31  1853  	}
-^1da177e4c3f415 drivers/video/cirrusfb.c Linus Torvalds 2005-04-16  1854  }
-^1da177e4c3f415 drivers/video/cirrusfb.c Linus Torvalds 2005-04-16  1855  
-
-:::::: The code at line 1852 was first introduced by commit
-:::::: 9e848062533207130667f6eaa748549367ccbedf cirrusfb: add imageblit function
-
-:::::: TO: Krzysztof Helt <krzysztof.h1@wp.pl>
-:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Best wishes,
+Vladimir
