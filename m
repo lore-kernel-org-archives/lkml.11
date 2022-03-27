@@ -2,214 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 110EEC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 16:46:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF5D4C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 16:47:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236087AbiC0QsA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 12:48:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37162 "EHLO
+        id S236085AbiC0Qtg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 12:49:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235060AbiC0Qrz (ORCPT
+        with ESMTP id S229998AbiC0Qtf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 12:47:55 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2762013CF9
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 09:46:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648399576; x=1679935576;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=yVsrP3tyOesK2UcDeqUPYX5bwgfBmBpYlO07wiAw8eg=;
-  b=C03X+QC7I4g8HqoxJhAUnQqUwBo5zQF3bAfXB/x/zTYuflumgMQrtteW
-   27CaF4NX3BvjPG448CH5BtMfTxkf47Pyy36eUQPvd18Msqu4SWjxxaL6Z
-   1uZXI1cLPR8aAcWNCsfbGGxPr2xutxtoy91MyzoLOAS1xDvQbw+1v+N4l
-   WC3vb2a424BAI7L8TFxrY6mRweU/iYPqUjK1ZEkTWcGubGzFbo9+GM5XA
-   I8Yw5nrw9uoRhkNAZFhjgoulGBqECSZQU4o+V+7THZv44L5wcRETdhRXq
-   jUubw85pc8v9P22+E/U/lEWWaaz1MvHLI5C6wTGkMqbemgCbC+m3nYISL
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10299"; a="241016549"
-X-IronPort-AV: E=Sophos;i="5.90,215,1643702400"; 
-   d="scan'208";a="241016549"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2022 09:46:15 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,215,1643702400"; 
-   d="scan'208";a="502269540"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 27 Mar 2022 09:46:13 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nYW1s-0001FI-UO; Sun, 27 Mar 2022 16:46:12 +0000
-Date:   Mon, 28 Mar 2022 00:46:01 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Stephen Boyd <swboyd@chromium.org>
-Subject: drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c:552:40: warning:
- variable 'mode' set but not used
-Message-ID: <202203280038.k7SUnGSa-lkp@intel.com>
+        Sun, 27 Mar 2022 12:49:35 -0400
+Received: from out162-62-57-252.mail.qq.com (out162-62-57-252.mail.qq.com [162.62.57.252])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01BF313D0F
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 09:47:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1648399671;
+        bh=aGbCOIhVGSt1Fp65mIowxPwh1FP/AAKeZhhFmidug4Q=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=OlUnvC3lka0EN7LlSSt6vve+bVLMb6EbwXWUcokaY0Zh81WyMJMeKwKKTbRCnehi9
+         XC1r2N/Ig7E+vV6D4BAUNhNhg2CcpNdTATC5UEtvgMbi2afETiq/5vagmhVF2CSLEl
+         qOwVBSqLnR3qMfZCEHM3z2lRZivH9MlhAoQoAHBg=
+Received: from localhost.localdomain ([120.245.132.52])
+        by newxmesmtplogicsvrszc10.qq.com (NewEsmtp) with SMTP
+        id BEF2A844; Mon, 28 Mar 2022 00:47:47 +0800
+X-QQ-mid: xmsmtpt1648399670teidx7g3p
+Message-ID: <tencent_15F1836A9FD7475D1FCED49818CC6778A006@qq.com>
+X-QQ-XMAILINFO: ORuEwgb9eurkdC4wUAENY3XBZ0pJZrPkJK/n3IRMG8QGa9y5M0AJB0dASrm3EE
+         yQv57yPFwn+ycpb8Xh0EeDr/MjZ/Ghdn3/4yFLtJ8QcKyNMmoAij00DZeMuOlek0cSTU0BfYDtuo
+         J+vdnck1v96RwgKcm5Gpa9eDSMtUyicbSZqQ9B5zEerU7O3V17T2wDTgLqFnm+OVlwt5jwwO0VzH
+         Ko6Do5Y7IOtm84rHhC4b3ODGNkL4oQ7/MR8r7z8hHmKx3wWtuGDs0nDWfL3EAr9ydkB/0DXlp7g9
+         DUb9xRsVfLiXRn+FYt0WLGVs2c6dn2zIBaueI3pkTclkBu5vhYfFQzredwkchzJMoJcT1+DQ26Sc
+         3uI5TpDFGjHKX2tMA4bCJkR8bdRUHcf/5hbRvuw5RAiqfTMdCdLitDXFtoboMrtgFn1pIJSV7NvI
+         S/5kl3qC5jnoE1wFnkN7nGp6nOhAJ5sjdK/3ouFyCYssDx/Y+PVpa6bIfw6TKOCsnVXf7ha7Pwt5
+         aYqd3d1bseK80iH3DKeEomFdeD1b/VwHLlhif8m33eg7/nMg600I6EfZevY3LQ6CeEWGk3lrlJxc
+         fZhhheZlsVTQ7pEwKedd3LgNQ15CveSrpiLV0xu24tZjyOsHr3Pt3zNg8n4Q+hEx7tNhiSEdLTGA
+         sCekX8p5YwTf0S747wgZtPDc7tV2skwWnlH75/y5zzuOJtRh7N5pd42KPvQm4EY0biSj9KBZ9gqW
+         dUJbvKm1rMeZ9fT5EFtOA2i7nmLrFvTyrfjrMelK0pOk841Cdh6+NKt2AAgwj97VflhIjC7CCPXZ
+         Vmoc6lws9lk3rJV+F92KL0OAXuF9NE9Zt7ZBvd3AG4IgYdthHEnNlGQxoyjeOotBQ9kKSluso2Wi
+         BKvns0YMxV9RKco0V/VYjKy7o0fhTK+pbrD+4voD12R7Hm0wUceLZJW2+yGU5+xJaWetFYyjiNNZ
+         gJDYQCQbhubA8MRRBkO+64lLUd484eaXYS1nkoRw8JlzcErLeFSsDCXqUfzZHnpKB8k3Fftn8=
+From:   Chen Guanqiao <chen.chenchacha@foxmail.com>
+To:     minyard@acm.org, openipmi-developer@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org
+Cc:     Chen Guanqiao <chen.chenchacha@foxmail.com>
+Subject: [PATCH 2/3] ipmi: msghandler: Get the number of message through sysfs
+Date:   Mon, 28 Mar 2022 00:47:43 +0800
+X-OQ-MSGID: <e1875e3eba4f8d6a4f861a6b43613b6f778bd095.1648397283.git.chen.chenchacha@foxmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1648397283.git.chen.chenchacha@foxmail.com>
+References: <cover.1648397283.git.chen.chenchacha@foxmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   f022814633e1c600507b3a99691b4d624c2813f0
-commit: 3177589c6e934494e72a2d5934539a836b986390 drm/msm/dpu: encoder: drop unused mode_fixup callback
-date:   5 weeks ago
-config: nios2-allyesconfig (https://download.01.org/0day-ci/archive/20220328/202203280038.k7SUnGSa-lkp@intel.com/config)
-compiler: nios2-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=3177589c6e934494e72a2d5934539a836b986390
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 3177589c6e934494e72a2d5934539a836b986390
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=nios2 SHELL=/bin/bash drivers/gpu/drm/msm/
+Reads the message_count file corresponding the ipmi device, ipmi traverse all
+intf, and count the number of message and high priority message.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Chen Guanqiao <chen.chenchacha@foxmail.com>
+---
+ drivers/char/ipmi/ipmi_msghandler.c | 44 +++++++++++++++++++++++++++++
+ 1 file changed, 44 insertions(+)
 
-All warnings (new ones prefixed by >>):
-
-   drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c: In function 'dpu_encoder_virt_atomic_check':
->> drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c:552:40: warning: variable 'mode' set but not used [-Wunused-but-set-variable]
-     552 |         const struct drm_display_mode *mode;
-         |                                        ^~~~
-
-
-vim +/mode +552 drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  501  
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  502  static struct msm_display_topology dpu_encoder_get_topology(
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  503  			struct dpu_encoder_virt *dpu_enc,
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  504  			struct dpu_kms *dpu_kms,
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  505  			struct drm_display_mode *mode)
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  506  {
-5fddd4f5db8730 Kalyan Thota      2020-06-11  507  	struct msm_display_topology topology = {0};
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  508  	int i, intf_count = 0;
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  509  
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  510  	for (i = 0; i < MAX_PHYS_ENCODERS_PER_VIRTUAL; i++)
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  511  		if (dpu_enc->phys_encs[i])
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  512  			intf_count++;
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  513  
-42a558b71c9ead Kalyan Thota      2019-11-25  514  	/* Datapath topology selection
-42a558b71c9ead Kalyan Thota      2019-11-25  515  	 *
-42a558b71c9ead Kalyan Thota      2019-11-25  516  	 * Dual display
-42a558b71c9ead Kalyan Thota      2019-11-25  517  	 * 2 LM, 2 INTF ( Split display using 2 interfaces)
-42a558b71c9ead Kalyan Thota      2019-11-25  518  	 *
-42a558b71c9ead Kalyan Thota      2019-11-25  519  	 * Single display
-42a558b71c9ead Kalyan Thota      2019-11-25  520  	 * 1 LM, 1 INTF
-42a558b71c9ead Kalyan Thota      2019-11-25  521  	 * 2 LM, 1 INTF (stream merge to support high resolution interfaces)
-42a558b71c9ead Kalyan Thota      2019-11-25  522  	 *
-5fddd4f5db8730 Kalyan Thota      2020-06-11  523  	 * Adding color blocks only to primary interface if available in
-5fddd4f5db8730 Kalyan Thota      2020-06-11  524  	 * sufficient number
-42a558b71c9ead Kalyan Thota      2019-11-25  525  	 */
-42a558b71c9ead Kalyan Thota      2019-11-25  526  	if (intf_count == 2)
-42a558b71c9ead Kalyan Thota      2019-11-25  527  		topology.num_lm = 2;
-42a558b71c9ead Kalyan Thota      2019-11-25  528  	else if (!dpu_kms->catalog->caps->has_3d_merge)
-42a558b71c9ead Kalyan Thota      2019-11-25  529  		topology.num_lm = 1;
-42a558b71c9ead Kalyan Thota      2019-11-25  530  	else
-42a558b71c9ead Kalyan Thota      2019-11-25  531  		topology.num_lm = (mode->hdisplay > MAX_HDISPLAY_SPLIT) ? 2 : 1;
-42a558b71c9ead Kalyan Thota      2019-11-25  532  
-5fddd4f5db8730 Kalyan Thota      2020-06-11  533  	if (dpu_enc->disp_info.intf_type == DRM_MODE_ENCODER_DSI) {
-5fddd4f5db8730 Kalyan Thota      2020-06-11  534  		if (dpu_kms->catalog->dspp &&
-5fddd4f5db8730 Kalyan Thota      2020-06-11  535  			(dpu_kms->catalog->dspp_count >= topology.num_lm))
-e47616df008b10 Kalyan Thota      2020-03-24  536  			topology.num_dspp = topology.num_lm;
-5fddd4f5db8730 Kalyan Thota      2020-06-11  537  	}
-e47616df008b10 Kalyan Thota      2020-03-24  538  
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  539  	topology.num_enc = 0;
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  540  	topology.num_intf = intf_count;
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  541  
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  542  	return topology;
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  543  }
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  544  static int dpu_encoder_virt_atomic_check(
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  545  		struct drm_encoder *drm_enc,
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  546  		struct drm_crtc_state *crtc_state,
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  547  		struct drm_connector_state *conn_state)
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  548  {
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  549  	struct dpu_encoder_virt *dpu_enc;
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  550  	struct msm_drm_private *priv;
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  551  	struct dpu_kms *dpu_kms;
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27 @552  	const struct drm_display_mode *mode;
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  553  	struct drm_display_mode *adj_mode;
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  554  	struct msm_display_topology topology;
-de3916c70a24e3 Drew Davenport    2020-02-19  555  	struct dpu_global_state *global_state;
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  556  	int i = 0;
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  557  	int ret = 0;
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  558  
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  559  	if (!drm_enc || !crtc_state || !conn_state) {
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  560  		DPU_ERROR("invalid arg(s), drm_enc %d, crtc/conn state %d/%d\n",
-e6790f7210062e Zheng Bin         2020-01-23  561  				drm_enc != NULL, crtc_state != NULL, conn_state != NULL);
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  562  		return -EINVAL;
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  563  	}
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  564  
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  565  	dpu_enc = to_dpu_encoder_virt(drm_enc);
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  566  	DPU_DEBUG_ENC(dpu_enc, "\n");
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  567  
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  568  	priv = drm_enc->dev->dev_private;
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  569  	dpu_kms = to_dpu_kms(priv->kms);
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  570  	mode = &crtc_state->mode;
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  571  	adj_mode = &crtc_state->adjusted_mode;
-ccc862b957c641 Kalyan Thota      2020-08-10  572  	global_state = dpu_kms_get_global_state(crtc_state->state);
-ccc862b957c641 Kalyan Thota      2020-08-10  573  	if (IS_ERR(global_state))
-ccc862b957c641 Kalyan Thota      2020-08-10  574  		return PTR_ERR(global_state);
-ccc862b957c641 Kalyan Thota      2020-08-10  575  
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  576  	trace_dpu_enc_atomic_check(DRMID(drm_enc));
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  577  
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  578  	/* perform atomic check on the first physical encoder (master) */
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  579  	for (i = 0; i < dpu_enc->num_phys_encs; i++) {
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  580  		struct dpu_encoder_phys *phys = dpu_enc->phys_encs[i];
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  581  
-b6fadcade62704 Drew Davenport    2019-12-06  582  		if (phys->ops.atomic_check)
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  583  			ret = phys->ops.atomic_check(phys, crtc_state,
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  584  					conn_state);
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  585  		if (ret) {
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  586  			DPU_ERROR_ENC(dpu_enc,
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  587  					"mode unsupported, phys idx %d\n", i);
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  588  			break;
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  589  		}
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  590  	}
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  591  
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  592  	topology = dpu_encoder_get_topology(dpu_enc, dpu_kms, adj_mode);
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  593  
-de3916c70a24e3 Drew Davenport    2020-02-19  594  	/* Reserve dynamic resources now. */
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  595  	if (!ret) {
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  596  		/*
-ccc862b957c641 Kalyan Thota      2020-08-10  597  		 * Release and Allocate resources on every modeset
-ccc862b957c641 Kalyan Thota      2020-08-10  598  		 * Dont allocate when active is false.
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  599  		 */
-de3916c70a24e3 Drew Davenport    2020-02-19  600  		if (drm_atomic_crtc_needs_modeset(crtc_state)) {
-ccc862b957c641 Kalyan Thota      2020-08-10  601  			dpu_rm_release(global_state, drm_enc);
-ccc862b957c641 Kalyan Thota      2020-08-10  602  
-ccc862b957c641 Kalyan Thota      2020-08-10  603  			if (!crtc_state->active_changed || crtc_state->active)
-de3916c70a24e3 Drew Davenport    2020-02-19  604  				ret = dpu_rm_reserve(&dpu_kms->rm, global_state,
-de3916c70a24e3 Drew Davenport    2020-02-19  605  						drm_enc, crtc_state, topology);
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  606  		}
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  607  	}
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  608  
-5dce0c0b92d426 Ville Syrjälä     2020-04-28  609  	trace_dpu_enc_atomic_check_flags(DRMID(drm_enc), adj_mode->flags);
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  610  
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  611  	return ret;
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  612  }
-25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  613  
-
-:::::: The code at line 552 was first introduced by commit
-:::::: 25fdd5933e4c0f5fe2ea5cd59994f8ac5fbe90ef drm/msm: Add SDM845 DPU support
-
-:::::: TO: Jeykumar Sankaran <jsanka@codeaurora.org>
-:::::: CC: Sean Paul <seanpaul@chromium.org>
-
+diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
+index e14beb51cae4..0238be81c435 100644
+--- a/drivers/char/ipmi/ipmi_msghandler.c
++++ b/drivers/char/ipmi/ipmi_msghandler.c
+@@ -2729,6 +2729,38 @@ static unsigned int get_user_count(void)
+ 	return total_count;
+ }
+ 
++static void get_msg_count(unsigned int *hp_count, unsigned int *count)
++{
++	struct ipmi_smi *intf;
++	int index;
++	int hp_msg_count = 0, msg_count = 0;
++
++	index = srcu_read_lock(&ipmi_interfaces_srcu);
++	list_for_each_entry_rcu(intf, &ipmi_interfaces, link) {
++		struct ipmi_smi_msg *msg;
++		unsigned long flags;
++		int run_to_completion = intf->run_to_completion;
++
++		rcu_read_lock();
++		if (!run_to_completion)
++			spin_lock_irqsave(&intf->xmit_msgs_lock, flags);
++		if (!intf->in_shutdown) {
++			list_for_each_entry(msg, &intf->hp_xmit_msgs, link)
++				hp_msg_count++;
++
++			list_for_each_entry(msg, &intf->xmit_msgs, link)
++				msg_count++;
++		}
++		if (!run_to_completion)
++			spin_unlock_irqrestore(&intf->xmit_msgs_lock, flags);
++		rcu_read_unlock();
++	}
++	srcu_read_unlock(&ipmi_interfaces_srcu, index);
++
++	*hp_count = msg_count;
++	*count = hp_msg_count;
++}
++
+ static ssize_t device_id_show(struct device *dev,
+ 			      struct device_attribute *attr,
+ 			      char *buf)
+@@ -2907,6 +2939,17 @@ static ssize_t user_count_show(struct device *dev,
+ }
+ static DEVICE_ATTR_ADMIN_RO(user_count);
+ 
++static ssize_t msg_count_show(struct device *dev, struct device_attribute *attr,
++			      char *buf)
++{
++	unsigned int hp_count, count;
++
++	get_msg_count(&hp_count, &count);
++
++	return snprintf(buf, 40, "hp msg:%u, msg:%u\n", hp_count, count);
++}
++static DEVICE_ATTR_ADMIN_RO(msg_count);
++
+ static struct attribute *bmc_dev_attrs[] = {
+ 	&dev_attr_device_id.attr,
+ 	&dev_attr_provides_device_sdrs.attr,
+@@ -2919,6 +2962,7 @@ static struct attribute *bmc_dev_attrs[] = {
+ 	&dev_attr_aux_firmware_revision.attr,
+ 	&dev_attr_guid.attr,
+ 	&dev_attr_user_count.attr,
++	&dev_attr_msg_count.attr,
+ 	NULL
+ };
+ 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
