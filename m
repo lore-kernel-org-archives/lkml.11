@@ -2,112 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B9F7C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 16:18:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D79A7C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 16:22:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236008AbiC0QTz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 12:19:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56330 "EHLO
+        id S236016AbiC0QXl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 12:23:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234593AbiC0QTy (ORCPT
+        with ESMTP id S234593AbiC0QXk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 12:19:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E89F11C1F;
-        Sun, 27 Mar 2022 09:18:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 16CBD6101C;
-        Sun, 27 Mar 2022 16:18:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40A94C340EC;
-        Sun, 27 Mar 2022 16:18:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648397894;
-        bh=iHeFz+xrKE7uKuB/dUPpK+m1qKZRqb6P9qUhGKMhVc4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UqOSShuycOk/6K5gIR8uAkzvdpgPetj2hk6s3OBeMLm/BDftz8OYYIG8w/gWWrJFR
-         ascTdifwpW950Dp/nMx9yEIpzQNd81iDPyvUIPRi9sZCO6V72wpTeteLylac7+2i5w
-         XoBYSDEGEb5mo6qPx6oTnfaACAq71k+80Ppk2XUj/uuDOSeiVoKfUQoTZQs6n6rbh+
-         +LV1rr5p9cSHw0gEFU2DCU/Lo3KS3pwfYNmnEIBn51tNBBBhtks5mCtExISx7YsX+c
-         kPC+vfHIVYRu1U14wBKcLLKUDItzB79CdP0kL0aGtMuLDqJKqWT7yOHCajLucAl3DB
-         s9H2223sIMaQQ==
-Date:   Sun, 27 Mar 2022 17:25:46 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     "Sa, Nuno" <Nuno.Sa@analog.com>
-Cc:     Wang ShaoBo <bobo.shaobowang@huawei.com>,
-        "cj.chengjian@huawei.com" <cj.chengjian@huawei.com>,
-        "liwei391@huawei.com" <liwei391@huawei.com>,
-        "Miclaus, Antoniu" <Antoniu.Miclaus@analog.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Jonathan.Cameron@huawei.com" <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v2] iio:filter:admv8818: select REGMAP_SPI for ADMV8818
-Message-ID: <20220327172546.40497743@jic23-huawei>
-In-Reply-To: <PH0PR03MB67860473C10499C1EEED1C0A99169@PH0PR03MB6786.namprd03.prod.outlook.com>
-References: <20220320055457.254983-1-bobo.shaobowang@huawei.com>
-        <PH0PR03MB67860473C10499C1EEED1C0A99169@PH0PR03MB6786.namprd03.prod.outlook.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Sun, 27 Mar 2022 12:23:40 -0400
+Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C88549F17;
+        Sun, 27 Mar 2022 09:22:01 -0700 (PDT)
+Received: by mail-il1-x12d.google.com with SMTP id h18so3836642ila.12;
+        Sun, 27 Mar 2022 09:22:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=SYh+PkIs8JchTuwkw2+G0wVLXgGV4Hhjl5dldnzihdg=;
+        b=OSHwkTIY1Oygy9pl7PymuNKc+1YH8XVzg8uVbcZddmAKBRq2PTrweOcbI9hFZp0NfD
+         RN66QcgIkO644vVNyNzMI0gi5radgQvfdaL24TOSvHVeKiw66Z+/BA9ULyYCkuRYEFYI
+         rBzxiqD67Ikcjsuf9guIeCx2JKH870WLk6+XN4tWAZ/UQY2QLv9i54+DM3KGVXMgn80n
+         SCaZZrIGDcB7Nq+tiMuWli4WfGZ75hipsuaXpGfH6cuAJheUPSdm01kpSzWkYkx61YFw
+         hzkKk6pilK2tQmeCnYtSeFwkaLFuPrbktFl+33DvrgbWRAerh2jDFkt7jQDO0m0bg7Ak
+         QGsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=SYh+PkIs8JchTuwkw2+G0wVLXgGV4Hhjl5dldnzihdg=;
+        b=R8vlra0OVHcrpriOlDdCipGkC5T1gmj65FNf5ns39ZMIQZ34jgYfaeZjHXKnXTVzmL
+         T7Jq8sIGYRmgdKw3v/ulivekAIO7TAd7aEkh6hpKDd1pxrfbhvI/3Rf8sgJYXtLgc/kg
+         gRUqvmxte6WpY/RfL3lLhFkwBJmHUvQwnN5+6CQ8OPnuJogYEwDHVYG+WU/p5Xf822r2
+         dKlHQux01AbWdgksEkJK03bAI/fa46K6sU8wtJQZgiz6vK163XkTyC/4zb+YZk4ftAHY
+         khrttCYs66YHbcGpyaLae/56UpXMdyNdiOb72SHNLZ0XR5lUxUwPJ7Awy06/k8lfP1OE
+         obRw==
+X-Gm-Message-State: AOAM533NikT8rD8DgGLruchsAtQEejayrQ/aU2XBOk31+7CvX2jfoqVm
+        upwyLXiyCiubvk1eZxaJvLm1iO2dvfHwJN9YzcI=
+X-Google-Smtp-Source: ABdhPJzguMKSlsQyq0L1yhg/+aFFywIs1BPCQlRtAFvd2zpGCkfyuLNQFihgi6G06vrTYWDMRzm3kXM0H6TJm0RJcNw=
+X-Received: by 2002:a05:6e02:1c2f:b0:2c9:ac72:b4b3 with SMTP id
+ m15-20020a056e021c2f00b002c9ac72b4b3mr1789485ilh.246.1648398120737; Sun, 27
+ Mar 2022 09:22:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+References: <20220327121404.1702631-1-eugene.shalygin@gmail.com> <20220327121404.1702631-3-eugene.shalygin@gmail.com>
+In-Reply-To: <20220327121404.1702631-3-eugene.shalygin@gmail.com>
+From:   Eugene Shalygin <eugene.shalygin@gmail.com>
+Date:   Sun, 27 Mar 2022 18:21:49 +0200
+Message-ID: <CAB95QASpZTz4eMger46WEa9xWJNmARShBUNb7edJA1eij3KBwA@mail.gmail.com>
+Subject: Re: [PATCH 2/4] hwmon: (asus-ec-sensors) implement locking via the
+ ACPI global lock
+To:     Eugene Shalygin <eugene.shalygin@gmail.com>
+Cc:     darcagn@protonmail.com, Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        linux-hwmon@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 21 Mar 2022 09:10:01 +0000
-"Sa, Nuno" <Nuno.Sa@analog.com> wrote:
+On Sun, 27 Mar 2022 at 14:15, Eugene Shalygin <eugene.shalygin@gmail.com> w=
+rote:
+> +       /* number of board EC sensors */
+> +       u8 nr_sensors;
 
-> > -----Original Message-----
-> > From: Wang ShaoBo <bobo.shaobowang@huawei.com>
-> > Sent: Sunday, March 20, 2022 6:55 AM
-> > Cc: cj.chengjian@huawei.com; liwei391@huawei.com;
-> > bobo.shaobowang@huawei.com; Miclaus, Antoniu
-> > <Antoniu.Miclaus@analog.com>; Sa, Nuno <Nuno.Sa@analog.com>;
-> > linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org;
-> > jic23@kernel.org; Jonathan.Cameron@huawei.com
-> > Subject: [PATCH v2] iio:filter:admv8818: select REGMAP_SPI for
-> > ADMV8818
-> >=20
-> > [External]
-> >=20
-> > admv8818 driver needs __devm_regmap_init_spi() which is defined
-> > when CONFIG_REGMAP_SPI is set and struct regmap_config when
-> > CONFIG_REGMAP is set, so automatically select CONFIG_REGMAP_SPI
-> > which also sets CONFIG_REGMAP.
-> >=20
-> > Fixes: f34fe888ad05 ("iio:filter:admv8818: add support for ADMV8818")
-> > Signed-off-by: Wang ShaoBo <bobo.shaobowang@huawei.com>
-> > --- =20
->=20
-> Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
-Applied to the fixes-togreg branch of iio.git but I'll not push that tree o=
-ut
-until I have had a chance to rebase on rc1.
+Re-added by mistake, will be fixed in the next patch version.
 
-Thanks,
+> +               if (ACPI_FAILURE(status)) {
+> +                       dev_err(dev,
+> +                               "Failed to get hardware access guard AML =
+mutex"
+> +                               "'%s': error %d",
+> +                               mutex_path, status);
 
-Jonathan
+Can't choose between various options to fix this broken string
+literal. Would be thankful, G=C3=BCnter, for a suggestion.
 
->=20
-> >  drivers/iio/filter/Kconfig | 1 +
-> >  1 file changed, 1 insertion(+)
-> >=20
-> > diff --git a/drivers/iio/filter/Kconfig b/drivers/iio/filter/Kconfig
-> > index 3ae35817ad82..a85b345ea14e 100644
-> > --- a/drivers/iio/filter/Kconfig
-> > +++ b/drivers/iio/filter/Kconfig
-> > @@ -8,6 +8,7 @@ menu "Filters"
-> >  config ADMV8818
-> >  	tristate "Analog Devices ADMV8818 High-Pass and Low-Pass
-> > Filter"
-> >  	depends on SPI && COMMON_CLK && 64BIT
-> > +	select REGMAP_SPI
-> >  	help
-> >  	  Say yes here to build support for Analog Devices ADMV8818
-> >  	  2 GHz to 18 GHz, Digitally Tunable, High-Pass and Low-Pass
-> > Filter.
-> > --
-> > 2.25.1 =20
->=20
-
+Best regards,
+Eugene
