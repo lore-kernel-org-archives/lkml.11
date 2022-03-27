@@ -2,134 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1437C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 13:47:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F1D4C4332F
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 13:53:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235408AbiC0NtZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 09:49:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46152 "EHLO
+        id S235550AbiC0Nyz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 09:54:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229513AbiC0NtW (ORCPT
+        with ESMTP id S233574AbiC0Nyx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 09:49:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D62213E94;
-        Sun, 27 Mar 2022 06:47:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E7345B8013C;
-        Sun, 27 Mar 2022 13:47:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9D99C340EC;
-        Sun, 27 Mar 2022 13:47:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648388859;
-        bh=GcofGmQumimhl5OM4grJQX7kjo1GV6TWDaRRje8li8E=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DVQEy2ex/vXD/NWI7KoNA5kIgUAVdd5vGyP4CG3hIh7nfMTVyQeQO5Ir+jkYThHL5
-         zRVVCumoQMVF0Tpd15Gfle0lul0LGBIsjhXbGvnwgf5bs5OxhnZQeOki8CGIN8tENg
-         w0D0sobt4gRRJChRVfQeRccEX96obw2BK09zh1p2qPMuIVC+ysi+lK/KRQwPMDsQy2
-         x+8TJRrjDmH6bRtbxsm2X1MIRQh6//az54g1CusTZSE6temv6JQMqXC6u0B+zDhwMo
-         yViHnXdP8SQYrVlp+98noCPB6pP5ZdTMipSYahDM/dB6f/kCL8bgoTe1b5amVSSgPY
-         BhJwuUjk8wmag==
-Date:   Sun, 27 Mar 2022 14:55:11 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Shreeya Patel <shreeya.patel@collabora.com>
-Cc:     lars@metafoo.de, robh+dt@kernel.org, Zhigang.Shi@liteon.com,
-        krisman@collabora.com, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@collabora.com, alvaro.soliverez@collabora.com
-Subject: Re: [PATCH 2/3] dt-bindings: Document ltrf216a light sensor
- bindings
-Message-ID: <20220327145511.2d36dd10@jic23-huawei>
-In-Reply-To: <20220325103014.6597-3-shreeya.patel@collabora.com>
-References: <20220325103014.6597-1-shreeya.patel@collabora.com>
-        <20220325103014.6597-3-shreeya.patel@collabora.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Sun, 27 Mar 2022 09:54:53 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9BAFB85C;
+        Sun, 27 Mar 2022 06:53:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648389194; x=1679925194;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ftpBL5isBU6wAN2J5Wb1nf5ir7WISc6nuxwRuY7UEnQ=;
+  b=AH5HJqpY8gYjvzL5p+C5B4WXt4rh/rFz+V14QbJ1hBzgk3zpCY/79i31
+   XMx3t3rQHDm7Rbz1K0m99KeumHI8PAMem5c8LKjdaHIkzyp5gxf7yluwd
+   qJlkassnuhUBBo5GCc7A8nSsTbAs1AcN8xYLRB8G7XHW5RfOMRLe0uQsm
+   N4vyDH6vqMhk+ZAdhDOEEdLvmpWsZ0KVGe3YWr9u58BTLKmnOgDAaUobS
+   4XP8SLtWdsOwW+EF27VkMJV1s4OjrXeAe2rsw1Lg8Q0Ssp5YbtG/NQcks
+   KtF0kJjfaoqv0C+BCsbRKwy/67zFo8HlUhmgRXSFcBYIo0UyBM2wZN3z3
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10299"; a="258820343"
+X-IronPort-AV: E=Sophos;i="5.90,215,1643702400"; 
+   d="scan'208";a="258820343"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2022 06:53:12 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,215,1643702400"; 
+   d="scan'208";a="617542612"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by fmsmga004.fm.intel.com with ESMTP; 27 Mar 2022 06:53:07 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nYTKM-00014v-Cw; Sun, 27 Mar 2022 13:53:06 +0000
+Date:   Sun, 27 Mar 2022 21:52:32 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Sui Jingfeng <15330273260@189.cn>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Roland Scheidegger <sroland@vmware.com>,
+        Zack Rusin <zackr@vmware.com>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Dan Carpenter <error27@gmail.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Ilia Mirkin <imirkin@alum.mit.edu>,
+        Qing Zhang <zhangqing@loongson.cn>,
+        suijingfeng <suijingfeng@loongson.cn>
+Cc:     kbuild-all@lists.01.org, devicetree@vger.kernel.org,
+        linux-mips@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v12 5/6] drm/loongson: add drm driver for loongson
+ display controller
+Message-ID: <202203272117.q6tMwBFo-lkp@intel.com>
+References: <20220327113846.2498146-6-15330273260@189.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220327113846.2498146-6-15330273260@189.cn>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 25 Mar 2022 16:00:13 +0530
-Shreeya Patel <shreeya.patel@collabora.com> wrote:
+Hi Sui,
 
-> Add devicetree bindings for ltrf216a ambient light sensor
-> 
-> Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
-Hi Shreeya,
+Thank you for the patch! Perhaps something to improve:
 
-As we are making this Zhigang Shi's problem to maintain, I'm 
-looking for an ack.  Bit mean otherwise :)
+[auto build test WARNING on drm/drm-next]
+[also build test WARNING on robh/for-next linus/master v5.17 next-20220325]
+[cannot apply to mripard/sunxi/for-next]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Except for the deprecated part this could just have gone in
-trivial-bindings.yaml.
+url:    https://github.com/intel-lab-lkp/linux/commits/Sui-Jingfeng/drm-loongson-add-drm-driver-for-loongson-display-controller/20220327-194016
+base:   git://anongit.freedesktop.org/drm/drm drm-next
+config: parisc-randconfig-r003-20220327 (https://download.01.org/0day-ci/archive/20220327/202203272117.q6tMwBFo-lkp@intel.com/config)
+compiler: hppa-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/e90d831d05f2c1b5631fd706fb449e83e64f632c
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Sui-Jingfeng/drm-loongson-add-drm-driver-for-loongson-display-controller/20220327-194016
+        git checkout e90d831d05f2c1b5631fd706fb449e83e64f632c
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=parisc SHELL=/bin/bash drivers/gpu/drm/loongson/
 
-I guess you don't need it for your existing board, but best
-practice would probably include ensuring whatever supplies
-the device needs are here so that platforms that don't enable
-them by default can turn them on.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Also, there is an interrupt according to the datasheet linked
-from patch 3 and that should definitely be in the binding
-even if the driver isn't using it.
+All warnings (new ones prefixed by >>):
 
-Jonathan
+>> drivers/gpu/drm/loongson/lsdc_debugfs.c:149: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+    * vram debugfs related ...
 
 
-> ---
->  .../bindings/iio/light/liteon,ltrf216a.yaml   | 42 +++++++++++++++++++
->  1 file changed, 42 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml b/Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml
-> new file mode 100644
-> index 000000000000..275d86a0353a
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml
-> @@ -0,0 +1,42 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/light/liteon,ltrf216a.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: LTRF216A Ambient Light Sensor
-> +
-> +maintainers:
-> +  - Zhigang Shi <Zhigang.Shi@liteon.com>
-> +
-> +description: |
-> +  Ambient sensing with an i2c interface.
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - liteon,ltrf216a
-> +      - ltr,ltrf216a
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    i2c {
-> +
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        light-sensor@53 {
-> +                compatible = "ltr,ltrf216a";
-> +                reg = <0x53>;
-> +        };
-> +    };
-> +...
+vim +149 drivers/gpu/drm/loongson/lsdc_debugfs.c
 
+   147	
+   148	/**
+ > 149	 * vram debugfs related ...
+   150	 */
+   151	static int lsdc_vram_mm_show(struct seq_file *m, void *data)
+   152	{
+   153		struct drm_info_node *node = (struct drm_info_node *)m->private;
+   154		struct drm_vram_mm *vmm = node->minor->dev->vram_mm;
+   155		struct ttm_resource_manager *man = ttm_manager_type(&vmm->bdev, TTM_PL_VRAM);
+   156		struct drm_printer p = drm_seq_file_printer(m);
+   157	
+   158		ttm_resource_manager_debug(man, &p);
+   159		return 0;
+   160	}
+   161	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
