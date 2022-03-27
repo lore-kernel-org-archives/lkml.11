@@ -2,84 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D79A7C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 16:22:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 868FAC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 16:23:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236016AbiC0QXl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 12:23:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37112 "EHLO
+        id S236007AbiC0QZ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 12:25:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234593AbiC0QXk (ORCPT
+        with ESMTP id S230418AbiC0QZ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 12:23:40 -0400
-Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C88549F17;
-        Sun, 27 Mar 2022 09:22:01 -0700 (PDT)
-Received: by mail-il1-x12d.google.com with SMTP id h18so3836642ila.12;
-        Sun, 27 Mar 2022 09:22:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=SYh+PkIs8JchTuwkw2+G0wVLXgGV4Hhjl5dldnzihdg=;
-        b=OSHwkTIY1Oygy9pl7PymuNKc+1YH8XVzg8uVbcZddmAKBRq2PTrweOcbI9hFZp0NfD
-         RN66QcgIkO644vVNyNzMI0gi5radgQvfdaL24TOSvHVeKiw66Z+/BA9ULyYCkuRYEFYI
-         rBzxiqD67Ikcjsuf9guIeCx2JKH870WLk6+XN4tWAZ/UQY2QLv9i54+DM3KGVXMgn80n
-         SCaZZrIGDcB7Nq+tiMuWli4WfGZ75hipsuaXpGfH6cuAJheUPSdm01kpSzWkYkx61YFw
-         hzkKk6pilK2tQmeCnYtSeFwkaLFuPrbktFl+33DvrgbWRAerh2jDFkt7jQDO0m0bg7Ak
-         QGsw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=SYh+PkIs8JchTuwkw2+G0wVLXgGV4Hhjl5dldnzihdg=;
-        b=R8vlra0OVHcrpriOlDdCipGkC5T1gmj65FNf5ns39ZMIQZ34jgYfaeZjHXKnXTVzmL
-         T7Jq8sIGYRmgdKw3v/ulivekAIO7TAd7aEkh6hpKDd1pxrfbhvI/3Rf8sgJYXtLgc/kg
-         gRUqvmxte6WpY/RfL3lLhFkwBJmHUvQwnN5+6CQ8OPnuJogYEwDHVYG+WU/p5Xf822r2
-         dKlHQux01AbWdgksEkJK03bAI/fa46K6sU8wtJQZgiz6vK163XkTyC/4zb+YZk4ftAHY
-         khrttCYs66YHbcGpyaLae/56UpXMdyNdiOb72SHNLZ0XR5lUxUwPJ7Awy06/k8lfP1OE
-         obRw==
-X-Gm-Message-State: AOAM533NikT8rD8DgGLruchsAtQEejayrQ/aU2XBOk31+7CvX2jfoqVm
-        upwyLXiyCiubvk1eZxaJvLm1iO2dvfHwJN9YzcI=
-X-Google-Smtp-Source: ABdhPJzguMKSlsQyq0L1yhg/+aFFywIs1BPCQlRtAFvd2zpGCkfyuLNQFihgi6G06vrTYWDMRzm3kXM0H6TJm0RJcNw=
-X-Received: by 2002:a05:6e02:1c2f:b0:2c9:ac72:b4b3 with SMTP id
- m15-20020a056e021c2f00b002c9ac72b4b3mr1789485ilh.246.1648398120737; Sun, 27
- Mar 2022 09:22:00 -0700 (PDT)
+        Sun, 27 Mar 2022 12:25:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF3AE4C40C;
+        Sun, 27 Mar 2022 09:23:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 90A9861090;
+        Sun, 27 Mar 2022 16:23:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1471EC340EC;
+        Sun, 27 Mar 2022 16:23:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648398228;
+        bh=YkDb6E6VtnXov8jHR1w8NK/7WAyUsl5XyV+mYViI/iE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Kf2cFa0wjjny3JaXVOXkLznTZSEzTiJG74AgLuspd+sBI6qwCUs6j+1HJZmiPVKEo
+         AQegVXVtLyP0vibmflnZhuY77ZgkvWLVe4QS1n7k+SdcWYLz4EfhinS4mdJlmLy9+N
+         zAvJCUxVDpG59aISHiO26KDh8flWqCA3ljekS4RFHUCwnCWlx9MrQUyiMKfLc+C7Zj
+         vhlvL3TDjgXdo65htGao+nYkEGyyaue5J75HM/OXp7+t1RBXHmgDSd/HdbKxtu2lUo
+         lVzSIFznum8jc0na+LePshZjhTt72aOS85Yd9JQ9+k5I9GauKgRgJHthh32klFnKtM
+         Y4Kizvk4vbRRg==
+Date:   Sun, 27 Mar 2022 17:31:20 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Jagath Jog J <jagathjog1996@gmail.com>
+Cc:     dan@dlrobertson.com, andy.shevchenko@gmail.com,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/5] iio: accel: bma400: Fix the scale min and max
+ macro values
+Message-ID: <20220327173120.78fd5148@jic23-huawei>
+In-Reply-To: <20220326194146.15549-2-jagathjog1996@gmail.com>
+References: <20220326194146.15549-1-jagathjog1996@gmail.com>
+        <20220326194146.15549-2-jagathjog1996@gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220327121404.1702631-1-eugene.shalygin@gmail.com> <20220327121404.1702631-3-eugene.shalygin@gmail.com>
-In-Reply-To: <20220327121404.1702631-3-eugene.shalygin@gmail.com>
-From:   Eugene Shalygin <eugene.shalygin@gmail.com>
-Date:   Sun, 27 Mar 2022 18:21:49 +0200
-Message-ID: <CAB95QASpZTz4eMger46WEa9xWJNmARShBUNb7edJA1eij3KBwA@mail.gmail.com>
-Subject: Re: [PATCH 2/4] hwmon: (asus-ec-sensors) implement locking via the
- ACPI global lock
-To:     Eugene Shalygin <eugene.shalygin@gmail.com>
-Cc:     darcagn@protonmail.com, Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        linux-hwmon@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 27 Mar 2022 at 14:15, Eugene Shalygin <eugene.shalygin@gmail.com> w=
-rote:
-> +       /* number of board EC sensors */
-> +       u8 nr_sensors;
+On Sun, 27 Mar 2022 01:11:42 +0530
+Jagath Jog J <jagathjog1996@gmail.com> wrote:
 
-Re-added by mistake, will be fixed in the next patch version.
+> Changing the scale macro values to match the bma400 sensitivity
+> for 1 LSB of all the available ranges.
+> 
+> Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
+Hi Jagath,
 
-> +               if (ACPI_FAILURE(status)) {
-> +                       dev_err(dev,
-> +                               "Failed to get hardware access guard AML =
-mutex"
-> +                               "'%s': error %d",
-> +                               mutex_path, status);
+> ---
+>  drivers/iio/accel/bma400.h | 22 ++++++++++++++++++++--
+>  1 file changed, 20 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/bma400.h b/drivers/iio/accel/bma400.h
+> index c4c8d74155c2..190366debdb3 100644
+> --- a/drivers/iio/accel/bma400.h
+> +++ b/drivers/iio/accel/bma400.h
+> @@ -83,8 +83,26 @@
+>  #define BMA400_ACC_ODR_MIN_WHOLE_HZ 25
+>  #define BMA400_ACC_ODR_MIN_HZ       12
+>  
+> -#define BMA400_SCALE_MIN            38357
+> -#define BMA400_SCALE_MAX            306864
+> +/* BMA400_SCALE_MIN macro value represents m/s^2 for 1 LSB before
+Multiline comment syntax in IIO is
+/*
+ * BMA400....
 
-Can't choose between various options to fix this broken string
-literal. Would be thankful, G=C3=BCnter, for a suggestion.
+> + * converting to micro values for +-2g range.
+> + *
+> + * For +-2g - 1 LSB = 0.976562 milli g = 0.009576 m/s^2
+> + * For +-4g - 1 LSB = 1.953125 milli g = 0.019153 m/s^2
+> + * For +-16g - 1 LSB = 7.8125 milli g = 0.076614 m/s^2
+> + *
+> + * The raw value which is used to select the different ranges is determined
+> + * by the first bit set position from the scale value, so BMA400_SCALE_MIN
+> + * should be odd.
+> + *
+> + * Scale values for +-2g, +-4g, +-8g and +-16g is populated into bma400_scales
+> + * array by left shifting BMA400_SCALE_MIN.
+> + * eg:
+> + * To select +-2g = 9577 << 0 = raw value to write is 0.
+> + * To select +-8g = 9577 << 2 = raw value to write is 2.
+> + * To select +-16g = 9677 << 3 = raw value to write is 3.
 
-Best regards,
-Eugene
+9667?
+
+> + */
+> +#define BMA400_SCALE_MIN            9577
+> +#define BMA400_SCALE_MAX            76617
+>  
+>  #define BMA400_NUM_REGULATORS       2
+>  #define BMA400_VDD_REGULATOR        0
+
