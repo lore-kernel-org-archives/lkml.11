@@ -2,142 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F50AC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 15:46:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 035E5C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 15:50:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235894AbiC0Prq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 11:47:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56734 "EHLO
+        id S235898AbiC0Pvk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 11:51:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235790AbiC0Pro (ORCPT
+        with ESMTP id S234251AbiC0Pvi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 11:47:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 047F935A82;
-        Sun, 27 Mar 2022 08:46:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 810E861046;
-        Sun, 27 Mar 2022 15:46:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C118CC340EC;
-        Sun, 27 Mar 2022 15:46:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648395964;
-        bh=B3ZPOyUYGQj+6qCSUleqjBCQQNBjm+6YkuHdgpSuAyw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=YL+McNUSywygkfaI557mBMAfRb0GJiv3JZRwJRHIGuweV+5a+4Xv2ENzQQjRXdPB4
-         CVSCQTU2esJ/zb8h2OJPHCY5fznjz6FRlpHKxUHVRjCGefXw8XlzBOTvmfAYtuyiHQ
-         iywuzIBa82tJN68p7zn4YWzBkiVvGxMWVQbQU9+V+sRH+1Km0wczyty5P+zSNFG7Wz
-         25piB0hpv07m3uxR8JC8S1k24aeRLCjZ0mv547FcGfIUp28gK5D1Jv+HkRYs1/OHXh
-         ZP0O6B2FO3KRVVVfvmlzMTezLF+EpUCnaPJtefdoW1zuV76ZXKi0qzrOU6TvIKV46J
-         JZnL5Q3Y2jsoA==
-Date:   Sun, 27 Mar 2022 16:53:36 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Tong Zhang <ztong0001@gmail.com>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sean Nyekjaer <sean@geanix.com>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Jonathan Albrieux <jonathan.albrieux@gmail.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] iio:imu:bmi160: disable regulator in error path
-Message-ID: <20220327165336.799db3ac@jic23-huawei>
-In-Reply-To: <20220327154005.806049-1-ztong0001@gmail.com>
-References: <20220318070900.2499370-1-ztong0001@gmail.com>
-        <20220327154005.806049-1-ztong0001@gmail.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Sun, 27 Mar 2022 11:51:38 -0400
+Received: from sender4-of-o53.zoho.com (sender4-of-o53.zoho.com [136.143.188.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E04E2656F
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 08:49:59 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1648396192; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=RcvQOByGXY1unKdCDaOAC1LXz+mMzM43DKPB5bsS7he8xMlBOQ9iftL4k8yCob8vJvJqWzZxyHwpFBbNz3Ao/PQy/BGCPhEWO51iydLTr5wnr5Fm9leoZxuFUa/Pl+PYyzcDPhqTshv51XfZgb7pMKo4MdTjcth/9nirZjCADfk=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1648396192; h=Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
+        bh=8ryXOoKRSeSj62X041ZptO6D0BqyP7/awmvCaEC3goQ=; 
+        b=Tg2GYmu667sTaIw7UUNqpS36/3Jdmgfl33zsLJU3BpOw97jipJ0Nto1TyQJodAaOGk3i/nnC2mPRSDRwC6iI9JomeAXo8tbeNU1I87TKe0vOflLac4r1f/UTCVITMcf7TFRpUFFgJda9LILqCC+9e5/GD6Gqkrnp/CX5HJYrm4E=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=anirudhrb.com;
+        spf=pass  smtp.mailfrom=mail@anirudhrb.com;
+        dmarc=pass header.from=<mail@anirudhrb.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1648396192;
+        s=zoho; d=anirudhrb.com; i=mail@anirudhrb.com;
+        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Message-Id:Message-Id:MIME-Version:Content-Transfer-Encoding:Reply-To;
+        bh=8ryXOoKRSeSj62X041ZptO6D0BqyP7/awmvCaEC3goQ=;
+        b=NKaXLtVA0nzqNngOwmr9FKIYWnsCiFxPqCU78hC0eXc8NGKqxYwIKWnu9IHEu7sj
+        0NWAlK3Gtq72gptaxHS2AZkaDpBGxTES+reSup/uQA0NWbeRl/ZDiX9Kc9TAIpuiSjE
+        x/f5b/Idr7FN6++AKJZQHevU9Awms/+C6bU1y2Do=
+Received: from localhost.localdomain (49.207.212.179 [49.207.212.179]) by mx.zohomail.com
+        with SMTPS id 1648396189292143.7738007891578; Sun, 27 Mar 2022 08:49:49 -0700 (PDT)
+From:   Anirudh Rayabharam <mail@anirudhrb.com>
+To:     David Howells <dhowells@redhat.com>,
+        Anirudh Rayabharam <mail@anirudhrb.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Cc:     syzbot+25ea042ae28f3888727a@syzkaller.appspotmail.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] watch_queue: free the notes array
+Date:   Sun, 27 Mar 2022 21:19:33 +0530
+Message-Id: <20220327154936.9353-1-mail@anirudhrb.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 27 Mar 2022 08:40:05 -0700
-Tong Zhang <ztong0001@gmail.com> wrote:
+__put_watch_queue() frees the individual notifications but doesn't free
+the notes array itself causing a memory leak.
 
-> Regulator should be disabled in error path as mentioned in _regulator_put().
-> Also disable accel if gyro cannot be enabled.
-> 
-> [   16.233604] WARNING: CPU: 0 PID: 2177 at drivers/regulator/core.c:2257 _regulator_put
-> [   16.240453] Call Trace:
-> [   16.240572]  <TASK>
-> [   16.240676]  regulator_put+0x26/0x40
-> [   16.240853]  regulator_bulk_free+0x26/0x50
-> [   16.241050]  release_nodes+0x3f/0x70
-> [   16.241225]  devres_release_group+0x147/0x1c0
-> [   16.241441]  ? bmi160_core_probe+0x175/0x3a0 [bmi160_core]
-> 
-> Fixes: 5dea3fb066f0 ("iio: imu: bmi160: added regulator support")
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Signed-off-by: Tong Zhang <ztong0001@gmail.com>
-oops. Raced with you ;)
+Reported by syzbot at:
+https://syzkaller.appspot.com/bug?extid=25ea042ae28f3888727a
 
-Anyhow, I added the tag, so no problem.
+Fix by adding a kfree().
 
-Jonathan
+Fixes: c73be61cede5 ("pipe: Add general notification queue support")
+Reported-by: syzbot+25ea042ae28f3888727a@syzkaller.appspotmail.com
+Tested-by: syzbot+25ea042ae28f3888727a@syzkaller.appspotmail.com
+Signed-off-by: Anirudh Rayabharam <mail@anirudhrb.com>
+---
+ kernel/watch_queue.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> ---
-> v2: also disable accel when gyro fail to enable
-> v3: add tag
->  drivers/iio/imu/bmi160/bmi160_core.c | 20 ++++++++++++++------
->  1 file changed, 14 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
-> index 824b5124a5f5..01336105792e 100644
-> --- a/drivers/iio/imu/bmi160/bmi160_core.c
-> +++ b/drivers/iio/imu/bmi160/bmi160_core.c
-> @@ -730,7 +730,7 @@ static int bmi160_chip_init(struct bmi160_data *data, bool use_spi)
->  
->  	ret = regmap_write(data->regmap, BMI160_REG_CMD, BMI160_CMD_SOFTRESET);
->  	if (ret)
-> -		return ret;
-> +		goto disable_regulator;
->  
->  	usleep_range(BMI160_SOFTRESET_USLEEP, BMI160_SOFTRESET_USLEEP + 1);
->  
-> @@ -741,29 +741,37 @@ static int bmi160_chip_init(struct bmi160_data *data, bool use_spi)
->  	if (use_spi) {
->  		ret = regmap_read(data->regmap, BMI160_REG_DUMMY, &val);
->  		if (ret)
-> -			return ret;
-> +			goto disable_regulator;
->  	}
->  
->  	ret = regmap_read(data->regmap, BMI160_REG_CHIP_ID, &val);
->  	if (ret) {
->  		dev_err(dev, "Error reading chip id\n");
-> -		return ret;
-> +		goto disable_regulator;
->  	}
->  	if (val != BMI160_CHIP_ID_VAL) {
->  		dev_err(dev, "Wrong chip id, got %x expected %x\n",
->  			val, BMI160_CHIP_ID_VAL);
-> -		return -ENODEV;
-> +		ret = -ENODEV;
-> +		goto disable_regulator;
->  	}
->  
->  	ret = bmi160_set_mode(data, BMI160_ACCEL, true);
->  	if (ret)
-> -		return ret;
-> +		goto disable_regulator;
->  
->  	ret = bmi160_set_mode(data, BMI160_GYRO, true);
->  	if (ret)
-> -		return ret;
-> +		goto disable_accel;
->  
->  	return 0;
-> +
-> +disable_accel:
-> +	bmi160_set_mode(data, BMI160_ACCEL, false);
-> +
-> +disable_regulator:
-> +	regulator_bulk_disable(ARRAY_SIZE(data->supplies), data->supplies);
-> +	return ret;
->  }
->  
->  static int bmi160_data_rdy_trigger_set_state(struct iio_trigger *trig,
+diff --git a/kernel/watch_queue.c b/kernel/watch_queue.c
+index 3990e4df3d7b..230038d4f908 100644
+--- a/kernel/watch_queue.c
++++ b/kernel/watch_queue.c
+@@ -370,6 +370,7 @@ static void __put_watch_queue(struct kref *kref)
+ 
+ 	for (i = 0; i < wqueue->nr_pages; i++)
+ 		__free_page(wqueue->notes[i]);
++	kfree(wqueue->notes);
+ 	bitmap_free(wqueue->notes_bitmap);
+ 
+ 	wfilter = rcu_access_pointer(wqueue->filter);
+-- 
+2.35.1
 
