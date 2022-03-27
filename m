@@ -2,152 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3817C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 03:51:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33BD1C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Mar 2022 04:00:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233809AbiC0DvP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Mar 2022 23:51:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53642 "EHLO
+        id S230116AbiC0EBh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 00:01:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230234AbiC0DvG (ORCPT
+        with ESMTP id S229455AbiC0EBf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Mar 2022 23:51:06 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E678562FD;
-        Sat, 26 Mar 2022 20:49:27 -0700 (PDT)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22QNHv8G010618;
-        Sun, 27 Mar 2022 03:48:57 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=pp1;
- bh=+mfoRcCmFT0JS6zf2eRI3+Pi12WB0EBK81p1P9sU4gs=;
- b=Zbdrt0LI2EXiVBh5IRuPJS9IKj/qkBF+X7vXMaAYHvsx+9s536+scpooWYSil3E+pNf+
- vI98T8t6SBBkOsSdOnO1nqG8abatud3Z8aVbRynfYBK93q3ne50KDOopgDvRr83x1TVj
- 3+g4vls3PiElzKU+HENeNpjU2X3wieLEnmxHg6+U9eynM1t6NWnGD5aGvj/kg6OhrXur
- 91Wdcs7ceWvkdAbQoSVzjKIpil8d+3/nIJK94k0TkR+FeP5REEcv5CmmD82g0DV5hyRS
- FHp3/IwrQQKvaCs2R6JGTu/GnGkW5EqFy+admvvd9RHAzdW5Qs294jHf2VS7I3ahs6nc NA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f2ccrjf5m-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 27 Mar 2022 03:48:57 +0000
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22R3muqC030615;
-        Sun, 27 Mar 2022 03:48:56 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f2ccrjf5d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 27 Mar 2022 03:48:56 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22R3mjgQ008417;
-        Sun, 27 Mar 2022 03:48:54 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma03ams.nl.ibm.com with ESMTP id 3f1tf99fpk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 27 Mar 2022 03:48:53 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22R3mujE45089254
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sun, 27 Mar 2022 03:48:56 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A40D8A404D;
-        Sun, 27 Mar 2022 03:48:51 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B88A0A4040;
-        Sun, 27 Mar 2022 03:48:50 +0000 (GMT)
-Received: from li-e979b1cc-23ba-11b2-a85c-dfd230f6cf82 (unknown [9.171.73.54])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with SMTP;
-        Sun, 27 Mar 2022 03:48:50 +0000 (GMT)
-Date:   Sun, 27 Mar 2022 05:48:48 +0200
-From:   Halil Pasic <pasic@linux.ibm.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@toke.dk>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Maxime Bizon <mbizon@freebox.fr>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Olha Cherevyk <olha.cherevyk@gmail.com>,
-        iommu <iommu@lists.linux-foundation.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable <stable@vger.kernel.org>,
-        Halil Pasic <pasic@linux.ibm.com>
-Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
- ath9k-based AP
-Message-ID: <20220327054848.1a545b12.pasic@linux.ibm.com>
-In-Reply-To: <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
-References: <1812355.tdWV9SEqCh@natalenko.name>
-        <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
-        <20220324055732.GB12078@lst.de>
-        <4386660.LvFx2qVVIh@natalenko.name>
-        <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com>
-        <878rsza0ih.fsf@toke.dk>
-        <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
-        <20220324163132.GB26098@lst.de>
-        <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com>
-        <871qyr9t4e.fsf@toke.dk>
-        <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
-Organization: IBM
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+        Sun, 27 Mar 2022 00:01:35 -0400
+Received: from m12-15.163.com (m12-15.163.com [220.181.12.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A491630F75
+        for <linux-kernel@vger.kernel.org>; Sat, 26 Mar 2022 20:59:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=V+ygl
+        RMKfr4Erz95QhUtW29GXggIatslDhhta+s/kRI=; b=RejtUTJVYUcg87iPhcGnb
+        fB6EU6bcnxL/Zf0Ky//jR9VHhx2Hp9ETlEOieu+0vEjh4fjCRMfSWnFUnkLuaFeQ
+        hV4I0OWt42f1gmz39GvZUYom9x9BOrVt72QVxnDITyuDKsZz7MW+c+0HtdBsdgtm
+        cHKgcjcc5Pb1/Qyg13Hkqg=
+Received: from localhost (unknown [223.74.106.110])
+        by smtp11 (Coremail) with SMTP id D8CowADHzioF4T9i_uyRCA--.136S2;
+        Sun, 27 Mar 2022 11:59:26 +0800 (CST)
+From:   wujunwen <wudaemon@163.com>
+To:     arnd@arndb.de, gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org, wujunwen <wudaemon@163.com>
+Subject: [PATCH v1] char: misc:use DEFINE_PROC_SHOW_ATTRIBUTE micro to simplify misc proc_fops
+Date:   Sun, 27 Mar 2022 03:58:54 +0000
+Message-Id: <20220327035854.219491-1-wudaemon@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: aU2QkfNNjgUjQGcm0JFsF5Yd0bFRyEZx
-X-Proofpoint-GUID: ewoGDMbOZ3Cbe29feLOTEoCrihOk2PUz
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-27_01,2022-03-24_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 mlxlogscore=739
- clxscore=1015 suspectscore=0 bulkscore=0 malwarescore=0 priorityscore=1501
- adultscore=0 spamscore=0 phishscore=0 lowpriorityscore=0 impostorscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2203270020
+X-CM-TRANSID: D8CowADHzioF4T9i_uyRCA--.136S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7tw1xCFy7ZF1UJFyDWFyfWFg_yoW8KrW7pF
+        4fZry7JF4UJF4xWrW7tF4DuanIg3WIq34q9rnrG3yrZF1DZr12gFnrJ34xuFy5G3ykWrnx
+        XFs0kry5Cw1jy3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0piApnkUUUUU=
+X-Originating-IP: [223.74.106.110]
+X-CM-SenderInfo: 5zxgtvxprqqiywtou0bp/1tbiKwTPbVQHcPfemgABsc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 24 Mar 2022 12:26:53 -0700
-Linus Torvalds <torvalds@linux-foundation.org> wrote:
+DEFINE_PROC_SHOW_ATTRIBUTE is used to simply seq_file flow ,so
+we can use it to simplify misc proc_fops.
 
-> So I don't think the dma_sync_single_for_device() is *wrong* per se,
-> because the CPU didn't actually do any modifications.
-> 
-> But yes, I think it's unnecessary - because any later CPU accesses
-> would need that dma_sync_single_for_cpu() anyway, which should
-> invalidate any stale caches.
-> 
-> And it clearly doesn't work in a bounce-buffer situation, but honestly
-> I don't think a "CPU modified buffers concurrently with DMA" can
-> *ever* work in that situation, so I think it's wrong for a bounce
-> buffer model to ever do anything in the dma_sync_single_for_device()
-> situation.
+Signed-off-by: wujunwen <wudaemon@163.com>
+---
+ drivers/char/misc.c | 37 ++++++++++---------------------------
+ 1 file changed, 10 insertions(+), 27 deletions(-)
 
-I agree it CPU modified buffers *concurrently* with DMA can never work,
-and I believe the ownership model was conceived to prevent this
-situation. But a CPU can modify the buffer *after* DMA has written to
-it, while the mapping is still alive. For example one could do one
-partial read from the device, *after* the DMA is done,
-sync_for_cpu(DMA_FROM_DEVICE), examine, then zero out the entire buffer,
-sync_for_device(DMA_FROM_DEVICE), make the device do partial DMA, do
-dma_unmap and expect no residue from the fist DMA. That is expect that
-the zeroing out was effective.
+diff --git a/drivers/char/misc.c b/drivers/char/misc.c
+index ca5141ed5ef3..f215f964a972 100644
+--- a/drivers/char/misc.c
++++ b/drivers/char/misc.c
+@@ -64,40 +64,23 @@ static DEFINE_MUTEX(misc_mtx);
+ static DECLARE_BITMAP(misc_minors, DYNAMIC_MINORS);
+ 
+ #ifdef CONFIG_PROC_FS
+-static void *misc_seq_start(struct seq_file *seq, loff_t *pos)
+-{
+-	mutex_lock(&misc_mtx);
+-	return seq_list_start(&misc_list, *pos);
+-}
+ 
+-static void *misc_seq_next(struct seq_file *seq, void *v, loff_t *pos)
++static int misc_show(struct seq_file *seq, void *v)
+ {
+-	return seq_list_next(v, &misc_list, pos);
+-}
++	const struct miscdevice *p;
+ 
+-static void misc_seq_stop(struct seq_file *seq, void *v)
+-{
++	mutex_lock(&misc_mtx);
++	list_for_each_entry(p, &misc_list, list) {
++		seq_printf(seq, "%3i %s\n", p->minor, p->name ? p->name : "");
++	}
+ 	mutex_unlock(&misc_mtx);
+-}
+-
+-static int misc_seq_show(struct seq_file *seq, void *v)
+-{
+-	const struct miscdevice *p = list_entry(v, struct miscdevice, list);
+-
+-	seq_printf(seq, "%3i %s\n", p->minor, p->name ? p->name : "");
+ 	return 0;
+ }
+ 
+-
+-static const struct seq_operations misc_seq_ops = {
+-	.start = misc_seq_start,
+-	.next  = misc_seq_next,
+-	.stop  = misc_seq_stop,
+-	.show  = misc_seq_show,
+-};
++DEFINE_PROC_SHOW_ATTRIBUTE(misc);
+ #endif
+ 
+-static int misc_open(struct inode *inode, struct file *file)
++static int misc_fops_open(struct inode *inode, struct file *file)
+ {
+ 	int minor = iminor(inode);
+ 	struct miscdevice *c;
+@@ -148,7 +131,7 @@ static struct class *misc_class;
+ 
+ static const struct file_operations misc_fops = {
+ 	.owner		= THIS_MODULE,
+-	.open		= misc_open,
++	.open		= misc_fops_open,
+ 	.llseek		= noop_llseek,
+ };
+ 
+@@ -268,7 +251,7 @@ static int __init misc_init(void)
+ 	int err;
+ 	struct proc_dir_entry *ret;
+ 
+-	ret = proc_create_seq("misc", 0, NULL, &misc_seq_ops);
++	ret = proc_create("misc", 0, NULL, &misc_proc_ops);
+ 	misc_class = class_create(THIS_MODULE, "misc");
+ 	err = PTR_ERR(misc_class);
+ 	if (IS_ERR(misc_class))
+-- 
+2.25.1
 
-The point I'm trying to make is: if concurrent is even permitted (it
-isn't because of ownership) swiotlb woudn't know if we are dealing with
-the *concurrent* case, which is completely bogous, or with the
-*sequential* case, which at least in theory could work. And if we don't
-do anyting on the sync_for_device(DMA_FROM_DEVICE) we render
-that zeroing out the entire buffer form my example ineffective, because
-it would not reach the bounce buffer, and on dma_unmap we would overwrite
-the original buffer with the content of the bounce buffer.
-
-Regards,
-Halil
