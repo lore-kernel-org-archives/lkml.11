@@ -2,234 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EDCDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:08:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C19C9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:12:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245503AbiC1TJr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 15:09:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44578 "EHLO
+        id S245508AbiC1TNr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 15:13:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245491AbiC1TJh (ORCPT
+        with ESMTP id S245494AbiC1TNm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 15:09:37 -0400
-Received: from mail-ua1-x92d.google.com (mail-ua1-x92d.google.com [IPv6:2607:f8b0:4864:20::92d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A625E66AC1
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 12:07:55 -0700 (PDT)
-Received: by mail-ua1-x92d.google.com with SMTP id m42so6733382uae.0
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 12:07:55 -0700 (PDT)
+        Mon, 28 Mar 2022 15:13:42 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3ADB66C8F
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 12:12:00 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id bq8so16733700ejb.10
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 12:12:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CCKplzUskEQ9PwRTyuFUMJADGXMGT+3wuQ0LIFqQJTA=;
-        b=iVLFo3/Wbarqi1Gy59ZX3ni8OxRbwnW/akTYc6RfW1m8CgbjSSyNDMtRp1RVi7Tejz
-         b8YQxZyK2jg/JAPh9AsJ0u4zLhoff1XDlf7NrWZEhJegte0LIdZ4IU6PC0WYwSjaHDjG
-         RFgv7u7HdAtOW66kFkWDiyk0LYdF9Ihm9DpHuX+mloqKl0secFILqUdD6yRMndKNIzGN
-         EFEJJBx6HsqPkivC5Zr9d/3RQqo6iWX2oenhxT7GQSq58SPUyBmNv6jwsg86dQzXeyE3
-         A3TdXe+MnA71RRcWLkbZ3wp8uGAphDzGldReYbNgQVUH49wE9PBm9VkLo0ky5A2w1yNh
-         1p9g==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jG3Rt4P3Raf9WSo1WvvLrHkpUajHf7ot05DbpWV2Eb0=;
+        b=PZXl6pFWIqhq+IGkvc2dvo1z28ViM0/IcQ4ra0LmbQRG+i3q7bJIKzhEv80XtXXLUZ
+         waKmqllEWW4P/SrOXG8yhqE5IICerx62efk1JSCHfpiKs9M0/QM9dNIClCclyNZJanlN
+         TZxflkCPUVClCsVlNjmTsqPXnB2f4kUt2KCVXGToBybPB04HISvbSsq+UPvv+XpZkzbO
+         whfwwhTEOqTOQebiJmWZWGOeOHWu734U2dHqQHsqubey4vfizUddn+ynpeCpeEn24N5b
+         B27SV1lynfnOmxFHMiqlmSB0bG9iX3Xx3lZ0RiEhINPXLJ8cfTZsoWfnosBwhV0fNVit
+         VWQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CCKplzUskEQ9PwRTyuFUMJADGXMGT+3wuQ0LIFqQJTA=;
-        b=LE7576LqdW95ovFi35Bo4PnXSZnjHVrglD5cFJh7cDox96SSKxZf8JljfVpi2zRCul
-         7rP0L4oRCaAZeORFjvg5e06gLY48X449cayJa0qIV4j9SN6oJTZ0gtub5MYuB2cRDfd0
-         6k9lmwjHmFAfAk42JGWvbHlA3XokxY/8reff0LYOBTljMu0nkuxeZcFlsfivmBjTkfia
-         tkmMJcUhAiZdewz6JRdVL1PwnPOkWi3EqOnp1Mhue3xbu+Ct419u2XNM4LfeeaqjKQF6
-         X5e2Z5Sp95JzmWGezjJ8V9qM/0H3AfRsmdMECaourCEvPpLi1UJMKPVQYHfwUDok4NW4
-         8ikw==
-X-Gm-Message-State: AOAM532/dDHmENbxbR03UGYu7cVdYEM0QkOR+LH7VS3oPg82HpmN9O5f
-        xU/4l9VYHnpaqeB6+R+11kX/2H45IcJIgtCoRLc=
-X-Google-Smtp-Source: ABdhPJyeB+4PzruoBESQc2VKSlA60X+ybn+mXU9Z41UctfcgMdS1JkVl9uLoW0REsYsj4gV+ulwXOYj02EGWedpRbnw=
-X-Received: by 2002:ab0:4ac1:0:b0:351:ed7d:e65c with SMTP id
- t1-20020ab04ac1000000b00351ed7de65cmr12559304uae.36.1648494474130; Mon, 28
- Mar 2022 12:07:54 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jG3Rt4P3Raf9WSo1WvvLrHkpUajHf7ot05DbpWV2Eb0=;
+        b=h8aGEAVkohWpOVJdGxghtop+/n1yj5jSnzwFvYUKKI3dT7TUpiCbAWrECmzmED3AUN
+         X5+8B7JgEZz0V3feINSKdUaoJZOgbNykwXwXlWRkfLX9iW3AUGrb3DXUVjaso+LomLUw
+         Dm9+mzYM/WJuD+oYDP3gSQ0Uiv0vnYLKi2EHXyUS9obda4BKQzN/4qylX1LM4QYqXJR5
+         RNDlyG7gcsVGJw3cw4HX5MHUrCQhDh/EPBVpX3JTaKL120UbZ9tRFV4EJjbH3UCINDNp
+         2r0D3cZvE86PojbceKE+Nu0vNOJC/tdFXZYVr+WH+gQSUSt4BCkOhh7PJG8TX2B7Rh7V
+         tjdQ==
+X-Gm-Message-State: AOAM530SSBD5gxhoCzRi0NAGjRB6GnI90KJqtdVneOZAkZW6G/Dej/Lu
+        Dzdv/jwyWdqgiPrTUWnvJ8FCvg1XuDlaAxO0
+X-Google-Smtp-Source: ABdhPJwFwLiR9+MtMZeMy5VDtsZaqzeSjHEJIe4h1TwW5hRcMHYc4oopQ5oF00JoT/EEnuMkQdrKVg==
+X-Received: by 2002:a17:907:60d6:b0:6df:a099:e26e with SMTP id hv22-20020a17090760d600b006dfa099e26emr29699586ejc.34.1648494718902;
+        Mon, 28 Mar 2022 12:11:58 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id gn3-20020a1709070d0300b006e1036666bfsm2166989ejc.223.2022.03.28.12.11.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 12:11:58 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Keerthy <j-keerthy@ti.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH] dt-bindings: gpio: davinci: list contents of GPIO hogs
+Date:   Mon, 28 Mar 2022 21:11:53 +0200
+Message-Id: <20220328191153.171241-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20220311044756.425777-1-jim.cromie@gmail.com> <20220311044756.425777-3-jim.cromie@gmail.com>
- <823e51e6-2af4-7854-9428-697a2af12488@akamai.com> <CAJfuBxxVti_pa1YPmas=Ub28yWUFFGeR13wxveLvPCYS61NxuA@mail.gmail.com>
- <0d00c529-3bac-f09f-e07c-584194251a06@akamai.com>
-In-Reply-To: <0d00c529-3bac-f09f-e07c-584194251a06@akamai.com>
-From:   jim.cromie@gmail.com
-Date:   Mon, 28 Mar 2022 13:07:27 -0600
-Message-ID: <CAJfuBxwxA-9EwBaEow2UTBXD5-iER03+f5=D1zCUjTUut_bQaw@mail.gmail.com>
-Subject: Re: [PATCH 2/5] dyndbg: add class_id field and query support
-To:     Jason Baron <jbaron@akamai.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sean Paul <seanpaul@chromium.org>, robdclark@gmail.com,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Joe Perches <joe@perches.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        amd-gfx mailing list <amd-gfx@lists.freedesktop.org>,
-        intel-gvt-dev@lists.freedesktop.org,
-        Intel Graphics Development <intel-gfx@lists.freedesktop.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 3:30 PM Jason Baron <jbaron@akamai.com> wrote:
->
->
->
-> On 3/11/22 20:06, jim.cromie@gmail.com wrote:
-> > On Fri, Mar 11, 2022 at 12:06 PM Jason Baron <jbaron@akamai.com> wrote:
-> >>
-> >>
-> >>
-> >> On 3/10/22 23:47, Jim Cromie wrote:
-> >>>
-> >>> With the patch, one can enable current/unclassed callsites by:
-> >>>
-> >>>   #> echo drm class 15 +p > /proc/dynamic_debug/control
-> >>>
-> >>
-> >> To me, this is hard to read, what the heck is '15'? I have to go look it
-> >> up in the control file and it's not descriptive. I think that using
-> >> classes/categories makes sense but I'm wondering if it can be a bit more
-> >> user friendly? Perhaps, we can pass an array of strings that is indexed
-> >> by the class id to each pr_debug() site that wants to use class. So
-> >> something like:
+The hogs children should list allowed properties, otherwise any property
+would be accepted.  Simplify also GPIO hog node name pattern.
 
-hi Jason,
-Im now in basically full agreement with you
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ .../devicetree/bindings/gpio/gpio-davinci.yaml        | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-1.   .class_id  is a "global" space, in that all callsites have one.
-2.    0-15 is an exceedingly small range for a global space
+diff --git a/Documentation/devicetree/bindings/gpio/gpio-davinci.yaml b/Documentation/devicetree/bindings/gpio/gpio-davinci.yaml
+index f32e09ef937c..e5b91c65dcb0 100644
+--- a/Documentation/devicetree/bindings/gpio/gpio-davinci.yaml
++++ b/Documentation/devicetree/bindings/gpio/gpio-davinci.yaml
+@@ -76,12 +76,21 @@ properties:
+     const: 2
+ 
+ patternProperties:
+-  "^(.+-hog(-[0-9]+)?)$":
++  "^.+-hog(-[0-9]+)?$":
+     type: object
++    properties:
++      gpio-hog: true
++      gpios: true
++      input: true
++      output-high: true
++      output-low: true
++      line-name: true
+ 
+     required:
+       - gpio-hog
+ 
++    additionalProperties: false
++
+ required:
+   - compatible
+   - reg
+-- 
+2.32.0
 
-Fix that by
-3. make it private (by removing "class N" parsing)
-   now nobody can do
-   echo module * class N +p >control
-
-4. add private/per-module "string" -> class_id map
-    each module will have to declare the class-strings they use/accept
-    opt-in - want coordinated / shared names for DRM_UT_KMS etc.
-
-5. validate input using the known class_string -> class_id
-
-then, this is knowably right or wrong, depending on DRM_FOO:
-     echo module drm class DRM_FOO +p > control
-
-it also means that
-     echo class DRM_UT_KMS +p >control
-is both wellformed and minimal;
-any module that has DRM_UT_KMS defined will know which class_id *they*
-have mapped it to.
-theres no global "DRM_UT_KMS" to be abused.
-
-So Ive been working towards that..
-Heres my current biggest roadblock
-
-DEFINE_DYNAMIC_DEBUG_CLASSBITS
-creates the class-strings[] array declaratively, at compile-time.
-This array is attached to the kernel-param.args,
-so it can be used by the callbacks (to construct the command)
-
-But its not obviously available from outside the sysfs knob
-that its attached to, as is needed to apply command >control generally.
-
-If I can attach the class-strings[]  to struct ddebug_table,
-then ddebug_change() can use it to validate >control input.
-
-So, how to attach ?
-its got to work for both builtin & loadable modules.
-(which precludes something in struct module ?)
-
-I looked for a kernel_param_register callback, came up empty.
-Trying to add it feels invasive / imposing.
-
-
-> >
-> > If that works, its cuz DEFINE_DYNAMIC_DEBUG_CLASSBITS()
-> > plucks class symbols out of its __VA_ARGS__, and #stringifes them.
-> > So that macro could then build the 1-per-module static constant string array
-> > and (only) the callbacks would be able to use it.
-> >
-
-So Ive been tinkering hard on this macro, since its pretty central to
-the interface defn.
-heres some choices:
-
-this is what Ive been working towards.
-using enum symbols directly like this associates them by grep,
-in contrast, class-strings are mealy-mouthed, milquetoast.
-
-DEFINE_DYNAMIC_DEBUG_CLASSBITS(debug, __drm_debug, "p",
-        "enable drm.debug categories - 1 bit per category",
-        DRM_UT_CORE,
-        DRM_UT_DRIVER,
-        DRM_UT_KMS,
-        DRM_UT_PRIME,
-        DRM_UT_ATOMIC,
-        DRM_UT_VBL,
-        DRM_UT_STATE,
-        DRM_UT_LEASE,
-        DRM_UT_DP,
-        DRM_UT_DRMRES);
-
- I found a slick MAP ( ) macro to do this:
-
-#define DEFINE_DYNAMIC_DEBUG_CLASSBITS(fsname, _var, _flgs, desc, ...) \
-  MODULE_PARM_DESC(fsname, desc); \
-  static struct dyndbg_classbits_param ddcats_##_var = { \
-    .bits = &(_var), \
-    .flags = _flgs, \
-    .classes = { __VA_ARGS__, _DPRINTK_CLASS_DFLT }, \
-    .class_names = { mgMAP(__stringify, sCOMMA, \
-                                                __VA_ARGS__,
-_DPRINTK_CLASS_DFLT) } \
-}; \
-module_param_cb(fsname, &param_ops_dyndbg_classbits, \
-&ddcats_##_var, 0644)
-
- __VA_ARGS__   is used 2x
-.class_names is available for validating command >control
-
-As much as I like the above, the MAP macro has a longer, more risky
-path to the kernel
-
-so a more modest alternative: module user defines class-strings in interface,
-but they *must* align manually with the enum values they correspond to;
-the order determines the bit-pos in the sysfs node,
-since the interface no longer provides the enum values themselves.
-
-DEFINE_DYNAMIC_DEBUG_CLASS_STRINGS(debug, __drm_debug, "p",
-        "enable drm.debug categories - 1 bit per category",
-        "DRM_UT_CORE",
-        "DRM_UT_DRIVER",
-        "DRM_UT_KMS",
-
-different name allows CLASSBITs or similar in future, if MAP works out.
-class-strings are completely defined by users, drm can drop UT naming
-
-TLDR: FWIW
-
-iSTM that  the same macro will support the coordinated use of class-strings
-across multiple modules.
-
-drm_print.c - natural home for exposed sysfs node
-
-amdgpu/, drm_helper/ i915/  nouveau/  will all need a DEFINE_DD added,
-so that ddebug_change() can allow those .class_ids to be controlled.
-sysfs perm inits can disable their nodes, since theyre coordinated.
-
-> >
->
-> Ok, yeah so I guess I'm thinking about the 'class' more as global namespace,
-> so that for example, it could span modules, or be specific to certain modules.
-> I'm also thinking of it as a 'string' which is maybe hierarchical, so that it's
-> clear what sub-system, or sub-sub-system it belongs to. So for DRM for example,
-> it could be a string like "DRM:CORE". The index num I think is still helpful for
-> implementation so we don't have to store a pointer size, but I don't think it's
-> really exposed (except perhaps in module params b/c drm is doing that already?).
->
-
-So what Ive got here is as described above,
-I just need a few bright ideas,
-then I can bring it together.
-got a spare tuit?
-
-Jim
