@@ -2,129 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96279C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 13:58:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C5B5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 14:00:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243562AbiC1N7j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 09:59:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53288 "EHLO
+        id S243565AbiC1OBz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 10:01:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243544AbiC1N7d (ORCPT
+        with ESMTP id S239631AbiC1OBu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 09:59:33 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7718E5EDC2
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 06:57:51 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id bi12so28916088ejb.3
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 06:57:51 -0700 (PDT)
+        Mon, 28 Mar 2022 10:01:50 -0400
+Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6511929CB0;
+        Mon, 28 Mar 2022 07:00:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ionos.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=n9XsGPVM3OBI1o2wqhHoOEJxIfzU6g7lXxBVU0mjG/Y=;
-        b=Ez6cMtRVxjy3WSMB1qzvx3cy4spCXTGzgPZr10+KtI8BzuENmAwZYO3QRxO8apwhdk
-         Gx/OwzAq56twYuJHbSNRr/ynrf8UZv8nZabgjguaaYtLEw14dRILVPlAIb3NWcfCIEFz
-         R0vs6suuVg8txAujwrRo9eCsP66vuNCyg3q/7Hl5rhtiFGcLBnBlVW0XK6WRDQXGQpo9
-         P98aIYsAcPHmRmHhZT5GEmhehUmAo5sskD4IVNthqt4MCA4hYgDq5DFudsoiPiOVmqz3
-         ObFCsBjvY+rUifYfspBCrmsYiRbQMQJGHN3WmpiWJ6enDYObilCHWxEJh02YvmEBZDCV
-         1jzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=n9XsGPVM3OBI1o2wqhHoOEJxIfzU6g7lXxBVU0mjG/Y=;
-        b=5+Hs55cdu2wKSIPXJNpqIGh0o5lg5a41V16sXSwB6LNuPUfb8X3NSgY8wwiRehDGcQ
-         jBgXrNg1o9kgiKzuf4TzAr5X7u/uLjHXiR5uPzkNfwJYdE46dNkLKthAG4zhlKYg9MO0
-         gkr7mI7mVwCwRA6NPhLfl/+GMkYCyMX7CCmxlMxqDmfdeMtUluPZRkqpJ91dHx8TUa4y
-         ZkfH4gixGAzlQwpvLTcLcGKCXNGCuAsPslupCGaLvkQsFga0Ag/xUosUITLoySa9xj/5
-         1y/e3GK5EK/d0C27u/x4WowHojacx9ysh/pROj4GD4+Jmp5MhotQFTEJ2pW+FOYqB60K
-         1X3Q==
-X-Gm-Message-State: AOAM533xeelfUGwqpqxL+MMFGNBnXVa/aH9x+xmJiV3tZOV+IxEw8qQx
-        P0Xn4TbSlYMVttSpKEC9+9HY2HGSpKt7j5PgSuV6eXID/IA=
-X-Google-Smtp-Source: ABdhPJx8IAzAnugQilvYszPqbwu/kHCCuyCQG5aZa/oDfoRHr1M15AxQcxiJNiHW7Pkc4FoojrnBeCiC5WtixX+3oUs=
-X-Received: by 2002:a17:907:3da9:b0:6db:f3f:33c2 with SMTP id
- he41-20020a1709073da900b006db0f3f33c2mr27321704ejc.735.1648475869953; Mon, 28
- Mar 2022 06:57:49 -0700 (PDT)
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1648476009; x=1680012009;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ayM215iKfS3RVxHHf6+6kiEWl9gC2cMSZOj/C1/hktk=;
+  b=U8/IvxCtevfYoGYrmAhmdvhsaSlpF29tUqtt73uDLA1mNqIdn9gAh5Px
+   LS3s2pIN8sFmOrO/atdnDsCnOk2QBkaCZTV5pGjo+XhXYYarAiIIzXbCI
+   KuAYCgpNsw2miPHYKSwBDdywOVa9743uWj5iGnEiCOVJIgtcJbuIArtuB
+   FiU0E0VJSlejFS+KsPWvPv6sxjL5m10MlkFYv8diGYs+wI7oYwi9BScOm
+   b1YQukNL5OvfmlbFPT95RwnRBykJWQqZ02S/dtSs24P6pyjcRpe4glG6y
+   b8YQyedffRPaJTs0VmLXut/QlvD30JS5tFylRtBCgwTcQfY5ZDcCWeQ0m
+   A==;
+X-IronPort-AV: E=Sophos;i="5.90,217,1643670000"; 
+   d="scan'208";a="22935295"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 28 Mar 2022 16:00:05 +0200
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Mon, 28 Mar 2022 16:00:05 +0200
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Mon, 28 Mar 2022 16:00:05 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1648476005; x=1680012005;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ayM215iKfS3RVxHHf6+6kiEWl9gC2cMSZOj/C1/hktk=;
+  b=WuV252Nu+GZzN74VzCmlspBKd0dca8X2+xSzsUDOC+VBkSdAcRJKkpz9
+   V6ZhUvtyzJXo40EU/KoKsnsMA+udDgpFrmJjA0OOrI8Du6AE/IqQXvbD0
+   l7/oi3cIclt6kdqSsBk62dD3jTXzpYH4IITmDIWCq1j5VlQdR/7ht0rkB
+   UzXa+gf9sB2fMmE9Y4BJg30hxvVMBs2s+cV3pKJsYN741b+m12/z4LAVK
+   Ghd0BfGmPSMkfRYy9LlDPSTztxPRWJXf02LYJ3AALa7lqL+bNoPBea5QD
+   q3OLZ+wYdDSKr/JtyC5EC84xkLnc6lGkLWsLSzPCKdl/McKEhN7OLwWQj
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,217,1643670000"; 
+   d="scan'208";a="22935294"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 28 Mar 2022 16:00:05 +0200
+Received: from steina-w.localnet (unknown [10.123.49.12])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 20160280065;
+        Mon, 28 Mar 2022 16:00:04 +0200 (CEST)
+From:   Alexander Stein <alexander.stein@ew.tq-group.com>
+To:     Jonathan =?ISO-8859-1?Q?Neusch=E4fer?= <j.neuschaefer@gmx.net>
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-actions@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, linux-omap@vger.kernel.org,
+        linux-amlogic@lists.infradead.org, linux-arm-kernel@axis.com,
+        linux-aspeed@lists.ozlabs.org,
+        linux-rpi-kernel@lists.infradead.org,
+        chrome-platform@lists.linux.dev, linux-renesas-soc@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        kernel@dh-electronics.com, linux-mediatek@lists.infradead.org,
+        openbmc@lists.ozlabs.org, linux-tegra@vger.kernel.org,
+        linux-oxnas@groups.io, linux-arm-msm@vger.kernel.org,
+        linux-unisoc@lists.infradead.org,
+        linux-rockchip@lists.infradead.org,
+        linux-realtek-soc@lists.infradead.org
+Subject: Re: (EXT) Re: [RFC PATCH 0/1] Categorize ARM dts directory
+Date:   Mon, 28 Mar 2022 16:00:02 +0200
+Message-ID: <2100132.irdbgypaU6@steina-w>
+Organization: TQ-Systems GmbH
+In-Reply-To: <YkG2RPrtPaBNXb7a@latitude>
+References: <20220328000915.15041-1-ansuelsmth@gmail.com> <YkG2RPrtPaBNXb7a@latitude>
 MIME-Version: 1.0
-References: <42165d3f9dfc7abb54542d34a4e33ea8e83b101c.1648379172.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <42165d3f9dfc7abb54542d34a4e33ea8e83b101c.1648379172.git.christophe.jaillet@wanadoo.fr>
-From:   Jinpu Wang <jinpu.wang@ionos.com>
-Date:   Mon, 28 Mar 2022 15:57:39 +0200
-Message-ID: <CAMGffEkVEWTcpK9ntx15xmvdiXtm+uwyz8Wr-AhAjwCcFLVOqg@mail.gmail.com>
-Subject: Re: [PATCH] block/rnbd: Fix the maximum clt_device_id value in init_dev()
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     "Md. Haris Iqbal" <haris.iqbal@ionos.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Danil Kipnis <danil.kipnis@ionos.com>,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Jack Wang <jinpu.wang@ionos.com>, linux-block@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Mar 27, 2022 at 1:06 PM Christophe JAILLET
-<christophe.jaillet@wanadoo.fr> wrote:
->
-> ida_alloc_range(..., min, max, ...) returns values from min to max,
-> inclusive.
->
-> So, '1 << (MINORBITS - RNBD_PART_BITS)' is a valid value for ret, which is
-> then saved in 'dev->clt_device_id'.
->
-> This value is used in rnbd_client_setup_device() and passed to
-> rnbd_clt_setup_gen_disk().
-> There we have:
->     dev->gd->first_minor        = idx << RNBD_PART_BITS
->
-> So a possible value for 'gd->first_minor' is '1 << MINORBITS'
->
-> This is an issue because:
->     rnbd_clt_setup_gen_disk()
->     --> add_disk(dev->gd)
->       --> device_add_disk(NULL, disk, NULL)
->
-> And there we have:
->    ddev->devt = MKDEV(disk->major, disk->first_minor);
->
-> So, should 'gd->first_minor' be '1 << MINORBITS', MKDEV() would overflow.
->
-> Fixes: f7a7a5c228d4 ("block/rnbd: client: main functionality")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
-> #define MKDEV(ma,mi)    (((ma) << MINORBITS) | (mi))
->
-> This patch is completely speculative.
->
-> I think that:
->         if (disk->first_minor + disk->minors > MINORMASK + 1)
->                 return -EINVAL;
-> in device_add_disk() handles this corner case.
-> Anyway, if I'm correct, handling the error earlier can't hurt (at least I
-> guess so :)).
->
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-looks good to me, thx!
-Acked-by: Jack Wang <jinpu.wang@ionos.com>
-> ---
->  drivers/block/rnbd/rnbd-clt.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/block/rnbd/rnbd-clt.c b/drivers/block/rnbd/rnbd-clt.c
-> index b66e8840b94b..db900c3786a3 100644
-> --- a/drivers/block/rnbd/rnbd-clt.c
-> +++ b/drivers/block/rnbd/rnbd-clt.c
-> @@ -1454,7 +1454,7 @@ static struct rnbd_clt_dev *init_dev(struct rnbd_clt_session *sess,
->                 goto out_alloc;
->         }
->
-> -       ret = ida_alloc_max(&index_ida, 1 << (MINORBITS - RNBD_PART_BITS),
-> +       ret = ida_alloc_max(&index_ida, (1 << (MINORBITS - RNBD_PART_BITS)) - 1,
->                             GFP_KERNEL);
->         if (ret < 0) {
->                 pr_err("Failed to initialize device '%s' from session %s, allocating idr failed, err: %d\n",
-> --
-> 2.32.0
->
+Am Montag, 28. M=E4rz 2022, 15:21:08 CEST schrieb Jonathan Neusch=E4fer:
+> * PGP Signed by an unknown key
+>=20
+> On Mon, Mar 28, 2022 at 02:09:14AM +0200, Ansuel Smith wrote:
+> > Hi,
+> > as the title say, the intention of this ""series"" is to finally
+> > categorize
+> > the ARM dts directory in subdirectory for each oem.
+>=20
+> [...]
+>=20
+> > [1] https://gist.github.com/Ansuel/47c49925ee7ef4b1dd035afc74679ab5
+> > [2] https://gist.github.com/Ansuel/19f61f1e583c49407ce35c10e770fbe0
+>=20
+> Nice idea, thank you!
+>=20
+> A few notes on categorization below.
+> [...]
+> >  create mode 100644 arch/arm/boot/dts/freescale/Makefile
+>=20
+> Freescale has been part of NXP for a while, so it might make sense to
+> merge the freescale and nxp directories. I can't speak for
+> NXP-the-company, so that's just my view as a bystander.
+
+Please don't mix the names for arm and arm64. It's very confusing if the=20
+vendor directory is named differently for each architecture.
+
+>[...]
+> >  create mode 120000 arch/arm/boot/dts/nxp/armv7-m.dtsi
+>=20
+> armv7-m.dtsi is a bit confusing, because it contains a few devices at
+> fixed addresses, so it looks vendor-specific at a first glance into the
+> file. However, if it is actually as vendor-neutral as the name implies,
+> I think it should live dts/ directly, rather than in vendor
+> subdirectories.
+
+This seems to be some generic devices common for all ARMv7M CPUs used in=20
+Cortex-M CPUs. It's also used by some stm32 .dtsi.
+
+Best regards,
+Alexander
+
+
+
