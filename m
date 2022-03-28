@@ -2,96 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2880BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 07:28:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E37BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 07:29:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238805AbiC1H3r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 03:29:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52708 "EHLO
+        id S238813AbiC1Ha5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 03:30:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236389AbiC1H3p (ORCPT
+        with ESMTP id S234268AbiC1Haz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 03:29:45 -0400
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC8473C49C;
-        Mon, 28 Mar 2022 00:28:03 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 2EEE0E0007;
-        Mon, 28 Mar 2022 07:28:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1648452482;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=OXmlB+ObSFBVeGDcXlfASLfeYiB6a6ZcPSqmHqh93og=;
-        b=MPweZDXu0TcPPoQSFxcBwNPGNR4hVLAVJmIjlMN0wMf0kRrvqf/0TkXBqElt4mPDGDUash
-        Q3Ho7RkFN48ihUbHmelfMMjflbkcqlp9a4M/zLtiNxMHRiFdooljlrjRYsdy9AICkaP/SG
-        QebvIiVa+V3H3MUm2fnX4/WLYEeK4yrihUsK17Y+71Co0l9AwIRXj5/Czm7npfrms5jD19
-        T6buST7yvqb+tGyw48uqvL33Ns2kGBodRahXcffHFHf2X4+mbslIOhMZvx7iQ5N/ThGZ2h
-        sw+bbeBcmRlZtZlpyMOqBXGPc8yToXeB3DWruIrPVx030B3SWtPr9hEXVSdPEw==
-Date:   Mon, 28 Mar 2022 08:26:42 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [net-next 1/5] net: mdio: fwnode: add fwnode_mdiobus_register()
-Message-ID: <20220328082642.471281e7@fixe.home>
-In-Reply-To: <Yj4MIIu7Qtvv25Fs@lunn.ch>
-References: <20220325172234.1259667-1-clement.leger@bootlin.com>
-        <20220325172234.1259667-2-clement.leger@bootlin.com>
-        <Yj4MIIu7Qtvv25Fs@lunn.ch>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Mon, 28 Mar 2022 03:30:55 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAC09427C6
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 00:29:12 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id k5-20020a056e02134500b002c9af0334e2so999025ilr.11
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 00:29:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=KF6RRSv0UEz8tSzbeuXx0815Teuk0m5QkpVJdIXOy1A=;
+        b=05s3lSvNDoUCoSVHrOqmntYgAbZtGRyu0L3C4bx/Xme46godiPT1Rmbhn7nM2mdB/3
+         dXGQf1E+Z4hj8HbS7TFB4cvTI7ifna+Ky2Um04nuvuJ1+tzl2AXSPrhPDlDGw0PUprHJ
+         UHmADiGlaGvs/bUOheyCWGXpsSVlhVnbi5VZUnNpT8VvQdvd6/mlbGpmNfc3TKhepnpM
+         ztnOdX8rgwrnAhkmdEtrORKZWHBo1v3g7F1gsX+d7p7/o1ygYIMvwv3BKZ0YlaAxHhL2
+         F3s4StnE/kaBExxrIQ1FL9zynMGYxwwoh6MGIPqDUVhqLNNZ54LXJirV/p65ZewSqqsL
+         GsMg==
+X-Gm-Message-State: AOAM531pkHcsJVdgN+/iAuCZTHxNH1O5tiPRflTTKc3HyEw2MqnYAl/W
+        5xkv/yhH1TNldRIwpu4cB5vrYU+MWQcJEShZqMOk1G68kb2F
+X-Google-Smtp-Source: ABdhPJylgre9J6aJ68nKejMHlxOmxK4+mEFWQQBbyeS+ASnoUYOMmCmdSz/22WytKSqAWnOGc3TqFAKHkQbHRRqzDsr0ElUtrNTs
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+X-Received: by 2002:a05:6638:4089:b0:319:b60c:3c3d with SMTP id
+ m9-20020a056638408900b00319b60c3c3dmr12553389jam.120.1648452551957; Mon, 28
+ Mar 2022 00:29:11 -0700 (PDT)
+Date:   Mon, 28 Mar 2022 00:29:11 -0700
+In-Reply-To: <12985729.uLZWGnKmhe@leap>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000c9dfe005db4244a9@google.com>
+Subject: Re: [syzbot] memory leak in blk_mq_init_tags
+From:   syzbot <syzbot+f08c77040fa163a75a46@syzkaller.appspotmail.com>
+To:     axboe@kernel.dk, fmdefrancesco@gmail.com,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Fri, 25 Mar 2022 19:38:24 +0100,
-Andrew Lunn <andrew@lunn.ch> a =C3=A9crit :
+Hello,
 
-> On Fri, Mar 25, 2022 at 06:22:30PM +0100, Cl=C3=A9ment L=C3=A9ger wrote:
-> > In order to support software node description transparently, add fwnode
-> > support with fwnode_mdiobus_register(). This function behaves exactly
-> > like of_mdiobus_register() function but using the fwnode node agnostic
-> > API. This support might also be used to merge ACPI mdiobus support
-> > which is quite similar to the fwnode one.
-> >=20
-> > Some part such as the whitelist matching are kept exclusively for OF
-> > nodes since it uses an of_device_id struct and seems tightly coupled
-> > with OF. Other parts are generic and will allow to move the existing
-> > OF support on top of this fwnode version. =20
->=20
-> Does fwnode have any documentation? How does a developer know what
-> properties can be passed? Should you be adding a
->=20
-> Documentation/fwnode/bindings/net/mdio.yaml ?
->=20
-> 	Andrew
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-Hi Andrew,
+Reported-and-tested-by: syzbot+f08c77040fa163a75a46@syzkaller.appspotmail.com
 
-Actually, fwnode is an abstraction for various firmware nodes such as
-ACPI, device-tree and software nodes. It allows to access properties,
-child and other attributes transparently from these various nodes but
-does not actually defines how they should describe the hardware. If
-there is specific hanling to be done, node type can be checked using
-is_acpi_node(), is_of_node() and so on.
+Tested on:
 
-I think it is still needed to document the bindings for each node type.
+commit:         ae085d7f mm: kfence: fix missing objcg housekeeping fo..
+git tree:       upstream
+kernel config:  https://syzkaller.appspot.com/x/.config?x=6583b67d32c256f1
+dashboard link: https://syzkaller.appspot.com/bug?extid=f08c77040fa163a75a46
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=1461d105700000
 
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+Note: testing is done by a robot and is best-effort only.
