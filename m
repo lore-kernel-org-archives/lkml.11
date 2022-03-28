@@ -2,226 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9A4AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 09:02:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA12DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 09:03:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239630AbiC1JEN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 05:04:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58204 "EHLO
+        id S239576AbiC1JFE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 05:05:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238671AbiC1JEK (ORCPT
+        with ESMTP id S234191AbiC1JFB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 05:04:10 -0400
-Received: from 189.cn (ptr.189.cn [183.61.185.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 18A9653E0C;
-        Mon, 28 Mar 2022 02:02:26 -0700 (PDT)
-HMM_SOURCE_IP: 10.64.8.43:54834.655473141
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-114.242.206.180 (unknown [10.64.8.43])
-        by 189.cn (HERMES) with SMTP id D96DF1002BE;
-        Mon, 28 Mar 2022 17:01:59 +0800 (CST)
-Received: from  ([172.27.8.53])
-        by gateway-151646-dep-b7fbf7d79-vjdjk with ESMTP id 3f3720f820be42faa0e22b914cbd3427 for lkp@intel.com;
-        Mon, 28 Mar 2022 17:02:25 CST
-X-Transaction-ID: 3f3720f820be42faa0e22b914cbd3427
-X-Real-From: 15330273260@189.cn
-X-Receive-IP: 172.27.8.53
-X-MEDUSA-Status: 0
-Sender: 15330273260@189.cn
-Message-ID: <efc756c5-9ea3-66df-4885-82f57ff31b1f@189.cn>
-Date:   Mon, 28 Mar 2022 17:01:52 +0800
+        Mon, 28 Mar 2022 05:05:01 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9C3552E16
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 02:03:20 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id q137-20020a6b8e8f000000b006495204b061so9961528iod.14
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 02:03:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=1BEYGgw9VLCjR2OvZTUoVmRSlR553OWUYaMPhi+y6Hc=;
+        b=NkOd19q/ze8jBNMnpx4YNPjDlWRqPFqVQ8DM2YNCo+BNZbk5TixIlICqLidatDSBvW
+         rYOeVddMS1lXSPA/A7zUxg4ZVhElHQZ0EO70EnqrynU0f5XKdRz7A1Ht5lZxxrZkBGIG
+         MCpG7C8OV/xzqAqRgqhSNJBQeenLJjhkO4CRCFJBWVGOBmwk4ErBqf2FvveK9EWa8yG/
+         klg5gVd52tnoGQj5D0v6PYkYtY4wqV9SJj0PvKNGBybG0Hx+avzHM8XBq+XZbWOTpK/p
+         r/bemCUpE24FZraPOiJ3WjXbKFHzHNfV1n6+iGpafx2d8YcGSVXBjeK+94EK6k3S/wGO
+         EzbQ==
+X-Gm-Message-State: AOAM532QcFxpETyysZOrlv1bt/WgS/RjODCq4u0sPhGyK5CbutimLb2B
+        Yek2NHhgYvrgO46/F2zrfxeZc/VA6S695/Q50Td7amPpfAg/
+X-Google-Smtp-Source: ABdhPJybG4JW2cX3BKjRHqvJcBND+2gWOtlcswy0BQI67/ZhFh4GTrfGHpwJw3X9zPUyPUUZEyS0yte8YTbeuDgoK4bmx/Tu2R7i
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v13 5/6] drm/loongson: add drm driver for loongson display
- controller
-Content-Language: en-US
-To:     kernel test robot <lkp@intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Roland Scheidegger <sroland@vmware.com>,
-        Zack Rusin <zackr@vmware.com>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dan Carpenter <error27@gmail.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Ilia Mirkin <imirkin@alum.mit.edu>,
-        Qing Zhang <zhangqing@loongson.cn>,
-        suijingfeng <suijingfeng@loongson.cn>
-Cc:     kbuild-all@lists.01.org, devicetree@vger.kernel.org,
-        linux-mips@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-References: <20220328022835.2508587-5-15330273260@189.cn>
- <202203281653.wiRaycuD-lkp@intel.com>
-From:   Sui Jingfeng <15330273260@189.cn>
-In-Reply-To: <202203281653.wiRaycuD-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6638:260c:b0:323:6cae:8654 with SMTP id
+ m12-20020a056638260c00b003236cae8654mr1522894jat.220.1648458200247; Mon, 28
+ Mar 2022 02:03:20 -0700 (PDT)
+Date:   Mon, 28 Mar 2022 02:03:20 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000073f09205db439577@google.com>
+Subject: [syzbot] kernel BUG in __pagevec_lru_add
+From:   syzbot <syzbot+e2771c7f4aa80a94a9d4@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello,
 
-On 2022/3/28 16:51, kernel test robot wrote:
-> Hi Sui,
->
-> Thank you for the patch! Perhaps something to improve:
->
-> [auto build test WARNING on drm/drm-next]
-> [also build test WARNING on robh/for-next linus/master v5.17 next-20220328]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch]
->
-> url:    https://github.com/intel-lab-lkp/linux/commits/Sui-Jingfeng/MIPS-Loongson64-dts-update-the-display-controller-device-node/20220328-103101
-> base:   git://anongit.freedesktop.org/drm/drm drm-next
-> config: microblaze-randconfig-s032-20220328 (https://download.01.org/0day-ci/archive/20220328/202203281653.wiRaycuD-lkp@intel.com/config)
-> compiler: microblaze-linux-gcc (GCC) 11.2.0
-> reproduce:
->          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->          chmod +x ~/bin/make.cross
->          # apt-get install sparse
->          # sparse version: v0.6.4-dirty
->          # https://github.com/intel-lab-lkp/linux/commit/836c0ab646f65b0a8c6574b5d2495c8617e96545
->          git remote add linux-review https://github.com/intel-lab-lkp/linux
->          git fetch --no-tags linux-review Sui-Jingfeng/MIPS-Loongson64-dts-update-the-display-controller-device-node/20220328-103101
->          git checkout 836c0ab646f65b0a8c6574b5d2495c8617e96545
->          # save the config file to linux build tree
->          mkdir build_dir
->          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=microblaze SHELL=/bin/bash drivers/gpu/drm/loongson/
->
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
->
->
-> sparse warnings: (new ones prefixed by >>)
->>> drivers/gpu/drm/loongson/lsdc_i2c.c:179:23: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected void [noderef] __iomem *dir_reg @@     got void * @@
->     drivers/gpu/drm/loongson/lsdc_i2c.c:179:23: sparse:     expected void [noderef] __iomem *dir_reg
->     drivers/gpu/drm/loongson/lsdc_i2c.c:179:23: sparse:     got void *
->>> drivers/gpu/drm/loongson/lsdc_i2c.c:180:23: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected void [noderef] __iomem *dat_reg @@     got void * @@
->     drivers/gpu/drm/loongson/lsdc_i2c.c:180:23: sparse:     expected void [noderef] __iomem *dat_reg
->     drivers/gpu/drm/loongson/lsdc_i2c.c:180:23: sparse:     got void *
->     drivers/gpu/drm/loongson/lsdc_i2c.c:252:23: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected void [noderef] __iomem *dir_reg @@     got void * @@
->     drivers/gpu/drm/loongson/lsdc_i2c.c:252:23: sparse:     expected void [noderef] __iomem *dir_reg
->     drivers/gpu/drm/loongson/lsdc_i2c.c:252:23: sparse:     got void *
->     drivers/gpu/drm/loongson/lsdc_i2c.c:253:23: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected void [noderef] __iomem *dat_reg @@     got void * @@
->     drivers/gpu/drm/loongson/lsdc_i2c.c:253:23: sparse:     expected void [noderef] __iomem *dat_reg
->     drivers/gpu/drm/loongson/lsdc_i2c.c:253:23: sparse:     got void *
-> --
->>> drivers/gpu/drm/loongson/lsdc_pci_drv.c:185:61: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void *reg_base @@     got void [noderef] __iomem *reg_base @@
->     drivers/gpu/drm/loongson/lsdc_pci_drv.c:185:61: sparse:     expected void *reg_base
->     drivers/gpu/drm/loongson/lsdc_pci_drv.c:185:61: sparse:     got void [noderef] __iomem *reg_base
-> --
->>> drivers/gpu/drm/loongson/lsdc_output.c:232:63: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void *reg_base @@     got void [noderef] __iomem *reg_base @@
->     drivers/gpu/drm/loongson/lsdc_output.c:232:63: sparse:     expected void *reg_base
->     drivers/gpu/drm/loongson/lsdc_output.c:232:63: sparse:     got void [noderef] __iomem *reg_base
->
-> vim +179 drivers/gpu/drm/loongson/lsdc_i2c.c
->
->     129	
->     130	struct lsdc_i2c *lsdc_of_create_i2c_adapter(struct device *parent,
->     131						    void *reg_base,
->     132						    struct device_node *i2c_np)
->     133	{
->     134		unsigned int udelay = 5;
->     135		unsigned int timeout = 2200;
->     136		int nr = -1;
->     137		struct i2c_adapter *adapter;
->     138		struct lsdc_i2c *li2c;
->     139		u32 sda, scl;
->     140		int ret;
->     141	
->     142		li2c = kzalloc(sizeof(*li2c), GFP_KERNEL);
->     143		if (!li2c)
->     144			return ERR_PTR(-ENOMEM);
->     145	
->     146		spin_lock_init(&li2c->reglock);
->     147	
->     148		ret = of_property_read_u32(i2c_np, "loongson,sda", &sda);
->     149		if (ret) {
->     150			dev_err(parent, "No sda pin number provided\n");
->     151			return ERR_PTR(ret);
->     152		}
->     153	
->     154		ret = of_property_read_u32(i2c_np, "loongson,scl", &scl);
->     155		if (ret) {
->     156			dev_err(parent, "No scl pin number provided\n");
->     157			return ERR_PTR(ret);
->     158		}
->     159	
->     160		ret = of_property_read_u32(i2c_np, "loongson,nr", &nr);
->     161		if (ret) {
->     162			int id;
->     163	
->     164			if (ret == -EINVAL)
->     165				dev_dbg(parent, "no nr provided\n");
->     166	
->     167			id = of_alias_get_id(i2c_np, "i2c");
->     168			if (id >= 0)
->     169				nr = id;
->     170		}
->     171	
->     172		li2c->sda = 1 << sda;
->     173		li2c->scl = 1 << scl;
->     174	
->     175		/* Optional properties which made the driver more flexible */
->     176		of_property_read_u32(i2c_np, "loongson,udelay", &udelay);
->     177		of_property_read_u32(i2c_np, "loongson,timeout", &timeout);
->     178	
->   > 179		li2c->dir_reg = reg_base + LS7A_DC_GPIO_DIR_REG;
->   > 180		li2c->dat_reg = reg_base + LS7A_DC_GPIO_DAT_REG;
->     181	
->     182		li2c->bit.setsda = ls7a_i2c_set_sda;
->     183		li2c->bit.setscl = ls7a_i2c_set_scl;
->     184		li2c->bit.getsda = ls7a_i2c_get_sda;
->     185		li2c->bit.getscl = ls7a_i2c_get_scl;
->     186		li2c->bit.udelay = udelay;
->     187		li2c->bit.timeout = usecs_to_jiffies(timeout);
->     188		li2c->bit.data = li2c;
->     189	
->     190		adapter = &li2c->adapter;
->     191		adapter->algo_data = &li2c->bit;
->     192		adapter->owner = THIS_MODULE;
->     193		adapter->class = I2C_CLASS_DDC;
->     194		adapter->dev.parent = parent;
->     195		adapter->nr = nr;
->     196		adapter->dev.of_node = i2c_np;
->     197	
->     198		snprintf(adapter->name, sizeof(adapter->name), "gpio-i2c-%d", nr);
->     199	
->     200		i2c_set_adapdata(adapter, li2c);
->     201	
->     202		ret = i2c_bit_add_numbered_bus(adapter);
->     203		if (ret) {
->     204			if (i2c_np)
->     205				of_node_put(i2c_np);
->     206	
->     207			kfree(li2c);
->     208			return ERR_PTR(ret);
->     209		}
->     210	
->     211		dev_info(parent, "sda=%u, scl=%u, nr=%d, udelay=%u, timeout=%u\n",
->     212			 li2c->sda, li2c->scl, nr, udelay, timeout);
->     213	
->     214		ret = devm_add_action_or_reset(parent, lsdc_of_release_i2c_adapter, li2c);
->     215		if (ret)
->     216			return NULL;
->     217	
->     218		return li2c;
->     219	}
->     220	
+syzbot found the following issue on:
 
-Hi,  my driver will not used on microblaze arch,
+HEAD commit:    1bc191051dca Merge tag 'trace-v5.18' of git://git.kernel.o..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=11b9b613700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a9ef58c085ccd118
+dashboard link: https://syzkaller.appspot.com/bug?extid=e2771c7f4aa80a94a9d4
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-what does this warnings means, do i need to fix this?
+Unfortunately, I don't have any reproducer for this issue yet.
 
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+e2771c7f4aa80a94a9d4@syzkaller.appspotmail.com
+
+ __release_gpc arch/x86/kvm/../../../virt/kvm/pfncache.c:121 [inline]
+ __release_gpc arch/x86/kvm/../../../virt/kvm/pfncache.c:107 [inline]
+ kvm_gfn_to_pfn_cache_unmap+0x2df/0x3a0 arch/x86/kvm/../../../virt/kvm/pfncache.c:296
+ kvm_gfn_to_pfn_cache_destroy arch/x86/kvm/../../../virt/kvm/pfncache.c:333 [inline]
+ kvm_gfn_to_pfn_cache_destroy+0x199/0x260 arch/x86/kvm/../../../virt/kvm/pfncache.c:326
+ kvm_xen_destroy_vm+0x18/0x90 arch/x86/kvm/xen.c:811
+ kvm_arch_destroy_vm+0x360/0x470 arch/x86/kvm/x86.c:11774
+ kvm_destroy_vm arch/x86/kvm/../../../virt/kvm/kvm_main.c:1217 [inline]
+ kvm_put_kvm+0x4fa/0xb60 arch/x86/kvm/../../../virt/kvm/kvm_main.c:1250
+ kvm_vm_release+0x3f/0x50 arch/x86/kvm/../../../virt/kvm/kvm_main.c:1273
+ __fput+0x286/0x9f0 fs/file_table.c:317
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+ exit_task_work include/linux/task_work.h:32 [inline]
+ do_exit+0xaff/0x2a30 kernel/exit.c:806
+ do_group_exit+0xd2/0x2f0 kernel/exit.c:936
+ get_signal+0x4b0/0x28c0 kernel/signal.c:2903
+------------[ cut here ]------------
+kernel BUG at mm/swap.c:1012!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 7754 Comm: syz-executor.1 Tainted: G        W         5.17.0-syzkaller-02237-g1bc191051dca #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:__pagevec_lru_add_fn mm/swap.c:1012 [inline]
+RIP: 0010:__pagevec_lru_add+0xead/0x11e0 mm/swap.c:1062
+Code: 48 c7 c6 00 0d b6 89 48 89 ef e8 de f1 09 00 0f 0b 45 31 e4 eb b3 e8 62 3e d4 ff 48 c7 c6 80 12 b6 89 48 89 ef e8 c3 f1 09 00 <0f> 0b e8 4c 3e d4 ff 48 89 ef e8 94 71 fe ff be 08 00 00 00 49 89
+RSP: 0000:ffffc90008587bc8 EFLAGS: 00010046
+RAX: 0000000000040000 RBX: dffffc0000000000 RCX: ffffc9000c3e9000
+RDX: 0000000000040000 RSI: ffffffff81a4822d RDI: 0000000000000003
+RBP: ffffea0001162680 R08: 0000000000000018 R09: 00000000ffffffff
+R10: ffffffff89186e92 R11: 00000000ffffffff R12: 0000000000000010
+R13: 0000000000000000 R14: ffff88805ad67000 R15: ffff888021768000
+FS:  00007f5c0fffe700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f5c0fffd0e8 CR3: 0000000057caa000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 00000000e08e0077 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000ffff0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ folio_add_lru+0x467/0x6a0 mm/swap.c:469
+ lru_cache_add_inactive_or_unevictable+0x192/0x520 mm/swap.c:490
+ do_anonymous_page mm/memory.c:3811 [inline]
+ handle_pte_fault mm/memory.c:4566 [inline]
+ __handle_mm_fault+0x3190/0x4150 mm/memory.c:4704
+ handle_mm_fault+0x1c8/0x790 mm/memory.c:4802
+ do_user_addr_fault+0x489/0x11c0 arch/x86/mm/fault.c:1397
+ handle_page_fault arch/x86/mm/fault.c:1484 [inline]
+ exc_page_fault+0x9e/0x180 arch/x86/mm/fault.c:1540
+ asm_exc_page_fault+0x1e/0x30 arch/x86/include/asm/idtentry.h:568
+RIP: 0033:0x7f5c1162f1dc
+Code: c0 e8 28 66 ff ff b8 ff ff ff ff e9 33 ff ff ff 66 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 41 54 31 c0 55 48 81 ec 68 10 00 00 <48> 89 7c 24 08 48 8d 3d 38 48 0a 00 48 89 34 24 48 8b 14 24 48 8b
+RSP: 002b:00007f5c0fffd0e0 EFLAGS: 00010202
+RAX: 0000000000000000 RBX: 00007f5c1179c030 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffffffffffff RDI: 0000000020000080
+RBP: 00007f5c116e308d R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000020000080 R11: 0000000000000000 R12: 0000000000000000
+R13: 00007f5c11ccfb1f R14: 00007f5c0fffe300 R15: 0000000000022000
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:__pagevec_lru_add_fn mm/swap.c:1012 [inline]
+RIP: 0010:__pagevec_lru_add+0xead/0x11e0 mm/swap.c:1062
+Code: 48 c7 c6 00 0d b6 89 48 89 ef e8 de f1 09 00 0f 0b 45 31 e4 eb b3 e8 62 3e d4 ff 48 c7 c6 80 12 b6 89 48 89 ef e8 c3 f1 09 00 <0f> 0b e8 4c 3e d4 ff 48 89 ef e8 94 71 fe ff be 08 00 00 00 49 89
+RSP: 0000:ffffc90008587bc8 EFLAGS: 00010046
+RAX: 0000000000040000 RBX: dffffc0000000000 RCX: ffffc9000c3e9000
+RDX: 0000000000040000 RSI: ffffffff81a4822d RDI: 0000000000000003
+RBP: ffffea0001162680 R08: 0000000000000018 R09: 00000000ffffffff
+R10: ffffffff89186e92 R11: 00000000ffffffff R12: 0000000000000010
+R13: 0000000000000000 R14: ffff88805ad67000 R15: ffff888021768000
+FS:  00007f5c0fffe700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f5c0fffd0e8 CR3: 0000000057caa000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 00000000e08e0077 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000ffff0ff0 DR7: 0000000000000400
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
