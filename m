@@ -2,50 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCF8DC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:24:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BB49C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:24:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239980AbiC1L0Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:26:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57226 "EHLO
+        id S240809AbiC1LYa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:24:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241278AbiC1LX1 (ORCPT
+        with ESMTP id S240918AbiC1LW5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:23:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 359CE58E5C;
-        Mon, 28 Mar 2022 04:20:31 -0700 (PDT)
+        Mon, 28 Mar 2022 07:22:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ADF5574AA;
+        Mon, 28 Mar 2022 04:19:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 18ACC61197;
-        Mon, 28 Mar 2022 11:20:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B41BC340EC;
-        Mon, 28 Mar 2022 11:20:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 73599B8105D;
+        Mon, 28 Mar 2022 11:19:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E64F0C340EC;
+        Mon, 28 Mar 2022 11:19:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466423;
-        bh=Ho2phXuAtWLZ+sQ5jklOkkrTmMsQa1r7GS6WxYIvvEQ=;
+        s=k20201202; t=1648466385;
+        bh=A/hAMMRh3XJNdD9x1AAtbacK618VtXEYBp3Ix1ZXMfo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qLTU24t1c/41MHcqW2SdadGMbeKKrNuj1Jkl9vGUL64B9Gh9KqVclb1w4sPqvnYYa
-         2hKDCyAmbx+5l0tQ+ekjmsuLQXQhulspfmNp57y6E4g/DDoW+W8NOMe7PLe1/Dfzvx
-         AOQT5X3v0Nqhr0oer0oJsDxAt20q+FvvexDXvAY4So668udVxmX7vU7DbzC8ICrga4
-         NgXvOcLY1sF5Ca8lEAmjy4v8zyuuvFSUE/guBD85fD0bI8r6wCDJ7Evk2o04Ipgftp
-         htA8XFlavnYRpUDqhiNWoibd18CQQG8u3OrcNbiehda0lUa45xsQXTcYBcDQzI+MaI
-         1lulNN0c5DvOA==
+        b=Edo29wWshR3KIyG3MHiaT9hq8u6O3DBpv/SYtATd1mk8R2XOcyi6iQt5A6j2PvZkq
+         zDUzt2Fz8lsor01zpijauVFc/hDPhcM6Vf8XA4QJvzuUUpWxtBnix5TBkSnyXa7Q1r
+         1wbJ22ecN3qeUDVn6+JZxFyQei1/Dh4BfhcBRiZFfKFnjmgkgbAT9k0YMTyMYQuurP
+         2scWxsBXHoUnupiQMki8w5eRjzeFwj076JVrq7q2Me5Hd4POoD5wSoVSZtjNTOMZnr
+         V5YhcgjhURCZPvPNuG+Rg2gp9F1WcEMtF+6RAYfwErDVZw4Lp0M9aY0zsphNgNSxOv
+         Id7BHy24xyUDg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
-        Zhouyi Zhou <zhouzhouyi@gmail.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, quic_neeraju@quicinc.com,
-        josh@joshtriplett.org, rcu@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 07/35] rcu: Mark writes to the rcu_segcblist structure's ->flags field
-Date:   Mon, 28 Mar 2022 07:19:43 -0400
-Message-Id: <20220328112011.1555169-7-sashal@kernel.org>
+Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
+        Matt Brown <matthew.brown.dev@gmail.com>,
+        Song Liu <song@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 34/43] lib/raid6/test/Makefile: Use $(pound) instead of \# for Make 4.3
+Date:   Mon, 28 Mar 2022 07:18:18 -0400
+Message-Id: <20220328111828.1554086-34-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220328112011.1555169-1-sashal@kernel.org>
-References: <20220328112011.1555169-1-sashal@kernel.org>
+In-Reply-To: <20220328111828.1554086-1-sashal@kernel.org>
+References: <20220328111828.1554086-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,45 +54,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Paul E. McKenney" <paulmck@kernel.org>
+From: Paul Menzel <pmenzel@molgen.mpg.de>
 
-[ Upstream commit c09929031018913b5783872a8b8cdddef4a543c7 ]
+[ Upstream commit 633174a7046ec3b4572bec24ef98e6ee89bce14b ]
 
-KCSAN reports data races between the rcu_segcblist_clear_flags() and
-rcu_segcblist_set_flags() functions, though misreporting the latter
-as a call to rcu_segcblist_is_enabled() from call_rcu().  This commit
-converts the updates of this field to WRITE_ONCE(), relying on the
-resulting unmarked reads to continue to detect buggy concurrent writes
-to this field.
+Buidling raid6test on Ubuntu 21.10 (ppc64le) with GNU Make 4.3 shows the
+errors below:
 
-Reported-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-Cc: Frederic Weisbecker <frederic@kernel.org>
+    $ cd lib/raid6/test/
+    $ make
+    <stdin>:1:1: error: stray ‘\’ in program
+    <stdin>:1:2: error: stray ‘#’ in program
+    <stdin>:1:11: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ \
+        before ‘<’ token
+
+    [...]
+
+The errors come from the HAS_ALTIVEC test, which fails, and the POWER
+optimized versions are not built. That’s also reason nobody noticed on the
+other architectures.
+
+GNU Make 4.3 does not remove the backslash anymore. From the 4.3 release
+announcment:
+
+> * WARNING: Backward-incompatibility!
+>   Number signs (#) appearing inside a macro reference or function invocation
+>   no longer introduce comments and should not be escaped with backslashes:
+>   thus a call such as:
+>     foo := $(shell echo '#')
+>   is legal.  Previously the number sign needed to be escaped, for example:
+>     foo := $(shell echo '\#')
+>   Now this latter will resolve to "\#".  If you want to write makefiles
+>   portable to both versions, assign the number sign to a variable:
+>     H := \#
+>     foo := $(shell echo '$H')
+>   This was claimed to be fixed in 3.81, but wasn't, for some reason.
+>   To detect this change search for 'nocomment' in the .FEATURES variable.
+
+So, do the same as commit 9564a8cf422d ("Kbuild: fix # escaping in .cmd
+files for future Make") and commit 929bef467771 ("bpf: Use $(pound) instead
+of \# in Makefiles") and define and use a $(pound) variable.
+
+Reference for the change in make:
+https://git.savannah.gnu.org/cgit/make.git/commit/?id=c6966b323811c37acedff05b57
+
+Cc: Matt Brown <matthew.brown.dev@gmail.com>
+Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
+Signed-off-by: Song Liu <song@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/rcu/rcu_segcblist.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ lib/raid6/test/Makefile | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/rcu/rcu_segcblist.h b/kernel/rcu/rcu_segcblist.h
-index 9a19328ff251..5d405943823e 100644
---- a/kernel/rcu/rcu_segcblist.h
-+++ b/kernel/rcu/rcu_segcblist.h
-@@ -56,13 +56,13 @@ static inline long rcu_segcblist_n_cbs(struct rcu_segcblist *rsclp)
- static inline void rcu_segcblist_set_flags(struct rcu_segcblist *rsclp,
- 					   int flags)
- {
--	rsclp->flags |= flags;
-+	WRITE_ONCE(rsclp->flags, rsclp->flags | flags);
- }
+diff --git a/lib/raid6/test/Makefile b/lib/raid6/test/Makefile
+index a4c7cd74cff5..4fb7700a741b 100644
+--- a/lib/raid6/test/Makefile
++++ b/lib/raid6/test/Makefile
+@@ -4,6 +4,8 @@
+ # from userspace.
+ #
  
- static inline void rcu_segcblist_clear_flags(struct rcu_segcblist *rsclp,
- 					     int flags)
- {
--	rsclp->flags &= ~flags;
-+	WRITE_ONCE(rsclp->flags, rsclp->flags & ~flags);
- }
- 
- static inline bool rcu_segcblist_test_flags(struct rcu_segcblist *rsclp,
++pound := \#
++
+ CC	 = gcc
+ OPTFLAGS = -O2			# Adjust as desired
+ CFLAGS	 = -I.. -I ../../../include -g $(OPTFLAGS)
+@@ -42,7 +44,7 @@ else ifeq ($(HAS_NEON),yes)
+         OBJS   += neon.o neon1.o neon2.o neon4.o neon8.o recov_neon.o recov_neon_inner.o
+         CFLAGS += -DCONFIG_KERNEL_MODE_NEON=1
+ else
+-        HAS_ALTIVEC := $(shell printf '\#include <altivec.h>\nvector int a;\n' |\
++        HAS_ALTIVEC := $(shell printf '$(pound)include <altivec.h>\nvector int a;\n' |\
+                          gcc -c -x c - >/dev/null && rm ./-.o && echo yes)
+         ifeq ($(HAS_ALTIVEC),yes)
+                 CFLAGS += -I../../../arch/powerpc/include
 -- 
 2.34.1
 
