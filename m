@@ -2,410 +2,264 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98407C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 20:44:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86AFDC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 20:45:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345505AbiC1Uq2 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 16:46:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43214 "EHLO
+        id S241151AbiC1Uql (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 16:46:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345672AbiC1Un1 (ORCPT
+        with ESMTP id S1345662AbiC1Un0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 16:43:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91BC3674C4;
+        Mon, 28 Mar 2022 16:43:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27D6566AD3;
         Mon, 28 Mar 2022 13:41:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1B6AEB81212;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A690A614CE;
         Mon, 28 Mar 2022 20:41:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99DCFC3410F;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C961BC34116;
         Mon, 28 Mar 2022 20:41:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648500102;
-        bh=bhjIYrP1LIUYHqVqwO9fRvylmwAunjFXsaJ23BiEGqA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=GovG5HsDQ4D8az97d54Km7h5AMXTWG1jPG8BBqU4m7W8PKWIWQDaFv3KNilsJFu+w
-         r6PT4f0ZHz1KMOwLZYHLXCFTezk981XP/jP4tpRP+lNSDedzrdVkNFWF8sLfFeCpWz
-         yGcm+G7UnX4/Mmh+FSqycxBuc3HpVPO3S/UK5QX2SzH7oA2m52dJLAsOveXgJFFRpZ
-         o0JOnOh1U2XjKNBI2HXO9ym/tr16EBpSnRA0fG8lcj1UUL8xDssF30NWcymiaYmmf6
-         t5rVUtXDpXdXSuzVNXzg/y+o0v7oYn1fS0UqHd3wwlx70A7y41aa54lyro8r09G4Ji
-         ognzsVS/3DS4A==
+        s=k20201202; t=1648500103;
+        bh=mua64LMxEhrXEnEbRhoDJw4ZtjP9VPW/gcbp0QDHqxs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=AgxR8xq9icu3S3gHL46voGOR1MtaoSaxR/XkMUj4cjbE25lKuAhB9IP7jObGbH4mG
+         4yIC7i2uQv+2isMxNgftmi493961e7zdLEBmTy/zIWWBjel9R+2DxAwahSlsyH6PrZ
+         SZe3MfQFmW6wzseLRD9FUsq5UoinO+0oV6q2byBdPuuwoCq6SkSYBWj+3bjWj1gMnH
+         2dBAVZQDI3iEi4ciQ6CwnFyLFcpq0sEKQxGmYTTQP9mf5b7TNSQ92Mm9HaxXkPa47k
+         mKgL/kX09q+kKfdJ5tgU9xTMrr5uNzAr7HT7wiNEb9RsYNtvaVKIHFb/iI80PgGodW
+         sKLLL54vnspCQ==
 Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
         (envelope-from <mchehab@kernel.org>)
-        id 1nYwBH-000lbp-SV; Mon, 28 Mar 2022 22:41:39 +0200
+        id 1nYwBH-000lbv-W9; Mon, 28 Mar 2022 22:41:40 +0200
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Krufky <mkrufky@linuxtv.org>,
+        Anton Vasilyev <vasilyev@ispras.ru>,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Johan Hovold <johan@kernel.org>, Sean Young <sean@mess.org>,
         linux-kernel@vger.kernel.org, linux-media@vger.kernel.org
-Subject: [PATCH 00/26] dvb-usb: use designated initializers
-Date:   Mon, 28 Mar 2022 22:41:12 +0200
-Message-Id: <cover.1648499509.git.mchehab@kernel.org>
+Subject: [PATCH 02/26] media: dvb-usb: move USB IDs to dvb-usb-ids.h
+Date:   Mon, 28 Mar 2022 22:41:14 +0200
+Message-Id: <7b32d5383169d23082758a7b69edef2f099202f3.1648499509.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1648499509.git.mchehab@kernel.org>
+References: <cover.1648499509.git.mchehab@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are two DVB USB cores on media. The new one (dvb-usb-v2)
-solves several problems with the previous one, but, unfortunately,
-there are several drivers that weren't migrated yet.
-
-One of the problems with dvb-usb is that, besides the common
-DVB USB table, it also uses a per-device table which require
-links to the USB ID table.
-
-This is done, on most drivers, using a magic number, which is easy
-to get outdated.
-
-Rewrite the drivers in order to use an enum and use designated
-initializers where needed.
-
-This patch series was inspired on this patch:
-  https://patchwork.kernel.org/project/linux-media/patch/20220326165909.506926-16-benni@stuerz.xyz/
-
-While it would be nice to also change the tables to be const, this
-is currently not possible, as a couple drivers that depend on the
-dvb-usb struct depend on it to not be const.
-
-Writing a patch series like that and making it properly referencing
-the right entries is not fun. That's most drivers were never fixed.
-So, I ended using a script to change it, adding several checks on
-it, in order to avoid the risk of problems.
-
-Even so, I needed to manually adjust some patches.
-
-This is the used script:
-
-<script>
-#!/usr/bin/perl
-use strict;
-use warnings;
-use Text::Tabs;
-use File::Find;
-
-my $usb_id_pre = "";
-my $usb_id_end = "";
-
-my %vid;
-my %pid;
-
-my %pid_count;
-
-my $state = "pre";
-
-sub out_ids()
-{
-	open OUT, "> include/media/dvb-usb-ids.h" or die;
-	print OUT $usb_id_pre;
-	foreach my $k(sort keys %vid) {
-		my $ln = sprintf "#define USB_VID_%-31s %s\n", $k, $vid{$k};
-		$ln = unexpand($ln);
-		print OUT $ln;
-	}
-
-	print OUT "\n/* Product IDs */\n\n";
-	foreach my $k(sort keys %pid) {
-		my $ln = sprintf "#define USB_PID_%-39s %s\n", $k, $pid{$k};
-		$ln = unexpand($ln);
-		print OUT $ln;
-	}
-	print OUT $usb_id_end;
-	close OUT;
-}
-
-my @enum;
-
-sub validate_model($$)
-{
-	my $my_vid = $1;
-	my $my_pid = $2;
-
-	if (!$vid{$my_vid}) {
-		print "$.# ERROR! VID: $my_vid\n";
-		return "";
-	}
-
-	if (!$pid{$my_pid}) {
-		print "$.# ERROR! PID: $my_pid\n";
-		return "";
-	}
-
-	my $tmp_vid = $my_vid;
-	$tmp_vid =~ s/_ELECTRONIC$//;
-	$tmp_vid =~ s/_MICRO$//;
-	$tmp_vid =~ s/_1$//;
-	$tmp_vid =~ s/_2$//;
-	$tmp_vid =~ s/_UNK$//;
-	$tmp_vid =~ s/GTEK/GENIATECH/;
-
-	# Change model name to be different
-	my $model = $tmp_vid . "_" . $my_pid;
-
-	return $my_pid if ($my_pid =~ /$tmp_vid[_]/ && !grep(/^$my_pid$/, @enum));
-
-	print "NEW model: $model\n";
-
-	# Add the new PID to include/media/dvb-usb-ids.h
-	$pid{$model} = $pid{$my_pid};
-
-	$pid_count{$my_pid}--;
-
-	# Drop unused PIDs
-	if (!$pid_count{$my_pid}) {
-		delete ($pid{$my_pid});
-		print "Drop: $my_pid\n";
-	}
-
-	return $model if (!grep(/^$model$/, @enum));
-
-	print "$.# ERROR! Model $model aready exists\n";
-	return "";
-}
-
-sub count_pid()
-{
-	my $file = $File::Find::name;
-
-	return if (!($file =~ /[.][ch]/));
-
-	open IN, $file or die "Can't open $file";
-	while (<IN>) {
-		if (/USB_PID_([\w\_]+)/) {
-			$pid_count{$1}++;
-			next;
-		}
-	}
-	close IN;
-}
-
-open IN, "include/media/dvb-usb-ids.h" or die;
-while (<IN>) {
-	if (/#define\s+USB_VID_(\S+)\s+(\S+)/) {
-		$state = "vid";
-		$vid{$1} = $2;
-#print "VID: $1 -> $2\n";
-		next;
-	}
-	if (/#define\s+USB_PID_(\S+)\s+(\S+)/) {
-		$state = "pid";
-		$pid{$1} = $2;
-#print "PID: $1 -> $2\n";
-		next;
-	}
-
-	if ($state eq "pre") {
-		$usb_id_pre .= $_;
-	} elsif ($state eq "pid") {
-		$usb_id_end .= $_;
-	}
-}
-close IN;
-
-find({wanted => \&count_pid, no_chdir => 1}, "drivers/media/usb/");
-
-
-while (scalar @ARGV) {
-	@enum = ();
-	my @dev_id;
-
-
-	my $usb_dev_id_table;
-	my $out = "";
-	my $should_write = 1;
-
-	my $file = $ARGV[0];
-
-	print "Processing $file...\n";
-
-	open IN, $file or die "Can't open $1";
-
-	my $entry = "";
-
-	my $pos = 0;
-
-	while (<IN>) {
-		if (m/struct\s.*usb_device_id\s+([\w\_]+).*{/) {
-			$usb_dev_id_table = $1;
-		}
-		if (!$usb_dev_id_table) {
-			$out .= $_;
-			next;
-		}
-
-		if (m,\/\*\s*(\d+)\s*\*\/,) {
-			if ($1 != $pos) {
-				printf "$.# ERROR! Count is wrong! Want %d, got %d\n", $pos, $1;
-				$should_write = 0;
-				last;
-			}
-		}
-
-		$pos++ if (m/USB_DEVICE/);
-
-		last if (m/^}\s*;/);
-
-		$entry .= $_;
-		next if (!(m/}\s*,/));
-
-		if ($entry =~ m/USB_DEVICE\(USB_VID_([\w\_]+)\s*,\s*USB_PID_([\w\_]+)/) {
-			my $my_vid = $1;
-			my $my_pid = $2;
-
-			my $model = validate_model($my_vid, $my_pid);
-			if ($model eq "") {
-				$should_write = 0;
-				last;
-			}
-
-			push @enum, $model;
-			push @dev_id, "DVB_USB_DEV($my_vid, $model)";
-			print "DVB_USB_DEV($my_vid, $model)\n";
-		}
-		if ($entry =~ m/USB_DEVICE_VER\(USB_VID_([\w\_]+)\s*,\s*USB_PID_([\w\_]+)\s*,\s*(\w+)\s*,\s*(\w+)/) {
-			my $my_vid = $1;
-			my $my_pid = $2;
-			my $lo = $3;
-			my $hi = $4;
-
-			my $model = validate_model($my_vid, $my_pid);
-			if ($model eq "") {
-				$should_write = 0;
-				last;
-			}
-
-			push @enum, $model;
-			push @dev_id, "DVB_USB_DEV_VER($my_vid, $model, $lo, $hi)";
-			print "DVB_USB_DEV_VER($my_vid, $model, $lo, $hi)\n";
-		}
-		$entry = "";
-	}
-
-	if ($should_write && scalar(@enum) != $pos) {
-		printf "ERROR! Count is wrong! Want %d, got %d\n", $pos, scalar(@enum);
-		$should_write = 0;
-	}
-
-	if ($usb_dev_id_table && $should_write) {
-		$out .= "enum {\n";
-		for my $e (@enum) {
-			$out .= "\t$e,\n";
-		}
-		$out .= "};\n\n";
-
-		$out .= "static struct usb_device_id $usb_dev_id_table\[\] = {\n";
-		for my $e (@dev_id) {
-			$out .= "\t$e,\n";
-		}
-		$out .= "\t{ }\n";
-		$out .= "};\n\n";
-
-		my $start = 1;
-
-		while (<IN>) {
-			next if ($start && m/^$/);
-			$start = 0;
-			while (m/$usb_dev_id_table\[(\d+)\]/g) {
-				my $i = $1;
-
-				if ($1 > scalar @enum) {
-					print "ERROR! $usb_dev_id_table element $1 doesn't exist!\n";
-					$should_write = 0;
-					last;
-				}
-
-				my $idx = $enum[$1];
-
-				if (!(s,($usb_dev_id_table)\[$i\],$1\[$idx],g)) {
-					print "ERROR! can't replace $1!\n";
-					$should_write = 0;
-					last;
-				}
-			}
-			$out .= $_;
-		}
-		close IN;
-	} else {
-		while (<IN>) {
-			$out .= $_;
-		}
-		print "\tunchanged\n";
-		$should_write = 0;
-	}
-
-	if ($should_write || $file eq "include/media/dvb-usb-ids.h") {
-		open OUT, ">$file" or die "Can't write on file $file";
-		print OUT $out;
-		close OUT;
-		printf "\twrote\n";
-
-		out_ids();
-	}
-
-	shift @ARGV;
-}
-</script>
-
-
-Mauro Carvalho Chehab (26):
-  media: dvb-usb-ids.h: sort entries
-  media: dvb-usb: move USB IDs to dvb-usb-ids.h
-  media: dvb-usb: vp702x: reference to usb ID table
-  media: dvb-usb: Add helper macros for using USB VID/PID
-  media: dvb-usb: a800: use an enum for the device number
-  media: af9005: use the newer dvb-usb macros for USB device
-  media: dvb-usb: az6027: use an enum for the device number
-  media: cinergyT2-core: use the newer dvb-usb macros for USB device
-  media: cxusb: use the newer dvb-usb macros for USB device
-  media: digitv: use the newer dvb-usb macros for USB device
-  media: dvb-usb: dtt200u: use an enum for the device number
-  media: dtv5100: use the newer dvb-usb macros for USB device
-  media: dw2102: use the newer dvb-usb macros for USB device
-  media: dvb-usb: gp8psk: use an enum for the device number
-  media: dvb-usb: m920x: use an enum for the device number
-  media: dvb-usb: nova-t-usb2: use an enum for the device number
-  media: dvb-usb: opera1: use an enum for the device number
-  media: dvb-usb: pctv452e: use an enum for the device number
-  media: technisat-usb2: use the newer dvb-usb macros for USB device
-  media: dvb-usb: ttusb2: use an enum for the device number
-  media: dvb-usb: umt-010: use an enum for the device number
-  media: dvb-usb: vp702x: use an enum for the device number
-  media: dvb-usb: vp7045: use an enum for the device number
-  media: dvb-usb: dibusb-mb: use an enum for the device number
-  media: dvb-usb: dibusb-mc: use an enum for the device number
-  media: dvb-usb: dib0700_devices: use an enum for the device number
-
- drivers/media/usb/dvb-usb/a800.c            |  18 +-
- drivers/media/usb/dvb-usb/af9005.c          |  19 +-
- drivers/media/usb/dvb-usb/az6027.c          |  45 +-
- drivers/media/usb/dvb-usb/cinergyT2-core.c  |  10 +-
- drivers/media/usb/dvb-usb/cxusb.c           |  88 +--
- drivers/media/usb/dvb-usb/dib0700_devices.c | 428 +++++++------
- drivers/media/usb/dvb-usb/dibusb-mb.c       | 165 ++---
- drivers/media/usb/dvb-usb/dibusb-mc.c       |  88 +--
- drivers/media/usb/dvb-usb/digitv.c          |  13 +-
- drivers/media/usb/dvb-usb/dtt200u.c         |  56 +-
- drivers/media/usb/dvb-usb/dtv5100.c         |  11 +-
- drivers/media/usb/dvb-usb/dw2102.c          |  84 ++-
- drivers/media/usb/dvb-usb/gp8psk.c          |  36 +-
- drivers/media/usb/dvb-usb/m920x.c           |  51 +-
- drivers/media/usb/dvb-usb/nova-t-usb2.c     |  18 +-
- drivers/media/usb/dvb-usb/opera1.c          |  15 +-
- drivers/media/usb/dvb-usb/pctv452e.c        |  22 +-
- drivers/media/usb/dvb-usb/technisat-usb2.c  |  11 +-
- drivers/media/usb/dvb-usb/ttusb2.c          |  36 +-
- drivers/media/usb/dvb-usb/umt-010.c         |  18 +-
- drivers/media/usb/dvb-usb/vp702x.c          |  23 +-
- drivers/media/usb/dvb-usb/vp7045.c          |  28 +-
- include/media/dvb-usb-ids.h                 | 632 +++++++++++---------
- 23 files changed, 1071 insertions(+), 844 deletions(-)
-
+Almost all drivers based on dvb-usb place their USB IDs
+at dvb-usb-ids.h. In order to make it more standard, place
+the remaining ones also there.
+
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+---
+
+To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
+See [PATCH 00/26] at: https://lore.kernel.org/all/cover.1648499509.git.mchehab@kernel.org/
+
+ drivers/media/usb/dvb-usb/cinergyT2-core.c |  2 +-
+ drivers/media/usb/dvb-usb/dtv5100.c        |  2 +-
+ drivers/media/usb/dvb-usb/dw2102.c         | 38 +++++++++++-----------
+ include/media/dvb-usb-ids.h                | 16 +++++++++
+ 4 files changed, 37 insertions(+), 21 deletions(-)
+
+diff --git a/drivers/media/usb/dvb-usb/cinergyT2-core.c b/drivers/media/usb/dvb-usb/cinergyT2-core.c
+index 23f1093d28f8..405b0c9a792c 100644
+--- a/drivers/media/usb/dvb-usb/cinergyT2-core.c
++++ b/drivers/media/usb/dvb-usb/cinergyT2-core.c
+@@ -194,7 +194,7 @@ static int cinergyt2_usb_probe(struct usb_interface *intf,
+ }
+ 
+ static struct usb_device_id cinergyt2_usb_table[] = {
+-	{ USB_DEVICE(USB_VID_TERRATEC, 0x0038) },
++	{ USB_DEVICE(USB_VID_TERRATEC, USB_PID_TERRATEC_CINERGY_T2) },
+ 	{ 0 }
+ };
+ 
+diff --git a/drivers/media/usb/dvb-usb/dtv5100.c b/drivers/media/usb/dvb-usb/dtv5100.c
+index 1c13e493322c..b644c1302c84 100644
+--- a/drivers/media/usb/dvb-usb/dtv5100.c
++++ b/drivers/media/usb/dvb-usb/dtv5100.c
+@@ -163,7 +163,7 @@ static int dtv5100_probe(struct usb_interface *intf,
+ }
+ 
+ static struct usb_device_id dtv5100_table[] = {
+-	{ USB_DEVICE(0x06be, 0xa232) },
++	{ USB_DEVICE(USB_VID_AME, USB_PID_AME_DTV5100) },
+ 	{ }		/* Terminating entry */
+ };
+ MODULE_DEVICE_TABLE(usb, dtv5100_table);
+diff --git a/drivers/media/usb/dvb-usb/dw2102.c b/drivers/media/usb/dvb-usb/dw2102.c
+index ca75ebdc10b3..33643fb88265 100644
+--- a/drivers/media/usb/dvb-usb/dw2102.c
++++ b/drivers/media/usb/dvb-usb/dw2102.c
+@@ -1793,23 +1793,23 @@ enum dw2102_table_entry {
+ 
+ static struct usb_device_id dw2102_table[] = {
+ 	[CYPRESS_DW2102] = {USB_DEVICE(USB_VID_CYPRESS, USB_PID_DW2102)},
+-	[CYPRESS_DW2101] = {USB_DEVICE(USB_VID_CYPRESS, 0x2101)},
++	[CYPRESS_DW2101] = {USB_DEVICE(USB_VID_CYPRESS, USB_PID_DW2101)},
+ 	[CYPRESS_DW2104] = {USB_DEVICE(USB_VID_CYPRESS, USB_PID_DW2104)},
+-	[TEVII_S650] = {USB_DEVICE(0x9022, USB_PID_TEVII_S650)},
++	[TEVII_S650] = {USB_DEVICE(USB_VID_TEVII, USB_PID_TEVII_S650)},
+ 	[TERRATEC_CINERGY_S] = {USB_DEVICE(USB_VID_TERRATEC, USB_PID_TERRATEC_CINERGY_S)},
+ 	[CYPRESS_DW3101] = {USB_DEVICE(USB_VID_CYPRESS, USB_PID_DW3101)},
+-	[TEVII_S630] = {USB_DEVICE(0x9022, USB_PID_TEVII_S630)},
+-	[PROF_1100] = {USB_DEVICE(0x3011, USB_PID_PROF_1100)},
+-	[TEVII_S660] = {USB_DEVICE(0x9022, USB_PID_TEVII_S660)},
+-	[PROF_7500] = {USB_DEVICE(0x3034, 0x7500)},
+-	[GENIATECH_SU3000] = {USB_DEVICE(0x1f4d, 0x3000)},
+-	[HAUPPAUGE_MAX_S2] = {USB_DEVICE(0x2040, 0xd900)},
++	[TEVII_S630] = {USB_DEVICE(USB_VID_TEVII, USB_PID_TEVII_S630)},
++	[PROF_1100] = {USB_DEVICE(USB_VID_PROF_1, USB_PID_PROF_1100)},
++	[TEVII_S660] = {USB_DEVICE(USB_VID_TEVII, USB_PID_TEVII_S660)},
++	[PROF_7500] = {USB_DEVICE(USB_VID_PROF_2, USB_PID_PROF_7500)},
++	[GENIATECH_SU3000] = {USB_DEVICE(USB_VID_GTEK, USB_PID_GENIATECH_SU3000)},
++	[HAUPPAUGE_MAX_S2] = {USB_DEVICE(USB_VID_HAUPPAUGE, USB_PID_HAUPPAUGE_MAX_S2)},
+ 	[TERRATEC_CINERGY_S2] = {USB_DEVICE(USB_VID_TERRATEC, USB_PID_TERRATEC_CINERGY_S2_R1)},
+-	[TEVII_S480_1] = {USB_DEVICE(0x9022, USB_PID_TEVII_S480_1)},
+-	[TEVII_S480_2] = {USB_DEVICE(0x9022, USB_PID_TEVII_S480_2)},
+-	[X3M_SPC1400HD] = {USB_DEVICE(0x1f4d, 0x3100)},
+-	[TEVII_S421] = {USB_DEVICE(0x9022, USB_PID_TEVII_S421)},
+-	[TEVII_S632] = {USB_DEVICE(0x9022, USB_PID_TEVII_S632)},
++	[TEVII_S480_1] = {USB_DEVICE(USB_VID_TEVII, USB_PID_TEVII_S480_1)},
++	[TEVII_S480_2] = {USB_DEVICE(USB_VID_TEVII, USB_PID_TEVII_S480_2)},
++	[X3M_SPC1400HD] = {USB_DEVICE(USB_VID_GTEK, USB_PID_GENIATECH_X3M_SPC1400HD)},
++	[TEVII_S421] = {USB_DEVICE(USB_VID_TEVII, USB_PID_TEVII_S421)},
++	[TEVII_S632] = {USB_DEVICE(USB_VID_TEVII, USB_PID_TEVII_S632)},
+ 	[TERRATEC_CINERGY_S2_R2] = {USB_DEVICE(USB_VID_TERRATEC,
+ 				    USB_PID_TERRATEC_CINERGY_S2_R2)},
+ 	[TERRATEC_CINERGY_S2_R3] = {USB_DEVICE(USB_VID_TERRATEC,
+@@ -1820,14 +1820,14 @@ static struct usb_device_id dw2102_table[] = {
+ 				   USB_PID_TERRATEC_CINERGY_S2_1)},
+ 	[TERRATEC_CINERGY_S2_2] = {USB_DEVICE(USB_VID_TERRATEC_2,
+ 				   USB_PID_TERRATEC_CINERGY_S2_2)},
+-	[GOTVIEW_SAT_HD] = {USB_DEVICE(0x1FE1, USB_PID_GOTVIEW_SAT_HD)},
+-	[GENIATECH_T220] = {USB_DEVICE(0x1f4d, 0xD220)},
++	[GOTVIEW_SAT_HD] = {USB_DEVICE(USB_VID_GOTVIEW, USB_PID_GOTVIEW_SAT_HD)},
++	[GENIATECH_T220] = {USB_DEVICE(USB_VID_GTEK, USB_PID_GENIATECH_T220)},
+ 	[TECHNOTREND_S2_4600] = {USB_DEVICE(USB_VID_TECHNOTREND,
+ 		USB_PID_TECHNOTREND_CONNECT_S2_4600)},
+-	[TEVII_S482_1] = {USB_DEVICE(0x9022, 0xd483)},
+-	[TEVII_S482_2] = {USB_DEVICE(0x9022, 0xd484)},
+-	[TERRATEC_CINERGY_S2_BOX] = {USB_DEVICE(USB_VID_TERRATEC, 0x0105)},
+-	[TEVII_S662] = {USB_DEVICE(0x9022, USB_PID_TEVII_S662)},
++	[TEVII_S482_1] = {USB_DEVICE(USB_VID_TEVII, USB_PID_TTEVII_S482_1)},
++	[TEVII_S482_2] = {USB_DEVICE(USB_VID_TEVII, USB_PID_TTEVII_S482_2)},
++	[TERRATEC_CINERGY_S2_BOX] = {USB_DEVICE(USB_VID_TERRATEC, USB_PID_TERRATEC_CINERGY_S2_BOX)},
++	[TEVII_S662] = {USB_DEVICE(USB_VID_TEVII, USB_PID_TEVII_S662)},
+ 	{ }
+ };
+ 
+diff --git a/include/media/dvb-usb-ids.h b/include/media/dvb-usb-ids.h
+index dcf5772c84a0..9577cae8c73b 100644
+--- a/include/media/dvb-usb-ids.h
++++ b/include/media/dvb-usb-ids.h
+@@ -17,6 +17,7 @@
+ #define USB_VID_AFATECH 			0x15a4
+ #define USB_VID_ALCOR_MICRO			0x058f
+ #define USB_VID_ALINK				0x05e3
++#define USB_VID_AME				0x06be
+ #define USB_VID_AMT				0x1c73
+ #define USB_VID_ANCHOR				0x0547
+ #define USB_VID_ANSONIC 			0x10b9
+@@ -38,6 +39,7 @@
+ #define USB_VID_EVOLUTEPC			0x1e59
+ #define USB_VID_GENPIX				0x09c0
+ #define USB_VID_GIGABYTE			0x1044
++#define USB_VID_GOTVIEW 			0x1fe1
+ #define USB_VID_GRANDTEC			0x5032
+ #define USB_VID_GTEK				0x1f4d
+ #define USB_VID_HAMA				0x147f
+@@ -61,6 +63,8 @@
+ #define USB_VID_PCTV				0x2013
+ #define USB_VID_PINNACLE			0x2304
+ #define USB_VID_PIXELVIEW			0x1554
++#define USB_VID_PROF_1				0x3011
++#define USB_VID_PROF_2				0x3034
+ #define USB_VID_REALTEK 			0x0bda
+ #define USB_VID_SONY				0x1415
+ #define USB_VID_TECHNISAT			0x14f7
+@@ -68,6 +72,7 @@
+ #define USB_VID_TELESTAR			0x10b9
+ #define USB_VID_TERRATEC			0x0ccd
+ #define USB_VID_TERRATEC_2			0x153b
++#define USB_VID_TEVII				0x9022
+ #define USB_VID_TWINHAN 			0x1822
+ #define USB_VID_ULTIMA_ELECTRONIC		0x05d8
+ #define USB_VID_UNIWILL 			0x1584
+@@ -90,6 +95,7 @@
+ #define USB_PID_AFATECH_AF9035_1003			0x1003
+ #define USB_PID_AFATECH_AF9035_9035			0x9035
+ #define USB_PID_ALINK_DTU				0xf170
++#define USB_PID_AME_DTV5100				0xa232
+ #define USB_PID_ANSONIC_DVBT_USB			0x6000
+ #define USB_PID_ANYSEE					0x861f
+ #define USB_PID_ARTEC_T14BR				0x810f
+@@ -198,6 +204,7 @@
+ #define USB_PID_DVICO_BLUEBIRD_LGZ201_WARM		0xdb01
+ #define USB_PID_DVICO_BLUEBIRD_TH7579_COLD		0xdb10
+ #define USB_PID_DVICO_BLUEBIRD_TH7579_WARM		0xdb11
++#define USB_PID_DW2101					0x2101
+ #define USB_PID_DW2102					0x2102
+ #define USB_PID_DW2104					0x2104
+ #define USB_PID_DW3101					0x3101
+@@ -217,6 +224,9 @@
+ #define USB_PID_FREECOM_DVBT				0x0160
+ #define USB_PID_FREECOM_DVBT_2				0x0161
+ #define USB_PID_FRIIO_WHITE				0x0001
++#define USB_PID_GENIATECH_SU3000			0x3000
++#define USB_PID_GENIATECH_T220				0xd220
++#define USB_PID_GENIATECH_X3M_SPC1400HD 		0x3100
+ #define USB_PID_GENIUS_TVGO_DVB_T03			0x4012
+ #define USB_PID_GENPIX_8PSK_REV_1_COLD			0x0200
+ #define USB_PID_GENPIX_8PSK_REV_1_WARM			0x0201
+@@ -234,6 +244,7 @@
+ #define USB_PID_HAMA_DVBT_HYBRID			0x2758
+ #define USB_PID_HANFTEK_UMT_010_COLD			0x0001
+ #define USB_PID_HANFTEK_UMT_010_WARM			0x0015
++#define USB_PID_HAUPPAUGE_MAX_S2			0xd900
+ #define USB_PID_HAUPPAUGE_MYTV_T			0x7080
+ #define USB_PID_HAUPPAUGE_NOVA_TD_STICK 		0x9580
+ #define USB_PID_HAUPPAUGE_NOVA_TD_STICK_52009		0x5200
+@@ -314,6 +325,7 @@
+ #define USB_PID_PINNACLE_PCTV_DVB_T_FLASH		0x0228
+ #define USB_PID_PIXELVIEW_SBTVD 			0x5010
+ #define USB_PID_PROF_1100				0xb012
++#define USB_PID_PROF_7500				0x7500
+ #define USB_PID_PROLECTRIX_DV107669			0xd803
+ #define USB_PID_REALTEK_RTL2831U			0x2831
+ #define USB_PID_REALTEK_RTL2832U			0x2832
+@@ -348,10 +360,12 @@
+ #define USB_PID_TERRATEC_CINERGY_S			0x0064
+ #define USB_PID_TERRATEC_CINERGY_S2_1			0x1181
+ #define USB_PID_TERRATEC_CINERGY_S2_2			0x1182
++#define USB_PID_TERRATEC_CINERGY_S2_BOX 		0x0105
+ #define USB_PID_TERRATEC_CINERGY_S2_R1			0x00a8
+ #define USB_PID_TERRATEC_CINERGY_S2_R2			0x00b0
+ #define USB_PID_TERRATEC_CINERGY_S2_R3			0x0102
+ #define USB_PID_TERRATEC_CINERGY_S2_R4			0x0105
++#define USB_PID_TERRATEC_CINERGY_T2			0x0038
+ #define USB_PID_TERRATEC_CINERGY_TC2_STICK		0x10b2
+ #define USB_PID_TERRATEC_CINERGY_T_EXPRESS		0x0062
+ #define USB_PID_TERRATEC_CINERGY_T_STICK		0x0093
+@@ -383,6 +397,8 @@
+ #define USB_PID_TINYTWIN_3				0x9016
+ #define USB_PID_TREKSTOR_DVBT				0x901b
+ #define USB_PID_TREKSTOR_TERRES_2_0			0xC803
++#define USB_PID_TTEVII_S482_1				0xd483
++#define USB_PID_TTEVII_S482_2				0xd484
+ #define USB_PID_TURBOX_DTT_2000 			0xd3a4
+ #define USB_PID_TVWAY_PLUS				0x0002
+ #define USB_PID_TWINHAN_VP7020_COLD			0x3203
 -- 
 2.35.1
-
 
