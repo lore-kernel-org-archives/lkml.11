@@ -2,203 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E257EC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 13:43:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A72EC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 13:44:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243368AbiC1Npb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 09:45:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41362 "EHLO
+        id S243383AbiC1Nqh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 09:46:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242157AbiC1Np2 (ORCPT
+        with ESMTP id S232470AbiC1Nqe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 09:45:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D8F55B9;
-        Mon, 28 Mar 2022 06:43:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C7F161169;
-        Mon, 28 Mar 2022 13:43:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48EBDC004DD;
-        Mon, 28 Mar 2022 13:43:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648475026;
-        bh=oHPX4dxkslmbgVNn7WyrR3+9FTtOwGZ2SlopKZz6En8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HqinKsJMtlplF1sflshBUOeTcTGiBf1RwWiWlFMUFjZGZrYCWHFHUIBHiMsZbRl42
-         kavH74/EfofOpUH1t8yXVjVzMh7zkg4SKJ9SJgktRJd/24RsU6TZHG3qwX9XDQS5eu
-         ShENddtBRHePg/QAMFHDkUaoNBKov5yTnYWPd9yI=
-Date:   Mon, 28 Mar 2022 15:43:44 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Trond Myklebust <trondmy@hammerspace.com>
-Cc:     "xiam0nd.tong@gmail.com" <xiam0nd.tong@gmail.com>,
-        "anna@kernel.org" <anna@kernel.org>,
-        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] nfs: callback_proc: fix an incorrect NULL check on list
- iterator
-Message-ID: <YkG7kPhYm+1fDxPB@kroah.com>
-References: <436766b6fb5f3ec513629d4fa0888b77c65cfa16.camel@hammerspace.com>
- <20220328014314.18987-1-xiam0nd.tong@gmail.com>
- <c4af251c0b90180b187e8a328d4ce5b948db9fcd.camel@hammerspace.com>
+        Mon, 28 Mar 2022 09:46:34 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ACBC137BFA;
+        Mon, 28 Mar 2022 06:44:53 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6D6941FB;
+        Mon, 28 Mar 2022 06:44:53 -0700 (PDT)
+Received: from lakrids (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0D43C3F718;
+        Mon, 28 Mar 2022 06:44:51 -0700 (PDT)
+Date:   Mon, 28 Mar 2022 14:44:46 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Jakub Jelinek <jakub@redhat.com>
+Cc:     Segher Boessenkool <segher@kernel.crashing.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Nathan Chancellor <nathan@kernel.org>, x86-ml <x86@kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        linux-toolchains@vger.kernel.org
+Subject: Re: clang memcpy calls
+Message-ID: <YkG7zqwFRtmUKVFc@lakrids>
+References: <YjxTt3pFIcV3lt8I@zn.tnic>
+ <CAKwvOdkw0Bbm+=ZyViXQhBE1L6uSbvkstHJuHpQ21tzJRftgAw@mail.gmail.com>
+ <Yj2yYFloadFobRPx@lakrids>
+ <Yj3OEI+WHV/A5uf8@hirez.programming.kicks-ass.net>
+ <20220325151238.GB614@gate.crashing.org>
+ <YkGFdtn0yDIPqXRl@FVFF77S0Q05N>
+ <YkGL929QoFiTfMK7@tucnak>
+ <YkGwSsXLBjReBhMf@lakrids>
+ <YkG0LqWoBRqQ9Jxu@tucnak>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <c4af251c0b90180b187e8a328d4ce5b948db9fcd.camel@hammerspace.com>
+In-Reply-To: <YkG0LqWoBRqQ9Jxu@tucnak>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 01:24:57PM +0000, Trond Myklebust wrote:
-> On Mon, 2022-03-28 at 09:43 +0800, Xiaomeng Tong wrote:
-> > On Sun, 27 Mar 2022 15:20:42 +0000, Trond Myklebust wrote:
-> > > On Sun, 2022-03-27 at 16:02 +0800, Xiaomeng Tong wrote:
-> > > > The bug is here:
-> > > >         if (!server ||
-> > > >         server->pnfs_curr_ld->id != dev->cbd_layout_type) {
+On Mon, Mar 28, 2022 at 03:12:14PM +0200, Jakub Jelinek wrote:
+> On Mon, Mar 28, 2022 at 01:55:38PM +0100, Mark Rutland wrote:
+> > > If coexistence of instrumented and non-instrumented memcpy etc. was the goal
+> > > (it clearly wasn't), then the sanitizer libraries wouldn't be overriding
+> > > memcpy calls, but instead the compiler would redirect calls to memcpy in
+> > > instrumented functions to say __asan_memcpy which then would be
+> > > instrumented.
+> > 
+> > FWIW, I think that approach would be fine for kernel usage.
+> > 
+> > > > Given the standard doesn't say *anything* about instrumentation, what does GCC
+> > > > *require* instrumentation-wise of the memcpy implementation? What happens *in
+> > > > practice* today?
 > > > > 
-> > > > The list iterator value 'server' will *always* be set and non-
-> > > > NULL
-> > > > by list_for_each_entry_rcu, so it is incorrect to assume that the
-> > > > iterator value will be NULL if the list is empty or no element is
-> > > > found (In fact, it will be a bogus pointer to an invalid struct
-> > > > object containing the HEAD, which is used for above check at next
-> > > > outer loop). Otherwise it may bypass the check in theory (iif
-> > > > server->pnfs_curr_ld->id == dev->cbd_layout_type, 'server' now is
-> > > > a bogus pointer) and lead to invalid memory access passing the
-> > > > check.
-> > > > 
-> > > > To fix the bug, use a new variable 'iter' as the list iterator,
-> > > > while use the original variable 'server' as a dedicated pointer
-> > > > to
-> > > > point to the found element.
-> > > > 
-> > > > Cc: stable@vger.kernel.org
-> > > > Fixes: 1be5683b03a76 ("pnfs: CB_NOTIFY_DEVICEID")
-> > > > Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-> > > > ---
-> > > >  fs/nfs/callback_proc.c | 9 +++++----
-> > > >  1 file changed, 5 insertions(+), 4 deletions(-)
-> > > > 
-> > > > diff --git a/fs/nfs/callback_proc.c b/fs/nfs/callback_proc.c
-> > > > index c343666d9a42..84779785dc8d 100644
-> > > > --- a/fs/nfs/callback_proc.c
-> > > > +++ b/fs/nfs/callback_proc.c
-> > > > @@ -361,7 +361,7 @@ __be32 nfs4_callback_devicenotify(void *argp,
-> > > > void *resp,
-> > > >         uint32_t i;
-> > > >         __be32 res = 0;
-> > > >         struct nfs_client *clp = cps->clp;
-> > > > -       struct nfs_server *server = NULL;
-> > > > +       struct nfs_server *server = NULL, *iter;
-> > > >  
-> > > >         if (!clp) {
-> > > >                 res = cpu_to_be32(NFS4ERR_OP_NOT_IN_SESSION);
-> > > > @@ -374,10 +374,11 @@ __be32 nfs4_callback_devicenotify(void
-> > > > *argp,
-> > > > void *resp,
-> > > >                 if (!server ||
-> > > >                     server->pnfs_curr_ld->id != dev-
-> > > > >cbd_layout_type)
-> > > > {
-> > > >                         rcu_read_lock();
-> > > > -                       list_for_each_entry_rcu(server, &clp-
-> > > > > cl_superblocks, client_link)
-> > > > -                               if (server->pnfs_curr_ld &&
-> > > > -                                   server->pnfs_curr_ld->id ==
-> > > > dev-
-> > > > > cbd_layout_type) {
-> > > > +                       list_for_each_entry_rcu(iter, &clp-
-> > > > > cl_superblocks, client_link)
-> > > > +                               if (iter->pnfs_curr_ld &&
-> > > > +                                   iter->pnfs_curr_ld->id ==
-> > > > dev-
-> > > > > cbd_layout_type) {
-> > > >                                         rcu_read_unlock();
-> > > > +                                       server = iter;
+> > > > For example, is the userspace implementation of memcpy() instrumented for
+> > > > AddressSanitizer, or not?
 > > > 
-> > > Hmm... We're not holding any locks on the super block for 'iter'
-> > > here,
-> > > so nothing is preventing it from going away while we're.
-> > > 
+> > > It is, for all functions, whether compiled with -fsanitize=address or not,
+> > > if user app is linked with -fsanitize=address, libasan is linked in and
+> > > overrides the libc memcpy with its instrumented version.
 > > 
-> > ok, i am not a 'rcu lock' expert, i will make it hold the
-> > rcu_read_lock()
-> > if necessary.
-> > 
-> > > Given that we really only want a pointer to the struct
-> > > pnfs_layoutdriver_type anyway, why not just convert the code to
-> > > save a
-> > > pointer to that (and do it while holding the rcu_read_lock())?
-> > > 
-> > 
-> > Maybe it's not that simple. If you only save a pointer to that and
-> > still
-> > use 'server' as the list iterator of list_for_each_entry_rcu, there
-> > could
-> > be problem.
-> > 
-> > I.e., if no element found in list_for_each_entry_rcu in the first
-> > outer
-> > 'for' loop, and now 'server' is a bogus pointer to an invalid struct,
-> > and
-> > continue to go into the second outer 'for' loop, and the check below
-> > will
-> > lead to invalid memory access (server->pnfs_curr_ld->id), even can
-> > potentialy
-> > be bypassed with crafted data to make the condition false and
-> > mistakely run
-> > nfs4_delete_deviceid(server->pnfs_curr_ld, clp, &dev->cbd_dev_id);
-> > with bogus
-> > 'server'.
-> > 
-> > if (!server ||
-> >     server->pnfs_curr_ld->id != dev->cbd_layout_type) {
-> > 
-> > > The struct pnfs_layoutdriver is always expected to be a statically
-> > > allocated structure, so it won't go away as long as the pNFS driver
-> > > module remains loaded.
-> > 
+> > Thanks for confirming! Just to check, how does libasan prevent recursing
+> > within itself on implicitly generated calls to memcpy and friends? Is
+> > anything special done to build the libasan code, is that all asm, or
+> > something else?
 > 
-> 
-> Let's just do the following.
-> 
-> 8<-----------------------------------------------
-> From 7c9d845f0612e5bcd23456a2ec43be8ac43458f1 Mon Sep 17 00:00:00 2001
-> From: Trond Myklebust <trond.myklebust@hammerspace.com>
-> Date: Mon, 28 Mar 2022 08:36:34 -0400
-> Subject: [PATCH] NFSv4/pNFS: Fix another issue with a list iterator pointing
->  to the head
-> 
-> In nfs4_callback_devicenotify(), if we don't find a matching entry for
-> the deviceid, we're left with a pointer to 'struct nfs_server' that
-> actually points to the list of super blocks associated with our struct
-> nfs_client.
-> Furthermore, even if we have a valid pointer, nothing pins the super
-> block, and so the struct nfs_server could end up getting freed while
-> we're using it.
-> 
-> Since all we want is a pointer to the struct pnfs_layoutdriver_type,
-> let's skip all the iteration over super blocks, and just use APIs to
-> find the layout driver directly.
-> 
-> Reported-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-> Fixes: 1be5683b03a7 ("pnfs: CB_NOTIFY_DEVICEID")
-> Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-> ---
->  fs/nfs/callback_proc.c | 27 +++++++++------------------
->  fs/nfs/pnfs.c          | 11 +++++++++++
->  fs/nfs/pnfs.h          |  2 ++
->  3 files changed, 22 insertions(+), 18 deletions(-)
+> Generally, most of the libasan wrappers look like
+>   do something
+>   call the original libc function (address from dlsym/dlvsym)
+>   do something
+> and the "do something" code isn't that complicated.  
 
-<formletter>
+I see; thanks!
 
-This is not the correct way to submit patches for inclusion in the
-stable kernel tree.  Please read:
-    https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
-for how to do this properly.
+> The compiler doesn't add calls to memcpy/memset etc. just to screw up
+> users, they are added for a reason, such as copying or clearing very
+> large aggregates (including for passing them by value), without -Os it
+> will rarely use calls for smaller sizes and will instead expand them
+> inline.
 
-</formletter>
+Sure; I understand that and (from my side at least) I'm not arguing that
+there's malice or so on, just that I don't think we currently have the
+tools for the kernel to be able to do the right thing reliably and
+robustly. Thanks for helping! :)
+
+> For malloc and the like wrappers I think it uses some TLS recursion
+> counters so that say malloc called from dlsym doesn't cause problems.
+> 
+> Now, one way for the kernel to make kasan work (more) reliably even with
+> existing compilers without special tweaks for this might be if those
+> calls to no_sanitize_address code aren't mixed with sanitized code all the
+> time might be set some per-thread flag when starting a "no sanitized" code
+> execution and clear it at the end of the region (or vice versa) and test
+> those flags in the kernel's memcpy/memset etc. implementation to decide if
+> they should be sanitized or not.
+
+Unfortunately, I don't think the setting a flag is workable, since e.g.
+we need to ensure the flag is set before any implicitly-generated calls,
+and I don't think we have a reliable way to do that from C. There's also
+a number of portions of uninstrumentable code, so from a maintainability
+and robustness PoV this option isn't great.
+
+For `noinstr` code specifically (which gets placed into a distinct
+section and can be identified by virtual address) we could have the
+out-of-line functions look at their return address, but that's not going
+to cover the general case of `__attribute__((no_sanitize_address))` or
+compilation units built without `-fsanitize=address`.
+
+From my PoV, distinguishing instrumentable/uninstrumentable calls at
+compile time would be ideal. That, or placing the instrumentation into
+the caller (omitting it when instrumentation is disabled for that
+caller), and expecting the out-of-line forms are never instrumented. I
+appreciate that latter option may not be workable due to potential size
+bloat, though.
+
+Similar will apply to TSAN, MSAN, etc, and I'm not sure whether those
+are mutually exclusive from the compiler's PoV.
+
+> As KASAN is (hopefully) just a kernel debugging aid and not something meant
+> for production (in the userspace at least GCC strongly recommends against
+> using the sanitizers in production), perhaps allocating one per-thread bool
+> or int and changing it in a few spots and testing in the library functions
+> might be acceptable.
+
+I'm not sure whether folk are using KASAN in production, but IIRC there
+was a desire to do so.
+
+Thanks,
+Mark.
