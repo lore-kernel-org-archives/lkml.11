@@ -2,117 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C634EC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 03:55:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B671C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 03:58:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237876AbiC1D4s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 23:56:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48744 "EHLO
+        id S237894AbiC1D7k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 23:59:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229754AbiC1D4q (ORCPT
+        with ESMTP id S229754AbiC1D7d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 23:56:46 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09EF5220D8;
-        Sun, 27 Mar 2022 20:55:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648439706; x=1679975706;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=1IrgS1Xz4xDu9eaps5L0yXyUmT/Eaqj8UxN5lOp2JiA=;
-  b=U3vuF2kBsyAx6Hih/UaZgUNuhyrEC9meVxDcrlvok1lFX2OgKjjDKhzA
-   /UaD6np6Gd+oIuh2mOjV7ABjfGXUNeEpW/ETIG0G5GErqG2v3r82Zec8j
-   +iZLemustXErmG/vxVdCGTMqzFuuzARIxm8vSaiDfrPmAeiuuEKMZ0S7h
-   0JB5F8PK3Mw1+YwyYWAPSzbBU4wUhRLiRfu9PEPdW8Tf4LKR+Zlqc1We3
-   smrhGY54PTs0fqoT0VA2MGGkSsQIVULILP9iwEsYeUuPNpzn3VPoDYhDh
-   M3xBennDfLhL6bmuKHDr327exzECY1BuXNdrmQ0iiMNOYOdiGlXTO1KI8
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10299"; a="239502536"
-X-IronPort-AV: E=Sophos;i="5.90,216,1643702400"; 
-   d="scan'208";a="239502536"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2022 20:55:05 -0700
-X-IronPort-AV: E=Sophos;i="5.90,216,1643702400"; 
-   d="scan'208";a="638819456"
-Received: from stung2-mobl.gar.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.255.94.73])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2022 20:55:03 -0700
-Message-ID: <51982ec477e43c686c5c64731715fee528750d85.camel@intel.com>
-Subject: Re: [PATCH v2 01/21] x86/virt/tdx: Detect SEAM
-From:   Kai Huang <kai.huang@intel.com>
-To:     "Tian, Kevin" <kevin.tian@intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>
-Cc:     "Hansen, Dave" <dave.hansen@intel.com>,
-        "Christopherson,, Sean" <seanjc@google.com>,
-        "pbonzini@redhat.com" <pbonzini@redhat.com>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "sathyanarayanan.kuppuswamy@linux.intel.com" 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "Luck, Tony" <tony.luck@intel.com>,
-        "ak@linux.intel.com" <ak@linux.intel.com>,
-        "Williams, Dan J" <dan.j.williams@intel.com>,
-        "Yamahata, Isaku" <isaku.yamahata@intel.com>
-Date:   Mon, 28 Mar 2022 16:55:01 +1300
-In-Reply-To: <BN9PR11MB527657C2AA8B9ACD94C9D5468C189@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <cover.1647167475.git.kai.huang@intel.com>
-         <a258224c26b6a08400d9a8678f5d88f749afe51e.1647167475.git.kai.huang@intel.com>
-         <BN9PR11MB527657C2AA8B9ACD94C9D5468C189@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Sun, 27 Mar 2022 23:59:33 -0400
+Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6C5C94D606;
+        Sun, 27 Mar 2022 20:57:51 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [10.15.192.164])
+        by mail-app2 (Coremail) with SMTP id by_KCgCHb54oMkFinXCbAA--.54813S2;
+        Mon, 28 Mar 2022 11:57:31 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     linux-hams@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        pabeni@redhat.com, kuba@kernel.org, davem@davemloft.net,
+        ralf@linux-mips.org, jreuter@yaina.de, dan.carpenter@oracle.com,
+        Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH net] ax25: fix UAF bug in ax25_send_control()
+Date:   Mon, 28 Mar 2022 11:57:26 +0800
+Message-Id: <20220328035726.27955-1-duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: by_KCgCHb54oMkFinXCbAA--.54813S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxury7Cw4UKr15Zw1kXF17GFg_yoW5Ww4rpF
+        WUtFW8Gr9FkF4vyrsrKrWxWF18Cayjqa4DGryIqF1SkwnxJ3s5Ary8tryjqFy5GrZ5KF48
+        Was7uF4UAF1kZFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvm1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVWxJr0_GcWl84ACjcxK6I8E
+        87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c
+        8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_
+        Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwI
+        xGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2Y2ka0xkIwI1l42xK82IY
+        c2Ij64vIr41l42xK82IY6x8ErcxFaVAv8VW8uw4UJr1UMxC20s026xCaFVCjc4AY6r1j6r
+        4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF
+        67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2I
+        x0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2
+        z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnU
+        UI43ZEXa7VUbXdbUUUUUU==
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgADAVZdtY6LRgABs8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-03-23 at 16:21 +1300, Tian, Kevin wrote:
-> > From: Kai Huang <kai.huang@intel.com>
-> > Sent: Sunday, March 13, 2022 6:50 PM
-> > 
-> > @@ -715,6 +716,8 @@ static void init_intel(struct cpuinfo_x86 *c)
-> >       if (cpu_has(c, X86_FEATURE_TME))
-> >               detect_tme(c);
-> > 
-> > +     tdx_detect_cpu(c);
-> > +
-> 
-> TDX is not reported as a x86 feature. and the majority of detection
-> and initialization have been conducted on demand in this series
-> (as explained in patch04). Why is SEAM (and latter keyid) so different
-> to be detected at early boot phase?
-> 
-> Thanks
-> Kevin
+If we don`t called ax25_bind() before ax25_kill_by_device(), the free
+operation of ax25_dev and net_device in ax25_kill_by_device() will not
+be executed, because we could not find ax25_cb in ax25_list.
 
-Hi Kevin,
+Then, we call ax25_bind() and ax25_connect() to set AX25_STATE_1 to
+ax25->state.
 
-Sorry for late reply.  I was out last week.
+Finally, when we call ax25_release(), ax25_dev and net_device will be
+freed before dereference sites in ax25_send_control().
 
-SEAMRR and TDX KeyIDs are configured by BIOS and they are static during
-machine's runtime.  On the other hand, TDX module can be updated and
-reinitialized at runtime (not supported in this series but will be supported in
-the future).  Theoretically, even P-SEAMLDR can be updated at runtime (although
-I think unlikely to be supported in Linux).  Therefore I think detecting SEAMRR
-and TDX KeyIDs at boot fits better.
+The possible race condition is shown below:
 
-It is also more flexible from some other perspectives I think: 1) There was a
-request to add X86_FEATURE_SEAM bit and expose it to /proc/cpuinfo. I didn't add
-it because I didn't think the use case was solid.  But in case someone has some
-use case in the future we can add it, and detecting SEAMRR during boot fits this
-more. 2) There was a request to expose TDX KeyID info via sysfs so userspace can
-know how many TDs can be created.  It's not done in this series but it will be
-done at some time in the future. Detecting KeyIDs at boot allows this info being
-able to be exposed via sysfs at early stage, providing more flexibility to
-userspace. 
+      (Thread 1)              |     (Thread 2)
+ax25_dev_device_up() //(1)    |
+                              | ax25_kill_by_device()
+ax25_bind()          //(2)    |
+ax25_connect()                | ...
+ ax25->state = AX25_STATE_1   |
+ ...                          | ax25_dev_device_down() //(3)
 
-At last, currently in this series the patch to handle kexec checks whether
-SEAMRR and TDX KeyIDs are enabled and then flush cache (of course this is open
-to discussion).  Detecting them at boot fits better I think.
+      (Thread 3)
+ax25_release()                |
+ dev_put_track() //(4) FREE   |
+ ax25_dev_put()  //(4) FREE   |
+ case AX25_STATE_1:           |
+  ax25_send_control()         |
+   alloc_skb()       //USE    |
 
+The refcount of ax25_dev and net_device increase in position (1) and (2),
+and decrease in position (3) and (4).
+
+The following is part of the report:
+
+[  102.297448] BUG: KASAN: use-after-free in ax25_send_control+0x33/0x210
+[  102.297448] Read of size 8 at addr ffff888009e6e408 by task ax25_close/602
+[  102.297448] Call Trace:
+[  102.303751]  ax25_send_control+0x33/0x210
+[  102.303751]  ax25_release+0x356/0x450
+[  102.305431]  __sock_release+0x6d/0x120
+[  102.305431]  sock_close+0xf/0x20
+[  102.305431]  __fput+0x11f/0x420
+[  102.305431]  task_work_run+0x86/0xd0
+[  102.307130]  get_signal+0x1075/0x1220
+[  102.308253]  arch_do_signal_or_restart+0x1df/0xc00
+[  102.308253]  exit_to_user_mode_prepare+0x150/0x1e0
+[  102.308253]  syscall_exit_to_user_mode+0x19/0x50
+[  102.308253]  do_syscall_64+0x48/0x90
+[  102.308253]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[  102.308253] RIP: 0033:0x405ae7
+
+This patch reorders the free operation of ax25_dev and net_device after
+all corresponding dereference sites in ax25_release() to avoid UAF.
+
+Fixes: 9fd75b66b8f6 ("ax25: Fix refcount leaks caused by ax25_cb_del()")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+---
+ net/ax25/af_ax25.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
+index 992b6e5d85d..f5686c463bc 100644
+--- a/net/ax25/af_ax25.c
++++ b/net/ax25/af_ax25.c
+@@ -991,10 +991,6 @@ static int ax25_release(struct socket *sock)
+ 	sock_orphan(sk);
+ 	ax25 = sk_to_ax25(sk);
+ 	ax25_dev = ax25->ax25_dev;
+-	if (ax25_dev) {
+-		dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
+-		ax25_dev_put(ax25_dev);
+-	}
+ 
+ 	if (sk->sk_type == SOCK_SEQPACKET) {
+ 		switch (ax25->state) {
+@@ -1056,6 +1052,10 @@ static int ax25_release(struct socket *sock)
+ 		sk->sk_state_change(sk);
+ 		ax25_destroy_socket(ax25);
+ 	}
++	if (ax25_dev) {
++		dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
++		ax25_dev_put(ax25_dev);
++	}
+ 
+ 	sock->sk   = NULL;
+ 	release_sock(sk);
 -- 
-Thanks,
--Kai
-
+2.17.1
 
