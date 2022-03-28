@@ -2,78 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 075B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 23:42:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F24FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 23:43:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231168AbiC1XoV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 19:44:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34152 "EHLO
+        id S231172AbiC1XpR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 19:45:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231131AbiC1XoU (ORCPT
+        with ESMTP id S231171AbiC1XpO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 19:44:20 -0400
-Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E5B515FC8;
-        Mon, 28 Mar 2022 16:42:39 -0700 (PDT)
-Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-df02f7e2c9so4522981fac.10;
-        Mon, 28 Mar 2022 16:42:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/bMD5XJK9ZeZ9JMXaFrOnemeInZdC+WRoQ/+0h/V9wY=;
-        b=NkHW4PgdiouECeJTgoy7OWQAoJ0sRIKyUWxMpVu0ckQMNHrQSNyrRVt2rXBRadlGrk
-         hDTecDWSKppBt7/DNMKfFon/MYc0I6oMFwXbWm06uPdeInnNWLBJNxqoxrV39VozHR4n
-         KVnm0e3riJFUgdvOmupN0ziGtInJn4vqSXfzvPeUV2OCbkSIT08lS1kpUdzOuti7lz+7
-         aH6+zUkgzf23vtfpqaGPAGrSVvMVqmgMdglRX0C8KdpErwzeUi4Hmnm2WE5hK4hxg2oN
-         pmEYRp6BrcRESJVzO3o15iG0C6TW58gD84jra56PxCk1DybZTRAjy+fPXj3rRbx1pLmi
-         sy3w==
-X-Gm-Message-State: AOAM533Yr0VEDUXAJCtTMq3RNACwRQcHFwD1CD7oPu/cgF7nLCphxAJ1
-        5lA9Yl4yp/XPO/FLbZOUCg==
-X-Google-Smtp-Source: ABdhPJzw+lAN1qKaN0d03io7vTQ2/YLq7E4IIiFYE2pFuJh6CZ1aVJn0WUpuqZjVOxM8u1TOPM2Mig==
-X-Received: by 2002:a05:6871:694:b0:dd:a43e:fca4 with SMTP id l20-20020a056871069400b000dda43efca4mr842188oao.77.1648510958312;
-        Mon, 28 Mar 2022 16:42:38 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id y143-20020aca4b95000000b002d9b530a96esm7922037oia.44.2022.03.28.16.42.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Mar 2022 16:42:38 -0700 (PDT)
-Received: (nullmailer pid 3269333 invoked by uid 1000);
-        Mon, 28 Mar 2022 23:42:37 -0000
-Date:   Mon, 28 Mar 2022 18:42:37 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Cc:     rohitkr@codeaurora.org, srinivas.kandagatla@linaro.org,
-        krzysztof.kozlowski@canonical.com, agross@kernel.org,
-        swboyd@chromium.org, broonie@kernel.org,
-        bjorn.andersson@linaro.org, robh+dt@kernel.org,
-        linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
-        dianders@chromium.org,
-        Venkata Prasad Potturu <quic_potturu@quicinc.com>,
-        linux-arm-msm@vger.kernel.org, judyhsiao@chromium.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH 2/3] ASoC: dt-bindings: wcd938x: Add mic bias supply
- property
-Message-ID: <YkJH7eRooyZ6aulW@robh.at.kernel.org>
-References: <1647852981-27895-1-git-send-email-quic_srivasam@quicinc.com>
- <1647852981-27895-3-git-send-email-quic_srivasam@quicinc.com>
+        Mon, 28 Mar 2022 19:45:14 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9136126FA9
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 16:43:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648511012; x=1680047012;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=YuVjfYfruYtRLaX1CiFhcGwi4qmnZq7U8gH5tKxN3g0=;
+  b=MKhMaKlxtLUSztbBEeYkUzQQZ8wKC0Irnp28Hi7KcoSJSBttlza4JFJY
+   d5oVF2HHhPyMu2WS7Z4ZGSZqvcFo+rD26X/gpBXUhC2Hr3da6VaRgbsFS
+   /Nj45t7dC3C6CJaJXv6j6PpM9IGcaOzGUo/qXMWV9nHCy7fjiXW8ezSqh
+   uhWKSzZIoJhSGjA6l7L2/MORxm3TKFy2ZWJsel0tvyqKDQfv2LtKtq1pz
+   AAohE1o304z8fvNMsCC1xrmFemGKxUrrLpprHXi2C8HuWgc/QXe+YJ73Q
+   75XhKCK69DcRnnmaA0LeK/6m2CJi3L4B36/XmcweUI4jITOj6AZFLoczV
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="284018342"
+X-IronPort-AV: E=Sophos;i="5.90,218,1643702400"; 
+   d="scan'208";a="284018342"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 16:43:32 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,218,1643702400"; 
+   d="scan'208";a="604390621"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by fmsmga008.fm.intel.com with ESMTP; 28 Mar 2022 16:43:31 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nYz1G-0002QD-97; Mon, 28 Mar 2022 23:43:30 +0000
+Date:   Tue, 29 Mar 2022 07:42:51 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:axboe/linux-block/sock-nolock 6/6]
+ fs/io_uring.c:8999:2: error: implicit declaration of function
+ 'io_sock_nolock_clear' is invalid in C99
+Message-ID: <202203290752.13QoLC96-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1647852981-27895-3-git-send-email-quic_srivasam@quicinc.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 21 Mar 2022 14:26:20 +0530, Srinivasa Rao Mandadapu wrote:
-> Add vdd mic bias supply, which is required to provide bias
-> for wcd938x codec.
-> 
-> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-> ---
->  Documentation/devicetree/bindings/sound/qcom,wcd938x.yaml | 3 +++
->  1 file changed, 3 insertions(+)
-> 
+tree:   https://github.com/ammarfaizi2/linux-block axboe/linux-block/sock-nolock
+head:   90b2144118aabeddabb82f22e07b87da068c54cd
+commit: 90b2144118aabeddabb82f22e07b87da068c54cd [6/6] io_uring: mark accept direct socket as no-lock
+config: hexagon-randconfig-r041-20220328 (https://download.01.org/0day-ci/archive/20220329/202203290752.13QoLC96-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0f6d9501cf49ce02937099350d08f20c4af86f3d)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/90b2144118aabeddabb82f22e07b87da068c54cd
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block axboe/linux-block/sock-nolock
+        git checkout 90b2144118aabeddabb82f22e07b87da068c54cd
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash
 
-Acked-by: Rob Herring <robh@kernel.org>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> fs/io_uring.c:8999:2: error: implicit declaration of function 'io_sock_nolock_clear' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+           io_sock_nolock_clear(file);
+           ^
+   1 error generated.
+
+
+vim +/io_sock_nolock_clear +8999 fs/io_uring.c
+
+  8938	
+  8939	static void io_rsrc_file_put(struct io_ring_ctx *ctx, struct io_rsrc_put *prsrc)
+  8940	{
+  8941		struct file *file = prsrc->file;
+  8942	#if defined(CONFIG_UNIX)
+  8943		struct sock *sock = ctx->ring_sock->sk;
+  8944		struct sk_buff_head list, *head = &sock->sk_receive_queue;
+  8945		struct sk_buff *skb;
+  8946		int i;
+  8947	
+  8948		__skb_queue_head_init(&list);
+  8949	
+  8950		/*
+  8951		 * Find the skb that holds this file in its SCM_RIGHTS. When found,
+  8952		 * remove this entry and rearrange the file array.
+  8953		 */
+  8954		skb = skb_dequeue(head);
+  8955		while (skb) {
+  8956			struct scm_fp_list *fp;
+  8957	
+  8958			fp = UNIXCB(skb).fp;
+  8959			for (i = 0; i < fp->count; i++) {
+  8960				int left;
+  8961	
+  8962				if (fp->fp[i] != file)
+  8963					continue;
+  8964	
+  8965				unix_notinflight(fp->user, fp->fp[i]);
+  8966				left = fp->count - 1 - i;
+  8967				if (left) {
+  8968					memmove(&fp->fp[i], &fp->fp[i + 1],
+  8969							left * sizeof(struct file *));
+  8970				}
+  8971				fp->count--;
+  8972				if (!fp->count) {
+  8973					kfree_skb(skb);
+  8974					skb = NULL;
+  8975				} else {
+  8976					__skb_queue_tail(&list, skb);
+  8977				}
+  8978				io_sock_nolock_clear(file);
+  8979				fput(file);
+  8980				file = NULL;
+  8981				break;
+  8982			}
+  8983	
+  8984			if (!file)
+  8985				break;
+  8986	
+  8987			__skb_queue_tail(&list, skb);
+  8988	
+  8989			skb = skb_dequeue(head);
+  8990		}
+  8991	
+  8992		if (skb_peek(&list)) {
+  8993			spin_lock_irq(&head->lock);
+  8994			while ((skb = __skb_dequeue(&list)) != NULL)
+  8995				__skb_queue_tail(head, skb);
+  8996			spin_unlock_irq(&head->lock);
+  8997		}
+  8998	#else
+> 8999		io_sock_nolock_clear(file);
+  9000		fput(file);
+  9001	#endif
+  9002	}
+  9003	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
