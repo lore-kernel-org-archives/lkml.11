@@ -2,140 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1A8CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 07:39:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F48EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 07:43:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238910AbiC1Hli (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 03:41:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56800 "EHLO
+        id S238898AbiC1HpN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 03:45:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238899AbiC1Hld (ORCPT
+        with ESMTP id S233529AbiC1HpM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 03:41:33 -0400
-Received: from APC01-TYZ-obe.outbound.protection.outlook.com (mail-tyzapc01on2126.outbound.protection.outlook.com [40.107.117.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0852452E47;
-        Mon, 28 Mar 2022 00:39:51 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=d48UX0rC3bbK3ym8aK0WVuim9KH19JsQhfXrSyYq/2e4FEyO2a4KfaoozPkqvA7S5czZdb+CqyJdM1CSkejIBgeI9higvwb8CAT9k5ZgY7XdJH2RKWOSk7PGnz84Nx7Li3VoozbY2qJZc1MHKr+p4VbDsKSzmtX22m6FnnUz2JhCPuyGMFfsjfAgns1TyLWnCvcBmbJ8cnhMNVQ/SbDM5zQkz+6y8OvP+9pNckHu6iVfx+UyNQIZWN/v2mEV/hnEDP2a+zFI6YZnNPKMOqlNYR9JjMFENk9sSs7j4wcXHb2Yod96k9DSYZLIa2ME6RxTyPe00thl7k8p5baeGEnYvQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yF3PIG3tKyoANPJokcNO+T+/IpYLNXtTX2IzlOtc1RE=;
- b=eu526xX/SbXZcKd5eyYZZXjlmMcsbcuJYJ2Jqpc8R8g0hxjZC5dKlNDrD4tksCzHn/6uXmiQxqb4czi84ag9A6GpwTfalfyZCpXRU3SBQtGIfIVIQkjyQZmHk4A2GxEXSs8ULoc1PBDK6nSso/Elsx8uicTOQtv5gXui+wfmBUE0KY8gv8mN0QemvrN175XmbsBO/LDxpW3oNFKjyjQDkJbKb+rdfJs7vVmcx4efp0FofWmih3cTJjfv9GYb46bd8jqZhDqmg12uOqfy7W9Xo0kzQGwF2+7ZcvQ+lVGH5rx8g5ISB88GuLhejPIDcVRbxbIsd8NWa+CrFzdJ+pXnlQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yF3PIG3tKyoANPJokcNO+T+/IpYLNXtTX2IzlOtc1RE=;
- b=RJmL3DTlNZHatasjveoypWioEzTSCwDH3E0FRKATg6AbrhDh45JeGSYTmVFO8qOtMlD8IQOm1qhXF/NfgO9+kDyckTLfXKFBxedHZ91qXDquc3ryB2zIhOLI2LRJ2wY+J+Srg9YGqcLV8DElp/40cYsiDCj9C0LmLg+bOJLUCaY=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from SG2PR06MB3367.apcprd06.prod.outlook.com (2603:1096:4:78::19) by
- SI2PR06MB4427.apcprd06.prod.outlook.com (2603:1096:4:15d::9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5102.18; Mon, 28 Mar 2022 07:39:44 +0000
-Received: from SG2PR06MB3367.apcprd06.prod.outlook.com
- ([fe80::9d3f:ff3b:1948:d732]) by SG2PR06MB3367.apcprd06.prod.outlook.com
- ([fe80::9d3f:ff3b:1948:d732%4]) with mapi id 15.20.5102.022; Mon, 28 Mar 2022
- 07:39:44 +0000
-From:   Wan Jiabing <wanjiabing@vivo.com>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc:     kael_w@yeah.net, Wan Jiabing <wanjiabing@vivo.com>
-Subject: [PATCH] clk: sunxi-ng: fix not NULL terminated coccicheck error
-Date:   Mon, 28 Mar 2022 15:39:31 +0800
-Message-Id: <20220328073931.36544-1-wanjiabing@vivo.com>
-X-Mailer: git-send-email 2.35.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: HK2PR0302CA0018.apcprd03.prod.outlook.com
- (2603:1096:202::28) To SG2PR06MB3367.apcprd06.prod.outlook.com
- (2603:1096:4:78::19)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8d9569b2-ccec-4c98-5013-08da108e1fe9
-X-MS-TrafficTypeDiagnostic: SI2PR06MB4427:EE_
-X-Microsoft-Antispam-PRVS: <SI2PR06MB44275E168101441F5BB57C74AB1D9@SI2PR06MB4427.apcprd06.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: PCm2Pg9iwGMIoa7p8BPLAJbiV+j3gG59bY9QI8QJ5Nq/g5uwo47Z6PKRcbkh8FkEFoGitvBLE1imC3c/XMHNp4FVfnIHahPCwOR3qieezG1Xo9UZfGxKEhU6ZUQKIms49r33cvfeeQ5mHLwy3g3/zsrI0MHEXCENXe3363idC9wXIg4ycA0GL2BofbG6IlT5woykdhjAML7zq+cg9CGYrGrOXy0lrn56PRTIuiXDBMQCnBRaSg/qx+4YSZeMTkK2MUen6AkwYCxqU1KfYf+YcyfDzExkpMDuLY56aqG+0kMDd5EXOTSBKKPdkxF6VLRTpyIfh/nw56K1MgTqqIogyJ7Tq4TgvIB5ijVjxNLXL5k/eo5sS/oDS4RaINUhwP+VoTqgiUaJNF0LiCaIzb1e7Einl4TDLn7JL7bYR9SpI+jWuObwxIVYHzbPGH0L+JzFHdPlY8Vsu4Z9Wo16lVi32+99lN+9Wlya9nfkuNbj9aMJ73y7Btqb6X7udxppTNXOIsBrf4hHPxnxl23Y/T09pxmwWGBY0c/98c24ywstLjyeHIIdSzFsg4/lf2w7la70/R1h5Tyzgx5MprFX384+yGNF/GNm6nUrFDWGyxR0549wW+yprv1ApeD/RUVf+S3/RyyOK53D7S6mDtsd+wzEVr1NLmFzHwlHN4Q/xV0nmk9tnARHqCDsFlbOcWDKlCCeMreqeMvw6j+FvuI7JaUDdyEXgXL03GM3TDjJFyJHszY=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB3367.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(5660300002)(38350700002)(38100700002)(86362001)(6512007)(52116002)(508600001)(36756003)(2906002)(107886003)(316002)(6486002)(921005)(8676002)(1076003)(110136005)(186003)(4744005)(83380400001)(66946007)(7416002)(4326008)(26005)(6666004)(2616005)(66476007)(66556008)(6506007)(8936002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?dtZHwFGUIH/X8EG+HZsJSqXmF7WOR2KJUgqkSL3NjlSia/U5klQQWiLNH2wa?=
- =?us-ascii?Q?w8SyNq29sM92/ftCHQIutWQLxoL/J/RMP9CIx69UYooMWCnh/974IIXNduzt?=
- =?us-ascii?Q?0ivN7QsrR8/2rsbXDigWJxh3buN/SVsA4OeSwNrFJrOT/Z3iDFf3MzF5alO5?=
- =?us-ascii?Q?aaz90u35gLc9o+00vRVYIBEM05qaCb6lZYcK+Tlt+Yzz0AxcNwnnV/O49M7s?=
- =?us-ascii?Q?h4XSc6qE/8X1zI7QMfCRVNe46MISdh2Fka5pR9HzmmwPPWaOBEg1zigGNhBz?=
- =?us-ascii?Q?X8+nq/wwH2pAY/0fJaUMSu6PkfAKmkjXK0xWVr6D+xzIAZMPlQgpdmePdwzh?=
- =?us-ascii?Q?tG8Nm5NhBjxjz5kZcM0f0OJXPC/Z8FAyQW3w0nFnNwUh1+vUUEsMZu+Wp08B?=
- =?us-ascii?Q?Wo1v+y+idWW+VXYJhw9WHEg2FwxlFYY2dXzBmLfsKtEYNTUuVzfaYBo1bh9G?=
- =?us-ascii?Q?77HVANFv4wEhTGU+L2LEiT1yTSEPfSEnzT/iiSujTE+3Mb2xq06ZiLzIs7gX?=
- =?us-ascii?Q?2qDp0sBC4iiLFLFJSYLfcIjAMUmxJbskzAJleYMsmSyNmpb7oNt+FNMoofoE?=
- =?us-ascii?Q?oj/SKA+xL6O6bMHy2K8NfZf3kd3aChe3QuZ8kxboATQVA36V1OzvQIooysOq?=
- =?us-ascii?Q?3M/wyg1XgKO40fc5XaqWW/jFU+1adC879rp6+Be5Hs06aKVk80OM3i5/PksW?=
- =?us-ascii?Q?0hDHmpM2xtYoiyOFYtDlwvO+l6gz2spziF/mLvXP4jk8j7AJKJODUfTglRiz?=
- =?us-ascii?Q?jf/elbiLtqninacZA0/x7OsMAA66vjPN3PhDHDBU2vwsVdbuBgahbSN4pyQc?=
- =?us-ascii?Q?KR0/v3dHkhik9eg8S8SZGZuqfnxQpapXP5xX1cX+dmeWjK1/Hh5jK/9b2Lxe?=
- =?us-ascii?Q?7/gdKNas/glEc3SvNvscg+iV/1OXipU6pmDDi8lCV+pj7qk1gotjdRuwbtur?=
- =?us-ascii?Q?b76LK7nGGF6mHKEkF9KLMOyAfm/Q/wmk/QSsyPkpK8sun2JmsI86mtmLHA4h?=
- =?us-ascii?Q?1K1dGsQjYHwNrf3cQ4a14XVW1zR4t76h5nOFmpzHKW6/7qCKgPEuwSKrag4D?=
- =?us-ascii?Q?ocz4cQMfW19sFRFKftvzlx6rFg3UYHEui3zc8eYGG2Bn08EHNOoKcmMHZKnJ?=
- =?us-ascii?Q?pCJk6JPEddLGmXkmmn3DB5jn+13DaIjzxdOjZZSxVf+0n+lFZ0sNWvGQVdvd?=
- =?us-ascii?Q?KJxwYf5vTVjZUkvPYzHRqvELOACfGjnrkwuaMMFm/xG9IsQ73FbRtHeA2rRY?=
- =?us-ascii?Q?2uZqs7rRRB5BgPZZYqOdy9z9AmoUVpS5xvwJWdohGKtjKIVprcDJpgAvzPPe?=
- =?us-ascii?Q?oc6It+OXEjvECy13/9xn2cbv+tlRvJ2jPpyUyaoFnYNgM1ueHY8YDmm1XDz+?=
- =?us-ascii?Q?ljOxkaUkUtfxOeitXkkCxSH+SvE4onPQ123uKkLEYtkW7tVx+sjgmi1jWwdX?=
- =?us-ascii?Q?lShlbUuxNkm+8PuxLFw4C6D+0ZsFBBnpe05hhrUTs035Cn/34B0MKeOREPdj?=
- =?us-ascii?Q?KBPN/B8hXdBd6xG4MWYctVO7+ccYGqf4pRSmxey/ai9YTO0ZG01BNGn4dZcZ?=
- =?us-ascii?Q?k6flj9eI3PThizSNhvF0UHi/Ed4flfWIAF5Nu8y9RGPsJ/HU/ntQ7Jq4M94b?=
- =?us-ascii?Q?u7+evZzl39IfP31aFGP+ZrlE4oEoegaDb0FwArB5sP2jSji7xYMoyKf7iH19?=
- =?us-ascii?Q?MYP1+tsrdIUypz9U549enyW7QbNPvj3nOBpE7B+bXRJAZyeXqVe0ABH9TrIp?=
- =?us-ascii?Q?csWeLQTpUA=3D=3D?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8d9569b2-ccec-4c98-5013-08da108e1fe9
-X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB3367.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Mar 2022 07:39:43.7505
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fhdCGlQtUlGjjJbMfMo21RzRoW8SmyXwpd48/U4AxKBTCGRsM6E15phQXvGZ2b5InvwG8pNa5r15/+ZgoxHdJA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SI2PR06MB4427
+        Mon, 28 Mar 2022 03:45:12 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D632752E18;
+        Mon, 28 Mar 2022 00:43:31 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id n7-20020a17090aab8700b001c6aa871860so14655947pjq.2;
+        Mon, 28 Mar 2022 00:43:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=5F0vPMEUiwjxuq5pjTLwGQrsLXzqAZhWm21dKQena8E=;
+        b=Pp5hdQtvybkoE7iXCBGqw92+FFCxtS0gcrDzWSM1XbdfogwH6IUPx9/+LqG9FedtVM
+         86lC/5AznmmTN+ZUSDXmPb1Wp6XyGRyx1sBuKEpeWIFH13EM48Sgy49hjQn8KC+tCRkw
+         Fxpxt5chztOHglhRcRYwAt0RIZduYDp7n1cbh7DDnbl/LZYYKN3eCPI7x4eXEgo16zVz
+         tZvv8PHSpn5ur7nF1XxuOPXBXzeeNf0H/x/YEtIErf3KsZyJ0og5EGXQOIga9nOLAXNB
+         vpOnB38wzG8gtJu1vjIQKUPJJI8oJ7CsbkiQEJHohouuFqZJK+Dwlsa+HOjX6AYIZYCB
+         l+eA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=5F0vPMEUiwjxuq5pjTLwGQrsLXzqAZhWm21dKQena8E=;
+        b=dE2gnF5WyM/VkhExXQ7q00VKaSlE6Hz2Zv3TFK7zhbvTnyzn9mjWL4iJrX0XrFXI7E
+         nx0SPLyQMM3vr/dC+UMFOoTRdvTCRFYA2u4XYNlgS5YkvWYS91R0T4XevcqDAmswJelg
+         Q0+BkWgnJZRMUHY/YnoyUxik+KtB4tHuMYAedZGCOxACsFJ45oKz11jnX9gEQo4s3QR0
+         Y8xB6jbDSqlM9V0lfgz/88JJg0AvzwQFOQaGjT9dq8OClbCdeZkks7Rp9NxfY7UL6+SF
+         gFPeyTtojEKBK/5BVQ3elglNH844XBhi/jzP6JdXt3Ct9TsrTMepUyiayk6VzPK+yemz
+         Ppcg==
+X-Gm-Message-State: AOAM532TdtL2llhlI3k0YV6Ss45ccmAgrkyFL9pPkS58XHZtb3wwGEF8
+        SJHY3OvEPau72BpYX9OvTZw=
+X-Google-Smtp-Source: ABdhPJyO4+ufZp/SIAWh+2kglfewOd/M/i3FDRBuWVxR+N7p90doKEWl81dY+fiOrjG6cVxA9k0AfQ==
+X-Received: by 2002:a17:902:8644:b0:153:9f01:2090 with SMTP id y4-20020a170902864400b001539f012090mr24200102plt.101.1648453411437;
+        Mon, 28 Mar 2022 00:43:31 -0700 (PDT)
+Received: from ubuntu.huawei.com ([119.3.119.18])
+        by smtp.googlemail.com with ESMTPSA id f30-20020a63755e000000b00381f6b7ef30sm12082098pgn.54.2022.03.28.00.43.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 00:43:30 -0700 (PDT)
+From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
+To:     viresh.kumar@linaro.org
+Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org, nm@ti.com,
+        rafael.j.wysocki@intel.com, sboyd@kernel.org,
+        stable@vger.kernel.org, vireshk@kernel.org, xiam0nd.tong@gmail.com
+Subject: Re: [PATCH] opp: fix a missing check on list iterator
+Date:   Mon, 28 Mar 2022 15:43:22 +0800
+Message-Id: <20220328074322.25349-1-xiam0nd.tong@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220328031739.72togwws2u2rlluo@vireshk-i7>
+References: <20220328031739.72togwws2u2rlluo@vireshk-i7>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the following coccicheck error:
-./drivers/clk/sunxi-ng/ccu-sun6i-rtc.c:348:1-2: sun6i_rtc_ccu_match is
-not NULL terminated at line 348
+On Mon, 28 Mar 2022 08:47:39 +0530, Viresh Kumar wrote:
+> > diff --git a/drivers/opp/debugfs.c b/drivers/opp/debugfs.c
+> > index 596c185b5dda..a4476985e4ce 100644
+> > --- a/drivers/opp/debugfs.c
+> > +++ b/drivers/opp/debugfs.c
+> > @@ -187,14 +187,19 @@ void opp_debug_register(struct opp_device *opp_dev, struct opp_table *opp_table)
+> >  static void opp_migrate_dentry(struct opp_device *opp_dev,
+> >  			       struct opp_table *opp_table)
+> >  {
+> > -	struct opp_device *new_dev;
+> > +	struct opp_device *new_dev = NULL, *iter;
+> >  	const struct device *dev;
+> >  	struct dentry *dentry;
+> >  
+> >  	/* Look for next opp-dev */
+> > -	list_for_each_entry(new_dev, &opp_table->dev_list, node)
+> > -		if (new_dev != opp_dev)
+> > +	list_for_each_entry(iter, &opp_table->dev_list, node)
+> > +		if (iter != opp_dev) {
+> > +			new_dev = iter;
+> >  			break;
+> > +		}
+> > +
+> > +	if (!new_dev)
+> > +		return;
+> 
+> I think you missed this check in the parent function ?
+> 
+> 		if (!list_is_singular(&opp_table->dev_list)) {
+> 
+> 
+> i.e. this bug can never happen.
+>
 
-Fixes: d91612d7f01a ("clk: sunxi-ng: Add support for the sun6i RTC clocks")
-Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
----
- drivers/clk/sunxi-ng/ccu-sun6i-rtc.c | 1 +
- 1 file changed, 1 insertion(+)
+No. the conditon to call opp_migrate_dentry(opp_dev, opp_table); is:
+if (!list_is_singular(&opp_table->dev_list)), 
 
-diff --git a/drivers/clk/sunxi-ng/ccu-sun6i-rtc.c b/drivers/clk/sunxi-ng/ccu-sun6i-rtc.c
-index 8a10bade7e0d..ffb72d9a9c36 100644
---- a/drivers/clk/sunxi-ng/ccu-sun6i-rtc.c
-+++ b/drivers/clk/sunxi-ng/ccu-sun6i-rtc.c
-@@ -346,6 +346,7 @@ static const struct of_device_id sun6i_rtc_ccu_match[] = {
- 		.compatible	= "allwinner,sun50i-r329-rtc",
- 		.data		= &sun50i_r329_rtc_ccu_data,
- 	},
-+	{},
- };
- 
- int sun6i_rtc_ccu_probe(struct device *dev, void __iomem *reg)
--- 
-2.35.1
+while list_is_singlular is: !list_empty(head) && (head->next == head->prev);
 
+so the condition is: list_empty(head) || (head->next != head->prev)
+
+if the list is empty, the bug can be triggered.
+
+--
+Xiaomeng Tong
