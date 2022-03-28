@@ -2,99 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A71EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 13:45:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4014C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 13:45:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243404AbiC1Nqn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 09:46:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44476 "EHLO
+        id S243413AbiC1Nq6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 09:46:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242157AbiC1Nqf (ORCPT
+        with ESMTP id S243414AbiC1Nqx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 09:46:35 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53B3E21E38;
-        Mon, 28 Mar 2022 06:44:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=7IJJdkjW4MGrMcE+ZwqPBADegtcLO1s09CtJPZpUSfM=; b=V5vG30XPI45ixAqklBQV8pmSiB
-        yeK7agmim930/Rw32uDEX2mffhfmmmyAPnmcHnkwTizhKFATGULoe3bwejjzQCW6G9WtR+Q5UStRx
-        N9iDwXBnrY7nkor2L1YlaosBVvHY+0Phm7b5+m/mTLYysaRru9KZceHunCXcWZyqMni4GJq5YUbji
-        pjlKzT/9Mwy4vigThQvDwbectXkAi0fs0fYRrLIHGyRyIWEBZcfJG7PSWIYdUDvF6IVWZtZtumuap
-        nAGld0ntJF3E2IWPwF82tZ8IzfSvw+VRCHu8niJQmeH8jM4gSBFKpVrQyebFcEc+y6+AlHM3JZ40K
-        krQ8cbvQ==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nYpey-00GxwQ-QI; Mon, 28 Mar 2022 13:43:52 +0000
-Date:   Mon, 28 Mar 2022 14:43:52 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Yu Zhao <yuzhao@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Barry Song <baohua@kernel.org>,
-        Brian Geffon <bgeffon@google.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Donald Carr <d@chaos-reins.com>,
-        Hillf Danton <hdanton@sina.com>,
-        Holger =?iso-8859-1?Q?Hoffst=E4tte?= 
-        <holger@applied-asynchrony.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Rik van Riel <riel@surriel.com>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Kernel Page Reclaim v2 <page-reclaim@google.com>,
-        the arch/x86 maintainers <x86@kernel.org>
-Subject: Re: [page-reclaim] Re: [GIT PULL] Multi-gen LRU for 5.18-rc1
-Message-ID: <YkG7mD8kT0uAk3Iy@casper.infradead.org>
-References: <20220326010003.3155137-1-yuzhao@google.com>
- <CAHk-=wjp=jEhjvD9GPnHfuV5Kc1=rUnf84b_qscLJ8fkY74u3Q@mail.gmail.com>
- <CAOUHufbqum18T4kZ=d_hMehz=N=3iSuNfGrLof5tB8kjGkk8yw@mail.gmail.com>
- <20220326134928.ad739eeecd5d0855dbdc6257@linux-foundation.org>
- <400edaab-7c6c-f4d1-9a94-e8d0803857fa@redhat.com>
+        Mon, 28 Mar 2022 09:46:53 -0400
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC784D60F;
+        Mon, 28 Mar 2022 06:45:13 -0700 (PDT)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-2e5757b57caso149299367b3.4;
+        Mon, 28 Mar 2022 06:45:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZQ0ps78hrvGNK6vW07h87pX9FYH0JqPOOOrmPTS+h6s=;
+        b=n7dXTXdlJ+o57awDU0dpp4GYsx6wl6OKpYN0Ef/xulA6vvMuNjPDNk7zI6REb+liRS
+         VMs7ZnGSmGJml8tVDSYPKv69v8Eq2vCOFoC3WC+SXupgUCVkl+peBobzawO5RbzD5ZgB
+         WJXVEioVaIUExS4mik8xoPYl4pTMG1DiqW6LxPgVg/1/Q9WKZpO/7KpjYAo3TDCYa5vJ
+         nrGBttfmqvF5KqXZms2ygIeKRUaAwNMy1ZD4z4OpNftWdqseDyjdzFNkHiCN56HJafxO
+         hv1fwtIqV808rLabKmsL93YsAEFhu54nWlFtRFO1RkTdVthS1nOxZWgr6tRcdLGt+sos
+         MQJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZQ0ps78hrvGNK6vW07h87pX9FYH0JqPOOOrmPTS+h6s=;
+        b=XwspngGsnI8rfAfHa45s8qBe5j0CuOD1FD8S03Y5x+nzNXDx+R8Yw54Xt8U3TNQcX1
+         PQsMTWhvsjs+3kqFdk0lR8w2AAoWgok19llpZzPyr3seryxy5qpWIHAVFR0tfabUKE2r
+         bgGt6RrPg/gwuLQ+6T1IkDSNu5gdukI//d5DnLaVwQPm+5JHs/HVoK16Bg4NUdWazrEP
+         8lBSG+XlYeL/Zyjeo/Zt6D71Du1To9MnEvizBiahXNcNdhyytSpot/8JecuwFGola0XC
+         nk/IG8mHGO+cS2SXG3wxeW7/17v8v7uHndZfczrSX0bXGRopxcntaedkwmBi5zdHmt5/
+         qWUQ==
+X-Gm-Message-State: AOAM533X5DVieVOFUcOAIeNtCo+wCNTU0EjLR4Lc0VRIVa17YMe8vQQz
+        gDKXodcdiIx2cTC2J6r7G1lOoajDBHr6BHUpGOE=
+X-Google-Smtp-Source: ABdhPJwIDhdCd3IkS0D2We7a/KiRyZKZsY9kiztJA7dGbxLGYT/79l2IKXVSFRX0m64D4N8AMrNbBk4+My3ookZUKXM=
+X-Received: by 2002:a0d:ead6:0:b0:2e5:952e:af45 with SMTP id
+ t205-20020a0dead6000000b002e5952eaf45mr25994290ywe.22.1648475112322; Mon, 28
+ Mar 2022 06:45:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <400edaab-7c6c-f4d1-9a94-e8d0803857fa@redhat.com>
+References: <20220322162822.566705-1-butterflyhuangxx@gmail.com> <2579412.1648468635@warthog.procyon.org.uk>
+In-Reply-To: <2579412.1648468635@warthog.procyon.org.uk>
+From:   butt3rflyh4ck <butterflyhuangxx@gmail.com>
+Date:   Mon, 28 Mar 2022 21:44:51 +0800
+Message-ID: <CAFcO6XNf+nXzWc9XyqBO01uTYkJsoEgi3ZMXt8MhKvSu39vbPQ@mail.gmail.com>
+Subject: Re: [PATCH] rxrpc: fix some null-ptr-deref bugs in server_key.c
+To:     David Howells <dhowells@redhat.com>
+Cc:     marc.dionne@auristor.com, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
+        linux-afs@lists.infradead.org, Networking <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 02:29:20PM +0200, David Hildenbrand wrote:
-> I'd appreciate if we could merge most MM-related stuff through the -MM
-> tree; it exists for a reason IMHO. Andrew, you usually have a very good
-> feeling when something's ready to be merged upstream (sufficient review
-> from relevant folks, sufficient exposure via -mm and -next, ...).
+No other syzbot report references it.
 
-The problem is that the MM tree is completely unusable when patches going
-in through other trees need to be based on it.  The MM workflow clearly
-works well for Andrew, but it doesn't work well for us as a community.
 
-Fortunately folios is past that point now, but I fear that maple tree
-will get to that point if it doesn't go in through Andrew's tree this
-cycle, as it may have other users.
+Regards,
+ butt3rflyh4ck.
+
+On Mon, Mar 28, 2022 at 7:57 PM David Howells <dhowells@redhat.com> wrote:
+>
+> Xiaolong Huang <butterflyhuangxx@gmail.com> wrote:
+>
+> > user@syzkaller:~$ ./rxrpc_preparse_s
+>
+> Is there a syzbot report to reference for this?
+>
+> David
+>
+
+
+-- 
+Active Defense Lab of Venustech
