@@ -2,393 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98D59C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 17:46:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBEE4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 17:49:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244701AbiC1Rsg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 13:48:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48620 "EHLO
+        id S244707AbiC1Ruy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 13:50:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239665AbiC1Rse (ORCPT
+        with ESMTP id S238979AbiC1Rux (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 13:48:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02BBB326EE;
-        Mon, 28 Mar 2022 10:46:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 969BFB80DFD;
-        Mon, 28 Mar 2022 17:46:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 671DCC004DD;
-        Mon, 28 Mar 2022 17:46:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648489610;
-        bh=h8P/Pv/fbuJrvEjfFoWLdsLWaKSoEzLkSjfA5QGUX3w=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hn79khCeI8og1Hy2rwe2oadj9g9ExOOJnPL/flnxCMPIZxTT4PH2QEobDCAgFKs2A
-         6X91hkuuM9mg42NrkgbJME2U0xXYTCl7ZDSyT7FgEAU0Ny5/XPdwxJ5ur/hd+Mx75D
-         odbfyYfsIUFLnHg4/vFsYW07Kl/t4k2kUC3Rckvjfg2uJ7N/JVbBv3GvFruiE6xXh/
-         1lHw3KKHbdLwmr4UN1W74z26WEt1mRinmiof7W8pIFnk+LlP5lFwHBrfQhxUixL1U6
-         OZk7GQ0ADi4xf7gdYtKlkWIntqjYH255/g50hwSZ6b6+Ef/s16haPEP4GwTHO/yVMo
-         BWhjKX3lUIwWQ==
-Date:   Mon, 28 Mar 2022 18:54:25 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Christian =?UTF-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 07/12] iio: buffer-dma: Use DMABUFs instead of custom
- solution
-Message-ID: <20220328185425.56b51f4a@jic23-huawei>
-In-Reply-To: <20220207125933.81634-8-paul@crapouillou.net>
-References: <20220207125933.81634-1-paul@crapouillou.net>
-        <20220207125933.81634-8-paul@crapouillou.net>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Mon, 28 Mar 2022 13:50:53 -0400
+Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com [209.85.208.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01D0B3C4B7;
+        Mon, 28 Mar 2022 10:49:12 -0700 (PDT)
+Received: by mail-lj1-f176.google.com with SMTP id a30so12799584ljq.13;
+        Mon, 28 Mar 2022 10:49:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EyQ8IXVuGy+MjhTeeviL9/NWr5Oku+oE3kNpUwAlM28=;
+        b=mzUsrqs1v9Oox0FLiZXA0oFdHuqoEo4Bzxx8RTE8IW2/gN/kMRw5hJyIY1cmLV6Vch
+         b6Nuh4yNiUtWICDHF+U+Xi7w19MAMZYQopDF/k/64vSbPj2J08FkzE1YDipEaOJdrHwp
+         i+7eYODLfGrZRKcuVHHvxaO+HAVbX1MsVmpewDujMWBFaIHgdYaKrEJZC4ZFAr7k8t9X
+         hFVDpYaLKnGJsiG8kU0DmOQoHIU5kS2DLvZY89xpazFhW6uNRSc9fd28pfIeFJrlerbB
+         U/r3suyr+U/rD0SEZ0uJV4lF0txJxYuDjEbQGfgMglFrMVwOqvk0Wlkxo9mj4Z9ctItd
+         gKJQ==
+X-Gm-Message-State: AOAM531oqij7enAauyfowhgvcSv9RMgJUMYpCgsdQYG0i3mSfBFW9g8W
+        MaPas58lBD2uy/kRC2pGlmPcRXaile2sd4wAM40=
+X-Google-Smtp-Source: ABdhPJylsb5/U29MfMdIeOIKZdvUSIE4MIawm5G11yaSRrZfEr1IXA3xAF9bfyuvUtx6BVZVZ6Fg7r4xnLNf7VJDTG4=
+X-Received: by 2002:a05:651c:248:b0:245:5b3d:9abb with SMTP id
+ x8-20020a05651c024800b002455b3d9abbmr21451205ljn.366.1648489750323; Mon, 28
+ Mar 2022 10:49:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220322185709.141236-1-namhyung@kernel.org> <20220322185709.141236-3-namhyung@kernel.org>
+ <20220328113946.GA8939@worktop.programming.kicks-ass.net>
+In-Reply-To: <20220328113946.GA8939@worktop.programming.kicks-ass.net>
+From:   Namhyung Kim <namhyung@kernel.org>
+Date:   Mon, 28 Mar 2022 10:48:59 -0700
+Message-ID: <CAM9d7ciQQEypvv2a2zQLHNc7p3NNxF59kASxHoFMCqiQicKwBA@mail.gmail.com>
+Subject: Re: [PATCH 2/2] locking: Apply contention tracepoints in the slow path
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Byungchul Park <byungchul.park@lge.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Radoslaw Burny <rburny@google.com>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon,  7 Feb 2022 12:59:28 +0000
-Paul Cercueil <paul@crapouillou.net> wrote:
+On Mon, Mar 28, 2022 at 4:39 AM Peter Zijlstra <peterz@infradead.org> wrote:
+>
+> On Tue, Mar 22, 2022 at 11:57:09AM -0700, Namhyung Kim wrote:
+> > diff --git a/kernel/locking/mutex.c b/kernel/locking/mutex.c
+> > index ee2fd7614a93..c88deda77cf2 100644
+> > --- a/kernel/locking/mutex.c
+> > +++ b/kernel/locking/mutex.c
+> > @@ -644,6 +644,7 @@ __mutex_lock_common(struct mutex *lock, unsigned int state, unsigned int subclas
+> >       }
+> >
+> >       set_current_state(state);
+> > +     trace_contention_begin(lock, 0);
+> >       for (;;) {
+> >               bool first;
+> >
+> > @@ -710,6 +711,7 @@ __mutex_lock_common(struct mutex *lock, unsigned int state, unsigned int subclas
+> >  skip_wait:
+> >       /* got the lock - cleanup and rejoice! */
+> >       lock_acquired(&lock->dep_map, ip);
+> > +     trace_contention_end(lock, 0);
+> >
+> >       if (ww_ctx)
+> >               ww_mutex_lock_acquired(ww, ww_ctx);
+>
+> (note: it's possible to get to this trace_contention_end() without ever
+> having passed a _begin -- fixed in the below)
+>
+> > @@ -721,6 +723,7 @@ __mutex_lock_common(struct mutex *lock, unsigned int state, unsigned int subclas
+> >  err:
+> >       __set_current_state(TASK_RUNNING);
+> >       __mutex_remove_waiter(lock, &waiter);
+> > +     trace_contention_end(lock, ret);
+> >  err_early_kill:
+> >       raw_spin_unlock(&lock->wait_lock);
+> >       debug_mutex_free_waiter(&waiter);
+>
+>
+> So there was one thing here, that might or might not be important, but
+> is somewhat inconsistent with the whole thing. That is, do you want to
+> include optimistic spinning in the contention time or not?
 
-> Enhance the current fileio code by using DMABUF objects instead of
-> custom buffers.
-> 
-> This adds more code than it removes, but:
-> - a lot of the complexity can be dropped, e.g. custom kref and
->   iio_buffer_block_put_atomic() are not needed anymore;
-> - it will be much easier to introduce an API to export these DMABUF
->   objects to userspace in a following patch.
-> 
-> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-Hi Paul,
+Yes, this was in a grey area and would create begin -> begin -> end
+path for mutexes.  But I think tools can handle it with the flags.
 
-I'm a bit rusty on dma mappings, but you seem to have
-a mixture of streaming and coherent mappings going on in here.
+>
+> Because currently you do it sometimes.
+>
+> Also, if you were to add LCB_F_MUTEX then you could have something like:
 
-Is it the case that the current code is using the coherent mappings
-and a potential 'other user' of the dma buffer might need
-streaming mappings?
+Yep, I'm ok with having the mutex flag.  Do you want me to send
+v5 with this change or would you like to do it by yourself?
 
-Jonathan
+Thanks,
+Namhyung
 
-> ---
->  drivers/iio/buffer/industrialio-buffer-dma.c | 192 ++++++++++++-------
->  include/linux/iio/buffer-dma.h               |   8 +-
->  2 files changed, 122 insertions(+), 78 deletions(-)
-> 
-> diff --git a/drivers/iio/buffer/industrialio-buffer-dma.c b/drivers/iio/buffer/industrialio-buffer-dma.c
-> index 15ea7bc3ac08..54e6000cd2ee 100644
-> --- a/drivers/iio/buffer/industrialio-buffer-dma.c
-> +++ b/drivers/iio/buffer/industrialio-buffer-dma.c
-> @@ -14,6 +14,7 @@
->  #include <linux/poll.h>
->  #include <linux/iio/buffer_impl.h>
->  #include <linux/iio/buffer-dma.h>
-> +#include <linux/dma-buf.h>
->  #include <linux/dma-mapping.h>
->  #include <linux/sizes.h>
->  
-> @@ -90,103 +91,145 @@
->   * callback is called from within the custom callback.
->   */
->  
-> -static void iio_buffer_block_release(struct kref *kref)
-> -{
-> -	struct iio_dma_buffer_block *block = container_of(kref,
-> -		struct iio_dma_buffer_block, kref);
-> -
-> -	WARN_ON(block->state != IIO_BLOCK_STATE_DEAD);
-> -
-> -	dma_free_coherent(block->queue->dev, PAGE_ALIGN(block->size),
-> -					block->vaddr, block->phys_addr);
-> -
-> -	iio_buffer_put(&block->queue->buffer);
-> -	kfree(block);
-> -}
-> -
-> -static void iio_buffer_block_get(struct iio_dma_buffer_block *block)
-> -{
-> -	kref_get(&block->kref);
-> -}
-> -
-> -static void iio_buffer_block_put(struct iio_dma_buffer_block *block)
-> -{
-> -	kref_put(&block->kref, iio_buffer_block_release);
-> -}
-> -
-> -/*
-> - * dma_free_coherent can sleep, hence we need to take some special care to be
-> - * able to drop a reference from an atomic context.
-> - */
-> -static LIST_HEAD(iio_dma_buffer_dead_blocks);
-> -static DEFINE_SPINLOCK(iio_dma_buffer_dead_blocks_lock);
-> -
-> -static void iio_dma_buffer_cleanup_worker(struct work_struct *work)
-> -{
-> -	struct iio_dma_buffer_block *block, *_block;
-> -	LIST_HEAD(block_list);
-> -
-> -	spin_lock_irq(&iio_dma_buffer_dead_blocks_lock);
-> -	list_splice_tail_init(&iio_dma_buffer_dead_blocks, &block_list);
-> -	spin_unlock_irq(&iio_dma_buffer_dead_blocks_lock);
-> -
-> -	list_for_each_entry_safe(block, _block, &block_list, head)
-> -		iio_buffer_block_release(&block->kref);
-> -}
-> -static DECLARE_WORK(iio_dma_buffer_cleanup_work, iio_dma_buffer_cleanup_worker);
-> -
-> -static void iio_buffer_block_release_atomic(struct kref *kref)
-> -{
-> +struct iio_buffer_dma_buf_attachment {
-> +	struct scatterlist sgl;
-> +	struct sg_table sg_table;
->  	struct iio_dma_buffer_block *block;
-> -	unsigned long flags;
-> -
-> -	block = container_of(kref, struct iio_dma_buffer_block, kref);
-> -
-> -	spin_lock_irqsave(&iio_dma_buffer_dead_blocks_lock, flags);
-> -	list_add_tail(&block->head, &iio_dma_buffer_dead_blocks);
-> -	spin_unlock_irqrestore(&iio_dma_buffer_dead_blocks_lock, flags);
-> -
-> -	schedule_work(&iio_dma_buffer_cleanup_work);
-> -}
-> -
-> -/*
-> - * Version of iio_buffer_block_put() that can be called from atomic context
-> - */
-> -static void iio_buffer_block_put_atomic(struct iio_dma_buffer_block *block)
-> -{
-> -	kref_put(&block->kref, iio_buffer_block_release_atomic);
-> -}
-> +};
->  
->  static struct iio_dma_buffer_queue *iio_buffer_to_queue(struct iio_buffer *buf)
->  {
->  	return container_of(buf, struct iio_dma_buffer_queue, buffer);
->  }
->  
-> +static struct iio_buffer_dma_buf_attachment *
-> +to_iio_buffer_dma_buf_attachment(struct sg_table *table)
-> +{
-> +	return container_of(table, struct iio_buffer_dma_buf_attachment, sg_table);
-> +}
-> +
-> +static void iio_buffer_block_get(struct iio_dma_buffer_block *block)
-> +{
-> +	get_dma_buf(block->dmabuf);
-> +}
-> +
-> +static void iio_buffer_block_put(struct iio_dma_buffer_block *block)
-> +{
-> +	dma_buf_put(block->dmabuf);
-> +}
-> +
-> +static int iio_buffer_dma_buf_attach(struct dma_buf *dbuf,
-> +				     struct dma_buf_attachment *at)
-> +{
-> +	at->priv = dbuf->priv;
-> +
-> +	return 0;
-> +}
-> +
-> +static struct sg_table *iio_buffer_dma_buf_map(struct dma_buf_attachment *at,
-> +					       enum dma_data_direction dma_dir)
-> +{
-> +	struct iio_dma_buffer_block *block = at->priv;
-> +	struct iio_buffer_dma_buf_attachment *dba;
-> +	int ret;
-> +
-> +	dba = kzalloc(sizeof(*dba), GFP_KERNEL);
-> +	if (!dba)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	sg_init_one(&dba->sgl, block->vaddr, PAGE_ALIGN(block->size));
-> +	dba->sg_table.sgl = &dba->sgl;
-> +	dba->sg_table.nents = 1;
-> +	dba->block = block;
-> +
-> +	ret = dma_map_sgtable(at->dev, &dba->sg_table, dma_dir, 0);
-> +	if (ret) {
-> +		kfree(dba);
-> +		return ERR_PTR(ret);
-> +	}
-> +
-> +	return &dba->sg_table;
-> +}
-> +
-> +static void iio_buffer_dma_buf_unmap(struct dma_buf_attachment *at,
-> +				     struct sg_table *sg_table,
-> +				     enum dma_data_direction dma_dir)
-> +{
-> +	struct iio_buffer_dma_buf_attachment *dba =
-> +		to_iio_buffer_dma_buf_attachment(sg_table);
-> +
-> +	dma_unmap_sgtable(at->dev, &dba->sg_table, dma_dir, 0);
-> +	kfree(dba);
-> +}
-> +
-> +static void iio_buffer_dma_buf_release(struct dma_buf *dbuf)
-> +{
-> +	struct iio_dma_buffer_block *block = dbuf->priv;
-> +	struct iio_dma_buffer_queue *queue = block->queue;
-> +
-> +	WARN_ON(block->state != IIO_BLOCK_STATE_DEAD);
-> +
-> +	mutex_lock(&queue->lock);
-> +
-> +	dma_free_coherent(queue->dev, PAGE_ALIGN(block->size),
-> +			  block->vaddr, block->phys_addr);
-> +	kfree(block);
-> +
-> +	mutex_unlock(&queue->lock);
-> +	iio_buffer_put(&queue->buffer);
-> +}
-> +
-> +static const struct dma_buf_ops iio_dma_buffer_dmabuf_ops = {
-> +	.attach			= iio_buffer_dma_buf_attach,
-> +	.map_dma_buf		= iio_buffer_dma_buf_map,
-> +	.unmap_dma_buf		= iio_buffer_dma_buf_unmap,
-> +	.release		= iio_buffer_dma_buf_release,
-> +};
-> +
->  static struct iio_dma_buffer_block *iio_dma_buffer_alloc_block(
->  	struct iio_dma_buffer_queue *queue, size_t size)
->  {
->  	struct iio_dma_buffer_block *block;
-> +	DEFINE_DMA_BUF_EXPORT_INFO(einfo);
-> +	struct dma_buf *dmabuf;
-> +	int err = -ENOMEM;
->  
->  	block = kzalloc(sizeof(*block), GFP_KERNEL);
->  	if (!block)
-> -		return NULL;
-> +		return ERR_PTR(err);
->  
->  	block->vaddr = dma_alloc_coherent(queue->dev, PAGE_ALIGN(size),
->  		&block->phys_addr, GFP_KERNEL);
-> -	if (!block->vaddr) {
-> -		kfree(block);
-> -		return NULL;
-> +	if (!block->vaddr)
-> +		goto err_free_block;
-> +
-> +	einfo.ops = &iio_dma_buffer_dmabuf_ops;
-> +	einfo.size = PAGE_ALIGN(size);
-> +	einfo.priv = block;
-> +	einfo.flags = O_RDWR;
-> +
-> +	dmabuf = dma_buf_export(&einfo);
-> +	if (IS_ERR(dmabuf)) {
-> +		err = PTR_ERR(dmabuf);
-> +		goto err_free_dma;
->  	}
->  
-> +	block->dmabuf = dmabuf;
->  	block->size = size;
->  	block->state = IIO_BLOCK_STATE_DONE;
->  	block->queue = queue;
->  	INIT_LIST_HEAD(&block->head);
-> -	kref_init(&block->kref);
->  
->  	iio_buffer_get(&queue->buffer);
->  
->  	return block;
-> +
-> +err_free_dma:
-> +	dma_free_coherent(queue->dev, PAGE_ALIGN(size),
-> +			  block->vaddr, block->phys_addr);
-> +err_free_block:
-> +	kfree(block);
-> +	return ERR_PTR(err);
->  }
->  
->  static void _iio_dma_buffer_block_done(struct iio_dma_buffer_block *block)
-> @@ -223,7 +266,7 @@ void iio_dma_buffer_block_done(struct iio_dma_buffer_block *block)
->  	_iio_dma_buffer_block_done(block);
->  	spin_unlock_irqrestore(&queue->list_lock, flags);
->  
-> -	iio_buffer_block_put_atomic(block);
-> +	iio_buffer_block_put(block);
->  	iio_dma_buffer_queue_wake(queue);
->  }
->  EXPORT_SYMBOL_GPL(iio_dma_buffer_block_done);
-> @@ -249,7 +292,8 @@ void iio_dma_buffer_block_list_abort(struct iio_dma_buffer_queue *queue,
->  		list_del(&block->head);
->  		block->bytes_used = 0;
->  		_iio_dma_buffer_block_done(block);
-> -		iio_buffer_block_put_atomic(block);
-> +
-> +		iio_buffer_block_put(block);
->  	}
->  	spin_unlock_irqrestore(&queue->list_lock, flags);
->  
-> @@ -340,8 +384,8 @@ int iio_dma_buffer_request_update(struct iio_buffer *buffer)
->  
->  		if (!block) {
->  			block = iio_dma_buffer_alloc_block(queue, size);
-> -			if (!block) {
-> -				ret = -ENOMEM;
-> +			if (IS_ERR(block)) {
-> +				ret = PTR_ERR(block);
->  				goto out_unlock;
->  			}
->  			queue->fileio.blocks[i] = block;
-> diff --git a/include/linux/iio/buffer-dma.h b/include/linux/iio/buffer-dma.h
-> index 490b93f76fa8..6b3fa7d2124b 100644
-> --- a/include/linux/iio/buffer-dma.h
-> +++ b/include/linux/iio/buffer-dma.h
-> @@ -8,7 +8,6 @@
->  #define __INDUSTRIALIO_DMA_BUFFER_H__
->  
->  #include <linux/list.h>
-> -#include <linux/kref.h>
->  #include <linux/spinlock.h>
->  #include <linux/mutex.h>
->  #include <linux/iio/buffer_impl.h>
-> @@ -16,6 +15,7 @@
->  struct iio_dma_buffer_queue;
->  struct iio_dma_buffer_ops;
->  struct device;
-> +struct dma_buf;
->  
->  /**
->   * enum iio_block_state - State of a struct iio_dma_buffer_block
-> @@ -39,8 +39,8 @@ enum iio_block_state {
->   * @vaddr: Virutal address of the blocks memory
->   * @phys_addr: Physical address of the blocks memory
->   * @queue: Parent DMA buffer queue
-> - * @kref: kref used to manage the lifetime of block
->   * @state: Current state of the block
-> + * @dmabuf: Underlying DMABUF object
->   */
->  struct iio_dma_buffer_block {
->  	/* May only be accessed by the owner of the block */
-> @@ -56,13 +56,13 @@ struct iio_dma_buffer_block {
->  	size_t size;
->  	struct iio_dma_buffer_queue *queue;
->  
-> -	/* Must not be accessed outside the core. */
-> -	struct kref kref;
->  	/*
->  	 * Must not be accessed outside the core. Access needs to hold
->  	 * queue->list_lock if the block is not owned by the core.
->  	 */
->  	enum iio_block_state state;
-> +
-> +	struct dma_buf *dmabuf;
->  };
->  
->  /**
 
+>
+>
+> --- a/kernel/locking/mutex.c
+> +++ b/kernel/locking/mutex.c
+> @@ -602,12 +602,14 @@ __mutex_lock_common(struct mutex *lock,
+>         preempt_disable();
+>         mutex_acquire_nest(&lock->dep_map, subclass, 0, nest_lock, ip);
+>
+> +       trace_contention_begin(lock, LCB_F_MUTEX | LCB_F_SPIN);
+>         if (__mutex_trylock(lock) ||
+>             mutex_optimistic_spin(lock, ww_ctx, NULL)) {
+>                 /* got the lock, yay! */
+>                 lock_acquired(&lock->dep_map, ip);
+>                 if (ww_ctx)
+>                         ww_mutex_set_context_fastpath(ww, ww_ctx);
+> +               trace_contention_end(lock, 0);
+>                 preempt_enable();
+>                 return 0;
+>         }
+> @@ -644,7 +646,7 @@ __mutex_lock_common(struct mutex *lock,
+>         }
+>
+>         set_current_state(state);
+> -       trace_contention_begin(lock, 0);
+> +       trace_contention_begin(lock, LCB_F_MUTEX);
+>         for (;;) {
+>                 bool first;
+>
+> @@ -684,10 +686,16 @@ __mutex_lock_common(struct mutex *lock,
+>                  * state back to RUNNING and fall through the next schedule(),
+>                  * or we must see its unlock and acquire.
+>                  */
+> -               if (__mutex_trylock_or_handoff(lock, first) ||
+> -                   (first && mutex_optimistic_spin(lock, ww_ctx, &waiter)))
+> +               if (__mutex_trylock_or_handoff(lock, first))
+>                         break;
+>
+> +               if (first) {
+> +                       trace_contention_begin(lock, LCB_F_MUTEX | LCB_F_SPIN);
+> +                       if (mutex_optimistic_spin(lock, ww_ctx, &waiter))
+> +                               break;
+> +                       trace_contention_begin(lock, LCB_F_MUTEX);
+> +               }
+> +
+>                 raw_spin_lock(&lock->wait_lock);
+>         }
+>         raw_spin_lock(&lock->wait_lock);
+> @@ -723,8 +731,8 @@ __mutex_lock_common(struct mutex *lock,
+>  err:
+>         __set_current_state(TASK_RUNNING);
+>         __mutex_remove_waiter(lock, &waiter);
+> -       trace_contention_end(lock, ret);
+>  err_early_kill:
+> +       trace_contention_end(lock, ret);
+>         raw_spin_unlock(&lock->wait_lock);
+>         debug_mutex_free_waiter(&waiter);
+>         mutex_release(&lock->dep_map, ip);
