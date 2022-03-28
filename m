@@ -2,187 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2295C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 08:43:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC907C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 08:43:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239472AbiC1IpI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 04:45:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35602 "EHLO
+        id S239480AbiC1Ipe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 04:45:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239468AbiC1IpF (ORCPT
+        with ESMTP id S237851AbiC1Ipc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 04:45:05 -0400
-Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B595C338BE
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 01:43:24 -0700 (PDT)
-Received: from epcas2p4.samsung.com (unknown [182.195.41.56])
-        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220328084322epoutp02c4cc134f8de82e6d1a24fdd053c392aa~gfujvcPUS0644606446epoutp02B
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 08:43:22 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220328084322epoutp02c4cc134f8de82e6d1a24fdd053c392aa~gfujvcPUS0644606446epoutp02B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1648457002;
-        bh=q+HVAoGqH/dia7eZTAEaFllANNuLtxUgWBVlfJGeTSQ=;
-        h=Subject:Reply-To:From:To:CC:Date:References:From;
-        b=LG+3W0XjKQkNCoam+k7N+jbx410o6MAgKY9rSTgvUzw4BIlMxjHeeAYiqY1f2vx00
-         svMuaeSeARxzifT6+NhxZbwjGdYTWCnfdsbCUblXAoY/xKCjZ8HZqxs5WzyjI4K54u
-         KQpNNs5krEUEP8KxKeJ0gZ+4d/MBTKNq4SUtvq+k=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas2p4.samsung.com (KnoxPortal) with ESMTP id
-        20220328084321epcas2p4beb7cee7ab047cdbeb9531b88c180a5b~gfui0S8EY1900419004epcas2p4o;
-        Mon, 28 Mar 2022 08:43:21 +0000 (GMT)
-Received: from epsmges2p2.samsung.com (unknown [182.195.36.88]) by
-        epsnrtp2.localdomain (Postfix) with ESMTP id 4KRmS76nKyz4x9Q4; Mon, 28 Mar
-        2022 08:43:19 +0000 (GMT)
-X-AuditID: b6c32a46-be9ff70000023ea8-c7-62417527a335
-Received: from epcas2p3.samsung.com ( [182.195.41.55]) by
-        epsmges2p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        E1.4C.16040.72571426; Mon, 28 Mar 2022 17:43:19 +0900 (KST)
-Mime-Version: 1.0
-Subject: [PATCH 2/5] dt-bindings: phy: Add ARTPEC-8 PCIe phy
-Reply-To: wangseok.lee@samsung.com
-Sender: =?UTF-8?B?7J207JmV7ISd?= <wangseok.lee@samsung.com>
-From:   =?UTF-8?B?7J207JmV7ISd?= <wangseok.lee@samsung.com>
-To:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
-        "kishon@ti.com" <kishon@ti.com>,
-        "vkoul@kernel.org" <vkoul@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "jesper.nilsson@axis.com" <jesper.nilsson@axis.com>,
-        "lars.persson@axis.com" <lars.persson@axis.com>
-CC:     "bhelgaas@google.com" <bhelgaas@google.com>,
-        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>,
-        "kw@linux.com" <kw@linux.com>,
-        "linux-arm-kernel@axis.com" <linux-arm-kernel@axis.com>,
-        "kernel@axis.com" <kernel@axis.com>,
-        =?UTF-8?B?7KCE66y46riw?= <moonki.jun@samsung.com>
-X-Priority: 3
-X-Content-Kind-Code: NORMAL
-X-CPGS-Detection: blocking_info_exchange
-X-Drm-Type: N,general
-X-Msg-Generator: Mail
-X-Msg-Type: PERSONAL
-X-Reply-Demand: N
-Message-ID: <20220328084319epcms2p3670d7836bb111e0d9c648aeebfde8603@epcms2p3>
-Date:   Mon, 28 Mar 2022 17:43:19 +0900
-X-CMS-MailID: 20220328084319epcms2p3670d7836bb111e0d9c648aeebfde8603
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-X-CPGSPASS: Y
-X-CPGSPASS: Y
-CMS-TYPE: 102P
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrMJsWRmVeSWpSXmKPExsWy7bCmua56qWOSwbJ9phZLmjIsXh7StJh/
-        5ByrxfNDs5gtPrWoWlx42sNm8XLWPTaLhp7frBZH3nxktth/fCWTxeVdc9gszs47zmYxYdU3
-        Fos3v1+wW5xbnGnRuvcIu8XOOyeYHQQ91sxbw+hxfV2Ax4JNpR6bVnWyeTy5Mp3JY/OSeo++
-        LasYPY7f2M7k8XmTXABnVLZNRmpiSmqRQmpecn5KZl66rZJ3cLxzvKmZgaGuoaWFuZJCXmJu
-        qq2Si0+ArltmDtAXSgpliTmlQKGAxOJiJX07m6L80pJUhYz84hJbpdSClJwC8wK94sTc4tK8
-        dL281BIrQwMDI1OgwoTsjLPn9rIXNApVNDytb2C8wtvFyMkhIWAiceTyZJYuRi4OIYEdjBJr
-        /rQzdzFycPAKCEr83SEMUiMsYCPxZ/dsZhBbSEBJYseaecwQcWuJT1Mus4DYbAKWEhdbHzKC
-        zBEROMskcfPudlYQh1ngNrPE/OfvWSC28UrMaH8KZUtLbF++lRHC1pD4sayXGcIWlbi5+i07
-        jP3+2HyoGhGJ1ntnoWoEJR783A0Vl5JY8OQQK4RdLbH/728mCLuBUaL/firIMxIC+hI7rhuD
-        hHkFfCWeXpoFNoZFQFVi9+lOqHIXiVsX94DFmQXkJba/nQMOB2YBTYn1u/QhpihLHLkF90jD
-        xt/s6GxmAT6JjsN/4eI75j2Bmq4mMW/lTmaIMTISW1/6T2BUmoUI51lI1s5CWLuAkXkVo1hq
-        QXFuemqxUYERPGaT83M3MYJTs5bbDsYpbz/oHWJk4mA8xCjBwawkwit71j5JiDclsbIqtSg/
-        vqg0J7X4EKMp0MMTmaVEk/OB2SGvJN7QxNLAxMzM0NzI1MBcSZzXK2VDopBAemJJanZqakFq
-        EUwfEwenVANT8SPd/vvnGiYfSV8UIqD0/snco60XVt32vLC4y+rKSfbJLwRafNPeFt8OUvsf
-        03Lijnj6dO1asfCiY3XLJkgJpc708PJUKvP/lcP9t4ohdfvVcCHtt58ZXidVvrlzZO0KowfX
-        /r0JWNgwq7qTzbhLwc7ov2SLtvKFPMVfK58b3u1kTvzsPK/vTPb6lZtOvBE9e+qd6vnTkxf0
-        zOT1mHtvtbBEpEQfK8fZPazMLveu7Dr57v1up8ehgXu62GtCdus+Vd19LbDw7FtjhtzKfc22
-        nkW7Hi7eefPE5H+O/c+nvN/z2rt3TiinzDbvEI/Il/OThWf3Zi10y1Z4ceH//+o7r7KKrmo3
-        7/pe/0z2lt4DNyWW4oxEQy3mouJEAM2QofZWBAAA
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220328084319epcms2p3670d7836bb111e0d9c648aeebfde8603
-References: <CGME20220328084319epcms2p3670d7836bb111e0d9c648aeebfde8603@epcms2p3>
+        Mon, 28 Mar 2022 04:45:32 -0400
+Received: from mail.meizu.com (edge07.meizu.com [112.91.151.210])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63B6D4B1EC
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 01:43:51 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail11.meizu.com
+ (172.16.1.15) with Microsoft SMTP Server (TLS) id 14.3.487.0; Mon, 28 Mar
+ 2022 16:43:50 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Mon, 28 Mar
+ 2022 16:43:49 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     <Larry.Finger@lwfinger.net>, <phil@philpotter.co.uk>,
+        <gregkh@linuxfoundation.org>, <straube.linux@gmail.com>,
+        <martin@kaiser.cx>
+CC:     <linux-staging@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+        "Haowen Bai" <baihaowen@meizu.com>
+Subject: [PATCH V2] staging: r8188eu: Directly return _SUCCESS instead of using local ret variable
+Date:   Mon, 28 Mar 2022 16:43:48 +0800
+Message-ID: <1648457028-4226-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-125.meizu.com (172.16.1.125) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add description to support Axis, ARTPEC-8 SoC.
-ARTPEC-8 is the SoC platform of Axis Communications
-and PCIe phy is designed based on SAMSUNG PHY.
+fixes coccinelle warning:
+./drivers/staging/r8188eu/core/rtw_mlme_ext.c:357:5-8: Unneeded variable: "res".
+ Return "_SUCCESS" on line 380
 
-Signed-off-by: Wangseok Lee <wangseok.lee@samsung.com>
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 ---
- .../bindings/phy/axis,artpec8-pcie-phy.yaml        | 67 ++++++++++++++++++++++
- 1 file changed, 67 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/phy/axis,artpec8-pcie-phy.yaml
+V1->V2: split into two patches.
 
-diff --git a/Documentation/devicetree/bindings/phy/axis,artpec8-pcie-phy.yaml b/Documentation/devicetree/bindings/phy/axis,artpec8-pcie-phy.yaml
-new file mode 100644
-index 0000000..f5f4166
---- /dev/null
-+++ b/Documentation/devicetree/bindings/phy/axis,artpec8-pcie-phy.yaml
-@@ -0,0 +1,67 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/phy/axis,artpec8-pcie-phy.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: ARTPEC-8 SoC PCIe PHY Device Tree Bindings
-+
-+maintainers:
-+  - Jesper Nilsson <jesper.nilsson@axis.com>
-+
-+properties:
-+  compatible:
-+    const: axis,artpec8-pcie-phy
-+
-+  reg:
-+    items:
-+      - description: PHY registers.
-+      - description: PHY coding sublayer registers.
-+
-+  reg-names:
-+    items:
-+      - const: phy
-+      - const: pcs
-+
-+  clocks:
-+    items:
-+      - description: PCIe PHY reference clock
-+
-+  clock-names:
-+    items:
-+      - const: ref_clk
-+
-+required:
-+  - compatible
-+  - "#phy-cells"
-+  - reg
-+  - reg-names
-+  - clocks
-+  - clock-names
-+  - samsung,fsys-sysreg
-+  - num-lanes
-+
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+    artec8 {
-+        #address-cells = <2>;
-+        #size-cells = <2>;
-+        pcie_phy: pcie-phy@16c80000 {
-+            compatible = "samsung,artpec8-pcie-phy";
-+            #phy-cells = <0>;
-+            reg = <0x0 0x16c80000 0x0 0x2000>,
-+                    <0x0 0x16c90000 0x0 0x1000>;
-+            reg-names = "phy", "pcs";
-+            clocks = <&clock_cmu_fsys 53>;
-+            clock-names = "ref_clk";
-+            samsung,fsys-sysreg = <&syscon_fsys>;
-+            num-lanes = <2>;
-+        };
-+    };
-+...
+ drivers/staging/r8188eu/core/rtw_mlme_ext.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/staging/r8188eu/core/rtw_mlme_ext.c b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
+index 931e6f2..4b7b0ee 100644
+--- a/drivers/staging/r8188eu/core/rtw_mlme_ext.c
++++ b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
+@@ -354,7 +354,6 @@ static u8 init_channel_set(struct adapter *padapter, u8 ChannelPlan, struct rt_c
+ 
+ int	init_mlme_ext_priv(struct adapter *padapter)
+ {
+-	int	res = _SUCCESS;
+ 	struct registry_priv *pregistrypriv = &padapter->registrypriv;
+ 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
+ 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
+@@ -377,7 +376,7 @@ int	init_mlme_ext_priv(struct adapter *padapter)
+ 
+ 	pmlmeext->active_keep_alive_check = true;
+ 
+-	return res;
++	return _SUCCESS;
+ }
+ 
+ void free_mlme_ext_priv(struct mlme_ext_priv *pmlmeext)
 -- 
-2.9.5
+2.7.4
+
