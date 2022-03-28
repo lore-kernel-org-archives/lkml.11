@@ -2,114 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94783C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 14:19:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F85BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 14:20:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243746AbiC1OUq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 10:20:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58416 "EHLO
+        id S243754AbiC1OWG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 10:22:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234059AbiC1OUo (ORCPT
+        with ESMTP id S237112AbiC1OWB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 10:20:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 871185DA67
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 07:19:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648477142;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=MdCC2vq9cPXJuSNaiMrLPgmXV59Q9f2WNHJtMSehXOA=;
-        b=jE8Ab9w/nr0M+wzoBLuSpdsEP4i0h1UeLrWOPfHR0HMdYzavHhEsCdciVbGPx5GN9gUNeT
-        ZwqkYBbTsycIgSFe6I0IoghkwltwgI/4vK/eRkl7NxTyTPQSi+mLCjr8iEyXjJ2CVeIqUz
-        Tnp4g7NI/kZ/sz/dt3Hm3OFESfPPL6g=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-134-STCIvrdoOxW5eo8Q9DZp2Q-1; Mon, 28 Mar 2022 10:19:01 -0400
-X-MC-Unique: STCIvrdoOxW5eo8Q9DZp2Q-1
-Received: by mail-wr1-f70.google.com with SMTP id h33-20020adf9024000000b00203fcba8aadso4338852wrh.15
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 07:19:00 -0700 (PDT)
+        Mon, 28 Mar 2022 10:22:01 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E73A5DA79
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 07:20:18 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id y10so9435325pfa.7
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 07:20:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=8JYmDY7pw6HG4IIvhyF4KoEeJvcY+xeCNEOxCuitmQg=;
+        b=zuljtzggTSZp4bz2amzqxW3YPXs1lXrTI5+3qF5/e1ZWyzanX3Ehx8U+Oaqxp/6rwL
+         63L7FHhObGNK8R8NVG9c6r9JrNEDm5qmUekqJl1PEgHDSW6cYFvnZ3o+pHP2ROs7hDXu
+         +zMbK6p+bwfVSsVf0iurvi1DWVnPagyAEmkJa4TDlwO4s7Afm6hj75lq4ZQRGujF7cvC
+         KuPTP/8K8UXEwi7b9bew6L24TLo4xkIi5jN6nvC25inl2zqygkz1myMnzuvcyJ6cSjzI
+         nrYdFfYvbMCLUmQcMKmXYOW4DDiRULFMdiRcfX5TvIGrgCfk/M9veFkOo8CYHXhMAJJi
+         Y03Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=MdCC2vq9cPXJuSNaiMrLPgmXV59Q9f2WNHJtMSehXOA=;
-        b=7kINMV0pcAoVTDqHArCz1XN5oCc4Li7hmA0PSV43OtfW7SN4NrrGqb1BpgeBoak0SU
-         ZlW2tocYfXOxciOJ5VGl1i+sQ2pWLjdHT54hFqnla+DCoEDoUePudED5Yn8M/909SP9Q
-         JgvBV7ZozcqJPhcU4vIUsHW+El6B3YLOVZKciWIEuo++KstpAkBd/OTZCOcgxU+HBGE4
-         sHNL/rAaVe0TC9S88b5f2KviA0ZyywRasdrg1rNiQg44U8zpXNI0SvYvNXIEeqnxrvSS
-         Wbzt4WuHrMSv2FsIa8QKxTLXLb/CvLCo9KqOpX0LwI6wZIob/BaBXc6oZWDo7O0IflHM
-         7muA==
-X-Gm-Message-State: AOAM5333CKZDjTilMskYy4HaqJvxQsufbOIsevoM5JVqnWEt8UgSRycg
-        +cQwwQk7/mGzyDzPQmHQrhEfo2n86mWV0jyNl7zxvnVX/JsiHNscXrTitfdSkG5wEGoUJb1e+zg
-        bwkp/ajpqWVhUympWSfdTDArk
-X-Received: by 2002:a05:6000:15c7:b0:205:87a2:87bc with SMTP id y7-20020a05600015c700b0020587a287bcmr23267027wry.260.1648477139905;
-        Mon, 28 Mar 2022 07:18:59 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx8w6depzhTIUSmpGGv6Ed4U55mm4nqtTubVGFzw0jHjIXP1/XJspcPZTrwm3K2T94Ka0w6kQ==
-X-Received: by 2002:a05:6000:15c7:b0:205:87a2:87bc with SMTP id y7-20020a05600015c700b0020587a287bcmr23267009wry.260.1648477139677;
-        Mon, 28 Mar 2022 07:18:59 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c704:2200:50d1:ff5c:5927:203a? (p200300cbc704220050d1ff5c5927203a.dip0.t-ipconnect.de. [2003:cb:c704:2200:50d1:ff5c:5927:203a])
-        by smtp.gmail.com with ESMTPSA id u11-20020a056000038b00b00203e5c9aa09sm18374118wrf.27.2022.03.28.07.18.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Mar 2022 07:18:58 -0700 (PDT)
-Message-ID: <02f50037-46ce-ec08-63cb-e855694e69a5@redhat.com>
-Date:   Mon, 28 Mar 2022 16:18:57 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=8JYmDY7pw6HG4IIvhyF4KoEeJvcY+xeCNEOxCuitmQg=;
+        b=rr0SvCOJIv/VDrMi82u7XFlFRrVAfHNd7L1q8pwLug8OkeQvgftsF+ojj3bfQwbnvg
+         9cqhLIXpw4iyNQeGzhxtk9VS38MtOITT1FLlKZvyDtuTvryAHBEeMr9zBqpQM8RQwTft
+         RclSRh4PU7fBkVSBNKJA0FiA3PaeAuc0l6yE+Y8SkegEwTt3QcudLFCsrNEsLhuM3Ay7
+         nHXfAfmGzPeOjsprkDvyIYOAfsYI2DdTfmOGU/0sui5ASlsDqFLzoQZT5dSS2i2jWfX/
+         9WF22EkBq2ZI+r8st0TPUL6RK8sv2mxMpuUpe6P8qJRiaGLUhAyBPoFsf2t4sAaUfafp
+         jB8g==
+X-Gm-Message-State: AOAM5328M5UFiYQoSbG1B919MoAFMr79oO7TAd3jxzNZPkUME3K+1uul
+        Qz5rFt7zWb4bwQssB+tNw74J
+X-Google-Smtp-Source: ABdhPJyRXehrqWCFnk/gIwqnV30MtOO5cWThfFqS66kHzbM+NvWWe3TdZAsOuAG1+kMM7Io8oCzc/A==
+X-Received: by 2002:a05:6a00:1312:b0:4e1:58c4:ddfd with SMTP id j18-20020a056a00131200b004e158c4ddfdmr23169664pfu.65.1648477217907;
+        Mon, 28 Mar 2022 07:20:17 -0700 (PDT)
+Received: from thinkpad ([220.158.159.124])
+        by smtp.gmail.com with ESMTPSA id l4-20020a056a0016c400b004f79504ef9csm16322604pfc.3.2022.03.28.07.20.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 07:20:17 -0700 (PDT)
+Date:   Mon, 28 Mar 2022 19:50:12 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc:     bjorn.andersson@linaro.org, bhelgaas@google.com,
+        svarbanov@mm-sol.com, robh@kernel.org, linux-pci@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] PCI: qcom: Add support for handling MSIs from 8 endpoints
+Message-ID: <20220328142012.GB17663@thinkpad>
+References: <20211214101319.25258-1-manivannan.sadhasivam@linaro.org>
+ <20220223100145.GA26873@lpieralisi>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [RFC] locking/rwsem: dont wake up wwaiter in case of lock holder
-Content-Language: en-US
-To:     Hillf Danton <hdanton@sina.com>, Waiman Long <longman@redhat.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>, MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20220326134059.4082-1-hdanton@sina.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220326134059.4082-1-hdanton@sina.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220223100145.GA26873@lpieralisi>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 26.03.22 14:40, Hillf Danton wrote:
-> In the slowpath of down for write, we bail out in case of signal received and
-> try to wake up any pending waiter but it makes no sense to wake up a write
-> waiter given any lock holder, either write or read.
-
-But is handling this better really worth additional code and runtime
-checks? IOW, does this happen often enough that we actually care about
-optimizing this? I have no idea :)
-
+On Wed, Feb 23, 2022 at 10:01:45AM +0000, Lorenzo Pieralisi wrote:
+> On Tue, Dec 14, 2021 at 03:43:19PM +0530, Manivannan Sadhasivam wrote:
+> > The DWC controller used in the Qcom Platforms are capable of addressing the
+> > MSIs generated from 8 different endpoints each with 32 vectors (256 in
+> > total). Currently the driver is using the default value of addressing the
+> > MSIs from 1 endpoint only. Extend it by passing the MAX_MSI_IRQS to the
+> > num_vectors field of pcie_port structure.
+> > 
+> > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> > ---
+> >  drivers/pci/controller/dwc/pcie-qcom.c | 1 +
+> >  1 file changed, 1 insertion(+)
 > 
-> The RFC is do nothing for wwaiter if any lock holder present - they will fill
-> their duty at lock release time.
-> 
-> Only for thoughts now.
-> 
-> Hillf
-> 
-> --- x/kernel/locking/rwsem.c
-> +++ y/kernel/locking/rwsem.c
-> @@ -418,6 +418,8 @@ static void rwsem_mark_wake(struct rw_se
->  	waiter = rwsem_first_waiter(sem);
->  
->  	if (waiter->type == RWSEM_WAITING_FOR_WRITE) {
-> +		if (RWSEM_LOCK_MASK & atomic_long_read(&sem->count))
-> +			return;
->  		if (wake_type == RWSEM_WAKE_ANY) {
->  			/*
->  			 * Mark writer at the front of the queue for wakeup.
-> --
+> Need an ACK from qcom maintainers.
 > 
 
+Looks like this patch was not applied eventhough the Acks were received.
+Please let me know if I need to resubmit it for next cycle.
 
--- 
 Thanks,
+Mani
 
-David / dhildenb
-
+> Thanks,
+> Lorenzo
+> 
+> > diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
+> > index 1c3d1116bb60..8a4c08d815a5 100644
+> > --- a/drivers/pci/controller/dwc/pcie-qcom.c
+> > +++ b/drivers/pci/controller/dwc/pcie-qcom.c
+> > @@ -1550,6 +1550,7 @@ static int qcom_pcie_probe(struct platform_device *pdev)
+> >  	pci->dev = dev;
+> >  	pci->ops = &dw_pcie_ops;
+> >  	pp = &pci->pp;
+> > +	pp->num_vectors = MAX_MSI_IRQS;
+> >  
+> >  	pcie->pci = pci;
+> >  
+> > -- 
+> > 2.25.1
+> > 
