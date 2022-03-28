@@ -2,118 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09E56C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 14:05:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D571C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 14:05:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243630AbiC1OGx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 10:06:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45398 "EHLO
+        id S243638AbiC1OHN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 10:07:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243612AbiC1OGq (ORCPT
+        with ESMTP id S233675AbiC1OHK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 10:06:46 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E1F21CB13
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 07:05:05 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id j2so26263534ybu.0
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 07:05:05 -0700 (PDT)
+        Mon, 28 Mar 2022 10:07:10 -0400
+Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 339771B780
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 07:05:30 -0700 (PDT)
+Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-2e5e9025c20so149828177b3.7
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 07:05:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=NKTQQt1eAM2QXg4NHEpyfpFhb+tbp65Bmfh3/IyYTI8=;
-        b=ko+VIK6/TNL5u8v1hmd9Qi3maHA0kRvq9dKngfv0JrurPB8BTUwO4X7jHJpqrxUjgF
-         +5PQrIl1jootBkFAFNgAUKNBmll77yKYDarFWo1tpUQ/JpKIJ7lQ7dNCk1dt+JUU7csR
-         UMO72zDIT90FTTMT8a0S4JRM/d4W4XTvf2y04QB+z6ZP0R6a3GZFj3ZFKuP3MKLachjE
-         NnvaGTgQ+ohcWH0lRN28opUr9MoZ2JGlbPVzbptffa0cVdvpG7QNsAeY0z6cstvh/enz
-         v1V4N6TsFRYmUCsF6SwwFLTZc+ALDT9zQrc4F4L/liRppTCMpj2dqYcDvqjNmUtGIG27
-         p2VQ==
+         :cc;
+        bh=r8CZApPDPuUnS9l1TU1XjaohxmYpHjLbbVg8Sjb9/IU=;
+        b=hEnL8NnTd1X3kQVRaVF2r1Gs4O1JWM+UyhPZKFirD+nwh88IvMtueVuTNU0QbfG6gZ
+         0wIXKD82+RchPkepMeaXVlPoMdtNhYBcXGyY7TRZdq9HAz3J5DPYvC1KxFPFN7Ahyc7u
+         LpF1j31cRAtpS91wYjry39PdUYf/ulRs4+gsBvgaHW91RjCcdZff3zCr66BetH293y4k
+         A0AZ3KoCdRPKSjDk/JSf6TN7irFlKHE8b1rv6pqI+mvNRMiUmC5vd4vzUP/BDSlsy1T0
+         2OxcKQg/lWD2wGCksK073dkWhYaIQIWKiaLT3w56a6jHm4IhQJq++RozHipIavK68+hk
+         uvtw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=NKTQQt1eAM2QXg4NHEpyfpFhb+tbp65Bmfh3/IyYTI8=;
-        b=tz3ILCzaEzVB7DzZ6t9m9ROLkdAvtvqmwSSc+DiOsdWSxecQdLyCduMlHcMws9n+2l
-         vz9B8tYvZq2DVibWypqYzAoneJ4thkVoi7Tb9EB326Jok2WVYXcu9kpjQ17+co0MSV7J
-         fUgcWTyHa18tnyD97BvusyosG6T5WQ3DR+w3CF9TzK8yZmcAnTfk2OpXSJ9vo90cAaCI
-         mtrkbVdHNpvztDf/+F5o1i24HOa6tNehFfFhPvOPDVYB34N5ZO8XouckrbTO8mbxiIK8
-         6wnkB7IHTIdrqAOf6LVLXxgCrGVncToS6oK1AeSGKWBudA4NooyqTbp+2vO+2tebD+Ta
-         B7+g==
-X-Gm-Message-State: AOAM530NLEtV075GHuuqg58a/7Y3jgbD+NYO4IA80ddD7K6nF/p6p7Zk
-        +LUGlHgXuQQBBiWhtVtGBn3dmzCdNjpxrE3LkodIIA==
-X-Google-Smtp-Source: ABdhPJx9733RddLzhyh+FUHD1TVLaxlvDzZGX6W0kOnkhSYE3AzWJNrw99CEPh1XUVS/r1iN7q150DGcBIq81rJaWAE=
-X-Received: by 2002:a25:23c2:0:b0:633:b871:ce27 with SMTP id
- j185-20020a2523c2000000b00633b871ce27mr23812254ybj.644.1648476304398; Mon, 28
- Mar 2022 07:05:04 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=r8CZApPDPuUnS9l1TU1XjaohxmYpHjLbbVg8Sjb9/IU=;
+        b=TD6ocPH6SwtJ2Gw/PQPZCUwkGJ65qpS7s0HgvD8dt090vqNs7x1/5PFXZxOJhUHhG7
+         +KzWLHlPBrM2N6Elk6Y51pQ4AYvqFi+4OQiBcMPaCkomIdV03saLW1/i+xuVXgZc4grl
+         I6HkiqB3Wqp0UzRkLNX1xFKWw58NZi4Hx9RYz3Cf5zIuUepMRs5k2GWiOqcNtRECJHfy
+         CEVD/P8/2gbx72DOltwDRZ4APtDLM8pDFOhgofh10etUI2VaDMMrKrdih8F2BeLQMAF5
+         o7s67eC8cVNzGYPcojqsDuELHDReUV88wWLJzq/O28W4YuSuh1LfZTSFbjaGJOLJ9JNx
+         8kZw==
+X-Gm-Message-State: AOAM530qt31aOlfhCtgXeRXvAq7z3ukLga6e7XTzmkvjMoDJ88ng4vED
+        dl75i7nSKsIY0n1kggz5Uwxxk7k/34bYf4edpUOS/A==
+X-Google-Smtp-Source: ABdhPJwP1VmXqDvTCTUI3qjDLG6Wty/aA06/s8fpPL2mZpmlqUDdfe5p9HBHNYyTKVOSuFwAsPxr6ozjZ6hwxp1nwlA=
+X-Received: by 2002:a0d:df05:0:b0:2e5:d2c2:675c with SMTP id
+ i5-20020a0ddf05000000b002e5d2c2675cmr25340860ywe.495.1648476329398; Mon, 28
+ Mar 2022 07:05:29 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220318141441.32329-1-pali@kernel.org>
-In-Reply-To: <20220318141441.32329-1-pali@kernel.org>
+References: <20220317111944.116148-1-yann.gautier@foss.st.com> <20220317111944.116148-2-yann.gautier@foss.st.com>
+In-Reply-To: <20220317111944.116148-2-yann.gautier@foss.st.com>
 From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Mon, 28 Mar 2022 16:04:26 +0200
-Message-ID: <CAPDyKFrQiHoY6wrGRDE6p0zarBiABJJB3DH5d1K+Mw5SrxMmEA@mail.gmail.com>
-Subject: Re: [PATCH] Revert "mmc: sdhci-xenon: fix annoying 1.8V regulator warning"
-To:     =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
-Cc:     Hu Ziji <huziji@marvell.com>,
-        =?UTF-8?B?TWFyZWsgQmVow7pu?= <marek.behun@nic.cz>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Konstantin Porotchkin <kostap@marvell.com>,
-        linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Mon, 28 Mar 2022 16:04:52 +0200
+Message-ID: <CAPDyKFpHUWodb_j8pF-tGV9JRMBEEAgsS7gouJ0rQLsJuxkTdQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2] mmc: mmci: stm32: correctly check all elements of sg list
+To:     Yann Gautier <yann.gautier@foss.st.com>
+Cc:     Christophe Kerello <christophe.kerello@foss.st.com>,
+        Ludovic Barre <ludovic.barre@foss.st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-mmc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 18 Mar 2022 at 15:14, Pali Roh=C3=A1r <pali@kernel.org> wrote:
+On Thu, 17 Mar 2022 at 12:19, Yann Gautier <yann.gautier@foss.st.com> wrote:
 >
-> This reverts commit bb32e1987bc55ce1db400faf47d85891da3c9b9f.
+> Use sg and not data->sg when checking sg list elements. Else only the
+> first element alignment is checked.
+> The last element should be checked the same way, for_each_sg already set
+> sg to sg_next(sg).
 >
-> Commit 1a3ed0dc3594 ("mmc: sdhci-xenon: fix 1.8v regulator stabilization"=
-)
-> contains proper fix for the issue described in commit bb32e1987bc5 ("mmc:
-> sdhci-xenon: fix annoying 1.8V regulator warning").
+> Fixes: 46b723dd867d ("mmc: mmci: add stm32 sdmmc variant")
 >
-> Fixes: 8d876bf472db ("mmc: sdhci-xenon: wait 5ms after set 1.8V signal en=
-able")
-> Cc: stable@vger.kernel.org # 1a3ed0dc3594 ("mmc: sdhci-xenon: fix 1.8v re=
-gulator stabilization")
-> Signed-off-by: Pali Roh=C3=A1r <pali@kernel.org>
+> Signed-off-by: Yann Gautier <yann.gautier@foss.st.com>
 
-Applied for fixes, thanks!
+This one, applied for fixes, thanks!
 
 Kind regards
 Uffe
 
 
 > ---
->  drivers/mmc/host/sdhci-xenon.c | 10 ----------
->  1 file changed, 10 deletions(-)
+>  drivers/mmc/host/mmci_stm32_sdmmc.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 >
-> diff --git a/drivers/mmc/host/sdhci-xenon.c b/drivers/mmc/host/sdhci-xeno=
-n.c
-> index 666cee4c7f7c..08e838400b52 100644
-> --- a/drivers/mmc/host/sdhci-xenon.c
-> +++ b/drivers/mmc/host/sdhci-xenon.c
-> @@ -241,16 +241,6 @@ static void xenon_voltage_switch(struct sdhci_host *=
-host)
->  {
->         /* Wait for 5ms after set 1.8V signal enable bit */
->         usleep_range(5000, 5500);
-> -
-> -       /*
-> -        * For some reason the controller's Host Control2 register report=
-s
-> -        * the bit representing 1.8V signaling as 0 when read after it wa=
-s
-> -        * written as 1. Subsequent read reports 1.
-> -        *
-> -        * Since this may cause some issues, do an empty read of the Host
-> -        * Control2 register here to circumvent this.
-> -        */
-> -       sdhci_readw(host, SDHCI_HOST_CONTROL2);
->  }
+> diff --git a/drivers/mmc/host/mmci_stm32_sdmmc.c b/drivers/mmc/host/mmci_stm32_sdmmc.c
+> index 9c13f2c31365..4566d7fc9055 100644
+> --- a/drivers/mmc/host/mmci_stm32_sdmmc.c
+> +++ b/drivers/mmc/host/mmci_stm32_sdmmc.c
+> @@ -62,8 +62,8 @@ static int sdmmc_idma_validate_data(struct mmci_host *host,
+>          * excepted the last element which has no constraint on idmasize
+>          */
+>         for_each_sg(data->sg, sg, data->sg_len - 1, i) {
+> -               if (!IS_ALIGNED(data->sg->offset, sizeof(u32)) ||
+> -                   !IS_ALIGNED(data->sg->length, SDMMC_IDMA_BURST)) {
+> +               if (!IS_ALIGNED(sg->offset, sizeof(u32)) ||
+> +                   !IS_ALIGNED(sg->length, SDMMC_IDMA_BURST)) {
+>                         dev_err(mmc_dev(host->mmc),
+>                                 "unaligned scatterlist: ofst:%x length:%d\n",
+>                                 data->sg->offset, data->sg->length);
+> @@ -71,7 +71,7 @@ static int sdmmc_idma_validate_data(struct mmci_host *host,
+>                 }
+>         }
 >
->  static unsigned int xenon_get_max_clock(struct sdhci_host *host)
+> -       if (!IS_ALIGNED(data->sg->offset, sizeof(u32))) {
+> +       if (!IS_ALIGNED(sg->offset, sizeof(u32))) {
+>                 dev_err(mmc_dev(host->mmc),
+>                         "unaligned last scatterlist: ofst:%x length:%d\n",
+>                         data->sg->offset, data->sg->length);
 > --
-> 2.20.1
+> 2.25.1
 >
