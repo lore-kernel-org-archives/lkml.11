@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AA88C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:42:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 147CBC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:42:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343500AbiC1ToG (ORCPT
+        id S1343612AbiC1ToJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 15:44:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49482 "EHLO
+        Mon, 28 Mar 2022 15:44:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232454AbiC1Tnu (ORCPT
+        with ESMTP id S245677AbiC1Tnx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 15:43:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED7035C645;
-        Mon, 28 Mar 2022 12:42:07 -0700 (PDT)
+        Mon, 28 Mar 2022 15:43:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93FCF5E169;
+        Mon, 28 Mar 2022 12:42:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5EF66B81204;
-        Mon, 28 Mar 2022 19:42:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EBBDC34110;
-        Mon, 28 Mar 2022 19:42:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 24B0F61291;
+        Mon, 28 Mar 2022 19:42:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2582C3410F;
+        Mon, 28 Mar 2022 19:42:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648496525;
-        bh=oMQSg6CXUfGf7M0XJ7W1ws/Esdcl5q8TOfK7sEO+VD4=;
+        s=k20201202; t=1648496528;
+        bh=cbFoD/cSl0Wwoo5hfS907/U1A0IK3iWQWOOCuvSG7/8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q/yrak+OkwBCdAS2ayDJ0wIRYn31ezRv7byfEUarifsXZZUaPGJumYaueyp71oFra
-         VP0+ZsPts7RfTf3ldkIQJ3Ete8DNgzyhuAeA9umuC8uE8fTBX3WlGyKjvGlnzNPiYV
-         /Gtjl2hbc6dsTbJ80QUWJSasmYKoYcdlRJMaFg7oZUe7CXvV9DWyHKdiGSc0v4qI1l
-         TlwQuQRcNL5meuXIBhcXQi7OJiWrcSgiFCSTSmwlu0Z29yX6xin+yaU5XwajBMG2Do
-         eSyZGuEy4nejwEGV3XiUNOoY+iy4YH90K8uJ/ORiReVlJFCBCMGKPVjJBLZd0x/hu+
-         ZleFUSpcb+Vhg==
+        b=SfqqIB4Ny8ZXGsErkUM6fDyFckH4bbQFbw6fAC9Gi9FZcy08L4KOu5Lgg9gAwiDOq
+         ZN1ASV9qAxAIZsQ/Tu/AOd/4cQnQwQW/simrgx6G0abXD1M8DW+3s56exelwSgfSU/
+         YH0W4xhGaWkvvIzyMzwl8d45eIBr8OmiC+F1pGFhfbpbimu6Nfm+ygM4ewUpRTH88V
+         L5VT8oTQYKx3oHt2Q6oC15Mg1aT1JDb2SvrNbXtqSq+ZFLw+x8pMOaDe3hcz7fPKq8
+         aDXX600Er3AJLTqfXwufTA4s+q14ww3E4WcmZyDnEtwpj3KMNvAUnRLbr87o9eA7PN
+         sTALGoju9DpEQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Valentin Schneider <valentin.schneider@arm.com>,
-        Abhijeet Dharmapurikar <adharmap@quicinc.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>, mingo@redhat.com
-Subject: [PATCH AUTOSEL 5.17 05/21] sched/tracing: Don't re-read p->state when emitting sched_switch event
-Date:   Mon, 28 Mar 2022 15:41:40 -0400
-Message-Id: <20220328194157.1585642-5-sashal@kernel.org>
+Cc:     Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, yuchao0@huawei.com,
+        linux-f2fs-devel@lists.sourceforge.net
+Subject: [PATCH AUTOSEL 5.17 08/21] f2fs: fix to do sanity check on curseg->alloc_type
+Date:   Mon, 28 Mar 2022 15:41:43 -0400
+Message-Id: <20220328194157.1585642-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220328194157.1585642-1-sashal@kernel.org>
 References: <20220328194157.1585642-1-sashal@kernel.org>
@@ -54,244 +52,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Valentin Schneider <valentin.schneider@arm.com>
+From: Chao Yu <chao@kernel.org>
 
-[ Upstream commit fa2c3254d7cfff5f7a916ab928a562d1165f17bb ]
+[ Upstream commit f41ee8b91c00770d718be2ff4852a80017ae9ab3 ]
 
-As of commit
+As Wenqing Liu reported in bugzilla:
 
-  c6e7bd7afaeb ("sched/core: Optimize ttwu() spinning on p->on_cpu")
+https://bugzilla.kernel.org/show_bug.cgi?id=215657
 
-the following sequence becomes possible:
+- Overview
+UBSAN: array-index-out-of-bounds in fs/f2fs/segment.c:3460:2 when mount and operate a corrupted image
 
-		      p->__state = TASK_INTERRUPTIBLE;
-		      __schedule()
-			deactivate_task(p);
-  ttwu()
-    READ !p->on_rq
-    p->__state=TASK_WAKING
-			trace_sched_switch()
-			  __trace_sched_switch_state()
-			    task_state_index()
-			      return 0;
+- Reproduce
+tested on kernel 5.17-rc4, 5.17-rc6
 
-TASK_WAKING isn't in TASK_REPORT, so the task appears as TASK_RUNNING in
-the trace event.
+1. mkdir test_crash
+2. cd test_crash
+3. unzip tmp2.zip
+4. mkdir mnt
+5. ./single_test.sh f2fs 2
 
-Prevent this by pushing the value read from __schedule() down the trace
-event.
+- Kernel dump
+[   46.434454] loop0: detected capacity change from 0 to 131072
+[   46.529839] F2FS-fs (loop0): Mounted with checkpoint version = 7548c2d9
+[   46.738319] ================================================================================
+[   46.738412] UBSAN: array-index-out-of-bounds in fs/f2fs/segment.c:3460:2
+[   46.738475] index 231 is out of range for type 'unsigned int [2]'
+[   46.738539] CPU: 2 PID: 939 Comm: umount Not tainted 5.17.0-rc6 #1
+[   46.738547] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.13.0-1ubuntu1.1 04/01/2014
+[   46.738551] Call Trace:
+[   46.738556]  <TASK>
+[   46.738563]  dump_stack_lvl+0x47/0x5c
+[   46.738581]  ubsan_epilogue+0x5/0x50
+[   46.738592]  __ubsan_handle_out_of_bounds+0x68/0x80
+[   46.738604]  f2fs_allocate_data_block+0xdff/0xe60 [f2fs]
+[   46.738819]  do_write_page+0xef/0x210 [f2fs]
+[   46.738934]  f2fs_do_write_node_page+0x3f/0x80 [f2fs]
+[   46.739038]  __write_node_page+0x2b7/0x920 [f2fs]
+[   46.739162]  f2fs_sync_node_pages+0x943/0xb00 [f2fs]
+[   46.739293]  f2fs_write_checkpoint+0x7bb/0x1030 [f2fs]
+[   46.739405]  kill_f2fs_super+0x125/0x150 [f2fs]
+[   46.739507]  deactivate_locked_super+0x60/0xc0
+[   46.739517]  deactivate_super+0x70/0xb0
+[   46.739524]  cleanup_mnt+0x11a/0x200
+[   46.739532]  __cleanup_mnt+0x16/0x20
+[   46.739538]  task_work_run+0x67/0xa0
+[   46.739547]  exit_to_user_mode_prepare+0x18c/0x1a0
+[   46.739559]  syscall_exit_to_user_mode+0x26/0x40
+[   46.739568]  do_syscall_64+0x46/0xb0
+[   46.739584]  entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-Reported-by: Abhijeet Dharmapurikar <adharmap@quicinc.com>
-Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Link: https://lore.kernel.org/r/20220120162520.570782-2-valentin.schneider@arm.com
+The root cause is we missed to do sanity check on curseg->alloc_type,
+result in out-of-bound accessing on sbi->block_count[] array, fix it.
+
+Signed-off-by: Chao Yu <chao@kernel.org>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/sched.h             | 11 ++++++++---
- include/trace/events/sched.h      | 11 +++++++----
- kernel/sched/core.c               |  4 ++--
- kernel/trace/fgraph.c             |  4 +++-
- kernel/trace/ftrace.c             |  4 +++-
- kernel/trace/trace_events.c       |  8 ++++++--
- kernel/trace/trace_osnoise.c      |  4 +++-
- kernel/trace/trace_sched_switch.c |  1 +
- kernel/trace/trace_sched_wakeup.c |  1 +
- 9 files changed, 34 insertions(+), 14 deletions(-)
+ fs/f2fs/segment.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 75ba8aa60248..a76a178f8eb6 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -1620,10 +1620,10 @@ static inline pid_t task_pgrp_nr(struct task_struct *tsk)
- #define TASK_REPORT_IDLE	(TASK_REPORT + 1)
- #define TASK_REPORT_MAX		(TASK_REPORT_IDLE << 1)
+diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
+index 1dabc8244083..416d802ebbea 100644
+--- a/fs/f2fs/segment.c
++++ b/fs/f2fs/segment.c
+@@ -4789,6 +4789,13 @@ static int sanity_check_curseg(struct f2fs_sb_info *sbi)
  
--static inline unsigned int task_state_index(struct task_struct *tsk)
-+static inline unsigned int __task_state_index(unsigned int tsk_state,
-+					      unsigned int tsk_exit_state)
- {
--	unsigned int tsk_state = READ_ONCE(tsk->__state);
--	unsigned int state = (tsk_state | tsk->exit_state) & TASK_REPORT;
-+	unsigned int state = (tsk_state | tsk_exit_state) & TASK_REPORT;
+ 		sanity_check_seg_type(sbi, curseg->seg_type);
  
- 	BUILD_BUG_ON_NOT_POWER_OF_2(TASK_REPORT_MAX);
- 
-@@ -1633,6 +1633,11 @@ static inline unsigned int task_state_index(struct task_struct *tsk)
- 	return fls(state);
- }
- 
-+static inline unsigned int task_state_index(struct task_struct *tsk)
-+{
-+	return __task_state_index(READ_ONCE(tsk->__state), tsk->exit_state);
-+}
++		if (curseg->alloc_type != LFS && curseg->alloc_type != SSR) {
++			f2fs_err(sbi,
++				 "Current segment has invalid alloc_type:%d",
++				 curseg->alloc_type);
++			return -EFSCORRUPTED;
++		}
 +
- static inline char task_index_to_char(unsigned int state)
- {
- 	static const char state_char[] = "RSDTtXZPI";
-diff --git a/include/trace/events/sched.h b/include/trace/events/sched.h
-index 94640482cfe7..65e786756321 100644
---- a/include/trace/events/sched.h
-+++ b/include/trace/events/sched.h
-@@ -187,7 +187,9 @@ DEFINE_EVENT(sched_wakeup_template, sched_wakeup_new,
- 	     TP_ARGS(p));
+ 		if (f2fs_test_bit(blkofs, se->cur_valid_map))
+ 			goto out;
  
- #ifdef CREATE_TRACE_POINTS
--static inline long __trace_sched_switch_state(bool preempt, struct task_struct *p)
-+static inline long __trace_sched_switch_state(bool preempt,
-+					      unsigned int prev_state,
-+					      struct task_struct *p)
- {
- 	unsigned int state;
- 
-@@ -208,7 +210,7 @@ static inline long __trace_sched_switch_state(bool preempt, struct task_struct *
- 	 * it for left shift operation to get the correct task->state
- 	 * mapping.
- 	 */
--	state = task_state_index(p);
-+	state = __task_state_index(prev_state, p->exit_state);
- 
- 	return state ? (1 << (state - 1)) : state;
- }
-@@ -220,10 +222,11 @@ static inline long __trace_sched_switch_state(bool preempt, struct task_struct *
- TRACE_EVENT(sched_switch,
- 
- 	TP_PROTO(bool preempt,
-+		 unsigned int prev_state,
- 		 struct task_struct *prev,
- 		 struct task_struct *next),
- 
--	TP_ARGS(preempt, prev, next),
-+	TP_ARGS(preempt, prev_state, prev, next),
- 
- 	TP_STRUCT__entry(
- 		__array(	char,	prev_comm,	TASK_COMM_LEN	)
-@@ -239,7 +242,7 @@ TRACE_EVENT(sched_switch,
- 		memcpy(__entry->next_comm, next->comm, TASK_COMM_LEN);
- 		__entry->prev_pid	= prev->pid;
- 		__entry->prev_prio	= prev->prio;
--		__entry->prev_state	= __trace_sched_switch_state(preempt, prev);
-+		__entry->prev_state	= __trace_sched_switch_state(preempt, prev_state, prev);
- 		memcpy(__entry->prev_comm, prev->comm, TASK_COMM_LEN);
- 		__entry->next_pid	= next->pid;
- 		__entry->next_prio	= next->prio;
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 9745613d531c..6f880ff06e0b 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -4834,7 +4834,7 @@ static struct rq *finish_task_switch(struct task_struct *prev)
- {
- 	struct rq *rq = this_rq();
- 	struct mm_struct *mm = rq->prev_mm;
--	long prev_state;
-+	unsigned int prev_state;
- 
- 	/*
- 	 * The previous task will have left us with a preempt_count of 2
-@@ -6298,7 +6298,7 @@ static void __sched notrace __schedule(unsigned int sched_mode)
- 		migrate_disable_switch(rq, prev);
- 		psi_sched_switch(prev, next, !task_on_rq_queued(prev));
- 
--		trace_sched_switch(sched_mode & SM_MASK_PREEMPT, prev, next);
-+		trace_sched_switch(sched_mode & SM_MASK_PREEMPT, prev_state, prev, next);
- 
- 		/* Also unlocks the rq: */
- 		rq = context_switch(rq, prev, next, &rf);
-diff --git a/kernel/trace/fgraph.c b/kernel/trace/fgraph.c
-index 22061d38fc00..19028e072cdb 100644
---- a/kernel/trace/fgraph.c
-+++ b/kernel/trace/fgraph.c
-@@ -415,7 +415,9 @@ static int alloc_retstack_tasklist(struct ftrace_ret_stack **ret_stack_list)
- 
- static void
- ftrace_graph_probe_sched_switch(void *ignore, bool preempt,
--			struct task_struct *prev, struct task_struct *next)
-+				unsigned int prev_state,
-+				struct task_struct *prev,
-+				struct task_struct *next)
- {
- 	unsigned long long timestamp;
- 	int index;
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index 6105b7036482..8b568f57cc24 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -7346,7 +7346,9 @@ ftrace_func_t ftrace_ops_get_func(struct ftrace_ops *ops)
- 
- static void
- ftrace_filter_pid_sched_switch_probe(void *data, bool preempt,
--		    struct task_struct *prev, struct task_struct *next)
-+				     unsigned int prev_state,
-+				     struct task_struct *prev,
-+				     struct task_struct *next)
- {
- 	struct trace_array *tr = data;
- 	struct trace_pid_list *pid_list;
-diff --git a/kernel/trace/trace_events.c b/kernel/trace/trace_events.c
-index 3147614c1812..2a19ea747ff4 100644
---- a/kernel/trace/trace_events.c
-+++ b/kernel/trace/trace_events.c
-@@ -759,7 +759,9 @@ void trace_event_follow_fork(struct trace_array *tr, bool enable)
- 
- static void
- event_filter_pid_sched_switch_probe_pre(void *data, bool preempt,
--		    struct task_struct *prev, struct task_struct *next)
-+					unsigned int prev_state,
-+					struct task_struct *prev,
-+					struct task_struct *next)
- {
- 	struct trace_array *tr = data;
- 	struct trace_pid_list *no_pid_list;
-@@ -783,7 +785,9 @@ event_filter_pid_sched_switch_probe_pre(void *data, bool preempt,
- 
- static void
- event_filter_pid_sched_switch_probe_post(void *data, bool preempt,
--		    struct task_struct *prev, struct task_struct *next)
-+					 unsigned int prev_state,
-+					 struct task_struct *prev,
-+					 struct task_struct *next)
- {
- 	struct trace_array *tr = data;
- 	struct trace_pid_list *no_pid_list;
-diff --git a/kernel/trace/trace_osnoise.c b/kernel/trace/trace_osnoise.c
-index 5e3c62a08fc0..e9ae1f33a7f0 100644
---- a/kernel/trace/trace_osnoise.c
-+++ b/kernel/trace/trace_osnoise.c
-@@ -1167,7 +1167,9 @@ thread_exit(struct osnoise_variables *osn_var, struct task_struct *t)
-  * used to record the beginning and to report the end of a thread noise window.
-  */
- static void
--trace_sched_switch_callback(void *data, bool preempt, struct task_struct *p,
-+trace_sched_switch_callback(void *data, bool preempt,
-+			    unsigned int prev_state,
-+			    struct task_struct *p,
- 			    struct task_struct *n)
- {
- 	struct osnoise_variables *osn_var = this_cpu_osn_var();
-diff --git a/kernel/trace/trace_sched_switch.c b/kernel/trace/trace_sched_switch.c
-index e304196d7c28..993b0ed10d8c 100644
---- a/kernel/trace/trace_sched_switch.c
-+++ b/kernel/trace/trace_sched_switch.c
-@@ -22,6 +22,7 @@ static DEFINE_MUTEX(sched_register_mutex);
- 
- static void
- probe_sched_switch(void *ignore, bool preempt,
-+		   unsigned int prev_state,
- 		   struct task_struct *prev, struct task_struct *next)
- {
- 	int flags;
-diff --git a/kernel/trace/trace_sched_wakeup.c b/kernel/trace/trace_sched_wakeup.c
-index 2402de520eca..46429f9a96fa 100644
---- a/kernel/trace/trace_sched_wakeup.c
-+++ b/kernel/trace/trace_sched_wakeup.c
-@@ -426,6 +426,7 @@ tracing_sched_wakeup_trace(struct trace_array *tr,
- 
- static void notrace
- probe_wakeup_sched_switch(void *ignore, bool preempt,
-+			  unsigned int prev_state,
- 			  struct task_struct *prev, struct task_struct *next)
- {
- 	struct trace_array_cpu *data;
 -- 
 2.34.1
 
