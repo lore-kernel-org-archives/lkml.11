@@ -2,259 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89594C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 01:01:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B90DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 01:03:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237232AbiC1BCr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 21:02:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51042 "EHLO
+        id S235166AbiC1BE5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 21:04:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237195AbiC1BCb (ORCPT
+        with ESMTP id S231214AbiC1BEx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 21:02:31 -0400
-X-Greylist: delayed 621 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 27 Mar 2022 18:00:50 PDT
-Received: from proxmox1.postmarketos.org (proxmox1.postmarketos.org [IPv6:2a01:4f8:a0:821d::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A81AD4ECDB;
-        Sun, 27 Mar 2022 18:00:50 -0700 (PDT)
-Received: from localhost.localdomain (cpc78119-cwma10-2-0-cust590.7-3.cable.virginm.net [81.96.50.79])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by proxmox1.postmarketos.org (Postfix) with ESMTPSA id 0028F140191;
-        Mon, 28 Mar 2022 00:50:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=postmarketos.org;
-        s=donut; t=1648428628;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Bu81eOdyE1PgdWCUxw1KdAZTJHOAI2JnAqP9I0MQSuA=;
-        b=j21xTSslEESvLFxMs+EYDFVsJUlLWimEebt7444X37O+50OyAf8T8kI8m1zHxbZ4ijTdKA
-        XlyhWJKvTeccvsoV10KyCGAiAWty0go0ucRBU+iA9MbScdKAjE854yCEQiyeXwvzzOO1VC
-        2EQzHPHIsVPoEIUnKypWb7uB3cT8z70=
-From:   Caleb Connolly <kc@postmarketos.org>
-To:     Caleb Connolly <kc@postmarketos.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-gpio@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, martijn@brixit.nl,
-        Arnaud Ferraris <arnaud.ferraris@collabora.com>
-Subject: [PATCH 1/4] pinctrl/rockchip: support deferring other gpio params
-Date:   Mon, 28 Mar 2022 01:50:02 +0100
-Message-Id: <20220328005005.72492-2-kc@postmarketos.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220328005005.72492-1-kc@postmarketos.org>
-References: <20220328005005.72492-1-kc@postmarketos.org>
+        Sun, 27 Mar 2022 21:04:53 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11olkn2096.outbound.protection.outlook.com [40.92.19.96])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AF78BE23
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 18:03:12 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IRQHPlCRQVy57qr9OfaPRCqFeY5rCck0LQGSyyDJXS+XiOI27LscIIBeefmk8wXVYfc/j+HGQCZWCbciJExTVQjo9P6p+E3JKuALwCSKgDstD56071ItJ7OvtCrMDNNXvaXgmLCR39fJnuUliCwdS4H5ZiXVAdyMWGLwcPoZX3/U3bpIP2qBIgqODd8OYPeNkuldF5l0Mfp9gIl4NaYdI436D2jN4aq+QZyPJc0bH/hCLliTR1mx6wrCLWd1aNy6gw6vgIDxrsHijT9Nw2dsptlAXnOCEKJDwKh/j9Neo3xKO0vmfoF5SJufCHriA1CG5/WVVPKF0c3inPOhTBdupw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=iCTrfxLfcXagVwsR8LMCGXPFzqm1g2iyi+7Iqer8zKA=;
+ b=Z/pmyAwYGeYB9ZPLSfihPUj1iUTbzTEHX1pqdATUpRTenxfX7V08qO9y6gLduxrvpdPvJZttvqhZ2GEpQTmvAF0KOcj1RTnYQxkrv4SqCR22ktI2soEpfdDQjYeWG4UAYLXGVa71X7J5ha7YIhMTwX4d/tdoHyk4tZS8PqIqMwxZZfjbP2FfooQwm15QLlYG3cWHM6a/kBTH3Jf6MbGDZVRg5BnUG3CBaYT0j3u6ZNlFxE2SEr/9Xb8dzR/vZKyb6+u7GN/NCXCinxJhM6yh79H5rlho/PSAhIR93ZqPWiE5vsXBNlPIuYH66/bx5WBrYkJ+dO2ewdzpDg0n47ketg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+Received: from CY4PR04MB0567.namprd04.prod.outlook.com (2603:10b6:903:b1::20)
+ by DM8PR04MB8071.namprd04.prod.outlook.com (2603:10b6:8:2::12) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5102.19; Mon, 28 Mar 2022 01:03:11 +0000
+Received: from CY4PR04MB0567.namprd04.prod.outlook.com
+ ([fe80::451b:e5ed:c1a3:4070]) by CY4PR04MB0567.namprd04.prod.outlook.com
+ ([fe80::451b:e5ed:c1a3:4070%5]) with mapi id 15.20.5102.022; Mon, 28 Mar 2022
+ 01:03:11 +0000
+From:   Jonathan Bakker <xc-racer2@live.ca>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     patches@opensource.cirrus.com, linux-kernel@vger.kernel.org,
+        Jonathan Bakker <xc-racer2@live.ca>
+Subject: [PATCH v2] regulator: wm8994: Add an off-on delay for WM8994 variant
+Date:   Sun, 27 Mar 2022 18:01:54 -0700
+Message-ID: <CY4PR04MB056771CFB80DC447C30D5A31CB1D9@CY4PR04MB0567.namprd04.prod.outlook.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <YkDpozx+ZmSWwwH0@sirena.org.uk>
+References: <YkDpozx+ZmSWwwH0@sirena.org.uk>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-TMN:  [DFlsxIhcIiBjeNCWRwyhmwb4ftg0F3kGFrkDbtYVBBXIICKviwjDZR5VnyQfmhWB]
+X-ClientProxiedBy: SJ0PR13CA0159.namprd13.prod.outlook.com
+ (2603:10b6:a03:2c7::14) To CY4PR04MB0567.namprd04.prod.outlook.com
+ (2603:10b6:903:b1::20)
+X-Microsoft-Original-Message-ID: <20220328010154.8274-1-xc-racer2@live.ca>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: bc72d361-632a-4bc7-481f-08da1056ba4c
+X-MS-TrafficTypeDiagnostic: DM8PR04MB8071:EE_
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: dR4W3gz6PVigrE3DQSrpa0fP1AxnC8bvwr93p6ZgjsNhVMvBVaMJ63/0Y+8VcHZi9phevJLmkqjuaKVZLzdQNWve+ztIFn2Dw6aC3C8oDH4jHyNi271W5WnBkZAdKO+xsuCzYo7Wa9M709XBAIwqa1NpnPIiex18bHsxnn9I4OZNJSNK+3W00vSS3ODSvBYQ8AJ5pTs5xLYoB5qjfKZ+LXSa84IJBovup3vBtxfBmslCw1Ml+bR+nwJXbyjILj/l0JFWTGaW72WZ3h5L4kLlCd9sCz9VBLjVA95Yek3b2+6KcIkev88tg1fuMHb/Qx5FEAXENB/nBZZ7s87SIcjvaf9SYf2lHqH4avxbrojSI+BDssoUI8h1AUzFkpWkxinpmcHJUkrMNWBhtM6dRdFtM/Go3x5tQfH/7PeWYz123C1xS+vri5gXbDflgvRsM+BfdhEjg+Kxlkd/kd+NTYntOmYtDkgStuPQePrzry10/sisyiuRB4eTwldZb8+EXZD9dTQawnw+im6gmHs1kq4tN4DT+EwSkdEML5iLoPhchILX8j97jSYMRuPG8Tbmk2NJegiQYPakz8WN8ipe2pmEvQkhs8wHpjbHUFShaTmhPcAjpCaHRyTCteFx3da8xPvU
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VJFsJ+1L0O/Tvu+GrwLNJNM/3Ht4erHERCaFptCVqNZ4LQZi00aiKf+ld4b3?=
+ =?us-ascii?Q?zPmkGhrESUeZCTIGqpL7nPM9SNsI+80IXRaJrd/scaKQcjXbq4cwi94rg+Gi?=
+ =?us-ascii?Q?LKzpL1Rfu5yQC9Scpbdv6Ohg8TxewdDivwP8fm1mK72HDSDrzN3K7ooRcuR/?=
+ =?us-ascii?Q?WpkgMRKE0qroe3khZFL0eS5hGda8BH8PEJzw7VMZWwJW8edfD+1qg8MTuX3e?=
+ =?us-ascii?Q?FgqvIUb/vrpqsgAUi8eUwPMf2XsODDFnLV+kM4f/NL6EIs0/4j9oWpEvmMb2?=
+ =?us-ascii?Q?4p4D9sx6SCnRHsmcLo4c7Yar35665W9ndnP0XGqJIWLeUCGtrD6pPBnYnAD7?=
+ =?us-ascii?Q?1LJnFjVLL9oKkeloWD6YCLnQ4Zeq70bSWWH5Jq/RJgv3ND8Ej1LqxXWTRZBj?=
+ =?us-ascii?Q?HQAW7DajURIMMySIsXClq/4jdsl1vSJVyQ7T+HLXRt7zNwg/jyxK2YfAD7Rh?=
+ =?us-ascii?Q?oyblsWW3eXi9LuhNZyNedbfN9BtBY7AtQN6bwI3bfsbTZIBZCTQ7rtdSuF7g?=
+ =?us-ascii?Q?E/ZTojp4uwS1ORNaMZubt0Vb4HWfKHsgjDUj9AI9jWDtEUZvotHQH0fFz1R3?=
+ =?us-ascii?Q?3M9R2PEWxJLTcjuLt8AYspA/1NjxpEOP51wPJ/YoLIYyW8qGF+CmJrp5LkyL?=
+ =?us-ascii?Q?iQyGZGMz7olrPd9bLlI/CF7/yH35FSi5/UCipEK64OSSDVe5zxSLgb5mMGqC?=
+ =?us-ascii?Q?MvWx8F39gWDWzQyACl1e2s23UfX1WRrmAk4PJAWllpU6V2mCUbh4UunEgWkQ?=
+ =?us-ascii?Q?2iIAkogZ9fOIW5pUPGDpYkPHlon6Qh/MhOpEGTEiOomacespThxBQ7BeqVEL?=
+ =?us-ascii?Q?BL7EWAKNODHKaUXE4OHczzXVa34MeJhp6+g8oZUjv96a6PxJDhQF9KRbcmNn?=
+ =?us-ascii?Q?JrbA69zEdojEUg7q0eoyad5imtJN1ROVfihDQS0VoPbYH9qjImMnsOcmUUpa?=
+ =?us-ascii?Q?qrI0XCzbyQiM0f2vlXlV3Ys5M2OYZj7jiySkrB8LcNiMtJdV/hZW0gJ4ZuDH?=
+ =?us-ascii?Q?EIah5Ne/24ukmZ4e/UoAeQV4XxDPKLH8DCeXr/IQyP56wVc0Ip7xaXqTcLXY?=
+ =?us-ascii?Q?KCr5bZULjo3JjLEmmKHEqU/JjpXV3gj3U/HvQQSS4TGysQdamXKrK98mq43h?=
+ =?us-ascii?Q?OfSd1g3Ky0MeZ8rlh5iaWobtVBJuAJXx4wpFfhzAF72Tfvu+xds5e0nYqvNH?=
+ =?us-ascii?Q?QNIeX4G1G/gOkBtAZV+FHfWAhfidpl6hSBXCryO3fo+/6uvgWnug1hn8Gz2n?=
+ =?us-ascii?Q?sFSxrq+qOym7IENxHAsMUOxmuOl/FVvoqwDJER8a3rbAdNxqbEq3d5k06kqQ?=
+ =?us-ascii?Q?SdHJ/nJbENWUnEMcajrI9JH5d2dR9Mv9KENMLIP7rX/l1q+ZnYQv2OZxFL2r?=
+ =?us-ascii?Q?+5g9V/nVeZJAqx9I3yhdpOu85mNO6JOa7OrgfeiuvH33l8UMoPGpWdsmRmxX?=
+ =?us-ascii?Q?Cgt12vlPKiS1OowrDKOlJsJBWpdkbpUiJOxhUVG0Gd3Z9nYU9a6cbtDzOV38?=
+ =?us-ascii?Q?3lzyJoC59cSZzXs=3D?=
+X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-edb50.templateTenant
+X-MS-Exchange-CrossTenant-Network-Message-Id: bc72d361-632a-4bc7-481f-08da1056ba4c
+X-MS-Exchange-CrossTenant-AuthSource: CY4PR04MB0567.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Mar 2022 01:03:11.0451
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR04MB8071
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for deferring other params like PIN_CONFIG_INPUT_ENABLE.
-This will be used to add support for PIN_CONFIG_INPUT_ENABLE to the
-driver.
+As per Table 130 of the wm8994 datasheet at [1], there is an off-on
+delay for LDO1 and LDO2.  In the wm8958 datasheet [2], I could not
+find any reference to it.  I could not find a wm1811 datasheet to
+double-check there, but as no one has complained presumably it works
+without it.
 
-Fixes: e7165b1d ("pinctrl/rockchip: add a queue for deferred pin output settings on probe")
-Fixes: 59dd178e ("gpio/rockchip: fetch deferred output settings on probe")
-Signed-off-by: Caleb Connolly <kc@postmarketos.org>
+This solves the issue on Samsung Aries boards with a wm8994 where
+register writes fail when the device is powered off and back-on
+quickly.
+
+[1] https://statics.cirrus.com/pubs/proDatasheet/WM8994_Rev4.6.pdf
+[2] https://statics.cirrus.com/pubs/proDatasheet/WM8958_v3.5.pdf
+
+Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
 ---
- drivers/gpio/gpio-rockchip.c       | 24 ++++++++-----
- drivers/pinctrl/pinctrl-rockchip.c | 54 ++++++++++++++++--------------
- drivers/pinctrl/pinctrl-rockchip.h |  7 ++--
- 3 files changed, 50 insertions(+), 35 deletions(-)
+Changes in v2
+- Duplicate regulator_desc, keep it const, and select which one
+  instead of modifying the one existing one
+---
+ drivers/regulator/wm8994-regulator.c | 42 ++++++++++++++++++++++++++--
+ 1 file changed, 39 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpio/gpio-rockchip.c b/drivers/gpio/gpio-rockchip.c
-index 099e358d2491..bcf5214e3586 100644
---- a/drivers/gpio/gpio-rockchip.c
-+++ b/drivers/gpio/gpio-rockchip.c
-@@ -19,6 +19,7 @@
- #include <linux/of_address.h>
- #include <linux/of_device.h>
- #include <linux/of_irq.h>
-+#include <linux/pinctrl/pinconf-generic.h>
- #include <linux/regmap.h>
- 
- #include "../pinctrl/core.h"
-@@ -706,7 +707,7 @@ static int rockchip_gpio_probe(struct platform_device *pdev)
- 	struct device_node *pctlnp = of_get_parent(np);
- 	struct pinctrl_dev *pctldev = NULL;
- 	struct rockchip_pin_bank *bank = NULL;
--	struct rockchip_pin_output_deferred *cfg;
-+	struct rockchip_pin_deferred *cfg;
- 	static int gpio;
- 	int id, ret;
- 
-@@ -747,15 +748,22 @@ static int rockchip_gpio_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
--	while (!list_empty(&bank->deferred_output)) {
--		cfg = list_first_entry(&bank->deferred_output,
--				       struct rockchip_pin_output_deferred, head);
-+	while (!list_empty(&bank->deferred_pins)) {
-+		cfg = list_first_entry(&bank->deferred_pins,
-+				       struct rockchip_pin_deferred, head);
- 		list_del(&cfg->head);
- 
--		ret = rockchip_gpio_direction_output(&bank->gpio_chip, cfg->pin, cfg->arg);
--		if (ret)
--			dev_warn(dev, "setting output pin %u to %u failed\n", cfg->pin, cfg->arg);
--
-+		switch (cfg->param) {
-+		case PIN_CONFIG_OUTPUT:
-+			ret = rockchip_gpio_direction_output(&bank->gpio_chip, cfg->pin, cfg->arg);
-+			if (ret)
-+				dev_warn(dev, "setting output pin %u to %u failed\n", cfg->pin,
-+					 cfg->arg);
-+			break;
-+		default:
-+			dev_warn(dev, "unknown deferred config param %d\n", cfg->param);
-+			break;
-+		}
- 		kfree(cfg);
- 	}
- 
-diff --git a/drivers/pinctrl/pinctrl-rockchip.c b/drivers/pinctrl/pinctrl-rockchip.c
-index d8dd8415fa81..d54fc1cdf609 100644
---- a/drivers/pinctrl/pinctrl-rockchip.c
-+++ b/drivers/pinctrl/pinctrl-rockchip.c
-@@ -2095,19 +2095,20 @@ static bool rockchip_pinconf_pull_valid(struct rockchip_pin_ctrl *ctrl,
- 	return false;
- }
- 
--static int rockchip_pinconf_defer_output(struct rockchip_pin_bank *bank,
--					 unsigned int pin, u32 arg)
-+static int rockchip_pinconf_defer_pin(struct rockchip_pin_bank *bank,
-+					 unsigned int pin, u32 param, u32 arg)
- {
--	struct rockchip_pin_output_deferred *cfg;
-+	struct rockchip_pin_deferred *cfg;
- 
- 	cfg = kzalloc(sizeof(*cfg), GFP_KERNEL);
- 	if (!cfg)
- 		return -ENOMEM;
- 
- 	cfg->pin = pin;
-+	cfg->param = param;
- 	cfg->arg = arg;
- 
--	list_add_tail(&cfg->head, &bank->deferred_output);
-+	list_add_tail(&cfg->head, &bank->deferred_pins);
- 
- 	return 0;
- }
-@@ -2128,6 +2129,25 @@ static int rockchip_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
- 		param = pinconf_to_config_param(configs[i]);
- 		arg = pinconf_to_config_argument(configs[i]);
- 
-+		if (param == (PIN_CONFIG_OUTPUT | PIN_CONFIG_INPUT_ENABLE)) {
-+			/*
-+			 * Check for gpio driver not being probed yet.
-+			 * The lock makes sure that either gpio-probe has completed
-+			 * or the gpio driver hasn't probed yet.
-+			 */
-+			mutex_lock(&bank->deferred_lock);
-+			if (!gpio || !gpio->direction_output) {
-+				rc = rockchip_pinconf_defer_pin(bank, pin - bank->pin_base, param,
-+								arg);
-+				mutex_unlock(&bank->deferred_lock);
-+				if (rc)
-+					return rc;
-+
-+				break;
-+			}
-+			mutex_unlock(&bank->deferred_lock);
-+		}
-+
- 		switch (param) {
- 		case PIN_CONFIG_BIAS_DISABLE:
- 			rc =  rockchip_set_pull(bank, pin - bank->pin_base,
-@@ -2156,22 +2176,6 @@ static int rockchip_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
- 			if (rc != RK_FUNC_GPIO)
- 				return -EINVAL;
- 
--			/*
--			 * Check for gpio driver not being probed yet.
--			 * The lock makes sure that either gpio-probe has completed
--			 * or the gpio driver hasn't probed yet.
--			 */
--			mutex_lock(&bank->deferred_lock);
--			if (!gpio || !gpio->direction_output) {
--				rc = rockchip_pinconf_defer_output(bank, pin - bank->pin_base, arg);
--				mutex_unlock(&bank->deferred_lock);
--				if (rc)
--					return rc;
--
--				break;
--			}
--			mutex_unlock(&bank->deferred_lock);
--
- 			rc = gpio->direction_output(gpio, pin - bank->pin_base,
- 						    arg);
- 			if (rc)
-@@ -2485,7 +2489,7 @@ static int rockchip_pinctrl_register(struct platform_device *pdev,
- 			pdesc++;
- 		}
- 
--		INIT_LIST_HEAD(&pin_bank->deferred_output);
-+		INIT_LIST_HEAD(&pin_bank->deferred_pins);
- 		mutex_init(&pin_bank->deferred_lock);
- 	}
- 
-@@ -2746,7 +2750,7 @@ static int rockchip_pinctrl_remove(struct platform_device *pdev)
- {
- 	struct rockchip_pinctrl *info = platform_get_drvdata(pdev);
- 	struct rockchip_pin_bank *bank;
--	struct rockchip_pin_output_deferred *cfg;
-+	struct rockchip_pin_deferred *cfg;
- 	int i;
- 
- 	of_platform_depopulate(&pdev->dev);
-@@ -2755,9 +2759,9 @@ static int rockchip_pinctrl_remove(struct platform_device *pdev)
- 		bank = &info->ctrl->pin_banks[i];
- 
- 		mutex_lock(&bank->deferred_lock);
--		while (!list_empty(&bank->deferred_output)) {
--			cfg = list_first_entry(&bank->deferred_output,
--					       struct rockchip_pin_output_deferred, head);
-+		while (!list_empty(&bank->deferred_pins)) {
-+			cfg = list_first_entry(&bank->deferred_pins,
-+					       struct rockchip_pin_deferred, head);
- 			list_del(&cfg->head);
- 			kfree(cfg);
- 		}
-diff --git a/drivers/pinctrl/pinctrl-rockchip.h b/drivers/pinctrl/pinctrl-rockchip.h
-index 91f10279d084..98a01a616da6 100644
---- a/drivers/pinctrl/pinctrl-rockchip.h
-+++ b/drivers/pinctrl/pinctrl-rockchip.h
-@@ -171,7 +171,7 @@ struct rockchip_pin_bank {
- 	u32				toggle_edge_mode;
- 	u32				recalced_mask;
- 	u32				route_mask;
--	struct list_head		deferred_output;
-+	struct list_head		deferred_pins;
- 	struct mutex			deferred_lock;
+diff --git a/drivers/regulator/wm8994-regulator.c b/drivers/regulator/wm8994-regulator.c
+index cadea0344486..40befdd9dfa9 100644
+--- a/drivers/regulator/wm8994-regulator.c
++++ b/drivers/regulator/wm8994-regulator.c
+@@ -71,6 +71,35 @@ static const struct regulator_ops wm8994_ldo2_ops = {
  };
  
-@@ -247,9 +247,12 @@ struct rockchip_pin_config {
- 	unsigned int		nconfigs;
- };
- 
--struct rockchip_pin_output_deferred {
-+enum pin_config_param;
+ static const struct regulator_desc wm8994_ldo_desc[] = {
++	{
++		.name = "LDO1",
++		.id = 1,
++		.type = REGULATOR_VOLTAGE,
++		.n_voltages = WM8994_LDO1_MAX_SELECTOR + 1,
++		.vsel_reg = WM8994_LDO_1,
++		.vsel_mask = WM8994_LDO1_VSEL_MASK,
++		.ops = &wm8994_ldo1_ops,
++		.min_uV = 2400000,
++		.uV_step = 100000,
++		.enable_time = 3000,
++		.off_on_delay = 36000,
++		.owner = THIS_MODULE,
++	},
++	{
++		.name = "LDO2",
++		.id = 2,
++		.type = REGULATOR_VOLTAGE,
++		.n_voltages = WM8994_LDO2_MAX_SELECTOR + 1,
++		.vsel_reg = WM8994_LDO_2,
++		.vsel_mask = WM8994_LDO2_VSEL_MASK,
++		.ops = &wm8994_ldo2_ops,
++		.enable_time = 3000,
++		.off_on_delay = 36000,
++		.owner = THIS_MODULE,
++	},
++};
 +
-+struct rockchip_pin_deferred {
- 	struct list_head head;
- 	unsigned int pin;
-+	enum pin_config_param param;
- 	u32 arg;
- };
- 
++static const struct regulator_desc wm8958_ldo_desc[] = {
+ 	{
+ 		.name = "LDO1",
+ 		.id = 1,
+@@ -172,9 +201,16 @@ static int wm8994_ldo_probe(struct platform_device *pdev)
+ 	 * regulator core and we need not worry about it on the
+ 	 * error path.
+ 	 */
+-	ldo->regulator = devm_regulator_register(&pdev->dev,
+-						 &wm8994_ldo_desc[id],
+-						 &config);
++	if (ldo->wm8994->type == WM8994) {
++		ldo->regulator = devm_regulator_register(&pdev->dev,
++							 &wm8994_ldo_desc[id],
++							 &config);
++	} else {
++		ldo->regulator = devm_regulator_register(&pdev->dev,
++							 &wm8958_ldo_desc[id],
++							 &config);
++	}
++
+ 	if (IS_ERR(ldo->regulator)) {
+ 		ret = PTR_ERR(ldo->regulator);
+ 		dev_err(wm8994->dev, "Failed to register LDO%d: %d\n",
 -- 
-2.35.1
+2.20.1
 
