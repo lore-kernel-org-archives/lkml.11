@@ -2,169 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6797C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 16:29:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDDEDC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 16:29:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241373AbiC1Qar (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 12:30:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56224 "EHLO
+        id S242181AbiC1QbV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 12:31:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235425AbiC1Qap (ORCPT
+        with ESMTP id S232359AbiC1QbS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 12:30:45 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34F882C649;
-        Mon, 28 Mar 2022 09:29:04 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id C4AA0210DD;
-        Mon, 28 Mar 2022 16:29:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1648484942; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=S32zs0pa2gEQEVNruGhWyIWEZSFgiNpA/SIR+p8B8Io=;
-        b=T7JP2LZxKvC6S64IAXjGt/3rro2IKKDx5Wwwk+5LDKln1XPFyTO9piyvZvPCoOdzIsESP5
-        tRzkCVOh1rdNSdartBydlZX3FeFTbK6c4ZPtVwpDEfVRrBcQkSU0Qt4gTWAHskJkBGWd1N
-        Jhyrh9fK6tLPCbpDovciiEEeN17G6y8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1648484942;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=S32zs0pa2gEQEVNruGhWyIWEZSFgiNpA/SIR+p8B8Io=;
-        b=/9UV5RKOAnikidCt+0qBaYGt+ZUtALDd6HKE5cJm/x6k0se36icsNFK8f1zod5h/Z0tphR
-        8NGwZj6tqW5X+iBQ==
-Received: from kunlun.suse.cz (unknown [10.100.128.76])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 5CCA3A3B89;
-        Mon, 28 Mar 2022 16:29:02 +0000 (UTC)
-Date:   Mon, 28 Mar 2022 18:29:01 +0200
-From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
-To:     Eric Snowberg <eric.snowberg@oracle.com>
-Cc:     joeyli <jlee@suse.com>, Mimi Zohar <zohar@linux.ibm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Philipp Rudo <prudo@redhat.com>, Baoquan He <bhe@redhat.com>,
-        Alexander Egorenkov <egorenar@linux.ibm.com>,
-        AKASHI Takahiro <takahiro.akashi@linaro.org>,
-        James Morse <james.morse@arm.com>,
-        Dave Young <dyoung@redhat.com>,
-        Kairui Song <kasong@redhat.com>,
-        Martin Schwidefsky <schwidefsky@de.ibm.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "stable@kernel.org" <stable@kernel.org>
-Subject: Re: [PATCH 4/4] module, KEYS: Make use of platform keyring for
- signature verification
-Message-ID: <20220328162901.GC163591@kunlun.suse.cz>
-References: <cover.1644953683.git.msuchanek@suse.de>
- <840433bc93a58d6dfc4d96c34c0c3b158a0e669d.1644953683.git.msuchanek@suse.de>
- <3e39412657a4b0839bcf38544d591959e89877b8.camel@linux.ibm.com>
- <20220215204730.GQ3113@kunlun.suse.cz>
- <20220328101557.GA11641@linux-l9pv.suse>
- <6A29007F-F1B7-4CDE-B3ED-7BF700B5ED2B@oracle.com>
+        Mon, 28 Mar 2022 12:31:18 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3592437035;
+        Mon, 28 Mar 2022 09:29:38 -0700 (PDT)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22SA4cUM011168;
+        Mon, 28 Mar 2022 09:29:35 -0700
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3f206p7xrg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 28 Mar 2022 09:29:35 -0700
+Received: from m0045849.ppops.net (m0045849.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 22SGTZAh026691;
+        Mon, 28 Mar 2022 09:29:35 -0700
+Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2100.outbound.protection.outlook.com [104.47.70.100])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3f206p7xre-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 28 Mar 2022 09:29:35 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CrW1rJZ+94welYuqT1j37V0ty/d3taDmUbONGxGayaCQBrxFT+HHp1S9+IH4voxRcDADPs+yuwqFQ3YQp3c4+2tvmSAWDNB3yWkvuaQbKruvIlYqKaQKS+ep6stsjqcLoOl6D2ocudikLHZJ4wHhEuU8XIf84o9fIlOpP1V5Ty6l1yzuDIPsVGyQATNAPtwGZniUnDTpvxQSsDtwy6cY38G5tTGePQUGJ1U6nWJl5VlBPcMBCGx+HWW8IEj19b0SB8zQ48FrxwZztUdOiO2PgHViMpnH/CDI+bKWkG9p+zb7GDkV9zMIFz/QDGupVMug0ZVgL3xccvS3Yb3rukk5Yg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yYRXnxu1fhkyPYj07BPQSdCQVUhwrbVef2mK12GSp3g=;
+ b=c1GzhcMCWiHg4AlK2SeZdTwtSwjqPgl/2TtTty/lW1Eh/tFraMp25F364fvjD3yDN/h6SqFKP4IDXXiYw8uIzw+uQgm+6lKsUvGK7wrIISxDexwLnMvZDC9hB45q7OQy4poiLSMSRyrVUSJF9o83aRvoMLC06fKsdO0eRCmB/+ED6ZhTte3s+Xfv6/bKOHc0DUao2Y6WWHJMS48jedtX8ZDdxl5SVo136xT+oAGq89yyEOruxfwhzLVB89TwZuBgnaX5DfXYolWxPJvUHZZ2WGUnMLtzytFPGBMvq7ZIXmcR28SpRaB8XcwynQf8fH3HVgtJJfH+aLyKjDIH6OW9tQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yYRXnxu1fhkyPYj07BPQSdCQVUhwrbVef2mK12GSp3g=;
+ b=CzL1bsi/MDVBwVBGg4LfGoM9RcFgupOl+DBMZM7aGzONXZVxe4q5UgdN4krgFv/I9uKXO9OWFXxACH8nmOiSUZ0zunwrVSPqNUvCnItQf/epKyEcssvWgPdJqwhBFH0hblPXREgjBmEJwOMGTgKAU5SfSAEPgJMLInG6M6ue0Ag=
+Received: from CO6PR18MB4419.namprd18.prod.outlook.com (2603:10b6:5:35a::11)
+ by DM6PR18MB3292.namprd18.prod.outlook.com (2603:10b6:5:1c2::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.23; Mon, 28 Mar
+ 2022 16:29:32 +0000
+Received: from CO6PR18MB4419.namprd18.prod.outlook.com
+ ([fe80::48eb:b18:5fe4:1b59]) by CO6PR18MB4419.namprd18.prod.outlook.com
+ ([fe80::48eb:b18:5fe4:1b59%7]) with mapi id 15.20.5102.023; Mon, 28 Mar 2022
+ 16:29:32 +0000
+From:   Manish Rangankar <mrangankar@marvell.com>
+To:     Colin Ian King <colin.i.king@gmail.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        GR-QLogic-Storage-Upstream <GR-QLogic-Storage-Upstream@marvell.com>,
+        "James E . J . Bottomley" <jejb@linux.ibm.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>
+CC:     "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [EXT] [PATCH] scsi: bnx2i: Fix spelling mistake "mis-match" ->
+ "mismatch"
+Thread-Topic: [EXT] [PATCH] scsi: bnx2i: Fix spelling mistake "mis-match" ->
+ "mismatch"
+Thread-Index: AQHYO+cjG3Qco0gsc0yT6jPTPdsvuKzVCh1g
+Date:   Mon, 28 Mar 2022 16:29:32 +0000
+Message-ID: <CO6PR18MB4419F24DDD5B381B751725DFD81D9@CO6PR18MB4419.namprd18.prod.outlook.com>
+References: <20220319231445.21696-1-colin.i.king@gmail.com>
+In-Reply-To: <20220319231445.21696-1-colin.i.king@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 15565959-6f89-4af5-27e3-08da10d823ad
+x-ms-traffictypediagnostic: DM6PR18MB3292:EE_
+x-microsoft-antispam-prvs: <DM6PR18MB329217DE0FC4C86DBD89F553D81D9@DM6PR18MB3292.namprd18.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 3o9y3/s0gtiTGkpok7I8QtroAl1DsiR5Kl4chdGMxKBtCEl9B1Sw18mbjJz0ymKlw/ib8rXuNBSTQNh9C2UrfcdL2eCKo9MFgHeQukKRbZcb9AsQycIwfeyRle9X+55bmAhlWl69AU6TcMuGsIZ4/0WXUg4FRyOhnAOBT2tXgozMkxN1TggR4OcudZFqB5DwFhjabAm4En7rb/BRfXv9ooNPK1Q3j80ltRtzewm6RIw9Rm8fAI09bZFfs1QObs2lqy5V1PbsrIL2Jc4z1Ry6c1ld7I0mhmDfZHt03GsyTft2lzIToQgFgU9EhJChLibFBky7ukuUeudqaBEurUcf3C8Sc1Zek3pSDud3kXNIXAO5/OuaE5rGC2CDka5HP7H6mmxCl1P4oXFYRtnMIg9n4Mp77b6ajAHTfoIwIG4iJtlLlHr8davo3dvoFm1bUicGDEbJfEqh0gv0YTXWA4J8xfpVbm2dVgrCJjfHtF6JPVjwtJ2rR8o7xTv79RIW6LHCUvtSVyGsW38RKib0a/68HwbFoBd8n7me15+esL429U+Mr+HVrsMOGRDZoA0nRju63utl5pk2taedk9nQ5n9M435R3l36AjwRkIcjkGbAAgGIknwn8AmswgaGcmYS6b/xtyGIU/tKmZrcnfmETiwNGNnhtLk5V4G7iV6QMNpJH4W7LVB0mPxA8C+2kcTKy5dlPCMxZlwMrekL2dd3OYRCuA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR18MB4419.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(33656002)(55016003)(122000001)(9686003)(26005)(53546011)(186003)(6506007)(110136005)(54906003)(316002)(7696005)(52536014)(8936002)(38070700005)(86362001)(66556008)(76116006)(66476007)(66946007)(83380400001)(64756008)(38100700002)(66446008)(8676002)(4326008)(508600001)(5660300002)(2906002)(71200400001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?ODBJTWkwSC84U0ZaWFIrbG1PcHAvVE5ZeE91OEdpUDRWeitJS3RNNmFGLyto?=
+ =?utf-8?B?RXUwRGFjalZ0YUc2bXhXUklkMWZZcXBnMVJqZWVHejhqaGhoL051RS9DaHpM?=
+ =?utf-8?B?Z2NaRnhRZkhTMEpnVXhWN29VRVpGM3ErUzhKSjZQQ2haZlRjVWZqcWxMM0Ns?=
+ =?utf-8?B?MnpWOEYyRjNMakdaL24rWmFEblgvK1BlVkhPcnZyYzY3MGR6dTBoSmcyaXRp?=
+ =?utf-8?B?bmxudDI3b1RJZTNRSlNZN2d4Q3o5aGRwR0xPc04wdDduam1xMnJKTXJQbGdy?=
+ =?utf-8?B?bVFFZm9VUGVqdTdtRHY4SUVEbUZtQ1VaRjhBQVFLZnQ0UXA1VWNvQ2VtZ1RF?=
+ =?utf-8?B?OE85RzRjN1o2c0NEV1lWUzVNa1dDa3dlYlc3OWlyT0FlcTRjNFVIeWJ5UzE1?=
+ =?utf-8?B?anUwWkZLR1gvWkVES2dLUit3RVJEMnZxcWtKRUFCM0JUZk95dXVlU2p1dFJT?=
+ =?utf-8?B?QS9YSzhpVktVRGlrWGlzMDRCTmxLV3JuT0Njd1ZXMjFOMkpvRDExWS9FQWZL?=
+ =?utf-8?B?UGlBcVkxQzdWZkQrSUg5azVOMHhGU045NnRnV3lMTDhTWkIvNDMyZ0NQWk43?=
+ =?utf-8?B?YURYZldLTGdIWXdVcFlXSFA4amVYeklyaEFKTU1FVHloTlFtMXhSNDZMM0pR?=
+ =?utf-8?B?QzJBNGF0Y1ZPZjNMKzdKQjBJY2NUOEtLdlhXb3llalJ3VnpObjltZk84NGN4?=
+ =?utf-8?B?VW5CeUQ1L0NlRnF1WHJtWXFUNEo1LzM0WkJqckw0SjVIaWZLbFB6cWN1dHlu?=
+ =?utf-8?B?ajVrZ0ZIYUdsa0RPSUNmZlNzd1pBTm1rVlVOSE5HYWYrZ3I2cVdUL29FdkFT?=
+ =?utf-8?B?bzB5NEdWWklmU01La0Z4ZHhVQm51MXE2ZjVyY3l1aytLUmwzOG5YODI2NUF6?=
+ =?utf-8?B?ZzJoWlJKS3Vmak42WEQ3OHZ6RDRQbGdLakUybnMyRmFZZUxIbTB6Zkp0QnMz?=
+ =?utf-8?B?VzhOMVd5OWFEZlhpZFAwbVNkcjdaLzAwQTlKKzBlSDI3V0dYcW5ob3RUSWFl?=
+ =?utf-8?B?TU9QSUErdkhVSDJNMmRSdXZueWZ4U1dKcmhWc2lham4wWWFQL3FoQnBWYnNq?=
+ =?utf-8?B?Y1pjQVJYNFZXV01rU0I1MEo3QThFNk9ZN24vYmNSVGg0QmF1T1JHSzV2VS9R?=
+ =?utf-8?B?cncyVXF4RW5xTTJHVHhYcnFCa3liZGRlRnhKZkdiSDB0YTIwbGNXbnBvSGNH?=
+ =?utf-8?B?Wm9qeDlOc1M5Q0pFUFZHRCtLSGJBUktXdm1oTVF1MGVJTVlWOXFVUll6SnBY?=
+ =?utf-8?B?WW9VRGhoM0xNM3RrTDhtWjBLWk01M29EY2g0Q29SQ3dyNHBMaTNOMi9CTGhH?=
+ =?utf-8?B?RW9SckpVc0FHUVc2LzVENi9kdDQxRXpZdmU3QlJ5MFFWd0pIbTBiSkNNUUdQ?=
+ =?utf-8?B?c3ltUWJJSm5pNkxxaHVMUmFLUGZrWkJEK1dIVHRmMlNQZnA1Z3QyOHRLRHNx?=
+ =?utf-8?B?c3cwUlBZbHZldUlHYmgwSEgwcFlGdldCTXNNc2tVK1RCZU05TGlnT3FSSjdt?=
+ =?utf-8?B?d0VXdGNNRkl1dnZEQ2t5T0w0SjFDSGdSbkx3cHBESVNMeWw2TmZmQS9UZVJ6?=
+ =?utf-8?B?YzNTZ3Yra2w5cExkWGlBSElCOENxLzh2RE84dk5LeHVENFQzblRhWnZJTDNq?=
+ =?utf-8?B?ME5kbWVoWWRxelRKaktpWE5yaEJDbmlCVmFOc0dteVM5Q1dXTzArcjAvMlNB?=
+ =?utf-8?B?cmg0aHJzMzBoNU4zditPeFFIMUJKQVZPK3pVWEdzU1RMQXZlcTVCVTBWZlU3?=
+ =?utf-8?B?cGNZMHlGWE5yQTFwMVZocUlRR0FaNWVYbGcrTENWbmRyYXpNOHpFbTc4S2dS?=
+ =?utf-8?B?MGZxY2tpSVN5MmZ6RW1MSXZtOTVraysrc3J2enVicHVYQ3Y0aWdUc21DWTRq?=
+ =?utf-8?B?TkFsYUZvbVE4a2crNlNralh5ckFNL29VYjZLYktzQ2ZUSVdVeVN0NzVGWU5y?=
+ =?utf-8?B?N1RNU1dPaTR2R3RtRERuOVF2bmw0ZTNNeFg4QWhyaThZTGd6ZlZ2MnJoWFhy?=
+ =?utf-8?B?aExKZjI0YXJFVFZJcThIb2RKRHlvcGszbkxrTmpZYUc0ZE1sb2Y5b3FQTzFD?=
+ =?utf-8?B?ZFdCZ3BuUGcwL1Axa2NQOE45RGxkUnVZQVF0bXZlbTRHcE1DWGVtdHJFUWlU?=
+ =?utf-8?B?QmUzU1FwMkJUa3hGa093YzRBdkpSRkJaTzEwNHFyUTBvc1E2MEQzQzkzRXZo?=
+ =?utf-8?B?TUV6M1ZSN09VcXhTakdLREREMmk1QkxaUjlpMjhhZHA4VVlXSnhVa29WNmlL?=
+ =?utf-8?B?Y1hvNktpYys5V3ZDMEVFOXdSQ2o1MUtuMjdVUTYxWkFZVWlTYW5wYnRxWk9y?=
+ =?utf-8?B?NDZuLzFuOW5BZkU5bTNwU3RPMnNOY3cwZ1VxcjhnMFV2NW0ya0NXQT09?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <6A29007F-F1B7-4CDE-B3ED-7BF700B5ED2B@oracle.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-OriginatorOrg: marvell.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO6PR18MB4419.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 15565959-6f89-4af5-27e3-08da10d823ad
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Mar 2022 16:29:32.2627
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: v8rK71qMHwVsRhG7fVjgq026fXaCrY9weKcElWMiNeFL3bdjACKPrxARaaypjmcutYJwkcsTcylq/9clBL3ASA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR18MB3292
+X-Proofpoint-GUID: ZG3jh-QDR9uyRy1pJAa15hZhITOHrp0R
+X-Proofpoint-ORIG-GUID: Ljv6hNF2DNoVl0Knu5y79DQrCyWJ9zjR
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-28_07,2022-03-28_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
-
-On Mon, Mar 28, 2022 at 02:44:30PM +0000, Eric Snowberg wrote:
-> 
-> 
-> > On Mar 28, 2022, at 4:15 AM, joeyli <jlee@suse.com> wrote:
-> > 
-> > Hi Mimi,
-> > 
-> > Sorry for bother you for this old topic.
-> > 
-> > On Tue, Feb 15, 2022 at 09:47:30PM +0100, Michal Suchánek wrote:
-> >> Hello,
-> >> 
-> >> On Tue, Feb 15, 2022 at 03:08:18PM -0500, Mimi Zohar wrote:
-> >>> [Cc'ing Eric Snowberg]
-> >>> 
-> >>> Hi Michal,
-> >>> 
-> >>> On Tue, 2022-02-15 at 20:39 +0100, Michal Suchanek wrote:
-> >>>> Commit 278311e417be ("kexec, KEYS: Make use of platform keyring for signature verify")
-> >>>> adds support for use of platform keyring in kexec verification but
-> >>>> support for modules is missing.
-> >>>> 
-> >>>> Add support for verification of modules with keys from platform keyring
-> >>>> as well.
-> >>> 
-> >>> Permission for loading the pre-OS keys onto the "platform" keyring and
-> >>> using them is limited to verifying the kexec kernel image, nothing
-> >>> else.
-> >> 
-> >> Why is the platform keyring limited to kexec, and nothing else?
-> >> 
-> >> It should either be used for everything or for nothing. You have the
-> >> option to compile it in and then it should be used, and the option to
-> >> not compile it in and then it cannot be used.
-> >> 
-> >> There are two basic use cases:
-> >> 
-> >> (1) there is a vendor key which is very hard to use so you sign
-> >> something small and simple like shim with the vendor key, and sign your
-> >> kernel and modules with your own key that's typically enrolled with shim
-> >> MOK, and built into the kernel.
-> >> 
-> >> (2) you import your key into the firmware, and possibly disable the
-> >> vendor key. You can load the kernel directly without shim, and then your
-> >> signing key is typically in the platform keyring and built into the
-> >> kernel.
-> >> 
-> > 
-> > In the second use case, if user can enroll their own key to db either before
-> > or after hardware shipping. And they don't need shim because they removed
-> > Microsoft or OEM/ODM keys.  Why kernel can not provide a Kconfig option to
-> > them for trusting db keys for verifying kernel module, or for IMA (using CA
-> > in db)?
-> > 
-> > In the above use case for distro, partner doesn't need to re-compiler distro
-> > kernel. They just need to re-sign distro kernel and modules. Which means
-> > that the partner trusted distro. Then the partner's key in db can be used to
-> > verify kernel image and also kernel module without shim involve.
-> 
-> If shim is used, the new machine keyring can be used to solve this problem. 
-> This pull request [1] allows additional certificates to be loaded into the MOKList 
-> without going through MokManager.  Have the end-user/partner create a 
-> shim_certificate.efi containing their key. Then sign it with their DB key.  When 
-> shim boots, it will validate shim_certificate.efi against the DB key and load the 
-> key contained within it into the MOKList.  Now both module and kernel validation 
-> can be performed with this key, since it is contained within the machine keyring.
-
-And why would you go through that when your platform keyring already has
-the key and you don't need shim for anything? This sounds a lot like "I
-have a hammer and all these look like nails" thinking.
-
-Sure, there is use for the machine keyring in the case you need it and
-have it regardless of the kernel making any use of it for anything.
-Artifically adding it because the kernel fails to work with the platform
-keyring sounds backwards, though.
-
-Thanks
-
-Michal
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogQ29saW4gSWFuIEtpbmcg
+PGNvbGluLmkua2luZ0BnbWFpbC5jb20+DQo+IFNlbnQ6IFN1bmRheSwgTWFyY2ggMjAsIDIwMjIg
+NDo0NSBBTQ0KPiBUbzogTmlsZXNoIEphdmFsaSA8bmphdmFsaUBtYXJ2ZWxsLmNvbT47IE1hbmlz
+aCBSYW5nYW5rYXINCj4gPG1yYW5nYW5rYXJAbWFydmVsbC5jb20+OyBHUi1RTG9naWMtU3RvcmFn
+ZS1VcHN0cmVhbSA8R1ItUUxvZ2ljLQ0KPiBTdG9yYWdlLVVwc3RyZWFtQG1hcnZlbGwuY29tPjsg
+SmFtZXMgRSAuIEogLiBCb3R0b21sZXkNCj4gPGplamJAbGludXguaWJtLmNvbT47IE1hcnRpbiBL
+IC4gUGV0ZXJzZW4gPG1hcnRpbi5wZXRlcnNlbkBvcmFjbGUuY29tPjsNCj4gbGludXgtc2NzaUB2
+Z2VyLmtlcm5lbC5vcmcNCj4gQ2M6IGtlcm5lbC1qYW5pdG9yc0B2Z2VyLmtlcm5lbC5vcmc7IGxp
+bnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNCj4gU3ViamVjdDogW0VYVF0gW1BBVENIXSBzY3Np
+OiBibngyaTogRml4IHNwZWxsaW5nIG1pc3Rha2UgIm1pcy1tYXRjaCIgLT4NCj4gIm1pc21hdGNo
+Ig0KPiANCj4gRXh0ZXJuYWwgRW1haWwNCj4gDQo+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCj4gVGhlcmUgYXJl
+IGEgZmV3IHNwZWxsaW5nIG1pc3Rha2VzIGluIHNvbWUgZXJyb3IgbWVzc2FnZXMuIEZpeCB0aGVt
+Lg0KPiANCj4gU2lnbmVkLW9mZi1ieTogQ29saW4gSWFuIEtpbmcgPGNvbGluLmkua2luZ0BnbWFp
+bC5jb20+DQo+IC0tLQ0KPiAgZHJpdmVycy9zY3NpL2JueDJpL2JueDJpX2h3aS5jIHwgNCArKy0t
+DQo+ICAxIGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQ0KPiAN
+Cj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvc2NzaS9ibngyaS9ibngyaV9od2kuYyBiL2RyaXZlcnMv
+c2NzaS9ibngyaS9ibngyaV9od2kuYyBpbmRleA0KPiA1NTIxNDY5Y2U2NzguLjdmZTdmNTNhNDFj
+MCAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9zY3NpL2JueDJpL2JueDJpX2h3aS5jDQo+ICsrKyBi
+L2RyaXZlcnMvc2NzaS9ibngyaS9ibngyaV9od2kuYw0KPiBAQCAtMjM5OCw3ICsyMzk4LDcgQEAg
+c3RhdGljIHZvaWQgYm54MmlfcHJvY2Vzc19jb25uX2Rlc3Ryb3lfY21wbChzdHJ1Y3QNCj4gYm54
+MmlfaGJhICpoYmEsDQo+ICAJfQ0KPiANCj4gIAlpZiAoaGJhICE9IGVwLT5oYmEpIHsNCj4gLQkJ
+cHJpbnRrKEtFUk5fQUxFUlQgImNvbm4gZGVzdHJveS0gZXJyb3IgaGJhIG1pcy1tYXRjaFxuIik7
+DQo+ICsJCXByaW50ayhLRVJOX0FMRVJUICJjb25uIGRlc3Ryb3ktIGVycm9yIGhiYSBtaXNtYXRj
+aFxuIik7DQo+ICAJCXJldHVybjsNCj4gIAl9DQo+IA0KPiBAQCAtMjQzMiw3ICsyNDMyLDcgQEAg
+c3RhdGljIHZvaWQgYm54MmlfcHJvY2Vzc19vZmxkX2NtcGwoc3RydWN0IGJueDJpX2hiYQ0KPiAq
+aGJhLA0KPiAgCX0NCj4gDQo+ICAJaWYgKGhiYSAhPSBlcC0+aGJhKSB7DQo+IC0JCXByaW50ayhL
+RVJOX0FMRVJUICJvZmxkX2NtcGw6IGVycm9yIGhiYSBtaXMtbWF0Y2hcbiIpOw0KPiArCQlwcmlu
+dGsoS0VSTl9BTEVSVCAib2ZsZF9jbXBsOiBlcnJvciBoYmEgbWlzbWF0Y2hcbiIpOw0KPiAgCQly
+ZXR1cm47DQo+ICAJfQ0KPiANCj4gLS0NCj4gMi4zNS4xDQoNClRoYW5rcywNCkFja2VkLWJ5OiBN
+YW5pc2ggUmFuZ2Fua2FyIDxtcmFuZ2Fua2FyQG1hcnZlbGwuY29tPg0K
