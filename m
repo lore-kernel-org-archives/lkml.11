@@ -2,72 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50DE7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 20:29:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F31D8C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 20:29:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344891AbiC1Uav (ORCPT
+        id S1344880AbiC1UbI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 16:30:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34652 "EHLO
+        Mon, 28 Mar 2022 16:31:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345789AbiC1UaZ (ORCPT
+        with ESMTP id S1344535AbiC1UbD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 16:30:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91D9CDFD5
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 13:28:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 72648613F5
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 20:28:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id DBB93C34100;
-        Mon, 28 Mar 2022 20:28:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648499323;
-        bh=hDzmwoBWJcvalozbJMYdgMflfBRp1M4sn/NRKZZi5R0=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=VES4+2A2G+gsCyvIn36bCmoqlN4ihnanxhue2saW+9OotPbifL8FRweh0rlHvGC5Z
-         9ocI7m/JzKv9qsORr3IKMQWpbAm76hDyt4t5f5ik/0RQmGBSYEB0j3mYeF2x4jYins
-         iQT5iADU1Qu0mNOVD0UhIJcQSIQdoKz3nX/bcuFwHHnb4m4aOKKOgWnmsoiWbIVzdD
-         OYCyIdmbqtcj1p1lNcdledAZoI23S+133UY5rokIJ5ymF1qHh0uO2Y9T7RVrFyUec0
-         nXwLJ5aOc1TqAcnxXj1rbNz/v4T3hkFmzDOFJrf+hM9wVBO5/+RxtT7lLANWJhbqp0
-         I+sRZ/dGTJxGg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C98D5E7BB0B;
-        Mon, 28 Mar 2022 20:28:43 +0000 (UTC)
-Subject: Re: [GIT PULL] Driver core changes for 5.18-rc1
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YkG6qJsnjjzF0iFD@kroah.com>
-References: <YkG6qJsnjjzF0iFD@kroah.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YkG6qJsnjjzF0iFD@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git tags/driver-core-5.18-rc1
-X-PR-Tracked-Commit-Id: 88d99e870143199ba5bf42701dca06ce1d1388f0
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 266d17a8c0d857a579813ad185cd1640b0d6ccac
-Message-Id: <164849932382.7875.3535925229119898659.pr-tracker-bot@kernel.org>
-Date:   Mon, 28 Mar 2022 20:28:43 +0000
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Saravana Kannan <saravanak@google.com>
+        Mon, 28 Mar 2022 16:31:03 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5589866ADA
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 13:29:10 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id h23-20020a17090a051700b001c9c1dd3acbso565804pjh.3
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 13:29:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Y3E8E72DVNg1bqj4CzNhc0bBStIOE5d2ucw0gPcv3Rc=;
+        b=WipcGv9hde/oJ3ORSV4+OdyvEgRrWVgjCbig0MhgOYm6vGxPzSpYYgLR2gc6cWbpd8
+         hRiY7eH3+mwCTIvxv5bJZls6Zx7WgEIdzpihAVIUwftuZWFEVy0xUggZNUdvXP8Q6bQ9
+         ZbPIJZW+dV9kaBOsAnGv3sy33QQRD6LHpVAhCPDW5ywzfUc+qLUUSGeFR3D8xREN0Pb8
+         AA9vtlt1q2WV1GHTeDhKxjm85Xm6ukv0vFCQxqP3ggYo72M4Pufg1DJeVZmQ5c84fFCe
+         RyqK2XMVw06HQH20fW5f6bo5LVFCR5dUZ6G+wdHzcctz0sOsOEDu9VzHwWMikWl+Qs9f
+         y0LA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Y3E8E72DVNg1bqj4CzNhc0bBStIOE5d2ucw0gPcv3Rc=;
+        b=HiwkCS0a9Zj4jf/3wD0D4WK+qME/InISQlEzJlEg+XgEXDmKv4lEPGGwOw9XnG/ymM
+         4rCIeXu1BHsDDeGC/p808CtO2fDyHHlrTK7rX0II+oO8CSBbHKYoifrNeTZhi17hDyzb
+         Hvaowmc+d2w2rO6h1U7SXVd/WI+9u/9rDOcolTyjWCxFs3eSEPn38jqdxjhMbtiP6jPG
+         uN0MWNzpwiWn2WHnqzbF1Fqv4WTqY3Rui9zOwcWEFkjMn2Mcc8ftxahznmQ9gqDND9nN
+         2W45Fa8x22rgBW7N73QN0Fcnl6x3SR+3GPAdHxyf2vbJK/PByj9ZDingX73mFPvyWN7G
+         /yXQ==
+X-Gm-Message-State: AOAM530huYFZ7staa1f8RoAoJSIYNn2BjFU6nU6/G5jMZPF1N1eyhlO4
+        +5RPOE6E272DW0TlpNKtEnUemg==
+X-Google-Smtp-Source: ABdhPJxkp0YfTQcf/frk44PWH7Oi5+shmKIumFaBIy+gRO2pJecS3YJisLpzFwAmLcmIbqeVdmIQiA==
+X-Received: by 2002:a17:90b:4f86:b0:1c6:b3eb:99a3 with SMTP id qe6-20020a17090b4f8600b001c6b3eb99a3mr926796pjb.66.1648499349457;
+        Mon, 28 Mar 2022 13:29:09 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id x29-20020aa79a5d000000b004f0ef1822d3sm16868200pfj.128.2022.03.28.13.29.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 13:29:08 -0700 (PDT)
+Date:   Mon, 28 Mar 2022 20:29:05 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Vipin Sharma <vipinsh@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        David Matlack <dmatlack@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm list <kvm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] KVM: x86/mmu: Speed up slot_rmap_walk_next for sparsely
+ populated rmaps
+Message-ID: <YkIakXAxkyJiO7iF@google.com>
+References: <20220325233125.413634-1-vipinsh@google.com>
+ <CALzav=e6W2VSp=btmqTpQJ=3bH+Bw3D8sLApkTTvMMKAnw_LAw@mail.gmail.com>
+ <CAHVum0dOfJ5HuscNq0tA6BnUJK34v4CPCTkD4piHc7FObZOsng@mail.gmail.com>
+ <b754fa0a-4f9e-1ea5-6c77-f2410b7f8456@redhat.com>
+ <CAHVum0cynwp5Phx=v2LV33Hsa8viq0jpVLh0Q_ZtpUZVy6Lm9w@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHVum0cynwp5Phx=v2LV33Hsa8viq0jpVLh0Q_ZtpUZVy6Lm9w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 28 Mar 2022 15:39:52 +0200:
+On Mon, Mar 28, 2022, Vipin Sharma wrote:
+> Thank you David and Paolo, for checking this patch carefully. With
+> hindsight, I should have explicitly mentioned adding "noinline" in my
+> patch email.
+> 
+> On Sun, Mar 27, 2022 at 3:41 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
+> >
+> > On 3/26/22 01:31, Vipin Sharma wrote:
+> > >>> -static void slot_rmap_walk_next(struct slot_rmap_walk_iterator *iterator)
+> > >>> +static noinline void
+> > >>
+> > >> What is the reason to add noinline?
+> > >
+> > > My understanding is that since this method is called from
+> > > __always_inline methods, noinline will avoid gcc inlining the
+> > > slot_rmap_walk_next in those functions and generate smaller code.
+> > >
+> >
+> > Iterators are written in such a way that it's way more beneficial to
+> > inline them.  After inlining, compilers replace the aggregates (in this
+> > case, struct slot_rmap_walk_iterator) with one variable per field and
+> > that in turn enables a lot of optimizations, so the iterators should
+> > actually be always_inline if anything.
+> >
+> > For the same reason I'd guess the effect on the generated code should be
+> > small (next time please include the output of "size mmu.o"), but should
+> > still be there.  I'll do a quick check of the generated code and apply
+> > the patch.
+> 
+> Yeah, I should have added the "size mmu.o" output. Here is what I have found:
+> 
+> size arch/x86/kvm/mmu/mmu.o
+> 
+> Without noinline:
+>               text      data     bss       dec        hex filename
+>           89938   15793      72  105803   19d4b arch/x86/kvm/mmu/mmu.o
+> 
+> With noinline:
+>               text      data     bss        dec       hex filename
+>           90058   15793      72  105923   19dc3 arch/x86/kvm/mmu/mmu.o
+> 
+> With noinline, increase in size = 120
+> 
+> Curiously, I also checked file size with "ls -l" command
+> File size:
+>         Without noinline: 1394272 bytes
+>         With noinline: 1381216 bytes
+> 
+> With noinline, decrease in size = 13056 bytes
+> 
+> I also disassembled mmu.o via "objdump -d" and found following
+> Total lines in the generated assembly:
+>         Without noinline: 23438
+>         With noinline: 23393
+> 
+> With noinline, decrease in assembly code = 45
+> 
+> I can see in assembly code that there are multiple "call" operations
+> in the "with noinline" object file, which is expected and has less
+> lines of code compared to "without noinline". I am not sure why the
+> size command is showing an increase in text segment for "with
+> noinline" and what to infer with all of this data.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git tags/driver-core-5.18-rc1
+The most common takeaway from these types of exercises is that trying to be smarter
+than the compiler is usually a fools errand.  Smaller code footprint doesn't
+necessarily equate to better runtime performance.  And conversely, inlining may
+not always be a win, which is why tagging static helpers (not in headers) with
+"inline" is generally discouraged.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/266d17a8c0d857a579813ad185cd1640b0d6ccac
-
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+IMO, unless there's an explicit side effect we want (or want to avoid), we should
+never use "noinline".  E.g. the VMX <insn>_error() handlers use noinline so that
+KVM only WARNs once per failure of instruction type, and fxregs_fixup() uses it
+to keep the stack size manageable.
