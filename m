@@ -2,122 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFEE0C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 08:14:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3C15C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 08:15:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239196AbiC1IQc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 04:16:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38880 "EHLO
+        id S239214AbiC1IQw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 04:16:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239182AbiC1IQ0 (ORCPT
+        with ESMTP id S239205AbiC1IQu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 04:16:26 -0400
-Received: from mail-vs1-xe34.google.com (mail-vs1-xe34.google.com [IPv6:2607:f8b0:4864:20::e34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2909212084;
-        Mon, 28 Mar 2022 01:14:46 -0700 (PDT)
-Received: by mail-vs1-xe34.google.com with SMTP id i186so14863604vsc.9;
-        Mon, 28 Mar 2022 01:14:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ckeifvMgypYIXe2YgiWpWX4ERXd6JiyVbgZjkElUqkw=;
-        b=bb7BiXkUvettQVFG2b2eBr0W/iV4goyxNm4XVLJaGy3HZvPh3RVrvIv2tWXYjmUMlh
-         ZEvrUU9MpAmROK1hzjTHYtCU3uamFwmnMTfBh4Hoc8whz5qulNvW22QiiBV5aEVGE9T0
-         2vQR/l09RmcwQnXTP0ipRtP3ovapuGXq8Nl5vn8KrPGTot22hASsXHcww6FEQeM4jZI8
-         mkO5yAHAjNK0Gr6KNqLH0q6zQcZsnVFDSe3Wsv+CsIR3U6dNHs8yRlK/ZmGz5rwzCjBC
-         UIJeWgmJI3dghIi9npT36UR17kA88DimcfHWkPsHOTF7fnb0qnozz+M+HX3yY30OHukQ
-         OYdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ckeifvMgypYIXe2YgiWpWX4ERXd6JiyVbgZjkElUqkw=;
-        b=HzTnnssGnAmqsGDjauy/34Rlu9t6Av4mfBlunvoSRKVPzmeskM+0csuS0X3wyX0d94
-         +0S1LhWL2fVMQNM4SXZx2XOl6ww/YY7Y9661Orn5EVmKoOMSPW4z9WYDx3FmJKVJZDRk
-         USBbqEklFinGb6lpwnh/LbwJHHC4NpO1zi3G6rfejRj79TByDeke08VbZFmDoDCKf2m4
-         ZPO5hpyq3kHK6Y1F9auIn8gDtoE3SoXRgQWPjN3lu333MxlpajZXUQbnDPG8shEqZdZF
-         veg80Yp4e/VM/r9ZdCSPNu3rAplDSZULozFQ+5uNHMX7eY2LWl1zQlKYk33t1mGw2ZoA
-         0rew==
-X-Gm-Message-State: AOAM5315Waed4rNJmQvA5XKSXK+EgMqevZdcrudPDvgNH6CbnUApdVKg
-        PBr58XlyECVbKFb1e6qxaRvppN0soJgU465Zbdo=
-X-Google-Smtp-Source: ABdhPJxFQoIeG8FrbG0yH0KD2Y75ZKlCMCBW5Kpuo5y1CF1Sci0KcpcoTnZkk11mu+xEVVK3UFdPxQXu7KlppP2mTmU=
-X-Received: by 2002:a67:fe12:0:b0:31b:9356:40fe with SMTP id
- l18-20020a67fe12000000b0031b935640femr8815628vsr.1.1648455285174; Mon, 28 Mar
- 2022 01:14:45 -0700 (PDT)
+        Mon, 28 Mar 2022 04:16:50 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA5281275D;
+        Mon, 28 Mar 2022 01:15:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648455310; x=1679991310;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=+ly0OGq6gM5noH+O4k+peHcygWjXe0wzX2kxggo7hiU=;
+  b=dUjn4iX2mLQQC+MSHoL1yNLV5Y3IWk1vaFSnm1eiSqSqDWf8t8q2ZLGk
+   oTP/IMegaP1HNcNgh8bkpSdM0qbx6kyqIWypLxMMZ7Au0pZ67HsRy6Afz
+   lPrABQSbTEHmV/kooRHG5NmAPm9/0o+oVogBFZ+rxRP1aZbnxewQ7S60C
+   tSpp8bcyNaFrOIGYadIlD4RB0TD0kFUGN7Krzd00yCzjY+CmeWO3Iq/VL
+   L8TDy2sIxF1yUFjqoLNI0yCnQLII08eqirDL4oAW/N5HDXZ8h8NV+6C/V
+   7HuG+cPAx/PW30iQsf1l0sH6yOCtdlFjCVUlN4zH2uKWteWCl51UmZUAc
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10299"; a="241095115"
+X-IronPort-AV: E=Sophos;i="5.90,216,1643702400"; 
+   d="scan'208";a="241095115"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 01:15:09 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,216,1643702400"; 
+   d="scan'208";a="694285824"
+Received: from kuha.fi.intel.com ([10.237.72.185])
+  by fmsmga001.fm.intel.com with SMTP; 28 Mar 2022 01:15:05 -0700
+Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Mon, 28 Mar 2022 11:15:05 +0300
+Date:   Mon, 28 Mar 2022 11:15:05 +0300
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Felipe Balbi <balbi@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-acpi@vger.kernel.org
+Subject: Re: [PATCHv2 1/3] software node: Power management operations for
+ software nodes
+Message-ID: <YkFuiarj9z9YUgOs@kuha.fi.intel.com>
+References: <20201029105941.63410-1-heikki.krogerus@linux.intel.com>
+ <20201029105941.63410-2-heikki.krogerus@linux.intel.com>
+ <20220325164255.GA12710@wunner.de>
 MIME-Version: 1.0
-References: <20220327060120.4316-1-xiam0nd.tong@gmail.com>
-In-Reply-To: <20220327060120.4316-1-xiam0nd.tong@gmail.com>
-From:   Vaibhav Agarwal <vaibhav.sr@gmail.com>
-Date:   Mon, 28 Mar 2022 13:44:09 +0530
-Message-ID: <CAAs364-MaXu5JevibWzV1GD1VN+XQPGT1uBUke3-9MfUq7iWQQ@mail.gmail.com>
-Subject: Re: [PATCH] greybus: audio_codec: fix three missing initializers for data
-To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Cc:     Mark Greer <mgreer@animalcreek.com>,
-        Johan Hovold <johan@kernel.org>, Alex Elder <elder@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "moderated list:GREYBUS SUBSYSTEM" <greybus-dev@lists.linaro.org>,
-        linux-staging@lists.linux.dev,
-        open list <linux-kernel@vger.kernel.org>,
-        stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220325164255.GA12710@wunner.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Mar 27, 2022 at 11:31 AM Xiaomeng Tong <xiam0nd.tong@gmail.com> wrote:
->
-> These three bugs are here:
->         struct gbaudio_data_connection *data;
->
-> If the list '&codec->module_list' is empty then the 'data' will
-> keep unchanged. However, the 'data' is not initialized and filled
-> with trash value. As a result, if the value is not NULL, the check
-> 'if (!data) {' will always be false and never exit expectly.
->
-> To fix these bug, just initialize 'data' with NULL.
->
-> Cc: stable@vger.kernel.org
-> Fixes: 6dd67645f22cf ("greybus: audio: Use single codec driver registration")
-> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-> ---
->  drivers/staging/greybus/audio_codec.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/staging/greybus/audio_codec.c b/drivers/staging/greybus/audio_codec.c
-> index b589cf6b1d03..939e05af4dcf 100644
-> --- a/drivers/staging/greybus/audio_codec.c
-> +++ b/drivers/staging/greybus/audio_codec.c
-> @@ -397,7 +397,7 @@ static int gbcodec_hw_params(struct snd_pcm_substream *substream,
->         u8 sig_bits, channels;
->         u32 format, rate;
->         struct gbaudio_module_info *module;
-> -       struct gbaudio_data_connection *data;
-> +       struct gbaudio_data_connection *data = NULL;
->         struct gb_bundle *bundle;
->         struct gbaudio_codec_info *codec = dev_get_drvdata(dai->dev);
->         struct gbaudio_stream_params *params;
-> @@ -498,7 +498,7 @@ static int gbcodec_prepare(struct snd_pcm_substream *substream,
->  {
->         int ret;
->         struct gbaudio_module_info *module;
-> -       struct gbaudio_data_connection *data;
-> +       struct gbaudio_data_connection *data = NULL;
->         struct gb_bundle *bundle;
->         struct gbaudio_codec_info *codec = dev_get_drvdata(dai->dev);
->         struct gbaudio_stream_params *params;
-> @@ -562,7 +562,7 @@ static int gbcodec_prepare(struct snd_pcm_substream *substream,
->  static int gbcodec_mute_stream(struct snd_soc_dai *dai, int mute, int stream)
->  {
->         int ret;
-> -       struct gbaudio_data_connection *data;
-> +       struct gbaudio_data_connection *data = NULL;
->         struct gbaudio_module_info *module;
->         struct gb_bundle *bundle;
->         struct gbaudio_codec_info *codec = dev_get_drvdata(dai->dev);
-> --
-> 2.17.1
->
-Thanks Xiaomeng for sharing the fix.
+Hi Lukas,
 
-Reviewed by: Vaibhav Agarwal <vaibhav.sr@gmail.com>
+On Fri, Mar 25, 2022 at 05:42:55PM +0100, Lukas Wunner wrote:
+> Hi Heikki,
+> 
+> saw this linked in your WSR and felt compelled to reply... ;)
+> 
+> On Thu, Oct 29, 2020 at 01:59:39PM +0300, Heikki Krogerus wrote:
+> > +static int software_node_runtime_suspend(struct device *dev)
+> > +{
+> > +	struct swnode_pm_domain *domain = to_swnode_pm_domain(dev->pm_domain);
+> > +	struct swnode *swnode = dev_to_swnode(dev);
+> > +	int ret;
+> > +
+> > +	if (domain->primary && domain->primary->ops.runtime_suspend)
+> > +		ret = domain->primary->ops.runtime_suspend(dev);
+> > +	else if (dev->type && dev->type->pm && dev->type->pm->runtime_suspend)
+> > +		ret = dev->type->pm->runtime_suspend(dev);
+> > +	else if (dev->class && dev->class->pm && dev->class->pm->runtime_suspend)
+> > +		ret = dev->class->pm->runtime_suspend(dev);
+> > +	else if (dev->bus && dev->bus->pm && dev->bus->pm->runtime_suspend)
+> > +		ret = dev->bus->pm->runtime_suspend(dev);
+> > +	else
+> > +		ret = pm_generic_runtime_suspend(dev);
+> 
+> This if/else ladder seems to be duplicated for every single PM callback
+> in this patch.
+> 
+> Code size can be reduced significantly if you use offsetof() to determine
+> the offset of the given callback in struct pm_ops, then pass that offset
+> to a helper which contains the above-quoted if/else ladder and retrieves
+> the callback.  Finally invoke the callback you've just retrieved.
+
+I think Sakari already suggested that. I'll improve this part in the
+next version.
+
+thanks,
+
+-- 
+heikki
