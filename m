@@ -2,114 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF8DAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 12:11:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5DEBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 12:11:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242327AbiC1MMt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 08:12:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44796 "EHLO
+        id S242332AbiC1MNW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 08:13:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234315AbiC1MMs (ORCPT
+        with ESMTP id S232505AbiC1MNU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 08:12:48 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14F4546177
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 05:11:04 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id r13so28206886ejd.5
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 05:11:04 -0700 (PDT)
+        Mon, 28 Mar 2022 08:13:20 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2099.outbound.protection.outlook.com [40.107.94.99])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96A6446175;
+        Mon, 28 Mar 2022 05:11:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dr9IMs2BzWg3IpLE5P5KbZyfBljrytvW+wsiJSbdt4s/mZWjapX/OpepG6+8hL70lTKO/VD7X35CdhDgOzegbZr7ZnW1dGtegplSwxuzGZIPIL7CdFP76O7zkGF0k7QNSRyNPcpGrLyDB6AqLO521lhr565omJn7c1+xWit7h/jtB5hzDEMeM2ZbJoW/JQazW4bMT/DMq/IAQubiMOQ7VRmNvfaLKRHhRQTGyXNboj2u22CHbJqNjfzmFoDHVLIhvlr8aPtx1U6QTGTEOUa/fRp943R2Vj6pPP7vbtvg5twKY/g3RMbJA51HLGiX4m/Nxetc4bp0m/gW9mPeIE29tg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SMgGUSuEI/SgMO69Gf3gBVbGWQ5EopaJWGTT/16x9I8=;
+ b=DXKMz6bD3kwlRQ5SS2gBinoAfg/YMNFJ/22+QeUcTOT+47bA6rCXZ/JfmE1WprTvj8dWABT+PTVoPkM+L4kcEbIs4Zv2XBuepVpJq0g01TX4l+wmW3DYfCvVZF6t6GqPMpjd4NAHKos9vtmf3oaas7kAY0Rk1I8VHAOWRkxO6Y8HqsVw10fRIMZnbGZO5N5WmHrO8dl3Z7fRaGuD+V15dPp+vGhY/IdEsX+1daHXH6z7ATwn+FaDd2EwGpjmm4vC+cdaLlBftfo6WaD4sPYGcQRLZRbNDnEk88g7a80Maqj+ZoE6DmYUxhNnhxL78L8lnxXlYO/+c5Y4pGf/YwL37g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=analogixsemi.com; dmarc=pass action=none
+ header.from=analogixsemi.com; dkim=pass header.d=analogixsemi.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=monstr-eu.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc:from
-         :subject:content-transfer-encoding;
-        bh=p3WqA2Vt0jZAym/U0O7alTlMruI2NoihwdZhe+rrgS0=;
-        b=msd/+Z5YWFSkIu6vkX9X5+ytPoI0xYxu3owYdNOW9AuQkV/h9++HMP6B/PvHZqQE7q
-         Eob8Qux+E+Tz8/UD4JHl+dYYo4hAh0W0wkaWIYV9rS6GVdELmFq9Aw9/QzooP2c96MnD
-         7fFwtVSBCXmLEwwUFgaSW92EuvFOBwM7a4weZ32jRx7imQwyg+AUjZf2pf7aCwGPEQ8v
-         zXwzsz1i0i/EMnHT4wKi0zdy4l4uWpzUcr8R/K0BxBg98S7Yt4McMQcy9FfP3lP4L6cE
-         EHu9oX+67lP4if+Wqx7ZZUM4/Prvy0sp9eVkvRf4QVo0cWGAnBoMA+AxYJNVPDTcZlFJ
-         pkeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:from:subject:content-transfer-encoding;
-        bh=p3WqA2Vt0jZAym/U0O7alTlMruI2NoihwdZhe+rrgS0=;
-        b=TLC0+UGE4ffklUYptiR1OyTa3n0YeGDnmx3Ls6urHCRyhoHnSR6CJv8LmK1gK+oaDu
-         atE1SZR4izeGFXH8fh6gUnxPtZduwJNTuvACv4deREfVVe5p2Wlx1IAMKH8axFbTIDI/
-         xoyXeER5L6Qp+aLF+bw6uPW27TiCa3hs0GXXJZuyjP0bhvl2K3pkQjYzaLg0hFj41AB3
-         gHAuGX5+rm4sec5r5s4JrFzNXbgp+OWcdFX0qS5KBIAHngh8Udt/bHrxTYJ8SjLdbPLW
-         8IBxlEynI9ILF+wlDrV4UpOwh3hWVWIRGGvl70q2VZJUrBiB91AyR3Y/ScTk/ZllaxOi
-         oVQQ==
-X-Gm-Message-State: AOAM531iuq0i5uHmzeMoYkkBLnbEEUtN2JUcSmvHnxjc0ybRmZId7om4
-        f8HchrbFnUlTHz7Jp01911oygvjlESlxYg==
-X-Google-Smtp-Source: ABdhPJxQTT74nxo/XuX3ODFEeZZaPChrRpC2Fk0tpinf84QOpQ8l53e2TsM8a6xClZuyt8xZ9sO6Zw==
-X-Received: by 2002:a17:907:e87:b0:6df:6a26:e17c with SMTP id ho7-20020a1709070e8700b006df6a26e17cmr27333589ejc.666.1648469459758;
-        Mon, 28 Mar 2022 05:10:59 -0700 (PDT)
-Received: from ?IPV6:2a02:768:2307:40d6::f9e? ([2a02:768:2307:40d6::f9e])
-        by smtp.gmail.com with ESMTPSA id m3-20020a17090679c300b006cf9ce53354sm5852684ejo.190.2022.03.28.05.10.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Mar 2022 05:10:58 -0700 (PDT)
-Message-ID: <04dd8f40-84eb-2c31-5b16-33ac60024b7f@monstr.eu>
-Date:   Mon, 28 Mar 2022 14:10:56 +0200
+ d=Analogixsemi.onmicrosoft.com; s=selector2-Analogixsemi-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SMgGUSuEI/SgMO69Gf3gBVbGWQ5EopaJWGTT/16x9I8=;
+ b=vDjf5l2oyDp8Jv2d/FOGnhfWgDwXZAcGA6L6oWXtaUR3gaOaKhYzzjDFkdJKCKXKdsWyrdMoyV0jCJg+AhX7WMbYrgPXWWISVpyssb70Wg98UAfv1+ZauXP8ooceiG6LZw5i8mmRfFU1nZxp86tL9DLih3fPV3Lme3dyNyZ3w3o=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=analogixsemi.com;
+Received: from BY5PR04MB6739.namprd04.prod.outlook.com (2603:10b6:a03:229::8)
+ by DM6PR04MB4170.namprd04.prod.outlook.com (2603:10b6:5:9c::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.16; Mon, 28 Mar
+ 2022 12:11:37 +0000
+Received: from BY5PR04MB6739.namprd04.prod.outlook.com
+ ([fe80::a865:6d10:c4a9:1142]) by BY5PR04MB6739.namprd04.prod.outlook.com
+ ([fe80::a865:6d10:c4a9:1142%9]) with mapi id 15.20.5102.023; Mon, 28 Mar 2022
+ 12:11:37 +0000
+From:   Xin Ji <xji@analogixsemi.com>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     robert.foss@linaro.org, bliang@analogixsemi.com,
+        qwen@analogixsemi.com, Xin Ji <xji@analogixsemi.com>,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/4] media/v4l2-core: Add enum V4L2_FWNODE_BUS_TYPE_DPI
+Date:   Mon, 28 Mar 2022 20:09:52 +0800
+Message-Id: <20220328120956.1848795-1-xji@analogixsemi.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: HK2PR02CA0139.apcprd02.prod.outlook.com
+ (2603:1096:202:16::23) To BY5PR04MB6739.namprd04.prod.outlook.com
+ (2603:10b6:a03:229::8)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Content-Language: en-US
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-From:   Michal Simek <monstr@monstr.eu>
-Subject: [GIT PULL] arch/microblaze patches for 5.18-rc1
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c3e99401-639e-4847-a0af-08da10b41bd1
+X-MS-TrafficTypeDiagnostic: DM6PR04MB4170:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR04MB41709B83DF11BB5E7F4B27EFC71D9@DM6PR04MB4170.namprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: gTmpJKBlGUOVD0GTJ7n8bO5r9RZpCDSzzCAqsHzHZu5iK/5G1XduAyoMAjM6/Qmq0uyCthLfsEvZMKndC+VPYhBmriTvj8Wo8JSm2Tdyf3ot9Xy7uQhzFCpREmVfJOp14M6GMh9meMH005wqBe4yhvOpJwPr38c1Wt1Rss4pMcjr9+YavQl4yOBTcbMii+mtIRXRvIejQy/u1hOL7hqrN0Pcqkr/Gq30LJpna4++UOjZ04NjBmKz6Nnl9Z1iCrGFnDSh3BDeFYt3ZKPB1p5VGRpZ8nbIUHz71dls7i5pLK1MNsVMn4UI66vZ6RJYCqqFWV6Hzeph/1FQQ8lt6Vk94CDTWsD91lq1bSzuP6NDd0gmuuP3bHQJ17bXn4RLrCv8/77qWyrScq0A0yOVGkJBAexXD/+tAFBapCGptEtJYfyDiXP+o9+fShNB5vkL8mIH5D43zNDWC59lmFJKKkOTmhoBIbCseL9ypYHDneJgUdtcMYLYyo+vgmu7xRV7GawikpCi3rX6k9PGXvOZQi0F3GwEViM7h8b4lMWtw8JBDmvIW5H8zsFiV97u7RrUFl4K8K9qf6Li1NnNpP9J2eDoDw08L5VFXIzGTucFAH5oHHeYWm54STBqU6fG555eQe9yVe2iOiz/w6pQS87FfwkCRrVQjBaBJkAXctzi4wFzkp0FP7jQm7zvcuRSv4PYtCoWMzJiUPQQtX8fdf3qTxNmrQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR04MB6739.namprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(8936002)(8676002)(2906002)(6916009)(5660300002)(38100700002)(316002)(38350700002)(66476007)(4326008)(86362001)(52116002)(55236004)(66946007)(186003)(6512007)(1076003)(26005)(66556008)(2616005)(6486002)(6506007)(36756003)(508600001)(6666004);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?rlxHMZwPWtT32rQ6GSXtOY/3F53qORq57C5fUBV9bXOKXR6TIXN2IqFsdONG?=
+ =?us-ascii?Q?ftqgX1ECIawOAJ8Iy1ldrytmCbhC6t0Zim78c/NU2FftxaWD3cu5I88SaKfF?=
+ =?us-ascii?Q?n8d5nSEQD7A5MzkrmMgTxZnwxGg/t2eoPxwU7wSp5KpoFNMzJ8/aEje5d1Mh?=
+ =?us-ascii?Q?4Gm85UM2kGQeV2pa6ec8RAtHFytujqOWN7uNUn6rwCu4yXV+QRpiu7CVnbky?=
+ =?us-ascii?Q?J+SGnUuPYahJDC6CNBHnrHRp086oo0gv2Eeffq8HkS8qPFXPGKlIBaQC2MdZ?=
+ =?us-ascii?Q?bMYQyjPsAgNypIkW+WRNjEs1POb/mcqVOmyic/3FKmKZ8qHms4jkXEukBN+R?=
+ =?us-ascii?Q?Yc6kfh6772zO34e2IJFdGFNpelxCQfJsY/ErE9o8gd8eArbXmprRmDJK/oey?=
+ =?us-ascii?Q?NZSlvdQUxx/IVoasprVCcR/nvqOHY+UpgzpxVpBjHAx0fK/WmzPqkJNe4iAE?=
+ =?us-ascii?Q?iSu3P4bVC69bJsFxwl6Y6lRSSamzJ4m6cYD8eSKbKErCo1nsmzZ1Gpb/NhxJ?=
+ =?us-ascii?Q?xmT+Gtb/A1gumf8bnljJdHxwcr7/rwY0bdRdWdbEBYDfLlnD4BIcJk/TLsDO?=
+ =?us-ascii?Q?gK4rK3luMeLfO23VbOIrZufVqF90t3clkPmYxZzWis3CyQ6xsDB70ZENarmn?=
+ =?us-ascii?Q?YTfb/O8hzw43QJXjqLYerOzG6t3jTDxh9qDSDIGZSr+OdxKCmmsmE+UZ21ca?=
+ =?us-ascii?Q?2koDjtbyGSfX/9gDHbPyxZWuxRSQk5Y3to98dB74tzR18ctwrm96SoS7FL+2?=
+ =?us-ascii?Q?uWV86mNyB3lN4R+JRWEg/Y9D+0UsS2ieDHkqlbxhCkupK29JrRrsvkZMaiHg?=
+ =?us-ascii?Q?iFWWmchqMwwyCvkMponNUdEWySP7yIlI1pX6NadfbjsiO78KGzqaAuOJtfPn?=
+ =?us-ascii?Q?XtoZH5B8gjQQ4lbYj/eyqihZEkTnYWzvys3fs2k5PLhiOVqIIH6sp2MKj4wT?=
+ =?us-ascii?Q?z3LphmEH/nFuB1jI307zMSuX5Fn7qAYZqAD0IAtFM6SSxBFcugMRqsV0l3mr?=
+ =?us-ascii?Q?2cAUxwTHjnISb+5/U8ERdCrBquFcyJzIUJVdklKiW1/GIPhRLx+ZyAQsZRZ6?=
+ =?us-ascii?Q?AJk48GFs5wXP4E6HOftJpllCUfZddhL8n1b68EjSHK/WpbTh4/Qz9EvsozDF?=
+ =?us-ascii?Q?XqrVV5xiQvedhhOVEl17QC+w3g80nRlM70V1ZH6mvaj29s2mRQTARoDqiW3p?=
+ =?us-ascii?Q?6Gnq8wh/gAW6mID6+FLABSiZLsEKVLT34AO+GnqiY5Yq+k2w+XO1dFFJM7QT?=
+ =?us-ascii?Q?5DlAMf4ywF9CZX+KYPWndDrd1NKPxpN++kFHEQRtUVPESlJyAheZSwC0TnWa?=
+ =?us-ascii?Q?EkQFoxCKcyCJJRszYPCw7F7KKPrZtO0egQ9zi/nwSFvZQWmAHc5HVFkZI9Ys?=
+ =?us-ascii?Q?/f27Au1FZGhYuBosKIViAgXX0tFKW781Tdy/F1n+Sb9gDSDNakPRuWMJMBYk?=
+ =?us-ascii?Q?b6vyvrx8dMgJ0EDFx/qqLLy7ZaX2Nq68RED/FGaiPzfL4K31dQ9aMZmgsVjD?=
+ =?us-ascii?Q?mSuzC7fi4RFiqQjgVVVoMf1/EN/Wvh27qgBO6zMGgxCZd7ilyqqgvADhUmIv?=
+ =?us-ascii?Q?1g6v9BQmjrlYADkBW2+Svmz7d2Md7yUpYlUtqpqJumfnn2eBpHSn27JZ5FWw?=
+ =?us-ascii?Q?yOp0N3liEYfd9YKMSxwhM5YAf6ogf8yZyP1AmKBGbf56mqxkCLAdg2hvkK1h?=
+ =?us-ascii?Q?fsT3lqSv55tx6U63T4EmYP0UkqH9be9JRJRXU1cXtHoJ94Z0V8fVR28i/tiB?=
+ =?us-ascii?Q?ZIbp8aRgpw=3D=3D?=
+X-OriginatorOrg: analogixsemi.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c3e99401-639e-4847-a0af-08da10b41bd1
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR04MB6739.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Mar 2022 12:11:37.5584
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: b099b0b4-f26c-4cf5-9a0f-d5be9acab205
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: rf6TOD6M5DYY+rXfuHagBEA97tcidgINxwnVKVr+HfgFtFq3hWwj9ubPi4nNwTPKRjk2bVFp6Is9wn3aT0NH3Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR04MB4170
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+As V4L2_FWNODE_BUS_TYPE_PARALLEL is not used for DPI interface, this
+patch add V4L2_FWNODE_BUS_TYPE_DPI for video DPI interface.
 
-please pull these 3 simple patches.
+Signed-off-by: Xin Ji <xji@analogixsemi.com>
+---
+ drivers/media/v4l2-core/v4l2-fwnode.c | 4 ++++
+ include/media/v4l2-fwnode.h           | 2 ++
+ include/media/v4l2-mediabus.h         | 2 ++
+ 3 files changed, 8 insertions(+)
 
-Thanks,
-Michal
-
-The following changes since commit e783362eb54cd99b2cac8b3a9aeac942e6f6ac07:
-
-   Linux 5.17-rc1 (2022-01-23 10:12:53 +0200)
-
-are available in the Git repository at:
-
-   git://git.monstr.eu/linux-2.6-microblaze.git tags/microblaze-v5.18
-
-for you to fetch changes up to fcc619621df50f63b641b18536f908b05d6782a4:
-
-   microblaze/PCI: Remove pci_phys_mem_access_prot() dead code (2022-01-24 
-13:11:34 +0100)
-
-----------------------------------------------------------------
-Microblaze patches for 5.18-rc1
-
-- Small fixups
-- Remove unused pci_phys_mem_access_prot()
-
-----------------------------------------------------------------
-Bjorn Helgaas (1):
-       microblaze/PCI: Remove pci_phys_mem_access_prot() dead code
-
-Jason Wang (1):
-       microblaze: fix typo in a comment
-
-Xiang wangx (1):
-       microblaze: add const to of_device_id
-
-  arch/microblaze/include/asm/pci.h |  4 --
-  arch/microblaze/kernel/signal.c   |  2 +-
-  arch/microblaze/pci/pci-common.c  | 49 --------------------
-  arch/microblaze/pci/xilinx_pci.c  |  2 +-
-  4 files changed, 2 insertions(+), 55 deletions(-)
-
+diff --git a/drivers/media/v4l2-core/v4l2-fwnode.c b/drivers/media/v4l2-core/v4l2-fwnode.c
+index 00457e1e93f6..4bbb70b5e8c4 100644
+--- a/drivers/media/v4l2-core/v4l2-fwnode.c
++++ b/drivers/media/v4l2-core/v4l2-fwnode.c
+@@ -61,6 +61,10 @@ static const struct v4l2_fwnode_bus_conv {
+ 		V4L2_FWNODE_BUS_TYPE_BT656,
+ 		V4L2_MBUS_BT656,
+ 		"Bt.656",
++	}, {
++		V4L2_FWNODE_BUS_TYPE_DPI,
++		V4L2_MBUS_DPI,
++		"DPI",
+ 	}
+ };
+ 
+diff --git a/include/media/v4l2-fwnode.h b/include/media/v4l2-fwnode.h
+index 9c97f1dbd1c6..e17e59dbb2e3 100644
+--- a/include/media/v4l2-fwnode.h
++++ b/include/media/v4l2-fwnode.h
+@@ -222,6 +222,7 @@ struct v4l2_fwnode_connector {
+  * @V4L2_FWNODE_BUS_TYPE_CSI2_DPHY: MIPI CSI-2 bus, D-PHY physical layer
+  * @V4L2_FWNODE_BUS_TYPE_PARALLEL: Camera Parallel Interface bus
+  * @V4L2_FWNODE_BUS_TYPE_BT656: BT.656 video format bus-type
++ * @V4L2_FWNODE_BUS_TYPE_DPI: Video Parallel Interface bus
+  * @NR_OF_V4L2_FWNODE_BUS_TYPE: Number of bus-types
+  */
+ enum v4l2_fwnode_bus_type {
+@@ -232,6 +233,7 @@ enum v4l2_fwnode_bus_type {
+ 	V4L2_FWNODE_BUS_TYPE_CSI2_DPHY,
+ 	V4L2_FWNODE_BUS_TYPE_PARALLEL,
+ 	V4L2_FWNODE_BUS_TYPE_BT656,
++	V4L2_FWNODE_BUS_TYPE_DPI,
+ 	NR_OF_V4L2_FWNODE_BUS_TYPE
+ };
+ 
+diff --git a/include/media/v4l2-mediabus.h b/include/media/v4l2-mediabus.h
+index 841e190aedd9..d35d8eafc7f7 100644
+--- a/include/media/v4l2-mediabus.h
++++ b/include/media/v4l2-mediabus.h
+@@ -103,6 +103,7 @@
+  * @V4L2_MBUS_CCP2:	CCP2 (Compact Camera Port 2)
+  * @V4L2_MBUS_CSI2_DPHY: MIPI CSI-2 serial interface, with D-PHY
+  * @V4L2_MBUS_CSI2_CPHY: MIPI CSI-2 serial interface, with C-PHY
++ * @V4L2_MBUS_DPI:      MIPI VIDEO DPI interface
+  * @V4L2_MBUS_INVALID:	invalid bus type (keep as last)
+  */
+ enum v4l2_mbus_type {
+@@ -113,6 +114,7 @@ enum v4l2_mbus_type {
+ 	V4L2_MBUS_CCP2,
+ 	V4L2_MBUS_CSI2_DPHY,
+ 	V4L2_MBUS_CSI2_CPHY,
++	V4L2_MBUS_DPI,
+ 	V4L2_MBUS_INVALID,
+ };
+ 
 -- 
-Michal Simek, Ing. (M.Eng), OpenPGP -> KeyID: FE3D1F91
-w: www.monstr.eu p: +42-0-721842854
-Maintainer of Linux kernel - Xilinx Microblaze
-Maintainer of Linux kernel - Xilinx Zynq ARM and ZynqMP ARM64 SoCs
-U-Boot custodian - Xilinx Microblaze/Zynq/ZynqMP/Versal SoCs
+2.25.1
 
