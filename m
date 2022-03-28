@@ -2,88 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40430C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 13:28:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E026AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 13:28:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243175AbiC1NaK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 09:30:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58904 "EHLO
+        id S243194AbiC1NaR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 09:30:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235022AbiC1NaG (ORCPT
+        with ESMTP id S243186AbiC1NaL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 09:30:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15D25BC4;
-        Mon, 28 Mar 2022 06:28:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6AAFB81126;
-        Mon, 28 Mar 2022 13:28:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1872C34110;
-        Mon, 28 Mar 2022 13:28:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648474101;
-        bh=tIR5y1hpm4AjO9RJ6v9GsRGC9Ca0AqosOs+7fpsV3Ck=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=uiP/2hcfgJ3zmSkfN+z42KczzDVrtCHK1ONpnC3cRb1wim0y2ms+Lxcb3FKqgeelg
-         zkOwT46z506BqRE+39zk4Eswmahgg3XIRbmT1Ys+B8DbUOrQuHP8z1uEqlFuS0kKQ5
-         ofTH73Gor19i5qG7597AQ/gzqQZ4wm7IF4o5afyT8MwRXCdzimNWawAtf5ILEuB4ew
-         gdzM7LdGlIfiF9kLFbipw7kuzEsguACL4WN3+HJ/CpFGXzN/sHlUakkW4g1X0nf/7n
-         rPNmuMmDZ04PBS1MKyRDCtsUYHAJgAtCTMgzv8D9bqdaRTpZBZqDiJtgo2Q8A9VK3F
-         I66kv69HlqD1Q==
-Received: by mail-ej1-f43.google.com with SMTP id qa43so28643126ejc.12;
-        Mon, 28 Mar 2022 06:28:21 -0700 (PDT)
-X-Gm-Message-State: AOAM532L0gU87c2ykn/B1bfhdcOay7mMABSgSqttQVSLxYuqXKDEz7UK
-        R3dgu/w9T0PzJyBjQ29B+V1aHqn0HE3CxGdEow==
-X-Google-Smtp-Source: ABdhPJw9vOvGYrmizEfXrzpQNqE0Cos/IyfXm4WzYVaV3l2V+fNfbJKz/yJlVk2RcFDMbVCV2HDXqIp3k8hJWlRTwAI=
-X-Received: by 2002:a17:907:2d0a:b0:6df:87bd:4cd5 with SMTP id
- gs10-20020a1709072d0a00b006df87bd4cd5mr27665304ejc.423.1648474099888; Mon, 28
- Mar 2022 06:28:19 -0700 (PDT)
+        Mon, 28 Mar 2022 09:30:11 -0400
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BA92E2F;
+        Mon, 28 Mar 2022 06:28:29 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id A530CE000D;
+        Mon, 28 Mar 2022 13:28:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1648474107;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=pvhfpTjbPTNOPq0i6h9iJSx3PSkVifP/1sAQ45cy05Q=;
+        b=EIHQVVnhQu901PrnzfOqv9osManSB1x0YotcJIv9sEE0MNhVsRkSw8/7w+VfUL8qwcr7BQ
+        I19Q7flGRM103VbzIMviYuuRh9rOaFMIiJTxKjJhEkPTyKHbEMIbeQllSqwAlNL2LhatUM
+        MGD2IulP2uKF6Jm9ISskl5/By71R4FTgYADNqSX5SSYcrbHNKwoAFVA4c3kZfy7QGLK4XG
+        4L/aLYB8uZ81g5ahIe+/5XFsvif1EpnZqqHzB/V5k1CSBqUlqLF1ON9apgvv2i6WuREf3+
+        eAorcBkeme5Q8uFptPd9PizzdOPiG6RzhCCfdOXMHhQP1xYgoysIEEQV3osvFA==
+Date:   Mon, 28 Mar 2022 15:27:00 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Allan Nielsen <allan.nielsen@microchip.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [net-next 1/5] net: mdio: fwnode: add fwnode_mdiobus_register()
+Message-ID: <20220328152700.74be6037@fixe.home>
+In-Reply-To: <YkGyFJuUDS6x4wrC@lunn.ch>
+References: <20220325172234.1259667-1-clement.leger@bootlin.com>
+        <20220325172234.1259667-2-clement.leger@bootlin.com>
+        <Yj4MIIu7Qtvv25Fs@lunn.ch>
+        <20220328082642.471281e7@fixe.home>
+        <YkGyFJuUDS6x4wrC@lunn.ch>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220324124402.3631379-1-daniel@0x0f.com> <20220324124402.3631379-5-daniel@0x0f.com>
-In-Reply-To: <20220324124402.3631379-5-daniel@0x0f.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Mon, 28 Mar 2022 08:28:07 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqL8A78Czx_3GZ6Tsg3_4xGUiL3u14R176gZTe+54CbGHw@mail.gmail.com>
-Message-ID: <CAL_JsqL8A78Czx_3GZ6Tsg3_4xGUiL3u14R176gZTe+54CbGHw@mail.gmail.com>
-Subject: Re: [PATCH 4/4] ARM: dts: mstar: Add second UART to base dtsi.
-To:     Daniel Palmer <daniel@0x0f.com>
-Cc:     devicetree@vger.kernel.org,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Romain Perier <romain.perier@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 7:44 AM Daniel Palmer <daniel@0x0f.com> wrote:
->
-> Add the second UART to the base dtsi.
->
-> Signed-off-by: Daniel Palmer <daniel@0x0f.com>
-> ---
->  arch/arm/boot/dts/mstar-v7.dtsi | 8 ++++++++
->  1 file changed, 8 insertions(+)
->
-> diff --git a/arch/arm/boot/dts/mstar-v7.dtsi b/arch/arm/boot/dts/mstar-v7.dtsi
-> index 8464a8f1b136..baf2422b9854 100644
-> --- a/arch/arm/boot/dts/mstar-v7.dtsi
-> +++ b/arch/arm/boot/dts/mstar-v7.dtsi
-> @@ -182,6 +182,14 @@ pm_uart: uart@221000 {
->                                 clock-frequency = <172000000>;
->                                 status = "disabled";
->                         };
-> +
-> +                       uart1: uart@221200 {
+Le Mon, 28 Mar 2022 15:03:16 +0200,
+Andrew Lunn <andrew@lunn.ch> a =C3=A9crit :
 
-serial@...
+> > >=20
+> > > Does fwnode have any documentation? How does a developer know what
+> > > properties can be passed? Should you be adding a
+> > >=20
+> > > Documentation/fwnode/bindings/net/mdio.yaml ?
+> > >=20
+> > > 	Andrew =20
+> >=20
+> > Hi Andrew,
+> >=20
+> > Actually, fwnode is an abstraction for various firmware nodes such as
+> > ACPI, device-tree and software nodes. It allows to access properties,
+> > child and other attributes transparently from these various nodes but
+> > does not actually defines how they should describe the hardware. If
+> > there is specific hanling to be done, node type can be checked using
+> > is_acpi_node(), is_of_node() and so on.
+> >=20
+> > I think it is still needed to document the bindings for each node type.=
+ =20
+>=20
+> But you seem to be implementing a subset of what each node type
+> supports. So maybe it would be good to document which parts of the OF
+> binding can be used, which parts of the ACPI binding can be used, etc.
 
-Please run schema checks on your DT as that should be a warning that I
-don't have to tell you about.
+With this series, fwnode_mdiobus_register() supports exactly the same
+subset that is supported by of_mdiobus_register(). This is not true for
+ACPI though, but I could easily add this support providing that someone
+could test it. Or I can left it as is and document that ACPI is not
+supported and add some checks to avoid fwnode_mdiobus_register being
+called with an ACPI node. What would you prefer ?
 
-Rob
+The goal in the end is to be able to use only fwnode_mdiobus_register()
+to register mdiobus device whatever the node type.
+
+>=20
+> 	Andrew
+
+
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
