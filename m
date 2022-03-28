@@ -2,122 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD9C8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 12:26:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF139C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 12:26:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233371AbiC1M1m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 08:27:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54188 "EHLO
+        id S236086AbiC1M1s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 08:27:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236086AbiC1M1k (ORCPT
+        with ESMTP id S242429AbiC1M1n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 08:27:40 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE1EB766A
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 05:25:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=lrVzwikDhjBGNRcFFbTyAqjkMTBLzQaJc2hHSS4wEmg=; b=U0YKf/ro6hqqx+3l1XJttwBDKF
-        vDjhJY0n6WPbgPtJ2ll6rW9EDBb+yeccBWQHCrDhNQ+Y9UJYYush8ulru/PCk7WvEw/EG3sW8bAy0
-        9tydBfVnc2Bpr07gk5Q274j/FBrwmc7wDIBX6KrC4MCW4W1mHw8XivgcAA8l9tBq0U3UTdBcJCKvc
-        u7Zlwm0FvMYk4K5vW0oMQ9O80CVtt2uAQc198QUVuU+QyAeX11FoBVg2z1smHSKGbuQjTMRC/T0+x
-        9JyHZFfQYdPY8IOPwgtrxslAmvSxLfurPf+geAgzW167ILRFvlI7OsSSIFE6M9uKWsQMzdx1NqnyN
-        tEZnkMiw==;
-Received: from [165.90.126.25] (helo=mail.igalia.com)
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1nYoRU-0005HJ-4I; Mon, 28 Mar 2022 14:25:52 +0200
-Date:   Mon, 28 Mar 2022 11:25:36 -0100
-From:   Melissa Wen <mwen@igalia.com>
-To:     Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Cc:     Emma Anholt <emma@anholt.net>, David Airlie <airlied@linux.ie>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        dan.carpenter@oracle.com
-Subject: Re: [PATCH] drm/v3d: Use kvcalloc
-Message-ID: <20220328122536.cobmqclwtl2ca6k4@mail.igalia.com>
-References: <20220312152656.51625-1-harshit.m.mogalapalli@oracle.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="qeqcrncyu2fdobow"
-Content-Disposition: inline
-In-Reply-To: <20220312152656.51625-1-harshit.m.mogalapalli@oracle.com>
+        Mon, 28 Mar 2022 08:27:43 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 002AB4D247;
+        Mon, 28 Mar 2022 05:26:00 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id t13so10887934pgn.8;
+        Mon, 28 Mar 2022 05:26:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=fNWn9Z6ADbA6o5al6zBEcDZHutfYeq1Ua+09g55SEsY=;
+        b=hyBsvFRAnDqXrnLe4zFp4A2phxS+MEVlGv6dFSwVAUKGGNJJMPum3KENT/JYpT8UZN
+         W9uk5uwXYo32qvMACevncJ9Xn4x4LXEVpu6j0dl7ZYYwVGlB3FHgUEtUVKX0VbcgfOBb
+         RSE2w1igMssWSdJD+ZTWW6aOgohp2IiH0bXuHTNSI4AmvGtF3I5Mc92U7QpNTpdbGv05
+         YfOWR6z5Qi44+BK+88HrJzwMPLcVchF4XRbMrN11TkAOg+P/VhBi0YyA2gCcudEDnbRL
+         hLq1c6hCoC66+u7SIVXLFZo3N9OG4FunNx53k6GESjQyaLCgnKPAQLCfZVLH90e6hwMK
+         jP/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=fNWn9Z6ADbA6o5al6zBEcDZHutfYeq1Ua+09g55SEsY=;
+        b=wRVa7ZonpwvgD656WX0QORG/gIOXj4asxNxHwYVBctXwSOzEz33OePb+UeE5fxmOIP
+         EM+rh7DWwDROB1mUppA0Eat++9XXpE7qkWllX6C9xOB53+28bTlTzzCF9ibaozi0LKG0
+         OPbObTapC9cMt+71pkNRkdVmkYQRyKG+2f33FWkngSU3L6nVrKZrNSsTBIkfjq2Cv2I9
+         55V9J0p42Ew9ReSTd1ViFryQGrirwKDKO9XQmeYR4U9dQgfBZ0OPbwLUWyE3KYfc640p
+         09p2U/akSiWWsPmeIBc+2GB1GAlAiruvEQVh+RxJKEiHp6KWzM+JlhUvsVWmywxkMiL6
+         vFLQ==
+X-Gm-Message-State: AOAM530s8LD9OM/o8oWAYkTBuqMtVyrhCHQsHyGJz8tp2GiQ8Vryx2cl
+        /dkfBcRVUmVaHsAuHG8uP5c=
+X-Google-Smtp-Source: ABdhPJxApUNNiWFzC8FfcO15afbiVATmwPDG03/UfTbCcUEDLdun03ylQ3CN3oVib23+GpUNHZU0dw==
+X-Received: by 2002:a65:6cc8:0:b0:382:1b18:56a9 with SMTP id g8-20020a656cc8000000b003821b1856a9mr10162480pgw.347.1648470360429;
+        Mon, 28 Mar 2022 05:26:00 -0700 (PDT)
+Received: from ubuntu.huawei.com ([119.3.119.18])
+        by smtp.googlemail.com with ESMTPSA id m18-20020a639412000000b003820bd9f2f2sm13301496pge.53.2022.03.28.05.25.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 05:25:59 -0700 (PDT)
+From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
+To:     chunkeey@gmail.com
+Cc:     davem@davemloft.net, kuba@kernel.org, kvalo@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linville@tuxdriver.com, netdev@vger.kernel.org, pabeni@redhat.com,
+        stable@vger.kernel.org, xiam0nd.tong@gmail.com
+Subject: Re: [PATCH] carl9170: tx: fix an incorrect use of list iterator
+Date:   Mon, 28 Mar 2022 20:25:51 +0800
+Message-Id: <20220328122551.936-1-xiam0nd.tong@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <CAAd0S9CR=PjEskWAi132qWB5WL1yZwzOBfV-y5m2ERzc3L_qcA@mail.gmail.com>
+References: <CAAd0S9CR=PjEskWAi132qWB5WL1yZwzOBfV-y5m2ERzc3L_qcA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Sun, 27 Mar 2022 23:40:46 +0200, Christian Lamparter wrote:
+> On Sun, Mar 27, 2022 at 8:10 PM Xiaomeng Tong <xiam0nd.tong@gmail.com> wrote:
+> >
+> > If the previous list_for_each_entry_continue_rcu() don't exit early
+> > (no goto hit inside the loop), the iterator 'cvif' after the loop
+> > will be a bogus pointer to an invalid structure object containing
+> > the HEAD (&ar->vif_list). As a result, the use of 'cvif' after that
+> > will lead to a invalid memory access (i.e., 'cvif->id': the invalid
+> > pointer dereference when return back to/after the callsite in the
+> > carl9170_update_beacon()).
+> >
+> > The original intention should have been to return the valid 'cvif'
+> > when found in list, NULL otherwise. So just make 'cvif' NULL when
+> > no entry found, to fix this bug.
+> >
+> > Cc: stable@vger.kernel.org
+> > Fixes: 1f1d9654e183c ("carl9170: refactor carl9170_update_beacon")
+> > Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+> > ---
+> >  drivers/net/wireless/ath/carl9170/tx.c | 3 +++
+> >  1 file changed, 3 insertions(+)
+> >
+> > diff --git a/drivers/net/wireless/ath/carl9170/tx.c b/drivers/net/wireless/ath/carl9170/tx.c
+> > index 1b76f4434c06..2b8084121001 100644
+> > --- a/drivers/net/wireless/ath/carl9170/tx.c
+> > +++ b/drivers/net/wireless/ath/carl9170/tx.c
+> > @@ -1558,6 +1558,9 @@ static struct carl9170_vif_info *carl9170_pick_beaconing_vif(struct ar9170 *ar)
+> >                                         goto out;
+> >                         }
+> >                 } while (ar->beacon_enabled && i--);
+> > +
+> > +               /* no entry found in list */
+> > +               cvif = NULL;
+> >         }
+> >
+> >  out:
+> 
+> hmm, It's really not easy test this.  There are multiple locks, device
+> states and flags to consider.
+> the state of the protecting ar->vifs > 0 (I guess this could be > 1.
+> There's no point in being choosy
+> about "picky choices", if there's only one), the main virtual
+> interface as well as cvif->enable_beacon
+> and ar->beacon_enable don't change on a whim.
+> 
+> But it it is true that this function gets called by the firmware as a
+> callback to the TBTT,
+> so it would warrant any protection that is possible. Whenever a bug
+> can happen or be
+> forced in this case: I don't know, I can't do experiments until much
+> later (easter :( ).
+> But it's better and easy to err on the side of caution.
+> 
+> Note: That "cvif = NULL;" will certainly break the beaconing for good
+> (for the remaining
+> lifetime of the main interface). The driver would need to be stopped
+> and restarted before
+> beaconing would work again. A safer choice would be to return NULL;
+> That said, if the
+> bug can happen, the driver/firmware would be in a bad state at that
+> point anyway.
+> So a call to carl9170_restart(ar, ...there's no code for a
+> driver/firmware mismatch yet) will
+> be necessary in the hope that this was just a temporary glitch.
 
---qeqcrncyu2fdobow
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Thank you, i have resubmitted a v2 patch as you suggested: just return NULL
+to fix it. Please check it.
 
-On 03/12, Harshit Mogalapalli wrote:
-> kvcalloc is same as kvmalloc_array + __GFP_ZERO.
->=20
-> Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-> ---
->  drivers/gpu/drm/v3d/v3d_gem.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
->=20
-> diff --git a/drivers/gpu/drm/v3d/v3d_gem.c b/drivers/gpu/drm/v3d/v3d_gem.c
-> index c7ed2e1cbab6..f7d37228461e 100644
-> --- a/drivers/gpu/drm/v3d/v3d_gem.c
-> +++ b/drivers/gpu/drm/v3d/v3d_gem.c
-> @@ -308,9 +308,8 @@ v3d_lookup_bos(struct drm_device *dev,
->  		return -EINVAL;
->  	}
-> =20
-> -	job->bo =3D kvmalloc_array(job->bo_count,
-> -				 sizeof(struct drm_gem_cma_object *),
-> -				 GFP_KERNEL | __GFP_ZERO);
-> +	job->bo =3D kvcalloc(job->bo_count, sizeof(struct drm_gem_cma_object *),
-> +			   GFP_KERNEL);
-
-Hi Harshit,
-
-This change seems valid to me, but I believe, in this point, v3d should
-move to use the DRM function `drm_gem_objects_lookup()`, and then your
-change goes there, since drm_get_objects_lookup() has the same issue
-you're pointing. What do you think?
-
-I already sent a patchset to replace steps in v3d_lookup_bos() by
-drm_gem_objects_lookup(), as I mentioned. The patchset is here:
-https://patchwork.freedesktop.org/series/101610/
-Willing to review it? ^
-
-Thanks,
-
-Melissa
-
->  	if (!job->bo) {
->  		DRM_DEBUG("Failed to allocate validated BO pointers\n");
->  		return -ENOMEM;
-> --=20
-> 2.31.1
->=20
-
---qeqcrncyu2fdobow
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEd8WOo/JViG+Tu+XIwqF3j0dLehwFAmJBqTsACgkQwqF3j0dL
-ehxezg//bh3x6Kkk5aU9Y0GowW2fk6Lfo/opQx/a9VPa/sCZ9ft0ctam7yGZUz4G
-6YvPDT9kPaZJ/4B2+U1MCECuEEciDoelttwXGls3AdRpk7UIZcWsnsHQZeo5tdPe
-gNDZHg7h+TiMNxmdPHItJRuNn4XSe36yTjNfHRUTyx67UhHvmcX8sO12DjQ1u+IL
-kKpODRaacDQvLc+hiizZl2Y8e7AP8/rDKH2Ydc8XrknlTt4q+IZLRSwljlhk1QhX
-Nfwvv4qTD2kMAQPPcRi64sqzEddFk+YJousPmxdIk2fQ0D8+ljEmf/jvxPnUikgj
-34moPZD5r0XJtij/uwTnEwljzAqCOv0XZrorQvVw6WHoi+XvEt7gfvYl7aOPAHZ/
-Q23CsRsXGE6yLttjbM45p87PZAtV48cSUGssufkzMJBqlj5aQKsyrBHDxIZF9cYH
-sRluiDWo18J7TwqKMo9v3sjkYncQgmt4sUrmL2CTkILdim52LnkHflI+balnVg4S
-OQKfafzJ/C9I/nhM/4hcnMeAcw0O+oTxuFKbA80hDUviUXie++SmZ++T1nN8KnAk
-2AedlB8lfMD/PK3mV0HtKvgSPyoQ2pyV9EYZNSzndJefNvRtt+jD2jxOFI1C4+dg
-mJDxWaTRl23qEr8hA0vM1FD8iogjM/HD5cN2eJbdSwbnO7C1gm4=
-=LPIG
------END PGP SIGNATURE-----
-
---qeqcrncyu2fdobow--
+--
+Xiaomeng Tong
