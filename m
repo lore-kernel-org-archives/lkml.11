@@ -2,212 +2,274 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 911D0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 13:07:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3DCDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 13:08:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242958AbiC1NJW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 09:09:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55432 "EHLO
+        id S242578AbiC1NJs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 09:09:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237498AbiC1NJG (ORCPT
+        with ESMTP id S242942AbiC1NJg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 09:09:06 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7897A5DA68;
-        Mon, 28 Mar 2022 06:07:08 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id b15so16846495edn.4;
-        Mon, 28 Mar 2022 06:07:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=aNfsrLmx/5q90lbCKlS7ErLvGKCOjJ1/q+sTtsEgIeE=;
-        b=mnZIsI4PSyWO7T8P41vMW5cuZPFFACt4jTrXsiruuRx3JW1oZ8BFxh8UKHNdfORpj/
-         GtHhhVAyaKf97xx6pSzYZcARl21K50Z8DdJLB5+vxowc2B04PZFVY0AojbzesbjhMjb9
-         ATYrm+rk3ZOV+W+FjXcLh4DUUuzEMzvtD0IZOwbCvDvWtR7pYuazyHSl1daJEVSC0Xhc
-         bLqLjtuBi6coAcLGRUhFp26f2vzKaif3ICJzmpuUQDvnJ3zRSMpv2pBfBQ7jgBKAHkv6
-         I4qzEXwgz75rcwGliV4eE0zfnmx1aDctboKqL/3bYfELHUJsqr5tyAWu0Vfe8clV2Fk6
-         bk4A==
+        Mon, 28 Mar 2022 09:09:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D2B625DA78
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 06:07:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648472859;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=PtHN8VWVvChKHe7fcrbgQxII1uEL3nooKYmXW4yHoDA=;
+        b=inivgjKJu9pDFHeYAE7MeXgxIAOm8mr9iznI9jsEXGgG1FBMtIICgLh17JJR7W7hI3UeeC
+        gggVylot+81MpUoSpN5UB3lZUDDHLXtwZIKw6beFEgrWf+xPgzeANZCSqv4Y9mZaH+9cNK
+        ve5cHVp9jZGIVbKjQvEn/0ADrKBbhFY=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-557-MpWw0_CpPfCOOoE-w9nQ-w-1; Mon, 28 Mar 2022 09:07:37 -0400
+X-MC-Unique: MpWw0_CpPfCOOoE-w9nQ-w-1
+Received: by mail-qv1-f70.google.com with SMTP id k20-20020ad44714000000b00440fd2c4a0aso11242615qvz.20
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 06:07:37 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aNfsrLmx/5q90lbCKlS7ErLvGKCOjJ1/q+sTtsEgIeE=;
-        b=5XAXExaN8mmD04blnVyzppMi2uxNVDuWaikmDGlzx7iVyfhdo9S6zhj/kJUATlHC+h
-         QEFa09G3sm46+VOXdp8fcuGOYkuRHYfGd6YYyCqLaq+whQMn2oPm6MDc7NpAuFhdd1vJ
-         QuOvFzzoz9WBnKLuofrQb/f+Gf0Ui8q3vBHAyFxWybNHN3jk2wafsBNAkcoh8zt55AFC
-         WcXeVDJRLGZObgmITmtOFyb/56EmD+BJ4lcn774ieVxPibcdJ8rfSWKZa6QDYg5hbRB6
-         alBntTAKlYog/lc9zsleE8C8IO/ytTTDty6As8iHHEoxEO8BOPELXR7mSBsyWc/oa29j
-         y/5g==
-X-Gm-Message-State: AOAM530qagj75nKEEPX/Jv8IPUJ9duCtj9CZDyYtrKshFuRcEufY0Lcm
-        8Sw/HRNwfKTXmw6lDW/oYug6Rp5B4vMCuTxsMU0aN617ZCc=
-X-Google-Smtp-Source: ABdhPJxdDup+7gg0d6Z1huyWsROwg7tN2X+wg3HA93QkKetKCp0e0RBJyTYnO/Yj14GwV6zLuSpyg/SW4LIfuw77wDs=
-X-Received: by 2002:aa7:cb18:0:b0:413:3a7a:b5d6 with SMTP id
- s24-20020aa7cb18000000b004133a7ab5d6mr15886561edt.254.1648472815207; Mon, 28
- Mar 2022 06:06:55 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PtHN8VWVvChKHe7fcrbgQxII1uEL3nooKYmXW4yHoDA=;
+        b=0Ga/gYCWtE8LCG2fcxKXC6wvAD03f0C83h6zs/gv1K+SfMy83h8CwQxUlLP2XDBPgm
+         XtFIDaO/XTWgtmzOgWDFCEqZ6kqlUROm59FXiIvTLqqRzAG5hMybqQkK3Fuofq6tLqP8
+         5PbrfusJq1A2c/UsbBa5K+m4gkKblHhVuRUazHi4n3zJhQZFiJvdZu/wLwhLAbQPrn1W
+         SVWCRpA08CiATQy3cy2HVHoItIigY+RINvFKuLQkP7X0VALINZ/c9HLIyBeWBTz+Jur/
+         3rzjUS4tBVwgaeRB0nB8liyrSlV8yEUcI5nRhTtjedhbMyp7BDyFw6fFYmhXXUwsJbYh
+         8+7g==
+X-Gm-Message-State: AOAM530Snr0ZZEmppPJk9ozi1rxMNoDnOSxmwPv9PkZ+PAMCPOymdMyx
+        +Was0gM1AwItZrnmc8mLTAYYFUJgOGos2iUT3r5Cz3y6e8i+lvOWBRz/tzSqGns1uBHsrHOjRpG
+        UTXp6etmcgW5w/BFL2TYK57qp
+X-Received: by 2002:a05:620a:44d6:b0:67b:2dd8:3064 with SMTP id y22-20020a05620a44d600b0067b2dd83064mr15958167qkp.219.1648472856944;
+        Mon, 28 Mar 2022 06:07:36 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzXF6xziFnZvT7B9Thf2sImzwCkc8tQCsS4WrJzX9a9Q+rXQD1iC0oh26pKBl4kArr2VB9/qQ==
+X-Received: by 2002:a05:620a:44d6:b0:67b:2dd8:3064 with SMTP id y22-20020a05620a44d600b0067b2dd83064mr15958127qkp.219.1648472856653;
+        Mon, 28 Mar 2022 06:07:36 -0700 (PDT)
+Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id n8-20020ac85a08000000b002e06aa02021sm13035414qta.49.2022.03.28.06.07.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 06:07:35 -0700 (PDT)
+From:   trix@redhat.com
+To:     toke@toke.dk, kvalo@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
+Subject: [PATCH v2] ath9k: initialize arrays at compile time
+Date:   Mon, 28 Mar 2022 06:07:27 -0700
+Message-Id: <20220328130727.3090827-1-trix@redhat.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-References: <20220327123835.28329-1-aford173@gmail.com> <20220327123835.28329-3-aford173@gmail.com>
- <c964bf2c-f7bf-451c-1691-02903f20c634@pengutronix.de> <CAHCN7xL05pBK0uK7zuE7Uq4P9Rzo6bHbJdbOt5XnQRB7Sh3msw@mail.gmail.com>
- <74e74ea8-1554-bf08-b0ea-36e77259cb18@pengutronix.de> <5c24c12b-3a12-1e18-9f03-2c54cad30bf9@kernel.org>
- <CAHCN7xJ28t3igV8uHWfLxJx6wWkwzojg-d0QTTZM9jdfGCbTzw@mail.gmail.com> <5282b39b-85d5-81d6-10d5-a45c66d4d4e9@kernel.org>
-In-Reply-To: <5282b39b-85d5-81d6-10d5-a45c66d4d4e9@kernel.org>
-From:   Adam Ford <aford173@gmail.com>
-Date:   Mon, 28 Mar 2022 08:06:43 -0500
-Message-ID: <CAHCN7x+VZgf3omXek_8wQ9XvZ7tvq5oSENxZNr-pCPdiikZ-Sw@mail.gmail.com>
-Subject: Re: [PATCH 3/5] arm64: dts: imx8mp: Enable HS400-ES
-To:     Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Adam Ford-BE <aford@beaconembedded.com>,
-        Haibo Chen <haibo.chen@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        arm-soc <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 7:56 AM Krzysztof Kozlowski <krzk@kernel.org> wrote:
->
-> On 28/03/2022 14:45, Adam Ford wrote:
-> > On Mon, Mar 28, 2022 at 6:49 AM Krzysztof Kozlowski <krzk@kernel.org> wrote:
-> >>
-> >> On 28/03/2022 13:09, Ahmad Fatoum wrote:
-> >>> Hello Adam,
-> >>>
-> >>> On 28.03.22 12:47, Adam Ford wrote:
-> >>>> On Mon, Mar 28, 2022 at 2:20 AM Ahmad Fatoum <a.fatoum@pengutronix.de> wrote:
-> >>>>>
-> >>>>> Hello Adam,
-> >>>>>
-> >>>>> On 27.03.22 14:38, Adam Ford wrote:
-> >>>>>> The SDHC controller in the imx8mp has the same controller
-> >>>>>> as the imx8mm which supports HS400-ES. Change the compatible
-> >>>>>> fallback to imx8mm to enable it.
-> >>>>>
-> >>>>> I believe that's a shortcoming of the Linux driver, which should explicitly list
-> >>>>> fsl,imx8mp-usdhc in its compatibles and enable HS400-ES for it.
-> >>>>>
-> >>>>> I find dropping compatibles problematic, because like Linux matching
-> >>>>> fsl,imx8mm-usdhc, but not fsl,imx8mp-usdhc, other software may match
-> >>>>> fsl,imx7d-usdhc, but not fsl,imx8[mp]-usdhc.
-> >>>>>
-> >>>>> I'd prefer that either the kernel driver gains extra compatibles or that
-> >>>>> the DTS lists extra compatibles and we refrain from dropping existing
-> >>>>> (correct) ones.
-> >>>>>
-> >>>>
-> >>>> I would argue that imx7d is not correct since the IP blocks between
-> >>>> imx7d and imx8mm have different flags/quirks.  One of which includes
-> >>>> HS400-ES, but there are other differences as well.
-> >>>
-> >>> The DTS currently says that an fsl,imx7d-usdhc is a subset of an
-> >>> fsl,imx8mm-usdhc. So a driver could treat both HW the exact same
-> >>> by focusing on the i.MX7D parts. Linux apparently did exactly
-> >>> that so far. Is this not accurate?
-> >>>
-> >>>
-> >>>>> What do you think?
-> >>>>
-> >>>> From my understanding of the fallback compatibility strings is to
-> >>>> avoid having to add more and more compatible strings to the drivers
-> >>>> when they do not serve a functional purpose. Based On a conversation
-> >>>> with Krzysztof [1], he suggested we update the YAML file based on the
-> >>>> fallback, but he wanted NXP to give their feedback as to what the
-> >>>> right fallback strings should be.  Haibo from NXP sent me a hierarchy
-> >>>> [1] which is what I used to update the YAML file.  Based on the YAML
-> >>>> file, the fallback in each DTSI file was updated to ensure the use of
-> >>>> the proper IP block.
-> >>>
-> >>> Myself I am in favor of moving to three compatibles instead of dropping one.
-> >>> For some theoretical fsl,imx8mf-usdhc that's supposed to be exactly the same
-> >>> as a fsl,imx8mm-usdhc, I don't mind omitting the fsl,imx7d-usdhc compatible,
-> >>> but for existing device trees, this may introduce needless potential breakage
-> >>> for other software that also uses Linux device trees.
-> >>>
-> >>
-> >> Affecting existing users is indeed a concern with this approach, because
-> >> in-kernel DTS might be used in other projects as well.
-> >>
-> >> I still cannot find here the answer whether fsl,imx8mm-usdhc is actually
-> >> compatible with fsl,imx7d-usdhc. It's not about driver, but about
-> >> hardware and programming model. imx8mm can support additional features
-> >> and still be compatible with imx7d. However if any flags of imx7d are
-> >> actually not valid for imx8mm, then it's different case.
-> >
-> > The imx7d flags are:
-> >  ESDHC_FLAG_USDHC
-> > ESDHC_FLAG_STD_TUNING
-> >  ESDHC_FLAG_HAVE_CAP1
-> > ESDHC_FLAG_HS200
-> >  ESDHC_FLAG_HS400
-> >  ESDHC_FLAG_STATE_LOST_IN_LPMODE
-> >  ESDHC_FLAG_BROKEN_AUTO_CMD23,
-> >
-> > The imx8mm flags are:
-> >  ESDHC_FLAG_USDHC
-> >  ESDHC_FLAG_STD_TUNING
-> >  ESDHC_FLAG_HAVE_CAP1
-> > ESDHC_FLAG_HS200
-> >  ESDHC_FLAG_HS400
-> >  ESDHC_FLAG_HS400_ES
-> >  ESDHC_FLAG_STATE_LOST_IN_LPMODE
-> >
-> > It does not have the ESDHC_FLAG_BROKEN_AUTO_CMD23 that is present in the imx7d.
->
-> AFAIU, it looks imx8mm is compatible with imx7d, because the broken
-> acmd23 only limits the features. If imx8mm binds according to imx7d, it
-> will not support acmd23 and HS400-ES.
->
-> Having three compatibles is therefore also OK.
->
-> You could also add two cases:
-> 1. three compatibles, deprecated: True,
-> 2. two compatibles, without imx7d.
->
-> Existing DTS stays with three compatibles for two years and later gets
-> converted to two compatibles. New DTS should use two compatibles.
->
-> It's quite a lot of churn, but would make in the long term bindings
-> correct and also not break other users/projects.
->
-> >
-> > Maybe Haibo can comment on whether or not that would be an issue for the 8m[mnp]
-> >
-> > I will defer to Krzysztof and Haibo as to the proper method that we
-> > should add HS400-ES.  I don't have an issue adding the imx8mn or
-> > imx8mp compatible flags to the esdhc driver if that's the decision.
->
-> I don't get what's the problem with HS400-ES. In any case (your patch
-> here, other ideas) your DTS will bind to imx8mm-usdhc which has HS400-ES.
+From: Tom Rix <trix@redhat.com>
 
-I was under the impression Ahmad didn't want me to add the imx8mm
-compatible to the DTS, but instead, add the imx8mp compatible into the
-driver so it binds directly to an imx8mp.
-Based on that, I was assuming this patch series would be rejected and
-I sould focus on just the driver file itself
+Early clearing of arrays with
+memset(array, 0, size);
+is equivilent to initializing the array in its decl with
+array[size] = {};
 
-From what I am reading from you, I should make the imx8mn and imx8mp
-device trees respectively read:
+Convert the memsets to initializations.
 
-compatible = "fsl,imx8mn-usdhc", "fsl,imx8mm-usdhc", "fsl,imx7d-usdhc";
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+v2: cleanup commit log
+    change { 0 } to {}
+    
+ drivers/net/wireless/ath/ath9k/ar9003_calib.c  |  6 ++----
+ drivers/net/wireless/ath/ath9k/ar9003_eeprom.c |  4 +---
+ drivers/net/wireless/ath/ath9k/ar9003_paprd.c  | 14 ++++++--------
+ drivers/net/wireless/ath/ath9k/eeprom.c        |  3 +--
+ drivers/net/wireless/ath/ath9k/eeprom_4k.c     |  4 +---
+ drivers/net/wireless/ath/ath9k/eeprom_9287.c   |  4 +---
+ drivers/net/wireless/ath/ath9k/eeprom_def.c    |  4 +---
+ drivers/net/wireless/ath/ath9k/wow.c           |  7 ++-----
+ 8 files changed, 15 insertions(+), 31 deletions(-)
 
-and
+diff --git a/drivers/net/wireless/ath/ath9k/ar9003_calib.c b/drivers/net/wireless/ath/ath9k/ar9003_calib.c
+index dc24da1ff00b1..142b11085bbc6 100644
+--- a/drivers/net/wireless/ath/ath9k/ar9003_calib.c
++++ b/drivers/net/wireless/ath/ath9k/ar9003_calib.c
+@@ -891,10 +891,9 @@ static void ar9003_hw_tx_iq_cal_outlier_detection(struct ath_hw *ah,
+ {
+ 	int i, im, nmeasurement;
+ 	int magnitude, phase;
+-	u32 tx_corr_coeff[MAX_MEASUREMENT][AR9300_MAX_CHAINS];
++	u32 tx_corr_coeff[MAX_MEASUREMENT][AR9300_MAX_CHAINS] = {};
+ 	struct ath9k_hw_cal_data *caldata = ah->caldata;
+ 
+-	memset(tx_corr_coeff, 0, sizeof(tx_corr_coeff));
+ 	for (i = 0; i < MAX_MEASUREMENT / 2; i++) {
+ 		tx_corr_coeff[i * 2][0] = tx_corr_coeff[(i * 2) + 1][0] =
+ 					AR_PHY_TX_IQCAL_CORR_COEFF_B0(i);
+@@ -1155,10 +1154,9 @@ static void ar9003_hw_tx_iq_cal_post_proc(struct ath_hw *ah,
+ static void ar9003_hw_tx_iq_cal_reload(struct ath_hw *ah)
+ {
+ 	struct ath9k_hw_cal_data *caldata = ah->caldata;
+-	u32 tx_corr_coeff[MAX_MEASUREMENT][AR9300_MAX_CHAINS];
++	u32 tx_corr_coeff[MAX_MEASUREMENT][AR9300_MAX_CHAINS] = {};
+ 	int i, im;
+ 
+-	memset(tx_corr_coeff, 0, sizeof(tx_corr_coeff));
+ 	for (i = 0; i < MAX_MEASUREMENT / 2; i++) {
+ 		tx_corr_coeff[i * 2][0] = tx_corr_coeff[(i * 2) + 1][0] =
+ 					AR_PHY_TX_IQCAL_CORR_COEFF_B0(i);
+diff --git a/drivers/net/wireless/ath/ath9k/ar9003_eeprom.c b/drivers/net/wireless/ath/ath9k/ar9003_eeprom.c
+index b0a4ca3559fd8..25dd9d92f656f 100644
+--- a/drivers/net/wireless/ath/ath9k/ar9003_eeprom.c
++++ b/drivers/net/wireless/ath/ath9k/ar9003_eeprom.c
+@@ -5451,14 +5451,12 @@ static void ath9k_hw_ar9300_set_txpower(struct ath_hw *ah,
+ 	struct ath_common *common = ath9k_hw_common(ah);
+ 	struct ar9300_eeprom *eep = &ah->eeprom.ar9300_eep;
+ 	struct ar9300_modal_eep_header *modal_hdr;
+-	u8 targetPowerValT2[ar9300RateSize];
++	u8 targetPowerValT2[ar9300RateSize] = {};
+ 	u8 target_power_val_t2_eep[ar9300RateSize];
+ 	u8 targetPowerValT2_tpc[ar9300RateSize];
+ 	unsigned int i = 0, paprd_scale_factor = 0;
+ 	u8 pwr_idx, min_pwridx = 0;
+ 
+-	memset(targetPowerValT2, 0 , sizeof(targetPowerValT2));
+-
+ 	/*
+ 	 * Get target powers from EEPROM - our baseline for TX Power
+ 	 */
+diff --git a/drivers/net/wireless/ath/ath9k/ar9003_paprd.c b/drivers/net/wireless/ath/ath9k/ar9003_paprd.c
+index 34e1009402846..ab3987777dd08 100644
+--- a/drivers/net/wireless/ath/ath9k/ar9003_paprd.c
++++ b/drivers/net/wireless/ath/ath9k/ar9003_paprd.c
+@@ -419,13 +419,16 @@ static inline int find_proper_scale(int expn, int N)
+ static bool create_pa_curve(u32 *data_L, u32 *data_U, u32 *pa_table, u16 *gain)
+ {
+ 	unsigned int thresh_accum_cnt;
+-	int x_est[NUM_BIN + 1], Y[NUM_BIN + 1], theta[NUM_BIN + 1];
++	int x_est[NUM_BIN + 1] = {};
++	int Y[NUM_BIN + 1] = {};
++	int theta[NUM_BIN + 1] = {};
+ 	int PA_in[NUM_BIN + 1];
+ 	int B1_tmp[NUM_BIN + 1], B2_tmp[NUM_BIN + 1];
+ 	unsigned int B1_abs_max, B2_abs_max;
+ 	int max_index, scale_factor;
+-	int y_est[NUM_BIN + 1];
+-	int x_est_fxp1_nonlin, x_tilde[NUM_BIN + 1];
++	int y_est[NUM_BIN + 1] = {};
++	int x_est_fxp1_nonlin;
++	int x_tilde[NUM_BIN + 1] = {};
+ 	unsigned int x_tilde_abs;
+ 	int G_fxp, Y_intercept, order_x_by_y, M, I, L, sum_y_sqr, sum_y_quad;
+ 	int Q_x, Q_B1, Q_B2, beta_raw, alpha_raw, scale_B;
+@@ -439,11 +442,6 @@ static bool create_pa_curve(u32 *data_L, u32 *data_U, u32 *pa_table, u16 *gain)
+ 	thresh_accum_cnt = 16;
+ 	scale_factor = 5;
+ 	max_index = 0;
+-	memset(theta, 0, sizeof(theta));
+-	memset(x_est, 0, sizeof(x_est));
+-	memset(Y, 0, sizeof(Y));
+-	memset(y_est, 0, sizeof(y_est));
+-	memset(x_tilde, 0, sizeof(x_tilde));
+ 
+ 	for (i = 0; i < NUM_BIN; i++) {
+ 		s32 accum_cnt, accum_tx, accum_rx, accum_ang;
+diff --git a/drivers/net/wireless/ath/ath9k/eeprom.c b/drivers/net/wireless/ath/ath9k/eeprom.c
+index efb7889142d47..03675f6e0409e 100644
+--- a/drivers/net/wireless/ath/ath9k/eeprom.c
++++ b/drivers/net/wireless/ath/ath9k/eeprom.c
+@@ -480,7 +480,7 @@ void ath9k_hw_get_gain_boundaries_pdadcs(struct ath_hw *ah,
+ 		[AR5416_MAX_PWR_RANGE_IN_HALF_DB];
+ 
+ 	u8 *pVpdL, *pVpdR, *pPwrL, *pPwrR;
+-	u8 minPwrT4[AR5416_NUM_PD_GAINS];
++	u8 minPwrT4[AR5416_NUM_PD_GAINS] = {};
+ 	u8 maxPwrT4[AR5416_NUM_PD_GAINS];
+ 	int16_t vpdStep;
+ 	int16_t tmpVal;
+@@ -500,7 +500,6 @@ void ath9k_hw_get_gain_boundaries_pdadcs(struct ath_hw *ah,
+ 	else
+ 		intercepts = AR5416_PD_GAIN_ICEPTS;
+ 
+-	memset(&minPwrT4, 0, AR5416_NUM_PD_GAINS);
+ 	ath9k_hw_get_channel_centers(ah, chan, &centers);
+ 
+ 	for (numPiers = 0; numPiers < availPiers; numPiers++) {
+diff --git a/drivers/net/wireless/ath/ath9k/eeprom_4k.c b/drivers/net/wireless/ath/ath9k/eeprom_4k.c
+index e8c2cc03be0cb..b74a60fd6cf17 100644
+--- a/drivers/net/wireless/ath/ath9k/eeprom_4k.c
++++ b/drivers/net/wireless/ath/ath9k/eeprom_4k.c
+@@ -583,12 +583,10 @@ static void ath9k_hw_4k_set_txpower(struct ath_hw *ah,
+ 	struct ath_regulatory *regulatory = ath9k_hw_regulatory(ah);
+ 	struct ar5416_eeprom_4k *pEepData = &ah->eeprom.map4k;
+ 	struct modal_eep_4k_header *pModal = &pEepData->modalHeader;
+-	int16_t ratesArray[Ar5416RateSize];
++	int16_t ratesArray[Ar5416RateSize] = {};
+ 	u8 ht40PowerIncForPdadc = 2;
+ 	int i;
+ 
+-	memset(ratesArray, 0, sizeof(ratesArray));
+-
+ 	if (ath9k_hw_4k_get_eeprom_rev(ah) >= AR5416_EEP_MINOR_VER_2)
+ 		ht40PowerIncForPdadc = pModal->ht40PowerIncForPdadc;
+ 
+diff --git a/drivers/net/wireless/ath/ath9k/eeprom_9287.c b/drivers/net/wireless/ath/ath9k/eeprom_9287.c
+index 3caa149b10131..f70e3ef9b10b3 100644
+--- a/drivers/net/wireless/ath/ath9k/eeprom_9287.c
++++ b/drivers/net/wireless/ath/ath9k/eeprom_9287.c
+@@ -711,12 +711,10 @@ static void ath9k_hw_ar9287_set_txpower(struct ath_hw *ah,
+ 	struct ath_regulatory *regulatory = ath9k_hw_regulatory(ah);
+ 	struct ar9287_eeprom *pEepData = &ah->eeprom.map9287;
+ 	struct modal_eep_ar9287_header *pModal = &pEepData->modalHeader;
+-	int16_t ratesArray[Ar5416RateSize];
++	int16_t ratesArray[Ar5416RateSize] = {};
+ 	u8 ht40PowerIncForPdadc = 2;
+ 	int i;
+ 
+-	memset(ratesArray, 0, sizeof(ratesArray));
+-
+ 	if (ath9k_hw_ar9287_get_eeprom_rev(ah) >= AR9287_EEP_MINOR_VER_2)
+ 		ht40PowerIncForPdadc = pModal->ht40PowerIncForPdadc;
+ 
+diff --git a/drivers/net/wireless/ath/ath9k/eeprom_def.c b/drivers/net/wireless/ath/ath9k/eeprom_def.c
+index 9729a69d3e2e3..4d24c877cbfc2 100644
+--- a/drivers/net/wireless/ath/ath9k/eeprom_def.c
++++ b/drivers/net/wireless/ath/ath9k/eeprom_def.c
+@@ -1150,12 +1150,10 @@ static void ath9k_hw_def_set_txpower(struct ath_hw *ah,
+ 	struct ar5416_eeprom_def *pEepData = &ah->eeprom.def;
+ 	struct modal_eep_header *pModal =
+ 		&(pEepData->modalHeader[IS_CHAN_2GHZ(chan)]);
+-	int16_t ratesArray[Ar5416RateSize];
++	int16_t ratesArray[Ar5416RateSize] = {};
+ 	u8 ht40PowerIncForPdadc = 2;
+ 	int i, cck_ofdm_delta = 0;
+ 
+-	memset(ratesArray, 0, sizeof(ratesArray));
+-
+ 	if (ath9k_hw_def_get_eeprom_rev(ah) >= AR5416_EEP_MINOR_VER_2)
+ 		ht40PowerIncForPdadc = pModal->ht40PowerIncForPdadc;
+ 
+diff --git a/drivers/net/wireless/ath/ath9k/wow.c b/drivers/net/wireless/ath/ath9k/wow.c
+index 8d0b1730a9d5b..0232fba96d74c 100644
+--- a/drivers/net/wireless/ath/ath9k/wow.c
++++ b/drivers/net/wireless/ath/ath9k/wow.c
+@@ -53,11 +53,8 @@ static int ath9k_wow_add_disassoc_deauth_pattern(struct ath_softc *sc)
+ 	struct ath_common *common = ath9k_hw_common(ah);
+ 	int pattern_count = 0;
+ 	int ret, i, byte_cnt = 0;
+-	u8 dis_deauth_pattern[MAX_PATTERN_SIZE];
+-	u8 dis_deauth_mask[MAX_PATTERN_SIZE];
+-
+-	memset(dis_deauth_pattern, 0, MAX_PATTERN_SIZE);
+-	memset(dis_deauth_mask, 0, MAX_PATTERN_SIZE);
++	u8 dis_deauth_pattern[MAX_PATTERN_SIZE] = {};
++	u8 dis_deauth_mask[MAX_PATTERN_SIZE] = {};
+ 
+ 	/*
+ 	 * Create Dissassociate / Deauthenticate packet filter
+-- 
+2.26.3
 
-compatible = "fsl,imx8mp-usdhc", "fsl,imx8mm-usdhc", "fsl,imx7d-usdhc";
-
-If that's true, do I need to change the YAML at all?
-
-adam
->
-> Best regards,
-> Krzysztof
