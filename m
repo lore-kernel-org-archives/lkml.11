@@ -2,172 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88539C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 15:25:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F012AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 15:29:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238007AbiC1P1Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 11:27:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46570 "EHLO
+        id S237447AbiC1Pba (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 11:31:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237392AbiC1P0J (ORCPT
+        with ESMTP id S232846AbiC1Pb1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 11:26:09 -0400
-Received: from mail.baikalelectronics.ru (mail.baikalelectronics.com [87.245.175.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 462E21FA55;
-        Mon, 28 Mar 2022 08:24:13 -0700 (PDT)
-Received: from mail.baikalelectronics.ru (unknown [192.168.51.25])
-        by mail.baikalelectronics.ru (Postfix) with ESMTP id 5EB0C1E4923;
-        Thu, 24 Mar 2022 04:37:52 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru 5EB0C1E4923
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1648085872;
-        bh=i8/8fLcZUXbXg67aSAjVRqmL8MzIGLx2dw5JpgWmYX8=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=bA0h9hLl7MP/I1G5OEbHLaqxYZu89pAzQIAk2mJsklz854E9hcGVO2UVPNnklG+Zg
-         bVcnza/LmIEdgFT7ppap3kRjOlw4YHR+JBiYjMDHSENoQQpgeE3KZeDqR8RVXBiRVf
-         yra6hstTZJrL1F0RD3gB2BfTdjN3qHVpWAVw0XFk=
-Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 24 Mar 2022 04:37:52 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Frank Li <Frank.Li@nxp.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, <linux-pci@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 05/16] PCI: dwc: Add IP-core version detection procedure
-Date:   Thu, 24 Mar 2022 04:37:23 +0300
-Message-ID: <20220324013734.18234-6-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20220324013734.18234-1-Sergey.Semin@baikalelectronics.ru>
-References: <20220324013734.18234-1-Sergey.Semin@baikalelectronics.ru>
+        Mon, 28 Mar 2022 11:31:27 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1DEE3CA4D;
+        Mon, 28 Mar 2022 08:29:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648481386; x=1680017386;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ujQCSh8gd9iXs63iL8zY1QPpgpG7qcOOfXmWogNz3mg=;
+  b=Z9wZRuLYX1bKRDwZG2Q6NppxZLRflAt5DYNaTyxRp+BRNQHZCb/AprW9
+   NfnEppq+sbNvQNoLfcttE/xI4VWftehq0oenlquFVIdMP8ZE0pS3/iS6O
+   NJ+zGN6+KJ9QghfKR4NFrrczFgiOoWHiC4JnUcTEH3Q1exTZFH6HDu0TI
+   MOzgoN72saB0QzP/nCmhKWkYWR+wfDKu85MqZPjdKKgdB3tTWMlD1zYZ3
+   /plDZ1jvjSXU3X/XUcMBpTDqBfqheTYd+ySPurVQG/X8u3F1zIRw9ueiO
+   T6L0MiBgKQRMxaDAZEalqfeKJBAtPQtHwcblnVf+wipwZpAlsat4dQpTc
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="258997215"
+X-IronPort-AV: E=Sophos;i="5.90,217,1643702400"; 
+   d="scan'208";a="258997215"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 08:29:46 -0700
+X-IronPort-AV: E=Sophos;i="5.90,217,1643702400"; 
+   d="scan'208";a="563756053"
+Received: from gsfreema-mobl1.amr.corp.intel.com ([10.251.131.129])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 08:29:45 -0700
+Message-ID: <51c8d2541ccff2689b9164ab9b671b0b2514e65f.camel@linux.intel.com>
+Subject: Re: [RFC PATCH v2 4/6] ASoC: soc-pcm: tweak DPCM BE hw_param() call
+ order
+From:   Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+To:     Sameer Pujar <spujar@nvidia.com>, broonie@kernel.org,
+        lgirdwood@gmail.com, robh+dt@kernel.org, krzk+dt@kernel.org,
+        perex@perex.cz, tiwai@suse.com, peter.ujfalusi@linux.intel.com,
+        pierre-louis.bossart@linux.intel.com
+Cc:     oder_chiou@realtek.com, devicetree@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        jonathanh@nvidia.com, thierry.reding@gmail.com,
+        linux-tegra@vger.kernel.org
+Date:   Mon, 28 Mar 2022 08:29:45 -0700
+In-Reply-To: <1648448050-15237-5-git-send-email-spujar@nvidia.com>
+References: <1648448050-15237-1-git-send-email-spujar@nvidia.com>
+         <1648448050-15237-5-git-send-email-spujar@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.3-0ubuntu1 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since DWC PCIe v4.70a the controller version and version type can be read
-from the PORT_LOGIC.PCIE_VERSION_OFF and PORT_LOGIC.PCIE_VERSION_TYPE_OFF
-registers respectively. Seeing the generic code has got version-dependent
-parts let's use these registers to find out the controller version.  The
-detection procedure is executed for both RC and EP modes right after the
-platform-specific initialization. We can't do that earlier since the
-glue-drivers can perform the DBI-related setups there including the bus
-reference clocks activation, without which the CSRs just can't be read.
-
-Note the CSRs content is zero on the older DWC PCIe controller. In that
-case we have no choice but to rely on the platform setup.
-
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
----
- .../pci/controller/dwc/pcie-designware-ep.c   |  2 ++
- .../pci/controller/dwc/pcie-designware-host.c |  2 ++
- drivers/pci/controller/dwc/pcie-designware.c  | 24 +++++++++++++++++++
- drivers/pci/controller/dwc/pcie-designware.h  |  6 +++++
- 4 files changed, 34 insertions(+)
-
-diff --git a/drivers/pci/controller/dwc/pcie-designware-ep.c b/drivers/pci/controller/dwc/pcie-designware-ep.c
-index 7c9315fffe24..3b981d13cca9 100644
---- a/drivers/pci/controller/dwc/pcie-designware-ep.c
-+++ b/drivers/pci/controller/dwc/pcie-designware-ep.c
-@@ -645,6 +645,8 @@ int dw_pcie_ep_init_complete(struct dw_pcie_ep *ep)
- 	u32 reg;
- 	int i;
- 
-+	dw_pcie_version_detect(pci);
-+
- 	hdr_type = dw_pcie_readb_dbi(pci, PCI_HEADER_TYPE) &
- 		   PCI_HEADER_TYPE_MASK;
- 	if (hdr_type != PCI_HEADER_TYPE_NORMAL) {
-diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
-index 8364ea234e88..8f0d473ff770 100644
---- a/drivers/pci/controller/dwc/pcie-designware-host.c
-+++ b/drivers/pci/controller/dwc/pcie-designware-host.c
-@@ -398,6 +398,8 @@ int dw_pcie_host_init(struct pcie_port *pp)
- 		}
- 	}
- 
-+	dw_pcie_version_detect(pci);
-+
- 	dw_pcie_iatu_detect(pci);
- 
- 	dw_pcie_setup_rc(pp);
-diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
-index c21373c6cb51..49c494d82042 100644
---- a/drivers/pci/controller/dwc/pcie-designware.c
-+++ b/drivers/pci/controller/dwc/pcie-designware.c
-@@ -16,6 +16,30 @@
- #include "../../pci.h"
- #include "pcie-designware.h"
- 
-+void dw_pcie_version_detect(struct dw_pcie *pci)
-+{
-+	u32 ver;
-+
-+	/* The content of the CSR is zero on DWC PCIe older than v4.70a */
-+	ver = dw_pcie_readl_dbi(pci, PCIE_VERSION_NUMBER);
-+	if (!ver)
-+		return;
-+
-+	if (pci->version && pci->version != ver)
-+		dev_warn(pci->dev, "Versions don't match (%08x != %08x)\n",
-+			 pci->version, ver);
-+	else
-+		pci->version = ver;
-+
-+	ver = dw_pcie_readl_dbi(pci, PCIE_VERSION_TYPE);
-+
-+	if (pci->type && pci->type != ver)
-+		dev_warn(pci->dev, "Types don't match (%08x != %08x)\n",
-+			 pci->type, ver);
-+	else
-+		pci->type = ver;
-+}
-+
- /*
-  * These interfaces resemble the pci_find_*capability() interfaces, but these
-  * are for configuring host controllers, which are bridges *to* PCI devices but
-diff --git a/drivers/pci/controller/dwc/pcie-designware.h b/drivers/pci/controller/dwc/pcie-designware.h
-index 5be43c662176..f70cbdedf5a3 100644
---- a/drivers/pci/controller/dwc/pcie-designware.h
-+++ b/drivers/pci/controller/dwc/pcie-designware.h
-@@ -85,6 +85,9 @@
- #define PCIE_PORT_MULTI_LANE_CTRL	0x8C0
- #define PORT_MLTI_UPCFG_SUPPORT		BIT(7)
- 
-+#define PCIE_VERSION_NUMBER		0x8F8
-+#define PCIE_VERSION_TYPE		0x8FC
-+
- #define PCIE_ATU_VIEWPORT		0x900
- #define PCIE_ATU_REGION_INBOUND		BIT(31)
- #define PCIE_ATU_REGION_OUTBOUND	0
-@@ -278,6 +281,7 @@ struct dw_pcie {
- 	struct dw_pcie_ep	ep;
- 	const struct dw_pcie_ops *ops;
- 	u32			version;
-+	u32			type;
- 	int			num_lanes;
- 	int			link_gen;
- 	u8			n_fts[2];
-@@ -290,6 +294,8 @@ struct dw_pcie {
- #define to_dw_pcie_from_ep(endpoint)   \
- 		container_of((endpoint), struct dw_pcie, ep)
- 
-+void dw_pcie_version_detect(struct dw_pcie *pci);
-+
- u8 dw_pcie_find_capability(struct dw_pcie *pci, u8 cap);
- u16 dw_pcie_find_ext_capability(struct dw_pcie *pci, u8 cap);
- 
--- 
-2.35.1
+On Mon, 2022-03-28 at 11:44 +0530, Sameer Pujar wrote:
+> For DPCM links, the order of hw_param() call depends on the sequence
+> of
+> BE connection to FE. It is possible that one BE link can provide
+> clock
+> to another BE link. In such cases consumer BE DAI, to get the rate
+> set
+> by provider BE DAI, can use the standard clock functions only if
+> provider
+> has already set the appropriate rate during its hw_param() stage.
+> 
+> Presently the order is fixed and does not depend on the provider and
+> consumer relationships. So the clock rates need to be known ahead of
+> hw_param() stage.
+> 
+> This patch tweaks the hw_param() order by connecting the provider BEs
+> late to a FE. With this hw_param() calls for provider BEs happen
+> first
+> and then followed by consumer BEs. The consumers can use the standard
+> clk_get_rate() function to get the rate of the clock they depend on.
+> 
+> Signed-off-by: Sameer Pujar <spujar@nvidia.com>
+> ---
+>  TODO:
+>   * The FE link is not considered in this. For Tegra it is fine to
+>     call hw_params() for FE at the end. But systems, which want to
+> apply
+>     this tweak for FE as well, have to extend this tweak to FE.
+>   * Also only DPCM is considered here. If normal links require such
+>     tweak, it needs to be extended.
+> 
+>  sound/soc/soc-pcm.c | 60
+> ++++++++++++++++++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 59 insertions(+), 1 deletion(-)
+> 
+> diff --git a/sound/soc/soc-pcm.c b/sound/soc/soc-pcm.c
+> index 9a95468..5829514 100644
+> --- a/sound/soc/soc-pcm.c
+> +++ b/sound/soc/soc-pcm.c
+> @@ -1442,6 +1442,29 @@ static int dpcm_prune_paths(struct
+> snd_soc_pcm_runtime *fe, int stream,
+>  	return prune;
+>  }
+>  
+> +static bool defer_dpcm_be_connect(struct snd_soc_pcm_runtime *rtd)
+> +{
+> +	struct snd_soc_dai *dai;
+> +	int i;
+> +
+> +	if (!(rtd->dai_link->dai_fmt & SND_SOC_DAIFMT_FORMAT_MASK))
+> +		return false;
+Is this check necessary?
+> +
+> +	if ((rtd->dai_link->dai_fmt &
+> SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) ==
+> +	    SND_SOC_DAIFMT_CBC_CFC) {
+> +
+> +		for_each_rtd_cpu_dais(rtd, i, dai) {
+> +
+> +			if (!snd_soc_dai_is_dummy(dai))
+> +				return true;
+> +		}
+> +	}
+> +
+> +	return false;
+> +}
+> +
+> +#define MAX_CLK_PROVIDER_BE 10
+> +
+>  static int dpcm_add_paths(struct snd_soc_pcm_runtime *fe, int
+> stream,
+>  	struct snd_soc_dapm_widget_list **list_)
+>  {
+> @@ -1449,7 +1472,8 @@ static int dpcm_add_paths(struct
+> snd_soc_pcm_runtime *fe, int stream,
+>  	struct snd_soc_dapm_widget_list *list = *list_;
+>  	struct snd_soc_pcm_runtime *be;
+>  	struct snd_soc_dapm_widget *widget;
+> -	int i, new = 0, err;
+> +	struct snd_soc_pcm_runtime *prov[MAX_CLK_PROVIDER_BE];
+> +	int i, new = 0, err, count = 0;
+>  
+>  	/* Create any new FE <--> BE connections */
+>  	for_each_dapm_widgets(list, i, widget) {
+> @@ -1489,6 +1513,40 @@ static int dpcm_add_paths(struct
+> snd_soc_pcm_runtime *fe, int stream,
+>  		    (be->dpcm[stream].state !=
+> SND_SOC_DPCM_STATE_CLOSE))
+>  			continue;
+>  
+> +		/* Connect clock provider BEs at the end */
+> +		if (defer_dpcm_be_connect(be)) {
+> +			if (count >= MAX_CLK_PROVIDER_BE) {
+What determines MAX_CLK_PROVIDER_BE? why 10? Can you use rtd->num_cpus
+instead? 
+Thanks,
+Ranjani
 
