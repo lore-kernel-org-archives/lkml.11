@@ -2,158 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C0EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 15:00:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37CE9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 15:03:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244167AbiC1PBu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 11:01:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51568 "EHLO
+        id S244174AbiC1PEo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 11:04:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244159AbiC1O77 (ORCPT
+        with ESMTP id S240427AbiC1PEm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 10:59:59 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 51380EAA;
-        Mon, 28 Mar 2022 07:58:17 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 09F86D6E;
-        Mon, 28 Mar 2022 07:58:17 -0700 (PDT)
-Received: from lakrids (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B75763F73B;
-        Mon, 28 Mar 2022 07:58:15 -0700 (PDT)
-Date:   Mon, 28 Mar 2022 15:58:10 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Segher Boessenkool <segher@kernel.crashing.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Nathan Chancellor <nathan@kernel.org>, x86-ml <x86@kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        linux-toolchains@vger.kernel.org
-Subject: Re: clang memcpy calls
-Message-ID: <YkHNArCbWUEojGjL@lakrids>
-References: <YjxTt3pFIcV3lt8I@zn.tnic>
- <CAKwvOdkw0Bbm+=ZyViXQhBE1L6uSbvkstHJuHpQ21tzJRftgAw@mail.gmail.com>
- <Yj2yYFloadFobRPx@lakrids>
- <Yj3OEI+WHV/A5uf8@hirez.programming.kicks-ass.net>
- <20220325151238.GB614@gate.crashing.org>
- <YkGFdtn0yDIPqXRl@FVFF77S0Q05N>
- <20220328142220.GI614@gate.crashing.org>
+        Mon, 28 Mar 2022 11:04:42 -0400
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9149B5FF1D;
+        Mon, 28 Mar 2022 08:03:01 -0700 (PDT)
+Received: by mail-wm1-f43.google.com with SMTP id bg31-20020a05600c3c9f00b00381590dbb33so8739679wmb.3;
+        Mon, 28 Mar 2022 08:03:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ZrgiKCrxWRZyk32G1TmboPczQSoLsqVVgxz7YTO8i5k=;
+        b=HEJwJjXBJGjPtk0lOHQ7mYyCnkWOanN8CBBlM+NC202fYWkcZFs6gugKwazdHA7yox
+         ZVMsElJw1eNq92q6GGgCpwUqKifiGMsatgSQn9dlI5qTggNFksDoIl8tJX5O6p/1aWJn
+         V6BryumpnPv8fzeS7vZq+czXv3W55cyjMWHgDPOHkD9HYrPQdPZt740KDxQq4z6dxliP
+         l27QcZsxHpUxydONyfToCn2dIHLNFrbu00aM6xLPaG+x9yIhQ/rXbPbctFa7J/FIxcaS
+         buwks5MbvnfDD/8NZec8uBAwlc7JeBqI7By7TiGRBqiWrtJND5Nkd5nMkr5hfFlF8MOy
+         Xx9A==
+X-Gm-Message-State: AOAM532hOzS4kUxf5ERS+IDA8u1BFfnntmJ1StlnOYA53nN1fuxH6WHT
+        I/Xi5/7/kTpI8Ica3We4JrU=
+X-Google-Smtp-Source: ABdhPJywupQH4SLAOIVaFYSgWXt+32QtCxN7pfRTFCK+LtCkmyy4u4ZTBg9yk9tY4OCAa0YsiEG1Lg==
+X-Received: by 2002:a1c:2744:0:b0:382:a9b7:1c8a with SMTP id n65-20020a1c2744000000b00382a9b71c8amr26485495wmn.187.1648479779943;
+        Mon, 28 Mar 2022 08:02:59 -0700 (PDT)
+Received: from [192.168.0.162] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.googlemail.com with ESMTPSA id y7-20020a5d4ac7000000b00203e4c8bdf1sm12587975wrs.93.2022.03.28.08.02.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Mar 2022 08:02:59 -0700 (PDT)
+Message-ID: <e0ace708-3754-d7af-35ee-c73e7b15a443@kernel.org>
+Date:   Mon, 28 Mar 2022 17:02:58 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220328142220.GI614@gate.crashing.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 2/4] arm64: dts: mediatek: Add device-tree for MT8195
+ Demo board
+Content-Language: en-US
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Fabien Parent <fparent@baylibre.com>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220327200312.3090515-1-fparent@baylibre.com>
+ <20220327200312.3090515-3-fparent@baylibre.com>
+ <94d231cf-ce4c-22f5-b9af-41ae68f1e659@collabora.com>
+ <20220328144107.ed4xwzuiezzixqrx@radium>
+ <0b042c71-4d07-76a6-53bb-94bbd4bad6c0@collabora.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <0b042c71-4d07-76a6-53bb-94bbd4bad6c0@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 09:22:20AM -0500, Segher Boessenkool wrote:
-> Hi!
+On 28/03/2022 16:50, AngeloGioacchino Del Regno wrote:
+> Il 28/03/22 16:41, Fabien Parent ha scritto:
+>> On Mon, Mar 28, 2022 at 03:47:09PM +0200, AngeloGioacchino Del Regno wrote:
+>>> Il 27/03/22 22:03, Fabien Parent ha scritto:
+>>>> Add basic device-tree for the MT8195 Demo board. The
+>>>> Demo board is made by MediaTek and has a MT8195 SoC,
+>>>> associated with the MT6359 and MT6360 PMICs, and
+>>>> the MT7921 connectivity chip.
+>>>>
+>>>> The IOs available on that board are:
+>>>> * 1 USB Type-C connector with DP aux mode support
+>>>> * 1 USB Type-A connector
+>>>> * 1 full size HDMI RX and 1 full size HDMI TX connector
+>>>> * 1 uSD slot
+>>>> * 40 pins header
+>>>> * SPI interface header
+>>>> * 1 M.2 slot
+>>>> * 1 audio jack
+>>>> * 1 micro-USB port for serial debug
+>>>> * 2 connectors for DSI displays
+>>>> * 3 connectors for CSI cameras
+>>>> * 1 connector for a eDP panel
+>>>> * 1 MMC storage
+>>>>
+>>>> This commit adds basic support in order to be able to boot.
+>>>>
+>>>> Signed-off-by: Fabien Parent <fparent@baylibre.com>
+>>>> ---
+>>>> v2:
+>>>>    * remove empty i2c nodes
+>>>>    * remove empty spi node
+>>>>    * remove unused pcie pinctrls
+>>>>    * fixup node nodes to not contains underscore
+>>>>    * rename mt6360 pmic node
+>>>>    * move mmc1 node right after mmc0 node
+>>>>    * use generic node name for gpio-keys
+>>>>    * uniformize pinctrl node names
+>>>>
+>>>>    arch/arm64/boot/dts/mediatek/Makefile        |   1 +
+>>>>    arch/arm64/boot/dts/mediatek/mt8195-demo.dts | 447 +++++++++++++++++++
+>>>>    2 files changed, 448 insertions(+)
+>>>>    create mode 100644 arch/arm64/boot/dts/mediatek/mt8195-demo.dts
+>>>>
+>>>
+>>> ..snip..
+>>>
+>>>> diff --git a/arch/arm64/boot/dts/mediatek/mt8195-demo.dts b/arch/arm64/boot/dts/mediatek/mt8195-demo.dts
+>>>> new file mode 100644
+>>>> index 000000000000..d94b4e01159a
+>>>> --- /dev/null
+>>>> +++ b/arch/arm64/boot/dts/mediatek/mt8195-demo.dts
+>>>> @@ -0,0 +1,447 @@
+>>>
+>>> ..snip..
+>>>
+>>>> +
+>>>> +	gpio-keys {
+>>>> +		compatible = "gpio-keys";
+>>>> +		input-name = "gpio-keys";
+>>>> +		pinctrl-names = "default";
+>>>> +		pinctrl-0 = <&gpio_keys_pins>;
+>>>> +
+>>>> +		key-0 {
+>>>
+>>> key-volup is more descriptive, can you please change that?
+>>
+>> Which review should I follow, yours or the one from Krzysztof? Because both reviews are contradictory
+>>
 > 
-> On Mon, Mar 28, 2022 at 10:52:54AM +0100, Mark Rutland wrote:
-> > On Fri, Mar 25, 2022 at 10:12:38AM -0500, Segher Boessenkool wrote:
-> > > The compiler isn't assuming anything about asan.  The compiler generates
-> > > its code without any consideration of what asan will or will not do.
-> > > The burden of making things work is on asan.
-> > 
-> > I think we're talking past each other here, so let me be more precise. :)
-> > 
-> > The key thing is that when the user passes `-fsantize=address`, instrumentation
-> > is added by (a part of) the compiler. That instrumentation is added under some
-> > assumptions as to how the compiler as a whole will behave.
-> > 
-> > With that in mind, the question is how is __attribute__((no_sanitize_address))
-> > intended to work when considering all the usual expectations around how the
-> > compiler can play with memcpy and similar?
+> There are a lot of "vol-down", "vol-up" (etc) instances, lots of which are on
+> Qualcomm device-trees... so I guess this is just about personal preference...
 > 
-> The attribute is about how the *current* function is instrumented, not
-> about anything called by this function.  This is clearly documented:
-> 'no_sanitize_address'
-> 'no_address_safety_analysis'
->      The 'no_sanitize_address' attribute on functions is used to inform
->      the compiler that it should not instrument memory accesses in the
->      function when compiling with the '-fsanitize=address' option.  The
->      'no_address_safety_analysis' is a deprecated alias of the
->      'no_sanitize_address' attribute, new code should use
->      'no_sanitize_address'.
+> Honestly, before sending my review I forgot to check Krzysztof's one (sorry!!),
+> but I think that this kind of node names is highly subjective... at least, I am
+> not aware of any rule about having to use "generic" names.
 
-I understand this, and I have read the documentation.
+Node names should be generic, not descriptive. See Devicetree specification:
+"The name of a node should be somewhat generic, reflecting the function
+of the device and not its precise programming
+ model. If appropriate, the name should be one of the following choices:
+...
+- keyboard
 
-I'm not claiming any *individual* semantic is wrong, just that in
-combination this doesn't provide what people *need* (even if it strictly
-matches what is documented).
+- key
 
-My argument is: if the compiler is permitted to implictly and
-arbitrarily add calls to instrumented functions within a function marked
-with `no_sanitize_address`, the `no_sanitize_address` attribute is
-effectively useless, and therefore *something* needs to change.
+- keys
+"
 
-> > > The compiler should not do anything differently here if it uses asan.
-> > > The address sanitizer and the memcpy function implementation perhaps
-> > > have to cooperate somehow, or asan needs more smarts.  This needs to
-> > > happen no matter what, to support other things calling memcpy, say,
-> > > assembler code.
-> > 
-> > I appreciate where you're coming from here, but I think you're approaching the
-> > problem sideways.
+I prefer key-0 but "volup-key" or "key-volup" could work too (but these
+are still specific, not generic).
+
+Using other DTS as examples is wrong, because most of submissions are
+wrong and almost half of my bindings and DTS reviews include that
+comment - generic node names. To be fair, most of my DTS contributions
+also contained specific node names till I learnt that rule...
+
+Anyway, it's not that important. :)
+
+Thanks for other changes in the DTS.
+
 > 
-> I am stating facts, I am not trying to solve your problem there.  It
-> seemed to me (and still does) that you didn't grasp all facts here.
-
-Sorry, but I think you're reading my replies uncharitably if you think
-that.
-
-> > We need to define *what the semantics are* so that we can actually solve the
-> > problem, e.g. is a memcpy implementation expected to be instrumented or not?
+> Check Documentation/devicetree/bindings/input/gpio-keys.yaml - in the example,
+> you can find "specific" node names, like:
 > 
-> That is up to the memcpy implementation itself, of course.
-
-Sorry, but that doesn't make sense to me. When the compiler instruments
-a function with AddressSanitizer, it must have *some* assumption about
-whether memcpy() itself will be instrumented, such that it won't miss
-some necessary instrumentation (and ideally, for performance reasons
-doesn't have redundant instrumentation).
-
-If the story is "memcpy may or may not be instrumented", then the only
-way to guarantee necessary instrumentation is for the compiler to
-*always* place it in the caller (unless forbidden by
-`no_sanitize_address`). If that were the case, the kernel can make
-things work by simply not instrumenting memcpy and friends.
-
-IIUC today those assumptions are not documented. Is the behaviour
-consistent?
-
-> > > GCC *requires* memcpy to be the standard memcpy always (i.e. to have the
-> > > standard-specified semantics).  This means that it will have the same
-> > > semantics as __builtin_memcpy always, and either or not be a call to an
-> > > external function.  It can also create calls to it out of thin air.
-> > 
-> > I understand all of that.
+>          up {
 > 
-> And still you want us to do something that is impossible under those
-> existing constraints :-(
+>              label = "GPIO Key UP";
+> 
+> In any case, as I said, it's my personal preference to have it named as something
+> like "key-volup" or "vol-up" or .. a name that is describing the key, but, as a
+> personal preference, it is nothing mandatory, not even from my side.
+> 
+> If anyone else has reasons to disagree, shrug, it's fine :))
 
-If that's truly impossible, that's very unfortunate.
 
-FWIW, I can believe this would require tremendous effort to change, even
-if it's not truly impossible.
-
-If that is the case, it means that kernel side we have to never
-instrument our implementation of memcpy and friends for correctness
-reasons, which has the unfortunate property of losing coverage in the
-cases we *would* like to use an instrumented memcpy.
-
-> If you want the external memcpy called by modules A, B, C to not be
-> instrumented, you have to link A, B, and C against an uninstrumented
-> memcpy.  This is something the kernel will have to do, the compiler has
-> no say in how the kernel is linked together.
-
-Unfortunately that options doesn't really fix the `no_sanitize_address`
-semantic, and forces us to move *all* uninstrumentable code out into
-separate compilation units, etc.
-
-This isn't *impossible*, but is *very* painful.
-
-Thanks,
-Mark.
+Best regards,
+Krzysztof
