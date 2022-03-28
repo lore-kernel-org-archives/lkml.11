@@ -2,110 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70004C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 12:52:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AEDCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 12:55:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242688AbiC1MyD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 08:54:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36844 "EHLO
+        id S242606AbiC1M5B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 08:57:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242726AbiC1Mxy (ORCPT
+        with ESMTP id S234432AbiC1M46 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 08:53:54 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47B3F5BD25;
-        Mon, 28 Mar 2022 05:52:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648471928; x=1680007928;
-  h=date:from:to:subject:message-id:references:mime-version:
-   in-reply-to;
-  bh=GcFmmw+wq2araDt2jjVJDabU9v0zfQ0Zqb+8UCPwJTM=;
-  b=QQYDzUttAtDJODjJRsrbjOztA2xNrZc+M17EA+P54KLqZqi1XV16x6Qm
-   b4LTeC2WXT3jZIcI2x/iaSqy5r8SwbWA4q1idWGIzDSyNahVQwn0qFjSF
-   uEPeiXTLUFmy+zhrnkYNtQ2ZIIlygHsJTDHNTYK5rKsht+O6Zlkq5XFwA
-   ZVAnvV1a2Nd+cYx9lifB6BjGORSdKlerphUtuadnzNcMyxV3qITEkxkoL
-   HwKBHHi+/bwpaUPcgY/ycfxpCPBlLQpeAfkr0Vk/549f8ZKgc+L66BO7B
-   t222ysktVeHwpMyIT288TStPz4uwcjdMAqI97ArLCrI51e3F0yPrjDrZD
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10299"; a="257817038"
-X-IronPort-AV: E=Sophos;i="5.90,217,1643702400"; 
-   d="scan'208";a="257817038"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 05:52:08 -0700
-X-IronPort-AV: E=Sophos;i="5.90,217,1643702400"; 
-   d="scan'208";a="651993171"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 05:52:06 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nYoqK-0086hU-9k;
-        Mon, 28 Mar 2022 15:51:32 +0300
-Date:   Mon, 28 Mar 2022 15:51:31 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH v7 1/1] gpio: add sloppy logic analyzer using polling
-Message-ID: <YkGvU3l1Lq7OlYKK@smile.fi.intel.com>
-References: <20220317085019.3987-1-wsa+renesas@sang-engineering.com>
- <20220317085019.3987-2-wsa+renesas@sang-engineering.com>
- <YjiC6Lg5k5gK/BfP@smile.fi.intel.com>
- <YkGB3AgME/OZAdoG@ninjato>
- <YkGSzCykWvPXX89O@smile.fi.intel.com>
- <YkGn6/B4XHhb72YC@ninjato>
+        Mon, 28 Mar 2022 08:56:58 -0400
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25419E0BD
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 05:55:18 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id i65so11233168qkd.7
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 05:55:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=marek-ca.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=k+wjaE9zp8UiiJ3ll5xchHseTtAzJ2kCou17dDYzPoA=;
+        b=tcx16Kj+7Cqux9mvpPivKKmgL8LuL0VEeyv7xtoKn155d3O5pQ1xM9KdQFbPq67vAu
+         ncPSybCNjkrekLm+BxOjgqjGogipQmtloV8c1paAp+7GYhYuV6wCmsGykAk0FTp6Il/w
+         SveZKg7ZHVBl72dE00xbC1PExj+UjXh2sEWE/3MXLhw/aMamfw35KhT50syApyCDML5H
+         d2KWjYD0l7FoZFzuPTMtRxzKpj3dQESwtb/YnSuKykGxKYinz3NENxy+Xt7Er2ZZfRq1
+         aWmBYOcwAkasBZD3JTKhMM9WLTWQDzMc+Sv2cWoc0BLJqX+/sYa7eWtfaYESenkXCpJ5
+         gnwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=k+wjaE9zp8UiiJ3ll5xchHseTtAzJ2kCou17dDYzPoA=;
+        b=I85DYt6MGbhQF1kZMUPcyFzyHStbYZ6I+JiJpqJqnlzNjXpgCI3kxA82ftM9LCtCt9
+         RLceZGNMTkBAb7UAcFDfjgLLOMt2wUMtrxuje6SRIGRFp3JEC/aCZ1/xnh/O1F80dNIw
+         BzMl0Fk/pLa/QzSXSaHL6L57FadYEi++Z5/Vc4733NJgbpqSaI7C9FwMJWJ99iWLptQa
+         R9wSF3uq2hjhM7er+yY380JL/hH/Pp/PbJEImWZHP/QeWbrQ26Qys38UusgPdOxwPaQO
+         SqH6H2X3guekrxhBDMtm7HbNh7z7skIqCze8hmd6JK09H6Bx9MZUbisSX0kvGqBOX5Z/
+         1DiA==
+X-Gm-Message-State: AOAM5301dZJ+1bguBi3exwKJjKgXvaXjhUo0ypH/zHvNmsKseQ1+Catu
+        xCRFYrouLS8XYPlxNJiEZNYFfQ==
+X-Google-Smtp-Source: ABdhPJxc8NsbZVET0kGypEAfG6BJjXHoFiXSRAGghnfGjwEdoHpPzeLu52swAHTy2TVKfJyxc8qtoQ==
+X-Received: by 2002:a37:a084:0:b0:67d:405b:60d0 with SMTP id j126-20020a37a084000000b0067d405b60d0mr15545606qke.83.1648472117315;
+        Mon, 28 Mar 2022 05:55:17 -0700 (PDT)
+Received: from localhost.localdomain (modemcable134.222-177-173.mc.videotron.ca. [173.177.222.134])
+        by smtp.gmail.com with ESMTPSA id c10-20020ac87dca000000b002e1db1b7b10sm12441798qte.25.2022.03.28.05.55.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 05:55:16 -0700 (PDT)
+From:   Jonathan Marek <jonathan@marek.ca>
+To:     freedreno@lists.freedesktop.org
+Cc:     dpiliaiev@igalia.com, Rob Clark <robdclark@gmail.com>,
+        Sean Paul <sean@poorly.run>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Jordan Crouse <jordan@cosmicpenguin.net>,
+        linux-arm-msm@vger.kernel.org (open list:DRM DRIVER FOR MSM ADRENO GPU),
+        dri-devel@lists.freedesktop.org (open list:DRM DRIVER FOR MSM ADRENO
+        GPU), linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] drm/msm: use orig_nents to iterate over scatterlist with per-process tables
+Date:   Mon, 28 Mar 2022 08:55:05 -0400
+Message-Id: <20220328125505.31605-1-jonathan@marek.ca>
+X-Mailer: git-send-email 2.26.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YkGn6/B4XHhb72YC@ninjato>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 02:19:55PM +0200, Wolfram Sang wrote:
-> 
-> > > I don't like assigning 'priv' memebers twice, so I'd like to keep it as
-> > > is.
-> > 
-> > But this will give better understanding of the steps the code performs, no?
-> 
-> IMO the current version is readable :)
+This matches the implementation of iommu_map_sgtable() used for the
+non-per-process page tables path.
 
-OK!
+This works around the dma_map_sgtable() call (used to invalidate cache)
+overwriting sgt->nents with 1 (which is probably a separate issue).
 
-...
+Fixes: b145c6e65eb0 ("drm/msm: Add support to create a local pagetable")
+Signed-off-by: Jonathan Marek <jonathan@marek.ca>
+---
+ drivers/gpu/drm/msm/msm_iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> > (Because this function basically contains two steps at once. I assume it's
-> >  done this way due to absence of vrealloc(), right?)
-> > 
-> > But we have kvrealloc(). Can it be used here?
-> 
-> This has a huge disadvantage: realloc() requests new memory before the
-> old one is discarded. If you want to make a huge buffer bigger, this can
-> lead to OOM. The old contents do not matter, so the old buffer can go
-> away in favor of the new one.
-
-Fair enough.
-
-...
-
-> > > > Can it be wrapped by DEFINE_SHOW_ATTRIBUTE()?
-> > > 
-> > > I don't see a way. Do you?
-> > 
-> > Me neither. I mixed this up with (not upstreamed yet) DEFINE_STORE_ATTRIBUTE.
-> 
-> Still no cigar. That one is for rw files. Mine is writable only, so I use
-> e.g. no_llseek.
-> 
-> Probably, the above macro should be named, DEFINE_SHOWSTORE_ATTRIBUTE.
-> But I see this macro is stalled since late 2020 anyhow.
-
-Right, not applicable here anyway.
-
+diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
+index bcaddbba564df..22935ef26a3a1 100644
+--- a/drivers/gpu/drm/msm/msm_iommu.c
++++ b/drivers/gpu/drm/msm/msm_iommu.c
+@@ -58,7 +58,7 @@ static int msm_iommu_pagetable_map(struct msm_mmu *mmu, u64 iova,
+ 	u64 addr = iova;
+ 	unsigned int i;
+ 
+-	for_each_sg(sgt->sgl, sg, sgt->nents, i) {
++	for_each_sg(sgt->sgl, sg, sgt->orig_nents, i) {
+ 		size_t size = sg->length;
+ 		phys_addr_t phys = sg_phys(sg);
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.26.1
 
