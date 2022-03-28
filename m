@@ -2,134 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43DD3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 12:34:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6308EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 12:36:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242540AbiC1Mfl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 08:35:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42020 "EHLO
+        id S242562AbiC1MiJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 08:38:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242528AbiC1Mfc (ORCPT
+        with ESMTP id S240930AbiC1MiF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 08:35:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D9A566440
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 05:33:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648470830;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ROdC7Jw3x8bFNSVJnYtQV9N5qoumVwi1dU/TOVEmlwk=;
-        b=i5wEWOWkeh+r1PfatBL4xI8RFp44WdBs40kSH9DkQUTutJVfD1orJAEGgkrDrqN587myuw
-        Iv3msY7QCUUanHyNSaHakWDVgqt2SFOBFoBsZMCs/6jOx599WaObxG6WrG1QAV5WdfFF9y
-        OmRneu+qcI8zuucvj5HjAux9jeuYVCg=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-612-3BKM04BkO1GrafXOwyk-Iw-1; Mon, 28 Mar 2022 08:33:48 -0400
-X-MC-Unique: 3BKM04BkO1GrafXOwyk-Iw-1
-Received: by mail-wm1-f71.google.com with SMTP id m35-20020a05600c3b2300b0038c90ef2dceso8180953wms.4
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 05:33:48 -0700 (PDT)
+        Mon, 28 Mar 2022 08:38:05 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDD45DEE7
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 05:36:23 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id u22so12494893pfg.6
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 05:36:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:in-reply-to:references:subject:message-id:date
+         :mime-version:content-transfer-encoding;
+        bh=s0MYHADlhkLmgL7QL3wLWNFZxF39wct7bEmjjdPPikg=;
+        b=vwhmFpraliyqWJSMmnH7DqX9kzpnwRglbGpcow2Z6N0VlX0C05na9yy3Tn5BZcbmQi
+         jZQxyUXXeD5bXMcwO10yxyojC0xk+hpMbERx7o7HF9m9cLGsk1x+BTaryp/zJnaudLYL
+         8pmtJAIa7I9FHBGI6/YsbQUM0ftJmJNvAE1v6V9gaMgEVuVVMlFgdxnRQWIpdJBdb8Qk
+         P71NwacXU98ms1gMdzlFqnrPtydU7m9zsYTYTXNKs52rGcWc90OHNnuDioz4nV1He4wK
+         cKRdFdNR9CwAYOSY6Jm15FNAUI+v6bapUwl88hQtcTxyO7V7KBJzk7bqPhTfDeF26HMI
+         9Iiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=ROdC7Jw3x8bFNSVJnYtQV9N5qoumVwi1dU/TOVEmlwk=;
-        b=RtbDkqscmXdSzxxBhbhs+SawDQSHXVxDRJ0aD/NNu/l2zKURoakX8kZ4nzgljZp9mU
-         NyHJBBlcd1CswAcMtBuLP8vYGbsHqpeTndBxsaflNieQvwRvwhwqjckQl9VMCzC0vNJQ
-         8GB0/gYj/LmDhB6cbzfWPd3bbmUJkPpygOZTV/nsRGZr/zqfrdqqBepIPOYbO6wQv9l1
-         UTPBZr66JSatbhIiP9ybEUkSBqnQkke53htFnUb74oShZniG9UAUBzpXHv+1yuTvMtp9
-         DLct+cNkPUhaQMG9nT7HhVopTST+8tYsOmvimIcoRtDWHoRkVM/f8I1oeY8SPfs41oXG
-         /7OA==
-X-Gm-Message-State: AOAM533wMwSUE9PcZebofKtXRrcxrkbmO+i+rTQs7EUXloAEPan9oaco
-        2W4PaujdGdLuYjFUbJ2iyCEZfLzezU2DzKBJNugsytSkm+5IbPlL5S7dm0hVwRy8rVSWL9TkoSE
-        MqWPibv/9A0QxN6I127vvRbBw
-X-Received: by 2002:a7b:c20b:0:b0:38c:6ed9:f4f with SMTP id x11-20020a7bc20b000000b0038c6ed90f4fmr26635143wmi.131.1648470827367;
-        Mon, 28 Mar 2022 05:33:47 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxhJwZZoG6Q1E+o6y6M1ilGgoNUpfEciP71qUcwMG1+HNmb4HQyx8CnO6u8Jy0aUNhZ3oDjCQ==
-X-Received: by 2002:a7b:c20b:0:b0:38c:6ed9:f4f with SMTP id x11-20020a7bc20b000000b0038c6ed90f4fmr26635096wmi.131.1648470827144;
-        Mon, 28 Mar 2022 05:33:47 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c704:2200:50d1:ff5c:5927:203a? (p200300cbc704220050d1ff5c5927203a.dip0.t-ipconnect.de. [2003:cb:c704:2200:50d1:ff5c:5927:203a])
-        by smtp.gmail.com with ESMTPSA id a11-20020a5d456b000000b0020406ce0e06sm12047500wrc.94.2022.03.28.05.33.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Mar 2022 05:33:46 -0700 (PDT)
-Message-ID: <15e3f11b-1551-a9c2-c348-bbe1ae1d9ef7@redhat.com>
-Date:   Mon, 28 Mar 2022 14:33:44 +0200
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject
+         :message-id:date:mime-version:content-transfer-encoding;
+        bh=s0MYHADlhkLmgL7QL3wLWNFZxF39wct7bEmjjdPPikg=;
+        b=GdyHh/5a0bW51wCM5EXii2rJthadUoktUaZF8YTCZgFTomz3648I3+PgToPMmzBF35
+         AbbKrbi6eqfMGKB2P+xj2d+5xnA7mwl9wB1PTsuKO+FmMvmEwnbBuqP/b9QtLvjsjSP6
+         fKTzEhzrZAn1nrOwTAh6euAWz7Nbn6kakXkOxCi3+r6VAMifVbnmRdrx47mpfBu+eUpj
+         6S9SxlePPUOeqfJPyoKbWPewlKNRGK0IBcQVjrrefWRqEnVu11NPYEyGQd55KCDnerk5
+         TT2CBrfy+v9dbcyJ2W27a9SZrFRmL1WKncJabRj7pUUknGx1QeLfmsR/wNp/FeiION/W
+         3jZg==
+X-Gm-Message-State: AOAM531aFVRHXLoLSm55rKGn8b0hWYlAmaRUmfA4W72rlJY/2Jkr8O/d
+        bfn1Yx6epb3kNn6JcXSqM5Ta7w==
+X-Google-Smtp-Source: ABdhPJzWhjK5YmHFJh+gdwf2xhaMXvtBHzGIOhwb6sN3mioE4XQobBxt9s/O31BZh77mukjrOCqKdQ==
+X-Received: by 2002:a63:1918:0:b0:382:1cfa:eefa with SMTP id z24-20020a631918000000b003821cfaeefamr9999216pgl.510.1648470983267;
+        Mon, 28 Mar 2022 05:36:23 -0700 (PDT)
+Received: from [127.0.1.1] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id y16-20020a17090a6c9000b001c993d935e7sm4914071pjj.56.2022.03.28.05.36.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 05:36:22 -0700 (PDT)
+From:   Jens Axboe <axboe@kernel.dk>
+To:     Jiri Slaby <jslaby@suse.cz>
+Cc:     Christoph Hellwig <hch@lst.de>, linux-block@vger.kernel.org,
+        Jan Kara <jack@suse.cz>, linux-kernel@vger.kernel.org
+In-Reply-To: <20220328085928.7899-1-jslaby@suse.cz>
+References: <20220328085928.7899-1-jslaby@suse.cz>
+Subject: Re: [PATCH] block: restore the old set_task_ioprio() behaviour wrt PF_EXITING
+Message-Id: <164847098196.6805.10674643795747634430.b4-ty@kernel.dk>
+Date:   Mon, 28 Mar 2022 06:36:21 -0600
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH 7/9] mm: Calc the right pfn if page size is not 4K
-Content-Language: en-US
-To:     Wupeng Ma <mawupeng1@huawei.com>, akpm@linux-foundation.org,
-        catalin.marinas@arm.com, will@kernel.org, corbet@lwn.net
-Cc:     ardb@kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
-        hpa@zyccr.com, dvhart@infradead.org, andy@infradead.org,
-        rppt@kernel.org, paulmck@kernel.org, peterz@infradead.org,
-        jroedel@suse.de, songmuchun@bytedance.com, macro@orcam.me.uk,
-        frederic@kernel.org, W_Armin@gmx.de, john.garry@huawei.com,
-        seanjc@google.com, tsbogend@alpha.franken.de,
-        anshuman.khandual@arm.com, chenhuacai@kernel.org,
-        gpiccoli@igalia.com, mark.rutland@arm.com,
-        wangkefeng.wang@huawei.com, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-efi@vger.kernel.org, linux-ia64@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, linux-mm@kvack.org
-References: <20220326064632.131637-1-mawupeng1@huawei.com>
- <20220326064632.131637-8-mawupeng1@huawei.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220326064632.131637-8-mawupeng1@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 26.03.22 07:46, Wupeng Ma wrote:
-> From: Ma Wupeng <mawupeng1@huawei.com>
+On Mon, 28 Mar 2022 10:59:28 +0200, Jiri Slaby wrote:
+> PF_EXITING tasks were silently ignored before the below commits.
+> Continue doing so. Otherwise python-psutil tests fail:
+>   ERROR: psutil.tests.test_process.TestProcess.test_zombie_process
+>   ----------------------------------------------------------------------
+>   Traceback (most recent call last):
+>     File "/home/abuild/rpmbuild/BUILD/psutil-5.9.0/build/lib.linux-x86_64-3.9/psutil/_pslinux.py", line 1661, in wrapper
+>       return fun(self, *args, **kwargs)
+>     File "/home/abuild/rpmbuild/BUILD/psutil-5.9.0/build/lib.linux-x86_64-3.9/psutil/_pslinux.py", line 2133, in ionice_set
+>       return cext.proc_ioprio_set(self.pid, ioclass, value)
+>   ProcessLookupError: [Errno 3] No such process
 > 
-> Pervious 0x100000 is used to check the 4G limit in
+> [...]
 
-s/Pervious/Previous/
+Applied, thanks!
 
-> find_zone_movable_pfns_for_nodes(). This is right in x86 because
-> the page size can only be 4K. But 16K and 64K are available in
-> arm64. So replate it with SIZE_4G >> PAGE_SHIFT.
+[1/1] block: restore the old set_task_ioprio() behaviour wrt PF_EXITING
+      commit: 15583a563cd5a7358e975599b7de7caacd9e9ce9
 
-s/replate/replace/
-
-> 
-> Signed-off-by: Ma Wupeng <mawupeng1@huawei.com>
-> ---
->  mm/page_alloc.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index 6e0b4596cde9..41fd987b5b93 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -7811,7 +7811,7 @@ static void __init find_zone_movable_pfns_for_nodes(void)
->  
->  			usable_startpfn = memblock_region_memory_base_pfn(r);
->  
-> -			if (usable_startpfn < 0x100000) {
-> +			if (usable_startpfn < (SZ_4G >> PAGE_SHIFT)) {
-
-PHYS_PFN(SZ_4G)
-
-?
-
->  				mem_below_4gb_not_mirrored = true;
->  				continue;
->  			}
-
-
+Best regards,
 -- 
-Thanks,
+Jens Axboe
 
-David / dhildenb
 
