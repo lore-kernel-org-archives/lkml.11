@@ -2,125 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87910C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 01:31:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B475BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 01:34:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237285AbiC1Bcu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 21:32:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49050 "EHLO
+        id S236509AbiC1Bfk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 21:35:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234256AbiC1Bcs (ORCPT
+        with ESMTP id S229867AbiC1Bfj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 21:32:48 -0400
-Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88A97186C3
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 18:31:05 -0700 (PDT)
-Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-2e6650cde1bso132644177b3.12
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 18:31:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=n4641r8SZTuedo4C1thTlXbTbbt1bLOvhiOy/cUyPZQ=;
-        b=7fJZpc2niPsuAHo3z+x/+07pZCkY8NgfaU303y8cfzGHQoXEpWPSWMoo5ltThQscZY
-         /u8iO9FBL1NaWftS6CInv/HFWgfkjoP0AzQrK2AV6kxjwLSu4OLvs6VWGSRyvaQhjNYC
-         +6NpZ95VUG5Vu69LG3kMaEeimK4ofB28mWN+oBX8xo8cqFiCRGondL7KWfK6IhGVqqqI
-         8gSvyqliUBc9YoFLBqOei2enYDZ5NPR+2sYgaYZeMmWvuOWUOpXeB6CpaMx4yU2KmdMj
-         2wNNRPbhx+F4I5VPMqD7GsJ5BmQreVI6mA5oZ1R5Dt4hGI5HknwvSM4N9qScIsaTUVJ3
-         7KsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=n4641r8SZTuedo4C1thTlXbTbbt1bLOvhiOy/cUyPZQ=;
-        b=YBgpobJuvS/fkR1e2jEsEINp6z/ezi2hxQBATc2YNDop4aoAgA6vYWyU3oTvR5dwjp
-         mgDkm5j9pcUOdrW255BaxGCxWyBSikOMFC4N0VDXsDbwAfUVH1BOjH559TP6QqH35ZdS
-         U/25nOU9m/+sBgfHa6MkveuvOL7njmjodqeahNh4WtEUFBcXA5/NfwGnVbcuiC0nBu8/
-         qbiDMxGmKaMWr1zwqUMPkBsJ79PWdzcezxQYTfheQpRNrAIqvIcYgbi002ONPGB/f2rY
-         nJvAYXUe39TdZkHm+GJbGeoSaIEuP/GrdIKXXWxPHoihnNwkcKc26TJAZYMsnqzLeslX
-         Tc4g==
-X-Gm-Message-State: AOAM533SVEzi3XW2IX4wfyHpqMrzbxJnScqnsq5jR4qP0iPKBsffoVp4
-        OhH87Yn2afQUxPNZh6ngBu9tptzslc2geke4obso4g==
-X-Google-Smtp-Source: ABdhPJyb8Blm5SfG8iGY1muDDyNFv0UA2d1gLRSWFSCH4tDtt8KDu/lZWJdxw0ZpatQeOuQsk9JC8XIqW5/w8IjIE4k=
-X-Received: by 2002:a0d:f685:0:b0:2e2:22e6:52d7 with SMTP id
- g127-20020a0df685000000b002e222e652d7mr22787293ywf.418.1648431064768; Sun, 27
- Mar 2022 18:31:04 -0700 (PDT)
+        Sun, 27 Mar 2022 21:35:39 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2850220D1
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 18:33:59 -0700 (PDT)
+Received: from kwepemi500021.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KRZwQ1lDZzcZyg;
+        Mon, 28 Mar 2022 09:33:42 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi500021.china.huawei.com (7.221.188.245) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 28 Mar 2022 09:33:56 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 28 Mar 2022 09:33:55 +0800
+From:   Tong Tiangen <tongtiangen@huawei.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+CC:     <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-riscv@lists.infradead.org>,
+        Tong Tiangen <tongtiangen@huawei.com>
+Subject: [PATCH -next v3 0/4]mm: page_table_check: add support on arm64 and riscv
+Date:   Mon, 28 Mar 2022 01:52:38 +0000
+Message-ID: <20220328015242.1136836-1-tongtiangen@huawei.com>
+X-Mailer: git-send-email 2.18.0.huawei.25
 MIME-Version: 1.0
-References: <20220328005736.2513727-1-longman@redhat.com>
-In-Reply-To: <20220328005736.2513727-1-longman@redhat.com>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Mon, 28 Mar 2022 09:30:28 +0800
-Message-ID: <CAMZfGtU4-QCyW2WE5m6hokmFegkGq5DoZgjrnCos_-qY322usw@mail.gmail.com>
-Subject: Re: [PATCH] mm/list_lru: Fix possible race in memcg_reparent_list_lru_node()
-To:     Waiman Long <longman@redhat.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 8:58 AM Waiman Long <longman@redhat.com> wrote:
->
-> Muchun Song found out there could be a race between list_lru_add()
-> and memcg_reparent_list_lru_node() causing the later function to miss
-> reparenting of a lru entry as shown below:
->
-> CPU0:                               CPU1:
-> list_lru_add()
->      spin_lock(&nlru->lock)
->      l = list_lru_from_kmem(memcg)
->                                      memcg_reparent_objcgs(memcg)
->                                      memcg_reparent_list_lrus(memcg)
->                                          memcg_reparent_list_lru()
->                                              memcg_reparent_list_lru_node()
->                                                  if (!READ_ONCE(nlru->nr_items))
->                                                      // Miss reparenting
->                                                      return
->      // Assume 0->1
->      l->nr_items++
->      // Assume 0->1
->      nlru->nr_items++
->
-> Though it is not likely that a list_lru_node that has 0 item suddenly
-> has a newly added lru entry at the end of its life. The race is still
-> theoretically possible.
->
-> Adding a spin_is_locked() check will likely be enough for x86, but it
-> is less certain for other arches with a more relaxed memory semantics
-> like arcm64 and ppc. To avoid race, this patch moves the nr_items check
-> to within the lock critical section.
->
-> Fixes: 405cc51fc104 ("mm/list_lru: optimize memcg_reparent_list_lru_node()")
-> Signed-off-by: Waiman Long <longman@redhat.com>
+Page table check performs extra verifications at the time when new
+pages become accessible from the userspace by getting their page
+table entries (PTEs PMDs etc.) added into the table. It is supported
+on X86[1].
 
-How about the following patch?  It is low overhead on x86_64. Even on
-relaxed memory mode, I think it is also lower overhead since it avoid a
-store operation to nlru->lock.
+This patchset made some simple changes and make it easier to support
+new architecture, then we support this feature on ARM64 and RISCV.
 
-We do not need to insert a smp_wmb() into the list_lru_add() since
-spin_lock() always implies at least a load acquiring semantics.
+[1]https://lore.kernel.org/lkml/20211123214814.3756047-1-pasha.tatashin@soleen.com/
 
-Thanks.
+v2 -> v3:
+  2. Modify ptep_clear() in include/linux/pgtable.h, using IS_ENABLED 
+     according to the suggestions of Pasha.
 
-diff --git a/mm/list_lru.c b/mm/list_lru.c
-index c669d87001a6..0e58374b629b 100644
---- a/mm/list_lru.c
-+++ b/mm/list_lru.c
-@@ -397,8 +397,11 @@ static void memcg_reparent_list_lru_node(struct
-list_lru *lru, int nid,
-        /*
-         * If there is no lru entry in this nlru, we can skip it immediately.
-         */
--       if (!READ_ONCE(nlru->nr_items))
--               return;
-+       if (!READ_ONCE(nlru->nr_items)) {
-+               smp_rmb();
-+               if (!spin_is_locked(&nlru->lock))
-+                       return;
-+       }
+v1 -> v2:
+  1. Fix arm64's pte/pmd/pud_user_accessible_page() according to the
+     suggestions of Catalin.
+  2. Also fix riscv's pte_pmd_pud_user_accessible_page().
 
-        /*
-         * Since list_lru_{add,del} may be called under an IRQ-safe lock,
+Kefeng Wang (2):
+  mm: page_table_check: move pxx_user_accessible_page into x86
+  arm64: mm: add support for page table check
+
+Tong Tiangen (2):
+  mm: page_table_check: add hooks to public helpers
+  riscv: mm: add support for page table check
+
+ arch/arm64/Kconfig               |  1 +
+ arch/arm64/include/asm/pgtable.h | 65 ++++++++++++++++++++++++---
+ arch/riscv/Kconfig               |  1 +
+ arch/riscv/include/asm/pgtable.h | 77 +++++++++++++++++++++++++++++---
+ arch/x86/include/asm/pgtable.h   | 29 +++++++-----
+ include/linux/pgtable.h          | 26 +++++++----
+ mm/page_table_check.c            | 25 ++++-------
+ 7 files changed, 178 insertions(+), 46 deletions(-)
+
+-- 
+2.18.0.huawei.25
+
