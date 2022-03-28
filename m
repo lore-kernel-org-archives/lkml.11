@@ -2,158 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFE64C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:50:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A2E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:50:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241577AbiC1Lvn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:51:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47470 "EHLO
+        id S233157AbiC1Lvt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:51:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243298AbiC1Lom (ORCPT
+        with ESMTP id S243251AbiC1Loj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:44:42 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05AA0574AA;
-        Mon, 28 Mar 2022 04:40:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=uSPQzhJnBZpuInXUZRxeTEHXo//rS4RqH+94/ELlhDM=; b=Y319biAt5K6nejbSVQElCizcwH
-        KshO/fhWzu1hp+KwOwUryrxbQeDmHHG3cgOxCgoW7piq2YJneFquQHl2Ypc/fz8B2txGisxU35L2R
-        N+iwuANB4NrRgWyUv6i38FoskJay75oaezYExrIXi0UX84c0fbRbQuG77f++ywMi423bOYWytesMe
-        NF8/Yem5KYG3fpVA9WSly7w6tnLfdCmR+0P9a/P0TmqVb3D/pukv4HvUBP4c5QCf/50ts4JAY5Z/U
-        +BunOWmHS1ASn87GsmDEGL2Y5TnieEE6dGFQbHJi9xxwfX/Sf9Ek/OaluB4mUZhT+B5MgM6Aszsgr
-        g4H6fshw==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nYnit-005Qev-7a; Mon, 28 Mar 2022 11:39:47 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 509969861E7; Mon, 28 Mar 2022 13:39:46 +0200 (CEST)
-Date:   Mon, 28 Mar 2022 13:39:46 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Namhyung Kim <namhyung@kernel.org>
-Cc:     Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Byungchul Park <byungchul.park@lge.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Radoslaw Burny <rburny@google.com>, linux-arch@vger.kernel.org,
-        bpf@vger.kernel.org, Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Subject: Re: [PATCH 2/2] locking: Apply contention tracepoints in the slow
- path
-Message-ID: <20220328113946.GA8939@worktop.programming.kicks-ass.net>
-References: <20220322185709.141236-1-namhyung@kernel.org>
- <20220322185709.141236-3-namhyung@kernel.org>
+        Mon, 28 Mar 2022 07:44:39 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBABA6468
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 04:40:00 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id y10so16530680edv.7
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 04:40:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=jodBJRHAI7bQz4eWwISuZPyoBIq/i4bbo51R73wWZsQ=;
+        b=cuBRhvoBXuanGhKSopcvIdj8n8tOh0tDDSDLs2SoiymrkH056m1LLdJfNLKZ999Xyc
+         734DU4Fd9gUARO66ZZX9X/exhiR4P6KNvvGlYnT3QgOi/0cSspeWbNS3onozAPjg3H+y
+         +UemaqBdynCqs/+mW/b0A22RRrwUv2lmt/Bqwu2YzmICGvlP/I/j1wJvEC1dKO/wqUkL
+         CwzN11AW/zD88zdFwM29XTKkL3OvErj1nJDVgNUAbPQCt80xhYiyVWMQos0Xopp/3cQ/
+         QOwH8JatTSwwlXIr+SntO63DlUXmqgIIh2gpT8e4fxYBqY1ucy0JW007R7GXvVto+HJF
+         3E7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=jodBJRHAI7bQz4eWwISuZPyoBIq/i4bbo51R73wWZsQ=;
+        b=MbpYBvOVVmD2IpwcOxtJDeDIyi5lYQSgydi6Ou8IyjvwY4BvVVYZwFh3ZNXQgD77P3
+         BdIjCXOvowIubv9ZFdhCGWEOoCMsi8BTTZnxgtOaaRkgrCO3HEgLHJuiXk/ou338bIp+
+         QQXNHfFG6SefchbE3f9aMrvE0wJVZxQpnzGVHUhEM8DVIf1FZcNd7ThaESoJfGGHytaZ
+         sTHBELA+o+7gR8inFr9bDl84VCr55Q/ydCqtORBevcBSDg1+nSn9o3YY1LumLeNy+c6z
+         iyS2EKjJqacAEIT2RoAYRSRFgeZV/0FugLLN0+YOzP/Tjt+zgGTKtY89ZWVcyaqIIM3y
+         Lk7A==
+X-Gm-Message-State: AOAM532OzxrarhRjKgD0H74b1YNtStz/8ybCjxV/qXPeZ6KgnUWrWTGa
+        3ZvD58td5bt2Bb2u8HTJlp3Y/DuiCzs=
+X-Google-Smtp-Source: ABdhPJyG8GUy6GyP5HcwR2//q/nK/QMklSt2zhCs5fL7M/rNPZgVcifTmo1kATZDImdgNVnggYHrbQ==
+X-Received: by 2002:aa7:cd7a:0:b0:419:48ce:3a10 with SMTP id ca26-20020aa7cd7a000000b0041948ce3a10mr15464848edb.312.1648467597358;
+        Mon, 28 Mar 2022 04:39:57 -0700 (PDT)
+Received: from localhost.localdomain (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
+        by smtp.gmail.com with ESMTPSA id hq39-20020a1709073f2700b006dfc58efab9sm5938556ejc.73.2022.03.28.04.39.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 04:39:56 -0700 (PDT)
+From:   Michael Straube <straube.linux@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Michael Straube <straube.linux@gmail.com>
+Subject: [PATCH 7/9] staging: r8188eu: simplify if-else statement
+Date:   Mon, 28 Mar 2022 13:39:38 +0200
+Message-Id: <20220328113940.6396-8-straube.linux@gmail.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220328113940.6396-1-straube.linux@gmail.com>
+References: <20220328113940.6396-1-straube.linux@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220322185709.141236-3-namhyung@kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 11:57:09AM -0700, Namhyung Kim wrote:
-> diff --git a/kernel/locking/mutex.c b/kernel/locking/mutex.c
-> index ee2fd7614a93..c88deda77cf2 100644
-> --- a/kernel/locking/mutex.c
-> +++ b/kernel/locking/mutex.c
-> @@ -644,6 +644,7 @@ __mutex_lock_common(struct mutex *lock, unsigned int state, unsigned int subclas
->  	}
->  
->  	set_current_state(state);
-> +	trace_contention_begin(lock, 0);
->  	for (;;) {
->  		bool first;
->  
-> @@ -710,6 +711,7 @@ __mutex_lock_common(struct mutex *lock, unsigned int state, unsigned int subclas
->  skip_wait:
->  	/* got the lock - cleanup and rejoice! */
->  	lock_acquired(&lock->dep_map, ip);
-> +	trace_contention_end(lock, 0);
->  
->  	if (ww_ctx)
->  		ww_mutex_lock_acquired(ww, ww_ctx);
+Simplify a nested if-else statement to a single if statement in
+rtw_joinbss_reset(). This improves readability and shortens the code.
 
-(note: it's possible to get to this trace_contention_end() without ever
-having passed a _begin -- fixed in the below)
+Signed-off-by: Michael Straube <straube.linux@gmail.com>
+---
+ drivers/staging/r8188eu/core/rtw_mlme.c | 18 +++++++-----------
+ 1 file changed, 7 insertions(+), 11 deletions(-)
 
-> @@ -721,6 +723,7 @@ __mutex_lock_common(struct mutex *lock, unsigned int state, unsigned int subclas
->  err:
->  	__set_current_state(TASK_RUNNING);
->  	__mutex_remove_waiter(lock, &waiter);
-> +	trace_contention_end(lock, ret);
->  err_early_kill:
->  	raw_spin_unlock(&lock->wait_lock);
->  	debug_mutex_free_waiter(&waiter);
-
-
-So there was one thing here, that might or might not be important, but
-is somewhat inconsistent with the whole thing. That is, do you want to
-include optimistic spinning in the contention time or not?
-
-Because currently you do it sometimes.
-
-Also, if you were to add LCB_F_MUTEX then you could have something like:
-
-
---- a/kernel/locking/mutex.c
-+++ b/kernel/locking/mutex.c
-@@ -602,12 +602,14 @@ __mutex_lock_common(struct mutex *lock,
- 	preempt_disable();
- 	mutex_acquire_nest(&lock->dep_map, subclass, 0, nest_lock, ip);
+diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/r8188eu/core/rtw_mlme.c
+index 83841cf85a0d..1569f719af1b 100644
+--- a/drivers/staging/r8188eu/core/rtw_mlme.c
++++ b/drivers/staging/r8188eu/core/rtw_mlme.c
+@@ -1810,19 +1810,15 @@ void rtw_joinbss_reset(struct adapter *padapter)
  
-+	trace_contention_begin(lock, LCB_F_MUTEX | LCB_F_SPIN);
- 	if (__mutex_trylock(lock) ||
- 	    mutex_optimistic_spin(lock, ww_ctx, NULL)) {
- 		/* got the lock, yay! */
- 		lock_acquired(&lock->dep_map, ip);
- 		if (ww_ctx)
- 			ww_mutex_set_context_fastpath(ww, ww_ctx);
-+		trace_contention_end(lock, 0);
- 		preempt_enable();
- 		return 0;
+ 	phtpriv->ampdu_enable = false;/* reset to disabled */
+ 
+-	/*  TH = 1 => means that invalidate usb rx aggregation */
+-	/*  TH = 0 => means that validate usb rx aggregation, use init value. */
+-	if (phtpriv->ht_option) {
+-		if (padapter->registrypriv.wifi_spec == 1)
+-			threshold = 1;
+-		else
+-			threshold = USB_RXAGG_PAGE_COUNT;
++	 /* invalidate usb rx aggregation */
++	threshold = 1;
+ 
+-		rtw_write8(padapter, REG_RXDMA_AGG_PG_TH, threshold);
+-	} else {
+-		threshold = 1;
+-		rtw_write8(padapter, REG_RXDMA_AGG_PG_TH, threshold);
++	if (phtpriv->ht_option && padapter->registrypriv.wifi_spec != 1) {
++		/* validate usb rx aggregation, use init value. */
++		threshold = USB_RXAGG_PAGE_COUNT;
  	}
-@@ -644,7 +646,7 @@ __mutex_lock_common(struct mutex *lock,
- 	}
- 
- 	set_current_state(state);
--	trace_contention_begin(lock, 0);
-+	trace_contention_begin(lock, LCB_F_MUTEX);
- 	for (;;) {
- 		bool first;
- 
-@@ -684,10 +686,16 @@ __mutex_lock_common(struct mutex *lock,
- 		 * state back to RUNNING and fall through the next schedule(),
- 		 * or we must see its unlock and acquire.
- 		 */
--		if (__mutex_trylock_or_handoff(lock, first) ||
--		    (first && mutex_optimistic_spin(lock, ww_ctx, &waiter)))
-+		if (__mutex_trylock_or_handoff(lock, first))
- 			break;
- 
-+		if (first) {
-+			trace_contention_begin(lock, LCB_F_MUTEX | LCB_F_SPIN);
-+			if (mutex_optimistic_spin(lock, ww_ctx, &waiter))
-+				break;
-+			trace_contention_begin(lock, LCB_F_MUTEX);
-+		}
 +
- 		raw_spin_lock(&lock->wait_lock);
- 	}
- 	raw_spin_lock(&lock->wait_lock);
-@@ -723,8 +731,8 @@ __mutex_lock_common(struct mutex *lock,
- err:
- 	__set_current_state(TASK_RUNNING);
- 	__mutex_remove_waiter(lock, &waiter);
--	trace_contention_end(lock, ret);
- err_early_kill:
-+	trace_contention_end(lock, ret);
- 	raw_spin_unlock(&lock->wait_lock);
- 	debug_mutex_free_waiter(&waiter);
- 	mutex_release(&lock->dep_map, ip);
++	rtw_write8(padapter, REG_RXDMA_AGG_PG_TH, threshold);
+ }
+ 
+ /* the function is >= passive_level */
+-- 
+2.35.1
+
