@@ -2,125 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC27DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:59:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C5F9C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:59:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343965AbiC1UBO (ORCPT
+        id S1343978AbiC1UBf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 16:01:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53562 "EHLO
+        Mon, 28 Mar 2022 16:01:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239880AbiC1UBJ (ORCPT
+        with ESMTP id S239880AbiC1UBd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 16:01:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 273E634B81
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 12:59:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648497566;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=rNlkcdDOnbEEqyaA/TedcvXNhWifU9B0NNWARWuI3n8=;
-        b=Q4W5mxp8IzvQnXAFA4pXr4iq6DFjrZ3uAYshzd2RmqwmQCfufN9DG/sm0/uQbJh0ck7W8z
-        YvmcNHOW6IY+7u8JXVg7aKdOc7xJ4qOsOimQp7dSRHgrafHDWVgaNJc1R9k9wjW4JJ0EhK
-        kp2Nl2JvQRYFtW8W03tBLCLhIfmOyCA=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-550-pZ5kztpxP6qC0KWnfws5FA-1; Mon, 28 Mar 2022 15:59:24 -0400
-X-MC-Unique: pZ5kztpxP6qC0KWnfws5FA-1
-Received: by mail-qt1-f197.google.com with SMTP id cb11-20020a05622a1f8b00b002e06f729debso13089703qtb.4
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 12:59:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rNlkcdDOnbEEqyaA/TedcvXNhWifU9B0NNWARWuI3n8=;
-        b=j5UydY96GoEO6z8+cWZXbLZ+UGk0itLYS3Y8G3PUfZGDtVs/BN+9Bavweyxi04LOj9
-         tH+3tZ+ZsK6jv0c4t3jnf37KcWWNNxK41P4YMsQ7/PVPHMw6Ijxzt27UJhnXomCSAJ1Z
-         EbgIi6IwAWGrqMoA1rktDo/KQuNEERrkKM36hdL5na2HVsIAOOaF/DyyeT4goU1KF0bO
-         ysFDOkArAwaDw5pOlpsSxQLKjYIn16bJlYOwGOcONWP6Z5wOyEW9clZl1t6KKHpXdimT
-         UhZhaSCnZb9SN52D5CorEawREYmSdVzPrCVULRPK9OQXOnL2mGKGR3DqoExjRelV8f6A
-         r7qQ==
-X-Gm-Message-State: AOAM532fFDJBGFNsqEnJj0y9ivr/F2UfU79BnLrM8KsQPhJQxPQMpzv2
-        +tssZYUkW9e3u1pZ4/smncf4Qk3etRqCJ6AeIkqvGl3vxu2PAFDfq2OyTpQkaYUyN9puFnckvci
-        FyGlP7dWR0FQ8uvVDUw8HtgsN
-X-Received: by 2002:ac8:5cc1:0:b0:2e1:bd05:1371 with SMTP id s1-20020ac85cc1000000b002e1bd051371mr23484915qta.573.1648497564278;
-        Mon, 28 Mar 2022 12:59:24 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx9L8BI7elUtjtShDyTNCfyVyjEHPEC/OaWfgPxbM34Cf9QU+7w8TC2BCSK0jUFIPEMZj6Lpw==
-X-Received: by 2002:ac8:5cc1:0:b0:2e1:bd05:1371 with SMTP id s1-20020ac85cc1000000b002e1bd051371mr23484900qta.573.1648497564027;
-        Mon, 28 Mar 2022 12:59:24 -0700 (PDT)
-Received: from treble ([2600:1700:6e32:6c00::35])
-        by smtp.gmail.com with ESMTPSA id z15-20020a05622a060f00b002e2070bf899sm12526007qta.90.2022.03.28.12.59.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Mar 2022 12:59:23 -0700 (PDT)
-Date:   Mon, 28 Mar 2022 12:59:20 -0700
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        "aik@ozlabs.ru" <aik@ozlabs.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "naveen.n.rao@linux.vnet.ibm.com" <naveen.n.rao@linux.vnet.ibm.com>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        Sathvika Vasireddy <sv@linux.ibm.com>
-Subject: Re: [RFC PATCH 3/3] objtool/mcount: Add powerpc specific functions
-Message-ID: <20220328195920.dqlfra3lcardko6r@treble>
-References: <20220318105140.43914-1-sv@linux.ibm.com>
- <20220318105140.43914-4-sv@linux.ibm.com>
- <YjR6kHq4c/rjCTpr@hirez.programming.kicks-ass.net>
- <0b55f122-4760-c1ba-840a-0911cefec2ad@csgroup.eu>
+        Mon, 28 Mar 2022 16:01:33 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1CF0387B8
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 12:59:50 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nicolas)
+        with ESMTPSA id 84BA11F40A43
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1648497589;
+        bh=xco3lbW21cyWapa9jNZ90fWA8TJrSosaNbyiTjreIEw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=E2SGCOlU6Vu2TQrbpD/JmCrK9QfnzGFxJpTx5LS65mKe2tTkuwNlhOp2gpHjQoEFQ
+         wu4XgyDXk2lX9f6V9ySek8zxFVZHmDF+WI8nl+m2ea7TIYhvszUt9+1MrUb9rWP7T/
+         ZT8rId2aW/3jwPJh/0R0O1guCCqFJZDGv3GRTMTd5YB0MJVj+EPSLy6xrgWBNgkv8G
+         etvHpbmLmdH50zzZSz8ghBdYSZmRNI9NggeQJ2mrw3FciBEgmJ1USz3AlnFplQDEEY
+         zSsAicMP8JIWRKZnXfqwC2+h1uijDHQLUo6MmL9anXk6bIb3tbOlfmSyxzjogMKaJv
+         liS+tyce4NW+w==
+From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Cc:     kernel@collabora.com, linux-kernel@vger.kernel.org
+Subject: [PATCH v1 00/24] H.264 Field Decoding Support for Frame-based Decoders
+Date:   Mon, 28 Mar 2022 15:59:12 -0400
+Message-Id: <20220328195936.82552-1-nicolas.dufresne@collabora.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <0b55f122-4760-c1ba-840a-0911cefec2ad@csgroup.eu>
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Mar 27, 2022 at 09:09:20AM +0000, Christophe Leroy wrote:
-> Second point is the endianess and 32/64 selection, especially when 
-> crossbuilding. There is already some stuff regarding endianess based on 
-> bswap_if_needed() but that's based on constant selection at build time 
-> and I couldn't find an easy way to set it conditionaly based on the 
-> target being built.
->
-> Regarding 32/64 selection, there is almost nothing, it's based on using 
-> type 'long' which means that at the time being the target and the build 
-> platform must both be 32 bits or 64 bits.
-> 
-> For both cases (endianess and 32/64) I think the solution should 
-> probably be to start with the fileformat of the object file being 
-> reworked by objtool.
+Until now, only Cedrus (a slice base decoder) supported interlaced decoding.
+In order to support field decoding in our frame-based decoder, the v4l2-h264
+library needed adaptation to produce the appropriate reference lists.
 
-Do we really need to detect the endianness/bitness at runtime?  Objtool
-is built with the kernel, why not just build-in the same target
-assumptions as the kernel itself?
+This patch extends the v4l2-h264 library to produce the larger references list
+needed to represent fields separately. Hantro, MTK-VCODEC and RKVDEC drivers
+have been adapted to accommodate the larger lists. Though, only Hantro and
+RKVDEC actually have HW support for field decoding. So only these two
+have been updated to make use of the larger lists. All this work has been
+done using the H.264 specification, LibreELEC downstream kernel patches,
+Rockchip MPP reference software and Hantro reference software.
 
-> What are current works in progress on objtool ? Should I wait Josh's 
-> changes before starting looking at all this ? Should I wait for anything 
-> else ?
+All this work have been tested using GStreamer mainline implementation but also
+with FFMPEG LibreELEC fork using the testing tool fluster running through the
+ITU-T H.264 (2016-02) AVCv2 set of bitstream. Before this patch, the scores
+were:
 
-I'm not making any major changes to the code, just shuffling things
-around to make the interface more modular.  I hope to have something
-soon (this week).  Peter recently added a big feature (Intel IBT) which
-is already in -next.
+Hantro:
+  FFMPEG:
+  GSteamer:
+RKVDEC:
+  FFMPEG:
+  GSteamer:
 
-Contributions are welcome, with the understanding that you'll help
-maintain it ;-)
+And after these changes:
 
-Some years ago Kamalesh Babulal had a prototype of objtool for ppc64le
-which did the full stack validation.  I'm not sure what ever became of
-that.
+Hantro:
+  FFMPEG:   118/135
+  GSteamer: 129/135
+RKVDEC:
+  FFMPEG:   118/135
+  GSteamer: 129/135
 
-FWIW, there have been some objtool patches for arm64 stack validation,
-but the arm64 maintainers have been hesitant to get on board with
-objtool, as it brings a certain maintenance burden.  Especially for the
-full stack validation and ORC unwinder.  But if you only want inline
-static calls and/or mcount then it'd probably be much easier to
-maintain.
+Note that a bug in FFMPEG / LibreELEC fork was noticed and fixed with the
+following change:
 
+diff --git a/libavcodec/v4l2_request_h264.c b/libavcodec/v4l2_request_h264.c
+index 88da8f0a2d..394bae0550 100644
+--- a/libavcodec/v4l2_request_h264.c
++++ b/libavcodec/v4l2_request_h264.c
+@@ -66,7 +66,7 @@ static void fill_dpb_entry(struct v4l2_h264_dpb_entry *entry, const H264Picture
+ {
+     entry->reference_ts = ff_v4l2_request_get_capture_timestamp(pic->f);
+     entry->pic_num = pic->pic_id;
+-    entry->frame_num = pic->frame_num;
++    entry->frame_num = pic->long_ref ? pic->pic_id : pic->frame_num;
+     entry->fields = pic->reference & V4L2_H264_FRAME_REF;
+     entry->flags = V4L2_H264_DPB_ENTRY_FLAG_VALID;
+     if (entry->fields)
+
+Some useful links:
+
+Detailed Hantro Results:     https://gitlab.freedesktop.org/-/snippets/5189
+Detailed RKVDEC Results:     https://gitlab.freedesktop.org/-/snippets/5253
+ITU-T H.264 (2016-02) AVCv2: https://www.itu.int/net/itu-t/sigdb/spevideo/VideoForm-s.aspx?val=102002641
+Fluster:                     https://github.com/fluendo/fluster
+GStreamer:                   https://gitlab.freedesktop.org/gstreamer/gstreamer/
+FFMPEG Fork:                 https://github.com/jernejsk/FFmpeg/tree/v4l2-request-hwaccel-4.4
+Rockchip MPP:                https://github.com/rockchip-linux/mpp
+
+Alex Bee (1):
+  media: rkvdec-h264: Don't hardcode SPS/PPS parameters
+
+Jonas Karlman (5):
+  media: rkvdec: h264: Fix reference frame_num wrap for second field
+  media: rkvdec: Ensure decoded resolution fit coded resolution
+  media: rkvdec: h264: Validate and use pic width and height in mbs
+  media: rkvdec: h264: Fix bit depth wrap in pps packet
+  media: hantro: h264: Make dpb entry management more robust
+
+Nicolas Dufresne (17):
+  media: h264: Increase reference lists size to 32
+  media: doc: Document dual use of H.264 pic_num/frame_num
+  media: h264: Avoid wrapping long_term_frame_idx
+  media: h264: Store current picture fields
+  media: h264: Store all fields into the unordered list
+  media: v4l2: Trace calculated p/b0/b1 initial reflist
+  media: h264: Sort p/b reflist using frame_num
+  media: v4l2: Reorder field reflist
+  media: v4l2-mem2mem: Fix typo in trace message
+  media: v4l2-mem2mem: Trace on implicit un-hold
+  media: rkvdec: Stop overclocking the decoder
+  media: rkvdec: h264: Fix dpb_valid implementation
+  media: rkvdec: Enable capture buffer holding for H264
+  media: rkvdec-h264: Add field decoding support
+  media: hantro: Enable HOLD_CAPTURE_BUF for H.264
+  media: hantro: Stop using H.264 parameter pic_num
+  media: hantro: Add H.264 field decoding support
+
+Sebastian Fricke (1):
+  media: videobuf2-v4l2: Warn on holding buffers without support
+
+ .../media/v4l/ext-ctrls-codec-stateless.rst   |  10 +-
+ .../media/common/videobuf2/videobuf2-v4l2.c   |   7 +-
+ drivers/media/v4l2-core/v4l2-h264.c           | 238 +++++++++++++++---
+ drivers/media/v4l2-core/v4l2-mem2mem.c        |   3 +-
+ drivers/staging/media/hantro/hantro_h264.c    | 119 +++++++--
+ drivers/staging/media/hantro/hantro_hw.h      |   7 +-
+ drivers/staging/media/hantro/hantro_v4l2.c    |  25 ++
+ drivers/staging/media/rkvdec/rkvdec-h264.c    | 104 ++++----
+ drivers/staging/media/rkvdec/rkvdec.c         |  22 +-
+ drivers/staging/media/rkvdec/rkvdec.h         |   1 +
+ include/media/v4l2-h264.h                     |  20 +-
+ 11 files changed, 431 insertions(+), 125 deletions(-)
+
+base-commit: 51d86122ff02ac2ceef5c0a1cf28f0b5ed580ddd
 -- 
-Josh
+2.34.1
 
