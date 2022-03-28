@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08CAEC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36AC6C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:37:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241575AbiC1Lcy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:32:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57276 "EHLO
+        id S241612AbiC1LdF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:33:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241716AbiC1LYJ (ORCPT
+        with ESMTP id S241119AbiC1LZR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:24:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCDF356212;
-        Mon, 28 Mar 2022 04:21:45 -0700 (PDT)
+        Mon, 28 Mar 2022 07:25:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EBFCBD3;
+        Mon, 28 Mar 2022 04:23:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D80961126;
-        Mon, 28 Mar 2022 11:21:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F9BDC36AE5;
-        Mon, 28 Mar 2022 11:21:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DE010B81062;
+        Mon, 28 Mar 2022 11:23:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3EAAC340EC;
+        Mon, 28 Mar 2022 11:23:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466505;
-        bh=p7xJ9qpWfezlsKnmcqhlhATGgUbph48s1/5K73DMHN0=;
+        s=k20201202; t=1648466601;
+        bh=n7dC2PkqALsL1C3GPJwNci7ttrqSVnI3KSuB5IsXlLk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CP/oZgRIqKbUfX0YKgoftcYgZW6AdFVHZREwqrHCTMfHmv6WDs7hgB3wK0p770XsR
-         /xQfvP52JH/dBIAWOruGI14mP+S/bTiSITZFg3tME82RCZtilRV53hKW8M7xNDnF4H
-         K9S59F6oty2weRnWMkm5zIgUgUDJkNz0dnVEUY/OJybkuxKkhuXfgW/ZyZQGYEINt5
-         /pKbRGa1ZkK3tuz6ge4FYE3mKOpiVLO31gUEzvQ0k3/e4Fnac+A3ythm1UFrC8t5RU
-         P0QMMxKx8WQO2nFSq7H+0Y6+H3HdJCwG6wMemCfqoq8g+B5IvtuLRpGvYHujwvfumA
-         upUvcjmgj486w==
+        b=VQGyrDEIFvD3beG9pY71iQSzLD95GKoA0f4PZZpKjLxUh0Bq6QOoQKfetbCicuCk/
+         gkapvDE+BkRgTOCoGzIa8D6yFoIe5X9eVyY5956P3MI0PAlzgib7EAGnqAgWBzblxg
+         V+1Lr2WOOR1Gvgy1xRKToZyruPovS4NX+kbGE3j9LT2FDEQk6MGk0MLIt2hlDhBrq2
+         TNgwHTcUjvdKSrAKtbsBh09O3ShAL09eclnJvw5+B2384l8DoRXrWIVLiuHqLLlF0R
+         FbmimSoscJJIGmUNN3W2KXn/1cjFhv7KBRgo6HJj5V7piV6Lz8ke9QaSyB1GZZV50y
+         xI2cNV9zq8bBw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yahu Gao <gaoyahu19@gmail.com>,
-        Paolo Valente <paolo.valente@linaro.org>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
-        linux-block@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 07/29] block/bfq_wf2q: correct weight to ioprio
-Date:   Mon, 28 Mar 2022 07:21:09 -0400
-Message-Id: <20220328112132.1555683-7-sashal@kernel.org>
+Cc:     "Souptick Joarder (HPE)" <jrdr.linux@gmail.com>,
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        tglx@linutronix.de
+Subject: [PATCH AUTOSEL 5.10 11/21] irqchip/nvic: Release nvic_base upon failure
+Date:   Mon, 28 Mar 2022 07:22:44 -0400
+Message-Id: <20220328112254.1556286-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220328112132.1555683-1-sashal@kernel.org>
-References: <20220328112132.1555683-1-sashal@kernel.org>
+In-Reply-To: <20220328112254.1556286-1-sashal@kernel.org>
+References: <20220328112254.1556286-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,36 +53,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yahu Gao <gaoyahu19@gmail.com>
+From: "Souptick Joarder (HPE)" <jrdr.linux@gmail.com>
 
-[ Upstream commit bcd2be763252f3a4d5fc4d6008d4d96c601ee74b ]
+[ Upstream commit e414c25e3399b2b3d7337dc47abccab5c71b7c8f ]
 
-The return value is ioprio * BFQ_WEIGHT_CONVERSION_COEFF or 0.
-What we want is ioprio or 0.
-Correct this by changing the calculation.
+smatch warning was reported as below ->
 
-Signed-off-by: Yahu Gao <gaoyahu19@gmail.com>
-Acked-by: Paolo Valente <paolo.valente@linaro.org>
-Link: https://lore.kernel.org/r/20220107065859.25689-1-gaoyahu19@gmail.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+smatch warnings:
+drivers/irqchip/irq-nvic.c:131 nvic_of_init()
+warn: 'nvic_base' not released on lines: 97.
+
+Release nvic_base upon failure.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Souptick Joarder (HPE) <jrdr.linux@gmail.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220218163303.33344-1-jrdr.linux@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/bfq-wf2q.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/irqchip/irq-nvic.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/block/bfq-wf2q.c b/block/bfq-wf2q.c
-index b74cc0da118e..709b901de3ca 100644
---- a/block/bfq-wf2q.c
-+++ b/block/bfq-wf2q.c
-@@ -519,7 +519,7 @@ unsigned short bfq_ioprio_to_weight(int ioprio)
- static unsigned short bfq_weight_to_ioprio(int weight)
- {
- 	return max_t(int, 0,
--		     IOPRIO_NR_LEVELS * BFQ_WEIGHT_CONVERSION_COEFF - weight);
-+		     IOPRIO_NR_LEVELS - weight / BFQ_WEIGHT_CONVERSION_COEFF);
- }
+diff --git a/drivers/irqchip/irq-nvic.c b/drivers/irqchip/irq-nvic.c
+index 21cb31ff2bbf..e903c44edb64 100644
+--- a/drivers/irqchip/irq-nvic.c
++++ b/drivers/irqchip/irq-nvic.c
+@@ -94,6 +94,7 @@ static int __init nvic_of_init(struct device_node *node,
  
- static void bfq_get_entity(struct bfq_entity *entity)
+ 	if (!nvic_irq_domain) {
+ 		pr_warn("Failed to allocate irq domain\n");
++		iounmap(nvic_base);
+ 		return -ENOMEM;
+ 	}
+ 
+@@ -103,6 +104,7 @@ static int __init nvic_of_init(struct device_node *node,
+ 	if (ret) {
+ 		pr_warn("Failed to allocate irq chips\n");
+ 		irq_domain_remove(nvic_irq_domain);
++		iounmap(nvic_base);
+ 		return ret;
+ 	}
+ 
 -- 
 2.34.1
 
