@@ -2,133 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DFCAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:44:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A79B1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:44:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244440AbiC1Tpy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 15:45:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50060 "EHLO
+        id S234463AbiC1TqK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 15:46:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343710AbiC1Too (ORCPT
+        with ESMTP id S1343713AbiC1Too (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Mar 2022 15:44:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB11666CA9;
-        Mon, 28 Mar 2022 12:42:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 99A946128E;
-        Mon, 28 Mar 2022 19:42:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C67FC340F0;
-        Mon, 28 Mar 2022 19:42:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648496560;
-        bh=Logx3igQbeY9kAMEeW2KRufDknkZLCvGzVUyIi7FQdY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CxUde1dt2ProG0lAAGOw0HxnX+I8GTTMo8Q5P9PAm5oTNCjBRgEWTW3iweBQUH+jt
-         Uoo0lwMXWk4dMjIpd0g+kc/zlIedcfLNGNDui0yHahUiw7BsGuJFsFtHB2KPVHhmNW
-         gC9t1wrYc5GFLoYmHew3KjpAVch/TaqiQImakwcbq/AHASqwfhGtVoSLlhJesNuVd9
-         8626GPg3TrArPjdlYCJPEHVQ1Qza+FALcMe8ypM/pSfPVRdQZzmhgn73zfcY4vWA64
-         Mg1Vzyx1BRyOnqodfSA67Xbjv2ass1cq0qzkC+gPusxkORIe+IeykrZyJBepgduHoR
-         eQp/wylA4kHgQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, yuchao0@huawei.com,
-        linux-f2fs-devel@lists.sourceforge.net
-Subject: [PATCH AUTOSEL 5.16 08/20] f2fs: fix to do sanity check on curseg->alloc_type
-Date:   Mon, 28 Mar 2022 15:42:14 -0400
-Message-Id: <20220328194226.1585920-8-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220328194226.1585920-1-sashal@kernel.org>
-References: <20220328194226.1585920-1-sashal@kernel.org>
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CD9866C9A
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 12:42:40 -0700 (PDT)
+Received: by mail-io1-f71.google.com with SMTP id g11-20020a056602072b00b00645cc0735d7so11042300iox.1
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 12:42:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to:cc;
+        bh=IH/0Be4mYvFxzGsDxJItB2Q/4tGPp/20wo5bgbYbxXU=;
+        b=rui2ySMZ8Hn7Zr6qEMAu1zwysg8I7UZmIii/m323X+petSIZUNz9Q9pirZPBzKtcGa
+         PK/IyxMiQNeoPZm8Szw0QOM1byYIe8/LyrURhWfCw1eYpV5CSGOAM6imi5eR2MI7Mx5Z
+         fnxPNzTpkzo3DRnO7gBkbqPtRRC89GpnoeVwtPrBtytn6/g86TE+KeYWh24Zfaqp39bN
+         fXmJ1gZGbvjOBaPpxwK/+n/ypERQ/RUY59JRbE1J2uiJP5qzVsKODfHLZ5fdol503ZwM
+         yR72RGNyrAtLccTFj1WR9M1bVwdIGyaHXFvp0bwzB9cvVbNxPGA6X6JogXVRV8tydrzP
+         o1uA==
+X-Gm-Message-State: AOAM531bcr4tgdsHG3ENgUKXV3aXYKaTmywIcZUDfNWld0Lh9z5En3TH
+        LBMrxmT3YbGMHdgMfa2krZ8kk2QEOsjfLgxn1oTNqGvHcG97
+X-Google-Smtp-Source: ABdhPJyk+05FvCtiduQ1ZZxIGJZy7XoI5uXzVOMzWtWn4sR4RVl6GeFcoQ7Gh/r9wsiMa0W9Ww3NjnoDROtkEqxLUBkNPjmESpOX
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a02:ceb2:0:b0:314:f9b9:d420 with SMTP id
+ z18-20020a02ceb2000000b00314f9b9d420mr13564302jaq.177.1648496559723; Mon, 28
+ Mar 2022 12:42:39 -0700 (PDT)
+Date:   Mon, 28 Mar 2022 12:42:39 -0700
+In-Reply-To: <20220328194226.1585920-7-sashal@kernel.org>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000db1a1c05db4c8319@google.com>
+Subject: Re: [PATCH AUTOSEL 5.16 07/20] ext4: don't BUG if someone dirty pages
+ without asking ext4 first
+From:   syzbot 
+        <syzbot+d59332e2db681cf18f0318a06e994ebbb529a8db@syzkaller.appspotmail.com>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     adilger.kernel@dilger.ca, lee.jones@linaro.org,
+        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org,
+        sashal@kernel.org, stable@vger.kernel.org, tytso@mit.edu
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+> From: Theodore Ts'o <tytso@mit.edu>
+>
+> [ Upstream commit cc5095747edfb054ca2068d01af20be3fcc3634f ]
+>
+> [un]pin_user_pages_remote is dirtying pages without properly warning
+> the file system in advance.  A related race was noted by Jan Kara in
+> 2018[1]; however, more recently instead of it being a very hard-to-hit
+> race, it could be reliably triggered by process_vm_writev(2) which was
+> discovered by Syzbot[2].
+>
+> This is technically a bug in mm/gup.c, but arguably ext4 is fragile in
+> that if some other kernel subsystem dirty pages without properly
+> notifying the file system using page_mkwrite(), ext4 will BUG, while
+> other file systems will not BUG (although data will still be lost).
+>
+> So instead of crashing with a BUG, issue a warning (since there may be
+> potential data loss) and just mark the page as clean to avoid
+> unprivileged denial of service attacks until the problem can be
+> properly fixed.  More discussion and background can be found in the
+> thread starting at [2].
+>
+> [1] https://lore.kernel.org/linux-mm/20180103100430.GE4911@quack2.suse.cz
+> [2] https://lore.kernel.org/r/Yg0m6IjcNmfaSokM@google.com
+>
+> Reported-by: syzbot+d59332e2db681cf18f0318a06e994ebbb529a8db@syzkaller.appspotmail.com
+> Reported-by: Lee Jones <lee.jones@linaro.org>
+> Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+> Link: https://lore.kernel.org/r/YiDS9wVfq4mM2jGK@mit.edu
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>  fs/ext4/inode.c | 25 +++++++++++++++++++++++++
+>  1 file changed, 25 insertions(+)
+>
+> diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+> index 2f5686dfa30d..a61d1e4e1026 100644
+> --- a/fs/ext4/inode.c
+> +++ b/fs/ext4/inode.c
+> @@ -1992,6 +1992,15 @@ static int ext4_writepage(struct page *page,
+>  	else
+>  		len = PAGE_SIZE;
+>  
+> +	/* Should never happen but for bugs in other kernel subsystems */
+> +	if (!page_has_buffers(page)) {
+> +		ext4_warning_inode(inode,
+> +		   "page %lu does not have buffers attached", page->index);
+> +		ClearPageDirty(page);
+> +		unlock_page(page);
+> +		return 0;
+> +	}
+> +
+>  	page_bufs = page_buffers(page);
+>  	/*
+>  	 * We cannot do block allocation or other extent handling in this
+> @@ -2595,6 +2604,22 @@ static int mpage_prepare_extent_to_map(struct mpage_da_data *mpd)
+>  			wait_on_page_writeback(page);
+>  			BUG_ON(PageWriteback(page));
+>  
+> +			/*
+> +			 * Should never happen but for buggy code in
+> +			 * other subsystems that call
+> +			 * set_page_dirty() without properly warning
+> +			 * the file system first.  See [1] for more
+> +			 * information.
+> +			 *
+> +			 * [1] https://lore.kernel.org/linux-mm/20180103100430.GE4911@quack2.suse.cz
+> +			 */
+> +			if (!page_has_buffers(page)) {
+> +				ext4_warning_inode(mpd->inode, "page %lu does not have buffers attached", page->index);
+> +				ClearPageDirty(page);
+> +				unlock_page(page);
+> +				continue;
+> +			}
+> +
+>  			if (mpd->map.m_len == 0)
+>  				mpd->first_page = page->index;
+>  			mpd->next_page = page->index + 1;
+> -- 
+> 2.34.1
+>
 
-[ Upstream commit f41ee8b91c00770d718be2ff4852a80017ae9ab3 ]
-
-As Wenqing Liu reported in bugzilla:
-
-https://bugzilla.kernel.org/show_bug.cgi?id=215657
-
-- Overview
-UBSAN: array-index-out-of-bounds in fs/f2fs/segment.c:3460:2 when mount and operate a corrupted image
-
-- Reproduce
-tested on kernel 5.17-rc4, 5.17-rc6
-
-1. mkdir test_crash
-2. cd test_crash
-3. unzip tmp2.zip
-4. mkdir mnt
-5. ./single_test.sh f2fs 2
-
-- Kernel dump
-[   46.434454] loop0: detected capacity change from 0 to 131072
-[   46.529839] F2FS-fs (loop0): Mounted with checkpoint version = 7548c2d9
-[   46.738319] ================================================================================
-[   46.738412] UBSAN: array-index-out-of-bounds in fs/f2fs/segment.c:3460:2
-[   46.738475] index 231 is out of range for type 'unsigned int [2]'
-[   46.738539] CPU: 2 PID: 939 Comm: umount Not tainted 5.17.0-rc6 #1
-[   46.738547] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.13.0-1ubuntu1.1 04/01/2014
-[   46.738551] Call Trace:
-[   46.738556]  <TASK>
-[   46.738563]  dump_stack_lvl+0x47/0x5c
-[   46.738581]  ubsan_epilogue+0x5/0x50
-[   46.738592]  __ubsan_handle_out_of_bounds+0x68/0x80
-[   46.738604]  f2fs_allocate_data_block+0xdff/0xe60 [f2fs]
-[   46.738819]  do_write_page+0xef/0x210 [f2fs]
-[   46.738934]  f2fs_do_write_node_page+0x3f/0x80 [f2fs]
-[   46.739038]  __write_node_page+0x2b7/0x920 [f2fs]
-[   46.739162]  f2fs_sync_node_pages+0x943/0xb00 [f2fs]
-[   46.739293]  f2fs_write_checkpoint+0x7bb/0x1030 [f2fs]
-[   46.739405]  kill_f2fs_super+0x125/0x150 [f2fs]
-[   46.739507]  deactivate_locked_super+0x60/0xc0
-[   46.739517]  deactivate_super+0x70/0xb0
-[   46.739524]  cleanup_mnt+0x11a/0x200
-[   46.739532]  __cleanup_mnt+0x16/0x20
-[   46.739538]  task_work_run+0x67/0xa0
-[   46.739547]  exit_to_user_mode_prepare+0x18c/0x1a0
-[   46.739559]  syscall_exit_to_user_mode+0x26/0x40
-[   46.739568]  do_syscall_64+0x46/0xb0
-[   46.739584]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-The root cause is we missed to do sanity check on curseg->alloc_type,
-result in out-of-bound accessing on sbi->block_count[] array, fix it.
-
-Signed-off-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- fs/f2fs/segment.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
-index df9ed75f0b7a..5fd33aabd0fc 100644
---- a/fs/f2fs/segment.c
-+++ b/fs/f2fs/segment.c
-@@ -4792,6 +4792,13 @@ static int sanity_check_curseg(struct f2fs_sb_info *sbi)
- 
- 		sanity_check_seg_type(sbi, curseg->seg_type);
- 
-+		if (curseg->alloc_type != LFS && curseg->alloc_type != SSR) {
-+			f2fs_err(sbi,
-+				 "Current segment has invalid alloc_type:%d",
-+				 curseg->alloc_type);
-+			return -EFSCORRUPTED;
-+		}
-+
- 		if (f2fs_test_bit(blkofs, se->cur_valid_map))
- 			goto out;
- 
--- 
-2.34.1
+I see the command but can't find the corresponding bug.
+The email is sent to  syzbot+HASH@syzkaller.appspotmail.com address
+but the HASH does not correspond to any known bug.
+Please double check the address.
 
