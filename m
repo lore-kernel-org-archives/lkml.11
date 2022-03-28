@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E4DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:28:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D90E5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:29:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238300AbiC1Lag (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:30:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54528 "EHLO
+        id S238678AbiC1Lak (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:30:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241740AbiC1LYK (ORCPT
+        with ESMTP id S241755AbiC1LYS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:24:10 -0400
+        Mon, 28 Mar 2022 07:24:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF74A56206;
-        Mon, 28 Mar 2022 04:22:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83204554B8;
+        Mon, 28 Mar 2022 04:22:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EA6661195;
-        Mon, 28 Mar 2022 11:22:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C58DDC340ED;
-        Mon, 28 Mar 2022 11:22:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 226C66115A;
+        Mon, 28 Mar 2022 11:22:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48AA1C340ED;
+        Mon, 28 Mar 2022 11:22:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466524;
-        bh=8rzxR8C9aV5joxDkLw1fv1HzRyps0zkC5tErCCANSjw=;
+        s=k20201202; t=1648466556;
+        bh=Xw/2gJHhbQCdbR9Btc27+q+yXGSLg084DpCItCXfpOA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bhGrzlie6Uduay4CJW18Nq2+7TdB52RfNQPQwlgcNuXgyWceRn6Bf74PA57ADzI5O
-         cA3bNzxhuAbXZHSrNg5dQEtRTCNwyhREVObGrgKCZ00eLPkXstkoDbPI+iy8g7sy+1
-         pWCMorBGaDtkV2w5xnx70bJw91qeP4Mgp+Frpn2qBT9ZS2iluknQfEBSw1JvXTv4Dv
-         eOUR7yNCZlH4S2qJ9PgLvNYU7b3PcVXQFuYCiNLgk0WzXovsIJHXb6H9jI5Vlx29uF
-         Ye3qG6BXDQvu5h5FTK/smG4CcoiVX49N5Qx8hgNpu4XBpAZyoz/T3fHuBsno3nTKWy
-         LP/XLL9BfaQug==
+        b=LoD0vLVKOYIdzwylqnVYTIE/HWQduCCsYXCxHd+vq4U+J6sP55typeajTtPkuzzEx
+         pKoETkNLvJGsMBS1rXNBFVvdPEh8yqY0FA1MXJ6uaxlkbjoFw9/XQtgNpxVP0ZZUeZ
+         m5MnSy9h0Ny35q0FoF25FFM3qcNXGOSVmqclA5SLUEAXZu+IMFgtldZro4ltImIh0g
+         HRU0Y/QKbsDSSflxTv2uuaKs+/Nd+gkh7RGJHwleW+MRCQnfBFLRcJByA47RcFtVEi
+         3RDs2qpBcv5BAOeT8uM5Xa8rs7e8aqaDjbYcKYAPk2yRfiD0+oj4SlnPWkyXK0VO1c
+         K1nLjDRRthE0g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Casey Schaufler <casey@schaufler-ca.com>,
-        kernel test robot <lkp@intel.com>,
-        Sasha Levin <sashal@kernel.org>, jmorris@namei.org,
-        serge@hallyn.com, linux-security-module@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 15/29] Fix incorrect type in assignment of ipv6 port for audit
-Date:   Mon, 28 Mar 2022 07:21:17 -0400
-Message-Id: <20220328112132.1555683-15-sashal@kernel.org>
+Cc:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
+        pavel@ucw.cz, len.brown@intel.com, gregkh@linuxfoundation.org,
+        linux-pm@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 25/29] PM: core: keep irq flags in device_pm_check_callbacks()
+Date:   Mon, 28 Mar 2022 07:21:27 -0400
+Message-Id: <20220328112132.1555683-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220328112132.1555683-1-sashal@kernel.org>
 References: <20220328112132.1555683-1-sashal@kernel.org>
@@ -52,33 +53,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Casey Schaufler <casey@schaufler-ca.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-[ Upstream commit a5cd1ab7ab679d252a6d2f483eee7d45ebf2040c ]
+[ Upstream commit 524bb1da785a7ae43dd413cd392b5071c6c367f8 ]
 
-Remove inappropriate use of ntohs() and assign the
-port value directly.
+The function device_pm_check_callbacks() can be called under the spin
+lock (in the reported case it happens from genpd_add_device() ->
+dev_pm_domain_set(), when the genpd uses spinlocks rather than mutexes.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
+However this function uncoditionally uses spin_lock_irq() /
+spin_unlock_irq(), thus not preserving the CPU flags. Use the
+irqsave/irqrestore instead.
+
+The backtrace for the reference:
+[    2.752010] ------------[ cut here ]------------
+[    2.756769] raw_local_irq_restore() called with IRQs enabled
+[    2.762596] WARNING: CPU: 4 PID: 1 at kernel/locking/irqflag-debug.c:10 warn_bogus_irq_restore+0x34/0x50
+[    2.772338] Modules linked in:
+[    2.775487] CPU: 4 PID: 1 Comm: swapper/0 Tainted: G S                5.17.0-rc6-00384-ge330d0d82eff-dirty #684
+[    2.781384] Freeing initrd memory: 46024K
+[    2.785839] pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[    2.785841] pc : warn_bogus_irq_restore+0x34/0x50
+[    2.785844] lr : warn_bogus_irq_restore+0x34/0x50
+[    2.785846] sp : ffff80000805b7d0
+[    2.785847] x29: ffff80000805b7d0 x28: 0000000000000000 x27: 0000000000000002
+[    2.785850] x26: ffffd40e80930b18 x25: ffff7ee2329192b8 x24: ffff7edfc9f60800
+[    2.785853] x23: ffffd40e80930b18 x22: ffffd40e80930d30 x21: ffff7edfc0dffa00
+[    2.785856] x20: ffff7edfc09e3768 x19: 0000000000000000 x18: ffffffffffffffff
+[    2.845775] x17: 6572206f74206465 x16: 6c696166203a3030 x15: ffff80008805b4f7
+[    2.853108] x14: 0000000000000000 x13: ffffd40e809550b0 x12: 00000000000003d8
+[    2.860441] x11: 0000000000000148 x10: ffffd40e809550b0 x9 : ffffd40e809550b0
+[    2.867774] x8 : 00000000ffffefff x7 : ffffd40e809ad0b0 x6 : ffffd40e809ad0b0
+[    2.875107] x5 : 000000000000bff4 x4 : 0000000000000000 x3 : 0000000000000000
+[    2.882440] x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff7edfc03a8000
+[    2.889774] Call trace:
+[    2.892290]  warn_bogus_irq_restore+0x34/0x50
+[    2.896770]  _raw_spin_unlock_irqrestore+0x94/0xa0
+[    2.901690]  genpd_unlock_spin+0x20/0x30
+[    2.905724]  genpd_add_device+0x100/0x2d0
+[    2.909850]  __genpd_dev_pm_attach+0xa8/0x23c
+[    2.914329]  genpd_dev_pm_attach_by_id+0xc4/0x190
+[    2.919167]  genpd_dev_pm_attach_by_name+0x3c/0xd0
+[    2.924086]  dev_pm_domain_attach_by_name+0x24/0x30
+[    2.929102]  psci_dt_attach_cpu+0x24/0x90
+[    2.933230]  psci_cpuidle_probe+0x2d4/0x46c
+[    2.937534]  platform_probe+0x68/0xe0
+[    2.941304]  really_probe.part.0+0x9c/0x2fc
+[    2.945605]  __driver_probe_device+0x98/0x144
+[    2.950085]  driver_probe_device+0x44/0x15c
+[    2.954385]  __device_attach_driver+0xb8/0x120
+[    2.958950]  bus_for_each_drv+0x78/0xd0
+[    2.962896]  __device_attach+0xd8/0x180
+[    2.966843]  device_initial_probe+0x14/0x20
+[    2.971144]  bus_probe_device+0x9c/0xa4
+[    2.975092]  device_add+0x380/0x88c
+[    2.978679]  platform_device_add+0x114/0x234
+[    2.983067]  platform_device_register_full+0x100/0x190
+[    2.988344]  psci_idle_init+0x6c/0xb0
+[    2.992113]  do_one_initcall+0x74/0x3a0
+[    2.996060]  kernel_init_freeable+0x2fc/0x384
+[    3.000543]  kernel_init+0x28/0x130
+[    3.004132]  ret_from_fork+0x10/0x20
+[    3.007817] irq event stamp: 319826
+[    3.011404] hardirqs last  enabled at (319825): [<ffffd40e7eda0268>] __up_console_sem+0x78/0x84
+[    3.020332] hardirqs last disabled at (319826): [<ffffd40e7fd6d9d8>] el1_dbg+0x24/0x8c
+[    3.028458] softirqs last  enabled at (318312): [<ffffd40e7ec90410>] _stext+0x410/0x588
+[    3.036678] softirqs last disabled at (318299): [<ffffd40e7ed1bf68>] __irq_exit_rcu+0x158/0x174
+[    3.045607] ---[ end trace 0000000000000000 ]---
+
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/smack/smack_lsm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/base/power/main.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/security/smack/smack_lsm.c b/security/smack/smack_lsm.c
-index 21a0e7c3b8de..3f3f56f6be4d 100644
---- a/security/smack/smack_lsm.c
-+++ b/security/smack/smack_lsm.c
-@@ -2505,7 +2505,7 @@ static int smk_ipv6_check(struct smack_known *subject,
- #ifdef CONFIG_AUDIT
- 	smk_ad_init_net(&ad, __func__, LSM_AUDIT_DATA_NET, &net);
- 	ad.a.u.net->family = PF_INET6;
--	ad.a.u.net->dport = ntohs(address->sin6_port);
-+	ad.a.u.net->dport = address->sin6_port;
- 	if (act == SMK_RECEIVING)
- 		ad.a.u.net->v6info.saddr = address->sin6_addr;
- 	else
+diff --git a/drivers/base/power/main.c b/drivers/base/power/main.c
+index 6bce40e2506e..8c4819fe73d4 100644
+--- a/drivers/base/power/main.c
++++ b/drivers/base/power/main.c
+@@ -2022,7 +2022,9 @@ static bool pm_ops_is_empty(const struct dev_pm_ops *ops)
+ 
+ void device_pm_check_callbacks(struct device *dev)
+ {
+-	spin_lock_irq(&dev->power.lock);
++	unsigned long flags;
++
++	spin_lock_irqsave(&dev->power.lock, flags);
+ 	dev->power.no_pm_callbacks =
+ 		(!dev->bus || (pm_ops_is_empty(dev->bus->pm) &&
+ 		 !dev->bus->suspend && !dev->bus->resume)) &&
+@@ -2031,7 +2033,7 @@ void device_pm_check_callbacks(struct device *dev)
+ 		(!dev->pm_domain || pm_ops_is_empty(&dev->pm_domain->ops)) &&
+ 		(!dev->driver || (pm_ops_is_empty(dev->driver->pm) &&
+ 		 !dev->driver->suspend && !dev->driver->resume));
+-	spin_unlock_irq(&dev->power.lock);
++	spin_unlock_irqrestore(&dev->power.lock, flags);
+ }
+ 
+ bool dev_pm_skip_suspend(struct device *dev)
 -- 
 2.34.1
 
