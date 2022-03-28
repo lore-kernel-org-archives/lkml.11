@@ -2,108 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B27A2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 14:27:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F3F9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 14:27:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243809AbiC1O2l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 10:28:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53076 "EHLO
+        id S243819AbiC1O3T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 10:29:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243801AbiC1O2i (ORCPT
+        with ESMTP id S231512AbiC1O3R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 10:28:38 -0400
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3744B46B1A;
-        Mon, 28 Mar 2022 07:26:58 -0700 (PDT)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 22SEMLX6009684;
-        Mon, 28 Mar 2022 09:22:21 -0500
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 22SEMKu7009683;
-        Mon, 28 Mar 2022 09:22:20 -0500
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Mon, 28 Mar 2022 09:22:20 -0500
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Nathan Chancellor <nathan@kernel.org>, x86-ml <x86@kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        linux-toolchains@vger.kernel.org
-Subject: Re: clang memcpy calls
-Message-ID: <20220328142220.GI614@gate.crashing.org>
-References: <YjxTt3pFIcV3lt8I@zn.tnic> <CAKwvOdkw0Bbm+=ZyViXQhBE1L6uSbvkstHJuHpQ21tzJRftgAw@mail.gmail.com> <Yj2yYFloadFobRPx@lakrids> <Yj3OEI+WHV/A5uf8@hirez.programming.kicks-ass.net> <20220325151238.GB614@gate.crashing.org> <YkGFdtn0yDIPqXRl@FVFF77S0Q05N>
-Mime-Version: 1.0
+        Mon, 28 Mar 2022 10:29:17 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3EB05DE45;
+        Mon, 28 Mar 2022 07:27:34 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 2DFC81F383;
+        Mon, 28 Mar 2022 14:27:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1648477653; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UWVLFeQC4kA035pwDBpIgSp59rb4pB2eEE0xn69bb5I=;
+        b=rCYZ4U8dxMLGxYFPnI9nfisVI+RD7AnoasPPCHQDnHAWmxGH+LxvS6NV1kPXspBlsnULaR
+        8+ALMjD925t8A+pcJtCZ43VOZjo1WcN093zbAF2Fod7bqBFv01tDetyh0LGJhKrIayPqeO
+        mWveBdOIDpV1bdqg8vBIOqhRwElbZPs=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id C989DA3B87;
+        Mon, 28 Mar 2022 14:27:30 +0000 (UTC)
+Date:   Mon, 28 Mar 2022 16:27:27 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     David Hildenbrand <david@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Yu Zhao <yuzhao@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Barry Song <baohua@kernel.org>,
+        Brian Geffon <bgeffon@google.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Donald Carr <d@chaos-reins.com>,
+        Hillf Danton <hdanton@sina.com>,
+        Holger =?iso-8859-1?Q?Hoffst=E4tte?= 
+        <holger@applied-asynchrony.com>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Rik van Riel <riel@surriel.com>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Sofia Trinh <sofia.trinh@edi.works>,
+        Steven Barrett <steven@liquorix.net>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        Ying Huang <ying.huang@intel.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Kernel Page Reclaim v2 <page-reclaim@google.com>,
+        the arch/x86 maintainers <x86@kernel.org>
+Subject: Re: [page-reclaim] Re: [GIT PULL] Multi-gen LRU for 5.18-rc1
+Message-ID: <YkHFz1f+s8+b5Qws@dhcp22.suse.cz>
+References: <20220326010003.3155137-1-yuzhao@google.com>
+ <CAHk-=wjp=jEhjvD9GPnHfuV5Kc1=rUnf84b_qscLJ8fkY74u3Q@mail.gmail.com>
+ <CAOUHufbqum18T4kZ=d_hMehz=N=3iSuNfGrLof5tB8kjGkk8yw@mail.gmail.com>
+ <20220326134928.ad739eeecd5d0855dbdc6257@linux-foundation.org>
+ <400edaab-7c6c-f4d1-9a94-e8d0803857fa@redhat.com>
+ <YkG7mD8kT0uAk3Iy@casper.infradead.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YkGFdtn0yDIPqXRl@FVFF77S0Q05N>
-User-Agent: Mutt/1.4.2.3i
+In-Reply-To: <YkG7mD8kT0uAk3Iy@casper.infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi!
-
-On Mon, Mar 28, 2022 at 10:52:54AM +0100, Mark Rutland wrote:
-> On Fri, Mar 25, 2022 at 10:12:38AM -0500, Segher Boessenkool wrote:
-> > The compiler isn't assuming anything about asan.  The compiler generates
-> > its code without any consideration of what asan will or will not do.
-> > The burden of making things work is on asan.
+On Mon 28-03-22 14:43:52, Matthew Wilcox wrote:
+> On Mon, Mar 28, 2022 at 02:29:20PM +0200, David Hildenbrand wrote:
+> > I'd appreciate if we could merge most MM-related stuff through the -MM
+> > tree; it exists for a reason IMHO. Andrew, you usually have a very good
+> > feeling when something's ready to be merged upstream (sufficient review
+> > from relevant folks, sufficient exposure via -mm and -next, ...).
 > 
-> I think we're talking past each other here, so let me be more precise. :)
-> 
-> The key thing is that when the user passes `-fsantize=address`, instrumentation
-> is added by (a part of) the compiler. That instrumentation is added under some
-> assumptions as to how the compiler as a whole will behave.
-> 
-> With that in mind, the question is how is __attribute__((no_sanitize_address))
-> intended to work when considering all the usual expectations around how the
-> compiler can play with memcpy and similar?
+> The problem is that the MM tree is completely unusable when patches going
+> in through other trees need to be based on it.  The MM workflow clearly
+> works well for Andrew, but it doesn't work well for us as a community.
 
-The attribute is about how the *current* function is instrumented, not
-about anything called by this function.  This is clearly documented:
-'no_sanitize_address'
-'no_address_safety_analysis'
-     The 'no_sanitize_address' attribute on functions is used to inform
-     the compiler that it should not instrument memory accesses in the
-     function when compiling with the '-fsanitize=address' option.  The
-     'no_address_safety_analysis' is a deprecated alias of the
-     'no_sanitize_address' attribute, new code should use
-     'no_sanitize_address'.
-
-> > The compiler should not do anything differently here if it uses asan.
-> > The address sanitizer and the memcpy function implementation perhaps
-> > have to cooperate somehow, or asan needs more smarts.  This needs to
-> > happen no matter what, to support other things calling memcpy, say,
-> > assembler code.
-> 
-> I appreciate where you're coming from here, but I think you're approaching the
-> problem sideways.
-
-I am stating facts, I am not trying to solve your problem there.  It
-seemed to me (and still does) that you didn't grasp all facts here.
-
-> We need to define *what the semantics are* so that we can actually solve the
-> problem, e.g. is a memcpy implementation expected to be instrumented or not?
-
-That is up to the memcpy implementation itself, of course.
-
-> > GCC *requires* memcpy to be the standard memcpy always (i.e. to have the
-> > standard-specified semantics).  This means that it will have the same
-> > semantics as __builtin_memcpy always, and either or not be a call to an
-> > external function.  It can also create calls to it out of thin air.
-> 
-> I understand all of that.
-
-And still you want us to do something that is impossible under those
-existing constraints :-(
-
-If you want the external memcpy called by modules A, B, C to not be
-instrumented, you have to link A, B, and C against an uninstrumented
-memcpy.  This is something the kernel will have to do, the compiler has
-no say in how the kernel is linked together.
-
-
-Segher
+This is not the first time this has been brought up over years. We have
+discussed the existing workflow at the LSFMM two years ago without a
+larger consensus. I believe we want/need to resurrect those discussions
+again. IMHO the existing workflow is more and more hitting its limits
+so we should really think about a long term solution.
+-- 
+Michal Hocko
+SUSE Labs
