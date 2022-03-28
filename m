@@ -2,131 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07BE5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:12:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 826D9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:12:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245510AbiC1TN4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 15:13:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58230 "EHLO
+        id S245523AbiC1TOJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 15:14:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239209AbiC1TNw (ORCPT
+        with ESMTP id S245522AbiC1TOB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 15:13:52 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E379A66F8F
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 12:12:10 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id h7so26482523lfl.2
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 12:12:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=z0hyCXgiwng5/9t6+pFesUyv1jubPkOVcRWMPxjuqVk=;
-        b=CYAJDipb2kfpHEC0ajYWVsuxHklphuLeT0OAwYQXQ5dbnDOPs6iszc4RweoqSMIy07
-         chQ0e15UhHy3z3M8TlDW0c74g3t+miH/0tWmu53PP8HZ2nEbd2CpalJHxLG3HPEDYhEs
-         KQtZm/A2FJK0JM3nKRt/PMDS2hMPW+DTmg7Sc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=z0hyCXgiwng5/9t6+pFesUyv1jubPkOVcRWMPxjuqVk=;
-        b=JYiYHPT+A4X1otXm80H11D98jqauNXwHf001nv/SLf7LKpfKgbq3AvJj9ezK2qr/8s
-         TOF2APUdtwZbNwh+89bVhCaxmTqYFnTGxA4fi3ikpVltzSnJJA1XNlrKUtVllTZkUuuV
-         2HdD9mG+88LM8aKJagfydJdz4kl8TDgqwsbKB/XSvxHUPjM0wwwcUdcu9/miHOP+97j8
-         p+mGGMQDuLkGuduA5Vdh7CgD9B+CT/NEfkhFoK2jtwI1FhkSrBz54P1ZKNWPkGIFqTkO
-         Bs/AQ/vAFRmRitYuVS40JtdcoY/w2O8Lj7eVJtJ1oaYi2zfI2nfROgY8zzHr9HAXNlMu
-         dV5w==
-X-Gm-Message-State: AOAM530qkKahqXJAfUzGkomDqItBfO+zuJmU3tvbO2RHDsWS4EXXocea
-        DCU+JaznHCEY+/sMG3+G+16i+8xzSQ/8gK8YzUA=
-X-Google-Smtp-Source: ABdhPJzJwZn2cXFW3RjcERPa4LHjh+K/iKeD5Iu9Gn4UY6yJhyPGT6IVi9oZE7AwPcuNmfbWBVlHuA==
-X-Received: by 2002:a05:6512:ac3:b0:44a:a5a3:1136 with SMTP id n3-20020a0565120ac300b0044aa5a31136mr2938166lfu.657.1648494727708;
-        Mon, 28 Mar 2022 12:12:07 -0700 (PDT)
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com. [209.85.167.51])
-        by smtp.gmail.com with ESMTPSA id g7-20020a2eb5c7000000b002497a261f02sm1815269ljn.41.2022.03.28.12.12.06
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Mar 2022 12:12:06 -0700 (PDT)
-Received: by mail-lf1-f51.google.com with SMTP id 5so26469139lfp.1
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 12:12:06 -0700 (PDT)
-X-Received: by 2002:a05:6512:3d8f:b0:44a:2c65:8323 with SMTP id
- k15-20020a0565123d8f00b0044a2c658323mr21124202lfv.52.1648494725528; Mon, 28
- Mar 2022 12:12:05 -0700 (PDT)
+        Mon, 28 Mar 2022 15:14:01 -0400
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 227CB66CA0
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 12:12:19 -0700 (PDT)
+Date:   Mon, 28 Mar 2022 12:12:12 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1648494737;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8pHkCo/gdRv4VedvapgXEYnE/62prPMyEb6hZYV3es8=;
+        b=t9tc2STGox8vO6ih3HLbuu+28UG4g40sJCUn6N4HOSguqH4MwV/DLaXfxB80qMUo2nYNJT
+        DyOpCDb6F4+8uAH0sU7MVsH+uBtYNh0C8yaocdC2D2CFOB2IMGrEaV4vOFuOoBJ9nYH5oz
+        ijbV7LGHWOVXRK3qPgnpikPHX1x0HKI=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Roman Gushchin <roman.gushchin@linux.dev>
+To:     Waiman Long <longman@redhat.com>
+Cc:     Muchun Song <songmuchun@bytedance.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH-mm v3] mm/list_lru: Optimize
+ memcg_reparent_list_lru_node()
+Message-ID: <YkIIjGk5t4XorQXe@carbon.dhcp.thefacebook.com>
+References: <20220309144000.1470138-1-longman@redhat.com>
+ <CAMZfGtWS581YW4Y8oNU=E_zPnpK=mMdYVSG1F3U3fJNAzBzc+g@mail.gmail.com>
+ <2263666d-5eef-b1fe-d5e3-b166a3185263@redhat.com>
+ <CAMZfGtVG2YcmxY0fECkAYNb=sKXJQhWJqgtMTEpQwxXEXmSOLw@mail.gmail.com>
+ <e93696b7-b678-6f41-9c1e-46aad447ce8d@redhat.com>
 MIME-Version: 1.0
-References: <CACRpkdZ_Jr3OzfoOpSSsAJMy1Oe_=zD861jouDzCVD-BQ6yZMg@mail.gmail.com>
-In-Reply-To: <CACRpkdZ_Jr3OzfoOpSSsAJMy1Oe_=zD861jouDzCVD-BQ6yZMg@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 28 Mar 2022 12:11:49 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whzqAB6kfHUcX2uhfPnNiWJRq=UmeA1TbgGi3XA+57j3w@mail.gmail.com>
-Message-ID: <CAHk-=whzqAB6kfHUcX2uhfPnNiWJRq=UmeA1TbgGi3XA+57j3w@mail.gmail.com>
-Subject: Re: [GIT PULL] pin control bulk changes for v5.18
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Kees Cook <keescook@chromium.org>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e93696b7-b678-6f41-9c1e-46aad447ce8d@redhat.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 6:08 AM Linus Walleij <linus.walleij@linaro.org> wr=
-ote:
->
->   git://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-pinctrl.git
-> tags/pinctrl-v5.18-1
+On Sun, Mar 27, 2022 at 08:57:15PM -0400, Waiman Long wrote:
+> On 3/22/22 22:12, Muchun Song wrote:
+> > On Wed, Mar 23, 2022 at 9:55 AM Waiman Long <longman@redhat.com> wrote:
+> > > On 3/22/22 21:06, Muchun Song wrote:
+> > > > On Wed, Mar 9, 2022 at 10:40 PM Waiman Long <longman@redhat.com> wrote:
+> > > > > Since commit 2c80cd57c743 ("mm/list_lru.c: fix list_lru_count_node()
+> > > > > to be race free"), we are tracking the total number of lru
+> > > > > entries in a list_lru_node in its nr_items field.  In the case of
+> > > > > memcg_reparent_list_lru_node(), there is nothing to be done if nr_items
+> > > > > is 0.  We don't even need to take the nlru->lock as no new lru entry
+> > > > > could be added by a racing list_lru_add() to the draining src_idx memcg
+> > > > > at this point.
+> > > > Hi Waiman,
+> > > > 
+> > > > Sorry for the late reply.  Quick question: what if there is an inflight
+> > > > list_lru_add()?  How about the following race?
+> > > > 
+> > > > CPU0:                               CPU1:
+> > > > list_lru_add()
+> > > >       spin_lock(&nlru->lock)
+> > > >       l = list_lru_from_kmem(memcg)
+> > > >                                       memcg_reparent_objcgs(memcg)
+> > > >                                       memcg_reparent_list_lrus(memcg)
+> > > >                                           memcg_reparent_list_lru()
+> > > >                                               memcg_reparent_list_lru_node()
+> > > >                                                   if (!READ_ONCE(nlru->nr_items))
+> > > >                                                       // Miss reparenting
+> > > >                                                       return
+> > > >       // Assume 0->1
+> > > >       l->nr_items++
+> > > >       // Assume 0->1
+> > > >       nlru->nr_items++
+> > > > 
+> > > > IIUC, we use nlru->lock to serialise this scenario.
+> > > I guess this race is theoretically possible but very unlikely since it
+> > > means a very long pause between list_lru_from_kmem() and the increment
+> > > of nr_items.
+> > It is more possible in a VM.
+> > 
+> > > How about the following changes to make sure that this race can't happen?
+> > > 
+> > > diff --git a/mm/list_lru.c b/mm/list_lru.c
+> > > index c669d87001a6..c31a0a8ad4e7 100644
+> > > --- a/mm/list_lru.c
+> > > +++ b/mm/list_lru.c
+> > > @@ -395,9 +395,10 @@ static void memcg_reparent_list_lru_node(struct
+> > > list_lru *lru, int nid,
+> > >           struct list_lru_one *src, *dst;
+> > > 
+> > >           /*
+> > > -        * If there is no lru entry in this nlru, we can skip it
+> > > immediately.
+> > > +        * If there is no lru entry in this nlru and the nlru->lock is free,
+> > > +        * we can skip it immediately.
+> > >            */
+> > > -       if (!READ_ONCE(nlru->nr_items))
+> > > +       if (!READ_ONCE(nlru->nr_items) && !spin_is_locked(&nlru->lock))
+> > I think we also should insert a smp_rmb() between those two loads.
+> 
+> Thinking about this some more, I believe that adding spin_is_locked() check
+> will be enough for x86. However, that will likely not be enough for arches
+> with a more relaxed memory semantics. So the safest way to avoid this
+> possible race is to move the check to within the lock critical section,
+> though that comes with a slightly higher overhead for the 0 nr_items case. I
+> will send out a patch to correct that. Thanks for bring this possible race
+> to my attention.
 
-Hmm.
+Yes, I think it's not enough:
+CPU0                                       CPU1
+READ_ONCE(&nlru->nr_items) -> 0
+                                           spin_lock(&nlru->lock);
+                                           nlru->nr_items++;
+                                           spin_unlock(&nlru->lock);
+&& !spin_is_locked(&nlru->lock) -> 0
 
-This clashes badly with the fact that we in the meantime have enabled
--Warray-bounds, and I got
 
-  drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c: In function =E2=80=98npcmgpio_=
-irq_handler=E2=80=99:
-  ./include/linux/find.h:40:23: error: array subscript =E2=80=98long unsign=
-ed
-int[0]=E2=80=99 is partly outside array bounds of =E2=80=98u32[1]=E2=80=99 =
-{aka =E2=80=98unsigned
-int[1]=E2=80=99} [-Werror=3Darray-bounds]
-     40 |                 val =3D *addr & GENMASK(size - 1, offset);
-        |                       ^~~~~
-  drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c:219:13: note: while
-referencing =E2=80=98sts=E2=80=99
-    219 |         u32 sts, en, bit;
-        |             ^~~
+Getting back to the original patch, I wonder if instead we can batch reparenting
+of lrus so we don't have to grab and release nlru->lock for each reparenting lru.
 
-as a result.
 
-Was this not in linux-next?
-
-Or was the array bounds checking not there?
-
-Anyway, that cast to "const void *"
-
-     for_each_set_bit(bit, (const void *)&sts,
-
-in that driver is completely wrong.
-
-The bit operations are defined in arrays of 'unsigned long', and you
-can't just cast the issue away, because the end result is not the same
-on a big-endian machine.
-
-I fixed it up in the merge, but what really confuses me (apart from
-the apparent lack of testing in linux-next) is that I don't actually
-see what made this happen now, and not before. Maybe that's why it
-didn't show up in linux-next: it's some odd gcc heisenbug.
-
-Because there seems to be no actual changes to that driver that would
-explain why I get the warning now, but not before the pull.
-
-There *was* a change from
-
--       dev_dbg(bank->gc.parent, "...
-+       dev_dbg(chip->parent_device, }...
-
-in that function, but nothing else I notice.
-
-VERY funky.
-
-Kees, any idea?
-
-                   Linus
+Thanks!
