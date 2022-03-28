@@ -2,49 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4159DC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 620F4C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:44:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243198AbiC1Log (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:44:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38086 "EHLO
+        id S243272AbiC1Lol (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:44:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241749AbiC1Lde (ORCPT
+        with ESMTP id S241750AbiC1Lde (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Mar 2022 07:33:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD2E2583BF;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD0A2583BE;
         Mon, 28 Mar 2022 04:24:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6ABC5B8105A;
-        Mon, 28 Mar 2022 11:24:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3264CC36AE5;
-        Mon, 28 Mar 2022 11:24:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 92B23B80EAE;
+        Mon, 28 Mar 2022 11:24:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33910C34100;
+        Mon, 28 Mar 2022 11:24:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466687;
-        bh=afXJF7r+BNN7Bd/BCnFM0/zZ4G0iDP/43BVuOKMseVQ=;
+        s=k20201202; t=1648466679;
+        bh=X1P+uoFM8eTv0k4flg3ON4z680a6QwZcO0ujur2zgxA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y2RvDUXAX70m8LHEa36XVqltHBlDZ8t6SjTZUoHAYyl6lKmdGeAukLPqTGr8A4wh3
-         14bwLNxHCxop0b+NARfs/80FM0sNHMw5iSkh17s8MpZX5vvG50uVxfbEssK0bifIJh
-         lefVH3tZ+EAAvPu7+aVx2wX+NAQkVGuQY0ryUy1ITT/KKVenfFTuhTSbaTxnD2ki/b
-         zvnEaT6hNxmde7wS0or3I92xT8VBkomvfjyPXPs6U/vpyz779i/JB9n9XUKLQCZgdY
-         HfGGHXgza0BmFcqHK4PTG2u08YFWoBzVEmjtakfbWM16pe05sTJiEK6rHcI79oBmIK
-         rULdLF+jFqU+Q==
+        b=pQzR3XxfGrrCBwKW2Fg6BGOr25kpETP+JicoCUwehkcLj+Ih6oR+VGUg5jwkdCXj/
+         7/guVOILUuTLxxMtXcRU45uW+lSQ1Cx2UN/z8WwD4WPKBm7ysNPcj7T+7wB+UVtSlV
+         0B2O80SXxa8YnsbKJ67V8rXCue7Hws9xURMfDz997C3f5tKSh2ZCCw/iuMJDyMSydv
+         wvKEbN9rPMQ5LIyfDIo63+5uVKGUO8Xzjqr6XTXdFKGlNO6uELJ6U3ZJTNhMQkoEdx
+         LteW9AtE0uqMRZsCbtYnAHecXtE8C+fluAK3ZjSwGnO+u4NJaV0OeZUqvlXbMQs/+P
+         WgbBo4n0jULNQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Souptick Joarder (HPE)" <jrdr.linux@gmail.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        tglx@linutronix.de
-Subject: [PATCH AUTOSEL 4.14 4/8] irqchip/nvic: Release nvic_base upon failure
-Date:   Mon, 28 Mar 2022 07:24:35 -0400
-Message-Id: <20220328112440.1557113-4-sashal@kernel.org>
+Cc:     Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, ldewangan@nvidia.com,
+        thierry.reding@gmail.com, jonathanh@nvidia.com,
+        linux-spi@vger.kernel.org, linux-tegra@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 12/12] spi: tegra20: Use of_device_get_match_data()
+Date:   Mon, 28 Mar 2022 07:24:17 -0400
+Message-Id: <20220328112417.1556946-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220328112440.1557113-1-sashal@kernel.org>
-References: <20220328112440.1557113-1-sashal@kernel.org>
+In-Reply-To: <20220328112417.1556946-1-sashal@kernel.org>
+References: <20220328112417.1556946-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,48 +54,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Souptick Joarder (HPE)" <jrdr.linux@gmail.com>
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-[ Upstream commit e414c25e3399b2b3d7337dc47abccab5c71b7c8f ]
+[ Upstream commit c9839acfcbe20ce43d363c2a9d0772472d9921c0 ]
 
-smatch warning was reported as below ->
+Use of_device_get_match_data() to simplify the code.
 
-smatch warnings:
-drivers/irqchip/irq-nvic.c:131 nvic_of_init()
-warn: 'nvic_base' not released on lines: 97.
-
-Release nvic_base upon failure.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Souptick Joarder (HPE) <jrdr.linux@gmail.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220218163303.33344-1-jrdr.linux@gmail.com
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+Link: https://lore.kernel.org/r/20220315023138.2118293-1-chi.minghao@zte.com.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-nvic.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/spi/spi-tegra20-slink.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
-diff --git a/drivers/irqchip/irq-nvic.c b/drivers/irqchip/irq-nvic.c
-index 9694529b709d..330beb62d015 100644
---- a/drivers/irqchip/irq-nvic.c
-+++ b/drivers/irqchip/irq-nvic.c
-@@ -108,6 +108,7 @@ static int __init nvic_of_init(struct device_node *node,
+diff --git a/drivers/spi/spi-tegra20-slink.c b/drivers/spi/spi-tegra20-slink.c
+index bc3097e5cc26..436d559503db 100644
+--- a/drivers/spi/spi-tegra20-slink.c
++++ b/drivers/spi/spi-tegra20-slink.c
+@@ -1016,14 +1016,8 @@ static int tegra_slink_probe(struct platform_device *pdev)
+ 	struct resource		*r;
+ 	int ret, spi_irq;
+ 	const struct tegra_slink_chip_data *cdata = NULL;
+-	const struct of_device_id *match;
  
- 	if (!nvic_irq_domain) {
- 		pr_warn("Failed to allocate irq domain\n");
-+		iounmap(nvic_base);
- 		return -ENOMEM;
- 	}
+-	match = of_match_device(tegra_slink_of_match, &pdev->dev);
+-	if (!match) {
+-		dev_err(&pdev->dev, "Error: No device match found\n");
+-		return -ENODEV;
+-	}
+-	cdata = match->data;
++	cdata = of_device_get_match_data(&pdev->dev);
  
-@@ -117,6 +118,7 @@ static int __init nvic_of_init(struct device_node *node,
- 	if (ret) {
- 		pr_warn("Failed to allocate irq chips\n");
- 		irq_domain_remove(nvic_irq_domain);
-+		iounmap(nvic_base);
- 		return ret;
- 	}
- 
+ 	master = spi_alloc_master(&pdev->dev, sizeof(*tspi));
+ 	if (!master) {
 -- 
 2.34.1
 
