@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13FB2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:29:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5449C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:29:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241409AbiC1LbL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:31:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59838 "EHLO
+        id S241362AbiC1LbW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:31:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241742AbiC1LYK (ORCPT
+        with ESMTP id S241737AbiC1LYK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Mar 2022 07:24:10 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D5A56221;
-        Mon, 28 Mar 2022 04:22:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC3055BFF;
+        Mon, 28 Mar 2022 04:22:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B0E8BB81055;
-        Mon, 28 Mar 2022 11:22:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CAF1C340F3;
-        Mon, 28 Mar 2022 11:22:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2D3DBB80EAE;
+        Mon, 28 Mar 2022 11:22:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D836C340EC;
+        Mon, 28 Mar 2022 11:22:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466529;
-        bh=v1V7OgQ9ZfL/uDAaRTe7sePn9Z+Wh9PgpBSkw0TQrrs=;
+        s=k20201202; t=1648466521;
+        bh=ahUU7IHsx3eEaR7+9UFDYhquLnI1w2O+ne0dM777ZH0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OlrrB902ZxzHBTk0R44eSnykZvfMdJX2LkbLefvv85KLCxOobVURIdqHNFSD/NaM4
-         osYXNn9uxfBCHRlULrEok1wcUYQu8cTfhn+i18UCsGMWu4aMHVwV7H1/c01zIwISgF
-         OGkWBp85qoFj/EdM5zDiTXnOJizciQFGYDNnfp/P7VCMBKhW1AL1NiT4phKo+ARo/I
-         YLOa0B+HQqjuzRE5Tc6yK4Ce2GRaSFGgwBUZjg4VY9eKhPbUNeWTHJ9muLAeSU4g6Y
-         CRafvZU9wa8W6Nq2UafD20FpjlmBgnvXF76VeQN825itIA6DCj/91UbOl17MY8LSj/
-         ot4blSWHHhEvg==
+        b=m1abU02WPi53jdb7Cvi6qydOaKwRVUYwXb3X6vLXKrDpCMOqNggizVaKxLNz55JqG
+         +nfe7IcYb1iYVdodZHs/FqRKY2NYqju9zrvAYS6us2nt5OrEoR0aXShqSma7csuOda
+         fuC/hq1/CMRJTJiXhGuPe2a8JE/d74PPpCqdgfdR1r4uG59qy3S30oJoXvJt3uOUXg
+         7aoidQ2SFZ14OVXetNxWBurL+wrXoG0dCxOvW+yuwiJniqFtAAlD+1ylIUCUrQo00n
+         /jhOkmTbE7zZMuQifxV9azEl3LOKukyFrryRCtOQxV8tPc1vOF0YIxUVt8EWRbAcP8
+         i0sSRfD8Tbuxg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Akira Kawata <akirakawata1@gmail.com>,
-        kernel test robot <lkp@intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Sasha Levin <sashal@kernel.org>, viro@zeniv.linux.org.uk,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org
-Subject: [PATCH AUTOSEL 5.15 18/29] fs/binfmt_elf: Fix AT_PHDR for unusual ELF files
-Date:   Mon, 28 Mar 2022 07:21:20 -0400
-Message-Id: <20220328112132.1555683-18-sashal@kernel.org>
+Cc:     Richard Haines <richard_c_haines@btinternet.com>,
+        Demi Marie Obenour <demiobenour@gmail.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Sasha Levin <sashal@kernel.org>,
+        stephen.smalley.work@gmail.com, eparis@parisplace.org,
+        cgzones@googlemail.com, ndesaulniers@google.com,
+        selinux@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 13/29] selinux: allow FIOCLEX and FIONCLEX with policy capability
+Date:   Mon, 28 Mar 2022 07:21:15 -0400
+Message-Id: <20220328112132.1555683-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220328112132.1555683-1-sashal@kernel.org>
 References: <20220328112132.1555683-1-sashal@kernel.org>
@@ -53,117 +55,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Akira Kawata <akirakawata1@gmail.com>
+From: Richard Haines <richard_c_haines@btinternet.com>
 
-[ Upstream commit 0da1d5002745cdc721bc018b582a8a9704d56c42 ]
+[ Upstream commit 65881e1db4e948614d9eb195b8e1197339822949 ]
 
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=197921
+These ioctls are equivalent to fcntl(fd, F_SETFD, flags), which SELinux
+always allows too.  Furthermore, a failed FIOCLEX could result in a file
+descriptor being leaked to a process that should not have access to it.
 
-As pointed out in the discussion of buglink, we cannot calculate AT_PHDR
-as the sum of load_addr and exec->e_phoff.
+As this patch removes access controls, a policy capability needs to be
+enabled in policy to always allow these ioctls.
 
-: The AT_PHDR of ELF auxiliary vectors should point to the memory address
-: of program header. But binfmt_elf.c calculates this address as follows:
-:
-: NEW_AUX_ENT(AT_PHDR, load_addr + exec->e_phoff);
-:
-: which is wrong since e_phoff is the file offset of program header and
-: load_addr is the memory base address from PT_LOAD entry.
-:
-: The ld.so uses AT_PHDR as the memory address of program header. In normal
-: case, since the e_phoff is usually 64 and in the first PT_LOAD region, it
-: is the correct program header address.
-:
-: But if the address of program header isn't equal to the first PT_LOAD
-: address + e_phoff (e.g.  Put the program header in other non-consecutive
-: PT_LOAD region), ld.so will try to read program header from wrong address
-: then crash or use incorrect program header.
-
-This is because exec->e_phoff
-is the offset of PHDRs in the file and the address of PHDRs in the
-memory may differ from it. This patch fixes the bug by calculating the
-address of program headers from PT_LOADs directly.
-
-Signed-off-by: Akira Kawata <akirakawata1@gmail.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Acked-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220127124014.338760-2-akirakawata1@gmail.com
+Based-on-patch-by: Demi Marie Obenour <demiobenour@gmail.com>
+Signed-off-by: Richard Haines <richard_c_haines@btinternet.com>
+[PM: subject line tweak]
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/binfmt_elf.c | 24 ++++++++++++++++++------
- 1 file changed, 18 insertions(+), 6 deletions(-)
+ security/selinux/hooks.c                   | 6 ++++++
+ security/selinux/include/policycap.h       | 1 +
+ security/selinux/include/policycap_names.h | 3 ++-
+ security/selinux/include/security.h        | 7 +++++++
+ 4 files changed, 16 insertions(+), 1 deletion(-)
 
-diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
-index a813b70f594e..3f6a7cac68fd 100644
---- a/fs/binfmt_elf.c
-+++ b/fs/binfmt_elf.c
-@@ -170,8 +170,8 @@ static int padzero(unsigned long elf_bss)
+diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+index cb938890f40b..468c3ec90d79 100644
+--- a/security/selinux/hooks.c
++++ b/security/selinux/hooks.c
+@@ -3788,6 +3788,12 @@ static int selinux_file_ioctl(struct file *file, unsigned int cmd,
+ 					    CAP_OPT_NONE, true);
+ 		break;
  
- static int
- create_elf_tables(struct linux_binprm *bprm, const struct elfhdr *exec,
--		unsigned long load_addr, unsigned long interp_load_addr,
--		unsigned long e_entry)
-+		unsigned long interp_load_addr,
-+		unsigned long e_entry, unsigned long phdr_addr)
- {
- 	struct mm_struct *mm = current->mm;
- 	unsigned long p = bprm->p;
-@@ -257,7 +257,7 @@ create_elf_tables(struct linux_binprm *bprm, const struct elfhdr *exec,
- 	NEW_AUX_ENT(AT_HWCAP, ELF_HWCAP);
- 	NEW_AUX_ENT(AT_PAGESZ, ELF_EXEC_PAGESIZE);
- 	NEW_AUX_ENT(AT_CLKTCK, CLOCKS_PER_SEC);
--	NEW_AUX_ENT(AT_PHDR, load_addr + exec->e_phoff);
-+	NEW_AUX_ENT(AT_PHDR, phdr_addr);
- 	NEW_AUX_ENT(AT_PHENT, sizeof(struct elf_phdr));
- 	NEW_AUX_ENT(AT_PHNUM, exec->e_phnum);
- 	NEW_AUX_ENT(AT_BASE, interp_load_addr);
-@@ -823,7 +823,7 @@ static int parse_elf_properties(struct file *f, const struct elf_phdr *phdr,
- static int load_elf_binary(struct linux_binprm *bprm)
- {
- 	struct file *interpreter = NULL; /* to shut gcc up */
-- 	unsigned long load_addr = 0, load_bias = 0;
-+	unsigned long load_addr, load_bias = 0, phdr_addr = 0;
- 	int load_addr_set = 0;
- 	unsigned long error;
- 	struct elf_phdr *elf_ppnt, *elf_phdata, *interp_elf_phdata = NULL;
-@@ -1156,6 +1156,17 @@ static int load_elf_binary(struct linux_binprm *bprm)
- 				reloc_func_desc = load_bias;
- 			}
- 		}
++	case FIOCLEX:
++	case FIONCLEX:
++		if (!selinux_policycap_ioctl_skip_cloexec())
++			error = ioctl_has_perm(cred, file, FILE__IOCTL, (u16) cmd);
++		break;
 +
-+		/*
-+		 * Figure out which segment in the file contains the Program
-+		 * Header table, and map to the associated memory address.
-+		 */
-+		if (elf_ppnt->p_offset <= elf_ex->e_phoff &&
-+		    elf_ex->e_phoff < elf_ppnt->p_offset + elf_ppnt->p_filesz) {
-+			phdr_addr = elf_ex->e_phoff - elf_ppnt->p_offset +
-+				    elf_ppnt->p_vaddr;
-+		}
+ 	/* default case assumes that the command will go
+ 	 * to the file's ioctl() function.
+ 	 */
+diff --git a/security/selinux/include/policycap.h b/security/selinux/include/policycap.h
+index 2ec038efbb03..a9e572ca4fd9 100644
+--- a/security/selinux/include/policycap.h
++++ b/security/selinux/include/policycap.h
+@@ -11,6 +11,7 @@ enum {
+ 	POLICYDB_CAPABILITY_CGROUPSECLABEL,
+ 	POLICYDB_CAPABILITY_NNP_NOSUID_TRANSITION,
+ 	POLICYDB_CAPABILITY_GENFS_SECLABEL_SYMLINKS,
++	POLICYDB_CAPABILITY_IOCTL_SKIP_CLOEXEC,
+ 	__POLICYDB_CAPABILITY_MAX
+ };
+ #define POLICYDB_CAPABILITY_MAX (__POLICYDB_CAPABILITY_MAX - 1)
+diff --git a/security/selinux/include/policycap_names.h b/security/selinux/include/policycap_names.h
+index b89289f092c9..ebd64afe1def 100644
+--- a/security/selinux/include/policycap_names.h
++++ b/security/selinux/include/policycap_names.h
+@@ -12,7 +12,8 @@ const char *selinux_policycap_names[__POLICYDB_CAPABILITY_MAX] = {
+ 	"always_check_network",
+ 	"cgroup_seclabel",
+ 	"nnp_nosuid_transition",
+-	"genfs_seclabel_symlinks"
++	"genfs_seclabel_symlinks",
++	"ioctl_skip_cloexec"
+ };
+ 
+ #endif /* _SELINUX_POLICYCAP_NAMES_H_ */
+diff --git a/security/selinux/include/security.h b/security/selinux/include/security.h
+index ac0ece01305a..c0d966020ebd 100644
+--- a/security/selinux/include/security.h
++++ b/security/selinux/include/security.h
+@@ -219,6 +219,13 @@ static inline bool selinux_policycap_genfs_seclabel_symlinks(void)
+ 	return READ_ONCE(state->policycap[POLICYDB_CAPABILITY_GENFS_SECLABEL_SYMLINKS]);
+ }
+ 
++static inline bool selinux_policycap_ioctl_skip_cloexec(void)
++{
++	struct selinux_state *state = &selinux_state;
 +
- 		k = elf_ppnt->p_vaddr;
- 		if ((elf_ppnt->p_flags & PF_X) && k < start_code)
- 			start_code = k;
-@@ -1191,6 +1202,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
- 	}
++	return READ_ONCE(state->policycap[POLICYDB_CAPABILITY_IOCTL_SKIP_CLOEXEC]);
++}
++
+ struct selinux_policy_convert_data;
  
- 	e_entry = elf_ex->e_entry + load_bias;
-+	phdr_addr += load_bias;
- 	elf_bss += load_bias;
- 	elf_brk += load_bias;
- 	start_code += load_bias;
-@@ -1254,8 +1266,8 @@ static int load_elf_binary(struct linux_binprm *bprm)
- 		goto out;
- #endif /* ARCH_HAS_SETUP_ADDITIONAL_PAGES */
- 
--	retval = create_elf_tables(bprm, elf_ex,
--			  load_addr, interp_load_addr, e_entry);
-+	retval = create_elf_tables(bprm, elf_ex, interp_load_addr,
-+				   e_entry, phdr_addr);
- 	if (retval < 0)
- 		goto out;
- 
+ struct selinux_load_state {
 -- 
 2.34.1
 
