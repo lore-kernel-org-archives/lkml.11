@@ -2,152 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3764CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 23:00:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32AD4C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 23:03:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230265AbiC1XCS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 19:02:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42814 "EHLO
+        id S230264AbiC1XFh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 19:05:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230221AbiC1XCI (ORCPT
+        with ESMTP id S229768AbiC1XFg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 19:02:08 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FCFF26130
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 16:00:23 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2e9e838590dso62331717b3.5
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 16:00:23 -0700 (PDT)
+        Mon, 28 Mar 2022 19:05:36 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C9BABC88
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 16:03:54 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id z15-20020a25bb0f000000b00613388c7d99so11979588ybg.8
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 16:03:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=PjCJgoS657I/tk8eQdlHI01Sy2nbJ1vs0eOca3BDeMA=;
-        b=YrW1oHI6OeNS97qb0yJLiWsmS/O0yisj3J+4OLHulXFrVW++E6+RYQOIE9kRM8gvPl
-         nYVOVSMnQ38vUWHmvPhbD7Di+LW8cxAlhFJk6rylh8ho4c7W6RbVgiqFR3kqbUGal79N
-         AnGraxxjbZ/qEIuvv/3hskPbqVzITszKNTauorm3U5A10LAz33yyLW+qRHr39PSjgZEc
-         gFxP0vIK4JjSTg72HAxnLs1TerTNewB0WjKzK2tZmdEGrsphjP+GpJ/8nRfVGtQ6/6oh
-         8DnJjPZ35lUPzzKkyIyhHXn9zk+j+m6UjTXpgJYAHJ8LEDsxYZSRsjbEB7hd4MEVv7fE
-         U7mw==
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=/earJ4sVck+JVD0RmuQXUvZhSB6QjqhmiJ8MWnO1LKI=;
+        b=IrQiLG0hxRXg32iOno2nUn/o2FgJuQrQ26s+9yJ0K6hg3SKY9v+eWzTgWWieBi817o
+         rh07NJ1BwQoOMW0XNqOICC5xRNxA/dezaHXddv4aAQU7St/PBcxzJqypHs1yGGZ7C5ah
+         LtCWlaOAFcwNoLOaQgKZ0zRnHxosa2YBvL/r/gVuGgs6ungEezlIu88mSwBB66cU0DOR
+         sjG+7cIvwAZd2MGkuIcpcoJbeinxd1JD3rODf+rrjgJbX2W/DkFHG1cGdwXtfAUvh5HS
+         bKL3cxSXgc2y6KgF0oAunBi0+hgT3Qokd3JpjjVBanEzXjKp0QH0e6yh0y+L4ZE09hUc
+         2nbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=PjCJgoS657I/tk8eQdlHI01Sy2nbJ1vs0eOca3BDeMA=;
-        b=oR7Si2TcLZ5d7QUPWQE36UGomBA4P1YHYJj4T4VMM8Hk2R/bFtlwwKYGIxTkA9Z5MJ
-         iUr/yxQ3OE+gMTYNkGS9h+M060V7Bo6EnLT2N0omLHqQbShibpEHvEhPKeIu8s2dDO5d
-         dk56Vs8uiWyxYzBUn+WlxVVk3YlcOrmfAXmlliIWHzDMHUSV5Fs7xBnXk/686D13u3A9
-         erEtEkHpkrSX0I0cdeBJ37DVgxaeKXg9nUdlI+MtCpqknjfmqn/egqrGFCvPQ0ZfSzYe
-         ArvxgqTd+p2aShBqGtIWPc4T2TfnfvCuPxjE8Y405Cnjb+lPorXyDuZ3YoR/MPEWP3MS
-         M38Q==
-X-Gm-Message-State: AOAM532PYwMNE0m0v2mFgmH2fcP1NJs5XBqSyGiuDYtB56+HoBHMsTwV
-        dfxeaOyZ7/EUZJdHzD28PZAx2I72X/rCiM8=
-X-Google-Smtp-Source: ABdhPJzCP0I8+FlderVfuOTtetUSRQ7p5Ej5WF/C0Zw2u46sRNYBzp8kbYF//zgxfxG0NFdnd84urn2FfzqAcr0=
-X-Received: from tansuresh.svl.corp.google.com ([2620:15c:2c5:13:3dbb:6bbc:98be:a31e])
- (user=tansuresh job=sendgmr) by 2002:a81:c02:0:b0:2e5:b6af:2c8 with SMTP id
- 2-20020a810c02000000b002e5b6af02c8mr29031195ywm.190.1648508422372; Mon, 28
- Mar 2022 16:00:22 -0700 (PDT)
-Date:   Mon, 28 Mar 2022 16:00:07 -0700
-In-Reply-To: <20220328230008.3587975-2-tansuresh@google.com>
-Message-Id: <20220328230008.3587975-3-tansuresh@google.com>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=/earJ4sVck+JVD0RmuQXUvZhSB6QjqhmiJ8MWnO1LKI=;
+        b=rQfaTZ2pa6tFGDlb4bPEtdlmk+pYUVbhAanZj6MB4h7hRFHLL7LDr1Xq5kDxrDWhU1
+         BqbfpppgNLZnguLrWJPqtvuwRRwb5vLv3pxRaELK6LeY6B9Q3hAZ5syVFjrQjV30rrwp
+         WUg0k7HdoV5mlRpCy1Xr2McB8N7WonsW2xELbWV1DU7f0+0jdmShvdEg9mXd1G4l9uPh
+         SPlPYP2AqnTKmMKfsXZX2QvAKVXgoVYFn1bR+EO/56OfhCQZqHzl4AXMx7ig3KYhmD0e
+         PtPrlZJdwFrG3S0MZdw90ItAFnWGP8DflRCVeL4vXrpbtDLAqgbkN3220Z6dXiK5bUaj
+         pGyg==
+X-Gm-Message-State: AOAM5306Od/e55AGieaLQd1s9xYiYB3SxbiDxUxsCPehZAN3AtcMPOYZ
+        vTdGfEai70rPJ+1BecCHgSUvOdMvZglrJEI=
+X-Google-Smtp-Source: ABdhPJz9kvuezk0rt56VKV0O2Pjvi8NOVadDXMqpdChGREa/T3/Qrbx4+KDzWi06IHkqCc2yN1SP4FzXrlIro2M=
+X-Received: from pceballos.nyc.corp.google.com ([2620:0:1003:510:a131:a916:1e0a:ee6a])
+ (user=pceballos job=sendgmr) by 2002:a05:6902:102f:b0:638:f9fd:1742 with SMTP
+ id x15-20020a056902102f00b00638f9fd1742mr22207235ybt.401.1648508633838; Mon,
+ 28 Mar 2022 16:03:53 -0700 (PDT)
+Date:   Mon, 28 Mar 2022 19:03:51 -0400
+Message-Id: <20220328185704.1.I7a855580ce9f43fc2f598bdccf088c978d4af822@changeid>
 Mime-Version: 1.0
-References: <20220328230008.3587975-1-tansuresh@google.com> <20220328230008.3587975-2-tansuresh@google.com>
 X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
-Subject: [PATCH v1 2/3] PCI: Support asynchronous shutdown
-From:   Tanjore Suresh <tansuresh@google.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Bjorn Helgaas <bhelgaas@google.com>
-Cc:     linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
-        linux-pci@vger.kernel.org, Tanjore Suresh <tansuresh@google.com>
+Subject: [PATCH] HID: Add driver for Google Hangouts Meet Speakermic
+From:   Pablo Ceballos <pceballos@google.com>
+To:     Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        Pablo Ceballos <pceballos@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enhances the base PCI driver to add support for asynchronous
-shutdown.
+This driver works around a problem with the HID usage sent by this
+device for the mute button. It prevents key events from being generated
+for that HID usage since they would be incorrect.
 
-Assume a device takes n secs to shutdown. If a machine has been
-populated with M such devices, the total time spent in shutting down
-all the devices will be M * n secs, if the shutdown is done
-synchronously. For example, if NVMe PCI Controllers take 5 secs
-to shutdown and if there are 16 such NVMe controllers in a system,
-system will spend a total of 80 secs to shutdown all
-NVMe devices in that system.
-
-In order to speed up the shutdown time, asynchronous interface to
-shutdown has been implemented. This will significantly reduce
-the machine reboot time.
-
-Signed-off-by: Tanjore Suresh <tansuresh@google.com>
+Signed-off-by: Pablo Ceballos <pceballos@google.com>
 ---
- drivers/pci/pci-driver.c | 17 ++++++++++++++---
- include/linux/pci.h      |  2 ++
- 2 files changed, 16 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index 4ceeb75fc899..0d0b46d71e88 100644
---- a/drivers/pci/pci-driver.c
-+++ b/drivers/pci/pci-driver.c
-@@ -501,14 +501,16 @@ static void pci_device_remove(struct device *dev)
- 	pci_dev_put(pci_dev);
- }
+ drivers/hid/Kconfig            | 12 ++++++++
+ drivers/hid/Makefile           |  1 +
+ drivers/hid/hid-google-atrus.c | 55 ++++++++++++++++++++++++++++++++++
+ drivers/hid/hid-ids.h          |  1 +
+ 4 files changed, 69 insertions(+)
+ create mode 100644 drivers/hid/hid-google-atrus.c
+
+diff --git a/drivers/hid/Kconfig b/drivers/hid/Kconfig
+index f5544157576c..dc6ae9970054 100644
+--- a/drivers/hid/Kconfig
++++ b/drivers/hid/Kconfig
+@@ -403,6 +403,18 @@ config HOLTEK_FF
+ 	  Say Y here if you have a Holtek On Line Grip based game controller
+ 	  and want to have force feedback support for it.
  
--static void pci_device_shutdown(struct device *dev)
-+static void pci_device_shutdown_pre(struct device *dev)
- {
- 	struct pci_dev *pci_dev = to_pci_dev(dev);
- 	struct pci_driver *drv = pci_dev->driver;
- 
- 	pm_runtime_resume(dev);
- 
--	if (drv && drv->shutdown)
-+	if (drv && drv->shutdown_pre)
-+		drv->shutdown_pre(pci_dev);
-+	else if (drv && drv->shutdown)
- 		drv->shutdown(pci_dev);
- 
- 	/*
-@@ -522,6 +524,14 @@ static void pci_device_shutdown(struct device *dev)
- 		pci_clear_master(pci_dev);
- }
- 
-+static void pci_device_shutdown_post(struct device *dev)
-+{
-+	struct pci_dev *pci_dev = to_pci_dev(dev);
-+	struct pci_driver *drv = pci_dev->driver;
++config HID_GOOGLE_ATRUS
++	tristate "Google Hangouts Meet Speakermic"
++	depends on USB_HID
++	---help---
++	This selects a driver for the Google Hangouts Meet Speakermic.
 +
-+	if (drv && drv->shutdown_post)
-+		drv->shutdown_post(pci_dev);
++	This driver works around a problem with the HID usage sent by this
++	device for the mute button. It prevents key events from being generated
++	for that HID usage since they would be incorrect.
++
++	Say Y here if you have a Google Hangouts Meet Speakermic.
++
+ config HID_GOOGLE_HAMMER
+ 	tristate "Google Hammer Keyboard"
+ 	depends on USB_HID && LEDS_CLASS && CROS_EC
+diff --git a/drivers/hid/Makefile b/drivers/hid/Makefile
+index 6d3e630e81af..2ee446b5b953 100644
+--- a/drivers/hid/Makefile
++++ b/drivers/hid/Makefile
+@@ -50,6 +50,7 @@ obj-$(CONFIG_HID_FT260)		+= hid-ft260.o
+ obj-$(CONFIG_HID_GEMBIRD)	+= hid-gembird.o
+ obj-$(CONFIG_HID_GFRM)		+= hid-gfrm.o
+ obj-$(CONFIG_HID_GLORIOUS)  += hid-glorious.o
++obj-$(CONFIG_HID_GOOGLE_ATRUS)  += hid-google-atrus.o
+ obj-$(CONFIG_HID_GOOGLE_HAMMER)	+= hid-google-hammer.o
+ obj-$(CONFIG_HID_VIVALDI)	+= hid-vivaldi.o
+ obj-$(CONFIG_HID_GT683R)	+= hid-gt683r.o
+diff --git a/drivers/hid/hid-google-atrus.c b/drivers/hid/hid-google-atrus.c
+new file mode 100644
+index 000000000000..e136c70e9425
+--- /dev/null
++++ b/drivers/hid/hid-google-atrus.c
+@@ -0,0 +1,55 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ *  HID driver for Google Hangouts Meet Speakermic
++ *
++ *  Copyright 2022 Google LLC.
++ */
++
++#include <linux/hid.h>
++#include <linux/module.h>
++
++#include "hid-ids.h"
++
++/*
++ * This driver handles the telephony phone mute HID usage by ignoring it. This
++ * avoids the default handling by the hid-input driver which is to map this to
++ * a KEY_MICMUTE event. The issue is that this device implements the phone mute
++ * HID usage as a toggle switch, where 1 indicates muted, and 0 indicates
++ * unmuted. However, for an EV_KEY event 1 indicates the key has been pressed
++ * and 0 indicates it has been released.
++ */
++
++static int atrus_event(struct hid_device *hid, struct hid_field *field,
++		       struct hid_usage *usage, __s32 value)
++{
++	/*
++	 * Return 1 to indicate no further processing should be done for this
++	 * usage.
++	 */
++	return 1;
 +}
- #ifdef CONFIG_PM
++
++static const struct hid_device_id atrus_devices[] = {
++	{ HID_DEVICE(BUS_USB, HID_GROUP_GENERIC,
++		     USB_VENDOR_ID_GOOGLE, USB_DEVICE_ID_GOOGLE_ATRUS) },
++	{ }
++};
++MODULE_DEVICE_TABLE(hid, atrus_devices);
++
++static const struct hid_usage_id atrus_usages[] = {
++	/* Handle only the Telephony Phone Mute usage. */
++	{ HID_UP_TELEPHONY | 0x2f, EV_KEY, HID_ANY_ID },
++	{ HID_TERMINATOR, HID_TERMINATOR, HID_TERMINATOR }
++};
++
++static struct hid_driver atrus_driver = {
++	.name = "atrus",
++	.id_table = atrus_devices,
++	.usage_table = atrus_usages,
++	.event = atrus_event,
++};
++module_hid_driver(atrus_driver);
++
++MODULE_AUTHOR("Pablo Ceballos <pcebalos@google.com>");
++MODULE_DESCRIPTION("Google Hangouts Meet Speakermic USB HID Driver");
++MODULE_LICENSE("GPL");
+diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
+index 85975031389b..9f6fc5cfbeb9 100644
+--- a/drivers/hid/hid-ids.h
++++ b/drivers/hid/hid-ids.h
+@@ -506,6 +506,7 @@
+ #define USB_DEVICE_ID_GOOGLE_MOONBALL	0x5044
+ #define USB_DEVICE_ID_GOOGLE_DON	0x5050
+ #define USB_DEVICE_ID_GOOGLE_EEL	0x5057
++#define USB_DEVICE_ID_GOOGLE_ATRUS	0x8001
  
- /* Auxiliary functions used for system resume and run-time resume. */
-@@ -1625,7 +1635,8 @@ struct bus_type pci_bus_type = {
- 	.uevent		= pci_uevent,
- 	.probe		= pci_device_probe,
- 	.remove		= pci_device_remove,
--	.shutdown	= pci_device_shutdown,
-+	.shutdown_pre	= pci_device_shutdown_pre,
-+	.shutdown_post	= pci_device_shutdown_post,
- 	.dev_groups	= pci_dev_groups,
- 	.bus_groups	= pci_bus_groups,
- 	.drv_groups	= pci_drv_groups,
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index b957eeb89c7a..19047fcb3c8a 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -905,6 +905,8 @@ struct pci_driver {
- 	int  (*suspend)(struct pci_dev *dev, pm_message_t state);	/* Device suspended */
- 	int  (*resume)(struct pci_dev *dev);	/* Device woken up */
- 	void (*shutdown)(struct pci_dev *dev);
-+	void (*shutdown_pre)(struct pci_dev *dev);
-+	void (*shutdown_post)(struct pci_dev *dev);
- 	int  (*sriov_configure)(struct pci_dev *dev, int num_vfs); /* On PF */
- 	int  (*sriov_set_msix_vec_count)(struct pci_dev *vf, int msix_vec_count); /* On PF */
- 	u32  (*sriov_get_vf_total_msix)(struct pci_dev *pf);
+ #define USB_VENDOR_ID_GOTOP		0x08f2
+ #define USB_DEVICE_ID_SUPER_Q2		0x007f
 -- 
 2.35.1.1021.g381101b075-goog
 
