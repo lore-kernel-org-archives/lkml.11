@@ -2,116 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C7AAC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 10:53:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6215FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 10:55:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240395AbiC1KzW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 06:55:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46674 "EHLO
+        id S240401AbiC1K53 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 06:57:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240386AbiC1KzT (ORCPT
+        with ESMTP id S240386AbiC1K50 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 06:55:19 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D9521A817;
-        Mon, 28 Mar 2022 03:53:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648464819; x=1680000819;
-  h=from:to:cc:subject:date:message-id;
-  bh=y5Ta5faJZepUriOYafytGSAos/omF5AAyV8E9eFTQcg=;
-  b=laqB0FzDKnjXGX0tYPCxgs6rZqsKEeNXPMQnkouOWmaLSMcr8PWrEhM9
-   W9i/dvuyw3ENUEEt6WdVwrrvyWb1fiFL4fG/atUpKmfasft+sS/ij4RjM
-   nrVAnj1dYngqa9SpKmSC04e3zWKqQogic/krMXHK5cKylOHQpZ5j8tvqR
-   9GwbS/VI6qjSgWnHVYF2HPOfJ+8Zn206dmR2zeN3sfKrC6ajGEAE2Lb/U
-   3NMPRjZ0klXRJ4DUQJMrrnfMPW1sKxWj85qKsVJ25/0Ol2nqmQF9snXug
-   IGfnWk7DMOpA7Mqr2I4O1GN0kqLLBNgIuiVKt8vi7yur7c93QDlM1ZAj7
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10299"; a="257798477"
-X-IronPort-AV: E=Sophos;i="5.90,217,1643702400"; 
-   d="scan'208";a="257798477"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 03:53:38 -0700
-X-IronPort-AV: E=Sophos;i="5.90,217,1643702400"; 
-   d="scan'208";a="563543771"
-Received: from unknown (HELO localhost.localdomain) ([10.223.165.89])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 03:53:36 -0700
-From:   tanveer1.alam@intel.com
-To:     gregkh@linuxfoundation.org, heikki.krogerus@linux.intel.com,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     tanveer1.alam@intel.com, abhijeet.rao@intel.com
-Subject: [PATCH] usb: typec: mux: intel_pmc_mux: Add retry logic to a PMC command
-Date:   Mon, 28 Mar 2022 16:21:37 +0530
-Message-Id: <20220328105137.6223-1-tanveer1.alam@intel.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 28 Mar 2022 06:57:26 -0400
+Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF01C24F1C;
+        Mon, 28 Mar 2022 03:55:44 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=hsiangkao@linux.alibaba.com;NM=1;PH=DS;RN=19;SR=0;TI=SMTPD_---0V8R4iF-_1648464938;
+Received: from B-P7TQMD6M-0146.local(mailfrom:hsiangkao@linux.alibaba.com fp:SMTPD_---0V8R4iF-_1648464938)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 28 Mar 2022 18:55:40 +0800
+Date:   Mon, 28 Mar 2022 18:55:38 +0800
+From:   Gao Xiang <hsiangkao@linux.alibaba.com>
+To:     Jeffle Xu <jefflexu@linux.alibaba.com>
+Cc:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
+        chao@kernel.org, linux-erofs@lists.ozlabs.org,
+        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
+        willy@infradead.org, linux-fsdevel@vger.kernel.org,
+        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
+        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
+        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
+        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
+        fannaihao@baidu.com
+Subject: Re: [PATCH v6 21/22] erofs: implement fscache-based data readahead
+Message-ID: <YkGUKlCstdl9TnY+@B-P7TQMD6M-0146.local>
+Mail-Followup-To: Jeffle Xu <jefflexu@linux.alibaba.com>,
+        dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
+        chao@kernel.org, linux-erofs@lists.ozlabs.org,
+        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
+        willy@infradead.org, linux-fsdevel@vger.kernel.org,
+        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
+        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
+        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
+        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
+        fannaihao@baidu.com
+References: <20220325122223.102958-1-jefflexu@linux.alibaba.com>
+ <20220325122223.102958-22-jefflexu@linux.alibaba.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220325122223.102958-22-jefflexu@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tanveer Alam <tanveer1.alam@intel.com>
+On Fri, Mar 25, 2022 at 08:22:22PM +0800, Jeffle Xu wrote:
+> Implements fscache-based data readahead. Also registers an individual
+> bdi for each erofs instance to enable readahead.
+> 
+> Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
+> ---
+>  fs/erofs/fscache.c | 114 +++++++++++++++++++++++++++++++++++++++++++++
+>  fs/erofs/super.c   |   4 ++
+>  2 files changed, 118 insertions(+)
+> 
+> diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
+> index cbb39657615e..589d1e7c2b1b 100644
+> --- a/fs/erofs/fscache.c
+> +++ b/fs/erofs/fscache.c
+> @@ -191,12 +191,126 @@ static int erofs_fscache_readpage(struct file *file, struct page *page)
+>  	return ret;
+>  }
+>  
+> +static inline size_t erofs_fscache_calc_len(struct erofs_map_blocks *map,
+> +					    size_t len, size_t done)
+> +{
+> +	/*
+> +	 * 1) For CHUNK_BASED layout, the output m_la is rounded down to the
+> +	 * nearest chunk boundary, and the output m_llen actually starts from
+> +	 * the start of the containing chunk.
+> +	 * 2) For other cases, the output m_la is equal to o_la.
+> +	 */
+> +	size_t length = map->m_llen - (map->o_la - map->m_la);
+> +
+> +	return min_t(size_t, length, len - done);
 
-There are few scenerio when PMC reports 'busy condition' and command
-fail.
+This helper can be folded too.
 
-If PMC receives a high priority command while servicing a low priority
-command then it discards the low priority command and start servicing
-the high priority command. The lower priority command fail and driver
-returns error. If the same command resend to the PMC then PMC latches
-the command and service it accordingly.
+> +}
+> +
+> +static inline void erofs_fscache_unlock_folios(struct readahead_control *rac,
+> +					       size_t len)
+> +{
+> +	while (len) {
+> +		struct folio *folio = readahead_folio(rac);
+> +
+> +		len -= folio_size(folio);
+> +		folio_mark_uptodate(folio);
+> +		folio_unlock(folio);
+> +	}
+> +}
+> +
+> +static void erofs_fscache_readahead(struct readahead_control *rac)
+> +{
+> +	struct inode *inode = rac->mapping->host;
+> +	struct erofs_inode *vi = EROFS_I(inode);
+> +	struct super_block *sb = inode->i_sb;
+> +	size_t len, done = 0;
+> +	loff_t start;
+> +	int ret;
+> +
+> +	if (erofs_inode_is_data_compressed(vi->datalayout)) {
+> +		erofs_info(sb, "compressed layout not supported yet");
+> +		return;
+> +	}
 
-Thus adds the retry logic for the PMC command.
+Redundant check.
 
-Signed-off-by: Tanveer Alam <tanveer1.alam@intel.com>
----
- drivers/usb/typec/mux/intel_pmc_mux.c | 21 +++++++++++++++++++--
- 1 file changed, 19 insertions(+), 2 deletions(-)
+> +
+> +	if (!readahead_count(rac))
+> +		return;
+> +
+> +	start = readahead_pos(rac);
+> +	len = readahead_length(rac);
+> +
+> +	do {
+> +		struct erofs_map_blocks map;
+> +
+> +		map.m_la = map.o_la = start + done;
+> +
+> +		ret = erofs_map_blocks(inode, &map, EROFS_GET_BLOCKS_RAW);
+> +		if (ret)
+> +			return;
+> +
+> +		/* Read-ahead Hole
+> +		 * Two cases will hit this:
+> +		 * 1) EOF. Imposibble in readahead routine;
+> +		 * 2) hole. Only CHUNK_BASED layout supports hole.
+> +		 */
 
-diff --git a/drivers/usb/typec/mux/intel_pmc_mux.c b/drivers/usb/typec/mux/intel_pmc_mux.c
-index 2cdd22130834..da6b381ddf00 100644
---- a/drivers/usb/typec/mux/intel_pmc_mux.c
-+++ b/drivers/usb/typec/mux/intel_pmc_mux.c
-@@ -173,7 +173,7 @@ static int hsl_orientation(struct pmc_usb_port *port)
- 	return port->orientation - 1;
- }
- 
--static int pmc_usb_command(struct pmc_usb_port *port, u8 *msg, u32 len)
-+static int pmc_usb_send_command(struct intel_scu_ipc_dev *ipc, u8 *msg, u32 len)
- {
- 	u8 response[4];
- 	u8 status_res;
-@@ -184,7 +184,7 @@ static int pmc_usb_command(struct pmc_usb_port *port, u8 *msg, u32 len)
- 	 * Status can be checked from the response message if the
- 	 * function intel_scu_ipc_dev_command succeeds.
- 	 */
--	ret = intel_scu_ipc_dev_command(port->pmc->ipc, PMC_USBC_CMD, 0, msg,
-+	ret = intel_scu_ipc_dev_command(ipc, PMC_USBC_CMD, 0, msg,
- 					len, response, sizeof(response));
- 
- 	if (ret)
-@@ -203,6 +203,23 @@ static int pmc_usb_command(struct pmc_usb_port *port, u8 *msg, u32 len)
- 	return 0;
- }
- 
-+static int pmc_usb_command(struct pmc_usb_port *port, u8 *msg, u32 len)
-+{
-+	int retry_count = 3;
-+	int ret;
-+
-+	/*
-+	 * If PMC is busy then retry the command once again
-+	 */
-+	while (retry_count--) {
-+		ret = pmc_usb_send_command(port->pmc->ipc, msg, len);
-+		if (ret != -EBUSY)
-+			break;
-+	}
-+
-+	return ret;
-+}
-+
- static int
- pmc_usb_mux_dp_hpd(struct pmc_usb_port *port, struct typec_displayport_data *dp)
- {
--- 
-2.17.1
+/*
+ *
+ */
 
+and typo `Imposibble'. Also I think this comment may not be useful
+though.
+
+> +		if (!(map.m_flags & EROFS_MAP_MAPPED)) {
+> +			struct iov_iter iter;
+> +			loff_t offset = start + done;
+> +			size_t count = erofs_fscache_calc_len(&map, len, done);
+> +
+> +			iov_iter_xarray(&iter, READ, &rac->mapping->i_pages, offset, count);
+> +			iov_iter_zero(count, &iter);
+> +
+> +			erofs_fscache_unlock_folios(rac, count);
+> +			ret = count;
+> +			continue;
+> +		}
+> +
+> +		ret = erofs_fscache_get_map(&map, sb);
+> +		if (ret)
+> +			return;
+> +
+> +		/* Read-ahead Inline */
+> +		if (map.m_flags & EROFS_MAP_META) {
+> +			struct folio *folio = readahead_folio(rac);
+> +
+> +			ret = erofs_fscache_readpage_inline(folio, &map);
+> +			if (!ret) {
+> +				folio_mark_uptodate(folio);
+> +				ret = folio_size(folio);
+> +			}
+> +
+> +			folio_unlock(folio);
+> +			continue;
+> +		}
+> +
+> +		/* Read-ahead No-inline */
+> +		if (vi->datalayout == EROFS_INODE_FLAT_PLAIN ||
+> +		    vi->datalayout == EROFS_INODE_FLAT_INLINE ||
+> +		    vi->datalayout == EROFS_INODE_CHUNK_BASED) {
+> +			struct fscache_cookie *cookie = map.m_fscache->cookie;
+> +			loff_t offset = start + done;
+> +			size_t count = erofs_fscache_calc_len(&map, len, done);
+
+You could promote `offset' and `count' to the outer block. So another
+`offset' and `count' in !EROFS_MAP_MAPPED can be dropped then.
+
+Thanks,
+Gao Xiang
