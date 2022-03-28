@@ -2,139 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E214C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 22:15:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65508C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 22:16:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229793AbiC1WRE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 18:17:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37870 "EHLO
+        id S229714AbiC1WSF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 18:18:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229724AbiC1WQi (ORCPT
+        with ESMTP id S229890AbiC1WR5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 18:16:38 -0400
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C4787C143
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 15:12:55 -0700 (PDT)
-Received: by mail-oi1-x22d.google.com with SMTP id j83so17189592oih.6
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 15:12:55 -0700 (PDT)
+        Mon, 28 Mar 2022 18:17:57 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5150295481
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 15:13:52 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id u3so22312966wrg.3
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 15:13:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version;
-        bh=hYgV/cj7s/KJHrRdB4rcVThWkKuipKsBWWVTwy7GkeY=;
-        b=ThkJbWLv9rIxaiiAXpFpGA+YNbqtfsNkqlw3AzbmFPP3LcN4iJXeUF9gPpwXpDO01P
-         FVR0aoODFvCx6scl2+ryNEa8dSFVhyJttsE953LXv+e0Qj9KAmHc1nSGGOEGy6mOGO18
-         lQ2xXlaJ8YZDQfaNnAUL7djpj3Yg6aBk8y0mQDaoWcJiPsXqtjnEPx3EIpC0VT+Qod1y
-         C61Xf8MN6RuLa9xpy410KXx0z1ik+WoyOGzFyTt2A06XAjp8S+I+/0KyRcj/urg3nsc+
-         PgWU31Bw4LtPiBL6RU44AiRmtVwF82RQHhT7ygzH+3PWe3c2YDFEc4/qjCsmH/v1uB3E
-         RyKQ==
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=c2rDBwbFTkCmCH7rcNPRABM5zIBAnbo13PAPu8ohgmY=;
+        b=DwcVfIsIcOJ0GPiMwt6DG2p9BfDbKkf2M226tZ9hZhd2YuGqT/e5r1qpmeRjV7Klsn
+         OQ2O9FGbsbrgWSfP7XnjPBbTHJVIhNT8xAsLHsK39wlF85wIalCk6RRHolEsoHmLPQov
+         VHDrPq0sOWmKJ+QtijvvzMghFDu+wNtyKfwYI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version;
-        bh=hYgV/cj7s/KJHrRdB4rcVThWkKuipKsBWWVTwy7GkeY=;
-        b=BLoyeUVWQuEnEvB+4dA6YJI0pcnV/WQLbG1CkKM9uCLRG++UtQxCppVETfSlL3ox7L
-         jnVdQi05QAcyMQHNMhw4/Oh3ZpRhFw7qh0WFBiXH5R3xxGWGRsFgpuNK8MD3NYVc1xHF
-         EnGugN3im6L70WI9NVwJ9j99LqcB3OCifIE7aMcrmstsW7i/FUmIPk7oRV+ZqF0XGYHQ
-         VKdVNd29BdFNG42gl3uOcHUBtF/qr2HrTIAeAabLXEnfE0R5iKJK096o5Xz3ytlBqhHH
-         HjfKbs8nKFxmoveqjGG8vDg1s/rTjcqWScG1pggdDY0Wb9UHXuv574gKRNQliE3316+r
-         DvYg==
-X-Gm-Message-State: AOAM533LrOqrtBvnOtdCHXmvknNfPg7p9XVcZWaRNcNgElFjnOIT0hCf
-        y3YlUqbWgItQHoPVMlj5WR4LhT3ZWAr3vA==
-X-Google-Smtp-Source: ABdhPJzIBjwmQbEY1T2jGgJO1yNijei4zyMA//zsn44ah4IfxKMgs56Z1dXVOvquog8xahe2gztSsw==
-X-Received: by 2002:a05:6870:1714:b0:dd:a30e:d23e with SMTP id h20-20020a056870171400b000dda30ed23emr577361oae.85.1648503853461;
-        Mon, 28 Mar 2022 14:44:13 -0700 (PDT)
-Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
-        by smtp.gmail.com with ESMTPSA id r7-20020a056830418700b005cda6037350sm7614141otu.79.2022.03.28.14.44.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Mar 2022 14:44:13 -0700 (PDT)
-Date:   Mon, 28 Mar 2022 14:44:11 -0700 (PDT)
-From:   Hugh Dickins <hughd@google.com>
-X-X-Sender: hugh@ripple.anvils
-To:     Andrew Morton <akpm@linux-foundation.org>
-cc:     Mike Galbraith <efault@gmx.de>, Vlastimil Babka <vbabka@suse.cz>,
-        Hugh Dickins <hughd@google.com>, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: [PATCH] mm/munlock: add lru_add_drain() to fix memcg_stat_test
-Message-ID: <47f6d39c-a075-50cb-1cfb-26dd957a48af@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=c2rDBwbFTkCmCH7rcNPRABM5zIBAnbo13PAPu8ohgmY=;
+        b=DpaloLRS5dOQe5y6F8SkYu+pFJsKygL0JN7om8cAkzsqig+nh2ydrgyGexo6PaZb4S
+         Bn6Fv68MHPwRY2Ze6pgzCBW59CwkLNJJnM1IzGY280/X4p17VKlqoyx6MYH84zDk0Mi7
+         KrG/UYcfrQYN5uEfbJfoB+SzeDrTeXV1BN98ufheWq1RdsoBmdyBJBljFCF/HlyUpGY2
+         cn7sn4JgGOrXKCapETwFxwNNkyG06bYDpCaRaKJ8Gu8dVfO6TpMc7Ryqy0mxAPV/CvB2
+         Ol00sAh7JsNJdOSMBDTLjkq+Px37nFLgg6slZkt1uKp4K1styxP4OwWjNoOy/eS8gZ3+
+         lF8A==
+X-Gm-Message-State: AOAM531Y7OSkSaxrzF/QYpWRXOx85ntOCEmGf0TkglthaATsnaCnEjHi
+        Qin0MC/bRF7qNKO6wDkAi47HkiLc8RO87ARIVTk=
+X-Google-Smtp-Source: ABdhPJwhjXF3RwLIU4GfcdOdt8gKMr+o0X5DVlV8VN3KFbj+PtldlURvmjq6iOjWP1/nrRa9fw5rTg==
+X-Received: by 2002:a05:651c:988:b0:24a:c21f:7057 with SMTP id b8-20020a05651c098800b0024ac21f7057mr13482856ljq.16.1648503711386;
+        Mon, 28 Mar 2022 14:41:51 -0700 (PDT)
+Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com. [209.85.208.182])
+        by smtp.gmail.com with ESMTPSA id j15-20020a056512108f00b0044a3cc8769dsm1752872lfg.123.2022.03.28.14.41.50
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Mar 2022 14:41:50 -0700 (PDT)
+Received: by mail-lj1-f182.google.com with SMTP id bn33so21031221ljb.6
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 14:41:50 -0700 (PDT)
+X-Received: by 2002:a2e:9794:0:b0:249:8488:7dbd with SMTP id
+ y20-20020a2e9794000000b0024984887dbdmr22077785lji.176.1648503709507; Mon, 28
+ Mar 2022 14:41:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+References: <CACRpkdZ_Jr3OzfoOpSSsAJMy1Oe_=zD861jouDzCVD-BQ6yZMg@mail.gmail.com>
+ <CAHk-=whzqAB6kfHUcX2uhfPnNiWJRq=UmeA1TbgGi3XA+57j3w@mail.gmail.com> <YkIqyb6lhn5uU2jb@latitude>
+In-Reply-To: <YkIqyb6lhn5uU2jb@latitude>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 28 Mar 2022 14:41:33 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjxvNGEUUN5fj203KJL8qXK3jv359Ketc-HJMJU9wN6KA@mail.gmail.com>
+Message-ID: <CAHk-=wjxvNGEUUN5fj203KJL8qXK3jv359Ketc-HJMJU9wN6KA@mail.gmail.com>
+Subject: Re: [GIT PULL] pin control bulk changes for v5.18
+To:     =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Kees Cook <keescook@chromium.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Mike reports that LTP memcg_stat_test usually leads to...
-memcg_stat_test 3 TINFO: Test unevictable with MAP_LOCKED
-memcg_stat_test 3 TINFO: Running memcg_process --mmap-lock1 -s 135168
-memcg_stat_test 3 TINFO: Warming up pid: 3460
-memcg_stat_test 3 TINFO: Process is still here after warm up: 3460
-memcg_stat_test 3 TFAIL: unevictable is 122880, 135168 expected
-...but may lead to...
-memcg_stat_test 4 TINFO: Test unevictable with mlock
-memcg_stat_test 4 TINFO: Running memcg_process --mmap-lock2 -s 135168
-memcg_stat_test 4 TINFO: Warming up pid: 4271
-memcg_stat_test 4 TINFO: Process is still here after warm up: 4271
-memcg_stat_test 4 TFAIL: unevictable is 122880, 135168 expected
-...or both.  A wee bit flaky.
+On Mon, Mar 28, 2022 at 2:38 PM Jonathan Neusch=C3=A4fer
+<j.neuschaefer@gmx.net> wrote:
+>
+> It was =E2=80=94 but when it was noticed, the fix went through the IRQ tr=
+ee, on
+> top of a refactoring that happened there (the switch to generic_handle_do=
+main_irq):
+>
+> https://lore.kernel.org/lkml/164751044707.389.16417510835118111853.tip-bo=
+t2@tip-bot2/
 
-follow_page_pte() used to have an lru_add_drain() per each page mlocked,
-and the test came to rely on accurate stats.  The pagevec to be drained
-is different now, but still covered by lru_add_drain(); and, never mind
-the test, I believe it's in everyone's interest that a bulk faulting
-interface like populate_vma_page_range() or faultin_vma_page_range()
-should drain its local pagevecs at the end, to save others sometimes
-needing the much more expensive lru_add_drain_all().  This does not
-absolutely guarantee exact stats - the mlocking task can be migrated
-between CPUs as it proceeds - but it's good enough and the tests pass.
+Ok, that ends up at least being identical to what I did, so thats' good.
 
-Reported-by: Mike Galbraith <efault@gmx.de>
-Fixes: b67bf49ce7aa ("mm/munlock: delete FOLL_MLOCK and FOLL_POPULATE")
-Signed-off-by: Hugh Dickins <hughd@google.com>
----
-One can argue about the Fixes tag - I'd have chosen the pagevec commit,
-but this is the one Mike identified, and the one which touches mm/gup.c,
-so I'm happy to go with this - and doesn't matter so long as 5.18 gets it.
+> When I added the pinctrl-wpcm450 driver, I changed the pinctrl/nuvoton/
+> directory to obj-y and exposed the pinctrl-npcm7xx to CI bot testing.
+> The bug existed, untouched, since the driver was added a few years ago.
 
- mm/gup.c |   10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+Ahh. Good. So not a heisenbug, just happened to be hidden before.
 
---- 5.18-pre/mm/gup.c
-+++ linux/mm/gup.c
-@@ -1404,6 +1404,7 @@ long populate_vma_page_range(struct vm_a
- 	struct mm_struct *mm = vma->vm_mm;
- 	unsigned long nr_pages = (end - start) / PAGE_SIZE;
- 	int gup_flags;
-+	long ret;
- 
- 	VM_BUG_ON(!PAGE_ALIGNED(start));
- 	VM_BUG_ON(!PAGE_ALIGNED(end));
-@@ -1438,8 +1439,10 @@ long populate_vma_page_range(struct vm_a
- 	 * We made sure addr is within a VMA, so the following will
- 	 * not result in a stack expansion that recurses back here.
- 	 */
--	return __get_user_pages(mm, start, nr_pages, gup_flags,
-+	ret = __get_user_pages(mm, start, nr_pages, gup_flags,
- 				NULL, NULL, locked);
-+	lru_add_drain();
-+	return ret;
- }
- 
- /*
-@@ -1471,6 +1474,7 @@ long faultin_vma_page_range(struct vm_ar
- 	struct mm_struct *mm = vma->vm_mm;
- 	unsigned long nr_pages = (end - start) / PAGE_SIZE;
- 	int gup_flags;
-+	long ret;
- 
- 	VM_BUG_ON(!PAGE_ALIGNED(start));
- 	VM_BUG_ON(!PAGE_ALIGNED(end));
-@@ -1498,8 +1502,10 @@ long faultin_vma_page_range(struct vm_ar
- 	if (check_vma_flags(vma, gup_flags))
- 		return -EINVAL;
- 
--	return __get_user_pages(mm, start, nr_pages, gup_flags,
-+	ret = __get_user_pages(mm, start, nr_pages, gup_flags,
- 				NULL, NULL, locked);
-+	lru_add_drain();
-+	return ret;
- }
- 
- /*
+Thanks for clarifying,
+
+                 Linus
