@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F0AFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:25:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2608BC43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:25:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241263AbiC1L1K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:27:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57236 "EHLO
+        id S240921AbiC1L1Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:27:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241439AbiC1LXu (ORCPT
+        with ESMTP id S241340AbiC1LXl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:23:50 -0400
+        Mon, 28 Mar 2022 07:23:41 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF3865A08B;
-        Mon, 28 Mar 2022 04:20:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA42959A47;
+        Mon, 28 Mar 2022 04:20:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7B315B8105C;
-        Mon, 28 Mar 2022 11:20:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34F75C340F3;
-        Mon, 28 Mar 2022 11:20:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DC957B81055;
+        Mon, 28 Mar 2022 11:20:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7C33C340EC;
+        Mon, 28 Mar 2022 11:20:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466452;
-        bh=5KA/8ySZ2n1/KKSMcoJazR7rOJ6n1FuR1d09mg0Xu70=;
+        s=k20201202; t=1648466436;
+        bh=W/lcVOcoPY+v/WrwziGHG8JE2ki8hpSfLXopMnCP2oA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LxDc8KC6USpf9c4Sy058F9PEOWi3+ZldtFcIBSNfluZWgwHjYOcPIMypoKYrAENjD
-         a0UA3arJj7nifkAG+TqajT0tZTjPMTOUYc4dkqhyqQ9bn21/dQUSgX1wgi7kyrnYr5
-         SdZ4PPtvXZaSA5oeZLYkJXr+Wk5zS/aAF8yfplW+RVb4pJ0D5Kfs0sHXu7oy7zvS8N
-         DvdIbB2iHiFjVSrlhzXpHQjjOWUc4YjRKxyYMnIq9Iua+0JPe/DcXzC8P+sk/MGn//
-         FCTOnRyXylzI6TmtkM9gDvzADIaCMhrgIjv3Sw3PT/MIsPRjmsTAeRjzla7uLpboy8
-         knMtg0f4io69A==
+        b=g1PZEuZuFmB6O3A1pjlN90VnVw8oZqr24FCo1MJFPlVKHFQPPzLEWlcDnVcjdvIlr
+         h0sxVe5jMpsxT5di1gJqkbYgKbpECddQIRCpKUIDUuSjhBcOTn9/lDQa29QX2aqYQv
+         unw3457EbPKpNENQp7blubSNKYeZYo5mGK3i98G4NuhOpfNke2vQEhRbEjd8CKWh8a
+         S3GKM/iAb2vAKn+scYjAdiZq3geiLouLKhp3XCkt+E4IFVRNGEqR9XHmHT1r5hgWdM
+         RFJf3UFngP8lND6oLUJ6RCl0Rkw402uJg7GC5FZ/85hcfkn87+HBT/Fk6WQdTUIgOs
+         lqva7k+KjJnEQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Marc Zyngier <maz@kernel.org>,
-        Maulik Shah <quic_mkshah@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
-        bjorn.andersson@linaro.org, tglx@linutronix.de,
-        linux-arm-msm@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 20/35] irqchip/qcom-pdc: Fix broken locking
-Date:   Mon, 28 Mar 2022 07:19:56 -0400
-Message-Id: <20220328112011.1555169-20-sashal@kernel.org>
+Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, daniel.lezcano@kernel.org,
+        rafael@kernel.org, linux-pm@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 15/35] powercap/dtpm_cpu: Reset per_cpu variable in the release function
+Date:   Mon, 28 Mar 2022 07:19:51 -0400
+Message-Id: <20220328112011.1555169-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220328112011.1555169-1-sashal@kernel.org>
 References: <20220328112011.1555169-1-sashal@kernel.org>
@@ -53,54 +52,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+From: Daniel Lezcano <daniel.lezcano@linaro.org>
 
-[ Upstream commit a6aca2f460e203781dc41391913cc5b54f4bc0ce ]
+[ Upstream commit 0aea2e4ec2a2bfa2d7e8820e37ba5b5ce04f20a5 ]
 
-pdc_enable_intr() serves as a primitive to qcom_pdc_gic_{en,dis}able,
-and has a raw spinlock for mutual exclusion, which is uses with
-interruptible primitives.
+The release function does not reset the per cpu variable when it is
+called. That will prevent creation again as the variable will be
+already from the previous creation.
 
-This means that this critical section can itself be interrupted.
-Should the interrupt also be a PDC interrupt, and the endpoint driver
-perform an irq_disable() on that interrupt, we end-up in a deadlock.
+Fix it by resetting them.
 
-Fix this by using the irqsave/irqrestore variants of the locking
-primitives.
-
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Reviewed-by: Maulik Shah <quic_mkshah@quicinc.com>
-Link: https://lore.kernel.org/r/20220224101226.88373-5-maz@kernel.org
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+Link: https://lore.kernel.org/r/20220130210210.549877-2-daniel.lezcano@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/qcom-pdc.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/powercap/dtpm_cpu.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/irqchip/qcom-pdc.c b/drivers/irqchip/qcom-pdc.c
-index 173e6520e06e..c0b457f26ec4 100644
---- a/drivers/irqchip/qcom-pdc.c
-+++ b/drivers/irqchip/qcom-pdc.c
-@@ -56,17 +56,18 @@ static u32 pdc_reg_read(int reg, u32 i)
- static void pdc_enable_intr(struct irq_data *d, bool on)
+diff --git a/drivers/powercap/dtpm_cpu.c b/drivers/powercap/dtpm_cpu.c
+index b740866b228d..1e8cac699646 100644
+--- a/drivers/powercap/dtpm_cpu.c
++++ b/drivers/powercap/dtpm_cpu.c
+@@ -150,10 +150,17 @@ static int update_pd_power_uw(struct dtpm *dtpm)
+ static void pd_release(struct dtpm *dtpm)
  {
- 	int pin_out = d->hwirq;
-+	unsigned long flags;
- 	u32 index, mask;
- 	u32 enable;
+ 	struct dtpm_cpu *dtpm_cpu = to_dtpm_cpu(dtpm);
++	struct cpufreq_policy *policy;
  
- 	index = pin_out / 32;
- 	mask = pin_out % 32;
+ 	if (freq_qos_request_active(&dtpm_cpu->qos_req))
+ 		freq_qos_remove_request(&dtpm_cpu->qos_req);
  
--	raw_spin_lock(&pdc_lock);
-+	raw_spin_lock_irqsave(&pdc_lock, flags);
- 	enable = pdc_reg_read(IRQ_ENABLE_BANK, index);
- 	enable = on ? ENABLE_INTR(enable, mask) : CLEAR_INTR(enable, mask);
- 	pdc_reg_write(IRQ_ENABLE_BANK, index, enable);
--	raw_spin_unlock(&pdc_lock);
-+	raw_spin_unlock_irqrestore(&pdc_lock, flags);
++	policy = cpufreq_cpu_get(dtpm_cpu->cpu);
++	if (policy) {
++		for_each_cpu(dtpm_cpu->cpu, policy->related_cpus)
++			per_cpu(dtpm_per_cpu, dtpm_cpu->cpu) = NULL;
++	}
++	
+ 	kfree(dtpm_cpu);
  }
  
- static void qcom_pdc_gic_disable(struct irq_data *d)
 -- 
 2.34.1
 
