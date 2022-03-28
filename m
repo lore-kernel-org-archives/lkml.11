@@ -2,189 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7B81C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:46:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 891F3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:49:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241567AbiC1Lrk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:47:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56202 "EHLO
+        id S233598AbiC1Lrt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:47:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244241AbiC1Lh2 (ORCPT
+        with ESMTP id S242105AbiC1LeF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:37:28 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECED02B241;
-        Mon, 28 Mar 2022 04:29:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=41L4t1c0ddl1MiDH25v6xSBFdVF9lvzdczk2Kg0lT04=; b=M6Pq7H4xo0r6r8b/a/aDpCechu
-        1rFwGHbmvKNa1TXH+8z7OYS8vywTvGhehp8H2/sys3CRG8JPDgK6VDOBVe7uHWziq/ciU+7iYvfIL
-        Xb+3Ukq9LW13g+/41GMUAI86Ly/6JwcpGGbh6dMMxLK4cQQUe9Kz1ji5/RJDGAc+/iJhqMpQe+RsH
-        YLQcSMMysM7Ne83+OCFOYLhJsedKbhLPv9ZqC4rNHolZRPvcsGHY+xCcciHGJtefkdqtYi4sTHzMC
-        OHpZLBnpeZjY1j8pquXMr8N6OQzI6bcUdn3/puK1nOnLMB7t5KDIi7oUgJdjk9A30C92weviCGPEd
-        +RZ2yuKw==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nYnYo-005QWv-Ul; Mon, 28 Mar 2022 11:29:23 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 56F1E9861E7; Mon, 28 Mar 2022 13:29:21 +0200 (CEST)
-Date:   Mon, 28 Mar 2022 13:29:21 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Namhyung Kim <namhyung@kernel.org>
-Cc:     Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Byungchul Park <byungchul.park@lge.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Radoslaw Burny <rburny@google.com>, linux-arch@vger.kernel.org,
-        bpf@vger.kernel.org, Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Subject: Re: [PATCH 2/2] locking: Apply contention tracepoints in the slow
- path
-Message-ID: <20220328112921.GZ8939@worktop.programming.kicks-ass.net>
-References: <20220322185709.141236-1-namhyung@kernel.org>
- <20220322185709.141236-3-namhyung@kernel.org>
+        Mon, 28 Mar 2022 07:34:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1EB05A08E;
+        Mon, 28 Mar 2022 04:25:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 164DE611E2;
+        Mon, 28 Mar 2022 11:25:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68A13C36AE7;
+        Mon, 28 Mar 2022 11:25:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648466710;
+        bh=0JX6Bc0zgHCRRRrkNX4F+crInzlrpeFphYoh277iDUQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=J2gN9J1X2nDTA6mVWl0+vDZ6RM+hDcY3aT4wTpAZMyFolBkW3pIMjAIM7woxaSBvf
+         S2Sqo3I9Ek66uQx17DKpxWNGLhfhZyCRA94f1sD6L7jle9RADl3iGwt/soFw9hr3Nl
+         QG1xaT1ndSvrZUyDSDFN9mIvkKaJNRjirP9XUzaJlytRVPyO4MNL1SVF2qVbGD5lEA
+         qX2ZUqM3yQmRRnzNRezQ1uOaBmzwvksyNgkTcbQ8CBNrrqMD9wdXO6x/IGkWkaDwP+
+         9i8gRE6p8SQO2ACLW1WiC/I7skVi6jJL4bs9h2QpaSQ+1Bb0qoe89cNFmZUaljh7xr
+         LBUBhH4SFfEKA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, ldewangan@nvidia.com,
+        thierry.reding@gmail.com, jonathanh@nvidia.com,
+        linux-spi@vger.kernel.org, linux-tegra@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 8/8] spi: tegra20: Use of_device_get_match_data()
+Date:   Mon, 28 Mar 2022 07:24:56 -0400
+Message-Id: <20220328112456.1557226-8-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220328112456.1557226-1-sashal@kernel.org>
+References: <20220328112456.1557226-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220322185709.141236-3-namhyung@kernel.org>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 11:57:09AM -0700, Namhyung Kim wrote:
-> Adding the lock contention tracepoints in various lock function slow
-> paths.  Note that each arch can define spinlock differently, I only
-> added it only to the generic qspinlock for now.
-> 
-> Tested-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-> Signed-off-by: Namhyung Kim <namhyung@kernel.org>
-> ---
->  kernel/locking/mutex.c        |  3 +++
->  kernel/locking/percpu-rwsem.c |  3 +++
->  kernel/locking/qrwlock.c      |  9 +++++++++
->  kernel/locking/qspinlock.c    |  5 +++++
->  kernel/locking/rtmutex.c      | 11 +++++++++++
->  kernel/locking/rwbase_rt.c    |  3 +++
->  kernel/locking/rwsem.c        |  9 +++++++++
->  kernel/locking/semaphore.c    | 15 ++++++++++++++-
->  8 files changed, 57 insertions(+), 1 deletion(-)
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-I had conflicts in rwsem.c due to Waiman's patches, but that was simple
-enough to resolve. However, I had a good look at the other sites and
-ended up with the below...
+[ Upstream commit c9839acfcbe20ce43d363c2a9d0772472d9921c0 ]
 
-Yes, I know I'm the one that suggested the percpu thing, but upon
-looking again it missed the largest part of percpu_down_write(), which
-very much includes that RCU grace period and waiting for the readers to
-bugger off
+Use of_device_get_match_data() to simplify the code.
 
-Also, rwbase_rt was missing the entire READ side -- yes, I see that's
-also covered by the rtmuex.c part, but that's on a different address and
-with different flags, and it's very confusing to not have it annotated.
-
-Anyway, I'll queue this patch with the below folded in for post -rc1.
-
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+Link: https://lore.kernel.org/r/20220315023138.2118293-1-chi.minghao@zte.com.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
+ drivers/spi/spi-tegra20-slink.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
---- a/kernel/locking/percpu-rwsem.c
-+++ b/kernel/locking/percpu-rwsem.c
-@@ -155,7 +155,6 @@ static void percpu_rwsem_wait(struct per
- 	}
- 	spin_unlock_irq(&sem->waiters.lock);
+diff --git a/drivers/spi/spi-tegra20-slink.c b/drivers/spi/spi-tegra20-slink.c
+index 88bfe7682a9e..b8a3a78730b5 100644
+--- a/drivers/spi/spi-tegra20-slink.c
++++ b/drivers/spi/spi-tegra20-slink.c
+@@ -1016,14 +1016,8 @@ static int tegra_slink_probe(struct platform_device *pdev)
+ 	struct resource		*r;
+ 	int ret, spi_irq;
+ 	const struct tegra_slink_chip_data *cdata = NULL;
+-	const struct of_device_id *match;
  
--	trace_contention_begin(sem, LCB_F_PERCPU | (reader ? LCB_F_READ : LCB_F_WRITE));
- 	while (wait) {
- 		set_current_state(TASK_UNINTERRUPTIBLE);
- 		if (!smp_load_acquire(&wq_entry.private))
-@@ -163,7 +162,6 @@ static void percpu_rwsem_wait(struct per
- 		schedule();
- 	}
- 	__set_current_state(TASK_RUNNING);
--	trace_contention_end(sem, 0);
- }
+-	match = of_match_device(tegra_slink_of_match, &pdev->dev);
+-	if (!match) {
+-		dev_err(&pdev->dev, "Error: No device match found\n");
+-		return -ENODEV;
+-	}
+-	cdata = match->data;
++	cdata = of_device_get_match_data(&pdev->dev);
  
- bool __sched __percpu_down_read(struct percpu_rw_semaphore *sem, bool try)
-@@ -174,9 +172,11 @@ bool __sched __percpu_down_read(struct p
- 	if (try)
- 		return false;
- 
-+	trace_contention_begin(sem, LCB_F_PERCPU | LCB_F_READ);
- 	preempt_enable();
- 	percpu_rwsem_wait(sem, /* .reader = */ true);
- 	preempt_disable();
-+	trace_contention_end(sem, 0);
- 
- 	return true;
- }
-@@ -219,6 +219,7 @@ void __sched percpu_down_write(struct pe
- {
- 	might_sleep();
- 	rwsem_acquire(&sem->dep_map, 0, 0, _RET_IP_);
-+	trace_contention_begin(sem, LCB_F_PERCPU | LCB_F_WRITE);
- 
- 	/* Notify readers to take the slow path. */
- 	rcu_sync_enter(&sem->rss);
-@@ -240,6 +241,7 @@ void __sched percpu_down_write(struct pe
- 
- 	/* Wait for all active readers to complete. */
- 	rcuwait_wait_event(&sem->writer, readers_active_check(sem), TASK_UNINTERRUPTIBLE);
-+	trace_contention_end(sem, 0);
- }
- EXPORT_SYMBOL_GPL(percpu_down_write);
- 
---- a/kernel/locking/qrwlock.c
-+++ b/kernel/locking/qrwlock.c
-@@ -35,7 +35,7 @@ void queued_read_lock_slowpath(struct qr
- 	}
- 	atomic_sub(_QR_BIAS, &lock->cnts);
- 
--	trace_contention_begin(lock, LCB_F_READ | LCB_F_SPIN);
-+	trace_contention_begin(lock, LCB_F_SPIN | LCB_F_READ);
- 
- 	/*
- 	 * Put the reader into the wait queue
-@@ -67,7 +67,7 @@ void queued_write_lock_slowpath(struct q
- {
- 	int cnts;
- 
--	trace_contention_begin(lock, LCB_F_WRITE | LCB_F_SPIN);
-+	trace_contention_begin(lock, LCB_F_SPIN | LCB_F_WRITE);
- 
- 	/* Put the writer into the wait queue */
- 	arch_spin_lock(&lock->wait_lock);
---- a/kernel/locking/rwbase_rt.c
-+++ b/kernel/locking/rwbase_rt.c
-@@ -112,6 +112,8 @@ static int __sched __rwbase_read_lock(st
- 	 * Reader2 to call up_read(), which might be unbound.
- 	 */
- 
-+	trace_contention_begin(rwb, LCB_F_RT | LCB_F_READ);
-+
- 	/*
- 	 * For rwlocks this returns 0 unconditionally, so the below
- 	 * !ret conditionals are optimized out.
-@@ -130,6 +132,8 @@ static int __sched __rwbase_read_lock(st
- 	raw_spin_unlock_irq(&rtm->wait_lock);
- 	if (!ret)
- 		rwbase_rtmutex_unlock(rtm);
-+
-+	trace_contention_end(rwb, ret);
- 	return ret;
- }
- 
-@@ -247,7 +251,7 @@ static int __sched rwbase_write_lock(str
- 		goto out_unlock;
- 
- 	rwbase_set_and_save_current_state(state);
--	trace_contention_begin(rwb, LCB_F_WRITE | LCB_F_RT);
-+	trace_contention_begin(rwb, LCB_F_RT | LCB_F_WRITE);
- 	for (;;) {
- 		/* Optimized out for rwlocks */
- 		if (rwbase_signal_pending_state(state, current)) {
+ 	master = spi_alloc_master(&pdev->dev, sizeof(*tspi));
+ 	if (!master) {
+-- 
+2.34.1
+
