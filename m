@@ -2,106 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE16EC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 10:50:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B70DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 10:53:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238855AbiC1KwJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 06:52:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41170 "EHLO
+        id S240377AbiC1KzL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 06:55:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240367AbiC1KwG (ORCPT
+        with ESMTP id S235367AbiC1KzG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 06:52:06 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08CB14198A;
-        Mon, 28 Mar 2022 03:50:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648464625; x=1680000625;
-  h=date:from:to:subject:message-id:references:mime-version:
-   in-reply-to;
-  bh=NMKlDRrWVU3oduK1nKD+bbA3te2Pbh9SaIncM+0rnMk=;
-  b=nA7TPX/fgWLjfmgN4fW0uXEL3ZaUO4T0mB+7Ffa/eK2PNBdSwZNeCOmm
-   +6/Ywgv8QwmJzgA54GEIeS2tDb23LI27huhG1/xxeKrhMzFo0G2YqXQzL
-   Wa1HincZmoGitMLB+DCrUKVVJUNuHhQbzPBmTebrzkNKOzgntzfFhZjS1
-   w59Vy6Gj5Y13g1i8VOMefvudUkvcHlPeyJ8YM4yGbMfsgYVKZ0ugE9nAQ
-   nvPCL82DLHSzhW2UVCeYt3RJt2UW0WOUCNzZrXuyiEm9zM/sY7swyQTgC
-   FT31xGyZQs33tEZKcWhLGlfUSxgVNgEmKOS4RgzYp2UNeynQykLxmwQtH
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10299"; a="238901754"
-X-IronPort-AV: E=Sophos;i="5.90,217,1643702400"; 
-   d="scan'208";a="238901754"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 03:50:24 -0700
-X-IronPort-AV: E=Sophos;i="5.90,217,1643702400"; 
-   d="scan'208";a="520962489"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 03:50:23 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nYmwX-0083s4-9E;
-        Mon, 28 Mar 2022 13:49:49 +0300
-Date:   Mon, 28 Mar 2022 13:49:48 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH v7 1/1] gpio: add sloppy logic analyzer using polling
-Message-ID: <YkGSzCykWvPXX89O@smile.fi.intel.com>
-References: <20220317085019.3987-1-wsa+renesas@sang-engineering.com>
- <20220317085019.3987-2-wsa+renesas@sang-engineering.com>
- <YjiC6Lg5k5gK/BfP@smile.fi.intel.com>
- <YkGB3AgME/OZAdoG@ninjato>
+        Mon, 28 Mar 2022 06:55:06 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4637F12083
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 03:53:24 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id r7so18657247wrc.0
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 03:53:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=pQvUwgGe2yUxoTgyZUNPtgyDX7Rla1bC9Fp/TydpPrQ=;
+        b=EUPsZ0BapwUGRVBvI45LPlGGVpCgTp2IJICaghOpvSgNEI/GIJHLT40ZIDpzkHQipr
+         4ApJswcAD8TGMNtTH5OeUgiZJCdBxRhzdIoeK2NG3nAQa+Wb2IpYD0KLhSdYyAjJHp8W
+         w3nZyOEngZqaQfu0muA68xymOxEasCLD+auRqe6r/PdfBeXmV9B5f6hCwpO91DqVQVEX
+         2JWGA02+1B4DvuIcajRxgVifEunaFgpDOzrezUhWJblsoEpmVA3b61TBKvyBygdp2LuC
+         wpePzCRkMalMTKORVbfHkGNQEvcOIDRRiX1CZ68gCz40o1pRznZ+rfJxdGf5UoH9yKL9
+         XQ1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=pQvUwgGe2yUxoTgyZUNPtgyDX7Rla1bC9Fp/TydpPrQ=;
+        b=cwlwDHc9t3FacwB8niAgt2aurYp2Zot6reUn/di9b7dO/XA/MKBQBPgXNcXUjEOqMI
+         r2fcQ6USalOOJEP7N/JcdyjiwUHA9hDelzdr4ZyrJpka8+ulD2llkswpNIqDyTdGZGXB
+         MKegmoooU8dyRC6uvxGDDa9JnV4JHy4Vyqna1KH47mxjAxkKzdC9vi/9ydFs8bQ61aOG
+         xGvWP1eE1vKlGIcqQBRCGDaulv1lwZCc458AJEuYhQVeu1h0MAkYeXr7WlsPehRoMGTA
+         0YNwhR3LMxjfoammwwi+nrlGpNHxUNUyEQFj1tF5gwXoEDzIfE+WMSfJeXdkfv2Z7pKU
+         DUlw==
+X-Gm-Message-State: AOAM5319uiZ7JRSxZ7y6mcyZaoI4ATNETiy+NqE1tIiqqW5Ye0Vntz5v
+        IMexi1VZYOzXDY4Sxu6GnYiwjp8Ur4h46Q==
+X-Google-Smtp-Source: ABdhPJzfW9YDSUoDqPF/6iL0fbw7yC3QCVyS/FFbWHw05MpIh2rYo5I/45yXykhosnFub4goGvtDwg==
+X-Received: by 2002:a5d:6d05:0:b0:205:8631:cfae with SMTP id e5-20020a5d6d05000000b002058631cfaemr22519718wrq.612.1648464802866;
+        Mon, 28 Mar 2022 03:53:22 -0700 (PDT)
+Received: from [192.168.0.32] ([137.101.87.65])
+        by smtp.gmail.com with ESMTPSA id v4-20020adfa1c4000000b00205c6dfc41esm1776263wrv.18.2022.03.28.03.53.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Mar 2022 03:53:22 -0700 (PDT)
+Message-ID: <fdf68128-b743-2ad5-a4e0-25451c387417@gmail.com>
+Date:   Mon, 28 Mar 2022 12:53:21 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YkGB3AgME/OZAdoG@ninjato>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2] soc: mediatek: mmsys: Add sw0_rst_offset for MT8192
+Content-Language: en-US
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com, rex-bc.chen@mediatek.com
+References: <20220323091932.10648-1-angelogioacchino.delregno@collabora.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220323091932.10648-1-angelogioacchino.delregno@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 11:37:32AM +0200, Wolfram Sang wrote:
 
-> > > +	mutex_lock(&priv->lock);
-> > > +
-> > > +	vfree(priv->blob.data);
-> > 
-> > 	priv->blob.data = NULL;
-> > 	priv->blob.size = 0;
-> > 
-> > > +	p = vzalloc(val);
-> > > +	if (!p) {
-> > > +		val = 0;
-> > > +		ret = -ENOMEM;
-> > > +	}
-> > 
-> > 	p = vzalloc(val);
-> > 	if (!p)
-> > 		return -ENOMEM;
-> > 
-> > > +	priv->blob.data = p;
-> > > +	priv->blob.size = val;
+
+On 23/03/2022 10:19, AngeloGioacchino Del Regno wrote:
+> MT8192 has the same sw0 reset offset as MT8186: add the parameter
+> to be able to use mmsys as a reset controller for managing at
+> least the DSI reset line.
 > 
-> I don't like assigning 'priv' memebers twice, so I'd like to keep it as
-> is.
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-But this will give better understanding of the steps the code performs, no?
-(Because this function basically contains two steps at once. I assume it's
- done this way due to absence of vrealloc(), right?)
+Applied thanks!
 
-But we have kvrealloc(). Can it be used here?
-
-...
-
-> > Can it be wrapped by DEFINE_SHOW_ATTRIBUTE()?
+> ---
 > 
-> I don't see a way. Do you?
-
-Me neither. I mixed this up with (not upstreamed yet) DEFINE_STORE_ATTRIBUTE.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+> v2: Change the offset to 0x160 (as defined for MT8186). Thanks, Rex-BC!
+> 
+>   drivers/soc/mediatek/mtk-mmsys.c | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/soc/mediatek/mtk-mmsys.c b/drivers/soc/mediatek/mtk-mmsys.c
+> index 4fc4c2c9ea20..f69521fabcce 100644
+> --- a/drivers/soc/mediatek/mtk-mmsys.c
+> +++ b/drivers/soc/mediatek/mtk-mmsys.c
+> @@ -70,6 +70,7 @@ static const struct mtk_mmsys_driver_data mt8192_mmsys_driver_data = {
+>   	.clk_driver = "clk-mt8192-mm",
+>   	.routes = mmsys_mt8192_routing_table,
+>   	.num_routes = ARRAY_SIZE(mmsys_mt8192_routing_table),
+> +	.sw0_rst_offset = MT8186_MMSYS_SW0_RST_B,
+>   };
+>   
+>   static const struct mtk_mmsys_driver_data mt8365_mmsys_driver_data = {
