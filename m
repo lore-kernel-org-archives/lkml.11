@@ -2,135 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F31BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 02:30:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AC2DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 02:35:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237619AbiC1CcP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 22:32:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35240 "EHLO
+        id S237630AbiC1Chc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 22:37:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237611AbiC1CcJ (ORCPT
+        with ESMTP id S230198AbiC1Cha (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 22:32:09 -0400
-Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 103833EB82;
-        Sun, 27 Mar 2022 19:30:29 -0700 (PDT)
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id E0C411A2337;
-        Mon, 28 Mar 2022 04:30:27 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id A8D621A2331;
-        Mon, 28 Mar 2022 04:30:27 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 969A0183AD0B;
-        Mon, 28 Mar 2022 10:30:26 +0800 (+08)
-From:   Shengjiu Wang <shengjiu.wang@nxp.com>
-To:     bjorn.andersson@linaro.org, mathieu.poirier@linaro.org
-Cc:     linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        shengjiu.wang@gmail.com
-Subject: [PATCH v2 2/2] remoteproc: core: Move state checking to remoteproc_core
-Date:   Mon, 28 Mar 2022 10:20:12 +0800
-Message-Id: <1648434012-16655-3-git-send-email-shengjiu.wang@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1648434012-16655-1-git-send-email-shengjiu.wang@nxp.com>
-References: <1648434012-16655-1-git-send-email-shengjiu.wang@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Sun, 27 Mar 2022 22:37:30 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79DD913E81;
+        Sun, 27 Mar 2022 19:35:50 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id v4so12707144pjh.2;
+        Sun, 27 Mar 2022 19:35:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=nwT/36IMIBdtHxFGCWtJ9XiKKgzDDQSdkdaTgjxnLU8=;
+        b=c2UKp3O/7LQbiI5nggGupsJ4g4IbAFqunyjCelAItHLwzVk8fcXiyIukjcbvifLySs
+         kZEMtUPANUNcZb0qhTxUhmHwv6l3kRL1XP8LCbUJhkpLo3v702ILjMW1g6jRldcN4MzZ
+         riXXYFWp9rrPTG8DDRQFDzyzwufD50q7q8G0vSHl18L44xAU4Y2vaqrHOXHrP2I0h04K
+         2TfXZKiyLKkzddHUL0DbfqH5aSNFpA0gBLZUHlattfPjdPBem7AKEtFjIRM+qkrfdxab
+         SdHPeWLCtnMvMkAe6hagDgfFvE/UTOR6R+fnTiQT4Rk1P0ejrdXXjmTzUF6CrJUGgf21
+         9PCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=nwT/36IMIBdtHxFGCWtJ9XiKKgzDDQSdkdaTgjxnLU8=;
+        b=3tIZ6tzKeTqgG+qCFaKqIVTICWHCiKycTHFpHireZkD+OG7HEgrLA/eeT+3K6ufQtA
+         5bWXoITxxJ8V3SWLVChowuJ8457WW30vFcRAGDXjbZuuKTNJWbj1thS33w59NsxC82KZ
+         QayFnrcjNQjW/tsLVeGfPynaWJeyBYPeXJAPdt8UFaLxZljJT8FC4PoPv/SZf+jMGV+B
+         fP8Fl3D7jAERI92NYc/eK1TAe+coanzi32pT+94u8Af3uwK/q4nEtU5qiv1FNu5E5AnM
+         +6GcAsvoAxg58o18ujd6nOzICcIWmvcy6fVdD9oSDjO5As8mYApCQituu1bv0fqLqclv
+         hlOg==
+X-Gm-Message-State: AOAM5322CBzaJm8XiezDWYjKkaQgwSz8l4C1KTKptA50YNGW9e5XVbf6
+        eAzOlvLhP20FlUds1jdsF7c=
+X-Google-Smtp-Source: ABdhPJzJozfvss5oangSUBVul8biC3VTbOb/jCHT8f0N5SWAv5e5ucdUsUWs9TwTpLoeAtAxXS8SBQ==
+X-Received: by 2002:a17:902:e5c3:b0:154:7d95:ba7e with SMTP id u3-20020a170902e5c300b001547d95ba7emr24071034plf.140.1648434950025;
+        Sun, 27 Mar 2022 19:35:50 -0700 (PDT)
+Received: from ubuntu.huawei.com ([119.3.119.18])
+        by smtp.googlemail.com with ESMTPSA id w6-20020a17090a460600b001bf355e964fsm18744505pjg.0.2022.03.27.19.35.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 27 Mar 2022 19:35:49 -0700 (PDT)
+From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
+To:     olteanv@gmail.com
+Cc:     andrew@lunn.ch, davem@davemloft.net, f.fainelli@gmail.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com, stable@vger.kernel.org,
+        vivien.didelot@gmail.com, xiam0nd.tong@gmail.com
+Subject: Re: [PATCH] dsa: bcm_sf2_cfp: fix an incorrect NULL check on list iterator
+Date:   Mon, 28 Mar 2022 10:35:42 +0800
+Message-Id: <20220328023542.19749-1-xiam0nd.tong@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220327185805.cibcmk4rejgb7jre@skbuf>
+References: <20220327185805.cibcmk4rejgb7jre@skbuf>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is no mutex protection of these state checking for 'stop'
-and 'detach' which can't guarantee there is no another instance
-is trying to do same operation.
+On Sun, 27 Mar 2022 21:58:05 +0300, Vladimir Oltean wrote:
+> On Sun, Mar 27, 2022 at 01:55:47PM +0800, Xiaomeng Tong wrote:
+> > The bug is here:
+> > 	return rule;
+> > 
+> > The list iterator value 'rule' will *always* be set and non-NULL
+> > by list_for_each_entry(), so it is incorrect to assume that the
+> > iterator value will be NULL if the list is empty or no element
+> > is found.
+> > 
+> > To fix the bug, return 'rule' when found, otherwise return NULL.
+> > 
+> > Cc: stable@vger.kernel.org
+> > Fixes: ae7a5aff783c7 ("net: dsa: bcm_sf2: Keep copy of inserted rules")
+> > Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+> > ---
+> 
+> The change looks correct, but from a process standpoint for next time
+> (a) you should have copied Florian, the driver's maintainer (which I did now)
+>     who appears on the top of the list in the output of ./get_maintainer.pl
+> (b) networking bugfixes that apply to the "net" tree shouldn't need
+>     stable@vger.kernel.org copied, instead just target the patch against
+>     the https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git
+>     tree and mark the subject prefix as "[PATCH net]".
+> 
+> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 
-Consider two instances case:
-Instance1: echo stop > /sys/class/remoteproc/remoteproc0/state
-Instance2: echo stop > /sys/class/remoteproc/remoteproc0/state
+Thank you for your patient review and good suggestion, i got it.
+I'm sorry I forgot to copy Florian.
 
-The issue is that the instance2 case may success, Or it
-may fail with -EINVAL, which is uncertain.
-
-So move this state checking in rproc_cdev_write() and
-state_store() for 'stop', 'detach' operation to
-'rproc_shutdown' , 'rproc_detach' function under the mutex
-protection.
-
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
----
- drivers/remoteproc/remoteproc_cdev.c  |  7 -------
- drivers/remoteproc/remoteproc_core.c  | 11 +++++++++++
- drivers/remoteproc/remoteproc_sysfs.c |  7 -------
- 3 files changed, 11 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/remoteproc/remoteproc_cdev.c b/drivers/remoteproc/remoteproc_cdev.c
-index 62001eda780c..687f205fd70a 100644
---- a/drivers/remoteproc/remoteproc_cdev.c
-+++ b/drivers/remoteproc/remoteproc_cdev.c
-@@ -34,15 +34,8 @@ static ssize_t rproc_cdev_write(struct file *filp, const char __user *buf, size_
- 	if (!strncmp(cmd, "start", len)) {
- 		ret = rproc_boot(rproc);
- 	} else if (!strncmp(cmd, "stop", len)) {
--		if (rproc->state != RPROC_RUNNING &&
--		    rproc->state != RPROC_ATTACHED)
--			return -EINVAL;
--
- 		ret = rproc_shutdown(rproc);
- 	} else if (!strncmp(cmd, "detach", len)) {
--		if (rproc->state != RPROC_ATTACHED)
--			return -EINVAL;
--
- 		ret = rproc_detach(rproc);
- 	} else {
- 		dev_err(&rproc->dev, "Unrecognized option\n");
-diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
-index c510125769b9..4b344d7271e3 100644
---- a/drivers/remoteproc/remoteproc_core.c
-+++ b/drivers/remoteproc/remoteproc_core.c
-@@ -2075,6 +2075,12 @@ int rproc_shutdown(struct rproc *rproc)
- 		return ret;
- 	}
- 
-+	if (rproc->state != RPROC_RUNNING &&
-+	    rproc->state != RPROC_ATTACHED) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
- 	/* if the remote proc is still needed, bail out */
- 	if (!atomic_dec_and_test(&rproc->power))
- 		goto out;
-@@ -2134,6 +2140,11 @@ int rproc_detach(struct rproc *rproc)
- 		return ret;
- 	}
- 
-+	if (rproc->state != RPROC_ATTACHED) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
- 	/* if the remote proc is still needed, bail out */
- 	if (!atomic_dec_and_test(&rproc->power)) {
- 		ret = 0;
-diff --git a/drivers/remoteproc/remoteproc_sysfs.c b/drivers/remoteproc/remoteproc_sysfs.c
-index ac64d69085ab..8c7ea8922638 100644
---- a/drivers/remoteproc/remoteproc_sysfs.c
-+++ b/drivers/remoteproc/remoteproc_sysfs.c
-@@ -198,15 +198,8 @@ static ssize_t state_store(struct device *dev,
- 		if (ret)
- 			dev_err(&rproc->dev, "Boot failed: %d\n", ret);
- 	} else if (sysfs_streq(buf, "stop")) {
--		if (rproc->state != RPROC_RUNNING &&
--		    rproc->state != RPROC_ATTACHED)
--			return -EINVAL;
--
- 		ret = rproc_shutdown(rproc);
- 	} else if (sysfs_streq(buf, "detach")) {
--		if (rproc->state != RPROC_ATTACHED)
--			return -EINVAL;
--
- 		ret = rproc_detach(rproc);
- 	} else {
- 		dev_err(&rproc->dev, "Unrecognised option: %s\n", buf);
--- 
-2.17.1
-
+--
+Xiaomeng tong
