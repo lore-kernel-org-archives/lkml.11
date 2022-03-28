@@ -2,163 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF590C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:58:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F595C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:58:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242129AbiC1MAE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 08:00:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42022 "EHLO
+        id S242220AbiC1MAK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 08:00:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242588AbiC1L6Z (ORCPT
+        with ESMTP id S242587AbiC1L6Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Mar 2022 07:58:25 -0400
 Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A054D329A6
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 04:56:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54795329B4
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 04:56:30 -0700 (PDT)
 Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22S89QbQ026189;
-        Mon, 28 Mar 2022 06:56:18 -0500
+        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22S89QbR026189;
+        Mon, 28 Mar 2022 06:56:19 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=PODMain02222019;
- bh=kiEn5VB/Wb3y2dfI5i5h5/iriKd0jxYjh1fSYi+iKpY=;
- b=PiT97eDfVAnl0usbap+IcaF4OW+fu5EIWTWETUMjIl8ZQ/4WYgj83hryH3/GqZngCww9
- s0ILdFmQs4TM3iX7Sh1d62/31JTcdTfTwcTBTHYRwOHF5pGl2jTgByimqZAeBZrzq1jc
- P9+fpyYyVDa10Rc6BKJvBVwFxvfhhqlXXNY1B4HHantMjc6y8nolaBnQVUQsDYHX4/Yd
- nzPgUVtOHhBDL1Oxz3aEPI9Zw3OThImwjVkDGiph9IGUcLO/E289dybiZYre+qU7Zoft
- 8w/iPqWn0KrHOkNcf/624MxMAjVRaUIqJTyzDR6erNv0wJE7IfRyhXVurKlFQgrYaCvy 7w== 
+ bh=1iCKKBsRCpcAHt3Z2W5VgioV8gqDpHsostAY2FXzOMU=;
+ b=ZbStT77tAdvE2YdHCwrmJw2CAPHNVDQREZbY14akSaH9F8BcuhbzIixUGiL9LBdWFjtd
+ Hwe+HXKU1o5wsbFpJAire0+SHhzrgTQyQTu6saBlbXGUF0YMzDg1dRfbRwCK+PRnfOIN
+ Az5mXq6fHmnN9KPG2nDd7ukh0GmNi3/r9YXbSQ5Lp+i7HhTFS08uz5e6Q8zoTGzkQT6S
+ G4qyA+w7g9Ys5muARNCDfQgqsuQxSoh6TqytAoqwNpgkfwnu+Rl1YwT6T654MyxdgdNT
+ 2/GwWREQPAQNHLPPMHyaml1lzAV+CEn0cYo+rpvJZLhNd9l29yV1nesLWO9gUMP+ytKb xg== 
 Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3f1y8pad75-2
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3f1y8pad75-3
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
         Mon, 28 Mar 2022 06:56:18 -0500
 Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
  (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 28 Mar
- 2022 12:56:16 +0100
+ 2022 12:56:17 +0100
 Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Mon, 28 Mar 2022 12:56:16 +0100
+ Transport; Mon, 28 Mar 2022 12:56:17 +0100
 Received: from vitaly-Legion-7-16ACHg6.ad.cirrus.com (unknown [198.90.238.244])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 4825DB1A;
-        Mon, 28 Mar 2022 11:56:16 +0000 (UTC)
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 33B3646A;
+        Mon, 28 Mar 2022 11:56:17 +0000 (UTC)
 From:   Vitaly Rodionov <vitalyr@opensource.cirrus.com>
 To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
 CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
-        <linux-kernel@vger.kernel.org>,
-        Stefan Binding <sbinding@opensource.cirrus.com>
-Subject: [PATCH v2 3/6] ALSA: hda/cs8409: Fix Full Scale Volume setting for all variants
-Date:   Mon, 28 Mar 2022 12:56:11 +0100
-Message-ID: <20220328115614.15761-4-vitalyr@opensource.cirrus.com>
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 6/6] ALSA: hda/cs8409: Add new Dolphin HW variants
+Date:   Mon, 28 Mar 2022 12:56:14 +0100
+Message-ID: <20220328115614.15761-7-vitalyr@opensource.cirrus.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220328115614.15761-1-vitalyr@opensource.cirrus.com>
 References: <20220328115614.15761-1-vitalyr@opensource.cirrus.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-GUID: tuZjagM1IgitpamjA_PzWHWUYu2Wg-On
-X-Proofpoint-ORIG-GUID: tuZjagM1IgitpamjA_PzWHWUYu2Wg-On
+X-Proofpoint-GUID: __PjmX7pIl-dZKLS_btuih4KK4okzYxT
+X-Proofpoint-ORIG-GUID: __PjmX7pIl-dZKLS_btuih4KK4okzYxT
 X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Binding <sbinding@opensource.cirrus.com>
+Add 5 new Dolphin Systems, same configuration as older systems.
 
-All current variants (Bullseye/Warlock/Cyborg) should be using
-reduced volume (-6dB) for better speaker protection.
-
-Refactor to make more explicit the meaning and setting of
-Full Scale Volume setting to avoid future confusion.
-
-Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
 Signed-off-by: Vitaly Rodionov <vitalyr@opensource.cirrus.com>
 
 Changes in v2:
 Add patch description in commit message.
 
 ---
- sound/pci/hda/patch_cs8409.c | 29 ++++++++++++++++-------------
- sound/pci/hda/patch_cs8409.h |  3 +++
- 2 files changed, 19 insertions(+), 13 deletions(-)
+ sound/pci/hda/patch_cs8409-tables.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/sound/pci/hda/patch_cs8409.c b/sound/pci/hda/patch_cs8409.c
-index 1411e3845f16..163ff3b3092a 100644
---- a/sound/pci/hda/patch_cs8409.c
-+++ b/sound/pci/hda/patch_cs8409.c
-@@ -733,6 +733,7 @@ static void cs42l42_resume(struct sub_codec *cs42l42)
- 		{ 0x130A, 0x00 },
- 		{ 0x130F, 0x00 },
- 	};
-+	int fsv_old, fsv_new;
- 
- 	/* Bring CS42L42 out of Reset */
- 	gpio_data = snd_hda_codec_read(codec, CS8409_PIN_AFG, 0, AC_VERB_GET_GPIO_DATA, 0);
-@@ -749,8 +750,13 @@ static void cs42l42_resume(struct sub_codec *cs42l42)
- 	/* Clear interrupts, by reading interrupt status registers */
- 	cs8409_i2c_bulk_read(cs42l42, irq_regs, ARRAY_SIZE(irq_regs));
- 
--	if (cs42l42->full_scale_vol)
--		cs8409_i2c_write(cs42l42, 0x2001, 0x01);
-+	fsv_old = cs8409_i2c_read(cs42l42, 0x2001);
-+	if (cs42l42->full_scale_vol == CS42L42_FULL_SCALE_VOL_0DB)
-+		fsv_new = fsv_old & ~CS42L42_FULL_SCALE_VOL_MASK;
-+	else
-+		fsv_new = fsv_old & CS42L42_FULL_SCALE_VOL_MASK;
-+	if (fsv_new != fsv_old)
-+		cs8409_i2c_write(cs42l42, 0x2001, fsv_new);
- 
- 	/* we have to explicitly allow unsol event handling even during the
- 	 * resume phase so that the jack event is processed properly
-@@ -997,21 +1003,15 @@ void cs8409_cs42l42_fixups(struct hda_codec *codec, const struct hda_fixup *fix,
- 		 * Additionally set HSBIAS_SENSE_EN and Full Scale volume for some variants.
- 		 */
- 		switch (codec->fixup_id) {
--		case CS8409_WARLOCK:
--			spec->scodecs[CS8409_CODEC0]->hsbias_hiz = 0x0020;
--			spec->scodecs[CS8409_CODEC0]->full_scale_vol = 1;
--			break;
--		case CS8409_BULLSEYE:
--			spec->scodecs[CS8409_CODEC0]->hsbias_hiz = 0x0020;
--			spec->scodecs[CS8409_CODEC0]->full_scale_vol = 0;
--			break;
- 		case CS8409_CYBORG:
- 			spec->scodecs[CS8409_CODEC0]->hsbias_hiz = 0x00a0;
--			spec->scodecs[CS8409_CODEC0]->full_scale_vol = 1;
-+			spec->scodecs[CS8409_CODEC0]->full_scale_vol =
-+				CS42L42_FULL_SCALE_VOL_MINUS6DB;
- 			break;
- 		default:
--			spec->scodecs[CS8409_CODEC0]->hsbias_hiz = 0x0003;
--			spec->scodecs[CS8409_CODEC0]->full_scale_vol = 1;
-+			spec->scodecs[CS8409_CODEC0]->hsbias_hiz = 0x0020;
-+			spec->scodecs[CS8409_CODEC0]->full_scale_vol =
-+				CS42L42_FULL_SCALE_VOL_MINUS6DB;
- 			break;
- 		}
- 
-@@ -1222,6 +1222,9 @@ void dolphin_fixups(struct hda_codec *codec, const struct hda_fixup *fix, int ac
- 		cs8409_fix_caps(codec, DOLPHIN_LO_PIN_NID);
- 		cs8409_fix_caps(codec, DOLPHIN_AMIC_PIN_NID);
- 
-+		spec->scodecs[CS8409_CODEC0]->full_scale_vol = CS42L42_FULL_SCALE_VOL_MINUS6DB;
-+		spec->scodecs[CS8409_CODEC1]->full_scale_vol = CS42L42_FULL_SCALE_VOL_MINUS6DB;
-+
- 		break;
- 	case HDA_FIXUP_ACT_PROBE:
- 		/* Fix Sample Rate to 48kHz */
-diff --git a/sound/pci/hda/patch_cs8409.h b/sound/pci/hda/patch_cs8409.h
-index d0b725c7285b..8e846f292cd0 100644
---- a/sound/pci/hda/patch_cs8409.h
-+++ b/sound/pci/hda/patch_cs8409.h
-@@ -235,6 +235,9 @@ enum cs8409_coefficient_index_registers {
- #define CS42L42_I2C_SLEEP_US			(2000)
- #define CS42L42_PDN_TIMEOUT_US			(250000)
- #define CS42L42_PDN_SLEEP_US			(2000)
-+#define CS42L42_FULL_SCALE_VOL_MASK		(2)
-+#define CS42L42_FULL_SCALE_VOL_0DB		(1)
-+#define CS42L42_FULL_SCALE_VOL_MINUS6DB		(0)
- 
- /* Dell BULLSEYE / WARLOCK / CYBORG Specific Definitions */
+diff --git a/sound/pci/hda/patch_cs8409-tables.c b/sound/pci/hda/patch_cs8409-tables.c
+index 8d20d7fb3d68..74c50ec040d9 100644
+--- a/sound/pci/hda/patch_cs8409-tables.c
++++ b/sound/pci/hda/patch_cs8409-tables.c
+@@ -532,6 +532,11 @@ const struct snd_pci_quirk cs8409_fixup_tbl[] = {
+ 	SND_PCI_QUIRK(0x1028, 0x0BBB, "Warlock MLK Dual Mic", CS8409_WARLOCK_MLK_DUAL_MIC),
+ 	SND_PCI_QUIRK(0x1028, 0x0BBC, "Warlock MLK", CS8409_WARLOCK_MLK),
+ 	SND_PCI_QUIRK(0x1028, 0x0BBD, "Warlock MLK Dual Mic", CS8409_WARLOCK_MLK_DUAL_MIC),
++	SND_PCI_QUIRK(0x1028, 0x0BD4, "Dolphin", CS8409_DOLPHIN),
++	SND_PCI_QUIRK(0x1028, 0x0BD5, "Dolphin", CS8409_DOLPHIN),
++	SND_PCI_QUIRK(0x1028, 0x0BD6, "Dolphin", CS8409_DOLPHIN),
++	SND_PCI_QUIRK(0x1028, 0x0BD7, "Dolphin", CS8409_DOLPHIN),
++	SND_PCI_QUIRK(0x1028, 0x0BD8, "Dolphin", CS8409_DOLPHIN),
+ 	{} /* terminator */
+ };
  
 -- 
 2.25.1
