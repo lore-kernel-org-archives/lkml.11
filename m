@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6944C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0204FC4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:26:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241322AbiC1L1y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:27:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59802 "EHLO
+        id S241338AbiC1L16 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:27:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241658AbiC1LYE (ORCPT
+        with ESMTP id S241657AbiC1LYE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Mar 2022 07:24:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFA325716B;
-        Mon, 28 Mar 2022 04:21:28 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D9A057159;
+        Mon, 28 Mar 2022 04:21:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2BA9CB81057;
-        Mon, 28 Mar 2022 11:21:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE286C340F3;
-        Mon, 28 Mar 2022 11:21:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B59A4B81056;
+        Mon, 28 Mar 2022 11:21:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 496F5C340F3;
+        Mon, 28 Mar 2022 11:21:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466486;
-        bh=ZhdGQAmWHHMFrACJpTe69z62VUQvcrG8v0VNxiUGKOw=;
+        s=k20201202; t=1648466475;
+        bh=f4cI2kwoNWeXjWEpz7vIiEEZffPnwnQuTh+ZvEZwOTM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xosp+HRx/k2w6j2Md4zQ8H2sICVrVyWpyFV12+9ZX6G3dJtA0+sZqqnNRZPyi0mL0
-         HzbiYvjQ6VbK3zeMQyX+8fHwRnws3DoR7c2FMQRqSiNjsQUlVfFhdg1Mc5mMrGGAAl
-         Dar49mzn4XKFG8uX8hn4Czold9Hr/yQCcOd/FvVakqBsPS7FcxnCX4+oS5uILQTEp9
-         tuWuI6jxo6H7bntADAV+65b0qBy5qB6a3qVL4vLcCL0eI+p9ajZDiLdrHT20OMjYLL
-         8B2VwzQsniBGgKn7nwUvYzd5lfQeWhVrBvxjB6RZw6x+nX0PZ58cfHe6L+JK39ordJ
-         DJL4jCoSHqM5A==
+        b=KBBnnfpUZGExDfCc69r2JrRspeT7zG1Qt2mqky0XI04HvWY5Zp5pXfLAHzYaRKddV
+         GDloaI58/rpOXzSAQDtYI3xajYzYr537X/Nloot57sxjRS714xNXvFiv9udFtEu8Ax
+         yubo4J4d5QI8DMvyb3S7i8tQJ6fQTyViKcWhugXyhAqq5uQDTqAa4Fz+9YI17Hyehy
+         Hvlxme0BNuq77G3e46VOknYyxrJqXE/N75zjUmjawRzw+qrUL6/JWECHVC+iTsnnZc
+         4iAAoHTayOOHSMJqNqbeQtghQq1aKbljhvB4F8AeZ4QMia5XtNJnfH2m7kiHUzxpdb
+         Oiuo3IbPYFHag==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chris Leech <cleech@redhat.com>, Christoph Hellwig <hch@lst.de>,
-        Sasha Levin <sashal@kernel.org>, kbusch@kernel.org,
-        axboe@fb.com, sagi@grimberg.me, linux-nvme@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.16 32/35] nvme-tcp: lockdep: annotate in-kernel sockets
-Date:   Mon, 28 Mar 2022 07:20:08 -0400
-Message-Id: <20220328112011.1555169-32-sashal@kernel.org>
+Cc:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
+        len.brown@intel.com, pavel@ucw.cz, gregkh@linuxfoundation.org,
+        linux-pm@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 29/35] PM: core: keep irq flags in device_pm_check_callbacks()
+Date:   Mon, 28 Mar 2022 07:20:05 -0400
+Message-Id: <20220328112011.1555169-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220328112011.1555169-1-sashal@kernel.org>
 References: <20220328112011.1555169-1-sashal@kernel.org>
@@ -51,125 +53,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chris Leech <cleech@redhat.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-[ Upstream commit 841aee4d75f18fdfb53935080b03de0c65e9b92c ]
+[ Upstream commit 524bb1da785a7ae43dd413cd392b5071c6c367f8 ]
 
-Put NVMe/TCP sockets in their own class to avoid some lockdep warnings.
-Sockets created by nvme-tcp are not exposed to user-space, and will not
-trigger certain code paths that the general socket API exposes.
+The function device_pm_check_callbacks() can be called under the spin
+lock (in the reported case it happens from genpd_add_device() ->
+dev_pm_domain_set(), when the genpd uses spinlocks rather than mutexes.
 
-Lockdep complains about a circular dependency between the socket and
-filesystem locks, because setsockopt can trigger a page fault with a
-socket lock held, but nvme-tcp sends requests on the socket while file
-system locks are held.
+However this function uncoditionally uses spin_lock_irq() /
+spin_unlock_irq(), thus not preserving the CPU flags. Use the
+irqsave/irqrestore instead.
 
-  ======================================================
-  WARNING: possible circular locking dependency detected
-  5.15.0-rc3 #1 Not tainted
-  ------------------------------------------------------
-  fio/1496 is trying to acquire lock:
-  (sk_lock-AF_INET){+.+.}-{0:0}, at: tcp_sendpage+0x23/0x80
+The backtrace for the reference:
+[    2.752010] ------------[ cut here ]------------
+[    2.756769] raw_local_irq_restore() called with IRQs enabled
+[    2.762596] WARNING: CPU: 4 PID: 1 at kernel/locking/irqflag-debug.c:10 warn_bogus_irq_restore+0x34/0x50
+[    2.772338] Modules linked in:
+[    2.775487] CPU: 4 PID: 1 Comm: swapper/0 Tainted: G S                5.17.0-rc6-00384-ge330d0d82eff-dirty #684
+[    2.781384] Freeing initrd memory: 46024K
+[    2.785839] pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[    2.785841] pc : warn_bogus_irq_restore+0x34/0x50
+[    2.785844] lr : warn_bogus_irq_restore+0x34/0x50
+[    2.785846] sp : ffff80000805b7d0
+[    2.785847] x29: ffff80000805b7d0 x28: 0000000000000000 x27: 0000000000000002
+[    2.785850] x26: ffffd40e80930b18 x25: ffff7ee2329192b8 x24: ffff7edfc9f60800
+[    2.785853] x23: ffffd40e80930b18 x22: ffffd40e80930d30 x21: ffff7edfc0dffa00
+[    2.785856] x20: ffff7edfc09e3768 x19: 0000000000000000 x18: ffffffffffffffff
+[    2.845775] x17: 6572206f74206465 x16: 6c696166203a3030 x15: ffff80008805b4f7
+[    2.853108] x14: 0000000000000000 x13: ffffd40e809550b0 x12: 00000000000003d8
+[    2.860441] x11: 0000000000000148 x10: ffffd40e809550b0 x9 : ffffd40e809550b0
+[    2.867774] x8 : 00000000ffffefff x7 : ffffd40e809ad0b0 x6 : ffffd40e809ad0b0
+[    2.875107] x5 : 000000000000bff4 x4 : 0000000000000000 x3 : 0000000000000000
+[    2.882440] x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff7edfc03a8000
+[    2.889774] Call trace:
+[    2.892290]  warn_bogus_irq_restore+0x34/0x50
+[    2.896770]  _raw_spin_unlock_irqrestore+0x94/0xa0
+[    2.901690]  genpd_unlock_spin+0x20/0x30
+[    2.905724]  genpd_add_device+0x100/0x2d0
+[    2.909850]  __genpd_dev_pm_attach+0xa8/0x23c
+[    2.914329]  genpd_dev_pm_attach_by_id+0xc4/0x190
+[    2.919167]  genpd_dev_pm_attach_by_name+0x3c/0xd0
+[    2.924086]  dev_pm_domain_attach_by_name+0x24/0x30
+[    2.929102]  psci_dt_attach_cpu+0x24/0x90
+[    2.933230]  psci_cpuidle_probe+0x2d4/0x46c
+[    2.937534]  platform_probe+0x68/0xe0
+[    2.941304]  really_probe.part.0+0x9c/0x2fc
+[    2.945605]  __driver_probe_device+0x98/0x144
+[    2.950085]  driver_probe_device+0x44/0x15c
+[    2.954385]  __device_attach_driver+0xb8/0x120
+[    2.958950]  bus_for_each_drv+0x78/0xd0
+[    2.962896]  __device_attach+0xd8/0x180
+[    2.966843]  device_initial_probe+0x14/0x20
+[    2.971144]  bus_probe_device+0x9c/0xa4
+[    2.975092]  device_add+0x380/0x88c
+[    2.978679]  platform_device_add+0x114/0x234
+[    2.983067]  platform_device_register_full+0x100/0x190
+[    2.988344]  psci_idle_init+0x6c/0xb0
+[    2.992113]  do_one_initcall+0x74/0x3a0
+[    2.996060]  kernel_init_freeable+0x2fc/0x384
+[    3.000543]  kernel_init+0x28/0x130
+[    3.004132]  ret_from_fork+0x10/0x20
+[    3.007817] irq event stamp: 319826
+[    3.011404] hardirqs last  enabled at (319825): [<ffffd40e7eda0268>] __up_console_sem+0x78/0x84
+[    3.020332] hardirqs last disabled at (319826): [<ffffd40e7fd6d9d8>] el1_dbg+0x24/0x8c
+[    3.028458] softirqs last  enabled at (318312): [<ffffd40e7ec90410>] _stext+0x410/0x588
+[    3.036678] softirqs last disabled at (318299): [<ffffd40e7ed1bf68>] __irq_exit_rcu+0x158/0x174
+[    3.045607] ---[ end trace 0000000000000000 ]---
 
-  but task is already holding lock:
-  (&xfs_dir_ilock_class/5){+.+.}-{3:3}, at: xfs_ilock+0xcf/0x290 [xfs]
-
-  which lock already depends on the new lock.
-
-  other info that might help us debug this:
-
-  chain exists of:
-   sk_lock-AF_INET --> sb_internal --> &xfs_dir_ilock_class/5
-
-  Possible unsafe locking scenario:
-
-        CPU0                    CPU1
-        ----                    ----
-   lock(&xfs_dir_ilock_class/5);
-                                lock(sb_internal);
-                                lock(&xfs_dir_ilock_class/5);
-   lock(sk_lock-AF_INET);
-
-  *** DEADLOCK ***
-
-  6 locks held by fio/1496:
-   #0: (sb_writers#13){.+.+}-{0:0}, at: path_openat+0x9fc/0xa20
-   #1: (&inode->i_sb->s_type->i_mutex_dir_key){++++}-{3:3}, at: path_openat+0x296/0xa20
-   #2: (sb_internal){.+.+}-{0:0}, at: xfs_trans_alloc_icreate+0x41/0xd0 [xfs]
-   #3: (&xfs_dir_ilock_class/5){+.+.}-{3:3}, at: xfs_ilock+0xcf/0x290 [xfs]
-   #4: (hctx->srcu){....}-{0:0}, at: hctx_lock+0x51/0xd0
-   #5: (&queue->send_mutex){+.+.}-{3:3}, at: nvme_tcp_queue_rq+0x33e/0x380 [nvme_tcp]
-
-This annotation lets lockdep analyze nvme-tcp controlled sockets
-independently of what the user-space sockets API does.
-
-Link: https://lore.kernel.org/linux-nvme/CAHj4cs9MDYLJ+q+2_GXUK9HxFizv2pxUryUR0toX974M040z7g@mail.gmail.com/
-
-Signed-off-by: Chris Leech <cleech@redhat.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/tcp.c | 40 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 40 insertions(+)
+ drivers/base/power/main.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c
-index 65e00c64a588..d66e2de044e0 100644
---- a/drivers/nvme/host/tcp.c
-+++ b/drivers/nvme/host/tcp.c
-@@ -30,6 +30,44 @@ static int so_priority;
- module_param(so_priority, int, 0644);
- MODULE_PARM_DESC(so_priority, "nvme tcp socket optimize priority");
+diff --git a/drivers/base/power/main.c b/drivers/base/power/main.c
+index 04ea92cbd9cf..08c8a69d7b81 100644
+--- a/drivers/base/power/main.c
++++ b/drivers/base/power/main.c
+@@ -2018,7 +2018,9 @@ static bool pm_ops_is_empty(const struct dev_pm_ops *ops)
  
-+#ifdef CONFIG_DEBUG_LOCK_ALLOC
-+/* lockdep can detect a circular dependency of the form
-+ *   sk_lock -> mmap_lock (page fault) -> fs locks -> sk_lock
-+ * because dependencies are tracked for both nvme-tcp and user contexts. Using
-+ * a separate class prevents lockdep from conflating nvme-tcp socket use with
-+ * user-space socket API use.
-+ */
-+static struct lock_class_key nvme_tcp_sk_key[2];
-+static struct lock_class_key nvme_tcp_slock_key[2];
+ void device_pm_check_callbacks(struct device *dev)
+ {
+-	spin_lock_irq(&dev->power.lock);
++	unsigned long flags;
 +
-+static void nvme_tcp_reclassify_socket(struct socket *sock)
-+{
-+	struct sock *sk = sock->sk;
-+
-+	if (WARN_ON_ONCE(!sock_allow_reclassification(sk)))
-+		return;
-+
-+	switch (sk->sk_family) {
-+	case AF_INET:
-+		sock_lock_init_class_and_name(sk, "slock-AF_INET-NVME",
-+					      &nvme_tcp_slock_key[0],
-+					      "sk_lock-AF_INET-NVME",
-+					      &nvme_tcp_sk_key[0]);
-+		break;
-+	case AF_INET6:
-+		sock_lock_init_class_and_name(sk, "slock-AF_INET6-NVME",
-+					      &nvme_tcp_slock_key[1],
-+					      "sk_lock-AF_INET6-NVME",
-+					      &nvme_tcp_sk_key[1]);
-+		break;
-+	default:
-+		WARN_ON_ONCE(1);
-+	}
-+}
-+#else
-+static void nvme_tcp_reclassify_socket(struct socket *sock) { }
-+#endif
-+
- enum nvme_tcp_send_state {
- 	NVME_TCP_SEND_CMD_PDU = 0,
- 	NVME_TCP_SEND_H2C_PDU,
-@@ -1469,6 +1507,8 @@ static int nvme_tcp_alloc_queue(struct nvme_ctrl *nctrl,
- 		goto err_destroy_mutex;
- 	}
++	spin_lock_irqsave(&dev->power.lock, flags);
+ 	dev->power.no_pm_callbacks =
+ 		(!dev->bus || (pm_ops_is_empty(dev->bus->pm) &&
+ 		 !dev->bus->suspend && !dev->bus->resume)) &&
+@@ -2027,7 +2029,7 @@ void device_pm_check_callbacks(struct device *dev)
+ 		(!dev->pm_domain || pm_ops_is_empty(&dev->pm_domain->ops)) &&
+ 		(!dev->driver || (pm_ops_is_empty(dev->driver->pm) &&
+ 		 !dev->driver->suspend && !dev->driver->resume));
+-	spin_unlock_irq(&dev->power.lock);
++	spin_unlock_irqrestore(&dev->power.lock, flags);
+ }
  
-+	nvme_tcp_reclassify_socket(queue->sock);
-+
- 	/* Single syn retry */
- 	tcp_sock_set_syncnt(queue->sock->sk, 1);
- 
+ bool dev_pm_skip_suspend(struct device *dev)
 -- 
 2.34.1
 
