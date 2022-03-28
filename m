@@ -2,135 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C50AEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 16:47:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81EBCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 16:49:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243830AbiC1Qsq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 12:48:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45088 "EHLO
+        id S238837AbiC1QvA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 12:51:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242731AbiC1QqC (ORCPT
+        with ESMTP id S236419AbiC1Qu7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 12:46:02 -0400
-Received: from mail.baikalelectronics.ru (mail.baikalelectronics.com [87.245.175.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 28FD12182E;
-        Mon, 28 Mar 2022 09:44:15 -0700 (PDT)
-Received: from mail.baikalelectronics.ru (unknown [192.168.51.25])
-        by mail.baikalelectronics.ru (Postfix) with ESMTP id 6CFA51E495B;
-        Thu, 24 Mar 2022 04:48:54 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru 6CFA51E495B
+        Mon, 28 Mar 2022 12:50:59 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FCAA393E4
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 09:49:18 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id o5so27097643ybe.2
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 09:49:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1648086534;
-        bh=6NSTRCoVzt81JyA6QUO5cIP2eDNgzFkfTxM4XjlryDw=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=NvFah7HZvSrT0KQVpWhAoFO1ZvuZwLY+HDDwBvpE2d9oaQwJoczT9p6xitDMIv0/Z
-         KkA27dWuRMtEZwU8tpLrkuTUE+/YQghjb/wtoTAIwY6IkKNaGWs+XUi8EnQA9wJ8on
-         IaKhwxNMBQR676ALcQ/zh0dZbvOZWiabqQHUkBV4=
-Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 24 Mar 2022 04:48:54 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Frank Li <Frank.Li@nxp.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        <linux-pci@vger.kernel.org>, <dmaengine@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH 22/25] dmaengine: dw-edma: Replace chip ID number with device name
-Date:   Thu, 24 Mar 2022 04:48:33 +0300
-Message-ID: <20220324014836.19149-23-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20220324014836.19149-1-Sergey.Semin@baikalelectronics.ru>
-References: <20220324014836.19149-1-Sergey.Semin@baikalelectronics.ru>
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=L08alKUmm6AlgR+PwMmA7OuwcVmU2N35lSDDIaFmWWM=;
+        b=RLmODLwPi1HGZt+v/Oi/5FkxojBFyPOtSKhC+PWgS4z8/ywxAsjLesVRQkcS6PtoR0
+         hmqK5P8B12/MBwYac/Xz/OiqHggEI5vOoJyvD7aemgRh7rFhqqVanCUPnOtgmSjbseXv
+         /TukGTxIjyafs4RDMmhL8EW2ZjWTUJgUkEtb4sWVte1ZO04adRkg9wZF+Wh6VtBNlJ0G
+         kRkQP7ighWnGAqRqDL/EDaumjD9x+sfLnGyFq5B57RukL45aXyMo2asOMlVOgaqdauKd
+         6zeHLiLydFoJHj+qnDJqHSqI68Ds4n4hTdXPkKVpPTboZv05i/N7SNspnRj+3G/dhJ3o
+         RZwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=L08alKUmm6AlgR+PwMmA7OuwcVmU2N35lSDDIaFmWWM=;
+        b=HUemjhoCibOTRUr7pRpgrqWowsNc2bc0LgeJMk7crHXMxfteDUUPBlHvPUuMUfw9gV
+         yNRiiEKlVV0a4Vv2lVd1dVVRRX3d6JQArebsHD0/CMNECVLA0EXKcBfb/GQq3hmUMLdy
+         WULhxQGv+huxcnbldnUudz0YwoNoMyrVSwneXutXTRmGCy05EUjwXXJAOSdZiPaWkoJE
+         8+0Ph9vdo6CIhiVsPd8dDEgreGeVhw72Pz6FfGUeSIu2yneIBDItvfHGRx+n52uiQZRP
+         S+6/TgPyASA8VkAnUnL5ZVsbJfaHuvVMQ7XsmprTFjxUx1FnwbxtSIzUnGNIYpxk1HBg
+         yRkA==
+X-Gm-Message-State: AOAM530iVBjHxizbHhMatndIOD7jpyeSIe9MYCTtRAPH/S6OLQQl+TJ6
+        B2KsxeX2n21/wIyv84IgZddOxTWfMB+pHVig+MWefh0SMhUurg==
+X-Google-Smtp-Source: ABdhPJx7a8pbEc2nxFw/EUBqxg9+ajazSjsfJYuPAeLxiURTPJx5h45EPc5k0WLTztD3wyitnt+wOftplCEsZGfC2ZE=
+X-Received: by 2002:a05:6902:72a:b0:634:6843:499c with SMTP id
+ l10-20020a056902072a00b006346843499cmr25092326ybt.36.1648486157491; Mon, 28
+ Mar 2022 09:49:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+References: <20220322004654.618274-1-eric.dumazet@gmail.com> <2572770.1648463660@warthog.procyon.org.uk>
+In-Reply-To: <2572770.1648463660@warthog.procyon.org.uk>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 28 Mar 2022 09:49:06 -0700
+Message-ID: <CANn89i+bE6C_dNEvUO-2S6nfjvieB29zJQN0uB82x6WytRnaVQ@mail.gmail.com>
+Subject: Re: [PATCH] watch_queue: Free the page array when watch_queue is dismantled
+To:     David Howells <dhowells@redhat.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        syzbot <syzkaller@googlegroups.com>, Jann Horn <jannh@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Using some abstract number as the DW eDMA chip identifier isn't really
-practical. First of all there can be more than one DW eDMA controller on
-the platform some of them can be detected as the PCIe end-points, some of
-them can be embedded into the DW PCIe Root Port/End-point controllers.
-Seeing some abstract number in for instance IRQ handlers list doesn't give
-a notion regarding their reference to the particular DMA controller.
-Secondly current DW eDMA chip id implementation doesn't provide the
-multi-eDMA platforms support for same reason of possibly having eDMA
-detected on different system buses. At the same time re-implementing
-something ida-based won't give much benefits especially seeing the DW eDMA
-chip ID is only used in the IRQ request procedure. So to speak in order to
-preserve the code simplicity and get to have the multi-eDMA platforms
-support let's just use the parental device name to create the DW eDMA
-controller name.
+On Mon, Mar 28, 2022 at 3:34 AM David Howells <dhowells@redhat.com> wrote:
+>
+> Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+> > Reported-by: syzbot <syzkaller@googlegroups.com>
+>
+> Should this be the following?
+>
+>         Reported-by: syzbot+25ea042ae28f3888727a@syzkaller.appspotmail.com
+>
 
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
----
- drivers/dma/dw-edma/dw-edma-core.c | 3 ++-
- drivers/dma/dw-edma/dw-edma-core.h | 2 +-
- drivers/dma/dw-edma/dw-edma-pcie.c | 1 -
- include/linux/dma/edma.h           | 1 -
- 4 files changed, 3 insertions(+), 4 deletions(-)
+This can be.
 
-diff --git a/drivers/dma/dw-edma/dw-edma-core.c b/drivers/dma/dw-edma/dw-edma-core.c
-index dbe1119fd1d2..72a51970bfba 100644
---- a/drivers/dma/dw-edma/dw-edma-core.c
-+++ b/drivers/dma/dw-edma/dw-edma-core.c
-@@ -970,7 +970,8 @@ int dw_edma_probe(struct dw_edma_chip *chip)
- 	if (!dw->chan)
- 		return -ENOMEM;
- 
--	snprintf(dw->name, sizeof(dw->name), "dw-edma-core:%d", chip->id);
-+	snprintf(dw->name, sizeof(dw->name), "dw-edma-core:%s",
-+		 dev_name(chip->dev));
- 
- 	/* Disable eDMA, only to establish the ideal initial conditions */
- 	dw_edma_v0_core_off(dw);
-diff --git a/drivers/dma/dw-edma/dw-edma-core.h b/drivers/dma/dw-edma/dw-edma-core.h
-index 980adb079182..dc25798d4ba9 100644
---- a/drivers/dma/dw-edma/dw-edma-core.h
-+++ b/drivers/dma/dw-edma/dw-edma-core.h
-@@ -96,7 +96,7 @@ struct dw_edma_irq {
- };
- 
- struct dw_edma {
--	char				name[20];
-+	char				name[30];
- 
- 	struct dma_device		dma;
- 
-diff --git a/drivers/dma/dw-edma/dw-edma-pcie.c b/drivers/dma/dw-edma/dw-edma-pcie.c
-index f530bacfd716..3f9dadc73854 100644
---- a/drivers/dma/dw-edma/dw-edma-pcie.c
-+++ b/drivers/dma/dw-edma/dw-edma-pcie.c
-@@ -222,7 +222,6 @@ static int dw_edma_pcie_probe(struct pci_dev *pdev,
- 
- 	/* Data structure initialization */
- 	chip->dev = dev;
--	chip->id = pdev->devfn;
- 
- 	chip->mf = vsec_data.mf;
- 	chip->nr_irqs = nr_irqs;
-diff --git a/include/linux/dma/edma.h b/include/linux/dma/edma.h
-index 5cc87cfdd685..241c5a97ddf4 100644
---- a/include/linux/dma/edma.h
-+++ b/include/linux/dma/edma.h
-@@ -73,7 +73,6 @@ enum dw_edma_map_format {
-  */
- struct dw_edma_chip {
- 	struct device		*dev;
--	int			id;
- 	int			nr_irqs;
- 	const struct dw_edma_core_ops   *ops;
- 	u32			flags;
--- 
-2.35.1
+I mostly send fixes while the syzbot report is not public, so I used a
+generic form.
+(Because I also take care of feeding the bot with the needed "#syz
+fix:  patch_title")
 
+In this case, I have released the syzbot report, because I saw you had
+a patch for this issue already.
+
+Please add "Reported-by:
+syzbot+25ea042ae28f3888727a@syzkaller.appspotmail.com" when you submit
+your fix, thanks !
