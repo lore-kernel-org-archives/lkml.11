@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ECECC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:43:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6A77C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:43:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343687AbiC1Tom (ORCPT
+        id S1343493AbiC1Tor (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 15:44:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49992 "EHLO
+        Mon, 28 Mar 2022 15:44:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343568AbiC1ToE (ORCPT
+        with ESMTP id S245756AbiC1ToA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 15:44:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A85D5C367;
-        Mon, 28 Mar 2022 12:42:20 -0700 (PDT)
+        Mon, 28 Mar 2022 15:44:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8969166C9F;
+        Mon, 28 Mar 2022 12:42:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C853B612BB;
-        Mon, 28 Mar 2022 19:42:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 517B8C36AE3;
-        Mon, 28 Mar 2022 19:42:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 31E3AB81208;
+        Mon, 28 Mar 2022 19:42:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00FA1C34111;
+        Mon, 28 Mar 2022 19:42:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648496539;
-        bh=BF/guW/+isYw2DnCZre/fA94hxTACgaGf++mu0iwiAI=;
+        s=k20201202; t=1648496529;
+        bh=Blv0c6ejg6rD0X1SOHhY8mR5VPAywL+8Nw0gmhTNI00=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gglaOfkJsyQOShHXzItcmM2gxLXCJ54hx/ljPI6W2DOJHUhIyyeN4OcWAYmbe/X6x
-         Z62ZpVsWwM1wu/QoC6AF/KNjKWH3pt08vEdPHz9xwGeMMqgbpYLLl1ul9g3qbM+7bA
-         BwjUMcSpBAWBZdXSMEghEjrHW8eFmSGXINZ1dUuG70+F4gwlSxHsZu5N5E61zuQ/UG
-         sp9AeBZ75jTFZH574UrjEPQ8Q6Msqn56b9QrZ8QUDtWR5T1Oj0cxA9ZJzL402/HNMj
-         x+IApDDwvyD2o2Oprnnj8uupYwGWTwOAEBLNoIeEmNQPQfzrrbstJ6YKW6zj0tScFn
-         96TvR8psWkbVw==
+        b=rOld9twwqOcdzoeVwGOOtCn9muPp8Ce976MVDcSGdUIgxlwCx+3yq+aMS7raMFR5m
+         VCo9loSQqigPevoztHwmNk7CQmOAngKX/kCjzjGA+AZVA1H6ga1gk+VVvE13hXa6iX
+         E420OyAgeETQYYmgdVfGxM2OfJ49q5ELpS+pufDxx1TANKygzBnwrcxx8ylpM+om9h
+         zIKE+/NHtgIvmXrIr3o3pdSm+ksEmMhYeTeNLo3M201sAZYDV2NsvZ5jp+lVd9DIbP
+         WBBJWTk6Nsa+IHpV6vJhX3tDQi6a9EtvNu0z4EDq8IBeCrP0zsFDM9MDXgnwZDP7pr
+         Z12kvH9KNIPaw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Josef Bacik <josef@toxicpanda.com>, Boris Burkov <boris@bur.io>,
-        David Sterba <dsterba@suse.com>,
-        Sasha Levin <sashal@kernel.org>, clm@fb.com, jbacik@fb.com,
-        linux-btrfs@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 16/21] btrfs: do not clean up repair bio if submit fails
-Date:   Mon, 28 Mar 2022 15:41:51 -0400
-Message-Id: <20220328194157.1585642-16-sashal@kernel.org>
+Cc:     Chuck Lever <chuck.lever@oracle.com>, Dai Ngo <dai.ngo@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, bfields@fieldses.org,
+        jlayton@poochiereds.net, linux-nfs@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 09/21] NFSD: Fix nfsd_breaker_owns_lease() return values
+Date:   Mon, 28 Mar 2022 15:41:44 -0400
+Message-Id: <20220328194157.1585642-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220328194157.1585642-1-sashal@kernel.org>
 References: <20220328194157.1585642-1-sashal@kernel.org>
@@ -53,59 +52,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josef Bacik <josef@toxicpanda.com>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-[ Upstream commit 8cbc3001a3264d998d6b6db3e23f935c158abd4d ]
+[ Upstream commit 50719bf3442dd6cd05159e9c98d020b3919ce978 ]
 
-The submit helper will always run bio_endio() on the bio if it fails to
-submit, so cleaning up the bio just leads to a variety of use-after-free
-and NULL pointer dereference bugs because we race with the endio
-function that is cleaning up the bio.  Instead just return BLK_STS_OK as
-the repair function has to continue to process the rest of the pages,
-and the endio for the repair bio will do the appropriate cleanup for the
-page that it was given.
+These have been incorrect since the function was introduced.
 
-Reviewed-by: Boris Burkov <boris@bur.io>
-Signed-off-by: Josef Bacik <josef@toxicpanda.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+A proper kerneldoc comment is added since this function, though
+static, is part of an external interface.
+
+Reported-by: Dai Ngo <dai.ngo@oracle.com>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/extent_io.c | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
+ fs/nfsd/nfs4state.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/fs/btrfs/extent_io.c b/fs/btrfs/extent_io.c
-index 4c91060d103a..2c4f75348282 100644
---- a/fs/btrfs/extent_io.c
-+++ b/fs/btrfs/extent_io.c
-@@ -2639,7 +2639,6 @@ int btrfs_repair_one_sector(struct inode *inode,
- 	const int icsum = bio_offset >> fs_info->sectorsize_bits;
- 	struct bio *repair_bio;
- 	struct btrfs_bio *repair_bbio;
--	blk_status_t status;
- 
- 	btrfs_debug(fs_info,
- 		   "repair read error: read error at %llu", start);
-@@ -2678,13 +2677,13 @@ int btrfs_repair_one_sector(struct inode *inode,
- 		    "repair read error: submitting new read to mirror %d",
- 		    failrec->this_mirror);
- 
--	status = submit_bio_hook(inode, repair_bio, failrec->this_mirror,
--				 failrec->bio_flags);
--	if (status) {
--		free_io_failure(failure_tree, tree, failrec);
--		bio_put(repair_bio);
--	}
--	return blk_status_to_errno(status);
-+	/*
-+	 * At this point we have a bio, so any errors from submit_bio_hook()
-+	 * will be handled by the endio on the repair_bio, so we can't return an
-+	 * error here.
-+	 */
-+	submit_bio_hook(inode, repair_bio, failrec->this_mirror, failrec->bio_flags);
-+	return BLK_STS_OK;
+diff --git a/fs/nfsd/nfs4state.c b/fs/nfsd/nfs4state.c
+index 32063733443d..f3b71fd1d134 100644
+--- a/fs/nfsd/nfs4state.c
++++ b/fs/nfsd/nfs4state.c
+@@ -4711,6 +4711,14 @@ nfsd_break_deleg_cb(struct file_lock *fl)
+ 	return ret;
  }
  
- static void end_page_read(struct page *page, bool uptodate, u64 start, u32 len)
++/**
++ * nfsd_breaker_owns_lease - Check if lease conflict was resolved
++ * @fl: Lock state to check
++ *
++ * Return values:
++ *   %true: Lease conflict was resolved
++ *   %false: Lease conflict was not resolved.
++ */
+ static bool nfsd_breaker_owns_lease(struct file_lock *fl)
+ {
+ 	struct nfs4_delegation *dl = fl->fl_owner;
+@@ -4718,11 +4726,11 @@ static bool nfsd_breaker_owns_lease(struct file_lock *fl)
+ 	struct nfs4_client *clp;
+ 
+ 	if (!i_am_nfsd())
+-		return NULL;
++		return false;
+ 	rqst = kthread_data(current);
+ 	/* Note rq_prog == NFS_ACL_PROGRAM is also possible: */
+ 	if (rqst->rq_prog != NFS_PROGRAM || rqst->rq_vers < 4)
+-		return NULL;
++		return false;
+ 	clp = *(rqst->rq_lease_breaker);
+ 	return dl->dl_stid.sc_client == clp;
+ }
 -- 
 2.34.1
 
