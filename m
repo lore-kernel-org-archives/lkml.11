@@ -2,159 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99DE7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 14:49:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 621F3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 14:50:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243734AbiC1OvJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 10:51:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56696 "EHLO
+        id S244067AbiC1Ovu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 10:51:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242843AbiC1OvF (ORCPT
+        with ESMTP id S237283AbiC1Ovs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 10:51:05 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 939823ED31
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 07:49:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648478964; x=1680014964;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=HO/Ta6xgsxWlSe1ppAZnjsR7g6TanwH+tQdb+CpTSfA=;
-  b=TvzMRvZg3hxxrOoBYomgpqLvvsc+QZMlFqlT+FWuWfhQQVTHo3UxWNGT
-   eKIRlv7U7kaoDyl66KbahyejiIhK4+fHELeVdz2LzfmHcjpPohQJo3Wz5
-   7OoPyhphctGx6gDR8uPlrz9x9KZMMA6KYFTuisGaw4I+uHjWrWo+r0EkO
-   G6xVr2lTf8YqbNFBkzQ4Y8IUtdhTxiYvtSuy8a9hP1rtKrwnSMkvFs7rt
-   DoqhwefO9+ogPc2SkDeWybaHPR599YjyIyE/yFDSyVcMYIwdD6J7N90Do
-   6dy0SZ+8D6/HJhWPT8t0EF7gBkr++OsboQuNh/V98lHRaIgtaoZ23fN3X
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="258728691"
-X-IronPort-AV: E=Sophos;i="5.90,217,1643702400"; 
-   d="scan'208";a="258728691"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 07:49:24 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,217,1643702400"; 
-   d="scan'208";a="719136605"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 28 Mar 2022 07:49:22 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nYqgL-00026T-OQ; Mon, 28 Mar 2022 14:49:21 +0000
-Date:   Mon, 28 Mar 2022 22:48:36 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: drivers/acpi/apei/erst.c:792:9: sparse: sparse: incorrect type in
- argument 1 (different address spaces)
-Message-ID: <202203282235.ONsTh0Y7-lkp@intel.com>
+        Mon, 28 Mar 2022 10:51:48 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13FEB3F8A7;
+        Mon, 28 Mar 2022 07:50:06 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 157AE1F404A0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1648479005;
+        bh=rh1r1C45HfSaIbukyLwkQj2wc8+C93F7ZOfSvSOU2o4=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Gm788Xsmn/QVrAO0hM+4de4tvTGjuuQWcofmlA/NObYcXRpCLczAB9EceIFF+RA+f
+         6YROwpBLFZrNKk2LvanhAbBgBOR4rFQ/fctRk4p2FQ4ZpVUj5ufjJJVhn6mIwDi456
+         F0oRcUMx8s2PESeOjf06VwhO2LHllFHJpJj/B/CqrFEko2GOKnz/UmXpXCUZSAMbIU
+         7B7bB1v2H4/Rdq3FBOn8QQkyneNIh60bQYvExblMH840ebePsWjvmgEwHVRAGhVepu
+         MLemwNev0VUqSuhOdykoq0wC0TU1muVwYWFICjzAcITBsShepSyR8TBnmO4d2P8hEG
+         /LqBP7Tixh4dA==
+Message-ID: <0b042c71-4d07-76a6-53bb-94bbd4bad6c0@collabora.com>
+Date:   Mon, 28 Mar 2022 16:50:02 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 2/4] arm64: dts: mediatek: Add device-tree for MT8195
+ Demo board
+Content-Language: en-US
+To:     Fabien Parent <fparent@baylibre.com>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220327200312.3090515-1-fparent@baylibre.com>
+ <20220327200312.3090515-3-fparent@baylibre.com>
+ <94d231cf-ce4c-22f5-b9af-41ae68f1e659@collabora.com>
+ <20220328144107.ed4xwzuiezzixqrx@radium>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220328144107.ed4xwzuiezzixqrx@radium>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   ae085d7f9365de7da27ab5c0d16b12d51ea7fca9
-commit: f68f2ff91512c199ec24883001245912afc17873 fortify: Detect struct member overflows in memcpy() at compile-time
-date:   6 weeks ago
-config: i386-randconfig-s001-20220328 (https://download.01.org/0day-ci/archive/20220328/202203282235.ONsTh0Y7-lkp@intel.com/config)
-compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f68f2ff91512c199ec24883001245912afc17873
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout f68f2ff91512c199ec24883001245912afc17873
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash drivers/acpi/apei/
+Il 28/03/22 16:41, Fabien Parent ha scritto:
+> On Mon, Mar 28, 2022 at 03:47:09PM +0200, AngeloGioacchino Del Regno wrote:
+>> Il 27/03/22 22:03, Fabien Parent ha scritto:
+>>> Add basic device-tree for the MT8195 Demo board. The
+>>> Demo board is made by MediaTek and has a MT8195 SoC,
+>>> associated with the MT6359 and MT6360 PMICs, and
+>>> the MT7921 connectivity chip.
+>>>
+>>> The IOs available on that board are:
+>>> * 1 USB Type-C connector with DP aux mode support
+>>> * 1 USB Type-A connector
+>>> * 1 full size HDMI RX and 1 full size HDMI TX connector
+>>> * 1 uSD slot
+>>> * 40 pins header
+>>> * SPI interface header
+>>> * 1 M.2 slot
+>>> * 1 audio jack
+>>> * 1 micro-USB port for serial debug
+>>> * 2 connectors for DSI displays
+>>> * 3 connectors for CSI cameras
+>>> * 1 connector for a eDP panel
+>>> * 1 MMC storage
+>>>
+>>> This commit adds basic support in order to be able to boot.
+>>>
+>>> Signed-off-by: Fabien Parent <fparent@baylibre.com>
+>>> ---
+>>> v2:
+>>>    * remove empty i2c nodes
+>>>    * remove empty spi node
+>>>    * remove unused pcie pinctrls
+>>>    * fixup node nodes to not contains underscore
+>>>    * rename mt6360 pmic node
+>>>    * move mmc1 node right after mmc0 node
+>>>    * use generic node name for gpio-keys
+>>>    * uniformize pinctrl node names
+>>>
+>>>    arch/arm64/boot/dts/mediatek/Makefile        |   1 +
+>>>    arch/arm64/boot/dts/mediatek/mt8195-demo.dts | 447 +++++++++++++++++++
+>>>    2 files changed, 448 insertions(+)
+>>>    create mode 100644 arch/arm64/boot/dts/mediatek/mt8195-demo.dts
+>>>
+>>
+>> ..snip..
+>>
+>>> diff --git a/arch/arm64/boot/dts/mediatek/mt8195-demo.dts b/arch/arm64/boot/dts/mediatek/mt8195-demo.dts
+>>> new file mode 100644
+>>> index 000000000000..d94b4e01159a
+>>> --- /dev/null
+>>> +++ b/arch/arm64/boot/dts/mediatek/mt8195-demo.dts
+>>> @@ -0,0 +1,447 @@
+>>
+>> ..snip..
+>>
+>>> +
+>>> +	gpio-keys {
+>>> +		compatible = "gpio-keys";
+>>> +		input-name = "gpio-keys";
+>>> +		pinctrl-names = "default";
+>>> +		pinctrl-0 = <&gpio_keys_pins>;
+>>> +
+>>> +		key-0 {
+>>
+>> key-volup is more descriptive, can you please change that?
+> 
+> Which review should I follow, yours or the one from Krzysztof? Because both reviews are contradictory
+> 
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+There are a lot of "vol-down", "vol-up" (etc) instances, lots of which are on
+Qualcomm device-trees... so I guess this is just about personal preference...
 
+Honestly, before sending my review I forgot to check Krzysztof's one (sorry!!),
+but I think that this kind of node names is highly subjective... at least, I am
+not aware of any rule about having to use "generic" names.
 
-sparse warnings: (new ones prefixed by >>)
-   drivers/acpi/apei/erst.c:272:13: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected void *src @@     got void [noderef] __iomem * @@
-   drivers/acpi/apei/erst.c:272:13: sparse:     expected void *src
-   drivers/acpi/apei/erst.c:272:13: sparse:     got void [noderef] __iomem *
-   drivers/acpi/apei/erst.c:275:13: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected void *dst @@     got void [noderef] __iomem * @@
-   drivers/acpi/apei/erst.c:275:13: sparse:     expected void *dst
-   drivers/acpi/apei/erst.c:275:13: sparse:     got void [noderef] __iomem *
-   drivers/acpi/apei/erst.c:277:25: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void volatile [noderef] __iomem *addr @@     got void *src @@
-   drivers/acpi/apei/erst.c:277:25: sparse:     expected void volatile [noderef] __iomem *addr
-   drivers/acpi/apei/erst.c:277:25: sparse:     got void *src
-   drivers/acpi/apei/erst.c:283:17: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void volatile [noderef] __iomem *addr @@     got void *src @@
-   drivers/acpi/apei/erst.c:283:17: sparse:     expected void volatile [noderef] __iomem *addr
-   drivers/acpi/apei/erst.c:283:17: sparse:     got void *src
-   drivers/acpi/apei/erst.c:284:17: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void volatile [noderef] __iomem *addr @@     got void *dst @@
-   drivers/acpi/apei/erst.c:284:17: sparse:     expected void volatile [noderef] __iomem *addr
-   drivers/acpi/apei/erst.c:284:17: sparse:     got void *dst
->> drivers/acpi/apei/erst.c:792:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *static [toplevel] vaddr @@
-   drivers/acpi/apei/erst.c:792:9: sparse:     expected void const *
-   drivers/acpi/apei/erst.c:792:9: sparse:     got void [noderef] __iomem *static [toplevel] vaddr
->> drivers/acpi/apei/erst.c:792:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem *static [toplevel] vaddr @@
-   drivers/acpi/apei/erst.c:792:9: sparse:     expected void const *
-   drivers/acpi/apei/erst.c:792:9: sparse:     got void [noderef] __iomem *static [toplevel] vaddr
-   drivers/acpi/apei/erst.c:792:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void * @@     got void [noderef] __iomem *static [toplevel] vaddr @@
-   drivers/acpi/apei/erst.c:792:9: sparse:     expected void *
-   drivers/acpi/apei/erst.c:792:9: sparse:     got void [noderef] __iomem *static [toplevel] vaddr
-   drivers/acpi/apei/erst.c:793:20: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct cper_record_header *rcd_erange @@     got void [noderef] __iomem *static [toplevel] vaddr @@
-   drivers/acpi/apei/erst.c:793:20: sparse:     expected struct cper_record_header *rcd_erange
-   drivers/acpi/apei/erst.c:793:20: sparse:     got void [noderef] __iomem *static [toplevel] vaddr
-   drivers/acpi/apei/erst.c:830:17: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct cper_record_header *rcd_tmp @@     got void [noderef] __iomem * @@
-   drivers/acpi/apei/erst.c:830:17: sparse:     expected struct cper_record_header *rcd_tmp
-   drivers/acpi/apei/erst.c:830:17: sparse:     got void [noderef] __iomem *
+Check Documentation/devicetree/bindings/input/gpio-keys.yaml - in the example,
+you can find "specific" node names, like:
 
-vim +792 drivers/acpi/apei/erst.c
+         up {
 
-a08f82d08053fb Huang Ying 2010-05-18  766  
-a08f82d08053fb Huang Ying 2010-05-18  767  int erst_write(const struct cper_record_header *record)
-a08f82d08053fb Huang Ying 2010-05-18  768  {
-a08f82d08053fb Huang Ying 2010-05-18  769  	int rc;
-a08f82d08053fb Huang Ying 2010-05-18  770  	unsigned long flags;
-a08f82d08053fb Huang Ying 2010-05-18  771  	struct cper_record_header *rcd_erange;
-a08f82d08053fb Huang Ying 2010-05-18  772  
-a08f82d08053fb Huang Ying 2010-05-18  773  	if (erst_disable)
-a08f82d08053fb Huang Ying 2010-05-18  774  		return -ENODEV;
-a08f82d08053fb Huang Ying 2010-05-18  775  
-a08f82d08053fb Huang Ying 2010-05-18  776  	if (memcmp(record->signature, CPER_SIG_RECORD, CPER_SIG_SIZE))
-a08f82d08053fb Huang Ying 2010-05-18  777  		return -EINVAL;
-a08f82d08053fb Huang Ying 2010-05-18  778  
-a08f82d08053fb Huang Ying 2010-05-18  779  	if (erst_erange.attr & ERST_RANGE_NVRAM) {
-3b38bb5f7f0635 Huang Ying 2010-12-02  780  		if (!raw_spin_trylock_irqsave(&erst_lock, flags))
-a08f82d08053fb Huang Ying 2010-05-18  781  			return -EBUSY;
-a08f82d08053fb Huang Ying 2010-05-18  782  		rc = __erst_write_to_nvram(record);
-3b38bb5f7f0635 Huang Ying 2010-12-02  783  		raw_spin_unlock_irqrestore(&erst_lock, flags);
-a08f82d08053fb Huang Ying 2010-05-18  784  		return rc;
-a08f82d08053fb Huang Ying 2010-05-18  785  	}
-a08f82d08053fb Huang Ying 2010-05-18  786  
-a08f82d08053fb Huang Ying 2010-05-18  787  	if (record->record_length > erst_erange.size)
-a08f82d08053fb Huang Ying 2010-05-18  788  		return -EINVAL;
-a08f82d08053fb Huang Ying 2010-05-18  789  
-3b38bb5f7f0635 Huang Ying 2010-12-02  790  	if (!raw_spin_trylock_irqsave(&erst_lock, flags))
-a08f82d08053fb Huang Ying 2010-05-18  791  		return -EBUSY;
-a08f82d08053fb Huang Ying 2010-05-18 @792  	memcpy(erst_erange.vaddr, record, record->record_length);
-a08f82d08053fb Huang Ying 2010-05-18  793  	rcd_erange = erst_erange.vaddr;
-a08f82d08053fb Huang Ying 2010-05-18  794  	/* signature for serialization system */
-a08f82d08053fb Huang Ying 2010-05-18  795  	memcpy(&rcd_erange->persistence_information, "ER", 2);
-a08f82d08053fb Huang Ying 2010-05-18  796  
-a08f82d08053fb Huang Ying 2010-05-18  797  	rc = __erst_write_to_storage(0);
-3b38bb5f7f0635 Huang Ying 2010-12-02  798  	raw_spin_unlock_irqrestore(&erst_lock, flags);
-a08f82d08053fb Huang Ying 2010-05-18  799  
-a08f82d08053fb Huang Ying 2010-05-18  800  	return rc;
-a08f82d08053fb Huang Ying 2010-05-18  801  }
-a08f82d08053fb Huang Ying 2010-05-18  802  EXPORT_SYMBOL_GPL(erst_write);
-a08f82d08053fb Huang Ying 2010-05-18  803  
+             label = "GPIO Key UP";
 
-:::::: The code at line 792 was first introduced by commit
-:::::: a08f82d08053fb6e3aa3635c2c26456d96337c8b ACPI, APEI, Error Record Serialization Table (ERST) support
+In any case, as I said, it's my personal preference to have it named as something
+like "key-volup" or "vol-up" or .. a name that is describing the key, but, as a
+personal preference, it is nothing mandatory, not even from my side.
 
-:::::: TO: Huang Ying <ying.huang@intel.com>
-:::::: CC: Len Brown <len.brown@intel.com>
+If anyone else has reasons to disagree, shrug, it's fine :))
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+>>
+>>> +			gpios = <&pio 106 GPIO_ACTIVE_LOW>;
+>>> +			label = "volume_up";
+>>> +			linux,code = <KEY_VOLUMEUP>;
+>>> +			wakeup-source;
+>>> +			debounce-interval = <15>;
+>>> +		};
+>>> +	};
+>>> +};
