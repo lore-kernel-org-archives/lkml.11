@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5B18C46467
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:37:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04BCBC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:37:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241808AbiC1Ldr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:33:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54416 "EHLO
+        id S241915AbiC1Ld4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:33:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241741AbiC1LYK (ORCPT
+        with ESMTP id S241728AbiC1LYJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:24:10 -0400
+        Mon, 28 Mar 2022 07:24:09 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB60956208;
-        Mon, 28 Mar 2022 04:22:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED6D356225;
+        Mon, 28 Mar 2022 04:21:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 98693B80ED8;
-        Mon, 28 Mar 2022 11:22:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B705C34100;
-        Mon, 28 Mar 2022 11:22:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A661DB80EAE;
+        Mon, 28 Mar 2022 11:21:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AF0BC36AE2;
+        Mon, 28 Mar 2022 11:21:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466523;
-        bh=Y9vz61kRi+0D0+pc4M6WJIazZc8SD+yi8M25hfH4qzQ=;
+        s=k20201202; t=1648466506;
+        bh=p4qOkgGo1/eyoeVeoSnjF3H2g47JG7CGB9P5oxsXQkc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lcyYN0ntTvygFAwrXAX22nGm21Bv/D+IDjnsmugH4ZQr0xQmRMrt/QdEVQvASsHId
-         CKo4ACmM7HAxRB8n9GMapGaHaLK0AQMO0vasuRzCt7XE4aXs+Wm3UDzF9tqXjKJNNC
-         qX6vQq3tTXG0WJvWgIeUUm1ZvPWiXwki7UFY/GcIRqQBmowfG6I2LuSYL2Ikchpzba
-         qWsCO/3tfQ6SGgnWLwOLWNY40Kdu1nK7iaaEv8l7u1zuRHjlOxYB882Q2L+F9IUHtZ
-         zFsNSGwJApLu9DeHadsB7fniEYHHWxFNqg6QU9qJq1BjJlr64qqBgOkM6JKyheoMF4
-         uJ7vezlNRr78w==
+        b=tPuptpqXF50Bret6VZDRy7MAdYfK/TrlWLIEKfwbOiCniS27a29CobpdlT3eKIqkq
+         s9oraCoMmflKSlWP/HljAgnRoQgrIV6r8bWPHLuzN/S/NVIn38WXzF91S9VyL64NBo
+         ikNAZAFmjFRSzgyRxwXblHzPX8Wq0QRCGlk2UZqQ9vEBp1mXos5TgNPcjLCOcC62dO
+         LGS3UCLRfY1+bU3CroXxTwtd5SLfaW1tYidEpXz3vANkXxd3CNSbJaCK1a1LgZ9j1p
+         A69du5DAp4Msv2v58+pfjDH2JNbCR21SMOUg5LF1ZD9d5+f4s1xtYxJUhuejGBBgEq
+         NJWs0UfTZanQg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chaitanya Kulkarni <kch@nvidia.com>,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
-        linux-block@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 14/29] loop: use sysfs_emit() in the sysfs xxx show()
-Date:   Mon, 28 Mar 2022 07:21:16 -0400
-Message-Id: <20220328112132.1555683-14-sashal@kernel.org>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>, rftc <rftc@gmx.de>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        linux-crypto@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 08/29] crypto: xts - Add softdep on ecb
+Date:   Mon, 28 Mar 2022 07:21:10 -0400
+Message-Id: <20220328112132.1555683-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220328112132.1555683-1-sashal@kernel.org>
 References: <20220328112132.1555683-1-sashal@kernel.org>
@@ -52,71 +51,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chaitanya Kulkarni <kch@nvidia.com>
+From: Herbert Xu <herbert@gondor.apana.org.au>
 
-[ Upstream commit b27824d31f09ea7b4a6ba2c1b18bd328df3e8bed ]
+[ Upstream commit dfe085d8dcd0bb1fe20cc2327e81c8064cead441 ]
 
-sprintf does not know the PAGE_SIZE maximum of the temporary buffer
-used for outputting sysfs content and it's possible to overrun the
-PAGE_SIZE buffer length.
+The xts module needs ecb to be present as it's meant to work
+on top of ecb.  This patch adds a softdep so ecb can be included
+automatically into the initramfs.
 
-Use a generic sysfs_emit function that knows the size of the
-temporary buffer and ensures that no overrun is done for offset
-attribute in
-loop_attr_[offset|sizelimit|autoclear|partscan|dio]_show() callbacks.
-
-Signed-off-by: Chaitanya Kulkarni <kch@nvidia.com>
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Link: https://lore.kernel.org/r/20220215213310.7264-2-kch@nvidia.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Reported-by: rftc <rftc@gmx.de>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/loop.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ crypto/xts.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/block/loop.c b/drivers/block/loop.c
-index 92f9d32bfae5..8cba10aafadb 100644
---- a/drivers/block/loop.c
-+++ b/drivers/block/loop.c
-@@ -844,33 +844,33 @@ static ssize_t loop_attr_backing_file_show(struct loop_device *lo, char *buf)
- 
- static ssize_t loop_attr_offset_show(struct loop_device *lo, char *buf)
- {
--	return sprintf(buf, "%llu\n", (unsigned long long)lo->lo_offset);
-+	return sysfs_emit(buf, "%llu\n", (unsigned long long)lo->lo_offset);
- }
- 
- static ssize_t loop_attr_sizelimit_show(struct loop_device *lo, char *buf)
- {
--	return sprintf(buf, "%llu\n", (unsigned long long)lo->lo_sizelimit);
-+	return sysfs_emit(buf, "%llu\n", (unsigned long long)lo->lo_sizelimit);
- }
- 
- static ssize_t loop_attr_autoclear_show(struct loop_device *lo, char *buf)
- {
- 	int autoclear = (lo->lo_flags & LO_FLAGS_AUTOCLEAR);
- 
--	return sprintf(buf, "%s\n", autoclear ? "1" : "0");
-+	return sysfs_emit(buf, "%s\n", autoclear ? "1" : "0");
- }
- 
- static ssize_t loop_attr_partscan_show(struct loop_device *lo, char *buf)
- {
- 	int partscan = (lo->lo_flags & LO_FLAGS_PARTSCAN);
- 
--	return sprintf(buf, "%s\n", partscan ? "1" : "0");
-+	return sysfs_emit(buf, "%s\n", partscan ? "1" : "0");
- }
- 
- static ssize_t loop_attr_dio_show(struct loop_device *lo, char *buf)
- {
- 	int dio = (lo->lo_flags & LO_FLAGS_DIRECT_IO);
- 
--	return sprintf(buf, "%s\n", dio ? "1" : "0");
-+	return sysfs_emit(buf, "%s\n", dio ? "1" : "0");
- }
- 
- LOOP_ATTR_RO(backing_file);
+diff --git a/crypto/xts.c b/crypto/xts.c
+index 6c12f30dbdd6..63c85b9e64e0 100644
+--- a/crypto/xts.c
++++ b/crypto/xts.c
+@@ -466,3 +466,4 @@ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("XTS block cipher mode");
+ MODULE_ALIAS_CRYPTO("xts");
+ MODULE_IMPORT_NS(CRYPTO_INTERNAL);
++MODULE_SOFTDEP("pre: ecb");
 -- 
 2.34.1
 
