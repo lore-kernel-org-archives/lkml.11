@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1C6CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:44:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C56A9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:44:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343713AbiC1TqO (ORCPT
+        id S1343764AbiC1TqR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 15:46:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51530 "EHLO
+        Mon, 28 Mar 2022 15:46:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343693AbiC1Ton (ORCPT
+        with ESMTP id S1343638AbiC1TpE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 15:44:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DBDC5C368;
-        Mon, 28 Mar 2022 12:42:38 -0700 (PDT)
+        Mon, 28 Mar 2022 15:45:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7B9867D1F;
+        Mon, 28 Mar 2022 12:42:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2ACDB81212;
-        Mon, 28 Mar 2022 19:42:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C6D0C34100;
-        Mon, 28 Mar 2022 19:42:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E68C4B811A2;
+        Mon, 28 Mar 2022 19:42:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CB0EC34100;
+        Mon, 28 Mar 2022 19:42:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648496555;
-        bh=K3S/S9rXwhs+s1yn6pNXbT0CewRRPS+OMxQdoLypzlY=;
+        s=k20201202; t=1648496558;
+        bh=fHWOggZ0S4hvTFd4G0AD1ngfqFQeOt9QOGZoZs+G7so=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SP44x/b1uxD0RCMam7DbpeJ/BG+rbyHSUYCRE8sCfTIqeeiZRlzoU07kai/TomoAr
-         LF7H0W5mRo03+0s1XWIBgqLdcsztcFLXXYfO6vIRzv3s9a/pDKefkRhkowXwyxImEG
-         fXOb+6YTeKrUU4zTIn5gGjiCtaU57+evs6sYDRZ7utiq49oK/peTSZK1DoeBxPx3UM
-         TnSzfnEfzN0id3PgGtut9C2GTyE6f+Za7XLkRdLOYXpDeI5aEunWpOsk3FiUuRNxR6
-         59tFSejCuynuHCNH2rgLWgWGRrFKieoJqL7XFkSP5ssZMKDeoedTQ/awM+Y+ktYZUK
-         sw51EEyyBW/AQ==
+        b=X5XsVsn3k1wR5leZvXeITSMlrcGD9glJJNJjq+UNgvuo0Ohot+xa/G/sQvdxZg5Ym
+         xMr+pDOT2Vk0SKze+SyOyXtRqoy4rXbrIslY45ZiRIRo/lRg1guwMjB087GwDhEm7w
+         9Gsu1EDUJlJdh41egSAVUfeXvgB/D3qxr0209KEXMXhJHCxG9jIdgEbaKQgjxhkgRT
+         H2x2njdcYx4zA/642ZWD8LyKhOaFQeydVJROBHnzEaFX7cZNaYk7bulpm16ptEseZs
+         tEd1xRi1jMP0AndDHPjM4vwxAX7hVvDBrDgDoIvhbTTz30922/Db89k5gImTxuiCEW
+         pTPKKMtA4WLIg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Valentin Schneider <valentin.schneider@arm.com>,
-        Abhijeet Dharmapurikar <adharmap@quicinc.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>, mingo@redhat.com
-Subject: [PATCH AUTOSEL 5.16 05/20] sched/tracing: Don't re-read p->state when emitting sched_switch event
-Date:   Mon, 28 Mar 2022 15:42:11 -0400
-Message-Id: <20220328194226.1585920-5-sashal@kernel.org>
+Cc:     Theodore Ts'o <tytso@mit.edu>,
+        syzbot+d59332e2db681cf18f0318a06e994ebbb529a8db@syzkaller.appspotmail.com,
+        Lee Jones <lee.jones@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, adilger.kernel@dilger.ca,
+        linux-ext4@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 07/20] ext4: don't BUG if someone dirty pages without asking ext4 first
+Date:   Mon, 28 Mar 2022 15:42:13 -0400
+Message-Id: <20220328194226.1585920-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220328194226.1585920-1-sashal@kernel.org>
 References: <20220328194226.1585920-1-sashal@kernel.org>
@@ -54,244 +54,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Valentin Schneider <valentin.schneider@arm.com>
+From: Theodore Ts'o <tytso@mit.edu>
 
-[ Upstream commit fa2c3254d7cfff5f7a916ab928a562d1165f17bb ]
+[ Upstream commit cc5095747edfb054ca2068d01af20be3fcc3634f ]
 
-As of commit
+[un]pin_user_pages_remote is dirtying pages without properly warning
+the file system in advance.  A related race was noted by Jan Kara in
+2018[1]; however, more recently instead of it being a very hard-to-hit
+race, it could be reliably triggered by process_vm_writev(2) which was
+discovered by Syzbot[2].
 
-  c6e7bd7afaeb ("sched/core: Optimize ttwu() spinning on p->on_cpu")
+This is technically a bug in mm/gup.c, but arguably ext4 is fragile in
+that if some other kernel subsystem dirty pages without properly
+notifying the file system using page_mkwrite(), ext4 will BUG, while
+other file systems will not BUG (although data will still be lost).
 
-the following sequence becomes possible:
+So instead of crashing with a BUG, issue a warning (since there may be
+potential data loss) and just mark the page as clean to avoid
+unprivileged denial of service attacks until the problem can be
+properly fixed.  More discussion and background can be found in the
+thread starting at [2].
 
-		      p->__state = TASK_INTERRUPTIBLE;
-		      __schedule()
-			deactivate_task(p);
-  ttwu()
-    READ !p->on_rq
-    p->__state=TASK_WAKING
-			trace_sched_switch()
-			  __trace_sched_switch_state()
-			    task_state_index()
-			      return 0;
+[1] https://lore.kernel.org/linux-mm/20180103100430.GE4911@quack2.suse.cz
+[2] https://lore.kernel.org/r/Yg0m6IjcNmfaSokM@google.com
 
-TASK_WAKING isn't in TASK_REPORT, so the task appears as TASK_RUNNING in
-the trace event.
-
-Prevent this by pushing the value read from __schedule() down the trace
-event.
-
-Reported-by: Abhijeet Dharmapurikar <adharmap@quicinc.com>
-Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Link: https://lore.kernel.org/r/20220120162520.570782-2-valentin.schneider@arm.com
+Reported-by: syzbot+d59332e2db681cf18f0318a06e994ebbb529a8db@syzkaller.appspotmail.com
+Reported-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Link: https://lore.kernel.org/r/YiDS9wVfq4mM2jGK@mit.edu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/sched.h             | 11 ++++++++---
- include/trace/events/sched.h      | 11 +++++++----
- kernel/sched/core.c               |  4 ++--
- kernel/trace/fgraph.c             |  4 +++-
- kernel/trace/ftrace.c             |  4 +++-
- kernel/trace/trace_events.c       |  8 ++++++--
- kernel/trace/trace_osnoise.c      |  4 +++-
- kernel/trace/trace_sched_switch.c |  1 +
- kernel/trace/trace_sched_wakeup.c |  1 +
- 9 files changed, 34 insertions(+), 14 deletions(-)
+ fs/ext4/inode.c | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index ee5ed8821963..084de9b70a77 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -1612,10 +1612,10 @@ static inline pid_t task_pgrp_nr(struct task_struct *tsk)
- #define TASK_REPORT_IDLE	(TASK_REPORT + 1)
- #define TASK_REPORT_MAX		(TASK_REPORT_IDLE << 1)
+diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+index 2f5686dfa30d..a61d1e4e1026 100644
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -1992,6 +1992,15 @@ static int ext4_writepage(struct page *page,
+ 	else
+ 		len = PAGE_SIZE;
  
--static inline unsigned int task_state_index(struct task_struct *tsk)
-+static inline unsigned int __task_state_index(unsigned int tsk_state,
-+					      unsigned int tsk_exit_state)
- {
--	unsigned int tsk_state = READ_ONCE(tsk->__state);
--	unsigned int state = (tsk_state | tsk->exit_state) & TASK_REPORT;
-+	unsigned int state = (tsk_state | tsk_exit_state) & TASK_REPORT;
- 
- 	BUILD_BUG_ON_NOT_POWER_OF_2(TASK_REPORT_MAX);
- 
-@@ -1625,6 +1625,11 @@ static inline unsigned int task_state_index(struct task_struct *tsk)
- 	return fls(state);
- }
- 
-+static inline unsigned int task_state_index(struct task_struct *tsk)
-+{
-+	return __task_state_index(READ_ONCE(tsk->__state), tsk->exit_state);
-+}
++	/* Should never happen but for bugs in other kernel subsystems */
++	if (!page_has_buffers(page)) {
++		ext4_warning_inode(inode,
++		   "page %lu does not have buffers attached", page->index);
++		ClearPageDirty(page);
++		unlock_page(page);
++		return 0;
++	}
 +
- static inline char task_index_to_char(unsigned int state)
- {
- 	static const char state_char[] = "RSDTtXZPI";
-diff --git a/include/trace/events/sched.h b/include/trace/events/sched.h
-index 94640482cfe7..65e786756321 100644
---- a/include/trace/events/sched.h
-+++ b/include/trace/events/sched.h
-@@ -187,7 +187,9 @@ DEFINE_EVENT(sched_wakeup_template, sched_wakeup_new,
- 	     TP_ARGS(p));
- 
- #ifdef CREATE_TRACE_POINTS
--static inline long __trace_sched_switch_state(bool preempt, struct task_struct *p)
-+static inline long __trace_sched_switch_state(bool preempt,
-+					      unsigned int prev_state,
-+					      struct task_struct *p)
- {
- 	unsigned int state;
- 
-@@ -208,7 +210,7 @@ static inline long __trace_sched_switch_state(bool preempt, struct task_struct *
- 	 * it for left shift operation to get the correct task->state
- 	 * mapping.
- 	 */
--	state = task_state_index(p);
-+	state = __task_state_index(prev_state, p->exit_state);
- 
- 	return state ? (1 << (state - 1)) : state;
- }
-@@ -220,10 +222,11 @@ static inline long __trace_sched_switch_state(bool preempt, struct task_struct *
- TRACE_EVENT(sched_switch,
- 
- 	TP_PROTO(bool preempt,
-+		 unsigned int prev_state,
- 		 struct task_struct *prev,
- 		 struct task_struct *next),
- 
--	TP_ARGS(preempt, prev, next),
-+	TP_ARGS(preempt, prev_state, prev, next),
- 
- 	TP_STRUCT__entry(
- 		__array(	char,	prev_comm,	TASK_COMM_LEN	)
-@@ -239,7 +242,7 @@ TRACE_EVENT(sched_switch,
- 		memcpy(__entry->next_comm, next->comm, TASK_COMM_LEN);
- 		__entry->prev_pid	= prev->pid;
- 		__entry->prev_prio	= prev->prio;
--		__entry->prev_state	= __trace_sched_switch_state(preempt, prev);
-+		__entry->prev_state	= __trace_sched_switch_state(preempt, prev_state, prev);
- 		memcpy(__entry->prev_comm, prev->comm, TASK_COMM_LEN);
- 		__entry->next_pid	= next->pid;
- 		__entry->next_prio	= next->prio;
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 65082cab2906..f3a5121723ff 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -4820,7 +4820,7 @@ static struct rq *finish_task_switch(struct task_struct *prev)
- {
- 	struct rq *rq = this_rq();
- 	struct mm_struct *mm = rq->prev_mm;
--	long prev_state;
-+	unsigned int prev_state;
- 
+ 	page_bufs = page_buffers(page);
  	/*
- 	 * The previous task will have left us with a preempt_count of 2
-@@ -6256,7 +6256,7 @@ static void __sched notrace __schedule(unsigned int sched_mode)
- 		migrate_disable_switch(rq, prev);
- 		psi_sched_switch(prev, next, !task_on_rq_queued(prev));
+ 	 * We cannot do block allocation or other extent handling in this
+@@ -2595,6 +2604,22 @@ static int mpage_prepare_extent_to_map(struct mpage_da_data *mpd)
+ 			wait_on_page_writeback(page);
+ 			BUG_ON(PageWriteback(page));
  
--		trace_sched_switch(sched_mode & SM_MASK_PREEMPT, prev, next);
-+		trace_sched_switch(sched_mode & SM_MASK_PREEMPT, prev_state, prev, next);
- 
- 		/* Also unlocks the rq: */
- 		rq = context_switch(rq, prev, next, &rf);
-diff --git a/kernel/trace/fgraph.c b/kernel/trace/fgraph.c
-index 22061d38fc00..19028e072cdb 100644
---- a/kernel/trace/fgraph.c
-+++ b/kernel/trace/fgraph.c
-@@ -415,7 +415,9 @@ static int alloc_retstack_tasklist(struct ftrace_ret_stack **ret_stack_list)
- 
- static void
- ftrace_graph_probe_sched_switch(void *ignore, bool preempt,
--			struct task_struct *prev, struct task_struct *next)
-+				unsigned int prev_state,
-+				struct task_struct *prev,
-+				struct task_struct *next)
- {
- 	unsigned long long timestamp;
- 	int index;
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index be5f6b32a012..bbfa4606cba6 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -7317,7 +7317,9 @@ ftrace_func_t ftrace_ops_get_func(struct ftrace_ops *ops)
- 
- static void
- ftrace_filter_pid_sched_switch_probe(void *data, bool preempt,
--		    struct task_struct *prev, struct task_struct *next)
-+				     unsigned int prev_state,
-+				     struct task_struct *prev,
-+				     struct task_struct *next)
- {
- 	struct trace_array *tr = data;
- 	struct trace_pid_list *pid_list;
-diff --git a/kernel/trace/trace_events.c b/kernel/trace/trace_events.c
-index 92be9cb1d7d4..c097d89ca946 100644
---- a/kernel/trace/trace_events.c
-+++ b/kernel/trace/trace_events.c
-@@ -759,7 +759,9 @@ void trace_event_follow_fork(struct trace_array *tr, bool enable)
- 
- static void
- event_filter_pid_sched_switch_probe_pre(void *data, bool preempt,
--		    struct task_struct *prev, struct task_struct *next)
-+					unsigned int prev_state,
-+					struct task_struct *prev,
-+					struct task_struct *next)
- {
- 	struct trace_array *tr = data;
- 	struct trace_pid_list *no_pid_list;
-@@ -783,7 +785,9 @@ event_filter_pid_sched_switch_probe_pre(void *data, bool preempt,
- 
- static void
- event_filter_pid_sched_switch_probe_post(void *data, bool preempt,
--		    struct task_struct *prev, struct task_struct *next)
-+					 unsigned int prev_state,
-+					 struct task_struct *prev,
-+					 struct task_struct *next)
- {
- 	struct trace_array *tr = data;
- 	struct trace_pid_list *no_pid_list;
-diff --git a/kernel/trace/trace_osnoise.c b/kernel/trace/trace_osnoise.c
-index b6da7bd2383d..b3b8060e8bdd 100644
---- a/kernel/trace/trace_osnoise.c
-+++ b/kernel/trace/trace_osnoise.c
-@@ -1168,7 +1168,9 @@ thread_exit(struct osnoise_variables *osn_var, struct task_struct *t)
-  * used to record the beginning and to report the end of a thread noise window.
-  */
- static void
--trace_sched_switch_callback(void *data, bool preempt, struct task_struct *p,
-+trace_sched_switch_callback(void *data, bool preempt,
-+			    unsigned int prev_state,
-+			    struct task_struct *p,
- 			    struct task_struct *n)
- {
- 	struct osnoise_variables *osn_var = this_cpu_osn_var();
-diff --git a/kernel/trace/trace_sched_switch.c b/kernel/trace/trace_sched_switch.c
-index e304196d7c28..993b0ed10d8c 100644
---- a/kernel/trace/trace_sched_switch.c
-+++ b/kernel/trace/trace_sched_switch.c
-@@ -22,6 +22,7 @@ static DEFINE_MUTEX(sched_register_mutex);
- 
- static void
- probe_sched_switch(void *ignore, bool preempt,
-+		   unsigned int prev_state,
- 		   struct task_struct *prev, struct task_struct *next)
- {
- 	int flags;
-diff --git a/kernel/trace/trace_sched_wakeup.c b/kernel/trace/trace_sched_wakeup.c
-index 2402de520eca..46429f9a96fa 100644
---- a/kernel/trace/trace_sched_wakeup.c
-+++ b/kernel/trace/trace_sched_wakeup.c
-@@ -426,6 +426,7 @@ tracing_sched_wakeup_trace(struct trace_array *tr,
- 
- static void notrace
- probe_wakeup_sched_switch(void *ignore, bool preempt,
-+			  unsigned int prev_state,
- 			  struct task_struct *prev, struct task_struct *next)
- {
- 	struct trace_array_cpu *data;
++			/*
++			 * Should never happen but for buggy code in
++			 * other subsystems that call
++			 * set_page_dirty() without properly warning
++			 * the file system first.  See [1] for more
++			 * information.
++			 *
++			 * [1] https://lore.kernel.org/linux-mm/20180103100430.GE4911@quack2.suse.cz
++			 */
++			if (!page_has_buffers(page)) {
++				ext4_warning_inode(mpd->inode, "page %lu does not have buffers attached", page->index);
++				ClearPageDirty(page);
++				unlock_page(page);
++				continue;
++			}
++
+ 			if (mpd->map.m_len == 0)
+ 				mpd->first_page = page->index;
+ 			mpd->next_page = page->index + 1;
 -- 
 2.34.1
 
