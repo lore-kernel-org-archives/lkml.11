@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA6F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:46:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65DE5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:46:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343776AbiC1Trq (ORCPT
+        id S1343741AbiC1Tru (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 15:47:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50036 "EHLO
+        Mon, 28 Mar 2022 15:47:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343838AbiC1Tqj (ORCPT
+        with ESMTP id S1343722AbiC1Tqy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 15:46:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFB5A68FAE;
+        Mon, 28 Mar 2022 15:46:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4042968FB3;
         Mon, 28 Mar 2022 12:43:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F39A6128E;
-        Mon, 28 Mar 2022 19:43:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13602C340F0;
-        Mon, 28 Mar 2022 19:43:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D9078B81204;
+        Mon, 28 Mar 2022 19:43:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B91A6C340F0;
+        Mon, 28 Mar 2022 19:43:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648496592;
-        bh=WUIYG6thePESUcULHT5I4qjXkkRS99F3jg0XOg3HOro=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PdQrv8Lt5ZMjsBWq6CzQFZ5fWuLw+N5Pr6SWczSpro0NztYsJoEvgxrKhrekndwCp
-         L74UYOj8s0gTk2ECt+/XMqkxDgPp/2OHhVqIY7TC3m589JsIoS2YQIqme+stR0wGLI
-         q/PB5gcjDj5wQVU2T6mxeouvDf5roWJ8bT2Fb2GxFzGAkmpXT+B/biFnZxiW6vGn3J
-         FAe2NtgNFOz0d2veiwzd36pKMJYdkXh8U9LKUseCh8Rvrp8wnVYq7fWlvZODq11OCQ
-         nD8Xl2CIOPdrEvCseiruf0c6XcH6ljzulgYK9ZV3MtyLkW54ldubsWF0MT4w2qR3ax
-         sASMPBe71zEjw==
+        s=k20201202; t=1648496582;
+        bh=yg6WkGRZiXN6RT05fbnMqWKZL4qp2s5qQM6TuONT29E=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Q91P3olZvaYqSiCyW3K5MecrNtUbk2fv9OMeeM3Qzjbh2gX/UjeVyMW9lyKXAjMb+
+         /nfU3nggig1npQ5TTF1CIT9WN8Zp/g4pkMMk9jQ/e5thX8IDyyko7KsbJJ9oZshZ49
+         fKopqM6QI4XAMnrVU+zdLwgySv6GWs+j4Bk9rBDZLoS28gc70nFLha/IJ8/xNsdLIQ
+         1Mk0Q5LsXqXh9UIgc00UX4vLzvnfPh3zqmasu5yILx8SAqE9b09LGNR89oqVYjf2Dk
+         OT7RadB8T5OFSdwnc9rCdIJfJqut7U9ND7w7qpNEMvqFQQ67yOdnD9JejWFPUvrmel
+         D2h+pIYEG8Xrw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chuck Lever <chuck.lever@oracle.com>, Dai Ngo <dai.ngo@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, bfields@fieldses.org,
-        jlayton@poochiereds.net, linux-nfs@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 09/16] NFSD: Fix nfsd_breaker_owns_lease() return values
-Date:   Mon, 28 Mar 2022 15:42:52 -0400
-Message-Id: <20220328194300.1586178-9-sashal@kernel.org>
+Cc:     Mark Rutland <mark.rutland@arm.com>, Arnd Bergmann <arnd@arndb.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 01/16] atomics: Fix atomic64_{read_acquire,set_release} fallbacks
+Date:   Mon, 28 Mar 2022 15:42:44 -0400
+Message-Id: <20220328194300.1586178-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220328194300.1586178-1-sashal@kernel.org>
-References: <20220328194300.1586178-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,55 +52,219 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuck Lever <chuck.lever@oracle.com>
+From: Mark Rutland <mark.rutland@arm.com>
 
-[ Upstream commit 50719bf3442dd6cd05159e9c98d020b3919ce978 ]
+[ Upstream commit dc1b4df09acdca7a89806b28f235cd6d8dcd3d24 ]
 
-These have been incorrect since the function was introduced.
+Arnd reports that on 32-bit architectures, the fallbacks for
+atomic64_read_acquire() and atomic64_set_release() are broken as they
+use smp_load_acquire() and smp_store_release() respectively, which do
+not work on types larger than the native word size.
 
-A proper kerneldoc comment is added since this function, though
-static, is part of an external interface.
+Since those contain compiletime_assert_atomic_type(), any attempt to use
+those fallbacks will result in a build-time error. e.g. with the
+following added to arch/arm/kernel/setup.c:
 
-Reported-by: Dai Ngo <dai.ngo@oracle.com>
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+| void test_atomic64(atomic64_t *v)
+| {
+|        atomic64_set_release(v, 5);
+|        atomic64_read_acquire(v);
+| }
+
+The compiler will complain as follows:
+
+| In file included from <command-line>:
+| In function 'arch_atomic64_set_release',
+|     inlined from 'test_atomic64' at ./include/linux/atomic/atomic-instrumented.h:669:2:
+| ././include/linux/compiler_types.h:346:38: error: call to '__compiletime_assert_9' declared with attribute error: Need native word sized stores/loads for atomicity.
+|   346 |  _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+|       |                                      ^
+| ././include/linux/compiler_types.h:327:4: note: in definition of macro '__compiletime_assert'
+|   327 |    prefix ## suffix();    \
+|       |    ^~~~~~
+| ././include/linux/compiler_types.h:346:2: note: in expansion of macro '_compiletime_assert'
+|   346 |  _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+|       |  ^~~~~~~~~~~~~~~~~~~
+| ././include/linux/compiler_types.h:349:2: note: in expansion of macro 'compiletime_assert'
+|   349 |  compiletime_assert(__native_word(t),    \
+|       |  ^~~~~~~~~~~~~~~~~~
+| ./include/asm-generic/barrier.h:133:2: note: in expansion of macro 'compiletime_assert_atomic_type'
+|   133 |  compiletime_assert_atomic_type(*p);    \
+|       |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+| ./include/asm-generic/barrier.h:164:55: note: in expansion of macro '__smp_store_release'
+|   164 | #define smp_store_release(p, v) do { kcsan_release(); __smp_store_release(p, v); } while (0)
+|       |                                                       ^~~~~~~~~~~~~~~~~~~
+| ./include/linux/atomic/atomic-arch-fallback.h:1270:2: note: in expansion of macro 'smp_store_release'
+|  1270 |  smp_store_release(&(v)->counter, i);
+|       |  ^~~~~~~~~~~~~~~~~
+| make[2]: *** [scripts/Makefile.build:288: arch/arm/kernel/setup.o] Error 1
+| make[1]: *** [scripts/Makefile.build:550: arch/arm/kernel] Error 2
+| make: *** [Makefile:1831: arch/arm] Error 2
+
+Fix this by only using smp_load_acquire() and smp_store_release() for
+native atomic types, and otherwise falling back to the regular barriers
+necessary for acquire/release semantics, as we do in the more generic
+acquire and release fallbacks.
+
+Since the fallback templates are used to generate the atomic64_*() and
+atomic_*() operations, the __native_word() check is added to both. For
+the atomic_*() operations, which are always 32-bit, the __native_word()
+check is redundant but not harmful, as it is always true.
+
+For the example above this works as expected on 32-bit, e.g. for arm
+multi_v7_defconfig:
+
+| <test_atomic64>:
+|         push    {r4, r5}
+|         dmb     ish
+|         pldw    [r0]
+|         mov     r2, #5
+|         mov     r3, #0
+|         ldrexd  r4, [r0]
+|         strexd  r4, r2, [r0]
+|         teq     r4, #0
+|         bne     484 <test_atomic64+0x14>
+|         ldrexd  r2, [r0]
+|         dmb     ish
+|         pop     {r4, r5}
+|         bx      lr
+
+... and also on 64-bit, e.g. for arm64 defconfig:
+
+| <test_atomic64>:
+|         bti     c
+|         paciasp
+|         mov     x1, #0x5
+|         stlr    x1, [x0]
+|         ldar    x0, [x0]
+|         autiasp
+|         ret
+
+Reported-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Mark Rutland <mark.rutland@arm.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
+Reviewed-by: Boqun Feng <boqun.feng@gmail.com>
+Link: https://lore.kernel.org/r/20220207101943.439825-1-mark.rutland@arm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfsd/nfs4state.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ include/linux/atomic/atomic-arch-fallback.h | 38 ++++++++++++++++++---
+ scripts/atomic/fallbacks/read_acquire       | 11 +++++-
+ scripts/atomic/fallbacks/set_release        |  7 +++-
+ 3 files changed, 49 insertions(+), 7 deletions(-)
 
-diff --git a/fs/nfsd/nfs4state.c b/fs/nfsd/nfs4state.c
-index db4a47a280dc..181bc3d9f566 100644
---- a/fs/nfsd/nfs4state.c
-+++ b/fs/nfsd/nfs4state.c
-@@ -4693,6 +4693,14 @@ nfsd_break_deleg_cb(struct file_lock *fl)
- 	return ret;
- }
- 
-+/**
-+ * nfsd_breaker_owns_lease - Check if lease conflict was resolved
-+ * @fl: Lock state to check
-+ *
-+ * Return values:
-+ *   %true: Lease conflict was resolved
-+ *   %false: Lease conflict was not resolved.
-+ */
- static bool nfsd_breaker_owns_lease(struct file_lock *fl)
+diff --git a/include/linux/atomic/atomic-arch-fallback.h b/include/linux/atomic/atomic-arch-fallback.h
+index a3dba31df01e..6db58d180866 100644
+--- a/include/linux/atomic/atomic-arch-fallback.h
++++ b/include/linux/atomic/atomic-arch-fallback.h
+@@ -151,7 +151,16 @@
+ static __always_inline int
+ arch_atomic_read_acquire(const atomic_t *v)
  {
- 	struct nfs4_delegation *dl = fl->fl_owner;
-@@ -4700,11 +4708,11 @@ static bool nfsd_breaker_owns_lease(struct file_lock *fl)
- 	struct nfs4_client *clp;
- 
- 	if (!i_am_nfsd())
--		return NULL;
-+		return false;
- 	rqst = kthread_data(current);
- 	/* Note rq_prog == NFS_ACL_PROGRAM is also possible: */
- 	if (rqst->rq_prog != NFS_PROGRAM || rqst->rq_vers < 4)
--		return NULL;
-+		return false;
- 	clp = *(rqst->rq_lease_breaker);
- 	return dl->dl_stid.sc_client == clp;
+-	return smp_load_acquire(&(v)->counter);
++	int ret;
++
++	if (__native_word(atomic_t)) {
++		ret = smp_load_acquire(&(v)->counter);
++	} else {
++		ret = arch_atomic_read(v);
++		__atomic_acquire_fence();
++	}
++
++	return ret;
  }
+ #define arch_atomic_read_acquire arch_atomic_read_acquire
+ #endif
+@@ -160,7 +169,12 @@ arch_atomic_read_acquire(const atomic_t *v)
+ static __always_inline void
+ arch_atomic_set_release(atomic_t *v, int i)
+ {
+-	smp_store_release(&(v)->counter, i);
++	if (__native_word(atomic_t)) {
++		smp_store_release(&(v)->counter, i);
++	} else {
++		__atomic_release_fence();
++		arch_atomic_set(v, i);
++	}
+ }
+ #define arch_atomic_set_release arch_atomic_set_release
+ #endif
+@@ -1258,7 +1272,16 @@ arch_atomic_dec_if_positive(atomic_t *v)
+ static __always_inline s64
+ arch_atomic64_read_acquire(const atomic64_t *v)
+ {
+-	return smp_load_acquire(&(v)->counter);
++	s64 ret;
++
++	if (__native_word(atomic64_t)) {
++		ret = smp_load_acquire(&(v)->counter);
++	} else {
++		ret = arch_atomic64_read(v);
++		__atomic_acquire_fence();
++	}
++
++	return ret;
+ }
+ #define arch_atomic64_read_acquire arch_atomic64_read_acquire
+ #endif
+@@ -1267,7 +1290,12 @@ arch_atomic64_read_acquire(const atomic64_t *v)
+ static __always_inline void
+ arch_atomic64_set_release(atomic64_t *v, s64 i)
+ {
+-	smp_store_release(&(v)->counter, i);
++	if (__native_word(atomic64_t)) {
++		smp_store_release(&(v)->counter, i);
++	} else {
++		__atomic_release_fence();
++		arch_atomic64_set(v, i);
++	}
+ }
+ #define arch_atomic64_set_release arch_atomic64_set_release
+ #endif
+@@ -2358,4 +2386,4 @@ arch_atomic64_dec_if_positive(atomic64_t *v)
+ #endif
+ 
+ #endif /* _LINUX_ATOMIC_FALLBACK_H */
+-// cca554917d7ea73d5e3e7397dd70c484cad9b2c4
++// 8e2cc06bc0d2c0967d2f8424762bd48555ee40ae
+diff --git a/scripts/atomic/fallbacks/read_acquire b/scripts/atomic/fallbacks/read_acquire
+index 803ba7561076..a0ea1d26e6b2 100755
+--- a/scripts/atomic/fallbacks/read_acquire
++++ b/scripts/atomic/fallbacks/read_acquire
+@@ -2,6 +2,15 @@ cat <<EOF
+ static __always_inline ${ret}
+ arch_${atomic}_read_acquire(const ${atomic}_t *v)
+ {
+-	return smp_load_acquire(&(v)->counter);
++	${int} ret;
++
++	if (__native_word(${atomic}_t)) {
++		ret = smp_load_acquire(&(v)->counter);
++	} else {
++		ret = arch_${atomic}_read(v);
++		__atomic_acquire_fence();
++	}
++
++	return ret;
+ }
+ EOF
+diff --git a/scripts/atomic/fallbacks/set_release b/scripts/atomic/fallbacks/set_release
+index 86ede759f24e..05cdb7f42477 100755
+--- a/scripts/atomic/fallbacks/set_release
++++ b/scripts/atomic/fallbacks/set_release
+@@ -2,6 +2,11 @@ cat <<EOF
+ static __always_inline void
+ arch_${atomic}_set_release(${atomic}_t *v, ${int} i)
+ {
+-	smp_store_release(&(v)->counter, i);
++	if (__native_word(${atomic}_t)) {
++		smp_store_release(&(v)->counter, i);
++	} else {
++		__atomic_release_fence();
++		arch_${atomic}_set(v, i);
++	}
+ }
+ EOF
 -- 
 2.34.1
 
