@@ -2,49 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 021C3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:40:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83C16C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:40:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241587AbiC1LmK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:42:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41456 "EHLO
+        id S241620AbiC1LmR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:42:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241456AbiC1Lax (ORCPT
+        with ESMTP id S241482AbiC1Lb2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:30:53 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 378D656C2A;
-        Mon, 28 Mar 2022 04:24:23 -0700 (PDT)
+        Mon, 28 Mar 2022 07:31:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 838AC56743;
+        Mon, 28 Mar 2022 04:24:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id DB046CE12EF;
-        Mon, 28 Mar 2022 11:24:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 795A8C34110;
-        Mon, 28 Mar 2022 11:24:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DBA8FB81056;
+        Mon, 28 Mar 2022 11:24:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBE95C340EC;
+        Mon, 28 Mar 2022 11:24:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466660;
-        bh=utaBIuZOLBtXiQN4N4Zh4kTBVWVw5hJbIvn9YJrb1B0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=vR3TAlwEyggGr2rEKKMCrjSBP/eUHEOxTfurej2OaoxjH5gh2lVEIpPBg8JaF3hvI
-         xE2HKQhnIYiIwyhbtby19ncUfcmBIDmj/LsIhEHUNZnQ4EJRFwNnBC7JGhM2Kt2ZOl
-         eH697u2iHJeqmHko+z1XLd2RGRBespcLpUYmG9CR58hf+LdCEUlehMxj0vE0v488Dh
-         i3Yc1M6BTAQZxZFl3oqzT4/mIrMVd3JjDLzA9AdsYgi+ZaaGeLJ2Ct00Y8MfzhlrPk
-         OUUB3l8lQTWOY6JXOF9MWxWW2YBYcsYwbuQgL8GPPmWZ4S2POHDeckdH4LsSQ2pyHk
-         I0pPrQezhTlzg==
+        s=k20201202; t=1648466665;
+        bh=afXJF7r+BNN7Bd/BCnFM0/zZ4G0iDP/43BVuOKMseVQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Shl+V5gB+3va8hxI6/hdpaG6UoXiv+PlerR7w6rVwjYBsnQDChz2qxiFBnu9SJfGZ
+         ZR2Aw4zc3d3h8Tsjt0qew/YS6DOcTEAbceTOyD4UOJlsLyF0tR/zMMwI1MK3/1h0HD
+         5I5ecm45IgQ8CVRPzKZEIac2wyoGCz/FCGdgIyDe5lG4iYWpFbGDvsQMFZHnucFstD
+         c7E3JhKoouhEaA3abTEiRGerN25yJAVd96uZiDZOkNhH9d4Hp9EHKEa8cvjhyf12Hi
+         NWDUB3JHAP2TASWDZ6YmXUs5qv66tagcZhRPWJ5vfRfL9NDEGcFTA92X2hUPsJYl5U
+         vrhmdv7wXYxnQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Christian=20G=C3=B6ttsche?= <cgzones@googlemail.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Sasha Levin <sashal@kernel.org>,
-        stephen.smalley.work@gmail.com, eparis@parisplace.org,
-        selinux@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 01/12] selinux: use correct type for context length
-Date:   Mon, 28 Mar 2022 07:24:06 -0400
-Message-Id: <20220328112417.1556946-1-sashal@kernel.org>
+Cc:     "Souptick Joarder (HPE)" <jrdr.linux@gmail.com>,
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        tglx@linutronix.de
+Subject: [PATCH AUTOSEL 4.19 05/12] irqchip/nvic: Release nvic_base upon failure
+Date:   Mon, 28 Mar 2022 07:24:10 -0400
+Message-Id: <20220328112417.1556946-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220328112417.1556946-1-sashal@kernel.org>
+References: <20220328112417.1556946-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -52,42 +53,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Göttsche <cgzones@googlemail.com>
+From: "Souptick Joarder (HPE)" <jrdr.linux@gmail.com>
 
-[ Upstream commit b97df7c098c531010e445da88d02b7bf7bf59ef6 ]
+[ Upstream commit e414c25e3399b2b3d7337dc47abccab5c71b7c8f ]
 
-security_sid_to_context() expects a pointer to an u32 as the address
-where to store the length of the computed context.
+smatch warning was reported as below ->
 
-Reported by sparse:
+smatch warnings:
+drivers/irqchip/irq-nvic.c:131 nvic_of_init()
+warn: 'nvic_base' not released on lines: 97.
 
-    security/selinux/xfrm.c:359:39: warning: incorrect type in arg 4
-                                    (different signedness)
-    security/selinux/xfrm.c:359:39:    expected unsigned int
-                                       [usertype] *scontext_len
-    security/selinux/xfrm.c:359:39:    got int *
+Release nvic_base upon failure.
 
-Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
-[PM: wrapped commit description]
-Signed-off-by: Paul Moore <paul@paul-moore.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Souptick Joarder (HPE) <jrdr.linux@gmail.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220218163303.33344-1-jrdr.linux@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/selinux/xfrm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/irqchip/irq-nvic.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/security/selinux/xfrm.c b/security/selinux/xfrm.c
-index 91dc3783ed94..9e803d2a687a 100644
---- a/security/selinux/xfrm.c
-+++ b/security/selinux/xfrm.c
-@@ -349,7 +349,7 @@ int selinux_xfrm_state_alloc_acquire(struct xfrm_state *x,
- 	int rc;
- 	struct xfrm_sec_ctx *ctx;
- 	char *ctx_str = NULL;
--	int str_len;
-+	u32 str_len;
+diff --git a/drivers/irqchip/irq-nvic.c b/drivers/irqchip/irq-nvic.c
+index 9694529b709d..330beb62d015 100644
+--- a/drivers/irqchip/irq-nvic.c
++++ b/drivers/irqchip/irq-nvic.c
+@@ -108,6 +108,7 @@ static int __init nvic_of_init(struct device_node *node,
  
- 	if (!polsec)
- 		return 0;
+ 	if (!nvic_irq_domain) {
+ 		pr_warn("Failed to allocate irq domain\n");
++		iounmap(nvic_base);
+ 		return -ENOMEM;
+ 	}
+ 
+@@ -117,6 +118,7 @@ static int __init nvic_of_init(struct device_node *node,
+ 	if (ret) {
+ 		pr_warn("Failed to allocate irq chips\n");
+ 		irq_domain_remove(nvic_irq_domain);
++		iounmap(nvic_base);
+ 		return ret;
+ 	}
+ 
 -- 
 2.34.1
 
