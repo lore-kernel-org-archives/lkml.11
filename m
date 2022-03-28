@@ -2,233 +2,256 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A31A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 18:22:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2E53C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 18:25:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245209AbiC1SX6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 14:23:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35802 "EHLO
+        id S245202AbiC1S1K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 14:27:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245196AbiC1SX5 (ORCPT
+        with ESMTP id S240336AbiC1S1I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 14:23:57 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 831A363539
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 11:22:14 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id 5so26251107lfp.1
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 11:22:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=987VgRiKOzh7tTiNOEp75EzBpME2g11sCtBMEaePFH4=;
-        b=LJ6wJ7vclB+ET04zMco5AkQet5XMwRyLiSn+jxzEXOIPjSxemr+NgjzAZIF2etD7lN
-         UUu2nIjBIV46zJTsxDO70RmVdI/1aSxh0HzFT0BRDlnCUUoAfE3mqTQM5jAQjPxHrvBO
-         leNJnMUav125+ns6yVCcX7Y8Zx16s4AY5FKQDr6813/UBYsl3jj2qbXoRRoLO8zh1KJi
-         3z6WwbaUGklayIl7UO2JZ4Zfzus51PSUCOisIE3apd8inwMhQ1cD+ypuhC6XzMEWl+9O
-         z2KBqa+o69jfjgrf92pevt7XIYigf3swSTYVfhf9pcMuN/knkV/zIAUsON02QYaGJark
-         3rBw==
+        Mon, 28 Mar 2022 14:27:08 -0400
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0F8D4ECF6
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 11:25:26 -0700 (PDT)
+Received: by mail-io1-f70.google.com with SMTP id d19-20020a0566022bf300b00645eba5c992so10933339ioy.4
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 11:25:26 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=987VgRiKOzh7tTiNOEp75EzBpME2g11sCtBMEaePFH4=;
-        b=fwREOP/Z0rfaZ82CPBbs4fEEgRfRaQbvXl5wOKGcLBQysvaNwFUgfw0sRaIs3ij0Sw
-         pezf13LAjI4p12cgmdf6SVSHnZBzc2MYGkH1Hjvz6j8mAqtaR/CDusNauW6eVAZUZQt5
-         E38xw8ZbiIpAu3cMpngBiVC3OfWP+DxtdGCskAc/eXoQZygPYAm+Yrn52w2dzdzferYd
-         kyj3TklyutVatbTp4gYSX947bc64rVZahG6CN1ydKuS5ZzY5x/y4APJgGJFHfCC45YyS
-         PEqqJOcLEnRTENoaxPEPBEc6AML4GcDaCDavoPnxxV1HbJmoEXRtHacbihYvfz0Olpt3
-         zZlQ==
-X-Gm-Message-State: AOAM532EocQbmVwYMBtUqLPg7jTO/oqhoH09VGYTL5IpoLB/aBBpKapM
-        Te4U4YxengT78MHkC1nZIFKtO3n9hdo3TjAOGFBSqA==
-X-Google-Smtp-Source: ABdhPJwztCsb7GzFt1s3bJnytaNxnFZxeCMhiEh+wpognksZjWLtEf2i4HepyzfDleS9wLFpcu6YHPK6wOq9mhJ9gj4=
-X-Received: by 2002:a05:6512:2282:b0:44a:93d2:dfd with SMTP id
- f2-20020a056512228200b0044a93d20dfdmr6862318lfu.102.1648491731786; Mon, 28
- Mar 2022 11:22:11 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=RBDHVALQi6in3MzmSvksdqiyNF+gV4JupE/OPsrZyog=;
+        b=BU0JIyMFHtncHsK1Be3EwXQjZ7E8Ioyc6y0PHdAgYB8RaN19R66ruLY2zlVNasPSA9
+         Y4z8FLC9grTHI7JvavoJPn++W2stCH9Mz4Fad5NAHqyZgmodGvyM3GMNJ7xv8W1HUEd2
+         E7DGqj2HX+GLaBK92YwgK1q4Mph5ggYBhPYUJ7t8yveLop7i1rsCCSqcwC49UIoAeFOk
+         BQgvODGBloFENNXhBorn5JOQ6h1q2RUGP6CslNYqA0agqWY7LjaLCfiwGNKafverZBIX
+         Bhjz6wXxTC3FzGnER+ZEfjVedWQvibP3Nqo8Xpise8RUyqyi8q3RuO69HcaVTjWNpt0N
+         Pk1g==
+X-Gm-Message-State: AOAM5302AX9vhLXwQhApfxh+oenMLxFx2NnwrxPVeieboaIev+bIYtR3
+        HbXH7wyqMJbJoyQm968aQY/xjrXKLPQrUHxV9h7Q1iSJoiet
+X-Google-Smtp-Source: ABdhPJzab1QKPQlFRWArIzNIbpMntnS0NX/WKJ497m2G15az2oVdICT7J0yPXysaW+n9iW88CC3NNPoZl6AWsrT/5eol+ZNCU12C
 MIME-Version: 1.0
-References: <20220321224358.1305530-1-bgardon@google.com> <20220321224358.1305530-10-bgardon@google.com>
-In-Reply-To: <20220321224358.1305530-10-bgardon@google.com>
-From:   David Matlack <dmatlack@google.com>
-Date:   Mon, 28 Mar 2022 11:21:45 -0700
-Message-ID: <CALzav=c3+RXA1Sw2koaNY8LDA8B3KXdk1ZPGSkR=JzX54irYGw@mail.gmail.com>
-Subject: Re: [PATCH v2 9/9] KVM: x86/mmu: Promote pages in-place when
- disabling dirty logging
-To:     Ben Gardon <bgardon@google.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        kvm list <kvm@vger.kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        David Dunn <daviddunn@google.com>,
-        Jing Zhang <jingzhangos@google.com>,
-        Junaid Shahid <junaids@google.com>
+X-Received: by 2002:a5e:dc05:0:b0:645:d2cc:3e92 with SMTP id
+ b5-20020a5edc05000000b00645d2cc3e92mr7186171iok.72.1648491926259; Mon, 28 Mar
+ 2022 11:25:26 -0700 (PDT)
+Date:   Mon, 28 Mar 2022 11:25:26 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ae0adf05db4b6f66@google.com>
+Subject: [syzbot] KASAN: use-after-free Read in j1939_xtp_rx_dat_one (3)
+From:   syzbot <syzbot+a9dce1ff45c3bbeceb3a@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kernel@pengutronix.de, kuba@kernel.org,
+        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux@rempel-privat.de, mkl@pengutronix.de, netdev@vger.kernel.org,
+        pabeni@redhat.com, robin@protonic.nl, socketcan@hartkopp.net,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 3:44 PM Ben Gardon <bgardon@google.com> wrote:
->
-> When disabling dirty logging, the TDP MMU currently zaps each leaf entry
-> mapping memory in the relevant memslot. This is very slow. Doing the zaps
-> under the mmu read lock requires a TLB flush for every zap and the
-> zapping causes a storm of ETP/NPT violations.
->
-> Instead of zapping, replace the split large pages with large page
-> mappings directly. While this sort of operation has historically only
-> been done in the vCPU page fault handler context, refactorings earlier
-> in this series and the relative simplicity of the TDP MMU make it
-> possible here as well.
->
-> Running the dirty_log_perf_test on an Intel Skylake with 96 vCPUs and 1G
-> of memory per vCPU, this reduces the time required to disable dirty
-> logging from over 45 seconds to just over 1 second. It also avoids
-> provoking page faults, improving vCPU performance while disabling
-> dirty logging.
->
-> Signed-off-by: Ben Gardon <bgardon@google.com>
-> ---
->  arch/x86/kvm/mmu/mmu.c          |  4 +-
->  arch/x86/kvm/mmu/mmu_internal.h |  6 +++
->  arch/x86/kvm/mmu/tdp_mmu.c      | 73 ++++++++++++++++++++++++++++++++-
->  3 files changed, 79 insertions(+), 4 deletions(-)
->
-> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-> index 6f98111f8f8b..a99c23ef90b6 100644
-> --- a/arch/x86/kvm/mmu/mmu.c
-> +++ b/arch/x86/kvm/mmu/mmu.c
-> @@ -100,7 +100,7 @@ module_param_named(flush_on_reuse, force_flush_and_sync_on_reuse, bool, 0644);
->   */
->  bool tdp_enabled = false;
->
-> -static int max_huge_page_level __read_mostly;
-> +int max_huge_page_level;
->  static int tdp_root_level __read_mostly;
->  static int max_tdp_level __read_mostly;
->
-> @@ -4486,7 +4486,7 @@ static inline bool boot_cpu_is_amd(void)
->   * the direct page table on host, use as much mmu features as
->   * possible, however, kvm currently does not do execution-protection.
->   */
-> -static void
-> +void
->  build_tdp_shadow_zero_bits_mask(struct rsvd_bits_validate *shadow_zero_check,
->                                 int shadow_root_level)
->  {
-> diff --git a/arch/x86/kvm/mmu/mmu_internal.h b/arch/x86/kvm/mmu/mmu_internal.h
-> index 1bff453f7cbe..6c08a5731fcb 100644
-> --- a/arch/x86/kvm/mmu/mmu_internal.h
-> +++ b/arch/x86/kvm/mmu/mmu_internal.h
-> @@ -171,4 +171,10 @@ void *mmu_memory_cache_alloc(struct kvm_mmu_memory_cache *mc);
->  void account_huge_nx_page(struct kvm *kvm, struct kvm_mmu_page *sp);
->  void unaccount_huge_nx_page(struct kvm *kvm, struct kvm_mmu_page *sp);
->
-> +void
-> +build_tdp_shadow_zero_bits_mask(struct rsvd_bits_validate *shadow_zero_check,
-> +                               int shadow_root_level);
-> +
-> +extern int max_huge_page_level __read_mostly;
-> +
->  #endif /* __KVM_X86_MMU_INTERNAL_H */
-> diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-> index af60922906ef..eb8929e394ec 100644
-> --- a/arch/x86/kvm/mmu/tdp_mmu.c
-> +++ b/arch/x86/kvm/mmu/tdp_mmu.c
-> @@ -1709,6 +1709,66 @@ void kvm_tdp_mmu_clear_dirty_pt_masked(struct kvm *kvm,
->                 clear_dirty_pt_masked(kvm, root, gfn, mask, wrprot);
->  }
->
-> +static bool try_promote_lpage(struct kvm *kvm,
-> +                             const struct kvm_memory_slot *slot,
-> +                             struct tdp_iter *iter)
-> +{
-> +       struct kvm_mmu_page *sp = sptep_to_sp(iter->sptep);
-> +       struct rsvd_bits_validate shadow_zero_check;
-> +       bool map_writable;
-> +       kvm_pfn_t pfn;
-> +       u64 new_spte;
-> +       u64 mt_mask;
-> +
-> +       /*
-> +        * If addresses are being invalidated, don't do in-place promotion to
-> +        * avoid accidentally mapping an invalidated address.
-> +        */
-> +       if (unlikely(kvm->mmu_notifier_count))
-> +               return false;
-> +
-> +       if (iter->level > max_huge_page_level || iter->gfn < slot->base_gfn ||
-> +           iter->gfn >= slot->base_gfn + slot->npages)
-> +               return false;
-> +
-> +       pfn = __gfn_to_pfn_memslot(slot, iter->gfn, true, NULL, true,
-> +                                  &map_writable, NULL);
-> +       if (is_error_noslot_pfn(pfn))
-> +               return false;
-> +
-> +       /*
-> +        * Can't reconstitute an lpage if the consituent pages can't be
-> +        * mapped higher.
-> +        */
-> +       if (iter->level > kvm_mmu_max_mapping_level(kvm, slot, iter->gfn,
-> +                                                   pfn, PG_LEVEL_NUM))
-> +               return false;
-> +
-> +       build_tdp_shadow_zero_bits_mask(&shadow_zero_check, iter->root_level);
-> +
-> +       /*
-> +        * In some cases, a vCPU pointer is required to get the MT mask,
-> +        * however in most cases it can be generated without one. If a
-> +        * vCPU pointer is needed kvm_x86_try_get_mt_mask will fail.
-> +        * In that case, bail on in-place promotion.
-> +        */
-> +       if (unlikely(!static_call(kvm_x86_try_get_mt_mask)(kvm, iter->gfn,
-> +                                                          kvm_is_mmio_pfn(pfn),
-> +                                                          &mt_mask)))
-> +               return false;
-> +
-> +       __make_spte(kvm, sp, slot, ACC_ALL, iter->gfn, pfn, 0, false, true,
-> +                 map_writable, mt_mask, &shadow_zero_check, &new_spte);
-> +
-> +       if (tdp_mmu_set_spte_atomic(kvm, iter, new_spte))
-> +               return true;
+Hello,
 
-Ah shoot, tdp_mmu_set_spte_atomic() now returns 0/-EBUSY, so this
-conditional needs to be flipped.
+syzbot found the following issue on:
 
-> +
-> +       /* Re-read the SPTE as it must have been changed by another thread. */
-> +       iter->old_spte = READ_ONCE(*rcu_dereference(iter->sptep));
+HEAD commit:    ae085d7f9365 mm: kfence: fix missing objcg housekeeping fo..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=17656105700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=6bae4cd50262530e
+dashboard link: https://syzkaller.appspot.com/bug?extid=a9dce1ff45c3bbeceb3a
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12529653700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14b64ea5700000
 
-tdp_mmu_set_spte_atomic() does this for you now.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+a9dce1ff45c3bbeceb3a@syzkaller.appspotmail.com
 
-> +
-> +       return false;
-> +}
-> +
->  /*
->   * Clear leaf entries which could be replaced by large mappings, for
->   * GFNs within the slot.
-> @@ -1729,8 +1789,17 @@ static void zap_collapsible_spte_range(struct kvm *kvm,
->                 if (tdp_mmu_iter_cond_resched(kvm, &iter, false, true))
->                         continue;
->
-> -               if (!is_shadow_present_pte(iter.old_spte) ||
-> -                   !is_last_spte(iter.old_spte, iter.level))
-> +               if (iter.level > max_huge_page_level ||
-> +                   iter.gfn < slot->base_gfn ||
-> +                   iter.gfn >= slot->base_gfn + slot->npages)
-> +                       continue;
-> +
-> +               if (!is_shadow_present_pte(iter.old_spte))
-> +                       continue;
-> +
-> +               /* Try to promote the constitutent pages to an lpage. */
-> +               if (!is_last_spte(iter.old_spte, iter.level) &&
-> +                   try_promote_lpage(kvm, slot, &iter))
->                         continue;
->
->                 pfn = spte_to_pfn(iter.old_spte);
-> --
-> 2.35.1.894.gb6a874cedc-goog
->
+vcan0: j1939_xtp_rx_dat_one: 0xffff88801fe31400: last 00
+vcan0: j1939_xtp_rx_dat_one: 0xffff88801fe31800: last 00
+vcan0: j1939_xtp_rx_dat_one: 0xffff88801fe31800: Data of RX-looped back packet (00 ff ff ff ff ff ff) doesn't match TX data (00 00 00 00 00 00 00)!
+==================================================================
+BUG: KASAN: use-after-free in j1939_xtp_rx_dat_one+0xe15/0xee0 net/can/j1939/transport.c:1877
+Read of size 1 at addr ffff88802304ab8e by task ksoftirqd/1/21
+
+CPU: 1 PID: 21 Comm: ksoftirqd/1 Tainted: G        W         5.17.0-syzkaller-11407-gae085d7f9365 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0xeb/0x495 mm/kasan/report.c:313
+ print_report mm/kasan/report.c:429 [inline]
+ kasan_report.cold+0xf4/0x1c6 mm/kasan/report.c:491
+ j1939_xtp_rx_dat_one+0xe15/0xee0 net/can/j1939/transport.c:1877
+ j1939_xtp_rx_dat net/can/j1939/transport.c:1929 [inline]
+ j1939_tp_recv+0x6de/0xcb0 net/can/j1939/transport.c:2123
+ j1939_can_recv+0x6ff/0x9a0 net/can/j1939/main.c:108
+ deliver net/can/af_can.c:574 [inline]
+ can_rcv_filter+0x5d4/0x8d0 net/can/af_can.c:608
+ can_receive+0x31d/0x580 net/can/af_can.c:665
+ can_rcv+0x120/0x1c0 net/can/af_can.c:696
+ __netif_receive_skb_one_core+0x114/0x180 net/core/dev.c:5405
+ __netif_receive_skb+0x24/0x1b0 net/core/dev.c:5519
+ process_backlog+0x3a0/0x7c0 net/core/dev.c:5847
+ __napi_poll+0xb3/0x6e0 net/core/dev.c:6413
+ napi_poll net/core/dev.c:6480 [inline]
+ net_rx_action+0x8ec/0xc60 net/core/dev.c:6567
+ __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
+ run_ksoftirqd kernel/softirq.c:921 [inline]
+ run_ksoftirqd+0x2d/0x60 kernel/softirq.c:913
+ smpboot_thread_fn+0x645/0x9c0 kernel/smpboot.c:164
+ kthread+0x2e9/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:298
+ </TASK>
+
+Allocated by task 3606:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track mm/kasan/common.c:45 [inline]
+ set_alloc_info mm/kasan/common.c:436 [inline]
+ __kasan_slab_alloc+0x90/0xc0 mm/kasan/common.c:469
+ kasan_slab_alloc include/linux/kasan.h:224 [inline]
+ slab_post_alloc_hook mm/slab.h:749 [inline]
+ slab_alloc_node mm/slub.c:3217 [inline]
+ kmem_cache_alloc_node+0x255/0x3f0 mm/slub.c:3267
+ __alloc_skb+0x215/0x340 net/core/skbuff.c:414
+ alloc_skb include/linux/skbuff.h:1300 [inline]
+ alloc_skb_with_frags+0x93/0x730 net/core/skbuff.c:5988
+ sock_alloc_send_pskb+0x793/0x920 net/core/sock.c:2600
+ j1939_sk_alloc_skb net/can/j1939/socket.c:861 [inline]
+ j1939_sk_send_loop net/can/j1939/socket.c:1118 [inline]
+ j1939_sk_sendmsg+0x6eb/0x13f0 net/can/j1939/socket.c:1253
+ sock_sendmsg_nosec net/socket.c:705 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:725
+ sock_no_sendpage+0xf6/0x140 net/core/sock.c:3106
+ kernel_sendpage.part.0+0x1ff/0x7b0 net/socket.c:3492
+ kernel_sendpage net/socket.c:3489 [inline]
+ sock_sendpage+0xdf/0x140 net/socket.c:1007
+ pipe_to_sendpage+0x2ad/0x380 fs/splice.c:364
+ splice_from_pipe_feed fs/splice.c:418 [inline]
+ __splice_from_pipe+0x43e/0x8a0 fs/splice.c:562
+ splice_from_pipe fs/splice.c:597 [inline]
+ generic_splice_sendpage+0xd4/0x140 fs/splice.c:746
+ do_splice_from fs/splice.c:767 [inline]
+ direct_splice_actor+0x110/0x180 fs/splice.c:936
+ splice_direct_to_actor+0x34b/0x8c0 fs/splice.c:891
+ do_splice_direct+0x1a7/0x270 fs/splice.c:979
+ do_sendfile+0xae0/0x1240 fs/read_write.c:1246
+ __do_sys_sendfile64 fs/read_write.c:1311 [inline]
+ __se_sys_sendfile64 fs/read_write.c:1297 [inline]
+ __x64_sys_sendfile64+0x1cc/0x210 fs/read_write.c:1297
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0x80 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Freed by task 15:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track+0x21/0x30 mm/kasan/common.c:45
+ kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
+ ____kasan_slab_free mm/kasan/common.c:366 [inline]
+ ____kasan_slab_free+0x166/0x1a0 mm/kasan/common.c:328
+ kasan_slab_free include/linux/kasan.h:200 [inline]
+ slab_free_hook mm/slub.c:1728 [inline]
+ slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1754
+ slab_free mm/slub.c:3510 [inline]
+ kmem_cache_free+0xdd/0x5a0 mm/slub.c:3527
+ kfree_skbmem+0xef/0x1b0 net/core/skbuff.c:700
+ kfree_skb_reason+0x85/0x110 include/linux/refcount.h:279
+ kfree_skb include/linux/skbuff.h:1250 [inline]
+ j1939_session_skb_drop_old net/can/j1939/transport.c:340 [inline]
+ j1939_xtp_rx_cts_one net/can/j1939/transport.c:1434 [inline]
+ j1939_xtp_rx_cts+0xbdb/0x1170 net/can/j1939/transport.c:1473
+ j1939_tp_cmd_recv net/can/j1939/transport.c:2061 [inline]
+ j1939_tp_recv+0x83c/0xcb0 net/can/j1939/transport.c:2133
+ j1939_can_recv+0x6ff/0x9a0 net/can/j1939/main.c:108
+ deliver net/can/af_can.c:574 [inline]
+ can_rcv_filter+0x5d4/0x8d0 net/can/af_can.c:608
+ can_receive+0x31d/0x580 net/can/af_can.c:665
+ can_rcv+0x120/0x1c0 net/can/af_can.c:696
+ __netif_receive_skb_one_core+0x114/0x180 net/core/dev.c:5405
+ __netif_receive_skb+0x24/0x1b0 net/core/dev.c:5519
+ process_backlog+0x3a0/0x7c0 net/core/dev.c:5847
+ __napi_poll+0xb3/0x6e0 net/core/dev.c:6413
+ napi_poll net/core/dev.c:6480 [inline]
+ net_rx_action+0x8ec/0xc60 net/core/dev.c:6567
+ __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
+
+The buggy address belongs to the object at ffff88802304ab40
+ which belongs to the cache skbuff_head_cache of size 232
+The buggy address is located 78 bytes inside of
+ 232-byte region [ffff88802304ab40, ffff88802304ac28)
+
+The buggy address belongs to the physical page:
+page:ffffea00008c1280 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x2304a
+flags: 0xfff00000000200(slab|node=0|zone=1|lastcpupid=0x7ff)
+raw: 00fff00000000200 0000000000000000 dead000000000122 ffff888140b8d500
+raw: 0000000000000000 00000000000c000c 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 0, migratetype Unmovable, gfp_mask 0x12a20(GFP_ATOMIC|__GFP_NOWARN|__GFP_NORETRY), pid 3590, tgid 3590 (kworker/1:3), ts 33637485571, free_ts 33296379898
+ prep_new_page mm/page_alloc.c:2438 [inline]
+ get_page_from_freelist+0xba2/0x3df0 mm/page_alloc.c:4179
+ __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5405
+ alloc_pages+0x1aa/0x310 mm/mempolicy.c:2262
+ alloc_slab_page mm/slub.c:1799 [inline]
+ allocate_slab+0x26c/0x3c0 mm/slub.c:1944
+ new_slab mm/slub.c:2004 [inline]
+ ___slab_alloc+0x8df/0xf20 mm/slub.c:3005
+ __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3092
+ slab_alloc_node mm/slub.c:3183 [inline]
+ kmem_cache_alloc_node+0x122/0x3f0 mm/slub.c:3267
+ __alloc_skb+0x215/0x340 net/core/skbuff.c:414
+ alloc_skb include/linux/skbuff.h:1300 [inline]
+ ndisc_alloc_skb+0x134/0x320 net/ipv6/ndisc.c:420
+ ndisc_send_rs+0x37f/0x6f0 net/ipv6/ndisc.c:701
+ addrconf_dad_completed+0x37a/0xd30 net/ipv6/addrconf.c:4231
+ addrconf_dad_work+0x79f/0x1340 net/ipv6/addrconf.c:4141
+ process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e9/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:298
+page last free stack trace:
+ reset_page_owner include/linux/page_owner.h:24 [inline]
+ free_pages_prepare mm/page_alloc.c:1353 [inline]
+ free_pcp_prepare+0x549/0xd20 mm/page_alloc.c:1403
+ free_unref_page_prepare mm/page_alloc.c:3325 [inline]
+ free_unref_page+0x19/0x690 mm/page_alloc.c:3420
+ qlink_free mm/kasan/quarantine.c:157 [inline]
+ qlist_free_all+0x6a/0x170 mm/kasan/quarantine.c:176
+ kasan_quarantine_reduce+0x180/0x200 mm/kasan/quarantine.c:283
+ __kasan_slab_alloc+0xa2/0xc0 mm/kasan/common.c:446
+ kasan_slab_alloc include/linux/kasan.h:224 [inline]
+ slab_post_alloc_hook mm/slab.h:749 [inline]
+ slab_alloc_node mm/slub.c:3217 [inline]
+ kmem_cache_alloc_node+0x255/0x3f0 mm/slub.c:3267
+ __alloc_skb+0x215/0x340 net/core/skbuff.c:414
+ alloc_skb include/linux/skbuff.h:1300 [inline]
+ alloc_skb_with_frags+0x93/0x730 net/core/skbuff.c:5988
+ sock_alloc_send_pskb+0x793/0x920 net/core/sock.c:2600
+ mld_newpack.isra.0+0x1be/0x750 net/ipv6/mcast.c:1746
+ add_grhead+0x283/0x360 net/ipv6/mcast.c:1849
+ add_grec+0x106a/0x1530 net/ipv6/mcast.c:1987
+ mld_send_initial_cr.part.0+0xf6/0x230 net/ipv6/mcast.c:2234
+ mld_send_initial_cr net/ipv6/mcast.c:1232 [inline]
+ ipv6_mc_dad_complete+0x1d0/0x690 net/ipv6/mcast.c:2245
+ addrconf_dad_completed+0x9e8/0xd30 net/ipv6/addrconf.c:4211
+ addrconf_dad_work+0x79f/0x1340 net/ipv6/addrconf.c:4141
+
+Memory state around the buggy address:
+ ffff88802304aa80: 00 00 00 00 00 00 00 00 00 00 00 00 00 fc fc fc
+ ffff88802304ab00: fc fc fc fc fc fc fc fc fa fb fb fb fb fb fb fb
+>ffff88802304ab80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                      ^
+ ffff88802304ac00: fb fb fb fb fb fc fc fc fc fc fc fc fc fc fc fc
+ ffff88802304ac80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+==================================================================
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
