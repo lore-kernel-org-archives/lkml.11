@@ -2,74 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15390C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 08:04:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4090EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 08:05:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239118AbiC1IGU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 04:06:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36122 "EHLO
+        id S239127AbiC1IHI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 04:07:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239116AbiC1IGS (ORCPT
+        with ESMTP id S236211AbiC1IHG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 04:06:18 -0400
-Received: from m12-17.163.com (m12-17.163.com [220.181.12.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0ACB4532D0;
-        Mon, 28 Mar 2022 01:04:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=KPx/rmNE2IqkPwzgVv
-        OSkXH+L0hTETFepkUJ7cvU4kA=; b=eXjmv/dOeGRYzXwaV1+6jPIiC1AdmlUzs4
-        Xrw6XVqy/V6P2zm0D/hVIjfTKxbsh//YpYV2HXJeJM+/XbvWq/QQ0Ikuhd8euAfP
-        rHqrY8xi5w/4SGTOoGvaOhcu96mYlDBmNAhDN7pJRuzabt2kR3TWGfUaJNPIE4Wl
-        5PLg4t4Kg=
-Received: from localhost (unknown [159.226.95.33])
-        by smtp13 (Coremail) with SMTP id EcCowAAnwdIAbEFiPwqmJA--.61675S2;
-        Mon, 28 Mar 2022 16:04:16 +0800 (CST)
-From:   QintaoShen <unSimple1993@163.com>
-To:     tsbogend@alpha.franken.de
-Cc:     linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        ralf@linux-mips.org, QintaoShen <unSimple1993@163.com>
-Subject: [PATCH v1] MIPS: ip22-gio: Add check for the return value of kzalloc()
-Date:   Mon, 28 Mar 2022 16:04:14 +0800
-Message-Id: <1648454654-27200-1-git-send-email-unSimple1993@163.com>
-X-Mailer: git-send-email 2.7.4
-X-CM-TRANSID: EcCowAAnwdIAbEFiPwqmJA--.61675S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWruFy5KrWDWFW5CrWkuFWUtwb_yoWfZFbE9a
-        yvvF1Dua98Jw17Aw13Xw4rJFy3A347uF4I93Z3tF1SkFyrArZ8WrWkXw15Jry7Wry2vF45
-        Crs0kF15uw4xKjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRE1xR3UUUUU==
-X-Originating-IP: [159.226.95.33]
-X-CM-SenderInfo: 5xqvxz5sohimizt6il2tof0z/1tbiNADRH1aD-Qb+DwAAsl
+        Mon, 28 Mar 2022 04:07:06 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18BC752E58;
+        Mon, 28 Mar 2022 01:05:26 -0700 (PDT)
+Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id A840D1EC03AD;
+        Mon, 28 Mar 2022 10:05:20 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1648454720;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=TgYlt5nc7wuciyx7G8H9YwvEKtCL+n4QE5+p7msxcds=;
+        b=V9IqrlxxviCrGiqelyL2A4fuZ02xoQlvZmW05/np63cGMoImBaU6+12OzilUmj4ggY+GFn
+        JqZ46zIiR4h3DyaxRKVol9wqXLnKyG4q07tz+4NovtOaz7R5QZtUzn4OF/M2iBtGsq3rlU
+        6Ypa1ZH/furZtBZNMAb0GDqQb2+xj48=
+Date:   Mon, 28 Mar 2022 10:05:22 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Alviro Iskandar Setiawan <alviro.iskandar@gmail.com>,
+        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Yazen Ghannam <yazen.ghannam@amd.com>,
+        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, gwml@vger.gnuweeb.org, x86@kernel.org
+Subject: Re: [PATCH v5 2/2] x86/MCE/AMD: Fix memory leak when
+ `threshold_create_bank()` fails
+Message-ID: <YkFsQhpGGXIFTMyp@zn.tnic>
+References: <20220310015306.445359-1-ammarfaizi2@gnuweeb.org>
+ <20220310015306.445359-3-ammarfaizi2@gnuweeb.org>
+ <YkDqo2eEbABbtSGY@zn.tnic>
+ <82609267-8fc6-5b3d-c931-c0d93ab14788@gnuweeb.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <82609267-8fc6-5b3d-c931-c0d93ab14788@gnuweeb.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since the memory allocation function kzalloc() may return a NULL pointer,
-the use of 'gio_dev' may lead to NULL pointer dereference.
+On Mon, Mar 28, 2022 at 11:12:53AM +0700, Ammar Faizi wrote:
+> Although, I am not sure if that 100% guarantees mce_threshold_remove_device()
+> will not mess up with the interrupt (e.g. freeing the data while the interrupt
+> reading it), unless we're using RCU stuff.
+> 
+> What do you think?
 
-So it is better to check the return value of kzalloc().
+I would've said it doesn't matter but that thresholding device creation
+is part of hotplug and it can happen multiple times even *after* the
+interrupt vector has been set during setup so a potential teardown and
+concurrent thresholding interrupt firing might really hit in a not fully
+initialized/cleaned up state so yeah, let's do Yazen's thing.
 
-Signed-off-by: QintaoShen <unSimple1993@163.com>
----
- arch/mips/sgi-ip22/ip22-gio.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+The alternative would be the temporarily re-assign mce_threshold_vector
+to default_threshold_interrupt while setup is being done but that's not
+really necessary atm.
 
-diff --git a/arch/mips/sgi-ip22/ip22-gio.c b/arch/mips/sgi-ip22/ip22-gio.c
-index dfc52f6..df7ca21 100644
---- a/arch/mips/sgi-ip22/ip22-gio.c
-+++ b/arch/mips/sgi-ip22/ip22-gio.c
-@@ -363,7 +363,11 @@ static void ip22_check_gio(int slotno, unsigned long addr, int irq)
- 		printk(KERN_INFO "GIO: slot %d : %s (id %x)\n",
- 		       slotno, name, id);
- 		gio_dev = kzalloc(sizeof *gio_dev, GFP_KERNEL);
--		gio_dev->name = name;
-+		
-+        if (!gio_dev)
-+            return ;
-+
-+        gio_dev->name = name;
- 		gio_dev->slotno = slotno;
- 		gio_dev->id.id = id;
- 		gio_dev->resource.start = addr;
+But call that helper function __threshold_remove_device().
+
+Thx.
+
 -- 
-2.7.4
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
