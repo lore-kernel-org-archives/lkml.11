@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF783C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:29:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13FB2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241398AbiC1LbD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:31:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59808 "EHLO
+        id S241409AbiC1LbL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:31:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241748AbiC1LYK (ORCPT
+        with ESMTP id S241742AbiC1LYK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Mar 2022 07:24:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D15B755492;
-        Mon, 28 Mar 2022 04:22:29 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D5A56221;
+        Mon, 28 Mar 2022 04:22:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5EFC161169;
-        Mon, 28 Mar 2022 11:22:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA02EC340ED;
-        Mon, 28 Mar 2022 11:22:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B0E8BB81055;
+        Mon, 28 Mar 2022 11:22:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CAF1C340F3;
+        Mon, 28 Mar 2022 11:22:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466548;
-        bh=ys19H8MNgs4LVTR3UqKljfxYa7ypfGSPYdnDYEHmRaA=;
+        s=k20201202; t=1648466529;
+        bh=v1V7OgQ9ZfL/uDAaRTe7sePn9Z+Wh9PgpBSkw0TQrrs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uBEGjmV9B6LAZy8uIL7B+mddREVMKueTGb3p+fqvUrmiNv/S+Fhx86UKiWhXNQei3
-         EVmsb7dZJncV58pvJQEfXgR0kazl4fgSwkE93da/K6csCr2fyCiPz1rhsyYgCZdnD5
-         pY+Dtb0y65m23lpseQdUGquvWwS78NgKu7NNAxSz0PBQAWxaV7ggIpYWaIfZu2jMDr
-         QSXKQcnyQ87UzaRzkju68tJ2xaYBD2kP3RA5MoPsa5tJlw97ipYsSVPBrhV9EOnlfS
-         JBz0uLbR1dltb5DQiIjIooTGp+uCIguKaxplfF/0YK5gv8IZ8t/U/o+83mnODnwOTF
-         LWsaoyEcyYgBg==
+        b=OlrrB902ZxzHBTk0R44eSnykZvfMdJX2LkbLefvv85KLCxOobVURIdqHNFSD/NaM4
+         osYXNn9uxfBCHRlULrEok1wcUYQu8cTfhn+i18UCsGMWu4aMHVwV7H1/c01zIwISgF
+         OGkWBp85qoFj/EdM5zDiTXnOJizciQFGYDNnfp/P7VCMBKhW1AL1NiT4phKo+ARo/I
+         YLOa0B+HQqjuzRE5Tc6yK4Ce2GRaSFGgwBUZjg4VY9eKhPbUNeWTHJ9muLAeSU4g6Y
+         CRafvZU9wa8W6Nq2UafD20FpjlmBgnvXF76VeQN825itIA6DCj/91UbOl17MY8LSj/
+         ot4blSWHHhEvg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Paolo Valente <paolo.valente@linaro.org>,
-        =?UTF-8?q?Holger=20Hoffst=C3=A4tte?= 
-        <holger@applied-asynchrony.com>, Jens Axboe <axboe@kernel.dk>,
-        Sasha Levin <sashal@kernel.org>, linux-block@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 23/29] Revert "Revert "block, bfq: honor already-setup queue merges""
-Date:   Mon, 28 Mar 2022 07:21:25 -0400
-Message-Id: <20220328112132.1555683-23-sashal@kernel.org>
+Cc:     Akira Kawata <akirakawata1@gmail.com>,
+        kernel test robot <lkp@intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Sasha Levin <sashal@kernel.org>, viro@zeniv.linux.org.uk,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org
+Subject: [PATCH AUTOSEL 5.15 18/29] fs/binfmt_elf: Fix AT_PHDR for unusual ELF files
+Date:   Mon, 28 Mar 2022 07:21:20 -0400
+Message-Id: <20220328112132.1555683-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220328112132.1555683-1-sashal@kernel.org>
 References: <20220328112132.1555683-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,72 +53,116 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Valente <paolo.valente@linaro.org>
+From: Akira Kawata <akirakawata1@gmail.com>
 
-[ Upstream commit 15729ff8143f8135b03988a100a19e66d7cb7ecd ]
+[ Upstream commit 0da1d5002745cdc721bc018b582a8a9704d56c42 ]
 
-A crash [1] happened to be triggered in conjunction with commit
-2d52c58b9c9b ("block, bfq: honor already-setup queue merges"). The
-latter was then reverted by commit ebc69e897e17 ("Revert "block, bfq:
-honor already-setup queue merges""). Yet, the reverted commit was not
-the one introducing the bug. In fact, it actually triggered a UAF
-introduced by a different commit, and now fixed by commit d29bd41428cf
-("block, bfq: reset last_bfqq_created on group change").
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=197921
 
-So, there is no point in keeping commit 2d52c58b9c9b ("block, bfq:
-honor already-setup queue merges") out. This commit restores it.
+As pointed out in the discussion of buglink, we cannot calculate AT_PHDR
+as the sum of load_addr and exec->e_phoff.
 
-[1] https://bugzilla.kernel.org/show_bug.cgi?id=214503
+: The AT_PHDR of ELF auxiliary vectors should point to the memory address
+: of program header. But binfmt_elf.c calculates this address as follows:
+:
+: NEW_AUX_ENT(AT_PHDR, load_addr + exec->e_phoff);
+:
+: which is wrong since e_phoff is the file offset of program header and
+: load_addr is the memory base address from PT_LOAD entry.
+:
+: The ld.so uses AT_PHDR as the memory address of program header. In normal
+: case, since the e_phoff is usually 64 and in the first PT_LOAD region, it
+: is the correct program header address.
+:
+: But if the address of program header isn't equal to the first PT_LOAD
+: address + e_phoff (e.g.  Put the program header in other non-consecutive
+: PT_LOAD region), ld.so will try to read program header from wrong address
+: then crash or use incorrect program header.
 
-Reported-by: Holger Hoffstätte <holger@applied-asynchrony.com>
-Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
-Link: https://lore.kernel.org/r/20211125181510.15004-1-paolo.valente@linaro.org
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+This is because exec->e_phoff
+is the offset of PHDRs in the file and the address of PHDRs in the
+memory may differ from it. This patch fixes the bug by calculating the
+address of program headers from PT_LOADs directly.
+
+Signed-off-by: Akira Kawata <akirakawata1@gmail.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Acked-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20220127124014.338760-2-akirakawata1@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/bfq-iosched.c | 16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+ fs/binfmt_elf.c | 24 ++++++++++++++++++------
+ 1 file changed, 18 insertions(+), 6 deletions(-)
 
-diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index 9843085cc2c3..63d2d66dece5 100644
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -2662,6 +2662,15 @@ bfq_setup_merge(struct bfq_queue *bfqq, struct bfq_queue *new_bfqq)
- 	 * are likely to increase the throughput.
- 	 */
- 	bfqq->new_bfqq = new_bfqq;
-+	/*
-+	 * The above assignment schedules the following redirections:
-+	 * each time some I/O for bfqq arrives, the process that
-+	 * generated that I/O is disassociated from bfqq and
-+	 * associated with new_bfqq. Here we increases new_bfqq->ref
-+	 * in advance, adding the number of processes that are
-+	 * expected to be associated with new_bfqq as they happen to
-+	 * issue I/O.
-+	 */
- 	new_bfqq->ref += process_refs;
- 	return new_bfqq;
- }
-@@ -2724,6 +2733,10 @@ bfq_setup_cooperator(struct bfq_data *bfqd, struct bfq_queue *bfqq,
+diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
+index a813b70f594e..3f6a7cac68fd 100644
+--- a/fs/binfmt_elf.c
++++ b/fs/binfmt_elf.c
+@@ -170,8 +170,8 @@ static int padzero(unsigned long elf_bss)
+ 
+ static int
+ create_elf_tables(struct linux_binprm *bprm, const struct elfhdr *exec,
+-		unsigned long load_addr, unsigned long interp_load_addr,
+-		unsigned long e_entry)
++		unsigned long interp_load_addr,
++		unsigned long e_entry, unsigned long phdr_addr)
  {
- 	struct bfq_queue *in_service_bfqq, *new_bfqq;
- 
-+	/* if a merge has already been setup, then proceed with that first */
-+	if (bfqq->new_bfqq)
-+		return bfqq->new_bfqq;
+ 	struct mm_struct *mm = current->mm;
+ 	unsigned long p = bprm->p;
+@@ -257,7 +257,7 @@ create_elf_tables(struct linux_binprm *bprm, const struct elfhdr *exec,
+ 	NEW_AUX_ENT(AT_HWCAP, ELF_HWCAP);
+ 	NEW_AUX_ENT(AT_PAGESZ, ELF_EXEC_PAGESIZE);
+ 	NEW_AUX_ENT(AT_CLKTCK, CLOCKS_PER_SEC);
+-	NEW_AUX_ENT(AT_PHDR, load_addr + exec->e_phoff);
++	NEW_AUX_ENT(AT_PHDR, phdr_addr);
+ 	NEW_AUX_ENT(AT_PHENT, sizeof(struct elf_phdr));
+ 	NEW_AUX_ENT(AT_PHNUM, exec->e_phnum);
+ 	NEW_AUX_ENT(AT_BASE, interp_load_addr);
+@@ -823,7 +823,7 @@ static int parse_elf_properties(struct file *f, const struct elf_phdr *phdr,
+ static int load_elf_binary(struct linux_binprm *bprm)
+ {
+ 	struct file *interpreter = NULL; /* to shut gcc up */
+- 	unsigned long load_addr = 0, load_bias = 0;
++	unsigned long load_addr, load_bias = 0, phdr_addr = 0;
+ 	int load_addr_set = 0;
+ 	unsigned long error;
+ 	struct elf_phdr *elf_ppnt, *elf_phdata, *interp_elf_phdata = NULL;
+@@ -1156,6 +1156,17 @@ static int load_elf_binary(struct linux_binprm *bprm)
+ 				reloc_func_desc = load_bias;
+ 			}
+ 		}
 +
- 	/*
- 	 * Check delayed stable merge for rotational or non-queueing
- 	 * devs. For this branch to be executed, bfqq must not be
-@@ -2825,9 +2838,6 @@ bfq_setup_cooperator(struct bfq_data *bfqd, struct bfq_queue *bfqq,
- 	if (bfq_too_late_for_merging(bfqq))
- 		return NULL;
++		/*
++		 * Figure out which segment in the file contains the Program
++		 * Header table, and map to the associated memory address.
++		 */
++		if (elf_ppnt->p_offset <= elf_ex->e_phoff &&
++		    elf_ex->e_phoff < elf_ppnt->p_offset + elf_ppnt->p_filesz) {
++			phdr_addr = elf_ex->e_phoff - elf_ppnt->p_offset +
++				    elf_ppnt->p_vaddr;
++		}
++
+ 		k = elf_ppnt->p_vaddr;
+ 		if ((elf_ppnt->p_flags & PF_X) && k < start_code)
+ 			start_code = k;
+@@ -1191,6 +1202,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
+ 	}
  
--	if (bfqq->new_bfqq)
--		return bfqq->new_bfqq;
--
- 	if (!io_struct || unlikely(bfqq == &bfqd->oom_bfqq))
- 		return NULL;
+ 	e_entry = elf_ex->e_entry + load_bias;
++	phdr_addr += load_bias;
+ 	elf_bss += load_bias;
+ 	elf_brk += load_bias;
+ 	start_code += load_bias;
+@@ -1254,8 +1266,8 @@ static int load_elf_binary(struct linux_binprm *bprm)
+ 		goto out;
+ #endif /* ARCH_HAS_SETUP_ADDITIONAL_PAGES */
+ 
+-	retval = create_elf_tables(bprm, elf_ex,
+-			  load_addr, interp_load_addr, e_entry);
++	retval = create_elf_tables(bprm, elf_ex, interp_load_addr,
++				   e_entry, phdr_addr);
+ 	if (retval < 0)
+ 		goto out;
  
 -- 
 2.34.1
