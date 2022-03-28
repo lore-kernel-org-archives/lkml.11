@@ -2,285 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C72AEC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 06:15:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D904C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 06:15:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238329AbiC1GQy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 02:16:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58856 "EHLO
+        id S238343AbiC1GRT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 02:17:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232223AbiC1GQu (ORCPT
+        with ESMTP id S238337AbiC1GRQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 02:16:50 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0190205FE;
-        Sun, 27 Mar 2022 23:15:07 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KRj6Y6XqpzCrP7;
-        Mon, 28 Mar 2022 14:12:53 +0800 (CST)
-Received: from [10.67.110.173] (10.67.110.173) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 28 Mar 2022 14:15:05 +0800
-Message-ID: <889cca45-4697-6edb-41f5-83cf6340bf32@huawei.com>
-Date:   Mon, 28 Mar 2022 14:14:53 +0800
+        Mon, 28 Mar 2022 02:17:16 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2065.outbound.protection.outlook.com [40.107.244.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC14E25C41;
+        Sun, 27 Mar 2022 23:15:36 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=D8DqTountFIyK14xZNYyu+pm7XnWYROYqta91GYx9lTdcs1UBEaxfqjiHGFFBcMSAscs3YmZASjqsVbmMiIByo9FeA79VQ99kcY9TRBe4UUx/m8ynsVUXD8yddX3A1+7eoQV+lo3bM4nnFXHJyGa73S4FzK98Ml1SY/D2hRfQ/3oSIii0BC2FaeSuieagMNBHrYw6BCyKROWZEPp3DOvL8c/PppJVSin3JEtbGrdve+a/s8X0EqmUVnOmnEIARVNAInulwXYH3Qb2DW2ir7NNSWThFk1TJi+Y6s/jqhTE0ZdwpXWqCYOngsIf47KBtW4xhcCY3caLc3Y2mfNNIX0Gw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lZT4XT3JMcW1sON4CueFXyQLqOqqsrrGrWnG/f4sJKM=;
+ b=VTiHGXWF917z+31RklWNepjSiicC+cequAw2HUL6IGWP+AGEmo1KfBBT7zTx0T7xOhi/PkanaEUMo5KPDMUz3VCXu/Y6Y2rAkUrqEysVyyOM6K6b/7QnFLOQ7Wzl7acs61fETr3QMbgx8MDoUaZhRxGxcgV454NOznDF359E24OaqyEx6rTslxOYtH0Lx/bYW+5Yt+ySYzl4xAvV0n06DlI+xb7L+vy2hLIBxb/2w2Ddta472Bs3R4l/HjLMp+kWL2Jw6UHMZPFEil6x+Zh0ZtP0rzq158zvt/YhL+91+b3iN3GaOtPwurA0SU/hJ1LJWDk+1AdLXUZVROLbUen6qQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
+ (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
+ (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lZT4XT3JMcW1sON4CueFXyQLqOqqsrrGrWnG/f4sJKM=;
+ b=e4eE/kUlitFruq+IKtxc9uGgt8G9+ad36EyJkv9dd0ZhwqtRIB4rKLYKswCz5MQwD0Idps0Td5fvyFphzuv8APFQK3BB+Wt7JZHVmK36Wz3hUP21l+J7Ddk78a3JyRdIegB0KL8wzn1m+GvdqyxTTAjQ/spmOAQklvtNGIOwvGNLs8GSZ5WAG8rg4gjPPgYmY7ytlmUV1BmTasKmt1k3FDrXtlRfydvZ/0pe3zwTp2eO9ETDiHMZApPmWWUdVVW1KMv+hT2Qd8HosJ5M7/cBAHu9psvWCGwFFe9Rws0iNQM+RVMOn2x0klJyMUYxQNWOYrj0lVE/o7CY8vD+Pf5fSA==
+Received: from BN9PR03CA0379.namprd03.prod.outlook.com (2603:10b6:408:f7::24)
+ by SN6PR12MB2749.namprd12.prod.outlook.com (2603:10b6:805:6d::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.21; Mon, 28 Mar
+ 2022 06:15:34 +0000
+Received: from BN8NAM11FT052.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:f7:cafe::a3) by BN9PR03CA0379.outlook.office365.com
+ (2603:10b6:408:f7::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.17 via Frontend
+ Transport; Mon, 28 Mar 2022 06:15:34 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.234) by
+ BN8NAM11FT052.mail.protection.outlook.com (10.13.177.210) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5102.17 via Frontend Transport; Mon, 28 Mar 2022 06:15:34 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL101.nvidia.com
+ (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Mon, 28 Mar
+ 2022 06:15:33 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Sun, 27 Mar
+ 2022 23:15:33 -0700
+Received: from audio.nvidia.com (10.127.8.10) by mail.nvidia.com (10.129.68.7)
+ with Microsoft SMTP Server id 15.2.986.22 via Frontend Transport; Sun, 27 Mar
+ 2022 23:15:28 -0700
+From:   Sameer Pujar <spujar@nvidia.com>
+To:     <broonie@kernel.org>, <lgirdwood@gmail.com>, <robh+dt@kernel.org>,
+        <krzk+dt@kernel.org>, <perex@perex.cz>, <tiwai@suse.com>,
+        <peter.ujfalusi@linux.intel.com>,
+        <pierre-louis.bossart@linux.intel.com>
+CC:     <oder_chiou@realtek.com>, <thierry.reding@gmail.com>,
+        <jonathanh@nvidia.com>, <alsa-devel@alsa-project.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-tegra@vger.kernel.org>, Sameer Pujar <spujar@nvidia.com>
+Subject: [RFC PATCH v2 0/6] Flexible codec clock configuration
+Date:   Mon, 28 Mar 2022 11:44:04 +0530
+Message-ID: <1648448050-15237-1-git-send-email-spujar@nvidia.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v7 2/5] ima: define a new template field named 'd-ngv2'
- and templates
-Content-Language: en-US
-To:     Mimi Zohar <zohar@linux.ibm.com>, <linux-integrity@vger.kernel.org>
-CC:     Eric Biggers <ebiggers@kernel.org>,
-        Stefan Berger <stefanb@linux.ibm.com>,
-        <linux-fscrypt@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20220325223824.310119-1-zohar@linux.ibm.com>
- <20220325223824.310119-3-zohar@linux.ibm.com>
-From:   "Guozihua (Scott)" <guozihua@huawei.com>
-In-Reply-To: <20220325223824.310119-3-zohar@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.110.173]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500024.china.huawei.com (7.185.36.203)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e46d8270-6368-444a-e8d7-08da10825ea8
+X-MS-TrafficTypeDiagnostic: SN6PR12MB2749:EE_
+X-Microsoft-Antispam-PRVS: <SN6PR12MB27499513D3EBDBD5BA8B70BCA71D9@SN6PR12MB2749.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: DlyU97Kx1awe/v9YEXAauZaREGPYk0yC0uWH1bLKL/JoTCyGVcFPeM1M/+OG8xiP/JF8HES8ASDnYHXZWN+ngkFyrsch1cbZ7595gJvvGozKjszcxnCN4PIFyw2auE8vKF/EPPAFfRZxrSCoIZsT6MTiG+joRkDsIptpW7/GiEl1QdXBF52qJ6LL1ile++/2bVO4VfRPlq85tJ2XOCK8JVrehxmpdr9+p1EwbGk6J0uo60IEMJYT5K25TafxZI8ETMTqu7Tgc6H1M95DkBSSQTYXfkm79v0DZHgUstSEvfOZC2cNaKvK0fKtGJodDlr/Yu1W1BChdr7bNU2/F+orDYC27hl1iLZ919rC8t/J4x3Nzkvrt3EEBmualV6G6Da/LOpIxJKDlQao1GH4uZ9k2D6SK/rSYVaUR14eDzqvv98TuZmsHxEHLpO5HGHJr8TEsw5+k9gMhOOcWg32Glprorkw4DXVHlBZ7I2rvQ6WbpESQv7jIHzWHqj7oXXfysCBNpTc0Pc2THI1HisBzOf+LEfq39HD6BlizRGTDIRxzVpurM03cuqfqVe8mlyBU7kX4GCKRgblqgBP9WjEVWZJkxHrLZx4ncH/CtAdWH55SDljS23n0LasZJWzTgWlD2o4kofbV3BlM8+rXrl0BH6W4NPnQLr0jXw+hOvulkiXlkQ/ygNCUpgIpFeV80cY6h78A2rcg0JEu843OubXoKraaQlU7NEPyWb1dcyRZuVhTmbORqmKzT5DNCrj5/ZBFsB61JdsoolvK0oC5nMcV3FaRaoC1jnzrm+nhSHylk+bqvs=
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(8936002)(508600001)(2906002)(47076005)(82310400004)(107886003)(2616005)(966005)(26005)(7696005)(336012)(83380400001)(426003)(86362001)(186003)(40460700003)(70586007)(6666004)(5660300002)(356005)(4326008)(81166007)(54906003)(316002)(8676002)(36860700001)(110136005)(36756003)(7416002)(70206006)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Mar 2022 06:15:34.4548
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e46d8270-6368-444a-e8d7-08da10825ea8
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT052.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR12MB2749
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/3/26 6:38, Mimi Zohar wrote:
-> In preparation to differentiate between unsigned regular IMA file
-> hashes and fs-verity's file digests in the IMA measurement list,
-> define a new template field named 'd-ngv2'.
-> 
-> Also define two new templates named 'ima-ngv2' and 'ima-sigv2', which
-> include the new 'd-ngv2' field.
-> 
-> Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
-> ---
->   .../admin-guide/kernel-parameters.txt         |  3 +-
->   security/integrity/ima/ima_template.c         |  4 +
->   security/integrity/ima/ima_template_lib.c     | 78 ++++++++++++++++---
->   security/integrity/ima/ima_template_lib.h     |  4 +
->   4 files changed, 79 insertions(+), 10 deletions(-)
-> 
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index f5a27f067db9..47386ac10471 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -1876,7 +1876,8 @@
->   
->   	ima_template=	[IMA]
->   			Select one of defined IMA measurements template formats.
-> -			Formats: { "ima" | "ima-ng" | "ima-sig" }
-> +			Formats: { "ima" | "ima-ng" | "ima-ngv2" | "ima-sig" |
-> +				   "ima-sigv2" }
->   			Default: "ima-ng"
->   
->   	ima_template_fmt=
-> diff --git a/security/integrity/ima/ima_template.c b/security/integrity/ima/ima_template.c
-> index db1ad6d7a57f..c25079faa208 100644
-> --- a/security/integrity/ima/ima_template.c
-> +++ b/security/integrity/ima/ima_template.c
-> @@ -20,6 +20,8 @@ static struct ima_template_desc builtin_templates[] = {
->   	{.name = IMA_TEMPLATE_IMA_NAME, .fmt = IMA_TEMPLATE_IMA_FMT},
->   	{.name = "ima-ng", .fmt = "d-ng|n-ng"},
->   	{.name = "ima-sig", .fmt = "d-ng|n-ng|sig"},
-> +	{.name = "ima-ngv2", .fmt = "d-ngv2|n-ng"},
-> +	{.name = "ima-sigv2", .fmt = "d-ngv2|n-ng|sig"},
->   	{.name = "ima-buf", .fmt = "d-ng|n-ng|buf"},
->   	{.name = "ima-modsig", .fmt = "d-ng|n-ng|sig|d-modsig|modsig"},
->   	{.name = "evm-sig",
-> @@ -38,6 +40,8 @@ static const struct ima_template_field supported_fields[] = {
->   	 .field_show = ima_show_template_string},
->   	{.field_id = "d-ng", .field_init = ima_eventdigest_ng_init,
->   	 .field_show = ima_show_template_digest_ng},
-> +	{.field_id = "d-ngv2", .field_init = ima_eventdigest_ngv2_init,
-> +	 .field_show = ima_show_template_digest_ngv2},
->   	{.field_id = "n-ng", .field_init = ima_eventname_ng_init,
->   	 .field_show = ima_show_template_string},
->   	{.field_id = "sig", .field_init = ima_eventsig_init,
-> diff --git a/security/integrity/ima/ima_template_lib.c b/security/integrity/ima/ima_template_lib.c
-> index 7155d17a3b75..af269b94b369 100644
-> --- a/security/integrity/ima/ima_template_lib.c
-> +++ b/security/integrity/ima/ima_template_lib.c
-> @@ -24,11 +24,22 @@ static bool ima_template_hash_algo_allowed(u8 algo)
->   enum data_formats {
->   	DATA_FMT_DIGEST = 0,
->   	DATA_FMT_DIGEST_WITH_ALGO,
-> +	DATA_FMT_DIGEST_WITH_TYPE_AND_ALGO,
->   	DATA_FMT_STRING,
->   	DATA_FMT_HEX,
->   	DATA_FMT_UINT
->   };
->   
-> +enum digest_type {
-> +	DIGEST_TYPE_IMA,
-> +	DIGEST_TYPE__LAST
-> +};
-> +
-> +#define DIGEST_TYPE_NAME_LEN_MAX 4	/* including NULL */
-> +static const char * const digest_type_name[DIGEST_TYPE__LAST] = {
-> +	[DIGEST_TYPE_IMA] = "ima"
-> +};
-> +
->   static int ima_write_template_field_data(const void *data, const u32 datalen,
->   					 enum data_formats datafmt,
->   					 struct ima_field_data *field_data)
-> @@ -72,8 +83,9 @@ static void ima_show_template_data_ascii(struct seq_file *m,
->   	u32 buflen = field_data->len;
->   
->   	switch (datafmt) {
-> +	case DATA_FMT_DIGEST_WITH_TYPE_AND_ALGO:
->   	case DATA_FMT_DIGEST_WITH_ALGO:
-> -		buf_ptr = strnchr(field_data->data, buflen, ':');
-> +		buf_ptr = strrchr(field_data->data, ':');
->   		if (buf_ptr != field_data->data)
->   			seq_printf(m, "%s", field_data->data);
->   
-> @@ -178,6 +190,14 @@ void ima_show_template_digest_ng(struct seq_file *m, enum ima_show_type show,
->   				     field_data);
->   }
->   
-> +void ima_show_template_digest_ngv2(struct seq_file *m, enum ima_show_type show,
-> +				   struct ima_field_data *field_data)
-> +{
-> +	ima_show_template_field_data(m, show,
-> +				     DATA_FMT_DIGEST_WITH_TYPE_AND_ALGO,
-> +				     field_data);
-> +}
-> +
->   void ima_show_template_string(struct seq_file *m, enum ima_show_type show,
->   			      struct ima_field_data *field_data)
->   {
-> @@ -265,26 +285,39 @@ int ima_parse_buf(void *bufstartp, void *bufendp, void **bufcurp,
->   }
->   
->   static int ima_eventdigest_init_common(const u8 *digest, u32 digestsize,
-> -				       u8 hash_algo,
-> +				       u8 digest_type, u8 hash_algo,
->   				       struct ima_field_data *field_data)
->   {
->   	/*
->   	 * digest formats:
->   	 *  - DATA_FMT_DIGEST: digest
->   	 *  - DATA_FMT_DIGEST_WITH_ALGO: [<hash algo>] + ':' + '\0' + digest,
-> +	 *  - DATA_FMT_DIGEST_WITH_TYPE_AND_ALGO:
-> +	 *	[<digest type> + ':' + <hash algo>] + ':' + '\0' + digest,
-> +	 *    where <hash type> is either "ima" or "verity",
->   	 *    where <hash algo> is provided if the hash algorithm is not
->   	 *    SHA1 or MD5
->   	 */
-> -	u8 buffer[CRYPTO_MAX_ALG_NAME + 2 + IMA_MAX_DIGEST_SIZE] = { 0 };
-> +	u8 buffer[DIGEST_TYPE_NAME_LEN_MAX + CRYPTO_MAX_ALG_NAME + 2 +
-> +		IMA_MAX_DIGEST_SIZE] = { 0 };
+Typically the codec drivers require setting up of Sysclk. Sometimes
+presence of internal PLL can provide more options of Sysclk configuration.
+Presently ASoC provides callbacks set_sysclk() and set_pll() in such
+cases. However it comes with following limitations considering generic
+machine drivers (simple-card or audio-graph-card):
 
-Hi Mimi,
+ 1. The Sysclk source needs to be passed to set_sysclk() callback.
+    Presently simple-card or audio-graph-card card rely on default
+    source value (which is 0). If any other source needs to be used,
+    it is currently not possible.
 
-Shouldn't this contains an additional ":", Thus should +1 again?
+ 2. The same would be true for codec PLL configuration as well, though
+    simple-card or audio-graph-card don't have support yet for the PLL
+    configuration.
 
->   	enum data_formats fmt = DATA_FMT_DIGEST;
->   	u32 offset = 0;
->   
-> -	if (hash_algo < HASH_ALGO__LAST) {
-> -		fmt = DATA_FMT_DIGEST_WITH_ALGO;
-> -		offset += snprintf(buffer, CRYPTO_MAX_ALG_NAME + 1, "%s",
-> +	if (digest_type < DIGEST_TYPE__LAST && hash_algo < HASH_ALGO__LAST) {
-> +		fmt = DATA_FMT_DIGEST_WITH_TYPE_AND_ALGO;
-> +		offset += snprintf(buffer, DIGEST_TYPE_NAME_LEN_MAX +
-> +				   CRYPTO_MAX_ALG_NAME + 1, "%*s:%s",
-> +				   (int)strlen(digest_type_name[digest_type]),
-> +				   digest_type_name[digest_type],
->   				   hash_algo_name[hash_algo]);
->   		buffer[offset] = ':';
->   		offset += 2;
-> +	} else if (hash_algo < HASH_ALGO__LAST) {
-> +		fmt = DATA_FMT_DIGEST_WITH_ALGO;
-> +		offset += snprintf(buffer, CRYPTO_MAX_ALG_NAME + 1,
-> +				   "%s", hash_algo_name[hash_algo]);
-> +		buffer[offset] = ':';
-> +		offset += 2;
->   	}
->   
->   	if (digest)
-> @@ -359,7 +392,8 @@ int ima_eventdigest_init(struct ima_event_data *event_data,
->   	cur_digestsize = hash.hdr.length;
->   out:
->   	return ima_eventdigest_init_common(cur_digest, cur_digestsize,
-> -					   HASH_ALGO__LAST, field_data);
-> +					   DIGEST_TYPE__LAST, HASH_ALGO__LAST,
-> +					   field_data);
->   }
->   
->   /*
-> @@ -380,7 +414,32 @@ int ima_eventdigest_ng_init(struct ima_event_data *event_data,
->   	hash_algo = event_data->iint->ima_hash->algo;
->   out:
->   	return ima_eventdigest_init_common(cur_digest, cur_digestsize,
-> -					   hash_algo, field_data);
-> +					   DIGEST_TYPE__LAST, hash_algo,
-> +					   field_data);
-> +}
-> +
-> +/*
-> + * This function writes the digest of an event (without size limit),
-> + * prefixed with both the hash type and algorithm.
-> + */
-> +int ima_eventdigest_ngv2_init(struct ima_event_data *event_data,
-> +			      struct ima_field_data *field_data)
-> +{
-> +	u8 *cur_digest = NULL, hash_algo = HASH_ALGO_SHA1;
-> +	u32 cur_digestsize = 0;
-> +	u8 digest_type = DIGEST_TYPE_IMA;
-> +
-> +	if (event_data->violation)	/* recording a violation. */
-> +		goto out;
-> +
-> +	cur_digest = event_data->iint->ima_hash->digest;
-> +	cur_digestsize = event_data->iint->ima_hash->length;
-> +
-> +	hash_algo = event_data->iint->ima_hash->algo;
-> +out:
-> +	return ima_eventdigest_init_common(cur_digest, cur_digestsize,
-> +					   digest_type, hash_algo,
-> +					   field_data);
->   }
->   
->   /*
-> @@ -415,7 +474,8 @@ int ima_eventdigest_modsig_init(struct ima_event_data *event_data,
->   	}
->   
->   	return ima_eventdigest_init_common(cur_digest, cur_digestsize,
-> -					   hash_algo, field_data);
-> +					   DIGEST_TYPE__LAST, hash_algo,
-> +					   field_data);
->   }
->   
->   static int ima_eventname_init_common(struct ima_event_data *event_data,
-> diff --git a/security/integrity/ima/ima_template_lib.h b/security/integrity/ima/ima_template_lib.h
-> index c71f1de95753..9f7c335f304f 100644
-> --- a/security/integrity/ima/ima_template_lib.h
-> +++ b/security/integrity/ima/ima_template_lib.h
-> @@ -21,6 +21,8 @@ void ima_show_template_digest(struct seq_file *m, enum ima_show_type show,
->   			      struct ima_field_data *field_data);
->   void ima_show_template_digest_ng(struct seq_file *m, enum ima_show_type show,
->   				 struct ima_field_data *field_data);
-> +void ima_show_template_digest_ngv2(struct seq_file *m, enum ima_show_type show,
-> +				   struct ima_field_data *field_data);
->   void ima_show_template_string(struct seq_file *m, enum ima_show_type show,
->   			      struct ima_field_data *field_data);
->   void ima_show_template_sig(struct seq_file *m, enum ima_show_type show,
-> @@ -38,6 +40,8 @@ int ima_eventname_init(struct ima_event_data *event_data,
->   		       struct ima_field_data *field_data);
->   int ima_eventdigest_ng_init(struct ima_event_data *event_data,
->   			    struct ima_field_data *field_data);
-> +int ima_eventdigest_ngv2_init(struct ima_event_data *event_data,
-> +			      struct ima_field_data *field_data);
->   int ima_eventdigest_modsig_init(struct ima_event_data *event_data,
->   				struct ima_field_data *field_data);
->   int ima_eventname_ng_init(struct ima_event_data *event_data,
 
+Earlier attempt[0] to address above was not felt suitable. The suggestion
+was to use standard clock based bindings instead.
+
+This RFC series takes RT5659 as a reference and exposes clock relationships
+via DT. **This is not in the final shape yet**, but I wanted to get some
+valuable feedback to understand if the idea is right. If this appears fine,
+this can be extended to other codecs (wherever necessary).
+
+This does not completely remove the need of set_sysclk() callback because
+the clock requirement (MCLK * fs) would come from the machine driver. But
+machine driver need not worry about Sysclk source. It would be internally
+managed by Codec via DT clock relationships.
+
+
+[0] https://patchwork.kernel.org/project/alsa-devel/list/?series=438531&archive=both&state=*
+
+
+Changelog:
+==========
+
+  v1 -> v2:
+  ---------
+    * New patch added to convert rt5659 binding doc to YAML format
+    * New patch added to document audio-graph-port binding for rt5659
+    * New patch added to document clock binding enhancement for rt5659
+
+Sameer Pujar (6):
+  ASoC: dt-bindings: Convert rt5659 bindings to YAML schema
+  ASoC: dt-bindings: Add audio-graph-port bindings to rt5659
+  ASoC: dt-bindings: Extend clock bindings of rt5659
+  ASoC: soc-pcm: tweak DPCM BE hw_param() call order
+  ASoC: rt5659: Expose internal clock relationships
+  ASoC: tegra: Get clock rate in consumer mode
+
+ .../devicetree/bindings/sound/realtek,rt5659.yaml  | 179 +++++++++++++++
+ Documentation/devicetree/bindings/sound/rt5659.txt |  89 --------
+ sound/soc/codecs/rt5659.c                          | 248 ++++++++++++++++++++-
+ sound/soc/codecs/rt5659.h                          |   9 +
+ sound/soc/soc-pcm.c                                |  60 ++++-
+ sound/soc/tegra/tegra210_i2s.c                     |  25 ++-
+ 6 files changed, 503 insertions(+), 107 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/sound/realtek,rt5659.yaml
+ delete mode 100644 Documentation/devicetree/bindings/sound/rt5659.txt
 
 -- 
-Best
-GUO Zihua
+2.7.4
+
