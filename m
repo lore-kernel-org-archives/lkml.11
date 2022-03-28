@@ -2,48 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49F07C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:31:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3D30C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:37:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241556AbiC1Lcr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:32:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54696 "EHLO
+        id S241562AbiC1Lcv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:32:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241689AbiC1LYG (ORCPT
+        with ESMTP id S241680AbiC1LYG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Mar 2022 07:24:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F5EF55773;
-        Mon, 28 Mar 2022 04:21:39 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3549757491;
+        Mon, 28 Mar 2022 04:21:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F9C4611B7;
-        Mon, 28 Mar 2022 11:21:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD38AC340ED;
-        Mon, 28 Mar 2022 11:21:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6793D611B5;
+        Mon, 28 Mar 2022 11:21:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB6F8C34111;
+        Mon, 28 Mar 2022 11:21:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466498;
-        bh=Gyix2CQ34Gq69PxjvLdjwTq82hEB1eQcP6V6TXWjEEk=;
+        s=k20201202; t=1648466489;
+        bh=RDdhik/g8aZ3wGxV6J8LDZnusm4htCVrLUo3WnbvOjw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S2xx9DIigIY+gyIkw5yMksleNUM2JW+9P9RrYX62JzMxdmG9tgbwirD+MeOkKUQAy
-         3MXQeLDAu7Ps+zsq33I1CA813awznGmAyFQscz3P322ZNN8hkjDZR7UHVL0Pimwvcl
-         wHqb8yMnKuQUXX1E9llK1PSU7FITEQ7+nig6pFEU+FMQW0tdNso2IwnTawTQcLSi78
-         lU3UDPcMZQNEfaDUqzmnBb9NDrVSN1J4SHM+t4EbVbCw5c/NON7Tnkpy6KALU0fEZO
-         AZIoLtVf7bi1gbcx4BUYsAQslPmzfaUBolNECoQF+UkYknf4tkxuE0V7AplCdkwmR+
-         qIO3IZlWGFNbA==
+        b=MrIsqh8Wisf8WhnPa46Qg/cMMBMJ2RLtdtINYBTW/TfsoxVWOFB9dD9AdSkdxNGqh
+         /o8LJIps26xKyakn2l6AvEdAT8vjPiWjXnUuWWkE9Q46pYD5ZG9yo9kpvBgGzrSFNH
+         TwWgYx3qiqOLTyMlVlsG0rNLBakn7yrA+XBsbOQzUkZIh6GoMAaDMu9Lr+Ulxzoh9T
+         cZW6E9CXoCV2q/TnrlEiPOrNExK7ePpSk0+e2QC1RRCn/RZGzF1X40586SjT1BwxqU
+         NAesLbr1r8dXtFQ2szGNdxpmbloo8uLRt0lKTFGSI00v0gxwE1qsVIeq8A9HDi7aG/
+         UBlwk4sWEwwoQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kai Ye <yekai13@huawei.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>, wangzhou1@hisilicon.com,
-        davem@davemloft.net, linux-crypto@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 03/29] crypto: hisilicon/qm - cleanup warning in qm_vf_read_qos
-Date:   Mon, 28 Mar 2022 07:21:05 -0400
-Message-Id: <20220328112132.1555683-3-sashal@kernel.org>
+Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Mario Limonciello <Mario.Limonciello@amd.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Huang Rui <ray.huang@amd.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
+        linux-acpi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 34/35] Revert "ACPI: Pass the same capabilities to the _OSC regardless of the query flag"
+Date:   Mon, 28 Mar 2022 07:20:10 -0400
+Message-Id: <20220328112011.1555169-34-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220328112132.1555683-1-sashal@kernel.org>
-References: <20220328112132.1555683-1-sashal@kernel.org>
+In-Reply-To: <20220328112011.1555169-1-sashal@kernel.org>
+References: <20220328112011.1555169-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,34 +55,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai Ye <yekai13@huawei.com>
+From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
 
-[ Upstream commit 05b3bade290d6c940701f97f3233c07cfe27205d ]
+[ Upstream commit 2ca8e6285250c07a2e5a22ecbfd59b5a4ef73484 ]
 
-The kernel test rebot report this warning: Uninitialized variable: ret.
-The code flow may return value of ret directly. This value is an
-uninitialized variable, here is fix it.
+Revert commit 159d8c274fd9 ("ACPI: Pass the same capabilities to the
+_OSC regardless of the query flag") which caused legitimate usage
+scenarios (when the platform firmware does not want the OS to control
+certain platform features controlled by the system bus scope _OSC) to
+break and was misguided by some misleading language in the _OSC
+definition in the ACPI specification (in particular, Section 6.2.11.1.3
+"Sequence of _OSC Calls" that contradicts other perts of the _OSC
+definition).
 
-Signed-off-by: Kai Ye <yekai13@huawei.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Link: https://lore.kernel.org/linux-acpi/CAJZ5v0iStA0JmO0H3z+VgQsVuQONVjKPpw0F5HKfiq=Gb6B5yw@mail.gmail.com
+Reported-by: Mario Limonciello <Mario.Limonciello@amd.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Tested-by: Mario Limonciello <mario.limonciello@amd.com>
+Acked-by: Huang Rui <ray.huang@amd.com>
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/hisilicon/qm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/acpi/bus.c | 27 +++++++++++++++++++--------
+ 1 file changed, 19 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/crypto/hisilicon/qm.c b/drivers/crypto/hisilicon/qm.c
-index ff1122153fbe..b616d2d8e773 100644
---- a/drivers/crypto/hisilicon/qm.c
-+++ b/drivers/crypto/hisilicon/qm.c
-@@ -4107,7 +4107,7 @@ static void qm_vf_get_qos(struct hisi_qm *qm, u32 fun_num)
- static int qm_vf_read_qos(struct hisi_qm *qm)
- {
- 	int cnt = 0;
--	int ret;
-+	int ret = -EINVAL;
+diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
+index dd535b4b9a16..3500744e6862 100644
+--- a/drivers/acpi/bus.c
++++ b/drivers/acpi/bus.c
+@@ -332,21 +332,32 @@ static void acpi_bus_osc_negotiate_platform_control(void)
+ 	if (ACPI_FAILURE(acpi_run_osc(handle, &context)))
+ 		return;
  
- 	/* reset mailbox qos val */
- 	qm->mb_qos = 0;
+-	kfree(context.ret.pointer);
++	capbuf_ret = context.ret.pointer;
++	if (context.ret.length <= OSC_SUPPORT_DWORD) {
++		kfree(context.ret.pointer);
++		return;
++	}
+ 
+-	/* Now run _OSC again with query flag clear */
++	/*
++	 * Now run _OSC again with query flag clear and with the caps
++	 * supported by both the OS and the platform.
++	 */
+ 	capbuf[OSC_QUERY_DWORD] = 0;
++	capbuf[OSC_SUPPORT_DWORD] = capbuf_ret[OSC_SUPPORT_DWORD];
++	kfree(context.ret.pointer);
+ 
+ 	if (ACPI_FAILURE(acpi_run_osc(handle, &context)))
+ 		return;
+ 
+ 	capbuf_ret = context.ret.pointer;
+-	osc_sb_apei_support_acked =
+-		capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_APEI_SUPPORT;
+-	osc_pc_lpi_support_confirmed =
+-		capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_PCLPI_SUPPORT;
+-	osc_sb_native_usb4_support_confirmed =
+-		capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_NATIVE_USB4_SUPPORT;
++	if (context.ret.length > OSC_SUPPORT_DWORD) {
++		osc_sb_apei_support_acked =
++			capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_APEI_SUPPORT;
++		osc_pc_lpi_support_confirmed =
++			capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_PCLPI_SUPPORT;
++		osc_sb_native_usb4_support_confirmed =
++			capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_NATIVE_USB4_SUPPORT;
++	}
+ 
+ 	kfree(context.ret.pointer);
+ }
 -- 
 2.34.1
 
