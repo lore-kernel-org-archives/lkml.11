@@ -2,53 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A22F2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:20:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF482C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:20:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240830AbiC1LWa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:22:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60232 "EHLO
+        id S240733AbiC1LWg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:22:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240771AbiC1LVd (ORCPT
+        with ESMTP id S240783AbiC1LVd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Mar 2022 07:21:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF0225642F;
-        Mon, 28 Mar 2022 04:19:03 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BD3456744;
+        Mon, 28 Mar 2022 04:19:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59472B80E01;
-        Mon, 28 Mar 2022 11:19:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8ABEC340EC;
-        Mon, 28 Mar 2022 11:18:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E48D1B81055;
+        Mon, 28 Mar 2022 11:19:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0ABB6C36AE2;
+        Mon, 28 Mar 2022 11:19:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466341;
-        bh=ie0Slw/MMRYXG+sa3rLyt1veHee/wbNfzo6+Xc7M9fQ=;
+        s=k20201202; t=1648466344;
+        bh=VmAP1FfGZcOdyX9tx8pMMq8DNl/LGmOclKKUyki6bmw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZQN4dBWoNkdJz1WnkIK6iAhQOOSgjw1Q3ep0cOv89lp6hwWJ74VuCLg5nryxaOaRR
-         VNSAa36vWrULD22m8w81RulDMEP28osRKxVjknPVaIIE1j4sxoDK8W1J9VKtfIzRjO
-         cZAX9i+dKVjLznJDOA+lbXIy3O6hV6zXFw5mf/4UcHfeyOAV+Z5TV63u8ihYREDN0I
-         76NeeeAx9VuoTDqoccoOVhpTMHKSJYLGtj98rvDo8nWPjL4w+7ozxycQ4bs3Lz2jFU
-         etPk7cT26wtrU1OgwIaIwqw7OQpvP91YDgPWfrJh/2nyHfDti4L4K+G205iMgTIogs
-         zBJmJ752qFe7A==
+        b=UVCpmE8O0ib233VotJKtjExmhMmEhkZ4tsp6Znq/hiy4D9ucGvx8fmUR5kanDNMMf
+         QPC+paYMoabRd8g6R8B8b+haaGBK3lBovJEaXcqiqddJyLx9IBVJAmHaNmUtMRvp6w
+         ohVwYQWbcalomyQxfSfWGxzBqgQLpPmorpmbWhb9N220YQrAWStZW7Sq+tUVwqrRN+
+         Yj+h9EpUg+JLrcZaSplV2jZfzr9dqduHt9rnqJ0ofqPc06VqiYwlL3Sv5T/8kEbe2S
+         e8x/ssAzAlu+GCooKZpWgf1q3GdCt2ANGM+/mj0/m7emGcJmjFDLbYV3X7aTug0YhD
+         Rw+aFc6I8qcnA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Theodore Ts'o <tytso@mit.edu>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
-        Eric Biggers <ebiggers@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Sasha Levin <sashal@kernel.org>, tytso@mit.edu
-Subject: [PATCH AUTOSEL 5.17 17/43] random: remove batched entropy locking
-Date:   Mon, 28 Mar 2022 07:18:01 -0400
-Message-Id: <20220328111828.1554086-17-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.17 20/43] random: round-robin registers as ulong, not u32
+Date:   Mon, 28 Mar 2022 07:18:04 -0400
+Message-Id: <20220328111828.1554086-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220328111828.1554086-1-sashal@kernel.org>
 References: <20220328111828.1554086-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -58,154 +54,47 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-[ Upstream commit 77760fd7f7ae3dfd03668204e708d1568d75447d ]
+[ Upstream commit da3951ebdcd1cb1d5c750e08cd05aee7b0c04d9a ]
 
-Rather than use spinlocks to protect batched entropy, we can instead
-disable interrupts locally, since we're dealing with per-cpu data, and
-manage resets with a basic generation counter. At the same time, we
-can't quite do this on PREEMPT_RT, where we still want spinlocks-as-
-mutexes semantics. So we use a local_lock_t, which provides the right
-behavior for each. Because this is a per-cpu lock, that generation
-counter is still doing the necessary CPU-to-CPU communication.
+When the interrupt handler does not have a valid cycle counter, it calls
+get_reg() to read a register from the irq stack, in round-robin.
+Currently it does this assuming that registers are 32-bit. This is
+_probably_ the case, and probably all platforms without cycle counters
+are in fact 32-bit platforms. But maybe not, and either way, it's not
+quite correct. This commit fixes that to deal with `unsigned long`
+rather than `u32`.
 
-This should improve performance a bit. It will also fix the linked splat
-that Jonathan received with a PROVE_RAW_LOCK_NESTING=y.
-
-Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Theodore Ts'o <tytso@mit.edu>
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
-Suggested-by: Andy Lutomirski <luto@kernel.org>
-Reported-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
-Tested-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
-Link: https://lore.kernel.org/lkml/YfMa0QgsjCVdRAvJ@latitude/
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/random.c | 55 ++++++++++++++++++++++---------------------
- 1 file changed, 28 insertions(+), 27 deletions(-)
+ drivers/char/random.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 882f78829a24..34ee34b30993 100644
+index 2f21c5473d86..d2ce6b1a229d 100644
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1876,13 +1876,16 @@ static int __init random_sysctls_init(void)
- device_initcall(random_sysctls_init);
- #endif	/* CONFIG_SYSCTL */
+@@ -1032,15 +1032,15 @@ static void add_interrupt_bench(cycles_t start)
+ #define add_interrupt_bench(x)
+ #endif
  
-+static atomic_t batch_generation = ATOMIC_INIT(0);
-+
- struct batched_entropy {
- 	union {
- 		u64 entropy_u64[CHACHA_BLOCK_SIZE / sizeof(u64)];
- 		u32 entropy_u32[CHACHA_BLOCK_SIZE / sizeof(u32)];
- 	};
-+	local_lock_t lock;
- 	unsigned int position;
--	spinlock_t batch_lock;
-+	int generation;
- };
- 
- /*
-@@ -1894,7 +1897,7 @@ struct batched_entropy {
-  * point prior.
-  */
- static DEFINE_PER_CPU(struct batched_entropy, batched_entropy_u64) = {
--	.batch_lock = __SPIN_LOCK_UNLOCKED(batched_entropy_u64.lock),
-+	.lock = INIT_LOCAL_LOCK(batched_entropy_u64.lock)
- };
- 
- u64 get_random_u64(void)
-@@ -1903,67 +1906,65 @@ u64 get_random_u64(void)
- 	unsigned long flags;
- 	struct batched_entropy *batch;
- 	static void *previous;
-+	int next_gen;
- 
- 	warn_unseeded_randomness(&previous);
- 
-+	local_lock_irqsave(&batched_entropy_u64.lock, flags);
- 	batch = raw_cpu_ptr(&batched_entropy_u64);
--	spin_lock_irqsave(&batch->batch_lock, flags);
--	if (batch->position % ARRAY_SIZE(batch->entropy_u64) == 0) {
-+
-+	next_gen = atomic_read(&batch_generation);
-+	if (batch->position % ARRAY_SIZE(batch->entropy_u64) == 0 ||
-+	    next_gen != batch->generation) {
- 		extract_crng((u8 *)batch->entropy_u64);
- 		batch->position = 0;
-+		batch->generation = next_gen;
- 	}
-+
- 	ret = batch->entropy_u64[batch->position++];
--	spin_unlock_irqrestore(&batch->batch_lock, flags);
-+	local_unlock_irqrestore(&batched_entropy_u64.lock, flags);
- 	return ret;
- }
- EXPORT_SYMBOL(get_random_u64);
- 
- static DEFINE_PER_CPU(struct batched_entropy, batched_entropy_u32) = {
--	.batch_lock = __SPIN_LOCK_UNLOCKED(batched_entropy_u32.lock),
-+	.lock = INIT_LOCAL_LOCK(batched_entropy_u32.lock)
- };
-+
- u32 get_random_u32(void)
+-static u32 get_reg(struct fast_pool *f, struct pt_regs *regs)
++static unsigned long get_reg(struct fast_pool *f, struct pt_regs *regs)
  {
- 	u32 ret;
- 	unsigned long flags;
- 	struct batched_entropy *batch;
- 	static void *previous;
-+	int next_gen;
+-	u32 *ptr = (u32 *)regs;
++	unsigned long *ptr = (unsigned long *)regs;
+ 	unsigned int idx;
  
- 	warn_unseeded_randomness(&previous);
- 
-+	local_lock_irqsave(&batched_entropy_u32.lock, flags);
- 	batch = raw_cpu_ptr(&batched_entropy_u32);
--	spin_lock_irqsave(&batch->batch_lock, flags);
--	if (batch->position % ARRAY_SIZE(batch->entropy_u32) == 0) {
-+
-+	next_gen = atomic_read(&batch_generation);
-+	if (batch->position % ARRAY_SIZE(batch->entropy_u32) == 0 ||
-+	    next_gen != batch->generation) {
- 		extract_crng((u8 *)batch->entropy_u32);
- 		batch->position = 0;
-+		batch->generation = next_gen;
- 	}
-+
- 	ret = batch->entropy_u32[batch->position++];
--	spin_unlock_irqrestore(&batch->batch_lock, flags);
-+	local_unlock_irqrestore(&batched_entropy_u32.lock, flags);
- 	return ret;
- }
- EXPORT_SYMBOL(get_random_u32);
- 
- /* It's important to invalidate all potential batched entropy that might
-  * be stored before the crng is initialized, which we can do lazily by
-- * simply resetting the counter to zero so that it's re-extracted on the
-- * next usage. */
-+ * bumping the generation counter.
-+ */
- static void invalidate_batched_entropy(void)
- {
--	int cpu;
--	unsigned long flags;
--
--	for_each_possible_cpu(cpu) {
--		struct batched_entropy *batched_entropy;
--
--		batched_entropy = per_cpu_ptr(&batched_entropy_u32, cpu);
--		spin_lock_irqsave(&batched_entropy->batch_lock, flags);
--		batched_entropy->position = 0;
--		spin_unlock(&batched_entropy->batch_lock);
--
--		batched_entropy = per_cpu_ptr(&batched_entropy_u64, cpu);
--		spin_lock(&batched_entropy->batch_lock);
--		batched_entropy->position = 0;
--		spin_unlock_irqrestore(&batched_entropy->batch_lock, flags);
--	}
-+	atomic_inc(&batch_generation);
- }
- 
- /**
+ 	if (regs == NULL)
+ 		return 0;
+ 	idx = READ_ONCE(f->reg_idx);
+-	if (idx >= sizeof(struct pt_regs) / sizeof(u32))
++	if (idx >= sizeof(struct pt_regs) / sizeof(unsigned long))
+ 		idx = 0;
+ 	ptr += idx++;
+ 	WRITE_ONCE(f->reg_idx, idx);
 -- 
 2.34.1
 
