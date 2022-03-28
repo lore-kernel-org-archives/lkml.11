@@ -2,108 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B08A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 15:10:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55395C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 15:12:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244300AbiC1PLt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 11:11:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54350 "EHLO
+        id S244282AbiC1PNx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 11:13:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244270AbiC1PKw (ORCPT
+        with ESMTP id S244580AbiC1PNg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 11:10:52 -0400
-Received: from mail.baikalelectronics.ru (mail.baikalelectronics.com [87.245.175.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C33305FF3D;
-        Mon, 28 Mar 2022 08:09:11 -0700 (PDT)
-Received: from mail.baikalelectronics.ru (unknown [192.168.51.25])
-        by mail.baikalelectronics.ru (Postfix) with ESMTP id 8CF071D5AAB;
-        Thu, 24 Mar 2022 04:25:29 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.ru 8CF071D5AAB
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1648085129;
-        bh=60xl7mC2mqeKL65zdGsBIIWEMSxp2vuKmudDQGN5FbE=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=Gna3OMyUsLeCvKrGe2UV9VyKO7TgX2XrJ4e7XIXgJbmkJ17Erf1Zr4C6Uv+q9REP1
-         SdelwNHqt+DYCN8dZBeyE104DCKlQFiL3d6k7IYXPzGYSpWGevQyYB2qIZu32W27dU
-         MrpT55UAuKt1ky9EH5wg9CShgeCKHMSmnTzzdIRw=
-Received: from localhost (192.168.168.10) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 24 Mar 2022 04:25:29 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Frank Li <Frank.Li@nxp.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        <linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 03/12] PCI: dwc: Add unroll iATU space support to the regions disable method
-Date:   Thu, 24 Mar 2022 04:25:14 +0300
-Message-ID: <20220324012524.16784-4-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20220324012524.16784-1-Sergey.Semin@baikalelectronics.ru>
-References: <20220324012524.16784-1-Sergey.Semin@baikalelectronics.ru>
+        Mon, 28 Mar 2022 11:13:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E69331C91F
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 08:11:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648480314;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=c4bc9leYRRtOW/54gUC7hrLdsVm71KWKCliWns2HM+g=;
+        b=D6jjAB0tfKaQ36HVeylCcQQfQ9yoEWZtw8iLVL06p1LMyqKoSvWhfqk8g3S0CWGg5HfxRP
+        sIXt1KZLT3JjViwgRONqx3VILjZ6YhWpuiKDfzuay+iynTu4XlRi6yiQoA3IOGgOCQrQAC
+        G1do+or/JHbNULICJxvWoeetlOrrGu4=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-426-dryIcnp_MXmfefw8afjRwA-1; Mon, 28 Mar 2022 11:11:52 -0400
+X-MC-Unique: dryIcnp_MXmfefw8afjRwA-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 97C2A3817483;
+        Mon, 28 Mar 2022 15:11:36 +0000 (UTC)
+Received: from [10.18.17.215] (dhcp-17-215.bos.redhat.com [10.18.17.215])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 51DA14010A02;
+        Mon, 28 Mar 2022 15:11:32 +0000 (UTC)
+Message-ID: <c4642442-aff8-c287-015f-90f41f09c323@redhat.com>
+Date:   Mon, 28 Mar 2022 11:11:31 -0400
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [RFC] locking/rwsem: dont wake up wwaiter in case of lock holder
+Content-Language: en-US
+To:     David Hildenbrand <david@redhat.com>,
+        Hillf Danton <hdanton@sina.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>, MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220326134059.4082-1-hdanton@sina.com>
+ <02f50037-46ce-ec08-63cb-e855694e69a5@redhat.com>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <02f50037-46ce-ec08-63cb-e855694e69a5@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The dw_pcie_disable_atu() method was introduced in the commit f8aed6ec624f
-("PCI: dwc: designware: Add EP mode support"). Since then it hasn't
-changed at all.  For all that time the method has supported the viewport
-version of the iATU CSRs only. Basically it works for the DW PCIe IP-cores
-older than v4.80a since the newer controllers are equipped with the
-unrolled iATU/eDMA space. It means the methods using it like
-pci_epc_ops.clear_bar and pci_epc_ops.unmap_addr callbacks just don't work
-correctly for the DW PCIe controllers with unrolled iATU CSRs. The same
-concerns the dw_pcie_setup_rc() method, which disables the outbound iATU
-entries before re-initializing them.
+On 3/28/22 10:18, David Hildenbrand wrote:
+> On 26.03.22 14:40, Hillf Danton wrote:
+>> In the slowpath of down for write, we bail out in case of signal received and
+>> try to wake up any pending waiter but it makes no sense to wake up a write
+>> waiter given any lock holder, either write or read.
+> But is handling this better really worth additional code and runtime
+> checks? IOW, does this happen often enough that we actually care about
+> optimizing this? I have no idea :)
+>
+>> The RFC is do nothing for wwaiter if any lock holder present - they will fill
+>> their duty at lock release time.
+>>
+>> Only for thoughts now.
+>>
+>> Hillf
+>>
+>> --- x/kernel/locking/rwsem.c
+>> +++ y/kernel/locking/rwsem.c
+>> @@ -418,6 +418,8 @@ static void rwsem_mark_wake(struct rw_se
+>>   	waiter = rwsem_first_waiter(sem);
+>>   
+>>   	if (waiter->type == RWSEM_WAITING_FOR_WRITE) {
+>> +		if (RWSEM_LOCK_MASK & atomic_long_read(&sem->count))
+>> +			return;
+>>   		if (wake_type == RWSEM_WAKE_ANY) {
+>>   			/*
+>>   			 * Mark writer at the front of the queue for wakeup.
+>> --
 
-So in order to fix the problems denoted above let's convert the
-dw_pcie_disable_atu() method to disabling the iATU inbound and outbound
-regions in the unrolled iATU CSRs in case the DW PCIe controller has been
-synthesized with the ones support. The former semantics will be remained
-for the controller having iATU mapped over the viewport.
+That check isn't good enough. First of all, any reader count in 
+sem->count can be transient due to the fact that we do an unconditional 
+atomic_long_add() on down_read(). The reader may then remove its reader 
+count in the slow path. This patch may cause missed wakeup which is a 
+much bigger problem than spending a bit of cpu time to check for lock 
+availability and sleep again.
 
-Fixes: f8aed6ec624f ("PCI: dwc: designware: Add EP mode support")
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
----
- drivers/pci/controller/dwc/pcie-designware.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+The write lock bit, however, is real. We do support the first writer in 
+the wait queue to spin on the lock when the handoff bit is set. So 
+waking up a writer when the rwsem is currently write-locked can still be 
+useful.
 
-diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
-index d92c8a25094f..7dc8c360a0d4 100644
---- a/drivers/pci/controller/dwc/pcie-designware.c
-+++ b/drivers/pci/controller/dwc/pcie-designware.c
-@@ -504,8 +504,18 @@ void dw_pcie_disable_atu(struct dw_pcie *pci, int index,
- 		return;
- 	}
- 
--	dw_pcie_writel_dbi(pci, PCIE_ATU_VIEWPORT, region | index);
--	dw_pcie_writel_dbi(pci, PCIE_ATU_CR2, ~(u32)PCIE_ATU_ENABLE);
-+	if (pci->iatu_unroll_enabled) {
-+		if (region == PCIE_ATU_REGION_INBOUND) {
-+			dw_pcie_writel_ib_unroll(pci, index, PCIE_ATU_UNR_REGION_CTRL2,
-+						 ~(u32)PCIE_ATU_ENABLE);
-+		} else {
-+			dw_pcie_writel_ob_unroll(pci, index, PCIE_ATU_UNR_REGION_CTRL2,
-+						 ~(u32)PCIE_ATU_ENABLE);
-+		}
-+	} else {
-+		dw_pcie_writel_dbi(pci, PCIE_ATU_VIEWPORT, region | index);
-+		dw_pcie_writel_dbi(pci, PCIE_ATU_CR2, ~(u32)PCIE_ATU_ENABLE);
-+	}
- }
- 
- int dw_pcie_wait_for_link(struct dw_pcie *pci)
--- 
-2.35.1
+BTW, I didn't see this RFC patch in LKML. Is it only posted on linux-mm 
+originally?
+
+Cheers,
+Longman
 
