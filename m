@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8886C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:24:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCF8DC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:24:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240902AbiC1LYf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:24:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54712 "EHLO
+        id S239980AbiC1L0Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:26:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240955AbiC1LXA (ORCPT
+        with ESMTP id S241278AbiC1LX1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:23:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C6FC55BEA;
-        Mon, 28 Mar 2022 04:19:53 -0700 (PDT)
+        Mon, 28 Mar 2022 07:23:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 359CE58E5C;
+        Mon, 28 Mar 2022 04:20:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 04DECB81055;
-        Mon, 28 Mar 2022 11:19:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D37BEC340EC;
-        Mon, 28 Mar 2022 11:19:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 18ACC61197;
+        Mon, 28 Mar 2022 11:20:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B41BC340EC;
+        Mon, 28 Mar 2022 11:20:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466390;
-        bh=dXFoBao1mnO+CxBybDVWep7qs/QLa3ksJJVYsnYonhc=;
+        s=k20201202; t=1648466423;
+        bh=Ho2phXuAtWLZ+sQ5jklOkkrTmMsQa1r7GS6WxYIvvEQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ERCjnZRna2znaXntCbtvYQmwUUThsr5N8xJeP8at2m4Qoc9bXB5Bxp5bTUmWX3SB6
-         UunUy9L7vDzH4mV8zpDwueB4KwadIB5Q35G7S5bZdg7jx+9JCYNAp8z/v1H7W00vzw
-         +JGkMl9yxD0MXURd+nkV+ZMdqWYqzrLNXucdFGe6hGm6Sw6XXeTHSO7ZAzkTSufpHj
-         izIy6l6F6zkBnMgCKCUFg2lCu5WZaxA7BJ3Q1ClOzBcskm6KH0uWL5W2bb1Gb2VZwq
-         jtPkSf65xgaFGxr/dqT4PRyjYqf0HRivGAtmXRU/BQStqLNtn3kXoGtvLKAyyJeVz0
-         WfyOZIlDKvJYg==
+        b=qLTU24t1c/41MHcqW2SdadGMbeKKrNuj1Jkl9vGUL64B9Gh9KqVclb1w4sPqvnYYa
+         2hKDCyAmbx+5l0tQ+ekjmsuLQXQhulspfmNp57y6E4g/DDoW+W8NOMe7PLe1/Dfzvx
+         AOQT5X3v0Nqhr0oer0oJsDxAt20q+FvvexDXvAY4So668udVxmX7vU7DbzC8ICrga4
+         NgXvOcLY1sF5Ca8lEAmjy4v8zyuuvFSUE/guBD85fD0bI8r6wCDJ7Evk2o04Ipgftp
+         htA8XFlavnYRpUDqhiNWoibd18CQQG8u3OrcNbiehda0lUa45xsQXTcYBcDQzI+MaI
+         1lulNN0c5DvOA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Darren Hart <darren@os.amperecomputing.com>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
-        rdunlap@infradead.org, ying.huang@intel.com,
-        linux-acpi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 36/43] ACPI/APEI: Limit printable size of BERT table data
-Date:   Mon, 28 Mar 2022 07:18:20 -0400
-Message-Id: <20220328111828.1554086-36-sashal@kernel.org>
+Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
+        Zhouyi Zhou <zhouzhouyi@gmail.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, quic_neeraju@quicinc.com,
+        josh@joshtriplett.org, rcu@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 07/35] rcu: Mark writes to the rcu_segcblist structure's ->flags field
+Date:   Mon, 28 Mar 2022 07:19:43 -0400
+Message-Id: <20220328112011.1555169-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220328111828.1554086-1-sashal@kernel.org>
-References: <20220328111828.1554086-1-sashal@kernel.org>
+In-Reply-To: <20220328112011.1555169-1-sashal@kernel.org>
+References: <20220328112011.1555169-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,70 +53,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Darren Hart <darren@os.amperecomputing.com>
+From: "Paul E. McKenney" <paulmck@kernel.org>
 
-[ Upstream commit 3f8dec116210ca649163574ed5f8df1e3b837d07 ]
+[ Upstream commit c09929031018913b5783872a8b8cdddef4a543c7 ]
 
-Platforms with large BERT table data can trigger soft lockup errors
-while attempting to print the entire BERT table data to the console at
-boot:
+KCSAN reports data races between the rcu_segcblist_clear_flags() and
+rcu_segcblist_set_flags() functions, though misreporting the latter
+as a call to rcu_segcblist_is_enabled() from call_rcu().  This commit
+converts the updates of this field to WRITE_ONCE(), relying on the
+resulting unmarked reads to continue to detect buggy concurrent writes
+to this field.
 
-  watchdog: BUG: soft lockup - CPU#160 stuck for 23s! [swapper/0:1]
-
-Observed on Ampere Altra systems with a single BERT record of ~250KB.
-
-The original bert driver appears to have assumed relatively small table
-data. Since it is impractical to reassemble large table data from
-interwoven console messages, and the table data is available in
-
-  /sys/firmware/acpi/tables/data/BERT
-
-limit the size for tables printed to the console to 1024 (for no reason
-other than it seemed like a good place to kick off the discussion, would
-appreciate feedback from existing users in terms of what size would
-maintain their current usage model).
-
-Alternatively, we could make printing a CONFIG option, use the
-bert_disable boot arg (or something similar), or use a debug log level.
-However, all those solutions require extra steps or change the existing
-behavior for small table data. Limiting the size preserves existing
-behavior on existing platforms with small table data, and eliminates the
-soft lockups for platforms with large table data, while still making it
-available.
-
-Signed-off-by: Darren Hart <darren@os.amperecomputing.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Reported-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Cc: Frederic Weisbecker <frederic@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/apei/bert.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ kernel/rcu/rcu_segcblist.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/acpi/apei/bert.c b/drivers/acpi/apei/bert.c
-index 19e50fcbf4d6..ad8ab3f12cf3 100644
---- a/drivers/acpi/apei/bert.c
-+++ b/drivers/acpi/apei/bert.c
-@@ -29,6 +29,7 @@
+diff --git a/kernel/rcu/rcu_segcblist.h b/kernel/rcu/rcu_segcblist.h
+index 9a19328ff251..5d405943823e 100644
+--- a/kernel/rcu/rcu_segcblist.h
++++ b/kernel/rcu/rcu_segcblist.h
+@@ -56,13 +56,13 @@ static inline long rcu_segcblist_n_cbs(struct rcu_segcblist *rsclp)
+ static inline void rcu_segcblist_set_flags(struct rcu_segcblist *rsclp,
+ 					   int flags)
+ {
+-	rsclp->flags |= flags;
++	WRITE_ONCE(rsclp->flags, rsclp->flags | flags);
+ }
  
- #undef pr_fmt
- #define pr_fmt(fmt) "BERT: " fmt
-+#define ACPI_BERT_PRINT_MAX_LEN 1024
+ static inline void rcu_segcblist_clear_flags(struct rcu_segcblist *rsclp,
+ 					     int flags)
+ {
+-	rsclp->flags &= ~flags;
++	WRITE_ONCE(rsclp->flags, rsclp->flags & ~flags);
+ }
  
- static int bert_disable;
- 
-@@ -58,8 +59,11 @@ static void __init bert_print_all(struct acpi_bert_region *region,
- 		}
- 
- 		pr_info_once("Error records from previous boot:\n");
--
--		cper_estatus_print(KERN_INFO HW_ERR, estatus);
-+		if (region_len < ACPI_BERT_PRINT_MAX_LEN)
-+			cper_estatus_print(KERN_INFO HW_ERR, estatus);
-+		else
-+			pr_info_once("Max print length exceeded, table data is available at:\n"
-+				     "/sys/firmware/acpi/tables/data/BERT");
- 
- 		/*
- 		 * Because the boot error source is "one-time polled" type,
+ static inline bool rcu_segcblist_test_flags(struct rcu_segcblist *rsclp,
 -- 
 2.34.1
 
