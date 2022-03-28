@@ -2,161 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C099BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 22:36:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B98FDC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 22:37:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230034AbiC1WiX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 18:38:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57178 "EHLO
+        id S230049AbiC1Wj0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 18:39:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230032AbiC1WiS (ORCPT
+        with ESMTP id S229934AbiC1WjX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 18:38:18 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 851AB47560;
-        Mon, 28 Mar 2022 15:36:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648506995; x=1680042995;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=afYqVHwiHVNSeLXUeEU0q+YnDh0ucsP8xpVz/aFfAqM=;
-  b=Bg54M+NwP0JxtedEsdJJfdpXljr+mi8RW5G353Yd2Xb8/m5mGRPLRoIt
-   yk3Fd3Fx+Vf7YbRwvb9IO1IAaCJ7m9dLAcKkafSjLTHURjMftDg7w9vfb
-   fnj18iz/l/KhmMpAjEfP68k8Ps3Q1oCJrQhvHD1WXri7m6pfOqVL9krJ4
-   lCPQoqvb53eXHp2FVnFOP41LgWEC0JrYR0z6X6H+uy4gja5kJ1YxYem+V
-   tgYX/CoVb9PJQik4aWX/FhGAUH+mAYpNnd26WIUQA2NW0YzhpIi2vmjVa
-   8Gl/E+HXHkr2GIsFGhc++BFzQY4YOM3tyP7F1M7hpfS6x3cOldtHeCytE
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="239711139"
-X-IronPort-AV: E=Sophos;i="5.90,218,1643702400"; 
-   d="scan'208";a="239711139"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 15:36:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,218,1643702400"; 
-   d="scan'208";a="652411975"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 28 Mar 2022 15:36:31 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nYxyQ-0002N8-VQ; Mon, 28 Mar 2022 22:36:30 +0000
-Date:   Tue, 29 Mar 2022 06:36:14 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Rob Herring <robh+dt@kernel.org>, linux-ide@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH 05/21] ata: libahci_platform: Convert to using devm bulk
- clocks API
-Message-ID: <202203290643.0ExdJphD-lkp@intel.com>
-References: <20220324001628.13028-6-Sergey.Semin@baikalelectronics.ru>
+        Mon, 28 Mar 2022 18:39:23 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37AD94925F
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 15:37:41 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id h1so18658550edj.1
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 15:37:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=koFN17ulxhdVtMhymKzO/TIc0UlPzvBHq58ZjJYY7jM=;
+        b=AIfvTei1IeVbt+Bk9bsDu8i0OAjWtkFUIv7yu6nVy8c08SnnefFP7cH85NLEj/wNCw
+         i2/jbg5t6KzHaYJu21vb1zZZOPfSMKIAjkR+wE9H95LVEpePX5UnIgZg54doj1ggCPBc
+         +E5bTjIsBu2ynhVqQIXJaZyKH5zDOCTzn7NjYEQi1hJkAah/ZByHz5rUdih+9IMXoZKn
+         kj1nSrlWjgLfiTlk1zuDCj6eG9iDc1KzyG+e9pGVIJXj8bktP0wojYEZJz2sgMCIF8R4
+         iQhNT1pJbGBi/pDON8VfwJv3viJtAZLBCCh4o1dGEvU7Ij2Ep6L7qPMlleiNsd5gbyl1
+         8vAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=koFN17ulxhdVtMhymKzO/TIc0UlPzvBHq58ZjJYY7jM=;
+        b=q1aDl5aD1XQE0ApOQIkfxr7pyd+Dzz/Lc0QCJg66fqf57dcwEBnNN6HFgfk+Qsx6A1
+         +zbTNqEphTrgpzu7UiOqSEwldSLiF0WPMO6W+PojZ6EuZLMsb80DSEUwaCUFjzLg1iF8
+         dfmbCwXr97Xw9eJoD7unSU4gcQhCPwJvACM/Gv4SJ05TJ5eGd38U+6bATysKtQVWYVUc
+         9RGFn/Bfo3jZaKPE8c77IxLorbbnIkekujMfhP8a85a7RFO2YV/BMervPWEsBb7BikFo
+         fNpFS1BJNq6tyB9ndun2ONG5NUkn+Zbl60mI25y1K2L0WgA8pQuSeOejS7yob+hWYw+W
+         6qNg==
+X-Gm-Message-State: AOAM531wZH7NjGodWh50aYCUAgEtesYeJsNR5MDdl/B4FiVRVrIy2RZ3
+        2DULgpLYisP5ndEmnV/aTQmsPIxca4H3LrX6bK2aoQ==
+X-Google-Smtp-Source: ABdhPJy4H1cvLXKft5SWJwyRx3X+cyr/G//Qw0QJiCqbwIOBZEWToj35RPb4cu1OUszYCjHF8kvRJgf830piojgobh0=
+X-Received: by 2002:a50:c307:0:b0:418:ec3b:2242 with SMTP id
+ a7-20020a50c307000000b00418ec3b2242mr147905edb.229.1648507059439; Mon, 28 Mar
+ 2022 15:37:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220324001628.13028-6-Sergey.Semin@baikalelectronics.ru>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <YkImfPbNOzQBq5ZD@marsc.168.1.7>
+In-Reply-To: <YkImfPbNOzQBq5ZD@marsc.168.1.7>
+From:   Daniel Latypov <dlatypov@google.com>
+Date:   Mon, 28 Mar 2022 17:37:28 -0500
+Message-ID: <CAGS_qxpjj1W54BM7v2Cszne4nh5kUXZt89Dq-5nO3nD7RWhsRQ@mail.gmail.com>
+Subject: Re: [PATCH] Documentation: dev-tools: Add a section for static
+ analysis tools
+To:     Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+Cc:     corbet@lwn.net, mchehab+huawei@kernel.org, davidgow@google.com,
+        linux-doc@vger.kernel.org, linux-sparse@vger.kernel.org,
+        cocci@inria.fr, smatch@vger.kernel.org,
+        linux-kernel@vger.kernel.org, skhan@linuxfoundation.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Serge,
-
-I love your patch! Yet something to improve:
-
-[auto build test ERROR on v5.17]
-[also build test ERROR on next-20220328]
-[cannot apply to axboe-block/for-next robh/for-next linus/master]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Serge-Semin/ata-ahci-Add-DWC-Baikal-T1-AHCI-SATA-support/20220328-234809
-base:    f443e374ae131c168a065ea1748feac6b2e76613
-config: arm-buildonly-randconfig-r005-20220327 (https://download.01.org/0day-ci/archive/20220329/202203290643.0ExdJphD-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0f6d9501cf49ce02937099350d08f20c4af86f3d)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://github.com/intel-lab-lkp/linux/commit/28cf1dcfb31bfca35af403a8774d0d880923fab3
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Serge-Semin/ata-ahci-Add-DWC-Baikal-T1-AHCI-SATA-support/20220328-234809
-        git checkout 28cf1dcfb31bfca35af403a8774d0d880923fab3
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/ata/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/ata/ahci_dm816.c:72:6: error: invalid argument type 'struct clk_bulk_data' to unary expression
-           if (!hpriv->clks[1]) {
-               ^~~~~~~~~~~~~~~
->> drivers/ata/ahci_dm816.c:77:29: error: passing 'struct clk_bulk_data' to parameter of incompatible type 'struct clk *'
-           refclk_rate = clk_get_rate(hpriv->clks[1]);
-                                      ^~~~~~~~~~~~~~
-   include/linux/clk.h:584:40: note: passing argument to parameter 'clk' here
-   unsigned long clk_get_rate(struct clk *clk);
-                                          ^
-   2 errors generated.
+On Mon, Mar 28, 2022 at 4:20 PM Marcelo Schmitt
+<marcelo.schmitt1@gmail.com> wrote:
+>
+> Complement the Kernel Testing Guide documentation page by adding a
+> section about static analysis tools.
+>
+> Signed-off-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
 
 
-vim +72 drivers/ata/ahci_dm816.c
+> ---
+> Hey everyone,
+>
+> I think this patch can be a good addition to the documentation as
+> discussed in the thread for the testing guide documentation page:
+> Link: https://lore.kernel.org/linux-doc/CABVgOS=2iYtqTVdxwH=mcFpcSuLP4cpJ4s6PKP4Gc-SH6jidgQ@mail.gmail.com/
+>
+> If you think it would be worth it, I can try making something more
 
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   60  
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   61  static int ahci_dm816_phy_init(struct ahci_host_priv *hpriv, struct device *dev)
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   62  {
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   63  	unsigned long refclk_rate;
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   64  	int mpy;
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   65  	u32 val;
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   66  
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   67  	/*
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   68  	 * We should have been supplied two clocks: the functional and
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   69  	 * keep-alive clock and the external reference clock. We need the
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   70  	 * rate of the latter to calculate the correct value of MPY bits.
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   71  	 */
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14  @72  	if (!hpriv->clks[1]) {
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   73  		dev_err(dev, "reference clock not supplied\n");
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   74  		return -EINVAL;
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   75  	}
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   76  
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14  @77  	refclk_rate = clk_get_rate(hpriv->clks[1]);
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   78  	if ((refclk_rate % 100) != 0) {
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   79  		dev_err(dev, "reference clock rate must be divisible by 100\n");
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   80  		return -EINVAL;
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   81  	}
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   82  
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   83  	mpy = ahci_dm816_get_mpy_bits(refclk_rate);
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   84  	if (mpy < 0) {
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   85  		dev_err(dev, "can't calculate the MPY bits value\n");
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   86  		return -EINVAL;
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   87  	}
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   88  
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   89  	/* Enable the PHY and configure the first HBA port. */
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   90  	val = AHCI_DM816_PHY_MPY(mpy) | AHCI_DM816_PHY_LOS(1) |
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   91  	      AHCI_DM816_PHY_RXCDR(4) | AHCI_DM816_PHY_RXEQ(1) |
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   92  	      AHCI_DM816_PHY_TXSWING(3) | AHCI_DM816_PHY_ENPLL(1);
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   93  	writel(val, hpriv->mmio + AHCI_DM816_P0PHYCR_REG);
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   94  
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   95  	/* Configure the second HBA port. */
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   96  	val = AHCI_DM816_PHY_LOS(1) | AHCI_DM816_PHY_RXCDR(4) |
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   97  	      AHCI_DM816_PHY_RXEQ(1) | AHCI_DM816_PHY_TXSWING(3);
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   98  	writel(val, hpriv->mmio + AHCI_DM816_P1PHYCR_REG);
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14   99  
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14  100  	return 0;
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14  101  }
-df46e6a4c06c89 Bartosz Golaszewski 2017-03-14  102  
+Nice!
+This is definitely worth including, but I'm out of my depth here.
+Some ideas below in case they're helpful.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Acked-by: Daniel Latypov <dlatypov@google.com>
+
+> elaborated. Maybe provide some guidance on when to use each tool.
+> I've been studying how Linux device drivers are tested.
+> Here's a post I wrote talking about some testing tools.
+> Link: https://marcelosc.gitlab.io/how-is-linux-tested/
+>
+> Best regards,
+> Marcelo
+>
+>  Documentation/dev-tools/testing-overview.rst | 29 ++++++++++++++++++++
+>  1 file changed, 29 insertions(+)
+>
+> diff --git a/Documentation/dev-tools/testing-overview.rst b/Documentation/dev-tools/testing-overview.rst
+> index 65feb81edb14..b00511109a9d 100644
+> --- a/Documentation/dev-tools/testing-overview.rst
+> +++ b/Documentation/dev-tools/testing-overview.rst
+> @@ -115,3 +115,32 @@ that none of these errors are occurring during the test.
+>  Some of these tools integrate with KUnit or kselftest and will
+>  automatically fail tests if an issue is detected.
+>
+> +Static Analysis Tools
+> +======================
+> +
+> +In addition to testing a running kernel, one may also scout for bugs by
+> +analyzing the source code semantics. Three tools are well known for serving this
+> +purpose.
+> +
+> +Sparse can help test the kernel by performing type-checking, lock checking,
+> +value range checking, in addition to reporting various errors and warnings while
+> +examining the code. See the Documentation/dev-tools/sparse.rst documentation
+> +page for details on how to use it.
+> +
+> +Smatch extends Sparse and provides additional checks for programming logic
+
+Coming from a place of ignorance, when should I use sparse vs smatch?
+Is there an existing consensus on this, or is that a controversial question?
+
+I assume other newcomers like me will have the same question and be
+unsure if they should spend time learning about sparse.
+In general, I think the main point of this page is to explain both
+what the tools do and give an idea of _why_ someone might want to
+consider using them.
+
+> +mistakes such as missing breaks in switch statements, unused return values on
+> +error checking, forgetting to set an error code in the return of an error path,
+> +etc. Smatch also has tests against more serious issues such as integer
+> +overflows, null pointer dereferences, and memory leaks. See the project page at
+> +http://smatch.sourceforge.net/.
+> +
+> +We also have Coccinelle as an option within static analyzers. Coccinelle is
+> +often used to aid collateral evolution of source code, but it can also help to
+> +avoid certain bugs that have been expressed semantically. The types of tests
+> +available include API tests, tests for correct usage of kernel iterators, checks
+> +for the soundness of free operations, analysis of locking behavior, and further
+> +tests known to help keep consistent kernel usage. See the
+> +Documentation/dev-tools/coccinelle.rst documentation page for details.
+> +
+> +These static analysis tools support running tests on the whole source tree or
+> +over a specific file or directory.
+
+Personal preference:
+I'd personally put this up before we go into details about each tool.
+
+E.g. perhaps like
+
+In addition to testing a running kernel, one can also analyze kernel
+source code directly (the whole tree or specific files) using **static
+analysis** tools.
+Some tools commonly used in the kernel are ...
+
+> --
+> 2.35.1
+>
