@@ -2,165 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CA7BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:13:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48BE2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:16:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240537AbiC1LP1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:15:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41738 "EHLO
+        id S240538AbiC1LRl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:17:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240521AbiC1LPR (ORCPT
+        with ESMTP id S233384AbiC1LRi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:15:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE4655523B;
-        Mon, 28 Mar 2022 04:13:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C3F0EB8104F;
-        Mon, 28 Mar 2022 11:13:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EFE6C34112;
-        Mon, 28 Mar 2022 11:13:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466011;
-        bh=jn2ZJ5F2Y7hAHYlXc+gmUJTzR90M4Zkj9GyGopzq6xk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LjNzqt3AaSp77g1FWQ/Vuu6wkpj68AEgWyL+E19vJrXh3+aCy1E/srHTEFOsyNWTQ
-         cnep1h6FZ5TAW6rdP3dFdQvcqnP8OAHF0fAlPgCvC5kbqioegmysR59/Ia0P7QPx8D
-         Y9AXU2agp96vb534IiTkp77RDiLbZ6Xr+DPFgO9i3wCVHPgvS01bNyv1Ge8C3jW/d5
-         b780HK1V8VjU2MXRKmI4tmBYbtkX4oSsQ97tlSyIcTK76uVWsd8ODoTw9xAFhF+BsN
-         WqNi/jJZLa2aIWv5cj6SLtM6h7eOSRQ9EuJ1+SOWHUVcFArrfmYVD0gC6YErmm+zCy
-         eFA559wwOrvgQ==
-From:   Roger Quadros <rogerq@kernel.org>
-To:     krzk@kernel.org
-Cc:     miquel.raynal@bootlin.com, tony@atomide.com, vigneshr@ti.com,
-        kishon@ti.com, nm@ti.com, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Roger Quadros <rogerq@kernel.org>
-Subject: [PATCH v2 2/2] memory: omap-gpmc: Allow building as a module
-Date:   Mon, 28 Mar 2022 14:13:19 +0300
-Message-Id: <20220328111319.1236-3-rogerq@kernel.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220328111319.1236-1-rogerq@kernel.org>
-References: <20220328111319.1236-1-rogerq@kernel.org>
+        Mon, 28 Mar 2022 07:17:38 -0400
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F3B95523F
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 04:15:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648466157; x=1680002157;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=wrodZFeDW4Z/d0hS+ESXF40ZqVjPhza5GfVoBuF40QU=;
+  b=iLJmZf/CUrYM9OUexBA7xjubYkItB0yFhkTrdD49SpND9dY46k6kr9yA
+   lYxZ38AXh9UZMIiLzeHzH5wOArfIE0BPoQP0iOk05ng0nO2BqvtB49wqz
+   no1rkFzfxIEmcaqYDGkRBUy8t7MUNnjFOVijdz54axgOkMcFyJB/saG0n
+   Jo/im5l1IBl3FyHg/1wueDZF83WT9q/K4FMoxtgr2Bssq7CXjYnKwnQNy
+   HuZ+8uvT+wTPbUAFD91gHds8LzFbEyd1AO22TV0O4OmZ8Dxw6oJ6fLSI6
+   B8jwXWWSQMMNVKoFSQpTGzsDUz8XcwvaLAWclQVGlg8R6BmQtFKD3LSH1
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10299"; a="319674412"
+X-IronPort-AV: E=Sophos;i="5.90,217,1643702400"; 
+   d="scan'208";a="319674412"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 04:15:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,217,1643702400"; 
+   d="scan'208";a="520968292"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 28 Mar 2022 04:15:55 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nYnLm-0001zV-NG; Mon, 28 Mar 2022 11:15:54 +0000
+Date:   Mon, 28 Mar 2022 19:14:55 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Beau Belgrave <beaub@linux.microsoft.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: kernel/trace/trace_events_user.c:593:31: sparse: sparse: incorrect
+ type in assignment (different address spaces)
+Message-ID: <202203281937.Po855SGa-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allow OMAP_GPMC to be built as a module.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   ae085d7f9365de7da27ab5c0d16b12d51ea7fca9
+commit: 0279400ad38d858ed68f5d787385f6122d4170b2 user_events: Optimize writing events by only copying data once
+date:   6 weeks ago
+config: i386-randconfig-s001-20220328 (https://download.01.org/0day-ci/archive/20220328/202203281937.Po855SGa-lkp@intel.com/config)
+compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0279400ad38d858ed68f5d787385f6122d4170b2
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 0279400ad38d858ed68f5d787385f6122d4170b2
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash drivers/acpi/apei/ drivers/gpu/drm/ kernel/trace/
 
-Remove redundant of_match_node() call before
-of_platform_default_populate() as the latter takes
-care of matching with of_default_bus_match_table.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Move compatible match table to the end where it is usually expected.
 
-Signed-off-by: Roger Quadros <rogerq@kernel.org>
----
- drivers/memory/Kconfig     |  2 +-
- drivers/memory/omap-gpmc.c | 44 +++++++++++++++++++++-----------------
- 2 files changed, 25 insertions(+), 21 deletions(-)
+sparse warnings: (new ones prefixed by >>)
+   kernel/trace/trace_events_user.c:409:38: sparse: sparse: Using plain integer as NULL pointer
+   kernel/trace/trace_events_user.c:430:40: sparse: sparse: Using plain integer as NULL pointer
+>> kernel/trace/trace_events_user.c:593:31: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected void *[assigned] udata @@     got void [noderef] __user * @@
+   kernel/trace/trace_events_user.c:593:31: sparse:     expected void *[assigned] udata
+   kernel/trace/trace_events_user.c:593:31: sparse:     got void [noderef] __user *
+   kernel/trace/trace_events_user.c:1064:16: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   kernel/trace/trace_events_user.c:1064:16: sparse:    void [noderef] __rcu *
+   kernel/trace/trace_events_user.c:1064:16: sparse:    void *
+   kernel/trace/trace_events_user.c:1122:13: sparse: sparse: cast removes address space '__user' of expression
+   kernel/trace/trace_events_user.c:1122:13: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __user *buf @@     got char * @@
+   kernel/trace/trace_events_user.c:1122:13: sparse:     expected void [noderef] __user *buf
+   kernel/trace/trace_events_user.c:1122:13: sparse:     got char *
+   kernel/trace/trace_events_user.c:1138:16: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   kernel/trace/trace_events_user.c:1138:16: sparse:    void [noderef] __rcu *
+   kernel/trace/trace_events_user.c:1138:16: sparse:    void *
+   kernel/trace/trace_events_user.c:1165:9: sparse: sparse: incompatible types in comparison expression (different address spaces):
+   kernel/trace/trace_events_user.c:1165:9: sparse:    void [noderef] __rcu *
+   kernel/trace/trace_events_user.c:1165:9: sparse:    void *
 
-diff --git a/drivers/memory/Kconfig b/drivers/memory/Kconfig
-index da2af9c38fe3..4debd4b2c8da 100644
---- a/drivers/memory/Kconfig
-+++ b/drivers/memory/Kconfig
-@@ -103,7 +103,7 @@ config TI_EMIF
- 	  temperature changes
- 
- config OMAP_GPMC
--	bool "Texas Instruments OMAP SoC GPMC driver"
-+	tristate "Texas Instruments OMAP SoC GPMC driver"
- 	depends on OF_ADDRESS || COMPILE_TEST
- 	select GPIOLIB
- 	help
-diff --git a/drivers/memory/omap-gpmc.c b/drivers/memory/omap-gpmc.c
-index ed11887c1b7c..6fdb76cc3bc9 100644
---- a/drivers/memory/omap-gpmc.c
-+++ b/drivers/memory/omap-gpmc.c
-@@ -12,6 +12,7 @@
- #include <linux/cpu_pm.h>
- #include <linux/irq.h>
- #include <linux/kernel.h>
-+#include <linux/module.h>
- #include <linux/init.h>
- #include <linux/err.h>
- #include <linux/clk.h>
-@@ -1889,16 +1890,6 @@ int gpmc_cs_program_settings(int cs, struct gpmc_settings *p)
- }
- 
- #ifdef CONFIG_OF
--static const struct of_device_id gpmc_dt_ids[] = {
--	{ .compatible = "ti,omap2420-gpmc" },
--	{ .compatible = "ti,omap2430-gpmc" },
--	{ .compatible = "ti,omap3430-gpmc" },	/* omap3430 & omap3630 */
--	{ .compatible = "ti,omap4430-gpmc" },	/* omap4430 & omap4460 & omap543x */
--	{ .compatible = "ti,am3352-gpmc" },	/* am335x devices */
--	{ .compatible = "ti,am64-gpmc" },
--	{ }
--};
--
- static void gpmc_cs_set_name(int cs, const char *name)
- {
- 	struct gpmc_cs_data *gpmc = &gpmc_cs[cs];
-@@ -2257,11 +2248,9 @@ static int gpmc_probe_generic_child(struct platform_device *pdev,
- 	if (!of_platform_device_create(child, NULL, &pdev->dev))
- 		goto err_child_fail;
- 
--	/* is child a common bus? */
--	if (of_match_node(of_default_bus_match_table, child))
--		/* create children and other common bus children */
--		if (of_platform_default_populate(child, NULL, &pdev->dev))
--			goto err_child_fail;
-+	/* create children and other common bus children */
-+	if (of_platform_default_populate(child, NULL, &pdev->dev))
-+		goto err_child_fail;
- 
- 	return 0;
- 
-@@ -2278,6 +2267,8 @@ static int gpmc_probe_generic_child(struct platform_device *pdev,
- 	return ret;
- }
- 
-+static const struct of_device_id gpmc_dt_ids[];
-+
- static int gpmc_probe_dt(struct platform_device *pdev)
- {
- 	int ret;
-@@ -2644,6 +2635,19 @@ static int gpmc_resume(struct device *dev)
- 
- static SIMPLE_DEV_PM_OPS(gpmc_pm_ops, gpmc_suspend, gpmc_resume);
- 
-+#ifdef CONFIG_OF
-+static const struct of_device_id gpmc_dt_ids[] = {
-+	{ .compatible = "ti,omap2420-gpmc" },
-+	{ .compatible = "ti,omap2430-gpmc" },
-+	{ .compatible = "ti,omap3430-gpmc" },	/* omap3430 & omap3630 */
-+	{ .compatible = "ti,omap4430-gpmc" },	/* omap4430 & omap4460 & omap543x */
-+	{ .compatible = "ti,am3352-gpmc" },	/* am335x devices */
-+	{ .compatible = "ti,am64-gpmc" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, gpmc_dt_ids);
-+#endif
-+
- static struct platform_driver gpmc_driver = {
- 	.probe		= gpmc_probe,
- 	.remove		= gpmc_remove,
-@@ -2654,8 +2658,8 @@ static struct platform_driver gpmc_driver = {
- 	},
- };
- 
--static __init int gpmc_init(void)
--{
--	return platform_driver_register(&gpmc_driver);
--}
--postcore_initcall(gpmc_init);
-+module_platform_driver(gpmc_driver);
-+
-+MODULE_DESCRIPTION("Texas Instruments GPMC driver");
-+MODULE_ALIAS("platform:" DEVICE_NAME);
-+MODULE_LICENSE("GPL v2");
+vim +593 kernel/trace/trace_events_user.c
+
+   571	
+   572	#ifdef CONFIG_PERF_EVENTS
+   573	static void user_event_bpf(struct user_event *user, struct iov_iter *i)
+   574	{
+   575		struct user_bpf_context context;
+   576		struct user_bpf_iter bpf_i;
+   577		char fast_data[MAX_STACK_BPF_DATA];
+   578		void *temp = NULL;
+   579	
+   580		if ((user->flags & FLAG_BPF_ITER) && iter_is_iovec(i)) {
+   581			/* Raw iterator */
+   582			context.data_type = USER_BPF_DATA_ITER;
+   583			context.data_len = i->count;
+   584			context.iter = &bpf_i;
+   585	
+   586			bpf_i.iov_offset = i->iov_offset;
+   587			bpf_i.iov = i->iov;
+   588			bpf_i.nr_segs = i->nr_segs;
+   589		} else if (i->nr_segs == 1 && iter_is_iovec(i)) {
+   590			/* Single buffer from user */
+   591			context.data_type = USER_BPF_DATA_USER;
+   592			context.data_len = i->count;
+ > 593			context.udata = i->iov->iov_base + i->iov_offset;
+   594		} else {
+   595			/* Multi buffer from user */
+   596			struct iov_iter copy = *i;
+   597			size_t copy_size = min_t(size_t, i->count, MAX_BPF_COPY_SIZE);
+   598	
+   599			context.data_type = USER_BPF_DATA_KERNEL;
+   600			context.kdata = fast_data;
+   601	
+   602			if (unlikely(copy_size > sizeof(fast_data))) {
+   603				temp = kmalloc(copy_size, GFP_NOWAIT);
+   604	
+   605				if (temp)
+   606					context.kdata = temp;
+   607				else
+   608					copy_size = sizeof(fast_data);
+   609			}
+   610	
+   611			context.data_len = copy_nofault(context.kdata,
+   612							copy_size, &copy);
+   613		}
+   614	
+   615		trace_call_bpf(&user->call, &context);
+   616	
+   617		kfree(temp);
+   618	}
+   619	
+
 -- 
-2.17.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
