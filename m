@@ -2,215 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A31FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 21:00:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69E78C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 21:00:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231441AbiC1VBv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 17:01:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41924 "EHLO
+        id S232736AbiC1VC3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 17:02:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiC1VBs (ORCPT
+        with ESMTP id S229926AbiC1VC0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 17:01:48 -0400
-Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F19E6EB35;
-        Mon, 28 Mar 2022 14:00:04 -0700 (PDT)
-Received: by mail-ot1-x334.google.com with SMTP id k25-20020a056830151900b005b25d8588dbso11507426otp.4;
-        Mon, 28 Mar 2022 14:00:04 -0700 (PDT)
+        Mon, 28 Mar 2022 17:02:26 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88D246FF75
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 14:00:40 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id y10so10595614pfa.7
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 14:00:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:user-agent:in-reply-to:references
-         :message-id:mime-version:content-transfer-encoding;
-        bh=9weLHGOdub5OZw2XOarC0R5RiKNEhEhayRIziAlf8Nk=;
-        b=HlW7kVJAVx6fk8jqZcDOLwfn+yROa49gqsMmmkwhup+bBzpDejyD/IXhJMktwDmIy3
-         bTYAEJHRQZLAbfJ7AwnW82SJ/9xaRIprAIxqFD2TwmYK8DvWkl5kOM6Fs+c/28Mta8le
-         lqHuVWovTMZXjlR5Dl1iYkeBspsTVb+bg01tQ9qeksV/wQ/QDm4HaiY2XUfuysEis/S6
-         ciJ3ZVUYhh59/YHUXv8HJKRzMQ6cSP+RYgE5s7NCSP1YnF8PvOv9Ke6hS5fl2ciW3J2H
-         J8PxsXWdS1O5tqCK4ryy6wG1M2g9uGQc/YD6UZEo5503dLr+EFWM9wQIRq7Z2YkQx3+R
-         dDzA==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=f/GvndT+5e72qW8tftZIUvnHz4PSf2jIRJgogiD5zrI=;
+        b=RCyi+zUD+fHdNxXdEz82Oe0p5sAr1mlG0X7xn+4MNPQ4B5E4u1HSBg6Qc1kwd9rYdR
+         ds/IDpBTa5rsEUU22cjOYUNwtOB8kDU39mk557YR3m5nLVtyBh0khXZo01N+q7hLD0ob
+         AxR0KEKE8IBX9Zaqkt6H+5Qepul4EO8wiwzJLZq8QHynTwqFhvHrh5su9nLyJvHBgGUi
+         xuKbF9Smrg2ECDOwuxSaO4PxxbbuNRX54Jq3b2Lsywv9os4IvDIteTaWT8OEH7FVxdGq
+         ViYntLkAJbK5YlO1nKdz6LAdh17GyluLkeAUhi2IIEG7Q9Zt7GYZGhLMcytWwUnmwz9p
+         jK4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:user-agent:in-reply-to
-         :references:message-id:mime-version:content-transfer-encoding;
-        bh=9weLHGOdub5OZw2XOarC0R5RiKNEhEhayRIziAlf8Nk=;
-        b=EQjs+MAR/5qFNeWzdTUhM2lWR+gGsG5XxiyYBU7nU5dNLTRiZwhv48ExQ8wPqaBwk2
-         eGUuCKKT9kXJmS9lDADG1hE9hEdSmvDqeXoHfXljVeF0PHn+TLTklrdD83t20qHzGUNI
-         rwAvde7NXVkrW3MeXfVGlAKfX4m+haeCePpn1B4xnTh+jkOFNA4zZu117RIt96Zkn2ZH
-         col4WoJeof+RuC/lLVZFCXFtDozV3y5eOC5SJUJdx3StvtRr5YO52a61FdBEaU6YN66u
-         sVSTWOh34LPLFZiL0RzzsBMtwOAShdaxFuh/mjSXFk4ER95A33+JAi2Od3U8JhelXBZs
-         0xrA==
-X-Gm-Message-State: AOAM532maxpGsiHFkRSEVgPhAprf2i5qykTQvAwGuhxcxG8tJvz3vf6C
-        zJb9/u8FP1hQpf/XgMIOU+kGBvIXvzsBow==
-X-Google-Smtp-Source: ABdhPJwldX4DAODDCtFUqD/NTUQbIo3+4mzAvTJXQ9FAHTQCRx5qO1oD1fZjm5az9lZrFqAFm7WIuQ==
-X-Received: by 2002:a05:6830:812:b0:5af:6b1b:537f with SMTP id r18-20020a056830081200b005af6b1b537fmr10677769ots.194.1648501203902;
-        Mon, 28 Mar 2022 14:00:03 -0700 (PDT)
-Received: from [127.0.0.1] ([187.19.239.165])
-        by smtp.gmail.com with ESMTPSA id m13-20020a9d7acd000000b005cda59325e6sm7591086otn.60.2022.03.28.14.00.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Mar 2022 14:00:03 -0700 (PDT)
-Date:   Mon, 28 Mar 2022 17:59:02 -0300
-From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-To:     Ian Rogers <irogers@google.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>
-CC:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        John Garry <john.garry@huawei.com>,
-        Will Deacon <will@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        James Clark <james.clark@arm.com>,
-        German Gomez <german.gomez@arm.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        Alexander Antonov <alexander.antonov@linux.intel.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Stephane Eranian <eranian@google.com>
-Subject: Re: [PATCH 3/5] perf cpumap: Add intersect function.
-User-Agent: K-9 Mail for Android
-In-Reply-To: <CAP-5=fVfYtu=wcfUQEzwuJMhxexi3d8hVqF5QFLkj_FWPHLK5Q@mail.gmail.com>
-References: <20220328062414.1893550-1-irogers@google.com> <20220328062414.1893550-4-irogers@google.com> <YkIaYq2alnNUiIfr@kernel.org> <CAP-5=fVfYtu=wcfUQEzwuJMhxexi3d8hVqF5QFLkj_FWPHLK5Q@mail.gmail.com>
-Message-ID: <CE94B4BA-5073-4332-A13E-2CD20379AA19@gmail.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=f/GvndT+5e72qW8tftZIUvnHz4PSf2jIRJgogiD5zrI=;
+        b=Mz4NAniJ+J3IT0I6OnhWmA35fRJ+fErqwjD5HJ6iga3LEajablth1BgNq8qqZkDBwM
+         l3NxMiszyUPUN/iaJzRTMoJEjRnwlo+LFdt4tynXpGdiYx/NbhYPaE1NtLojMlkNeTVq
+         29pN4UfQPYLowd//BtmkC/Kvybor7PnnbzVrm+KaIi1BHpZJ1zCAnEhZu/Ui0JGma8ZC
+         GmuLJQL0Yz5/KNB0XJnJs9Rebzs8bSGzF+l9ShjH+SCtLf0qRWZDnaAyVmH9vw9wJ0r7
+         OpCvWuxAcLQJSMAyizTglIY85Vu5NXuCV6GzCxFylWaeBmNRUnnKajjWsRMN67L2t3PC
+         ynYA==
+X-Gm-Message-State: AOAM532p6h8E2JyCzY/0DI3orWVgOT2mLIeTpJ6wofWN1v4Avn3CQwwk
+        Zm3THgyNOw5N5+J9tULJKK0+mw==
+X-Google-Smtp-Source: ABdhPJxjtirRjZvZZguFjo78NbXyGY7NQBBzphFPUklHd9ZkaFYulPitcqn8m4RWZDIjPMlN1BjiyA==
+X-Received: by 2002:a63:58d:0:b0:382:16e6:9fb6 with SMTP id 135-20020a63058d000000b0038216e69fb6mr11689292pgf.16.1648501239349;
+        Mon, 28 Mar 2022 14:00:39 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id x38-20020a056a0018a600b004fafd05ac3fsm14473848pfh.37.2022.03.28.14.00.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 14:00:38 -0700 (PDT)
+Date:   Mon, 28 Mar 2022 21:00:35 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Nikunj A Dadhania <nikunj@amd.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Peter Gonda <pgonda@google.com>,
+        Bharata B Rao <bharata@amd.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Mingwei Zhang <mizhang@google.com>,
+        David Hildenbrand <david@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC v1 0/9] KVM: SVM: Defer page pinning for SEV guests
+Message-ID: <YkIh8zM7XfhsFN8L@google.com>
+References: <20220308043857.13652-1-nikunj@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220308043857.13652-1-nikunj@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Mar 08, 2022, Nikunj A Dadhania wrote:
+> This is a follow-up to the RFC implementation [1] that incorporates
+> review feedback and bug fixes. See the "RFC v1" section below for a 
+> list of changes.
 
+Heh, for future reference, the initial posting of a series/patch/RFC is implicitly
+v1, i.e. this should be RFC v2.
 
-On March 28, 2022 5:54:06 PM GMT-03:00, Ian Rogers <irogers@google=2Ecom> =
-wrote:
->On Mon, Mar 28, 2022 at 1:28 PM Arnaldo Carvalho de Melo
-><acme@kernel=2Eorg> wrote:
->>
->> Em Sun, Mar 27, 2022 at 11:24:12PM -0700, Ian Rogers escreveu:
->> > The merge function gives the union of two cpu maps=2E Add an intersec=
-t
->> > function which will be used in the next change=2E
->> >
->> > Signed-off-by: Ian Rogers <irogers@google=2Ecom>
->> > ---
->> >  tools/lib/perf/cpumap=2Ec              | 38 ++++++++++++++++++++++++=
-++++
->> >  tools/lib/perf/include/perf/cpumap=2Eh |  2 ++
->> >  2 files changed, 40 insertions(+)
->> >
->> > diff --git a/tools/lib/perf/cpumap=2Ec b/tools/lib/perf/cpumap=2Ec
->> > index 953bc50b0e41=2E=2E56b4d213039f 100644
->> > --- a/tools/lib/perf/cpumap=2Ec
->> > +++ b/tools/lib/perf/cpumap=2Ec
->> > @@ -393,3 +393,41 @@ struct perf_cpu_map *perf_cpu_map__merge(struct =
-perf_cpu_map *orig,
->> >       perf_cpu_map__put(orig);
->> >       return merged;
->> >  }
->> > +
->> > +struct perf_cpu_map *perf_cpu_map__intersect(struct perf_cpu_map *or=
-ig,
->> > +                                          struct perf_cpu_map *other=
-)
->> > +{
->> > +     struct perf_cpu *tmp_cpus;
->> > +     int tmp_len;
->> > +     int i, j, k;
->> > +     struct perf_cpu_map *merged =3D NULL;
->> > +
->> > +     if (perf_cpu_map__is_subset(other, orig))
->> > +             return orig;
->> > +     if (perf_cpu_map__is_subset(orig, other)) {
->> > +             perf_cpu_map__put(orig);
->>
->> Why this put(orig)?
->
->As with merge, if orig isn't returned then it is put=2E
+> SEV guest requires the guest's pages to be pinned in host physical
+> memory as migration of encrypted pages is not supported. The memory
+> encryption scheme uses the physical address of the memory being
+> encrypted. If guest pages are moved by the host, content decrypted in
+> the guest would be incorrect thereby corrupting guest's memory.
+> 
+> For SEV/SEV-ES guests, the hypervisor doesn't know which pages are
+> encrypted and when the guest is done using those pages. Hypervisor
+> should treat all the guest pages as encrypted until they are 
+> deallocated or the guest is destroyed.
+> 
+> While provision a pfn, make KVM aware that guest pages need to be 
+> pinned for long-term and use appropriate pin_user_pages API for these
+> special encrypted memory regions. KVM takes the first reference and
+> holds it until a mapping is done. Take an extra reference before KVM
+> releases the pfn. 
+> 
+> Actual pinning management is handled by vendor code via new
+> kvm_x86_ops hooks. MMU calls in to vendor code to pin the page on
+> demand. Metadata of the pinning is stored in architecture specific
+> memslot area. During the memslot freeing path and deallocation path
+> guest pages are unpinned.
+> 
+> Guest boot time comparison:
+> +---------------+----------------+-------------------+
+> | Guest Memory  |   baseline     |  Demand Pinning + |
+> | Size (GB)     | v5.17-rc6(secs)| v5.17-rc6(secs)   |
+> +---------------+----------------+-------------------+
+> |      4        |     6.16       |      5.71         |
+> +---------------+----------------+-------------------+
+> |     16        |     7.38       |      5.91         |
+> +---------------+----------------+-------------------+
+> |     64        |    12.17       |      6.16         |
+> +---------------+----------------+-------------------+
+> |    128        |    18.20       |      6.50         |
+> +---------------+----------------+-------------------+
+> |    192        |    24.56       |      6.80         |
+> +---------------+----------------+-------------------+
 
-For merge I can see it dropping a reference, i=2Ee=2E get b and merge it i=
-nto a, after that b was "consumed"
+Let me preface this by saying I generally like the idea and especially the
+performance, but...
 
-But for intersect?
+I think we should abandon this approach in favor of committing all our resources
+to fd-based private memory[*], which (if done right) will provide on-demand pinning
+for "free".  I would much rather get that support merged sooner than later, and use
+it as a carrot for legacy SEV to get users to move over to its new APIs, with a long
+term goal of deprecating and disallowing SEV/SEV-ES guests without fd-based private
+memory.  That would require guest kernel support to communicate private vs. shared,
+but SEV guests already "need" to do that to play nice with live migration, so it's
+not a big ask, just another carrot to entice guests/customers to update their kernel
+(and possibly users to update their guest firmware).
 
+This series isn't awful by any means, but it requires poking into core flows and
+further complicates paths that are already anything but simple.  And things like
+conditionally grabbing vCPU0 to pin pages in its MMU make me flinch.  And I think
+the situation would only get worse by the time all the bugs and corner cases are
+ironed out.  E.g. this code is wrong:
 
->
->> > +             return perf_cpu_map__get(other);
->>
->> And why the get here and not on the first if?
->
->The first argument orig is either put or returned while the second may
->be returned only if the reference count is incremented=2E We could
->change the API for merge and intersect to put both arguments, or to
->not put either argument=2E
->
->Thanks,
->Ian
->
->> > +     }
->> > +
->> > +     tmp_len =3D max(orig->nr, other->nr);
->> > +     tmp_cpus =3D malloc(tmp_len * sizeof(struct perf_cpu));
->> > +     if (!tmp_cpus)
->> > +             return NULL;
->> > +
->> > +     i =3D j =3D k =3D 0;
->> > +     while (i < orig->nr && j < other->nr) {
->> > +             if (orig->map[i]=2Ecpu < other->map[j]=2Ecpu)
->> > +                     i++;
->> > +             else if (orig->map[i]=2Ecpu > other->map[j]=2Ecpu)
->> > +                     j++;
->> > +             else {
->> > +                     j++;
->> > +                     tmp_cpus[k++] =3D orig->map[i++];
->> > +             }
->> > +     }
->> > +     if (k)
->> > +             merged =3D cpu_map__trim_new(k, tmp_cpus);
->> > +     free(tmp_cpus);
->> > +     perf_cpu_map__put(orig);
->> > +     return merged;
->> > +}
->> > diff --git a/tools/lib/perf/include/perf/cpumap=2Eh b/tools/lib/perf/=
-include/perf/cpumap=2Eh
->> > index 4a2edbdb5e2b=2E=2Ea2a7216c0b78 100644
->> > --- a/tools/lib/perf/include/perf/cpumap=2Eh
->> > +++ b/tools/lib/perf/include/perf/cpumap=2Eh
->> > @@ -19,6 +19,8 @@ LIBPERF_API struct perf_cpu_map *perf_cpu_map__read=
-(FILE *file);
->> >  LIBPERF_API struct perf_cpu_map *perf_cpu_map__get(struct perf_cpu_m=
-ap *map);
->> >  LIBPERF_API struct perf_cpu_map *perf_cpu_map__merge(struct perf_cpu=
-_map *orig,
->> >                                                    struct perf_cpu_ma=
-p *other);
->> > +LIBPERF_API struct perf_cpu_map *perf_cpu_map__intersect(struct perf=
-_cpu_map *orig,
->> > +                                                      struct perf_cp=
-u_map *other);
->> >  LIBPERF_API void perf_cpu_map__put(struct perf_cpu_map *map);
->> >  LIBPERF_API struct perf_cpu perf_cpu_map__cpu(const struct perf_cpu_=
-map *cpus, int idx);
->> >  LIBPERF_API int perf_cpu_map__nr(const struct perf_cpu_map *cpus);
->> > --
->> > 2=2E35=2E1=2E1021=2Eg381101b075-goog
->>
->> --
->>
->> - Arnaldo
+  void kvm_release_pfn_clean(kvm_pfn_t pfn)
+  {
+	if (!is_error_noslot_pfn(pfn) && !kvm_is_reserved_pfn(pfn)) {
+		struct page *page = pfn_to_page(pfn);
+
+		if (page_maybe_dma_pinned(page))
+			unpin_user_page(page);
+		else
+			put_page(page);
+	}
+  }
+  EXPORT_SYMBOL_GPL(kvm_release_pfn_clean);
+
+Because (a) page_maybe_dma_pinned() is susceptible to false positives (clearly
+documented), and (b) even if it didn't get false positives, there's no guarantee
+that _KVM_ owns a pin of the page.
+
+It's not an impossible problem to solve, but I suspect any solution will require
+either touching a lot of code or will be fragile and difficult to maintain, e.g.
+by auditing all users to understand which need to pin and which don't.  Even if
+we _always_ pin memory for SEV guests, we'd still need to plumb the "is SEV guest"
+info around.
+
+And FWIW, my years-old idea of using a software-available SPTE bit to track pinned
+pages is plagued by the same underlying issue: KVM's current management (or lack
+thereof) of SEV guest memory just isn't viable long term.  In all honesty, it
+probably should never have been merged.  We can't change the past, but we can, 
+and IMO should, avoid piling on more code to an approach that is fundamentally flawed.
+	
+[*] https://lore.kernel.org/all/20220310140911.50924-1-chao.p.peng@linux.intel.com
