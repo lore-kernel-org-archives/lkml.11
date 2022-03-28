@@ -2,96 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00F18C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 17:40:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F384C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 17:41:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244639AbiC1RmO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 13:42:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57804 "EHLO
+        id S244649AbiC1RnT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 13:43:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244633AbiC1RmJ (ORCPT
+        with ESMTP id S244441AbiC1RnR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 13:42:09 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE8495D1A3
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 10:40:26 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id o10so30251042ejd.1
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 10:40:26 -0700 (PDT)
+        Mon, 28 Mar 2022 13:43:17 -0400
+Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEE8036B62
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 10:41:35 -0700 (PDT)
+Received: by mail-qt1-x830.google.com with SMTP id bp39so13026187qtb.6
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 10:41:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=jt/2KJODcgfg0427B2D9EMe8ii/7j8vJOFClANb3PD0=;
-        b=AIx7uFeBO7lezvIfbwU6IX2xiruO53nNSMLWYwdOxDucBEV2PxHLFJojbplpKiVB1C
-         aDvZnIIrbYCYvNyDBBdDhSsPJE0TG1vXL/+ARJ+2Wv7EHWJ+54rlhXes03XZRTHacBA4
-         cfEQX5YLfQaiQqYbkIR27B7WnvXwhz/7RenoWcJ3158WT3DMMKcNnAkJH7GPN525P7hj
-         J9cUBslhYZwxudBmBR/Lh/PJPKw2MDBebfYmCdZZqh8xjsiP1PUozNicgLb0d2EXpLyu
-         oyo9tBgeDNfEl9eVVi5PwPqBUaBTbJws67i5wjUo4V9mQHOvbF8OMIc28rGvLBpV84cX
-         xkAg==
+        bh=OE+8cdgGfoCGXGwp8r/5HOUNTsvZQT1x4g0OFfZy04I=;
+        b=VpuXPRNVm7f1LqJrjVj7chLW0tPoQ3BE1b1rqOCodPiOJkbCRaxy3RaqkZ3zgcws1Z
+         BmY7ItjiL2MzN3PNeAVPB1vGcUUdvw4SSDVbsHNp2sWBUJ3YOArvlSgd5sFosUnNhRDp
+         9S0fobS/YsOxR55WP+tFLPD7FLla6aVPjYa+cBXmoJ4Pc1N9D9BWP0mQDiKICcx2FWp4
+         HgEz9JMtHIXUPFvUrKeDItYmkoOuG0dwZoIyGT/GR5JQGYeEuebbO0GYSlcS6zHv69x2
+         vqR/jEWpLjrjNl8YCBT64S+sk3pyg6/YfqZwYnm57mtx8p5kSu4BNADmKoOKfVcg6W6R
+         SBJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=jt/2KJODcgfg0427B2D9EMe8ii/7j8vJOFClANb3PD0=;
-        b=RjeRoduUewsE73pwl0T7DKY01V97FxNWteyYBAnUTI45lmnzDLo7gJHRCW9nTXwDq8
-         bEk8S5SSbqbcZEdFFsrBJLzNeKw3ET02jn5SrFbie12vUhFcVog2dLaXtpRvY+tESE5A
-         ygQC48evwTJY3BOxUIlk037PpZvJhKFq5tcCAroGV8ftqoIbi6nZushO1UB/ZsI+Gtzh
-         PldKa1VxbdtuzqypBDzMNY7lMLOjnrynoI2GvtpQf+seib5iOlCVmIWC4Nmwpm/gjKzO
-         ZHs0efJi02CRA/KWGhZXegwvc+6Id8F9Mtp+q0qogxbZ20NRwsPkGP4wmeeASKmbuJlF
-         gb7A==
-X-Gm-Message-State: AOAM533IZ663+5bov2DW8e3enDWLkt2WhxVY1qu/UR3XLNDWj9Z0I63Z
-        EgLHIJtfOt/1WDvPp349c56oLGZ5X86sgXJQ+emWeg==
-X-Google-Smtp-Source: ABdhPJwsOs66+UXvMtZ/P41ZXdOJx64Q6ugDoNZ7WVGczKBfExknstGF3U0wlEmtO6Rzb3z7Wv0hB75cIK9CqpLelOA=
-X-Received: by 2002:a17:906:c282:b0:6ce:369d:3d5 with SMTP id
- r2-20020a170906c28200b006ce369d03d5mr29674650ejz.425.1648489225178; Mon, 28
- Mar 2022 10:40:25 -0700 (PDT)
+        bh=OE+8cdgGfoCGXGwp8r/5HOUNTsvZQT1x4g0OFfZy04I=;
+        b=0b5RokpXJ3x9Xp3jmeYPMsZ2+k4s0pSDkqJsckc4GiBU9xGBlwWMneYXaV7lSeQm8d
+         P11uCE++UAUsRkfjRL1vKf4aFXj8hV+pw8lpK3dcxcRG+UxIO470lSexLP9TCWNrb1OD
+         NqToBQWkwlYNNuRWSG0kXfGzchP7ynpwnim/sBnfiUvOrvk7NKOghQW+SJY3Hw6uSX7g
+         823/CS3ZgxKQFYGtxaZuVSGWIEhMHB6gk7XYDefX1MOLgHwuWhyTCWELzWd+c9RR9ZP1
+         Jk++hU6/JsTWA4ai9QAzsI8XxibyY3gPTD2jwyGcv6ZLj6UXIN+sV8GDcwwWuML581yF
+         iJjw==
+X-Gm-Message-State: AOAM532zPJYKvE0jWjKxRrSKe6JxC4mUJWNi1Lw3ArJGVBkTtDUU/q+z
+        WSEJ5MFHx6rbi7WLqNXzN/ziS5SQVUCuFP588/nboA==
+X-Google-Smtp-Source: ABdhPJzG6IU5B+2M3qXnnxgjxuQwtFazpbuUwBiH9W1XKT5vWh+FJkrC4Mnus1LpesRkUaMWoMwBYnzujoxfG1MZOn4=
+X-Received: by 2002:ac8:7d0e:0:b0:2e0:6675:adf6 with SMTP id
+ g14-20020ac87d0e000000b002e06675adf6mr23080372qtb.227.1648489294729; Mon, 28
+ Mar 2022 10:41:34 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220326002013.483394-1-dlatypov@google.com> <20220326002013.483394-2-dlatypov@google.com>
- <CABVgOSm+o=t=8hgR=T676rHJjWp0p-VXeoZt28G0kVqURqCGMg@mail.gmail.com>
-In-Reply-To: <CABVgOSm+o=t=8hgR=T676rHJjWp0p-VXeoZt28G0kVqURqCGMg@mail.gmail.com>
-From:   Daniel Latypov <dlatypov@google.com>
-Date:   Mon, 28 Mar 2022 12:40:14 -0500
-Message-ID: <CAGS_qxrx-ZMUhTqkfOEGsA5O0cZW13mNmo4YV-2n7-wiUAeHkA@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] kunit: split resource API impl from test.c into
- new resource.c
-To:     David Gow <davidgow@google.com>
-Cc:     Brendan Higgins <brendanhiggins@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        KUnit Development <kunit-dev@googlegroups.com>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220327205803.739336-1-mizhang@google.com> <YkHRYY6x1Ewez/g4@google.com>
+In-Reply-To: <YkHRYY6x1Ewez/g4@google.com>
+From:   Mingwei Zhang <mizhang@google.com>
+Date:   Mon, 28 Mar 2022 10:41:23 -0700
+Message-ID: <CAL715WL7ejOBjzXy9vbS_M2LmvXcC-CxmNr+oQtCZW0kciozHA@mail.gmail.com>
+Subject: Re: [PATCH] KVM: x86/mmu: add lockdep check before lookup_address_in_mm()
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm <kvm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ben Gardon <bgardon@google.com>,
+        David Matlack <dmatlack@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 11:27 PM David Gow <davidgow@google.com> wrote:
+Hi Sean,
+
+
+On Mon, Mar 28, 2022 at 8:16 AM Sean Christopherson <seanjc@google.com> wrote:
 >
-> On Sat, Mar 26, 2022 at 8:20 AM Daniel Latypov <dlatypov@google.com> wrote:
+> On Sun, Mar 27, 2022, Mingwei Zhang wrote:
+> > Add a lockdep check before invoking lookup_address_in_mm().
+> > lookup_address_in_mm() walks all levels of host page table without
+> > accquiring any lock. This is usually unsafe unless we are walking the
+> > kernel addresses (check other usage cases of lookup_address_in_mm and
+> > lookup_address_in_pgd).
 > >
-> > We've split out the declarations from include/kunit/test.h into
-> > resource.h.
-> > This patch splits out the definitions as well for consistency.
+> > Walking host page table (especially guest addresses) usually requires
+> > holding two types of locks: 1) mmu_lock in mm or the lock that protects
+> > the reverse maps of host memory in range; 2) lock for the leaf paging
+> > structures.
 > >
-> > A side effect of this is git blame won't properly track history by
-> > default, users need to run
-> > $ git blame -L ,1 -C13 lib/kunit/resource.c
+> > One exception case is when we take the mmu_lock of the secondary mmu.
+> > Holding mmu_lock of KVM MMU in either read mode or write mode prevents host
+> > level entities from modifying the host page table concurrently. This is
+> > because all of them will have to invoke KVM mmu_notifier first before doing
+> > the actual work. Since KVM mmu_notifier invalidation operations always take
+> > the mmu write lock, we are safe if we hold the mmu lock here.
 > >
-> > Signed-off-by: Daniel Latypov <dlatypov@google.com>
+> > Note: this means that KVM cannot allow concurrent multiple mmu_notifier
+> > invalidation callbacks by using KVM mmu read lock. Since, otherwise, any
+> > host level entity can cause race conditions with this one. Walking host
+> > page table here may get us stale information or may trigger NULL ptr
+> > dereference that is hard to reproduce.
+> >
+> > Having a lockdep check here will prevent or at least warn future
+> > development that directly walks host page table simply in a KVM ioctl
+> > function. In addition, it provides a record for any future development on
+> > KVM mmu_notifier.
+> >
+> > Cc: Sean Christopherson <seanjc@google.com>
+> > Cc: Ben Gardon <bgardon@google.com>
+> > Cc: David Matlack <dmatlack@google.com>
+> >
+> > Signed-off-by: Mingwei Zhang <mizhang@google.com>
 > > ---
+> >  arch/x86/kvm/mmu/mmu.c | 18 ++++++++++++++++++
+> >  1 file changed, 18 insertions(+)
+> >
+> > diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> > index 1361eb4599b4..066bb5435156 100644
+> > --- a/arch/x86/kvm/mmu/mmu.c
+> > +++ b/arch/x86/kvm/mmu/mmu.c
+> > @@ -2820,6 +2820,24 @@ static int host_pfn_mapping_level(struct kvm *kvm, gfn_t gfn, kvm_pfn_t pfn,
+> >        */
+> >       hva = __gfn_to_hva_memslot(slot, gfn);
+> >
+> > +     /*
+> > +      * lookup_address_in_mm() walks all levels of host page table without
+> > +      * accquiring any lock. This is not safe when KVM does not take the
+> > +      * mmu_lock. Holding mmu_lock in either read mode or write mode prevents
+> > +      * host level entities from modifying the host page table. This is
+> > +      * because all of them will have to invoke KVM mmu_notifier first before
+> > +      * doing the actual work. Since KVM mmu_notifier invalidation operations
+> > +      * always take the mmu write lock, we are safe if we hold the mmu lock
+> > +      * here.
+> > +      *
+> > +      * Note: this means that KVM cannot allow concurrent multiple
+> > +      * mmu_notifier invalidation callbacks by using KVM mmu read lock.
+> > +      * Otherwise, any host level entity can cause race conditions with this
+> > +      * one. Walking host page table here may get us stale information or may
+> > +      * trigger NULL ptr dereference that is hard to reproduce.
+> > +      */
+> > +     lockdep_assert_held(&kvm->mmu_lock);
 >
-> Looks good and works fine here. I'm going to try to rebase most of the
-> other resource system stuff I'm working on on top of these (which will
-> likely end up moving a bunch of code _again_, but is probably the
-> least terrible of all the available options).
+> Holding mmu_lock isn't strictly required.  It would also be safe to use this helper
+> if mmu_notifier_retry_hva() were checked after grabbing the mapping level, before
+> consuming it.  E.g. we could theoretically move this to kvm_faultin_pfn().
 >
-> One nitpick (newline at end of file) below, otherwise this is good.
+> And simply holding the lock isn't sufficient, i.e. the lockdep gives a false sense
+> of security.  E.g. calling this while holding mmu_lock but without first checking
+> mmu_notifier_count would let it run concurrently with host PTE modifications.
 
-Huh, I had thought checkpatch --strict would catch this.
-I guess not.
+Right, even holding the kvm->mmu_lock is not safe, since we may have
+several concurrent invalidations ongoing and they are done zapping
+entries in EPT (so that they could just release the kvm->mmu_lock) and
+start working on the host page table. If we want to make it safe, we
+also have to check mmu_notifier_count (and potentially mmu_seq as
+well).
 
-Fixing this and sending out a v3.
+With that, I start to feel this is a bug. The issue is just so rare
+that it has never triggered a problem.
+
+lookup_address_in_mm() walks the host page table as if it is a
+sequence of _static_ memory chunks. This is clearly dangerous. If we
+look at hva_to_pfn(), which is the right way to walk host page table:
+
+hva_to_pfn() =>
+  hva_to_pfn_fast() =>
+    get_user_page_fast_only() =>
+      internal_get_user_pages_fast() =>
+        lockless_pages_from_mm() =>
+          local_irq_save(flags); /* Disable interrupts here. */
+          gup_pgd_range(start, end, gup_flags, pages, &nr_pinned);
+  ... ...
+  hva_to_pfn_slow() =>
+    get_user_pages_unlocked() =>
+      mmap_read_lock(mm); /* taking the mm lock here. */
+
+The above code has two branches to walk the host page table: 1) the
+fast one and 2) slow one; The slower one takes the mm lock, while the
+faster one simply disables the interrupts.
+
+I think we might have to mimic the same thing in
+lockless_pages_from_mm(), i.e. wrapping
+local_irq_{save,restore}(flags) around the lookup_address_in_mm().
+
+Alternatively, we have to specify that the function
+lookup_address_in_mm() as well as its callers:
+host_pfn_mapping_level() and kvm_mmu_max_mapping_level() CANNOT be
+called in generic places in KVM, but only in the fault path and AFTER
+the check of "is_page_fault_stale()".
+
+But right now,  kvm_mmu_max_mapping_level() are used in other places
+as well: kvm_mmu_zap_collapsible_spte(), which does not satisfy the
+strict requirement of walking the host page table.
 
 >
-> Reviewed-by: David Gow <davidgow@google.com>
+> I'm definitely in favor of adding a comment to document the mmu_notifier
+> interactions, but I don't like adding a lockdep.
