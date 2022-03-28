@@ -2,123 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E890EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 12:52:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70004C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 12:52:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242703AbiC1Mxu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 08:53:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36556 "EHLO
+        id S242688AbiC1MyD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 08:54:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242702AbiC1Mxr (ORCPT
+        with ESMTP id S242726AbiC1Mxy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 08:53:47 -0400
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E37235C669
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 05:51:50 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id b16so16898090ioz.3
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 05:51:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Hl62ZZF9xXxGgi6ZZphdBA1i//kHz1iBa2y3695NrsA=;
-        b=icASZrSdFNGQbdG/IOShlTLaQfwjDp+8NApwJepYPtkO2VaC8ATzL5GB0O7w1lwJnC
-         gQK/lMYDEIt2Uhb+6lmuiTqoPwhBpKt6V+zk0WyvV6JqFZkkq3lcEDuX1leU7siSlnLA
-         3KBEzm2uuxPJiizEuJX544AU8uZXfi3+gLQM5j+1wjsTAPiJqc+7miG69zs/cEcN4eli
-         yRLAsRf6Kty/Wh5lXqdQATNNQY3BpTJAuEsokXdbyXJTTJ7Fm3sXLqJ4POh4aMKQASxa
-         EuinR2GO4dDxqRAJ7/fQj1zOgInecsrGs+2pRx0vv1bAz4R/BzKdXcYv89C6F+C9sHxN
-         h2Xg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Hl62ZZF9xXxGgi6ZZphdBA1i//kHz1iBa2y3695NrsA=;
-        b=vz7uVinsaOsK9LO2yaNjGil6vcqqiP8KaVBhze7O1/U2/iPfzbrJEifuf2/F7pclfq
-         wXSz7CFPYq7lO2yTwhYLPLCSfDRC3TmWn8ZmluIhZHUDYgC/oa3a8BdaxfAzl3XbJp1Q
-         FX9qd9zzV12W4R1UvDwR7Rf1rqTPDrc1KaScZzd3khRSHNqW3S1i5eQjYj4VeHeGQNxq
-         ROhKO+ChrNM/e3+AiaTLupbOWI+JElLUwD7OQR+SMnQuLswVxjeoHY6spDxia35HK9D1
-         heDG5xNbL0Z8BSykXWFJX40QSvJ1fqj9eQO+GCXrsUWwHaDliTG6fs4C5eUQbYFL6Uv9
-         c1fg==
-X-Gm-Message-State: AOAM532be+jWk+UWbNK5M/ITLjF/ENF+AGELn6WbrH11B/WgHT2hCw0V
-        rBVBKV6BNo47ZAVatcMIzfuPYb73IcnoHyJwMsJ93io1+tASaA==
-X-Google-Smtp-Source: ABdhPJwjOhlugyhQlt5yYxr+1HihIKi/r9Q2nmaXntqRiDx9IpPxhh1ziluusQ/rSAQ46Z5+SMaNsJ5FYPJaYLRk8b4=
-X-Received: by 2002:a05:6602:1683:b0:649:f7d3:f0cf with SMTP id
- s3-20020a056602168300b00649f7d3f0cfmr6162906iow.197.1648471910425; Mon, 28
- Mar 2022 05:51:50 -0700 (PDT)
+        Mon, 28 Mar 2022 08:53:54 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47B3F5BD25;
+        Mon, 28 Mar 2022 05:52:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648471928; x=1680007928;
+  h=date:from:to:subject:message-id:references:mime-version:
+   in-reply-to;
+  bh=GcFmmw+wq2araDt2jjVJDabU9v0zfQ0Zqb+8UCPwJTM=;
+  b=QQYDzUttAtDJODjJRsrbjOztA2xNrZc+M17EA+P54KLqZqi1XV16x6Qm
+   b4LTeC2WXT3jZIcI2x/iaSqy5r8SwbWA4q1idWGIzDSyNahVQwn0qFjSF
+   uEPeiXTLUFmy+zhrnkYNtQ2ZIIlygHsJTDHNTYK5rKsht+O6Zlkq5XFwA
+   ZVAnvV1a2Nd+cYx9lifB6BjGORSdKlerphUtuadnzNcMyxV3qITEkxkoL
+   HwKBHHi+/bwpaUPcgY/ycfxpCPBlLQpeAfkr0Vk/549f8ZKgc+L66BO7B
+   t222ysktVeHwpMyIT288TStPz4uwcjdMAqI97ArLCrI51e3F0yPrjDrZD
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10299"; a="257817038"
+X-IronPort-AV: E=Sophos;i="5.90,217,1643702400"; 
+   d="scan'208";a="257817038"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 05:52:08 -0700
+X-IronPort-AV: E=Sophos;i="5.90,217,1643702400"; 
+   d="scan'208";a="651993171"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 05:52:06 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nYoqK-0086hU-9k;
+        Mon, 28 Mar 2022 15:51:32 +0300
+Date:   Mon, 28 Mar 2022 15:51:31 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org
+Subject: Re: [PATCH v7 1/1] gpio: add sloppy logic analyzer using polling
+Message-ID: <YkGvU3l1Lq7OlYKK@smile.fi.intel.com>
+References: <20220317085019.3987-1-wsa+renesas@sang-engineering.com>
+ <20220317085019.3987-2-wsa+renesas@sang-engineering.com>
+ <YjiC6Lg5k5gK/BfP@smile.fi.intel.com>
+ <YkGB3AgME/OZAdoG@ninjato>
+ <YkGSzCykWvPXX89O@smile.fi.intel.com>
+ <YkGn6/B4XHhb72YC@ninjato>
 MIME-Version: 1.0
-References: <20220328021139.8700-1-steve.lee.analog@gmail.com> <PH0PR03MB6786EB43BFAD3B711096F69B991D9@PH0PR03MB6786.namprd03.prod.outlook.com>
-In-Reply-To: <PH0PR03MB6786EB43BFAD3B711096F69B991D9@PH0PR03MB6786.namprd03.prod.outlook.com>
-From:   Lee Steve <steve.lee.analog@gmail.com>
-Date:   Mon, 28 Mar 2022 21:51:39 +0900
-Message-ID: <CA+Fz0PaxSFhZG9dOYOWd4MOtHLxwyC3fXmCDZtOTwg4+aQ+jOA@mail.gmail.com>
-Subject: Re: [V3 1/2] ASoC: max98390: Add reset gpio control
-To:     "Sa, Nuno" <Nuno.Sa@analog.com>
-Cc:     "lgirdwood@gmail.com" <lgirdwood@gmail.com>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        "perex@perex.cz" <perex@perex.cz>,
-        "tiwai@suse.com" <tiwai@suse.com>,
-        "ryans.lee@maximintegrated.com" <ryans.lee@maximintegrated.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
-        "krzk@kernel.org" <krzk@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YkGn6/B4XHhb72YC@ninjato>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 5:46 PM Sa, Nuno <Nuno.Sa@analog.com> wrote:
->
->
->
-> > -----Original Message-----
-> > From: Steve Lee <steve.lee.analog@gmail.com>
-> > Sent: Monday, March 28, 2022 4:12 AM
-> > To: lgirdwood@gmail.com; broonie@kernel.org; perex@perex.cz;
-> > tiwai@suse.com; ryans.lee@maximintegrated.com; linux-
-> > kernel@vger.kernel.org; alsa-devel@alsa-project.org
-> > Cc: krzk@kernel.org; Sa, Nuno <Nuno.Sa@analog.com>; Steve Lee
-> > <steve.lee.analog@gmail.com>
-> > Subject: [V3 1/2] ASoC: max98390: Add reset gpio control
-> >
-> > [External]
-> >
-> >  Add reset gpio control to support RESET PIN connected to gpio.
-> >
-> > Signed-off-by: Steve Lee <steve.lee.analog@gmail.com>
-> > ---
-> >  sound/soc/codecs/max98390.c | 12 ++++++++++++
-> >  1 file changed, 12 insertions(+)
-> >
-> > diff --git a/sound/soc/codecs/max98390.c
-> > b/sound/soc/codecs/max98390.c
-> > index 40fd6f363f35..05df9b85d9b0 100644
-> > --- a/sound/soc/codecs/max98390.c
-> > +++ b/sound/soc/codecs/max98390.c
-> > @@ -1022,6 +1022,7 @@ static int max98390_i2c_probe(struct
-> > i2c_client *i2c,
-> >
-> >       struct max98390_priv *max98390 =3D NULL;
-> >       struct i2c_adapter *adapter =3D i2c->adapter;
-> > +     struct gpio_desc *reset_gpio;
-> >
-> >       ret =3D i2c_check_functionality(adapter,
-> >               I2C_FUNC_SMBUS_BYTE
-> > @@ -1073,6 +1074,17 @@ static int max98390_i2c_probe(struct
-> > i2c_client *i2c,
-> >               return ret;
-> >       }
-> >
-> > +     reset_gpio =3D devm_gpiod_get_optional(&i2c->dev,
-> > +                                          "reset", GPIOD_OUT_LOW);
->
-> Forgot to mention,
->
-> As you stated in the bindings the gpio is active low, this should also be
-> GPIOD_OUT_HIGH, if we want to have the device in reset after this call.
->
-> - Nuno S=C3=A1
->
+On Mon, Mar 28, 2022 at 02:19:55PM +0200, Wolfram Sang wrote:
+> 
+> > > I don't like assigning 'priv' memebers twice, so I'd like to keep it as
+> > > is.
+> > 
+> > But this will give better understanding of the steps the code performs, no?
+> 
+> IMO the current version is readable :)
 
-This also agree with your comment. I will update next version patch if
-there is other concern.
+OK!
+
+...
+
+> > (Because this function basically contains two steps at once. I assume it's
+> >  done this way due to absence of vrealloc(), right?)
+> > 
+> > But we have kvrealloc(). Can it be used here?
+> 
+> This has a huge disadvantage: realloc() requests new memory before the
+> old one is discarded. If you want to make a huge buffer bigger, this can
+> lead to OOM. The old contents do not matter, so the old buffer can go
+> away in favor of the new one.
+
+Fair enough.
+
+...
+
+> > > > Can it be wrapped by DEFINE_SHOW_ATTRIBUTE()?
+> > > 
+> > > I don't see a way. Do you?
+> > 
+> > Me neither. I mixed this up with (not upstreamed yet) DEFINE_STORE_ATTRIBUTE.
+> 
+> Still no cigar. That one is for rw files. Mine is writable only, so I use
+> e.g. no_llseek.
+> 
+> Probably, the above macro should be named, DEFINE_SHOWSTORE_ATTRIBUTE.
+> But I see this macro is stalled since late 2020 anyhow.
+
+Right, not applicable here anyway.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
