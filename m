@@ -2,87 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A707FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 16:54:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7A44C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 16:54:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233679AbiC1Q4Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 12:56:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48636 "EHLO
+        id S243758AbiC1Q42 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 12:56:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239070AbiC1Q4T (ORCPT
+        with ESMTP id S243664AbiC1Q4Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 12:56:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 486AD4C41F;
-        Mon, 28 Mar 2022 09:54:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D670F6138B;
-        Mon, 28 Mar 2022 16:54:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCDA9C004DD;
-        Mon, 28 Mar 2022 16:54:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648486476;
-        bh=wecLqM+6wj4MYjctE+l0MU6HzWzPoE6xPZCJaeMiP3w=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Fd+1Rpszy2FjIs8nnvc5MeP6yn3XiSkzp93oaGnmP1bFHDXzcyLqrdUFCqSm+mSlI
-         NXy5WWoUDcK9brEOVznVNkzMCoHi1XwLZEX81TgbUCWCyHt4pSxCVZiNkavXqRzeBM
-         wePrLbbEks2hzJSHnb5+pZ46iByE/M1WGu1ElITYrl7fPF9VCuzqVX4AyMcPI1ZjO3
-         I7/8GwAJqKYupPTB9QDt/TMMoed2fqJuZiJke6c7i0twT4KdCNsg4EslqtwQJ16+qj
-         sdmMcf+jnaP1EuiSTF120B4jqpZfwTaIgNtrO9Ss00Mo9KQa4ELnPzbeD8kwWiFLua
-         wRGmEC/z7W68w==
-Date:   Mon, 28 Mar 2022 18:02:12 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Jagath Jog J <jagathjog1996@gmail.com>,
-        Dan Robertson <dan@dlrobertson.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 3/5] iio: accel: bma400: Add triggered buffer support
-Message-ID: <20220328180212.0bac53fe@jic23-huawei>
-In-Reply-To: <CAHp75Vdx3ZWFc9Xa7AhLGM=-4AzfamEqTkZxvBeu=Hu4KF7pSg@mail.gmail.com>
-References: <20220326194146.15549-1-jagathjog1996@gmail.com>
-        <20220326194146.15549-4-jagathjog1996@gmail.com>
-        <CAHp75Vdx3ZWFc9Xa7AhLGM=-4AzfamEqTkZxvBeu=Hu4KF7pSg@mail.gmail.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Mon, 28 Mar 2022 12:56:24 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C97CB4CD4A
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 09:54:43 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id z92so17628854ede.13
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 09:54:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=V+3U/vned9HkTyfTaMmIcrVKk2BnMz3lKHdfaoCgpb0=;
+        b=pjapL1jB0Bzc43euAW7NnZgfYJn+m6AKQ+qvrWGyx/40n4QMmUcpxefze/vNflYMSG
+         +1rjux4wGSGxDVdFjAUg23PfqLJdoGpdgW73WWc6w0+8Tmh/7pyRU4kW2ZYoM/cl2Im1
+         aN44nucKSXF10fJT5bqb7s0jaYhe1LAF9fq5DhF+BLx984P/y+XRuqYJsIh3I/dIYl7V
+         CON23UvNdW/HHgSxMvLFw2A5zJqUkVqgGhkeTgIeu2dEX/nXQsKxkXEMlMyzeXu3WULW
+         CpavXM5Q8LdC5dr1oOBUhho+vOmgS9UTQ2aSMUyDdMV4pr1iuvqJi6gO1828pssJ0/bF
+         7RFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=V+3U/vned9HkTyfTaMmIcrVKk2BnMz3lKHdfaoCgpb0=;
+        b=m+toFzzBj2OPNRWEiZjR+I1/gfsACD3Mxj84kk0CBfD7ZBidfC/v5y4kNJFw9aT6p/
+         l6m0zboiWjM7zVMJQGsC40XmYfGRdQ3ShuH6qaxItn1XfDSrnG56TaryRUjI/hyuxXOy
+         CkBbQvSZAcg4rYb+iUiI8zae6+kKPq89cR0pcjNbF413ZtxCImrb3QprdXmL3oCQ0OAj
+         1LxgbfJGwT7/+7P3G6RyuUAIRhfm4mECK9M3aFpU3UVqZJOE/zt/PEvguRpDBnyjee/I
+         Z95epTQBBkaPetxMcnSYCT9oVHAxv02NuwI+6g+ql3K1J7E0uj62tclkAY7kgJPYKkdz
+         7HUA==
+X-Gm-Message-State: AOAM532owXQnDl7G2aE+oZmAwrme7sTfJoajFnDoIffqWNZQKPQ01sZW
+        UOsMM5Bhc3uQFCbfzP4kNeNLpQ8wKayrLNvVe+J7tQ==
+X-Google-Smtp-Source: ABdhPJyaviXVKiOGRFommlh51L/M5pChybEslM2SsXlhUC7gov1a9lrFdqwwV6iQ75H8dKgB8//d8wSMsf7HN+96QkQ=
+X-Received: by 2002:a50:d949:0:b0:418:ecfe:8c25 with SMTP id
+ u9-20020a50d949000000b00418ecfe8c25mr17467328edj.156.1648486482209; Mon, 28
+ Mar 2022 09:54:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220326003356.487828-1-dlatypov@google.com> <CABVgOSmbQxZmmNtUQLsvMSPkr2FpXB_kdJUUbC=nLrt6xN7e2A@mail.gmail.com>
+ <CAGS_qxq_vFtGS4BGieZz8L3QH7rZ7ZN25pGYmjWWoXbTGOKC9A@mail.gmail.com>
+In-Reply-To: <CAGS_qxq_vFtGS4BGieZz8L3QH7rZ7ZN25pGYmjWWoXbTGOKC9A@mail.gmail.com>
+From:   Brendan Higgins <brendanhiggins@google.com>
+Date:   Mon, 28 Mar 2022 12:54:30 -0400
+Message-ID: <CAFd5g45f3X3xF2vz2BkTHRqOC4uW6GZxtUUMaP5mwwbK8uNVtA@mail.gmail.com>
+Subject: Re: [PATCH] Documentation: kunit: update kconfig options needed for
+ UML coverage
+To:     Daniel Latypov <dlatypov@google.com>
+Cc:     David Gow <davidgow@google.com>, Kees Cook <keescook@chromium.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        KUnit Development <kunit-dev@googlegroups.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>, maxime@cerno.tech
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 27 Mar 2022 22:45:16 +0300
-Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-
-> On Sat, Mar 26, 2022 at 9:41 PM Jagath Jog J <jagathjog1996@gmail.com> wrote:
+On Mon, Mar 28, 2022 at 12:35 PM Daniel Latypov <dlatypov@google.com> wrote:
+>
+> On Fri, Mar 25, 2022 at 9:56 PM David Gow <davidgow@google.com> wrote:
 > >
-> > Added trigger buffer support to read continuous acceleration
-> > data from device with data ready interrupt which is mapped
-> > to INT1 pin.  
-> 
-> ...
-> 
-> > +       struct {  
-> 
-> > +               __le16 buff[3];  
-> 
-> In my (mostly review) practice it's rare that sensors operate in LE mode.
-> Please, double check that.
+>
+> <snip>
+>
+> > >         # Append coverage options to the current config
+> > > -       $ echo -e "CONFIG_DEBUG_KERNEL=y\nCONFIG_DEBUG_INFO=y\nCONFIG_GCOV=y" >> .kunit/.kunitconfig
+> > > +       $ echo -e "CONFIG_DEBUG_KERNEL=y\nCONFIG_DEBUG_INFO=y\nCONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y\nCONFIG_GCOV=y" >> .kunit/.kunitconfig
+> > >         $ ./tools/testing/kunit/kunit.py run
+> >
+> > Would we want to instead use a chain of --kconfig_add arguments? (I
+> > think there are advantages either way...)
+>
+> I've been considering this ever since the --kconfig_add patch was accepted.
+> It's more compatible w/ commands using --kunitconfig, but it also
+> looks very verbose.
+> E.g. it looks like
+>
+> $ tools/testing/kunit/kunit.py run --make_options=CC=/usr/bin/gcc-6
+> --kconfig_add=CONFIG_DEBUG_INFO=y
+> --kconfig_add=CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y
+> --kconfig_add=CONFIG_GCOV=y
 
-Just for giggles, we've had sensors that had most channels little endian
-but with one that was big endian...  Thankfully this isn't one of those.
+I don't think it's *that* much more verbose, but I see your point. I
+personally prefer this, but not enough to argue about it.
 
-I checked the datasheet and whilst indeed less common, these do appear to
-be little endian.
-https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bma400-ds000.pdf
-page 50
-ACC_X_LSB at address 0x04
-ACC_X_MSB at address 0x05
-> 
-> > +               u8 temperature;
-> > +               s64 ts __aligned(8);
-> > +       } buffer ____cacheline_aligned;  
-> 
+> Neither looks very appealing to me, so I've just kept it as-is for now.
+>
+> Maybe there's something we can do to make this easier (e.g. allowing
+> --kunitconfig to be repeated and mergable)?
 
+I would like --kunitconfig to be repeadable and mergable.
