@@ -2,171 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F38AEC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 06:20:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75E89C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 06:24:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238404AbiC1GW0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 02:22:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48220 "EHLO
+        id S238415AbiC1G0J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 02:26:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230080AbiC1GWY (ORCPT
+        with ESMTP id S235004AbiC1G0C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 02:22:24 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2083.outbound.protection.outlook.com [40.107.93.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC48251E4E;
-        Sun, 27 Mar 2022 23:20:44 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DkT6fXudpAHyH4BAuDqBmYf7ensFYNyuYIqOeQDV7XYhvl33BSOC9PC1cab5aV7VJD6d2CEKDpxqwmneZ+3kTJl9V4x5kyggWyUdDITlYr7Autcj2BbadlT+j0/xbuwykX36AazI29Rv9itFui9hfS13nDcjik7UYMsi5augLJA69KkfxTuwP2Op9c5JqlucjD5cQrLh0VIBPXhvh8EKoOp7ToWjqk4jKZITMeO6NPPJFX++byjR5w1/e7+kzXUkkx8xP/eJu3B4HTGFPvpbML/yXhmnbsZ8mrY6jSDZUtHSWA6c8A8y54WGq87xYY8fz0aSj7/4ltJp50FbNOtWdg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PxP9Pa1a94zidhRTUtKJeIhevcUCnvFlq1R0lfQ0ZHw=;
- b=h72ILxSd+YEcWfKpPzR9E8ZHGy7Vs2SfIe2XExEUZissh7bqtcp87KKaRZPPaCFlh6d0OqC2NkctZq2VYtUsqqqFBN3Vi6ofItYR0iSn2yqLyIh6CdkFXBCXAjanF54yB95liTLIkVIZublDvvzmEwnxHCwbrJmKTytY6F7QwJeuR2vSjaewf+teCLyiIMj+fC7wMhWtEMALesefqbneLCJqCgBUrKPpWHqyAwiTurS5xtf8EgawpejAdbuwHysv/sevsYESk4HFu1Z/Vxf8GD0my0hLugXdwvuM4Fidj9lqxosOeHL4oIN6G5fZ87iLSp7ehzas0nJdsIPTFgfDnw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PxP9Pa1a94zidhRTUtKJeIhevcUCnvFlq1R0lfQ0ZHw=;
- b=ZYGJtBKjX1nO7mhk28hNg7eIB/YtJJCItaLNul3BnEThT5TIYPPKKgqjtWIVhJz6qg1fRUoGs/MTE1CTOJAtCSjSWTwe7d9+dRbfcIXfG0pyG8+vDdYdinoOiEmBG5rF5TzVRtvDx+16av3kFLKnwJLZLW/+BZtXp9EImFwxrPlE+juqZsgmrFENi4nq58w+zrHKedfA12RlMTgDV03ItejJubOSzIm2rmklTWatoaNNHAFe3UUdhCmcOEMxtLbhkjSkLB4dXPEcYdQ5IZPAnsX3kicyrWSjnWEUu4cd7UQ0J95uD/2LR6NJml6d4EchsVx5n3i6qli/227jW6ANgg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4437.namprd12.prod.outlook.com (2603:10b6:208:26f::17)
- by BL1PR12MB5224.namprd12.prod.outlook.com (2603:10b6:208:319::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.16; Mon, 28 Mar
- 2022 06:20:43 +0000
-Received: from MN2PR12MB4437.namprd12.prod.outlook.com
- ([fe80::9c66:21b0:b8e8:ea63]) by MN2PR12MB4437.namprd12.prod.outlook.com
- ([fe80::9c66:21b0:b8e8:ea63%7]) with mapi id 15.20.5102.022; Mon, 28 Mar 2022
- 06:20:43 +0000
-Message-ID: <3d1658b5-e2ef-c2be-8c80-f5554faffcc3@nvidia.com>
-Date:   Mon, 28 Mar 2022 11:50:33 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] arm64: tegra: Enable hda node for P3737 + P3701
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzk@kernel.org>, robh+dt@kernel.org,
-        krzk+dt@kernel.org
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        thierry.reding@gmail.com, jonathanh@nvidia.com
-References: <20220325072141.28597-1-mkumard@nvidia.com>
- <f35537de-6352-e6db-b4a6-17b1ab96deda@kernel.org>
- <32e425be-5d78-e1e0-6ec4-70ea21895e15@nvidia.com>
- <ca18fa50-f63b-8131-07a2-8c44daed9f26@kernel.org>
-From:   Mohan Kumar D <mkumard@nvidia.com>
-In-Reply-To: <ca18fa50-f63b-8131-07a2-8c44daed9f26@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: MA1PR0101CA0034.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:a00:22::20) To MN2PR12MB4437.namprd12.prod.outlook.com
- (2603:10b6:208:26f::17)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 77a9677f-8e6f-407f-f93d-08da10831678
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5224:EE_
-X-Microsoft-Antispam-PRVS: <BL1PR12MB52248B8A3CBBC0D59E7C1B9FC11D9@BL1PR12MB5224.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: mXH1Ab1UW4wgmSYV1QGgtWKboGFgw8zD0WC4FvQUlh6dZn/HQOkEH3UWSL2BF1vbmjiiq8sryixI8rrFZ7NKLHC55YQ8OFfgqSi24OWOEMR7U3rauzmZnE0FdfXtfPlzdMA1tzCTGSe9JMMt8uroVs9GFfvP3a/KvX/XdUsTEkYSrRxhklzrQ7rs1er7O7jGq6ldd9NifiVdGoltchwHxNJQAKyo8XbO7cqbyMMoJSAxZlFHlMoeBzVOEK6PJ3cbkXKD1s0n482UEsfaUpNjPbMITL46XHsph629Y4alSuls1qtZbaAOUDcCWFkqKpYfn6z32me1FakBJEZmBmyaQZUGfyY0qLjxoA0k4HcHWPGpf2azqEFyhQVI8q5VosZ1zQyHBt3fBFWDNEckLGzMbo0MARrCRuclkgeD0VsVYI8eom3B9yHrtEmswg7NGNz+asnCIfoPBKy//1gvVjZxFWcW8x9u4e5cPhvK4bmo+iHkwE9VlLhkIpZfxZhSil+X4RR2MmyTXkFzDAhDMXqQGercJI0tNUEWcnoeWNQYIQsFBgkNw6F2Y0IiMTuk64RcUASbNd2pumkXBXBaBIXuNU3BsNgkn8ewh3ZVsSPCgH5O6ItdDEx1DPCloBdHwViTKEyNOEd3NgPRo2w8rm5JDEvNAw7SMkIBoVQ9AEYldDL4io8ohOKR/Q+n6hQ4LQmwyXtEsBMKsHqdwFjBvOZtmyo2/4SJ8Xiz7zmLnWSTpxA=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4437.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(83380400001)(6486002)(2616005)(53546011)(6666004)(31686004)(4326008)(508600001)(107886003)(5660300002)(186003)(26005)(6512007)(38100700002)(36756003)(6506007)(66476007)(2906002)(66556008)(316002)(66946007)(31696002)(8936002)(8676002)(86362001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YW1Ndk1sdjl3bkRnUDRvaG9kTjdsMGt3U3lxR09VMEYwaVdFYnYyQWZhT2oz?=
- =?utf-8?B?VXNzcmZEbGYvY3JaOGZVTVI4N1JLUjJWYlJ6SHRDVDVhdzZaOC9KSUlETng1?=
- =?utf-8?B?T0dOSHkrQjNKL2RaT1BoajZwUWg1UVROUGJKQXBWRGdqU0hNYXNlNnUvZ3Z5?=
- =?utf-8?B?Vm01WUFXdlUyazBOdXRjWlZSdGIyUEhndHpMQnJwRUtiKzlvOGdoL3pnKzRD?=
- =?utf-8?B?d2J0YVJ1TXFhUW5sakxqNDRZNm1sNzg0UVdCWHo4R2ducWlNc3FhM3AwODBY?=
- =?utf-8?B?cEhGeTNQT0FjVmxwaUxEOHBMSS80bFpnMmRZS05ZMENUWjQrMGhBRXBLZXpy?=
- =?utf-8?B?WmtBZG1PS0g3L1BmcjRSTy9GN0xlSENNUnR3M2FvaHhtalNTVGxWOVVJdDM3?=
- =?utf-8?B?Z0NSSVBlUE1lTHQxcCtoY0FRWEQwR3FqRnljTzlrTjBuN1hGd2RESjNsbjMv?=
- =?utf-8?B?c3FQbEhWVFNpR1BiS1M3RnljalpxMW5MUkQ5cEpiY2cvTDJmTFpaZjZjSmky?=
- =?utf-8?B?bmlnUjR2M3pEQm1GVDllZWpxaTN2S1piaEt2eEMrMXNVRlQ4ckxIa2YxaGM1?=
- =?utf-8?B?NEh1SkoyZFAzUGVyRzBrV21IVm1aWk9ITEU3ZW95Q25PQS9uK0UzbkxXdklp?=
- =?utf-8?B?aWc3M1BNMTVhU0cvSVRlR1EwcmR2dDIvVE05cUJRTDlWR3NreDJvUFJWWWlq?=
- =?utf-8?B?M1JQMExpUnlvRzJQWHNOYnNBTUVON005MUJzeGZGQUordVo2NnFiZTQxM2Zz?=
- =?utf-8?B?YW9iK2J4VnkvVHIrU0k0Um1rY2NxV2xneWJnbTl5KzdPL3Jxb09BeUlDM05S?=
- =?utf-8?B?RmJoWk5SZCtqcURqaXlhV2dPNnRRK0hDTWRxNnNYWUxRSzJiME9uVmpEMnZp?=
- =?utf-8?B?ZmxHRllMdWtwWGxDWm5pM0krYTFTUkRYR1FUdVVtQUh3VE94eHNoS1NBdHRu?=
- =?utf-8?B?SmRWQ3Y4bmt3UjJUS2RlMEV2VDkzRzZrRFZlVU94VXp3NFJJQVpEbFhxZXlH?=
- =?utf-8?B?SER4SG93TDFjSUlPZEVVMkpyL3Q3bVNGamJueWY2bVJ5RW1zcE4xTEx2dmdt?=
- =?utf-8?B?ajVQUHNzOC8zQWc0cm9hZGxRZW1CeG9UTkJhdDNCVkNSVmJncU9saUlSdzdj?=
- =?utf-8?B?QlF0MTdGN3c4aktqc095d2FDcGFhZS9JMHBpVFNtSHRvUEQ2RkpNTGhWYlky?=
- =?utf-8?B?SWJpdE15T3pZZVFzSjNLRlVSS2YrVklSeVZLUUVxYnorNmFRQTMraG1lM2hM?=
- =?utf-8?B?ZkpBeS9PQ1VvcTk4SGpvVlpvSkRxRmtRTmMxT2dadjZYNEN2U2R6VVUzKy9r?=
- =?utf-8?B?SE9RTDhVSVZ3Yk1ZZXFwYnJzNlRCdFdYWUE4bHo2VUtkLzJ2T3BZTlFtREp1?=
- =?utf-8?B?SzQrYURmbG5OQ1dZM2FDU282cDhSc1V2Q0tmMTJTQ1dBUlM0bStlYkNqQWtr?=
- =?utf-8?B?di9KUGdNUkY3UEExdC9ZdjJBZFhzeXdHQ1VPeXJDOHlrNUJSK1VHeDZLNlpT?=
- =?utf-8?B?YkRRMUZtR3RXZU8xdktEOW1lWUNzc0JRNnhrdGIzRDJXMTZjOElrV1RjdkdT?=
- =?utf-8?B?ajhac0dleHN4TW8vSTkxd0tEVGhpQ2d6VWhHSnNWeE9sZlp4dWp1TXpIcXo4?=
- =?utf-8?B?K2ZPckd4Ny9iOHRtZ25aZUhjOE8zb042cnUzRDU0UFdMSzdNVlBSM2RhcXkr?=
- =?utf-8?B?ZTNDMEVHd1ZYUDJIOEdCTVlqVEJ6b3RUSjF6YjNlUmI2SC8yU3dRRzV3VEN2?=
- =?utf-8?B?bkw0TjRPdFIzK014dDROL1hEQ0dQaTFLVEVjd3M1RGM1VE51bDRaWS8zQmEz?=
- =?utf-8?B?MVZ6RC9vUFlQUUFwK24rTHRFY216aGw3YUJwb29KdjRtV1oxalE3ZG5oUlY4?=
- =?utf-8?B?bmlxMEo3dW9rRkFxTCszbUlTL2g1alFMSnpnV3FjUWtEcUxITk1DdTRnZ296?=
- =?utf-8?B?U0NaNjdNUGlXckR5NzBnU3JsNXJZVHRGb2dKaUtGWmZOdldjZkExeUM4eGJ6?=
- =?utf-8?B?QnNmZzJhZFlwdGpLVzJvS0RtaENtTEM2ejhwT3Q3RDBPRmxpTUlKc2dsdmZN?=
- =?utf-8?B?NlgxZmh5T0s0ZzRmNTcrZDVzSW5MSURXektXTWx2d0c2U2lNN3hEVWJvbHpu?=
- =?utf-8?B?UjJaQU5RYUttay9PV0dlOGh0S1R2bmtnVzBCYVBNQzIrRlJWeFk5clBXYTFW?=
- =?utf-8?B?akY2LzZlaTY0cU9MUU4yL3JXdEpDTlJUWjQ1TS9veDZSWEJ2clIveVV0OEZQ?=
- =?utf-8?B?ZFRlSGZmbFhqK2UzUGtOSmpycUN6Qm9EQTB6cjVpa0NoNVphREFIa1RjbGFM?=
- =?utf-8?B?Q0Robnpwd2ttd3lSSUs4dm1JQlhaZGhjR2xCYUgraC9ueGhJT0h1QT09?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 77a9677f-8e6f-407f-f93d-08da10831678
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4437.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Mar 2022 06:20:43.3726
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: y6MFi2GkoqmEqXQZt1Ryk+L938ySYvGbZTWpdS/XK+8Xx4c0T+1a8yalRpDuRTyPtQuSlZJfk9WHYqgAN25QgQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5224
+        Mon, 28 Mar 2022 02:26:02 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56BB34E3AA
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 23:24:22 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2e68c93bb30so110961577b3.18
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 23:24:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=x0B3czyjsM+UfZLmfIxDKqt01DOoxfjklLpknwf6OIA=;
+        b=BKA5tvIg1VJxcH3DbfLPgKEmNl0vjbLvRfkVXAU5KOW6bVmQ2bhanMOPwMHb8ztUmQ
+         J5mchyAWm/UvwWoxDViWBVmO8GuuadAnKIkOWzyk5xLtFVBDV9Yb4qOLjl1EJ43ikEIx
+         Oc9YwXCZIFhR1xRWdxe3Po1vWtRWfs3+v/HLJDdepOd5ORa/7ZKd95V6aXVjrRuO4yGx
+         ikmBGu/ZQn57GynRRE3t5Ntqw2S3tlVptup2j2rRCvF/Ntq609BDHgmPPpys2mfXv15g
+         MFbseTvzaVUmkNfqrCI/LJ2CxU9x0kmUVc4/nvoQTg4gP/bBKKL6IQ1HoA43KgvWFefJ
+         kw5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=x0B3czyjsM+UfZLmfIxDKqt01DOoxfjklLpknwf6OIA=;
+        b=xZ4jtfE8h5L/ETAGsoQniAplUHkD/lPu8+3YO5edp18lFNk/HL3fhPe3dDsWx00LM2
+         upq3ALFZbi3U34yF3k8rg7K06ee+Y3YZxtFlb4khaejvPURclBMkIU4fs1lu/U/T+etK
+         4iCOpmU3+OrlcBPuOSh5vJiHzalj1bXYazgbZC2Jo12bqi4r3tc+LKhPUoRehtO6Bfhz
+         ArRWyOlpfU74rgC6Y7B0e3hat48rTfARmmoizZHT3BS+QPhE1bmuf2HM9QnULso11sMH
+         UYoj3gPXX+EfoRZVXz37vHUov5k9m4wRz+7r85VwkmRJXph7Ux84U2hn4TVLHdDJFu9J
+         estQ==
+X-Gm-Message-State: AOAM530dpnMm26AntQwpQRyrbjYyd48Kyb+Qfe+b+aFpmv+6GRYAEw18
+        +SsDLZLUSrWO5RZgTVOSzgv8vRcrzuOK
+X-Google-Smtp-Source: ABdhPJxWHgdCIIH4SXciDGG4Nax8iqLB+oB99XOa+1GirXx4Tq9c1PYuzpznG8p4LqOmcttKMzoe42FGpUSW
+X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:ef08:ed1b:261f:77fa])
+ (user=irogers job=sendgmr) by 2002:a81:7802:0:b0:2e5:c28d:171b with SMTP id
+ t2-20020a817802000000b002e5c28d171bmr23999477ywc.236.1648448661434; Sun, 27
+ Mar 2022 23:24:21 -0700 (PDT)
+Date:   Sun, 27 Mar 2022 23:24:09 -0700
+Message-Id: <20220328062414.1893550-1-irogers@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
+Subject: [PATCH 0/5] Make evlist CPUs more accurate
+From:   Ian Rogers <irogers@google.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        James Clark <james.clark@arm.com>,
+        German Gomez <german.gomez@arm.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Alexander Antonov <alexander.antonov@linux.intel.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     Stephane Eranian <eranian@google.com>,
+        Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+evlist has all_cpus, computed to be the merge of all evsel CPU maps,
+and cpus. cpus may contain more CPUs than all_cpus, as by default cpus
+holds all online CPUs whilst all_cpus holds the merge/union from
+evsels. For an uncore event there may just be 1 CPU per socket, which
+will be a far smaller CPU map than all online CPUs.
 
-On 3/25/2022 3:12 PM, Krzysztof Kozlowski wrote:
-> External email: Use caution opening links or attachments
->
->
-> On 25/03/2022 10:31, Mohan Kumar D wrote:
->> On 3/25/2022 12:56 PM, Krzysztof Kozlowski wrote:
->>> External email: Use caution opening links or attachments
->>>
->>>
->>> On 25/03/2022 08:21, Mohan Kumar wrote:
->>>> Add iommus property for hda and enable the node for P3737 + P3701
->>>> platform.
->>>>
->>>> Signed-off-by: Mohan Kumar <mkumard@nvidia.com>
->>>> ---
->>>>    arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts | 1 +
->>>>    arch/arm64/boot/dts/nvidia/tegra234.dtsi                      | 1 +
->>>>    2 files changed, 2 insertions(+)
->>>>
->>>> diff --git a/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts b/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts
->>>> index 34d6a01ee1c6..156d5d95fde7 100644
->>>> --- a/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts
->>>> +++ b/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts
->>>> @@ -1751,6 +1751,7 @@
->>>>
->>>>                 hda@3510000 {
->>>>                         nvidia,model = "NVIDIA Jetson AGX Orin HDA";
->>>> +                     status = "okay";
->>> Nodes are enabled by default. Why do you need this?
->> hda node status is set to "disabled" by default in soc dts file
->> tegra234.dtsi. The enable is controlled by platform specific dts files.
-> Oh, surprise... why do you override nodes with full path? This is
-> error-prone and makes any changes (like node name fixing) difficult.
-> This should be overridden by label.
-    I see similar method is followed for earlier boards too for hda and 
-other nodes. As chance of changing the node name is most unlikely due to 
-node name is closely tied to HW base address for a given chip. If still 
-there is a concern will fix with label in next patch.
->
->
-> Best regards,
-> Krzysztof
+These patches change cpus to be called user_cpus, to reflect their
+potential user specified nature. The user_cpus are set to be the
+current value intersected with all_cpus, so that user_cpus is always a
+subset of all_cpus. This fixes printing code for metrics so that
+unnecessary blank lines aren't printed.
+
+To make the intersect function perform well, a perf_cpu_map__is_subset
+function is added. While adding this function, also use it in
+perf_cpu_map__merge to avoid creating a new CPU map for some currently
+missed patterns.
+
+Ian Rogers (5):
+  perf evlist: Rename cpus to user_cpus
+  perf cpumap: More cpu map reuse by merge.
+  perf cpumap: Add intersect function.
+  perf stat: Avoid segv if core.user_cpus isn't set.
+  perf evlist: Respect all_cpus when setting user_cpus
+
+ tools/lib/perf/cpumap.c                  | 76 ++++++++++++++++++++----
+ tools/lib/perf/evlist.c                  | 28 ++++-----
+ tools/lib/perf/include/internal/evlist.h |  4 +-
+ tools/lib/perf/include/perf/cpumap.h     |  2 +
+ tools/perf/arch/arm/util/cs-etm.c        |  8 +--
+ tools/perf/arch/arm64/util/arm-spe.c     |  2 +-
+ tools/perf/arch/x86/util/intel-bts.c     |  2 +-
+ tools/perf/arch/x86/util/intel-pt.c      |  4 +-
+ tools/perf/bench/evlist-open-close.c     |  2 +-
+ tools/perf/builtin-ftrace.c              |  2 +-
+ tools/perf/builtin-record.c              |  6 +-
+ tools/perf/builtin-stat.c                | 11 ++--
+ tools/perf/builtin-top.c                 |  2 +-
+ tools/perf/util/auxtrace.c               |  2 +-
+ tools/perf/util/bpf_ftrace.c             |  4 +-
+ tools/perf/util/evlist.c                 | 16 ++---
+ tools/perf/util/record.c                 |  6 +-
+ tools/perf/util/sideband_evlist.c        |  2 +-
+ tools/perf/util/stat-display.c           |  2 +-
+ tools/perf/util/synthetic-events.c       |  2 +-
+ tools/perf/util/top.c                    |  6 +-
+ 21 files changed, 127 insertions(+), 62 deletions(-)
+
+-- 
+2.35.1.1021.g381101b075-goog
+
