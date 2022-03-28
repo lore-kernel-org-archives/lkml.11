@@ -2,138 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C5B5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 14:00:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26713C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 14:03:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243565AbiC1OBz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 10:01:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60996 "EHLO
+        id S243591AbiC1OFD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 10:05:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239631AbiC1OBu (ORCPT
+        with ESMTP id S235942AbiC1OE5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 10:01:50 -0400
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6511929CB0;
-        Mon, 28 Mar 2022 07:00:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1648476009; x=1680012009;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ayM215iKfS3RVxHHf6+6kiEWl9gC2cMSZOj/C1/hktk=;
-  b=U8/IvxCtevfYoGYrmAhmdvhsaSlpF29tUqtt73uDLA1mNqIdn9gAh5Px
-   LS3s2pIN8sFmOrO/atdnDsCnOk2QBkaCZTV5pGjo+XhXYYarAiIIzXbCI
-   KuAYCgpNsw2miPHYKSwBDdywOVa9743uWj5iGnEiCOVJIgtcJbuIArtuB
-   FiU0E0VJSlejFS+KsPWvPv6sxjL5m10MlkFYv8diGYs+wI7oYwi9BScOm
-   b1YQukNL5OvfmlbFPT95RwnRBykJWQqZ02S/dtSs24P6pyjcRpe4glG6y
-   b8YQyedffRPaJTs0VmLXut/QlvD30JS5tFylRtBCgwTcQfY5ZDcCWeQ0m
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,217,1643670000"; 
-   d="scan'208";a="22935295"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 28 Mar 2022 16:00:05 +0200
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Mon, 28 Mar 2022 16:00:05 +0200
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Mon, 28 Mar 2022 16:00:05 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1648476005; x=1680012005;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ayM215iKfS3RVxHHf6+6kiEWl9gC2cMSZOj/C1/hktk=;
-  b=WuV252Nu+GZzN74VzCmlspBKd0dca8X2+xSzsUDOC+VBkSdAcRJKkpz9
-   V6ZhUvtyzJXo40EU/KoKsnsMA+udDgpFrmJjA0OOrI8Du6AE/IqQXvbD0
-   l7/oi3cIclt6kdqSsBk62dD3jTXzpYH4IITmDIWCq1j5VlQdR/7ht0rkB
-   UzXa+gf9sB2fMmE9Y4BJg30hxvVMBs2s+cV3pKJsYN741b+m12/z4LAVK
-   Ghd0BfGmPSMkfRYy9LlDPSTztxPRWJXf02LYJ3AALa7lqL+bNoPBea5QD
-   q3OLZ+wYdDSKr/JtyC5EC84xkLnc6lGkLWsLSzPCKdl/McKEhN7OLwWQj
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,217,1643670000"; 
-   d="scan'208";a="22935294"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 28 Mar 2022 16:00:05 +0200
-Received: from steina-w.localnet (unknown [10.123.49.12])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        Mon, 28 Mar 2022 10:04:57 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F63D5EDE7;
+        Mon, 28 Mar 2022 07:03:16 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id EEAE51F37E;
+        Mon, 28 Mar 2022 14:03:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1648476194; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3mKaj769f6o7BeoQ24YhxAdfu6PG3zqKO0SxHdXcFt8=;
+        b=CxlTxY/4QuwxdlwiSBSebYg2ffvjtZuWZJBb4D9zmxdkwtUEdlW8J3VxMITKwBWsigpRMj
+        pAdKTsV7/7ETFJrav28Hq4h6EXFYWZA8p7q50hiGTOBMJT+axsmIplUMIs+SBOGCy6i4AW
+        0dd9pKwCt1r5lcbUdd+UoZE/OyHIb6c=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1648476194;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3mKaj769f6o7BeoQ24YhxAdfu6PG3zqKO0SxHdXcFt8=;
+        b=bOjuzxjO/aBFTxAUkQvWrSHyXlWACDUicg1XK6iFj5JKFr9qzLq7MZ3TLtGjroogmRq/Y+
+        FdcgYGpJv7FooABA==
+Received: from kunlun.suse.cz (unknown [10.100.128.76])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 20160280065;
-        Mon, 28 Mar 2022 16:00:04 +0200 (CEST)
-From:   Alexander Stein <alexander.stein@ew.tq-group.com>
-To:     Jonathan =?ISO-8859-1?Q?Neusch=E4fer?= <j.neuschaefer@gmx.net>
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-actions@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-omap@vger.kernel.org,
-        linux-amlogic@lists.infradead.org, linux-arm-kernel@axis.com,
-        linux-aspeed@lists.ozlabs.org,
-        linux-rpi-kernel@lists.infradead.org,
-        chrome-platform@lists.linux.dev, linux-renesas-soc@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        kernel@dh-electronics.com, linux-mediatek@lists.infradead.org,
-        openbmc@lists.ozlabs.org, linux-tegra@vger.kernel.org,
-        linux-oxnas@groups.io, linux-arm-msm@vger.kernel.org,
-        linux-unisoc@lists.infradead.org,
-        linux-rockchip@lists.infradead.org,
-        linux-realtek-soc@lists.infradead.org
-Subject: Re: (EXT) Re: [RFC PATCH 0/1] Categorize ARM dts directory
-Date:   Mon, 28 Mar 2022 16:00:02 +0200
-Message-ID: <2100132.irdbgypaU6@steina-w>
-Organization: TQ-Systems GmbH
-In-Reply-To: <YkG2RPrtPaBNXb7a@latitude>
-References: <20220328000915.15041-1-ansuelsmth@gmail.com> <YkG2RPrtPaBNXb7a@latitude>
+        by relay2.suse.de (Postfix) with ESMTPS id 7ED6CA3BE5;
+        Mon, 28 Mar 2022 14:03:14 +0000 (UTC)
+Date:   Mon, 28 Mar 2022 16:03:13 +0200
+From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
+To:     Mimi Zohar <zohar@linux.ibm.com>
+Cc:     joeyli <jlee@suse.com>, Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Philipp Rudo <prudo@redhat.com>, Baoquan He <bhe@redhat.com>,
+        Alexander Egorenkov <egorenar@linux.ibm.com>,
+        AKASHI Takahiro <takahiro.akashi@linaro.org>,
+        James Morse <james.morse@arm.com>,
+        Dave Young <dyoung@redhat.com>,
+        Kairui Song <kasong@redhat.com>,
+        Martin Schwidefsky <schwidefsky@de.ibm.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-modules@vger.kernel.org,
+        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org,
+        stable@kernel.org, Eric Snowberg <eric.snowberg@oracle.com>,
+        Luis Chamberlain <mcgrof@kernel.org>
+Subject: Re: [PATCH 4/4] module, KEYS: Make use of platform keyring for
+ signature verification
+Message-ID: <20220328140313.GZ163591@kunlun.suse.cz>
+References: <cover.1644953683.git.msuchanek@suse.de>
+ <840433bc93a58d6dfc4d96c34c0c3b158a0e669d.1644953683.git.msuchanek@suse.de>
+ <3e39412657a4b0839bcf38544d591959e89877b8.camel@linux.ibm.com>
+ <20220215204730.GQ3113@kunlun.suse.cz>
+ <20220328101557.GA11641@linux-l9pv.suse>
+ <7265798627defd6111af4e3a863b8525b07c511d.camel@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <7265798627defd6111af4e3a863b8525b07c511d.camel@linux.ibm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Montag, 28. M=E4rz 2022, 15:21:08 CEST schrieb Jonathan Neusch=E4fer:
-> * PGP Signed by an unknown key
->=20
-> On Mon, Mar 28, 2022 at 02:09:14AM +0200, Ansuel Smith wrote:
-> > Hi,
-> > as the title say, the intention of this ""series"" is to finally
-> > categorize
-> > the ARM dts directory in subdirectory for each oem.
->=20
-> [...]
->=20
-> > [1] https://gist.github.com/Ansuel/47c49925ee7ef4b1dd035afc74679ab5
-> > [2] https://gist.github.com/Ansuel/19f61f1e583c49407ce35c10e770fbe0
->=20
-> Nice idea, thank you!
->=20
-> A few notes on categorization below.
-> [...]
-> >  create mode 100644 arch/arm/boot/dts/freescale/Makefile
->=20
-> Freescale has been part of NXP for a while, so it might make sense to
-> merge the freescale and nxp directories. I can't speak for
-> NXP-the-company, so that's just my view as a bystander.
+Hello,
 
-Please don't mix the names for arm and arm64. It's very confusing if the=20
-vendor directory is named differently for each architecture.
+On Mon, Mar 28, 2022 at 09:28:14AM -0400, Mimi Zohar wrote:
+> On Mon, 2022-03-28 at 18:15 +0800, joeyli wrote:
+> 
+> Hi Joey,
+> 
+> > Hi Mimi,
+> > 
+> > Sorry for bother you for this old topic.
+> 
+> Cc'ing Luis the kernel modules maintainer.
+> 
+> > 
+> > On Tue, Feb 15, 2022 at 09:47:30PM +0100, Michal Suchánek wrote:
+> > > Hello,
+> > > 
+> > > On Tue, Feb 15, 2022 at 03:08:18PM -0500, Mimi Zohar wrote:
+> > > > [Cc'ing Eric Snowberg]
+> > > > 
+> > > > Hi Michal,
+> > > > 
+> > > > On Tue, 2022-02-15 at 20:39 +0100, Michal Suchanek wrote:
+> > > > > Commit 278311e417be ("kexec, KEYS: Make use of platform keyring for signature verify")
+> > > > > adds support for use of platform keyring in kexec verification but
+> > > > > support for modules is missing.
+> > > > > 
+> > > > > Add support for verification of modules with keys from platform keyring
+> > > > > as well.
+> > > > 
+> > > > Permission for loading the pre-OS keys onto the "platform" keyring and
+> > > > using them is limited to verifying the kexec kernel image, nothing
+> > > > else.
+> > > 
+> > > Why is the platform keyring limited to kexec, and nothing else?
+> > > 
+> > > It should either be used for everything or for nothing. You have the
+> > > option to compile it in and then it should be used, and the option to
+> > > not compile it in and then it cannot be used.
+> > > 
+> > > There are two basic use cases:
+> > > 
+> > > (1) there is a vendor key which is very hard to use so you sign
+> > > something small and simple like shim with the vendor key, and sign your
+> > > kernel and modules with your own key that's typically enrolled with shim
+> > > MOK, and built into the kernel.
+> > > 
+> > > (2) you import your key into the firmware, and possibly disable the
+> > > vendor key. You can load the kernel directly without shim, and then your
+> > > signing key is typically in the platform keyring and built into the
+> > > kernel.
+> > >
+> > 
+> > In the second use case, if user can enroll their own key to db either before
+> > or after hardware shipping. And they don't need shim because they removed
+> > Microsoft or OEM/ODM keys.  Why kernel can not provide a Kconfig option to
+> > them for trusting db keys for verifying kernel module, or for IMA (using CA
+> > in db)?
+> >  
+> > In the above use case for distro, partner doesn't need to re-compiler distro
+> > kernel. They just need to re-sign distro kernel and modules. Which means
+> > that the partner trusted distro. Then the partner's key in db can be used to
+> > verify kernel image and also kernel module without shim involve.
+> 
+> From what I understand, distros don't want customers resigning their
+> kernels.  If they did, then they could have enabled the
+> CONFIG_SYSTEM_EXTRA_CERTIFICATE, which would load the keys onto the
+> "builtin" keyring, and anything signed by those keys could be loaded
+> onto the secondary keyring.  (Of course CONFIG_SYSTEM_EXTRA_CERTIFICATE
+> would need to be fixed/updated.)
 
->[...]
-> >  create mode 120000 arch/arm/boot/dts/nxp/armv7-m.dtsi
->=20
-> armv7-m.dtsi is a bit confusing, because it contains a few devices at
-> fixed addresses, so it looks vendor-specific at a first glance into the
-> file. However, if it is actually as vendor-neutral as the name implies,
-> I think it should live dts/ directly, rather than in vendor
-> subdirectories.
+You don't need to re-sign. You can just import the distro key into the
+firmware.
 
-This seems to be some generic devices common for all ARMv7M CPUs used in=20
-Cortex-M CPUs. It's also used by some stm32 .dtsi.
+> 
+> We've gone through "what if" scenarios before.  My response then, as
+> now, is post it as a patch with the real motivation for such a change.
 
-Best regards,
-Alexander
+Then that's what this does. Both modules and kernel run on ring0 so
+there is no practical distinction. For consistency verify both with the
+same keys.
 
+Either way if there should be a disctinction it should be explicit, not
+implicit.
 
+That is each option that imports keys should crate a basic keyring that
+just has keys, and we should have 'kexec' and 'module' keyrings that
+do not have keys, only link the keyrings that import keys from some
+specific source. All of them by default but you can adjust this in
+defconfigs depending on platform-typical usage.
 
+Contrast to that the current 'secondary' keyring that randomly links
+some key sources and not others, is used in some kexec implementations
+and not others. Also if you list the keys in it do you get the keys
+dynamically added at runtime, or also all the keys on the linked
+keyrings? Whatever you get is misleading and unclear.
+
+Thanks
+
+Michal
