@@ -2,108 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8157CC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 927D7C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 20:48:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346328AbiC1Usd (ORCPT
+        id S1346385AbiC1Usg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 16:48:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43204 "EHLO
+        Mon, 28 Mar 2022 16:48:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345663AbiC1Un0 (ORCPT
+        with ESMTP id S1346495AbiC1UpQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 16:43:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4956C66ADF;
-        Mon, 28 Mar 2022 13:41:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D37D8614D7;
-        Mon, 28 Mar 2022 20:41:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 466F0C341CD;
-        Mon, 28 Mar 2022 20:41:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648500103;
-        bh=ZMqRsVWH7Xix4Ul67rXjIZoC7fsabNACSNqXpoa4wzA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rtGzrvJs1iMpmwB+D4nDRkpYksccEbAcQtw7mnEZFASfZQl5TkYtS98q9TqdXvKMP
-         54R408zJoCQ9qg/WguoUbTa82GGIRLJb7YFVUe+faI+62qNH1y1UaGCg1eusDeaggF
-         L9i7SvK9QtxjuQn/jv7RHLY95v6G+3NJkPDycADPTZWwq9/hfoMP2jo+jjPARaT2NM
-         nRZ9z1gppNwAIrGr0IjfZoi4W5TxF4ckwQLYoE8ow6WT0ZDkzgvisD7w/XdvorZ9qR
-         OApcb7uaDI4BpTLE4KUnpLYPzrHRlei6VvHq4FisH40qfr2mtkIhrxHArwwCjvMz3Q
-         D6eWw7kIoC/KQ==
-Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
-        (envelope-from <mchehab@kernel.org>)
-        id 1nYwBI-000ldA-V1; Mon, 28 Mar 2022 22:41:40 +0200
-From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org
-Subject: [PATCH 21/26] media: dvb-usb: umt-010: use an enum for the device number
-Date:   Mon, 28 Mar 2022 22:41:33 +0200
-Message-Id: <5fd3c469faa115856f48037019e607edcb41d458.1648499509.git.mchehab@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1648499509.git.mchehab@kernel.org>
-References: <cover.1648499509.git.mchehab@kernel.org>
+        Mon, 28 Mar 2022 16:45:16 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A5EA18F;
+        Mon, 28 Mar 2022 13:43:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=PVRdwLRjbdaCvrvFVMElpF1SE8OywHiiQwb+mQwE81s=; b=qWapL4vKx4xwxmY09OrhllQm6L
+        BU1dDFYxJsD5tKND/6b+wQ3Aym8PGQ5Bam6kelQ7+mzYRc3h4I696m1e2DXKbUt5hDDrRTHVH39++
+        y5VXmy60nj4chA4+9DQtcph/1RD8vEXdSAjOfeBciXG+CW7MGeyBeXJlUq7BZljC3EZk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nYwCs-00D4Cm-4L; Mon, 28 Mar 2022 22:43:18 +0200
+Date:   Mon, 28 Mar 2022 22:43:18 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, UNGLinuxDriver@microchip.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net: lan966x: fix kernel oops on ioctl when I/F is
+ down
+Message-ID: <YkId5ssdyHH8JZ64@lunn.ch>
+References: <1ee5aec079e3eefff8475017ff1044bf@walle.cc>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1ee5aec079e3eefff8475017ff1044bf@walle.cc>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The device number is currently a value that needs to be the same
-on two separate tables, but the code doesn't actually enforce it,
-leading to errors as boards get added or removed.
+> > So rather than testing of running, it would be better to test if the
+> > phydev is NULL or not.
+> 
+> What about the following:
+> 
+> static int lan966x_port_ioctl(struct net_device *dev, struct ifreq *ifr,
+> 			     int cmd)
+> {
+> 	struct lan966x_port *port = netdev_priv(dev);
+> 
+> 	if (!phy_has_hwtstamp(dev->phydev) && port->lan966x->ptp) {
+> 		switch (cmd) {
+> 		case SIOCSHWTSTAMP:
+> 			return lan966x_ptp_hwtstamp_set(port, ifr);
+> 		case SIOCGHWTSTAMP:
+> 			return lan966x_ptp_hwtstamp_get(port, ifr);
+> 		}
+> 	}
+> 
+> 	if (!dev->phydev)
+> 		return -ENODEV;
+> 
+> 	return phy_mii_ioctl(dev->phydev, ifr, cmd);
 
-Fix it by using an enum.
+Yes, that is good.
 
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
----
-
-To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
-See [PATCH 00/26] at: https://lore.kernel.org/all/cover.1648499509.git.mchehab@kernel.org/
-
- drivers/media/usb/dvb-usb/umt-010.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/media/usb/dvb-usb/umt-010.c b/drivers/media/usb/dvb-usb/umt-010.c
-index 2181993771ae..464699b0b75b 100644
---- a/drivers/media/usb/dvb-usb/umt-010.c
-+++ b/drivers/media/usb/dvb-usb/umt-010.c
-@@ -81,11 +81,17 @@ static int umt_probe(struct usb_interface *intf,
- }
- 
- /* do not change the order of the ID table */
--static struct usb_device_id umt_table [] = {
--/* 00 */	{ USB_DEVICE(USB_VID_HANFTEK, USB_PID_HANFTEK_UMT_010_COLD) },
--/* 01 */	{ USB_DEVICE(USB_VID_HANFTEK, USB_PID_HANFTEK_UMT_010_WARM) },
--			{ }		/* Terminating entry */
-+enum {
-+	HANFTEK_UMT_010_COLD,
-+	HANFTEK_UMT_010_WARM,
- };
-+
-+static struct usb_device_id umt_table[] = {
-+	DVB_USB_DEV(HANFTEK, HANFTEK_UMT_010_COLD),
-+	DVB_USB_DEV(HANFTEK, HANFTEK_UMT_010_WARM),
-+	{ }
-+};
-+
- MODULE_DEVICE_TABLE (usb, umt_table);
- 
- static struct dvb_usb_device_properties umt_properties = {
-@@ -127,8 +133,8 @@ static struct dvb_usb_device_properties umt_properties = {
- 	.num_device_descs = 1,
- 	.devices = {
- 		{	"Hanftek UMT-010 DVB-T USB2.0",
--			{ &umt_table[0], NULL },
--			{ &umt_table[1], NULL },
-+			{ &umt_table[HANFTEK_UMT_010_COLD], NULL },
-+			{ &umt_table[HANFTEK_UMT_010_WARM], NULL },
- 		},
- 	}
- };
--- 
-2.35.1
-
+     Andrew
