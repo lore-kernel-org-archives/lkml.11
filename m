@@ -2,104 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 939BAC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 17:16:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE373C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 17:17:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244539AbiC1RS2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 13:18:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50906 "EHLO
+        id S244528AbiC1RTA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 13:19:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238830AbiC1RS1 (ORCPT
+        with ESMTP id S236199AbiC1RS5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 13:18:27 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E966655499
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 10:16:45 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id p15so30074887ejc.7
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 10:16:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=T/+x5VpPJ7QLm43SsL5WVchw6Hk5lFlDqtEMZZRXdAw=;
-        b=tnv2I3sJnt9P4shxPZks6Awb7xKTNAaVVzkvtSPNn11Eo9q8xy1EH3zPgu9aSofBYh
-         YfSc3jSne+KcczprZmny5dXFpuvWnqLmijCQ1xDhimjrzcD9+BKJ6QFsTdzbPHksO8DJ
-         nphyUv7MkP0pqSLKCkxa9vCkjDs5m5hlcxtImQLmK107A0RMUA+Zr6ShNR7NQT404FuL
-         v4Co5wmO1bpG67+Rqh3kq24HXyowT5hd5VAeSY5OY7NhqUvIGGJ4QxdWJokgHnSK1a59
-         8DzWnySwNjd7+joK5pobvPaQ/iXjzA/u4HBfMgjZv7r2IMwm1nIAnOZzUIKZML1ufYzi
-         JuMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=T/+x5VpPJ7QLm43SsL5WVchw6Hk5lFlDqtEMZZRXdAw=;
-        b=PeMkF5BNDU/2WcL7HXF6DDCAeXZjc2ZgHGE8EBi7uBKbkLy7BVpDaC//+NxQmPZGGD
-         m6FDz5og7d5uS87KRW21Z7Dpn96DTDh9IYRMkps8hu01962Y/1KWXjewWFr2fC8wbQ5Z
-         I8GUyHuLXIOfIS6+uRfJJAFkNBGnSSAxvtkGnwLf3xeda/UdCaKFeqcK9VOdwxv/AcJq
-         Z1BqFL0g77o6Z9JPmAmlDqbHpXJY/K4kP54Pqx3A3+biY+ibsWYgYPrwWzflhMue9MiF
-         r3VR8gDrSrw4U3phmGBn39m1efY4addqMm9yLvOy6Ms+dUJlZkQqmVFGShRy1xSptmeE
-         6jtQ==
-X-Gm-Message-State: AOAM532j2H8gyQXap0gCb+76NMlcccZDktO65+RU03EbZZvvZ5+xl3PU
-        SARJvSiwca7uNRhFzIAyRFFTxQ==
-X-Google-Smtp-Source: ABdhPJxq3kmLfp2xsm583j+YyKQFEVnIjTN7dkIeVm3QtFs5iM0ClGpb2KO/nkDh5XzG8ycIh7mmLg==
-X-Received: by 2002:a17:907:72c4:b0:6df:917c:df6f with SMTP id du4-20020a17090772c400b006df917cdf6fmr29151235ejc.120.1648487804489;
-        Mon, 28 Mar 2022 10:16:44 -0700 (PDT)
-Received: from [192.168.0.162] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id a102-20020a509eef000000b0041614c8f79asm7133642edf.88.2022.03.28.10.16.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Mar 2022 10:16:44 -0700 (PDT)
-Message-ID: <3f5c5ff5-8ae6-6c05-15fb-35b13259be4d@linaro.org>
-Date:   Mon, 28 Mar 2022 19:16:43 +0200
+        Mon, 28 Mar 2022 13:18:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0187164BE0
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 10:17:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 891FCB8117D
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 17:17:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3505C340F0;
+        Mon, 28 Mar 2022 17:17:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648487833;
+        bh=tsHOIB8dmpEnEigOmeEzDX7+3UaF+f5tQDsXH8gievU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=R+dhNRJ3fJh94YsiEAPa1fz1v7bIvyALQBN7pfBRthhbjgJBB/MVXl5gZBOQsiMlV
+         VwO+I5g9NbgOzKZh0i+HOw+qKjeDKND6BAodGwsbLoQEqH98Syj8UynG/+rr6US8Uu
+         j4FSxhaE/h0BO8fghQhNfSv+5SKpiq9r3JuHUTvcu+oF+f1kztqR4CznJQWopZFJ7L
+         O3auhUsc+FUZoUaKW+2xQSjLd4e1yRCzmxz5S+odM3LswUuClzU2xXNxcTmUTuNKh/
+         C4v+QgKdbNiA73tkI5Sqk9Z6vuknKXg36V2QT79anPX7LTPEgSBeB780JEjCX6kCDg
+         dRqiMKebjRkcQ==
+Date:   Mon, 28 Mar 2022 10:17:11 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     kernel test robot <lkp@intel.com>
+Cc:     Eric Dumazet <edumazet@google.com>, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Brian Vazquez <brianvv@google.com>,
+        linux-riscv@lists.infradead.org
+Subject: Re: net/core/dev.c:10290:18: sparse: sparse: cast removes address
+ space '__percpu' of expression
+Message-ID: <20220328101711.111e1dd5@kernel.org>
+In-Reply-To: <202203281436.hsNgYWWu-lkp@intel.com>
+References: <202203281436.hsNgYWWu-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 4/6] arm64: dts: qcom: sm8250: move sound node out of soc
-Content-Language: en-US
-To:     Vinod Koul <vkoul@kernel.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-arm-msm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220328143035.519909-1-vkoul@kernel.org>
- <20220328143035.519909-5-vkoul@kernel.org>
- <3cc9c1a0-45f3-cb1b-1991-f51da4789afd@linaro.org> <YkHs5TuYBKmOLrHO@matsya>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <YkHs5TuYBKmOLrHO@matsya>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28/03/2022 19:14, Vinod Koul wrote:
-> On 28-03-22, 17:14, Krzysztof Kozlowski wrote:
->> On 28/03/2022 16:30, Vinod Koul wrote:
->>> The soc node expects all the nodes to have unit addresses. The sound
->>> node does not have that which causes warnings:
->>>
->>> arch/arm64/boot/dts/qcom/sm8250.dtsi:2806.16-2807.5:
->>> Warning (simple_bus_reg): /soc@0/sound: missing or empty reg/ranges property
->>>
->>> Move sound node out of soc to fix this
->>>
->>> Signed-off-by: Vinod Koul <vkoul@kernel.org>
->>> ---
->>>  arch/arm64/boot/dts/qcom/sm8250.dtsi | 6 +++---
->>>  1 file changed, 3 insertions(+), 3 deletions(-)
->>>
->>
->> I don't know the SM8250, but usually the sound node (e.g. containing
->> audio-codec) is not part of SoC. I propose to remove it entirely from
->> DTSI and define in same place in each DTS. It makes more sense logically
->> in such case - one clearly see which board defines the sounds, which
->> does not.
+CC: riscv, is there something special about cmpxchg() on that arch?
+We don't see it on x86, and I don't see anything special in the code
+for riscv, at least on 5.17.
+
+On Mon, 28 Mar 2022 14:28:34 +0800 kernel test robot wrote:
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> head:   ae085d7f9365de7da27ab5c0d16b12d51ea7fca9
+> commit: 625788b5844511cf4c30cffa7fa0bc3a69cebc82 net: add per-cpu storage and net->core_stats
+> date:   2 weeks ago
+> config: riscv-randconfig-s032-20220328 (https://download.01.org/0day-ci/archive/20220328/202203281436.hsNgYWWu-lkp@intel.com/config)
+> compiler: riscv64-linux-gcc (GCC) 11.2.0
+> reproduce:
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # apt-get install sparse
+>         # sparse version: v0.6.4-dirty
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=625788b5844511cf4c30cffa7fa0bc3a69cebc82
+>         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+>         git fetch --no-tags linus master
+>         git checkout 625788b5844511cf4c30cffa7fa0bc3a69cebc82
+>         # save the config file to linux build tree
+>         mkdir build_dir
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=riscv SHELL=/bin/bash net/core/
 > 
-> Most of our boards have sound, should we duplicate it in all the
-> boards..? Bjorn..?
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> 
+> sparse warnings: (new ones prefixed by >>)
+>    net/core/dev.c:3254:23: sparse: sparse: incorrect type in argument 4 (different base types) @@     expected restricted __wsum [usertype] csum @@     got unsigned int @@
+>    net/core/dev.c:3254:23: sparse:     expected restricted __wsum [usertype] csum
+>    net/core/dev.c:3254:23: sparse:     got unsigned int
+>    net/core/dev.c:3254:23: sparse: sparse: cast from restricted __wsum
+> >> net/core/dev.c:10290:18: sparse: sparse: cast removes address space '__percpu' of expression  
+>    net/core/dev.c:3759:17: sparse: sparse: context imbalance in '__dev_queue_xmit' - different lock contexts for basic block
+>    net/core/dev.c:4961:17: sparse: sparse: context imbalance in 'net_tx_action' - different lock contexts for basic block
+> 
+> vim +/__percpu +10290 net/core/dev.c
+> 
+>  10282	
+>  10283	struct net_device_core_stats *netdev_core_stats_alloc(struct net_device *dev)
+>  10284	{
+>  10285		struct net_device_core_stats __percpu *p;
+>  10286	
+>  10287		p = alloc_percpu_gfp(struct net_device_core_stats,
+>  10288				     GFP_ATOMIC | __GFP_NOWARN);
+>  10289	
+>  10290		if (p && cmpxchg(&dev->core_stats, NULL, p))
+>  10291			free_percpu(p);
+>  10292	
+>  10293		/* This READ_ONCE() pairs with the cmpxchg() above */
+>  10294		p = READ_ONCE(dev->core_stats);
+>  10295		if (!p)
+>  10296			return NULL;
+>  10297	
+>  10298		return this_cpu_ptr(p);
+>  10299	}
+>  10300	EXPORT_SYMBOL(netdev_core_stats_alloc);
+>  10301	
+> 
 
-It's anyway empty here, so not much of saving lines f code...
-
-
-Best regards,
-Krzysztof
