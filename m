@@ -2,631 +2,304 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCDA2C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 23:27:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8059C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 23:27:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230479AbiC1X25 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 19:28:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35766 "EHLO
+        id S230494AbiC1X3B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 19:29:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230399AbiC1X2r (ORCPT
+        with ESMTP id S230442AbiC1X2t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 19:28:47 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 935D039149
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 16:26:58 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id i5-20020a258b05000000b006347131d40bso11919116ybl.17
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 16:26:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=4v15mL/KsIPcjfWANW6CoPVghkgsTalbfK+klAHCJek=;
-        b=Z+T8cdctJOlwOxOPCD8FwbVN5jmTHQhwkJeSpfR5EUpH8oHbldDxVNFatl9FApzrYe
-         jJoV2TD71fCY1Xk3UPGG3ldm7deIvEPOOwnwgkHcBSWsTAz9SU31GvMHRqko2Tsl+UWa
-         atqnoPx546YcT3rQ5IuzgDkFPi4CjarrDjerygQTCbC2/968Y8SN6x3v6/mUob/Drbi8
-         ME7HsxtVLQAtCxW4kQuNYrwg/JgYahEiQJxSd/6f7Am/HbHBHhDFOyWXyzMx0LWJVqug
-         ha74LCrLi0ejucXjBRd5k1Is5VI7MyLwxSIYGh67nSI5vgTpS42+Unm/DANEc5XldaX5
-         Xm0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=4v15mL/KsIPcjfWANW6CoPVghkgsTalbfK+klAHCJek=;
-        b=PpZ196bWu20LWt49yWKe2TKolPjO1e4nOjXOV/mQwjZcriof3MNWbsfEuraRE0783D
-         5QHa/MD8x9EIZlUQlVUZV6Mi2CBkGdXoy5gMOW26YN8V3mm2jOUyjZ2rqRoX2m8tBCd0
-         Oa9fAg2CE4AA5cohVVQmb82ramZulo3dcb1CnPiJGUn2GKCV1CoAvkYnpDmBiQ/cRb8l
-         BTfBpOupy890JV15arcaop6o/0QF2uoRuxb2qtvbrktn0H3EalSn+5A3ZnNCPl/YPO/i
-         7V4DTREWc6RiMULtfJPfIJEFZVnyrCPCvrxUxqFejqITXc+vDWfVSP8etdtH/xiy3h34
-         x6bg==
-X-Gm-Message-State: AOAM53212jKf9DnegHscxS7knO4wluv2QSE7LMJtYk+edX1Tx7w02CFX
-        BFwPH2wP0F4/BvMWLGB0atOwHk9FbM15
-X-Google-Smtp-Source: ABdhPJxKqcBq06zaby/ljA8yCASn4AANh+tfk1ttaLKylHz4aHnc3KQov81yk153WqOHf8Xek4FEkUrT+AgG
-X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:9d6a:527d:cf46:71e2])
- (user=irogers job=sendgmr) by 2002:a25:608:0:b0:634:5ff5:7c65 with SMTP id
- 8-20020a250608000000b006345ff57c65mr24798354ybg.282.1648510017688; Mon, 28
- Mar 2022 16:26:57 -0700 (PDT)
-Date:   Mon, 28 Mar 2022 16:26:44 -0700
-In-Reply-To: <20220328232648.2127340-1-irogers@google.com>
-Message-Id: <20220328232648.2127340-3-irogers@google.com>
-Mime-Version: 1.0
-References: <20220328232648.2127340-1-irogers@google.com>
-X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
-Subject: [PATCH v2 2/6] perf evlist: Rename cpus to user_requested_cpus
-From:   Ian Rogers <irogers@google.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        John Garry <john.garry@huawei.com>,
-        Will Deacon <will@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        James Clark <james.clark@arm.com>,
-        German Gomez <german.gomez@arm.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        Alexander Antonov <alexander.antonov@linux.intel.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     Stephane Eranian <eranian@google.com>,
-        Ian Rogers <irogers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Mon, 28 Mar 2022 19:28:49 -0400
+Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 471524615E;
+        Mon, 28 Mar 2022 16:27:06 -0700 (PDT)
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22SKVkZ5021294;
+        Mon, 28 Mar 2022 16:27:05 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=Kw3jLJ70jqG9sObM/OH4j0l1ak18NE+mrptt4rTrb3E=;
+ b=cwM2pKJmaCcOxTAUgCpabATHAI0QMA547VhNdGjRmHth6jmeXTeJ1u0Udsk2vIkKqSSV
+ tTEUhlNOHzrAJJE89AlYcg5HEPyeikRbxHP89nJIlLneRUomteB14CWK1bFKdtqYJYdC
+ xndFga9MYEzAi6oAD489oexSJdtwG/iR/5w= 
+Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2174.outbound.protection.outlook.com [104.47.58.174])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3f20jvpaaf-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 28 Mar 2022 16:27:05 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YkD3LTefr69cpvLR7i3TAFLg0I9v7WMkK6QKTAffr/wXyvjd2jmSSdCYo/96Nw+3klU/b7Dk5aeB3tgqm8xNcSJMUhQSf3wJ64QWJ2ef28Vzsr9WQ2bdy+Wk6fjhjD3SJ3qUaP71rb1eFXt9uxLBm35yWQ/RBRTvQ1fRcMXF6yU9Ayy0r88BWZ56nzt0KfG9kigRX7xoYkIdRDkuFGb9wTn4GB9U8rlEZ1N36CTAw11uJDCyF1VN4rAyi3ssO8ljVnyfW9IH2eiKQij4l5mAlXcnOR6u2zXPIP2BGuy9+ul+j6JZUSc3nYPvbIU4c8HU06VobbcpJlo9PLGzFtiikA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Kw3jLJ70jqG9sObM/OH4j0l1ak18NE+mrptt4rTrb3E=;
+ b=D2C6cu+lN2KPC15raBl638P2d3BLhSgrDlnWVEy2fuGcFDSpP5/zR9exnXvFS8d83li8f+A14gWj4kPuSpbx63tG2b/D5oj/fV4DlhuOsjFkZWoeO8JQ1KScCxmXcaEyB77DCMgqNdbPBRlehPiPJHPfP8vS/l07DwtDPXZVUqOSOBUbahNe7nJNqk4rh4U5yJWn0Eb6r/0teXWhCaMt8JV+m9Qklth/Za9oc+5OBeKpTYraIOFO0vQzAsbBePs1eWPTSpWZ+ux/8uY2ELAwt1ltXOUaGRI5Cscfz7vdu098dhknKgdxzLTAYf6QOpxcq2p8LO9kK0gmg3XOFDQ0KQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SA1PR15MB5109.namprd15.prod.outlook.com (2603:10b6:806:1dc::10)
+ by MWHPR15MB1773.namprd15.prod.outlook.com (2603:10b6:301:53::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.22; Mon, 28 Mar
+ 2022 23:27:02 +0000
+Received: from SA1PR15MB5109.namprd15.prod.outlook.com
+ ([fe80::58c9:859d:dc03:3bb4]) by SA1PR15MB5109.namprd15.prod.outlook.com
+ ([fe80::58c9:859d:dc03:3bb4%3]) with mapi id 15.20.5102.023; Mon, 28 Mar 2022
+ 23:27:01 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
+        Paul Menzel <pmenzel@molgen.mpg.de>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "song@kernel.org" <song@kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "iii@linux.ibm.com" <iii@linux.ibm.com>
+Subject: Re: [PATCH v9 bpf-next 1/9] x86/Kconfig: select
+ HAVE_ARCH_HUGE_VMALLOC with HAVE_ARCH_HUGE_VMAP
+Thread-Topic: [PATCH v9 bpf-next 1/9] x86/Kconfig: select
+ HAVE_ARCH_HUGE_VMALLOC with HAVE_ARCH_HUGE_VMAP
+Thread-Index: AQHYGfmQYHpJmCxW+kSTgNf/KlCER6zRFs+AgASr4wA=
+Date:   Mon, 28 Mar 2022 23:27:01 +0000
+Message-ID: <F079AC10-2677-41B4-A4D5-F07BDE512BE1@fb.com>
+References: <20220204185742.271030-1-song@kernel.org>
+ <20220204185742.271030-2-song@kernel.org>
+ <5bd16e2c06a2df357400556c6ae01bb5d3c5c32a.camel@intel.com>
+In-Reply-To: <5bd16e2c06a2df357400556c6ae01bb5d3c5c32a.camel@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3693.60.0.1.1)
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9ce58adb-f92d-4935-f993-08da11127632
+x-ms-traffictypediagnostic: MWHPR15MB1773:EE_
+x-microsoft-antispam-prvs: <MWHPR15MB17737B0D17B0E496DB8D2323B31D9@MWHPR15MB1773.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: KwpeJ51w/UxVhcmWlBaFN/A4aewQAR3JM/+vk5ehu/+Jeo71V80xU4bUtuqGflwP6XrCKYjPuLCiBiyYK1EkdvrriRj0acKytmWaYKX/Ow/qmPCGUDhOgKpdJRd+Az8eFXW84OscA28Lf7VEr9LKffAoKSOBtPN1ZxQohEFAUb/04AieFXj/3LqVbQCmgxrcfFtdMAiMjQ7H+Mvk3+AumaPoLNmA9BRPuSQcMlvuyWvXWVpLYCiQ0LHj7X/4mz6sf3IJfL0FIdItL35YYwwRH3iq8GItRTHDKVHvDphlkGVz4S7bXxvD/oEqVgc+ThSatQ3ovn/UrJAAk24yp5kdAYtrAl9f72hvsUn4Tqr1aQEa73oQjvc/guDIeHuPDWZdkj1mta81C76MQ3btgIwl38m+XjgrpPK/l24fK1pJBKXlI7DH1433mqrL6h999AUb+sak5obc9mAXuMu58QHqOf74rNerOvaEGs+RO8i8tQ0WVg6MeZAsKbaIDUDOUdj1WfQfiKOj119YFuY7EnnGz6pkLAO38TdYFMdh+ESCPfMno6PjoQpX0qNr+CR012veer03siOVONXJWpcmzc/d2RCuEZd0HhL5Jip0d+gMtPikUIoi25htfDn45VBYN+tHF8ooM4DUA7pquqMs9sQ3MrXBSs+qtHEEGgAU+HQ+1h0J2gsGwfFp79tmnhvG0mIli4Dr30D+AAssT7Ud4UPTMew6IfjrxeyXdRB39vc6RCh+tJPK2HGrcKTE7anDe/EGfe0QvMSH6EIJWSemUU2HOf0jqfAjzSwX7N3cFxRBJuKgwLhoFZZkWRp3F5sP6a4bLZ23bVr+D/m/OgyJ+wYXKiuLo0WJfSe4nZ/vc+u6RhY=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5109.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(2906002)(33656002)(38070700005)(53546011)(7416002)(316002)(66946007)(4326008)(66476007)(66446008)(64756008)(66556008)(8936002)(38100700002)(83380400001)(186003)(76116006)(508600001)(6506007)(6512007)(71200400001)(122000001)(91956017)(966005)(8676002)(6486002)(5660300002)(2616005)(54906003)(86362001)(110136005)(36756003)(14583001)(45980500001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?SlpCSkZ4c3F5dnVPb2JNR29CWTFMQ2RjdktQL2srOEh0eVErUlo4bmxlUHYy?=
+ =?utf-8?B?ODZMT2U1U3F2d3lVaG13anM1QXBWZCs3MTNWWkRndTJSRnI1WWdBS1hVbXgz?=
+ =?utf-8?B?dnQvcXhmaGlUcjFUQnk0cnhZRWNSOFRKT2hSUWRGa05iZDhvVGs4SU5LUWsy?=
+ =?utf-8?B?ZlNJZU1JbW9DMit0QXllOXpSMzVNYnVhR2ExbUdXVUI0amZLVFcrNStPdEg0?=
+ =?utf-8?B?dUVtcTRhNVlTd1p6dGVEOWJwaHdWdVNhU0YyeHNQalFydGpWZzRDYXNwVjdv?=
+ =?utf-8?B?OUFkU3NMQ0lnMWVTNUovR1pyc0txaVg2Vld2ODIxWEpCSlRsaEVlQTFGRHlp?=
+ =?utf-8?B?UkgwN3c0TjJ1cEFlSkZnZldpZGUyVUNMejh2ejlEQyswTTZzTmoxeVRSMnhV?=
+ =?utf-8?B?aWIyUGMvMkhORTlNWE9GeGFQRVNaTUlyQjc5ZmNGVkZnZlRVR0hmR2c4SmFn?=
+ =?utf-8?B?c3dYRXo2eUhUR0RlWkhSQkFxRko5bVo1dWFZTGJqd0xnc3BkOWtyMTA0ZzIr?=
+ =?utf-8?B?bkt3M3JXNUtLNTc4c3UraWJHVHo3a290TU1xUFhzdllvdE9XcjJDYkg1aDhL?=
+ =?utf-8?B?a29sYWIvV0krbnhjZTZMa3VQNytid2VNUitYN3ByWW5LZmljQThlbU82eC9S?=
+ =?utf-8?B?cFMrbGRkWkV3Qis3N3VZanFyb0xTTTdhQ1Y3YXo4MnpUK2NUVGh6eUx0SWFy?=
+ =?utf-8?B?UW5adk1rMkRqVmo1WkNpRGJmbDNTRXA0YzArTlp2SGswUmpEczFGcVFDeDQz?=
+ =?utf-8?B?RWJ2WEVDbDU0UTlBWE9hVFE4b205U0s4bmdONFV0SHYwNExLV2l1alQ4Sk15?=
+ =?utf-8?B?SS95aFpGdUgyOTJaYjY2VUdHSkV5SkpwUUJFbVBCYm5ibHRqZ0cvQnNLaFFO?=
+ =?utf-8?B?cDFxSDNJaVFJbFNCRGsyYmdmSU9mRCtqY2FOTXYzU1EzajNiR3hDSWp2ZWl5?=
+ =?utf-8?B?Q3F5cktMaGNLRFlpMnpmajBGSjgrK2MyMXFiOS9QWmVuOVZTdWtwaFhuOWNi?=
+ =?utf-8?B?V0ZhNE85TEY2YlZ2YjBWZ1pkZVlUSUl3QXZNOFpSU3UrWkZuZEZLM2hBMXlt?=
+ =?utf-8?B?RUxrUHJRT0t5VGlrSHdWL0tSanRNUHM2UmhiSytTUElUSVZEMk44WlZlaDUw?=
+ =?utf-8?B?M0ZYazZTYWlsd2NEbVZkeXJXMCtSS1hyK0o3OTczK1htZmkrU0JnVWNYc3kz?=
+ =?utf-8?B?Ni9Uck1LcTFJVjg4UjZaTFpXc2J3QWJyWVdUZlhrZVFPNndlNjBLNDBFejdM?=
+ =?utf-8?B?NEtWWGNIU1JQR0h5OFM0cVJyUWovVlBLVmtpaDNvZkJ3Qk9vSEwwOVRSOWF6?=
+ =?utf-8?B?eUFLTytKMk1yN1VUL21JWkFhKzV3VDZ2VkZUQWdQQS9HSWZMK0dxdTQ5SWhG?=
+ =?utf-8?B?dllZck5peFpJQStXTVY0Q1pSR2hwcjhxV1dSV2lDSVFzQ1NaM0R2VE0vQ0tP?=
+ =?utf-8?B?aVNYczRzaEc0QVNUQ25XWW1BUjJ6YU1TQUZHT245d0ZyV2xYTkw5ZHdubTJr?=
+ =?utf-8?B?bFBGZ2hLWmZnam5ETDdseWR0Mk9tVUdrWk5wZm55Uk5XS2ordlBKTTlNeEFH?=
+ =?utf-8?B?elZNdmRqejF6RldBMUN6dWNnMStzcmwyRDNEcFN3MkdIY1pjSXFyR0NUbG9w?=
+ =?utf-8?B?U3VxTHYzY1VnWU9sSFRYclQyNXVhMDBlN0l5eGt1TWJTTmk3UThoZlY1ZGs0?=
+ =?utf-8?B?aWRSZTh1aFR0NGtlQllWTnE2dkNUckh3L1R6d3pOOG9KdnlhYmFpbHpVZHNj?=
+ =?utf-8?B?YTkzWVA5S0c0MjgvS2tHRFZDNldXN3ppMExEZ0ZsMVhwS3hjSm53NWdrMWJp?=
+ =?utf-8?B?ejdzSElLeUI5Z2Y5eFBtb3NxYUtUdGRpNmFtM2dDai9ZTTFGT1FXb2IvR1FS?=
+ =?utf-8?B?ZExQTmNFRkNtNEp6b1Fsa2pQbDdrakhocHM2Rk5adUpSY2VQSTU2WGRBZy8w?=
+ =?utf-8?B?ZkVnRWRkV2YybzVXd1dmTUdVenpZakk2ekhJSitHc0I2RGNXaFErVEJmWnVQ?=
+ =?utf-8?B?MzUvZEkrdlc0alJIVktUUllEVjBKSGY0YUNKRU9Sdlc5YkxaRndFU1JNbCtX?=
+ =?utf-8?B?RGltaExyQWhudVNqMDVMbFRac2RGeS9Sbm9kQnQ2WUNrcVNaOE1oOE9MTG9S?=
+ =?utf-8?B?MjBURDRSSFhZNE5iYVNJZi9lK3FrY0pKclpNTlBLalRpRXhZYVVMOE5STndV?=
+ =?utf-8?B?YzBJbHdtNHJmZXM4bnF1YzJ6cXNpMHBCOWpBL1h6UjZ3TDFrUEhvcnlkNUwx?=
+ =?utf-8?B?ZnB1T3JoN2k2T2wySDNUU3NqM3llWit5Vlo3YjdtejJTSWFvNWdYeXlFeGIw?=
+ =?utf-8?B?WkYyTFJXUlRHRnNvWW1FS0Evb1JPditTekQyc0NvcW8yYW1CbWZheUp2clVY?=
+ =?utf-8?Q?KUe9ZSSSptETjgaVVjhzByQoLwHsg++Zf7Pcw?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <BBBEF695DD3A664184917C84959AEC33@namprd15.prod.outlook.com>
+X-OriginatorOrg: fb.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5109.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9ce58adb-f92d-4935-f993-08da11127632
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Mar 2022 23:27:01.5544
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 9BZ1uBu7xALS/bO8tXfvkQWQXuNVwtPy0qiTQDrX0AwgI6DXZ2KWm6J/d0WnhYGdRCfMNO87jws5ynK/v7hByA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1773
+X-Proofpoint-ORIG-GUID: pd5TY0aeGJRIGmF7kNJg0C6H0qxFu5O9
+X-Proofpoint-GUID: pd5TY0aeGJRIGmF7kNJg0C6H0qxFu5O9
+Content-Transfer-Encoding: base64
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-28_11,2022-03-28_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-evlist contains cpus and all_cpus. all_cpus is the union of the cpu maps
-of all evsels. For non-task targets, cpus is set to be cpus requested
-from the command line, defaulting to all online cpus if no cpus are
-specified. For an uncore event, all_cpus may be just CPU 0 or every online
-CPU. This causes all_cpus to have fewer values than the cpus variable
-which is confusing given the 'all' in the name. To try to make the behavior
-clearer, rename cpus to user_requested_cpus and add comments on the two
-struct variables.
-
-Signed-off-by: Ian Rogers <irogers@google.com>
----
- tools/lib/perf/evlist.c                  | 28 ++++++++++++------------
- tools/lib/perf/include/internal/evlist.h |  7 +++++-
- tools/perf/arch/arm/util/cs-etm.c        |  8 +++----
- tools/perf/arch/arm64/util/arm-spe.c     |  2 +-
- tools/perf/arch/x86/util/intel-bts.c     |  2 +-
- tools/perf/arch/x86/util/intel-pt.c      |  4 ++--
- tools/perf/bench/evlist-open-close.c     |  2 +-
- tools/perf/builtin-ftrace.c              |  2 +-
- tools/perf/builtin-record.c              |  6 ++---
- tools/perf/builtin-stat.c                | 10 ++++-----
- tools/perf/builtin-top.c                 |  2 +-
- tools/perf/util/auxtrace.c               |  2 +-
- tools/perf/util/bpf_ftrace.c             |  4 ++--
- tools/perf/util/evlist.c                 | 15 +++++++------
- tools/perf/util/record.c                 |  6 ++---
- tools/perf/util/sideband_evlist.c        |  3 ++-
- tools/perf/util/stat-display.c           |  2 +-
- tools/perf/util/synthetic-events.c       |  2 +-
- tools/perf/util/top.c                    |  8 ++++---
- 19 files changed, 62 insertions(+), 53 deletions(-)
-
-diff --git a/tools/lib/perf/evlist.c b/tools/lib/perf/evlist.c
-index 9a770bfdc804..1b15ba13c477 100644
---- a/tools/lib/perf/evlist.c
-+++ b/tools/lib/perf/evlist.c
-@@ -41,10 +41,10 @@ static void __perf_evlist__propagate_maps(struct perf_evlist *evlist,
- 	 */
- 	if (!evsel->own_cpus || evlist->has_user_cpus) {
- 		perf_cpu_map__put(evsel->cpus);
--		evsel->cpus = perf_cpu_map__get(evlist->cpus);
--	} else if (!evsel->system_wide && perf_cpu_map__empty(evlist->cpus)) {
-+		evsel->cpus = perf_cpu_map__get(evlist->user_requested_cpus);
-+	} else if (!evsel->system_wide && perf_cpu_map__empty(evlist->user_requested_cpus)) {
- 		perf_cpu_map__put(evsel->cpus);
--		evsel->cpus = perf_cpu_map__get(evlist->cpus);
-+		evsel->cpus = perf_cpu_map__get(evlist->user_requested_cpus);
- 	} else if (evsel->cpus != evsel->own_cpus) {
- 		perf_cpu_map__put(evsel->cpus);
- 		evsel->cpus = perf_cpu_map__get(evsel->own_cpus);
-@@ -123,10 +123,10 @@ static void perf_evlist__purge(struct perf_evlist *evlist)
- 
- void perf_evlist__exit(struct perf_evlist *evlist)
- {
--	perf_cpu_map__put(evlist->cpus);
-+	perf_cpu_map__put(evlist->user_requested_cpus);
- 	perf_cpu_map__put(evlist->all_cpus);
- 	perf_thread_map__put(evlist->threads);
--	evlist->cpus = NULL;
-+	evlist->user_requested_cpus = NULL;
- 	evlist->all_cpus = NULL;
- 	evlist->threads = NULL;
- 	fdarray__exit(&evlist->pollfd);
-@@ -155,9 +155,9 @@ void perf_evlist__set_maps(struct perf_evlist *evlist,
- 	 * original reference count of 1.  If that is not the case it is up to
- 	 * the caller to increase the reference count.
- 	 */
--	if (cpus != evlist->cpus) {
--		perf_cpu_map__put(evlist->cpus);
--		evlist->cpus = perf_cpu_map__get(cpus);
-+	if (cpus != evlist->user_requested_cpus) {
-+		perf_cpu_map__put(evlist->user_requested_cpus);
-+		evlist->user_requested_cpus = perf_cpu_map__get(cpus);
- 	}
- 
- 	if (threads != evlist->threads) {
-@@ -294,7 +294,7 @@ int perf_evlist__id_add_fd(struct perf_evlist *evlist,
- 
- int perf_evlist__alloc_pollfd(struct perf_evlist *evlist)
- {
--	int nr_cpus = perf_cpu_map__nr(evlist->cpus);
-+	int nr_cpus = perf_cpu_map__nr(evlist->user_requested_cpus);
- 	int nr_threads = perf_thread_map__nr(evlist->threads);
- 	int nfds = 0;
- 	struct perf_evsel *evsel;
-@@ -426,7 +426,7 @@ mmap_per_evsel(struct perf_evlist *evlist, struct perf_evlist_mmap_ops *ops,
- 	       int idx, struct perf_mmap_param *mp, int cpu_idx,
- 	       int thread, int *_output, int *_output_overwrite)
- {
--	struct perf_cpu evlist_cpu = perf_cpu_map__cpu(evlist->cpus, cpu_idx);
-+	struct perf_cpu evlist_cpu = perf_cpu_map__cpu(evlist->user_requested_cpus, cpu_idx);
- 	struct perf_evsel *evsel;
- 	int revent;
- 
-@@ -536,7 +536,7 @@ mmap_per_cpu(struct perf_evlist *evlist, struct perf_evlist_mmap_ops *ops,
- 	     struct perf_mmap_param *mp)
- {
- 	int nr_threads = perf_thread_map__nr(evlist->threads);
--	int nr_cpus    = perf_cpu_map__nr(evlist->cpus);
-+	int nr_cpus    = perf_cpu_map__nr(evlist->user_requested_cpus);
- 	int cpu, thread;
- 
- 	for (cpu = 0; cpu < nr_cpus; cpu++) {
-@@ -564,8 +564,8 @@ static int perf_evlist__nr_mmaps(struct perf_evlist *evlist)
- {
- 	int nr_mmaps;
- 
--	nr_mmaps = perf_cpu_map__nr(evlist->cpus);
--	if (perf_cpu_map__empty(evlist->cpus))
-+	nr_mmaps = perf_cpu_map__nr(evlist->user_requested_cpus);
-+	if (perf_cpu_map__empty(evlist->user_requested_cpus))
- 		nr_mmaps = perf_thread_map__nr(evlist->threads);
- 
- 	return nr_mmaps;
-@@ -576,7 +576,7 @@ int perf_evlist__mmap_ops(struct perf_evlist *evlist,
- 			  struct perf_mmap_param *mp)
- {
- 	struct perf_evsel *evsel;
--	const struct perf_cpu_map *cpus = evlist->cpus;
-+	const struct perf_cpu_map *cpus = evlist->user_requested_cpus;
- 	const struct perf_thread_map *threads = evlist->threads;
- 
- 	if (!ops || !ops->get || !ops->mmap)
-diff --git a/tools/lib/perf/include/internal/evlist.h b/tools/lib/perf/include/internal/evlist.h
-index 4cefade540bd..e3e64f37db7b 100644
---- a/tools/lib/perf/include/internal/evlist.h
-+++ b/tools/lib/perf/include/internal/evlist.h
-@@ -19,7 +19,12 @@ struct perf_evlist {
- 	int			 nr_entries;
- 	int			 nr_groups;
- 	bool			 has_user_cpus;
--	struct perf_cpu_map	*cpus;
-+	/**
-+	 * The cpus passed from the command line or all online CPUs by
-+	 * default.
-+	 */
-+	struct perf_cpu_map	*user_requested_cpus;
-+	/** The union of all evsel cpu maps. */
- 	struct perf_cpu_map	*all_cpus;
- 	struct perf_thread_map	*threads;
- 	int			 nr_mmaps;
-diff --git a/tools/perf/arch/arm/util/cs-etm.c b/tools/perf/arch/arm/util/cs-etm.c
-index cbc555245959..11c71aa219f7 100644
---- a/tools/perf/arch/arm/util/cs-etm.c
-+++ b/tools/perf/arch/arm/util/cs-etm.c
-@@ -199,7 +199,7 @@ static int cs_etm_set_option(struct auxtrace_record *itr,
- 			     struct evsel *evsel, u32 option)
- {
- 	int i, err = -EINVAL;
--	struct perf_cpu_map *event_cpus = evsel->evlist->core.cpus;
-+	struct perf_cpu_map *event_cpus = evsel->evlist->core.user_requested_cpus;
- 	struct perf_cpu_map *online_cpus = perf_cpu_map__new(NULL);
- 
- 	/* Set option of each CPU we have */
-@@ -299,7 +299,7 @@ static int cs_etm_recording_options(struct auxtrace_record *itr,
- 				container_of(itr, struct cs_etm_recording, itr);
- 	struct perf_pmu *cs_etm_pmu = ptr->cs_etm_pmu;
- 	struct evsel *evsel, *cs_etm_evsel = NULL;
--	struct perf_cpu_map *cpus = evlist->core.cpus;
-+	struct perf_cpu_map *cpus = evlist->core.user_requested_cpus;
- 	bool privileged = perf_event_paranoid_check(-1);
- 	int err = 0;
- 
-@@ -522,7 +522,7 @@ cs_etm_info_priv_size(struct auxtrace_record *itr __maybe_unused,
- {
- 	int i;
- 	int etmv3 = 0, etmv4 = 0, ete = 0;
--	struct perf_cpu_map *event_cpus = evlist->core.cpus;
-+	struct perf_cpu_map *event_cpus = evlist->core.user_requested_cpus;
- 	struct perf_cpu_map *online_cpus = perf_cpu_map__new(NULL);
- 
- 	/* cpu map is not empty, we have specific CPUs to work with */
-@@ -713,7 +713,7 @@ static int cs_etm_info_fill(struct auxtrace_record *itr,
- 	u32 offset;
- 	u64 nr_cpu, type;
- 	struct perf_cpu_map *cpu_map;
--	struct perf_cpu_map *event_cpus = session->evlist->core.cpus;
-+	struct perf_cpu_map *event_cpus = session->evlist->core.user_requested_cpus;
- 	struct perf_cpu_map *online_cpus = perf_cpu_map__new(NULL);
- 	struct cs_etm_recording *ptr =
- 			container_of(itr, struct cs_etm_recording, itr);
-diff --git a/tools/perf/arch/arm64/util/arm-spe.c b/tools/perf/arch/arm64/util/arm-spe.c
-index 5860bbaea95a..86e2e926aa0e 100644
---- a/tools/perf/arch/arm64/util/arm-spe.c
-+++ b/tools/perf/arch/arm64/util/arm-spe.c
-@@ -144,7 +144,7 @@ static int arm_spe_recording_options(struct auxtrace_record *itr,
- 			container_of(itr, struct arm_spe_recording, itr);
- 	struct perf_pmu *arm_spe_pmu = sper->arm_spe_pmu;
- 	struct evsel *evsel, *arm_spe_evsel = NULL;
--	struct perf_cpu_map *cpus = evlist->core.cpus;
-+	struct perf_cpu_map *cpus = evlist->core.user_requested_cpus;
- 	bool privileged = perf_event_paranoid_check(-1);
- 	struct evsel *tracking_evsel;
- 	int err;
-diff --git a/tools/perf/arch/x86/util/intel-bts.c b/tools/perf/arch/x86/util/intel-bts.c
-index 4a76d49d25d6..d68a0f48e41e 100644
---- a/tools/perf/arch/x86/util/intel-bts.c
-+++ b/tools/perf/arch/x86/util/intel-bts.c
-@@ -110,7 +110,7 @@ static int intel_bts_recording_options(struct auxtrace_record *itr,
- 			container_of(itr, struct intel_bts_recording, itr);
- 	struct perf_pmu *intel_bts_pmu = btsr->intel_bts_pmu;
- 	struct evsel *evsel, *intel_bts_evsel = NULL;
--	const struct perf_cpu_map *cpus = evlist->core.cpus;
-+	const struct perf_cpu_map *cpus = evlist->core.user_requested_cpus;
- 	bool privileged = perf_event_paranoid_check(-1);
- 
- 	if (opts->auxtrace_sample_mode) {
-diff --git a/tools/perf/arch/x86/util/intel-pt.c b/tools/perf/arch/x86/util/intel-pt.c
-index 8c31578d6f4a..38ec2666ec12 100644
---- a/tools/perf/arch/x86/util/intel-pt.c
-+++ b/tools/perf/arch/x86/util/intel-pt.c
-@@ -382,7 +382,7 @@ static int intel_pt_info_fill(struct auxtrace_record *itr,
- 			ui__warning("Intel Processor Trace: TSC not available\n");
- 	}
- 
--	per_cpu_mmaps = !perf_cpu_map__empty(session->evlist->core.cpus);
-+	per_cpu_mmaps = !perf_cpu_map__empty(session->evlist->core.user_requested_cpus);
- 
- 	auxtrace_info->type = PERF_AUXTRACE_INTEL_PT;
- 	auxtrace_info->priv[INTEL_PT_PMU_TYPE] = intel_pt_pmu->type;
-@@ -632,7 +632,7 @@ static int intel_pt_recording_options(struct auxtrace_record *itr,
- 	struct perf_pmu *intel_pt_pmu = ptr->intel_pt_pmu;
- 	bool have_timing_info, need_immediate = false;
- 	struct evsel *evsel, *intel_pt_evsel = NULL;
--	const struct perf_cpu_map *cpus = evlist->core.cpus;
-+	const struct perf_cpu_map *cpus = evlist->core.user_requested_cpus;
- 	bool privileged = perf_event_paranoid_check(-1);
- 	u64 tsc_bit;
- 	int err;
-diff --git a/tools/perf/bench/evlist-open-close.c b/tools/perf/bench/evlist-open-close.c
-index de56601f69ee..5a27691469ed 100644
---- a/tools/perf/bench/evlist-open-close.c
-+++ b/tools/perf/bench/evlist-open-close.c
-@@ -151,7 +151,7 @@ static int bench_evlist_open_close__run(char *evstr)
- 
- 	init_stats(&time_stats);
- 
--	printf("  Number of cpus:\t%d\n", perf_cpu_map__nr(evlist->core.cpus));
-+	printf("  Number of cpus:\t%d\n", perf_cpu_map__nr(evlist->core.user_requested_cpus));
- 	printf("  Number of threads:\t%d\n", evlist->core.threads->nr);
- 	printf("  Number of events:\t%d (%d fds)\n",
- 		evlist->core.nr_entries, evlist__count_evsel_fds(evlist));
-diff --git a/tools/perf/builtin-ftrace.c b/tools/perf/builtin-ftrace.c
-index ad9ce1bfffa1..7de07bb16d23 100644
---- a/tools/perf/builtin-ftrace.c
-+++ b/tools/perf/builtin-ftrace.c
-@@ -301,7 +301,7 @@ static int set_tracing_cpumask(struct perf_cpu_map *cpumap)
- 
- static int set_tracing_cpu(struct perf_ftrace *ftrace)
- {
--	struct perf_cpu_map *cpumap = ftrace->evlist->core.cpus;
-+	struct perf_cpu_map *cpumap = ftrace->evlist->core.user_requested_cpus;
- 
- 	if (!target__has_cpu(&ftrace->target))
- 		return 0;
-diff --git a/tools/perf/builtin-record.c b/tools/perf/builtin-record.c
-index 0b4abed555d8..ba74fab02e62 100644
---- a/tools/perf/builtin-record.c
-+++ b/tools/perf/builtin-record.c
-@@ -987,7 +987,7 @@ static int record__thread_data_init_maps(struct record_thread *thread_data, stru
- 	int m, tm, nr_mmaps = evlist->core.nr_mmaps;
- 	struct mmap *mmap = evlist->mmap;
- 	struct mmap *overwrite_mmap = evlist->overwrite_mmap;
--	struct perf_cpu_map *cpus = evlist->core.cpus;
-+	struct perf_cpu_map *cpus = evlist->core.user_requested_cpus;
- 
- 	thread_data->nr_mmaps = bitmap_weight(thread_data->mask->maps.bits,
- 					      thread_data->mask->maps.nbits);
-@@ -1881,7 +1881,7 @@ static int record__synthesize(struct record *rec, bool tail)
- 		return err;
- 	}
- 
--	err = perf_event__synthesize_cpu_map(&rec->tool, rec->evlist->core.cpus,
-+	err = perf_event__synthesize_cpu_map(&rec->tool, rec->evlist->core.user_requested_cpus,
- 					     process_synthesized_event, NULL);
- 	if (err < 0) {
- 		pr_err("Couldn't synthesize cpu map.\n");
-@@ -3675,7 +3675,7 @@ static int record__init_thread_default_masks(struct record *rec, struct perf_cpu
- static int record__init_thread_masks(struct record *rec)
- {
- 	int ret = 0;
--	struct perf_cpu_map *cpus = rec->evlist->core.cpus;
-+	struct perf_cpu_map *cpus = rec->evlist->core.user_requested_cpus;
- 
- 	if (!record__threads_enabled(rec))
- 		return record__init_thread_default_masks(rec, cpus);
-diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
-index b81ae5053218..a96f106dc93a 100644
---- a/tools/perf/builtin-stat.c
-+++ b/tools/perf/builtin-stat.c
-@@ -804,7 +804,7 @@ static int __run_perf_stat(int argc, const char **argv, int run_idx)
- 	if (group)
- 		evlist__set_leader(evsel_list);
- 
--	if (!cpu_map__is_dummy(evsel_list->core.cpus)) {
-+	if (!cpu_map__is_dummy(evsel_list->core.user_requested_cpus)) {
- 		if (affinity__setup(&saved_affinity) < 0)
- 			return -1;
- 		affinity = &saved_affinity;
-@@ -1458,7 +1458,7 @@ static int perf_stat_init_aggr_mode(void)
- 	aggr_cpu_id_get_t get_id = aggr_mode__get_aggr(stat_config.aggr_mode);
- 
- 	if (get_id) {
--		stat_config.aggr_map = cpu_aggr_map__new(evsel_list->core.cpus,
-+		stat_config.aggr_map = cpu_aggr_map__new(evsel_list->core.user_requested_cpus,
- 							 get_id, /*data=*/NULL);
- 		if (!stat_config.aggr_map) {
- 			pr_err("cannot build %s map", aggr_mode__string[stat_config.aggr_mode]);
-@@ -1472,8 +1472,8 @@ static int perf_stat_init_aggr_mode(void)
- 	 * taking the highest cpu number to be the size of
- 	 * the aggregation translate cpumap.
- 	 */
--	if (evsel_list->core.cpus)
--		nr = perf_cpu_map__max(evsel_list->core.cpus).cpu;
-+	if (evsel_list->core.user_requested_cpus)
-+		nr = perf_cpu_map__max(evsel_list->core.user_requested_cpus).cpu;
- 	else
- 		nr = 0;
- 	stat_config.cpus_aggr_map = cpu_aggr_map__empty_new(nr + 1);
-@@ -1630,7 +1630,7 @@ static int perf_stat_init_aggr_mode_file(struct perf_stat *st)
- 	if (!get_id)
- 		return 0;
- 
--	stat_config.aggr_map = cpu_aggr_map__new(evsel_list->core.cpus, get_id, env);
-+	stat_config.aggr_map = cpu_aggr_map__new(evsel_list->core.user_requested_cpus, get_id, env);
- 	if (!stat_config.aggr_map) {
- 		pr_err("cannot build %s map", aggr_mode__string[stat_config.aggr_mode]);
- 		return -1;
-diff --git a/tools/perf/builtin-top.c b/tools/perf/builtin-top.c
-index 9b08e44a31d9..fd8fd913c533 100644
---- a/tools/perf/builtin-top.c
-+++ b/tools/perf/builtin-top.c
-@@ -1021,7 +1021,7 @@ static int perf_top__start_counters(struct perf_top *top)
- 
- 	evlist__for_each_entry(evlist, counter) {
- try_again:
--		if (evsel__open(counter, top->evlist->core.cpus,
-+		if (evsel__open(counter, top->evlist->core.user_requested_cpus,
- 				     top->evlist->core.threads) < 0) {
- 
- 			/*
-diff --git a/tools/perf/util/auxtrace.c b/tools/perf/util/auxtrace.c
-index 9e48652662d4..df1c5bbbaa0d 100644
---- a/tools/perf/util/auxtrace.c
-+++ b/tools/perf/util/auxtrace.c
-@@ -174,7 +174,7 @@ void auxtrace_mmap_params__set_idx(struct auxtrace_mmap_params *mp,
- 	mp->idx = idx;
- 
- 	if (per_cpu) {
--		mp->cpu = perf_cpu_map__cpu(evlist->core.cpus, idx);
-+		mp->cpu = perf_cpu_map__cpu(evlist->core.user_requested_cpus, idx);
- 		if (evlist->core.threads)
- 			mp->tid = perf_thread_map__pid(evlist->core.threads, 0);
- 		else
-diff --git a/tools/perf/util/bpf_ftrace.c b/tools/perf/util/bpf_ftrace.c
-index 4f4d3aaff37c..7a4297d8fd2c 100644
---- a/tools/perf/util/bpf_ftrace.c
-+++ b/tools/perf/util/bpf_ftrace.c
-@@ -38,7 +38,7 @@ int perf_ftrace__latency_prepare_bpf(struct perf_ftrace *ftrace)
- 
- 	/* don't need to set cpu filter for system-wide mode */
- 	if (ftrace->target.cpu_list) {
--		ncpus = perf_cpu_map__nr(ftrace->evlist->core.cpus);
-+		ncpus = perf_cpu_map__nr(ftrace->evlist->core.user_requested_cpus);
- 		bpf_map__set_max_entries(skel->maps.cpu_filter, ncpus);
- 	}
- 
-@@ -63,7 +63,7 @@ int perf_ftrace__latency_prepare_bpf(struct perf_ftrace *ftrace)
- 		fd = bpf_map__fd(skel->maps.cpu_filter);
- 
- 		for (i = 0; i < ncpus; i++) {
--			cpu = perf_cpu_map__cpu(ftrace->evlist->core.cpus, i).cpu;
-+			cpu = perf_cpu_map__cpu(ftrace->evlist->core.user_requested_cpus, i).cpu;
- 			bpf_map_update_elem(fd, &cpu, &val, BPF_ANY);
- 		}
- 	}
-diff --git a/tools/perf/util/evlist.c b/tools/perf/util/evlist.c
-index 9bb79e049957..cb2cf4463c08 100644
---- a/tools/perf/util/evlist.c
-+++ b/tools/perf/util/evlist.c
-@@ -440,7 +440,7 @@ static void __evlist__disable(struct evlist *evlist, char *evsel_name)
- 	bool has_imm = false;
- 
- 	// See explanation in evlist__close()
--	if (!cpu_map__is_dummy(evlist->core.cpus)) {
-+	if (!cpu_map__is_dummy(evlist->core.user_requested_cpus)) {
- 		if (affinity__setup(&saved_affinity) < 0)
- 			return;
- 		affinity = &saved_affinity;
-@@ -500,7 +500,7 @@ static void __evlist__enable(struct evlist *evlist, char *evsel_name)
- 	struct affinity saved_affinity, *affinity = NULL;
- 
- 	// See explanation in evlist__close()
--	if (!cpu_map__is_dummy(evlist->core.cpus)) {
-+	if (!cpu_map__is_dummy(evlist->core.user_requested_cpus)) {
- 		if (affinity__setup(&saved_affinity) < 0)
- 			return;
- 		affinity = &saved_affinity;
-@@ -565,7 +565,7 @@ static int evlist__enable_event_cpu(struct evlist *evlist, struct evsel *evsel,
- static int evlist__enable_event_thread(struct evlist *evlist, struct evsel *evsel, int thread)
- {
- 	int cpu;
--	int nr_cpus = perf_cpu_map__nr(evlist->core.cpus);
-+	int nr_cpus = perf_cpu_map__nr(evlist->core.user_requested_cpus);
- 
- 	if (!evsel->core.fd)
- 		return -EINVAL;
-@@ -580,7 +580,7 @@ static int evlist__enable_event_thread(struct evlist *evlist, struct evsel *evse
- 
- int evlist__enable_event_idx(struct evlist *evlist, struct evsel *evsel, int idx)
- {
--	bool per_cpu_mmaps = !perf_cpu_map__empty(evlist->core.cpus);
-+	bool per_cpu_mmaps = !perf_cpu_map__empty(evlist->core.user_requested_cpus);
- 
- 	if (per_cpu_mmaps)
- 		return evlist__enable_event_cpu(evlist, evsel, idx);
-@@ -1301,10 +1301,11 @@ void evlist__close(struct evlist *evlist)
- 	struct affinity affinity;
- 
- 	/*
--	 * With perf record core.cpus is usually NULL.
-+	 * With perf record core.user_requested_cpus is usually NULL.
- 	 * Use the old method to handle this for now.
- 	 */
--	if (!evlist->core.cpus || cpu_map__is_dummy(evlist->core.cpus)) {
-+	if (!evlist->core.user_requested_cpus ||
-+	    cpu_map__is_dummy(evlist->core.user_requested_cpus)) {
- 		evlist__for_each_entry_reverse(evlist, evsel)
- 			evsel__close(evsel);
- 		return;
-@@ -1367,7 +1368,7 @@ int evlist__open(struct evlist *evlist)
- 	 * Default: one fd per CPU, all threads, aka systemwide
- 	 * as sys_perf_event_open(cpu = -1, thread = -1) is EINVAL
- 	 */
--	if (evlist->core.threads == NULL && evlist->core.cpus == NULL) {
-+	if (evlist->core.threads == NULL && evlist->core.user_requested_cpus == NULL) {
- 		err = evlist__create_syswide_maps(evlist);
- 		if (err < 0)
- 			goto out_err;
-diff --git a/tools/perf/util/record.c b/tools/perf/util/record.c
-index 007a64681416..5b09ecbb05dc 100644
---- a/tools/perf/util/record.c
-+++ b/tools/perf/util/record.c
-@@ -106,7 +106,7 @@ void evlist__config(struct evlist *evlist, struct record_opts *opts, struct call
- 	if (opts->group)
- 		evlist__set_leader(evlist);
- 
--	if (perf_cpu_map__cpu(evlist->core.cpus, 0).cpu < 0)
-+	if (perf_cpu_map__cpu(evlist->core.user_requested_cpus, 0).cpu < 0)
- 		opts->no_inherit = true;
- 
- 	use_comm_exec = perf_can_comm_exec();
-@@ -244,7 +244,7 @@ bool evlist__can_select_event(struct evlist *evlist, const char *str)
- 
- 	evsel = evlist__last(temp_evlist);
- 
--	if (!evlist || perf_cpu_map__empty(evlist->core.cpus)) {
-+	if (!evlist || perf_cpu_map__empty(evlist->core.user_requested_cpus)) {
- 		struct perf_cpu_map *cpus = perf_cpu_map__new(NULL);
- 
- 		if (cpus)
-@@ -252,7 +252,7 @@ bool evlist__can_select_event(struct evlist *evlist, const char *str)
- 
- 		perf_cpu_map__put(cpus);
- 	} else {
--		cpu = perf_cpu_map__cpu(evlist->core.cpus, 0);
-+		cpu = perf_cpu_map__cpu(evlist->core.user_requested_cpus, 0);
- 	}
- 
- 	while (1) {
-diff --git a/tools/perf/util/sideband_evlist.c b/tools/perf/util/sideband_evlist.c
-index 748371ac22be..388846f17bc1 100644
---- a/tools/perf/util/sideband_evlist.c
-+++ b/tools/perf/util/sideband_evlist.c
-@@ -114,7 +114,8 @@ int evlist__start_sb_thread(struct evlist *evlist, struct target *target)
- 	}
- 
- 	evlist__for_each_entry(evlist, counter) {
--		if (evsel__open(counter, evlist->core.cpus, evlist->core.threads) < 0)
-+		if (evsel__open(counter, evlist->core.user_requested_cpus,
-+				evlist->core.threads) < 0)
- 			goto out_delete_evlist;
- 	}
- 
-diff --git a/tools/perf/util/stat-display.c b/tools/perf/util/stat-display.c
-index 9cbe351b141f..138e3ab9d638 100644
---- a/tools/perf/util/stat-display.c
-+++ b/tools/perf/util/stat-display.c
-@@ -929,7 +929,7 @@ static void print_no_aggr_metric(struct perf_stat_config *config,
- 	int all_idx;
- 	struct perf_cpu cpu;
- 
--	perf_cpu_map__for_each_cpu(cpu, all_idx, evlist->core.cpus) {
-+	perf_cpu_map__for_each_cpu(cpu, all_idx, evlist->core.user_requested_cpus) {
- 		struct evsel *counter;
- 		bool first = true;
- 
-diff --git a/tools/perf/util/synthetic-events.c b/tools/perf/util/synthetic-events.c
-index b654de0841f8..27acdc5e5723 100644
---- a/tools/perf/util/synthetic-events.c
-+++ b/tools/perf/util/synthetic-events.c
-@@ -2127,7 +2127,7 @@ int perf_event__synthesize_stat_events(struct perf_stat_config *config, struct p
- 		return err;
- 	}
- 
--	err = perf_event__synthesize_cpu_map(tool, evlist->core.cpus, process, NULL);
-+	err = perf_event__synthesize_cpu_map(tool, evlist->core.user_requested_cpus, process, NULL);
- 	if (err < 0) {
- 		pr_err("Couldn't synthesize thread map.\n");
- 		return err;
-diff --git a/tools/perf/util/top.c b/tools/perf/util/top.c
-index c1ebfc5d2e0c..b8b32431d2f7 100644
---- a/tools/perf/util/top.c
-+++ b/tools/perf/util/top.c
-@@ -95,15 +95,17 @@ size_t perf_top__header_snprintf(struct perf_top *top, char *bf, size_t size)
- 
- 	if (target->cpu_list)
- 		ret += SNPRINTF(bf + ret, size - ret, ", CPU%s: %s)",
--				perf_cpu_map__nr(top->evlist->core.cpus) > 1 ? "s" : "",
-+				perf_cpu_map__nr(top->evlist->core.user_requested_cpus) > 1
-+				? "s" : "",
- 				target->cpu_list);
- 	else {
- 		if (target->tid)
- 			ret += SNPRINTF(bf + ret, size - ret, ")");
- 		else
- 			ret += SNPRINTF(bf + ret, size - ret, ", %d CPU%s)",
--					perf_cpu_map__nr(top->evlist->core.cpus),
--					perf_cpu_map__nr(top->evlist->core.cpus) > 1 ? "s" : "");
-+					perf_cpu_map__nr(top->evlist->core.user_requested_cpus),
-+					perf_cpu_map__nr(top->evlist->core.user_requested_cpus) > 1
-+					? "s" : "");
- 	}
- 
- 	perf_top__reset_sample_counters(top);
--- 
-2.35.1.1021.g381101b075-goog
-
+K1BhdWwNCg0KPiBPbiBNYXIgMjUsIDIwMjIsIGF0IDU6MDYgUE0sIEVkZ2Vjb21iZSwgUmljayBQ
+IDxyaWNrLnAuZWRnZWNvbWJlQGludGVsLmNvbT4gd3JvdGU6DQo+IA0KPiBPbiBGcmksIDIwMjIt
+MDItMDQgYXQgMTA6NTcgLTA4MDAsIFNvbmcgTGl1IHdyb3RlOg0KPj4gRnJvbTogU29uZyBMaXUg
+PHNvbmdsaXVicmF2aW5nQGZiLmNvbT4NCj4+IA0KPj4gVGhpcyBlbmFibGVzIG1vZHVsZV9hbGxv
+YygpIHRvIGFsbG9jYXRlIGh1Z2UgcGFnZSBmb3IgMk1CKyByZXF1ZXN0cy4NCj4+IFRvIGNoZWNr
+IHRoZSBkaWZmZXJlbmNlIG9mIHRoaXMgY2hhbmdlLCB3ZSBuZWVkIGVuYWJsZSBjb25maWcNCj4+
+IENPTkZJR19QVERVTVBfREVCVUdGUywgYW5kIGNhbGwgbW9kdWxlX2FsbG9jKDJNQikuIEJlZm9y
+ZSB0aGUgY2hhbmdlLA0KPj4gL3N5cy9rZXJuZWwvZGVidWcvcGFnZV90YWJsZXMva2VybmVsIHNo
+b3dzIHB0ZSBmb3IgdGhpcyBtYXAuIFdpdGggdGhlDQo+PiBjaGFuZ2UsIC9zeXMva2VybmVsL2Rl
+YnVnL3BhZ2VfdGFibGVzLyBzaG93IHBtZCBmb3IgdGhpZSBtYXAuDQo+PiANCj4+IFNpZ25lZC1v
+ZmYtYnk6IFNvbmcgTGl1IDxzb25nbGl1YnJhdmluZ0BmYi5jb20+DQo+PiAtLS0NCj4+IGFyY2gv
+eDg2L0tjb25maWcgfCAxICsNCj4+IDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKQ0KPiAN
+Cj4gSGksDQo+IA0KPiBJIGp1c3Qgc2F3IHRoaXMgdXBzdHJlYW0gdG9kYXkuIEdsYWQgdG8gc2Vl
+IHRoaXMgZnVuY3Rpb25hbGl0eSwgYnV0IEkNCj4gdGhpbmsgdHVybmluZyBvbiBodWdlIHZtYWxs
+b2MgcGFnZXMgZm9yIHg4NiBuZWVkcyBhIGJpdCBtb3JlLiBJ4oCZbGwNCj4gZGVzY3JpYmUgYSBj
+b3VwbGUgcG9zc2libGUgZmFpbHVyZSBtb2RlcyBJIGhhdmVu4oCZdCBhY3R1YWxseSB0ZXN0ZWQu
+DQo+IA0KPiBPbmUgcHJvYmxlbSBpcyB0aGF0IHRoZSBkaXJlY3QgbWFwIHBlcm1pc3Npb24gcmVz
+ZXQgcGFydCBpbiB2bWFsbG9jDQo+IGFzc3VtZXMgYW55IHNwZWNpYWwgcGVybWlzc2lvbmVkIHBh
+Z2VzIGFyZSBtYXBwZWQgNGsgb24gdGhlIGRpcmVjdCBtYXAuDQo+IE90aGVyd2lzZSB0aGUgb3Bl
+cmF0aW9uIGNvdWxkIGZhaWwgdG8gcmVzZXQgYSBwYWdlIFJXIGlmIGEgUFRFIHBhZ2UNCj4gYWxs
+b2NhdGlvbiBmYWlscyB3aGVuIGl0IHRyaWVzIHRvIHNwbGl0IHRoZSBwYWdlIHRvIHRvZ2dsZSBh
+IDRrIHNpemVkDQo+IHJlZ2lvbiBOUC9QLiBJZiB5b3UgYXJlIG5vdCBmYW1pbGlhciwgeDg2IENQ
+QSBnZW5lcmFsbHkgbGVhdmVzIHRoZQ0KPiBkaXJlY3QgbWFwIHBhZ2Ugc2l6ZXMgbWlycm9yaW5n
+IHRoZSBwcmltYXJ5IGFsaWFzICh2bWFsbG9jKS4gU28gb25jZQ0KPiB2bWFsbG9jIGhhcyBodWdl
+IHBhZ2VzLCB0aGUgc3BlY2lhbCBwZXJtaXNzaW9uZWQgZGlyZWN0IG1hcCBhbGlhc2VzDQo+IHdp
+bGwgaGF2ZSB0aGVtIHRvby4gVGhpcyBsaW1pdGF0aW9uIG9mIEhBVkVfQVJDSF9IVUdFX1ZNQUxM
+T0MgaXMNCj4gYWN0dWFsbHkgaGludGVkIGFib3V0IGluIHRoZSBLY29uZmlnIGNvbW1lbnRzLCBi
+dXQgSSBndWVzcyBpdCB3YXNu4oCZdA0KPiBzcGVjaWZpYyB0aGF0IHg4NiBoYXMgdGhlc2UgcHJv
+cGVydGllcy4NCj4gDQo+IEkgdGhpbmsgdG8gbWFrZSB0aGUgdm1hbGxvYyByZXNldHRpbmcgcGFy
+dCBzYWZlOg0KPiAxLiBzZXRfZGlyZWN0X21hcF9pbnZhbGlkL2RlZmF1bHQoKSBuZWVkcyB0byBz
+dXBwb3J0IG11bHRpcGxlIHBhZ2VzDQo+IGxpa2UgdGhpc1swXS4NCj4gMi4gdm1fcmVtb3ZlX21h
+cHBpbmdzKCkgbmVlZHMgdG8gY2FsbCB0aGVtIHdpdGggdGhlIGNvcnJlY3QgcGFnZSBzaXplDQo+
+IGluIHRoZSBocGFnZSBjYXNlIHNvIHRoZXkgZG9uJ3QgY2F1c2UgYSBzcGxpdFsxXS4NCj4gMy4g
+VGhlbiBoaWJlcm5hdGUgbmVlZHMgdG8gYmUgYmxvY2tlZCBkdXJpbmcgdGhpcyBvcGVyYXRpb24g
+c28gaXQNCj4gZG9lc27igJl0IGVuY291bnRlciB0aGUgbm93IHNvbWV0aW1lcyBodWdlIE5QIHBh
+Z2VzLCB3aGljaCBpdCBjYW7igJl0DQo+IGhhbmRsZS4gTm90IHN1cmUgd2hhdCB0aGUgcmlnaHQg
+d2F5IHRvIGRvIHRoaXMgaXMsIGJ1dCBwb3RlbnRpYWxseSBsaWtlDQo+IGluIHRoZSBkaWZmIGJl
+bG93WzFdLg0KPiANCj4gQW5vdGhlciBwcm9ibGVtIGlzIHRoYXQgQ1BBIHdpbGwgc29tZXRpbWVz
+IG5vdyBzcGxpdCBwYWdlcyBvZiB2bWFsbG9jDQo+IG1hcHBpbmdzIGluIGNhc2VzIHdoZXJlIGl0
+IHNldHMgYSByZWdpb24gb2YgYW4gYWxsb2NhdGlvbiB0byBhDQo+IGRpZmZlcmVudCBwZXJtaXNz
+aW9uIHRoYW4gdGhlIHJlc3QgKGZvciBleGFtcGxlIHJlZ3VsYXIgbW9kdWxlcyBjYWxsaW5nDQo+
+IHNldF9tZW1vcnlfeCgpIG9uIHRoZSB0ZXh0IHNlY3Rpb24pLiBCZWZvcmUgdGhpcyBjaGFuZ2Us
+IHRoZXNlIGNvdWxkbuKAmXQNCj4gZmFpbCBzaW5jZSB0aGUgbW9kdWxlIHNwYWNlIG1hcHBpbmcg
+d291bGQgbmV2ZXIgcmVxdWlyZSBhIHNwbGl0Lg0KPiBNb2R1bGVzIGRvZXNu4oCZdCBjaGVjayBm
+b3IgZmFpbHVyZSB0aGVyZSwgc28gSeKAmW0gdGhpbmtpbmcgbm93IGl0IHdvdWxkDQo+IHByb2Nl
+ZWQgdG8gdHJ5IHRvIGV4ZWN1dGUgTlggbWVtb3J5IGlmIHRoZSBzcGxpdCBmYWlsZWQuIEl0IGNv
+dWxkIG9ubHkNCj4gaGFwcGVuIG9uIGFsbG9jYXRpb24gb2YgZXNwZWNpYWxseSBsYXJnZSBtb2R1
+bGVzLiBNYXliZSBpdCBzaG91bGQganVzdA0KPiBiZSBhdm9pZGVkIGZvciBub3cgYnkgaGF2aW5n
+IHJlZ3VsYXIgbW9kdWxlIGFsbG9jYXRpb25zIHBhc3MNCj4gVk1fTk9fSFVHRV9WTUFQIG9uIHg4
+Ni4gQW5kIEJQRiBjb3VsZCBjYWxsIF9fdm1hbGxvY19ub2RlX3JhbmdlKCkNCj4gZGlyZWN0bHkg
+dG8gZ2V0IDJNQiB2bWFsbG9jcy4NCg0KSSBsaWtlIHRoaXMgZGlyZWN0aW9uLiBCdXQgSSBhbSBh
+ZnJhaWQgdGhpcyBpcyBub3QgZW5vdWdoLiBVc2luZw0KVk1fTk9fSFVHRV9WTUFQIGluIG1vZHVs
+ZV9hbGxvYygpIHdpbGwgbWFrZSBzdXJlIHdlIGRvbid0IGFsbG9jYXRlIA0KaHVnZSBwYWdlcyBm
+b3IgbW9kdWxlcy4gQnV0IG90aGVyIHVzZXJzIG9mIF9fdm1hbGxvY19ub2RlX3JhbmdlKCksIA0K
+c3VjaCBhcyB2emFsbG9jIGluIFBhdWwncyByZXBvcnQsIG1heSBzdGlsbCBoaXQgdGhlIGlzc3Vl
+LiANCg0KTWF5YmUgd2UgbmVlZCBhbm90aGVyIGZsYWcgVk1fRk9SQ0VfSFVHRV9WTUFQIHRoYXQg
+YnlwYXNzZXMgDQp2bWFwX2FsbG93X2h1Z2UgY2hlY2suIFNvbWV0aGluZyBsaWtlIHRoZSBkaWZm
+IGJlbG93Lg0KDQpXb3VsZCB0aGlzIHdvcms/DQoNClRoYW5rcywNClNvbmcNCg0KDQoNCmRpZmYg
+LS1naXQgaS9pbmNsdWRlL2xpbnV4L3ZtYWxsb2MuaCB3L2luY2x1ZGUvbGludXgvdm1hbGxvYy5o
+DQppbmRleCAzYjFkZjdkYTQwMmQuLmE2Mzk0MDVkYWI5OSAxMDA2NDQNCi0tLSBpL2luY2x1ZGUv
+bGludXgvdm1hbGxvYy5oDQorKysgdy9pbmNsdWRlL2xpbnV4L3ZtYWxsb2MuaA0KQEAgLTI3LDYg
+KzI3LDcgQEAgc3RydWN0IG5vdGlmaWVyX2Jsb2NrOyAgICAgICAgICAgICAgICAvKiBpbiBub3Rp
+Zmllci5oICovDQogI2RlZmluZSBWTV9GTFVTSF9SRVNFVF9QRVJNUyAgIDB4MDAwMDAxMDAgICAg
+ICAvKiByZXNldCBkaXJlY3QgbWFwIGFuZCBmbHVzaCBUTEIgb24gdW5tYXAsIGNhbid0IGJlIGZy
+ZWVkIGluIGF0b21pYyBjb250ZXh0ICovDQogI2RlZmluZSBWTV9NQVBfUFVUX1BBR0VTICAgICAg
+IDB4MDAwMDAyMDAgICAgICAvKiBwdXQgcGFnZXMgYW5kIGZyZWUgYXJyYXkgaW4gdmZyZWUgKi8N
+CiAjZGVmaW5lIFZNX05PX0hVR0VfVk1BUCAgICAgICAgICAgICAgICAweDAwMDAwNDAwICAgICAg
+LyogZm9yY2UgUEFHRV9TSVpFIHB0ZSBtYXBwaW5nICovDQorI2RlZmluZSBWTV9GT1JDRV9IVUdF
+X1ZNQVAgICAgIDB4MDAwMDA4MDAgICAgICAvKiBmb3JjZSBQTURfU0laRSBtYXBwaW5nIChieXBh
+c3Mgdm1hcF9hbGxvd19odWdlIGNoZWNrKSAqLw0KDQogI2lmIChkZWZpbmVkKENPTkZJR19LQVNB
+Tl9HRU5FUklDKSB8fCBkZWZpbmVkKENPTkZJR19LQVNBTl9TV19UQUdTKSkgJiYgXA0KICAgICAg
+ICAhZGVmaW5lZChDT05GSUdfS0FTQU5fVk1BTExPQykNCmRpZmYgLS1naXQgaS9rZXJuZWwvYnBm
+L2NvcmUuYyB3L2tlcm5lbC9icGYvY29yZS5jDQppbmRleCAxM2U5ZGJlZWVkZjMuLjNjZDBmZjY2
+ZDM5YyAxMDA2NDQNCi0tLSBpL2tlcm5lbC9icGYvY29yZS5jDQorKysgdy9rZXJuZWwvYnBmL2Nv
+cmUuYw0KQEAgLTg1MSwxMyArODUxLDIyIEBAIHN0YXRpYyBMSVNUX0hFQUQocGFja19saXN0KTsN
+CiAjZGVmaW5lIEJQRl9IUEFHRV9NQVNLIFBBR0VfTUFTSw0KICNlbmRpZg0KDQorc3RhdGljIHZv
+aWQgKmJwZl9wcm9nX3BhY2tfdm1hbGxvYyh1bnNpZ25lZCBsb25nIHNpemUpDQorew0KKyAgICAg
+ICByZXR1cm4gX192bWFsbG9jX25vZGVfcmFuZ2Uoc2l6ZSwgTU9EVUxFX0FMSUdOLA0KKyAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgTU9EVUxFU19WQUREUiArIGdldF9tb2R1bGVf
+bG9hZF9vZmZzZXQoKSwNCisgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIE1PRFVM
+RVNfRU5ELCBnZnBfbWFzaywgUEFHRV9LRVJORUwsDQorICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICBWTV9ERUZFUl9LTUVNTEVBSyB8IFZNX0ZPUkNFX0hVR0VfVk1BUCwNCisgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIE5VTUFfTk9fTk9ERSwgX19idWlsdGluX3Jl
+dHVybl9hZGRyZXNzKDApKTsNCit9DQorDQogc3RhdGljIHNpemVfdCBzZWxlY3RfYnBmX3Byb2df
+cGFja19zaXplKHZvaWQpDQogew0KICAgICAgICBzaXplX3Qgc2l6ZTsNCiAgICAgICAgdm9pZCAq
+cHRyOw0KDQogICAgICAgIHNpemUgPSBCUEZfSFBBR0VfU0laRSAqIG51bV9vbmxpbmVfbm9kZXMo
+KTsNCi0gICAgICAgcHRyID0gbW9kdWxlX2FsbG9jKHNpemUpOw0KKyAgICAgICBwdHIgPSBicGZf
+cHJvZ19wYWNrX3ZtYWxsb2Moc2l6ZSk7DQoNCiAgICAgICAgLyogVGVzdCB3aGV0aGVyIHdlIGNh
+biBnZXQgaHVnZSBwYWdlcy4gSWYgbm90IGp1c3QgdXNlIFBBR0VfU0laRQ0KICAgICAgICAgKiBw
+YWNrcy4NCkBAIC04ODEsNyArODkwLDcgQEAgc3RhdGljIHN0cnVjdCBicGZfcHJvZ19wYWNrICph
+bGxvY19uZXdfcGFjayh2b2lkKQ0KICAgICAgICAgICAgICAgICAgICAgICBHRlBfS0VSTkVMKTsN
+CiAgICAgICAgaWYgKCFwYWNrKQ0KICAgICAgICAgICAgICAgIHJldHVybiBOVUxMOw0KLSAgICAg
+ICBwYWNrLT5wdHIgPSBtb2R1bGVfYWxsb2MoYnBmX3Byb2dfcGFja19zaXplKTsNCisgICAgICAg
+cGFjay0+cHRyID0gYnBmX3Byb2dfcGFja192bWFsbG9jKGJwZl9wcm9nX3BhY2tfc2l6ZSk7DQog
+ICAgICAgIGlmICghcGFjay0+cHRyKSB7DQogICAgICAgICAgICAgICAga2ZyZWUocGFjayk7DQog
+ICAgICAgICAgICAgICAgcmV0dXJuIE5VTEw7DQpkaWZmIC0tZ2l0IGkvbW0vdm1hbGxvYy5jIHcv
+bW0vdm1hbGxvYy5jDQppbmRleCBlMTYzMzcyZDM5NjcuLmRmMmRkNjc3OWZhOCAxMDA2NDQNCi0t
+LSBpL21tL3ZtYWxsb2MuYw0KKysrIHcvbW0vdm1hbGxvYy5jDQpAQCAtMzEwNiw3ICszMTA2LDgg
+QEAgdm9pZCAqX192bWFsbG9jX25vZGVfcmFuZ2UodW5zaWduZWQgbG9uZyBzaXplLCB1bnNpZ25l
+ZCBsb25nIGFsaWduLA0KICAgICAgICAgICAgICAgIHJldHVybiBOVUxMOw0KICAgICAgICB9DQoN
+Ci0gICAgICAgaWYgKHZtYXBfYWxsb3dfaHVnZSAmJiAhKHZtX2ZsYWdzICYgVk1fTk9fSFVHRV9W
+TUFQKSkgew0KKyAgICAgICBpZiAoKHZtYXBfYWxsb3dfaHVnZSAmJiAhKHZtX2ZsYWdzICYgVk1f
+Tk9fSFVHRV9WTUFQKSkgfHwNCisgICAgICAgICAgICh2bV9mbGFncyAmIFZNX0ZPUkNFX0hVR0Vf
+Vk1BUCkpIHsNCiAgICAgICAgICAgICAgICB1bnNpZ25lZCBsb25nIHNpemVfcGVyX25vZGU7DQoN
+CiAgICAgICAgICAgICAgICAvKg0KDQoNCg0KPiANCj4gWzBdIA0KPiBodHRwczovL2xvcmUua2Vy
+bmVsLm9yZy9sa21sLzIwMjEwMjA4MDg0OTIwLjI4ODQtNS1ycHB0QGtlcm5lbC5vcmcvI3QNCj4g
+DQo+IFsxXSBVbnRlc3RlZCwgYnV0IHNvbWV0aGluZyBsaWtlIHRoaXMgcG9zc2libHk6DQo+IGRp
+ZmYgLS1naXQgYS9tbS92bWFsbG9jLmMgYi9tbS92bWFsbG9jLmMNCj4gaW5kZXggOTllMGYzZThk
+MWE1Li45N2M0Y2EzYTI5YjEgMTAwNjQ0DQo+IC0tLSBhL21tL3ZtYWxsb2MuYw0KPiArKysgYi9t
+bS92bWFsbG9jLmMNCj4gQEAgLTQyLDYgKzQyLDcgQEANCj4gI2luY2x1ZGUgPGxpbnV4L3NjaGVk
+L21tLmg+DQo+ICNpbmNsdWRlIDxhc20vdGxiZmx1c2guaD4NCj4gI2luY2x1ZGUgPGFzbS9zaG1w
+YXJhbS5oPg0KPiArI2luY2x1ZGUgPGxpbnV4L3N1c3BlbmQuaD4NCj4gDQo+ICNpbmNsdWRlICJp
+bnRlcm5hbC5oIg0KPiAjaW5jbHVkZSAicGdhbGxvYy10cmFjay5oIg0KPiBAQCAtMjI0MSw3ICsy
+MjQyLDcgQEAgRVhQT1JUX1NZTUJPTCh2bV9tYXBfcmFtKTsNCj4gDQo+IHN0YXRpYyBzdHJ1Y3Qg
+dm1fc3RydWN0ICp2bWxpc3QgX19pbml0ZGF0YTsNCj4gDQo+IC1zdGF0aWMgaW5saW5lIHVuc2ln
+bmVkIGludCB2bV9hcmVhX3BhZ2Vfb3JkZXIoc3RydWN0IHZtX3N0cnVjdCAqdm0pDQo+ICtzdGF0
+aWMgaW5saW5lIHVuc2lnbmVkIGludCB2bV9hcmVhX3BhZ2Vfb3JkZXIoY29uc3Qgc3RydWN0IHZt
+X3N0cnVjdA0KPiAqdm0pDQo+IHsNCj4gI2lmZGVmIENPTkZJR19IQVZFX0FSQ0hfSFVHRV9WTUFM
+TE9DDQo+ICAgICAgICByZXR1cm4gdm0tPnBhZ2Vfb3JkZXI7DQo+IEBAIC0yNTYwLDEyICsyNTYx
+LDEyIEBAIHN0cnVjdCB2bV9zdHJ1Y3QgKnJlbW92ZV92bV9hcmVhKGNvbnN0IHZvaWQNCj4gKmFk
+ZHIpDQo+IHN0YXRpYyBpbmxpbmUgdm9pZCBzZXRfYXJlYV9kaXJlY3RfbWFwKGNvbnN0IHN0cnVj
+dCB2bV9zdHJ1Y3QgKmFyZWEsDQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgaW50ICgqc2V0X2RpcmVjdF9tYXApKHN0cnVjdA0KPiBwYWdlICpwYWdlKSkNCj4gew0KPiAr
+ICAgICAgIHVuc2lnbmVkIGludCBwYWdlX29yZGVyID0gdm1fYXJlYV9wYWdlX29yZGVyKGFyZWEp
+Ow0KPiAgICAgICAgaW50IGk7DQo+IA0KPiAtICAgICAgIC8qIEhVR0VfVk1BTExPQyBwYXNzZXMg
+c21hbGwgcGFnZXMgdG8gc2V0X2RpcmVjdF9tYXAgKi8NCj4gLSAgICAgICBmb3IgKGkgPSAwOyBp
+IDwgYXJlYS0+bnJfcGFnZXM7IGkrKykNCj4gKyAgICAgICBmb3IgKGkgPSAwOyBpIDwgYXJlYS0+
+bnJfcGFnZXM7IGkgKz0gMVUgPDwgcGFnZV9vcmRlcikNCj4gICAgICAgICAgICAgICAgaWYgKHBh
+Z2VfYWRkcmVzcyhhcmVhLT5wYWdlc1tpXSkpDQo+IC0gICAgICAgICAgICAgICAgICAgICAgIHNl
+dF9kaXJlY3RfbWFwKGFyZWEtPnBhZ2VzW2ldKTsNCj4gKyAgICAgICAgICAgICAgICAgICAgICAg
+c2V0X2RpcmVjdF9tYXAoYXJlYS0+cGFnZXNbaV0sIDFVIDw8DQo+IHBhZ2Vfb3JkZXIpOw0KPiB9
+DQo+IA0KPiAvKiBIYW5kbGUgcmVtb3ZpbmcgYW5kIHJlc2V0dGluZyB2bSBtYXBwaW5ncyByZWxh
+dGVkIHRvIHRoZSB2bV9zdHJ1Y3QuDQo+ICovDQo+IEBAIC0yNTkyLDYgKzI1OTMsMTAgQEAgc3Rh
+dGljIHZvaWQgdm1fcmVtb3ZlX21hcHBpbmdzKHN0cnVjdCB2bV9zdHJ1Y3QNCj4gKmFyZWEsIGlu
+dCBkZWFsbG9jYXRlX3BhZ2VzKQ0KPiAgICAgICAgICAgICAgICByZXR1cm47DQo+ICAgICAgICB9
+DQo+IA0KPiArICAgICAgIC8qIEhpYmVybmF0ZSBjYW4ndCBoYW5kbGUgbGFyZ2UgTlAgcGFnZXMg
+Ki8NCj4gKyAgICAgICBpZiAocGFnZV9vcmRlcikNCj4gKyAgICAgICAgICAgICAgIGxvY2tfc3lz
+dGVtX3NsZWVwKCk7DQo+ICsNCj4gICAgICAgIC8qDQo+ICAgICAgICAgKiBJZiBleGVjdXRpb24g
+Z2V0cyBoZXJlLCBmbHVzaCB0aGUgdm0gbWFwcGluZyBhbmQgcmVzZXQgdGhlDQo+IGRpcmVjdA0K
+PiAgICAgICAgICogbWFwLiBGaW5kIHRoZSBzdGFydCBhbmQgZW5kIHJhbmdlIG9mIHRoZSBkaXJl
+Y3QgbWFwcGluZ3MgdG8NCj4gbWFrZSBzdXJlDQo+IEBAIC0yNjE3LDYgKzI2MjIsOSBAQCBzdGF0
+aWMgdm9pZCB2bV9yZW1vdmVfbWFwcGluZ3Moc3RydWN0IHZtX3N0cnVjdA0KPiAqYXJlYSwgaW50
+IGRlYWxsb2NhdGVfcGFnZXMpDQo+ICAgICAgICBzZXRfYXJlYV9kaXJlY3RfbWFwKGFyZWEsIHNl
+dF9kaXJlY3RfbWFwX2ludmFsaWRfbm9mbHVzaCk7DQo+ICAgICAgICBfdm1fdW5tYXBfYWxpYXNl
+cyhzdGFydCwgZW5kLCBmbHVzaF9kbWFwKTsNCj4gICAgICAgIHNldF9hcmVhX2RpcmVjdF9tYXAo
+YXJlYSwgc2V0X2RpcmVjdF9tYXBfZGVmYXVsdF9ub2ZsdXNoKTsNCj4gKw0KPiArICAgICAgIGlm
+IChwYWdlX29yZGVyKQ0KPiArICAgICAgICAgICAgICAgdW5sb2NrX3N5c3RlbV9zbGVlcCgpOw0K
+PiB9DQo+IA0KPiBzdGF0aWMgdm9pZCBfX3Z1bm1hcChjb25zdCB2b2lkICphZGRyLCBpbnQgZGVh
+bGxvY2F0ZV9wYWdlcykNCg0K
