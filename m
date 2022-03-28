@@ -2,52 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6F10C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:28:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E7D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:28:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241317AbiC1L3y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:29:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57598 "EHLO
+        id S241324AbiC1LaA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:30:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241593AbiC1LYA (ORCPT
+        with ESMTP id S241635AbiC1LYD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:24:00 -0400
+        Mon, 28 Mar 2022 07:24:03 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F62355492;
-        Mon, 28 Mar 2022 04:21:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DB9B554B0;
+        Mon, 28 Mar 2022 04:21:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D116611D2;
-        Mon, 28 Mar 2022 11:21:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0424C340EC;
-        Mon, 28 Mar 2022 11:21:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B22761192;
+        Mon, 28 Mar 2022 11:21:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDB57C340EC;
+        Mon, 28 Mar 2022 11:21:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466463;
-        bh=uXrOhBqrtKKihiFUNpw/CzqMDPhyvmx2FANFhkXdOsg=;
+        s=k20201202; t=1648466473;
+        bh=dXFoBao1mnO+CxBybDVWep7qs/QLa3ksJJVYsnYonhc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fewydTCUVl9383siwq4454NKJVNFjIFX4kodsleLjTs6oernPShp7Zh7HXKyKNwoq
-         ojtTg/qzjbrnA5hRHvAik5CN8ETWu0ohgX5FoZUQBTtmk+aQiBbyE+5ed1X6Lv5Lml
-         6tqxdPFCSgQ0TU7ceuMPpIoIY8xb4C4+mu9gRSc3u3Yl0gUIpRgTXvW6/Wf68D/41L
-         1URS1UkRBBJmaErQ9vqWbMwntuEaNvxE7K+EJNoa/0rA3zkTeaV6jsRpDhZMAwXMfr
-         sllYIX01+7kAM6Lp0n1pOI4WrkNAX/Sr0cUhB2NjNCc/RlXhBMXgoidl+oA63YXpzf
-         IyPYpxL4MIyiQ==
+        b=m/jExj6Th7zR4nsQLQPOC1pStCvzmXe2yu6LwBTrNlY74e/iyxIj1XRu0X5XLbqKj
+         QnoUyvfBdm6MfZcqBOlQsjATgQNnglXudCZwQA4b5FAVSA7T1TStlzA4mWY+Q+YEex
+         TbSRbAYao02LOd2eaauYZ32TdALLlXcaSkzpVbamQVVXmRVz4K6i+B+saCWU1NzLQ9
+         N6hKnRB3Rml/r5Z4yC6Oz+hR+4kmyOBUj7orn6LfU6dy7rhHV6F/CVjNdULpH64+2m
+         5BvmwLnXL/F98snE6jEKz9rJfTt3dc/qO5j5LaleJM3cjavrEcJuhq72w9c5poCggx
+         hWeBcgoKRrOEg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Oleg Nesterov <oleg@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
-        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
-        peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, luto@kernel.org, frederic@kernel.org,
-        valentin.schneider@arm.com, ardb@kernel.org, mark.rutland@arm.com,
-        ebiederm@xmission.com, keescook@chromium.org, elver@google.com,
-        legion@kernel.org
-Subject: [PATCH AUTOSEL 5.16 23/35] signal, x86: Delay calling signals in atomic on RT enabled kernels
-Date:   Mon, 28 Mar 2022 07:19:59 -0400
-Message-Id: <20220328112011.1555169-23-sashal@kernel.org>
+Cc:     Darren Hart <darren@os.amperecomputing.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
+        rdunlap@infradead.org, ying.huang@intel.com,
+        linux-acpi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 28/35] ACPI/APEI: Limit printable size of BERT table data
+Date:   Mon, 28 Mar 2022 07:20:04 -0400
+Message-Id: <20220328112011.1555169-28-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220328112011.1555169-1-sashal@kernel.org>
 References: <20220328112011.1555169-1-sashal@kernel.org>
@@ -59,185 +53,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oleg Nesterov <oleg@redhat.com>
+From: Darren Hart <darren@os.amperecomputing.com>
 
-[ Upstream commit bf9ad37dc8a30cce22ae95d6c2ca6abf8731d305 ]
+[ Upstream commit 3f8dec116210ca649163574ed5f8df1e3b837d07 ]
 
-On x86_64 we must disable preemption before we enable interrupts
-for stack faults, int3 and debugging, because the current task is using
-a per CPU debug stack defined by the IST. If we schedule out, another task
-can come in and use the same stack and cause the stack to be corrupted
-and crash the kernel on return.
+Platforms with large BERT table data can trigger soft lockup errors
+while attempting to print the entire BERT table data to the console at
+boot:
 
-When CONFIG_PREEMPT_RT is enabled, spinlock_t locks become sleeping, and
-one of these is the spin lock used in signal handling.
+  watchdog: BUG: soft lockup - CPU#160 stuck for 23s! [swapper/0:1]
 
-Some of the debug code (int3) causes do_trap() to send a signal.
-This function calls a spinlock_t lock that has been converted to a
-sleeping lock. If this happens, the above issues with the corrupted
-stack is possible.
+Observed on Ampere Altra systems with a single BERT record of ~250KB.
 
-Instead of calling the signal right away, for PREEMPT_RT and x86,
-the signal information is stored on the stacks task_struct and
-TIF_NOTIFY_RESUME is set. Then on exit of the trap, the signal resume
-code will send the signal when preemption is enabled.
+The original bert driver appears to have assumed relatively small table
+data. Since it is impractical to reassemble large table data from
+interwoven console messages, and the table data is available in
 
-[ rostedt: Switched from #ifdef CONFIG_PREEMPT_RT to
-  ARCH_RT_DELAYS_SIGNAL_SEND and added comments to the code. ]
-[bigeasy: Add on 32bit as per Yang Shi, minor rewording. ]
-[ tglx: Use a config option ]
+  /sys/firmware/acpi/tables/data/BERT
 
-Signed-off-by: Oleg Nesterov <oleg@redhat.com>
-Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lore.kernel.org/r/Ygq5aBB/qMQw6aP5@linutronix.de
+limit the size for tables printed to the console to 1024 (for no reason
+other than it seemed like a good place to kick off the discussion, would
+appreciate feedback from existing users in terms of what size would
+maintain their current usage model).
+
+Alternatively, we could make printing a CONFIG option, use the
+bert_disable boot arg (or something similar), or use a debug log level.
+However, all those solutions require extra steps or change the existing
+behavior for small table data. Limiting the size preserves existing
+behavior on existing platforms with small table data, and eliminates the
+soft lockups for platforms with large table data, while still making it
+available.
+
+Signed-off-by: Darren Hart <darren@os.amperecomputing.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/Kconfig       |  1 +
- include/linux/sched.h  |  3 +++
- kernel/Kconfig.preempt | 12 +++++++++++-
- kernel/entry/common.c  | 14 ++++++++++++++
- kernel/signal.c        | 40 ++++++++++++++++++++++++++++++++++++++++
- 5 files changed, 69 insertions(+), 1 deletion(-)
+ drivers/acpi/apei/bert.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 5c2ccb85f2ef..3ce5418dd1dc 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -119,6 +119,7 @@ config X86
- 	select ARCH_WANTS_NO_INSTR
- 	select ARCH_WANT_HUGE_PMD_SHARE
- 	select ARCH_WANT_LD_ORPHAN_WARN
-+	select ARCH_WANTS_RT_DELAYED_SIGNALS
- 	select ARCH_WANTS_THP_SWAP		if X86_64
- 	select ARCH_HAS_PARANOID_L1D_FLUSH
- 	select BUILDTIME_TABLE_SORT
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index ee5ed8821963..ce62a8554171 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -1082,6 +1082,9 @@ struct task_struct {
- 	/* Restored if set_restore_sigmask() was used: */
- 	sigset_t			saved_sigmask;
- 	struct sigpending		pending;
-+#ifdef CONFIG_RT_DELAYED_SIGNALS
-+	struct kernel_siginfo		forced_info;
-+#endif
- 	unsigned long			sas_ss_sp;
- 	size_t				sas_ss_size;
- 	unsigned int			sas_ss_flags;
-diff --git a/kernel/Kconfig.preempt b/kernel/Kconfig.preempt
-index ce77f0265660..5644abd5f8a8 100644
---- a/kernel/Kconfig.preempt
-+++ b/kernel/Kconfig.preempt
-@@ -132,4 +132,14 @@ config SCHED_CORE
- 	  which is the likely usage by Linux distributions, there should
- 	  be no measurable impact on performance.
+diff --git a/drivers/acpi/apei/bert.c b/drivers/acpi/apei/bert.c
+index 19e50fcbf4d6..ad8ab3f12cf3 100644
+--- a/drivers/acpi/apei/bert.c
++++ b/drivers/acpi/apei/bert.c
+@@ -29,6 +29,7 @@
  
+ #undef pr_fmt
+ #define pr_fmt(fmt) "BERT: " fmt
++#define ACPI_BERT_PRINT_MAX_LEN 1024
+ 
+ static int bert_disable;
+ 
+@@ -58,8 +59,11 @@ static void __init bert_print_all(struct acpi_bert_region *region,
+ 		}
+ 
+ 		pr_info_once("Error records from previous boot:\n");
 -
-+config ARCH_WANTS_RT_DELAYED_SIGNALS
-+	bool
-+	help
-+	  This option is selected by architectures where raising signals
-+	  can happen in atomic contexts on PREEMPT_RT enabled kernels. This
-+	  option delays raising the signal until the return to user space
-+	  loop where it is also delivered. X86 requires this to deliver
-+	  signals from trap handlers which run on IST stacks.
-+
-+config RT_DELAYED_SIGNALS
-+	def_bool PREEMPT_RT && ARCH_WANTS_RT_DELAYED_SIGNALS
-diff --git a/kernel/entry/common.c b/kernel/entry/common.c
-index d5a61d565ad5..75f352775e6e 100644
---- a/kernel/entry/common.c
-+++ b/kernel/entry/common.c
-@@ -148,6 +148,18 @@ static void handle_signal_work(struct pt_regs *regs, unsigned long ti_work)
- 	arch_do_signal_or_restart(regs, ti_work & _TIF_SIGPENDING);
- }
+-		cper_estatus_print(KERN_INFO HW_ERR, estatus);
++		if (region_len < ACPI_BERT_PRINT_MAX_LEN)
++			cper_estatus_print(KERN_INFO HW_ERR, estatus);
++		else
++			pr_info_once("Max print length exceeded, table data is available at:\n"
++				     "/sys/firmware/acpi/tables/data/BERT");
  
-+#ifdef CONFIG_RT_DELAYED_SIGNALS
-+static inline void raise_delayed_signal(void)
-+{
-+	if (unlikely(current->forced_info.si_signo)) {
-+		force_sig_info(&current->forced_info);
-+		current->forced_info.si_signo = 0;
-+	}
-+}
-+#else
-+static inline void raise_delayed_signal(void) { }
-+#endif
-+
- static unsigned long exit_to_user_mode_loop(struct pt_regs *regs,
- 					    unsigned long ti_work)
- {
-@@ -162,6 +174,8 @@ static unsigned long exit_to_user_mode_loop(struct pt_regs *regs,
- 		if (ti_work & _TIF_NEED_RESCHED)
- 			schedule();
- 
-+		raise_delayed_signal();
-+
- 		if (ti_work & _TIF_UPROBE)
- 			uprobe_notify_resume(regs);
- 
-diff --git a/kernel/signal.c b/kernel/signal.c
-index 684fb02b20f8..ba7e6a4d38be 100644
---- a/kernel/signal.c
-+++ b/kernel/signal.c
-@@ -1304,6 +1304,43 @@ enum sig_handler {
- 	HANDLER_EXIT,	 /* Only visible as the process exit code */
- };
- 
-+/*
-+ * On some archictectures, PREEMPT_RT has to delay sending a signal from a
-+ * trap since it cannot enable preemption, and the signal code's
-+ * spin_locks turn into mutexes. Instead, it must set TIF_NOTIFY_RESUME
-+ * which will send the signal on exit of the trap.
-+ */
-+#ifdef CONFIG_RT_DELAYED_SIGNALS
-+static inline bool force_sig_delayed(struct kernel_siginfo *info,
-+				     struct task_struct *t)
-+{
-+	if (!in_atomic())
-+		return false;
-+
-+	if (WARN_ON_ONCE(t->forced_info.si_signo))
-+		return true;
-+
-+	if (is_si_special(info)) {
-+		WARN_ON_ONCE(info != SEND_SIG_PRIV);
-+		t->forced_info.si_signo = info->si_signo;
-+		t->forced_info.si_errno = 0;
-+		t->forced_info.si_code = SI_KERNEL;
-+		t->forced_info.si_pid = 0;
-+		t->forced_info.si_uid = 0;
-+	} else {
-+		t->forced_info = *info;
-+	}
-+	set_tsk_thread_flag(t, TIF_NOTIFY_RESUME);
-+	return true;
-+}
-+#else
-+static inline bool force_sig_delayed(struct kernel_siginfo *info,
-+				     struct task_struct *t)
-+{
-+	return false;
-+}
-+#endif
-+
- /*
-  * Force a signal that the process can't ignore: if necessary
-  * we unblock the signal and change any SIG_IGN to SIG_DFL.
-@@ -1324,6 +1361,9 @@ force_sig_info_to_task(struct kernel_siginfo *info, struct task_struct *t,
- 	struct k_sigaction *action;
- 	int sig = info->si_signo;
- 
-+	if (force_sig_delayed(info, t))
-+		return 0;
-+
- 	spin_lock_irqsave(&t->sighand->siglock, flags);
- 	action = &t->sighand->action[sig-1];
- 	ignored = action->sa.sa_handler == SIG_IGN;
+ 		/*
+ 		 * Because the boot error source is "one-time polled" type,
 -- 
 2.34.1
 
