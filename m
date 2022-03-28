@@ -2,86 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2924C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 12:51:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9984BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 12:51:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242664AbiC1MxL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 08:53:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34954 "EHLO
+        id S239741AbiC1MxP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 08:53:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242643AbiC1Mww (ORCPT
+        with ESMTP id S242635AbiC1Mwu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 08:52:52 -0400
-Received: from mail-oa1-f52.google.com (mail-oa1-f52.google.com [209.85.160.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AD7A6424;
-        Mon, 28 Mar 2022 05:51:10 -0700 (PDT)
-Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-de3eda6b5dso15113393fac.0;
-        Mon, 28 Mar 2022 05:51:10 -0700 (PDT)
+        Mon, 28 Mar 2022 08:52:50 -0400
+Received: from mail-oa1-f41.google.com (mail-oa1-f41.google.com [209.85.160.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DF023ED3E;
+        Mon, 28 Mar 2022 05:51:08 -0700 (PDT)
+Received: by mail-oa1-f41.google.com with SMTP id 586e51a60fabf-de3ca1efbaso15056127fac.9;
+        Mon, 28 Mar 2022 05:51:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=cQGZg2ywem6zxyCvwABFfPlNmUhfTOw/8YRFpemaFf4=;
-        b=lxYI6PE/y1AyVi/kPrz3uzfMQr9NaeAJKx8sGYkkgayhNhRdX+0v8MSLkl0ltW8lPc
-         +bQaTpJ9DHNQyC4ADdh5zwr4gAP4aTUFj6xsZ2JYYDOeobyBPIKgd9ci+lZ08p2jFaMv
-         801DaSCgvRAMAndOHxMccqrF18/Txhat1aQdT3HFXkJh19UHjybZWD6n8ega68PUY3Fo
-         pZELp6whHbujMgMelI8H9FtkqWGMxsWL1vHbvfiJ4YPOB1RRr8A3bU0TPUWc5HSaniAR
-         Ay3ZvsiiNOn3Uv6RyWymXtu2xVYsPSkL1t6kahtYQhtQD5QdxlssOaFRMeF7Wx4koVlE
-         0LNw==
-X-Gm-Message-State: AOAM530/wo7YVM7ixMwqwClLMz94E/DAq0sQuC9xy79gOFymU07BV7gS
-        STn7jcA96DPvD+7wBftaxA==
-X-Google-Smtp-Source: ABdhPJxhc/XOS06cKfWmV8nxW6YHrYLXoTD/KyWUtNUbx5hNVIsj9+PLIdx7x7AayOuJl1MVzaw89Q==
-X-Received: by 2002:a05:6870:a1a0:b0:dd:e471:8baf with SMTP id a32-20020a056870a1a000b000dde4718bafmr14907619oaf.40.1648471869579;
-        Mon, 28 Mar 2022 05:51:09 -0700 (PDT)
+        bh=YKxyUK+Nou4xViHDx8TkfPYtGoA/VwvXE7HQXU1aq8I=;
+        b=uGEGFy03xxAvRqNyUMlVHsjmP42NeryTXBBNTGQkGysZ49e3LGGf1JVYFSMvuQ/wne
+         j6K5VrJdfNxPlsnTMn0EAroBTRQki8VXBly3HGnKKgFx4ACvuXvWrnAKtLih+MXFPxPY
+         +mKGoEWgrz416l/CSbZsILZQqNX1mAhengWe8PTScUeaeC2xYHqdElwVNrPX0mWKlbIy
+         uccPJbrzEvWrY3RkpRMHj9uF7Van2R99kJsYsiI5S0Po6f4FEbHvfLwUbWCmB8cwjAq3
+         nLDg8LAbrUO/EnBgg/0A6iTjLi8+YMLhWgCschGaByfLCd2T+8Jraido+gNMbWZfysuh
+         cg8w==
+X-Gm-Message-State: AOAM530uv5A6V6vymiQyeDONB/3stKkMy74hILXIfCMIquyrgpIWNUJO
+        qMDXxqCqKInBJA5wJwUnVPoQbQSVQQ==
+X-Google-Smtp-Source: ABdhPJx44lE4vp2aYCeZ7I/lyjmousbKuU1sEX5HIWJFpKqkaVPGdwLqNEmBm4TX4iixQSE+3S145A==
+X-Received: by 2002:a05:6871:694:b0:dd:a43e:fca4 with SMTP id l20-20020a056871069400b000dda43efca4mr15486919oao.77.1648471867780;
+        Mon, 28 Mar 2022 05:51:07 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id n62-20020acaef41000000b002ef646e6690sm7309500oih.53.2022.03.28.05.51.08
+        by smtp.gmail.com with ESMTPSA id y67-20020a4a4546000000b0032476e1cb40sm6811033ooa.25.2022.03.28.05.51.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Mar 2022 05:51:08 -0700 (PDT)
-Received: (nullmailer pid 2153574 invoked by uid 1000);
+        Mon, 28 Mar 2022 05:51:07 -0700 (PDT)
+Received: (nullmailer pid 2153569 invoked by uid 1000);
         Mon, 28 Mar 2022 12:51:05 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-In-Reply-To: <1648433498-23450-1-git-send-email-hayashi.kunihiko@socionext.com>
-References: <1648433498-23450-1-git-send-email-hayashi.kunihiko@socionext.com>
-Subject: Re: [PATCH] dt-bindings: PCI: uniphier: Convert uniphier-pcie.txt to json-schema
+To:     Guillaume Ranquet <granquet@baylibre.com>
+Cc:     mripard@kernel.org, airlied@linux.ie, tzimmermann@suse.de,
+        maarten.lankhorst@linux.intel.com, chunfeng.yun@mediatek.com,
+        krzk+dt@kernel.org, linux-phy@lists.infradead.org,
+        matthias.bgg@gmail.com, chunkuang.hu@kernel.org,
+        jitao.shi@mediatek.com, vkoul@kernel.org, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, kishon@ti.com,
+        linux-fbdev@vger.kernel.org, daniel@ffwll.ch,
+        angelogioacchino.delregno@collabora.com,
+        Markus Schneider-Pargmann <msp@baylibre.com>,
+        p.zabel@pengutronix.de, linux-mediatek@lists.infradead.org,
+        deller@gmx.de, linux-arm-kernel@lists.infradead.org,
+        markyacoub@google.com, ck.hu@mediatek.com,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
+In-Reply-To: <20220327223927.20848-3-granquet@baylibre.com>
+References: <20220327223927.20848-1-granquet@baylibre.com> <20220327223927.20848-3-granquet@baylibre.com>
+Subject: Re: [PATCH v9 02/22] dt-bindings: mediatek,dp: Add Display Port binding
 Date:   Mon, 28 Mar 2022 07:51:05 -0500
-Message-Id: <1648471865.799906.2153573.nullmailer@robh.at.kernel.org>
+Message-Id: <1648471865.772251.2153568.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 28 Mar 2022 11:11:38 +0900, Kunihiko Hayashi wrote:
-> Convert the file into a JSON description at the yaml format.
+On Mon, 28 Mar 2022 00:39:07 +0200, Guillaume Ranquet wrote:
+> From: Markus Schneider-Pargmann <msp@baylibre.com>
 > 
-> Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+> This controller is present on several mediatek hardware. Currently
+> mt8195 and mt8395 have this controller without a functional difference,
+> so only one compatible field is added.
+> 
+> The controller can have two forms, as a normal display port and as an
+> embedded display port.
+> 
+> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
 > ---
->  .../bindings/pci/socionext,uniphier-pcie.yaml | 100 ++++++++++++++++++
->  .../devicetree/bindings/pci/uniphier-pcie.txt |  82 --------------
->  MAINTAINERS                                   |   2 +-
->  3 files changed, 101 insertions(+), 83 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/pci/socionext,uniphier-pcie.yaml
->  delete mode 100644 Documentation/devicetree/bindings/pci/uniphier-pcie.txt
+>  .../display/mediatek/mediatek,dp.yaml         | 100 ++++++++++++++++++
+>  1 file changed, 100 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,dp.yaml
 > 
 
-Running 'make dtbs_check' with the schema in this patch gives the
-following warnings. Consider if they are expected or the schema is
-incorrect. These may not be new warnings.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-This will change in the future.
+yamllint warnings/errors:
 
-Full log is available here: https://patchwork.ozlabs.org/patch/1609988
+dtschema/dtc warnings/errors:
+Documentation/devicetree/bindings/display/mediatek/mediatek,dp.example.dts:24:18: fatal error: dt-bindings/power/mt8195-power.h: No such file or directory
+   24 |         #include <dt-bindings/power/mt8195-power.h>
+      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+make[1]: *** [scripts/Makefile.lib:378: Documentation/devicetree/bindings/display/mediatek/mediatek,dp.example.dt.yaml] Error 1
+make[1]: *** Waiting for unfinished jobs....
+make: *** [Makefile:1398: dt_binding_check] Error 2
 
+doc reference errors (make refcheckdocs):
 
-pcie@66000000: compatible: ['socionext,uniphier-pcie', 'snps,dw-pcie'] is too long
-	arch/arm64/boot/dts/socionext/uniphier-ld20-akebi96.dt.yaml
-	arch/arm64/boot/dts/socionext/uniphier-ld20-global.dt.yaml
-	arch/arm64/boot/dts/socionext/uniphier-ld20-ref.dt.yaml
-	arch/arm64/boot/dts/socionext/uniphier-pxs3-ref.dt.yaml
+See https://patchwork.ozlabs.org/patch/1609955
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
