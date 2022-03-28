@@ -2,106 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 963C1C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:07:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BE4EC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:07:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245461AbiC1TJH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 15:09:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43760 "EHLO
+        id S245474AbiC1TJT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 15:09:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235490AbiC1TJF (ORCPT
+        with ESMTP id S245471AbiC1TJQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 15:09:05 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D40346661D
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 12:07:23 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id o10so30703518ejd.1
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 12:07:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=aI63GcTf6gIJjYZOcN3sH/TkheejjIhMV25OEIzc6Es=;
-        b=yMCe2oa9eLROBvH71tSNApB8bYSQKjqsrRcqq9lk8SsaX8A71feiM5wg/Tf4Rh7+2H
-         6436/nMc6kg2V1JU0G0862qWsGIccJH75IJcy0cr2fk3L5AWdrMu9dMqh0xkl6fgskoT
-         iqzeLEIUuKe93hydF8Fxi3wDF8lTcUpf0xb5GQxJyxaXLG7uCfHrtI76i6L2V2CbAdUe
-         yk+O+XhX5SGG1KZaeOhPKP6xZiCPzgOWn+OfK7xRHLiyPLiypG0FlNRmVreHQp48Z0O2
-         enHSzW0UEBlbKtkW6jBGktkSscxYlQxE5iTbaN1mNv5ckYiZpC6tRdzHmCWtV0j9wvZl
-         mH8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=aI63GcTf6gIJjYZOcN3sH/TkheejjIhMV25OEIzc6Es=;
-        b=0ixeol1spw9J/wm4NKFa/ibJw1Z1vQLz3UgU1Zwk8X4RL0ahoMzX4yJVlHihvhATQQ
-         gXZViNmMzRXnLfTuqysjrsCIO/94KnBYW0ZEtIUlY8FuVMBXA17xzDn/mWx4JVNuR5q8
-         DEGXDSKSM6Tg0w7a+qL6TFs6ljV2hCdyLgwD08gGk041hMaNiWOxqmfmkrlsa1YisbYv
-         zA93PyrGWZGbiDLiagTsNMQMUa3FcZmXCTnKxIdGbaK+m24abqKMSAK5RJqfMj7AjLPV
-         gqRU7yZyZ0qat6zVAYApIXYbuDDHJVAGZFjfiP7gmvFWgf0GKiqjIWU1PXb+du0q5Nl3
-         7RKw==
-X-Gm-Message-State: AOAM533DxXWszsFtzIfGnVw+gBGP6I6yB2JZ5LnR2pQh2YSeMKuy0ULQ
-        O3Z/Kcz9e12kmyjFGFkAlOH7XQ==
-X-Google-Smtp-Source: ABdhPJw1kVWYj5h6rYtr9VUdImtCHgGwu9zW9gdjJDu5MHe8emeVa+v0qt9r/jwydBlC2hkJIzOVSg==
-X-Received: by 2002:a17:907:761c:b0:6d6:e553:7bd1 with SMTP id jx28-20020a170907761c00b006d6e5537bd1mr28996835ejc.5.1648494442407;
-        Mon, 28 Mar 2022 12:07:22 -0700 (PDT)
-Received: from [192.168.0.162] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id dn4-20020a17090794c400b006dbec4f4acbsm6421924ejc.6.2022.03.28.12.07.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Mar 2022 12:07:21 -0700 (PDT)
-Message-ID: <54984d87-9bfb-94e0-69d6-eee34fafcfc6@linaro.org>
-Date:   Mon, 28 Mar 2022 21:07:20 +0200
+        Mon, 28 Mar 2022 15:09:16 -0400
+Received: from smtp.smtpout.orange.fr (smtp08.smtpout.orange.fr [80.12.242.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E507A66621
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 12:07:34 -0700 (PDT)
+Received: from pop-os.home ([90.126.236.122])
+        by smtp.orange.fr with ESMTPA
+        id YuiCnPo2kuvBOYuiCnOEV4; Mon, 28 Mar 2022 21:07:33 +0200
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Mon, 28 Mar 2022 21:07:33 +0200
+X-ME-IP: 90.126.236.122
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Tony Luck <tony.luck@intel.com>,
+        Zhang Yanmin <yanmin.zhang@intel.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-ia64@vger.kernel.org
+Subject: [PATCH 1/2] ia64: topology: Fix an error handling path in cache_add_dev()
+Date:   Mon, 28 Mar 2022 21:07:31 +0200
+Message-Id: <452b20c160a20754022407acefd2abb170f43d14.1648494330.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] dt-bindings: reset: Add parent "resets" property as
- optional
-Content-Language: en-US
-To:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     Masami Hiramatsu <mhiramat@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <1648430678-21631-1-git-send-email-hayashi.kunihiko@socionext.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <1648430678-21631-1-git-send-email-hayashi.kunihiko@socionext.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28/03/2022 03:24, Kunihiko Hayashi wrote:
-> LD11 mio reset controller has a reset lines from system controller.
-> Add parent "resets" property to fix the following warning.
-> 
->   uniphier-ld11-global.dt.yaml: reset: 'resets' does not match any of the regexes: 'pinctrl-[0-9]+'
->       From schema: Documentation/devicetree/bindings/reset/socionext,uniphier-reset.yaml
-> 
-> Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-> ---
->  .../devicetree/bindings/reset/socionext,uniphier-reset.yaml    | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/reset/socionext,uniphier-reset.yaml b/Documentation/devicetree/bindings/reset/socionext,uniphier-reset.yaml
-> index 377a7d242323..f2a848c74f1e 100644
-> --- a/Documentation/devicetree/bindings/reset/socionext,uniphier-reset.yaml
-> +++ b/Documentation/devicetree/bindings/reset/socionext,uniphier-reset.yaml
-> @@ -55,6 +55,9 @@ properties:
->    "#reset-cells":
->      const: 1
->  
-> +  resets:
-> +    minItems: 1
+If kobject_init_and_add()fails, kobject_put() needs to be called.
+Add the missing call which is already there a few lines below in another
+error handling path.
 
-maxItems
+Fixes: f19180056ea0 ("[IA64] Export cpu cache info by sysfs")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+This patch is provided as-is and is not even compile tested. I don't have the
+cross-building toolchain for that.
+---
+ arch/ia64/kernel/topology.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> +
->  additionalProperties: false
->  
->  required:
+diff --git a/arch/ia64/kernel/topology.c b/arch/ia64/kernel/topology.c
+index 94a848b06f15..6adb84f05cbb 100644
+--- a/arch/ia64/kernel/topology.c
++++ b/arch/ia64/kernel/topology.c
+@@ -354,6 +354,7 @@ static int cache_add_dev(unsigned int cpu)
+ 				      &cache_ktype_percpu_entry, &sys_dev->kobj,
+ 				      "%s", "cache");
+ 	if (unlikely(retval < 0)) {
++		kobject_put(&all_cpu_cache_info[cpu].kobj);
+ 		cpu_cache_sysfs_exit(cpu);
+ 		return retval;
+ 	}
+-- 
+2.32.0
 
-
-Best regards,
-Krzysztof
