@@ -2,105 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F189FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 20:02:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51CC9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 20:02:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344435AbiC1UCx (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 16:02:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55910 "EHLO
+        id S244659AbiC1UEf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 16:04:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344253AbiC1UCU (ORCPT
+        with ESMTP id S234908AbiC1UEd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 16:02:20 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2019F5B3E1;
-        Mon, 28 Mar 2022 13:00:21 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: nicolas)
-        with ESMTPSA id AEA9B1F438B1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1648497619;
-        bh=BQgi4WXn9GkaikKLBxnmXBJ9Op1ly9b7u96QvOVoYaY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nQy6Ul9u9ZNQiDPpimTjQGgDKJ4dMDUQ4QHsaH6Vtmdydoas4nbQmvrWD/vVrf/6p
-         Y8vXWtMlaovLs7s5bcR2TGA55jiDeiHt7oE5atDSNWmLCPtAvU9dAAE8oy0uGCbJAK
-         eORjbvoA3MGKEmj1cQ9EBllZ52/2Or5tpTLLIwClMzg2CrZ0CZV5FDkJJV2g+9oOBb
-         2YKnVer0ahF5asTI39s2dK0CAI756v9o04AvIxR2jUPP4FSJ1vxow6dUBx24PH/ZsI
-         6/j03Rhfs4mas3bS5A/U3P0UNrfJZYUhQEcG0bqtakc6I2n8i5/vuxc3a0b6kzqI/e
-         5Eb+8DiJGY0gQ==
-From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
-To:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     kernel@collabora.com, linux-media@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
+        Mon, 28 Mar 2022 16:04:33 -0400
+Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A27D83BA5E;
+        Mon, 28 Mar 2022 13:02:52 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:35::5f6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id 47C3E37A;
+        Mon, 28 Mar 2022 20:02:52 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 47C3E37A
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1648497772; bh=PwIBFic52cB+8cV6Ms4Smf/K/c9Y0vVMor8KDA0YN2c=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=k0xDbu41Pd0W0r93jSo7/AJ7ki4ya8GQbyZgUmEkPeyKGxfaG9oZGu3jCV2gnVR5k
+         WEPyPkuKiwawV2DwNKfy4R79Ba/VXT/lpm5iWEJj0fJsmM7huBYJlDkByq7pZLFXO8
+         l5qLkfHUQlIuFeFSg+9JD9rNTzIZMMlRd2qhsjkawHcLnwev4QnmRzIWSWekooKQgJ
+         YitPxnxFVB8hjUUp6Fbq3U3pdQw+YuPyohNG3gavAnOnTn6WfQ1dpQFbUgKFMjIJbY
+         9oOKg7aIK+SzBfORYABsnkVU0ahODzR8+UP+/73O8gr8FcR8WXYrOQ/v7FgSDpqXNx
+         /0DSV5XcbxGZQ==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     David Gow <davidgow@google.com>,
+        Brendan Higgins <brendanhiggins@google.com>
+Cc:     David Gow <davidgow@google.com>, Marco Elver <elver@google.com>,
+        Daniel Latypov <dlatypov@google.com>,
+        skhan@linuxfoundation.org, kunit-dev@googlegroups.com,
+        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v1 20/24] media: hantro: Enable HOLD_CAPTURE_BUF for H.264
-Date:   Mon, 28 Mar 2022 15:59:32 -0400
-Message-Id: <20220328195936.82552-21-nicolas.dufresne@collabora.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220328195936.82552-1-nicolas.dufresne@collabora.com>
-References: <20220328195936.82552-1-nicolas.dufresne@collabora.com>
+Subject: Re: [PATCH] Documentation: kunit: Fix cross-referencing warnings
+In-Reply-To: <20220326054414.637293-1-davidgow@google.com>
+References: <20220326054414.637293-1-davidgow@google.com>
+Date:   Mon, 28 Mar 2022 14:02:51 -0600
+Message-ID: <87r16l7slw.fsf@meer.lwn.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is needed to optimizing field decoding. Each field will be
-decoded in the same capture buffer, so to make use of the queues
-we need to be able to ask the driver to keep the capture buffer.
+David Gow <davidgow@google.com> writes:
 
-Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
----
- drivers/staging/media/hantro/hantro_v4l2.c | 25 ++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+> The Architecture chapter of the KUnit documentation tried to include
+> copies of the kernel-doc for a couple of things, despite these already
+> existing in the API documentation. This lead to some warnings:
+>
+> architecture:31: ./include/kunit/test.h:3: WARNING: Duplicate C declaration, also defined at dev-tools/kunit/api/test:66.
+> Declaration is '.. c:struct:: kunit_case'.
+> architecture:163: ./include/kunit/test.h:1217: WARNING: Duplicate C declaration, also defined at dev-tools/kunit/api/test:1217.
+> Declaration is '.. c:macro:: KUNIT_ARRAY_PARAM'.
+> architecture.rst:3: WARNING: Duplicate C declaration, also defined at dev-tools/kunit/api/test:66.
+> Declaration is '.. c:struct:: kunit_case'.
+> architecture.rst:1217: WARNING: Duplicate C declaration, also defined at dev-tools/kunit/api/test:1217.
+> Declaration is '.. c:macro:: KUNIT_ARRAY_PARAM'.
+>
+> Get rid of these, and cleanup the mentions of the struct and macro in
+> question so that sphinx generates a link to the existing copy of the
+> documentation in the api/test document.
+>
+> Fixes: bc145b370c ("Documentation: KUnit: Added KUnit Architecture")
+> Signed-off-by: David Gow <davidgow@google.com>
+> ---
+>  Documentation/dev-tools/kunit/architecture.rst | 13 ++-----------
+>  1 file changed, 2 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/staging/media/hantro/hantro_v4l2.c b/drivers/staging/media/hantro/hantro_v4l2.c
-index 67148ba346f5..50d636678ff3 100644
---- a/drivers/staging/media/hantro/hantro_v4l2.c
-+++ b/drivers/staging/media/hantro/hantro_v4l2.c
-@@ -409,6 +409,30 @@ hantro_update_requires_request(struct hantro_ctx *ctx, u32 fourcc)
- 	}
- }
- 
-+static void
-+hantro_update_requires_hold_capture_buf(struct hantro_ctx *ctx, u32 fourcc)
-+{
-+	struct vb2_queue *vq;
-+
-+	vq = v4l2_m2m_get_vq(ctx->fh.m2m_ctx,
-+			     V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
-+
-+	switch (fourcc) {
-+	case V4L2_PIX_FMT_JPEG:
-+	case V4L2_PIX_FMT_MPEG2_SLICE:
-+	case V4L2_PIX_FMT_VP8_FRAME:
-+	case V4L2_PIX_FMT_HEVC_SLICE:
-+	case V4L2_PIX_FMT_VP9_FRAME:
-+		vq->subsystem_flags &= ~(VB2_V4L2_FL_SUPPORTS_M2M_HOLD_CAPTURE_BUF);
-+		break;
-+	case V4L2_PIX_FMT_H264_SLICE:
-+		vq->subsystem_flags |= VB2_V4L2_FL_SUPPORTS_M2M_HOLD_CAPTURE_BUF;
-+		break;
-+	default:
-+		break;
-+	}
-+}
-+
- static int hantro_set_fmt_out(struct hantro_ctx *ctx,
- 			      struct v4l2_pix_format_mplane *pix_mp)
- {
-@@ -472,6 +496,7 @@ static int hantro_set_fmt_out(struct hantro_ctx *ctx,
- 	ctx->dst_fmt.quantization = pix_mp->quantization;
- 
- 	hantro_update_requires_request(ctx, pix_mp->pixelformat);
-+	hantro_update_requires_hold_capture_buf(ctx, pix_mp->pixelformat);
- 
- 	vpu_debug(0, "OUTPUT codec mode: %d\n", ctx->vpu_src_fmt->codec_mode);
- 	vpu_debug(0, "fmt - w: %d, h: %d\n",
--- 
-2.34.1
+Applied, thanks.
 
+jon
