@@ -2,120 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAA60C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:57:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC27DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:59:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343940AbiC1T7P (ORCPT
+        id S1343965AbiC1UBO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 15:59:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48266 "EHLO
+        Mon, 28 Mar 2022 16:01:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245592AbiC1T7F (ORCPT
+        with ESMTP id S239880AbiC1UBJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 15:59:05 -0400
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 339C5673FC
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 12:57:24 -0700 (PDT)
-Received: by mail-qt1-x829.google.com with SMTP id d15so13386766qty.8
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 12:57:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version;
-        bh=NGspnAFOzJSoDZcuTuDayNTMlf+9yY8D8Ve789Ll0sM=;
-        b=jkm+7pi2evYjUioD24kEJ4jw5PSVqdjUsYal52RTsLOFxeM/JoTW0tmGWK/fsDGF9b
-         dW5MW3VY0ParUG+jUCsp9i2mofXCCMhyHbESxtxK+Tf/4iKI91/RWDhdDQu8Ec4i5DGW
-         G9B+Re0ozD0/P1U02GKOGXSrp/SL59FyJ+Q7vwpVp1Nb4BgnW/I6wwdgXUTOXwVD8UoJ
-         GFlAJXjk5bip6TuZEryLoRVUdgTkXFWPW4aD4OzJ7uqRbqMu7DLajDrviY7g1A4jHOPJ
-         eHfdaH5pc/CghBjQz7k3tG0+PNd5ee/u/TQ0rmubKYYsGZeUNexxJx5gz2rZPzf3Unli
-         0Aaw==
+        Mon, 28 Mar 2022 16:01:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 273E634B81
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 12:59:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648497566;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rNlkcdDOnbEEqyaA/TedcvXNhWifU9B0NNWARWuI3n8=;
+        b=Q4W5mxp8IzvQnXAFA4pXr4iq6DFjrZ3uAYshzd2RmqwmQCfufN9DG/sm0/uQbJh0ck7W8z
+        YvmcNHOW6IY+7u8JXVg7aKdOc7xJ4qOsOimQp7dSRHgrafHDWVgaNJc1R9k9wjW4JJ0EhK
+        kp2Nl2JvQRYFtW8W03tBLCLhIfmOyCA=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-550-pZ5kztpxP6qC0KWnfws5FA-1; Mon, 28 Mar 2022 15:59:24 -0400
+X-MC-Unique: pZ5kztpxP6qC0KWnfws5FA-1
+Received: by mail-qt1-f197.google.com with SMTP id cb11-20020a05622a1f8b00b002e06f729debso13089703qtb.4
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 12:59:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version;
-        bh=NGspnAFOzJSoDZcuTuDayNTMlf+9yY8D8Ve789Ll0sM=;
-        b=VxQ4AcfpLvQhlSLtGY7c0uaNcL+gIEMJJlLQbC4LfUUYEMYpzz5XH+zkpRn6CKed4A
-         uUJdLZCvgI8zA+FPhbz8dZKe5hrREiJWKQX8u95NpbPLKszeFBoLc1Ne7eAqIyt+CePC
-         POSkEthoxoIRCly0ZDLmSW+XglyEuyY4Gc5dP6hMkE+LDjqv1wFVv4eVQ4/ViBSEVodX
-         38Vhq+ZGoYkLKSbLnD+NnYVlyfZcS32csEMQCHLj0b91T48IiocVSKuOHjwaldGKTdea
-         rkYOrOKCNCv6C/IYMp8c6MZYld+DMeSLKkME0BpX1ejwnr1ETfkM1kLcLT99+zpS+y1m
-         ac2Q==
-X-Gm-Message-State: AOAM533zCd18LiZXRe1sSmVePQv9VUncTUJr5g4qCd0ACXJbqUP1dMM9
-        bviLuutonPBXdidjFCEwxKLmpg==
-X-Google-Smtp-Source: ABdhPJxZEMZqwqCh8vPDbf/fPBdNzAmZVrSRzj42G402jWvD8pjIgfONlUqwp3H8KQZmFogpt6dUnA==
-X-Received: by 2002:a05:622a:552:b0:2e2:72c:a05b with SMTP id m18-20020a05622a055200b002e2072ca05bmr23563976qtx.409.1648497443168;
-        Mon, 28 Mar 2022 12:57:23 -0700 (PDT)
-Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
-        by smtp.gmail.com with ESMTPSA id q8-20020a05622a030800b002e1c9304db8sm13082619qtw.38.2022.03.28.12.57.21
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rNlkcdDOnbEEqyaA/TedcvXNhWifU9B0NNWARWuI3n8=;
+        b=j5UydY96GoEO6z8+cWZXbLZ+UGk0itLYS3Y8G3PUfZGDtVs/BN+9Bavweyxi04LOj9
+         tH+3tZ+ZsK6jv0c4t3jnf37KcWWNNxK41P4YMsQ7/PVPHMw6Ijxzt27UJhnXomCSAJ1Z
+         EbgIi6IwAWGrqMoA1rktDo/KQuNEERrkKM36hdL5na2HVsIAOOaF/DyyeT4goU1KF0bO
+         ysFDOkArAwaDw5pOlpsSxQLKjYIn16bJlYOwGOcONWP6Z5wOyEW9clZl1t6KKHpXdimT
+         UhZhaSCnZb9SN52D5CorEawREYmSdVzPrCVULRPK9OQXOnL2mGKGR3DqoExjRelV8f6A
+         r7qQ==
+X-Gm-Message-State: AOAM532fFDJBGFNsqEnJj0y9ivr/F2UfU79BnLrM8KsQPhJQxPQMpzv2
+        +tssZYUkW9e3u1pZ4/smncf4Qk3etRqCJ6AeIkqvGl3vxu2PAFDfq2OyTpQkaYUyN9puFnckvci
+        FyGlP7dWR0FQ8uvVDUw8HtgsN
+X-Received: by 2002:ac8:5cc1:0:b0:2e1:bd05:1371 with SMTP id s1-20020ac85cc1000000b002e1bd051371mr23484915qta.573.1648497564278;
+        Mon, 28 Mar 2022 12:59:24 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx9L8BI7elUtjtShDyTNCfyVyjEHPEC/OaWfgPxbM34Cf9QU+7w8TC2BCSK0jUFIPEMZj6Lpw==
+X-Received: by 2002:ac8:5cc1:0:b0:2e1:bd05:1371 with SMTP id s1-20020ac85cc1000000b002e1bd051371mr23484900qta.573.1648497564027;
+        Mon, 28 Mar 2022 12:59:24 -0700 (PDT)
+Received: from treble ([2600:1700:6e32:6c00::35])
+        by smtp.gmail.com with ESMTPSA id z15-20020a05622a060f00b002e2070bf899sm12526007qta.90.2022.03.28.12.59.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Mar 2022 12:57:22 -0700 (PDT)
-Date:   Mon, 28 Mar 2022 12:57:20 -0700 (PDT)
-From:   Hugh Dickins <hughd@google.com>
-X-X-Sender: hugh@ripple.anvils
-To:     Andrew Morton <akpm@linux-foundation.org>
-cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Hugh Dickins <hughd@google.com>, linux-kernel@vger.kernel.org,
-        linux-next@vger.kernel.org, linux-mm@kvack.org
-Subject: [PATCH] mm/munlock: remove fields to fix htmldocs warnings
-Message-ID: <d2c8f66d-be8e-7c91-b0c8-b2f7ffb08bec@google.com>
+        Mon, 28 Mar 2022 12:59:23 -0700 (PDT)
+Date:   Mon, 28 Mar 2022 12:59:20 -0700
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        "aik@ozlabs.ru" <aik@ozlabs.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "naveen.n.rao@linux.vnet.ibm.com" <naveen.n.rao@linux.vnet.ibm.com>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        Sathvika Vasireddy <sv@linux.ibm.com>
+Subject: Re: [RFC PATCH 3/3] objtool/mcount: Add powerpc specific functions
+Message-ID: <20220328195920.dqlfra3lcardko6r@treble>
+References: <20220318105140.43914-1-sv@linux.ibm.com>
+ <20220318105140.43914-4-sv@linux.ibm.com>
+ <YjR6kHq4c/rjCTpr@hirez.programming.kicks-ass.net>
+ <0b55f122-4760-c1ba-840a-0911cefec2ad@csgroup.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <0b55f122-4760-c1ba-840a-0911cefec2ad@csgroup.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Stephen reports that 'make htmldocs' currently issues two warnings:
-include/linux/mm_types.h:275: warning: Function parameter or member
-'__filler' not described in 'folio'
-include/linux/mm_types.h:275: warning: Function parameter or member
-'mlock_count' not described in 'folio'
+On Sun, Mar 27, 2022 at 09:09:20AM +0000, Christophe Leroy wrote:
+> Second point is the endianess and 32/64 selection, especially when 
+> crossbuilding. There is already some stuff regarding endianess based on 
+> bswap_if_needed() but that's based on constant selection at build time 
+> and I couldn't find an easy way to set it conditionaly based on the 
+> target being built.
+>
+> Regarding 32/64 selection, there is almost nothing, it's based on using 
+> type 'long' which means that at the time being the target and the build 
+> platform must both be 32 bits or 64 bits.
+> 
+> For both cases (endianess and 32/64) I think the solution should 
+> probably be to start with the fileformat of the object file being 
+> reworked by objtool.
 
-Certainly __filler doesn't want documenting there, and all but one use of
-mlock_count is through page->mlock_count at present: so I think it's best
-just to remove them both from struct folio for now, and sort out the
-right way to document folio->mlock_count once that is the one true way.
+Do we really need to detect the endianness/bitness at runtime?  Objtool
+is built with the kernel, why not just build-in the same target
+assumptions as the kernel itself?
 
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Fixes: 07ca76067308 ("mm/munlock: maintain page->mlock_count while unevictable")
-Signed-off-by: Hugh Dickins <hughd@google.com>
----
+> What are current works in progress on objtool ? Should I wait Josh's 
+> changes before starting looking at all this ? Should I wait for anything 
+> else ?
 
- include/linux/mm_types.h |    8 +-------
- mm/swap.c                |    4 ++--
- 2 files changed, 3 insertions(+), 9 deletions(-)
+I'm not making any major changes to the code, just shuffling things
+around to make the interface more modular.  I hope to have something
+soon (this week).  Peter recently added a big feature (Intel IBT) which
+is already in -next.
 
---- 5.18-pre/include/linux/mm_types.h
-+++ linux/include/linux/mm_types.h
-@@ -253,13 +253,7 @@ struct folio {
- 		struct {
- 	/* public: */
- 			unsigned long flags;
--			union {
--				struct list_head lru;
--				struct {
--					void *__filler;
--					unsigned int mlock_count;
--				};
--			};
-+			struct list_head lru;
- 			struct address_space *mapping;
- 			pgoff_t index;
- 			void *private;
---- 5.18-pre/mm/swap.c
-+++ linux/mm/swap.c
-@@ -1026,13 +1026,13 @@ static void __pagevec_lru_add_fn(struct
- 		folio_clear_active(folio);
- 		folio_set_unevictable(folio);
- 		/*
--		 * folio->mlock_count = !!folio_test_mlocked(folio)?
-+		 * page->mlock_count = !!PageMlocked(page)?
- 		 * But that leaves __mlock_page() in doubt whether another
- 		 * actor has already counted the mlock or not.  Err on the
- 		 * safe side, underestimate, let page reclaim fix it, rather
- 		 * than leaving a page on the unevictable LRU indefinitely.
- 		 */
--		folio->mlock_count = 0;
-+		folio_page(folio, 0)->mlock_count = 0;
- 		if (!was_unevictable)
- 			__count_vm_events(UNEVICTABLE_PGCULLED, nr_pages);
- 	}
+Contributions are welcome, with the understanding that you'll help
+maintain it ;-)
+
+Some years ago Kamalesh Babulal had a prototype of objtool for ppc64le
+which did the full stack validation.  I'm not sure what ever became of
+that.
+
+FWIW, there have been some objtool patches for arm64 stack validation,
+but the arm64 maintainers have been hesitant to get on board with
+objtool, as it brings a certain maintenance burden.  Especially for the
+full stack validation and ORC unwinder.  But if you only want inline
+static calls and/or mcount then it'd probably be much easier to
+maintain.
+
+-- 
+Josh
+
