@@ -2,148 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8521BC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 22:33:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54FC9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 22:36:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230007AbiC1Wfa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 18:35:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48384 "EHLO
+        id S229992AbiC1WiM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 18:38:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229837AbiC1WfZ (ORCPT
+        with ESMTP id S229996AbiC1WiI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 18:35:25 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E98751163
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 15:33:41 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id bc27so13275071pgb.4
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 15:33:41 -0700 (PDT)
+        Mon, 28 Mar 2022 18:38:08 -0400
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 908B547559
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 15:36:24 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id g21so5738826iom.13
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 15:36:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=2ABviws9BXbfxTsMHoYmEcQBLN3yu8stMpTqnw9eDk8=;
-        b=rYUjTKzGOFHx6d15Tswooja+d30xBTDDUHatG0/ZcYrDXuH0PfkjhUH1PWeOTfidl+
-         vYJIWPT6oxLsddoyOabTrOO1tVAq7mc/vYWGRF/xHT6Zkm9YinxTH/0vsmRSLsdzVkKr
-         6pd96qJfscL7yKbX4y+A5Mu5s1jsgn8U+dy5S4ZqCvCfco0t//embRohXdJdoJUpkoR/
-         +rAdfVLcRZcp7qqE5ZtyTqie24GhbftV5PTRJAHm1SFW93aYXxALqSwG5/AMgSwMco3+
-         dtnGSwv8eE42JLUTvRoXFyxnboBZbMprh1RRTGVK+iAeHGKfsjUevmvmc+QSSrVtaClB
-         o0gQ==
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=AExd4vaFTbJ590yLTEsxZaq1Tm0Bzwb1nLh9ynuGeIw=;
+        b=DTRFn7+l1UKGJysQuFvGqP5W+I598Bx27SczkLubNCt0VlS2qdgUPay/HmX8b6XpGC
+         PTu66/GD01WGJz9u0XQ35hx2zataUVLZX413a+wYt3JptVnM1+bb2pnMkZFqWgVlM2je
+         s4wGDP20Dm3uuXw4kmJXTzk4OU+xgUe94XwiM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2ABviws9BXbfxTsMHoYmEcQBLN3yu8stMpTqnw9eDk8=;
-        b=jS919+6QfBp0zUI2oc2wiQoSi+8P1A2p4BF2M0abUQ881N3MQsnZkppCrmyqS2K/LI
-         Dfq08+7Z2wL+viAGHzzUbrpVBWBgQycQ5jyCOXAE4yf8vNuNr8dREMoFdBGLm5ViuJ0e
-         V3qdLgyf4vuX8ydesJ9htP7hTYkHm4pAstyLuyK+AiCqixHuAYHssY+6jqRkPgzQvuZK
-         olI1ljvYS2XUVp2dwU6D5i97h0VhWlHccTCJ1jNIS9iLEXqKZ8lW8TBN4IantwVuW6Cb
-         164WldIi+yRuMezBYC0AWNQYfrWTbC66Z7Jtf1ZefzhJUYgweG4LWIDrmctTVp7MS9HY
-         t/ZQ==
-X-Gm-Message-State: AOAM533K3pPeF4i9VMH+UcDKUJ9wt/bIGz1v8EXKKBLqo5L8OedFsVc1
-        SJJibABE3tS2/BltTzbrhHT8uw==
-X-Google-Smtp-Source: ABdhPJwxvlht5QIP7qnxQ/NrpyslimX+9K7yNm7qbqA6RcGg490QKIvotfYQ+yrSTDNk0Bag7lNL6A==
-X-Received: by 2002:a05:6a00:21c8:b0:4c4:4bd:dc17 with SMTP id t8-20020a056a0021c800b004c404bddc17mr24814255pfj.57.1648506821242;
-        Mon, 28 Mar 2022 15:33:41 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id 22-20020a17090a019600b001c6457e1760sm479337pjc.21.2022.03.28.15.33.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Mar 2022 15:33:40 -0700 (PDT)
-Date:   Mon, 28 Mar 2022 22:33:37 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Chao Peng <chao.p.peng@linux.intel.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, qemu-devel@nongnu.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com
-Subject: Re: [PATCH v5 07/13] KVM: Add KVM_EXIT_MEMORY_ERROR exit
-Message-ID: <YkI3wa3rmWTOrpmw@google.com>
-References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
- <20220310140911.50924-8-chao.p.peng@linux.intel.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=AExd4vaFTbJ590yLTEsxZaq1Tm0Bzwb1nLh9ynuGeIw=;
+        b=DiIPfts/YQR/xVc6vDBNScmoG/vDO/dpgwY8mIcEq6xhUdpOuLmrxsu2Fa7O/8dmYj
+         o6jLCcaWvf14+yQHclwc2qgxPLSwm3rT8LRJsEBtYsX3Cx/S4kp5nDivos5Akh/Yhvij
+         UZhtNgi//mMxa3tPFSfyw/W1aQRypqwld6bfQWvNn/UYxRnNvoqBcmfb5HQqJSPQDhbk
+         DkhY5NzVO6r9ldMH9jeJaZrUGvqKvauqRXL57sxlLcpXq9nvwQD13XjVc+COMLel++vW
+         wDYnSqTmLznoK7vx6i5eCCfzY/ubYBVL1s0DL0BTeMXGOsr2nADv57YO+XU3Rbi+0QDm
+         uHLA==
+X-Gm-Message-State: AOAM531URk6kzWFIMpIxNd/9pg2bTfxKrqN1r960DyHT8CXHbPGqDMtn
+        KoXnLLFn51p6laOu+2ACK00P1Q==
+X-Google-Smtp-Source: ABdhPJxHgbesdx6T5wcEa6Fn7Cv//g3Oqi2VOyXANaYIxT1Jk5KGVgEj1yKkQN/+2BN4fxIYPra8Lw==
+X-Received: by 2002:a02:cb0d:0:b0:321:4041:f680 with SMTP id j13-20020a02cb0d000000b003214041f680mr13781718jap.162.1648506983900;
+        Mon, 28 Mar 2022 15:36:23 -0700 (PDT)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id y20-20020a5d94d4000000b00640843474e2sm8434240ior.10.2022.03.28.15.36.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Mar 2022 15:36:23 -0700 (PDT)
+Subject: Re: [PATCH] Documentation: dev-tools: Add a section for static
+ analysis tools
+To:     Marcelo Schmitt <marcelo.schmitt1@gmail.com>, corbet@lwn.net,
+        mchehab+huawei@kernel.org, dlatypov@google.com, davidgow@google.com
+Cc:     linux-doc@vger.kernel.org, linux-sparse@vger.kernel.org,
+        cocci@inria.fr, smatch@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <YkImfPbNOzQBq5ZD@marsc.168.1.7>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <6f1e410e-4b35-eb37-153a-8f5959ef0a49@linuxfoundation.org>
+Date:   Mon, 28 Mar 2022 16:36:22 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220310140911.50924-8-chao.p.peng@linux.intel.com>
+In-Reply-To: <YkImfPbNOzQBq5ZD@marsc.168.1.7>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022, Chao Peng wrote:
-> This new KVM exit allows userspace to handle memory-related errors. It
-> indicates an error happens in KVM at guest memory range [gpa, gpa+size).
-> The flags includes additional information for userspace to handle the
-> error. Currently bit 0 is defined as 'private memory' where '1'
-> indicates error happens due to private memory access and '0' indicates
-> error happens due to shared memory access.
+On 3/28/22 3:19 PM, Marcelo Schmitt wrote:
+> Complement the Kernel Testing Guide documentation page by adding a
+> section about static analysis tools.
 > 
-> After private memory is enabled, this new exit will be used for KVM to
-> exit to userspace for shared memory <-> private memory conversion in
-> memory encryption usage.
-> 
-> In such usage, typically there are two kind of memory conversions:
->   - explicit conversion: happens when guest explicitly calls into KVM to
->     map a range (as private or shared), KVM then exits to userspace to
->     do the map/unmap operations.
->   - implicit conversion: happens in KVM page fault handler.
->     * if the fault is due to a private memory access then causes a
->       userspace exit for a shared->private conversion request when the
->       page has not been allocated in the private memory backend.
->     * If the fault is due to a shared memory access then causes a
->       userspace exit for a private->shared conversion request when the
->       page has already been allocated in the private memory backend.
-> 
-> Signed-off-by: Yu Zhang <yu.c.zhang@linux.intel.com>
-> Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
+> Signed-off-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
 > ---
->  Documentation/virt/kvm/api.rst | 22 ++++++++++++++++++++++
->  include/uapi/linux/kvm.h       |  9 +++++++++
->  2 files changed, 31 insertions(+)
+> Hey everyone,
 > 
-> diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
-> index f76ac598606c..bad550c2212b 100644
-> --- a/Documentation/virt/kvm/api.rst
-> +++ b/Documentation/virt/kvm/api.rst
-> @@ -6216,6 +6216,28 @@ array field represents return values. The userspace should update the return
->  values of SBI call before resuming the VCPU. For more details on RISC-V SBI
->  spec refer, https://github.com/riscv/riscv-sbi-doc.
->  
-> +::
+> I think this patch can be a good addition to the documentation as
+> discussed in the thread for the testing guide documentation page:
+> Link: https://lore.kernel.org/linux-doc/CABVgOS=2iYtqTVdxwH=mcFpcSuLP4cpJ4s6PKP4Gc-SH6jidgQ@mail.gmail.com/
+> 
+> If you think it would be worth it, I can try making something more
+> elaborated. Maybe provide some guidance on when to use each tool.
+> I've been studying how Linux device drivers are tested.
+> Here's a post I wrote talking about some testing tools.
+> Link: https://marcelosc.gitlab.io/how-is-linux-tested/
+> 
+> Best regards,
+> Marcelo
+> 
+
+This a good addition to the testing overview doc. Please see a couple of
+comments below
+
+>   Documentation/dev-tools/testing-overview.rst | 29 ++++++++++++++++++++
+>   1 file changed, 29 insertions(+)
+> 
+> diff --git a/Documentation/dev-tools/testing-overview.rst b/Documentation/dev-tools/testing-overview.rst
+> index 65feb81edb14..b00511109a9d 100644
+> --- a/Documentation/dev-tools/testing-overview.rst
+> +++ b/Documentation/dev-tools/testing-overview.rst
+> @@ -115,3 +115,32 @@ that none of these errors are occurring during the test.
+>   Some of these tools integrate with KUnit or kselftest and will
+>   automatically fail tests if an issue is detected.
+>   
+> +Static Analysis Tools
+> +======================
 > +
-> +		/* KVM_EXIT_MEMORY_ERROR */
-> +		struct {
-> +  #define KVM_MEMORY_EXIT_FLAG_PRIVATE	(1 << 0)
-> +			__u32 flags;
-> +			__u32 padding;
-> +			__u64 gpa;
-> +			__u64 size;
-> +		} memory;
-> +If exit reason is KVM_EXIT_MEMORY_ERROR then it indicates that the VCPU has
+> +In addition to testing a running kernel, one may also scout for bugs by
+> +analyzing the source code semantics. Three tools are well known for serving this
+> +purpose.
+> +
+> +Sparse can help test the kernel by performing type-checking, lock checking,
+> +value range checking, in addition to reporting various errors and warnings while
+> +examining the code. See the Documentation/dev-tools/sparse.rst documentation
+> +page for details on how to use it.
+> +> +Smatch extends Sparse and provides additional checks for programming logic
+> +mistakes such as missing breaks in switch statements, unused return values on
+> +error checking, forgetting to set an error code in the return of an error path,
+> +etc. Smatch also has tests against more serious issues such as integer
+> +overflows, null pointer dereferences, and memory leaks. See the project page at
+> +http://smatch.sourceforge.net/.
+> +
+> +We also have Coccinelle as an option within static analyzers. Coccinelle is
+> +often used to aid collateral evolution of source code, but it can also help to
+> +avoid certain bugs that have been expressed semantically. The types of tests
+> +available include API tests, tests for correct usage of kernel iterators, checks
+> +for the soundness of free operations, analysis of locking behavior, and further
+> +tests known to help keep consistent kernel usage. See the
+> +Documentation/dev-tools/coccinelle.rst documentation page for details.
+> +
+> +These static analysis tools support running tests on the whole source tree or
+> +over a specific file or directory.
+> 
 
-Doh, I'm pretty sure I suggested KVM_EXIT_MEMORY_ERROR.  Any objection to using
-KVM_EXIT_MEMORY_FAULT instead of KVM_EXIT_MEMORY_ERROR?  "ERROR" makes me think
-of ECC errors, i.e. uncorrected #MC in x86 land, not more generic "faults".  That
-would align nicely with -EFAULT.
+You can also add a couple of sentences along the lines to clarify why static
+analysis is beneficial:
 
-> +encountered a memory error which is not handled by KVM kernel module and
-> +userspace may choose to handle it. The 'flags' field indicates the memory
-> +properties of the exit.
+"It is easier to detect and fix problems during the development process."
+
+Also add a word of caution:
+
+"Static analysis tools suffer from false positives and errors and warns need to
+  be evaluated carefully before attempting to fix them."
+  
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+
+thanks,
+-- Shuah
