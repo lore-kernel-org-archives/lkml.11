@@ -2,199 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AA26C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 17:18:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B9E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 17:20:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244559AbiC1RTq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 13:19:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52300 "EHLO
+        id S244562AbiC1RWQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 13:22:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244547AbiC1RTn (ORCPT
+        with ESMTP id S236180AbiC1RWP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 13:19:43 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F8D263BC4
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 10:17:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=ilMcPBjUCXJWeW2dVgPW5uEUuNJPkXASfjLKkiNNkIs=; b=T+m65BH3m8iNnGqfbRdiWmAMiA
-        trFg2yKWGqWUm5wBcKzDvtyri4OXqPn53c9WSF/uTjShv6yV+tIVD/IXPNgqMaUoURo5vHhn4Yjq4
-        VEksJMCVhNm5Etic2RzIDePf8s4cjoTReycG1WycSJfKINPR4mT1oINBgGKXQ4sgtWvX1p70ORkzE
-        ZVf6vuMenbeaplCsUScybdMuwHL06NMP+alz/e3R9RkJrPNoDsN7hoecRXJPRLjv2FdwpFHZ9iHwO
-        OZ4fBd90lGZzmGvnreKv6kmD1hEmRGvjBWO3AqlehAKFfk6ENC7uZ9AOXXxaSrNG02qtg+eDzxWgn
-        5lK0Yesg==;
-Received: from [165.90.126.25] (helo=mail.igalia.com)
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1nYt04-0006lu-Qv; Mon, 28 Mar 2022 19:17:52 +0200
-Date:   Mon, 28 Mar 2022 16:17:38 -0100
-From:   Melissa Wen <mwen@igalia.com>
-To:     Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
-Cc:     amd-gfx@lists.freedesktop.org, harry.wentland@amd.com,
-        sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
-        alexander.deucher@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, Qingqing Zhuo <qingqing.zhuo@amd.com>,
-        Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Jasdeep Dhillon <jdhillon@amd.com>
-Subject: Re: [PATCH 1/2] drm/amd/display: detach fpu operations from
- dcn10_validate_bandwidth in calcs
-Message-ID: <20220328171738.iu5peqfcled2psv3@mail.igalia.com>
-References: <20220326202448.2046077-1-mwen@igalia.com>
- <20220326202448.2046077-2-mwen@igalia.com>
- <1586f68e-c635-482f-9399-2b027b766543@amd.com>
+        Mon, 28 Mar 2022 13:22:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90CC35A59D;
+        Mon, 28 Mar 2022 10:20:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 169DE60C7E;
+        Mon, 28 Mar 2022 17:20:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8814FC340F0;
+        Mon, 28 Mar 2022 17:20:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648488033;
+        bh=A1cAETogMKE4ByDJveM04ydwDhQNcj7ZVpXQPOMQvQs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Xo72ByilWB92HDWNLTtqY4spp9AeXbHk/lIMpcKvTCxuvJxK1agcIrDcJBMcU6ONQ
+         OrLQiIJfvQPszkZlORSVD3EBxVv/cFKt8DY6Ecuol75mzJVFKWimAm1a15lLoiZaGX
+         +c9kaiRQumyv3W7d3B9qxnUKyUYK2Pq8MWmO7I7G+pizhBkaIuGU0zxdvKFUPRKwj6
+         ENJmUDd4XO5Dt8OmtPJKEbWa+i5oe/81Ztqx4H2JJv9JcoHbyMpl4mBXkagDw2e+AM
+         gYKHLx3m8AUjySN4AstB8l57w4Yw5yLC1QvgB4DBODe4Oe77EmR0B05aYzPT9v4MTN
+         39NFS0/Be9MIQ==
+Date:   Mon, 28 Mar 2022 18:28:08 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Paul Cercueil <paul@crapouillou.net>
+Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Christian =?UTF-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 04/12] iio: buffer-dmaengine: Enable write support
+Message-ID: <20220328182808.48e51432@jic23-huawei>
+In-Reply-To: <20220207125933.81634-5-paul@crapouillou.net>
+References: <20220207125933.81634-1-paul@crapouillou.net>
+        <20220207125933.81634-5-paul@crapouillou.net>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="nck3fakny2nfpihg"
-Content-Disposition: inline
-In-Reply-To: <1586f68e-c635-482f-9399-2b027b766543@amd.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon,  7 Feb 2022 12:59:25 +0000
+Paul Cercueil <paul@crapouillou.net> wrote:
 
---nck3fakny2nfpihg
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> Use the iio_dma_buffer_write() and iio_dma_buffer_space_available()
+> functions provided by the buffer-dma core, to enable write support in
+> the buffer-dmaengine code.
+> 
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+> Reviewed-by: Alexandru Ardelean <ardeleanalex@gmail.com>
+This (and previous) look fine to me. Just that question of a user for
+the new functionality...
 
-On 03/28, Christian K=F6nig wrote:
-> Am 26.03.22 um 21:24 schrieb Melissa Wen:
-> > dcn10_validate_bandwidth is only used on dcn10 files, but is declared in
-> > dcn_calcs files. Rename dcn10_* to dcn_* in calcs, remove DC_FP_* wrapp=
-er
-> > inside DML folder and create an specific dcn10_validate_bandwidth in
-> > dcn10_resources that calls dcn_validate_bandwidth and properly wraps th=
-at
-> > FPU function with DC_FP_* macro.
-> >=20
-> > Signed-off-by: Melissa Wen <mwen@igalia.com>
-> > ---
-> >   .../gpu/drm/amd/display/dc/dcn10/dcn10_resource.c  | 14 ++++++++++++++
-> >   .../gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c   |  5 +----
-> >   drivers/gpu/drm/amd/display/dc/inc/dcn_calcs.h     |  2 +-
-> >   3 files changed, 16 insertions(+), 5 deletions(-)
-> >=20
-> > diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_resource.c b/dr=
-ivers/gpu/drm/amd/display/dc/dcn10/dcn10_resource.c
-> > index 4048908dd265..1587a060b55a 100644
-> > --- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_resource.c
-> > +++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_resource.c
-> > @@ -1141,6 +1141,20 @@ static void dcn10_destroy_resource_pool(struct r=
-esource_pool **pool)
-> >   	*pool =3D NULL;
-> >   }
-> > +static bool dcn10_validate_bandwidth(
-> > +		struct dc *dc,
-> > +		struct dc_state *context,
-> > +		bool fast_validate)
-> > +{
-> > +	bool voltage_supported;
-> > +
-> > +	DC_FP_START();
-> > +	voltage_supported =3D dcn_validate_bandwidth(dc, context, fast_valida=
-te);
-> > +	DC_FP_END();
-> > +
-> > +	return voltage_supported;
-> > +}
-> > +
-> >   static enum dc_status dcn10_validate_plane(const struct dc_plane_stat=
-e *plane_state, struct dc_caps *caps)
-> >   {
-> >   	if (plane_state->format >=3D SURFACE_PIXEL_FORMAT_VIDEO_BEGIN
-> > diff --git a/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c b/dri=
-vers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c
-> > index e447c74be713..c25023f7d604 100644
-> > --- a/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c
-> > +++ b/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c
-> > @@ -764,7 +764,7 @@ static unsigned int get_highest_allowed_voltage_lev=
-el(uint32_t chip_family,
-> >   	return 4;
-> >   }
-> > -bool dcn10_validate_bandwidth(
-> > +bool dcn_validate_bandwidth(
-> >   		struct dc *dc,
-> >   		struct dc_state *context,
-> >   		bool fast_validate)
-> > @@ -790,7 +790,6 @@ bool dcn10_validate_bandwidth(
-> >   		dcn_bw_sync_calcs_and_dml(dc);
-> >   	memset(v, 0, sizeof(*v));
-> > -	DC_FP_START();
-> >   	v->sr_exit_time =3D dc->dcn_soc->sr_exit_time;
-> >   	v->sr_enter_plus_exit_time =3D dc->dcn_soc->sr_enter_plus_exit_time;
-> > @@ -1323,8 +1322,6 @@ bool dcn10_validate_bandwidth(
-> >   	bw_limit =3D dc->dcn_soc->percent_disp_bw_limit * v->fabric_and_dram=
-_bandwidth_vmax0p9;
-> >   	bw_limit_pass =3D (v->total_data_read_bandwidth / 1000.0) < bw_limit;
-> > -	DC_FP_END();
-> > -
-> >   	PERFORMANCE_TRACE_END();
-> >   	BW_VAL_TRACE_FINISH();
-> > diff --git a/drivers/gpu/drm/amd/display/dc/inc/dcn_calcs.h b/drivers/g=
-pu/drm/amd/display/dc/inc/dcn_calcs.h
-> > index 337c0161e72d..806f3041db14 100644
-> > --- a/drivers/gpu/drm/amd/display/dc/inc/dcn_calcs.h
-> > +++ b/drivers/gpu/drm/amd/display/dc/inc/dcn_calcs.h
-> > @@ -619,7 +619,7 @@ struct dcn_ip_params {
-> >   };
-> >   extern const struct dcn_ip_params dcn10_ip_defaults;
-> > -bool dcn10_validate_bandwidth(
-> > +bool dcn_validate_bandwidth(
-> >   		struct dc *dc,
-> >   		struct dc_state *context,
-> >   		bool fast_validate);
->=20
-> Just for the record: That's not really usual kernel coding style, but tha=
-t's
-> not topic of this patch set.
-Yeah. I didn't change the code style to ease any version conflict managemen=
-t.
->=20
-> The series is Acked-by: Christian K=F6nig <christian.koenig@amd.com>
+Jonathan
 
-Thanks!
->=20
-> And it would be really nice if we could make the DC_FP_* macros somehow f=
-ail
-> in the dml folder.
+> ---
+>  drivers/iio/buffer/industrialio-buffer-dmaengine.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+> index ac26b04aa4a9..5cde8fd81c7f 100644
+> --- a/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+> +++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+> @@ -123,12 +123,14 @@ static void iio_dmaengine_buffer_release(struct iio_buffer *buf)
+>  
+>  static const struct iio_buffer_access_funcs iio_dmaengine_buffer_ops = {
+>  	.read = iio_dma_buffer_read,
+> +	.write = iio_dma_buffer_write,
+>  	.set_bytes_per_datum = iio_dma_buffer_set_bytes_per_datum,
+>  	.set_length = iio_dma_buffer_set_length,
+>  	.request_update = iio_dma_buffer_request_update,
+>  	.enable = iio_dma_buffer_enable,
+>  	.disable = iio_dma_buffer_disable,
+>  	.data_available = iio_dma_buffer_data_available,
+> +	.space_available = iio_dma_buffer_space_available,
+>  	.release = iio_dmaengine_buffer_release,
+>  
+>  	.modes = INDIO_BUFFER_HARDWARE,
 
-And if we include a kind of dc_assert_fp_disabled() in the dc_fpu_begin()
-(DC_FP_START) - more or less the reverse of dc_assert_fp_enabled(). Does
-it meet the `make the DC_FP_* macros somehow fail in the dml folder` ?
-It is not restricted to the dml folder, but I think it would work
-similarly... Does it make sense?
-
-Melissa
-
->=20
-> Thanks,
-> Christian.
->=20
->=20
-
---nck3fakny2nfpihg
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEd8WOo/JViG+Tu+XIwqF3j0dLehwFAmJB7a4ACgkQwqF3j0dL
-ehwrzA//QJ6AXYIDEi3GqSLj5lCIMmah8UIxpKgnr8qwFlwj7C/PjnJyOTGe0snd
-dTwfd7G0rsmfcYkS/YtqKT+/9Vbfv596xSNOBVAZoQxJ2+ffNdG854aKEM1Mx512
-OL3X5/3oOb0uc6Z3xjOa2vYRc0RssXdUwvU6DaKFsAx2tYLN5M62E/k6WP83B1wR
-hphGK3wj81ihN6hmyucmhvQI88eHCyayrTWKyUlDCjMUJFr+7A5F0jbbg73fahVQ
-o73TCuuThqRT+Irp42o3/HmPsvyjaPhH1wnkfjsZeXBiw0FB8GkZmAYGPx4A5rXK
-8b3OlT9jIQ99cLojzWh5voRWKZsQ9Tu0/HFIqayseg70d4I24zt8Sn9XtZTOVCvl
-aFPQc3RUhKPjgbgb/1BUX9NPd+uB6Db8UdpcTM5vA+tf2rzpFFgIqbLfmM82fhkp
-wjUDaI8iN0NVIkMy/BZ/t6DQ6BfYJCly3d68BDfpcNnlWl8EAqjW5X3LcEwaqtZ0
-F96jQ6MbqhX9I6Xvn0rMVQQuyWGW6/cJzgCqq0UsKXg7SKJmqP4dtK6mrgP5RvVk
-gTU9FjmowMVGuFiGN/i1QPHN8eCc0FVmFjs4/uEWWWkCFbjxJLu1VJmiMBLhUpun
-XfyfThUfwoj//5unmAqYryRL4V3KRdluzAti6iDjLAzi5q+I8+M=
-=jExT
------END PGP SIGNATURE-----
-
---nck3fakny2nfpihg--
