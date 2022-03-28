@@ -2,75 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55F4AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 15:08:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F777C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 15:08:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244238AbiC1PJs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 11:09:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50418 "EHLO
+        id S244239AbiC1PKM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 11:10:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238206AbiC1PJn (ORCPT
+        with ESMTP id S244241AbiC1PKI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 11:09:43 -0400
-Received: from conuserg-10.nifty.com (conuserg-10.nifty.com [210.131.2.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A15685F8CC;
-        Mon, 28 Mar 2022 08:08:02 -0700 (PDT)
-Received: from grover.. (133-32-176-37.west.xps.vectant.ne.jp [133.32.176.37]) (authenticated)
-        by conuserg-10.nifty.com with ESMTP id 22SF7L0W004279;
-        Tue, 29 Mar 2022 00:07:21 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-10.nifty.com 22SF7L0W004279
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1648480041;
-        bh=ISTtvjUDXjLP9uSMSA+wgYZumpK7DOq5dgiQQSeSIqE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=KoasDRFT+Y9OH4RDffPN8+zEsxOIaWcbUWh0+/ZgJ5K+Zp9g3FI5rmqtmDp7p5IfL
-         KP2zn9fh5nl1iMa1HZZbglvYL9FKZKMALpoQQX1zxiwMm6n3J0EwwtqxCPJhtofU3F
-         RNSBwxVDeeixYfuPdJhSpcQ/FLZ0QNCmtB0rxah3GcOu3BJs+Yn1hop+MelDiNOxEK
-         uIRDXzzyWroEMhsgyerHPsHjDgBrfbafAaieKWjpoqj6xnIiFV2pT23lxq9EPhqr3S
-         9WM67f+ykjd9c9jAdaj0TJ0wqu70ilVp+14I+BSvpRSPA0W8QobOnHOFxrcoXQpb7M
-         pJiqkIOsmTQ0g==
-X-Nifty-SrcIP: [133.32.176.37]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>
-Subject: [PATCH] kconfig: remove stale comment about removed kconfig_print_symbol()
-Date:   Tue, 29 Mar 2022 00:07:10 +0900
-Message-Id: <20220328150710.162368-1-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
+        Mon, 28 Mar 2022 11:10:08 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A726E517F3
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 08:08:27 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id a1so20831845wrh.10
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 08:08:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=c6REY1PLhiapPTr7AeZ96JBFH3lbQ/XIpgsf/k2b/KE=;
+        b=rc8knfvsbiIZeLFyS7vHudfEQ6F+nDgM3nGrhMy05X5s2i59dmjrUszAs0BvjyNWc+
+         c6YiB86dNVsSkk/sbeN3N18kffBdAaLmtremfAs81l4O9b8E7WdTc9ol8rl2i0wCU/Bl
+         ptGd+ZZm2dn/f9ZkjKxpqWN8O5Rh4C0cdkYbNsdrEJG4aLvhlMlWo1DpLweq6SvuyWyj
+         IehazaE5KCh2hWLPm18e9Eu715V1wMv5olHpb0n8AfTU+h4CSPs5lCbHcryvYEm1O9ph
+         c5HXrQ3FP5UeRqpYwPKoNQ8WUqy6REhpB10VdrlL3l4VvoJDP5SU/o4VLLTbkasbM10f
+         zaJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=c6REY1PLhiapPTr7AeZ96JBFH3lbQ/XIpgsf/k2b/KE=;
+        b=0vdeeb3S2QqLdS54BmWaMGX78YuJUIZo64ZOEQ6Z4JYm0Esb698iYrvRcnWUxrKicl
+         Wh5wDoFEPcEimHnsz2wb6KSB8+LbbSVq76uWraGS2SBx3F/C+QBfuhJJRGo2sRvBlEpW
+         Irs8h5vhRG3Jgp5JCRR/J6Id5DOCpU8bohwf08gE34XDxwrMrXr4CK7QFbCAg/NQb2nG
+         jpw0rvr0a0mAhf7cwfrrC0rVSBqbc/55zgaqt5cq7h7wPEmP9Em0SsKLJklxwEbyUwm9
+         AXnmK0vaDSYkdnpwGqXp5gAHJRwC4N9Af/duYHPDUJw2CTFGqdGv+2q7B2QtFEfbz6+I
+         ZgxA==
+X-Gm-Message-State: AOAM531drRwChAWtGzwqfW5JbxnMZPx/VzWUEfbBxzQCHigXUnwABCQJ
+        WTChwiYz7YQEze3f6I5NRHFHqA==
+X-Google-Smtp-Source: ABdhPJydoBELfp7hcJZbOgQCsniJ3eyPk42bn+yxHvqwq2v6SqofvqObHz1gbJ5BZQd3D8SmYadJfw==
+X-Received: by 2002:a05:6000:386:b0:203:f8d8:f70 with SMTP id u6-20020a056000038600b00203f8d80f70mr23939212wrf.163.1648480100875;
+        Mon, 28 Mar 2022 08:08:20 -0700 (PDT)
+Received: from [192.168.0.162] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id u23-20020a7bcb17000000b0037bdfa1665asm22329921wmj.18.2022.03.28.08.08.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Mar 2022 08:08:20 -0700 (PDT)
+Message-ID: <4ae92eed-7713-69a4-8fe4-f777af652e3d@linaro.org>
+Date:   Mon, 28 Mar 2022 17:08:19 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 2/6] arm64: dts: qcom: sm8350: move qup-opp-tables out of
+ soc node
+Content-Language: en-US
+To:     Vinod Koul <vkoul@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     linux-arm-msm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220328143035.519909-1-vkoul@kernel.org>
+ <20220328143035.519909-3-vkoul@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220328143035.519909-3-vkoul@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This comment is about kconfig_print_symbol(), which was removed by
-commit 6ce45a91a982 ("kconfig: refactor conf_write_symbol()").
+On 28/03/2022 16:30, Vinod Koul wrote:
+> The soc node expects all the nodes to have unit addresses. The
+> qup-opp-tables do not have that which causes warnings:
+> 
+> arch/arm64/boot/dts/qcom/sm8350.dtsi:640.46-657.5:
+> 	Warning (simple_bus_reg): /soc@0/qup-100mhz-opp-table:
+> 	missing or empty reg/ranges property
+> arch/arm64/boot/dts/qcom/sm8350.dtsi:659.46-676.5:
+> 	Warning (simple_bus_reg): /soc@0/qup-120mhz-opp-table:
+> 	missing or empty reg/ranges property
+> 
+> Move the qup-opp-tables out of soc node to fix these warnings
+> 
+> Signed-off-by: Vinod Koul <vkoul@kernel.org>
+> ---
+>  arch/arm64/boot/dts/qcom/sm8350.dtsi | 76 ++++++++++++++--------------
+>  1 file changed, 38 insertions(+), 38 deletions(-)
+> 
 
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
 
- scripts/kconfig/confdata.c | 7 -------
- 1 file changed, 7 deletions(-)
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-diff --git a/scripts/kconfig/confdata.c b/scripts/kconfig/confdata.c
-index 0c711a1bdc96..00f93c03aa57 100644
---- a/scripts/kconfig/confdata.c
-+++ b/scripts/kconfig/confdata.c
-@@ -658,13 +658,6 @@ static char *escape_string_value(const char *in)
- 	return out;
- }
- 
--/*
-- * Kconfig configuration printer
-- *
-- * This printer is used when generating the resulting configuration after
-- * kconfig invocation and `defconfig' files. Unset symbol might be omitted by
-- * passing a non-NULL argument to the printer.
-- */
- static void __print_symbol(FILE *fp, struct symbol *sym, bool output_n,
- 			   bool escape_string)
- {
--- 
-2.32.0
-
+Best regards,
+Krzysztof
