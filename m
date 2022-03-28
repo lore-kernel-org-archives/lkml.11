@@ -2,129 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D273C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 06:40:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E120C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 06:41:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238530AbiC1GmQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 02:42:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40598 "EHLO
+        id S238538AbiC1Gmx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 02:42:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238525AbiC1GmO (ORCPT
+        with ESMTP id S238525AbiC1Gmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 02:42:14 -0400
-X-Greylist: delayed 1465 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 27 Mar 2022 23:40:34 PDT
-Received: from gateway22.websitewelcome.com (gateway22.websitewelcome.com [192.185.46.224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A3D649F06
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 23:40:33 -0700 (PDT)
-Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
-        by gateway22.websitewelcome.com (Postfix) with ESMTP id DC6456299F
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 01:15:26 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id Yif0nqfKe9AGSYif0nei4k; Mon, 28 Mar 2022 01:15:26 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=jQgqtKv6g3c9JTlzvFF9fkILdnQrG04PzWMmUtyZ79I=; b=Z9m6Uy21YEhtJzNbcBVhcTYQYn
-        vTB3fNlc3MOfcSh6ksPbcbYt3oSXkofi5a6lRQPC05JtMruK8znKUKiTTX3akYnERi0THt5V62b9k
-        O3i2yVX8iGTxxGcpJ47nvcy0wCRN019I5YMj117403A7hpVRofIkzeD8LQgrGrmdIpYLwgqyOAlD/
-        AW2eJjvcAFsrsOMELIVWO1G++G5f5/H22dbAqQ8Ex3v0lYALkLQtX6V/okDZ43zfuA2OfLBspZOEH
-        Bw9+aSG4L4fcfrJe4f2a4dwsO/Uoddhuvu6U0FDkQ06+RWGTnrDTKhOxrvlY2iBr2UTk1rSe/pNCM
-        ikLFO6lA==;
-Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:38018 helo=[192.168.15.9])
-        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1nYif0-000lJi-7y; Mon, 28 Mar 2022 01:15:26 -0500
-Message-ID: <4c520e2e-d1a5-6d2b-3ef1-b891d7946c01@embeddedor.com>
-Date:   Mon, 28 Mar 2022 01:23:59 -0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH][next] iwlwifi: fw: Replace zero-length arrays with
- flexible-array members
-Content-Language: en-US
-To:     Kalle Valo <kvalo@kernel.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-References: <20220216195015.GA904148@embeddedor>
- <202202161235.2FB20E6A5@keescook> <20220326003843.GA2602091@embeddedor>
- <871qym1vck.fsf@kernel.org>
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-In-Reply-To: <871qym1vck.fsf@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 187.162.31.110
-X-Source-L: No
-X-Exim-ID: 1nYif0-000lJi-7y
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.9]) [187.162.31.110]:38018
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 2
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+        Mon, 28 Mar 2022 02:42:52 -0400
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCF1A4ECC9;
+        Sun, 27 Mar 2022 23:41:12 -0700 (PDT)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 6C9991A02A8;
+        Mon, 28 Mar 2022 08:41:11 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 356711A18DB;
+        Mon, 28 Mar 2022 08:41:11 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 6F049183F0C8;
+        Mon, 28 Mar 2022 14:41:10 +0800 (+08)
+From:   Shengjiu Wang <shengjiu.wang@nxp.com>
+To:     bjorn.andersson@linaro.org, mathieu.poirier@linaro.org
+Cc:     linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        shengjiu.wang@gmail.com
+Subject: [PATCH] rpmsg: char: Add mutex protection for rpmsg_eptdev_open()
+Date:   Mon, 28 Mar 2022 14:31:11 +0800
+Message-Id: <1648449071-16959-1-git-send-email-shengjiu.wang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+There is no mutex protection for rpmsg_eptdev_open(),
+especially for eptdev->ept read and write operation.
+It may cause issues when multiple instances call
+rpmsg_eptdev_open() in parallel,
 
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+---
+ drivers/rpmsg/rpmsg_char.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-On 3/28/22 00:47, Kalle Valo wrote:
-> "Gustavo A. R. Silva" <gustavoars@kernel.org> writes:
-> 
->> On Wed, Feb 16, 2022 at 12:35:14PM -0800, Kees Cook wrote:
->>> On Wed, Feb 16, 2022 at 01:50:15PM -0600, Gustavo A. R. Silva wrote:
->>>> There is a regular need in the kernel to provide a way to declare
->>>> having a dynamically sized set of trailing elements in a structure.
->>>> Kernel code should always use “flexible array members”[1] for these
->>>> cases. The older style of one-element or zero-length arrays should
->>>> no longer be used[2].
->>>>
->>>> [1] https://en.wikipedia.org/wiki/Flexible_array_member
->>>> [2]
->>>> https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
->>>>
->>>> Link: https://github.com/KSPP/linux/issues/78
->>>> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
->>>
->>> Reviewed-by: Kees Cook <keescook@chromium.org>
->>
->> Hi all,
->>
->> Friendly ping: can someone take this, please?
->>
->> ...I can take this in my -next tree in the meantime.
-> 
-> Like we have discussed before, please don't take any wireless patches to
-> your tree. The conflicts just cause more work of us.
+diff --git a/drivers/rpmsg/rpmsg_char.c b/drivers/rpmsg/rpmsg_char.c
+index b6183d4f62a2..4f2189111494 100644
+--- a/drivers/rpmsg/rpmsg_char.c
++++ b/drivers/rpmsg/rpmsg_char.c
+@@ -120,8 +120,11 @@ static int rpmsg_eptdev_open(struct inode *inode, struct file *filp)
+ 	struct rpmsg_device *rpdev = eptdev->rpdev;
+ 	struct device *dev = &eptdev->dev;
+ 
+-	if (eptdev->ept)
++	mutex_lock(&eptdev->ept_lock);
++	if (eptdev->ept) {
++		mutex_unlock(&eptdev->ept_lock);
+ 		return -EBUSY;
++	}
+ 
+ 	get_device(dev);
+ 
+@@ -137,11 +140,13 @@ static int rpmsg_eptdev_open(struct inode *inode, struct file *filp)
+ 	if (!ept) {
+ 		dev_err(dev, "failed to open %s\n", eptdev->chinfo.name);
+ 		put_device(dev);
++		mutex_unlock(&eptdev->ept_lock);
+ 		return -EINVAL;
+ 	}
+ 
+ 	eptdev->ept = ept;
+ 	filp->private_data = eptdev;
++	mutex_unlock(&eptdev->ept_lock);
+ 
+ 	return 0;
+ }
+-- 
+2.17.1
 
-Sure thing. I just removed it from my tree.
-
-I didn't get any reply from wireless people in more than a month, and
-that's why I temporarily took it in my tree so it doesn't get lost. :)
-
-> I assigned this patch to me on patchwork and I'm planning to take it to
-> wireless-next once it opens. Luca, ack?
-
-Awesome.
-
-Thanks
---
-Gustavo
