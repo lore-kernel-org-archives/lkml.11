@@ -2,139 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA4C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:57:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A8FBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:57:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240947AbiC1L7b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:59:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40882 "EHLO
+        id S241981AbiC1L7g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:59:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241981AbiC1L5l (ORCPT
+        with ESMTP id S242756AbiC1L7C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:57:41 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B6FE3BFB7;
-        Mon, 28 Mar 2022 04:54:09 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id pv16so28178492ejb.0;
-        Mon, 28 Mar 2022 04:54:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=LKPrfvGWNCgTg4TyAaxCLaMtN2+t2qHlTsa1uVOq8pM=;
-        b=kw5U/JCmxslxZizV2jLlmOBcIGssYEKq78XpVjnkGPlQXwgkdWAeFftd0yoAS+p3Es
-         6bwRaMEB8Zw0+KWXTqe5xSm+v3FtPxgM1RwYnyrFhzLni/EoCXXr2a4ZaW4d9wU25zbe
-         eoniOgU5G4dswNrq9JJELqXGcHi7pVp1q2vyKzlG9qqT6TMzxJDxKEKbi/+Gm1DeYjXV
-         3UGggeaDhqV9rH/7fzTDT4rvoqsZCz8BOdcAeH6/X0BclpVxtXas1+/6ml1BvWFhOWRe
-         yfEvE0l/ifZkZqpd8ktCUvFEOWyKT3gPWwBAnqgNkhDVlu40OBzAA6dNTFKzBXUmZGp/
-         emUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LKPrfvGWNCgTg4TyAaxCLaMtN2+t2qHlTsa1uVOq8pM=;
-        b=uUywCf9YyZbOwvyUvDZ7Szr9s/y4DhXh5zIhilzhrxBPLAhPOcOPfOoNcHqKboOmkX
-         Obx3sj6dvfGfXt4hdBaw6WJXE7/WLUUevYhh8FgLcFlVku5IzAtG6lE+kCuZqmEnn4Nk
-         Hj4U4ODPuz4R/jOhkfR4vEBIkKCyxVm7EHo6U6cdpMf4BElZ97g2onSlsE/eFmEVi+fH
-         L4KIkdaWBLzhcIyzvvF/59b3+1+2KXzHPha7+wwfE1XZI/yxTWQWRIiYEfCPSXQi2VQd
-         7xfSsvoGU4FM6/r7zFQ702ejA7P6Hu31w4P45wtRZMvrdqPGvZ/xAD3Ff6YnZdzfPNv1
-         MqjQ==
-X-Gm-Message-State: AOAM5303vFj94L75aftP2vJxNFJM3O62fhTxP2hNQsRlXXS02tUjOzXM
-        xO8K4qr5s6VaxprFC5+zQ4A=
-X-Google-Smtp-Source: ABdhPJxnuIkGxnuYGLZsxAfTPmW5TkGf54BmupZ2me5Tuu+k4VyUkun2Hg1gMwbCB0fty6ZgA/O4mQ==
-X-Received: by 2002:a17:907:3f18:b0:6e0:df2d:c76a with SMTP id hq24-20020a1709073f1800b006e0df2dc76amr12117312ejc.55.1648468447864;
-        Mon, 28 Mar 2022 04:54:07 -0700 (PDT)
-Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
-        by smtp.gmail.com with ESMTPSA id hs12-20020a1709073e8c00b006dfdfdac005sm5850462ejc.174.2022.03.28.04.54.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Mar 2022 04:54:07 -0700 (PDT)
-Date:   Mon, 28 Mar 2022 13:54:07 +0200
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-actions@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-omap@vger.kernel.org,
-        linux-amlogic@lists.infradead.org, linux-arm-kernel@axis.com,
-        linux-aspeed@lists.ozlabs.org,
-        linux-rpi-kernel@lists.infradead.org,
-        chrome-platform@lists.linux.dev, linux-renesas-soc@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        kernel@dh-electronics.com, linux-mediatek@lists.infradead.org,
-        openbmc@lists.ozlabs.org, linux-tegra@vger.kernel.org,
-        linux-oxnas@groups.io, linux-arm-msm@vger.kernel.org,
-        linux-unisoc@lists.infradead.org,
-        linux-rockchip@lists.infradead.org,
-        linux-realtek-soc@lists.infradead.org
-Subject: Re: [RFC PATCH 1/1] ARM/arm64: categorize dts in arm dir and fix
- dependency in arm64
-Message-ID: <YkGh36h03EfUd3/q@Ansuel-xps.localdomain>
-References: <20220328000915.15041-1-ansuelsmth@gmail.com>
- <20220328000915.15041-2-ansuelsmth@gmail.com>
- <c5eeca79-38b6-eb9f-1d78-1685aa1cca6c@gmail.com>
+        Mon, 28 Mar 2022 07:59:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D112FFE0
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 04:57:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648468640;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=HRFRUKcMdD/p3LSc6/qBBnakB7BfN4JwTEDtAHV0SqM=;
+        b=HNivMTJllLyZesL8/7TTHbVbkzxNM7En+48mrMzVpgtRhuHNWNWapQjxMMa28fQy2lOyG4
+        oxbYVHqFUKKsOqGSzigE51CiUU49lKOLqTXYTH0EV2GVYWUeyd4yH3r5b+1nl1VWdQigLq
+        1JdmPpob756o+7wtcYn+HwcvZyUDbfI=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-146-9R00gojhP4uvnAWFE0RhYA-1; Mon, 28 Mar 2022 07:57:17 -0400
+X-MC-Unique: 9R00gojhP4uvnAWFE0RhYA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3E36E811E78;
+        Mon, 28 Mar 2022 11:57:17 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 05E80C15D57;
+        Mon, 28 Mar 2022 11:57:15 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20220322162822.566705-1-butterflyhuangxx@gmail.com>
+References: <20220322162822.566705-1-butterflyhuangxx@gmail.com>
+To:     Xiaolong Huang <butterflyhuangxx@gmail.com>
+Cc:     dhowells@redhat.com, marc.dionne@auristor.com, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, linux-afs@lists.infradead.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] rxrpc: fix some null-ptr-deref bugs in server_key.c
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c5eeca79-38b6-eb9f-1d78-1685aa1cca6c@gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <2579411.1648468635.1@warthog.procyon.org.uk>
+Date:   Mon, 28 Mar 2022 12:57:15 +0100
+Message-ID: <2579412.1648468635@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 12:47:46PM +0200, Matthias Brugger wrote:
-> 
-> 
-> On 28/03/2022 02:09, Ansuel Smith wrote:
-> > - Categorize every dts in arm directory in subdirectory
-> > - Fix Makefile to address for the arm subdirectory
-> > - Fix any arm64 dependency
-> > 
-> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> > ---
-> [...]
-> >   arch/arm/boot/dts/mediatek/Makefile           |   14 +
-> >   .../boot/dts/{ => mediatek}/mt2701-evb.dts    |    0
-> >   .../boot/dts/{ => mediatek}/mt2701-pinfunc.h  |    0
-> >   arch/arm/boot/dts/{ => mediatek}/mt2701.dtsi  |    0
-> >   arch/arm/boot/dts/{ => mediatek}/mt6323.dtsi  |    0
-> >   .../boot/dts/{ => mediatek}/mt6580-evbp1.dts  |    0
-> >   arch/arm/boot/dts/{ => mediatek}/mt6580.dtsi  |    0
-> >   .../mt6582-prestigio-pmt5008-3g.dts           |    0
-> >   arch/arm/boot/dts/{ => mediatek}/mt6582.dtsi  |    0
-> >   .../dts/{ => mediatek}/mt6589-aquaris5.dts    |    0
-> >   .../{ => mediatek}/mt6589-fairphone-fp1.dts   |    0
-> >   arch/arm/boot/dts/{ => mediatek}/mt6589.dtsi  |    0
-> >   .../boot/dts/{ => mediatek}/mt6592-evb.dts    |    0
-> >   arch/arm/boot/dts/{ => mediatek}/mt6592.dtsi  |    0
-> >   arch/arm/boot/dts/{ => mediatek}/mt7623.dtsi  |    0
-> >   .../dts/{ => mediatek}/mt7623a-rfb-emmc.dts   |    0
-> >   .../dts/{ => mediatek}/mt7623a-rfb-nand.dts   |    0
-> >   arch/arm/boot/dts/{ => mediatek}/mt7623a.dtsi |    0
-> >   .../mt7623n-bananapi-bpi-r2.dts               |    0
-> >   .../dts/{ => mediatek}/mt7623n-rfb-emmc.dts   |    0
-> >   arch/arm/boot/dts/{ => mediatek}/mt7623n.dtsi |    0
-> >   .../boot/dts/{ => mediatek}/mt7629-rfb.dts    |    0
-> >   arch/arm/boot/dts/{ => mediatek}/mt7629.dtsi  |    0
-> >   .../boot/dts/{ => mediatek}/mt8127-moose.dts  |    0
-> >   arch/arm/boot/dts/{ => mediatek}/mt8127.dtsi  |    0
-> >   .../boot/dts/{ => mediatek}/mt8135-evbp1.dts  |    0
-> >   arch/arm/boot/dts/{ => mediatek}/mt8135.dtsi  |    0
-> 
-> Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-> 
-> Would it be possible to also script a fix for the MAINTAINERS file?
-> 
-> $ git grep "arch\/arm\/boot\/dts" MAINTAINERS |wc -l
-> 
-> 101
-> 
-> 
-> Regards,
-> Matthias
+Xiaolong Huang <butterflyhuangxx@gmail.com> wrote:
 
-Totally forgot about the MAINTAINERS file! Yes will add to the script a
-check to fix also that.
+> user@syzkaller:~$ ./rxrpc_preparse_s
 
--- 
-	Ansuel
+Is there a syzbot report to reference for this?
+
+David
+
