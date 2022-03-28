@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81AC9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:43:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFC23C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:43:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343720AbiC1Tp1 (ORCPT
+        id S1343750AbiC1Tpg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 15:45:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50786 "EHLO
+        Mon, 28 Mar 2022 15:45:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343657AbiC1ToU (ORCPT
+        with ESMTP id S1343624AbiC1Toc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 15:44:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D42A674E3;
-        Mon, 28 Mar 2022 12:42:30 -0700 (PDT)
+        Mon, 28 Mar 2022 15:44:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F342673D1;
+        Mon, 28 Mar 2022 12:42:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 25EE4612AC;
-        Mon, 28 Mar 2022 19:42:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88C7CC34113;
-        Mon, 28 Mar 2022 19:42:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 73577612AE;
+        Mon, 28 Mar 2022 19:42:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC83DC34113;
+        Mon, 28 Mar 2022 19:42:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648496549;
-        bh=yg6WkGRZiXN6RT05fbnMqWKZL4qp2s5qQM6TuONT29E=;
-        h=From:To:Cc:Subject:Date:From;
-        b=BhJs/6hZxzce0WBIBdp89NOWju+w1qCMf0Y9odQE9L88IIO16vU4vX1JJZ8XbJ7df
-         In7tzRpWJZbDxuDgDrCyEPOgzGGA/T0d7vxRTl/7E8BI3vjSBnnXs3zE+LjZnYqx2c
-         +OPLsiSYDXZS1+Z2OhhEeHjfLnbq0Cd7LAvvFNkLEiaD14jyBwO0ScPMM3CZzWczyM
-         neMEL0wA2ZxtqJkqvzmSZBoqLY8xaWzORiJ1kO7RtQqfjDNxiegFeFb7s+tqi6a1bR
-         ThPfVe7J/eVeZ3Fy21D8qm7kq/wZgUUNvCOg5Zwd6Esm9Z+aET4XgckgHUXBQppF2P
-         XJ068XCkRqH+Q==
+        s=k20201202; t=1648496553;
+        bh=KpPtZ/tjlfjttY65BjHOE0YsAbqn8bWLNZODuldjEjo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=LtOIgQqEFEInvVozoGFLUqRPxlSsmoIXe+ndhRtjRhRTvSX4Jt5We+UaPUuikTd5u
+         WKCWf3H42a9Xg6WVMOCUa8RkA3D7DRpUIWeqYouKxv9OW2iAtvcErkY8UoTFPboZfV
+         +MBkoja0jHRzXIrUmIUf+0+EIDH+ASGn+o2hlD++jYLPIiHUXi3I/MgZJftsJqQHFz
+         geKaFkX0dPn8KpbU7Mih+cx+x42YcM+310uGo3aWK5MhINvDZofwkEARCM1I6aCPY7
+         u7o2TSicvi/1Al4muScrjG7Uooq1n/lN+SVjbYHH9CszAjXMKP5VUhXzI1J5wf/gJU
+         /8TQE7dODzoKw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mark Rutland <mark.rutland@arm.com>, Arnd Bergmann <arnd@arndb.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.16 01/20] atomics: Fix atomic64_{read_acquire,set_release} fallbacks
-Date:   Mon, 28 Mar 2022 15:42:07 -0400
-Message-Id: <20220328194226.1585920-1-sashal@kernel.org>
+Cc:     Ritesh Harjani <riteshh@linux.ibm.com>, Jan Kara <jack@suse.cz>,
+        Theodore Ts'o <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>,
+        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 04/20] ext4: fix ext4_mb_mark_bb() with flex_bg with fast_commit
+Date:   Mon, 28 Mar 2022 15:42:10 -0400
+Message-Id: <20220328194226.1585920-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220328194226.1585920-1-sashal@kernel.org>
+References: <20220328194226.1585920-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,219 +52,222 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Rutland <mark.rutland@arm.com>
+From: Ritesh Harjani <riteshh@linux.ibm.com>
 
-[ Upstream commit dc1b4df09acdca7a89806b28f235cd6d8dcd3d24 ]
+[ Upstream commit bfdc502a4a4c058bf4cbb1df0c297761d528f54d ]
 
-Arnd reports that on 32-bit architectures, the fallbacks for
-atomic64_read_acquire() and atomic64_set_release() are broken as they
-use smp_load_acquire() and smp_store_release() respectively, which do
-not work on types larger than the native word size.
+In case of flex_bg feature (which is by default enabled), extents for
+any given inode might span across blocks from two different block group.
+ext4_mb_mark_bb() only reads the buffer_head of block bitmap once for the
+starting block group, but it fails to read it again when the extent length
+boundary overflows to another block group. Then in this below loop it
+accesses memory beyond the block group bitmap buffer_head and results
+into a data abort.
 
-Since those contain compiletime_assert_atomic_type(), any attempt to use
-those fallbacks will result in a build-time error. e.g. with the
-following added to arch/arm/kernel/setup.c:
+	for (i = 0; i < clen; i++)
+		if (!mb_test_bit(blkoff + i, bitmap_bh->b_data) == !state)
+			already++;
 
-| void test_atomic64(atomic64_t *v)
-| {
-|        atomic64_set_release(v, 5);
-|        atomic64_read_acquire(v);
-| }
+This patch adds this functionality for checking block group boundary in
+ext4_mb_mark_bb() and update the buffer_head(bitmap_bh) for every different
+block group.
 
-The compiler will complain as follows:
+w/o this patch, I was easily able to hit a data access abort using Power platform.
 
-| In file included from <command-line>:
-| In function 'arch_atomic64_set_release',
-|     inlined from 'test_atomic64' at ./include/linux/atomic/atomic-instrumented.h:669:2:
-| ././include/linux/compiler_types.h:346:38: error: call to '__compiletime_assert_9' declared with attribute error: Need native word sized stores/loads for atomicity.
-|   346 |  _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-|       |                                      ^
-| ././include/linux/compiler_types.h:327:4: note: in definition of macro '__compiletime_assert'
-|   327 |    prefix ## suffix();    \
-|       |    ^~~~~~
-| ././include/linux/compiler_types.h:346:2: note: in expansion of macro '_compiletime_assert'
-|   346 |  _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-|       |  ^~~~~~~~~~~~~~~~~~~
-| ././include/linux/compiler_types.h:349:2: note: in expansion of macro 'compiletime_assert'
-|   349 |  compiletime_assert(__native_word(t),    \
-|       |  ^~~~~~~~~~~~~~~~~~
-| ./include/asm-generic/barrier.h:133:2: note: in expansion of macro 'compiletime_assert_atomic_type'
-|   133 |  compiletime_assert_atomic_type(*p);    \
-|       |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-| ./include/asm-generic/barrier.h:164:55: note: in expansion of macro '__smp_store_release'
-|   164 | #define smp_store_release(p, v) do { kcsan_release(); __smp_store_release(p, v); } while (0)
-|       |                                                       ^~~~~~~~~~~~~~~~~~~
-| ./include/linux/atomic/atomic-arch-fallback.h:1270:2: note: in expansion of macro 'smp_store_release'
-|  1270 |  smp_store_release(&(v)->counter, i);
-|       |  ^~~~~~~~~~~~~~~~~
-| make[2]: *** [scripts/Makefile.build:288: arch/arm/kernel/setup.o] Error 1
-| make[1]: *** [scripts/Makefile.build:550: arch/arm/kernel] Error 2
-| make: *** [Makefile:1831: arch/arm] Error 2
+<...>
+[   74.327662] EXT4-fs error (device loop3): ext4_mb_generate_buddy:1141: group 11, block bitmap and bg descriptor inconsistent: 21248 vs 23294 free clusters
+[   74.533214] EXT4-fs (loop3): shut down requested (2)
+[   74.536705] Aborting journal on device loop3-8.
+[   74.702705] BUG: Unable to handle kernel data access on read at 0xc00000005e980000
+[   74.703727] Faulting instruction address: 0xc0000000007bffb8
+cpu 0xd: Vector: 300 (Data Access) at [c000000015db7060]
+    pc: c0000000007bffb8: ext4_mb_mark_bb+0x198/0x5a0
+    lr: c0000000007bfeec: ext4_mb_mark_bb+0xcc/0x5a0
+    sp: c000000015db7300
+   msr: 800000000280b033
+   dar: c00000005e980000
+ dsisr: 40000000
+  current = 0xc000000027af6880
+  paca    = 0xc00000003ffd5200   irqmask: 0x03   irq_happened: 0x01
+    pid   = 5167, comm = mount
+<...>
+enter ? for help
+[c000000015db7380] c000000000782708 ext4_ext_clear_bb+0x378/0x410
+[c000000015db7400] c000000000813f14 ext4_fc_replay+0x1794/0x2000
+[c000000015db7580] c000000000833f7c do_one_pass+0xe9c/0x12a0
+[c000000015db7710] c000000000834504 jbd2_journal_recover+0x184/0x2d0
+[c000000015db77c0] c000000000841398 jbd2_journal_load+0x188/0x4a0
+[c000000015db7880] c000000000804de8 ext4_fill_super+0x2638/0x3e10
+[c000000015db7a40] c0000000005f8404 get_tree_bdev+0x2b4/0x350
+[c000000015db7ae0] c0000000007ef058 ext4_get_tree+0x28/0x40
+[c000000015db7b00] c0000000005f6344 vfs_get_tree+0x44/0x100
+[c000000015db7b70] c00000000063c408 path_mount+0xdd8/0xe70
+[c000000015db7c40] c00000000063c8f0 sys_mount+0x450/0x550
+[c000000015db7d50] c000000000035770 system_call_exception+0x4a0/0x4e0
+[c000000015db7e10] c00000000000c74c system_call_common+0xec/0x250
 
-Fix this by only using smp_load_acquire() and smp_store_release() for
-native atomic types, and otherwise falling back to the regular barriers
-necessary for acquire/release semantics, as we do in the more generic
-acquire and release fallbacks.
-
-Since the fallback templates are used to generate the atomic64_*() and
-atomic_*() operations, the __native_word() check is added to both. For
-the atomic_*() operations, which are always 32-bit, the __native_word()
-check is redundant but not harmful, as it is always true.
-
-For the example above this works as expected on 32-bit, e.g. for arm
-multi_v7_defconfig:
-
-| <test_atomic64>:
-|         push    {r4, r5}
-|         dmb     ish
-|         pldw    [r0]
-|         mov     r2, #5
-|         mov     r3, #0
-|         ldrexd  r4, [r0]
-|         strexd  r4, r2, [r0]
-|         teq     r4, #0
-|         bne     484 <test_atomic64+0x14>
-|         ldrexd  r2, [r0]
-|         dmb     ish
-|         pop     {r4, r5}
-|         bx      lr
-
-... and also on 64-bit, e.g. for arm64 defconfig:
-
-| <test_atomic64>:
-|         bti     c
-|         paciasp
-|         mov     x1, #0x5
-|         stlr    x1, [x0]
-|         ldar    x0, [x0]
-|         autiasp
-|         ret
-
-Reported-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
-Reviewed-by: Boqun Feng <boqun.feng@gmail.com>
-Link: https://lore.kernel.org/r/20220207101943.439825-1-mark.rutland@arm.com
+Signed-off-by: Ritesh Harjani <riteshh@linux.ibm.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/2609bc8f66fc15870616ee416a18a3d392a209c4.1644992609.git.riteshh@linux.ibm.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/atomic/atomic-arch-fallback.h | 38 ++++++++++++++++++---
- scripts/atomic/fallbacks/read_acquire       | 11 +++++-
- scripts/atomic/fallbacks/set_release        |  7 +++-
- 3 files changed, 49 insertions(+), 7 deletions(-)
+ fs/ext4/mballoc.c | 131 +++++++++++++++++++++++++++-------------------
+ 1 file changed, 76 insertions(+), 55 deletions(-)
 
-diff --git a/include/linux/atomic/atomic-arch-fallback.h b/include/linux/atomic/atomic-arch-fallback.h
-index a3dba31df01e..6db58d180866 100644
---- a/include/linux/atomic/atomic-arch-fallback.h
-+++ b/include/linux/atomic/atomic-arch-fallback.h
-@@ -151,7 +151,16 @@
- static __always_inline int
- arch_atomic_read_acquire(const atomic_t *v)
- {
--	return smp_load_acquire(&(v)->counter);
-+	int ret;
-+
-+	if (__native_word(atomic_t)) {
-+		ret = smp_load_acquire(&(v)->counter);
-+	} else {
-+		ret = arch_atomic_read(v);
-+		__atomic_acquire_fence();
-+	}
-+
-+	return ret;
- }
- #define arch_atomic_read_acquire arch_atomic_read_acquire
- #endif
-@@ -160,7 +169,12 @@ arch_atomic_read_acquire(const atomic_t *v)
- static __always_inline void
- arch_atomic_set_release(atomic_t *v, int i)
- {
--	smp_store_release(&(v)->counter, i);
-+	if (__native_word(atomic_t)) {
-+		smp_store_release(&(v)->counter, i);
-+	} else {
-+		__atomic_release_fence();
-+		arch_atomic_set(v, i);
-+	}
- }
- #define arch_atomic_set_release arch_atomic_set_release
- #endif
-@@ -1258,7 +1272,16 @@ arch_atomic_dec_if_positive(atomic_t *v)
- static __always_inline s64
- arch_atomic64_read_acquire(const atomic64_t *v)
- {
--	return smp_load_acquire(&(v)->counter);
-+	s64 ret;
-+
-+	if (__native_word(atomic64_t)) {
-+		ret = smp_load_acquire(&(v)->counter);
-+	} else {
-+		ret = arch_atomic64_read(v);
-+		__atomic_acquire_fence();
-+	}
-+
-+	return ret;
- }
- #define arch_atomic64_read_acquire arch_atomic64_read_acquire
- #endif
-@@ -1267,7 +1290,12 @@ arch_atomic64_read_acquire(const atomic64_t *v)
- static __always_inline void
- arch_atomic64_set_release(atomic64_t *v, s64 i)
- {
--	smp_store_release(&(v)->counter, i);
-+	if (__native_word(atomic64_t)) {
-+		smp_store_release(&(v)->counter, i);
-+	} else {
-+		__atomic_release_fence();
-+		arch_atomic64_set(v, i);
-+	}
- }
- #define arch_atomic64_set_release arch_atomic64_set_release
- #endif
-@@ -2358,4 +2386,4 @@ arch_atomic64_dec_if_positive(atomic64_t *v)
- #endif
+diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
+index b89e748210f0..f968fee40fca 100644
+--- a/fs/ext4/mballoc.c
++++ b/fs/ext4/mballoc.c
+@@ -3901,72 +3901,93 @@ void ext4_mb_mark_bb(struct super_block *sb, ext4_fsblk_t block,
+ 	ext4_grpblk_t blkoff;
+ 	int i, err;
+ 	int already;
+-	unsigned int clen, clen_changed;
++	unsigned int clen, clen_changed, thisgrp_len;
  
- #endif /* _LINUX_ATOMIC_FALLBACK_H */
--// cca554917d7ea73d5e3e7397dd70c484cad9b2c4
-+// 8e2cc06bc0d2c0967d2f8424762bd48555ee40ae
-diff --git a/scripts/atomic/fallbacks/read_acquire b/scripts/atomic/fallbacks/read_acquire
-index 803ba7561076..a0ea1d26e6b2 100755
---- a/scripts/atomic/fallbacks/read_acquire
-+++ b/scripts/atomic/fallbacks/read_acquire
-@@ -2,6 +2,15 @@ cat <<EOF
- static __always_inline ${ret}
- arch_${atomic}_read_acquire(const ${atomic}_t *v)
- {
--	return smp_load_acquire(&(v)->counter);
-+	${int} ret;
+-	clen = EXT4_NUM_B2C(sbi, len);
+-
+-	ext4_get_group_no_and_offset(sb, block, &group, &blkoff);
+-	bitmap_bh = ext4_read_block_bitmap(sb, group);
+-	if (IS_ERR(bitmap_bh)) {
+-		err = PTR_ERR(bitmap_bh);
+-		bitmap_bh = NULL;
+-		goto out_err;
+-	}
+-
+-	err = -EIO;
+-	gdp = ext4_get_group_desc(sb, group, &gdp_bh);
+-	if (!gdp)
+-		goto out_err;
++	while (len > 0) {
++		ext4_get_group_no_and_offset(sb, block, &group, &blkoff);
+ 
+-	ext4_lock_group(sb, group);
+-	already = 0;
+-	for (i = 0; i < clen; i++)
+-		if (!mb_test_bit(blkoff + i, bitmap_bh->b_data) == !state)
+-			already++;
+-
+-	clen_changed = clen - already;
+-	if (state)
+-		ext4_set_bits(bitmap_bh->b_data, blkoff, clen);
+-	else
+-		mb_test_and_clear_bits(bitmap_bh->b_data, blkoff, clen);
+-	if (ext4_has_group_desc_csum(sb) &&
+-	    (gdp->bg_flags & cpu_to_le16(EXT4_BG_BLOCK_UNINIT))) {
+-		gdp->bg_flags &= cpu_to_le16(~EXT4_BG_BLOCK_UNINIT);
+-		ext4_free_group_clusters_set(sb, gdp,
+-					     ext4_free_clusters_after_init(sb,
+-						group, gdp));
+-	}
+-	if (state)
+-		clen = ext4_free_group_clusters(sb, gdp) - clen_changed;
+-	else
+-		clen = ext4_free_group_clusters(sb, gdp) + clen_changed;
++		/*
++		 * Check to see if we are freeing blocks across a group
++		 * boundary.
++		 * In case of flex_bg, this can happen that (block, len) may
++		 * span across more than one group. In that case we need to
++		 * get the corresponding group metadata to work with.
++		 * For this we have goto again loop.
++		 */
++		thisgrp_len = min_t(unsigned int, (unsigned int)len,
++			EXT4_BLOCKS_PER_GROUP(sb) - EXT4_C2B(sbi, blkoff));
++		clen = EXT4_NUM_B2C(sbi, thisgrp_len);
+ 
+-	ext4_free_group_clusters_set(sb, gdp, clen);
+-	ext4_block_bitmap_csum_set(sb, group, gdp, bitmap_bh);
+-	ext4_group_desc_csum_set(sb, group, gdp);
++		bitmap_bh = ext4_read_block_bitmap(sb, group);
++		if (IS_ERR(bitmap_bh)) {
++			err = PTR_ERR(bitmap_bh);
++			bitmap_bh = NULL;
++			break;
++		}
+ 
+-	ext4_unlock_group(sb, group);
++		err = -EIO;
++		gdp = ext4_get_group_desc(sb, group, &gdp_bh);
++		if (!gdp)
++			break;
+ 
+-	if (sbi->s_log_groups_per_flex) {
+-		ext4_group_t flex_group = ext4_flex_group(sbi, group);
+-		struct flex_groups *fg = sbi_array_rcu_deref(sbi,
+-					   s_flex_groups, flex_group);
++		ext4_lock_group(sb, group);
++		already = 0;
++		for (i = 0; i < clen; i++)
++			if (!mb_test_bit(blkoff + i, bitmap_bh->b_data) ==
++					 !state)
++				already++;
+ 
++		clen_changed = clen - already;
+ 		if (state)
+-			atomic64_sub(clen_changed, &fg->free_clusters);
++			ext4_set_bits(bitmap_bh->b_data, blkoff, clen);
+ 		else
+-			atomic64_add(clen_changed, &fg->free_clusters);
++			mb_test_and_clear_bits(bitmap_bh->b_data, blkoff, clen);
++		if (ext4_has_group_desc_csum(sb) &&
++		    (gdp->bg_flags & cpu_to_le16(EXT4_BG_BLOCK_UNINIT))) {
++			gdp->bg_flags &= cpu_to_le16(~EXT4_BG_BLOCK_UNINIT);
++			ext4_free_group_clusters_set(sb, gdp,
++			     ext4_free_clusters_after_init(sb, group, gdp));
++		}
++		if (state)
++			clen = ext4_free_group_clusters(sb, gdp) - clen_changed;
++		else
++			clen = ext4_free_group_clusters(sb, gdp) + clen_changed;
 +
-+	if (__native_word(${atomic}_t)) {
-+		ret = smp_load_acquire(&(v)->counter);
-+	} else {
-+		ret = arch_${atomic}_read(v);
-+		__atomic_acquire_fence();
-+	}
++		ext4_free_group_clusters_set(sb, gdp, clen);
++		ext4_block_bitmap_csum_set(sb, group, gdp, bitmap_bh);
++		ext4_group_desc_csum_set(sb, group, gdp);
 +
-+	return ret;
++		ext4_unlock_group(sb, group);
++
++		if (sbi->s_log_groups_per_flex) {
++			ext4_group_t flex_group = ext4_flex_group(sbi, group);
++			struct flex_groups *fg = sbi_array_rcu_deref(sbi,
++						   s_flex_groups, flex_group);
++
++			if (state)
++				atomic64_sub(clen_changed, &fg->free_clusters);
++			else
++				atomic64_add(clen_changed, &fg->free_clusters);
++
++		}
++
++		err = ext4_handle_dirty_metadata(NULL, NULL, bitmap_bh);
++		if (err)
++			break;
++		sync_dirty_buffer(bitmap_bh);
++		err = ext4_handle_dirty_metadata(NULL, NULL, gdp_bh);
++		sync_dirty_buffer(gdp_bh);
++		if (err)
++			break;
++
++		block += thisgrp_len;
++		len -= thisgrp_len;
++		brelse(bitmap_bh);
++		BUG_ON(len < 0);
+ 	}
+ 
+-	err = ext4_handle_dirty_metadata(NULL, NULL, bitmap_bh);
+ 	if (err)
+-		goto out_err;
+-	sync_dirty_buffer(bitmap_bh);
+-	err = ext4_handle_dirty_metadata(NULL, NULL, gdp_bh);
+-	sync_dirty_buffer(gdp_bh);
+-
+-out_err:
+-	brelse(bitmap_bh);
++		brelse(bitmap_bh);
  }
- EOF
-diff --git a/scripts/atomic/fallbacks/set_release b/scripts/atomic/fallbacks/set_release
-index 86ede759f24e..05cdb7f42477 100755
---- a/scripts/atomic/fallbacks/set_release
-+++ b/scripts/atomic/fallbacks/set_release
-@@ -2,6 +2,11 @@ cat <<EOF
- static __always_inline void
- arch_${atomic}_set_release(${atomic}_t *v, ${int} i)
- {
--	smp_store_release(&(v)->counter, i);
-+	if (__native_word(${atomic}_t)) {
-+		smp_store_release(&(v)->counter, i);
-+	} else {
-+		__atomic_release_fence();
-+		arch_${atomic}_set(v, i);
-+	}
- }
- EOF
+ 
+ /*
 -- 
 2.34.1
 
