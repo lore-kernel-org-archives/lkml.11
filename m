@@ -2,65 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCFAEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 23:30:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29280C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 23:32:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230403AbiC1XcJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 19:32:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50222 "EHLO
+        id S230482AbiC1Xds (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 19:33:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230450AbiC1XcD (ORCPT
+        with ESMTP id S230396AbiC1Xdq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 19:32:03 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9762942ECC;
-        Mon, 28 Mar 2022 16:30:20 -0700 (PDT)
-Received: from localhost.localdomain (c-73-140-2-214.hsd1.wa.comcast.net [73.140.2.214])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 2102820DEDDE;
-        Mon, 28 Mar 2022 16:30:20 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 2102820DEDDE
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1648510220;
-        bh=VCBmKOU3bhYrRKyxH/RJtKwil2TxccJ2CJcGM4eyu/Q=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=noDMiblwX6L3HSRCCnVnic33xfGbHmfkE9BfxIdWCOwQZIAEzf9V8AlRBxGPWkf1f
-         RRJleWDD5u/STBlTvRlNOnZQSj0dLyiBOV00pF+DZNA4LRInwY2qIlNjfbgghSrw1g
-         z71ppjoAxGGZF9nJLDxtSf4Tx/uLk31XJYjFnNCI=
-From:   Beau Belgrave <beaub@linux.microsoft.com>
-To:     mathieu.desnoyers@efficios.com
-Cc:     linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-trace-devel@vger.kernel.org, rostedt@goodmis.org,
-        beaub@linux.microsoft.com
-Subject: Re: Comments on new user events ABI
-Date:   Mon, 28 Mar 2022 16:30:10 -0700
-Message-Id: <20220328233010.2636-1-beaub@linux.microsoft.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <1283359416.196715.1648499713041.JavaMail.zimbra@efficios.com>
-References: <1283359416.196715.1648499713041.JavaMail.zimbra@efficios.com>
+        Mon, 28 Mar 2022 19:33:46 -0400
+Received: from relay5.hostedemail.com (relay5.hostedemail.com [64.99.140.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 795984BFD6;
+        Mon, 28 Mar 2022 16:32:04 -0700 (PDT)
+Received: from omf18.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay12.hostedemail.com (Postfix) with ESMTP id 3A451120857;
+        Mon, 28 Mar 2022 23:32:02 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf18.hostedemail.com (Postfix) with ESMTPA id 03F042E;
+        Mon, 28 Mar 2022 23:31:53 +0000 (UTC)
+Message-ID: <8569d431ce4e1d64ae271f0498c7a0395d2c5c7e.camel@perches.com>
+Subject: Re: [PATCH 03/16] PCI: dwc: Add more verbose link-up message
+From:   Joe Perches <joe@perches.com>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?UTF-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
+Cc:     Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Frank Li <Frank.Li@nxp.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, linux-pci@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Mon, 28 Mar 2022 16:31:53 -0700
+In-Reply-To: <20220324013734.18234-4-Sergey.Semin@baikalelectronics.ru>
+References: <20220324013734.18234-1-Sergey.Semin@baikalelectronics.ru>
+         <20220324013734.18234-4-Sergey.Semin@baikalelectronics.ru>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Rspamd-Server: rspamout05
+X-Rspamd-Queue-Id: 03F042E
+X-Stat-Signature: meuo49tiime8xmtnwejfrcwtzrcjaoci
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX181O1cQlVu9KyimR2kDvRtMJRaMI+j7axg=
+X-HE-Tag: 1648510313-438953
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> ----- On Mar 28, 2022, at 4:24 PM, Mathieu Desnoyers mathieu.desnoyers@efficios.com wrote:
+On Thu, 2022-03-24 at 04:37 +0300, Serge Semin wrote:
+> Printing just "link up" isn't that much informative especially when it
+> comes to working with the PCI Express bus. Even if the link is up, due to
+> multiple reasons the bus performance can degrade to slower speeds or to
+> narrower width than both Root Port and its partner is capable of. In that
+> case it would be handy to know the link specifications as early as
+> possible. So let's add a more verbose message to the busy-wait link-state
+> method, which will contain the link speed generation and the PCIe bus
+> width in case if the link up state is discovered. Otherwise an error will
+> be printed to the system log.
 > 
-> > Hi Beau, Hi Steven,
-> > 
-> > I've done a review of the trace events ABI, and I have a few comments.
-> > Sorry for being late to the party, but I only noticed this new ABI recently.
-> > Hopefully we can improve this ABI before the 5.18 release.
-> > 
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> ---
+>  drivers/pci/controller/dwc/pcie-designware.c | 22 +++++++++++++++-----
+>  1 file changed, 17 insertions(+), 5 deletions(-)
 > 
-> Also a bit of testing shows that dyn_event_add() is called without holding the event_mutex.
-> Has this been tested with lockdep ?
+> diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
+[]
+> @@ -528,14 +528,26 @@ int dw_pcie_wait_for_link(struct dw_pcie *pci)
+>  
+>  	/* Check if the link is up or not */
+>  	for (retries = 0; retries < LINK_WAIT_MAX_RETRIES; retries++) {
+> -		if (dw_pcie_link_up(pci)) {
+> -			dev_info(pci->dev, "Link up\n");
+> -			return 0;
+> -		}
+> +		if (dw_pcie_link_up(pci))
+> +			break;
+> +
+>  		usleep_range(LINK_WAIT_USLEEP_MIN, LINK_WAIT_USLEEP_MAX);
+>  	}
+>  
+> -	dev_info(pci->dev, "Phy link never came up\n");
+> +	if (retries < LINK_WAIT_MAX_RETRIES) {
+> +		u32 offset, val;
+> +
+> +		offset = dw_pcie_find_capability(pci, PCI_CAP_ID_EXP);
+> +		val = dw_pcie_readw_dbi(pci, offset + PCI_EXP_LNKSTA);
+> +
+> +		dev_info(pci->dev, "PCIe Gen.%u x%u link up\n",
+> +			 FIELD_GET(PCI_EXP_LNKSTA_CLS, val),
+> +			 FIELD_GET(PCI_EXP_LNKSTA_NLW, val));
+> +
+> +		return 0;
+> +	}
+> +
+> +	dev_err(pci->dev, "Phy link never came up\n");
+>  
+>  	return -ETIMEDOUT;
+>  }
 
-Sorry, looks like I've been running with LOCKDEP_SUPPORT without it on :(
-I now have both CONFIG_LOCKDEP and CONFIG_LOCK_DEBUGGING_SUPPORT.
+IMO: it's generally bette to test the error condition and unindent
+the typical return.
 
-You are right about this, thanks! I've sent a patch.
+	if (retries >= LINK_WAIT_MAX_RETRIES) {
+		dev_err(pci->dev, "Phy link never came up\n");
+		return -ETIMEDOUT;
+	}
 
-Link: https://lore.kernel.org/all/20220328223225.1992-1-beaub@linux.microsoft.com/
+	offset = ...
+	val = ...
+	dev_info(...)
 
-Thanks,
--Beau
+	return 0;
+}
+
