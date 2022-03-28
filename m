@@ -2,88 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C881CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 16:52:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A707FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 16:54:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238314AbiC1Qx4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 12:53:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42482 "EHLO
+        id S233679AbiC1Q4Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 12:56:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244439AbiC1QxM (ORCPT
+        with ESMTP id S239070AbiC1Q4T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 12:53:12 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F8FD52E2A
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 09:51:31 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id pv16so30004989ejb.0
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 09:51:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TjNuhCXe+PjFnTXBHLrLoeoTTYDdDeH8ei+EheLHkDc=;
-        b=MyfZrav6RgVjpKFdewxmvRPK3g8FVlWpFb0ATz57iua3B4pBl1QfVbGAhpJj+wif/X
-         zTaSikLrHqFkPCcjkGeCg2uYN1eI+SzvtyKPbnerWds66SzTQYxlP4tvsakATAdmnvU6
-         YPHyaWANcejF028m7vh50waXCYMhqqtAbmijQhm7hb+lVtsfKTnyrWWi47jlvP3Ux53D
-         4yKpm1j5btuQDw53Iqud6mEVTKdXMZm09X1has8IrWks1DrRrOZwLduZ8vygERXf0dUN
-         WWfAl4rn6WWHkw0/shVKhml2sHveGN6mTjNhMW9eZncM3wiza2Mn+LLb5Fz2NZWtOd6Z
-         uJmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TjNuhCXe+PjFnTXBHLrLoeoTTYDdDeH8ei+EheLHkDc=;
-        b=Fs0e/lb7OSdqMhonbfCoZlRXLzF73mhBbb9JwH7sIetuijpplIeIpgmKLCHiyk1424
-         n08z1oZs4WlDOymnJrIZAe/gngflqD6RMgIXwn9p95B1oPyugz+7arEds3E5vqmdt83e
-         LtAHNmEUK1lmr9ap3sBad2/U3vDsoIyKUqdtIJLY7dQNivBQjocvhrF3zsSEDm25w9MG
-         KNr5a+cmB2Dg+ZTWOfmIiesTRWXWb+yD5tQdCgV52AtwPHqYwC+uqxtufynzBrMzgw7p
-         FG1cRtqsLAHbwSX1d6pbAphC9P+og0tQlOmyg4UfGcYu5axUFT06rogsuWtTYea3wXiW
-         pOXQ==
-X-Gm-Message-State: AOAM530N3GMjzIZbUKhygSXXtGDLcpSKGBPhwLuXRAF2QhFspL29gmbp
-        u4pm+2330IsFhA2yEKhjGNDiaEK+VU4GhHVR5n2JDw==
-X-Google-Smtp-Source: ABdhPJwQUeLnvUWh/kg8H2Rq1WHHdSozspFbhwqXozAWN0gl0KPOFdMJ3F7LoGB2Ee9TPuaDSOTzNmMBumWtUgfgTfU=
-X-Received: by 2002:a17:907:c018:b0:6df:e31b:d912 with SMTP id
- ss24-20020a170907c01800b006dfe31bd912mr28886127ejc.196.1648486286570; Mon, 28
- Mar 2022 09:51:26 -0700 (PDT)
+        Mon, 28 Mar 2022 12:56:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 486AD4C41F;
+        Mon, 28 Mar 2022 09:54:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D670F6138B;
+        Mon, 28 Mar 2022 16:54:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCDA9C004DD;
+        Mon, 28 Mar 2022 16:54:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648486476;
+        bh=wecLqM+6wj4MYjctE+l0MU6HzWzPoE6xPZCJaeMiP3w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Fd+1Rpszy2FjIs8nnvc5MeP6yn3XiSkzp93oaGnmP1bFHDXzcyLqrdUFCqSm+mSlI
+         NXy5WWoUDcK9brEOVznVNkzMCoHi1XwLZEX81TgbUCWCyHt4pSxCVZiNkavXqRzeBM
+         wePrLbbEks2hzJSHnb5+pZ46iByE/M1WGu1ElITYrl7fPF9VCuzqVX4AyMcPI1ZjO3
+         I7/8GwAJqKYupPTB9QDt/TMMoed2fqJuZiJke6c7i0twT4KdCNsg4EslqtwQJ16+qj
+         sdmMcf+jnaP1EuiSTF120B4jqpZfwTaIgNtrO9Ss00Mo9KQa4ELnPzbeD8kwWiFLua
+         wRGmEC/z7W68w==
+Date:   Mon, 28 Mar 2022 18:02:12 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Jagath Jog J <jagathjog1996@gmail.com>,
+        Dan Robertson <dan@dlrobertson.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 3/5] iio: accel: bma400: Add triggered buffer support
+Message-ID: <20220328180212.0bac53fe@jic23-huawei>
+In-Reply-To: <CAHp75Vdx3ZWFc9Xa7AhLGM=-4AzfamEqTkZxvBeu=Hu4KF7pSg@mail.gmail.com>
+References: <20220326194146.15549-1-jagathjog1996@gmail.com>
+        <20220326194146.15549-4-jagathjog1996@gmail.com>
+        <CAHp75Vdx3ZWFc9Xa7AhLGM=-4AzfamEqTkZxvBeu=Hu4KF7pSg@mail.gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220326054414.637293-1-davidgow@google.com>
-In-Reply-To: <20220326054414.637293-1-davidgow@google.com>
-From:   Brendan Higgins <brendanhiggins@google.com>
-Date:   Mon, 28 Mar 2022 12:51:15 -0400
-Message-ID: <CAFd5g44qS4Qy2zBvGK-OszKnNC22daC63SREvL1Noiu5dKeP-w@mail.gmail.com>
-Subject: Re: [PATCH] Documentation: kunit: Fix cross-referencing warnings
-To:     David Gow <davidgow@google.com>
-Cc:     Jonathan Corbet <corbet@lwn.net>, Marco Elver <elver@google.com>,
-        Daniel Latypov <dlatypov@google.com>,
-        skhan@linuxfoundation.org, kunit-dev@googlegroups.com,
-        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 26, 2022 at 1:45 AM David Gow <davidgow@google.com> wrote:
->
-> The Architecture chapter of the KUnit documentation tried to include
-> copies of the kernel-doc for a couple of things, despite these already
-> existing in the API documentation. This lead to some warnings:
->
-> architecture:31: ./include/kunit/test.h:3: WARNING: Duplicate C declaration, also defined at dev-tools/kunit/api/test:66.
-> Declaration is '.. c:struct:: kunit_case'.
-> architecture:163: ./include/kunit/test.h:1217: WARNING: Duplicate C declaration, also defined at dev-tools/kunit/api/test:1217.
-> Declaration is '.. c:macro:: KUNIT_ARRAY_PARAM'.
-> architecture.rst:3: WARNING: Duplicate C declaration, also defined at dev-tools/kunit/api/test:66.
-> Declaration is '.. c:struct:: kunit_case'.
-> architecture.rst:1217: WARNING: Duplicate C declaration, also defined at dev-tools/kunit/api/test:1217.
-> Declaration is '.. c:macro:: KUNIT_ARRAY_PARAM'.
->
-> Get rid of these, and cleanup the mentions of the struct and macro in
-> question so that sphinx generates a link to the existing copy of the
-> documentation in the api/test document.
->
-> Fixes: bc145b370c ("Documentation: KUnit: Added KUnit Architecture")
-> Signed-off-by: David Gow <davidgow@google.com>
+On Sun, 27 Mar 2022 22:45:16 +0300
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
-Tested-by: Brendan Higgins <brendanhiggins@google.com>
+> On Sat, Mar 26, 2022 at 9:41 PM Jagath Jog J <jagathjog1996@gmail.com> wrote:
+> >
+> > Added trigger buffer support to read continuous acceleration
+> > data from device with data ready interrupt which is mapped
+> > to INT1 pin.  
+> 
+> ...
+> 
+> > +       struct {  
+> 
+> > +               __le16 buff[3];  
+> 
+> In my (mostly review) practice it's rare that sensors operate in LE mode.
+> Please, double check that.
+
+Just for giggles, we've had sensors that had most channels little endian
+but with one that was big endian...  Thankfully this isn't one of those.
+
+I checked the datasheet and whilst indeed less common, these do appear to
+be little endian.
+https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bma400-ds000.pdf
+page 50
+ACC_X_LSB at address 0x04
+ACC_X_MSB at address 0x05
+> 
+> > +               u8 temperature;
+> > +               s64 ts __aligned(8);
+> > +       } buffer ____cacheline_aligned;  
+> 
+
