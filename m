@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 654E7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 17:55:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BA20C3525B
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 17:56:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239895AbiC1R4w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 13:56:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42316 "EHLO
+        id S244932AbiC1R5j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 13:57:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244903AbiC1R4I (ORCPT
+        with ESMTP id S245130AbiC1R4u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 13:56:08 -0400
+        Mon, 28 Mar 2022 13:56:50 -0400
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC8BE2251A;
-        Mon, 28 Mar 2022 10:53:45 -0700 (PDT)
-Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KS0d44bNNz67Lnh;
-        Tue, 29 Mar 2022 01:51:52 +0800 (CST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2E271F619;
+        Mon, 28 Mar 2022 10:55:03 -0700 (PDT)
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KS0fb2wNQz67y8J;
+        Tue, 29 Mar 2022 01:53:11 +0800 (CST)
 Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
  fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 28 Mar 2022 19:53:41 +0200
+ 15.1.2375.24; Mon, 28 Mar 2022 19:55:00 +0200
 From:   Roberto Sassu <roberto.sassu@huawei.com>
 To:     <corbet@lwn.net>, <viro@zeniv.linux.org.uk>, <ast@kernel.org>,
         <daniel@iogearbox.net>, <andrii@kernel.org>, <kpsingh@kernel.org>,
@@ -36,9 +36,9 @@ CC:     <linux-doc@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
         <linux-security-module@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>,
         Roberto Sassu <roberto.sassu@huawei.com>
-Subject: [PATCH 10/18] bpf-preload: Generate bpf_preload_ops
-Date:   Mon, 28 Mar 2022 19:50:25 +0200
-Message-ID: <20220328175033.2437312-11-roberto.sassu@huawei.com>
+Subject: [PATCH 15/18] bpf-preload: Generate code of kernel module to preload
+Date:   Mon, 28 Mar 2022 19:50:30 +0200
+Message-ID: <20220328175033.2437312-16-roberto.sassu@huawei.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220328175033.2437312-1-roberto.sassu@huawei.com>
 References: <20220328175033.2437312-1-roberto.sassu@huawei.com>
@@ -53,79 +53,159 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Generate a bpf_preload_ops structure, to specify the kernel module and the
-preload method.
+Since every function is automatically generated and placed to the light
+skeleton, the kernel module for preloading an eBPF program is very small
+and with a well-defined structure. The only variable part is the path of
+the light skeleton.
+
+Introduce the new 'subcommand' module of the 'gen' bpftool command, which
+takes the path of the light skeleton to be included in the #include
+directive and generates the code of the kernel module to preload the eBPF
+program.
 
 Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
 ---
- kernel/bpf/preload/bpf_preload_kern.c          |  5 -----
- kernel/bpf/preload/iterators/iterators.lskel.h |  5 +++++
- tools/bpf/bpftool/gen.c                        | 13 +++++++++++++
- 3 files changed, 18 insertions(+), 5 deletions(-)
+ kernel/bpf/preload/bpf_preload_kern.c         |  1 +
+ kernel/bpf/preload/iterators/Makefile         |  7 +++--
+ .../bpf/bpftool/Documentation/bpftool-gen.rst |  8 +++++
+ tools/bpf/bpftool/bash-completion/bpftool     |  4 +++
+ tools/bpf/bpftool/gen.c                       | 31 +++++++++++++++++++
+ 5 files changed, 49 insertions(+), 2 deletions(-)
 
 diff --git a/kernel/bpf/preload/bpf_preload_kern.c b/kernel/bpf/preload/bpf_preload_kern.c
-index 35e9abd1a668..3839af367200 100644
+index c6d97872225b..048bca3ba499 100644
 --- a/kernel/bpf/preload/bpf_preload_kern.c
 +++ b/kernel/bpf/preload/bpf_preload_kern.c
-@@ -5,11 +5,6 @@
- #include <linux/bpf_preload.h>
- #include "iterators/iterators.lskel.h"
+@@ -1,4 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0
++/* THIS FILE IS AUTOGENERATED! */
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+ #include <linux/init.h>
+ #include <linux/module.h>
+diff --git a/kernel/bpf/preload/iterators/Makefile b/kernel/bpf/preload/iterators/Makefile
+index d36a822d3e16..9dcad1c5c44b 100644
+--- a/kernel/bpf/preload/iterators/Makefile
++++ b/kernel/bpf/preload/iterators/Makefile
+@@ -35,17 +35,20 @@ endif
  
--static struct bpf_preload_ops ops = {
--	.preload = preload,
--	.owner = THIS_MODULE,
--};
+ .PHONY: all clean
+ 
+-all: iterators.lskel.h
++all: iterators.lskel.h bpf_preload_kern.c
+ 
+ clean:
+ 	$(call msg,CLEAN)
+ 	$(Q)rm -rf $(OUTPUT) iterators
+ 
++bpf_preload_kern.c: iterators.lskel.h $(BPFTOOL)
++	$(call msg,GEN-PRELOAD,$@)
++	$(Q)$(BPFTOOL) gen module iterators/iterators.lskel.h $< > ../$@
++
+ iterators.lskel.h: $(OUTPUT)/iterators.bpf.o | $(BPFTOOL)
+ 	$(call msg,GEN-SKEL,$@)
+ 	$(Q)$(BPFTOOL) gen skeleton -L -P $< > $@
+ 
 -
- static int __init load(void)
- {
- 	int err;
-diff --git a/kernel/bpf/preload/iterators/iterators.lskel.h b/kernel/bpf/preload/iterators/iterators.lskel.h
-index 6faf3708be01..7595fc283a65 100644
---- a/kernel/bpf/preload/iterators/iterators.lskel.h
-+++ b/kernel/bpf/preload/iterators/iterators.lskel.h
-@@ -474,6 +474,11 @@ static int preload(struct dentry *parent)
+ $(OUTPUT)/iterators.bpf.o: iterators.bpf.c $(BPFOBJ) | $(OUTPUT)
+ 	$(call msg,BPF,$@)
+ 	$(Q)$(CLANG) -g -O2 -target bpf $(INCLUDES)			      \
+diff --git a/tools/bpf/bpftool/Documentation/bpftool-gen.rst b/tools/bpf/bpftool/Documentation/bpftool-gen.rst
+index 74bbefa28212..6d29d2b1e4e2 100644
+--- a/tools/bpf/bpftool/Documentation/bpftool-gen.rst
++++ b/tools/bpf/bpftool/Documentation/bpftool-gen.rst
+@@ -27,6 +27,7 @@ GEN COMMANDS
+ |	**bpftool** **gen skeleton** *FILE* [**name** *OBJECT_NAME*]
+ |	**bpftool** **gen subskeleton** *FILE* [**name** *OBJECT_NAME*]
+ |	**bpftool** **gen min_core_btf** *INPUT* *OUTPUT* *OBJECT* [*OBJECT*...]
++|	**bpftool** **gen module** *FILE*
+ |	**bpftool** **gen help**
+ 
+ DESCRIPTION
+@@ -195,6 +196,13 @@ DESCRIPTION
+ 
+ 		  Check examples bellow for more information how to use it.
+ 
++	**bpftool** **gen module** *FILE*
++		  Generate the code of a kernel module including the light
++		  skeleton of an eBPF program to preload. The only variable part
++		  is the path of the light skeleton. All kernel modules call
++		  load_skel() and free_objs_and_skel() respectively in the init
++		  and fini module entrypoints.
++
+ 	**bpftool gen help**
+ 		  Print short help message.
+ 
+diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
+index 6e433e86fb26..82e8716fd3ad 100644
+--- a/tools/bpf/bpftool/bash-completion/bpftool
++++ b/tools/bpf/bpftool/bash-completion/bpftool
+@@ -1019,6 +1019,10 @@ _bpftool()
+                     _filedir
+                     return 0
+                     ;;
++                module)
++                    _filedir
++                    return 0
++                    ;;
+                 *)
+                     [[ $prev == $object ]] && \
+                         COMPREPLY=( $( compgen -W 'object skeleton subskeleton help min_core_btf' -- "$cur" ) )
+diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
+index af939183f57a..77ab78884285 100644
+--- a/tools/bpf/bpftool/gen.c
++++ b/tools/bpf/bpftool/gen.c
+@@ -1898,6 +1898,35 @@ static int do_object(int argc, char **argv)
  	return err;
  }
  
-+static struct bpf_preload_ops ops = {
-+	.preload = preload,
-+	.owner = THIS_MODULE,
-+};
-+
- static int load_skel(void)
- {
- 	int err;
-diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
-index 28b1fe718248..5593cbee1846 100644
---- a/tools/bpf/bpftool/gen.c
-+++ b/tools/bpf/bpftool/gen.c
-@@ -841,6 +841,18 @@ static void codegen_preload(struct bpf_object *obj, const char *obj_name)
- 		");
- }
- 
-+static void codegen_preload_ops(void)
++static int do_module(int argc, char **argv)
 +{
++	const char *skeleton_file;
++
++	if (!REQ_ARGS(1)) {
++		usage();
++		return -1;
++	}
++
++	skeleton_file = GET_ARG();
++
 +	codegen("\
 +		\n\
++		// SPDX-License-Identifier: GPL-2.0			    \n\
++		/* THIS FILE IS AUTOGENERATED! */			    \n\
++		#define pr_fmt(fmt) KBUILD_MODNAME \": \" fmt		    \n\
++		#include <linux/init.h>					    \n\
++		#include <linux/module.h>				    \n\
++		#include <linux/bpf_preload.h>				    \n\
++		#include \"%s\"						    \n\
 +		\n\
-+		static struct bpf_preload_ops ops = {			    \n\
-+			.preload = preload,				    \n\
-+			.owner = THIS_MODULE,				    \n\
-+		};							    \n\
-+		");
++		late_initcall(load_skel);				    \n\
++		module_exit(free_objs_and_skel);			    \n\
++		MODULE_LICENSE(\"GPL\");				    \n\
++		", skeleton_file);
++
++	return 0;
 +}
 +
- static void codegen_preload_load(struct bpf_object *obj, const char *obj_name)
+ static int do_help(int argc, char **argv)
  {
- 	struct bpf_program *prog;
-@@ -1076,6 +1088,7 @@ static int gen_trace(struct bpf_object *obj, const char *obj_name, const char *h
- 		codegen_preload_vars(obj, obj_name);
- 		codegen_preload_free(obj, obj_name);
- 		codegen_preload(obj, obj_name);
-+		codegen_preload_ops();
- 		codegen_preload_load(obj, obj_name);
- 	}
- 
+ 	if (json_output) {
+@@ -1910,6 +1939,7 @@ static int do_help(int argc, char **argv)
+ 		"       %1$s %2$s skeleton FILE [name OBJECT_NAME]\n"
+ 		"       %1$s %2$s subskeleton FILE [name OBJECT_NAME]\n"
+ 		"       %1$s %2$s min_core_btf INPUT OUTPUT OBJECT [OBJECT...]\n"
++		"       %1$s %2$s module SKELETON_FILE\n"
+ 		"       %1$s %2$s help\n"
+ 		"\n"
+ 		"       " HELP_SPEC_OPTIONS " |\n"
+@@ -2508,6 +2538,7 @@ static const struct cmd cmds[] = {
+ 	{ "skeleton",		do_skeleton },
+ 	{ "subskeleton",	do_subskeleton },
+ 	{ "min_core_btf",	do_min_core_btf},
++	{ "module",		do_module},
+ 	{ "help",		do_help },
+ 	{ 0 }
+ };
 -- 
 2.32.0
 
