@@ -2,165 +2,255 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94DF7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 22:27:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D1CCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 22:29:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229848AbiC1W2o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 18:28:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57332 "EHLO
+        id S229906AbiC1Wau (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 18:30:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229772AbiC1W2m (ORCPT
+        with ESMTP id S229818AbiC1Was (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 18:28:42 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B552575238
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 15:27:00 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id f3so12912572pfe.2
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 15:27:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=EaW6LnFnD0yHSZLOEoOdmGP4SdnTb3yLLH8IPqs77KY=;
-        b=Xyvle5xj+iytheGd+opSaVUcJMrxydFolbbLLB0cfjcq5NLgRpKcyY8LmvKaLgqjGf
-         4Wz+LYcSQ0FaI+N5y+VY4SzfRHCjtAZByjFVMXJ2KOnIAwrohQC+hThWqUCVqG+4NbES
-         3SNF28Gr4dRvSXnzRTTpxIDvLztpdn1WZNrxh8Q8n7iGr0rCaj4r9+fp3XG393ZBWs6k
-         SHSEkJqmZ3YIGgDpQAEgtvU4ck1H0tPnbq3AaPzkvTPpDKGc7uoyX0A9YsGMVeSengHe
-         iGHaJiaF81xnBQn+5IhcSf8NxcBCjbS8eFYH7svcMpAomWcPYrKr0MsWl6ZnU5x0GLV1
-         TUTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=EaW6LnFnD0yHSZLOEoOdmGP4SdnTb3yLLH8IPqs77KY=;
-        b=2Sm8zDgQlVVWnvGumOIfLUeSNvX+lQW8XXDtK4hZ6okkS4ownBUyDSLoeE3M2CNddw
-         9X27Db1/2rrvC1Sr6UJZf1CwAFB5fDx6Dxgd/YZCIfb7DaB/dBGHZ+SwlRTDQHRgTz4P
-         KD95zH0TFPwORbTD7sgRBSR30vLar9BBFF+3KyE3UnlSdjMOK9Ti4K1kYNSt94rrwvaM
-         nW+YE9/KFAmHtWfybuPUdT8SDk/I0/z8v/5YcI4mxb8IPtjzMZer4thy886G2SI86PsA
-         KX90sQPUaKDOztU+oeejKCqgfIBjf4Rf2oHs+jvQCoUCigpJmnULuQ4V+rgftWHpqwlo
-         9Ezw==
-X-Gm-Message-State: AOAM530+1xoYC3RQIV37HKTkIgWd5GVJfTvPukcC5XEoEd14VrlrJQMG
-        yiHbFoXNz4SrekTF0AziqDB9Aw==
-X-Google-Smtp-Source: ABdhPJyCCih0kMQlx0T3Lnxi+OwtGBTbKYzIPbgZGi6J5hxjxW3HSWsT0UQDj72qn+FBmxrSiRdwKg==
-X-Received: by 2002:a62:e215:0:b0:4fa:87f1:dc16 with SMTP id a21-20020a62e215000000b004fa87f1dc16mr25067148pfi.19.1648506420043;
-        Mon, 28 Mar 2022 15:27:00 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id f16-20020a056a001ad000b004fb358ffe86sm8955991pfv.137.2022.03.28.15.26.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Mar 2022 15:26:59 -0700 (PDT)
-Date:   Mon, 28 Mar 2022 22:26:55 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Chao Peng <chao.p.peng@linux.intel.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, qemu-devel@nongnu.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
+        Mon, 28 Mar 2022 18:30:48 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AD0B4BBBF
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 15:29:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648506546; x=1680042546;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=gg5QwhP4YCgK1cnFnIvMFqJVjZwNm4QeiHPCuwP2Rc8=;
+  b=jOm/zI2HtDDL4tnyh0xVuvqV0TBFcEi7v4ih4sbE5pOpKnfn7UY/SWJH
+   zLSxjhcokryqigwxkiuNOBajHpYdE7LM7EGmsWVS5pPPOZmj+iRVe+AGH
+   ehkJ/YXs7hchqfebIxM2XObUNRKm9KejYs40Ho2nwoemIkqEf+tKDzyaZ
+   e6gT0sHVF/6sv+hcf8yB5tyrEDV0vi0cUg8D52OOTHyCCu5AElGnS6iuS
+   9orLVxe89oP8swrFcB1b/Q4/BCxy8Xe7FgOV8leJJ9woIRK/2Nkas3BmW
+   ftoIgD0QU1M3GXLcFhXDy4iLD/xQtxhTGa2DEZSp9gHko266sVyOHCrdR
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="258823339"
+X-IronPort-AV: E=Sophos;i="5.90,218,1643702400"; 
+   d="scan'208";a="258823339"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 14:41:01 -0700
+X-IronPort-AV: E=Sophos;i="5.90,218,1643702400"; 
+   d="scan'208";a="617924058"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 14:41:00 -0700
+Date:   Mon, 28 Mar 2022 14:44:23 -0700
+From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
+To:     Lu Baolu <baolu.lu@linux.intel.com>
+Cc:     iommu@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>,
         Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com
-Subject: Re: [PATCH v5 06/13] KVM: Use kvm_userspace_memory_region_ext
-Message-ID: <YkI2Lyv9SJaGPDz+@google.com>
-References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
- <20220310140911.50924-7-chao.p.peng@linux.intel.com>
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Jacob Pan <jacob.jun.pan@intel.com>,
+        Raj Ashok <ashok.raj@intel.com>,
+        "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        "Zanussi, Tom" <tom.zanussi@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
+        jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v2 5/8] iommu: Add PASID support for DMA mapping API
+ users
+Message-ID: <20220328144423.39ba9b9b@jacob-builder>
+In-Reply-To: <12390112-c497-1f02-5ddc-ad8ee3645347@linux.intel.com>
+References: <20220315050713.2000518-1-jacob.jun.pan@linux.intel.com>
+        <20220315050713.2000518-6-jacob.jun.pan@linux.intel.com>
+        <12390112-c497-1f02-5ddc-ad8ee3645347@linux.intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220310140911.50924-7-chao.p.peng@linux.intel.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022, Chao Peng wrote:
-> @@ -4476,14 +4477,23 @@ static long kvm_vm_ioctl(struct file *filp,
->  		break;
->  	}
->  	case KVM_SET_USER_MEMORY_REGION: {
-> -		struct kvm_userspace_memory_region kvm_userspace_mem;
-> +		struct kvm_userspace_memory_region_ext region_ext;
+Hi BaoLu,
 
-It's probably a good idea to zero initialize the full region to avoid consuming
-garbage stack data if there's a bug and an _ext field is accessed without first
-checking KVM_MEM_PRIVATE.  I'm usually opposed to unnecessary initialization, but
-this seems like something we could screw up quite easily.
+On Fri, 18 Mar 2022 20:43:54 +0800, Lu Baolu <baolu.lu@linux.intel.com>
+wrote:
 
->  		r = -EFAULT;
-> -		if (copy_from_user(&kvm_userspace_mem, argp,
-> -						sizeof(kvm_userspace_mem)))
-> +		if (copy_from_user(&region_ext, argp,
-> +				sizeof(struct kvm_userspace_memory_region)))
->  			goto out;
-> +		if (region_ext.region.flags & KVM_MEM_PRIVATE) {
-> +			int offset = offsetof(
-> +				struct kvm_userspace_memory_region_ext,
-> +				private_offset);
-> +			if (copy_from_user(&region_ext.private_offset,
-> +					   argp + offset,
-> +					   sizeof(region_ext) - offset))
-
-In this patch, KVM_MEM_PRIVATE should result in an -EINVAL as it's not yet
-supported.  Copying the _ext on KVM_MEM_PRIVATE belongs in the "Expose KVM_MEM_PRIVATE"
-patch.
-
-Mechnically, what about first reading flags via get_user(), and then doing a single
-copy_from_user()?  It's technically more work in the common case, and requires an
-extra check to guard against TOCTOU attacks, but this isn't a fast path by any means
-and IMO the end result makes it easier to understand the relationship between
-KVM_MEM_PRIVATE and the two different structs.
-
-E.g.
-
-	case KVM_SET_USER_MEMORY_REGION: {
-		struct kvm_user_mem_region region;
-		unsigned long size;
-		u32 flags;
-
-		memset(&region, 0, sizeof(region));
-
-		r = -EFAULT;
-		if (get_user(flags, (u32 __user *)(argp + offsetof(typeof(region), flags))))
-			goto out;
-
-		if (flags & KVM_MEM_PRIVATE)
-			size = sizeof(struct kvm_userspace_memory_region_ext);
-		else
-			size = sizeof(struct kvm_userspace_memory_region);
-		if (copy_from_user(&region, argp, size))
-			goto out;
-
-		r = -EINVAL;
-		if ((flags ^ region.flags) & KVM_MEM_PRIVATE)
-			goto out;
-
-		r = kvm_vm_ioctl_set_memory_region(kvm, &region);
-		break;
-	}
-
-> +				goto out;
-> +		}
->  
-> -		r = kvm_vm_ioctl_set_memory_region(kvm, &kvm_userspace_mem);
-> +		r = kvm_vm_ioctl_set_memory_region(kvm, &region_ext);
->  		break;
->  	}
->  	case KVM_GET_DIRTY_LOG: {
-> -- 
-> 2.17.1
+> On 2022/3/15 13:07, Jacob Pan wrote:
+> > DMA mapping API is the de facto standard for in-kernel DMA. It operates
+> > on a per device/RID basis which is not PASID-aware.
+> > 
+> > Some modern devices such as Intel Data Streaming Accelerator, PASID is
+> > required for certain work submissions. To allow such devices use DMA
+> > mapping API, we need the following functionalities:
+> > 1. Provide device a way to retrieve a PASID for work submission within
+> > the kernel
+> > 2. Enable the kernel PASID on the IOMMU for the device
+> > 3. Attach the kernel PASID to the device's default DMA domain, let it
+> > be IOVA or physical address in case of pass-through.
+> > 
+> > This patch introduces a driver facing API that enables DMA API
+> > PASID usage. Once enabled, device drivers can continue to use DMA APIs
+> > as is. There is no difference in dma_handle between without PASID and
+> > with PASID.
+> > 
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > ---
+> >   drivers/iommu/dma-iommu.c | 65 +++++++++++++++++++++++++++++++++++++++
+> >   include/linux/dma-iommu.h |  7 +++++
+> >   include/linux/iommu.h     |  9 ++++++
+> >   3 files changed, 81 insertions(+)
+> > 
+> > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> > index b22034975301..d0ff1a34b1b6 100644
+> > --- a/drivers/iommu/dma-iommu.c
+> > +++ b/drivers/iommu/dma-iommu.c
+> > @@ -39,6 +39,8 @@ enum iommu_dma_cookie_type {
+> >   	IOMMU_DMA_MSI_COOKIE,
+> >   };
+> >   
+> > +static DECLARE_IOASID_SET(iommu_dma_pasid);
+> > +
+> >   struct iommu_dma_cookie {
+> >   	enum iommu_dma_cookie_type	type;
+> >   	union {
+> > @@ -370,6 +372,69 @@ void iommu_put_dma_cookie(struct iommu_domain
+> > *domain) domain->iova_cookie = NULL;
+> >   }
+> >   
+> > +/**
+> > + * iommu_enable_pasid_dma --Enable in-kernel DMA request with PASID
+> > + * @dev:	Device to be enabled
+> > + *
+> > + * DMA request with PASID will be mapped the same way as the legacy
+> > DMA.
+> > + * If the device is in pass-through, PASID will also pass-through. If
+> > the
+> > + * device is in IOVA map, the supervisor PASID will point to the same
+> > IOVA
+> > + * page table.
+> > + *
+> > + * @return the kernel PASID to be used for DMA or INVALID_IOASID on
+> > failure  
 > 
+> The comment on the return value should be rephrased according to the
+> real code.
+> 
+yes, will do.
+
+> > + */
+> > +int iommu_enable_pasid_dma(struct device *dev, ioasid_t *pasid)
+> > +{
+> > +	struct iommu_domain *dom;
+> > +	ioasid_t id, max;
+> > +	int ret;
+> > +
+> > +	dom = iommu_get_domain_for_dev(dev);
+> > +	if (!dom || !dom->ops || !dom->ops->attach_dev_pasid)
+> > +		return -ENODEV;
+> > +	max = iommu_get_dev_pasid_max(dev);
+> > +	if (!max)
+> > +		return -EINVAL;
+> > +
+> > +	id = ioasid_alloc(&iommu_dma_pasid, 1, max, dev);
+> > +	if (id == INVALID_IOASID)
+> > +		return -ENOMEM;
+> > +
+> > +	ret = dom->ops->attach_dev_pasid(dom, dev, id);
+> > +	if (ret) {
+> > +		ioasid_put(id);
+> > +		return ret;
+> > +	}
+> > +	*pasid = id;
+> > +
+> > +	return ret;
+> > +}
+> > +EXPORT_SYMBOL(iommu_enable_pasid_dma);
+> > +
+> > +/**
+> > + * iommu_disable_pasid_dma --Disable in-kernel DMA request with PASID
+> > + * @dev:	Device's PASID DMA to be disabled
+> > + *
+> > + * It is the device driver's responsibility to ensure no more incoming
+> > DMA
+> > + * requests with the kernel PASID before calling this function. IOMMU
+> > driver
+> > + * ensures PASID cache, IOTLBs related to the kernel PASID are cleared
+> > and
+> > + * drained.
+> > + *
+> > + * @return 0 on success or error code on failure  
+> 
+> Ditto.
+> 
+same
+
+> > + */
+> > +void iommu_disable_pasid_dma(struct device *dev, ioasid_t pasid)
+> > +{
+> > +	struct iommu_domain *dom;
+> > +
+> > +	/* TODO: check the given PASID is within the ioasid_set */
+> > +	dom = iommu_get_domain_for_dev(dev);
+> > +	if (!dom->ops->detach_dev_pasid)
+> > +		return;
+> > +	dom->ops->detach_dev_pasid(dom, dev, pasid);
+> > +	ioasid_put(pasid);
+> > +}
+> > +EXPORT_SYMBOL(iommu_disable_pasid_dma);
+> > +
+> >   /**
+> >    * iommu_dma_get_resv_regions - Reserved region driver helper
+> >    * @dev: Device from iommu_get_resv_regions()
+> > diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+> > index 24607dc3c2ac..e6cb9b52a420 100644
+> > --- a/include/linux/dma-iommu.h
+> > +++ b/include/linux/dma-iommu.h
+> > @@ -18,6 +18,13 @@ int iommu_get_dma_cookie(struct iommu_domain
+> > *domain); int iommu_get_msi_cookie(struct iommu_domain *domain,
+> > dma_addr_t base); void iommu_put_dma_cookie(struct iommu_domain
+> > *domain); 
+> > +/*
+> > + * For devices that can do DMA request with PASID, setup a system
+> > PASID.
+> > + * Address modes (IOVA, PA) are selected by the platform code.
+> > + */  
+> 
+> No need for a comment here. Or move it to the function if need.
+> 
+right, this comment is obsolete. will remove.
+
+> > +int iommu_enable_pasid_dma(struct device *dev, ioasid_t *pasid);
+> > +void iommu_disable_pasid_dma(struct device *dev, ioasid_t pasid);
+> > +
+> >   /* Setup call for arch DMA mapping code */
+> >   void iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64
+> > dma_limit); int iommu_dma_init_fq(struct iommu_domain *domain);
+> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> > index fde5b933dbe3..fb011722e4f8 100644
+> > --- a/include/linux/iommu.h
+> > +++ b/include/linux/iommu.h
+> > @@ -395,6 +395,15 @@ static inline void iommu_set_dev_pasid_max(struct
+> > device *dev, 
+> >   	param->pasid_max = max;
+> >   }
+> > +static inline ioasid_t iommu_get_dev_pasid_max(struct device *dev)
+> > +{
+> > +	struct dev_iommu *param = dev->iommu;
+> > +
+> > +	if (WARN_ON(!param))
+> > +		return 0;
+> > +
+> > +	return param->pasid_max;
+> > +}
+> >   
+> >   int iommu_device_register(struct iommu_device *iommu,
+> >   			  const struct iommu_ops *ops,  
+> 
+> Best regards,
+> baolu
+
+
+Thanks,
+
+Jacob
