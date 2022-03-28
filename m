@@ -2,50 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8120DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:30:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C762C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:30:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241460AbiC1Lc0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:32:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45208 "EHLO
+        id S241463AbiC1Lcc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:32:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240831AbiC1LZA (ORCPT
+        with ESMTP id S241704AbiC1LYH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:25:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE42A55BCF;
-        Mon, 28 Mar 2022 04:23:05 -0700 (PDT)
+        Mon, 28 Mar 2022 07:24:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4603555BF5;
+        Mon, 28 Mar 2022 04:21:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F1080B81055;
-        Mon, 28 Mar 2022 11:23:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5673BC36AF9;
-        Mon, 28 Mar 2022 11:23:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A2F2E611D6;
+        Mon, 28 Mar 2022 11:21:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B07ADC340ED;
+        Mon, 28 Mar 2022 11:21:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466582;
-        bh=3arK47s3mm6uyX8/+rui0IYzUFmtvrOLWmgcwKONhzU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=ZY3NvvAfAgKcIFqduTMVvmhsEiZ3qj3ACTUs38n91KTAcKv9RgXvJ9Ff0+MY717D3
-         UHGUzkHXMDnlhemUEgOd3h6NDb2vyzGSGSjyxK/F7SOBJas+BkULXfkfJ3dKGXExeV
-         sMHgva1kL0td1epDe83JOMhrhYFW5BwKDC025OvZ7t7uNQUMSkk7Ti9TX5covt/bBW
-         uwHoFEnZUJWpnCvxos0VToOYT5xolI1k8xDa46hBNZVHG7TlXC49aqmdGheA6PSAy5
-         gAsKpWFmDyYeyB20POboHH4LGswEUvKNu9H6DQIlrJzQ/lxxP59iCylYfNucp/M/8I
-         P1WTosjybUWsQ==
+        s=k20201202; t=1648466502;
+        bh=GtXm7TP4FiF7Hh17CXHOhSXHFwXsRaUDFmn/WhLxqg0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DrmtbnbMb5Xgms2FaDfWdFLka+hv8VOJoGsDbiVQ3oIjyPz8kA+eP65vS3rWle9tU
+         378FNHMjR+yoHEDtzFrxeD8D8f9XTvpmNxwO1F31Ti5uUysh1T7moMcGnHASElIFyV
+         jexNZWeXx/j2aPch4tOU7ivl3eKbNjgzg9YOsulrEFwoiLcjb22JMlgpNFa/tDHXHx
+         J/5MTU3jk4BW+7G7VmeM2lTgtMydEehdaEyHvGiyXHyou1LCr2pENQOphrLyKZUqB8
+         NQu2uiOiOdlTQJRihuTnzp1oNbtqVuwocDzyBMT/QO15j/B8oHJ5eNSJiRrxjI6H86
+         tz2XoNls6LuBw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Casey Schaufler <casey@schaufler-ca.com>,
-        syzbot+d1e3b1d92d25abf97943@syzkaller.appspotmail.com,
-        James Morris <jamorris@linux.microsoft.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Sasha Levin <sashal@kernel.org>, jmorris@namei.org,
-        serge@hallyn.com, stephen.smalley.work@gmail.com,
-        eparis@parisplace.org, linux-security-module@vger.kernel.org,
-        selinux@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 01/21] LSM: general protection fault in legacy_parse_param
-Date:   Mon, 28 Mar 2022 07:22:34 -0400
-Message-Id: <20220328112254.1556286-1-sashal@kernel.org>
+Cc:     Marc Zyngier <maz@kernel.org>, Bartosz Golaszewski <brgl@bgdev.pl>,
+        Sasha Levin <sashal@kernel.org>, avifishman70@gmail.com,
+        tmaimon77@gmail.com, tali.perry1@gmail.com,
+        linus.walleij@linaro.org, openbmc@lists.ozlabs.org,
+        linux-gpio@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 05/29] pinctrl: npcm: Fix broken references to chip->parent_device
+Date:   Mon, 28 Mar 2022 07:21:07 -0400
+Message-Id: <20220328112132.1555683-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220328112132.1555683-1-sashal@kernel.org>
+References: <20220328112132.1555683-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,77 +53,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Casey Schaufler <casey@schaufler-ca.com>
+From: Marc Zyngier <maz@kernel.org>
 
-[ Upstream commit ecff30575b5ad0eda149aadad247b7f75411fd47 ]
+[ Upstream commit f7e53e2255808ca3abcc8f38d18ad0823425e771 ]
 
-The usual LSM hook "bail on fail" scheme doesn't work for cases where
-a security module may return an error code indicating that it does not
-recognize an input.  In this particular case Smack sees a mount option
-that it recognizes, and returns 0. A call to a BPF hook follows, which
-returns -ENOPARAM, which confuses the caller because Smack has processed
-its data.
+The npcm driver has a bunch of references to the irq_chip parent_device
+field, but never sets it.
 
-The SELinux hook incorrectly returns 1 on success. There was a time
-when this was correct, however the current expectation is that it
-return 0 on success. This is repaired.
+Fix it by fishing that reference from somewhere else, but it is
+obvious that these debug statements were never used. Also remove
+an unused field in a local data structure.
 
-Reported-by: syzbot+d1e3b1d92d25abf97943@syzkaller.appspotmail.com
-Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
-Acked-by: James Morris <jamorris@linux.microsoft.com>
-Signed-off-by: Paul Moore <paul@paul-moore.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Acked-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Link: https://lore.kernel.org/r/20220201120310.878267-11-maz@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/security.c      | 17 +++++++++++++++--
- security/selinux/hooks.c |  5 ++---
- 2 files changed, 17 insertions(+), 5 deletions(-)
+ drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c | 25 +++++++++++------------
+ 1 file changed, 12 insertions(+), 13 deletions(-)
 
-diff --git a/security/security.c b/security/security.c
-index a864ff824dd3..d9d42d64f89f 100644
---- a/security/security.c
-+++ b/security/security.c
-@@ -860,9 +860,22 @@ int security_fs_context_dup(struct fs_context *fc, struct fs_context *src_fc)
- 	return call_int_hook(fs_context_dup, 0, fc, src_fc);
+diff --git a/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c b/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
+index 4d81908d6725..ba536fd4d674 100644
+--- a/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
++++ b/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
+@@ -78,7 +78,6 @@ struct npcm7xx_gpio {
+ 	struct gpio_chip	gc;
+ 	int			irqbase;
+ 	int			irq;
+-	void			*priv;
+ 	struct irq_chip		irq_chip;
+ 	u32			pinctrl_id;
+ 	int (*direction_input)(struct gpio_chip *chip, unsigned offset);
+@@ -226,7 +225,7 @@ static void npcmgpio_irq_handler(struct irq_desc *desc)
+ 	chained_irq_enter(chip, desc);
+ 	sts = ioread32(bank->base + NPCM7XX_GP_N_EVST);
+ 	en  = ioread32(bank->base + NPCM7XX_GP_N_EVEN);
+-	dev_dbg(chip->parent_device, "==> got irq sts %.8x %.8x\n", sts,
++	dev_dbg(bank->gc.parent, "==> got irq sts %.8x %.8x\n", sts,
+ 		en);
+ 
+ 	sts &= en;
+@@ -241,33 +240,33 @@ static int npcmgpio_set_irq_type(struct irq_data *d, unsigned int type)
+ 		gpiochip_get_data(irq_data_get_irq_chip_data(d));
+ 	unsigned int gpio = BIT(d->hwirq);
+ 
+-	dev_dbg(d->chip->parent_device, "setirqtype: %u.%u = %u\n", gpio,
++	dev_dbg(bank->gc.parent, "setirqtype: %u.%u = %u\n", gpio,
+ 		d->irq, type);
+ 	switch (type) {
+ 	case IRQ_TYPE_EDGE_RISING:
+-		dev_dbg(d->chip->parent_device, "edge.rising\n");
++		dev_dbg(bank->gc.parent, "edge.rising\n");
+ 		npcm_gpio_clr(&bank->gc, bank->base + NPCM7XX_GP_N_EVBE, gpio);
+ 		npcm_gpio_clr(&bank->gc, bank->base + NPCM7XX_GP_N_POL, gpio);
+ 		break;
+ 	case IRQ_TYPE_EDGE_FALLING:
+-		dev_dbg(d->chip->parent_device, "edge.falling\n");
++		dev_dbg(bank->gc.parent, "edge.falling\n");
+ 		npcm_gpio_clr(&bank->gc, bank->base + NPCM7XX_GP_N_EVBE, gpio);
+ 		npcm_gpio_set(&bank->gc, bank->base + NPCM7XX_GP_N_POL, gpio);
+ 		break;
+ 	case IRQ_TYPE_EDGE_BOTH:
+-		dev_dbg(d->chip->parent_device, "edge.both\n");
++		dev_dbg(bank->gc.parent, "edge.both\n");
+ 		npcm_gpio_set(&bank->gc, bank->base + NPCM7XX_GP_N_EVBE, gpio);
+ 		break;
+ 	case IRQ_TYPE_LEVEL_LOW:
+-		dev_dbg(d->chip->parent_device, "level.low\n");
++		dev_dbg(bank->gc.parent, "level.low\n");
+ 		npcm_gpio_set(&bank->gc, bank->base + NPCM7XX_GP_N_POL, gpio);
+ 		break;
+ 	case IRQ_TYPE_LEVEL_HIGH:
+-		dev_dbg(d->chip->parent_device, "level.high\n");
++		dev_dbg(bank->gc.parent, "level.high\n");
+ 		npcm_gpio_clr(&bank->gc, bank->base + NPCM7XX_GP_N_POL, gpio);
+ 		break;
+ 	default:
+-		dev_dbg(d->chip->parent_device, "invalid irq type\n");
++		dev_dbg(bank->gc.parent, "invalid irq type\n");
+ 		return -EINVAL;
+ 	}
+ 
+@@ -289,7 +288,7 @@ static void npcmgpio_irq_ack(struct irq_data *d)
+ 		gpiochip_get_data(irq_data_get_irq_chip_data(d));
+ 	unsigned int gpio = d->hwirq;
+ 
+-	dev_dbg(d->chip->parent_device, "irq_ack: %u.%u\n", gpio, d->irq);
++	dev_dbg(bank->gc.parent, "irq_ack: %u.%u\n", gpio, d->irq);
+ 	iowrite32(BIT(gpio), bank->base + NPCM7XX_GP_N_EVST);
  }
  
--int security_fs_context_parse_param(struct fs_context *fc, struct fs_parameter *param)
-+int security_fs_context_parse_param(struct fs_context *fc,
-+				    struct fs_parameter *param)
- {
--	return call_int_hook(fs_context_parse_param, -ENOPARAM, fc, param);
-+	struct security_hook_list *hp;
-+	int trc;
-+	int rc = -ENOPARAM;
-+
-+	hlist_for_each_entry(hp, &security_hook_heads.fs_context_parse_param,
-+			     list) {
-+		trc = hp->hook.fs_context_parse_param(fc, param);
-+		if (trc == 0)
-+			rc = 0;
-+		else if (trc != -ENOPARAM)
-+			return trc;
-+	}
-+	return rc;
+@@ -301,7 +300,7 @@ static void npcmgpio_irq_mask(struct irq_data *d)
+ 	unsigned int gpio = d->hwirq;
+ 
+ 	/* Clear events */
+-	dev_dbg(d->chip->parent_device, "irq_mask: %u.%u\n", gpio, d->irq);
++	dev_dbg(bank->gc.parent, "irq_mask: %u.%u\n", gpio, d->irq);
+ 	iowrite32(BIT(gpio), bank->base + NPCM7XX_GP_N_EVENC);
  }
  
- int security_sb_alloc(struct super_block *sb)
-diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-index 86159b32921c..63e61f2f1ad6 100644
---- a/security/selinux/hooks.c
-+++ b/security/selinux/hooks.c
-@@ -2820,10 +2820,9 @@ static int selinux_fs_context_parse_param(struct fs_context *fc,
- 		return opt;
+@@ -313,7 +312,7 @@ static void npcmgpio_irq_unmask(struct irq_data *d)
+ 	unsigned int gpio = d->hwirq;
  
- 	rc = selinux_add_opt(opt, param->string, &fc->security);
--	if (!rc) {
-+	if (!rc)
- 		param->string = NULL;
--		rc = 1;
--	}
-+
- 	return rc;
+ 	/* Enable events */
+-	dev_dbg(d->chip->parent_device, "irq_unmask: %u.%u\n", gpio, d->irq);
++	dev_dbg(bank->gc.parent, "irq_unmask: %u.%u\n", gpio, d->irq);
+ 	iowrite32(BIT(gpio), bank->base + NPCM7XX_GP_N_EVENS);
  }
  
+@@ -323,7 +322,7 @@ static unsigned int npcmgpio_irq_startup(struct irq_data *d)
+ 	unsigned int gpio = d->hwirq;
+ 
+ 	/* active-high, input, clear interrupt, enable interrupt */
+-	dev_dbg(d->chip->parent_device, "startup: %u.%u\n", gpio, d->irq);
++	dev_dbg(gc->parent, "startup: %u.%u\n", gpio, d->irq);
+ 	npcmgpio_direction_input(gc, gpio);
+ 	npcmgpio_irq_ack(d);
+ 	npcmgpio_irq_unmask(d);
 -- 
 2.34.1
 
