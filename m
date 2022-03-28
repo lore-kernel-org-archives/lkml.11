@@ -2,98 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1AADC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:55:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CE9DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:57:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242086AbiC1L5I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:57:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43166 "EHLO
+        id S241656AbiC1L7F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:59:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242070AbiC1L4Y (ORCPT
+        with ESMTP id S242600AbiC1L6Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:56:24 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95EDB3FBF9
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 04:53:01 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id n18so14556667plg.5
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 04:53:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=Q9Y80Me/FKZXwIk/FXh37Xcqjr72zJSb5A51MgW/+68=;
-        b=MfgAoZoDmpoKcdQ2l7qme85CsjdL/bh1edE+LxzIkbbY8G2h1Q505y1rUrVO62nTmx
-         yibtwAaEYeJPyhAcNpMLBcVTMyyEKU9Nc/F/WXovNFws4C7NSX8AdMih0+gGvwpeN00H
-         4/Kxg34Uy0DZYeo6ifni3NZzJil86bDG34WE75hLa6ksBq5WzMq7+n0naJnsmjvC1jgO
-         XVy7VEIbrKMoh/vMvvt161PxkoVdhDHR29oNNKZlbcNmOllJgnIb4CrYYLauoGeeJOxX
-         9AMW1hoDEoEv1LyXrfPtvsb0s26rifav2OuRpc7RjAN/uTBfTtNJ7FiDRWRKhdhbyCBa
-         19Ag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Q9Y80Me/FKZXwIk/FXh37Xcqjr72zJSb5A51MgW/+68=;
-        b=x2mX5m2gHjNoT+5W0oHs41zdO2az/B8Bbkihg1Z6SgKiAdoXpvlTNtMjNaDMKEUOx8
-         PlrhLDKN0o4w56tO7eUP3yBlpog/IXtBtH7rcKyS0QV0aTnfJlVRogOSTgJFodqLlp+T
-         lI0Un9SnEp2vaI6pVGSfiUXUjDYG1B0ILRKjembvKll5AM5LWg5Fi3yGiC+adq7B8WQW
-         7Puw3VPZ6x+TLnJnYJp2kvroI3KPf5ck0y+gE4IuHyitILgB0GXv2UL9fZSnuCbGPJ9v
-         VQVAIcY9VG9UckE5g4u34MYhEXwbSxzh9bNKHtyIFJ6GFfKrh+wEbxXECqw2xK0A/wEF
-         ocQg==
-X-Gm-Message-State: AOAM530ss1No7lQKh34YpuOBcYuHhRxBp1qNCNcqW9l+Y0g5EbW7h0FT
-        Ckxyjm9cbzE6ssE0Q0+Vn+k=
-X-Google-Smtp-Source: ABdhPJxuR5zWnAdKnW87IOOgssws/XB1hUqtT+pD/XtpR+VleB/5GgF6oIjju4J6k7TlvID8p4oxUw==
-X-Received: by 2002:a17:90b:2242:b0:1c6:80e3:71b6 with SMTP id hk2-20020a17090b224200b001c680e371b6mr40375303pjb.152.1648468381131;
-        Mon, 28 Mar 2022 04:53:01 -0700 (PDT)
-Received: from ubuntu.huawei.com ([119.3.119.18])
-        by smtp.googlemail.com with ESMTPSA id y12-20020a17090a784c00b001c6bdafc995sm17644787pjl.3.2022.03.28.04.52.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Mar 2022 04:53:00 -0700 (PDT)
-From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
-To:     sj@kernel.org, akpm@linux-foundation.org
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Subject: [PATCH] damon: vaddr-test: tweak code to make the logic clearer
-Date:   Mon, 28 Mar 2022 19:52:52 +0800
-Message-Id: <20220328115252.31675-1-xiam0nd.tong@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 28 Mar 2022 07:58:25 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 752AB33375
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 04:56:31 -0700 (PDT)
+Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
+        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22S8AHvc030601;
+        Mon, 28 Mar 2022 06:56:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=PODMain02222019;
+ bh=9TVpbkm1MRlp+hgjJt9czyCr1ZPFU47JnpZNPwLM70g=;
+ b=YxlVeCG1DZ8GATC9xnMMhPWtOQmdXfm4XWN8CqpQvRljDzOskkfHREeuJOG/OVfdt+j6
+ p7uM653xgdZnNQAcmblZa6YobyGNcF7YoZr0dzar5GHM/2ajc1Y1JOPWCKhmKTwurwBP
+ myd48BU3/O2dRbAICh7lEikGQwqsC9T+IGOfxbCK0RVf6UJeq7/7Julr1lNKzRIojQkE
+ qMM4hfi6swwB7HvjNDNSIcQs/XU6rmTyFAdFesdF7rzYflAHCn6waG2bTuXOEBDSiDG7
+ tzxuW1C2gcyk9fZmpGrBP22D8OIS+BPnLs2fjqxgEbBcvpD1QNMDW1EOyymlGAz4R28n cQ== 
+Received: from ediex01.ad.cirrus.com ([84.19.233.68])
+        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3f2081apda-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 28 Mar 2022 06:56:18 -0500
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 28 Mar
+ 2022 12:56:16 +0100
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
+ Transport; Mon, 28 Mar 2022 12:56:16 +0100
+Received: from vitaly-Legion-7-16ACHg6.ad.cirrus.com (unknown [198.90.238.244])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 9145046A;
+        Mon, 28 Mar 2022 11:56:16 +0000 (UTC)
+From:   Vitaly Rodionov <vitalyr@opensource.cirrus.com>
+To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
+        <linux-kernel@vger.kernel.org>,
+        Stefan Binding <sbinding@opensource.cirrus.com>
+Subject: [PATCH v2 4/6] ALSA: hda/cs8409: Support new Warlock MLK Variants
+Date:   Mon, 28 Mar 2022 12:56:12 +0100
+Message-ID: <20220328115614.15761-5-vitalyr@opensource.cirrus.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220328115614.15761-1-vitalyr@opensource.cirrus.com>
+References: <20220328115614.15761-1-vitalyr@opensource.cirrus.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: xoBx6kjNmBa6J3WgDy-ofga5bXbzlcn_
+X-Proofpoint-GUID: xoBx6kjNmBa6J3WgDy-ofga5bXbzlcn_
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move these two lines into the damon_for_each_region loop, it is always
-for testing the last region. And also avoid to use a list iterator 'r'
-outside the loop which is considered harmful[1].
+From: Stefan Binding <sbinding@opensource.cirrus.com>
 
-[1]:  https://lkml.org/lkml/2022/2/17/1032
+Added 15 new laptops, with 2 variants:
+Warlock MLK and Warlock MLK with Dual Mic
 
-Reviewed-by: SeongJae Park <sj@kernel.org>
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+The only difference between the variants, is the
+the dual Mic variants use a stereo DMIC.
+
+These variants do no use reduce volume (Full Scale Volume)
+
+Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
+Signed-off-by: Vitaly Rodionov <vitalyr@opensource.cirrus.com>
+
+Changes in v2:
+Add patch description in commit message.
+
 ---
- mm/damon/vaddr-test.h | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ sound/pci/hda/patch_cs8409-tables.c | 29 +++++++++++++++++++++++++++++
+ sound/pci/hda/patch_cs8409.c        | 15 +++++++++++++--
+ sound/pci/hda/patch_cs8409.h        |  2 ++
+ 3 files changed, 44 insertions(+), 2 deletions(-)
 
-diff --git a/mm/damon/vaddr-test.h b/mm/damon/vaddr-test.h
-index 6a1b9272ea12..98b7a9f54b35 100644
---- a/mm/damon/vaddr-test.h
-+++ b/mm/damon/vaddr-test.h
-@@ -281,14 +281,16 @@ static void damon_test_split_evenly_succ(struct kunit *test,
- 	KUNIT_EXPECT_EQ(test, damon_nr_regions(t), nr_pieces);
+diff --git a/sound/pci/hda/patch_cs8409-tables.c b/sound/pci/hda/patch_cs8409-tables.c
+index 9c1fa97100ef..8d20d7fb3d68 100644
+--- a/sound/pci/hda/patch_cs8409-tables.c
++++ b/sound/pci/hda/patch_cs8409-tables.c
+@@ -515,8 +515,23 @@ const struct snd_pci_quirk cs8409_fixup_tbl[] = {
+ 	SND_PCI_QUIRK(0x1028, 0x0AF0, "Cyborg", CS8409_CYBORG),
+ 	SND_PCI_QUIRK(0x1028, 0x0AF4, "Warlock", CS8409_WARLOCK),
+ 	SND_PCI_QUIRK(0x1028, 0x0AF5, "Warlock", CS8409_WARLOCK),
++	SND_PCI_QUIRK(0x1028, 0x0B92, "Warlock MLK", CS8409_WARLOCK_MLK),
++	SND_PCI_QUIRK(0x1028, 0x0B93, "Warlock MLK Dual Mic", CS8409_WARLOCK_MLK_DUAL_MIC),
++	SND_PCI_QUIRK(0x1028, 0x0B94, "Warlock MLK", CS8409_WARLOCK_MLK),
++	SND_PCI_QUIRK(0x1028, 0x0B95, "Warlock MLK Dual Mic", CS8409_WARLOCK_MLK_DUAL_MIC),
++	SND_PCI_QUIRK(0x1028, 0x0B96, "Warlock MLK", CS8409_WARLOCK_MLK),
++	SND_PCI_QUIRK(0x1028, 0x0B97, "Warlock MLK Dual Mic", CS8409_WARLOCK_MLK_DUAL_MIC),
++	SND_PCI_QUIRK(0x1028, 0x0BB2, "Warlock MLK", CS8409_WARLOCK_MLK),
++	SND_PCI_QUIRK(0x1028, 0x0BB3, "Warlock MLK", CS8409_WARLOCK_MLK),
++	SND_PCI_QUIRK(0x1028, 0x0BB4, "Warlock MLK", CS8409_WARLOCK_MLK),
+ 	SND_PCI_QUIRK(0x1028, 0x0BB5, "Warlock N3 15 TGL-U Nuvoton EC", CS8409_WARLOCK),
+ 	SND_PCI_QUIRK(0x1028, 0x0BB6, "Warlock V3 15 TGL-U Nuvoton EC", CS8409_WARLOCK),
++	SND_PCI_QUIRK(0x1028, 0x0BB8, "Warlock MLK", CS8409_WARLOCK_MLK),
++	SND_PCI_QUIRK(0x1028, 0x0BB9, "Warlock MLK Dual Mic", CS8409_WARLOCK_MLK_DUAL_MIC),
++	SND_PCI_QUIRK(0x1028, 0x0BBA, "Warlock MLK", CS8409_WARLOCK_MLK),
++	SND_PCI_QUIRK(0x1028, 0x0BBB, "Warlock MLK Dual Mic", CS8409_WARLOCK_MLK_DUAL_MIC),
++	SND_PCI_QUIRK(0x1028, 0x0BBC, "Warlock MLK", CS8409_WARLOCK_MLK),
++	SND_PCI_QUIRK(0x1028, 0x0BBD, "Warlock MLK Dual Mic", CS8409_WARLOCK_MLK_DUAL_MIC),
+ 	{} /* terminator */
+ };
  
- 	damon_for_each_region(r, t) {
--		if (i == nr_pieces - 1)
-+		if (i == nr_pieces - 1) {
-+			KUNIT_EXPECT_EQ(test,
-+				r->ar.start, start + i * expected_width);
-+			KUNIT_EXPECT_EQ(test, r->ar.end, end);
- 			break;
-+		}
- 		KUNIT_EXPECT_EQ(test,
- 				r->ar.start, start + i++ * expected_width);
- 		KUNIT_EXPECT_EQ(test, r->ar.end, start + i * expected_width);
+@@ -524,6 +539,8 @@ const struct snd_pci_quirk cs8409_fixup_tbl[] = {
+ const struct hda_model_fixup cs8409_models[] = {
+ 	{ .id = CS8409_BULLSEYE, .name = "bullseye" },
+ 	{ .id = CS8409_WARLOCK, .name = "warlock" },
++	{ .id = CS8409_WARLOCK_MLK, .name = "warlock mlk" },
++	{ .id = CS8409_WARLOCK_MLK_DUAL_MIC, .name = "warlock mlk dual mic" },
+ 	{ .id = CS8409_CYBORG, .name = "cyborg" },
+ 	{ .id = CS8409_DOLPHIN, .name = "dolphin" },
+ 	{}
+@@ -542,6 +559,18 @@ const struct hda_fixup cs8409_fixups[] = {
+ 		.chained = true,
+ 		.chain_id = CS8409_FIXUPS,
+ 	},
++	[CS8409_WARLOCK_MLK] = {
++		.type = HDA_FIXUP_PINS,
++		.v.pins = cs8409_cs42l42_pincfgs,
++		.chained = true,
++		.chain_id = CS8409_FIXUPS,
++	},
++	[CS8409_WARLOCK_MLK_DUAL_MIC] = {
++		.type = HDA_FIXUP_PINS,
++		.v.pins = cs8409_cs42l42_pincfgs,
++		.chained = true,
++		.chain_id = CS8409_FIXUPS,
++	},
+ 	[CS8409_CYBORG] = {
+ 		.type = HDA_FIXUP_PINS,
+ 		.v.pins = cs8409_cs42l42_pincfgs,
+diff --git a/sound/pci/hda/patch_cs8409.c b/sound/pci/hda/patch_cs8409.c
+index 163ff3b3092a..ce5fc03a8065 100644
+--- a/sound/pci/hda/patch_cs8409.c
++++ b/sound/pci/hda/patch_cs8409.c
+@@ -912,9 +912,15 @@ static void cs8409_cs42l42_hw_init(struct hda_codec *codec)
+ 			cs8409_vendor_coef_set(codec, seq_bullseye->cir, seq_bullseye->coeff);
  	}
--	KUNIT_EXPECT_EQ(test, r->ar.start, start + i * expected_width);
--	KUNIT_EXPECT_EQ(test, r->ar.end, end);
- 	damon_free_target(t);
- }
  
+-	/* DMIC1_MO=00b, DMIC1/2_SR=1 */
+-	if (codec->fixup_id == CS8409_CYBORG)
++	switch (codec->fixup_id) {
++	case CS8409_CYBORG:
++	case CS8409_WARLOCK_MLK_DUAL_MIC:
++		/* DMIC1_MO=00b, DMIC1/2_SR=1 */
+ 		cs8409_vendor_coef_set(codec, CS8409_DMIC_CFG, 0x0003);
++		break;
++	default:
++		break;
++	}
+ 
+ 	cs42l42_resume(cs42l42);
+ 
+@@ -1008,6 +1014,11 @@ void cs8409_cs42l42_fixups(struct hda_codec *codec, const struct hda_fixup *fix,
+ 			spec->scodecs[CS8409_CODEC0]->full_scale_vol =
+ 				CS42L42_FULL_SCALE_VOL_MINUS6DB;
+ 			break;
++		case CS8409_WARLOCK_MLK:
++		case CS8409_WARLOCK_MLK_DUAL_MIC:
++			spec->scodecs[CS8409_CODEC0]->hsbias_hiz = 0x0020;
++			spec->scodecs[CS8409_CODEC0]->full_scale_vol = CS42L42_FULL_SCALE_VOL_0DB;
++			break;
+ 		default:
+ 			spec->scodecs[CS8409_CODEC0]->hsbias_hiz = 0x0020;
+ 			spec->scodecs[CS8409_CODEC0]->full_scale_vol =
+diff --git a/sound/pci/hda/patch_cs8409.h b/sound/pci/hda/patch_cs8409.h
+index 8e846f292cd0..7df46bd8d2da 100644
+--- a/sound/pci/hda/patch_cs8409.h
++++ b/sound/pci/hda/patch_cs8409.h
+@@ -267,6 +267,8 @@ enum cs8409_coefficient_index_registers {
+ enum {
+ 	CS8409_BULLSEYE,
+ 	CS8409_WARLOCK,
++	CS8409_WARLOCK_MLK,
++	CS8409_WARLOCK_MLK_DUAL_MIC,
+ 	CS8409_CYBORG,
+ 	CS8409_FIXUPS,
+ 	CS8409_DOLPHIN,
 -- 
-2.17.1
+2.25.1
 
