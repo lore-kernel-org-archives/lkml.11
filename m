@@ -2,85 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAA68C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 12:51:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6750FC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 12:51:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235875AbiC1MxH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 08:53:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34952 "EHLO
+        id S242655AbiC1MxK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 08:53:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242641AbiC1Mww (ORCPT
+        with ESMTP id S242638AbiC1Mwv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 08:52:52 -0400
-Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35A733ED3E;
-        Mon, 28 Mar 2022 05:51:12 -0700 (PDT)
-Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-deb9295679so7821828fac.6;
-        Mon, 28 Mar 2022 05:51:12 -0700 (PDT)
+        Mon, 28 Mar 2022 08:52:51 -0400
+Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F12B34D634
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 05:51:10 -0700 (PDT)
+Received: by mail-il1-x141.google.com with SMTP id i1so9921218ila.0
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 05:51:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=NmQMOl74rWGRWzafuyJ5jjCyGGjWrcet8PudU8eNoTM=;
+        b=fmnUk8fzFuPNcQLP4BGXA1S9aa97ooEg6VvUkroT0u2nlfdICTx4oy6TaPbWXhvP2p
+         ycG9uUulYtBRRjLm9QXjKOnv6AXp/13Jj48+DV1eeBRQcSNHZBR8E/63/XFTjZ4F2U1Z
+         /yWrDsUP0Axr8AP3acYeBwfDZz53FpCWg20obz6FBTMIy6DyWhoK3XEuP3vzdYNdNFi8
+         +0A4Z/J7Mlr9Z394QGOI1u0UNFDGE7BJASd2oJy7o5ajLXTTwx3PsG+wubUAG6Tzsn1M
+         e99RFMzotoXtGAcBMws38D0LjwZFIdFfjgVk2ZTTXM/RkrDzZs84Ula9HelT/mD+AsNs
+         pjYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=GP1bdWVmsBSkAlGr/Gp2UnisAPKv1M13pEpomMv6UjQ=;
-        b=34iRuX7v98YsGgMuCZcu3ahfBcnI0ZtkR1TkfhKxI7/sTdEfORIy/Tv8d6TUjcRYlB
-         QUMyeCAjjflXqRKGIdmxb0vbqlTRN3ndVnp6RK7llXPtoAJiDplhmKy5pVMranYf5pYG
-         5TF6skor1HQYgo4xnWcQyxLjiaomVvesDwYkjGeimnbr36V0MEUJZsxXta8SGdNNCu0x
-         5SwAJLPqKtbsa+dOg/g0NBlfYjWDwaWupVZv7L+UtriSNKnHjqSgaiOqoJWot8DbUpbU
-         A8IElb7XuMd5jy+BAyEIXrJ5RCWsJRYdkMKkXDxY4d74xQiOAOnA3tUIxAzxI+a4Bzmi
-         p0fA==
-X-Gm-Message-State: AOAM530e7v26vHEuO/s9fZjSwW8TuE7ODmdkesoi8DP3pSIUP8Mi7HAS
-        9NH3qzjWKnq0iPo+U3NASb6wAbrJsA==
-X-Google-Smtp-Source: ABdhPJwT3yYx6LIv4tBCmidDkpcH2xuaILIymk6sDk/mQOiMYgThNK+zceGc8kgIC3YCSqd7omS/7w==
-X-Received: by 2002:a05:6870:65ab:b0:de:37be:30a6 with SMTP id fp43-20020a05687065ab00b000de37be30a6mr14525453oab.70.1648471871476;
-        Mon, 28 Mar 2022 05:51:11 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id n15-20020aca240f000000b002da2fc73741sm6940329oic.33.2022.03.28.05.51.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Mar 2022 05:51:10 -0700 (PDT)
-Received: (nullmailer pid 2153576 invoked by uid 1000);
-        Mon, 28 Mar 2022 12:51:05 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Sameer Pujar <spujar@nvidia.com>
-Cc:     broonie@kernel.org, robh+dt@kernel.org,
-        linux-tegra@vger.kernel.org, tiwai@suse.com, krzk+dt@kernel.org,
-        thierry.reding@gmail.com, jonathanh@nvidia.com,
-        oder_chiou@realtek.com, linux-kernel@vger.kernel.org,
-        peter.ujfalusi@linux.intel.com,
-        pierre-louis.bossart@linux.intel.com, devicetree@vger.kernel.org,
-        alsa-devel@alsa-project.org, lgirdwood@gmail.com, perex@perex.cz
-In-Reply-To: <1648448050-15237-2-git-send-email-spujar@nvidia.com>
-References: <1648448050-15237-1-git-send-email-spujar@nvidia.com> <1648448050-15237-2-git-send-email-spujar@nvidia.com>
-Subject: Re: [RFC PATCH v2 1/6] ASoC: dt-bindings: Convert rt5659 bindings to YAML schema
-Date:   Mon, 28 Mar 2022 07:51:05 -0500
-Message-Id: <1648471865.814225.2153575.nullmailer@robh.at.kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=NmQMOl74rWGRWzafuyJ5jjCyGGjWrcet8PudU8eNoTM=;
+        b=joBcVIR8/zO1LvbNI9MRhfkfqmZrdLrGGj7vRztaQlZWpJQPEI36TS0ux9QiaBPUAG
+         QqfpID1B3YxXNf0mOyMp+8dxF8IsCCB+OaWNArVuMFcuv9njh/fzGdqmado/VzHXoAaf
+         erCfB0ru+K4mdpQYv6cOb2jnbngczY0fd0tBedF7oYIFyvs7aRVinLKNWHe/md6d4EvH
+         Mh3fTH2bKRiLQeg2HzeWnHCERPyoLX2x1wFiW59ybOl+HDdPMXlnGL70a0OVdjaiVscK
+         zkEdo0+7+QNoADFvcKCRHg0rEAlBecKv1JpD6rHQCU6JPeACsEt9qPE22pp/KERI+voz
+         UBlw==
+X-Gm-Message-State: AOAM5318oaSDR106mHmqg7cmMDxnzEa8UhXgnuwuM3WTw2A3o1tcB4QD
+        py7rs76qrtr93smYgw+aM8Tg/EDx1iw3EiuzhwM=
+X-Google-Smtp-Source: ABdhPJxh9OmbBwag5bvEGizKUKZLQbnirkyw/QJTsPJZeG6mVqa3cTPMDPAy/NRf7yrVNUIQBEFYGZcMWITxadtTRCQ=
+X-Received: by 2002:a92:cdad:0:b0:2c6:7b76:a086 with SMTP id
+ g13-20020a92cdad000000b002c67b76a086mr6014966ild.5.1648471870337; Mon, 28 Mar
+ 2022 05:51:10 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220328021139.8700-1-steve.lee.analog@gmail.com> <PH0PR03MB678617C7A854827D0EC99010991D9@PH0PR03MB6786.namprd03.prod.outlook.com>
+In-Reply-To: <PH0PR03MB678617C7A854827D0EC99010991D9@PH0PR03MB6786.namprd03.prod.outlook.com>
+From:   Lee Steve <steve.lee.analog@gmail.com>
+Date:   Mon, 28 Mar 2022 21:50:59 +0900
+Message-ID: <CA+Fz0PZQUcjLL2fmOLcyYxhqfyoY0jVKtz1GgRTur9XJDs_wag@mail.gmail.com>
+Subject: Re: [V3 1/2] ASoC: max98390: Add reset gpio control
+To:     "Sa, Nuno" <Nuno.Sa@analog.com>
+Cc:     "lgirdwood@gmail.com" <lgirdwood@gmail.com>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "perex@perex.cz" <perex@perex.cz>,
+        "tiwai@suse.com" <tiwai@suse.com>,
+        "ryans.lee@maximintegrated.com" <ryans.lee@maximintegrated.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
+        "krzk@kernel.org" <krzk@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 28 Mar 2022 11:44:05 +0530, Sameer Pujar wrote:
-> Convert rt5659.txt DT binding to YAML schema. This binding is applicable
-> to rt5658 and rt5659 audio CODECs.
-> 
-> Signed-off-by: Sameer Pujar <spujar@nvidia.com>
-> Cc: Oder Chiou <oder_chiou@realtek.com>
-> ---
->  .../devicetree/bindings/sound/realtek,rt5659.yaml  | 112 +++++++++++++++++++++
->  Documentation/devicetree/bindings/sound/rt5659.txt |  89 ----------------
->  2 files changed, 112 insertions(+), 89 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/sound/realtek,rt5659.yaml
->  delete mode 100644 Documentation/devicetree/bindings/sound/rt5659.txt
-> 
+On Mon, Mar 28, 2022 at 4:42 PM Sa, Nuno <Nuno.Sa@analog.com> wrote:
+>
+> > From: Steve Lee <steve.lee.analog@gmail.com>
+> > Sent: Monday, March 28, 2022 4:12 AM
+> > To: lgirdwood@gmail.com; broonie@kernel.org; perex@perex.cz;
+> > tiwai@suse.com; ryans.lee@maximintegrated.com; linux-
+> > kernel@vger.kernel.org; alsa-devel@alsa-project.org
+> > Cc: krzk@kernel.org; Sa, Nuno <Nuno.Sa@analog.com>; Steve Lee
+> > <steve.lee.analog@gmail.com>
+> > Subject: [V3 1/2] ASoC: max98390: Add reset gpio control
+> >
+> > [External]
+> >
+> >  Add reset gpio control to support RESET PIN connected to gpio.
+> >
+> > Signed-off-by: Steve Lee <steve.lee.analog@gmail.com>
+> > ---
+> >  sound/soc/codecs/max98390.c | 12 ++++++++++++
+> >  1 file changed, 12 insertions(+)
+> >
+> > diff --git a/sound/soc/codecs/max98390.c
+> > b/sound/soc/codecs/max98390.c
+> > index 40fd6f363f35..05df9b85d9b0 100644
+> > --- a/sound/soc/codecs/max98390.c
+> > +++ b/sound/soc/codecs/max98390.c
+> > @@ -1022,6 +1022,7 @@ static int max98390_i2c_probe(struct
+> > i2c_client *i2c,
+> >
+> >       struct max98390_priv *max98390 =3D NULL;
+> >       struct i2c_adapter *adapter =3D i2c->adapter;
+> > +     struct gpio_desc *reset_gpio;
+> >
+> >       ret =3D i2c_check_functionality(adapter,
+> >               I2C_FUNC_SMBUS_BYTE
+> > @@ -1073,6 +1074,17 @@ static int max98390_i2c_probe(struct
+> > i2c_client *i2c,
+> >               return ret;
+> >       }
+> >
+> > +     reset_gpio =3D devm_gpiod_get_optional(&i2c->dev,
+> > +                                          "reset", GPIOD_OUT_LOW);
+> > +
+> > +     /* Power on device */
+> > +     if (reset_gpio) {
+> > +             usleep_range(1000, 2000);
+> > +             /* bring out of reset */
+> > +             gpiod_set_value_cansleep(reset_gpio, 1);
+>
+> Note this will set the gpio in the asserted state. Being it active low, t=
+his will
+> do the opposite thing that you are trying to accomplish...
+>
+> - Nuno S=C3=A1
 
-Running 'make dtbs_check' with the schema in this patch gives the
-following warnings. Consider if they are expected or the schema is
-incorrect. These may not be new warnings.
-
-Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-This will change in the future.
-
-Full log is available here: https://patchwork.ozlabs.org/patch/1610026
-
-
-audio-codec@1a: 'port' does not match any of the regexes: 'pinctrl-[0-9]+'
-	arch/arm64/boot/dts/nvidia/tegra194-p2972-0000.dt.yaml
-
+I agree with your comment. I will update next version patch if there
+is other concern.
