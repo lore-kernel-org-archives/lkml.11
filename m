@@ -2,136 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C711DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 17:22:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04923C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 17:28:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244585AbiC1RYV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 13:24:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37338 "EHLO
+        id S243941AbiC1R3l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 13:29:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232718AbiC1RYT (ORCPT
+        with ESMTP id S230226AbiC1R3i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 13:24:19 -0400
-Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BF3864BD1;
-        Mon, 28 Mar 2022 10:22:37 -0700 (PDT)
-Received: from grover.. (133-32-185-133.west.xps.vectant.ne.jp [133.32.185.133]) (authenticated)
-        by conuserg-12.nifty.com with ESMTP id 22SHLdGZ017332;
-        Tue, 29 Mar 2022 02:21:40 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 22SHLdGZ017332
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1648488100;
-        bh=UH1VDPx6gdMj3puEVBexYhQw2eBB8T7IsyNihS4F0YM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ov2CdN5oQp5TdxkGzLQIabmizxCidhSCe2jkecUC2Jq9B3bLXl3Amuypl11knvFxH
-         zVvOPyiEb2bcuTrKFa0xKgHp5J4TL2xG4JF2p9dpnvwnO/r2Mvx+bISGokVSkRx3tL
-         3IOSC8xdtSKS1GdN3z+hoV88w0tZZDT511BP51yCVZCcYuPlm6VoWr0tHdynR+qsc3
-         zGAsqzfk8OQvxw/FSRqLy84uc/Bq/Xk26kOn/GCKJzP94mvRRMmpiVsOgINjJ9UEMp
-         8qkmwB9JJF/qasA9MuXNQErhk5LtIEBvTSRQgOUEvejeZi92XLgC4HWpg0J8+6W+M6
-         62MnpZKhFg3/Q==
-X-Nifty-SrcIP: [133.32.185.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        "Dmitry V. Levin" <ldv@altlinux.org>,
-        Elliot Berman <quic_eberman@quicinc.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: [PATCH 2/2] kbuild: forbid exported headers from including <stdint.h>, <stdbool.h>
-Date:   Tue, 29 Mar 2022 02:21:30 +0900
-Message-Id: <20220328172130.197319-2-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220328172130.197319-1-masahiroy@kernel.org>
-References: <20220328172130.197319-1-masahiroy@kernel.org>
+        Mon, 28 Mar 2022 13:29:38 -0400
+Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2420963530;
+        Mon, 28 Mar 2022 10:27:58 -0700 (PDT)
+Received: by mail-oi1-f172.google.com with SMTP id w127so16313027oig.10;
+        Mon, 28 Mar 2022 10:27:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=pKj0Gjvro8HTxjGPukTbqzqx9n4h/OXOk7/nuTgNznk=;
+        b=YxIOSdrFnwgp+NrOe7QEDFoqev1ufwNP9BTLhsX3oibQuaQOqLqgj53JajQVKqFqOx
+         MUYaCT3KtVRoObXy/h3Ylz8atNVohwRVeQQbSsoRY0iVU7+yU1NqagMDCboCqk2Th1Pt
+         B67oG8pFt9Zm7Jhss/jy8d3Z83QjRaooCfbg7edg77Wy5qxui9y89KCwMGAfOCUrZoMv
+         g7jVz59f177F2neSzIvgRMefH7dQVcJEBINAsSefCjWJ0A2ME4XiEDINUoATTDtRA3Ti
+         k7J4FqNOkG18xbaLAkwsRh5S+D9djYjh0/cfj+JZYL/6pG5Wu4//hsKbOyrfX//Y1dD8
+         uGJQ==
+X-Gm-Message-State: AOAM533aczP/unKlcx7wfwM9RIDPa1o5YVEzvntqJYgrxXkWxQCDd3tD
+        CmyTxgSrviO9HKDKuWcV7A==
+X-Google-Smtp-Source: ABdhPJy9zkdxb+G0m7ZY98qArUKWYEXV2InDfgYRh2KbJ2ffNuMS4F51mQaf1i8pp3e5obxjJ3g9Ng==
+X-Received: by 2002:a05:6808:308c:b0:2f7:5d2e:1a5e with SMTP id bl12-20020a056808308c00b002f75d2e1a5emr102483oib.209.1648488477125;
+        Mon, 28 Mar 2022 10:27:57 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id x65-20020a9d20c7000000b005cdaeec68d5sm7389911ota.37.2022.03.28.10.27.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 10:27:56 -0700 (PDT)
+Received: (nullmailer pid 2611453 invoked by uid 1000);
+        Mon, 28 Mar 2022 17:27:55 -0000
+Date:   Mon, 28 Mar 2022 12:27:55 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Johan Jonker <jbx6244@gmail.com>
+Cc:     krzk+dt@kernel.org, mturquette@baylibre.com,
+        devicetree@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        robh+dt@kernel.org, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        heiko@sntech.de, sboyd@kernel.org
+Subject: Re: [PATCH v1 1/2] dt-bindings: clock: convert
+ rockchip,rk3288-cru.txt to YAML
+Message-ID: <YkHwG5SaXchzeJ7o@robh.at.kernel.org>
+References: <20220326120942.24008-1-jbx6244@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220326120942.24008-1-jbx6244@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some UAPI headers included <stdlib.h>, like this:
+On Sat, 26 Mar 2022 13:09:41 +0100, Johan Jonker wrote:
+> Current dts files with RK3288 'cru' nodes are manually verified.
+> In order to automate this process rockchip,rk3288-cru.txt has to be
+> converted to YAML.
+> 
+> Changed:
+>   Add properties to fix notifications by clocks.yaml for example:
+>     clocks
+>     clock-names
+> 
+> Signed-off-by: Johan Jonker <jbx6244@gmail.com>
+> ---
+>  .../bindings/clock/rockchip,rk3288-cru.txt    | 67 ---------------
+>  .../bindings/clock/rockchip,rk3288-cru.yaml   | 83 +++++++++++++++++++
+>  2 files changed, 83 insertions(+), 67 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/clock/rockchip,rk3288-cru.txt
+>  create mode 100644 Documentation/devicetree/bindings/clock/rockchip,rk3288-cru.yaml
+> 
 
-  #ifndef __KERNEL__
-  #include <stdlib.h>
-  #endif
-
-As it turned out, they just included it for no good reason.
-
-After some fixes, now I can compile-test UAPI headers
-(CONFIG_UAPI_HEADER_TEST=y) without <stdlib.h> included.
-
-To avoid somebody getting it back again, this commit adds the dummy
-header, usr/dummy-include/stdlib.h
-
-I added $(srctree)/usr/dummy-include to the header search paths.
-Because it is searched before the system directories, if someone
-tries to include <stdlib.h>, they will see the error message.
-
-While I am here, I also replaced $(objtree)/usr/include with $(obj), but
-it is just a small refactoring.
-
-If we achieve the situation where none of system headers is included
-from exported kernel headers (i.e. kernel headers become self-contained),
-we might be able to add -nostdinc, but that is much far from where we
-stand now. (see many no-header-test lines in usr/include/Makefile)
-
-As a realistic solution, you can forbid header inclusion individually by
-putting a dummy header into usr/dummy-include/.
-
-Currently, no header include <stdbool.h>. I put it as well before somebody
-attempts to use it.
-
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
-
- usr/dummy-include/stdbool.h | 7 +++++++
- usr/dummy-include/stdlib.h  | 7 +++++++
- usr/include/Makefile        | 2 +-
- 3 files changed, 15 insertions(+), 1 deletion(-)
- create mode 100644 usr/dummy-include/stdbool.h
- create mode 100644 usr/dummy-include/stdlib.h
-
-diff --git a/usr/dummy-include/stdbool.h b/usr/dummy-include/stdbool.h
-new file mode 100644
-index 000000000000..54ff9e9c90ac
---- /dev/null
-+++ b/usr/dummy-include/stdbool.h
-@@ -0,0 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+#ifndef _STDBOOL_H
-+#define _STDBOOL_H
-+
-+#error "Please do not include <stdbool.h> from exported headers"
-+
-+#endif /* _STDBOOL_H */
-diff --git a/usr/dummy-include/stdlib.h b/usr/dummy-include/stdlib.h
-new file mode 100644
-index 000000000000..e8c21888e371
---- /dev/null
-+++ b/usr/dummy-include/stdlib.h
-@@ -0,0 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+#ifndef _STDLIB_H
-+#define _STDLIB_H
-+
-+#error "Please do not include <stdlib.h> from exported headers"
-+
-+#endif /* _STDLIB_H */
-diff --git a/usr/include/Makefile b/usr/include/Makefile
-index fa9819e022b7..7740777b49f8 100644
---- a/usr/include/Makefile
-+++ b/usr/include/Makefile
-@@ -15,7 +15,7 @@ UAPI_CFLAGS += $(filter -m32 -m64 --target=%, $(KBUILD_CFLAGS))
- # USERCFLAGS might contain sysroot location for CC.
- UAPI_CFLAGS += $(USERCFLAGS)
- 
--override c_flags = $(UAPI_CFLAGS) -Wp,-MMD,$(depfile) -I$(objtree)/usr/include
-+override c_flags = $(UAPI_CFLAGS) -Wp,-MMD,$(depfile) -I $(obj) -I $(srctree)/usr/dummy-include
- 
- # The following are excluded for now because they fail to build.
- #
--- 
-2.32.0
-
+Reviewed-by: Rob Herring <robh@kernel.org>
