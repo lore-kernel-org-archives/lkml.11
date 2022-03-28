@@ -2,58 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E128C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 15:06:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA62AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 15:07:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244234AbiC1PIJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 11:08:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48514 "EHLO
+        id S244237AbiC1PJO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 11:09:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244244AbiC1PIA (ORCPT
+        with ESMTP id S242755AbiC1PJL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 11:08:00 -0400
-Received: from iris.vrvis.at (iris.vrvis.at [92.60.8.8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAE9642493;
-        Mon, 28 Mar 2022 08:06:17 -0700 (PDT)
-Received: from [10.42.99.207]
-        by iris.vrvis.at with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <valentin@vrvis.at>)
-        id 1nYqvu-0002xb-Pi; Mon, 28 Mar 2022 17:05:27 +0200
-Message-ID: <f74aa70e-8222-12fc-b44a-880865c9badd@vrvis.at>
-Date:   Mon, 28 Mar 2022 17:06:11 +0200
+        Mon, 28 Mar 2022 11:09:11 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FB885FF2A
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 08:07:30 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id u16so20850099wru.4
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 08:07:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=zZJ1VYHzl+uCBWOcy9/JV+qpcRJPPAiZCf5L78FM8SM=;
+        b=ELuySM+X/BzCbKbBZ1B2Q2pavEk6t2uubx/lxhuzTEm75tEvlQ7fc8bIdPhvkzbf8k
+         Ljwg/BZ6c4kUxmIbsfFo4o3uhaRmgEOFKBgbodDljWDpeq9f3UZkC5PIpekAtOLbeAo2
+         rnrefSF/dzj8GLf8NIGnO2b/C9Vm8pZR7PccGScUq5iOWtFTFowlDBcADFYYkg4VNeee
+         kMgcSg0JnTpYT0LaoRWEhiRaxC1eilIFUlOoHU+VaYp0a6QaMY1XT6tglHbE8V+1zOwE
+         1S1Ta0epEQS9fahMFWkLx9EFF1I2h89pipzH6R+HoGVs47VDmuilEPsWC8xjrE7kIfg0
+         4Uig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=zZJ1VYHzl+uCBWOcy9/JV+qpcRJPPAiZCf5L78FM8SM=;
+        b=B2a6d/nRuZnYlRgZgUD/FXKNrxFlxATaVWIcqlQjhrSdlpvHuqLkHwu4smy5evKme6
+         1/6ABtUelYlK3gy3IYYEUv2mQ2c2Ts4jMJBlVO4i9Tn6pqMrgVG8tJD2X0+/enbiGtUl
+         p3SbL2qg7IBsDjHlpYyaLeqZSHZqNtNuLQnTF7wrOAYielMdzbmYNBTaA6xYyR94iVXR
+         8wIj0XmkWie7OAFeVR242/f+kaLMRvQqYFsMxtG8hugfislszlcpD8B4k4yiolfx6EvI
+         pRFqb+gFivwdPSCo/1V6eVeoQ8Mm4CXMqlYmZeIxCDcUVoEe1Quy7D7hNdSu3I9UDDQG
+         Q4zQ==
+X-Gm-Message-State: AOAM530hF0KmuVe9MaPFSYJuEv//MWgVf+8q8KBf6PXPwAK/UkbKWsvu
+        C+/Ysv8wgquP4iIYumgTvIC2Ww==
+X-Google-Smtp-Source: ABdhPJyflC3cNH6mL7Le9z1FX7QjaOQACGJODNPJLRXsr1Mvb8Qm1tzwLAErODLYkjl7U+FUbPBkKQ==
+X-Received: by 2002:adf:eb81:0:b0:1e3:2bf5:132 with SMTP id t1-20020adfeb81000000b001e32bf50132mr24038198wrn.246.1648480048111;
+        Mon, 28 Mar 2022 08:07:28 -0700 (PDT)
+Received: from [192.168.0.162] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id i74-20020adf90d0000000b0020373ba7beesm18431418wri.0.2022.03.28.08.07.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Mar 2022 08:07:27 -0700 (PDT)
+Message-ID: <784aa271-5c95-3675-07e1-25b495d9eb80@linaro.org>
+Date:   Mon, 28 Mar 2022 17:07:26 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Justin Sanders <justin@coraid.com>,
-        Jens Axboe <axboe@kernel.dk>
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 1/6] arm64: dts: qcom: sm8450: rename interconnect nodes
 Content-Language: en-US
-To:     Christoph Hellwig <hch@infradead.org>
-References: <07bafc71-a6d2-ad6d-4706-7c99047b3228@vrvis.at>
- <YioZaO21yingv0nD@infradead.org>
-From:   Valentin Kleibel <valentin@vrvis.at>
-In-Reply-To: <YioZaO21yingv0nD@infradead.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Vinod Koul <vkoul@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     linux-arm-msm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220328143035.519909-1-vkoul@kernel.org>
+ <20220328143035.519909-2-vkoul@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220328143035.519909-2-vkoul@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] block: aoe: handle device timeouts atomic-safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/03/2022 16:29, Christoph Hellwig wrote:
-> On Thu, Mar 10, 2022 at 04:17:37PM +0100, Valentin Kleibel wrote:
->> If an aoe device does not respond to any packet on the network layer within
->> aoe_deadsecs, the driver tries to mark the device as down, fail all I/O and
->> clean out the queue.
+On 28/03/2022 16:30, Vinod Koul wrote:
+> clk-virt and mc-virt interconnect nodes were named interconnect@0 and
+> interconnect@1. That is incorrect as we don't have unit addresses 0/1
+> for these node.
 > 
-> I think the problem is that aoe even tries to queue up request
-> internally. It really needs to switch to use BLK_MQ_F_BLOCKING and
-> stop queuing up the requests internall at all.
+> This causes warning:
+> arch/arm64/boot/dts/qcom/sm8450.dtsi:255.27-259.4:
+> 	Warning (unit_address_vs_reg): /interconnect@0:
+> 	node has a unit name, but no reg or ranges property
+> arch/arm64/boot/dts/qcom/sm8450.dtsi:261.26-265.4:
+> 	Warning (unit_address_vs_reg): /interconnect@1:
+> 	node has a unit name, but no reg or ranges property
+> arch/arm64/boot/dts/qcom/sm8450.dtsi:255.27-259.4:
+> 	Warning (unique_unit_address_if_enabled): /interconnect@0:
+> 	duplicate unit-address (also used in node /soc@0)
+> 
+> Rename the nodes to interconnect-0 and interconnect-1 to fix the
+> warning.
+> 
+> Signed-off-by: Vinod Koul <vkoul@kernel.org>
+> Suggested-by: Krzysztof Kozlowski <krzk@kernel.org>
+> ---
+>  arch/arm64/boot/dts/qcom/sm8450.dtsi | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
-Unfortunately I'm not able to assess this.
-It would be a more complicated change than I'd be able to provide and 
-the proposed patch fixes the existing issue.
+The DT schema will still need to be fixed because it expects 'reg' address.
 
-Cheers,
-Valentin
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+
+Best regards,
+Krzysztof
