@@ -2,274 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3DCDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 13:08:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85B6CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 13:08:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242578AbiC1NJs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 09:09:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55866 "EHLO
+        id S242917AbiC1NJx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 09:09:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242942AbiC1NJg (ORCPT
+        with ESMTP id S242919AbiC1NHu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 09:09:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D2B625DA78
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 06:07:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648472859;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=PtHN8VWVvChKHe7fcrbgQxII1uEL3nooKYmXW4yHoDA=;
-        b=inivgjKJu9pDFHeYAE7MeXgxIAOm8mr9iznI9jsEXGgG1FBMtIICgLh17JJR7W7hI3UeeC
-        gggVylot+81MpUoSpN5UB3lZUDDHLXtwZIKw6beFEgrWf+xPgzeANZCSqv4Y9mZaH+9cNK
-        ve5cHVp9jZGIVbKjQvEn/0ADrKBbhFY=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-557-MpWw0_CpPfCOOoE-w9nQ-w-1; Mon, 28 Mar 2022 09:07:37 -0400
-X-MC-Unique: MpWw0_CpPfCOOoE-w9nQ-w-1
-Received: by mail-qv1-f70.google.com with SMTP id k20-20020ad44714000000b00440fd2c4a0aso11242615qvz.20
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 06:07:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PtHN8VWVvChKHe7fcrbgQxII1uEL3nooKYmXW4yHoDA=;
-        b=0Ga/gYCWtE8LCG2fcxKXC6wvAD03f0C83h6zs/gv1K+SfMy83h8CwQxUlLP2XDBPgm
-         XtFIDaO/XTWgtmzOgWDFCEqZ6kqlUROm59FXiIvTLqqRzAG5hMybqQkK3Fuofq6tLqP8
-         5PbrfusJq1A2c/UsbBa5K+m4gkKblHhVuRUazHi4n3zJhQZFiJvdZu/wLwhLAbQPrn1W
-         SVWCRpA08CiATQy3cy2HVHoItIigY+RINvFKuLQkP7X0VALINZ/c9HLIyBeWBTz+Jur/
-         3rzjUS4tBVwgaeRB0nB8liyrSlV8yEUcI5nRhTtjedhbMyp7BDyFw6fFYmhXXUwsJbYh
-         8+7g==
-X-Gm-Message-State: AOAM530Snr0ZZEmppPJk9ozi1rxMNoDnOSxmwPv9PkZ+PAMCPOymdMyx
-        +Was0gM1AwItZrnmc8mLTAYYFUJgOGos2iUT3r5Cz3y6e8i+lvOWBRz/tzSqGns1uBHsrHOjRpG
-        UTXp6etmcgW5w/BFL2TYK57qp
-X-Received: by 2002:a05:620a:44d6:b0:67b:2dd8:3064 with SMTP id y22-20020a05620a44d600b0067b2dd83064mr15958167qkp.219.1648472856944;
-        Mon, 28 Mar 2022 06:07:36 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzXF6xziFnZvT7B9Thf2sImzwCkc8tQCsS4WrJzX9a9Q+rXQD1iC0oh26pKBl4kArr2VB9/qQ==
-X-Received: by 2002:a05:620a:44d6:b0:67b:2dd8:3064 with SMTP id y22-20020a05620a44d600b0067b2dd83064mr15958127qkp.219.1648472856653;
-        Mon, 28 Mar 2022 06:07:36 -0700 (PDT)
-Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id n8-20020ac85a08000000b002e06aa02021sm13035414qta.49.2022.03.28.06.07.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Mar 2022 06:07:35 -0700 (PDT)
-From:   trix@redhat.com
-To:     toke@toke.dk, kvalo@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
-Subject: [PATCH v2] ath9k: initialize arrays at compile time
-Date:   Mon, 28 Mar 2022 06:07:27 -0700
-Message-Id: <20220328130727.3090827-1-trix@redhat.com>
-X-Mailer: git-send-email 2.26.3
+        Mon, 28 Mar 2022 09:07:50 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 591C25DA5A;
+        Mon, 28 Mar 2022 06:06:03 -0700 (PDT)
+X-UUID: db8c6ee7f64f4b7b9b1515bcafd910aa-20220328
+X-UUID: db8c6ee7f64f4b7b9b1515bcafd910aa-20220328
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        (envelope-from <chun-jie.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 766879410; Mon, 28 Mar 2022 21:05:55 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Mon, 28 Mar 2022 21:05:53 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 28 Mar 2022 21:05:53 +0800
+From:   Chun-Jie Chen <chun-jie.chen@mediatek.com>
+To:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Nicolas Boichat <drinkcat@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>, <linux-clk@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <srv_heupstream@mediatek.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>
+Subject: [PATCH v4 12/15] clk: mediatek: Add MT8186 vencsys clock support
+Date:   Mon, 28 Mar 2022 21:05:18 +0800
+Message-ID: <20220328130521.24385-13-chun-jie.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220328130521.24385-1-chun-jie.chen@mediatek.com>
+References: <20220328130521.24385-1-chun-jie.chen@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+Add MT8186 vencsys clock controller which provide clock gate
+control for video encoder.
 
-Early clearing of arrays with
-memset(array, 0, size);
-is equivilent to initializing the array in its decl with
-array[size] = {};
-
-Convert the memsets to initializations.
-
-Signed-off-by: Tom Rix <trix@redhat.com>
+Signed-off-by: Chun-Jie Chen <chun-jie.chen@mediatek.com>
+Acked-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Miles Chen <miles.chen@mediatek.com>
 ---
-v2: cleanup commit log
-    change { 0 } to {}
-    
- drivers/net/wireless/ath/ath9k/ar9003_calib.c  |  6 ++----
- drivers/net/wireless/ath/ath9k/ar9003_eeprom.c |  4 +---
- drivers/net/wireless/ath/ath9k/ar9003_paprd.c  | 14 ++++++--------
- drivers/net/wireless/ath/ath9k/eeprom.c        |  3 +--
- drivers/net/wireless/ath/ath9k/eeprom_4k.c     |  4 +---
- drivers/net/wireless/ath/ath9k/eeprom_9287.c   |  4 +---
- drivers/net/wireless/ath/ath9k/eeprom_def.c    |  4 +---
- drivers/net/wireless/ath/ath9k/wow.c           |  7 ++-----
- 8 files changed, 15 insertions(+), 31 deletions(-)
+ drivers/clk/mediatek/Makefile          |  2 +-
+ drivers/clk/mediatek/clk-mt8186-venc.c | 51 ++++++++++++++++++++++++++
+ 2 files changed, 52 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/clk/mediatek/clk-mt8186-venc.c
 
-diff --git a/drivers/net/wireless/ath/ath9k/ar9003_calib.c b/drivers/net/wireless/ath/ath9k/ar9003_calib.c
-index dc24da1ff00b1..142b11085bbc6 100644
---- a/drivers/net/wireless/ath/ath9k/ar9003_calib.c
-+++ b/drivers/net/wireless/ath/ath9k/ar9003_calib.c
-@@ -891,10 +891,9 @@ static void ar9003_hw_tx_iq_cal_outlier_detection(struct ath_hw *ah,
- {
- 	int i, im, nmeasurement;
- 	int magnitude, phase;
--	u32 tx_corr_coeff[MAX_MEASUREMENT][AR9300_MAX_CHAINS];
-+	u32 tx_corr_coeff[MAX_MEASUREMENT][AR9300_MAX_CHAINS] = {};
- 	struct ath9k_hw_cal_data *caldata = ah->caldata;
- 
--	memset(tx_corr_coeff, 0, sizeof(tx_corr_coeff));
- 	for (i = 0; i < MAX_MEASUREMENT / 2; i++) {
- 		tx_corr_coeff[i * 2][0] = tx_corr_coeff[(i * 2) + 1][0] =
- 					AR_PHY_TX_IQCAL_CORR_COEFF_B0(i);
-@@ -1155,10 +1154,9 @@ static void ar9003_hw_tx_iq_cal_post_proc(struct ath_hw *ah,
- static void ar9003_hw_tx_iq_cal_reload(struct ath_hw *ah)
- {
- 	struct ath9k_hw_cal_data *caldata = ah->caldata;
--	u32 tx_corr_coeff[MAX_MEASUREMENT][AR9300_MAX_CHAINS];
-+	u32 tx_corr_coeff[MAX_MEASUREMENT][AR9300_MAX_CHAINS] = {};
- 	int i, im;
- 
--	memset(tx_corr_coeff, 0, sizeof(tx_corr_coeff));
- 	for (i = 0; i < MAX_MEASUREMENT / 2; i++) {
- 		tx_corr_coeff[i * 2][0] = tx_corr_coeff[(i * 2) + 1][0] =
- 					AR_PHY_TX_IQCAL_CORR_COEFF_B0(i);
-diff --git a/drivers/net/wireless/ath/ath9k/ar9003_eeprom.c b/drivers/net/wireless/ath/ath9k/ar9003_eeprom.c
-index b0a4ca3559fd8..25dd9d92f656f 100644
---- a/drivers/net/wireless/ath/ath9k/ar9003_eeprom.c
-+++ b/drivers/net/wireless/ath/ath9k/ar9003_eeprom.c
-@@ -5451,14 +5451,12 @@ static void ath9k_hw_ar9300_set_txpower(struct ath_hw *ah,
- 	struct ath_common *common = ath9k_hw_common(ah);
- 	struct ar9300_eeprom *eep = &ah->eeprom.ar9300_eep;
- 	struct ar9300_modal_eep_header *modal_hdr;
--	u8 targetPowerValT2[ar9300RateSize];
-+	u8 targetPowerValT2[ar9300RateSize] = {};
- 	u8 target_power_val_t2_eep[ar9300RateSize];
- 	u8 targetPowerValT2_tpc[ar9300RateSize];
- 	unsigned int i = 0, paprd_scale_factor = 0;
- 	u8 pwr_idx, min_pwridx = 0;
- 
--	memset(targetPowerValT2, 0 , sizeof(targetPowerValT2));
--
- 	/*
- 	 * Get target powers from EEPROM - our baseline for TX Power
- 	 */
-diff --git a/drivers/net/wireless/ath/ath9k/ar9003_paprd.c b/drivers/net/wireless/ath/ath9k/ar9003_paprd.c
-index 34e1009402846..ab3987777dd08 100644
---- a/drivers/net/wireless/ath/ath9k/ar9003_paprd.c
-+++ b/drivers/net/wireless/ath/ath9k/ar9003_paprd.c
-@@ -419,13 +419,16 @@ static inline int find_proper_scale(int expn, int N)
- static bool create_pa_curve(u32 *data_L, u32 *data_U, u32 *pa_table, u16 *gain)
- {
- 	unsigned int thresh_accum_cnt;
--	int x_est[NUM_BIN + 1], Y[NUM_BIN + 1], theta[NUM_BIN + 1];
-+	int x_est[NUM_BIN + 1] = {};
-+	int Y[NUM_BIN + 1] = {};
-+	int theta[NUM_BIN + 1] = {};
- 	int PA_in[NUM_BIN + 1];
- 	int B1_tmp[NUM_BIN + 1], B2_tmp[NUM_BIN + 1];
- 	unsigned int B1_abs_max, B2_abs_max;
- 	int max_index, scale_factor;
--	int y_est[NUM_BIN + 1];
--	int x_est_fxp1_nonlin, x_tilde[NUM_BIN + 1];
-+	int y_est[NUM_BIN + 1] = {};
-+	int x_est_fxp1_nonlin;
-+	int x_tilde[NUM_BIN + 1] = {};
- 	unsigned int x_tilde_abs;
- 	int G_fxp, Y_intercept, order_x_by_y, M, I, L, sum_y_sqr, sum_y_quad;
- 	int Q_x, Q_B1, Q_B2, beta_raw, alpha_raw, scale_B;
-@@ -439,11 +442,6 @@ static bool create_pa_curve(u32 *data_L, u32 *data_U, u32 *pa_table, u16 *gain)
- 	thresh_accum_cnt = 16;
- 	scale_factor = 5;
- 	max_index = 0;
--	memset(theta, 0, sizeof(theta));
--	memset(x_est, 0, sizeof(x_est));
--	memset(Y, 0, sizeof(Y));
--	memset(y_est, 0, sizeof(y_est));
--	memset(x_tilde, 0, sizeof(x_tilde));
- 
- 	for (i = 0; i < NUM_BIN; i++) {
- 		s32 accum_cnt, accum_tx, accum_rx, accum_ang;
-diff --git a/drivers/net/wireless/ath/ath9k/eeprom.c b/drivers/net/wireless/ath/ath9k/eeprom.c
-index efb7889142d47..03675f6e0409e 100644
---- a/drivers/net/wireless/ath/ath9k/eeprom.c
-+++ b/drivers/net/wireless/ath/ath9k/eeprom.c
-@@ -480,7 +480,7 @@ void ath9k_hw_get_gain_boundaries_pdadcs(struct ath_hw *ah,
- 		[AR5416_MAX_PWR_RANGE_IN_HALF_DB];
- 
- 	u8 *pVpdL, *pVpdR, *pPwrL, *pPwrR;
--	u8 minPwrT4[AR5416_NUM_PD_GAINS];
-+	u8 minPwrT4[AR5416_NUM_PD_GAINS] = {};
- 	u8 maxPwrT4[AR5416_NUM_PD_GAINS];
- 	int16_t vpdStep;
- 	int16_t tmpVal;
-@@ -500,7 +500,6 @@ void ath9k_hw_get_gain_boundaries_pdadcs(struct ath_hw *ah,
- 	else
- 		intercepts = AR5416_PD_GAIN_ICEPTS;
- 
--	memset(&minPwrT4, 0, AR5416_NUM_PD_GAINS);
- 	ath9k_hw_get_channel_centers(ah, chan, &centers);
- 
- 	for (numPiers = 0; numPiers < availPiers; numPiers++) {
-diff --git a/drivers/net/wireless/ath/ath9k/eeprom_4k.c b/drivers/net/wireless/ath/ath9k/eeprom_4k.c
-index e8c2cc03be0cb..b74a60fd6cf17 100644
---- a/drivers/net/wireless/ath/ath9k/eeprom_4k.c
-+++ b/drivers/net/wireless/ath/ath9k/eeprom_4k.c
-@@ -583,12 +583,10 @@ static void ath9k_hw_4k_set_txpower(struct ath_hw *ah,
- 	struct ath_regulatory *regulatory = ath9k_hw_regulatory(ah);
- 	struct ar5416_eeprom_4k *pEepData = &ah->eeprom.map4k;
- 	struct modal_eep_4k_header *pModal = &pEepData->modalHeader;
--	int16_t ratesArray[Ar5416RateSize];
-+	int16_t ratesArray[Ar5416RateSize] = {};
- 	u8 ht40PowerIncForPdadc = 2;
- 	int i;
- 
--	memset(ratesArray, 0, sizeof(ratesArray));
--
- 	if (ath9k_hw_4k_get_eeprom_rev(ah) >= AR5416_EEP_MINOR_VER_2)
- 		ht40PowerIncForPdadc = pModal->ht40PowerIncForPdadc;
- 
-diff --git a/drivers/net/wireless/ath/ath9k/eeprom_9287.c b/drivers/net/wireless/ath/ath9k/eeprom_9287.c
-index 3caa149b10131..f70e3ef9b10b3 100644
---- a/drivers/net/wireless/ath/ath9k/eeprom_9287.c
-+++ b/drivers/net/wireless/ath/ath9k/eeprom_9287.c
-@@ -711,12 +711,10 @@ static void ath9k_hw_ar9287_set_txpower(struct ath_hw *ah,
- 	struct ath_regulatory *regulatory = ath9k_hw_regulatory(ah);
- 	struct ar9287_eeprom *pEepData = &ah->eeprom.map9287;
- 	struct modal_eep_ar9287_header *pModal = &pEepData->modalHeader;
--	int16_t ratesArray[Ar5416RateSize];
-+	int16_t ratesArray[Ar5416RateSize] = {};
- 	u8 ht40PowerIncForPdadc = 2;
- 	int i;
- 
--	memset(ratesArray, 0, sizeof(ratesArray));
--
- 	if (ath9k_hw_ar9287_get_eeprom_rev(ah) >= AR9287_EEP_MINOR_VER_2)
- 		ht40PowerIncForPdadc = pModal->ht40PowerIncForPdadc;
- 
-diff --git a/drivers/net/wireless/ath/ath9k/eeprom_def.c b/drivers/net/wireless/ath/ath9k/eeprom_def.c
-index 9729a69d3e2e3..4d24c877cbfc2 100644
---- a/drivers/net/wireless/ath/ath9k/eeprom_def.c
-+++ b/drivers/net/wireless/ath/ath9k/eeprom_def.c
-@@ -1150,12 +1150,10 @@ static void ath9k_hw_def_set_txpower(struct ath_hw *ah,
- 	struct ar5416_eeprom_def *pEepData = &ah->eeprom.def;
- 	struct modal_eep_header *pModal =
- 		&(pEepData->modalHeader[IS_CHAN_2GHZ(chan)]);
--	int16_t ratesArray[Ar5416RateSize];
-+	int16_t ratesArray[Ar5416RateSize] = {};
- 	u8 ht40PowerIncForPdadc = 2;
- 	int i, cck_ofdm_delta = 0;
- 
--	memset(ratesArray, 0, sizeof(ratesArray));
--
- 	if (ath9k_hw_def_get_eeprom_rev(ah) >= AR5416_EEP_MINOR_VER_2)
- 		ht40PowerIncForPdadc = pModal->ht40PowerIncForPdadc;
- 
-diff --git a/drivers/net/wireless/ath/ath9k/wow.c b/drivers/net/wireless/ath/ath9k/wow.c
-index 8d0b1730a9d5b..0232fba96d74c 100644
---- a/drivers/net/wireless/ath/ath9k/wow.c
-+++ b/drivers/net/wireless/ath/ath9k/wow.c
-@@ -53,11 +53,8 @@ static int ath9k_wow_add_disassoc_deauth_pattern(struct ath_softc *sc)
- 	struct ath_common *common = ath9k_hw_common(ah);
- 	int pattern_count = 0;
- 	int ret, i, byte_cnt = 0;
--	u8 dis_deauth_pattern[MAX_PATTERN_SIZE];
--	u8 dis_deauth_mask[MAX_PATTERN_SIZE];
--
--	memset(dis_deauth_pattern, 0, MAX_PATTERN_SIZE);
--	memset(dis_deauth_mask, 0, MAX_PATTERN_SIZE);
-+	u8 dis_deauth_pattern[MAX_PATTERN_SIZE] = {};
-+	u8 dis_deauth_mask[MAX_PATTERN_SIZE] = {};
- 
- 	/*
- 	 * Create Dissassociate / Deauthenticate packet filter
+diff --git a/drivers/clk/mediatek/Makefile b/drivers/clk/mediatek/Makefile
+index 7b0238847881..28aefad8042e 100644
+--- a/drivers/clk/mediatek/Makefile
++++ b/drivers/clk/mediatek/Makefile
+@@ -74,7 +74,7 @@ obj-$(CONFIG_COMMON_CLK_MT8183_VENCSYS) += clk-mt8183-venc.o
+ obj-$(CONFIG_COMMON_CLK_MT8186) += clk-mt8186-mcu.o clk-mt8186-topckgen.o clk-mt8186-infra_ao.o \
+ 				   clk-mt8186-apmixedsys.o clk-mt8186-imp_iic_wrap.o \
+ 				   clk-mt8186-mfg.o clk-mt8186-mm.o clk-mt8186-wpe.o \
+-				   clk-mt8186-img.o clk-mt8186-vdec.o
++				   clk-mt8186-img.o clk-mt8186-vdec.o clk-mt8186-venc.o
+ obj-$(CONFIG_COMMON_CLK_MT8192) += clk-mt8192.o
+ obj-$(CONFIG_COMMON_CLK_MT8192_AUDSYS) += clk-mt8192-aud.o
+ obj-$(CONFIG_COMMON_CLK_MT8192_CAMSYS) += clk-mt8192-cam.o
+diff --git a/drivers/clk/mediatek/clk-mt8186-venc.c b/drivers/clk/mediatek/clk-mt8186-venc.c
+new file mode 100644
+index 000000000000..f5519f794c45
+--- /dev/null
++++ b/drivers/clk/mediatek/clk-mt8186-venc.c
+@@ -0,0 +1,51 @@
++// SPDX-License-Identifier: GPL-2.0-only
++//
++// Copyright (c) 2022 MediaTek Inc.
++// Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
++
++#include <linux/clk-provider.h>
++#include <linux/platform_device.h>
++#include <dt-bindings/clock/mt8186-clk.h>
++
++#include "clk-gate.h"
++#include "clk-mtk.h"
++
++static const struct mtk_gate_regs venc_cg_regs = {
++	.set_ofs = 0x4,
++	.clr_ofs = 0x8,
++	.sta_ofs = 0x0,
++};
++
++#define GATE_VENC(_id, _name, _parent, _shift)			\
++	GATE_MTK(_id, _name, _parent, &venc_cg_regs, _shift, &mtk_clk_gate_ops_setclr_inv)
++
++static const struct mtk_gate venc_clks[] = {
++	GATE_VENC(CLK_VENC_CKE0_LARB, "venc_cke0_larb", "top_venc", 0),
++	GATE_VENC(CLK_VENC_CKE1_VENC, "venc_cke1_venc", "top_venc", 4),
++	GATE_VENC(CLK_VENC_CKE2_JPGENC, "venc_cke2_jpgenc", "top_venc", 8),
++	GATE_VENC(CLK_VENC_CKE5_GALS, "venc_cke5_gals", "top_venc", 28),
++};
++
++static const struct mtk_clk_desc venc_desc = {
++	.clks = venc_clks,
++	.num_clks = ARRAY_SIZE(venc_clks),
++};
++
++static const struct of_device_id of_match_clk_mt8186_venc[] = {
++	{
++		.compatible = "mediatek,mt8186-vencsys",
++		.data = &venc_desc,
++	}, {
++		/* sentinel */
++	}
++};
++
++static struct platform_driver clk_mt8186_venc_drv = {
++	.probe = mtk_clk_simple_probe,
++	.remove = mtk_clk_simple_remove,
++	.driver = {
++		.name = "clk-mt8186-venc",
++		.of_match_table = of_match_clk_mt8186_venc,
++	},
++};
++builtin_platform_driver(clk_mt8186_venc_drv);
 -- 
-2.26.3
+2.18.0
 
