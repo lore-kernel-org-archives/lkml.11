@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65370C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 17:51:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77063C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 17:52:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244789AbiC1RxU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 13:53:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33450 "EHLO
+        id S244766AbiC1RyE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 13:54:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244775AbiC1Rw4 (ORCPT
+        with ESMTP id S244761AbiC1Rwx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 13:52:56 -0400
+        Mon, 28 Mar 2022 13:52:53 -0400
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD65D3C735;
-        Mon, 28 Mar 2022 10:51:15 -0700 (PDT)
-Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KS0YR4g3Pz67w73;
-        Tue, 29 Mar 2022 01:48:43 +0800 (CST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47B5159A5D;
+        Mon, 28 Mar 2022 10:51:12 -0700 (PDT)
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KS0Z80VPMz67PnL;
+        Tue, 29 Mar 2022 01:49:20 +0800 (CST)
 Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
  fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 28 Mar 2022 19:51:12 +0200
+ 15.1.2375.24; Mon, 28 Mar 2022 19:51:09 +0200
 From:   Roberto Sassu <roberto.sassu@huawei.com>
 To:     <corbet@lwn.net>, <viro@zeniv.linux.org.uk>, <ast@kernel.org>,
         <daniel@iogearbox.net>, <andrii@kernel.org>, <kpsingh@kernel.org>,
@@ -36,9 +36,9 @@ CC:     <linux-doc@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
         <linux-security-module@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>,
         Roberto Sassu <roberto.sassu@huawei.com>
-Subject: [PATCH 04/18] bpf-preload: Export and call bpf_obj_do_pin_kernel()
-Date:   Mon, 28 Mar 2022 19:50:19 +0200
-Message-ID: <20220328175033.2437312-5-roberto.sassu@huawei.com>
+Subject: [PATCH 01/18] bpf: Export bpf_link_inc()
+Date:   Mon, 28 Mar 2022 19:50:16 +0200
+Message-ID: <20220328175033.2437312-2-roberto.sassu@huawei.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220328175033.2437312-1-roberto.sassu@huawei.com>
 References: <20220328175033.2437312-1-roberto.sassu@huawei.com>
@@ -53,170 +53,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Export bpf_obj_do_pin_kernel(), so that the preload method of an eBPF
-program (built-in or in a kernel module) can call this function to pin
-links, maps and progs.
+In the upcoming patches, populate_bpffs() will not have visibility anymore
+on the links and maps to be pinned (to avoid the limitation of the 'objs'
+fixed-size array), but the eBPF-program-specific preload method will
+directly do the pinning and increase/decrease the reference count.
 
-This removes the need of defining the bpf_preload_info structure, to hold
-the links to be pinned by populate_bpffs().
-
-Since after this patch the preload method has everything needed to pin
-objects, that makes it possible to pin arbitrary objects of eBPF programs,
-by generating the corresponding preload method in the light skeleton.
+Since the preload method can be implemented in a kernel module, also
+bpf_link_inc(), before called by populate_bpffs(), should be exported.
+Thus, export bpf_link_inc().
 
 Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
 ---
- include/linux/bpf_preload.h           | 20 +++++++++++++-----
- kernel/bpf/inode.c                    | 30 +++++----------------------
- kernel/bpf/preload/bpf_preload_kern.c | 25 +++++++++++++++++-----
- 3 files changed, 40 insertions(+), 35 deletions(-)
+ kernel/bpf/syscall.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/linux/bpf_preload.h b/include/linux/bpf_preload.h
-index 09d55d9f1131..e604933b3daa 100644
---- a/include/linux/bpf_preload.h
-+++ b/include/linux/bpf_preload.h
-@@ -2,19 +2,29 @@
- #ifndef _BPF_PRELOAD_H
- #define _BPF_PRELOAD_H
- 
--struct bpf_preload_info {
--	char link_name[16];
--	struct bpf_link *link;
-+enum bpf_type {
-+	BPF_TYPE_UNSPEC	= 0,
-+	BPF_TYPE_PROG,
-+	BPF_TYPE_MAP,
-+	BPF_TYPE_LINK,
- };
- 
- struct bpf_preload_ops {
--	int (*preload)(struct bpf_preload_info *);
-+	int (*preload)(struct dentry *parent);
- 	struct module *owner;
- };
- 
- #ifdef CONFIG_BPF_SYSCALL
- extern struct bpf_preload_ops *bpf_preload_ops;
-+
-+int bpf_obj_do_pin_kernel(struct dentry *parent, const char *name, void *raw,
-+			  enum bpf_type type);
-+#else
-+static inline int bpf_obj_do_pin_kernel(struct dentry *parent, const char *name,
-+					void *raw, enum bpf_type type)
-+{
-+	return -EOPNOTSUPP;
-+}
- #endif /*CONFIG_BPF_SYSCALL*/
- 
--#define BPF_PRELOAD_LINKS 2
- #endif
-diff --git a/kernel/bpf/inode.c b/kernel/bpf/inode.c
-index a9d725db4cf4..bb8762abbf3d 100644
---- a/kernel/bpf/inode.c
-+++ b/kernel/bpf/inode.c
-@@ -22,13 +22,6 @@
- #include <linux/bpf_trace.h>
- #include <linux/bpf_preload.h>
- 
--enum bpf_type {
--	BPF_TYPE_UNSPEC	= 0,
--	BPF_TYPE_PROG,
--	BPF_TYPE_MAP,
--	BPF_TYPE_LINK,
--};
--
- static void *bpf_any_get(void *raw, enum bpf_type type)
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index cdaa1152436a..8ffe342545c3 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -2459,6 +2459,7 @@ void bpf_link_inc(struct bpf_link *link)
  {
- 	switch (type) {
-@@ -415,9 +408,8 @@ static const struct inode_operations bpf_dir_iops = {
- };
- 
- /* pin object into bpffs */
--static int bpf_obj_do_pin_kernel(struct dentry *parent,
--				 const char *name, void *raw,
--				 enum bpf_type type)
-+int bpf_obj_do_pin_kernel(struct dentry *parent, const char *name, void *raw,
-+			  enum bpf_type type)
- {
- 	umode_t mode = S_IFREG | S_IRUSR;
- 	struct dentry *dentry;
-@@ -449,6 +441,7 @@ static int bpf_obj_do_pin_kernel(struct dentry *parent,
- 	inode_unlock(parent->d_inode);
- 	return ret;
+ 	atomic64_inc(&link->refcnt);
  }
-+EXPORT_SYMBOL(bpf_obj_do_pin_kernel);
++EXPORT_SYMBOL_GPL(bpf_link_inc);
  
- static int bpf_obj_do_pin(const char __user *pathname, void *raw,
- 			  enum bpf_type type)
-@@ -724,8 +717,7 @@ static DEFINE_MUTEX(bpf_preload_lock);
- 
- static int populate_bpffs(struct dentry *parent)
- {
--	struct bpf_preload_info objs[BPF_PRELOAD_LINKS] = {};
--	int err = 0, i;
-+	int err = 0;
- 
- 	/* grab the mutex to make sure the kernel interactions with bpf_preload
- 	 * are serialized
-@@ -736,19 +728,7 @@ static int populate_bpffs(struct dentry *parent)
- 	if (!bpf_preload_mod_get())
- 		goto out;
- 
--	err = bpf_preload_ops->preload(objs);
--	if (err)
--		goto out_put;
--	for (i = 0; i < BPF_PRELOAD_LINKS; i++) {
--		bpf_link_inc(objs[i].link);
--		err = bpf_obj_do_pin_kernel(parent, objs[i].link_name,
--					    objs[i].link, BPF_TYPE_LINK);
--		if (err) {
--			bpf_link_put(objs[i].link);
--			goto out_put;
--		}
--	}
--out_put:
-+	err = bpf_preload_ops->preload(parent);
- 	bpf_preload_mod_put();
- out:
- 	mutex_unlock(&bpf_preload_lock);
-diff --git a/kernel/bpf/preload/bpf_preload_kern.c b/kernel/bpf/preload/bpf_preload_kern.c
-index f43391d1c49c..d70047108bb3 100644
---- a/kernel/bpf/preload/bpf_preload_kern.c
-+++ b/kernel/bpf/preload/bpf_preload_kern.c
-@@ -17,13 +17,28 @@ static void free_links_and_skel(void)
- 	iterators_bpf__destroy(skel);
- }
- 
--static int preload(struct bpf_preload_info *obj)
-+static int preload(struct dentry *parent)
- {
--	strlcpy(obj[0].link_name, "maps.debug", sizeof(obj[0].link_name));
--	obj[0].link = maps_link;
--	strlcpy(obj[1].link_name, "progs.debug", sizeof(obj[1].link_name));
--	obj[1].link = progs_link;
-+	int err;
-+
-+	bpf_link_inc(maps_link);
-+	bpf_link_inc(progs_link);
-+
-+	err = bpf_obj_do_pin_kernel(parent, "maps.debug", maps_link,
-+				    BPF_TYPE_LINK);
-+	if (err)
-+		goto undo;
-+
-+	err = bpf_obj_do_pin_kernel(parent, "progs.debug", progs_link,
-+				    BPF_TYPE_LINK);
-+	if (err)
-+		goto undo;
-+
- 	return 0;
-+undo:
-+	bpf_link_put(maps_link);
-+	bpf_link_put(progs_link);
-+	return err;
- }
- 
- static struct bpf_preload_ops ops = {
+ /* bpf_link_free is guaranteed to be called from process context */
+ static void bpf_link_free(struct bpf_link *link)
 -- 
 2.32.0
 
