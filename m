@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1682C3525B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8157CC41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 20:48:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346140AbiC1UsS (ORCPT
+        id S1346328AbiC1Usd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 16:48:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43286 "EHLO
+        Mon, 28 Mar 2022 16:48:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345695AbiC1Un2 (ORCPT
+        with ESMTP id S1345663AbiC1Un0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 16:43:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB46A66AF9;
-        Mon, 28 Mar 2022 13:41:47 -0700 (PDT)
+        Mon, 28 Mar 2022 16:43:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4956C66ADF;
+        Mon, 28 Mar 2022 13:41:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65F65B81219;
-        Mon, 28 Mar 2022 20:41:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD95DC36AE2;
-        Mon, 28 Mar 2022 20:41:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D37D8614D7;
+        Mon, 28 Mar 2022 20:41:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 466F0C341CD;
+        Mon, 28 Mar 2022 20:41:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648500102;
-        bh=QzQoNs68jW+xI6V/AO2/hYHoODXE7W40VrXyZsKu0h0=;
+        s=k20201202; t=1648500103;
+        bh=ZMqRsVWH7Xix4Ul67rXjIZoC7fsabNACSNqXpoa4wzA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EBNGwfhiLKxRrZbiDzg4Oqg/CqeVhvgp8WmqmRoljNmqbl7G7r/I6kYfRl88Aq/zU
-         TVJ76WDdsIP6ZKXKdC4ajI4JwokvyuaBtG6bXaAxifP1jytue4dXNo+IasGsd4STD6
-         7ntLHLuhbWjv8WLYC7jK35oS27kVY0zh9axBAQ04ZMH1Vi2t9q0JayIhty06As5cfd
-         LyDXZuZZSHbNq7EQW9gJwr0x/dfproYjmH3xfNAT/qn2VZdQXwzvHN7Q/bpLJCvT4x
-         1gYuN+oKYjhFqJSOAm0FVYu0+ctt3tmG6lnA/rQ89jouoAH48xpiXmfFsQytAsjiwg
-         /9JNfpP6eIItw==
+        b=rtGzrvJs1iMpmwB+D4nDRkpYksccEbAcQtw7mnEZFASfZQl5TkYtS98q9TqdXvKMP
+         54R408zJoCQ9qg/WguoUbTa82GGIRLJb7YFVUe+faI+62qNH1y1UaGCg1eusDeaggF
+         L9i7SvK9QtxjuQn/jv7RHLY95v6G+3NJkPDycADPTZWwq9/hfoMP2jo+jjPARaT2NM
+         nRZ9z1gppNwAIrGr0IjfZoi4W5TxF4ckwQLYoE8ow6WT0ZDkzgvisD7w/XdvorZ9qR
+         OApcb7uaDI4BpTLE4KUnpLYPzrHRlei6VvHq4FisH40qfr2mtkIhrxHArwwCjvMz3Q
+         D6eWw7kIoC/KQ==
 Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
         (envelope-from <mchehab@kernel.org>)
-        id 1nYwBI-000lca-F4; Mon, 28 Mar 2022 22:41:40 +0200
+        id 1nYwBI-000ldA-V1; Mon, 28 Mar 2022 22:41:40 +0200
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Johan Hovold <johan@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org
-Subject: [PATCH 12/26] media: dtv5100: use the newer dvb-usb macros for USB device
-Date:   Mon, 28 Mar 2022 22:41:24 +0200
-Message-Id: <6e7183735aacf33fff86bc709a38aafb6b858dff.1648499509.git.mchehab@kernel.org>
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org
+Subject: [PATCH 21/26] media: dvb-usb: umt-010: use an enum for the device number
+Date:   Mon, 28 Mar 2022 22:41:33 +0200
+Message-Id: <5fd3c469faa115856f48037019e607edcb41d458.1648499509.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1648499509.git.mchehab@kernel.org>
 References: <cover.1648499509.git.mchehab@kernel.org>
@@ -54,8 +52,11 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to make the drivers under dvb-usb more homogeneous,
-use the new macro.
+The device number is currently a value that needs to be the same
+on two separate tables, but the code doesn't actually enforce it,
+leading to errors as boards get added or removed.
+
+Fix it by using an enum.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
@@ -63,37 +64,43 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH 00/26] at: https://lore.kernel.org/all/cover.1648499509.git.mchehab@kernel.org/
 
- drivers/media/usb/dvb-usb/dtv5100.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/media/usb/dvb-usb/umt-010.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/media/usb/dvb-usb/dtv5100.c b/drivers/media/usb/dvb-usb/dtv5100.c
-index b644c1302c84..56c9d521a34a 100644
---- a/drivers/media/usb/dvb-usb/dtv5100.c
-+++ b/drivers/media/usb/dvb-usb/dtv5100.c
-@@ -162,10 +162,15 @@ static int dtv5100_probe(struct usb_interface *intf,
- 	return 0;
+diff --git a/drivers/media/usb/dvb-usb/umt-010.c b/drivers/media/usb/dvb-usb/umt-010.c
+index 2181993771ae..464699b0b75b 100644
+--- a/drivers/media/usb/dvb-usb/umt-010.c
++++ b/drivers/media/usb/dvb-usb/umt-010.c
+@@ -81,11 +81,17 @@ static int umt_probe(struct usb_interface *intf,
  }
  
+ /* do not change the order of the ID table */
+-static struct usb_device_id umt_table [] = {
+-/* 00 */	{ USB_DEVICE(USB_VID_HANFTEK, USB_PID_HANFTEK_UMT_010_COLD) },
+-/* 01 */	{ USB_DEVICE(USB_VID_HANFTEK, USB_PID_HANFTEK_UMT_010_WARM) },
+-			{ }		/* Terminating entry */
 +enum {
-+	AME_DTV5100,
-+};
-+
- static struct usb_device_id dtv5100_table[] = {
--	{ USB_DEVICE(USB_VID_AME, USB_PID_AME_DTV5100) },
--	{ }		/* Terminating entry */
-+	DVB_USB_DEV(AME, AME_DTV5100),
-+	{ }
++	HANFTEK_UMT_010_COLD,
++	HANFTEK_UMT_010_WARM,
  };
 +
- MODULE_DEVICE_TABLE(usb, dtv5100_table);
++static struct usb_device_id umt_table[] = {
++	DVB_USB_DEV(HANFTEK, HANFTEK_UMT_010_COLD),
++	DVB_USB_DEV(HANFTEK, HANFTEK_UMT_010_WARM),
++	{ }
++};
++
+ MODULE_DEVICE_TABLE (usb, umt_table);
  
- static struct dvb_usb_device_properties dtv5100_properties = {
-@@ -201,7 +206,7 @@ static struct dvb_usb_device_properties dtv5100_properties = {
- 		{
- 			.name = "AME DTV-5100 USB2.0 DVB-T",
- 			.cold_ids = { NULL },
--			.warm_ids = { &dtv5100_table[0], NULL },
-+			.warm_ids = { &dtv5100_table[AME_DTV5100], NULL },
+ static struct dvb_usb_device_properties umt_properties = {
+@@ -127,8 +133,8 @@ static struct dvb_usb_device_properties umt_properties = {
+ 	.num_device_descs = 1,
+ 	.devices = {
+ 		{	"Hanftek UMT-010 DVB-T USB2.0",
+-			{ &umt_table[0], NULL },
+-			{ &umt_table[1], NULL },
++			{ &umt_table[HANFTEK_UMT_010_COLD], NULL },
++			{ &umt_table[HANFTEK_UMT_010_WARM], NULL },
  		},
  	}
  };
