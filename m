@@ -2,143 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C69B7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 12:55:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD4A1C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 12:56:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242698AbiC1M5a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 08:57:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48616 "EHLO
+        id S242712AbiC1M6R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 08:58:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240038AbiC1M51 (ORCPT
+        with ESMTP id S242702AbiC1M5y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 08:57:27 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EDCBB35DD5;
-        Mon, 28 Mar 2022 05:55:45 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7F150D6E;
-        Mon, 28 Mar 2022 05:55:45 -0700 (PDT)
-Received: from lakrids (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1E1623F718;
-        Mon, 28 Mar 2022 05:55:44 -0700 (PDT)
-Date:   Mon, 28 Mar 2022 13:55:38 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Jakub Jelinek <jakub@redhat.com>
-Cc:     Segher Boessenkool <segher@kernel.crashing.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Nathan Chancellor <nathan@kernel.org>, x86-ml <x86@kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        linux-toolchains@vger.kernel.org
-Subject: Re: clang memcpy calls
-Message-ID: <YkGwSsXLBjReBhMf@lakrids>
-References: <YjxTt3pFIcV3lt8I@zn.tnic>
- <CAKwvOdkw0Bbm+=ZyViXQhBE1L6uSbvkstHJuHpQ21tzJRftgAw@mail.gmail.com>
- <Yj2yYFloadFobRPx@lakrids>
- <Yj3OEI+WHV/A5uf8@hirez.programming.kicks-ass.net>
- <20220325151238.GB614@gate.crashing.org>
- <YkGFdtn0yDIPqXRl@FVFF77S0Q05N>
- <YkGL929QoFiTfMK7@tucnak>
+        Mon, 28 Mar 2022 08:57:54 -0400
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAF6058E68;
+        Mon, 28 Mar 2022 05:56:13 -0700 (PDT)
+Received: by mail-ej1-f54.google.com with SMTP id bi12so28524249ejb.3;
+        Mon, 28 Mar 2022 05:56:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=h6/QR931sIAnRXfrCPnVI+qkKk8MD2xvnF7GrFGigmY=;
+        b=gSyfnyNTxzgIGu/SM27qrZe705xoEMhpYQzUdv29V897uDqQhipqz15A6RsasoeZAv
+         g7+anAmMJnYQWDnRkautO3L/gZ+ldEOCErn98fT9yEVdaM1gwTijNV0R0W1qgIDOBX37
+         kHafCDRvc2gMwkedVKJl1M/5W/XNgf0FdTJaiMMIlXt0EFwMMVwmzrQeYXhP2aFqgbaF
+         /g8MwGIDiZY2RhlVXF+WvV8uyCEsf9AsLNwZyXlKY2kUpCg8tbQGBcagO66NVAgiz0D/
+         ZBPbtd7CqQC+Va9ohaQXl5bRx+DodpHOQ4uIZOIncHpWGQ40Rq4Nm+ENWx0esE7oxsBp
+         hSGQ==
+X-Gm-Message-State: AOAM53295X3IZqg8iS/pLDPpNeD2HCz+ykVLbkKHOLCIs9lp0+8dwKOr
+        K5hhPg4/jPTZ5gfdSfdm8Tg=
+X-Google-Smtp-Source: ABdhPJxAaEEZ4cDVthpRoTUi4w0OyQWWqM18j2mt2rO0pz1m/+MVXDW+E3xg5roUXlX+RXHnV+cXbA==
+X-Received: by 2002:a17:907:7254:b0:6db:ad8f:27b4 with SMTP id ds20-20020a170907725400b006dbad8f27b4mr27324151ejc.599.1648472172089;
+        Mon, 28 Mar 2022 05:56:12 -0700 (PDT)
+Received: from [192.168.0.162] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.googlemail.com with ESMTPSA id e28-20020a170906649c00b006df6dfeb557sm5842764ejm.49.2022.03.28.05.56.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Mar 2022 05:56:11 -0700 (PDT)
+Message-ID: <5282b39b-85d5-81d6-10d5-a45c66d4d4e9@kernel.org>
+Date:   Mon, 28 Mar 2022 14:56:10 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YkGL929QoFiTfMK7@tucnak>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 3/5] arm64: dts: imx8mp: Enable HS400-ES
+Content-Language: en-US
+To:     Adam Ford <aford173@gmail.com>
+Cc:     Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Adam Ford-BE <aford@beaconembedded.com>,
+        Haibo Chen <haibo.chen@nxp.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        arm-soc <linux-arm-kernel@lists.infradead.org>
+References: <20220327123835.28329-1-aford173@gmail.com>
+ <20220327123835.28329-3-aford173@gmail.com>
+ <c964bf2c-f7bf-451c-1691-02903f20c634@pengutronix.de>
+ <CAHCN7xL05pBK0uK7zuE7Uq4P9Rzo6bHbJdbOt5XnQRB7Sh3msw@mail.gmail.com>
+ <74e74ea8-1554-bf08-b0ea-36e77259cb18@pengutronix.de>
+ <5c24c12b-3a12-1e18-9f03-2c54cad30bf9@kernel.org>
+ <CAHCN7xJ28t3igV8uHWfLxJx6wWkwzojg-d0QTTZM9jdfGCbTzw@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <CAHCN7xJ28t3igV8uHWfLxJx6wWkwzojg-d0QTTZM9jdfGCbTzw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 12:20:39PM +0200, Jakub Jelinek wrote:
-> On Mon, Mar 28, 2022 at 10:52:54AM +0100, Mark Rutland wrote:
-> > I think we're talking past each other here, so let me be more precise. :)
-> > 
-> > The key thing is that when the user passes `-fsantize=address`, instrumentation
-> > is added by (a part of) the compiler. That instrumentation is added under some
-> > assumptions as to how the compiler as a whole will behave.
-> > 
-> > With that in mind, the question is how is __attribute__((no_sanitize_address))
-> > intended to work when considering all the usual expectations around how the
-> > compiler can play with memcpy and similar?
+On 28/03/2022 14:45, Adam Ford wrote:
+> On Mon, Mar 28, 2022 at 6:49 AM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+>>
+>> On 28/03/2022 13:09, Ahmad Fatoum wrote:
+>>> Hello Adam,
+>>>
+>>> On 28.03.22 12:47, Adam Ford wrote:
+>>>> On Mon, Mar 28, 2022 at 2:20 AM Ahmad Fatoum <a.fatoum@pengutronix.de> wrote:
+>>>>>
+>>>>> Hello Adam,
+>>>>>
+>>>>> On 27.03.22 14:38, Adam Ford wrote:
+>>>>>> The SDHC controller in the imx8mp has the same controller
+>>>>>> as the imx8mm which supports HS400-ES. Change the compatible
+>>>>>> fallback to imx8mm to enable it.
+>>>>>
+>>>>> I believe that's a shortcoming of the Linux driver, which should explicitly list
+>>>>> fsl,imx8mp-usdhc in its compatibles and enable HS400-ES for it.
+>>>>>
+>>>>> I find dropping compatibles problematic, because like Linux matching
+>>>>> fsl,imx8mm-usdhc, but not fsl,imx8mp-usdhc, other software may match
+>>>>> fsl,imx7d-usdhc, but not fsl,imx8[mp]-usdhc.
+>>>>>
+>>>>> I'd prefer that either the kernel driver gains extra compatibles or that
+>>>>> the DTS lists extra compatibles and we refrain from dropping existing
+>>>>> (correct) ones.
+>>>>>
+>>>>
+>>>> I would argue that imx7d is not correct since the IP blocks between
+>>>> imx7d and imx8mm have different flags/quirks.  One of which includes
+>>>> HS400-ES, but there are other differences as well.
+>>>
+>>> The DTS currently says that an fsl,imx7d-usdhc is a subset of an
+>>> fsl,imx8mm-usdhc. So a driver could treat both HW the exact same
+>>> by focusing on the i.MX7D parts. Linux apparently did exactly
+>>> that so far. Is this not accurate?
+>>>
+>>>
+>>>>> What do you think?
+>>>>
+>>>> From my understanding of the fallback compatibility strings is to
+>>>> avoid having to add more and more compatible strings to the drivers
+>>>> when they do not serve a functional purpose. Based On a conversation
+>>>> with Krzysztof [1], he suggested we update the YAML file based on the
+>>>> fallback, but he wanted NXP to give their feedback as to what the
+>>>> right fallback strings should be.  Haibo from NXP sent me a hierarchy
+>>>> [1] which is what I used to update the YAML file.  Based on the YAML
+>>>> file, the fallback in each DTSI file was updated to ensure the use of
+>>>> the proper IP block.
+>>>
+>>> Myself I am in favor of moving to three compatibles instead of dropping one.
+>>> For some theoretical fsl,imx8mf-usdhc that's supposed to be exactly the same
+>>> as a fsl,imx8mm-usdhc, I don't mind omitting the fsl,imx7d-usdhc compatible,
+>>> but for existing device trees, this may introduce needless potential breakage
+>>> for other software that also uses Linux device trees.
+>>>
+>>
+>> Affecting existing users is indeed a concern with this approach, because
+>> in-kernel DTS might be used in other projects as well.
+>>
+>> I still cannot find here the answer whether fsl,imx8mm-usdhc is actually
+>> compatible with fsl,imx7d-usdhc. It's not about driver, but about
+>> hardware and programming model. imx8mm can support additional features
+>> and still be compatible with imx7d. However if any flags of imx7d are
+>> actually not valid for imx8mm, then it's different case.
 > 
-> no_sanitize_address or lack thereof is whether the current function
-> shouldn't be or should be ASan instrumented, not on whether other functions
-> it calls are instrumented or not.
-
-I understand this. :)
-
-> memcpy/memmove/memset are just a tiny bit special case because the
-> compiler can add them on their own even if they aren't present in the
-> source (there are a few others the compiler can pattern match too) and
-> various builtins can be on the other side expanded inline instead of
-> called, so one then gets the sanitization status of the function in
-> which it is used rather than whether the out of line implementation of
-> the function is sanitized.
-
-Yep, and this is the point I'm getting at. If the compiler *implicitly*
-generates a call to one of these from a function which was marked with
-__attribute__((no_sanitize_address)), then either:
-
-1) This renders __attribute__((no_sanitize_address)) useless, since
-   instrumentation is being added in a way the code author cannot
-   reliably prevent. If so, I'd argue that this is a compiler bug, and
-   that the transformation of inserting the call is unsound.
-
-2) There's an expectation that those out-of-line implementations are
-   *NOT* instrumented, and this is fine so long as those are not
-   instrumented.
-
-I appreciate that this isn't necessarily something which was considered
-when the feature was originally designed, and maybe this is fine for
-userspace, but for kernel usage we need to be able to reliably prevent
-instrumentation.
-
-> If coexistence of instrumented and non-instrumented memcpy etc. was the goal
-> (it clearly wasn't), then the sanitizer libraries wouldn't be overriding
-> memcpy calls, but instead the compiler would redirect calls to memcpy in
-> instrumented functions to say __asan_memcpy which then would be
-> instrumented.
-
-FWIW, I think that approach would be fine for kernel usage.
-
-> > Given the standard doesn't say *anything* about instrumentation, what does GCC
-> > *require* instrumentation-wise of the memcpy implementation? What happens *in
-> > practice* today?
-> > 
-> > For example, is the userspace implementation of memcpy() instrumented for
-> > AddressSanitizer, or not?
+> The imx7d flags are:
+>  ESDHC_FLAG_USDHC
+> ESDHC_FLAG_STD_TUNING
+>  ESDHC_FLAG_HAVE_CAP1
+> ESDHC_FLAG_HS200
+>  ESDHC_FLAG_HS400
+>  ESDHC_FLAG_STATE_LOST_IN_LPMODE
+>  ESDHC_FLAG_BROKEN_AUTO_CMD23,
 > 
-> It is, for all functions, whether compiled with -fsanitize=address or not,
-> if user app is linked with -fsanitize=address, libasan is linked in and
-> overrides the libc memcpy with its instrumented version.
-
-Thanks for confirming! Just to check, how does libasan prevent recursing
-within itself on implicitly generated calls to memcpy and friends? Is
-anything special done to build the libasan code, is that all asm, or
-something else?
-
-> Note that the default shadow memory value is 0 which means accessible,
-> so even when memcpy is instrumented, when called from non-instrumented code
-> often it will not do anything beyond normal behavior
-
-That might be true in userspace, but is not the case within the kernel
-as the shadow might not be mapped (and is one reason we need to inhibit
-instrumentation in the first place).
-
-For example, consider the code which *creates* the page tables for the
-shadow memory. Until that's run, accessing the shadow will result in a
-(fatal) fault, and while the compilation unit with that code is compiled
-*without* `-fsantize=address`, it may call into the common
-implementation of memcpy() and friends shared by all kernel code.
-
-Thanks,
-Mark.
-
-> , as non-instrumented
-> functions don't poison the paddings in between variable (there even doesn't
-> have to be any) etc.  But e.g. malloc/operator new etc. is also overridden,
-> so buffer overflows/underflows on memory allocated that way from
-> uninstrumented code using memcpy etc. will be diagnosed.
+> The imx8mm flags are:
+>  ESDHC_FLAG_USDHC
+>  ESDHC_FLAG_STD_TUNING
+>  ESDHC_FLAG_HAVE_CAP1
+> ESDHC_FLAG_HS200
+>  ESDHC_FLAG_HS400
+>  ESDHC_FLAG_HS400_ES
+>  ESDHC_FLAG_STATE_LOST_IN_LPMODE
 > 
-> 	Jakub
+> It does not have the ESDHC_FLAG_BROKEN_AUTO_CMD23 that is present in the imx7d.
+
+AFAIU, it looks imx8mm is compatible with imx7d, because the broken
+acmd23 only limits the features. If imx8mm binds according to imx7d, it
+will not support acmd23 and HS400-ES.
+
+Having three compatibles is therefore also OK.
+
+You could also add two cases:
+1. three compatibles, deprecated: True,
+2. two compatibles, without imx7d.
+
+Existing DTS stays with three compatibles for two years and later gets
+converted to two compatibles. New DTS should use two compatibles.
+
+It's quite a lot of churn, but would make in the long term bindings
+correct and also not break other users/projects.
+
 > 
+> Maybe Haibo can comment on whether or not that would be an issue for the 8m[mnp]
+> 
+> I will defer to Krzysztof and Haibo as to the proper method that we
+> should add HS400-ES.  I don't have an issue adding the imx8mn or
+> imx8mp compatible flags to the esdhc driver if that's the decision.
+
+I don't get what's the problem with HS400-ES. In any case (your patch
+here, other ideas) your DTS will bind to imx8mm-usdhc which has HS400-ES.
+
+Best regards,
+Krzysztof
