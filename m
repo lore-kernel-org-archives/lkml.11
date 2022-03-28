@@ -2,438 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43D45C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:16:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E2AFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:17:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245559AbiC1TSg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 15:18:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44832 "EHLO
+        id S239614AbiC1TTT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 15:19:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343587AbiC1TSH (ORCPT
+        with ESMTP id S234167AbiC1TTR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 15:18:07 -0400
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FC9D6663F;
-        Mon, 28 Mar 2022 12:16:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1648494984; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bR+5ek2By7kDQ4MDZLE82wSKnOnXLjg0yQ+z90nLqXE=;
-        b=Y/OYuheazXHpu1GEObnPnrWFEJ5vTPCYieMCY9BJwtco180FyNGrXAp8hNZQDWGGWaVmdG
-        aXsx4iMkvQQhEMHoFi1BA0Dh9idiOE0GGMpDub54xvYbE49lKiH83y/SLrM9yJH9i4P6N+
-        15Lg8l46yEr678RsDsDJDw0L+Esd5hg=
-Date:   Mon, 28 Mar 2022 20:16:13 +0100
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH v2 07/12] iio: buffer-dma: Use DMABUFs instead of custom
- solution
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Christian =?iso-8859-1?b?S/ZuaWc=?= <christian.koenig@amd.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org
-Message-Id: <1VYG9R.1JAKRTCN4I411@crapouillou.net>
-In-Reply-To: <20220328185425.56b51f4a@jic23-huawei>
-References: <20220207125933.81634-1-paul@crapouillou.net>
-        <20220207125933.81634-8-paul@crapouillou.net>
-        <20220328185425.56b51f4a@jic23-huawei>
+        Mon, 28 Mar 2022 15:19:17 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFCED66F98
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 12:17:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648495056; x=1680031056;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=trpX5tdxgjQO3JI80yKQLz7qoKVtzUFR4QPu1Q6nHKE=;
+  b=TXT/hTB1zSuAkrmNRAzHoA49lOeo0UsXPSk5HkzPk7VZIBJ1KOHsNK+T
+   XgnF92xH5DeFQhPFeASPCRojgTVeW3AOIIbDkOzkuWEG9dqBPI6br5Jkz
+   2QQNIoujeOOBZy86gNF5mDTzMb+MvXUjkPY2tVhxqTnuyKNqUdtdUdlnp
+   QTSsg08+VUVZYJgBsfvp8MoR49s3fZq9joGs09UpvnwYJqyMBELiQGFi1
+   jGauo86KaTjoA1l4XXMJN3FybPFA5C5WC/UKlDB46mT13OPENoOHA+8gv
+   fsNBErAVpkKKuOGsMhMWAMM1tQXQGx7ppjr6hQw5N626ib0e2l3Y9UN4n
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="258800543"
+X-IronPort-AV: E=Sophos;i="5.90,218,1643702400"; 
+   d="scan'208";a="258800543"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 12:17:36 -0700
+X-IronPort-AV: E=Sophos;i="5.90,218,1643702400"; 
+   d="scan'208";a="832002398"
+Received: from weiweihx-mobl.amr.corp.intel.com (HELO [10.255.229.113]) ([10.255.229.113])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 12:17:34 -0700
+Message-ID: <4c0c05a8-08f2-7d5d-6746-a92d0d3c5ef0@intel.com>
+Date:   Mon, 28 Mar 2022 12:17:35 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        luto@kernel.org, peterz@infradead.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
+        linux-kernel@vger.kernel.org,
+        Sean Christopherson <sean.j.christopherson@intel.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
+References: <20220318153048.51177-1-kirill.shutemov@linux.intel.com>
+ <20220318153048.51177-22-kirill.shutemov@linux.intel.com>
+ <2847763c-6202-9e2a-54c5-44c761b59a63@intel.com>
+ <20220324152415.grt6xvhblmd4uccu@black.fi.intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCHv7 21/30] x86/acpi, x86/boot: Add multiprocessor wake-up
+ support
+In-Reply-To: <20220324152415.grt6xvhblmd4uccu@black.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jonathan,
+On 3/24/22 08:24, Kirill A. Shutemov wrote:
+> On Fri, Mar 18, 2022 at 11:23:59AM -0700, Dave Hansen wrote:
+>> On 3/18/22 08:30, Kirill A. Shutemov wrote:
+>>> +	/*
+>>> +	 * After writing the wakeup command, wait for maximum timeout of 0xFF
+>>> +	 * for firmware to reset the command address back zero to indicate
+>>> +	 * the successful reception of command.
+>>> +	 * NOTE: 0xFF as timeout value is decided based on our experiments.
+>>> +	 *
+>>> +	 * XXX: Change the timeout once ACPI specification comes up with
+>>> +	 *      standard maximum timeout value.
+>>> +	 */
+>>> +	timeout = 0xFF;
+>>> +	while (READ_ONCE(acpi_mp_wake_mailbox->command) && --timeout)
+>>> +		cpu_relax();
+>>
+>> I don't feel like this was ever actually resolved.  This timeout
+>> basically boiled down to "this value seems to work for us".  There are
+>> also *SURELY* timeouts that are going to happen here.
+> 
+> It makes me think if it can be an attack vector: once kernel initiated
+> wake up of a secondary vCPU it has no control on how long it takes.
 
-Le lun., mars 28 2022 at 18:54:25 +0100, Jonathan Cameron=20
-<jic23@kernel.org> a =E9crit :
-> On Mon,  7 Feb 2022 12:59:28 +0000
-> Paul Cercueil <paul@crapouillou.net> wrote:
->=20
->>  Enhance the current fileio code by using DMABUF objects instead of
->>  custom buffers.
->>=20
->>  This adds more code than it removes, but:
->>  - a lot of the complexity can be dropped, e.g. custom kref and
->>    iio_buffer_block_put_atomic() are not needed anymore;
->>  - it will be much easier to introduce an API to export these DMABUF
->>    objects to userspace in a following patch.
->>=20
->>  Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-> Hi Paul,
->=20
-> I'm a bit rusty on dma mappings, but you seem to have
-> a mixture of streaming and coherent mappings going on in here.
+I don't think that's a meaningful attack vector for TDX.  Hosts always
+have a choice to not run the guest.  Sure, they can hang the boot CPU
+forever if they don't run the secondary CPU.  But, they can also do that
+by just not ever running the boot CPU in the first place.
 
-That's OK, so am I. What do you call "streaming mappings"?
+> I worry that malicious VMM can induce timeout intentionally, but then wake
+> up the secondary CPU when kernel doesn't expect it. After quick look I was
+> not able to convince myself that kernel can deal with this without a
+> problem.
+> 
+> Is it legitimate concern?
 
-> Is it the case that the current code is using the coherent mappings
-> and a potential 'other user' of the dma buffer might need
-> streaming mappings?
+The only thing I'd be worried about would be a secondary CPU going off
+and doing things that it's not supposed to because *it* thinks it is in
+boot code and the other CPUs are off doing normal runtime things.
 
-Something like that. There are two different things; on both cases,=20
-userspace needs to create a DMABUF with IIO_BUFFER_DMABUF_ALLOC_IOCTL,=20
-and the backing memory is allocated with dma_alloc_coherent().
+I don't know the boot code well enough to guess where it would hang or
+what damage it could do.  I suspect it would get hung up on something
+like 'cpu_callout_mask'.
 
-- For the userspace interface, you then have a "cpu access" IOCTL=20
-(DMA_BUF_IOCTL_SYNC), that allows userspace to inform when it will=20
-start/finish to process the buffer in user-space (which will=20
-sync/invalidate the data cache if needed). A buffer can then be=20
-enqueued for DMA processing (TX or RX) with the new=20
-IIO_BUFFER_DMABUF_ENQUEUE_IOCTL.
+Is there anything in the trampoline code or start_secondary() that would
+cause damage if it got run later than the kernel expects?
 
-- When the DMABUF created via the IIO core is sent to another driver=20
-through the driver's custom DMABUF import function, this driver will=20
-call dma_buf_attach(), which will call iio_buffer_dma_buf_map(). Since=20
-it has to return a "struct sg_table *", this function then simply=20
-creates a sgtable with one entry that points to the backing memory.
+> Patch below drops timeout handling completely. Any opinions?
+> 
+> Other option would be to check in the trampoline code that initiated wake
+> up is legitimate. But it should only be untrue if VMM acting weird (or
+> virtual BIOS is buggy). I don't think it's right side to deal with the
+> problem.
 
-Note that I added the iio_buffer_dma_buf_map() / _unmap() functions=20
-because the dma-buf core would WARN() if these were not provided. But=20
-since this code doesn't yet support importing/exporting DMABUFs to=20
-other drivers, these are never called, and I should probably just make=20
-them return a ERR_PTR() unconditionally.
+Yeah, that would just be a band-aid.  If we are worried about the
+secondary CPU doing some damage at a random time, the host can just wait
+until *after* the wakeup check.
 
-Cheers,
--Paul
+>>>         /*
+>>>          * If the CPU wakeup process is successful, store the
+>>>          * status in apic_id_wakemap to prevent re-wakeup
+>>>          * requests.
+>>>          */
+>>>         physid_set(apicid, apic_id_wakemap);
+>>>
+>>>         return 0;
+>>> }
+>>
+>> If this goes wrong, won't the new wakeup just timeout?  Do we really
+>> need a dedicated mechanism to stop re-wakeups?  How much of a problem is
+>> this going to be?
+> 
+> Well, it can provide a proper diagnostics and a distinct error code. If
+> you think it is unneeded we can drop it.
 
-> Jonathan
->=20
->>  ---
->>   drivers/iio/buffer/industrialio-buffer-dma.c | 192=20
->> ++++++++++++-------
->>   include/linux/iio/buffer-dma.h               |   8 +-
->>   2 files changed, 122 insertions(+), 78 deletions(-)
->>=20
->>  diff --git a/drivers/iio/buffer/industrialio-buffer-dma.c=20
->> b/drivers/iio/buffer/industrialio-buffer-dma.c
->>  index 15ea7bc3ac08..54e6000cd2ee 100644
->>  --- a/drivers/iio/buffer/industrialio-buffer-dma.c
->>  +++ b/drivers/iio/buffer/industrialio-buffer-dma.c
->>  @@ -14,6 +14,7 @@
->>   #include <linux/poll.h>
->>   #include <linux/iio/buffer_impl.h>
->>   #include <linux/iio/buffer-dma.h>
->>  +#include <linux/dma-buf.h>
->>   #include <linux/dma-mapping.h>
->>   #include <linux/sizes.h>
->>=20
->>  @@ -90,103 +91,145 @@
->>    * callback is called from within the custom callback.
->>    */
->>=20
->>  -static void iio_buffer_block_release(struct kref *kref)
->>  -{
->>  -	struct iio_dma_buffer_block *block =3D container_of(kref,
->>  -		struct iio_dma_buffer_block, kref);
->>  -
->>  -	WARN_ON(block->state !=3D IIO_BLOCK_STATE_DEAD);
->>  -
->>  -	dma_free_coherent(block->queue->dev, PAGE_ALIGN(block->size),
->>  -					block->vaddr, block->phys_addr);
->>  -
->>  -	iio_buffer_put(&block->queue->buffer);
->>  -	kfree(block);
->>  -}
->>  -
->>  -static void iio_buffer_block_get(struct iio_dma_buffer_block=20
->> *block)
->>  -{
->>  -	kref_get(&block->kref);
->>  -}
->>  -
->>  -static void iio_buffer_block_put(struct iio_dma_buffer_block=20
->> *block)
->>  -{
->>  -	kref_put(&block->kref, iio_buffer_block_release);
->>  -}
->>  -
->>  -/*
->>  - * dma_free_coherent can sleep, hence we need to take some special=20
->> care to be
->>  - * able to drop a reference from an atomic context.
->>  - */
->>  -static LIST_HEAD(iio_dma_buffer_dead_blocks);
->>  -static DEFINE_SPINLOCK(iio_dma_buffer_dead_blocks_lock);
->>  -
->>  -static void iio_dma_buffer_cleanup_worker(struct work_struct *work)
->>  -{
->>  -	struct iio_dma_buffer_block *block, *_block;
->>  -	LIST_HEAD(block_list);
->>  -
->>  -	spin_lock_irq(&iio_dma_buffer_dead_blocks_lock);
->>  -	list_splice_tail_init(&iio_dma_buffer_dead_blocks, &block_list);
->>  -	spin_unlock_irq(&iio_dma_buffer_dead_blocks_lock);
->>  -
->>  -	list_for_each_entry_safe(block, _block, &block_list, head)
->>  -		iio_buffer_block_release(&block->kref);
->>  -}
->>  -static DECLARE_WORK(iio_dma_buffer_cleanup_work,=20
->> iio_dma_buffer_cleanup_worker);
->>  -
->>  -static void iio_buffer_block_release_atomic(struct kref *kref)
->>  -{
->>  +struct iio_buffer_dma_buf_attachment {
->>  +	struct scatterlist sgl;
->>  +	struct sg_table sg_table;
->>   	struct iio_dma_buffer_block *block;
->>  -	unsigned long flags;
->>  -
->>  -	block =3D container_of(kref, struct iio_dma_buffer_block, kref);
->>  -
->>  -	spin_lock_irqsave(&iio_dma_buffer_dead_blocks_lock, flags);
->>  -	list_add_tail(&block->head, &iio_dma_buffer_dead_blocks);
->>  -	spin_unlock_irqrestore(&iio_dma_buffer_dead_blocks_lock, flags);
->>  -
->>  -	schedule_work(&iio_dma_buffer_cleanup_work);
->>  -}
->>  -
->>  -/*
->>  - * Version of iio_buffer_block_put() that can be called from=20
->> atomic context
->>  - */
->>  -static void iio_buffer_block_put_atomic(struct=20
->> iio_dma_buffer_block *block)
->>  -{
->>  -	kref_put(&block->kref, iio_buffer_block_release_atomic);
->>  -}
->>  +};
->>=20
->>   static struct iio_dma_buffer_queue *iio_buffer_to_queue(struct=20
->> iio_buffer *buf)
->>   {
->>   	return container_of(buf, struct iio_dma_buffer_queue, buffer);
->>   }
->>=20
->>  +static struct iio_buffer_dma_buf_attachment *
->>  +to_iio_buffer_dma_buf_attachment(struct sg_table *table)
->>  +{
->>  +	return container_of(table, struct iio_buffer_dma_buf_attachment,=20
->> sg_table);
->>  +}
->>  +
->>  +static void iio_buffer_block_get(struct iio_dma_buffer_block=20
->> *block)
->>  +{
->>  +	get_dma_buf(block->dmabuf);
->>  +}
->>  +
->>  +static void iio_buffer_block_put(struct iio_dma_buffer_block=20
->> *block)
->>  +{
->>  +	dma_buf_put(block->dmabuf);
->>  +}
->>  +
->>  +static int iio_buffer_dma_buf_attach(struct dma_buf *dbuf,
->>  +				     struct dma_buf_attachment *at)
->>  +{
->>  +	at->priv =3D dbuf->priv;
->>  +
->>  +	return 0;
->>  +}
->>  +
->>  +static struct sg_table *iio_buffer_dma_buf_map(struct=20
->> dma_buf_attachment *at,
->>  +					       enum dma_data_direction dma_dir)
->>  +{
->>  +	struct iio_dma_buffer_block *block =3D at->priv;
->>  +	struct iio_buffer_dma_buf_attachment *dba;
->>  +	int ret;
->>  +
->>  +	dba =3D kzalloc(sizeof(*dba), GFP_KERNEL);
->>  +	if (!dba)
->>  +		return ERR_PTR(-ENOMEM);
->>  +
->>  +	sg_init_one(&dba->sgl, block->vaddr, PAGE_ALIGN(block->size));
->>  +	dba->sg_table.sgl =3D &dba->sgl;
->>  +	dba->sg_table.nents =3D 1;
->>  +	dba->block =3D block;
->>  +
->>  +	ret =3D dma_map_sgtable(at->dev, &dba->sg_table, dma_dir, 0);
->>  +	if (ret) {
->>  +		kfree(dba);
->>  +		return ERR_PTR(ret);
->>  +	}
->>  +
->>  +	return &dba->sg_table;
->>  +}
->>  +
->>  +static void iio_buffer_dma_buf_unmap(struct dma_buf_attachment *at,
->>  +				     struct sg_table *sg_table,
->>  +				     enum dma_data_direction dma_dir)
->>  +{
->>  +	struct iio_buffer_dma_buf_attachment *dba =3D
->>  +		to_iio_buffer_dma_buf_attachment(sg_table);
->>  +
->>  +	dma_unmap_sgtable(at->dev, &dba->sg_table, dma_dir, 0);
->>  +	kfree(dba);
->>  +}
->>  +
->>  +static void iio_buffer_dma_buf_release(struct dma_buf *dbuf)
->>  +{
->>  +	struct iio_dma_buffer_block *block =3D dbuf->priv;
->>  +	struct iio_dma_buffer_queue *queue =3D block->queue;
->>  +
->>  +	WARN_ON(block->state !=3D IIO_BLOCK_STATE_DEAD);
->>  +
->>  +	mutex_lock(&queue->lock);
->>  +
->>  +	dma_free_coherent(queue->dev, PAGE_ALIGN(block->size),
->>  +			  block->vaddr, block->phys_addr);
->>  +	kfree(block);
->>  +
->>  +	mutex_unlock(&queue->lock);
->>  +	iio_buffer_put(&queue->buffer);
->>  +}
->>  +
->>  +static const struct dma_buf_ops iio_dma_buffer_dmabuf_ops =3D {
->>  +	.attach			=3D iio_buffer_dma_buf_attach,
->>  +	.map_dma_buf		=3D iio_buffer_dma_buf_map,
->>  +	.unmap_dma_buf		=3D iio_buffer_dma_buf_unmap,
->>  +	.release		=3D iio_buffer_dma_buf_release,
->>  +};
->>  +
->>   static struct iio_dma_buffer_block *iio_dma_buffer_alloc_block(
->>   	struct iio_dma_buffer_queue *queue, size_t size)
->>   {
->>   	struct iio_dma_buffer_block *block;
->>  +	DEFINE_DMA_BUF_EXPORT_INFO(einfo);
->>  +	struct dma_buf *dmabuf;
->>  +	int err =3D -ENOMEM;
->>=20
->>   	block =3D kzalloc(sizeof(*block), GFP_KERNEL);
->>   	if (!block)
->>  -		return NULL;
->>  +		return ERR_PTR(err);
->>=20
->>   	block->vaddr =3D dma_alloc_coherent(queue->dev, PAGE_ALIGN(size),
->>   		&block->phys_addr, GFP_KERNEL);
->>  -	if (!block->vaddr) {
->>  -		kfree(block);
->>  -		return NULL;
->>  +	if (!block->vaddr)
->>  +		goto err_free_block;
->>  +
->>  +	einfo.ops =3D &iio_dma_buffer_dmabuf_ops;
->>  +	einfo.size =3D PAGE_ALIGN(size);
->>  +	einfo.priv =3D block;
->>  +	einfo.flags =3D O_RDWR;
->>  +
->>  +	dmabuf =3D dma_buf_export(&einfo);
->>  +	if (IS_ERR(dmabuf)) {
->>  +		err =3D PTR_ERR(dmabuf);
->>  +		goto err_free_dma;
->>   	}
->>=20
->>  +	block->dmabuf =3D dmabuf;
->>   	block->size =3D size;
->>   	block->state =3D IIO_BLOCK_STATE_DONE;
->>   	block->queue =3D queue;
->>   	INIT_LIST_HEAD(&block->head);
->>  -	kref_init(&block->kref);
->>=20
->>   	iio_buffer_get(&queue->buffer);
->>=20
->>   	return block;
->>  +
->>  +err_free_dma:
->>  +	dma_free_coherent(queue->dev, PAGE_ALIGN(size),
->>  +			  block->vaddr, block->phys_addr);
->>  +err_free_block:
->>  +	kfree(block);
->>  +	return ERR_PTR(err);
->>   }
->>=20
->>   static void _iio_dma_buffer_block_done(struct iio_dma_buffer_block=20
->> *block)
->>  @@ -223,7 +266,7 @@ void iio_dma_buffer_block_done(struct=20
->> iio_dma_buffer_block *block)
->>   	_iio_dma_buffer_block_done(block);
->>   	spin_unlock_irqrestore(&queue->list_lock, flags);
->>=20
->>  -	iio_buffer_block_put_atomic(block);
->>  +	iio_buffer_block_put(block);
->>   	iio_dma_buffer_queue_wake(queue);
->>   }
->>   EXPORT_SYMBOL_GPL(iio_dma_buffer_block_done);
->>  @@ -249,7 +292,8 @@ void iio_dma_buffer_block_list_abort(struct=20
->> iio_dma_buffer_queue *queue,
->>   		list_del(&block->head);
->>   		block->bytes_used =3D 0;
->>   		_iio_dma_buffer_block_done(block);
->>  -		iio_buffer_block_put_atomic(block);
->>  +
->>  +		iio_buffer_block_put(block);
->>   	}
->>   	spin_unlock_irqrestore(&queue->list_lock, flags);
->>=20
->>  @@ -340,8 +384,8 @@ int iio_dma_buffer_request_update(struct=20
->> iio_buffer *buffer)
->>=20
->>   		if (!block) {
->>   			block =3D iio_dma_buffer_alloc_block(queue, size);
->>  -			if (!block) {
->>  -				ret =3D -ENOMEM;
->>  +			if (IS_ERR(block)) {
->>  +				ret =3D PTR_ERR(block);
->>   				goto out_unlock;
->>   			}
->>   			queue->fileio.blocks[i] =3D block;
->>  diff --git a/include/linux/iio/buffer-dma.h=20
->> b/include/linux/iio/buffer-dma.h
->>  index 490b93f76fa8..6b3fa7d2124b 100644
->>  --- a/include/linux/iio/buffer-dma.h
->>  +++ b/include/linux/iio/buffer-dma.h
->>  @@ -8,7 +8,6 @@
->>   #define __INDUSTRIALIO_DMA_BUFFER_H__
->>=20
->>   #include <linux/list.h>
->>  -#include <linux/kref.h>
->>   #include <linux/spinlock.h>
->>   #include <linux/mutex.h>
->>   #include <linux/iio/buffer_impl.h>
->>  @@ -16,6 +15,7 @@
->>   struct iio_dma_buffer_queue;
->>   struct iio_dma_buffer_ops;
->>   struct device;
->>  +struct dma_buf;
->>=20
->>   /**
->>    * enum iio_block_state - State of a struct iio_dma_buffer_block
->>  @@ -39,8 +39,8 @@ enum iio_block_state {
->>    * @vaddr: Virutal address of the blocks memory
->>    * @phys_addr: Physical address of the blocks memory
->>    * @queue: Parent DMA buffer queue
->>  - * @kref: kref used to manage the lifetime of block
->>    * @state: Current state of the block
->>  + * @dmabuf: Underlying DMABUF object
->>    */
->>   struct iio_dma_buffer_block {
->>   	/* May only be accessed by the owner of the block */
->>  @@ -56,13 +56,13 @@ struct iio_dma_buffer_block {
->>   	size_t size;
->>   	struct iio_dma_buffer_queue *queue;
->>=20
->>  -	/* Must not be accessed outside the core. */
->>  -	struct kref kref;
->>   	/*
->>   	 * Must not be accessed outside the core. Access needs to hold
->>   	 * queue->list_lock if the block is not owned by the core.
->>   	 */
->>   	enum iio_block_state state;
->>  +
->>  +	struct dma_buf *dmabuf;
->>   };
->>=20
->>   /**
->=20
-
-
+It looks like debugging that you add when you're bringing something up.
+ I'm not sure of its utility going forward.  I'd just zap it for now and
+bring it back later if it's really needed.
