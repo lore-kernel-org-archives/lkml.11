@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EBBFC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 01:34:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BBB6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 01:34:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237292AbiC1Bfq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 21:35:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53858 "EHLO
+        id S237300AbiC1Bft (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 21:35:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229867AbiC1Bfm (ORCPT
+        with ESMTP id S237286AbiC1Bfp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 21:35:42 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4B8D220D8
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 18:34:02 -0700 (PDT)
-Received: from kwepemi100013.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KRZwT5XMcz1GCx0;
-        Mon, 28 Mar 2022 09:33:45 +0800 (CST)
+        Sun, 27 Mar 2022 21:35:45 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 902E2220E1
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 18:34:05 -0700 (PDT)
+Received: from kwepemi500023.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KRZwX6Q8Gzcb6T;
+        Mon, 28 Mar 2022 09:33:48 +0800 (CST)
 Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- kwepemi100013.china.huawei.com (7.221.188.136) with Microsoft SMTP Server
+ kwepemi500023.china.huawei.com (7.221.188.76) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 28 Mar 2022 09:33:59 +0800
+ 15.1.2375.24; Mon, 28 Mar 2022 09:34:03 +0800
 Received: from localhost.localdomain (10.175.112.125) by
  kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 28 Mar 2022 09:33:58 +0800
+ 15.1.2308.21; Mon, 28 Mar 2022 09:34:02 +0800
 From:   Tong Tiangen <tongtiangen@huawei.com>
 To:     Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
@@ -42,9 +42,9 @@ CC:     <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-riscv@lists.infradead.org>,
         Tong Tiangen <tongtiangen@huawei.com>
-Subject: [PATCH -next v3 1/4] mm: page_table_check: move pxx_user_accessible_page into x86
-Date:   Mon, 28 Mar 2022 01:52:39 +0000
-Message-ID: <20220328015242.1136836-2-tongtiangen@huawei.com>
+Subject: [PATCH -next v3 3/4] arm64: mm: add support for page table check
+Date:   Mon, 28 Mar 2022 01:52:41 +0000
+Message-ID: <20220328015242.1136836-4-tongtiangen@huawei.com>
 X-Mailer: git-send-email 2.18.0.huawei.25
 In-Reply-To: <20220328015242.1136836-1-tongtiangen@huawei.com>
 References: <20220328015242.1136836-1-tongtiangen@huawei.com>
@@ -60,91 +60,173 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kefeng Wang <wangkefeng.wang@huawei.com>
 
-The pxx_user_accessible_page() check the PTE bit, it's
-architecture-specific code, move them into x86's pgtable.h,
-also add default PMD/PUD_PAGE_SIZE definition, it's prepare
-for support page table check feature on new architecture.
+As commit d283d422c6c4 ("x86: mm: add x86_64 support for page table
+check"), add some necessary page table check hooks into routines that
+modify user page tables.
 
 Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
-Acked-by: Pasha Tatashin <pasha.tatashin@soleen.com>
+Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
+Reviewed-by: Pasha Tatashin <pasha.tatashin@soleen.com>
 ---
- arch/x86/include/asm/pgtable.h | 19 +++++++++++++++++++
- mm/page_table_check.c          | 25 ++++++++-----------------
- 2 files changed, 27 insertions(+), 17 deletions(-)
+ arch/arm64/Kconfig               |  1 +
+ arch/arm64/include/asm/pgtable.h | 65 +++++++++++++++++++++++++++++---
+ 2 files changed, 61 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/include/asm/pgtable.h b/arch/x86/include/asm/pgtable.h
-index 62ab07e24aef..8cd6514e3052 100644
---- a/arch/x86/include/asm/pgtable.h
-+++ b/arch/x86/include/asm/pgtable.h
-@@ -1430,6 +1430,25 @@ static inline bool arch_faults_on_old_pte(void)
- 	return false;
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index ba8e5a6b66aa..a7ce128b841e 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -91,6 +91,7 @@ config ARM64
+ 	select ARCH_SUPPORTS_ATOMIC_RMW
+ 	select ARCH_SUPPORTS_INT128 if CC_HAS_INT128
+ 	select ARCH_SUPPORTS_NUMA_BALANCING
++	select ARCH_SUPPORTS_PAGE_TABLE_CHECK
+ 	select ARCH_WANT_COMPAT_IPC_PARSE_VERSION if COMPAT
+ 	select ARCH_WANT_DEFAULT_BPF_JIT
+ 	select ARCH_WANT_DEFAULT_TOPDOWN_MMAP_LAYOUT
+diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgtable.h
+index 94e147e5456c..30ed787b5df3 100644
+--- a/arch/arm64/include/asm/pgtable.h
++++ b/arch/arm64/include/asm/pgtable.h
+@@ -33,6 +33,7 @@
+ #include <linux/mmdebug.h>
+ #include <linux/mm_types.h>
+ #include <linux/sched.h>
++#include <linux/page_table_check.h>
+ 
+ #ifdef CONFIG_TRANSPARENT_HUGEPAGE
+ #define __HAVE_ARCH_FLUSH_PMD_TLB_RANGE
+@@ -96,6 +97,7 @@ static inline pteval_t __phys_to_pte_val(phys_addr_t phys)
+ #define pte_young(pte)		(!!(pte_val(pte) & PTE_AF))
+ #define pte_special(pte)	(!!(pte_val(pte) & PTE_SPECIAL))
+ #define pte_write(pte)		(!!(pte_val(pte) & PTE_WRITE))
++#define pte_user(pte)		(!!(pte_val(pte) & PTE_USER))
+ #define pte_user_exec(pte)	(!(pte_val(pte) & PTE_UXN))
+ #define pte_cont(pte)		(!!(pte_val(pte) & PTE_CONT))
+ #define pte_devmap(pte)		(!!(pte_val(pte) & PTE_DEVMAP))
+@@ -312,7 +314,7 @@ static inline void __check_racy_pte_update(struct mm_struct *mm, pte_t *ptep,
+ 		     __func__, pte_val(old_pte), pte_val(pte));
  }
  
+-static inline void set_pte_at(struct mm_struct *mm, unsigned long addr,
++static inline void __set_pte_at(struct mm_struct *mm, unsigned long addr,
+ 			      pte_t *ptep, pte_t pte)
+ {
+ 	if (pte_present(pte) && pte_user_exec(pte) && !pte_special(pte))
+@@ -343,6 +345,13 @@ static inline void set_pte_at(struct mm_struct *mm, unsigned long addr,
+ 	set_pte(ptep, pte);
+ }
+ 
++static inline void set_pte_at(struct mm_struct *mm, unsigned long addr,
++			      pte_t *ptep, pte_t pte)
++{
++	page_table_check_pte_set(mm, addr, ptep, pte);
++	return __set_pte_at(mm, addr, ptep, pte);
++}
++
+ /*
+  * Huge pte definitions.
+  */
+@@ -438,6 +447,8 @@ static inline int pmd_trans_huge(pmd_t pmd)
+ #define pmd_dirty(pmd)		pte_dirty(pmd_pte(pmd))
+ #define pmd_young(pmd)		pte_young(pmd_pte(pmd))
+ #define pmd_valid(pmd)		pte_valid(pmd_pte(pmd))
++#define pmd_user(pmd)		pte_user(pmd_pte(pmd))
++#define pmd_user_exec(pmd)	pte_user_exec(pmd_pte(pmd))
+ #define pmd_cont(pmd)		pte_cont(pmd_pte(pmd))
+ #define pmd_wrprotect(pmd)	pte_pmd(pte_wrprotect(pmd_pte(pmd)))
+ #define pmd_mkold(pmd)		pte_pmd(pte_mkold(pmd_pte(pmd)))
+@@ -485,8 +496,19 @@ static inline pmd_t pmd_mkdevmap(pmd_t pmd)
+ #define pud_pfn(pud)		((__pud_to_phys(pud) & PUD_MASK) >> PAGE_SHIFT)
+ #define pfn_pud(pfn,prot)	__pud(__phys_to_pud_val((phys_addr_t)(pfn) << PAGE_SHIFT) | pgprot_val(prot))
+ 
+-#define set_pmd_at(mm, addr, pmdp, pmd)	set_pte_at(mm, addr, (pte_t *)pmdp, pmd_pte(pmd))
+-#define set_pud_at(mm, addr, pudp, pud)	set_pte_at(mm, addr, (pte_t *)pudp, pud_pte(pud))
++static inline void set_pmd_at(struct mm_struct *mm, unsigned long addr,
++			      pmd_t *pmdp, pmd_t pmd)
++{
++	page_table_check_pmd_set(mm, addr, pmdp, pmd);
++	return __set_pte_at(mm, addr, (pte_t *)pmdp, pmd_pte(pmd));
++}
++
++static inline void set_pud_at(struct mm_struct *mm, unsigned long addr,
++			      pud_t *pudp, pud_t pud)
++{
++	page_table_check_pud_set(mm, addr, pudp, pud);
++	return __set_pte_at(mm, addr, (pte_t *)pudp, pud_pte(pud));
++}
+ 
+ #define __p4d_to_phys(p4d)	__pte_to_phys(p4d_pte(p4d))
+ #define __phys_to_p4d_val(phys)	__phys_to_pte_val(phys)
+@@ -627,6 +649,24 @@ static inline unsigned long pmd_page_vaddr(pmd_t pmd)
+ #define pud_present(pud)	pte_present(pud_pte(pud))
+ #define pud_leaf(pud)		pud_sect(pud)
+ #define pud_valid(pud)		pte_valid(pud_pte(pud))
++#define pud_user(pud)		pte_user(pud_pte(pud))
++
 +#ifdef CONFIG_PAGE_TABLE_CHECK
 +static inline bool pte_user_accessible_page(pte_t pte)
 +{
-+	return (pte_val(pte) & _PAGE_PRESENT) && (pte_val(pte) & _PAGE_USER);
++	return pte_present(pte) && (pte_user(pte) || pte_user_exec(pte));
 +}
 +
 +static inline bool pmd_user_accessible_page(pmd_t pmd)
 +{
-+	return pmd_leaf(pmd) && (pmd_val(pmd) & _PAGE_PRESENT) &&
-+		(pmd_val(pmd) & _PAGE_USER);
++	return pmd_present(pmd) && (pmd_user(pmd) || pmd_user_exec(pmd));
 +}
 +
 +static inline bool pud_user_accessible_page(pud_t pud)
 +{
-+	return pud_leaf(pud) && (pud_val(pud) & _PAGE_PRESENT) &&
-+		(pud_val(pud) & _PAGE_USER);
++	return pud_present(pud) && pud_user(pud);
 +}
 +#endif
-+
- #endif	/* __ASSEMBLY__ */
  
- #endif /* _ASM_X86_PGTABLE_H */
-diff --git a/mm/page_table_check.c b/mm/page_table_check.c
-index 2458281bff89..145f059d1c4d 100644
---- a/mm/page_table_check.c
-+++ b/mm/page_table_check.c
-@@ -10,6 +10,14 @@
- #undef pr_fmt
- #define pr_fmt(fmt)	"page_table_check: " fmt
+ static inline void set_pud(pud_t *pudp, pud_t pud)
+ {
+@@ -856,11 +896,21 @@ static inline int pmdp_test_and_clear_young(struct vm_area_struct *vma,
+ }
+ #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
  
-+#ifndef PMD_PAGE_SIZE
-+#define PMD_PAGE_SIZE	PMD_SIZE
-+#endif
++static inline pte_t __ptep_get_and_clear(struct mm_struct *mm,
++				       unsigned long address, pte_t *ptep)
++{
++	return __pte(xchg_relaxed(&pte_val(*ptep), 0));
++}
 +
-+#ifndef PUD_PAGE_SIZE
-+#define PUD_PAGE_SIZE	PUD_SIZE
-+#endif
+ #define __HAVE_ARCH_PTEP_GET_AND_CLEAR
+ static inline pte_t ptep_get_and_clear(struct mm_struct *mm,
+ 				       unsigned long address, pte_t *ptep)
+ {
+-	return __pte(xchg_relaxed(&pte_val(*ptep), 0));
++	pte_t pte = __ptep_get_and_clear(mm, address, ptep);
 +
- struct page_table_check {
- 	atomic_t anon_map_count;
- 	atomic_t file_map_count;
-@@ -52,23 +60,6 @@ static struct page_table_check *get_page_table_check(struct page_ext *page_ext)
- 	return (void *)(page_ext) + page_table_check_ops.offset;
++	page_table_check_pte_clear(mm, address, pte);
++
++	return pte;
  }
  
--static inline bool pte_user_accessible_page(pte_t pte)
--{
--	return (pte_val(pte) & _PAGE_PRESENT) && (pte_val(pte) & _PAGE_USER);
--}
--
--static inline bool pmd_user_accessible_page(pmd_t pmd)
--{
--	return pmd_leaf(pmd) && (pmd_val(pmd) & _PAGE_PRESENT) &&
--		(pmd_val(pmd) & _PAGE_USER);
--}
--
--static inline bool pud_user_accessible_page(pud_t pud)
--{
--	return pud_leaf(pud) && (pud_val(pud) & _PAGE_PRESENT) &&
--		(pud_val(pud) & _PAGE_USER);
--}
--
- /*
-  * An enty is removed from the page table, decrement the counters for that page
-  * verify that it is of correct type and counters do not become negative.
+ #ifdef CONFIG_TRANSPARENT_HUGEPAGE
+@@ -868,7 +918,11 @@ static inline pte_t ptep_get_and_clear(struct mm_struct *mm,
+ static inline pmd_t pmdp_huge_get_and_clear(struct mm_struct *mm,
+ 					    unsigned long address, pmd_t *pmdp)
+ {
+-	return pte_pmd(ptep_get_and_clear(mm, address, (pte_t *)pmdp));
++	pmd_t pmd = pte_pmd(__ptep_get_and_clear(mm, address, (pte_t *)pmdp));
++
++	page_table_check_pmd_clear(mm, address, pmd);
++
++	return pmd;
+ }
+ #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+ 
+@@ -902,6 +956,7 @@ static inline void pmdp_set_wrprotect(struct mm_struct *mm,
+ static inline pmd_t pmdp_establish(struct vm_area_struct *vma,
+ 		unsigned long address, pmd_t *pmdp, pmd_t pmd)
+ {
++	page_table_check_pmd_set(vma->vm_mm, address, pmdp, pmd);
+ 	return __pmd(xchg_relaxed(&pmd_val(*pmdp), pmd_val(pmd)));
+ }
+ #endif
 -- 
 2.18.0.huawei.25
 
