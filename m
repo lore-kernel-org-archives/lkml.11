@@ -2,250 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10447C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:43:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F76AC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:44:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242547AbiC1Lni (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:43:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38158 "EHLO
+        id S243120AbiC1LoX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:44:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242041AbiC1LeB (ORCPT
+        with ESMTP id S241874AbiC1Ldz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:34:01 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 225D82AF3;
-        Mon, 28 Mar 2022 04:25:14 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Mon, 28 Mar 2022 07:33:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88FEE58E6D;
+        Mon, 28 Mar 2022 04:24:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 7F48422248;
-        Mon, 28 Mar 2022 13:25:11 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1648466711;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zBw+PYlzDnA680TyMVGBJYf23zpR2sb+VpxY5mvvU9I=;
-        b=vLCRgnd8MfJftkjWMSnRCUsvnW1ULm+gTn2AMh9LNgY/JQOtNe1qQ+DaQe5IsKkKHboYYw
-        jAJN0M27y7MQNQJY/4szyRLF3GP/qjs67iAkkue3bUc/EKwGENMTiSpOpXtTLNxDKj9lu0
-        judQLNVfV8u/IgJL/vp8Ock8+KqR2Dw=
-From:   Michael Walle <michael@walle.cc>
-To:     Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
-Subject: [PATCH v2 1/4] lib: add generic polynomial calculation
-Date:   Mon, 28 Mar 2022 13:25:02 +0200
-Message-Id: <20220328112505.3025374-2-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220328112505.3025374-1-michael@walle.cc>
-References: <20220328112505.3025374-1-michael@walle.cc>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B8E76122E;
+        Mon, 28 Mar 2022 11:24:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B28D6C34110;
+        Mon, 28 Mar 2022 11:24:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648466693;
+        bh=JS5FYOtkNEY390+6ZSo/ta/uD5zpzbnuGnFQm+Z78rU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=iNz/D+hK7QngR3j781qzKEYj1Eqf3HBvrry4WgyGsjLk6ceqPMHABk651QYMbtxoJ
+         /4MI5ixwtG2s1TsI8fabrh5Y7EuN7p2Sphs5ZasFTvQGkdSBaYqDcpTwv9Cw2FAJuC
+         9V6bo/A4XJ3+hj28fRpw/iJz6opbfFHJoZMucxJX8Nh2mEkmx7WdIjyIz9CITQR2F/
+         IAIqrcpzhqt69ZagAhKpfNUF3NkZuUe8zsTSPd0T0TfdLinnGZ74uzcN9yQRUS7VQ5
+         6owUlraHVcPotfKrT+7TdF3AQBnWHiDSulgjSUMlCdaKrKwP4iZIKc6XGEFC/EAyTm
+         sHrkGAGxFEFJQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
+        pavel@ucw.cz, len.brown@intel.com, gregkh@linuxfoundation.org,
+        linux-pm@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 7/8] PM: core: keep irq flags in device_pm_check_callbacks()
+Date:   Mon, 28 Mar 2022 07:24:38 -0400
+Message-Id: <20220328112440.1557113-7-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220328112440.1557113-1-sashal@kernel.org>
+References: <20220328112440.1557113-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some temperature and voltage sensors use a polynomial to convert between
-raw data points and actual temperature or voltage. The polynomial is
-usually the result of a curve fitting of the diode characteristic.
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-The BT1 PVT hwmon driver already uses such a polynonmial calculation
-which is rather generic. Move it to lib/ so other drivers can reuse it.
+[ Upstream commit 524bb1da785a7ae43dd413cd392b5071c6c367f8 ]
 
-Signed-off-by: Michael Walle <michael@walle.cc>
+The function device_pm_check_callbacks() can be called under the spin
+lock (in the reported case it happens from genpd_add_device() ->
+dev_pm_domain_set(), when the genpd uses spinlocks rather than mutexes.
+
+However this function uncoditionally uses spin_lock_irq() /
+spin_unlock_irq(), thus not preserving the CPU flags. Use the
+irqsave/irqrestore instead.
+
+The backtrace for the reference:
+[    2.752010] ------------[ cut here ]------------
+[    2.756769] raw_local_irq_restore() called with IRQs enabled
+[    2.762596] WARNING: CPU: 4 PID: 1 at kernel/locking/irqflag-debug.c:10 warn_bogus_irq_restore+0x34/0x50
+[    2.772338] Modules linked in:
+[    2.775487] CPU: 4 PID: 1 Comm: swapper/0 Tainted: G S                5.17.0-rc6-00384-ge330d0d82eff-dirty #684
+[    2.781384] Freeing initrd memory: 46024K
+[    2.785839] pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[    2.785841] pc : warn_bogus_irq_restore+0x34/0x50
+[    2.785844] lr : warn_bogus_irq_restore+0x34/0x50
+[    2.785846] sp : ffff80000805b7d0
+[    2.785847] x29: ffff80000805b7d0 x28: 0000000000000000 x27: 0000000000000002
+[    2.785850] x26: ffffd40e80930b18 x25: ffff7ee2329192b8 x24: ffff7edfc9f60800
+[    2.785853] x23: ffffd40e80930b18 x22: ffffd40e80930d30 x21: ffff7edfc0dffa00
+[    2.785856] x20: ffff7edfc09e3768 x19: 0000000000000000 x18: ffffffffffffffff
+[    2.845775] x17: 6572206f74206465 x16: 6c696166203a3030 x15: ffff80008805b4f7
+[    2.853108] x14: 0000000000000000 x13: ffffd40e809550b0 x12: 00000000000003d8
+[    2.860441] x11: 0000000000000148 x10: ffffd40e809550b0 x9 : ffffd40e809550b0
+[    2.867774] x8 : 00000000ffffefff x7 : ffffd40e809ad0b0 x6 : ffffd40e809ad0b0
+[    2.875107] x5 : 000000000000bff4 x4 : 0000000000000000 x3 : 0000000000000000
+[    2.882440] x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff7edfc03a8000
+[    2.889774] Call trace:
+[    2.892290]  warn_bogus_irq_restore+0x34/0x50
+[    2.896770]  _raw_spin_unlock_irqrestore+0x94/0xa0
+[    2.901690]  genpd_unlock_spin+0x20/0x30
+[    2.905724]  genpd_add_device+0x100/0x2d0
+[    2.909850]  __genpd_dev_pm_attach+0xa8/0x23c
+[    2.914329]  genpd_dev_pm_attach_by_id+0xc4/0x190
+[    2.919167]  genpd_dev_pm_attach_by_name+0x3c/0xd0
+[    2.924086]  dev_pm_domain_attach_by_name+0x24/0x30
+[    2.929102]  psci_dt_attach_cpu+0x24/0x90
+[    2.933230]  psci_cpuidle_probe+0x2d4/0x46c
+[    2.937534]  platform_probe+0x68/0xe0
+[    2.941304]  really_probe.part.0+0x9c/0x2fc
+[    2.945605]  __driver_probe_device+0x98/0x144
+[    2.950085]  driver_probe_device+0x44/0x15c
+[    2.954385]  __device_attach_driver+0xb8/0x120
+[    2.958950]  bus_for_each_drv+0x78/0xd0
+[    2.962896]  __device_attach+0xd8/0x180
+[    2.966843]  device_initial_probe+0x14/0x20
+[    2.971144]  bus_probe_device+0x9c/0xa4
+[    2.975092]  device_add+0x380/0x88c
+[    2.978679]  platform_device_add+0x114/0x234
+[    2.983067]  platform_device_register_full+0x100/0x190
+[    2.988344]  psci_idle_init+0x6c/0xb0
+[    2.992113]  do_one_initcall+0x74/0x3a0
+[    2.996060]  kernel_init_freeable+0x2fc/0x384
+[    3.000543]  kernel_init+0x28/0x130
+[    3.004132]  ret_from_fork+0x10/0x20
+[    3.007817] irq event stamp: 319826
+[    3.011404] hardirqs last  enabled at (319825): [<ffffd40e7eda0268>] __up_console_sem+0x78/0x84
+[    3.020332] hardirqs last disabled at (319826): [<ffffd40e7fd6d9d8>] el1_dbg+0x24/0x8c
+[    3.028458] softirqs last  enabled at (318312): [<ffffd40e7ec90410>] _stext+0x410/0x588
+[    3.036678] softirqs last disabled at (318299): [<ffffd40e7ed1bf68>] __irq_exit_rcu+0x158/0x174
+[    3.045607] ---[ end trace 0000000000000000 ]---
+
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/polynomial.h |  35 ++++++++++++
- lib/Kconfig                |   3 ++
- lib/Makefile               |   2 +
- lib/polynomial.c           | 108 +++++++++++++++++++++++++++++++++++++
- 4 files changed, 148 insertions(+)
- create mode 100644 include/linux/polynomial.h
- create mode 100644 lib/polynomial.c
+ drivers/base/power/main.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/polynomial.h b/include/linux/polynomial.h
-new file mode 100644
-index 000000000000..9e074a0bb6fa
---- /dev/null
-+++ b/include/linux/polynomial.h
-@@ -0,0 +1,35 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Copyright (C) 2020 BAIKAL ELECTRONICS, JSC
-+ */
-+
-+#ifndef _POLYNOMIAL_H
-+#define _POLYNOMIAL_H
-+
-+/*
-+ * struct polynomial_term - one term descriptor of a polynomial
-+ * @deg: degree of the term.
-+ * @coef: multiplication factor of the term.
-+ * @divider: distributed divider per each degree.
-+ * @divider_leftover: divider leftover, which couldn't be redistributed.
-+ */
-+struct polynomial_term {
-+	unsigned int deg;
-+	long coef;
-+	long divider;
-+	long divider_leftover;
-+};
-+
-+/*
-+ * struct polynomial - a polynomial descriptor
-+ * @total_divider: total data divider.
-+ * @terms: polynomial terms, last term must have degree of 0
-+ */
-+struct polynomial {
-+	long total_divider;
-+	struct polynomial_term terms[];
-+};
-+
-+long polynomial_calc(const struct polynomial *poly, long data);
-+
-+#endif
-diff --git a/lib/Kconfig b/lib/Kconfig
-index 087e06b4cdfd..6a843639814f 100644
---- a/lib/Kconfig
-+++ b/lib/Kconfig
-@@ -737,3 +737,6 @@ config PLDMFW
+diff --git a/drivers/base/power/main.c b/drivers/base/power/main.c
+index 4fd49d55bc3e..3d51e457a4cd 100644
+--- a/drivers/base/power/main.c
++++ b/drivers/base/power/main.c
+@@ -1901,7 +1901,9 @@ static bool pm_ops_is_empty(const struct dev_pm_ops *ops)
  
- config ASN1_ENCODER
-        tristate
+ void device_pm_check_callbacks(struct device *dev)
+ {
+-	spin_lock_irq(&dev->power.lock);
++	unsigned long flags;
 +
-+config POLYNOMIAL
-+       tristate
-diff --git a/lib/Makefile b/lib/Makefile
-index 6b9ffc1bd1ee..89fcae891361 100644
---- a/lib/Makefile
-+++ b/lib/Makefile
-@@ -263,6 +263,8 @@ obj-$(CONFIG_MEMREGION) += memregion.o
- obj-$(CONFIG_STMP_DEVICE) += stmp_device.o
- obj-$(CONFIG_IRQ_POLL) += irq_poll.o
- 
-+obj-$(CONFIG_POLYNOMIAL) += polynomial.o
-+
- # stackdepot.c should not be instrumented or call instrumented functions.
- # Prevent the compiler from calling builtins like memcmp() or bcmp() from this
- # file.
-diff --git a/lib/polynomial.c b/lib/polynomial.c
-new file mode 100644
-index 000000000000..66d383445fec
---- /dev/null
-+++ b/lib/polynomial.c
-@@ -0,0 +1,108 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Generic polynomial calculation using integer coefficients.
-+ *
-+ * Copyright (C) 2020 BAIKAL ELECTRONICS, JSC
-+ *
-+ * Authors:
-+ *   Maxim Kaurkin <maxim.kaurkin@baikalelectronics.ru>
-+ *   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-+ *
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/polynomial.h>
-+
-+/*
-+ * Originally this was part of drivers/hwmon/bt1-pvt.c.
-+ * There the following conversion is used and should serve as an example here:
-+ *
-+ * The original translation formulae of the temperature (in degrees of Celsius)
-+ * to PVT data and vice-versa are following:
-+ *
-+ * N = 1.8322e-8*(T^4) + 2.343e-5*(T^3) + 8.7018e-3*(T^2) + 3.9269*(T^1) +
-+ *     1.7204e2
-+ * T = -1.6743e-11*(N^4) + 8.1542e-8*(N^3) + -1.8201e-4*(N^2) +
-+ *     3.1020e-1*(N^1) - 4.838e1
-+ *
-+ * where T = [-48.380, 147.438]C and N = [0, 1023].
-+ *
-+ * They must be accordingly altered to be suitable for the integer arithmetics.
-+ * The technique is called 'factor redistribution', which just makes sure the
-+ * multiplications and divisions are made so to have a result of the operations
-+ * within the integer numbers limit. In addition we need to translate the
-+ * formulae to accept millidegrees of Celsius. Here what they look like after
-+ * the alterations:
-+ *
-+ * N = (18322e-20*(T^4) + 2343e-13*(T^3) + 87018e-9*(T^2) + 39269e-3*T +
-+ *     17204e2) / 1e4
-+ * T = -16743e-12*(D^4) + 81542e-9*(D^3) - 182010e-6*(D^2) + 310200e-3*D -
-+ *     48380
-+ * where T = [-48380, 147438] mC and N = [0, 1023].
-+ *
-+ * static const struct polynomial poly_temp_to_N = {
-+ *         .total_divider = 10000,
-+ *         .terms = {
-+ *                 {4, 18322, 10000, 10000},
-+ *                 {3, 2343, 10000, 10},
-+ *                 {2, 87018, 10000, 10},
-+ *                 {1, 39269, 1000, 1},
-+ *                 {0, 1720400, 1, 1}
-+ *         }
-+ * };
-+ *
-+ * static const struct polynomial poly_N_to_temp = {
-+ *         .total_divider = 1,
-+ *         .terms = {
-+ *                 {4, -16743, 1000, 1},
-+ *                 {3, 81542, 1000, 1},
-+ *                 {2, -182010, 1000, 1},
-+ *                 {1, 310200, 1000, 1},
-+ *                 {0, -48380, 1, 1}
-+ *         }
-+ * };
-+ */
-+
-+/**
-+ * polynomial_calc - calculate a polynomial using integer arithmetic
-+ *
-+ * @poly: pointer to the descriptor of the polynomial
-+ * @data: input value of the polynimal
-+ *
-+ * Calculate the result of a polynomial using only integer arithmetic. For
-+ * this to work without too much loss of precision the coefficients has to
-+ * be altered. This is called factor redistribution.
-+ *
-+ * Returns the result of the polynomial calculation.
-+ */
-+long polynomial_calc(const struct polynomial *poly, long data)
-+{
-+	const struct polynomial_term *term = poly->terms;
-+	long total_divider = poly->total_divider ?: 1;
-+	long tmp, ret = 0;
-+	int deg;
-+
-+	/*
-+	 * Here is the polynomial calculation function, which performs the
-+	 * redistributed terms calculations. It's pretty straightforward.
-+	 * We walk over each degree term up to the free one, and perform
-+	 * the redistributed multiplication of the term coefficient, its
-+	 * divider (as for the rationale fraction representation), data
-+	 * power and the rational fraction divider leftover. Then all of
-+	 * this is collected in a total sum variable, which value is
-+	 * normalized by the total divider before being returned.
-+	 */
-+	do {
-+		tmp = term->coef;
-+		for (deg = 0; deg < term->deg; ++deg)
-+			tmp = mult_frac(tmp, data, term->divider);
-+		ret += tmp / term->divider_leftover;
-+	} while ((term++)->deg);
-+
-+	return ret / total_divider;
-+}
-+EXPORT_SYMBOL_GPL(polynomial_calc);
-+
-+MODULE_DESCRIPTION("Generic polynomial calculations");
-+MODULE_LICENSE("GPL");
++	spin_lock_irqsave(&dev->power.lock, flags);
+ 	dev->power.no_pm_callbacks =
+ 		(!dev->bus || (pm_ops_is_empty(dev->bus->pm) &&
+ 		 !dev->bus->suspend && !dev->bus->resume)) &&
+@@ -1911,5 +1913,5 @@ void device_pm_check_callbacks(struct device *dev)
+ 		(!dev->pm_domain || pm_ops_is_empty(&dev->pm_domain->ops)) &&
+ 		(!dev->driver || (pm_ops_is_empty(dev->driver->pm) &&
+ 		 !dev->driver->suspend && !dev->driver->resume));
+-	spin_unlock_irq(&dev->power.lock);
++	spin_unlock_irqrestore(&dev->power.lock, flags);
+ }
 -- 
-2.30.2
+2.34.1
 
