@@ -2,45 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22811C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:27:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFEEAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:27:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229980AbiC1L2y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:28:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57160 "EHLO
+        id S239690AbiC1L3E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:29:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237948AbiC1LW3 (ORCPT
+        with ESMTP id S240794AbiC1LW2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:22:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86FFC56C3F;
-        Mon, 28 Mar 2022 04:19:35 -0700 (PDT)
+        Mon, 28 Mar 2022 07:22:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 136C85576B;
+        Mon, 28 Mar 2022 04:19:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 141B26114A;
-        Mon, 28 Mar 2022 11:19:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95963C340EC;
-        Mon, 28 Mar 2022 11:19:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DE6B7B80ED8;
+        Mon, 28 Mar 2022 11:19:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86BD7C340ED;
+        Mon, 28 Mar 2022 11:19:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466374;
-        bh=eIRS4p7zo1cUJrb/T2hKO+d1LleZqfjg6q8qyY7uGqg=;
+        s=k20201202; t=1648466371;
+        bh=pT6/DAmDXjGCpbuqTH9UFCdOrBgFQpXkJTY1gkTsc4k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YeVVLejTAL7ekmog0939Ue+ajs8JDEdHdj8QV3S+fZMdyysCrsr9qW+OmUZmnw0VL
-         u9pPObz6I2K7iyosUEtpEHC8N3fN/CPA9XWYTkVz2SnRv/DYwhIHII/cM4+tjg8R56
-         AtaJzvT4gAybC11QEO/YjsRpSt+HwocEV2tnRaIiq1pZpudn3Q6So1e2/UpDD8yzN6
-         9JeYq+ZIlf6Ri7dSvl3jKGqVv6ysY7NRAKEK7NZQv8Bhz8bVY/dx7oryBOlcceCysx
-         6vRjExCBKuD7cVElnsLW7/swEZwAS1kTHL9il1AKMTE5VuDxY4BbEQJkCoeporDL0O
-         njec2i04qZjGw==
+        b=GR7J16DaDCki+yw7lgunwqscHIQjZfLhxU38AwS9vZ79g6kvtAa40jFwjBpGvAOMC
+         RUbuShoOaIrBifOgM1vyQySa/c7nbRRtt+gklfP8Ugl9A68WeSGBPOF7qwGLtIPj1H
+         NqfGK8uCuW1USZvygee++ZrohGhc01o+nbz+gctts1mihe1g244CD1eNK6bC182SPt
+         tx6Em8DXJAHTj7VlCZY+TU1ECkakMTgnHXiPnZVlMJUuQQYeySJ/uBq1ZoN44cDkyM
+         IxlI9Jou24kvRgWoB4/7vyyoqMIbmpKkaQtN4NV3NYz3cicjmAEqTG7WKae+EmdKG9
+         LCGUNBXJagpDA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, robert.moore@intel.com,
-        linux-acpi@vger.kernel.org, devel@acpica.org
-Subject: [PATCH AUTOSEL 5.17 31/43] ACPICA: Avoid walking the ACPI Namespace if it is not there
-Date:   Mon, 28 Mar 2022 07:18:15 -0400
-Message-Id: <20220328111828.1554086-31-sashal@kernel.org>
+Cc:     Oleg Nesterov <oleg@redhat.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
+        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+        peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, luto@kernel.org, frederic@kernel.org,
+        mark.rutland@arm.com, valentin.schneider@arm.com,
+        ebiederm@xmission.com, keescook@chromium.org, elver@google.com,
+        legion@kernel.org
+Subject: [PATCH AUTOSEL 5.17 29/43] signal, x86: Delay calling signals in atomic on RT enabled kernels
+Date:   Mon, 28 Mar 2022 07:18:13 -0400
+Message-Id: <20220328111828.1554086-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220328111828.1554086-1-sashal@kernel.org>
 References: <20220328111828.1554086-1-sashal@kernel.org>
@@ -52,42 +59,185 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+From: Oleg Nesterov <oleg@redhat.com>
 
-[ Upstream commit 0c9992315e738e7d6e927ef36839a466b080dba6 ]
+[ Upstream commit bf9ad37dc8a30cce22ae95d6c2ca6abf8731d305 ]
 
-ACPICA commit b1c3656ef4950098e530be68d4b589584f06cddc
+On x86_64 we must disable preemption before we enable interrupts
+for stack faults, int3 and debugging, because the current task is using
+a per CPU debug stack defined by the IST. If we schedule out, another task
+can come in and use the same stack and cause the stack to be corrupted
+and crash the kernel on return.
 
-Prevent acpi_ns_walk_namespace() from crashing when called with
-start_node equal to ACPI_ROOT_OBJECT if the Namespace has not been
-instantiated yet and acpi_gbl_root_node is NULL.
+When CONFIG_PREEMPT_RT is enabled, spinlock_t locks become sleeping, and
+one of these is the spin lock used in signal handling.
 
-For instance, this can happen if the kernel is run with "acpi=off"
-in the command line.
+Some of the debug code (int3) causes do_trap() to send a signal.
+This function calls a spinlock_t lock that has been converted to a
+sleeping lock. If this happens, the above issues with the corrupted
+stack is possible.
 
-Link: https://github.com/acpica/acpica/commit/b1c3656ef4950098e530be68d4b589584f06cddc
-Link: https://lore.kernel.org/linux-acpi/CAJZ5v0hJWW_vZ3wwajE7xT38aWjY7cZyvqMJpXHzUL98-SiCVQ@mail.gmail.com/
-Reported-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Instead of calling the signal right away, for PREEMPT_RT and x86,
+the signal information is stored on the stacks task_struct and
+TIF_NOTIFY_RESUME is set. Then on exit of the trap, the signal resume
+code will send the signal when preemption is enabled.
+
+[ rostedt: Switched from #ifdef CONFIG_PREEMPT_RT to
+  ARCH_RT_DELAYS_SIGNAL_SEND and added comments to the code. ]
+[bigeasy: Add on 32bit as per Yang Shi, minor rewording. ]
+[ tglx: Use a config option ]
+
+Signed-off-by: Oleg Nesterov <oleg@redhat.com>
+Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lore.kernel.org/r/Ygq5aBB/qMQw6aP5@linutronix.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/acpica/nswalk.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/x86/Kconfig       |  1 +
+ include/linux/sched.h  |  3 +++
+ kernel/Kconfig.preempt | 12 +++++++++++-
+ kernel/entry/common.c  | 14 ++++++++++++++
+ kernel/signal.c        | 40 ++++++++++++++++++++++++++++++++++++++++
+ 5 files changed, 69 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/acpi/acpica/nswalk.c b/drivers/acpi/acpica/nswalk.c
-index 915c2433463d..e7c30ce06e18 100644
---- a/drivers/acpi/acpica/nswalk.c
-+++ b/drivers/acpi/acpica/nswalk.c
-@@ -169,6 +169,9 @@ acpi_ns_walk_namespace(acpi_object_type type,
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 9f5bd41bf660..d557ac29b6cd 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -120,6 +120,7 @@ config X86
+ 	select ARCH_WANTS_NO_INSTR
+ 	select ARCH_WANT_HUGE_PMD_SHARE
+ 	select ARCH_WANT_LD_ORPHAN_WARN
++	select ARCH_WANTS_RT_DELAYED_SIGNALS
+ 	select ARCH_WANTS_THP_SWAP		if X86_64
+ 	select ARCH_HAS_PARANOID_L1D_FLUSH
+ 	select BUILDTIME_TABLE_SORT
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index 75ba8aa60248..098e37fd770a 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -1087,6 +1087,9 @@ struct task_struct {
+ 	/* Restored if set_restore_sigmask() was used: */
+ 	sigset_t			saved_sigmask;
+ 	struct sigpending		pending;
++#ifdef CONFIG_RT_DELAYED_SIGNALS
++	struct kernel_siginfo		forced_info;
++#endif
+ 	unsigned long			sas_ss_sp;
+ 	size_t				sas_ss_size;
+ 	unsigned int			sas_ss_flags;
+diff --git a/kernel/Kconfig.preempt b/kernel/Kconfig.preempt
+index ce77f0265660..5644abd5f8a8 100644
+--- a/kernel/Kconfig.preempt
++++ b/kernel/Kconfig.preempt
+@@ -132,4 +132,14 @@ config SCHED_CORE
+ 	  which is the likely usage by Linux distributions, there should
+ 	  be no measurable impact on performance.
  
- 	if (start_node == ACPI_ROOT_OBJECT) {
- 		start_node = acpi_gbl_root_node;
-+		if (!start_node) {
-+			return_ACPI_STATUS(AE_NO_NAMESPACE);
-+		}
- 	}
+-
++config ARCH_WANTS_RT_DELAYED_SIGNALS
++	bool
++	help
++	  This option is selected by architectures where raising signals
++	  can happen in atomic contexts on PREEMPT_RT enabled kernels. This
++	  option delays raising the signal until the return to user space
++	  loop where it is also delivered. X86 requires this to deliver
++	  signals from trap handlers which run on IST stacks.
++
++config RT_DELAYED_SIGNALS
++	def_bool PREEMPT_RT && ARCH_WANTS_RT_DELAYED_SIGNALS
+diff --git a/kernel/entry/common.c b/kernel/entry/common.c
+index bad713684c2e..0543a2c92f20 100644
+--- a/kernel/entry/common.c
++++ b/kernel/entry/common.c
+@@ -148,6 +148,18 @@ static void handle_signal_work(struct pt_regs *regs, unsigned long ti_work)
+ 	arch_do_signal_or_restart(regs, ti_work & _TIF_SIGPENDING);
+ }
  
- 	/* Null child means "get first node" */
++#ifdef CONFIG_RT_DELAYED_SIGNALS
++static inline void raise_delayed_signal(void)
++{
++	if (unlikely(current->forced_info.si_signo)) {
++		force_sig_info(&current->forced_info);
++		current->forced_info.si_signo = 0;
++	}
++}
++#else
++static inline void raise_delayed_signal(void) { }
++#endif
++
+ static unsigned long exit_to_user_mode_loop(struct pt_regs *regs,
+ 					    unsigned long ti_work)
+ {
+@@ -162,6 +174,8 @@ static unsigned long exit_to_user_mode_loop(struct pt_regs *regs,
+ 		if (ti_work & _TIF_NEED_RESCHED)
+ 			schedule();
+ 
++		raise_delayed_signal();
++
+ 		if (ti_work & _TIF_UPROBE)
+ 			uprobe_notify_resume(regs);
+ 
+diff --git a/kernel/signal.c b/kernel/signal.c
+index 9b04631acde8..e93de6daa188 100644
+--- a/kernel/signal.c
++++ b/kernel/signal.c
+@@ -1307,6 +1307,43 @@ enum sig_handler {
+ 	HANDLER_EXIT,	 /* Only visible as the process exit code */
+ };
+ 
++/*
++ * On some archictectures, PREEMPT_RT has to delay sending a signal from a
++ * trap since it cannot enable preemption, and the signal code's
++ * spin_locks turn into mutexes. Instead, it must set TIF_NOTIFY_RESUME
++ * which will send the signal on exit of the trap.
++ */
++#ifdef CONFIG_RT_DELAYED_SIGNALS
++static inline bool force_sig_delayed(struct kernel_siginfo *info,
++				     struct task_struct *t)
++{
++	if (!in_atomic())
++		return false;
++
++	if (WARN_ON_ONCE(t->forced_info.si_signo))
++		return true;
++
++	if (is_si_special(info)) {
++		WARN_ON_ONCE(info != SEND_SIG_PRIV);
++		t->forced_info.si_signo = info->si_signo;
++		t->forced_info.si_errno = 0;
++		t->forced_info.si_code = SI_KERNEL;
++		t->forced_info.si_pid = 0;
++		t->forced_info.si_uid = 0;
++	} else {
++		t->forced_info = *info;
++	}
++	set_tsk_thread_flag(t, TIF_NOTIFY_RESUME);
++	return true;
++}
++#else
++static inline bool force_sig_delayed(struct kernel_siginfo *info,
++				     struct task_struct *t)
++{
++	return false;
++}
++#endif
++
+ /*
+  * Force a signal that the process can't ignore: if necessary
+  * we unblock the signal and change any SIG_IGN to SIG_DFL.
+@@ -1327,6 +1364,9 @@ force_sig_info_to_task(struct kernel_siginfo *info, struct task_struct *t,
+ 	struct k_sigaction *action;
+ 	int sig = info->si_signo;
+ 
++	if (force_sig_delayed(info, t))
++		return 0;
++
+ 	spin_lock_irqsave(&t->sighand->siglock, flags);
+ 	action = &t->sighand->action[sig-1];
+ 	ignored = action->sa.sa_handler == SIG_IGN;
 -- 
 2.34.1
 
