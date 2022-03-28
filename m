@@ -2,227 +2,629 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AA7BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 06:17:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63393C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 06:18:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238374AbiC1GSl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 02:18:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35590 "EHLO
+        id S235693AbiC1GUd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 02:20:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238408AbiC1GRv (ORCPT
+        with ESMTP id S229966AbiC1GU3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 02:17:51 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2041.outbound.protection.outlook.com [40.107.244.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98BF52E9C9;
-        Sun, 27 Mar 2022 23:16:06 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kBL+E3FhpgepBlSjfL8Ve1SJ0cEL5Da59dP0vCCIJxEIAhmsVeGDWRObertidcr+wJOkSE1G5uHZFa3dxLQzN5Xi5XlLl/6SS5HsJkcTax5P8QkSogJdAzW2baxDtQxTK9Dba3GFW39oDVnz9HwggIFtIfyQXwGDn1KZIBn/GKbu3v88sEjj7FNsFEPKf4baneNnCPWCCpEMl5xx06hWgcPeuUxDFC8uMZ7u2mUHP8GR84izEE2Me4gf6fztzukk1LpGqURK1xm48XX/kDU9kas6hjQ4ptjDm+M8DkfgDQ3a0C+ZVgAGsyDbplzYkSCJJrfau2vex954R7P1YpvG8g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XVbAgiWj7uQBw+VCLMddmZGQpgzkOz+iiy3XW8lKpUY=;
- b=caM1H1mUhgRzerC2l/HdtDjagnERnzk2AnY0mqbJ6P+kn6dsU38aXLpEOda+oT6xeSrMwBpbsBrLvoGefbgSRgbpEXghkh3C9QcW5D6QQ3Tq6Vlhmfph2ye0tacf1oduPfVZoftPayL7isZcYjqnUrm02xZQd++xXGN6kwANKsFjDHyYSPIe8ZMQZaocGaD4mGK9q8MRCaQ7fNrh1QzQ/3F2wPOgaRwTjly/tGZm2Dtlw3YiQ9lKbpJOMsRuJlTp8EHeTzw/dY7xFJC+BsD6H+7Hj51RahglpYVl68J6eD4sI6/TRO5FkFrwjWptYJpJXrKNg//ELGAAIEFP34w8eQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
- (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
- (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XVbAgiWj7uQBw+VCLMddmZGQpgzkOz+iiy3XW8lKpUY=;
- b=dV9wJgdr8tfwdZNL6KIYBE5lWTpFnNoyEPC4aQ0qgufd769v5G5P0r8rjDxBXI6w5P8/z64o/yeNixatNXSaRHZpcOrxSXZCXV837X7K/jh34Yq2XdTPEsLEhJYje0HRRWu7lEwJ6p/ao0HIDVhoyJ7w/jsM9M+ANvnTOPZkYAeeZ1JBHlT7Fpxk7zjC+Qfe7RCsE8s58XJa/GhcS9hLFMh64VDMnzsnJOKfmrFFci7lXOv3YEbSgVfrk+YAaLD+gDqRD/66GQI6Jaz5a7hfAKGKdsYrWoEG6x/yl05kgY7avOjpmTj8jlzwNyvmpqSCNWSiE55bXVHoJu305Wazkw==
-Received: from BN9P222CA0006.NAMP222.PROD.OUTLOOK.COM (2603:10b6:408:10c::11)
- by PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.17; Mon, 28 Mar
- 2022 06:16:03 +0000
-Received: from BN8NAM11FT060.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:10c:cafe::f4) by BN9P222CA0006.outlook.office365.com
- (2603:10b6:408:10c::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.17 via Frontend
- Transport; Mon, 28 Mar 2022 06:16:03 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.234) by
- BN8NAM11FT060.mail.protection.outlook.com (10.13.177.211) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5102.17 via Frontend Transport; Mon, 28 Mar 2022 06:16:03 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Mon, 28 Mar
- 2022 06:16:02 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Sun, 27 Mar
- 2022 23:16:01 -0700
-Received: from audio.nvidia.com (10.127.8.10) by mail.nvidia.com (10.129.68.7)
- with Microsoft SMTP Server id 15.2.986.22 via Frontend Transport; Sun, 27 Mar
- 2022 23:15:57 -0700
-From:   Sameer Pujar <spujar@nvidia.com>
-To:     <broonie@kernel.org>, <lgirdwood@gmail.com>, <robh+dt@kernel.org>,
-        <krzk+dt@kernel.org>, <perex@perex.cz>, <tiwai@suse.com>,
-        <peter.ujfalusi@linux.intel.com>,
-        <pierre-louis.bossart@linux.intel.com>
-CC:     <oder_chiou@realtek.com>, <thierry.reding@gmail.com>,
-        <jonathanh@nvidia.com>, <alsa-devel@alsa-project.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-tegra@vger.kernel.org>, Sameer Pujar <spujar@nvidia.com>
-Subject: [RFC PATCH v2 6/6] ASoC: tegra: Get clock rate in consumer mode
-Date:   Mon, 28 Mar 2022 11:44:10 +0530
-Message-ID: <1648448050-15237-7-git-send-email-spujar@nvidia.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1648448050-15237-1-git-send-email-spujar@nvidia.com>
-References: <1648448050-15237-1-git-send-email-spujar@nvidia.com>
+        Mon, 28 Mar 2022 02:20:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 34C633CFEB
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 23:18:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648448327;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TOq4wlvx736BsBWhZ6JA8b6dWPJXab61zLMmfndi4Bc=;
+        b=UqP44aynsNUqRV+i3rAcVGi7nUdrxhikcMwf/Q/TBrzb/AwKjOI4oOMmqGA0+sWigC9zRC
+        0/tGxPWIkvSyDpZ1BbPQaO5Tz7u/oePprgYAt5OM9oZcxCR1Jlpm3BC72+fs2m/jhZqXC2
+        kNS0IjPdV2XQUH5OS5Qdzu6bFcN2zDw=
+Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
+ [209.85.208.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-427-QtLNXXxfPZqoNc6FWcXMxQ-1; Mon, 28 Mar 2022 02:18:35 -0400
+X-MC-Unique: QtLNXXxfPZqoNc6FWcXMxQ-1
+Received: by mail-lj1-f199.google.com with SMTP id h4-20020a2ea484000000b002480c04898aso5515785lji.6
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 23:18:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=TOq4wlvx736BsBWhZ6JA8b6dWPJXab61zLMmfndi4Bc=;
+        b=Om8D8BJM3WBskq6HpNcUahUUOHGa11/TL7J6r/EFrTrTJsIsTBD4TKJGvGOqOmA2jo
+         1rU1fXv90roV9Qom5x2V8hlqOP9Hh9wa8dleYNALH6HFn9dNzcKKTVKq1mB2wYM6QgAN
+         cDsfrxr/T6OUeRuhVk2ckZF1TUg3djKUtkzTnahG26WQCtJrxBPt8UGZ042nWWm8FvAy
+         g9vKJ/bUjKf/YFqF6MXEGZXrGy5j1Lkn4zjAi5oFwd2kwZNkM7d9aXowQkB1GFDPcMGq
+         MzE+eVpCZFlIzV7gKRWQv8ycQB0M9WqRiQxOyDdyVXnly9UBm6B477Z1OYxIVQP8Z38b
+         KhMQ==
+X-Gm-Message-State: AOAM531UIHyL2iuhWqAnYeCMYS8klzbYg29V+/u5uruxLHz27ooQ/TjJ
+        6W/uI1XJiBkY7/zcLUO/JCH9ke+yefi+fpk7Cl8YrXlRT9nHoBMGocRoVhb8tPHMEcdcMSl3rzO
+        uoGpnKPkD0i2bveqK5pxuiSApFRr7uZKWEF5j59/c
+X-Received: by 2002:a05:6512:2203:b0:44a:12c9:8696 with SMTP id h3-20020a056512220300b0044a12c98696mr18842236lfu.98.1648448313760;
+        Sun, 27 Mar 2022 23:18:33 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyI2Q2LMMG8+mW3nff22tnI7dvxsrM50RfloptpE6d8PmS7L1v/505BjHQdTcUuY5bYb0gyp9gkYvlPGG/mgNg=
+X-Received: by 2002:a05:6512:2203:b0:44a:12c9:8696 with SMTP id
+ h3-20020a056512220300b0044a12c98696mr18842223lfu.98.1648448313408; Sun, 27
+ Mar 2022 23:18:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a37d4cff-22ec-4b6c-ba8b-08da10826faf
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_
-X-Microsoft-Antispam-PRVS: <PH7PR12MB5685EA177719B22750D930C4A71D9@PH7PR12MB5685.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: aHdu+izTmoMjRSmgsmwZx8FWJqSeIkSQnp4yMYVx5YI2fNm5SgHf2KYPwL/gD2R6d0hYCjRrddRhVX3MNYyjDpv0Bg33fqCWOBLa6GskRftdKpJYjc2zxrpkecOkT5wfcc3TUUwphZhJd+vh3oMeFNUlA+R15xT39BBj+Rd8nPgaUDQbQnyBwUQsoiWRTVeYnGUrYTKypAvsRQ0SEPQ3pj6OoyV27ZV6NrzUSG4UDJVJZKjME8kPmn+gP5InL3Rz5lywH9JkBzXpBkGoSP4uWaZm81VP2/nRKLQXrxE8AbvsUqKywkWLl9m5eD4qjwGu7WrLjDhF3s4VCwB8UqgeeFvik198uGpl1/7iLfIOE0Vl2yKn5/ZlYNI8NcaDJa/1e/Z7OD7s5XjbWid5qnsqfZgh+fsgw/u4bQbfg3AMcQ6arXTWYFL+0mGtkFhciI8OFycfoyUtuL87Wo338Flia5rXcoOYbyLR+Gb+PWUIl1uMjgkH426Zf0AB5Quv5xzCLifPg+CEdkV8I9IUKjCoUI4JNH+j8yFcSD5ynn5SWeDi2qrvzLOLSAtMadImz79JWfZDlqIc70/RkL8AImSmYityL+ZbGAWsdYRJkmpVvi5EnCLuT5ZVj+j9iq1RXS3oeHQXzi1FRGIVSnbQDbjCX7F9+3YXAqIddn0HVhCW6H37AcdVlnDpigXWPYQK87DuekNbAbC6IFrTm6Bf/PK32w==
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(70206006)(7416002)(336012)(26005)(86362001)(40460700003)(316002)(426003)(70586007)(81166007)(356005)(47076005)(6666004)(107886003)(508600001)(8936002)(186003)(82310400004)(7696005)(110136005)(8676002)(2906002)(36860700001)(83380400001)(2616005)(4326008)(5660300002)(54906003)(36756003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Mar 2022 06:16:03.0208
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a37d4cff-22ec-4b6c-ba8b-08da10826faf
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT060.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5685
+References: <Yj1hkpyUqJE9sQ2p@redhat.com> <CACGkMEunsuWhn+aB2dM7noU257M9JV6jDjkQXLyOA+GjEoz_iw@mail.gmail.com>
+ <20220325050947-mutt-send-email-mst@kernel.org> <CACGkMEvioAVMmB+ab2xXB2YPECtwi1J55u8mRRk9-JAjFSZ8vg@mail.gmail.com>
+ <20220325060659-mutt-send-email-mst@kernel.org> <CACGkMEu4mRfNbJXJtAFzhyd55fD7phUDKnVtYW0aqRnQmT_bYw@mail.gmail.com>
+ <20220328015757-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20220328015757-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Mon, 28 Mar 2022 14:18:22 +0800
+Message-ID: <CACGkMEu+fax6YYwhfbc1yoSxv6o1FTQyrOheVTmUfqGvmbAEfA@mail.gmail.com>
+Subject: Re:
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     virtualization <virtualization@lists.linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Keir Fraser <keirf@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When Tegra I2S is consumer the clock is driven by the external codec.
-In such cases, ideally the bit clock (BCLK) rate needs to be updated by
-provider. Consumer can use standard clock function to get the rate.
+On Mon, Mar 28, 2022 at 1:59 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+>
+> On Mon, Mar 28, 2022 at 12:56:41PM +0800, Jason Wang wrote:
+> > On Fri, Mar 25, 2022 at 6:10 PM Michael S. Tsirkin <mst@redhat.com> wro=
+te:
+> > >
+> > > On Fri, Mar 25, 2022 at 05:20:19PM +0800, Jason Wang wrote:
+> > > > On Fri, Mar 25, 2022 at 5:10 PM Michael S. Tsirkin <mst@redhat.com>=
+ wrote:
+> > > > >
+> > > > > On Fri, Mar 25, 2022 at 03:52:00PM +0800, Jason Wang wrote:
+> > > > > > On Fri, Mar 25, 2022 at 2:31 PM Michael S. Tsirkin <mst@redhat.=
+com> wrote:
+> > > > > > >
+> > > > > > > Bcc:
+> > > > > > > Subject: Re: [PATCH 3/3] virtio: harden vring IRQ
+> > > > > > > Message-ID: <20220325021422-mutt-send-email-mst@kernel.org>
+> > > > > > > Reply-To:
+> > > > > > > In-Reply-To: <f7046303-7d7d-e39f-3c71-3688126cc812@redhat.com=
+>
+> > > > > > >
+> > > > > > > On Fri, Mar 25, 2022 at 11:04:08AM +0800, Jason Wang wrote:
+> > > > > > > >
+> > > > > > > > =E5=9C=A8 2022/3/24 =E4=B8=8B=E5=8D=887:03, Michael S. Tsir=
+kin =E5=86=99=E9=81=93:
+> > > > > > > > > On Thu, Mar 24, 2022 at 04:40:04PM +0800, Jason Wang wrot=
+e:
+> > > > > > > > > > This is a rework on the previous IRQ hardening that is =
+done for
+> > > > > > > > > > virtio-pci where several drawbacks were found and were =
+reverted:
+> > > > > > > > > >
+> > > > > > > > > > 1) try to use IRQF_NO_AUTOEN which is not friendly to a=
+ffinity managed IRQ
+> > > > > > > > > >     that is used by some device such as virtio-blk
+> > > > > > > > > > 2) done only for PCI transport
+> > > > > > > > > >
+> > > > > > > > > > In this patch, we tries to borrow the idea from the INT=
+X IRQ hardening
+> > > > > > > > > > in the reverted commit 080cd7c3ac87 ("virtio-pci: harde=
+n INTX interrupts")
+> > > > > > > > > > by introducing a global irq_soft_enabled variable for e=
+ach
+> > > > > > > > > > virtio_device. Then we can to toggle it during
+> > > > > > > > > > virtio_reset_device()/virtio_device_ready(). A synchorn=
+ize_rcu() is
+> > > > > > > > > > used in virtio_reset_device() to synchronize with the I=
+RQ handlers. In
+> > > > > > > > > > the future, we may provide config_ops for the transport=
+ that doesn't
+> > > > > > > > > > use IRQ. With this, vring_interrupt() can return check =
+and early if
+> > > > > > > > > > irq_soft_enabled is false. This lead to smp_load_acquir=
+e() to be used
+> > > > > > > > > > but the cost should be acceptable.
+> > > > > > > > > Maybe it should be but is it? Can't we use synchronize_ir=
+q instead?
+> > > > > > > >
+> > > > > > > >
+> > > > > > > > Even if we allow the transport driver to synchornize throug=
+h
+> > > > > > > > synchronize_irq() we still need a check in the vring_interr=
+upt().
+> > > > > > > >
+> > > > > > > > We do something like the following previously:
+> > > > > > > >
+> > > > > > > >         if (!READ_ONCE(vp_dev->intx_soft_enabled))
+> > > > > > > >                 return IRQ_NONE;
+> > > > > > > >
+> > > > > > > > But it looks like a bug since speculative read can be done =
+before the check
+> > > > > > > > where the interrupt handler can't see the uncommitted setup=
+ which is done by
+> > > > > > > > the driver.
+> > > > > > >
+> > > > > > > I don't think so - if you sync after setting the value then
+> > > > > > > you are guaranteed that any handler running afterwards
+> > > > > > > will see the new value.
+> > > > > >
+> > > > > > The problem is not disabled but the enable.
+> > > > >
+> > > > > So a misbehaving device can lose interrupts? That's not a problem=
+ at all
+> > > > > imo.
+> > > >
+> > > > It's the interrupt raised before setting irq_soft_enabled to true:
+> > > >
+> > > > CPU 0 probe) driver specific setup (not commited)
+> > > > CPU 1 IRQ handler) read the uninitialized variable
+> > > > CPU 0 probe) set irq_soft_enabled to true
+> > > > CPU 1 IRQ handler) read irq_soft_enable as true
+> > > > CPU 1 IRQ handler) use the uninitialized variable
+> > > >
+> > > > Thanks
+> > >
+> > > Yea, it hurts if you do it.  So do not do it then ;).
+> > >
+> > > irq_soft_enabled (I think driver_ok or status is a better name)
+> >
+> > I can change it to driver_ok.
+> >
+> > > should be initialized to false *before* irq is requested.
+> > >
+> > > And requesting irq commits all memory otherwise all drivers would be
+> > > broken,
+> >
+> > So I think we might talk different issues:
+> >
+> > 1) Whether request_irq() commits the previous setups, I think the
+> > answer is yes, since the spin_unlock of desc->lock (release) can
+> > guarantee this though there seems no documentation around
+> > request_irq() to say this.
+> >
+> > And I can see at least drivers/video/fbdev/omap2/omapfb/dss/dispc.c is
+> > using smp_wmb() before the request_irq().
+> >
+> > And even if write is ordered we still need read to be ordered to be
+> > paired with that.
+> >
+> > > if it doesn't it just needs to be fixed, not worked around in
+> > > virtio.
+> >
+> > 2) virtio drivers might do a lot of setups between request_irq() and
+> > virtio_device_ready():
+> >
+> > request_irq()
+> > driver specific setups
+> > virtio_device_ready()
+> >
+> > CPU 0 probe) request_irq()
+> > CPU 1 IRQ handler) read the uninitialized variable
+> > CPU 0 probe) driver specific setups
+> > CPU 0 probe) smp_store_release(intr_soft_enabled, true), commit the set=
+ups
+> > CPU 1 IRQ handler) read irq_soft_enable as true
+> > CPU 1 IRQ handler) use the uninitialized variable
+> >
+> > Thanks
+>
+>
+> As I said, virtio_device_ready needs to do synchronize_irq.
+> That will guarantee all setup is visible to the specific IRQ,
 
-On Tegra HW it is possible to use I2S BCLK clock as reference to the
-I/O (other I2S or DMIC or DSPK) interfaces. This input clock is called
-as SYNC input clock and it can act as a parent clock to any of the
-remaining I/O interfaces. Thus it is important to set the clock rate
-in Tegra I2S consumer mode as well.
+Only the interrupt after synchronize_irq() returns.
 
-With this patch SYNC input clock rate is updated and any I/O interface
-relying on this can derive required rate.
+>this
+> is what it's point is.
 
-Signed-off-by: Sameer Pujar <spujar@nvidia.com>
----
- Following are the DT binding cases I tried on Jetson AGX Xavier platform.
+What happens if an interrupt is raised in the middle like:
 
-   1. Sysclk derived from MCLK : This is currently being used. No DT
-      binding change would be necessary.
+smp_store_release(dev->irq_soft_enabled, true)
+IRQ handler
+synchornize_irq()
 
-      Clock tree dump snippet in this case with proposed series:
+If we don't enforce a reading order, the IRQ handler may still see the
+uninitialized variable.
 
-          ...
+Thanks
 
-          pll_a
-            |
-            |-- plla_out0
-                    |
-                    |-- ahub
-                    |
-                    |-- aud_mclk
-                    |      |
-                    |      |-- rt5659_sysclk
-                    |
-                    |-- i2s1
-
-          ...
-      
-
-   2. Sysclk is derived from codec internal PLL and this PLL uses I2S
-      bit clock (BCLK) as reference.
-
-      rt5658: audio-codec@1a {
-         ...
-
-         clocks = <&bpmp TEGRA194_CLK_AUD_MCLK>,
-		  <&bpmp TEGRA194_CLK_I2S1>,
-		  <&bpmp TEGRA194_CLK_I2S1>,
-                  <&rt5658 0>;
-         clock-names = "mclk", "bclk1", "pll_ref", "sysclk";
-
-         #clock-cells = <1>;
-         clock-output-names = "rt5659_pll_out";
-
-         ...
-      };
-
-      Clock tree dump snippet in this case with proposed series:
-
-          ...
-
-          pll_a
-            |
-            |-- plla_out0
-                    |
-                    |-- ahub
-                    |
-                    |-- aud_mclk
-                    |
-                    |-- i2s1
-                         |
-                         |-- rt5659_pll_ref
-                                   |
-                                   |-- rt5659_pll_out
-                                             |
-                                             |-- rt5659_sysclk
-
-          ...
-
-
- sound/soc/tegra/tegra210_i2s.c | 25 ++++++++++++++++---------
- 1 file changed, 16 insertions(+), 9 deletions(-)
-
-diff --git a/sound/soc/tegra/tegra210_i2s.c b/sound/soc/tegra/tegra210_i2s.c
-index 9552bbb..53e5307 100644
---- a/sound/soc/tegra/tegra210_i2s.c
-+++ b/sound/soc/tegra/tegra210_i2s.c
-@@ -53,17 +53,24 @@ static int tegra210_i2s_set_clock_rate(struct device *dev,
- 
- 	regmap_read(i2s->regmap, TEGRA210_I2S_CTRL, &val);
- 
--	/* No need to set rates if I2S is being operated in slave */
--	if (!(val & I2S_CTRL_MASTER_EN))
--		return 0;
--
--	err = clk_set_rate(i2s->clk_i2s, clock_rate);
--	if (err) {
--		dev_err(dev, "can't set I2S bit clock rate %u, err: %d\n",
--			clock_rate, err);
--		return err;
-+	/*
-+	 * If I2S is consumer, then the clock rate is expected to be
-+	 * set by the respective provider and thus just read the rate
-+	 * in such case. If I2S is provider, then set the clock rate.
-+	 */
-+	if (!(val & I2S_CTRL_MASTER_EN)) {
-+		clock_rate = clk_get_rate(i2s->clk_i2s);
-+	} else {
-+		err = clk_set_rate(i2s->clk_i2s, clock_rate);
-+		if (err) {
-+			dev_err(dev, "can't set I2S bit clock rate %u, err: %d\n",
-+				clock_rate, err);
-+			return err;
-+		}
- 	}
- 
-+	dev_dbg(dev, "bit clock (BCLK) rate is %u\n", clock_rate);
+>
+>
+> > >
+> > >
+> > > > >
+> > > > > > We use smp_store_relase()
+> > > > > > to make sure the driver commits the setup before enabling the i=
+rq. It
+> > > > > > means the read needs to be ordered as well in vring_interrupt()=
+.
+> > > > > >
+> > > > > > >
+> > > > > > > Although I couldn't find anything about this in memory-barrie=
+rs.txt
+> > > > > > > which surprises me.
+> > > > > > >
+> > > > > > > CC Paul to help make sure I'm right.
+> > > > > > >
+> > > > > > >
+> > > > > > > >
+> > > > > > > > >
+> > > > > > > > > > To avoid breaking legacy device which can send IRQ befo=
+re DRIVER_OK, a
+> > > > > > > > > > module parameter is introduced to enable the hardening =
+so function
+> > > > > > > > > > hardening is disabled by default.
+> > > > > > > > > Which devices are these? How come they send an interrupt =
+before there
+> > > > > > > > > are any buffers in any queues?
+> > > > > > > >
+> > > > > > > >
+> > > > > > > > I copied this from the commit log for 22b7050a024d7
+> > > > > > > >
+> > > > > > > > "
+> > > > > > > >
+> > > > > > > >     This change will also benefit old hypervisors (before 2=
+009)
+> > > > > > > >     that send interrupts without checking DRIVER_OK: previo=
+usly,
+> > > > > > > >     the callback could race with driver-specific initializa=
+tion.
+> > > > > > > > "
+> > > > > > > >
+> > > > > > > > If this is only for config interrupt, I can remove the abov=
+e log.
+> > > > > > >
+> > > > > > >
+> > > > > > > This is only for config interrupt.
+> > > > > >
+> > > > > > Ok.
+> > > > > >
+> > > > > > >
+> > > > > > > >
+> > > > > > > > >
+> > > > > > > > > > Note that the hardening is only done for vring interrup=
+t since the
+> > > > > > > > > > config interrupt hardening is already done in commit 22=
+b7050a024d7
+> > > > > > > > > > ("virtio: defer config changed notifications"). But the=
+ method that is
+> > > > > > > > > > used by config interrupt can't be reused by the vring i=
+nterrupt
+> > > > > > > > > > handler because it uses spinlock to do the synchronizat=
+ion which is
+> > > > > > > > > > expensive.
+> > > > > > > > > >
+> > > > > > > > > > Signed-off-by: Jason Wang <jasowang@redhat.com>
+> > > > > > > > >
+> > > > > > > > > > ---
+> > > > > > > > > >   drivers/virtio/virtio.c       | 19 ++++++++++++++++++=
 +
- 	if (!IS_ERR(i2s->clk_sync_input)) {
- 		/*
- 		 * Other I/O modules in AHUB can use i2s bclk as reference
--- 
-2.7.4
+> > > > > > > > > >   drivers/virtio/virtio_ring.c  |  9 ++++++++-
+> > > > > > > > > >   include/linux/virtio.h        |  4 ++++
+> > > > > > > > > >   include/linux/virtio_config.h | 25 ++++++++++++++++++=
++++++++
+> > > > > > > > > >   4 files changed, 56 insertions(+), 1 deletion(-)
+> > > > > > > > > >
+> > > > > > > > > > diff --git a/drivers/virtio/virtio.c b/drivers/virtio/v=
+irtio.c
+> > > > > > > > > > index 8dde44ea044a..85e331efa9cc 100644
+> > > > > > > > > > --- a/drivers/virtio/virtio.c
+> > > > > > > > > > +++ b/drivers/virtio/virtio.c
+> > > > > > > > > > @@ -7,6 +7,12 @@
+> > > > > > > > > >   #include <linux/of.h>
+> > > > > > > > > >   #include <uapi/linux/virtio_ids.h>
+> > > > > > > > > > +static bool irq_hardening =3D false;
+> > > > > > > > > > +
+> > > > > > > > > > +module_param(irq_hardening, bool, 0444);
+> > > > > > > > > > +MODULE_PARM_DESC(irq_hardening,
+> > > > > > > > > > +          "Disalbe IRQ software processing when it is =
+not expected");
+> > > > > > > > > > +
+> > > > > > > > > >   /* Unique numbering for virtio devices. */
+> > > > > > > > > >   static DEFINE_IDA(virtio_index_ida);
+> > > > > > > > > > @@ -220,6 +226,15 @@ static int virtio_features_ok(stru=
+ct virtio_device *dev)
+> > > > > > > > > >    * */
+> > > > > > > > > >   void virtio_reset_device(struct virtio_device *dev)
+> > > > > > > > > >   {
+> > > > > > > > > > + /*
+> > > > > > > > > > +  * The below synchronize_rcu() guarantees that any
+> > > > > > > > > > +  * interrupt for this line arriving after
+> > > > > > > > > > +  * synchronize_rcu() has completed is guaranteed to s=
+ee
+> > > > > > > > > > +  * irq_soft_enabled =3D=3D false.
+> > > > > > > > > News to me I did not know synchronize_rcu has anything to=
+ do
+> > > > > > > > > with interrupts. Did not you intend to use synchronize_ir=
+q?
+> > > > > > > > > I am not even 100% sure synchronize_rcu is by design a me=
+mory barrier
+> > > > > > > > > though it's most likely is ...
+> > > > > > > >
+> > > > > > > >
+> > > > > > > > According to the comment above tree RCU version of synchron=
+ize_rcu():
+> > > > > > > >
+> > > > > > > > """
+> > > > > > > >
+> > > > > > > >  * RCU read-side critical sections are delimited by rcu_rea=
+d_lock()
+> > > > > > > >  * and rcu_read_unlock(), and may be nested.  In addition, =
+but only in
+> > > > > > > >  * v5.0 and later, regions of code across which interrupts,=
+ preemption,
+> > > > > > > >  * or softirqs have been disabled also serve as RCU read-si=
+de critical
+> > > > > > > >  * sections.  This includes hardware interrupt handlers, so=
+ftirq handlers,
+> > > > > > > >  * and NMI handlers.
+> > > > > > > > """
+> > > > > > > >
+> > > > > > > > So interrupt handlers are treated as read-side critical sec=
+tions.
+> > > > > > > >
+> > > > > > > > And it has the comment for explain the barrier:
+> > > > > > > >
+> > > > > > > > """
+> > > > > > > >
+> > > > > > > >  * Note that this guarantee implies further memory-ordering=
+ guarantees.
+> > > > > > > >  * On systems with more than one CPU, when synchronize_rcu(=
+) returns,
+> > > > > > > >  * each CPU is guaranteed to have executed a full memory ba=
+rrier since
+> > > > > > > >  * the end of its last RCU read-side critical section whose=
+ beginning
+> > > > > > > >  * preceded the call to synchronize_rcu().  In addition, ea=
+ch CPU having
+> > > > > > > > """
+> > > > > > > >
+> > > > > > > > So on SMP it provides a full barrier. And for UP/tiny RCU w=
+e don't need the
+> > > > > > > > barrier, if the interrupt come after WRITE_ONCE() it will s=
+ee the
+> > > > > > > > irq_soft_enabled as false.
+> > > > > > > >
+> > > > > > >
+> > > > > > > You are right. So then
+> > > > > > > 1. I do not think we need load_acquire - why is it needed? Ju=
+st
+> > > > > > >    READ_ONCE should do.
+> > > > > >
+> > > > > > See above.
+> > > > > >
+> > > > > > > 2. isn't synchronize_irq also doing the same thing?
+> > > > > >
+> > > > > >
+> > > > > > Yes, but it requires a config ops since the IRQ knowledge is tr=
+ansport specific.
+> > > > > >
+> > > > > > >
+> > > > > > >
+> > > > > > > > >
+> > > > > > > > > > +  */
+> > > > > > > > > > + WRITE_ONCE(dev->irq_soft_enabled, false);
+> > > > > > > > > > + synchronize_rcu();
+> > > > > > > > > > +
+> > > > > > > > > >           dev->config->reset(dev);
+> > > > > > > > > >   }
+> > > > > > > > > >   EXPORT_SYMBOL_GPL(virtio_reset_device);
+> > > > > > > > > Please add comment explaining where it will be enabled.
+> > > > > > > > > Also, we *really* don't need to synch if it was already d=
+isabled,
+> > > > > > > > > let's not add useless overhead to the boot sequence.
+> > > > > > > >
+> > > > > > > >
+> > > > > > > > Ok.
+> > > > > > > >
+> > > > > > > >
+> > > > > > > > >
+> > > > > > > > >
+> > > > > > > > > > @@ -427,6 +442,10 @@ int register_virtio_device(struct =
+virtio_device *dev)
+> > > > > > > > > >           spin_lock_init(&dev->config_lock);
+> > > > > > > > > >           dev->config_enabled =3D false;
+> > > > > > > > > >           dev->config_change_pending =3D false;
+> > > > > > > > > > + dev->irq_soft_check =3D irq_hardening;
+> > > > > > > > > > +
+> > > > > > > > > > + if (dev->irq_soft_check)
+> > > > > > > > > > +         dev_info(&dev->dev, "IRQ hardening is enabled=
+\n");
+> > > > > > > > > >           /* We always start by resetting the device, i=
+n case a previous
+> > > > > > > > > >            * driver messed it up.  This also tests that=
+ code path a little. */
+> > > > > > > > > one of the points of hardening is it's also helpful for b=
+uggy
+> > > > > > > > > devices. this flag defeats the purpose.
+> > > > > > > >
+> > > > > > > >
+> > > > > > > > Do you mean:
+> > > > > > > >
+> > > > > > > > 1) we need something like config_enable? This seems not eas=
+y to be
+> > > > > > > > implemented without obvious overhead, mainly the synchroniz=
+e with the
+> > > > > > > > interrupt handlers
+> > > > > > >
+> > > > > > > But synchronize is only on tear-down path. That is not critic=
+al for any
+> > > > > > > users at the moment, even less than probe.
+> > > > > >
+> > > > > > I meant if we have vq->irq_pending, we need to call vring_inter=
+rupt()
+> > > > > > in the virtio_device_ready() and synchronize the IRQ handlers w=
+ith
+> > > > > > spinlock or others.
+> > > > > >
+> > > > > > >
+> > > > > > > > 2) enable this by default, so I don't object, but this may =
+have some risk
+> > > > > > > > for old hypervisors
+> > > > > > >
+> > > > > > >
+> > > > > > > The risk if there's a driver adding buffers without setting D=
+RIVER_OK.
+> > > > > >
+> > > > > > Probably not, we have devices that accept random inputs from ou=
+tside,
+> > > > > > net, console, input etc. I've done a round of audits of the Qem=
+u
+> > > > > > codes. They look all fine since day0.
+> > > > > >
+> > > > > > > So with this approach, how about we rename the flag "driver_o=
+k"?
+> > > > > > > And then add_buf can actually test it and BUG_ON if not there=
+  (at least
+> > > > > > > in the debug build).
+> > > > > >
+> > > > > > This looks like a hardening of the driver in the core instead o=
+f the
+> > > > > > device. I think it can be done but in a separate series.
+> > > > > >
+> > > > > > >
+> > > > > > > And going down from there, how about we cache status in the
+> > > > > > > device? Then we don't need to keep re-reading it every time,
+> > > > > > > speeding boot up a tiny bit.
+> > > > > >
+> > > > > > I don't fully understand here, actually spec requires status to=
+ be
+> > > > > > read back for validation in many cases.
+> > > > > >
+> > > > > > Thanks
+> > > > > >
+> > > > > > >
+> > > > > > > >
+> > > > > > > > >
+> > > > > > > > > > diff --git a/drivers/virtio/virtio_ring.c b/drivers/vir=
+tio/virtio_ring.c
+> > > > > > > > > > index 962f1477b1fa..0170f8c784d8 100644
+> > > > > > > > > > --- a/drivers/virtio/virtio_ring.c
+> > > > > > > > > > +++ b/drivers/virtio/virtio_ring.c
+> > > > > > > > > > @@ -2144,10 +2144,17 @@ static inline bool more_used(co=
+nst struct vring_virtqueue *vq)
+> > > > > > > > > >           return vq->packed_ring ? more_used_packed(vq)=
+ : more_used_split(vq);
+> > > > > > > > > >   }
+> > > > > > > > > > -irqreturn_t vring_interrupt(int irq, void *_vq)
+> > > > > > > > > > +irqreturn_t vring_interrupt(int irq, void *v)
+> > > > > > > > > >   {
+> > > > > > > > > > + struct virtqueue *_vq =3D v;
+> > > > > > > > > > + struct virtio_device *vdev =3D _vq->vdev;
+> > > > > > > > > >           struct vring_virtqueue *vq =3D to_vvq(_vq);
+> > > > > > > > > > + if (!virtio_irq_soft_enabled(vdev)) {
+> > > > > > > > > > +         dev_warn_once(&vdev->dev, "virtio vring IRQ r=
+aised before DRIVER_OK");
+> > > > > > > > > > +         return IRQ_NONE;
+> > > > > > > > > > + }
+> > > > > > > > > > +
+> > > > > > > > > >           if (!more_used(vq)) {
+> > > > > > > > > >                   pr_debug("virtqueue interrupt with no=
+ work for %p\n", vq);
+> > > > > > > > > >                   return IRQ_NONE;
+> > > > > > > > > > diff --git a/include/linux/virtio.h b/include/linux/vir=
+tio.h
+> > > > > > > > > > index 5464f398912a..957d6ad604ac 100644
+> > > > > > > > > > --- a/include/linux/virtio.h
+> > > > > > > > > > +++ b/include/linux/virtio.h
+> > > > > > > > > > @@ -95,6 +95,8 @@ dma_addr_t virtqueue_get_used_addr(st=
+ruct virtqueue *vq);
+> > > > > > > > > >    * @failed: saved value for VIRTIO_CONFIG_S_FAILED bi=
+t (for restore)
+> > > > > > > > > >    * @config_enabled: configuration change reporting en=
+abled
+> > > > > > > > > >    * @config_change_pending: configuration change repor=
+ted while disabled
+> > > > > > > > > > + * @irq_soft_check: whether or not to check @irq_soft_=
+enabled
+> > > > > > > > > > + * @irq_soft_enabled: callbacks enabled
+> > > > > > > > > >    * @config_lock: protects configuration change report=
+ing
+> > > > > > > > > >    * @dev: underlying device.
+> > > > > > > > > >    * @id: the device type identification (used to match=
+ it with a driver).
+> > > > > > > > > > @@ -109,6 +111,8 @@ struct virtio_device {
+> > > > > > > > > >           bool failed;
+> > > > > > > > > >           bool config_enabled;
+> > > > > > > > > >           bool config_change_pending;
+> > > > > > > > > > + bool irq_soft_check;
+> > > > > > > > > > + bool irq_soft_enabled;
+> > > > > > > > > >           spinlock_t config_lock;
+> > > > > > > > > >           spinlock_t vqs_list_lock; /* Protects VQs lis=
+t access */
+> > > > > > > > > >           struct device dev;
+> > > > > > > > > > diff --git a/include/linux/virtio_config.h b/include/li=
+nux/virtio_config.h
+> > > > > > > > > > index dafdc7f48c01..9c1b61f2e525 100644
+> > > > > > > > > > --- a/include/linux/virtio_config.h
+> > > > > > > > > > +++ b/include/linux/virtio_config.h
+> > > > > > > > > > @@ -174,6 +174,24 @@ static inline bool virtio_has_feat=
+ure(const struct virtio_device *vdev,
+> > > > > > > > > >           return __virtio_test_bit(vdev, fbit);
+> > > > > > > > > >   }
+> > > > > > > > > > +/*
+> > > > > > > > > > + * virtio_irq_soft_enabled: whether we can execute cal=
+lbacks
+> > > > > > > > > > + * @vdev: the device
+> > > > > > > > > > + */
+> > > > > > > > > > +static inline bool virtio_irq_soft_enabled(const struc=
+t virtio_device *vdev)
+> > > > > > > > > > +{
+> > > > > > > > > > + if (!vdev->irq_soft_check)
+> > > > > > > > > > +         return true;
+> > > > > > > > > > +
+> > > > > > > > > > + /*
+> > > > > > > > > > +  * Read irq_soft_enabled before reading other device =
+specific
+> > > > > > > > > > +  * data. Paried with smp_store_relase() in
+> > > > > > > > > paired
+> > > > > > > >
+> > > > > > > >
+> > > > > > > > Will fix.
+> > > > > > > >
+> > > > > > > > Thanks
+> > > > > > > >
+> > > > > > > >
+> > > > > > > > >
+> > > > > > > > > > +  * virtio_device_ready() and WRITE_ONCE()/synchronize=
+_rcu() in
+> > > > > > > > > > +  * virtio_reset_device().
+> > > > > > > > > > +  */
+> > > > > > > > > > + return smp_load_acquire(&vdev->irq_soft_enabled);
+> > > > > > > > > > +}
+> > > > > > > > > > +
+> > > > > > > > > >   /**
+> > > > > > > > > >    * virtio_has_dma_quirk - determine whether this devi=
+ce has the DMA quirk
+> > > > > > > > > >    * @vdev: the device
+> > > > > > > > > > @@ -236,6 +254,13 @@ void virtio_device_ready(struct vi=
+rtio_device *dev)
+> > > > > > > > > >           if (dev->config->enable_cbs)
+> > > > > > > > > >                     dev->config->enable_cbs(dev);
+> > > > > > > > > > + /*
+> > > > > > > > > > +  * Commit the driver setup before enabling the virtqu=
+eue
+> > > > > > > > > > +  * callbacks. Paried with smp_load_acuqire() in
+> > > > > > > > > > +  * virtio_irq_soft_enabled()
+> > > > > > > > > > +  */
+> > > > > > > > > > + smp_store_release(&dev->irq_soft_enabled, true);
+> > > > > > > > > > +
+> > > > > > > > > >           BUG_ON(status & VIRTIO_CONFIG_S_DRIVER_OK);
+> > > > > > > > > >           dev->config->set_status(dev, status | VIRTIO_=
+CONFIG_S_DRIVER_OK);
+> > > > > > > > > >   }
+> > > > > > > > > > --
+> > > > > > > > > > 2.25.1
+> > > > > > >
+> > > > >
+> > >
+>
 
