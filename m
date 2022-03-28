@@ -2,127 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD4C6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 07:35:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4E84C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 07:36:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238857AbiC1HhX convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 03:37:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48316 "EHLO
+        id S238864AbiC1HiF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 03:38:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238843AbiC1HhT (ORCPT
+        with ESMTP id S238843AbiC1HiD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 03:37:19 -0400
-Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAA2F51E5B;
-        Mon, 28 Mar 2022 00:35:38 -0700 (PDT)
-Received: by mail-qv1-f41.google.com with SMTP id b17so1566277qvf.12;
-        Mon, 28 Mar 2022 00:35:38 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=NSmS9k73z1IP3D2QdHYwh4TDW9fTJmU9UMoo6xsufQI=;
-        b=acfAYp2ABR1gjv+B5A6ocgOn4nsKn1gDGOGBIPK/n/joHLigwfGyWK/wkD7lqsjuLg
-         EgrY8JyXT/a8Td3oSgP6Vt05Vsd7nc3TxeSybqhrwUz4R2SnPVEZECwQJbODVQVYNYyc
-         Xg3Rynz44u6FBUoMfgEA22Bl6FtmI08H3IaeuyBqllTk1haPQNOSdA/4aGAcHO/syCFX
-         Kb0zU5fIEQtnpT6hAsbIe+xoj9VvpT+aM/aNUp678J2zjXxcK4fBxuruhm4Rul79fBei
-         AgvPDPEbIVZGZisGyRry6btbDljNyzbYIdvFJbpDHGeR3FGSSqo93mAVkFYYnbMKF+J0
-         kowQ==
-X-Gm-Message-State: AOAM531EKenaGCIjUCYy4KyURRamXVxvODdCCtPN3fohEjEgXw0NyP1j
-        MY+BvnOk857+mAaRkmaI1OQs9RZH3FtZJg==
-X-Google-Smtp-Source: ABdhPJx9HCSlrOfCy1RX0tHlKOQi7AonJNJPNbcRkXBbYAxLHj+oH8V7T0d4vs8/bxWyDQ/6aPlndg==
-X-Received: by 2002:a05:6214:2a49:b0:441:69b0:84c7 with SMTP id jf9-20020a0562142a4900b0044169b084c7mr19452797qvb.122.1648452937649;
-        Mon, 28 Mar 2022 00:35:37 -0700 (PDT)
-Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com. [209.85.219.175])
-        by smtp.gmail.com with ESMTPSA id x6-20020a376306000000b0067b32a8568esm7815817qkb.101.2022.03.28.00.35.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Mar 2022 00:35:37 -0700 (PDT)
-Received: by mail-yb1-f175.google.com with SMTP id g9so22079449ybf.1;
-        Mon, 28 Mar 2022 00:35:36 -0700 (PDT)
-X-Received: by 2002:a05:6902:101:b0:633:ccde:cfca with SMTP id
- o1-20020a056902010100b00633ccdecfcamr20853450ybh.207.1648452936744; Mon, 28
- Mar 2022 00:35:36 -0700 (PDT)
+        Mon, 28 Mar 2022 03:38:03 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 018F852E0D;
+        Mon, 28 Mar 2022 00:36:22 -0700 (PDT)
+Received: from [192.168.0.3] (ip5f5aef5a.dynamic.kabel-deutschland.de [95.90.239.90])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 48F0061EA1927;
+        Mon, 28 Mar 2022 09:36:21 +0200 (CEST)
+Message-ID: <cd36a994-0c13-201c-522d-5f8af53e1e87@molgen.mpg.de>
+Date:   Mon, 28 Mar 2022 09:36:20 +0200
 MIME-Version: 1.0
-References: <20220325200338.54270-1-andriy.shevchenko@linux.intel.com>
-In-Reply-To: <20220325200338.54270-1-andriy.shevchenko@linux.intel.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 28 Mar 2022 09:35:25 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXJo=XWNLKpFFe65fx-c7oPXmydvXxiPzGicNaxYthGbg@mail.gmail.com>
-Message-ID: <CAMuHMdXJo=XWNLKpFFe65fx-c7oPXmydvXxiPzGicNaxYthGbg@mail.gmail.com>
-Subject: Re: [PATCH v1 1/5] gpiolib: Introduce gpiochip_count() helper
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Gregory CLEMENT <gregory.clement@bootlin.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Fabien Dessenne <fabien.dessenne@foss.st.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] drm/amdgpu: resolve s3 hang for r7340
+Content-Language: en-US
+To:     Zhenneng Li <lizhenneng@kylinos.cn>
+Cc:     Alex Deucher <alexander.deucher@amd.com>,
+        Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
+        Jack Zhang <Jack.Zhang1@amd.com>,
+        Lijo Lazar <lijo.lazar@amd.com>,
+        Guchun Chen <guchun.chen@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Pan Xinhui <Xinhui.Pan@amd.com>, linux-kernel@vger.kernel.org,
+        amd-gfx@lists.freedesktop.org,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        linaro-mm-sig@lists.linaro.org, dri-devel@lists.freedesktop.org,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Kevin Wang <kevin1.wang@amd.com>,
+        Evan Quan <evan.quan@amd.com>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        linux-media@vger.kernel.org
+References: <20220328040536.4121797-1-lizhenneng@kylinos.cn>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <20220328040536.4121797-1-lizhenneng@kylinos.cn>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andy,
+Dear Zhenneng,
 
-On Fri, Mar 25, 2022 at 9:04 PM Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
-> The gpiochip_count() helper iterates over the device child nodes that have
-> the "gpio-controller" property set. It returns the number of such nodes
-> under given device.
->
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Thanks for your patch!
+Thank you for your patch.
 
-> --- a/include/linux/gpio/driver.h
-> +++ b/include/linux/gpio/driver.h
-> @@ -750,4 +751,17 @@ static inline void gpiochip_unlock_as_irq(struct gpio_chip *gc,
->  }
->  #endif /* CONFIG_GPIOLIB */
->
-> +static inline unsigned int gpiochip_count(struct device *dev)
-> +{
-> +       struct fwnode_handle *child;
-> +       unsigned int count = 0;
+Am 28.03.22 um 06:05 schrieb Zhenneng Li:
+> This is a workaround for s3 hang for r7340(amdgpu).
+
+Is it hanging when resuming from S3? Maybe also use the line below for 
+the commit message summary:
+
+drm/amdgpu: Add 1 ms delay to init handler to fix s3 resume hang
+
+Also, please add a space before the ( in “r7340(amdgpu)”.
+
+> When we test s3 with r7340 on arm64 platform, graphics card will hang up,
+> the error message are as follows:
+> Mar  4 01:14:11 greatwall-GW-XXXXXX-XXX kernel: [    1.599374][ 7] [  T291] amdgpu 0000:02:00.0: fb0: amdgpudrmfb frame buffer device
+> Mar  4 01:14:11 greatwall-GW-XXXXXX-XXX kernel: [    1.612869][ 7] [  T291] [drm:amdgpu_device_ip_late_init [amdgpu]] *ERROR* late_init of IP block <si_dpm> failed -22
+> Mar  4 01:14:11 greatwall-GW-XXXXXX-XXX kernel: [    1.623392][ 7] [  T291] amdgpu 0000:02:00.0: amdgpu_device_ip_late_init failed
+> Mar  4 01:14:11 greatwall-GW-XXXXXX-XXX kernel: [    1.630696][ 7] [  T291] amdgpu 0000:02:00.0: Fatal error during GPU init
+> Mar  4 01:14:11 greatwall-GW-XXXXXX-XXX kernel: [    1.637477][ 7] [  T291] [drm] amdgpu: finishing device.
+
+The prefix in the beginning is not really needed. Only the stuff after 
+`kernel: `.
+
+Maybe also add the output of `lspci -nn -s …` for that r7340 device.
+
+> Change-Id: I5048b3894c0ca9faf2f4847ddab61f9eb17b4823
+
+Without the Gerrit instance this belongs to, the Change-Id is of no use 
+in the public.
+
+> Signed-off-by: Zhenneng Li <lizhenneng@kylinos.cn>
+> ---
+>   drivers/gpu/drm/amd/amdgpu/amdgpu_device.c | 2 ++
+>   1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+> index 3987ecb24ef4..1eced991b5b2 100644
+> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+> @@ -2903,6 +2903,8 @@ static void amdgpu_device_delayed_init_work_handler(struct work_struct *work)
+>   		container_of(work, struct amdgpu_device, delayed_init_work.work);
+>   	int r;
+>   
+> +	mdelay(1);
 > +
-> +       device_for_each_child_node(dev, child) {
-> +               if (device_property_read_bool(child, "gpio-controller"))
 
-error: passing argument 1 of ‘device_property_read_bool’ from
-incompatible pointer type [-Werror=incompatible-pointer-types]
+Wow, I wonder how long it took you to find that workaround.
 
-So I'm afraid I cannot test patch 3/5 yet ;-)
+>   	r = amdgpu_ib_ring_tests(adev);
+>   	if (r)
+>   		DRM_ERROR("ib ring test failed (%d).\n", r);
 
-> +                       count++;
-> +       }
-> +
-> +       return count;
-> +}
-> +
->  #endif /* __LINUX_GPIO_DRIVER_H */
 
-Gr{oetje,eeting}s,
+Kind regards,
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Paul
