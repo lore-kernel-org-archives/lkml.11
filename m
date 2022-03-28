@@ -2,140 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B652C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 10:10:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E75BC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 10:10:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240162AbiC1KLo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 06:11:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47390 "EHLO
+        id S240169AbiC1KM1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 06:12:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235601AbiC1KLn (ORCPT
+        with ESMTP id S235601AbiC1KMZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 06:11:43 -0400
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0E9552E12;
-        Mon, 28 Mar 2022 03:10:02 -0700 (PDT)
-Received: by mail-ej1-f49.google.com with SMTP id yy13so27586996ejb.2;
-        Mon, 28 Mar 2022 03:10:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=9VEDMDRK+F+NgdG+/BTht0bpzUjaEb9tTJF4uHum5G4=;
-        b=EnU8FnKFHyjtj4seCppcFejs7e/5Lq4FB6AN7IpDN60ingGOj41EgOEnbJhnyeYQCq
-         OXoMs+E0lzXpBe7PapKNSDlAr2O9xmCJUMnEnhjd8G9owrXt1PJ9U2VjKRalNnaCtf2e
-         TgeL4FWkHdEA7iy1vA9axgnA4fvNXCbWPWqgLx/NiPU0b56e6TgdVP4fMtq4FNPOlQTr
-         TUmffKrK5cgVpnVTqD06irSwoy8C2NAK+ntyn7kHB/SSv4ZDdb95HR/Ly+9wlystnRRf
-         ZKVcpBRvqf56o7CMuYtQ71Ys0Z1VlY1t6FBM889A6QSKzbTffZbaUiVvkpldkofCfwy4
-         tVyA==
-X-Gm-Message-State: AOAM533xWMy57MrJ1hVTN8G2Bov5UK/kZ0czqqe0zgxl1I8tOz/aXTT1
-        USCCzN06E0EzJPtV2wb5iJmuJMc7i7M=
-X-Google-Smtp-Source: ABdhPJyGhS8Oi+4QpGbrtyBLN6s4x2Oj8INuB/XnTVveVQwyOTorpU06yRa8+Z0xmcfK0AeShFaykQ==
-X-Received: by 2002:a17:906:27d1:b0:6df:ccdd:1a8d with SMTP id k17-20020a17090627d100b006dfccdd1a8dmr27581256ejc.751.1648462201277;
-        Mon, 28 Mar 2022 03:10:01 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
-        by smtp.gmail.com with ESMTPSA id 22-20020a17090600d600b006dfbc46efabsm5724836eji.126.2022.03.28.03.10.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Mar 2022 03:10:00 -0700 (PDT)
-Message-ID: <47a6e396-3d51-79f5-a544-8942470fa2fd@kernel.org>
-Date:   Mon, 28 Mar 2022 12:09:59 +0200
+        Mon, 28 Mar 2022 06:12:25 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C88F452E12
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 03:10:44 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 841381F37E;
+        Mon, 28 Mar 2022 10:10:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1648462243; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MEUjP7knGa/NIjIdm17InHHeis0a7CbD1Zy0ms8KFt4=;
+        b=VGijNzoIi8tSLKplwWXwpv83yPzhlX4c6/0YnH7iiqrDPb9dOGGWen4T78zMRbWgbCvhnE
+        15/NrhAfM3yDAGnOGM7aOzv51N1/AZ7/xUlAvga01H6F49oZnTEKg9AQ+k/NSoP3cW6Ost
+        +i7rgMR2GV9JiRZjR+rBuIBUpxSjf4U=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1648462243;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MEUjP7knGa/NIjIdm17InHHeis0a7CbD1Zy0ms8KFt4=;
+        b=b23bF/+1Gspjhj8aQE39s29aPL3wPkpcD12HSrGVystQMZa029E8E04iQl8AxUdqH3wrhX
+        jKpFwpW0W6D584Ag==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4E80413215;
+        Mon, 28 Mar 2022 10:10:43 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id MN8rEqOJQWLlPQAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Mon, 28 Mar 2022 10:10:43 +0000
+Message-ID: <0b22192a-b5e5-93a3-6ed7-7670ff15844d@suse.cz>
+Date:   Mon, 28 Mar 2022 12:09:35 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH v3] char: tty3270: fix a missing check on list iterator
+ Thunderbird/91.6.1
+Subject: Re: [PATCH] mm, kasan: fix __GFP_BITS_SHIFT definition breaking
+ LOCKDEP
 Content-Language: en-US
-To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>, hca@linux.ibm.com,
-        gor@linux.ibm.com, agordeev@linux.ibm.com
-Cc:     borntraeger@linux.ibm.com, svens@linux.ibm.com,
-        gregkh@linuxfoundation.org, jcmvbkbc@gmail.com, elder@linaro.org,
-        dsterba@suse.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-References: <20220328093505.27902-1-xiam0nd.tong@gmail.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220328093505.27902-1-xiam0nd.tong@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     andrey.konovalov@linux.dev,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
+        Marco Elver <elver@google.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        kasan-dev@googlegroups.com, linux-mm@kvack.org,
+        Matthew Wilcox <willy@infradead.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Andrey Konovalov <andreyknvl@google.com>
+References: <462ff52742a1fcc95a69778685737f723ee4dfb3.1648400273.git.andreyknvl@google.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <462ff52742a1fcc95a69778685737f723ee4dfb3.1648400273.git.andreyknvl@google.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28. 03. 22, 11:35, Xiaomeng Tong wrote:
-> The bug is here:
-> 	if (s->len != flen) {
+On 3/27/22 19:00, andrey.konovalov@linux.dev wrote:
+> From: Andrey Konovalov <andreyknvl@google.com>
 > 
-> The list iterator 's' will point to a bogus position containing
-> HEAD if the list is empty or no element is found.
-
-Could you also explain how that can happen?
-
-> This case must
-> be checked before any use of the iterator, otherwise it may bpass
-> the 'if (s->len != flen) {' in theory iif s->len's value is flen,
-
-bpass + iif -- others already commented on that and you ignored them.
-
-> or/and lead to an invalid memory access.
+> KASAN changes that added new GFP flags mistakenly updated __GFP_BITS_SHIFT
+> as the total number of GFP bits instead of as a shift used to define
+> __GFP_BITS_MASK.
 > 
-> To fix this bug, use a new variable 'iter' as the list iterator,
-> while using the origin variable 's' as a dedicated pointer to
-> point to the found element. And if the list is empty or no element
-> is found, WARN_ON and return.
+> This broke LOCKDEP, as __GFP_BITS_MASK now gets the 25th bit enabled
+> instead of the 28th for __GFP_NOLOCKDEP.
 > 
-> Cc: stable@vger.kernel.org
-> Fixes: ^1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Update __GFP_BITS_SHIFT to always count KASAN GFP bits.
+> 
+> In the future, we could handle all combinations of KASAN and LOCKDEP to
+> occupy as few bits as possible. For now, we have enough GFP bits to be
+> inefficient in this quick fix.
+> 
+> Fixes: 9353ffa6e9e9 ("kasan, page_alloc: allow skipping memory init for HW_TAGS")
+> Fixes: 53ae233c30a6 ("kasan, page_alloc: allow skipping unpoisoning for HW_TAGS")
+> Fixes: f49d9c5bb15c ("kasan, mm: only define ___GFP_SKIP_KASAN_POISON with HW_TAGS")
+> Reported-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
 
-That's barely the commit introducing the behavior.
+Acked-by: Vlastimil Babka <vbabka@suse.cz>
 
-> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 > ---
-> changes since v2:
->   - WARN_ON and return (Sven Schnelle)
+>  include/linux/gfp.h | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
 > 
-> changes since v1:
->   - reallocate s when s == NULL (Sven Schnelle)
-> 
-> v1:https://lore.kernel.org/lkml/20220327064931.7775-1-xiam0nd.tong@gmail.com/
-> v2:https://lore.kernel.org/lkml/20220328070543.24671-1-xiam0nd.tong@gmail.com/
-> 
-> ---
->   drivers/s390/char/tty3270.c | 11 ++++++++---
->   1 file changed, 8 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/s390/char/tty3270.c b/drivers/s390/char/tty3270.c
-> index 5c83f71c1d0e..9d0952178322 100644
-> --- a/drivers/s390/char/tty3270.c
-> +++ b/drivers/s390/char/tty3270.c
-> @@ -1109,9 +1109,9 @@ static void tty3270_put_character(struct tty3270 *tp, char ch)
->   static void
->   tty3270_convert_line(struct tty3270 *tp, int line_nr)
->   {
-> +	struct string *s = NULL, *n, *iter;
->   	struct tty3270_line *line;
->   	struct tty3270_cell *cell;
-> -	struct string *s, *n;
->   	unsigned char highlight;
->   	unsigned char f_color;
->   	char *cp;
-> @@ -1142,9 +1142,14 @@ tty3270_convert_line(struct tty3270 *tp, int line_nr)
->   
->   	/* Find the line in the list. */
->   	i = tp->view.rows - 2 - line_nr;
-> -	list_for_each_entry_reverse(s, &tp->lines, list)
-> -		if (--i <= 0)
-> +	list_for_each_entry_reverse(iter, &tp->lines, list)
-> +		if (--i <= 0) {
-> +			s = iter;
->   			break;
-> +		 }
-> +
-> +	if(WARN_ON(!s))
-> +		return;
->   	/*
->   	 * Check if the line needs to get reallocated.
->   	 */
+> diff --git a/include/linux/gfp.h b/include/linux/gfp.h
+> index 0fa17fb85de5..761f8f1885c7 100644
+> --- a/include/linux/gfp.h
+> +++ b/include/linux/gfp.h
+> @@ -264,9 +264,7 @@ struct vm_area_struct;
+>  #define __GFP_NOLOCKDEP ((__force gfp_t)___GFP_NOLOCKDEP)
+>  
+>  /* Room for N __GFP_FOO bits */
+> -#define __GFP_BITS_SHIFT (24 +						\
+> -			  3 * IS_ENABLED(CONFIG_KASAN_HW_TAGS) +	\
+> -			  IS_ENABLED(CONFIG_LOCKDEP))
+> +#define __GFP_BITS_SHIFT (27 + IS_ENABLED(CONFIG_LOCKDEP))
+>  #define __GFP_BITS_MASK ((__force gfp_t)((1 << __GFP_BITS_SHIFT) - 1))
+>  
+>  /**
 
-thanks,
--- 
-js
-suse labs
