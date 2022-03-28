@@ -2,50 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1765AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:29:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C513C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:29:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241431AbiC1Lb2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:31:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43550 "EHLO
+        id S239442AbiC1Lbe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:31:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240825AbiC1LYb (ORCPT
+        with ESMTP id S241026AbiC1LZC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:24:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB4E155BD0;
-        Mon, 28 Mar 2022 04:22:49 -0700 (PDT)
+        Mon, 28 Mar 2022 07:25:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 620C15643F;
+        Mon, 28 Mar 2022 04:23:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 154AB61169;
-        Mon, 28 Mar 2022 11:22:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10193C340EC;
-        Mon, 28 Mar 2022 11:22:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA686611D8;
+        Mon, 28 Mar 2022 11:23:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 506C2C340F3;
+        Mon, 28 Mar 2022 11:23:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466568;
-        bh=CV240FBWJ+J/RE78ZouTlWfvTag+OZii7101escWnGk=;
+        s=k20201202; t=1648466588;
+        bh=D7zehDB5ZT+cPJglemgyT0v37ZSf+QM4AK+whiwO7mQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZC+qL1LmCqzE9mCksAJ/DZKJNNCx6kFANHWfpV+SDQ+x0+YW7DoOV3JzXwVu50qmS
-         nIKezayTblQ/ByhE2wZwy90v7T4xDrfLw7WREWBUWICEhjlGXKsxh0A3FrizJNk/q4
-         c+IMh0dAu75u5Fk/EuCv40o0PUozwCiMlhN6Q3hWdgykNKQrxpif8OE4Mvmm9QbrlK
-         JGrVglpfcCs9IOMX+EmWmucJpNC3ErhtkDJIPw7ed0k4SonHpr4CUjne5VPjD/rJnF
-         ScsitU1X6szD/lxyAQlvV2/CIJIa48orlwALlM9mtyYrgEiPu3uHirEet7kgrkLC5O
-         hJIYDSsPeNOqQ==
+        b=rcEQ5BzMOiNupz15FGivAI6C4IqPwJYHHn9ntCEb4dku4GQtMT7j5WAmG90J5/g0a
+         l+phooA3E2PH3XJsNpBdK/PKSD5pbfAFqYbTMSzY+lCy6HupFmfMdrkRcI8tAjr7kG
+         o62YOiCFpillZp2VNIIBJLGNBVlbfG/AUGPANhyT6rV+X6U448wyQEns5Em8tfvASf
+         b1zBGd9NRifuomvupqJ3E6RQ/HwOZFpmi0LVzkll4xDFHTsUiTawfaO6nS4rx5Acmc
+         +fhb5GbMqX6CZ165Pyc2+i9/6qVaK2R2VF2gdkRhzmKce9+2iq4+aL3WPzKjB6Ledc
+         +NCqjm70UbNKg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     John David Anglin <dave.anglin@bell.net>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
-        James.Bottomley@HansenPartnership.com, svens@stackframe.org,
-        wangkefeng.wang@huawei.com, ebiederm@xmission.com,
-        zhengqi.arch@bytedance.com, akpm@linux-foundation.org,
-        linux-parisc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 26/29] parisc: Fix handling off probe non-access faults
-Date:   Mon, 28 Mar 2022 07:21:28 -0400
-Message-Id: <20220328112132.1555683-26-sashal@kernel.org>
+Cc:     Yu Kuai <yukuai3@huawei.com>, Jan Kara <jack@suse.cz>,
+        Paolo Valente <paolo.valente@linaro.org>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
+        tj@kernel.org, linux-block@vger.kernel.org, cgroups@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 05/21] block, bfq: don't move oom_bfqq
+Date:   Mon, 28 Mar 2022 07:22:38 -0400
+Message-Id: <20220328112254.1556286-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220328112132.1555683-1-sashal@kernel.org>
-References: <20220328112132.1555683-1-sashal@kernel.org>
+In-Reply-To: <20220328112254.1556286-1-sashal@kernel.org>
+References: <20220328112254.1556286-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,166 +52,140 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John David Anglin <dave.anglin@bell.net>
+From: Yu Kuai <yukuai3@huawei.com>
 
-[ Upstream commit e00b0a2ab8ec019c344e53bfc76e31c18bb587b7 ]
+[ Upstream commit 8410f70977734f21b8ed45c37e925d311dfda2e7 ]
 
-Currently, the parisc kernel does not fully support non-access TLB
-fault handling for probe instructions. In the fast path, we set the
-target register to zero if it is not a shadowed register. The slow
-path is not implemented, so we call do_page_fault. The architecture
-indicates that non-access faults should not cause a page fault from
-disk.
+Our test report a UAF:
 
-This change adds to code to provide non-access fault support for
-probe instructions. It also modifies the handling of faults on
-userspace so that if the address lies in a valid VMA and the access
-type matches that for the VMA, the probe target register is set to
-one. Otherwise, the target register is set to zero.
+[ 2073.019181] ==================================================================
+[ 2073.019188] BUG: KASAN: use-after-free in __bfq_put_async_bfqq+0xa0/0x168
+[ 2073.019191] Write of size 8 at addr ffff8000ccf64128 by task rmmod/72584
+[ 2073.019192]
+[ 2073.019196] CPU: 0 PID: 72584 Comm: rmmod Kdump: loaded Not tainted 4.19.90-yk #5
+[ 2073.019198] Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0 02/06/2015
+[ 2073.019200] Call trace:
+[ 2073.019203]  dump_backtrace+0x0/0x310
+[ 2073.019206]  show_stack+0x28/0x38
+[ 2073.019210]  dump_stack+0xec/0x15c
+[ 2073.019216]  print_address_description+0x68/0x2d0
+[ 2073.019220]  kasan_report+0x238/0x2f0
+[ 2073.019224]  __asan_store8+0x88/0xb0
+[ 2073.019229]  __bfq_put_async_bfqq+0xa0/0x168
+[ 2073.019233]  bfq_put_async_queues+0xbc/0x208
+[ 2073.019236]  bfq_pd_offline+0x178/0x238
+[ 2073.019240]  blkcg_deactivate_policy+0x1f0/0x420
+[ 2073.019244]  bfq_exit_queue+0x128/0x178
+[ 2073.019249]  blk_mq_exit_sched+0x12c/0x160
+[ 2073.019252]  elevator_exit+0xc8/0xd0
+[ 2073.019256]  blk_exit_queue+0x50/0x88
+[ 2073.019259]  blk_cleanup_queue+0x228/0x3d8
+[ 2073.019267]  null_del_dev+0xfc/0x1e0 [null_blk]
+[ 2073.019274]  null_exit+0x90/0x114 [null_blk]
+[ 2073.019278]  __arm64_sys_delete_module+0x358/0x5a0
+[ 2073.019282]  el0_svc_common+0xc8/0x320
+[ 2073.019287]  el0_svc_handler+0xf8/0x160
+[ 2073.019290]  el0_svc+0x10/0x218
+[ 2073.019291]
+[ 2073.019294] Allocated by task 14163:
+[ 2073.019301]  kasan_kmalloc+0xe0/0x190
+[ 2073.019305]  kmem_cache_alloc_node_trace+0x1cc/0x418
+[ 2073.019308]  bfq_pd_alloc+0x54/0x118
+[ 2073.019313]  blkcg_activate_policy+0x250/0x460
+[ 2073.019317]  bfq_create_group_hierarchy+0x38/0x110
+[ 2073.019321]  bfq_init_queue+0x6d0/0x948
+[ 2073.019325]  blk_mq_init_sched+0x1d8/0x390
+[ 2073.019330]  elevator_switch_mq+0x88/0x170
+[ 2073.019334]  elevator_switch+0x140/0x270
+[ 2073.019338]  elv_iosched_store+0x1a4/0x2a0
+[ 2073.019342]  queue_attr_store+0x90/0xe0
+[ 2073.019348]  sysfs_kf_write+0xa8/0xe8
+[ 2073.019351]  kernfs_fop_write+0x1f8/0x378
+[ 2073.019359]  __vfs_write+0xe0/0x360
+[ 2073.019363]  vfs_write+0xf0/0x270
+[ 2073.019367]  ksys_write+0xdc/0x1b8
+[ 2073.019371]  __arm64_sys_write+0x50/0x60
+[ 2073.019375]  el0_svc_common+0xc8/0x320
+[ 2073.019380]  el0_svc_handler+0xf8/0x160
+[ 2073.019383]  el0_svc+0x10/0x218
+[ 2073.019385]
+[ 2073.019387] Freed by task 72584:
+[ 2073.019391]  __kasan_slab_free+0x120/0x228
+[ 2073.019394]  kasan_slab_free+0x10/0x18
+[ 2073.019397]  kfree+0x94/0x368
+[ 2073.019400]  bfqg_put+0x64/0xb0
+[ 2073.019404]  bfqg_and_blkg_put+0x90/0xb0
+[ 2073.019408]  bfq_put_queue+0x220/0x228
+[ 2073.019413]  __bfq_put_async_bfqq+0x98/0x168
+[ 2073.019416]  bfq_put_async_queues+0xbc/0x208
+[ 2073.019420]  bfq_pd_offline+0x178/0x238
+[ 2073.019424]  blkcg_deactivate_policy+0x1f0/0x420
+[ 2073.019429]  bfq_exit_queue+0x128/0x178
+[ 2073.019433]  blk_mq_exit_sched+0x12c/0x160
+[ 2073.019437]  elevator_exit+0xc8/0xd0
+[ 2073.019440]  blk_exit_queue+0x50/0x88
+[ 2073.019443]  blk_cleanup_queue+0x228/0x3d8
+[ 2073.019451]  null_del_dev+0xfc/0x1e0 [null_blk]
+[ 2073.019459]  null_exit+0x90/0x114 [null_blk]
+[ 2073.019462]  __arm64_sys_delete_module+0x358/0x5a0
+[ 2073.019467]  el0_svc_common+0xc8/0x320
+[ 2073.019471]  el0_svc_handler+0xf8/0x160
+[ 2073.019474]  el0_svc+0x10/0x218
+[ 2073.019475]
+[ 2073.019479] The buggy address belongs to the object at ffff8000ccf63f00
+ which belongs to the cache kmalloc-1024 of size 1024
+[ 2073.019484] The buggy address is located 552 bytes inside of
+ 1024-byte region [ffff8000ccf63f00, ffff8000ccf64300)
+[ 2073.019486] The buggy address belongs to the page:
+[ 2073.019492] page:ffff7e000333d800 count:1 mapcount:0 mapping:ffff8000c0003a00 index:0x0 compound_mapcount: 0
+[ 2073.020123] flags: 0x7ffff0000008100(slab|head)
+[ 2073.020403] raw: 07ffff0000008100 ffff7e0003334c08 ffff7e00001f5a08 ffff8000c0003a00
+[ 2073.020409] raw: 0000000000000000 00000000001c001c 00000001ffffffff 0000000000000000
+[ 2073.020411] page dumped because: kasan: bad access detected
+[ 2073.020412]
+[ 2073.020414] Memory state around the buggy address:
+[ 2073.020420]  ffff8000ccf64000: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[ 2073.020424]  ffff8000ccf64080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[ 2073.020428] >ffff8000ccf64100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[ 2073.020430]                                   ^
+[ 2073.020434]  ffff8000ccf64180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[ 2073.020438]  ffff8000ccf64200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[ 2073.020439] ==================================================================
 
-This was done to make probe instructions more useful for userspace.
-Probe instructions are not very useful if they set the target register
-to zero whenever a page is not present in memory. Nominally, the
-purpose of the probe instruction is determine whether read or write
-access to a given address is allowed.
+The same problem exist in mainline as well.
 
-This fixes a problem in function pointer comparison noticed in the
-glibc testsuite (stdio-common/tst-vfprintf-user-type). The same
-problem is likely in glibc (_dl_lookup_address).
+This is because oom_bfqq is moved to a non-root group, thus root_group
+is freed earlier.
 
-V2 adds flush and lpa instruction support to handle_nadtlb_fault.
+Thus fix the problem by don't move oom_bfqq.
 
-Signed-off-by: John David Anglin <dave.anglin@bell.net>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Acked-by: Paolo Valente <paolo.valente@linaro.org>
+Link: https://lore.kernel.org/r/20220129015924.3958918-4-yukuai3@huawei.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/parisc/include/asm/traps.h |  1 +
- arch/parisc/kernel/traps.c      |  2 +
- arch/parisc/mm/fault.c          | 89 +++++++++++++++++++++++++++++++++
- 3 files changed, 92 insertions(+)
+ block/bfq-cgroup.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/parisc/include/asm/traps.h b/arch/parisc/include/asm/traps.h
-index 8ecc1f0c0483..d0e090a2c000 100644
---- a/arch/parisc/include/asm/traps.h
-+++ b/arch/parisc/include/asm/traps.h
-@@ -17,6 +17,7 @@ void die_if_kernel(char *str, struct pt_regs *regs, long err);
- const char *trap_name(unsigned long code);
- void do_page_fault(struct pt_regs *regs, unsigned long code,
- 		unsigned long address);
-+int handle_nadtlb_fault(struct pt_regs *regs);
- #endif
+diff --git a/block/bfq-cgroup.c b/block/bfq-cgroup.c
+index b791e2041e49..c2fdd6fcdaee 100644
+--- a/block/bfq-cgroup.c
++++ b/block/bfq-cgroup.c
+@@ -642,6 +642,12 @@ void bfq_bfqq_move(struct bfq_data *bfqd, struct bfq_queue *bfqq,
+ {
+ 	struct bfq_entity *entity = &bfqq->entity;
  
- #endif
-diff --git a/arch/parisc/kernel/traps.c b/arch/parisc/kernel/traps.c
-index afe8b902a8fc..6fe5a3e98edc 100644
---- a/arch/parisc/kernel/traps.c
-+++ b/arch/parisc/kernel/traps.c
-@@ -661,6 +661,8 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
- 			 by hand. Technically we need to emulate:
- 			 fdc,fdce,pdc,"fic,4f",prober,probeir,probew, probeiw
- 		*/
-+		if (code == 17 && handle_nadtlb_fault(regs))
-+			return;
- 		fault_address = regs->ior;
- 		fault_space = regs->isr;
- 		break;
-diff --git a/arch/parisc/mm/fault.c b/arch/parisc/mm/fault.c
-index 716960f5d92e..5faa3cff4738 100644
---- a/arch/parisc/mm/fault.c
-+++ b/arch/parisc/mm/fault.c
-@@ -424,3 +424,92 @@ void do_page_fault(struct pt_regs *regs, unsigned long code,
- 		goto no_context;
- 	pagefault_out_of_memory();
- }
-+
-+/* Handle non-access data TLB miss faults.
-+ *
-+ * For probe instructions, accesses to userspace are considered allowed
-+ * if they lie in a valid VMA and the access type matches. We are not
-+ * allowed to handle MM faults here so there may be situations where an
-+ * actual access would fail even though a probe was successful.
-+ */
-+int
-+handle_nadtlb_fault(struct pt_regs *regs)
-+{
-+	unsigned long insn = regs->iir;
-+	int breg, treg, xreg, val = 0;
-+	struct vm_area_struct *vma, *prev_vma;
-+	struct task_struct *tsk;
-+	struct mm_struct *mm;
-+	unsigned long address;
-+	unsigned long acc_type;
-+
-+	switch (insn & 0x380) {
-+	case 0x280:
-+		/* FDC instruction */
-+		fallthrough;
-+	case 0x380:
-+		/* PDC and FIC instructions */
-+		if (printk_ratelimit()) {
-+			pr_warn("BUG: nullifying cache flush/purge instruction\n");
-+			show_regs(regs);
-+		}
-+		if (insn & 0x20) {
-+			/* Base modification */
-+			breg = (insn >> 21) & 0x1f;
-+			xreg = (insn >> 16) & 0x1f;
-+			if (breg && xreg)
-+				regs->gr[breg] += regs->gr[xreg];
-+		}
-+		regs->gr[0] |= PSW_N;
-+		return 1;
-+
-+	case 0x180:
-+		/* PROBE instruction */
-+		treg = insn & 0x1f;
-+		if (regs->isr) {
-+			tsk = current;
-+			mm = tsk->mm;
-+			if (mm) {
-+				/* Search for VMA */
-+				address = regs->ior;
-+				mmap_read_lock(mm);
-+				vma = find_vma_prev(mm, address, &prev_vma);
-+				mmap_read_unlock(mm);
-+
-+				/*
-+				 * Check if access to the VMA is okay.
-+				 * We don't allow for stack expansion.
-+				 */
-+				acc_type = (insn & 0x40) ? VM_WRITE : VM_READ;
-+				if (vma
-+				    && address >= vma->vm_start
-+				    && (vma->vm_flags & acc_type) == acc_type)
-+					val = 1;
-+			}
-+		}
-+		if (treg)
-+			regs->gr[treg] = val;
-+		regs->gr[0] |= PSW_N;
-+		return 1;
-+
-+	case 0x300:
-+		/* LPA instruction */
-+		if (insn & 0x20) {
-+			/* Base modification */
-+			breg = (insn >> 21) & 0x1f;
-+			xreg = (insn >> 16) & 0x1f;
-+			if (breg && xreg)
-+				regs->gr[breg] += regs->gr[xreg];
-+		}
-+		treg = insn & 0x1f;
-+		if (treg)
-+			regs->gr[treg] = 0;
-+		regs->gr[0] |= PSW_N;
-+		return 1;
-+
-+	default:
-+		break;
-+	}
-+
-+	return 0;
-+}
++	/*
++	 * oom_bfqq is not allowed to move, oom_bfqq will hold ref to root_group
++	 * until elevator exit.
++	 */
++	if (bfqq == &bfqd->oom_bfqq)
++		return;
+ 	/*
+ 	 * Get extra reference to prevent bfqq from being freed in
+ 	 * next possible expire or deactivate.
 -- 
 2.34.1
 
