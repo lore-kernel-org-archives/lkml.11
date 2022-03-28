@@ -2,155 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA07BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 23:44:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAECBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 23:53:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231200AbiC1Xqh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 19:46:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43340 "EHLO
+        id S231178AbiC1XzJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 19:55:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231130AbiC1Xqe (ORCPT
+        with ESMTP id S229752AbiC1XzG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 19:46:34 -0400
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A68613DFB
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 16:44:52 -0700 (PDT)
-Date:   Mon, 28 Mar 2022 16:44:45 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1648511090;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=a/CwHgY1OQH27D1lFMO1ZeHx5K6kGyMSqY6y7nOOFAE=;
-        b=OtAGsM4wI8P38y+LX/EzDOHIeRGVdxEnG4+bxRWWO9b6gmBsR8lvwLOWDDzNYtF8zdvKTy
-        u3Yx4YFiKFwjVddd+CeFXt1b2xVWAh8aY4VWve4ba2U32S82IerLXbUZbdBcq/eTK1kS5k
-        sB61GcIJD7nmGIBQjT4nc1UCF/wrt00=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH-mm v3] mm/list_lru: Optimize
- memcg_reparent_list_lru_node()
-Message-ID: <YkJIbfqt6x6xTpd7@carbon.dhcp.thefacebook.com>
-References: <20220309144000.1470138-1-longman@redhat.com>
- <CAMZfGtWS581YW4Y8oNU=E_zPnpK=mMdYVSG1F3U3fJNAzBzc+g@mail.gmail.com>
- <2263666d-5eef-b1fe-d5e3-b166a3185263@redhat.com>
- <CAMZfGtVG2YcmxY0fECkAYNb=sKXJQhWJqgtMTEpQwxXEXmSOLw@mail.gmail.com>
- <e93696b7-b678-6f41-9c1e-46aad447ce8d@redhat.com>
- <YkIIjGk5t4XorQXe@carbon.dhcp.thefacebook.com>
- <5aa687c4-2888-7977-8c1a-d51384e685aa@redhat.com>
- <YkIkvoCgWr8aZeRx@carbon.dhcp.thefacebook.com>
- <9e184cff-263a-d83a-0fc9-0ac7d453aa2a@redhat.com>
+        Mon, 28 Mar 2022 19:55:06 -0400
+Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87AC5134
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 16:53:22 -0700 (PDT)
+Received: from in01.mta.xmission.com ([166.70.13.51]:48432)
+        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nYzAm-00FuPV-4Y; Mon, 28 Mar 2022 17:53:20 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:41522 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nYzAk-000IZk-5q; Mon, 28 Mar 2022 17:53:19 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     <akpm@linux-foundation.org>, <hughd@google.com>,
+        <legion@kernel.org>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>, Miaohe Lin <linmiaohe@huawei.com>
+References: <20220322080918.59861-1-linmiaohe@huawei.com>
+Date:   Mon, 28 Mar 2022 18:52:43 -0500
+In-Reply-To: <20220322080918.59861-1-linmiaohe@huawei.com> (Miaohe Lin's
+        message of "Tue, 22 Mar 2022 16:09:18 +0800")
+Message-ID: <87ilrxprck.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9e184cff-263a-d83a-0fc9-0ac7d453aa2a@redhat.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Type: text/plain
+X-XM-SPF: eid=1nYzAk-000IZk-5q;;;mid=<87ilrxprck.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX18Nb6UePjBpVKyMHCsWjDtNwSqTFKHXX5Q=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: [GIT PULL] ucounts: Fix shm ucounts for v5.18
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 05:20:16PM -0400, Waiman Long wrote:
-> On 3/28/22 17:12, Roman Gushchin wrote:
-> > On Mon, Mar 28, 2022 at 04:46:39PM -0400, Waiman Long wrote:
-> > > On 3/28/22 15:12, Roman Gushchin wrote:
-> > > > On Sun, Mar 27, 2022 at 08:57:15PM -0400, Waiman Long wrote:
-> > > > > On 3/22/22 22:12, Muchun Song wrote:
-> > > > > > On Wed, Mar 23, 2022 at 9:55 AM Waiman Long <longman@redhat.com> wrote:
-> > > > > > > On 3/22/22 21:06, Muchun Song wrote:
-> > > > > > > > On Wed, Mar 9, 2022 at 10:40 PM Waiman Long <longman@redhat.com> wrote:
-> > > > > > > > > Since commit 2c80cd57c743 ("mm/list_lru.c: fix list_lru_count_node()
-> > > > > > > > > to be race free"), we are tracking the total number of lru
-> > > > > > > > > entries in a list_lru_node in its nr_items field.  In the case of
-> > > > > > > > > memcg_reparent_list_lru_node(), there is nothing to be done if nr_items
-> > > > > > > > > is 0.  We don't even need to take the nlru->lock as no new lru entry
-> > > > > > > > > could be added by a racing list_lru_add() to the draining src_idx memcg
-> > > > > > > > > at this point.
-> > > > > > > > Hi Waiman,
-> > > > > > > > 
-> > > > > > > > Sorry for the late reply.  Quick question: what if there is an inflight
-> > > > > > > > list_lru_add()?  How about the following race?
-> > > > > > > > 
-> > > > > > > > CPU0:                               CPU1:
-> > > > > > > > list_lru_add()
-> > > > > > > >         spin_lock(&nlru->lock)
-> > > > > > > >         l = list_lru_from_kmem(memcg)
-> > > > > > > >                                         memcg_reparent_objcgs(memcg)
-> > > > > > > >                                         memcg_reparent_list_lrus(memcg)
-> > > > > > > >                                             memcg_reparent_list_lru()
-> > > > > > > >                                                 memcg_reparent_list_lru_node()
-> > > > > > > >                                                     if (!READ_ONCE(nlru->nr_items))
-> > > > > > > >                                                         // Miss reparenting
-> > > > > > > >                                                         return
-> > > > > > > >         // Assume 0->1
-> > > > > > > >         l->nr_items++
-> > > > > > > >         // Assume 0->1
-> > > > > > > >         nlru->nr_items++
-> > > > > > > > 
-> > > > > > > > IIUC, we use nlru->lock to serialise this scenario.
-> > > > > > > I guess this race is theoretically possible but very unlikely since it
-> > > > > > > means a very long pause between list_lru_from_kmem() and the increment
-> > > > > > > of nr_items.
-> > > > > > It is more possible in a VM.
-> > > > > > 
-> > > > > > > How about the following changes to make sure that this race can't happen?
-> > > > > > > 
-> > > > > > > diff --git a/mm/list_lru.c b/mm/list_lru.c
-> > > > > > > index c669d87001a6..c31a0a8ad4e7 100644
-> > > > > > > --- a/mm/list_lru.c
-> > > > > > > +++ b/mm/list_lru.c
-> > > > > > > @@ -395,9 +395,10 @@ static void memcg_reparent_list_lru_node(struct
-> > > > > > > list_lru *lru, int nid,
-> > > > > > >             struct list_lru_one *src, *dst;
-> > > > > > > 
-> > > > > > >             /*
-> > > > > > > -        * If there is no lru entry in this nlru, we can skip it
-> > > > > > > immediately.
-> > > > > > > +        * If there is no lru entry in this nlru and the nlru->lock is free,
-> > > > > > > +        * we can skip it immediately.
-> > > > > > >              */
-> > > > > > > -       if (!READ_ONCE(nlru->nr_items))
-> > > > > > > +       if (!READ_ONCE(nlru->nr_items) && !spin_is_locked(&nlru->lock))
-> > > > > > I think we also should insert a smp_rmb() between those two loads.
-> > > > > Thinking about this some more, I believe that adding spin_is_locked() check
-> > > > > will be enough for x86. However, that will likely not be enough for arches
-> > > > > with a more relaxed memory semantics. So the safest way to avoid this
-> > > > > possible race is to move the check to within the lock critical section,
-> > > > > though that comes with a slightly higher overhead for the 0 nr_items case. I
-> > > > > will send out a patch to correct that. Thanks for bring this possible race
-> > > > > to my attention.
-> > > > Yes, I think it's not enough:
-> > > > CPU0                                       CPU1
-> > > > READ_ONCE(&nlru->nr_items) -> 0
-> > > >                                              spin_lock(&nlru->lock);
-> > > >                                              nlru->nr_items++;
-> > > >                                              spin_unlock(&nlru->lock);
-> > > > && !spin_is_locked(&nlru->lock) -> 0
-> > > I have actually thought of that. I am even thinking about reading nr_items
-> > > again after spin_is_locked(). Still for arches with relaxed memory
-> > > semantics, when will a memory write by one cpu be propagated to another cpu
-> > > can be highly variable. It is very hard to prove that it is completely safe.
-> > > 
-> > > x86 has a more strict memory semantics and it is the only architecture that
-> > > I have enough confidence that doing the check without taking a lock can be
-> > > safe. Perhaps we could use this optimization just for x86 and do it inside
-> > > locks for the rests.
-> > Hm, is this such a big problem in the real life? Can you describe the setup?
-> > I'm somewhat resistant to an idea of having arch-specific optimizations here
-> > without a HUGE reason.
-> 
-> I am just throwing this idea out for discussion. It does not mean that I
-> want to do an arch specific patch unless there is performance data to
-> indicate a substantial gain in performance in some use cases.
 
-Got it!
-I mean it's not obvious from the original commit message if it's just a nice
-optimization or there was a real life problem. In the first case the best thing
-is probably to leave everything as it is now, in the latter we need to do
-something. I'm trying to understand which case it is.
+Linus,
 
-Thanks!
+Please pull the ucount-rlimit-for-v5.18 tag from the git tree:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/ebiederm/user-namespace.git ucount-rlimit-for-v5.18
+
+  HEAD: e97824ff663ce3509fe040431c713182c2f058b1 mm/mlock: fix two bugs in user_shm_lock()
+
+From: Miaohe Lin <linmiaohe@huawei.com>
+Date: Tue, 22 Mar 2022 16:09:18 +0800
+Subject: [PATCH] mm/mlock: fix two bugs in user_shm_lock()
+
+user_shm_lock forgets to set allowed to 0 when get_ucounts fails. So the
+later user_shm_unlock might do the extra dec_rlimit_ucounts. Also in the
+RLIM_INFINITY case, user_shm_lock will success regardless of the value of
+memlock where memblock == LONG_MAX && !capable(CAP_IPC_LOCK) should fail.
+Fix all of these by changing the code to leave lock_limit at ULONG_MAX aka
+RLIM_INFINITY, leave "allowed" initialized to 0 and remove the special case
+of RLIM_INFINITY as nothing can be greater than ULONG_MAX.
+
+Credit goes to Eric W. Biederman for proposing simplifying the code and
+thus catching the later bug.
+
+Fixes: d7c9e99aee48 ("Reimplement RLIMIT_MEMLOCK on top of ucounts")
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Cc: stable@vger.kernel.org
+v1: https://lkml.kernel.org/r/20220310132417.41189-1-linmiaohe@huawei.com
+v2: https://lkml.kernel.org/r/20220314064039.62972-1-linmiaohe@huawei.com
+Link: https://lkml.kernel.org/r/20220322080918.59861-1-linmiaohe@huawei.com
+Signed-off-by: Eric W. Biederman <ebiederm@xmission.com>
+---
+ mm/mlock.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/mm/mlock.c b/mm/mlock.c
+index 25934e7db3e1..37f969ec68fa 100644
+--- a/mm/mlock.c
++++ b/mm/mlock.c
+@@ -827,13 +827,12 @@ int user_shm_lock(size_t size, struct ucounts *ucounts)
+ 
+ 	locked = (size + PAGE_SIZE - 1) >> PAGE_SHIFT;
+ 	lock_limit = rlimit(RLIMIT_MEMLOCK);
+-	if (lock_limit == RLIM_INFINITY)
+-		allowed = 1;
+-	lock_limit >>= PAGE_SHIFT;
++	if (lock_limit != RLIM_INFINITY)
++		lock_limit >>= PAGE_SHIFT;
+ 	spin_lock(&shmlock_user_lock);
+ 	memlock = inc_rlimit_ucounts(ucounts, UCOUNT_RLIMIT_MEMLOCK, locked);
+ 
+-	if (!allowed && (memlock == LONG_MAX || memlock > lock_limit) && !capable(CAP_IPC_LOCK)) {
++	if ((memlock == LONG_MAX || memlock > lock_limit) && !capable(CAP_IPC_LOCK)) {
+ 		dec_rlimit_ucounts(ucounts, UCOUNT_RLIMIT_MEMLOCK, locked);
+ 		goto out;
+ 	}
+-- 
+2.29.2
+
