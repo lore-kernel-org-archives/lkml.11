@@ -2,135 +2,291 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09008C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 01:53:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E67AAC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 01:53:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237393AbiC1BzB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 21:55:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43168 "EHLO
+        id S237399AbiC1BzG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 21:55:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234637AbiC1By6 (ORCPT
+        with ESMTP id S234637AbiC1BzC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 21:54:58 -0400
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1E664FC52
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 18:53:18 -0700 (PDT)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2e6650cde1bso132932437b3.12
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 18:53:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ld6gg90UxBewd5EuGKuXKzT3kPcWyc890roNOgvWpfk=;
-        b=5h4Rr7Cxj8cXXW8wb+j0jqJ/+Tk37Wv78eprkSxBXIZ5n57eqyJPv6fvnWo0y+kDq9
-         yFFV1uIFMQmTsZczXyoU3t/U0n2UDVBaAtW5ZBltiQ+KDK1mp6RiTy1BSCN9Hlwke1MG
-         Xed05ry/fZyrvE6Wpzkn7WqLi9SZAB7jOdx/cWbSP84BP2+UWis0XNYchFwFGLTRJgZZ
-         QwXNexHoVXd+3DjEio4oPOVYbLFAfOlOjfqHc+BpE2H4lzKPJKINjHhZhe/4s+vLPeRP
-         pYfwlVKvDmow3zL0HveL743Xxm4bhwPuFlk9fWPq+61gdMGzbmA1JGQNnD2+ofRU67ZR
-         gKBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ld6gg90UxBewd5EuGKuXKzT3kPcWyc890roNOgvWpfk=;
-        b=U1mQUPwSOvlleZIhF97uweoW/Cb3+xRSsO9pxm9SsS4ewkGTf+Defp++CCpVXnOkoB
-         NInp2D8RW5P6E3CN3Mz66GttqXDALhbY6wuw3zZPBTnpDo6jeoFceyP+AmI4XGXJC2EH
-         tO/srvPF9UVBdvGdqAA3Q2T7iUNA/VSmkvsF0zVy245ZJBWlCJF9sTJLu+RCrQ7IUlOm
-         43MztfpnH72lh+WwSRcifMvzzTfy7moUJhDZMg/+wPEJZeupIyGepV4pNaW3HdKikwaw
-         GTDqm+gC866JJM4Lp/mfdyCrRAnhtSM6ltLcP6A3pZ/+4F1clyV85Si4JSHk3ALJlmN6
-         C10Q==
-X-Gm-Message-State: AOAM53215usaC/2TI2qgJlGiMAVMtZv3rGvfc6YhkA6Mj53OTUdjt/Mz
-        K8mfAlRlRZ+0x6wqLoAkAG1/zUujYzM4N8ee5W77iA==
-X-Google-Smtp-Source: ABdhPJxYugzqwYygfRvHynhLC1/y3UEtpQG+g+Vx00P+G+LPRSrHTxtSoTXnS8V1aBHStCTQzJ52zfmvBCz0y9N1JKA=
-X-Received: by 2002:a81:897:0:b0:2e5:f3b2:f6de with SMTP id
- 145-20020a810897000000b002e5f3b2f6demr23165273ywi.141.1648432398131; Sun, 27
- Mar 2022 18:53:18 -0700 (PDT)
+        Sun, 27 Mar 2022 21:55:02 -0400
+Received: from 189.cn (ptr.189.cn [183.61.185.102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C6C3BB8;
+        Sun, 27 Mar 2022 18:53:20 -0700 (PDT)
+HMM_SOURCE_IP: 10.64.8.43:53434.1335546779
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-114.242.206.180 (unknown [10.64.8.43])
+        by 189.cn (HERMES) with SMTP id 6258A1002E0;
+        Mon, 28 Mar 2022 09:52:31 +0800 (CST)
+Received: from  ([114.242.206.180])
+        by gateway-151646-dep-b7fbf7d79-vjdjk with ESMTP id 99efaa0237f14c4d90846b278cc6f86f for jiaxun.yang@flygoat.com;
+        Mon, 28 Mar 2022 09:53:18 CST
+X-Transaction-ID: 99efaa0237f14c4d90846b278cc6f86f
+X-Real-From: 15330273260@189.cn
+X-Receive-IP: 114.242.206.180
+X-MEDUSA-Status: 0
+Sender: 15330273260@189.cn
+Message-ID: <30b8ee6e-d890-a76a-96fd-080042af1d7a@189.cn>
+Date:   Mon, 28 Mar 2022 09:52:30 +0800
 MIME-Version: 1.0
-References: <20220327051853.57647-1-songmuchun@bytedance.com>
- <20220327051853.57647-2-songmuchun@bytedance.com> <CANpmjNPA71CyZefox1rb_f8HqEM_R70EgZCX8fHeeAnDyujO8w@mail.gmail.com>
-In-Reply-To: <CANpmjNPA71CyZefox1rb_f8HqEM_R70EgZCX8fHeeAnDyujO8w@mail.gmail.com>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Mon, 28 Mar 2022 09:52:40 +0800
-Message-ID: <CAMZfGtXt9xWnVv8hav+zWHYRmOqBGu3WPaasYwGxCb1-MDDwgQ@mail.gmail.com>
-Subject: Re: [PATCH 2/2] mm: kfence: fix objcgs vector allocation
-To:     Marco Elver <elver@google.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v12 3/6] dt-bindings: display: Add Loongson display
+ controller
+Content-Language: en-US
+To:     Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Roland Scheidegger <sroland@vmware.com>,
+        Zack Rusin <zackr@vmware.com>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Ilia Mirkin <imirkin@alum.mit.edu>,
+        Qing Zhang <zhangqing@loongson.cn>,
+        suijingfeng <suijingfeng@loongson.cn>
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org
+References: <20220327113846.2498146-1-15330273260@189.cn>
+ <20220327113846.2498146-4-15330273260@189.cn>
+ <169412ca-9167-b214-d613-4fe0e76ad36a@flygoat.com>
+From:   Sui Jingfeng <15330273260@189.cn>
+In-Reply-To: <169412ca-9167-b214-d613-4fe0e76ad36a@flygoat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 1:31 AM Marco Elver <elver@google.com> wrote:
->
-> On Sun, 27 Mar 2022 at 07:19, Muchun Song <songmuchun@bytedance.com> wrote:
-> >
-> > If the kfence object is allocated to be used for objects vector, then
-> > this slot of the pool eventually being occupied permanently since
-> > the vector is never freed.  The solutions could be 1) freeing vector
-> > when the kfence object is freed or 2) allocating all vectors statically.
-> > Since the memory consumption of object vectors is low, it is better to
-> > chose 2) to fix the issue and it is also can reduce overhead of vectors
-> > allocating in the future.
-> >
-> > Fixes: d3fb45f370d9 ("mm, kfence: insert KFENCE hooks for SLAB")
-> > Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-> > ---
-> >  mm/kfence/core.c   | 3 +++
-> >  mm/kfence/kfence.h | 1 +
-> >  2 files changed, 4 insertions(+)
->
-> Thanks for this -- mostly looks good. Minor comments below + also
-> please fix what the test robot reported.
 
-Will do.
-
+On 2022/3/27 20:54, Jiaxun Yang wrote:
 >
-> > diff --git a/mm/kfence/core.c b/mm/kfence/core.c
-> > index 13128fa13062..9976b3f0d097 100644
-> > --- a/mm/kfence/core.c
-> > +++ b/mm/kfence/core.c
-> > @@ -579,9 +579,11 @@ static bool __init kfence_init_pool(void)
-> >         }
-> >
-> >         for (i = 0; i < CONFIG_KFENCE_NUM_OBJECTS; i++) {
-> > +               struct slab *slab = virt_to_slab(addr);
-> >                 struct kfence_metadata *meta = &kfence_metadata[i];
-> >
-> >                 /* Initialize metadata. */
-> > +               slab->memcg_data = (unsigned long)&meta->objcg | MEMCG_DATA_OBJCGS;
 >
-> Maybe just move it to kfence_guarded_alloc(), see "/* Set required
-> slab fields */", where similar initialization on slab is done.
-
-But slab->memcg_data is special since it is only needed to be
-initialized once.  I think it is better move it to the place where
-__SetPageSlab(&pages[i]) is.  What do you think?
-
+> 在 2022/3/27 12:38, Sui Jingfeng 写道:
+>> Add DT bindings and simple usages for Loongson display controller
+>> found in LS7A1000 bridges chip and LS2k1000 SoC.
+>>
+>> Signed-off-by: Sui Jingfeng <15330273260@189.cn>
+> [...]
+>> +
+>> +  - |
+>> +    #include <dt-bindings/interrupt-controller/irq.h>
+>> +    bus {
+>> +
+>> +        #address-cells = <3>;
+>> +        #size-cells = <2>;
+>> +        #interrupt-cells = <2>;
+>> +
+>> +        display-controller@6,1 {
+>> +            compatible = "loongson,ls7a1000-dc";
+>> +            reg = <0x3100 0x0 0x0 0x0 0x0>;
+>> +            interrupts = <28 IRQ_TYPE_LEVEL_HIGH>;
+>> +
+>> +            #address-cells = <1>;
+>> +            #size-cells = <0>;
+>> +
+>> +            i2c@6 {
+>> +                compatible = "loongson,gpio-i2c";
+>> +                reg = <0x00001650 0x00000020>;
+> Hi Jingfeng,
 >
-> >                 INIT_LIST_HEAD(&meta->list);
-> >                 raw_spin_lock_init(&meta->lock);
-> >                 meta->state = KFENCE_OBJECT_UNUSED;
-> > @@ -938,6 +940,7 @@ void __kfence_free(void *addr)
-> >  {
-> >         struct kfence_metadata *meta = addr_to_metadata((unsigned long)addr);
-> >
-> > +       KFENCE_WARN_ON(meta->objcg);
+> Thanks for your patch.
 >
-> This holds true for both SLAB and SLUB, right? (I think it does, but
-> just double-checking.)
+> Just curious about what is this "reg" for?
 
-Right.
+Hi, Jiaxun
 
-Thanks.
+Thanks for you take valuable time to review my patch.
+
+Without it make dt_binding_check generate warnings:
+
+Documentation/devicetree/bindings/display/loongson/loongson,display-controller.example.dts:65.23-73.19: 
+Warning (unit_address_vs_reg): 
+/example-1/bus/display-controller@6,1/i2c@6: node has a unit name, but 
+no reg or ranges property
+
+reg are the control register offset and size of the dedicate GPIO, they 
+are not get used by the driver currently,
+
+put in there just for silence the warning .
+
+
+>> +                loongson,nr = <6>;
+> Why nr start from 6?
+
+
+Bus number greater than 6 is safe  because ls7a1000 bridge have 6 hardware I2C controller integrated. but 
+the driver for it is not upstream yet. To avoid potential conflict with the bus number of the hardware I2C driver.
+
+In the future, if someone contribute the hardware I2C driver to upstream,
+you don't need change it. Let me give you an example to show what it will be:
+
+  	aliases {
+		i2c0 = &i2c0;
+		i2c1 = &i2c1;
+		i2c2 = &i2c2;
+		i2c3 = &i2c3;
+		i2c4 = &i2c4;
+		i2c5 = &i2c5;
+		i2c6 = &i2c6;
+		i2c7 = &i2c7;
+	};
+
+	i2c0: i2c@10090000 {
+		compatible = "loongson,ls-i2c";
+		reg = <0x10090000 0x8>;
+		interrupts = <73>;
+		interrupt-parent = <&platic>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+	};
+
+
+	i2c1: i2c@10090100 {
+		compatible = "loongson,ls-i2c";
+		reg = <0x10090100 0x8>;
+		interrupts = <73>;
+		interrupt-parent = <&platic>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+	};
+
+	i2c2: i2c@10090200 {
+		compatible = "loongson,ls-i2c";
+		reg = <0x10090200 0x8>;
+		interrupts = <73>;
+		interrupt-parent = <&platic>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+	};
+
+	i2c3: i2c@10090300 {
+		compatible = "loongson,ls-i2c";
+		reg = <0x10090300 0x8>;
+		interrupts = <73>;
+		interrupt-parent = <&platic>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+	};
+
+	i2c4: i2c@10090400 {
+		compatible = "loongson,ls-i2c";
+		reg = <0x10090400 0x8>;
+		interrupts = <73>;
+		interrupt-parent = <&platic>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+	};
+
+	i2c5: i2c@10090500 {
+		compatible = "loongson,ls-i2c";
+		reg = <0x10090500 0x8>;
+		interrupts = <73>;
+		interrupt-parent = <&platic>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+	};
+
+> The approach you are handling I2C seems to be wired..
+>
+
+It is not wired,  you can change it to 0 or 1 it you like currently,
+
+you can even remove loongson,nr = <6> and loongson,nr = <7>,
+
+then the i2c core driver will automatically  allocate one for you.
+
+It is very flexible actually.
+
+> Actually you can reference how network subsystem is handling
+> MDIO controller built-in into Ethernet controller [1] in this case. It is
+> basically the same problem.
+>
+> [1]: 
+> https://elixir.bootlin.com/linux/latest/source/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+>
+> Thanks.
+> - Jiaxun
+>
+>> +                loongson,sda = <0>;
+>> +                loongson,scl = <1>;
+>> +                loongson,udelay = <5>;
+>> +                loongson,timeout = <2200>;
+>> +            };
+>> +
+>> +            i2c@7 {
+>> +                compatible = "loongson,gpio-i2c";
+>> +                reg = <0x00001650 0x00000020>;
+>> +                loongson,nr = <7>;
+>> +                loongson,sda = <2>;
+>> +                loongson,scl = <3>;
+>> +                loongson,udelay = <5>;
+>> +                loongson,timeout = <2200>;
+>> +            };
+>> +
+>> +            ports {
+>> +                #address-cells = <1>;
+>> +                #size-cells = <0>;
+>> +                port@0 {
+>> +                    reg = <0>;
+>> +                    endpoint {
+>> +                            remote-endpoint = <&vga_encoder_in>;
+>> +                    };
+>> +                };
+>> +
+>> +                port@1 {
+>> +                    reg = <1>;
+>> +                    endpoint {
+>> +                            remote-endpoint = <&dvi_encoder_in>;
+>> +                    };
+>> +                };
+>> +            };
+>> +        };
+>> +    };
+>> +
+>> +  - |
+>> +    #include <dt-bindings/interrupt-controller/irq.h>
+>> +    bus {
+>> +
+>> +        #address-cells = <3>;
+>> +        #size-cells = <2>;
+>> +        #interrupt-cells = <2>;
+>> +
+>> +        display-controller@6,0 {
+>> +            compatible = "loongson,ls2k1000-dc";
+>> +            reg = <0x3100 0x0 0x0 0x0 0x0>;
+>> +            interrupts = <28 IRQ_TYPE_LEVEL_HIGH>;
+>> +
+>> +            ports {
+>> +                #address-cells = <1>;
+>> +                #size-cells = <0>;
+>> +                port@0 {
+>> +                    reg = <0>;
+>> +                    endpoint {
+>> +                            remote-endpoint = <&panel_in>;
+>> +                    };
+>> +                };
+>> +
+>> +                port@1 {
+>> +                    reg = <1>;
+>> +                    endpoint {
+>> +                            remote-endpoint = <&hdmi_encoder_in>;
+>> +                    };
+>> +                };
+>> +            };
+>> +        };
+>> +    };
+>> +...
+>
