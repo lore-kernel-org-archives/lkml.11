@@ -2,121 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09968C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 12:49:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAA68C4167D
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 12:51:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242629AbiC1Mvh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 08:51:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58474 "EHLO
+        id S235875AbiC1MxH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 08:53:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234249AbiC1Mvc (ORCPT
+        with ESMTP id S242641AbiC1Mww (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 08:51:32 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5380B33A07
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 05:49:52 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id j2so25861613ybu.0
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 05:49:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KUChceqjpLh79J1JQFAPdmmRt16+9BpF6Er6lqRNHnM=;
-        b=maVnbV2w40X+zie6c69eqLTkE3mwOUCUKhLqXBM5TBtY9izg4Mq9EndXyXXEQDihlh
-         ZkHfQxiXaMnhMMdwDip1XvXuXZ7ScmQWwvW/WZQeLwjDehz04SIA0Ts+EVjB4nTnD9zY
-         7qeGSbRUBvHUdRHrzr8HhPZS/KY/7z1Z4aJuEZk+h1bMGQI2ZfeNP62Tnf+mP1RdkNZI
-         VYV4ZO4V7TaAtGhl6djHJPtYZdb1sPVykMZJnfQdgxzWJOnKYF2FqcxBzsvKOcBy6XT4
-         YATWrrE48W/6FFVW6LvoILUNa6ehaETUCpNtc9VYgS0vVTZ8K6cpbZ/zWsU59pvw5j67
-         zS8w==
+        Mon, 28 Mar 2022 08:52:52 -0400
+Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35A733ED3E;
+        Mon, 28 Mar 2022 05:51:12 -0700 (PDT)
+Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-deb9295679so7821828fac.6;
+        Mon, 28 Mar 2022 05:51:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KUChceqjpLh79J1JQFAPdmmRt16+9BpF6Er6lqRNHnM=;
-        b=l0JvC2zitdSUqBqko00ENXsNKu1RZxKyrCgF60VvbLt28Z0PuSYiz2sBJmJqtcjrRk
-         0CBy+OND/8gwJHBO7gAPATWImlEsejbqP4Y6t+FlTNFzMyoVG1flWIP7OBWiqIrbGWcI
-         TtcsaNWbY6/w81zfrn5Q6QxkD68VgCDKjACjkeq4zBlQK0+HNZBdcZSozcNAT9kHb2kN
-         cwKBnvwbZCr44eyJsSbTNDLsH3w47IPKIGmsNJC50Vn7Uxt2MRBdQQj1qlkHiTsbN79U
-         X1Jo9MSIMhScsL6RsSjkTfrBsUfmDEh3bhKw9l4v5mljRdV4tmcVtbBOUmPmYGtiniTv
-         Z5xQ==
-X-Gm-Message-State: AOAM531ntKRP+w9wD6djGaSKaqNqEndy9if/Z34ez/HB/twlgls7MGkk
-        ZMdzidTCrkY+Olib5O04BZG7paVzQ7NnAG6QzbK96g==
-X-Google-Smtp-Source: ABdhPJz/nC8Q3dmMv0pTY0Bqml7jS4vWoZHU6q7UKQKSEbGR6IHs4zmkgJSlmMqGUOmtHm2Y9W1Xg3JOt85G5SRnmEo=
-X-Received: by 2002:a05:6902:24f:b0:62d:69d:c9fc with SMTP id
- k15-20020a056902024f00b0062d069dc9fcmr21590325ybs.87.1648471791406; Mon, 28
- Mar 2022 05:49:51 -0700 (PDT)
-MIME-Version: 1.0
-References: <cover.1648049113.git.andreyknvl@google.com> <7027b9b6b0cae2921ff65739582ae499bf61470c.1648049113.git.andreyknvl@google.com>
-In-Reply-To: <7027b9b6b0cae2921ff65739582ae499bf61470c.1648049113.git.andreyknvl@google.com>
-From:   Marco Elver <elver@google.com>
-Date:   Mon, 28 Mar 2022 14:49:15 +0200
-Message-ID: <CANpmjNPJkFOMn1pL-=gx+x_YHgg72QH5iqe561+Geiy3JoOg1w@mail.gmail.com>
-Subject: Re: [PATCH v2 4/4] kasan: use stack_trace_save_shadow
-To:     andrey.konovalov@linux.dev
-Cc:     Alexander Potapenko <glider@google.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev@googlegroups.com, Mark Rutland <mark.rutland@arm.com>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Evgenii Stepanov <eugenis@google.com>,
-        Florian Mayer <fmayer@google.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrey Konovalov <andreyknvl@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=GP1bdWVmsBSkAlGr/Gp2UnisAPKv1M13pEpomMv6UjQ=;
+        b=34iRuX7v98YsGgMuCZcu3ahfBcnI0ZtkR1TkfhKxI7/sTdEfORIy/Tv8d6TUjcRYlB
+         QUMyeCAjjflXqRKGIdmxb0vbqlTRN3ndVnp6RK7llXPtoAJiDplhmKy5pVMranYf5pYG
+         5TF6skor1HQYgo4xnWcQyxLjiaomVvesDwYkjGeimnbr36V0MEUJZsxXta8SGdNNCu0x
+         5SwAJLPqKtbsa+dOg/g0NBlfYjWDwaWupVZv7L+UtriSNKnHjqSgaiOqoJWot8DbUpbU
+         A8IElb7XuMd5jy+BAyEIXrJ5RCWsJRYdkMKkXDxY4d74xQiOAOnA3tUIxAzxI+a4Bzmi
+         p0fA==
+X-Gm-Message-State: AOAM530e7v26vHEuO/s9fZjSwW8TuE7ODmdkesoi8DP3pSIUP8Mi7HAS
+        9NH3qzjWKnq0iPo+U3NASb6wAbrJsA==
+X-Google-Smtp-Source: ABdhPJwT3yYx6LIv4tBCmidDkpcH2xuaILIymk6sDk/mQOiMYgThNK+zceGc8kgIC3YCSqd7omS/7w==
+X-Received: by 2002:a05:6870:65ab:b0:de:37be:30a6 with SMTP id fp43-20020a05687065ab00b000de37be30a6mr14525453oab.70.1648471871476;
+        Mon, 28 Mar 2022 05:51:11 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id n15-20020aca240f000000b002da2fc73741sm6940329oic.33.2022.03.28.05.51.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 05:51:10 -0700 (PDT)
+Received: (nullmailer pid 2153576 invoked by uid 1000);
+        Mon, 28 Mar 2022 12:51:05 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Sameer Pujar <spujar@nvidia.com>
+Cc:     broonie@kernel.org, robh+dt@kernel.org,
+        linux-tegra@vger.kernel.org, tiwai@suse.com, krzk+dt@kernel.org,
+        thierry.reding@gmail.com, jonathanh@nvidia.com,
+        oder_chiou@realtek.com, linux-kernel@vger.kernel.org,
+        peter.ujfalusi@linux.intel.com,
+        pierre-louis.bossart@linux.intel.com, devicetree@vger.kernel.org,
+        alsa-devel@alsa-project.org, lgirdwood@gmail.com, perex@perex.cz
+In-Reply-To: <1648448050-15237-2-git-send-email-spujar@nvidia.com>
+References: <1648448050-15237-1-git-send-email-spujar@nvidia.com> <1648448050-15237-2-git-send-email-spujar@nvidia.com>
+Subject: Re: [RFC PATCH v2 1/6] ASoC: dt-bindings: Convert rt5659 bindings to YAML schema
+Date:   Mon, 28 Mar 2022 07:51:05 -0500
+Message-Id: <1648471865.814225.2153575.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 23 Mar 2022 at 16:33, <andrey.konovalov@linux.dev> wrote:
->
-> From: Andrey Konovalov <andreyknvl@google.com>
->
-> Now that stack_trace_save_shadow() is implemented by arm64, use it
-> whenever CONFIG_HAVE_SHADOW_STACKTRACE is enabled. This improves the
-> boot time of a defconfig build by ~30% for all KASAN modes.
->
-> Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+On Mon, 28 Mar 2022 11:44:05 +0530, Sameer Pujar wrote:
+> Convert rt5659.txt DT binding to YAML schema. This binding is applicable
+> to rt5658 and rt5659 audio CODECs.
+> 
+> Signed-off-by: Sameer Pujar <spujar@nvidia.com>
+> Cc: Oder Chiou <oder_chiou@realtek.com>
 > ---
->  mm/kasan/common.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
->
-> diff --git a/mm/kasan/common.c b/mm/kasan/common.c
-> index d9079ec11f31..8d9d35c6562b 100644
-> --- a/mm/kasan/common.c
-> +++ b/mm/kasan/common.c
-> @@ -33,10 +33,13 @@
->  depot_stack_handle_t kasan_save_stack(gfp_t flags, bool can_alloc)
->  {
->         unsigned long entries[KASAN_STACK_DEPTH];
-> -       unsigned int nr_entries;
-> +       unsigned int size;
+>  .../devicetree/bindings/sound/realtek,rt5659.yaml  | 112 +++++++++++++++++++++
+>  Documentation/devicetree/bindings/sound/rt5659.txt |  89 ----------------
+>  2 files changed, 112 insertions(+), 89 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/sound/realtek,rt5659.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/sound/rt5659.txt
+> 
 
-Why did this variable name change?
+Running 'make dtbs_check' with the schema in this patch gives the
+following warnings. Consider if they are expected or the schema is
+incorrect. These may not be new warnings.
 
-> -       nr_entries = stack_trace_save(entries, ARRAY_SIZE(entries), 0);
-> -       return __stack_depot_save(entries, nr_entries, flags, can_alloc);
-> +       if (IS_ENABLED(CONFIG_HAVE_SHADOW_STACKTRACE))
+Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+This will change in the future.
 
-Would it be more reliable to check the return-code? I.e. do:
+Full log is available here: https://patchwork.ozlabs.org/patch/1610026
 
-  int size;
 
-  size = stack_trace_save_shadow(...)
-  if (size < 0)
-    size = stack_trace_save(...);
+audio-codec@1a: 'port' does not match any of the regexes: 'pinctrl-[0-9]+'
+	arch/arm64/boot/dts/nvidia/tegra194-p2972-0000.dt.yaml
 
-> +               size = stack_trace_save_shadow(entries, ARRAY_SIZE(entries), 0);
-> +       else
-> +               size = stack_trace_save(entries, ARRAY_SIZE(entries), 0);
-> +       return __stack_depot_save(entries, size, flags, can_alloc);
->  }
->
->  void kasan_set_track(struct kasan_track *track, gfp_t flags)
-> --
-> 2.25.1
