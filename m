@@ -2,154 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 621F3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 14:50:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E652C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 14:51:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244067AbiC1Ovu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 10:51:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59862 "EHLO
+        id S244076AbiC1OxR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 10:53:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237283AbiC1Ovs (ORCPT
+        with ESMTP id S244110AbiC1OxH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 10:51:48 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13FEB3F8A7;
-        Mon, 28 Mar 2022 07:50:06 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 157AE1F404A0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1648479005;
-        bh=rh1r1C45HfSaIbukyLwkQj2wc8+C93F7ZOfSvSOU2o4=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Gm788Xsmn/QVrAO0hM+4de4tvTGjuuQWcofmlA/NObYcXRpCLczAB9EceIFF+RA+f
-         6YROwpBLFZrNKk2LvanhAbBgBOR4rFQ/fctRk4p2FQ4ZpVUj5ufjJJVhn6mIwDi456
-         F0oRcUMx8s2PESeOjf06VwhO2LHllFHJpJj/B/CqrFEko2GOKnz/UmXpXCUZSAMbIU
-         7B7bB1v2H4/Rdq3FBOn8QQkyneNIh60bQYvExblMH840ebePsWjvmgEwHVRAGhVepu
-         MLemwNev0VUqSuhOdykoq0wC0TU1muVwYWFICjzAcITBsShepSyR8TBnmO4d2P8hEG
-         /LqBP7Tixh4dA==
-Message-ID: <0b042c71-4d07-76a6-53bb-94bbd4bad6c0@collabora.com>
-Date:   Mon, 28 Mar 2022 16:50:02 +0200
+        Mon, 28 Mar 2022 10:53:07 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F84E4BB97
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 07:51:26 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id l129so3916103pga.3
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 07:51:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=obleDDk1Z4CONGxAkHZNS2tjDM/nuYlv6cPwOVJDufY=;
+        b=h8Ok29DH4z6N0TfkIQj67vjU5KD03U8eMxwkX7kHs1WHIbA4lLyhTbcKvx33kZrWV5
+         4tWfsq4cMxVflItMlDGuqv7OJV1eH4KdzObOzdOtizGAIkxs5mrn85cRduSTqrnG00PQ
+         lL3IUJdXqE+IrbTYrjk1tVVXals52dlLJhfHN08n6eJ+rnGqFHEtsew3k8F56JnePW/4
+         Zw7A6sVXJ+Aq9Tjx6/ONd0HiSUFF1MWVPcy4GVHXqAPwBhLU2ccTWenC/NJysEW/Rd95
+         T3atXP4WAJ0g/Hnd6AHuxCGN4fX4Zp/B2DOVWsUW09lZPzOuSOBmfGQUZqJmRMe9+EP3
+         BWiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=obleDDk1Z4CONGxAkHZNS2tjDM/nuYlv6cPwOVJDufY=;
+        b=0REcFbyK+0NyiaOwbM62KJZbcaza6WQRXtcRpZ/vmUJUojLrm+yJT4u7evmZzWbf3v
+         CFGkCUyZNTBg0kHTPMwf0dHJl0MVkzZWbZFcKHTg6egvu0Bf8rH9sSTot4DmcHINng+a
+         wLk7hhwFy19xfuRcNsA0LGEd/AzM8YjLdMvkxIvN0RBo4dWaBjxBLDTw+QAZgzfjEkEW
+         nir7UDnXCuB1lumQVLTwEuNnXTPnTr/1+J8uWFdFZO8/U7TcDK0eQ37SN34elj6ZjntO
+         Z8zw5qtL/LPCa7W3imxQ/9S8OjqEuqEqpTD2Uo9ltJ+3qmnf1yv5CiGXcjhGNR48Ia5i
+         kO/w==
+X-Gm-Message-State: AOAM530hadDVKhqmar70h1nhPqywQt+0pXwB8KYFIUZARMVe1g9m55OL
+        73bGl+l9wd5aceItGlxm2m0PKA==
+X-Google-Smtp-Source: ABdhPJx6O3QG54jbtM3+68GYNfgyadHMEYPzXTEypnpZ1C+mZMHehDR1WLLZmYv16OhknEgRZIk0wg==
+X-Received: by 2002:a63:68c6:0:b0:380:3fbc:dfb6 with SMTP id d189-20020a6368c6000000b003803fbcdfb6mr10592508pgc.326.1648479085523;
+        Mon, 28 Mar 2022 07:51:25 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id h12-20020a056a00230c00b004faf2563bcasm15408065pfh.114.2022.03.28.07.51.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 07:51:24 -0700 (PDT)
+Date:   Mon, 28 Mar 2022 14:51:21 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Jon Kohler <jon@nutanix.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] KVM: x86: optimize PKU branching in
+ kvm_load_{guest|host}_xsave_state
+Message-ID: <YkHLaS2IPZDCToXk@google.com>
+References: <20220324004439.6709-1-jon@nutanix.com>
+ <Yj5bCw0q5n4ZgSuU@google.com>
+ <387E8E8B-81B9-40FF-8D52-76821599B7E4@nutanix.com>
+ <e8488e5c-7372-fc6e-daee-56633028854a@redhat.com>
+ <1E31F2B6-96BF-42E0-AD41-3C512D98D74B@nutanix.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 2/4] arm64: dts: mediatek: Add device-tree for MT8195
- Demo board
-Content-Language: en-US
-To:     Fabien Parent <fparent@baylibre.com>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220327200312.3090515-1-fparent@baylibre.com>
- <20220327200312.3090515-3-fparent@baylibre.com>
- <94d231cf-ce4c-22f5-b9af-41ae68f1e659@collabora.com>
- <20220328144107.ed4xwzuiezzixqrx@radium>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220328144107.ed4xwzuiezzixqrx@radium>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1E31F2B6-96BF-42E0-AD41-3C512D98D74B@nutanix.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 28/03/22 16:41, Fabien Parent ha scritto:
-> On Mon, Mar 28, 2022 at 03:47:09PM +0200, AngeloGioacchino Del Regno wrote:
->> Il 27/03/22 22:03, Fabien Parent ha scritto:
->>> Add basic device-tree for the MT8195 Demo board. The
->>> Demo board is made by MediaTek and has a MT8195 SoC,
->>> associated with the MT6359 and MT6360 PMICs, and
->>> the MT7921 connectivity chip.
->>>
->>> The IOs available on that board are:
->>> * 1 USB Type-C connector with DP aux mode support
->>> * 1 USB Type-A connector
->>> * 1 full size HDMI RX and 1 full size HDMI TX connector
->>> * 1 uSD slot
->>> * 40 pins header
->>> * SPI interface header
->>> * 1 M.2 slot
->>> * 1 audio jack
->>> * 1 micro-USB port for serial debug
->>> * 2 connectors for DSI displays
->>> * 3 connectors for CSI cameras
->>> * 1 connector for a eDP panel
->>> * 1 MMC storage
->>>
->>> This commit adds basic support in order to be able to boot.
->>>
->>> Signed-off-by: Fabien Parent <fparent@baylibre.com>
->>> ---
->>> v2:
->>>    * remove empty i2c nodes
->>>    * remove empty spi node
->>>    * remove unused pcie pinctrls
->>>    * fixup node nodes to not contains underscore
->>>    * rename mt6360 pmic node
->>>    * move mmc1 node right after mmc0 node
->>>    * use generic node name for gpio-keys
->>>    * uniformize pinctrl node names
->>>
->>>    arch/arm64/boot/dts/mediatek/Makefile        |   1 +
->>>    arch/arm64/boot/dts/mediatek/mt8195-demo.dts | 447 +++++++++++++++++++
->>>    2 files changed, 448 insertions(+)
->>>    create mode 100644 arch/arm64/boot/dts/mediatek/mt8195-demo.dts
->>>
->>
->> ..snip..
->>
->>> diff --git a/arch/arm64/boot/dts/mediatek/mt8195-demo.dts b/arch/arm64/boot/dts/mediatek/mt8195-demo.dts
->>> new file mode 100644
->>> index 000000000000..d94b4e01159a
->>> --- /dev/null
->>> +++ b/arch/arm64/boot/dts/mediatek/mt8195-demo.dts
->>> @@ -0,0 +1,447 @@
->>
->> ..snip..
->>
->>> +
->>> +	gpio-keys {
->>> +		compatible = "gpio-keys";
->>> +		input-name = "gpio-keys";
->>> +		pinctrl-names = "default";
->>> +		pinctrl-0 = <&gpio_keys_pins>;
->>> +
->>> +		key-0 {
->>
->> key-volup is more descriptive, can you please change that?
+On Mon, Mar 28, 2022, Jon Kohler wrote:
 > 
-> Which review should I follow, yours or the one from Krzysztof? Because both reviews are contradictory
 > 
+> > On Mar 27, 2022, at 6:43 AM, Paolo Bonzini <pbonzini@redhat.com> wrote:
+> > 
+> > On 3/26/22 02:37, Jon Kohler wrote:
+> >>>>    Flip the ordering of the || condition so that XFEATURE_MASK_PKRU is
+> >>>>    checked first, which when instrumented in our environment appeared
+> >>>>    to be always true and less overall work than kvm_read_cr4_bits.
+> >>> 
+> >>> If it's always true, then it should be checked last, not first.  And if
+> >> Sean thanks for the review. This would be a left handed || short circuit, so
+> >> wouldn’t we want always true to be first?
+> > 
+> > Yes.
+> 
+> Ack, thanks.
 
-There are a lot of "vol-down", "vol-up" (etc) instances, lots of which are on
-Qualcomm device-trees... so I guess this is just about personal preference...
-
-Honestly, before sending my review I forgot to check Krzysztof's one (sorry!!),
-but I think that this kind of node names is highly subjective... at least, I am
-not aware of any rule about having to use "generic" names.
-
-Check Documentation/devicetree/bindings/input/gpio-keys.yaml - in the example,
-you can find "specific" node names, like:
-
-         up {
-
-             label = "GPIO Key UP";
-
-In any case, as I said, it's my personal preference to have it named as something
-like "key-volup" or "vol-up" or .. a name that is describing the key, but, as a
-personal preference, it is nothing mandatory, not even from my side.
-
-If anyone else has reasons to disagree, shrug, it's fine :))
-
->>
->>> +			gpios = <&pio 106 GPIO_ACTIVE_LOW>;
->>> +			label = "volume_up";
->>> +			linux,code = <KEY_VOLUMEUP>;
->>> +			wakeup-source;
->>> +			debounce-interval = <15>;
->>> +		};
->>> +	};
->>> +};
+Yeah, I lost track of whether it was a || or &&.
