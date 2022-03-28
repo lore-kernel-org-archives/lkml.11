@@ -2,88 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D17CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 05:12:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90050C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 05:22:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238123AbiC1FOI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 01:14:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43274 "EHLO
+        id S238132AbiC1FXm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 01:23:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237107AbiC1FOG (ORCPT
+        with ESMTP id S237107AbiC1FXk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 01:14:06 -0400
-Received: from nksmu.kylinos.cn (mailgw.kylinos.cn [123.150.8.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F22F951315;
-        Sun, 27 Mar 2022 22:12:23 -0700 (PDT)
-X-UUID: fb30e82a4d7c424e9a44f7ee3c6f49f3-20220328
-X-GW-Reason: 11101
-X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HNeS6uumcgOimgeWuoeaguA==
-X-Content-Feature: ica/max.line-size 167
-        audit/email.address 1
-        meta/cnt.alert 1
-X-UUID: fb30e82a4d7c424e9a44f7ee3c6f49f3-20220328
-Received: from cs2c.com.cn [(172.17.111.24)] by nksmu.kylinos.cn
-        (envelope-from <lizhenneng@kylinos.cn>)
-        (Generic MTA)
-        with ESMTP id 2131348658; Mon, 28 Mar 2022 12:05:18 +0800
-X-ns-mid: postfix-62413430-3057013324
-Received: from localhost.localdomain (unknown [172.20.108.41])
-        by cs2c.com.cn (NSMail) with ESMTPA id D30D23848676;
-        Mon, 28 Mar 2022 04:06:07 +0000 (UTC)
-From:   Zhenneng Li <lizhenneng@kylinos.cn>
-To:     Alex Deucher <alexander.deucher@amd.com>
-Cc:     =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Pan Xinhui <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
-        Evan Quan <evan.quan@amd.com>,
-        Guchun Chen <guchun.chen@amd.com>,
-        Jack Zhang <Jack.Zhang1@amd.com>,
-        Lijo Lazar <lijo.lazar@amd.com>,
-        Kevin Wang <kevin1.wang@amd.com>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linaro-mm-sig@lists.linaro.org, Zhenneng Li <lizhenneng@kylinos.cn>
-Subject: [PATCH] drm/amdgpu: resolve s3 hang for r7340
-Date:   Mon, 28 Mar 2022 12:05:36 +0800
-Message-Id: <20220328040536.4121797-1-lizhenneng@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
+        Mon, 28 Mar 2022 01:23:40 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DBFD1DA79
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 22:21:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648444919; x=1679980919;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=TssxZi5HbhRuTGitKGwvo5yP8Uu2MNcvCLKPIgM9VQA=;
+  b=WRx2J45aQYCMM0cU+rTOVPMx98uSbm1oT/pPDNmnoIwpNYfzWKz2i/vs
+   +KIwqx2m/FvCPeO1f86uMgaMN5COUR9+QNIO8Xmxh3RSNYt6VJ21BIAkB
+   gJ0/vgwBBDyH2jK3xURo0r/g841QyhSIIP1J84Fje0vMtTD/ECEaow+Wz
+   gO9/BIN7UUpcpuqErnZjChi/Shkxzs7G+hsZvyaI+xy6JI2AwoRp60ebf
+   l+LZBjgQfwQtluzOI/+3AHhCr4BL0FDwFtY2Pz33EB9TTY9oTRNOyS0vz
+   HiWazsEoEk4zd96Mm07OChWJHnoAiTtE50D1um7J1/fip725AZe3zyONy
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10299"; a="258882853"
+X-IronPort-AV: E=Sophos;i="5.90,216,1643702400"; 
+   d="scan'208";a="258882853"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2022 22:21:58 -0700
+X-IronPort-AV: E=Sophos;i="5.90,216,1643702400"; 
+   d="scan'208";a="520873240"
+Received: from rongch2-mobl.ccr.corp.intel.com (HELO [10.249.169.179]) ([10.249.169.179])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2022 22:21:56 -0700
+Subject: Re: [kbuild-all] Unsigned emails from Intel robot was Re:
+ [linux-next:master 9122/14381] drivers/leds/leds-pca955x.c:149:19: warning:
+ unused function 'pca95xx_num_led_regs'
+To:     Pavel Machek <pavel@ucw.cz>, kernel test robot <lkp@intel.com>,
+        kernel list <linux-kernel@vger.kernel.org>
+Cc:     Andrew Jeffery <andrew@aj.id.au>, llvm@lists.linux.dev,
+        kbuild-all@lists.01.org,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        =?UTF-8?Q?C=c3=a9dric_Le_Goater?= <clg@kaod.org>
+References: <202203260634.OFB2IPFf-lkp@intel.com> <20220326092537.GA8704@amd>
+From:   "Chen, Rong A" <rong.a.chen@intel.com>
+Message-ID: <a244acc9-eff3-e666-d703-1ba63d5a037d@intel.com>
+Date:   Mon, 28 Mar 2022 13:21:54 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220326092537.GA8704@amd>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a workaround for s3 hang for r7340(amdgpu).
-When we test s3 with r7340 on arm64 platform, graphics card will hang up,
-the error message are as follows:
-Mar  4 01:14:11 greatwall-GW-XXXXXX-XXX kernel: [    1.599374][ 7] [  T291] amdgpu 0000:02:00.0: fb0: amdgpudrmfb frame buffer device
-Mar  4 01:14:11 greatwall-GW-XXXXXX-XXX kernel: [    1.612869][ 7] [  T291] [drm:amdgpu_device_ip_late_init [amdgpu]] *ERROR* late_init of IP block <si_dpm> failed -22
-Mar  4 01:14:11 greatwall-GW-XXXXXX-XXX kernel: [    1.623392][ 7] [  T291] amdgpu 0000:02:00.0: amdgpu_device_ip_late_init failed
-Mar  4 01:14:11 greatwall-GW-XXXXXX-XXX kernel: [    1.630696][ 7] [  T291] amdgpu 0000:02:00.0: Fatal error during GPU init
-Mar  4 01:14:11 greatwall-GW-XXXXXX-XXX kernel: [    1.637477][ 7] [  T291] [drm] amdgpu: finishing device.
 
-Change-Id: I5048b3894c0ca9faf2f4847ddab61f9eb17b4823
-Signed-off-by: Zhenneng Li <lizhenneng@kylinos.cn>
----
- drivers/gpu/drm/amd/amdgpu/amdgpu_device.c | 2 ++
- 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-index 3987ecb24ef4..1eced991b5b2 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-@@ -2903,6 +2903,8 @@ static void amdgpu_device_delayed_init_work_handler(struct work_struct *work)
- 		container_of(work, struct amdgpu_device, delayed_init_work.work);
- 	int r;
- 
-+	mdelay(1);
-+
- 	r = amdgpu_ib_ring_tests(adev);
- 	if (r)
- 		DRM_ERROR("ib ring test failed (%d).\n", r);
--- 
-2.25.1
+On 3/26/2022 5:25 PM, Pavel Machek wrote:
+> Hey robot!
+> 
+>> FYI, the error/warning still remains.
+> 
+> Could you please sign emails with real name of person responsible for
+> this? Was there human writing this?
 
+Hi Pavel,
+
+The report was generated automatically, we continue to optimize the bot
+to output the right result.
+
+> 
+>> If you fix the issue, kindly add following tag as appropriate
+>> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> I'd preffer to credit human if human was involved.
+> 
+>>>> drivers/leds/leds-pca955x.c:149:19: warning: unused function 'pca95xx_num_led_regs'
+>>     static inline int pca95xx_num_led_regs(int bits)
+>>     ^
+>>     fatal error: error in backend: Nested variants found in inline asm string: ' .set push
+>>     .set mips64r2
+> 
+> This sounds like an compiler problem, not a kernel problem, right?
+
+Yes, it's not related to your commit, sorry for the inconvenience,
+we'll take a look at it to avoid false positive next time.
+
+Best Regards,
+Rong Chen
