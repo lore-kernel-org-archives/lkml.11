@@ -2,99 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9EC2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 15:06:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E128C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 15:06:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244226AbiC1PIH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 11:08:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47944 "EHLO
+        id S244234AbiC1PIJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 11:08:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244186AbiC1PHu (ORCPT
+        with ESMTP id S244244AbiC1PIA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 11:07:50 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56DEE42493
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 08:06:09 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id y38so23883453ybi.8
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 08:06:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=M/wRiyThS5X8/D2KX8GPji/87UrigbGUnnN2Y5aIQZk=;
-        b=yV5Sdnq4Kjd2UWp/LZ5lwEEIERJNIr6KcM46CNCVWFvx5wlzaJKddNK3VRi9pv7R2o
-         hWLbRfqsYLG0O6BNwadNXFRL0YPv+6GRHkR0IzKLPhfmrUR2KryNXljHadxnyCDBIKfG
-         KF3hEMCHNIbTbUadbfHl44Bxavmpj4Yv1hA3CuM83B2CxsfvMWvxfFESE+lhkcc2sl81
-         sVn2fmUkIK1jSq6CSafEfGsW+woSpsvXDMkS8B+IG38HEM9XFKMRr8RrXUF/P0GXJxbn
-         0RCKTCb0nMdQINyuCCC1bFgIRbmReMA7sVoFZOdeeWwD8F4hNP9k17WhtrZi3ge5CPd4
-         ikkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=M/wRiyThS5X8/D2KX8GPji/87UrigbGUnnN2Y5aIQZk=;
-        b=MYwP5AijEsRoRwCmdm1TYMylaaxHRvnq5r85IarYrTJm80B/87L63ZXhX/P0Qgt9CZ
-         4BH/Tw+v5UFd6GT8hYD7zLyW9kT8ZN9mwVixDoMl0kTLsMW0BXWlJizSPtjSJXfdQi+Q
-         8qLXstlf7nfbuKQtNjJRi2H+R9IJ/dNXpxqNP7kmI61jh9TuF4SS8GyuwVpoNa91IKQl
-         ZwfxiCVF5ewa29hZcG5IKR/WTSuqK+GkgT1VEPySXJweN8xvF4lJxmd7/lt/p1A7mNPm
-         s2CEpCDD3Asp7S4IyjoFklR316tCMkLfWci04/8ZCJ1EHX+ikx8qK6D8+o0O8KZQsPog
-         Zz1w==
-X-Gm-Message-State: AOAM533hxhZUsIKevm2ea2jI2YwAq2hIcx7R/GHycamDJAp/2xmv3wDB
-        9EsW9p71X+AZ1p/OVLSvDh9JNFdWf9m5Hmypq9c1Vw==
-X-Google-Smtp-Source: ABdhPJyBvWP4T/nWYSh2/FjJMHmzkTwu66lNSkHUz/fBNP/OZSAqAsPGed14FjOgCZ7TguMcw0Nj5dmdm+VJ9v0F0CI=
-X-Received: by 2002:a25:ab64:0:b0:633:6d02:ebc8 with SMTP id
- u91-20020a25ab64000000b006336d02ebc8mr23196123ybi.492.1648479968482; Mon, 28
- Mar 2022 08:06:08 -0700 (PDT)
+        Mon, 28 Mar 2022 11:08:00 -0400
+Received: from iris.vrvis.at (iris.vrvis.at [92.60.8.8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAE9642493;
+        Mon, 28 Mar 2022 08:06:17 -0700 (PDT)
+Received: from [10.42.99.207]
+        by iris.vrvis.at with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <valentin@vrvis.at>)
+        id 1nYqvu-0002xb-Pi; Mon, 28 Mar 2022 17:05:27 +0200
+Message-ID: <f74aa70e-8222-12fc-b44a-880865c9badd@vrvis.at>
+Date:   Mon, 28 Mar 2022 17:06:11 +0200
 MIME-Version: 1.0
-References: <20220321042142.69239-1-frank@zago.net> <20220321042142.69239-3-frank@zago.net>
-In-Reply-To: <20220321042142.69239-3-frank@zago.net>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Mon, 28 Mar 2022 17:05:57 +0200
-Message-ID: <CACRpkdaOHHkJnvB=RQ8dLXGxT_h5mGgy5Np87QVMcPzegNi2oQ@mail.gmail.com>
-Subject: Re: [PATCH v4 2/3] gpio: ch341: add MFD cell driver for the CH341
-To:     frank zago <frank@zago.net>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Wolfram Sang <wsa@kernel.org>, Johan Hovold <johan@kernel.org>,
-        linux-usb@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Justin Sanders <justin@coraid.com>,
+        Jens Axboe <axboe@kernel.dk>
+Content-Language: en-US
+To:     Christoph Hellwig <hch@infradead.org>
+References: <07bafc71-a6d2-ad6d-4706-7c99047b3228@vrvis.at>
+ <YioZaO21yingv0nD@infradead.org>
+From:   Valentin Kleibel <valentin@vrvis.at>
+In-Reply-To: <YioZaO21yingv0nD@infradead.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] block: aoe: handle device timeouts atomic-safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Frank,
+On 10/03/2022 16:29, Christoph Hellwig wrote:
+> On Thu, Mar 10, 2022 at 04:17:37PM +0100, Valentin Kleibel wrote:
+>> If an aoe device does not respond to any packet on the network layer within
+>> aoe_deadsecs, the driver tries to mark the device as down, fail all I/O and
+>> clean out the queue.
+> 
+> I think the problem is that aoe even tries to queue up request
+> internally. It really needs to switch to use BLK_MQ_F_BLOCKING and
+> stop queuing up the requests internall at all.
 
-thanks for your patch!
+Unfortunately I'm not able to assess this.
+It would be a more complicated change than I'd be able to provide and 
+the proposed patch fixes the existing issue.
 
-I see you already got a bunch of homework from Andy, I will do a more
-thorough review on the next iteration, just a few things:
-
-On Mon, Mar 21, 2022 at 5:21 AM frank zago <frank@zago.net> wrote:
-
-> The GPIO interface offers 16 GPIOs. 6 are read/write, and 10 are
-> read-only.
->
-> Signed-off-by: frank zago <frank@zago.net>
-(...)
-> +config GPIO_CH341
-> +       tristate "CH341 USB adapter in GPIO/I2C/SPI mode"
-> +       depends on MFD_CH341
-
-I would add
-default MFD_CD341
-
-This way it gets selected automatically if the MFD module gets
-selected. (I suspect you should do the same with the I2C module).
-
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/mfd/core.h>
-> +#include <linux/gpio.h>
-
-Use <linux/gpio/driver.h>
-
-Yours,
-Linus Walleij
+Cheers,
+Valentin
