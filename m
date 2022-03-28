@@ -2,112 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B044FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:18:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C82A3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:18:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240579AbiC1LUL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:20:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53676 "EHLO
+        id S240572AbiC1LUW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:20:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240569AbiC1LUG (ORCPT
+        with ESMTP id S240564AbiC1LUR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:20:06 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D8D0D6D
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 04:18:25 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id m3so24065057lfj.11
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 04:18:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=openvz-org.20210112.gappssmtp.com; s=20210112;
-        h=subject:from:to:date:message-id:in-reply-to:references:user-agent
-         :mime-version:content-transfer-encoding;
-        bh=Mr3I0zTOmgfpQLSBDag6X3RkoBkoQu16gRVM9S+AEJk=;
-        b=jbV6LejVShCi1T0VntAgmPDw0vvedWvv41xd7eUPffr8XAgeNM0WFffn+YkFYGyBnT
-         IjZQOH8dAm+wYbyX7H2e3MtEPMbSQEr/B1L3kFtt0k2QXD0NpTBSg4PkNm0lSj8vdTtv
-         43bgjUPTnFjYYPW9wpNJSkHhkoJeZ3hkNuInHXjULLXvBLe8uaSIHiA86Vmhhk38qZ9J
-         j9qMbQULcVlnFdfIR9l5soJEeaI9BIX9G8CHHJPqkViyE7LIRxMaErBnaXOAsrbYd+dz
-         pULh2gHBCEz8TktcZbKH4MPF4n/Vd56PMOvizrs+cImHZCMHYkFob1/GGiy1A+g6ALi/
-         HA6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:from:to:date:message-id:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=Mr3I0zTOmgfpQLSBDag6X3RkoBkoQu16gRVM9S+AEJk=;
-        b=WTFXOBtlYwBkH+FCLTyRlbmJ7oVwCcOgrD3HDHjFyv6bnKF620aHz7KRChD2IeQ/BQ
-         MO0CsYcSp/EiA9wbPxAY30ZntuhBVd1wFqn36TrErHAQY0nKYulNaqiYkrbqDR+XtOfj
-         rfVBwkxLlBr09hZ+wEGT7hrWdtPCvOBm3kBGSeyo4SZpaofTSobS2ALm+GxetdG/p1fd
-         cYGDNgc1fUiAazFjbNtImjfxlNj1uyJgBV//9/Uwr/YZOwWtQCoZKDCgRe6ep5nHvWKu
-         wpqRF7YgIbqeiO+SB/SQy//wFbOUrtDGGMqjys1M9aQBSaGFiwlAnWWTFNktR7AZE2S0
-         mGfg==
-X-Gm-Message-State: AOAM532pdUdI9euze3H2Nasln5EFBv5+JxzDc2wEtTXWYoS1tMSsm7XR
-        fBQ2QZFRG8sA+waiEyTvCIHcyw==
-X-Google-Smtp-Source: ABdhPJyEoLfTVx81uIbeqr52bd0IdNg687n+trzkDyCfYVD8GcWwCIe94C+hoM3YaYIuscSMh9fFmA==
-X-Received: by 2002:a19:654c:0:b0:448:2649:1169 with SMTP id c12-20020a19654c000000b0044826491169mr19369641lfj.555.1648466303868;
-        Mon, 28 Mar 2022 04:18:23 -0700 (PDT)
-Received: from [127.0.1.1] ([2.92.192.17])
-        by smtp.gmail.com with ESMTPSA id j15-20020a056512108f00b0044a3cc8769dsm1603648lfg.123.2022.03.28.04.18.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Mar 2022 04:18:23 -0700 (PDT)
-Subject: [PATCH 1/4] dm: Export dm_complete_request()
-From:   Kirill Tkhai <kirill.tkhai@openvz.org>
-To:     agk@redhat.com, snitzer@redhat.com, dm-devel@redhat.com,
-        song@kernel.org, linux-kernel@vger.kernel.org,
-        khorenko@virtuozzo.com, kirill.tkhai@openvz.org
-Date:   Mon, 28 Mar 2022 14:18:22 +0300
-Message-ID: <164846630280.251310.15762330533681496392.stgit@pro>
-In-Reply-To: <164846619932.251310.3668540533992131988.stgit@pro>
-References: <164846619932.251310.3668540533992131988.stgit@pro>
-User-Agent: StGit/1.5
+        Mon, 28 Mar 2022 07:20:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA82755492;
+        Mon, 28 Mar 2022 04:18:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4469861143;
+        Mon, 28 Mar 2022 11:18:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 468B2C340EC;
+        Mon, 28 Mar 2022 11:18:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648466311;
+        bh=sIfC8IzjPnQADnfqoYQogVIEnZP7501njURyn9RBSZM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=qj44PraXASpeVudm/5dcVcBjh6TnOEwIAhEInA+lTXrWM7UmvsQBif3WMAJqVhbwS
+         VIhnYmtOLxRTl90KRp/lK4keNrJbHQdxpC2aK0pgFsV+TU/1LczEssYOcja5BewOJT
+         vWzNqj5uHya5veEftr+kwd+mZkHQ/Lk/YT+MMY6zXiDikMHfc7Eqi/A7EYy5LBwXKk
+         k27aYPsTqfj3fFahBMhL2w3IZ4VtxRPEZR4BEyVY40bQ8ggwYwM1SfrTDhiZ5o0xTQ
+         f0R1FMDZOU2nJX6df5X96WjNyu+lDqoL9VzWheh6iUAuTrS3aNbwbIx9EVQN7x/4C3
+         ukNBHR6ViMqoQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Casey Schaufler <casey@schaufler-ca.com>,
+        syzbot+d1e3b1d92d25abf97943@syzkaller.appspotmail.com,
+        James Morris <jamorris@linux.microsoft.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Sasha Levin <sashal@kernel.org>, jmorris@namei.org,
+        serge@hallyn.com, stephen.smalley.work@gmail.com,
+        eparis@parisplace.org, linux-security-module@vger.kernel.org,
+        selinux@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 01/43] LSM: general protection fault in legacy_parse_param
+Date:   Mon, 28 Mar 2022 07:17:45 -0400
+Message-Id: <20220328111828.1554086-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This function is required for dm-qcow2 driver going in next patches.
-The driver transforms block requests into file operations on underlining
-file in QCOW2 format (like loop but over QCOW2 instead of RAW file).
-We need to have a possibility to complete a request after corresponding
-file operations are finished.
+From: Casey Schaufler <casey@schaufler-ca.com>
 
-Signed-off-by: Kirill Tkhai <kirill.tkhai@openvz.org>
+[ Upstream commit ecff30575b5ad0eda149aadad247b7f75411fd47 ]
+
+The usual LSM hook "bail on fail" scheme doesn't work for cases where
+a security module may return an error code indicating that it does not
+recognize an input.  In this particular case Smack sees a mount option
+that it recognizes, and returns 0. A call to a BPF hook follows, which
+returns -ENOPARAM, which confuses the caller because Smack has processed
+its data.
+
+The SELinux hook incorrectly returns 1 on success. There was a time
+when this was correct, however the current expectation is that it
+return 0 on success. This is repaired.
+
+Reported-by: syzbot+d1e3b1d92d25abf97943@syzkaller.appspotmail.com
+Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
+Acked-by: James Morris <jamorris@linux.microsoft.com>
+Signed-off-by: Paul Moore <paul@paul-moore.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/dm-rq.c |    3 ++-
- drivers/md/dm-rq.h |    2 ++
- 2 files changed, 4 insertions(+), 1 deletion(-)
+ security/security.c      | 17 +++++++++++++++--
+ security/selinux/hooks.c |  5 ++---
+ 2 files changed, 17 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/md/dm-rq.c b/drivers/md/dm-rq.c
-index 579ab6183d4d..1b9a633efe37 100644
---- a/drivers/md/dm-rq.c
-+++ b/drivers/md/dm-rq.c
-@@ -275,7 +275,7 @@ static void dm_softirq_done(struct request *rq)
-  * Complete the clone and the original request with the error status
-  * through softirq context.
-  */
--static void dm_complete_request(struct request *rq, blk_status_t error)
-+void dm_complete_request(struct request *rq, blk_status_t error)
- {
- 	struct dm_rq_target_io *tio = tio_from_request(rq);
- 
-@@ -283,6 +283,7 @@ static void dm_complete_request(struct request *rq, blk_status_t error)
- 	if (likely(!blk_should_fake_timeout(rq->q)))
- 		blk_mq_complete_request(rq);
+diff --git a/security/security.c b/security/security.c
+index 22261d79f333..f101a53a63ed 100644
+--- a/security/security.c
++++ b/security/security.c
+@@ -884,9 +884,22 @@ int security_fs_context_dup(struct fs_context *fc, struct fs_context *src_fc)
+ 	return call_int_hook(fs_context_dup, 0, fc, src_fc);
  }
-+EXPORT_SYMBOL(dm_complete_request);
  
- /*
-  * Complete the not-mapped clone and the original request with the error status
-diff --git a/drivers/md/dm-rq.h b/drivers/md/dm-rq.h
-index 1eea0da641db..56156738d1b4 100644
---- a/drivers/md/dm-rq.h
-+++ b/drivers/md/dm-rq.h
-@@ -44,4 +44,6 @@ ssize_t dm_attr_rq_based_seq_io_merge_deadline_show(struct mapped_device *md, ch
- ssize_t dm_attr_rq_based_seq_io_merge_deadline_store(struct mapped_device *md,
- 						     const char *buf, size_t count);
- 
-+void dm_complete_request(struct request *rq, blk_status_t error);
+-int security_fs_context_parse_param(struct fs_context *fc, struct fs_parameter *param)
++int security_fs_context_parse_param(struct fs_context *fc,
++				    struct fs_parameter *param)
+ {
+-	return call_int_hook(fs_context_parse_param, -ENOPARAM, fc, param);
++	struct security_hook_list *hp;
++	int trc;
++	int rc = -ENOPARAM;
 +
- #endif
-
++	hlist_for_each_entry(hp, &security_hook_heads.fs_context_parse_param,
++			     list) {
++		trc = hp->hook.fs_context_parse_param(fc, param);
++		if (trc == 0)
++			rc = 0;
++		else if (trc != -ENOPARAM)
++			return trc;
++	}
++	return rc;
+ }
+ 
+ int security_sb_alloc(struct super_block *sb)
+diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+index 5b6895e4fc29..371f67a37f9a 100644
+--- a/security/selinux/hooks.c
++++ b/security/selinux/hooks.c
+@@ -2860,10 +2860,9 @@ static int selinux_fs_context_parse_param(struct fs_context *fc,
+ 		return opt;
+ 
+ 	rc = selinux_add_opt(opt, param->string, &fc->security);
+-	if (!rc) {
++	if (!rc)
+ 		param->string = NULL;
+-		rc = 1;
+-	}
++
+ 	return rc;
+ }
+ 
+-- 
+2.34.1
 
