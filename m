@@ -2,187 +2,393 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DC05C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 17:46:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98D59C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 17:46:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244696AbiC1RsR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 13:48:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47522 "EHLO
+        id S244701AbiC1Rsg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 13:48:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242737AbiC1RsM (ORCPT
+        with ESMTP id S239665AbiC1Rse (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 13:48:12 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 995672458A
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 10:46:30 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id p15so30236019ejc.7
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 10:46:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=SymjDndU9Uze0JvEagAd5eX9OKJosBWeGBfW/S+DSuM=;
-        b=Z3mezvkFtrKwM2FAqMnLvQwkbmLD4frPCJzQsImS/mGIGSl/huwuVaTfUxpa5SoMnu
-         EgCwTzcnuJ1osunTWbmUpQ666EVCzst6+34T3mn3yW0o91GH14iWo0OHUehJHPpxfXXR
-         NgE60K0ZworKv25xuZaTmq2I9WajV23kzWvKNlRZtEGl0Ny/aWFzF7zfqcApdfyjK23D
-         GGf/VvtCdsrZgNCDlG+SGyeYD9Dkl5LjawFxS2seGHqSoMI5bcrTl3VxbtVKKhM9NHF/
-         g1MqNbqDDm/XNwhc+hD8rFhUFGiXM2qziiOsv7EpQXtcr7kWBK+l0GPdluH2SvqTkLlp
-         pf9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=SymjDndU9Uze0JvEagAd5eX9OKJosBWeGBfW/S+DSuM=;
-        b=vN5/NJdbn7bS2zrzoH0t9MWGy8rjks4zegwuTYXM4KKaHSfgWK9tjqdrVjdI2yC7rc
-         oBD1PRESm/vOvPj5znQN1w+by4Gf0L/9jpMUw8oZGwNaTkmMWGE8RTWTaHBZ8sjVKufT
-         thKxBxJWowZWA1DgMkBMPaMOOYbBk49ypZbMtVlbkA2iX1KcwEglf8h2es9Pd73R4z8M
-         Yxs95AcDSz7pdsoklLHU7Rl7XeE6c/HGaDhw6iHo1VBAoNyQTB0ZRBHj7g0gstWjBhI8
-         wIzsdWOsQx4xYblUBHNpCcIN9QuH0vriCWZjQqAgot/Uikhe5fQhMJ/qTQBztV0b4x30
-         6KTg==
-X-Gm-Message-State: AOAM531xOzXgdhgFhMPBi7O+NlSVZS/kNtMFtPMpeTN66WXxkbPONrIF
-        NEw/e+jwtioIUl5er5hYiCs=
-X-Google-Smtp-Source: ABdhPJxaGdkB/uFHJglSvsw95vcYxutlSaP+i+Kh24dzvA/n1NXG5rLzCDrO1Hs+2ipo/scsx2YleQ==
-X-Received: by 2002:a17:907:6da6:b0:6e0:bb24:f731 with SMTP id sb38-20020a1709076da600b006e0bb24f731mr18461252ejc.25.1648489589063;
-        Mon, 28 Mar 2022 10:46:29 -0700 (PDT)
-Received: from ?IPV6:2a02:908:1252:fb60:4276:c469:b15d:9dea? ([2a02:908:1252:fb60:4276:c469:b15d:9dea])
-        by smtp.gmail.com with ESMTPSA id z11-20020a50e68b000000b00412ec8b2180sm7324782edm.90.2022.03.28.10.46.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Mar 2022 10:46:28 -0700 (PDT)
-Message-ID: <426855bc-9480-ad47-c362-f2a73c0c8ce9@gmail.com>
-Date:   Mon, 28 Mar 2022 19:46:26 +0200
+        Mon, 28 Mar 2022 13:48:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02BBB326EE;
+        Mon, 28 Mar 2022 10:46:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 969BFB80DFD;
+        Mon, 28 Mar 2022 17:46:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 671DCC004DD;
+        Mon, 28 Mar 2022 17:46:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648489610;
+        bh=h8P/Pv/fbuJrvEjfFoWLdsLWaKSoEzLkSjfA5QGUX3w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hn79khCeI8og1Hy2rwe2oadj9g9ExOOJnPL/flnxCMPIZxTT4PH2QEobDCAgFKs2A
+         6X91hkuuM9mg42NrkgbJME2U0xXYTCl7ZDSyT7FgEAU0Ny5/XPdwxJ5ur/hd+Mx75D
+         odbfyYfsIUFLnHg4/vFsYW07Kl/t4k2kUC3Rckvjfg2uJ7N/JVbBv3GvFruiE6xXh/
+         1lHw3KKHbdLwmr4UN1W74z26WEt1mRinmiof7W8pIFnk+LlP5lFwHBrfQhxUixL1U6
+         OZk7GQ0ADi4xf7gdYtKlkWIntqjYH255/g50hwSZ6b6+Ef/s16haPEP4GwTHO/yVMo
+         BWhjKX3lUIwWQ==
+Date:   Mon, 28 Mar 2022 18:54:25 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Paul Cercueil <paul@crapouillou.net>
+Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Christian =?UTF-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 07/12] iio: buffer-dma: Use DMABUFs instead of custom
+ solution
+Message-ID: <20220328185425.56b51f4a@jic23-huawei>
+In-Reply-To: <20220207125933.81634-8-paul@crapouillou.net>
+References: <20220207125933.81634-1-paul@crapouillou.net>
+        <20220207125933.81634-8-paul@crapouillou.net>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 1/2] drm/amd/display: detach fpu operations from
- dcn10_validate_bandwidth in calcs
-Content-Language: en-US
-To:     Melissa Wen <mwen@igalia.com>,
-        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
-Cc:     sunpeng.li@amd.com, Qingqing Zhuo <qingqing.zhuo@amd.com>,
-        Xinhui.Pan@amd.com, Rodrigo.Siqueira@amd.com,
-        linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        airlied@linux.ie, Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>,
-        dri-devel@lists.freedesktop.org, daniel@ffwll.ch,
-        Jasdeep Dhillon <jdhillon@amd.com>, alexander.deucher@amd.com,
-        harry.wentland@amd.com
-References: <20220326202448.2046077-1-mwen@igalia.com>
- <20220326202448.2046077-2-mwen@igalia.com>
- <1586f68e-c635-482f-9399-2b027b766543@amd.com>
- <20220328171738.iu5peqfcled2psv3@mail.igalia.com>
-From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>
-In-Reply-To: <20220328171738.iu5peqfcled2psv3@mail.igalia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 28.03.22 um 19:17 schrieb Melissa Wen:
-> On 03/28, Christian König wrote:
->> Am 26.03.22 um 21:24 schrieb Melissa Wen:
->>> dcn10_validate_bandwidth is only used on dcn10 files, but is declared in
->>> dcn_calcs files. Rename dcn10_* to dcn_* in calcs, remove DC_FP_* wrapper
->>> inside DML folder and create an specific dcn10_validate_bandwidth in
->>> dcn10_resources that calls dcn_validate_bandwidth and properly wraps that
->>> FPU function with DC_FP_* macro.
->>>
->>> Signed-off-by: Melissa Wen <mwen@igalia.com>
->>> ---
->>>    .../gpu/drm/amd/display/dc/dcn10/dcn10_resource.c  | 14 ++++++++++++++
->>>    .../gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c   |  5 +----
->>>    drivers/gpu/drm/amd/display/dc/inc/dcn_calcs.h     |  2 +-
->>>    3 files changed, 16 insertions(+), 5 deletions(-)
->>>
->>> diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_resource.c b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_resource.c
->>> index 4048908dd265..1587a060b55a 100644
->>> --- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_resource.c
->>> +++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_resource.c
->>> @@ -1141,6 +1141,20 @@ static void dcn10_destroy_resource_pool(struct resource_pool **pool)
->>>    	*pool = NULL;
->>>    }
->>> +static bool dcn10_validate_bandwidth(
->>> +		struct dc *dc,
->>> +		struct dc_state *context,
->>> +		bool fast_validate)
->>> +{
->>> +	bool voltage_supported;
->>> +
->>> +	DC_FP_START();
->>> +	voltage_supported = dcn_validate_bandwidth(dc, context, fast_validate);
->>> +	DC_FP_END();
->>> +
->>> +	return voltage_supported;
->>> +}
->>> +
->>>    static enum dc_status dcn10_validate_plane(const struct dc_plane_state *plane_state, struct dc_caps *caps)
->>>    {
->>>    	if (plane_state->format >= SURFACE_PIXEL_FORMAT_VIDEO_BEGIN
->>> diff --git a/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c b/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c
->>> index e447c74be713..c25023f7d604 100644
->>> --- a/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c
->>> +++ b/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calcs.c
->>> @@ -764,7 +764,7 @@ static unsigned int get_highest_allowed_voltage_level(uint32_t chip_family,
->>>    	return 4;
->>>    }
->>> -bool dcn10_validate_bandwidth(
->>> +bool dcn_validate_bandwidth(
->>>    		struct dc *dc,
->>>    		struct dc_state *context,
->>>    		bool fast_validate)
->>> @@ -790,7 +790,6 @@ bool dcn10_validate_bandwidth(
->>>    		dcn_bw_sync_calcs_and_dml(dc);
->>>    	memset(v, 0, sizeof(*v));
->>> -	DC_FP_START();
->>>    	v->sr_exit_time = dc->dcn_soc->sr_exit_time;
->>>    	v->sr_enter_plus_exit_time = dc->dcn_soc->sr_enter_plus_exit_time;
->>> @@ -1323,8 +1322,6 @@ bool dcn10_validate_bandwidth(
->>>    	bw_limit = dc->dcn_soc->percent_disp_bw_limit * v->fabric_and_dram_bandwidth_vmax0p9;
->>>    	bw_limit_pass = (v->total_data_read_bandwidth / 1000.0) < bw_limit;
->>> -	DC_FP_END();
->>> -
->>>    	PERFORMANCE_TRACE_END();
->>>    	BW_VAL_TRACE_FINISH();
->>> diff --git a/drivers/gpu/drm/amd/display/dc/inc/dcn_calcs.h b/drivers/gpu/drm/amd/display/dc/inc/dcn_calcs.h
->>> index 337c0161e72d..806f3041db14 100644
->>> --- a/drivers/gpu/drm/amd/display/dc/inc/dcn_calcs.h
->>> +++ b/drivers/gpu/drm/amd/display/dc/inc/dcn_calcs.h
->>> @@ -619,7 +619,7 @@ struct dcn_ip_params {
->>>    };
->>>    extern const struct dcn_ip_params dcn10_ip_defaults;
->>> -bool dcn10_validate_bandwidth(
->>> +bool dcn_validate_bandwidth(
->>>    		struct dc *dc,
->>>    		struct dc_state *context,
->>>    		bool fast_validate);
->> Just for the record: That's not really usual kernel coding style, but that's
->> not topic of this patch set.
-> Yeah. I didn't change the code style to ease any version conflict management.
->> The series is Acked-by: Christian König <christian.koenig@amd.com>
-> Thanks!
->> And it would be really nice if we could make the DC_FP_* macros somehow fail
->> in the dml folder.
-> And if we include a kind of dc_assert_fp_disabled() in the dc_fpu_begin()
-> (DC_FP_START) - more or less the reverse of dc_assert_fp_enabled(). Does
-> it meet the `make the DC_FP_* macros somehow fail in the dml folder` ?
-> It is not restricted to the dml folder, but I think it would work
-> similarly... Does it make sense?
+On Mon,  7 Feb 2022 12:59:28 +0000
+Paul Cercueil <paul@crapouillou.net> wrote:
 
-No, IIRC our display team even mentioned to me that those macros could 
-potentially be used recursively.
+> Enhance the current fileio code by using DMABUF objects instead of
+> custom buffers.
+> 
+> This adds more code than it removes, but:
+> - a lot of the complexity can be dropped, e.g. custom kref and
+>   iio_buffer_block_put_atomic() are not needed anymore;
+> - it will be much easier to introduce an API to export these DMABUF
+>   objects to userspace in a following patch.
+> 
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Hi Paul,
 
-What I mean here is that we somehow raise a compiler warning if somebody 
-tries to use those defines inside the folder.
+I'm a bit rusty on dma mappings, but you seem to have
+a mixture of streaming and coherent mappings going on in here.
 
-Maybe check of gcc supports hardware floating point or something like this.
+Is it the case that the current code is using the coherent mappings
+and a potential 'other user' of the dma buffer might need
+streaming mappings?
 
-Christian.
+Jonathan
 
->
-> Melissa
->
->> Thanks,
->> Christian.
->>
->>
+> ---
+>  drivers/iio/buffer/industrialio-buffer-dma.c | 192 ++++++++++++-------
+>  include/linux/iio/buffer-dma.h               |   8 +-
+>  2 files changed, 122 insertions(+), 78 deletions(-)
+> 
+> diff --git a/drivers/iio/buffer/industrialio-buffer-dma.c b/drivers/iio/buffer/industrialio-buffer-dma.c
+> index 15ea7bc3ac08..54e6000cd2ee 100644
+> --- a/drivers/iio/buffer/industrialio-buffer-dma.c
+> +++ b/drivers/iio/buffer/industrialio-buffer-dma.c
+> @@ -14,6 +14,7 @@
+>  #include <linux/poll.h>
+>  #include <linux/iio/buffer_impl.h>
+>  #include <linux/iio/buffer-dma.h>
+> +#include <linux/dma-buf.h>
+>  #include <linux/dma-mapping.h>
+>  #include <linux/sizes.h>
+>  
+> @@ -90,103 +91,145 @@
+>   * callback is called from within the custom callback.
+>   */
+>  
+> -static void iio_buffer_block_release(struct kref *kref)
+> -{
+> -	struct iio_dma_buffer_block *block = container_of(kref,
+> -		struct iio_dma_buffer_block, kref);
+> -
+> -	WARN_ON(block->state != IIO_BLOCK_STATE_DEAD);
+> -
+> -	dma_free_coherent(block->queue->dev, PAGE_ALIGN(block->size),
+> -					block->vaddr, block->phys_addr);
+> -
+> -	iio_buffer_put(&block->queue->buffer);
+> -	kfree(block);
+> -}
+> -
+> -static void iio_buffer_block_get(struct iio_dma_buffer_block *block)
+> -{
+> -	kref_get(&block->kref);
+> -}
+> -
+> -static void iio_buffer_block_put(struct iio_dma_buffer_block *block)
+> -{
+> -	kref_put(&block->kref, iio_buffer_block_release);
+> -}
+> -
+> -/*
+> - * dma_free_coherent can sleep, hence we need to take some special care to be
+> - * able to drop a reference from an atomic context.
+> - */
+> -static LIST_HEAD(iio_dma_buffer_dead_blocks);
+> -static DEFINE_SPINLOCK(iio_dma_buffer_dead_blocks_lock);
+> -
+> -static void iio_dma_buffer_cleanup_worker(struct work_struct *work)
+> -{
+> -	struct iio_dma_buffer_block *block, *_block;
+> -	LIST_HEAD(block_list);
+> -
+> -	spin_lock_irq(&iio_dma_buffer_dead_blocks_lock);
+> -	list_splice_tail_init(&iio_dma_buffer_dead_blocks, &block_list);
+> -	spin_unlock_irq(&iio_dma_buffer_dead_blocks_lock);
+> -
+> -	list_for_each_entry_safe(block, _block, &block_list, head)
+> -		iio_buffer_block_release(&block->kref);
+> -}
+> -static DECLARE_WORK(iio_dma_buffer_cleanup_work, iio_dma_buffer_cleanup_worker);
+> -
+> -static void iio_buffer_block_release_atomic(struct kref *kref)
+> -{
+> +struct iio_buffer_dma_buf_attachment {
+> +	struct scatterlist sgl;
+> +	struct sg_table sg_table;
+>  	struct iio_dma_buffer_block *block;
+> -	unsigned long flags;
+> -
+> -	block = container_of(kref, struct iio_dma_buffer_block, kref);
+> -
+> -	spin_lock_irqsave(&iio_dma_buffer_dead_blocks_lock, flags);
+> -	list_add_tail(&block->head, &iio_dma_buffer_dead_blocks);
+> -	spin_unlock_irqrestore(&iio_dma_buffer_dead_blocks_lock, flags);
+> -
+> -	schedule_work(&iio_dma_buffer_cleanup_work);
+> -}
+> -
+> -/*
+> - * Version of iio_buffer_block_put() that can be called from atomic context
+> - */
+> -static void iio_buffer_block_put_atomic(struct iio_dma_buffer_block *block)
+> -{
+> -	kref_put(&block->kref, iio_buffer_block_release_atomic);
+> -}
+> +};
+>  
+>  static struct iio_dma_buffer_queue *iio_buffer_to_queue(struct iio_buffer *buf)
+>  {
+>  	return container_of(buf, struct iio_dma_buffer_queue, buffer);
+>  }
+>  
+> +static struct iio_buffer_dma_buf_attachment *
+> +to_iio_buffer_dma_buf_attachment(struct sg_table *table)
+> +{
+> +	return container_of(table, struct iio_buffer_dma_buf_attachment, sg_table);
+> +}
+> +
+> +static void iio_buffer_block_get(struct iio_dma_buffer_block *block)
+> +{
+> +	get_dma_buf(block->dmabuf);
+> +}
+> +
+> +static void iio_buffer_block_put(struct iio_dma_buffer_block *block)
+> +{
+> +	dma_buf_put(block->dmabuf);
+> +}
+> +
+> +static int iio_buffer_dma_buf_attach(struct dma_buf *dbuf,
+> +				     struct dma_buf_attachment *at)
+> +{
+> +	at->priv = dbuf->priv;
+> +
+> +	return 0;
+> +}
+> +
+> +static struct sg_table *iio_buffer_dma_buf_map(struct dma_buf_attachment *at,
+> +					       enum dma_data_direction dma_dir)
+> +{
+> +	struct iio_dma_buffer_block *block = at->priv;
+> +	struct iio_buffer_dma_buf_attachment *dba;
+> +	int ret;
+> +
+> +	dba = kzalloc(sizeof(*dba), GFP_KERNEL);
+> +	if (!dba)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	sg_init_one(&dba->sgl, block->vaddr, PAGE_ALIGN(block->size));
+> +	dba->sg_table.sgl = &dba->sgl;
+> +	dba->sg_table.nents = 1;
+> +	dba->block = block;
+> +
+> +	ret = dma_map_sgtable(at->dev, &dba->sg_table, dma_dir, 0);
+> +	if (ret) {
+> +		kfree(dba);
+> +		return ERR_PTR(ret);
+> +	}
+> +
+> +	return &dba->sg_table;
+> +}
+> +
+> +static void iio_buffer_dma_buf_unmap(struct dma_buf_attachment *at,
+> +				     struct sg_table *sg_table,
+> +				     enum dma_data_direction dma_dir)
+> +{
+> +	struct iio_buffer_dma_buf_attachment *dba =
+> +		to_iio_buffer_dma_buf_attachment(sg_table);
+> +
+> +	dma_unmap_sgtable(at->dev, &dba->sg_table, dma_dir, 0);
+> +	kfree(dba);
+> +}
+> +
+> +static void iio_buffer_dma_buf_release(struct dma_buf *dbuf)
+> +{
+> +	struct iio_dma_buffer_block *block = dbuf->priv;
+> +	struct iio_dma_buffer_queue *queue = block->queue;
+> +
+> +	WARN_ON(block->state != IIO_BLOCK_STATE_DEAD);
+> +
+> +	mutex_lock(&queue->lock);
+> +
+> +	dma_free_coherent(queue->dev, PAGE_ALIGN(block->size),
+> +			  block->vaddr, block->phys_addr);
+> +	kfree(block);
+> +
+> +	mutex_unlock(&queue->lock);
+> +	iio_buffer_put(&queue->buffer);
+> +}
+> +
+> +static const struct dma_buf_ops iio_dma_buffer_dmabuf_ops = {
+> +	.attach			= iio_buffer_dma_buf_attach,
+> +	.map_dma_buf		= iio_buffer_dma_buf_map,
+> +	.unmap_dma_buf		= iio_buffer_dma_buf_unmap,
+> +	.release		= iio_buffer_dma_buf_release,
+> +};
+> +
+>  static struct iio_dma_buffer_block *iio_dma_buffer_alloc_block(
+>  	struct iio_dma_buffer_queue *queue, size_t size)
+>  {
+>  	struct iio_dma_buffer_block *block;
+> +	DEFINE_DMA_BUF_EXPORT_INFO(einfo);
+> +	struct dma_buf *dmabuf;
+> +	int err = -ENOMEM;
+>  
+>  	block = kzalloc(sizeof(*block), GFP_KERNEL);
+>  	if (!block)
+> -		return NULL;
+> +		return ERR_PTR(err);
+>  
+>  	block->vaddr = dma_alloc_coherent(queue->dev, PAGE_ALIGN(size),
+>  		&block->phys_addr, GFP_KERNEL);
+> -	if (!block->vaddr) {
+> -		kfree(block);
+> -		return NULL;
+> +	if (!block->vaddr)
+> +		goto err_free_block;
+> +
+> +	einfo.ops = &iio_dma_buffer_dmabuf_ops;
+> +	einfo.size = PAGE_ALIGN(size);
+> +	einfo.priv = block;
+> +	einfo.flags = O_RDWR;
+> +
+> +	dmabuf = dma_buf_export(&einfo);
+> +	if (IS_ERR(dmabuf)) {
+> +		err = PTR_ERR(dmabuf);
+> +		goto err_free_dma;
+>  	}
+>  
+> +	block->dmabuf = dmabuf;
+>  	block->size = size;
+>  	block->state = IIO_BLOCK_STATE_DONE;
+>  	block->queue = queue;
+>  	INIT_LIST_HEAD(&block->head);
+> -	kref_init(&block->kref);
+>  
+>  	iio_buffer_get(&queue->buffer);
+>  
+>  	return block;
+> +
+> +err_free_dma:
+> +	dma_free_coherent(queue->dev, PAGE_ALIGN(size),
+> +			  block->vaddr, block->phys_addr);
+> +err_free_block:
+> +	kfree(block);
+> +	return ERR_PTR(err);
+>  }
+>  
+>  static void _iio_dma_buffer_block_done(struct iio_dma_buffer_block *block)
+> @@ -223,7 +266,7 @@ void iio_dma_buffer_block_done(struct iio_dma_buffer_block *block)
+>  	_iio_dma_buffer_block_done(block);
+>  	spin_unlock_irqrestore(&queue->list_lock, flags);
+>  
+> -	iio_buffer_block_put_atomic(block);
+> +	iio_buffer_block_put(block);
+>  	iio_dma_buffer_queue_wake(queue);
+>  }
+>  EXPORT_SYMBOL_GPL(iio_dma_buffer_block_done);
+> @@ -249,7 +292,8 @@ void iio_dma_buffer_block_list_abort(struct iio_dma_buffer_queue *queue,
+>  		list_del(&block->head);
+>  		block->bytes_used = 0;
+>  		_iio_dma_buffer_block_done(block);
+> -		iio_buffer_block_put_atomic(block);
+> +
+> +		iio_buffer_block_put(block);
+>  	}
+>  	spin_unlock_irqrestore(&queue->list_lock, flags);
+>  
+> @@ -340,8 +384,8 @@ int iio_dma_buffer_request_update(struct iio_buffer *buffer)
+>  
+>  		if (!block) {
+>  			block = iio_dma_buffer_alloc_block(queue, size);
+> -			if (!block) {
+> -				ret = -ENOMEM;
+> +			if (IS_ERR(block)) {
+> +				ret = PTR_ERR(block);
+>  				goto out_unlock;
+>  			}
+>  			queue->fileio.blocks[i] = block;
+> diff --git a/include/linux/iio/buffer-dma.h b/include/linux/iio/buffer-dma.h
+> index 490b93f76fa8..6b3fa7d2124b 100644
+> --- a/include/linux/iio/buffer-dma.h
+> +++ b/include/linux/iio/buffer-dma.h
+> @@ -8,7 +8,6 @@
+>  #define __INDUSTRIALIO_DMA_BUFFER_H__
+>  
+>  #include <linux/list.h>
+> -#include <linux/kref.h>
+>  #include <linux/spinlock.h>
+>  #include <linux/mutex.h>
+>  #include <linux/iio/buffer_impl.h>
+> @@ -16,6 +15,7 @@
+>  struct iio_dma_buffer_queue;
+>  struct iio_dma_buffer_ops;
+>  struct device;
+> +struct dma_buf;
+>  
+>  /**
+>   * enum iio_block_state - State of a struct iio_dma_buffer_block
+> @@ -39,8 +39,8 @@ enum iio_block_state {
+>   * @vaddr: Virutal address of the blocks memory
+>   * @phys_addr: Physical address of the blocks memory
+>   * @queue: Parent DMA buffer queue
+> - * @kref: kref used to manage the lifetime of block
+>   * @state: Current state of the block
+> + * @dmabuf: Underlying DMABUF object
+>   */
+>  struct iio_dma_buffer_block {
+>  	/* May only be accessed by the owner of the block */
+> @@ -56,13 +56,13 @@ struct iio_dma_buffer_block {
+>  	size_t size;
+>  	struct iio_dma_buffer_queue *queue;
+>  
+> -	/* Must not be accessed outside the core. */
+> -	struct kref kref;
+>  	/*
+>  	 * Must not be accessed outside the core. Access needs to hold
+>  	 * queue->list_lock if the block is not owned by the core.
+>  	 */
+>  	enum iio_block_state state;
+> +
+> +	struct dma_buf *dmabuf;
+>  };
+>  
+>  /**
 
