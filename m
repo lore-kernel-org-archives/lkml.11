@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC16AC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:23:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A93E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:23:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241065AbiC1LYx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:24:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59962 "EHLO
+        id S241071AbiC1LZD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:25:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241110AbiC1LXQ (ORCPT
+        with ESMTP id S241130AbiC1LXS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:23:16 -0400
+        Mon, 28 Mar 2022 07:23:18 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EA1C580D2;
-        Mon, 28 Mar 2022 04:20:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB892580E8;
+        Mon, 28 Mar 2022 04:20:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6094BB80ED8;
-        Mon, 28 Mar 2022 11:20:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D421C36AE2;
-        Mon, 28 Mar 2022 11:20:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF4A7B80D13;
+        Mon, 28 Mar 2022 11:20:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F259C34100;
+        Mon, 28 Mar 2022 11:20:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466406;
-        bh=ZhdGQAmWHHMFrACJpTe69z62VUQvcrG8v0VNxiUGKOw=;
+        s=k20201202; t=1648466409;
+        bh=mP7yVkWymwe1Bg1ZwxWju12O4lA9WkWvgZ0XNh+ZUsw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EG/nBvUr8Y2aQs3YZYesQ+u6kZP7eJRXUY5LzgOJrQg+ABrsx5Bh/JHzZ6KabHwyi
-         1cRrEuNnO3ihKzhyJdmvL+gVf/Kl06e5WBeaZEBi8gujeCQBPcwLXPdE5lqfvyjNka
-         bPkCOiyzLs9J9MFtALMGzTj8UhCntaLtBevIBK8nTlnZ88eWUZxuWppvIkFyubJJdW
-         JOOmVhj6IzEvz/dCLpEdo6J8r7bojklcK9+LI5jj4l8GhY16RT4GvK54qA8HG9rIbP
-         YqvJm/VObjMsNVitEll8rl//vEQezg20FEvkemhSW/aPJ2YqXEn2xOAiVZcKK6yYY7
-         9rnjWjAmak4pw==
+        b=geT6WG3gBY5UDcppnRog/iORSimnnEXCd9iAIiQVDdwNSbvVGfYysmj6mBt58SHmp
+         iJ04t1TYMsjA5Jfg7Mv1lwAzUEaRNVK38GujWrzzqNCtvK2r2ZgtWnCqvnpBYyH/c0
+         ppt1i28FAb05n2Yu6CaKMVdm2LlDLElOiXz/a42rObhkwzmV+kfe9Oo47nozbOHMjF
+         gQTRlWe6PVyjfYhFAEYTuLjRTxwByDJVQh3Yl5ZhSkySDmmaPBdrPI1is08gvjQMjw
+         O/YJk3pUTZIAsTJefMHvAuN7Jdd4qSS7egHMQ3Tq2RTPzxQ7YZ3mRz2o97lTUpjVo1
+         JNEn1U6+5Tg5Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chris Leech <cleech@redhat.com>, Christoph Hellwig <hch@lst.de>,
-        Sasha Levin <sashal@kernel.org>, kbusch@kernel.org,
-        axboe@fb.com, sagi@grimberg.me, linux-nvme@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.17 40/43] nvme-tcp: lockdep: annotate in-kernel sockets
-Date:   Mon, 28 Mar 2022 07:18:24 -0400
-Message-Id: <20220328111828.1554086-40-sashal@kernel.org>
+Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Mario Limonciello <Mario.Limonciello@amd.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Huang Rui <ray.huang@amd.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
+        linux-acpi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 42/43] Revert "ACPI: Pass the same capabilities to the _OSC regardless of the query flag"
+Date:   Mon, 28 Mar 2022 07:18:26 -0400
+Message-Id: <20220328111828.1554086-42-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220328111828.1554086-1-sashal@kernel.org>
 References: <20220328111828.1554086-1-sashal@kernel.org>
@@ -51,125 +55,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chris Leech <cleech@redhat.com>
+From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
 
-[ Upstream commit 841aee4d75f18fdfb53935080b03de0c65e9b92c ]
+[ Upstream commit 2ca8e6285250c07a2e5a22ecbfd59b5a4ef73484 ]
 
-Put NVMe/TCP sockets in their own class to avoid some lockdep warnings.
-Sockets created by nvme-tcp are not exposed to user-space, and will not
-trigger certain code paths that the general socket API exposes.
+Revert commit 159d8c274fd9 ("ACPI: Pass the same capabilities to the
+_OSC regardless of the query flag") which caused legitimate usage
+scenarios (when the platform firmware does not want the OS to control
+certain platform features controlled by the system bus scope _OSC) to
+break and was misguided by some misleading language in the _OSC
+definition in the ACPI specification (in particular, Section 6.2.11.1.3
+"Sequence of _OSC Calls" that contradicts other perts of the _OSC
+definition).
 
-Lockdep complains about a circular dependency between the socket and
-filesystem locks, because setsockopt can trigger a page fault with a
-socket lock held, but nvme-tcp sends requests on the socket while file
-system locks are held.
-
-  ======================================================
-  WARNING: possible circular locking dependency detected
-  5.15.0-rc3 #1 Not tainted
-  ------------------------------------------------------
-  fio/1496 is trying to acquire lock:
-  (sk_lock-AF_INET){+.+.}-{0:0}, at: tcp_sendpage+0x23/0x80
-
-  but task is already holding lock:
-  (&xfs_dir_ilock_class/5){+.+.}-{3:3}, at: xfs_ilock+0xcf/0x290 [xfs]
-
-  which lock already depends on the new lock.
-
-  other info that might help us debug this:
-
-  chain exists of:
-   sk_lock-AF_INET --> sb_internal --> &xfs_dir_ilock_class/5
-
-  Possible unsafe locking scenario:
-
-        CPU0                    CPU1
-        ----                    ----
-   lock(&xfs_dir_ilock_class/5);
-                                lock(sb_internal);
-                                lock(&xfs_dir_ilock_class/5);
-   lock(sk_lock-AF_INET);
-
-  *** DEADLOCK ***
-
-  6 locks held by fio/1496:
-   #0: (sb_writers#13){.+.+}-{0:0}, at: path_openat+0x9fc/0xa20
-   #1: (&inode->i_sb->s_type->i_mutex_dir_key){++++}-{3:3}, at: path_openat+0x296/0xa20
-   #2: (sb_internal){.+.+}-{0:0}, at: xfs_trans_alloc_icreate+0x41/0xd0 [xfs]
-   #3: (&xfs_dir_ilock_class/5){+.+.}-{3:3}, at: xfs_ilock+0xcf/0x290 [xfs]
-   #4: (hctx->srcu){....}-{0:0}, at: hctx_lock+0x51/0xd0
-   #5: (&queue->send_mutex){+.+.}-{3:3}, at: nvme_tcp_queue_rq+0x33e/0x380 [nvme_tcp]
-
-This annotation lets lockdep analyze nvme-tcp controlled sockets
-independently of what the user-space sockets API does.
-
-Link: https://lore.kernel.org/linux-nvme/CAHj4cs9MDYLJ+q+2_GXUK9HxFizv2pxUryUR0toX974M040z7g@mail.gmail.com/
-
-Signed-off-by: Chris Leech <cleech@redhat.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/linux-acpi/CAJZ5v0iStA0JmO0H3z+VgQsVuQONVjKPpw0F5HKfiq=Gb6B5yw@mail.gmail.com
+Reported-by: Mario Limonciello <Mario.Limonciello@amd.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Tested-by: Mario Limonciello <mario.limonciello@amd.com>
+Acked-by: Huang Rui <ray.huang@amd.com>
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/tcp.c | 40 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 40 insertions(+)
+ drivers/acpi/bus.c | 27 +++++++++++++++++++--------
+ 1 file changed, 19 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c
-index 65e00c64a588..d66e2de044e0 100644
---- a/drivers/nvme/host/tcp.c
-+++ b/drivers/nvme/host/tcp.c
-@@ -30,6 +30,44 @@ static int so_priority;
- module_param(so_priority, int, 0644);
- MODULE_PARM_DESC(so_priority, "nvme tcp socket optimize priority");
+diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
+index 07f604832fd6..079b952ab59f 100644
+--- a/drivers/acpi/bus.c
++++ b/drivers/acpi/bus.c
+@@ -332,21 +332,32 @@ static void acpi_bus_osc_negotiate_platform_control(void)
+ 	if (ACPI_FAILURE(acpi_run_osc(handle, &context)))
+ 		return;
  
-+#ifdef CONFIG_DEBUG_LOCK_ALLOC
-+/* lockdep can detect a circular dependency of the form
-+ *   sk_lock -> mmap_lock (page fault) -> fs locks -> sk_lock
-+ * because dependencies are tracked for both nvme-tcp and user contexts. Using
-+ * a separate class prevents lockdep from conflating nvme-tcp socket use with
-+ * user-space socket API use.
-+ */
-+static struct lock_class_key nvme_tcp_sk_key[2];
-+static struct lock_class_key nvme_tcp_slock_key[2];
-+
-+static void nvme_tcp_reclassify_socket(struct socket *sock)
-+{
-+	struct sock *sk = sock->sk;
-+
-+	if (WARN_ON_ONCE(!sock_allow_reclassification(sk)))
+-	kfree(context.ret.pointer);
++	capbuf_ret = context.ret.pointer;
++	if (context.ret.length <= OSC_SUPPORT_DWORD) {
++		kfree(context.ret.pointer);
 +		return;
-+
-+	switch (sk->sk_family) {
-+	case AF_INET:
-+		sock_lock_init_class_and_name(sk, "slock-AF_INET-NVME",
-+					      &nvme_tcp_slock_key[0],
-+					      "sk_lock-AF_INET-NVME",
-+					      &nvme_tcp_sk_key[0]);
-+		break;
-+	case AF_INET6:
-+		sock_lock_init_class_and_name(sk, "slock-AF_INET6-NVME",
-+					      &nvme_tcp_slock_key[1],
-+					      "sk_lock-AF_INET6-NVME",
-+					      &nvme_tcp_sk_key[1]);
-+		break;
-+	default:
-+		WARN_ON_ONCE(1);
 +	}
-+}
-+#else
-+static void nvme_tcp_reclassify_socket(struct socket *sock) { }
-+#endif
-+
- enum nvme_tcp_send_state {
- 	NVME_TCP_SEND_CMD_PDU = 0,
- 	NVME_TCP_SEND_H2C_PDU,
-@@ -1469,6 +1507,8 @@ static int nvme_tcp_alloc_queue(struct nvme_ctrl *nctrl,
- 		goto err_destroy_mutex;
- 	}
  
-+	nvme_tcp_reclassify_socket(queue->sock);
-+
- 	/* Single syn retry */
- 	tcp_sock_set_syncnt(queue->sock->sk, 1);
+-	/* Now run _OSC again with query flag clear */
++	/*
++	 * Now run _OSC again with query flag clear and with the caps
++	 * supported by both the OS and the platform.
++	 */
+ 	capbuf[OSC_QUERY_DWORD] = 0;
++	capbuf[OSC_SUPPORT_DWORD] = capbuf_ret[OSC_SUPPORT_DWORD];
++	kfree(context.ret.pointer);
  
+ 	if (ACPI_FAILURE(acpi_run_osc(handle, &context)))
+ 		return;
+ 
+ 	capbuf_ret = context.ret.pointer;
+-	osc_sb_apei_support_acked =
+-		capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_APEI_SUPPORT;
+-	osc_pc_lpi_support_confirmed =
+-		capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_PCLPI_SUPPORT;
+-	osc_sb_native_usb4_support_confirmed =
+-		capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_NATIVE_USB4_SUPPORT;
++	if (context.ret.length > OSC_SUPPORT_DWORD) {
++		osc_sb_apei_support_acked =
++			capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_APEI_SUPPORT;
++		osc_pc_lpi_support_confirmed =
++			capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_PCLPI_SUPPORT;
++		osc_sb_native_usb4_support_confirmed =
++			capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_NATIVE_USB4_SUPPORT;
++	}
+ 
+ 	kfree(context.ret.pointer);
+ }
 -- 
 2.34.1
 
