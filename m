@@ -2,128 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF81BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 18:07:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57106C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 18:08:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245072AbiC1SJi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 14:09:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54398 "EHLO
+        id S245101AbiC1SKQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 14:10:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245010AbiC1SJe (ORCPT
+        with ESMTP id S237111AbiC1SKM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 14:09:34 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B99005DE42
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 11:07:52 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nYtmI-0007iB-Qd; Mon, 28 Mar 2022 20:07:42 +0200
-Received: from pengutronix.de (2a03-f580-87bc-d400-3f39-5bba-2215-6d78.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:3f39:5bba:2215:6d78])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 0478655CFA;
-        Mon, 28 Mar 2022 18:07:39 +0000 (UTC)
-Date:   Mon, 28 Mar 2022 20:07:39 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Tejun Heo <tj@kernel.org>
-Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Peter Hurley <peter@hurleysoftware.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Esben Haabendal <esben@geanix.com>,
-        Steven Walter <stevenrwalter@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        =?utf-8?B?QW5kcsOp?= Pribil <a.pribil@beck-ipc.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-rt-users@vger.kernel.org
-Subject: Re: [RFC PATCH 0/2] RT scheduling policies for workqueues
-Message-ID: <20220328180739.o2nka5u72jj66ipg@pengutronix.de>
-References: <20220323145600.2156689-1-linux@rasmusvillemoes.dk>
- <YkGIhYKJG+w4L7ge@linutronix.de>
- <20220328100927.5ax34nea7sp7jdsy@pengutronix.de>
- <YkHyzcfiyjLfIVOo@slm.duckdns.org>
+        Mon, 28 Mar 2022 14:10:12 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0B4420186
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 11:08:30 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id c15-20020a17090a8d0f00b001c9c81d9648so115939pjo.2
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 11:08:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=hNzwHJfpkpmEw/hct0zF3etMNc0cBO4fopLuf3JQwh0=;
+        b=j+MhoQtHPKvT8/iY4rD3ORM6UPsD3J+KwsMPPTxs+VaA/Ye0qfO43/9gyfVuw4bCCA
+         KbU/ghqbikyVT+ikaf+dcsZF2TeNWINi5mbTZggLvUyb115NvU/oAG33I26VRaF8bKGv
+         fqoivDS1ir2euXvQJAeIFbIc+fobV0swxGnNdPUz6OSYyRXzS2+idViGDCpaqxbLKRmM
+         7c3IFwx3BSmgGECIzf/upkN0mXZb1kOoPc0O49ZMigPY4P7UvIl1qUnd7wX7unjYa9e5
+         t/FmYQi3oO4uToIrj4vwRJZ4OJuXX6VogEvlTaXHke65bPUHgcfJ8MdGKhqmmVN0uatg
+         ZoWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hNzwHJfpkpmEw/hct0zF3etMNc0cBO4fopLuf3JQwh0=;
+        b=ShOMpkigX0fyAikvQw368p+e7k4siE2IcHGrkiJMeSTxs0v95RMOCCaU+0G9ARzOk6
+         uSjo9TqfQnLohyO58HKnEgTzq0QvY5ZIm95434ft9Bye/bGvB67chJr2vz9MCOLwuH+t
+         8jNdLzn1EdJGq9vVXuoLGl8U5qu6kDFyhzv5jiqR73wxqsW6CHUnQMxw3LojzVEMusJw
+         MBJGsexjZyUnbqMipcItjQLDJ1OA2k9IYRsOOX5dVymQ4JIdpyQDD3iERv8rF14HOAg+
+         Qdmju8GTHoBuJ79E0obM/vusy57cgFP/HG/wJWwctygJyKX4SPdIaZfcadd6mGjXsP2r
+         cSxQ==
+X-Gm-Message-State: AOAM533eZoQMw7sdO2RGM3oy5MievWL10gML2OQU/r1Us8dcIu6jdxs6
+        mh0kMMY4GhnWXdX8i8ed/EMTg3GPoRbr9w==
+X-Google-Smtp-Source: ABdhPJxetOLScKRUcMTopUmhm1Ev7y4iwJyX08ybSbGXjAvTgYb2EcxGlWoFK/86lsZmPt0m0MtlmQ==
+X-Received: by 2002:a17:902:be18:b0:153:2444:9c1a with SMTP id r24-20020a170902be1800b0015324449c1amr27513128pls.152.1648490909947;
+        Mon, 28 Mar 2022 11:08:29 -0700 (PDT)
+Received: from google.com (128.65.83.34.bc.googleusercontent.com. [34.83.65.128])
+        by smtp.gmail.com with ESMTPSA id oc10-20020a17090b1c0a00b001c7510ed0c8sm145308pjb.49.2022.03.28.11.08.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 11:08:29 -0700 (PDT)
+Date:   Mon, 28 Mar 2022 18:08:26 +0000
+From:   Eric Biggers <ebiggers@google.com>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>
+Subject: Re: [PATCH AUTOSEL 5.17 16/43] random: use computational hash for
+ entropy extraction
+Message-ID: <YkH5mhYokPB87FtE@google.com>
+References: <20220328111828.1554086-1-sashal@kernel.org>
+ <20220328111828.1554086-16-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="jaohf7esmtmkbeyj"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YkHyzcfiyjLfIVOo@slm.duckdns.org>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+In-Reply-To: <20220328111828.1554086-16-sashal@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Mar 28, 2022 at 07:18:00AM -0400, Sasha Levin wrote:
+> From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+> 
+> [ Upstream commit 6e8ec2552c7d13991148e551e3325a624d73fac6 ]
+> 
 
---jaohf7esmtmkbeyj
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I don't think it's a good idea to start backporting random commits to random.c
+that weren't marked for stable.  There were a lot of changes in v5.18, and
+sometimes they relate to each other in subtle ways, so the individual commits
+aren't necessarily safe to pick.
 
-On 28.03.2022 07:39:25, Tejun Heo wrote:
-> Hello,
->=20
-> On Mon, Mar 28, 2022 at 12:09:27PM +0200, Marc Kleine-Budde wrote:
-> > > Having a kthread per "low-latency" tty instance is something I would
-> > > prefer. The kwork corner is an anonymous worker instance and probably
-> > > does more harm than good. Especially if it is a knob for everyone whi=
-ch
-> > > is used for the wrong reasons and manages to be harmful in the end.
-> > > With a special kthread for a particular tty, the thread can be assign=
-ed
-> > > with the desired priority within the system and ttyS1 can be
-> > > distinguished from ttyS0 (and so on). This turned out to be useful in=
- a
-> > > few setups over the years.
-> >=20
-> > +1
-> >=20
-> > The networking subsystem has gone the same/similar way with NAPI. NAPI
-> > handling can be switched from the softirq to kernel thread on a per
-> > interface basis.
->=20
-> I wonder whether it'd be useful to provide a set of wrappers which can ma=
-ke
-> switching between workqueue and kworker easy. Semantics-wise, they're
-> already mostly aligned and it shouldn't be too difficult to e.g. make an
-> unbounded workqueue be backed by a dedicated kthread_worker instead of
-> shared pool depending on a flag, or even allow switching dynamically.
+IMO, you shouldn't backport any non-stable-Cc'ed commits to random.c unless
+Jason explicitly reviews the exact sequence of commits that you're backporting.
 
-For NAPI a sysfs entry was added to switch to threaded mode:
-
-| 5fdd2f0e5c64 net: add sysfs attribute to control napi threaded mode
-| 29863d41bb6e net: implement threaded-able napi poll loop support
-| 898f8015ffe7 net: extract napi poll functionality to __napi_poll()
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---jaohf7esmtmkbeyj
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmJB+WgACgkQrX5LkNig
-013Z1ggAtDuYsJ8eovJaR23f5iytmtRRTA6QccpR0Mkf20o+g47two6oUywEU5dq
-mC3OVmG8STeZflRuUelhII1ghKhmUUXGAN5z/lYuTypmKeGJoZeebPuwYPjUbGo2
-gHxxsKFpBhanPh4uFgFzq1AYPmdMYIdL1Io/fbjym0BL41fyKmJJsTFJ9P9iAQmn
-AXFr/VwU/Q0NbQD/SUKkzs0CvOoE5Zh1UvE2EIQCtFP8xUqiCAGx6ko0yEPrC5bS
-NOsJKRrO6rSHY3wIFW0r77w2mxQIkzn3W8EWVL7037RMiYt4EQjgbLs2+cPh7DfS
-+XEHOZs0yK2jpFKOpITZDOWfkPW+0g==
-=s07w
------END PGP SIGNATURE-----
-
---jaohf7esmtmkbeyj--
+- Eric
