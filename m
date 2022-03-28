@@ -2,52 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 707EEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:44:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DFCAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:44:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245671AbiC1Tpr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 15:45:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50372 "EHLO
+        id S244440AbiC1Tpy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 15:45:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343700AbiC1Too (ORCPT
+        with ESMTP id S1343710AbiC1Too (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Mar 2022 15:44:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C63F25EBC3;
-        Mon, 28 Mar 2022 12:42:39 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB11666CA9;
+        Mon, 28 Mar 2022 12:42:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7532EB8120F;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 99A946128E;
+        Mon, 28 Mar 2022 19:42:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C67FC340F0;
         Mon, 28 Mar 2022 19:42:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2DEDC3410F;
-        Mon, 28 Mar 2022 19:42:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648496557;
-        bh=bGozNgv5tjLJ84Cay1tq/nxVZeU7A+W6BXdShzv6ds8=;
+        s=k20201202; t=1648496560;
+        bh=Logx3igQbeY9kAMEeW2KRufDknkZLCvGzVUyIi7FQdY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FTs+b2mWmWAVPFcEj/fqARsb9dmF8fh19RKkwzEhAaaTNGcj/+Vod3cKX3i9CKJw3
-         pxXj0Y/M4cDnRNgnl21lM2JQjL0O3BLrcyhbdCDc3ZzInIgx+I3Hki+8r9SoK+Pq4y
-         pjiPy4LihKSvKHnp7TChgBnxPqoJHAXhDmLRKFOP+YCPA6MdvMQBbYV86X67KXtLlG
-         e4ysiZF5DvAq+44Wjya7rIslywAJdrapHTAeN+tWDaIcE5l4+wSmXB5Ewz8v55yEbX
-         cOkd5KTwS7cr+ZEqXgLSsQNYAzJP/65D0oapxbxjtbSHlSSXgCHD2NYZka2w+oq18A
-         NOah2aZzMGhCw==
+        b=CxUde1dt2ProG0lAAGOw0HxnX+I8GTTMo8Q5P9PAm5oTNCjBRgEWTW3iweBQUH+jt
+         Uoo0lwMXWk4dMjIpd0g+kc/zlIedcfLNGNDui0yHahUiw7BsGuJFsFtHB2KPVHhmNW
+         gC9t1wrYc5GFLoYmHew3KjpAVch/TaqiQImakwcbq/AHASqwfhGtVoSLlhJesNuVd9
+         8626GPg3TrArPjdlYCJPEHVQ1Qza+FALcMe8ypM/pSfPVRdQZzmhgn73zfcY4vWA64
+         Mg1Vzyx1BRyOnqodfSA67Xbjv2ass1cq0qzkC+gPusxkORIe+IeykrZyJBepgduHoR
+         eQp/wylA4kHgQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Valentin Schneider <valentin.schneider@arm.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>, mingo@redhat.com
-Subject: [PATCH AUTOSEL 5.16 06/20] sched/tracing: Report TASK_RTLOCK_WAIT tasks as TASK_UNINTERRUPTIBLE
-Date:   Mon, 28 Mar 2022 15:42:12 -0400
-Message-Id: <20220328194226.1585920-6-sashal@kernel.org>
+Cc:     Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, yuchao0@huawei.com,
+        linux-f2fs-devel@lists.sourceforge.net
+Subject: [PATCH AUTOSEL 5.16 08/20] f2fs: fix to do sanity check on curseg->alloc_type
+Date:   Mon, 28 Mar 2022 15:42:14 -0400
+Message-Id: <20220328194226.1585920-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220328194226.1585920-1-sashal@kernel.org>
 References: <20220328194226.1585920-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,52 +51,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Valentin Schneider <valentin.schneider@arm.com>
+From: Chao Yu <chao@kernel.org>
 
-[ Upstream commit 25795ef6299f07ce3838f3253a9cb34f64efcfae ]
+[ Upstream commit f41ee8b91c00770d718be2ff4852a80017ae9ab3 ]
 
-TASK_RTLOCK_WAIT currently isn't part of TASK_REPORT, thus a task blocking
-on an rtlock will appear as having a task state == 0, IOW TASK_RUNNING.
+As Wenqing Liu reported in bugzilla:
 
-The actual state is saved in p->saved_state, but reading it after reading
-p->__state has a few issues:
-o that could still be TASK_RUNNING in the case of e.g. rt_spin_lock
-o ttwu_state_match() might have changed that to TASK_RUNNING
+https://bugzilla.kernel.org/show_bug.cgi?id=215657
 
-As pointed out by Eric, adding TASK_RTLOCK_WAIT to TASK_REPORT implies
-exposing a new state to userspace tools which way not know what to do with
-them. The only information that needs to be conveyed here is that a task is
-waiting on an rt_mutex, which matches TASK_UNINTERRUPTIBLE - there's no
-need for a new state.
+- Overview
+UBSAN: array-index-out-of-bounds in fs/f2fs/segment.c:3460:2 when mount and operate a corrupted image
 
-Reported-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Link: https://lore.kernel.org/r/20220120162520.570782-3-valentin.schneider@arm.com
+- Reproduce
+tested on kernel 5.17-rc4, 5.17-rc6
+
+1. mkdir test_crash
+2. cd test_crash
+3. unzip tmp2.zip
+4. mkdir mnt
+5. ./single_test.sh f2fs 2
+
+- Kernel dump
+[   46.434454] loop0: detected capacity change from 0 to 131072
+[   46.529839] F2FS-fs (loop0): Mounted with checkpoint version = 7548c2d9
+[   46.738319] ================================================================================
+[   46.738412] UBSAN: array-index-out-of-bounds in fs/f2fs/segment.c:3460:2
+[   46.738475] index 231 is out of range for type 'unsigned int [2]'
+[   46.738539] CPU: 2 PID: 939 Comm: umount Not tainted 5.17.0-rc6 #1
+[   46.738547] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.13.0-1ubuntu1.1 04/01/2014
+[   46.738551] Call Trace:
+[   46.738556]  <TASK>
+[   46.738563]  dump_stack_lvl+0x47/0x5c
+[   46.738581]  ubsan_epilogue+0x5/0x50
+[   46.738592]  __ubsan_handle_out_of_bounds+0x68/0x80
+[   46.738604]  f2fs_allocate_data_block+0xdff/0xe60 [f2fs]
+[   46.738819]  do_write_page+0xef/0x210 [f2fs]
+[   46.738934]  f2fs_do_write_node_page+0x3f/0x80 [f2fs]
+[   46.739038]  __write_node_page+0x2b7/0x920 [f2fs]
+[   46.739162]  f2fs_sync_node_pages+0x943/0xb00 [f2fs]
+[   46.739293]  f2fs_write_checkpoint+0x7bb/0x1030 [f2fs]
+[   46.739405]  kill_f2fs_super+0x125/0x150 [f2fs]
+[   46.739507]  deactivate_locked_super+0x60/0xc0
+[   46.739517]  deactivate_super+0x70/0xb0
+[   46.739524]  cleanup_mnt+0x11a/0x200
+[   46.739532]  __cleanup_mnt+0x16/0x20
+[   46.739538]  task_work_run+0x67/0xa0
+[   46.739547]  exit_to_user_mode_prepare+0x18c/0x1a0
+[   46.739559]  syscall_exit_to_user_mode+0x26/0x40
+[   46.739568]  do_syscall_64+0x46/0xb0
+[   46.739584]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+The root cause is we missed to do sanity check on curseg->alloc_type,
+result in out-of-bound accessing on sbi->block_count[] array, fix it.
+
+Signed-off-by: Chao Yu <chao@kernel.org>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/sched.h | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ fs/f2fs/segment.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 084de9b70a77..46ef8c75802f 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -1622,6 +1622,14 @@ static inline unsigned int __task_state_index(unsigned int tsk_state,
- 	if (tsk_state == TASK_IDLE)
- 		state = TASK_REPORT_IDLE;
+diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
+index df9ed75f0b7a..5fd33aabd0fc 100644
+--- a/fs/f2fs/segment.c
++++ b/fs/f2fs/segment.c
+@@ -4792,6 +4792,13 @@ static int sanity_check_curseg(struct f2fs_sb_info *sbi)
  
-+	/*
-+	 * We're lying here, but rather than expose a completely new task state
-+	 * to userspace, we can make this appear as if the task has gone through
-+	 * a regular rt_mutex_lock() call.
-+	 */
-+	if (tsk_state == TASK_RTLOCK_WAIT)
-+		state = TASK_UNINTERRUPTIBLE;
+ 		sanity_check_seg_type(sbi, curseg->seg_type);
+ 
++		if (curseg->alloc_type != LFS && curseg->alloc_type != SSR) {
++			f2fs_err(sbi,
++				 "Current segment has invalid alloc_type:%d",
++				 curseg->alloc_type);
++			return -EFSCORRUPTED;
++		}
 +
- 	return fls(state);
- }
+ 		if (f2fs_test_bit(blkofs, se->cur_valid_map))
+ 			goto out;
  
 -- 
 2.34.1
