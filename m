@@ -2,112 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE373C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 17:17:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 136C4C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 17:18:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244528AbiC1RTA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 13:19:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51286 "EHLO
+        id S240270AbiC1RTm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 13:19:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236199AbiC1RS5 (ORCPT
+        with ESMTP id S239644AbiC1RTk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 13:18:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0187164BE0
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 10:17:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 891FCB8117D
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 17:17:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3505C340F0;
-        Mon, 28 Mar 2022 17:17:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648487833;
-        bh=tsHOIB8dmpEnEigOmeEzDX7+3UaF+f5tQDsXH8gievU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=R+dhNRJ3fJh94YsiEAPa1fz1v7bIvyALQBN7pfBRthhbjgJBB/MVXl5gZBOQsiMlV
-         VwO+I5g9NbgOzKZh0i+HOw+qKjeDKND6BAodGwsbLoQEqH98Syj8UynG/+rr6US8Uu
-         j4FSxhaE/h0BO8fghQhNfSv+5SKpiq9r3JuHUTvcu+oF+f1kztqR4CznJQWopZFJ7L
-         O3auhUsc+FUZoUaKW+2xQSjLd4e1yRCzmxz5S+odM3LswUuClzU2xXNxcTmUTuNKh/
-         C4v+QgKdbNiA73tkI5Sqk9Z6vuknKXg36V2QT79anPX7LTPEgSBeB780JEjCX6kCDg
-         dRqiMKebjRkcQ==
-Date:   Mon, 28 Mar 2022 10:17:11 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     kernel test robot <lkp@intel.com>
-Cc:     Eric Dumazet <edumazet@google.com>, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Brian Vazquez <brianvv@google.com>,
-        linux-riscv@lists.infradead.org
-Subject: Re: net/core/dev.c:10290:18: sparse: sparse: cast removes address
- space '__percpu' of expression
-Message-ID: <20220328101711.111e1dd5@kernel.org>
-In-Reply-To: <202203281436.hsNgYWWu-lkp@intel.com>
-References: <202203281436.hsNgYWWu-lkp@intel.com>
+        Mon, 28 Mar 2022 13:19:40 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFFE063BE7
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 10:17:58 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id b24so17708145edu.10
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 10:17:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=PfGu1Gh5gOnyIlm1iZqOR1KzskMRiaHDBmIl7z2QE6I=;
+        b=SS9lD2FartjqbmLvIybnxYK7DZu2mOa4V8OjcueWGmfHX7+9gyvVzz2YR231SARBlh
+         tT/ACANSvNw+nR+IArymugrc8NoiWptCklXZ6AkM6tRyOphTeapK5odP+9gFQxn3t22w
+         gAhBqmMnVOXhdFhDQUCdui2mBW14iFjrpkxvrNeHgfbovOK8gOXjiyO1/AWWkaTIliTK
+         8hKLoAcIz//0MU+sOaNl9OcMObocqWkl2gPQ4FsyanmuyZ66sVR/Vwt0NHE44kAgNzZh
+         InZ9rwqlN1jlO9QjKlNSOJqxAtwdSAdd8q4xXpJxalSzV5tY1vCYhkUJpMImvs4AO/ey
+         lS0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=PfGu1Gh5gOnyIlm1iZqOR1KzskMRiaHDBmIl7z2QE6I=;
+        b=MkKaYmHeQ+87RmjwROQgxVA00B8x691o2qYbNtrDzzhEMiGG62/siG9L1zCb13FZJR
+         TkQcpiZW14m3zUAp/LzhdXowZLO26dtXOfkargSsNSgB0r9V8zUToKnIUq+hq2Omrs7I
+         dqqY4ZQrDuwgN3b9+b2j4porNx9co2SFlgYFSLekC2xMK3gRWt4eGQa0B4CKy8hwZB8g
+         9G1lbjECMv3VOw+67U7On6YKCfTdNwteOfE26DYh2cC7VS1VaAC77ywdBeejZ5VcQ5+l
+         I4vZSwwRPC/bMQVIOL7orhREirCy8TYvTziFzhqWoh3QqOI4+qvzPCEoxOuNggRvC9fg
+         dxNQ==
+X-Gm-Message-State: AOAM530r3ZQlz7yGyjXR+1Qd24Ndz1pOL5dcOlHeu9C+VjDTe5n+7baX
+        xXSbUW8i6xj8GFBlnDJ8cIlogg==
+X-Google-Smtp-Source: ABdhPJyigBX1uqqXExWRAhFYFbuaenjSC8MKFfgbyUoYMWd4PQLdsdqvigzxFhceIqW/RQzj5hlXtw==
+X-Received: by 2002:a05:6402:60e:b0:419:d2e:bcea with SMTP id n14-20020a056402060e00b004190d2ebceamr17695197edv.326.1648487877473;
+        Mon, 28 Mar 2022 10:17:57 -0700 (PDT)
+Received: from [192.168.0.162] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id f3-20020a056402004300b004162aa024c0sm7190332edu.76.2022.03.28.10.17.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Mar 2022 10:17:57 -0700 (PDT)
+Message-ID: <12b0056b-8032-452b-f325-6f36037b5a80@linaro.org>
+Date:   Mon, 28 Mar 2022 19:17:55 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] dt-bindings: display: msm: dsi: remove address/size cells
+Content-Language: en-US
+To:     Vinod Koul <vkoul@kernel.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Krishna Manikandan <mkrishn@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220328152923.90623-1-krzysztof.kozlowski@linaro.org>
+ <CAA8EJprWoxWwk5EWEfWdLquPR+2=u6V0-v1-+wHMHOk8HiEyNw@mail.gmail.com>
+ <YkHtY9absUjmqmW7@matsya>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <YkHtY9absUjmqmW7@matsya>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CC: riscv, is there something special about cmpxchg() on that arch?
-We don't see it on x86, and I don't see anything special in the code
-for riscv, at least on 5.17.
-
-On Mon, 28 Mar 2022 14:28:34 +0800 kernel test robot wrote:
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> head:   ae085d7f9365de7da27ab5c0d16b12d51ea7fca9
-> commit: 625788b5844511cf4c30cffa7fa0bc3a69cebc82 net: add per-cpu storage and net->core_stats
-> date:   2 weeks ago
-> config: riscv-randconfig-s032-20220328 (https://download.01.org/0day-ci/archive/20220328/202203281436.hsNgYWWu-lkp@intel.com/config)
-> compiler: riscv64-linux-gcc (GCC) 11.2.0
-> reproduce:
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # apt-get install sparse
->         # sparse version: v0.6.4-dirty
->         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=625788b5844511cf4c30cffa7fa0bc3a69cebc82
->         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
->         git fetch --no-tags linus master
->         git checkout 625788b5844511cf4c30cffa7fa0bc3a69cebc82
->         # save the config file to linux build tree
->         mkdir build_dir
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=riscv SHELL=/bin/bash net/core/
+On 28/03/2022 19:16, Vinod Koul wrote:
+> On 28-03-22, 19:43, Dmitry Baryshkov wrote:
+>> On Mon, 28 Mar 2022 at 18:30, Krzysztof Kozlowski
+>> <krzysztof.kozlowski@linaro.org> wrote:
+>>>
+>>> The DSI node is not a bus and the children do not have unit addresses.
+>>>
+>>> Reported-by: Vinod Koul <vkoul@kernel.org>
+>>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>>
+>> NAK.
+>> DSI panels are children of the DSI device tree node with the reg = <0>; address.
+>> This is the convention used by other platforms too (see e.g.
+>> arch/arm64/boot/dts/freescale/imx8mq-evk.dts).
 > 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> 
-> sparse warnings: (new ones prefixed by >>)
->    net/core/dev.c:3254:23: sparse: sparse: incorrect type in argument 4 (different base types) @@     expected restricted __wsum [usertype] csum @@     got unsigned int @@
->    net/core/dev.c:3254:23: sparse:     expected restricted __wsum [usertype] csum
->    net/core/dev.c:3254:23: sparse:     got unsigned int
->    net/core/dev.c:3254:23: sparse: sparse: cast from restricted __wsum
-> >> net/core/dev.c:10290:18: sparse: sparse: cast removes address space '__percpu' of expression  
->    net/core/dev.c:3759:17: sparse: sparse: context imbalance in '__dev_queue_xmit' - different lock contexts for basic block
->    net/core/dev.c:4961:17: sparse: sparse: context imbalance in 'net_tx_action' - different lock contexts for basic block
-> 
-> vim +/__percpu +10290 net/core/dev.c
-> 
->  10282	
->  10283	struct net_device_core_stats *netdev_core_stats_alloc(struct net_device *dev)
->  10284	{
->  10285		struct net_device_core_stats __percpu *p;
->  10286	
->  10287		p = alloc_percpu_gfp(struct net_device_core_stats,
->  10288				     GFP_ATOMIC | __GFP_NOWARN);
->  10289	
->  10290		if (p && cmpxchg(&dev->core_stats, NULL, p))
->  10291			free_percpu(p);
->  10292	
->  10293		/* This READ_ONCE() pairs with the cmpxchg() above */
->  10294		p = READ_ONCE(dev->core_stats);
->  10295		if (!p)
->  10296			return NULL;
->  10297	
->  10298		return this_cpu_ptr(p);
->  10299	}
->  10300	EXPORT_SYMBOL(netdev_core_stats_alloc);
->  10301	
+> So we should add reg = 0, i will update my dtsi fix
 > 
 
+To "ports" node? No. The reg=0 is for children of the bus, so the
+panels. How to combine both without warnings - ports and panel@0 - I
+don't know yet...
+
+Best regards,
+Krzysztof
