@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93E81C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:27:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C60D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:27:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241226AbiC1L3e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:29:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57442 "EHLO
+        id S241234AbiC1L3h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:29:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241215AbiC1LXX (ORCPT
+        with ESMTP id S241303AbiC1LXh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:23:23 -0400
+        Mon, 28 Mar 2022 07:23:37 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D37E5881D;
-        Mon, 28 Mar 2022 04:20:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE6A0593A9;
+        Mon, 28 Mar 2022 04:20:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A52E61193;
-        Mon, 28 Mar 2022 11:20:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38D29C340ED;
-        Mon, 28 Mar 2022 11:20:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CA25E611BD;
+        Mon, 28 Mar 2022 11:20:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 912FBC340EC;
+        Mon, 28 Mar 2022 11:20:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466418;
-        bh=hOasPOHGeymPIR9CFGjXih8tpW9A6b/MeZtf9fDUetE=;
+        s=k20201202; t=1648466431;
+        bh=p4qOkgGo1/eyoeVeoSnjF3H2g47JG7CGB9P5oxsXQkc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=juJxDTPo4QnUZ+t+HSCayFwd5s5Rk4A++ocMKPMMQu9RXg1DrmZ2CGiTu2OWYayX/
-         iq0Nn0giHyTezrGB81JzVxifDHIaZoS80O2Ho6kgMnLcPeYDsU377BKqY1xzk3jmpP
-         Ed2DN3uF58fIaY7RYPPXXTDqm39WKlc0tnGlSHLwAiewrmUrzS6eWhomhN+SVHuw/G
-         xXNAvIHFPNdyGq1Lh8y1+s6J3YT+m7meZ6+4iEkPiXOQ+dY965J6FnN9It6Gg4NTXc
-         lE12YU/Q657j/dOUobioTNXn2jaLnU+Hkq/K7xgtCIwTX1NP5kfUT3oD2yveTXeBAJ
-         a029hl5gEnxQA==
+        b=hqnQmDx2im5mBqCmsC65tKlL9Tn9/jmBMJXAxCJidP9pOUJbLGDqPFnOlvrVExYSr
+         H8emEdda9UkqGTvUpLwMUKX4ZwkUhmi5QXvE78fCzP4vr6QoT7Fnsgl0pJ0+EhhTYB
+         nGX3m/DB8N9IRPhTAx1ZDWc21WiAhc37t/5BfCCQRZ+wJN3ZXn5w4oywA5TxDr6E7p
+         Nw1ZxqFiA4rRVNd8E/i4nwN09t8kc0NgchhdGA2nFpdtsWJ4oTVESu3+uVKxHR1muF
+         9nwFeGAoTWak9wLZfcIRmPSLt09YEYNXNvxyg6q74Vc+63yKWzsMP26USs+nPsypzG
+         U2uiPn+yccquA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kees Cook <keescook@chromium.org>,
-        Alexander Popov <alex.popov@linux.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 04/35] gcc-plugins/stackleak: Exactly match strings instead of prefixes
-Date:   Mon, 28 Mar 2022 07:19:40 -0400
-Message-Id: <20220328112011.1555169-4-sashal@kernel.org>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>, rftc <rftc@gmx.de>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        linux-crypto@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 11/35] crypto: xts - Add softdep on ecb
+Date:   Mon, 28 Mar 2022 07:19:47 -0400
+Message-Id: <20220328112011.1555169-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220328112011.1555169-1-sashal@kernel.org>
 References: <20220328112011.1555169-1-sashal@kernel.org>
@@ -52,68 +51,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Herbert Xu <herbert@gondor.apana.org.au>
 
-[ Upstream commit 27e9faf415dbf94af19b9c827842435edbc1fbbc ]
+[ Upstream commit dfe085d8dcd0bb1fe20cc2327e81c8064cead441 ]
 
-Since STRING_CST may not be NUL terminated, strncmp() was used for check
-for equality. However, this may lead to mismatches for longer section
-names where the start matches the tested-for string. Test for exact
-equality by checking for the presences of NUL termination.
+The xts module needs ecb to be present as it's meant to work
+on top of ecb.  This patch adds a softdep so ecb can be included
+automatically into the initramfs.
 
-Cc: Alexander Popov <alex.popov@linux.com>
-Signed-off-by: Kees Cook <keescook@chromium.org>
+Reported-by: rftc <rftc@gmx.de>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/gcc-plugins/stackleak_plugin.c | 25 +++++++++++++++++++++----
- 1 file changed, 21 insertions(+), 4 deletions(-)
+ crypto/xts.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/scripts/gcc-plugins/stackleak_plugin.c b/scripts/gcc-plugins/stackleak_plugin.c
-index e9db7dcb3e5f..b04aa8e91a41 100644
---- a/scripts/gcc-plugins/stackleak_plugin.c
-+++ b/scripts/gcc-plugins/stackleak_plugin.c
-@@ -429,6 +429,23 @@ static unsigned int stackleak_cleanup_execute(void)
- 	return 0;
- }
- 
-+/*
-+ * STRING_CST may or may not be NUL terminated:
-+ * https://gcc.gnu.org/onlinedocs/gccint/Constant-expressions.html
-+ */
-+static inline bool string_equal(tree node, const char *string, int length)
-+{
-+	if (TREE_STRING_LENGTH(node) < length)
-+		return false;
-+	if (TREE_STRING_LENGTH(node) > length + 1)
-+		return false;
-+	if (TREE_STRING_LENGTH(node) == length + 1 &&
-+	    TREE_STRING_POINTER(node)[length] != '\0')
-+		return false;
-+	return !memcmp(TREE_STRING_POINTER(node), string, length);
-+}
-+#define STRING_EQUAL(node, str)	string_equal(node, str, strlen(str))
-+
- static bool stackleak_gate(void)
- {
- 	tree section;
-@@ -438,13 +455,13 @@ static bool stackleak_gate(void)
- 	if (section && TREE_VALUE(section)) {
- 		section = TREE_VALUE(TREE_VALUE(section));
- 
--		if (!strncmp(TREE_STRING_POINTER(section), ".init.text", 10))
-+		if (STRING_EQUAL(section, ".init.text"))
- 			return false;
--		if (!strncmp(TREE_STRING_POINTER(section), ".devinit.text", 13))
-+		if (STRING_EQUAL(section, ".devinit.text"))
- 			return false;
--		if (!strncmp(TREE_STRING_POINTER(section), ".cpuinit.text", 13))
-+		if (STRING_EQUAL(section, ".cpuinit.text"))
- 			return false;
--		if (!strncmp(TREE_STRING_POINTER(section), ".meminit.text", 13))
-+		if (STRING_EQUAL(section, ".meminit.text"))
- 			return false;
- 	}
- 
+diff --git a/crypto/xts.c b/crypto/xts.c
+index 6c12f30dbdd6..63c85b9e64e0 100644
+--- a/crypto/xts.c
++++ b/crypto/xts.c
+@@ -466,3 +466,4 @@ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("XTS block cipher mode");
+ MODULE_ALIAS_CRYPTO("xts");
+ MODULE_IMPORT_NS(CRYPTO_INTERNAL);
++MODULE_SOFTDEP("pre: ecb");
 -- 
 2.34.1
 
