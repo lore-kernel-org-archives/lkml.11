@@ -2,74 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41ED8C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 22:11:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C86F3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 22:11:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229475AbiC1WNd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 18:13:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37720 "EHLO
+        id S229517AbiC1WNg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 18:13:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229517AbiC1WN0 (ORCPT
+        with ESMTP id S229457AbiC1WN0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Mar 2022 18:13:26 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0977C12AA7;
-        Mon, 28 Mar 2022 15:02:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1648504935; x=1680040935;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=V6wj85aktAy4zchSrB2TRXjLBQSa81RFSvjg7s60U4c=;
-  b=xaCJZ3oZZcyngJ53hxm1SqqHPlKf7ee30yaHC/aN9RDSuAeOqZv1hU9C
-   GaoZqXLUkhAL/KhKN1NlAcSFAu+v3fmj0hGtFQonE1ggLA6/7quCwhN6A
-   sRwTuHSFWORiKziTLdqTb9X3ZNVpybcZjc9QMMk1QMFU1CxPXjmDzKHvi
-   I=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 28 Mar 2022 14:49:11 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 14:49:11 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 28 Mar 2022 14:49:11 -0700
-Received: from [10.110.35.108] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 28 Mar
- 2022 14:49:10 -0700
-Message-ID: <798bfcaa-eb73-9395-02d1-fa4de2eee396@quicinc.com>
-Date:   Mon, 28 Mar 2022 14:49:09 -0700
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BDAB13E42E;
+        Mon, 28 Mar 2022 15:02:22 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id DED2E1FDA9;
+        Mon, 28 Mar 2022 22:02:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1648504940;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rYFGS9AYzxVsx9knDBb4jcUDE3645z2CTIc2cXxxBpM=;
+        b=0soT1ko22OO/7z4QLN0QnF8+IKnrsF+Q8yRaz++XBb+qqIXDWjmrjUzZlmY1nR4o9B8VCT
+        g8LoEDjuYZqXWXAVrUS7pWYDCBpMpgQ5dgFiKE2JVHTcwZDZIYHmw60DTHhPPZhNDegNQz
+        aRthzkd57oYYo/684UBnFlh4HZOJumY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1648504940;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rYFGS9AYzxVsx9knDBb4jcUDE3645z2CTIc2cXxxBpM=;
+        b=tZBEhRKftWDILuZsN9gHgfpd2FAfOGHdKlv3I5ZVGNuvwAnQRItPQXCKb5G8KdXdtdTgQw
+        ADB02uAof+v3rACA==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id D0E53A3B87;
+        Mon, 28 Mar 2022 22:02:20 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id 937FBDA7F3; Mon, 28 Mar 2022 23:58:23 +0200 (CEST)
+Date:   Mon, 28 Mar 2022 23:58:23 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
+Cc:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Nick Terrell <terrelln@fb.com>, linux-kernel@vger.kernel.org,
+        linux-btrfs@vger.kernel.org, kernel-team@fb.com
+Subject: Re: [PATCH 0/2] btrfs: Allocate page arrays more efficiently.
+Message-ID: <20220328215823.GV2237@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz,
+        Sweet Tea Dorminy <sweettea-kernel@dorminy.me>,
+        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, Nick Terrell <terrelln@fb.com>,
+        linux-kernel@vger.kernel.org, linux-btrfs@vger.kernel.org,
+        kernel-team@fb.com
+References: <cover.1648496453.git.sweettea-kernel@dorminy.me>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3] wcn36xx: Improve readability of wcn36xx_caps_name
-Content-Language: en-US
-To:     =?UTF-8?Q?Benjamin_St=c3=bcrz?= <benni@stuerz.xyz>,
-        <loic.poulain@linaro.org>
-CC:     <kvalo@kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <wcn36xx@lists.infradead.org>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220328212912.283393-1-benni@stuerz.xyz>
-From:   Jeff Johnson <quic_jjohnson@quicinc.com>
-In-Reply-To: <20220328212912.283393-1-benni@stuerz.xyz>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1648496453.git.sweettea-kernel@dorminy.me>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/28/2022 2:29 PM, Benjamin Stürz wrote:
-> Use macros to force strict ordering of the elements.
-> 
-> Signed-off-by: Benjamin Stürz <benni@stuerz.xyz>
-> ---
->   drivers/net/wireless/ath/wcn36xx/main.c | 126 ++++++++++++------------
->   1 file changed, 65 insertions(+), 61 deletions(-)
-> 
+On Mon, Mar 28, 2022 at 04:14:26PM -0400, Sweet Tea Dorminy wrote:
+> In several places, btrfs allocates an array of pages, one at a time.  In
+> addition to duplicating code, the mm subsystem provides a helper to
+> allocate multiple pages at once into an array which is suited for our
+> usecase. In the fast path, the batching can result in better allocation
+> decisions and less locking. This changeset first adjusts the users to
+> call a common array-of-pages allocation function, then adjusts that
+> common function to use the batch page allocator.
 
-Reviewed-by: Jeff Johnson <quic_jjohnson@quicinc.com>
+Makes sense, the allocator internal knowledge can improve things. Though
+after some time the memory often is fragmented and the bulk allocator
+could fall back to single page allocation, it won't be worse than what
+we already have.
+
+I have some coding style comments, will reply under the patches,
+otherwise the series looks good.
