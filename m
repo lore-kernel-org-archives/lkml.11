@@ -2,64 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11CF3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 15:00:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C0EFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 15:00:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244168AbiC1O77 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 10:59:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51426 "EHLO
+        id S244167AbiC1PBu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 11:01:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244144AbiC1O75 (ORCPT
+        with ESMTP id S244159AbiC1O77 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 10:59:57 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 231DBF0D
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 07:58:16 -0700 (PDT)
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1648479494;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0Gn1QwT0EvYD779jh6Nvet+oIgA0sr1ySIt5fRK2NZ8=;
-        b=WhRxEk9MVnSLWphxKh7/JMP/lBPIh9cPWbFkqo/wmHEp9T1Uz70psONPhUhEsf9RyswsKL
-        mvxqD2lkNBtwaO5E2dq5pold6b29XlaAR98Psbw8Vvbk+QSFq7KG6m2kGY2/kNB6WXa0QG
-        si4bWqkvEOHhJTuUGw+6I/N730hyKSqZX+GOS9TOivdVi9WJHXvklQtZ7C2NgRauaX/xDR
-        wMRhqukQYlA5DITCy7BPD6GFvdiUg8LZeO0b1zcDfWXfmTMPYlR46Ch6f2ek5mOE7H4W3k
-        N/1sjIOleN0mEPQ0JP+a7lZLIx4VXFQcsy0avusRuF10VxxDhxiC2prFVABRjg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1648479494;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0Gn1QwT0EvYD779jh6Nvet+oIgA0sr1ySIt5fRK2NZ8=;
-        b=zVlW2MbCS8cT5rIhOBy661wre7NRIuiGLxErpNd3QaYw4nT2ou8tRRoBZhYQOq3FbJcNJV
-        0EkVshxdkgENh2BQ==
-To:     torvalds@linux-foundation.org
-Cc:     akpm@linux-foundation.org, bigeasy@linutronix.de,
-        boqun.feng@gmail.com, bp@alien8.de, linux-kernel@vger.kernel.org,
-        longman@redhat.com, mingo@kernel.org, peterz@infradead.org,
-        tglx@linutronix.de, will@kernel.org,
-        Dennis Zhou <dennis@kernel.org>, Tejun Heo <tj@kernel.org>,
-        Christoph Lameter <cl@linux.com>
-Subject: [PATCH v2 0/3] Remove volatile from arch_raw_cpu_ptr() and revert the hacks.
-Date:   Mon, 28 Mar 2022 16:58:07 +0200
-Message-Id: <20220328145810.86783-1-bigeasy@linutronix.de>
-In-Reply-To: <CAHk-=wgcM9vUjGTdoCbX4DuBM+53FFmHFqYZdF8mNzATwj8z0A@mail.gmail.com>
-References: <CAHk-=wgcM9vUjGTdoCbX4DuBM+53FFmHFqYZdF8mNzATwj8z0A@mail.gmail.com>
+        Mon, 28 Mar 2022 10:59:59 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 51380EAA;
+        Mon, 28 Mar 2022 07:58:17 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 09F86D6E;
+        Mon, 28 Mar 2022 07:58:17 -0700 (PDT)
+Received: from lakrids (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B75763F73B;
+        Mon, 28 Mar 2022 07:58:15 -0700 (PDT)
+Date:   Mon, 28 Mar 2022 15:58:10 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Segher Boessenkool <segher@kernel.crashing.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Nathan Chancellor <nathan@kernel.org>, x86-ml <x86@kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        linux-toolchains@vger.kernel.org
+Subject: Re: clang memcpy calls
+Message-ID: <YkHNArCbWUEojGjL@lakrids>
+References: <YjxTt3pFIcV3lt8I@zn.tnic>
+ <CAKwvOdkw0Bbm+=ZyViXQhBE1L6uSbvkstHJuHpQ21tzJRftgAw@mail.gmail.com>
+ <Yj2yYFloadFobRPx@lakrids>
+ <Yj3OEI+WHV/A5uf8@hirez.programming.kicks-ass.net>
+ <20220325151238.GB614@gate.crashing.org>
+ <YkGFdtn0yDIPqXRl@FVFF77S0Q05N>
+ <20220328142220.GI614@gate.crashing.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220328142220.GI614@gate.crashing.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove volatile from arch_raw_cpu_ptr() and revert the hacks.
+On Mon, Mar 28, 2022 at 09:22:20AM -0500, Segher Boessenkool wrote:
+> Hi!
+> 
+> On Mon, Mar 28, 2022 at 10:52:54AM +0100, Mark Rutland wrote:
+> > On Fri, Mar 25, 2022 at 10:12:38AM -0500, Segher Boessenkool wrote:
+> > > The compiler isn't assuming anything about asan.  The compiler generates
+> > > its code without any consideration of what asan will or will not do.
+> > > The burden of making things work is on asan.
+> > 
+> > I think we're talking past each other here, so let me be more precise. :)
+> > 
+> > The key thing is that when the user passes `-fsantize=address`, instrumentation
+> > is added by (a part of) the compiler. That instrumentation is added under some
+> > assumptions as to how the compiler as a whole will behave.
+> > 
+> > With that in mind, the question is how is __attribute__((no_sanitize_address))
+> > intended to work when considering all the usual expectations around how the
+> > compiler can play with memcpy and similar?
+> 
+> The attribute is about how the *current* function is instrumented, not
+> about anything called by this function.  This is clearly documented:
+> 'no_sanitize_address'
+> 'no_address_safety_analysis'
+>      The 'no_sanitize_address' attribute on functions is used to inform
+>      the compiler that it should not instrument memory accesses in the
+>      function when compiling with the '-fsanitize=address' option.  The
+>      'no_address_safety_analysis' is a deprecated alias of the
+>      'no_sanitize_address' attribute, new code should use
+>      'no_sanitize_address'.
 
-v1=E2=80=A6v2: Updated the comments in 1/3
+I understand this, and I have read the documentation.
 
-Sebastian
+I'm not claiming any *individual* semantic is wrong, just that in
+combination this doesn't provide what people *need* (even if it strictly
+matches what is documented).
 
+My argument is: if the compiler is permitted to implictly and
+arbitrarily add calls to instrumented functions within a function marked
+with `no_sanitize_address`, the `no_sanitize_address` attribute is
+effectively useless, and therefore *something* needs to change.
 
+> > > The compiler should not do anything differently here if it uses asan.
+> > > The address sanitizer and the memcpy function implementation perhaps
+> > > have to cooperate somehow, or asan needs more smarts.  This needs to
+> > > happen no matter what, to support other things calling memcpy, say,
+> > > assembler code.
+> > 
+> > I appreciate where you're coming from here, but I think you're approaching the
+> > problem sideways.
+> 
+> I am stating facts, I am not trying to solve your problem there.  It
+> seemed to me (and still does) that you didn't grasp all facts here.
+
+Sorry, but I think you're reading my replies uncharitably if you think
+that.
+
+> > We need to define *what the semantics are* so that we can actually solve the
+> > problem, e.g. is a memcpy implementation expected to be instrumented or not?
+> 
+> That is up to the memcpy implementation itself, of course.
+
+Sorry, but that doesn't make sense to me. When the compiler instruments
+a function with AddressSanitizer, it must have *some* assumption about
+whether memcpy() itself will be instrumented, such that it won't miss
+some necessary instrumentation (and ideally, for performance reasons
+doesn't have redundant instrumentation).
+
+If the story is "memcpy may or may not be instrumented", then the only
+way to guarantee necessary instrumentation is for the compiler to
+*always* place it in the caller (unless forbidden by
+`no_sanitize_address`). If that were the case, the kernel can make
+things work by simply not instrumenting memcpy and friends.
+
+IIUC today those assumptions are not documented. Is the behaviour
+consistent?
+
+> > > GCC *requires* memcpy to be the standard memcpy always (i.e. to have the
+> > > standard-specified semantics).  This means that it will have the same
+> > > semantics as __builtin_memcpy always, and either or not be a call to an
+> > > external function.  It can also create calls to it out of thin air.
+> > 
+> > I understand all of that.
+> 
+> And still you want us to do something that is impossible under those
+> existing constraints :-(
+
+If that's truly impossible, that's very unfortunate.
+
+FWIW, I can believe this would require tremendous effort to change, even
+if it's not truly impossible.
+
+If that is the case, it means that kernel side we have to never
+instrument our implementation of memcpy and friends for correctness
+reasons, which has the unfortunate property of losing coverage in the
+cases we *would* like to use an instrumented memcpy.
+
+> If you want the external memcpy called by modules A, B, C to not be
+> instrumented, you have to link A, B, and C against an uninstrumented
+> memcpy.  This is something the kernel will have to do, the compiler has
+> no say in how the kernel is linked together.
+
+Unfortunately that options doesn't really fix the `no_sanitize_address`
+semantic, and forces us to move *all* uninstrumentable code out into
+separate compilation units, etc.
+
+This isn't *impossible*, but is *very* painful.
+
+Thanks,
+Mark.
