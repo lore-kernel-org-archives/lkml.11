@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C08AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:25:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1EB2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:25:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241280AbiC1L1b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:27:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57190 "EHLO
+        id S241286AbiC1L1i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:27:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241565AbiC1LX7 (ORCPT
+        with ESMTP id S241610AbiC1LYB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:23:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7118056C30;
-        Mon, 28 Mar 2022 04:21:18 -0700 (PDT)
+        Mon, 28 Mar 2022 07:24:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE83D56C3D;
+        Mon, 28 Mar 2022 04:21:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C61F61196;
-        Mon, 28 Mar 2022 11:21:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0452CC340EC;
-        Mon, 28 Mar 2022 11:21:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E3E161126;
+        Mon, 28 Mar 2022 11:21:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84CD6C340EC;
+        Mon, 28 Mar 2022 11:21:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466465;
-        bh=eIRS4p7zo1cUJrb/T2hKO+d1LleZqfjg6q8qyY7uGqg=;
+        s=k20201202; t=1648466478;
+        bh=TzN9S2c1jJpI9v8G0EpdcxObJsrqJKiqIfBV48VR++4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Dwhivg6CjxnW2BNIZfSkrAchfHDitujus7T19myu29ogS2Tw53hp0Yrb4fuZdHZHC
-         2k7R60ljEG6s545dQvWlToaeLgIEP7aBsRJaLf0TduACdoWBVJQBLRqsMDLMiejoEw
-         lgJXtdyM7JeQu+vdFrTUChadNS0LzKlmoeOgPS9BOU8LGKnRy8IXyMDF0pWmBuW/o/
-         SVanVbng2ccZwBc6kTIsymtQpuuUjv3RZRq9EFD/T+Y8ZABr4ZHH+WCbcOoXlPAToJ
-         u4RRegxTw8a72tP8BSEK0KSKZUNc7YsC2qNMtOYfOkKiPOy57uf6bmajD0gSmY/bWE
-         FTnfcXm6yMTBw==
+        b=n8FvSGM0+snEAWToKQlnvF0Zn7MlCEujW2AOALzcjEOpadw6FpW4/4+WhpQR8GlKl
+         nnRroaqzXrFR/vrFjM91UScFzNxqAEnP72ZImJkbqo61GS2F14FayIAomKNwk/k59/
+         iJP9qpsULYuw0XZVN5e8c9KeQxKDhPEXnNFrsgLzl0sVdHFiG7jKZKM2zdZ8rwIXca
+         BZU8Ervq477KU6S1afP06RJH7cvsqsqoGozSZiupfdzM0mgn3ESqFuQXY+Aqkd4O5v
+         rK+B4l7kBIgHoEwh8rkPcKjBUA+vxHlb8sw09qmvsZmrKe3WwUqt3NteefSjZwjP6M
+         pHMpe9LvbXlBg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, robert.moore@intel.com,
-        linux-acpi@vger.kernel.org, devel@acpica.org
-Subject: [PATCH AUTOSEL 5.16 25/35] ACPICA: Avoid walking the ACPI Namespace if it is not there
-Date:   Mon, 28 Mar 2022 07:20:01 -0400
-Message-Id: <20220328112011.1555169-25-sashal@kernel.org>
+Cc:     John David Anglin <dave.anglin@bell.net>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        James.Bottomley@HansenPartnership.com, svens@stackframe.org,
+        ira.weiny@intel.com, akpm@linux-foundation.org,
+        linux-parisc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 30/35] parisc: Fix non-access data TLB cache flush faults
+Date:   Mon, 28 Mar 2022 07:20:06 -0400
+Message-Id: <20220328112011.1555169-30-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220328112011.1555169-1-sashal@kernel.org>
 References: <20220328112011.1555169-1-sashal@kernel.org>
@@ -52,42 +53,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+From: John David Anglin <dave.anglin@bell.net>
 
-[ Upstream commit 0c9992315e738e7d6e927ef36839a466b080dba6 ]
+[ Upstream commit f839e5f1cef36ce268950c387129b1bfefdaebc9 ]
 
-ACPICA commit b1c3656ef4950098e530be68d4b589584f06cddc
+When a page is not present, we get non-access data TLB faults from
+the fdc and fic instructions in flush_user_dcache_range_asm and
+flush_user_icache_range_asm. When these occur, the cache line is
+not invalidated and potentially we get memory corruption. The
+problem was hidden by the nullification of the flush instructions.
 
-Prevent acpi_ns_walk_namespace() from crashing when called with
-start_node equal to ACPI_ROOT_OBJECT if the Namespace has not been
-instantiated yet and acpi_gbl_root_node is NULL.
+These faults also affect performance. With pa8800/pa8900 processors,
+there will be 32 faults per 4 KB page since the cache line is 128
+bytes.  There will be more faults with earlier processors.
 
-For instance, this can happen if the kernel is run with "acpi=off"
-in the command line.
+The problem is fixed by using flush_cache_pages(). It does the flush
+using a tmp alias mapping.
 
-Link: https://github.com/acpica/acpica/commit/b1c3656ef4950098e530be68d4b589584f06cddc
-Link: https://lore.kernel.org/linux-acpi/CAJZ5v0hJWW_vZ3wwajE7xT38aWjY7cZyvqMJpXHzUL98-SiCVQ@mail.gmail.com/
-Reported-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+The flush_cache_pages() call in flush_cache_range() flushed too
+large a range.
+
+V2: Remove unnecessary preempt_disable() and preempt_enable() calls.
+
+Signed-off-by: John David Anglin <dave.anglin@bell.net>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/acpica/nswalk.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/parisc/kernel/cache.c | 28 +---------------------------
+ 1 file changed, 1 insertion(+), 27 deletions(-)
 
-diff --git a/drivers/acpi/acpica/nswalk.c b/drivers/acpi/acpica/nswalk.c
-index 915c2433463d..e7c30ce06e18 100644
---- a/drivers/acpi/acpica/nswalk.c
-+++ b/drivers/acpi/acpica/nswalk.c
-@@ -169,6 +169,9 @@ acpi_ns_walk_namespace(acpi_object_type type,
+diff --git a/arch/parisc/kernel/cache.c b/arch/parisc/kernel/cache.c
+index 94150b91c96f..bce71cefe572 100644
+--- a/arch/parisc/kernel/cache.c
++++ b/arch/parisc/kernel/cache.c
+@@ -558,15 +558,6 @@ static void flush_cache_pages(struct vm_area_struct *vma, struct mm_struct *mm,
+ 	}
+ }
  
- 	if (start_node == ACPI_ROOT_OBJECT) {
- 		start_node = acpi_gbl_root_node;
-+		if (!start_node) {
-+			return_ACPI_STATUS(AE_NO_NAMESPACE);
-+		}
+-static void flush_user_cache_tlb(struct vm_area_struct *vma,
+-				 unsigned long start, unsigned long end)
+-{
+-	flush_user_dcache_range_asm(start, end);
+-	if (vma->vm_flags & VM_EXEC)
+-		flush_user_icache_range_asm(start, end);
+-	flush_tlb_range(vma, start, end);
+-}
+-
+ void flush_cache_mm(struct mm_struct *mm)
+ {
+ 	struct vm_area_struct *vma;
+@@ -581,17 +572,8 @@ void flush_cache_mm(struct mm_struct *mm)
+ 		return;
  	}
  
- 	/* Null child means "get first node" */
+-	preempt_disable();
+-	if (mm->context == mfsp(3)) {
+-		for (vma = mm->mmap; vma; vma = vma->vm_next)
+-			flush_user_cache_tlb(vma, vma->vm_start, vma->vm_end);
+-		preempt_enable();
+-		return;
+-	}
+-
+ 	for (vma = mm->mmap; vma; vma = vma->vm_next)
+ 		flush_cache_pages(vma, mm, vma->vm_start, vma->vm_end);
+-	preempt_enable();
+ }
+ 
+ void flush_cache_range(struct vm_area_struct *vma,
+@@ -605,15 +587,7 @@ void flush_cache_range(struct vm_area_struct *vma,
+ 		return;
+ 	}
+ 
+-	preempt_disable();
+-	if (vma->vm_mm->context == mfsp(3)) {
+-		flush_user_cache_tlb(vma, start, end);
+-		preempt_enable();
+-		return;
+-	}
+-
+-	flush_cache_pages(vma, vma->vm_mm, vma->vm_start, vma->vm_end);
+-	preempt_enable();
++	flush_cache_pages(vma, vma->vm_mm, start, end);
+ }
+ 
+ void
 -- 
 2.34.1
 
