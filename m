@@ -2,89 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF769C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 13:51:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AB90C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 13:51:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241718AbiC1Nwy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 09:52:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36904 "EHLO
+        id S243504AbiC1NxC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 09:53:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243493AbiC1Nwr (ORCPT
+        with ESMTP id S243495AbiC1NxA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 09:52:47 -0400
-Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [85.215.255.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAC975BD1A;
-        Mon, 28 Mar 2022 06:51:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1648475436;
-    s=strato-dkim-0002; d=goldelico.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=4ezCWy705CocHbi8RdHxAqN8vv3gv5SFt/Dzp2Yq4pw=;
-    b=h67cVVRQQY22Ho6Oj4lqPV6bbZckg/sqlHJTvISuhhitSpD81WickIMTAt5h0AFRCu
-    Qg+4KMYijDSN2sgiXaUl4mkWwL9szWD4xXIJNJkYGv3z88l0PTuJb0dZ/VHDeEbmgBID
-    CBrquT4GkxLKaOV2BIp8osnHX+l3cX0/OHzhwCQzswvxR4LPQN6v+l5jOK8elenecZim
-    yxdVkybdH/gWZLIWfRewxjT6C6qAdZGJSpqqZf7tPJGeXqzB/cGuyUHgPrRZx7Uc2aQt
-    y0IhuWC0oSbH7Z+AuXQhtPgu/MgbvE1jvg6fxo79GX5ZqOVxt5WvtyeuH2CF7eSsjLBB
-    +nnw==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj4Qpw9iZeHWElw43u32M="
-X-RZG-CLASS-ID: mo00
-Received: from imac.fritz.box
-    by smtp.strato.de (RZmta 47.42.1 DYNA|AUTH)
-    with ESMTPSA id u3e945y2SDoZ3IR
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
-        (Client did not present a certificate);
-    Mon, 28 Mar 2022 15:50:35 +0200 (CEST)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.21\))
-Subject: Re: [RFC PATCH 0/1] Categorize ARM dts directory
-From:   "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <YkG2RPrtPaBNXb7a@latitude>
-Date:   Mon, 28 Mar 2022 15:50:34 +0200
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS 
-        <devicetree@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-actions@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        Linux-OMAP <linux-omap@vger.kernel.org>,
-        linux-amlogic@lists.infradead.org, linux-arm-kernel@axis.com,
-        linux-aspeed@lists.ozlabs.org,
-        linux-rpi-kernel@lists.infradead.org,
-        chrome-platform@lists.linux.dev, linux-renesas-soc@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        kernel@dh-electronics.com, linux-mediatek@lists.infradead.org,
-        openbmc@lists.ozlabs.org, linux-tegra@vger.kernel.org,
-        linux-oxnas@groups.io, linux-arm-msm@vger.kernel.org,
-        linux-unisoc@lists.infradead.org,
-        linux-rockchip@lists.infradead.org,
-        linux-realtek-soc@lists.infradead.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <D9AFAC3C-46CA-4C40-8559-FD6934411CAB@goldelico.com>
-References: <20220328000915.15041-1-ansuelsmth@gmail.com>
- <YkG2RPrtPaBNXb7a@latitude>
-To:     =?utf-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Ansuel Smith <ansuelsmth@gmail.com>
-X-Mailer: Apple Mail (2.3445.104.21)
+        Mon, 28 Mar 2022 09:53:00 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DD855EBEB;
+        Mon, 28 Mar 2022 06:51:18 -0700 (PDT)
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22SDIID9013485;
+        Mon, 28 Mar 2022 13:51:08 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=pr6D/jbd4lK0qyeCKzWTrtA5NkWr9yYSeGF6wt9w0lg=;
+ b=nwI9w/Ew6yo8vLrscTHGMKI9xfdxGTFFWQoBmQocesNdw2JEw9ssABQg+O1xVqDaNbYy
+ p2v3G4jd5f/aLQBV49tN+0UPTehXrebc3GFBeTaVWejzS03GPFPjXubqicuJ3h4Q70KL
+ yYlv+vAYikdmImV9enkOuW9qG29h0spLp7PNsC5077j8TeuF0qkR54izO/6BBttTUZvp
+ FReUDLmuNvl0pPpdU21eDp8UJCI/GnzzBvE9uCeNF+xh2fyRwgpFMFUSCWpZaO8pT4Z/
+ LQlkyy1O5TTcDVtvHEghUPXJQlA/09Kfrdv7eu4ozHb9Tv240QSK5f4hgtwp9/N4rLox ZQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3f3dsngn76-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 28 Mar 2022 13:51:08 +0000
+Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22SDg5wt019333;
+        Mon, 28 Mar 2022 13:51:08 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3f3dsngn6r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 28 Mar 2022 13:51:07 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22SDhaa7013419;
+        Mon, 28 Mar 2022 13:51:06 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma04ams.nl.ibm.com with ESMTP id 3f1tf8v3hc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 28 Mar 2022 13:51:06 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22SDp3Bl34210212
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 28 Mar 2022 13:51:03 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6D7634203F;
+        Mon, 28 Mar 2022 13:51:03 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 731E042045;
+        Mon, 28 Mar 2022 13:51:02 +0000 (GMT)
+Received: from sig-9-65-77-40.ibm.com (unknown [9.65.77.40])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 28 Mar 2022 13:51:02 +0000 (GMT)
+Message-ID: <152f1bfa9a07354183ca808a036d5e3fef664ea8.camel@linux.ibm.com>
+Subject: Re: [PATCH v7 1/5] fs-verity: define a function to return the
+ integrity protected file digest
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     "Guozihua (Scott)" <guozihua@huawei.com>,
+        linux-integrity@vger.kernel.org
+Cc:     Eric Biggers <ebiggers@kernel.org>,
+        Stefan Berger <stefanb@linux.ibm.com>,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Eric Biggers <ebiggers@google.com>
+Date:   Mon, 28 Mar 2022 09:51:01 -0400
+In-Reply-To: <0e803aad-5ae6-349b-b17e-89a832306925@huawei.com>
+References: <20220325223824.310119-1-zohar@linux.ibm.com>
+         <20220325223824.310119-2-zohar@linux.ibm.com>
+         <0e803aad-5ae6-349b-b17e-89a832306925@huawei.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: WC8DueF78B8C15jgMAIQ6z0M7HltKIvp
+X-Proofpoint-ORIG-GUID: TsjQreu5Rozw_elGqqFo-o0zcO1GdIi9
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-28_05,2022-03-28_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ bulkscore=0 malwarescore=0 adultscore=0 clxscore=1015 suspectscore=0
+ impostorscore=0 mlxscore=0 spamscore=0 phishscore=0 mlxlogscore=999
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203280078
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Scott,
 
+On Mon, 2022-03-28 at 11:45 +0800, Guozihua (Scott) wrote:
+> > +
+> > +/**
+> > + * fsverity_get_digest() - get a verity file's digest
+> > + * @inode: inode to get digest of
+> > + * @digest: (out) pointer to the digest
+> > + * @alg: (out) pointer to the hash algorithm enumeration
+> > + *
+> > + * Return the file hash algorithm and digest of an fsverity protected file.
+> > + * Assumption: before calling fsverity_get_digest(), the file must have been
+> > + * opened.
+> > + *
+> > + * Return: 0 on success, -errno on failure
+> > + */
+> > +int fsverity_get_digest(struct inode *inode,
+> > +                     u8 digest[FS_VERITY_MAX_DIGEST_SIZE],
+> > +                     enum hash_algo *alg)
+> > +{
+> > +     const struct fsverity_info *vi;
+> > +     const struct fsverity_hash_alg *hash_alg;
+> > +     int i;
+> > +
+> > +     vi = fsverity_get_info(inode);
+> > +     if (!vi)
+> > +             return -ENODATA; /* not a verity file */
+> > +
+> > +     hash_alg = vi->tree_params.hash_alg;
+> > +     memset(digest, 0, FS_VERITY_MAX_DIGEST_SIZE);
+> 
+> Hi Mimi,
+> 
+> I would suggest moving this memset downward right before the memcpy.
 
-> Am 28.03.2022 um 15:21 schrieb Jonathan Neusch=C3=A4fer =
-<j.neuschaefer@gmx.net>:
->=20
-> Or maybe bcm instead of broadcom. Not sure which is preferred by
-> Broadcom people.
+By doing it here, any existing garbage stored in the digest is cleared
+before returning a failure.
 
-Maybe it should always follow the list of vendor prefixes as we are =
-talking about DTS?
+thanks,
 
-just my 2cts,
-Nikolaus
+Mimi
+> 
+> > +
+> > +     /* convert the verity hash algorithm name to a hash_algo_name enum */
+> > +     i = match_string(hash_algo_name, HASH_ALGO__LAST, hash_alg->name);
+> > +     if (i < 0)
+> > +             return -EINVAL;
+> > +     *alg = i;
+> > +
+> > +     if (WARN_ON_ONCE(hash_alg->digest_size != hash_digest_size[*alg]))
+> > +             return -EINVAL;
+> > +     memcpy(digest, vi->file_digest, hash_alg->digest_size);
+> > +
+> > +     pr_debug("file digest %s:%*phN\n", hash_algo_name[*alg],
+> > +              hash_digest_size[*alg], digest);
+> > +
+> > +     return 0;
+
 
