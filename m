@@ -2,270 +2,333 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21672C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:19:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23FDEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:19:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240617AbiC1LVJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:21:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54416 "EHLO
+        id S240636AbiC1LVO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:21:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240583AbiC1LU2 (ORCPT
+        with ESMTP id S240607AbiC1LU2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Mar 2022 07:20:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA12D55759;
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB02D55763
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 04:18:44 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id p15so24085543lfk.8
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 04:18:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=openvz-org.20210112.gappssmtp.com; s=20210112;
+        h=subject:from:to:date:message-id:in-reply-to:references:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=N926ipqlEwj4JO1xTcsrXgCa3AA/3fWt5Bm+xv75a5E=;
+        b=nz38DioMMu/o2OpQIzvPDjyYpPLI0nFTsULpn2HmsTcsJvQZ7J3CkBnphloPw/Ek/T
+         2CV+PcbPozG279+rNdUW64wR5Lus3yn2+g8JB1OkBnfK5htgoQWDS96xU71x8XM0aTQU
+         sAcs5TpXaQsXWw/zxSInITGD+LUo1YTEVbGIXjV2kacYbDBhB4V77jA5kws+Pwmu0oB+
+         t4E9Z1LlRbV/W9IwBJE+V31v5+z4BE10KhA4+5wQxU0iqiSMFAVy+tuumRZ04PkQLUXF
+         EsdqqJilrhiXX60X0ERWCPIGdY7mjYiH0a7Z+COTeBRi4Kyr5YoSxc9fHyqtCW19qww3
+         PTSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:from:to:date:message-id:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=N926ipqlEwj4JO1xTcsrXgCa3AA/3fWt5Bm+xv75a5E=;
+        b=UiRv5OZx+ijkJGZXOovm2UIA1n3niGI4TwQ6mOgf7S4RxXLu0+xigkKo54gF89J7Pu
+         7yeSdcG1UVCHdZDy/sZiIRAzhZeU3P+6wfGKnAEqIvsekCqZcXwBDHeS30b3HIjoiMp6
+         xN6Wr/GctYPZ61ma4ygoq+v/k0mqLcpvtNlEHpvCZxYmcYA6m5V24hrtw/wXZ534+7rY
+         wwIN6KV5ZkJlh3n4E/yuOLx0kQdVLelsL64O2aqBkZE5s2kodRd0r1ZAkUpRo1iI/iV/
+         fRFMCrg11a5eSVHFeSjjeryYqB86CZFkFLYm/bSAVvWrT3Sz3qLvp1k5Zz1TnFGbinzZ
+         n4ow==
+X-Gm-Message-State: AOAM532vXBYErWKNCJL56gdXe+VbjOWj0ynZAgarJaKOjH+qVgnKqQj2
+        YnkwxpcrBE25NaerlJ9oEwpTUQVU4Bqp8+iX
+X-Google-Smtp-Source: ABdhPJwe/gX2NWrPoEuwfjHT3h0n/GqZ0JM31cCteh0vGnsgz/4AYMDMtb0HtiAGvAasyUXkJKGZ5w==
+X-Received: by 2002:ac2:43bb:0:b0:44a:1ee6:8c12 with SMTP id t27-20020ac243bb000000b0044a1ee68c12mr19628435lfl.683.1648466323220;
         Mon, 28 Mar 2022 04:18:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D667E6114A;
-        Mon, 28 Mar 2022 11:18:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4393BC340EC;
-        Mon, 28 Mar 2022 11:18:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466322;
-        bh=2ncRTTPX3hIETBFICl5p5zP4ZHOlcCFDMCrPZS07OeY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QOlYCyhAyP9rpIdayW4xuVUWGP1ams/4RzUIFnK9BVtnPdRI0PCWsr9F+G1wCPEum
-         Y6DGwTpYPH9A0NdsT0QOAE8+1nj/umjX4bEc1HKrs6X8Xdmyo7nOudQOaHzkPQTlnQ
-         GDFgP/3/7wZT2BHrugkQmw4lTUYWmoTSU4o7pQarL8lbGIFEBo8uNa+AheDhNnnfto
-         Ze/urRgjktwyOVhssGDnYfSlRMbStJslhvZeizREKikszQj8dm8KVhOieVsDCEnrLR
-         gmLWGdjq2tAw4MzmqV+wG68vYpjbvohFXf8sL6jmaZz9LHNamMLeWtUz7k5/Ku7ijG
-         b57zZNXF/s0Og==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Woodhouse <dwmw@amazon.co.uk>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, frederic@kernel.org,
-        quic_neeraju@quicinc.com, josh@joshtriplett.org,
-        rcu@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 06/43] rcu: Kill rnp->ofl_seq and use only rcu_state.ofl_lock for exclusion
-Date:   Mon, 28 Mar 2022 07:17:50 -0400
-Message-Id: <20220328111828.1554086-6-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220328111828.1554086-1-sashal@kernel.org>
-References: <20220328111828.1554086-1-sashal@kernel.org>
+Received: from [127.0.1.1] ([2.92.192.17])
+        by smtp.gmail.com with ESMTPSA id t19-20020a199113000000b0044a2d7a1f4asm1601632lfd.206.2022.03.28.04.18.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 04:18:42 -0700 (PDT)
+Subject: [PATCH 4/4] dm-qcow2: Add helper for working with dm-qcow2 devices
+From:   Kirill Tkhai <kirill.tkhai@openvz.org>
+To:     agk@redhat.com, snitzer@redhat.com, dm-devel@redhat.com,
+        song@kernel.org, linux-kernel@vger.kernel.org,
+        khorenko@virtuozzo.com, kirill.tkhai@openvz.org
+Date:   Mon, 28 Mar 2022 14:18:41 +0300
+Message-ID: <164846632180.251310.3616379476259718920.stgit@pro>
+In-Reply-To: <164846619932.251310.3668540533992131988.stgit@pro>
+References: <164846619932.251310.3668540533992131988.stgit@pro>
+User-Agent: StGit/1.5
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Woodhouse <dwmw@amazon.co.uk>
+This scripts allows to create and remove dm-qcow2 device,
+create internal snapshot, resize virtual device size,
+or check image consistency on live device.
 
-[ Upstream commit 82980b1622d97017053c6792382469d7dc26a486 ]
-
-If we allow architectures to bring APs online in parallel, then we end
-up requiring rcu_cpu_starting() to be reentrant. But currently, the
-manipulation of rnp->ofl_seq is not thread-safe.
-
-However, rnp->ofl_seq is also fairly much pointless anyway since both
-rcu_cpu_starting() and rcu_report_dead() hold rcu_state.ofl_lock for
-fairly much the whole time that rnp->ofl_seq is set to an odd number
-to indicate that an operation is in progress.
-
-So drop rnp->ofl_seq completely, and use only rcu_state.ofl_lock.
-
-This has a couple of minor complexities: lockdep will complain when we
-take rcu_state.ofl_lock, and currently accepts the 'excuse' of having
-an odd value in rnp->ofl_seq. So switch it to an arch_spinlock_t to
-avoid that false positive complaint. Since we're killing rnp->ofl_seq
-of course that 'excuse' has to be changed too, so make it check for
-arch_spin_is_locked(rcu_state.ofl_lock).
-
-There's no arch_spin_lock_irqsave() so we have to manually save and
-restore local interrupts around the locking.
-
-At Paul's request based on Neeraj's analysis, make rcu_gp_init not just
-wait but *exclude* any CPU online/offline activity, which was fairly
-much true already by virtue of it holding rcu_state.ofl_lock.
-
-Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Kirill Tkhai <kirill.tkhai@openvz.org>
 ---
- kernel/rcu/tree.c | 71 ++++++++++++++++++++++++-----------------------
- kernel/rcu/tree.h |  4 +--
- 2 files changed, 37 insertions(+), 38 deletions(-)
+ scripts/qcow2-dm.sh |  249 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 249 insertions(+)
+ create mode 100755 scripts/qcow2-dm.sh
 
-diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-index a4c25a6283b0..73a4c9d07b86 100644
---- a/kernel/rcu/tree.c
-+++ b/kernel/rcu/tree.c
-@@ -91,7 +91,7 @@ static struct rcu_state rcu_state = {
- 	.abbr = RCU_ABBR,
- 	.exp_mutex = __MUTEX_INITIALIZER(rcu_state.exp_mutex),
- 	.exp_wake_mutex = __MUTEX_INITIALIZER(rcu_state.exp_wake_mutex),
--	.ofl_lock = __RAW_SPIN_LOCK_UNLOCKED(rcu_state.ofl_lock),
-+	.ofl_lock = __ARCH_SPIN_LOCK_UNLOCKED,
- };
- 
- /* Dump rcu_node combining tree at boot to verify correct setup. */
-@@ -1175,7 +1175,15 @@ bool rcu_lockdep_current_cpu_online(void)
- 	preempt_disable_notrace();
- 	rdp = this_cpu_ptr(&rcu_data);
- 	rnp = rdp->mynode;
--	if (rdp->grpmask & rcu_rnp_online_cpus(rnp) || READ_ONCE(rnp->ofl_seq) & 0x1)
-+	/*
-+	 * Strictly, we care here about the case where the current CPU is
-+	 * in rcu_cpu_starting() and thus has an excuse for rdp->grpmask
-+	 * not being up to date. So arch_spin_is_locked() might have a
-+	 * false positive if it's held by some *other* CPU, but that's
-+	 * OK because that just means a false *negative* on the warning.
-+	 */
-+	if (rdp->grpmask & rcu_rnp_online_cpus(rnp) ||
-+	    arch_spin_is_locked(&rcu_state.ofl_lock))
- 		ret = true;
- 	preempt_enable_notrace();
- 	return ret;
-@@ -1739,7 +1747,6 @@ static void rcu_strict_gp_boundary(void *unused)
-  */
- static noinline_for_stack bool rcu_gp_init(void)
- {
--	unsigned long firstseq;
- 	unsigned long flags;
- 	unsigned long oldmask;
- 	unsigned long mask;
-@@ -1782,22 +1789,17 @@ static noinline_for_stack bool rcu_gp_init(void)
- 	 * of RCU's Requirements documentation.
- 	 */
- 	WRITE_ONCE(rcu_state.gp_state, RCU_GP_ONOFF);
-+	/* Exclude CPU hotplug operations. */
- 	rcu_for_each_leaf_node(rnp) {
--		// Wait for CPU-hotplug operations that might have
--		// started before this grace period did.
--		smp_mb(); // Pair with barriers used when updating ->ofl_seq to odd values.
--		firstseq = READ_ONCE(rnp->ofl_seq);
--		if (firstseq & 0x1)
--			while (firstseq == READ_ONCE(rnp->ofl_seq))
--				schedule_timeout_idle(1);  // Can't wake unless RCU is watching.
--		smp_mb(); // Pair with barriers used when updating ->ofl_seq to even values.
--		raw_spin_lock(&rcu_state.ofl_lock);
--		raw_spin_lock_irq_rcu_node(rnp);
-+		local_irq_save(flags);
-+		arch_spin_lock(&rcu_state.ofl_lock);
-+		raw_spin_lock_rcu_node(rnp);
- 		if (rnp->qsmaskinit == rnp->qsmaskinitnext &&
- 		    !rnp->wait_blkd_tasks) {
- 			/* Nothing to do on this leaf rcu_node structure. */
--			raw_spin_unlock_irq_rcu_node(rnp);
--			raw_spin_unlock(&rcu_state.ofl_lock);
-+			raw_spin_unlock_rcu_node(rnp);
-+			arch_spin_unlock(&rcu_state.ofl_lock);
-+			local_irq_restore(flags);
- 			continue;
- 		}
- 
-@@ -1832,8 +1834,9 @@ static noinline_for_stack bool rcu_gp_init(void)
- 				rcu_cleanup_dead_rnp(rnp);
- 		}
- 
--		raw_spin_unlock_irq_rcu_node(rnp);
--		raw_spin_unlock(&rcu_state.ofl_lock);
-+		raw_spin_unlock_rcu_node(rnp);
-+		arch_spin_unlock(&rcu_state.ofl_lock);
-+		local_irq_restore(flags);
- 	}
- 	rcu_gp_slow(gp_preinit_delay); /* Races with CPU hotplug. */
- 
-@@ -4287,11 +4290,10 @@ void rcu_cpu_starting(unsigned int cpu)
- 
- 	rnp = rdp->mynode;
- 	mask = rdp->grpmask;
--	WRITE_ONCE(rnp->ofl_seq, rnp->ofl_seq + 1);
--	WARN_ON_ONCE(!(rnp->ofl_seq & 0x1));
-+	local_irq_save(flags);
-+	arch_spin_lock(&rcu_state.ofl_lock);
- 	rcu_dynticks_eqs_online();
--	smp_mb(); // Pair with rcu_gp_cleanup()'s ->ofl_seq barrier().
--	raw_spin_lock_irqsave_rcu_node(rnp, flags);
-+	raw_spin_lock_rcu_node(rnp);
- 	WRITE_ONCE(rnp->qsmaskinitnext, rnp->qsmaskinitnext | mask);
- 	newcpu = !(rnp->expmaskinitnext & mask);
- 	rnp->expmaskinitnext |= mask;
-@@ -4304,15 +4306,18 @@ void rcu_cpu_starting(unsigned int cpu)
- 
- 	/* An incoming CPU should never be blocking a grace period. */
- 	if (WARN_ON_ONCE(rnp->qsmask & mask)) { /* RCU waiting on incoming CPU? */
-+		/* rcu_report_qs_rnp() *really* wants some flags to restore */
-+		unsigned long flags2;
+diff --git a/scripts/qcow2-dm.sh b/scripts/qcow2-dm.sh
+new file mode 100755
+index 000000000000..7d9bda44c1d6
+--- /dev/null
++++ b/scripts/qcow2-dm.sh
+@@ -0,0 +1,249 @@
++#!/bin/bash
++#
++# This requires parameter dm_qcow2.kernel_sets_dirty_bit=y
 +
-+		local_irq_save(flags2);
- 		rcu_disable_urgency_upon_qs(rdp);
- 		/* Report QS -after- changing ->qsmaskinitnext! */
--		rcu_report_qs_rnp(mask, rnp, rnp->gp_seq, flags);
-+		rcu_report_qs_rnp(mask, rnp, rnp->gp_seq, flags2);
- 	} else {
--		raw_spin_unlock_irqrestore_rcu_node(rnp, flags);
-+		raw_spin_unlock_rcu_node(rnp);
- 	}
--	smp_mb(); // Pair with rcu_gp_cleanup()'s ->ofl_seq barrier().
--	WRITE_ONCE(rnp->ofl_seq, rnp->ofl_seq + 1);
--	WARN_ON_ONCE(rnp->ofl_seq & 0x1);
-+	arch_spin_unlock(&rcu_state.ofl_lock);
-+	local_irq_restore(flags);
- 	smp_mb(); /* Ensure RCU read-side usage follows above initialization. */
- }
- 
-@@ -4326,7 +4331,7 @@ void rcu_cpu_starting(unsigned int cpu)
-  */
- void rcu_report_dead(unsigned int cpu)
- {
--	unsigned long flags;
-+	unsigned long flags, seq_flags;
- 	unsigned long mask;
- 	struct rcu_data *rdp = per_cpu_ptr(&rcu_data, cpu);
- 	struct rcu_node *rnp = rdp->mynode;  /* Outgoing CPU's rdp & rnp. */
-@@ -4340,10 +4345,8 @@ void rcu_report_dead(unsigned int cpu)
- 
- 	/* Remove outgoing CPU from mask in the leaf rcu_node structure. */
- 	mask = rdp->grpmask;
--	WRITE_ONCE(rnp->ofl_seq, rnp->ofl_seq + 1);
--	WARN_ON_ONCE(!(rnp->ofl_seq & 0x1));
--	smp_mb(); // Pair with rcu_gp_cleanup()'s ->ofl_seq barrier().
--	raw_spin_lock(&rcu_state.ofl_lock);
-+	local_irq_save(seq_flags);
-+	arch_spin_lock(&rcu_state.ofl_lock);
- 	raw_spin_lock_irqsave_rcu_node(rnp, flags); /* Enforce GP memory-order guarantee. */
- 	rdp->rcu_ofl_gp_seq = READ_ONCE(rcu_state.gp_seq);
- 	rdp->rcu_ofl_gp_flags = READ_ONCE(rcu_state.gp_flags);
-@@ -4354,10 +4357,8 @@ void rcu_report_dead(unsigned int cpu)
- 	}
- 	WRITE_ONCE(rnp->qsmaskinitnext, rnp->qsmaskinitnext & ~mask);
- 	raw_spin_unlock_irqrestore_rcu_node(rnp, flags);
--	raw_spin_unlock(&rcu_state.ofl_lock);
--	smp_mb(); // Pair with rcu_gp_cleanup()'s ->ofl_seq barrier().
--	WRITE_ONCE(rnp->ofl_seq, rnp->ofl_seq + 1);
--	WARN_ON_ONCE(rnp->ofl_seq & 0x1);
-+	arch_spin_unlock(&rcu_state.ofl_lock);
-+	local_irq_restore(seq_flags);
- 
- 	rdp->cpu_started = false;
- }
-diff --git a/kernel/rcu/tree.h b/kernel/rcu/tree.h
-index 486fc901bd08..4b4bcef8a974 100644
---- a/kernel/rcu/tree.h
-+++ b/kernel/rcu/tree.h
-@@ -56,8 +56,6 @@ struct rcu_node {
- 				/*  Initialized from ->qsmaskinitnext at the */
- 				/*  beginning of each grace period. */
- 	unsigned long qsmaskinitnext;
--	unsigned long ofl_seq;	/* CPU-hotplug operation sequence count. */
--				/* Online CPUs for next grace period. */
- 	unsigned long expmask;	/* CPUs or groups that need to check in */
- 				/*  to allow the current expedited GP */
- 				/*  to complete. */
-@@ -355,7 +353,7 @@ struct rcu_state {
- 	const char *name;			/* Name of structure. */
- 	char abbr;				/* Abbreviated name. */
- 
--	raw_spinlock_t ofl_lock ____cacheline_internodealigned_in_smp;
-+	arch_spinlock_t ofl_lock ____cacheline_internodealigned_in_smp;
- 						/* Synchronize offline with */
- 						/*  GP pre-initialization. */
- };
--- 
-2.34.1
++usage () {
++    cat <<EOF
++Usage:
++	$prog_name create <file.qcow2> <dev_name>
++	$prog_name remove <file.qcow2>
++	$prog_name check [qemu-img check optional args] <file.qcow2>
++	$prog_name snapshot [qemu-img snapshot optional args] <file.qcow2>
++	$prog_name resize [qemu-img resize optional args] <file.qcow2> [+ | -]size
++EOF
++}
++
++get_img_size () {
++	sz=`qemu-img info -f qcow2 $1 | grep "virtual size" | sed 's/.*(\(.*\) bytes)/\1/'`
++	echo $sz
++}
++
++get_nr_imgs () {
++	nr=`echo $1 | sed "s/.*qcow2 \(\w\) .*$/\1/"`
++	echo $nr
++}
++
++get_dev_of_image () {
++	abs_path=$1
++
++	while read line; do
++		dev=`echo $line | sed "s/:.*//"`
++		nr_imgs=$(get_nr_imgs "$line")
++		top_img_id=$((nr_imgs - 1))
++
++		top_img_path=`dmsetup message $dev 0 get_img_name $top_img_id`
++		if [ -z "$top_img_path" ]; then
++			echo >&2 "Error during search of device"; exit 1;
++			return 1
++		fi
++
++		if [ "$abs_path" != "$top_img_path" ]; then
++			continue
++		fi
++
++		echo $dev
++		return 0
++
++	done < <(LANG=C dmsetup table --target=qcow2 | grep -v "No devices found")
++
++	return 0
++}
++
++create () {
++	if [ "$#" -ne 2 ]; then
++		echo >&2 "Wrong number of arguments."; usage; exit 1;
++	fi
++
++	file=$1
++	dev=$2
++	files=()
++	fds=""
++
++	qemu-img check $file || exit 1
++
++	disk_sz=$(get_img_size "$file")
++	echo disk_sz=$disk_sz
++	if [ -z "$disk_sz" ]; then
++		echo "Can't get disk size."; exit 1;
++	fi
++
++	while :; do
++		if [ ! -f "$file" ]; then
++			echo "$file does not exist."; exit 1;
++		fi
++
++		files+=("$file")
++
++		exec {fd}<>$file || exit 1
++		flock -x $fd || exit 1
++		fds="$fd $fds"
++
++		file=`qemu-img info $file | grep "backing file:" | sed "s/backing file: //"`
++		if [ -z "$file" ]; then
++			break
++		fi
++	done
++
++	echo "Create device [$dev] of size $disk_sz from [${files[*]}]."
++	dmsetup create $dev --table "0 $((disk_sz / 512)) qcow2 ${fds}"
++}
++
++reload_device () {
++	disk_sz=$(get_img_size "$abs_path")
++	if [ -z "$disk_sz" ]; then
++		echo "Can't get disk size."; return;
++	fi
++
++	line=`dmsetup table $dev`
++	nr_imgs=$(get_nr_imgs "$line")
++	top_img_id=$((nr_imgs - 1))
++	fds=""
++
++	for id in `seq 0 $top_img_id`;
++	do
++		file=`dmsetup message $dev 0 get_img_name $id`
++		if [ -z "$file" ]; then
++			echo "Can't get image file."; return;
++		fi
++		exec {fd}<>$file || exit 1
++
++		fds="$fds $fd"
++	done
++
++	echo "Reloading $dev."
++	dmsetup reload $dev --table "0 $((disk_sz / 512)) qcow2 ${fds}"
++}
++
++remove () {
++	if [ "$#" -ne 1 ]; then
++		echo >&2 "Wrong number of arguments."; usage; exit 1;
++	fi
++	user_path=$1
++	abs_path=`realpath $user_path`
++
++	dev=$(get_dev_of_image "$abs_path")
++	if [ -z "$dev" ]; then
++		echo >&2 "Can't find device with [$user_path] top image."; exit 1
++	fi
++
++	echo "Removing device [$dev]."
++	dmsetup remove $dev
++	ret=$?
++
++	if [ $ret -eq 0 ]; then
++		#Sanity check
++		echo "Checking [$abs_path]."
++		qemu-img check $abs_path
++	fi
++	exit $ret
++}
++
++qemu_img () {
++	wants_reload=0
++	if [ $1 == "--wants_reload" ]; then
++		wants_reload=1
++		shift
++	fi
++
++	if [ "$#" -lt 3 ]; then
++		echo >&2 "Wrong number of arguments."; usage; exit 1;
++	fi
++
++	user_path=$1
++	cmd=$2
++	abs_path=`realpath $user_path`
++	qemu_img_args=${@: 2}
++
++	dev=$(get_dev_of_image "$abs_path")
++	if [ -z "$dev" ]; then
++		echo >&2 "Can't find device by [$user_path]."; return 1
++	fi
++
++	echo "Suspending $dev."
++	dmsetup suspend $dev || exit 1
++
++	if [ "$cmd" != "check" ]; then
++		echo "Checking $abs_path"
++		qemu-img check $abs_path
++		ret=$?
++		if [ $ret -ne 0 ]; then
++			echo "Resuming $dev."
++			dmsetup resume $dev
++			exit 1
++		fi
++	fi
++
++	echo "===== Call:  qemu-img $qemu_img_args. ====="
++	qemu-img $qemu_img_args
++	ret=$?
++	if [ $ret -ne 0 ]; then
++		echo >&2 "Failed during qemu-img call."
++	fi
++	echo "===== End of qemu-img $qemu_img_args. ====="
++
++	if [ $wants_reload -ne 0 ]; then
++		reload_device $dev $abs_path
++	fi
++
++	echo "Resuming $dev."
++	dmsetup resume $dev || exit 1
++	if [ $? -ne 0 ]; then
++		ret=$?
++	fi
++
++	return $ret
++}
++
++check () {
++	user_path=${@: -1}
++	qemu_img_args=$@
++
++	qemu_img $user_path check $qemu_img_args
++	return $?
++}
++
++snapshot () {
++	user_path=${@: -1}
++	qemu_img_args=$@
++
++	qemu_img $user_path snapshot $qemu_img_args
++	return $?
++}
++
++resize () {
++	user_path=${@:(-2):1}
++	qemu_img_args=$@
++
++	qemu_img --wants_reload $user_path resize $qemu_img_args
++	return $?
++}
++
++prog_name=$(basename $0)
++
++case $1 in
++	"create")
++		shift
++		create "$@"
++		exit 0
++		;;
++	"remove")
++		shift
++		remove "$@"
++		;;
++	"check")
++		shift
++		check "$@"
++		;;
++	"snapshot")
++		shift
++		snapshot "$@"
++		;;
++	"resize")
++		shift
++		resize "$@"
++		;;
++	*)
++		usage
++		exit 1
++	        ;;
++esac
+
 
