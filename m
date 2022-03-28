@@ -2,147 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0012C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 13:50:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D2D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 13:50:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243478AbiC1Nvq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 09:51:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60148 "EHLO
+        id S243485AbiC1Nv7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 09:51:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231748AbiC1Nvn (ORCPT
+        with ESMTP id S243479AbiC1Nv5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 09:51:43 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14AFA2F390;
-        Mon, 28 Mar 2022 06:50:01 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id a16-20020a17090a6d9000b001c7d6c1bb13so10647005pjk.4;
-        Mon, 28 Mar 2022 06:50:01 -0700 (PDT)
+        Mon, 28 Mar 2022 09:51:57 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E749851E40
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 06:50:15 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id a16-20020a17090a6d9000b001c7d6c1bb13so10648147pjk.4
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 06:50:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xtFNLVlQMA8W8gjicxShKgjg5KaAgkiFM5gezyxbQpA=;
-        b=k01uP0/oFxmzITXyA6+rtr6bRVqlnyS3/W1w/0G1nRbDuPZm/AMWrgVXcb+cFKPmZV
-         BePjT6xldkrOFDwSJSZZ0z+K5Ow8PUvCzY7YFB4OrINIF4aVilCwdu3VY1nt8/YFJWNZ
-         N/IH9aC6TjWYPok+SOCY0+sctSOOmnvEXHl0SpU4GqbXC7WIDKy6FcfFOSdwJVJyMRpU
-         xyIS1MKFqnzEEyuY+XRwSfBl0ZsVd6HYyv+j2uhfE3FvyDaVLeG5KeW7mHSzZZ12D4Tz
-         ZiLdcAxSIkN3kZqrjXVy9dwcV70r3SXaYm0MUJiQtdLhTAAhPcAy7wsZVAj4XmbFCeKq
-         5lDA==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=fYLS3FUqU6ElSyyxJvju10Ed/M1yqpvYoJBkWCWwU+Y=;
+        b=ZWFK5+xwGXw7oPM/iGfRRRCNaF2jI3AzpFlQtaV6DU+HkIy6Jf9sFeftvS/3gSabeG
+         Z90f9L8K4jXmhZ3sNoNXya0wqmFmH6o8HAvRLix+pjySIYr5Lp/OBY7NxjjsiTFzCFe1
+         E3yuaSqnw0y2xw9oY5KM9qIPAPn3rCVsiTQWfSwN4nO/fzeISvih74bWczQckDwm7fjU
+         ZMOrrBMt+v5LAGstZm+z/6ldoo61Vdi7znyMfei7tdxFViLYpJgDFRSiG7IrTU4r9bEH
+         kyuNkqh9B/f3JeE6kS761ACcZqiQFYvwW+qk6ObiG9fTQg5wgAv+kTzSx4y3VQ1RcJEY
+         m6QQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=xtFNLVlQMA8W8gjicxShKgjg5KaAgkiFM5gezyxbQpA=;
-        b=URDUT4trT8urvBIi5uYZUPMUPUWqeKXo7QFea75b0YSFGnSDMmu7ODrjqud7tEOe0T
-         ckfp2sMJ7tMIb5JUZeEh3KXKEGagogDsoJRrZCPh0hrP4A3e8/YuG6K/frfPpAaAh5lg
-         rDVli5ipSw/0XYaZGsEbAGq0E+lGoVODcxq+uVtk2z9wC6MJIohX0kDQ6hRMlGPTjyAU
-         9f/79rJcpOu5FziMiq7BV/X+vZlC5FlySAd3sRRPWYZQPxmzENKx0fT0OhevE6M1R8h9
-         wsI02rqrZ+jgK/GHwZSq2DgELxjgSBSTiHkmv8ugBhQTGFPmmR935kIJjEfFpeR8/rDi
-         azdQ==
-X-Gm-Message-State: AOAM531FIg3La50f0zgjgFHMeAaEpIIIs9pD6BFF3VFKJX8Al7ypRDv/
-        4WoZxM3foGr6X1sdbl7a6AM=
-X-Google-Smtp-Source: ABdhPJyYYGj445KyqY172ZmIEsXCgJwhZyrBEfnCMtwf9ZK7TNqNVQhJyD9l3N8JjzGEo3LAegDGHw==
-X-Received: by 2002:a17:90a:da02:b0:1bf:3919:f2a with SMTP id e2-20020a17090ada0200b001bf39190f2amr41346443pjv.208.1648475400417;
-        Mon, 28 Mar 2022 06:50:00 -0700 (PDT)
-Received: from localhost.localdomain ([103.149.162.115])
-        by smtp.gmail.com with ESMTPSA id j7-20020a17090a31c700b001c6dbb70c94sm22527552pjf.18.2022.03.28.06.49.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Mar 2022 06:49:59 -0700 (PDT)
-From:   Dongli Si <kvmx86@gmail.com>
-X-Google-Original-From: Dongli Si <sidongli1997@gmail.com>
-To:     peterz@infradead.org, joro@8bytes.org
-Cc:     liam.merwick@oracle.com, kim.phillips@amd.com, mingo@kernel.org,
-        acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
-        namhyung@kernel.org, tglx@linutronix.de, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v5] perf/x86/amd: Don't touch the Host-only bit inside the guest hypervisor
-Date:   Mon, 28 Mar 2022 21:48:29 +0800
-Message-Id: <20220328134829.2292928-1-sidongli1997@gmail.com>
-X-Mailer: git-send-email 2.32.0
+        bh=fYLS3FUqU6ElSyyxJvju10Ed/M1yqpvYoJBkWCWwU+Y=;
+        b=fKMsOaeQWfXJp6TetIjgDQRaNdsovK0suUX64BrL3kBkRmgb1synSNVmZmIrH1ruXb
+         DfXmOxKNf6E4TcV7WkvfBWHFjawSYGjuWpd2HGeRbVE4wfBw9jc9cNJqSQL+1ObNI1Xu
+         +65QYIjRZXUugv6paIwbQW2h4hQMcfxPZZ7HyDs/db5tf/11qgTGtXVky6+f9GZa4wHM
+         ilb95I1A3EJlEGHe/iSj+927G7nGmYegeSyI6TD39/NJSgpkykfGT2B4h4HMx2Up0hvj
+         8G6+zxG1liASzWFJmIQKjfsDjSZJzVJFuadBItKB4okN2o9AaiYTk0Ng3qTgcUhk1JcS
+         lNYA==
+X-Gm-Message-State: AOAM5336meA0MOI9zahKsa96yk5lh51G62hkQZ1k/rav+EuCWtwsXDLV
+        kcLH1SKOmfOQ2Z/H5VbjM2i7Bg==
+X-Google-Smtp-Source: ABdhPJyWR7UUgXnqyeNQTWo5J4/+xW5sMz6Rk/7vNAQSxhZG8Uz1PRs+zmE6Y7ocgIGh8R9G+b1FEQ==
+X-Received: by 2002:a17:90a:5291:b0:1bb:ef4d:947d with SMTP id w17-20020a17090a529100b001bbef4d947dmr41339439pjh.243.1648475415426;
+        Mon, 28 Mar 2022 06:50:15 -0700 (PDT)
+Received: from ?IPV6:2409:8a28:e6c:aaa0:b49b:a46e:8f1f:6bcd? ([2409:8a28:e6c:aaa0:b49b:a46e:8f1f:6bcd])
+        by smtp.gmail.com with ESMTPSA id l2-20020a056a0016c200b004f7e3181a41sm17091631pfc.98.2022.03.28.06.50.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Mar 2022 06:50:15 -0700 (PDT)
+Message-ID: <c0465b27-328a-1288-fb50-d4c6321c8b4d@bytedance.com>
+Date:   Mon, 28 Mar 2022 21:50:05 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.7.0
+Subject: Re: [External] Re: [PATCH] sched/fair: fix broken bandwidth control
+ with nohz_full
+Content-Language: en-US
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     mingo@redhat.com, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com, linux-kernel@vger.kernel.org,
+        duanxiongchun@bytedance.com, songmuchun@bytedance.com
+References: <20220328110751.39987-1-zhouchengming@bytedance.com>
+ <20220328132047.GD8939@worktop.programming.kicks-ass.net>
+From:   Chengming Zhou <zhouchengming@bytedance.com>
+In-Reply-To: <20220328132047.GD8939@worktop.programming.kicks-ass.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongli Si <sidongli1997@gmail.com>
+On 2022/3/28 21:20, Peter Zijlstra wrote:
+> On Mon, Mar 28, 2022 at 07:07:51PM +0800, Chengming Zhou wrote:
+>> With nohz_full enabled on cpu, the scheduler_tick() will be stopped
+>> when only one CFS task left on rq.
+>>
+>> scheduler_tick()
+>>   task_tick_fair()
+>>     entity_tick()
+>>       update_curr()
+>>         account_cfs_rq_runtime(cfs_rq, delta_exec) --> stopped
+>>
+>> So that running task can't account its runtime periodically, but
+>> the cfs_bandwidth hrtimer still __refill_cfs_bandwidth_runtime()
+>> periodically. Later in one period, the task would account very
+>> big delta_exec, which cause the cfs_rq to be throttled for a
+>> long time.
+>>
+>> There are two solutions for the problem, the first is that we
+>> can check in sched_can_stop_tick() if current task's cfs_rq
+>> have runtime_enabled, in which case we don't stop tick. But
+>> it will make nohz_full almost useless in cloud environment
+>> that every container has the cpu bandwidth control setting.
+> 
+> How is NOHZ_FULL useful in that environment to begin with? If you set
+> bandwidth crap, the expectation is that there is overcommit, which more
+> or less assumes lots of scheduling, presumably VMs or somesuch crud.
+> 
+> So how does NOHZ_FULL make sense?
 
-With nested virtualization on AMD Milan, if "perf record" is run in an
-L1 hypervisor with an L2 guest, the following warning is emitted in
-the L1 guest.
+Yes, we have scheduled some VMs in cgroups on the host, which
+enabled NOHZ_FULL to reduce the interference of tick to vcpu task
+if it's the only task running on cpu.
 
-[] unchecked MSR access error: WRMSR to 0xc0010200 (tried to write 0x0000020000510076)
-at rIP: 0xffffffff81003a50 (x86_pmu_enable_all+0x60/0x100)
-[] Call Trace:
-[]  <IRQ>
-[]  ? x86_pmu_enable+0x146/0x300
-[]  __perf_install_in_context+0x150/0x170
+This problem will however throttle it wrongly, even if it hasn't
+used up its quota.
 
-The AMD64_EVENTSEL_HOSTONLY bit is defined and used on the host (L0),
-while the L1 hypervisor Performance Monitor Unit should avoid such use.
+Do you suggest that we shouldn't stop tick when the current task's
+cfs_rq has runtime_enabled ?
 
-Fixes: 1018faa6cf23 ("perf/x86/kvm: Fix Host-Only/Guest-Only counting with SVM disabled")
-Signed-off-by: Dongli Si <sidongli1997@gmail.com>
-Tested-by: Liam Merwick <liam.merwick@oracle.com>
-Reviewed-by: Liam Merwick <liam.merwick@oracle.com>
----
-v5: Add a wee comment to clarifies things and improve code
-v4: https://lore.kernel.org/all/20220320002106.1800166-1-sidongli1997@gmail.com/
-v3: https://lore.kernel.org/all/20220314042254.1487836-1-sidongli1997@gmail.com/
-v2: https://lore.kernel.org/all/20220310183404.1291725-1-sidongli1997@gmail.com/
-v1: https://lore.kernel.org/all/20220227132640.3-1-sidongli1997@gmail.com/
-
- arch/x86/events/amd/core.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
-
-diff --git a/arch/x86/events/amd/core.c b/arch/x86/events/amd/core.c
-index 9687a8aef01c..5a1657c684f0 100644
---- a/arch/x86/events/amd/core.c
-+++ b/arch/x86/events/amd/core.c
-@@ -8,6 +8,7 @@
- #include <linux/jiffies.h>
- #include <asm/apicdef.h>
- #include <asm/nmi.h>
-+#include <asm/hypervisor.h>
- 
- #include "../perf_event.h"
- 
-@@ -1023,10 +1024,16 @@ __init int amd_pmu_init(void)
- 	return 0;
- }
- 
-+/*
-+ * Set the Host-only bit when virtualization is enabled on the Host Hypervisor
-+ */
- void amd_pmu_enable_virt(void)
- {
- 	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
- 
-+	if (!hypervisor_is_type(X86_HYPER_NATIVE))
-+		return;
-+
- 	cpuc->perf_ctr_virt_mask = 0;
- 
- 	/* Reload all events */
-@@ -1035,10 +1042,16 @@ void amd_pmu_enable_virt(void)
- }
- EXPORT_SYMBOL_GPL(amd_pmu_enable_virt);
- 
-+/*
-+ * Mask the Host-only bit when virtualization is disabled on the Host Hypervisor
-+ */
- void amd_pmu_disable_virt(void)
- {
- 	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
- 
-+	if (!hypervisor_is_type(X86_HYPER_NATIVE))
-+		return;
-+
- 	/*
- 	 * We only mask out the Host-only bit so that host-only counting works
- 	 * when SVM is disabled. If someone sets up a guest-only counter when
--- 
-2.32.0
+Thanks.
 
