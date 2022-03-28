@@ -2,101 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0DBDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:44:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4159DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:44:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243144AbiC1Loc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:44:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38444 "EHLO
+        id S243198AbiC1Log (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:44:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241877AbiC1Ldz (ORCPT
+        with ESMTP id S241749AbiC1Lde (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:33:55 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8927158E74
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 04:24:57 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id j15so27915242eje.9
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 04:24:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LSGVVstA8xSFKqm3J0T/OWA7Sm6ZWqDMvi1oUYKoUQg=;
-        b=DPV4As0LqO6PxUoMkKt+gD4Sp4g81m4Uyo0RMYEz2E3P7pfyvtdXjGrBNZDHBP/UB1
-         gCFttcV0hthj4q1bL5TNl0zgC1lGn7IRag4nBKsJ8EP2YePrQZ13CN6W5Sfvfp8QF2Sp
-         wELX/+cizZqQx47zB7fGuZ9lFxr9AwmUsxdmwe8MW4eic5SAUeR1O8wHo+TyZ21CIyay
-         q7N3FAUsLSw2T7TAwO/n3REWByJ0KsJHuB6v+wB5DLXByNeI7ARpMC1EcyMes+d0d++3
-         Az1f4uQBXYfarp3CB4XKNCRn8iHQgyIum6DxyH2giFC9U76PXYn+pGn9yYRL50TSN3s1
-         2OrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LSGVVstA8xSFKqm3J0T/OWA7Sm6ZWqDMvi1oUYKoUQg=;
-        b=SHp2GaygXk4bIUpB48g+Yk5GxOSKMtTKNsM3WlY7GszUT7QvnhvrzXwQtR/GGjzYqj
-         T1dN19Oov0og+ZPXVlEqUN49l45+zLR6BmuC5LdEyoniSMvVihf4D6QePjA5wJ6n9Chh
-         FTs4lArh+ZcQteZY660O9KfEmIvQ9eyNN+UOZF8UHYV2c0emyWhzWgGbV5cMN5UBD9sw
-         Wn1lBSC6V10nY0bovRXS46DmMkJTZuEdk8XZGSAcPemRiDA1ncI4lOcbsbLQq3FiC8xT
-         9XsibvH1mcZc0oL8ZTfwARvJxnOzvIp8JbX7nwkgzbb4czK8jNqGopACaXv5AMiTSTko
-         uhig==
-X-Gm-Message-State: AOAM532y33XvMlD7ClJ4GQdiEfjW5hxXz2my9jcuf+OjWF4gxuJHuWqH
-        FhXGKfkCqmebIwHS6JuqEwg=
-X-Google-Smtp-Source: ABdhPJxl6boSwWBk+hJgPWLFTN1iKFHKVHLRcqYs36e+eXokFUamDhBLmr6Eju0TLSaJYffp3TOQTA==
-X-Received: by 2002:a17:907:1623:b0:6df:c9da:a6a8 with SMTP id hb35-20020a170907162300b006dfc9daa6a8mr26762275ejc.303.1648466693755;
-        Mon, 28 Mar 2022 04:24:53 -0700 (PDT)
-Received: from localhost.localdomain (host-95-249-145-232.retail.telecomitalia.it. [95.249.145.232])
-        by smtp.gmail.com with ESMTPSA id u10-20020a170906b10a00b006e1004406easm1839730ejy.93.2022.03.28.04.24.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Mar 2022 04:24:52 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Benjamin Philip <benjamin.philip495@gmail.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Charlie Sands <sandsch@northvilleschools.net>,
-        Mitali Borkar <mitaliborkar810@gmail.com>,
-        Colin Ian King <colin.king@intel.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        ira.weiny@intel.com
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Subject: [PATCH] staging: rts5208: Convert kmap() to kmap_local_page()
-Date:   Mon, 28 Mar 2022 13:24:40 +0200
-Message-Id: <20220328112440.17756-1-fmdefrancesco@gmail.com>
+        Mon, 28 Mar 2022 07:33:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD2E2583BF;
+        Mon, 28 Mar 2022 04:24:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6ABC5B8105A;
+        Mon, 28 Mar 2022 11:24:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3264CC36AE5;
+        Mon, 28 Mar 2022 11:24:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648466687;
+        bh=afXJF7r+BNN7Bd/BCnFM0/zZ4G0iDP/43BVuOKMseVQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Y2RvDUXAX70m8LHEa36XVqltHBlDZ8t6SjTZUoHAYyl6lKmdGeAukLPqTGr8A4wh3
+         14bwLNxHCxop0b+NARfs/80FM0sNHMw5iSkh17s8MpZX5vvG50uVxfbEssK0bifIJh
+         lefVH3tZ+EAAvPu7+aVx2wX+NAQkVGuQY0ryUy1ITT/KKVenfFTuhTSbaTxnD2ki/b
+         zvnEaT6hNxmde7wS0or3I92xT8VBkomvfjyPXPs6U/vpyz779i/JB9n9XUKLQCZgdY
+         HfGGHXgza0BmFcqHK4PTG2u08YFWoBzVEmjtakfbWM16pe05sTJiEK6rHcI79oBmIK
+         rULdLF+jFqU+Q==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     "Souptick Joarder (HPE)" <jrdr.linux@gmail.com>,
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        tglx@linutronix.de
+Subject: [PATCH AUTOSEL 4.14 4/8] irqchip/nvic: Release nvic_base upon failure
+Date:   Mon, 28 Mar 2022 07:24:35 -0400
+Message-Id: <20220328112440.1557113-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220328112440.1557113-1-sashal@kernel.org>
+References: <20220328112440.1557113-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The use of kmap() is being deprecated and kmap_local_page() is faster.
-Use kmap_local_page() in place of kmap().
+From: "Souptick Joarder (HPE)" <jrdr.linux@gmail.com>
 
-Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+[ Upstream commit e414c25e3399b2b3d7337dc47abccab5c71b7c8f ]
+
+smatch warning was reported as below ->
+
+smatch warnings:
+drivers/irqchip/irq-nvic.c:131 nvic_of_init()
+warn: 'nvic_base' not released on lines: 97.
+
+Release nvic_base upon failure.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Souptick Joarder (HPE) <jrdr.linux@gmail.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220218163303.33344-1-jrdr.linux@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rts5208/rtsx_transport.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/irqchip/irq-nvic.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/staging/rts5208/rtsx_transport.c b/drivers/staging/rts5208/rtsx_transport.c
-index 805dc18fac0a..de690d7ee5e3 100644
---- a/drivers/staging/rts5208/rtsx_transport.c
-+++ b/drivers/staging/rts5208/rtsx_transport.c
-@@ -92,13 +92,13 @@ unsigned int rtsx_stor_access_xfer_buf(unsigned char *buffer,
- 			while (sglen > 0) {
- 				unsigned int plen = min(sglen, (unsigned int)
- 						PAGE_SIZE - poff);
--				unsigned char *ptr = kmap(page);
-+				unsigned char *ptr = kmap_local_page(page);
+diff --git a/drivers/irqchip/irq-nvic.c b/drivers/irqchip/irq-nvic.c
+index 9694529b709d..330beb62d015 100644
+--- a/drivers/irqchip/irq-nvic.c
++++ b/drivers/irqchip/irq-nvic.c
+@@ -108,6 +108,7 @@ static int __init nvic_of_init(struct device_node *node,
  
- 				if (dir == TO_XFER_BUF)
- 					memcpy(ptr + poff, buffer + cnt, plen);
- 				else
- 					memcpy(buffer + cnt, ptr + poff, plen);
--				kunmap(page);
-+				kunmap_local(ptr);
+ 	if (!nvic_irq_domain) {
+ 		pr_warn("Failed to allocate irq domain\n");
++		iounmap(nvic_base);
+ 		return -ENOMEM;
+ 	}
  
- 				/* Start at the beginning of the next page */
- 				poff = 0;
+@@ -117,6 +118,7 @@ static int __init nvic_of_init(struct device_node *node,
+ 	if (ret) {
+ 		pr_warn("Failed to allocate irq chips\n");
+ 		irq_domain_remove(nvic_irq_domain);
++		iounmap(nvic_base);
+ 		return ret;
+ 	}
+ 
 -- 
 2.34.1
 
