@@ -2,183 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C22A1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 23:27:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25D06C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 23:30:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231136AbiC1X3Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 19:29:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35822 "EHLO
+        id S230431AbiC1Xb7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 19:31:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230452AbiC1X2t (ORCPT
+        with ESMTP id S230339AbiC1Xb4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 19:28:49 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE7003151B
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 16:27:07 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2ea05573995so55490077b3.8
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 16:27:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=62T0/TU1Sa4Wqe+eN5txv4UBeKWrByFVFuAcfl2TJUY=;
-        b=WuFWAPyS7pgyWDgjtlzsKpFPsxxPd9tgW0nM0IULEGbEsaEs5zE0BwR/iV0yiRyiUr
-         C9LzDD7OQikFacW2EZ3HgTOERW8ioeMdDmGtbxjGjdAvIgFqPAGlWSKO/Fo07kxOusQj
-         xXQTuUoN7COi2/I3yvyXPwYeetZ2hVDiAs6t36XmpeIj0N0pXu41bgEpHgFvTMqjwxGS
-         YkJ0glvboVcb8xY9ZZdbAAgSHoReMnojd0N4VWMYdi2aBcDvyxepEb8RTHF4ZzMUgt9m
-         qUiIro8106ztVL4WbMUEwnsQ0Z0mF/k9xEPBZD0X3XV3XPniYpCSNqCpBNG82OklWGGW
-         su1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=62T0/TU1Sa4Wqe+eN5txv4UBeKWrByFVFuAcfl2TJUY=;
-        b=UmUUvfVi7lDKMTKaexeGChexThSj5zvHrNm5vZWRPuoCVpLTXObTZ2kcuC78ULF460
-         RjZV9iDKfz5w4GUQDf2Z1bY8ti/XgcQ81AmHhIooUWky3Qgp+bxNnIAwlvH8EliHGghP
-         PXXA/rqhz7GEKiY7o3jaYlbR75++4kpi7YFxJK+Xb2kYyVepyDS34HgC1bnPVRZ9PktH
-         st4tyBf4HQsCKqvYgfyp4WntzsJ/Nr9m/8/I0iPcSpHb3hoQRG9iBSXXUDZ/gOON6tB1
-         34d+K91VgdpiumPcoruKEZIl7u2k38SxCMH7y9vlmUCd6p77j83k4rci+kyHzFGUaFou
-         bCSA==
-X-Gm-Message-State: AOAM531BCapJfQXEAY8mSlDJMgdUuK4Oq6VPkdaNFYZBy2PspG8qfMAb
-        WVULA7N+tiNR2vAVxXCCTBDVAVVpe9yY
-X-Google-Smtp-Source: ABdhPJyGiiWxc4ARHStwB+ZXo/aW9HRYLxvc/de+ZQtJa8gJqpvKLIH6JBfkA9BFTOaLI3PuawSjmI+3PmmF
-X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:9d6a:527d:cf46:71e2])
- (user=irogers job=sendgmr) by 2002:a25:ba04:0:b0:623:ed7a:701d with SMTP id
- t4-20020a25ba04000000b00623ed7a701dmr25269976ybg.209.1648510026853; Mon, 28
- Mar 2022 16:27:06 -0700 (PDT)
-Date:   Mon, 28 Mar 2022 16:26:48 -0700
-In-Reply-To: <20220328232648.2127340-1-irogers@google.com>
-Message-Id: <20220328232648.2127340-7-irogers@google.com>
-Mime-Version: 1.0
-References: <20220328232648.2127340-1-irogers@google.com>
-X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
-Subject: [PATCH v2 6/6] perf evlist: Respect all_cpus when setting user_requested_cpus
-From:   Ian Rogers <irogers@google.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        John Garry <john.garry@huawei.com>,
-        Will Deacon <will@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        James Clark <james.clark@arm.com>,
-        German Gomez <german.gomez@arm.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        Alexander Antonov <alexander.antonov@linux.intel.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     Stephane Eranian <eranian@google.com>,
-        Ian Rogers <irogers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Mon, 28 Mar 2022 19:31:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2F7538181;
+        Mon, 28 Mar 2022 16:30:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D1EF260FCF;
+        Mon, 28 Mar 2022 23:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 37597C34111;
+        Mon, 28 Mar 2022 23:30:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648510212;
+        bh=AcSSt6s9DZqIxCq3CMNV8dEihdvg5HBi2xHYQpL2nOw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=I+2ROWg0R4L7HsIkYAEQIJj1trKqmPitSf0VtOlWK82brUsO4Dsc4DSh6I+gMkCt5
+         HquOV1uXOwLo1UnY0EaUpv8BA7TZCeOUhous45ad3HTqhumlPfvz5B+nC11lvy1zQ3
+         UJBcU/UHGHDraU8c1UkJblchW5RNWJCdaB5O4BmjC1P4ZmroUhT0tPX8Cq83aebjM0
+         LgW3JtxUkjnxDZEukJlPpw60EZEOyVKiIl+WRtYWTjgDE3vqPVNq4tuZE7WHHkaTQ4
+         C5lhAc4bN7IYmbjSwmhxgwZglKtouEmZ2nTjlYgdhw90I2CWvToatWvv/vJU8eyRPe
+         uYs+xFIdirJuA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0BD8FF0384A;
+        Mon, 28 Mar 2022 23:30:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net/smc: Send out the remaining data in sndbuf before
+ close
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164851021204.6043.13335558443304429.git-patchwork-notify@kernel.org>
+Date:   Mon, 28 Mar 2022 23:30:12 +0000
+References: <1648447836-111521-1-git-send-email-guwen@linux.alibaba.com>
+In-Reply-To: <1648447836-111521-1-git-send-email-guwen@linux.alibaba.com>
+To:     Wen Gu <guwen@linux.alibaba.com>
+Cc:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org,
+        dust.li@linux.alibaba.com, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If all_cpus is calculated it represents the merge/union of all
-evsel cpu maps. By default user_requested_cpus is computed to be
-the online CPUs. For uncore events, it is often the case currently
-that all_cpus is a subset of user_requested_cpus. Metrics printed
-without aggregation and with metric-only, in print_no_aggr_metric,
-iterate over user_requested_cpus assuming every CPU has a metric to
-print. For each CPU the prefix is printed, but then if the
-evsel's cpus doesn't contain anything you get an empty line like
-the following on a 2 socket 36 core SkylakeX:
+Hello:
 
-```
-$ perf stat -A -M DRAM_BW_Use -a --metric-only -I 1000
-     1.000453137 CPU0                       0.00
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137 CPU18                      0.00
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     2.003717143 CPU0                       0.00
-...
-```
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-While it is possible to be lazier in printing the prefix and
-trailing newline, having user_requested_cpus not be a subset of
-all_cpus is preferential so that wasted work isn't done elsewhere
-user_requested_cpus is used. The change modifies user_requested_cpus
-to be the intersection of user specified CPUs, or default all online
-CPUs, with the CPUs computed through the merge of all evsel cpu maps.
+On Mon, 28 Mar 2022 14:10:36 +0800 you wrote:
+> The current autocork algorithms will delay the data transmission
+> in BH context to smc_release_cb() when sock_lock is hold by user.
+> 
+> So there is a possibility that when connection is being actively
+> closed (sock_lock is hold by user now), some corked data still
+> remains in sndbuf, waiting to be sent by smc_release_cb(). This
+> will cause:
+> 
+> [...]
 
-New behavior:
-```
-$ perf stat -A -M DRAM_BW_Use -a --metric-only -I 1000
-     1.001086325 CPU0                       0.00
-     1.001086325 CPU18                      0.00
-     2.003671291 CPU0                       0.00
-     2.003671291 CPU18                      0.00
-...
-```
+Here is the summary with links:
+  - [net] net/smc: Send out the remaining data in sndbuf before close
+    https://git.kernel.org/netdev/net/c/906b3d64913c
 
-Signed-off-by: Ian Rogers <irogers@google.com>
----
- tools/perf/util/evlist.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/tools/perf/util/evlist.c b/tools/perf/util/evlist.c
-index cb2cf4463c08..1a3308ec35f1 100644
---- a/tools/perf/util/evlist.c
-+++ b/tools/perf/util/evlist.c
-@@ -1036,6 +1036,8 @@ int evlist__create_maps(struct evlist *evlist, struct target *target)
- 	if (!cpus)
- 		goto out_delete_threads;
- 
-+	if (evlist->core.all_cpus)
-+		cpus = perf_cpu_map__intersect(cpus, evlist->core.all_cpus);
- 	evlist->core.has_user_cpus = !!target->cpu_list && !target->hybrid;
- 
- 	perf_evlist__set_maps(&evlist->core, cpus, threads);
+You are awesome, thank you!
 -- 
-2.35.1.1021.g381101b075-goog
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
