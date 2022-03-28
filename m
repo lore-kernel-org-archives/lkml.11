@@ -2,101 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F79EC4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:43:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6BEAC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:43:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242630AbiC1Lnp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:43:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39418 "EHLO
+        id S242343AbiC1LnY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:43:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242031AbiC1LeB (ORCPT
+        with ESMTP id S241863AbiC1Ldy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:34:01 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2258D100A;
-        Mon, 28 Mar 2022 04:25:14 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Mon, 28 Mar 2022 07:33:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5977858E65;
+        Mon, 28 Mar 2022 04:24:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id F38102223A;
-        Mon, 28 Mar 2022 13:25:10 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1648466711;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=1QO+CuCRXM0SAPBpiNzGRIWNurP+FMMvJMul6jNgdPs=;
-        b=oTHgXPkgVOAYx4mmLCgcEoTmB1sOTfbaYE2/zva0NeCFSBtkckRC+XXpuEggymiH51MktB
-        NiwPFMACoXPfBZhomCMZp1wxqI37CPxcFeDeQQ480VQwKn23u56OrezF7YyrzSxqhhBPQs
-        TVxIpd3uEGDxjMOINN17TeNMphD0psM=
-From:   Michael Walle <michael@walle.cc>
-To:     Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
-Subject: [PATCH v2 0/4] hwmon: add lan9668 driver
-Date:   Mon, 28 Mar 2022 13:25:01 +0200
-Message-Id: <20220328112505.3025374-1-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BC03161120;
+        Mon, 28 Mar 2022 11:24:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 168ADC340ED;
+        Mon, 28 Mar 2022 11:24:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648466692;
+        bh=NLoVDs7rjLn2vTwN1PgZVDG0/Iak4g0H4eBUbih//qY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=lcYZpJmymbVfUPu0i4JgmcCube8c5uOsLdhwncmPb+71MtMOANbXGijP5laB71zpA
+         4VsHc1+Gasikpd6wb7ouDdrf2M+9ApXkqYWKKTh723Tm9Mg6Z1UnFvkvnY/sPnBXIk
+         xOL0C0GNAC4nnyMdS84zJOcws5M5pFF2BxFH5z5v32UKteGUG2eFi1tSI4HkjS6WBJ
+         tm2AAjtzHW+Vx9hJvb3CPHjYC99JwFCMupfur1/DsjPE2pYLkH35lb2htolNdYwZct
+         9tVh6GrJmxj7pxEkabIaEbpFsPlJt204GyMHbsB5nM3eu5iwpnW7sTEl98CQAIdJPW
+         tqJKaTCMhYcxg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Darren Hart <darren@os.amperecomputing.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
+        ying.huang@intel.com, rdunlap@infradead.org,
+        linux-acpi@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 6/8] ACPI/APEI: Limit printable size of BERT table data
+Date:   Mon, 28 Mar 2022 07:24:37 -0400
+Message-Id: <20220328112440.1557113-6-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220328112440.1557113-1-sashal@kernel.org>
+References: <20220328112440.1557113-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a temperature and fan controller driver for the Microchip LAN9668 SoC.
+From: Darren Hart <darren@os.amperecomputing.com>
 
-The temperature sensor uses a polynomial to calculate the actual
-temperature. Fortunately, the bt1-pvt already has such a calculation.
-It seems that the LAN9668 uses the same Analog Bits sensor as the
-BT1 although with a different characteristic. To be able to reuse the
-code move it to lib/ as it seems pretty generic to calculate any
-polynomial using integers only, which might also be used by other parts
-of the kernel. Another option might be to move the code to hwmon-poly.c,
-I'm not sure. Thoughts?
+[ Upstream commit 3f8dec116210ca649163574ed5f8df1e3b837d07 ]
 
-I also plan on submitting patches to add temperature sensor support for
-the GPYxxx and LAN8814 PHYs which also use polynomial_calc().
+Platforms with large BERT table data can trigger soft lockup errors
+while attempting to print the entire BERT table data to the console at
+boot:
 
-The last two patches adds the actual driver and the dt-binding for it.
+  watchdog: BUG: soft lockup - CPU#160 stuck for 23s! [swapper/0:1]
 
-changes since v1:
- - add doc string to polynomial_calc(), moved the comment
-   into the function.
- - add missing "select POLYNOMIAL" to the bt1_pvt driver
-   Kconfig symbol
- - add hwmon driver documentation
- - cache sys_clk rate during probe
- - add missing ERR_CAST()
- - adapted comment for the PPS->RPM calculation
- - add temporary variable in lan966x_hwmon_read_pwm_freq()
+Observed on Ampere Altra systems with a single BERT record of ~250KB.
 
-Michael Walle (4):
-  lib: add generic polynomial calculation
-  hwmon: (bt1-pvt) use generic polynomial functions
-  dt-bindings: hwmon: add Microchip LAN966x bindings
-  hwmon: add driver for the Microchip LAN966x SoC
+The original bert driver appears to have assumed relatively small table
+data. Since it is impractical to reassemble large table data from
+interwoven console messages, and the table data is available in
 
- .../bindings/hwmon/microchip,lan966x.yaml     |  53 +++
- Documentation/hwmon/lan966x.rst               |  47 +++
- drivers/hwmon/Kconfig                         |  13 +
- drivers/hwmon/Makefile                        |   1 +
- drivers/hwmon/bt1-pvt.c                       |  50 +--
- drivers/hwmon/lan966x-hwmon.c                 | 390 ++++++++++++++++++
- include/linux/polynomial.h                    |  35 ++
- lib/Kconfig                                   |   3 +
- lib/Makefile                                  |   2 +
- lib/polynomial.c                              | 108 +++++
- 10 files changed, 665 insertions(+), 37 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/hwmon/microchip,lan966x.yaml
- create mode 100644 Documentation/hwmon/lan966x.rst
- create mode 100644 drivers/hwmon/lan966x-hwmon.c
- create mode 100644 include/linux/polynomial.h
- create mode 100644 lib/polynomial.c
+  /sys/firmware/acpi/tables/data/BERT
 
+limit the size for tables printed to the console to 1024 (for no reason
+other than it seemed like a good place to kick off the discussion, would
+appreciate feedback from existing users in terms of what size would
+maintain their current usage model).
+
+Alternatively, we could make printing a CONFIG option, use the
+bert_disable boot arg (or something similar), or use a debug log level.
+However, all those solutions require extra steps or change the existing
+behavior for small table data. Limiting the size preserves existing
+behavior on existing platforms with small table data, and eliminates the
+soft lockups for platforms with large table data, while still making it
+available.
+
+Signed-off-by: Darren Hart <darren@os.amperecomputing.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/acpi/apei/bert.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/acpi/apei/bert.c b/drivers/acpi/apei/bert.c
+index 12771fcf0417..19b96fde77c4 100644
+--- a/drivers/acpi/apei/bert.c
++++ b/drivers/acpi/apei/bert.c
+@@ -31,6 +31,7 @@
+ 
+ #undef pr_fmt
+ #define pr_fmt(fmt) "BERT: " fmt
++#define ACPI_BERT_PRINT_MAX_LEN 1024
+ 
+ static int bert_disable;
+ 
+@@ -59,8 +60,11 @@ static void __init bert_print_all(struct acpi_bert_region *region,
+ 		}
+ 
+ 		pr_info_once("Error records from previous boot:\n");
+-
+-		cper_estatus_print(KERN_INFO HW_ERR, estatus);
++		if (region_len < ACPI_BERT_PRINT_MAX_LEN)
++			cper_estatus_print(KERN_INFO HW_ERR, estatus);
++		else
++			pr_info_once("Max print length exceeded, table data is available at:\n"
++				     "/sys/firmware/acpi/tables/data/BERT");
+ 
+ 		/*
+ 		 * Because the boot error source is "one-time polled" type,
 -- 
-2.30.2
+2.34.1
 
