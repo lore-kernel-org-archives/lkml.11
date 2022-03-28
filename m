@@ -2,147 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62B2BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 22:43:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5A7DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 22:43:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230071AbiC1Wow (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 18:44:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49798 "EHLO
+        id S230060AbiC1WpE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 18:45:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230036AbiC1Wot (ORCPT
+        with ESMTP id S230118AbiC1Wox (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 18:44:49 -0400
+        Mon, 28 Mar 2022 18:44:53 -0400
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D8AFA777D;
-        Mon, 28 Mar 2022 15:43:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C050A8EE3
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 15:43:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648507386; x=1680043386;
+  t=1648507391; x=1680043391;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=Go8oxxC6Pe7H7dirXGB5IDnB7EGjXVoNw/QrYHUiyLg=;
-  b=bxqcAUdd0K1vJDJPSOHJqX0NgvsaxJgQUnJ0CL4cczMiRo9ZGsd61eTa
-   NIGtQxo2scKg9aPHk+vUklIMl5VsZoaLcY3tWRWbk5RyXeqCCtF5bsAKh
-   +YdnG0kgoZ2i8Rp7GCPneH8jh5m7O7YbyeDdUqRVyGBj1sy6DliIytPCA
-   SPoC4ELL2MF0RfRb/GyYNcYK4ZAhz1e47lYEQh4uoyotnRRqpEqEc//Xy
-   ea0Qm0xdFo/LjskgCOfLp9NN6Uar9vz0OzwUTanFkndvJbFWI65hEp8Pl
-   3mbfxp4xLxmkHEWMDUG3rorkhPLf+r348dizRPCs9uWI/CjmSCT0UJdto
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="322294628"
+  bh=dGBkA2wzKCxxRszSguxFPvOan/QZFJYt4C3EW6Xk4W0=;
+  b=R4ZILREbKJEX4UM+ZUZx23mAjQ7WFW5NZpeDRtDvdmGshYmeLfeXMZ62
+   fF/rgCJ71ZTjR7NM4j9U9E9QZVRojvJSYB8JLo+5HtY7jauF72KoT0p9z
+   K19aZ/HN8JKOTiU2gntStkpc7v4VLTE8BnxH1SkELlQvZxYCX1vNthZ0M
+   PnXsJxJYMttB9/32nODTRJgTYzKugsSUyMz/cqUYajv3+Rs/u1N4sGHXx
+   JmAoARI+InCDFjyXRTQKhsGJnd/DxOChnYEx5wzHLKmFEl0n39VdvrG8V
+   JthmnHvC0Gb+WJCzS+2B+NbB1jciu9IbjUI+zDz+lEtxzKb+EJaPcmHw0
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="322301424"
 X-IronPort-AV: E=Sophos;i="5.90,218,1643702400"; 
-   d="scan'208";a="322294628"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 14:35:55 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="322301424"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 15:30:09 -0700
 X-IronPort-AV: E=Sophos;i="5.90,218,1643702400"; 
-   d="scan'208";a="564024528"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga008.jf.intel.com with ESMTP; 28 Mar 2022 14:35:51 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nYx1j-0002Kz-6r; Mon, 28 Mar 2022 21:35:51 +0000
-Date:   Tue, 29 Mar 2022 05:34:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Frank Li <Frank.Li@nxp.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 03/12] PCI: dwc: Add unroll iATU space support to the
- regions disable method
-Message-ID: <202203290533.uObikFCd-lkp@intel.com>
-References: <20220324012524.16784-4-Sergey.Semin@baikalelectronics.ru>
+   d="scan'208";a="546137025"
+Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 15:30:09 -0700
+Date:   Mon, 28 Mar 2022 15:30:04 -0700
+From:   Fenghua Yu <fenghua.yu@intel.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>, x86@kernel.org,
+        "Chang S. Bae" <chang.seok.bae@intel.com>,
+        Paolo Bonzini <bonzini@gnu.org>,
+        Tony Luck <tony.luck@intel.com>
+Subject: Re: [patch 0/7] x86/fpu: Cure supervisor mode (ENQCMD) fallout
+Message-ID: <YkI27CuLsDFcPWpS@otcwcpicx3.sc.intel.com>
+References: <20220324134548.432837672@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220324012524.16784-4-Sergey.Semin@baikalelectronics.ru>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220324134548.432837672@linutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Serge,
+Hi, Thomas,
 
-I love your patch! Perhaps something to improve:
+On Thu, Mar 24, 2022 at 02:47:07PM +0100, Thomas Gleixner wrote:
+> It builds, boots on host and guest, but is not yet extensively tested.
+> Testing with a AMX + PASID enabled machine has not been done at all as I
+> don't have easy access to such a beast.
 
-[auto build test WARNING on helgaas-pci/next]
-[also build test WARNING on v5.17 next-20220328]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+I run many copies of dsa_test [1] (i.e. multi-threading and multi-tasking)
+to stressfully exercise FPU PASID state context switch on native.
+No issue is found so far.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Serge-Semin/PCI-dwc-Various-fixes-and-cleanups/20220328-231112
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git next
-config: arm64-buildonly-randconfig-r004-20220327 (https://download.01.org/0day-ci/archive/20220329/202203290533.uObikFCd-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0f6d9501cf49ce02937099350d08f20c4af86f3d)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://github.com/intel-lab-lkp/linux/commit/fb5c4386b8af12124d1e7b48bd7f538c12d85100
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Serge-Semin/PCI-dwc-Various-fixes-and-cleanups/20220328-231112
-        git checkout fb5c4386b8af12124d1e7b48bd7f538c12d85100
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/pci/controller/dwc/
+1. https://github.com/intel/idxd-config
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Thanks.
 
-All warnings (new ones prefixed by >>):
-
->> drivers/pci/controller/dwc/pcie-designware.c:508:14: warning: result of comparison of constant 2147483648 with expression of type 'int' is always false [-Wtautological-constant-out-of-range-compare]
-                   if (region == PCIE_ATU_REGION_INBOUND) {
-                       ~~~~~~ ^  ~~~~~~~~~~~~~~~~~~~~~~~
-   1 warning generated.
-
-
-vim +/int +508 drivers/pci/controller/dwc/pcie-designware.c
-
-   490	
-   491	void dw_pcie_disable_atu(struct dw_pcie *pci, int index,
-   492				 enum dw_pcie_region_type type)
-   493	{
-   494		int region;
-   495	
-   496		switch (type) {
-   497		case DW_PCIE_REGION_INBOUND:
-   498			region = PCIE_ATU_REGION_INBOUND;
-   499			break;
-   500		case DW_PCIE_REGION_OUTBOUND:
-   501			region = PCIE_ATU_REGION_OUTBOUND;
-   502			break;
-   503		default:
-   504			return;
-   505		}
-   506	
-   507		if (pci->iatu_unroll_enabled) {
- > 508			if (region == PCIE_ATU_REGION_INBOUND) {
-   509				dw_pcie_writel_ib_unroll(pci, index, PCIE_ATU_UNR_REGION_CTRL2,
-   510							 ~(u32)PCIE_ATU_ENABLE);
-   511			} else {
-   512				dw_pcie_writel_ob_unroll(pci, index, PCIE_ATU_UNR_REGION_CTRL2,
-   513							 ~(u32)PCIE_ATU_ENABLE);
-   514			}
-   515		} else {
-   516			dw_pcie_writel_dbi(pci, PCIE_ATU_VIEWPORT, region | index);
-   517			dw_pcie_writel_dbi(pci, PCIE_ATU_CR2, ~(u32)PCIE_ATU_ENABLE);
-   518		}
-   519	}
-   520	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+-Fenghua
