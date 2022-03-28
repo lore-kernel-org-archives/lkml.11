@@ -2,123 +2,293 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 942BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 20:34:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44FBDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 20:34:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344574AbiC1Ug1 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 16:36:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47216 "EHLO
+        id S241379AbiC1Ugh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 16:36:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346274AbiC1UeQ (ORCPT
+        with ESMTP id S1344566AbiC1UgO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 16:34:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BE6232EF8;
-        Mon, 28 Mar 2022 13:32:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A86D6149E;
-        Mon, 28 Mar 2022 20:32:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60CA1C340ED;
-        Mon, 28 Mar 2022 20:32:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648499554;
-        bh=8+UTYWbVLgOBzCkQVECx2w9eUsJDkRhc8E5Y1Jz2ip0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sPy/YTXkdJdSZVHLGbJfXwU8C0JLpFaTNvtev8+HV1HOtIxVNXr8isggfrPXodslo
-         d5/r7Zn4lLeWOpZWcd6/rk9M00q9O4CdS79sdqlXOUUii20ZrQfqN71rPcBUHIPlXt
-         /rEBLI07rQO8OI0qPBNmerM0KlAC0VQ41Z3LCJPahzAQtSjhlJAHJWqJ3PmGy4EGLn
-         zoqohpSev54HbH7NZ3SaAfInKtZs3xSf7/XehKqj/XFM4yzbMcF4aWogKMRHdcrsdC
-         6Lwvr77bWO60aTj9DzWNDIyoBLUkno0z6EB7mdF7+Lxdk/b0X7KepLA0XELxwUDTAR
-         twPi+mbwai4Mw==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 3A55E40407; Mon, 28 Mar 2022 17:32:31 -0300 (-03)
-Date:   Mon, 28 Mar 2022 17:32:31 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Ian Rogers <irogers@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        John Garry <john.garry@huawei.com>,
-        Will Deacon <will@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        James Clark <james.clark@arm.com>,
-        German Gomez <german.gomez@arm.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        Alexander Antonov <alexander.antonov@linux.intel.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Stephane Eranian <eranian@google.com>
-Subject: Re: [PATCH 4/5] perf stat: Avoid segv if core.user_cpus isn't set.
-Message-ID: <YkIbXzCYEutqxQRE@kernel.org>
-References: <20220328062414.1893550-1-irogers@google.com>
- <20220328062414.1893550-5-irogers@google.com>
+        Mon, 28 Mar 2022 16:36:14 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80B9B51E6D
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 13:34:26 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id c11so13060886pgu.11
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 13:34:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Z8M2eaDrvySsRMoJDq3gdwHu0GI4WHy75G6qEWnfrak=;
+        b=UDUMifkjplq8rJ6a+odmLYcEQAXp6T6HvU89gOcSXenZ++rWsksgkLUZHakIakEqoM
+         092VAJn5hHH1DhG0qyrYvjjdzUBUTzHhobRgl4mFji/FjDh8x4ji3NraIQTC3GliwDWV
+         Xz3nb7KzKPHat9T11HkkwoXt7zfpxcv+nKihAI4qEYPEXpAKFTNHpb+z4qaARrxt8mNy
+         CjGeqFlOnjfbLFi5dMUza92eKf5khfq56qwIkGTtR8EEgTZedFRT/D/1Z5cL+i4JFiag
+         4pISPz3r8REj3A3chZuksVXQ6ivqXOxmhTgSlwb46eNpPu8JcJLx+83en6zYNBX5jV78
+         ZCig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Z8M2eaDrvySsRMoJDq3gdwHu0GI4WHy75G6qEWnfrak=;
+        b=AvhuhLjE4zC79j5Tm1rGgTpWA5sUqnw6BGNvlFkibiMFi1JNK0/oB4fbaUVaJ3kUIo
+         8aCFeilT2njNiXGMdQXHhk2uHch0E+BeWdCgnCifGfBiNcTejpLTJ8DNoYdbfTazc6cv
+         WNCcI6AB/o0AzhEYVojp4uRQpskEW1JYBFFXuQkpViwhVbA312j5jdov4bEoCSsPoczu
+         ZbgkGSVFX4ACT6n/2lCD3wSN+FivoWWPBj1GSeVkLPgW0Ofi0D7dZmXg9p2/ayNSePwV
+         QlSSTRwyatba7d5pmC0tcgDkG/qU3WBG33EaznOoQM5SJuQSfd0XZLDH3VEnQe8Jnzru
+         o5Uw==
+X-Gm-Message-State: AOAM530HLK68Pdg/4/V/hP8MIjTwxpLa43HLK+sVM2DatvvPLtCanw+h
+        VlbPDQQC9DJQTu4T4+Y9HjXrnw==
+X-Google-Smtp-Source: ABdhPJyAHodgi4WXMqBDST8LyTg3i4XZ/SS4vBU9UigkT8BaXibKIqaOWnSK6pOBC4R3tdkj8P6aHA==
+X-Received: by 2002:aa7:8556:0:b0:4fa:6d38:95e3 with SMTP id y22-20020aa78556000000b004fa6d3895e3mr24967832pfn.54.1648499665428;
+        Mon, 28 Mar 2022 13:34:25 -0700 (PDT)
+Received: from google.com (254.80.82.34.bc.googleusercontent.com. [34.82.80.254])
+        by smtp.gmail.com with ESMTPSA id j9-20020a056a00130900b004f73df40914sm16770458pfu.82.2022.03.28.13.34.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 13:34:24 -0700 (PDT)
+Date:   Mon, 28 Mar 2022 20:34:21 +0000
+From:   David Matlack <dmatlack@google.com>
+To:     Ben Gardon <bgardon@google.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        David Dunn <daviddunn@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        Junaid Shahid <junaids@google.com>
+Subject: Re: [PATCH v2 11/11] KVM: x86/MMU: Require reboot permission to
+ disable NX hugepages
+Message-ID: <YkIbzWcC36w9vqng@google.com>
+References: <20220321234844.1543161-1-bgardon@google.com>
+ <20220321234844.1543161-12-bgardon@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220328062414.1893550-5-irogers@google.com>
-X-Url:  http://acmel.wordpress.com
+In-Reply-To: <20220321234844.1543161-12-bgardon@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Sun, Mar 27, 2022 at 11:24:13PM -0700, Ian Rogers escreveu:
-> Passing null to perf_cpu_map__max doesn't make sense as there is no
-> valid max. Avoid this problem by null checking in
-> perf_stat_init_aggr_mode.
-
-Applying this one after changing user_cpus back to cpus as this is a fix
-independent of this patchset.
-
-In the future, please try to have such patches at the beginning of the
-series, so that  they can get cherry-picked more easily.
-
-- Arnaldo
- 
-> Signed-off-by: Ian Rogers <irogers@google.com>
-> ---
->  tools/perf/builtin-stat.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
+On Mon, Mar 21, 2022 at 04:48:44PM -0700, Ben Gardon wrote:
+> Ensure that the userspace actor attempting to disable NX hugepages has
+> permission to reboot the system. Since disabling NX hugepages would
+> allow a guest to crash the system, it is similar to reboot permissions.
 > 
-> diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
-> index 5bee529f7656..ecd5cf4fd872 100644
-> --- a/tools/perf/builtin-stat.c
-> +++ b/tools/perf/builtin-stat.c
-> @@ -1472,7 +1472,10 @@ static int perf_stat_init_aggr_mode(void)
->  	 * taking the highest cpu number to be the size of
->  	 * the aggregation translate cpumap.
->  	 */
-> -	nr = perf_cpu_map__max(evsel_list->core.user_cpus).cpu;
-> +	if (evsel_list->core.user_cpus)
-> +		nr = perf_cpu_map__max(evsel_list->core.user_cpus).cpu;
-> +	else
-> +		nr = 0;
->  	stat_config.cpus_aggr_map = cpu_aggr_map__empty_new(nr + 1);
->  	return stat_config.cpus_aggr_map ? 0 : -ENOMEM;
+> This approach is the simplest permission gating, but passing a file
+> descriptor opened for write for the module parameter would also work
+> well and be more precise.
+> The latter approach was suggested by Sean Christopherson.
+> 
+> Suggested-by: Jim Mattson <jmattson@google.com>
+> Signed-off-by: Ben Gardon <bgardon@google.com>
+> ---
+>  arch/x86/kvm/x86.c                            | 18 ++++++-
+>  .../selftests/kvm/include/kvm_util_base.h     |  2 +
+>  tools/testing/selftests/kvm/lib/kvm_util.c    |  7 +++
+>  .../selftests/kvm/x86_64/nx_huge_pages_test.c | 49 ++++++++++++++-----
+>  .../kvm/x86_64/nx_huge_pages_test.sh          |  2 +-
+>  5 files changed, 65 insertions(+), 13 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> index 74351cbb9b5b..995f30667619 100644
+> --- a/arch/x86/kvm/x86.c
+> +++ b/arch/x86/kvm/x86.c
+> @@ -4256,7 +4256,6 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
+>  	case KVM_CAP_SYS_ATTRIBUTES:
+>  	case KVM_CAP_VAPIC:
+>  	case KVM_CAP_ENABLE_CAP:
+> -	case KVM_CAP_VM_DISABLE_NX_HUGE_PAGES:
+>  		r = 1;
+>  		break;
+>  	case KVM_CAP_EXIT_HYPERCALL:
+> @@ -4359,6 +4358,14 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
+>  	case KVM_CAP_DISABLE_QUIRKS2:
+>  		r = KVM_X86_VALID_QUIRKS;
+>  		break;
+> +	case KVM_CAP_VM_DISABLE_NX_HUGE_PAGES:
+> +		/*
+> +		 * Since the risk of disabling NX hugepages is a guest crashing
+> +		 * the system, ensure the userspace process has permission to
+> +		 * reboot the system.
+> +		 */
+> +		r = capable(CAP_SYS_BOOT);
+
+Duplicating this check and comment isn't ideal. I think it would be fine
+to unconditionally return true here (KVM, after all, does support the
+capability) and only check for CAP_SYS_BOOT when userspace attempts to
+enable the capability.
+
+> +		break;
+>  	default:
+>  		break;
+>  	}
+> @@ -6050,6 +6057,15 @@ int kvm_vm_ioctl_enable_cap(struct kvm *kvm,
+>  		mutex_unlock(&kvm->lock);
+>  		break;
+>  	case KVM_CAP_VM_DISABLE_NX_HUGE_PAGES:
+> +		/*
+> +		 * Since the risk of disabling NX hugepages is a guest crashing
+> +		 * the system, ensure the userspace process has permission to
+> +		 * reboot the system.
+> +		 */
+> +		if (!capable(CAP_SYS_BOOT)) {
+> +			r = -EPERM;
+> +			break;
+> +		}
+>  		kvm->arch.disable_nx_huge_pages = true;
+>  		kvm_update_nx_huge_pages(kvm);
+>  		r = 0;
+> diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
+> index 72163ba2f878..4db8251c3ce5 100644
+> --- a/tools/testing/selftests/kvm/include/kvm_util_base.h
+> +++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
+
+Can you split out the selftests changes to a separate commit? I have a
+feeling you meant to :).
+
+> @@ -411,4 +411,6 @@ uint64_t vm_get_single_stat(struct kvm_vm *vm, const char *stat_name);
+>  
+>  uint32_t guest_get_vcpuid(void);
+>  
+> +void vm_disable_nx_huge_pages(struct kvm_vm *vm);
+> +
+>  #endif /* SELFTEST_KVM_UTIL_BASE_H */
+> diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
+> index 9d72d1bb34fa..46a7fa08d3e0 100644
+> --- a/tools/testing/selftests/kvm/lib/kvm_util.c
+> +++ b/tools/testing/selftests/kvm/lib/kvm_util.c
+> @@ -2765,3 +2765,10 @@ uint64_t vm_get_single_stat(struct kvm_vm *vm, const char *stat_name)
+>  	return value;
 >  }
+>  
+> +void vm_disable_nx_huge_pages(struct kvm_vm *vm)
+> +{
+> +	struct kvm_enable_cap cap = { 0 };
+> +
+> +	cap.cap = KVM_CAP_VM_DISABLE_NX_HUGE_PAGES;
+> +	vm_enable_cap(vm, &cap);
+> +}
+> diff --git a/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.c b/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.c
+> index 2bcbe4efdc6a..5ce98f759bc8 100644
+> --- a/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.c
+> +++ b/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.c
+
+Will you add a test to exercise the CAP_SYS_BOOT check? At minimum the
+selftest should check if it has CAP_SYS_BOOT and act accordingly (e.g.
+exiting with KSFT_SKIP).
+
+> @@ -57,13 +57,40 @@ static void check_split_count(struct kvm_vm *vm, int expected_splits)
+>  		    expected_splits, actual_splits);
+>  }
+>  
+> +static void help(void)
+> +{
+> +	puts("");
+> +	printf("usage: nx_huge_pages_test.sh [-x]\n");
+> +	puts("");
+> +	printf(" -x: Allow executable huge pages on the VM.\n");
+> +	puts("");
+> +	exit(0);
+> +}
+> +
+>  int main(int argc, char **argv)
+>  {
+>  	struct kvm_vm *vm;
+>  	struct timespec ts;
+> +	bool disable_nx = false;
+> +	int opt;
+> +
+> +	while ((opt = getopt(argc, argv, "x")) != -1) {
+> +		switch (opt) {
+> +		case 'x':
+> +			disable_nx = true;
+> +			break;
+> +		case 'h':
+> +		default:
+> +			help();
+> +			break;
+> +		}
+> +	}
+>  
+>  	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES, O_RDWR);
+>  
+> +	if (disable_nx)
+> +		vm_disable_nx_huge_pages(vm);
+> +
+>  	vm_userspace_mem_region_add(vm, VM_MEM_SRC_ANONYMOUS_HUGETLB,
+>  				    HPAGE_PADDR_START, HPAGE_SLOT,
+>  				    HPAGE_SLOT_NPAGES, 0);
+> @@ -83,21 +110,21 @@ int main(int argc, char **argv)
+>  	 * at 2M.
+>  	 */
+>  	run_guest_code(vm, guest_code0);
+> -	check_2m_page_count(vm, 2);
+> -	check_split_count(vm, 2);
+> +	check_2m_page_count(vm, disable_nx ? 4 : 2);
+> +	check_split_count(vm, disable_nx ? 0 : 2);
+>  
+>  	/*
+>  	 * guest_code1 is in the same huge page as data1, so it will cause
+>  	 * that huge page to be remapped at 4k.
+>  	 */
+>  	run_guest_code(vm, guest_code1);
+> -	check_2m_page_count(vm, 1);
+> -	check_split_count(vm, 3);
+> +	check_2m_page_count(vm, disable_nx ? 4 : 1);
+> +	check_split_count(vm, disable_nx ? 0 : 3);
+>  
+>  	/* Run guest_code0 again to check that is has no effect. */
+>  	run_guest_code(vm, guest_code0);
+> -	check_2m_page_count(vm, 1);
+> -	check_split_count(vm, 3);
+> +	check_2m_page_count(vm, disable_nx ? 4 : 1);
+> +	check_split_count(vm, disable_nx ? 0 : 3);
+>  
+>  	/*
+>  	 * Give recovery thread time to run. The wrapper script sets
+> @@ -110,7 +137,7 @@ int main(int argc, char **argv)
+>  	/*
+>  	 * Now that the reclaimer has run, all the split pages should be gone.
+>  	 */
+> -	check_2m_page_count(vm, 1);
+> +	check_2m_page_count(vm, disable_nx ? 4 : 1);
+>  	check_split_count(vm, 0);
+>  
+>  	/*
+> @@ -118,13 +145,13 @@ int main(int argc, char **argv)
+>  	 * again to check that pages are mapped at 2M again.
+>  	 */
+>  	run_guest_code(vm, guest_code0);
+> -	check_2m_page_count(vm, 2);
+> -	check_split_count(vm, 2);
+> +	check_2m_page_count(vm, disable_nx ? 4 : 2);
+> +	check_split_count(vm, disable_nx ? 0 : 2);
+>  
+>  	/* Pages are once again split from running guest_code1. */
+>  	run_guest_code(vm, guest_code1);
+> -	check_2m_page_count(vm, 1);
+> -	check_split_count(vm, 3);
+> +	check_2m_page_count(vm, disable_nx ? 4 : 1);
+> +	check_split_count(vm, disable_nx ? 0 : 3);
+>  
+>  	kvm_vm_free(vm);
+>  
+> diff --git a/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.sh b/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.sh
+> index 19fc95723fcb..29f999f48848 100755
+> --- a/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.sh
+> +++ b/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.sh
+> @@ -14,7 +14,7 @@ echo 1 > /sys/module/kvm/parameters/nx_huge_pages_recovery_ratio
+>  echo 100 > /sys/module/kvm/parameters/nx_huge_pages_recovery_period_ms
+>  echo 200 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+>  
+> -./nx_huge_pages_test
+> +./nx_huge_pages_test "${@}"
+>  RET=$?
+>  
+>  echo $NX_HUGE_PAGES > /sys/module/kvm/parameters/nx_huge_pages
 > -- 
-> 2.35.1.1021.g381101b075-goog
-
--- 
-
-- Arnaldo
+> 2.35.1.894.gb6a874cedc-goog
+> 
