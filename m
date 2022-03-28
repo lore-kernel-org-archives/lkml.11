@@ -2,176 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A47F2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 18:02:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14F46C4167D
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 18:02:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245345AbiC1SEC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 14:04:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38876 "EHLO
+        id S244936AbiC1SEF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 14:04:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244897AbiC1SCw (ORCPT
+        with ESMTP id S245146AbiC1SDX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 14:02:52 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F1274B1E6
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 11:01:06 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id u3so21550944wrg.3
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 11:01:05 -0700 (PDT)
+        Mon, 28 Mar 2022 14:03:23 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1601A47380
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 11:01:42 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id u3so20356499ljd.0
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 11:01:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ytrSkwXUDSFcv9NwzDcZHJvhwX8Ip28tSIzF/72ZJ1Q=;
-        b=VcyTOLVPq+V1OSY1Zl84llZUOW1+DiM07S87IWjY6+20V2jBdQ1vm+S2GV9qIJPtqv
-         pLK4CJ9etgGbTHFOsHk97o/HxvnmIVI4mMk+EGHbRX6CJrIFhyvnSC6Rfimd+X/hl2uA
-         a6RBgH4fTtSovkIx/LH5QsjPzVnFtvX03n05rdHb2Niy7y93hqADUsfUaEgwWTWY0DGl
-         GeMqskNlS97LRMAsvI02JTysyyghYlfjb9mf6gG4HlbTYhYnGIBhn3XdBYfTYXBaOwsF
-         95L6ejUjlhIht89eN92IqbUGGnk20Xbj3EaFlV+lYxgRhw/js5pXwNxfvBz/LaSuxyZ9
-         fpdA==
+        d=daynix-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uuYv067X4kT+NOzbPXQ219scQGqPB4cAH5gxcRBn5ME=;
+        b=RyjbhIYZZ7QEgJfc3+9Bvvfbd8rZqEPj/OObh6rKDftThCHs1swjSvwR2LsVN2SMXn
+         ACeJlGqAX0jZU6F0xlnzpYw7hbagCAR/zZLV+JNklkWGwSwvEW1KcmO7l78PUUW1OZgs
+         wLtAHxeU1GiXwYZ5dlr2HBceQA4EVjrnVyjsofmW1YxlcOPqS8S+n+0/Cybudrx+USc7
+         rYeomXkg6+VSjJSzSesLobXvpvMInAmwMTitRxEfPaI0eQ/8COOsr21qosO8ck+XJ7zq
+         UJEaVw4GqdoS/oHfy7t42zHNWpI34jr4HGSu20CZOZJk3tulDkJdnNzdjdbaxmRyiwFS
+         UPWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ytrSkwXUDSFcv9NwzDcZHJvhwX8Ip28tSIzF/72ZJ1Q=;
-        b=uFEAidMOyYhozYR6K1Os9ekplcnbujLl6cHYlHUlc2pkKPNvsvplFAtMmCbr/k6Viz
-         vdRh3Iw1N7aYe0zSCjy9F1h9krMbexEKnSS1uaEVa/N339Y434ZeD3zWAzXu+2QH9mTo
-         l4yV0s4IH6Uq45JlSRe4C/CIKWsv5GaoLxDj8Vox0WatdGQnreHGYE9ctJlXxj2d/Ka4
-         ktx/XBlEe++pRx13K6IMrDkJxJpeFJy+MKygWikHB4Jbb3R/AjNIx3idOLYVRgjQCJo2
-         kLVId1RQfmmSgeXJrgNx4o5c6pVtV1PRqgGHtHpBw+GnAETBoFegCbJDEpZgFVmBicKJ
-         pw7g==
-X-Gm-Message-State: AOAM533Exd2LGMx0jj1lToyODZ2wHJMS6wUfkpSbk8Uk08kCMjehBuSZ
-        V/57Di/o9dF0x09tabIXWl3eSg==
-X-Google-Smtp-Source: ABdhPJz/DFJ+XVXhJNrPMlWXh7xu5l3qH4Q/QymhLpFp1U0q32kHVhkRByS9xkteULaLyJt8VbhF/w==
-X-Received: by 2002:adf:fac8:0:b0:203:fb08:ff7 with SMTP id a8-20020adffac8000000b00203fb080ff7mr24674238wrs.648.1648490463028;
-        Mon, 28 Mar 2022 11:01:03 -0700 (PDT)
-Received: from google.com ([2a00:79e0:d:210:2cfc:d300:5bbc:f8a0])
-        by smtp.gmail.com with ESMTPSA id bi20-20020a05600c3d9400b0038cfe80eeddsm142468wmb.29.2022.03.28.11.01.01
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uuYv067X4kT+NOzbPXQ219scQGqPB4cAH5gxcRBn5ME=;
+        b=wFUl/r7hzEy7ITCpF/STTMzUZOa4aCB7pJ6rmmvednBimsmw0K3cZvu7+hT3rZZbvo
+         KSnN4cX2WDO0bZKMaP9F4C6PhlqEKSuOg3kwDWp2GudWnV+deu0bRH+c3IfvkELKgsTS
+         XCeN0QeNVsZzplNgCpXTx37owYNF6HjIfej8UQooe4cSCRm5mtLSbL2GRv/pzZQC2JWD
+         El8XCqu6BgsMlQepXD9G03UgNt4ftB/fgM7fOpYYJXaxem6UeQRpykS/nk2ZDkW3EViu
+         aH4wLF8B5rtPjYd9mWyGLnd8FUoTtVjhm16lAar60vr72TK9Hz96tedxv0hPzMvSPWJe
+         Ms+Q==
+X-Gm-Message-State: AOAM532dozkxDeTPN2wDGjkj0/j1g9Ysu2CC12IVRlp5Z6WRsAWypeXk
+        WI5XdTpa14+KNOKytEFkvcEecw==
+X-Google-Smtp-Source: ABdhPJyshjbv5zxOBh3CePhb4vs8HHNCKWvlGyNfSZ0PMMK0RCvdxXijXOCiAixCaIl0voXdnRAxrA==
+X-Received: by 2002:a05:651c:17a3:b0:245:f39e:f2d2 with SMTP id bn35-20020a05651c17a300b00245f39ef2d2mr22295503ljb.490.1648490500316;
+        Mon, 28 Mar 2022 11:01:40 -0700 (PDT)
+Received: from localhost.localdomain (host-188-190-49-235.la.net.ua. [188.190.49.235])
+        by smtp.gmail.com with ESMTPSA id a4-20020a2eb164000000b0024988e1cfb6sm1801559ljm.94.2022.03.28.11.01.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Mar 2022 11:01:02 -0700 (PDT)
-Date:   Mon, 28 Mar 2022 19:00:58 +0100
-From:   Quentin Perret <qperret@google.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Chao Peng <chao.p.peng@linux.intel.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
-        qemu-devel@nongnu.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com, maz@kernel.org,
-        will@kernel.org
-Subject: Re: [PATCH v5 00/13] KVM: mm: fd-based approach for supporting KVM
- guest private memory
-Message-ID: <YkH32nx+YsJuUbmZ@google.com>
-References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
- <YjyS6A0o4JASQK+B@google.com>
- <YkHspg+YzOsbUaCf@google.com>
+        Mon, 28 Mar 2022 11:01:39 -0700 (PDT)
+From:   Andrew Melnychenko <andrew@daynix.com>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org
+Cc:     kuba@kernel.org, davem@davemloft.net, jasowang@redhat.com,
+        mst@redhat.com, yan@daynix.com, yuri.benditovich@daynix.com
+Subject: [PATCH v5 0/4] RSS support for VirtioNet.
+Date:   Mon, 28 Mar 2022 20:53:32 +0300
+Message-Id: <20220328175336.10802-1-andrew@daynix.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YkHspg+YzOsbUaCf@google.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sean,
+Virtio-net supports "hardware" RSS with toeplitz key.
+Also, it allows receiving calculated hash in vheader
+that may be used with RPS.
+Added ethtools callbacks to manipulate RSS.
 
-Thanks for the reply, this helps a lot.
+Technically hash calculation may be set only for
+SRC+DST and SRC+DST+PORTSRC+PORTDST hashflows.
+The completely disabling hash calculation for TCP or UDP
+would disable hash calculation for IP.
 
-On Monday 28 Mar 2022 at 17:13:10 (+0000), Sean Christopherson wrote:
-> On Thu, Mar 24, 2022, Quentin Perret wrote:
-> > For Protected KVM (and I suspect most other confidential computing
-> > solutions), guests have the ability to share some of their pages back
-> > with the host kernel using a dedicated hypercall. This is necessary
-> > for e.g. virtio communications, so these shared pages need to be mapped
-> > back into the VMM's address space. I'm a bit confused about how that
-> > would work with the approach proposed here. What is going to be the
-> > approach for TDX?
-> > 
-> > It feels like the most 'natural' thing would be to have a KVM exit
-> > reason describing which pages have been shared back by the guest, and to
-> > then allow the VMM to mmap those specific pages in response in the
-> > memfd. Is this something that has been discussed or considered?
-> 
-> The proposed solution is to exit to userspace with a new exit reason, KVM_EXIT_MEMORY_ERROR,
-> when the guest makes the hypercall to request conversion[1].  The private fd itself
-> will never allow mapping memory into userspace, instead userspace will need to punch
-> a hole in the private fd backing store.  The absense of a valid mapping in the private
-> fd is how KVM detects that a pfn is "shared" (memslots without a private fd are always
-> shared)[2].
+RSS/RXHASH is disabled by default.
 
-Right. I'm still a bit confused about how the VMM is going to get the
-shared page mapped in its page-table. Once it has punched a hole into
-the private fd, how is it supposed to access the actual physical page
-that the guest shared? Is there an assumption somewhere that the VMM
-should have this page mapped in via an alias that it can legally access
-only once it has punched a hole at the corresponding offset in the
-private fd or something along those lines?
+Changes since v4:
+* Refactored code.
+* Fixed sparse warnings, there would be warnings for using
+  restricted fields in vnet header structure.
 
-> The key point is that KVM never decides to convert between shared and private, it's
-> always a userspace decision.  Like normal memslots, where userspace has full control
-> over what gfns are a valid, this gives userspace full control over whether a gfn is
-> shared or private at any given time.
+Changes since v3:
+* Moved hunks a bit.
+* Added indirection table zero size check
+  for hash report only feature.
+* Added virtio_skb_set_hash() helper instead of in-place routine.
 
-I'm understanding this as 'the VMM is allowed to punch holes in the
-private fd whenever it wants'. Is this correct? What happens if it does
-so for a page that a guest hasn't shared back?
+Changes since v2:
+* Fixed issue with calculating padded header length.
+  During review/tests, there was found an issue that
+  will crash the kernel if VIRTIO_NET_F_MRG_RXBUF
+  was not set. (thx to Jason Wang <jasowang@redhat.com>)
+* Refactored the code according to review.
 
-> Another important detail is that this approach means the kernel and KVM treat the
-> shared backing store and private backing store as independent, albeit related,
-> entities.  This is very deliberate as it makes it easier to reason about what is
-> and isn't allowed/required.  E.g. the kernel only needs to handle freeing private
-> memory, there is no special handling for conversion to shared because no such path
-> exists as far as host pfns are concerned.  And userspace doesn't need any new "rules"
-> for protecting itself against a malicious guest, e.g. userspace already needs to
-> ensure that it has a valid mapping prior to accessing guest memory (or be able to
-> handle any resulting signals).  A malicious guest can DoS itself by instructing
-> userspace to communicate over memory that is currently mapped private, but there
-> are no new novel attack vectors from the host's perspective as coercing the host
-> into accessing an invalid mapping after shared=>private conversion is just a variant
-> of a use-after-free.
+Changes since v1:
+* Refactored virtnet_set_hashflow.
+* Refactored virtio_net_ctrl_rss.
+* Moved hunks between patches a bit.
 
-Interesting. I was (maybe incorrectly) assuming that it would be
-difficult to handle illegal host accesses w/ TDX. IOW, this would
-essentially crash the host. Is this remotely correct or did I get that
-wrong?
+Changes since rfc:
+* Code refactored.
+* Patches reformatted.
+* Added feature validation.
 
-> One potential conversions that's TBD (at least, I think it is, I haven't read through
-> this most recent version) is how to support populating guest private memory with
-> non-zero data, e.g. to allow in-place conversion of the initial guest firmware instead
-> of having to an extra memcpy().
+Andrew (1):
+  drivers/net/virtio_net: Added RSS hash report control.
 
-Right. FWIW, in the pKVM case we should be pretty immune to this I
-think. The initial firmware is loaded in guest memory by the hypervisor
-itself (the EL2 code in arm64 speak) as the first vCPU starts running.
-And that firmware can then use e.g. virtio to load the guest payload and
-measure/check it. IOW, we currently don't have expectations regarding
-the initial state of guest memory, but it might be handy to have support
-for pre-loading the payload in the future (should save a copy as you
-said).
+Andrew Melnychenko (3):
+  drivers/net/virtio_net: Fixed padded vheader to use v1 with hash.
+  drivers/net/virtio_net: Added basic RSS support.
+  drivers/net/virtio_net: Added RSS hash report.
 
-> [1] KVM will also exit to userspace with the same info on "implicit" conversions,
->     i.e. if the guest accesses the "wrong" GPA.  Neither SEV-SNP nor TDX mandate
->     explicit conversions in their guest<->host ABIs, so KVM has to support implicit
->     conversions :-/
-> 
-> [2] Ideally (IMO), KVM would require userspace to completely remove the private memslot,
->     but that's too slow due to use of SRCU in both KVM and userspace (QEMU at least uses
->     SRCU for memslot changes).
+ drivers/net/virtio_net.c | 389 +++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 376 insertions(+), 13 deletions(-)
+
+-- 
+2.35.1
+
