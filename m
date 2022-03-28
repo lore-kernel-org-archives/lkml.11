@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55162C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:45:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5675DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:45:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343873AbiC1Tr1 (ORCPT
+        id S1343879AbiC1Tra (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 15:47:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51526 "EHLO
+        Mon, 28 Mar 2022 15:47:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343778AbiC1Tq2 (ORCPT
+        with ESMTP id S1343789AbiC1Tqa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 15:46:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25118689A7;
-        Mon, 28 Mar 2022 12:43:02 -0700 (PDT)
+        Mon, 28 Mar 2022 15:46:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3B3E673FD;
+        Mon, 28 Mar 2022 12:43:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59089B8120F;
-        Mon, 28 Mar 2022 19:42:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06990C36AE3;
-        Mon, 28 Mar 2022 19:42:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 94367612AB;
+        Mon, 28 Mar 2022 19:43:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C5D7C34111;
+        Mon, 28 Mar 2022 19:43:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648496574;
-        bh=Ho/BjnVNGfweAgBtMiS7dBtzUEAbt0AM1Wjb60i/UUs=;
+        s=k20201202; t=1648496585;
+        bh=cxIlbeMDmUc/aVrFTc+t0g8Jo+ZFlW+CNDEk4hZ16Io=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b1yhqUVhuWpC2v4IJ9FoQLHsCyjuPaatx8NvRi7DDQpivqsq6n2hsix+q06Obuku6
-         iRdkf2FbbtkfZv2XuUHBgTDBUxOi9Nk7C6CH9ke4sk6p9JQ4KyCu+Kzhp4e4GKm1of
-         akrRdrfyVNgvnfrdNJzRKyr6o9TB6vfwuaWWaD+EH1gvysXtbYuKQmljin5OvPaD51
-         gR0scmJzg7c9aRODIraYTJhi8gDxPsYkjtq1wZgLJ8Ljk0kyKmZvfe29CtJ61TIOnZ
-         dZNWZsHYa90j07IAcbC4+gKUkCkFW+N+/RqRkWIhQGWKxuOjIJlHtotrAd5SMKwZcy
-         tRNKDIIB+X2Eg==
+        b=WyB8MuVrMKBP9sXESFupQmRigYjCCtrOFyGJi5Wj215ZCC7X/34b63SQs72flXELL
+         CAWpdju9qliKr7GF5FG58DSgvi4iY/nTTfdEmnpSQu2+WL/LKdaEt6dYATTl08Sexl
+         C9wfxsvpsLn5X8xzUAgITpBa7QQW146LUzw8IGNExeVaFI2g6L9NqahhDTn2IJ9gLw
+         7rcnW0UCtTCiAGKfiGuie0pi9SMLN3VkyROyli9DK+IyEHM8dD9NlAAUu+kV5YgzxD
+         CFo4XiVhUaEv4srYq8nUSmZLvUiD1C7g3+4iZFNpsCM0hnhXX6tdo5XInVM6+1WcbV
+         ZqbjBKibl+imQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jaegeuk Kim <jaegeuk@kernel.org>, Chao Yu <chao@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, yuchao0@huawei.com,
-        linux-f2fs-devel@lists.sourceforge.net
-Subject: [PATCH AUTOSEL 5.16 17/20] f2fs: use spin_lock to avoid hang
-Date:   Mon, 28 Mar 2022 15:42:23 -0400
-Message-Id: <20220328194226.1585920-17-sashal@kernel.org>
+Cc:     Ritesh Harjani <riteshh@linux.ibm.com>, Jan Kara <jack@suse.cz>,
+        Theodore Ts'o <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>,
+        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 03/16] ext4: correct cluster len and clusters changed accounting in ext4_mb_mark_bb
+Date:   Mon, 28 Mar 2022 15:42:46 -0400
+Message-Id: <20220328194300.1586178-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220328194226.1585920-1-sashal@kernel.org>
-References: <20220328194226.1585920-1-sashal@kernel.org>
+In-Reply-To: <20220328194300.1586178-1-sashal@kernel.org>
+References: <20220328194300.1586178-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,139 +52,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jaegeuk Kim <jaegeuk@kernel.org>
+From: Ritesh Harjani <riteshh@linux.ibm.com>
 
-[ Upstream commit 98237fcda4a24e67b0a4498c17d5aa4ad4537bc7 ]
+[ Upstream commit a5c0e2fdf7cea535ba03259894dc184e5a4c2800 ]
 
-[14696.634553] task:cat             state:D stack:    0 pid:1613738 ppid:1613735 flags:0x00000004
-[14696.638285] Call Trace:
-[14696.639038]  <TASK>
-[14696.640032]  __schedule+0x302/0x930
-[14696.640969]  schedule+0x58/0xd0
-[14696.641799]  schedule_preempt_disabled+0x18/0x30
-[14696.642890]  __mutex_lock.constprop.0+0x2fb/0x4f0
-[14696.644035]  ? mod_objcg_state+0x10c/0x310
-[14696.645040]  ? obj_cgroup_charge+0xe1/0x170
-[14696.646067]  __mutex_lock_slowpath+0x13/0x20
-[14696.647126]  mutex_lock+0x34/0x40
-[14696.648070]  stat_show+0x25/0x17c0 [f2fs]
-[14696.649218]  seq_read_iter+0x120/0x4b0
-[14696.650289]  ? aa_file_perm+0x12a/0x500
-[14696.651357]  ? lru_cache_add+0x1c/0x20
-[14696.652470]  seq_read+0xfd/0x140
-[14696.653445]  full_proxy_read+0x5c/0x80
-[14696.654535]  vfs_read+0xa0/0x1a0
-[14696.655497]  ksys_read+0x67/0xe0
-[14696.656502]  __x64_sys_read+0x1a/0x20
-[14696.657580]  do_syscall_64+0x3b/0xc0
-[14696.658671]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[14696.660068] RIP: 0033:0x7efe39df1cb2
-[14696.661133] RSP: 002b:00007ffc8badd948 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
-[14696.662958] RAX: ffffffffffffffda RBX: 0000000000020000 RCX: 00007efe39df1cb2
-[14696.664757] RDX: 0000000000020000 RSI: 00007efe399df000 RDI: 0000000000000003
-[14696.666542] RBP: 00007efe399df000 R08: 00007efe399de010 R09: 00007efe399de010
-[14696.668363] R10: 0000000000000022 R11: 0000000000000246 R12: 0000000000000000
-[14696.670155] R13: 0000000000000003 R14: 0000000000020000 R15: 0000000000020000
-[14696.671965]  </TASK>
-[14696.672826] task:umount          state:D stack:    0 pid:1614985 ppid:1614984 flags:0x00004000
-[14696.674930] Call Trace:
-[14696.675903]  <TASK>
-[14696.676780]  __schedule+0x302/0x930
-[14696.677927]  schedule+0x58/0xd0
-[14696.679019]  schedule_preempt_disabled+0x18/0x30
-[14696.680412]  __mutex_lock.constprop.0+0x2fb/0x4f0
-[14696.681783]  ? destroy_inode+0x65/0x80
-[14696.683006]  __mutex_lock_slowpath+0x13/0x20
-[14696.684305]  mutex_lock+0x34/0x40
-[14696.685442]  f2fs_destroy_stats+0x1e/0x60 [f2fs]
-[14696.686803]  f2fs_put_super+0x158/0x390 [f2fs]
-[14696.688238]  generic_shutdown_super+0x7a/0x120
-[14696.689621]  kill_block_super+0x27/0x50
-[14696.690894]  kill_f2fs_super+0x7f/0x100 [f2fs]
-[14696.692311]  deactivate_locked_super+0x35/0xa0
-[14696.693698]  deactivate_super+0x40/0x50
-[14696.694985]  cleanup_mnt+0x139/0x190
-[14696.696209]  __cleanup_mnt+0x12/0x20
-[14696.697390]  task_work_run+0x64/0xa0
-[14696.698587]  exit_to_user_mode_prepare+0x1b7/0x1c0
-[14696.700053]  syscall_exit_to_user_mode+0x27/0x50
-[14696.701418]  do_syscall_64+0x48/0xc0
-[14696.702630]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+ext4_mb_mark_bb() currently wrongly calculates cluster len (clen) and
+flex_group->free_clusters. This patch fixes that.
 
-Reviewed-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Identified based on code review of ext4_mb_mark_bb() function.
+
+Signed-off-by: Ritesh Harjani <riteshh@linux.ibm.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/a0b035d536bafa88110b74456853774b64c8ac40.1644992609.git.riteshh@linux.ibm.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/debug.c | 17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+ fs/ext4/mballoc.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
-diff --git a/fs/f2fs/debug.c b/fs/f2fs/debug.c
-index 07ad0d81f0c5..b449c7a372a4 100644
---- a/fs/f2fs/debug.c
-+++ b/fs/f2fs/debug.c
-@@ -21,7 +21,7 @@
- #include "gc.h"
+diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
+index 74e3286d0e26..9a749327336f 100644
+--- a/fs/ext4/mballoc.c
++++ b/fs/ext4/mballoc.c
+@@ -3899,10 +3899,11 @@ void ext4_mb_mark_bb(struct super_block *sb, ext4_fsblk_t block,
+ 	struct ext4_sb_info *sbi = EXT4_SB(sb);
+ 	ext4_group_t group;
+ 	ext4_grpblk_t blkoff;
+-	int i, clen, err;
++	int i, err;
+ 	int already;
++	unsigned int clen, clen_changed;
  
- static LIST_HEAD(f2fs_stat_list);
--static DEFINE_MUTEX(f2fs_stat_mutex);
-+static DEFINE_RAW_SPINLOCK(f2fs_stat_lock);
- #ifdef CONFIG_DEBUG_FS
- static struct dentry *f2fs_debugfs_root;
- #endif
-@@ -345,8 +345,9 @@ static int stat_show(struct seq_file *s, void *v)
- {
- 	struct f2fs_stat_info *si;
- 	int i = 0, j = 0;
-+	unsigned long flags;
+-	clen = EXT4_B2C(sbi, len);
++	clen = EXT4_NUM_B2C(sbi, len);
  
--	mutex_lock(&f2fs_stat_mutex);
-+	raw_spin_lock_irqsave(&f2fs_stat_lock, flags);
- 	list_for_each_entry(si, &f2fs_stat_list, stat_list) {
- 		update_general_status(si->sbi);
+ 	ext4_get_group_no_and_offset(sb, block, &group, &blkoff);
+ 	bitmap_bh = ext4_read_block_bitmap(sb, group);
+@@ -3923,6 +3924,7 @@ void ext4_mb_mark_bb(struct super_block *sb, ext4_fsblk_t block,
+ 		if (!mb_test_bit(blkoff + i, bitmap_bh->b_data) == !state)
+ 			already++;
  
-@@ -574,7 +575,7 @@ static int stat_show(struct seq_file *s, void *v)
- 		seq_printf(s, "  - paged : %llu KB\n",
- 				si->page_mem >> 10);
++	clen_changed = clen - already;
+ 	if (state)
+ 		ext4_set_bits(bitmap_bh->b_data, blkoff, clen);
+ 	else
+@@ -3935,9 +3937,9 @@ void ext4_mb_mark_bb(struct super_block *sb, ext4_fsblk_t block,
+ 						group, gdp));
  	}
--	mutex_unlock(&f2fs_stat_mutex);
-+	raw_spin_unlock_irqrestore(&f2fs_stat_lock, flags);
- 	return 0;
- }
+ 	if (state)
+-		clen = ext4_free_group_clusters(sb, gdp) - clen + already;
++		clen = ext4_free_group_clusters(sb, gdp) - clen_changed;
+ 	else
+-		clen = ext4_free_group_clusters(sb, gdp) + clen - already;
++		clen = ext4_free_group_clusters(sb, gdp) + clen_changed;
  
-@@ -585,6 +586,7 @@ int f2fs_build_stats(struct f2fs_sb_info *sbi)
- {
- 	struct f2fs_super_block *raw_super = F2FS_RAW_SUPER(sbi);
- 	struct f2fs_stat_info *si;
-+	unsigned long flags;
- 	int i;
+ 	ext4_free_group_clusters_set(sb, gdp, clen);
+ 	ext4_block_bitmap_csum_set(sb, group, gdp, bitmap_bh);
+@@ -3947,10 +3949,13 @@ void ext4_mb_mark_bb(struct super_block *sb, ext4_fsblk_t block,
  
- 	si = f2fs_kzalloc(sbi, sizeof(struct f2fs_stat_info), GFP_KERNEL);
-@@ -620,9 +622,9 @@ int f2fs_build_stats(struct f2fs_sb_info *sbi)
- 	atomic_set(&sbi->max_aw_cnt, 0);
- 	atomic_set(&sbi->max_vw_cnt, 0);
+ 	if (sbi->s_log_groups_per_flex) {
+ 		ext4_group_t flex_group = ext4_flex_group(sbi, group);
++		struct flex_groups *fg = sbi_array_rcu_deref(sbi,
++					   s_flex_groups, flex_group);
  
--	mutex_lock(&f2fs_stat_mutex);
-+	raw_spin_lock_irqsave(&f2fs_stat_lock, flags);
- 	list_add_tail(&si->stat_list, &f2fs_stat_list);
--	mutex_unlock(&f2fs_stat_mutex);
-+	raw_spin_unlock_irqrestore(&f2fs_stat_lock, flags);
+-		atomic64_sub(len,
+-			     &sbi_array_rcu_deref(sbi, s_flex_groups,
+-						  flex_group)->free_clusters);
++		if (state)
++			atomic64_sub(clen_changed, &fg->free_clusters);
++		else
++			atomic64_add(clen_changed, &fg->free_clusters);
+ 	}
  
- 	return 0;
- }
-@@ -630,10 +632,11 @@ int f2fs_build_stats(struct f2fs_sb_info *sbi)
- void f2fs_destroy_stats(struct f2fs_sb_info *sbi)
- {
- 	struct f2fs_stat_info *si = F2FS_STAT(sbi);
-+	unsigned long flags;
- 
--	mutex_lock(&f2fs_stat_mutex);
-+	raw_spin_lock_irqsave(&f2fs_stat_lock, flags);
- 	list_del(&si->stat_list);
--	mutex_unlock(&f2fs_stat_mutex);
-+	raw_spin_unlock_irqrestore(&f2fs_stat_lock, flags);
- 
- 	kfree(si);
- }
+ 	err = ext4_handle_dirty_metadata(NULL, NULL, bitmap_bh);
 -- 
 2.34.1
 
