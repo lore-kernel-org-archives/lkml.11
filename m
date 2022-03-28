@@ -2,81 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54798C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 12:40:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4484AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 12:41:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242597AbiC1MmZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 08:42:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35894 "EHLO
+        id S242602AbiC1MnX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 08:43:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240672AbiC1MmY (ORCPT
+        with ESMTP id S236168AbiC1MnV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 08:42:24 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38D045B3F9;
-        Mon, 28 Mar 2022 05:40:38 -0700 (PDT)
-X-UUID: 7c04888e22d946a2ab98aa302e160b34-20220328
-X-UUID: 7c04888e22d946a2ab98aa302e160b34-20220328
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <xiaobing.shi@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 589206584; Mon, 28 Mar 2022 20:40:31 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Mon, 28 Mar 2022 20:40:30 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 28 Mar
- 2022 20:40:30 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 28 Mar 2022 20:40:29 +0800
-From:   Xiaobing shi <xiaobing.shi@mediatek.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>
-CC:     Matthias Brugger <matthias.bgg@gmail.com>,
-        <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        Xiaobing shi <xiaobing.shi@mediatek.com>
-Subject: [PATCH] remoteproc: avoid array index out of bounds in debugfs file
-Date:   Mon, 28 Mar 2022 20:34:13 +0800
-Message-ID: <20220328123413.18169-1-xiaobing.shi@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        Mon, 28 Mar 2022 08:43:21 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D8B95C36F
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 05:41:40 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id bn33so19003251ljb.6
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 05:41:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MegZaMgRrshb8FVD+WqvuRy2H4KFth7Hnw9qafWigzg=;
+        b=sVgBvtgNOiUNfokbcV/UEDxd3JbQxAqFvnxjGqBN4cY1QyDJWCp4TYhdHlVxavEMwT
+         NaFhnLpDLEIxIERrZCB/RKEyyreqy/bcT3s8yoTOkaKn3uBV1pHmbsPXVYpKERtWv7I0
+         F2mmTxuFI5aPxwkvU3l9pzqSO9KrfYhA0VK+MjuVscOkMFZc4ZdLF72MLLsfQT6khDwD
+         ixbnFD9X5+U7gmj1CmiV7l38/zxI2p1W5vRYGm4dgOWaUh6EG+T9+X4UouW6j48gfMhM
+         kb3oqKb2aZGEB5WMIFtpmK0Ok5P4JpB/eDJY6Z44vQ+8KQuHELPXJa1Ss3+avqtOwYMK
+         4PeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MegZaMgRrshb8FVD+WqvuRy2H4KFth7Hnw9qafWigzg=;
+        b=YNNGKXCU4VxqsNWuEQssz2Ynp2WTF8UCtkZGOmGWBLztbpr0FV1XzSeksUbzUN36Qx
+         A2BW3DBURWJqzKEUF6ozh4pGgGVwYx6v76exsjzw97L3utpq2EHLa2uCcpE6sC2QuEEF
+         B1yD4jUOZQmTwUufdwAp6dIkSFj+EjARUIJ0U3lDsJp7tZa7REpw83FcaRft6q6uKCfT
+         4m+YPPY2fRVZiDOIA4FRjGOZEFCK1vfh+PwT6iY4S1qJlKkF/Z7ITuXYwP6vPdyDwcps
+         10tjSY/u7OB7oPWKJblukn+ACuzdf/6AmIzPwVzxSWaLDdKERE0cpbqaqsaQDLCB0iMf
+         BHAg==
+X-Gm-Message-State: AOAM531XZs3+/MSa/+V7CP/cj7sbtcufu3hWTY45kbWBT9ffTH42bGmu
+        5EB1GMHw07a0MP7dM2s8tJshKr/uBgIz3Ed0FVCJwg==
+X-Google-Smtp-Source: ABdhPJz8oYefLtyZH5D4aZO3gwY4fRrPfU6rhkLLTSaJ+H+rVRizSEjRP9apIY+xtVx4iUTTPet971+EQdjqec2tvyg=
+X-Received: by 2002:a2e:bc12:0:b0:249:8daa:4de4 with SMTP id
+ b18-20020a2ebc12000000b002498daa4de4mr20231163ljf.383.1648471298777; Mon, 28
+ Mar 2022 05:41:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+References: <20220311161406.23497-1-vincent.guittot@linaro.org>
+ <20220311161406.23497-4-vincent.guittot@linaro.org> <6bee2e39-34a8-905f-084f-379b8476ea98@arm.com>
+In-Reply-To: <6bee2e39-34a8-905f-084f-379b8476ea98@arm.com>
+From:   Vincent Guittot <vincent.guittot@linaro.org>
+Date:   Mon, 28 Mar 2022 14:41:27 +0200
+Message-ID: <CAKfTPtCr0se4T=21VONvsR1wmxhWFiLDeh-Wpc3xhFxUYMh5OQ@mail.gmail.com>
+Subject: Re: [PATCH 3/6] sched: Allow sched_{get,set}attr to change
+ latency_nice of the task
+To:     Dietmar Eggemann <dietmar.eggemann@arm.com>
+Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        linux-kernel@vger.kernel.org, parth@linux.ibm.com,
+        qais.yousef@arm.com, chris.hyser@oracle.com,
+        pkondeti@codeaurora.org, Valentin.Schneider@arm.com,
+        patrick.bellasi@matbug.net, David.Laight@aculab.com,
+        pjt@google.com, pavel@ucw.cz, tj@kernel.org,
+        dhaval.giani@oracle.com, qperret@google.com,
+        tim.c.chen@linux.intel.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is a negative offset of an on-stack array that causes an out of
-bounds issue when someone called with a zero 'count' argument to
-syswrite().
+On Mon, 28 Mar 2022 at 11:23, Dietmar Eggemann <dietmar.eggemann@arm.com> wrote:
+>
+> On 11/03/2022 17:14, Vincent Guittot wrote:
+>
+> [...]
+>
+> > @@ -98,6 +99,22 @@ struct sched_param {
+> >   * scheduled on a CPU with no more capacity than the specified value.
+> >   *
+> >   * A task utilization boundary can be reset by setting the attribute to -1.
+> > + *
+> > + * Latency Tolerance Attributes
+> > + * ===========================
+> > + *
+> > + * A subset of sched_attr attributes allows to specify the relative latency
+> > + * requirements of a task with respect to the other tasks running/queued in the
+> > + * system.
+> > + *
+> > + * @ sched_latency_nice      task's latency_nice value
+> > + *
+> > + * The latency_nice of a task can have any value in a range of
+> > + * [LATENCY_NICE_MIN..LATENCY_NICE_MAX].
+>
+> s/LATENCY_NICE_MIN/MIN_LATENCY_NICE
+> s/LATENCY_NICE_MAX/MAX_LATENCY_NICE
 
-	buf[count - 1]
+yes
 
-We should add an extra check in rproc_coredump_write() to prevent the
-access.
+>
+> > + * A task with latency_nice with the value of LATENCY_NICE_MIN can be
+> > + * taken for a task with lower latency requirements as opposed to the task with
+> > + * higher latency_nice.
+>
+> low latency nice (priority): -20 -> high weight: 1024 ... Doesn't a task
+> with MIN_LATENCY_NICE -20 have the highest latency requirements?
 
-Signed-off-by: Xiaobing shi <xiaobing.shi@mediatek.com>
----
- drivers/remoteproc/remoteproc_debugfs.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+IIUC, What Parth wanted to say here is that low latency nice
+(priority): -20  is taken for a task which needs low latency. The low
+applies to latency not requirements
 
-diff --git a/drivers/remoteproc/remoteproc_debugfs.c b/drivers/remoteproc/remoteproc_debugfs.c
-index b5a1e3b697d9..581930483ef8 100644
---- a/drivers/remoteproc/remoteproc_debugfs.c
-+++ b/drivers/remoteproc/remoteproc_debugfs.c
-@@ -76,7 +76,7 @@ static ssize_t rproc_coredump_write(struct file *filp,
- 	int ret, err = 0;
- 	char buf[20];
- 
--	if (count > sizeof(buf))
-+	if (count < 1 || count > sizeof(buf))
- 		return -EINVAL;
- 
- 	ret = copy_from_user(buf, user_buf, count);
--- 
-2.18.0
-
+>
+> [...]
