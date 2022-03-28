@@ -2,105 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7863CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 01:00:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F4FBC4167D
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 01:00:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237189AbiC1BB7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 21:01:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48598 "EHLO
+        id S235753AbiC1BCe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 21:02:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232506AbiC1BB5 (ORCPT
+        with ESMTP id S235028AbiC1BCb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 21:01:57 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6D532E9D9;
-        Sun, 27 Mar 2022 18:00:17 -0700 (PDT)
-Received: from kwepemi500021.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KRZ7x07BCzfZb6;
-        Mon, 28 Mar 2022 08:58:36 +0800 (CST)
-Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
- kwepemi500021.china.huawei.com (7.221.188.245) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 28 Mar 2022 09:00:14 +0800
-Received: from [10.174.178.208] (10.174.178.208) by
- kwepemm600013.china.huawei.com (7.193.23.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 28 Mar 2022 09:00:13 +0800
-Subject: Re: [PATCH 5.4 00/29] 5.4.188-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <stable@vger.kernel.org>, <torvalds@linux-foundation.org>,
-        <akpm@linux-foundation.org>, <linux@roeck-us.net>,
-        <shuah@kernel.org>, <patches@kernelci.org>,
-        <lkft-triage@lists.linaro.org>, <pavel@denx.de>,
-        <jonathanh@nvidia.com>, <f.fainelli@gmail.com>,
-        <sudipm.mukherjee@gmail.com>, <slade@sladewatkins.com>
-References: <20220325150418.585286754@linuxfoundation.org>
-From:   Samuel Zou <zou_wei@huawei.com>
-Message-ID: <d40d9e05-9927-f389-3eb1-dcb9a255be62@huawei.com>
-Date:   Mon, 28 Mar 2022 09:00:12 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        Sun, 27 Mar 2022 21:02:31 -0400
+Received: from proxmox1.postmarketos.org (proxmox1.postmarketos.org [213.239.216.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AC3084ECDD;
+        Sun, 27 Mar 2022 18:00:50 -0700 (PDT)
+Received: from localhost.localdomain (cpc78119-cwma10-2-0-cust590.7-3.cable.virginm.net [81.96.50.79])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by proxmox1.postmarketos.org (Postfix) with ESMTPSA id CCA3E140195;
+        Mon, 28 Mar 2022 00:50:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=postmarketos.org;
+        s=donut; t=1648428630;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FJPO+cvB8mQMll3NzzvYxlnd9zKt1uj4D1+8hbf+ebs=;
+        b=QCUmOohgp7Hn9lmS+r5wAkX438yPTC/mINkGBozlm1i//Cp1NiRAtUM3e23zyrgp2VJvQN
+        DE+ArD6XUE8FhBU+jPxyGQt2L0qsKA0/nPOTZtLCbc3Fi3aokGFvGdP/S1FV8J1smBuvit
+        jFZPfxAXuWy8dGFa+TQ9V7nD04Dswew=
+From:   Caleb Connolly <kc@postmarketos.org>
+To:     Caleb Connolly <kc@postmarketos.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-gpio@vger.kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht, martijn@brixit.nl,
+        Arnaud Ferraris <arnaud.ferraris@collabora.com>
+Subject: [PATCH 3/4] gpio/rockchip: handle deferring input-enable pinconfs
+Date:   Mon, 28 Mar 2022 01:50:04 +0100
+Message-Id: <20220328005005.72492-4-kc@postmarketos.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220328005005.72492-1-kc@postmarketos.org>
+References: <20220328005005.72492-1-kc@postmarketos.org>
 MIME-Version: 1.0
-In-Reply-To: <20220325150418.585286754@linuxfoundation.org>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.208]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600013.china.huawei.com (7.193.23.68)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Add support for deferred PIN_CONFIG_INPUT_ENABLE handling.
 
+Signed-off-by: Caleb Connolly <kc@postmarketos.org>
+---
+ drivers/gpio/gpio-rockchip.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-On 2022/3/25 23:04, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.4.188 release.
-> There are 29 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Sun, 27 Mar 2022 15:04:08 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.188-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+diff --git a/drivers/gpio/gpio-rockchip.c b/drivers/gpio/gpio-rockchip.c
+index bcf5214e3586..e342a6dc4c6c 100644
+--- a/drivers/gpio/gpio-rockchip.c
++++ b/drivers/gpio/gpio-rockchip.c
+@@ -760,6 +760,11 @@ static int rockchip_gpio_probe(struct platform_device *pdev)
+ 				dev_warn(dev, "setting output pin %u to %u failed\n", cfg->pin,
+ 					 cfg->arg);
+ 			break;
++		case PIN_CONFIG_INPUT_ENABLE:
++			ret = rockchip_gpio_direction_input(&bank->gpio_chip, cfg->pin);
++			if (ret)
++				dev_warn(dev, "setting input pin %u failed\n", cfg->pin);
++			break;
+ 		default:
+ 			dev_warn(dev, "unknown deferred config param %d\n", cfg->param);
+ 			break;
+-- 
+2.35.1
 
-Tested on arm64 and x86 for 5.4.188-rc1,
-
-Kernel repo:
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-Branch: linux-5.4.y
-Version: 5.4.188-rc1
-Commit: f7f6eb6ea69d3487f62c6e27e7855e0818d2a704
-Compiler: gcc version 7.3.0 (GCC)
-
-arm64:
---------------------------------------------------------------------
-Testcase Result Summary:
-total: 9008
-passed: 9008
-failed: 0
-timeout: 0
---------------------------------------------------------------------
-
-x86:
---------------------------------------------------------------------
-Testcase Result Summary:
-total: 9008
-passed: 9008
-failed: 0
-timeout: 0
---------------------------------------------------------------------
-
-Tested-by: Hulk Robot <hulkrobot@huawei.com>
