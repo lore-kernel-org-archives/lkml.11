@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9938EC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:38:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 595A3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:39:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241555AbiC1Lkf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:40:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37152 "EHLO
+        id S241659AbiC1Lkm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:40:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239586AbiC1L37 (ORCPT
+        with ESMTP id S241299AbiC1L3p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:29:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13491120;
-        Mon, 28 Mar 2022 04:23:55 -0700 (PDT)
+        Mon, 28 Mar 2022 07:29:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9F27DF6B;
+        Mon, 28 Mar 2022 04:23:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5ED1961174;
-        Mon, 28 Mar 2022 11:23:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 751BEC340EC;
-        Mon, 28 Mar 2022 11:23:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 23631B80EAE;
+        Mon, 28 Mar 2022 11:23:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D171AC34112;
+        Mon, 28 Mar 2022 11:23:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466621;
-        bh=bPX/khrWPtuH6lxw45TCKs76d2OxZC/P91UXYox1D2c=;
+        s=k20201202; t=1648466635;
+        bh=2S2WN7lbSNG7gDajWPNwg0YM4+H6wviOd9QuIF14ciY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AmIWko0MxrQz2vAWas11Gr56JNWwrwOJpBRkECfXtjqrQxwdzi2Hn/dbfYQ/hV1kN
-         tMEXInavCot79w2XR6JXI2kFCKveIOwBVIe0q1FjDrDCyI9oxrOCl/2Rk3eXEPaMzn
-         ewgYsCGHMrZuIUp6F69HEDyGzMqaTePHZp8aJV1iIN9ZxLATdliAz+EDH8I2Piy4Rb
-         8JrIurdMWBy0b/nnMjq/g08Ikw38q5onQhUhBFo7PWgfdC16e3I0zSrAr8bsUXcPIR
-         u5HPZ7MKeXekpiBNZn1qk2ZkQKjorv6Kqc08qCSnsq8hSEctJe8Lqu8l7XAvVhnToi
-         d6lK24sQSkIiw==
+        b=ToGN3/n9uIAwDQ6XWMno3V8bI4PxN8F7vp9urx72RQwmCKTMyD47Xum8HkgByT8Hs
+         Iz/hQ4iem10dBphKH6j7BUFUN6cLRM/Xl7j/b8zzvatNGzgZCTxBxOLt2VbpbwOU34
+         4EdB17OpKWxTSVR/JAZIb5NLqWvNS6we7JdXN9DVfJFx1a/u3is9qWrVs54j//ycw9
+         OI6np7XHirYAFAUmmSlUWNgba81OeBai8hoEOLnrLUo3RKnS6JreX26fv6+VhhUJBw
+         CS6ZTpSQsNb/A786l6lA1yESUKolc/d5uve1gByY2kDozMozHGg+KOmj0sorSyQYIn
+         f09jI4SUNrjdQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     John David Anglin <dave.anglin@bell.net>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
-        James.Bottomley@HansenPartnership.com, svens@stackframe.org,
-        rmk+kernel@armlinux.org.uk, akpm@linux-foundation.org,
-        ebiederm@xmission.com, wangkefeng.wang@huawei.com,
-        zhengqi.arch@bytedance.com, linux-parisc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 19/21] parisc: Fix handling off probe non-access faults
-Date:   Mon, 28 Mar 2022 07:22:52 -0400
-Message-Id: <20220328112254.1556286-19-sashal@kernel.org>
+Cc:     =?UTF-8?q?Christian=20G=C3=B6ttsche?= <cgzones@googlemail.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Sasha Levin <sashal@kernel.org>,
+        stephen.smalley.work@gmail.com, eparis@parisplace.org,
+        selinux@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 05/16] selinux: use correct type for context length
+Date:   Mon, 28 Mar 2022 07:23:34 -0400
+Message-Id: <20220328112345.1556601-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220328112254.1556286-1-sashal@kernel.org>
-References: <20220328112254.1556286-1-sashal@kernel.org>
+In-Reply-To: <20220328112345.1556601-1-sashal@kernel.org>
+References: <20220328112345.1556601-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,166 +54,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John David Anglin <dave.anglin@bell.net>
+From: Christian Göttsche <cgzones@googlemail.com>
 
-[ Upstream commit e00b0a2ab8ec019c344e53bfc76e31c18bb587b7 ]
+[ Upstream commit b97df7c098c531010e445da88d02b7bf7bf59ef6 ]
 
-Currently, the parisc kernel does not fully support non-access TLB
-fault handling for probe instructions. In the fast path, we set the
-target register to zero if it is not a shadowed register. The slow
-path is not implemented, so we call do_page_fault. The architecture
-indicates that non-access faults should not cause a page fault from
-disk.
+security_sid_to_context() expects a pointer to an u32 as the address
+where to store the length of the computed context.
 
-This change adds to code to provide non-access fault support for
-probe instructions. It also modifies the handling of faults on
-userspace so that if the address lies in a valid VMA and the access
-type matches that for the VMA, the probe target register is set to
-one. Otherwise, the target register is set to zero.
+Reported by sparse:
 
-This was done to make probe instructions more useful for userspace.
-Probe instructions are not very useful if they set the target register
-to zero whenever a page is not present in memory. Nominally, the
-purpose of the probe instruction is determine whether read or write
-access to a given address is allowed.
+    security/selinux/xfrm.c:359:39: warning: incorrect type in arg 4
+                                    (different signedness)
+    security/selinux/xfrm.c:359:39:    expected unsigned int
+                                       [usertype] *scontext_len
+    security/selinux/xfrm.c:359:39:    got int *
 
-This fixes a problem in function pointer comparison noticed in the
-glibc testsuite (stdio-common/tst-vfprintf-user-type). The same
-problem is likely in glibc (_dl_lookup_address).
-
-V2 adds flush and lpa instruction support to handle_nadtlb_fault.
-
-Signed-off-by: John David Anglin <dave.anglin@bell.net>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
+[PM: wrapped commit description]
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/parisc/include/asm/traps.h |  1 +
- arch/parisc/kernel/traps.c      |  2 +
- arch/parisc/mm/fault.c          | 89 +++++++++++++++++++++++++++++++++
- 3 files changed, 92 insertions(+)
+ security/selinux/xfrm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/parisc/include/asm/traps.h b/arch/parisc/include/asm/traps.h
-index 8ecc1f0c0483..d0e090a2c000 100644
---- a/arch/parisc/include/asm/traps.h
-+++ b/arch/parisc/include/asm/traps.h
-@@ -17,6 +17,7 @@ void die_if_kernel(char *str, struct pt_regs *regs, long err);
- const char *trap_name(unsigned long code);
- void do_page_fault(struct pt_regs *regs, unsigned long code,
- 		unsigned long address);
-+int handle_nadtlb_fault(struct pt_regs *regs);
- #endif
+diff --git a/security/selinux/xfrm.c b/security/selinux/xfrm.c
+index 7314196185d1..00e95f8bd7c7 100644
+--- a/security/selinux/xfrm.c
++++ b/security/selinux/xfrm.c
+@@ -346,7 +346,7 @@ int selinux_xfrm_state_alloc_acquire(struct xfrm_state *x,
+ 	int rc;
+ 	struct xfrm_sec_ctx *ctx;
+ 	char *ctx_str = NULL;
+-	int str_len;
++	u32 str_len;
  
- #endif
-diff --git a/arch/parisc/kernel/traps.c b/arch/parisc/kernel/traps.c
-index 269b737d2629..bce47e0fb692 100644
---- a/arch/parisc/kernel/traps.c
-+++ b/arch/parisc/kernel/traps.c
-@@ -661,6 +661,8 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
- 			 by hand. Technically we need to emulate:
- 			 fdc,fdce,pdc,"fic,4f",prober,probeir,probew, probeiw
- 		*/
-+		if (code == 17 && handle_nadtlb_fault(regs))
-+			return;
- 		fault_address = regs->ior;
- 		fault_space = regs->isr;
- 		break;
-diff --git a/arch/parisc/mm/fault.c b/arch/parisc/mm/fault.c
-index 716960f5d92e..5faa3cff4738 100644
---- a/arch/parisc/mm/fault.c
-+++ b/arch/parisc/mm/fault.c
-@@ -424,3 +424,92 @@ void do_page_fault(struct pt_regs *regs, unsigned long code,
- 		goto no_context;
- 	pagefault_out_of_memory();
- }
-+
-+/* Handle non-access data TLB miss faults.
-+ *
-+ * For probe instructions, accesses to userspace are considered allowed
-+ * if they lie in a valid VMA and the access type matches. We are not
-+ * allowed to handle MM faults here so there may be situations where an
-+ * actual access would fail even though a probe was successful.
-+ */
-+int
-+handle_nadtlb_fault(struct pt_regs *regs)
-+{
-+	unsigned long insn = regs->iir;
-+	int breg, treg, xreg, val = 0;
-+	struct vm_area_struct *vma, *prev_vma;
-+	struct task_struct *tsk;
-+	struct mm_struct *mm;
-+	unsigned long address;
-+	unsigned long acc_type;
-+
-+	switch (insn & 0x380) {
-+	case 0x280:
-+		/* FDC instruction */
-+		fallthrough;
-+	case 0x380:
-+		/* PDC and FIC instructions */
-+		if (printk_ratelimit()) {
-+			pr_warn("BUG: nullifying cache flush/purge instruction\n");
-+			show_regs(regs);
-+		}
-+		if (insn & 0x20) {
-+			/* Base modification */
-+			breg = (insn >> 21) & 0x1f;
-+			xreg = (insn >> 16) & 0x1f;
-+			if (breg && xreg)
-+				regs->gr[breg] += regs->gr[xreg];
-+		}
-+		regs->gr[0] |= PSW_N;
-+		return 1;
-+
-+	case 0x180:
-+		/* PROBE instruction */
-+		treg = insn & 0x1f;
-+		if (regs->isr) {
-+			tsk = current;
-+			mm = tsk->mm;
-+			if (mm) {
-+				/* Search for VMA */
-+				address = regs->ior;
-+				mmap_read_lock(mm);
-+				vma = find_vma_prev(mm, address, &prev_vma);
-+				mmap_read_unlock(mm);
-+
-+				/*
-+				 * Check if access to the VMA is okay.
-+				 * We don't allow for stack expansion.
-+				 */
-+				acc_type = (insn & 0x40) ? VM_WRITE : VM_READ;
-+				if (vma
-+				    && address >= vma->vm_start
-+				    && (vma->vm_flags & acc_type) == acc_type)
-+					val = 1;
-+			}
-+		}
-+		if (treg)
-+			regs->gr[treg] = val;
-+		regs->gr[0] |= PSW_N;
-+		return 1;
-+
-+	case 0x300:
-+		/* LPA instruction */
-+		if (insn & 0x20) {
-+			/* Base modification */
-+			breg = (insn >> 21) & 0x1f;
-+			xreg = (insn >> 16) & 0x1f;
-+			if (breg && xreg)
-+				regs->gr[breg] += regs->gr[xreg];
-+		}
-+		treg = insn & 0x1f;
-+		if (treg)
-+			regs->gr[treg] = 0;
-+		regs->gr[0] |= PSW_N;
-+		return 1;
-+
-+	default:
-+		break;
-+	}
-+
-+	return 0;
-+}
+ 	if (!polsec)
+ 		return 0;
 -- 
 2.34.1
 
