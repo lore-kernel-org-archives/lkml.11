@@ -2,104 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D4C1C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 16:57:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 482B3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 16:58:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243514AbiC1Q7R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 12:59:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56444 "EHLO
+        id S243823AbiC1RAc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 13:00:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234838AbiC1Q7P (ORCPT
+        with ESMTP id S234838AbiC1RA3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 12:59:15 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E340C4CD4B;
-        Mon, 28 Mar 2022 09:57:34 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id a8so29908300ejc.8;
-        Mon, 28 Mar 2022 09:57:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=wBY8GOjTBGWVEL0GTMWI6P1arfhZD9nF3EMgpiHJ8pg=;
-        b=TrhfV81sE8oJYSmCYeOpiNX4rwzFlNa0YYzLP08JEAl6V9ZLFZAITEpA+veBQrtYXd
-         nTIjE75VTCdIqCw6ACstHID8jmEUgPezsa2Ye+Q8W1m3xfHTfeACSgW68kRyL0MmayFL
-         y6fCbN7XOb4+BqlfFW+POMeDwCKcSLdInFNbxW1/RObEC7S48YVIEaaj7mIRVg9cBG15
-         2beqkvhDpR66XCMne9A7AkOOyftPDo8lqXCdH3KL4usS/GBmP0v4FgXC0I0ohOZ3So6t
-         JRh1x+o00LD4zh72QK1QlcGKLfNkewdqNuktuGZnEQEyx0ijfjAX/mqSuMPxI5K9/NIS
-         EQlw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=wBY8GOjTBGWVEL0GTMWI6P1arfhZD9nF3EMgpiHJ8pg=;
-        b=b/HWAANSSAgj7N2sbARHIp85cju/6wieArTUtr9yRGrt9z9kXzj6UpHVpMAnhGilMC
-         USkt6cHlb2vm8qJakP0bEV1YdB7djmEvfMipWYYqk1txS2txLIWe9Dq7JEsycTgTTkXr
-         uMFNThoE7jBMeflNREz2ueNZKp8Zp1IiMiqZHBRk2e8MmuYCguLYyloQRrsqgl/JVobM
-         XNH8Y8vsQYW3AWvDhz/tVfqEN29AHYDJzsWC3sPC5MhCy5eIzLTyPsq6DzfVSWPBenpK
-         6WPvxCwSvN1OjC65evSGXX5HI3Mcw+e29gZs8tGrZ+p68f8m1jXXjym+uKeA7XXG3GBu
-         XRRQ==
-X-Gm-Message-State: AOAM531OKdieaSY5IKM5b8byoB4DjSecZCZcsXKRjHOWZqe4t/l+Y3Rz
-        cos9igW8S7oWOiRCuVOUTqo=
-X-Google-Smtp-Source: ABdhPJwbZdbg18gH4uRako7Q+MjVs4nlqqVBcAfzLaiEeJvaLPgfUTObm+Sv22eUIX11zO3Tys/+HQ==
-X-Received: by 2002:a17:907:2a53:b0:6ce:e4fe:3f92 with SMTP id fe19-20020a1709072a5300b006cee4fe3f92mr28685432ejc.389.1648486649986;
-        Mon, 28 Mar 2022 09:57:29 -0700 (PDT)
-Received: from jernej-laptop.localnet (cpe-86-58-32-107.static.triera.net. [86.58.32.107])
-        by smtp.gmail.com with ESMTPSA id p12-20020a17090635cc00b006e055c9c91esm6038305ejb.101.2022.03.28.09.57.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Mar 2022 09:57:29 -0700 (PDT)
-From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
-        Samuel Holland <samuel@sholland.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Wan Jiabing <wanjiabing@vivo.com>
-Cc:     kael_w@yeah.net, Wan Jiabing <wanjiabing@vivo.com>
-Subject: Re: [PATCH] clk: sunxi-ng: fix not NULL terminated coccicheck error
-Date:   Mon, 28 Mar 2022 18:57:28 +0200
-Message-ID: <2621623.mvXUDI8C0e@jernej-laptop>
-In-Reply-To: <20220328073931.36544-1-wanjiabing@vivo.com>
-References: <20220328073931.36544-1-wanjiabing@vivo.com>
+        Mon, 28 Mar 2022 13:00:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4F7C60DA8;
+        Mon, 28 Mar 2022 09:58:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0FD4FB810D5;
+        Mon, 28 Mar 2022 16:58:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5950C004DD;
+        Mon, 28 Mar 2022 16:58:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648486725;
+        bh=fc1ZqAVDO0efw8axuiPEWNcZoPrAnCItKAK5ldZG1EY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=o2T5CvXfvYNhjsxOwg9KcQkxv9jT4itsTBvvL2bLNQEG2jyZUQxEaJM8QtGWfNwTU
+         70PVLeCXiRc2Wv7bPhOqXl8a1zkvmfloiwRROzSk6aag/qVBkjFpYp0jVSbT+RHN6z
+         SsFyKCaDdenUG0S1DqPE0T86hjYLL9LN9bfJsgsRz+y08Av4FMih7RQquEY6zsdQai
+         +wCceg1AXiiUg3O/TCV01bdFgfA4pBug1QbnpHwSYbKabsXIkpg1uGd9JB2RPS6LmF
+         tbJSpL1b+IwWGi0jMuzS+FAvPgYnhbdGt+SBjIZFxeXSUC3SVDKPn6qkLPTOQxSqe4
+         zhI1vDn3vUYnQ==
+Date:   Mon, 28 Mar 2022 18:06:23 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Paul Lemmermann <thepaulodoom@thepaulodoom.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] IIO: accel: fixed coding style issues
+Message-ID: <20220328180623.1380d23e@jic23-huawei>
+In-Reply-To: <YkHOpCT2Gad1YaxN@hp-amd-paul>
+References: <YkHOpCT2Gad1YaxN@hp-amd-paul>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dne ponedeljek, 28. marec 2022 ob 09:39:31 CEST je Wan Jiabing napisal(a):
-> Fix the following coccicheck error:
-> ./drivers/clk/sunxi-ng/ccu-sun6i-rtc.c:348:1-2: sun6i_rtc_ccu_match is
-> not NULL terminated at line 348
+On Mon, 28 Mar 2022 10:05:08 -0500
+Paul Lemmermann <thepaulodoom@thepaulodoom.com> wrote:
+
+> Fixed case statement issues and spacing issues.
 > 
-> Fixes: d91612d7f01a ("clk: sunxi-ng: Add support for the sun6i RTC clocks")
-> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+> Signed-off-by: Paul Lemmermann <thepaulodoom@thepaulodoom.com>
+Hi Paul,
 
-Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Thanks for the patch.
 
-Best regards,
-Jernej
+These are drivers written / maintained by different authors, so one
+patch per driver preferred.  Particularly handy as people might not
+agree with all of them so separate patches would allow me to pick
+and choose which ones to pick up.
+
+Comments inline.
+
+Please state how you identified the changes btw.  Script?
+
+Jonathan
 
 > ---
->  drivers/clk/sunxi-ng/ccu-sun6i-rtc.c | 1 +
->  1 file changed, 1 insertion(+)
+>  drivers/iio/accel/bmc150-accel-core.c | 15 +++++++++++----
+>  drivers/iio/accel/dmard09.c           |  2 +-
+>  drivers/iio/accel/kxsd9-spi.c         |  4 ++--
+>  3 files changed, 14 insertions(+), 7 deletions(-)
 > 
-> diff --git a/drivers/clk/sunxi-ng/ccu-sun6i-rtc.c
-> b/drivers/clk/sunxi-ng/ccu-sun6i-rtc.c index 8a10bade7e0d..ffb72d9a9c36
-> 100644
-> --- a/drivers/clk/sunxi-ng/ccu-sun6i-rtc.c
-> +++ b/drivers/clk/sunxi-ng/ccu-sun6i-rtc.c
-> @@ -346,6 +346,7 @@ static const struct of_device_id sun6i_rtc_ccu_match[] =
-> { .compatible	= "allwinner,sun50i-r329-rtc",
->  		.data		= &sun50i_r329_rtc_ccu_data,
->  	},
-> +	{},
+> diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+> index d11f66801..f7dd7ec2c 100644
+> --- a/drivers/iio/accel/bmc150-accel-core.c
+> +++ b/drivers/iio/accel/bmc150-accel-core.c
+> @@ -432,10 +432,17 @@ static bool bmc150_apply_bosc0200_acpi_orientation(struct device *dev,
+>  
+>  		for (j = 0; j < 3; j++) {
+>  			switch (val[j]) {
+> -			case -1: str = "-1"; break;
+> -			case 0:  str = "0";  break;
+> -			case 1:  str = "1";  break;
+> -			default: goto unknown_format;
+> +			case -1:
+> +				str = "-1";
+> +				break;
+> +			case 0:
+> +				str = "0";
+> +				break;
+> +			case 1:
+> +				str = "1";
+> +				break;
+> +			default:
+> +				goto unknown_format;
+
+I'm not seeing any clear advantage to this change.
+
+
+>  			}
+>  			orientation->rotation[i * 3 + j] = str;
+>  		}
+> diff --git a/drivers/iio/accel/dmard09.c b/drivers/iio/accel/dmard09.c
+> index e6e28c964..87bc38d4d 100644
+> --- a/drivers/iio/accel/dmard09.c
+> +++ b/drivers/iio/accel/dmard09.c
+> @@ -24,7 +24,7 @@
+>  #define DMARD09_AXIS_Y 1
+>  #define DMARD09_AXIS_Z 2
+>  #define DMARD09_AXIS_X_OFFSET ((DMARD09_AXIS_X + 1) * 2)
+> -#define DMARD09_AXIS_Y_OFFSET ((DMARD09_AXIS_Y + 1 )* 2)
+> +#define DMARD09_AXIS_Y_OFFSET ((DMARD09_AXIS_Y + 1) * 2)
+
+This is one is good.
+
+>  #define DMARD09_AXIS_Z_OFFSET ((DMARD09_AXIS_Z + 1) * 2)
+>  
+>  struct dmard09_data {
+> diff --git a/drivers/iio/accel/kxsd9-spi.c b/drivers/iio/accel/kxsd9-spi.c
+> index 57c451cfb..989f53fb0 100644
+> --- a/drivers/iio/accel/kxsd9-spi.c
+> +++ b/drivers/iio/accel/kxsd9-spi.c
+> @@ -44,8 +44,8 @@ static const struct spi_device_id kxsd9_spi_id[] = {
+>  MODULE_DEVICE_TABLE(spi, kxsd9_spi_id);
+>  
+>  static const struct of_device_id kxsd9_of_match[] = {
+> -        { .compatible = "kionix,kxsd9" },
+> -        { },
+> +	{ .compatible = "kionix,kxsd9" },
+
+Also good to clean up.
+
+Thanks,
+
+Jonathan
+
+
+> +	{ },
 >  };
-> 
->  int sun6i_rtc_ccu_probe(struct device *dev, void __iomem *reg)
-
-
-
+>  MODULE_DEVICE_TABLE(of, kxsd9_of_match);
+>  
 
