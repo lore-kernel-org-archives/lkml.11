@@ -2,36 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0655C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:49:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 008E1C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:49:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244552AbiC1Tv0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 15:51:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51218 "EHLO
+        id S1344136AbiC1Tv3 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 15:51:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344067AbiC1TsI (ORCPT
+        with ESMTP id S1343944AbiC1Tr4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 15:48:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B31F6A017;
-        Mon, 28 Mar 2022 12:43:52 -0700 (PDT)
+        Mon, 28 Mar 2022 15:47:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B040DF82;
+        Mon, 28 Mar 2022 12:43:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AD40AB81213;
-        Mon, 28 Mar 2022 19:43:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61E19C3410F;
-        Mon, 28 Mar 2022 19:43:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DDDCEB81217;
+        Mon, 28 Mar 2022 19:43:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5161C34112;
+        Mon, 28 Mar 2022 19:43:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648496618;
+        s=k20201202; t=1648496613;
         bh=JDgnhN3MSlCM+3tBS3nKBXEXX80jRKTZVSXwNmSC/NM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=esJcMItHETTRiJzns4eLzvRTSMUURLZCx3Rp0Vk3yGt5ISePtb8MYrTDhXYkfJYP8
-         XGUNwH+TS6LtFJQG8NWp89t06iLVRO8VIH0T7/K6klJPDPZEUT+L3zFaZJOGRCeQqX
-         r/ANWe57VKhr0QEWC3wRoLCPhbDSPD5HgFbjQwbx74cYG/6PttgmFptKKTQzLINWjM
-         QpdnU+S1FPTGBqDoAq5OGlBo7AVFa8v5eOlA/g2rrmgTeomUQO07P5Jd2RTIebJ3rQ
-         To0LpkKtqnREwYYwbJh+YTi1GIexk1h1k1QWdrUSEtBMI5egJ7vAlikkSP1KxCtC2l
-         jxijX3fj6r27Q==
+        b=SU+Po519ejzLwzJu1YguvXUtPO7OHxOmjLPpUeZn93OiCAa+3SSf+FNyQT/El2Yw0
+         cAkCbKpQg6ZjEdge8bDPUp9FyTIIIP9w4juB2FxA/Fhbua5M5jO5wLQuhIKtZ00Obd
+         UM1E3nxjjgZC8J5Eh46lLrLH3HhiPWY+6DY7dJ5Z666n3utNz4wVyEhBocRGQAs9hu
+         09WQwaa1pb/jN3D9AchgM+TqHXsk1+GcKl1ULrBe92BMliJdoEwRYVlB7iFgZQwYfq
+         zfY9SjHGCbycpP3t8I8z3+HZTjDv6YdtvBVlXzomwH1UzyZFNB5KJQZ5W2Pp7tVAUG
+         PheHjS+HEOqiw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
@@ -41,12 +42,12 @@ Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
         Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>,
         linux-ntfs-dev@lists.sourceforge.net
-Subject: [PATCH AUTOSEL 5.4 2/2] ntfs: add sanity check on allocation size
-Date:   Mon, 28 Mar 2022 15:43:33 -0400
-Message-Id: <20220328194334.1586542-2-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 8/8] ntfs: add sanity check on allocation size
+Date:   Mon, 28 Mar 2022 15:43:22 -0400
+Message-Id: <20220328194322.1586401-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220328194334.1586542-1-sashal@kernel.org>
-References: <20220328194334.1586542-1-sashal@kernel.org>
+In-Reply-To: <20220328194322.1586401-1-sashal@kernel.org>
+References: <20220328194322.1586401-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
