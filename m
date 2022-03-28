@@ -2,108 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F73DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 13:21:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B7F8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 13:21:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243107AbiC1NXA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 09:23:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42194 "EHLO
+        id S243119AbiC1NXF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 09:23:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243100AbiC1NW7 (ORCPT
+        with ESMTP id S243115AbiC1NXD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 09:22:59 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1CC05D5EE
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 06:21:18 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id t13so11001939pgn.8
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 06:21:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5c3917MAZUYc8aYNOkJjQUYFUTHwIYAfPcFsBEaVqNw=;
-        b=r39mJhBONAyJ7iXYcHhktyYbkv/FPoZd74/kg4pgnTyGP1heoE7mTSS62HxWYxqLm4
-         PuXMXRdxhhUPQgQDEKXSTDKbCERIm4ZxXgMFSGHxPwq7rEmRd9kjNCbu4ZDixvhilV6w
-         v7W70+Mv6ParbmAjsbbGsb/VYLI5oIHC3oCg2tQ6awPFhRo5EDLR5YqsOm9KVXQzwjBa
-         eoC/H/OtOefp9xkaXUJ81Hjr+2imn9dVDM5MEf0XlnRX/GUs6ZJOroYAWgl09x6vwwmY
-         rSRL7wd4/o3bYrmaSkTnqSR6MV/SQGq88Hrx+DT1s/9/8Ge1VJ8k8golO2cYUQMzpRGC
-         NVvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5c3917MAZUYc8aYNOkJjQUYFUTHwIYAfPcFsBEaVqNw=;
-        b=s9GDGJlAQnHhZktigFtTfRRDlP55wpisI1uQdHTucJQDBFEDRMEKjOtnjXTxevlEHO
-         boO+oy9nQ7h9HiBSnXD/GwWWhXDfrAJzKuUpmyFsf/bpg4g+wegG9hWxzwgfrql/WWTv
-         mLoRktgbOYcMHNR4h8UZEesHFCYhZnPvYTGwgs6U+6spkiwySVGV1pNRemNZrxdXlmNn
-         fJ3D9cuzjNHWCF3Xvh8EtzLv2n+ajxnMO889EGC3LxFoU1XqFd6pEAiE7wFem2wuljYS
-         HnvlpJkbFThL8blZaEbjvMw8lJ93eG2hxqBV6aJVvEIDI3zpPNn22ofBhure0RcSLIAI
-         CrDg==
-X-Gm-Message-State: AOAM533MH8mBpOEgiR1oTMT1icoifPSxERZFs/ZrpZLBM64qc4ri4Suc
-        L6F+wgItG776HZ67V07MReisibRqB1cjFfVm6P3LQg==
-X-Google-Smtp-Source: ABdhPJyfHIEgcq0z1XfEkx7RvUBOUzGmsXb6PCpzATZyq9pUeZ2izW3H71PqV4LgpviFa/P7cR8EnzqtvU9/vZhAiCg=
-X-Received: by 2002:a05:6a00:1741:b0:4fa:f5bc:30bd with SMTP id
- j1-20020a056a00174100b004faf5bc30bdmr20188685pfc.0.1648473678172; Mon, 28 Mar
- 2022 06:21:18 -0700 (PDT)
+        Mon, 28 Mar 2022 09:23:03 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64C855DE5F
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 06:21:22 -0700 (PDT)
+Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nYpJA-0008Oi-58; Mon, 28 Mar 2022 15:21:20 +0200
+Message-ID: <cb5b81bd-9882-e5dc-cd22-54bdbaaefbbc@leemhuis.info>
+Date:   Mon, 28 Mar 2022 15:21:16 +0200
 MIME-Version: 1.0
-References: <20220322080213.1487134-1-xji@analogixsemi.com>
- <CAJMQK-j+PhB6dZBuKG3NtW94oT0bVkp9G1bXhmyZLgYOmTCgog@mail.gmail.com>
- <20220322085208.GA1487511@anxtwsw-Precision-3640-Tower> <CAGXv+5Gddu8VU7xjX-r2=u85i7Ut=_6JpQV6py52OyzEkpezTg@mail.gmail.com>
- <20220322101342.GA1493353@anxtwsw-Precision-3640-Tower> <CAG3jFytYcLP_1JJzoTU8YcwXp8==EpPdad5z02ROu8HtuaqfzQ@mail.gmail.com>
- <20220325062912.GA1527766@anxtwsw-Precision-3640-Tower>
-In-Reply-To: <20220325062912.GA1527766@anxtwsw-Precision-3640-Tower>
-From:   Robert Foss <robert.foss@linaro.org>
-Date:   Mon, 28 Mar 2022 15:21:06 +0200
-Message-ID: <CAG3jFysrg6opHQpqdy9aDSQWFkwyGfZYG9PStTaApkS=euk1Ag@mail.gmail.com>
-Subject: Re: [PATCH v2] drm/bridge: anx7625: Set downstream sink into normal status
-To:     Xin Ji <xji@analogixsemi.com>
-Cc:     Chen-Yu Tsai <wenst@chromium.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        dri-devel@lists.freedesktop.org, Jonas Karlman <jonas@kwiboo.se>,
-        David Airlie <airlied@linux.ie>, qwen@analogixsemi.com,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        linux-kernel@vger.kernel.org,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        treapking@chromium.org, pihsun@chromium.org,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Andrzej Hajda <andrzej.hajda@intel.com>, tzungbi@google.com,
-        bliang@analogixsemi.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     "H.J. Lu" <hjl.tools@gmail.com>
+Cc:     "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Victor Stinner <vstinner@redhat.com>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+Subject: Bug 215720 - brk() regression on AArch64 on static-pie binary --
+ issue with ASLR and a guard page?
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1648473682;77d6f0c8;
+X-HE-SMSGID: 1nYpJA-0008Oi-58
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 25 Mar 2022 at 07:29, Xin Ji <xji@analogixsemi.com> wrote:
->
-> On Thu, Mar 24, 2022 at 01:07:56PM +0100, Robert Foss wrote:
-> > > > > > The driver uses DRM_DEV_* for logs. Can we use this?
-> > > > > Hi Hsin-Yi, as comment in drm/drm_print.h:
-> > > > > "NOTE: this is deprecated in favor of drm_dbg". DRM bridge driver not
-> > > > > use DRM_DEV_* any more. I'll send a patch to replace all of DRM_DEV_*
-> > > > > later.
-> > > >
-> > > > drm_dbg is better than dev_dbg though. With the former, you still get the
-> > > > option to control it with the drm.debug module parameter, unlike the latter
-> > > > which normally gets compiled out.
-> > > >
-> > > > Please use drm_dbg*.
-> > > >
-> > > > ChenYu
-> > >
-> > > Hi ChenYu, the parameter of drm_dbg is "drm", if use drm_dbg, it will
-> > > change more code, I'll consider to upstream new patch to replace all of
-> > > them later.
-> > >
-> >
-> > Alright, since the driver already uses these logging functions, let's
-> > apply this patch and fix the logging function this driver uses in a
-> > separate series.
-> >
-> > Xin: Can you submit a patch/series that converts this driver to use
-> > drm_dbg* functions instead?
-> Hi Robert Foss, OK, I'll submit patch after this patch get merged.
-> Thanks,
+Hi, this is your Linux kernel regression tracker.
 
-Applied to drm-misc-next.
+I noticed a regression report in bugzilla.kernel.org that afaics nobody
+acted upon since it was reported about a week ago, that's why I decided
+to forward it to the lists and the author of the culprit. To quote from
+https://bugzilla.kernel.org/show_bug.cgi?id=215720:
 
-Rob.
+>  Victor Stinner 2022-03-22 02:24:57 UTC
+> 
+> Created attachment 300597 [details]
+> empty.c reproducer
+> 
+> I found a brk() syscall regression of Linux kernel 5.17 on AArch64.
+> 
+> A git bisect found the change "fs/binfmt_elf: use PT_LOAD p_align values for static PIE": commit 9630f0d60fec5fbcaa4435a66f75df1dc9704b66, changed related to the bz#215275.
+> 
+> Program to reproduce the bug, empty.c (attached to the issue):
+> ---
+> _Thread_local int var1 = 0;
+> int main() {
+>     volatile int x = 1;
+>     var1 = x;
+>     return 0;
+> }
+> ---
+> 
+> Build the program as a static PIE program:
+> 
+>     gcc -std=c11 -static-pie -g empty.c -o empty -O2
+> 
+> The program fails randomly, it takes 100 to 6000 runs to reproduce the crash.
+> 
+> Short shell loop to reproduce the crash:
+> ---
+> $ i=0; while true; do ./empty; rc=$?; i=$(($i + 1)); echo "$i:
+> $(date): $rc"; if [ $rc -ne 0 ]; then break; fi; done
+> (...)
+> 159: Tue Mar 22 01:54:22 CET 2022: 0
+> 160: Tue Mar 22 01:54:22 CET 2022: 0
+> Segmentation fault (core dumped)
+> 161: Tue Mar 22 01:54:22 CET 2022: 139
+> ---
+> 
+> Disabling ASLR (write 0 to /proc/sys/kernel/randomize_va_space) works
+> around the bug.
+> 
+> Rather than using "empty.c" program, the "ldconfig -V > /dev/null" command can be used: standard static-pie program.
+> 
+> strace when the program works:
+> ---
+> brk(NULL)                               = 0xaaaac3961000
+> brk(0xaaaac3961b78)                     = 0xaaaac3961b78
+> ---
+> 
+> strace when the bug occurs:
+> ---
+> brk(NULL)                               = 0xaaaabf3c3000
+> brk(0xaaaabf3c3b78)                     = 0xaaaabf3c3000
+> ---
+> 
+> The following test of the brk() syscall fails when the bug occurs:
+> ---
+> 	/* Check against existing mmap mappings. */
+> 	next = find_vma(mm, oldbrk);
+> 	if (next && newbrk + PAGE_SIZE > vm_start_gap(next))
+> 		goto out;
+> ---
+> 
+> Note: When the bug occurs, the program crash with SIGSEGV: the glibc __libc_setup_tls() function calls sbrk(2936) to allocate TLS variables, but it doesn't handle the memory allocation failure.
+> 
+> Note: At the beginning, I discovered this kernel regression while checking for Python
+> buildbot failures on our Fedora Rawhide AArch64 machine.
+> 
+> * Fedora downstream issue: https://bugzilla.redhat.com/show_bug.cgi?id=2066147
+> * Python issue: https://bugs.python.org/issue47078
+> 
+> [reply] [−] Comment 1 Victor Stinner 2022-03-22 02:41:00 UTC
+> 
+> See also the binutils issue: "p_align in ELF program headers should not exceed section alignment"
+> https://sourceware.org/bugzilla/show_bug.cgi?id=28689
+> 
+> See also this old (kernel 4.18) fixed x86-64 kernel bug: "kernel: brk can grow the heap into the area reserved for the stack"
+> https://bugzilla.redhat.com/show_bug.cgi?id=1749633
+
+
+Could somebody take a look into this? Or was this discussed somewhere
+else already? Or even fixed?
+
+Anyway, to get this tracked:
+
+#regzbot introduced: 9630f0d60fec5fbcaa4435a66f75df1dc9704b66
+#regzbot from: Victor Stinner <vstinner@redhat.com>
+#regzbot title: brk() regression on AArch64 on static-pie binary
+#regzbot link: https://bugzilla.kernel.org/show_bug.cgi?id=215720
+
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+
+P.S.: As the Linux kernel's regression tracker I'm getting a lot of
+reports on my table. I can only look briefly into most of them and lack
+knowledge about most of the areas they concern. I thus unfortunately
+will sometimes get things wrong or miss something important. I hope
+that's not the case here; if you think it is, don't hesitate to tell me
+in a public reply, it's in everyone's interest to set the public record
+straight.
+
+-- 
+Additional information about regzbot:
+
+If you want to know more about regzbot, check out its web-interface, the
+getting start guide, and the references documentation:
+
+https://linux-regtracking.leemhuis.info/regzbot/
+https://gitlab.com/knurd42/regzbot/-/blob/main/docs/getting_started.md
+https://gitlab.com/knurd42/regzbot/-/blob/main/docs/reference.md
+
+The last two documents will explain how you can interact with regzbot
+yourself if your want to.
+
+Hint for reporters: when reporting a regression it's in your interest to
+CC the regression list and tell regzbot about the issue, as that ensures
+the regression makes it onto the radar of the Linux kernel's regression
+tracker -- that's in your interest, as it ensures your report won't fall
+through the cracks unnoticed.
+
+Hint for developers: you normally don't need to care about regzbot once
+it's involved. Fix the issue as you normally would, just remember to
+include 'Link:' tag in the patch descriptions pointing to all reports
+about the issue. This has been expected from developers even before
+regzbot showed up for reasons explained in
+'Documentation/process/submitting-patches.rst' and
+'Documentation/process/5.Posting.rst'.
