@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49B72C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:40:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11155C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:40:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231214AbiC1Lma (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:42:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38130 "EHLO
+        id S241781AbiC1Lmg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:42:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241489AbiC1Lb2 (ORCPT
+        with ESMTP id S241500AbiC1Lbo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:31:28 -0400
+        Mon, 28 Mar 2022 07:31:44 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CED1A57499;
-        Mon, 28 Mar 2022 04:24:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A57E574B6;
+        Mon, 28 Mar 2022 04:24:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 262B360F43;
-        Mon, 28 Mar 2022 11:24:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFB69C340ED;
-        Mon, 28 Mar 2022 11:24:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E356A611D2;
+        Mon, 28 Mar 2022 11:24:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60CC2C34115;
+        Mon, 28 Mar 2022 11:24:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466661;
-        bh=rLsO+ntsnTh0EzAnd/PjkFHrU+ojDgLX96KW1jxcRh8=;
+        s=k20201202; t=1648466664;
+        bh=HAjsokNLpm1BGeHXA8hl2TeS4FY5QiuvnC9KI1mxvmM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z8BiODu4WuPordFkxBrJ1pg0wWczddBALNfUnSTZgqTgfLAYPDoODxiOBgCT5H6jX
-         Bh7i9pyldUdgrwXyu/E3xsGyPtino8wEKopRNrxlkZxZ+4pxfawKWrDU/AFN5mRiXK
-         Ki1biKUxdgIqG7MQi4X+vYBwBSf+5Qsoa1Cjju1j2LxQk/AP9UPfKgPU+vWVxb3AaM
-         PvdsZAmduIoQywIkZQlYBSBBULWZqCgJxRY5g5JKQfo+wg8TcWCmOvqWyo6lz2mTrQ
-         DOuA7Oc0zIkpvE8BusrrWeBaKFfTShd3GTIK+LLXdp73cv65U+kIkc1ahNJM4vBvIB
-         1hLhUQojSM9+Q==
+        b=danXERLx4+IMqrcG3UppWPmoOXV8LLouEmFzUZCBgqP6hBwoUtOljZe89oXatxBDe
+         0stLf/5MGYf2EZ9avwdyxO7qPPy5y5/vuNy14HEBiBiFr9kiKT5M0ZYQ2S3bqO78QQ
+         YGTwQa81iY21VrsqNDFoCGRY3frfbc1BBBikQsUEwzvfby7VKFdsqoRuOrkUbKiMzR
+         2vrt7E17UwkxodMoW2omPwzSGbzSStpAljyg3AVeA8La8+ITVIk0GxPj8GRCTgomp4
+         hCATFjICflCVb83PSWrPAhu57JcQiLTWC5qSXv8f7Rnv3STVYURMVDzfZaOuyAEAbA
+         WQ1MQBG9jiPzg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chaitanya Kulkarni <kch@nvidia.com>,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
-        linux-block@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 02/12] loop: use sysfs_emit() in the sysfs xxx show()
-Date:   Mon, 28 Mar 2022 07:24:07 -0400
-Message-Id: <20220328112417.1556946-2-sashal@kernel.org>
+Cc:     Marc Zyngier <maz@kernel.org>,
+        Maulik Shah <quic_mkshah@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
+        bjorn.andersson@linaro.org, tglx@linutronix.de,
+        linux-arm-msm@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 04/12] irqchip/qcom-pdc: Fix broken locking
+Date:   Mon, 28 Mar 2022 07:24:09 -0400
+Message-Id: <20220328112417.1556946-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220328112417.1556946-1-sashal@kernel.org>
 References: <20220328112417.1556946-1-sashal@kernel.org>
@@ -52,71 +53,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chaitanya Kulkarni <kch@nvidia.com>
+From: Marc Zyngier <maz@kernel.org>
 
-[ Upstream commit b27824d31f09ea7b4a6ba2c1b18bd328df3e8bed ]
+[ Upstream commit a6aca2f460e203781dc41391913cc5b54f4bc0ce ]
 
-sprintf does not know the PAGE_SIZE maximum of the temporary buffer
-used for outputting sysfs content and it's possible to overrun the
-PAGE_SIZE buffer length.
+pdc_enable_intr() serves as a primitive to qcom_pdc_gic_{en,dis}able,
+and has a raw spinlock for mutual exclusion, which is uses with
+interruptible primitives.
 
-Use a generic sysfs_emit function that knows the size of the
-temporary buffer and ensures that no overrun is done for offset
-attribute in
-loop_attr_[offset|sizelimit|autoclear|partscan|dio]_show() callbacks.
+This means that this critical section can itself be interrupted.
+Should the interrupt also be a PDC interrupt, and the endpoint driver
+perform an irq_disable() on that interrupt, we end-up in a deadlock.
 
-Signed-off-by: Chaitanya Kulkarni <kch@nvidia.com>
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Link: https://lore.kernel.org/r/20220215213310.7264-2-kch@nvidia.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fix this by using the irqsave/irqrestore variants of the locking
+primitives.
+
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Reviewed-by: Maulik Shah <quic_mkshah@quicinc.com>
+Link: https://lore.kernel.org/r/20220224101226.88373-5-maz@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/loop.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/irqchip/qcom-pdc.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/block/loop.c b/drivers/block/loop.c
-index 19042b42a8ba..c31a76485c9c 100644
---- a/drivers/block/loop.c
-+++ b/drivers/block/loop.c
-@@ -795,33 +795,33 @@ static ssize_t loop_attr_backing_file_show(struct loop_device *lo, char *buf)
- 
- static ssize_t loop_attr_offset_show(struct loop_device *lo, char *buf)
+diff --git a/drivers/irqchip/qcom-pdc.c b/drivers/irqchip/qcom-pdc.c
+index faa7d61b9d6c..239a889df608 100644
+--- a/drivers/irqchip/qcom-pdc.c
++++ b/drivers/irqchip/qcom-pdc.c
+@@ -50,17 +50,18 @@ static u32 pdc_reg_read(int reg, u32 i)
+ static void pdc_enable_intr(struct irq_data *d, bool on)
  {
--	return sprintf(buf, "%llu\n", (unsigned long long)lo->lo_offset);
-+	return sysfs_emit(buf, "%llu\n", (unsigned long long)lo->lo_offset);
+ 	int pin_out = d->hwirq;
++	unsigned long flags;
+ 	u32 index, mask;
+ 	u32 enable;
+ 
+ 	index = pin_out / 32;
+ 	mask = pin_out % 32;
+ 
+-	raw_spin_lock(&pdc_lock);
++	raw_spin_lock_irqsave(&pdc_lock, flags);
+ 	enable = pdc_reg_read(IRQ_ENABLE_BANK, index);
+ 	enable = on ? ENABLE_INTR(enable, mask) : CLEAR_INTR(enable, mask);
+ 	pdc_reg_write(IRQ_ENABLE_BANK, index, enable);
+-	raw_spin_unlock(&pdc_lock);
++	raw_spin_unlock_irqrestore(&pdc_lock, flags);
  }
  
- static ssize_t loop_attr_sizelimit_show(struct loop_device *lo, char *buf)
- {
--	return sprintf(buf, "%llu\n", (unsigned long long)lo->lo_sizelimit);
-+	return sysfs_emit(buf, "%llu\n", (unsigned long long)lo->lo_sizelimit);
- }
- 
- static ssize_t loop_attr_autoclear_show(struct loop_device *lo, char *buf)
- {
- 	int autoclear = (lo->lo_flags & LO_FLAGS_AUTOCLEAR);
- 
--	return sprintf(buf, "%s\n", autoclear ? "1" : "0");
-+	return sysfs_emit(buf, "%s\n", autoclear ? "1" : "0");
- }
- 
- static ssize_t loop_attr_partscan_show(struct loop_device *lo, char *buf)
- {
- 	int partscan = (lo->lo_flags & LO_FLAGS_PARTSCAN);
- 
--	return sprintf(buf, "%s\n", partscan ? "1" : "0");
-+	return sysfs_emit(buf, "%s\n", partscan ? "1" : "0");
- }
- 
- static ssize_t loop_attr_dio_show(struct loop_device *lo, char *buf)
- {
- 	int dio = (lo->lo_flags & LO_FLAGS_DIRECT_IO);
- 
--	return sprintf(buf, "%s\n", dio ? "1" : "0");
-+	return sysfs_emit(buf, "%s\n", dio ? "1" : "0");
- }
- 
- LOOP_ATTR_RO(backing_file);
+ static void qcom_pdc_gic_mask(struct irq_data *d)
 -- 
 2.34.1
 
