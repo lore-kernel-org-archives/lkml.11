@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C7C2C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:43:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0BAEC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:43:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343641AbiC1TpH (ORCPT
+        id S1343610AbiC1TpN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 15:45:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50046 "EHLO
+        Mon, 28 Mar 2022 15:45:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343531AbiC1ToG (ORCPT
+        with ESMTP id S1343561AbiC1ToL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 15:44:06 -0400
+        Mon, 28 Mar 2022 15:44:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A30E65EBC0;
-        Mon, 28 Mar 2022 12:42:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1875E673CA;
+        Mon, 28 Mar 2022 12:42:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 335D3612B4;
-        Mon, 28 Mar 2022 19:42:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8665C36AE5;
-        Mon, 28 Mar 2022 19:42:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E2E2061291;
+        Mon, 28 Mar 2022 19:42:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74B19C36AE2;
+        Mon, 28 Mar 2022 19:42:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648496540;
-        bh=bBhZEU/hFqTYDAtYVCRaoJEj/Mkfi3zNTPkbl87wudY=;
+        s=k20201202; t=1648496544;
+        bh=B1hib5XDcTGq62O6/RgqQN7bWOgkYrf7z11rxoCMWhg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vQA4X9jRPzJH3MGL5ARL11HQfP2kxw4tPpj4b+gLIyYsBRYbbkzCEenpJ0saTIigh
-         i4HQkqoiHOKYgjuJNDaMXSQXJaG5YHL18uYLYkO4N0Xu1Eu/5zCsMfjJgq1W1UBCht
-         AUilkEotWI5Ve0ArnfeiF4aOwv32LlESwZFI4rOETmZ8N4yRCpBUJ5vqBPbRwlcLcv
-         t6L/fZeJ3FOnKRo/pmIrcdnKz7bhM5x25QhZZN7jUt7BafFb2XJzaXLSYSZh1/ymyp
-         usN4ggOkZ9NCKNfabfjq0D82mZ9exOrHzK9CTOTuR6+627pZOwG07rhDeb4JxBYS1y
-         30EmgOOCPn46w==
+        b=cPgwzvlS26eokKINKTDYNn9g7/Ol57am6sWQPaBIWgFbJyHOCMbINER4G00STeLsB
+         TiOhUi7Xy8RHcOBBI1xPHX+aLH9ZIo/3dXMkwjXWMKYBKEPt2hU1CcQ5Sf1Rs8o9x8
+         4z5WYTczJrTEzRmG5PbG5JbR9L6WCr4qD2pQ6YgGGB/XmQ1PBuExoWn1JbOrJFHXtj
+         f1UE/BU6UY+tlaj5yLd0deLZNy/alUvNB4aLp0Nu0Vr3CHUwiBWEDsYPGpBxehjmnU
+         BBq+IWT9I/5Qn6JmK/K8FeJlsDiJiGZdroaNlwKjaLhvQa6n16zeJy9Iy3RTmv6Ryf
+         T8fuaMfPEAa4w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Filipe Manana <fdmanana@suse.com>, David Sterba <dsterba@suse.com>,
-        Sasha Levin <sashal@kernel.org>, clm@fb.com, jbacik@fb.com,
-        linux-btrfs@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 17/21] btrfs: reset last_reflink_trans after fsyncing inode
-Date:   Mon, 28 Mar 2022 15:41:52 -0400
-Message-Id: <20220328194157.1585642-17-sashal@kernel.org>
+Cc:     Rohith Surabattula <rohiths@microsoft.com>,
+        Paulo Alcantara <pc@cjr.nz>,
+        Steve French <stfrench@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>, sfrench@samba.org,
+        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org
+Subject: [PATCH AUTOSEL 5.17 20/21] Adjust cifssb maximum read size
+Date:   Mon, 28 Mar 2022 15:41:55 -0400
+Message-Id: <20220328194157.1585642-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220328194157.1585642-1-sashal@kernel.org>
 References: <20220328194157.1585642-1-sashal@kernel.org>
@@ -52,211 +54,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Rohith Surabattula <rohiths@microsoft.com>
 
-[ Upstream commit 23e3337faf73e5bb2610697977e175313d48acb0 ]
+[ Upstream commit 06a466565d54a1a42168f9033a062a3f5c40e73b ]
 
-When an inode has a last_reflink_trans matching the current transaction,
-we have to take special care when logging its checksums in order to
-avoid getting checksum items with overlapping ranges in a log tree,
-which could result in missing checksums after log replay (more on that
-in the changelogs of commit 40e046acbd2f36 ("Btrfs: fix missing data
-checksums after replaying a log tree") and commit e289f03ea79bbc ("btrfs:
-fix corrupt log due to concurrent fsync of inodes with shared extents")).
-We also need to make sure a full fsync will copy all old file extent
-items it finds in modified leaves, because they might have been copied
-from some other inode.
+When session gets reconnected during mount then read size in super block fs context
+gets set to zero and after negotiate, rsize is not modified which results in
+incorrect read with requested bytes as zero. Fixes intermittent failure
+of xfstest generic/240
 
-However once we fsync an inode, we don't need to keep paying the price of
-that extra special care in future fsyncs done in the same transaction,
-unless the inode is used for another reflink operation or the full sync
-flag is set on it (truncate, failure to allocate extent maps for holes,
-and other exceptional and infrequent cases).
+Note that stable requires a different version of this patch which will be
+sent to the stable mailing list.
 
-So after we fsync an inode reset its last_unlink_trans to zero. In case
-another reflink happens, we continue to update the last_reflink_trans of
-the inode, just as before. Also set last_reflink_trans to the generation
-of the last transaction that modified the inode whenever we need to set
-the full sync flag on the inode, just like when we need to load an inode
-from disk after eviction.
-
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Rohith Surabattula <rohiths@microsoft.com>
+Acked-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/btrfs_inode.h | 30 ++++++++++++++++++++++++++++++
- fs/btrfs/file.c        |  7 +++----
- fs/btrfs/inode.c       | 12 +++++-------
- fs/btrfs/reflink.c     |  5 ++---
- fs/btrfs/tree-log.c    |  8 ++++++++
- 5 files changed, 48 insertions(+), 14 deletions(-)
+ fs/cifs/cifsfs.c |  3 +++
+ fs/cifs/file.c   | 10 ++++++++++
+ 2 files changed, 13 insertions(+)
 
-diff --git a/fs/btrfs/btrfs_inode.h b/fs/btrfs/btrfs_inode.h
-index b3e46aabc3d8..d0b52b106041 100644
---- a/fs/btrfs/btrfs_inode.h
-+++ b/fs/btrfs/btrfs_inode.h
-@@ -333,6 +333,36 @@ static inline void btrfs_set_inode_last_sub_trans(struct btrfs_inode *inode)
- 	spin_unlock(&inode->lock);
- }
- 
-+/*
-+ * Should be called while holding the inode's VFS lock in exclusive mode or in a
-+ * context where no one else can access the inode concurrently (during inode
-+ * creation or when loading an inode from disk).
-+ */
-+static inline void btrfs_set_inode_full_sync(struct btrfs_inode *inode)
-+{
-+	set_bit(BTRFS_INODE_NEEDS_FULL_SYNC, &inode->runtime_flags);
-+	/*
-+	 * The inode may have been part of a reflink operation in the last
-+	 * transaction that modified it, and then a fsync has reset the
-+	 * last_reflink_trans to avoid subsequent fsyncs in the same
-+	 * transaction to do unnecessary work. So update last_reflink_trans
-+	 * to the last_trans value (we have to be pessimistic and assume a
-+	 * reflink happened).
-+	 *
-+	 * The ->last_trans is protected by the inode's spinlock and we can
-+	 * have a concurrent ordered extent completion update it. Also set
-+	 * last_reflink_trans to ->last_trans only if the former is less than
-+	 * the later, because we can be called in a context where
-+	 * last_reflink_trans was set to the current transaction generation
-+	 * while ->last_trans was not yet updated in the current transaction,
-+	 * and therefore has a lower value.
-+	 */
-+	spin_lock(&inode->lock);
-+	if (inode->last_reflink_trans < inode->last_trans)
-+		inode->last_reflink_trans = inode->last_trans;
-+	spin_unlock(&inode->lock);
-+}
-+
- static inline bool btrfs_inode_in_log(struct btrfs_inode *inode, u64 generation)
- {
- 	bool ret = false;
-diff --git a/fs/btrfs/file.c b/fs/btrfs/file.c
-index a0179cc62913..f38cc706a6cf 100644
---- a/fs/btrfs/file.c
-+++ b/fs/btrfs/file.c
-@@ -2474,7 +2474,7 @@ static int fill_holes(struct btrfs_trans_handle *trans,
- 	hole_em = alloc_extent_map();
- 	if (!hole_em) {
- 		btrfs_drop_extent_cache(inode, offset, end - 1, 0);
--		set_bit(BTRFS_INODE_NEEDS_FULL_SYNC, &inode->runtime_flags);
-+		btrfs_set_inode_full_sync(inode);
- 	} else {
- 		hole_em->start = offset;
- 		hole_em->len = end - offset;
-@@ -2495,8 +2495,7 @@ static int fill_holes(struct btrfs_trans_handle *trans,
- 		} while (ret == -EEXIST);
- 		free_extent_map(hole_em);
- 		if (ret)
--			set_bit(BTRFS_INODE_NEEDS_FULL_SYNC,
--					&inode->runtime_flags);
-+			btrfs_set_inode_full_sync(inode);
- 	}
- 
- 	return 0;
-@@ -2850,7 +2849,7 @@ int btrfs_replace_file_extents(struct btrfs_inode *inode,
- 	 * maps for the replacement extents (or holes).
- 	 */
- 	if (extent_info && !extent_info->is_new_extent)
--		set_bit(BTRFS_INODE_NEEDS_FULL_SYNC, &inode->runtime_flags);
-+		btrfs_set_inode_full_sync(inode);
- 
- 	if (ret)
- 		goto out_trans;
-diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
-index 5aace4c13519..3783fdf78da8 100644
---- a/fs/btrfs/inode.c
-+++ b/fs/btrfs/inode.c
-@@ -423,7 +423,7 @@ static noinline int cow_file_range_inline(struct btrfs_inode *inode, u64 start,
- 		goto out;
- 	}
- 
--	set_bit(BTRFS_INODE_NEEDS_FULL_SYNC, &inode->runtime_flags);
-+	btrfs_set_inode_full_sync(inode);
- out:
- 	/*
- 	 * Don't forget to free the reserved space, as for inlined extent
-@@ -4882,8 +4882,7 @@ int btrfs_cont_expand(struct btrfs_inode *inode, loff_t oldsize, loff_t size)
- 						cur_offset + hole_size - 1, 0);
- 			hole_em = alloc_extent_map();
- 			if (!hole_em) {
--				set_bit(BTRFS_INODE_NEEDS_FULL_SYNC,
--					&inode->runtime_flags);
-+				btrfs_set_inode_full_sync(inode);
- 				goto next;
- 			}
- 			hole_em->start = cur_offset;
-@@ -6146,7 +6145,7 @@ static struct inode *btrfs_new_inode(struct btrfs_trans_handle *trans,
- 	 * sync since it will be a full sync anyway and this will blow away the
- 	 * old info in the log.
- 	 */
--	set_bit(BTRFS_INODE_NEEDS_FULL_SYNC, &BTRFS_I(inode)->runtime_flags);
-+	btrfs_set_inode_full_sync(BTRFS_I(inode));
- 
- 	key[0].objectid = objectid;
- 	key[0].type = BTRFS_INODE_ITEM_KEY;
-@@ -8740,7 +8739,7 @@ static int btrfs_truncate(struct inode *inode, bool skip_writeback)
- 	 * extents beyond i_size to drop.
- 	 */
- 	if (control.extents_found > 0)
--		set_bit(BTRFS_INODE_NEEDS_FULL_SYNC, &BTRFS_I(inode)->runtime_flags);
-+		btrfs_set_inode_full_sync(BTRFS_I(inode));
- 
- 	return ret;
- }
-@@ -10027,8 +10026,7 @@ static int __btrfs_prealloc_file_range(struct inode *inode, int mode,
- 
- 		em = alloc_extent_map();
- 		if (!em) {
--			set_bit(BTRFS_INODE_NEEDS_FULL_SYNC,
--				&BTRFS_I(inode)->runtime_flags);
-+			btrfs_set_inode_full_sync(BTRFS_I(inode));
- 			goto next;
+diff --git a/fs/cifs/cifsfs.c b/fs/cifs/cifsfs.c
+index 082c21478686..f89bb6e154f1 100644
+--- a/fs/cifs/cifsfs.c
++++ b/fs/cifs/cifsfs.c
+@@ -210,6 +210,9 @@ cifs_read_super(struct super_block *sb)
+ 	if (rc)
+ 		goto out_no_root;
+ 	/* tune readahead according to rsize if readahead size not set on mount */
++	if (cifs_sb->ctx->rsize == 0)
++		cifs_sb->ctx->rsize =
++			tcon->ses->server->ops->negotiate_rsize(tcon, cifs_sb->ctx);
+ 	if (cifs_sb->ctx->rasize)
+ 		sb->s_bdi->ra_pages = cifs_sb->ctx->rasize / PAGE_SIZE;
+ 	else
+diff --git a/fs/cifs/file.c b/fs/cifs/file.c
+index e7af802dcfa6..a2723f7cb5e9 100644
+--- a/fs/cifs/file.c
++++ b/fs/cifs/file.c
+@@ -3740,6 +3740,11 @@ cifs_send_async_read(loff_t offset, size_t len, struct cifsFileInfo *open_file,
+ 				break;
  		}
  
-diff --git a/fs/btrfs/reflink.c b/fs/btrfs/reflink.c
-index a3930da4eb3f..e37a61ad87df 100644
---- a/fs/btrfs/reflink.c
-+++ b/fs/btrfs/reflink.c
-@@ -277,7 +277,7 @@ static int clone_copy_inline_extent(struct inode *dst,
- 						  path->slots[0]),
- 			    size);
- 	btrfs_update_inode_bytes(BTRFS_I(dst), datal, drop_args.bytes_found);
--	set_bit(BTRFS_INODE_NEEDS_FULL_SYNC, &BTRFS_I(dst)->runtime_flags);
-+	btrfs_set_inode_full_sync(BTRFS_I(dst));
- 	ret = btrfs_inode_set_file_extent_range(BTRFS_I(dst), 0, aligned_end);
- out:
- 	if (!ret && !trans) {
-@@ -575,8 +575,7 @@ static int btrfs_clone(struct inode *src, struct inode *inode,
- 		 * replaced file extent items.
- 		 */
- 		if (last_dest_end >= i_size_read(inode))
--			set_bit(BTRFS_INODE_NEEDS_FULL_SYNC,
--				&BTRFS_I(inode)->runtime_flags);
-+			btrfs_set_inode_full_sync(BTRFS_I(inode));
++		if (cifs_sb->ctx->rsize == 0)
++			cifs_sb->ctx->rsize =
++				server->ops->negotiate_rsize(tlink_tcon(open_file->tlink),
++							     cifs_sb->ctx);
++
+ 		rc = server->ops->wait_mtu_credits(server, cifs_sb->ctx->rsize,
+ 						   &rsize, credits);
+ 		if (rc)
+@@ -4474,6 +4479,11 @@ static void cifs_readahead(struct readahead_control *ractl)
+ 			}
+ 		}
  
- 		ret = btrfs_replace_file_extents(BTRFS_I(inode), path,
- 				last_dest_end, destoff + len - 1, NULL, &trans);
-diff --git a/fs/btrfs/tree-log.c b/fs/btrfs/tree-log.c
-index 6bc8834ac8f7..607527a924c2 100644
---- a/fs/btrfs/tree-log.c
-+++ b/fs/btrfs/tree-log.c
-@@ -5836,6 +5836,14 @@ static int btrfs_log_inode(struct btrfs_trans_handle *trans,
- 	if (inode_only != LOG_INODE_EXISTS)
- 		inode->last_log_commit = inode->last_sub_trans;
- 	spin_unlock(&inode->lock);
++		if (cifs_sb->ctx->rsize == 0)
++			cifs_sb->ctx->rsize =
++				server->ops->negotiate_rsize(tlink_tcon(open_file->tlink),
++							     cifs_sb->ctx);
 +
-+	/*
-+	 * Reset the last_reflink_trans so that the next fsync does not need to
-+	 * go through the slower path when logging extents and their checksums.
-+	 */
-+	if (inode_only == LOG_INODE_ALL)
-+		inode->last_reflink_trans = 0;
-+
- out_unlock:
- 	mutex_unlock(&inode->log_mutex);
- out:
+ 		rc = server->ops->wait_mtu_credits(server, cifs_sb->ctx->rsize,
+ 						   &rsize, credits);
+ 		if (rc)
 -- 
 2.34.1
 
