@@ -2,114 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 893A0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 02:48:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78D33C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 02:49:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237670AbiC1CuR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 22:50:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51212 "EHLO
+        id S237677AbiC1Cur (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Mar 2022 22:50:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237657AbiC1CuP (ORCPT
+        with ESMTP id S235045AbiC1Cuo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 22:50:15 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F84027CD8
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 19:48:35 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KRcXx0j6xzfZHX;
-        Mon, 28 Mar 2022 10:46:57 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 28 Mar 2022 10:48:33 +0800
-Received: from use12-sp2.huawei.com (10.67.189.20) by
- dggpemm500007.china.huawei.com (7.185.36.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 28 Mar 2022 10:48:33 +0800
-From:   Jubin Zhong <zhongjubin@huawei.com>
-To:     <lasse.collin@tukaani.org>, <linux@armlinux.org.uk>
-CC:     <akpm@linux-foundation.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <liaohua4@huawei.com>,
-        <wangfangpeng1@huawei.com>, <zhongjubin@huawei.com>,
-        <nixiaoming@huawei.com>
-Subject: [PATCH v2 RESEND] kbuild: Enable armthumb BCJ filter for Thumb-2 kernel
-Date:   Mon, 28 Mar 2022 10:48:31 +0800
-Message-ID: <1648435711-95240-1-git-send-email-zhongjubin@huawei.com>
-X-Mailer: git-send-email 1.8.5.6
-In-Reply-To: <20220326203516.1ddb6492@kaneli>
-References: <20220326203516.1ddb6492@kaneli>
+        Sun, 27 Mar 2022 22:50:44 -0400
+Received: from mail.meizu.com (unknown [14.29.68.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCF8B4199A;
+        Sun, 27 Mar 2022 19:49:02 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
+ (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Mon, 28 Mar
+ 2022 10:49:00 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Mon, 28 Mar
+ 2022 10:49:00 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     <chuck.lever@oracle.com>
+CC:     <linux-nfs@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Haowen Bai <baihaowen@meizu.com>
+Subject: [PATCH] SUNRPC: Return true/false (not 1/0) from bool functions
+Date:   Mon, 28 Mar 2022 10:48:59 +0800
+Message-ID: <1648435739-3034-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.67.189.20]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-125.meizu.com (172.16.1.125) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-xz_wrap.sh use $SRCARCH to detect the BCJ filter. However, assigning
-arm BCJ filter to Thumb-2 kernel is not optimal. In my case, about 5%
-decrease of image size is observed with armthumb BCJ filter:
+Return boolean values ("true" or "false") instead of 1 or 0 from bool
+functions.  This fixes the following warnings from coccicheck:
 
-Test results:
-  hardware:      QEMU emulator version 3.1.0
-  config:        vexpress_defconfig with THUMB2_KERNEL & KERNEL_XZ on
-  arm BCJ:       4029808
-  armthumb BCJ:  3827280
+./fs/nfsd/nfs2acl.c:289:9-10: WARNING: return of 0/1 in function
+'nfsaclsvc_encode_accessres' with return type bool
+./fs/nfsd/nfs2acl.c:252:9-10: WARNING: return of 0/1 in function
+'nfsaclsvc_encode_getaclres' with return type bool
 
-Choose armthumb BCJ filter for Thumb-2 kernel to make smaller images.
-
-Signed-off-by: Jubin Zhong <zhongjubin@huawei.com>
-Acked-by: Lasse Collin <lasse.collin@tukaani.org>
-
-----
-v1:
-https://lore.kernel.org/lkml/1637323647-19988-1-git-send-email-zhongjubin@huawei.com/
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 ---
- lib/decompress_unxz.c | 6 +++++-
- scripts/xz_wrap.sh    | 6 ++++++
- 2 files changed, 11 insertions(+), 1 deletion(-)
+ fs/nfsd/nfs2acl.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/lib/decompress_unxz.c b/lib/decompress_unxz.c
-index 9f4262e..9d9cb48 100644
---- a/lib/decompress_unxz.c
-+++ b/lib/decompress_unxz.c
-@@ -129,7 +129,11 @@
- #	define XZ_DEC_POWERPC
- #endif
- #ifdef CONFIG_ARM
--#	define XZ_DEC_ARM
-+#	ifdef CONFIG_THUMB2_KERNEL
-+#		define XZ_DEC_ARMTHUMB
-+#	else
-+#		define XZ_DEC_ARM
-+#	endif
- #endif
- #ifdef CONFIG_IA64
- #	define XZ_DEC_IA64
-diff --git a/scripts/xz_wrap.sh b/scripts/xz_wrap.sh
-index 76e9cbc..3824fdf 100755
---- a/scripts/xz_wrap.sh
-+++ b/scripts/xz_wrap.sh
-@@ -9,6 +9,8 @@
- # You can do whatever you want with this file.
- #
+diff --git a/fs/nfsd/nfs2acl.c b/fs/nfsd/nfs2acl.c
+index 367551b..b576080 100644
+--- a/fs/nfsd/nfs2acl.c
++++ b/fs/nfsd/nfs2acl.c
+@@ -249,34 +249,34 @@ nfsaclsvc_encode_getaclres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
+ 	int w;
  
-+. include/config/auto.conf
-+
- BCJ=
- LZMA2OPTS=
+ 	if (!svcxdr_encode_stat(xdr, resp->status))
+-		return 0;
++		return false;
  
-@@ -20,4 +22,8 @@ case $SRCARCH in
- 	sparc)          BCJ=--sparc ;;
- esac
+ 	if (dentry == NULL || d_really_is_negative(dentry))
+-		return 1;
++		return true;
+ 	inode = d_inode(dentry);
  
-+if [ -n "${CONFIG_THUMB2_KERNEL}" ]; then
-+	BCJ=--armthumb
-+fi
-+
- exec $XZ --check=crc32 $BCJ --lzma2=$LZMA2OPTS,dict=32MiB
+ 	if (!svcxdr_encode_fattr(rqstp, xdr, &resp->fh, &resp->stat))
+-		return 0;
++		return false;
+ 	if (xdr_stream_encode_u32(xdr, resp->mask) < 0)
+-		return 0;
++		return false;
+ 
+ 	rqstp->rq_res.page_len = w = nfsacl_size(
+ 		(resp->mask & NFS_ACL)   ? resp->acl_access  : NULL,
+ 		(resp->mask & NFS_DFACL) ? resp->acl_default : NULL);
+ 	while (w > 0) {
+ 		if (!*(rqstp->rq_next_page++))
+-			return 1;
++			return true;
+ 		w -= PAGE_SIZE;
+ 	}
+ 
+ 	if (!nfs_stream_encode_acl(xdr, inode, resp->acl_access,
+ 				   resp->mask & NFS_ACL, 0))
+-		return 0;
++		return false;
+ 	if (!nfs_stream_encode_acl(xdr, inode, resp->acl_default,
+ 				   resp->mask & NFS_DFACL, NFS_ACL_DEFAULT))
+-		return 0;
++		return false;
+ 
+-	return 1;
++	return true;
+ }
+ 
+ /* ACCESS */
+@@ -286,17 +286,17 @@ nfsaclsvc_encode_accessres(struct svc_rqst *rqstp, struct xdr_stream *xdr)
+ 	struct nfsd3_accessres *resp = rqstp->rq_resp;
+ 
+ 	if (!svcxdr_encode_stat(xdr, resp->status))
+-		return 0;
++		return false;
+ 	switch (resp->status) {
+ 	case nfs_ok:
+ 		if (!svcxdr_encode_fattr(rqstp, xdr, &resp->fh, &resp->stat))
+-			return 0;
++			return false;
+ 		if (xdr_stream_encode_u32(xdr, resp->access) < 0)
+-			return 0;
++			return false;
+ 		break;
+ 	}
+ 
+-	return 1;
++	return true;
+ }
+ 
+ /*
 -- 
-1.8.5.6
+2.7.4
 
