@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E184C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:50:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7877DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:50:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343974AbiC1TwS (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 15:52:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50400 "EHLO
+        id S239972AbiC1TwW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 15:52:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343927AbiC1Trv (ORCPT
+        with ESMTP id S1343677AbiC1Trj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 15:47:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B09B694AF;
-        Mon, 28 Mar 2022 12:43:34 -0700 (PDT)
+        Mon, 28 Mar 2022 15:47:39 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FEB0BCA3;
+        Mon, 28 Mar 2022 12:43:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D83F612B4;
-        Mon, 28 Mar 2022 19:43:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFECEC36AE3;
-        Mon, 28 Mar 2022 19:43:19 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2753ECE169A;
+        Mon, 28 Mar 2022 19:43:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5BC4C3410F;
+        Mon, 28 Mar 2022 19:43:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648496600;
-        bh=LZjNhn3D34oGf+si0xSo0xnRlHAG8AJ4KOgRDUwCSYk=;
+        s=k20201202; t=1648496591;
+        bh=AJfBjKjh2+RRkrw2MJojNVGL7DPhthwNBpPtrMeZIT8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j+InaUQs3LEdXP5Z1bjPBTsmGJYt0oap7+ikyICXaXNczSc4GW8QMoML5R6wf2kbZ
-         YqXJfK7D83adh3pt+aM1gS+5TIGxrvloifLkeCfGR63Mny/V+chNN1x91zOdCnb0XB
-         /jRXU43YHe8sY+WsKO5ltQt5bjEbHXSIj8SeIIrNWaGKGtas6fGqcDSVRHM2gIa555
-         7AeHxnU9A941BBFg/sfMIsKgPpuuCUC+m1XHi0YYCPHe+i+kJsnYN4y+FLnfsjQxX2
-         vDJyv36pF0ntpyEYlRjVGuCMck9PHGg7C9EobkYEzbRNJrpg83JxUx3o20p4qfox5t
-         VDxCmMKFtMsWw==
+        b=PW3EITEfD1ceIh04cVEogDke+2JCzGpdkBEP34ujt1lGH9KJErKTYpWeRIAjOwq+J
+         2/FJ/6ROfLDd3f5Ep00odVr+kTzo8VY9I6x4f4L8GYwTGhPPAiIXtyywXswwb5oDtA
+         vZTO2bqpUHcrLI+IP7+hrh/ostHwngT18z+JuAw3slXekAB8Ag6NHktyp3eGYwLcgS
+         9V6v3Cng4oueU/heuvgWCYLiG1gm8KYu/Me+5jXHjvMfPgWACzjp8DIw6C9s1/ebSo
+         PT5AyCoPX+nYhtq5hByZn9+KtPkC77h/fusVCUfLOEgZ3ijIncvoaEu61yvt2KbzbD
+         U2+lRRhM7pj3g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Rohith Surabattula <rohiths@microsoft.com>,
-        Paulo Alcantara <pc@cjr.nz>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>, sfrench@samba.org,
-        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org
-Subject: [PATCH AUTOSEL 5.15 15/16] Adjust cifssb maximum read size
-Date:   Mon, 28 Mar 2022 15:42:58 -0400
-Message-Id: <20220328194300.1586178-15-sashal@kernel.org>
+Cc:     Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, yuchao0@huawei.com,
+        linux-f2fs-devel@lists.sourceforge.net
+Subject: [PATCH AUTOSEL 5.15 08/16] f2fs: fix to do sanity check on curseg->alloc_type
+Date:   Mon, 28 Mar 2022 15:42:51 -0400
+Message-Id: <20220328194300.1586178-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220328194300.1586178-1-sashal@kernel.org>
 References: <20220328194300.1586178-1-sashal@kernel.org>
@@ -54,69 +51,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rohith Surabattula <rohiths@microsoft.com>
+From: Chao Yu <chao@kernel.org>
 
-[ Upstream commit 06a466565d54a1a42168f9033a062a3f5c40e73b ]
+[ Upstream commit f41ee8b91c00770d718be2ff4852a80017ae9ab3 ]
 
-When session gets reconnected during mount then read size in super block fs context
-gets set to zero and after negotiate, rsize is not modified which results in
-incorrect read with requested bytes as zero. Fixes intermittent failure
-of xfstest generic/240
+As Wenqing Liu reported in bugzilla:
 
-Note that stable requires a different version of this patch which will be
-sent to the stable mailing list.
+https://bugzilla.kernel.org/show_bug.cgi?id=215657
 
-Signed-off-by: Rohith Surabattula <rohiths@microsoft.com>
-Acked-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+- Overview
+UBSAN: array-index-out-of-bounds in fs/f2fs/segment.c:3460:2 when mount and operate a corrupted image
+
+- Reproduce
+tested on kernel 5.17-rc4, 5.17-rc6
+
+1. mkdir test_crash
+2. cd test_crash
+3. unzip tmp2.zip
+4. mkdir mnt
+5. ./single_test.sh f2fs 2
+
+- Kernel dump
+[   46.434454] loop0: detected capacity change from 0 to 131072
+[   46.529839] F2FS-fs (loop0): Mounted with checkpoint version = 7548c2d9
+[   46.738319] ================================================================================
+[   46.738412] UBSAN: array-index-out-of-bounds in fs/f2fs/segment.c:3460:2
+[   46.738475] index 231 is out of range for type 'unsigned int [2]'
+[   46.738539] CPU: 2 PID: 939 Comm: umount Not tainted 5.17.0-rc6 #1
+[   46.738547] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.13.0-1ubuntu1.1 04/01/2014
+[   46.738551] Call Trace:
+[   46.738556]  <TASK>
+[   46.738563]  dump_stack_lvl+0x47/0x5c
+[   46.738581]  ubsan_epilogue+0x5/0x50
+[   46.738592]  __ubsan_handle_out_of_bounds+0x68/0x80
+[   46.738604]  f2fs_allocate_data_block+0xdff/0xe60 [f2fs]
+[   46.738819]  do_write_page+0xef/0x210 [f2fs]
+[   46.738934]  f2fs_do_write_node_page+0x3f/0x80 [f2fs]
+[   46.739038]  __write_node_page+0x2b7/0x920 [f2fs]
+[   46.739162]  f2fs_sync_node_pages+0x943/0xb00 [f2fs]
+[   46.739293]  f2fs_write_checkpoint+0x7bb/0x1030 [f2fs]
+[   46.739405]  kill_f2fs_super+0x125/0x150 [f2fs]
+[   46.739507]  deactivate_locked_super+0x60/0xc0
+[   46.739517]  deactivate_super+0x70/0xb0
+[   46.739524]  cleanup_mnt+0x11a/0x200
+[   46.739532]  __cleanup_mnt+0x16/0x20
+[   46.739538]  task_work_run+0x67/0xa0
+[   46.739547]  exit_to_user_mode_prepare+0x18c/0x1a0
+[   46.739559]  syscall_exit_to_user_mode+0x26/0x40
+[   46.739568]  do_syscall_64+0x46/0xb0
+[   46.739584]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+The root cause is we missed to do sanity check on curseg->alloc_type,
+result in out-of-bound accessing on sbi->block_count[] array, fix it.
+
+Signed-off-by: Chao Yu <chao@kernel.org>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/cifsfs.c |  3 +++
- fs/cifs/file.c   | 10 ++++++++++
- 2 files changed, 13 insertions(+)
+ fs/f2fs/segment.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/fs/cifs/cifsfs.c b/fs/cifs/cifsfs.c
-index 21bf82fc2278..ba6f536d76de 100644
---- a/fs/cifs/cifsfs.c
-+++ b/fs/cifs/cifsfs.c
-@@ -210,6 +210,9 @@ cifs_read_super(struct super_block *sb)
- 	if (rc)
- 		goto out_no_root;
- 	/* tune readahead according to rsize if readahead size not set on mount */
-+	if (cifs_sb->ctx->rsize == 0)
-+		cifs_sb->ctx->rsize =
-+			tcon->ses->server->ops->negotiate_rsize(tcon, cifs_sb->ctx);
- 	if (cifs_sb->ctx->rasize)
- 		sb->s_bdi->ra_pages = cifs_sb->ctx->rasize / PAGE_SIZE;
- 	else
-diff --git a/fs/cifs/file.c b/fs/cifs/file.c
-index 82bbaf8e92b7..b23f6b489bb9 100644
---- a/fs/cifs/file.c
-+++ b/fs/cifs/file.c
-@@ -3734,6 +3734,11 @@ cifs_send_async_read(loff_t offset, size_t len, struct cifsFileInfo *open_file,
- 				break;
- 		}
+diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
+index d716553bdc02..338a57360bb8 100644
+--- a/fs/f2fs/segment.c
++++ b/fs/f2fs/segment.c
+@@ -4747,6 +4747,13 @@ static int sanity_check_curseg(struct f2fs_sb_info *sbi)
  
-+		if (cifs_sb->ctx->rsize == 0)
-+			cifs_sb->ctx->rsize =
-+				server->ops->negotiate_rsize(tlink_tcon(open_file->tlink),
-+							     cifs_sb->ctx);
-+
- 		rc = server->ops->wait_mtu_credits(server, cifs_sb->ctx->rsize,
- 						   &rsize, credits);
- 		if (rc)
-@@ -4512,6 +4517,11 @@ static int cifs_readpages(struct file *file, struct address_space *mapping,
- 				break;
- 		}
+ 		sanity_check_seg_type(sbi, curseg->seg_type);
  
-+		if (cifs_sb->ctx->rsize == 0)
-+			cifs_sb->ctx->rsize =
-+				server->ops->negotiate_rsize(tlink_tcon(open_file->tlink),
-+							     cifs_sb->ctx);
++		if (curseg->alloc_type != LFS && curseg->alloc_type != SSR) {
++			f2fs_err(sbi,
++				 "Current segment has invalid alloc_type:%d",
++				 curseg->alloc_type);
++			return -EFSCORRUPTED;
++		}
 +
- 		rc = server->ops->wait_mtu_credits(server, cifs_sb->ctx->rsize,
- 						   &rsize, credits);
- 		if (rc)
+ 		if (f2fs_test_bit(blkofs, se->cur_valid_map))
+ 			goto out;
+ 
 -- 
 2.34.1
 
