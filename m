@@ -2,160 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 643B8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 15:15:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A110C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 15:16:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238163AbiC1PQu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 11:16:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47318 "EHLO
+        id S234005AbiC1PSh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 11:18:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234467AbiC1PQs (ORCPT
+        with ESMTP id S230175AbiC1PSe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 11:16:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 479D01E3EB
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 08:15:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D7D71612F4
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 15:15:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABF02C004DD;
-        Mon, 28 Mar 2022 15:15:05 +0000 (UTC)
-Date:   Mon, 28 Mar 2022 11:15:03 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     kernel test robot <lkp@intel.com>
-Cc:     Beau Belgrave <beaub@linux.microsoft.com>, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: kernel/trace/trace_events_user.c:747:16: sparse: sparse:
- incompatible types in comparison expression (different address spaces):
-Message-ID: <20220328111503.1629c464@gandalf.local.home>
-In-Reply-To: <202203281558.fjXyftuw-lkp@intel.com>
-References: <202203281558.fjXyftuw-lkp@intel.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Mon, 28 Mar 2022 11:18:34 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A900560078
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 08:16:53 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id k14so12525640pga.0
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 08:16:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=V2BkG1eTX10cucUGmcHAn94FhLtFZhm8llsNlwvtRuc=;
+        b=sALbJwx8VGCOa6mzxzDleDWU1dPFqfgqIX1UyiHh3zAj5ZCTtCKO3xjq94w2VrpetQ
+         y0OlGDN2AP01yDewUz/x8/cbYm9hbsQQ7RsIAkSDsaia0hIWnniT0PPDDAg9NMxLqT7f
+         CUh5MKcp8D4mUEodbmDVwDeIhz1E/LoLuUEAg/360b4C0vFGeHSOm9fHdeUV1wr2NJyf
+         D4l1oUU7gaTWjmf8iToex55XptSW+KJX3nCVq3VNVumPDFyAXJrvmiPnfTWg6AKp5THL
+         hN3Tbi1K4CiHHiW9fzyPr6xYQmlwrDUIYWzTSDQIl2m4MSCeIu7Wjc4IHwm43yWIdm+N
+         MUEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=V2BkG1eTX10cucUGmcHAn94FhLtFZhm8llsNlwvtRuc=;
+        b=tc6ehxmA+oovqdFj1KBIEkqfeqrwy7E3V0KH98q6Ohg19RX9Q7vkJquHNoNQddK9Uh
+         KoCeko8bboe4l6qvi4bKA0GMr3wrqouM7vujf1sZi/0gSPEv/UIt4xEktOmHT6I+2QEd
+         +4p07uwr+oUXHfO4NHBtP88Db59OSNZgMpc2S89YEPtdLPykm26WdF4b375NTPpQlQNs
+         apfjmvtKdctOLbbERjrjOLCUGUcY0yO+60daF4HPp3Y1oZz8x8U2iE+tnpWGFDPbPqd5
+         kPOnDhwx7o/gCM0TtT3PHsAclcyldS9cT5tg+peQRuI/BjO8NvFDqHI/8nxPZ0Ux5F7V
+         AaPw==
+X-Gm-Message-State: AOAM532SdDU4K7EOj+DEVA7UB2rUpQjX3lJH3luQqmOkGsTJLZ1jcLzz
+        GSA4TBwFBbaM41URenFOAHQ7xQ==
+X-Google-Smtp-Source: ABdhPJymvUPIEff3uEiOhFC8PqKbbFXCngUaPAQ96GGUp2FYuqQpLllY+Mk5xWbNxDWjkvXLJTlEUw==
+X-Received: by 2002:a05:6a00:b51:b0:4fa:ece9:15e4 with SMTP id p17-20020a056a000b5100b004faece915e4mr22481702pfo.27.1648480612981;
+        Mon, 28 Mar 2022 08:16:52 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id p10-20020a056a0026ca00b004fb44e0cb17sm6083630pfw.116.2022.03.28.08.16.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 08:16:52 -0700 (PDT)
+Date:   Mon, 28 Mar 2022 15:16:49 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Mingwei Zhang <mizhang@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ben Gardon <bgardon@google.com>,
+        David Matlack <dmatlack@google.com>
+Subject: Re: [PATCH] KVM: x86/mmu: add lockdep check before
+ lookup_address_in_mm()
+Message-ID: <YkHRYY6x1Ewez/g4@google.com>
+References: <20220327205803.739336-1-mizhang@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220327205803.739336-1-mizhang@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 28 Mar 2022 15:39:22 +0800
-kernel test robot <lkp@intel.com> wrote:
-
-> sparse warnings: (new ones prefixed by >>)
-> >> kernel/trace/trace_events_user.c:747:16: sparse: sparse: incompatible types in comparison expression (different address spaces):
-> >> kernel/trace/trace_events_user.c:747:16: sparse:    void [noderef] __rcu *
-> >> kernel/trace/trace_events_user.c:747:16: sparse:    void *
-> >> kernel/trace/trace_events_user.c:811:13: sparse: sparse: cast removes address space '__user' of expression
-> >> kernel/trace/trace_events_user.c:811:13: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void [noderef] __user *buf @@     got char * @@  
->    kernel/trace/trace_events_user.c:811:13: sparse:     expected void [noderef] __user *buf
->    kernel/trace/trace_events_user.c:811:13: sparse:     got char *
->    kernel/trace/trace_events_user.c:827:16: sparse: sparse: incompatible types in comparison expression (different address spaces):
->    kernel/trace/trace_events_user.c:827:16: sparse:    void [noderef] __rcu *
->    kernel/trace/trace_events_user.c:827:16: sparse:    void *
->    kernel/trace/trace_events_user.c:854:9: sparse: sparse: incompatible types in comparison expression (different address spaces):
->    kernel/trace/trace_events_user.c:854:9: sparse:    void [noderef] __rcu *
->    kernel/trace/trace_events_user.c:854:9: sparse:    void *
+On Sun, Mar 27, 2022, Mingwei Zhang wrote:
+> Add a lockdep check before invoking lookup_address_in_mm().
+> lookup_address_in_mm() walks all levels of host page table without
+> accquiring any lock. This is usually unsafe unless we are walking the
+> kernel addresses (check other usage cases of lookup_address_in_mm and
+> lookup_address_in_pgd).
 > 
-> vim +747 kernel/trace/trace_events_user.c
+> Walking host page table (especially guest addresses) usually requires
+> holding two types of locks: 1) mmu_lock in mm or the lock that protects
+> the reverse maps of host memory in range; 2) lock for the leaf paging
+> structures.
 > 
->    730	
->    731	/*
->    732	 * Validates the user payload and writes via iterator.
->    733	 */
->    734	static ssize_t user_events_write_core(struct file *file, struct iov_iter *i)
->    735	{
->    736		struct user_event_refs *refs;
-
-Looks like the above needs to be:
-
-			struct user_event_refs __rcu *refs;
-
->    737		struct user_event *user = NULL;
->    738		struct tracepoint *tp;
->    739		ssize_t ret = i->count;
->    740		int idx;
->    741	
->    742		if (unlikely(copy_from_iter(&idx, sizeof(idx), i) != sizeof(idx)))
->    743			return -EFAULT;
->    744	
->    745		rcu_read_lock_sched();
->    746	
->  > 747		refs = rcu_dereference_sched(file->private_data);  
->    748	
->    749		/*
->    750		 * The refs->events array is protected by RCU, and new items may be
->    751		 * added. But the user retrieved from indexing into the events array
->    752		 * shall be immutable while the file is opened.
->    753		 */
->    754		if (likely(refs && idx < refs->count))
->    755			user = refs->events[idx];
->    756	
->    757		rcu_read_unlock_sched();
->    758	
->    759		if (unlikely(user == NULL))
->    760			return -ENOENT;
->    761	
->    762		tp = &user->tracepoint;
->    763	
->    764		/*
->    765		 * It's possible key.enabled disables after this check, however
->    766		 * we don't mind if a few events are included in this condition.
->    767		 */
->    768		if (likely(atomic_read(&tp->key.enabled) > 0)) {
->    769			struct tracepoint_func *probe_func_ptr;
->    770			user_event_func_t probe_func;
->    771			void *tpdata;
->    772			void *kdata;
->    773			u32 datalen;
->    774	
->    775			kdata = kmalloc(i->count, GFP_KERNEL);
->    776	
->    777			if (unlikely(!kdata))
->    778				return -ENOMEM;
->    779	
->    780			datalen = copy_from_iter(kdata, i->count, i);
->    781	
->    782			rcu_read_lock_sched();
->    783	
->    784			probe_func_ptr = rcu_dereference_sched(tp->funcs);
->    785	
->    786			if (probe_func_ptr) {
->    787				do {
->    788					probe_func = probe_func_ptr->func;
->    789					tpdata = probe_func_ptr->data;
->    790					probe_func(user, kdata, datalen, tpdata);
->    791				} while ((++probe_func_ptr)->func);
->    792			}
->    793	
->    794			rcu_read_unlock_sched();
->    795	
->    796			kfree(kdata);
->    797		}
->    798	
->    799		return ret;
->    800	}
->    801	
->    802	static ssize_t user_events_write(struct file *file, const char __user *ubuf,
->    803					 size_t count, loff_t *ppos)
->    804	{
->    805		struct iovec iov;
->    806		struct iov_iter i;
->    807	
->    808		if (unlikely(*ppos != 0))
->    809			return -EFAULT;
->    810	
->  > 811		if (unlikely(import_single_range(READ, (char *)ubuf, count, &iov, &i)))  
-
-						(char __user *)ubuf
-
--- Steve
-
->    812			return -EFAULT;
->    813	
->    814		return user_events_write_core(file, &i);
->    815	}
->    816	
+> One exception case is when we take the mmu_lock of the secondary mmu.
+> Holding mmu_lock of KVM MMU in either read mode or write mode prevents host
+> level entities from modifying the host page table concurrently. This is
+> because all of them will have to invoke KVM mmu_notifier first before doing
+> the actual work. Since KVM mmu_notifier invalidation operations always take
+> the mmu write lock, we are safe if we hold the mmu lock here.
 > 
+> Note: this means that KVM cannot allow concurrent multiple mmu_notifier
+> invalidation callbacks by using KVM mmu read lock. Since, otherwise, any
+> host level entity can cause race conditions with this one. Walking host
+> page table here may get us stale information or may trigger NULL ptr
+> dereference that is hard to reproduce.
+> 
+> Having a lockdep check here will prevent or at least warn future
+> development that directly walks host page table simply in a KVM ioctl
+> function. In addition, it provides a record for any future development on
+> KVM mmu_notifier.
+> 
+> Cc: Sean Christopherson <seanjc@google.com>
+> Cc: Ben Gardon <bgardon@google.com>
+> Cc: David Matlack <dmatlack@google.com>
+> 
+> Signed-off-by: Mingwei Zhang <mizhang@google.com>
+> ---
+>  arch/x86/kvm/mmu/mmu.c | 18 ++++++++++++++++++
+>  1 file changed, 18 insertions(+)
+> 
+> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> index 1361eb4599b4..066bb5435156 100644
+> --- a/arch/x86/kvm/mmu/mmu.c
+> +++ b/arch/x86/kvm/mmu/mmu.c
+> @@ -2820,6 +2820,24 @@ static int host_pfn_mapping_level(struct kvm *kvm, gfn_t gfn, kvm_pfn_t pfn,
+>  	 */
+>  	hva = __gfn_to_hva_memslot(slot, gfn);
+>  
+> +	/*
+> +	 * lookup_address_in_mm() walks all levels of host page table without
+> +	 * accquiring any lock. This is not safe when KVM does not take the
+> +	 * mmu_lock. Holding mmu_lock in either read mode or write mode prevents
+> +	 * host level entities from modifying the host page table. This is
+> +	 * because all of them will have to invoke KVM mmu_notifier first before
+> +	 * doing the actual work. Since KVM mmu_notifier invalidation operations
+> +	 * always take the mmu write lock, we are safe if we hold the mmu lock
+> +	 * here.
+> +	 *
+> +	 * Note: this means that KVM cannot allow concurrent multiple
+> +	 * mmu_notifier invalidation callbacks by using KVM mmu read lock.
+> +	 * Otherwise, any host level entity can cause race conditions with this
+> +	 * one. Walking host page table here may get us stale information or may
+> +	 * trigger NULL ptr dereference that is hard to reproduce.
+> +	 */
+> +	lockdep_assert_held(&kvm->mmu_lock);
 
+Holding mmu_lock isn't strictly required.  It would also be safe to use this helper
+if mmu_notifier_retry_hva() were checked after grabbing the mapping level, before
+consuming it.  E.g. we could theoretically move this to kvm_faultin_pfn().
+
+And simply holding the lock isn't sufficient, i.e. the lockdep gives a false sense
+of security.  E.g. calling this while holding mmu_lock but without first checking
+mmu_notifier_count would let it run concurrently with host PTE modifications.
+
+I'm definitely in favor of adding a comment to document the mmu_notifier
+interactions, but I don't like adding a lockdep.
