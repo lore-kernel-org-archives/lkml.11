@@ -2,138 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29C6AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 22:56:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71759C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 23:00:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230173AbiC1W6Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 18:58:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32882 "EHLO
+        id S230217AbiC1XB7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 19:01:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230108AbiC1W6P (ORCPT
+        with ESMTP id S230108AbiC1XB4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 18:58:15 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A67B62DDF
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 15:56:33 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id lr4so23192680ejb.11
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 15:56:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=gsnbPHN1+bJ5AgqkGTl4dGaLitG9L/CZ09Bd+KwNgt8=;
-        b=Nmc6PrFt6l1vzHoSiGbeJVaO2omXu1zy0HbTQgmkhtqaoMUk850z389Usqgda2XjCw
-         7qxtOJQ0mt98v793Ly+rhMDTjDCid4BOX4I7rLXv9xEdRYju+bZEmv462n26Cr4L+y4+
-         92z2himg1vWBiE1x7B92vwcVVbhU+CPPxPs5c=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=gsnbPHN1+bJ5AgqkGTl4dGaLitG9L/CZ09Bd+KwNgt8=;
-        b=J9Vm9wQ2K6SYpWBkiSQZ650tUj2SHJ1fUzJFtmLruFw1Gl2SqS3JDvvRcCvcnOWnc7
-         CeVzv6DiBzowgbkqkmBLlBEHMfFp+Dd0xIrZ4xmcxRawsL/WIsJYvtMdfTBGdLAtmjvU
-         ZGjg6cs/14EFaLL4djSd+xHQsCKeiCkKXyRcgyrJQa9fp3Myv/hs9w6r15EF2yrFxe4C
-         JVSsn34D4bMGXMOuhnGopbvYGHAvR9Oosbu0YZjpTNcLnWbCvMRmg3t4jYdEUaqivY9E
-         c0V1sU8EjpsJ4bZNQycx0dpSQed8dRSLs6CoJc3SX7FmQWu5X1elhjOIlZECBcuH8v7C
-         I6Fw==
-X-Gm-Message-State: AOAM530IGB1qrqcYhh6k6ZBqKdGBTVUYLBjix28/mWUZUmjsR4uaV5H/
-        CD+hRVgG6Duusg/tPTDO/tp7Hg==
-X-Google-Smtp-Source: ABdhPJwDQnj/ROBBuZuaqnx106ED7fkzgOyheeZAC0CiYJv4yEO4htrkiieMhqfBUYpz8+9IZIpz+A==
-X-Received: by 2002:a17:907:3e03:b0:6da:8c5a:6d4a with SMTP id hp3-20020a1709073e0300b006da8c5a6d4amr30831660ejc.585.1648508192251;
-        Mon, 28 Mar 2022 15:56:32 -0700 (PDT)
-Received: from localhost.localdomain ([80.208.64.233])
-        by smtp.gmail.com with ESMTPSA id by4-20020a0564021b0400b00418fc410299sm7510740edb.62.2022.03.28.15.56.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Mar 2022 15:56:31 -0700 (PDT)
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-To:     Mark Brown <broonie@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] regmap: make range check functions static
-Date:   Tue, 29 Mar 2022 00:56:28 +0200
-Message-Id: <20220328225628.3012397-1-linux@rasmusvillemoes.dk>
-X-Mailer: git-send-email 2.31.1
+        Mon, 28 Mar 2022 19:01:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5078240BD;
+        Mon, 28 Mar 2022 16:00:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A1D660C7D;
+        Mon, 28 Mar 2022 23:00:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3525AC340EC;
+        Mon, 28 Mar 2022 23:00:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648508412;
+        bh=7C2zg81KqOPL2oH4kK0Qvprda9/Ao9Mc247z5u2Vhek=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=id0zVO7sDGlf9kZ37Xmm3W2vqP4HQ6Nx8BFmzlf4pK6cRRawvVWJCRhrc3WJNQMmh
+         8SOk/4153l4fNYchqGmpNIONa/WBdWeU4990FXm9guej0rDqzS9iEzvY+65EM9+lF0
+         unKhwrNDWDnyZzteKKXNhgify24sUvSS53oLSQZB9zhUBGVzjDdwOa16AtYHA1ajsC
+         IZ+M/d07et278qpc3m+o6Ktug8tnQj22mWvN+V27xXBemHIaBEoo8LEptb/CxnSX1x
+         BFIsO3SC4BJn7nwKjY6AmpfbKqlxi1acp12QXdt8Wfu0I7PAdeNXN/55GQMsRqok2n
+         oMzCyPpL42emg==
+Date:   Mon, 28 Mar 2022 16:00:10 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Guenter Roeck <linux@roeck-us.net>, Andrew Lunn <andrew@lunn.ch>,
+        Xu Yilun <yilun.xu@intel.com>, Tom Rix <trix@redhat.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v1 0/2] hwmon: introduce hwmon_sanitize()
+Message-ID: <20220328160010.73bd2a47@kernel.org>
+In-Reply-To: <e87c3ab2a0c188dced27bf83fc444c40@walle.cc>
+References: <20220328115226.3042322-1-michael@walle.cc>
+        <YkGwjjUz+421O2E1@lunn.ch>
+        <ab64105b-c48d-cdf2-598a-3e0a2e261b27@roeck-us.net>
+        <e87c3ab2a0c188dced27bf83fc444c40@walle.cc>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-regmap_reg_in_ranges() and regmap_check_range_table() have no callers
-outside regmap.c, so they have no reason to be exported nor have
-external linkage.
+On Tue, 29 Mar 2022 00:50:28 +0200 Michael Walle wrote:
+> > No, it isn't the easiest solution because it also modifies a hwmon
+> > driver to use it.  
+> 
+> So that leaves us with option 1? The next version will contain the
+> additional patch which moves the hwmon_is_bad_char() from the include
+> to the core and make it private. That will then need an immutable
+> branch from netdev to get merged back into hwmon before that patch
+> can be applied, right?
 
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
----
- drivers/base/regmap/regmap.c | 12 +++++-------
- include/linux/regmap.h       |  7 -------
- 2 files changed, 5 insertions(+), 14 deletions(-)
+If anything immutable branch from hwmon that we can pull, because hwmon
+is the home of the API, and netdev is just _a_ consumer.
 
-diff --git a/drivers/base/regmap/regmap.c b/drivers/base/regmap/regmap.c
-index 5e12f7cb5147..8b3fdc966ed6 100644
---- a/drivers/base/regmap/regmap.c
-+++ b/drivers/base/regmap/regmap.c
-@@ -57,9 +57,9 @@ static int _regmap_bus_reg_write(void *context, unsigned int reg,
- static int _regmap_bus_raw_write(void *context, unsigned int reg,
- 				 unsigned int val);
- 
--bool regmap_reg_in_ranges(unsigned int reg,
--			  const struct regmap_range *ranges,
--			  unsigned int nranges)
-+static bool regmap_reg_in_ranges(unsigned int reg,
-+				 const struct regmap_range *ranges,
-+				 unsigned int nranges)
- {
- 	const struct regmap_range *r;
- 	int i;
-@@ -69,10 +69,9 @@ bool regmap_reg_in_ranges(unsigned int reg,
- 			return true;
- 	return false;
- }
--EXPORT_SYMBOL_GPL(regmap_reg_in_ranges);
- 
--bool regmap_check_range_table(struct regmap *map, unsigned int reg,
--			      const struct regmap_access_table *table)
-+static bool regmap_check_range_table(struct regmap *map, unsigned int reg,
-+				     const struct regmap_access_table *table)
- {
- 	/* Check "no ranges" first */
- 	if (regmap_reg_in_ranges(reg, table->no_ranges, table->n_no_ranges))
-@@ -85,7 +84,6 @@ bool regmap_check_range_table(struct regmap *map, unsigned int reg,
- 	return regmap_reg_in_ranges(reg, table->yes_ranges,
- 				    table->n_yes_ranges);
- }
--EXPORT_SYMBOL_GPL(regmap_check_range_table);
- 
- bool regmap_writeable(struct regmap *map, unsigned int reg)
- {
-diff --git a/include/linux/regmap.h b/include/linux/regmap.h
-index de81a94d7b30..5008db9bf69a 100644
---- a/include/linux/regmap.h
-+++ b/include/linux/regmap.h
-@@ -1210,9 +1210,6 @@ void regcache_cache_only(struct regmap *map, bool enable);
- void regcache_cache_bypass(struct regmap *map, bool enable);
- void regcache_mark_dirty(struct regmap *map);
- 
--bool regmap_check_range_table(struct regmap *map, unsigned int reg,
--			      const struct regmap_access_table *table);
--
- int regmap_register_patch(struct regmap *map, const struct reg_sequence *regs,
- 			  int num_regs);
- int regmap_parse_val(struct regmap *map, const void *buf,
-@@ -1224,10 +1221,6 @@ static inline bool regmap_reg_in_range(unsigned int reg,
- 	return reg >= range->range_min && reg <= range->range_max;
- }
- 
--bool regmap_reg_in_ranges(unsigned int reg,
--			  const struct regmap_range *ranges,
--			  unsigned int nranges);
--
- static inline int regmap_set_bits(struct regmap *map,
- 				  unsigned int reg, unsigned int bits)
- {
--- 
-2.31.1
-
+Either way I think you can post the patch that adds the new helper
+for review.
