@@ -2,95 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9309BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:50:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CD09C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:50:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344150AbiC1Tvi (ORCPT
+        id S1344025AbiC1Tvo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 15:51:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51212 "EHLO
+        Mon, 28 Mar 2022 15:51:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344152AbiC1TsP (ORCPT
+        with ESMTP id S1344149AbiC1TsP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Mar 2022 15:48:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6D8E6A044;
-        Mon, 28 Mar 2022 12:44:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 248F0B81214;
-        Mon, 28 Mar 2022 19:43:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E85D0C34100;
-        Mon, 28 Mar 2022 19:43:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648496622;
-        bh=XQomRRf5KXr6nqUdmC6zMldedcQ+i/ySkJX5ypQsNo0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Co8Pfq0lvnR6qN78UYLtYOsSU4Gx0tNhFLzlie28RIuE1/yRFwzofvQfVwTFkEyT/
-         pgc2E4iL6tA6vPHCnxu/DqS0BeoDGXwNSQMZnOtnpJiK2DN0/QKiF6e28k60DI6w+x
-         EGBm3ROK18zj34tPZLizFymgzbr6bOuhNG+zZWqERXoizc1Nj9CEAzZjM0XarXr7av
-         xJOSvRNRCbBZ3TiuuFg3fdPlOSPUeYcWC6ZN+7VMQ9ev+tlV0N824FOqyk1hH5MKE9
-         NgUXGw95L6cJ0ciTCS/G8aXhH6qGwvEYVxSVoVTEbay65VQIFD6DJs+TktyUsh9j/2
-         fUHFxxlQeXl5A==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzbot+3c765c5248797356edaa@syzkaller.appspotmail.com,
-        Anton Altaparmakov <anton@tuxera.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-ntfs-dev@lists.sourceforge.net
-Subject: [PATCH AUTOSEL 4.19 2/2] ntfs: add sanity check on allocation size
-Date:   Mon, 28 Mar 2022 15:43:38 -0400
-Message-Id: <20220328194338.1586587-2-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220328194338.1586587-1-sashal@kernel.org>
-References: <20220328194338.1586587-1-sashal@kernel.org>
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DC2B6A04E
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 12:44:03 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id b43so16136757ljr.10
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 12:44:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yY5uf81qt+1I3vTlghdpq4T8dk4DpEDuV1Evhs9S7xk=;
+        b=akIoitYH+autCWTeAaNEldmByYC482HSaca0P9IxLJj7fsaVSfNd42H+iwcxh4GRWL
+         aypsLEJK3ATuIaNodb8n3qOF77dMiQykxpohirj3o8IItWcLV8RMBRa48/Hr6cAlS70z
+         hLIa9bUOCy/VZS0n8MBlAqf1WrfAC7HgAd44A=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yY5uf81qt+1I3vTlghdpq4T8dk4DpEDuV1Evhs9S7xk=;
+        b=a7WMqg+E5KL9vmCedAybXfex5P7neNQSlCRs9qotx7yA8wTn/vujbNaUVywW8rrsqD
+         MM4C25K3YnkZfcytQiN1sW5kGC8q4TSzVJYm01n4KZ04mOo9uLwMj99k+wSQ0V8BheRe
+         queI5NxMts8Yo0uE/0XFw8cI5sDVafoINjCFjrJJH4TSkijw3U4XRnRmcPK6Ka7CwB9d
+         wx3nCVjw/s6wJJlZPuE/mTEZOZ+1ljwucAves9OLyNthqTvlsim9Afke9+XtaNT9cdSF
+         Ce2fidB5qslP3Wf/kmpFixzrQ0BUYKBmUqG6bqh6iM2vPbV9BSoD/me58AIqGn2nre5c
+         nxPg==
+X-Gm-Message-State: AOAM532ML5POOOiM4rKnphIgz0f6C9Uc6v3E24cCNNWx+bOQ931dDqaJ
+        otBBOgOVabIn0s9Z9oc9DHhgwzOfdtp/YTYr5cM=
+X-Google-Smtp-Source: ABdhPJwt+zDgU9qgFlb5woH5sVBdWNq/SD/iLhcJ+OPBVpMDM7CWMA4f0F+ef3gxNUhZl46ZL2Wzcw==
+X-Received: by 2002:a2e:808d:0:b0:23e:f35:506b with SMTP id i13-20020a2e808d000000b0023e0f35506bmr22000998ljg.285.1648496636653;
+        Mon, 28 Mar 2022 12:43:56 -0700 (PDT)
+Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com. [209.85.208.181])
+        by smtp.gmail.com with ESMTPSA id k12-20020a0565123d8c00b0044a3528a3cdsm1720151lfv.208.2022.03.28.12.43.56
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Mar 2022 12:43:56 -0700 (PDT)
+Received: by mail-lj1-f181.google.com with SMTP id v12so7944496ljd.3
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 12:43:56 -0700 (PDT)
+X-Received: by 2002:a05:651c:1213:b0:247:e2d9:cdda with SMTP id
+ i19-20020a05651c121300b00247e2d9cddamr22434723lja.443.1648496635677; Mon, 28
+ Mar 2022 12:43:55 -0700 (PDT)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <YkG6qJsnjjzF0iFD@kroah.com>
+In-Reply-To: <YkG6qJsnjjzF0iFD@kroah.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 28 Mar 2022 12:43:39 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgqY_5oWAFvp=zO_HqbdYsQLK+5O3DFgEpRM3MLjNZ9eQ@mail.gmail.com>
+Message-ID: <CAHk-=wgqY_5oWAFvp=zO_HqbdYsQLK+5O3DFgEpRM3MLjNZ9eQ@mail.gmail.com>
+Subject: Re: [GIT PULL] Driver core changes for 5.18-rc1
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Saravana Kannan <saravanak@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+On Mon, Mar 28, 2022 at 6:39 AM Greg KH <gregkh@linuxfoundation.org> wrote:
+>
+> There will be a merge conflict in drivers/power/supply/ab8500_chargalg.c
+> with your tree, the merge conflict should be easy (take all the
+> changes).
 
-[ Upstream commit 714fbf2647b1a33d914edd695d4da92029c7e7c0 ]
+And by "take all the changes", I'm sure you mean "take none of them,
+since the code was removed upstream in the meantime".
 
-ntfs_read_inode_mount invokes ntfs_malloc_nofs with zero allocation
-size.  It triggers one BUG in the __ntfs_malloc function.
+Easy typo to make.
 
-Fix this by adding sanity check on ni->attr_list_size.
-
-Link: https://lkml.kernel.org/r/20220120094914.47736-1-dzm91@hust.edu.cn
-Reported-by: syzbot+3c765c5248797356edaa@syzkaller.appspotmail.com
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Acked-by: Anton Altaparmakov <anton@tuxera.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- fs/ntfs/inode.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/fs/ntfs/inode.c b/fs/ntfs/inode.c
-index e844b43f2eac..0acd1f02b146 100644
---- a/fs/ntfs/inode.c
-+++ b/fs/ntfs/inode.c
-@@ -1906,6 +1906,10 @@ int ntfs_read_inode_mount(struct inode *vi)
- 		}
- 		/* Now allocate memory for the attribute list. */
- 		ni->attr_list_size = (u32)ntfs_attr_size(a);
-+		if (!ni->attr_list_size) {
-+			ntfs_error(sb, "Attr_list_size is zero");
-+			goto put_err_out;
-+		}
- 		ni->attr_list = ntfs_malloc_nofs(ni->attr_list_size);
- 		if (!ni->attr_list) {
- 			ntfs_error(sb, "Not enough memory to allocate buffer "
--- 
-2.34.1
-
+              Linus
