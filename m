@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55041C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7810C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:44:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242863AbiC1LoA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:44:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37794 "EHLO
+        id S242959AbiC1LoE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:44:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242000AbiC1LeA (ORCPT
+        with ESMTP id S241902AbiC1Ld4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:34:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC83E101C;
-        Mon, 28 Mar 2022 04:25:11 -0700 (PDT)
+        Mon, 28 Mar 2022 07:33:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BC835838F;
+        Mon, 28 Mar 2022 04:25:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 66BA8611D9;
-        Mon, 28 Mar 2022 11:25:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F97EC34100;
-        Mon, 28 Mar 2022 11:25:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 10AE2B81055;
+        Mon, 28 Mar 2022 11:25:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1ED7C340EC;
+        Mon, 28 Mar 2022 11:24:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466703;
-        bh=BIDaCQS8ikV182C2h0L5q5M5eU6XgcfUSVMxhfSo8So=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K5ep32HhDyR8LLY2ch4G4Zwx/uR0DKSJEgxMk6fWnuRqTcSsNDabXVdqxilp1d4jl
-         iQoGFdIViETSgz+ofPxy6jWx9i8JkH8bHN+fOj6yxyX6C35ONMWfFGODsd6J/+Mc69
-         7XZip5PEDHXN4FVP5Yi+SfxUHzm43dwsijWGGMOv2VzBXGbiLUQKtRNsJGdGwvSEXu
-         WGE4l8+b0OItIopgrjOpisIhE07qMySjjTYxAynzXFzasriJOUmBSMMNjIqk4fB1qP
-         WuEyN8eTjYUgUNFPtzYawJ3bYvQUbYd9Eg42/n62CXfoptcxMNw5Hh9WTkw2ocfPkN
-         qEfZz6Ub9s8ug==
+        s=k20201202; t=1648466698;
+        bh=zZZ8+bt+swbdKgisPUds2B86Lnz7Y1ZXyD/TXnFQ/U8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=g/68It5+Vs6MG/zmg69c4xiQcT/sMm5PMZEN7KjgFyVcQYS5xUa6vEPw+wUAt8vz0
+         QgpoHAzegm/ikk8yqa2d2qINbFG7UDwtHdtVifr/bj4ttvT7NCFEL5azwcarp2DTjy
+         L8rSeysTgjI3kFMeUNGprN0pVh49evl3Evwfwnj5/0bjw/9BT9TnlxcIkIN9gf6a4c
+         P6I6h8pp6DHhMplM2/vij7BmMSVwkvB+5RPTIJNpwQhoA5SKXPpH7lHYOQaMi0kLRS
+         5Swso7/524C/gpcp5ICcpjZPuRRzTF1etnaJcLGSgYXmtfIYUhbWB6rqu7ULusPb1f
+         tqY0QMwlnSLuQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, robert.moore@intel.com,
-        linux-acpi@vger.kernel.org, devel@acpica.org
-Subject: [PATCH AUTOSEL 4.9 5/8] ACPICA: Avoid walking the ACPI Namespace if it is not there
-Date:   Mon, 28 Mar 2022 07:24:53 -0400
-Message-Id: <20220328112456.1557226-5-sashal@kernel.org>
+Cc:     =?UTF-8?q?Christian=20G=C3=B6ttsche?= <cgzones@googlemail.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Sasha Levin <sashal@kernel.org>,
+        stephen.smalley.work@gmail.com, eparis@parisplace.org,
+        selinux@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 1/8] selinux: use correct type for context length
+Date:   Mon, 28 Mar 2022 07:24:49 -0400
+Message-Id: <20220328112456.1557226-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220328112456.1557226-1-sashal@kernel.org>
-References: <20220328112456.1557226-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -52,42 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+From: Christian Göttsche <cgzones@googlemail.com>
 
-[ Upstream commit 0c9992315e738e7d6e927ef36839a466b080dba6 ]
+[ Upstream commit b97df7c098c531010e445da88d02b7bf7bf59ef6 ]
 
-ACPICA commit b1c3656ef4950098e530be68d4b589584f06cddc
+security_sid_to_context() expects a pointer to an u32 as the address
+where to store the length of the computed context.
 
-Prevent acpi_ns_walk_namespace() from crashing when called with
-start_node equal to ACPI_ROOT_OBJECT if the Namespace has not been
-instantiated yet and acpi_gbl_root_node is NULL.
+Reported by sparse:
 
-For instance, this can happen if the kernel is run with "acpi=off"
-in the command line.
+    security/selinux/xfrm.c:359:39: warning: incorrect type in arg 4
+                                    (different signedness)
+    security/selinux/xfrm.c:359:39:    expected unsigned int
+                                       [usertype] *scontext_len
+    security/selinux/xfrm.c:359:39:    got int *
 
-Link: https://github.com/acpica/acpica/commit/b1c3656ef4950098e530be68d4b589584f06cddc
-Link: https://lore.kernel.org/linux-acpi/CAJZ5v0hJWW_vZ3wwajE7xT38aWjY7cZyvqMJpXHzUL98-SiCVQ@mail.gmail.com/
-Reported-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
+[PM: wrapped commit description]
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/acpica/nswalk.c | 3 +++
- 1 file changed, 3 insertions(+)
+ security/selinux/xfrm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/acpi/acpica/nswalk.c b/drivers/acpi/acpica/nswalk.c
-index ebd731fe8e45..6902c2a01f6f 100644
---- a/drivers/acpi/acpica/nswalk.c
-+++ b/drivers/acpi/acpica/nswalk.c
-@@ -203,6 +203,9 @@ acpi_ns_walk_namespace(acpi_object_type type,
+diff --git a/security/selinux/xfrm.c b/security/selinux/xfrm.c
+index 56e354fcdfc6..5304dd49e054 100644
+--- a/security/selinux/xfrm.c
++++ b/security/selinux/xfrm.c
+@@ -344,7 +344,7 @@ int selinux_xfrm_state_alloc_acquire(struct xfrm_state *x,
+ 	int rc;
+ 	struct xfrm_sec_ctx *ctx;
+ 	char *ctx_str = NULL;
+-	int str_len;
++	u32 str_len;
  
- 	if (start_node == ACPI_ROOT_OBJECT) {
- 		start_node = acpi_gbl_root_node;
-+		if (!start_node) {
-+			return_ACPI_STATUS(AE_NO_NAMESPACE);
-+		}
- 	}
- 
- 	/* Null child means "get first node" */
+ 	if (!polsec)
+ 		return 0;
 -- 
 2.34.1
 
