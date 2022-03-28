@@ -2,121 +2,259 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E63AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 17:42:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54E5AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 17:45:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244680AbiC1RoU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 13:44:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34920 "EHLO
+        id S244315AbiC1RrU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 13:47:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241277AbiC1RoS (ORCPT
+        with ESMTP id S234310AbiC1RrR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 13:44:18 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEB4764BE4
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 10:42:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1648489345;
-        bh=hALfZm+7u5wG4Gk0GOZM9IFFoUVeMWeOU+c2qaXA7Y8=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=Jea1mmCDSGEchxzPkPfKmYxi4He1t1l1eGYpSzfwXtRNzVJ3vM4/qrPqgd9o12gKQ
-         sn0wsGypoRxWswjdQvkE4ZTU+SSh+H5jUz6Gi2SLP0c1OczQzYblf3iRGdTjYPnfbm
-         UPBp2jVMFCZ9vL0SZqjvxVX5M2mmZCaKzXtrv758=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.168.86]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1N1fis-1o1G4v1dge-0121v9; Mon, 28
- Mar 2022 19:42:25 +0200
-Message-ID: <f9407abf-23cf-d539-b7de-2f1e3c589559@gmx.de>
-Date:   Mon, 28 Mar 2022 19:40:47 +0200
+        Mon, 28 Mar 2022 13:47:17 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50CA11DA50
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 10:45:36 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id g9-20020a17090ace8900b001c7cce3c0aeso6836pju.2
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 10:45:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=DFRGfZNHGMMZKzJXUtu7ywwZlF3JepUWQrm/J5WbDog=;
+        b=Yy3kEtjMZs/I13OAjIHNMfVQqyx8j2y9dZpaYo4UdgPeSC0LY3fzpXqyQ1VsawjRh3
+         HwC+BnDEukxYsn8YMnQzppXPNqj+Nj9Q4853j941qJtuaAulWV7jo1a4mKB+fQSnR+vm
+         drF6ZUCZ9nd5FoWi9r1laR/5SAp/fBFtmBRaqXNbVvKTCooqfShSqN/IjsckscJjHFq/
+         Le80edO/zX0cwYTdpWnyk5dZKV4G1rpdY1nbimdPoz7iLCKv87dfnAfhMQ55CAdB1ffW
+         kPdFJPrVld3qFIzI72m2dFfazJVSIhgPntvLB2to/twgjxjs3ydu3VxBuEdT02TAnsKo
+         7Tew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=DFRGfZNHGMMZKzJXUtu7ywwZlF3JepUWQrm/J5WbDog=;
+        b=iiiwNWkvHMw3UixtmvgsCEGQJVV1G1OhPbDi5OOJ+e9a6XZo45MCfOVf2mCjKM5MDv
+         R6XyNQM/jWrIEyCjmnnW+Tx3Q/1b/59+wy4jUMlEPpQDCl2mc3k6+KfKk9VMrWgZUGcN
+         +BViRjLvzKTtqYJWbJmvTYfGgCVIQnadg8Cg0reYjKzMFgsGXie0QAwLsGrFUoR31yZf
+         AEIw/xC9jVFXTllCTMpft++gOAs6TUbfGCsQQ65XG8kid6Lg9TIaxlt7/ScIaj/DhFiR
+         4iy/8cepvL84vU+plczgn+yy9meHpRqChu21magXKcPMUez6gHCBi58IbiUBoPB+sb5L
+         z12w==
+X-Gm-Message-State: AOAM530zJa9/AZWsELt+zSiTz0FC/Gy93THcr6+0FkboRqhvM9DbDaWM
+        O1N9etDFNnFm+cM4JBw+bdx2iQ==
+X-Google-Smtp-Source: ABdhPJwEx7IuTcEsLqYET6UU/G+s23PPdN9RvYtLCUVjSTVaQ++fYWkpyiwXGZwx1OCTpvKAaHQ6/Q==
+X-Received: by 2002:a17:902:cec8:b0:154:6dd6:255d with SMTP id d8-20020a170902cec800b001546dd6255dmr27367332plg.62.1648489535569;
+        Mon, 28 Mar 2022 10:45:35 -0700 (PDT)
+Received: from google.com (254.80.82.34.bc.googleusercontent.com. [34.82.80.254])
+        by smtp.gmail.com with ESMTPSA id e6-20020a63aa06000000b00380c8bed5a6sm14379851pgf.46.2022.03.28.10.45.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 10:45:34 -0700 (PDT)
+Date:   Mon, 28 Mar 2022 17:45:31 +0000
+From:   David Matlack <dmatlack@google.com>
+To:     Ben Gardon <bgardon@google.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        David Dunn <daviddunn@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        Junaid Shahid <junaids@google.com>
+Subject: Re: [PATCH v2 9/9] KVM: x86/mmu: Promote pages in-place when
+ disabling dirty logging
+Message-ID: <YkH0O2Qh7lRizGtC@google.com>
+References: <20220321224358.1305530-1-bgardon@google.com>
+ <20220321224358.1305530-10-bgardon@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [deller-parisc:for-next 11/14] kernel/irq/cpuhotplug.c:155:6:
- warning: no previous prototype for 'irq_migrate_all_off_this_cpu'
-Content-Language: en-US
-To:     kernel test robot <lkp@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-References: <202203290038.b6TKcGbv-lkp@intel.com>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <202203290038.b6TKcGbv-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:kpde6xC0xalvtU//EPFQaY+sNDf/p0igb5twFId+G/15m2L1WpG
- DWynANkLt02QQxszWhaayZyTW+A++W5RaUEpNjjNdveLbHq6MxR1vs15EM5nqOhdUSjERFa
- jY3RzajwFPpY8xSwgNt2t+U9yFtQXjHoTdkMIZxVFY7+v/HtRGTxR9SjNTlxDmg0OSRYIai
- Ukqwbdbjgn21XqsLggImw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Rbabh3kivLs=:rUj67NzeSMarr7mtZLKopG
- xiZJxB9l/iFf/2BZCr3cVVzk9OblebcQhMYUZ+V4gQNaF/sACkPFYDNQfjldy9ifYhCFVadw2
- Ihta9kttw20UX0VDijenkEOC5IJSS9QNP6ebq8o/2exY91TMw4prb9/LNnbjf6Cbe7Tf6h/qh
- NNtXZu9shLrQkhi/pedGnUre+/xvjqRIzBQrnAnk4rcnB87gEnbjB/uMwmJF0bT97S79pbyO6
- PfALepk46HVqeYyrISlNKK5A54sJkgV8jADk+sIuylJRWWNG8dvDIBw4JIc5lYaQd1Q2RBB70
- St4aBULfbLs/z87678jdIZRV3QqY4/quteQE+MvBUNW/j5PuwGn+i+uY8QPlJt3oM7NdMcEPs
- 6A9EuPHeT9vc+8oQMDxKH3DnMqGNAt04sbz8XRg8KWuOoCFKeJol+8m/zAGu/95yCtU5QfLvH
- R9JpsK+k0Lyl+4s8LX9ToQQFH2pPPLqT+aDX4tBSjYwizLnymFMOHItyiI4aig6Vv1cKgZxvh
- mUaaKk4o9eDk4sIH6E421HjIdEYEnbxrm/K6Pwz20R0+56rF00V/3fzbkS+SdAUDmBV/nc/e5
- csvWY+Y0mo/2k9NbZABR3YVPuLfZKOkZxvVNMqP6dULvrvedXxbl4MCyt+iMEK6/ojCGFc0Vp
- H+rqLmd3yu38uxD5bUsRg+pjy8sscoJKvtl6Ftu8a91V9uidKM5sZhcXo62TNNMhJ4gmxrMUX
- WID2wG+4zCmfqMqjtkP+8hPrcuzSISbkI0uyB5PIkKWQbMhbElagr669I0VVoKZucMIMKLECu
- IwnhAQv4fTk5q1MCkrCJJVo7J0ZWYxsY7Cw+vXUO5QhlScO6VtHZqy+DCtx/h0t/aeyH04vvE
- fLWYQ7AtSsDaUWZR9I+jCblykaSkkW1GY4g3f7kWIFkx7tew7Ot8dk3tfmxAx1hNlrkvPiUbW
- xXzPZxPpZyHHwm1lXvbS/3wrc30WQebeE16aBQ0GbiB6P0G+dZUeqJelPuncBDRJaueSq/5ue
- YbKU1/k9XThfNnRootYWJlHCH2pzaF8MWvbW7aN1ZmUp9f98dUAivxLJdP8G6/kXwq8M64jsm
- fUlt+HBD1WEH7A=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220321224358.1305530-10-bgardon@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/28/22 18:50, kernel test robot wrote:
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/deller/parisc-li=
-nux.git for-next
-> head:   d2d1f1e2e989e1f0369d6c991fec7cd3843979a3
-> commit: 1d02434051997d499ed9b4fe29fb2992f93f5345 [11/14] parisc: Impleme=
-nt __cpu_die() and __cpu_disable() for CPU hotplugging
-> config: parisc-randconfig-r004-20220327 (https://download.01.org/0day-ci=
-/archive/20220329/202203290038.b6TKcGbv-lkp@intel.com/config)
-> compiler: hppa64-linux-gcc (GCC) 11.2.0
-> reproduce (this is a W=3D1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sb=
-in/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://git.kernel.org/pub/scm/linux/kernel/git/deller/parisc-=
-linux.git/commit/?id=3D1d02434051997d499ed9b4fe29fb2992f93f5345
->         git remote add deller-parisc https://git.kernel.org/pub/scm/linu=
-x/kernel/git/deller/parisc-linux.git
->         git fetch --no-tags deller-parisc for-next
->         git checkout 1d02434051997d499ed9b4fe29fb2992f93f5345
->         # save the config file to linux build tree
->         mkdir build_dir
->         COMPILER_INSTALL_PATH=3D$HOME/0day COMPILER=3Dgcc-11.2.0 make.cr=
-oss O=3Dbuild_dir ARCH=3Dparisc64 SHELL=3D/bin/bash kernel/irq/
->
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
->
-> All error/warnings (new ones prefixed by >>):
->
->>> kernel/irq/cpuhotplug.c:155:6: warning: no previous prototype for 'irq=
-_migrate_all_off_this_cpu' [-Wmissing-prototypes]
->      155 | void irq_migrate_all_off_this_cpu(void)
->          |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
->    In file included from include/uapi/linux/posix_types.h:5,
->                     from include/uapi/linux/types.h:14,
->                     from include/linux/types.h:6,
->                     from include/linux/limits.h:6,
->                     from include/linux/kernel.h:16,
->                     from include/linux/interrupt.h:6,
->                     from kernel/irq/cpuhotplug.c:12:
->>> include/linux/stddef.h:8:16: error: expected identifier or '(' before =
-'void'
->        8 | #define NULL ((void *)0)
->          |                ^~~~
->    include/linux/irq.h:620:41: note: in expansion of macro 'NULL'
->      620 | # define irq_affinity_online_cpu        NULL
->          |                                         ^~~~
->    kernel/irq/cpuhotplug.c:218:5: note: in expansion of macro 'irq_affin=
-ity_online_cpu'
->      218 | int irq_affinity_online_cpu(unsigned int cpu)
+On Mon, Mar 21, 2022 at 03:43:58PM -0700, Ben Gardon wrote:
+> When disabling dirty logging, the TDP MMU currently zaps each leaf entry
+> mapping memory in the relevant memslot. This is very slow. Doing the zaps
+> under the mmu read lock requires a TLB flush for every zap and the
+> zapping causes a storm of ETP/NPT violations.
+> 
+> Instead of zapping, replace the split large pages with large page
+> mappings directly. While this sort of operation has historically only
+> been done in the vCPU page fault handler context, refactorings earlier
+> in this series and the relative simplicity of the TDP MMU make it
+> possible here as well.
+> 
+> Running the dirty_log_perf_test on an Intel Skylake with 96 vCPUs and 1G
+> of memory per vCPU, this reduces the time required to disable dirty
+> logging from over 45 seconds to just over 1 second. It also avoids
+> provoking page faults, improving vCPU performance while disabling
+> dirty logging.
+> 
+> Signed-off-by: Ben Gardon <bgardon@google.com>
+> ---
+>  arch/x86/kvm/mmu/mmu.c          |  4 +-
+>  arch/x86/kvm/mmu/mmu_internal.h |  6 +++
+>  arch/x86/kvm/mmu/tdp_mmu.c      | 73 ++++++++++++++++++++++++++++++++-
+>  3 files changed, 79 insertions(+), 4 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> index 6f98111f8f8b..a99c23ef90b6 100644
+> --- a/arch/x86/kvm/mmu/mmu.c
+> +++ b/arch/x86/kvm/mmu/mmu.c
+> @@ -100,7 +100,7 @@ module_param_named(flush_on_reuse, force_flush_and_sync_on_reuse, bool, 0644);
+>   */
+>  bool tdp_enabled = false;
+>  
+> -static int max_huge_page_level __read_mostly;
+> +int max_huge_page_level;
+>  static int tdp_root_level __read_mostly;
+>  static int max_tdp_level __read_mostly;
+>  
+> @@ -4486,7 +4486,7 @@ static inline bool boot_cpu_is_amd(void)
+>   * the direct page table on host, use as much mmu features as
+>   * possible, however, kvm currently does not do execution-protection.
+>   */
+> -static void
+> +void
+>  build_tdp_shadow_zero_bits_mask(struct rsvd_bits_validate *shadow_zero_check,
+>  				int shadow_root_level)
+>  {
+> diff --git a/arch/x86/kvm/mmu/mmu_internal.h b/arch/x86/kvm/mmu/mmu_internal.h
+> index 1bff453f7cbe..6c08a5731fcb 100644
+> --- a/arch/x86/kvm/mmu/mmu_internal.h
+> +++ b/arch/x86/kvm/mmu/mmu_internal.h
+> @@ -171,4 +171,10 @@ void *mmu_memory_cache_alloc(struct kvm_mmu_memory_cache *mc);
+>  void account_huge_nx_page(struct kvm *kvm, struct kvm_mmu_page *sp);
+>  void unaccount_huge_nx_page(struct kvm *kvm, struct kvm_mmu_page *sp);
+>  
+> +void
+> +build_tdp_shadow_zero_bits_mask(struct rsvd_bits_validate *shadow_zero_check,
+> +				int shadow_root_level);
+> +
+> +extern int max_huge_page_level __read_mostly;
+> +
+>  #endif /* __KVM_X86_MMU_INTERNAL_H */
+> diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+> index af60922906ef..eb8929e394ec 100644
+> --- a/arch/x86/kvm/mmu/tdp_mmu.c
+> +++ b/arch/x86/kvm/mmu/tdp_mmu.c
+> @@ -1709,6 +1709,66 @@ void kvm_tdp_mmu_clear_dirty_pt_masked(struct kvm *kvm,
+>  		clear_dirty_pt_masked(kvm, root, gfn, mask, wrprot);
+>  }
+>  
+> +static bool try_promote_lpage(struct kvm *kvm,
+> +			      const struct kvm_memory_slot *slot,
+> +			      struct tdp_iter *iter)
 
-fixed.
-Thanks!
-Helge
+Use "huge_page" instead of "lpage" to be consistent with eager page
+splitting and the rest of the Linux kernel. Some of the old KVM methods
+still use "lpage" and "large page", but we're slowly moving away from
+that.
+
+> +{
+> +	struct kvm_mmu_page *sp = sptep_to_sp(iter->sptep);
+> +	struct rsvd_bits_validate shadow_zero_check;
+> +	bool map_writable;
+> +	kvm_pfn_t pfn;
+> +	u64 new_spte;
+> +	u64 mt_mask;
+> +
+> +	/*
+> +	 * If addresses are being invalidated, don't do in-place promotion to
+> +	 * avoid accidentally mapping an invalidated address.
+> +	 */
+> +	if (unlikely(kvm->mmu_notifier_count))
+> +		return false;
+
+Why is this necessary? Seeing this makes me wonder if we need a similar
+check for eager page splitting.
+
+> +
+> +	if (iter->level > max_huge_page_level || iter->gfn < slot->base_gfn ||
+> +	    iter->gfn >= slot->base_gfn + slot->npages)
+> +		return false;
+> +
+> +	pfn = __gfn_to_pfn_memslot(slot, iter->gfn, true, NULL, true,
+> +				   &map_writable, NULL);
+> +	if (is_error_noslot_pfn(pfn))
+> +		return false;
+> +
+> +	/*
+> +	 * Can't reconstitute an lpage if the consituent pages can't be
+> +	 * mapped higher.
+> +	 */
+> +	if (iter->level > kvm_mmu_max_mapping_level(kvm, slot, iter->gfn,
+> +						    pfn, PG_LEVEL_NUM))
+> +		return false;
+> +
+> +	build_tdp_shadow_zero_bits_mask(&shadow_zero_check, iter->root_level);
+> +
+> +	/*
+> +	 * In some cases, a vCPU pointer is required to get the MT mask,
+> +	 * however in most cases it can be generated without one. If a
+> +	 * vCPU pointer is needed kvm_x86_try_get_mt_mask will fail.
+> +	 * In that case, bail on in-place promotion.
+> +	 */
+> +	if (unlikely(!static_call(kvm_x86_try_get_mt_mask)(kvm, iter->gfn,
+> +							   kvm_is_mmio_pfn(pfn),
+> +							   &mt_mask)))
+> +		return false;
+> +
+> +	__make_spte(kvm, sp, slot, ACC_ALL, iter->gfn, pfn, 0, false, true,
+> +		  map_writable, mt_mask, &shadow_zero_check, &new_spte);
+> +
+> +	if (tdp_mmu_set_spte_atomic(kvm, iter, new_spte))
+> +		return true;
+> +
+> +	/* Re-read the SPTE as it must have been changed by another thread. */
+> +	iter->old_spte = READ_ONCE(*rcu_dereference(iter->sptep));
+
+Huge page promotion could be retried in this case.
+
+> +
+> +	return false;
+> +}
+> +
+>  /*
+>   * Clear leaf entries which could be replaced by large mappings, for
+>   * GFNs within the slot.
+> @@ -1729,8 +1789,17 @@ static void zap_collapsible_spte_range(struct kvm *kvm,
+>  		if (tdp_mmu_iter_cond_resched(kvm, &iter, false, true))
+>  			continue;
+>  
+> -		if (!is_shadow_present_pte(iter.old_spte) ||
+> -		    !is_last_spte(iter.old_spte, iter.level))
+> +		if (iter.level > max_huge_page_level ||
+> +		    iter.gfn < slot->base_gfn ||
+> +		    iter.gfn >= slot->base_gfn + slot->npages)
+
+I feel like I've been seeing this "does slot contain gfn" calculation a
+lot in recent commits. It's probably time to create a helper function.
+No need to do this clean up as part of your series though, unless you
+want to :).
+
+> +			continue;
+> +
+> +		if (!is_shadow_present_pte(iter.old_spte))
+> +			continue;
+> +
+> +		/* Try to promote the constitutent pages to an lpage. */
+> +		if (!is_last_spte(iter.old_spte, iter.level) &&
+> +		    try_promote_lpage(kvm, slot, &iter))
+>  			continue;
+
+If iter.old_spte is not a leaf, the only loop would always continue to
+the next SPTE. Now we try to promote it and if that fails we run through
+the rest of the loop. This seems broken. For example, in the next line
+we end up grabbing the pfn of the non-leaf SPTE (which would be the PFN
+of the TDP MMU page table?) and treat that as the PFN backing this GFN,
+which is wrong.
+
+In the worst case we end up zapping an SPTE that we didn't need to, but
+we should still fix up this code.
+
+>  
+>  		pfn = spte_to_pfn(iter.old_spte);
+> -- 
+> 2.35.1.894.gb6a874cedc-goog
+> 
