@@ -2,90 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 761D2C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 20:30:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEDD2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 20:34:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344983AbiC1Ubq (ORCPT
+        id S1345080AbiC1UgW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 16:31:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40886 "EHLO
+        Mon, 28 Mar 2022 16:36:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344555AbiC1Ubm (ORCPT
+        with ESMTP id S1346503AbiC1UfG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 16:31:42 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C18B6BC26;
-        Mon, 28 Mar 2022 13:30:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648499401; x=1680035401;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=KDJhS+gF41QpT4r+vh7URXlkO3BK6Mbi7mjFtJyx8Rs=;
-  b=NDZS3v1EDr2pMKAr23h1xA/Wo60BR2lQjBoYuLDMERVyLssyOKPffD2l
-   Skb4zfj3fBctyqdt/ZUwulc5/naiREyodMAC3wM6fZjlVjhY/YSJBKzbA
-   iFO7TmNzsv69UGEKe2lfdp7p9teaq5x0cPlilmbWW+jCGkiQ7LDI40S25
-   W/jLJXfWP+Rsnx20SF3NZzg3XDsfDenSyADztMkDvUav0NzeWCHWP9DJq
-   0+UbVBjZCs8aPR4tWpwdGeev2rXj7xpTJrWsz0ucO5CNPAM+jx6hwfnSV
-   tmGq2YwcBjBXy/u5dwWUPXPAKwKBbylKd1gCd/ZE/VLrcHG8hm+SZolAK
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="345533272"
-X-IronPort-AV: E=Sophos;i="5.90,218,1643702400"; 
-   d="scan'208";a="345533272"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 13:30:01 -0700
-X-IronPort-AV: E=Sophos;i="5.90,218,1643702400"; 
-   d="scan'208";a="832181780"
-Received: from weiweihx-mobl.amr.corp.intel.com (HELO [10.255.229.113]) ([10.255.229.113])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 13:30:00 -0700
-Message-ID: <60bf1aa7-b004-0ea7-7efc-37b4a1ea2461@intel.com>
-Date:   Mon, 28 Mar 2022 13:30:01 -0700
+        Mon, 28 Mar 2022 16:35:06 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B701530F6C;
+        Mon, 28 Mar 2022 13:33:22 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id r13so31066767ejd.5;
+        Mon, 28 Mar 2022 13:33:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=99of423IY7CVPR8iPnU+TMAUNxIGG8oT/8tTMtEORJo=;
+        b=G5DBj1J4jLpDgQj7PFiqg755gBkN6ZebE1uZCqAfXyefK1DTfuLKXUbpVv8eChBm/6
+         j+9ZOtiTtsRKec9UTyuPH78a1LDBDHVlI5Ri9ulgfW79sWSTowUIBbsR7m+YxeS/qAZc
+         EZoCnTMA1kTWwkrSCR0wbrdM4YuF8YtBvkCrNlEe5ZRu6DA79QoHwWu9JNHl5uoG7kYD
+         yH64hFSIyfYEsjTixT3DTerwLTh+A2iKo2Z9YwWibTVtOS6SIx0JN0L7q7gwXVr5V0sB
+         4WpFTx9p3YRgp7BxWgSTUjdPLkv2bkRyCuiltwEKDdk1S8kGyfaxGQTvRq5GRp/5SCtA
+         78qA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=99of423IY7CVPR8iPnU+TMAUNxIGG8oT/8tTMtEORJo=;
+        b=mFbN1mxA00vR4Czgk3myFKPdkEiwch69MwpSN/2ow2TJr1plvrTn51PmrAv3dxiQF8
+         AKv66No+szw4N986PKx3w/Z6qiESW7eOwto2X972TB4vm3p3Ck555EdLeNcpuRnzdhiQ
+         qFg9tfhkojFgt6pPI2TbKKLf+itOoBYYRC3UP7GyWF4H28ofq8zmydEW5X8pndYL3mv+
+         FBiOehogQuf+bD8LRjuTrWhWqXVd5IhKua1BiZ77aWzvT4Rkh3yOmnIprC9kgZYZR+Db
+         +eDvF47ZPjOAuc9IYB0pBJK9Zb1KN19rW6PGbM2cE9QOm7dQ88mfChr2xis2c38wNQIR
+         yazQ==
+X-Gm-Message-State: AOAM5325w91H3oYz5pMH2uirncvXlhDh7qvpe1Z7HMFTw2cJoJXr+1bo
+        FbGIbTDkQxi76ScBS5uk/mypaqZdUP1GscZsBYA=
+X-Google-Smtp-Source: ABdhPJzCRrL+Gc1pbqF+lApMPgSvyVYO246Ig45MwOtUmzuhGX2T1TmaYbvQh8EJzEZ6yHHl8+D9+W35G0lcF5JQgc0=
+X-Received: by 2002:a17:907:e8d:b0:6e0:19e7:9549 with SMTP id
+ ho13-20020a1709070e8d00b006e019e79549mr30071158ejc.44.1648499601151; Mon, 28
+ Mar 2022 13:33:21 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 09/21] x86/virt/tdx: Get information about TDX module
- and convertible memory
-Content-Language: en-US
-To:     Isaku Yamahata <isaku.yamahata@gmail.com>,
-        Kai Huang <kai.huang@intel.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        seanjc@google.com, pbonzini@redhat.com,
-        kirill.shutemov@linux.intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com, peterz@infradead.org,
-        tony.luck@intel.com, ak@linux.intel.com, dan.j.williams@intel.com,
-        isaku.yamahata@intel.com
-References: <cover.1647167475.git.kai.huang@intel.com>
- <98c1010509aa412e7f05b12187cacf40451d5246.1647167475.git.kai.huang@intel.com>
- <20220324174301.GA1212881@ls.amr.corp.intel.com>
- <f211441a6d23321e22517684159e2c28c8492b86.camel@intel.com>
- <20220328202225.GA1525925@ls.amr.corp.intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <20220328202225.GA1525925@ls.amr.corp.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <YkHOpCT2Gad1YaxN@hp-amd-paul>
+In-Reply-To: <YkHOpCT2Gad1YaxN@hp-amd-paul>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 28 Mar 2022 23:32:44 +0300
+Message-ID: <CAHp75Vf7R2=m7apZfXkY9-nETNiG7n6oXpivBg-56Wguzx2+8A@mail.gmail.com>
+Subject: Re: [PATCH] IIO: accel: fixed coding style issues
+To:     Paul Lemmermann <thepaulodoom@thepaulodoom.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/28/22 13:22, Isaku Yamahata wrote:
->>>> +	/*
->>>> +	 * Also a sane BIOS should never generate invalid CMR(s) between
->>>> +	 * two valid CMRs.  Sanity check this and simply return error in
->>>> +	 * this case.
->>>> +	 */
->>>> +	for (j = i; j < cmr_num; j++)
->>>> +		if (cmr_valid(&cmr_array[j])) {
->>>> +			pr_err("Firmware bug: invalid CMR(s) among valid CMRs.\n");
->>>> +			return -EFAULT;
->>>> +		}
->>> This check doesn't make sense because above i-for loop has break.
->> The break in above i-for loop will hit at the first invalid CMR entry.  Yes "j =
->> i" will make double check on this invalid CMR entry, but it should have no
->> problem.  Or we can change to "j = i + 1" to skip the first invalid CMR entry.
->>
->> Does this make sense?
-> It makes sense. Somehow I missed j = i. I scratch my review.
+On Mon, Mar 28, 2022 at 7:45 PM Paul Lemmermann
+<thepaulodoom@thepaulodoom.com> wrote:
+>
+> Fixed case statement issues and spacing issues.
 
-You can also take it as something you might want to refactor, add
-comments, or work on better variable names.  If it confused one person,
-it will confuse more in the future.
+...
+
+>                         switch (val[j]) {
+> -                       case -1: str = "-1"; break;
+> -                       case 0:  str = "0";  break;
+> -                       case 1:  str = "1";  break;
+> -                       default: goto unknown_format;
+> +                       case -1:
+> +                               str = "-1";
+> +                               break;
+> +                       case 0:
+> +                               str = "0";
+> +                               break;
+> +                       case 1:
+> +                               str = "1";
+> +                               break;
+> +                       default:
+> +                               goto unknown_format;
+>                         }
+
+What you cited from documentation mostly affects the new code, but
+this code is already in the kernel and modifying it, esp. taking into
+account 3x LOCs count, looks like an unneeded churn, even if
+documentation thinks otherwise.
+
+What I could acknowledge from your proposal is the default case.
+Otherwise just leave it to the point if we touch this code for
+something else in the future.
+
+...
+
+>  static const struct of_device_id kxsd9_of_match[] = {
+> -        { .compatible = "kionix,kxsd9" },
+> -        { },
+> +       { .compatible = "kionix,kxsd9" },
+
+> +       { },
+
+I dunno why you touched this line (likely TABs vs. spaces), but please
+remove the comma as well here.
+
+>  };
+
+-- 
+With Best Regards,
+Andy Shevchenko
