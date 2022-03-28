@@ -2,101 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C391C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:58:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE040C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:59:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242091AbiC1MAV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 08:00:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40786 "EHLO
+        id S241795AbiC1MBN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 08:01:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242589AbiC1L6Z (ORCPT
+        with ESMTP id S238584AbiC1MBF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:58:25 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D5832ECB
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 04:56:30 -0700 (PDT)
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22S8AHvd030601;
-        Mon, 28 Mar 2022 06:56:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=PODMain02222019;
- bh=2aajtPw/VHXGiRbn4d9elWFWs+V7SiFRzaL6S/XYPoc=;
- b=GY+pGXMMIti1+Y1NchsWxh2X/+3qI1hHKStPEJuQ8UHZbPZcgXnMa+JbyJhJt/HKjowy
- v2fM/pgab7ww7pL4EASM2Fct58iiIlndPEnjX9UDdBfHBg43To3LO/3+xk1iLFWR8BjL
- dHgFkpS2w7nhQDx+0yTS1XbVTCAE7aJyVfQVqRCc3RwLKdMR5x4hY6jZQtp70stVZvKT
- U9jfc/zaMZ4k5Ld2rZqXwiasb8AktU2Z7g6IGgRPWLD03jHGxL/KZM6ptxzgNW2OtHze
- 4iMAdvl3Bjl3kLofA8h4baAGWqFnnC5mAPSxGZ66KxNUR27LjeE6gP6Cg8dbONd3LhCO 6Q== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3f2081apda-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 28 Mar 2022 06:56:19 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 28 Mar
- 2022 12:56:17 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Mon, 28 Mar 2022 12:56:17 +0100
-Received: from vitaly-Legion-7-16ACHg6.ad.cirrus.com (unknown [198.90.238.244])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id D979EB16;
-        Mon, 28 Mar 2022 11:56:16 +0000 (UTC)
-From:   Vitaly Rodionov <vitalyr@opensource.cirrus.com>
-To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
-CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
-        <linux-kernel@vger.kernel.org>,
-        Stefan Binding <sbinding@opensource.cirrus.com>
-Subject: [PATCH v2 5/6] ALSA: hda/cs8409: Disable HSBIAS_SENSE_EN for Cyborg
-Date:   Mon, 28 Mar 2022 12:56:13 +0100
-Message-ID: <20220328115614.15761-6-vitalyr@opensource.cirrus.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220328115614.15761-1-vitalyr@opensource.cirrus.com>
-References: <20220328115614.15761-1-vitalyr@opensource.cirrus.com>
+        Mon, 28 Mar 2022 08:01:05 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C54C31FD
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 04:59:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=RyQhY95RNsCK4Pvvmfcn6PT7x9nJFEOteS09X0MJ5gc=; b=InedvJYkxngIeEPtMsu0qc2tRm
+        V4VMLB5/wuDOLAUFEvYfK9ZL3hrr6Iw3AFTHeBZZyWZfUx6YSRRIkUfBIYWvUPSuN+6d9+g6WB2D2
+        16wOx2KwxVH+F1/NS91y4XziCmgGqsL3eaHou4ZO99Da/UN91P8qfChyu/CfzsaudJoDGF4w2Rp2j
+        1dVBWWzIePh394HgRA1XA+fi5rTXrdTiYlVXJ62YW0K4GBQNK9QPHxVmJnghZzgsCQb2LhkxdRIFb
+        ryVvHt/QEZGtowPPi+xTKq6c5q68waGzcFZkQ2bnY6KcAVauT2O8njz/z8/inqE6AQFnagRLAGrfj
+        BKw/6N0Q==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nYo1F-005QtX-1J; Mon, 28 Mar 2022 11:58:45 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id A36C39861E7; Mon, 28 Mar 2022 13:58:44 +0200 (CEST)
+Date:   Mon, 28 Mar 2022 13:58:44 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Qing Wang <wangqing@vivo.com>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] sched: topology: add input parameter for
+ sched_domain_flags_f()
+Message-ID: <20220328115844.GC8939@worktop.programming.kicks-ass.net>
+References: <1648461219-4333-1-git-send-email-wangqing@vivo.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: 0GjImj-kWq39K3a-caZBIBcalXGmuIO8
-X-Proofpoint-GUID: 0GjImj-kWq39K3a-caZBIBcalXGmuIO8
-X-Proofpoint-Spam-Reason: safe
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1648461219-4333-1-git-send-email-wangqing@vivo.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Binding <sbinding@opensource.cirrus.com>
+On Mon, Mar 28, 2022 at 02:53:37AM -0700, Qing Wang wrote:
+> From: Wang Qing <wangqing@vivo.com>
+> 
+> sched_domain_flags_f() are statically set now, but actually, we can get a
+> lot of necessary information based on the cpu_map. e.g. we can know whether
+> its cache is shared.
+> 
+> Allows custom extension without affecting current.
 
-For ESD reasons, all variants should now set HSBIAS_SENSE_EN.
+This all still makes absolutely no sense. The architecture builds these
+masks, the architecture is in charge of which flags function is called
+on which mask.
 
-Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
-Signed-off-by: Vitaly Rodionov <vitalyr@opensource.cirrus.com>
+Passing the mask back in means it lost the plot somewhere and doens't
+know wth it's doing anymore.
 
-Changes in v2:
-Add patch description in commit message.
-
----
- sound/pci/hda/patch_cs8409.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
-
-diff --git a/sound/pci/hda/patch_cs8409.c b/sound/pci/hda/patch_cs8409.c
-index ce5fc03a8065..343fabc4387d 100644
---- a/sound/pci/hda/patch_cs8409.c
-+++ b/sound/pci/hda/patch_cs8409.c
-@@ -1005,15 +1005,8 @@ void cs8409_cs42l42_fixups(struct hda_codec *codec, const struct hda_fixup *fix,
- 		cs8409_fix_caps(codec, CS8409_CS42L42_HP_PIN_NID);
- 		cs8409_fix_caps(codec, CS8409_CS42L42_AMIC_PIN_NID);
- 
--		/* Set TIP_SENSE_EN for analog front-end of tip sense.
--		 * Additionally set HSBIAS_SENSE_EN and Full Scale volume for some variants.
--		 */
-+		/* Set HSBIAS_SENSE_EN and Full Scale volume for some variants. */
- 		switch (codec->fixup_id) {
--		case CS8409_CYBORG:
--			spec->scodecs[CS8409_CODEC0]->hsbias_hiz = 0x00a0;
--			spec->scodecs[CS8409_CODEC0]->full_scale_vol =
--				CS42L42_FULL_SCALE_VOL_MINUS6DB;
--			break;
- 		case CS8409_WARLOCK_MLK:
- 		case CS8409_WARLOCK_MLK_DUAL_MIC:
- 			spec->scodecs[CS8409_CODEC0]->hsbias_hiz = 0x0020;
--- 
-2.25.1
-
+NAK
