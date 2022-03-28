@@ -2,118 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCD72C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 08:20:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B4A9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 08:20:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239300AbiC1IWd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 04:22:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58524 "EHLO
+        id S239283AbiC1IWg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 04:22:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239268AbiC1IWV (ORCPT
+        with ESMTP id S239292AbiC1IWY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 04:22:21 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA5775371A;
-        Mon, 28 Mar 2022 01:20:41 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 7221F1F37E;
-        Mon, 28 Mar 2022 08:20:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1648455640; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=6wdWMli+ploY7Tbm8LOf/p2w8O/NqqHCNuCB1Aq96EE=;
-        b=CzglI/ISsO+h5aC3Hr8632CF2Fp6FxIReWHhdmG24ZMlboCo7XB6ds4Qpao2QkGf0wutOL
-        Ee5YqH3L5iO2Uf/JY1QXS73h59tMlBEfsPJ1KJsUrp+VWPeuPg88w52y+/JrKZq++cYesU
-        o6WjqD0UYVf7ag7wthne3BCbgeXpNo0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1648455640;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=6wdWMli+ploY7Tbm8LOf/p2w8O/NqqHCNuCB1Aq96EE=;
-        b=gugwsrZvrDwoymYqqJKLXeXxgs3okqqQklju/cu1/lxSoNA8oMhvlVD7BIRb1IwZZ0wM8g
-        r8pn5YPjzJv02/Cw==
-Received: from quack3.suse.cz (unknown [10.163.43.118])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 57E8BA3B9B;
-        Mon, 28 Mar 2022 08:20:40 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id 14580A0610; Mon, 28 Mar 2022 10:20:40 +0200 (CEST)
-Date:   Mon, 28 Mar 2022 10:20:40 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Jens Axboe <axboe@kernel.dk>, Hannes Reinecke <hare@suse.de>,
-        Jan Kara <jack@suse.cz>, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-block@vger.kernel.org,
-        Matthew Wilcox <willy@infradead.org>
-Subject: Re: [PATCH] block: Fix the maximum minor value is
- blk_alloc_ext_minor()
-Message-ID: <20220328082040.h7pmagyaacttxhda@quack3.lan>
-References: <cc17199798312406b90834e433d2cefe8266823d.1648306232.git.christophe.jaillet@wanadoo.fr>
+        Mon, 28 Mar 2022 04:22:24 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD6153A5D
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 01:20:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648455643; x=1679991643;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=X/ujBVMAf8bxk2V6GI32GPU9XNz0mDme+92j35t6tB4=;
+  b=DpQTLhXdPbp7ICihLu3eCOqtAfgOMk4QmiT7BuNP2dWRQhWok0S0zxSV
+   yhzPZumIdfH4HazYktm8W9t+dpng5k+AYifl3xtW79F1zXpn2Tb4M4yXy
+   aStrgXFxxiG2PgyHgRdylVTsie0WuGzaf8oxcIAF9xhOBJtV0pQ4UbV1C
+   3vb11kfjq684WgGG0Z3fzfDIEUeqIB4uhTwHu7Cq5wzPfLplyS5brk6re
+   SSEhXIH5o6sMMXgLwfLka8cZSXLtp1RFMaWO02jG29WTws30p+MxzvMpn
+   qQD6KLWYYR+clJwPD/YushhXTe62x+/oQLs4m0sOpaSYGdGzvM+GAjf6j
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10299"; a="259129827"
+X-IronPort-AV: E=Sophos;i="5.90,216,1643702400"; 
+   d="scan'208";a="259129827"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 01:20:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,216,1643702400"; 
+   d="scan'208";a="563435784"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga008.jf.intel.com with ESMTP; 28 Mar 2022 01:20:41 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nYkcC-0001sL-HP; Mon, 28 Mar 2022 08:20:40 +0000
+Date:   Mon, 28 Mar 2022 16:20:32 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     =?iso-8859-1?Q?Andr=E9?= Almeida <andrealmeid@collabora.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>
+Subject: drivers/spi/spi-amd.c:296:21: warning: cast to smaller integer type
+ 'enum amd_spi_versions' from 'const void *'
+Message-ID: <202203281638.pWQ7vWbp-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <cc17199798312406b90834e433d2cefe8266823d.1648306232.git.christophe.jaillet@wanadoo.fr>
+Content-Transfer-Encoding: 8bit
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat 26-03-22 15:50:46, Christophe JAILLET wrote:
-> ida_alloc_range(..., min, max, ...) returns values from min to max,
-> inclusive.
-> 
-> So, NR_EXT_DEVT is a valid idx returned by blk_alloc_ext_minor().
-> 
-> This is an issue because in device_add_disk(), this value is used in:
->    ddev->devt = MKDEV(disk->major, disk->first_minor);
-> and NR_EXT_DEVT is '(1 << MINORBITS)'.
-> 
-> So, should 'disk->first_minor' be NR_EXT_DEVT, it would overflow.
-> 
-> Fixes: 22ae8ce8b892 ("block: simplify bdev/disk lookup in blkdev_get")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Hi André,
 
-Indeed. The patch looks good to me so feel free to add:
+FYI, the error/warning still remains.
 
-Reviewed-by: Jan Kara <jack@suse.cz>
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   ae085d7f9365de7da27ab5c0d16b12d51ea7fca9
+commit: 209043554915d7c51ac112a668ad1a255e1bea61 spi: amd: Add support for version AMDI0062
+date:   6 weeks ago
+config: x86_64-randconfig-a011-20220328 (https://download.01.org/0day-ci/archive/20220328/202203281638.pWQ7vWbp-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0f6d9501cf49ce02937099350d08f20c4af86f3d)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=209043554915d7c51ac112a668ad1a255e1bea61
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 209043554915d7c51ac112a668ad1a255e1bea61
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/spi/
 
-> ---
-> #define MKDEV(ma,mi)	(((ma) << MINORBITS) | (mi))
-> 
-> This patch is completely speculative, but it seems that idr_alloc() and
-> ida_alloc_range() don't have the same semantic regarding the upper bound.
-> idr_alloc() looks exclusive, while ida_alloc_range() is inclusive.
-> 
-> We changed from the first one to the other one in the commit in Fixes:.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Yes, this difference is really a landmine. Matthew, why is the semantics of
-max parameter for idr_alloc() different from ida_alloc_range() or say
-idr_alloc_u32()? It is really easy to introduce subtle bugs with this...
+All warnings (new ones prefixed by >>):
 
-								Honza
+>> drivers/spi/spi-amd.c:296:21: warning: cast to smaller integer type 'enum amd_spi_versions' from 'const void *' [-Wvoid-pointer-to-enum-cast]
+           amd_spi->version = (enum amd_spi_versions) device_get_match_data(dev);
+                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   1 warning generated.
 
-> ---
->  block/genhd.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/block/genhd.c b/block/genhd.c
-> index c9a4fc90d3e9..b8b6759d670f 100644
-> --- a/block/genhd.c
-> +++ b/block/genhd.c
-> @@ -335,7 +335,7 @@ int blk_alloc_ext_minor(void)
->  {
->  	int idx;
->  
-> -	idx = ida_alloc_range(&ext_devt_ida, 0, NR_EXT_DEVT, GFP_KERNEL);
-> +	idx = ida_alloc_range(&ext_devt_ida, 0, NR_EXT_DEVT - 1, GFP_KERNEL);
->  	if (idx == -ENOSPC)
->  		return -EBUSY;
->  	return idx;
-> -- 
-> 2.32.0
-> 
+
+vim +296 drivers/spi/spi-amd.c
+
+   272	
+   273	static int amd_spi_probe(struct platform_device *pdev)
+   274	{
+   275		struct device *dev = &pdev->dev;
+   276		struct spi_master *master;
+   277		struct amd_spi *amd_spi;
+   278		int err = 0;
+   279	
+   280		/* Allocate storage for spi_master and driver private data */
+   281		master = spi_alloc_master(dev, sizeof(struct amd_spi));
+   282		if (!master) {
+   283			dev_err(dev, "Error allocating SPI master\n");
+   284			return -ENOMEM;
+   285		}
+   286	
+   287		amd_spi = spi_master_get_devdata(master);
+   288		amd_spi->io_remap_addr = devm_platform_ioremap_resource(pdev, 0);
+   289		if (IS_ERR(amd_spi->io_remap_addr)) {
+   290			err = PTR_ERR(amd_spi->io_remap_addr);
+   291			dev_err(dev, "error %d ioremap of SPI registers failed\n", err);
+   292			goto err_free_master;
+   293		}
+   294		dev_dbg(dev, "io_remap_address: %p\n", amd_spi->io_remap_addr);
+   295	
+ > 296		amd_spi->version = (enum amd_spi_versions) device_get_match_data(dev);
+   297	
+   298		/* Initialize the spi_master fields */
+   299		master->bus_num = 0;
+   300		master->num_chipselect = 4;
+   301		master->mode_bits = 0;
+   302		master->flags = SPI_MASTER_HALF_DUPLEX;
+   303		master->setup = amd_spi_master_setup;
+   304		master->transfer_one_message = amd_spi_master_transfer;
+   305	
+   306		/* Register the controller with SPI framework */
+   307		err = devm_spi_register_master(dev, master);
+   308		if (err) {
+   309			dev_err(dev, "error %d registering SPI controller\n", err);
+   310			goto err_free_master;
+   311		}
+   312	
+   313		return 0;
+   314	
+   315	err_free_master:
+   316		spi_master_put(master);
+   317	
+   318		return err;
+   319	}
+   320	
+
 -- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+0-DAY CI Kernel Test Service
+https://01.org/lkp
