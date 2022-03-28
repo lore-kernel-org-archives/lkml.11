@@ -2,115 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29424C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 12:37:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 002F8C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 12:38:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242567AbiC1Min (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 08:38:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53642 "EHLO
+        id S242580AbiC1Mjk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 08:39:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239356AbiC1Mik (ORCPT
+        with ESMTP id S239356AbiC1Mji (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 08:38:40 -0400
-Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C69254ECC9
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 05:36:59 -0700 (PDT)
-Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-2e612af95e3so146670877b3.9
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 05:36:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uMEZK2jSyKIkvvjIbH4GT3Fdajafv9KYrdFViGd4yCs=;
-        b=E9+QQkZMHaB3kC1jUcU1jKceyPqYXHgBAwrVH0Qoo7sy3RqybcW+gUMd6ILGzB7f+l
-         ws3VHba8umN32ny6nvOGE7S0/BDPYbL3CibIFNlYrI+ImbMRn5uBNTtYcvWjpMn70BeQ
-         YSZHLatfVPFPqrYmESblO10IJea6qXAQwCHfSeIe/Um9EbObWu/lemX2KJ23uLSz97eH
-         g6on/oQ6sD9DD5h9J/mHKHD3CEJ6mjGQwCKzXS6Oo18j1nmsU3d9qcw+HawWBiquerkd
-         1uGdCrnf3Y0q0XTNc1w9PPJSTSY6BhV6JhFKAinQ4KUVPbxqYrV3ctxarnAfrHwnZlJo
-         D6Gw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uMEZK2jSyKIkvvjIbH4GT3Fdajafv9KYrdFViGd4yCs=;
-        b=HCmt2dCST3p3r3bPbV0ZLth+J6TKrqy3c0O08LJeHd0CI1Ke5wbQzk8DBPWVmRhOnH
-         RF/4TbluuQ9kAknZbfiIqIn/+LifmhZhhcCpoYUy+nbaXwWfp0S4+RSyXIGHC9TaZ5Xl
-         hj68bb6W50E2rHxVMTznYxbLhgki5qPpVnRV9DMTSAKux9lJwSyIxu8gnhpefqvOSJAM
-         2AjhyN6oageWG09u3KvBqQJz0V8bww9+g9i0NsCK9Luxtrap1ZnKTOt7eVsyTIxd/Yls
-         HKPGsjksu6Pl03n+BvF/mdotX8hehgM5CklHCKD5JzZ37bIDl9NWnmYtizCWsdeoLMZW
-         FJGA==
-X-Gm-Message-State: AOAM531lWyvj1dzs0eI18gSmhxlPstyKdHCEX6ZYdF/UhZMMfZxndH2g
-        FKg/f6OUEZf248Bful6AukJNenxQUKO4s08Xvoljx67OXg4=
-X-Google-Smtp-Source: ABdhPJzKaHl48iYBzuviShvc/fSc+yX8bEigh83P/lNX0DQQM0lmzYQvFiEjENIrpwu0FVlWRhmYK7v0KTcRTDtdgBE=
-X-Received: by 2002:a81:59c4:0:b0:2e5:c7c3:5d29 with SMTP id
- n187-20020a8159c4000000b002e5c7c35d29mr25403537ywb.512.1648471018879; Mon, 28
- Mar 2022 05:36:58 -0700 (PDT)
+        Mon, 28 Mar 2022 08:39:38 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 902924ECFF;
+        Mon, 28 Mar 2022 05:37:57 -0700 (PDT)
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22S8Jr1s017538;
+        Mon, 28 Mar 2022 14:37:44 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=PRSUOkbjhbLZbdipmTB0fmY4CfFxVYPER1xJPcVCusk=;
+ b=GND7worVS6mA7ZXXW7V81FZ/BD6+o/Yo1ksdttq6DgyRCkO4AxsgshfrPJ8hqliCtafS
+ MMr0eK4bT/qd5/Z3bnELbfPK5hs5LNt9pBgJouBKWLxcwQZFlRRz/C2bj5Ahq7Zjehbr
+ /QIRaEmTtHc9AZdQHbnFF40wIvz7MHuAYNxAAiuChN7mFZ402kf6YTNe7r4BoH+MaQRI
+ o7BeNbCs5PGvzl/Ckairnt/Iqse9KcZdwEgr9cpzkOjHGT/22tEKzXIImOz8Ql6OZePi
+ xjbuH/nBXkYT/a78Q9BfJaCw4eXTFAeoQXUU7o2O+vw+c16n1i704lkw4t6DVDW9Fytv og== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3f1s4p1r08-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 28 Mar 2022 14:37:44 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 86AE710002A;
+        Mon, 28 Mar 2022 14:37:38 +0200 (CEST)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 7629C22D163;
+        Mon, 28 Mar 2022 14:37:38 +0200 (CEST)
+Received: from [10.201.21.216] (10.75.127.47) by SFHDAG2NODE2.st.com
+ (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 28 Mar
+ 2022 14:37:37 +0200
+Message-ID: <be2042d2-e315-223d-5454-ebfb934f9d2d@foss.st.com>
+Date:   Mon, 28 Mar 2022 14:37:37 +0200
 MIME-Version: 1.0
-References: <cover.1648049113.git.andreyknvl@google.com>
-In-Reply-To: <cover.1648049113.git.andreyknvl@google.com>
-From:   Marco Elver <elver@google.com>
-Date:   Mon, 28 Mar 2022 14:36:22 +0200
-Message-ID: <CANpmjNP_bWMzSkW=Q8Lc7yRWw8as_FoBpD-zwcweAiSBVn-Fsw@mail.gmail.com>
-Subject: Re: [PATCH v2 0/4] kasan, arm64, scs, stacktrace: collect stack
- traces from Shadow Call Stack
-To:     andrey.konovalov@linux.dev
-Cc:     Alexander Potapenko <glider@google.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev@googlegroups.com, Mark Rutland <mark.rutland@arm.com>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Evgenii Stepanov <eugenis@google.com>,
-        Florian Mayer <fmayer@google.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrey Konovalov <andreyknvl@google.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] stm: ltdc: fix two incorrect NULL checks on list iterator
+Content-Language: en-US
+To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        <yannick.fertre@foss.st.com>
+CC:     <philippe.cornu@foss.st.com>, <airlied@linux.ie>,
+        <daniel@ffwll.ch>, <mcoquelin.stm32@gmail.com>,
+        <alexandre.torgue@foss.st.com>, <marex@denx.de>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>
+References: <20220327055355.3808-1-xiam0nd.tong@gmail.com>
+From:   Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>
+In-Reply-To: <20220327055355.3808-1-xiam0nd.tong@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.75.127.47]
+X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-28_04,2022-03-28_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 23 Mar 2022 at 16:33, <andrey.konovalov@linux.dev> wrote:
+Hello Xiaomeng
+
+On 3/27/22 07:53, Xiaomeng Tong wrote:
+> The two bugs are here:
+> 	if (encoder) {
+> 	if (bridge && bridge->timings)
 >
-> From: Andrey Konovalov <andreyknvl@google.com>
+> The list iterator value 'encoder/bridge' will *always* be set and
+> non-NULL by drm_for_each_encoder()/list_for_each_entry(), so it is
+> incorrect to assume that the iterator value will be NULL if the
+> list is empty or no element is found.
 >
-> kasan, arm64, scs, stacktrace: collect stack traces from Shadow Call Stack
+> To fix the bug, use a new variable '*_iter' as the list iterator,
+> while use the old variable 'encoder/bridge' as a dedicated pointer
+> to point to the found element.
 >
-> Currently, KASAN always uses the normal stack trace collection routines,
-> which rely on the unwinder, when saving alloc and free stack traces.
->
-> Instead of invoking the unwinder, collect the stack trace by copying
-> frames from the Shadow Call Stack whenever it is enabled. This reduces
-> boot time by 30% for all KASAN modes when Shadow Call Stack is enabled.
->
-> Stack staces are collected from the Shadow Call Stack via a new
-> stack_trace_save_shadow() interface.
->
-> Note that the frame of the interrupted function is not included into
-> the stack trace, as it is not yet saved on the SCS when an interrupt
-> happens.
->
+> Cc: stable@vger.kernel.org
+> Fixes: 99e360442f223 ("drm/stm: Fix bus_flags handling")
+> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 > ---
->
-> To deal with this last thing, we could save the interrupted frame address
-> in another per-CPU variable. I'll look into implementing this for v3.
->
-> I decided to postpone the changes to stack depot that avoid copying
-> frames twice until a planned upcoming update for stack depot.
+>  drivers/gpu/drm/stm/ltdc.c | 16 ++++++++++------
+>  1 file changed, 10 insertions(+), 6 deletions(-)
 
-That's fair.
 
-> Changes v1->v2:
-> - Provide a kernel-wide stack_trace_save_shadow() interface for collecting
->   stack traces from shadow stack.
-> - Use ptrauth_strip_insn_pac() and READ_ONCE_NOCHECK, see the comments.
-> - Get SCS pointer from x18, as per-task value is meant to save the SCS
->   value on CPU switches.
-> - Collect stack frames from SDEI and IRQ contexts.
+Thanks for your fix
 
-Do any of these new changes introduce new (noticeable) overhead (in
-particular patch 2)?
+Acked-by: Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>
+
+
+Raphaël Gallais-Pou
+
