@@ -2,37 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 008E1C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:49:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDF03C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:49:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344136AbiC1Tv3 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 15:51:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50434 "EHLO
+        id S232593AbiC1Tve (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 15:51:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343944AbiC1Tr4 (ORCPT
+        with ESMTP id S1344093AbiC1TsL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 15:47:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B040DF82;
-        Mon, 28 Mar 2022 12:43:36 -0700 (PDT)
+        Mon, 28 Mar 2022 15:48:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 607E45C643;
+        Mon, 28 Mar 2022 12:43:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DDDCEB81217;
-        Mon, 28 Mar 2022 19:43:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5161C34112;
-        Mon, 28 Mar 2022 19:43:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A6B9161291;
+        Mon, 28 Mar 2022 19:43:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F099CC3410F;
+        Mon, 28 Mar 2022 19:43:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648496613;
-        bh=JDgnhN3MSlCM+3tBS3nKBXEXX80jRKTZVSXwNmSC/NM=;
+        s=k20201202; t=1648496632;
+        bh=ingGZxMaEc9r5alfLYbLed9tPRonczPlahQ4UPFgo+s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SU+Po519ejzLwzJu1YguvXUtPO7OHxOmjLPpUeZn93OiCAa+3SSf+FNyQT/El2Yw0
-         cAkCbKpQg6ZjEdge8bDPUp9FyTIIIP9w4juB2FxA/Fhbua5M5jO5wLQuhIKtZ00Obd
-         UM1E3nxjjgZC8J5Eh46lLrLH3HhiPWY+6DY7dJ5Z666n3utNz4wVyEhBocRGQAs9hu
-         09WQwaa1pb/jN3D9AchgM+TqHXsk1+GcKl1ULrBe92BMliJdoEwRYVlB7iFgZQwYfq
-         zfY9SjHGCbycpP3t8I8z3+HZTjDv6YdtvBVlXzomwH1UzyZFNB5KJQZ5W2Pp7tVAUG
-         PheHjS+HEOqiw==
+        b=pZV3WP2VKPTjmjJFBcO+8pWbwtEftxB0eDC2nhK4MFXNVEu2XBn81igEkLohJJMXz
+         Of9A1dW6slpGSAgcCDzsZWMLoCJkeS6uLSubFSx3eiCHxOeyhwgnMSBcFyV7XaL2mA
+         7ijCgnwx7JtV/BDYGMdRGrbFcA4mMFOoswjtaCPuOqIinjDrMYg9tLMcmoG1iGhSVh
+         jIC5HxjyMMtl+tjtiZZDYqSvkYL2EkRYl9V+Kk5TRwzpwMuMjc5dRu8Dx41SeUybIm
+         B//ufYlmQ45yZcCwFNdR8jABnKa4cjJK4YhEt6bccnLFhi4Dc7PZ+0E3qlURe+e3py
+         bwD6+MPuANu9g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
@@ -42,12 +41,12 @@ Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
         Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>,
         linux-ntfs-dev@lists.sourceforge.net
-Subject: [PATCH AUTOSEL 5.10 8/8] ntfs: add sanity check on allocation size
-Date:   Mon, 28 Mar 2022 15:43:22 -0400
-Message-Id: <20220328194322.1586401-8-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 2/2] ntfs: add sanity check on allocation size
+Date:   Mon, 28 Mar 2022 15:43:47 -0400
+Message-Id: <20220328194347.1586667-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220328194322.1586401-1-sashal@kernel.org>
-References: <20220328194322.1586401-1-sashal@kernel.org>
+In-Reply-To: <20220328194347.1586667-1-sashal@kernel.org>
+References: <20220328194347.1586667-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -77,10 +76,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 4 insertions(+)
 
 diff --git a/fs/ntfs/inode.c b/fs/ntfs/inode.c
-index ea18e4a2a691..cf222c9225d6 100644
+index 8cd134750ebb..4150b3633f77 100644
 --- a/fs/ntfs/inode.c
 +++ b/fs/ntfs/inode.c
-@@ -1881,6 +1881,10 @@ int ntfs_read_inode_mount(struct inode *vi)
+@@ -1915,6 +1915,10 @@ int ntfs_read_inode_mount(struct inode *vi)
  		}
  		/* Now allocate memory for the attribute list. */
  		ni->attr_list_size = (u32)ntfs_attr_size(a);
