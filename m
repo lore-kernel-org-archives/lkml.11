@@ -2,143 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B75EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 15:43:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFCF1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 15:43:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238529AbiC1Ppa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 11:45:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43034 "EHLO
+        id S232000AbiC1Ppf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 11:45:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238368AbiC1PpZ (ORCPT
+        with ESMTP id S238455AbiC1Pp3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 11:45:25 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E6C48395
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 08:43:44 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id x20so26601034ybi.5
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 08:43:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JLAMImTBODJ6p1BQ28mgm1zYhXSzYUbNlmQ348cuLdo=;
-        b=GIYTLtunk/7VbdlxJz2L+F+hC5s7K7qDdgMJKyJ4TEI6TpypWEuW3uISWwVhgRmRe0
-         L6LGJ+vHPyfz+1A/Jo+JJKPbg5dJjRwKEq9Lp9sylO86h5+/W3mpm/Kt8HzHfDRSdZVx
-         E6N8kncLZ6ofsBbax1zxIM7Bnm3vnPrReCA3DePBTNMu5wBShS4HbsbK/ta1/YWSKJZ0
-         3USyelDXZnfONkjzwyxvkcVd8DqqfxjXKo3qIeOx+eD6o+ITHJrCGnv6KnGg4fKwkaR+
-         epyweFbyBMws3SiH3/Az2m5+5iAkEu0t+ZWOGGeaKmiWLmc7a1kImsNi87Lj7qDjkfdX
-         +CRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JLAMImTBODJ6p1BQ28mgm1zYhXSzYUbNlmQ348cuLdo=;
-        b=gKUfViQPoOjb3IirIHr2FSvVsxfPfWdRylcmu0DrD8FCFW9T4LJfsOufQ4USyfSeJG
-         R69DZ5TYg8U63r89H2c36WhUe/XSzUr/l5c5nbRPdLiDZ6SXWyWjiWAJy9iO18LZKnCO
-         f1Rdbv54Dt0Vge+KpHm9T1k59QV/B9moxHuURPTCbTpLuUPDP/N3vlk4xhWnd8sM48md
-         xc1SYsBi5W9DCy6qXmVPkWBkyAGiBWDrGhK5GlZo7ItpioVaFYVpPcWgPmw9FPjywgeF
-         4Pdu7uNEJNtzQSykV0k3RYiJrswT30o7pPf2QS4jTqP6eIi6NZTpo8H8oUpTfdx0UF0L
-         9a4w==
-X-Gm-Message-State: AOAM531k6ovh01WboeoJs1VkRBinfDWTrw3+ClE61T8NNruikarvDNZm
-        bHWzCl4hLF9MYsuKRW/hoQOUje4PGA8AMcE7E2vUoy9ynaa01w==
-X-Google-Smtp-Source: ABdhPJwmVXEqdR8lQkP19/L8e0cirz16e509iPdj4QWD1qSuTNtPHrKLywy+HWYdoSO5gRqUetj/qXfwkm9pxb46L88=
-X-Received: by 2002:a05:6902:24f:b0:62d:69d:c9fc with SMTP id
- k15-20020a056902024f00b0062d069dc9fcmr22422814ybs.87.1648482223855; Mon, 28
- Mar 2022 08:43:43 -0700 (PDT)
+        Mon, 28 Mar 2022 11:45:29 -0400
+Received: from mail.toke.dk (mail.toke.dk [45.145.95.4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E81B4888A;
+        Mon, 28 Mar 2022 08:43:48 -0700 (PDT)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
+        t=1648482226; bh=JCpqMHJ6otYgfj2zSfXB9RBHyVtJRWFIKxZQ4Fk3YvI=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=XgTSl9cvKEL5rwjrGQY4S32YWBWp8Iqjd/z/0ehjHwdD2AxisgQxeITwsWiX+I/4Z
+         zL2PJtSiqPD/ituh8X/SnMhDZHiGha6c3ha9J9fMV4cLXp+Z/RATrWRn/LhB7Agcjm
+         qGW4Fi5WJjAPi9Ah9zz1ZQHuwYuwnNwtmcQG62l4a8yg8AkN4sql3AdUAFUowCQ60F
+         b39Zg2FDEZffGWiqyGui3JKNcXVKAVmFoMzhn7A9zRrN9wxZeg2mCWgyzJjWIRJZaT
+         ayyw6GR9BZsouydytE7ZNruFHXfvbcSr+KqvsvEMOhIStdD1sPN0DmPiDGmdxiBpNb
+         VXJLG47mw36rw==
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, Paolo Abeni <pabeni@redhat.com>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        cake@lists.bufferbloat.net
+Subject: Re: [PATCH net-next] sch_cake: Take into account guideline
+ DEF/DGSIC/36 from French Administration
+In-Reply-To: <356a242a964fabbdf876a18c7640eb6ead6d0e6b.1648468695.git.christophe.leroy@csgroup.eu>
+References: <356a242a964fabbdf876a18c7640eb6ead6d0e6b.1648468695.git.christophe.leroy@csgroup.eu>
+Date:   Mon, 28 Mar 2022 17:43:46 +0200
+X-Clacks-Overhead: GNU Terry Pratchett
+Message-ID: <87bkxq5bgt.fsf@toke.dk>
 MIME-Version: 1.0
-References: <20220328132843.16624-1-songmuchun@bytedance.com>
-In-Reply-To: <20220328132843.16624-1-songmuchun@bytedance.com>
-From:   Marco Elver <elver@google.com>
-Date:   Mon, 28 Mar 2022 17:43:07 +0200
-Message-ID: <CANpmjNO=vMYhL_Uf3ewXvfWoan3q+cYjWV0jEze7toKSh2HRjg@mail.gmail.com>
-Subject: Re: [PATCH v2] mm: kfence: fix objcgs vector allocation
-To:     Muchun Song <songmuchun@bytedance.com>
-Cc:     glider@google.com, dvyukov@google.com, akpm@linux-foundation.org,
-        kasan-dev@googlegroups.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 28 Mar 2022 at 15:28, Muchun Song <songmuchun@bytedance.com> wrote:
->
-> If the kfence object is allocated to be used for objects vector, then
-> this slot of the pool eventually being occupied permanently since
-> the vector is never freed.  The solutions could be 1) freeing vector
-> when the kfence object is freed or 2) allocating all vectors statically.
-> Since the memory consumption of object vectors is low, it is better to
-> chose 2) to fix the issue and it is also can reduce overhead of vectors
-> allocating in the future.
->
-> Fixes: d3fb45f370d9 ("mm, kfence: insert KFENCE hooks for SLAB")
-> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+Christophe Leroy <christophe.leroy@csgroup.eu> writes:
 
-Reviewed-by: Marco Elver <elver@google.com>
+> French Administration has written a guideline that defines additional
+> DSCP values for use in its networks.
 
-Btw, how did you test this?
+Huh, that's interesting!
 
-Thanks,
--- Marco
+> Add new CAKE diffserv tables to take those new values into account
+> and add CONFIG_NET_SCH_CAKE_DGSIC to select those tables instead of
+> the default ones.
 
-> ---
-> v2:
->  - Fix compiler error reported by kernel test robot <lkp@intel.com>.
->
->  mm/kfence/core.c   | 11 ++++++++++-
->  mm/kfence/kfence.h |  3 +++
->  2 files changed, 13 insertions(+), 1 deletion(-)
->
-> diff --git a/mm/kfence/core.c b/mm/kfence/core.c
-> index 13128fa13062..d4c7978cd75e 100644
-> --- a/mm/kfence/core.c
-> +++ b/mm/kfence/core.c
-> @@ -555,6 +555,8 @@ static bool __init kfence_init_pool(void)
->          * enters __slab_free() slow-path.
->          */
->         for (i = 0; i < KFENCE_POOL_SIZE / PAGE_SIZE; i++) {
-> +               struct slab *slab = page_slab(&pages[i]);
-> +
->                 if (!i || (i % 2))
->                         continue;
->
-> @@ -562,7 +564,11 @@ static bool __init kfence_init_pool(void)
->                 if (WARN_ON(compound_head(&pages[i]) != &pages[i]))
->                         goto err;
->
-> -               __SetPageSlab(&pages[i]);
-> +               __folio_set_slab(slab_folio(slab));
-> +#ifdef CONFIG_MEMCG
-> +               slab->memcg_data = (unsigned long)&kfence_metadata[i / 2 - 1].objcg |
-> +                                  MEMCG_DATA_OBJCGS;
-> +#endif
->         }
->
->         /*
-> @@ -938,6 +944,9 @@ void __kfence_free(void *addr)
->  {
->         struct kfence_metadata *meta = addr_to_metadata((unsigned long)addr);
->
-> +#ifdef CONFIG_MEMCG
-> +       KFENCE_WARN_ON(meta->objcg);
-> +#endif
->         /*
->          * If the objects of the cache are SLAB_TYPESAFE_BY_RCU, defer freeing
->          * the object, as the object page may be recycled for other-typed
-> diff --git a/mm/kfence/kfence.h b/mm/kfence/kfence.h
-> index 2a2d5de9d379..9a6c4b1b12a8 100644
-> --- a/mm/kfence/kfence.h
-> +++ b/mm/kfence/kfence.h
-> @@ -89,6 +89,9 @@ struct kfence_metadata {
->         struct kfence_track free_track;
->         /* For updating alloc_covered on frees. */
->         u32 alloc_stack_hash;
-> +#ifdef CONFIG_MEMCG
-> +       struct obj_cgroup *objcg;
-> +#endif
->  };
->
->  extern struct kfence_metadata kfence_metadata[CONFIG_KFENCE_NUM_OBJECTS];
-> --
-> 2.11.0
->
+...however I don't think we should be including something this
+special-purpose into the qdisc kernel code, and certainly we shouldn't
+have a config option that changes the meaning of the existing diffserv
+keywords!
+
+Rather, this is something that is best specified from userspace; and in
+fact Cake already has no less than two different ways to do this: the
+'fwmark' option, and setting the skb->priority field. Have you tried
+using those?
+
+-Toke
