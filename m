@@ -2,140 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78672C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 12:51:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBD2FC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 12:51:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242680AbiC1Mxc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 08:53:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36030 "EHLO
+        id S242696AbiC1Mxi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 08:53:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236261AbiC1Mxa (ORCPT
+        with ESMTP id S242688AbiC1Mxd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 08:53:30 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFC9E5D1B2
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 05:51:43 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id bn33so19041826ljb.6
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 05:51:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FarkKMmLpVs9abc1JGwF3+6Em6/7bJylY266bKU1okM=;
-        b=AgsHsK/VKvAlNZn55HY1SCwW17O18ekHg4MBnW1cyn7uxkH+D5mO+to7ExoGkE7i+r
-         e0pE4J8sOV1KDmqKX/i/1aAjLmU2wtif6aXDZRbcV+kCx9sBLBYpBT3bBsr/nxYONGMw
-         FYd8V2inF/c8kTj9PsubdpwnOy9JMx4NocT42vJQRRHLUvW3JciCfIXVlRLsQBFKbdnS
-         U5e9GsXrE+8Sp3mwdSGYMhuxb9QQQlrq9DP4n8imgt6uv4gaO+gtKywNU3tvWtK5bXwC
-         +bRXG2m56g5dMgrC6acA06aEtqjn9OIfgVc3+cvX8UqAwQyK3xdLh9NAC/TC3I1qmnd3
-         PwGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FarkKMmLpVs9abc1JGwF3+6Em6/7bJylY266bKU1okM=;
-        b=quMlFPlkfRKXFIbEFUU3fwe8kCT+iyAjCQnjtND200hwgrndAQfjn7KTeZHco+wcGB
-         FXhFGQ9BD3S6dLMkBtJnkI4VKo+LfQMC2fZYjKp91R760wqSFkRmChtDMNdHwtTF1Tw1
-         wHFJ9TSEGyKyRb4LdT0Kv9GK8NrD92gMuNHGYPaIbbdib3PtSt5Mgax+qKeiKbBnw9PQ
-         edSLDl1MhBNDnn1zI3Q7VDS9MOwo1sc6Z+QSu3X9D4RHzgpXC5yJlc0fgYiUTUUj0tNW
-         pMtKoxyycfD1wZOd8xlPPvvp+GCBgqK38vb/WAGzUuhYcmWRWy37VyFu5/WgLSvcmiwV
-         gJKw==
-X-Gm-Message-State: AOAM5339sQ686W/4e8A7s56hKkDo7CZtEqHZbHdivOLf2Cmm8E5Jbm1c
-        9X+Xr/OYrVsuhehE1J6bj+oEPkKrU8a4lReMTYhTIA==
-X-Google-Smtp-Source: ABdhPJwOJv1Z0j/jaHQ3e7pDXB/bqvLC6hjCGxQr2O82xChNKWxBovkAUr01edZUW+5pkpNu8F7A09O/ZmkHIgl4lrk=
-X-Received: by 2002:a2e:b5b9:0:b0:246:b30:64c8 with SMTP id
- f25-20020a2eb5b9000000b002460b3064c8mr19533430ljn.17.1648471901768; Mon, 28
- Mar 2022 05:51:41 -0700 (PDT)
+        Mon, 28 Mar 2022 08:53:33 -0400
+Received: from mail.thepaulodoom.com (www.thepaulodoom.com [45.77.108.202])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BFB3C5D19F;
+        Mon, 28 Mar 2022 05:51:43 -0700 (PDT)
+Received: from hp-amd-paul (c-98-240-189-147.hsd1.mn.comcast.net [98.240.189.147])
+        by vultr.guest (OpenSMTPD) with ESMTPSA id 6629f991 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Mon, 28 Mar 2022 12:51:41 +0000 (UTC)
+Date:   Mon, 28 Mar 2022 07:51:37 -0500
+From:   Paul Lemmermann <thepaulodoom@thepaulodoom.com>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     davem@davemloft.net, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] crypto: aes_generic: fixed styling warnings
+Message-ID: <20220328125137.bsbvroyxcjw6rl5m@hp-amd-paul>
+References: <20220326172051.14722-1-thepaulodoom@thepaulodoom.com>
+ <CAMj1kXEQtTAMPLTtgc=9sDYvgxs+oihfnY7Q6bggC0p5u-V1Hw@mail.gmail.com>
+ <20220327224009.2jotnczk67j4cfh2@hp-amd-paul>
+ <CAMj1kXHCR1nD24WDnYpD4Nu23x9+hw+=7EXOpq7y7m9LDk2J0w@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220311161406.23497-1-vincent.guittot@linaro.org>
- <20220311161406.23497-6-vincent.guittot@linaro.org> <bb92b4ee-293b-7e00-6e74-bd10fc088f7e@arm.com>
-In-Reply-To: <bb92b4ee-293b-7e00-6e74-bd10fc088f7e@arm.com>
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-Date:   Mon, 28 Mar 2022 14:51:29 +0200
-Message-ID: <CAKfTPtBWUz3zvOXx-s7_xsyPZU9WDYXz-6KpiC6hG9TVhFVXdw@mail.gmail.com>
-Subject: Re: [RFC 5/6] sched/fair: Take into account latency nice at wakeup
-To:     Dietmar Eggemann <dietmar.eggemann@arm.com>
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        linux-kernel@vger.kernel.org, parth@linux.ibm.com,
-        qais.yousef@arm.com, chris.hyser@oracle.com,
-        pkondeti@codeaurora.org, Valentin.Schneider@arm.com,
-        patrick.bellasi@matbug.net, David.Laight@aculab.com,
-        pjt@google.com, pavel@ucw.cz, tj@kernel.org,
-        dhaval.giani@oracle.com, qperret@google.com,
-        tim.c.chen@linux.intel.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMj1kXHCR1nD24WDnYpD4Nu23x9+hw+=7EXOpq7y7m9LDk2J0w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 28 Mar 2022 at 11:24, Dietmar Eggemann <dietmar.eggemann@arm.com> wrote:
->
-> On 11/03/2022 17:14, Vincent Guittot wrote:
->
-> [...]
->
-> > @@ -4412,7 +4417,7 @@ int sched_fork(unsigned long clone_flags, struct task_struct *p)
-> >               p->prio = p->normal_prio = p->static_prio;
-> >               set_load_weight(p, false);
+On Mon, Mar 28, 2022 at 09:39:14AM +0200, Ard Biesheuvel wrote:
+> (please keep the cc's)
+> 
+> On Mon, 28 Mar 2022 at 00:46, Paul Lemmermann
+> <thepaulodoom@thepaulodoom.com> wrote:
 > >
-> > -             p->latency_nice = DEFAULT_LATENCY_NICE;
-> > +             p->latency_prio = NICE_TO_LATENCY(0);
-> >               /*
-> >                * We don't need the reset flag anymore after the fork. It has
-> >                * fulfilled its duty:
-> > @@ -4420,6 +4425,9 @@ int sched_fork(unsigned long clone_flags, struct task_struct *p)
-> >               p->sched_reset_on_fork = 0;
-> >       }
+> > On Sun, Mar 27, 2022 at 01:41:19PM +0200, Ard Biesheuvel wrote:
+> > > On Sat, 26 Mar 2022 at 18:48, Paul Lemmermann
+> > > <thepaulodoom@thepaulodoom.com> wrote:
+> > > >
+> > > > Fixed all styling warnings from the checkpatch.pl script.
+> > > >
+> > > > Signed-off-by: Paul Lemmermann <thepaulodoom@thepaulodoom.com>
+> > >
+> > > Did you test this code after 'fixing' it?
+> > >
+> > No, I did not. Now that I scrutinized it a bit more, I realized the
+> > kernel coding conventions. Sorry about that, this is my first patch.
+> 
+> In that case, welcome!
+> 
+> This is not about coding conventions. This is about correctness.
+> 
+> For instance,
+> 
+> > > >
+> > > > -#define f_nround(bo, bi, k)    do {\
+> > > > +#define f_nround(bo, bi, k)    while (0) {\
+> > > >         f_rn(bo, bi, 0, k);     \
+> > > >         f_rn(bo, bi, 1, k);     \
+> > > >         f_rn(bo, bi, 2, k);     \
+> > > >         f_rn(bo, bi, 3, k);     \
+> > > >         k += 4;                 \
+> > > > -} while (0)
+> > > > +}
+> > > >
+> 
+> Why are you making this change, and why do you think it produces the
+> same result?
+> 
+> > Can you remove everything in the patch past the section with line
+> > 1144, or do I have to resubit the patch?
 > >
-> > +     /* Once latency_prio is set, update the latency weight */
-> > +     set_latency_weight(p);
->
-> I thought we only have to do this in the `sched_reset_on_fork` case?
-> Like we do with set_load_weight(). Can we not rely on dup_task_struct()
-> in the other case?
->
-> [...]
->
-> > @@ -5648,6 +5677,9 @@ enqueue_task_fair(struct rq *rq, struct task_struct *p, int flags)
-> >       if (!task_new)
-> >               update_overutilized_status(rq);
-> >
-> > +     if (rq->curr == rq->idle)
-> > +             check_preempt_from_idle(cfs_rq_of(&p->se), &p->se);
->
-> This is done here (1) because check_preempt_wakeup() (2) is only called
-> if p and rq->curr have CFS sched class?
+> 
+> checkpatch.pl is a useful tool for finding style issues, but please
+> use it with care. And changing decades old code just to fix issues
+> reported by checkpatch.pl is really just pointless churn.
+> 
+> So let's just drop this patch altogether, shall we? If you're
+> interested in helping out, please have a look at the staging/ tree -
+> there is a lot of code there that needs cleaning up.
+> 
+Yes, we can drop the patch. Thank you so much for your help and support.
+Looking forward to contributing more to the Linux kernel.
 
-Yes
-
->
->
-> ttwu_do_activate()
->   activate_task()
->     enqueue_task <-- (1)
->   ttwu_do_wakeup()
->     check_preempt_curr()
->       if (p->sched_class == rq->curr->sched_class)
->         rq->curr->sched_class->check_preempt_curr() <-- (2)
->
-> [...]
->
-> > @@ -7008,6 +7059,10 @@ static int
-> >  wakeup_preempt_entity(struct sched_entity *curr, struct sched_entity *se)
-> >  {
-> >       s64 gran, vdiff = curr->vruntime - se->vruntime;
-> > +     int latency_weight = se->latency_weight - curr->latency_weight;
-> > +
-> > +     latency_weight = min(latency_weight, se->latency_weight);
->
-> Why the min out of latency_weight_diff(se, curr) and se->latency_weight
-> here?
-
-when there are 2  low latency tasks (weight 1024), there is no reason
-to favor the the waking task so we take the diff (0 in this case)
-When there are 2 high latency  tolerant task (weight -1024), we want
-to make sure to not preempt current task we take the weight (-1024)
-instead of the diff
-
->
-> [...]
+Thanks,
+Paul
