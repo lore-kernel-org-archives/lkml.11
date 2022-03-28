@@ -2,79 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8C9BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:11:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF38CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:13:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240514AbiC1LNF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:13:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39588 "EHLO
+        id S240516AbiC1LPQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:15:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240580AbiC1LNB (ORCPT
+        with ESMTP id S230431AbiC1LPM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:13:01 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A3FD26AE7
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 04:11:21 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 422DC1F434D8
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1648465879;
-        bh=419/BL+mLF16KS+JYf0o8RqyMhR63jMhw3wqLehWCM4=;
+        Mon, 28 Mar 2022 07:15:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A5385522A;
+        Mon, 28 Mar 2022 04:13:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C06F561124;
+        Mon, 28 Mar 2022 11:13:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDA6EC340EC;
+        Mon, 28 Mar 2022 11:13:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648466006;
+        bh=DfqUxVX+5WP9pagJlTm4FcFkhSqHyaRpzyiaeYkTWC0=;
         h=From:To:Cc:Subject:Date:From;
-        b=G8hXakp8phXhjZ9JqEyaLDuoT4TMR3hosQo+KbGJ0YBXDN63JcDNKHSoxgkqy/Yn4
-         N8hScWtIJk63aIlBBXwFuAJ16hblfIri4OmoPNW5GtEYRlRg+TR4QB1BvGf5yiNK7j
-         2y+Mv/tS8Ldp41/Y1ZQbYsd2OrVBOZR8u7+hEiCbGb59UPonMN2ms1f7psqvESfjYP
-         aMqFIIe/OMVKeXnyw/XxnhYHsIItR+45paYxaDhu/Aa/yKnPdmVVHctIizjJhJeEZe
-         21Kv3+dFYWCi1UtNWlOvkSQo/ivHfQQm0cM4t293Kc5VZiJTgdgbBJabYsvFxcCSE0
-         KaoR8FmpQuepA==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     chunkuang.hu@kernel.org
-Cc:     p.zabel@pengutronix.de, chunfeng.yun@mediatek.com, kishon@ti.com,
-        vkoul@kernel.org, matthias.bgg@gmail.com,
-        dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-phy@lists.infradead.org, linux-kernel@vger.kernel.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH] phy: mediatek: phy-mtk-mipi-dsi: Simplify with dev_err_probe()
-Date:   Mon, 28 Mar 2022 13:11:15 +0200
-Message-Id: <20220328111115.210821-1-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        b=LqEVRs6wOZQtSIcp0MA2Zg17F8n1hEGjSsqIOhKQJfc00eEMrJmmRZJzXu8omvhu3
+         bD/6KpaeVKL5d/xvIW5dfYJSFXGQ4O0aSnmuQpUXYswJ9Km6fGANBsWLaMBcwgthYG
+         xM6DAGkVGsaUrLX4ew81wMAWgcyrc6RkbE6lBlGQK6IWhU26smNSIDPpFHvqqVti0s
+         +loe4Bh6WJiAr/F6OByMlFm2kcExKi3LiMiLyxXzb9UoZ8T9gLX9O+KQt0WZ/7N0VQ
+         l5zh2sANbSZ/Cj8jvz2CMquwveS9W+UnYgPqYCr+NiIocoB1ZKkDs75laTevEPE7Dx
+         jZM3kDekmWDJA==
+From:   Roger Quadros <rogerq@kernel.org>
+To:     krzk@kernel.org
+Cc:     miquel.raynal@bootlin.com, tony@atomide.com, vigneshr@ti.com,
+        kishon@ti.com, nm@ti.com, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Roger Quadros <rogerq@kernel.org>
+Subject: [PATCH v2 0/2] memory: omap-gpmc: Allow module build
+Date:   Mon, 28 Mar 2022 14:13:17 +0300
+Message-Id: <20220328111319.1236-1-rogerq@kernel.org>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the dev_err_probe() helper to simplify error handling during probe.
+Hi,
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/phy/mediatek/phy-mtk-mipi-dsi.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+Allow OMAP_GPMC config to be visible in menuconfig and buildable
+as a module.
 
-diff --git a/drivers/phy/mediatek/phy-mtk-mipi-dsi.c b/drivers/phy/mediatek/phy-mtk-mipi-dsi.c
-index 67b005d5b9e3..815895e54172 100644
---- a/drivers/phy/mediatek/phy-mtk-mipi-dsi.c
-+++ b/drivers/phy/mediatek/phy-mtk-mipi-dsi.c
-@@ -154,11 +154,9 @@ static int mtk_mipi_tx_probe(struct platform_device *pdev)
- 		return PTR_ERR(mipi_tx->regs);
- 
- 	ref_clk = devm_clk_get(dev, NULL);
--	if (IS_ERR(ref_clk)) {
--		ret = PTR_ERR(ref_clk);
--		dev_err(dev, "Failed to get reference clock: %d\n", ret);
--		return ret;
--	}
-+	if (IS_ERR(ref_clk))
-+		return dev_err_probe(dev, PTR_ERR(ref_clk),
-+				     "Failed to get reference clock\n");
- 
- 	ret = of_property_read_u32(dev->of_node, "drive-strength-microamp",
- 				   &mipi_tx->mipitx_drive);
+Changelog:
+v2:
+- Allow building as a module
+
+cheers,
+-roger
+
+Roger Quadros (2):
+  memory: omap-gpmc: Make OMAP_GPMC config visible and selectable
+  memory: omap-gpmc: Allow building as a module
+
+ drivers/memory/Kconfig     |  4 ++--
+ drivers/memory/omap-gpmc.c | 44 +++++++++++++++++++++-----------------
+ 2 files changed, 26 insertions(+), 22 deletions(-)
+
 -- 
-2.35.1
+2.17.1
 
