@@ -2,73 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71759C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 23:00:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76855C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 23:00:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230217AbiC1XB7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 19:01:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42176 "EHLO
+        id S230233AbiC1XCE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 19:02:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230108AbiC1XB4 (ORCPT
+        with ESMTP id S230155AbiC1XB4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Mar 2022 19:01:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5078240BD;
-        Mon, 28 Mar 2022 16:00:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A1D660C7D;
-        Mon, 28 Mar 2022 23:00:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3525AC340EC;
-        Mon, 28 Mar 2022 23:00:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648508412;
-        bh=7C2zg81KqOPL2oH4kK0Qvprda9/Ao9Mc247z5u2Vhek=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=id0zVO7sDGlf9kZ37Xmm3W2vqP4HQ6Nx8BFmzlf4pK6cRRawvVWJCRhrc3WJNQMmh
-         8SOk/4153l4fNYchqGmpNIONa/WBdWeU4990FXm9guej0rDqzS9iEzvY+65EM9+lF0
-         unKhwrNDWDnyZzteKKXNhgify24sUvSS53oLSQZB9zhUBGVzjDdwOa16AtYHA1ajsC
-         IZ+M/d07et278qpc3m+o6Ktug8tnQj22mWvN+V27xXBemHIaBEoo8LEptb/CxnSX1x
-         BFIsO3SC4BJn7nwKjY6AmpfbKqlxi1acp12QXdt8Wfu0I7PAdeNXN/55GQMsRqok2n
-         oMzCyPpL42emg==
-Date:   Mon, 28 Mar 2022 16:00:10 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Guenter Roeck <linux@roeck-us.net>, Andrew Lunn <andrew@lunn.ch>,
-        Xu Yilun <yilun.xu@intel.com>, Tom Rix <trix@redhat.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>, linux-hwmon@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v1 0/2] hwmon: introduce hwmon_sanitize()
-Message-ID: <20220328160010.73bd2a47@kernel.org>
-In-Reply-To: <e87c3ab2a0c188dced27bf83fc444c40@walle.cc>
-References: <20220328115226.3042322-1-michael@walle.cc>
-        <YkGwjjUz+421O2E1@lunn.ch>
-        <ab64105b-c48d-cdf2-598a-3e0a2e261b27@roeck-us.net>
-        <e87c3ab2a0c188dced27bf83fc444c40@walle.cc>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E2EF24596
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 16:00:14 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id h16-20020a056902009000b00628a70584b2so11889403ybs.6
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 16:00:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=4i1l9AwTfFdRqUE9mxnbmrk0dHwvz4ZAenZccJvB6o4=;
+        b=qhQZecwTYMf+9F7yNoTpRhQqYlOzBbcyLmOjLGZ+2DfFLnN01ArsyEc9L7i4fW5gIW
+         wrxurOmtOwKxa22NDpX1WjFuENaqRudK5KYX4o5DTCZDzvB1ApjdSVEqdraxxjyLCAH8
+         F2CdZhA5eh6qpyE2sFKVxh9A2/F1rO1MbiqNhzvrAYNt6IXbe+iWvWzawNcppFFX1gDN
+         QEy5IaxY4b4XhR+DUb22pzXMedvHOcdcg1P3m53/ejxgDotSV8vSMW9g5YicsNVmNd5w
+         TbMLzukw8r0a8bwmSzuyzT7T3BcIqEbgNIWtEq6FCjEqb0bm8g7kXPzcd73diH9jL9TW
+         MjbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=4i1l9AwTfFdRqUE9mxnbmrk0dHwvz4ZAenZccJvB6o4=;
+        b=687fDl0lPiTNgonmFiWPd5NJ4eqJpCjHmGzqKQKCGc8mJy2G3oql5+15O4aayr5QNh
+         GaD7IzxH9nsXHzQ59efQvAmFMRmV0v7+wJIp+uK4cxszWf+N5NVGFtP5b0DWV/D1V65D
+         6aI6uBy40mOS4Q434FuErwcZon3kOdwod6lJ/K1Zf8z08uSUJwa7nSJT1LqM5luLzfBY
+         4Uab1KF3RAl9l0zr1vkG9hsJ/70QsMra55FiddMneWRorB/6MSwxDXfCEszFl1UzbOZG
+         iu0L/WMnIyCCpJEcIlYIcjPnscjD501WFbTY1o2c8B4vQIo/JSizEoFkuAo0ks0b9h5P
+         jnXA==
+X-Gm-Message-State: AOAM532Rnb3kPUTkvscvCPeCG8PVQ8+CVeIN8n/StKQZd+x3E7c9zgPd
+        MhXsJE7B0aToQ4mBgtYVOH2BRImDOmzA8HU=
+X-Google-Smtp-Source: ABdhPJwQazt4139wX1tGxlX7XgKb6/VZvyzPRdIhufvuYPe+Sy8H/VS5jPEanUTEUA+sCU5Vw6ybWDF1XyuZkCg=
+X-Received: from tansuresh.svl.corp.google.com ([2620:15c:2c5:13:3dbb:6bbc:98be:a31e])
+ (user=tansuresh job=sendgmr) by 2002:a25:e30c:0:b0:633:6081:d44b with SMTP id
+ z12-20020a25e30c000000b006336081d44bmr25995917ybd.523.1648508413391; Mon, 28
+ Mar 2022 16:00:13 -0700 (PDT)
+Date:   Mon, 28 Mar 2022 16:00:05 -0700
+Message-Id: <20220328230008.3587975-1-tansuresh@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
+Subject: [PATCH v1 0/3] Asynchronous shutdown interface and example implementation
+From:   Tanjore Suresh <tansuresh@google.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Cc:     linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
+        linux-pci@vger.kernel.org, Tanjore Suresh <tansuresh@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 29 Mar 2022 00:50:28 +0200 Michael Walle wrote:
-> > No, it isn't the easiest solution because it also modifies a hwmon
-> > driver to use it.  
-> 
-> So that leaves us with option 1? The next version will contain the
-> additional patch which moves the hwmon_is_bad_char() from the include
-> to the core and make it private. That will then need an immutable
-> branch from netdev to get merged back into hwmon before that patch
-> can be applied, right?
+Problem:
 
-If anything immutable branch from hwmon that we can pull, because hwmon
-is the home of the API, and netdev is just _a_ consumer.
+Some of our machines are configured with  many NVMe devices and
+are validated for strict shutdown time requirements. Each NVMe
+device plugged into the system, typicaly takes about 4.5 secs
+to shutdown. A system with 16 such NVMe devices will takes
+approximately 80 secs to shutdown and go through reboot.
 
-Either way I think you can post the patch that adds the new helper
-for review.
+The current shutdown APIs as defined at bus level is defined to be
+synchronous. Therefore, more devices are in the system the greater
+the time it takes to shutdown. This shutdown time significantly
+contributes the machine reboot time.
+
+Solution:
+
+This patch set proposes an asynchronous shutdown interface at bus level,
+modifies the core driver, device shutdown routine to exploit the
+new interface while maintaining backward compatibility with synchronous
+implementation already existing (Patch 1 of 3) and exploits new interface
+to enable all PCI-E based devices to use asynchronous interface semantics
+if necessary (Patch 2 of 3). The implementation at PCI-E level also works
+in a backward compatible way, to allow exiting device implementation
+to work with current synchronous semantics. Only show cases an example
+implementation for NVMe device to exploit this asynchronous shutdown
+interface. (Patch 3 of 3).
+
+Tanjore Suresh (3):
+  driver core: Support asynchronous driver shutdown
+  PCI: Support asynchronous shutdown
+  nvme: Add async shutdown support
+
+ drivers/base/core.c        | 39 ++++++++++++++++++-
+ drivers/nvme/host/core.c   | 28 +++++++++----
+ drivers/nvme/host/nvme.h   |  8 ++++
+ drivers/nvme/host/pci.c    | 80 ++++++++++++++++++++++++--------------
+ drivers/pci/pci-driver.c   | 17 ++++++--
+ include/linux/device/bus.h | 10 +++++
+ include/linux/pci.h        |  2 +
+ 7 files changed, 144 insertions(+), 40 deletions(-)
+
+-- 
+2.35.1.1021.g381101b075-goog
+
