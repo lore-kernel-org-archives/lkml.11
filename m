@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86C72C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:30:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7E80C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:30:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241366AbiC1Lbm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:31:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45972 "EHLO
+        id S241447AbiC1Lbt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:31:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241138AbiC1LZN (ORCPT
+        with ESMTP id S241136AbiC1LZN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Mar 2022 07:25:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E176B29C;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20FF89D;
         Mon, 28 Mar 2022 04:23:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 791AF6114A;
-        Mon, 28 Mar 2022 11:23:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 254BAC340EC;
-        Mon, 28 Mar 2022 11:23:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9BDBDB81056;
+        Mon, 28 Mar 2022 11:23:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41184C340ED;
+        Mon, 28 Mar 2022 11:23:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466598;
-        bh=OBxEfYhzCvPlaf1L8GH5GI+UgRcsxLFcLA/QQnqss/M=;
+        s=k20201202; t=1648466596;
+        bh=aHVl+/EsQrR9neBjGG86Q9pePZdY475UvksKXzhKhz8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AQ7NK0AJHUkVQ/+OeEY2N98qd86Vt5wPVBFx6SlujQXQjFT/pFsFPCuCuJKkADxb0
-         jUfCMJ8M8IZGFrpVIvueSU0CztB2RXGSA6dsDzuLndAi/LnChXCtqxSNjuZbMSde3E
-         AuUot5RF1Rc1JPiCGX8IgpTnmGUsXtuptH0XSMPQkEqWPC8KgaNlSRGkSGku3iBt5l
-         bRGSXxTLgr5O4hBrSbBAARp7UhmI2y6Yba2HfAqpIGd7t0ZdvzGb1yOh650QrdY5KK
-         oUMp1zX8Qw8ODN1sd0sDpCSuRGiPbtyO9rq18AkouuE9ToOdvQxW9qY2g21qnVM38N
-         wX8E5NnjRh6DQ==
+        b=Iac471Iz/CHb3CyRdoWr8hkjToTtjqdYUnngmyvuj+RY+Fg++B0aO6gIfcCSDW7/H
+         /Mv5NuUFyn4hvxy98YfrUqGsqvZVLJASlKVoEwZDNO48MXQ+j9f9vSHAsp4wMthnx2
+         TXFLm2DkgNiYASrF+ZixtCDLCxCcw2HRbKngq5mQvaGUHsYr1MxlspDM3QvSbytVFL
+         p/n1v8q61+YUXC2VlHfQqOpiJjS6vOgPSo6WvaUhaDkUBkWDdTI199CH9enQNgOKaM
+         l6Hk2Z70a8bqDpHZNFJyn6aplAY0EceDz44xe21myxN/nkuFqc1d4R74WrvTNqD8Mz
+         8wOH0e+x5j6Wg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Casey Schaufler <casey@schaufler-ca.com>,
-        kernel test robot <lkp@intel.com>,
-        Sasha Levin <sashal@kernel.org>, jmorris@namei.org,
-        serge@hallyn.com, linux-security-module@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 09/21] Fix incorrect type in assignment of ipv6 port for audit
-Date:   Mon, 28 Mar 2022 07:22:42 -0400
-Message-Id: <20220328112254.1556286-9-sashal@kernel.org>
+Cc:     Richard Haines <richard_c_haines@btinternet.com>,
+        Demi Marie Obenour <demiobenour@gmail.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Sasha Levin <sashal@kernel.org>,
+        stephen.smalley.work@gmail.com, eparis@parisplace.org,
+        cgzones@googlemail.com, ndesaulniers@google.com,
+        selinux@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 07/21] selinux: allow FIOCLEX and FIONCLEX with policy capability
+Date:   Mon, 28 Mar 2022 07:22:40 -0400
+Message-Id: <20220328112254.1556286-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220328112254.1556286-1-sashal@kernel.org>
 References: <20220328112254.1556286-1-sashal@kernel.org>
@@ -52,33 +55,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Casey Schaufler <casey@schaufler-ca.com>
+From: Richard Haines <richard_c_haines@btinternet.com>
 
-[ Upstream commit a5cd1ab7ab679d252a6d2f483eee7d45ebf2040c ]
+[ Upstream commit 65881e1db4e948614d9eb195b8e1197339822949 ]
 
-Remove inappropriate use of ntohs() and assign the
-port value directly.
+These ioctls are equivalent to fcntl(fd, F_SETFD, flags), which SELinux
+always allows too.  Furthermore, a failed FIOCLEX could result in a file
+descriptor being leaked to a process that should not have access to it.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
+As this patch removes access controls, a policy capability needs to be
+enabled in policy to always allow these ioctls.
+
+Based-on-patch-by: Demi Marie Obenour <demiobenour@gmail.com>
+Signed-off-by: Richard Haines <richard_c_haines@btinternet.com>
+[PM: subject line tweak]
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/smack/smack_lsm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ security/selinux/hooks.c                   | 6 ++++++
+ security/selinux/include/policycap.h       | 1 +
+ security/selinux/include/policycap_names.h | 3 ++-
+ security/selinux/include/security.h        | 7 +++++++
+ 4 files changed, 16 insertions(+), 1 deletion(-)
 
-diff --git a/security/smack/smack_lsm.c b/security/smack/smack_lsm.c
-index 5c90b9fa4d40..b36b8668f1f4 100644
---- a/security/smack/smack_lsm.c
-+++ b/security/smack/smack_lsm.c
-@@ -2506,7 +2506,7 @@ static int smk_ipv6_check(struct smack_known *subject,
- #ifdef CONFIG_AUDIT
- 	smk_ad_init_net(&ad, __func__, LSM_AUDIT_DATA_NET, &net);
- 	ad.a.u.net->family = PF_INET6;
--	ad.a.u.net->dport = ntohs(address->sin6_port);
-+	ad.a.u.net->dport = address->sin6_port;
- 	if (act == SMK_RECEIVING)
- 		ad.a.u.net->v6info.saddr = address->sin6_addr;
- 	else
+diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+index 63e61f2f1ad6..8c901ae05dd8 100644
+--- a/security/selinux/hooks.c
++++ b/security/selinux/hooks.c
+@@ -3647,6 +3647,12 @@ static int selinux_file_ioctl(struct file *file, unsigned int cmd,
+ 					    CAP_OPT_NONE, true);
+ 		break;
+ 
++	case FIOCLEX:
++	case FIONCLEX:
++		if (!selinux_policycap_ioctl_skip_cloexec())
++			error = ioctl_has_perm(cred, file, FILE__IOCTL, (u16) cmd);
++		break;
++
+ 	/* default case assumes that the command will go
+ 	 * to the file's ioctl() function.
+ 	 */
+diff --git a/security/selinux/include/policycap.h b/security/selinux/include/policycap.h
+index 2ec038efbb03..a9e572ca4fd9 100644
+--- a/security/selinux/include/policycap.h
++++ b/security/selinux/include/policycap.h
+@@ -11,6 +11,7 @@ enum {
+ 	POLICYDB_CAPABILITY_CGROUPSECLABEL,
+ 	POLICYDB_CAPABILITY_NNP_NOSUID_TRANSITION,
+ 	POLICYDB_CAPABILITY_GENFS_SECLABEL_SYMLINKS,
++	POLICYDB_CAPABILITY_IOCTL_SKIP_CLOEXEC,
+ 	__POLICYDB_CAPABILITY_MAX
+ };
+ #define POLICYDB_CAPABILITY_MAX (__POLICYDB_CAPABILITY_MAX - 1)
+diff --git a/security/selinux/include/policycap_names.h b/security/selinux/include/policycap_names.h
+index b89289f092c9..ebd64afe1def 100644
+--- a/security/selinux/include/policycap_names.h
++++ b/security/selinux/include/policycap_names.h
+@@ -12,7 +12,8 @@ const char *selinux_policycap_names[__POLICYDB_CAPABILITY_MAX] = {
+ 	"always_check_network",
+ 	"cgroup_seclabel",
+ 	"nnp_nosuid_transition",
+-	"genfs_seclabel_symlinks"
++	"genfs_seclabel_symlinks",
++	"ioctl_skip_cloexec"
+ };
+ 
+ #endif /* _SELINUX_POLICYCAP_NAMES_H_ */
+diff --git a/security/selinux/include/security.h b/security/selinux/include/security.h
+index 63ca6e79daeb..1521460a97d4 100644
+--- a/security/selinux/include/security.h
++++ b/security/selinux/include/security.h
+@@ -219,6 +219,13 @@ static inline bool selinux_policycap_genfs_seclabel_symlinks(void)
+ 	return READ_ONCE(state->policycap[POLICYDB_CAPABILITY_GENFS_SECLABEL_SYMLINKS]);
+ }
+ 
++static inline bool selinux_policycap_ioctl_skip_cloexec(void)
++{
++	struct selinux_state *state = &selinux_state;
++
++	return READ_ONCE(state->policycap[POLICYDB_CAPABILITY_IOCTL_SKIP_CLOEXEC]);
++}
++
+ struct selinux_policy_convert_data;
+ 
+ struct selinux_load_state {
 -- 
 2.34.1
 
