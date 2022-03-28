@@ -2,49 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5675DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:45:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54DEDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:45:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343879AbiC1Tra (ORCPT
+        id S1343883AbiC1Trd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 15:47:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50046 "EHLO
+        Mon, 28 Mar 2022 15:47:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343789AbiC1Tqa (ORCPT
+        with ESMTP id S1343815AbiC1Tqc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 15:46:30 -0400
+        Mon, 28 Mar 2022 15:46:32 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3B3E673FD;
-        Mon, 28 Mar 2022 12:43:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E523310D9;
+        Mon, 28 Mar 2022 12:43:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 94367612AB;
-        Mon, 28 Mar 2022 19:43:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C5D7C34111;
-        Mon, 28 Mar 2022 19:43:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C58ED612B3;
+        Mon, 28 Mar 2022 19:43:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67DF6C34110;
+        Mon, 28 Mar 2022 19:43:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648496585;
-        bh=cxIlbeMDmUc/aVrFTc+t0g8Jo+ZFlW+CNDEk4hZ16Io=;
+        s=k20201202; t=1648496589;
+        bh=EEzSTtJhiB4vfmd+xlsYP6HL/LckkspU9kimszDf3zY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WyB8MuVrMKBP9sXESFupQmRigYjCCtrOFyGJi5Wj215ZCC7X/34b63SQs72flXELL
-         CAWpdju9qliKr7GF5FG58DSgvi4iY/nTTfdEmnpSQu2+WL/LKdaEt6dYATTl08Sexl
-         C9wfxsvpsLn5X8xzUAgITpBa7QQW146LUzw8IGNExeVaFI2g6L9NqahhDTn2IJ9gLw
-         7rcnW0UCtTCiAGKfiGuie0pi9SMLN3VkyROyli9DK+IyEHM8dD9NlAAUu+kV5YgzxD
-         CFo4XiVhUaEv4srYq8nUSmZLvUiD1C7g3+4iZFNpsCM0hnhXX6tdo5XInVM6+1WcbV
-         ZqbjBKibl+imQ==
+        b=KZjy+baOLo1bYYHuw9N97F1amyfIVRYUfkTe8h8oX27QjuIq4K4sQCqfUUYPm/v96
+         UVd3SBIgkViARol4dTIhbzgobeYRz6RxBhgBC19Lnxtncw8u8Sok+3+YMOPts7y7CH
+         pSPZJwpUa0ymMwz26jUUn1V2b1zMTKb0ARSSnvKi3V21WUrEdrvt255nDx/+QdQ03U
+         8XRb/jbSnnnFF49fAihfwShHV2d8ffrOg4pYLaBqe01qjy8bG4qrblRsTsjNGJfXV8
+         yhHqwpkzKYAJYSXdIKMJTjb4x3Vsymg0pP7XnioYdjekLsyFNX5JSkkysWt8fZaYtJ
+         ilE9hqjObFybA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ritesh Harjani <riteshh@linux.ibm.com>, Jan Kara <jack@suse.cz>,
-        Theodore Ts'o <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>,
-        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 03/16] ext4: correct cluster len and clusters changed accounting in ext4_mb_mark_bb
-Date:   Mon, 28 Mar 2022 15:42:46 -0400
-Message-Id: <20220328194300.1586178-3-sashal@kernel.org>
+Cc:     Valentin Schneider <valentin.schneider@arm.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sasha Levin <sashal@kernel.org>, mingo@redhat.com
+Subject: [PATCH AUTOSEL 5.15 06/16] sched/tracing: Report TASK_RTLOCK_WAIT tasks as TASK_UNINTERRUPTIBLE
+Date:   Mon, 28 Mar 2022 15:42:49 -0400
+Message-Id: <20220328194300.1586178-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220328194300.1586178-1-sashal@kernel.org>
 References: <20220328194300.1586178-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -52,79 +56,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ritesh Harjani <riteshh@linux.ibm.com>
+From: Valentin Schneider <valentin.schneider@arm.com>
 
-[ Upstream commit a5c0e2fdf7cea535ba03259894dc184e5a4c2800 ]
+[ Upstream commit 25795ef6299f07ce3838f3253a9cb34f64efcfae ]
 
-ext4_mb_mark_bb() currently wrongly calculates cluster len (clen) and
-flex_group->free_clusters. This patch fixes that.
+TASK_RTLOCK_WAIT currently isn't part of TASK_REPORT, thus a task blocking
+on an rtlock will appear as having a task state == 0, IOW TASK_RUNNING.
 
-Identified based on code review of ext4_mb_mark_bb() function.
+The actual state is saved in p->saved_state, but reading it after reading
+p->__state has a few issues:
+o that could still be TASK_RUNNING in the case of e.g. rt_spin_lock
+o ttwu_state_match() might have changed that to TASK_RUNNING
 
-Signed-off-by: Ritesh Harjani <riteshh@linux.ibm.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/a0b035d536bafa88110b74456853774b64c8ac40.1644992609.git.riteshh@linux.ibm.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+As pointed out by Eric, adding TASK_RTLOCK_WAIT to TASK_REPORT implies
+exposing a new state to userspace tools which way not know what to do with
+them. The only information that needs to be conveyed here is that a task is
+waiting on an rt_mutex, which matches TASK_UNINTERRUPTIBLE - there's no
+need for a new state.
+
+Reported-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Link: https://lore.kernel.org/r/20220120162520.570782-3-valentin.schneider@arm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/mballoc.c | 19 ++++++++++++-------
- 1 file changed, 12 insertions(+), 7 deletions(-)
+ include/linux/sched.h | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
-index 74e3286d0e26..9a749327336f 100644
---- a/fs/ext4/mballoc.c
-+++ b/fs/ext4/mballoc.c
-@@ -3899,10 +3899,11 @@ void ext4_mb_mark_bb(struct super_block *sb, ext4_fsblk_t block,
- 	struct ext4_sb_info *sbi = EXT4_SB(sb);
- 	ext4_group_t group;
- 	ext4_grpblk_t blkoff;
--	int i, clen, err;
-+	int i, err;
- 	int already;
-+	unsigned int clen, clen_changed;
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index 8fcf76fed984..031588cd2ccb 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -1626,6 +1626,14 @@ static inline unsigned int __task_state_index(unsigned int tsk_state,
+ 	if (tsk_state == TASK_IDLE)
+ 		state = TASK_REPORT_IDLE;
  
--	clen = EXT4_B2C(sbi, len);
-+	clen = EXT4_NUM_B2C(sbi, len);
++	/*
++	 * We're lying here, but rather than expose a completely new task state
++	 * to userspace, we can make this appear as if the task has gone through
++	 * a regular rt_mutex_lock() call.
++	 */
++	if (tsk_state == TASK_RTLOCK_WAIT)
++		state = TASK_UNINTERRUPTIBLE;
++
+ 	return fls(state);
+ }
  
- 	ext4_get_group_no_and_offset(sb, block, &group, &blkoff);
- 	bitmap_bh = ext4_read_block_bitmap(sb, group);
-@@ -3923,6 +3924,7 @@ void ext4_mb_mark_bb(struct super_block *sb, ext4_fsblk_t block,
- 		if (!mb_test_bit(blkoff + i, bitmap_bh->b_data) == !state)
- 			already++;
- 
-+	clen_changed = clen - already;
- 	if (state)
- 		ext4_set_bits(bitmap_bh->b_data, blkoff, clen);
- 	else
-@@ -3935,9 +3937,9 @@ void ext4_mb_mark_bb(struct super_block *sb, ext4_fsblk_t block,
- 						group, gdp));
- 	}
- 	if (state)
--		clen = ext4_free_group_clusters(sb, gdp) - clen + already;
-+		clen = ext4_free_group_clusters(sb, gdp) - clen_changed;
- 	else
--		clen = ext4_free_group_clusters(sb, gdp) + clen - already;
-+		clen = ext4_free_group_clusters(sb, gdp) + clen_changed;
- 
- 	ext4_free_group_clusters_set(sb, gdp, clen);
- 	ext4_block_bitmap_csum_set(sb, group, gdp, bitmap_bh);
-@@ -3947,10 +3949,13 @@ void ext4_mb_mark_bb(struct super_block *sb, ext4_fsblk_t block,
- 
- 	if (sbi->s_log_groups_per_flex) {
- 		ext4_group_t flex_group = ext4_flex_group(sbi, group);
-+		struct flex_groups *fg = sbi_array_rcu_deref(sbi,
-+					   s_flex_groups, flex_group);
- 
--		atomic64_sub(len,
--			     &sbi_array_rcu_deref(sbi, s_flex_groups,
--						  flex_group)->free_clusters);
-+		if (state)
-+			atomic64_sub(clen_changed, &fg->free_clusters);
-+		else
-+			atomic64_add(clen_changed, &fg->free_clusters);
- 	}
- 
- 	err = ext4_handle_dirty_metadata(NULL, NULL, bitmap_bh);
 -- 
 2.34.1
 
