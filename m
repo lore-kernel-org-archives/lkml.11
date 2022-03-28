@@ -2,126 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B69A2C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 17:00:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9966C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 17:02:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243919AbiC1RBs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 13:01:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35816 "EHLO
+        id S243949AbiC1REc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 13:04:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234838AbiC1RBq (ORCPT
+        with ESMTP id S234838AbiC1REa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 13:01:46 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8D6460DA8;
-        Mon, 28 Mar 2022 10:00:04 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id j18so21282689wrd.6;
-        Mon, 28 Mar 2022 10:00:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ZEVHtJO6G677L0G9fCsEHBPzXupfvRbVBLDDcKGMsYU=;
-        b=GgFcrGvHeEH9/JlDBJIxdBIaTQg6F3si2q5JnsELpGexfHNINgrEkleEGhZEppLibP
-         BhiiFQMGXwqq50116/Bkk6wogeLJprQ+5bKwzXN+kMaU0pIxxzAAeTfaSVj+EzjxARRe
-         hTZw6+nbuV56dKTaTp0Xqrs5tkC9fEPLbWVzpk9AnrvYhcHTm8e/sCtFI7zmov2sabX9
-         ONkVSc+3F+g2yiueHefAvigIqxij9CEOWQW1aR/CHIiA6ThvCKgZoQpTjGWT39Br2UPV
-         bAMyeKsdacEE4OMzznwTEGpf5Tmu4LaVw2jJGEYt4g19MVPeiUSaDKSsK++gHzHxsCaF
-         8Y5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZEVHtJO6G677L0G9fCsEHBPzXupfvRbVBLDDcKGMsYU=;
-        b=7YXqBeEzFpSstGusFqp57NzZJyd+Qxx0GjMa8CShWBYItLcfIQuJcBS50MaUjLNDGY
-         zzXjAD1xOO2x60eXHEFj6RZYWsssqONx5ftwrMUnoYAqpJU6ts+9t0Cm/46HTodvmKPy
-         CB1QCRO08o1atJaJl1J8ZvR1OWlbFB+m0yTjGGkiWWSQ43x/UY7fecvSpNQS+AVivQEn
-         4yx89lnIsO/VNPe6EY7/lYh66+t89lMxpzFaQgRvVWbYZOVp51kWi56hTsACENc26Sot
-         buiEUqt9wCW45/J21b1O/BMX/9hosS4QLbEPiHnjakccG6B0YSB0fCPEh7nBfiL2QdDm
-         1AOg==
-X-Gm-Message-State: AOAM5314t4FN5Jqa9KExZIRN7144+BF7T9qlx7Aedk+AlDgaib3Qacci
-        2ENrYlDrwuldNzDc9mYVQIo=
-X-Google-Smtp-Source: ABdhPJxzjh9QUSY5wPmlsFXZZNn50r8F3dt/NEaF/KDOVSxLctYdcEXRjycF7pXgfgOk2gK6TCDYyQ==
-X-Received: by 2002:adf:e2cc:0:b0:203:e8ba:c709 with SMTP id d12-20020adfe2cc000000b00203e8bac709mr24899786wrj.713.1648486803349;
-        Mon, 28 Mar 2022 10:00:03 -0700 (PDT)
-Received: from trex (95.red-81-38-138.dynamicip.rima-tde.net. [81.38.138.95])
-        by smtp.gmail.com with ESMTPSA id r12-20020a5d6c6c000000b00203ec2b1255sm16241799wrz.60.2022.03.28.10.00.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Mar 2022 10:00:02 -0700 (PDT)
-From:   "Jorge Ramirez-Ortiz, Gmail" <jorge.ramirez.ortiz@gmail.com>
-X-Google-Original-From: "Jorge Ramirez-Ortiz, Gmail" <JorgeRamirez-Ortiz>
-Date:   Mon, 28 Mar 2022 19:00:01 +0200
-To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Cc:     srinivas.kandagatla@linaro.org, amahesh@qti.qualcomm.com,
-        arnd@arndb.de, gregkh@linuxfoundation.org,
-        jorge.ramirez-ortiz@linaro.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH] misc: fastrpc: fix an incorrect NULL check on list
- iterator
-Message-ID: <20220328170001.GA3040725@trex>
-References: <20220327062202.5720-1-xiam0nd.tong@gmail.com>
-MIME-Version: 1.0
+        Mon, 28 Mar 2022 13:04:30 -0400
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 42D9F62BC8;
+        Mon, 28 Mar 2022 10:02:49 -0700 (PDT)
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 22SGwOb6019521;
+        Mon, 28 Mar 2022 11:58:24 -0500
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 22SGwL89019520;
+        Mon, 28 Mar 2022 11:58:21 -0500
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Mon, 28 Mar 2022 11:58:21 -0500
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Nathan Chancellor <nathan@kernel.org>, x86-ml <x86@kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        linux-toolchains@vger.kernel.org
+Subject: Re: clang memcpy calls
+Message-ID: <20220328165821.GL614@gate.crashing.org>
+References: <YjxTt3pFIcV3lt8I@zn.tnic> <CAKwvOdkw0Bbm+=ZyViXQhBE1L6uSbvkstHJuHpQ21tzJRftgAw@mail.gmail.com> <Yj2yYFloadFobRPx@lakrids> <Yj3OEI+WHV/A5uf8@hirez.programming.kicks-ass.net> <20220325151238.GB614@gate.crashing.org> <YkGFdtn0yDIPqXRl@FVFF77S0Q05N> <20220328142220.GI614@gate.crashing.org> <YkHNArCbWUEojGjL@lakrids> <20220328155957.GK614@gate.crashing.org> <YkHfZbCE0ycVWyxz@hirez.programming.kicks-ass.net>
+Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220327062202.5720-1-xiam0nd.tong@gmail.com>
+In-Reply-To: <YkHfZbCE0ycVWyxz@hirez.programming.kicks-ass.net>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27/03/22, Xiaomeng Tong wrote:
-> The bug is here:
-> 	if (!buf) {
-> 
-> The list iterator value 'buf' will *always* be set and non-NULL
-> by list_for_each_entry(), so it is incorrect to assume that the
-> iterator value will be NULL if the list is empty (in this case, the
-> check 'if (!buf) {' will always be false and never exit expectly).
+On Mon, Mar 28, 2022 at 06:16:37PM +0200, Peter Zijlstra wrote:
+> On Mon, Mar 28, 2022 at 10:59:57AM -0500, Segher Boessenkool wrote:
 
-yes.
+[ Context added back: ]
+> > > My argument is: if the compiler is permitted to implictly and
+> > > arbitrarily add calls to instrumented functions within a function marked
+> > > with `no_sanitize_address`, the `no_sanitize_address` attribute is
+> > > effectively useless, and therefore *something* needs to change.
 
+ > I do not see how that follows.  Maybe that is obvious from how you look
+> > at your use case, but it is not from the viewpoint of people who just
+> > want to do sanitation. 
 > 
-> To fix the bug, use a new variable 'iter' as the list iterator,
-> while use the original variable 'buf' as a dedicated pointer to
-> point to the found element.
+> It's a substitution issue:
+> 
+> either:
+> 
+>   memcpy() equals: "asan instrumentation" + "memcpy implementation"
+> 
+> or:
+> 
+>   memcpy() equals: "memcpy implementation"
+> 
+> It can not be both, since they're not equivalent.
 
-LGTM
+Equivalent in what sense?  ASAN (like any other sanitizer) does not
+change the semantics of valid programs *at all*.  And invalid programs
+do not have semantics, of course.
 
-> 
-> Cc: stable@vger.kernel.org
-> Fixes: 2419e55e532de ("misc: fastrpc: add mmap/unmap support")
-> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-> ---
->  drivers/misc/fastrpc.c | 9 +++++----
->  1 file changed, 5 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
-> index aa1682b94a23..45aaf54a7560 100644
-> --- a/drivers/misc/fastrpc.c
-> +++ b/drivers/misc/fastrpc.c
-> @@ -1353,17 +1353,18 @@ static int fastrpc_req_munmap_impl(struct fastrpc_user *fl,
->  				   struct fastrpc_req_munmap *req)
->  {
->  	struct fastrpc_invoke_args args[1] = { [0] = { 0 } };
-> -	struct fastrpc_buf *buf, *b;
-> +	struct fastrpc_buf *buf = NULL, *iter, *b;
->  	struct fastrpc_munmap_req_msg req_msg;
->  	struct device *dev = fl->sctx->dev;
->  	int err;
->  	u32 sc;
->  
->  	spin_lock(&fl->lock);
-> -	list_for_each_entry_safe(buf, b, &fl->mmaps, node) {
-> -		if ((buf->raddr == req->vaddrout) && (buf->size == req->size))
-> +	list_for_each_entry_safe(iter, b, &fl->mmaps, node) {
-> +		if ((iter->raddr == req->vaddrout) && (iter->size == req->size)) {
-> +			buf = iter;
->  			break;
-> -		buf = NULL;
-> +		}
->  	}
->  	spin_unlock(&fl->lock);
->  
-> -- 
-> 2.17.1
-> 
+> So if the compiler does the substitution, it needs some sense of
+> equivalence. All we're asking is that it be consistent (my preference is
+> for the latter).
 
+If you want to never do sanitation, there is -fno-sanitize=all.  But
+that obviously is not what you want either.
+
+> > So what is the goal here?  Why do you need to
+> > prevent sanitation on anything called from this function, at all cost?
+> 
+> Kernel entry code might not have reached a point where instrumentation
+> assumptions are valid yet. Consider calling into C before the kernel
+> page-tables are swapped in. KASAN instrumentation would insta-explode
+> simply because the environment it expects (the shadow data etc..) isn't
+> there.
+
+Ah.  Something like the proposed global boolean flag would work fine for
+that, afaics?  Have all the asan implementation functions just return
+until the "I am ready now" flag is set.  This is trivial overhead,
+compared to having asan at all!
+
+
+Segher
