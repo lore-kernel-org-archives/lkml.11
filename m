@@ -2,131 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A7A7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 22:41:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62B2BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 22:43:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230041AbiC1WnX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 18:43:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44396 "EHLO
+        id S230071AbiC1Wow (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 18:44:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230036AbiC1WnK (ORCPT
+        with ESMTP id S230036AbiC1Wot (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 18:43:10 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 233AA4CD49
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 15:41:28 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id bq8so17616576ejb.10
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 15:41:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=vSGMUwSwwoLLYmM3DxccJfgGzUMvXUzZDLyfSZkPBWw=;
-        b=hk+wcIWxCLf4sNqsonO3Oh6An8qK1acIBJsIO+BUdTMRg1qwh8Z+EKm6L6lr+xvb7N
-         pyez1YPbgsOCtJsl0mRmxohYAuApCOdJnaGazAqcl/Ibsh9N1G4Gr++le9paiJLXrA/h
-         w4lKCrHz3vW26Yd3ywx7s7bOTRI376tXhj0oo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=vSGMUwSwwoLLYmM3DxccJfgGzUMvXUzZDLyfSZkPBWw=;
-        b=urzO2qaNJEMgSDi7psfnf7ZEvIQV+YtMVQrkv5kb+Oqkn6LeTRXRcTJHo9XUdULGbv
-         f9QKEv15aNO+hVjZFVbExYzd0dfzpQTCbMRY8t9f8kpr/+A2H/cOpqY0rjIdslOfG8BY
-         2cvFP+/AYGf4QaP3wgMZs6iopTz5tlInIF5mI95wGyHmru4Qryely4RjFjoBkbnvjmJf
-         6xoESUyXEfAiITEbZhnC8RXik0TpqWkjKeMsM0uNp8MVWFaA21es8WoRZu3AKl1cDsNC
-         Xg638l5LOBOBy+tY+7lJPcXNFStYC2FLo3M0pQe2R3aLnXE8A6w2fqO4KZqMlCMbURBy
-         tMyA==
-X-Gm-Message-State: AOAM532WYviHvNAcYLinhcKdbiP1+KRFgM+pXzg5VnFiT9JHk4taltr9
-        Q+o9y5PZk/q1F7SPuB6WOcOVRA==
-X-Google-Smtp-Source: ABdhPJzCmwwdGne6xblxUaLuB54XD3pmnlnat+9i9zpry/1AqC/SPqlg5eCYj5c3OqGRlmN8oCynZQ==
-X-Received: by 2002:a17:906:2bd7:b0:6ce:698b:7531 with SMTP id n23-20020a1709062bd700b006ce698b7531mr29710061ejg.146.1648507286741;
-        Mon, 28 Mar 2022 15:41:26 -0700 (PDT)
-Received: from localhost.localdomain ([80.208.64.233])
-        by smtp.gmail.com with ESMTPSA id m3-20020a17090679c300b006cf9ce53354sm6392714ejo.190.2022.03.28.15.41.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Mar 2022 15:41:26 -0700 (PDT)
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Andy Shevchenko <andy@kernel.org>
-Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] lib/string.c: simplify str[c]spn
-Date:   Tue, 29 Mar 2022 00:41:19 +0200
-Message-Id: <20220328224119.3003834-2-linux@rasmusvillemoes.dk>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220328224119.3003834-1-linux@rasmusvillemoes.dk>
-References: <20220328224119.3003834-1-linux@rasmusvillemoes.dk>
+        Mon, 28 Mar 2022 18:44:49 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D8AFA777D;
+        Mon, 28 Mar 2022 15:43:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648507386; x=1680043386;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Go8oxxC6Pe7H7dirXGB5IDnB7EGjXVoNw/QrYHUiyLg=;
+  b=bxqcAUdd0K1vJDJPSOHJqX0NgvsaxJgQUnJ0CL4cczMiRo9ZGsd61eTa
+   NIGtQxo2scKg9aPHk+vUklIMl5VsZoaLcY3tWRWbk5RyXeqCCtF5bsAKh
+   +YdnG0kgoZ2i8Rp7GCPneH8jh5m7O7YbyeDdUqRVyGBj1sy6DliIytPCA
+   SPoC4ELL2MF0RfRb/GyYNcYK4ZAhz1e47lYEQh4uoyotnRRqpEqEc//Xy
+   ea0Qm0xdFo/LjskgCOfLp9NN6Uar9vz0OzwUTanFkndvJbFWI65hEp8Pl
+   3mbfxp4xLxmkHEWMDUG3rorkhPLf+r348dizRPCs9uWI/CjmSCT0UJdto
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="322294628"
+X-IronPort-AV: E=Sophos;i="5.90,218,1643702400"; 
+   d="scan'208";a="322294628"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 14:35:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,218,1643702400"; 
+   d="scan'208";a="564024528"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga008.jf.intel.com with ESMTP; 28 Mar 2022 14:35:51 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nYx1j-0002Kz-6r; Mon, 28 Mar 2022 21:35:51 +0000
+Date:   Tue, 29 Mar 2022 05:34:45 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Frank Li <Frank.Li@nxp.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 03/12] PCI: dwc: Add unroll iATU space support to the
+ regions disable method
+Message-ID: <202203290533.uObikFCd-lkp@intel.com>
+References: <20220324012524.16784-4-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220324012524.16784-4-Sergey.Semin@baikalelectronics.ru>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use strchr(), which makes them a lot shorter, and more obviously
-symmetric in their treatment of accept/reject. It also saves a little
-bit of .text; bloat-o-meter for an arm build says
+Hi Serge,
 
-Function                                     old     new   delta
-strcspn                                       92      76     -16
-strspn                                       108      76     -32
+I love your patch! Perhaps something to improve:
 
-While here, also remove a stray empty line before EXPORT_SYMBOL().
+[auto build test WARNING on helgaas-pci/next]
+[also build test WARNING on v5.17 next-20220328]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
----
- lib/string.c | 25 ++++++-------------------
- 1 file changed, 6 insertions(+), 19 deletions(-)
+url:    https://github.com/intel-lab-lkp/linux/commits/Serge-Semin/PCI-dwc-Various-fixes-and-cleanups/20220328-231112
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git next
+config: arm64-buildonly-randconfig-r004-20220327 (https://download.01.org/0day-ci/archive/20220329/202203290533.uObikFCd-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0f6d9501cf49ce02937099350d08f20c4af86f3d)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/fb5c4386b8af12124d1e7b48bd7f538c12d85100
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Serge-Semin/PCI-dwc-Various-fixes-and-cleanups/20220328-231112
+        git checkout fb5c4386b8af12124d1e7b48bd7f538c12d85100
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/pci/controller/dwc/
 
-diff --git a/lib/string.c b/lib/string.c
-index 485777c9da83..6f334420f687 100644
---- a/lib/string.c
-+++ b/lib/string.c
-@@ -517,21 +517,13 @@ EXPORT_SYMBOL(strnlen);
- size_t strspn(const char *s, const char *accept)
- {
- 	const char *p;
--	const char *a;
--	size_t count = 0;
- 
- 	for (p = s; *p != '\0'; ++p) {
--		for (a = accept; *a != '\0'; ++a) {
--			if (*p == *a)
--				break;
--		}
--		if (*a == '\0')
--			return count;
--		++count;
-+		if (!strchr(accept, *p))
-+			break;
- 	}
--	return count;
-+	return p - s;
- }
--
- EXPORT_SYMBOL(strspn);
- #endif
- 
-@@ -544,17 +536,12 @@ EXPORT_SYMBOL(strspn);
- size_t strcspn(const char *s, const char *reject)
- {
- 	const char *p;
--	const char *r;
--	size_t count = 0;
- 
- 	for (p = s; *p != '\0'; ++p) {
--		for (r = reject; *r != '\0'; ++r) {
--			if (*p == *r)
--				return count;
--		}
--		++count;
-+		if (strchr(reject, *p))
-+			break;
- 	}
--	return count;
-+	return p - s;
- }
- EXPORT_SYMBOL(strcspn);
- #endif
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/pci/controller/dwc/pcie-designware.c:508:14: warning: result of comparison of constant 2147483648 with expression of type 'int' is always false [-Wtautological-constant-out-of-range-compare]
+                   if (region == PCIE_ATU_REGION_INBOUND) {
+                       ~~~~~~ ^  ~~~~~~~~~~~~~~~~~~~~~~~
+   1 warning generated.
+
+
+vim +/int +508 drivers/pci/controller/dwc/pcie-designware.c
+
+   490	
+   491	void dw_pcie_disable_atu(struct dw_pcie *pci, int index,
+   492				 enum dw_pcie_region_type type)
+   493	{
+   494		int region;
+   495	
+   496		switch (type) {
+   497		case DW_PCIE_REGION_INBOUND:
+   498			region = PCIE_ATU_REGION_INBOUND;
+   499			break;
+   500		case DW_PCIE_REGION_OUTBOUND:
+   501			region = PCIE_ATU_REGION_OUTBOUND;
+   502			break;
+   503		default:
+   504			return;
+   505		}
+   506	
+   507		if (pci->iatu_unroll_enabled) {
+ > 508			if (region == PCIE_ATU_REGION_INBOUND) {
+   509				dw_pcie_writel_ib_unroll(pci, index, PCIE_ATU_UNR_REGION_CTRL2,
+   510							 ~(u32)PCIE_ATU_ENABLE);
+   511			} else {
+   512				dw_pcie_writel_ob_unroll(pci, index, PCIE_ATU_UNR_REGION_CTRL2,
+   513							 ~(u32)PCIE_ATU_ENABLE);
+   514			}
+   515		} else {
+   516			dw_pcie_writel_dbi(pci, PCIE_ATU_VIEWPORT, region | index);
+   517			dw_pcie_writel_dbi(pci, PCIE_ATU_CR2, ~(u32)PCIE_ATU_ENABLE);
+   518		}
+   519	}
+   520	
+
 -- 
-2.31.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
