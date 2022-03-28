@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE781C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 07:03:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC583C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 07:04:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238701AbiC1HFe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 03:05:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41924 "EHLO
+        id S238737AbiC1HFi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 03:05:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238703AbiC1HFb (ORCPT
+        with ESMTP id S238684AbiC1HFc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 03:05:31 -0400
+        Mon, 28 Mar 2022 03:05:32 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DABD71261E;
-        Mon, 28 Mar 2022 00:03:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34B9F12776;
+        Mon, 28 Mar 2022 00:03:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47A56B80EAE;
-        Mon, 28 Mar 2022 07:03:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8B10C004DD;
-        Mon, 28 Mar 2022 07:03:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6427EB80EB0;
+        Mon, 28 Mar 2022 07:03:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1471C004DD;
+        Mon, 28 Mar 2022 07:03:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648451017;
-        bh=QhFYaqznr3dNlC2INKhH0CRKvCR9ITmbq31aRaKIoLQ=;
+        s=korg; t=1648451020;
+        bh=VXXSUxW+VVjNuHQgDjjpeCwKJudXg+Gybmr2NZREo/w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FVIK6a58wPxzBMA7lo2ed5RzWR6FXOM84gs41R0jgheDxKwxBFwerdbnJdOY1drGB
-         asoAtMjBLjlFeRd2Q5ElmDLWlzc2JSriluwJMZfCBtTo+fCy1R94duM+ESclNxPxoz
-         Oey+UoLDzylGV/bP+OtqPcWCoRG+BDmlenYgJxa0=
+        b=m6mDg9BEw1WzA+iGPiI5NZwWk4k3oaNpIFc2aw1XeAjen4ys0IAeXiY13Ak90YglC
+         8qFe0xsT4Y+ACeey/RCny9/1xeaLAQ9XLDC7zZmzpF6iKZK6HblUFuvs7K6TKGleSv
+         q41pzAtG8LtRDcOXNpM5REz3u7a7Ip5fc34VcJds=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
         torvalds@linux-foundation.org, stable@vger.kernel.org
 Cc:     lwn@lwn.net, jslaby@suse.cz,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: Linux 4.14.274
-Date:   Mon, 28 Mar 2022 09:03:26 +0200
-Message-Id: <164845100517279@kroah.com>
+Subject: Re: Linux 4.19.237
+Date:   Mon, 28 Mar 2022 09:03:31 +0200
+Message-Id: <164845101091109@kroah.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <1648451005138218@kroah.com>
-References: <1648451005138218@kroah.com>
+In-Reply-To: <1648451010213@kroah.com>
+References: <1648451010213@kroah.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -47,23 +47,74 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 diff --git a/Makefile b/Makefile
-index bc909859dd8b..a06abc38f35d 100644
+index d83513c13520..834336f971c1 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,7 +1,7 @@
  # SPDX-License-Identifier: GPL-2.0
  VERSION = 4
- PATCHLEVEL = 14
--SUBLEVEL = 273
-+SUBLEVEL = 274
+ PATCHLEVEL = 19
+-SUBLEVEL = 236
++SUBLEVEL = 237
  EXTRAVERSION =
- NAME = Petit Gorille
+ NAME = "People's Front"
+ 
+diff --git a/arch/nds32/include/asm/uaccess.h b/arch/nds32/include/asm/uaccess.h
+index 362a32d9bd16..c8b4b8cc6529 100644
+--- a/arch/nds32/include/asm/uaccess.h
++++ b/arch/nds32/include/asm/uaccess.h
+@@ -75,9 +75,7 @@ static inline void set_fs(mm_segment_t fs)
+  * versions are void (ie, don't return a value as such).
+  */
+ 
+-#define get_user	__get_user					\
+-
+-#define __get_user(x, ptr)						\
++#define get_user(x, ptr)						\
+ ({									\
+ 	long __gu_err = 0;						\
+ 	__get_user_check((x), (ptr), __gu_err);				\
+@@ -90,6 +88,14 @@ static inline void set_fs(mm_segment_t fs)
+ 	(void)0;							\
+ })
+ 
++#define __get_user(x, ptr)						\
++({									\
++	long __gu_err = 0;						\
++	const __typeof__(*(ptr)) __user *__p = (ptr);			\
++	__get_user_err((x), __p, (__gu_err));				\
++	__gu_err;							\
++})
++
+ #define __get_user_check(x, ptr, err)					\
+ ({									\
+ 	const __typeof__(*(ptr)) __user *__p = (ptr);			\
+@@ -170,12 +176,18 @@ do {									\
+ 		: "r"(addr), "i"(-EFAULT)				\
+ 		: "cc")
+ 
+-#define put_user	__put_user					\
++#define put_user(x, ptr)						\
++({									\
++	long __pu_err = 0;						\
++	__put_user_check((x), (ptr), __pu_err);				\
++	__pu_err;							\
++})
+ 
+ #define __put_user(x, ptr)						\
+ ({									\
+ 	long __pu_err = 0;						\
+-	__put_user_err((x), (ptr), __pu_err);				\
++	__typeof__(*(ptr)) __user *__p = (ptr);				\
++	__put_user_err((x), __p, __pu_err);				\
+ 	__pu_err;							\
+ })
  
 diff --git a/arch/x86/kernel/acpi/boot.c b/arch/x86/kernel/acpi/boot.c
-index 3613681b49cf..fd9c4479880d 100644
+index b35c34cfbe52..8b1aa1206d98 100644
 --- a/arch/x86/kernel/acpi/boot.c
 +++ b/arch/x86/kernel/acpi/boot.c
-@@ -1343,6 +1343,17 @@ static int __init disable_acpi_pci(const struct dmi_system_id *d)
+@@ -1351,6 +1351,17 @@ static int __init disable_acpi_pci(const struct dmi_system_id *d)
  	return 0;
  }
  
@@ -81,7 +132,7 @@ index 3613681b49cf..fd9c4479880d 100644
  static int __init dmi_disable_acpi(const struct dmi_system_id *d)
  {
  	if (!acpi_force) {
-@@ -1463,6 +1474,19 @@ static const struct dmi_system_id acpi_dmi_table[] __initconst = {
+@@ -1475,6 +1486,19 @@ static const struct dmi_system_id acpi_dmi_table[] __initconst = {
  		     DMI_MATCH(DMI_PRODUCT_NAME, "TravelMate 360"),
  		     },
  	 },
@@ -102,10 +153,10 @@ index 3613681b49cf..fd9c4479880d 100644
  };
  
 diff --git a/drivers/acpi/battery.c b/drivers/acpi/battery.c
-index 30996effc491..42fba8493854 100644
+index d4e42a578e18..c0c533206e02 100644
 --- a/drivers/acpi/battery.c
 +++ b/drivers/acpi/battery.c
-@@ -89,6 +89,10 @@ enum acpi_battery_files {
+@@ -90,6 +90,10 @@ extern void *acpi_unlock_battery_dir(struct proc_dir_entry *acpi_battery_dir);
  
  static const struct acpi_device_id battery_device_ids[] = {
  	{"PNP0C0A", 0},
@@ -116,8 +167,8 @@ index 30996effc491..42fba8493854 100644
  	{"", 0},
  };
  
-@@ -1183,6 +1187,14 @@ static const struct dmi_system_id bat_dmi_table[] __initconst = {
- 			DMI_MATCH(DMI_PRODUCT_NAME, "Aspire V5-573G"),
+@@ -1416,6 +1420,14 @@ static const struct dmi_system_id bat_dmi_table[] __initconst = {
+ 			DMI_MATCH(DMI_PRODUCT_VERSION, "ThinkPad"),
  		},
  	},
 +	{
@@ -268,10 +319,10 @@ index 3a489b2b99c9..86811de191ed 100644
  	slots = page_pool->slots - 1;
  	head = page_pool->head;
 diff --git a/drivers/nfc/st21nfca/se.c b/drivers/nfc/st21nfca/se.c
-index eac608a457f0..475f8a67856d 100644
+index fd967a38a94a..ced3c20d6453 100644
 --- a/drivers/nfc/st21nfca/se.c
 +++ b/drivers/nfc/st21nfca/se.c
-@@ -330,6 +330,11 @@ int st21nfca_connectivity_event_received(struct nfc_hci_dev *hdev, u8 host,
+@@ -332,6 +332,11 @@ int st21nfca_connectivity_event_received(struct nfc_hci_dev *hdev, u8 host,
  			return -ENOMEM;
  
  		transaction->aid_len = skb->data[1];
@@ -283,7 +334,7 @@ index eac608a457f0..475f8a67856d 100644
  		memcpy(transaction->aid, &skb->data[2],
  		       transaction->aid_len);
  
-@@ -339,6 +344,11 @@ int st21nfca_connectivity_event_received(struct nfc_hci_dev *hdev, u8 host,
+@@ -341,6 +346,11 @@ int st21nfca_connectivity_event_received(struct nfc_hci_dev *hdev, u8 host,
  			return -EPROTO;
  
  		transaction->params_len = skb->data[transaction->aid_len + 3];
@@ -296,10 +347,10 @@ index eac608a457f0..475f8a67856d 100644
  		       transaction->aid_len + 4, transaction->params_len);
  
 diff --git a/drivers/staging/fbtft/fb_st7789v.c b/drivers/staging/fbtft/fb_st7789v.c
-index a5d7c87557f8..b790b18de98b 100644
+index 3c3f387936e8..30086ae03605 100644
 --- a/drivers/staging/fbtft/fb_st7789v.c
 +++ b/drivers/staging/fbtft/fb_st7789v.c
-@@ -85,6 +85,8 @@ enum st7789v_command {
+@@ -76,6 +76,8 @@ enum st7789v_command {
   */
  static int init_display(struct fbtft_par *par)
  {
@@ -309,7 +360,7 @@ index a5d7c87557f8..b790b18de98b 100644
  	write_reg(par, MIPI_DCS_EXIT_SLEEP_MODE);
  	mdelay(120);
 diff --git a/drivers/thermal/int340x_thermal/int3400_thermal.c b/drivers/thermal/int340x_thermal/int3400_thermal.c
-index 4a20f4d47b1d..d7cd86116084 100644
+index e9d58de8b5da..77967da5d406 100644
 --- a/drivers/thermal/int340x_thermal/int3400_thermal.c
 +++ b/drivers/thermal/int340x_thermal/int3400_thermal.c
 @@ -223,6 +223,10 @@ static void int3400_notify(acpi_handle handle,
@@ -322,7 +373,7 @@ index 4a20f4d47b1d..d7cd86116084 100644
 +		kfree(thermal_prop[3]);
  		break;
  	default:
- 		dev_err(&priv->adev->dev, "Unsupported event [0x%x]\n", event);
+ 		/* Ignore unknown notification codes sent to INT3400 device */
 diff --git a/include/net/esp.h b/include/net/esp.h
 index 117652eb6ea3..465e38890ee9 100644
 --- a/include/net/esp.h
@@ -337,22 +388,24 @@ index 117652eb6ea3..465e38890ee9 100644
  
  static inline struct ip_esp_hdr *ip_esp_hdr(const struct sk_buff *skb)
 diff --git a/include/net/sock.h b/include/net/sock.h
-index 029df5cdeaf1..f72753391acc 100644
+index 75677050c82e..2bf8dcf863f2 100644
 --- a/include/net/sock.h
 +++ b/include/net/sock.h
-@@ -2438,4 +2438,7 @@ extern int sysctl_optmem_max;
+@@ -2518,6 +2518,9 @@ extern int sysctl_optmem_max;
  extern __u32 sysctl_wmem_default;
  extern __u32 sysctl_rmem_default;
  
 +/* On 32bit arches, an skb frag is limited to 2^15 */
 +#define SKB_FRAG_PAGE_ORDER	get_order(32768)
 +
- #endif	/* _SOCK_H */
+ static inline int sk_get_wmem0(const struct sock *sk, const struct proto *proto)
+ {
+ 	/* Does this proto have per netns sysctl_wmem ? */
 diff --git a/net/core/sock.c b/net/core/sock.c
-index 427024597204..bbf9517218ff 100644
+index 41a77027a549..79f085df52ce 100644
 --- a/net/core/sock.c
 +++ b/net/core/sock.c
-@@ -2193,9 +2193,6 @@ static void sk_leave_memory_pressure(struct sock *sk)
+@@ -2207,9 +2207,6 @@ static void sk_leave_memory_pressure(struct sock *sk)
  	}
  }
  
@@ -363,10 +416,10 @@ index 427024597204..bbf9517218ff 100644
   * skb_page_frag_refill - check that a page_frag contains enough room
   * @sz: minimum size of the fragment we want to get
 diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
-index 9e664b6cef13..38e2aa2b2a31 100644
+index 0792a9e2a555..45bb5b60b994 100644
 --- a/net/ipv4/esp4.c
 +++ b/net/ipv4/esp4.c
-@@ -257,6 +257,7 @@ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
+@@ -275,6 +275,7 @@ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
  	struct page *page;
  	struct sk_buff *trailer;
  	int tailen = esp->tailen;
@@ -374,7 +427,7 @@ index 9e664b6cef13..38e2aa2b2a31 100644
  
  	/* this is non-NULL only with UDP Encapsulation */
  	if (x->encap) {
-@@ -266,6 +267,10 @@ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
+@@ -284,6 +285,10 @@ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
  			return err;
  	}
  
@@ -386,10 +439,10 @@ index 9e664b6cef13..38e2aa2b2a31 100644
  		if (tailen <= skb_tailroom(skb)) {
  			nfrags = 1;
 diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
-index dd1f4ed3fc2b..a9baf562bb9b 100644
+index 25317d5ccf2c..e3abfc97fde7 100644
 --- a/net/ipv6/esp6.c
 +++ b/net/ipv6/esp6.c
-@@ -223,6 +223,11 @@ int esp6_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info
+@@ -241,6 +241,11 @@ int esp6_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info
  	struct page *page;
  	struct sk_buff *trailer;
  	int tailen = esp->tailen;
@@ -402,10 +455,10 @@ index dd1f4ed3fc2b..a9baf562bb9b 100644
  	if (!skb_cloned(skb)) {
  		if (tailen <= skb_tailroom(skb)) {
 diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index c474e4b4c4bb..fbad7828568f 100644
+index fd496bda7ec7..373df391dc93 100644
 --- a/net/ipv6/ip6_output.c
 +++ b/net/ipv6/ip6_output.c
-@@ -1321,8 +1321,8 @@ static int __ip6_append_data(struct sock *sk,
+@@ -1325,8 +1325,8 @@ static int __ip6_append_data(struct sock *sk,
  		      sizeof(struct frag_hdr) : 0) +
  		     rt->rt6i_nfheader_len;
  
@@ -417,7 +470,7 @@ index c474e4b4c4bb..fbad7828568f 100644
  
  	maxfraglen = ((mtu - fragheaderlen) & ~7) + fragheaderlen -
 diff --git a/net/llc/af_llc.c b/net/llc/af_llc.c
-index ec48fb3fd30e..1e20b719fb3c 100644
+index 89a3dc7d5d40..5cba9199c3c9 100644
 --- a/net/llc/af_llc.c
 +++ b/net/llc/af_llc.c
 @@ -276,6 +276,7 @@ static int llc_ui_autobind(struct socket *sock, struct sockaddr_llc *addr)
@@ -536,10 +589,10 @@ index ec48fb3fd30e..1e20b719fb3c 100644
  	return rc;
  }
 diff --git a/net/mac80211/cfg.c b/net/mac80211/cfg.c
-index 3b3ed96c19e5..f769b08e6f2a 100644
+index 6804cdd43bef..9348caf1c611 100644
 --- a/net/mac80211/cfg.c
 +++ b/net/mac80211/cfg.c
-@@ -1811,13 +1811,11 @@ static int copy_mesh_setup(struct ieee80211_if_mesh *ifmsh,
+@@ -1823,13 +1823,11 @@ static int copy_mesh_setup(struct ieee80211_if_mesh *ifmsh,
  		const struct mesh_setup *setup)
  {
  	u8 *new_ie;
@@ -553,7 +606,7 @@ index 3b3ed96c19e5..f769b08e6f2a 100644
  
  	if (setup->ie_len) {
  		new_ie = kmemdup(setup->ie, setup->ie_len,
-@@ -1827,7 +1825,6 @@ static int copy_mesh_setup(struct ieee80211_if_mesh *ifmsh,
+@@ -1839,7 +1837,6 @@ static int copy_mesh_setup(struct ieee80211_if_mesh *ifmsh,
  	}
  	ifmsh->ie_len = setup->ie_len;
  	ifmsh->ie = new_ie;
@@ -562,23 +615,69 @@ index 3b3ed96c19e5..f769b08e6f2a 100644
  	/* now copy the rest of the setup parameters */
  	ifmsh->mesh_id_len = setup->mesh_id_len;
 diff --git a/net/netfilter/nf_tables_core.c b/net/netfilter/nf_tables_core.c
-index 32b7896929f3..7d60fa57bf80 100644
+index a3850414dba2..7dfaad783cd5 100644
 --- a/net/netfilter/nf_tables_core.c
 +++ b/net/netfilter/nf_tables_core.c
-@@ -150,7 +150,7 @@ nft_do_chain(struct nft_pktinfo *pkt, void *priv)
- 	const struct net *net = nft_net(pkt);
+@@ -144,7 +144,7 @@ nft_do_chain(struct nft_pktinfo *pkt, void *priv)
+ 	struct nft_rule *const *rules;
  	const struct nft_rule *rule;
  	const struct nft_expr *expr, *last;
 -	struct nft_regs regs;
 +	struct nft_regs regs = {};
  	unsigned int stackptr = 0;
  	struct nft_jumpstack jumpstack[NFT_JUMP_STACK_SIZE];
- 	int rulenum;
+ 	bool genbit = READ_ONCE(net->nft.gencursor);
+diff --git a/sound/core/oss/pcm_oss.c b/sound/core/oss/pcm_oss.c
+index cd68a0ae82d3..c85fa85285d9 100644
+--- a/sound/core/oss/pcm_oss.c
++++ b/sound/core/oss/pcm_oss.c
+@@ -789,6 +789,11 @@ static int snd_pcm_oss_period_size(struct snd_pcm_substream *substream,
+ 
+ 	if (oss_period_size < 16)
+ 		return -EINVAL;
++
++	/* don't allocate too large period; 1MB period must be enough */
++	if (oss_period_size > 1024 * 1024)
++		return -ENOMEM;
++
+ 	runtime->oss.period_bytes = oss_period_size;
+ 	runtime->oss.period_frames = 1;
+ 	runtime->oss.periods = oss_periods;
+@@ -1060,10 +1065,9 @@ static int snd_pcm_oss_change_params_locked(struct snd_pcm_substream *substream)
+ 			goto failure;
+ 	}
+ #endif
+-	oss_period_size *= oss_frame_size;
+-
+-	oss_buffer_size = oss_period_size * runtime->oss.periods;
+-	if (oss_buffer_size < 0) {
++	oss_period_size = array_size(oss_period_size, oss_frame_size);
++	oss_buffer_size = array_size(oss_period_size, runtime->oss.periods);
++	if (oss_buffer_size <= 0) {
+ 		err = -EINVAL;
+ 		goto failure;
+ 	}
+diff --git a/sound/core/oss/pcm_plugin.c b/sound/core/oss/pcm_plugin.c
+index da400da1fafe..8b7bbabeea24 100644
+--- a/sound/core/oss/pcm_plugin.c
++++ b/sound/core/oss/pcm_plugin.c
+@@ -61,7 +61,10 @@ static int snd_pcm_plugin_alloc(struct snd_pcm_plugin *plugin, snd_pcm_uframes_t
+ 	}
+ 	if ((width = snd_pcm_format_physical_width(format->format)) < 0)
+ 		return width;
+-	size = frames * format->channels * width;
++	size = array3_size(frames, format->channels, width);
++	/* check for too large period size once again */
++	if (size > 1024 * 1024)
++		return -ENOMEM;
+ 	if (snd_BUG_ON(size % 8))
+ 		return -ENXIO;
+ 	size /= 8;
 diff --git a/sound/core/pcm_native.c b/sound/core/pcm_native.c
-index c78db361cbba..c530d008fe01 100644
+index db62dbe7eaa8..c92eca627840 100644
 --- a/sound/core/pcm_native.c
 +++ b/sound/core/pcm_native.c
-@@ -1616,21 +1616,25 @@ static int snd_pcm_do_reset(struct snd_pcm_substream *substream, int state)
+@@ -1648,21 +1648,25 @@ static int snd_pcm_do_reset(struct snd_pcm_substream *substream, int state)
  	int err = substream->ops->ioctl(substream, SNDRV_PCM_IOCTL1_RESET, NULL);
  	if (err < 0)
  		return err;
@@ -605,7 +704,7 @@ index c78db361cbba..c530d008fe01 100644
  
  static const struct action_ops snd_pcm_action_reset = {
 diff --git a/sound/pci/ac97/ac97_codec.c b/sound/pci/ac97/ac97_codec.c
-index 38f355ae1863..1cb2a1ecf3cf 100644
+index 27b468f057dd..34d75d4fb93f 100644
 --- a/sound/pci/ac97/ac97_codec.c
 +++ b/sound/pci/ac97/ac97_codec.c
 @@ -958,8 +958,8 @@ static int snd_ac97_ad18xx_pcm_get_volume(struct snd_kcontrol *kcontrol, struct
@@ -620,7 +719,7 @@ index 38f355ae1863..1cb2a1ecf3cf 100644
  	return 0;
  }
 diff --git a/sound/pci/cmipci.c b/sound/pci/cmipci.c
-index 26a657870664..3d0f8f31b2e5 100644
+index 452cc79b44af..79df78a7ec56 100644
 --- a/sound/pci/cmipci.c
 +++ b/sound/pci/cmipci.c
 @@ -315,7 +315,6 @@ MODULE_PARM_DESC(joystick_port, "Joystick port address.");
@@ -640,11 +739,55 @@ index 26a657870664..3d0f8f31b2e5 100644
  	CM_REG_CH0_FRAME1, CM_REG_CH0_FRAME2,
  	CM_REG_CH1_FRAME1, CM_REG_CH1_FRAME2, CM_REG_EXT_MISC,
  	CM_REG_INT_STATUS, CM_REG_INT_HLDCLR, CM_REG_FUNCTRL0,
+diff --git a/sound/soc/sti/uniperif_player.c b/sound/soc/sti/uniperif_player.c
+index 4b0beb372cd9..908f13623f8c 100644
+--- a/sound/soc/sti/uniperif_player.c
++++ b/sound/soc/sti/uniperif_player.c
+@@ -91,7 +91,7 @@ static irqreturn_t uni_player_irq_handler(int irq, void *dev_id)
+ 			SET_UNIPERIF_ITM_BCLR_FIFO_ERROR(player);
+ 
+ 			/* Stop the player */
+-			snd_pcm_stop_xrun(player->substream);
++			snd_pcm_stop(player->substream, SNDRV_PCM_STATE_XRUN);
+ 		}
+ 
+ 		ret = IRQ_HANDLED;
+@@ -105,7 +105,7 @@ static irqreturn_t uni_player_irq_handler(int irq, void *dev_id)
+ 		SET_UNIPERIF_ITM_BCLR_DMA_ERROR(player);
+ 
+ 		/* Stop the player */
+-		snd_pcm_stop_xrun(player->substream);
++		snd_pcm_stop(player->substream, SNDRV_PCM_STATE_XRUN);
+ 
+ 		ret = IRQ_HANDLED;
+ 	}
+@@ -138,7 +138,7 @@ static irqreturn_t uni_player_irq_handler(int irq, void *dev_id)
+ 		dev_err(player->dev, "Underflow recovery failed\n");
+ 
+ 		/* Stop the player */
+-		snd_pcm_stop_xrun(player->substream);
++		snd_pcm_stop(player->substream, SNDRV_PCM_STATE_XRUN);
+ 
+ 		ret = IRQ_HANDLED;
+ 	}
+diff --git a/sound/soc/sti/uniperif_reader.c b/sound/soc/sti/uniperif_reader.c
+index 7b63d35ef428..ee0055e60852 100644
+--- a/sound/soc/sti/uniperif_reader.c
++++ b/sound/soc/sti/uniperif_reader.c
+@@ -65,7 +65,7 @@ static irqreturn_t uni_reader_irq_handler(int irq, void *dev_id)
+ 	if (unlikely(status & UNIPERIF_ITS_FIFO_ERROR_MASK(reader))) {
+ 		dev_err(reader->dev, "FIFO error detected\n");
+ 
+-		snd_pcm_stop_xrun(reader->substream);
++		snd_pcm_stop(reader->substream, SNDRV_PCM_STATE_XRUN);
+ 
+ 		ret = IRQ_HANDLED;
+ 	}
 diff --git a/sound/usb/mixer_quirks.c b/sound/usb/mixer_quirks.c
-index d7878ed5ecc0..a84d3c9254d5 100644
+index a74e07eff60c..3bb89fcaa2f5 100644
 --- a/sound/usb/mixer_quirks.c
 +++ b/sound/usb/mixer_quirks.c
-@@ -1884,9 +1884,10 @@ void snd_usb_mixer_fu_apply_quirk(struct usb_mixer_interface *mixer,
+@@ -1997,9 +1997,10 @@ void snd_usb_mixer_fu_apply_quirk(struct usb_mixer_interface *mixer,
  		if (unitid == 7 && cval->control == UAC_FU_VOLUME)
  			snd_dragonfly_quirk_db_scale(mixer, cval, kctl);
  		break;
