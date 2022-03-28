@@ -2,115 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D6B8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 20:49:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7684AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 20:49:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345680AbiC1Uul (ORCPT
+        id S1345753AbiC1Uuo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 16:50:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51736 "EHLO
+        Mon, 28 Mar 2022 16:50:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346295AbiC1Us1 (ORCPT
+        with ESMTP id S1346422AbiC1Usl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 16:48:27 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5429E6BDF4
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 13:46:00 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Mon, 28 Mar 2022 16:48:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E5A63DEC4
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 13:46:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648500418;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+j0F+pjj0JcJKM7ihopqWQCEovqqfXkw1HkKI4nUXYk=;
+        b=MxPRXWRsUUcTaXUedFSs1kUsuudMnmLBL7y3heflcAEFS51ikasAGy4XZRDuQymUXMHjob
+        VvbyIf3OdXuEytrXYA4Ua47RNwVZPhnSWPj9NEQiUuA+Lk4595mGnwp/sMGbBusZNd9hRg
+        FYJkx4ohiFQpa9Lf0e2qsnRTfH7f+x0=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-428-pv8RJBa8Pjq0LT3-dVzq8Q-1; Mon, 28 Mar 2022 16:46:56 -0400
+X-MC-Unique: pv8RJBa8Pjq0LT3-dVzq8Q-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id CE2E01F866;
-        Mon, 28 Mar 2022 20:45:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1648500358; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=X6NIxGNottqljoTasC6vRjEbRw8uZfFfQW5dJ7q06EE=;
-        b=0nlol1R2bRwpSjdo6iljCXyGvsJZ9rqc4M5SZkH7VHMIk+oKL/db9qNTZr53F3PMd7RW4K
-        fj7EJYrYC3GcUgm5WB0r0gjKttGguU0iOChVgcnFdAL9QOmjU7UxcxcGrX8qoZXt2InNb6
-        xX24HHVgL0AR6cweuMjQQHz4ETffyB4=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1648500358;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=X6NIxGNottqljoTasC6vRjEbRw8uZfFfQW5dJ7q06EE=;
-        b=REBhHBKOTDn3Nt/pTVAKvNYOwcut5kaaYYn64pB/Ag2CuiY/scNaWxuamuT0vGVx4gpqMf
-        3YFMv8QRD7a2CgCA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 926411332D;
-        Mon, 28 Mar 2022 20:45:58 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id ZSc4IYYeQmLIUgAAMHmgww
-        (envelope-from <pvorel@suse.cz>); Mon, 28 Mar 2022 20:45:58 +0000
-From:   Petr Vorel <pvorel@suse.cz>
-To:     linux-kernel@vger.kernel.org
-Cc:     Petr Vorel <pvorel@suse.cz>, Cyril Hrubis <chrubis@suse.cz>,
-        Andrea Cervesato <andrea.cervesato@suse.de>
-Subject: [PATCH v2 1/1] lib: Retry safe_clone() on ENOSPC|EUSERS
-Date:   Mon, 28 Mar 2022 22:45:54 +0200
-Message-Id: <20220328204554.2528-1-pvorel@suse.cz>
-X-Mailer: git-send-email 2.35.1
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A896A899ED0;
+        Mon, 28 Mar 2022 20:46:55 +0000 (UTC)
+Received: from [10.18.17.215] (dhcp-17-215.bos.redhat.com [10.18.17.215])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7DC7D2166B3F;
+        Mon, 28 Mar 2022 20:46:44 +0000 (UTC)
+Message-ID: <5aa687c4-2888-7977-8c1a-d51384e685aa@redhat.com>
+Date:   Mon, 28 Mar 2022 16:46:39 -0400
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH-mm v3] mm/list_lru: Optimize
+ memcg_reparent_list_lru_node()
+Content-Language: en-US
+To:     Roman Gushchin <roman.gushchin@linux.dev>
+Cc:     Muchun Song <songmuchun@bytedance.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220309144000.1470138-1-longman@redhat.com>
+ <CAMZfGtWS581YW4Y8oNU=E_zPnpK=mMdYVSG1F3U3fJNAzBzc+g@mail.gmail.com>
+ <2263666d-5eef-b1fe-d5e3-b166a3185263@redhat.com>
+ <CAMZfGtVG2YcmxY0fECkAYNb=sKXJQhWJqgtMTEpQwxXEXmSOLw@mail.gmail.com>
+ <e93696b7-b678-6f41-9c1e-46aad447ce8d@redhat.com>
+ <YkIIjGk5t4XorQXe@carbon.dhcp.thefacebook.com>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <YkIIjGk5t4XorQXe@carbon.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In some tests we are creating the namespaces faster than they are being
-asynchronously cleaned up in the kernel:
+On 3/28/22 15:12, Roman Gushchin wrote:
+> On Sun, Mar 27, 2022 at 08:57:15PM -0400, Waiman Long wrote:
+>> On 3/22/22 22:12, Muchun Song wrote:
+>>> On Wed, Mar 23, 2022 at 9:55 AM Waiman Long <longman@redhat.com> wrote:
+>>>> On 3/22/22 21:06, Muchun Song wrote:
+>>>>> On Wed, Mar 9, 2022 at 10:40 PM Waiman Long <longman@redhat.com> wrote:
+>>>>>> Since commit 2c80cd57c743 ("mm/list_lru.c: fix list_lru_count_node()
+>>>>>> to be race free"), we are tracking the total number of lru
+>>>>>> entries in a list_lru_node in its nr_items field.  In the case of
+>>>>>> memcg_reparent_list_lru_node(), there is nothing to be done if nr_items
+>>>>>> is 0.  We don't even need to take the nlru->lock as no new lru entry
+>>>>>> could be added by a racing list_lru_add() to the draining src_idx memcg
+>>>>>> at this point.
+>>>>> Hi Waiman,
+>>>>>
+>>>>> Sorry for the late reply.  Quick question: what if there is an inflight
+>>>>> list_lru_add()?  How about the following race?
+>>>>>
+>>>>> CPU0:                               CPU1:
+>>>>> list_lru_add()
+>>>>>        spin_lock(&nlru->lock)
+>>>>>        l = list_lru_from_kmem(memcg)
+>>>>>                                        memcg_reparent_objcgs(memcg)
+>>>>>                                        memcg_reparent_list_lrus(memcg)
+>>>>>                                            memcg_reparent_list_lru()
+>>>>>                                                memcg_reparent_list_lru_node()
+>>>>>                                                    if (!READ_ONCE(nlru->nr_items))
+>>>>>                                                        // Miss reparenting
+>>>>>                                                        return
+>>>>>        // Assume 0->1
+>>>>>        l->nr_items++
+>>>>>        // Assume 0->1
+>>>>>        nlru->nr_items++
+>>>>>
+>>>>> IIUC, we use nlru->lock to serialise this scenario.
+>>>> I guess this race is theoretically possible but very unlikely since it
+>>>> means a very long pause between list_lru_from_kmem() and the increment
+>>>> of nr_items.
+>>> It is more possible in a VM.
+>>>
+>>>> How about the following changes to make sure that this race can't happen?
+>>>>
+>>>> diff --git a/mm/list_lru.c b/mm/list_lru.c
+>>>> index c669d87001a6..c31a0a8ad4e7 100644
+>>>> --- a/mm/list_lru.c
+>>>> +++ b/mm/list_lru.c
+>>>> @@ -395,9 +395,10 @@ static void memcg_reparent_list_lru_node(struct
+>>>> list_lru *lru, int nid,
+>>>>            struct list_lru_one *src, *dst;
+>>>>
+>>>>            /*
+>>>> -        * If there is no lru entry in this nlru, we can skip it
+>>>> immediately.
+>>>> +        * If there is no lru entry in this nlru and the nlru->lock is free,
+>>>> +        * we can skip it immediately.
+>>>>             */
+>>>> -       if (!READ_ONCE(nlru->nr_items))
+>>>> +       if (!READ_ONCE(nlru->nr_items) && !spin_is_locked(&nlru->lock))
+>>> I think we also should insert a smp_rmb() between those two loads.
+>> Thinking about this some more, I believe that adding spin_is_locked() check
+>> will be enough for x86. However, that will likely not be enough for arches
+>> with a more relaxed memory semantics. So the safest way to avoid this
+>> possible race is to move the check to within the lock critical section,
+>> though that comes with a slightly higher overhead for the 0 nr_items case. I
+>> will send out a patch to correct that. Thanks for bring this possible race
+>> to my attention.
+> Yes, I think it's not enough:
+> CPU0                                       CPU1
+> READ_ONCE(&nlru->nr_items) -> 0
+>                                             spin_lock(&nlru->lock);
+>                                             nlru->nr_items++;
+>                                             spin_unlock(&nlru->lock);
+> && !spin_is_locked(&nlru->lock) -> 0
+I have actually thought of that. I am even thinking about reading 
+nr_items again after spin_is_locked(). Still for arches with relaxed 
+memory semantics, when will a memory write by one cpu be propagated to 
+another cpu can be highly variable. It is very hard to prove that it is 
+completely safe.
 
-$ sudo ./userns08 -i 10
-userns08.c:65: TPASS: Denied write access to ./restricted : EACCES (13)
-userns08.c:65: TPASS: Denied write access to ./restricted : EACCES (13)
-userns08.c:65: TPASS: Denied write access to ./restricted : EACCES (13)
-userns08.c:65: TPASS: Denied write access to ./restricted : EACCES (13)
-userns08.c:65: TPASS: Denied write access to ./restricted : EACCES (13)
-userns08.c:36: TBROK: clone3 failed: ENOSPC (28)
+x86 has a more strict memory semantics and it is the only architecture 
+that I have enough confidence that doing the check without taking a lock 
+can be safe. Perhaps we could use this optimization just for x86 and do 
+it inside locks for the rests.
 
-Thus retrying the clone() on ENOSPC (or EUSERS for kernel < 4.9).
+> Getting back to the original patch, I wonder if instead we can batch reparenting
+> of lrus so we don't have to grab and release nlru->lock for each reparenting lru.
 
-Suggested-by: Cyril Hrubis <chrubis@suse.cz>
-Signed-off-by: Petr Vorel <pvorel@suse.cz>
----
-changes v1->v2:
-* use TST_RETRY_FN_EXP_BACKOFF() (Cyril)
+nlru is actually a sub-structure within a lru. So if there are m lrus 
+and n nodes, we will have m*n nlrus. I don't believe there is anymore 
+batching that can be done.
 
-NOTE: 0.1s seems to be safe, although using TST_RETRY_FUNC() with 1s
-(the default) would be of course OK.
-
-Kind regards,
-Petr
-
- lib/tst_test.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/lib/tst_test.c b/lib/tst_test.c
-index 384c73e163..2e89d954ec 100644
---- a/lib/tst_test.c
-+++ b/lib/tst_test.c
-@@ -436,6 +436,9 @@ pid_t safe_fork(const char *filename, unsigned int lineno)
- 	return pid;
- }
- 
-+/* too fast creating namespaces => retrying */
-+#define TST_CHECK_ENOSPC(x) ((x) >= 0 || !(errno == ENOSPC || errno == EUSERS))
-+
- pid_t safe_clone(const char *file, const int lineno,
- 		 const struct tst_clone_args *args)
- {
-@@ -444,7 +447,7 @@ pid_t safe_clone(const char *file, const int lineno,
- 	if (!tst_test->forks_child)
- 		tst_brk(TBROK, "test.forks_child must be set!");
- 
--	pid = tst_clone(args);
-+	pid = TST_RETRY_FN_EXP_BACKOFF(tst_clone(args), TST_CHECK_ENOSPC, 0.1);
- 
- 	switch (pid) {
- 	case -1:
--- 
-2.35.1
+Cheers,
+Longman
 
