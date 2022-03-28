@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4192BC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:24:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8886C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:24:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240974AbiC1L0V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:26:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60266 "EHLO
+        id S240902AbiC1LYf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:24:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241252AbiC1LXZ (ORCPT
+        with ESMTP id S240955AbiC1LXA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:23:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F20F58E64;
-        Mon, 28 Mar 2022 04:20:34 -0700 (PDT)
+        Mon, 28 Mar 2022 07:23:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C6FC55BEA;
+        Mon, 28 Mar 2022 04:19:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C5F261195;
-        Mon, 28 Mar 2022 11:20:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAB5CC340ED;
-        Mon, 28 Mar 2022 11:20:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 04DECB81055;
+        Mon, 28 Mar 2022 11:19:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D37BEC340EC;
+        Mon, 28 Mar 2022 11:19:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466432;
-        bh=4iVXIPkT3ePxCznX2ZMKrI8so8HKS+0aauaqn24SB9c=;
+        s=k20201202; t=1648466390;
+        bh=dXFoBao1mnO+CxBybDVWep7qs/QLa3ksJJVYsnYonhc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VFPXhVb1KmN/pdrkiuTevoltK53hvTywgQL0oGTx5oR41vd8+kCVUShNdb6/mVErr
-         if8waa1jhCMuTb2eIYijiB+2sp2mz+xfkPLk0gduFRQs7jGdGzMz0bRWwG6z+vTYc7
-         tD5/i6v+qOw4SSCuNBuUpb7AKTkA2TFUD/mVCBwCOgyaj39RWn+2/h3D5lPqE3yaYq
-         DOJeIzM3AaS+xCEISMcUdbunljoyPX4lKN8fGUvooHhPjvFHeYj5YV4tjUv0PDTVIV
-         MJSdmeW4MB/D9vQGe9Kq4Kxgfvl97gRsuKzMZJDl0XHM8tI9otE+7AYTMeAjKKCkeh
-         MvfBBuIrhd33Q==
+        b=ERCjnZRna2znaXntCbtvYQmwUUThsr5N8xJeP8at2m4Qoc9bXB5Bxp5bTUmWX3SB6
+         UunUy9L7vDzH4mV8zpDwueB4KwadIB5Q35G7S5bZdg7jx+9JCYNAp8z/v1H7W00vzw
+         +JGkMl9yxD0MXURd+nkV+ZMdqWYqzrLNXucdFGe6hGm6Sw6XXeTHSO7ZAzkTSufpHj
+         izIy6l6F6zkBnMgCKCUFg2lCu5WZaxA7BJ3Q1ClOzBcskm6KH0uWL5W2bb1Gb2VZwq
+         jtPkSf65xgaFGxr/dqT4PRyjYqf0HRivGAtmXRU/BQStqLNtn3kXoGtvLKAyyJeVz0
+         WfyOZIlDKvJYg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kai Ye <yekai13@huawei.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>, liulongfang@huawei.com,
-        davem@davemloft.net, linux-crypto@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 12/35] crypto: hisilicon/sec - not need to enable sm4 extra mode at HW V3
-Date:   Mon, 28 Mar 2022 07:19:48 -0400
-Message-Id: <20220328112011.1555169-12-sashal@kernel.org>
+Cc:     Darren Hart <darren@os.amperecomputing.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
+        rdunlap@infradead.org, ying.huang@intel.com,
+        linux-acpi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 36/43] ACPI/APEI: Limit printable size of BERT table data
+Date:   Mon, 28 Mar 2022 07:18:20 -0400
+Message-Id: <20220328111828.1554086-36-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220328112011.1555169-1-sashal@kernel.org>
-References: <20220328112011.1555169-1-sashal@kernel.org>
+In-Reply-To: <20220328111828.1554086-1-sashal@kernel.org>
+References: <20220328111828.1554086-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,38 +53,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai Ye <yekai13@huawei.com>
+From: Darren Hart <darren@os.amperecomputing.com>
 
-[ Upstream commit f8a2652826444d13181061840b96a5d975d5b6c6 ]
+[ Upstream commit 3f8dec116210ca649163574ed5f8df1e3b837d07 ]
 
-It is not need to enable sm4 extra mode in at HW V3. Here is fix it.
+Platforms with large BERT table data can trigger soft lockup errors
+while attempting to print the entire BERT table data to the console at
+boot:
 
-Signed-off-by: Kai Ye <yekai13@huawei.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+  watchdog: BUG: soft lockup - CPU#160 stuck for 23s! [swapper/0:1]
+
+Observed on Ampere Altra systems with a single BERT record of ~250KB.
+
+The original bert driver appears to have assumed relatively small table
+data. Since it is impractical to reassemble large table data from
+interwoven console messages, and the table data is available in
+
+  /sys/firmware/acpi/tables/data/BERT
+
+limit the size for tables printed to the console to 1024 (for no reason
+other than it seemed like a good place to kick off the discussion, would
+appreciate feedback from existing users in terms of what size would
+maintain their current usage model).
+
+Alternatively, we could make printing a CONFIG option, use the
+bert_disable boot arg (or something similar), or use a debug log level.
+However, all those solutions require extra steps or change the existing
+behavior for small table data. Limiting the size preserves existing
+behavior on existing platforms with small table data, and eliminates the
+soft lockups for platforms with large table data, while still making it
+available.
+
+Signed-off-by: Darren Hart <darren@os.amperecomputing.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/hisilicon/sec2/sec_main.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/acpi/apei/bert.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/crypto/hisilicon/sec2/sec_main.c b/drivers/crypto/hisilicon/sec2/sec_main.c
-index 90551bf38b52..03d239cfdf8c 100644
---- a/drivers/crypto/hisilicon/sec2/sec_main.c
-+++ b/drivers/crypto/hisilicon/sec2/sec_main.c
-@@ -443,9 +443,11 @@ static int sec_engine_init(struct hisi_qm *qm)
+diff --git a/drivers/acpi/apei/bert.c b/drivers/acpi/apei/bert.c
+index 19e50fcbf4d6..ad8ab3f12cf3 100644
+--- a/drivers/acpi/apei/bert.c
++++ b/drivers/acpi/apei/bert.c
+@@ -29,6 +29,7 @@
  
- 	writel(SEC_SAA_ENABLE, qm->io_base + SEC_SAA_EN_REG);
+ #undef pr_fmt
+ #define pr_fmt(fmt) "BERT: " fmt
++#define ACPI_BERT_PRINT_MAX_LEN 1024
  
--	/* Enable sm4 extra mode, as ctr/ecb */
--	writel_relaxed(SEC_BD_ERR_CHK_EN0,
--		       qm->io_base + SEC_BD_ERR_CHK_EN_REG0);
-+	/* HW V2 enable sm4 extra mode, as ctr/ecb */
-+	if (qm->ver < QM_HW_V3)
-+		writel_relaxed(SEC_BD_ERR_CHK_EN0,
-+			       qm->io_base + SEC_BD_ERR_CHK_EN_REG0);
-+
- 	/* Enable sm4 xts mode multiple iv */
- 	writel_relaxed(SEC_BD_ERR_CHK_EN1,
- 		       qm->io_base + SEC_BD_ERR_CHK_EN_REG1);
+ static int bert_disable;
+ 
+@@ -58,8 +59,11 @@ static void __init bert_print_all(struct acpi_bert_region *region,
+ 		}
+ 
+ 		pr_info_once("Error records from previous boot:\n");
+-
+-		cper_estatus_print(KERN_INFO HW_ERR, estatus);
++		if (region_len < ACPI_BERT_PRINT_MAX_LEN)
++			cper_estatus_print(KERN_INFO HW_ERR, estatus);
++		else
++			pr_info_once("Max print length exceeded, table data is available at:\n"
++				     "/sys/firmware/acpi/tables/data/BERT");
+ 
+ 		/*
+ 		 * Because the boot error source is "one-time polled" type,
 -- 
 2.34.1
 
