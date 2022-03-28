@@ -2,115 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D2D6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 13:50:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1F0CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 13:50:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243485AbiC1Nv7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 09:51:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33092 "EHLO
+        id S243491AbiC1Nwc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 09:52:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243479AbiC1Nv5 (ORCPT
+        with ESMTP id S232482AbiC1Nwa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 09:51:57 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E749851E40
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 06:50:15 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id a16-20020a17090a6d9000b001c7d6c1bb13so10648147pjk.4
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 06:50:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=fYLS3FUqU6ElSyyxJvju10Ed/M1yqpvYoJBkWCWwU+Y=;
-        b=ZWFK5+xwGXw7oPM/iGfRRRCNaF2jI3AzpFlQtaV6DU+HkIy6Jf9sFeftvS/3gSabeG
-         Z90f9L8K4jXmhZ3sNoNXya0wqmFmH6o8HAvRLix+pjySIYr5Lp/OBY7NxjjsiTFzCFe1
-         E3yuaSqnw0y2xw9oY5KM9qIPAPn3rCVsiTQWfSwN4nO/fzeISvih74bWczQckDwm7fjU
-         ZMOrrBMt+v5LAGstZm+z/6ldoo61Vdi7znyMfei7tdxFViLYpJgDFRSiG7IrTU4r9bEH
-         kyuNkqh9B/f3JeE6kS761ACcZqiQFYvwW+qk6ObiG9fTQg5wgAv+kTzSx4y3VQ1RcJEY
-         m6QQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=fYLS3FUqU6ElSyyxJvju10Ed/M1yqpvYoJBkWCWwU+Y=;
-        b=fKMsOaeQWfXJp6TetIjgDQRaNdsovK0suUX64BrL3kBkRmgb1synSNVmZmIrH1ruXb
-         DfXmOxKNf6E4TcV7WkvfBWHFjawSYGjuWpd2HGeRbVE4wfBw9jc9cNJqSQL+1ObNI1Xu
-         +65QYIjRZXUugv6paIwbQW2h4hQMcfxPZZ7HyDs/db5tf/11qgTGtXVky6+f9GZa4wHM
-         ilb95I1A3EJlEGHe/iSj+927G7nGmYegeSyI6TD39/NJSgpkykfGT2B4h4HMx2Up0hvj
-         8G6+zxG1liASzWFJmIQKjfsDjSZJzVJFuadBItKB4okN2o9AaiYTk0Ng3qTgcUhk1JcS
-         lNYA==
-X-Gm-Message-State: AOAM5336meA0MOI9zahKsa96yk5lh51G62hkQZ1k/rav+EuCWtwsXDLV
-        kcLH1SKOmfOQ2Z/H5VbjM2i7Bg==
-X-Google-Smtp-Source: ABdhPJyWR7UUgXnqyeNQTWo5J4/+xW5sMz6Rk/7vNAQSxhZG8Uz1PRs+zmE6Y7ocgIGh8R9G+b1FEQ==
-X-Received: by 2002:a17:90a:5291:b0:1bb:ef4d:947d with SMTP id w17-20020a17090a529100b001bbef4d947dmr41339439pjh.243.1648475415426;
-        Mon, 28 Mar 2022 06:50:15 -0700 (PDT)
-Received: from ?IPV6:2409:8a28:e6c:aaa0:b49b:a46e:8f1f:6bcd? ([2409:8a28:e6c:aaa0:b49b:a46e:8f1f:6bcd])
-        by smtp.gmail.com with ESMTPSA id l2-20020a056a0016c200b004f7e3181a41sm17091631pfc.98.2022.03.28.06.50.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Mar 2022 06:50:15 -0700 (PDT)
-Message-ID: <c0465b27-328a-1288-fb50-d4c6321c8b4d@bytedance.com>
-Date:   Mon, 28 Mar 2022 21:50:05 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.7.0
-Subject: Re: [External] Re: [PATCH] sched/fair: fix broken bandwidth control
- with nohz_full
-Content-Language: en-US
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     mingo@redhat.com, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, linux-kernel@vger.kernel.org,
-        duanxiongchun@bytedance.com, songmuchun@bytedance.com
-References: <20220328110751.39987-1-zhouchengming@bytedance.com>
- <20220328132047.GD8939@worktop.programming.kicks-ass.net>
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-In-Reply-To: <20220328132047.GD8939@worktop.programming.kicks-ass.net>
-Content-Type: text/plain; charset=UTF-8
+        Mon, 28 Mar 2022 09:52:30 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D9965AEE4;
+        Mon, 28 Mar 2022 06:50:50 -0700 (PDT)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22SDJXXg037825;
+        Mon, 28 Mar 2022 13:50:43 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=Rszm0S6p6TmzIZCniTrbjaLJliMRHstOCG1+jay0WR0=;
+ b=VKjfGB1ewapPjiXkMPXtFvrEkF9v5YqHFVYBFKBaBgryJiYgMTE1jdHdkxsKpR46RzNK
+ YndD5IvhSyZQLIbcWe9B+M2nYjwRfxnM7/9dqp7Iv54zcK3kKfCNqmgonmc+6aJl6hJk
+ W27OqYHgsziNnasgisCKHd+gbbiLUuK5NDxUtl90+m7LloW96vHRhWAiJvlud0DVElvi
+ SRam3jyaA4puMh0hauSnULrq+YBts5Mj8OwPp20HUdTNOQG4XKBIOSLxliTWLPFdM0B9
+ kF0NOTtn/4RRLBkcnjCHwfJZE1f54dBKul6N3orekUXG7hE1f0h3FWEQpaVTbhW3GSUi Iw== 
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3f3dt8rpf6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 28 Mar 2022 13:50:43 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22SDhWT8013405;
+        Mon, 28 Mar 2022 13:50:41 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma04ams.nl.ibm.com with ESMTP id 3f1tf8v3gt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 28 Mar 2022 13:50:40 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22SDocOI36045104
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 28 Mar 2022 13:50:38 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 929874C040;
+        Mon, 28 Mar 2022 13:50:38 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C2DC14C044;
+        Mon, 28 Mar 2022 13:50:37 +0000 (GMT)
+Received: from sig-9-65-77-40.ibm.com (unknown [9.65.77.40])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 28 Mar 2022 13:50:37 +0000 (GMT)
+Message-ID: <2c54d52208b1f5b3c628e6a52f5fbd0af3fff6f3.camel@linux.ibm.com>
+Subject: Re: [PATCH v7 2/5] ima: define a new template field named 'd-ngv2'
+ and templates
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     "Guozihua (Scott)" <guozihua@huawei.com>,
+        linux-integrity@vger.kernel.org
+Cc:     Eric Biggers <ebiggers@kernel.org>,
+        Stefan Berger <stefanb@linux.ibm.com>,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Mon, 28 Mar 2022 09:50:37 -0400
+In-Reply-To: <889cca45-4697-6edb-41f5-83cf6340bf32@huawei.com>
+References: <20220325223824.310119-1-zohar@linux.ibm.com>
+         <20220325223824.310119-3-zohar@linux.ibm.com>
+         <889cca45-4697-6edb-41f5-83cf6340bf32@huawei.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: M0cmhCTidW3487aI158N__5P9G1jEuTk
+X-Proofpoint-ORIG-GUID: M0cmhCTidW3487aI158N__5P9G1jEuTk
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-28_05,2022-03-28_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 impostorscore=0
+ priorityscore=1501 suspectscore=0 lowpriorityscore=0 bulkscore=0
+ clxscore=1015 phishscore=0 mlxlogscore=999 malwarescore=0 adultscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203280078
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/3/28 21:20, Peter Zijlstra wrote:
-> On Mon, Mar 28, 2022 at 07:07:51PM +0800, Chengming Zhou wrote:
->> With nohz_full enabled on cpu, the scheduler_tick() will be stopped
->> when only one CFS task left on rq.
->>
->> scheduler_tick()
->>   task_tick_fair()
->>     entity_tick()
->>       update_curr()
->>         account_cfs_rq_runtime(cfs_rq, delta_exec) --> stopped
->>
->> So that running task can't account its runtime periodically, but
->> the cfs_bandwidth hrtimer still __refill_cfs_bandwidth_runtime()
->> periodically. Later in one period, the task would account very
->> big delta_exec, which cause the cfs_rq to be throttled for a
->> long time.
->>
->> There are two solutions for the problem, the first is that we
->> can check in sched_can_stop_tick() if current task's cfs_rq
->> have runtime_enabled, in which case we don't stop tick. But
->> it will make nohz_full almost useless in cloud environment
->> that every container has the cpu bandwidth control setting.
+On Mon, 2022-03-28 at 14:14 +0800, Guozihua (Scott) wrote:
+> > @@ -265,26 +285,39 @@ int ima_parse_buf(void *bufstartp, void *bufendp, void **bufcurp,
+> >   }
+> >   
+> >   static int ima_eventdigest_init_common(const u8 *digest, u32 digestsize,
+> > -                                    u8 hash_algo,
+> > +                                    u8 digest_type, u8 hash_algo,
+> >                                      struct ima_field_data *field_data)
+> >   {
+> >       /*
+> >        * digest formats:
+> >        *  - DATA_FMT_DIGEST: digest
+> >        *  - DATA_FMT_DIGEST_WITH_ALGO: [<hash algo>] + ':' + '\0' + digest,
+> > +      *  - DATA_FMT_DIGEST_WITH_TYPE_AND_ALGO:
+> > +      *      [<digest type> + ':' + <hash algo>] + ':' + '\0' + digest,
+> > +      *    where <hash type> is either "ima" or "verity",
+> >        *    where <hash algo> is provided if the hash algorithm is not
+> >        *    SHA1 or MD5
+> >        */
+> > -     u8 buffer[CRYPTO_MAX_ALG_NAME + 2 + IMA_MAX_DIGEST_SIZE] = { 0 };
+> > +     u8 buffer[DIGEST_TYPE_NAME_LEN_MAX + CRYPTO_MAX_ALG_NAME + 2 +
+> > +             IMA_MAX_DIGEST_SIZE] = { 0 };
 > 
-> How is NOHZ_FULL useful in that environment to begin with? If you set
-> bandwidth crap, the expectation is that there is overcommit, which more
-> or less assumes lots of scheduling, presumably VMs or somesuch crud.
+> Hi Mimi,
 > 
-> So how does NOHZ_FULL make sense?
+> Shouldn't this contains an additional ":", Thus should +1 again?
 
-Yes, we have scheduled some VMs in cgroups on the host, which
-enabled NOHZ_FULL to reduce the interference of tick to vcpu task
-if it's the only task running on cpu.
+The length of the CRYPTO_MAX_ALG_NAME includes room for the terminating
+NULL.  In this case, the terminating NULL isn't needed.  It's replaced
+with the ':'.
 
-This problem will however throttle it wrongly, even if it hasn't
-used up its quota.
+thanks,
 
-Do you suggest that we shouldn't stop tick when the current task's
-cfs_rq has runtime_enabled ?
+Mimi
 
-Thanks.
+> 
+> >       enum data_formats fmt = DATA_FMT_DIGEST;
+> >       u32 offset = 0;
+> >   
+
 
