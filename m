@@ -2,79 +2,219 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67A76C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 16:10:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5769EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 16:11:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241508AbiC1QMG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 12:12:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33638 "EHLO
+        id S241503AbiC1QMr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 12:12:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241406AbiC1QL4 (ORCPT
+        with ESMTP id S238507AbiC1QMo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 12:11:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A58253B68;
-        Mon, 28 Mar 2022 09:10:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C7B4361446;
-        Mon, 28 Mar 2022 16:10:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 232FAC340F3;
-        Mon, 28 Mar 2022 16:10:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648483814;
-        bh=C56vqohSF2+qE/1ERNm3Se9n5cXzJDxUNt6M2glu0BM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=pQpD8xYFWVRNej1bWR8inZi78pgTDL3Sr/X3H/4UgTsJ7W/jpY/5Pj2Ja03nmQojD
-         OlnCseDaHZQ+GS4QrdMWG5iwgwgW2naZ8ni5xAWNt/ANdvxG2YeDisMzXNldTS6zQt
-         MVNeWEVSeXQa7ohwPmfdwZv1oH3VP7JbrLfRzUKNjgTcYLANDA8gus/8wwZfDu7TIR
-         B8wc9lvLh/UmUWmExeAoYaBwDbCtSpnsJO91JoshmqraXQzhqzZeVmJST3C8HWhSKL
-         NXQvkeEoXhqnuVJ/U9YW57O0W4TMTO2bR23skwVRFbm5r0njJWASaPFO8WUuVcwrm0
-         6zv8pNZXBl8Ng==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F0A24E7BB0B;
-        Mon, 28 Mar 2022 16:10:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Mon, 28 Mar 2022 12:12:44 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFFB85C346
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 09:11:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648483860; x=1680019860;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=EyFL9vehGGSWjtUPI8WwMooTYrzEzpqH7Ia4FoQJCYM=;
+  b=eizt9stGJU9Tfo+aLJD/bcaix8B+rgPJdCW4R654o388RHlMmJiNBo+D
+   y1rh6G41F7m7sUgrO4J8BaJgpKMhrr5LDizoQ/G59JtmgPa/RCb6u0S+F
+   +4STVMj6c9Iq7Zc4mpqMGdChhU7PjJVKOeqgO8Ow60hslF6iNew7mq7qu
+   Rkruqfab1VKBjsSzA8ZugQAetWIT5qvCwHq87Zne9yy8/2r6C78LWY8ST
+   obdhIGWIKRBT9pKLRFrcVp+cBjLb477JbdpbFEop5/rrDLVFnVS4zcON4
+   eY+wL3MJqfzRmbtULMaiKZHr7wxOtLuseI29RXzasTTXVS7EUCRcmB2uK
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="256615881"
+X-IronPort-AV: E=Sophos;i="5.90,217,1643702400"; 
+   d="scan'208";a="256615881"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 09:10:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,217,1643702400"; 
+   d="scan'208";a="652144977"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga004.jf.intel.com with ESMTP; 28 Mar 2022 09:10:47 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nYrx8-00028y-VM; Mon, 28 Mar 2022 16:10:46 +0000
+Date:   Tue, 29 Mar 2022 00:09:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Mohan Kumar <mkumard@nvidia.com>, tiwai@suse.com,
+        kai.vehmanen@linux.intel.com, perex@perex.cz,
+        ville.syrjala@linux.intel.com
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        thierry.reding@gmail.com, jonathanh@nvidia.com,
+        Mohan Kumar <mkumard@nvidia.com>
+Subject: Re: [PATCH] ALSA: hda: Avoid unsol event during RPM suspending
+Message-ID: <202203290053.emhsIdTK-lkp@intel.com>
+References: <20220328091411.31488-1-mkumard@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] selftests: net: Add tls config dependency for tls selftests
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164848381397.17422.14353941842854525376.git-patchwork-notify@kernel.org>
-Date:   Mon, 28 Mar 2022 16:10:13 +0000
-References: <20220328134650.72265-1-naresh.kamboju@linaro.org>
-In-Reply-To: <20220328134650.72265-1-naresh.kamboju@linaro.org>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     davem@davemloft.net, pabeni@redhat.com, kuba@kernel.org,
-        shuah@kernel.org, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lkft@linaro.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220328091411.31488-1-mkumard@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Hi Mohan,
 
-This patch was applied to bpf/bpf.git (master)
-by David S. Miller <davem@davemloft.net>:
+Thank you for the patch! Yet something to improve:
 
-On Mon, 28 Mar 2022 19:16:50 +0530 you wrote:
-> selftest net tls test cases need TLS=m without this the test hangs.
-> Enabling config TLS solves this problem and runs to complete.
->   - CONFIG_TLS=m
-> 
-> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-> Signed-off-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-> 
-> [...]
+[auto build test ERROR on tiwai-sound/for-next]
+[also build test ERROR on v5.17 next-20220328]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Here is the summary with links:
-  - selftests: net: Add tls config dependency for tls selftests
-    https://git.kernel.org/bpf/bpf/c/d9142e1cf3bb
+url:    https://github.com/intel-lab-lkp/linux/commits/Mohan-Kumar/ALSA-hda-Avoid-unsol-event-during-RPM-suspending/20220328-171517
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git for-next
+config: s390-randconfig-c005-20220327 (https://download.01.org/0day-ci/archive/20220329/202203290053.emhsIdTK-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0f6d9501cf49ce02937099350d08f20c4af86f3d)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install s390 cross compiling tool for clang build
+        # apt-get install binutils-s390x-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/80c4e21f5e97cd4b779806fa5da5bb7392e2874f
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Mohan-Kumar/ALSA-hda-Avoid-unsol-event-during-RPM-suspending/20220328-171517
+        git checkout 80c4e21f5e97cd4b779806fa5da5bb7392e2874f
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash sound/pci/hda/
 
-You are awesome, thank you!
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   In file included from sound/pci/hda/patch_hdmi.c:21:
+   In file included from include/linux/pci.h:39:
+   In file included from include/linux/io.h:13:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:464:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __raw_readb(PCI_IOBASE + addr);
+                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:477:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:37:59: note: expanded from macro '__le16_to_cpu'
+   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
+                                                             ^
+   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
+   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
+                                                        ^
+   In file included from sound/pci/hda/patch_hdmi.c:21:
+   In file included from include/linux/pci.h:39:
+   In file included from include/linux/io.h:13:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:35:59: note: expanded from macro '__le32_to_cpu'
+   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
+                                                             ^
+   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
+   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
+                                                        ^
+   In file included from sound/pci/hda/patch_hdmi.c:21:
+   In file included from include/linux/pci.h:39:
+   In file included from include/linux/io.h:13:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:501:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writeb(value, PCI_IOBASE + addr);
+                               ~~~~~~~~~~ ^
+   include/asm-generic/io.h:511:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:521:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:609:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsb(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:617:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsw(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:625:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsl(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:634:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesb(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:643:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesw(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:652:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesl(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+>> sound/pci/hda/patch_hdmi.c:1644:15: error: no member named 'runtime_status' in 'struct dev_pm_info'
+                   (dev->power.runtime_status == RPM_SUSPENDING))
+                    ~~~~~~~~~~ ^
+   12 warnings and 1 error generated.
+
+
+vim +1644 sound/pci/hda/patch_hdmi.c
+
+  1620	
+  1621	/* update ELD and jack state via HD-audio verbs */
+  1622	static void hdmi_present_sense_via_verbs(struct hdmi_spec_per_pin *per_pin,
+  1623						 int repoll)
+  1624	{
+  1625		struct hda_codec *codec = per_pin->codec;
+  1626		struct hdmi_spec *spec = codec->spec;
+  1627		struct hdmi_eld *eld = &spec->temp_eld;
+  1628		struct device *dev = hda_codec_dev(codec);
+  1629		hda_nid_t pin_nid = per_pin->pin_nid;
+  1630		int dev_id = per_pin->dev_id;
+  1631		/*
+  1632		 * Always execute a GetPinSense verb here, even when called from
+  1633		 * hdmi_intrinsic_event; for some NVIDIA HW, the unsolicited
+  1634		 * response's PD bit is not the real PD value, but indicates that
+  1635		 * the real PD value changed. An older version of the HD-audio
+  1636		 * specification worked this way. Hence, we just ignore the data in
+  1637		 * the unsolicited response to avoid custom WARs.
+  1638		 */
+  1639		int present;
+  1640		int ret;
+  1641	
+  1642		ret = snd_hda_power_up_pm(codec);
+  1643		if ((ret < 0 && pm_runtime_suspended(dev)) ||
+> 1644			(dev->power.runtime_status == RPM_SUSPENDING))
+  1645			goto out;
+  1646	
+  1647		present = snd_hda_jack_pin_sense(codec, pin_nid, dev_id);
+  1648	
+  1649		mutex_lock(&per_pin->lock);
+  1650		eld->monitor_present = !!(present & AC_PINSENSE_PRESENCE);
+  1651		if (eld->monitor_present)
+  1652			eld->eld_valid  = !!(present & AC_PINSENSE_ELDV);
+  1653		else
+  1654			eld->eld_valid = false;
+  1655	
+  1656		codec_dbg(codec,
+  1657			"HDMI status: Codec=%d NID=0x%x Presence_Detect=%d ELD_Valid=%d\n",
+  1658			codec->addr, pin_nid, eld->monitor_present, eld->eld_valid);
+  1659	
+  1660		if (eld->eld_valid) {
+  1661			if (spec->ops.pin_get_eld(codec, pin_nid, dev_id,
+  1662						  eld->eld_buffer, &eld->eld_size) < 0)
+  1663				eld->eld_valid = false;
+  1664		}
+  1665	
+  1666		update_eld(codec, per_pin, eld, repoll);
+  1667		mutex_unlock(&per_pin->lock);
+  1668	 out:
+  1669		snd_hda_power_down_pm(codec);
+  1670	}
+  1671	
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
