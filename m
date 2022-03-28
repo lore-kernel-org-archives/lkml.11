@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ADAFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:51:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18A69C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:51:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241793AbiC1Lwg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:52:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47278 "EHLO
+        id S241892AbiC1Lwp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:52:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243220AbiC1Loi (ORCPT
+        with ESMTP id S243217AbiC1Loi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Mar 2022 07:44:38 -0400
 Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50ADD56C2A
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F9B83207D
         for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 04:39:57 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id h1so16574478edj.1
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 04:39:57 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id x34so16532916ede.8
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 04:39:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=yM1+Oyjs7rm2COzVRYeg0I3yW0Tfk94lGVc8waDOVeI=;
-        b=dc38IoMpWs+lEG/BmL0z48Adl6jmTMzVi6trdkH2alBV+433Xkg5FA37EOYmGfSaLh
-         xmi8J2979iBiggD0YfEJyUWwMquaCxeUi0QN5lULG0BtXFeL+N3iaRZph863S28eUZU3
-         PkLjjcRH2HntNTk0gihCVGxHqaEGm6jAtSWSAtqYjganrZtjfZLdq8F29muBpJyigLHG
-         vBzOojqQKwfQx/MllJ51tlrlG65GjsReRtMT2n8jpU3zUwUgmFfR3COkbsHhbM5xlRGE
-         UR5fGSXBfEr4bI42YRqpIalX1f8WEG0+KosM9hwkWPoiGWflZpZhZd8Si9h7fyVQzF2Z
-         4gUg==
+        bh=/BBT6nEYzLBNKJa5StA4l20Ep/xLb2s98P4A955hkWk=;
+        b=ApcDM2P3ZXeAufbLvqkC/ab+Np12Rcl9lbLtcxNMC5ZN9KcP9ehRjKitH7G8DZRgdp
+         qEtQuIRNuwmYu3PDKxRUC5uwV6Y5LxJ4PVjDJSKdJPF87PbvhCt107h5uFfZBhPW7MNp
+         izHT+qeUM1anm8q1K7eh6TcoLy6bTgt0Lun6MVe12zLtDlv/apzS3GAjRTEaxvp4Iv6V
+         6kG1rXCGj5+Ze4UqXjx6ke48NOXYDMg0Hl6CvrgefeQHsPKR8dbzQS7aX4NHKEvZVeXS
+         K/tilVHSvVAYjHdPwmlCdwwAMsNwLoF0FwxCDdUfgot33q0n0MqfmyUwUAYE1mUz2VzJ
+         RDdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=yM1+Oyjs7rm2COzVRYeg0I3yW0Tfk94lGVc8waDOVeI=;
-        b=2yLRlVuU23eWGHuQuKXaLmVjdf8FGVyK21RPb0KJGK8fN/Xm1gHceDoRwWkYiNNQUR
-         Ez/eh3Fjog817JHoM6jlGRSKiGqT3BcqVeMjzKJQO+XfzKP2LsOPWfw6C3QKcnZWZe5W
-         Kl5HqFbpygDKsOigqyxtadU4ozGYNAv4b6jJC88sVtyIYBdprmm+PH3qobsc8YqzGsIa
-         cDYrrRntoFqMazRYJhOj1XlPGs0QQTnP1d5qStfG5V4iZWvthrnhjILhVk1w6HqyOm0j
-         3LvQyX3/S8BqABTfm5Mzz24lvKbUL8v6NOVgnah6ASbOpSJP5ncpY0sfnZuIx4pkWIQK
-         h5BQ==
-X-Gm-Message-State: AOAM530oKooAiHVbOVuGU5CeZvh/wl+kbFL9f3rLv/rjF0MSfEOCZ05a
-        Xum0nzova2ZyFWMA9CBIZmw=
-X-Google-Smtp-Source: ABdhPJxVaoduq6jwj15g4ToMbp7aFdbZH7njcersBGBWMEc/mCryNyI05RgL5hVAY7VUjMz9uBiWWg==
-X-Received: by 2002:a05:6402:847:b0:419:7fb0:9e29 with SMTP id b7-20020a056402084700b004197fb09e29mr15565288edz.45.1648467595613;
-        Mon, 28 Mar 2022 04:39:55 -0700 (PDT)
+        bh=/BBT6nEYzLBNKJa5StA4l20Ep/xLb2s98P4A955hkWk=;
+        b=kSmIjwf/+JIQEKPuV7hR8HJqJrZI4PWGTLFBCIPDkjUIykX/X5GAXDA9e0gqRSyMWN
+         /Ar4rJK9IBpbP93yh0+Dhf3GbiOVxrAivRoBgHlqwMrITfdThtskxK6F87pRNXpvHpo/
+         6Ubqpvxrh0gy12+o3gOzFEpc66g2RkKI0L3gNN0bBBG84gIrhllEJjkoqvy7uYWpmtIq
+         RF566BCNq13EHcTuyGoQlH9lpfYjQhHb5hwGbFakt+8FFNt09c27LAZA+INz3nSY0plm
+         0SDiY/CZfeSA9JeKseq3eExsdJV1Y4HEWLqHvaRNIIdp6Z8K28GHlX0sQmlFZR+cUdUD
+         QOUg==
+X-Gm-Message-State: AOAM531omaSpiiEX2kAhz+29mfrDqVM9R3smMDEl5GSBURJI+Pa1HxXF
+        bkggjyhJxnWvQR0k3H9UIIE=
+X-Google-Smtp-Source: ABdhPJwio4iQdmg5hTn4ICgwa/6A6/OAfMwLhxhVHZl+K2bgUwFU+NuoMMKJPODt8fHEfwNqaY32pg==
+X-Received: by 2002:a05:6402:5cd:b0:419:7753:acfb with SMTP id n13-20020a05640205cd00b004197753acfbmr15442329edx.131.1648467593052;
+        Mon, 28 Mar 2022 04:39:53 -0700 (PDT)
 Received: from localhost.localdomain (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
-        by smtp.gmail.com with ESMTPSA id hq39-20020a1709073f2700b006dfc58efab9sm5938556ejc.73.2022.03.28.04.39.54
+        by smtp.gmail.com with ESMTPSA id hq39-20020a1709073f2700b006dfc58efab9sm5938556ejc.73.2022.03.28.04.39.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Mar 2022 04:39:55 -0700 (PDT)
+        Mon, 28 Mar 2022 04:39:52 -0700 (PDT)
 From:   Michael Straube <straube.linux@gmail.com>
 To:     gregkh@linuxfoundation.org
 Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH 5/9] staging: r8188eu: remove HW_VAR_RXDMA_AGG_PG_TH from SetHwReg8188EU()
-Date:   Mon, 28 Mar 2022 13:39:36 +0200
-Message-Id: <20220328113940.6396-6-straube.linux@gmail.com>
+Subject: [PATCH 3/9] staging: r8188eu: rename some macros to upper case
+Date:   Mon, 28 Mar 2022 13:39:34 +0200
+Message-Id: <20220328113940.6396-4-straube.linux@gmail.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220328113940.6396-1-straube.linux@gmail.com>
 References: <20220328113940.6396-1-straube.linux@gmail.com>
@@ -65,70 +65,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The HW_VAR_RXDMA_AGG_PG_TH case in SetHwReg8188EU() just sets a
-variable conditionally and then calls rtw_write8(). Set the variable
-in the caller and, call rtw_write8() directly and remove the
-HW_VAR_RXDMA_AGG_PG_TH case from SetHwReg8188EU(). This is part of the
-ongoing effort to get rid of the unwanted hal layer.
+Rename some macros to upper case to avoid camel case and improve
+readability. While at it, remove some unused macros.
 
 Signed-off-by: Michael Straube <straube.linux@gmail.com>
 ---
- drivers/staging/r8188eu/core/rtw_mlme.c    | 7 +++++--
- drivers/staging/r8188eu/hal/usb_halinit.c  | 8 --------
- drivers/staging/r8188eu/include/hal_intf.h | 1 -
- 3 files changed, 5 insertions(+), 11 deletions(-)
+ drivers/staging/r8188eu/hal/usb_halinit.c       | 12 ++++++------
+ drivers/staging/r8188eu/include/rtl8188e_spec.h | 10 +++-------
+ 2 files changed, 9 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/r8188eu/core/rtw_mlme.c
-index 6f0bff186477..14aff6a2040a 100644
---- a/drivers/staging/r8188eu/core/rtw_mlme.c
-+++ b/drivers/staging/r8188eu/core/rtw_mlme.c
-@@ -1817,10 +1817,13 @@ void rtw_joinbss_reset(struct adapter *padapter)
- 			threshold = 1;
- 		else
- 			threshold = 0;
--		SetHwReg8188EU(padapter, HW_VAR_RXDMA_AGG_PG_TH, (u8 *)(&threshold));
-+
-+		if (threshold == 0)
-+			threshold = USB_RXAGG_PAGE_COUNT;
-+		rtw_write8(padapter, REG_RXDMA_AGG_PG_TH, threshold);
- 	} else {
- 		threshold = 1;
--		SetHwReg8188EU(padapter, HW_VAR_RXDMA_AGG_PG_TH, (u8 *)(&threshold));
-+		rtw_write8(padapter, REG_RXDMA_AGG_PG_TH, threshold);
- 	}
- }
- 
 diff --git a/drivers/staging/r8188eu/hal/usb_halinit.c b/drivers/staging/r8188eu/hal/usb_halinit.c
-index 86d8b603d4fa..219f0e5d36aa 100644
+index cf1e4bbfd6a9..26a86b891aa1 100644
 --- a/drivers/staging/r8188eu/hal/usb_halinit.c
 +++ b/drivers/staging/r8188eu/hal/usb_halinit.c
-@@ -1197,14 +1197,6 @@ void SetHwReg8188EU(struct adapter *Adapter, u8 variable, u8 *val)
- 			}
+@@ -1152,19 +1152,19 @@ void SetHwReg8188EU(struct adapter *Adapter, u8 variable, u8 *val)
+ 				AcmCtrl = AcmCtrl | 0x1;
+ 
+ 			if (acm_ctrl & BIT(3))
+-				AcmCtrl |= AcmHw_VoqEn;
++				AcmCtrl |= ACMHW_VOQEN;
+ 			else
+-				AcmCtrl &= (~AcmHw_VoqEn);
++				AcmCtrl &= (~ACMHW_VOQEN);
+ 
+ 			if (acm_ctrl & BIT(2))
+-				AcmCtrl |= AcmHw_ViqEn;
++				AcmCtrl |= ACMHW_VIQEN;
+ 			else
+-				AcmCtrl &= (~AcmHw_ViqEn);
++				AcmCtrl &= (~ACMHW_VIQEN);
+ 
+ 			if (acm_ctrl & BIT(1))
+-				AcmCtrl |= AcmHw_BeqEn;
++				AcmCtrl |= ACMHW_BEQEN;
+ 			else
+-				AcmCtrl &= (~AcmHw_BeqEn);
++				AcmCtrl &= (~ACMHW_BEQEN);
+ 
+ 			rtw_write8(Adapter, REG_ACMHWCTRL, AcmCtrl);
  		}
- 		break;
--	case HW_VAR_RXDMA_AGG_PG_TH:
--		{
--			u8 threshold = *((u8 *)val);
--			if (threshold == 0)
--				threshold = USB_RXAGG_PAGE_COUNT;
--			rtw_write8(Adapter, REG_RXDMA_AGG_PG_TH, threshold);
--		}
--		break;
- 	case HW_VAR_H2C_FW_PWRMODE:
- 		{
- 			u8 psmode = (*(u8 *)val);
-diff --git a/drivers/staging/r8188eu/include/hal_intf.h b/drivers/staging/r8188eu/include/hal_intf.h
-index d0317f5b85ba..9d755eb59224 100644
---- a/drivers/staging/r8188eu/include/hal_intf.h
-+++ b/drivers/staging/r8188eu/include/hal_intf.h
-@@ -25,7 +25,6 @@ enum hw_variables {
- 	HW_VAR_AC_PARAM_BE,
- 	HW_VAR_AMPDU_MIN_SPACE,
- 	HW_VAR_AMPDU_FACTOR,
--	HW_VAR_RXDMA_AGG_PG_TH,
- 	HW_VAR_H2C_FW_PWRMODE,
- 	HW_VAR_H2C_FW_JOINBSSRPT,
- 	HW_VAR_FWLPS_RF_ON,
+diff --git a/drivers/staging/r8188eu/include/rtl8188e_spec.h b/drivers/staging/r8188eu/include/rtl8188e_spec.h
+index edae053e350e..ef42c4b2f20c 100644
+--- a/drivers/staging/r8188eu/include/rtl8188e_spec.h
++++ b/drivers/staging/r8188eu/include/rtl8188e_spec.h
+@@ -998,13 +998,9 @@ Current IOREG MAP
+ #define STOP_BCNQ		BIT(6)
+ 
+ /* 2 ACMHWCTRL */
+-#define	AcmHw_HwEn		BIT(0)
+-#define	AcmHw_BeqEn		BIT(1)
+-#define	AcmHw_ViqEn		BIT(2)
+-#define	AcmHw_VoqEn		BIT(3)
+-#define	AcmHw_BeqStatus		BIT(4)
+-#define	AcmHw_ViqStatus		BIT(5)
+-#define	AcmHw_VoqStatus		BIT(6)
++#define ACMHW_BEQEN		BIT(1)
++#define ACMHW_VIQEN		BIT(2)
++#define ACMHW_VOQEN		BIT(3)
+ 
+ /* 	0x0600h ~ 0x07FFh	WMAC Configuration */
+ /* 2APSD_CTRL */
 -- 
 2.35.1
 
