@@ -2,71 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BF1BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 03:58:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E52EC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 03:59:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237884AbiC1D5v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Mar 2022 23:57:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52644 "EHLO
+        id S233468AbiC1EBR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 00:01:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229754AbiC1D5s (ORCPT
+        with ESMTP id S229627AbiC1EBP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Mar 2022 23:57:48 -0400
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 888BA2ED6B;
-        Sun, 27 Mar 2022 20:56:03 -0700 (PDT)
-Received: by mail-qt1-x832.google.com with SMTP id a11so11330970qtb.12;
-        Sun, 27 Mar 2022 20:56:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=03aR3MfA/hCu36kyVYa11iw/hI3fFEpil9/f9TAKde8=;
-        b=NjS0MQrXfhvcMJ+x9aH2I/vR3GPAehQMEVsHxz+Nu6zrwMPJc1er4ruV2asbhbzldi
-         uQi6sDRQXIibjUeAiBxNP2ZfbFFmhPzN2TC8odqSAi53/K5QEmlzOtoFWXGREAicNyje
-         bz7Z7qLeHRnGjcTFKJaxxIsSGNO7KuPgS3GpYZD+xJ66cEPrGPTndnWpOpcrMWr/7SL8
-         1mJCrpSrh3Ysl7RXev6FOZ2UJJFnYGTvvyj1oo2tw7bTEVdaVJsJbf3gzYgE60BjYawe
-         lE1bkVk0/Wx2ngFCyakY22Qs53Ij9JmiFe82K6kDAlzWMhEGtmO47InSdy5zCSeATvlY
-         rY3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=03aR3MfA/hCu36kyVYa11iw/hI3fFEpil9/f9TAKde8=;
-        b=lInYB2faBbAEIoicqy5h09p3rKSTgRAx11fwbWQIXo2ejlwDCZmQlZ6ErOIA8btiyE
-         9HguJ5cb//sK1Cx/p5M8bAh1KRL77FQ3nH3oaARscY3yxwYpzU0gKcuaf3Jvb7u8jKCd
-         TM4TDz0PzMNS/+5HOi0wdrQTKRxg/Q6m4FXVWIcHVldESj53MSh0Wj45V/qMw9I/F6j8
-         VAHlTu+e9IVST5Ld4SdEq2Ih2wq4cfLc7BrY7Nnb4pL1nyhWJWgWSg25/hRMXG6lPIFM
-         MKrblD0PNsHmsROXiOqygml5VgoObcdnOaVC0ZPC+pmRbFRCF37V9sMpvpxWwFR4mPgI
-         3WMQ==
-X-Gm-Message-State: AOAM530vUIPlA64+rnzvZ9fDuc+GoFNCbmE9WeeS3XazrJCw+ODtGSZD
-        26C9Gw1EnhRX2xQ23xytoi4=
-X-Google-Smtp-Source: ABdhPJwjNplIhyndBYfc5+qt988HQZCa95oOuSWKPNZha4EkFwCVG8QEXbRuruK+XT+huSoJhRgb9w==
-X-Received: by 2002:a05:622a:178d:b0:2e1:a593:2d63 with SMTP id s13-20020a05622a178d00b002e1a5932d63mr19854077qtk.563.1648439762766;
-        Sun, 27 Mar 2022 20:56:02 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id o27-20020a05620a111b00b0067d5f359007sm7006967qkk.23.2022.03.27.20.55.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Mar 2022 20:56:02 -0700 (PDT)
-From:   Lv Ruyi <cgel.zte@gmail.com>
-X-Google-Original-From: Lv Ruyi <lv.ruyi@zte.com.cn>
-To:     damien.lemoal@opensource.wdc.com
-Cc:     allison.henderson@oracle.com, bfoster@redhat.com,
-        cgel.zte@gmail.com, chandan.babu@oracle.com, dchinner@redhat.com,
-        djwong@kernel.org, linux-kernel@vger.kernel.org,
-        linux-xfs@vger.kernel.org, lv.ruyi@zte.com.cn, zealci@zte.com.cn
-Subject: Re: [PATCH] fs: xfs: add NULL pointer check
-Date:   Mon, 28 Mar 2022 03:55:56 +0000
-Message-Id: <20220328035556.2372314-1-lv.ruyi@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <32fad707-fdab-75a6-f7e5-d356a0b86983@opensource.wdc.com>
-References: <32fad707-fdab-75a6-f7e5-d356a0b86983@opensource.wdc.com>
+        Mon, 28 Mar 2022 00:01:15 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 022D5433A3;
+        Sun, 27 Mar 2022 20:59:34 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: krisman)
+        with ESMTPSA id DAC9B1F42E3D
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1648439973;
+        bh=p5kFKkno7W8Otr+MEWs2MZhZGWjZxlAPNrorp3vcRNg=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=My6E3QlN7FcjxmfTvX/c1wcXd90XrxliEgJQI9mTs+dDK4g532bhf6jeJU4cHhpeS
+         bDhiVMHbh6agyEwnuI4LY6+5D3nmDjZAtAq4n8K6+nW5xk8kjN84QwhyWW2tHqYLrg
+         D3uUGaJKkaWSqWcsxWx6o5F/RLQPjsHxLA/aC3D1EkJnUkhnjB0l6Ua+yzCqW58mhq
+         TxfuHpglNpHqReT9r8Z4AJ+38k4i43K6eJ51tVoUzQue6IDPk5/g/foRRJtP0KqlbB
+         UyOv/2pFB6XA/O20XhG5+54r6iJ7FJoyeauSdzO/JrzS3v88vWjnj2WxGC9uAhwj35
+         OYq/mbx5Dos/w==
+From:   Gabriel Krisman Bertazi <krisman@collabora.com>
+To:     Shreeya Patel <shreeya.patel@collabora.com>
+Cc:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
+        Zhigang.Shi@liteon.com, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com, alvaro.soliverez@collabora.com
+Subject: Re: [PATCH 3/3] iio: light: Add support for ltrf216a sensor
+Organization: Collabora
+References: <20220325103014.6597-1-shreeya.patel@collabora.com>
+        <20220325103014.6597-4-shreeya.patel@collabora.com>
+Date:   Sun, 27 Mar 2022 23:59:28 -0400
+In-Reply-To: <20220325103014.6597-4-shreeya.patel@collabora.com> (Shreeya
+        Patel's message of "Fri, 25 Mar 2022 16:00:14 +0530")
+Message-ID: <878rsusp5r.fsf@collabora.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sorry, please ignore the noise.
+Shreeya Patel <shreeya.patel@collabora.com> writes:
 
-thanks
+> From: Zhigang Shi <Zhigang.Shi@liteon.com>
+>
+> Add initial support for ltrf216a ambient light sensor.
+>
+> Datasheet :-
+> https://gitlab.steamos.cloud/shreeya/iio/-/blob/main/LTR-F216A-QT.pdf
+> +	struct ltrf216a_data *data = iio_priv(indio_dev);
+> +
+> +	ret = i2c_smbus_write_byte_data(data->client, LTRF216A_MAIN_CTRL, 0);
+> +	if (ret < 0)
+> +		dev_err(&data->client->dev, "Error writing LTRF216A_MAIN_CTRL\n");
+> +
+> +	return ret;
+> +}
+> +
+> +static int ltrf216a_set_it_time(struct ltrf216a_data *data, int itime)
+
+ltrf216a_set_int_time instad of it_time?  although, ltr501 also uses
+"it" instead of "int" on the function name..
+
+> +
+> +static int ltrf216a_get_lux(struct ltrf216a_data *data)
+> +{
+> +	int greendata, cleardata, lux;
+> +
+> +	greendata = ltrf216a_read_data(data, LTRF216A_ALS_DATA_0);
+> +	cleardata = ltrf216a_read_data(data, LTRF216A_CLEAR_DATA_0);
+> +
+> +	if (greendata < 0 || cleardata < 0)
+> +		lux = 0;
+> +	else
+> +		lux = greendata * 8 * WIN_FAC / data->als_gain_fac / data->int_time_fac / 10;
+
+This could be rewritten to avoid most of the divisions.
+
+But it also doesn't fit the calculation shown in page 20 on the
+datasheet.
+
+I suspect that 8 was calculated from a specific Window Factor (~1.77),
+which is specific to one device, but I'm not sure.  The datasheet
+formula is:
+
+lux = (ALS_DATA_X * 0.45 * window_factor) / (gain * int_time)
+
+Shouldn't WIN_FAC be a configurable parameter, instead of constant?
+
+-- 
+Gabriel Krisman Bertazi
