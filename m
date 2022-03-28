@@ -2,421 +2,288 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B374BC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 23:13:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB2DFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 23:20:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230315AbiC1XOx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 19:14:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51362 "EHLO
+        id S230325AbiC1XVv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 19:21:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230288AbiC1XOu (ORCPT
+        with ESMTP id S230240AbiC1XVt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 19:14:50 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FE541C132;
-        Mon, 28 Mar 2022 16:13:08 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 0119B21C41;
-        Mon, 28 Mar 2022 23:13:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1648509187;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=21Evlhp3V+QRnVu+WtdU3GTS4r6+O5Bat+kErY1IoFc=;
-        b=l63sl1mN3gNS4Kyw+DL2bt7ZNekfe8zUkVXPeB/zKnv1MkFGR+esxO3qknmMHxMdiRUNO+
-        vBTJC1OtnWv3WXab9m79QOt50+Gj6BfGb0Nd2fUz5iyGGQXHOF9pKvn+FpI2ASXMuP2mQ4
-        mcNdfhwVge4kzGolodKi4HJiV92ePhI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1648509187;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=21Evlhp3V+QRnVu+WtdU3GTS4r6+O5Bat+kErY1IoFc=;
-        b=YlCIw+Jyf/h7+iJQmkc8EzlPbUPs3HadNCWe036vB6NR+erPXDWhqW5YV66xmNrGO/x06V
-        kFwQddKEne1KTRBg==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id E9B9CA3B89;
-        Mon, 28 Mar 2022 23:13:06 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id CA6E7DA7F3; Tue, 29 Mar 2022 01:09:09 +0200 (CEST)
-Date:   Tue, 29 Mar 2022 01:09:09 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
-Cc:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Nick Terrell <terrelln@fb.com>, linux-kernel@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH 1/2] btrfs: Factor out allocating an array of pages.
-Message-ID: <20220328230909.GW2237@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz,
-        Sweet Tea Dorminy <sweettea-kernel@dorminy.me>,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, Nick Terrell <terrelln@fb.com>,
-        linux-kernel@vger.kernel.org, linux-btrfs@vger.kernel.org,
-        kernel-team@fb.com
-References: <cover.1648496453.git.sweettea-kernel@dorminy.me>
- <8a8c3d39c858a1b8610ea967a50c2572c7604f5e.1648497027.git.sweettea-kernel@dorminy.me>
+        Mon, 28 Mar 2022 19:21:49 -0400
+Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ACD1134;
+        Mon, 28 Mar 2022 16:20:06 -0700 (PDT)
+Received: by mail-oi1-f171.google.com with SMTP id q129so17365961oif.4;
+        Mon, 28 Mar 2022 16:20:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Az+MY9NSlQZZNnS3o0rLrGelAp7EayLadbgOGpBV7a0=;
+        b=vnGDD/vGqF7m4PbOUtfTrVazlvjE52ttDP3wkUK+x0y7s/4zRMfnzsQji0ntFdqEcx
+         A0TAQJGdsPNpFn5taBS0JJMsUWfAmxvojvI2lDYHRLb6q6MDk+qvSe3s5Wf5OODEt71V
+         HBz/xs3m2F3BKjA7LulETI5wMqt0+RQYlyzgeiuUn7KanqJWso8vPzeD51CsnIfOoWwT
+         t43mhAHUMSDIosEWa37oGIDLhPVdCoNUb5qDCmIYo13Kmd4B7ZYESEFFQnOynSpGPiYS
+         v/2WwhLlpquT1Zf7zsJ62EbY197oNL6HZcYoDBe8bF2ywfHBY0Cp9taFOoGAEySotgYA
+         Y8cA==
+X-Gm-Message-State: AOAM533RHwwF7xmuj1HwK4RDuno7oaH+a3+u8k2Y2wqw/1Lri5OcwJX8
+        F6s6sxolepxVVv/7qeutXA==
+X-Google-Smtp-Source: ABdhPJyAuKzd/h23jgh/6Vp1uLc82of3PFROtweM3HvlHdJkNRANCNS43he2n/hdyVEtd9aeKJP5eg==
+X-Received: by 2002:a05:6808:170d:b0:2f7:3e70:fdb3 with SMTP id bc13-20020a056808170d00b002f73e70fdb3mr812746oib.139.1648509605211;
+        Mon, 28 Mar 2022 16:20:05 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id r19-20020a056830121300b005cdb11a7b85sm7761844otp.29.2022.03.28.16.20.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 16:20:04 -0700 (PDT)
+Received: (nullmailer pid 3227660 invoked by uid 1000);
+        Mon, 28 Mar 2022 23:20:03 -0000
+Date:   Mon, 28 Mar 2022 18:20:03 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Frank Li <Frank.Li@nxp.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 02/16] dt-bindings: PCI: dwc: Add Baikal-T1 PCIe Root
+ Port bindings
+Message-ID: <YkJCo1PrdKlHYt8D@robh.at.kernel.org>
+References: <20220324013734.18234-1-Sergey.Semin@baikalelectronics.ru>
+ <20220324013734.18234-3-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <8a8c3d39c858a1b8610ea967a50c2572c7604f5e.1648497027.git.sweettea-kernel@dorminy.me>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+In-Reply-To: <20220324013734.18234-3-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Please format the subjects so there's lower case after "btrfs:" and no
-"." at the end, I've edited that in your previous patches.
-
-On Mon, Mar 28, 2022 at 04:14:27PM -0400, Sweet Tea Dorminy wrote:
-> Several functions currently populate an array of page pointers one
-> allocated page at a time; factor out the common code so as to allow
-> improvements to all of the sites at once.
+On Thu, Mar 24, 2022 at 04:37:20AM +0300, Serge Semin wrote:
+> Baikal-T1 SoC is equipped with DWC PCIe v4.60a Root Port controller, which
+> link can be trained to work on up to Gen.3 speed over up to x4 lanes. The
+> controller is supposed to be fed up with four clock sources: DBI
+> peripheral clock, AXI application Tx/Rx clocks and external PHY/core
+> reference clock generating the 100MHz signal. In addition to that the
+> platform provide a way to reset each part of the controller:
+> sticky/non-sticky bits, host controller core, PIPE interface, PCS/PHY and
+> Hot/Power reset signal. The Root Port controller is equipped with multiple
+> IRQ lines like MSI, system AER, PME, HP, Bandwidth change, Link
+> equalization request and eDMA ones. The registers space is accessed over
+> the DBI interface. There can be no more than four inbound or outbound iATU
+> windows configured.
 > 
-> Signed-off-by: Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> 
 > ---
->  fs/btrfs/check-integrity.c |  8 +++-----
->  fs/btrfs/compression.c     | 37 +++++++++++++++--------------------
->  fs/btrfs/ctree.c           | 25 ++++++++++++++++++++++++
->  fs/btrfs/ctree.h           |  2 ++
->  fs/btrfs/extent_io.c       | 40 +++++++++++++++++++++++---------------
->  fs/btrfs/inode.c           | 10 ++++------
->  fs/btrfs/raid56.c          | 30 ++++------------------------
->  7 files changed, 78 insertions(+), 74 deletions(-)
 > 
-> diff --git a/fs/btrfs/check-integrity.c b/fs/btrfs/check-integrity.c
-> index 7e9f90fa0388..366d5a80f3c5 100644
-> --- a/fs/btrfs/check-integrity.c
-> +++ b/fs/btrfs/check-integrity.c
-> @@ -1553,11 +1553,9 @@ static int btrfsic_read_block(struct btrfsic_state *state,
->  		return -ENOMEM;
->  	block_ctx->datav = block_ctx->mem_to_free;
->  	block_ctx->pagev = (struct page **)(block_ctx->datav + num_pages);
-> -	for (i = 0; i < num_pages; i++) {
-> -		block_ctx->pagev[i] = alloc_page(GFP_NOFS);
-> -		if (!block_ctx->pagev[i])
-> -			return -1;
-> -	}
-> +	ret = btrfs_alloc_page_array(num_pages, block_ctx->pagev);
-> +	if (ret)
-> +		return ret;
->  
->  	dev_bytenr = block_ctx->dev_bytenr;
->  	for (i = 0; i < num_pages;) {
-> diff --git a/fs/btrfs/compression.c b/fs/btrfs/compression.c
-> index be476f094300..0fc663b757fb 100644
-> --- a/fs/btrfs/compression.c
-> +++ b/fs/btrfs/compression.c
-> @@ -801,8 +801,6 @@ blk_status_t btrfs_submit_compressed_read(struct inode *inode, struct bio *bio,
->  	struct extent_map_tree *em_tree;
->  	struct compressed_bio *cb;
->  	unsigned int compressed_len;
-> -	unsigned int nr_pages;
-> -	unsigned int pg_index;
->  	struct bio *comp_bio = NULL;
->  	const u64 disk_bytenr = bio->bi_iter.bi_sector << SECTOR_SHIFT;
->  	u64 cur_disk_byte = disk_bytenr;
-> @@ -812,7 +810,8 @@ blk_status_t btrfs_submit_compressed_read(struct inode *inode, struct bio *bio,
->  	u64 em_start;
->  	struct extent_map *em;
->  	blk_status_t ret;
-> -	int faili = 0;
-> +	int r;
-
-Please don't use single letter variables for basically anything else
-than an indexing variable 'i', like below. You can use 'ret2' in this
-case, as is supposed to be the preferred style in btrfs code.
-
-> +	int i;
->  	u8 *sums;
->  
->  	em_tree = &BTRFS_I(inode)->extent_tree;
-> @@ -855,25 +854,20 @@ blk_status_t btrfs_submit_compressed_read(struct inode *inode, struct bio *bio,
->  	cb->compress_type = extent_compress_type(bio_flags);
->  	cb->orig_bio = bio;
->  
-> -	nr_pages = DIV_ROUND_UP(compressed_len, PAGE_SIZE);
-> -	cb->compressed_pages = kcalloc(nr_pages, sizeof(struct page *),
-> +	cb->nr_pages = DIV_ROUND_UP(compressed_len, PAGE_SIZE);
-> +	cb->compressed_pages = kcalloc(cb->nr_pages, sizeof(struct page *),
->  				       GFP_NOFS);
->  	if (!cb->compressed_pages) {
->  		ret = BLK_STS_RESOURCE;
-> -		goto fail1;
-> +		goto fail;
->  	}
->  
-> -	for (pg_index = 0; pg_index < nr_pages; pg_index++) {
-> -		cb->compressed_pages[pg_index] = alloc_page(GFP_NOFS);
-> -		if (!cb->compressed_pages[pg_index]) {
-> -			faili = pg_index - 1;
-> -			ret = BLK_STS_RESOURCE;
-> -			goto fail2;
-> -		}
-> +	r = btrfs_alloc_page_array(cb->nr_pages, cb->compressed_pages);
-> +	if (r) {
-> +		ret = BLK_STS_RESOURCE;
-> +		goto fail;
->  	}
-> -	faili = nr_pages - 1;
-> -	cb->nr_pages = nr_pages;
-> -
-> +	
->  	add_ra_bio_pages(inode, em_start + em_len, cb);
->  
->  	/* include any pages we added in add_ra-bio_pages */
-> @@ -949,14 +943,15 @@ blk_status_t btrfs_submit_compressed_read(struct inode *inode, struct bio *bio,
->  	}
->  	return BLK_STS_OK;
->  
-> -fail2:
-> -	while (faili >= 0) {
-> -		__free_page(cb->compressed_pages[faili]);
-> -		faili--;
-> +fail:
-> +	if (cb->compressed_pages) {
-> +		for (i = 0; i < cb->nr_pages; i++) {
-> +			if (cb->compressed_pages[i])
-> +				__free_page(cb->compressed_pages[i]);
-> +		}
->  	}
->  
->  	kfree(cb->compressed_pages);
-> -fail1:
->  	kfree(cb);
->  out:
->  	free_extent_map(em);
-> diff --git a/fs/btrfs/ctree.c b/fs/btrfs/ctree.c
-> index 1e24695ede0a..4e81e75c8e7c 100644
-> --- a/fs/btrfs/ctree.c
-> +++ b/fs/btrfs/ctree.c
-> @@ -90,6 +90,31 @@ void btrfs_free_path(struct btrfs_path *p)
->  	kmem_cache_free(btrfs_path_cachep, p);
->  }
->  
-> +/**
-> + * btrfs_alloc_page_array() - allocate an array of pages.
-
-We've been using a simplified format without the function name (as it's
-right after the comment.
-
-> + *
-> + * @nr_pages: the number of pages to request
-> + * @page_array: the array to fill with pages. Any existing non-null entries in
-> + * 	the array will be skipped.
-
-And the argument description should be aligned.
-
-> + *
-> + * Return: 0 if all pages were able to be allocated; -ENOMEM otherwise, and the
-> + * caller is responsible for freeing all non-null page pointers in the array.
-> + */
-> +int btrfs_alloc_page_array(unsigned long nr_pages, struct page **page_array)
-> +{
-> +	int i;
-
-Newline
-
-> +	for (i = 0; i < nr_pages; i++) {
-> +		struct page *page;
-
-Newline
-
-> +		if (page_array[i])
-> +			continue;
-> +		page = alloc_page(GFP_NOFS);
-> +		if (!page)
-> +			return -ENOMEM;
-
-Do you need the return value? For allocation helpers it's just a valid
-memory or NULL, so you can move the parameter to return value.
-
-> +		page_array[i] = page;
-> +	}
-> +	return 0;
-> +}
+> Rob, this DT-bindings most likely will fail the dt_bindings_check
+> evaluations with the "'*' is not of type 'array'" errors for the same
+> reason described in the previous patch. Let's discuss the problem there.
+> ---
+>  .../bindings/pci/baikal,bt1-pcie.yaml         | 148 ++++++++++++++++++
+>  1 file changed, 148 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pci/baikal,bt1-pcie.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/pci/baikal,bt1-pcie.yaml b/Documentation/devicetree/bindings/pci/baikal,bt1-pcie.yaml
+> new file mode 100644
+> index 000000000000..f34438330a86
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pci/baikal,bt1-pcie.yaml
+> @@ -0,0 +1,148 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/pci/baikal,bt1-pcie.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
->  /*
->   * path release drops references on the extent buffers in the path
->   * and it drops any locks held by this path
-> diff --git a/fs/btrfs/ctree.h b/fs/btrfs/ctree.h
-> index 7328fb17b7f5..e835a2bfb60a 100644
-> --- a/fs/btrfs/ctree.h
-> +++ b/fs/btrfs/ctree.h
-> @@ -2969,6 +2969,8 @@ void btrfs_release_path(struct btrfs_path *p);
->  struct btrfs_path *btrfs_alloc_path(void);
->  void btrfs_free_path(struct btrfs_path *p);
->  
-> +int btrfs_alloc_page_array(unsigned long nr_pages, struct page **page_array);
+> +title: Baikal-T1 PCIe Root Port Controller
 > +
->  int btrfs_del_items(struct btrfs_trans_handle *trans, struct btrfs_root *root,
->  		   struct btrfs_path *path, int slot, int nr);
->  static inline int btrfs_del_item(struct btrfs_trans_handle *trans,
-> diff --git a/fs/btrfs/extent_io.c b/fs/btrfs/extent_io.c
-> index 53b59944013f..c1c8d770f43a 100644
-> --- a/fs/btrfs/extent_io.c
-> +++ b/fs/btrfs/extent_io.c
-> @@ -5898,9 +5898,9 @@ __alloc_extent_buffer(struct btrfs_fs_info *fs_info, u64 start,
->  struct extent_buffer *btrfs_clone_extent_buffer(const struct extent_buffer *src)
->  {
->  	int i;
-> -	struct page *p;
->  	struct extent_buffer *new;
->  	int num_pages = num_extent_pages(src);
-> +	int r;
->  
->  	new = __alloc_extent_buffer(src->fs_info, src->start, src->len);
->  	if (new == NULL)
-> @@ -5913,22 +5913,23 @@ struct extent_buffer *btrfs_clone_extent_buffer(const struct extent_buffer *src)
->  	 */
->  	set_bit(EXTENT_BUFFER_UNMAPPED, &new->bflags);
->  
-> +	memset(new->pages, 0, sizeof(*new->pages) * num_pages);
-> +	r = btrfs_alloc_page_array(num_pages, new->pages);
-> +	if (r) {
-> +		btrfs_release_extent_buffer(new);
-> +		return NULL;
-> +	}
+> +maintainers:
+> +  - Serge Semin <fancer.lancer@gmail.com>
 > +
->  	for (i = 0; i < num_pages; i++) {
->  		int ret;
-> +		struct page *p = new->pages[i];
->  
-> -		p = alloc_page(GFP_NOFS);
-> -		if (!p) {
-> -			btrfs_release_extent_buffer(new);
-> -			return NULL;
-> -		}
->  		ret = attach_extent_buffer_page(new, p, NULL);
->  		if (ret < 0) {
-> -			put_page(p);
->  			btrfs_release_extent_buffer(new);
->  			return NULL;
->  		}
->  		WARN_ON(PageDirty(p));
-> -		new->pages[i] = p;
->  		copy_page(page_address(p), page_address(src->pages[i]));
->  	}
->  	set_extent_buffer_uptodate(new);
-> @@ -5942,31 +5943,38 @@ struct extent_buffer *__alloc_dummy_extent_buffer(struct btrfs_fs_info *fs_info,
->  	struct extent_buffer *eb;
->  	int num_pages;
->  	int i;
-> +	int r;
->  
->  	eb = __alloc_extent_buffer(fs_info, start, len);
->  	if (!eb)
->  		return NULL;
->  
->  	num_pages = num_extent_pages(eb);
-> +	r = btrfs_alloc_page_array(num_pages, eb->pages);
-> +	if (r)
-> +		goto err;
+> +description: |
+> +  Embedded into Baikal-T1 SoC Root Complex controller. It's based on the
+> +  DWC RC PCIe v4.60a IP-core, which is configured to have just a single Root
+> +  Port function and is capable of establishing the link up to Gen.3 speed
+> +  on x4 lanes. It doesn't have embedded clock and reset control module, so
+> +  the proper interface initialization is supposed to be performed by software.
 > +
->  	for (i = 0; i < num_pages; i++) {
->  		int ret;
-> +		struct page *p = eb->pages[i];
->  
-> -		eb->pages[i] = alloc_page(GFP_NOFS);
-> -		if (!eb->pages[i])
-> -			goto err;
-> -		ret = attach_extent_buffer_page(eb, eb->pages[i], NULL);
-> -		if (ret < 0)
-> +		ret = attach_extent_buffer_page(eb, p, NULL);
-> +		if (ret < 0) {
->  			goto err;
-> +		}
+> +allOf:
+> +  - $ref: /schemas/pci/pci-bus.yaml#
+> +  - $ref: snps,dw-pcie.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    contains:
+> +      const: baikal,bt1-pcie
+> +
+> +  reg:
+> +    description:
+> +      DBI, DBI2 and at least 4KB outbound iATU-capable region are available.
 
-No {  } around single statements.
+outbound iATU-capable region? While configured with iATU, it's just 
+config space from a binding standpoint.
 
->  	}
+It's a bit more precise to do this:
+
+items:
+  - description: DBI...
+  - description: DBI2...
+  - ...
+
+
+> +    maxItems: 3
+
+And then drop this.
+
 > +
->  	set_extent_buffer_uptodate(eb);
->  	btrfs_set_header_nritems(eb, 0);
->  	set_bit(EXTENT_BUFFER_UNMAPPED, &eb->bflags);
->  
->  	return eb;
->  err:
-> -	for (; i > 0; i--) {
-> -		detach_extent_buffer_page(eb, eb->pages[i - 1]);
-> -		__free_page(eb->pages[i - 1]);
-> +	for (i = 0; i < num_pages; i++) {
-> +		if (eb->pages[i]) {
-> +			detach_extent_buffer_page(eb, eb->pages[i]);
-> +			__free_page(eb->pages[i]);
-> +		}
->  	}
->  	__free_extent_buffer(eb);
->  	return NULL;
-> diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
-> index c7b15634fe70..121858652a09 100644
-> --- a/fs/btrfs/inode.c
-> +++ b/fs/btrfs/inode.c
-> @@ -10427,13 +10427,11 @@ static ssize_t btrfs_encoded_read_regular(struct kiocb *iocb,
->  	pages = kcalloc(nr_pages, sizeof(struct page *), GFP_NOFS);
->  	if (!pages)
->  		return -ENOMEM;
-> -	for (i = 0; i < nr_pages; i++) {
-> -		pages[i] = alloc_page(GFP_NOFS);
-> -		if (!pages[i]) {
-> -			ret = -ENOMEM;
-> -			goto out;
-> +	ret = btrfs_alloc_page_array(nr_pages, pages);
-> +	if (ret) {
-> +		ret = -ENOMEM;
-> +		goto out;
->  		}
-> -	}
->  
->  	ret = btrfs_encoded_read_regular_fill_pages(inode, start, disk_bytenr,
->  						    disk_io_size, pages);
-> diff --git a/fs/btrfs/raid56.c b/fs/btrfs/raid56.c
-> index 0e239a4c3b26..ea7a9152b1cc 100644
-> --- a/fs/btrfs/raid56.c
-> +++ b/fs/btrfs/raid56.c
-> @@ -1026,37 +1026,15 @@ static struct btrfs_raid_bio *alloc_rbio(struct btrfs_fs_info *fs_info,
->  /* allocate pages for all the stripes in the bio, including parity */
->  static int alloc_rbio_pages(struct btrfs_raid_bio *rbio)
->  {
-> -	int i;
-> -	struct page *page;
-> -
-> -	for (i = 0; i < rbio->nr_pages; i++) {
-> -		if (rbio->stripe_pages[i])
-> -			continue;
-> -		page = alloc_page(GFP_NOFS);
-> -		if (!page)
-> -			return -ENOMEM;
-> -		rbio->stripe_pages[i] = page;
-> -	}
-> -	return 0;
-> +	return btrfs_alloc_page_array(rbio->nr_pages, rbio->stripe_pages);
->  }
->  
->  /* only allocate pages for p/q stripes */
->  static int alloc_rbio_parity_pages(struct btrfs_raid_bio *rbio)
->  {
-> -	int i;
-> -	struct page *page;
-> -
-> -	i = rbio_stripe_page_index(rbio, rbio->nr_data, 0);
-> -
-> -	for (; i < rbio->nr_pages; i++) {
-> -		if (rbio->stripe_pages[i])
-> -			continue;
-> -		page = alloc_page(GFP_NOFS);
-> -		if (!page)
-> -			return -ENOMEM;
-> -		rbio->stripe_pages[i] = page;
-> -	}
-> -	return 0;
-> +	int data_pages = rbio_stripe_page_index(rbio, rbio->nr_data, 0);
-> +	return btrfs_alloc_page_array(rbio->nr_pages - data_pages,
-> +				      rbio->stripe_pages + data_pages);
->  }
->  
->  /*
+> +  reg-names:
+> +    minItems: 3
+> +    maxItems: 3
+> +    items:
+> +      enum: [ dbi, dbi2, config ]
+
+To enforce the order:
+
+items:
+  - const: dbi
+  - const: dbi2
+  - const: config
+
+> +
+> +  interrupts:
+> +    description:
+> +      MSI, AER, PME, Hot-plug, Link Bandwidth Management, Link Equalization
+> +      request and eight Read/Write eDMA IRQ lines are available.
+> +    maxItems: 14
+> +
+> +  interrupt-names:
+> +    minItems: 14
+> +    maxItems: 14
+> +    items:
+> +      oneOf:
+> +        - pattern: '^dma[0-7]$'
+> +        - enum: [ msi, aer, pme, hp, bw_mg, l_eq ]
+
+Can't you define the order?
+
+> +
+> +  clocks:
+> +    description:
+> +      DBI (attached to the APB bus), AXI-bus master and slave interfaces
+> +      are fed up by the dedicated application clocks. A common reference
+> +      clock signal is supposed to be attached to the corresponding Ref-pad
+> +      of the SoC. It will be redistributed amongst the controller core
+> +      sub-modules (pipe, core, aux, etc).
+> +    minItems: 4
+> +    maxItems: 4
+> +
+> +  clock-names:
+> +    minItems: 4
+> +    maxItems: 4
+> +    items:
+> +      enum: [ dbi, mstr, slv, ref ]
+> +
+> +  resets:
+> +    description:
+> +      A comprehensive controller reset logic is supposed to be implemented
+> +      by software, so almost all the possible application and core reset
+> +      signals are exposed via the system CCU module.
+> +    minItems: 9
+> +    maxItems: 9
+> +
+> +  reset-names:
+> +    minItems: 9
+> +    maxItems: 9
+> +    items:
+> +      enum: [ mstr, slv, pwr, hot, phy, core, pipe, sticky, non-sticky ]
+
+Again, define the order.
+
+> +
+> +  syscon:
+
+Needs a vendor prefix.
+
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+> +    description:
+> +      Phandle to the Baikal-T1 System Controller DT node. It's required to
+> +      access some additional PM, Reset-related and LTSSM signals.
+> +
+> +  num-lanes:
+> +    maximum: 4
+> +
+> +  max-link-speed:
+> +    maximum: 3
+> +
+
+> +  num-ob-windows:
+> +    const: 4
+> +
+> +  num-ib-windows:
+> +    const: 4
+
+These are deprecated. The driver probes for how many now.
+
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - reg-names
+> +  - interrupts
+> +  - interrupt-names
+> +  - clocks
+> +  - clock-names
+> +  - resets
+> +  - reset-names
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    pcie@1f052000 {
+> +      compatible = "baikal,bt1-pcie", "snps,dw-pcie-4.60a", "snps,dw-pcie";
+> +      device_type = "pci";
+> +      reg = <0x1f052000 0x1000>, <0x1f053000 0x1000>, <0x1bdbf000 0x1000>;
+> +      reg-names = "dbi", "dbi2", "config";
+> +      #address-cells = <3>;
+> +      #size-cells = <2>;
+> +      ranges = <0x81000000 0 0x00000000 0x1bdb0000 0 0x00008000>,
+> +               <0x82000000 0 0x20000000 0x08000000 0 0x13db0000>;
+> +      bus-range = <0x0 0xff>;
+> +
+> +      interrupts = <0 80 4>, <0 81 4>, <0 82 4>, <0 83 4>,
+> +                   <0 84 4>, <0 85 4>, <0 86 4>, <0 87 4>,
+> +                   <0 88 4>, <0 89 4>, <0 90 4>, <0 91 4>,
+> +                   <0 92 4>, <0 93 4>;
+> +      interrupt-names = "dma0", "dma1", "dma2", "dma3", "dma4", "dma5", "dma6",
+> +                        "dma7", "msi", "aer", "pme", "hp", "bw_mg", "l_eq";
+> +
+> +      clocks = <&ccu_sys 1>, <&ccu_axi 6>, <&ccu_axi 7>, <&clk_pcie>;
+> +      clock-names = "dbi", "mstr", "slv", "ref";
+> +
+> +      resets = <&ccu_axi 6>, <&ccu_axi 7>, <&ccu_sys 7>, <&ccu_sys 10>,
+> +               <&ccu_sys 4>, <&ccu_sys 6>, <&ccu_sys 5>, <&ccu_sys 8>,
+> +               <&ccu_sys 9>;
+> +      reset-names = "mstr", "slv", "pwr", "hot", "phy", "core", "pipe",
+> +                    "sticky", "non-sticky";
+> +
+> +      reset-gpios = <&port0 0 1>;
+> +
+> +      num-lanes = <4>;
+> +      max-link-speed = <3>;
+> +    };
+> +...
 > -- 
 > 2.35.1
+> 
+> 
