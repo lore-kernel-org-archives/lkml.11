@@ -2,180 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66E98C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:45:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5970C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:45:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239992AbiC1LrM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:47:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38688 "EHLO
+        id S241602AbiC1LrS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:47:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245188AbiC1LjN (ORCPT
+        with ESMTP id S241526AbiC1Lbz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:39:13 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2063.outbound.protection.outlook.com [40.107.94.63])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 184A1A3;
-        Mon, 28 Mar 2022 04:37:33 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BOS7Nje7xnbJPIs1E7tUEoRn3OW16Z3Nzhl7F1/M0qL/JvNIJZeRqRo0iZx15ry472eZbmHvyyMnCQVRxiBDdKfpEGtQDh179V8mf6cZqsVq+C+h0BmV6HAqnhKG40SsxY/DH1OykOrPE9nwnPmjeQfEEzezUJH50ncQ94KMV3+gRBszGHmqTF6vd4vNPVNWLahKC2iNR2YxwrW8RgSP3U12uPgUfkRdeO9+GsBWAMvR2KER/0tvwT8PAhgejZV6ZSI432y9Q4JpIM6jFUvCvXCjs80WeFU88YpYUK18q0G+8JEOsWJXGHGTyCvrl3UGitt8Y5mWnEJSXP+pcFUkUw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Wky6Dw4IOL0VUIvGxK33h2O0Oa8eBHODGGjK86WgDvg=;
- b=h7h5LhTngIc2/N/oaepT937DZ+dSKRhiEVQnogYayRuMfbV6cgNNPVJN2jsi8cQ30lYpYYfoUyReOR4h2YwrBkrCUx42saFpdrcDmCycKzO0+SUtnS4UKxhAprUrwJhjKq52AWF8EuDzlKFJSQDT/Y41VP+OgkhvNtC3035+9965d94xYG3mI3c2N20iwB/kL2jZEhRmbdfnpREN/idEN8keQb/Bl/asFlj9Oomfw+Mhpr7fAN0gs126khxGUfmPTVVLnoYs5qHkVMWyjBJIUK7RrX30zosfKM+4eaBmj67P4G35u+rksnFa8yZy/VgfHMg1qDNgK+2nlG8zeegwJw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Wky6Dw4IOL0VUIvGxK33h2O0Oa8eBHODGGjK86WgDvg=;
- b=JfTJcCU4iMl0S4OuoisPgeBGgI/uTep4OJ2FkYUBeFedtQ5LmIeO5IdUtVPaNSnN/AcXs9GKTDJkTMOASTGoMnh4Zj1nUJO4oI/fdOEOgS1qssS9VP1hcL0NyDJ81KTm3yDRFCT49m16TrrPTe2twWc3/HSRqH3JLmdDEXmrU90uNlwnYe05wzpyidwZ3Ce+XvKieIBnLfZ+NG7SU/0wNdiXOcC+mxhY1c1pKXexr35Bl487P1PYn/9aliEXiC71PbCEggsc1SV+18h2d+d5ZJNESFILE3wNd8FBMCJDznEkip+HszylGLIFoZwWevngun7PZkElvSxLdoQb8N/2ow==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH2PR12MB4181.namprd12.prod.outlook.com (2603:10b6:610:a8::16)
- by CY4PR1201MB2550.namprd12.prod.outlook.com (2603:10b6:903:ce::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.16; Mon, 28 Mar
- 2022 11:37:31 +0000
-Received: from CH2PR12MB4181.namprd12.prod.outlook.com
- ([fe80::9ce9:6278:15f:fd03]) by CH2PR12MB4181.namprd12.prod.outlook.com
- ([fe80::9ce9:6278:15f:fd03%8]) with mapi id 15.20.5102.023; Mon, 28 Mar 2022
- 11:37:31 +0000
-Date:   Mon, 28 Mar 2022 08:37:28 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Shlomo Pongratz <shlomopongratz@gmail.com>
-Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        andrew.maier@eideticom.com, logang@deltatee.com,
-        bhelgaas@google.com, Shlomo Pongratz <shlomop@pliops.com>
-Subject: Re: [PATCH V2 1/1] Intel Sky Lake-E host root ports check.
-Message-ID: <20220328113728.GA1693573@nvidia.com>
-References: <20220327112011.3350-1-shlomop@pliops.com>
- <20220327112011.3350-2-shlomop@pliops.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220327112011.3350-2-shlomop@pliops.com>
-X-ClientProxiedBy: BLAPR03CA0062.namprd03.prod.outlook.com
- (2603:10b6:208:329::7) To CH2PR12MB4181.namprd12.prod.outlook.com
- (2603:10b6:610:a8::16)
+        Mon, 28 Mar 2022 07:31:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0032B57B35;
+        Mon, 28 Mar 2022 04:24:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C25026114A;
+        Mon, 28 Mar 2022 11:24:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C1C3C340ED;
+        Mon, 28 Mar 2022 11:24:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648466676;
+        bh=NLoVDs7rjLn2vTwN1PgZVDG0/Iak4g0H4eBUbih//qY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Z93i3QaNvKu4YFiffQipp3buTlTqPkf/Zi1z8zGV94hyw6wCfPHmHKfk4UQXLYKLR
+         IjWdL+nBYTvrDL8LN/nki5RNsG8ZJrxfcT1cnXrV3XlF/w2HxdbEEU16HRA/IJ68QQ
+         dxbPOh3mAz8wK8wXm0mAA/B+4ORzpaPaZreC4gpe5KykvethfZUCOjRuH2so3xEkM+
+         kupZn3pnmXeqSuWPUeMLtGUq18BFy4DpEIcsWv+q2iI26BeH39+EUFZvABTQTpO7E6
+         OzVrFdgenzb6Md0cesgj+2lNA7K10iWjCHFk0Y3KJzgzRnOfAOsXgbw15Jb//PkdP5
+         385ph214PPK1Q==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Darren Hart <darren@os.amperecomputing.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
+        rdunlap@infradead.org, ying.huang@intel.com,
+        linux-acpi@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 10/12] ACPI/APEI: Limit printable size of BERT table data
+Date:   Mon, 28 Mar 2022 07:24:15 -0400
+Message-Id: <20220328112417.1556946-10-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220328112417.1556946-1-sashal@kernel.org>
+References: <20220328112417.1556946-1-sashal@kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2fe7f0a4-dd50-4b0d-a3e5-08da10af57c8
-X-MS-TrafficTypeDiagnostic: CY4PR1201MB2550:EE_
-X-Microsoft-Antispam-PRVS: <CY4PR1201MB25505100B3C43A4341F8920CC21D9@CY4PR1201MB2550.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 7FeXMVfGdUfRyZTJ8Rmw+WyTkDlSJDNSebfq2rljNaKYlqeZoy4bRfrfl5PGnx16LscGPhPTUDqkeKSRgkiFVkvMQ7ZDOFMv2hi7rN6HOYGijELXf1No7blr6uMDObljYDCwDOUj8eCcVN99Pzu1t6hSvyK44IJb9oJd41ocDU0yFmEFBKeJFT12yRzouYrP6XFbK2n/WaXmTLeBKTmPiDp1XceZJlENOV1FhuKCtsSAuiW9mOLaRpXo8yUwo8zcRVlnP+5d5PjK6sIEalWkQ44INoDfGPkklFtO9rYaNTvxtEblZ3PkB+BIZH4l/fSHLZ9vHtucqCGrh4bprWQEUudo02Kj4U1haEPpu2iIXQB8XSYaf7JhAkbstzITZkq17DC+Ah/2i2HrNiatqO9a/JsjufEWojCllESbD/id+vWjdaVTNcK9KZhrbUGgKD/sYV6dEKOdG19aqCzmTRGsp+ErgOhc3r78+/oRsXWAOLAU9/RNnC7ZK2ZgZjbAnYG8nVsg7ncD8q+mayQ0P0ZVxYjP01fvcf5FTovGYoCtl8MGb6duRJtmVOnOfqRsNj6l0+iWMlNDZoX1IK9o0ShbhBZvNqn1kS5NhaCUXyFgujPFScxLMrcEg2oFq0bUOdRdA215GU/E+34IC4Tnr0qi2g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR12MB4181.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38100700002)(86362001)(36756003)(6512007)(6506007)(6666004)(316002)(6916009)(66476007)(66556008)(66946007)(8676002)(508600001)(6486002)(33656002)(2906002)(2616005)(1076003)(26005)(186003)(83380400001)(5660300002)(4326008)(8936002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?nhMScBxNe6YcWyN5yqadSjxMdgbF5nIS+WUKqvjXCy32AJcZdADEGqtwNvq+?=
- =?us-ascii?Q?T4vND/NaFkS/wIIALpVjM0H41FLbP4KGCCy6I4vD4wLRA5t3k29c6vUD/nbx?=
- =?us-ascii?Q?S2jWoCHy3j8adEUpMKIM9X3e8m+nyLVfzT5cdH6EEhVkspUbcV0v/xtry/BM?=
- =?us-ascii?Q?bnBGjil0OlsncrscNZwEphS08pE6IH9Kuna+6uqgFVlpJyvhE5g9O/9UWgD5?=
- =?us-ascii?Q?ZAxjzUlJBK3hXZvAdouMXjp9mEZI9D2W3yOQGnfMw3z3ZcXNpagzqK2/HnVu?=
- =?us-ascii?Q?mCJWw+PuJ7r4By47ajOtN9xOvTCmi5OgliwSjYSlb/1/vSIW11w7u4xfqwyU?=
- =?us-ascii?Q?g38YM5ReAljeHWXmbilfhwRv5Qzfx3YhTTWei8Pcq2+OkeL36tG4VcYo9BGl?=
- =?us-ascii?Q?J1uplzwwUwLN16T18UxfJkPVaaMraPOyHtLsezDyCncySQZ+BQRQCRbuvCXe?=
- =?us-ascii?Q?/r9sNQJMZ9GrKIE8EH5+MCKGQ/9TcbGI3wwrMqJ+FeMqzkTgZOkMyWAgReOq?=
- =?us-ascii?Q?6LSSjWztJCx81hh5FMfNFZdlzqKG08fK/QTptiZwg/dUpN8SCa1mgKG/UbF3?=
- =?us-ascii?Q?KPQ7rIb7y7KHFqXQIhRym70suEwl125W1LuVWuxGDtN7tksOH962K8R9VPPA?=
- =?us-ascii?Q?Z5YC476CuD5YuCtmnJUvYNdEQn401MfCTgrwNnyxoM3lOsgAvyY0PrbLL8VI?=
- =?us-ascii?Q?sL59zxQe0VaxGcnKWqWtdWDdYuMrcTBibq4ZbncnAw84spFAhBiEj9xuqmTU?=
- =?us-ascii?Q?qdKL800gjqbUc0JeZBj3f9PutrDtHdsYLqM1pLUbyZL2SL9J9w+W8YRoemy4?=
- =?us-ascii?Q?+NNsGw541OF9qaFLsGt9RMOViPY4Vo7dQPTC0g4mUhLLLKlN0zGcXheWqd95?=
- =?us-ascii?Q?ERbzRolABguzmfqtUHXucJvOSEA4oWx+q4VVVM90bZCRwcmUeh5ndwO2kLY9?=
- =?us-ascii?Q?i52Q3EUrKZw9x205ossCxe4tRzf6uf3Ctko6X6WUGlc44VIHaBX+L8thEhFQ?=
- =?us-ascii?Q?uaWS5WHuVK99wmpvTDNKdtXOlr3iYGSpXQH/X/LfBYIsogM6YbAwqx166coZ?=
- =?us-ascii?Q?FAJ39MIazLppdr+ZD9dwRi6HuR7fo0D+ZOkcZ0+a8jR2NvhP8fBiz2eZWdIb?=
- =?us-ascii?Q?xgwSQPJFZpGRZwUgTapLOoLXxJNR+X8lvx/QTNrtoKu4uxNayTo2ew2HL1KZ?=
- =?us-ascii?Q?I3Wu4gmFeR3KFYkMmi9YcN23wfvS1pIcYHAdNBtoF7//Waicz7NnCOQGFela?=
- =?us-ascii?Q?XytOjXkYM1nV4PMQsqeJ2rIfYNjH4uF30IcLHCe5oaYHr4UviwOm5VQeK7sn?=
- =?us-ascii?Q?SZOwNRNybv51UJK118Tqj34Y7qPubZqSqzFjIixFkj5NAlH8U7ynSpvYIu1f?=
- =?us-ascii?Q?mD5P5nQu2mOi2EOPUISaFlcPtZXaApGjtPEit824Xchm0+xkmQirHwcHJ9i+?=
- =?us-ascii?Q?zARHBdalqeBtZQlQTCeaPUm/IkUAAOzxuS9lZapRIUde6kJPbRqLWKKpneGx?=
- =?us-ascii?Q?iho/rGgZZI7ujkDDhRx2dpzKRuzmm5PG65UbpXGaRjHJiKMSdlRgpmC/XF89?=
- =?us-ascii?Q?A2wT6cnH334v5kQ42n3oC/igJXVnWAjz93ea61pL0jz5exlnDwFef/OV6FnH?=
- =?us-ascii?Q?10FSXRZCj7Kg9tDhCG3zBcZo8XKpwcOF4nkImNi5F2r10CPb5CRZuzc6FgOG?=
- =?us-ascii?Q?m67lbbw85A3bEXIO5g9BG1qQTb/O6FubgqTWgQJZRIEdSFNUxZE8P6RZW9w4?=
- =?us-ascii?Q?4KxG37AbIQ=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2fe7f0a4-dd50-4b0d-a3e5-08da10af57c8
-X-MS-Exchange-CrossTenant-AuthSource: CH2PR12MB4181.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Mar 2022 11:37:30.9590
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ybOsBiocxSyc/e/FSRCnUQ8BPJTkgdgeKXj4q0ydtxoo40m3tsvP+zsFRQ8/Rgxf
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1201MB2550
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Mar 27, 2022 at 02:20:11PM +0300, Shlomo Pongratz wrote:
-> On commit 7b94b53db34f ("PCI/P2PDMA: Add Intel Sky Lake-E Root Ports B, C, D to the whitelist")
-> Andrew Maier added the Sky Lake-E additional devices
-> 2031, 2032 and 2033 root ports to the already existing 2030 device.
-> 
-> The Intel devices 2030, 2031, 2032 and 2033 which are ports A, B, C and D,
-> and if all exist they will occupy slots 0 till 3 in that order.
-> 
-> Now if for example device 2030 is missing then there will no device on slot 0, but
-> other devices can reside on other slots according to there port.
-> For this reason the test that insisted that the bridge should be on slot 0 was modified
-> to support bridges that are not on slot 0.
+From: Darren Hart <darren@os.amperecomputing.com>
 
-This helped our systems here! Thanks
+[ Upstream commit 3f8dec116210ca649163574ed5f8df1e3b837d07 ]
 
-Though to be clear the BIOS/ACPI modeling seems to be wrong in a way
-which prevents linux from finding the true root port which is the main
-cause of this problem.
+Platforms with large BERT table data can trigger soft lockup errors
+while attempting to print the entire BERT table data to the console at
+boot:
 
-2030-2033 are *root ports* not host bridges. So when we are in
-pci_host_bridge_dev() the code is not looking at the system's host
-bridge device at all, but a root port off the host bridge.
+  watchdog: BUG: soft lockup - CPU#160 stuck for 23s! [swapper/0:1]
 
-Which explains why the non-zero slot is happening.
+Observed on Ampere Altra systems with a single BERT record of ~250KB.
 
-So this might be better to add a flag 'IS_ROOT_PORT' instead of 'port'
-and then just ignore the slot number entirely for root ports.
+The original bert driver appears to have assumed relatively small table
+data. Since it is impractical to reassemble large table data from
+interwoven console messages, and the table data is available in
 
-Though maybe someone has a better idea how the host bridge stuff is
-supposed to work on these skylake-e systems.
+  /sys/firmware/acpi/tables/data/BERT
 
-> + * The method above will work in most cases but not for all.
-> + * Note that the Intel devices 2030, 2031, 2032 and 2033 are ports A, B, C and D.
-> + * Consider on a bus X only port C is connected downstream so in the PCI scan only
-> + * device 8086:2032 on 0000:X:02.0 will be found as birdges with no children are ignored
+limit the size for tables printed to the console to 1024 (for no reason
+other than it seemed like a good place to kick off the discussion, would
+appreciate feedback from existing users in terms of what size would
+maintain their current usage model).
 
-'bridges' mispelled
+Alternatively, we could make printing a CONFIG option, use the
+bert_disable boot arg (or something similar), or use a debug log level.
+However, all those solutions require extra steps or change the existing
+behavior for small table data. Limiting the size preserves existing
+behavior on existing platforms with small table data, and eliminates the
+soft lockups for platforms with large table data, while still making it
+available.
 
-> + *
->   * This function is equivalent to pci_get_slot(host->bus, 0), however it does
->   * not take the pci_bus_sem lock seeing __host_bridge_whitelist() must not
->   * sleep.
-> @@ -350,7 +356,10 @@ static struct pci_dev *pci_host_bridge_dev(struct pci_host_bridge *host)
->  
->  	if (!root)
->  		return NULL;
-> -	if (root->devfn != PCI_DEVFN(0, 0))
-> +	/* Here just check that the function is 0
-> +	 * The slot number will be checked later
-> +	 */
-> +	if (PCI_FUNC(root->devfn) != 0)
->  		return NULL;
->  
->  	return root;
-> @@ -372,6 +381,13 @@ static bool __host_bridge_whitelist(struct pci_host_bridge *host,
->  	for (entry = pci_p2pdma_whitelist; entry->vendor; entry++) {
->  		if (vendor != entry->vendor || device != entry->device)
->  			continue;
-> +		/* For devices which are bounded to a specific slot
-> +		 * (e.g. Intel Sky Lake-E host root ports) check the port is
-> +		 * Identical to the slot number.
-> +		 * For other devices continue to inssist on slot 0
+Signed-off-by: Darren Hart <darren@os.amperecomputing.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/acpi/apei/bert.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-"insist" mispelled.
+diff --git a/drivers/acpi/apei/bert.c b/drivers/acpi/apei/bert.c
+index 12771fcf0417..19b96fde77c4 100644
+--- a/drivers/acpi/apei/bert.c
++++ b/drivers/acpi/apei/bert.c
+@@ -31,6 +31,7 @@
+ 
+ #undef pr_fmt
+ #define pr_fmt(fmt) "BERT: " fmt
++#define ACPI_BERT_PRINT_MAX_LEN 1024
+ 
+ static int bert_disable;
+ 
+@@ -59,8 +60,11 @@ static void __init bert_print_all(struct acpi_bert_region *region,
+ 		}
+ 
+ 		pr_info_once("Error records from previous boot:\n");
+-
+-		cper_estatus_print(KERN_INFO HW_ERR, estatus);
++		if (region_len < ACPI_BERT_PRINT_MAX_LEN)
++			cper_estatus_print(KERN_INFO HW_ERR, estatus);
++		else
++			pr_info_once("Max print length exceeded, table data is available at:\n"
++				     "/sys/firmware/acpi/tables/data/BERT");
+ 
+ 		/*
+ 		 * Because the boot error source is "one-time polled" type,
+-- 
+2.34.1
 
-Jason
