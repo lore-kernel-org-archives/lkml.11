@@ -2,50 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D012EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:27:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DC5BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:27:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231336AbiC1L33 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:29:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60258 "EHLO
+        id S241222AbiC1L3b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:29:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241083AbiC1LXO (ORCPT
+        with ESMTP id S241162AbiC1LXU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:23:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E858E55BED;
-        Mon, 28 Mar 2022 04:20:06 -0700 (PDT)
+        Mon, 28 Mar 2022 07:23:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7443758398;
+        Mon, 28 Mar 2022 04:20:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 38AFC611B5;
-        Mon, 28 Mar 2022 11:20:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40058C340F3;
-        Mon, 28 Mar 2022 11:20:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C456D61169;
+        Mon, 28 Mar 2022 11:20:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65E72C36AE3;
+        Mon, 28 Mar 2022 11:20:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466404;
-        bh=PPyB38zuBoAibvBuvbbADfl/549D/slCttl/tVe3DZc=;
+        s=k20201202; t=1648466416;
+        bh=PaGBNH3IO+vHhfj5CQrJJiXJVdx0NKXBLXt6WjCBSr8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GQiwkRlxk0RUzHTbr+UTcprC5QGTmI9+269Ms1CxYWzy1Gofz+b3ZaL0DkCD2OHdg
-         mGwtw1Rop+QV++zyU7wQXOcntHQy8r552HUyOyMB7ZPJ08eu+MSPAmAhS1Bj5HlQDv
-         l+6kBPkfOsrzxzlP7b8unRLdaQRLDeoW3wdoT3uQZjWeNXSQyAGUBo2WUEA5pZBu1E
-         /ZDY6nx2bQ9z7al+6RLdgiQksMvAQ6XDTXcDKVeMiawetMF6JLUoRHXqdqBTzb086J
-         sd5LV37TKiAtQE4ePdmsMgYvSpnus/MdSSXMe7VBAl+ozV/HfB/08HGnDtVK997Ozq
-         a5LH0TnUaMF+g==
+        b=j1xlR5DXTTX/3psSrP+ElZ109nRiA9ZQyz7z72VNbfdjV8aDYsqq2TSh6nJOF1YIC
+         vhG/2UWFW1YyiNk4t8ttdTgSWDzamQj4PS45Z/v7Qnzw7DJRLN1ifDo06lUGYb5tnE
+         HrYlb7Fp6wy1i98Vt1IqxpmJ9ZZk97E3hQyQOUqieC6eezgjUabBizuOfMzZnKPjCc
+         cumg2I7al2G87E25nxlLp9WQNcvnJhD3eAFGdKRKbuy6ZiUvyVLUHlAu3Lxwn0tND0
+         0C6AZ4hcjdTva3fj9P7T46vUwSvwy0hJ+VOjNaaLEF2TmoDAjXW/2RUyJM4B2JizjV
+         XL7JOUM/23ITQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     John David Anglin <dave.anglin@bell.net>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
-        James.Bottomley@HansenPartnership.com, svens@stackframe.org,
-        rmk+kernel@armlinux.org.uk, akpm@linux-foundation.org,
-        ebiederm@xmission.com, wangkefeng.wang@huawei.com,
-        zhengqi.arch@bytedance.com, linux-parisc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 39/43] parisc: Fix handling off probe non-access faults
-Date:   Mon, 28 Mar 2022 07:18:23 -0400
-Message-Id: <20220328111828.1554086-39-sashal@kernel.org>
+Cc:     Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Detlev Casanova <detlev.casanova@collabora.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com
+Subject: [PATCH AUTOSEL 5.16 02/35] regulator: rpi-panel: Handle I2C errors/timing to the Atmel
+Date:   Mon, 28 Mar 2022 07:19:38 -0400
+Message-Id: <20220328112011.1555169-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220328111828.1554086-1-sashal@kernel.org>
-References: <20220328111828.1554086-1-sashal@kernel.org>
+In-Reply-To: <20220328112011.1555169-1-sashal@kernel.org>
+References: <20220328112011.1555169-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,166 +52,141 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John David Anglin <dave.anglin@bell.net>
+From: Dave Stevenson <dave.stevenson@raspberrypi.com>
 
-[ Upstream commit e00b0a2ab8ec019c344e53bfc76e31c18bb587b7 ]
+[ Upstream commit 5665eee7a3800430e7dc3ef6f25722476b603186 ]
 
-Currently, the parisc kernel does not fully support non-access TLB
-fault handling for probe instructions. In the fast path, we set the
-target register to zero if it is not a shadowed register. The slow
-path is not implemented, so we call do_page_fault. The architecture
-indicates that non-access faults should not cause a page fault from
-disk.
+The Atmel is doing some things in the I2C ISR, during which
+period it will not respond to further commands. This is
+particularly true of the POWERON command.
 
-This change adds to code to provide non-access fault support for
-probe instructions. It also modifies the handling of faults on
-userspace so that if the address lies in a valid VMA and the access
-type matches that for the VMA, the probe target register is set to
-one. Otherwise, the target register is set to zero.
+Increase delays appropriately, and retry should I2C errors be
+reported.
 
-This was done to make probe instructions more useful for userspace.
-Probe instructions are not very useful if they set the target register
-to zero whenever a page is not present in memory. Nominally, the
-purpose of the probe instruction is determine whether read or write
-access to a given address is allowed.
-
-This fixes a problem in function pointer comparison noticed in the
-glibc testsuite (stdio-common/tst-vfprintf-user-type). The same
-problem is likely in glibc (_dl_lookup_address).
-
-V2 adds flush and lpa instruction support to handle_nadtlb_fault.
-
-Signed-off-by: John David Anglin <dave.anglin@bell.net>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Signed-off-by: Detlev Casanova <detlev.casanova@collabora.com>
+Link: https://lore.kernel.org/r/20220124220129.158891-3-detlev.casanova@collabora.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/parisc/include/asm/traps.h |  1 +
- arch/parisc/kernel/traps.c      |  2 +
- arch/parisc/mm/fault.c          | 89 +++++++++++++++++++++++++++++++++
- 3 files changed, 92 insertions(+)
+ .../regulator/rpi-panel-attiny-regulator.c    | 56 +++++++++++++++----
+ 1 file changed, 46 insertions(+), 10 deletions(-)
 
-diff --git a/arch/parisc/include/asm/traps.h b/arch/parisc/include/asm/traps.h
-index 34619f010c63..0ccdb738a9a3 100644
---- a/arch/parisc/include/asm/traps.h
-+++ b/arch/parisc/include/asm/traps.h
-@@ -18,6 +18,7 @@ unsigned long parisc_acctyp(unsigned long code, unsigned int inst);
- const char *trap_name(unsigned long code);
- void do_page_fault(struct pt_regs *regs, unsigned long code,
- 		unsigned long address);
-+int handle_nadtlb_fault(struct pt_regs *regs);
- #endif
+diff --git a/drivers/regulator/rpi-panel-attiny-regulator.c b/drivers/regulator/rpi-panel-attiny-regulator.c
+index ee46bfbf5eee..991b4730d768 100644
+--- a/drivers/regulator/rpi-panel-attiny-regulator.c
++++ b/drivers/regulator/rpi-panel-attiny-regulator.c
+@@ -37,11 +37,24 @@ static const struct regmap_config attiny_regmap_config = {
+ static int attiny_lcd_power_enable(struct regulator_dev *rdev)
+ {
+ 	unsigned int data;
++	int ret, i;
  
- #endif
-diff --git a/arch/parisc/kernel/traps.c b/arch/parisc/kernel/traps.c
-index b6fdebddc8e9..39576a9245c7 100644
---- a/arch/parisc/kernel/traps.c
-+++ b/arch/parisc/kernel/traps.c
-@@ -662,6 +662,8 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
- 			 by hand. Technically we need to emulate:
- 			 fdc,fdce,pdc,"fic,4f",prober,probeir,probew, probeiw
- 		*/
-+		if (code == 17 && handle_nadtlb_fault(regs))
-+			return;
- 		fault_address = regs->ior;
- 		fault_space = regs->isr;
- 		break;
-diff --git a/arch/parisc/mm/fault.c b/arch/parisc/mm/fault.c
-index e9eabf8f14d7..f114e102aaf2 100644
---- a/arch/parisc/mm/fault.c
-+++ b/arch/parisc/mm/fault.c
-@@ -425,3 +425,92 @@ void do_page_fault(struct pt_regs *regs, unsigned long code,
- 	}
- 	pagefault_out_of_memory();
+ 	regmap_write(rdev->regmap, REG_POWERON, 1);
++	msleep(80);
++
+ 	/* Wait for nPWRDWN to go low to indicate poweron is done. */
+-	regmap_read_poll_timeout(rdev->regmap, REG_PORTB, data,
+-					data & BIT(0), 10, 1000000);
++	for (i = 0; i < 20; i++) {
++		ret = regmap_read(rdev->regmap, REG_PORTB, &data);
++		if (!ret) {
++			if (data & BIT(0))
++				break;
++		}
++		usleep_range(10000, 12000);
++	}
++	usleep_range(10000, 12000);
++
++	if (ret)
++		pr_err("%s: regmap_read_poll_timeout failed %d\n", __func__, ret);
+ 
+ 	/* Default to the same orientation as the closed source
+ 	 * firmware used for the panel.  Runtime rotation
+@@ -57,23 +70,34 @@ static int attiny_lcd_power_disable(struct regulator_dev *rdev)
+ {
+ 	regmap_write(rdev->regmap, REG_PWM, 0);
+ 	regmap_write(rdev->regmap, REG_POWERON, 0);
+-	udelay(1);
++	msleep(30);
+ 	return 0;
  }
-+
-+/* Handle non-access data TLB miss faults.
-+ *
-+ * For probe instructions, accesses to userspace are considered allowed
-+ * if they lie in a valid VMA and the access type matches. We are not
-+ * allowed to handle MM faults here so there may be situations where an
-+ * actual access would fail even though a probe was successful.
-+ */
-+int
-+handle_nadtlb_fault(struct pt_regs *regs)
-+{
-+	unsigned long insn = regs->iir;
-+	int breg, treg, xreg, val = 0;
-+	struct vm_area_struct *vma, *prev_vma;
-+	struct task_struct *tsk;
-+	struct mm_struct *mm;
-+	unsigned long address;
-+	unsigned long acc_type;
-+
-+	switch (insn & 0x380) {
-+	case 0x280:
-+		/* FDC instruction */
-+		fallthrough;
-+	case 0x380:
-+		/* PDC and FIC instructions */
-+		if (printk_ratelimit()) {
-+			pr_warn("BUG: nullifying cache flush/purge instruction\n");
-+			show_regs(regs);
-+		}
-+		if (insn & 0x20) {
-+			/* Base modification */
-+			breg = (insn >> 21) & 0x1f;
-+			xreg = (insn >> 16) & 0x1f;
-+			if (breg && xreg)
-+				regs->gr[breg] += regs->gr[xreg];
-+		}
-+		regs->gr[0] |= PSW_N;
-+		return 1;
-+
-+	case 0x180:
-+		/* PROBE instruction */
-+		treg = insn & 0x1f;
-+		if (regs->isr) {
-+			tsk = current;
-+			mm = tsk->mm;
-+			if (mm) {
-+				/* Search for VMA */
-+				address = regs->ior;
-+				mmap_read_lock(mm);
-+				vma = find_vma_prev(mm, address, &prev_vma);
-+				mmap_read_unlock(mm);
-+
-+				/*
-+				 * Check if access to the VMA is okay.
-+				 * We don't allow for stack expansion.
-+				 */
-+				acc_type = (insn & 0x40) ? VM_WRITE : VM_READ;
-+				if (vma
-+				    && address >= vma->vm_start
-+				    && (vma->vm_flags & acc_type) == acc_type)
-+					val = 1;
-+			}
-+		}
-+		if (treg)
-+			regs->gr[treg] = val;
-+		regs->gr[0] |= PSW_N;
-+		return 1;
-+
-+	case 0x300:
-+		/* LPA instruction */
-+		if (insn & 0x20) {
-+			/* Base modification */
-+			breg = (insn >> 21) & 0x1f;
-+			xreg = (insn >> 16) & 0x1f;
-+			if (breg && xreg)
-+				regs->gr[breg] += regs->gr[xreg];
-+		}
-+		treg = insn & 0x1f;
-+		if (treg)
-+			regs->gr[treg] = 0;
-+		regs->gr[0] |= PSW_N;
-+		return 1;
-+
-+	default:
-+		break;
+ 
+ static int attiny_lcd_power_is_enabled(struct regulator_dev *rdev)
+ {
+ 	unsigned int data;
+-	int ret;
++	int ret, i;
+ 
+-	ret = regmap_read(rdev->regmap, REG_POWERON, &data);
++	for (i = 0; i < 10; i++) {
++		ret = regmap_read(rdev->regmap, REG_POWERON, &data);
++		if (!ret)
++			break;
++		usleep_range(10000, 12000);
++	}
+ 	if (ret < 0)
+ 		return ret;
+ 
+ 	if (!(data & BIT(0)))
+ 		return 0;
+ 
+-	ret = regmap_read(rdev->regmap, REG_PORTB, &data);
++	for (i = 0; i < 10; i++) {
++		ret = regmap_read(rdev->regmap, REG_PORTB, &data);
++		if (!ret)
++			break;
++		usleep_range(10000, 12000);
 +	}
 +
-+	return 0;
-+}
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -103,20 +127,32 @@ static int attiny_update_status(struct backlight_device *bl)
+ {
+ 	struct regmap *regmap = bl_get_data(bl);
+ 	int brightness = bl->props.brightness;
++	int ret, i;
+ 
+ 	if (bl->props.power != FB_BLANK_UNBLANK ||
+ 	    bl->props.fb_blank != FB_BLANK_UNBLANK)
+ 		brightness = 0;
+ 
+-	return regmap_write(regmap, REG_PWM, brightness);
++	for (i = 0; i < 10; i++) {
++		ret = regmap_write(regmap, REG_PWM, brightness);
++		if (!ret)
++			break;
++	}
++
++	return ret;
+ }
+ 
+ static int attiny_get_brightness(struct backlight_device *bl)
+ {
+ 	struct regmap *regmap = bl_get_data(bl);
+-	int ret, brightness;
++	int ret, brightness, i;
++
++	for (i = 0; i < 10; i++) {
++		ret = regmap_read(regmap, REG_PWM, &brightness);
++		if (!ret)
++			break;
++	}
+ 
+-	ret = regmap_read(regmap, REG_PWM, &brightness);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -166,7 +202,7 @@ static int attiny_i2c_probe(struct i2c_client *i2c,
+ 	}
+ 
+ 	regmap_write(regmap, REG_POWERON, 0);
+-	mdelay(1);
++	msleep(30);
+ 
+ 	config.dev = &i2c->dev;
+ 	config.regmap = regmap;
 -- 
 2.34.1
 
