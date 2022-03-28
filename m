@@ -2,111 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C392C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 09:48:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52CA2C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 09:49:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239935AbiC1JuS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 05:50:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44762 "EHLO
+        id S239937AbiC1Jup (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 05:50:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239926AbiC1JuP (ORCPT
+        with ESMTP id S239936AbiC1Jul (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 05:50:15 -0400
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 047BA31216;
-        Mon, 28 Mar 2022 02:48:33 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=hsiangkao@linux.alibaba.com;NM=1;PH=DS;RN=19;SR=0;TI=SMTPD_---0V8QUoPW_1648460907;
-Received: from B-P7TQMD6M-0146.local(mailfrom:hsiangkao@linux.alibaba.com fp:SMTPD_---0V8QUoPW_1648460907)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 28 Mar 2022 17:48:29 +0800
-Date:   Mon, 28 Mar 2022 17:48:26 +0800
-From:   Gao Xiang <hsiangkao@linux.alibaba.com>
-To:     Jeffle Xu <jefflexu@linux.alibaba.com>
-Cc:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
-        chao@kernel.org, linux-erofs@lists.ozlabs.org,
-        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
-        willy@infradead.org, linux-fsdevel@vger.kernel.org,
-        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
-        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
-        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
-        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
-        fannaihao@baidu.com
-Subject: Re: [PATCH v6 19/22] erofs: register cookie context for data blobs
-Message-ID: <YkGEasaBSCwfGdj3@B-P7TQMD6M-0146.local>
-Mail-Followup-To: Jeffle Xu <jefflexu@linux.alibaba.com>,
-        dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
-        chao@kernel.org, linux-erofs@lists.ozlabs.org,
-        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
-        willy@infradead.org, linux-fsdevel@vger.kernel.org,
-        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
-        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
-        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
-        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
-        fannaihao@baidu.com
-References: <20220325122223.102958-1-jefflexu@linux.alibaba.com>
- <20220325122223.102958-20-jefflexu@linux.alibaba.com>
+        Mon, 28 Mar 2022 05:50:41 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DB0141998
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 02:49:01 -0700 (PDT)
+Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
+        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22S8AwhF030875;
+        Mon, 28 Mar 2022 04:48:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=PODMain02222019;
+ bh=ibHl2GksQmQQam7qX5RenwrdLC1XTS4U1w3rN1pnzl8=;
+ b=YYDjKUKg+VcfN0qY8HRO80xKphK0ZDDpZDZz7tEqMuDWxoNavhVBLnNd3okoQivUFUco
+ BZCx/PlfrXlmzHM9BJjJaALCTm5o/O1Dp1tXmQk5A8+KYHTzwc/xKH26BRVOmtZ74DMS
+ EoJagoX+7JV4fklQ2ljh6XFWo5X4sb3vcsXCW21ErpmdMzWJADh5f2qEX6PumPsyDvae
+ WI6EMiK+O4zNFrCrUDCBkrICqYorWEv8ZZUfBW4007YDGy8VFz2K+1NSP4rRW4do4gKO
+ Exb2kLaBcl8Su1WdTxwO7+jgwgoyj04fAIlt/JS60xRuFHGaTxM6/a1NLHenfAgyBmWz Dg== 
+Received: from ediex01.ad.cirrus.com ([84.19.233.68])
+        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3f2081agab-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 28 Mar 2022 04:48:51 -0500
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 28 Mar
+ 2022 10:48:49 +0100
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
+ Transport; Mon, 28 Mar 2022 10:48:49 +0100
+Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 790A8B16;
+        Mon, 28 Mar 2022 09:48:49 +0000 (UTC)
+Date:   Mon, 28 Mar 2022 09:48:49 +0000
+From:   Charles Keepax <ckeepax@opensource.cirrus.com>
+To:     Stephen Kitt <steve@sk2.org>
+CC:     James Schulman <james.schulman@cirrus.com>,
+        David Rhodes <david.rhodes@cirrus.com>,
+        Lucas Tanure <tanureal@opensource.cirrus.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        <patches@opensource.cirrus.com>, Wolfram Sang <wsa@kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] ASoC: cs*: use simple i2c probe function
+Message-ID: <20220328094849.GB38351@ediswmail.ad.cirrus.com>
+References: <20220325170734.1216018-1-steve@sk2.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20220325122223.102958-20-jefflexu@linux.alibaba.com>
+In-Reply-To: <20220325170734.1216018-1-steve@sk2.org>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-Proofpoint-ORIG-GUID: aIvY0tMkFETfT-DjU7U0AIM1VAcYqSaC
+X-Proofpoint-GUID: aIvY0tMkFETfT-DjU7U0AIM1VAcYqSaC
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 08:22:20PM +0800, Jeffle Xu wrote:
-> Similar to the multi device mode, erofs could be mounted from multiple
-> blob files (one bootstrap blob file and optional multiple data blob
-> files). In this case, each device slot contains the path of
-> corresponding data blob file.
+On Fri, Mar 25, 2022 at 06:07:34PM +0100, Stephen Kitt wrote:
+> The i2c probe functions here don't use the id information provided in
+> their second argument, so the single-parameter i2c probe function
+> ("probe_new") can be used instead.
 > 
-> Registers corresponding cookie context for each data blob file.
+> This avoids scanning the identifier tables during probes.
 > 
-> Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
+> Signed-off-by: Stephen Kitt <steve@sk2.org>
 > ---
->  fs/erofs/internal.h |  1 +
->  fs/erofs/super.c    | 30 ++++++++++++++++++++++--------
->  2 files changed, 23 insertions(+), 8 deletions(-)
-> 
-> diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
-> index 6537ededed51..94a118caf580 100644
-> --- a/fs/erofs/internal.h
-> +++ b/fs/erofs/internal.h
-> @@ -52,6 +52,7 @@ struct erofs_device_info {
->  	struct block_device *bdev;
->  	struct dax_device *dax_dev;
 
-Place
-	struct erofs_fscache *fscache;
-
->  	u64 dax_part_off;
-> +	struct erofs_fscache *blob;
-
-Instead here since `blob' is also nydus-specific.
-
-Need to update the subject and commit message too.
-
->  
->  	u32 blocks;
->  	u32 mapped_blkaddr;
-> diff --git a/fs/erofs/super.c b/fs/erofs/super.c
-> index de5aeda4aea0..9a6f35e0c22b 100644
-> --- a/fs/erofs/super.c
-> +++ b/fs/erofs/super.c
-> @@ -259,15 +259,28 @@ static int erofs_init_devices(struct super_block *sb,
->  		}
->  		dis = ptr + erofs_blkoff(pos);
->  
-> -		bdev = blkdev_get_by_path(dif->path,
-> -					  FMODE_READ | FMODE_EXCL,
-> -					  sb->s_type);
-> -		if (IS_ERR(bdev)) {
-> -			err = PTR_ERR(bdev);
-> -			break;
-> +		if (IS_ENABLED(CONFIG_EROFS_FS_ONDEMAND) &&
-> +		    erofs_is_nodev_mode(sb)) {
-> +			struct erofs_fscache *blob;
-
-Same here.
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
 
 Thanks,
-Gao Xiang
+Charles
