@@ -2,146 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B4A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 08:20:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6439DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 08:21:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239283AbiC1IWg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 04:22:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58424 "EHLO
+        id S238026AbiC1IXY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 04:23:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239292AbiC1IWY (ORCPT
+        with ESMTP id S233675AbiC1IXX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 04:22:24 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD6153A5D
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 01:20:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648455643; x=1679991643;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=X/ujBVMAf8bxk2V6GI32GPU9XNz0mDme+92j35t6tB4=;
-  b=DpQTLhXdPbp7ICihLu3eCOqtAfgOMk4QmiT7BuNP2dWRQhWok0S0zxSV
-   yhzPZumIdfH4HazYktm8W9t+dpng5k+AYifl3xtW79F1zXpn2Tb4M4yXy
-   aStrgXFxxiG2PgyHgRdylVTsie0WuGzaf8oxcIAF9xhOBJtV0pQ4UbV1C
-   3vb11kfjq684WgGG0Z3fzfDIEUeqIB4uhTwHu7Cq5wzPfLplyS5brk6re
-   SSEhXIH5o6sMMXgLwfLka8cZSXLtp1RFMaWO02jG29WTws30p+MxzvMpn
-   qQD6KLWYYR+clJwPD/YushhXTe62x+/oQLs4m0sOpaSYGdGzvM+GAjf6j
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10299"; a="259129827"
-X-IronPort-AV: E=Sophos;i="5.90,216,1643702400"; 
-   d="scan'208";a="259129827"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 01:20:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,216,1643702400"; 
-   d="scan'208";a="563435784"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga008.jf.intel.com with ESMTP; 28 Mar 2022 01:20:41 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nYkcC-0001sL-HP; Mon, 28 Mar 2022 08:20:40 +0000
-Date:   Mon, 28 Mar 2022 16:20:32 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     =?iso-8859-1?Q?Andr=E9?= Almeida <andrealmeid@collabora.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>
-Subject: drivers/spi/spi-amd.c:296:21: warning: cast to smaller integer type
- 'enum amd_spi_versions' from 'const void *'
-Message-ID: <202203281638.pWQ7vWbp-lkp@intel.com>
+        Mon, 28 Mar 2022 04:23:23 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC80053704;
+        Mon, 28 Mar 2022 01:21:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 48F92CE1268;
+        Mon, 28 Mar 2022 08:21:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F124C004DD;
+        Mon, 28 Mar 2022 08:21:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1648455699;
+        bh=rGS3hg/MsslSpTPtajHfguVHB2camyQ2cJ7EAOHchlQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qs/+XN8V+cYmkweV7abKvrL3IsgVrtYiptavboQsW+qhYyMmfxoKl0neGLCXm9zJj
+         RbBpQ8TA2CzS7ZzzfNa4B7e5ffpc7zwQ2SjLlxqXaHUcj30lA+q/FN3zgXl9m2wFHp
+         9/GdzpUMeyVxruRswzKx1YEX8m7y08yBYLqWm5JQ=
+Date:   Mon, 28 Mar 2022 10:21:37 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        stable <stable@vger.kernel.org>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 5.10 11/38] swiotlb: rework "fix info leak with
+ DMA_FROM_DEVICE"
+Message-ID: <YkFwEWy9Pt0v5KLr@kroah.com>
+References: <20220325150419.757836392@linuxfoundation.org>
+ <20220325150420.085364078@linuxfoundation.org>
+ <CAHk-=wiaeZKiEk87Sms1sy53m8tT3UCLOoeUBnX1c_1dZ78WjQ@mail.gmail.com>
+ <Yj7oXgoCdhWAwFQt@kroah.com>
+ <CAHk-=wgeOrhN_Gznm80==STG1pEbqLMCaZZoeQzZu=NN9GOTgw@mail.gmail.com>
+ <YkAuqiHAEaDLHDAO@kroah.com>
+ <CAHk-=wgzSHQqz33i0DfmFyEG43eeyDkkUO=a3jY0eH2h_1AwgA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CAHk-=wgzSHQqz33i0DfmFyEG43eeyDkkUO=a3jY0eH2h_1AwgA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi André,
+On Sun, Mar 27, 2022 at 11:02:12AM -0700, Linus Torvalds wrote:
+> On Sun, Mar 27, 2022 at 2:30 AM Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+> >
+> > But why did you just revert that commit, and not the previous one (i.e.
+> > the one that this one "fixes")?  Shouldn't ddbd89deb7d3 ("swiotlb: fix
+> > info leak with DMA_FROM_DEVICE") also be dropped?
+> 
+> The previous one wasn't obviously broken, and while it's a bit ugly,
+> it doesn't have the fundamental issues that the "fix" commit had.
+> 
+> And it does fix the whole "bounce buffer contents are undefined, and
+> can get copied back later" at the bounce buffer allocation (well,
+> "mapping") stage.
+> 
+> Which could cause wasted CPU cycles and isn't great, but should fix
+> the stale content thing for at least the common "map DMA, do DMA,
+> unmap" situation.
+> 
+> What commit aa6f8dcbab47 tried to fix was the "do multiple DMA
+> sequences using one single mapping" case, but that's also what then
+> broke ath9k because it really does want to do exactly that, but it
+> very much needs to do it using the same buffer with no "let's reset
+> it".
+> 
+> So I think you're fine to drop ddbd89deb7d3 too, but that commit
+> doesn't seem *wrong* per se.
+> 
+> I do think we need some model for "clear the bounce buffer of stale
+> data", and I do think that commit ddbd89deb7d3 probably isn't the
+> final word, but we don't actually _have_ the final word on this all,
+> so stable dropping it all is sane.
+> 
+> But as mentioned, commit ddbd89deb7d3 can actually fix some cases.
+> 
+> In particular, I do think it fixes the SG_IO data leak case that
+> triggered the whole issue. It was just then the "let's expand on this
+> fix" that was a disaster.
 
-FYI, the error/warning still remains.
+Ok, I have just queued that one up now for the older kernels, and the
+revert for 5.15 and newer, thanks.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   ae085d7f9365de7da27ab5c0d16b12d51ea7fca9
-commit: 209043554915d7c51ac112a668ad1a255e1bea61 spi: amd: Add support for version AMDI0062
-date:   6 weeks ago
-config: x86_64-randconfig-a011-20220328 (https://download.01.org/0day-ci/archive/20220328/202203281638.pWQ7vWbp-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0f6d9501cf49ce02937099350d08f20c4af86f3d)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=209043554915d7c51ac112a668ad1a255e1bea61
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 209043554915d7c51ac112a668ad1a255e1bea61
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/spi/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/spi/spi-amd.c:296:21: warning: cast to smaller integer type 'enum amd_spi_versions' from 'const void *' [-Wvoid-pointer-to-enum-cast]
-           amd_spi->version = (enum amd_spi_versions) device_get_match_data(dev);
-                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   1 warning generated.
-
-
-vim +296 drivers/spi/spi-amd.c
-
-   272	
-   273	static int amd_spi_probe(struct platform_device *pdev)
-   274	{
-   275		struct device *dev = &pdev->dev;
-   276		struct spi_master *master;
-   277		struct amd_spi *amd_spi;
-   278		int err = 0;
-   279	
-   280		/* Allocate storage for spi_master and driver private data */
-   281		master = spi_alloc_master(dev, sizeof(struct amd_spi));
-   282		if (!master) {
-   283			dev_err(dev, "Error allocating SPI master\n");
-   284			return -ENOMEM;
-   285		}
-   286	
-   287		amd_spi = spi_master_get_devdata(master);
-   288		amd_spi->io_remap_addr = devm_platform_ioremap_resource(pdev, 0);
-   289		if (IS_ERR(amd_spi->io_remap_addr)) {
-   290			err = PTR_ERR(amd_spi->io_remap_addr);
-   291			dev_err(dev, "error %d ioremap of SPI registers failed\n", err);
-   292			goto err_free_master;
-   293		}
-   294		dev_dbg(dev, "io_remap_address: %p\n", amd_spi->io_remap_addr);
-   295	
- > 296		amd_spi->version = (enum amd_spi_versions) device_get_match_data(dev);
-   297	
-   298		/* Initialize the spi_master fields */
-   299		master->bus_num = 0;
-   300		master->num_chipselect = 4;
-   301		master->mode_bits = 0;
-   302		master->flags = SPI_MASTER_HALF_DUPLEX;
-   303		master->setup = amd_spi_master_setup;
-   304		master->transfer_one_message = amd_spi_master_transfer;
-   305	
-   306		/* Register the controller with SPI framework */
-   307		err = devm_spi_register_master(dev, master);
-   308		if (err) {
-   309			dev_err(dev, "error %d registering SPI controller\n", err);
-   310			goto err_free_master;
-   311		}
-   312	
-   313		return 0;
-   314	
-   315	err_free_master:
-   316		spi_master_put(master);
-   317	
-   318		return err;
-   319	}
-   320	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+greg k-h
