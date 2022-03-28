@@ -2,560 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4CD6C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:44:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C80DFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:44:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241537AbiC1Lph (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:45:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39406 "EHLO
+        id S234949AbiC1Lpv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:45:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242139AbiC1LeH (ORCPT
+        with ESMTP id S242661AbiC1Lf0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:34:07 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9C105A143;
-        Mon, 28 Mar 2022 04:25:22 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 3A79E2224E;
-        Mon, 28 Mar 2022 13:25:13 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1648466713;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5jLHwuZPoCIbU73qP6lRzMFi0PToiOD7l+hzymyFxxg=;
-        b=gc+xKBr7+KT+Ej5gdVPM/rtoNatn7of93SriJod78PEndF2+ViyuVZ30SxlS4wI/cg/AdW
-        SIi2992TzFdHxj9QEdyJKjPWf2KJ4LDSGBy8Ew/m8jk5pMWFMXEaCQUxtZUBvMvf6JLZV3
-        GNVYUZsVwRgjw55jUNBguWR2mTBYMaA=
-From:   Michael Walle <michael@walle.cc>
-To:     Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
-Subject: [PATCH v2 4/4] hwmon: add driver for the Microchip LAN966x SoC
-Date:   Mon, 28 Mar 2022 13:25:05 +0200
-Message-Id: <20220328112505.3025374-5-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220328112505.3025374-1-michael@walle.cc>
-References: <20220328112505.3025374-1-michael@walle.cc>
+        Mon, 28 Mar 2022 07:35:26 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53F59F76
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 04:26:33 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KRr1w24myzCrNB;
+        Mon, 28 Mar 2022 19:24:20 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
+ (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 28 Mar
+ 2022 19:26:31 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <akpm@linux-foundation.org>, <hughd@google.com>
+CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        <linmiaohe@huawei.com>
+Subject: [PATCH] mm: shmem: make shmem_init return void
+Date:   Mon, 28 Mar 2022 19:27:07 +0800
+Message-ID: <20220328112707.22217-1-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for the temperatur sensor and the fan controller on the
-Microchip LAN966x SoC. Apparently, an Analog Bits PVT sensor is used
-which can measure temperature and process voltages. But only a forumlae
-for the temperature sensor is known. Additionally, the SoC support a fan
-tacho input as well as a PWM signal to control the fan.
+The return value of shmem_init is never used. So we can make it
+return void now.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 ---
-Just in case someone is curious why the I state the datasheet is wrong
-on the PWM frequency: The actual PWM frequency was verified by measuring
-the output with an oscilloscope. Also you can write a '0' as the PWM
-frequency which would result in div-by-zero; but what happens is that
-the output frequency will be half the frequency of a setting of '1'.
+ include/linux/shmem_fs.h | 2 +-
+ mm/shmem.c               | 9 ++++-----
+ 2 files changed, 5 insertions(+), 6 deletions(-)
 
- Documentation/hwmon/lan966x.rst |  47 ++++
- drivers/hwmon/Kconfig           |  12 +
- drivers/hwmon/Makefile          |   1 +
- drivers/hwmon/lan966x-hwmon.c   | 390 ++++++++++++++++++++++++++++++++
- 4 files changed, 450 insertions(+)
- create mode 100644 Documentation/hwmon/lan966x.rst
- create mode 100644 drivers/hwmon/lan966x-hwmon.c
-
-diff --git a/Documentation/hwmon/lan966x.rst b/Documentation/hwmon/lan966x.rst
-new file mode 100644
-index 000000000000..00c93539d842
---- /dev/null
-+++ b/Documentation/hwmon/lan966x.rst
-@@ -0,0 +1,47 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+Kernel driver lan966x-hwmon
-+===========================
-+
-+Supported chips:
-+
-+  * Microchip LAN9668 (sensor in SoC)
-+
-+    Prefix: 'lan9668-hwmon'
-+
-+    Datasheet: https://microchip-ung.github.io/lan9668_reginfo
-+
-+Authors:
-+
-+	Michael Walle <michael@walle.cc>
-+
-+Description
-+-----------
-+
-+This driver implements support for the Microchip LAN9668 on-chip
-+temperature sensor as well as its fan controller. It provides one
-+temperature sensor and one fan controller. The temperature range
-+of the sensor is specified from -40 to +125 degrees Celsius and
-+its accuracy is +/- 5 degrees Celsius. The fan controller has a
-+tacho input and a PWM output with a customizable PWM output
-+frequency from ~20Hz to ~650kHz
-+
-+No alarms are supported by the SoC.
-+
-+temperature sensor chips. TMP464 provides one local and four remote
-+sensors. TMP468 provides one local and eight remote sensors.
-+Temperature is measured in degrees Celsius. The chips are wired over
-+I2C/SMBus and specified over a temperature range of -40 to +125 degrees
-+Celsius. Resolution for both the local and remote channels is 0.0625
-+degree C.
-+
-+The driver exports temperature values, fan tacho input and PWM settings
-+via the following sysfs files:
-+
-+**temp1_input**
-+
-+**fan1_input**
-+
-+**pwm1**
-+
-+**pwm1_freq**
-diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
-index be9773270e53..26a60e1eebbc 100644
---- a/drivers/hwmon/Kconfig
-+++ b/drivers/hwmon/Kconfig
-@@ -815,6 +815,18 @@ config SENSORS_POWR1220
- 	  This driver can also be built as a module. If so, the module
- 	  will be called powr1220.
+diff --git a/include/linux/shmem_fs.h b/include/linux/shmem_fs.h
+index ab51d3cd39bd..3e915cc550bc 100644
+--- a/include/linux/shmem_fs.h
++++ b/include/linux/shmem_fs.h
+@@ -56,7 +56,7 @@ static inline struct shmem_inode_info *SHMEM_I(struct inode *inode)
+  * Functions in mm/shmem.c called directly from elsewhere:
+  */
+ extern const struct fs_parameter_spec shmem_fs_parameters[];
+-extern int shmem_init(void);
++extern void shmem_init(void);
+ extern int shmem_init_fs_context(struct fs_context *fc);
+ extern struct file *shmem_file_setup(const char *name,
+ 					loff_t size, unsigned long flags);
+diff --git a/mm/shmem.c b/mm/shmem.c
+index 529c9ad3e926..26e09a022087 100644
+--- a/mm/shmem.c
++++ b/mm/shmem.c
+@@ -3879,7 +3879,7 @@ static struct file_system_type shmem_fs_type = {
+ 	.fs_flags	= FS_USERNS_MOUNT,
+ };
  
-+config SENSORS_LAN966X
-+	tristate "Microchip LAN966x Hardware Monitoring"
-+	depends on SOC_LAN966 || COMPILE_TEST
-+	depends on REGMAP
-+	select POLYNOMIAL
-+	help
-+	  If you say yes here you get support for temperature monitoring
-+	  on the Microchip LAN966x SoC.
-+
-+	  This driver can also be built as a module. If so, the module
-+	  will be called lan966x-hwmon.
-+
- config SENSORS_LINEAGE
- 	tristate "Lineage Compact Power Line Power Entry Module"
- 	depends on I2C
-diff --git a/drivers/hwmon/Makefile b/drivers/hwmon/Makefile
-index 8a03289e2aa4..51ca6956f8b7 100644
---- a/drivers/hwmon/Makefile
-+++ b/drivers/hwmon/Makefile
-@@ -100,6 +100,7 @@ obj-$(CONFIG_SENSORS_IT87)	+= it87.o
- obj-$(CONFIG_SENSORS_JC42)	+= jc42.o
- obj-$(CONFIG_SENSORS_K8TEMP)	+= k8temp.o
- obj-$(CONFIG_SENSORS_K10TEMP)	+= k10temp.o
-+obj-$(CONFIG_SENSORS_LAN966X)	+= lan966x-hwmon.o
- obj-$(CONFIG_SENSORS_LINEAGE)	+= lineage-pem.o
- obj-$(CONFIG_SENSORS_LOCHNAGAR)	+= lochnagar-hwmon.o
- obj-$(CONFIG_SENSORS_LM63)	+= lm63.o
-diff --git a/drivers/hwmon/lan966x-hwmon.c b/drivers/hwmon/lan966x-hwmon.c
-new file mode 100644
-index 000000000000..d0db2de6c7e8
---- /dev/null
-+++ b/drivers/hwmon/lan966x-hwmon.c
-@@ -0,0 +1,390 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+
-+#include <linux/bitfield.h>
-+#include <linux/clk.h>
-+#include <linux/hwmon.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/platform_device.h>
-+#include <linux/polynomial.h>
-+#include <linux/regmap.h>
-+
-+/*
-+ * The original translation formulae of the temperature (in degrees of Celsius)
-+ * are as follows:
-+ *
-+ *   T = -3.4627e-11*(N^4) + 1.1023e-7*(N^3) + -1.9165e-4*(N^2) +
-+ *       3.0604e-1*(N^1) + -5.6197e1
-+ *
-+ * where [-56.197, 136.402]C and N = [0, 1023].
-+ *
-+ * They must be accordingly altered to be suitable for the integer arithmetics.
-+ * The technique is called 'factor redistribution', which just makes sure the
-+ * multiplications and divisions are made so to have a result of the operations
-+ * within the integer numbers limit. In addition we need to translate the
-+ * formulae to accept millidegrees of Celsius. Here what it looks like after
-+ * the alterations:
-+ *
-+ *   T = -34627e-12*(N^4) + 110230e-9*(N^3) + -191650e-6*(N^2) +
-+ *       306040e-3*(N^1) + -56197
-+ *
-+ * where T = [-56197, 136402]mC and N = [0, 1023].
-+ */
-+
-+static const struct polynomial poly_N_to_temp = {
-+	.terms = {
-+		{4,  -34627, 1000, 1},
-+		{3,  110230, 1000, 1},
-+		{2, -191650, 1000, 1},
-+		{1,  306040, 1000, 1},
-+		{0,  -56197,    1, 1}
-+	}
-+};
-+
-+#define PVT_SENSOR_CTRL		0x0 /* unused */
-+#define PVT_SENSOR_CFG		0x4
-+#define   SENSOR_CFG_CLK_CFG		GENMASK(27, 20)
-+#define   SENSOR_CFG_TRIM_VAL		GENMASK(13, 9)
-+#define   SENSOR_CFG_SAMPLE_ENA		BIT(8)
-+#define   SENSOR_CFG_START_CAPTURE	BIT(7)
-+#define   SENSOR_CFG_CONTINIOUS_MODE	BIT(6)
-+#define   SENSOR_CFG_PSAMPLE_ENA	GENMASK(1, 0)
-+#define PVT_SENSOR_STAT		0x8
-+#define   SENSOR_STAT_DATA_VALID	BIT(10)
-+#define   SENSOR_STAT_DATA		GENMASK(9, 0)
-+
-+#define FAN_CFG			0x0
-+#define   FAN_CFG_DUTY_CYCLE		GENMASK(23, 16)
-+#define   INV_POL			BIT(3)
-+#define   GATE_ENA			BIT(2)
-+#define   PWM_OPEN_COL_ENA		BIT(1)
-+#define   FAN_STAT_CFG			BIT(0)
-+#define FAN_PWM_FREQ		0x4
-+#define   FAN_PWM_CYC_10US		GENMASK(25, 15)
-+#define   FAN_PWM_FREQ_FREQ		GENMASK(14, 0)
-+#define FAN_CNT			0xc
-+#define   FAN_CNT_DATA			GENMASK(15, 0)
-+
-+struct lan966x_hwmon {
-+	struct regmap *regmap_pvt;
-+	struct regmap *regmap_fan;
-+	struct clk *clk;
-+	unsigned long clk_rate;
-+};
-+
-+static int lan966x_hwmon_read_temp(struct device *dev, long *val)
-+{
-+	struct lan966x_hwmon *hwmon = dev_get_drvdata(dev);
-+	unsigned int data;
-+	int ret;
-+
-+	ret = regmap_read(hwmon->regmap_pvt, PVT_SENSOR_STAT, &data);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (!(data & SENSOR_STAT_DATA_VALID))
-+		return -ENODATA;
-+
-+	*val = polynomial_calc(&poly_N_to_temp,
-+			       FIELD_GET(SENSOR_STAT_DATA, data));
-+
-+	return 0;
-+}
-+
-+static int lan966x_hwmon_read_fan(struct device *dev, long *val)
-+{
-+	struct lan966x_hwmon *hwmon = dev_get_drvdata(dev);
-+	unsigned int data;
-+	int ret;
-+
-+	ret = regmap_read(hwmon->regmap_fan, FAN_CNT, &data);
-+	if (ret < 0)
-+		return ret;
-+
-+	/*
-+	 * Data is given in pulses per second. Assume two pulses
-+	 * per revolution.
-+	 */
-+	*val = FIELD_GET(FAN_CNT_DATA, data) * 60 / 2;
-+
-+	return 0;
-+}
-+
-+static int lan966x_hwmon_read_pwm(struct device *dev, long *val)
-+{
-+	struct lan966x_hwmon *hwmon = dev_get_drvdata(dev);
-+	unsigned int data;
-+	int ret;
-+
-+	ret = regmap_read(hwmon->regmap_fan, FAN_CFG, &data);
-+	if (ret < 0)
-+		return ret;
-+
-+	*val = FIELD_GET(FAN_CFG_DUTY_CYCLE, data);
-+
-+	return 0;
-+}
-+
-+static int lan966x_hwmon_read_pwm_freq(struct device *dev, long *val)
-+{
-+	struct lan966x_hwmon *hwmon = dev_get_drvdata(dev);
-+	unsigned long tmp;
-+	unsigned int data;
-+	int ret;
-+
-+	ret = regmap_read(hwmon->regmap_fan, FAN_PWM_FREQ, &data);
-+	if (ret < 0)
-+		return ret;
-+
-+	/*
-+	 * Datasheet says it is sys_clk / 256 / pwm_freq. But in reality
-+	 * it is sys_clk / 256 / (pwm_freq + 1).
-+	 */
-+	data = FIELD_GET(FAN_PWM_FREQ_FREQ, data) + 1;
-+	tmp = DIV_ROUND_CLOSEST(hwmon->clk_rate, 256);
-+	*val = DIV_ROUND_CLOSEST(tmp, data);
-+
-+	return 0;
-+}
-+
-+static int lan966x_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
-+			      u32 attr, int channel, long *val)
-+{
-+
-+	switch (type) {
-+	case hwmon_temp:
-+		return lan966x_hwmon_read_temp(dev, val);
-+	case hwmon_fan:
-+		return lan966x_hwmon_read_fan(dev, val);
-+	case hwmon_pwm:
-+		switch (attr) {
-+		case hwmon_pwm_input:
-+			return lan966x_hwmon_read_pwm(dev, val);
-+		case hwmon_pwm_freq:
-+			return lan966x_hwmon_read_pwm_freq(dev, val);
-+		default:
-+			return -EOPNOTSUPP;
-+		}
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+static int lan966x_hwmon_write_pwm(struct device *dev, long val)
-+{
-+	struct lan966x_hwmon *hwmon = dev_get_drvdata(dev);
-+
-+	if (val < 0 || val > 255)
-+		return -EINVAL;
-+
-+	return regmap_update_bits(hwmon->regmap_fan, FAN_CFG,
-+				  FAN_CFG_DUTY_CYCLE,
-+				  FIELD_PREP(FAN_CFG_DUTY_CYCLE, val));
-+}
-+
-+static int lan966x_hwmon_write_pwm_freq(struct device *dev, long val)
-+{
-+	struct lan966x_hwmon *hwmon = dev_get_drvdata(dev);
-+
-+	val = DIV_ROUND_CLOSEST(hwmon->clk_rate, val);
-+	val = DIV_ROUND_CLOSEST(val, 256) - 1;
-+	val = clamp_val(val, 0, FAN_PWM_FREQ_FREQ);
-+
-+	return regmap_update_bits(hwmon->regmap_fan, FAN_PWM_FREQ,
-+				  FAN_PWM_FREQ_FREQ,
-+				  FIELD_PREP(FAN_PWM_FREQ_FREQ, val));
-+}
-+
-+static int lan966x_hwmon_write(struct device *dev, enum hwmon_sensor_types type,
-+			       u32 attr, int channel, long val)
-+{
-+	switch (type) {
-+	case hwmon_pwm:
-+		switch (attr) {
-+		case hwmon_pwm_input:
-+			return lan966x_hwmon_write_pwm(dev, val);
-+		case hwmon_pwm_freq:
-+			return lan966x_hwmon_write_pwm_freq(dev, val);
-+		default:
-+			return -EOPNOTSUPP;
-+		}
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+static umode_t lan966x_hwmon_is_visible(const void *data,
-+					enum hwmon_sensor_types type,
-+					u32 attr, int channel)
-+{
-+	umode_t mode = 0;
-+
-+	switch (type) {
-+	case hwmon_temp:
-+		switch (attr) {
-+		case hwmon_temp_input:
-+			mode = 0444;
-+			break;
-+		default:
-+			break;
-+		}
-+		break;
-+	case hwmon_fan:
-+		switch (attr) {
-+		case hwmon_fan_input:
-+			mode = 0444;
-+			break;
-+		default:
-+			break;
-+		}
-+		break;
-+	case hwmon_pwm:
-+		switch (attr) {
-+		case hwmon_pwm_input:
-+		case hwmon_pwm_freq:
-+			mode = 0644;
-+			break;
-+		default:
-+			break;
-+		}
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	return mode;
-+}
-+
-+
-+static const struct hwmon_channel_info *lan966x_hwmon_info[] = {
-+	HWMON_CHANNEL_INFO(chip, HWMON_C_REGISTER_TZ),
-+	HWMON_CHANNEL_INFO(temp, HWMON_T_INPUT),
-+	HWMON_CHANNEL_INFO(fan, HWMON_F_INPUT),
-+	HWMON_CHANNEL_INFO(pwm, HWMON_PWM_INPUT | HWMON_PWM_FREQ),
-+	NULL
-+};
-+
-+static const struct hwmon_ops lan966x_hwmon_ops = {
-+	.is_visible = lan966x_hwmon_is_visible,
-+	.read = lan966x_hwmon_read,
-+	.write = lan966x_hwmon_write,
-+};
-+
-+static const struct hwmon_chip_info lan966x_hwmon_chip_info = {
-+	.ops = &lan966x_hwmon_ops,
-+	.info = lan966x_hwmon_info,
-+};
-+
-+static int lan966x_hwmon_enable(struct lan966x_hwmon *hwmon)
-+{
-+	unsigned int mask = SENSOR_CFG_SAMPLE_ENA |
-+			    SENSOR_CFG_START_CAPTURE |
-+			    SENSOR_CFG_CONTINIOUS_MODE |
-+			    SENSOR_CFG_PSAMPLE_ENA;
-+	unsigned int val;
-+
-+	/* enable continuous mode */
-+	val = SENSOR_CFG_SAMPLE_ENA | SENSOR_CFG_CONTINIOUS_MODE;
-+
-+	return regmap_update_bits(hwmon->regmap_pvt, PVT_SENSOR_CFG,
-+				  mask, val);
-+}
-+
-+static struct regmap *lan966x_init_regmap(struct platform_device *pdev,
-+					  const char *name)
-+{
-+	struct regmap_config regmap_config = {
-+		.reg_bits = 32,
-+		.reg_stride = 4,
-+		.val_bits = 32,
-+	};
-+	void __iomem *base;
-+
-+	base = devm_platform_ioremap_resource_byname(pdev, name);
-+	if (IS_ERR(base))
-+		return ERR_CAST(base);
-+
-+	regmap_config.name = name;
-+
-+	return devm_regmap_init_mmio(&pdev->dev, base, &regmap_config);
-+}
-+
-+static void lan966x_clk_disable(void *data)
-+{
-+	struct lan966x_hwmon *hwmon = data;
-+
-+	clk_disable_unprepare(hwmon->clk);
-+}
-+
-+static int lan966x_clk_enable(struct device *dev, struct lan966x_hwmon *hwmon)
-+{
-+	int ret;
-+
-+	ret = clk_prepare_enable(hwmon->clk);
-+	if (ret)
-+		return ret;
-+
-+	return devm_add_action_or_reset(dev, lan966x_clk_disable, hwmon);
-+}
-+
-+static int lan966x_hwmon_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct lan966x_hwmon *hwmon;
-+	struct device *hwmon_dev;
-+	int ret;
-+
-+	hwmon = devm_kzalloc(dev, sizeof(*hwmon), GFP_KERNEL);
-+	if (!hwmon)
-+		return -ENOMEM;
-+
-+	hwmon->clk = devm_clk_get(dev, NULL);
-+	if (IS_ERR(hwmon->clk))
-+		return dev_err_probe(dev, PTR_ERR(hwmon->clk),
-+				     "failed to get clock\n");
-+
-+	ret = lan966x_clk_enable(dev, hwmon);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "failed to enable clock\n");
-+
-+	hwmon->clk_rate = clk_get_rate(hwmon->clk);
-+
-+	hwmon->regmap_pvt = lan966x_init_regmap(pdev, "pvt");
-+	if (IS_ERR(hwmon->regmap_pvt))
-+		return dev_err_probe(dev, PTR_ERR(hwmon->regmap_pvt),
-+				     "failed to get regmap for PVT registers\n");
-+
-+	hwmon->regmap_fan = lan966x_init_regmap(pdev, "fan");
-+	if (IS_ERR(hwmon->regmap_fan))
-+		return dev_err_probe(dev, PTR_ERR(hwmon->regmap_fan),
-+				     "failed to get regmap for fan registers\n");
-+
-+	hwmon_dev = devm_hwmon_device_register_with_info(&pdev->dev,
-+				"lan966x_hwmon", hwmon,
-+				&lan966x_hwmon_chip_info, NULL);
-+	if (IS_ERR(hwmon_dev))
-+		return dev_err_probe(dev, PTR_ERR(hwmon_dev),
-+				     "failed to register hwmon device\n");
-+
-+	return lan966x_hwmon_enable(hwmon);
-+}
-+
-+static const struct of_device_id lan966x_hwmon_of_match[] = {
-+	{ .compatible = "microchip,lan9668-hwmon" },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, lan966x_hwmon_of_match);
-+
-+static struct platform_driver lan966x_hwmon_driver = {
-+	.probe = lan966x_hwmon_probe,
-+	.driver = {
-+		.name = "lan966x-hwmon",
-+		.of_match_table = lan966x_hwmon_of_match,
-+	},
-+};
-+module_platform_driver(lan966x_hwmon_driver);
-+
-+MODULE_DESCRIPTION("LAN966x Hardware Monitoring Driver");
-+MODULE_AUTHOR("Michael Walle <michael@walle.cc>");
-+MODULE_LICENSE("GPL");
+-int __init shmem_init(void)
++void __init shmem_init(void)
+ {
+ 	int error;
+ 
+@@ -3904,14 +3904,13 @@ int __init shmem_init(void)
+ 	else
+ 		shmem_huge = SHMEM_HUGE_NEVER; /* just in case it was patched */
+ #endif
+-	return 0;
++	return;
+ 
+ out1:
+ 	unregister_filesystem(&shmem_fs_type);
+ out2:
+ 	shmem_destroy_inodecache();
+ 	shm_mnt = ERR_PTR(error);
+-	return error;
+ }
+ 
+ #if defined(CONFIG_TRANSPARENT_HUGEPAGE) && defined(CONFIG_SYSFS)
+@@ -3989,14 +3988,14 @@ static struct file_system_type shmem_fs_type = {
+ 	.fs_flags	= FS_USERNS_MOUNT,
+ };
+ 
+-int __init shmem_init(void)
++void __init shmem_init(void)
+ {
+ 	BUG_ON(register_filesystem(&shmem_fs_type) != 0);
+ 
+ 	shm_mnt = kern_mount(&shmem_fs_type);
+ 	BUG_ON(IS_ERR(shm_mnt));
+ 
+-	return 0;
++	return;
+ }
+ 
+ int shmem_unuse(unsigned int type)
 -- 
-2.30.2
+2.23.0
 
