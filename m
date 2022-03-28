@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBB14C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:45:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55162C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:45:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343868AbiC1TrY (ORCPT
+        id S1343873AbiC1Tr1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 15:47:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51510 "EHLO
+        Mon, 28 Mar 2022 15:47:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343779AbiC1Tq2 (ORCPT
+        with ESMTP id S1343778AbiC1Tq2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Mar 2022 15:46:28 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E3376831E;
-        Mon, 28 Mar 2022 12:43:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25118689A7;
+        Mon, 28 Mar 2022 12:43:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3A8BB81218;
-        Mon, 28 Mar 2022 19:42:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B51EC36AE5;
-        Mon, 28 Mar 2022 19:42:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 59089B8120F;
+        Mon, 28 Mar 2022 19:42:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06990C36AE3;
+        Mon, 28 Mar 2022 19:42:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648496577;
-        bh=8jDtJcVMC/AdbhgKYyEFkAnFVPESQCIhjycJEyf6pFY=;
+        s=k20201202; t=1648496574;
+        bh=Ho/BjnVNGfweAgBtMiS7dBtzUEAbt0AM1Wjb60i/UUs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m9ixiM8Cgpd6v6oV9vPqh9bS8GN3RioFRNMy+EV4+cT+oSh/i55mKU5lk6jSElGVi
-         L2/1Ms+LEmLhbpSaAKispgVfRaUFH7gkZGo1U0h3crz6442uxl1VLbBIg/CZMrV45J
-         l3UPv3zf11OTo7ALKPNnAZEFH6T7nYW6fcIOBJll4C0XwHd8ZA5dNQw6AR8B2zbnf+
-         7InIE6bg6aoD+EbAHhq3TxyruvOkeyZEBlx82LV0S+9uLQg6zeLovl8MyMR0Gd03Hi
-         CHKZldOJn7Na3gQBRIs+s6CfoVwZWVLfJ10Utnrssla1/GRuAqBjhz6Fty0KbANL+5
-         jNJJ7NetrEm8w==
+        b=b1yhqUVhuWpC2v4IJ9FoQLHsCyjuPaatx8NvRi7DDQpivqsq6n2hsix+q06Obuku6
+         iRdkf2FbbtkfZv2XuUHBgTDBUxOi9Nk7C6CH9ke4sk6p9JQ4KyCu+Kzhp4e4GKm1of
+         akrRdrfyVNgvnfrdNJzRKyr6o9TB6vfwuaWWaD+EH1gvysXtbYuKQmljin5OvPaD51
+         gR0scmJzg7c9aRODIraYTJhi8gDxPsYkjtq1wZgLJ8Ljk0kyKmZvfe29CtJ61TIOnZ
+         dZNWZsHYa90j07IAcbC4+gKUkCkFW+N+/RqRkWIhQGWKxuOjIJlHtotrAd5SMKwZcy
+         tRNKDIIB+X2Eg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Rohith Surabattula <rohiths@microsoft.com>,
-        Paulo Alcantara <pc@cjr.nz>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>, sfrench@samba.org,
-        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org
-Subject: [PATCH AUTOSEL 5.16 19/20] Adjust cifssb maximum read size
-Date:   Mon, 28 Mar 2022 15:42:25 -0400
-Message-Id: <20220328194226.1585920-19-sashal@kernel.org>
+Cc:     Jaegeuk Kim <jaegeuk@kernel.org>, Chao Yu <chao@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, yuchao0@huawei.com,
+        linux-f2fs-devel@lists.sourceforge.net
+Subject: [PATCH AUTOSEL 5.16 17/20] f2fs: use spin_lock to avoid hang
+Date:   Mon, 28 Mar 2022 15:42:23 -0400
+Message-Id: <20220328194226.1585920-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220328194226.1585920-1-sashal@kernel.org>
 References: <20220328194226.1585920-1-sashal@kernel.org>
@@ -54,69 +52,139 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rohith Surabattula <rohiths@microsoft.com>
+From: Jaegeuk Kim <jaegeuk@kernel.org>
 
-[ Upstream commit 06a466565d54a1a42168f9033a062a3f5c40e73b ]
+[ Upstream commit 98237fcda4a24e67b0a4498c17d5aa4ad4537bc7 ]
 
-When session gets reconnected during mount then read size in super block fs context
-gets set to zero and after negotiate, rsize is not modified which results in
-incorrect read with requested bytes as zero. Fixes intermittent failure
-of xfstest generic/240
+[14696.634553] task:cat             state:D stack:    0 pid:1613738 ppid:1613735 flags:0x00000004
+[14696.638285] Call Trace:
+[14696.639038]  <TASK>
+[14696.640032]  __schedule+0x302/0x930
+[14696.640969]  schedule+0x58/0xd0
+[14696.641799]  schedule_preempt_disabled+0x18/0x30
+[14696.642890]  __mutex_lock.constprop.0+0x2fb/0x4f0
+[14696.644035]  ? mod_objcg_state+0x10c/0x310
+[14696.645040]  ? obj_cgroup_charge+0xe1/0x170
+[14696.646067]  __mutex_lock_slowpath+0x13/0x20
+[14696.647126]  mutex_lock+0x34/0x40
+[14696.648070]  stat_show+0x25/0x17c0 [f2fs]
+[14696.649218]  seq_read_iter+0x120/0x4b0
+[14696.650289]  ? aa_file_perm+0x12a/0x500
+[14696.651357]  ? lru_cache_add+0x1c/0x20
+[14696.652470]  seq_read+0xfd/0x140
+[14696.653445]  full_proxy_read+0x5c/0x80
+[14696.654535]  vfs_read+0xa0/0x1a0
+[14696.655497]  ksys_read+0x67/0xe0
+[14696.656502]  __x64_sys_read+0x1a/0x20
+[14696.657580]  do_syscall_64+0x3b/0xc0
+[14696.658671]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[14696.660068] RIP: 0033:0x7efe39df1cb2
+[14696.661133] RSP: 002b:00007ffc8badd948 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
+[14696.662958] RAX: ffffffffffffffda RBX: 0000000000020000 RCX: 00007efe39df1cb2
+[14696.664757] RDX: 0000000000020000 RSI: 00007efe399df000 RDI: 0000000000000003
+[14696.666542] RBP: 00007efe399df000 R08: 00007efe399de010 R09: 00007efe399de010
+[14696.668363] R10: 0000000000000022 R11: 0000000000000246 R12: 0000000000000000
+[14696.670155] R13: 0000000000000003 R14: 0000000000020000 R15: 0000000000020000
+[14696.671965]  </TASK>
+[14696.672826] task:umount          state:D stack:    0 pid:1614985 ppid:1614984 flags:0x00004000
+[14696.674930] Call Trace:
+[14696.675903]  <TASK>
+[14696.676780]  __schedule+0x302/0x930
+[14696.677927]  schedule+0x58/0xd0
+[14696.679019]  schedule_preempt_disabled+0x18/0x30
+[14696.680412]  __mutex_lock.constprop.0+0x2fb/0x4f0
+[14696.681783]  ? destroy_inode+0x65/0x80
+[14696.683006]  __mutex_lock_slowpath+0x13/0x20
+[14696.684305]  mutex_lock+0x34/0x40
+[14696.685442]  f2fs_destroy_stats+0x1e/0x60 [f2fs]
+[14696.686803]  f2fs_put_super+0x158/0x390 [f2fs]
+[14696.688238]  generic_shutdown_super+0x7a/0x120
+[14696.689621]  kill_block_super+0x27/0x50
+[14696.690894]  kill_f2fs_super+0x7f/0x100 [f2fs]
+[14696.692311]  deactivate_locked_super+0x35/0xa0
+[14696.693698]  deactivate_super+0x40/0x50
+[14696.694985]  cleanup_mnt+0x139/0x190
+[14696.696209]  __cleanup_mnt+0x12/0x20
+[14696.697390]  task_work_run+0x64/0xa0
+[14696.698587]  exit_to_user_mode_prepare+0x1b7/0x1c0
+[14696.700053]  syscall_exit_to_user_mode+0x27/0x50
+[14696.701418]  do_syscall_64+0x48/0xc0
+[14696.702630]  entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-Note that stable requires a different version of this patch which will be
-sent to the stable mailing list.
-
-Signed-off-by: Rohith Surabattula <rohiths@microsoft.com>
-Acked-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Reviewed-by: Chao Yu <chao@kernel.org>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/cifsfs.c |  3 +++
- fs/cifs/file.c   | 10 ++++++++++
- 2 files changed, 13 insertions(+)
+ fs/f2fs/debug.c | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
 
-diff --git a/fs/cifs/cifsfs.c b/fs/cifs/cifsfs.c
-index 99c51391a48d..d4fa4e3131b4 100644
---- a/fs/cifs/cifsfs.c
-+++ b/fs/cifs/cifsfs.c
-@@ -209,6 +209,9 @@ cifs_read_super(struct super_block *sb)
- 	if (rc)
- 		goto out_no_root;
- 	/* tune readahead according to rsize if readahead size not set on mount */
-+	if (cifs_sb->ctx->rsize == 0)
-+		cifs_sb->ctx->rsize =
-+			tcon->ses->server->ops->negotiate_rsize(tcon, cifs_sb->ctx);
- 	if (cifs_sb->ctx->rasize)
- 		sb->s_bdi->ra_pages = cifs_sb->ctx->rasize / PAGE_SIZE;
- 	else
-diff --git a/fs/cifs/file.c b/fs/cifs/file.c
-index 9fee3af83a73..abadc2f86dea 100644
---- a/fs/cifs/file.c
-+++ b/fs/cifs/file.c
-@@ -3734,6 +3734,11 @@ cifs_send_async_read(loff_t offset, size_t len, struct cifsFileInfo *open_file,
- 				break;
- 		}
+diff --git a/fs/f2fs/debug.c b/fs/f2fs/debug.c
+index 07ad0d81f0c5..b449c7a372a4 100644
+--- a/fs/f2fs/debug.c
++++ b/fs/f2fs/debug.c
+@@ -21,7 +21,7 @@
+ #include "gc.h"
  
-+		if (cifs_sb->ctx->rsize == 0)
-+			cifs_sb->ctx->rsize =
-+				server->ops->negotiate_rsize(tlink_tcon(open_file->tlink),
-+							     cifs_sb->ctx);
-+
- 		rc = server->ops->wait_mtu_credits(server, cifs_sb->ctx->rsize,
- 						   &rsize, credits);
- 		if (rc)
-@@ -4512,6 +4517,11 @@ static int cifs_readpages(struct file *file, struct address_space *mapping,
- 				break;
- 		}
+ static LIST_HEAD(f2fs_stat_list);
+-static DEFINE_MUTEX(f2fs_stat_mutex);
++static DEFINE_RAW_SPINLOCK(f2fs_stat_lock);
+ #ifdef CONFIG_DEBUG_FS
+ static struct dentry *f2fs_debugfs_root;
+ #endif
+@@ -345,8 +345,9 @@ static int stat_show(struct seq_file *s, void *v)
+ {
+ 	struct f2fs_stat_info *si;
+ 	int i = 0, j = 0;
++	unsigned long flags;
  
-+		if (cifs_sb->ctx->rsize == 0)
-+			cifs_sb->ctx->rsize =
-+				server->ops->negotiate_rsize(tlink_tcon(open_file->tlink),
-+							     cifs_sb->ctx);
-+
- 		rc = server->ops->wait_mtu_credits(server, cifs_sb->ctx->rsize,
- 						   &rsize, credits);
- 		if (rc)
+-	mutex_lock(&f2fs_stat_mutex);
++	raw_spin_lock_irqsave(&f2fs_stat_lock, flags);
+ 	list_for_each_entry(si, &f2fs_stat_list, stat_list) {
+ 		update_general_status(si->sbi);
+ 
+@@ -574,7 +575,7 @@ static int stat_show(struct seq_file *s, void *v)
+ 		seq_printf(s, "  - paged : %llu KB\n",
+ 				si->page_mem >> 10);
+ 	}
+-	mutex_unlock(&f2fs_stat_mutex);
++	raw_spin_unlock_irqrestore(&f2fs_stat_lock, flags);
+ 	return 0;
+ }
+ 
+@@ -585,6 +586,7 @@ int f2fs_build_stats(struct f2fs_sb_info *sbi)
+ {
+ 	struct f2fs_super_block *raw_super = F2FS_RAW_SUPER(sbi);
+ 	struct f2fs_stat_info *si;
++	unsigned long flags;
+ 	int i;
+ 
+ 	si = f2fs_kzalloc(sbi, sizeof(struct f2fs_stat_info), GFP_KERNEL);
+@@ -620,9 +622,9 @@ int f2fs_build_stats(struct f2fs_sb_info *sbi)
+ 	atomic_set(&sbi->max_aw_cnt, 0);
+ 	atomic_set(&sbi->max_vw_cnt, 0);
+ 
+-	mutex_lock(&f2fs_stat_mutex);
++	raw_spin_lock_irqsave(&f2fs_stat_lock, flags);
+ 	list_add_tail(&si->stat_list, &f2fs_stat_list);
+-	mutex_unlock(&f2fs_stat_mutex);
++	raw_spin_unlock_irqrestore(&f2fs_stat_lock, flags);
+ 
+ 	return 0;
+ }
+@@ -630,10 +632,11 @@ int f2fs_build_stats(struct f2fs_sb_info *sbi)
+ void f2fs_destroy_stats(struct f2fs_sb_info *sbi)
+ {
+ 	struct f2fs_stat_info *si = F2FS_STAT(sbi);
++	unsigned long flags;
+ 
+-	mutex_lock(&f2fs_stat_mutex);
++	raw_spin_lock_irqsave(&f2fs_stat_lock, flags);
+ 	list_del(&si->stat_list);
+-	mutex_unlock(&f2fs_stat_mutex);
++	raw_spin_unlock_irqrestore(&f2fs_stat_lock, flags);
+ 
+ 	kfree(si);
+ }
 -- 
 2.34.1
 
