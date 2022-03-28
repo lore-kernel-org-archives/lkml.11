@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A93E6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:23:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64844C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:23:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241071AbiC1LZD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:25:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60158 "EHLO
+        id S240893AbiC1LZH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:25:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241130AbiC1LXS (ORCPT
+        with ESMTP id S240966AbiC1LXA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:23:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB892580E8;
-        Mon, 28 Mar 2022 04:20:12 -0700 (PDT)
+        Mon, 28 Mar 2022 07:23:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A6AA55BD0;
+        Mon, 28 Mar 2022 04:19:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF4A7B80D13;
-        Mon, 28 Mar 2022 11:20:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F259C34100;
-        Mon, 28 Mar 2022 11:20:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CD133B81057;
+        Mon, 28 Mar 2022 11:19:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E30FC340ED;
+        Mon, 28 Mar 2022 11:19:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466409;
-        bh=mP7yVkWymwe1Bg1ZwxWju12O4lA9WkWvgZ0XNh+ZUsw=;
+        s=k20201202; t=1648466392;
+        bh=f4cI2kwoNWeXjWEpz7vIiEEZffPnwnQuTh+ZvEZwOTM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=geT6WG3gBY5UDcppnRog/iORSimnnEXCd9iAIiQVDdwNSbvVGfYysmj6mBt58SHmp
-         iJ04t1TYMsjA5Jfg7Mv1lwAzUEaRNVK38GujWrzzqNCtvK2r2ZgtWnCqvnpBYyH/c0
-         ppt1i28FAb05n2Yu6CaKMVdm2LlDLElOiXz/a42rObhkwzmV+kfe9Oo47nozbOHMjF
-         gQTRlWe6PVyjfYhFAEYTuLjRTxwByDJVQh3Yl5ZhSkySDmmaPBdrPI1is08gvjQMjw
-         O/YJk3pUTZIAsTJefMHvAuN7Jdd4qSS7egHMQ3Tq2RTPzxQ7YZ3mRz2o97lTUpjVo1
-         JNEn1U6+5Tg5Q==
+        b=Sr55rENO2CnCruHWydCLrBQRyjxNh7QrgCopzBaFZtyx3mkItRU7xVThdB5ikSfQR
+         1WD117J9Q6Tk/aS+d3P0B2+sl5kK99puGManHAfgeJcv+8b5fHcPOJE0cH0Uv9UBWT
+         fNeycF1JhvUQ5PA4+VvZkNvEW/tB9wcNOIOd1nTYO4ZsyjXv4qiWYB7BrDfIXVODUg
+         0jEibdmhk8o6nmf2YRb8P/H5Ed9K5LP26YjyF7s+LUXQ3blnRHpi1i7r4Fke/0GbuJ
+         OVODfgR37gQxxCQ3jrX2KpzGH8v9dWthg16ptHm3FwWMVhuGVYEFROhKyVoYvMYE/+
+         ypGbbN+z94Rvg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Mario Limonciello <Mario.Limonciello@amd.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Huang Rui <ray.huang@amd.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
+Cc:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
-        linux-acpi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 42/43] Revert "ACPI: Pass the same capabilities to the _OSC regardless of the query flag"
-Date:   Mon, 28 Mar 2022 07:18:26 -0400
-Message-Id: <20220328111828.1554086-42-sashal@kernel.org>
+        pavel@ucw.cz, len.brown@intel.com, gregkh@linuxfoundation.org,
+        linux-pm@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 37/43] PM: core: keep irq flags in device_pm_check_callbacks()
+Date:   Mon, 28 Mar 2022 07:18:21 -0400
+Message-Id: <20220328111828.1554086-37-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220328111828.1554086-1-sashal@kernel.org>
 References: <20220328111828.1554086-1-sashal@kernel.org>
@@ -55,75 +53,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-[ Upstream commit 2ca8e6285250c07a2e5a22ecbfd59b5a4ef73484 ]
+[ Upstream commit 524bb1da785a7ae43dd413cd392b5071c6c367f8 ]
 
-Revert commit 159d8c274fd9 ("ACPI: Pass the same capabilities to the
-_OSC regardless of the query flag") which caused legitimate usage
-scenarios (when the platform firmware does not want the OS to control
-certain platform features controlled by the system bus scope _OSC) to
-break and was misguided by some misleading language in the _OSC
-definition in the ACPI specification (in particular, Section 6.2.11.1.3
-"Sequence of _OSC Calls" that contradicts other perts of the _OSC
-definition).
+The function device_pm_check_callbacks() can be called under the spin
+lock (in the reported case it happens from genpd_add_device() ->
+dev_pm_domain_set(), when the genpd uses spinlocks rather than mutexes.
 
-Link: https://lore.kernel.org/linux-acpi/CAJZ5v0iStA0JmO0H3z+VgQsVuQONVjKPpw0F5HKfiq=Gb6B5yw@mail.gmail.com
-Reported-by: Mario Limonciello <Mario.Limonciello@amd.com>
+However this function uncoditionally uses spin_lock_irq() /
+spin_unlock_irq(), thus not preserving the CPU flags. Use the
+irqsave/irqrestore instead.
+
+The backtrace for the reference:
+[    2.752010] ------------[ cut here ]------------
+[    2.756769] raw_local_irq_restore() called with IRQs enabled
+[    2.762596] WARNING: CPU: 4 PID: 1 at kernel/locking/irqflag-debug.c:10 warn_bogus_irq_restore+0x34/0x50
+[    2.772338] Modules linked in:
+[    2.775487] CPU: 4 PID: 1 Comm: swapper/0 Tainted: G S                5.17.0-rc6-00384-ge330d0d82eff-dirty #684
+[    2.781384] Freeing initrd memory: 46024K
+[    2.785839] pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[    2.785841] pc : warn_bogus_irq_restore+0x34/0x50
+[    2.785844] lr : warn_bogus_irq_restore+0x34/0x50
+[    2.785846] sp : ffff80000805b7d0
+[    2.785847] x29: ffff80000805b7d0 x28: 0000000000000000 x27: 0000000000000002
+[    2.785850] x26: ffffd40e80930b18 x25: ffff7ee2329192b8 x24: ffff7edfc9f60800
+[    2.785853] x23: ffffd40e80930b18 x22: ffffd40e80930d30 x21: ffff7edfc0dffa00
+[    2.785856] x20: ffff7edfc09e3768 x19: 0000000000000000 x18: ffffffffffffffff
+[    2.845775] x17: 6572206f74206465 x16: 6c696166203a3030 x15: ffff80008805b4f7
+[    2.853108] x14: 0000000000000000 x13: ffffd40e809550b0 x12: 00000000000003d8
+[    2.860441] x11: 0000000000000148 x10: ffffd40e809550b0 x9 : ffffd40e809550b0
+[    2.867774] x8 : 00000000ffffefff x7 : ffffd40e809ad0b0 x6 : ffffd40e809ad0b0
+[    2.875107] x5 : 000000000000bff4 x4 : 0000000000000000 x3 : 0000000000000000
+[    2.882440] x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff7edfc03a8000
+[    2.889774] Call trace:
+[    2.892290]  warn_bogus_irq_restore+0x34/0x50
+[    2.896770]  _raw_spin_unlock_irqrestore+0x94/0xa0
+[    2.901690]  genpd_unlock_spin+0x20/0x30
+[    2.905724]  genpd_add_device+0x100/0x2d0
+[    2.909850]  __genpd_dev_pm_attach+0xa8/0x23c
+[    2.914329]  genpd_dev_pm_attach_by_id+0xc4/0x190
+[    2.919167]  genpd_dev_pm_attach_by_name+0x3c/0xd0
+[    2.924086]  dev_pm_domain_attach_by_name+0x24/0x30
+[    2.929102]  psci_dt_attach_cpu+0x24/0x90
+[    2.933230]  psci_cpuidle_probe+0x2d4/0x46c
+[    2.937534]  platform_probe+0x68/0xe0
+[    2.941304]  really_probe.part.0+0x9c/0x2fc
+[    2.945605]  __driver_probe_device+0x98/0x144
+[    2.950085]  driver_probe_device+0x44/0x15c
+[    2.954385]  __device_attach_driver+0xb8/0x120
+[    2.958950]  bus_for_each_drv+0x78/0xd0
+[    2.962896]  __device_attach+0xd8/0x180
+[    2.966843]  device_initial_probe+0x14/0x20
+[    2.971144]  bus_probe_device+0x9c/0xa4
+[    2.975092]  device_add+0x380/0x88c
+[    2.978679]  platform_device_add+0x114/0x234
+[    2.983067]  platform_device_register_full+0x100/0x190
+[    2.988344]  psci_idle_init+0x6c/0xb0
+[    2.992113]  do_one_initcall+0x74/0x3a0
+[    2.996060]  kernel_init_freeable+0x2fc/0x384
+[    3.000543]  kernel_init+0x28/0x130
+[    3.004132]  ret_from_fork+0x10/0x20
+[    3.007817] irq event stamp: 319826
+[    3.011404] hardirqs last  enabled at (319825): [<ffffd40e7eda0268>] __up_console_sem+0x78/0x84
+[    3.020332] hardirqs last disabled at (319826): [<ffffd40e7fd6d9d8>] el1_dbg+0x24/0x8c
+[    3.028458] softirqs last  enabled at (318312): [<ffffd40e7ec90410>] _stext+0x410/0x588
+[    3.036678] softirqs last disabled at (318299): [<ffffd40e7ed1bf68>] __irq_exit_rcu+0x158/0x174
+[    3.045607] ---[ end trace 0000000000000000 ]---
+
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Tested-by: Mario Limonciello <mario.limonciello@amd.com>
-Acked-by: Huang Rui <ray.huang@amd.com>
-Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/bus.c | 27 +++++++++++++++++++--------
- 1 file changed, 19 insertions(+), 8 deletions(-)
+ drivers/base/power/main.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
-index 07f604832fd6..079b952ab59f 100644
---- a/drivers/acpi/bus.c
-+++ b/drivers/acpi/bus.c
-@@ -332,21 +332,32 @@ static void acpi_bus_osc_negotiate_platform_control(void)
- 	if (ACPI_FAILURE(acpi_run_osc(handle, &context)))
- 		return;
+diff --git a/drivers/base/power/main.c b/drivers/base/power/main.c
+index 04ea92cbd9cf..08c8a69d7b81 100644
+--- a/drivers/base/power/main.c
++++ b/drivers/base/power/main.c
+@@ -2018,7 +2018,9 @@ static bool pm_ops_is_empty(const struct dev_pm_ops *ops)
  
--	kfree(context.ret.pointer);
-+	capbuf_ret = context.ret.pointer;
-+	if (context.ret.length <= OSC_SUPPORT_DWORD) {
-+		kfree(context.ret.pointer);
-+		return;
-+	}
- 
--	/* Now run _OSC again with query flag clear */
-+	/*
-+	 * Now run _OSC again with query flag clear and with the caps
-+	 * supported by both the OS and the platform.
-+	 */
- 	capbuf[OSC_QUERY_DWORD] = 0;
-+	capbuf[OSC_SUPPORT_DWORD] = capbuf_ret[OSC_SUPPORT_DWORD];
-+	kfree(context.ret.pointer);
- 
- 	if (ACPI_FAILURE(acpi_run_osc(handle, &context)))
- 		return;
- 
- 	capbuf_ret = context.ret.pointer;
--	osc_sb_apei_support_acked =
--		capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_APEI_SUPPORT;
--	osc_pc_lpi_support_confirmed =
--		capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_PCLPI_SUPPORT;
--	osc_sb_native_usb4_support_confirmed =
--		capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_NATIVE_USB4_SUPPORT;
-+	if (context.ret.length > OSC_SUPPORT_DWORD) {
-+		osc_sb_apei_support_acked =
-+			capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_APEI_SUPPORT;
-+		osc_pc_lpi_support_confirmed =
-+			capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_PCLPI_SUPPORT;
-+		osc_sb_native_usb4_support_confirmed =
-+			capbuf_ret[OSC_SUPPORT_DWORD] & OSC_SB_NATIVE_USB4_SUPPORT;
-+	}
- 
- 	kfree(context.ret.pointer);
+ void device_pm_check_callbacks(struct device *dev)
+ {
+-	spin_lock_irq(&dev->power.lock);
++	unsigned long flags;
++
++	spin_lock_irqsave(&dev->power.lock, flags);
+ 	dev->power.no_pm_callbacks =
+ 		(!dev->bus || (pm_ops_is_empty(dev->bus->pm) &&
+ 		 !dev->bus->suspend && !dev->bus->resume)) &&
+@@ -2027,7 +2029,7 @@ void device_pm_check_callbacks(struct device *dev)
+ 		(!dev->pm_domain || pm_ops_is_empty(&dev->pm_domain->ops)) &&
+ 		(!dev->driver || (pm_ops_is_empty(dev->driver->pm) &&
+ 		 !dev->driver->suspend && !dev->driver->resume));
+-	spin_unlock_irq(&dev->power.lock);
++	spin_unlock_irqrestore(&dev->power.lock, flags);
  }
+ 
+ bool dev_pm_skip_suspend(struct device *dev)
 -- 
 2.34.1
 
