@@ -2,69 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BADFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:15:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52266C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:16:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245737AbiC1TRZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 15:17:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41958 "EHLO
+        id S241539AbiC1TSc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 15:18:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245624AbiC1TRW (ORCPT
+        with ESMTP id S1343598AbiC1TSI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 15:17:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86E5B4C7BC;
-        Mon, 28 Mar 2022 12:15:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2574B6127C;
-        Mon, 28 Mar 2022 19:15:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 813BFC340F0;
-        Mon, 28 Mar 2022 19:15:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648494940;
-        bh=fUykuyt+ci5j6L5MrTv+Hviy4KF45ZasIQ6f/i78xPg=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=lwd2A3BD6RnkclFQb+uH6wpciMq8TUlUld0rZytB7n9f4fFoL9MdYHHfmMhO5m6Gu
-         JPS0fsCL1hURTZAfgMtL6/MJ9NeyTeiiYmuNH/XX8wvJIYNX++40Jn6X14FcFmkfKT
-         EQI97NtwUBZ8iRmYA2KZOIm6B9HsgCfienXUDZ7zKWq4fvQg3TVjKK5Yl50+8uedTg
-         mtP6N84/Gtn9/8IDIxnhinLjvBj1Vc72YVK/Die4ba2e3EimKDXwAWQZEWwOv11JRs
-         HDcnmMJsuRbmV/iK3ilmVnhF3f1ERwz+7JYY3dJ/m7GxFJUoHM7yf11SF18jZezUkd
-         sj3O7YqDV5xqQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6D8E0E7BB0B;
-        Mon, 28 Mar 2022 19:15:40 +0000 (UTC)
-Subject: Re: [GIT PULL] pin control bulk changes for v5.18
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <CACRpkdZ_Jr3OzfoOpSSsAJMy1Oe_=zD861jouDzCVD-BQ6yZMg@mail.gmail.com>
-References: <CACRpkdZ_Jr3OzfoOpSSsAJMy1Oe_=zD861jouDzCVD-BQ6yZMg@mail.gmail.com>
-X-PR-Tracked-List-Id: <linux-gpio.vger.kernel.org>
-X-PR-Tracked-Message-Id: <CACRpkdZ_Jr3OzfoOpSSsAJMy1Oe_=zD861jouDzCVD-BQ6yZMg@mail.gmail.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-pinctrl.git tags/pinctrl-v5.18-1
-X-PR-Tracked-Commit-Id: 4a6d01495a167762de1691eb51e0413954db20eb
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: ff61bc81b3feebcef4d0431a92e2e40e8d4fe8b3
-Message-Id: <164849494043.24728.12971269557915471221.pr-tracker-bot@kernel.org>
-Date:   Mon, 28 Mar 2022 19:15:40 +0000
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>
+        Mon, 28 Mar 2022 15:18:08 -0400
+Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B9D6662F;
+        Mon, 28 Mar 2022 12:16:26 -0700 (PDT)
+Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
+          by outpost.zedat.fu-berlin.de (Exim 4.95)
+          with esmtps (TLS1.2)
+          tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+          (envelope-from <glaubitz@zedat.fu-berlin.de>)
+          id 1nYuqk-000YoB-Mr; Mon, 28 Mar 2022 21:16:22 +0200
+Received: from p57bd9b9a.dip0.t-ipconnect.de ([87.189.155.154] helo=[192.168.178.81])
+          by inpost2.zedat.fu-berlin.de (Exim 4.95)
+          with esmtpsa (TLS1.2)
+          tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+          (envelope-from <glaubitz@physik.fu-berlin.de>)
+          id 1nYuqk-003a6u-G9; Mon, 28 Mar 2022 21:16:22 +0200
+Message-ID: <facd6471-4c4f-ff5a-e81f-38acd855eb8d@physik.fu-berlin.de>
+Date:   Mon, 28 Mar 2022 21:16:21 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 1/2] ia64: topology: Fix an error handling path in
+ cache_add_dev()
+Content-Language: en-US
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Tony Luck <tony.luck@intel.com>,
+        Zhang Yanmin <yanmin.zhang@intel.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-ia64@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>
+References: <452b20c160a20754022407acefd2abb170f43d14.1648494330.git.christophe.jaillet@wanadoo.fr>
+From:   John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+In-Reply-To: <452b20c160a20754022407acefd2abb170f43d14.1648494330.git.christophe.jaillet@wanadoo.fr>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Original-Sender: glaubitz@physik.fu-berlin.de
+X-Originating-IP: 87.189.155.154
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 28 Mar 2022 15:08:42 +0200:
+Hi Christophe!
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-pinctrl.git tags/pinctrl-v5.18-1
+On 3/28/22 21:07, Christophe JAILLET wrote:
+> If kobject_init_and_add()fails, kobject_put() needs to be called.
+> Add the missing call which is already there a few lines below in another
+> error handling path.
+> 
+> Fixes: f19180056ea0 ("[IA64] Export cpu cache info by sysfs")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/ff61bc81b3feebcef4d0431a92e2e40e8d4fe8b3
+Thanks for your patches. There is currently no maintainer for ia64, so the patches
+would have to go through Andrew Morton's tree.
 
-Thank you!
+However, I can test the patches and verify they don't break anything.
+
+Adrian
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+ .''`.  John Paul Adrian Glaubitz
+: :' :  Debian Developer - glaubitz@debian.org
+`. `'   Freie Universitaet Berlin - glaubitz@physik.fu-berlin.de
+  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
+
