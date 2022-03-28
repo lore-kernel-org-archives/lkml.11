@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2260CC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41ACCC43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 20:48:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346032AbiC1UsE (ORCPT
+        id S1346195AbiC1UsV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 16:48:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43202 "EHLO
+        Mon, 28 Mar 2022 16:48:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345704AbiC1Un3 (ORCPT
+        with ESMTP id S1345668AbiC1Un0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 16:43:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9644E66AD2;
-        Mon, 28 Mar 2022 13:41:47 -0700 (PDT)
+        Mon, 28 Mar 2022 16:43:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49B9166AE0;
+        Mon, 28 Mar 2022 13:41:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4DABFB8121B;
-        Mon, 28 Mar 2022 20:41:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED94BC3411E;
-        Mon, 28 Mar 2022 20:41:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CD5D8614D3;
+        Mon, 28 Mar 2022 20:41:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E2BFC3411F;
+        Mon, 28 Mar 2022 20:41:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1648500103;
-        bh=gaJVK9j4dgU7VRPy0o42lYJiLsQkio1yHZPgSpFfnQQ=;
+        bh=hTy+qzETzi69PC0L01ikNmjGWuzUbT7kNwTJl3UyFeI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IdKqAdDMeOXOpA7KnlrMUExtyq/yYs1qxXPd0UqRXFe8siG/CMeDqoeWQGtvBa3mE
-         N4eWw1YE4pSKrw48mQkiLP86C2qiZ3vD7lWoNnRCbzNn9sdmXDRn9Npd3FvdqaNb2M
-         TL3zkMytfldedhzuAH2aWLsyDasAWACcgF2hkk3fSoSssKxzNjb+8+XW0im5tdcGFq
-         TA74tdL0I4uD+8zxKuPe08lSATZAI453dsaXK5V2vrnSRcF/eolzADB70X0jBrYLag
-         yY0yLdvbLU3h562rbYqW9RmtaES6cMAX8Iafy3WtbEEwmzIk+/zERkdeqHXiNRp760
-         cgJvezqSriiqg==
+        b=DlZulTcIO7yvJWxGwnOCQgiRoCjvTwjGh932UNyzMtdvX3xhyKwSdQBrD87TMMS0r
+         gOjAnpu+NdP9fhjM2duwn/Bkxo+qIxOpPn1Mv7rrLAZANY12fki7fWlBJjamyOkLGu
+         9NIyFgfJkqZUqjiAm6q2mV/WfEMERgojG3rmJbuQSEsA1gDtvqz8eIBvOFDb/LLmHa
+         ZzUVC1QUI/stIWyM6oOnegkzZ8Qq78pdTRCgXFQEeWLnLeTDOzvj6SEJgOjUzeONjI
+         8B/r3I1i6cGqw3kYXBEmKCWCV44krKn109UjlBlskrI9JZ0IWfwSBoC+v5E6MXdVJ9
+         4kbh/DZ5rYQpg==
 Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
         (envelope-from <mchehab@kernel.org>)
-        id 1nYwBI-000lci-IJ; Mon, 28 Mar 2022 22:41:40 +0200
+        id 1nYwBI-000ld2-Qu; Mon, 28 Mar 2022 22:41:40 +0200
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         linux-kernel@vger.kernel.org, linux-media@vger.kernel.org
-Subject: [PATCH 14/26] media: dvb-usb: gp8psk: use an enum for the device number
-Date:   Mon, 28 Mar 2022 22:41:26 +0200
-Message-Id: <0d32148747df677f0c930605389c12b190c09bdf.1648499509.git.mchehab@kernel.org>
+Subject: [PATCH 19/26] media: technisat-usb2: use the newer dvb-usb macros for USB device
+Date:   Mon, 28 Mar 2022 22:41:31 +0200
+Message-Id: <c125c28aeb3d4344b632e1f99d81c433917f2a4c.1648499509.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1648499509.git.mchehab@kernel.org>
 References: <cover.1648499509.git.mchehab@kernel.org>
@@ -52,11 +52,8 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The device number is currently a value that needs to be the same
-on two separate tables, but the code doesn't actually enforce it,
-leading to errors as boards get added or removed.
-
-Fix it by using an enum.
+In order to make the drivers under dvb-usb more homogeneous,
+use the new macro.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
@@ -64,73 +61,40 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH 00/26] at: https://lore.kernel.org/all/cover.1648499509.git.mchehab@kernel.org/
 
- drivers/media/usb/dvb-usb/gp8psk.c | 36 +++++++++++++++++++-----------
- 1 file changed, 23 insertions(+), 13 deletions(-)
+ drivers/media/usb/dvb-usb/technisat-usb2.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/media/usb/dvb-usb/gp8psk.c b/drivers/media/usb/dvb-usb/gp8psk.c
-index b4f661bb5648..b2b27a86dfe5 100644
---- a/drivers/media/usb/dvb-usb/gp8psk.c
-+++ b/drivers/media/usb/dvb-usb/gp8psk.c
-@@ -310,15 +310,25 @@ static int gp8psk_usb_probe(struct usb_interface *intf,
- 	return ret;
+diff --git a/drivers/media/usb/dvb-usb/technisat-usb2.c b/drivers/media/usb/dvb-usb/technisat-usb2.c
+index a9ed26ce1be6..9c77911fcad4 100644
+--- a/drivers/media/usb/dvb-usb/technisat-usb2.c
++++ b/drivers/media/usb/dvb-usb/technisat-usb2.c
+@@ -689,10 +689,15 @@ static int technisat_usb2_rc_query(struct dvb_usb_device *d)
  }
  
--static struct usb_device_id gp8psk_usb_table [] = {
--	    { USB_DEVICE(USB_VID_GENPIX, USB_PID_GENPIX_8PSK_REV_1_COLD) },
--	    { USB_DEVICE(USB_VID_GENPIX, USB_PID_GENPIX_8PSK_REV_1_WARM) },
--	    { USB_DEVICE(USB_VID_GENPIX, USB_PID_GENPIX_8PSK_REV_2) },
--	    { USB_DEVICE(USB_VID_GENPIX, USB_PID_GENPIX_SKYWALKER_1) },
--	    { USB_DEVICE(USB_VID_GENPIX, USB_PID_GENPIX_SKYWALKER_2) },
--/*	    { USB_DEVICE(USB_VID_GENPIX, USB_PID_GENPIX_SKYWALKER_CW3K) }, */
--	    { 0 },
+ /* DVB-USB and USB stuff follows */
 +enum {
-+	GENPIX_8PSK_REV_1_COLD,
-+	GENPIX_8PSK_REV_1_WARM,
-+	GENPIX_8PSK_REV_2,
-+	GENPIX_SKYWALKER_1,
-+	GENPIX_SKYWALKER_2,
-+	GENPIX_SKYWALKER_CW3K,
- };
-+
-+static struct usb_device_id gp8psk_usb_table[] = {
-+	DVB_USB_DEV(GENPIX, GENPIX_8PSK_REV_1_COLD),
-+	DVB_USB_DEV(GENPIX, GENPIX_8PSK_REV_1_WARM),
-+	DVB_USB_DEV(GENPIX, GENPIX_8PSK_REV_2),
-+	DVB_USB_DEV(GENPIX, GENPIX_SKYWALKER_1),
-+	DVB_USB_DEV(GENPIX, GENPIX_SKYWALKER_2),
-+	DVB_USB_DEV(GENPIX, GENPIX_SKYWALKER_CW3K),
-+	{ }
++	TECHNISAT_USB2_DVB_S2,
 +};
 +
- MODULE_DEVICE_TABLE(usb, gp8psk_usb_table);
+ static struct usb_device_id technisat_usb2_id_table[] = {
+-	{ USB_DEVICE(USB_VID_TECHNISAT, USB_PID_TECHNISAT_USB2_DVB_S2) },
+-	{ 0 }		/* Terminating entry */
++	DVB_USB_DEV(TECHNISAT, TECHNISAT_USB2_DVB_S2),
++	{ }
+ };
++
+ MODULE_DEVICE_TABLE(usb, technisat_usb2_id_table);
  
- static struct dvb_usb_device_properties gp8psk_properties = {
-@@ -355,20 +365,20 @@ static struct dvb_usb_device_properties gp8psk_properties = {
- 	.num_device_descs = 4,
+ /* device description */
+@@ -738,7 +743,7 @@ static struct dvb_usb_device_properties technisat_usb2_devices = {
+ 	.num_device_descs = 1,
  	.devices = {
- 		{ .name = "Genpix 8PSK-to-USB2 Rev.1 DVB-S receiver",
--		  .cold_ids = { &gp8psk_usb_table[0], NULL },
--		  .warm_ids = { &gp8psk_usb_table[1], NULL },
-+		  .cold_ids = { &gp8psk_usb_table[GENPIX_8PSK_REV_1_COLD], NULL },
-+		  .warm_ids = { &gp8psk_usb_table[GENPIX_8PSK_REV_1_WARM], NULL },
+ 		{   "Technisat SkyStar USB HD (DVB-S/S2)",
+-			{ &technisat_usb2_id_table[0], NULL },
++			{ &technisat_usb2_id_table[TECHNISAT_USB2_DVB_S2], NULL },
+ 			{ NULL },
  		},
- 		{ .name = "Genpix 8PSK-to-USB2 Rev.2 DVB-S receiver",
- 		  .cold_ids = { NULL },
--		  .warm_ids = { &gp8psk_usb_table[2], NULL },
-+		  .warm_ids = { &gp8psk_usb_table[GENPIX_8PSK_REV_2], NULL },
- 		},
- 		{ .name = "Genpix SkyWalker-1 DVB-S receiver",
- 		  .cold_ids = { NULL },
--		  .warm_ids = { &gp8psk_usb_table[3], NULL },
-+		  .warm_ids = { &gp8psk_usb_table[GENPIX_SKYWALKER_1], NULL },
- 		},
- 		{ .name = "Genpix SkyWalker-2 DVB-S receiver",
- 		  .cold_ids = { NULL },
--		  .warm_ids = { &gp8psk_usb_table[4], NULL },
-+		  .warm_ids = { &gp8psk_usb_table[GENPIX_SKYWALKER_2], NULL },
- 		},
- 		{ NULL },
- 	}
+ 	},
 -- 
 2.35.1
 
