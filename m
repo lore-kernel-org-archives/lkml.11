@@ -2,101 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E652C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 14:51:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0055EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 14:51:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244076AbiC1OxR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 10:53:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35436 "EHLO
+        id S244077AbiC1OxU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 10:53:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244110AbiC1OxH (ORCPT
+        with ESMTP id S244091AbiC1OxC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 10:53:07 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F84E4BB97
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 07:51:26 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id l129so3916103pga.3
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 07:51:26 -0700 (PDT)
+        Mon, 28 Mar 2022 10:53:02 -0400
+Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE5DD3F8A7
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 07:51:21 -0700 (PDT)
+Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-2e5e31c34bfso151531767b3.10
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 07:51:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=obleDDk1Z4CONGxAkHZNS2tjDM/nuYlv6cPwOVJDufY=;
-        b=h8Ok29DH4z6N0TfkIQj67vjU5KD03U8eMxwkX7kHs1WHIbA4lLyhTbcKvx33kZrWV5
-         4tWfsq4cMxVflItMlDGuqv7OJV1eH4KdzObOzdOtizGAIkxs5mrn85cRduSTqrnG00PQ
-         lL3IUJdXqE+IrbTYrjk1tVVXals52dlLJhfHN08n6eJ+rnGqFHEtsew3k8F56JnePW/4
-         Zw7A6sVXJ+Aq9Tjx6/ONd0HiSUFF1MWVPcy4GVHXqAPwBhLU2ccTWenC/NJysEW/Rd95
-         T3atXP4WAJ0g/Hnd6AHuxCGN4fX4Zp/B2DOVWsUW09lZPzOuSOBmfGQUZqJmRMe9+EP3
-         BWiA==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Dh492AvAmd1IfP231Dj/fJ74UloGtVlkt9YVNW5vE7I=;
+        b=rTK8HzanSVvHJeaRUqDoYN+cyp2drqzhCBdkBIia2K9UHYErmLeBK1OF/IhtkMKjMd
+         4+DvzSiFP3vAayYc5opVfj41MCgxmEQBqkQQRWWbIG0LAIcbrOs8KZdtMVelLS2er9dZ
+         jaxB9J/SWWUrxSXh1SWupnN36l+s9gh7UnQCAiKuuQusGpvuHHsROcp8xmilrEEIYbK3
+         Aetv6B61+/xAPj5dfK/gSAJJKbvDVjsZZI7/EcFX/nzsileuM+QGjh/tkT4SafDIs5qm
+         Drssu3limcmRrZ657CulEGvWJwC4sWBiDlSFDu3Z3q0wpQoorJ/UqttXZSqCWrnkNHX5
+         zOFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=obleDDk1Z4CONGxAkHZNS2tjDM/nuYlv6cPwOVJDufY=;
-        b=0REcFbyK+0NyiaOwbM62KJZbcaza6WQRXtcRpZ/vmUJUojLrm+yJT4u7evmZzWbf3v
-         CFGkCUyZNTBg0kHTPMwf0dHJl0MVkzZWbZFcKHTg6egvu0Bf8rH9sSTot4DmcHINng+a
-         wLk7hhwFy19xfuRcNsA0LGEd/AzM8YjLdMvkxIvN0RBo4dWaBjxBLDTw+QAZgzfjEkEW
-         nir7UDnXCuB1lumQVLTwEuNnXTPnTr/1+J8uWFdFZO8/U7TcDK0eQ37SN34elj6ZjntO
-         Z8zw5qtL/LPCa7W3imxQ/9S8OjqEuqEqpTD2Uo9ltJ+3qmnf1yv5CiGXcjhGNR48Ia5i
-         kO/w==
-X-Gm-Message-State: AOAM530hadDVKhqmar70h1nhPqywQt+0pXwB8KYFIUZARMVe1g9m55OL
-        73bGl+l9wd5aceItGlxm2m0PKA==
-X-Google-Smtp-Source: ABdhPJx6O3QG54jbtM3+68GYNfgyadHMEYPzXTEypnpZ1C+mZMHehDR1WLLZmYv16OhknEgRZIk0wg==
-X-Received: by 2002:a63:68c6:0:b0:380:3fbc:dfb6 with SMTP id d189-20020a6368c6000000b003803fbcdfb6mr10592508pgc.326.1648479085523;
-        Mon, 28 Mar 2022 07:51:25 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id h12-20020a056a00230c00b004faf2563bcasm15408065pfh.114.2022.03.28.07.51.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Mar 2022 07:51:24 -0700 (PDT)
-Date:   Mon, 28 Mar 2022 14:51:21 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Jon Kohler <jon@nutanix.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] KVM: x86: optimize PKU branching in
- kvm_load_{guest|host}_xsave_state
-Message-ID: <YkHLaS2IPZDCToXk@google.com>
-References: <20220324004439.6709-1-jon@nutanix.com>
- <Yj5bCw0q5n4ZgSuU@google.com>
- <387E8E8B-81B9-40FF-8D52-76821599B7E4@nutanix.com>
- <e8488e5c-7372-fc6e-daee-56633028854a@redhat.com>
- <1E31F2B6-96BF-42E0-AD41-3C512D98D74B@nutanix.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Dh492AvAmd1IfP231Dj/fJ74UloGtVlkt9YVNW5vE7I=;
+        b=uqIzuOi5WILsc8mK3ZBu6BFLfGl/06LFWDudRp0iLLktNKnElmb6oPpenj8o0oqWt3
+         i/sajb9lC/S5dbEJ5onAECMutYi+AQdSdZLaHxIWksoNWFC5PdunZUVioO4x/eisFHed
+         s73WLAcDFFhsGiHa3jlaIhxyOAW/k80I6upSzK7VM89uH426icrz4YLPVJiHQvr4AZDN
+         3YOTi3/ijKNLue8k3sbVAs6XE23mrNaNrHQohcALHWGpOgLHx/aMcAu4QCgsTNRlenca
+         CS7+D3OZ+qYz5x7mt/KjpA6xdlMDxhj5yXLU+M23mG6bR7RW5uOCpAwP4ZBoOha4ldg4
+         DKJA==
+X-Gm-Message-State: AOAM533b7EpKeXZHiUZy+rT8E+7SyKao4a3BZmf8j1A8tLHmJC8d4u0g
+        LzKoXS4e/iwChzQFT/5Na4jIWC+AAUAgVfRsSjAaJQ==
+X-Google-Smtp-Source: ABdhPJwmyDAZlA/7hxHve0d0gyq6aqe1zkCsFLU02yLIaouW62yvoiJYimjxjmhfS2vJzYOHdSk9d4pF7QNrsYPzPxA=
+X-Received: by 2002:a81:1c4f:0:b0:2e5:9db3:7a8e with SMTP id
+ c76-20020a811c4f000000b002e59db37a8emr24636467ywc.319.1648479081138; Mon, 28
+ Mar 2022 07:51:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1E31F2B6-96BF-42E0-AD41-3C512D98D74B@nutanix.com>
+References: <20220328112707.22217-1-linmiaohe@huawei.com>
+In-Reply-To: <20220328112707.22217-1-linmiaohe@huawei.com>
+From:   Muchun Song <songmuchun@bytedance.com>
+Date:   Mon, 28 Mar 2022 22:50:45 +0800
+Message-ID: <CAMZfGtXccwgR6TxNJc6aYV+WGJvAWWAz=RXEHNWDwjKfV49JuA@mail.gmail.com>
+Subject: Re: [PATCH] mm: shmem: make shmem_init return void
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022, Jon Kohler wrote:
-> 
-> 
-> > On Mar 27, 2022, at 6:43 AM, Paolo Bonzini <pbonzini@redhat.com> wrote:
-> > 
-> > On 3/26/22 02:37, Jon Kohler wrote:
-> >>>>    Flip the ordering of the || condition so that XFEATURE_MASK_PKRU is
-> >>>>    checked first, which when instrumented in our environment appeared
-> >>>>    to be always true and less overall work than kvm_read_cr4_bits.
-> >>> 
-> >>> If it's always true, then it should be checked last, not first.  And if
-> >> Sean thanks for the review. This would be a left handed || short circuit, so
-> >> wouldn’t we want always true to be first?
-> > 
-> > Yes.
-> 
-> Ack, thanks.
+On Mon, Mar 28, 2022 at 7:44 PM Miaohe Lin <linmiaohe@huawei.com> wrote:
+>
+> The return value of shmem_init is never used. So we can make it
+> return void now.
+>
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> ---
+>  include/linux/shmem_fs.h | 2 +-
+>  mm/shmem.c               | 9 ++++-----
+>  2 files changed, 5 insertions(+), 6 deletions(-)
+>
+> diff --git a/include/linux/shmem_fs.h b/include/linux/shmem_fs.h
+> index ab51d3cd39bd..3e915cc550bc 100644
+> --- a/include/linux/shmem_fs.h
+> +++ b/include/linux/shmem_fs.h
+> @@ -56,7 +56,7 @@ static inline struct shmem_inode_info *SHMEM_I(struct inode *inode)
+>   * Functions in mm/shmem.c called directly from elsewhere:
+>   */
+>  extern const struct fs_parameter_spec shmem_fs_parameters[];
+> -extern int shmem_init(void);
+> +extern void shmem_init(void);
+>  extern int shmem_init_fs_context(struct fs_context *fc);
+>  extern struct file *shmem_file_setup(const char *name,
+>                                         loff_t size, unsigned long flags);
+> diff --git a/mm/shmem.c b/mm/shmem.c
+> index 529c9ad3e926..26e09a022087 100644
+> --- a/mm/shmem.c
+> +++ b/mm/shmem.c
+> @@ -3879,7 +3879,7 @@ static struct file_system_type shmem_fs_type = {
+>         .fs_flags       = FS_USERNS_MOUNT,
+>  };
+>
+> -int __init shmem_init(void)
+> +void __init shmem_init(void)
+>  {
+>         int error;
+>
+> @@ -3904,14 +3904,13 @@ int __init shmem_init(void)
+>         else
+>                 shmem_huge = SHMEM_HUGE_NEVER; /* just in case it was patched */
+>  #endif
+> -       return 0;
+> +       return;
+>
+>  out1:
+>         unregister_filesystem(&shmem_fs_type);
+>  out2:
+>         shmem_destroy_inodecache();
+>         shm_mnt = ERR_PTR(error);
+> -       return error;
+>  }
+>
+>  #if defined(CONFIG_TRANSPARENT_HUGEPAGE) && defined(CONFIG_SYSFS)
+> @@ -3989,14 +3988,14 @@ static struct file_system_type shmem_fs_type = {
+>         .fs_flags       = FS_USERNS_MOUNT,
+>  };
+>
+> -int __init shmem_init(void)
+> +void __init shmem_init(void)
+>  {
+>         BUG_ON(register_filesystem(&shmem_fs_type) != 0);
+>
+>         shm_mnt = kern_mount(&shmem_fs_type);
+>         BUG_ON(IS_ERR(shm_mnt));
+>
+> -       return 0;
+> +       return;
 
-Yeah, I lost track of whether it was a || or &&.
+Weird. Using return at the end of a void function.
