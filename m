@@ -2,50 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D5D6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:40:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C04B7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:40:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241454AbiC1Llt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:41:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39422 "EHLO
+        id S232481AbiC1Lly (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:41:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241421AbiC1Laa (ORCPT
+        with ESMTP id S241455AbiC1Lax (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:30:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D6F456420;
-        Mon, 28 Mar 2022 04:24:16 -0700 (PDT)
+        Mon, 28 Mar 2022 07:30:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38DED56C2E;
+        Mon, 28 Mar 2022 04:24:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DA8ACB8105B;
-        Mon, 28 Mar 2022 11:24:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4855C36AE9;
-        Mon, 28 Mar 2022 11:24:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 77E0D61195;
+        Mon, 28 Mar 2022 11:24:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25279C340EC;
+        Mon, 28 Mar 2022 11:24:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466649;
-        bh=6u4aBbe7i69Fsu1VOhKUiFkUhrWR5ouoCib/ZwTmlgo=;
+        s=k20201202; t=1648466662;
+        bh=sxBywIbmDzdEuccwtVSS+3Adnpc3kzgA4oswz3VyPA8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RyWjSa0EQSMoRBASfHQwd0FItK4uITlKyQamYbpra32vjiQ75WaP2Ai55nt/FBQvw
-         VRMNcS2erqMHbuhjuBHtP93BK/6/bdnGY07guTOqvv0VXhvNy60vOHJCAgVZtKcuNh
-         vTUnrFTU0KwjeGpH09IYKVXJYb4yDY5og03a3zxIC8w272dZh3oSmqtYY6zmz2ttSI
-         R90UHVRBthmXr41TeVc7YvjWuaYfXendaBHLdBhftHJTYDOobikvxIu0w1ixukpF0t
-         yvyqx2ZIEoD4OKBqgEtwc1MTf8C6lXPRffILX28JXtDKMOM5yBHocjxWUffJvE2z4C
-         ovcn8IOgzQeNA==
+        b=gO5MfwtiyUU93fLi55aEmsB1epiVTh0Y9+FQ4mqN+BZ3STjD2a6Wa8qhD65KViwSN
+         kbmlO3NkBFq1SLQLaGL4+6NthA+P2Yaj33AZf0ATrjVqJCsTmE4eIbDR4odkwgPHIq
+         SNKGWbE936KrQnJo5FDVwkni2wFNvr2T956iGNAK9NfQp5N9ljoVhz8zpeRHh0fL5t
+         lcEoqKTqRn0wQIUINT9hxGFRON7fTm3ZvfttQVhtFBkS5W/xJdlWxn8UEpb5wDCgEu
+         PMq//MRex/CrrcmLL0e08Q5XKJE7oeD9ywsSnn/n12uLhfQKzW+B3hCdrSM0L5qXsl
+         ii7q4dbUZ6QMA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Paolo Valente <paolo.valente@linaro.org>,
-        =?UTF-8?q?Holger=20Hoffst=C3=A4tte?= 
-        <holger@applied-asynchrony.com>, Jens Axboe <axboe@kernel.dk>,
-        Sasha Levin <sashal@kernel.org>, linux-block@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 13/16] Revert "Revert "block, bfq: honor already-setup queue merges""
-Date:   Mon, 28 Mar 2022 07:23:42 -0400
-Message-Id: <20220328112345.1556601-13-sashal@kernel.org>
+Cc:     Casey Schaufler <casey@schaufler-ca.com>,
+        kernel test robot <lkp@intel.com>,
+        Sasha Levin <sashal@kernel.org>, jmorris@namei.org,
+        serge@hallyn.com, linux-security-module@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 03/12] Fix incorrect type in assignment of ipv6 port for audit
+Date:   Mon, 28 Mar 2022 07:24:08 -0400
+Message-Id: <20220328112417.1556946-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220328112345.1556601-1-sashal@kernel.org>
-References: <20220328112345.1556601-1-sashal@kernel.org>
+In-Reply-To: <20220328112417.1556946-1-sashal@kernel.org>
+References: <20220328112417.1556946-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,73 +52,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Valente <paolo.valente@linaro.org>
+From: Casey Schaufler <casey@schaufler-ca.com>
 
-[ Upstream commit 15729ff8143f8135b03988a100a19e66d7cb7ecd ]
+[ Upstream commit a5cd1ab7ab679d252a6d2f483eee7d45ebf2040c ]
 
-A crash [1] happened to be triggered in conjunction with commit
-2d52c58b9c9b ("block, bfq: honor already-setup queue merges"). The
-latter was then reverted by commit ebc69e897e17 ("Revert "block, bfq:
-honor already-setup queue merges""). Yet, the reverted commit was not
-the one introducing the bug. In fact, it actually triggered a UAF
-introduced by a different commit, and now fixed by commit d29bd41428cf
-("block, bfq: reset last_bfqq_created on group change").
+Remove inappropriate use of ntohs() and assign the
+port value directly.
 
-So, there is no point in keeping commit 2d52c58b9c9b ("block, bfq:
-honor already-setup queue merges") out. This commit restores it.
-
-[1] https://bugzilla.kernel.org/show_bug.cgi?id=214503
-
-Reported-by: Holger Hoffstätte <holger@applied-asynchrony.com>
-Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
-Link: https://lore.kernel.org/r/20211125181510.15004-1-paolo.valente@linaro.org
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/bfq-iosched.c | 16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+ security/smack/smack_lsm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index 38c39d50ae04..1d443d17cf7c 100644
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -2523,6 +2523,15 @@ bfq_setup_merge(struct bfq_queue *bfqq, struct bfq_queue *new_bfqq)
- 	 * are likely to increase the throughput.
- 	 */
- 	bfqq->new_bfqq = new_bfqq;
-+	/*
-+	 * The above assignment schedules the following redirections:
-+	 * each time some I/O for bfqq arrives, the process that
-+	 * generated that I/O is disassociated from bfqq and
-+	 * associated with new_bfqq. Here we increases new_bfqq->ref
-+	 * in advance, adding the number of processes that are
-+	 * expected to be associated with new_bfqq as they happen to
-+	 * issue I/O.
-+	 */
- 	new_bfqq->ref += process_refs;
- 	return new_bfqq;
- }
-@@ -2582,6 +2591,10 @@ bfq_setup_cooperator(struct bfq_data *bfqd, struct bfq_queue *bfqq,
- {
- 	struct bfq_queue *in_service_bfqq, *new_bfqq;
- 
-+	/* if a merge has already been setup, then proceed with that first */
-+	if (bfqq->new_bfqq)
-+		return bfqq->new_bfqq;
-+
- 	/*
- 	 * Do not perform queue merging if the device is non
- 	 * rotational and performs internal queueing. In fact, such a
-@@ -2636,9 +2649,6 @@ bfq_setup_cooperator(struct bfq_data *bfqd, struct bfq_queue *bfqq,
- 	if (bfq_too_late_for_merging(bfqq))
- 		return NULL;
- 
--	if (bfqq->new_bfqq)
--		return bfqq->new_bfqq;
--
- 	if (!io_struct || unlikely(bfqq == &bfqd->oom_bfqq))
- 		return NULL;
- 
+diff --git a/security/smack/smack_lsm.c b/security/smack/smack_lsm.c
+index 221de4c755c3..4f65d953fe31 100644
+--- a/security/smack/smack_lsm.c
++++ b/security/smack/smack_lsm.c
+@@ -2586,7 +2586,7 @@ static int smk_ipv6_check(struct smack_known *subject,
+ #ifdef CONFIG_AUDIT
+ 	smk_ad_init_net(&ad, __func__, LSM_AUDIT_DATA_NET, &net);
+ 	ad.a.u.net->family = PF_INET6;
+-	ad.a.u.net->dport = ntohs(address->sin6_port);
++	ad.a.u.net->dport = address->sin6_port;
+ 	if (act == SMK_RECEIVING)
+ 		ad.a.u.net->v6info.saddr = address->sin6_addr;
+ 	else
 -- 
 2.34.1
 
