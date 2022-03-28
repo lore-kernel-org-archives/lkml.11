@@ -2,142 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB1B0C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 14:04:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BC84C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 14:04:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243603AbiC1OGE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 10:06:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42242 "EHLO
+        id S243620AbiC1OGT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 10:06:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235942AbiC1OGC (ORCPT
+        with ESMTP id S243606AbiC1OGR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 10:06:02 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C5EC165A4;
-        Mon, 28 Mar 2022 07:04:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=2M99mtkTvG5cK3m8zZkeFYPdptTQ9Ex4WvB2EKCnEKA=; b=FxvyRvKPeGf14lrLUisHLiO5o7
-        ITRFIXXAnDPrMRry6X3MgjV8hFkKanuSuBJXFoOvQMDZxymkbSZqBiygcSQgCf7+tOyJS3KxokY1a
-        Cp2xJkslDgv38ZHPhHbfp5svbHW7MMTqnNI6JNeXTEQmsLsSCFoNn6P5pTP4y/p9g4f27XKSRbk5b
-        hExEhXPhmPrGZT/AVfBr6ecwIgKr7CklV6Z9Tj7GXK8+4HaOGlRP+Ej8m4EiLDvDMh9uJK/TXDX/i
-        FDKWy/pbLPQ8aRmtLobXjfLfb1Cbsm8SxAlH54RxhvmC27vVGgyXYpDL4fe0C5wi+PEv0n1hDTQOu
-        kckVnIyA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nYpyQ-00Gypt-Sj; Mon, 28 Mar 2022 14:03:58 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 70F3D9861EA; Mon, 28 Mar 2022 16:03:58 +0200 (CEST)
-Date:   Mon, 28 Mar 2022 16:03:58 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Dongli Si <kvmx86@gmail.com>
-Cc:     acme@kernel.org, alexander.shishkin@linux.intel.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, hpa@zytor.com, jolsa@kernel.org,
-        joro@8bytes.org, kim.phillips@amd.com, liam.merwick@oracle.com,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        mark.rutland@arm.com, mingo@kernel.org, namhyung@kernel.org,
-        tglx@linutronix.de, x86@kernel.org
-Subject: Re: [PATCH v4] perf/x86/amd: Don't touch the Host-only bit inside
- the guest hypervisor
-Message-ID: <20220328140358.GF8939@worktop.programming.kicks-ass.net>
-References: <20220324104217.GE8939@worktop.programming.kicks-ass.net>
- <20220327105603.2141333-1-sidongli1997@gmail.com>
+        Mon, 28 Mar 2022 10:06:17 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76FE01AF01;
+        Mon, 28 Mar 2022 07:04:36 -0700 (PDT)
+Received: from zn.tnic (p200300ea9715611f329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9715:611f:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 128971EC0554;
+        Mon, 28 Mar 2022 16:04:31 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1648476271;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=8PvL2NBkYmWn7Kv5lbwoJ37q4vTsHm2ZlegzleFZA5Y=;
+        b=YxFF5HkLkezSY99cI85f2qcDDV8Tupqk8jvyP69SrNmy6C01KmfR/lYVrN15QhvLdIB1Z7
+        GulMmOuj43BPSBDM+pJnNdRFR0GxAerdA8Xe53DBry5v6C8F0upTIvx8/O2oVfgsZdOB3F
+        8y81jIzARdu6wZCmk/329yNnceLGKvI=
+Date:   Mon, 28 Mar 2022 16:04:32 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Carlos Bilbao <carlos.bilbao@amd.com>
+Cc:     tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
+        x86@kernel.org, yazen.ghannam@amd.com,
+        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
+        bilbao@vt.edu
+Subject: Re: [PATCH 0/2] x86/mce: Grade new machine errors for AMD MCEs and
+ include messages for panic cases
+Message-ID: <YkHAcIZDpZER9knA@zn.tnic>
+References: <20220328134131.736572-1-carlos.bilbao@amd.com>
+ <YkG+SFCYMoAXrqJ3@zn.tnic>
+ <299368f0-a3f3-c252-ab98-7dd324dbd3c5@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220327105603.2141333-1-sidongli1997@gmail.com>
+In-Reply-To: <299368f0-a3f3-c252-ab98-7dd324dbd3c5@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Mar 27, 2022 at 06:56:03PM +0800, Dongli Si wrote:
+On Mon, Mar 28, 2022 at 08:57:04AM -0500, Carlos Bilbao wrote:
+> Just fixed a typo in the first patch -I should have included a change log.
 
-> From: Dongli Si <sidongli1997@gmail.com>
-> 
-> With nested virtualization on AMD Milan, if "perf record" is run in an
-> L1 hypervisor with an L2 guest, the following warning is emitted in
-> the L1 guest.
-> 
-> [] unchecked MSR access error: WRMSR to 0xc0010200 (tried to write 0x0000020000510076)
-> at rIP: 0xffffffff81003a50 (x86_pmu_enable_all+0x60/0x100)
-> [] Call Trace:
-> []  <IRQ>
-> []  ? x86_pmu_enable+0x146/0x300
-> []  __perf_install_in_context+0x150/0x170
-> 
-> The AMD64_EVENTSEL_HOSTONLY bit is defined and used on the host (L0),
-> while the L1 hypervisor Performance Monitor Unit should avoid such use.
-> 
-> Fixes: 1018faa6cf23 ("perf/x86/kvm: Fix Host-Only/Guest-Only counting with SVM disabled")
-> Signed-off-by: Dongli Si <sidongli1997@gmail.com>
-> Tested-by: Liam Merwick <liam.merwick@oracle.com>
-> Reviewed-by: Liam Merwick <liam.merwick@oracle.com>
-> ---
->  arch/x86/events/amd/core.c | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
-> 
-> diff --git a/arch/x86/events/amd/core.c b/arch/x86/events/amd/core.c
-> index 9687a8aef01c..5a1657c684f0 100644
-> --- a/arch/x86/events/amd/core.c
-> +++ b/arch/x86/events/amd/core.c
-> @@ -8,6 +8,7 @@
->  #include <linux/jiffies.h>
->  #include <asm/apicdef.h>
->  #include <asm/nmi.h>
-> +#include <asm/hypervisor.h>
->  
->  #include "../perf_event.h"
->  
-> @@ -1023,10 +1024,16 @@ __init int amd_pmu_init(void)
->  	return 0;
->  }
->  
-> +/*
-> + * Set the Host-only bit when virtualization is enabled on the Host Hypervisor
-> + */
->  void amd_pmu_enable_virt(void)
->  {
->  	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
->  
-> +	if (!hypervisor_is_type(X86_HYPER_NATIVE))
-> +		return;
-> +
->  	cpuc->perf_ctr_virt_mask = 0;
->  
->  	/* Reload all events */
-> @@ -1035,10 +1042,16 @@ void amd_pmu_enable_virt(void)
->  }
->  EXPORT_SYMBOL_GPL(amd_pmu_enable_virt);
->  
-> +/*
-> + * Mask the Host-only bit when virtualization is disabled on the Host Hypervisor
-> + */
->  void amd_pmu_disable_virt(void)
->  {
->  	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
->  
-> +	if (!hypervisor_is_type(X86_HYPER_NATIVE))
-> +		return;
-> +
->  	/*
->  	 * We only mask out the Host-only bit so that host-only counting works
->  	 * when SVM is disabled. If someone sets up a guest-only counter when
+Well, we have the merge window open currently:
 
-Better I suppose, but I think the comments can be improved by covering
-the 'why' of things. We can all read the code to see the what of it.
+Merge window
+^^^^^^^^^^^^
 
-Anyway, doesn't this also affect behaviour? I'm guessing this HO bit is
-only set by perf-record for events it wants to record on the host. But
-by not setting it, we'll also record the activity of the guest.
+Please do not expect large patch series to be handled during the merge
+window or even during the week before.  Such patches should be submitted in
+mergeable state *at* *least* a week before the merge window opens.
+Exceptions are made for bug fixes and *sometimes* for small standalone
+drivers for new hardware or minimally invasive patches for hardware
+enablement.
 
-So suppose we create a CPU wide HO event, then it will only count L0
-activity, right? Any L1 (or higher) activite will be invisible.
+During the merge window, the maintainers instead focus on following the
+upstream changes, fixing merge window fallout, collecting bug fixes, and
+allowing themselves a breath. Please respect that.
 
+The release candidate -rc1 is the starting point for new patches to be
+applied which are targeted for the next merge window.
 
-But with this change on, the L1 HV doesn't provide these same semantics,
-it's guest will be included in that host counter.
+---
 
-Or is there additional counter {dis,en}abling on virt enter,exit (resp.)
-to achieve these semantics?
+and since you're new to this, I'd suggest you take the
+time to read Documentation/process/ and especially
+Documentation/process/submitting-patches.rst while waiting.
+
+Thx.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
