@@ -2,124 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2584C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 07:03:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD238C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 07:03:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238669AbiC1HFK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 03:05:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40232 "EHLO
+        id S238681AbiC1HFO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 03:05:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234808AbiC1HFG (ORCPT
+        with ESMTP id S238666AbiC1HFI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 03:05:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E82D0AE57;
+        Mon, 28 Mar 2022 03:05:08 -0400
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B388E2AF5;
+        Mon, 28 Mar 2022 00:03:26 -0700 (PDT)
+Received: by mail-wr1-f51.google.com with SMTP id u16so18943883wru.4;
+        Mon, 28 Mar 2022 00:03:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=pkiElRGcYMgqGO+15AWzkYL63nI4vFLbBIBuyFUuyGM=;
+        b=AVvIeps8xZRD98ICS5dQ7gA256C+XkC06zWEgJqsY41wW6INddOJpq3kVWjWw56csG
+         cbQaELz4Vhvoys7lnP2NjJjZS/8zAabldA/MdO/FV3ufpDDuLG+EqP6GgGpneRtJb3WW
+         xazyNf6xSebAiH0NXI0tiLxmiWDT3a7mutOVwtS8zuKwrdCFcTOAA0T3rJhIkyX0+wLs
+         S30USnF1CQXVz8Q5rISgV0fCmrcrmszIvAyfVYkuTA0P+EEqZ8MTIbYYeWUMDV1s2g4R
+         VkAkEtMjpOuOsPrCnUc/5phm6XQwb1VDuMiQ4zkTwUQukdHuN2fvAJspA4FCJs9zLwF+
+         ufAw==
+X-Gm-Message-State: AOAM531V23x/qSIfyNBW07djIvnHGagV+sSrw5z+GwQwNLe8YIdnNGRY
+        iQgIyEO2QptipIdWuCcHSAw=
+X-Google-Smtp-Source: ABdhPJwy/cOClG5uWIA9JX2AxfXLLjzon9aoQtRw5DDcKvCEtvAdLnaCcFAucyDOibo1MjviWfbGPg==
+X-Received: by 2002:a5d:64e7:0:b0:205:8b74:8db7 with SMTP id g7-20020a5d64e7000000b002058b748db7mr21770989wri.34.1648451005144;
         Mon, 28 Mar 2022 00:03:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8A2A4B80EAE;
-        Mon, 28 Mar 2022 07:03:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0600BC004DD;
-        Mon, 28 Mar 2022 07:03:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648451003;
-        bh=STCzqcvRLOvG0e/JorDbYRnam8XtBBlirsDGMmdN2dQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=P5HNf9HP9+NmN3Mor9yBmCkm8sh1/uGtaN9miLN0zNKI0MkFP9KN8reifqSQoo4f3
-         alQGDkE4znQjw2q6NUPVXsz4TmK4AtWX0FejGE5cyLW9yZ+9tntUqhhkWKR5YMVVn6
-         ny/jH//HfXCjBhuzrSNOn9zqVO1wVFbEw3TIBVD0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
-        torvalds@linux-foundation.org, stable@vger.kernel.org
-Cc:     lwn@lwn.net, jslaby@suse.cz,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Linux 4.9.309
-Date:   Mon, 28 Mar 2022 09:03:19 +0200
-Message-Id: <16484509993211@kroah.com>
-X-Mailer: git-send-email 2.35.1
+Received: from [192.168.0.162] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.googlemail.com with ESMTPSA id w5-20020a5d5445000000b00203f8c96bcesm11097375wrv.49.2022.03.28.00.03.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Mar 2022 00:03:24 -0700 (PDT)
+Message-ID: <95cb1ea9-a737-7d01-f81f-f94ea92c7a4d@kernel.org>
+Date:   Mon, 28 Mar 2022 09:03:23 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [RFC PATCH v2 2/6] ASoC: dt-bindings: Add audio-graph-port
+ bindings to rt5659
+Content-Language: en-US
+To:     Sameer Pujar <spujar@nvidia.com>, broonie@kernel.org,
+        lgirdwood@gmail.com, robh+dt@kernel.org, krzk+dt@kernel.org,
+        perex@perex.cz, tiwai@suse.com, peter.ujfalusi@linux.intel.com,
+        pierre-louis.bossart@linux.intel.com
+Cc:     oder_chiou@realtek.com, thierry.reding@gmail.com,
+        jonathanh@nvidia.com, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-tegra@vger.kernel.org
+References: <1648448050-15237-1-git-send-email-spujar@nvidia.com>
+ <1648448050-15237-3-git-send-email-spujar@nvidia.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <1648448050-15237-3-git-send-email-spujar@nvidia.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I'm announcing the release of the 4.9.309 kernel.
+On 28/03/2022 08:14, Sameer Pujar wrote:
+> To use rt5658 or rt5659 audio CODEC with generic audio-graph-card machine
+> driver, the CODEC requires "port" bindings. Thus add "audio-graph-port"
+> reference to the rt5659 binding.
+> 
+> Signed-off-by: Sameer Pujar <spujar@nvidia.com>
+> Cc: Oder Chiou <oder_chiou@realtek.com>
+> ---
+>  Documentation/devicetree/bindings/sound/realtek,rt5659.yaml | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
 
-All users of the 4.9 kernel series must upgrade.
+This should be squashed with your previous patch, otherwise that one is
+not a complete conversion.
 
-The updated 4.9.y git tree can be found at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-4.9.y
-and can be browsed at the normal kernel.org git web browser:
-	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
-
-thanks,
-
-greg k-h
-
-------------
-
- Makefile                                   |    2 
- arch/x86/kernel/acpi/boot.c                |   24 +++++++++
- drivers/acpi/battery.c                     |   12 ++++
- drivers/acpi/video_detect.c                |   75 +++++++++++++++++++++++++++++
- drivers/crypto/qat/qat_common/qat_crypto.c |    8 +++
- drivers/nfc/st21nfca/se.c                  |   10 +++
- drivers/staging/fbtft/fb_st7789v.c         |    2 
- net/ipv6/ip6_output.c                      |    4 -
- net/llc/af_llc.c                           |   49 ++++++++++++------
- net/mac80211/cfg.c                         |    3 -
- net/netfilter/nf_tables_core.c             |    2 
- sound/core/pcm_native.c                    |    4 +
- sound/pci/ac97/ac97_codec.c                |    4 -
- sound/pci/cmipci.c                         |    3 -
- sound/usb/mixer_quirks.c                   |    7 +-
- 15 files changed, 178 insertions(+), 31 deletions(-)
-
-Eric Dumazet (2):
-      llc: fix netdevice reference leaks in llc_ui_bind()
-      llc: only change llc->dev when bind() succeeds
-
-Giacomo Guiduzzi (1):
-      ALSA: pci: fix reading of swapped values from pcmreg in AC97 codec
-
-Giovanni Cabiddu (1):
-      crypto: qat - disable registration of algorithms
-
-Greg Kroah-Hartman (1):
-      Linux 4.9.309
-
-Jonathan Teh (1):
-      ALSA: cmipci: Restore aux vol on suspend/resume
-
-Jordy Zomer (1):
-      nfc: st21nfca: Fix potential buffer overflows in EVT_TRANSACTION
-
-Lars-Peter Clausen (1):
-      ALSA: usb-audio: Add mute TLV for playback volumes on RODE NT-USB
-
-Linus Lüssing (1):
-      mac80211: fix potential double free on mesh join
-
-Mark Cilissen (1):
-      ACPI / x86: Work around broken XSDT on Advantech DAC-BJ01 board
-
-Maximilian Luz (1):
-      ACPI: battery: Add device HID and quirk for Microsoft Surface Go 3
-
-Oliver Graute (1):
-      staging: fbtft: fb_st7789v: reset display before initialization
-
-Pablo Neira Ayuso (1):
-      netfilter: nf_tables: initialize registers in nft_do_chain()
-
-Tadeusz Struk (1):
-      net: ipv6: fix skb_over_panic in __ip6_append_data
-
-Takashi Iwai (1):
-      ALSA: pcm: Add stream lock during PCM reset ioctl operations
-
-Werner Sembach (1):
-      ACPI: video: Force backlight native for Clevo NL5xRU and NL5xNU
-
+Best regards,
+Krzysztof
