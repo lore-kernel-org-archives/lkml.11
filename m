@@ -2,60 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8C3DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:51:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7E1EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:53:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236258AbiC1Lxa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:53:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43782 "EHLO
+        id S233758AbiC1Ly5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:54:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242892AbiC1Lun (ORCPT
+        with ESMTP id S241514AbiC1Lyq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:50:43 -0400
-Received: from relay4.hostedemail.com (relay4.hostedemail.com [64.99.140.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E51C29CAF;
-        Mon, 28 Mar 2022 04:44:53 -0700 (PDT)
-Received: from omf19.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay09.hostedemail.com (Postfix) with ESMTP id 2D4C723546;
-        Mon, 28 Mar 2022 11:44:52 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf19.hostedemail.com (Postfix) with ESMTPA id CCBAC20031;
-        Mon, 28 Mar 2022 11:44:45 +0000 (UTC)
-Message-ID: <d22ab1b8a17220fc8a5de94be037138a7a043ace.camel@perches.com>
-Subject: Re: [PATCH AUTOSEL 4.19 02/12] loop: use sysfs_emit() in the sysfs
- xxx show()
-From:   Joe Perches <joe@perches.com>
-To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Cc:     Chaitanya Kulkarni <kch@nvidia.com>,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Jens Axboe <axboe@kernel.dk>, linux-block@vger.kernel.org
-Date:   Mon, 28 Mar 2022 04:44:44 -0700
-In-Reply-To: <20220328112417.1556946-2-sashal@kernel.org>
-References: <20220328112417.1556946-1-sashal@kernel.org>
-         <20220328112417.1556946-2-sashal@kernel.org>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        Mon, 28 Mar 2022 07:54:46 -0400
+Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16712377D0;
+        Mon, 28 Mar 2022 04:49:22 -0700 (PDT)
+Received: by mail-ed1-f52.google.com with SMTP id a17so16574175edm.9;
+        Mon, 28 Mar 2022 04:49:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=wbmtuFgYk21OVybrhPNThf688k7OlnshZ2rECopA1sQ=;
+        b=DUus5YkXMkLwPHuMSYWpSbAzEXKGC7Ax8I4gLTBEAU+OOe7y2W8iqUcJvefaKdlUrI
+         cTo/YO6lFVWMCYHS8k3iPDCUO8bSrg1kjG5dIHkXlsRGeClBuJgjmN2agwAlK9XSljKm
+         2/2wRWSwgojkS5EjDMg6E4PPrQe4Z7chakGYt4qow8Ep4l+VJn7JyO+Ag0S2t+fjwCYL
+         c44IJDiWb9QMSWWamjJFA7ZgY96yZNmd/NQ1SKXSchyOPI1EwOa9CebK+IfF2CN/g4/q
+         SfrXLM41BhL8N1BkC10jatnFv3FTUOkRCOHldzmL50CbUg8QveVEI2Mnzl11ogKOVpeJ
+         x6gA==
+X-Gm-Message-State: AOAM533/LymGBHtkiU11xyP+BtzLsdrzWp2jVPVZnAr8hNECH7hRtK5h
+        /hoi9Zi9srLYcJmeQeKVLC4=
+X-Google-Smtp-Source: ABdhPJzWXsy4+GphF1QuoAkcYFlawyiEs4+1gNVRO87F9Ywpbhee44VZa+NoHAfXuvSNPc08MaGPTA==
+X-Received: by 2002:a05:6402:3488:b0:419:172c:e287 with SMTP id v8-20020a056402348800b00419172ce287mr15585663edc.87.1648468160467;
+        Mon, 28 Mar 2022 04:49:20 -0700 (PDT)
+Received: from [192.168.0.162] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.googlemail.com with ESMTPSA id f3-20020a056402004300b004162aa024c0sm6850041edu.76.2022.03.28.04.49.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Mar 2022 04:49:19 -0700 (PDT)
+Message-ID: <5c24c12b-3a12-1e18-9f03-2c54cad30bf9@kernel.org>
+Date:   Mon, 28 Mar 2022 13:49:18 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 3/5] arm64: dts: imx8mp: Enable HS400-ES
+Content-Language: en-US
+To:     Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        Adam Ford <aford173@gmail.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     linux-mmc <linux-mmc@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Adam Ford-BE <aford@beaconembedded.com>,
+        Haibo Chen <haibo.chen@nxp.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        arm-soc <linux-arm-kernel@lists.infradead.org>
+References: <20220327123835.28329-1-aford173@gmail.com>
+ <20220327123835.28329-3-aford173@gmail.com>
+ <c964bf2c-f7bf-451c-1691-02903f20c634@pengutronix.de>
+ <CAHCN7xL05pBK0uK7zuE7Uq4P9Rzo6bHbJdbOt5XnQRB7Sh3msw@mail.gmail.com>
+ <74e74ea8-1554-bf08-b0ea-36e77259cb18@pengutronix.de>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <74e74ea8-1554-bf08-b0ea-36e77259cb18@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Stat-Signature: obmf73rx3tnfzbozg4wnjhp4k17hbdr4
-X-Rspamd-Server: rspamout01
-X-Rspamd-Queue-Id: CCBAC20031
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1/l3C74hzmVuV7AIL7xJJu0gQ8RzTgtr1k=
-X-HE-Tag: 1648467885-922355
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-03-28 at 07:24 -0400, Sasha Levin wrote:
-> From: Chaitanya Kulkarni <kch@nvidia.com>
+On 28/03/2022 13:09, Ahmad Fatoum wrote:
+> Hello Adam,
 > 
-> [ Upstream commit b27824d31f09ea7b4a6ba2c1b18bd328df3e8bed ]
+> On 28.03.22 12:47, Adam Ford wrote:
+>> On Mon, Mar 28, 2022 at 2:20 AM Ahmad Fatoum <a.fatoum@pengutronix.de> wrote:
+>>>
+>>> Hello Adam,
+>>>
+>>> On 27.03.22 14:38, Adam Ford wrote:
+>>>> The SDHC controller in the imx8mp has the same controller
+>>>> as the imx8mm which supports HS400-ES. Change the compatible
+>>>> fallback to imx8mm to enable it.
+>>>
+>>> I believe that's a shortcoming of the Linux driver, which should explicitly list
+>>> fsl,imx8mp-usdhc in its compatibles and enable HS400-ES for it.
+>>>
+>>> I find dropping compatibles problematic, because like Linux matching
+>>> fsl,imx8mm-usdhc, but not fsl,imx8mp-usdhc, other software may match
+>>> fsl,imx7d-usdhc, but not fsl,imx8[mp]-usdhc.
+>>>
+>>> I'd prefer that either the kernel driver gains extra compatibles or that
+>>> the DTS lists extra compatibles and we refrain from dropping existing
+>>> (correct) ones.
+>>>
+>>
+>> I would argue that imx7d is not correct since the IP blocks between
+>> imx7d and imx8mm have different flags/quirks.  One of which includes
+>> HS400-ES, but there are other differences as well.
 > 
-> sprintf does not know the PAGE_SIZE maximum of the temporary buffer
-> used for outputting sysfs content and it's possible to overrun the
-> PAGE_SIZE buffer length.
+> The DTS currently says that an fsl,imx7d-usdhc is a subset of an
+> fsl,imx8mm-usdhc. So a driver could treat both HW the exact same
+> by focusing on the i.MX7D parts. Linux apparently did exactly
+> that so far. Is this not accurate?
+> 
+> 
+>>> What do you think?
+>>
+>> From my understanding of the fallback compatibility strings is to
+>> avoid having to add more and more compatible strings to the drivers
+>> when they do not serve a functional purpose. Based On a conversation
+>> with Krzysztof [1], he suggested we update the YAML file based on the
+>> fallback, but he wanted NXP to give their feedback as to what the
+>> right fallback strings should be.  Haibo from NXP sent me a hierarchy
+>> [1] which is what I used to update the YAML file.  Based on the YAML
+>> file, the fallback in each DTSI file was updated to ensure the use of
+>> the proper IP block.
+> 
+> Myself I am in favor of moving to three compatibles instead of dropping one.
+> For some theoretical fsl,imx8mf-usdhc that's supposed to be exactly the same
+> as a fsl,imx8mm-usdhc, I don't mind omitting the fsl,imx7d-usdhc compatible,
+> but for existing device trees, this may introduce needless potential breakage
+> for other software that also uses Linux device trees.
+> 
 
-IMOP This isn't something that should be backported.
+Affecting existing users is indeed a concern with this approach, because
+in-kernel DTS might be used in other projects as well.
+
+I still cannot find here the answer whether fsl,imx8mm-usdhc is actually
+compatible with fsl,imx7d-usdhc. It's not about driver, but about
+hardware and programming model. imx8mm can support additional features
+and still be compatible with imx7d. However if any flags of imx7d are
+actually not valid for imx8mm, then it's different case.
 
 
+Best regards,
+Krzysztof
