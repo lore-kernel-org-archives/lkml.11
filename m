@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6598EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:23:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7501EC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:23:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240952AbiC1LYj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:24:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54990 "EHLO
+        id S241013AbiC1LYo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:24:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240999AbiC1LXD (ORCPT
+        with ESMTP id S241112AbiC1LXQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:23:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FB2A56219;
-        Mon, 28 Mar 2022 04:19:58 -0700 (PDT)
+        Mon, 28 Mar 2022 07:23:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24FB9580E0;
+        Mon, 28 Mar 2022 04:20:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0BE3BB81058;
-        Mon, 28 Mar 2022 11:19:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA3FCC34100;
-        Mon, 28 Mar 2022 11:19:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 552DD6114A;
+        Mon, 28 Mar 2022 11:20:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B266C340EC;
+        Mon, 28 Mar 2022 11:20:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466395;
-        bh=TzN9S2c1jJpI9v8G0EpdcxObJsrqJKiqIfBV48VR++4=;
+        s=k20201202; t=1648466410;
+        bh=3FDGENo31HR4d2ixNLW5MS9/VHe0brDMr3Xy9M1Mn4o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QWb47MVqqOrbWmsOejZHe0cYnXjrcqD9BzoK6BGnNnNvNElEJ8XL7jru7VMNja99p
-         360R92JMZvozOrWuqkWvcGsCiNglIDfgrM3pMBLg2cd74Ln7enLHPlRKcHVzyqt4tr
-         BHLGM9/D8Cps/2iw8XENtCK1fB0+ctWoytISrjop3grfBRSnnx4lQYT2EnRJNt/Goj
-         XOye7MoARZAQSpu4NKR62RtsoqKzi5aAFmeoJQwl6ul0hQeHP8VvBW/eW96aqokpbk
-         cgqAkHssLJiUxcQKcapHJg9w2WH32ikqBuQipRx+KEoWpvXfXlp0yFhpoC16+Q+fuj
-         Z5VKD32jMdjHg==
+        b=Y4axwzxA0hZ7z4A0Ot6whZdgG8FmoqIAnKAcwILrWhKFif73RYHUOD/9JQm8Xyz+6
+         Rs+p7/ehV24kvF/DVwDaqiKmdzLlbl1hGk1I/MDxZVaAvWXVqQ8I7C7uN1A+yGP2uQ
+         1dDliONUC/fMU+88Qn/HmJJsuGYJnfvF+cOXpOXXkLj6H+vsmva1t8F0KinWJGvnHI
+         0YmOpkjsNr5eACpjKWnCeQhxKRGNtkASnavhxXLm7u+xfls6KO3p91q5q7w4jTdBqC
+         f8oQjkyu+0pGsauTgRmO45EAaUBMY4bj5UT/6fPlBm1ZiBtY5THp5cIKjvYM3LaDhH
+         SZLbWkETwavhA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     John David Anglin <dave.anglin@bell.net>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
-        James.Bottomley@HansenPartnership.com, svens@stackframe.org,
-        ira.weiny@intel.com, akpm@linux-foundation.org,
-        linux-parisc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 38/43] parisc: Fix non-access data TLB cache flush faults
-Date:   Mon, 28 Mar 2022 07:18:22 -0400
-Message-Id: <20220328111828.1554086-38-sashal@kernel.org>
+Cc:     Eddie James <eajames@linux.ibm.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, linux-spi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 43/43] spi: fsi: Implement a timeout for polling status
+Date:   Mon, 28 Mar 2022 07:18:27 -0400
+Message-Id: <20220328111828.1554086-43-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220328111828.1554086-1-sashal@kernel.org>
 References: <20220328111828.1554086-1-sashal@kernel.org>
@@ -53,90 +51,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John David Anglin <dave.anglin@bell.net>
+From: Eddie James <eajames@linux.ibm.com>
 
-[ Upstream commit f839e5f1cef36ce268950c387129b1bfefdaebc9 ]
+[ Upstream commit 89b35e3f28514087d3f1e28e8f5634fbfd07c554 ]
 
-When a page is not present, we get non-access data TLB faults from
-the fdc and fic instructions in flush_user_dcache_range_asm and
-flush_user_icache_range_asm. When these occur, the cache line is
-not invalidated and potentially we get memory corruption. The
-problem was hidden by the nullification of the flush instructions.
+The data transfer routines must poll the status register to
+determine when more data can be shifted in or out. If the hardware
+gets into a bad state, these polling loops may never exit. Prevent
+this by returning an error if a timeout is exceeded.
 
-These faults also affect performance. With pa8800/pa8900 processors,
-there will be 32 faults per 4 KB page since the cache line is 128
-bytes.  There will be more faults with earlier processors.
-
-The problem is fixed by using flush_cache_pages(). It does the flush
-using a tmp alias mapping.
-
-The flush_cache_pages() call in flush_cache_range() flushed too
-large a range.
-
-V2: Remove unnecessary preempt_disable() and preempt_enable() calls.
-
-Signed-off-by: John David Anglin <dave.anglin@bell.net>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Eddie James <eajames@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220317211426.38940-1-eajames@linux.ibm.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/parisc/kernel/cache.c | 28 +---------------------------
- 1 file changed, 1 insertion(+), 27 deletions(-)
+ drivers/spi/spi-fsi.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/arch/parisc/kernel/cache.c b/arch/parisc/kernel/cache.c
-index 94150b91c96f..bce71cefe572 100644
---- a/arch/parisc/kernel/cache.c
-+++ b/arch/parisc/kernel/cache.c
-@@ -558,15 +558,6 @@ static void flush_cache_pages(struct vm_area_struct *vma, struct mm_struct *mm,
- 	}
- }
+diff --git a/drivers/spi/spi-fsi.c b/drivers/spi/spi-fsi.c
+index b6c7467f0b59..d403a7a3021d 100644
+--- a/drivers/spi/spi-fsi.c
++++ b/drivers/spi/spi-fsi.c
+@@ -25,6 +25,7 @@
  
--static void flush_user_cache_tlb(struct vm_area_struct *vma,
--				 unsigned long start, unsigned long end)
--{
--	flush_user_dcache_range_asm(start, end);
--	if (vma->vm_flags & VM_EXEC)
--		flush_user_icache_range_asm(start, end);
--	flush_tlb_range(vma, start, end);
--}
--
- void flush_cache_mm(struct mm_struct *mm)
+ #define SPI_FSI_BASE			0x70000
+ #define SPI_FSI_INIT_TIMEOUT_MS		1000
++#define SPI_FSI_STATUS_TIMEOUT_MS	100
+ #define SPI_FSI_MAX_RX_SIZE		8
+ #define SPI_FSI_MAX_TX_SIZE		40
+ 
+@@ -299,6 +300,7 @@ static int fsi_spi_transfer_data(struct fsi_spi *ctx,
+ 				 struct spi_transfer *transfer)
  {
- 	struct vm_area_struct *vma;
-@@ -581,17 +572,8 @@ void flush_cache_mm(struct mm_struct *mm)
- 		return;
- 	}
+ 	int rc = 0;
++	unsigned long end;
+ 	u64 status = 0ULL;
  
--	preempt_disable();
--	if (mm->context == mfsp(3)) {
--		for (vma = mm->mmap; vma; vma = vma->vm_next)
--			flush_user_cache_tlb(vma, vma->vm_start, vma->vm_end);
--		preempt_enable();
--		return;
--	}
--
- 	for (vma = mm->mmap; vma; vma = vma->vm_next)
- 		flush_cache_pages(vma, mm, vma->vm_start, vma->vm_end);
--	preempt_enable();
- }
+ 	if (transfer->tx_buf) {
+@@ -315,10 +317,14 @@ static int fsi_spi_transfer_data(struct fsi_spi *ctx,
+ 			if (rc)
+ 				return rc;
  
- void flush_cache_range(struct vm_area_struct *vma,
-@@ -605,15 +587,7 @@ void flush_cache_range(struct vm_area_struct *vma,
- 		return;
- 	}
++			end = jiffies + msecs_to_jiffies(SPI_FSI_STATUS_TIMEOUT_MS);
+ 			do {
+ 				rc = fsi_spi_status(ctx, &status, "TX");
+ 				if (rc)
+ 					return rc;
++
++				if (time_after(jiffies, end))
++					return -ETIMEDOUT;
+ 			} while (status & SPI_FSI_STATUS_TDR_FULL);
  
--	preempt_disable();
--	if (vma->vm_mm->context == mfsp(3)) {
--		flush_user_cache_tlb(vma, start, end);
--		preempt_enable();
--		return;
--	}
--
--	flush_cache_pages(vma, vma->vm_mm, vma->vm_start, vma->vm_end);
--	preempt_enable();
-+	flush_cache_pages(vma, vma->vm_mm, start, end);
- }
+ 			sent += nb;
+@@ -329,10 +335,14 @@ static int fsi_spi_transfer_data(struct fsi_spi *ctx,
+ 		u8 *rx = transfer->rx_buf;
  
- void
+ 		while (transfer->len > recv) {
++			end = jiffies + msecs_to_jiffies(SPI_FSI_STATUS_TIMEOUT_MS);
+ 			do {
+ 				rc = fsi_spi_status(ctx, &status, "RX");
+ 				if (rc)
+ 					return rc;
++
++				if (time_after(jiffies, end))
++					return -ETIMEDOUT;
+ 			} while (!(status & SPI_FSI_STATUS_RDR_FULL));
+ 
+ 			rc = fsi_spi_read_reg(ctx, SPI_FSI_DATA_RX, &in);
 -- 
 2.34.1
 
