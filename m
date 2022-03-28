@@ -2,198 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CE55C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 12:09:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 145EEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 12:10:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242297AbiC1MLB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 08:11:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35918 "EHLO
+        id S242307AbiC1MMY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 08:12:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236940AbiC1MK7 (ORCPT
+        with ESMTP id S234315AbiC1MMX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 08:10:59 -0400
-Received: from conssluserg-05.nifty.com (conssluserg-05.nifty.com [210.131.2.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C84673E5F9;
-        Mon, 28 Mar 2022 05:09:17 -0700 (PDT)
-Received: from mail-pj1-f52.google.com (mail-pj1-f52.google.com [209.85.216.52]) (authenticated)
-        by conssluserg-05.nifty.com with ESMTP id 22SC93bM012079;
-        Mon, 28 Mar 2022 21:09:03 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com 22SC93bM012079
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1648469343;
-        bh=c+gGW+Hvo3/XEWQflB1H1elV17VcXaSFdPpwtt/xXBs=;
-        h=From:Date:Subject:To:Cc:From;
-        b=na13MT7aDkurjoM8uu48kfDnv+m67IUwPnGIaICUE2OCmimlu+kRUEeMMBTqq/hsm
-         DtgRQs1MCKBxfw87BVMEWzGl7kIivHa7iBCPyRcOb1huwC5hPhmp2S2QzIrEroQLhK
-         DKaRxvDH6GTBTGSNiYMT0dUuunqOr1feSKX+U9MxYZnDz8w6Lf/R/Ek5I+t6qZ5j/5
-         L8behEnweKSrQ+TC7wU2QRtoKDn+uZ/JZJ+RzQs3t2t09GPISLLqNr8QsvhDH1L0DA
-         Vrv2DVQE5S3KXubXzApUDZv1suwbOfS8qTV4pHZiMrdY3s+6faFs0uFrlNizV8p+DH
-         EBYyBe3zOTu5w==
-X-Nifty-SrcIP: [209.85.216.52]
-Received: by mail-pj1-f52.google.com with SMTP id bx24-20020a17090af49800b001c6872a9e4eso15290891pjb.5;
-        Mon, 28 Mar 2022 05:09:03 -0700 (PDT)
-X-Gm-Message-State: AOAM533LX6BIUrl1DF/cnHuMiSajpOcY0Y1joip/hgFgijCzJGYdBPGd
-        D/kY9aqebZsYaUtOLwiwMeLakmGDR0p8xbLtzbU=
-X-Google-Smtp-Source: ABdhPJwYfzvKemZswJY8637ay3aUSXZUmXezfQifjzzQkJ5SZ8jAGwqS70Lj09Aejd1Tj0brVbU9PJR8pr4wk7HTjDQ=
-X-Received: by 2002:a17:902:b183:b0:14f:c266:20d5 with SMTP id
- s3-20020a170902b18300b0014fc26620d5mr25875877plr.136.1648469342649; Mon, 28
- Mar 2022 05:09:02 -0700 (PDT)
-MIME-Version: 1.0
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Mon, 28 Mar 2022 21:08:19 +0900
-X-Gmail-Original-Message-ID: <CAK7LNATL4v40ZHJ+Ym3k_fVe4ddmMA3wFQXb5RaTz9hmPebeuQ@mail.gmail.com>
-Message-ID: <CAK7LNATL4v40ZHJ+Ym3k_fVe4ddmMA3wFQXb5RaTz9hmPebeuQ@mail.gmail.com>
-Subject: [GIT PULL] Kbuild updates for v5.18-rc1
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Mon, 28 Mar 2022 08:12:23 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD4E94616F;
+        Mon, 28 Mar 2022 05:10:42 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id b13so10564674pfv.0;
+        Mon, 28 Mar 2022 05:10:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=2metHrwiTDvTKdu2SsVynM27Kre3NRcfjJWJDziOK2s=;
+        b=bzLn/vTVd5csLlxLA8U14K6h6AVYNc/RaTCL2SCqxZTGmJhDLexAqiu40rUPlPJZ1+
+         EHWKGGcoIbJahNJfKHYl2GmXvEEh/DG4QQU3qzKFMvpmk8SpWzz8+7o4Bngn6iyBi8Ve
+         danmjzuRezT1r5HfS/9olEugghGy+AeI8c0u0S27K2MSwonGfyIbrT3MokDmYeUpBQvg
+         yukIigRDeqY43PseXtn6zKUJicPkatL5bHwzS/DgzBkOIDTgPBkTZKrljs2upSPCgC7Z
+         +3d8QpUx0l5hx3m7IVcCXLP6I9jH1aHPEQc7l2F00tRVfLFApTyLBA2RQP3GMUfsZVWT
+         BczA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=2metHrwiTDvTKdu2SsVynM27Kre3NRcfjJWJDziOK2s=;
+        b=a4McFD4uiEotbtyuCI+B7NmMjK6KX4Lzn66HRye00zZdDPkF95a0AU2KIJYsojxgCZ
+         PH+sH+NIGIN4i+BZJeFycKIyjJPVFrmHNmL/oSwG+FFN6rM7ni8vZsmnWBUgTbNwDDGS
+         nhOos70RazISFoE7V3Aja7m+rqtB0r/Sgv2rL25p1ELRcShaC8sqnIXmRXuR9wPgovXV
+         9TqpQj3rhGZ1KrKw72+sojyZX9DF85RwtPOtbVEsjsDKjKWsctl0UHoUQYMPSyKNXy5H
+         Rg2drkoS0toBDE4c1V0BCIHFghfjm4QN2/AnfMgiEzNMyl7gsV/bsr0HsLHEsMBPhGTs
+         wswg==
+X-Gm-Message-State: AOAM530VHGQBFYkuF55pTBNw29jxpoaRbYyYuv73mPI20q/gxj756Tc4
+        cpV8Wwt5Ib/nGJ1soL41SnA3VKEC1vC4AA==
+X-Google-Smtp-Source: ABdhPJyNkvB3SXX6Y53tt18jSoLf0RY9GAqt/vx5zeQ2C0Q++J31WoyKZlVWfJrEAe8oSoT2nr33MQ==
+X-Received: by 2002:a63:770c:0:b0:386:361f:ecce with SMTP id s12-20020a63770c000000b00386361feccemr10162135pgc.202.1648469442425;
+        Mon, 28 Mar 2022 05:10:42 -0700 (PDT)
+Received: from ubuntu.huawei.com ([119.3.119.18])
+        by smtp.googlemail.com with ESMTPSA id p10-20020a056a0026ca00b004fb44e0cb17sm5528250pfw.116.2022.03.28.05.10.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 05:10:41 -0700 (PDT)
+From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
+To:     hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com
+Cc:     borntraeger@linux.ibm.com, svens@linux.ibm.com,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        jcmvbkbc@gmail.com, elder@linaro.org, dsterba@suse.com,
+        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>, stable@vger.kernel.org
+Subject: [PATCH v3] char: tty3270: fix a missing check on list iterator
+Date:   Mon, 28 Mar 2022 20:10:30 +0800
+Message-Id: <20220328121030.32047-1-xiam0nd.tong@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+The bug is here:
+	if (s->len != flen) {
 
+The list iterator 's' will point to a bogus position containing
+HEAD if the list is empty or no element is found. This case must
+be checked before any use of the iterator, otherwise it may bypass
+the 'if (s->len != flen) {' in theory if s->len's value is flen,
+or/and lead to an invalid memory access lately.
 
-Please pull the remaining Kbuild changes.
+To fix this bug, use a new variable 'iter' as the list iterator,
+while using the origin variable 's' as a dedicated pointer to
+point to the found element. And if the list is empty or no element
+is found, WARN_ON and return.
 
-You will see conflicts in the top Makefile.
-The fix-up is available in linux-next.
-(6c4457c324cd9855352e3eb1f965105901e47a6d)
+Cc: stable@vger.kernel.org
+Fixes: ^1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+---
+changes since v2:
+ - WARN_ON and return (Sven Schnelle)
 
+changes since v1:
+ - reallocate s when s == NULL (Sven Schnelle)
 
-Thank you.
+v1:https://lore.kernel.org/lkml/20220327064931.7775-1-xiam0nd.tong@gmail.com/
+v2:https://lore.kernel.org/lkml/20220328070543.24671-1-xiam0nd.tong@gmail.com/
 
+---
+ drivers/s390/char/tty3270.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-
-The following changes since commit 754e0b0e35608ed5206d6a67a791563c631cec07:
-
-  Linux 5.17-rc4 (2022-02-13 12:13:30 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.git
-tags/kbuild-v5.18
-
-for you to fetch changes up to b0324de9dfba0e05ea7991a91b002c1441bf27e1:
-
-  kbuild: Make $(LLVM) more flexible (2022-03-18 13:45:14 +0900)
-
-----------------------------------------------------------------
-Kbuild updates for v5.18
-
- - Add new environment variables, USERCFLAGS and USERLDFLAGS to allow
-   additional flags to be passed to user-space programs.
-
- - Fix missing fflush() bugs in Kconfig and fixdep
-
- - Fix a minor bug in the comment format of the .config file
-
- - Make kallsyms ignore llvm's local labels, .L*
-
- - Change the .config format to use CONFIG_FOO=n instead of
-   "# CONFIG_FOO is not set"
-
- - Fix UAPI compile-test for cross-compiling with Clang
-
- - Extend the LLVM= syntax to support LLVM=<suffix> form for using a
-   particular version of LLVm, and LLVM=<prefix> form for using custom
-   LLVM in a particular directory path.
-
- - Clean up Makefiles
-
-----------------------------------------------------------------
-Changbin Du (1):
-      kallsyms: ignore all local labels prefixed by '.L'
-
-Elliot Berman (1):
-      kbuild: Add environment variables for userprogs flags
-
-Masahiro Yamada (11):
-      kbuild: unify cmd_copy and cmd_shipped
-      kbuild: replace $(if A,A,B) with $(or A,B)
-      kconfig: add fflush() before ferror() check
-      kconfig: fix missing '# end of' for empty menu
-      certs: include certs/signing_key.x509 unconditionally
-      certs: simplify empty certs creation in certs/Makefile
-      kconfig: change .config format to use =n instead of "is not set"
-      usr/include: replace extra-y with always-y
-      arch: syscalls: simplify uapi/kapi directory creation
-      fixdep: use fflush() and ferror() to ensure successful write to files
-      kbuild: add --target to correctly cross-compile UAPI headers with Clang
-
-Nathan Chancellor (1):
-      kbuild: Make $(LLVM) more flexible
-
- Documentation/kbuild/kbuild.rst                             | 11 +++++++
- Documentation/kbuild/llvm.rst                               | 31
-++++++++++++++----
- Documentation/kbuild/makefiles.rst                          |  2 ++
- Makefile                                                    | 44
-++++++++++++++-----------
- arch/alpha/kernel/syscalls/Makefile                         |  3 +-
- arch/arm/tools/Makefile                                     |  3 +-
- arch/ia64/kernel/syscalls/Makefile                          |  3 +-
- arch/m68k/kernel/syscalls/Makefile                          |  3 +-
- arch/microblaze/boot/Makefile                               |  2 +-
- arch/microblaze/boot/dts/Makefile                           |  2 +-
- arch/microblaze/kernel/syscalls/Makefile                    |  3 +-
- arch/mips/kernel/syscalls/Makefile                          |  3 +-
- arch/parisc/kernel/syscalls/Makefile                        |  3 +-
- arch/powerpc/kernel/syscalls/Makefile                       |  3 +-
- arch/s390/kernel/syscalls/Makefile                          |  3 +-
- arch/sh/kernel/syscalls/Makefile                            |  3 +-
- arch/sparc/kernel/syscalls/Makefile                         |  3 +-
- arch/x86/entry/syscalls/Makefile                            |  3 +-
- arch/xtensa/kernel/syscalls/Makefile                        |  3 +-
- certs/Makefile                                              | 37
-+++++++--------------
- certs/system_certificates.S                                 |  3 --
- fs/unicode/Makefile                                         |  2 +-
- init/Kconfig                                                |  8 ++---
- scripts/Makefile.build                                      |  3 +-
- scripts/Makefile.clean                                      |  2 +-
- scripts/Makefile.lib                                        | 16 ++++------
- scripts/basic/fixdep.c                                      | 46
-+++++++++++----------------
- scripts/kallsyms.c                                          |  2 +-
- scripts/kconfig/confdata.c                                  | 42
-++++++++++++------------
- scripts/kconfig/merge_config.sh                             | 19 ++++++-----
- scripts/kconfig/streamline_config.pl                        |  2 +-
- scripts/kconfig/tests/choice/alldef_expected_config         |  6 ++--
- scripts/kconfig/tests/choice/allmod_expected_config         |  4 +--
- scripts/kconfig/tests/choice/allno_expected_config          |  6 ++--
- scripts/kconfig/tests/choice/allyes_expected_config         |  8 ++---
- scripts/kconfig/tests/choice/oldask1_config                 |  2 +-
- scripts/kconfig/tests/inter_choice/expected_config          |  2 +-
- scripts/kconfig/tests/new_choice_with_dep/config            |  2 +-
- scripts/kconfig/tests/no_write_if_dep_unmet/__init__.py     |  7 ++--
- scripts/kconfig/tests/no_write_if_dep_unmet/expected_config |  2 +-
- tools/bpf/bpftool/Makefile                                  |  4 +--
- tools/build/Makefile                                        |  2 +-
- tools/counter/Makefile                                      |  2 +-
- tools/gpio/Makefile                                         |  2 +-
- tools/hv/Makefile                                           |  2 +-
- tools/iio/Makefile                                          |  2 +-
- tools/lib/api/Makefile                                      |  2 +-
- tools/lib/bpf/Makefile                                      |  2 +-
- tools/lib/perf/Makefile                                     |  2 +-
- tools/lib/subcmd/Makefile                                   |  2 +-
- tools/objtool/Makefile                                      |  2 +-
- tools/pci/Makefile                                          |  2 +-
- tools/perf/Makefile.perf                                    |  4 +--
- tools/power/x86/intel-speed-select/Makefile                 |  2 +-
- tools/scripts/Makefile.include                              | 22 ++++++++-----
- tools/scripts/utilities.mak                                 |  2 +-
- tools/spi/Makefile                                          |  6 ++--
- tools/testing/selftests/lib.mk                              |  8 ++++-
- tools/tracing/rtla/Makefile                                 |  2 +-
- tools/usb/Makefile                                          |  2 +-
- usr/Makefile                                                |  4 +--
- usr/include/Makefile                                        |  7 ++--
- 62 files changed, 224 insertions(+), 213 deletions(-)
-
+diff --git a/drivers/s390/char/tty3270.c b/drivers/s390/char/tty3270.c
+index 5c83f71c1d0e..9d0952178322 100644
+--- a/drivers/s390/char/tty3270.c
++++ b/drivers/s390/char/tty3270.c
+@@ -1109,9 +1109,9 @@ static void tty3270_put_character(struct tty3270 *tp, char ch)
+ static void
+ tty3270_convert_line(struct tty3270 *tp, int line_nr)
+ {
++	struct string *s = NULL, *n, *iter;
+ 	struct tty3270_line *line;
+ 	struct tty3270_cell *cell;
+-	struct string *s, *n;
+ 	unsigned char highlight;
+ 	unsigned char f_color;
+ 	char *cp;
+@@ -1142,9 +1142,14 @@ tty3270_convert_line(struct tty3270 *tp, int line_nr)
+ 
+ 	/* Find the line in the list. */
+ 	i = tp->view.rows - 2 - line_nr;
+-	list_for_each_entry_reverse(s, &tp->lines, list)
+-		if (--i <= 0)
++	list_for_each_entry_reverse(iter, &tp->lines, list)
++		if (--i <= 0) {
++			s = iter;
+ 			break;
++		 }
++
++	if(WARN_ON(!s))
++		return;
+ 	/*
+ 	 * Check if the line needs to get reallocated.
+ 	 */
 -- 
-Best Regards
-Masahiro Yamada
+2.17.1
+
