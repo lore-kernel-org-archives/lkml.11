@@ -2,52 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFEEAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:27:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5D25C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:27:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239690AbiC1L3E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:29:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54528 "EHLO
+        id S241176AbiC1L3I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:29:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240794AbiC1LW2 (ORCPT
+        with ESMTP id S240763AbiC1LVm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:22:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 136C85576B;
-        Mon, 28 Mar 2022 04:19:33 -0700 (PDT)
+        Mon, 28 Mar 2022 07:21:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D4C85640D;
+        Mon, 28 Mar 2022 04:19:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DE6B7B80ED8;
-        Mon, 28 Mar 2022 11:19:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86BD7C340ED;
-        Mon, 28 Mar 2022 11:19:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A410F61147;
+        Mon, 28 Mar 2022 11:19:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FF4AC340EC;
+        Mon, 28 Mar 2022 11:19:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466371;
-        bh=pT6/DAmDXjGCpbuqTH9UFCdOrBgFQpXkJTY1gkTsc4k=;
+        s=k20201202; t=1648466362;
+        bh=uKfwxnRdGV6bnGFbOE1aukn5+0ttKyN7SN8ugucYkHg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GR7J16DaDCki+yw7lgunwqscHIQjZfLhxU38AwS9vZ79g6kvtAa40jFwjBpGvAOMC
-         RUbuShoOaIrBifOgM1vyQySa/c7nbRRtt+gklfP8Ugl9A68WeSGBPOF7qwGLtIPj1H
-         NqfGK8uCuW1USZvygee++ZrohGhc01o+nbz+gctts1mihe1g244CD1eNK6bC182SPt
-         tx6Em8DXJAHTj7VlCZY+TU1ECkakMTgnHXiPnZVlMJUuQQYeySJ/uBq1ZoN44cDkyM
-         IxlI9Jou24kvRgWoB4/7vyyoqMIbmpKkaQtN4NV3NYz3cicjmAEqTG7WKae+EmdKG9
-         LCGUNBXJagpDA==
+        b=rmRect7lTI3Sl9agiX7kYZvzn9/jKunAU9OpxXcEPOWa21PwGm9TYdvWsprmUfMc1
+         ks5qTuSnxqqQ9hzYULRqtrczH4CYdNnJ/4n4/zUBGhIri8TKwwFQhxYNy6KTLoi53V
+         5CN/d2suhSyJZMmAMmod0D7iuKw8k/AXW9rwHPFi0fCjSwP5Lyp0GKchv9DVSHJJYg
+         VHLrAOtbayV1K+LXHEkk5jNxeMHvDJYHoZUvovjtH6QqrgfVVEJuhdOKvkfC4oqPq8
+         +4SJ1M9Voku+1I9WNSYhdcYk90iNBQ8dgD0dosxwKomkXjbXJWe5Adyxil0zmuq4w/
+         EHgUi6D1KVugA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Oleg Nesterov <oleg@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
-        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
-        peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, luto@kernel.org, frederic@kernel.org,
-        mark.rutland@arm.com, valentin.schneider@arm.com,
-        ebiederm@xmission.com, keescook@chromium.org, elver@google.com,
-        legion@kernel.org
-Subject: [PATCH AUTOSEL 5.17 29/43] signal, x86: Delay calling signals in atomic on RT enabled kernels
-Date:   Mon, 28 Mar 2022 07:18:13 -0400
-Message-Id: <20220328111828.1554086-29-sashal@kernel.org>
+Cc:     Akira Kawata <akirakawata1@gmail.com>,
+        kernel test robot <lkp@intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Sasha Levin <sashal@kernel.org>, viro@zeniv.linux.org.uk,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org
+Subject: [PATCH AUTOSEL 5.17 27/43] fs/binfmt_elf: Fix AT_PHDR for unusual ELF files
+Date:   Mon, 28 Mar 2022 07:18:11 -0400
+Message-Id: <20220328111828.1554086-27-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220328111828.1554086-1-sashal@kernel.org>
 References: <20220328111828.1554086-1-sashal@kernel.org>
@@ -59,185 +53,117 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oleg Nesterov <oleg@redhat.com>
+From: Akira Kawata <akirakawata1@gmail.com>
 
-[ Upstream commit bf9ad37dc8a30cce22ae95d6c2ca6abf8731d305 ]
+[ Upstream commit 0da1d5002745cdc721bc018b582a8a9704d56c42 ]
 
-On x86_64 we must disable preemption before we enable interrupts
-for stack faults, int3 and debugging, because the current task is using
-a per CPU debug stack defined by the IST. If we schedule out, another task
-can come in and use the same stack and cause the stack to be corrupted
-and crash the kernel on return.
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=197921
 
-When CONFIG_PREEMPT_RT is enabled, spinlock_t locks become sleeping, and
-one of these is the spin lock used in signal handling.
+As pointed out in the discussion of buglink, we cannot calculate AT_PHDR
+as the sum of load_addr and exec->e_phoff.
 
-Some of the debug code (int3) causes do_trap() to send a signal.
-This function calls a spinlock_t lock that has been converted to a
-sleeping lock. If this happens, the above issues with the corrupted
-stack is possible.
+: The AT_PHDR of ELF auxiliary vectors should point to the memory address
+: of program header. But binfmt_elf.c calculates this address as follows:
+:
+: NEW_AUX_ENT(AT_PHDR, load_addr + exec->e_phoff);
+:
+: which is wrong since e_phoff is the file offset of program header and
+: load_addr is the memory base address from PT_LOAD entry.
+:
+: The ld.so uses AT_PHDR as the memory address of program header. In normal
+: case, since the e_phoff is usually 64 and in the first PT_LOAD region, it
+: is the correct program header address.
+:
+: But if the address of program header isn't equal to the first PT_LOAD
+: address + e_phoff (e.g.  Put the program header in other non-consecutive
+: PT_LOAD region), ld.so will try to read program header from wrong address
+: then crash or use incorrect program header.
 
-Instead of calling the signal right away, for PREEMPT_RT and x86,
-the signal information is stored on the stacks task_struct and
-TIF_NOTIFY_RESUME is set. Then on exit of the trap, the signal resume
-code will send the signal when preemption is enabled.
+This is because exec->e_phoff
+is the offset of PHDRs in the file and the address of PHDRs in the
+memory may differ from it. This patch fixes the bug by calculating the
+address of program headers from PT_LOADs directly.
 
-[ rostedt: Switched from #ifdef CONFIG_PREEMPT_RT to
-  ARCH_RT_DELAYS_SIGNAL_SEND and added comments to the code. ]
-[bigeasy: Add on 32bit as per Yang Shi, minor rewording. ]
-[ tglx: Use a config option ]
-
-Signed-off-by: Oleg Nesterov <oleg@redhat.com>
-Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lore.kernel.org/r/Ygq5aBB/qMQw6aP5@linutronix.de
+Signed-off-by: Akira Kawata <akirakawata1@gmail.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Acked-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20220127124014.338760-2-akirakawata1@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/Kconfig       |  1 +
- include/linux/sched.h  |  3 +++
- kernel/Kconfig.preempt | 12 +++++++++++-
- kernel/entry/common.c  | 14 ++++++++++++++
- kernel/signal.c        | 40 ++++++++++++++++++++++++++++++++++++++++
- 5 files changed, 69 insertions(+), 1 deletion(-)
+ fs/binfmt_elf.c | 24 ++++++++++++++++++------
+ 1 file changed, 18 insertions(+), 6 deletions(-)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 9f5bd41bf660..d557ac29b6cd 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -120,6 +120,7 @@ config X86
- 	select ARCH_WANTS_NO_INSTR
- 	select ARCH_WANT_HUGE_PMD_SHARE
- 	select ARCH_WANT_LD_ORPHAN_WARN
-+	select ARCH_WANTS_RT_DELAYED_SIGNALS
- 	select ARCH_WANTS_THP_SWAP		if X86_64
- 	select ARCH_HAS_PARANOID_L1D_FLUSH
- 	select BUILDTIME_TABLE_SORT
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 75ba8aa60248..098e37fd770a 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -1087,6 +1087,9 @@ struct task_struct {
- 	/* Restored if set_restore_sigmask() was used: */
- 	sigset_t			saved_sigmask;
- 	struct sigpending		pending;
-+#ifdef CONFIG_RT_DELAYED_SIGNALS
-+	struct kernel_siginfo		forced_info;
-+#endif
- 	unsigned long			sas_ss_sp;
- 	size_t				sas_ss_size;
- 	unsigned int			sas_ss_flags;
-diff --git a/kernel/Kconfig.preempt b/kernel/Kconfig.preempt
-index ce77f0265660..5644abd5f8a8 100644
---- a/kernel/Kconfig.preempt
-+++ b/kernel/Kconfig.preempt
-@@ -132,4 +132,14 @@ config SCHED_CORE
- 	  which is the likely usage by Linux distributions, there should
- 	  be no measurable impact on performance.
+diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
+index d61543fbd652..af0965c10619 100644
+--- a/fs/binfmt_elf.c
++++ b/fs/binfmt_elf.c
+@@ -170,8 +170,8 @@ static int padzero(unsigned long elf_bss)
  
--
-+config ARCH_WANTS_RT_DELAYED_SIGNALS
-+	bool
-+	help
-+	  This option is selected by architectures where raising signals
-+	  can happen in atomic contexts on PREEMPT_RT enabled kernels. This
-+	  option delays raising the signal until the return to user space
-+	  loop where it is also delivered. X86 requires this to deliver
-+	  signals from trap handlers which run on IST stacks.
-+
-+config RT_DELAYED_SIGNALS
-+	def_bool PREEMPT_RT && ARCH_WANTS_RT_DELAYED_SIGNALS
-diff --git a/kernel/entry/common.c b/kernel/entry/common.c
-index bad713684c2e..0543a2c92f20 100644
---- a/kernel/entry/common.c
-+++ b/kernel/entry/common.c
-@@ -148,6 +148,18 @@ static void handle_signal_work(struct pt_regs *regs, unsigned long ti_work)
- 	arch_do_signal_or_restart(regs, ti_work & _TIF_SIGPENDING);
- }
- 
-+#ifdef CONFIG_RT_DELAYED_SIGNALS
-+static inline void raise_delayed_signal(void)
-+{
-+	if (unlikely(current->forced_info.si_signo)) {
-+		force_sig_info(&current->forced_info);
-+		current->forced_info.si_signo = 0;
-+	}
-+}
-+#else
-+static inline void raise_delayed_signal(void) { }
-+#endif
-+
- static unsigned long exit_to_user_mode_loop(struct pt_regs *regs,
- 					    unsigned long ti_work)
+ static int
+ create_elf_tables(struct linux_binprm *bprm, const struct elfhdr *exec,
+-		unsigned long load_addr, unsigned long interp_load_addr,
+-		unsigned long e_entry)
++		unsigned long interp_load_addr,
++		unsigned long e_entry, unsigned long phdr_addr)
  {
-@@ -162,6 +174,8 @@ static unsigned long exit_to_user_mode_loop(struct pt_regs *regs,
- 		if (ti_work & _TIF_NEED_RESCHED)
- 			schedule();
+ 	struct mm_struct *mm = current->mm;
+ 	unsigned long p = bprm->p;
+@@ -257,7 +257,7 @@ create_elf_tables(struct linux_binprm *bprm, const struct elfhdr *exec,
+ 	NEW_AUX_ENT(AT_HWCAP, ELF_HWCAP);
+ 	NEW_AUX_ENT(AT_PAGESZ, ELF_EXEC_PAGESIZE);
+ 	NEW_AUX_ENT(AT_CLKTCK, CLOCKS_PER_SEC);
+-	NEW_AUX_ENT(AT_PHDR, load_addr + exec->e_phoff);
++	NEW_AUX_ENT(AT_PHDR, phdr_addr);
+ 	NEW_AUX_ENT(AT_PHENT, sizeof(struct elf_phdr));
+ 	NEW_AUX_ENT(AT_PHNUM, exec->e_phnum);
+ 	NEW_AUX_ENT(AT_BASE, interp_load_addr);
+@@ -823,7 +823,7 @@ static int parse_elf_properties(struct file *f, const struct elf_phdr *phdr,
+ static int load_elf_binary(struct linux_binprm *bprm)
+ {
+ 	struct file *interpreter = NULL; /* to shut gcc up */
+- 	unsigned long load_addr = 0, load_bias = 0;
++	unsigned long load_addr, load_bias = 0, phdr_addr = 0;
+ 	int load_addr_set = 0;
+ 	unsigned long error;
+ 	struct elf_phdr *elf_ppnt, *elf_phdata, *interp_elf_phdata = NULL;
+@@ -1180,6 +1180,17 @@ static int load_elf_binary(struct linux_binprm *bprm)
+ 				reloc_func_desc = load_bias;
+ 			}
+ 		}
++
++		/*
++		 * Figure out which segment in the file contains the Program
++		 * Header table, and map to the associated memory address.
++		 */
++		if (elf_ppnt->p_offset <= elf_ex->e_phoff &&
++		    elf_ex->e_phoff < elf_ppnt->p_offset + elf_ppnt->p_filesz) {
++			phdr_addr = elf_ex->e_phoff - elf_ppnt->p_offset +
++				    elf_ppnt->p_vaddr;
++		}
++
+ 		k = elf_ppnt->p_vaddr;
+ 		if ((elf_ppnt->p_flags & PF_X) && k < start_code)
+ 			start_code = k;
+@@ -1215,6 +1226,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
+ 	}
  
-+		raise_delayed_signal();
-+
- 		if (ti_work & _TIF_UPROBE)
- 			uprobe_notify_resume(regs);
+ 	e_entry = elf_ex->e_entry + load_bias;
++	phdr_addr += load_bias;
+ 	elf_bss += load_bias;
+ 	elf_brk += load_bias;
+ 	start_code += load_bias;
+@@ -1278,8 +1290,8 @@ static int load_elf_binary(struct linux_binprm *bprm)
+ 		goto out;
+ #endif /* ARCH_HAS_SETUP_ADDITIONAL_PAGES */
  
-diff --git a/kernel/signal.c b/kernel/signal.c
-index 9b04631acde8..e93de6daa188 100644
---- a/kernel/signal.c
-+++ b/kernel/signal.c
-@@ -1307,6 +1307,43 @@ enum sig_handler {
- 	HANDLER_EXIT,	 /* Only visible as the process exit code */
- };
+-	retval = create_elf_tables(bprm, elf_ex,
+-			  load_addr, interp_load_addr, e_entry);
++	retval = create_elf_tables(bprm, elf_ex, interp_load_addr,
++				   e_entry, phdr_addr);
+ 	if (retval < 0)
+ 		goto out;
  
-+/*
-+ * On some archictectures, PREEMPT_RT has to delay sending a signal from a
-+ * trap since it cannot enable preemption, and the signal code's
-+ * spin_locks turn into mutexes. Instead, it must set TIF_NOTIFY_RESUME
-+ * which will send the signal on exit of the trap.
-+ */
-+#ifdef CONFIG_RT_DELAYED_SIGNALS
-+static inline bool force_sig_delayed(struct kernel_siginfo *info,
-+				     struct task_struct *t)
-+{
-+	if (!in_atomic())
-+		return false;
-+
-+	if (WARN_ON_ONCE(t->forced_info.si_signo))
-+		return true;
-+
-+	if (is_si_special(info)) {
-+		WARN_ON_ONCE(info != SEND_SIG_PRIV);
-+		t->forced_info.si_signo = info->si_signo;
-+		t->forced_info.si_errno = 0;
-+		t->forced_info.si_code = SI_KERNEL;
-+		t->forced_info.si_pid = 0;
-+		t->forced_info.si_uid = 0;
-+	} else {
-+		t->forced_info = *info;
-+	}
-+	set_tsk_thread_flag(t, TIF_NOTIFY_RESUME);
-+	return true;
-+}
-+#else
-+static inline bool force_sig_delayed(struct kernel_siginfo *info,
-+				     struct task_struct *t)
-+{
-+	return false;
-+}
-+#endif
-+
- /*
-  * Force a signal that the process can't ignore: if necessary
-  * we unblock the signal and change any SIG_IGN to SIG_DFL.
-@@ -1327,6 +1364,9 @@ force_sig_info_to_task(struct kernel_siginfo *info, struct task_struct *t,
- 	struct k_sigaction *action;
- 	int sig = info->si_signo;
- 
-+	if (force_sig_delayed(info, t))
-+		return 0;
-+
- 	spin_lock_irqsave(&t->sighand->siglock, flags);
- 	action = &t->sighand->action[sig-1];
- 	ignored = action->sa.sa_handler == SIG_IGN;
 -- 
 2.34.1
 
