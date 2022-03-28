@@ -2,98 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 735F4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 22:18:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94DF7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 22:27:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229695AbiC1WUL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 18:20:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59168 "EHLO
+        id S229848AbiC1W2o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 18:28:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229599AbiC1WUH (ORCPT
+        with ESMTP id S229772AbiC1W2m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 18:20:07 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4EBDC65;
-        Mon, 28 Mar 2022 15:18:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=8GkLc/s+XEtz/UORDgvxTa0KxKSEAfLI2AHFnWlv8Mk=; b=ICob3tApxQsmar5HbaaA3fVYUE
-        Aa++An9QkojsDVrsh/htJ0+2v+LMyi9qn0y9676fOzkhDZyskgLhMGl218NEqnKk3pgDisRzyAagc
-        Tar+Eyn01xVBFdR9TtK8Nh8xUCCRVsutxDXyLyROP7fJptrNfYl0hD8gUmxQWCywarq5M8YH2Gd1A
-        uX6svXP8R5BDnGctjm3hgxNOqcFkseL6QO5HAY7ckxv6HoLX7U6faXR5McOyrRoqmg0hSFwyjPgHM
-        d76QrrVArIoMYG1zpPg4LmHV7BzhXK+WnJWK3jTlIZC9ICgueWZK7m/8U3s2GFY1LfVLGv5ksk31b
-        BZTPR92Q==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nYxZK-00HJIv-IW; Mon, 28 Mar 2022 22:10:34 +0000
-Date:   Mon, 28 Mar 2022 23:10:34 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Hugh Dickins <hughd@google.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Mon, 28 Mar 2022 18:28:42 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B552575238
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 15:27:00 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id f3so12912572pfe.2
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 15:27:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=EaW6LnFnD0yHSZLOEoOdmGP4SdnTb3yLLH8IPqs77KY=;
+        b=Xyvle5xj+iytheGd+opSaVUcJMrxydFolbbLLB0cfjcq5NLgRpKcyY8LmvKaLgqjGf
+         4Wz+LYcSQ0FaI+N5y+VY4SzfRHCjtAZByjFVMXJ2KOnIAwrohQC+hThWqUCVqG+4NbES
+         3SNF28Gr4dRvSXnzRTTpxIDvLztpdn1WZNrxh8Q8n7iGr0rCaj4r9+fp3XG393ZBWs6k
+         SHSEkJqmZ3YIGgDpQAEgtvU4ck1H0tPnbq3AaPzkvTPpDKGc7uoyX0A9YsGMVeSengHe
+         iGHaJiaF81xnBQn+5IhcSf8NxcBCjbS8eFYH7svcMpAomWcPYrKr0MsWl6ZnU5x0GLV1
+         TUTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=EaW6LnFnD0yHSZLOEoOdmGP4SdnTb3yLLH8IPqs77KY=;
+        b=2Sm8zDgQlVVWnvGumOIfLUeSNvX+lQW8XXDtK4hZ6okkS4ownBUyDSLoeE3M2CNddw
+         9X27Db1/2rrvC1Sr6UJZf1CwAFB5fDx6Dxgd/YZCIfb7DaB/dBGHZ+SwlRTDQHRgTz4P
+         KD95zH0TFPwORbTD7sgRBSR30vLar9BBFF+3KyE3UnlSdjMOK9Ti4K1kYNSt94rrwvaM
+         nW+YE9/KFAmHtWfybuPUdT8SDk/I0/z8v/5YcI4mxb8IPtjzMZer4thy886G2SI86PsA
+         KX90sQPUaKDOztU+oeejKCqgfIBjf4Rf2oHs+jvQCoUCigpJmnULuQ4V+rgftWHpqwlo
+         9Ezw==
+X-Gm-Message-State: AOAM530+1xoYC3RQIV37HKTkIgWd5GVJfTvPukcC5XEoEd14VrlrJQMG
+        yiHbFoXNz4SrekTF0AziqDB9Aw==
+X-Google-Smtp-Source: ABdhPJyCCih0kMQlx0T3Lnxi+OwtGBTbKYzIPbgZGi6J5hxjxW3HSWsT0UQDj72qn+FBmxrSiRdwKg==
+X-Received: by 2002:a62:e215:0:b0:4fa:87f1:dc16 with SMTP id a21-20020a62e215000000b004fa87f1dc16mr25067148pfi.19.1648506420043;
+        Mon, 28 Mar 2022 15:27:00 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id f16-20020a056a001ad000b004fb358ffe86sm8955991pfv.137.2022.03.28.15.26.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 15:26:59 -0700 (PDT)
+Date:   Mon, 28 Mar 2022 22:26:55 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Chao Peng <chao.p.peng@linux.intel.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-api@vger.kernel.org, qemu-devel@nongnu.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>, linux-kernel@vger.kernel.org,
-        linux-next@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: linux-next: build warnings after merge of the akpm-current tree
-Message-ID: <YkIyWqOAiAmJ4ear@casper.infradead.org>
-References: <20220209170245.08968c92@canb.auug.org.au>
- <20220324182725.63a454e3@canb.auug.org.au>
- <224c2147-36fe-93ed-41a5-a4609b59b4a2@google.com>
+        Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com
+Subject: Re: [PATCH v5 06/13] KVM: Use kvm_userspace_memory_region_ext
+Message-ID: <YkI2Lyv9SJaGPDz+@google.com>
+References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
+ <20220310140911.50924-7-chao.p.peng@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <224c2147-36fe-93ed-41a5-a4609b59b4a2@google.com>
+In-Reply-To: <20220310140911.50924-7-chao.p.peng@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 12:54:14PM -0700, Hugh Dickins wrote:
-> On Thu, 24 Mar 2022, Stephen Rothwell wrote:
+On Thu, Mar 10, 2022, Chao Peng wrote:
+> @@ -4476,14 +4477,23 @@ static long kvm_vm_ioctl(struct file *filp,
+>  		break;
+>  	}
+>  	case KVM_SET_USER_MEMORY_REGION: {
+> -		struct kvm_userspace_memory_region kvm_userspace_mem;
+> +		struct kvm_userspace_memory_region_ext region_ext;
+
+It's probably a good idea to zero initialize the full region to avoid consuming
+garbage stack data if there's a bug and an _ext field is accessed without first
+checking KVM_MEM_PRIVATE.  I'm usually opposed to unnecessary initialization, but
+this seems like something we could screw up quite easily.
+
+>  		r = -EFAULT;
+> -		if (copy_from_user(&kvm_userspace_mem, argp,
+> -						sizeof(kvm_userspace_mem)))
+> +		if (copy_from_user(&region_ext, argp,
+> +				sizeof(struct kvm_userspace_memory_region)))
+>  			goto out;
+> +		if (region_ext.region.flags & KVM_MEM_PRIVATE) {
+> +			int offset = offsetof(
+> +				struct kvm_userspace_memory_region_ext,
+> +				private_offset);
+> +			if (copy_from_user(&region_ext.private_offset,
+> +					   argp + offset,
+> +					   sizeof(region_ext) - offset))
+
+In this patch, KVM_MEM_PRIVATE should result in an -EINVAL as it's not yet
+supported.  Copying the _ext on KVM_MEM_PRIVATE belongs in the "Expose KVM_MEM_PRIVATE"
+patch.
+
+Mechnically, what about first reading flags via get_user(), and then doing a single
+copy_from_user()?  It's technically more work in the common case, and requires an
+extra check to guard against TOCTOU attacks, but this isn't a fast path by any means
+and IMO the end result makes it easier to understand the relationship between
+KVM_MEM_PRIVATE and the two different structs.
+
+E.g.
+
+	case KVM_SET_USER_MEMORY_REGION: {
+		struct kvm_user_mem_region region;
+		unsigned long size;
+		u32 flags;
+
+		memset(&region, 0, sizeof(region));
+
+		r = -EFAULT;
+		if (get_user(flags, (u32 __user *)(argp + offsetof(typeof(region), flags))))
+			goto out;
+
+		if (flags & KVM_MEM_PRIVATE)
+			size = sizeof(struct kvm_userspace_memory_region_ext);
+		else
+			size = sizeof(struct kvm_userspace_memory_region);
+		if (copy_from_user(&region, argp, size))
+			goto out;
+
+		r = -EINVAL;
+		if ((flags ^ region.flags) & KVM_MEM_PRIVATE)
+			goto out;
+
+		r = kvm_vm_ioctl_set_memory_region(kvm, &region);
+		break;
+	}
+
+> +				goto out;
+> +		}
+>  
+> -		r = kvm_vm_ioctl_set_memory_region(kvm, &kvm_userspace_mem);
+> +		r = kvm_vm_ioctl_set_memory_region(kvm, &region_ext);
+>  		break;
+>  	}
+>  	case KVM_GET_DIRTY_LOG: {
+> -- 
+> 2.17.1
 > 
-> > Hi all,
-> > 
-> > On Wed, 9 Feb 2022 17:02:45 +1100 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
-> > > 
-> > > After merging the akpm-current tree, today's linux-next build (htmldocs)
-> > > produced these warnings:
-> > > 
-> > > include/linux/mm_types.h:272: warning: Function parameter or member '__filler' not described in 'folio'
-> > > include/linux/mm_types.h:272: warning: Function parameter or member 'mlock_count' not described in 'folio'
-> > > 
-> > > Introduced by commit
-> > > 
-> > >   60a5c5ab0ba7 ("mm/munlock: maintain page->mlock_count while unevictable")
-> > 
-> > I am still getting these warnings.  That commit is now
-> > 
-> >   07ca76067308 ("mm/munlock: maintain page->mlock_count while unevictable")
-> > 
-> > in Linus' tree :-(
-> 
-> Sorry about that Stephen: back in Feb I expected Matthew to have strong
-> feelings about it, and it wouldn't have been helpful for me to mess it
-> around at that time.
-> 
-> But I'll reply to this now with my suggested patch: which Matthew may
-> not like (he may consider it a retrograde step), but unless he NAKs it
-> and comes up with something we all like better, it should do for now.
-
-Sorry!  I didn't see these emails back in February, or I would have
-fixed it up.  I'm doing a build now, but it's a very slow process
-(and seems to have become single-threaded since the last time I ran it?)
-so it will be a little while before I can produce a patch.
-
-> I did try to 'make htmldocs' for the first time, but was put off by all
-> the new packages I was asked to install - not a good use of time.  And
-> I'm so ignorant that I do not even know if "/* public: */" is a helpful
-> comment or a special annotation.
-
-Fortunately the documentation is actually documented:
-Documentation/doc-guide/kernel-doc.rst
-''Structure, union, and enumeration documentation''
-
-There are still many, many warnings when building the documentation, so
-don't feel particularly bad about this.  I've tried to make it more
-obvious to non-doc-specialists by making W=1 emit warnings, but that
-only happens for .c files, not for .h files.  As you say, the amount
-of tooling that needs to be installed to make htmldocs is intimidating.
