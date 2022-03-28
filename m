@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 263F7C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 20:44:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D9CBC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 20:44:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345446AbiC1UqF (ORCPT
+        id S1345464AbiC1UqP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 16:46:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43158 "EHLO
+        Mon, 28 Mar 2022 16:46:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345657AbiC1UnY (ORCPT
+        with ESMTP id S1345855AbiC1Un3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 16:43:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9130366ACC;
-        Mon, 28 Mar 2022 13:41:43 -0700 (PDT)
+        Mon, 28 Mar 2022 16:43:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F1DF66ADB;
+        Mon, 28 Mar 2022 13:41:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3303F614B3;
+        by ams.source.kernel.org (Postfix) with ESMTPS id E56E4B81223;
+        Mon, 28 Mar 2022 20:41:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56BD5C34112;
         Mon, 28 Mar 2022 20:41:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9306BC340ED;
-        Mon, 28 Mar 2022 20:41:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648500102;
-        bh=kWgGrhwx6DwAxyD1VMwH9Xw1QxCd/o7nc+h7FA2drrU=;
+        s=k20201202; t=1648500103;
+        bh=igf1YSCCBjkuVabykAkqPLeWrSFcFzZevr9yX0NS45c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R9h30IAyzmOvqaQe+Wt6s4dtwgekH/Z/c8JIhXUPSJ+SDYT5HEDEQOs1cC55zlbse
-         SVH/qG8fVXne/OiVu6hhugpx5C6OztIPtbZ6GRcUITejO7CzojGeMriZ8SNbtmXlLm
-         8NQLnrVcDOArEm5eCET0pFrHKEcOgsJIehkEK7LqTLY9IowqM5Qv8+N5rr9ZWSexni
-         fsqxtUA943a9Ftd9HQhyFLuEJEbGXf0vTV0iK4Gy5KpcyCDh54ofvWYonZ3rEFo4eC
-         e1sPH3ssgrxR7vHinS33phJrmmT0EJxzshcGeXvQ11yNb+tEEFhUEN9nhp+TZBc2m0
-         w7VcDuEi6OhBQ==
+        b=lk01mu3g9AAyWFT1QH3Bwy9bYT9/mLtTIeYWEflJc8FMdys2FP8ipBHBT6avsSvW9
+         0Cl0LDOWmJ3xfOQpvAKjTX1WxkVN+2iaYi6sDZopawJmq9k1fYThVHVbLDzAaeM9UG
+         Uded8KMrWKUoNKR4fyQ22q2Q6b70uURXNU5vIoBOzlrzkGINaVwbAuboxEJyQkMytZ
+         EKZ4J9bMUQKfmb2bccnmyM5MNw9yrU9O1GcaPZOFGEjTWnw8Vtw5+kEE8SH4XO7TUy
+         1WOGuHTDf0UEBOHN2h3swOE4BRFiWT2P2r7pssHHi6axkAIF45kGKLz9fS9s7wDuJm
+         HcR+1NndqF6TQ==
 Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
         (envelope-from <mchehab@kernel.org>)
-        id 1nYwBI-000lcG-6t; Mon, 28 Mar 2022 22:41:40 +0200
+        id 1nYwBJ-000ldI-32; Mon, 28 Mar 2022 22:41:41 +0200
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Sean Young <sean@mess.org>, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org
-Subject: [PATCH 07/26] media: dvb-usb: az6027: use an enum for the device number
-Date:   Mon, 28 Mar 2022 22:41:19 +0200
-Message-Id: <65b9775c39dcd21e5cb75a86e1e7b99b7d6eefcd.1648499509.git.mchehab@kernel.org>
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org
+Subject: [PATCH 23/26] media: dvb-usb: vp7045: use an enum for the device number
+Date:   Mon, 28 Mar 2022 22:41:35 +0200
+Message-Id: <0241bf842bf592dfa01b0ef4916afda396194f98.1648499509.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1648499509.git.mchehab@kernel.org>
 References: <cover.1648499509.git.mchehab@kernel.org>
@@ -66,94 +64,95 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH 00/26] at: https://lore.kernel.org/all/cover.1648499509.git.mchehab@kernel.org/
 
- drivers/media/usb/dvb-usb/az6027.c | 45 +++++++++++++++++++-----------
- 1 file changed, 28 insertions(+), 17 deletions(-)
+ drivers/media/usb/dvb-usb/vp7045.c | 28 ++++++++++++++++++----------
+ include/media/dvb-usb-ids.h        |  8 ++++----
+ 2 files changed, 22 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/media/usb/dvb-usb/az6027.c b/drivers/media/usb/dvb-usb/az6027.c
-index 86788771175b..cf15988dfb51 100644
---- a/drivers/media/usb/dvb-usb/az6027.c
-+++ b/drivers/media/usb/dvb-usb/az6027.c
-@@ -1080,16 +1080,27 @@ static int az6027_identify_state(struct usb_device *udev,
+diff --git a/drivers/media/usb/dvb-usb/vp7045.c b/drivers/media/usb/dvb-usb/vp7045.c
+index 23e3a90af1f4..1dc2b18d44d8 100644
+--- a/drivers/media/usb/dvb-usb/vp7045.c
++++ b/drivers/media/usb/dvb-usb/vp7045.c
+@@ -172,13 +172,21 @@ static int vp7045_usb_probe(struct usb_interface *intf,
+ 				   THIS_MODULE, NULL, adapter_nr);
  }
  
- 
+-static struct usb_device_id vp7045_usb_table [] = {
+-	    { USB_DEVICE(USB_VID_VISIONPLUS, USB_PID_TWINHAN_VP7045_COLD) },
+-	    { USB_DEVICE(USB_VID_VISIONPLUS, USB_PID_TWINHAN_VP7045_WARM) },
+-	    { USB_DEVICE(USB_VID_VISIONPLUS, USB_PID_DNTV_TINYUSB2_COLD) },
+-	    { USB_DEVICE(USB_VID_VISIONPLUS, USB_PID_DNTV_TINYUSB2_WARM) },
+-	    { 0 },
 +enum {
-+	AZUREWAVE_AZ6027,
-+	TERRATEC_DVBS2CI_V1,
-+	TERRATEC_DVBS2CI_V2,
-+	TECHNISAT_USB2_HDCI_V1,
-+	TECHNISAT_USB2_HDCI_V2,
-+	ELGATO_EYETV_SAT,
-+	ELGATO_EYETV_SAT_V2,
-+	ELGATO_EYETV_SAT_V3,
++	VISIONPLUS_VP7045_COLD,
++	VISIONPLUS_VP7045_WARM,
++	VISIONPLUS_TINYUSB2_COLD,
++	VISIONPLUS_TINYUSB2_WARM,
+ };
++
++static struct usb_device_id vp7045_usb_table[] = {
++	DVB_USB_DEV(VISIONPLUS, VISIONPLUS_VP7045_COLD),
++	DVB_USB_DEV(VISIONPLUS, VISIONPLUS_VP7045_WARM),
++	DVB_USB_DEV(VISIONPLUS, VISIONPLUS_TINYUSB2_COLD),
++	DVB_USB_DEV(VISIONPLUS, VISIONPLUS_TINYUSB2_WARM),
++	{ }
 +};
 +
- static struct usb_device_id az6027_usb_table[] = {
--	{ USB_DEVICE(USB_VID_AZUREWAVE, USB_PID_AZUREWAVE_AZ6027) },
--	{ USB_DEVICE(USB_VID_TERRATEC,  USB_PID_TERRATEC_DVBS2CI_V1) },
--	{ USB_DEVICE(USB_VID_TERRATEC,  USB_PID_TERRATEC_DVBS2CI_V2) },
--	{ USB_DEVICE(USB_VID_TECHNISAT, USB_PID_TECHNISAT_USB2_HDCI_V1) },
--	{ USB_DEVICE(USB_VID_TECHNISAT, USB_PID_TECHNISAT_USB2_HDCI_V2) },
--	{ USB_DEVICE(USB_VID_ELGATO, USB_PID_ELGATO_EYETV_SAT) },
--	{ USB_DEVICE(USB_VID_ELGATO, USB_PID_ELGATO_EYETV_SAT_V2) },
--	{ USB_DEVICE(USB_VID_ELGATO, USB_PID_ELGATO_EYETV_SAT_V3) },
--	{ },
-+	DVB_USB_DEV(AZUREWAVE, AZUREWAVE_AZ6027),
-+	DVB_USB_DEV(TERRATEC, TERRATEC_DVBS2CI_V1),
-+	DVB_USB_DEV(TERRATEC, TERRATEC_DVBS2CI_V2),
-+	DVB_USB_DEV(TECHNISAT, TECHNISAT_USB2_HDCI_V1),
-+	DVB_USB_DEV(TECHNISAT, TECHNISAT_USB2_HDCI_V2),
-+	DVB_USB_DEV(ELGATO, ELGATO_EYETV_SAT),
-+	DVB_USB_DEV(ELGATO, ELGATO_EYETV_SAT_V2),
-+	DVB_USB_DEV(ELGATO, ELGATO_EYETV_SAT_V3),
-+	{ }
- };
+ MODULE_DEVICE_TABLE(usb, vp7045_usb_table);
  
- MODULE_DEVICE_TABLE(usb, az6027_usb_table);
-@@ -1141,35 +1152,35 @@ static struct dvb_usb_device_properties az6027_properties = {
+ static struct dvb_usb_device_properties vp7045_properties = {
+@@ -221,12 +229,12 @@ static struct dvb_usb_device_properties vp7045_properties = {
+ 	.num_device_descs = 2,
  	.devices = {
- 		{
- 			.name = "AZUREWAVE DVB-S/S2 USB2.0 (AZ6027)",
--			.cold_ids = { &az6027_usb_table[0], NULL },
-+			.cold_ids = { &az6027_usb_table[AZUREWAVE_AZ6027], NULL },
- 			.warm_ids = { NULL },
- 		}, {
- 			.name = "TERRATEC S7",
--			.cold_ids = { &az6027_usb_table[1], NULL },
-+			.cold_ids = { &az6027_usb_table[TERRATEC_DVBS2CI_V1], NULL },
- 			.warm_ids = { NULL },
- 		}, {
- 			.name = "TERRATEC S7 MKII",
--			.cold_ids = { &az6027_usb_table[2], NULL },
-+			.cold_ids = { &az6027_usb_table[TERRATEC_DVBS2CI_V2], NULL },
- 			.warm_ids = { NULL },
- 		}, {
- 			.name = "Technisat SkyStar USB 2 HD CI",
--			.cold_ids = { &az6027_usb_table[3], NULL },
-+			.cold_ids = { &az6027_usb_table[TECHNISAT_USB2_HDCI_V1], NULL },
- 			.warm_ids = { NULL },
- 		}, {
- 			.name = "Technisat SkyStar USB 2 HD CI",
--			.cold_ids = { &az6027_usb_table[4], NULL },
-+			.cold_ids = { &az6027_usb_table[TECHNISAT_USB2_HDCI_V2], NULL },
- 			.warm_ids = { NULL },
- 		}, {
- 			.name = "Elgato EyeTV Sat",
--			.cold_ids = { &az6027_usb_table[5], NULL },
-+			.cold_ids = { &az6027_usb_table[ELGATO_EYETV_SAT], NULL },
- 			.warm_ids = { NULL },
- 		}, {
- 			.name = "Elgato EyeTV Sat",
--			.cold_ids = { &az6027_usb_table[6], NULL },
-+			.cold_ids = { &az6027_usb_table[ELGATO_EYETV_SAT_V2], NULL },
- 			.warm_ids = { NULL },
- 		}, {
- 			.name = "Elgato EyeTV Sat",
--			.cold_ids = { &az6027_usb_table[7], NULL },
-+			.cold_ids = { &az6027_usb_table[ELGATO_EYETV_SAT_V3], NULL },
- 			.warm_ids = { NULL },
+ 		{ .name = "Twinhan USB2.0 DVB-T receiver (TwinhanDTV Alpha/MagicBox II)",
+-		  .cold_ids = { &vp7045_usb_table[0], NULL },
+-		  .warm_ids = { &vp7045_usb_table[1], NULL },
++		  .cold_ids = { &vp7045_usb_table[VISIONPLUS_VP7045_COLD], NULL },
++		  .warm_ids = { &vp7045_usb_table[VISIONPLUS_VP7045_WARM], NULL },
+ 		},
+ 		{ .name = "DigitalNow TinyUSB 2 DVB-t Receiver",
+-		  .cold_ids = { &vp7045_usb_table[2], NULL },
+-		  .warm_ids = { &vp7045_usb_table[3], NULL },
++		  .cold_ids = { &vp7045_usb_table[VISIONPLUS_TINYUSB2_COLD], NULL },
++		  .warm_ids = { &vp7045_usb_table[VISIONPLUS_TINYUSB2_WARM], NULL },
  		},
  		{ NULL },
+ 	}
+diff --git a/include/media/dvb-usb-ids.h b/include/media/dvb-usb-ids.h
+index e022e38b6f95..9f53b3ce3e58 100644
+--- a/include/media/dvb-usb-ids.h
++++ b/include/media/dvb-usb-ids.h
+@@ -199,8 +199,6 @@
+ #define USB_PID_DIGITALNOW_BLUEBIRD_DUAL_1_WARM 	0xdb55
+ #define USB_PID_DIGIVOX_MINI_SL_COLD			0xe360
+ #define USB_PID_DIGIVOX_MINI_SL_WARM			0xe361
+-#define USB_PID_DNTV_TINYUSB2_COLD			0x3223
+-#define USB_PID_DNTV_TINYUSB2_WARM			0x3224
+ #define USB_PID_DPOSH_M9206_COLD			0x9206
+ #define USB_PID_DPOSH_M9206_WARM			0xa090
+ #define USB_PID_DVB_T_USB_STICK_HIGH_SPEED_COLD 	0x5000
+@@ -413,8 +411,6 @@
+ #define USB_PID_TWINHAN_VP7021_WARM			0x3208
+ #define USB_PID_TWINHAN_VP7041_COLD			0x3201
+ #define USB_PID_TWINHAN_VP7041_WARM			0x3202
+-#define USB_PID_TWINHAN_VP7045_COLD			0x3205
+-#define USB_PID_TWINHAN_VP7045_WARM			0x3206
+ #define USB_PID_ULTIMA_TVBOX_AN2235_COLD		0x8107
+ #define USB_PID_ULTIMA_TVBOX_AN2235_WARM		0x8108
+ #define USB_PID_ULTIMA_TVBOX_ANCHOR_COLD		0x2235
+@@ -428,9 +424,13 @@
+ #define USB_PID_UNK_HYPER_PALTEK_COLD			0x005e
+ #define USB_PID_UNK_HYPER_PALTEK_WARM			0x005f
+ #define USB_PID_VISIONPLUS_PINNACLE_PCTV310E		0x3211
++#define USB_PID_VISIONPLUS_TINYUSB2_COLD		0x3223
++#define USB_PID_VISIONPLUS_TINYUSB2_WARM		0x3224
+ #define USB_PID_VISIONPLUS_VP7020_COLD			0x3203
+ #define USB_PID_VISIONPLUS_VP7020_WARM			0x3204
+ #define USB_PID_VISIONPLUS_VP7021_COLD			0x3207
++#define USB_PID_VISIONPLUS_VP7045_COLD			0x3205
++#define USB_PID_VISIONPLUS_VP7045_WARM			0x3206
+ #define USB_PID_WIDEVIEW_DTT200U_COLD			0x0201
+ #define USB_PID_WIDEVIEW_DTT200U_WARM			0x0301
+ #define USB_PID_WIDEVIEW_WT220U_COLD			0x0222
 -- 
 2.35.1
 
