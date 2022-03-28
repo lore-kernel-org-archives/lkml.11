@@ -2,120 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03106C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 16:12:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54EF9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 16:15:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241619AbiC1QO2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 12:14:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39336 "EHLO
+        id S241597AbiC1QRh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 12:17:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241597AbiC1QOX (ORCPT
+        with ESMTP id S239988AbiC1QRf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 12:14:23 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0252562A21
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 09:12:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648483962; x=1680019962;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=1K00Uy2bjZkVdoEOhcJO6s0f7diS2FE9HUV9VPPi8yw=;
-  b=TZl93Yn4/jB/6jAmw+awVAIe3zA9FqmIHYS8WzRgwpdkdSk1vtKH5tuN
-   tPQS7ya64oScLop8FicBnVgfeBj7lkvW2y0TOW8/7sBuZeD1eDfcmCqiO
-   8ISRij/bFIZNUq5kHoJ6iCBtQkxbbsR6jyofZVhVvXH+n2YOtqg4h1Q/H
-   C5CrShAi6LiDp2gZG3FaRVqxvr4DcAGjk1FtK3Y6MZzkBk2t+A+hgKdTm
-   aFmaFHXMMPUoVHArym+BFmIx/oUGUfleiW6GhNVkMuRXTkyepgZCONPgB
-   /RRJWrkGB6zdNmNWz7BiOOWG7d+sIfow5ozSNNdjyR8ANcooCijJaF9KT
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="241195781"
-X-IronPort-AV: E=Sophos;i="5.90,217,1643702400"; 
-   d="scan'208";a="241195781"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 09:11:58 -0700
-X-IronPort-AV: E=Sophos;i="5.90,217,1643702400"; 
-   d="scan'208";a="521075979"
-Received: from allenzho-mobl.amr.corp.intel.com (HELO localhost) ([10.212.109.43])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 09:11:57 -0700
-Date:   Mon, 28 Mar 2022 09:11:56 -0700
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Benjamin Philip <benjamin.philip495@gmail.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Charlie Sands <sandsch@northvilleschools.net>,
-        Mitali Borkar <mitaliborkar810@gmail.com>,
-        Colin Ian King <colin.king@intel.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        iweiny@gmail.com, ira.weiny@intel.com
-Subject: Re: [PATCH] staging: rts5208: Convert kmap() to kmap_local_page()
-Message-ID: <YkHeTCGdnGPjW0/9@iweiny-desk3>
-References: <20220328112440.17756-1-fmdefrancesco@gmail.com>
- <YkHXQRmExRFioEBN@iweiny-desk3>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YkHXQRmExRFioEBN@iweiny-desk3>
+        Mon, 28 Mar 2022 12:17:35 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D68625EBF
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 09:15:54 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 43FA4210EE;
+        Mon, 28 Mar 2022 16:15:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1648484153; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=q4Xt99w9xbYhH0KUJ1KGjk1nQO3I91qbWeC7RgiTOTM=;
+        b=aui3z9lUJWoZzWioOA8gh+7KdVc2GhaSTiJZeV/8K/6sR11p+AbaHSYw/F37iTj2PmKMpH
+        OfD7F/F/FV9ox1gfV6AO3I8z5Hq5M8/PCmY4mj251JXBns0TSvyfwdf9atJudq0BD7aWJf
+        XTPbQY3ekdaRKj1DhcgYMM3z5mp9ylM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1648484153;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=q4Xt99w9xbYhH0KUJ1KGjk1nQO3I91qbWeC7RgiTOTM=;
+        b=bskkfPk2ufk9FbJgwzGfb4xiY/0rkelwLXX7jkO+0rUVN/6D+4WWR0agYzQzWZhNquLwaz
+        7YscciewtgELbSCA==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id 2DF91A3B82;
+        Mon, 28 Mar 2022 16:15:53 +0000 (UTC)
+Date:   Mon, 28 Mar 2022 18:15:53 +0200
+Message-ID: <s5hilryjbnq.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Mohan Kumar D <mkumard@nvidia.com>
+Cc:     tiwai@suse.com, kai.vehmanen@linux.intel.com, perex@perex.cz,
+        ville.syrjala@linux.intel.com, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org, thierry.reding@gmail.com,
+        jonathanh@nvidia.com
+Subject: Re: [PATCH] ALSA: hda: Avoid unsol event during RPM suspending
+In-Reply-To: <7cbfca20-bd1a-9ca0-f0e2-2ecf5fa74f45@nvidia.com>
+References: <20220328091411.31488-1-mkumard@nvidia.com>
+        <s5hczi6l8fz.wl-tiwai@suse.de>
+        <7f7934e6-137c-4d8d-049b-0ed5e57cf00b@nvidia.com>
+        <s5ha6dal4ys.wl-tiwai@suse.de>
+        <7cbfca20-bd1a-9ca0-f0e2-2ecf5fa74f45@nvidia.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 08:41:53AM -0700, Ira Weiny wrote:
-> On Mon, Mar 28, 2022 at 01:24:40PM +0200, Fabio M. De Francesco wrote:
-> > The use of kmap() is being deprecated and kmap_local_page() is faster.
-> > Use kmap_local_page() in place of kmap().
+On Mon, 28 Mar 2022 15:51:17 +0200,
+Mohan Kumar D wrote:
 > 
-> Thanks for the patch!  I have just a couple of comments.
 > 
-> kmap_local_page() is not necessarily faster than kmap() but it is more correct
-> in this case.  You should mention why.
-> 
-> Also to help with kmap_local_page() there are a number of helpers implemented
-> in highmem.h for things like memcpy, memmove, etc.
-> 
-> Check out memcpy_page() for this use case.
-> 
-> Thank you!
-> Ira
-> 
+> On 3/28/2022 4:27 PM, Takashi Iwai wrote:
+> > External email: Use caution opening links or attachments
+> >
+> >
+> > On Mon, 28 Mar 2022 12:19:03 +0200,
+> > Mohan Kumar D wrote:
+> >>
+> >> On 3/28/2022 3:12 PM, Takashi Iwai wrote:
+> >>> External email: Use caution opening links or attachments
+> >>>
+> >>>
+> >>> On Mon, 28 Mar 2022 11:14:11 +0200,
+> >>> Mohan Kumar wrote:
+> >>>> There is a corner case with unsol event handling during codec runtime
+> >>>> suspending state. When the codec runtime suspend call initiated, the
+> >>>> codec->in_pm atomic variable would be 0, currently the codec runtime
+> >>>> suspend function calls snd_hdac_enter_pm() which will just increments
+> >>>> the codec->in_pm atomic variable. Consider unsol event happened just
+> >>>> after this step and before snd_hdac_leave_pm() in the codec runtime
+> >>>> suspend function. The snd_hdac_power_up_pm() in the unsol event
+> >>>> flow in hdmi_present_sense_via_verbs() function would just increment
+> >>>> the codec->in_pm atomic variable without calling pm_runtime_get_sync
+> >>>> function.
+> >>>>
+> >>>> As codec runtime suspend flow is already in progress and in parallel
+> >>>> unsol event is also accessing the codec verbs, as soon as codec
+> >>>> suspend flow completes and clocks are  switched off before completing
+> >>>> the unsol event handling as both functions doesn't wait for each other.
+> >>>> This will result in below errors
+> >>>>
+> >>>> [  589.428020] tegra-hda 3510000.hda: azx_get_response timeout, switching
+> >>>> to polling mode: last cmd=0x505f2f57
+> >>>> [  589.428344] tegra-hda 3510000.hda: spurious response 0x80000074:0x5,
+> >>>> last cmd=0x505f2f57
+> >>>> [  589.428547] tegra-hda 3510000.hda: spurious response 0x80000065:0x5,
+> >>>> last cmd=0x505f2f57
+> >>>>
+> >>>> To avoid this, the unsol event flow should not perform any codec verb
+> >>>> related operations during RPM_SUSPENDING state.
+> >>>>
+> >>>> Signed-off-by: Mohan Kumar <mkumard@nvidia.com>
+> >>> Thanks, that's a hairy problem...
+> >>>
+> >>> The logic sounds good, but can we check the PM state before calling
+> >>> snd_hda_power_up_pm()?
+> >> If am not wrong, PM apis exposed either provide RPM_ACTIVE or
+> >> RPM_SUSPENDED status. Don't see anything which provides info on
+> >> RPM_SUSPENDING. We might need to exactly know this state to fix this
+> >> issue.
+> > Well, maybe my question wasn't clear.  What I meant was that your
+> > change below
+> >
+> >>        ret = snd_hda_power_up_pm(codec);
+> >> -     if (ret < 0 && pm_runtime_suspended(hda_codec_dev(codec)))
+> >> +     if ((ret < 0 && pm_runtime_suspended(dev)) ||
+> >> +             (dev->power.runtime_status == RPM_SUSPENDING))
+> >>                goto out;
+> > can be rather like:
+> >
+> >> +     if (dev->power.runtime_status == RPM_SUSPENDING)
+> >> +             return;
+> >>        ret = snd_hda_power_up_pm(codec);
+> >>        if (ret < 0 && pm_runtime_suspended(hda_codec_dev(codec)))
+> > so that it skips unneeded power up/down calls.
+> >
+> > Basically the state is set at drivers/base/power/runtime.c
+> > rpm_suspend() just before calling the device's runtime_suspend
+> > callback.  So the state is supposed to be same before and after
+> > snd_hda_power_up_pm() in that case.
+> Thanks!, Make sense, will push the updated patch after testing with
+> latest suggestion.
 
-Also I believe this is work toward the Outreachy program.  If so be sure to
-follow the guidelines on this page:
+Thanks.  Also don't forget to cover a case the test bot complained:
+the reference to power.runtime_status needs #ifdef CONFIG_PM.
 
-https://kernelnewbies.org/Outreachyfirstpatch
 
-In particular, it does not look like you cc'ed the Outreachy list.
-
-Thanks!
-Ira
-
-> > 
-> > Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
-> > ---
-> >  drivers/staging/rts5208/rtsx_transport.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/staging/rts5208/rtsx_transport.c b/drivers/staging/rts5208/rtsx_transport.c
-> > index 805dc18fac0a..de690d7ee5e3 100644
-> > --- a/drivers/staging/rts5208/rtsx_transport.c
-> > +++ b/drivers/staging/rts5208/rtsx_transport.c
-> > @@ -92,13 +92,13 @@ unsigned int rtsx_stor_access_xfer_buf(unsigned char *buffer,
-> >  			while (sglen > 0) {
-> >  				unsigned int plen = min(sglen, (unsigned int)
-> >  						PAGE_SIZE - poff);
-> > -				unsigned char *ptr = kmap(page);
-> > +				unsigned char *ptr = kmap_local_page(page);
-> >  
-> >  				if (dir == TO_XFER_BUF)
-> >  					memcpy(ptr + poff, buffer + cnt, plen);
-> >  				else
-> >  					memcpy(buffer + cnt, ptr + poff, plen);
-> > -				kunmap(page);
-> > +				kunmap_local(ptr);
-> >  
-> >  				/* Start at the beginning of the next page */
-> >  				poff = 0;
-> > -- 
-> > 2.34.1
-> > 
+Takashi
