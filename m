@@ -2,82 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C498C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:51:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8C3DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:51:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241975AbiC1LxF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:53:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45448 "EHLO
+        id S236258AbiC1Lxa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:53:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243767AbiC1Lpc (ORCPT
+        with ESMTP id S242892AbiC1Lun (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:45:32 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42CC05AA7F;
-        Mon, 28 Mar 2022 04:41:29 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KRrP11mQDz1GD9b;
-        Mon, 28 Mar 2022 19:40:53 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 28 Mar
- 2022 19:41:07 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <hannes@cmpxchg.org>, <mhocko@kernel.org>,
-        <roman.gushchin@linux.dev>, <shakeelb@google.com>,
-        <akpm@linux-foundation.org>
-CC:     <cgroups@vger.kernel.org>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH] mm/memcg: remove unneeded nr_scanned
-Date:   Mon, 28 Mar 2022 19:41:44 +0800
-Message-ID: <20220328114144.53389-1-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
+        Mon, 28 Mar 2022 07:50:43 -0400
+Received: from relay4.hostedemail.com (relay4.hostedemail.com [64.99.140.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E51C29CAF;
+        Mon, 28 Mar 2022 04:44:53 -0700 (PDT)
+Received: from omf19.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay09.hostedemail.com (Postfix) with ESMTP id 2D4C723546;
+        Mon, 28 Mar 2022 11:44:52 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf19.hostedemail.com (Postfix) with ESMTPA id CCBAC20031;
+        Mon, 28 Mar 2022 11:44:45 +0000 (UTC)
+Message-ID: <d22ab1b8a17220fc8a5de94be037138a7a043ace.camel@perches.com>
+Subject: Re: [PATCH AUTOSEL 4.19 02/12] loop: use sysfs_emit() in the sysfs
+ xxx show()
+From:   Joe Perches <joe@perches.com>
+To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Cc:     Chaitanya Kulkarni <kch@nvidia.com>,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Jens Axboe <axboe@kernel.dk>, linux-block@vger.kernel.org
+Date:   Mon, 28 Mar 2022 04:44:44 -0700
+In-Reply-To: <20220328112417.1556946-2-sashal@kernel.org>
+References: <20220328112417.1556946-1-sashal@kernel.org>
+         <20220328112417.1556946-2-sashal@kernel.org>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7bit
+X-Stat-Signature: obmf73rx3tnfzbozg4wnjhp4k17hbdr4
+X-Rspamd-Server: rspamout01
+X-Rspamd-Queue-Id: CCBAC20031
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1/l3C74hzmVuV7AIL7xJJu0gQ8RzTgtr1k=
+X-HE-Tag: 1648467885-922355
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The local variable nr_scanned is unneeded as mem_cgroup_soft_reclaim always
-does *total_scanned += nr_scanned. So we can pass total_scanned directly to
-the mem_cgroup_soft_reclaim to simplify the code and save some cpu cycles
-of adding nr_scanned to total_scanned.
+On Mon, 2022-03-28 at 07:24 -0400, Sasha Levin wrote:
+> From: Chaitanya Kulkarni <kch@nvidia.com>
+> 
+> [ Upstream commit b27824d31f09ea7b4a6ba2c1b18bd328df3e8bed ]
+> 
+> sprintf does not know the PAGE_SIZE maximum of the temporary buffer
+> used for outputting sysfs content and it's possible to overrun the
+> PAGE_SIZE buffer length.
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
----
- mm/memcontrol.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+IMOP This isn't something that should be backported.
 
-diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index b686ec4f42c6..79341365ec90 100644
---- a/mm/memcontrol.c
-+++ b/mm/memcontrol.c
-@@ -3384,7 +3384,6 @@ unsigned long mem_cgroup_soft_limit_reclaim(pg_data_t *pgdat, int order,
- 	int loop = 0;
- 	struct mem_cgroup_tree_per_node *mctz;
- 	unsigned long excess;
--	unsigned long nr_scanned;
- 
- 	if (order > 0)
- 		return 0;
-@@ -3412,11 +3411,9 @@ unsigned long mem_cgroup_soft_limit_reclaim(pg_data_t *pgdat, int order,
- 		if (!mz)
- 			break;
- 
--		nr_scanned = 0;
- 		reclaimed = mem_cgroup_soft_reclaim(mz->memcg, pgdat,
--						    gfp_mask, &nr_scanned);
-+						    gfp_mask, total_scanned);
- 		nr_reclaimed += reclaimed;
--		*total_scanned += nr_scanned;
- 		spin_lock_irq(&mctz->lock);
- 		__mem_cgroup_remove_exceeded(mz, mctz);
- 
--- 
-2.23.0
 
