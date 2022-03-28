@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63009C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:45:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBC9CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:45:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244767AbiC1TrI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 15:47:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50392 "EHLO
+        id S240205AbiC1TrN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 15:47:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343690AbiC1Tps (ORCPT
+        with ESMTP id S1343559AbiC1Tq0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 15:45:48 -0400
+        Mon, 28 Mar 2022 15:46:26 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD9E46833A;
-        Mon, 28 Mar 2022 12:42:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF89968992;
+        Mon, 28 Mar 2022 12:42:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EAF661291;
-        Mon, 28 Mar 2022 19:42:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0B3BC36AE2;
-        Mon, 28 Mar 2022 19:42:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A2AE6128E;
+        Mon, 28 Mar 2022 19:42:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9555FC34100;
+        Mon, 28 Mar 2022 19:42:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648496571;
-        bh=r22Org1ZbKSB65acS8V3e6cCs/LI69xKLR2hmxYz7jI=;
+        s=k20201202; t=1648496575;
+        bh=8OMFyOaAk1BzOs8bd9OEu8SQHWkFyA3dMkqxRl+sTPI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MCg/AXr5X2sEMDomaO7oZWxuzs3ITp3NJvPeNf6QxpNHa+aDbdF5+OhdKWNl1dsAJ
-         VOtnjOyYAM/LqJ+wVsf+b7v2fFVluDB7QnCO0jlI9plrXAGIOpbjJInyQPd6IpjkcH
-         7zYXQHqRqGblCdeJohAssSkRHDH1gLxXld4ooZlQylaY3h6hOLz4laSwhwCQqB/jxT
-         u0wV5tQTMTNLWyb4an5y9nrMr83ZItxCANv9utabm1wNqjmQ2tjFHomaiE/q3RVMOT
-         JxIBIiSSfSln8QwSA2+SbKBSQZDq6kwDcfjni0vHETBu+31++B6sxKwRxACXrLckCH
-         fb5Ht9zvI2mJQ==
+        b=XTVbySn7+zd335MVf2oIeaMr2iVl+Mi1C+wSg1jLfhevRuy0SrcdIiEnWTBmjg0Be
+         /L5MiesYM1GzSfztp9xP4Hd5qx4gJER4lfO0ELHKQjBZ/y4GuL1SDtZEk8U+xvUa7C
+         3ZdkB2Wn3aCxH/MQQdxvcfT5Ju/e2CF4RsTQGJEMPJGC9gkOAoF2MWUrhXErO9RDJ4
+         s7jlLIC9pU+uxNhPJu7kd2sEDGQtvTKeLplWme3cI99Su+YCVzJJd3Xyy7SLn+M2OO
+         eV5zhppOXCm2wChpsRjmot87Js7+68RhRRyaEXjhuw8VN7yqOuT/GBNYYXDhDkSZRy
+         rTAdhkqCTkEeQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Sasha Levin <sashal@kernel.org>, clm@fb.com, jbacik@fb.com,
-        linux-btrfs@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 15/20] btrfs: do not double complete bio on errors during compressed reads
-Date:   Mon, 28 Mar 2022 15:42:21 -0400
-Message-Id: <20220328194226.1585920-15-sashal@kernel.org>
+Cc:     Chao Yu <chao@kernel.org>, Chao Yu <chao.yu@oppo.com>,
+        Jaegeuk Kim <jaegeuk@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, yuchao0@huawei.com,
+        linux-f2fs-devel@lists.sourceforge.net
+Subject: [PATCH AUTOSEL 5.16 18/20] f2fs: compress: fix to print raw data size in error path of lz4 decompression
+Date:   Mon, 28 Mar 2022 15:42:24 -0400
+Message-Id: <20220328194226.1585920-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220328194226.1585920-1-sashal@kernel.org>
 References: <20220328194226.1585920-1-sashal@kernel.org>
@@ -52,128 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josef Bacik <josef@toxicpanda.com>
+From: Chao Yu <chao@kernel.org>
 
-[ Upstream commit f9f15de85d74e7eef021af059ca53a15f041cdd8 ]
+[ Upstream commit d284af43f703760e261b1601378a0c13a19d5f1f ]
 
-I hit some weird panics while fixing up the error handling from
-btrfs_lookup_bio_sums().  Turns out the compression path will complete
-the bio we use if we set up any of the compression bios and then return
-an error, and then btrfs_submit_data_bio() will also call bio_endio() on
-the bio.
+In lz4_decompress_pages(), if size of decompressed data is not equal to
+expected one, we should print the size rather than size of target buffer
+for decompressed data, fix it.
 
-Fix this by making btrfs_submit_compressed_read() responsible for
-calling bio_endio() on the bio if there are any errors.  Currently it
-was only doing it if we created the compression bios, otherwise it was
-depending on btrfs_submit_data_bio() to do the right thing.  This
-creates the above problem, so fix up btrfs_submit_compressed_read() to
-always call bio_endio() in case of an error, and then simply return from
-btrfs_submit_data_bio() if we had to call
-btrfs_submit_compressed_read().
-
-Signed-off-by: Josef Bacik <josef@toxicpanda.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/compression.c | 20 ++++++++++++++------
- fs/btrfs/inode.c       |  8 +++++++-
- 2 files changed, 21 insertions(+), 7 deletions(-)
+ fs/f2fs/compress.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/fs/btrfs/compression.c b/fs/btrfs/compression.c
-index b2bb96934a8f..b3ab5a447ada 100644
---- a/fs/btrfs/compression.c
-+++ b/fs/btrfs/compression.c
-@@ -807,7 +807,7 @@ blk_status_t btrfs_submit_compressed_read(struct inode *inode, struct bio *bio,
- 	u64 em_len;
- 	u64 em_start;
- 	struct extent_map *em;
--	blk_status_t ret = BLK_STS_RESOURCE;
-+	blk_status_t ret;
- 	int faili = 0;
- 	u8 *sums;
- 
-@@ -820,14 +820,18 @@ blk_status_t btrfs_submit_compressed_read(struct inode *inode, struct bio *bio,
- 	read_lock(&em_tree->lock);
- 	em = lookup_extent_mapping(em_tree, file_offset, fs_info->sectorsize);
- 	read_unlock(&em_tree->lock);
--	if (!em)
--		return BLK_STS_IOERR;
-+	if (!em) {
-+		ret = BLK_STS_IOERR;
-+		goto out;
-+	}
- 
- 	ASSERT(em->compress_type != BTRFS_COMPRESS_NONE);
- 	compressed_len = em->block_len;
- 	cb = kmalloc(compressed_bio_size(fs_info, compressed_len), GFP_NOFS);
--	if (!cb)
-+	if (!cb) {
-+		ret = BLK_STS_RESOURCE;
- 		goto out;
-+	}
- 
- 	refcount_set(&cb->pending_sectors, compressed_len >> fs_info->sectorsize_bits);
- 	cb->errors = 0;
-@@ -850,8 +854,10 @@ blk_status_t btrfs_submit_compressed_read(struct inode *inode, struct bio *bio,
- 	nr_pages = DIV_ROUND_UP(compressed_len, PAGE_SIZE);
- 	cb->compressed_pages = kcalloc(nr_pages, sizeof(struct page *),
- 				       GFP_NOFS);
--	if (!cb->compressed_pages)
-+	if (!cb->compressed_pages) {
-+		ret = BLK_STS_RESOURCE;
- 		goto fail1;
-+	}
- 
- 	for (pg_index = 0; pg_index < nr_pages; pg_index++) {
- 		cb->compressed_pages[pg_index] = alloc_page(GFP_NOFS);
-@@ -937,7 +943,7 @@ blk_status_t btrfs_submit_compressed_read(struct inode *inode, struct bio *bio,
- 			comp_bio = NULL;
- 		}
+diff --git a/fs/f2fs/compress.c b/fs/f2fs/compress.c
+index 190a3c4d4c91..ced0fd54658c 100644
+--- a/fs/f2fs/compress.c
++++ b/fs/f2fs/compress.c
+@@ -313,10 +313,9 @@ static int lz4_decompress_pages(struct decompress_io_ctx *dic)
  	}
--	return 0;
-+	return BLK_STS_OK;
  
- fail2:
- 	while (faili >= 0) {
-@@ -950,6 +956,8 @@ blk_status_t btrfs_submit_compressed_read(struct inode *inode, struct bio *bio,
- 	kfree(cb);
- out:
- 	free_extent_map(em);
-+	bio->bi_status = ret;
-+	bio_endio(bio);
- 	return ret;
- finish_cb:
- 	if (comp_bio) {
-diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
-index 6680e74b1977..27a725814e0b 100644
---- a/fs/btrfs/inode.c
-+++ b/fs/btrfs/inode.c
-@@ -2536,10 +2536,15 @@ blk_status_t btrfs_submit_data_bio(struct inode *inode, struct bio *bio,
- 			goto out;
- 
- 		if (bio_flags & EXTENT_BIO_COMPRESSED) {
-+			/*
-+			 * btrfs_submit_compressed_read will handle completing
-+			 * the bio if there were any errors, so just return
-+			 * here.
-+			 */
- 			ret = btrfs_submit_compressed_read(inode, bio,
- 							   mirror_num,
- 							   bio_flags);
--			goto out;
-+			goto out_no_endio;
- 		} else {
- 			/*
- 			 * Lookup bio sums does extra checks around whether we
-@@ -2573,6 +2578,7 @@ blk_status_t btrfs_submit_data_bio(struct inode *inode, struct bio *bio,
- 		bio->bi_status = ret;
- 		bio_endio(bio);
+ 	if (ret != PAGE_SIZE << dic->log_cluster_size) {
+-		printk_ratelimited("%sF2FS-fs (%s): lz4 invalid rlen:%zu, "
++		printk_ratelimited("%sF2FS-fs (%s): lz4 invalid ret:%d, "
+ 					"expected:%lu\n", KERN_ERR,
+-					F2FS_I_SB(dic->inode)->sb->s_id,
+-					dic->rlen,
++					F2FS_I_SB(dic->inode)->sb->s_id, ret,
+ 					PAGE_SIZE << dic->log_cluster_size);
+ 		return -EIO;
  	}
-+out_no_endio:
- 	return ret;
- }
- 
 -- 
 2.34.1
 
