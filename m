@@ -2,331 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E21FEC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:16:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48B5EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:18:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240557AbiC1LST (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:18:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52382 "EHLO
+        id S240567AbiC1LUF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:20:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240661AbiC1LSL (ORCPT
+        with ESMTP id S240558AbiC1LUB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:18:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D382255492;
-        Mon, 28 Mar 2022 04:16:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1384D61147;
-        Mon, 28 Mar 2022 11:16:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B358AC340EC;
-        Mon, 28 Mar 2022 11:16:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466189;
-        bh=SEGKAv2y0LvSw8+qA9ED5lVRRO6x9HRUKOz3nmtGoC8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tUTV/QOq7dDA4kcmIkSHlLL/Hr9M04Fs6Vl5W5VQmjdsYu270n5hz/mijUUoBCylW
-         RyysfIlXK7NXFCbLPvxou3Rv/NxGZhCanIVqXYkk1C+xyRGK4VwJGH3PrXY9tHNPTc
-         reOczTlpUZSom/wyacm3f2vHkjY1t++RgYCFKu2IzJxjEJKhWV4F5wvgZbbcTbc1hC
-         044fBGw9JLpSB6LhU+ye76Spr+A37VSsQvcxKkyB0fWpE80MQlGOOhjZsskkHYZhbY
-         5wmKVwR3jKiwjfmAxTg8LdL7sdqj9YsjPQuWPTyl8OF4jgTO11Qvf4gThlBKtpRqyS
-         kIq7WJRMN83ZQ==
-Date:   Mon, 28 Mar 2022 20:16:22 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Padmanabha Srinivasaiah <treasure4paddy@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Nathan Chancellor <nathan@kernel.org>, llvm@lists.linux.dev,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Subject: Re: [PATCH v4 2/3] bootconfig: Support embedding a bootconfig file
- in kernel
-Message-Id: <20220328201622.c0b06c599b2f3dfc971f48eb@kernel.org>
-In-Reply-To: <CAK7LNATv8aHMPazZ1TrLjT4T6SfFSpFJcQNJOVFdc4_noO61Kw@mail.gmail.com>
-References: <164833878595.2575750.1483106296151574233.stgit@devnote2>
-        <164833880897.2575750.113875316750095499.stgit@devnote2>
-        <CAK7LNATv8aHMPazZ1TrLjT4T6SfFSpFJcQNJOVFdc4_noO61Kw@mail.gmail.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        Mon, 28 Mar 2022 07:20:01 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45978A3
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 04:18:19 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id 5so24111701lfp.1
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 04:18:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=openvz-org.20210112.gappssmtp.com; s=20210112;
+        h=subject:from:to:date:message-id:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=QtYy8qA9A7f/3Xy7Dur/JEWyQGPt7QBEGPR9HcaH88s=;
+        b=RRtLw6JHyCx1Jr++m0P1IgQZJLCqJrgN9gdtZHPXlNZE3av11GDLxXm8Y8vpnZrGDn
+         4WEx1FuWE9HUHaLtUun8DlVH2UAztjfTVYxe/uFfW7qHZbPs4uc48lta8PJyttdYkZ/c
+         MKvVF9cZTQgc2n7TzpDpmL485ev6weVbdtjXwzLcb+l8pLaMveZB5wStTzQWX37Snx2L
+         3vyvgV0u/0cH19gv7fVisIcak+giRCB2okaY7IvGPwwkI/cKme8PfSJw8788HhY1Ve+2
+         TSgLq0lWTugEHD9k6CRPQh4qHT8Ia4u7V8c6kJTIfOPZHjweVmWOZ3X5Q+vk2GKPYLQ8
+         4AZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:from:to:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=QtYy8qA9A7f/3Xy7Dur/JEWyQGPt7QBEGPR9HcaH88s=;
+        b=7fbJ4sIOdRqT6opyf+V7NXXxgZObw8yK0df8hu/SMVhjwcc5bNBz3UWtGwl/AWo9Kn
+         J90hlEmXpRLdbkXXLWOj9gVEbK9CZpbiZZwuIlbpISCcb1qWbCJP6OHS5RIll/ElzDOz
+         qKvAIrKKS0hp+dCQV0xFHf7YQOlX+qhcwEKbhPgUQl98Dyouf5/Xkj3505/17tFPO0tN
+         ogbwKUrh66efs6aoEb2iCUhb12TURkxbJcQZyzM4wyzDVt9wC3ZQivZFOxC7zFn5K9sr
+         d/h7GE9FaeCQSQvdPtEX8RB/h2Usw2PBh4VspT9oReq8hXDEROngAIetD9Un4PFP+Hbi
+         bnBg==
+X-Gm-Message-State: AOAM530dcYOGDyEyFwNWpsmyHKbkRRQ2vNt5rkJS+Vm2zsfIB5F3mMcg
+        dJN84kN23YLlKlww/72v+CIBTg==
+X-Google-Smtp-Source: ABdhPJyG6HakjF8S+cSEVLGRq5jL+P4HH8LNlrkQBxNGFhsYxM9yivaZAvLE+OFDpuX+6LG5nXUfTw==
+X-Received: by 2002:a19:6709:0:b0:448:3162:d843 with SMTP id b9-20020a196709000000b004483162d843mr19212735lfc.95.1648466297580;
+        Mon, 28 Mar 2022 04:18:17 -0700 (PDT)
+Received: from [127.0.1.1] ([2.92.192.17])
+        by smtp.gmail.com with ESMTPSA id r20-20020a2e5754000000b002480655267dsm1624572ljd.67.2022.03.28.04.18.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 04:18:16 -0700 (PDT)
+Subject: [PATCH 0/4] dm: Introduce dm-qcow2 driver to attach QCOW2 files as
+ block device
+From:   Kirill Tkhai <kirill.tkhai@openvz.org>
+To:     agk@redhat.com, snitzer@redhat.com, dm-devel@redhat.com,
+        song@kernel.org, linux-kernel@vger.kernel.org,
+        khorenko@virtuozzo.com, kirill.tkhai@openvz.org
+Date:   Mon, 28 Mar 2022 14:18:16 +0300
+Message-ID: <164846619932.251310.3668540533992131988.stgit@pro>
+User-Agent: StGit/1.5
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 28 Mar 2022 15:27:43 +0900
-Masahiro Yamada <masahiroy@kernel.org> wrote:
+This patchset adds a new driver allowing to attach QCOW2 files
+as block devices. Its idea is to implement in kernel only that
+features, which affect runtime IO performance (IO requests
+processing functionality). The maintenance operations are
+synchronously processed in userspace, while device is suspended.
 
-> On Sun, Mar 27, 2022 at 8:53 AM Masami Hiramatsu <mhiramat@kernel.org> wrote:
-> >
-> > This allows kernel developer to embed a default bootconfig file in
-> > the kernel instead of embedding it in the initrd. This will be good
-> > for who are using the kernel without initrd, or who needs a default
-> > bootconfigs.
-> > This needs to set two kconfigs: CONFIG_EMBED_BOOT_CONFIG=y and set
-> > the file path to CONFIG_EMBED_BOOT_CONFIG_FILE.
-> >
-> > Note that you still need 'bootconfig' command line option to load the
-> > embedded bootconfig. Also if you boot using an initrd with a different
-> > bootconfig, the kernel will use the bootconfig in the initrd, instead
-> > of the default bootconfig.
-> >
-> > Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
-> > ---
-> >  Changes in v3:
-> >   - Avoid updating the default.bconf if the file is not changed.
-> > ---
-> >  include/linux/bootconfig.h |   10 ++++++++++
-> >  init/Kconfig               |   21 +++++++++++++++++++++
-> >  init/main.c                |   13 ++++++++-----
-> >  lib/.gitignore             |    1 +
-> >  lib/Makefile               |   10 ++++++++++
-> >  lib/bootconfig.c           |   23 +++++++++++++++++++++++
-> >  6 files changed, 73 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/include/linux/bootconfig.h b/include/linux/bootconfig.h
-> > index a4665c7ab07c..5dbda5e3e9bb 100644
-> > --- a/include/linux/bootconfig.h
-> > +++ b/include/linux/bootconfig.h
-> > @@ -289,4 +289,14 @@ int __init xbc_get_info(int *node_size, size_t *data_size);
-> >  /* XBC cleanup data structures */
-> >  void __init xbc_exit(void);
-> >
-> > +/* XBC embedded bootconfig data in kernel */
-> > +#ifdef CONFIG_EMBED_BOOT_CONFIG
-> > +char * __init xbc_get_embedded_bootconfig(size_t *size);
-> > +#else
-> > +static inline char *xbc_get_embedded_bootconfig(size_t *size)
-> > +{
-> > +       return NULL;
-> > +}
-> > +#endif
-> > +
-> >  #endif
-> > diff --git a/init/Kconfig b/init/Kconfig
-> > index beb5b866c318..bff308a782f8 100644
-> > --- a/init/Kconfig
-> > +++ b/init/Kconfig
-> > @@ -1357,6 +1357,27 @@ config BOOT_CONFIG
-> >
-> >           If unsure, say Y.
-> >
-> > +config EMBED_BOOT_CONFIG
-> > +       bool "Embed bootconfig file in the kernel"
-> > +       depends on BOOT_CONFIG
-> > +       default n
-> > +       help
-> > +         Embed a bootconfig file given by EMBED_BOOT_CONFIG_FILE in the
-> > +         kernel. Usually, the bootconfig file is loaded with the initrd
-> > +         image. But if the system doesn't support initrd, this option will
-> > +         help you by embedding a bootconfig file while building the kernel.
-> > +
-> > +         If unsure, say N.
-> > +
-> > +config EMBED_BOOT_CONFIG_FILE
-> > +       string "Embedded bootconfig file path"
-> > +       default ""
-> > +       depends on EMBED_BOOT_CONFIG
-> > +       help
-> > +         Specify a bootconfig file which will be embedded to the kernel.
-> > +         This bootconfig will be used if there is no initrd or no other
-> > +         bootconfig in the initrd.
-> > +
-> >  choice
-> >         prompt "Compiler optimization level"
-> >         default CC_OPTIMIZE_FOR_PERFORMANCE
-> > diff --git a/init/main.c b/init/main.c
-> > index 4f3ba3b84e34..180511324c95 100644
-> > --- a/init/main.c
-> > +++ b/init/main.c
-> > @@ -265,7 +265,7 @@ static int __init loglevel(char *str)
-> >  early_param("loglevel", loglevel);
-> >
-> >  #ifdef CONFIG_BLK_DEV_INITRD
-> > -static void * __init get_boot_config_from_initrd(u32 *_size)
-> > +static void * __init get_boot_config_from_initrd(size_t *_size)
-> >  {
-> >         u32 size, csum;
-> >         char *data;
-> > @@ -411,12 +411,15 @@ static void __init setup_boot_config(void)
-> >         static char tmp_cmdline[COMMAND_LINE_SIZE] __initdata;
-> >         const char *msg;
-> >         int pos;
-> > -       u32 size;
-> > +       size_t size;
-> >         char *data, *err;
-> >         int ret;
-> >
-> >         /* Cut out the bootconfig data even if we have no bootconfig option */
-> >         data = get_boot_config_from_initrd(&size);
-> > +       /* If there is no bootconfig in initrd, try embedded one. */
-> > +       if (!data)
-> > +               data = xbc_get_embedded_bootconfig(&size);
-> >
-> >         strlcpy(tmp_cmdline, boot_command_line, COMMAND_LINE_SIZE);
-> >         err = parse_args("bootconfig", tmp_cmdline, NULL, 0, 0, 0, NULL,
-> > @@ -435,8 +438,8 @@ static void __init setup_boot_config(void)
-> >         }
-> >
-> >         if (size >= XBC_DATA_MAX) {
-> > -               pr_err("bootconfig size %d greater than max size %d\n",
-> > -                       size, XBC_DATA_MAX);
-> > +               pr_err("bootconfig size %ld greater than max size %d\n",
-> > +                       (long)size, XBC_DATA_MAX);
-> >                 return;
-> >         }
-> >
-> > @@ -449,7 +452,7 @@ static void __init setup_boot_config(void)
-> >                                 msg, pos);
-> >         } else {
-> >                 xbc_get_info(&ret, NULL);
-> > -               pr_info("Load bootconfig: %d bytes %d nodes\n", size, ret);
-> > +               pr_info("Load bootconfig: %ld bytes %d nodes\n", (long)size, ret);
-> >                 /* keys starting with "kernel." are passed via cmdline */
-> >                 extra_command_line = xbc_make_cmdline("kernel");
-> >                 /* Also, "init." keys are init arguments */
-> > diff --git a/lib/.gitignore b/lib/.gitignore
-> > index e5e217b8307b..30a2a5db7033 100644
-> > --- a/lib/.gitignore
-> > +++ b/lib/.gitignore
-> > @@ -6,3 +6,4 @@
-> >  /oid_registry_data.c
-> >  /test_fortify.log
-> >  /test_fortify/*.log
-> > +/default.bconf
-> 
-> 
-> I think lib/.gitignore is alphabetically sorted.
-> 
-> Please insert the new one
-> to the proper line.
+Userspace is allowed to do only that operations, which never
+modifies virtual disk's data. It is only allowed to modify
+QCOW2 file metadata providing that disk's data. The examples
+of allowed operations is snapshot creation and resize.
 
-Ah, OK. Let me fix that.
+Userspace part is handled by already existing utils (qemu-img).
 
-> > diff --git a/lib/Makefile b/lib/Makefile
-> > index 353bc09ce38d..dd9f3ebb62ca 100644
-> > --- a/lib/Makefile
-> > +++ b/lib/Makefile
-> > @@ -276,6 +276,16 @@ $(foreach file, $(libfdt_files), \
-> >         $(eval CFLAGS_$(file) = -I $(srctree)/scripts/dtc/libfdt))
-> >  lib-$(CONFIG_LIBFDT) += $(libfdt_files)
-> >
-> > +ifeq ($(CONFIG_EMBED_BOOT_CONFIG),y)
-> > +$(obj)/bootconfig.o: $(obj)/default.bconf
-> > +
-> > +targets += default.bconf
-> 
-> 
-> I did not test this patch, but presumably
-> "make clean" will miss to clean up default.bconf
-> 
-> The 'targets' must exist outside the ifeq-block.
-> Move the 'endif' up.
-> 
-> 
-> ifeq ($(CONFIG_EMBED_BOOT_CONFIG),y)
-> $(obj)/bootconfig.o: $(obj)/default.bconf
-> endif
-> 
-> targets += default.bconf
-> 
-> ...
+For instance, snapshot creation on attached dm-qcow2 device looks like:
 
-You're right! I didn't know this behavior. Thanks for the notice.
-I misunderstood that the files in targets always be built...
+# dmsetup suspend $device
+# qemu-img snapshot -c <snapshot_name> $device.qcow2
+# dmsetup resume $device
 
-After moving the 'targets' out of ifeq-block, I confirmed that the
-default.bconf was not generated when CONFIG_EMBED_BOOT_CONFIG is not
-set, and it is cleaned up when CONFIG_EMBED_BOOT_CONFIG=y.
-Thanks!
+1)Suspend flushes all pending IO and related metadata to file,
+  leaving the file in consistent QCOW2 format.
+  Driver .postsuspend throws out all images's cached metadata.
+2)qemu-img creates snapshot: changes/moves metadata inside QCOW2 file.
+3)Driver .preresume reads new version of metadata
+  from file (1 page is required), and the device is ready
+  to continue handling of IO requests.
 
-> 
-> > +filechk_defbconf = cat /dev/null $(CONFIG_EMBED_BOOT_CONFIG_FILE)
-> > +$(obj)/default.bconf: FORCE
-> > +       $(call filechk,defbconf)
-> 
-> 
-> This will work, but users will be confused when they
-> try to build out-of-tree with the O= option.
-> 
-> If CONFIG_EMBED_BOOT_CONFIG_FILE is a relative path,
-> it is actually relative to the object tree, not the source tree.
+This example shows the way of device-mapper infrastructure
+allows to implement drivers following the idea of
+kernel/userspace components demarcation. Thus, the driver
+uses advantages of device-mapper instead of implementing
+its own suspend/resume engine.
 
-Yes, that's right. I would like to fix this issue.
+The below fio test was used to measure performance:
 
-> I am not sure if that is the expected behavior, but it is not documented
-> anywhere.
-> 
-> 
-> If you want to search both in the objtree and srctree,
-> you can write like follows:   [UNTESTED]
-> 
-> 
-> filechk_defbconf = cat $(or $(real-prereqs), /dev/null)
-> $(obj)/default.bconf: $(CONFIG_EMBED_BOOT_CONFIG_FILE) FORCE
->         $(call filechk,defbconf)
+# fio --name=test --ioengine=libaio --direct=1 --bs=$bs --filename=$dev
+      --readwrite=$rw --runtime=60 --numjobs=2 --iodepth=8
 
-Great! let me check it works.
+The collected results consists of the both: fio measurement
+and system load taken from /proc/loadavg. Since loadavg min
+period is 60 seconds, fio's runtime is 60 too.
+Here is average results of 5 runs (IO/loadavg is also average
+of IO/loadavg of 5 runs):
 
-Thank you,
+-------------------------------------------+---------------------------------+--------------------------+
+                  qemu-nbd (native aio)    |             dm-qcow2            |          diff, %         |
+----+--------------------------------------+---------------------------------+--------------------------+
+bs  |  RW   | IO,MiB/s  loadavg  IO/loadavg|  IO,MiB/s   loadavg   IO/loadavg|IO     loadavg  IO/loadavg|
+------------|------------------------------+---------------------------------+--------------------------+
+4K  | READ  |  279       1.986     147     |  512        2.088     248       |+83.7    +5.1     +68.4   |
+4K  | WRITE |  242       2.31      105     |  770        2.172     357       |+217.9   -5.9     +239.7  |
+----+-------|------------------------------+---------------------------------+--------------------------+
+64K | READ  |  1199      1.794     691     |  1218       1.118     1217      |+1.6     -37.7    +76     |
+64K | WRITE |  946       1.084     877     |  1003       0.466     2144      |+6.1     -57      +144.5  |
+------------|------------------------------+---------------------------------+--------------------------+
+512K| READ  |  1741      1.142     1526    |  2196       0.546     4197      |+26.1    -52.2    +175.1  |
+512K| WRITE |  1016      1.084     941     |  993        0.306     3267      |-2.2     -71.7    +246.9  |
+----|-------|------------------------------+---------------------------------+--------------------------+
+1M  | READ  |  1793      1.174     1542    |  2373       0.566     4384      |+32.4    -51.8    +184.2  |
+1M  | WRITE |  1037      0.894     1165    |  1068       0.892     1196      |+2.9     -0.2     +2.7    |
+----|-------+------------------------------+---------------------------------+--------------------------+
+2M  | READ  |  1784      1.084     1654    |  2431       0.788     3090      |+36.3    -27.3    +86.8   |
+2M  | WRITE |  1027      0.878     1172    |  1063       0.878     1212      |+3.6     0        +3.4    |
+----+-------+------------------------------+---------------------------------+--------------------------+
+(NBD attaching string: qemu-nbd -c $dev --aio=native --nocache file.qcow2)
 
-> 
-> 
-> 
-> 
-> > +
-> > +endif
-> > +
-> >  lib-$(CONFIG_BOOT_CONFIG) += bootconfig.o
-> >
-> >  obj-$(CONFIG_RBTREE_TEST) += rbtree_test.o
-> > diff --git a/lib/bootconfig.c b/lib/bootconfig.c
-> > index 74f3201ab8e5..3a3bf3a208e3 100644
-> > --- a/lib/bootconfig.c
-> > +++ b/lib/bootconfig.c
-> > @@ -12,6 +12,29 @@
-> >  #include <linux/kernel.h>
-> >  #include <linux/memblock.h>
-> >  #include <linux/string.h>
-> > +
-> > +#ifdef CONFIG_EMBED_BOOT_CONFIG
-> > +asm (
-> > +"      .pushsection .init.data, \"aw\"                 \n"
-> > +"      .global embedded_bootconfig_data                \n"
-> > +"embedded_bootconfig_data:                             \n"
-> > +"      .incbin \"lib/default.bconf\"                   \n"
-> > +"      .global embedded_bootconfig_data_end            \n"
-> > +"embedded_bootconfig_data_end:                         \n"
-> > +"      .popsection                                     \n"
-> > +);
-> > +
-> > +extern __visible char embedded_bootconfig_data[];
-> > +extern __visible char embedded_bootconfig_data_end[];
-> > +
-> > +char * __init xbc_get_embedded_bootconfig(size_t *size)
-> > +{
-> > +       *size = embedded_bootconfig_data_end - embedded_bootconfig_data;
-> > +       return (*size) ? embedded_bootconfig_data : NULL;
-> > +}
-> > +
-> > +#endif
-> > +
-> >  #else /* !__KERNEL__ */
-> >  /*
-> >   * NOTE: This is only for tools/bootconfig, because tools/bootconfig will
-> >
-> 
-> 
-> -- 
-> Best Regards
-> Masahiro Yamada
+As in diff column, dm-qcow2 driver has the best throughput
+(the only exception is 512K WRITE), and the smallest
+loadavg (the only exception is 4K READ). The density
+of dm-qcow2 is significantly better.
+
+(Note, that tests are made on preallocated images, when
+ all L2 table is allocated, since QEMU has lazy L2 allocation
+ feature, which is not implemented in dm-qcow2 yet).
+
+So, one of the reasons of implementing the driver is providing
+better performance and density than it's done in qemu-nbd.
+The second reason is a possibility to unify virtual disks format
+for VMs and containers, so a disk image can be used to start
+both of them.
+
+This patchset consists of 4 patches. Patches [1-2] make small
+changes in dm code: [1] exports a function, while [2] makes
+.io_hints be called for drivers not having .iterate_devices.
+Patch [3] adds dm-qcow2, while patch [4] adds a userspace
+wrapper for attaching such the devices.
+
+---
+
+Kirill Tkhai (4):
+      dm: Export dm_complete_request()
+      dm: Process .io_hints for drivers not having underlying devices
+      dm-qcow2: Introduce driver to create block devices over QCOW2 files
+      dm-qcow2: Add helper for working with dm-qcow2 devices
 
 
--- 
-Masami Hiramatsu <mhiramat@kernel.org>
+ drivers/md/Kconfig           |   17 +
+ drivers/md/Makefile          |    2 +
+ drivers/md/dm-qcow2-cmd.c    |  383 +++
+ drivers/md/dm-qcow2-map.c    | 4256 ++++++++++++++++++++++++++++++++++
+ drivers/md/dm-qcow2-target.c | 1026 ++++++++
+ drivers/md/dm-qcow2.h        |  368 +++
+ drivers/md/dm-rq.c           |    3 +-
+ drivers/md/dm-rq.h           |    2 +
+ drivers/md/dm-table.c        |    5 +-
+ scripts/qcow2-dm.sh          |  249 ++
+ 10 files changed, 6309 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/md/dm-qcow2-cmd.c
+ create mode 100644 drivers/md/dm-qcow2-map.c
+ create mode 100644 drivers/md/dm-qcow2-target.c
+ create mode 100644 drivers/md/dm-qcow2.h
+ create mode 100755 scripts/qcow2-dm.sh
+
+--
+Signed-off-by: Kirill Tkhai <kirill.tkhai@openvz.org>
+
