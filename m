@@ -2,106 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DAC9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:42:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B94B7C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 19:42:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245743AbiC1Tn7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 15:43:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49454 "EHLO
+        id S1343496AbiC1ToD (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 15:44:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241259AbiC1Tns (ORCPT
+        with ESMTP id S244572AbiC1Tnu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 15:43:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73F3D5C659;
-        Mon, 28 Mar 2022 12:42:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D1907612B2;
-        Mon, 28 Mar 2022 19:42:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D84CC34100;
-        Mon, 28 Mar 2022 19:42:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648496526;
-        bh=bk9cWPr/wjcvI1DpKgD6lGJ0CQY4X1di6UU/QY0bodk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fGe1iyRRVDxFQqX0PvvfzczrEp0NXbuzjWIFWXMnLPjgNHIAdLM8v7O3KNtmXdZ9n
-         6hPKH2LqS3lkoavtpiTJWePb8htCASii73h9tFklkjt+QIFdJFcADTNR/sCGhTnEtY
-         cffgASjjxBMd27j2T4sSMh6m+sjvOfLr+nhxcxG1hZfJTgwm1g31NaIXS3MlWGl1GX
-         iUTeQN75K7ZFpCZk/Bc/hP/Jy97XO97STdonwsRpgrK8EY+VLYo3WZ8b1bGx37a56l
-         9/0yJpZrMClSB3TkwIpOFpxtvXWKcx96OkBWRntXjnrSAV+KjAKgpw0Lj59pjlsaBe
-         2lwgpoDRs7/Og==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Valentin Schneider <valentin.schneider@arm.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>, mingo@redhat.com
-Subject: [PATCH AUTOSEL 5.17 06/21] sched/tracing: Report TASK_RTLOCK_WAIT tasks as TASK_UNINTERRUPTIBLE
-Date:   Mon, 28 Mar 2022 15:41:41 -0400
-Message-Id: <20220328194157.1585642-6-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220328194157.1585642-1-sashal@kernel.org>
-References: <20220328194157.1585642-1-sashal@kernel.org>
+        Mon, 28 Mar 2022 15:43:50 -0400
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D26275C374
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 12:42:08 -0700 (PDT)
+Received: by mail-il1-f200.google.com with SMTP id m16-20020a928710000000b002c7be7653d1so8415578ild.4
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 12:42:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to:cc;
+        bh=1f9ND9o/PsSNeonnJwXgaxAKcaZUJc1enOSDuKxkvj0=;
+        b=JpFULJaOo9hInL77l+Tk1Fs976gJ6mvc213/LsIIpqC/6u/ppbIiwst91ZE9iG6T0v
+         m+rBp4/051Gz1FzUIYNNtnygvajJfchPzcCpQP4MmeSUIhqaWcMiaX41JXv8ckSJ6jSL
+         Dys7Ic/I2Q8F8M+PI2ys01M/h1I1xBPvYa+u0CNN/6EazY/6iiUIeuJ1r0k6CKH2FHHM
+         mgMYtMNkCKN2ndVkyTqJrrXPs1W+XFBM75+elqyiXW83avQzbE/4kDFHA6ML+8KUmTRR
+         xZTZtEiukFxIA5fzOfRibwLqdq+zU9WShaD3CNZUnDcVsU5v9erKBT0o3b1DA/B3mpQx
+         U3YQ==
+X-Gm-Message-State: AOAM531v4kiajlLIRfSN7B6tgDFV6ne+TCv2DepIw8th2yTF8daOLlWG
+        bBsGddI8h2qn6wjz3iIbKDhh8K0sABHoS31WMee15vs4u9x6
+X-Google-Smtp-Source: ABdhPJwT4asTjmA8p7L275zbIbaYIcJpq0BzCmH5c/hc+svlsV1Zz9bZm6Ufec9Kfmy1AOliy435OXO66dIHDrAlVOXaEd4z83u9
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a6b:fd0c:0:b0:645:d261:ba25 with SMTP id
+ c12-20020a6bfd0c000000b00645d261ba25mr7379533ioi.124.1648496528212; Mon, 28
+ Mar 2022 12:42:08 -0700 (PDT)
+Date:   Mon, 28 Mar 2022 12:42:08 -0700
+In-Reply-To: <20220328194157.1585642-7-sashal@kernel.org>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000fa496505db4c811d@google.com>
+Subject: Re: [PATCH AUTOSEL 5.17 07/21] ext4: don't BUG if someone dirty pages
+ without asking ext4 first
+From:   syzbot 
+        <syzbot+d59332e2db681cf18f0318a06e994ebbb529a8db@syzkaller.appspotmail.com>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     adilger.kernel@dilger.ca, lee.jones@linaro.org,
+        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org,
+        sashal@kernel.org, stable@vger.kernel.org, tytso@mit.edu
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Valentin Schneider <valentin.schneider@arm.com>
+> From: Theodore Ts'o <tytso@mit.edu>
+>
+> [ Upstream commit cc5095747edfb054ca2068d01af20be3fcc3634f ]
+>
+> [un]pin_user_pages_remote is dirtying pages without properly warning
+> the file system in advance.  A related race was noted by Jan Kara in
+> 2018[1]; however, more recently instead of it being a very hard-to-hit
+> race, it could be reliably triggered by process_vm_writev(2) which was
+> discovered by Syzbot[2].
+>
+> This is technically a bug in mm/gup.c, but arguably ext4 is fragile in
+> that if some other kernel subsystem dirty pages without properly
+> notifying the file system using page_mkwrite(), ext4 will BUG, while
+> other file systems will not BUG (although data will still be lost).
+>
+> So instead of crashing with a BUG, issue a warning (since there may be
+> potential data loss) and just mark the page as clean to avoid
+> unprivileged denial of service attacks until the problem can be
+> properly fixed.  More discussion and background can be found in the
+> thread starting at [2].
+>
+> [1] https://lore.kernel.org/linux-mm/20180103100430.GE4911@quack2.suse.cz
+> [2] https://lore.kernel.org/r/Yg0m6IjcNmfaSokM@google.com
+>
+> Reported-by: syzbot+d59332e2db681cf18f0318a06e994ebbb529a8db@syzkaller.appspotmail.com
+> Reported-by: Lee Jones <lee.jones@linaro.org>
+> Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+> Link: https://lore.kernel.org/r/YiDS9wVfq4mM2jGK@mit.edu
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>  fs/ext4/inode.c | 25 +++++++++++++++++++++++++
+>  1 file changed, 25 insertions(+)
+>
+> diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+> index 01c9e4f743ba..531a94f48637 100644
+> --- a/fs/ext4/inode.c
+> +++ b/fs/ext4/inode.c
+> @@ -1993,6 +1993,15 @@ static int ext4_writepage(struct page *page,
+>  	else
+>  		len = PAGE_SIZE;
+>  
+> +	/* Should never happen but for bugs in other kernel subsystems */
+> +	if (!page_has_buffers(page)) {
+> +		ext4_warning_inode(inode,
+> +		   "page %lu does not have buffers attached", page->index);
+> +		ClearPageDirty(page);
+> +		unlock_page(page);
+> +		return 0;
+> +	}
+> +
+>  	page_bufs = page_buffers(page);
+>  	/*
+>  	 * We cannot do block allocation or other extent handling in this
+> @@ -2594,6 +2603,22 @@ static int mpage_prepare_extent_to_map(struct mpage_da_data *mpd)
+>  			wait_on_page_writeback(page);
+>  			BUG_ON(PageWriteback(page));
+>  
+> +			/*
+> +			 * Should never happen but for buggy code in
+> +			 * other subsystems that call
+> +			 * set_page_dirty() without properly warning
+> +			 * the file system first.  See [1] for more
+> +			 * information.
+> +			 *
+> +			 * [1] https://lore.kernel.org/linux-mm/20180103100430.GE4911@quack2.suse.cz
+> +			 */
+> +			if (!page_has_buffers(page)) {
+> +				ext4_warning_inode(mpd->inode, "page %lu does not have buffers attached", page->index);
+> +				ClearPageDirty(page);
+> +				unlock_page(page);
+> +				continue;
+> +			}
+> +
+>  			if (mpd->map.m_len == 0)
+>  				mpd->first_page = page->index;
+>  			mpd->next_page = page->index + 1;
+> -- 
+> 2.34.1
+>
 
-[ Upstream commit 25795ef6299f07ce3838f3253a9cb34f64efcfae ]
-
-TASK_RTLOCK_WAIT currently isn't part of TASK_REPORT, thus a task blocking
-on an rtlock will appear as having a task state == 0, IOW TASK_RUNNING.
-
-The actual state is saved in p->saved_state, but reading it after reading
-p->__state has a few issues:
-o that could still be TASK_RUNNING in the case of e.g. rt_spin_lock
-o ttwu_state_match() might have changed that to TASK_RUNNING
-
-As pointed out by Eric, adding TASK_RTLOCK_WAIT to TASK_REPORT implies
-exposing a new state to userspace tools which way not know what to do with
-them. The only information that needs to be conveyed here is that a task is
-waiting on an rt_mutex, which matches TASK_UNINTERRUPTIBLE - there's no
-need for a new state.
-
-Reported-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Link: https://lore.kernel.org/r/20220120162520.570782-3-valentin.schneider@arm.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- include/linux/sched.h | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index a76a178f8eb6..36e38434391c 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -1630,6 +1630,14 @@ static inline unsigned int __task_state_index(unsigned int tsk_state,
- 	if (tsk_state == TASK_IDLE)
- 		state = TASK_REPORT_IDLE;
- 
-+	/*
-+	 * We're lying here, but rather than expose a completely new task state
-+	 * to userspace, we can make this appear as if the task has gone through
-+	 * a regular rt_mutex_lock() call.
-+	 */
-+	if (tsk_state == TASK_RTLOCK_WAIT)
-+		state = TASK_UNINTERRUPTIBLE;
-+
- 	return fls(state);
- }
- 
--- 
-2.34.1
+I see the command but can't find the corresponding bug.
+The email is sent to  syzbot+HASH@syzkaller.appspotmail.com address
+but the HASH does not correspond to any known bug.
+Please double check the address.
 
