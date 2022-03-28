@@ -2,183 +2,248 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E12B8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 06:25:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84308C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 06:27:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238434AbiC1G0y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 02:26:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58246 "EHLO
+        id S237932AbiC1G26 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 02:28:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238452AbiC1G0V (ORCPT
+        with ESMTP id S233541AbiC1G2y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 02:26:21 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B005522D3
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 23:24:33 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2e642be1a51so109966827b3.21
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Mar 2022 23:24:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=9DdBX2SnvA0xmL5taueohrnj4hozmwadyqsEuZMg/sA=;
-        b=JExcflpahLFCp46tCO+bVKhfqtpGsdrFCJs+A4n7LEj0S0oyM28aQpiH9N2I4o3EFq
-         qv6yOpmEB4FHmzEJDFtrlj5POsxwk7ymhkoAZGKLNsnrUMmG7PhVKT+rNPkl7WrEnsRG
-         r+DGYQwjH6ShFQ0BJbAPo3ulaNKd7bAJJW2F8mb0pcjRDO3zlwYg6zLaYLbBc17pLs+e
-         1PgB6LDqxrfexhWFD9UWMtQIlMqoh3dCxy7XUyejsjPNhj1KacYCvXPRwTBhF+BOCrYj
-         K0AonuWZtGaodLfoc3NG1ln7v73zS22G4J7e++zg1bmud/pqhRfzzj1pMmNSlD2pY85i
-         UZsw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=9DdBX2SnvA0xmL5taueohrnj4hozmwadyqsEuZMg/sA=;
-        b=qg6viFJx8BTLrAmFgbiztWGj12Z0jnvaX6dXv9jIsYO8oZv2a6yYhe8LuWZ128xnVf
-         oUm4qVH9QJaXHEa0PjNF4kFJA1hDeMEP4hOjXAzLbrppKtv5I51p5ya2PU4I0SIrdRtp
-         4pwiAQOUg+dVPgT1GZqWANDFUUoLA50tJIxqnA+3OhGyU7fLOf4OrabQmlCU6fz6W4YI
-         Sk+ejecZao3zQ7+MqEMrw0o3njBd95zrfIi5Lj1a2Bi+r+7rKpB6FkIq6A9vsF2+qf5L
-         jSBi9Nf2noSrZ/kVwkjexKOLnjBlJjzgBmBe129NtYqTBkpwKcAe8No2OfPIQljGQrLz
-         cUEA==
-X-Gm-Message-State: AOAM531sylaUIQnQeTWcUUD+xO+uaxkXW08Y3eXowUWpVyBQZthYa5j+
-        km3oP1d1ME+44uR3H0/dK6sNOMWNzqvT
-X-Google-Smtp-Source: ABdhPJxPf/g6psmSnbUpwgPJRs5+zV2W469Tco/QieQGsDIBSkUvRLgEjG1Y+RiHh3KzGowWDsrlmJTLCwDJ
-X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:ef08:ed1b:261f:77fa])
- (user=irogers job=sendgmr) by 2002:a25:ec08:0:b0:633:9106:b10b with SMTP id
- j8-20020a25ec08000000b006339106b10bmr22130772ybh.62.1648448672235; Sun, 27
- Mar 2022 23:24:32 -0700 (PDT)
-Date:   Sun, 27 Mar 2022 23:24:14 -0700
-In-Reply-To: <20220328062414.1893550-1-irogers@google.com>
-Message-Id: <20220328062414.1893550-6-irogers@google.com>
-Mime-Version: 1.0
-References: <20220328062414.1893550-1-irogers@google.com>
-X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
-Subject: [PATCH 5/5] perf evlist: Respect all_cpus when setting user_cpus
-From:   Ian Rogers <irogers@google.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        John Garry <john.garry@huawei.com>,
-        Will Deacon <will@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        James Clark <james.clark@arm.com>,
-        German Gomez <german.gomez@arm.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        Alexander Antonov <alexander.antonov@linux.intel.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     Stephane Eranian <eranian@google.com>,
-        Ian Rogers <irogers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Mon, 28 Mar 2022 02:28:54 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 937E24E3AE;
+        Sun, 27 Mar 2022 23:27:13 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4KRjR33Rnjz9sSS;
+        Mon, 28 Mar 2022 08:27:11 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id TR6XdBzRQH81; Mon, 28 Mar 2022 08:27:11 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4KRjR32Szvz9sSR;
+        Mon, 28 Mar 2022 08:27:11 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 3F9C38B76C;
+        Mon, 28 Mar 2022 08:27:11 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id LaNwMWJvjrPJ; Mon, 28 Mar 2022 08:27:11 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 0F1168B763;
+        Mon, 28 Mar 2022 08:27:11 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 22S6R0jK086991
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Mon, 28 Mar 2022 08:27:00 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 22S6QtUO086990;
+        Mon, 28 Mar 2022 08:26:55 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+        x86@kernel.org
+Subject: [PATCH] livepatch: Remove klp_arch_set_pc() and asm/livepatch.h
+Date:   Mon, 28 Mar 2022 08:26:48 +0200
+Message-Id: <e029c7cfde436f6bbf99148ab14dc2da99add503.1648447981.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1648448806; l=5338; s=20211009; h=from:subject:message-id; bh=Ly3GCtAkNGT2oW79kHKKyNL7YZGR2HnWx0D4adICxx8=; b=XJR/9U3DapYzZNiy8ayr2RO17EEiTtxk/1b/78Yf/bR6w68Nxbu3f9F6YR6mdMciz4bDGWUfJZJ7 c/sCVLhTCtQjo+bLWTKXKGqCXOAEdIl/1KmBXMQ1lMwwdCBjge/Q
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If all_cpus is calculated it represents the merge/union of all
-evsel cpu maps. By default user_cpus is computed to be the online
-CPUs. For uncore events, it is often the case currently that
-all_cpus is a subset of user_cpus. Metrics printed without
-aggregation and with metric-only, in print_no_aggr_metric,
-iterate over user_cpus assuming every CPU has a metric to
-print. For each CPU the prefix is printed, but then if the
-evsel's cpus doesn't contain anything you get an empty line like
-the following on a SkylakeX:
+All three versions of klp_arch_set_pc() do exactly the same: they
+call ftrace_instruction_pointer_set().
 
-```
-$ perf stat -A -M DRAM_BW_Use -a --metric-only -I 1000
-     1.000453137 CPU0                       0.00
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137 CPU18                      0.00
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     1.000453137
-     2.003717143 CPU0                       0.00
-...
-```
+Call ftrace_instruction_pointer_set() directly and remove
+klp_arch_set_pc().
 
-While it is possible to be lazier in printing the prefix and
-trailing newline, having user_cpus not be a subset of all_cpus is
-preferential so that wasted work isn't done elsewhere user_cpus
-is used. The change modifies user_cpus to be the intersection of
-user specified CPUs, or default all online CPUs, with the CPUs
-computed through the merge of all evsel cpu maps.
+As klp_arch_set_pc() was the only thing remaining in asm/livepatch.h
+on x86 and s390, remove asm/livepatch.h
 
-New behavior:
-```
-$ perf stat -A -M DRAM_BW_Use -a --metric-only -I 1000
-     1.001086325 CPU0                       0.00
-     1.001086325 CPU18                      0.00
-     2.003671291 CPU0                       0.00
-     2.003671291 CPU18                      0.00
-...
-```
+livepatch.h remains on powerpc but its content is exclusively used
+by powerpc specific code.
 
-Signed-off-by: Ian Rogers <irogers@google.com>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
- tools/perf/util/evlist.c | 2 ++
- 1 file changed, 2 insertions(+)
+ MAINTAINERS                          |  2 --
+ arch/powerpc/include/asm/livepatch.h | 10 +---------
+ arch/powerpc/kernel/irq.c            |  1 -
+ arch/powerpc/kernel/setup_64.c       |  2 +-
+ arch/s390/include/asm/livepatch.h    | 22 ----------------------
+ arch/x86/include/asm/livepatch.h     | 20 --------------------
+ include/linux/livepatch.h            |  2 --
+ kernel/livepatch/patch.c             |  2 +-
+ 8 files changed, 3 insertions(+), 58 deletions(-)
+ delete mode 100644 arch/s390/include/asm/livepatch.h
+ delete mode 100644 arch/x86/include/asm/livepatch.h
 
-diff --git a/tools/perf/util/evlist.c b/tools/perf/util/evlist.c
-index d335fb713f5e..91bbb66b7e9a 100644
---- a/tools/perf/util/evlist.c
-+++ b/tools/perf/util/evlist.c
-@@ -1036,6 +1036,8 @@ int evlist__create_maps(struct evlist *evlist, struct target *target)
- 	if (!cpus)
- 		goto out_delete_threads;
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 1ef8327aef1f..cb5f0d4a8fcc 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -11253,8 +11253,6 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/livepatching/livepatching.g
+ F:	Documentation/ABI/testing/sysfs-kernel-livepatch
+ F:	Documentation/livepatch/
+ F:	arch/powerpc/include/asm/livepatch.h
+-F:	arch/s390/include/asm/livepatch.h
+-F:	arch/x86/include/asm/livepatch.h
+ F:	include/linux/livepatch.h
+ F:	kernel/livepatch/
+ F:	lib/livepatch/
+diff --git a/arch/powerpc/include/asm/livepatch.h b/arch/powerpc/include/asm/livepatch.h
+index 1c60094ea0cd..d044a1fd4f44 100644
+--- a/arch/powerpc/include/asm/livepatch.h
++++ b/arch/powerpc/include/asm/livepatch.h
+@@ -7,17 +7,9 @@
+ #ifndef _ASM_POWERPC_LIVEPATCH_H
+ #define _ASM_POWERPC_LIVEPATCH_H
  
-+	if (evlist->core.all_cpus)
-+		cpus = perf_cpu_map__intersect(cpus, evlist->core.all_cpus);
- 	evlist->core.has_user_cpus = !!target->cpu_list && !target->hybrid;
+-#include <linux/module.h>
+-#include <linux/ftrace.h>
++#include <linux/sched.h>
+ #include <linux/sched/task_stack.h>
  
- 	perf_evlist__set_maps(&evlist->core, cpus, threads);
+-#ifdef CONFIG_LIVEPATCH
+-static inline void klp_arch_set_pc(struct ftrace_regs *fregs, unsigned long ip)
+-{
+-	ftrace_instruction_pointer_set(fregs, ip);
+-}
+-#endif /* CONFIG_LIVEPATCH */
+-
+ #ifdef CONFIG_LIVEPATCH_64
+ static inline void klp_init_thread_info(struct task_struct *p)
+ {
+diff --git a/arch/powerpc/kernel/irq.c b/arch/powerpc/kernel/irq.c
+index 1c4715a03cd1..8c20226bcc11 100644
+--- a/arch/powerpc/kernel/irq.c
++++ b/arch/powerpc/kernel/irq.c
+@@ -64,7 +64,6 @@
+ #include <asm/machdep.h>
+ #include <asm/udbg.h>
+ #include <asm/smp.h>
+-#include <asm/livepatch.h>
+ #include <asm/hw_irq.h>
+ #include <asm/softirq_stack.h>
+ 
+diff --git a/arch/powerpc/kernel/setup_64.c b/arch/powerpc/kernel/setup_64.c
+index e547066a06aa..2c1e9a5ac6ca 100644
+--- a/arch/powerpc/kernel/setup_64.c
++++ b/arch/powerpc/kernel/setup_64.c
+@@ -59,7 +59,7 @@
+ #include <asm/udbg.h>
+ #include <asm/kexec.h>
+ #include <asm/code-patching.h>
+-#include <asm/livepatch.h>
++#include <asm/ftrace.h>
+ #include <asm/opal.h>
+ #include <asm/cputhreads.h>
+ #include <asm/hw_irq.h>
+diff --git a/arch/s390/include/asm/livepatch.h b/arch/s390/include/asm/livepatch.h
+deleted file mode 100644
+index 5209f223331a..000000000000
+--- a/arch/s390/include/asm/livepatch.h
++++ /dev/null
+@@ -1,22 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0+ */
+-/*
+- * livepatch.h - s390-specific Kernel Live Patching Core
+- *
+- *  Copyright (c) 2013-2015 SUSE
+- *   Authors: Jiri Kosina
+- *	      Vojtech Pavlik
+- *	      Jiri Slaby
+- */
+-
+-#ifndef ASM_LIVEPATCH_H
+-#define ASM_LIVEPATCH_H
+-
+-#include <linux/ftrace.h>
+-#include <asm/ptrace.h>
+-
+-static inline void klp_arch_set_pc(struct ftrace_regs *fregs, unsigned long ip)
+-{
+-	ftrace_instruction_pointer_set(fregs, ip);
+-}
+-
+-#endif
+diff --git a/arch/x86/include/asm/livepatch.h b/arch/x86/include/asm/livepatch.h
+deleted file mode 100644
+index 7c5cc6660e4b..000000000000
+--- a/arch/x86/include/asm/livepatch.h
++++ /dev/null
+@@ -1,20 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0-or-later */
+-/*
+- * livepatch.h - x86-specific Kernel Live Patching Core
+- *
+- * Copyright (C) 2014 Seth Jennings <sjenning@redhat.com>
+- * Copyright (C) 2014 SUSE
+- */
+-
+-#ifndef _ASM_X86_LIVEPATCH_H
+-#define _ASM_X86_LIVEPATCH_H
+-
+-#include <asm/setup.h>
+-#include <linux/ftrace.h>
+-
+-static inline void klp_arch_set_pc(struct ftrace_regs *fregs, unsigned long ip)
+-{
+-	ftrace_instruction_pointer_set(fregs, ip);
+-}
+-
+-#endif /* _ASM_X86_LIVEPATCH_H */
+diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
+index 2614247a9781..293e29960c6e 100644
+--- a/include/linux/livepatch.h
++++ b/include/linux/livepatch.h
+@@ -16,8 +16,6 @@
+ 
+ #if IS_ENABLED(CONFIG_LIVEPATCH)
+ 
+-#include <asm/livepatch.h>
+-
+ /* task patch states */
+ #define KLP_UNDEFINED	-1
+ #define KLP_UNPATCHED	 0
+diff --git a/kernel/livepatch/patch.c b/kernel/livepatch/patch.c
+index c172bf92b576..4c4f5a776d80 100644
+--- a/kernel/livepatch/patch.c
++++ b/kernel/livepatch/patch.c
+@@ -118,7 +118,7 @@ static void notrace klp_ftrace_handler(unsigned long ip,
+ 	if (func->nop)
+ 		goto unlock;
+ 
+-	klp_arch_set_pc(fregs, (unsigned long)func->new_func);
++	ftrace_instruction_pointer_set(fregs, (unsigned long)func->new_func);
+ 
+ unlock:
+ 	ftrace_test_recursion_unlock(bit);
 -- 
-2.35.1.1021.g381101b075-goog
+2.35.1
 
