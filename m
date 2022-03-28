@@ -2,92 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B829AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:43:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F79EC4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Mar 2022 11:43:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242213AbiC1LnP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 07:43:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38084 "EHLO
+        id S242630AbiC1Lnp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 07:43:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241758AbiC1Ldf (ORCPT
+        with ESMTP id S242031AbiC1LeB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 07:33:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 207765880B;
-        Mon, 28 Mar 2022 04:24:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 28 Mar 2022 07:34:01 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2258D100A;
+        Mon, 28 Mar 2022 04:25:14 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 278EF611D9;
-        Mon, 28 Mar 2022 11:24:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD89DC340ED;
-        Mon, 28 Mar 2022 11:24:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466688;
-        bh=pVKwIPhEl16Zgr7Gxz4cWOsKUkyZ55JZU9qmnQ8W2s4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=adwcKAfxKcvhhYWkL14sc+N+AEofaHTMDZFkoJGYx3Sr2Q1SaRhIuhhHbHmKqDTeC
-         0o7VFAwJdUPwE7we1l1DSWywbjQl0jEi2sqPuGwhzms0INxBDQtGLYC7kz8DqDhCZO
-         EGXxy/NsJx3gI09QSXNymsEoNLo9AFjkEzGsZarY4ev9TXPo2e5crd+Pxt3HUVcBcW
-         bM19uzHh3XZcOjujWmss7uzK2q0BUmTD8vkn8FzLLPLyukPUFI74cBy5CvkB3KD0we
-         bkH1G2ctYxugLoOLvQkz/pzeQbhMk0mn9RfqOYNcoZKqjY8COYpL2uoH8Yx2b/isUo
-         VDrpCTNXMtOHg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, robert.moore@intel.com,
-        linux-acpi@vger.kernel.org, devel@acpica.org
-Subject: [PATCH AUTOSEL 4.14 5/8] ACPICA: Avoid walking the ACPI Namespace if it is not there
-Date:   Mon, 28 Mar 2022 07:24:36 -0400
-Message-Id: <20220328112440.1557113-5-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220328112440.1557113-1-sashal@kernel.org>
-References: <20220328112440.1557113-1-sashal@kernel.org>
+        by ssl.serverraum.org (Postfix) with ESMTPSA id F38102223A;
+        Mon, 28 Mar 2022 13:25:10 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1648466711;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=1QO+CuCRXM0SAPBpiNzGRIWNurP+FMMvJMul6jNgdPs=;
+        b=oTHgXPkgVOAYx4mmLCgcEoTmB1sOTfbaYE2/zva0NeCFSBtkckRC+XXpuEggymiH51MktB
+        NiwPFMACoXPfBZhomCMZp1wxqI37CPxcFeDeQQ480VQwKn23u56OrezF7YyrzSxqhhBPQs
+        TVxIpd3uEGDxjMOINN17TeNMphD0psM=
+From:   Michael Walle <michael@walle.cc>
+To:     Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
+Subject: [PATCH v2 0/4] hwmon: add lan9668 driver
+Date:   Mon, 28 Mar 2022 13:25:01 +0200
+Message-Id: <20220328112505.3025374-1-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Add a temperature and fan controller driver for the Microchip LAN9668 SoC.
 
-[ Upstream commit 0c9992315e738e7d6e927ef36839a466b080dba6 ]
+The temperature sensor uses a polynomial to calculate the actual
+temperature. Fortunately, the bt1-pvt already has such a calculation.
+It seems that the LAN9668 uses the same Analog Bits sensor as the
+BT1 although with a different characteristic. To be able to reuse the
+code move it to lib/ as it seems pretty generic to calculate any
+polynomial using integers only, which might also be used by other parts
+of the kernel. Another option might be to move the code to hwmon-poly.c,
+I'm not sure. Thoughts?
 
-ACPICA commit b1c3656ef4950098e530be68d4b589584f06cddc
+I also plan on submitting patches to add temperature sensor support for
+the GPYxxx and LAN8814 PHYs which also use polynomial_calc().
 
-Prevent acpi_ns_walk_namespace() from crashing when called with
-start_node equal to ACPI_ROOT_OBJECT if the Namespace has not been
-instantiated yet and acpi_gbl_root_node is NULL.
+The last two patches adds the actual driver and the dt-binding for it.
 
-For instance, this can happen if the kernel is run with "acpi=off"
-in the command line.
+changes since v1:
+ - add doc string to polynomial_calc(), moved the comment
+   into the function.
+ - add missing "select POLYNOMIAL" to the bt1_pvt driver
+   Kconfig symbol
+ - add hwmon driver documentation
+ - cache sys_clk rate during probe
+ - add missing ERR_CAST()
+ - adapted comment for the PPS->RPM calculation
+ - add temporary variable in lan966x_hwmon_read_pwm_freq()
 
-Link: https://github.com/acpica/acpica/commit/b1c3656ef4950098e530be68d4b589584f06cddc
-Link: https://lore.kernel.org/linux-acpi/CAJZ5v0hJWW_vZ3wwajE7xT38aWjY7cZyvqMJpXHzUL98-SiCVQ@mail.gmail.com/
-Reported-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/acpi/acpica/nswalk.c | 3 +++
- 1 file changed, 3 insertions(+)
+Michael Walle (4):
+  lib: add generic polynomial calculation
+  hwmon: (bt1-pvt) use generic polynomial functions
+  dt-bindings: hwmon: add Microchip LAN966x bindings
+  hwmon: add driver for the Microchip LAN966x SoC
 
-diff --git a/drivers/acpi/acpica/nswalk.c b/drivers/acpi/acpica/nswalk.c
-index 6b6e6f498cff..129fc61f14c4 100644
---- a/drivers/acpi/acpica/nswalk.c
-+++ b/drivers/acpi/acpica/nswalk.c
-@@ -203,6 +203,9 @@ acpi_ns_walk_namespace(acpi_object_type type,
- 
- 	if (start_node == ACPI_ROOT_OBJECT) {
- 		start_node = acpi_gbl_root_node;
-+		if (!start_node) {
-+			return_ACPI_STATUS(AE_NO_NAMESPACE);
-+		}
- 	}
- 
- 	/* Null child means "get first node" */
+ .../bindings/hwmon/microchip,lan966x.yaml     |  53 +++
+ Documentation/hwmon/lan966x.rst               |  47 +++
+ drivers/hwmon/Kconfig                         |  13 +
+ drivers/hwmon/Makefile                        |   1 +
+ drivers/hwmon/bt1-pvt.c                       |  50 +--
+ drivers/hwmon/lan966x-hwmon.c                 | 390 ++++++++++++++++++
+ include/linux/polynomial.h                    |  35 ++
+ lib/Kconfig                                   |   3 +
+ lib/Makefile                                  |   2 +
+ lib/polynomial.c                              | 108 +++++
+ 10 files changed, 665 insertions(+), 37 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/hwmon/microchip,lan966x.yaml
+ create mode 100644 Documentation/hwmon/lan966x.rst
+ create mode 100644 drivers/hwmon/lan966x-hwmon.c
+ create mode 100644 include/linux/polynomial.h
+ create mode 100644 lib/polynomial.c
+
 -- 
-2.34.1
+2.30.2
 
