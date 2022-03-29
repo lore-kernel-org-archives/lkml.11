@@ -2,169 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAD42C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 13:54:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0E92C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 13:54:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237599AbiC2N4C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 09:56:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60972 "EHLO
+        id S237590AbiC2N4k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 09:56:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237561AbiC2Nzx (ORCPT
+        with ESMTP id S234222AbiC2N4g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 09:55:53 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C74BF1C7C3B;
-        Tue, 29 Mar 2022 06:54:08 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2a02:3030:a:f397:f6bc:b726:2678:839f])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: sebastianfricke)
-        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 244CD1F43F35;
-        Tue, 29 Mar 2022 14:54:07 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1648562047;
-        bh=8B1qrSJI0pwevUCYKVB5QvEM9Cz4zIGrfiS9YCQ8xWM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Cjo6B7GBuagdrECvYXJwN4E9sG+lit31ck1eIlwF6q7cHMEtMXpmAIjQ4l7cTHAIW
-         hNnpYA2UimzcJtad2wFPaNAU7lP6BehiEuQ4rXVLVGSbJ7Lp1cZJNlLC7Scq7z2SvE
-         6vAsgz3twqcVWyI3QEWw0lFuoa0TSZ5cH+t146TedABssSbsUcOqLhXYl2uDUEYuJ1
-         UFAaIt8TKHh4+YzbK09VT2yk5MhgVvI5XFNuS/epQuAsJKtnAH/w1WDUA95xyEwmkL
-         i6Iaz01DtPOQm0OIEStaWw7JvMwmwaHXgj8shvu3wPHe/dr5+bVV3jmt9OwDVGq1Xv
-         pqTOsw8zpHbMg==
-Date:   Tue, 29 Mar 2022 15:54:03 +0200
-From:   Sebastian Fricke <sebastian.fricke@collabora.com>
-To:     Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>, kernel@collabora.com,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 08/24] media: v4l2: Reorder field reflist
-Message-ID: <20220329135403.37dqfaw5ctxoj3wx@basti-XPS-13-9310>
-References: <20220328195936.82552-1-nicolas.dufresne@collabora.com>
- <20220328195936.82552-9-nicolas.dufresne@collabora.com>
+        Tue, 29 Mar 2022 09:56:36 -0400
+Received: from gateway31.websitewelcome.com (gateway31.websitewelcome.com [192.185.144.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 767771E3E33
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 06:54:53 -0700 (PDT)
+Received: from cm14.websitewelcome.com (cm14.websitewelcome.com [100.42.49.7])
+        by gateway31.websitewelcome.com (Postfix) with ESMTP id 00D748A6CC
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 08:54:53 -0500 (CDT)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id ZCHEn8FVMHnotZCHEn1dRS; Tue, 29 Mar 2022 08:52:52 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:Subject:From:References:Cc:To:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=R8VF1083Jml6bSlqQeVvGDZxIbXB4VClUDd8cNl8HqA=; b=ycg/a9dlJnrsrXw2QIi/hOynJz
+        YapMKagNgi0vMp0GKaSr32e2PIXcmtWBEGCIkRUbEDIFRzkBAbqKOr9vwcCt/gwl2/RmYmxlbDwkc
+        9irvStDtwQR1PmxXGudquz6OypiepTQyImdwe86pa2qNZ+RBuuzFhvfjW8UYrAbVPqd0T9MNXdgU2
+        GsCNUaso2xsF8byuJGCZZ8Fu7zTMQHxp0LxKZ+T7dZRFOegM8Xv9lhn0dn2oyMuj+gfN5KuX2d71l
+        /zHjs+zTOn4H2vXsh38qxOjPkyq6NOLnzP08v7IukXPeYIKRnd3vSoZ22hmGWKFxT6imnN4wfFsHq
+        9C00d64A==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54542)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nZCHD-00353G-Re; Tue, 29 Mar 2022 13:52:51 +0000
+Message-ID: <ad6373ce-ad60-e54c-139c-b4b807f3531c@roeck-us.net>
+Date:   Tue, 29 Mar 2022 06:52:50 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220328195936.82552-9-nicolas.dufresne@collabora.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     Michael Walle <michael@walle.cc>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Xu Yilun <yilun.xu@intel.com>,
+        Tom Rix <trix@redhat.com>, Jean Delvare <jdelvare@suse.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <20220328115226.3042322-1-michael@walle.cc>
+ <YkGwjjUz+421O2E1@lunn.ch>
+ <ab64105b-c48d-cdf2-598a-3e0a2e261b27@roeck-us.net>
+ <e87c3ab2a0c188dced27bf83fc444c40@walle.cc>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v1 0/2] hwmon: introduce hwmon_sanitize()
+In-Reply-To: <e87c3ab2a0c188dced27bf83fc444c40@walle.cc>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nZCHD-00353G-Re
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54542
+X-Source-Auth: linux@roeck-us.net
+X-Email-Count: 8
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey Nicolas,
+On 3/28/22 15:50, Michael Walle wrote:
+> Am 2022-03-28 18:27, schrieb Guenter Roeck:
+>> On 3/28/22 05:56, Andrew Lunn wrote:
+>>>> I'm not sure how to handle this correctly, as this touches both the
+>>>> network tree and the hwmon tree. Also, the GPY PHY temperature senors
+>>>> driver would use it.
+>>>
+>>> There are a few options:
+>>>
+>>> 1) Get the hwmon_sanitize_name() merged into hwmon, ask for a stable
+>>> branch, and get it merged into netdev net-next.
+>>>
+>>> 2) Have the hwmon maintainers ACK the change and agree that it can be
+>>> merged via netdev.
+>>>
+>>> Probably the second option is easiest, and since it is not touching
+>>> the core of hwmon, it is unlikely to cause merge conflicts.
+>>>
+>>
+>> No, it isn't the easiest solution because it also modifies a hwmon
+>> driver to use it.
+> 
+> So that leaves us with option 1? The next version will contain the
+> additional patch which moves the hwmon_is_bad_char() from the include
+> to the core and make it private. That will then need an immutable
+> branch from netdev to get merged back into hwmon before that patch
+> can be applied, right?
 
-On 28.03.2022 15:59, Nicolas Dufresne wrote:
->As per spec, the field refslist requires interleaving top and bottom
+We can not control if someone else starts using the function before
+it is removed. As pointed out, the immutable branch needs to be from hwmon,
+and the patch to make hwmon_is_bad_char private can only be applied
+after all of its users are gone from the mainline kernel.
 
-In other patches you call it always field reflist, so I'd say let's
-stick to that:
-s/field refslist/field reflist/
+I would actually suggest to allocate the new string as part of the
+function and have it return a pointer to a new string. Something like
+	char *devm_hwmon_sanitize_name(struct device *dev, const char *name);
+and
+         char *hwmon_sanitize_name(const char *name);
 
->field in a specific way that does not fit inside the sort operation.
->Reorder in-place the references so that their parity sart with the same
->parity as the current picture and do that for both short and longterm
->references separately.
+because the string duplication is also part of all calling code.
 
-I find that sentence hard to understand, is this maybe better:
-
-"""
-Rearrange the references in place so that their parity matches that of
-the current image, and do this separately for both short- and long-term
-references.
-"""
-
->
->Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Reviewed-by: Sebastian Fricke <sebastian.fricke@collabora.com>
-
->---
-> drivers/media/v4l2-core/v4l2-h264.c | 45 +++++++++++++++++++++++++++++
-> 1 file changed, 45 insertions(+)
->
->diff --git a/drivers/media/v4l2-core/v4l2-h264.c b/drivers/media/v4l2-core/v4l2-h264.c
->index c3fad382882d..2f7ee8d5479f 100644
->--- a/drivers/media/v4l2-core/v4l2-h264.c
->+++ b/drivers/media/v4l2-core/v4l2-h264.c
->@@ -243,6 +243,43 @@ static int v4l2_h264_b1_ref_list_cmp(const void *ptra, const void *ptrb,
-> 	return poca < pocb ? -1 : 1;
-> }
->
->+/*
->+ * The references need to be reorder so that reference are alternating between
-
-s/to be reorder/to be reordered/
-s/ so that reference/, so that references/
-
->+ * top and bottom ref starting with the current picture parity. This have to be
-
-s/bottom ref/bottom field references/
-s/This have to be/This has to be/
-
->+ * done for short term and long term references separately.
->+ */
->+static void reorder_field_reflist(const struct v4l2_h264_reflist_builder *b,
->+				  struct v4l2_h264_reference *reflist)
->+{
->+	struct v4l2_h264_reference tmplist[V4L2_H264_REF_LIST_LEN];
->+	u8 lt, i = 0, j = 0, k = 0;
->+
->+	memcpy(tmplist, reflist, sizeof(tmplist[0]) * b->num_valid);
->+
->+	for (lt = 0; lt <= 1; lt++) {
->+		do {
->+			for (; i < b->num_valid && b->refs[tmplist[i].index].longterm == lt; i++) {
->+				if (tmplist[i].fields == b->cur_pic_fields) {
->+					reflist[k] = tmplist[i];
->+					k++;
->+					i++;
-
-You can just say: `reflist[k++] = tmplist[i++];`
-
->+					break;
->+				}
->+			}
->+
->+			for (; j < b->num_valid && b->refs[tmplist[j].index].longterm == lt; j++) {
->+				if (tmplist[j].fields != b->cur_pic_fields) {
->+					reflist[k] = tmplist[j];
->+					k++;
->+					j++;
-
-Same here: `reflist[k++] = tmplist[j++];`
-
-Greetings,
-Sebastian
-
->+					break;
->+				}
->+			}
->+		} while ((i < b->num_valid && b->refs[tmplist[i].index].longterm == lt) ||
->+			 (j < b->num_valid && b->refs[tmplist[j].index].longterm == lt));
->+	}
->+}
->+
-> static char ref_type_to_char (u8 ref_type)
-> {
-> 	switch (ref_type) {
->@@ -345,6 +382,9 @@ v4l2_h264_build_p_ref_list(const struct v4l2_h264_reflist_builder *builder,
-> 	sort_r(reflist, builder->num_valid, sizeof(*reflist),
-> 	       v4l2_h264_p_ref_list_cmp, NULL, builder);
->
->+	if (builder->cur_pic_fields != V4L2_H264_FRAME_REF)
->+		reorder_field_reflist(builder, reflist);
->+
-> 	print_ref_list_p(builder, reflist);
-> }
-> EXPORT_SYMBOL_GPL(v4l2_h264_build_p_ref_list);
->@@ -378,6 +418,11 @@ v4l2_h264_build_b_ref_lists(const struct v4l2_h264_reflist_builder *builder,
-> 	sort_r(b1_reflist, builder->num_valid, sizeof(*b1_reflist),
-> 	       v4l2_h264_b1_ref_list_cmp, NULL, builder);
->
->+	if (builder->cur_pic_fields != V4L2_H264_FRAME_REF) {
->+		reorder_field_reflist(builder, b0_reflist);
->+		reorder_field_reflist(builder, b1_reflist);
->+	}
->+
-> 	if (builder->num_valid > 1 &&
-> 	    !memcmp(b1_reflist, b0_reflist, builder->num_valid))
-> 		swap(b1_reflist[0], b1_reflist[1]);
->-- 
->2.34.1
->
+Guenter
