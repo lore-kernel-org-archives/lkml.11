@@ -2,104 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A05D0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:05:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72DADC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:05:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239175AbiC2QGx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 12:06:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60640 "EHLO
+        id S239193AbiC2QGz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 12:06:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239189AbiC2QGs (ORCPT
+        with ESMTP id S239176AbiC2QGv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 12:06:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 290A7583B8
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:05:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648569902;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=myVn/ud/g7W9TqDN/fCCVknHoq1NPUOKCp3kWuQdaq4=;
-        b=avu1dGdamZQTvRQ9Z6CcXguExRC3vKtxeYcJPyFj9o5Kh2kI8rQ4Al37blcYZdQIi+O9qW
-        9pbObuXes+rcyW7tf7lH/TR3j+gPro5lbWZX8ZhNiN6rbvGpknQnDkpkwX6I4IqvnclCuO
-        g//KggomlJJv9l4DfNl3cbgDWbAT8Uw=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-325-pxOjCAI_PzWIeFbyjZlp3g-1; Tue, 29 Mar 2022 12:04:56 -0400
-X-MC-Unique: pxOjCAI_PzWIeFbyjZlp3g-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 29 Mar 2022 12:06:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E1DB56C25
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:05:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 616821C02322;
-        Tue, 29 Mar 2022 16:04:55 +0000 (UTC)
-Received: from t480s.redhat.com (unknown [10.39.194.134])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B9AEF401E2A;
-        Tue, 29 Mar 2022 16:04:48 +0000 (UTC)
-From:   David Hildenbrand <david@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Pedro Gomes <pedrodemargomes@gmail.com>,
-        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org,
-        David Hildenbrand <david@redhat.com>,
-        Khalid Aziz <khalid.aziz@oracle.com>
-Subject: [PATCH v3 01/16] mm/rmap: fix missing swap_free() in try_to_unmap() after arch_unmap_one() failed
-Date:   Tue, 29 Mar 2022 18:04:25 +0200
-Message-Id: <20220329160440.193848-2-david@redhat.com>
-In-Reply-To: <20220329160440.193848-1-david@redhat.com>
-References: <20220329160440.193848-1-david@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9FA6661351
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 16:05:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A92C1C340ED;
+        Tue, 29 Mar 2022 16:05:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1648569907;
+        bh=xXdEJIbH9Ts8g7LPtQKk1FDb5fMmACcejHkKXetfK7U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=xBPLN2Hzb/yjdxQXqd+bxnV1vaYx971cl0k6JTbpSOuyPZ1Lk3WPI8jubglw6PBqm
+         tdouWo8QUFZkdg5gsBD+8rzuarL82GBqZVHA5l01pFZmy53O7W0v7yMtNPA4wY9sHX
+         hBCHmFcvqNq4pLqqLgd7fAVUvpuXp7zFRzD5pFK4=
+Date:   Tue, 29 Mar 2022 18:05:04 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Michael Straube <straube.linux@gmail.com>
+Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 9/9] staging: r8188eu: remove HW_VAR_BCN_VALID from
+ SetHwReg8188EU()
+Message-ID: <YkMuMC1I4Cj6aIah@kroah.com>
+References: <20220328113940.6396-1-straube.linux@gmail.com>
+ <20220328113940.6396-10-straube.linux@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220328113940.6396-10-straube.linux@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In case arch_unmap_one() fails, we already did a swap_duplicate(). let's
-undo that properly via swap_free().
+On Mon, Mar 28, 2022 at 01:39:40PM +0200, Michael Straube wrote:
+> The HW_VAR_BCN_VALID case in SetHwReg8188EU() just calls rtw_write8().
+> Remove HW_VAR_BCN_VALID from SetHwReg8188EU() and call rtw_write8()
+> directly. This is part of the ongoing effort to getrid of the unwanted
+> hal layer.
+> 
+> Signed-off-by: Michael Straube <straube.linux@gmail.com>
+> ---
+>  drivers/staging/r8188eu/core/rtw_mlme_ext.c |  5 ++++-
+>  drivers/staging/r8188eu/hal/rtl8188e_cmd.c  | 12 ++++++++----
+>  drivers/staging/r8188eu/hal/usb_halinit.c   |  4 ----
+>  3 files changed, 12 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/staging/r8188eu/core/rtw_mlme_ext.c b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
+> index b5c2e7d4cb48..313e1a3beecb 100644
+> --- a/drivers/staging/r8188eu/core/rtw_mlme_ext.c
+> +++ b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
+> @@ -5765,7 +5765,10 @@ unsigned int send_beacon(struct adapter *padapter)
+>  
+>  	u32 start = jiffies;
+>  
+> -	SetHwReg8188EU(padapter, HW_VAR_BCN_VALID, NULL);
+> +	/* Clear beacon valid check bit. */
+> +	/* BIT(16) of REG_TDECTRL = BIT(0) of REG_TDECTRL+2, write 1 to clear, Clear by sw */
+> +	rtw_write8(padapter, REG_TDECTRL + 2, rtw_read8(padapter, REG_TDECTRL + 2) | BIT(0));
 
-Fixes: ca827d55ebaa ("mm, swap: Add infrastructure for saving page metadata on swap")
-Reviewed-by: Khalid Aziz <khalid.aziz@oracle.com>
-Signed-off-by: David Hildenbrand <david@redhat.com>
----
- mm/rmap.c | 1 +
- 1 file changed, 1 insertion(+)
+You commented this twice, it should be a single function :)
 
-diff --git a/mm/rmap.c b/mm/rmap.c
-index 5cb970d51f0a..07f59bc6ffc1 100644
---- a/mm/rmap.c
-+++ b/mm/rmap.c
-@@ -1637,6 +1637,7 @@ static bool try_to_unmap_one(struct folio *folio, struct vm_area_struct *vma,
- 				break;
- 			}
- 			if (arch_unmap_one(mm, vma, address, pteval) < 0) {
-+				swap_free(entry);
- 				set_pte_at(mm, address, pvmw.pte, pteval);
- 				ret = false;
- 				page_vma_mapped_walk_done(&pvmw);
--- 
-2.35.1
+thanks,
 
+greg k-h
