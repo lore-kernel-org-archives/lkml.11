@@ -2,151 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18D14C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 22:33:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C52D1C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 22:34:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237660AbiC2WfT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 18:35:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56624 "EHLO
+        id S237674AbiC2Wg3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 18:36:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237593AbiC2WfQ (ORCPT
+        with ESMTP id S234307AbiC2Wg1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 18:35:16 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADE1CD76C3
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 15:33:31 -0700 (PDT)
+        Tue, 29 Mar 2022 18:36:27 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A21BE1F686C
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 15:34:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648593211; x=1680129211;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=gJUVHXuYif343W5kwl53LsjF/P1U/FFSXed6oIWSZgo=;
-  b=EvSjBq6BY6uf/+EKPMZLXOMU9qOPY4boMVV13nB76/lJcBwZdgzUnGGg
-   kG+p+YXqvzp0a8ouoBZ61sSX7sB4xYIu/e+bv1ZMJ2gtK8r5L0zrjevuU
-   vSowcjH/8J+re49u+keOM5f6kBGC1/U/VxDc5JC4v3DXM0Uk1kbCsBn8k
-   sea5+6yPMMnExsSc7p1tDSpjGOSmWWdOJpQVjaAtN4L2iqt+Jec2WJ0kQ
-   tM+AgkHK17sPEqwY/DTyNxzsV54Z1RgdaYc2ZP91SCrjbwOT6snzuHRhn
-   5uSR36pJ32+l9XGhlqLeTgM4yuea70xCxGRk0rkrIo7YhQKYuegV6qY1Q
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="259361728"
+  t=1648593283; x=1680129283;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=CeCGP8l6wcfntguGcvUHng56/zPfN8nAI7+geuG9AH4=;
+  b=P+TkJOKmIWid1j+4v04VUSLhG/cpkocjKaFoJhQmsGj6eBqOK+8UbZ04
+   8FwOnyoH3kwD50U6xYb3btW2LZXk7yfMJN/EjtJ3tKks4Xqnv7d+lz14k
+   BuvhywUyumrs+2IJFHXblBsHgbVPYhqDjQvW046aqqhKRENkELaXlD06F
+   kesUvslJl7Nv/orNzCbv6+Lv8zXNH3eaKQWoRW3Dt8OtoxoyEJkChkdOQ
+   QxPElLfp6YKRF+LTW5okJWyMaupaOW8/YoplXleLSsh4v3RFUh1LWiFIy
+   kls95X4RTKXs0orbjwU64ZLQ7VmTQK5Ld3ptHijaEmeEtCeHoFXx9ZVmW
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="345826526"
 X-IronPort-AV: E=Sophos;i="5.90,220,1643702400"; 
-   d="scan'208";a="259361728"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 15:33:31 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="345826526"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 15:34:43 -0700
 X-IronPort-AV: E=Sophos;i="5.90,220,1643702400"; 
-   d="scan'208";a="585767823"
-Received: from lkp-server01.sh.intel.com (HELO 3965e2759b93) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 29 Mar 2022 15:33:30 -0700
-Received: from kbuild by 3965e2759b93 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nZKP3-0000jm-I2; Tue, 29 Mar 2022 22:33:29 +0000
-Date:   Wed, 30 Mar 2022 06:32:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [andersson:wip/sc8180x-next-20220301-take2 5/27]
- drivers/gpu/drm/msm/dp/dp_hpd.c:83: undefined reference to
- `typec_mux_unregister'
-Message-ID: <202203300600.W7zSpGZl-lkp@intel.com>
+   d="scan'208";a="605072928"
+Received: from acstuden-mobl.amr.corp.intel.com (HELO [10.209.45.17]) ([10.209.45.17])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 15:34:43 -0700
+Message-ID: <1ec9dd62-7299-1662-3907-bf73ea56fa7d@intel.com>
+Date:   Tue, 29 Mar 2022 15:34:46 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     Matthias Welwarsky <matthias.welwarsky@sysgo.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        linux-kernel@vger.kernel.org, x86-ml <x86@kernel.org>
+References: <3422754.iIbC2pHGDl@linux-3513> <Yj49F1pnehy3ga5U@zn.tnic>
+ <d9d0405e-b118-b028-d26f-fbb8de4e7a0e@intel.com> <Yj7Oi9g/B54xAcmF@zn.tnic>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: x86, possible bug in __memmove() alternatives patching
+In-Reply-To: <Yj7Oi9g/B54xAcmF@zn.tnic>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/andersson/kernel wip/sc8180x-next-20220301-take2
-head:   4e9e94d03691fd0820dcff8d0877ddb280b01f88
-commit: e4014b0e8a0a46349e91bfb9ef44a59d5a4a2771 [5/27] drm/msm/dp: Add typec_mux implementation
-config: microblaze-randconfig-r006-20220327 (https://download.01.org/0day-ci/archive/20220330/202203300600.W7zSpGZl-lkp@intel.com/config)
-compiler: microblaze-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/andersson/kernel/commit/e4014b0e8a0a46349e91bfb9ef44a59d5a4a2771
-        git remote add andersson https://github.com/andersson/kernel
-        git fetch --no-tags andersson wip/sc8180x-next-20220301-take2
-        git checkout e4014b0e8a0a46349e91bfb9ef44a59d5a4a2771
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=microblaze SHELL=/bin/bash
+On 3/26/22 01:27, Borislav Petkov wrote:
+> So, more to the point, it is about this chunk:
+> 
+>         /*
+>          * If fast string is not enabled in IA32_MISC_ENABLE for any reason,
+>          * clear the fast string and enhanced fast string CPU capabilities.
+>          */
+>         if (c->x86 > 6 || (c->x86 == 6 && c->x86_model >= 0xd)) {
+>                 rdmsrl(MSR_IA32_MISC_ENABLE, misc_enable);
+>                 if (!(misc_enable & MSR_IA32_MISC_ENABLE_FAST_STRING)) {
+>                         pr_info("Disabled fast string operations\n");
+>                         setup_clear_cpu_cap(X86_FEATURE_REP_GOOD);
+>                         setup_clear_cpu_cap(X86_FEATURE_ERMS);
+>                 }
+>         }
+> 
+> we already check whether fast strings was disabled, regardless of HV or
+> not. Question is, should we clear X86_FEATURE_FSRM there too. I wanna
+> say yes.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+I don't think it would hurt to clear it.
 
-All errors (new ones prefixed by >>):
+> Or is it that, *if* MSR_IA32_MISC_ENABLE_FAST_STRING is clear, the FSRM
+> CPUID bit was not set either so nothing to clear...
 
-   microblaze-linux-ld: drivers/gpu/drm/msm/dp/dp_hpd.o: in function `dp_hpd_unregister_typec_mux':
->> drivers/gpu/drm/msm/dp/dp_hpd.c:83: undefined reference to `typec_mux_unregister'
-   microblaze-linux-ld: drivers/gpu/drm/msm/dp/dp_hpd.o: in function `dp_hpd_mux_set':
->> drivers/gpu/drm/msm/dp/dp_hpd.c:55: undefined reference to `typec_mux_get_drvdata'
-   microblaze-linux-ld: drivers/gpu/drm/msm/dp/dp_hpd.o: in function `dp_hpd_get':
->> drivers/gpu/drm/msm/dp/dp_hpd.c:109: undefined reference to `typec_mux_register'
->> microblaze-linux-ld: drivers/gpu/drm/msm/dp/dp_hpd.c:83: undefined reference to `typec_mux_unregister'
-
-
-vim +83 drivers/gpu/drm/msm/dp/dp_hpd.c
-
-    52	
-    53	static int dp_hpd_mux_set(struct typec_mux *mux, struct typec_mux_state *state)
-    54	{
-  > 55		struct dp_hpd_private *dp_hpd = typec_mux_get_drvdata(mux);
-    56		struct dp_usbpd *usbpd = &dp_hpd->dp_usbpd;
-    57		struct typec_displayport_data *dp_data = state->data;
-    58		int pin_assign = 0;
-    59	
-    60		if (dp_data) {
-    61			pin_assign = DP_CONF_GET_PIN_ASSIGN(dp_data->conf);
-    62			usbpd->hpd_irq = !!(dp_data->status & DP_STATUS_IRQ_HPD);
-    63			usbpd->multi_func = pin_assign == DP_PIN_ASSIGN_C || DP_PIN_ASSIGN_E;
-    64		}
-    65	
-    66		if (!pin_assign) {
-    67			if (dp_hpd->connected) {
-    68				dp_hpd->connected = false;
-    69				dp_hpd->dp_cb->disconnect(dp_hpd->dev);
-    70			}
-    71		} else if (!dp_hpd->connected) {
-    72			dp_hpd->connected = true;
-    73			dp_hpd->dp_cb->configure(dp_hpd->dev);
-    74		} else {
-    75			dp_hpd->dp_cb->attention(dp_hpd->dev);
-    76		}
-    77	
-    78		return 0;
-    79	}
-    80	
-    81	static void dp_hpd_unregister_typec_mux(void *data)
-    82	{
-  > 83		typec_mux_unregister(data);
-    84	}
-    85	
-    86	struct dp_usbpd *dp_hpd_get(struct device *dev, struct dp_usbpd_cb *cb)
-    87	{
-    88		struct typec_mux_desc mux_desc = {};
-    89		struct dp_hpd_private *dp_hpd;
-    90		int rc;
-    91	
-    92		if (!cb) {
-    93			pr_err("invalid cb data\n");
-    94			return ERR_PTR(-EINVAL);
-    95		}
-    96	
-    97		dp_hpd = devm_kzalloc(dev, sizeof(*dp_hpd), GFP_KERNEL);
-    98		if (!dp_hpd)
-    99			return ERR_PTR(-ENOMEM);
-   100	
-   101		dp_hpd->dev = dev;
-   102		dp_hpd->dp_cb = cb;
-   103	
-   104		dp_hpd->dp_usbpd.connect = dp_hpd_connect;
-   105	
-   106		mux_desc.fwnode = dev->fwnode;
-   107		mux_desc.set = dp_hpd_mux_set;
-   108		mux_desc.drvdata = dp_hpd;
- > 109		dp_hpd->mux = typec_mux_register(dev, &mux_desc);
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+I don't think there's really any direct connection between the CPUID bit
+and MSR_IA32_MISC_ENABLE_FAST_STRING.  The CPUID bit definitely doesn't
+appear to be cleared by the CPU if MSR_IA32_MISC_ENABLE_FAST_STRING is
+clear.
