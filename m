@@ -2,183 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFB5DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 11:03:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF9D6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 11:06:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235523AbiC2LF2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 07:05:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52270 "EHLO
+        id S235532AbiC2LIC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 07:08:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231437AbiC2LFZ (ORCPT
+        with ESMTP id S231437AbiC2LIA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 07:05:25 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33F071A82E;
-        Tue, 29 Mar 2022 04:03:39 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KSRWF10D9z1GD1m;
-        Tue, 29 Mar 2022 19:03:21 +0800 (CST)
-Received: from dggpemm500014.china.huawei.com (7.185.36.153) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 29 Mar 2022 19:03:37 +0800
-Received: from [10.174.178.120] (10.174.178.120) by
- dggpemm500014.china.huawei.com (7.185.36.153) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2308.21; Tue, 29 Mar 2022 19:03:35 +0800
-Message-ID: <4136ec1c-51a9-3874-9bf3-c81cd88e868a@huawei.com>
-Date:   Tue, 29 Mar 2022 19:03:35 +0800
+        Tue, 29 Mar 2022 07:08:00 -0400
+Received: from mail.meizu.com (unknown [14.29.68.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 181D21A82E
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 04:06:15 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
+ (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Tue, 29 Mar
+ 2022 19:06:13 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Tue, 29 Mar
+ 2022 19:06:12 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     Haowen Bai <baihaowen@meizu.com>, <linux-staging@lists.linux.dev>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] staging: r8188eu: Directly return _SUCCESS instead of using local ret variable
+Date:   Tue, 29 Mar 2022 19:06:06 +0800
+Message-ID: <1648551967-23627-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <d293aee5-6065-9d87-0906-438542a8be84@meizu.com>
+References: <d293aee5-6065-9d87-0906-438542a8be84@meizu.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 0/9] introduce mirrored memory support for arm64
-To:     <ardb@kernel.org>
-CC:     <akpm@linux-foundation.org>, <catalin.marinas@arm.com>,
-        <will@kernel.org>, <corbet@lwn.net>, <tglx@linutronix.de>,
-        <mingo@redhat.com>, <bp@alien8.de>, <dave.hansen@linux.intel.com>,
-        <x86@kernel.org>, <hpa@zyccr.com>, <dvhart@infradead.org>,
-        <andy@infradead.org>, <rppt@kernel.org>, <paulmck@kernel.org>,
-        <peterz@infradead.org>, <jroedel@suse.de>,
-        <songmuchun@bytedance.com>, <macro@orcam.me.uk>,
-        <frederic@kernel.org>, <W_Armin@gmx.de>, <john.garry@huawei.com>,
-        <seanjc@google.com>, <tsbogend@alpha.franken.de>,
-        <anshuman.khandual@arm.com>, <chenhuacai@kernel.org>,
-        <david@redhat.com>, <gpiccoli@igalia.com>, <mark.rutland@arm.com>,
-        <wangkefeng.wang@huawei.com>, <linux-doc@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-efi@vger.kernel.org>, <linux-ia64@vger.kernel.org>,
-        <platform-driver-x86@vger.kernel.org>, <linux-mm@kvack.org>
-References: <20220326064632.131637-1-mawupeng1@huawei.com>
- <CAMj1kXEwzJE8V-tqJJwZ-RqHB3atKJvoRZ8C6_EVM7caNbttxw@mail.gmail.com>
-From:   mawupeng <mawupeng1@huawei.com>
-In-Reply-To: <CAMj1kXEwzJE8V-tqJJwZ-RqHB3atKJvoRZ8C6_EVM7caNbttxw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.178.120]
-X-ClientProxiedBy: dggeme706-chm.china.huawei.com (10.1.199.102) To
- dggpemm500014.china.huawei.com (7.185.36.153)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-124.meizu.com (172.16.1.124) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+As init_mlme_ext_priv function always returns SUCCESS , We can change
+return type from int to void.
 
+fixes coccinelle warning:
+./drivers/staging/r8188eu/core/rtw_mlme_ext.c:357:5-8: Unneeded variable: "res".
+ Return "_SUCCESS" on line 380
 
-在 2022/3/29 16:26, Ard Biesheuvel 写道:
-> On Sat, 26 Mar 2022 at 07:27, Wupeng Ma <mawupeng1@huawei.com> wrote:
->>
->> From: Ma Wupeng <mawupeng1@huawei.com>
->>
->> Commit b05b9f5f9dcf ("x86, mirror: x86 enabling - find mirrored memory ranges")
->> introduced mirrored memory support for x86. This support rely on UEFI to
->> report mirrored memory address ranges.  See UEFI 2.5 spec pages 157-158:
->>
->>    http://www.uefi.org/sites/default/files/resources/UEFI%202_5.pdf
->>
->> Arm64 can support this too. So mirrored memory support is added to support
->> arm64.
->>
-> 
-> What is the point of this if the kernel itself is not loaded in
-> EFI_MORE_RELIABLE memory? On x86, this is handled by the decompressor,
-> but that does not exist on arm64.
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+---
+ drivers/staging/r8188eu/core/rtw_mlme_ext.c    | 5 +----
+ drivers/staging/r8188eu/include/rtw_mlme_ext.h | 2 +-
+ drivers/staging/r8188eu/os_dep/os_intfs.c      | 8 +-------
+ 3 files changed, 3 insertions(+), 12 deletions(-)
 
-Do you mean this is x86, commit c05cd79750fb
-("x86/boot/KASLR: Prefer mirrored memory regions for the kernel physical address").
-This scenario is not considered.
+diff --git a/drivers/staging/r8188eu/core/rtw_mlme_ext.c b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
+index 10d5f12..ff48293 100644
+--- a/drivers/staging/r8188eu/core/rtw_mlme_ext.c
++++ b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
+@@ -352,9 +352,8 @@ static u8 init_channel_set(struct adapter *padapter, u8 ChannelPlan, struct rt_c
+ 	return chanset_size;
+ }
+ 
+-int	init_mlme_ext_priv(struct adapter *padapter)
++void init_mlme_ext_priv(struct adapter *padapter)
+ {
+-	int	res = _SUCCESS;
+ 	struct registry_priv *pregistrypriv = &padapter->registrypriv;
+ 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
+ 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
+@@ -376,8 +375,6 @@ int	init_mlme_ext_priv(struct adapter *padapter)
+ 	pmlmeext->mlmeext_init = true;
+ 
+ 	pmlmeext->active_keep_alive_check = true;
+-
+-	return res;
+ }
+ 
+ void free_mlme_ext_priv(struct mlme_ext_priv *pmlmeext)
+diff --git a/drivers/staging/r8188eu/include/rtw_mlme_ext.h b/drivers/staging/r8188eu/include/rtw_mlme_ext.h
+index 0c555ea..827ac6c 100644
+--- a/drivers/staging/r8188eu/include/rtw_mlme_ext.h
++++ b/drivers/staging/r8188eu/include/rtw_mlme_ext.h
+@@ -419,7 +419,7 @@ struct mlme_ext_priv {
+ 	u8 active_keep_alive_check;
+ };
+ 
+-int init_mlme_ext_priv(struct adapter *adapter);
++void init_mlme_ext_priv(struct adapter *adapter);
+ int init_hw_mlme_ext(struct adapter *padapter);
+ void free_mlme_ext_priv (struct mlme_ext_priv *pmlmeext);
+ extern void init_mlme_ext_timer(struct adapter *padapter);
+diff --git a/drivers/staging/r8188eu/os_dep/os_intfs.c b/drivers/staging/r8188eu/os_dep/os_intfs.c
+index 550721e..ca1c4df 100644
+--- a/drivers/staging/r8188eu/os_dep/os_intfs.c
++++ b/drivers/staging/r8188eu/os_dep/os_intfs.c
+@@ -490,10 +490,7 @@ u8 rtw_init_drv_sw(struct adapter *padapter)
+ 	init_wifidirect_info(padapter, P2P_ROLE_DISABLE);
+ 	reset_global_wifidirect_info(padapter);
+ 
+-	if (init_mlme_ext_priv(padapter) == _FAIL) {
+-		dev_err(dvobj_to_dev(padapter->dvobj), "init_mlme_ext_priv failed\n");
+-		goto free_mlme_priv;
+-	}
++	init_mlme_ext_priv(padapter);
+ 
+ 	if (_rtw_init_xmit_priv(&padapter->xmitpriv, padapter) == _FAIL) {
+ 		dev_err(dvobj_to_dev(padapter->dvobj), "_rtw_init_xmit_priv failed\n");
+@@ -534,9 +531,6 @@ u8 rtw_init_drv_sw(struct adapter *padapter)
+ free_mlme_ext:
+ 	free_mlme_ext_priv(&padapter->mlmeextpriv);
+ 
+-free_mlme_priv:
+-	rtw_free_mlme_priv(&padapter->mlmepriv);
+-
+ free_evt_priv:
+ 	rtw_free_evt_priv(&padapter->evtpriv);
+ 
+-- 
+2.7.4
 
->  
-> The problem here is that UEFI defines this as a memory *attribute*
-> rather than a memory *type*, which means you cannot allocate
-> EFI_MORE_RELIABLE memory easily: you have to iterate over the memory
-> map and look for regions with the desired attribute, and allocate
-> those pages explicitly. I'd prefer to implement this in the
-> bootloader, and only add minimal logic to the stub to respect the
-> placement of the kernel by the loader if the loader signals it to do
-> so (there are other reasons for this - I will cc you on a patch
-> shortly that implements this)
-
-Thanks for your incoming patch.
-
-> 
-> This also means that the fake_mem stuff is not going to work: the
-> memory map observed by the stub comes straight from the firmware, and
-> if the stub needs to be involved in placing (or respecting the
-> placement by the loader of) the kernel image, it needs to observe
-> those EFI_MORE_RELIABLE regions too. If you don't have access to a
-> machine that actually exposes EFI_MORE_RELIABLE memory, I suggest you
-> prototype it in QEMU/edk2 instead.
-
-You are right fake_mem stuff is not going to work. But, efi_fake_mem is
-used for testing mirrored features and will not be used in production
-environment. This test features can fake memory's attribute values.
-
-The reason why efi_fake_mem support is put first is that memory's attribute
-is reported by BIOS which is hard to simulate. With this support, any arm64
-machines with efi support can easily test mirrored features.
-
-> 
-> In fact, we have been trying very hard not to touch the firmware
-> provided memory map at all on ARM, rather than use it as a scratchpad
-> for all kinds of annotations. This means, for instance, that kexec is
-> idempotent - the next kernel should not be affected by modifications
-> to the memory map applied by the previous kernel.
-
-Yes, you're absolutely right. Efi_fake_mem is incompatible with kdump which
-will use kexec. But we can remove specify cmdline(efi_fake_mem=xx) by
-modofing /etc/sysconfig/kdump. Efi_fake_mem is only used for testing and
-will not be used in production environment.
-
-> 
-> In summary, implementing kernelcore=mirror for arm64 is fine with me,
-> but there are some issues we need to address first.
->
-Can you be clear what the issues are?
-
-The main purpose of this patchset is to introduce mirrored support for
-arm64 and we have already fixed the problems we had which is shown in
-patch #5 to patch #7 and try to bring total isolation in patch #8 which
-will disable mirror feature if kernelcore is not specified.
-
-Thanks for reviewing.
-
-> 
-> 
-> 
->> Patch #1-#2 introduce efi_fake_mem support for arm64.
->> Patch #3-#4 introduce mirrored memory support form arm64.
->> Patch #5-#7 fix some bugs for arm64 if memory reliable is enabled.
->> Patch #8 disable mirror feature if kernelcore is not specified.
->> Patch #9 remove some redundant code in ia64 efi_init.
->>
->> Ma Wupeng (9):
->>    efi: Make efi_print_memmap() public
->>    arm64: efi: Add fake memory support
->>    efi: Make efi_find_mirror() public
->>    arm64/mirror: arm64 enabling - find mirrored memory ranges
->>    mm: Ratelimited mirrored memory related warning messages
->>    mm: Demote warning message in vmemmap_verify() to debug level
->>    mm: Calc the right pfn if page size is not 4K
->>    efi: Disable mirror feature if kernelcore is not specified
->>    ia64/efi: Code simplification in efi_init
->>
->>   .../admin-guide/kernel-parameters.txt         |  4 +-
->>   arch/arm64/kernel/setup.c                     |  3 ++
->>   arch/ia64/kernel/efi.c                        | 37 +-----------------
->>   arch/x86/include/asm/efi.h                    |  5 ---
->>   arch/x86/platform/efi/efi.c                   | 39 -------------------
->>   drivers/firmware/efi/Kconfig                  |  2 +-
->>   drivers/firmware/efi/efi.c                    | 26 +++++++++++++
->>   drivers/firmware/efi/memmap.c                 | 16 ++++++++
->>   include/linux/efi.h                           |  4 ++
->>   include/linux/mm.h                            |  2 +
->>   mm/memblock.c                                 |  4 +-
->>   mm/page_alloc.c                               |  4 +-
->>   mm/sparse-vmemmap.c                           |  2 +-
->>   13 files changed, 60 insertions(+), 88 deletions(-)
->>
->> --
->> 2.18.0.huawei.25
->>
-> .
