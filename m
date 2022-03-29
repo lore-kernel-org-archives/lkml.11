@@ -2,58 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2237C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:48:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1EBDC43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:48:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236655AbiC2Mtu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 08:49:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33978 "EHLO
+        id S234229AbiC2Mt7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 08:49:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236740AbiC2Mr0 (ORCPT
+        with ESMTP id S236831AbiC2MsH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 08:47:26 -0400
+        Tue, 29 Mar 2022 08:48:07 -0400
 Received: from mail-ej1-x649.google.com (mail-ej1-x649.google.com [IPv6:2a00:1450:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AA3321BC52
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:42:15 -0700 (PDT)
-Received: by mail-ej1-x649.google.com with SMTP id hg13-20020a1709072ccd00b006dfa484ec23so8157040ejc.8
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:42:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 758BF224749
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:42:22 -0700 (PDT)
+Received: by mail-ej1-x649.google.com with SMTP id gv17-20020a1709072bd100b006dfcc7f7962so8127026ejc.5
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:42:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=vfNewWnsnLKjgrLxloInM3ksKktMuhZ88Cjjen8dSfw=;
-        b=k2grIaWEX10+pjmxqhkcyCA78d3h23qdz2hQwriW/AtBkEbXWlTAWHSjR5jVjwbRd0
-         HKX1zG6uUcVNaozu8WxucSiCuQwHnnudt3nW2uxWtac7hF54EJ1kbSIlqPv4TwsjdCTr
-         G92SqYktPjAwRps3tSeMbzJyGmoMawImGJXnVDm7RQbHHOMHmWqFKxMC2IeRQOg1Xhxq
-         OJFN3e7mKc2NOaXlMGXsa9yHEVB8W3tfRWFhpSrRETeApxMNk01V3f1Rz7tcgby1LDeH
-         XGjGGEIIihzXVuI4E4ZD/omsJ5xBfcLQ6Erf+tZ7ZaeE1xczews93WWLLOk7DrdHF6hz
-         Ns5g==
+        bh=6EKMd0bjP1WkGhZZPkjCgU25E3DWfYJCasURW7mFnYs=;
+        b=P1k71GssRqu7HsErV73nnblS85PhkUFheLyBFZgmPWLpl7OKiy1Bqi/JlOtZzfJVPy
+         VAc7cvO8fwjHIxHwD4P9pVu2rdNH8e0p6iE439JugyKP3tEZpAogt6YoEY/b5rvhs6YN
+         OlYMWP+8vwtXjv8eNiLfoejuKaPkdCuMEozoeNlW8PpIb+edtD9db/0+pmWKLdNhwURR
+         5E3Lth/p8S4d05TzSLze03fVsfkwrT++EyTKtUjOhLVyC4kbo3lKGGRltm0PtD2GB/IH
+         Q3WE4SbVcH6AFhiknkVN5O3R1HMm1J+ZfOcalpdSexIx4dKDpVcT7q34bBD07dT9kvEi
+         C7Fw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=vfNewWnsnLKjgrLxloInM3ksKktMuhZ88Cjjen8dSfw=;
-        b=vq81z/lVVJ1gcJoID8do64tmXfvjqsbfh5vFmtRCKeqInxawnsvRk/eNsa/wiyOCbY
-         q8/NARCWQlelZLgI/WhH0kNmGqDz7UxIln8a9n5+zOPCDC25HWrjCH7/frI4+vbCXKef
-         zOMY8HQta7iJK+dQ2q2mtQfJ7tyzCxKvhKFMZB4yZugWtP43JOnTfHKyGj10Y7VkkQRS
-         OpRcqsjXfXQ6qlN+fu3Yrj+sjvy1DmDjhG4sfQ227wRdsSQx8b2qGA1Or1GLVoj4ilKn
-         CoDGlItkdMtf1qL8metLXejkiQNbsw2qrHQFJjF+KjPxcO1iPqKvMIu5FCsQCtjGsL/X
-         Cexg==
-X-Gm-Message-State: AOAM532L3OgElDqWOq+KG+oNy2BkBVIYDEO2HWi+3BMYlrYCDCoydo4g
-        MgakP2BF+XoDn+CM0CiHt64xkycqFWY=
-X-Google-Smtp-Source: ABdhPJxYhi4C5lMRGBP4ot4j5u4X+r6OfqpTJ+iIL9kMkH3POTY1BlEuc6eV3fFfpCDp3jcSR0ZuHMnxazU=
+        bh=6EKMd0bjP1WkGhZZPkjCgU25E3DWfYJCasURW7mFnYs=;
+        b=rPJuR5MEzyzLKzKLm81Sz3UQ4ii9YtT0rVjc7jime4/vS1Lc6FS7XfhYjvdMyHp7tG
+         8TCrefZGujaFe/KvRe3mpezAoR6uryr6KnnSqR39RujTzZuY1MpDcvxZzxye2PNmZ9JY
+         iuMAl24Uay7SlUb4HVLni4aRpltGx+XCCkbnpaA/3EeMpky3gX0OA9t6gghNcdvLrjiL
+         pAKSsNZs5e0LoHDoXF9K/HzxB+xGmhSIRTdr3xx+ZswM2Ef5OPXF82KcPSN1J3rVVQR5
+         GxMNwm6C0Mbka5uIAxGfeZNA11wFb88LA5oMJXMD13WnQNN508K8dTEXxLhNCyQ1lrsc
+         V48g==
+X-Gm-Message-State: AOAM531a6mAMO552v74Dz5dQ7/9kSOIQEZ+u0GdiMEGzKeDvfmFjng5p
+        nXXgJ4Fh75eV0XTknYf0Qnu1f4XX+GA=
+X-Google-Smtp-Source: ABdhPJyN/u61iYoRLkPCDJv7Xs3UegKZjTjkx8b5A87Fx1oaelxWk3uqKnX5mytmcMKvTp7b3Wewv/gEEvA=
 X-Received: from glider.muc.corp.google.com ([2a00:79e0:15:13:36eb:759:798f:98c3])
- (user=glider job=sendgmr) by 2002:a17:906:2699:b0:6d0:9f3b:a6a7 with SMTP id
- t25-20020a170906269900b006d09f3ba6a7mr33007227ejc.397.1648557733360; Tue, 29
- Mar 2022 05:42:13 -0700 (PDT)
-Date:   Tue, 29 Mar 2022 14:40:08 +0200
+ (user=glider job=sendgmr) by 2002:a17:906:3042:b0:6cd:20ed:7c5c with SMTP id
+ d2-20020a170906304200b006cd20ed7c5cmr33818169ejd.241.1648557740796; Tue, 29
+ Mar 2022 05:42:20 -0700 (PDT)
+Date:   Tue, 29 Mar 2022 14:40:11 +0200
 In-Reply-To: <20220329124017.737571-1-glider@google.com>
-Message-Id: <20220329124017.737571-40-glider@google.com>
+Message-Id: <20220329124017.737571-43-glider@google.com>
 Mime-Version: 1.0
 References: <20220329124017.737571-1-glider@google.com>
 X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
-Subject: [PATCH v2 39/48] x86: kmsan: make READ_ONCE_TASK_STACK() return
- initialized values
+Subject: [PATCH v2 42/48] x86: kmsan: handle open-coded assembly in lib/iomem.c
 From:   Alexander Potapenko <glider@google.com>
 To:     glider@google.com
 Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
@@ -90,51 +89,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To avoid false positives, assume that reading from the task stack
-always produces initialized values.
+KMSAN cannot intercept memory accesses within asm() statements.
+That's why we add kmsan_unpoison_memory() and kmsan_check_memory() to
+hint it how to handle memory copied from/to I/O memory.
 
 Signed-off-by: Alexander Potapenko <glider@google.com>
 ---
-Link: https://linux-review.googlesource.com/id/I9e2350bf3e88688dd83537e12a23456480141997
+Link: https://linux-review.googlesource.com/id/Icb16bf17269087e475debf07a7fe7d4bebc3df23
 ---
- arch/x86/include/asm/unwind.h | 23 ++++++++++++-----------
- 1 file changed, 12 insertions(+), 11 deletions(-)
+ arch/x86/lib/iomem.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/arch/x86/include/asm/unwind.h b/arch/x86/include/asm/unwind.h
-index 2a1f8734416dc..51173b19ac4d5 100644
---- a/arch/x86/include/asm/unwind.h
-+++ b/arch/x86/include/asm/unwind.h
-@@ -129,18 +129,19 @@ unsigned long unwind_recover_ret_addr(struct unwind_state *state,
+diff --git a/arch/x86/lib/iomem.c b/arch/x86/lib/iomem.c
+index df50451d94ef7..2307770f3f4c8 100644
+--- a/arch/x86/lib/iomem.c
++++ b/arch/x86/lib/iomem.c
+@@ -1,6 +1,7 @@
+ #include <linux/string.h>
+ #include <linux/module.h>
+ #include <linux/io.h>
++#include <linux/kmsan-checks.h>
+ 
+ #define movs(type,to,from) \
+ 	asm volatile("movs" type:"=&D" (to), "=&S" (from):"0" (to), "1" (from):"memory")
+@@ -37,6 +38,8 @@ void memcpy_fromio(void *to, const volatile void __iomem *from, size_t n)
+ 		n-=2;
+ 	}
+ 	rep_movs(to, (const void *)from, n);
++	/* KMSAN must treat values read from devices as initialized. */
++	kmsan_unpoison_memory(to, n);
  }
+ EXPORT_SYMBOL(memcpy_fromio);
  
- /*
-- * This disables KASAN checking when reading a value from another task's stack,
-- * since the other task could be running on another CPU and could have poisoned
-- * the stack in the meantime.
-+ * This disables KASAN/KMSAN checking when reading a value from another task's
-+ * stack, since the other task could be running on another CPU and could have
-+ * poisoned the stack in the meantime. Frame pointers are uninitialized by
-+ * default, so for KMSAN we mark the return value initialized unconditionally.
-  */
--#define READ_ONCE_TASK_STACK(task, x)			\
--({							\
--	unsigned long val;				\
--	if (task == current)				\
--		val = READ_ONCE(x);			\
--	else						\
--		val = READ_ONCE_NOCHECK(x);		\
--	val;						\
-+#define READ_ONCE_TASK_STACK(task, x)				\
-+({								\
-+	unsigned long val;					\
-+	if (task == current && !IS_ENABLED(CONFIG_KMSAN))	\
-+		val = READ_ONCE(x);				\
-+	else							\
-+		val = READ_ONCE_NOCHECK(x);			\
-+	val;							\
- })
+@@ -45,6 +48,8 @@ void memcpy_toio(volatile void __iomem *to, const void *from, size_t n)
+ 	if (unlikely(!n))
+ 		return;
  
- static inline bool task_on_another_cpu(struct task_struct *task)
++	/* Make sure uninitialized memory isn't copied to devices. */
++	kmsan_check_memory(from, n);
+ 	/* Align any unaligned destination IO */
+ 	if (unlikely(1 & (unsigned long)to)) {
+ 		movs("b", to, from);
 -- 
 2.35.1.1021.g381101b075-goog
 
