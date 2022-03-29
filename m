@@ -2,78 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE2CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 13:06:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACBF8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 13:08:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237131AbiC2NIY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 09:08:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49586 "EHLO
+        id S237128AbiC2NKV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 09:10:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237122AbiC2NIS (ORCPT
+        with ESMTP id S231810AbiC2NKS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 09:08:18 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BE2A9EE4EE
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 06:06:34 -0700 (PDT)
-Received: from localhost.localdomain (unknown [10.2.5.185])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9BxsM42BENiSf0RAA--.45474S2;
-        Tue, 29 Mar 2022 21:06:08 +0800 (CST)
-From:   Jianxing Wang <wangjianxing@loongson.cn>
-To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com
-Cc:     linux-kernel@vger.kernel.org,
-        Jianxing Wang <wangjianxing@loongson.cn>,
-        Mike Galbraith <bitbucket@online.de>
-Subject: [PATCH 1/1] sched/headers: remove double_lock function
-Date:   Tue, 29 Mar 2022 21:05:38 +0800
-Message-Id: <20220329130539.568762-1-wangjianxing@loongson.cn>
-X-Mailer: git-send-email 2.31.1
+        Tue, 29 Mar 2022 09:10:18 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85D9F5F99
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 06:08:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=wpco1Q/eEi8aY7+QQt48HMppPX+YBcw1colLd/STuVk=; b=Xjh5zsk14IxefscN8QozLeefcE
+        hInBviNQnC99d/BzMZ2+cu+ZqSOFnM0lCj4+z8dJW0PnOuRawxL3sF3k/rfKiFb9tAWKgfCQQ/RKX
+        G7wuZfgOxUiU/ynQJdRyvdoRbCWp3sitcXyPm4vAIDz79F9iw+cCHNuUz8QL7wwrc1WCoTfp8CL7B
+        4M+HvY1/7v0p4rKtrh4xm8sKsr16AvGSgaiku4cAzXH1zKz1NTFRUairi2wpfVTJsGdKGRpWGWY00
+        67JUpZ/VqDnhAx9W3GDOXfUq1FatC1j6FL/uR3O3UD2fBU10QbftfdXLlTpqRbHmW9QzIBno85iqY
+        FGM8Lutg==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nZBaC-000Ilg-K8; Tue, 29 Mar 2022 13:08:24 +0000
+Date:   Tue, 29 Mar 2022 14:08:24 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Chen Wandun <chenwandun@huawei.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        akpm@linux-foundation.org
+Subject: Re: [PATCH 2/2] mm: fix contiguous memmap assumptions about
+ alloc/free pages
+Message-ID: <YkMEyH9QB8MyzW37@casper.infradead.org>
+References: <20220329130928.266323-1-chenwandun@huawei.com>
+ <20220329130928.266323-3-chenwandun@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: AQAAf9BxsM42BENiSf0RAA--.45474S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrZF4rKrWfuw4kuF18WryfWFg_yoWkXrg_W3
-        W5GF1vkF4UJw4F9342gw45WF4rta10qa48Cr97Ka1DJa45JFZYyanxGF43ArnxZFsrCasr
-        C3sFqFyvkF1kCjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJ3UbIYCTnIWIevJa73UjIFyTuYvj4RJUUUUUUUU
-X-CM-SenderInfo: pzdqwyxldq5xtqj6z05rqj20fqof0/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220329130928.266323-3-chenwandun@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-commit 8c8a743c5087b ("sched/numa: Use {cpu, pid} to create task groups
-for shared faults") import double_lock but
-commit 60e69eed85bb ("sched/numa: Fix task_numa_free() lockdep splat")
-replace it with double_lock_irq, now nobody care it, just remove it.
+On Tue, Mar 29, 2022 at 09:09:28PM +0800, Chen Wandun wrote:
+> +#define page_nth(head, tail)	(page_to_pfn(tail) - page_to_pfn(head))
 
-Cc: Mike Galbraith <bitbucket@online.de>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Signed-off-by: Jianxing Wang <wangjianxing@loongson.cn>
----
- kernel/sched/sched.h | 9 ---------
- 1 file changed, 9 deletions(-)
+Could we avoid reintroducing page_nth()?  It is a terrible name.
 
-diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index 58263f90c559..f8ca414177bd 100644
---- a/kernel/sched/sched.h
-+++ b/kernel/sched/sched.h
-@@ -2586,15 +2586,6 @@ static inline void double_unlock_balance(struct rq *this_rq, struct rq *busiest)
- 	lock_set_subclass(&__rq_lockp(this_rq)->dep_map, 0, _RET_IP_);
- }
- 
--static inline void double_lock(spinlock_t *l1, spinlock_t *l2)
--{
--	if (l1 > l2)
--		swap(l1, l2);
--
--	spin_lock(l1);
--	spin_lock_nested(l2, SINGLE_DEPTH_NESTING);
--}
--
- static inline void double_lock_irq(spinlock_t *l1, spinlock_t *l2)
- {
- 	if (l1 > l2)
--- 
-2.31.1
+> @@ -1213,7 +1213,7 @@ static int free_tail_pages_check(struct page *head_page, struct page *page)
+>  		ret = 0;
+>  		goto out;
+>  	}
+> -	switch (page - head_page) {
+> +	switch (page_nth(head_page, page)) {
+>  	case 1:
+>  		/* the first tail page: ->mapping may be compound_mapcount() */
+>  		if (unlikely(compound_mapcount(page))) {
 
+This is the only place you use it.  I'd suggest free_tail_pages_check()
+should take 'i' as its second parameter instead of 'page + i', then
+there's no need to convert back to i.
