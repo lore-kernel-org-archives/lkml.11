@@ -2,95 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EE33C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:47:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84E88C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:47:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239857AbiC2Qsp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 12:48:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55236 "EHLO
+        id S239873AbiC2Qsr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 12:48:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239837AbiC2Qsj (ORCPT
+        with ESMTP id S239852AbiC2Qsn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 12:48:39 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F3AA6211F
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:46:56 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id p8so16389393pfh.8
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:46:56 -0700 (PDT)
+        Tue, 29 Mar 2022 12:48:43 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A96EA6E3E
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:46:58 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id h19so15393770pfv.1
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:46:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
-        h=subject:date:message-id:mime-version:content-transfer-encoding:cc
-         :from:to;
-        bh=mjUJmj4POHLc72j+uESMrPipTUvziFqTLssOqNZTKng=;
-        b=16bvm3mK5BVPEq0QsKQh8+GZ+eE3roFJbDhcdsWwz8Ho+JKpMBeJgHQBc5vEXGZTl5
-         MyoYHuyex5gP78CXssjDemtj7S6fPfK7X8eP3FYhNjPAf3AI5lE0tnJANGvwoZzqP/Pw
-         WxmltKzSxZV1WZB8zTh3uOTnae0eIbiGn+1aSmAZsDV/311oVeTG/Bgc1ltg8bJ+0fAN
-         vp4pJaVXVGunFXuZZzGlPrAs7OxLKBy17is1ZCMJTGsvR8LfDSyu54kgns9+5vH0Z8eQ
-         luAFgyJnoyCxTYL+/zKEBfV/IF3hV/kSxOHalp6TjtfIIehSJ5o099fb+cko7bEnMX7+
-         9LEQ==
+        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
+        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Mll/pMxUBALsnuYtHp2CgJeJZP8oeqCPx7ZbOSMz7Mk=;
+        b=SVp6nz7Mh4KGeAB6sUGxDOz4z9VibRyKENDnrJ03jjNe4K9FIb4z9fxd907+hI1okf
+         96JKIbPjjOt64CqsI1CYXwEooyBDNjCPc2ORwWsRV4f9Fqs4rDQHI6xyRPRQ4Qy+3Hpa
+         UJ1C8d30sJWZ1GnA+vCKkeUj5qgGbwwoKMJuct3QJzqUvpOcB2OIjLPzDUL6J4Ioi1ZG
+         HPJzM2Sm00b9sONxIBibkMoGPmguJh1w+b3k7TlGYCNCuwyJED257GahKPNiJR8Edo5U
+         wCrYd2pTV7wQbn682vnV12jCSbK+/IutXk/taMZW/ZewZ3WJrBIU+ekgiVa6/8SH6BEx
+         M3Dw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:date:message-id:mime-version
-         :content-transfer-encoding:cc:from:to;
-        bh=mjUJmj4POHLc72j+uESMrPipTUvziFqTLssOqNZTKng=;
-        b=CBmdGKZiZB/CwjO/GoVGwUWnCW9oyfWWFwsOAMkjjnxCp7y7WEfv4RBqXDfPXiQUH9
-         Aks/w0AOebjWm3j2f/gbO1gxKu4VYhqc5M/DZrwyHi2WPFZRrkPaUhAcDs8WLBTRdB2B
-         6OYKB6qHEdL5IsTk0cRYW0IAHLydJ7FVkKFCHKf05GlIBvEWA2Cz4OUNO0827Gzfv18Y
-         4NPj+IS8zL0CZG3Yj4Ps+st5Zg5yhWrt5Fq05Q2Ls31t0JEfGEPdBGkDnXRTar/nPlBK
-         fVoEgWyPa73ScXQ0ltIO6lpdltf7AuD3LLHyWqtD2W0rj5yG2bU8iRnN2+h38HWXskN4
-         7Vcg==
-X-Gm-Message-State: AOAM533ESW6WUM/DBTmYRj8jh9nlHFYfNP163ZF0Etazj56AhYx5qZ/8
-        8d+21tJ1BEL0lINBY7pOyPZIGg==
-X-Google-Smtp-Source: ABdhPJxTUNdlC9idt9aofzdeF/SqBgQafoUThLB6TuhkEmYTEqzNhlqRyTH3BuFi+mQCqEe8rTs57Q==
-X-Received: by 2002:a62:4e4e:0:b0:4fa:b1d4:3405 with SMTP id c75-20020a624e4e000000b004fab1d43405mr28627061pfb.71.1648572415934;
-        Tue, 29 Mar 2022 09:46:55 -0700 (PDT)
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=Mll/pMxUBALsnuYtHp2CgJeJZP8oeqCPx7ZbOSMz7Mk=;
+        b=UZjy997rEdeMkEu3STPGtfPPBgUJ7bylNVRU6lagIIkM3/xdzjh1jy6l4wzwtTDy3k
+         zEXr5HeIAC/jatugLag7XE2SILWoAHLzvm1Vw2s7I/bxlBDC23WvmZHVUbDqp3iB+1fy
+         6OSAlgXE5QeWuOtWcsQypqUSXV0vSmjGoJPA+uMb9bE4PQSO1cfZg8ZXpmNsLm+hYoX3
+         xWMIn9ilgXYx0/q/bNIF2a5YD4p0OqJkC4ebUmheoAhfskpQLzeWGJCk/o7gH5MThY2L
+         SqPuuSxp7FrpzZjFUtoGe7Lp4hIEGQQl1v+qjo/2BkGtRNDExE8OvZlhbWyDZjEqgpTN
+         9K7Q==
+X-Gm-Message-State: AOAM5323HktVHWAcafdWkWEWndw7gPwtMTq2ozKhBwQ3QUjSMkFOfvrD
+        L0FLHPnNuEwoNlykwhjWGkd2fw==
+X-Google-Smtp-Source: ABdhPJybC4NPgtQQoB80BKs5OokRMkw6fanDwLE97kLL8FlQw1sxVz5LiZzjhvIfVg5/O4RnvDXNPw==
+X-Received: by 2002:a05:6a00:21c6:b0:4fa:914c:2c2b with SMTP id t6-20020a056a0021c600b004fa914c2c2bmr28739586pfj.56.1648572417640;
+        Tue, 29 Mar 2022 09:46:57 -0700 (PDT)
 Received: from localhost (76-210-143-223.lightspeed.sntcca.sbcglobal.net. [76.210.143.223])
-        by smtp.gmail.com with ESMTPSA id e12-20020a056a001a8c00b004fab88d7de8sm20243658pfv.132.2022.03.29.09.46.52
+        by smtp.gmail.com with ESMTPSA id z126-20020a633384000000b0039858053bafsm5876859pgz.27.2022.03.29.09.46.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Mar 2022 09:46:52 -0700 (PDT)
-Subject: [PATCH] doc: RISC-V: Remove pmu/ from the toctree
-Date:   Tue, 29 Mar 2022 09:45:44 -0700
-Message-Id: <20220329164544.29367-1-palmer@rivosinc.com>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
+        Tue, 29 Mar 2022 09:46:57 -0700 (PDT)
+Date:   Tue, 29 Mar 2022 09:46:57 -0700 (PDT)
+X-Google-Original-Date: Tue, 29 Mar 2022 09:46:35 PDT (-0700)
+Subject:     Re: linux-next: build warning after merge of the risc-v tree
+In-Reply-To: <20220329133412.591d6882@canb.auug.org.au>
+CC:     Paul Walmsley <paul@pwsan.com>, Atish Patra <atishp@rivosinc.com>,
+        atishp@atishpatra.org, Atish Patra <atishp@rivosinc.com>,
+        linux-kernel@vger.kernel.org, linux-next@vger.kernel.org
+From:   Palmer Dabbelt <palmer@dabbelt.com>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Message-ID: <mhng-f46f3c64-24e0-4284-a6cb-71266e61e9ef@palmer-mbp2014>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Cc:     corbet@lwn.net, Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>, aou@eecs.berkeley.edu,
-        alex@ghiti.fr, linux-doc@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Palmer Dabbelt <palmer@rivosinc.com>
-From:   Palmer Dabbelt <palmer@rivosinc.com>
-To:         linux-riscv@lists.infradead.org,
-            Stephen Rothwell <sfr@canb.auug.org.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Palmer Dabbelt <palmer@rivosinc.com>
+On Mon, 28 Mar 2022 19:34:12 PDT (-0700), Stephen Rothwell wrote:
+> Hi all,
+>
+> After merging the risc-v tree, today's linux-next build (htmldocs)
+> produced this warning:
+>
+> Documentation/riscv/index.rst:5: WARNING: toctree contains reference to nonexisting document 'riscv/pmu'
+>
+> Introduced by commit
+>
+>   23b1f18326ec ("Documentation: riscv: Remove the old documentation")
+>
+> This is actually in Linus' tree.  Sorry I missed it when it was
+> introduced.
 
-This subdir no longer exists: it was there to document some of the
-quirks and paths forward for handling them, but those have been dealt
-with as of Atish's recent patch set.
-
-Fixes: 23b1f18326ec ("Documentation: riscv: Remove the old documentation")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
----
- Documentation/riscv/index.rst | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/Documentation/riscv/index.rst b/Documentation/riscv/index.rst
-index ea915c196048..e23b876ad6eb 100644
---- a/Documentation/riscv/index.rst
-+++ b/Documentation/riscv/index.rst
-@@ -7,7 +7,6 @@ RISC-V architecture
- 
-     boot-image-header
-     vm-layout
--    pmu
-     patch-acceptance
- 
-     features
--- 
-2.34.1
-
+I guess I missed it too.  I just sent a patch to fix it up.
