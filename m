@@ -2,89 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 137A1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 06:04:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A055AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 06:07:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232861AbiC2GGX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 02:06:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40430 "EHLO
+        id S232876AbiC2GJB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 02:09:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231264AbiC2GGU (ORCPT
+        with ESMTP id S231264AbiC2GI6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 02:06:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC91D340EE;
-        Mon, 28 Mar 2022 23:04:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 62FB5614D5;
-        Tue, 29 Mar 2022 06:04:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75C6EC2BBE4;
-        Tue, 29 Mar 2022 06:04:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648533877;
-        bh=Zw3Xh8fbjP2zftckUoT1RTXypyNAxf9E8jIl4L/E890=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bR6w+YPdci2xa0YLOpiFgipiMjVXbqn86z1XDK+vDffw4Hal1PzNq8Crl5CWMc9P5
-         cfuXBE5d/njExkuFrM5ghQLI7abxOc73yf00Wrd/759k67OsjxwTYKIryWTTXIfYuC
-         TRpkw/2UDUqFQ2wOSZznKTavOR8OqHDyarD/uq8A=
-Date:   Tue, 29 Mar 2022 08:04:35 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        linux-kernel@vger.kernel.org, "Dmitry V. Levin" <ldv@altlinux.org>,
-        Elliot Berman <quic_eberman@quicinc.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: Re: [PATCH 2/2] kbuild: forbid exported headers from including
- <stdint.h>, <stdbool.h>
-Message-ID: <YkKhc2BbkmdVwKex@kroah.com>
-References: <20220328172130.197319-1-masahiroy@kernel.org>
- <20220328172130.197319-2-masahiroy@kernel.org>
+        Tue, 29 Mar 2022 02:08:58 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B9CB78938;
+        Mon, 28 Mar 2022 23:07:16 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id z16so14974894pfh.3;
+        Mon, 28 Mar 2022 23:07:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SMJ7HA+GhWy/IAmB9jNUXH9QEgpFnaJvqxK6ae+CKGY=;
+        b=aHHElCWDjalts8TqZ0B6f0CAhdJmHF6sr/aDWMIUeChXC50KWpl/E1z8DjI4dIB1G9
+         EYv5TKjH/vv3KzZPbZz6S7SRiw4jHqFWSpAJnBL4mb04HcugZaEgWl8V2kSvgwrj98Ej
+         aqSI4F89WvUv+AjjdFKY/7ienbIKVCsnhe+AXBLPZMeFJRKOHmTIdBkuOtZKrJh6Ic3Y
+         xTlk6ouqLhQdgGhkbHTC5lfJ0emeaVWP0pELOKp6k7rbKBBfucC3w1ABUXgK0H0dtuQm
+         hDDNnJDNToxrNj1EAjcDgzIK4hlKbxLo4WRkzL1gMEvzHUqTP106VTWegDQBC4Y4+dnj
+         MlKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SMJ7HA+GhWy/IAmB9jNUXH9QEgpFnaJvqxK6ae+CKGY=;
+        b=RV9eE7djElSLk/Exps6stu0muuJW7d9t8NwNKar0jojL7mkI2OtPiW2MNNdF8GSobA
+         /RRpIhBF1eNu0SUlp+WxobNNHf/LK/mlC9yUoVZZWkUUqiNgm/Z9geo88nhBTnNvZhXO
+         InH/A2lFDJ+ZO6IKCWMT/b2WGJUjRRCLVqhkfV9s/wSJOSFfVCjdF7lSGnea1jstkKUb
+         sPmXhJ/PcPVZ2Mvn1bma/44l/walvS9/UPRCouFGD72dsu8cxOrtiRXlZT0iGp8U+o7Z
+         pM6zoC3UVbAN6VmBY9JovDWg5o/GK2mCPHCc4itRS7gwPUGRIwZSBOAYLRjXb5NqDTWO
+         QJDQ==
+X-Gm-Message-State: AOAM533KWpoaFoAOkCVhcs3CdMXVs64NGe4e9/8hVKHC44JXXHWTokEZ
+        Xvb9Pa+ZvAvvcD1Augv3z8M=
+X-Google-Smtp-Source: ABdhPJyyXXOioKACQFUU6un5fspuVrPVOiEEhudBCJZQTZKQE/ZoF9mH7tf9KH8pDRiTxxYZkZeZrA==
+X-Received: by 2002:a63:68c6:0:b0:380:3fbc:dfb6 with SMTP id d189-20020a6368c6000000b003803fbcdfb6mr865178pgc.326.1648534035603;
+        Mon, 28 Mar 2022 23:07:15 -0700 (PDT)
+Received: from localhost.localdomain ([180.150.111.33])
+        by smtp.gmail.com with ESMTPSA id k3-20020a056a00168300b004f7e60da26csm18967112pfc.182.2022.03.28.23.07.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 23:07:15 -0700 (PDT)
+From:   Jamie Bainbridge <jamie.bainbridge@gmail.com>
+To:     Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Jamie Bainbridge <jamie.bainbridge@gmail.com>,
+        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net] sctp: count singleton chunks in assoc user stats
+Date:   Tue, 29 Mar 2022 13:13:36 +1000
+Message-Id: <3369a5f0a632571d7439377175051039db29f91d.1648522807.git.jamie.bainbridge@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220328172130.197319-2-masahiroy@kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 02:21:30AM +0900, Masahiro Yamada wrote:
-> Some UAPI headers included <stdlib.h>, like this:
-> 
->   #ifndef __KERNEL__
->   #include <stdlib.h>
->   #endif
-> 
-> As it turned out, they just included it for no good reason.
-> 
-> After some fixes, now I can compile-test UAPI headers
-> (CONFIG_UAPI_HEADER_TEST=y) without <stdlib.h> included.
-> 
-> To avoid somebody getting it back again, this commit adds the dummy
-> header, usr/dummy-include/stdlib.h
-> 
-> I added $(srctree)/usr/dummy-include to the header search paths.
-> Because it is searched before the system directories, if someone
-> tries to include <stdlib.h>, they will see the error message.
-> 
-> While I am here, I also replaced $(objtree)/usr/include with $(obj), but
-> it is just a small refactoring.
-> 
-> If we achieve the situation where none of system headers is included
-> from exported kernel headers (i.e. kernel headers become self-contained),
-> we might be able to add -nostdinc, but that is much far from where we
-> stand now. (see many no-header-test lines in usr/include/Makefile)
-> 
-> As a realistic solution, you can forbid header inclusion individually by
-> putting a dummy header into usr/dummy-include/.
-> 
-> Currently, no header include <stdbool.h>. I put it as well before somebody
-> attempts to use it.
-> 
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+singleton chunks (INIT, and less importantly SHUTDOWN and SHUTDOWN-
+COMPLETE) are not counted in SCTP_GET_ASOC_STATS "sas_octrlchunks"
+counter available to the assoc owner.
 
-Nice work!
+INIT (and the SHUTDOWN chunks) are control chunks so they should be
+counted as such.
 
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Add counting of singleton chunks so they are properly accounted for.
+
+Signed-off-by: Jamie Bainbridge <jamie.bainbridge@gmail.com>
+---
+ net/sctp/outqueue.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/sctp/outqueue.c b/net/sctp/outqueue.c
+index a18609f608fb786b2532a4febbd72a9737ab906c..e2d7c955f07c80da17c7525159aaf8a053432ae3 100644
+--- a/net/sctp/outqueue.c
++++ b/net/sctp/outqueue.c
+@@ -914,6 +914,7 @@ static void sctp_outq_flush_ctrl(struct sctp_flush_ctx *ctx)
+ 				ctx->asoc->base.sk->sk_err = -error;
+ 				return;
+ 			}
++			ctx->asoc->stats.octrlchunks++;
+ 			break;
+ 
+ 		case SCTP_CID_ABORT:
+-- 
+2.35.1
+
