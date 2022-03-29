@@ -2,207 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5EEEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 09:28:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71305C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 09:29:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234715AbiC2Jag (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 05:30:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43502 "EHLO
+        id S234717AbiC2Ja4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 05:30:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234708AbiC2Ja2 (ORCPT
+        with ESMTP id S234300AbiC2Jaw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 05:30:28 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58B559D053
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 02:28:46 -0700 (PDT)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22T8oVAG028622;
-        Tue, 29 Mar 2022 09:28:31 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : content-type : mime-version; s=corp-2021-07-09;
- bh=SaG+MLP+RT/iNav0p+pat1HqwxrV+XL7uW+rsWsZhxI=;
- b=ooS0PLvP4lJ/AK/4iT6EoKzhQ8r2s/sr5QkFVmhAfrinQO7GPiamrGFQOHs3+E3zszHN
- JFJFtV8L2c8vEaRqZ3vRy1hLXVZDyU/BqA+pjN7FywMd5pPWw4DyfYIZyd+8fX029GaP
- gTZFaDNmF2g6ws27tBTfIDYAKRWHr66O4T1q+rsRtF89lLoExjGO179uxEsXcYXTGjH9
- dU4ophK/WV1LuT3Q3HOFAqOtwQGes0smanauH1gDrDNTckR17tTVsyZpkqRqVPEHT28y
- fqMtsMjAms+4vVCkhnjEAlbUkyWEZihCHG3N/Dc7RY4yb7C387MfmLGcacozBbT5RW7m xg== 
-Received: from aserp3030.oracle.com ([141.146.126.71])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3f1tqb606g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 29 Mar 2022 09:28:31 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 22T9B9ES179358;
-        Tue, 29 Mar 2022 09:28:30 GMT
-Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2172.outbound.protection.outlook.com [104.47.59.172])
-        by aserp3030.oracle.com with ESMTP id 3f1rv8c8fc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 29 Mar 2022 09:28:30 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=U4aF5wqoij7Cqcdi8UQuKVAwDZDwgOf+wa26a6bAc/6D1S+Uwr2UZXR1bvWHHydmq9sLF5ZSXG/JtWJSVsVOcdbhl2k9c2zZ6IibKTs5ScqCCPF0YCiC8tGjOxHVjfNeQQx7Fe1oh7R4ggKn8Jd+4bO/LtZft3xrv6YFHd3ekzUC1ywUi+EmUmJIhF4s2QEMXJ7UZ6AWQASg2y1+pIeS71y33Nht77B1VIS3BufBZ+dJg6tX8FcWwgtxF6aBFiiSdaaQp2GSXkfZ0l0bFC8nF1sRn80irsZ2r+vVlo1bgUgkKPgD5izT/xAEjdRqDF43+N9nkvbjB+SIioJrRVrVBg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=SaG+MLP+RT/iNav0p+pat1HqwxrV+XL7uW+rsWsZhxI=;
- b=QHMTwIGIE8u56ykyZo+p2gLujuASt0bKKsMdma+voL1RswsxPMNqIKMdiSVjmaPDRwMZYQcD6eHHYbYQTK+moQS7KTJbkrl4EoQCBRM+yEIqA2eH9w7cPT3SWKUJUjWjdM9TkqXSzL9uIKjrJ+40oVcrUWEynTQwJYTbr1gAkpiNILmBHlpoBvVdDhEgTU2pxBcDcijecFco7/9snrL0un3tyOG+kPK6zFbTK9LW6swfa3l3/0F6uvHG1wlCHHNLyHLqkdVBm6SG65wzKrRIQljt6RdrEC6VPzG6qslWTPzQPafEQiRmBxMQZixi2+go0RhZMFugWo+2bTswan+ihQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        Tue, 29 Mar 2022 05:30:52 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0177EEF7B7;
+        Tue, 29 Mar 2022 02:29:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SaG+MLP+RT/iNav0p+pat1HqwxrV+XL7uW+rsWsZhxI=;
- b=xbD27vPpVPhUFTTHr47/7A2fI1Juluwd7+K4sSw4nI5KF8LopfOsxDcfQcaT6y/8/vrOIgTRyAmAwoKKwQ+sBIiUIpj3wue6YDNi6jGyGOz8dZQwfzgZGiWgtUuE33YXlQq/JLVIgMuK/+MtD05ag6b6IWbq/QU3/GrFz6dyxP0=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by BL0PR10MB2913.namprd10.prod.outlook.com
- (2603:10b6:208:31::31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.22; Tue, 29 Mar
- 2022 09:28:28 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::d4e7:ee60:f060:e20c]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::d4e7:ee60:f060:e20c%7]) with mapi id 15.20.5081.025; Tue, 29 Mar 2022
- 09:28:28 +0000
-Date:   Tue, 29 Mar 2022 12:28:08 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     kbuild@lists.01.org, "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     lkp@intel.com, kbuild-all@lists.01.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: [gustavoars:testing/kspp-stringop-overflow 5/5]
- arch/x86/mm/pgtable.c:442 pgd_alloc() error: uninitialized symbol 'pmds'.
-Message-ID: <202203291451.bKVdLfSv-lkp@intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JNXP275CA0021.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:19::33)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1648546150; x=1680082150;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=/6KMD7x5IdWCSeuDi2cNHClnlamv+e+Da8kYwSzDITE=;
+  b=zHUoEvw+2Pfchj13Ms2EoVhPNDmxkW9QsqL7hD3nIkYRr9XTmvP4rxYq
+   5oJ3ZcQsShn+Wdj9oXdxtu21XNY6J9MVBkbelByukZtHAuQ1YhRvz83ky
+   5cYn7CVcpMNO3YX3WIuK/GfvOyEP966wGQK5WXXwbfa2Z9g+1qGvHRn/9
+   Y=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 29 Mar 2022 02:29:09 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 02:29:09 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 29 Mar 2022 02:29:08 -0700
+Received: from hu-pkondeti-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 29 Mar 2022 02:29:03 -0700
+Date:   Tue, 29 Mar 2022 14:58:59 +0530
+From:   Pavan Kondeti <quic_pkondeti@quicinc.com>
+To:     "Sandeep Maheswaram (Temp)" <quic_c_sanm@quicinc.com>
+CC:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        "Matthias Kaehlcke" <mka@chromium.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        "Peter Chen" <peter.chen@kernel.org>,
+        Pawel Laszczak <pawell@cadence.com>,
+        "Roger Quadros" <rogerq@kernel.org>,
+        Aswath Govindraju <a-govindraju@ti.com>,
+        <linux-arm-msm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <quic_pkondeti@quicinc.com>,
+        <quic_ppratap@quicinc.com>
+Subject: Re: [PATCH v3 3/3] usb: dwc: host: add xhci_plat_priv quirk
+ XHCI_SKIP_PHY_INIT
+Message-ID: <20220329092859.GA32726@hu-pkondeti-hyd.qualcomm.com>
+References: <1648103831-12347-1-git-send-email-quic_c_sanm@quicinc.com>
+ <1648103831-12347-4-git-send-email-quic_c_sanm@quicinc.com>
+ <YjxjxplpOpDC2JLs@kuha.fi.intel.com>
+ <4c2a28ad-b866-1b65-e73a-4eda0596cea2@linux.intel.com>
+ <Yj2nPa6/Y01P5aCY@kuha.fi.intel.com>
+ <4619c75c-cd34-82f2-56e1-a8bcb6d97177@linux.intel.com>
+ <Yj3h4p/kmZTvMz0O@kuha.fi.intel.com>
+ <fae54b27-9ae2-ecfc-69ae-40e5f5e1afbe@quicinc.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5817d856-b296-425b-1be1-08da11667b9b
-X-MS-TrafficTypeDiagnostic: BL0PR10MB2913:EE_
-X-Microsoft-Antispam-PRVS: <BL0PR10MB29134D232C703D8BF83D83FE8E1E9@BL0PR10MB2913.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: tRc7sjiazkzjIoBkOGqSzFW0Za2xvgdYx7FwlGAbEcbtCeA6+iXadEPMN/8Fo1VKJC/J1xDDn5f0vTU10fI18FjR/utR1X9oyGZxoJCbmiVQAHXr0OyMq9SPfFXARU7JiNZx+s6cRYP5Z3ixP6wkK1SLazPV/3Jtp9hBd0M/7k0tEhnjwDubAcCAlRD1k2gBSmG1r7WaTGvoUflQDAkHMmArcPC8ZKQjUaMA1GJJk2UC3fuFZHN42ftOSBFtRRS6sTPfbebN/ecmvLlY31IJoadpymNmTKV7tXP9HxWq2z4bbewxU7oshR1C5ALVG7M6E89w9LZiC02HQwHyFzdRYpH0AQgQDs1gl2wsbsXrOvKfr9V4Gyg+XxV/HSeOt1FRw2MHeDCWw4TPEfScRU2BhFmuxCkiGpH6oxcZpLmVmAG5iVRMLzk8oKnk8QVe2iKz4Ne4HjZ3t+D3KhUQUqoSg69Rk/yG3kRQDwpRFvqqWlxBQjpi4HRfF5jBUg6sExOxgzv7ofAc8j/hUSFLykmX5sbdTjpprbPK+JmO00ISfrHfWQd/JeX3JMQ6TeU6xpf+o/Iktwgs6a50qxlG+0c0k7gM8wyM6xGE+ERrHkJW2MTjl5FC7/EkdqtIytbtVQSziVH4ECMIpi/4YhrwuUhjT5AFiH1jr6YNIXZFbcra2tD1Oj+bY8DhvZcTLgdXYSGlOWi3UuhjwApAvgDsmSy+PyY09YK5dyXWr90FOp/e/W9fXikIZhNgXFBMNRdbGm/WI0bQI/Wyqf7lqxyIXQVWnZhScP7uZR6ZRkj8TO9xHhWTnA7j9QDmA7Z4HocXRaaXiWOfQz3zl/CxnafbFRdUoA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(83380400001)(86362001)(66946007)(4326008)(6486002)(316002)(966005)(54906003)(6916009)(36756003)(66476007)(8676002)(66556008)(38100700002)(186003)(26005)(508600001)(6506007)(6666004)(38350700002)(52116002)(5660300002)(6512007)(9686003)(1076003)(8936002)(44832011)(2906002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sN7TlPQRYDw59IDXF5FTCX2tf8dyaL9yD/AUmlzGTXC5hgKjG6d5uLr89nO+?=
- =?us-ascii?Q?3YhFpBMYmSE/e6/4qziT/7o4qhWIjZ7S3fVOQYK8gzmjRJDXS8GyFmKsUtyJ?=
- =?us-ascii?Q?UT0NhGeLDEPNTQgoM14re6EQezpgDHnGH0PkuNElr9HjHQyu+uDg+kosOHrD?=
- =?us-ascii?Q?Eg92aVdW2Bb2TjQkg8KHXvDtisSYAih/C4jFD92U5VQkgzHo6c/ZlStNLbC7?=
- =?us-ascii?Q?YPEkZccGb2KD+waNURfOhDWnPLBdBWzzD5cASm5VESyfEdzbEUbopBGnZ4QK?=
- =?us-ascii?Q?8uGz6jdJGoemynvg/AXsfElsKBy0YwVnz2JPavQi6tin3fYHjypE/2UcWFo7?=
- =?us-ascii?Q?pSlVANvRHwVtYqKt7HCdRUqpi9a2yZijIgQHptZtCnI9NmdHePDZ+MKh72x1?=
- =?us-ascii?Q?YlacWY9xJTLngVVfHU6WjIQm4y22ZZSQn1liv0HZ508x7cF/xhjdgcqr8jFu?=
- =?us-ascii?Q?EPmIxESCYQb+MrwikXlPbJ9V8QNdeEcVFdlaVw8JU3BNPH3WCCK1Gxfl3SSd?=
- =?us-ascii?Q?1Cx7Bg8s926ZlUCJRX9WeQpr8W84wHJO3wY79c3wuvll30V3CyBzMBOEtrGX?=
- =?us-ascii?Q?J4JRbI50K1WvLgks4z2MwPt4oT4neJgWZ0d7Y5k9g9YnJBSpXtKO7EQTQ1gh?=
- =?us-ascii?Q?v5QFdrAhwKL6VyZxihJyxF5C60oR1NQfGg13Gl1GWv1+rJ2Aeh1Nmc8XniOD?=
- =?us-ascii?Q?jdrONNP7T0KCcDIC3vifnjCfOO88q4DDyGjipls373l6hW4iIDGguMbDJSzv?=
- =?us-ascii?Q?vL5VtV4ptFnSM+TMRLAYCZmIpcxkDQo8Ob2p05LETdGeMptzJwJfZCoCMRvv?=
- =?us-ascii?Q?5gqJMV9J3BCet47Yc8hSsSk/df8wXIOn7p29xL9UyqQbU6vzN4nNC0AVsQdg?=
- =?us-ascii?Q?XwsAOvb+iGSQ6AD+tdhPvxANxNuhGx1k3Ft4Gxso3qai6CGjRr2I+FTCv2nu?=
- =?us-ascii?Q?IP6VBV9zKbk1rDnmH2qt9xjOE43eTl6wGFjDIQl6YhCDVOisKeHQC/LFpJii?=
- =?us-ascii?Q?iTR+x02hsLFHLOS2VD+TK+FfN0oUaEvA8nziYBOSR+1NaeQDthuAnUM1nylC?=
- =?us-ascii?Q?m5vmt2OtNE/eLb3EPgf1BIFw9UIOX9CqWFkNYntA+p7guJaZi7IRdeK1SIXp?=
- =?us-ascii?Q?lFSK9AK2f636UTlV+gIkFo56CoGz6jQVmn2RKAa49rCKQ2gg2R/XDGx1mwfM?=
- =?us-ascii?Q?/NPc3gZZJ8QC2sIDtEHVzlEjFLEawM8plqJ6Hnie6wE2GekrSmQ/JIuP1wlA?=
- =?us-ascii?Q?LMZykhiogrtdxNTw2spQzUXJ5KZavVgY9rDGZ1V+K0Qyv0aChfmt6678vjYu?=
- =?us-ascii?Q?f0RAyJIzKszW1LBUF652u7NjSyYxNvH3UvNVHMQYXyraf2XnuT0A/bbMIcFh?=
- =?us-ascii?Q?aVjuSRQn/h7/tm0COvp1ij/oBKM1PnQweVm3/GS5EgKm/90VZd9vrl6tF0fs?=
- =?us-ascii?Q?Hb/Aco/FPZhzjcpmAzoc2xbtcrOWI9wqKQNIznhwrwr6TFkvb8Eo8iMKSbm3?=
- =?us-ascii?Q?VPexZlIhhZnIrFniMy6pfMrAj98rctFcRzFSbKNqrYvxlx+UCkPp3dm4y9Wt?=
- =?us-ascii?Q?m3VrkIOvdhNOBmEkufDvW7iZnK54GydN+zdA3P/uNQvlDhZspJdaMB/0kC+P?=
- =?us-ascii?Q?yvrBbyMiQB8l8Z352fKzNwV19Jzu7nYcFzCFf2ho7Xu0qdeVTWIaU2pLWJx1?=
- =?us-ascii?Q?AvhWq74NB7YyAAasbdB7+GYyNnV7GQHx7NFWjYhAhpqg+OLxyZG6Qb1ID8Xq?=
- =?us-ascii?Q?0S3KhcY8qLHxJDcr6qFSFMyrkSNU3s8=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5817d856-b296-425b-1be1-08da11667b9b
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Mar 2022 09:28:28.5695
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: uRIsnaxf99nwpwJ5QKvSdhNvLG30hzuNZ0SIqfE3YmasjMsEzRSMYrgfIc6+Qv7cBGY1vfI9o882PrUllxonVJr0ZDfGvVvFrMnQxXUrJuY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR10MB2913
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10300 signatures=694973
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 spamscore=0
- adultscore=0 mlxscore=0 phishscore=0 bulkscore=0 suspectscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203290055
-X-Proofpoint-GUID: _iQkfpyF0Hdo1c3LdYt71e_WAX-TKnBc
-X-Proofpoint-ORIG-GUID: _iQkfpyF0Hdo1c3LdYt71e_WAX-TKnBc
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <fae54b27-9ae2-ecfc-69ae-40e5f5e1afbe@quicinc.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/gustavoars/linux.git testing/kspp-stringop-overflow
-head:   d3becb16bbfe48ca524e4489b6c6c4fb1ccafa1a
-commit: d3becb16bbfe48ca524e4489b6c6c4fb1ccafa1a [5/5] mm/pgtable: Fix Wstringop-overflow warnings in pgd_alloc()
-config: i386-randconfig-m021-20220328 (https://download.01.org/0day-ci/archive/20220329/202203291451.bKVdLfSv-lkp@intel.com/config)
-compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0
+On Tue, Mar 29, 2022 at 02:48:05PM +0530, Sandeep Maheswaram (Temp) wrote:
+> Hi Mathias,Heikki
+> 
+> On 3/25/2022 9:08 PM, Heikki Krogerus wrote:
+> >On Fri, Mar 25, 2022 at 04:33:27PM +0200, Mathias Nyman wrote:
+> >>On 25.3.2022 13.27, Heikki Krogerus wrote:
+> >>>On Fri, Mar 25, 2022 at 12:36:22AM +0200, Mathias Nyman wrote:
+> >>>>On 24.3.2022 14.27, Heikki Krogerus wrote:
+> >>>>>On Thu, Mar 24, 2022 at 12:07:11PM +0530, Sandeep Maheswaram wrote:
+> >>>>>>Currently the phy init is done from dwc3 and also xhci which makes the
+> >>>>>>runtime_usage value 2 for the phy which causes issue during runtime
+> >>>>>>suspend. When we run the below command the runtime_status still shows
+> >>>>>>active.
+> >>>>>>echo auto > /sys/bus/platform/devices/88e3000.phy/power/control
+> >>>>>>
+> >>>>>>dwc3 manages PHY by own DRD driver, so skip the management by
+> >>>>>>HCD core by setting this quirk.
+> >>>>>>
+> >>>>>>Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+> >>>>>>---
+> >>>>>>  drivers/usb/dwc3/host.c | 13 +++++++++++++
+> >>>>>>  1 file changed, 13 insertions(+)
+> >>>>>>
+> >>>>>>diff --git a/drivers/usb/dwc3/host.c b/drivers/usb/dwc3/host.c
+> >>>>>>index eda8719..d4fcf06 100644
+> >>>>>>--- a/drivers/usb/dwc3/host.c
+> >>>>>>+++ b/drivers/usb/dwc3/host.c
+> >>>>>>@@ -13,6 +13,12 @@
+> >>>>>>  #include <linux/platform_device.h>
+> >>>>>>  #include "core.h"
+> >>>>>>+#include <linux/usb/xhci-plat.h>
+> >>>>>>+#include <linux/usb/xhci-quirks.h>
+> >>>>>>+
+> >>>>>>+static const struct xhci_plat_priv xhci_plat_dwc3_xhci = {
+> >>>>>>+	.quirks = XHCI_SKIP_PHY_INIT,
+> >>>>>>+};
+> >>>>>>  static void dwc3_host_fill_xhci_irq_res(struct dwc3 *dwc,
+> >>>>>>  					int irq, char *name)
+> >>>>>>@@ -122,6 +128,13 @@ int dwc3_host_init(struct dwc3 *dwc)
+> >>>>>>  		}
+> >>>>>>  	}
+> >>>>>>+	ret = platform_device_add_data(xhci, &xhci_plat_dwc3_xhci,
+> >>>>>>+			sizeof(xhci_plat_dwc3_xhci));
+> >>>>>>+	if (ret) {
+> >>>>>>+		dev_err(dwc->dev, "failed to add data to xHCI\n");
+> >>>>>>+		goto err;
+> >>>>>>+	}
+> >>>>>>+
+> >>>>>>  	ret = platform_device_add(xhci);
+> >>>>>>  	if (ret) {
+> >>>>>>  		dev_err(dwc->dev, "failed to register xHCI device\n");
+> >>>>>I think you should just use device property:
+> >>>>>
+> >>>>This was suggested in an earlier series, but was rejected as it also added
+> >>>>the property as a device tree parameter.
+> >>>>
+> >>>>I think adding more device properties can be messy in the long run, especially if we
+> >>>>need to add them for many of the existing xhci quirks.
+> >>>>We also end up with a mix where some device properties are listed as device tree
+> >>>>parameters, and some not.
+> >>>>
+> >>>>Defining xhci quirks and platform data structure in headers shared with dwc3 and cdns3
+> >>>>allow those drivers to easily set any existing xhci quirk, or other possible optional
+> >>>>callbacks.
+> >>>>
+> >>>>cdns3 driver is already doing this, but it includes the full xhci.h header.
+> >>>>This series cleans up that a bit so cdns3 will only include xhci quirk bits and
+> >>>>platform data structure.
+> >>>>
+> >>>>On the downside we add a couple xhci related header files to include/linux/usb/
+> >>>>Let me know if you see any other issues I missed with this approach.
+> >>>The problem here is that these drivers are now coupled together, and
+> >>>that should not be taken lightly. We have a dependency hell in our
+> >>>hands with a lot of drivers, and the culprit is always platform data.
+> >>>
+> >>>Build-in device properties may be messy, but I would still say they
+> >>>are less messy than those quirk flags - you got to admit, they are a
+> >>>mess. The benefit from build-in properties is in any case the fact
+> >>>that they remove the need to couple these drivers together.
+> >>Agree, quirk bits are messy. Any suggestion that would work with
+> >>PCI xHCI devices, devicetree, and "pure" platform devices?
+> >I think xHCI driver should always be able to rely on being able to
+> >read this kind of information from the fwnode. If there is no actual
+> >firmware node (DT or ACPI), or if it's missing some information, the
+> >glue driver needs to populate software node for the xHCI.
+> >
+> >Right now I just want to avoid having to pass the quirks using
+> >platform data from drivers such as drivers/usb/cdns3/host.c and
+> >drivers/usb/dwc3/host.c to xHCI.
+> >
+> >One way we could do that is by defining compatibility ID for both of
+> >them that we provide using a single device property (like I guess DT
+> >does). Then based on that compatibility ID, xhci-plat.c can set the
+> >actual "static" quirk flags. That we could already do easily. How
+> >would that sound to you?
+> 
+> This was my previous patch where I was using device tree property. Should we
+> go ahead with this approach?
+> 
+> https://patchwork.kernel.org/project/linux-arm-msm/cover/1636353710-25582-1-git-send-email-quic_c_sanm@quicinc.com/
+> 
+> Any further changes to this ?
+> 
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Actually the dT idea looks better than the platform data. Earlier, we decided
+to use if (of_device_is_compatible(dev->parent->of_node, "snps,dwc3")) check
+but I feel that we should just introduce a device tree param that specify
+this functionality (skipping phy init). we don't want xhci-plat to know that
+this is dwc3/xyz device. we expect it to be abstracted.
 
-New smatch warnings:
-arch/x86/mm/pgtable.c:442 pgd_alloc() error: uninitialized symbol 'pmds'.
-arch/x86/mm/pgtable.c:445 pgd_alloc() error: uninitialized symbol 'u_pmds'.
-
-Old smatch warnings:
-arch/x86/mm/pgtable.c:281 pgd_mop_up_pmds() warn: we never enter this loop
-
-vim +/pmds +442 arch/x86/mm/pgtable.c
-
-1ec1fe73dfb711 Ingo Molnar         2008-03-19  434  
-1db491f77b6ed0 Fenghua Yu          2015-01-15  435  	pgd = _pgd_alloc();
-1ec1fe73dfb711 Ingo Molnar         2008-03-19  436  
-d8d5900ef8afc5 Jeremy Fitzhardinge 2008-06-25  437  	if (pgd == NULL)
-d8d5900ef8afc5 Jeremy Fitzhardinge 2008-06-25  438  		goto out;
-4f76cd382213b2 Jeremy Fitzhardinge 2008-03-17  439  
-d8d5900ef8afc5 Jeremy Fitzhardinge 2008-06-25  440  	mm->pgd = pgd;
-4f76cd382213b2 Jeremy Fitzhardinge 2008-03-17  441  
-f59dbe9ca6707e Joerg Roedel        2018-07-18 @442  	if (preallocate_pmds(mm, pmds, PREALLOCATED_PMDS) != 0)
-
-This can be either an array or a pointer depending on the .config
-
-d8d5900ef8afc5 Jeremy Fitzhardinge 2008-06-25  443  		goto out_free_pgd;
-d8d5900ef8afc5 Jeremy Fitzhardinge 2008-06-25  444  
-f59dbe9ca6707e Joerg Roedel        2018-07-18 @445  	if (preallocate_pmds(mm, u_pmds, PREALLOCATED_USER_PMDS) != 0)
-d8d5900ef8afc5 Jeremy Fitzhardinge 2008-06-25  446  		goto out_free_pmds;
-d8d5900ef8afc5 Jeremy Fitzhardinge 2008-06-25  447  
-f59dbe9ca6707e Joerg Roedel        2018-07-18  448  	if (paravirt_pgd_alloc(mm) != 0)
-f59dbe9ca6707e Joerg Roedel        2018-07-18  449  		goto out_free_user_pmds;
-f59dbe9ca6707e Joerg Roedel        2018-07-18  450  
-d8d5900ef8afc5 Jeremy Fitzhardinge 2008-06-25  451  	/*
-d8d5900ef8afc5 Jeremy Fitzhardinge 2008-06-25  452  	 * Make sure that pre-populating the pmds is atomic with
-d8d5900ef8afc5 Jeremy Fitzhardinge 2008-06-25  453  	 * respect to anything walking the pgd_list, so that they
-d8d5900ef8afc5 Jeremy Fitzhardinge 2008-06-25  454  	 * never see a partially populated pgd.
-d8d5900ef8afc5 Jeremy Fitzhardinge 2008-06-25  455  	 */
-a79e53d85683c6 Andrea Arcangeli    2011-02-16  456  	spin_lock(&pgd_lock);
-4f76cd382213b2 Jeremy Fitzhardinge 2008-03-17  457  
-617d34d9e5d832 Jeremy Fitzhardinge 2010-09-21  458  	pgd_ctor(mm, pgd);
-d8d5900ef8afc5 Jeremy Fitzhardinge 2008-06-25  459  	pgd_prepopulate_pmd(mm, pgd, pmds);
-f59dbe9ca6707e Joerg Roedel        2018-07-18  460  	pgd_prepopulate_user_pmd(mm, pgd, u_pmds);
-4f76cd382213b2 Jeremy Fitzhardinge 2008-03-17  461  
-a79e53d85683c6 Andrea Arcangeli    2011-02-16  462  	spin_unlock(&pgd_lock);
-4f76cd382213b2 Jeremy Fitzhardinge 2008-03-17  463  
-4f76cd382213b2 Jeremy Fitzhardinge 2008-03-17  464  	return pgd;
-d8d5900ef8afc5 Jeremy Fitzhardinge 2008-06-25  465  
-f59dbe9ca6707e Joerg Roedel        2018-07-18  466  out_free_user_pmds:
-f59dbe9ca6707e Joerg Roedel        2018-07-18  467  	free_pmds(mm, u_pmds, PREALLOCATED_USER_PMDS);
-d8d5900ef8afc5 Jeremy Fitzhardinge 2008-06-25  468  out_free_pmds:
-f59dbe9ca6707e Joerg Roedel        2018-07-18  469  	free_pmds(mm, pmds, PREALLOCATED_PMDS);
-d8d5900ef8afc5 Jeremy Fitzhardinge 2008-06-25  470  out_free_pgd:
-1db491f77b6ed0 Fenghua Yu          2015-01-15  471  	_pgd_free(pgd);
-d8d5900ef8afc5 Jeremy Fitzhardinge 2008-06-25  472  out:
-d8d5900ef8afc5 Jeremy Fitzhardinge 2008-06-25  473  	return NULL;
-4f76cd382213b2 Jeremy Fitzhardinge 2008-03-17  474  }
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
-
+Thanks,
+Pavan
