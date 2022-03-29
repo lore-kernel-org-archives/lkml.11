@@ -2,95 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 305B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 15:31:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6174DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 15:31:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238670AbiC2PdD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 11:33:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34700 "EHLO
+        id S238702AbiC2PdJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 11:33:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238832AbiC2Pcp (ORCPT
+        with ESMTP id S238674AbiC2PdD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 11:32:45 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB0E25E32B
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 08:30:34 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id j15so35875978eje.9
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 08:30:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=9s4lhXjKpwZnBP5OBDO69JPVEpFDyvkrKT28ZSCHe50=;
-        b=jDhWGvbg45hFMUc2H7L/PyMkYepJE8Brw9CTox76BJp6yPuVDBNvo5TZrS4eMek5wM
-         pfF+gywAT7TFWN+4+Cdf1eifEK1m3Nx9NdlETbTn7GgWzKR94JYAG2cXI0DNc3OcR9Nd
-         a6ZrUtyti5au1h8RnTM6R+4PgBaUbg3YdBQGPnn3CFd8x+6zA8NzLLBfoI6lX/CLAKJI
-         lqk4JxyM6at65/JWMnEmDXl71Orl4KqnbVNzDDsMd8eZEUUkhHp/Rjwt4J0YhOqLzTMI
-         HW9g8uZw7x7xTBDfheGd8qZlGxL6SK1cBCI8L/80jGmpbePGZBxplREsBaJPUJFdqZix
-         ynNQ==
+        Tue, 29 Mar 2022 11:33:03 -0400
+Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DF9611629D;
+        Tue, 29 Mar 2022 08:31:20 -0700 (PDT)
+Received: by mail-oi1-f180.google.com with SMTP id w127so19370040oig.10;
+        Tue, 29 Mar 2022 08:31:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=9s4lhXjKpwZnBP5OBDO69JPVEpFDyvkrKT28ZSCHe50=;
-        b=j9xBc0PRzyM+Aa62RkS9JWTY4wernt/kKZbqigOZriVAbHND4E5482mBA9eUAZRiP+
-         pB28OijqwpjuVRF0F//yOoYOHcivahlxThULojRz/0ZJ+JYNtlzR4MNxQRyi2d3Mt2R1
-         sk07c5EwowxjBKeOFOB5S9WJNs6b1kEt9aYPCBOfRxs2peNSBeFEut8DiBVepiT36yIY
-         bg+VoUyzYxWBeMYOrbeAZ2UY+UCm1iXNB7RlgPt3mezJ2yx9UAV2Hgw73gKMH2HelOHg
-         rYweOuMVSPf3kWw07R+TfxyI9Gahv8XOIGby1iJZydlHYvXVuJw528eq7vsF2MApna7i
-         Rc0Q==
-X-Gm-Message-State: AOAM532iF0RFWvKNhSVhDUnRHNoFnRCOtS4QQuc9aixf53+pHG3nIWj7
-        EG4XSFFETQbJ5//0aRQj/uOTSg==
-X-Google-Smtp-Source: ABdhPJyggpvt+L2mf4BO89ncYH14tsLLTo3h13rFb/YMGVlS4Lafq4DYQ0pjj0PQ8J9clwYcURhZ2Q==
-X-Received: by 2002:a17:906:dc8f:b0:6e0:5ce7:d80e with SMTP id cs15-20020a170906dc8f00b006e05ce7d80emr35826397ejc.435.1648567833374;
-        Tue, 29 Mar 2022 08:30:33 -0700 (PDT)
-Received: from [192.168.0.162] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id o3-20020aa7dd43000000b00419db53ae65sm3024996edw.7.2022.03.29.08.30.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 29 Mar 2022 08:30:32 -0700 (PDT)
-Message-ID: <7f3d8d2c-ec83-b79d-621c-312636285eee@linaro.org>
-Date:   Tue, 29 Mar 2022 17:30:31 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=PvY0F/be7YTKOMJTR8VDW/v15Xk3QY2EesChHl1hKgI=;
+        b=BStzDRiObUq4ZNMr+2B8Ft9O2kOEvb0Vh0IRqLw+3/zqJPnsS9zbRak7FfS21RShfy
+         xZBeD8gB8rfIHQ9ZA5TiGROio8Gtb5HdW47nWBwt6RRTTOWVvNz/ak5JGO6jcFC3M50Q
+         8pxK72udinpfFz3UnCdHVT/E/qJswwnFWijfhsMvTgN6eK2kymuToPhkBLg4SA/JsyPR
+         y9zFpW7zszfECnM2AgfKCsmqOahN9IsKPu3C7CdFHdmXHBCewwOUJYC0CLyUu04SYkNu
+         LOQCxU5yOMTgSFhsex1zZqdpRoXiDWohPp5MXoeOATaWQwnK+3VkJbgKVORU2gqXbk1b
+         uY5Q==
+X-Gm-Message-State: AOAM530zmBn48LKMswdB4a0iX8O/WnFvqhP+uYS+GAoTMUz4jXrd4JHu
+        dIEAHMtl5TRDa2fgBGt7Iw==
+X-Google-Smtp-Source: ABdhPJwjYUE9YiYwrmM3u4QfcBz+PfqHfMHxhsovn8+GB23SpgirybkYplWaog51nuRKzWOnWKyWnw==
+X-Received: by 2002:a05:6808:118d:b0:2cc:ef90:3812 with SMTP id j13-20020a056808118d00b002ccef903812mr115228oil.48.1648567879795;
+        Tue, 29 Mar 2022 08:31:19 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id 190-20020a4a0dc7000000b003244ae0bbd5sm8659861oob.7.2022.03.29.08.31.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Mar 2022 08:31:19 -0700 (PDT)
+Received: (nullmailer pid 717474 invoked by uid 1000);
+        Tue, 29 Mar 2022 15:31:18 -0000
+Date:   Tue, 29 Mar 2022 10:31:18 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Frank Li <Frank.Li@nxp.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 10/16] PCI: dwc: Drop iATU regions enumeration -
+ dw_pcie_region_type
+Message-ID: <YkMmRrF0e7WyvKsO@robh.at.kernel.org>
+References: <20220324013734.18234-1-Sergey.Semin@baikalelectronics.ru>
+ <20220324013734.18234-11-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 4/6] dt-bindings: clock: fix rk3399 cru clock issues
-Content-Language: en-US
-To:     Johan Jonker <jbx6244@gmail.com>, heiko@sntech.de,
-        zhangqing@rock-chips.com
-Cc:     robh+dt@kernel.org, krzk+dt@kernel.org, mturquette@baylibre.com,
-        sboyd@kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220329150742.22093-1-jbx6244@gmail.com>
- <20220329150742.22093-4-jbx6244@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220329150742.22093-4-jbx6244@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220324013734.18234-11-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 29/03/2022 17:07, Johan Jonker wrote:
-> The current rk3399 cru DT node gives warnings like:
-> 'clocks' is a dependency of 'assigned-clocks'.
+On Thu, Mar 24, 2022 at 04:37:28AM +0300, Serge Semin wrote:
+> There is no point in having the dw_pcie_region_type enumeration for almost
+> the same reasons as it was stated for dw_pcie_as_type. First of all it's
+> redundant since the driver already has a set of macro declared which
+> describe the possible inbound and outbound iATU regions. Having an
+> addition abstraction just needlessly complicates the code. Secondly
+> checking the region index passed to the dw_pcie_disable_atu() method for
+> validity is pointless since the erroneous situation will be just
+> ignored in the current code implementation. So to speak let's drop the
+> redundant dw_pcie_region_type enumeration replacing it with the direct
+> iATU direction macro usage.
 > 
-> With the YAML conversion somehow "assigned-xxx" properties where added.
-> If a proper clock is added to the cru node these properties are no longer
-> needed, so removed them. Currently only one clock will be added, so limit
-> the clock maxItems to 1. Add a clock name to be able to differentiate
-> and filter bogus entries.
+> While at it we suggest to convert the dw_pcie_disable_atu() method to
+> being more consistent with the dw_pcie_readl_atu{_ib}() and
+> dw_pcie_readl_atu{_ob}() functions by having the direction parameter
+> specified ahead of the region index. Thus the code will be a little bit
+> more pleasant to read.
 > 
-> Signed-off-by: Johan Jonker <jbx6244@gmail.com>
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 > ---
->  .../bindings/clock/rockchip,rk3399-cru.yaml       | 15 +++------------
->  1 file changed, 3 insertions(+), 12 deletions(-)
-> 
+>  drivers/pci/controller/dwc/pcie-designware-ep.c  |  4 ++--
+>  .../pci/controller/dwc/pcie-designware-host.c    |  2 +-
+>  drivers/pci/controller/dwc/pcie-designware.c     | 16 +---------------
+>  drivers/pci/controller/dwc/pcie-designware.h     |  9 +--------
+>  4 files changed, 5 insertions(+), 26 deletions(-)
 
+This answers my question. I would have expected this to come before the 
+previous patch, but if it's easier to do it this way it's fine.
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-
-Best regards,
-Krzysztof
+Reviewed-by: Rob Herring <robh@kernel.org>
