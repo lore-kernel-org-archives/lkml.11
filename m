@@ -2,266 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82AC6C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:13:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6A2FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:15:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239518AbiC2QPN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 12:15:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40086 "EHLO
+        id S239523AbiC2QRV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 12:17:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239507AbiC2QPJ (ORCPT
+        with ESMTP id S237751AbiC2QRT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 12:15:09 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 169EE6357
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:13:24 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id n63-20020a1c2742000000b0038d0c31db6eso1802483wmn.1
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:13:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=YTxP7HWRQagvLol49w9U8StQxxwKyv5+VjuLHJHzNBc=;
-        b=xaD4Og1Xqqt/c+vuuNvNvPRGz0QjW7LfiuaJLGgqojn5KiEeGmfbb9hX5Iqw9D1QCv
-         cbLo+8LQFk0quq/KXtXrPEZ3Ae+H573+RMGNPXj/dBVwmge/E08j10ZXwiTksoj/nZ1+
-         JF/PjAU/rYfvs2ZkDWTK2X1iv+I3ioS0ZSNgsWvkOuU2CyY+72Lc3Vw1s81OI/NB+HUQ
-         /NPpwTIKSCqCzIietzPRRCn+3Z3aKCz1jFRKoAiiocpXHH7xZE8iz3yIVpUlukDFpOhl
-         FGU5m1kuJL9YmBczNFSXf6jjtID0BkoU4ys0izSF9lL9NqWPVc0qI7hZicay4HQ6Efvn
-         aGKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=YTxP7HWRQagvLol49w9U8StQxxwKyv5+VjuLHJHzNBc=;
-        b=1K6sve9iTqGmVW4Xm0E8/Mb8VeD9X19eJDaI5G2XzzfEfSAmlJ3ot9XkwmcUDjHUuz
-         8kCz0QySbX+MVXouOWIcct6eR2GwgPA1epmh+hprsCIgq3OMk7bIQMbKvjQUgNpLSuAs
-         ArutF8jQIw/D389t1KfGw/zPbT9ncHtSGodF4Wv/TfJeLAe2krrHiC+tVC0ZkbFvlsqx
-         kP+3iPwCWwMYG5kq5Q03FjZ+QuyAwDVGDC+MeXqnyEI3lT0/LqZKY2gNO6gZCSPYpf2h
-         F4zVm1jce7sMdJUeXcDIOcWoz8i4qyumn7BY/2XIb2i7LklZO6cE6kCyx15H2Rz7/xRa
-         E1uA==
-X-Gm-Message-State: AOAM532VjMSoA5WEff5OBPun5+wLtdUarwfyfdVR4q3tFQ7pltlKB71O
-        Pd9VFUZRF25OmUKf7w8m4SiQpQ==
-X-Google-Smtp-Source: ABdhPJxNC8QU4RkF7zsoVybBcs79idtSW/nKBSrMwv6YVnFFHPw6flf9Pyqw6kxzux0CMOPDesy1PQ==
-X-Received: by 2002:a05:600c:4e8a:b0:380:e340:bfba with SMTP id f10-20020a05600c4e8a00b00380e340bfbamr542917wmq.80.1648570402437;
-        Tue, 29 Mar 2022 09:13:22 -0700 (PDT)
-Received: from ?IPV6:2001:861:44c0:66c0:a663:978b:3ffb:7dc3? ([2001:861:44c0:66c0:a663:978b:3ffb:7dc3])
-        by smtp.gmail.com with ESMTPSA id q16-20020adff950000000b00205aa05fa03sm11025699wrr.58.2022.03.29.09.13.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 29 Mar 2022 09:13:21 -0700 (PDT)
-Message-ID: <94e888fe-d8fc-5379-302f-66d64f2ae10b@baylibre.com>
-Date:   Tue, 29 Mar 2022 18:13:19 +0200
+        Tue, 29 Mar 2022 12:17:19 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D84D4D60F
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:15:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648570536; x=1680106536;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=V7I1wdGG6eu8VtqmUYmFQ80cpXVRC0RQdim1swUODT4=;
+  b=fLivWg6g/ELS7ghvMEw7iV47oS2Liocljy/fFD1+gm/bWHVsfQtjvjTA
+   ZOnBeZei8i5CQhdwTOCQPzqYVdIEPhCjxteZiv/taOk5pM2U3U+VIs9G7
+   YhwzAw3CAWYkTMu1RxXhmPPs034WPGoebScI+3E09+sttbXm/WMC1ovtW
+   q0IO2FJyhuuJ9ibnZYUsvafP7XH/mogdHARx8Yr4sfDKvfgJDige+2Z9g
+   O6ib8GU8Rq7dMt52Brkb4bmoc1YLyXdcfToBHFou/KX1h09aPBh0nOimM
+   YgP+hvYSMknZIPR+ZFIXmtVEON4mslC28QfLCrN9T2eu+PoLcKIoFqp86
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="284189452"
+X-IronPort-AV: E=Sophos;i="5.90,220,1643702400"; 
+   d="scan'208";a="284189452"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 09:14:07 -0700
+X-IronPort-AV: E=Sophos;i="5.90,220,1643702400"; 
+   d="scan'208";a="564742695"
+Received: from alison-desk.jf.intel.com (HELO alison-desk) ([10.54.74.41])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 09:14:06 -0700
+Date:   Tue, 29 Mar 2022 09:16:32 -0700
+From:   Alison Schofield <alison.schofield@intel.com>
+To:     Rebecca Mckeever <remckee0@gmail.com>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        outreachy@lists.linux.dev
+Subject: Re: [PATCH] staging: r8188eu: fix suspect code indent for
+ conditional statements
+Message-ID: <20220329161632.GA1169956@alison-desk>
+References: <YkK7ABTVt0TCbd18@bertie>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 09/13] pinctrl: meson: Rename REG_* to MREG_*
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Qianggui Song <qianggui.song@amlogic.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Fabien Dessenne <fabien.dessenne@foss.st.com>,
-        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        openbmc@lists.ozlabs.org, linux-renesas-soc@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-References: <20220329152926.50958-1-andriy.shevchenko@linux.intel.com>
- <20220329152926.50958-10-andriy.shevchenko@linux.intel.com>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-Organization: Baylibre
-In-Reply-To: <20220329152926.50958-10-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YkK7ABTVt0TCbd18@bertie>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 29/03/2022 17:29, Andy Shevchenko wrote:
-> Rename REG_* to MREG_* as a prerequisite for enabling COMPILE_TEST.
+On Tue, Mar 29, 2022 at 02:53:36AM -0500, Rebecca Mckeever wrote:
+> Align the if and else if branches of the conditional statement
+> to improve readability. Prevent bugs that could be introduced
+> if developers misread the code. Issue found by checkpatch.
 
-What error do you hit ?
+Thanks for the patch Rebecca!
 
-MREG_ is rather ugly, something like PINCONF_REG_ or more simpler MESON_REG_ would be more appropriate.
+Lots of stuff done right - passes chkp, compiles, patch is sent to
+correct recipients, the commit message follows the format of the file.
 
-Neil
+Let's set a pattern here for all checkpatch related cleanups,
+for you and others that follow.(Thanks for being the first ;))
+
+Commit msg says 'what'. Commit log says 'why'. Acknowledge that
+it was found using checkpatch in the commit log also. (In the future
+you may be acknowledging use of other tools like sparse, coccinelle.)
+
+Note that the 'why' is never that a tool reported an error. The 'why'
+for these checkpatch reports is usually to follow the Linux Kernel
+Coding Style.
+
+'Fix' in the commit message is needlessly generic. Perhaps:
+[PATCH] staging: r8188eu: align both branches of a conditional statement
+
+Commit log: (what you have is fine in the log)
+I usually paste in the checkpatch error explicitly so it can be grep'd
+for. Something like:
+
+Issue found by checkpatch:
+WARNING: suspect code indent for conditional statements
+
+Thanks,
+Alison
 
 > 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
 > ---
->   drivers/pinctrl/meson/pinctrl-meson.c | 24 ++++++++++++------------
->   drivers/pinctrl/meson/pinctrl-meson.h | 24 ++++++++++++------------
->   2 files changed, 24 insertions(+), 24 deletions(-)
+>  drivers/staging/r8188eu/core/rtw_cmd.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/pinctrl/meson/pinctrl-meson.c b/drivers/pinctrl/meson/pinctrl-meson.c
-> index 49851444a6e3..64da61ba2bb9 100644
-> --- a/drivers/pinctrl/meson/pinctrl-meson.c
-> +++ b/drivers/pinctrl/meson/pinctrl-meson.c
-> @@ -218,13 +218,13 @@ static int meson_pinconf_set_output(struct meson_pinctrl *pc,
->   				    unsigned int pin,
->   				    bool out)
->   {
-> -	return meson_pinconf_set_gpio_bit(pc, pin, REG_DIR, !out);
-> +	return meson_pinconf_set_gpio_bit(pc, pin, MREG_DIR, !out);
->   }
->   
->   static int meson_pinconf_get_output(struct meson_pinctrl *pc,
->   				    unsigned int pin)
->   {
-> -	int ret = meson_pinconf_get_gpio_bit(pc, pin, REG_DIR);
-> +	int ret = meson_pinconf_get_gpio_bit(pc, pin, MREG_DIR);
->   
->   	if (ret < 0)
->   		return ret;
-> @@ -236,13 +236,13 @@ static int meson_pinconf_set_drive(struct meson_pinctrl *pc,
->   				   unsigned int pin,
->   				   bool high)
->   {
-> -	return meson_pinconf_set_gpio_bit(pc, pin, REG_OUT, high);
-> +	return meson_pinconf_set_gpio_bit(pc, pin, MREG_OUT, high);
->   }
->   
->   static int meson_pinconf_get_drive(struct meson_pinctrl *pc,
->   				   unsigned int pin)
->   {
-> -	return meson_pinconf_get_gpio_bit(pc, pin, REG_OUT);
-> +	return meson_pinconf_get_gpio_bit(pc, pin, MREG_OUT);
->   }
->   
->   static int meson_pinconf_set_output_drive(struct meson_pinctrl *pc,
-> @@ -269,7 +269,7 @@ static int meson_pinconf_disable_bias(struct meson_pinctrl *pc,
->   	if (ret)
->   		return ret;
->   
-> -	meson_calc_reg_and_bit(bank, pin, REG_PULLEN, &reg, &bit);
-> +	meson_calc_reg_and_bit(bank, pin, MREG_PULLEN, &reg, &bit);
->   	ret = regmap_update_bits(pc->reg_pullen, reg, BIT(bit), 0);
->   	if (ret)
->   		return ret;
-> @@ -288,7 +288,7 @@ static int meson_pinconf_enable_bias(struct meson_pinctrl *pc, unsigned int pin,
->   	if (ret)
->   		return ret;
->   
-> -	meson_calc_reg_and_bit(bank, pin, REG_PULL, &reg, &bit);
-> +	meson_calc_reg_and_bit(bank, pin, MREG_PULL, &reg, &bit);
->   	if (pull_up)
->   		val = BIT(bit);
->   
-> @@ -296,7 +296,7 @@ static int meson_pinconf_enable_bias(struct meson_pinctrl *pc, unsigned int pin,
->   	if (ret)
->   		return ret;
->   
-> -	meson_calc_reg_and_bit(bank, pin, REG_PULLEN, &reg, &bit);
-> +	meson_calc_reg_and_bit(bank, pin, MREG_PULLEN, &reg, &bit);
->   	ret = regmap_update_bits(pc->reg_pullen, reg, BIT(bit),	BIT(bit));
->   	if (ret)
->   		return ret;
-> @@ -321,7 +321,7 @@ static int meson_pinconf_set_drive_strength(struct meson_pinctrl *pc,
->   	if (ret)
->   		return ret;
->   
-> -	meson_calc_reg_and_bit(bank, pin, REG_DS, &reg, &bit);
-> +	meson_calc_reg_and_bit(bank, pin, MREG_DS, &reg, &bit);
->   
->   	if (drive_strength_ua <= 500) {
->   		ds_val = MESON_PINCONF_DRV_500UA;
-> @@ -407,7 +407,7 @@ static int meson_pinconf_get_pull(struct meson_pinctrl *pc, unsigned int pin)
->   	if (ret)
->   		return ret;
->   
-> -	meson_calc_reg_and_bit(bank, pin, REG_PULLEN, &reg, &bit);
-> +	meson_calc_reg_and_bit(bank, pin, MREG_PULLEN, &reg, &bit);
->   
->   	ret = regmap_read(pc->reg_pullen, reg, &val);
->   	if (ret)
-> @@ -416,7 +416,7 @@ static int meson_pinconf_get_pull(struct meson_pinctrl *pc, unsigned int pin)
->   	if (!(val & BIT(bit))) {
->   		conf = PIN_CONFIG_BIAS_DISABLE;
->   	} else {
-> -		meson_calc_reg_and_bit(bank, pin, REG_PULL, &reg, &bit);
-> +		meson_calc_reg_and_bit(bank, pin, MREG_PULL, &reg, &bit);
->   
->   		ret = regmap_read(pc->reg_pull, reg, &val);
->   		if (ret)
-> @@ -447,7 +447,7 @@ static int meson_pinconf_get_drive_strength(struct meson_pinctrl *pc,
->   	if (ret)
->   		return ret;
->   
-> -	meson_calc_reg_and_bit(bank, pin, REG_DS, &reg, &bit);
-> +	meson_calc_reg_and_bit(bank, pin, MREG_DS, &reg, &bit);
->   
->   	ret = regmap_read(pc->reg_ds, reg, &val);
->   	if (ret)
-> @@ -595,7 +595,7 @@ static int meson_gpio_get(struct gpio_chip *chip, unsigned gpio)
->   	if (ret)
->   		return ret;
->   
-> -	meson_calc_reg_and_bit(bank, gpio, REG_IN, &reg, &bit);
-> +	meson_calc_reg_and_bit(bank, gpio, MREG_IN, &reg, &bit);
->   	regmap_read(pc->reg_gpio, reg, &val);
->   
->   	return !!(val & BIT(bit));
-> diff --git a/drivers/pinctrl/meson/pinctrl-meson.h b/drivers/pinctrl/meson/pinctrl-meson.h
-> index ff5372e0a475..c00d9ad27843 100644
-> --- a/drivers/pinctrl/meson/pinctrl-meson.h
-> +++ b/drivers/pinctrl/meson/pinctrl-meson.h
-> @@ -63,12 +63,12 @@ struct meson_reg_desc {
->    * enum meson_reg_type - type of registers encoded in @meson_reg_desc
->    */
->   enum meson_reg_type {
-> -	REG_PULLEN,
-> -	REG_PULL,
-> -	REG_DIR,
-> -	REG_OUT,
-> -	REG_IN,
-> -	REG_DS,
-> +	MREG_PULLEN,
-> +	MREG_PULL,
-> +	MREG_DIR,
-> +	MREG_OUT,
-> +	MREG_IN,
-> +	MREG_DS,
->   	NUM_REG,
->   };
->   
-> @@ -150,12 +150,12 @@ struct meson_pinctrl {
->   		.irq_first	= fi,					\
->   		.irq_last	= li,					\
->   		.regs = {						\
-> -			[REG_PULLEN]	= { per, peb },			\
-> -			[REG_PULL]	= { pr, pb },			\
-> -			[REG_DIR]	= { dr, db },			\
-> -			[REG_OUT]	= { or, ob },			\
-> -			[REG_IN]	= { ir, ib },			\
-> -			[REG_DS]	= { dsr, dsb },			\
-> +			[MREG_PULLEN]	= { per, peb },			\
-> +			[MREG_PULL]	= { pr, pb },			\
-> +			[MREG_DIR]	= { dr, db },			\
-> +			[MREG_OUT]	= { or, ob },			\
-> +			[MREG_IN]	= { ir, ib },			\
-> +			[MREG_DS]	= { dsr, dsb },			\
->   		},							\
->   	 }
->   
-
+> diff --git a/drivers/staging/r8188eu/core/rtw_cmd.c b/drivers/staging/r8188eu/core/rtw_cmd.c
+> index 6eca30124ee8..ccc43c0ba433 100644
+> --- a/drivers/staging/r8188eu/core/rtw_cmd.c
+> +++ b/drivers/staging/r8188eu/core/rtw_cmd.c
+> @@ -1408,7 +1408,7 @@ void rtw_survey_cmd_callback(struct adapter *padapter,  struct cmd_obj *pcmd)
+>  		/* TODO: cancel timer and do timeout handler directly... */
+>  		/* need to make timeout handlerOS independent */
+>  		_set_timer(&pmlmepriv->scan_to_timer, 1);
+> -		} else if (pcmd->res != H2C_SUCCESS) {
+> +	} else if (pcmd->res != H2C_SUCCESS) {
+>  		_set_timer(&pmlmepriv->scan_to_timer, 1);
+>  	}
+>  
+> -- 
+> 2.32.0
+> 
+> 
