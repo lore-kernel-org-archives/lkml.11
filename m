@@ -2,191 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0FCEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:50:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4F2DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:50:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239912AbiC2Qvv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 12:51:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40322 "EHLO
+        id S234382AbiC2QwA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 12:52:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234852AbiC2Qvu (ORCPT
+        with ESMTP id S239915AbiC2Qv5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 12:51:50 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DB762467D9
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:50:06 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id r13so36340216ejd.5
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:50:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=3W39tC2e+e4XlENh3geReI/CxfG4scvOcsFNszfM2k4=;
-        b=ySG+mixvItTpHny21aTnBnKz+TP6aGDVpHG5nZS5Rd0Tb52jAYKdBGgZaJDE0/8bXr
-         FkmjdkptNzOvdefZvgAiIdDYcCPwMYf0P0BP0klpKVeoZ/zZoyVfbtIeq+3Cp7kgRKSE
-         Pads40KqXEJvZ1Hx5Ul05VMlYoDrtSoRRWKhAcbP1qpGnKpZXO/HrsXV//iT6zsmogoE
-         sARUk5j21HdviVg9F+ARHjnDqn5JBLx0/Ry/Mn0QGJnnBUToAQyri++1kLyz9x7ZGjEJ
-         XmVJMXt234cCaIHxx0EHLEcC8TTMZmyiiiljhTLMewQQBEw1kVdyCyfXBaLZzam+cr18
-         BsKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=3W39tC2e+e4XlENh3geReI/CxfG4scvOcsFNszfM2k4=;
-        b=q6B1xThuhfbIPqFbpt4bSK9k3v9l0P+h2orkHqa+bHu5RbfIPJV5eGNzSkFYTU2CLE
-         f5rdDaqe0Otm6GnJc86te0bKKo2FoYtQFebHaACszPa1nyrPjjnodrGak27VZpXTmeu6
-         VcAa1m10uDnXOzMsuw/ybxIxVRFqlTFVUXYCWln3cGq9ki6YAL1ykb2k4LVWEHopFABc
-         HLD43c37fWFHmBVeagSHRbNVWsqSVQf0HFtl+RV6QF2sBeyzij83C15nmmILUHitfkt5
-         TXQqgbv5HqosPKJiT0wI1c2LxgHKF6XlR6LUUt6jUIXZP1skDkNt9kJJgBxUlzfG1wAa
-         kL4g==
-X-Gm-Message-State: AOAM532EdE0bGz7cTgP4IoEeuXoMlknZN2xKdg3B/mnx98nBg4qf9jcO
-        MfAxSfAtgk8mrEDNuz9iym/jMgWMllzG88x2
-X-Google-Smtp-Source: ABdhPJyv5/j1KLCPW2EGMkODOgQaFZJ8INemE/1yDu/Q4K7LSfV1gStbxYZglireUgGSfjH+MeW7Pg==
-X-Received: by 2002:a17:907:7f8b:b0:6e0:612b:38fd with SMTP id qk11-20020a1709077f8b00b006e0612b38fdmr35710600ejc.552.1648572604849;
-        Tue, 29 Mar 2022 09:50:04 -0700 (PDT)
-Received: from [192.168.0.162] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id n13-20020a170906724d00b006cedd6d7e24sm7237928ejk.119.2022.03.29.09.50.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 29 Mar 2022 09:50:04 -0700 (PDT)
-Message-ID: <85ed0e5b-0c6f-aea0-ea89-522591d85420@linaro.org>
-Date:   Tue, 29 Mar 2022 18:50:03 +0200
+        Tue, 29 Mar 2022 12:51:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 509A72527B1
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:50:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648572613;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bMfZOVQVS5I2zZPcY9Fdh37ujSfx4fPUK1QRVEaCA5k=;
+        b=IQsrZ4Kw+TkBVsrNIwn344Cw/0fK62+C3VUJplg8lEt66504Fb+E5iAaw0gKG9eyLCs/VP
+        JLQGRZUhubt4Ka9aL6uf/IVJ6HASqP3RN1MQPo8qejogs+qyXXj4Xh0yjbZYnRcrHGEXPi
+        y0PV813Wg2nY4bSEnCgZ8cK8QJkd8vc=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-57-w3EaO9epNH-b7CkKN7fb2w-1; Tue, 29 Mar 2022 12:50:09 -0400
+X-MC-Unique: w3EaO9epNH-b7CkKN7fb2w-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 719C31C1782F;
+        Tue, 29 Mar 2022 16:50:07 +0000 (UTC)
+Received: from t480s.redhat.com (unknown [10.39.194.134])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BC9701121314;
+        Tue, 29 Mar 2022 16:49:27 +0000 (UTC)
+From:   David Hildenbrand <david@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Pedro Gomes <pedrodemargomes@gmail.com>,
+        Oded Gabbay <oded.gabbay@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        linux-mm@kvack.org, x86@kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+        David Hildenbrand <david@redhat.com>
+Subject: [PATCH v2 7/8] powerpc/pgtable: remove _PAGE_BIT_SWAP_TYPE for book3s
+Date:   Tue, 29 Mar 2022 18:43:28 +0200
+Message-Id: <20220329164329.208407-8-david@redhat.com>
+In-Reply-To: <20220329164329.208407-1-david@redhat.com>
+References: <20220329164329.208407-1-david@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v5 1/2] dt-binding: mmc: Add mmc yaml file for Sunplus
- SP7021
-Content-Language: en-US
-To:     Tony Huang <tonyhuang.sunplus@gmail.com>, ulf.hansson@linaro.org,
-        robh+dt@kernel.org, lhjeff911@gmail.com, linux-mmc@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        p.zabel@pengutronix.de
-Cc:     wells.lu@sunplus.com, tony.huang@sunplus.com, lh.kuo@sunplus.com
-References: <cover.1648551070.git.tonyhuang.sunplus@gmail.com>
- <abd34a74bf56e04050868c63d030552a9af210f4.1648551070.git.tonyhuang.sunplus@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <abd34a74bf56e04050868c63d030552a9af210f4.1648551070.git.tonyhuang.sunplus@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 29/03/2022 16:42, Tony Huang wrote:
-> Add mmc yaml file for Sunplus SP7021
+The swap type is simply stored in bits 0x1f of the swap pte. Let's
+simplify by just getting rid of _PAGE_BIT_SWAP_TYPE. It's not like that
+we can simply change it: _PAGE_SWP_SOFT_DIRTY would suddenly fall into
+_RPAGE_RSV1, which isn't possible and would make the
+BUILD_BUG_ON(_PAGE_HPTEFLAGS & _PAGE_SWP_SOFT_DIRTY) angry.
 
-s/mmc/MMC/
-s/yaml/YAML/
-And a full stop.
+While at it, make it clearer which bit we're actually using for
+_PAGE_SWP_SOFT_DIRTY by just using the proper define and introduce and
+use SWP_TYPE_MASK.
 
-Please rebase your changes on recent Linux kernel, because you skip
-Cc-ing me all the time, so I assume you have some old Maintainers file.
+Signed-off-by: David Hildenbrand <david@redhat.com>
+---
+ arch/powerpc/include/asm/book3s/64/pgtable.h | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
-> 
-> Signed-off-by: Tony Huang <tonyhuang.sunplus@gmail.com>
-> ---
-> Changes in v5:
->  - Addressed comments from Krzysztof.
-> 
->  .../devicetree/bindings/mmc/sunplus,mmc.yaml       | 64 ++++++++++++++++++++++
->  MAINTAINERS                                        |  6 ++
->  2 files changed, 70 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/mmc/sunplus,mmc.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/mmc/sunplus,mmc.yaml b/Documentation/devicetree/bindings/mmc/sunplus,mmc.yaml
-> new file mode 100644
-> index 0000000..92537d0
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/mmc/sunplus,mmc.yaml
-> @@ -0,0 +1,64 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +# Copyright (C) Sunplus Ltd. Co. 2021
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/mmc/sunplus,mmc.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Sunplus MMC Controller
-> +
-> +maintainers:
-> +  - Tony Huang <tonyhuang.sunplus@gmail.com>
-> +  - Li-hao Kuo <lhjeff911@gmail.com>
-> +
-> +allOf:
-> +  - $ref: "mmc-controller.yaml"
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - sunplus,sp7021-mmc
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    maxItems: 1
-> +
-> +  resets:
-> +    maxItems: 1
-> +
-> +  max-frequency: true
+diff --git a/arch/powerpc/include/asm/book3s/64/pgtable.h b/arch/powerpc/include/asm/book3s/64/pgtable.h
+index 875730d5af40..8e98375d5c4a 100644
+--- a/arch/powerpc/include/asm/book3s/64/pgtable.h
++++ b/arch/powerpc/include/asm/book3s/64/pgtable.h
+@@ -13,7 +13,6 @@
+ /*
+  * Common bits between hash and Radix page table
+  */
+-#define _PAGE_BIT_SWAP_TYPE	0
+ 
+ #define _PAGE_EXEC		0x00001 /* execute permission */
+ #define _PAGE_WRITE		0x00002 /* write access allowed */
+@@ -751,17 +750,16 @@ static inline pte_t pte_modify(pte_t pte, pgprot_t newprot)
+ 	 * Don't have overlapping bits with _PAGE_HPTEFLAGS	\
+ 	 * We filter HPTEFLAGS on set_pte.			\
+ 	 */							\
+-	BUILD_BUG_ON(_PAGE_HPTEFLAGS & (0x1f << _PAGE_BIT_SWAP_TYPE)); \
++	BUILD_BUG_ON(_PAGE_HPTEFLAGS & SWP_TYPE_MASK); \
+ 	BUILD_BUG_ON(_PAGE_HPTEFLAGS & _PAGE_SWP_SOFT_DIRTY);	\
+ 	} while (0)
+ 
+ #define SWP_TYPE_BITS 5
+-#define __swp_type(x)		(((x).val >> _PAGE_BIT_SWAP_TYPE) \
+-				& ((1UL << SWP_TYPE_BITS) - 1))
++#define SWP_TYPE_MASK		((1UL << SWP_TYPE_BITS) - 1)
++#define __swp_type(x)		((x).val & SWP_TYPE_MASK)
+ #define __swp_offset(x)		(((x).val & PTE_RPN_MASK) >> PAGE_SHIFT)
+ #define __swp_entry(type, offset)	((swp_entry_t) { \
+-				((type) << _PAGE_BIT_SWAP_TYPE) \
+-				| (((offset) << PAGE_SHIFT) & PTE_RPN_MASK)})
++				(type) | (((offset) << PAGE_SHIFT) & PTE_RPN_MASK)})
+ /*
+  * swp_entry_t must be independent of pte bits. We build a swp_entry_t from
+  * swap type and offset we get from swap and convert that to pte to find a
+@@ -774,7 +772,7 @@ static inline pte_t pte_modify(pte_t pte, pgprot_t newprot)
+ #define __swp_entry_to_pmd(x)	(pte_pmd(__swp_entry_to_pte(x)))
+ 
+ #ifdef CONFIG_MEM_SOFT_DIRTY
+-#define _PAGE_SWP_SOFT_DIRTY   (1UL << (SWP_TYPE_BITS + _PAGE_BIT_SWAP_TYPE))
++#define _PAGE_SWP_SOFT_DIRTY	_PAGE_NON_IDEMPOTENT
+ #else
+ #define _PAGE_SWP_SOFT_DIRTY	0UL
+ #endif /* CONFIG_MEM_SOFT_DIRTY */
+-- 
+2.35.1
 
-I think you do not need this.
-
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - clocks
-> +  - resets
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    mmc0: mmc@9c003b00 {
-> +        compatible = "sunplus,mmc-v2";
-> +        reg = <0x9c003b00 0x180>;
-> +        interrupts = <20 IRQ_TYPE_LEVEL_HIGH>;
-> +        clocks = <&clkc 0x4e>;
-> +        resets = <&rstc 0x3e>;
-> +        bus-width = <8>;
-> +        max-frequency = <52000000>;
-> +        non-removable;
-> +        disable-wp;
-> +        cap-mmc-highspeed;
-> +        mmc-ddr-3_3v;
-> +        no-sdio;
-> +        no-sd;
-> +    };
-> +
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index fb18ce7..42498b2 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -18242,6 +18242,12 @@ L:	netdev@vger.kernel.org
->  S:	Maintained
->  F:	drivers/net/ethernet/dlink/sundance.c
->  
-> +SUNPLUS MMC DRIVER
-> +M:	Tony Huang <tonyhuang.sunplus@gmail.com>
-> +M:	Li-hao Kuo <lhjeff911@gmail.com>
-> +S:	Maintained
-> +F:	Documentation/devicetree/bindings/mmc/sunplu,mmc.yaml
-
-I pointed this already for your v4.
-
-> +
->  SUPERH
->  M:	Yoshinori Sato <ysato@users.sourceforge.jp>
->  M:	Rich Felker <dalias@libc.org>
-
-
-Best regards,
-Krzysztof
