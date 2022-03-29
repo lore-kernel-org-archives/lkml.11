@@ -2,58 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88CCCC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:49:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD776C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:49:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234809AbiC2MvR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 08:51:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53084 "EHLO
+        id S236826AbiC2MvY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 08:51:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236859AbiC2MsJ (ORCPT
+        with ESMTP id S236812AbiC2MsG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 08:48:09 -0400
-Received: from mail-ej1-x649.google.com (mail-ej1-x649.google.com [IPv6:2a00:1450:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 027EF25D5E9
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:42:30 -0700 (PDT)
-Received: by mail-ej1-x649.google.com with SMTP id jl19-20020a17090775d300b006dff5abe965so8145895ejc.18
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:42:30 -0700 (PDT)
+        Tue, 29 Mar 2022 08:48:06 -0400
+Received: from mail-ej1-x64a.google.com (mail-ej1-x64a.google.com [IPv6:2a00:1450:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1954225CB98
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:42:20 -0700 (PDT)
+Received: by mail-ej1-x64a.google.com with SMTP id h22-20020a1709060f5600b006b11a2d3dcfso8126847ejj.4
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:42:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=RlYSbadXoEfpVHc0vV/XNEsRdhGi1prUW+giHTFauGk=;
-        b=Dk6OfzDOhhWLYgl5XDrPV/wHbOcl0QIYza/6JtkZqHgLudavSZzmjMk+5f28h2orgU
-         iHrCh6plBIwBN36pcmW+p7rGqqO0YMM7u/i5PR6jUmB+3M7Gvzrldrx36VWhdEly5wqL
-         OCFVfyQ70Xqs++xgzaju3Y7LpDid5Y2SH/Q8CDmTucqxRIowd4s6C0QFAALHjEO+0nwB
-         fuNr7hQPe/Epycuo17M1wj5VYq+p5MbKDJtrQQ5brwghYeQJKrjFvhP1FeN553lIB4Ty
-         /plVPtHNwRzPgAYEUGGThxWuO/QztfBN6vGOWx0oeHAc0cwrK2ZfAWzl7GaTEqAJcx59
-         JBIg==
+        bh=eekKcS683P9sWiTSuhgkvdPXp9EdJwN5ZjFsPJMzm7E=;
+        b=nThiYlFFBsJrC6J4CsRmdsKff+pDAxmWAIIBI48Vo80VmKhgV7dastoHrc6SVW9X6d
+         jx/eMpAi1+TKGKqks/kz1GydwiVFtB3s4/Iqslz0Sb0I1p4yER6QQnh5/UL9bNG2RLeo
+         C5XtiIVh5zpbhTTlL5airTyDdq93mQxCRjBtLqk2mbuMHgpMJxTKy/8BxllO8FXvoXri
+         ekBImg/blQGPTzvxUnzHyySXJs6MIGJ9C3qLF6RA9zgxjyAbLcaI48UrWAydgcCoo14J
+         kueGk3ukqrtHmHCvYLUUERRZzvhgDhUfNxGvcRCiVUwTYx9WsgjVrySPvU/5ycGH8wZP
+         hUMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=RlYSbadXoEfpVHc0vV/XNEsRdhGi1prUW+giHTFauGk=;
-        b=SVFkT/0nrRcA3791RiCxiAKIlybD6K9V4CAxgnJnRcMdUptdpCElY9CWkwIRc3kS18
-         4or6J9J5r6SK3MRopy3EW01NKi25HHApKK6ZwHh9LDZtcjlOy0PDO03eFcyIcjdKSaru
-         GcliQOCHCgBY1dmIuavDvdTLZnMntMGeP0DHT83Ks9VOmJZjnOoc8P4iSVNNh2K/rvy4
-         bNd1gylMTd4Zk30zX7gLq/BVNCnF3WIuaSYnPE7i1e8NgDzlnYOf5QDdy95dKw/jQg4q
-         IENEoGbzdMyC0LCsPn2fke3NG86ligkzytGZj+lwDb25fLnQVVDIWj3UNPRrnyhHNzD9
-         v9KQ==
-X-Gm-Message-State: AOAM532pBfEMMFYbaq7fycu7PTc1LVi0yZRaebU75ukgFhJxGZ3Vjvzd
-        +deq9FWB3YJI81lpQNGeMcYCQ8PQ7oM=
-X-Google-Smtp-Source: ABdhPJwAQ2KpkKZtt/s3LazFEoxsBevCE6SqXEdguMxH7F8FiFrFs/1K5CRo60urh/1AvLKrhdVF+1gfvd0=
+        bh=eekKcS683P9sWiTSuhgkvdPXp9EdJwN5ZjFsPJMzm7E=;
+        b=TJn4ebmQJbPzt8sSkAnkxqLAeKp3nReVtkDvR6ognjWpL+wvA9ySvjDlWjFv5EFysw
+         kTTlRxx/7xP7Nr+cLARB0H6EdkNGFOtrb+GWxdzbhfbHJsrYuAAHZnky8AbVF4wH0J9u
+         weRVe0snq9GNvTohQfmI2LvlvTMFSF+QnGj+x74wBgdKkjv/D1HJ65lV7Ts+xaOsHd4v
+         7AaGWnRjm+h+hvjQON63bnzmPuSd7lvTCAZv6PDMM3LvOnofPQUcyEWjKvswniBX1w+c
+         jTchsADAXlmQWCQfXs6AmA/7xpjBvUHPhiZ1i45BcyvZZvH7CsIVQL7gJ4NivV94HbQK
+         w6gw==
+X-Gm-Message-State: AOAM530VbnR7Mt6NfuHJCHXW3h79SSOwMOn9npSe3zQa6b5CiXb3dr9S
+        yh9GPPJ6rqnWBVznoWPAeEnJKJ2q3jo=
+X-Google-Smtp-Source: ABdhPJzQ+mzPatwMfV3rPhv+G2Q81dnqKFY/srjOhBDb0t1yefVaA5tyYkGIYP5vkw1Slryk14/AH+9Tlek=
 X-Received: from glider.muc.corp.google.com ([2a00:79e0:15:13:36eb:759:798f:98c3])
- (user=glider job=sendgmr) by 2002:a17:907:2d20:b0:6df:8c3f:730a with SMTP id
- gs32-20020a1709072d2000b006df8c3f730amr34340038ejc.725.1648557748867; Tue, 29
- Mar 2022 05:42:28 -0700 (PDT)
-Date:   Tue, 29 Mar 2022 14:40:14 +0200
+ (user=glider job=sendgmr) by 2002:a50:c010:0:b0:418:d53c:24ec with SMTP id
+ r16-20020a50c010000000b00418d53c24ecmr4358428edb.17.1648557738276; Tue, 29
+ Mar 2022 05:42:18 -0700 (PDT)
+Date:   Tue, 29 Mar 2022 14:40:10 +0200
 In-Reply-To: <20220329124017.737571-1-glider@google.com>
-Message-Id: <20220329124017.737571-46-glider@google.com>
+Message-Id: <20220329124017.737571-42-glider@google.com>
 Mime-Version: 1.0
 References: <20220329124017.737571-1-glider@google.com>
 X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
-Subject: [PATCH v2 45/48] x86: kasan: kmsan: support CONFIG_GENERIC_CSUM on
- x86, enable it for KASAN/KMSAN
+Subject: [PATCH v2 41/48] x86: kmsan: skip shadow checks in __switch_to()
 From:   Alexander Potapenko <glider@google.com>
 To:     glider@google.com
 Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
@@ -90,78 +89,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is needed to allow memory tools like KASAN and KMSAN see the
-memory accesses from the checksum code. Without CONFIG_GENERIC_CSUM the
-tools can't see memory accesses originating from handwritten assembly
-code.
-For KASAN it's a question of detecting more bugs, for KMSAN using the C
-implementation also helps avoid false positives originating from
-seemingly uninitialized checksum values.
+When instrumenting functions, KMSAN obtains the per-task state (mostly
+pointers to metadata for function arguments and return values) once per
+function at its beginning, using the `current` pointer.
 
+Every time the instrumented function calls another function, this state
+(`struct kmsan_context_state`) is updated with shadow/origin data of the
+passed and returned values.
+
+When `current` changes in the low-level arch code, instrumented code can
+not notice that, and will still refer to the old state, possibly corrupting
+it or using stale data. This may result in false positive reports.
+
+To deal with that, we need to apply __no_kmsan_checks to the functions
+performing context switching - this will result in skipping all KMSAN
+shadow checks and marking newly created values as initialized,
+preventing all false positive reports in those functions. False negatives
+are still possible, but we expect them to be rare and impersistent.
+
+Suggested-by: Marco Elver <elver@google.com>
 Signed-off-by: Alexander Potapenko <glider@google.com>
 
 ---
+v2:
+ -- This patch was previously called "kmsan: skip shadow checks in files
+    doing context switches". Per Mark Rutland's suggestion, we now only
+    skip checks in low-level arch-specific code, as context switches in
+    common code should be invisible to KMSAN. We also apply the checks
+    to precisely the functions performing the context switch instead of
+    the whole file.
 
-Link: https://linux-review.googlesource.com/id/I3e95247be55b1112af59dbba07e8cbf34e50a581
+Link: https://linux-review.googlesource.com/id/I45e3ed9c5f66ee79b0409d1673d66ae419029bcb
 ---
- arch/x86/Kconfig                |  4 ++++
- arch/x86/include/asm/checksum.h | 16 ++++++++++------
- arch/x86/lib/Makefile           |  2 ++
- 3 files changed, 16 insertions(+), 6 deletions(-)
+ arch/x86/kernel/process_64.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 9f5bd41bf660c..86df15017f79d 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -315,6 +315,10 @@ config GENERIC_ISA_DMA
- 	def_bool y
- 	depends on ISA_DMA_API
- 
-+config GENERIC_CSUM
-+	bool
-+	default y if KMSAN || KASAN
-+
- config GENERIC_BUG
- 	def_bool y
- 	depends on BUG
-diff --git a/arch/x86/include/asm/checksum.h b/arch/x86/include/asm/checksum.h
-index bca625a60186c..6df6ece8a28ec 100644
---- a/arch/x86/include/asm/checksum.h
-+++ b/arch/x86/include/asm/checksum.h
-@@ -1,9 +1,13 @@
- /* SPDX-License-Identifier: GPL-2.0 */
--#define  _HAVE_ARCH_COPY_AND_CSUM_FROM_USER 1
--#define HAVE_CSUM_COPY_USER
--#define _HAVE_ARCH_CSUM_AND_COPY
--#ifdef CONFIG_X86_32
--# include <asm/checksum_32.h>
-+#ifdef CONFIG_GENERIC_CSUM
-+# include <asm-generic/checksum.h>
- #else
--# include <asm/checksum_64.h>
-+# define  _HAVE_ARCH_COPY_AND_CSUM_FROM_USER 1
-+# define HAVE_CSUM_COPY_USER
-+# define _HAVE_ARCH_CSUM_AND_COPY
-+# ifdef CONFIG_X86_32
-+#  include <asm/checksum_32.h>
-+# else
-+#  include <asm/checksum_64.h>
-+# endif
- #endif
-diff --git a/arch/x86/lib/Makefile b/arch/x86/lib/Makefile
-index f76747862bd2e..7ba5f61d72735 100644
---- a/arch/x86/lib/Makefile
-+++ b/arch/x86/lib/Makefile
-@@ -65,7 +65,9 @@ ifneq ($(CONFIG_X86_CMPXCHG64),y)
- endif
- else
-         obj-y += iomap_copy_64.o
-+ifneq ($(CONFIG_GENERIC_CSUM),y)
-         lib-y += csum-partial_64.o csum-copy_64.o csum-wrappers_64.o
-+endif
-         lib-y += clear_page_64.o copy_page_64.o
-         lib-y += memmove_64.o memset_64.o
-         lib-y += copy_user_64.o
+diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
+index 3402edec236c4..838b1e9808d6f 100644
+--- a/arch/x86/kernel/process_64.c
++++ b/arch/x86/kernel/process_64.c
+@@ -553,6 +553,7 @@ void compat_start_thread(struct pt_regs *regs, u32 new_ip, u32 new_sp, bool x32)
+  * Kprobes not supported here. Set the probe on schedule instead.
+  * Function graph tracer not supported too.
+  */
++__no_kmsan_checks
+ __visible __notrace_funcgraph struct task_struct *
+ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
+ {
 -- 
 2.35.1.1021.g381101b075-goog
 
