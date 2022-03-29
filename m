@@ -2,240 +2,241 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E1FAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 09:08:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B330AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 09:08:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234457AbiC2JJr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 05:09:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50556 "EHLO
+        id S234468AbiC2JKi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 05:10:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233938AbiC2JJn (ORCPT
+        with ESMTP id S233938AbiC2JKd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 05:09:43 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16BB9242203;
-        Tue, 29 Mar 2022 02:08:00 -0700 (PDT)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22T8oV4u028622;
-        Tue, 29 Mar 2022 09:07:47 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=ykMN/lpl4FxnbXFPw89SFkeE/DC+xzGC+w8I351Wc4Q=;
- b=uZUAS7Cneir+xQ/pI0u29PnqNLLrB1wOSQfqzXPTZYnsxSEdZ4HZPUX7VFWn9Pm3fenr
- caJI/1RRZ/aDr/JrzqoU9K118OupGhQB4LOShLc8yyzPbTUkULoB3e1DNHX2LGjy/9ka
- fbyhk32oX9oK9NLntu0Ns0iXW8HuXx5YqlO3SmBlq5/WNGOlBcIDTmofkNgQWelCIBwu
- 5WtgDVUxFPvRMoJo+5/kJrM9vIt4a7JTg1CqyrUtZ5WId1dojz5c++iUmdzilZWGoH1w
- LXJT+15Uymc05kfF1y5CGo4ttN6dXkFARk/NZ2YnHRTS0DkekITJoQiHOof29ARBL2P4 1A== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3f1tqb5xy2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 29 Mar 2022 09:07:46 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 22T8uwdO007083;
-        Tue, 29 Mar 2022 09:07:45 GMT
-Received: from nam02-dm3-obe.outbound.protection.outlook.com (mail-dm3nam07lp2043.outbound.protection.outlook.com [104.47.56.43])
-        by userp3020.oracle.com with ESMTP id 3f1v9ffh99-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 29 Mar 2022 09:07:45 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DOKc5FO7vccR0X1i9DtmTqqOMHiJ3jvL09gfpKOXOGxeMfxZuDCm3WCQxs+KVm14kVT/Ij1BREcVaYFtUbzaPu5d5NhYcvLaHBTXNlRtkrVHvtEWzob7yvaL6akM34lvE5mrOBNB9md4GvAydjJXr1oNt8/LV/DguT2WfJhmpJ6faqYp0QAUKRQF4ioeS4Mmspevw6u3MjUGaQaTk8hNtOms86yy5+cKRjVaQGXN5MbMaQpWL9leyNBtIoGyMwGt30Y20LZEJhfza/nBn81+gU1kpwH8tDG/15gj6hNMJ5lGc0e5c/qHbr4LqxcVr8rw9Nda+6m3YA9dbscg07TaEQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ykMN/lpl4FxnbXFPw89SFkeE/DC+xzGC+w8I351Wc4Q=;
- b=eO25Iuc0iZp2bQaH1MKLmzdrxIeF7DsT+YImH7+oh944q2KraQoIK6pNtHsIXQi53xLPWHPmcsDPu7MePkEp+a5qCMK/2mik8IrznBqBkFcEQK7aTAbmVJEOd0YXTDC2jIE1TXPXEuP/DRBx9LLTK0TjRBnI7uCZbupZ+O8Yy5sEq8W0DwcQ7aFMMYxNealjLVgjDyysL+inbgl5WehnVjlO61TSpe28WqcB6w3QZypk+eZlcGDXWxg1m8SwLuvZpMhfHrNqROGQUGTF/gFXhI+uYVoEc8EfFprs3f3B9gBtjHzQpvmoYnPLYimHa+scCm4FBf9YlhSn8S4LYLk3ug==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ykMN/lpl4FxnbXFPw89SFkeE/DC+xzGC+w8I351Wc4Q=;
- b=G2GvQDKo4Vg6SPZPLiFtl42uIEN7y5WIwKEwP/s7GvcqbeIHGNuz4omoUBauKCceZMkKZHp5IkQmsvz+8ajxPKGknIuRWJjDsmuVrNNZCCPuv7rJy7JDwffCUsxzaDljzA6Fc6mc7DNvvQth/1IhjKkMwNccSmgv0aR7JN+TpKA=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by DM6PR10MB2523.namprd10.prod.outlook.com
- (2603:10b6:5:b2::27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.17; Tue, 29 Mar
- 2022 09:07:43 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::d4e7:ee60:f060:e20c]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::d4e7:ee60:f060:e20c%7]) with mapi id 15.20.5081.025; Tue, 29 Mar 2022
- 09:07:43 +0000
-Date:   Tue, 29 Mar 2022 12:07:21 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Daniel Latypov <dlatypov@google.com>
-Cc:     Marcelo Schmitt <marcelo.schmitt1@gmail.com>, corbet@lwn.net,
-        mchehab+huawei@kernel.org, davidgow@google.com,
-        linux-doc@vger.kernel.org, linux-sparse@vger.kernel.org,
-        cocci@inria.fr, smatch@vger.kernel.org,
-        linux-kernel@vger.kernel.org, skhan@linuxfoundation.org
-Subject: Re: [PATCH] Documentation: dev-tools: Add a section for static
- analysis tools
-Message-ID: <20220329090721.GW3293@kadam>
-References: <YkImfPbNOzQBq5ZD@marsc.168.1.7>
- <CAGS_qxpjj1W54BM7v2Cszne4nh5kUXZt89Dq-5nO3nD7RWhsRQ@mail.gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGS_qxpjj1W54BM7v2Cszne4nh5kUXZt89Dq-5nO3nD7RWhsRQ@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JNAP275CA0071.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4f::22)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+        Tue, 29 Mar 2022 05:10:33 -0400
+Received: from out28-101.mail.aliyun.com (out28-101.mail.aliyun.com [115.124.28.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00EEF1A821;
+        Tue, 29 Mar 2022 02:08:49 -0700 (PDT)
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.07436313|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_regular_dialog|0.0176879-0.00292261-0.979389;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047193;MF=michael@allwinnertech.com;NM=1;PH=DS;RN=9;RT=9;SR=0;TI=SMTPD_---.NFHcEC-_1648544920;
+Received: from 172.30.10.142(mailfrom:michael@allwinnertech.com fp:SMTPD_---.NFHcEC-_1648544920)
+          by smtp.aliyun-inc.com(33.37.68.185);
+          Tue, 29 Mar 2022 17:08:46 +0800
+Message-ID: <e56d5447-9b08-d2e3-09a8-4546e4112d1c@allwinnertech.com>
+Date:   Tue, 29 Mar 2022 17:08:40 +0800
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d03f3da5-fcee-436e-e83a-08da11639542
-X-MS-TrafficTypeDiagnostic: DM6PR10MB2523:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR10MB2523D32E87FC7C9B8B2B34148E1E9@DM6PR10MB2523.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: yrnzRnPRsnP/NuLy8jpcXW9oumUf5okR/HK0skCOIJWncfYqthrd93NUQBbYUudc76BzKznvUudvYcv4yzvCjgL4htwv5kiApH+NTBPV33gIPxriTuSwiRVT/OMBB8Wm7Ifn99gA5OkYLYbkFUSXMRd9wEbYSBhXeSkfS+2fEL2v9gwfSjoE2cWo6fEHHE94TcKbFmayRsv9YkFXMlp6LoC2PBVkfJcmpjG5b0Bqmn1aN5fhTHNwHwcb6Xkujbijj1lOT4PSDHwpisWnb+VNYB7noLyVXC6P5OpdGwceE6CFguWTr8xVIf02JFyV5wHE9h7L6SZ6os0UdPy+eA8RP6bb+AGL2wT2o4Ejn2IeXb8JS3pJeTs2cI/YU2K0bEQO9ELENquzEfEHRiM6Q71vzekbDRTzvlDgNZEEsMXjRPoGw+5S4kHA55hY1+124K1zYqlteMddbLmF+S+gs/EYEbOCFaxiGTWQptqiCzP3wLokunKpOahlKo/w4mqmxoc8TsmasA6LrduGXkGcYfeICSq0sjwfpU2HdTCokxywMm7RjSug/yUsM7x882bx0mTKtyKT56YNCS8imdCq3g3/X3mQS4p6GimeYFloz5AZOFeHae7A181EVtWy69dJH3Jr0E5muxmPjiy5fQxjW2XwS5+W7K5kY2KtZYHKVdcbY1fHjEn8KrhW9rVXjZT7cCh1Xrcs8xGRamqFCGwh7HP/N+PAInwNMvD2/8A+u8Y+BzEOvyBny08iLEojiCEWxnwgxewlOjX/yopfHyIWhae0vbFcbaWtpjWnb0SdBDkPqhU=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(4326008)(8676002)(53546011)(66476007)(52116002)(9686003)(6512007)(33716001)(86362001)(66556008)(6506007)(6666004)(33656002)(1076003)(26005)(508600001)(6486002)(186003)(966005)(83380400001)(316002)(6916009)(66946007)(5660300002)(2906002)(38350700002)(38100700002)(7416002)(44832011)(8936002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?GyDN2ks3C/gFv88ihgKEzvgjj6VBmPzh0LsSgMfqKEC1sbK7H3+T14IZYRj5?=
- =?us-ascii?Q?P3kMMKrRYJWF/koX4Ydhu+C0R9FLD/kK6Px1O0B0obiY+xJtMcxOxu1IAPpR?=
- =?us-ascii?Q?CREJwLsD5sTPqLFcrxAmwO/qY8F1jzdvD2XsfaHQ6pyN1u3WiTzIQXB6tUZ6?=
- =?us-ascii?Q?ThqAQYcewNWSuyDJ0bGFro2YYunpkRySNyJqUpHOyWkuhvXDItppgw1ZG0xC?=
- =?us-ascii?Q?zhCIOFrPQLhnY6rVRtYfqKJ89fhQchbMVuP4FOwBesZPJ9Spn6rgAnMEcuCe?=
- =?us-ascii?Q?6tNHxLCaPLj235xJXi4uIFs9bhfrob/HFodzg91LDgdwnSYA+JoDJ91u6JL9?=
- =?us-ascii?Q?jTr20I/tmAWUyDL+xCSGjpMtx74m77pfQze/43x9Ebv3BBbLCryzfV2/drJ7?=
- =?us-ascii?Q?gmUxzkYbHzq3cTLN5E+kdoKxkcAyDr0bGMfxq1h8yiZtyr4AX1sK84RSrmiv?=
- =?us-ascii?Q?SBk5N9VeHB29iNvfibHTCzqbwpYSfJyAnFeMqF5P+GPxdSaX1HoO5M0hA4WK?=
- =?us-ascii?Q?71tUOVN+32MQAl0ngZlDpztYpWr+scc2eZhjtAp2/aBFaEcwPz0nzB6UCLUU?=
- =?us-ascii?Q?3S40BuKtRL51MjU5Vnoz5cssOtu+QFLBagJ+ZgXSg47pWYyUQYOLJ6vM49ln?=
- =?us-ascii?Q?D2BA123BXF3CZWfjuySS+2y26IzutYcdjkEUHRp+Zuy5ZV/+9fkBDawlblrR?=
- =?us-ascii?Q?hxk+RQ6Zpi6Rw0pleh6BLToEw0QcUqxsTd0/PT143wDX6bLuNX9rX6FLvaPI?=
- =?us-ascii?Q?e56ut6jLH5X461wEHMI0728MnGiOvoJCz86lK27EVARi0fQsSozkLEoq1vj1?=
- =?us-ascii?Q?ChoLIc86+LS0L/M3BNHMR0YmOmPJu0vwPBHvI5IySfLz24l8kat5ipKQ8aIY?=
- =?us-ascii?Q?t2tr7ewYqsqXSFYesD7jLBzSWXOUW8wBGppj1G0MKbD9CVklPB2fezfs3+xy?=
- =?us-ascii?Q?LLFedDdBZhRV9BmQMKJwZlYhjY2uDVM5NsPXQP2Awgms60DNit/jXo6puz+6?=
- =?us-ascii?Q?mKnEeE+v4+Nm9WhPVb+gcH7Y+dcPPqKBjFyk4PDyatjh5aSxtsdzqbDAp/L2?=
- =?us-ascii?Q?MPj5srekSBA2siAZPBS3LPZDrtym8+pKyisvgvV2AmsyXstVf2t6WUG5ej40?=
- =?us-ascii?Q?381is99NBluSS3XQgYeKUmSnAOrpI7ECub8s+rB3PugOUgOet3pTVvP1b2yB?=
- =?us-ascii?Q?axgdEGp4qvRoD+trth+9Yy/II9dz89YmY20WA/rNvfV+v/ycptH4uLe8KF42?=
- =?us-ascii?Q?6/mUNm/1w+0SKf5gUTFjSpr+Yb9OBbnclvAWJhbxAbSfOITFevBXjQRsu7U3?=
- =?us-ascii?Q?6EotjrUyXxFRTGv7T5QRIpSsKF+9tGjbyw//bSF//tSEm9RF9Lluc10woCCu?=
- =?us-ascii?Q?9JbGB+zbZT86KIr7P15PDVmcoaV7onTrpLo4b6wmZStk/WwdU5juQ4UYv8ch?=
- =?us-ascii?Q?sx6iPo3xkk3FD15wiPDwJfXSaMMIZsqSnBaYFUTaB0u1R8PElupZOJRgS2JZ?=
- =?us-ascii?Q?qULaMhNJucv5OMdYLKPBqIkuenGhqbvec3f3dDI84REuzfMQ+QxqV3s6I0Zm?=
- =?us-ascii?Q?AfayyvNhQnBZbyVIpZqXFlbPTWT8Yvxhw5aW1zw5vsb3JYdFClV/g6igurB/?=
- =?us-ascii?Q?TCOd2rtD+s0zbbfKYtnKQ7Mx/vkjGcWdbd063kJCHMR1z2mVqubFaW+n52Pc?=
- =?us-ascii?Q?vUOzuShpFSGqsIcwqYeNQ3AuG6iJLIoPrBiSImQs+OmVo8QLdBes+VutPZdM?=
- =?us-ascii?Q?WFLMvomum8wn3jSM/zh/QQGwCYzl6Ws=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d03f3da5-fcee-436e-e83a-08da11639542
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Mar 2022 09:07:43.2002
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fggk6kJWZQXoSwOGM4dinIP8Uh6SJG/8KbnITiNPWgSq+tGfwwY+bMou5cpM12qRnAEmdKnjPXiUZE1YaxSwvGw7HpCla7uPNHFLhi6nEME=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB2523
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10300 signatures=694973
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 malwarescore=0 spamscore=0
- adultscore=0 mlxlogscore=999 phishscore=0 suspectscore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2203290053
-X-Proofpoint-GUID: oNBWbRljdBorZ9wZYB8RTmvg693YjJR2
-X-Proofpoint-ORIG-GUID: oNBWbRljdBorZ9wZYB8RTmvg693YjJR2
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] mmc: block: enable cache-flushing when mmc cache is on
+Content-Language: en-GB
+To:     Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     Adrian Hunter <adrian.hunter@intel.com>,
+        =?UTF-8?Q?Christian_L=c3=b6hle?= <CLoehle@hyperstone.com>,
+        Avri Altman <avri.altman@wdc.com>,
+        "beanhuo@micron.com" <beanhuo@micron.com>,
+        "porzio@gmail.com" <porzio@gmail.com>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        allwinner-opensource-support 
+        <allwinner-opensource-support@allwinnertech.com>
+References: <20220312044315.7994-1-michael@allwinnertech.com>
+ <83edf9a1-1712-5388-a3fa-d685f1f581df@intel.com>
+ <88e53cb9-791f-ee58-9be8-76ae9986e0e2@allwinnertech.com>
+ <DM6PR04MB6575C3B87DFA920EDCD994CCFC0F9@DM6PR04MB6575.namprd04.prod.outlook.com>
+ <32b29790-eb5c-dac0-1f91-aede38220914@allwinnertech.com>
+ <DM6PR04MB6575A4A2A687A876EA5C04B7FC119@DM6PR04MB6575.namprd04.prod.outlook.com>
+ <312d724c-e43f-d766-49fb-9c5b10fe8b07@intel.com>
+ <7ec0cf3e316a4ed9987962b4cbf01604@hyperstone.com>
+ <a1230f11-a2dd-1959-5444-28c57d3babf6@intel.com>
+ <CAPDyKFpnR12+nrbiB-Ps-C4vn-WeHneRGJioQ_0b2ikk2CBChw@mail.gmail.com>
+ <CAPDyKFqnFVd=mvQMnydT569Y6YFg3zPkttQ=amdzmT_yqYQeTg@mail.gmail.com>
+ <a39e9f71-7a9c-bf0e-50d0-d45de3c2e132@allwinnertech.com>
+ <CAPDyKFoVVrCNqJUztKnOqyJHhFYnH0H3PR1z02qVN7pchD6W0g@mail.gmail.com>
+ <580a9991-b117-86aa-a7b9-bf952d580a87@allwinnertech.com>
+ <CAPDyKFrtVV35mg4dq5UZRnAzNRQRAbmbRXQfCB_gdpdyPETK3Q@mail.gmail.com>
+From:   Michael Wu <michael@allwinnertech.com>
+In-Reply-To: <CAPDyKFrtVV35mg4dq5UZRnAzNRQRAbmbRXQfCB_gdpdyPETK3Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 05:37:28PM -0500, Daniel Latypov wrote:
-> On Mon, Mar 28, 2022 at 4:20 PM Marcelo Schmitt
-> <marcelo.schmitt1@gmail.com> wrote:
-> >
-> > Complement the Kernel Testing Guide documentation page by adding a
-> > section about static analysis tools.
-> >
-> > Signed-off-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+On 28/03/2022 19:38, Ulf Hansson wrote:
+> On Mon, 28 Mar 2022 at 12:11, Michael Wu <michael@allwinnertech.com> wrote:
+>>
+>> On 25/03/2022 18:13, Ulf Hansson wrote:
+>>> On Fri, 25 Mar 2022 at 06:46, Michael Wu <michael@allwinnertech.com> wrote:
+>>>>
+>>>> On 24/03/2022 19:27, Ulf Hansson wrote:
+>>>>> On Thu, 17 Mar 2022 at 10:14, Ulf Hansson <ulf.hansson@linaro.org> wrote:
+>>>>>>
+>>>>>> On Wed, 16 Mar 2022 at 17:08, Adrian Hunter <adrian.hunter@intel.com> wrote:
+>>>>>>>
+>>>>>>> On 16.3.2022 16.46, Christian Löhle wrote:
+>>>>>>>>> So we are not going to let the block layer know about SD cache?
+>>>>>>>>> Or is it a separate change?
+>>>>>>>>
+>>>>>>>> I have some code for this laying around, but as it requires reading, parsing and writing Function Registers,
+>>>>>>>> in particular PEH, it's a lot of boilerplate code to get the functionality, but I'll clean it up and send a patch in the coming weeks.
+>>>>>>>>
+>>>>>>>
+>>>>>>> We have the sd cache flush.  We would presumably just need to call blk_queue_write_cache()
+>>>>>>> for the !mmc_card_mmc(card) case e.g.
+>>>>>>>
+>>>>>>>            if (mmc_has_reliable_write(card)) {
+>>>>>>>                    md->flags |= MMC_BLK_REL_WR;
+>>>>>>>                    enable_fua = true;
+>>>>>>>            }
+>>>>>>>
+>>>>>>>            if (mmc_cache_enabled(card->host))
+>>>>>>>                    enable_cache = true;
+>>>>>>>
+>>>>>>>            blk_queue_write_cache(md->queue.queue, enable_cache, enable_fua);
+>>>>>>
+>>>>>> To me, this seems like the most reasonable thing to do.
+>>>>>>
+>>>>>> However, I have to admit that it's not clear to me, if there was a
+>>>>>> good reason to why commit f4c5522b0a88 ("mmc: Reliable write
+>>>>>> support.") also added support for REQ_FLUSH (write back cache) and why
+>>>>>> not only REQ_FUA. I assumed this was wrong too, right?
+>>>>>>
+>>>>
+>>>> Hi Ulf,
+>>>>
+>>>> 1. I've found the reason. If we only enable REQ_FUA, there won't be any
+>>>> effect -- The block layer won't send any request with FUA flag to the
+>>>> driver.
+>>>> If we want REQ_FUA to take effect, we must enable REQ_FLUSH. But on the
+>>>> contrary, REQ_FLUSH does not rely on REQ_FUA.
+>>>> In the previous patch(commit f4c5522b0a88 ("mmc: Reliable write
+>>>> support.")), REQ_FLUSH was added to make REQ_FUA effective. I've done
+>>>> experiments to prove this.
+>>>
+>>> Thanks for doing the research and for confirming.
+>>>
+>>> Note that this is also pretty well documented in
+>>> Documentation/block/writeback_cache_control.rst.
+>>
+>> Thanks for reminding. I'm clear now.
+>>
+>>>
+>>>>
+>>>> 2. Why block layer requires REQ_FLUSH to make REQ_FUA effective? I did
+>>>> not find the reason. Does anyone know about this? Thank you.
+>>>
+>>> The REQ_FLUSH indicates that the storage device has a write back
+>>> cache, which also can be flushed in some device specific way.
+>>>
+>>> The REQ_FUA (Force Unit Access), tells that the data can be written to
+>>> the storage device, in a way that when the I/O request is completed,
+>>> the data is fully written to the device (the data must not be left in
+>>> the write back cache). In other words, REQ_FUA doesn't make sense
+>>> unless REQ_FLUSH is supported too.
+>>>
+>>
+>> Thank you for your answer.
+>>
+>>> $subject patch should also conform to this pattern.
+>>
+>> I'm not sure if I understood this in a right way... Did you mean I
+>> should modify the subject of this mail/patch?
+> 
+> No, I just meant that the code in the patch should conform to this.
+
+No problem. Please have a look at the code below.
+
+> 
+> If REQ_FUA is set, REQ_FLUSH must be set too.
+> 
+>>
+>>>
+>>> However, it's still questionable to me whether we want to support
+>>> REQ_FUA through the eMMC reliable write command - in case we also have
+>>> support for managing the eMMC cache separately. It looks to me that
+>>> the reason why we currently support REQ_FUA, is because back in the
+>>> days when there was only the eMMC reliable write command available, it
+>>> was simply the best we could do. But it was never really a good fit.
+>>>
+>>> I am starting to think that we may consider dropping REQ_FUA, if we
+>>> have the option to manage the eMMC cache separately - no matter
+>>> whether the eMMC reliable write command is supported or not. In this
+>>> case, REQ_FLUSH is sufficient and also a better match to what we
+>>> really can support.
+>>
+>> Hi Ulf,
+>> As to dropping REQ_FUA, I don't know if it is a good idea, but generally
+>> we are facing three possible situations:
+>>
+>> 1. If both cache and reliable-write are available, both REQ_FUA and
+>> REQ_FLUSH can be supported at the same time. In this case, with
+>> available cache, the behavior of reliable-write is to write eMMC while
+>> skipping cache, which is consistent with the current kernel's definition
+>> of REQ_FUA. What's more, most eMMCs now support both cache and
+>> reliable-write command.
+> 
+> Yes, this seems reasonable.
 > 
 > 
-> > ---
-> > Hey everyone,
-> >
-> > I think this patch can be a good addition to the documentation as
-> > discussed in the thread for the testing guide documentation page:
-> > Link: https://lore.kernel.org/linux-doc/CABVgOS=2iYtqTVdxwH=mcFpcSuLP4cpJ4s6PKP4Gc-SH6jidgQ@mail.gmail.com/
-> >
-> > If you think it would be worth it, I can try making something more
+>> 2. If only reliable-write is available, REQ_FUA should not be supported,
+>> which is consistent with the current standard in another way. But I
+>> don't think eMMCs that only support reliable-write can be easily found
+>> nowadays.
 > 
-> Nice!
-> This is definitely worth including, but I'm out of my depth here.
-> Some ideas below in case they're helpful.
+> If we drop REQ_FUA for this case, I am worried that we might break use
+> cases for those older eMMC devices.
 > 
-> Acked-by: Daniel Latypov <dlatypov@google.com>
+> So, no, let's keep REQ_FUA and REQ_FLUSH if reliable-write is supported.
+
+OK. Let's keep them.
+
 > 
-> > elaborated. Maybe provide some guidance on when to use each tool.
-> > I've been studying how Linux device drivers are tested.
-> > Here's a post I wrote talking about some testing tools.
-> > Link: https://marcelosc.gitlab.io/how-is-linux-tested/
-> >
-> > Best regards,
-> > Marcelo
-> >
-> >  Documentation/dev-tools/testing-overview.rst | 29 ++++++++++++++++++++
-> >  1 file changed, 29 insertions(+)
-> >
-> > diff --git a/Documentation/dev-tools/testing-overview.rst b/Documentation/dev-tools/testing-overview.rst
-> > index 65feb81edb14..b00511109a9d 100644
-> > --- a/Documentation/dev-tools/testing-overview.rst
-> > +++ b/Documentation/dev-tools/testing-overview.rst
-> > @@ -115,3 +115,32 @@ that none of these errors are occurring during the test.
-> >  Some of these tools integrate with KUnit or kselftest and will
-> >  automatically fail tests if an issue is detected.
-> >
-> > +Static Analysis Tools
-> > +======================
-> > +
-> > +In addition to testing a running kernel, one may also scout for bugs by
-> > +analyzing the source code semantics. Three tools are well known for serving this
-> > +purpose.
-> > +
-> > +Sparse can help test the kernel by performing type-checking, lock checking,
-> > +value range checking, in addition to reporting various errors and warnings while
-> > +examining the code. See the Documentation/dev-tools/sparse.rst documentation
-> > +page for details on how to use it.
-> > +
-> > +Smatch extends Sparse and provides additional checks for programming logic
+>> 3. If only cache is available, we just use REQ_FLUSH. It is not in
+>> conflict with keeping REQ_FUA.
 > 
-> Coming from a place of ignorance, when should I use sparse vs smatch?
-> Is there an existing consensus on this, or is that a controversial question?
+> Right.
+> 
+>>
+>> Maybe, is it more reasonable to reserve FUA and use if/else to pick it
+>> up or down, considering the compatibility? I mean, in most cases, FUA
+>> and FLUSH are complementary. So it seems more feasible with branch to
+>> choose.
+> 
+> Let's summarize what I think we should do then:
+> 
+>   if (reliable-write supported) {
+>       enable_fua = true;
+>       enable_cache = true;
+> }
+> 
+> if (mmc_cache_enabled)
+>       enable_cache = true;
+> 
+> blk_queue_write_cache(md->queue.queue, enable_cache, enable_fua);
+> 
+> Does this seem reasonable to you?
 
-I am the author of Smatch.
+Yes. Let me attach the complete code here:
 
-Sparse is a compiler which can print static checker warnings.  Smatch
-uses Sparse as a C front end.
+     if (md->flags & MMC_BLK_CMD23 &&
+         ((card->ext_csd.rel_param & EXT_CSD_WR_REL_PARAM_EN) ||
+         card->ext_csd.rel_sectors)) {
+         md->flags |= MMC_BLK_REL_WR;
+         enable_fua = true;
+         enable_cache = true;
+     }
 
-Sparse is useful for type checking, detecting places which use __user
-pointers improperly or endian bugs.  Sparse is much faster than Smatch.
+     if (mmc_cache_enabled(card->host))
+         enable_cache = true;
 
-Smatch does flow analysis and if you build the DB, then it does
-cross function analysis.  Smatch tries to answer questions like where is
-this buffer allocated?  How big is it?  Can this index be controlled by
-the user?  Is this variable larger than that variable?  I feel like it's
-generally easier to write checks in Smatch than it is to write checks in
-Sparse.
+     blk_queue_write_cache(md->queue.queue, enable_cache, enable_fua);
 
-Coccinelle is probably the easiest for writing checks.  It works before
-the pre-compiler so it easier to check for bugs in macros using
-Coccinelle.  Coccinelle also writes patches fixes for you which no one
-else does.
 
-There are sometimes overlap in their checks.  But I'm not going to
-re-implement Sparse's check in Smatch because Sparse already does that
-well.  If it's just way easier to write the check with Coccinelle then
-do that.
+If this is good, I'll submit a patch-v2 soon.
 
-With Coccinelle you can do a mass conversion from
-kmalloc(x * size, GFP_KERNEL) to kmalloc_array(x, size, GFP_KERNEL); and
-that's really useful.  If you just created a Smatch warning and try to
-push the work of converting on to the maintainers they would be annoyed.
-You'd have to argue about each warning if can really overflow or not.
+> 
+> [...]
+> 
+> Kind regards
+> Uffe
 
-regards,
-dan carpenter
-
+-- 
+Best Regards,
+Michael Wu
