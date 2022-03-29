@@ -2,139 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DE74C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 01:00:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E105EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 01:02:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229558AbiC2BCW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 21:02:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60762 "EHLO
+        id S229525AbiC2BEe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 21:04:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiC2BCV (ORCPT
+        with ESMTP id S229379AbiC2BEa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 21:02:21 -0400
-Received: from mail-oo1-f50.google.com (mail-oo1-f50.google.com [209.85.161.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1488D23F9C3;
-        Mon, 28 Mar 2022 18:00:39 -0700 (PDT)
-Received: by mail-oo1-f50.google.com with SMTP id p34-20020a4a95e5000000b003248d73d460so2851731ooi.1;
-        Mon, 28 Mar 2022 18:00:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=qsEldasqSmPH+uyKPG9uvo/NU8uKdGNTwdCF9sy/D/E=;
-        b=6HFD1myHIe4Oz25NBwXFDddKLJRZMwBSBAVE/VIiTPdolT6SHLA3IgJCDaLeH8W2gc
-         0vmrfcpQS7+F0J5xD0OIAXWM7/ZYLziHJ1FJEKgSX9GPGCRAJJ7kmQ01Hr4HiQG6Lp9z
-         ayboApYop9rqWom+nsHmtys7HRY+j8yP9K8PBIqDms8m7pqmSK3dkIHxrmpAz0SJQ08H
-         +1+OEhTdC3/KnomS7/6O5iBHhk+EfUT+mOXunEAR3ISq8FCpKAMiyjulmwnTg+BAY4Q5
-         CgVOHRXLudbj/6TxTcq8aLHUemwXHJn1qCB7EGl6hDcJk31nzrnL1HdPQQIf9iwaaK+x
-         RUCQ==
-X-Gm-Message-State: AOAM533pVxyNNY+03LvCwKqpeajRp3B3fFYHO9bkXMXkY5t73AsfuwTS
-        h2LWHgELpNvobDwAn7/3vyz26DSxDA==
-X-Google-Smtp-Source: ABdhPJygqRqHhRk4OiSo6iQBjfgsT2QvY6ZZ2r8mczpG9SMPz5GWtegFSl3boIRZpO//0kXJL1k3YA==
-X-Received: by 2002:a4a:1784:0:b0:324:5b06:dd0d with SMTP id 126-20020a4a1784000000b003245b06dd0dmr75661ooe.77.1648515638332;
-        Mon, 28 Mar 2022 18:00:38 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id r205-20020acadad6000000b002ef824213c9sm8044301oig.55.2022.03.28.18.00.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Mar 2022 18:00:37 -0700 (PDT)
-Received: (nullmailer pid 3398741 invoked by uid 1000);
-        Tue, 29 Mar 2022 01:00:36 -0000
-Date:   Mon, 28 Mar 2022 20:00:36 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Cc:     agross@kernel.org, bjorn.andersson@linaro.org, broonie@kernel.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, rohitkr@codeaurora.org,
-        srinivas.kandagatla@linaro.org, dianders@chromium.org,
-        swboyd@chromium.org, judyhsiao@chromium.org,
-        alsa-devel@alsa-project.org, krzysztof.kozlowski@canonical.com,
-        Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Subject: Re: [PATCH 3/3] ASoC: dt-bindings: lpass-cpu: Update clocks and
- power domain names for sc7280 platform
-Message-ID: <YkJaNJT2yt6UpBZG@robh.at.kernel.org>
-References: <1647852981-27895-1-git-send-email-quic_srivasam@quicinc.com>
- <1647852981-27895-4-git-send-email-quic_srivasam@quicinc.com>
+        Mon, 28 Mar 2022 21:04:30 -0400
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 917312A24E;
+        Mon, 28 Mar 2022 18:02:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648515769; x=1680051769;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=E1Mse4J2gkjy4zky9Hh8Adz/f4f0mswnlvb9K0UZs84=;
+  b=YYr1t7VPxHjjssml6QxE5xv4/IiWakAtLpoNcXT9rJ+KK1BKCbELmSnm
+   yrjD34/e/2Xj4FhYXW2wBkFCJyA2w9gAlGmYt3zR3Zo5xG8jN69VW0WGs
+   QTLFOS1RNUIfX6eyx2yTz7qU2upujh8aBzD7YEfyWMEYiBBgcRlabIkqF
+   5RGnts+BeP54dd/I6/y68HF7bWjpzhChpxMIyDWzlAvFbKStUhhdt0pgx
+   CjTTafsKwK/3gvHosZ2aMRfDpUjvmvoyTAhXJB9tYOj5+WZPTdIXg3oSi
+   KSoawSXBy1zP8K2hAydQvzN4ijy6MxOohhiFjWoDO95XBpxETfr7LWq28
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="319833652"
+X-IronPort-AV: E=Sophos;i="5.90,218,1643702400"; 
+   d="scan'208";a="319833652"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 18:02:49 -0700
+X-IronPort-AV: E=Sophos;i="5.90,218,1643702400"; 
+   d="scan'208";a="652505910"
+Received: from alison-desk.jf.intel.com (HELO alison-desk) ([10.54.74.41])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 18:02:49 -0700
+Date:   Mon, 28 Mar 2022 18:05:16 -0700
+From:   Alison Schofield <alison.schofield@intel.com>
+To:     Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+Cc:     outreachy@lists.linux.dev, toke@toke.dk, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] First Patch: Add Printk to pci.c
+Message-ID: <20220329010516.GA1166534@alison-desk>
+References: <20220328232449.132550-1-eng.alaamohamedsoliman.am@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1647852981-27895-4-git-send-email-quic_srivasam@quicinc.com>
+In-Reply-To: <20220328232449.132550-1-eng.alaamohamedsoliman.am@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 02:26:21PM +0530, Srinivasa Rao Mandadapu wrote:
-> Update required clock-names used for MI2S primary path, VA macro's
-> codec memory path and HDMI path in sc7280 based platforms.
-> Update power domain names required for sc7280 platforms.
+On Tue, Mar 29, 2022 at 01:24:49AM +0200, Alaa Mohamed wrote:
+> This patch for adding Printk line to ath9k probe function as a task
+> for Outreachy internship
 > 
-> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+
+Hi Alaa,
+
+Based on your 'CC to outreachy I can guess you are following out 'First
+Patch Tutorial'. A patch for this step does not need to be sent out to
+the maintainers and lists, since it's not something we actually want
+to change in the Linux Kernel. 
+
+Your next patch, a cleanup patch in drivers/staging/ does need to get
+sent. I guess we'll see that soon!
+
+Thanks & welcome to this round of Outreachy,
+Alison
+
+
 > ---
->  .../devicetree/bindings/sound/qcom,lpass-cpu.yaml       | 17 ++++++++++++++---
->  1 file changed, 14 insertions(+), 3 deletions(-)
+>  drivers/net/wireless/ath/ath9k/pci.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/sound/qcom,lpass-cpu.yaml b/Documentation/devicetree/bindings/sound/qcom,lpass-cpu.yaml
-> index 2c81efb..e9a5330 100644
-> --- a/Documentation/devicetree/bindings/sound/qcom,lpass-cpu.yaml
-> +++ b/Documentation/devicetree/bindings/sound/qcom,lpass-cpu.yaml
-> @@ -38,8 +38,8 @@ properties:
->      maxItems: 7
+> diff --git a/drivers/net/wireless/ath/ath9k/pci.c b/drivers/net/wireless/ath/ath9k/pci.c
+> index a074e23013c5..e16bdf343a2f 100644
+> --- a/drivers/net/wireless/ath/ath9k/pci.c
+> +++ b/drivers/net/wireless/ath/ath9k/pci.c
+> @@ -892,6 +892,7 @@ static int ath_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>  	int ret = 0;
+>  	char hw_name[64];
+>  	int msi_enabled = 0;
+> +	printk(KERN_DEBUG "I can modify the Linux kernel!\n");
 >  
->    clock-names:
-> -    minItems: 3
-> -    maxItems: 7
-> +    minItems: 1
-> +    maxItems: 10
->  
->    interrupts:
->      minItems: 2
-> @@ -62,6 +62,9 @@ properties:
->    power-domains:
->      maxItems: 1
->  
-> +  power-domain-names:
-> +    maxItems: 1
-> +
->    '#sound-dai-cells':
->      const: 1
->  
-> @@ -192,15 +195,19 @@ allOf:
->            oneOf:
->              - items:   #for I2S
->                  - const: aon_cc_audio_hm_h
-> +                - const: audio_cc_ext_mclk0
->                  - const: core_cc_sysnoc_mport_core
-> +                - const: core_cc_ext_if0_ibit
->                  - const: core_cc_ext_if1_ibit
-
-You can't add new clocks in the middle. That breaks the ABI.
-
->              - items:   #for Soundwire
->                  - const: aon_cc_audio_hm_h
-> +                - const: audio_cc_codec_mem
->                  - const: audio_cc_codec_mem0
->                  - const: audio_cc_codec_mem1
->                  - const: audio_cc_codec_mem2
-> +                - const: aon_cc_va_mem0
->              - items:   #for HDMI
-> -                - const: aon_cc_audio_hm_h
-> +                - const: core_cc_sysnoc_mport_core
->  
->          reg-names:
->            anyOf:
-> @@ -228,6 +235,10 @@ allOf:
->                  - const: lpass-irq-hdmi
->                  - const: lpass-irq-vaif
->                  - const: lpass-irq-rxtxif
-> +        power-domain-names:
-> +          allOf:
-> +            - items:
-> +                - const: lcx
->  
->        required:
->          - iommus
+>  	if (pcim_enable_device(pdev))
+>  		return -EIO;
 > -- 
-> 2.7.4
+> 2.35.1
 > 
 > 
