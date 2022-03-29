@@ -2,77 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F57AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 13:09:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD72CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 13:09:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237141AbiC2NKp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 09:10:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58338 "EHLO
+        id S237151AbiC2NLc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 09:11:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235616AbiC2NKo (ORCPT
+        with ESMTP id S235616AbiC2NLb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 09:10:44 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D703DF10
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 06:09:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=cTMwKalK7QXcN3cet26Iin/abX8tZmbV6bru+8JGtfI=; b=FJw0zubQ07UUlTaiwOPvhMpdEi
-        U442VB+nkCNvx5N2krFK86rGtIL+JYiJx+SCfII34bS0HPXmjS5JyEJ5FQDqQ2Fj100s0akK4COcS
-        jo4/fHskA5JpNKlg4fZvFLUJMK74BpiuHiskt3U0d+SFb0i1NW+0XfanIIg/9xzL1V9Nj3duWugO4
-        YUDkDFerDEVWhVQeVW/XrOd9fRWHsk/dfVjGXjT8Njzt88icGVkLy3ZQZqRecaXlxGvKQcRpDPuD8
-        Lp4BiDxj2y/B/54dG71Omd5W9oyzzkgN8tyHn2tzxTnMZHUlg9cgZ2EzX7tNf5LZHx4ezj3ip17Vo
-        KHYXbtRg==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nZBaf-00CICc-HL; Tue, 29 Mar 2022 13:08:53 +0000
-Date:   Tue, 29 Mar 2022 06:08:53 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Kirill Tkhai <kirill.tkhai@openvz.org>
-Cc:     agk@redhat.com, snitzer@redhat.com, dm-devel@redhat.com,
-        song@kernel.org, linux-kernel@vger.kernel.org,
-        khorenko@virtuozzo.com
-Subject: Re: [dm-devel] [PATCH 0/4] dm: Introduce dm-qcow2 driver to attach
- QCOW2 files as block device
-Message-ID: <YkME5ZS2CpXuNmN6@infradead.org>
-References: <164846619932.251310.3668540533992131988.stgit@pro>
+        Tue, 29 Mar 2022 09:11:31 -0400
+Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BDA5DF10;
+        Tue, 29 Mar 2022 06:09:48 -0700 (PDT)
+Received: by mail-ot1-f42.google.com with SMTP id z9-20020a05683020c900b005b22bf41872so12715970otq.13;
+        Tue, 29 Mar 2022 06:09:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=pgmVS6Ri5wIx578wOnaD17/Gk0HO8xT8dcbeURwXcvM=;
+        b=jGGraEXM6HEYbCh2s7/DHpL1QheO2q0stI0MN4yYrXbH8Cwki/ZhPMQ3WLd2VEzGTm
+         g1/e/63CHpcCTwUtl01im/IsYQ37vEZMu3q0/XJ6uo7Zqs5oGmWczCreze6PHM1U66M0
+         j7trzPNoorEP1TEoYjdzT5LCOkXwdw/JBOSTrEjRaWzf50zdAcOOf8taM1hUM2oXjNNX
+         cxDIGhDTZjBd7rp3CFkYYKfud3f4k1i0fssNgdvV9V6TzF3qw4jV5zYroCWKtk245iJ9
+         gDe8bRRlvVqLLhgjq00lglqKuNk2RfiwyHYDpnvVu/tjVbvvoEvH65MaIJeDn1iDEbbS
+         tDbQ==
+X-Gm-Message-State: AOAM533+KjdCvgu91Lp/UMZtzbP5gz60/kN95sYuHSZVMHrYolt+hv4m
+        w1FZmRZblCpZ9lGkG1IYmg==
+X-Google-Smtp-Source: ABdhPJxz1vLRb+ULvjznOE3SueYbicXZjpLRanPIOSO+cxvPbO6krkNLY2qTn6KPl8CwI3JDJM2gsQ==
+X-Received: by 2002:a9d:5614:0:b0:5b2:5fe3:8f1c with SMTP id e20-20020a9d5614000000b005b25fe38f1cmr1052711oti.229.1648559387820;
+        Tue, 29 Mar 2022 06:09:47 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id li20-20020a056871421400b000deaa91898fsm6115814oab.40.2022.03.29.06.09.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Mar 2022 06:09:46 -0700 (PDT)
+Received: (nullmailer pid 482676 invoked by uid 1000);
+        Tue, 29 Mar 2022 13:09:45 -0000
+Date:   Tue, 29 Mar 2022 08:09:45 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Irui Wang <irui.wang@mediatek.com>
+Cc:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Tzung-Bi Shih <tzungbi@chromium.org>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tomasz Figa <tfiga@google.com>,
+        angelogioacchino.delregno@collabora.com,
+        Yong Wu <yong.wu@mediatek.com>,
+        Tiffany Lin <tiffany.lin@mediatek.com>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Maoguang Meng <maoguang.meng@mediatek.com>,
+        Longfei Wang <longfei.wang@mediatek.com>,
+        Yunfei Dong <yunfei.dong@mediatek.com>,
+        Fritz Koenig <frkoenig@chromium.org>,
+        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        srv_heupstream@mediatek.com, linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+Subject: Re: [PATCH v3, 03/10] dt-bindings: media: mtk-vcodec: Adds encoder
+ cores dt-bindings for mt8195
+Message-ID: <YkMFGbgYq5DhLjt8@robh.at.kernel.org>
+References: <20220317082230.23622-1-irui.wang@mediatek.com>
+ <20220317082230.23622-4-irui.wang@mediatek.com>
+ <Yj4s0zcHxz3U3wlc@robh.at.kernel.org>
+ <ab2b24eeb51048227ad7b2ac659617a7da5b2e45.camel@mediatek.com>
+ <YkG8ka1xY2k+HWi1@robh.at.kernel.org>
+ <e41e909f85e3891edb6b66d7d5a810af103113c8.camel@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <164846619932.251310.3668540533992131988.stgit@pro>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <e41e909f85e3891edb6b66d7d5a810af103113c8.camel@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 02:18:16PM +0300, Kirill Tkhai wrote:
-> This patchset adds a new driver allowing to attach QCOW2 files
-> as block devices. Its idea is to implement in kernel only that
-> features, which affect runtime IO performance (IO requests
-> processing functionality).
-
-From a quick looks it seems to be like this should be a block driver
-just like the loop driver and not use device mapper.  Why would
-you use device mapper to basically reimplement a fancy loop driver
-to start with?
-
-> The maintenance operations are
-> synchronously processed in userspace, while device is suspended.
+On Tue, Mar 29, 2022 at 09:26:37AM +0800, Irui Wang wrote:
+> Dear Rob,
 > 
-> Userspace is allowed to do only that operations, which never
-> modifies virtual disk's data. It is only allowed to modify
-> QCOW2 file metadata providing that disk's data. The examples
-> of allowed operations is snapshot creation and resize.
+> Many thanks for your attention.
+> 
+> On Mon, 2022-03-28 at 08:48 -0500, Rob Herring wrote:
+> > On Sat, Mar 26, 2022 at 10:00:55AM +0800, Irui Wang wrote:
+> > > Dear Rob,
+> > > 
+> > > Thanks for your review and comments.
+> > > 
+> > > On Fri, 2022-03-25 at 15:57 -0500, Rob Herring wrote:
+> > > > On Thu, Mar 17, 2022 at 04:22:23PM +0800, Irui Wang wrote:
+> > > > > Adds encoder cores dt-bindings for mt8195.
 
-And this sounds like a pretty fragile design.  It basically requires
-both userspace and the kernel driver to access metadata on disk, which
-sounds rather dangerous.
+[...]
 
-> This example shows the way of device-mapper infrastructure
-> allows to implement drivers following the idea of
-> kernel/userspace components demarcation. Thus, the driver
-> uses advantages of device-mapper instead of implementing
-> its own suspend/resume engine.
+> > > > > +      mediatek,core-id:
+> > > > > +        $ref: /schemas/types.yaml#/definitions/uint32
+> > > > > +        description: |
+> > > > > +          Current encoder core id.
+> > > > 
+> > > > What is this for and what does its value correspond to in the
+> > > > h/w.
+> > > > We 
+> > > > generally don't do made up indices in DT.
+> > > 
+> > > It's for encoder core id, core@1a020000 must be core-0, 
+> > > core@1b020000
+> > > must be core-1, we add this property in each child node, so we can 
+> > > get core-id in drivers. If it can't ref "uint32" types yaml, would 
+> > > you mind giving some more suggestions ?
+> > 
+> > I still don't understand why it is needed. What is 'core-0'?
+> > 
+> > Is there some functional difference between the cores? If so,
+> > describe 
+> > that difference.
+> > 
+> > Rob
+> 
+> They are two different pieces of hardware, it's our encoder hardware
+> design. There are two encoder hardware cores inside MT8195, named core0
+> and core1(we can rename it, but core id should be declared),
+> for core0, its module base address is 0x1A02_0000, uses IOMMU
+> "vdo0_iommu" and power domain "POWER_DOMAIN_VENC",
+> for core1, its module base address is 0x1B02_0000, uses IOMMU
+> "vpp_iommu" and power domain "POWER_DOMAIN_VENC_CORE1".
+> So the two encoder cores have their own base, IRQ, clock, power, etc.
+> Each core can encode independently, moreover, they can work together
+> for higher performance. 
+> We will describe more details in YAML about it if it's OK for you.
 
-What do you need more than a queue freeze?
+All the resources you list are in the child nodes, so you don't need 0 
+and 1 numbering for those. 
+
+Looking at the driver patches, the only thing I see distinguishing 
+core numbers is this:
+
+"frame#0 uses core#0, frame#1 uses core#1, frame#2 uses core#0...,
+
+Lock the device and enable the clock by used core, for sequence
+header encoding, it always uses core#0."
+
+Is this a requirement in the h/w or just what the driver picked? IOW, 
+could frame#0 use core#1?
+
+Rob
