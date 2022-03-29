@@ -2,180 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 042F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 02:48:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50181C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 02:48:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231194AbiC2Ctu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 22:49:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34390 "EHLO
+        id S231258AbiC2CuE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 22:50:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230147AbiC2Cts (ORCPT
+        with ESMTP id S231211AbiC2Ct5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 22:49:48 -0400
-Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A80641A1283
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 19:48:04 -0700 (PDT)
-Received: from epcas3p1.samsung.com (unknown [182.195.41.19])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220329024802epoutp01fae3517dfe18e2cab3c9d13bf2edb6db~guhmmhQDC0821908219epoutp01H
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 02:48:02 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220329024802epoutp01fae3517dfe18e2cab3c9d13bf2edb6db~guhmmhQDC0821908219epoutp01H
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1648522082;
-        bh=1olVSWAEgR/VDjFbhzBg6IiLtOiXutP5xF9bpZypCY8=;
+        Mon, 28 Mar 2022 22:49:57 -0400
+Received: from smtp.tom.com (smtprz02.163.net [106.3.154.235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1C27A4617D
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 19:48:11 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by vip-app02.163.net (Postfix) with ESMTP id 9A1DE440106
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 10:48:10 +0800 (CST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=mail;
+        t=1648522090; bh=UxIN0gCQWDCPxHwAlV5GfBTdHsvgwdbGdcBxlAMphuU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=V29Uku4VPuEy+h29pL+XscipYSGV+h2Hb39zsUSyZcpr253mdBt0SSH0Jzt2U9vn3
-         AQzZoXgTMvngJORAHIc6DVSXScLQ/jTq6lG+acEd73OGOhzNjXK7glRBp61hdgZ/db
-         0XhXwE0SoLnDtCnft0So7b/Vvww2Z1SEHW5lStDE=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas3p1.samsung.com (KnoxPortal) with ESMTP id
-        20220329024802epcas3p1dfc1df6ab5ae4cacd249ee7454bfb182~guhl9sVTV1195811958epcas3p1N;
-        Tue, 29 Mar 2022 02:48:02 +0000 (GMT)
-Received: from epcpadp4 (unknown [182.195.40.18]) by epsnrtp2.localdomain
-        (Postfix) with ESMTP id 4KSDWk1bNNz4x9Q7; Tue, 29 Mar 2022 02:48:02 +0000
-        (GMT)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas2p1.samsung.com (KnoxPortal) with ESMTPA id
-        20220329024519epcas2p18206b61214fcf982708a82df57d0e26b~gufOqaPqk2937829378epcas2p1R;
-        Tue, 29 Mar 2022 02:45:19 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220329024519epsmtrp213868e78e14146572244a7b1e3337346~gufOpg8-r0124001240epsmtrp2K;
-        Tue, 29 Mar 2022 02:45:19 +0000 (GMT)
-X-AuditID: b6c32a29-b05ff70000005f16-59-624272bfa9ba
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        D5.21.24342.FB272426; Tue, 29 Mar 2022 11:45:19 +0900 (KST)
-Received: from ubuntu (unknown [12.36.155.120]) by epsmtip2.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220329024519epsmtip2e407ed617a9e57d75e9576ee5a09afbb~gufOeBXM12802128021epsmtip2X;
-        Tue, 29 Mar 2022 02:45:19 +0000 (GMT)
-Date:   Tue, 29 Mar 2022 11:43:51 +0900
-From:   Jung Daehwan <dh10.jung@samsung.com>
-To:     Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     Mathias Nyman <mathias.nyman@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "open list:USB XHCI DRIVER" <linux-usb@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Howard Yen <howardyen@google.com>,
-        Jack Pham <jackp@codeaurora.org>,
-        Puma Hsu <pumahsu@google.com>,
-        "J . Avila" <elavila@google.com>,
-        "chihhao . chen" <chihhao.chen@mediatek.com>, sc.suh@samsung.com,
-        cpgs@samsung.com, cpgsproxy5@samsung.com
-Subject: Re: [PATCH v1 1/4] usb: host: export symbols for xhci hooks usage
-Message-ID: <1983025922.01648522082197.JavaMail.epsvc@epcpadp4>
+        b=TItiNbo1FHWTYF+aGHjG2PeBXJVFxoU2jVRHsyUMg/kPJ2x8yB1ebm9pb6/xp86fj
+         etIEqkvkNdXiMFTXAvfMwxUMwQvqNLnWnz8ZNm2b11sDMXedjU8um8sTg/GRD9It+f
+         O2GIZs/I1+A3LttPkHVOsD1noHItP7I14fhjWI0Y=
+Received: from localhost (HELO smtp.tom.com) ([127.0.0.1])
+          by localhost (TOM SMTP Server) with SMTP ID 1189854655
+          for <linux-kernel@vger.kernel.org>;
+          Tue, 29 Mar 2022 10:48:10 +0800 (CST)
+X-Virus-Scanned: Debian amavisd-new at mxtest.tom.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=mail;
+        t=1648522090; bh=UxIN0gCQWDCPxHwAlV5GfBTdHsvgwdbGdcBxlAMphuU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=TItiNbo1FHWTYF+aGHjG2PeBXJVFxoU2jVRHsyUMg/kPJ2x8yB1ebm9pb6/xp86fj
+         etIEqkvkNdXiMFTXAvfMwxUMwQvqNLnWnz8ZNm2b11sDMXedjU8um8sTg/GRD9It+f
+         O2GIZs/I1+A3LttPkHVOsD1noHItP7I14fhjWI0Y=
+Received: from localhost (unknown [101.93.196.13])
+        by antispamvip.163.net (Postfix) with ESMTPA id E79AA15411AE;
+        Tue, 29 Mar 2022 10:48:06 +0800 (CST)
+Date:   Tue, 29 Mar 2022 10:48:06 +0800
+From:   Mingbao Sun <sunmingbao@tom.com>
+To:     Sagi Grimberg <sagi@grimberg.me>
+Cc:     Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        tyler.sun@dell.com, ping.gan@dell.com, yanxiu.cai@dell.com,
+        libin.zhang@dell.com, ao.sun@dell.com
+Subject: Re: [PATCH v2 2/3] nvme-tcp: support specifying the
+ congestion-control
+Message-ID: <20220329104806.00000126@tom.com>
+In-Reply-To: <b7b5106a-9c0d-db49-00ab-234756955de8@grimberg.me>
+References: <20220311103414.8255-1-sunmingbao@tom.com>
+        <20220311103414.8255-2-sunmingbao@tom.com>
+        <7121e4be-0e25-dd5f-9d29-0fb02cdbe8de@grimberg.me>
+        <20220325201123.00002f28@tom.com>
+        <b7b5106a-9c0d-db49-00ab-234756955de8@grimberg.me>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
 MIME-Version: 1.0
-In-Reply-To: <382c4fae-95c5-af26-5d54-fa7ae7422b37@kernel.org>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmplkeLIzCtJLcpLzFFi42LZdlhJXnd/kVOSwa+b2hYrDs9jtHh5SNNi
-        88MrbBZPjixit2hevJ7N4vqf94wW7c8vsFmcP7+B3eLyrjlsFouWtTJbNG+awmoxc62yRdfd
-        G4wOvB6X+3qZPBZsKvVYvOclk8emVZ1sHvvnrmH3aDm5n8Wjb8sqRo/Pm+QCOKK4bFJSczLL
-        Uov07RK4Mk5M9yxYK1Rxd/NG1gbG9XxdjJwcEgImEh0r1rGC2EICuxklmheaQMQlJZbOvcEO
-        YQtL3G85AlXziFHi3fw6EJtFQFXiT/MTNhCbTUBL4t6PE8wgtoiApsT1v9+B6rk4mAX2M0t8
-        338WLCEs4CXx89k3sEG8AjoSa74+ZgYpEhK4xixxdNd6FoiEoMTJmU/AbGagqTf+vWTqYuQA
-        sqUllv/jAAlzCthJLNnwmQ0kLCqgIvHqYP0ERsFZSJpnIWmehdC8gJF5FaNkakFxbnpusWGB
-        YV5quV5xYm5xaV66XnJ+7iZGcExpae5g3L7qg94hRiYOxkOMEhzMSiK8smftk4R4UxIrq1KL
-        8uOLSnNSiw8xSnOwKInzXug6GS8kkJ5YkpqdmlqQWgSTZeLglGpgWr8yt8LEd1N2mplMxvYZ
-        /9c8lbp+JK/24fTMhbw/b1ceTOkvtfF7cfzy1l+1pWuLa/IPhNTtV8yt3XT+5LMp+SeOTowS
-        +jPtVckSn/5ft3eW6p/Zs6B4f3J+fOmk8oSgPrbsEvm7hX/sotZt/eGlMfPafo6t78UL2h48
-        6zh6RYTfoWiqld7PkzFfHnBv+n13LcfKJnMb1ptv734Oi+fbECW0JsXmxefw/ytm+10Lsrfn
-        e/XK9sWdUz86J3D1fP/q/2jPTY6SZc/FrQr3ikrGGZ2KObr5toUSg4XWraI1qbclvt6wVus0
-        Euu6t/PjgZ6goqm+v8Wr3xT3ndKuFZ6ZdGqDf3zB3znNTfxxvznff1ViKc5INNRiLipOBABk
-        ebAfGAMAAA==
-X-CMS-MailID: 20220329024519epcas2p18206b61214fcf982708a82df57d0e26b
-X-Msg-Generator: CA
-Content-Type: multipart/mixed;
-        boundary="----5UEmwHbbA6AZTFHXI7vBSuA.tpbU4PvcG6ycPLnmUYkKA_Gh=_2773e_"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-X-CPGSPASS: Y
-X-Hop-Count: 3
-X-CMS-RootMailID: 20220304062617epcas2p2084161966aaa66d07f4c25720ec18088
-References: <1646375038-72082-1-git-send-email-dh10.jung@samsung.com>
-        <CGME20220304062617epcas2p2084161966aaa66d07f4c25720ec18088@epcas2p2.samsung.com>
-        <252651381.41646375583002.JavaMail.epsvc@epcpadp4>
-        <b33d8497-d6d5-18e2-93a9-e0564a84c1c5@kernel.org>
-        <1983025922.01648006681661.JavaMail.epsvc@epcpadp4>
-        <105eaeec-d77e-b0eb-86ad-a88c7446ca98@kernel.org>
-        <1295226194.41648172284403.JavaMail.epsvc@epcpadp4>
-        <382c4fae-95c5-af26-5d54-fa7ae7422b37@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-------5UEmwHbbA6AZTFHXI7vBSuA.tpbU4PvcG6ycPLnmUYkKA_Gh=_2773e_
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
+> As I said, TCP can be tuned in various ways, congestion being just one
+> of them. I'm sure you can find a workload where rmem/wmem will make
+> a difference.
 
-On Fri, Mar 25, 2022 at 12:36:20PM +0100, Krzysztof Kozlowski wrote:
-> On 25/03/2022 02:28, Jung Daehwan wrote:
-> > On Wed, Mar 23, 2022 at 10:41:23AM +0100, Krzysztof Kozlowski wrote:
-> >> On 23/03/2022 03:58, Jung Daehwan wrote:
-> >>> On Mon, Mar 07, 2022 at 10:59:06AM +0100, Krzysztof Kozlowski wrote:
-> >>>> On 04/03/2022 07:23, Daehwan Jung wrote:
-> >>>>> Export symbols for xhci hooks usage:
-> >>>>> 	xhci_ring_free
-> >>>>> 	- Allow xhci hook to free xhci_ring.
-> >>>>
-> >>>> Instead of copying-pasting the name of function, please explain why do
-> >>>> you need these symbols exported.
-> >>>>
-> >>>> The "Why" is actually one of most important questions, because "what is
-> >>>> this patch doing" we can easily see...
-> >>>>
-> >>>>>
-> >>>>> 	xhci_get_slot_ctx
-> >>>>> 	- Allow xhci hook to get slot_ctx from the xhci_container_ctx
-> >>>>> 	  for getting the slot_ctx information to know which slot is
-> >>>>> 	  offloading and compare the context in remote subsystem memory
-> >>>>> 	  if needed.
-> >>>>>
-> >>>>
-> >>>>
-> >>>> Best regards,
-> >>>> Krzysztof
-> >>>>
-> >>>
-> >>> Hi Krzysztof
-> >>>
-> >>> xhci_ring_free has been removed from v3..
-> >>> The reason why I want to export is for managing vendor specific ring.
-> >>> I want to alloc and free vendor specific ring on specific address.
-> >>> It's done with xhci hooks.
-> >>
-> >> It's better, but still does not explain why these have to be exported.
-> >> Please mention where are these hooks going to be. Where are they
-> >> implemented. I actually expect all of these exports to be used in your
-> >> patchset.
-> >>
-> >> Best regards,
-> >> Krzysztof
-> >>
-> > 
-> > OK. How about adding call stack like below?
-> > 
-> > xhci_free_endpoint_ring -> xhci_vendor_free_transfer_ring(xhck hooks
-> > ops) -> xhci_ring_free
-> 
-> What I would like to see is high level explanation, why do you need
-> these functions exported. Such call trace does not answer this, because
-> you do not need to export functions just to call the. You need to export
-> them for modules, so this means that some modules (which - need names)
-> will be using these functions. Three or four sentences are usually
-> enough to explain it.
-> 
-> 
-> Best regards,
-> Krzysztof
-> 
+agree.
+but the difference for the knob of rmem/wmem is:
+we could enlarge rmem/wmem for NVMe/TCP via sysctl,
+and it would not bring downside to any other sockets whose
+rmem/wmem are not explicitly specified.
 
-I got it. I'm going to modify it on next submission.
+> In addition, based on my knowledge, application specific TCP level
+> tuning (like congestion) is not really a common thing to do. So why in
+> nvme-tcp?
+>=20
+> So to me at least, it is not clear why we should add it to the driver.
 
-Best Regards,
-Jung Daehwan
+As mentioned in the commit message, though we can specify the
+congestion-control of NVMe_over_TCP via sysctl or writing
+'/proc/sys/net/ipv4/tcp_congestion_control', but this also
+changes the congestion-control of all the future TCP sockets on
+the same host that have not been explicitly assigned the
+congestion-control, thus bringing potential impaction on their
+performance.
 
-------5UEmwHbbA6AZTFHXI7vBSuA.tpbU4PvcG6ycPLnmUYkKA_Gh=_2773e_
-Content-Type: text/plain; charset="utf-8"
+For example:
 
+A server in a data-center with the following 2 NICs:
 
-------5UEmwHbbA6AZTFHXI7vBSuA.tpbU4PvcG6ycPLnmUYkKA_Gh=_2773e_--
+    - NIC_fron-end, for interacting with clients through WAN
+      (high latency, ms-level)
 
+    - NIC_back-end, for interacting with NVMe/TCP target through LAN
+      (low latency, ECN-enabled, ideal for dctcp)
+
+This server interacts with clients (handling requests) via the fron-end
+network and accesses the NVMe/TCP storage via the back-end network.
+This is a normal use case, right?
+
+For the client devices, we can=E2=80=99t determine their congestion-control.
+But normally it=E2=80=99s cubic by default (per the CONFIG_DEFAULT_TCP_CONG=
+).
+So if we change the default congestion control on the server to dctcp
+on behalf of the NVMe/TCP traffic of the LAN side, it could at the
+same time change the congestion-control of the front-end sockets
+to dctcp while the congestion-control of the client-side is cubic.
+So this is an unexpected scenario.
+
+In addition, distributed storage products like the following also have
+the above problem:
+
+    - The product consists of a cluster of servers.
+
+    - Each server serves clients via its front-end NIC
+     (WAN, high latency).
+
+    - All servers interact with each other via NVMe/TCP via back-end NIC
+     (LAN, low latency, ECN-enabled, ideal for dctcp).
