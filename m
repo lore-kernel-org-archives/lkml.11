@@ -2,123 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE420C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 13:34:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95ACDC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 13:34:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237349AbiC2NgH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 09:36:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40660 "EHLO
+        id S237371AbiC2Nga (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 09:36:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230330AbiC2NgC (ORCPT
+        with ESMTP id S237361AbiC2Ng1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 09:36:02 -0400
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2DB01F626;
-        Tue, 29 Mar 2022 06:34:18 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=xueshuai@linux.alibaba.com;NM=1;PH=DS;RN=22;SR=0;TI=SMTPD_---0V8ZK4JR_1648560852;
-Received: from 30.240.123.174(mailfrom:xueshuai@linux.alibaba.com fp:SMTPD_---0V8ZK4JR_1648560852)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 29 Mar 2022 21:34:14 +0800
-Message-ID: <48b2cf46-d96b-4d2d-5a56-97a88566edcc@linux.alibaba.com>
-Date:   Tue, 29 Mar 2022 21:34:11 +0800
+        Tue, 29 Mar 2022 09:36:27 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C87EC24F1C;
+        Tue, 29 Mar 2022 06:34:44 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2a02:3030:a:f397:f6bc:b726:2678:839f])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: sebastianfricke)
+        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 7287A1F43E8A;
+        Tue, 29 Mar 2022 14:34:43 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1648560883;
+        bh=mw2lnNcKQgzkmIX92vMYzPG0ozHkEL7vt1dPMHbwDBk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Z+UVVCYaAPDIuQO43XpFCDQB5et0nfUsweNkYyuvNPr69YNOhavC9TQQS5woGC5Pe
+         Cx3IWQmKyGaRsihIvWXwhxrfuN79va9vfMFIsFqzEyiQhdwbpMGmjRw5NRQ9k3zMUF
+         jC0mkKkpLwaUsXp4agzcN5UD6snCplE8xSoARnCAd2bfBRsyymsmcKeOTfA/qYfkq/
+         XYbiJ6l6PT3NvSbJFOz0Mj4pmlKBjOvztKOrmIQh5D2p6HucLEoPIuExSMxw2lgUX+
+         gHzGDSqVUtNTC6EpT5e+pgr8JgW4flNOSUwLWrOUTRHEcQsIm4ndQ6miNE9EPPs12f
+         lIe7isnLs1GXQ==
+Date:   Tue, 29 Mar 2022 15:34:39 +0200
+From:   Sebastian Fricke <sebastian.fricke@collabora.com>
+To:     Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>, kernel@collabora.com,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 07/24] media: h264: Sort p/b reflist using frame_num
+Message-ID: <20220329133439.qt6bze35bppx3mne@basti-XPS-13-9310>
+References: <20220328195936.82552-1-nicolas.dufresne@collabora.com>
+ <20220328195936.82552-8-nicolas.dufresne@collabora.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.7.0
-From:   Shuai Xue <xueshuai@linux.alibaba.com>
-Subject: Re: [PATCH v4 2/4] perf arm-spe: Use SPE data source for neoverse
- cores
-To:     Leo Yan <leo.yan@linaro.org>, Ali Saidi <alisaidi@amazon.com>
-Cc:     Nick.Forrington@arm.com, acme@kernel.org,
-        alexander.shishkin@linux.intel.com, andrew.kilroy@arm.com,
-        benh@kernel.crashing.org, german.gomez@arm.com,
-        james.clark@arm.com, john.garry@huawei.com, jolsa@kernel.org,
-        kjain@linux.ibm.com, lihuafei1@huawei.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, mark.rutland@arm.com,
-        mathieu.poirier@linaro.org, mingo@redhat.com, namhyung@kernel.org,
-        peterz@infradead.org, will@kernel.org
-References: <20220326194327.32239-1-alisaidi@amazon.com>
- <20220328030805.14175-1-alisaidi@amazon.com>
- <20220328130547.GA360814@leoy-ThinkPad-X240s>
-Content-Language: en-US
-In-Reply-To: <20220328130547.GA360814@leoy-ThinkPad-X240s>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20220328195936.82552-8-nicolas.dufresne@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Leo, Ali,
+Hey Nicolas,
 
-Thank you for your great work and valuable discussion.
+On 28.03.2022 15:59, Nicolas Dufresne wrote:
+>In the reference list builder, frame_num referers to FrameNumWrap
 
-在 2022/3/27 AM3:43, Ali Saidi 写道:> Hi Leo,
-> On Sat, 26 Mar 2022 21:47:54 +0800, Leo Yan wrote:
->> Hi Ali, German,
->>
->> On Thu, Mar 24, 2022 at 06:33:21PM +0000, Ali Saidi wrote:
->>
->> [...]
->>
->>> +static void arm_spe__synth_data_source_neoverse(const struct arm_spe_record *record,
->>> +						union perf_mem_data_src *data_src)
->>>  {
->>> -	union perf_mem_data_src	data_src = { 0 };
->>> +	/*
->>> +	 * Even though four levels of cache hierarchy are possible, no known
->>> +	 * production Neoverse systems currently include more than three levels
->>> +	 * so for the time being we assume three exist. If a production system
->>> +	 * is built with four the this function would have to be changed to
->>> +	 * detect the number of levels for reporting.
->>> +	 */
->>>
->>> -	if (record->op == ARM_SPE_LD)
->>> -		data_src.mem_op = PERF_MEM_OP_LOAD;
->>> -	else
->>> -		data_src.mem_op = PERF_MEM_OP_STORE;
->>
->> Firstly, apologize that I didn't give clear idea when Ali sent patch sets
->> v2 and v3.
->>
->> IMHO, we need to consider two kinds of information which can guide us
->> for a reliable implementation.  The first thing is to summarize the data
->> source configuration for x86 PEBS, we can dive in more details for this
->> part; the second thing is we can refer to the AMBA architecture document
->> ARM IHI 0050E.b, section 11.1.2 'Crossing a chip-to-chip interface' and
->> its sub section 'Suggested DataSource values', which would help us
->> much for mapping the cache topology to Arm SPE data source.
->>
->> As a result, I summarized the data source configurations for PEBS and
->> Arm SPE Neoverse in the spreadsheet:
->> https://docs.google.com/spreadsheets/d/11YmjG0TyRjH7IXgvsREFgTg3AVtxh2dvLloRK1EdNjU/edit?usp=sharing
+s/referers/refers/
+
+>in the spec, which is the same as the pic_num for frame decoding.
+>The same applied for long_tern_pic_num and long_ter_frame_idx.
+
+s/same applied/same applies/
+s/long_ter_frame_idx/long_term_frame_idx/
+
 >
-> Thanks for putting this together and digging into the details, but you're making
-> assumptions in neoverse data sources about the core configurations that aren't
-> correct. The Neoverse cores have all have integrated L1 and L2 cache, so if the
-> line is coming from a peer-core we don't know which level it's actually coming
-> from.  Similarly, if it's coming from a local cluster, that could mean a cluster
-> l3, but it's not the L2.
+>Sort all type of references by frame_num so the sort can be reused
 
-As far as I know, Neoverse N2 microarchitecture L3 Cache is non-inclusive, and L1
-and L2 are strictly inclusive, like  Intel Skylake SP (SKX), i.e., the L2 may
-or may not be in the L3 (no guarantee is made). That is to say, we can not tell
-it is from cluster L2 or L3. Could you confirm this?
+s/frame_num so the sort/frame_num, so the order/
 
-[...]
+>for field reflist were the sorting is done using frame_num instead.
 
+s/field/the field/
+s/reflist were the sorting is done using frame_num instead/
+   reflist, which is sorted by the frame_num instead/
 
-> I still think we should consider to extend the memory levels to
-> demonstrate clear momory hierarchy on Arm archs, I personally like the
-> definitions for "PEER_CORE", "LCL_CLSTR", "PEER_CLSTR" and "SYS_CACHE",
-> though these cache levels are not precise like L1/L2/L3 levels, they can
-> help us to map very well for the cache topology on Arm archs and without
-> any confusion.  We could take this as an enhancement if you don't want
-> to bother the current patch set's upstreaming.
+>In short, pic_num is never actually used for building reference
+>lists.
+>
+>Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Reviewed-by: Sebastian Fricke <sebastian.fricke@collabora.com>
 
-Agree. In my opinion, imprecise cache levels can lead to wrong conclusions.
-"PEER_CORE", "LCL_CLSTR", "PEER_CLSTR" and "SYS_CACHE" are more intuitive.
+>---
+> drivers/media/v4l2-core/v4l2-h264.c | 22 ++++++++++++----------
+> include/media/v4l2-h264.h           |  2 --
+> 2 files changed, 12 insertions(+), 12 deletions(-)
+>
+>diff --git a/drivers/media/v4l2-core/v4l2-h264.c b/drivers/media/v4l2-core/v4l2-h264.c
+>index c9e18fd51d78..c3fad382882d 100644
+>--- a/drivers/media/v4l2-core/v4l2-h264.c
+>+++ b/drivers/media/v4l2-core/v4l2-h264.c
+>@@ -50,7 +50,6 @@ v4l2_h264_init_reflist_builder(struct v4l2_h264_reflist_builder *b,
+> 		if (!(dpb[i].flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE))
+> 			continue;
+>
+>-		b->refs[i].pic_num = dpb[i].pic_num;
+> 		if (dpb[i].flags & V4L2_H264_DPB_ENTRY_FLAG_LONG_TERM)
+> 			b->refs[i].longterm = true;
+>
+>@@ -139,15 +138,18 @@ static int v4l2_h264_p_ref_list_cmp(const void *ptra, const void *ptrb,
+> 	}
+>
+> 	/*
+>-	 * Short term pics in descending pic num order, long term ones in
+>-	 * ascending order.
+>+	 * For frames, short term pics are in descending pic num order and long
+>+	 * term ones in ascending order. For field this is the same direction
 
-Best Regards,
-Shuai
+s/For field this is the same direction/For fields the same direction is used/
 
+>+	 * but with frame_num (wrapped). As for frame the pic_num and frame_num
+>+	 * are the same (see formula (8-28) and (8-29)) use the frame_num and share
 
+s/As for frame the pic_num and frame_num are the same/
+   The fields pic_num and frame_num are the same for frames/
+
+>+	 * this funciton between frame and field reflist.
+
+s/funciton/function/
+
+Greetings,
+Sebastian
+
+> 	 */
+> 	if (!builder->refs[idxa].longterm)
+> 		return builder->refs[idxb].frame_num <
+> 		       builder->refs[idxa].frame_num ?
+> 		       -1 : 1;
+>
+>-	return builder->refs[idxa].pic_num < builder->refs[idxb].pic_num ?
+>+	return builder->refs[idxa].frame_num < builder->refs[idxb].frame_num ?
+> 	       -1 : 1;
+> }
+>
+>@@ -173,10 +175,10 @@ static int v4l2_h264_b0_ref_list_cmp(const void *ptra, const void *ptrb,
+> 			return 1;
+> 	}
+>
+>-	/* Long term pics in ascending pic num order. */
+>+	/* Long term pics in ascending frame num order. */
+> 	if (builder->refs[idxa].longterm)
+>-		return builder->refs[idxa].pic_num <
+>-		       builder->refs[idxb].pic_num ?
+>+		return builder->refs[idxa].frame_num <
+>+		       builder->refs[idxb].frame_num ?
+> 		       -1 : 1;
+>
+> 	poca = v4l2_h264_get_poc(builder, ptra);
+>@@ -218,10 +220,10 @@ static int v4l2_h264_b1_ref_list_cmp(const void *ptra, const void *ptrb,
+> 			return 1;
+> 	}
+>
+>-	/* Long term pics in ascending pic num order. */
+>+	/* Long term pics in ascending frame num order. */
+> 	if (builder->refs[idxa].longterm)
+>-		return builder->refs[idxa].pic_num <
+>-		       builder->refs[idxb].pic_num ?
+>+		return builder->refs[idxa].frame_num <
+>+		       builder->refs[idxb].frame_num ?
+> 		       -1 : 1;
+>
+> 	poca = v4l2_h264_get_poc(builder, ptra);
+>diff --git a/include/media/v4l2-h264.h b/include/media/v4l2-h264.h
+>index 4cef717b3f18..0d9eaa956123 100644
+>--- a/include/media/v4l2-h264.h
+>+++ b/include/media/v4l2-h264.h
+>@@ -18,7 +18,6 @@
+>  * @refs.top_field_order_cnt: top field order count
+>  * @refs.bottom_field_order_cnt: bottom field order count
+>  * @refs.frame_num: reference frame number
+>- * @refs.pic_num: reference picture number
+>  * @refs.longterm: set to true for a long term reference
+>  * @refs: array of references
+>  * @cur_pic_order_count: picture order count of the frame being decoded
+>@@ -36,7 +35,6 @@ struct v4l2_h264_reflist_builder {
+> 		s32 top_field_order_cnt;
+> 		s32 bottom_field_order_cnt;
+> 		int frame_num;
+>-		u32 pic_num;
+> 		u16 longterm : 1;
+> 	} refs[V4L2_H264_NUM_DPB_ENTRIES];
+>
+>-- 
+>2.34.1
+>
