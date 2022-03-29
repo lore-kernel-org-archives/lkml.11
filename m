@@ -2,146 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A625AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 21:32:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6783AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 21:33:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234482AbiC2VeV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 17:34:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52926 "EHLO
+        id S234540AbiC2Vfk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 17:35:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234386AbiC2VeQ (ORCPT
+        with ESMTP id S234386AbiC2Vfi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 17:34:16 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B70A239336
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 14:32:30 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id lr4so29290983ejb.11
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 14:32:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZNJQ60t9ow46nPLDTL0lGrHwboox4GQw0/vTKn1ZL5A=;
-        b=lnCZC0DpxNBLUffB2oLIpMxBrnBLwD0WpNwv5f4uqc5YgSJI4TrtRUIQf/bb9rxUed
-         AtfCIuaRpS5iFubDPmmKV3V/46+wzs/EDPYr8LSgwndpCVpOsBh6enFI6o6nFZVS5olq
-         qTFPzcWj0F+8AgEs2wEDFQ29eb+bYS+jHElB1GmX5Y/wIvCgxthpJ9u41nbuJBrhXYQx
-         sfkOfFov7NlGx0boBMgMYs5msdyhwv4Z+xIyZFg/hY25oyySfW/0Bb7QLLEaZEVPxMAK
-         //gQhJubH1DN1qykwZxJe9fbnx+4xLuVBh7veoFkeq6OxHhylLUivsrLDF2kk1FD6CoX
-         35FQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZNJQ60t9ow46nPLDTL0lGrHwboox4GQw0/vTKn1ZL5A=;
-        b=TNsxhwRHujBv6i3Hi/eH0du8dxvJiATLFFaBaIyYuNAeFCvPlRRsZgpwWwsoCOD8sp
-         Q0i7CvhPSlGHzA0uOreN9Bmp01zaPdThxd7GkPvd1YVfOrWiGRmwzEdBeghNIqOUT81b
-         jQbjVVDRMH01FoAfizJAfQ3tJtx3nr8SfHYaxOEESpjGv8wY68JgiaWb+nBUq8Xb0pRW
-         3zexWabAJbLapwU3Rv3t64NM4dc/bUlkaeGx1o51dKg6+aOdzOLoiNg9TQqkyhMHG6iW
-         g8GDKxZD3Ii7A1Mpxs/cVFIQN6EcznyaMfIcuA4k70IBMTofM/3j2aW2Mp1emMPDjO7c
-         6l5g==
-X-Gm-Message-State: AOAM531fk6NLnS2ysrlHTBFGHptdjACNv8WniWWXDQ8AW6KlbB6EAyR2
-        dmXa9gOn+RZz14k7eosFUPfTvKiDoKNNwoznESR/fA==
-X-Google-Smtp-Source: ABdhPJy4BTMYt2cEtBSbmfC31i1s9R0oGmoVOfOD2HZA+Zfy6cogEZxNy+3Fb9rktahrlflKpbi84cW4L/9tBA7+n80=
-X-Received: by 2002:a17:907:eab:b0:6da:8ec5:d386 with SMTP id
- ho43-20020a1709070eab00b006da8ec5d386mr36400202ejc.668.1648589548764; Tue, 29
- Mar 2022 14:32:28 -0700 (PDT)
+        Tue, 29 Mar 2022 17:35:38 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE611E6154
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 14:33:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648589634; x=1680125634;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=tHyJpMSgREeaX7Il6lUt/mc24/CfgD9AxcBykZQ1fFA=;
+  b=W6ird+ntVHeCGxOmqm/TUXKNPjg4h5rutM7/bgpxTmBjhqdrVNNh5P4Y
+   zp2Eyz3EEeZZwM2VlWZh3H+nSK9Om2wbzPMCG8Uy2uiTq68vIxz6Pr4cG
+   HDsdXhR4l9V0MJvVmnN6mOVR3/dZTOTDpiTxV+BdnvPHizNcWuehcJSeL
+   JFvko7ayaI4XB7wNtyb89D7MC1o8TECiEPUmTTVwCyzYMAa32//7WXAM4
+   m2WwDMFfQ5kz1F9j4tHFiVtcJZUshe51yHlR+y+/1w5v6v0Tr0P1J+izn
+   BNHqZXAR431nhTxt45AhJsYlcpN5/ehmH5UiwsH2XVI/kc0DvHM5+8JTk
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="259352575"
+X-IronPort-AV: E=Sophos;i="5.90,220,1643702400"; 
+   d="scan'208";a="259352575"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 14:33:54 -0700
+X-IronPort-AV: E=Sophos;i="5.90,220,1643702400"; 
+   d="scan'208";a="585750705"
+Received: from alison-desk.jf.intel.com (HELO alison-desk) ([10.54.74.41])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 14:33:54 -0700
+Date:   Tue, 29 Mar 2022 14:36:19 -0700
+From:   Alison Schofield <alison.schofield@intel.com>
+To:     Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Fabio Aiuto <fabioaiuto83@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Muhammad Usama Anjum <musamaanjum@gmail.com>,
+        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        outreachy@lists.linux.dev
+Subject: Re: [PATCH] staging: rtl8723bs: Remove redundant else branches.
+Message-ID: <20220329213619.GA1171634@alison-desk>
+References: <20220329140904.GA3566@ubuntu>
+ <20220329200053.GA1170989@alison-desk>
+ <CAMWRUK4ti6QxA4JWbG_XwZHwQwWUKYu+HvVHvEBX-k82oaEP6g@mail.gmail.com>
+ <20220329212426.GA1171538@alison-desk>
 MIME-Version: 1.0
-References: <20220329103919.2376818-1-lv.ruyi@zte.com.cn> <CAGS_qxpCHgp7ToQV9UALPy-4nyHDcdpWOCCd3duz-L6EgYPpOg@mail.gmail.com>
-In-Reply-To: <CAGS_qxpCHgp7ToQV9UALPy-4nyHDcdpWOCCd3duz-L6EgYPpOg@mail.gmail.com>
-From:   Brendan Higgins <brendanhiggins@google.com>
-Date:   Tue, 29 Mar 2022 17:32:17 -0400
-Message-ID: <CAFd5g46xma=yCYYNhupXkQmM=u1-ts3L0JhkX-Ueo21QxsMtmA@mail.gmail.com>
-Subject: Re: [PATCH] kunit: tool: add null pointer check
-To:     Daniel Latypov <dlatypov@google.com>
-Cc:     cgel.zte@gmail.com, linux-kselftest@vger.kernel.org,
-        kunit-dev@googlegroups.com, linux-kernel@vger.kernel.org,
-        Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220329212426.GA1171538@alison-desk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 3:29 PM Daniel Latypov <dlatypov@google.com> wrote:
->
-> On Tue, Mar 29, 2022 at 5:39 AM <cgel.zte@gmail.com> wrote:
-> >
-> > From: Lv Ruyi <lv.ruyi@zte.com.cn>
-> >
-> > kmalloc and kcalloc is a memory allocation function which can return NULL
-> > when some internal memory errors happen. Add null pointer check to avoid
-> > dereferencing null pointer.
-> >
-> > Reported-by: Zeal Robot <zealci@zte.com.cn>
-> > Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-> > ---
-> >  lib/kunit/executor.c | 4 ++++
-> >  1 file changed, 4 insertions(+)
-> >
-> > diff --git a/lib/kunit/executor.c b/lib/kunit/executor.c
-> > index 22640c9ee819..be21d0451367 100644
-> > --- a/lib/kunit/executor.c
-> > +++ b/lib/kunit/executor.c
-> > @@ -71,9 +71,13 @@ kunit_filter_tests(struct kunit_suite *const suite, const char *test_glob)
-> >
-> >         /* Use memcpy to workaround copy->name being const. */
-> >         copy = kmalloc(sizeof(*copy), GFP_KERNEL);
-> > +       if (!copy)
-> > +               return NULL;
->
-> While this is technically correct to check, in this context it's less clear.
-> If we can't allocate this memory, we likely can't run any subsequent
-> tests, either because the test cases will want to allocate some memory
-> and/or KUnit will need to allocate some for internal bookkeeping.
->
-> The existing code (and by extension this patch) "handles" OOM
-> situations by silently dropping test suites/cases.
-> So I sort of intentionally figured we should let it crash early in
-> this case since that's probably more debuggable.
->
-> This code does check for NULL returns earlier on in the call chain, i.e.
->
-> first in kunit_filter_suites()
->    158          copy = kmalloc_array(max, sizeof(*filtered.start), GFP_KERNEL);
->    159          filtered.start = copy;
->    160          if (!copy) { /* won't be able to run anything, return
-> an empty set */
->    161                  filtered.end = copy;
->    162                  return filtered;
->    163          }
->
-> and second in kunit_filter_subsuite()
->    107          filtered = kmalloc_array(n + 1, sizeof(*filtered), GFP_KERNEL);
->    108          if (!filtered)
->    109                  return NULL;
->
-> The first kmalloc_array() is our first allocation in this file.
-> If we can't handle that, then things are really going wrong, and I
-> assumed there'd be plenty of debug messages in dmesg, so silently
-> returning is probably fine.
-> The second one also felt similar.
->
-> So I think that
-> * it's highly unlikely that we pass those checks and fail on these new
-> ones (we're not allocating much)
-> * if we do fail, this is now harder to debug since it's partially
-> running tests, partially not
->
-> Should we instead rework the code to more clearly signal allocation
-> errors instead of overloading NULL to mean "no matches or error?"
-> Or maybe just adding some pr_err() calls is sufficient.
+snip
 
-I think we should either return an err ptr, or log something (maybe both).
+On Tue, Mar 29, 2022 at 02:24:26PM -0700, Alison Schofield wrote:
+> On Tue, Mar 29, 2022 at 01:59:52PM -0700, Sevinj Aghayeva wrote:
+> > 
+> > That one has already landed. Is it okay if I send v2 just for this patch?
+> 
+> Did you see it applied already?
+> 
 
-But yeah, I agree with you Daniel, I don't like overloading NULL.
+I see Greg took a couple that I wanted to send for rework.
+BTW - if it was really something *wrong* I would ask you to send
+another patch,  but since it's just style, let's just apply the
+learning to the next one.
 
-> >         memcpy(copy, suite, sizeof(*copy));
-> >
-> >         filtered = kcalloc(n + 1, sizeof(*filtered), GFP_KERNEL);
-> > +       if (!filtered)
-> > +               return NULL;
-> >
-> >         n = 0;
-> >         kunit_suite_for_each_test_case(suite, test_case) {
-> > --
-> > 2.25.1
-> >
+Thanks!
+Alison
+
