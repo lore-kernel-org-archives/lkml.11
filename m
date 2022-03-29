@@ -2,57 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25DAEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:48:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2237C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:48:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235979AbiC2Mti (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 08:49:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60372 "EHLO
+        id S236655AbiC2Mtu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 08:49:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236705AbiC2MrA (ORCPT
+        with ESMTP id S236740AbiC2Mr0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 08:47:00 -0400
+        Tue, 29 Mar 2022 08:47:26 -0400
 Received: from mail-ej1-x649.google.com (mail-ej1-x649.google.com [IPv6:2a00:1450:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38D2425279E
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:42:04 -0700 (PDT)
-Received: by mail-ej1-x649.google.com with SMTP id do20-20020a170906c11400b006e0de97a0e9so3084421ejc.19
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:42:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AA3321BC52
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:42:15 -0700 (PDT)
+Received: by mail-ej1-x649.google.com with SMTP id hg13-20020a1709072ccd00b006dfa484ec23so8157040ejc.8
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:42:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=/KmrLQz2B9LUGG5T0s5DB1smaxsYg6k7avQ3Zjj3eGk=;
-        b=nf15GMhub2RWppTwCYZIrWIlhESGQRfc/W+NIYyqHWkrAY5ZTdWS9tNg5R+WFNEwDR
-         ws+bWlr0jAPjLQgTU8HBYWK/xBDV/+Z4gS8/E0xP18HFUtngLfocVvFSvgaAAKlkp4H3
-         kXATs/dpgLrmitCYFBWHPxmJvSrUCCPUNzG/KXTkCq2AyohIUvlifgXGdxppP4apBE5A
-         LAliLdtfENt0IXvOlwHuX/jsHQwOwjSPAiUrAj6DAH7RdyI9h/hc7xkf9IhqtKQUhdA7
-         KWoj2cicXsXsWzrnFpLIgQlZXdwXJns/c+61ORU+3rxi9tyOWn8w7u20i5xnvlynULyv
-         A3iw==
+        bh=vfNewWnsnLKjgrLxloInM3ksKktMuhZ88Cjjen8dSfw=;
+        b=k2grIaWEX10+pjmxqhkcyCA78d3h23qdz2hQwriW/AtBkEbXWlTAWHSjR5jVjwbRd0
+         HKX1zG6uUcVNaozu8WxucSiCuQwHnnudt3nW2uxWtac7hF54EJ1kbSIlqPv4TwsjdCTr
+         G92SqYktPjAwRps3tSeMbzJyGmoMawImGJXnVDm7RQbHHOMHmWqFKxMC2IeRQOg1Xhxq
+         OJFN3e7mKc2NOaXlMGXsa9yHEVB8W3tfRWFhpSrRETeApxMNk01V3f1Rz7tcgby1LDeH
+         XGjGGEIIihzXVuI4E4ZD/omsJ5xBfcLQ6Erf+tZ7ZaeE1xczews93WWLLOk7DrdHF6hz
+         Ns5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=/KmrLQz2B9LUGG5T0s5DB1smaxsYg6k7avQ3Zjj3eGk=;
-        b=Sf0mpoK8WTYNobzTrf8HVHdc+vAPHNiu44ZeGPLwSAqhXHT2EUACiOOu+cMKvR2JkW
-         eNVDVCmtz0G/Wl3odsWdePyMEUJC7Mq3IQJJecQNCFdzqE+bU4Nst2VmgFVLCLcGcZBU
-         N6c6qabwFfHdvkXcJTJWmfgIuhVRinG6p6Nf498iUdYwQDjp0TP+DVHdB47DkMIxuCeb
-         an1vM/pypFtz/Bxw3kY50s9Mj5ERKEU06HesO1UZTonoxrNPQ0Nj4hmRTf6g8O3455WD
-         o+es1wI6hF8vr58ntad6AOfv1sjJQ94ZWaV9zuDbBQRoAC/6RgxH+RripgH7xapvC5mJ
-         OxeQ==
-X-Gm-Message-State: AOAM533xiYHL4IQc7+5EBy2rK/cbwxwLxE2toRHnDtyKG/y3ll1OttQS
-        1wDbB+yZYqnLwriVXoGrDIf8v0O/h1g=
-X-Google-Smtp-Source: ABdhPJxVb0eTOD5/UioVaLlWvIUvUDI3ZO47Rl6mwf+HN91ZLWrwoGAWiWD7v0UD4gilbb/v2zNMV7AgqQo=
+        bh=vfNewWnsnLKjgrLxloInM3ksKktMuhZ88Cjjen8dSfw=;
+        b=vq81z/lVVJ1gcJoID8do64tmXfvjqsbfh5vFmtRCKeqInxawnsvRk/eNsa/wiyOCbY
+         q8/NARCWQlelZLgI/WhH0kNmGqDz7UxIln8a9n5+zOPCDC25HWrjCH7/frI4+vbCXKef
+         zOMY8HQta7iJK+dQ2q2mtQfJ7tyzCxKvhKFMZB4yZugWtP43JOnTfHKyGj10Y7VkkQRS
+         OpRcqsjXfXQ6qlN+fu3Yrj+sjvy1DmDjhG4sfQ227wRdsSQx8b2qGA1Or1GLVoj4ilKn
+         CoDGlItkdMtf1qL8metLXejkiQNbsw2qrHQFJjF+KjPxcO1iPqKvMIu5FCsQCtjGsL/X
+         Cexg==
+X-Gm-Message-State: AOAM532L3OgElDqWOq+KG+oNy2BkBVIYDEO2HWi+3BMYlrYCDCoydo4g
+        MgakP2BF+XoDn+CM0CiHt64xkycqFWY=
+X-Google-Smtp-Source: ABdhPJxYhi4C5lMRGBP4ot4j5u4X+r6OfqpTJ+iIL9kMkH3POTY1BlEuc6eV3fFfpCDp3jcSR0ZuHMnxazU=
 X-Received: from glider.muc.corp.google.com ([2a00:79e0:15:13:36eb:759:798f:98c3])
- (user=glider job=sendgmr) by 2002:a17:906:3583:b0:6d1:c07:fac0 with SMTP id
- o3-20020a170906358300b006d10c07fac0mr34312763ejb.749.1648557723241; Tue, 29
- Mar 2022 05:42:03 -0700 (PDT)
-Date:   Tue, 29 Mar 2022 14:40:04 +0200
+ (user=glider job=sendgmr) by 2002:a17:906:2699:b0:6d0:9f3b:a6a7 with SMTP id
+ t25-20020a170906269900b006d09f3ba6a7mr33007227ejc.397.1648557733360; Tue, 29
+ Mar 2022 05:42:13 -0700 (PDT)
+Date:   Tue, 29 Mar 2022 14:40:08 +0200
 In-Reply-To: <20220329124017.737571-1-glider@google.com>
-Message-Id: <20220329124017.737571-36-glider@google.com>
+Message-Id: <20220329124017.737571-40-glider@google.com>
 Mime-Version: 1.0
 References: <20220329124017.737571-1-glider@google.com>
 X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
-Subject: [PATCH v2 35/48] kmsan: block: skip bio block merging logic for KMSAN
+Subject: [PATCH v2 39/48] x86: kmsan: make READ_ONCE_TASK_STACK() return
+ initialized values
 From:   Alexander Potapenko <glider@google.com>
 To:     glider@google.com
 Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
@@ -83,42 +84,57 @@ Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
         Vasily Gorbik <gor@linux.ibm.com>,
         Vegard Nossum <vegard.nossum@oracle.com>,
         Vlastimil Babka <vbabka@suse.cz>, linux-mm@kvack.org,
-        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Eric Biggers <ebiggers@google.com>
+        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-KMSAN doesn't allow treating adjacent memory pages as such, if they were
-allocated by different alloc_pages() calls.
-The block layer however does so: adjacent pages end up being used
-together. To prevent this, make page_is_mergeable() return false under
-KMSAN.
+To avoid false positives, assume that reading from the task stack
+always produces initialized values.
 
-Suggested-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Alexander Potapenko <glider@google.com>
-
 ---
-
-Link: https://linux-review.googlesource.com/id/Ie29cc2464c70032347c32ab2a22e1e7a0b37b905
+Link: https://linux-review.googlesource.com/id/I9e2350bf3e88688dd83537e12a23456480141997
 ---
- block/bio.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/x86/include/asm/unwind.h | 23 ++++++++++++-----------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
 
-diff --git a/block/bio.c b/block/bio.c
-index 4312a8085396b..3c8806bbe3a81 100644
---- a/block/bio.c
-+++ b/block/bio.c
-@@ -808,6 +808,8 @@ static inline bool page_is_mergeable(const struct bio_vec *bv,
- 		return false;
+diff --git a/arch/x86/include/asm/unwind.h b/arch/x86/include/asm/unwind.h
+index 2a1f8734416dc..51173b19ac4d5 100644
+--- a/arch/x86/include/asm/unwind.h
++++ b/arch/x86/include/asm/unwind.h
+@@ -129,18 +129,19 @@ unsigned long unwind_recover_ret_addr(struct unwind_state *state,
+ }
  
- 	*same_page = ((vec_end_addr & PAGE_MASK) == page_addr);
-+	if (!*same_page && IS_ENABLED(CONFIG_KMSAN))
-+		return false;
- 	if (*same_page)
- 		return true;
- 	return (bv->bv_page + bv_end / PAGE_SIZE) == (page + off / PAGE_SIZE);
+ /*
+- * This disables KASAN checking when reading a value from another task's stack,
+- * since the other task could be running on another CPU and could have poisoned
+- * the stack in the meantime.
++ * This disables KASAN/KMSAN checking when reading a value from another task's
++ * stack, since the other task could be running on another CPU and could have
++ * poisoned the stack in the meantime. Frame pointers are uninitialized by
++ * default, so for KMSAN we mark the return value initialized unconditionally.
+  */
+-#define READ_ONCE_TASK_STACK(task, x)			\
+-({							\
+-	unsigned long val;				\
+-	if (task == current)				\
+-		val = READ_ONCE(x);			\
+-	else						\
+-		val = READ_ONCE_NOCHECK(x);		\
+-	val;						\
++#define READ_ONCE_TASK_STACK(task, x)				\
++({								\
++	unsigned long val;					\
++	if (task == current && !IS_ENABLED(CONFIG_KMSAN))	\
++		val = READ_ONCE(x);				\
++	else							\
++		val = READ_ONCE_NOCHECK(x);			\
++	val;							\
+ })
+ 
+ static inline bool task_on_another_cpu(struct task_struct *task)
 -- 
 2.35.1.1021.g381101b075-goog
 
