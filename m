@@ -2,79 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72DADC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:05:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5329BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:05:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239193AbiC2QGz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 12:06:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60780 "EHLO
+        id S239198AbiC2QG7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 12:06:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239176AbiC2QGv (ORCPT
+        with ESMTP id S239200AbiC2QG5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 12:06:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E1DB56C25
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:05:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 29 Mar 2022 12:06:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9235C5A59C
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:05:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648569912;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qsmsHftiHR1VzvLFONNunuJiB50n6fRGGuQ1zsoAsWQ=;
+        b=XGvBhJDhnm+/sHXT/2V+EjlcSdtaaeVUuiFSLgH5bf3VkIzi44Sl+RtVsdza0kl9JUtlaC
+        azE9ftJ3C/OX+aRY7dK+Wy9yQ9WymstEXCuYUpkdduY6VhniuzYYPkyTvQzM8SmLpa0GiQ
+        1Yq+VH5OwLeTAT/SNHoiUKak5f6uNXQ=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-91-EYg6iz9UP5etdm0fCNNgjQ-1; Tue, 29 Mar 2022 12:05:08 -0400
+X-MC-Unique: EYg6iz9UP5etdm0fCNNgjQ-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9FA6661351
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 16:05:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A92C1C340ED;
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 20AFD91BD81;
         Tue, 29 Mar 2022 16:05:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648569907;
-        bh=xXdEJIbH9Ts8g7LPtQKk1FDb5fMmACcejHkKXetfK7U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=xBPLN2Hzb/yjdxQXqd+bxnV1vaYx971cl0k6JTbpSOuyPZ1Lk3WPI8jubglw6PBqm
-         tdouWo8QUFZkdg5gsBD+8rzuarL82GBqZVHA5l01pFZmy53O7W0v7yMtNPA4wY9sHX
-         hBCHmFcvqNq4pLqqLgd7fAVUvpuXp7zFRzD5pFK4=
-Date:   Tue, 29 Mar 2022 18:05:04 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Michael Straube <straube.linux@gmail.com>
-Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 9/9] staging: r8188eu: remove HW_VAR_BCN_VALID from
- SetHwReg8188EU()
-Message-ID: <YkMuMC1I4Cj6aIah@kroah.com>
-References: <20220328113940.6396-1-straube.linux@gmail.com>
- <20220328113940.6396-10-straube.linux@gmail.com>
+Received: from t480s.redhat.com (unknown [10.39.194.134])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 41FA8401E2A;
+        Tue, 29 Mar 2022 16:05:01 +0000 (UTC)
+From:   David Hildenbrand <david@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Pedro Gomes <pedrodemargomes@gmail.com>,
+        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org,
+        David Hildenbrand <david@redhat.com>
+Subject: [PATCH v3 03/16] mm/memory: slightly simplify copy_present_pte()
+Date:   Tue, 29 Mar 2022 18:04:27 +0200
+Message-Id: <20220329160440.193848-4-david@redhat.com>
+In-Reply-To: <20220329160440.193848-1-david@redhat.com>
+References: <20220329160440.193848-1-david@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220328113940.6396-10-straube.linux@gmail.com>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 01:39:40PM +0200, Michael Straube wrote:
-> The HW_VAR_BCN_VALID case in SetHwReg8188EU() just calls rtw_write8().
-> Remove HW_VAR_BCN_VALID from SetHwReg8188EU() and call rtw_write8()
-> directly. This is part of the ongoing effort to getrid of the unwanted
-> hal layer.
-> 
-> Signed-off-by: Michael Straube <straube.linux@gmail.com>
-> ---
->  drivers/staging/r8188eu/core/rtw_mlme_ext.c |  5 ++++-
->  drivers/staging/r8188eu/hal/rtl8188e_cmd.c  | 12 ++++++++----
->  drivers/staging/r8188eu/hal/usb_halinit.c   |  4 ----
->  3 files changed, 12 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/staging/r8188eu/core/rtw_mlme_ext.c b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-> index b5c2e7d4cb48..313e1a3beecb 100644
-> --- a/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-> +++ b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-> @@ -5765,7 +5765,10 @@ unsigned int send_beacon(struct adapter *padapter)
->  
->  	u32 start = jiffies;
->  
-> -	SetHwReg8188EU(padapter, HW_VAR_BCN_VALID, NULL);
-> +	/* Clear beacon valid check bit. */
-> +	/* BIT(16) of REG_TDECTRL = BIT(0) of REG_TDECTRL+2, write 1 to clear, Clear by sw */
-> +	rtw_write8(padapter, REG_TDECTRL + 2, rtw_read8(padapter, REG_TDECTRL + 2) | BIT(0));
+Let's move the pinning check into the caller, to simplify return code
+logic and prepare for further changes: relocating the
+page_needs_cow_for_dma() into rmap handling code.
 
-You commented this twice, it should be a single function :)
+While at it, remove the unused pte parameter and simplify the comments a
+bit.
 
-thanks,
+No functional change intended.
 
-greg k-h
+Signed-off-by: David Hildenbrand <david@redhat.com>
+---
+ mm/memory.c | 53 ++++++++++++++++-------------------------------------
+ 1 file changed, 16 insertions(+), 37 deletions(-)
+
+diff --git a/mm/memory.c b/mm/memory.c
+index be44d0b36b18..e3038cb6f212 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -862,19 +862,11 @@ copy_nonpresent_pte(struct mm_struct *dst_mm, struct mm_struct *src_mm,
+ }
+ 
+ /*
+- * Copy a present and normal page if necessary.
++ * Copy a present and normal page.
+  *
+- * NOTE! The usual case is that this doesn't need to do
+- * anything, and can just return a positive value. That
+- * will let the caller know that it can just increase
+- * the page refcount and re-use the pte the traditional
+- * way.
+- *
+- * But _if_ we need to copy it because it needs to be
+- * pinned in the parent (and the child should get its own
+- * copy rather than just a reference to the same page),
+- * we'll do that here and return zero to let the caller
+- * know we're done.
++ * NOTE! The usual case is that this isn't required;
++ * instead, the caller can just increase the page refcount
++ * and re-use the pte the traditional way.
+  *
+  * And if we need a pre-allocated page but don't yet have
+  * one, return a negative error to let the preallocation
+@@ -884,25 +876,10 @@ copy_nonpresent_pte(struct mm_struct *dst_mm, struct mm_struct *src_mm,
+ static inline int
+ copy_present_page(struct vm_area_struct *dst_vma, struct vm_area_struct *src_vma,
+ 		  pte_t *dst_pte, pte_t *src_pte, unsigned long addr, int *rss,
+-		  struct page **prealloc, pte_t pte, struct page *page)
++		  struct page **prealloc, struct page *page)
+ {
+ 	struct page *new_page;
+-
+-	/*
+-	 * What we want to do is to check whether this page may
+-	 * have been pinned by the parent process.  If so,
+-	 * instead of wrprotect the pte on both sides, we copy
+-	 * the page immediately so that we'll always guarantee
+-	 * the pinned page won't be randomly replaced in the
+-	 * future.
+-	 *
+-	 * The page pinning checks are just "has this mm ever
+-	 * seen pinning", along with the (inexact) check of
+-	 * the page count. That might give false positives for
+-	 * for pinning, but it will work correctly.
+-	 */
+-	if (likely(!page_needs_cow_for_dma(src_vma, page)))
+-		return 1;
++	pte_t pte;
+ 
+ 	new_page = *prealloc;
+ 	if (!new_page)
+@@ -944,14 +921,16 @@ copy_present_pte(struct vm_area_struct *dst_vma, struct vm_area_struct *src_vma,
+ 	struct page *page;
+ 
+ 	page = vm_normal_page(src_vma, addr, pte);
+-	if (page) {
+-		int retval;
+-
+-		retval = copy_present_page(dst_vma, src_vma, dst_pte, src_pte,
+-					   addr, rss, prealloc, pte, page);
+-		if (retval <= 0)
+-			return retval;
+-
++	if (page && unlikely(page_needs_cow_for_dma(src_vma, page))) {
++		/*
++		 * If this page may have been pinned by the parent process,
++		 * copy the page immediately for the child so that we'll always
++		 * guarantee the pinned page won't be randomly replaced in the
++		 * future.
++		 */
++		return copy_present_page(dst_vma, src_vma, dst_pte, src_pte,
++					 addr, rss, prealloc, page);
++	} else if (page) {
+ 		get_page(page);
+ 		page_dup_rmap(page, false);
+ 		rss[mm_counter(page)]++;
+-- 
+2.35.1
+
