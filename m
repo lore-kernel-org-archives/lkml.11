@@ -2,160 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62246C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:50:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85532C43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:50:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239940AbiC2QwJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 12:52:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41538 "EHLO
+        id S239948AbiC2QwW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 12:52:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239951AbiC2QwG (ORCPT
+        with ESMTP id S239932AbiC2QwU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 12:52:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7F7B5258FCF
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:50:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648572621;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=TwO5MaKuynUSMbsOinBzVosboPLVHwPyacLiL1/kyJE=;
-        b=GDLSsqbtQDhsuxqqXQFRQdezY1YgYbMjOTZN5kjiNKYvYQMhW14GOMb2NJqk0Yg8vJN3Jr
-        wyLmO3q7srVxVJNj50837qmmML1CZi9Ao1dEcWySFtrT5wWTisYbW8hwDwISALJ/U8gDR3
-        Cpu2fL3AqReqhJ5NSjXuFdbtOMPFYzk=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-344-ZGoj0HAdOw6IJYJ1nLpi-Q-1; Tue, 29 Mar 2022 12:50:17 -0400
-X-MC-Unique: ZGoj0HAdOw6IJYJ1nLpi-Q-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AFE7D29AA2F0;
-        Tue, 29 Mar 2022 16:50:15 +0000 (UTC)
-Received: from t480s.redhat.com (unknown [10.39.194.134])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CA3611121314;
-        Tue, 29 Mar 2022 16:50:07 +0000 (UTC)
-From:   David Hildenbrand <david@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Pedro Gomes <pedrodemargomes@gmail.com>,
-        Oded Gabbay <oded.gabbay@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        linux-mm@kvack.org, x86@kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
-        David Hildenbrand <david@redhat.com>
-Subject: [PATCH v2 8/8] powerpc/pgtable: support __HAVE_ARCH_PTE_SWP_EXCLUSIVE for book3s
-Date:   Tue, 29 Mar 2022 18:43:29 +0200
-Message-Id: <20220329164329.208407-9-david@redhat.com>
-In-Reply-To: <20220329164329.208407-1-david@redhat.com>
-References: <20220329164329.208407-1-david@redhat.com>
+        Tue, 29 Mar 2022 12:52:20 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44CC1D6E;
+        Tue, 29 Mar 2022 09:50:37 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id jx9so18055992pjb.5;
+        Tue, 29 Mar 2022 09:50:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=oo4DwVPmc4Xc8mHsSOZJPPM1+kxb1H+BME8RduWXyEc=;
+        b=fon/v7xEg/MG9yKo0ZhFyVDd8Pi8tu6+Ushj4CQ5i5ZK7JvGdhYA+9e/SNRbZmP9Sv
+         pCKmTk3lb6hjAAWbXCrUihV4aR6Osupca5LKufEEjFzjS5dKaHLe0jNplTFUZ36iHnVk
+         sTubKidTh4TFkPcklY8dTxB8YzPtwQKC9XMO0UBR3PrCLB/DdkbgqeffVh5WeCzY1Kz3
+         JiapQ7p+VMjbsVZb1XgQylMCEerXzU91lVY69si8AUutSOzJsBTatSYV6g7QbeGrvQUa
+         oPrdqMZejb1WJMC3kUMFa0DQeBm3jfo1vJfKQPQsi7YcylRvBDYfhLYmZlW2miVTOKKE
+         o0Mg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=oo4DwVPmc4Xc8mHsSOZJPPM1+kxb1H+BME8RduWXyEc=;
+        b=of4CBxGLiYVg4mpUN7JvzLc5RxuPon3AaxLPNTbxrY92cW9iV0KuU9QaTNpNvnp84s
+         Eed/MFTnP/bbvTNnEOAr5AO5JjMGS7iZ/HXolNVhRUbRIsi85iHnbvPuEXe7LycMwc1h
+         VPdnm82OVAbBx1i7PC6jKMwOWzN6qUIJYGwJXQN8tkx354ruhOEVujFzV/s8LNQcVu19
+         3VE2hGxd6eA5Ya60CguEq80HmBPArjLeEjMRcdmkx/CQa5uTHyPGFtAeRk595ctOUNLd
+         8zfZI55J1gYiFWPKfrcBXpP767DIkRdQyG0w/8eTUpTenpn4TTf38jV1aNixNCNV8uLC
+         HknA==
+X-Gm-Message-State: AOAM5328TIf4HR7HrGJfg69rLyfSYhBGozBVQ+RDWO/2EHu/cGK+BvHe
+        BBmskWlAy/FZcEUIp9mrV8Q=
+X-Google-Smtp-Source: ABdhPJwK34gym8LY0bVce8JYqwr3XDALjGLRfStGWGhzeJS7utaFiUFkwfefNjUZnxfhL3wq68o19Q==
+X-Received: by 2002:a17:903:246:b0:153:87f0:a93e with SMTP id j6-20020a170903024600b0015387f0a93emr31382772plh.171.1648572636435;
+        Tue, 29 Mar 2022 09:50:36 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::5:7749])
+        by smtp.gmail.com with ESMTPSA id b25-20020a637159000000b00381fda49d15sm17968864pgn.39.2022.03.29.09.50.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Mar 2022 09:50:35 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Tue, 29 Mar 2022 06:50:34 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Daniel Vetter <daniel@ffwll.ch>
+Cc:     "T.J. Mercier" <tjmercier@google.com>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arve =?iso-8859-1?B?SGr4bm5lduVn?= <arve@android.com>,
+        Todd Kjos <tkjos@android.com>,
+        Martijn Coenen <maco@android.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Hridya Valsaraju <hridya@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
+        Liam Mark <lmark@codeaurora.org>,
+        Laura Abbott <labbott@redhat.com>,
+        Brian Starkey <Brian.Starkey@arm.com>,
+        John Stultz <john.stultz@linaro.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Kalesh Singh <kaleshsingh@google.com>, Kenny.Ho@amd.com,
+        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linaro-mm-sig@lists.linaro.org, cgroups@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [RFC v4 4/8] dmabuf: heaps: export system_heap buffers with GPU
+ cgroup charging
+Message-ID: <YkM42vdq3mdIP9Zl@slm.duckdns.org>
+References: <20220328035951.1817417-1-tjmercier@google.com>
+ <20220328035951.1817417-5-tjmercier@google.com>
+ <YkHH/0Use7F30UUE@phenom.ffwll.local>
+ <CABdmKX01p6g_iHsB6dd4Wwh=8iLdYiUqdY6_yyA5ax2YNHt6tQ@mail.gmail.com>
+ <YkLGbL5Z3HVCyVkK@phenom.ffwll.local>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YkLGbL5Z3HVCyVkK@phenom.ffwll.local>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Right now, the last 5 bits (0x1f) of the swap entry are used for the
-type and the bit before that (0x20) is used for _PAGE_SWP_SOFT_DIRTY. We
-cannot use 0x40, as that collides with _RPAGE_RSV1 -- contained in
-_PAGE_HPTEFLAGS. The next candidate would be _RPAGE_SW3 (0x200) -- which is
-used for _PAGE_SOFT_DIRTY for !swp ptes.
+On Tue, Mar 29, 2022 at 10:42:20AM +0200, Daniel Vetter wrote:
+> Hm I just realized ... are the names in the groups abi? If yes then I
+> think we need to fix this before we merge anything.
 
-So let's just use _PAGE_SOFT_DIRTY for _PAGE_SWP_SOFT_DIRTY (to make it
-easier to grasp) and use 0x20 now for _PAGE_SWP_EXCLUSIVE.
+Yes.
 
-Signed-off-by: David Hildenbrand <david@redhat.com>
----
- arch/powerpc/include/asm/book3s/64/pgtable.h | 21 +++++++++++++++++++-
- 1 file changed, 20 insertions(+), 1 deletion(-)
+Thanks.
 
-diff --git a/arch/powerpc/include/asm/book3s/64/pgtable.h b/arch/powerpc/include/asm/book3s/64/pgtable.h
-index 8e98375d5c4a..eecff2036869 100644
---- a/arch/powerpc/include/asm/book3s/64/pgtable.h
-+++ b/arch/powerpc/include/asm/book3s/64/pgtable.h
-@@ -752,6 +752,7 @@ static inline pte_t pte_modify(pte_t pte, pgprot_t newprot)
- 	 */							\
- 	BUILD_BUG_ON(_PAGE_HPTEFLAGS & SWP_TYPE_MASK); \
- 	BUILD_BUG_ON(_PAGE_HPTEFLAGS & _PAGE_SWP_SOFT_DIRTY);	\
-+	BUILD_BUG_ON(_PAGE_HPTEFLAGS & _PAGE_SWP_EXCLUSIVE);	\
- 	} while (0)
- 
- #define SWP_TYPE_BITS 5
-@@ -772,11 +773,13 @@ static inline pte_t pte_modify(pte_t pte, pgprot_t newprot)
- #define __swp_entry_to_pmd(x)	(pte_pmd(__swp_entry_to_pte(x)))
- 
- #ifdef CONFIG_MEM_SOFT_DIRTY
--#define _PAGE_SWP_SOFT_DIRTY	_PAGE_NON_IDEMPOTENT
-+#define _PAGE_SWP_SOFT_DIRTY	_PAGE_SOFT_DIRTY
- #else
- #define _PAGE_SWP_SOFT_DIRTY	0UL
- #endif /* CONFIG_MEM_SOFT_DIRTY */
- 
-+#define _PAGE_SWP_EXCLUSIVE	_PAGE_NON_IDEMPOTENT
-+
- #ifdef CONFIG_HAVE_ARCH_SOFT_DIRTY
- static inline pte_t pte_swp_mksoft_dirty(pte_t pte)
- {
-@@ -794,6 +797,22 @@ static inline pte_t pte_swp_clear_soft_dirty(pte_t pte)
- }
- #endif /* CONFIG_HAVE_ARCH_SOFT_DIRTY */
- 
-+#define __HAVE_ARCH_PTE_SWP_EXCLUSIVE
-+static inline pte_t pte_swp_mkexclusive(pte_t pte)
-+{
-+	return __pte_raw(pte_raw(pte) | cpu_to_be64(_PAGE_SWP_EXCLUSIVE));
-+}
-+
-+static inline int pte_swp_exclusive(pte_t pte)
-+{
-+	return !!(pte_raw(pte) & cpu_to_be64(_PAGE_SWP_EXCLUSIVE));
-+}
-+
-+static inline pte_t pte_swp_clear_exclusive(pte_t pte)
-+{
-+	return __pte_raw(pte_raw(pte) & cpu_to_be64(~_PAGE_SWP_EXCLUSIVE));
-+}
-+
- static inline bool check_pte_access(unsigned long access, unsigned long ptev)
- {
- 	/*
 -- 
-2.35.1
-
+tejun
