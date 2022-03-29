@@ -2,131 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89373C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:26:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFB86C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:30:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239633AbiC2Q2I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 12:28:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58222 "EHLO
+        id S239640AbiC2QcD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 12:32:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238973AbiC2Q1r (ORCPT
+        with ESMTP id S237573AbiC2Qb5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 12:27:47 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9DDC229C85;
-        Tue, 29 Mar 2022 09:26:03 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id v4so18004494pjh.2;
-        Tue, 29 Mar 2022 09:26:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zSrzL4RcvPdwRrem0JkeQUvfghxscmF/IIS73/4ISuM=;
-        b=bPfDbjpxT0DjSxL1JWnNIzaPLGLUUme9ZWh2cGwHb8l0KU6et+OSmZSHXDAfDMlBV7
-         x9enOeMebdZsaPVu+3jwjyR3vpUVE315M4onO3XK9p5P/ErHPsG9n/RzTrJM32YLmVB2
-         cjssIk65ai2vA3WifAewBN9c3HxMWnLGaE4Fs7X8RW48MOb4EFTFTm7EajCtTffqUZea
-         BczMb7mH+NRyho4RPrfgnI7gwT47rolAYjj5kOyhWxinpzVAfA6CeoQBHcd/hFn0CqJ7
-         DXvT6jKqwuSmbYPA2nnwELtAawLRF2kERBojv9dTU5loc10Wx26v2/2fkrWPSaqxXx4N
-         ZDiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zSrzL4RcvPdwRrem0JkeQUvfghxscmF/IIS73/4ISuM=;
-        b=YhWl/AWyOvZFl2WiCZGbzG5Fcy0XW5gEzQ+3eozb58oNaDTxJjAVd91c03I20tsQt7
-         G90SUIOSuEDLfttOjksmPSfH7QTWBj97DPFULCJfLBhuXjrI3WufwbZcJZd/C4TTB97P
-         F/F+qrKtKruIkmYEVWAqSez4LUALg3tbYro8NX1YUeJk8OWLrXXIZ6/jTDQ1gYShoYKQ
-         uawOx0ACH34wUOpLxuyLlPMKUboxICi9bIa5tFB+OLaaq8x0lXlBD5xvLPRv/OUBU2/i
-         RPlCTER0dRR7FU5WGr5BdKZ/RygXsYEu70GE4cGxHP0Rss8DVh5yj2Mxa23tJJp/zA6p
-         Uy6g==
-X-Gm-Message-State: AOAM5313NtsQ++66AMAqUzELV9SF6cfcv1LdT4d7680McBSI5YnxZsjt
-        E+vg3XcfGcHvWzRHK1zeRqk4gLk2W1HJ8/a34gY=
-X-Google-Smtp-Source: ABdhPJy1y4rAeGRjAUma3/+QC6ZygqH6gCxyxvl+xjD9wME0wCYbFyY6Gq6YQ7F/SN+20kvJeSyRdQJx/ECNTEFRVzA=
-X-Received: by 2002:a17:902:ba83:b0:154:727e:5fc5 with SMTP id
- k3-20020a170902ba8300b00154727e5fc5mr31922203pls.55.1648571163362; Tue, 29
- Mar 2022 09:26:03 -0700 (PDT)
+        Tue, 29 Mar 2022 12:31:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD074241B72;
+        Tue, 29 Mar 2022 09:30:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8A3C6B81877;
+        Tue, 29 Mar 2022 16:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E43DCC3410F;
+        Tue, 29 Mar 2022 16:30:10 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="hbjb2Gn/"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1648571408;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=gWpDt/rwNM/nig7k6lt+szP4lNhhSqQ0Y3OUIZSEPzM=;
+        b=hbjb2Gn/Xqxghf441c701bvJaHV9I+EjzkQv2fZW1/lkHHUOiu/mnkE7OSpMQ4fAX2J3Qi
+        8DGTbR1YAlU/gpWwgtswix4J5VWianiSrD9Q0sXBaWuPbe+tTTuBcV0S3me+6DywIwWwLw
+        FvkrfGrqoPDbSy/uiAjpOtVrB2dl3+E=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id ecaad57d (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Tue, 29 Mar 2022 16:30:07 +0000 (UTC)
+Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-2db2add4516so189956827b3.1;
+        Tue, 29 Mar 2022 09:30:07 -0700 (PDT)
+X-Gm-Message-State: AOAM531JPTkLuCAXkdrZEz9mU2ChL0N0h1Eu/ZKZedM3sreJsBRunBqd
+        Dkz9Yktm1o/STqLwX4O9CtWIullYOmrhxL6IvgI=
+X-Google-Smtp-Source: ABdhPJx19sXr2RsIii2GkQbjQnPceSjSSWkgV89Y13xyhfMg4Uq23lWzaHw/ZQPb9dPHhvxRKHs0O6YsjXedp4I+Fis=
+X-Received: by 2002:a0d:d508:0:b0:2e5:d9ec:d668 with SMTP id
+ x8-20020a0dd508000000b002e5d9ecd668mr32980539ywd.499.1648571406134; Tue, 29
+ Mar 2022 09:30:06 -0700 (PDT)
 MIME-Version: 1.0
-References: <2059213643.196683.1648499088753.JavaMail.zimbra@efficios.com>
- <20220329002935.2869-1-beaub@linux.microsoft.com> <1014535694.197402.1648570634323.JavaMail.zimbra@efficios.com>
-In-Reply-To: <1014535694.197402.1648570634323.JavaMail.zimbra@efficios.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 29 Mar 2022 09:25:52 -0700
-Message-ID: <CAADnVQK=GCuhTHz=iwv0r7Y37gYvt_UBzkfFJmNT+uR0z+7Myw@mail.gmail.com>
-Subject: Re: Comments on new user events ABI
-To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>
-Cc:     Beau Belgrave <beaub@linux.microsoft.com>,
-        Beau Belgrave <beaub@microsoft.com>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-trace-devel <linux-trace-devel@vger.kernel.org>,
-        rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>
+References: <20220329121552.661647-1-wanghai38@huawei.com>
+In-Reply-To: <20220329121552.661647-1-wanghai38@huawei.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Tue, 29 Mar 2022 12:29:55 -0400
+X-Gmail-Original-Message-ID: <CAHmME9rpRTLN7tHOsdVTJZfKLVsr_ZBTkWsheLKNjX5-3-rwkg@mail.gmail.com>
+Message-ID: <CAHmME9rpRTLN7tHOsdVTJZfKLVsr_ZBTkWsheLKNjX5-3-rwkg@mail.gmail.com>
+Subject: Re: [PATCH net] wireguard: socket: fix memory leak in send6()
+To:     wanghai38@huawei.com
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        WireGuard mailing list <wireguard@lists.zx2c4.com>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 9:17 AM Mathieu Desnoyers
-<mathieu.desnoyers@efficios.com> wrote:
->
-> >
-> >> include/uapi/linux/user_events.h:
-> >>
-> >> struct user_bpf_iter {
-> >>
-> >>         /* Offset of the data within the first iovec */
-> >>         __u32 iov_offset;
-> >>
-> >>         /* Number of iovec structures */
-> >>         __u32 nr_segs;
-> >>
-> >>         /* Pointer to iovec structures */
-> >>         const struct iovec *iov;
-> >>
-> >>                            ^ a pointer in a uapi header is usually a no-go. This should be a u64.
-> >> };
-> >>
-> >> include/uapi/linux/user_events.h:
-> >>
-> >> struct user_bpf_context {
-> >>
-> >>         /* Data type being passed (see union below) */
-> >>         __u32 data_type;
-> >>
-> >>         /* Length of the data */
-> >>         __u32 data_len;
-> >>
-> >>         /* Pointer to data, varies by data type */
-> >>         union {
-> >>                 /* Kernel data (data_type == USER_BPF_DATA_KERNEL) */
-> >>                 void *kdata;
-> >>
-> >>                 /* User data (data_type == USER_BPF_DATA_USER) */
-> >>                 void *udata;
-> >>
-> >>                 /* Direct iovec (data_type == USER_BPF_DATA_ITER) */
-> >>                 struct user_bpf_iter *iter;
-> >>
-> >>                                ^ likewise for the 3 pointers above. Should be u64 in uapi headers.
-> >>         };
-> >> };
-> >>
-> >
-> > The bpf structs are only used within a BPF program. At that point the pointer
-> > sizes should all align, right?
->
-> I must admit I do not know enough about the eBPF uapi practices to answer this.
-> [CCing Alexei on this]
-
-Mathieu,
-
-Thanks for flagging.
-
-Whoever added this user_bpf* stuff please remove it immediately.
-It was never reviewed by bpf maintainers.
-
-It's a hard Nack to add a bpf interface to user_events.
+Applied, thanks for the patch.
