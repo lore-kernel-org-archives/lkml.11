@@ -2,54 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFA13C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 04:20:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3A54C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 04:21:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231969AbiC2EWa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 00:22:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51826 "EHLO
+        id S231981AbiC2EXI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 00:23:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231919AbiC2EW2 (ORCPT
+        with ESMTP id S231919AbiC2EXF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 00:22:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5216F23B3D5
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 21:20:46 -0700 (PDT)
+        Tue, 29 Mar 2022 00:23:05 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 150B023B3D7
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 21:21:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648527644;
+        s=mimecast20190719; t=1648527682;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
         bh=NBrZonGtyPiYVHPrtXOiyOTwxwGC7d31Hs1pwiySqI4=;
-        b=Q/IEEpePc42Q3nEsWcsDg5I35HDT0U38/5Ri3sEm7YGoFHtw96DYQKSosyUaFtYNahk0m6
-        G4nlHcx7Hx1+lvFjbx3LJ7QjMPD8joyHPRejruYop4bIptEDU8YfGovnqD6667mTuidJef
-        hJinf6+irra+awdyQIKGHU68M+Qeo1c=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        b=XoTUseReaRcFjWpW39fIeVeP3DE/UuLmj0YSA61hxaQFDXei+mY4uVSIUHeCcmSWSzfrSZ
+        E9tZ9vcYhTzqqXjnmI3B1xBfzqeJ3KUYIFGjgY4CNPKo811N6o4WSDM+8JcYf91EICcHMz
+        d3lecg4YJgH73fOKMuBQg7gsocqjAf4=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-43-59RoqxS8OZ-T4NjDV1YHpg-1; Tue, 29 Mar 2022 00:09:01 -0400
-X-MC-Unique: 59RoqxS8OZ-T4NjDV1YHpg-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+ us-mta-314-rqTZFqzIPTWYwI3hFxTFfA-1; Tue, 29 Mar 2022 00:21:19 -0400
+X-MC-Unique: rqTZFqzIPTWYwI3hFxTFfA-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B672A1C05ABA;
-        Tue, 29 Mar 2022 04:08:48 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 24AE38117B0;
+        Tue, 29 Mar 2022 04:21:19 +0000 (UTC)
 Received: from localhost.localdomain (ovpn-13-210.pek2.redhat.com [10.72.13.210])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 41400401E64;
-        Tue, 29 Mar 2022 04:08:45 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5324C401DEA;
+        Tue, 29 Mar 2022 04:21:15 +0000 (UTC)
 From:   Jason Wang <jasowang@redhat.com>
-To:     mst@redhat.com, jasowang@redhat.com
-Cc:     virtualization@lists.linux-foundation.org,
+To:     jasowang@redhat.com, mst@redhat.com
+Cc:     elic@nvidia.com, hdanton@sina.com,
+        virtualization@lists.linux-foundation.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V2 2/3] vdpa: mlx5: synchronize driver status with CVQ
-Date:   Tue, 29 Mar 2022 12:08:39 +0800
-Message-Id: <20220329040840.3419-2-jasowang@redhat.com>
-In-Reply-To: <20220329040840.3419-1-jasowang@redhat.com>
-References: <20220329040840.3419-1-jasowang@redhat.com>
+Subject: [PATCH RESEND V2 2/3] vdpa: mlx5: synchronize driver status with CVQ
+Date:   Tue, 29 Mar 2022 12:21:08 +0800
+Message-Id: <20220329042109.4029-2-jasowang@redhat.com>
+In-Reply-To: <20220329042109.4029-1-jasowang@redhat.com>
+References: <20220329042109.4029-1-jasowang@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
