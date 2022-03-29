@@ -2,92 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D80F7C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 15:34:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E5A7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 15:35:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238784AbiC2Pgb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 11:36:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55142 "EHLO
+        id S238801AbiC2PhJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 11:37:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238775AbiC2Pg3 (ORCPT
+        with ESMTP id S238775AbiC2PhH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 11:36:29 -0400
-Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72F05CA0D4
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 08:34:46 -0700 (PDT)
-Received: by mail-io1-xd35.google.com with SMTP id x4so21404089iop.7
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 08:34:46 -0700 (PDT)
+        Tue, 29 Mar 2022 11:37:07 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27EFE108557;
+        Tue, 29 Mar 2022 08:35:24 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id y6so15425003plg.2;
+        Tue, 29 Mar 2022 08:35:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=htBX7L4Dsxnz/XrjDNY+IIiit4PR6UfEgdlGlVmAc10=;
-        b=BOJAerkdMLPAWF6Fbj9L+HP7t58FctG3RomHvcwAWryDr9qR9qTFEpQQjin0iETsIJ
-         Ia2ObqXDWctfEOP0NvX5V8SljA4ZkrWCJ2tj/qjxfhBIV73T4lQbAIcxPe5/zk3AISkL
-         VSmlGK6sjnyL8xKCH1M0Jm62fInohQXJhqq6A=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hXXDAsVberZERpiqBZUmvRldgBLnXTkqn777k+qHy4M=;
+        b=EAI87mx8MDRK8xMXQNaElYaVk5+kOjZwSRg0qmZhjJvyEtzYi5sj8ZVsQzpF3jYH7E
+         0PpQzdUEfa7xfxiTAtz+TmaLS9UvmI2vxlRHvcPeMjdy4tUw1d0vukOHfYp4J42xxJJf
+         VH61yfGoH1H7NLWvCp82IdFZejvh+FS6ANiW8uehWkpvoCxXzkabUonIarc9ARo3F/aH
+         4gemyU8oMXKtUYSuSGoL7JREfxm3SxGYqRviRTBBqh8Ro/HI6BUU+P/eiayBi2laq7pn
+         Z5iKQr9DPzNUEQ9kzoDOv0GO1so+6U1iw/oDDQtCYZ90d0O25Jw771ASIihAULa6/BwU
+         5Mgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=htBX7L4Dsxnz/XrjDNY+IIiit4PR6UfEgdlGlVmAc10=;
-        b=Ri6lqrlLHF9Jz41jltgxMJ8Zy00YJKSsr/QIrzSQFUU9VXw4fcTQWXLRPhcjC9QDmd
-         92iOLUROMkgNSTVbP+KyU0wwGyd8yfwwvu+s4VS96YK6bY5+WU09KLnHrheIgjcXLJWd
-         Gg2SYiripS3tV+vf+Fy5bjY/pzso3ksOPsn/5TmOB3b+i//YTkTKu5mHgORVwGZ7Bf39
-         dYjqjbt5lcufW2gnq+YKNCdUyH2PF1Kx4WtVKIQaNM6yKkhgnwggdqLQBvNQNCVJGgKw
-         FjrCW1spGhUBM1d3OhNAenRZcRSoWU2RDAzFXA4ZbX0itn9DdgI1/GH7Gei3EBnRDmpq
-         M0qw==
-X-Gm-Message-State: AOAM533+8UsJBbtD/BzwGHC9Uo11wFNfl57OFmjyhWljmx520sYoD8L8
-        ZSydku2PlbGTWvLQRnaSdVip5w==
-X-Google-Smtp-Source: ABdhPJzfhtLxQM1xtXtWtwV8YaGmygkTHU8Mm5KMZbG7uj4B2Mq0NA/2DemnGbPpL3OV6yk84Uq9Ew==
-X-Received: by 2002:a05:6602:29ce:b0:609:4f60:59cb with SMTP id z14-20020a05660229ce00b006094f6059cbmr9539011ioq.183.1648568085905;
-        Tue, 29 Mar 2022 08:34:45 -0700 (PDT)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id v7-20020a92d247000000b002c9dd3a2d38sm255450ilg.31.2022.03.29.08.34.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 29 Mar 2022 08:34:45 -0700 (PDT)
-Subject: Re: [PATCH v5 2/2] selftests/resctrl: Print a message if the result
- of MBM&CMT tests is failed on Intel CPU
-To:     Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Shuah Khan <shuah@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220323080928.1586408-1-tan.shaopeng@jp.fujitsu.com>
- <20220323080928.1586408-3-tan.shaopeng@jp.fujitsu.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <61b7e805-975f-d273-58b5-46ec9ee723d6@linuxfoundation.org>
-Date:   Tue, 29 Mar 2022 09:34:45 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        bh=hXXDAsVberZERpiqBZUmvRldgBLnXTkqn777k+qHy4M=;
+        b=W9HD5efWPZdXr60gj3yiCrT5REvWnMXunOCvHvSqoXC6A8aUIUKVvTlitNZIjmW3HQ
+         TqbZvkc5Cx3s25On1kUVFooFcc6aHXK21PsYSV1b9pSHfIYkYNwGSVdPhQZnbq4hkE39
+         Lnm1WpdRY1qHf/8O1gQTwkxuR9uRY32yAQOb8dUee7qn1Bue3j69LGR/1JCMSfJVCopw
+         v57VdGa425QF0aQ4srf/+ELzfnLdV/fdq/kubEY9dLGMwn5Db7O9v3e8drjAkBdO0Yii
+         hzR8O3t7f9Qwwr4rlrVAG5N5GEVJFs+0NaaRAcsjkjnKiwmSYYqejzVhgIQLBxDqe2hr
+         /g2g==
+X-Gm-Message-State: AOAM533NC2ve52/RnkGd0/PBrehhBIy+3K4S9x0Yl6mZxuAv/FW0lMbQ
+        GTceD9EO5eK0QUVQ/UFjWAaQAH/gK/E=
+X-Google-Smtp-Source: ABdhPJwLcsla511HPCq1O4W/HZJVKhb6M0IsTGvQX7oPVlOP3QJPE75EqnWX9k9z0OTuejGHdavSZA==
+X-Received: by 2002:a17:902:ea92:b0:153:d046:5711 with SMTP id x18-20020a170902ea9200b00153d0465711mr31245213plb.77.1648568123323;
+        Tue, 29 Mar 2022 08:35:23 -0700 (PDT)
+Received: from localhost ([47.251.3.230])
+        by smtp.gmail.com with ESMTPSA id b16-20020a056a00115000b004f6ff260c9esm19292309pfm.207.2022.03.29.08.35.22
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 29 Mar 2022 08:35:23 -0700 (PDT)
+From:   Lai Jiangshan <jiangshanlai@gmail.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Cc:     Lai Jiangshan <jiangshan.ljs@antgroup.com>
+Subject: [RFC PATCH V2 0/4] KVM: X86: Add and use shadow page with level expanded or acting as pae_root
+Date:   Tue, 29 Mar 2022 23:36:00 +0800
+Message-Id: <20220329153604.507475-1-jiangshanlai@gmail.com>
+X-Mailer: git-send-email 2.19.1.6.gb485710b
 MIME-Version: 1.0
-In-Reply-To: <20220323080928.1586408-3-tan.shaopeng@jp.fujitsu.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/23/22 2:09 AM, Shaopeng Tan wrote:
-> According to "Intel Resource Director Technology (Intel RDT) on
-> 2nd Generation Intel Xeon Scalable Processors Reference Manual",
-> When the Intel Sub-NUMA Clustering(SNC) feature is enabled,
-> Intel CMT and MBM counters may not be accurate.
-> 
-> However, there does not seem to be an architectural way to detect
-> if SNC is enabled.
-> 
-> If the result of MBM&CMT test fails on Intel CPU,
-> print a message to let users know a possible cause of failure.
-> 
-> Acked-by: Reinette Chatre <reinette.chatre@intel.com>
-> Signed-off-by: Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
+From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-Looks good to me.
+(Request For Help for testing on AMD machine with 32 bit L1 hypervisor,
+see information below)
 
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+KVM handles root pages specially for these cases:
 
-thanks,
--- Shuah
+direct mmu (nonpaping for 32 bit guest):
+	gCR0_PG=0
+shadow mmu (shadow paping for 32 bit guest):
+	gCR0_PG=1,gEFER_LMA=0,gCR4_PSE=0
+	gCR0_PG=1,gEFER_LMA=0,gCR4_PSE=1
+direct mmu (NPT for 32bit host):
+	hEFER_LMA=0
+shadow nested NPT (for 32bit L1 hypervisor):
+	gCR0_PG=1,gEFER_LMA=0,gCR4_PSE=0,hEFER_LMA=0
+	gCR0_PG=1,gEFER_LMA=0,gCR4_PSE=1,hEFER_LMA=0
+	gCR0_PG=1,gEFER_LMA=0,gCR4_PSE={0|1},hEFER_LMA=1,hCR4_LA57={0|1}
+Shadow nested NPT for 64bit L1 hypervisor:
+	gEFER_LMA=1,gCR4_LA57=0,hEFER_LMA=1,hCR4_LA57=1
+
+They are either using special roots or matched the condition 
+((mmu->shadow_root_level > mmu->root_level) && !mm->direct_map)
+(refered as level expansion) or both.
+
+All the cases are using special roots except the last one.
+Many cases are doing level expansion including the last one.
+
+When special roots are used, the root page will not be backed by
+kvm_mmu_page.  So they must be treated specially, but not all places
+is considering this problem, and Sean is adding some code to check
+this special roots.
+
+When level expansion, the kvm treats them silently always.
+
+These treaments incur problems or complication, see the changelog
+of every patch.
+
+These patches were made when I reviewed all the usage of shadow_root_level
+and root_level.  Many root level patches are sent and accepted.
+
+These patches has not been tested with shadow NPT cases listed above.
+Because I don't have guest images can act as 32 bit L1 hypervisor, nor
+I can access to AMD machine with 5 level paging.  I'm a bit reluctant
+to ask for the resource, so I send the patches and wish someone test
+them and modify them.  At least, it provides some thinking and reveals
+problems of the existing code and of the AMD cases.
+( *Request For Help* here.)
+
+These patches have been tested with the all cases except the shadow-NPT
+cases, the code coverage is believed to be more than 95% (hundreds of
+code related to shadow-NPT are shoved, and be replaced with common
+role.pae_root and role.passthrough code with only 8 line of code is
+added for shadow-NPT, only 2 line of code is not covered in my tests).
+
+[V1]: https://lore.kernel.org/lkml/20211210092508.7185-1-jiangshanlai@gmail.com/
+
+Changed from V1:
+	Apply Sean's comments and suggestion. (Too much to list. Thanks!)
+	Add some comments.
+	Change changelog for role.pae_root patch.
+
+Lai Jiangshan (4):
+  KVM: X86: Add arguement gfn and role to kvm_mmu_alloc_page()
+  KVM: X86: Introduce role.passthrough for level expanded pagetable
+  KVM: X86: Alloc role.pae_root shadow page
+  KVM: X86: Use passthrough and pae_root shadow page for 32bit guests
+
+ Documentation/virt/kvm/mmu.rst  |   7 +
+ arch/x86/include/asm/kvm_host.h |  16 +-
+ arch/x86/kvm/mmu/mmu.c          | 400 +++++++++-----------------------
+ arch/x86/kvm/mmu/paging_tmpl.h  |  15 +-
+ 4 files changed, 138 insertions(+), 300 deletions(-)
+
+-- 
+2.19.1.6.gb485710b
+
