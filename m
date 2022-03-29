@@ -2,99 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1E66C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 02:16:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07CFAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 02:19:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230192AbiC2CSH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 22:18:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34952 "EHLO
+        id S230261AbiC2CVi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 22:21:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230147AbiC2CRx (ORCPT
+        with ESMTP id S229986AbiC2CVg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 22:17:53 -0400
-Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A9A663B1;
-        Mon, 28 Mar 2022 19:16:10 -0700 (PDT)
-Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-12.nifty.com with ESMTP id 22T2FUb1001635;
-        Tue, 29 Mar 2022 11:15:30 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 22T2FUb1001635
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1648520131;
-        bh=IGjG7HZTYaNUSK92f2Wk37VM01/dRdTOa/MwlyRMzuA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=CK5A6Z8l9TIdOTlyalfmupcm97RSZxmWQEQe1ijh8aYFSryWIvY9FPhCopnCz3yEV
-         TmRJDW3y/5UtCNWM6jcvbHSuY/x1t0VT9zPSlQGuYHXfxwp126QWMxFW3bWbizy664
-         ii4Y2K6f0+lq4XwxFvXbFjhaitR1ew0xAJecRHNAvC1zmwkRoGXyD9kO2H4VDvyrdx
-         pfLS2wi0lCBYVY9k39c0J0AfkWY6amG0yEHBVOrs9H1BVI9dAhLtJwBTxQzq2hhScQ
-         OIIkUHHgpMbI2S1PGiWgM5PVFTjuPCtqDRaJN1o62ByIdpwXOos+JHEn/3mGu3P3Wk
-         vu6BVPgv7YdrQ==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: [PATCH 1/2] kbuild: factor out genksyms command from cmd_gensymtypes_{c,S}
-Date:   Tue, 29 Mar 2022 11:15:19 +0900
-Message-Id: <20220329021520.308997-1-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
+        Mon, 28 Mar 2022 22:21:36 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89C992717D
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 19:19:54 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 49AF521985;
+        Tue, 29 Mar 2022 02:19:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1648520392; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZPkIZ/XPkzUw3GjYvyN+kAbsucuIGnV2jh6uGeU7IYw=;
+        b=Nqd4JoQK6yUWhkcVCPx/L2AnKtO3DnEXQc+fbSPNlZADjl1RQ/AnZKioJKNOMqj7uCYtte
+        mlyfhrqR5G7T5aodZkGOTeXBCdZNP/AwPQmbqi5WUXVgRfnzaAuIRFfKGk65mptVqC2znn
+        JkIyadYj/SBG+Zs/5tJVyDYX0u1jq4Q=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1648520392;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZPkIZ/XPkzUw3GjYvyN+kAbsucuIGnV2jh6uGeU7IYw=;
+        b=DzeLs96G9pLdG7R6oZoAvgLb8XvdopgoKAISiuJ/595Gh3Qw9DQ58FbSPP1yZSrbGym2qc
+        edOnjsVfueSeb7Dw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id A0BED13A7E;
+        Tue, 29 Mar 2022 02:19:51 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 2eezE8dsQmLhNQAAMHmgww
+        (envelope-from <ematsumiya@suse.de>); Tue, 29 Mar 2022 02:19:51 +0000
+Date:   Mon, 28 Mar 2022 23:19:41 -0300
+From:   Enzo Matsumiya <ematsumiya@suse.de>
+To:     CGEL <cgel.zte@gmail.com>
+Cc:     rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com,
+        paul@paul-moore.com, kbuild-all@lists.01.org,
+        Zeal Robot <zealci@zte.com.cn>, linux-kernel@vger.kernel.org,
+        eparis@redhat.com, Yang Yang <yang.yang29@zte.com.cn>,
+        linux-audit@redhat.com
+Subject: Re: [PATCH] audit: do a quick exit when syscall number is invalid
+Message-ID: <20220329021941.ai3d6fgrkyd5ylto@cyberdelia>
+References: <20220326094654.2361956-1-yang.yang29@zte.com.cn>
+ <202203270449.WBYQF9X3-lkp@intel.com>
+ <62426553.1c69fb81.bb808.345c@mx.google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <62426553.1c69fb81.bb808.345c@mx.google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The genksyms command part in cmd_gensymtypes_{c,S} is duplicated.
-Factor it out into the 'genksyms' macro.
+On 03/29, CGEL wrote:
+>>    In file included from include/linux/init.h:5,
+>>                     from kernel/auditsc.c:34:
+>>    kernel/auditsc.c: In function '__audit_syscall_exit':
+>> >> kernel/auditsc.c:2081:61: error: 'NR_syscalls' undeclared (first use in this function); did you mean 'si_syscall'?
+>>     2081 |             unlikely(context->major < 0 || context->major > NR_syscalls))
+>>          |                                                             ^~~~~~~~~~~
+>
+>Sorry could anybody give a hand to solve this? It works well on x86_64 and arm64.
+>I have no alpha environment and not familiar to this arch, much thanks!
 
-For the readability, I slightly refactor the arguments to genksyms.
+Sorry, no experience either, but from a quick look at arch/alpha/include/asm/unistd.h
+shows that it's called NR_SYSCALLS for alpha arch, for whatever reason.
 
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
 
- scripts/Makefile.build | 19 ++++++++-----------
- 1 file changed, 8 insertions(+), 11 deletions(-)
+HTH
 
-diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index 9717e6f6fb31..3f2985df4d60 100644
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -125,13 +125,14 @@ cmd_cpp_i_c       = $(CPP) $(c_flags) -o $@ $<
- $(obj)/%.i: $(src)/%.c FORCE
- 	$(call if_changed_dep,cpp_i_c)
- 
-+genksyms = scripts/genksyms/genksyms		\
-+	$(if $(1), -T $(2))			\
-+	$(if $(CONFIG_MODULE_REL_CRCS), -R)	\
-+	$(if $(KBUILD_PRESERVE), -p)		\
-+	-r $(or $(wildcard $(2:.symtypes=.symref), /dev/null))
-+
- # These mirror gensymtypes_S and co below, keep them in synch.
--cmd_gensymtypes_c =                                                         \
--    $(CPP) -D__GENKSYMS__ $(c_flags) $< |                                   \
--    scripts/genksyms/genksyms $(if $(1), -T $(2))                           \
--     $(patsubst y,-R,$(CONFIG_MODULE_REL_CRCS))                             \
--     $(if $(KBUILD_PRESERVE),-p)                                            \
--     -r $(firstword $(wildcard $(2:.symtypes=.symref) /dev/null))
-+cmd_gensymtypes_c = $(CPP) -D__GENKSYMS__ $(c_flags) $< | $(genksyms)
- 
- quiet_cmd_cc_symtypes_c = SYM $(quiet_modtag) $@
- cmd_cc_symtypes_c =                                                         \
-@@ -344,11 +345,7 @@ cmd_gensymtypes_S =                                                         \
-     $(CPP) $(a_flags) $< |                                                  \
-      grep "\<___EXPORT_SYMBOL\>" |                                          \
-      sed 's/.*___EXPORT_SYMBOL[[:space:]]*\([a-zA-Z0-9_]*\)[[:space:]]*,.*/EXPORT_SYMBOL(\1);/' ; } | \
--    $(CPP) -D__GENKSYMS__ $(c_flags) -xc - |                                \
--    scripts/genksyms/genksyms $(if $(1), -T $(2))                           \
--     $(patsubst y,-R,$(CONFIG_MODULE_REL_CRCS))                             \
--     $(if $(KBUILD_PRESERVE),-p)                                            \
--     -r $(firstword $(wildcard $(2:.symtypes=.symref) /dev/null))
-+    $(CPP) -D__GENKSYMS__ $(c_flags) -xc - | $(genksyms)
- 
- quiet_cmd_cc_symtypes_S = SYM $(quiet_modtag) $@
- cmd_cc_symtypes_S =                                                         \
--- 
-2.32.0
-
+Enzo
