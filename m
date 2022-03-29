@@ -2,285 +2,235 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1C6BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 20:44:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C30AC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 20:47:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232238AbiC2Upq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 16:45:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40260 "EHLO
+        id S232374AbiC2Usv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 16:48:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232169AbiC2Upo (ORCPT
+        with ESMTP id S232034AbiC2Ust (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 16:45:44 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5247156C12
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 13:43:59 -0700 (PDT)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22TKeglq028406;
-        Tue, 29 Mar 2022 20:43:09 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=8/AiFHodVaPAEictazV7DFCNDibggGlrrh+iKKb3HGY=;
- b=phEiDC/egvQyfXtW3lcyLLB89beHNNuCUmo6FsYu05/6j40cFmaNKUM90/OgFZXkleuX
- KMNlHSvZZf9SojfAC+MEDX0sv5W2G2wF8aXJ2npEKoQnoifNHYbAYLVx+vidcSlNnNGy
- bkC3f5WaJTN7XIdpDPY8Cfhs50GIG+Jhvr02QPPweqsoQiEYuk6O2K8wETXqe/zqdGLn
- hE9bwdLcRYcc1CW1iwNSQjFannoT9ktktlSIVv7s7QG3ec5QonYkWE4UJ7mcb8WkXrYg
- zzLZBJO+ZpmQiSk4pvubvU8ktamtiOEaPOBou8UZaATZZT7ACbC8C+h2fUDTmH4lOOKg 6w== 
-Received: from aserp3030.oracle.com ([141.146.126.71])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3f1tqb7n00-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 29 Mar 2022 20:43:09 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 22TKet3L140265;
-        Tue, 29 Mar 2022 20:43:08 GMT
-Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2175.outbound.protection.outlook.com [104.47.57.175])
-        by aserp3030.oracle.com with ESMTP id 3f1rv8dt7s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 29 Mar 2022 20:43:08 +0000
+        Tue, 29 Mar 2022 16:48:49 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2043.outbound.protection.outlook.com [40.107.237.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F2371B4EBA;
+        Tue, 29 Mar 2022 13:47:05 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=I3GYmR9d0MzKiT+E78zjqyGeLLEn5udc7wr5o7lRq+KmeeyYFKPvcBQk+vaVFyg2ls/2n8xUNeKRWI4Ik+VCl1iyD1FfqHYP1gZOL0sQ/JVUeduf5SBkfzyUrDhpb89Q1bMYomxRunduHEwx9jSmV4g3rmR8cWCM9AdcRfCn0va2j1RF9SAU6IqNKsbIKByM9nnxL4vQY2MOsdAlRbTGym6Sy7IlKi4u6jxMR+QqKPHNmsndp42iU8UNNTAMwIpqRKJ8lUbf/4OnmohROA1t7dZtxwJQ+B7TkqsdkF0/I/QxW5D6lDJij9lDbH5yG2gegppAzN/mMJ7/2X8JmzA1OA==
+ b=iRLWk8wDJMRhnTpL6odE9aQmCmFDoqipJnOTSRmh/uSH3zpUp8lXOox33+gxNH7eSNRkD87dCNepx6S1iccflhDAQNjikwc2l+GZ/TqvlwL0C7l/siNq/k9Y8IKZxIbzUZnwThqZrEF27v9LXixUk8ZgXJtvlIc4u3kaTag7KytdMyCZ/WovORD8uXwIicd2XCPFhO7V7meTYaojh5v6t9BpmdeIpgZI9wXGKe/I3mUCAyelwJNdh2rGyzB45Azvu0JHPgPE1uhcfnfSRUlKvzHt8RoWS84JMbJlOc+04HkFhyxkkX+duvvFqmHUqf5/rinb7VMVcYAeDSf8iDR/TQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8/AiFHodVaPAEictazV7DFCNDibggGlrrh+iKKb3HGY=;
- b=MH9OCc6yjxihWCZXOKsqtmP/5mrnqybbQzE64QxrOzT+gvL6A2X+5/R409y4/5psiUEHxskDEtBa2Yj896xSJqAJ08+Wt9aFeTXG02vRxyi2iADNXOECXa2JKqYSVrSgCZ9Nw3Z4bxT00Yey1Ppj/Samv6XPT9JZ5t+oPudfr4dybvSPyoON71Mt68tKDCUy7qseXPmzpQHimDk5G2CMSuIjDvpA3KVrxmtYhMBS2x243HxvuQy+cyFQoFwPPewFDpbmX6XXb8VzZw7kHt3SaxIoBYUnQIYoEhMMXSwDOlZR9/jo84n5Ba3M2uPzi4NueXat+s2HS0OLyHDsxekpVg==
+ bh=bWGjsp6bcWoD+PhWERM8MSXtSYDlVFmnFMGpERQQVI8=;
+ b=gpZuDd+WWKqYB+qOVhmrxBSdnnICD/fl9sGzH9fsH52o0/g9O304Pjxvh1oXPbzubXO2qpJA6bYlRMDYA7I2/VB+QOeLazshs5moiAuARreef+3hDqfR8Om0J5WeS+sbM0orIaP92rsqYYpKgR4bzZUI/WOBRNs2EX58mPbrkZ+kj3lyjL2ddhh4TfoAQtf4LcoM95SnbR+j9DgAn6MO7UcPktqaKeiTMD5IX4jP2TaxyoM+y6fCvwzBUrZbME4UR5dZsRmHBeAhhpcyxUoX0lQk8LdDKuYtpWbeyO5563KGshDDbUvcjPj7RWWREByDVymmGD9c5RH8/QdEF4GZaw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8/AiFHodVaPAEictazV7DFCNDibggGlrrh+iKKb3HGY=;
- b=MaZYbuOscsKQ6DePu2LuGi1ZUOXWP/T/S1dnlfeGnBYwSU9MxC0xl0OTQANEtwDQnEMh7Hg0IuhUZwzMxkbww+xvc/7kMxlCU1W4MwodT9TjcgM8rMQjpWtA+PRRf/kGNB6yThHlyr5nMIZJ2IOMNXpoeAPTagYwZWx/3Ss4J3E=
-Received: from BN8PR10MB3220.namprd10.prod.outlook.com (2603:10b6:408:c8::18)
- by SJ0PR10MB5600.namprd10.prod.outlook.com (2603:10b6:a03:3dc::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.18; Tue, 29 Mar
- 2022 20:43:05 +0000
-Received: from BN8PR10MB3220.namprd10.prod.outlook.com
- ([fe80::7dba:ea0:121a:eeaf]) by BN8PR10MB3220.namprd10.prod.outlook.com
- ([fe80::7dba:ea0:121a:eeaf%4]) with mapi id 15.20.5102.023; Tue, 29 Mar 2022
- 20:43:05 +0000
-Message-ID: <909cc1b6-6f4f-4c45-f418-31d5dd5acaa3@oracle.com>
-Date:   Tue, 29 Mar 2022 14:42:57 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 01/15] mm/rmap: fix missing swap_free() in
- try_to_unmap() after arch_unmap_one() failed
+ bh=bWGjsp6bcWoD+PhWERM8MSXtSYDlVFmnFMGpERQQVI8=;
+ b=1m0NXNzr+lit1DgtwH9HmUW0ZvAjdr03BHCfqrkLCFxU3WSr1Bx1GSECFCXSR/aB7VNaGJLedFA1nIcn7co9GiWxkQsQ3ZS8NwH1F+wjXkmVAUodY6cfELmSlkQQcQL0fbWZZS/eLsuOezCKMnHWGFkyAdenAQflPvYPfhxhCyg=
+Received: from DM4PR12MB5168.namprd12.prod.outlook.com (2603:10b6:5:397::8) by
+ SN6PR12MB4751.namprd12.prod.outlook.com (2603:10b6:805:df::33) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5102.17; Tue, 29 Mar 2022 20:47:03 +0000
+Received: from DM4PR12MB5168.namprd12.prod.outlook.com
+ ([fe80::b5ce:25ac:77a6:9903]) by DM4PR12MB5168.namprd12.prod.outlook.com
+ ([fe80::b5ce:25ac:77a6:9903%6]) with mapi id 15.20.5102.023; Tue, 29 Mar 2022
+ 20:47:03 +0000
+From:   "Limonciello, Mario" <Mario.Limonciello@amd.com>
+To:     "Huang, Ray" <Ray.Huang@amd.com>
+CC:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        "open list:AMD PSTATE DRIVER" <linux-pm@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v2 0/3] Improve usability for amd-pstate
+Thread-Topic: [PATCH v2 0/3] Improve usability for amd-pstate
+Thread-Index: AQHYQxCvjIp4MpZ2wkGqsTNLtlSvs6zV3xwAgAD217A=
+Date:   Tue, 29 Mar 2022 20:47:02 +0000
+Message-ID: <DM4PR12MB5168F84795F4467B048B6AC3E21E9@DM4PR12MB5168.namprd12.prod.outlook.com>
+References: <20220329015947.565-1-mario.limonciello@amd.com>
+ <YkKhCplrh/TJl/OQ@amd.com>
+In-Reply-To: <YkKhCplrh/TJl/OQ@amd.com>
+Accept-Language: en-US
 Content-Language: en-US
-To:     David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Pedro Gomes <pedrodemargomes@gmail.com>,
-        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org
-References: <20220315104741.63071-1-david@redhat.com>
- <20220315104741.63071-2-david@redhat.com>
- <d98bd1f9-e9b7-049c-7bde-3348b074eb18@redhat.com>
-From:   Khalid Aziz <khalid.aziz@oracle.com>
-In-Reply-To: <d98bd1f9-e9b7-049c-7bde-3348b074eb18@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SN4PR0701CA0007.namprd07.prod.outlook.com
- (2603:10b6:803:28::17) To BN8PR10MB3220.namprd10.prod.outlook.com
- (2603:10b6:408:c8::18)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_Enabled=true;
+ MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_SetDate=2022-03-29T20:47:01Z;
+ MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_Method=Standard;
+ MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_Name=AMD Official Use
+ Only-AIP 2.0;
+ MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_SiteId=3dd8961f-e488-4e60-8e11-a82d994e183d;
+ MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_ActionId=6d76b0e4-0579-4acc-be63-a9f05a6ff4ce;
+ MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_ContentBits=1
+msip_label_88914ebd-7e6c-4e12-a031-a9906be2db14_enabled: true
+msip_label_88914ebd-7e6c-4e12-a031-a9906be2db14_setdate: 2022-03-29T20:47:01Z
+msip_label_88914ebd-7e6c-4e12-a031-a9906be2db14_method: Standard
+msip_label_88914ebd-7e6c-4e12-a031-a9906be2db14_name: AMD Official Use
+ Only-AIP 2.0
+msip_label_88914ebd-7e6c-4e12-a031-a9906be2db14_siteid: 3dd8961f-e488-4e60-8e11-a82d994e183d
+msip_label_88914ebd-7e6c-4e12-a031-a9906be2db14_actionid: 6c28d8a6-c195-4b04-8900-86251ced14ac
+msip_label_88914ebd-7e6c-4e12-a031-a9906be2db14_contentbits: 0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 36779823-0afd-4062-93ca-08da11c5478b
+x-ms-traffictypediagnostic: SN6PR12MB4751:EE_
+x-microsoft-antispam-prvs: <SN6PR12MB47511F9B2D9CD5A7F25A15C7E21E9@SN6PR12MB4751.namprd12.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: X9rCqFr5LJDgOhM+3dRsl6wC5v74pXHLhfIlpMpIY17fNhnCU2XlJH0xWN2/lLin+DCpUa531LtmLWnPY6wsArSD22rwJYHC3qM4pkv/UdgBwB+ZCF1ZHJtlXWF1YVufCcKOnmf2xuY4dwMGpW5kqoujtvkHf3qX4SenlG4qRsN3Nd7VMHyGv88XEZYTKnMvaVseQ6bq8sG08t148bXM9tQbjyq/1JT6XXWMc6EtUfL6gJclkeNlRNVYqE9FdxPNj+V8m5qEquLbSEnmRnjFMU5pOO8WilL6gjLVzw2/i62whqmS6TaK+zNOV1JhX9OZWiodrGpSG1L4KET2t2orjVHhaxNY9bSitdgCBJskOoP3aEpZDUuvsV2j7OegwtWRBnBXEQQ+Vv/+YP1dxbwq0hD6Y0/YcjWVDH33pa3u8sE65qlZYZchj7nCpHJ3f1DGJXNc+EgqqriVrER1kFyJIHSXMkLPZ/jr4xLdy/8vejdBrCo2qgpWu0WX0dzD1c6UYfGhDCF4yYDvkplBgzHALepC3T3mZNmkoVqrVijliQ2sMsZWNnfyk7+m3vvDgtLbv2Qg95ajAVxs7VjDGB2v6PyBz7PKcnJllpFZNmxN8gQKJ4InLw9KgSSvWRQUe1Ww/l4iuue9PU4zFh271F6W6F54yD/LSAXMwxAfhC+vBwz8yVUu+Y4eABlRMhYQlDnEsZif1YzERru6NwZHI0VFag==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5168.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(316002)(8936002)(66556008)(8676002)(6636002)(66476007)(76116006)(83380400001)(9686003)(86362001)(66446008)(6862004)(4326008)(38100700002)(53546011)(6506007)(66946007)(7696005)(64756008)(122000001)(186003)(26005)(55016003)(2906002)(33656002)(71200400001)(52536014)(38070700005)(5660300002)(508600001)(54906003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?aPYJiEQ9IZvAxR8llhKkY/o8ev07mcMAVX7tDXkb8tTGUbWpEkbm7Fmjtme2?=
+ =?us-ascii?Q?+N1q5uOAHd0iRt6eYSbD+xYbnT2SxWys2IraXAz8MSsESolGPio/+tjPp+tL?=
+ =?us-ascii?Q?V/s6mNgkGhgPxyfkaK2/RY4/vZ0txHUekduMW+MGWe5b2aJtr0gP+YOQ6GSf?=
+ =?us-ascii?Q?5bFSZMhB5gXp7pyBg0kSVo11HbacHmHolnIzXnjqwoGHL7YmIqq40xDQHRVw?=
+ =?us-ascii?Q?LhWYKOqvtRo6571/8yU7rm+X8y4lQ/HeJuR9XkT7eiUVCAHMbAtc38t2qpw0?=
+ =?us-ascii?Q?aJIhuU82AI3ySllSHQEJiYRJZWNeKGvzV+pYYkOuC/1MJ/JZ7afSM+dYffcO?=
+ =?us-ascii?Q?lJWxHeZsOzw7JvUQTz949XPliL5WkVIiVBsglFJIVWCqZyslg2Fs06H5aoZA?=
+ =?us-ascii?Q?MOe0562VxHDbP1evTqz5lAhCyyqfdGnNd+oi8dh+Xqn26s0uKjAIYD2BXksf?=
+ =?us-ascii?Q?YVgBP8AG2Cf4GLOhJJ5jtmKjn3fQkIEBKOUHuMnDGI1XHvP7OthAcOOdpIJN?=
+ =?us-ascii?Q?BQgC0kwDpzRmTSnhCq9UfXzxghqSNVQ8ePWN7b5OVCKnaehTW4dkLB9ZqO0N?=
+ =?us-ascii?Q?tWr772e9V8i5E0PcCIHzwJY7JRtcHJ4bPzgJNPH4RDKzmmDJhiY8F3XiOqHG?=
+ =?us-ascii?Q?Lwl1dMo1ozkXgOvEq6EPHLlCd/4NOT3+wgXbH/eubInZXDDYkAuQ9EmKNX0I?=
+ =?us-ascii?Q?zbZSV3b36wwrpawICc4h4ypiseZZHcFH1+2z8pOcWaBxz4I160FusasdcwP+?=
+ =?us-ascii?Q?Qa3p+L6pF9w/xZjhMtZ4IJKIEF4mEGFOL2lJqCM6wmXzhxTovzEDIEQeY6Kh?=
+ =?us-ascii?Q?SD81z79ozIg4AGAGWPJUQ6ynVzDSFrP9I67AqlseDb70cE1WAIci8Am8tWWU?=
+ =?us-ascii?Q?g3X5j3qD898kEfqwsHs2Id8lPbZ130rz3v48XGYhJee1r0dtuUDSAUfWIQWD?=
+ =?us-ascii?Q?JO0KpY9Gs6nW9gFckqxDyhq2F/P4NFNq8ZkZIu2l8WV3h6G2twojYBD7FaGd?=
+ =?us-ascii?Q?7TfXDUmbDqXxuGnJCcXYWZLMFWK9OWq/RJ0XbkA867TqlQiQfVssN8jI5knI?=
+ =?us-ascii?Q?IqxDFxvtVTGHK2MMMDaMyhmRhdFUqpWJlob/vCbPm5m8LC27Gpp7kPjqNMqr?=
+ =?us-ascii?Q?9HYfHkAU7gU295/odxp/xX6VrYes0lW57XUqSL312hQu1MFvo0sANd6+Xg5h?=
+ =?us-ascii?Q?Dl6fha2rncFkDR55K84A7XQZUNvcKtvLcAPL97p8aC3i4LzqbaXR5VHvdAu6?=
+ =?us-ascii?Q?oCJftv+V6OP/Wez3WWBYdwosGTTJGRdybAFQp5BbxoKgjYOMrGJupjZzkpJQ?=
+ =?us-ascii?Q?vrZdcoW+UcK8LuettyqCdpn2FTpxB0t1ZQak+WEglkSfYvblqBoY1EOw5q/P?=
+ =?us-ascii?Q?tDNHH+J9Z8Rd8XKwFMsyg/F53zYGP5INv77Y2yHuCsri/lU1SBVaZjtnpE71?=
+ =?us-ascii?Q?NQAzp9PmIL4Sl9+/fQMKTvHrMEGatgcF/4o8jSK29jZcGVTdj8LVq+Ji0Z6u?=
+ =?us-ascii?Q?RnWORv7mgQciX5fHiJwQpvX5XfmJq0vVFBsVM8KUj4YT83a8GkfhFTlNqgUA?=
+ =?us-ascii?Q?hELzwMMRiyrLtFIiKxaplQieAhk6tjH2RBAmxr0qT+xzNdP1kxUZ1Qp31lsP?=
+ =?us-ascii?Q?q+EdJ53TqOT1VVPGYScf3/Z8RMDeXT1PM5TtQvIp4eusoihrzBTSl6/WsjRN?=
+ =?us-ascii?Q?caP5SL24FnTxtMWhPXQnujtYw4bgyCecR+MVMaKFlf8tSkitDd4F0asjQ7xR?=
+ =?us-ascii?Q?WpFydQw9wg=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 955bf654-d46c-4d6c-53b3-08da11c4b980
-X-MS-TrafficTypeDiagnostic: SJ0PR10MB5600:EE_
-X-Microsoft-Antispam-PRVS: <SJ0PR10MB5600F06039596EF5A72D7825861E9@SJ0PR10MB5600.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: cBp07Xhj8lK+VydNEs+YI8xklsmIabAtr215WtCjNj9LVLoZLq1w9RamnL+Vu3BkKVWFMqPizSTaQxKmTnO1KxuRCczHll1yA1ouTxkd61gq21LMfKT1TmSSPKmBH0xk/VY4AfEPR5JjfLfMQtaZ6HX9Dj5KUS0eS+DYRzgagvv4cW4RWshJJIx9o/eE4h20UdQcKQpkA6V59P9i2TxIrDWmgaMWaLTKDEXwSHlEfoBvpoMBBxu8BSzelV7N9t7bpjvs8KxXIo+oqMwtMH/vefj0CQ5rye60JP9GCM3m4dWycstIc8sQGClZf8tt2RYHa7PBsNMFcY105rqWlDlS7I9wA8tDWDKR+e262bCEtb5IKeT1WkFe5Kxofp21NSm7NTyEjAaqrMa606RM6swMxIiBrl8ZpsrZvVICOi0XGCNLhhAsXORhWvsMXbqkgwgu39LVxhviM01K32QiGd53V1Dlp3I77Tr86G0w2Em1cVWFfOKncipP/Tz2fpBInolnwatUbugMnqCi2jVjNCqyaAj5XQrMcXO9J26Y08nZaSBDc0Lgy9CGYI8TS8LJJpBG5LTX1PEHr6UtisjgP3/2g8ApOh1DmF39HQb7MScG3dNWhq8fh/qj93hS9sxKUZ0k8oac1Pb8aLAbS8pHXk3WZ5cy93g5FMTihESyBryEswPE4B60SpKZjWDUnlb4MzSd2/eF1L8XsUG9F+93H2OmOQZ8m0q4RbzZ1T4Bvrebu7Q=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR10MB3220.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(4326008)(8676002)(66946007)(66476007)(66556008)(53546011)(44832011)(508600001)(83380400001)(6486002)(86362001)(26005)(2616005)(6506007)(31696002)(6512007)(8936002)(2906002)(5660300002)(6666004)(186003)(38100700002)(7416002)(54906003)(36756003)(31686004)(316002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?N2FKblZuN0ZocU5haXU0YlZORGphcGFuQ2NKYlA4Z0VRVVN3ZkRLeElSdXkw?=
- =?utf-8?B?aFNTa0x3T05CVXA2akNmSWdzdGVEZ2haRXNQcDZKbUVqTnJRVXlLTWsrOHg5?=
- =?utf-8?B?dzlaUkFTY1ZiNWw2MEIwRE05WlVsWWcwWE1oWW1LWVF5NklHUUY4cHRNeElk?=
- =?utf-8?B?ZzBvSmg4SFAzb1JXdG5ZRmJGMm1nSW05TCt6RFIwbUErL25MZHNYT3RNMTVr?=
- =?utf-8?B?aHVRUjdqVkZJcXdCQW9pOHJ5MHppc04xemRTL2EvRHBLdlpCTTBvQXFLZTJp?=
- =?utf-8?B?U2loa3dTeDBOdGZmTmNOanRGUVFzYkpmRmZTak9ML01tWDJmeDdwaVN0V2RM?=
- =?utf-8?B?UGNWSkNxNGFTUWNkNVlxL0wwY2Fnekp4dEFNdGJXcTlLQlBDRWZCT3d2VnpI?=
- =?utf-8?B?WWN0YnF6Q2hjZEg5VG9TTmdOTXBnUjdIUkZ3N2JCemNpSk4wMDI2Y2I5VVl3?=
- =?utf-8?B?djZjcXZqS01WdmZiSDR4VXk2SkdmT0F2ZHpIWTV4dVE5Q2xmTDJSSktpY1hx?=
- =?utf-8?B?ZkNjT213RG5pR2x4YVZZd05uYVFIQXIrMmFISkJKUmI1RUt4SFpZNkdrdkFw?=
- =?utf-8?B?UXo2YWgya20yeTBKcGNwdnp0Q2h6aUkreHdxZnFKdU56L0wrWWRVYnBIWExt?=
- =?utf-8?B?ekNpSTlNRldpcmhETlN5MkhBNy9oUzRnNWtyYzBXZHFnUHJUWURYOEk2VTVF?=
- =?utf-8?B?QjAxMUhJVEc1UU16SGc4ODRIS2MzSnBqa3VzakducTY1VVVnQWhCandkZjl0?=
- =?utf-8?B?Y28yazFGVHF4UUg4TFlqT1kwUTN2Q0FRb2FPUk9SYlFmUTVLN3lYaHpFamow?=
- =?utf-8?B?K252TVFtMHlXcHJyMngvMFp5cDZ0WGlYQnVoVzcxZlFGZUUxU2VOWnNkUks0?=
- =?utf-8?B?MkZBNytrK0JjSHdsTlhqV3hKWE5jenBhYlZiMDJvR2tEbWRJMTFIeGJ4TUp0?=
- =?utf-8?B?UDNCYmhRWHJjNkJFa3pXY3BvS0tFc1FXWlV3cmUrV2RSZ3ZweS9XVEN4TGZZ?=
- =?utf-8?B?Q0pUZU5LNEtYMmhaYjdqU2dVZlcyNmZZYWlwWnZjN1BDYitBWDNsT054dk5u?=
- =?utf-8?B?VDhzMkpwWjl0UEhKb1ZpbCtmV1NEeEFUL3dQY3NOTzBsZHFoMDBlR2xucDBx?=
- =?utf-8?B?NGMyMU1ma2J3a1pjL3VxVFhiSDZrcnB1V2c1SUNMSnFDOGNzYlZYTTNzUTBU?=
- =?utf-8?B?UTAwTlhrSGpFRm5UNnZYYXpTSkFlL1hqa090V29nKzVQVjVmNEdqTDlsMnY1?=
- =?utf-8?B?M0E4NGdha0FTMHBLQ0dPRGlrK3JKaU8zaHpoZkwvT3pJZ2pJR3NObm5rYmoz?=
- =?utf-8?B?MTN6UGdQTkNZVHhob2F2M0ZrZUtsY001ZG4zOGJlckpEZEN1ZlBEcTlmeTAy?=
- =?utf-8?B?TjA3b2xvREJtNjZuQzRlZUsrTlZYRDlIa09oSmdSNWt4WmQxRTZBaWxaSy8r?=
- =?utf-8?B?Tllobzluc0YxdG5wNVlrRlJ4YmhscFI3RWtQcEU4QWcxN1ZqalpsZjlOYVUv?=
- =?utf-8?B?TWl1K0VjTmwvTHgwRjFVcG1iNktGN2Z4RXlXSkxTV2UyV1BiOGl5YTNNd1VR?=
- =?utf-8?B?MlVaVGJFQ2JOdy9TUThWQyt4dm4yam1MRllhWlJ6eUFGM2lFL2wwbFJyNU1i?=
- =?utf-8?B?akVTbTdIalFyMkd2WHlZZWpuL1JUQ3hwak91aFlhR1hvNGVEbDczVlh0T1Fj?=
- =?utf-8?B?b2tLbmsrN2M2Rko1Si9NOGxzZm5uWGJ2RjRLc2hoTWN4ZWMxRW1pNTFheTFZ?=
- =?utf-8?B?Ly84MG5PejFaaVFTcXllbzN5UEV2NkN4c2QvQStCRXhWcEtqRHVPR2oxdFhh?=
- =?utf-8?B?cmhRQUhFYjNDVHJmY0dIMVpGU0JrdFlod25LNUQ2SjRwa1JqTVRpem5LQlhD?=
- =?utf-8?B?MHVXV2E1TXBGUElWUVNNWmoxQlB1b2xDamh4K2Z1RGNucmYzd3B4cFdSNDZs?=
- =?utf-8?B?eWRrWUdSa0l4eUhWbGUxL0cxZjN1R2NmYnI1cXR2TWpXMVZYZDBNbndyZzd1?=
- =?utf-8?B?UGJkRllGaHZTQkxXY3lIYndBSmYzYzlKSCtSbWN5VTR0cmV1UlkxUks5MUhZ?=
- =?utf-8?B?R0hkakVzT3ZQMzRJKzNYdFFRRWNWMytQSmJLL2FKQTdFZnFUc2NBbjkrSmRD?=
- =?utf-8?B?NnhnZmg0ai96ZzVmTlJ5YVNqT1QxQzM1T3lLY1pkZm9tcjdUU3NXcFphblA5?=
- =?utf-8?B?aGR6QkczVnU4ZDZhWk5wbGFaNkplL0tpbnlUUlBNUTA1ZitqUXB6OWJpZDJ6?=
- =?utf-8?B?d3BHT1lGcGg4ZVhUMUxhSUlxYnNqc1k3VjQrdERYTDRGZXV3dkViYi9vWjI2?=
- =?utf-8?B?K0ZoVVpPUUI4enc4V0FSZUNweWt1eDJ5cDFmTG1KWDNXYmFYajhkUT09?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 955bf654-d46c-4d6c-53b3-08da11c4b980
-X-MS-Exchange-CrossTenant-AuthSource: BN8PR10MB3220.namprd10.prod.outlook.com
+X-OriginatorOrg: amd.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Mar 2022 20:43:05.2772
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5168.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 36779823-0afd-4062-93ca-08da11c5478b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Mar 2022 20:47:03.1655
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /f+vrT2vw7+b/14/5beK/PAUvTQz//zzvK5FhRqrOvPq/lkt8NRPBEqpKXub12VcubvlPIyWv8gJU4HNeeemvg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB5600
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10301 signatures=695566
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 spamscore=0
- adultscore=0 mlxscore=0 phishscore=0 bulkscore=0 suspectscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203290111
-X-Proofpoint-GUID: 0jB5aYVfAHXGqlnc8cVQQ54-FDMiZJow
-X-Proofpoint-ORIG-GUID: 0jB5aYVfAHXGqlnc8cVQQ54-FDMiZJow
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: vF3DYdvDirjXnGL7HdUAGmUZ9fNS+2MW+vo1FWdvXv88icPIyaT5OXoAD0g+JOgTENJF+OFOE+WrifjYZl+MhA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR12MB4751
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/29/22 07:59, David Hildenbrand wrote:
-> On 15.03.22 11:47, David Hildenbrand wrote:
->> In case arch_unmap_one() fails, we already did a swap_duplicate(). let's
->> undo that properly via swap_free().
->>
->> Fixes: ca827d55ebaa ("mm, swap: Add infrastructure for saving page metadata on swap")
->> Reviewed-by: Khalid Aziz <khalid.aziz@oracle.com>
->> Signed-off-by: David Hildenbrand <david@redhat.com>
->> ---
->>   mm/rmap.c | 1 +
->>   1 file changed, 1 insertion(+)
->>
->> diff --git a/mm/rmap.c b/mm/rmap.c
->> index 6a1e8c7f6213..f825aeef61ca 100644
->> --- a/mm/rmap.c
->> +++ b/mm/rmap.c
->> @@ -1625,6 +1625,7 @@ static bool try_to_unmap_one(struct page *page, struct vm_area_struct *vma,
->>   				break;
->>   			}
->>   			if (arch_unmap_one(mm, vma, address, pteval) < 0) {
->> +				swap_free(entry);
->>   				set_pte_at(mm, address, pvmw.pte, pteval);
->>   				ret = false;
->>   				page_vma_mapped_walk_done(&pvmw);
-> 
-> Hi Khalid,
-> 
-> I'm a bit confused about the semantics if arch_unmap_one(), I hope you can clarify.
-> 
-> 
-> See patch #11 in this series, were we can fail unmapping after arch_unmap_one() succeeded. E.g.,
-> 
-> @@ -1623,6 +1634,24 @@ static bool try_to_unmap_one(struct page *page, struct vm_area_struct *vma,
->   				page_vma_mapped_walk_done(&pvmw);
->   				break;
->   			}
-> +			if (anon_exclusive &&
-> +			    page_try_share_anon_rmap(subpage)) {
-> +				swap_free(entry);
-> +				set_pte_at(mm, address, pvmw.pte, pteval);
-> +				ret = false;
-> +				page_vma_mapped_walk_done(&pvmw);
-> +				break;
-> +			}
-> +			/*
-> +			 * Note: We don't remember yet if the page was mapped
-> +			 * exclusively in the swap entry, so swapin code has
-> +			 * to re-determine that manually and might detect the
-> +			 * page as possibly shared, for example, if there are
-> +			 * other references on the page or if the page is under
-> +			 * writeback. We made sure that there are no GUP pins
-> +			 * on the page that would rely on it, so for GUP pins
-> +			 * this is fine.
-> +			 */
->   			if (list_empty(&mm->mmlist)) {
->   				spin_lock(&mmlist_lock);
->   				if (list_empty(&mm->mmlist))
-> 
-> 
-> For now, I was under the impression that we don't have to undo anything after
-> arch_unmap_one() succeeded, because we seem to not do anything for two
-> cases below. But looking into arch_unmap_one() and how it allocates stuff I do
-> wonder what we would actually want to do here -- I'd assume we'd want to
-> trigger the del_tag_store() somehow?
+[AMD Official Use Only]
 
-Hi David,
 
-Currently once arch_unmap_one() completes successfully, we are at the point of no return for this pte. It will be 
-replaced by swap pte soon thereafter. Patch 11 adds another case where we may return without replacing current pte with 
-swap pte. For now could you resolve this by moving the above code block in patch 11 to before the call to 
-arch_unmap_one(). That still leaves open the issue having the flexibility of undoing what arch_unmap_one() does for some 
-other reason in future. That will require coming up with a properly architected way to do it.
 
-> 
-> arch_unmap_one() calls adi_save_tags(), which allocates memory.
-> adi_restore_tags()->del_tag_store() reverts that operation and ends up
-> freeing memory conditionally; However, it's only
-> called from arch_do_swap_page().
-> 
-> 
-> Here is why I have to scratch my head:
-> 
-> a) arch_do_swap_page() is only called from do_swap_page(). We don't do anything similar
-> for mm/swapfile.c:unuse_pte(), aren't we missing something?
+> -----Original Message-----
+> From: Huang, Ray <Ray.Huang@amd.com>
+> Sent: Tuesday, March 29, 2022 01:03
+> To: Limonciello, Mario <Mario.Limonciello@amd.com>
+> Cc: Rafael J . Wysocki <rafael@kernel.org>; Viresh Kumar
+> <viresh.kumar@linaro.org>; open list:AMD PSTATE DRIVER <linux-
+> pm@vger.kernel.org>; open list <linux-kernel@vger.kernel.org>
+> Subject: Re: [PATCH v2 0/3] Improve usability for amd-pstate
+>=20
+> On Tue, Mar 29, 2022 at 09:59:44AM +0800, Limonciello, Mario wrote:
+> > There has recently been some news coverage about `amd-pstate` being in
+> > 5.17, but this news also mentioned that it's a bit difficult to use.
+> >
+> > You need to either block init calls, or compile the module into the ker=
+nel
+> > to force it to take precedence over acpi-cpufreq.
+> >
+> > This series aims to improve the usability of amd-pstate so that distros
+> > can compile as a module, but users can still use it (relatively) easily=
+.
+> >
+> > A new module parameter is included that will force amd-pstate to take
+> > precedence and a module table to let it load automatically on such syst=
+ems.
+> >
+> > With the patches in this series a user can make a file
+> > /etc/modprobe.d/amd-pstate.conf:
+> >
+> > options amd-pstate replace=3D1
+> >
+> > Then upon the next reboot amd-pstate should load automatically even if
+> > acpi-cpufreq was included on the system.
+> >
+> > Mario Limonciello (3):
+> >   cpufreq: Export acpu_cpufreq_exit for other drivers to call
+> >   cpufreq: amd-pstate: Allow replacing acpi-cpufreq when loaded
+> >   cpufreq: amd-pstate: Add a module device table
+> >
+> >  drivers/cpufreq/acpi-cpufreq.c |  3 ++-
+> >  drivers/cpufreq/amd-pstate.c   | 30 +++++++++++++++++++++++++++---
+> >  2 files changed, 29 insertions(+), 4 deletions(-)
+> >
+>=20
+> Mario, just applied your patch set in my platform, but it get the page fa=
+ult
+> panic below:
+>=20
+> [    4.195078] BUG: unable to handle page fault for address: ffffffff8aa2=
+db87
+> [    4.196838] #PF: supervisor instruction fetch in kernel mode
+> [    4.197035] #PF: error_code(0x0011) - permissions violation
+> [    4.197035] PGD 1f980e067 P4D 1f980e067 PUD 1f980f063 PMD 100800063
+> PTE 80000001fa42d163
+> [    4.197035] Oops: 0011 [#1] PREEMPT SMP NOPTI
+> [    4.197035] CPU: 2 PID: 464 Comm: systemd-udevd Not tainted 5.17.0-
+> custom+ #1
+> [    4.197035] Hardware name: AMD Artic/Artic-CZN, BIOS WA21407N
+> 04/06/2021
+> [    4.197035] RIP: 0010:acpi_cpufreq_exit+0x0/0x46
+> [    4.197035] Code: 7f 00 00 a0 56 95 d2 4f 7f 00 00 80 f9 e7 d1 4f 7f 0=
+0 00 00 40
+> 90 d2 4f 7f 00 00 10 36 93 d2 4f 7f 00 00 10 a4 87 d2 4f 7f 00 <00> d0 b6=
+ 57 d2 4f
+> 7f 00 00 40 bf 1b d2 4f 7f 00 00 00 a4 85 d2 4f
+> [    4.197035] RSP: 0018:ffffaee0c156fc78 EFLAGS: 00010246
+> [    4.197035] RAX: 0000000000000000 RBX: 0000000000000000 RCX:
+> 0000000000000040
+> [    4.197035] RDX: 0000000000000000 RSI: ffffffffc04ee5c5 RDI:
+> ffffffff8a706100
+> [    4.197035] RBP: ffffaee0c156fc88 R08: 0000000000000000 R09:
+> 0000000000000000
+> [    4.197035] R10: 0000000000000000 R11: 0000000000000001 R12:
+> 00000000ffffffed
+> [    4.197035] R13: ffff9286ceead7e0 R14: ffffaee0c156fd90 R15:
+> ffffffffc04f0740
+> [    4.197035] FS:  00007fe0ab0c3880(0000) GS:ffff9289ee280000(0000)
+> knlGS:0000000000000000
+> [    4.197035] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [    4.197035] CR2: ffffffff8aa2db87 CR3: 0000000105a40000 CR4:
+> 0000000000750ee0
+> [    4.197035] PKRU: 55555554
+> [    4.197035] Call Trace:
+> [    4.197035]  <TASK>
+> [    4.197035]  ? amd_pstate_init+0x7d/0x1000 [amd_pstate]
+> [    4.197035]  ? 0xffffffffc0477000
+> [    4.197035]  do_one_initcall+0x48/0x200
+> [    4.197035]  ? __x64_sys_delete_module+0x251/0x260
+> [    4.197035]  ? kmem_cache_alloc_trace+0x34c/0x450
+> [    4.197035]  do_init_module+0x52/0x240
+> [    4.197035]  load_module+0x2471/0x2790
+> [    4.197035]  __do_sys_finit_module+0xc5/0x130
+> [    4.197035]  ? __do_sys_finit_module+0xc5/0x130
+> [    4.197035]  __x64_sys_finit_module+0x1a/0x20
+> [    4.197035]  do_syscall_64+0x3b/0xc0
+> [    4.197035]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> [    4.197035] RIP: 0033:0x7fe0ab64589d
 
-My understanding of this code path maybe flawed, so do correct me if this does not sound right. unused_pte() is called 
-upon user turning off swap on a device. unused_pte() is called by unused_pte_range() which swaps the page back in from 
-swap device before calling unuse_pte(). Once the page is read back in from swap, ultimately access to the va for the 
-page will result in call to __handle_mm_fault() which in turn will call handle_pte_fault() to insert a new pte for this 
-mapping and handle_pte_fault() will call arch_do_swap_page() which will restore the tags.
-
-> 
-> b) try_to_migrate_one() does the arch_unmap_one(), but who will do the
-> restore+free after migration succeeded or failed, aren't we missing something?
-
-try_to_migrate_one() replaces the current pte with a migration pte after calling arch_unmap_one(). This causes 
-__handle_mm_fault() to be called when a reference to the va covered by migration pte is made. This will in turn finally 
-result in a call to arch_do_swap_page() which restores the tags.
-
-> 
-> 
-> I assume that we won't be properly freeing the tag space in case of a), and won't
-> be properly restoring/migrating the tags in case of a) and b).
-
-I think both cases are covered correctly unless I am misunderstand the code.
-
---
-Khalid
+Presumably you didn't have acpi-cpufreq compiled in or loaded at this time
+right?  I think I'll need to use IS_REACHABLE().
