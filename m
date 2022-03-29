@@ -2,88 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 740E2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 07:44:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84557C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 07:46:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233520AbiC2Hqc convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 03:46:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41476 "EHLO
+        id S233543AbiC2HsG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 03:48:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231801AbiC2Hqa (ORCPT
+        with ESMTP id S233465AbiC2Hr7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 03:46:30 -0400
-Received: from mx1.emlix.com (mx1.emlix.com [136.243.223.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9E719E09A
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 00:44:47 -0700 (PDT)
-Received: from mailer.emlix.com (p5098be52.dip0.t-ipconnect.de [80.152.190.82])
-        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1.emlix.com (Postfix) with ESMTPS id B84455F850;
-        Tue, 29 Mar 2022 09:44:45 +0200 (CEST)
-From:   Rolf Eike Beer <eb@emlix.com>
-To:     Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [PATCH] sched: use TASK_USER_PRIO() instead of open coding it
-Date:   Tue, 29 Mar 2022 09:44:30 +0200
-Message-ID: <5667632.X0gI6VCO9r@mobilepool36.emlix.com>
+        Tue, 29 Mar 2022 03:47:59 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9479D1C391E;
+        Tue, 29 Mar 2022 00:46:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1648539976; x=1680075976;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Iv6eZyi8BlLuO8dorNPKusST5FRIAaRdbW31rrkLVqQ=;
+  b=TjsIx33f2xk8A92Y4tAPJG7akur8lRbSPGNt48DPFv/bHHHghB3nbkV2
+   hKV9x1Qaqy/sqXSHyBkd+in8yTWtxWU0R0w44Y8JTuSF2Fd2mAdGTWCMk
+   ZDHPLHyanVjrypWyDQ2DyNV7FUFdoRZSzMa+PgzSKmWTxFCkR3uSWLJ5Q
+   M=;
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 29 Mar 2022 00:46:16 -0700
+X-QCInternal: smtphost
+Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 00:46:16 -0700
+Received: from mingxue-gv.qualcomm.com (10.80.80.8) by
+ nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 29 Mar 2022 00:46:14 -0700
+Date:   Tue, 29 Mar 2022 15:46:11 +0800
+From:   Minghao Xue <quic_mingxue@quicinc.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+CC:     <jasowang@redhat.com>, <robh+dt@kernel.org>,
+        <jean-philippe@linaro.org>,
+        <virtualization@lists.linux-foundation.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <quic_ztu@quicinc.com>, <krzk@kernel.org>
+Subject: Re: [PATCH v2 1/2] dt-bindings: virtio: mmio: add optional
+ wakeup-source property
+Message-ID: <20220329074610.GA20342@mingxue-gv.qualcomm.com>
+References: <20220325015945.GA17578@mingxue-gv.qualcomm.com>
+ <20220328164228-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220328164228-mutt-send-email-mst@kernel.org>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Signed-off-by: Rolf Eike Beer <eb@emlix.com>
----
- kernel/sched/core.c  | 2 +-
- kernel/trace/trace.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+On Mon, Mar 28, 2022 at 04:42:59PM -0400, Michael S. Tsirkin wrote:
+> On Fri, Mar 25, 2022 at 09:59:45AM +0800, Minghao Xue wrote:
+> > Some systems want to set the interrupt of virtio_mmio device
+> > as a wakeup source. On such systems, we'll use the existence
+> > of the "wakeup-source" property as a signal of requirement.
+> > 
+> > Signed-off-by: Minghao Xue <quic_mingxue@quicinc.com>
+> 
+> I don't have enough of a clue about dt to review this.
+> Pls get some acks from people with DT expertise.
+> 
+Hi Michael,
+I had a discussion with Krzysztof on the first version of patch. And we've
+got aligned. 
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index d575b4914925..c01c49aa4e77 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -1281,7 +1281,7 @@ int tg_nop(struct task_group *tg, void *data)
- 
- static void set_load_weight(struct task_struct *p, bool update_load)
- {
--	int prio = p->static_prio - MAX_RT_PRIO;
-+	int prio = TASK_USER_PRIO(p);
- 	struct load_weight *load = &p->se.load;
- 
- 	/*
-diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index f4de111fa18f..f8ab47a87fd0 100644
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -1782,7 +1782,7 @@ __update_max_tr(struct trace_array *tr, struct task_struct *tsk, int cpu)
- 	else
- 		max_data->uid = task_uid(tsk);
- 
--	max_data->nice = tsk->static_prio - 20 - MAX_RT_PRIO;
-+	max_data->nice = TASK_USER_PRIO(tsk) - 20;
- 	max_data->policy = tsk->policy;
- 	max_data->rt_priority = tsk->rt_priority;
- 
--- 
-2.35.1
+Regards,
+Minghao
 
-
--- 
-Rolf Eike Beer, emlix GmbH, https://www.emlix.com
-Fon +49 551 30664-0, Fax +49 551 30664-11
-Gothaer Platz 3, 37083 Göttingen, Germany
-Sitz der Gesellschaft: Göttingen, Amtsgericht Göttingen HR B 3160
-Geschäftsführung: Heike Jordan, Dr. Uwe Kracke – Ust-IdNr.: DE 205 198 055
-
-emlix - smart embedded open source
-
-
+> > ---
+> > v1 -> v2: rename property from "virtio,wakeup" to "wakeup-source"
+> > 
+> >  Documentation/devicetree/bindings/virtio/mmio.yaml | 4 ++++
+> >  1 file changed, 4 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/virtio/mmio.yaml b/Documentation/devicetree/bindings/virtio/mmio.yaml
+> > index 4b7a027..160b21b 100644
+> > --- a/Documentation/devicetree/bindings/virtio/mmio.yaml
+> > +++ b/Documentation/devicetree/bindings/virtio/mmio.yaml
+> > @@ -31,6 +31,10 @@ properties:
+> >      description: Required for devices making accesses thru an IOMMU.
+> >      maxItems: 1
+> >  
+> > +  wakeup-source:
+> > +    type: boolean
+> > +    description: Required for setting irq of a virtio_mmio device as wakeup source.
+> > +
+> >  required:
+> >    - compatible
+> >    - reg
+> > -- 
+> > 2.7.4
+> 
