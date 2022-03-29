@@ -2,152 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74ED1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 23:39:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3329C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 23:41:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240783AbiC2Xku (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 19:40:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54216 "EHLO
+        id S240850AbiC2Xng (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 19:43:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231628AbiC2Xks (ORCPT
+        with ESMTP id S234637AbiC2Xne (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 19:40:48 -0400
-Received: from gateway20.websitewelcome.com (gateway20.websitewelcome.com [192.185.47.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 945B862F6
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 16:39:04 -0700 (PDT)
-Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
-        by gateway20.websitewelcome.com (Postfix) with ESMTP id 01201400C36C4
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 18:39:04 -0500 (CDT)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id ZLOZnU9FBRnrrZLOZnf35L; Tue, 29 Mar 2022 18:37:03 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=s6j/BhgIkwBUzXe+DvwFH/oKdI/HQ5L9CcN/nCwmPoo=; b=yv2b13u2GyeOm/0Fnctklxkctt
-        6bDiqvkeSvt2XVQM8bzPttH9oL8xUVHKY1gm1IIVOMmOCgKaWDxGmwW2pSU96FvfSUrHMaA0sf7RQ
-        k1ZSkkpGmJJuWFfXxsE+fU9G2D/8PVmlmjsdTppTH8ExU0pohnyeEdtZm4bYcsBrBw3KuMaW9gOhs
-        NWW02Ld+b4jHWiaXSJ3Z/+lj/VmGDiBR0on1GzuYlQcitjNz8yHBKrEfJYnPpdWwe3WcBdIGTTRAZ
-        1FTcfvZNaJRM0V38zmDfgMke//xpnUnPVkHlk/DfZ1lJk8qEfPGDuI+RQYX8pCDEFYreoBzWvYlDZ
-        XWmpjF2g==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54548)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nZLOZ-0010Uk-Dv; Tue, 29 Mar 2022 23:37:03 +0000
-Message-ID: <fef5c154-2b1b-0a2b-52c3-c3fe0b4c2abf@roeck-us.net>
-Date:   Tue, 29 Mar 2022 16:37:02 -0700
+        Tue, 29 Mar 2022 19:43:34 -0400
+Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BA96199510;
+        Tue, 29 Mar 2022 16:41:51 -0700 (PDT)
+Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-2d07ae0b1c4so200213677b3.11;
+        Tue, 29 Mar 2022 16:41:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9mUNJ7n65nz704WphwMWeIj2CegCvez8/+xvi3QOa3k=;
+        b=BB4Nen7haFRBVOuM/aqc67KY0vhx0MIiXVWiPikq9xJ807mqTGmKb5EPnSYP05oFhK
+         G/Fuw8dRmgo5owXEAk6Xt8+W3NhlwVy6i7ly0qdUYLYjcbiiJx++U1YqsAdRD11urcF9
+         1TYE0vdjyVAYNmUNNe1UE1u/7KTBIaSIYKhnXhX1ay82/eYtGtZIg/1BGFVb1P6f0V3c
+         vroj5n215LLR9JK/JyrAHc/KUHVb6ctc/qpnU62tJapLSMvkcY2rASHtE9MuhP7gHadb
+         CYEwd2sLEgummuK5QBxCX4BeWZWnYBrWaWw+3KlKiuRfGcraExpQ7R0IEne7+9cQT2hD
+         LxQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9mUNJ7n65nz704WphwMWeIj2CegCvez8/+xvi3QOa3k=;
+        b=uMmhiWmRHTCqn2WEPSEUzNGV95TOWEwzrgZXraHoaEOhMV50zeJfstmmcgXfzJoE0H
+         1vj1wA1KAotlmzHyVie/C6fVmlgAGHhjLZLckURsMsffgkyBLXiCIV03aOml4y9KMxg6
+         oYQmOL8NvtvyY45odOf9DcohvxkwxlAJub7/xueObJdhaWM/kmEulebUhhNzmfjL8Y3+
+         TpQgdHMW5seVmfCKAsfvt109873FrjqmxZJWV5Lgq9ES0lZOqpKo8qD6pO92Fjeini0z
+         zogrh7Bc8rNOQbuuGOkEh9771kysVQFE6CvD9wpO6hg3DwsLyAll8RPP75UQj5/UroLy
+         4kPA==
+X-Gm-Message-State: AOAM530J07YC3cNLhXkMXCQQW5v1dTHZkm9gknlmZIuH5M5Im9SvRndJ
+        PTNlCAVUq2b6IXnSs3TQlASw3zghSv4empE1fsY=
+X-Google-Smtp-Source: ABdhPJx7GvXiwPFPHDcBgmaJ7B0Jckcd1zMAEMIktiASSKv9VprfTodGChKK60fOANPjxjUXORmptkmKpwwnihUhy5c=
+X-Received: by 2002:a81:9842:0:b0:2e5:9e00:288 with SMTP id
+ p63-20020a819842000000b002e59e000288mr34551786ywg.369.1648597310252; Tue, 29
+ Mar 2022 16:41:50 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 2/4] hwmon: (asus-ec-sensors) implement locking via the
- ACPI global lock
-Content-Language: en-US
-To:     Eugene Shalygin <eugene.shalygin@gmail.com>
-Cc:     darcagn@protonmail.com, Jean Delvare <jdelvare@suse.com>,
-        linux-hwmon@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220327121404.1702631-1-eugene.shalygin@gmail.com>
- <20220327121404.1702631-3-eugene.shalygin@gmail.com>
- <df43bce6-b1bc-1abc-307b-878ee7acb261@roeck-us.net>
- <CAB95QASgzUSaLjZuxWauiSvNK7Or=1Kz8htJcjWqU+HrRutvJg@mail.gmail.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <CAB95QASgzUSaLjZuxWauiSvNK7Or=1Kz8htJcjWqU+HrRutvJg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nZLOZ-0010Uk-Dv
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54548
-X-Source-Auth: linux@roeck-us.net
-X-Email-Count: 1
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+References: <20220329153604.507475-1-jiangshanlai@gmail.com> <d8f5f25d-e544-dea7-2474-6d98fea39cbc@redhat.com>
+In-Reply-To: <d8f5f25d-e544-dea7-2474-6d98fea39cbc@redhat.com>
+From:   Lai Jiangshan <jiangshanlai@gmail.com>
+Date:   Wed, 30 Mar 2022 07:41:39 +0800
+Message-ID: <CAJhGHyDpo7RQGvnrpGtRPAp3ribXk515tGZ9D-rfaBkq=gKMuA@mail.gmail.com>
+Subject: Re: [RFC PATCH V2 0/4] KVM: X86: Add and use shadow page with level
+ expanded or acting as pae_root
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>, kvm@vger.kernel.org,
+        Sean Christopherson <seanjc@google.com>,
+        Lai Jiangshan <jiangshan.ljs@antgroup.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/29/22 15:11, Eugene Shalygin wrote:
-> On Tue, 29 Mar 2022 at 23:23, Guenter Roeck <linux@roeck-us.net> wrote:
-> 
->>> +/* Moniker for the ACPI global lock (':' is not allowed in ASL identifiers) */
->>> +#define ACPI_GLOBAL_LOCK_PSEUDO_PATH ":GLOBAL_LOCK"
->>> +
->>
->> That needs to be documented.
-> 
-> Do you mean a note in the /Documentation/..../...rst or adding details
-> here? There is an additional bit of information on this identifier
-> below, in the ec_board_info struct declaration.
-> 
-My understanding was that the user would/could request its use via
-the module parameter, so it needs to be documented in the rst file.
+On Wed, Mar 30, 2022 at 4:31 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
+>
+> On 3/29/22 17:36, Lai Jiangshan wrote:
+> > From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+> >
+> > (Request For Help for testing on AMD machine with 32 bit L1 hypervisor,
+> > see information below)
+> >
+> > KVM handles root pages specially for these cases:
+> >
+> > direct mmu (nonpaping for 32 bit guest):
+> >       gCR0_PG=0
+> > shadow mmu (shadow paping for 32 bit guest):
+> >       gCR0_PG=1,gEFER_LMA=0,gCR4_PSE=0
+> >       gCR0_PG=1,gEFER_LMA=0,gCR4_PSE=1
+> > direct mmu (NPT for 32bit host):
+> >       hEFER_LMA=0
+> > shadow nested NPT (for 32bit L1 hypervisor):
+> >       gCR0_PG=1,gEFER_LMA=0,gCR4_PSE=0,hEFER_LMA=0
+> >       gCR0_PG=1,gEFER_LMA=0,gCR4_PSE=1,hEFER_LMA=0
+> >       gCR0_PG=1,gEFER_LMA=0,gCR4_PSE={0|1},hEFER_LMA=1,hCR4_LA57={0|1}
+> > Shadow nested NPT for 64bit L1 hypervisor:
+> >       gEFER_LMA=1,gCR4_LA57=0,hEFER_LMA=1,hCR4_LA57=1
+> >
+> > They are either using special roots or matched the condition
+> > ((mmu->shadow_root_level > mmu->root_level) && !mm->direct_map)
+> > (refered as level expansion) or both.
+> >
+> > All the cases are using special roots except the last one.
+> > Many cases are doing level expansion including the last one.
+>
+> Hi Jiangshan,
+>
+> so the main difference between direct and passthrough shadow pages is
+> that passthrough pages can have indirect children.  A direct page maps
+> the page at sp->gfn, while a passthrough page maps the page _table_ at
+> sp->gfn.  Is this correct?
+>
+> If so, I think there is a difference between a passthrough page that
+> maps a level-2 page from level-4, and a passthrough page that maps a
+> level-3 page from level-4.  If that is true, a single bit in the role
+> is not enough.
 
->> There is some type confusion in the above lock functions. Some return
->> ACPI error codes, some return Linux error codes. Please make return
->> values consistent.
->>
->> Also, why use mutex_trylock() instead of mutex_lock() ? This is
->> unusual since it will result in errors if more than one user
->> tries to access the data (eg multiple processes reading sysfs
->> attributes at the same time), and thus warrants a detailed
->> explanation.
-> OK.
-> 
->>> +     struct lock_data lock_data;
->>> +     /* number of board EC sensors */
->>> +     u8 nr_sensors;
->>
->> Ok, I must admit I am more than a bit lost. In patch 1/4
->> you removed this variable (and argued that removing it was
->> for "deduplication"), only to re-introduce it here.
->> Sorry, I don't follow the logic.
-> 
-> Sorry for that. This is my mistake which I tried to warn you about in
-> my first reply to the email with this patch.
-> 
->>> +     if (!mutex_path || !strlen(mutex_path)) {
->>
->> When would mutex_path be NULL ?
-> When it is set to NULL in the board definition struct ec_board_info.
-> 
+Ahhhh, you are correct.
 
-Are there any such board definitions ? I don't recall seeing any.
-
-Thanks,
-Guenter
-
->>> +             if (ACPI_FAILURE(status)) {
->>> +                     dev_err(dev,
->>> +                             "Failed to get hardware access guard AML mutex"
->>> +                             "'%s': error %d",
->>
->> Please no string splits. And the negative impact can be seen here:
->> No space between "mutex" and "'%s'".
-> 
-> Yes, of course.
-> 
->>>                dev_warn(dev,
->>> -                     "Concurrent access to the ACPI EC detected.\nRace condition possible.");
->>> +                     "Concurrent access to the ACPI EC detected.\n"
->>> +                     "Race condition possible.");
->>
->> Why this change, and how is it related to this patch ?
-> Same as above, will be corrected.
-> 
-> Thank you,
-> Eugene
-
+>
+> One way to handle this could be to have a single field "mapping_level"
+> that subsumes both "direct" and "passthrough".  direct==1
+> would correspond to "mapping_level == 0"; direct==0 && passthrough==0
+> would be "mapping_level == level"; anything in the middle would be a
+> passthrough page in your series.
+>
+> What do you think?
+>
+> Thanks,
+>
+> Paolo
+>
