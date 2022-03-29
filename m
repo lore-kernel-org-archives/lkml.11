@@ -2,242 +2,274 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2551C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 08:31:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87133C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 08:31:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233964AbiC2IdU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 04:33:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47500 "EHLO
+        id S233960AbiC2Id3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 04:33:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231682AbiC2IdR (ORCPT
+        with ESMTP id S231682AbiC2IdV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 04:33:17 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2044.outbound.protection.outlook.com [40.107.236.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0002769498;
-        Tue, 29 Mar 2022 01:31:34 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CkecLf1qr5jhSnIFglFe9CLNuUWDjXE9OAQHsVXS1gz2lZ6jD1GNqwew5qsts8EB9CxCOMbGwGJXJgyYlc4emW59tCHLXIX9pmmDdEXi2PCzDcorpdGqfT9VBJNsHwLnPPCskHcuQSWSfGAU8AYPtzfRF6+ja2GVyBx4VGXM+oqv1ABNx2I09Kr2mPrfV02PBGSbukcYemI5y0+qJG/3BEsIOYf4CHtIB8zcFMi21JQRI9+MZI9I+lJq0dgv78YP/yar6GDDRkcu/qU7/zfnLhnCPNIKKL17KOhArV/zcatl0J3W06x8h7jG5sl304tq988Q5cjy/GhT1Lw7OLFOCw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wmtO6gaJPWpn5FyHdTGG0+CPHi3zhFNWhKm1Z4ymczI=;
- b=GFPO3O+TPctqC7Kk4+lXRqf1Ub7ACPSsnwndEPk6sqjG4k2LH/gItDwKIc2LU1ME8qXgEoc0UKB+WZfoIWvOahYqmxBH+MBIl2BY8v0lleGPiJgKvuR9pTJKH/kanaEF9RbOuYH3Ac4wunEXlMxPxs8RCsJso6goCMzqq/seeo+F6f6pYFZ0Zace8kzMp4URirlpgUc0mz0/UNt3MhwfAWh820ZXA6QQAkY9MYx0G4P8fj7N/2UsCwTSiIE/q6QJUuAFpULcxnHje/FPPFv3x7vZ6yqOtPgOnBxvvK8ttrgYdSfcmFQf8CODSAcMg3UaTotgD1IGnZH7kiqmowZQ9w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wmtO6gaJPWpn5FyHdTGG0+CPHi3zhFNWhKm1Z4ymczI=;
- b=UbVoIsCgOHzjXfspqkMyW1KXD5WZqYPJC5WECwGWEBpa6gjrqUOQuSfZIOeQsMkgW0c6ssRQ+d1LCZG2E26fiCjtVzXeVWWZlqZxHQh7Su8DEGJNGYn/aasrNWLfSrRgJiMx3QtmlTyMr/IF3pP/GV5x/on271BjjublwvaGCAYEZ3pazNPqAgr0GeagwZ1DSiZnvPQp4aNjrw78A3ZLu7vZmG+kqLAWs6C1lghGT2yq9PbmzgzRRbfnpTCNtZlV6zosRKFHdAIOAoZvpmnnclUJNHxyRt8mAEuh4exEF7zxMFbaqzof0WFEvxzrIZJ0cuf6HMjYwKJs4UrDyrx8Nw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM5PR12MB1579.namprd12.prod.outlook.com (2603:10b6:4:c::21) by
- BYAPR12MB2869.namprd12.prod.outlook.com (2603:10b6:a03:132::30) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.19; Tue, 29 Mar
- 2022 08:31:32 +0000
-Received: from DM5PR12MB1579.namprd12.prod.outlook.com
- ([fe80::55b6:14a1:6fa5:3955]) by DM5PR12MB1579.namprd12.prod.outlook.com
- ([fe80::55b6:14a1:6fa5:3955%11]) with mapi id 15.20.5102.023; Tue, 29 Mar
- 2022 08:31:32 +0000
-Message-ID: <dadc2846-38fa-c169-5dca-55bd5cbfd39d@nvidia.com>
-Date:   Tue, 29 Mar 2022 14:01:15 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-From:   Sameer Pujar <spujar@nvidia.com>
-Subject: Re: [RFC PATCH v2 4/6] ASoC: soc-pcm: tweak DPCM BE hw_param() call
- order
-To:     Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        broonie@kernel.org, lgirdwood@gmail.com, robh+dt@kernel.org,
-        krzk+dt@kernel.org, perex@perex.cz, tiwai@suse.com,
-        peter.ujfalusi@linux.intel.com,
-        pierre-louis.bossart@linux.intel.com
-Cc:     oder_chiou@realtek.com, devicetree@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        jonathanh@nvidia.com, thierry.reding@gmail.com,
-        linux-tegra@vger.kernel.org
-References: <1648448050-15237-1-git-send-email-spujar@nvidia.com>
- <1648448050-15237-5-git-send-email-spujar@nvidia.com>
- <51c8d2541ccff2689b9164ab9b671b0b2514e65f.camel@linux.intel.com>
-Content-Language: en-US
-In-Reply-To: <51c8d2541ccff2689b9164ab9b671b0b2514e65f.camel@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MAXPR0101CA0027.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:a00:d::13) To DM5PR12MB1579.namprd12.prod.outlook.com
- (2603:10b6:4:c::21)
+        Tue, 29 Mar 2022 04:33:21 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B4886EC74;
+        Tue, 29 Mar 2022 01:31:39 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id k14so14243649pga.0;
+        Tue, 29 Mar 2022 01:31:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:subject:to:cc:references:in-reply-to:mime-version
+         :message-id:content-transfer-encoding;
+        bh=BwEH8cAogfesmpmdPkr5kXu4rb67r/3s0WyVWQsv/vc=;
+        b=bfRcQnLl7+gXZZDmNsi/MstDIUsJ3nfGg4PAq+z3f/UPacnryzhrE/WjJDii45tW8J
+         2Qjvhs/o65NScw6EcrojeXYETnpr4+5XOVa/L0jPahDX5dJbkR7Aqq4w/4V/ARtMlV2N
+         6GO4EW/yFQzsHGf9wUdbssUS4EZ2kFG8r0Pb0Dq0SqB4GPkw21SO55h1Wq3erJ/UGbFi
+         YVlsqzNqr3uGbMJ3ZJuHeqfUHyq1ZCJWBpQnfuYox044k7IrylmGPkAjzdU2rvFHL2Fd
+         IxY1v9tXuSz7TEFX7fPbTUj8dZ4nEFuSbf7fu9wvhNlt8eoxvR1A78OIS1sg529uY3wa
+         LX0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:subject:to:cc:references:in-reply-to
+         :mime-version:message-id:content-transfer-encoding;
+        bh=BwEH8cAogfesmpmdPkr5kXu4rb67r/3s0WyVWQsv/vc=;
+        b=fU91c3KReUUoe3LK6Q95QOa+JS/QF3BBYAXCTEOvE0kr5GkOLt4FpQgwPI2ivyfWaE
+         jcqMcId8AE++e6gzxDiSwYMUTTq5IZQeHH1Qqw2yXwYca1GGuksOqNjFfpeh5nuPMafC
+         f5Rr2bW7x9ijt+7TSWsNRpjqcyJXBhw+ycE6uubNIsTZU3QwGr3J+yeJmiYVAPuFOSPz
+         pAXaztRwnGqG5YEaRp/81/oRQrzpFPYMRpwMwFvioQ8xT/dfQrKHzhe6ZbXexi1jZey+
+         bSxiMKXNDBFpnDzyZM7r4P55JhrAmYXmYLpwqyumZkk4AUfmShutyQnEPVZuf/hDRdlc
+         STwQ==
+X-Gm-Message-State: AOAM532xp3Y4L46AAxq+fhkfo6OQzo745ipCO5sLlJLJ/pwZ56mwsvts
+        ZPgjpoKHvgY1ku+lSojwPMQ=
+X-Google-Smtp-Source: ABdhPJyAuUEtOmIKUFW25H0UGsqMoNj9TQ6I8rg61j2YcPT49wVc6qxJ0cY8Uh+J8Haxq/nQzttEZg==
+X-Received: by 2002:a63:d916:0:b0:385:fe06:a1db with SMTP id r22-20020a63d916000000b00385fe06a1dbmr1217302pgg.446.1648542698546;
+        Tue, 29 Mar 2022 01:31:38 -0700 (PDT)
+Received: from localhost (58-6-255-110.tpgi.com.au. [58.6.255.110])
+        by smtp.gmail.com with ESMTPSA id n3-20020a056a0007c300b004fa3e9f59cdsm17922413pfu.39.2022.03.29.01.31.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Mar 2022 01:31:38 -0700 (PDT)
+Date:   Tue, 29 Mar 2022 18:31:33 +1000
+From:   Nicholas Piggin <npiggin@gmail.com>
+Subject: Re: [PATCH] powerpc/rtas: Keep MSR RI set when calling RTAS
+To:     Laurent Dufour <ldufour@linux.ibm.com>, mpe@ellerman.id.au
+Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        stable@vger.kernel.org
+References: <20220317110601.86917-1-ldufour@linux.ibm.com>
+In-Reply-To: <20220317110601.86917-1-ldufour@linux.ibm.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e89d693c-576e-448d-20ca-08da115e8784
-X-MS-TrafficTypeDiagnostic: BYAPR12MB2869:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR12MB28695864AF7F44278648D30FA71E9@BYAPR12MB2869.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: NgU+ZI54fP4BFjft2nlUPWRlfQSvArOpIURItBhcegBx+zPsVqmyEu9RkN/9eHbzRKSbgP1V+LIjbCtIEI3+P75KX7ArqdFwyGbi9WlGhiZBq6fWnz+8OveA8zRoNnSuKF5psfYOlYFDdGLrI+meNw7tTWnxg3pL7/nGFbbnWUWwGQ8456zET2iUFgPWF2q7Fam6IeqTnP01DIZXf4+7+Vy6tJdiGDXP8QPS5af9hjqVTtyzJ33Ogz0jWfCTU3QoASiJo1JXRD3XGBO7u8mMJJuMhhcSSCJggViyqw3ELPvCXmp6YYRwzhAoCvvHw+1cqapyHtlG2JzmaQvp9z6qwybu5iulTOcVQnggYqX++kiOrT+DbUwRpJZmrneJjYNVecZEgIlK1DZ/O4dgIVIRxqwVJkyGG5H+x7MiaFa4RPVp38RyUBpwiOYZkPmP7I0KKsoCr72LzF/vK6gcs6mMj7BeHpoGvor5oBBipdWl48tef7EFNqJ7FP49W0SsjxNN0+zB3JfrsuGWhhJeZ/Rp96cUYCJwmrjDC8SpUNz2P2Vr+YD0rnMhODCFrEdOoQMPUqL6Xt1VCjtW5TDnLUb9rIfAkkDh7uE1jxkgUrfSvNQk+MvErvZAyO6rkfYQa2WG1vvpPwlp9AXeVBGWkFo9TcO8Ci6J5sz2JB9+8nEv/WOWfIz/YsiYyVJu1App09WGsvBtrsSBheqJvTEPp0B24YRkhhcd170b6nOuyIFMRA4=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR12MB1579.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2906002)(36756003)(316002)(66946007)(31686004)(5660300002)(6666004)(53546011)(8676002)(508600001)(6512007)(4326008)(6506007)(7416002)(6486002)(8936002)(66476007)(66556008)(38100700002)(86362001)(83380400001)(26005)(31696002)(186003)(2616005)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VmNXRWFuT0hNREpKYTh1eFpCcFpoQnVaZFhwSWNKbkJVd3RPUVFtSnFhejIy?=
- =?utf-8?B?NzVYVGl6Ymw4bFJmZkNMbmVTb0RWaExZODQzOW85bjk4YXNJVlptcjVRZzAx?=
- =?utf-8?B?ZWlGc1Z0dEdFOTlRL2tHa25xeTg2UmVYL084N2VCTHFTbHRRd2QxbE1BVk41?=
- =?utf-8?B?d0FEelk2TE0xamxLS2pOS0FLcXRLd1RUblRLR21yU1BaRG00bjNVWmxWaW1U?=
- =?utf-8?B?emNmU3FGR0FsVndHYWJPYlRBV2RGcXJpUmMvYWpJblNEeElJSTJyVU0yYStu?=
- =?utf-8?B?WWtGckR5N1hYWUk0Z1pkWGEzSWl3NjByVTl4aVpOOGFiQ0Jib3BWUk1QazNE?=
- =?utf-8?B?bFRIdFdvTmdEcU5neEUwUFM5M21Oa2p3YUtvTmVCNGxQcTJUS0V0bjZ0K3o5?=
- =?utf-8?B?cWZzTHlGT2tCcjdVaUVjSk1oSVRFQnN5T3RaSmtjTTRqc1ZqLzliU2xzbnVt?=
- =?utf-8?B?VW5vTXF1ZkQvVmVFeGlPamgwM1l0azV0NFRuUHRWQ2J3NldDQVB1RjRWTW1l?=
- =?utf-8?B?STBaVUJmdDNadmZQSTRjR1FLLytFeFJJZGovQXBRcmNrckx0YkVTcjM2a1V2?=
- =?utf-8?B?VTkxcjhwSTZKSGx4TklKSGlnSTR6NXNhc3BVQnU4ZU1TZFlCeUNCYVBjQVZZ?=
- =?utf-8?B?TmtXY3dpTlNxSVFBTUtUL0sxdTBsQk1iRjJqZ3NIa3I1RnZhWElLTmdETk1a?=
- =?utf-8?B?OTRORS84YVQzQk8yREZWYUdlODZlR3o3VVV5dk0yeWN0SlJ6QjNuT0xjTndM?=
- =?utf-8?B?cjBsYmVUWnl3RG5ZSVpBT1pSTWp2K1JHbXR5SzBXRXNkUng3d20xV25EVnht?=
- =?utf-8?B?OWJ3aEZLNjRZTTBteXpoaTdpQzYzcnNsVlNWbS9ySlpSWGl6M25BWlYwTmVP?=
- =?utf-8?B?WHRhL2wwUnJOMTh1dW1KTlRGcjNIL1NkY2tZQmFNN08xNnNWaTM5dUF1WWl5?=
- =?utf-8?B?TFRFaWlXdzNkL0JaaGMzV2h0dDJndzBnQzVsZWFteWE0ekEvR0JRbWNGeC9I?=
- =?utf-8?B?L1kxUm1xZjQySHc2L0ZZckVxZmtpNTdJMitwbEZRSDd0bFFDMnkzSW56Rnk0?=
- =?utf-8?B?MEFKaWZhTTI3WlBMYzJsbW9EdjZQVU8rcXU4djZLMHA4NGlqaUoxaXAwOVBH?=
- =?utf-8?B?ZDkvQzVWTTAzbDRQVFlVcXV2eG1IVXp1Z0Fydzd1emxCMmYzRHNmZGp3YmxM?=
- =?utf-8?B?eWhMclBCVlJVdnErWmh2NVdTdFF6ZmZGNS9TSDAyZEhlaGtld01WdVdpOFBt?=
- =?utf-8?B?WjM4aUZTdXl6eEM1dDFCNEZsL1hvOWJxR0trYkVEandBc1ZWYzFId1NMTFVC?=
- =?utf-8?B?TncxbGtqZUF1NlE4UkpzNk9ncmJINTdKZjJ5OXJwN0Rvazl4dGxjTUVVMW1w?=
- =?utf-8?B?NE02STRQRldHeVErUDNZN2lVRlB2d1I2STFKNFRPMlNLVTFqU0dUN1VENEdZ?=
- =?utf-8?B?ZXVMTlRhMzFsTE0zNGV4ZUNuWXR0bDRXM3M2cnJxYjdqWmo4dEtHcHNJRnNG?=
- =?utf-8?B?VXlaTEhaRzRTQS93UzRZTXNpaW9vMU95enZ6bzlpSEFmeXF3Nm04bW5nWWU5?=
- =?utf-8?B?N2VlQVJESThraHo2Y1VHUDhsZ0xVeExyZnpNbTZuTDFhMGo3aC84TXhMSGJO?=
- =?utf-8?B?YjEyNXlIU0MwY3JZdmEzK2ZwZGdzVkQ2cVA1bWJHNVBrNGRWcFR3U3IycjRz?=
- =?utf-8?B?MmVHTm5Qd0k5dktSaG9OcWhrYzA1YnUvUm43QXZMTTVMbnF1RUxKWmhya2JF?=
- =?utf-8?B?YjJKeHBLMFFQTXE3amhUVkRHaytGR3NiYW51dEJaVDZ3Z3NBZ1c5UnRuNnBQ?=
- =?utf-8?B?bnJWWDhscE9Cam14L2lSekNYb2NpS1FEb3dHM3hqNmg3cHNCZWlKMndKSExG?=
- =?utf-8?B?UDB1dzN1MXlST1Q5TDNPK0xZTm1BZDAwRmFyZzFjR2RaWDhkOGFVT3dBYmZx?=
- =?utf-8?B?b3hxZnU4Z0VXY3Y4WUEzSEZjYzRlL0svdEY5OSsxR2FWa1ZrYTg2aHVTc1hZ?=
- =?utf-8?B?RXB4dEUvc25FbXpsTWI0SDRDTE5FYVdHSjE3d3NiYi9nL0RLeVJuMERwTi9v?=
- =?utf-8?B?RWdLRlJFbzV5MFNaTWQzbFkzQjBHdXNoOE1FT2Mzd09hRnRqMnQ4bXd0TFlR?=
- =?utf-8?B?b01GM2VvWk1aclg2QVZiZWYrUDNsSHg0dC82Z25mclhvOWhkNGpvNmU4Wlln?=
- =?utf-8?B?US9LbCtXYnRqNXFPRkFHY1dTaUhiV2pZalZBWTVmSTJBRkY1MmtSWnNNb0Jx?=
- =?utf-8?B?cjgrcGJJSHViNkhSL2JKMyt3OUo1bGNSV2RIenpjMzZiVmc5RDU3Z3JaaS9N?=
- =?utf-8?B?TGxDNlg3c1BSWEhIY3FubTZ3Q1J2ZFVYQjNmTWxDSnNackovTDhXZz09?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e89d693c-576e-448d-20ca-08da115e8784
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB1579.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Mar 2022 08:31:32.8277
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MV8qLhynRE7qxp2xRKQ2agIgjlugYQ0DwXCKbtLV3hQsJIJODzNcZy5gEzWJ/TGResYQfZ+mdVQ56/O1K+MyoA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2869
+Message-Id: <1648542633.wzscjm967w.astroid@bobo.none>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Excerpts from Laurent Dufour's message of March 17, 2022 9:06 pm:
+> RTAS runs in real mode (MSR[DR] and MSR[IR] unset) and in 32bits
+> mode (MSR[SF] unset).
+>=20
+> The change in MSR is done in enter_rtas() in a relatively complex way,
+> since the MSR value could be hardcoded.
+>=20
+> Furthermore, a panic has been reported when hitting the watchdog interrup=
+t
+> while running in RTAS, this leads to the following stack trace:
+>=20
+> [69244.027433][   C24] watchdog: CPU 24 Hard LOCKUP
+> [69244.027442][   C24] watchdog: CPU 24 TB:997512652051031, last heartbea=
+t TB:997504470175378 (15980ms ago)
+> [69244.027451][   C24] Modules linked in: chacha_generic(E) libchacha(E) =
+xxhash_generic(E) wp512(E) sha3_generic(E) rmd160(E) poly1305_generic(E) li=
+bpoly1305(E) michael_mic(E) md4(E) crc32_generic(E) cmac(E) ccm(E) algif_rn=
+g(E) twofish_generic(E) twofish_common(E) serpent_generic(E) fcrypt(E) des_=
+generic(E) libdes(E) cast6_generic(E) cast5_generic(E) cast_common(E) camel=
+lia_generic(E) blowfish_generic(E) blowfish_common(E) algif_skcipher(E) alg=
+if_hash(E) gcm(E) algif_aead(E) af_alg(E) tun(E) rpcsec_gss_krb5(E) auth_rp=
+cgss(E)
+> nfsv4(E) dns_resolver(E) rpadlpar_io(EX) rpaphp(EX) xsk_diag(E) tcp_diag(=
+E) udp_diag(E) raw_diag(E) inet_diag(E) unix_diag(E) af_packet_diag(E) netl=
+ink_diag(E) nfsv3(E) nfs_acl(E) nfs(E) lockd(E) grace(E) sunrpc(E) fscache(=
+E) netfs(E) af_packet(E) rfkill(E) bonding(E) tls(E) ibmveth(EX) crct10dif_=
+vpmsum(E) rtc_generic(E) drm(E) drm_panel_orientation_quirks(E) fuse(E) con=
+figfs(E) backlight(E) ip_tables(E) x_tables(E) dm_service_time(E) sd_mod(E)=
+ t10_pi(E)
+> [69244.027555][   C24]  ibmvfc(EX) scsi_transport_fc(E) vmx_crypto(E) gf1=
+28mul(E) btrfs(E) blake2b_generic(E) libcrc32c(E) crc32c_vpmsum(E) xor(E) r=
+aid6_pq(E) dm_mirror(E) dm_region_hash(E) dm_log(E) sg(E) dm_multipath(E) d=
+m_mod(E) scsi_dh_rdac(E) scsi_dh_emc(E) scsi_dh_alua(E) scsi_mod(E)
+> [69244.027587][   C24] Supported: No, Unreleased kernel
+> [69244.027600][   C24] CPU: 24 PID: 87504 Comm: drmgr Kdump: loaded Taint=
+ed: G            E  X    5.14.21-150400.71.1.bz196362_2-default #1 SLE15-SP=
+4 (unreleased) 0d821077ef4faa8dfaf370efb5fdca1fa35f4e2c
+> [69244.027609][   C24] NIP:  000000001fb41050 LR: 000000001fb4104c CTR: 0=
+000000000000000
+> [69244.027612][   C24] REGS: c00000000fc33d60 TRAP: 0100   Tainted: G    =
+        E  X     (5.14.21-150400.71.1.bz196362_2-default)
+> [69244.027615][   C24] MSR:  8000000002981000 <SF,VEC,VSX,ME>  CR: 488000=
+02  XER: 20040020
+> [69244.027625][   C24] CFAR: 000000000000011c IRQMASK: 1
+> [69244.027625][   C24] GPR00: 0000000000000003 ffffffffffffffff 000000000=
+0000001 00000000000050dc
+> [69244.027625][   C24] GPR04: 000000001ffb6100 0000000000000020 000000000=
+0000001 000000001fb09010
+> [69244.027625][   C24] GPR08: 0000000020000000 0000000000000000 000000000=
+0000000 0000000000000000
+> [69244.027625][   C24] GPR12: 80040000072a40a8 c00000000ff8b680 000000000=
+0000007 0000000000000034
+> [69244.027625][   C24] GPR16: 000000001fbf6e94 000000001fbf6d84 000000001=
+fbd1db0 000000001fb3f008
+> [69244.027625][   C24] GPR20: 000000001fb41018 ffffffffffffffff 000000000=
+000017f fffffffffffff68f
+> [69244.027625][   C24] GPR24: 000000001fb18fe8 000000001fb3e000 000000001=
+fb1adc0 000000001fb1cf40
+> [69244.027625][   C24] GPR28: 000000001fb26000 000000001fb460f0 000000001=
+fb17f18 000000001fb17000
+> [69244.027663][   C24] NIP [000000001fb41050] 0x1fb41050
+> [69244.027696][   C24] LR [000000001fb4104c] 0x1fb4104c
+> [69244.027699][   C24] Call Trace:
+> [69244.027701][   C24] Instruction dump:
+> [69244.027723][   C24] XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXX=
+XXX XXXXXXXX XXXXXXXX
+> [69244.027728][   C24] XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXX=
+XXX XXXXXXXX XXXXXXXX
+> [69244.027762][T87504] Oops: Unrecoverable System Reset, sig: 6 [#1]
+> [69244.028044][T87504] LE PAGE_SIZE=3D64K MMU=3DHash SMP NR_CPUS=3D2048 N=
+UMA pSeries
+> [69244.028089][T87504] Modules linked in: chacha_generic(E) libchacha(E) =
+xxhash_generic(E) wp512(E) sha3_generic(E) rmd160(E) poly1305_generic(E) li=
+bpoly1305(E) michael_mic(E) md4(E) crc32_generic(E) cmac(E) ccm(E) algif_rn=
+g(E) twofish_generic(E) twofish_common(E) serpent_generic(E) fcrypt(E) des_=
+generic(E) libdes(E) cast6_generic(E) cast5_generic(E) cast_common(E) camel=
+lia_generic(E) blowfish_generic(E) blowfish_common(E) algif_skcipher(E) alg=
+if_hash(E) gcm(E) algif_aead(E) af_alg(E) tun(E) rpcsec_gss_krb5(E) auth_rp=
+cgss(E)
+> nfsv4(E) dns_resolver(E) rpadlpar_io(EX) rpaphp(EX) xsk_diag(E) tcp_diag(=
+E) udp_diag(E) raw_diag(E) inet_diag(E) unix_diag(E) af_packet_diag(E) netl=
+ink_diag(E) nfsv3(E) nfs_acl(E) nfs(E) lockd(E) grace(E) sunrpc(E) fscache(=
+E) netfs(E) af_packet(E) rfkill(E) bonding(E) tls(E) ibmveth(EX) crct10dif_=
+vpmsum(E) rtc_generic(E) drm(E) drm_panel_orientation_quirks(E) fuse(E) con=
+figfs(E) backlight(E) ip_tables(E) x_tables(E) dm_service_time(E) sd_mod(E)=
+ t10_pi(E)
+> [69244.028171][T87504]  ibmvfc(EX) scsi_transport_fc(E) vmx_crypto(E) gf1=
+28mul(E) btrfs(E) blake2b_generic(E) libcrc32c(E) crc32c_vpmsum(E) xor(E) r=
+aid6_pq(E) dm_mirror(E) dm_region_hash(E) dm_log(E) sg(E) dm_multipath(E) d=
+m_mod(E) scsi_dh_rdac(E) scsi_dh_emc(E) scsi_dh_alua(E) scsi_mod(E)
+> [69244.028307][T87504] Supported: No, Unreleased kernel
+> [69244.028385][T87504] CPU: 24 PID: 87504 Comm: drmgr Kdump: loaded Taint=
+ed: G            E  X    5.14.21-150400.71.1.bz196362_2-default #1 SLE15-SP=
+4 (unreleased) 0d821077ef4faa8dfaf370efb5fdca1fa35f4e2c
+> [69244.028408][T87504] NIP:  000000001fb41050 LR: 000000001fb4104c CTR: 0=
+000000000000000
+> [69244.028418][T87504] REGS: c00000000fc33d60 TRAP: 0100   Tainted: G    =
+        E  X     (5.14.21-150400.71.1.bz196362_2-default)
+> [69244.028429][T87504] MSR:  8000000002981000 <SF,VEC,VSX,ME>  CR: 488000=
+02  XER: 20040020
+> [69244.028444][T87504] CFAR: 000000000000011c IRQMASK: 1
+> [69244.028444][T87504] GPR00: 0000000000000003 ffffffffffffffff 000000000=
+0000001 00000000000050dc
+> [69244.028444][T87504] GPR04: 000000001ffb6100 0000000000000020 000000000=
+0000001 000000001fb09010
+> [69244.028444][T87504] GPR08: 0000000020000000 0000000000000000 000000000=
+0000000 0000000000000000
+> [69244.028444][T87504] GPR12: 80040000072a40a8 c00000000ff8b680 000000000=
+0000007 0000000000000034
+> [69244.028444][T87504] GPR16: 000000001fbf6e94 000000001fbf6d84 000000001=
+fbd1db0 000000001fb3f008
+> [69244.028444][T87504] GPR20: 000000001fb41018 ffffffffffffffff 000000000=
+000017f fffffffffffff68f
+> [69244.028444][T87504] GPR24: 000000001fb18fe8 000000001fb3e000 000000001=
+fb1adc0 000000001fb1cf40
+> [69244.028444][T87504] GPR28: 000000001fb26000 000000001fb460f0 000000001=
+fb17f18 000000001fb17000
+> [69244.028534][T87504] NIP [000000001fb41050] 0x1fb41050
+> [69244.028543][T87504] LR [000000001fb4104c] 0x1fb4104c
+> [69244.028549][T87504] Call Trace:
+> [69244.028554][T87504] Instruction dump:
+> [69244.028561][T87504] XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXX=
+XXX XXXXXXXX XXXXXXXX
+> [69244.028575][T87504] XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXX=
+XXX XXXXXXXX XXXXXXXX
+> [69244.028607][T87504] ---[ end trace 3ddec07f638c34a2 ]---
+>=20
+> This happens because MSR[RI] is unset when entering RTAS but there is no
+> valid reason to not set it here.
+>=20
+> Fixing this by reviewing the way MSR is compute before calling RTAS. Now =
+a
+> hardcoded value meaning real mode, 32 bits and Recoverable Interrupt is
+> loaded.
+>=20
+> In addition a check is added in do_enter_rtas() to detect calls made with
+> MSR[RI] unset, as we are forcing it on later.
 
-On 28-03-2022 20:59, Ranjani Sridharan wrote:
-> On Mon, 2022-03-28 at 11:44 +0530, Sameer Pujar wrote:
->> For DPCM links, the order of hw_param() call depends on the sequence
->> of
->> BE connection to FE. It is possible that one BE link can provide
->> clock
->> to another BE link. In such cases consumer BE DAI, to get the rate
->> set
->> by provider BE DAI, can use the standard clock functions only if
->> provider
->> has already set the appropriate rate during its hw_param() stage.
->>
->> Presently the order is fixed and does not depend on the provider and
->> consumer relationships. So the clock rates need to be known ahead of
->> hw_param() stage.
->>
->> This patch tweaks the hw_param() order by connecting the provider BEs
->> late to a FE. With this hw_param() calls for provider BEs happen
->> first
->> and then followed by consumer BEs. The consumers can use the standard
->> clk_get_rate() function to get the rate of the clock they depend on.
->>
->> Signed-off-by: Sameer Pujar<spujar@nvidia.com>
->> ---
->>   TODO:
->>    * The FE link is not considered in this. For Tegra it is fine to
->>      call hw_params() for FE at the end. But systems, which want to
->> apply
->>      this tweak for FE as well, have to extend this tweak to FE.
->>    * Also only DPCM is considered here. If normal links require such
->>      tweak, it needs to be extended.
->>
->>   sound/soc/soc-pcm.c | 60
->> ++++++++++++++++++++++++++++++++++++++++++++++++++++-
->>   1 file changed, 59 insertions(+), 1 deletion(-)
->>
->> diff --git a/sound/soc/soc-pcm.c b/sound/soc/soc-pcm.c
->> index 9a95468..5829514 100644
->> --- a/sound/soc/soc-pcm.c
->> +++ b/sound/soc/soc-pcm.c
->> @@ -1442,6 +1442,29 @@ static int dpcm_prune_paths(struct
->> snd_soc_pcm_runtime *fe, int stream,
->>        return prune;
->>   }
->>
->> +static bool defer_dpcm_be_connect(struct snd_soc_pcm_runtime *rtd)
->> +{
->> +     struct snd_soc_dai *dai;
->> +     int i;
->> +
->> +     if (!(rtd->dai_link->dai_fmt & SND_SOC_DAIFMT_FORMAT_MASK))
->> +             return false;
-> Is this check necessary?
+This looks okay to me, I would just adjust the comment about watchdog
+irq. It's more like NMI (SRESET or MCE), watchdog irq could be confusing=20
+for the soft-NMI timer.
 
-By default the link has "SND_SOC_DAIFMT_CBC_CFC". When no format 
-(I2S/RIGHT_J etc.,) is specified, the links are mostly internal and the 
-normal order can be followed.
+Otherwise I think it's okay.
 
->> +
->> +     if ((rtd->dai_link->dai_fmt &
->> SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) ==
->> +         SND_SOC_DAIFMT_CBC_CFC) {
->> +
->> +             for_each_rtd_cpu_dais(rtd, i, dai) {
->> +
->> +                     if (!snd_soc_dai_is_dummy(dai))
->> +                             return true;
->> +             }
->> +     }
->> +
->> +     return false;
->> +}
->> +
->> +#define MAX_CLK_PROVIDER_BE 10
->> +
->>   static int dpcm_add_paths(struct snd_soc_pcm_runtime *fe, int
->> stream,
->>        struct snd_soc_dapm_widget_list **list_)
->>   {
->> @@ -1449,7 +1472,8 @@ static int dpcm_add_paths(struct
->> snd_soc_pcm_runtime *fe, int stream,
->>        struct snd_soc_dapm_widget_list *list = *list_;
->>        struct snd_soc_pcm_runtime *be;
->>        struct snd_soc_dapm_widget *widget;
->> -     int i, new = 0, err;
->> +     struct snd_soc_pcm_runtime *prov[MAX_CLK_PROVIDER_BE];
->> +     int i, new = 0, err, count = 0;
->>
->>        /* Create any new FE <--> BE connections */
->>        for_each_dapm_widgets(list, i, widget) {
->> @@ -1489,6 +1513,40 @@ static int dpcm_add_paths(struct
->> snd_soc_pcm_runtime *fe, int stream,
->>                    (be->dpcm[stream].state !=
->> SND_SOC_DPCM_STATE_CLOSE))
->>                        continue;
->>
->> +             /* Connect clock provider BEs at the end */
->> +             if (defer_dpcm_be_connect(be)) {
->> +                     if (count >= MAX_CLK_PROVIDER_BE) {
-> What determines MAX_CLK_PROVIDER_BE? why 10? Can you use rtd->num_cpus
-> instead?
+Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
 
-There is no specific reason as why it cannot be more than 10. I mostly 
-thought it would be a fair assumption to have these many clock providers 
-for audio paths. I will check if such limitation can be avoided. I 
-cannot rely on "rtd->num_cpus", since in my case there are two different 
-rtds one acting as provider and other as consumer.
-
+>=20
+> Cc: stable@vger.kernel.org
+> Suggested-by: Nicholas Piggin <npiggin@gmail.com>
+> Signed-off-by: Laurent Dufour <ldufour@linux.ibm.com>
+> ---
+>  arch/powerpc/kernel/entry_64.S | 18 ++++++------------
+>  arch/powerpc/kernel/rtas.c     |  5 +++++
+>  2 files changed, 11 insertions(+), 12 deletions(-)
+>=20
+> diff --git a/arch/powerpc/kernel/entry_64.S b/arch/powerpc/kernel/entry_6=
+4.S
+> index 9581906b5ee9..fbc8dfe7da9f 100644
+> --- a/arch/powerpc/kernel/entry_64.S
+> +++ b/arch/powerpc/kernel/entry_64.S
+> @@ -330,22 +330,16 @@ _GLOBAL(enter_rtas)
+>  	clrldi	r4,r4,2			/* convert to realmode address */
+>         	mtlr	r4
+> =20
+> -	li	r0,0
+> -	ori	r0,r0,MSR_EE|MSR_SE|MSR_BE|MSR_RI
+> -	andc	r0,r6,r0
+> -=09
+> -        li      r9,1
+> -        rldicr  r9,r9,MSR_SF_LG,(63-MSR_SF_LG)
+> -	ori	r9,r9,MSR_IR|MSR_DR|MSR_FE0|MSR_FE1|MSR_FP|MSR_RI|MSR_LE
+> -	andc	r6,r0,r9
+> -
+>  __enter_rtas:
+> -	sync				/* disable interrupts so SRR0/1 */
+> -	mtmsrd	r0			/* don't get trashed */
+> -
+>  	LOAD_REG_ADDR(r4, rtas)
+>  	ld	r5,RTASENTRY(r4)	/* get the rtas->entry value */
+>  	ld	r4,RTASBASE(r4)		/* get the rtas->base value */
+> +
+> +	/* RTAS runs in 32bits real mode but we may hit watchdog irq */
+> +	LOAD_REG_IMMEDIATE(r6, MSR_ME|MSR_RI)
+> +
+> +	li      r0,0
+> +	mtmsrd  r0,1                    /* disable RI before using SRR0/1 */
+>  =09
+>  	mtspr	SPRN_SRR0,r5
+>  	mtspr	SPRN_SRR1,r6
+> diff --git a/arch/powerpc/kernel/rtas.c b/arch/powerpc/kernel/rtas.c
+> index 1f42aabbbab3..d7775b8c8853 100644
+> --- a/arch/powerpc/kernel/rtas.c
+> +++ b/arch/powerpc/kernel/rtas.c
+> @@ -49,6 +49,11 @@ void enter_rtas(unsigned long);
+> =20
+>  static inline void do_enter_rtas(unsigned long args)
+>  {
+> +	unsigned long msr;
+> +
+> +	msr =3D mfmsr();
+> +	BUG_ON(!(msr & MSR_RI));
+> +
+>  	enter_rtas(args);
+> =20
+>  	srr_regs_clobbered(); /* rtas uses SRRs, invalidate */
+> --=20
+> 2.35.1
+>=20
+>=20
