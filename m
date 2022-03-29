@@ -2,128 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3900C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 08:50:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83F9AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 08:51:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234226AbiC2Iwh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 04:52:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38614 "EHLO
+        id S234227AbiC2IxI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 04:53:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234203AbiC2Iwf (ORCPT
+        with ESMTP id S234238AbiC2Iwt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 04:52:35 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 451374D9E8;
-        Tue, 29 Mar 2022 01:50:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1648543850; x=1680079850;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=0r3zs2np5g1OGyfR5AfBJmzryAoR1xJqsqcoDejQqWU=;
-  b=yk4zhCNfipUX7eRQzl/UWFsl14TkWgV2nFyQ/JLuu6mnldU1Qx+kirAp
-   HLM8rwpAp6PWXxOKFxbhKl6Hs1XrckSBku5ZWXzHO2Sflw/U1Kb8vOv46
-   VbynjfzxLp+Owgf/x9Qk2FSbxb6ySmn/gEjlF83HAidCgv37I+YYfZWFx
-   8arXK4lidSDelocVshQlRpnyUWoHlbgM5kxJRuCXuYVsKfwU0QRAhpUh0
-   aRKwX98fKthGl/CZztXDOkMfjqYL/wbG0Imu2rced0IOEw4agUjJ5KCf9
-   T+XnH6gB5ZmpDt2G31geY8en+lD7dZNIcvvVGPavFtdgmQeFSJltAH1tB
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,219,1643698800"; 
-   d="scan'208";a="158497460"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Mar 2022 01:50:48 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 29 Mar 2022 01:50:48 -0700
-Received: from [10.159.245.112] (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Tue, 29 Mar 2022 01:50:41 -0700
-Message-ID: <4ff4f171-c5f8-87af-aad1-5e7686292288@microchip.com>
-Date:   Tue, 29 Mar 2022 10:50:38 +0200
+        Tue, 29 Mar 2022 04:52:49 -0400
+Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2619451E5A;
+        Tue, 29 Mar 2022 01:51:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1648543865; x=1680079865;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=wWjkIsGoRiHdG4LM9QjPl/bqZpReNK5RcM9UVleK3mw=;
+  b=B/LEcAqrLIBOv2FnFFlIoYTbhf5KrkcjpWjSVjnLtv3EWUt8MWmQn/YM
+   gQxOx68OfTLViQewQl9BN48BzHSAyNq9fvkrGzt1xQaA3CyepQN2RtSAQ
+   M2Uph0WgHgf+QorVEC06yTvxZyOzNiaJyzbKlpPYA8rpnHknQapLgN23T
+   SIS5WEbbHmWNGJ0qpgQl7zCYWKH2inbOn/FT861wvrsm6qe00uKTYa7Lr
+   yvB0a5uRt8/bL9WCtFiGR3xAnRviotlgORj1OMmb4oxLpOtp7hCerzGJJ
+   +nZyViWsl5xhFHn4YRrWaasi/SCtavgPTM9iIIh8YofrvOiD63F2G8hLc
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,219,1643670000"; 
+   d="scan'208";a="22954136"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 29 Mar 2022 10:51:02 +0200
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Tue, 29 Mar 2022 10:51:02 +0200
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Tue, 29 Mar 2022 10:51:02 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1648543862; x=1680079862;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=wWjkIsGoRiHdG4LM9QjPl/bqZpReNK5RcM9UVleK3mw=;
+  b=QnE21zjVvkmAd27D8EsS86mdmONZwM+HOwPgYUSQiDVnnsYDKln6YqXl
+   OmVNDhiYFx/Bp9SJHkUZzCLOm5mqZAYchtNIoUEfrTeTZjnNXtsSujAx4
+   2hRgsMh6hFDxBKLVCmF67V9xuGvDB0V3NvJUC+Zc23k9A/3N2ARR1FbKx
+   akYeJdHw/sMW8dAAxzhhjPumbIt+ixH4k/gw8dR1TQnbmS/k6M32YqTJ+
+   /Ewm4RryjznrgfTj/CDDSAZ4zjfsv4lOeJ9LQ2Xx0yC1jVelMdIO1rzuj
+   wr3cGjsdIZn+Hb21E1aFaBubxnFHM0hRIBkBYSWUklcIeuw3qlBnIHoeB
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,219,1643670000"; 
+   d="scan'208";a="22954135"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 29 Mar 2022 10:51:02 +0200
+Received: from localhost.localdomain (SCHIFFERM-M2.tq-net.de [10.121.201.138])
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id C47F3280065;
+        Tue, 29 Mar 2022 10:51:01 +0200 (CEST)
+From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Lukas Wunner <lukas@wunner.de>
+Cc:     Russell King <linux@armlinux.org.uk>, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Subject: [PATCH] serial: Revert RS485 polarity change on UART open
+Date:   Tue, 29 Mar 2022 10:50:50 +0200
+Message-Id: <20220329085050.311408-1-matthias.schiffer@ew.tq-group.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH 0/1] Categorize ARM dts directory
-Content-Language: en-US
-To:     Daniel Palmer <daniel@0x0f.com>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        Claudiu Beznea <Claudiu.Beznea@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Santiago Esteban <Santiago.Esteban@microchip.com>,
-        Cristian Birsan <Cristian.Birsan@microchip.com>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        <linux-actions@lists.infradead.org>, <linux-sunxi@lists.linux.dev>,
-        <linux-omap@vger.kernel.org>, <linux-amlogic@lists.infradead.org>,
-        <linux-arm-kernel@axis.com>, <linux-aspeed@lists.ozlabs.org>,
-        <linux-rpi-kernel@lists.infradead.org>,
-        <chrome-platform@lists.linux.dev>,
-        <linux-renesas-soc@vger.kernel.org>,
-        <linux-samsung-soc@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <kernel@dh-electronics.com>, <linux-mediatek@lists.infradead.org>,
-        <openbmc@lists.ozlabs.org>, <linux-tegra@vger.kernel.org>,
-        <linux-oxnas@groups.io>, <linux-arm-msm@vger.kernel.org>,
-        <linux-unisoc@lists.infradead.org>,
-        <linux-rockchip@lists.infradead.org>,
-        <linux-realtek-soc@lists.infradead.org>
-References: <20220328000915.15041-1-ansuelsmth@gmail.com>
- <CAFr9PXkgrRe-=E=GhNnZ4w1x_FMb97-_RmX6ND1vEd74_TbZSw@mail.gmail.com>
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-In-Reply-To: <CAFr9PXkgrRe-=E=GhNnZ4w1x_FMb97-_RmX6ND1vEd74_TbZSw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ansuel, All,
+While the change of the RS485 polarity in
+commit d3b3404df318 ("serial: Fix incorrect rs485 polarity on uart open")
+might have made sense based on the original intention of the
+rs485-rts-active-low flag (*), this is not how it is implemented in
+various drivers:
 
-On 28/03/2022 at 10:55, Daniel Palmer wrote:
-> Hi Ansuel
-> 
-> On Mon, 28 Mar 2022 at 09:09, Ansuel Smith <ansuelsmth@gmail.com> wrote:
->>
->> Hi,
->> as the title say, the intention of this ""series"" is to finally categorize
->> the ARM dts directory in subdirectory for each oem.
-> 
-> While I agree with this change and think it's for the good (browsing
-> the ARM dts directory at the moment is frustrating..) I think
-> buildroot and others need to be told about this as it'll potentially
-> break their kernel build scripting for ARM and probably messes up the
-> configs they have for existing boards.
+At least the 8250 and the i.MX UART drivers interpret rs485-rts-active-low
+the other way around. For these drivers, said change broke the initial
+state of the RTS pin after opening the UART, making it impossible to
+receive data until after the first send.
 
-This aspect mustn't be underestimated and I anticipate lots of issues 
-during a long time on this particular topic of "build systems".
+I considered fixing up the drivers to match the polarity used for the
+initial state, however doing so would break all existing Device Trees
+that configure RS485 for one of these drivers. Reverting the change
+makes RS485 work correctly again on these devices.
 
-Another aspect is CI and public or private testing farms we all have 
-running.
+[(*) My understanding of the mentioned commit's description is that
+rs485-rts-active-low should have referred to the electical signal level
+of the RTS pin, rather than the logical RTS state as understood by the
+UART controller.]
 
-These aspects always refrained me to change anything in the naming 
-scheme of our DT files, but if we go in this direction, we must really 
-be prepared and I'm still not convince it's worth it...
+Fixes: d3b3404df318 ("serial: Fix incorrect rs485 polarity on uart open")
+Fixes: 2dd8a74fddd2 ("serial: core: Initialize rs485 RTS polarity already on probe")
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+---
 
+Skimming through a few other drivers with RS485 support, many other
+implementation are in agreement with the 8250 and i.MX drivers. This seems
+to be the case for the OMAP and the STM32 drivers. The PL011 driver on the
+other hand seems to disagree, so it will need to be fixed if the intention
+is to make all drivers consistent (preferable by someone who is familiar
+with that hardware and can test the change).
 
-If this has to happen, I would also like to queue some file name changes 
-to do all modifications in one go in order to lower the annoyance level 
-of those who would need to adapt to those changes.
+It is unfortunate that different drivers disagree here, as any fix to
+make things more consistent will break some users. One way to avoid that
+would be to deprecate the rs485-rts-active-low flag altogether and replace
+it with something new that is implemented consistently...
 
-BTW, is there a common scheme for dts/dtsi file naming? Is it more 
-enforced in one way or another for arm64 in a sense that I can take some 
-norm as an example?
+I can also propose a clarification for the DT binding documentation, if
+this revert is how we want to proceed with the issue.
 
-[..]
+ drivers/tty/serial/serial_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Best regards,
-   Nicolas
-
-
-
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 6a8963caf954..c1c8bd712a59 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2390,7 +2390,7 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
+ 		spin_lock_irqsave(&port->lock, flags);
+ 		port->mctrl &= TIOCM_DTR;
+ 		if (port->rs485.flags & SER_RS485_ENABLED &&
+-		    !(port->rs485.flags & SER_RS485_RTS_AFTER_SEND))
++		    !(port->rs485.flags & SER_RS485_RTS_ON_SEND))
+ 			port->mctrl |= TIOCM_RTS;
+ 		port->ops->set_mctrl(port, port->mctrl);
+ 		spin_unlock_irqrestore(&port->lock, flags);
 -- 
-Nicolas Ferre
+2.25.1
+
