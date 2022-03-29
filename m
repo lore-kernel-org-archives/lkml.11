@@ -2,154 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55454C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 08:20:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB9C3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 08:22:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233823AbiC2IWP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 04:22:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60740 "EHLO
+        id S233833AbiC2IY2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 04:24:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232327AbiC2IWH (ORCPT
+        with ESMTP id S232327AbiC2IYW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 04:22:07 -0400
-Received: from esa3.hgst.iphmx.com (esa3.hgst.iphmx.com [216.71.153.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E8B732980
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 01:20:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1648542022; x=1680078022;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=AYrQtlhqVh2hDSgzcQ5+Kpv4dRRHUmkrluQwNnS8EkQ=;
-  b=QMThhccqiJsuZV2NIE5nwVCArU+c8Ocy33mEMkMIPA1cqCUgqzLmbgeG
-   3xEvoM0H95vspMaKfAsgi3yLUOIpN4SRBAIsjp4VhJI4htxAPLKzQ+200
-   8gvRi6M4gJrx6PGUHMWsp+/Qy38Lb4bxrW4tCuYskhTPUt7BGb8PF201U
-   rLe4P/T5/P48iIM2HrjpIG3w3Zc61l9fIk7ClCu0ovHR4zApiBn6yauZR
-   TY8dmPBTGnZk5wIChC84kJj7V8H4M7AgsVNHl8UjVRUcpvXNAAcDCM7tw
-   ioWjfIcjGUtkDcq04lUaw462e2fm0p2jYhcpqQIE98xaovtGLl5hZZeMT
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,219,1643644800"; 
-   d="scan'208";a="201365921"
-Received: from h199-255-45-14.hgst.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
-  by ob1.hgst.iphmx.com with ESMTP; 29 Mar 2022 16:20:21 +0800
-IronPort-SDR: gywd8qDig/D1aHffmz+gFEU3Yu2xZg2JWSwatxlY5sEiWVKWMCgxdN7xAu9/MgFJB5dub//Lcl
- dO/kL49tQc8BdXTWckLtcCf+3S7va0YMiMU/Tsf+oJFR/J6IbtimppNB80s7k9VSB8xmdXcn+n
- axRGKnqjZIm/fBBaTgVgR7lhPgvMLT43V6IIVnXQ43cFA47fInNevR5QO3BBElyasN8jmL4/oE
- OrtKYBD8R7IY6Tn88iqd4jhkZKd1IEvG6NtCZPI9cJlQSeRE1wfgqPR8h7c9gZjgJ8QmHwwjkR
- iAMjOrkTdQqnfYhqrgZ8gYLA
-Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
-  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 29 Mar 2022 00:52:06 -0700
-IronPort-SDR: m8JZA3DBgwEVEyu4wA0Q7TG93oyxsJXAHVjkac0fY+yqQgaE507osLHS+mq0+UQS+cf3LpTM41
- 9q9V4AKMg7eM3fZLarK5DuswaDmDrOrNHLJT5NEQXUIWbxrJpVk95MXfmuWUEVc56nqB1pkpm4
- Pq0AkPAs29u3Jc7r4GZCeQquB8t3n15jYmsbRU3tiAgoUiiN4zV7RldPifhFEBRi2b+0yGc/9l
- /leEu6EcVaB8EBDwdBZWrUC5AB9rFX/Xv6+dCmYLi6i8N+0ZAUi6rjtOAZlZHVlHTrGdOhS1Zy
- I/k=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
-  by uls-op-cesaip01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 29 Mar 2022 01:20:22 -0700
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4KSMvB09mqz1SVp3
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 01:20:21 -0700 (PDT)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
-        reason="pass (just generated, assumed good)"
-        header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        opensource.wdc.com; h=content-transfer-encoding:content-type
-        :in-reply-to:organization:from:references:to:content-language
-        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
-        1648542021; x=1651134022; bh=AYrQtlhqVh2hDSgzcQ5+Kpv4dRRHUmkrluQ
-        wNnS8EkQ=; b=TEjUpXy5ecajpkRWD6i90A6dtLRMsnlF9jXHbzuHQ7Tx/gmzCAp
-        4TFjIMVlXTgJzfifINZOS7fB80oYaeMmFURWcIf1QLdMde/JwNpJcrkHGT05ieUW
-        SxPUB1OLqZCS9JdkcWkVRWJ+rWpyi2vDByvZBnrLKm3Pxk1dfPsDuIfNG2rSaUuM
-        1E2Y79T9PMN6PgoYG3GoWfPdmi+8hnqfgxz9oOfCY8ptbDaSRiSYRyRJvK6f3Re4
-        5YNe/RRGTM/8focEhVO6s6814qUqJX3lgPdEz0ooz+HMTKnc0BB1Mp3QLSsHZvGa
-        7LuWtffk0yzfcwcYQt8EvGK9DDNSEcrgong==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
-        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id 94imeTiHwv9W for <linux-kernel@vger.kernel.org>;
-        Tue, 29 Mar 2022 01:20:21 -0700 (PDT)
-Received: from [10.225.163.121] (unknown [10.225.163.121])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4KSMv75G6Nz1Rvlx;
-        Tue, 29 Mar 2022 01:20:19 -0700 (PDT)
-Message-ID: <19912886-4032-633e-e4a7-ef47ae389ffd@opensource.wdc.com>
-Date:   Tue, 29 Mar 2022 17:20:18 +0900
+        Tue, 29 Mar 2022 04:24:22 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 742A5986F1
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 01:22:39 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id s11so15213193pfu.13
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 01:22:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:subject:to:cc:references:in-reply-to:mime-version
+         :message-id:content-transfer-encoding;
+        bh=u+eOiR/JQGj21WH/g/6/ThX1ZxYwYrc08hxhIyZJdXw=;
+        b=do8wrfbyUYPlF15QBTTaREmSpP6vTRJgsYPGDwNovTThFdcraXgHXhwuE2i55wYGkq
+         x5DRkt/cIVY5f9pASZvp7SrOPBnk+C0GcEC8eiqJ7S6v43n4DaEiDJAavYMQfelINO0s
+         3uE9LQ45q28F0mY3ezOhg7cDfQ0+Bx3yERur+R+ek7zpMbaFs38Rw3N+RPFRMYreUTSa
+         9nRICKCV1ewJd4GFZdOOCrirGOKqnuxQE/+fr6tbFb0yZLjMFuetmOzIN1gFCkto1/q/
+         O1s5ETecjelfbM5E1Z77X7jxxi+kZwRD8OZy/8HPz/2JRs69uWaFFofNpjwGBnS79e9L
+         RXsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:subject:to:cc:references:in-reply-to
+         :mime-version:message-id:content-transfer-encoding;
+        bh=u+eOiR/JQGj21WH/g/6/ThX1ZxYwYrc08hxhIyZJdXw=;
+        b=rzThZ00WWDV2hcCXbqamtP6rVx0vylBteTfrEf81lolD+NoUythQqsU5NG2ZuloAej
+         sKl87hbP+Klr+MVSzKZbbCNpvDrzX/O4ZCJpXaTF4PCa4T9+HXPn7A1lWux2sLvU0Jir
+         1iaDPQk6uE7CR8eyJeKwSGbqGN9AvE4Ydae6vAJYlh01cRAfu9WJ/m5eg9M2Y8IjJKuH
+         4fdFvXqcTVSSyh+R8r4shn0XhFDYzzgDcXhp+eImLUNLJFZUMZKX8qQlelXwZc6XA4FS
+         lnJOV5sP+9R+KmMuVV+VvGW8U2EnO1BLNZmzLBqKqqro+x8eamtwM7b/hc3kIKX6Dw5N
+         kNcw==
+X-Gm-Message-State: AOAM532MSwmGfB7yjWIbEhPfMZFjXuisNhRuD+i92S5D7h7MKic1lDmf
+        8ecaVMCcWHa79jmMYLdszzw=
+X-Google-Smtp-Source: ABdhPJwHEY8IZNGIbEt08JmgXbNuNgvYuXk6DC6Cg5y9CY0T2RgfV1IjinLIYrKIM8PHMCXXTXVnrQ==
+X-Received: by 2002:a05:6a00:1c9e:b0:4fa:d946:378b with SMTP id y30-20020a056a001c9e00b004fad946378bmr27137436pfw.46.1648542158916;
+        Tue, 29 Mar 2022 01:22:38 -0700 (PDT)
+Received: from localhost (58-6-255-110.tpgi.com.au. [58.6.255.110])
+        by smtp.gmail.com with ESMTPSA id v22-20020a17090ad59600b001b7deb42251sm1879863pju.15.2022.03.29.01.22.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Mar 2022 01:22:38 -0700 (PDT)
+Date:   Tue, 29 Mar 2022 18:22:28 +1000
+From:   Nicholas Piggin <npiggin@gmail.com>
+Subject: Re: [PATCH] powerpc/64: Fix build failure with allyesconfig in
+ book3s_64_entry.S
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Paul Mackerras <paulus@samba.org>
+Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+References: <89cf27bf43ee07a0b2879b9e8e2f5cd6386a3645.1648366338.git.christophe.leroy@csgroup.eu>
+In-Reply-To: <89cf27bf43ee07a0b2879b9e8e2f5cd6386a3645.1648366338.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 03/21] ata: libahci_platform: Explicitly set rc on
- devres_alloc failure
-Content-Language: en-US
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>
-Cc:     Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Rob Herring <robh+dt@kernel.org>, linux-ide@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-References: <20220324001628.13028-1-Sergey.Semin@baikalelectronics.ru>
- <20220324001628.13028-4-Sergey.Semin@baikalelectronics.ru>
-From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Organization: Western Digital Research
-In-Reply-To: <20220324001628.13028-4-Sergey.Semin@baikalelectronics.ru>
+Message-Id: <1648542114.vy2hyu1uzt.astroid@bobo.none>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/24/22 09:16, Serge Semin wrote:
-> It's better for readability and maintainability to explicitly assign an
-> error number to the variable used then as a return value from the method
-> on the cleanup-on-error path. So adding new code in the method we won't
-> have to think whether the overridden rc-variable is set afterward in case
-> of an error. Saving one line of code doesn't worth it especially seeing
-> the rest of the ahci_platform_get_resources() function errors handling
-> blocks do explicitly write errno to rc.
-> 
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Excerpts from Christophe Leroy's message of March 27, 2022 5:32 pm:
+> Using conditional branches between two files is hasardous,
+> they may get linked to far from each other.
+>=20
+> 	arch/powerpc/kvm/book3s_64_entry.o:(.text+0x3ec): relocation truncated
+> 	to fit: R_PPC64_REL14 (stub) against symbol `system_reset_common'
+> 	defined in .text section in arch/powerpc/kernel/head_64.o
+>=20
+> Reorganise the code to use non conditional branches.
+
+Thanks for the fix, I agree this is better.
+
+Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
+
+>=20
+> Cc: Nicholas Piggin <npiggin@gmail.com>
+> Fixes: 89d35b239101 ("KVM: PPC: Book3S HV P9: Implement the rest of the P=
+9 path in C")
+> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 > ---
->  drivers/ata/libahci_platform.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/ata/libahci_platform.c b/drivers/ata/libahci_platform.c
-> index 18296443ccba..1bd2f1686239 100644
-> --- a/drivers/ata/libahci_platform.c
-> +++ b/drivers/ata/libahci_platform.c
-> @@ -389,7 +389,7 @@ struct ahci_host_priv *ahci_platform_get_resources(struct platform_device *pdev,
->  	struct ahci_host_priv *hpriv;
->  	struct clk *clk;
->  	struct device_node *child;
-> -	int i, enabled_ports = 0, rc = -ENOMEM, child_nodes;
-> +	int i, enabled_ports = 0, rc = 0, child_nodes;
-
-You I did say that I do not like this. Especially considering that this
-function uses rc only in the case of an error return. Having it uselessly
-initialized to 0 does not make sense and goes against your goal of
-avoiding problems in case it is not set in an error path. returning
-"ERR_PTR(0)" is the same as returning NULL, which defeats the purpose of
-using ERR_PTR/PTR_ERR.
-
-Please drop this patch.
-
->  	u32 mask_port_map = 0;
->  
->  	if (!devres_open_group(dev, NULL, GFP_KERNEL))
-> @@ -397,8 +397,10 @@ struct ahci_host_priv *ahci_platform_get_resources(struct platform_device *pdev,
->  
->  	hpriv = devres_alloc(ahci_platform_put_resources, sizeof(*hpriv),
->  			     GFP_KERNEL);
-> -	if (!hpriv)
-> +	if (!hpriv) {
-> +		rc = -ENOMEM;
->  		goto err_out;
-> +	}
->  
->  	devres_add(dev, hpriv);
->  
-
-
--- 
-Damien Le Moal
-Western Digital Research
+>  arch/powerpc/kvm/book3s_64_entry.S | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/arch/powerpc/kvm/book3s_64_entry.S b/arch/powerpc/kvm/book3s=
+_64_entry.S
+> index 05e003eb5d90..99fa36df36fa 100644
+> --- a/arch/powerpc/kvm/book3s_64_entry.S
+> +++ b/arch/powerpc/kvm/book3s_64_entry.S
+> @@ -414,10 +414,11 @@ END_FTR_SECTION_IFSET(CPU_FTR_DAWR1)
+>  	 */
+>  	ld	r10,HSTATE_SCRATCH0(r13)
+>  	cmpwi	r10,BOOK3S_INTERRUPT_MACHINE_CHECK
+> -	beq	machine_check_common
+> +	beq	1f
+> =20
+>  	cmpwi	r10,BOOK3S_INTERRUPT_SYSTEM_RESET
+> -	beq	system_reset_common
+> +	bne	.
+> =20
+> -	b	.
+> +	b	system_reset_common
+> +1:	b	machine_check_common
+>  #endif
+> --=20
+> 2.35.1
+>=20
+>=20
