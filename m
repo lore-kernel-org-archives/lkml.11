@@ -2,101 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66213C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 17:20:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E145C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 17:21:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240123AbiC2RWG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 13:22:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42308 "EHLO
+        id S240132AbiC2RXJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 13:23:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233105AbiC2RWD (ORCPT
+        with ESMTP id S233105AbiC2RXH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 13:22:03 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30AE016D8E4
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 10:20:20 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id c10so18106169ejs.13
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 10:20:20 -0700 (PDT)
+        Tue, 29 Mar 2022 13:23:07 -0400
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F0EA17942F
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 10:21:23 -0700 (PDT)
+Received: by mail-qt1-x833.google.com with SMTP id t2so15841427qtw.9
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 10:21:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ROsQcUJTGNxUVGtLXxEiy/5+m8Zgw5SGAV2688lVg4g=;
-        b=o/5vMuNiIBEAuZd0SjplKcjp4d+racjVgUESBlfA7iYult41e/OVKGwOCEAy0g7c/z
-         +c4TtwYJM7xxJXIPEGKsjG2JI/W60wL58H1Ex3ebbr5vicEqqSeSRUqXK6i8F+7PnxCr
-         XA+25ysr6U44Tp3sL0L8TMGMwO31zYmhOvetAvrGt/1NjtqLE49OUBtpw5G2bxUyg3rH
-         cA2m5BVCkFXY4DtvCZ5oerGtLJ9Oo00/ByywRHHYmgL6t46w0NByYO+clPjtup72Vdr2
-         GpdC+9GdcFUdCotzU2JNFHyJt+Ere370OakHWs5NR9tyAdWCdxd2egttVqvgHPmb9dJw
-         aU4Q==
+        d=gmail.com; s=20210112;
+        h=date:from:to:subject:message-id:mime-version:content-disposition;
+        bh=Kf1v8hS8vyA7Y5W9J43n/PAPUIUn4eGCoQYkh6AdKJ0=;
+        b=Aa/bMcJenjtxFF5mhNT5iiE4M9JTC0iCsIzerOh5vuhT2TOu1A0cg7mP0Cly9SodV2
+         1sfMfIIv5yxlIzS3b2XjQXxA1qfklG08+dQ8Uh2nIqSPX5g5MFT6oZ+VH4KJXzBUsgDZ
+         tc0oUyCIOW3XL++hTPLa5WRZnog1dp3/QPxwgG8Vij6MOyXe2/0Xw5VVtFo3vlXqOogy
+         3qyJDw8++eNDXTqH9XjUAmkVmkmS1IfjdoH0hzCyuT6Wzdioo8/59H+lZfGHHCZgqe2A
+         dt7Olf5cRk5+BZ5K99oi+NaU80jGDnDRXhCJjPYNLCQ4H/Y9jmwpeukOvdiF0Jb8yXV8
+         VSZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ROsQcUJTGNxUVGtLXxEiy/5+m8Zgw5SGAV2688lVg4g=;
-        b=F3EnvjlIXUxI8jRwNvnhAoMDb5riTIoWbNc7qRYmk+82moQ5oDPJueO7Aw9JeOH/iq
-         WWxXDMZ68sDco9oRnuAXS2VLSB6TsQKwgNcP5EkY9a6Q2brIuRKBkv8BfJ2KADv4xdfe
-         86Suh00iKiZuusLpCti5N5r8lQKUPgdf54uCZ/dVVXwQBxh3EJI+vuS9il/ckpDcsT/I
-         /d7ajNcVLrXjIgX3Pzxfa5yAka0Dc2C3PvRIQjfiqACpRfVXuxW1OSAXADI2XDQAeXFb
-         RrnBYj1kqCJVPnqXhHGnpyq8tKA07A102jZuon4FWizU1sZYagSMJu0eVxdXvWox7PDA
-         BLOA==
-X-Gm-Message-State: AOAM530WgAg03bZ8nOyvDmZeQ3DaHZTZXzG5lmcTX2ToSgTa6Ne3KV6j
-        e5fhX6QYuQqsEE17KAMVDM/Dtg==
-X-Google-Smtp-Source: ABdhPJxkbDZq562GC5mkdl0Wlt68amgyNMSrc+Yo4YTeVWsfVfweU8TsmgnU6j66uTFhrh1FbFO/8g==
-X-Received: by 2002:a17:906:c110:b0:6e0:dc2a:3393 with SMTP id do16-20020a170906c11000b006e0dc2a3393mr20631113ejc.512.1648574418760;
-        Tue, 29 Mar 2022 10:20:18 -0700 (PDT)
-Received: from [192.168.0.162] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id z21-20020a1709063a1500b006da6436819dsm7295462eje.173.2022.03.29.10.20.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 29 Mar 2022 10:20:18 -0700 (PDT)
-Message-ID: <5e3ef437-82d3-ae4e-f8bb-0b508b45050d@linaro.org>
-Date:   Tue, 29 Mar 2022 19:20:17 +0200
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-disposition;
+        bh=Kf1v8hS8vyA7Y5W9J43n/PAPUIUn4eGCoQYkh6AdKJ0=;
+        b=vVGT5tXdEO45fHXFJRnkI+fadOy9CSc6zSN5oIoFgp2Ced5HW8dujK0ARhNj1HXp4v
+         TRx8jc904QbN2D0bKHyMpyKyucxEqbhs/NUPM8PLNRfb1dA2gSPpltPY/S4yJrI+v7d+
+         9g6wnb0yupvVHuy3SpQ9UO/Tcvgtfk5945eP6R9Ji7Fcf1K7SoB55Ebly5f1MN9rhiMM
+         E/sUwmw55RUvPV8jY/UyNLIGLwyvHGx6ef2cFXnYqwfhbKtgAmHMmZCHB6+rOiZMHrNB
+         2pxc7VzUWkApeQXCDDXhNSTYrgquiiqh8HBZfSni5P+tTTxjXhAkbCHYOQ0o4DNu/RkK
+         cbNA==
+X-Gm-Message-State: AOAM5306tQPIHf4D0HaGo00v4Hz+wPtN8l6BdaygGWdvRgVBJkZ2m+9a
+        ocUxCeikzqjTdeRReMZiEiw=
+X-Google-Smtp-Source: ABdhPJzd+TvCfuNO8xYNBI86wdS+kYFzzEDJm5od6F+y3VVnDsW2sUTNvvOelHDWj5ejtlr0wtf54w==
+X-Received: by 2002:a05:622a:1994:b0:2e1:a3dc:23dd with SMTP id u20-20020a05622a199400b002e1a3dc23ddmr29120672qtc.203.1648574482441;
+        Tue, 29 Mar 2022 10:21:22 -0700 (PDT)
+Received: from euclid ([104.39.252.111])
+        by smtp.gmail.com with ESMTPSA id k73-20020a37a14c000000b0067b316a4161sm10082583qke.120.2022.03.29.10.21.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Mar 2022 10:21:21 -0700 (PDT)
+Date:   Tue, 29 Mar 2022 13:21:20 -0400
+From:   Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Fabio Aiuto <fabioaiuto83@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Muhammad Usama Anjum <musamaanjum@gmail.com>,
+        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        outreachy@lists.linux.dev
+Subject: [PATCH] staging: rtl8723bs: Remove redundant braces in if statements.
+Message-ID: <20220329172037.GA208840@euclid>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v1 1/3] dt-bindings: clock: convert rockchip,
- rk3328-cru.txt to YAML
-Content-Language: en-US
-To:     Johan Jonker <jbx6244@gmail.com>, heiko@sntech.de,
-        zhangqing@rock-chips.com
-Cc:     robh+dt@kernel.org, krzk+dt@kernel.org, mturquette@baylibre.com,
-        sboyd@kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220329163016.27458-1-jbx6244@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220329163016.27458-1-jbx6244@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 29/03/2022 18:30, Johan Jonker wrote:
-> Current dts files with RK3328 'cru' nodes are manually verified.
-> In order to automate this process rockchip,rk3328-cru.txt has to be
-> converted to YAML.
+This patch fixes the following checkpatch.pl warning:
 
-You know that this can be one or two lines max?
-"Convert RK3328 clock controller bindings to DT schema"
+WARNING: braces {} are not necessary for single statement blocks
 
-It's equal, because we all know the benefits of DT schema. :)
+Signed-off-by: Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
+---
+ drivers/staging/rtl8723bs/core/rtw_ieee80211.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+diff --git a/drivers/staging/rtl8723bs/core/rtw_ieee80211.c b/drivers/staging/rtl8723bs/core/rtw_ieee80211.c
+index 27de086903e2..68e41d99679d 100644
+--- a/drivers/staging/rtl8723bs/core/rtw_ieee80211.c
++++ b/drivers/staging/rtl8723bs/core/rtw_ieee80211.c
+@@ -335,9 +335,8 @@ int rtw_generate_ie(struct registry_priv *pregistrypriv)
+ 
+ 	ie = rtw_set_ie(ie, WLAN_EID_IBSS_PARAMS, 2, (u8 *)&(pdev_network->configuration.atim_window), &sz);
+ 
+-	if (rateLen > 8) {
++	if (rateLen > 8)
+ 		ie = rtw_set_ie(ie, WLAN_EID_EXT_SUPP_RATES, (rateLen - 8), (pdev_network->supported_rates + 8), &sz);
+-	}
+ 
+ 	/* HT Cap. */
+ 	if ((pregistrypriv->wireless_mode & WIRELESS_11_24N) &&
+@@ -366,9 +365,8 @@ unsigned char *rtw_get_wpa_ie(unsigned char *pie, int *wpa_ie_len, int limit)
+ 
+ 		if (pbuf) {
+ 			/* check if oui matches... */
+-			if (memcmp((pbuf + 2), wpa_oui_type, sizeof(wpa_oui_type))) {
++			if (memcmp((pbuf + 2), wpa_oui_type, sizeof(wpa_oui_type)))
+ 				goto check_next_ie;
+-			}
+ 
+ 			/* check version... */
+ 			memcpy((u8 *)&le_tmp, (pbuf + 6), sizeof(val16));
+@@ -493,9 +491,8 @@ int rtw_parse_wpa_ie(u8 *wpa_ie, int wpa_ie_len, int *group_cipher, int *pairwis
+ 	if (is_8021x) {
+ 		if (left >= 6) {
+ 			pos += 2;
+-			if (!memcmp(pos, SUITE_1X, 4)) {
++			if (!memcmp(pos, SUITE_1X, 4))
+ 				*is_8021x = 1;
+-			}
+ 		}
+ 	}
+ 
+@@ -514,9 +511,8 @@ int rtw_parse_wpa2_ie(u8 *rsn_ie, int rsn_ie_len, int *group_cipher, int *pairwi
+ 		return _FAIL;
+ 	}
+ 
+-	if ((*rsn_ie != WLAN_EID_RSN) || (*(rsn_ie+1) != (u8)(rsn_ie_len - 2))) {
++	if ((*rsn_ie != WLAN_EID_RSN) || (*(rsn_ie+1) != (u8)(rsn_ie_len - 2)))
+ 		return _FAIL;
+-	}
+ 
+ 	pos = rsn_ie;
+ 	pos += 4;
+-- 
+2.25.1
 
-> Changed:
->   Add properties to fix notifications by clocks.yaml for example:
->     clocks
->     clock-names
-> 
-> Signed-off-by: Johan Jonker <jbx6244@gmail.com>
-> ---
->  .../bindings/clock/rockchip,rk3328-cru.txt    | 58 ---------------
->  .../bindings/clock/rockchip,rk3328-cru.yaml   | 74 +++++++++++++++++++
->  2 files changed, 74 insertions(+), 58 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/clock/rockchip,rk3328-cru.txt
->  create mode 100644 Documentation/devicetree/bindings/clock/rockchip,rk3328-cru.yaml
-> 
-
-Best regards,
-Krzysztof
