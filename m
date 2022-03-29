@@ -2,70 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2223C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 15:57:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F6AEC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 15:57:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239088AbiC2P66 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 11:58:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57494 "EHLO
+        id S239101AbiC2P7A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 11:59:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239067AbiC2P6y (ORCPT
+        with ESMTP id S239080AbiC2P6z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 11:58:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 502094D261;
-        Tue, 29 Mar 2022 08:57:11 -0700 (PDT)
+        Tue, 29 Mar 2022 11:58:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 875B14D60F
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 08:57:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DEC3461345;
-        Tue, 29 Mar 2022 15:57:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 46F48C340ED;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1130561266
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 15:57:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7A361C36AE2;
         Tue, 29 Mar 2022 15:57:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1648569430;
-        bh=GhEABGbbcF6fJDPfQzlhpd2zhIdKrHcjExkzMoYoXxQ=;
+        bh=OALu3e4G6DViU7RlcvyUOAUs4LuErpcF4updO83j36I=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=Jum01t2VqhETFU/RcdbL1K1qfh+6WBLm5fFFvAyrxArlXZ66Iigw12L+88zuHLVqC
-         ysWsF06ItUd3+GXSZCI0fRj9rXCKc8QElwVEx1IuM/OAjlIubRcSRjjttxANlEYw+K
-         9mGCTQVhjl7v5FTNG0mBPH6KquCuMhoZ9bmmzdYqvZcg9lURvvaW5imx+q0ZFxEih9
-         l3WaPEO9zqasV+aSs0Y5XuoEM9JfdEHIByiofYcVULbqof9759F3Upeigmd/XuVhIR
-         TX775b2esf6xjWNgxB750U0cv7FbQECKVZhtRPxf/PZloFThcpx4mdKFQNGUnMrKZM
-         EE5LGemGZ0OmQ==
+        b=stDNkXfYXXTn9ye2hIKKav9UKyb57sgQvl1g6qr+jHcu0J4LZy69mlXJkUQW40tHN
+         SfsXNq6Rwdf7lwpPFg7Err47HI4BO3g2BcF03E4y0OZIhrq+gt4qA4RDZRIi90jqKS
+         HrE1ncw+wY6OZW0eiJNvMvwp+jpOgdDm25SEbvr3A0buQ0aXT+Eq5hy37ic+rtEUNl
+         V3hKs+lvuKiRTbueK+PMMqkCGjgDKyu1iC6W9VpkS9+/leHqn1Kn2CjbG1d1aQ9MOZ
+         V9VH3UN+aUQAeAE6/q3J14y2koYUFXI5V7XJCFXPE46yCZWv5P3ozarJtHgSsPp8O2
+         yWJGJnfbaYoww==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 32DEFEAC081;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 663CFEAC081;
         Tue, 29 Mar 2022 15:57:10 +0000 (UTC)
-Subject: Re: [GIT PULL] Devicetree fixes for v5.18, take 1
+Subject: Re: [GIT PULL] dma-mapping updates for Linux 5.18
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YkJhd/QX64LDANXN@robh.at.kernel.org>
-References: <YkJhd/QX64LDANXN@robh.at.kernel.org>
+In-Reply-To: <YkMOoNaIpyQf/LKL@infradead.org>
+References: <YkMOoNaIpyQf/LKL@infradead.org>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YkJhd/QX64LDANXN@robh.at.kernel.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git tags/devicetree-fixes-for-5.18-1
-X-PR-Tracked-Commit-Id: 22a41e9a5044bf3519f05b4a00e99af34bfeb40c
+X-PR-Tracked-Message-Id: <YkMOoNaIpyQf/LKL@infradead.org>
+X-PR-Tracked-Remote: git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-5.18
+X-PR-Tracked-Commit-Id: 8ddde07a3d285a0f3cec14924446608320fdc013
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 5efabdadcf4a5b9a37847ecc85ba71cf2eff0fcf
-Message-Id: <164856943020.29048.17765502026263151480.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: 9ae2a143081fa8fba5042431007b33d9a855b7a2
+Message-Id: <164856943041.29048.4286933805151487227.pr-tracker-bot@kernel.org>
 Date:   Tue, 29 Mar 2022 15:57:10 +0000
-To:     Rob Herring <robh@kernel.org>
+To:     Christoph Hellwig <hch@infradead.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Dave Airlie <airlied@gmail.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>
+        linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 28 Mar 2022 20:31:35 -0500:
+The pull request you sent on Tue, 29 Mar 2022 15:50:24 +0200:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git tags/devicetree-fixes-for-5.18-1
+> git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-5.18
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/5efabdadcf4a5b9a37847ecc85ba71cf2eff0fcf
+https://git.kernel.org/torvalds/c/9ae2a143081fa8fba5042431007b33d9a855b7a2
 
 Thank you!
 
