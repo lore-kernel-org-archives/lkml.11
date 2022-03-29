@@ -2,112 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53E4FC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:48:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41635C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:48:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232641AbiC2QuE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 12:50:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32962 "EHLO
+        id S239902AbiC2Qu3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 12:50:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239884AbiC2QuA (ORCPT
+        with ESMTP id S238991AbiC2Qu0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 12:50:00 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4768924F283;
-        Tue, 29 Mar 2022 09:48:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648572496; x=1680108496;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=l79PCfT680tSg5itoW3f+C4BVaO65e08V3oBAzUaQsg=;
-  b=mvTq5SvPLjHI/l9uBUOpTYZmJJVadA8YNncWNLQx+QiakguhpbM4VspM
-   VaxWLPlpIUPknbSNYXY3NLh/XGiiR9Z7RL7idOykqABsWWOMNgzYdcyvp
-   D+PoTKtf+XVq0a594l4/aPxSBaO/X5vbH3x1x/2i9ja96LFpDBNCxuRY0
-   hvqOCk97ETR1e8ODEmPKXEC+vKERFzlk8vk572oATFZyvvc89WHbS/0af
-   TKmcNBCwKUhfAxsXq9qKfhNP5H+wKm49qkVW1hCaVms9q4fQQxCmgU/Ku
-   LnBhVjXPbgA6+vmE1VxbaCFFosB1r1aJ7Ld+Cfqa4eeVHMa9wZAn/2Ikq
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="284206058"
-X-IronPort-AV: E=Sophos;i="5.90,220,1643702400"; 
-   d="scan'208";a="284206058"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 09:42:43 -0700
-X-IronPort-AV: E=Sophos;i="5.90,220,1643702400"; 
-   d="scan'208";a="554327473"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 09:42:36 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nZEuu-008rb0-Vw;
-        Tue, 29 Mar 2022 19:42:00 +0300
-Date:   Tue, 29 Mar 2022 19:42:00 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Neil Armstrong <narmstrong@baylibre.com>
-Cc:     Qianggui Song <qianggui.song@amlogic.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Fabien Dessenne <fabien.dessenne@foss.st.com>,
-        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        openbmc@lists.ozlabs.org, linux-renesas-soc@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Subject: Re: [PATCH v2 09/13] pinctrl: meson: Rename REG_* to MREG_*
-Message-ID: <YkM22GwhxV+YKl8l@smile.fi.intel.com>
-References: <20220329152926.50958-1-andriy.shevchenko@linux.intel.com>
- <20220329152926.50958-10-andriy.shevchenko@linux.intel.com>
- <94e888fe-d8fc-5379-302f-66d64f2ae10b@baylibre.com>
+        Tue, 29 Mar 2022 12:50:26 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 58DC8BC30
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:48:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648572520;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TxaQVn2NE+iTp5vXuPi54qPiuWLB/mqPzeAeVN+34/k=;
+        b=h2kPPwTyjFki9EukskbFzAvQi59y2Oxld29YU8JsbM2kwOH7QnE/AHj9RG5/YUJdNrAoiV
+        gTfL0qphMreNzo6g52KHvohiQX3v6/WjuEcmOTEtqiEdQnYHts80eT+63pItvFZRGT+B4Y
+        H9UjImJIuxP/xDaHamWTSolZDcLCbbw=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-58-Xxnwvdp8Oy6WfSdhCutofQ-1; Tue, 29 Mar 2022 12:48:33 -0400
+X-MC-Unique: Xxnwvdp8Oy6WfSdhCutofQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DE8122800947;
+        Tue, 29 Mar 2022 16:48:31 +0000 (UTC)
+Received: from t480s.redhat.com (unknown [10.39.194.134])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AA9B01121330;
+        Tue, 29 Mar 2022 16:47:33 +0000 (UTC)
+From:   David Hildenbrand <david@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Pedro Gomes <pedrodemargomes@gmail.com>,
+        Oded Gabbay <oded.gabbay@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        linux-mm@kvack.org, x86@kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+        David Hildenbrand <david@redhat.com>
+Subject: [PATCH v2 5/8] s390/pgtable: cleanup description of swp pte layout
+Date:   Tue, 29 Mar 2022 18:43:26 +0200
+Message-Id: <20220329164329.208407-6-david@redhat.com>
+In-Reply-To: <20220329164329.208407-1-david@redhat.com>
+References: <20220329164329.208407-1-david@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <94e888fe-d8fc-5379-302f-66d64f2ae10b@baylibre.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 06:13:19PM +0200, Neil Armstrong wrote:
-> On 29/03/2022 17:29, Andy Shevchenko wrote:
-> > Rename REG_* to * as a prerequisite for enabling COMPILE_TEST.
-> 
-> What error do you hit ?
+Bit 52 and bit 55 don't have to be zero: they only trigger a
+translation-specifiation exception if the PTE is marked as valid, which
+is not the case for swap ptes.
 
-arch/x86/include/asm/arch_hweight.h:9:17: error: expected identifier before string constant
-9 | #define REG_OUT "a"
-  |                 ^~~
-drivers/pinctrl/meson/pinctrl-meson.h:69:9: note: in expansion of macro ‘REG_OUT’
-69 |         REG_OUT,
+Document which bits are used for what, and which ones are unused.
 
-And some more.
+Signed-off-by: David Hildenbrand <david@redhat.com>
+---
+ arch/s390/include/asm/pgtable.h | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
-> MREG_ is rather ugly, something like PINCONF_REG_ or more simpler MESON_REG_ would be more appropriate.
-
-Fine with me.
-
+diff --git a/arch/s390/include/asm/pgtable.h b/arch/s390/include/asm/pgtable.h
+index 9df679152620..3982575bb586 100644
+--- a/arch/s390/include/asm/pgtable.h
++++ b/arch/s390/include/asm/pgtable.h
+@@ -1712,18 +1712,17 @@ static inline int has_transparent_hugepage(void)
+ /*
+  * 64 bit swap entry format:
+  * A page-table entry has some bits we have to treat in a special way.
+- * Bits 52 and bit 55 have to be zero, otherwise a specification
+- * exception will occur instead of a page translation exception. The
+- * specification exception has the bad habit not to store necessary
+- * information in the lowcore.
+- * Bits 54 and 63 are used to indicate the page type.
++ * Bits 54 and 63 are used to indicate the page type. Bit 53 marks the pte
++ * as invalid.
+  * A swap pte is indicated by bit pattern (pte & 0x201) == 0x200
+- * This leaves the bits 0-51 and bits 56-62 to store type and offset.
+- * We use the 5 bits from 57-61 for the type and the 52 bits from 0-51
+- * for the offset.
+- * |			  offset			|01100|type |00|
++ * |			  offset			|X11XX|type |S0|
+  * |0000000000111111111122222222223333333333444444444455|55555|55566|66|
+  * |0123456789012345678901234567890123456789012345678901|23456|78901|23|
++ *
++ * Bits 0-51 store the offset.
++ * Bits 57-61 store the type.
++ * Bit 62 (S) is used for softdirty tracking.
++ * Bits 52, 55 and 56 (X) are unused.
+  */
+ 
+ #define __SWP_OFFSET_MASK	((1UL << 52) - 1)
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.35.1
 
