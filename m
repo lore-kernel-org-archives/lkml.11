@@ -2,211 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B619FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 04:50:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BCFAC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 04:52:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232158AbiC2Evm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 00:51:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40788 "EHLO
+        id S232171AbiC2Ey3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 00:54:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232153AbiC2Evj (ORCPT
+        with ESMTP id S231706AbiC2Ey2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 00:51:39 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79AECDF4B
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 21:49:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648529397; x=1680065397;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=fE8T8+OF3nlyzvigsZn0OhCxH8BVRICMlnryBTAXd1Q=;
-  b=enZCPsry6GpDZJZ+Lw7BRn8/M/iDapIaL0fn/fJXq78/WsYHckMxCNCB
-   5UwOb5zp8VbogrnPkGpN/KLVQfxJAdkT9wiiwRJHGJ0YyX4wblzxfzo86
-   Quv7+kx68+Wj8XNzM+QgPmPIOd1EtxDjAFnhmoDuk00v5fzpTnHGNplTm
-   ZyGqmdRGoW72KOSi/gKnoB9F9n4FIjqyzwXkICtHy1zqFkci/DXNSdlgF
-   avFE/d0sLw2VlCym/nJziqXvTi9d8Rfl7YVUHQl26UyJ3gxuyxy/uTYh/
-   buXh4aT5IOKlA28lhLINf6q6rLwnbzn8/js6ld3hkBH4PA08WfDSO1MJO
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="246650327"
-X-IronPort-AV: E=Sophos;i="5.90,219,1643702400"; 
-   d="scan'208";a="246650327"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 21:49:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,219,1643702400"; 
-   d="scan'208";a="719379472"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 28 Mar 2022 21:49:55 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nZ3nm-0002f6-Rc; Tue, 29 Mar 2022 04:49:54 +0000
-Date:   Tue, 29 Mar 2022 12:49:25 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Rick Yiu <rickyiu@google.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:google/android/kernel/common/android13-5.10
- 9999/9999] kernel/sched/pelt.c:220:5: warning: no previous prototype for
- '___update_load_sum'
-Message-ID: <202203291253.hHVqFjjU-lkp@intel.com>
+        Tue, 29 Mar 2022 00:54:28 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C39134B9D;
+        Mon, 28 Mar 2022 21:52:46 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id bc27so13860779pgb.4;
+        Mon, 28 Mar 2022 21:52:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PendfA7YHEcMYsdHc2AY4wG6aL+D0ZWLpIYu106xzh4=;
+        b=G9sFOv2jF7octFBSSjhV/jTK0MOIcZh1yVUBsgrNdeiw+wy5M2JlTySo4lpQfTkj/u
+         4cDsVHSYgw1YXU/GRX3dLRWBSWO99Q9ub1VLS7sbqJM+baDQFZBW8PzxZCOZxvoGby/2
+         4t8Sy/jNH/YA9cEZdnrKhx+K1RnRk0a2P4h+/+tbjKU/tJfiWe17S7Y2pKL619ahZ16B
+         vlaamNHKJsfP1RI45j/hlP9olMiZ/BWM9ppA/HKltQqPRewUT7mz8oJ8Z8+undYEjjV2
+         AHBb/URFYM+BKm/r3Jsa68dZj4Dt2aneKbpSQCqnfB/TpPZBTcRCpMmjlKj0HwbQiCX1
+         Hd1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PendfA7YHEcMYsdHc2AY4wG6aL+D0ZWLpIYu106xzh4=;
+        b=q7OnX3hOo6Aw9Oo5hR82Ox+mIB7goxP533oKnhIZsw9swNmvVKFklZH/CwIA+OKtS2
+         FbE4P00OuFfXVbminPHHuWS192WWnYZNqRoVET/CoMR7L19uZw+/vmRmHZjMD4zpVMKA
+         M9oHXYIBIfjUF+gLOqZQzt6+dvRic2BjlqC847ejRAJnaQrGAU4wa1abgvksq4xXTN/c
+         In8R7k4MseNhVDhYrFt12+N9U3RNMmqwjs94Ri/OHuistKbj4Oh1ZvvMPZvUJ9jV1cPr
+         4SQzNaEzm4nwR0Z1+rieQfwS9L6KbvrYfsqhv92LdBNPfQJCwzhIHVMa+VPPXj1lRVZe
+         xecw==
+X-Gm-Message-State: AOAM533jskk/Vzl+kDnFcbSJtJOjnIpABvTNtVBRgROAmdRYapZVoziS
+        6snu4922tN2NenowpRZxGwCzDUJgQBsDneU3
+X-Google-Smtp-Source: ABdhPJx1yYZXjQ+lW4d9RgSU6MBVhCzLU5IoRR8phbPepNRxgp8vq9eW/D+rpSObHGSqsX7dSG4/4A==
+X-Received: by 2002:a65:6cc3:0:b0:382:9d3c:ff82 with SMTP id g3-20020a656cc3000000b003829d3cff82mr716322pgw.110.1648529565356;
+        Mon, 28 Mar 2022 21:52:45 -0700 (PDT)
+Received: from ubuntu.mate (subs02-180-214-232-80.three.co.id. [180.214.232.80])
+        by smtp.gmail.com with ESMTPSA id f16-20020a056a00229000b004fabe756ba6sm19327282pfe.54.2022.03.28.21.52.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 21:52:44 -0700 (PDT)
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     linux-doc@vger.kernel.org
+Cc:     Bagas Sanjaya <bagasdotme@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org
+Subject: [PATCH v4 0/2] Documentation: doc-guide: Add missing page titles
+Date:   Tue, 29 Mar 2022 11:52:33 +0700
+Message-Id: <20220329045235.11879-1-bagasdotme@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android13-5.10
-head:   e3356ca0a6c24e1ccdde6e9f80875701218ab090
-commit: e3356ca0a6c24e1ccdde6e9f80875701218ab090 [9999/9999] ANDROID: sched: Add vendor hook for util-update related functions
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220329/202203291253.hHVqFjjU-lkp@intel.com/config)
-compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0
-reproduce (this is a W=1 build):
-        # https://github.com/ammarfaizi2/linux-block/commit/e3356ca0a6c24e1ccdde6e9f80875701218ab090
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android13-5.10
-        git checkout e3356ca0a6c24e1ccdde6e9f80875701218ab090
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash kernel/
+The kernel documentation guidelines [1] lists that there should have page
+title.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Add missing page title for kernel-doc.rst and sphinx.rst, in accordance
+to the guideline.
 
-All warnings (new ones prefixed by >>):
+Changes since v3 [2]:
+  - Clarify that there is no output differences except formatting
+    semantics in [1/2]
+  - Drop Suggested-by trailer from Akira Yokosawa in [1/2] 
 
->> kernel/sched/pelt.c:220:5: warning: no previous prototype for '___update_load_sum' [-Wmissing-prototypes]
-     220 | int ___update_load_sum(u64 now, struct sched_avg *sa,
-         |     ^~~~~~~~~~~~~~~~~~
->> kernel/sched/pelt.c:297:6: warning: no previous prototype for '___update_load_avg' [-Wmissing-prototypes]
-     297 | void ___update_load_avg(struct sched_avg *sa, unsigned long load)
-         |      ^~~~~~~~~~~~~~~~~~
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc: Vinod Koul <vkoul@kernel.org>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc: Akira Yokosawa <akiyks@gmail.com>
+Cc: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Cc: Jens Axboe <axboe@kernel.dk>
+Cc: linux-kernel@vger.kernel.org
+
+[1]: https://docs.kernel.org/doc-guide/sphinx.html#specific-guidelines-for-the-kernel-documentation
+[2]:
+https://lore.kernel.org/linux-doc/20220328065030.24936-1-bagasdotme@gmail.com/
+
+Bagas Sanjaya (2):
+  Documentation: kernel-doc: Promote two chapter headings to page title
+  Documentation: sphinx: replace "Introduction" chapter heading with
+    page title
+
+ Documentation/doc-guide/kernel-doc.rst | 2 ++
+ Documentation/doc-guide/sphinx.rst     | 5 +++--
+ 2 files changed, 5 insertions(+), 2 deletions(-)
 
 
-vim +/___update_load_sum +220 kernel/sched/pelt.c
-
-   191	
-   192	/*
-   193	 * We can represent the historical contribution to runnable average as the
-   194	 * coefficients of a geometric series.  To do this we sub-divide our runnable
-   195	 * history into segments of approximately 1ms (1024us); label the segment that
-   196	 * occurred N-ms ago p_N, with p_0 corresponding to the current period, e.g.
-   197	 *
-   198	 * [<- 1024us ->|<- 1024us ->|<- 1024us ->| ...
-   199	 *      p0            p1           p2
-   200	 *     (now)       (~1ms ago)  (~2ms ago)
-   201	 *
-   202	 * Let u_i denote the fraction of p_i that the entity was runnable.
-   203	 *
-   204	 * We then designate the fractions u_i as our co-efficients, yielding the
-   205	 * following representation of historical load:
-   206	 *   u_0 + u_1*y + u_2*y^2 + u_3*y^3 + ...
-   207	 *
-   208	 * We choose y based on the with of a reasonably scheduling period, fixing:
-   209	 *   y^32 = 0.5
-   210	 *
-   211	 * This means that the contribution to load ~32ms ago (u_32) will be weighted
-   212	 * approximately half as much as the contribution to load within the last ms
-   213	 * (u_0).
-   214	 *
-   215	 * When a period "rolls over" and we have new u_0`, multiplying the previous
-   216	 * sum again by y is sufficient to update:
-   217	 *   load_avg = u_0` + y*(u_0 + u_1*y + u_2*y^2 + ... )
-   218	 *            = u_0 + u_1*y + u_2*y^2 + ... [re-labeling u_i --> u_{i+1}]
-   219	 */
- > 220	int ___update_load_sum(u64 now, struct sched_avg *sa,
-   221			       unsigned long load, unsigned long runnable, int running)
-   222	{
-   223		u64 delta;
-   224	
-   225		delta = now - sa->last_update_time;
-   226		/*
-   227		 * This should only happen when time goes backwards, which it
-   228		 * unfortunately does during sched clock init when we swap over to TSC.
-   229		 */
-   230		if ((s64)delta < 0) {
-   231			sa->last_update_time = now;
-   232			return 0;
-   233		}
-   234	
-   235		/*
-   236		 * Use 1024ns as the unit of measurement since it's a reasonable
-   237		 * approximation of 1us and fast to compute.
-   238		 */
-   239		delta >>= 10;
-   240		if (!delta)
-   241			return 0;
-   242	
-   243		sa->last_update_time += delta << 10;
-   244	
-   245		/*
-   246		 * running is a subset of runnable (weight) so running can't be set if
-   247		 * runnable is clear. But there are some corner cases where the current
-   248		 * se has been already dequeued but cfs_rq->curr still points to it.
-   249		 * This means that weight will be 0 but not running for a sched_entity
-   250		 * but also for a cfs_rq if the latter becomes idle. As an example,
-   251		 * this happens during idle_balance() which calls
-   252		 * update_blocked_averages().
-   253		 *
-   254		 * Also see the comment in accumulate_sum().
-   255		 */
-   256		if (!load)
-   257			runnable = running = 0;
-   258	
-   259		/*
-   260		 * Now we know we crossed measurement unit boundaries. The *_avg
-   261		 * accrues by two steps:
-   262		 *
-   263		 * Step 1: accumulate *_sum since last_update_time. If we haven't
-   264		 * crossed period boundaries, finish.
-   265		 */
-   266		if (!accumulate_sum(delta, sa, load, runnable, running))
-   267			return 0;
-   268	
-   269		return 1;
-   270	}
-   271	EXPORT_SYMBOL_GPL(___update_load_sum);
-   272	
-   273	/*
-   274	 * When syncing *_avg with *_sum, we must take into account the current
-   275	 * position in the PELT segment otherwise the remaining part of the segment
-   276	 * will be considered as idle time whereas it's not yet elapsed and this will
-   277	 * generate unwanted oscillation in the range [1002..1024[.
-   278	 *
-   279	 * The max value of *_sum varies with the position in the time segment and is
-   280	 * equals to :
-   281	 *
-   282	 *   LOAD_AVG_MAX*y + sa->period_contrib
-   283	 *
-   284	 * which can be simplified into:
-   285	 *
-   286	 *   LOAD_AVG_MAX - 1024 + sa->period_contrib
-   287	 *
-   288	 * because LOAD_AVG_MAX*y == LOAD_AVG_MAX-1024
-   289	 *
-   290	 * The same care must be taken when a sched entity is added, updated or
-   291	 * removed from a cfs_rq and we need to update sched_avg. Scheduler entities
-   292	 * and the cfs rq, to which they are attached, have the same position in the
-   293	 * time segment because they use the same clock. This means that we can use
-   294	 * the period_contrib of cfs_rq when updating the sched_avg of a sched_entity
-   295	 * if it's more convenient.
-   296	 */
- > 297	void ___update_load_avg(struct sched_avg *sa, unsigned long load)
-   298	{
-   299		u32 divider = get_pelt_divider(sa);
-   300	
-   301		/*
-   302		 * Step 2: update *_avg.
-   303		 */
-   304		sa->load_avg = div_u64(load * sa->load_sum, divider);
-   305		sa->runnable_avg = div_u64(sa->runnable_sum, divider);
-   306		WRITE_ONCE(sa->util_avg, sa->util_sum / divider);
-   307	}
-   308	EXPORT_SYMBOL_GPL(___update_load_avg);
-   309	
-
+base-commit: f443e374ae131c168a065ea1748feac6b2e76613
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+An old man doll... just what I always wanted! - Clara
+
