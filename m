@@ -2,87 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CB16C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:55:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A903DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:57:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239978AbiC2Q5c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 12:57:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34500 "EHLO
+        id S239990AbiC2Q7L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 12:59:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231454AbiC2Q52 (ORCPT
+        with ESMTP id S231454AbiC2Q7I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 12:57:28 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAA656CA67;
-        Tue, 29 Mar 2022 09:55:45 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 1A2411FBB5;
-        Tue, 29 Mar 2022 16:55:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1648572944;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=vGp9jGwdHCBsNKzn3RMLekDPtLMAAOka0qtIic71SAE=;
-        b=ggiJymO1CY5s++AmMmwGPJnw4UdEG2FEjEWzVHtt8rcdIib+Un2/xxXo2m24p8XUF3Wr1Q
-        uCBww4Hgu5uLiM4G68q/TFAkhIOE+daaCjizzaYKhONVEmG2U43HTTdzZbKxs+fmp0dBv0
-        preMHNRDbeR/kuN1+l5c/h71N+nrdaY=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1648572944;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=vGp9jGwdHCBsNKzn3RMLekDPtLMAAOka0qtIic71SAE=;
-        b=kVCOgDMg2T+BYorkUFqDGI6jho5rldCiJTpvQSOTIVIYX0hEFpufc3ADFGKUtja90+r9rW
-        euIhI+9rN+UK6bAw==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 0F2D6A3B83;
-        Tue, 29 Mar 2022 16:55:44 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id 51348DA7F3; Tue, 29 Mar 2022 18:51:46 +0200 (CEST)
-Date:   Tue, 29 Mar 2022 18:51:46 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Colin Ian King <colin.i.king@gmail.com>
-Cc:     David Sterba <dsterba@suse.com>, linux-fsdevel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] fs/affs: remove redundant assignment to ch
-Message-ID: <20220329165145.GZ2237@suse.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Colin Ian King <colin.i.king@gmail.com>,
-        David Sterba <dsterba@suse.com>, linux-fsdevel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220307150742.137873-1-colin.i.king@gmail.com>
+        Tue, 29 Mar 2022 12:59:08 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 76BEAB0D13;
+        Tue, 29 Mar 2022 09:57:25 -0700 (PDT)
+Received: from kbox (c-73-140-2-214.hsd1.wa.comcast.net [73.140.2.214])
+        by linux.microsoft.com (Postfix) with ESMTPSA id D622820DECF5;
+        Tue, 29 Mar 2022 09:57:24 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com D622820DECF5
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1648573045;
+        bh=y4az3WkefbkCxNOR94uEneUMzG1hS7Ex1VtRu+4P1Bo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=IdcQGez5VpXMC13T34f3NRA32xpcJEd4uifF7Z6OeMFNtGAKR0TqJDL1H9QEkvIOs
+         U+6EQhI2kt56AE62BCRK3yTBQzi0laG/ssqeocAEr+SShu8W7KmUs9driHbH6y3jUh
+         fVXZhAf2HG3/ivXbo6dGbtMKMQK14LavBKD9/4To=
+Date:   Tue, 29 Mar 2022 09:57:18 -0700
+From:   Beau Belgrave <beaub@linux.microsoft.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Beau Belgrave <beaub@microsoft.com>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-trace-devel <linux-trace-devel@vger.kernel.org>,
+        rostedt <rostedt@goodmis.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: Re: Comments on new user events ABI
+Message-ID: <20220329165718.GA10381@kbox>
+References: <2059213643.196683.1648499088753.JavaMail.zimbra@efficios.com>
+ <20220329002935.2869-1-beaub@linux.microsoft.com>
+ <1014535694.197402.1648570634323.JavaMail.zimbra@efficios.com>
+ <CAADnVQK=GCuhTHz=iwv0r7Y37gYvt_UBzkfFJmNT+uR0z+7Myw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220307150742.137873-1-colin.i.king@gmail.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+In-Reply-To: <CAADnVQK=GCuhTHz=iwv0r7Y37gYvt_UBzkfFJmNT+uR0z+7Myw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 07, 2022 at 03:07:42PM +0000, Colin Ian King wrote:
-> The assignment of ch after subtracting ('a' - 'A') is redundant and
-> can be removed. Fix this by replacing the -= operator with just -
-> to remove the assignment.
+On Tue, Mar 29, 2022 at 09:25:52AM -0700, Alexei Starovoitov wrote:
+> On Tue, Mar 29, 2022 at 9:17 AM Mathieu Desnoyers
+> <mathieu.desnoyers@efficios.com> wrote:
+> >
+> > >
+> > >> include/uapi/linux/user_events.h:
+> > >>
+> > >> struct user_bpf_iter {
+> > >>
+> > >>         /* Offset of the data within the first iovec */
+> > >>         __u32 iov_offset;
+> > >>
+> > >>         /* Number of iovec structures */
+> > >>         __u32 nr_segs;
+> > >>
+> > >>         /* Pointer to iovec structures */
+> > >>         const struct iovec *iov;
+> > >>
+> > >>                            ^ a pointer in a uapi header is usually a no-go. This should be a u64.
+> > >> };
+> > >>
+> > >> include/uapi/linux/user_events.h:
+> > >>
+> > >> struct user_bpf_context {
+> > >>
+> > >>         /* Data type being passed (see union below) */
+> > >>         __u32 data_type;
+> > >>
+> > >>         /* Length of the data */
+> > >>         __u32 data_len;
+> > >>
+> > >>         /* Pointer to data, varies by data type */
+> > >>         union {
+> > >>                 /* Kernel data (data_type == USER_BPF_DATA_KERNEL) */
+> > >>                 void *kdata;
+> > >>
+> > >>                 /* User data (data_type == USER_BPF_DATA_USER) */
+> > >>                 void *udata;
+> > >>
+> > >>                 /* Direct iovec (data_type == USER_BPF_DATA_ITER) */
+> > >>                 struct user_bpf_iter *iter;
+> > >>
+> > >>                                ^ likewise for the 3 pointers above. Should be u64 in uapi headers.
+> > >>         };
+> > >> };
+> > >>
+> > >
+> > > The bpf structs are only used within a BPF program. At that point the pointer
+> > > sizes should all align, right?
+> >
+> > I must admit I do not know enough about the eBPF uapi practices to answer this.
+> > [CCing Alexei on this]
 > 
-> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-> ---
->  fs/affs/namei.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Mathieu,
 > 
-> diff --git a/fs/affs/namei.c b/fs/affs/namei.c
-> index bcab18956b4f..a1270deba908 100644
-> --- a/fs/affs/namei.c
-> +++ b/fs/affs/namei.c
-> @@ -19,7 +19,7 @@ typedef int (*toupper_t)(int);
->  static int
->  affs_toupper(int ch)
->  {
-> -	return ch >= 'a' && ch <= 'z' ? ch -= ('a' - 'A') : ch;
-> +	return ch >= 'a' && ch <= 'z' ? ch - ('a' - 'A') : ch;
+> Thanks for flagging.
+> 
+> Whoever added this user_bpf* stuff please remove it immediately.
+> It was never reviewed by bpf maintainers.
+> 
+> It's a hard Nack to add a bpf interface to user_events.
 
-AFFS is in fixes-only mode, I wonder how much this change is affecting
-anybody, from the user perspective. I'd say not at all, W=1 build is
-clean and that's something I'd be fine to fix, W=2 and W=3 warnings are
-from other code.
+Sorry about that, I'm sending a patch to remove this.
+
+I'll have another patch to add it back in out to bpf and trace-devel for
+review.
+
+Thanks,
+-Beau
