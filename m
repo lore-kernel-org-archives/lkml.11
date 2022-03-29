@@ -2,87 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 362F9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:41:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99E2BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:41:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236495AbiC2MnX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 08:43:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60340 "EHLO
+        id S236393AbiC2Mn1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 08:43:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236459AbiC2Mmr (ORCPT
+        with ESMTP id S236472AbiC2Mms (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 08:42:47 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03D21211EC7;
-        Tue, 29 Mar 2022 05:40:48 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KSTdm4c2WzfZKw;
-        Tue, 29 Mar 2022 20:39:08 +0800 (CST)
-Received: from dggpemm500017.china.huawei.com (7.185.36.178) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 29 Mar 2022 20:40:46 +0800
-Received: from [10.174.178.220] (10.174.178.220) by
- dggpemm500017.china.huawei.com (7.185.36.178) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 29 Mar 2022 20:40:45 +0800
-Subject: Re: [REQUEST DISCUSS]: speed up SCSI error handle for host with
- massive devices
-To:     Steffen Maier <maier@linux.ibm.com>, <linux-scsi@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Mike Christie <michael.christie@oracle.com>,
-        Lee Duncan <lduncan@suse.com>
-CC:     Wu Bo <wubo40@huawei.com>, Feilong Lin <linfeilong@huawei.com>,
-        <zhangjian013@huawei.com>
-References: <71e09bb4-ff0a-23fe-38b4-fe6425670efa@huawei.com>
- <cd7bda98-2160-9271-9520-e98d1fe00ea5@linux.ibm.com>
-From:   Wenchao Hao <haowenchao@huawei.com>
-Message-ID: <331aafe1-df9b-cae4-c958-9cf1800e389a@huawei.com>
-Date:   Tue, 29 Mar 2022 20:40:45 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.1
-MIME-Version: 1.0
-In-Reply-To: <cd7bda98-2160-9271-9520-e98d1fe00ea5@linux.ibm.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.220]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500017.china.huawei.com (7.185.36.178)
-X-CFilter-Loop: Reflected
+        Tue, 29 Mar 2022 08:42:48 -0400
+Received: from mail-ed1-x549.google.com (mail-ed1-x549.google.com [IPv6:2a00:1450:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 756B7216FB3
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:40:56 -0700 (PDT)
+Received: by mail-ed1-x549.google.com with SMTP id i22-20020a508716000000b0041908045af3so10872398edb.3
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:40:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=6/sayBfyjsH2Y3AfJUr4VjD2mcwzYPMTZLT8of1IREg=;
+        b=gPCDqH0qCHmbSNoYXOMeBTfYfmSmbXUFr3zh1f5ZPo0Pb3cPpOC3T9Li2Ba/s3wfmz
+         gQ2bEXLw+QpWVfUvoSRzIkAV0HGDefVdPLjvrmeyUVW1CwUFY/o/0iTuMpy00qfMhXYD
+         S7Ny7FKu+E+vuPhMe33YJ17U98elZnTICW7Rf7enJip6PmyGcM/IKGLtw9meI2L8r4T/
+         1B+1Mwp5rxGR/FQmQuUKPOmSqvjvULvO7aaLABE+y2HIRD0KCdYz/+lXqsDIyraIiLZx
+         Zx5IqS0hdEQnvzCuaM2/3M5V3KZQK9XBZNOZyH5gNz855mbOM3DEDHGoM3IbScEoxq6l
+         Nn2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=6/sayBfyjsH2Y3AfJUr4VjD2mcwzYPMTZLT8of1IREg=;
+        b=FtBMDrDBqqtM+ziKANkq+VU5MjbctZUOR4k+tQ9g/wPfREp4eiTg/cr6uNbE4pT53H
+         om0L3Gt/5NnkGWeK1aojLHJ/ugG/EBPRwNfIBk8lDO8AXZV4Fm8gkU9bfFxqiNEL7i6h
+         lsfThcXKKZepQoyIny9AahYxrERQZKPhTkN9P299l80AT+ReJVqAwKGEbHR0MQ8qcqyg
+         RccSPbHLm0VXVtve0OB621XoobPcDpUxxWIRuk56bM8a7xZ8tZP3utAG+JbruF6FzAXI
+         zSqNUZgubLanfjAZfvGFNAbIDtMNJ2e8334CVeo7m9LjEJ8sqgy/oh927shl1LAA126/
+         MOxA==
+X-Gm-Message-State: AOAM530aVIEtLtBd1DLTr81flPe6b7f8x1PbJ1edlfGiMbZjzVYRlzxP
+        URyZ1IcyM84hhEHa9Y4rSO+aiB10oAM=
+X-Google-Smtp-Source: ABdhPJz19CPV3rmf1QsGMB2W43cqP02JXhPWr4JS53hrOaKJGQqZA3fyKoTvfV9B2lQS0qWbgSPFKMg0F4A=
+X-Received: from glider.muc.corp.google.com ([2a00:79e0:15:13:36eb:759:798f:98c3])
+ (user=glider job=sendgmr) by 2002:a17:906:40da:b0:6ce:51b:a593 with SMTP id
+ a26-20020a17090640da00b006ce051ba593mr34588142ejk.604.1648557654844; Tue, 29
+ Mar 2022 05:40:54 -0700 (PDT)
+Date:   Tue, 29 Mar 2022 14:39:39 +0200
+In-Reply-To: <20220329124017.737571-1-glider@google.com>
+Message-Id: <20220329124017.737571-11-glider@google.com>
+Mime-Version: 1.0
+References: <20220329124017.737571-1-glider@google.com>
+X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
+Subject: [PATCH v2 10/48] x86: kmsan: pgtable: reduce vmalloc space
+From:   Alexander Potapenko <glider@google.com>
+To:     glider@google.com
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Christoph Hellwig <hch@lst.de>,
+        Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Kees Cook <keescook@chromium.org>,
+        Marco Elver <elver@google.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>, linux-mm@kvack.org,
+        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/3/29 18:56, Steffen Maier wrote:
-> On 3/29/22 11:06, Wenchao Hao wrote:
->> SCSI timeout would call scsi_eh_scmd_add() on some conditions, host would be set
->> to SHOST_RECOVERY state. Once host enter SHOST_RECOVERY, IOs submitted to all
->> devices in this host would not succeed until the scsi_error_handler() finished.
->> The scsi_error_handler() might takes long time to be done, it's unbearable when
->> host has massive devices.
->>
->> I want to ask is anyone applying another error handler flow to address this
->> phenomenon?
->>
->> I think we can move some operations(like scsi get sense, scsi send startunit
->> and scsi device reset) out of scsi_unjam_host(), to perform these operations
->> without setting host to SHOST_RECOVERY? It would reduce the time of block the
->> whole host.
->>
->> Waiting for your discussion.
-> 
-> We already have "async" aborts before even entering scsi_eh. So your use case seems to imply that those aborts fail and we enter scsi_eh?
-> 
+KMSAN is going to use 3/4 of existing vmalloc space to hold the
+metadata, therefore we lower VMALLOC_END to make sure vmalloc() doesn't
+allocate past the first 1/4.
 
-Yes, I mean when scsi_abort_command() failed and scsi_eh_scmd_add() is called.
+Signed-off-by: Alexander Potapenko <glider@google.com>
+---
+v2:
+ -- added x86: to the title
 
-> There's eh_deadline for limiting the time spent in escalation of scsi_eh, and instead directly go to host reset. Would this help?
-> 
-> 
+Link: https://linux-review.googlesource.com/id/I9d8b7f0a88a639f1263bc693cbd5c136626f7efd
+---
+ arch/x86/include/asm/pgtable_64_types.h | 41 ++++++++++++++++++++++++-
+ arch/x86/mm/init_64.c                   |  2 +-
+ 2 files changed, 41 insertions(+), 2 deletions(-)
 
-The deadline seems not helpful. What we want to see is a single LUN's command error
-would not stop other LUNs which share the same host. So my plan is to move reset LUN out
-from scsi_unjam_host() which run with host set to SHOST_RECOVERY.
+diff --git a/arch/x86/include/asm/pgtable_64_types.h b/arch/x86/include/asm/pgtable_64_types.h
+index 91ac106545703..7f15d43754a34 100644
+--- a/arch/x86/include/asm/pgtable_64_types.h
++++ b/arch/x86/include/asm/pgtable_64_types.h
+@@ -139,7 +139,46 @@ extern unsigned int ptrs_per_p4d;
+ # define VMEMMAP_START		__VMEMMAP_BASE_L4
+ #endif /* CONFIG_DYNAMIC_MEMORY_LAYOUT */
+ 
+-#define VMALLOC_END		(VMALLOC_START + (VMALLOC_SIZE_TB << 40) - 1)
++#define VMEMORY_END		(VMALLOC_START + (VMALLOC_SIZE_TB << 40) - 1)
++
++#ifndef CONFIG_KMSAN
++#define VMALLOC_END		VMEMORY_END
++#else
++/*
++ * In KMSAN builds vmalloc area is four times smaller, and the remaining 3/4
++ * are used to keep the metadata for virtual pages. The memory formerly
++ * belonging to vmalloc area is now laid out as follows:
++ *
++ * 1st quarter: VMALLOC_START to VMALLOC_END - new vmalloc area
++ * 2nd quarter: KMSAN_VMALLOC_SHADOW_START to
++ *              VMALLOC_END+KMSAN_VMALLOC_SHADOW_OFFSET - vmalloc area shadow
++ * 3rd quarter: KMSAN_VMALLOC_ORIGIN_START to
++ *              VMALLOC_END+KMSAN_VMALLOC_ORIGIN_OFFSET - vmalloc area origins
++ * 4th quarter: KMSAN_MODULES_SHADOW_START to KMSAN_MODULES_ORIGIN_START
++ *              - shadow for modules,
++ *              KMSAN_MODULES_ORIGIN_START to
++ *              KMSAN_MODULES_ORIGIN_START + MODULES_LEN - origins for modules.
++ */
++#define VMALLOC_QUARTER_SIZE	((VMALLOC_SIZE_TB << 40) >> 2)
++#define VMALLOC_END		(VMALLOC_START + VMALLOC_QUARTER_SIZE - 1)
++
++/*
++ * vmalloc metadata addresses are calculated by adding shadow/origin offsets
++ * to vmalloc address.
++ */
++#define KMSAN_VMALLOC_SHADOW_OFFSET	VMALLOC_QUARTER_SIZE
++#define KMSAN_VMALLOC_ORIGIN_OFFSET	(VMALLOC_QUARTER_SIZE << 1)
++
++#define KMSAN_VMALLOC_SHADOW_START	(VMALLOC_START + KMSAN_VMALLOC_SHADOW_OFFSET)
++#define KMSAN_VMALLOC_ORIGIN_START	(VMALLOC_START + KMSAN_VMALLOC_ORIGIN_OFFSET)
++
++/*
++ * The shadow/origin for modules are placed one by one in the last 1/4 of
++ * vmalloc space.
++ */
++#define KMSAN_MODULES_SHADOW_START	(VMALLOC_END + KMSAN_VMALLOC_ORIGIN_OFFSET + 1)
++#define KMSAN_MODULES_ORIGIN_START	(KMSAN_MODULES_SHADOW_START + MODULES_LEN)
++#endif /* CONFIG_KMSAN */
+ 
+ #define MODULES_VADDR		(__START_KERNEL_map + KERNEL_IMAGE_SIZE)
+ /* The module sections ends with the start of the fixmap */
+diff --git a/arch/x86/mm/init_64.c b/arch/x86/mm/init_64.c
+index 96d34ebb20a9e..fcea37beb3911 100644
+--- a/arch/x86/mm/init_64.c
++++ b/arch/x86/mm/init_64.c
+@@ -1287,7 +1287,7 @@ static void __init preallocate_vmalloc_pages(void)
+ 	unsigned long addr;
+ 	const char *lvl;
+ 
+-	for (addr = VMALLOC_START; addr <= VMALLOC_END; addr = ALIGN(addr + 1, PGDIR_SIZE)) {
++	for (addr = VMALLOC_START; addr <= VMEMORY_END; addr = ALIGN(addr + 1, PGDIR_SIZE)) {
+ 		pgd_t *pgd = pgd_offset_k(addr);
+ 		p4d_t *p4d;
+ 		pud_t *pud;
+-- 
+2.35.1.1021.g381101b075-goog
+
