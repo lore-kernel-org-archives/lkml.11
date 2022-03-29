@@ -2,337 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A26E4C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 08:42:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8D6BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 08:44:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234109AbiC2IoL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 04:44:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35616 "EHLO
+        id S234113AbiC2IqR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 04:46:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232372AbiC2IoI (ORCPT
+        with ESMTP id S234084AbiC2IqQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 04:44:08 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E81D2414C5
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 01:42:25 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id m30so23731904wrb.1
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 01:42:25 -0700 (PDT)
+        Tue, 29 Mar 2022 04:46:16 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 686D1158D82
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 01:44:32 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id h4so23684995wrc.13
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 01:44:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=lFgsYM4zWagmGFR0mX6PcOwk+1vvvPuWIVIxk5q1HzY=;
-        b=hvVW6QkfUoJI7v+QSqi4yNrySbRNmw6dpN3LGpOoEN+D5BX0bDR5eMx3aXp0NJl47N
-         KOKHZ2JRZUpYhPm5RhWck5cLNWp2nTzcW13KOo0EzQkLMh7zcAdwHPty91/OFL/Yf33K
-         b3pfLfKWpmSo1+KfbbJPJQup0g3wrzlk7QejA=
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Htf510lK0K0COaDanUWn9grVtQC7hoD/BNW+qqmuIzY=;
+        b=ydBG1SsWkporM4icCaqCFjTWkROmyeZ3Ob2QMeUEysrgdC5VYUgoGRvr4YNO9iM4IE
+         Q35Kd0kUOiX8ntz3z8DvfqgdwqJvlTg3LEfM5rxB2jEj9t4Xnmj8mLV+cObDjIbfc6XV
+         D8iskwAMbGIHPwVuHwzVfISuyCPF70kHf6V4h/PAjqrILHZk34gFraz9T+xsFxuQMXgP
+         Xts8GamC1I0k0AI6yB1cft2NSAVgv/UQ6Tiacv+tP6HGXlw/jxZ3vWp8jtnkYB/OZerU
+         v72nRUIU8p6F/mTy/4p7xT7/geVhhU1OetUz2uL3JDjNUdIQFzwgVSQ+TLVgCQHi1sZI
+         OZUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :content-transfer-encoding:in-reply-to;
-        bh=lFgsYM4zWagmGFR0mX6PcOwk+1vvvPuWIVIxk5q1HzY=;
-        b=Kl1yNAbcJaxUdEdZ+Tb+52dnSRSBWcBq2AICTgCWihNFSEbkW7iKq9Ai2JOGngsY+i
-         dfk+AB56JFa3QUMu+sk2P04A8uIP5EzGQ2o+4DhO+oqVefsPmD4zNi1wRZTWgxLe+FSe
-         JzCC8u9vq+k4RrnSNc5hvhazinNfshQ7Vk8dPqRb/nF+WSZ9biQAJY+DrOX/+p95hA8z
-         Yy7uYXbuCffUqfX2qihQWkdblLPXNBhv37CtUZ8xtZvcZyPl5IGyebMsWN1pzO8J48Q0
-         43RtPuywQJrmVT4Wud5qqlNDjJDHY5M3Wn+bPC5ohm24Yu0NBKJlijHOZw49zikjeMDX
-         +qFA==
-X-Gm-Message-State: AOAM533dXS47XMagC/93eWvbPR6vj+32HzODGwn2ooDgo8K0Al3VxuwR
-        IfQkQrhfjad0RfhoPWhbcl3nHw==
-X-Google-Smtp-Source: ABdhPJyvivybM3GVmZaWjrXRx1KODRyFpVQl4kff2gyWX8mRASed0fPCZS8ndiHYIOBBsRWgpOtubg==
-X-Received: by 2002:a5d:4091:0:b0:203:f2a6:66f0 with SMTP id o17-20020a5d4091000000b00203f2a666f0mr29509943wrp.481.1648543343815;
-        Tue, 29 Mar 2022 01:42:23 -0700 (PDT)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id bg20-20020a05600c3c9400b0037fa5c422c8sm1725908wmb.48.2022.03.29.01.42.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Mar 2022 01:42:23 -0700 (PDT)
-Date:   Tue, 29 Mar 2022 10:42:20 +0200
-From:   Daniel Vetter <daniel@ffwll.ch>
-To:     "T.J. Mercier" <tjmercier@google.com>
-Cc:     David Airlie <airlied@linux.ie>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arve =?iso-8859-1?B?SGr4bm5lduVn?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
-        Liam Mark <lmark@codeaurora.org>,
-        Laura Abbott <labbott@redhat.com>,
-        Brian Starkey <Brian.Starkey@arm.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Kalesh Singh <kaleshsingh@google.com>, Kenny.Ho@amd.com,
-        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linaro-mm-sig@lists.linaro.org, cgroups@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, Daniel Vetter <daniel@ffwll.ch>
-Subject: Re: [RFC v4 4/8] dmabuf: heaps: export system_heap buffers with GPU
- cgroup charging
-Message-ID: <YkLGbL5Z3HVCyVkK@phenom.ffwll.local>
-Mail-Followup-To: "T.J. Mercier" <tjmercier@google.com>,
-        David Airlie <airlied@linux.ie>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arve =?iso-8859-1?B?SGr4bm5lduVn?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>, Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
-        Liam Mark <lmark@codeaurora.org>, Laura Abbott <labbott@redhat.com>,
-        Brian Starkey <Brian.Starkey@arm.com>,
-        John Stultz <john.stultz@linaro.org>, Tejun Heo <tj@kernel.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>, Shuah Khan <shuah@kernel.org>,
-        Kalesh Singh <kaleshsingh@google.com>, Kenny.Ho@amd.com,
-        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linaro-mm-sig@lists.linaro.org, cgroups@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-References: <20220328035951.1817417-1-tjmercier@google.com>
- <20220328035951.1817417-5-tjmercier@google.com>
- <YkHH/0Use7F30UUE@phenom.ffwll.local>
- <CABdmKX01p6g_iHsB6dd4Wwh=8iLdYiUqdY6_yyA5ax2YNHt6tQ@mail.gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Htf510lK0K0COaDanUWn9grVtQC7hoD/BNW+qqmuIzY=;
+        b=6c2Ol9JidEp9UF3Grd1h6RhdCbopscIbylREIm3gPKWlyHlXavqc5PC8NU134iDSxo
+         G3oX0eMKSd7juyZxi5RY0YvK8VdwQIz6VbgskLLbY0Ag1esCkL5W23P+IGsDeFh43HfD
+         aDImE8GXL50yDebiSXNgREeRrYriuBGdmCnZlgb9pKmJFCDAHv+TWp05R88b8hplr1BC
+         1GZFVy3nXDmpSMLLSKw+jpeSCm+DG3hwn/w84YmXM803SW8fG3RfU7YQDFCWHgT7tuHJ
+         atx1Wxkeo/QqvTxYMP9tQt0ZjC0fclKkTFAzuLR4Vl2CfcqKFULk4ffxH1x6+YsXJJw5
+         c2Qw==
+X-Gm-Message-State: AOAM531UgenhEDqiOIm51CTpIE/MIUbGplHyI4bGLNITVvPSgJe6uSI6
+        rhyA0HUGPbrkNRPLSmNxs7tmjg==
+X-Google-Smtp-Source: ABdhPJxOxk74gcWW7ZlOUIH21Esvp3h7kP/TrINagIG08xeGiSbVPKvEo/5GjZ/XH8OljMI9dvwPqw==
+X-Received: by 2002:adf:df8c:0:b0:203:e4f3:920 with SMTP id z12-20020adfdf8c000000b00203e4f30920mr29736954wrl.461.1648543470930;
+        Tue, 29 Mar 2022 01:44:30 -0700 (PDT)
+Received: from [192.168.86.34] (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
+        by smtp.googlemail.com with ESMTPSA id z18-20020a5d6412000000b0020400dde72esm14180734wru.37.2022.03.29.01.44.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 29 Mar 2022 01:44:30 -0700 (PDT)
+Message-ID: <ae78d199-a782-75ed-5178-c9757be79f5d@linaro.org>
+Date:   Tue, 29 Mar 2022 09:44:28 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CABdmKX01p6g_iHsB6dd4Wwh=8iLdYiUqdY6_yyA5ax2YNHt6tQ@mail.gmail.com>
-X-Operating-System: Linux phenom 5.10.0-8-amd64 
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 5/6] arm64: dts: qcom: sm8250: move wcd938x node out of
+ soc node
+Content-Language: en-US
+To:     Vinod Koul <vkoul@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-arm-msm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220328143035.519909-1-vkoul@kernel.org>
+ <20220328143035.519909-6-vkoul@kernel.org>
+ <0b43c297-d0d6-f38f-9609-47fca856aa6d@linaro.org> <YkHssmiGup+LdIBC@matsya>
+From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+In-Reply-To: <YkHssmiGup+LdIBC@matsya>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 11:28:24AM -0700, T.J. Mercier wrote:
-> On Mon, Mar 28, 2022 at 7:36 AM Daniel Vetter <daniel@ffwll.ch> wrote:
-> >
-> > On Mon, Mar 28, 2022 at 03:59:43AM +0000, T.J. Mercier wrote:
-> > > From: Hridya Valsaraju <hridya@google.com>
-> > >
-> > > All DMA heaps now register a new GPU cgroup device upon creation, and the
-> > > system_heap now exports buffers associated with its GPU cgroup device for
-> > > tracking purposes.
-> > >
-> > > Signed-off-by: Hridya Valsaraju <hridya@google.com>
-> > > Signed-off-by: T.J. Mercier <tjmercier@google.com>
-> > >
-> > > ---
-> > > v3 changes
-> > > Use more common dual author commit message format per John Stultz.
-> > >
-> > > v2 changes
-> > > Move dma-buf cgroup charge transfer from a dma_buf_op defined by every
-> > > heap to a single dma-buf function for all heaps per Daniel Vetter and
-> > > Christian König.
-> >
-> > Apologies for being out of the loop quite a bit. I scrolled through this
-> > all and I think it looks good to get going.
-> >
-> > The only thing I have is whether we should move the cgroup controllers out
-> > of dma-buf heaps, since that's rather android centric. E.g.
-> > - a system gpucg_device which is used by all the various single page
-> >   allocators (dma-buf heap but also shmem helpers and really anything
-> >   else)
-> > - same for cma, again both for dma-buf heaps and also for the gem cma
-> >   helpers in drm
+
+
+On 28/03/2022 18:13, Vinod Koul wrote:
+> On 28-03-22, 17:21, Krzysztof Kozlowski wrote:
+>> On 28/03/2022 16:30, Vinod Koul wrote:
+>>> The soc node expects all the nodes to have unit addresses. The wcd codec
+>>> node does not have that which causes warnings:
+>>>
+>>> arch/arm64/boot/dts/qcom/sm8250-mtp.dts:631.17-648.4:
+>>> Warning (simple_bus_reg): /soc@0/codec: missing or empty reg/ranges property
+>>>
+>>> Move wcd node out of soc to fix this
+>>>
+>>> Signed-off-by: Vinod Koul <vkoul@kernel.org>
+>>> ---
+>>>   arch/arm64/boot/dts/qcom/sm8250-mtp.dts | 40 ++++++++++++-------------
+>>>   1 file changed, 19 insertions(+), 21 deletions(-)
+>>>
+>>> diff --git a/arch/arm64/boot/dts/qcom/sm8250-mtp.dts b/arch/arm64/boot/dts/qcom/sm8250-mtp.dts
+>>> index fb99cc2827c7..3876a94b49a9 100644
+>>> --- a/arch/arm64/boot/dts/qcom/sm8250-mtp.dts
+>>> +++ b/arch/arm64/boot/dts/qcom/sm8250-mtp.dts
+>>> @@ -156,6 +156,25 @@ vreg_s6c_0p88: smpc6-regulator {
+>>>   		regulator-always-on;
+>>>   		vin-supply = <&vph_pwr>;
+>>>   	};
+>>> +
+>>> +	wcd938x: codec {
+>>
+>> This probably should be under "sound" node. Anyway having it under soc
+>> seemed incorrect.
 > 
-> Thanks Daniel, in general that makes sense to me as an approach to
-> making this more universal. However for the Android case I'm not sure
-> if the part about a single system gpucg_device would be sufficient,
-> because there are at least 12 different graphics related heaps that
-> could potentially be accounted/limited differently. [1]  So that
-> raises the question of how fine grained we want this to be... I tend
-> towards separating them all, but I haven't formed a strong opinion
-> about this at the moment. It sounds like you are in favor of a
-> smaller, more rigidly defined set of them? Either way, we need to add
-> code for accounting at points where we know memory is specifically for
-> graphics use and not something else right? (I.E. Whether it is a
-> dma-buf heap or somewhere like drm_gem_object_init.) So IIUC the only
-> question is what to use for the gpucg_device(s) at these locations.
+> yeah it might make sense to be under sound. I think this is a slimbus
+> codec (right Srini..?) and this should be under slim node..
 
-We don't have 12 in upstream, so this is a lot easier here :-)
+wcd938x can be moved out of soc node but not under sound as it is.
 
-I'm not exactly sure why you have such a huge pile of them.
+If we plan to move external codecs under sound node then sound node has 
+to be converted in to a simple-bus I guess. If we do that we have to 
+make sure that we are consistent across all the qcom dts. This does 
+sound correct either.
 
-For gem buffers it would be fairly similar to what you've done for dma-buf
-heaps I think, with the various helper libraries (drivers stopped
-hand-rolling their gem buffer) setting the right accounting group. And
-yeah for system memory I think we'd need to have standard ones, for driver
-specific ones it's kinda different.
+Currently sound node is only used for sound-card, sound card uses LPASS 
+IP which is part of SoC along with external or internal codecs.
 
-> [1] https://cs.android.com/android/platform/superproject/+/master:hardware/google/graphics/common/libion/ion.cpp;l=39-50
+I am not 100% sure moving aggregate devices like sound card which uses 
+SoC components along with external components out of soc node is the 
+right choice.
+
+Moving sound out of soc node might also add some regressions as sound 
+device is sometimes used to allocate dma memory, so we have to be 
+careful with this move.
+
+The reason why sound node is empty in SoC is because the wiring of dais 
+are board specific. We could add compatible string to soc sound node if 
+that helps clear some confusion.
 > 
-> >
-> > Otherwise this will only work on non-upstream android where gpu drivers
-> > allocate everything from dma-buf heap. If you use something like the x86
-> > android project with mesa drivers, then driver-internal buffers will be
-> > allocated through gem and not through dma-buf heaps. Or at least I think
-> > that's how it works.
-> >
-> > But also meh, we can fix this fairly easily later on by adding these
-> > standard gpucg_dev somwehere with a bit of kerneldoc.
-> 
-> This is what I was thinking would happen next, but IDK if anyone sees
-> a more central place to do this type of use-specific accounting.
+>>
+>> I actually wonder where this wcd9380 sits? What type of bus?
 
-Hm I just realized ... are the names in the groups abi? If yes then I
-think we need to fix this before we merge anything.
--Daniel
+WCD938x codec has two parts wcd938x-tx and wcd938x-rx which are under 
+there respective SoundWire bus.
 
-> 
-> >
-> > Anyway has my all my ack, but don't count this as my in-depth review :-)
-> > -Daniel
-> 
-> Thanks again for taking a look!
-> >
-> > > ---
-> > >  drivers/dma-buf/dma-heap.c          | 27 +++++++++++++++++++++++++++
-> > >  drivers/dma-buf/heaps/system_heap.c |  3 +++
-> > >  include/linux/dma-heap.h            | 11 +++++++++++
-> > >  3 files changed, 41 insertions(+)
-> > >
-> > > diff --git a/drivers/dma-buf/dma-heap.c b/drivers/dma-buf/dma-heap.c
-> > > index 8f5848aa144f..885072427775 100644
-> > > --- a/drivers/dma-buf/dma-heap.c
-> > > +++ b/drivers/dma-buf/dma-heap.c
-> > > @@ -7,6 +7,7 @@
-> > >   */
-> > >
-> > >  #include <linux/cdev.h>
-> > > +#include <linux/cgroup_gpu.h>
-> > >  #include <linux/debugfs.h>
-> > >  #include <linux/device.h>
-> > >  #include <linux/dma-buf.h>
-> > > @@ -31,6 +32,7 @@
-> > >   * @heap_devt                heap device node
-> > >   * @list             list head connecting to list of heaps
-> > >   * @heap_cdev                heap char device
-> > > + * @gpucg_dev                gpu cgroup device for memory accounting
-> > >   *
-> > >   * Represents a heap of memory from which buffers can be made.
-> > >   */
-> > > @@ -41,6 +43,9 @@ struct dma_heap {
-> > >       dev_t heap_devt;
-> > >       struct list_head list;
-> > >       struct cdev heap_cdev;
-> > > +#ifdef CONFIG_CGROUP_GPU
-> > > +     struct gpucg_device gpucg_dev;
-> > > +#endif
-> > >  };
-> > >
-> > >  static LIST_HEAD(heap_list);
-> > > @@ -216,6 +221,26 @@ const char *dma_heap_get_name(struct dma_heap *heap)
-> > >       return heap->name;
-> > >  }
-> > >
-> > > +#ifdef CONFIG_CGROUP_GPU
-> > > +/**
-> > > + * dma_heap_get_gpucg_dev() - get struct gpucg_device for the heap.
-> > > + * @heap: DMA-Heap to get the gpucg_device struct for.
-> > > + *
-> > > + * Returns:
-> > > + * The gpucg_device struct for the heap. NULL if the GPU cgroup controller is
-> > > + * not enabled.
-> > > + */
-> > > +struct gpucg_device *dma_heap_get_gpucg_dev(struct dma_heap *heap)
-> > > +{
-> > > +     return &heap->gpucg_dev;
-> > > +}
-> > > +#else /* CONFIG_CGROUP_GPU */
-> > > +struct gpucg_device *dma_heap_get_gpucg_dev(struct dma_heap *heap)
-> > > +{
-> > > +     return NULL;
-> > > +}
-> > > +#endif /* CONFIG_CGROUP_GPU */
-> > > +
-> > >  struct dma_heap *dma_heap_add(const struct dma_heap_export_info *exp_info)
-> > >  {
-> > >       struct dma_heap *heap, *h, *err_ret;
-> > > @@ -288,6 +313,8 @@ struct dma_heap *dma_heap_add(const struct dma_heap_export_info *exp_info)
-> > >       list_add(&heap->list, &heap_list);
-> > >       mutex_unlock(&heap_list_lock);
-> > >
-> > > +     gpucg_register_device(dma_heap_get_gpucg_dev(heap), exp_info->name);
-> > > +
-> > >       return heap;
-> > >
-> > >  err2:
-> > > diff --git a/drivers/dma-buf/heaps/system_heap.c b/drivers/dma-buf/heaps/system_heap.c
-> > > index ab7fd896d2c4..752a05c3cfe2 100644
-> > > --- a/drivers/dma-buf/heaps/system_heap.c
-> > > +++ b/drivers/dma-buf/heaps/system_heap.c
-> > > @@ -395,6 +395,9 @@ static struct dma_buf *system_heap_allocate(struct dma_heap *heap,
-> > >       exp_info.ops = &system_heap_buf_ops;
-> > >       exp_info.size = buffer->len;
-> > >       exp_info.flags = fd_flags;
-> > > +#ifdef CONFIG_CGROUP_GPU
-> > > +     exp_info.gpucg_dev = dma_heap_get_gpucg_dev(heap);
-> > > +#endif
-> > >       exp_info.priv = buffer;
-> > >       dmabuf = dma_buf_export(&exp_info);
-> > >       if (IS_ERR(dmabuf)) {
-> > > diff --git a/include/linux/dma-heap.h b/include/linux/dma-heap.h
-> > > index 0c05561cad6e..e447a61d054e 100644
-> > > --- a/include/linux/dma-heap.h
-> > > +++ b/include/linux/dma-heap.h
-> > > @@ -10,6 +10,7 @@
-> > >  #define _DMA_HEAPS_H
-> > >
-> > >  #include <linux/cdev.h>
-> > > +#include <linux/cgroup_gpu.h>
-> > >  #include <linux/types.h>
-> > >
-> > >  struct dma_heap;
-> > > @@ -59,6 +60,16 @@ void *dma_heap_get_drvdata(struct dma_heap *heap);
-> > >   */
-> > >  const char *dma_heap_get_name(struct dma_heap *heap);
-> > >
-> > > +/**
-> > > + * dma_heap_get_gpucg_dev() - get a pointer to the struct gpucg_device for the
-> > > + * heap.
-> > > + * @heap: DMA-Heap to retrieve gpucg_device for.
-> > > + *
-> > > + * Returns:
-> > > + * The gpucg_device struct for the heap.
-> > > + */
-> > > +struct gpucg_device *dma_heap_get_gpucg_dev(struct dma_heap *heap);
-> > > +
-> > >  /**
-> > >   * dma_heap_add - adds a heap to dmabuf heaps
-> > >   * @exp_info:                information needed to register this heap
-> > > --
-> > > 2.35.1.1021.g381101b075-goog
-> > >
-> >
-> > --
-> > Daniel Vetter
-> > Software Engineer, Intel Corporation
-> > http://blog.ffwll.ch
+We can not move wcd938x-tx and wcd938x-rx out of there bus nodes which 
+result with no device enumeration.
 
--- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+--srini
+
+
+
+>>
+>>
+>>> +		compatible = "qcom,wcd9380-codec";
+>>> +		#sound-dai-cells = <1>;
+>>> +		reset-gpios = <&tlmm 32 0>;
+>>> +		vdd-buck-supply = <&vreg_s4a_1p8>;
+>>> +		vdd-rxtx-supply = <&vreg_s4a_1p8>;
+>>> +		vdd-io-supply = <&vreg_s4a_1p8>;
+>>> +		vdd-mic-bias-supply = <&vreg_bob>;
+>>> +		qcom,micbias1-microvolt = <1800000>;
+>>> +		qcom,micbias2-microvolt = <1800000>;
+>>> +		qcom,micbias3-microvolt = <1800000>;
+>>> +		qcom,micbias4-microvolt = <1800000>;
+>>> +		qcom,mbhc-buttons-vthreshold-microvolt = <75000 150000 237000 500000 500000 500000 500000 500000>;
+>>> +		qcom,mbhc-headset-vthreshold-microvolt = <1700000>;
+>>> +		qcom,mbhc-headphone-vthreshold-microvolt = <50000>;
+>>> +		qcom,rx-device = <&wcd_rx>;
+>>> +		qcom,tx-device = <&wcd_tx>;
+>>> +	};
+>>>   };
+>>>   
+>>>   &adsp {
+>>> @@ -627,27 +646,6 @@ &slpi {
+>>>   	firmware-name = "qcom/sm8250/slpi.mbn";
+>>>   };
+>>>   
+>>> -&soc {
+>>> -	wcd938x: codec {
+>>> -		compatible = "qcom,wcd9380-codec";
+>>> -		#sound-dai-cells = <1>;
+>>> -		reset-gpios = <&tlmm 32 0>;
+>>> -		vdd-buck-supply = <&vreg_s4a_1p8>;
+>>> -		vdd-rxtx-supply = <&vreg_s4a_1p8>;
+>>> -		vdd-io-supply = <&vreg_s4a_1p8>;
+>>> -		vdd-mic-bias-supply = <&vreg_bob>;
+>>> -		qcom,micbias1-microvolt = <1800000>;
+>>> -		qcom,micbias2-microvolt = <1800000>;
+>>> -		qcom,micbias3-microvolt = <1800000>;
+>>> -		qcom,micbias4-microvolt = <1800000>;
+>>> -		qcom,mbhc-buttons-vthreshold-microvolt = <75000 150000 237000 500000 500000 500000 500000 500000>;
+>>> -		qcom,mbhc-headset-vthreshold-microvolt = <1700000>;
+>>> -		qcom,mbhc-headphone-vthreshold-microvolt = <50000>;
+>>> -		qcom,rx-device = <&wcd_rx>;
+>>> -		qcom,tx-device = <&wcd_tx>;
+>>> -	};
+>>> -};
+>>> -
+>>>   &sound {
+>>>   	compatible = "qcom,sm8250-sndcard";
+>>>   	model = "SM8250-MTP-WCD9380-WSA8810-VA-DMIC";
+>>
+>>
+>> Best regards,
+>> Krzysztof
+> 
