@@ -2,95 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DFC2C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:17:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36474C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:20:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239559AbiC2QTT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 12:19:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55990 "EHLO
+        id S239568AbiC2QVx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 12:21:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239552AbiC2QTR (ORCPT
+        with ESMTP id S237546AbiC2QVv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 12:19:17 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBF2318FADC
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:17:33 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id w8so18076720pll.10
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:17:33 -0700 (PDT)
+        Tue, 29 Mar 2022 12:21:51 -0400
+Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3E6D1AD1D5
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:20:07 -0700 (PDT)
+Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-2e68c95e0f9so189710317b3.0
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:20:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=TMrA0BSxQ2e14GUo8aUARrnnRc+CyMpNFMpjP7yEipw=;
-        b=ZpI8HNwlFm89T3GivZ/z8dptmrBOynllfNitBkGa8KUnUZUORBC1R73FTdtWPAGk5l
-         QabfMqpAm2NMfMr1MidAfzdW0P3dArEUOu1NaBpJPi5zlopNDkr7S/vZJ/wmZ3VdLzpj
-         OO38ARcDPSppoN4qNsO+xF5QRfLfHSgMRUpF8EmNiDVY6AxUZs6jN1toKtdDOjf+e22L
-         hqrV9unSkQknZnx2q8HUYZ44wRa0YEymQ6kXax81e0SSXqqdaLA7C5OuZYHvyFwy521E
-         bIq11o9dVlBIImt8PzSLvu6DXujxCO3RbEZoGW0QH3zTlscx2/dxrV82sWRecub8/Enn
-         wV6Q==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=w+cPcA1MdpcxCl1Fud3F8uMJqpHFql9isbi4TC94PVI=;
+        b=xN8WgVCiCYwFm8ilUQje8wkU7kxFCkNusS7kydKR96hcg/btmQgA4JM4cIjX/qC6zK
+         OeGMX1SHe/xltwW9/kCA6xoRRVl5ZQA8cruG/WRJSAIUAk0ZLGarCoSnLdsX5JiivA0H
+         7U8DvX+AxGkuzzvANWmVO9VTRuAOkQzjrJqVlKjXCvhUqxZC7cfHAaTW6KIGPLTDj53K
+         gs5GjT9aSxUpRSfZ4Yr4KynImdRk8VlP9H6vUhHpN28VwPdinfq85owKeJxO3Xa9o/0e
+         Vu06YgaIHCAc+cwoEkCGNsFxC51BKdNvkpukCXFdeme19KUAt2HnFs8TqbOPVAlR5G+X
+         C3ww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=TMrA0BSxQ2e14GUo8aUARrnnRc+CyMpNFMpjP7yEipw=;
-        b=YjhE1M1+tyEi3no2b9SsjHcDX+NOYR3Ah7uRik3FQQrz30B/k7IyFHa+jsT6cE3ftF
-         t1YlUG/+i5KlKz9Wv6zqwTdflzUMUkETkXI4z4LBdiJn6w3um10tE9v4EZc1q0jiyzA7
-         S5jkNS8D3t6eFEKPP1uoSscjqGF98Snrka5AK4yoJlrbvwdnNeZxMPmGqjcTAZ5UM0Pf
-         ZNooXMpQdElfiI8rXysWl8PqCbLRhUdmKdZZHumwaq23cer3MBSKAZbyqyjze3JUHGRw
-         6aZdH7qtMn2e3QrMmI1fRXgKBU5LoNjHeEWKsgqs8pTBT945iAasJGTzBKaQs3PHaX2L
-         r+Qg==
-X-Gm-Message-State: AOAM533tWgjcCedOItZBfaENNXSFyRCCV58rY9fCQngCNeIFgXuwE8oB
-        I6bv1ex7AIuXgOaQAZHiALMYXg==
-X-Google-Smtp-Source: ABdhPJytcG+eED68hrgGg1AnBIRwhFeGvXbf9FyhfN4WiBIavoIciyGwvRV+T95FqYOFvEGhwoo/aw==
-X-Received: by 2002:a17:902:d708:b0:156:1858:71fa with SMTP id w8-20020a170902d70800b00156185871famr8454366ply.92.1648570652930;
-        Tue, 29 Mar 2022 09:17:32 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id w9-20020a056a0014c900b004fb2ca5f6d7sm12956163pfu.136.2022.03.29.09.17.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Mar 2022 09:17:32 -0700 (PDT)
-Date:   Tue, 29 Mar 2022 16:17:28 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, kvm list <kvm@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        lkft-triage@lists.linaro.org, Shuah Khan <shuah@kernel.org>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: WARNING: at arch/x86/kvm/../../../virt/kvm/kvm_main.c:3156
- mark_page_dirty_in_slot
-Message-ID: <YkMxGLAG0zqEzt1V@google.com>
-References: <CA+G9fYsd+zXJqsxuYkWLQo0aYwmqLVA_YeBu+sr546bGA+1Nfg@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=w+cPcA1MdpcxCl1Fud3F8uMJqpHFql9isbi4TC94PVI=;
+        b=pnU6r1NxjofmmLaLGkqm3zaeWFOTCSoKSOOgabN1K7oenLFIUrHjQdZ5DL/89/PeP8
+         lfet4uOOeuYweN1+GMIFpo7uwD4/J8L3yLB9f0iAzd2udD+G5DjXIrRU8ZZz9R57oIeU
+         nvtLUuDf6/vFPjpp0t5EVlQF+c04RqAvv7Hr9UOPWFEDFl33ZSZq6GOka1CLoLuVCAzY
+         mX76o6rrNmUnMdwspjCnhIT5hFTCj93ZPPYLs0Y1kC2uPNHjTCrl++AZ2iv9bPfe9D0E
+         Lv2Jh7L7aHdFiZr5sjhkERKzOZ7o2t3PrY1dnl10vhCLJkWL1pMMkX7temtK2zOZWt8v
+         zgDw==
+X-Gm-Message-State: AOAM5328aoxL97yeyFzy2Om0nNIKmos/rgrTvpCDD5/h4G0SKS5uIlzr
+        dXvUS2S9bbREWShneYS1VPHF2GdbtRX0FcZips2dAA==
+X-Google-Smtp-Source: ABdhPJySCueyNElcU6iBARblDBGTj6cLFwcu/NFFhKAV32k64Aq1Ty4XbqqFM45LeF6b7WU4KU65JrtsLzWyNvxACbc=
+X-Received: by 2002:a81:b50d:0:b0:2e5:b653:7e97 with SMTP id
+ t13-20020a81b50d000000b002e5b6537e97mr33216518ywh.140.1648570807014; Tue, 29
+ Mar 2022 09:20:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+G9fYsd+zXJqsxuYkWLQo0aYwmqLVA_YeBu+sr546bGA+1Nfg@mail.gmail.com>
+References: <20220329033226.535475-1-y.oudjana@protonmail.com>
+In-Reply-To: <20220329033226.535475-1-y.oudjana@protonmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 29 Mar 2022 18:19:55 +0200
+Message-ID: <CACRpkdaakmGHo_VWNJsf2ph-EcFY_G_NMVfVFFK7oVUR7Bj_DQ@mail.gmail.com>
+Subject: Re: [PATCH] power: supply: Reset err after not finding static battery
+To:     Yassine Oudjana <y.oudjana@protonmail.com>
+Cc:     Sebastian Reichel <sre@kernel.org>, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 29, 2022, Naresh Kamboju wrote:
-> While running kselftest kvm test cases on x86_64 devices the following
-> kernel warning was reported.
+On Tue, Mar 29, 2022 at 5:34 AM Yassine Oudjana
+<y.oudjana@protonmail.com> wrote:
 
-...
+> Otherwise power_supply_get_battery_info always returns -ENODEV
+> on devices that do not have a static battery, even when a simple
+> battery is found.
+>
+> Fixes: c8aee3f41cb8 ("power: supply: Static data for Samsung batteries")
+> Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
 
-> [   62.510388] ------------[ cut here ]------------
-> [   62.515064] WARNING: CPU: 1 PID: 915 at
-> arch/x86/kvm/../../../virt/kvm/kvm_main.c:3156
-> mark_page_dirty_in_slot+0xba/0xd0
-> [   62.525968] Modules linked in: x86_pkg_temp_thermal fuse
-> [   62.531307] CPU: 1 PID: 915 Comm: hyperv_clock Not tainted 5.17.0 #1
-> [   62.537691] Hardware name: Supermicro SYS-5019S-ML/X11SSH-F, BIOS
-> 2.0b 07/27/2017
-> [   62.545185] RIP: 0010:mark_page_dirty_in_slot+0xba/0xd0
+Quick and nice fix, thanks a lot!
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-Long known issue.  I think we're all waiting for someone else to post an actual
-patch.
-
-Vitaly, can you formally post the below patch, or do you need feedback first?
-
-https://lore.kernel.org/all/874k51eddp.fsf@redhat.com/
+Yours,
+Linus Walleij
