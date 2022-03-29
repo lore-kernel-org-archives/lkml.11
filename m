@@ -2,97 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3AF8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 23:52:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45111C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 23:52:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241277AbiC2XyG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 19:54:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46274 "EHLO
+        id S241337AbiC2XyM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 19:54:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241307AbiC2Xxl (ORCPT
+        with ESMTP id S241199AbiC2Xxl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 29 Mar 2022 19:53:41 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3D2622321A;
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4314C2220DE;
         Tue, 29 Mar 2022 16:51:48 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: dmitry.osipenko)
-        with ESMTPSA id 6ED681F4422B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1648597907;
-        bh=et/XZn08cRQRjlbxlsEMHOWSiI9trad+rRAwptS/tho=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=eU/CXz4oCKEM4/AAl48PB10SdUxcEOaB3Blt+zaWn43GTSWZJrgDJ8Ybev+Blw9Tv
-         IT92GcGSNbrHHuAYrrXJz8AMihjNPjUbWhEvGrhP8IA3sQSQXoIfykLEPPiDaGdW26
-         O/pR1/c8HSh8NGHxPi5s33YDLQniat0vBgAsfJoZk6pQi9qCEsalSag5lKUFfT9p6u
-         qqiv2XAnhdKHMAPNgvcrn45clwjCCtd+0N9GtdTeC+pj2gvFa67dJPf3cnyr7OmVVw
-         hMSS+WBHsd90sFoqVzrWJtAlhX8+phvoQu7GPqIlZGXpjNB5ISerbaZNWO3yK59M0s
-         T55aaXozmguDA==
-Message-ID: <dacf1be8-f20c-de41-5ae5-9dba5e351881@collabora.com>
-Date:   Wed, 30 Mar 2022 02:51:43 +0300
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id D2912218F9;
+        Tue, 29 Mar 2022 23:51:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1648597906; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sLvvpukBNWt13VBBabTsBNGnhJSKURMdgbwJ9UivCME=;
+        b=1UD9aAQ8orYrMK0d0F0TErQntCJpTfs64QKgUga1VfuazRBB++sMQf8lzTP7dKndQHHGOp
+        4DbHUWSK64s0l0Uwk11IgeOybARpFK+xyPMcYTnAzjRWk2bQtidgvc/iF5HluPfYchA5Sp
+        CAa7jCFUKUw1pUDVqC/CaHAnyc0+Y/E=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1648597906;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sLvvpukBNWt13VBBabTsBNGnhJSKURMdgbwJ9UivCME=;
+        b=36zu8erF3HUybCY//DfF0XMJtYIgpph+i5zjMsGzt+6uxRgaFQutxNcn5EKYzSLC8tpzjS
+        kP8JveVby32aqlBQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id E3A4313A7E;
+        Tue, 29 Mar 2022 23:51:42 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id qZkrJ46bQ2I1LwAAMHmgww
+        (envelope-from <neilb@suse.de>); Tue, 29 Mar 2022 23:51:42 +0000
+Subject: [PATCH 04/10] MM: reclaim mustn't enter FS for SWP_FS_OPS swap-space
+From:   NeilBrown <neilb@suse.de>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        David Howells <dhowells@redhat.com>, linux-nfs@vger.kernel.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Date:   Wed, 30 Mar 2022 10:49:41 +1100
+Message-ID: <164859778124.29473.16176717935781721855.stgit@noble.brown>
+In-Reply-To: <164859751830.29473.5309689752169286816.stgit@noble.brown>
+References: <164859751830.29473.5309689752169286816.stgit@noble.brown>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [Patch v5 2/4] memory: tegra: Add MC error logging on tegra186
- onward
-Content-Language: en-US
-To:     Ashish Mhetre <amhetre@nvidia.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        krzysztof.kozlowski@canonical.com, robh+dt@kernel.org,
-        thierry.reding@gmail.com, jonathanh@nvidia.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-Cc:     vdumpa@nvidia.com, Snikam@nvidia.com
-References: <20220316092525.4554-1-amhetre@nvidia.com>
- <20220316092525.4554-3-amhetre@nvidia.com>
- <168cf065-bc17-1ffc-8cc0-75775c7f3bcb@gmail.com>
- <ecdc86b4-c207-de89-a094-6923a5573ac6@nvidia.com>
-From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
-In-Reply-To: <ecdc86b4-c207-de89-a094-6923a5573ac6@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/22/22 20:23, Ashish Mhetre wrote:
-> 
-> 
-> On 3/19/2022 9:29 PM, Dmitry Osipenko wrote:
->> External email: Use caution opening links or attachments
->>
->>
->> 16.03.2022 12:25, Ashish Mhetre пишет:
->>> diff --git a/include/soc/tegra/mc.h b/include/soc/tegra/mc.h
->>> index 92f810c55b43..6f115436e344 100644
->>> --- a/include/soc/tegra/mc.h
->>> +++ b/include/soc/tegra/mc.h
->>> @@ -203,6 +203,8 @@ struct tegra_mc_soc {
->>>        const struct tegra_smmu_soc *smmu;
->>>
->>>        u32 intmask;
->>> +     u32 int_channel_mask;
->>
->> ch_intmask
->>
-> Okay, I will update,
-> 
->>> +     bool has_addr_hi_reg;
->>>
->>>        const struct tegra_mc_reset_ops *reset_ops;
->>>        const struct tegra_mc_reset *resets;
->>> @@ -210,6 +212,8 @@ struct tegra_mc_soc {
->>>
->>>        const struct tegra_mc_icc_ops *icc_ops;
->>>        const struct tegra_mc_ops *ops;
->>> +
->>> +     int (*get_int_channel)(const struct tegra_mc *mc, int
->>> *mc_channel);
->>
->> This should be a part of tegra_mc_ops.
-> 
-> tegra_mc_ops is common for T186, T194 and T234 i.e. all of them use
-> tegra186_mc_ops. get_int_channel function has to be differently
-> implemented for all of these SOCs. So I had put it in tegra_mc_soc.
+If swap-out is using filesystem operations (SWP_FS_OPS), then it is not
+safe to enter the FS for reclaim.
+So only down-grade the requirement for swap pages to __GFP_IO after
+checking that SWP_FS_OPS are not being used.
 
-Then tegra_mc_ops shouldn't be common anymore?
+This makes the calculation of "may_enter_fs" slightly more complex, so
+move it into a separate function.  with that done, there is little value
+in maintaining the bool variable any more.  So replace the
+may_enter_fs variable with a may_enter_fs() function.  This removes any
+risk for the variable becoming out-of-date.
+
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: NeilBrown <neilb@suse.de>
+---
+ mm/swap.h   |    8 ++++++++
+ mm/vmscan.c |   29 ++++++++++++++++++++---------
+ 2 files changed, 28 insertions(+), 9 deletions(-)
+
+diff --git a/mm/swap.h b/mm/swap.h
+index f8265bf0ce00..e19f185df5e2 100644
+--- a/mm/swap.h
++++ b/mm/swap.h
+@@ -50,6 +50,10 @@ struct page *swap_cluster_readahead(swp_entry_t entry, gfp_t flag,
+ struct page *swapin_readahead(swp_entry_t entry, gfp_t flag,
+ 			      struct vm_fault *vmf);
+ 
++static inline unsigned int page_swap_flags(struct page *page)
++{
++	return page_swap_info(page)->flags;
++}
+ #else /* CONFIG_SWAP */
+ static inline int swap_readpage(struct page *page, bool do_poll)
+ {
+@@ -129,5 +133,9 @@ static inline void clear_shadow_from_swap_cache(int type, unsigned long begin,
+ {
+ }
+ 
++static inline unsigned int page_swap_flags(struct page *page)
++{
++	return 0;
++}
+ #endif /* CONFIG_SWAP */
+ #endif /* _MM_SWAP_H */
+diff --git a/mm/vmscan.c b/mm/vmscan.c
+index 60378d36ec77..9150754bf2b8 100644
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -1502,6 +1502,22 @@ static unsigned int demote_page_list(struct list_head *demote_pages,
+ 	return nr_succeeded;
+ }
+ 
++static bool may_enter_fs(struct page *page, gfp_t gfp_mask)
++{
++	if (gfp_mask & __GFP_FS)
++		return true;
++	if (!PageSwapCache(page) || !(gfp_mask & __GFP_IO))
++		return false;
++	/*
++	 * We can "enter_fs" for swap-cache with only __GFP_IO
++	 * providing this isn't SWP_FS_OPS.
++	 * ->flags can be updated non-atomicially (scan_swap_map_slots),
++	 * but that will never affect SWP_FS_OPS, so the data_race
++	 * is safe.
++	 */
++	return !data_race(page_swap_flags(page) & SWP_FS_OPS);
++}
++
+ /*
+  * shrink_page_list() returns the number of reclaimed pages
+  */
+@@ -1528,7 +1544,7 @@ static unsigned int shrink_page_list(struct list_head *page_list,
+ 		struct page *page;
+ 		struct folio *folio;
+ 		enum page_references references = PAGEREF_RECLAIM;
+-		bool dirty, writeback, may_enter_fs;
++		bool dirty, writeback;
+ 		unsigned int nr_pages;
+ 
+ 		cond_resched();
+@@ -1553,9 +1569,6 @@ static unsigned int shrink_page_list(struct list_head *page_list,
+ 		if (!sc->may_unmap && page_mapped(page))
+ 			goto keep_locked;
+ 
+-		may_enter_fs = (sc->gfp_mask & __GFP_FS) ||
+-			(PageSwapCache(page) && (sc->gfp_mask & __GFP_IO));
+-
+ 		/*
+ 		 * The number of dirty pages determines if a node is marked
+ 		 * reclaim_congested. kswapd will stall and start writing
+@@ -1598,7 +1611,7 @@ static unsigned int shrink_page_list(struct list_head *page_list,
+ 		 *    not to fs). In this case mark the page for immediate
+ 		 *    reclaim and continue scanning.
+ 		 *
+-		 *    Require may_enter_fs because we would wait on fs, which
++		 *    Require may_enter_fs() because we would wait on fs, which
+ 		 *    may not have submitted IO yet. And the loop driver might
+ 		 *    enter reclaim, and deadlock if it waits on a page for
+ 		 *    which it is needed to do the write (loop masks off
+@@ -1630,7 +1643,7 @@ static unsigned int shrink_page_list(struct list_head *page_list,
+ 
+ 			/* Case 2 above */
+ 			} else if (writeback_throttling_sane(sc) ||
+-			    !PageReclaim(page) || !may_enter_fs) {
++			    !PageReclaim(page) || !may_enter_fs(page, sc->gfp_mask)) {
+ 				/*
+ 				 * This is slightly racy - end_page_writeback()
+ 				 * might have just cleared PageReclaim, then
+@@ -1720,8 +1733,6 @@ static unsigned int shrink_page_list(struct list_head *page_list,
+ 						goto activate_locked_split;
+ 				}
+ 
+-				may_enter_fs = true;
+-
+ 				/* Adding to swap updated mapping */
+ 				mapping = page_mapping(page);
+ 			}
+@@ -1792,7 +1803,7 @@ static unsigned int shrink_page_list(struct list_head *page_list,
+ 
+ 			if (references == PAGEREF_RECLAIM_CLEAN)
+ 				goto keep_locked;
+-			if (!may_enter_fs)
++			if (!may_enter_fs(page, sc->gfp_mask))
+ 				goto keep_locked;
+ 			if (!sc->may_writepage)
+ 				goto keep_locked;
+
+
