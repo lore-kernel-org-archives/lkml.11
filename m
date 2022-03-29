@@ -2,115 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE66DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 19:57:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2508FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 19:58:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241097AbiC2T7Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 15:59:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35654 "EHLO
+        id S241103AbiC2UAS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 16:00:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241082AbiC2T7K (ORCPT
+        with ESMTP id S235687AbiC2UAM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 15:59:10 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 873217807C
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 12:57:26 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id w8so18606151pll.10
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 12:57:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=osandov-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=yIT4p7ShXHLUNOjV8CvgepES5xgtr9srlJOvqbKocNI=;
-        b=kjeNyVLDw5gfpGN6mw79/GvJcQUnO9h4KG7JQXWW7+lMBvuE7+gpRGnoM9tHv09Qv9
-         t2l3lEwvIoLb/JEa5uMXY2LTipPPBIBgtR+UiX4uOtoeAnzCROOS0e5tya/scJYnCTPL
-         e0d8gYrRvsICGZMjGtanaku1+tmyy4ceY3YSr1RnDFPNKD3Rh2+0TbZgzAWAHGw/TlDM
-         1bMrL0m33jyeKj8iwYCHUoMtOroc3r1Uc0pYHtQulZjZRKzFNdrssTorQDj4I/z7kPVD
-         ZqSmsB62Lv0WoghLr31QWyoOFI513dDOm68umOnNz8WCRUC4fIPgqQf3K1FUKyqD6qeW
-         x0OA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yIT4p7ShXHLUNOjV8CvgepES5xgtr9srlJOvqbKocNI=;
-        b=vHaXzfvud/MWqOIwWqkfmripmkj/ca7tL3zjHY0wVgU21Q0KhiptijFws8rQwDxGHS
-         9oIEBvkmyb8KhAJt5sDvXSmGLRW0oYL9FXZnbGifPbmEYwrvLv6Dx3GE2y5Dw5kSk5TF
-         lFdmze0qapNpEj5hQ9ry2FFX6+ZaCiFfJ8Fn5FlD/S8Fj7yfkHbvsbaK4u57RJvhrGao
-         UXoDfpnvAsoqg/ou6WVgFfGCxR4Eseafy84Qz03IkKRGh3QRNBHhJz+hq5ENn4M7uN2s
-         N0KvOZxINffvexUtVGiAZwaYijvey+itICjnFUuPY6EWHc7UzzyL6IW1mjsxk+pC1Rom
-         0QSw==
-X-Gm-Message-State: AOAM530XLSEURLZ7sPor1hRsP2NH+YpYA01D8502/LBNajWa+OcoErKx
-        J07xHdW4abJEUenKIVAfjP7cfBlQxdHXIQ==
-X-Google-Smtp-Source: ABdhPJxXbNP+DG2LiBZF6CN5/bbP5jCUmTbPtiuDEPEq6c1AqNZk16Ydy4+mvxb/OeMYAKyvPv7t1A==
-X-Received: by 2002:a17:902:e0ca:b0:156:24d4:23e7 with SMTP id e10-20020a170902e0ca00b0015624d423e7mr6462076pla.13.1648583845945;
-        Tue, 29 Mar 2022 12:57:25 -0700 (PDT)
-Received: from relinquished.localdomain ([2620:10d:c090:400::5:421])
-        by smtp.gmail.com with ESMTPSA id u15-20020a056a00098f00b004faa58d44eesm21890847pfg.145.2022.03.29.12.57.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Mar 2022 12:57:25 -0700 (PDT)
-Date:   Tue, 29 Mar 2022 12:57:23 -0700
-From:   Omar Sandoval <osandov@osandov.com>
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Omar Sandoval <osandov@fb.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        Nikolay Borisov <nborisov@suse.com>,
-        David Sterba <dsterba@suse.com>, clm@fb.com, jbacik@fb.com,
-        linux-btrfs@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 5.17 12/21] btrfs: don't advance offset for
- compressed bios in btrfs_csum_one_bio()
-Message-ID: <YkNko1BcsyDt2QUS@relinquished.localdomain>
-References: <20220328194157.1585642-1-sashal@kernel.org>
- <20220328194157.1585642-12-sashal@kernel.org>
+        Tue, 29 Mar 2022 16:00:12 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59F9DDF1E
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 12:58:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648583908; x=1680119908;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=6lXzXPNeWSTZUKpGd3f1DaStNivl3hsDdk61LrorPAo=;
+  b=bp83OO7zxePMZs1hkZvUppQqyBFhJ3lhdRwu69vm1a4K2VvwWYL6YOKP
+   ZDtGAHDZiGl9NUDN1JLZ4IfkshSono18/XVrHdymhB6DvBkKYTvKJft0h
+   hlXGhT4Iq9en8L2jJ8TjK8zW9filVUcyb83z/E3VUQZONuVJtNmQGqEI/
+   CTlUejL/PpudckRwXd4nCm10nQ6kFmPlhkYoCl8treV/05V6cfzoQk84U
+   8Rg51kAPGFD4jCDIHyo0WN4UHdhKe2oUbDnsgMXnRyLsIjmjvpeXDJPqg
+   ymjE2t9a4P+z+BhIwTdQKkuGEoxmSdfVNxCWJVy+UYpbC90gVsHvA6+pZ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="246850540"
+X-IronPort-AV: E=Sophos;i="5.90,220,1643702400"; 
+   d="scan'208";a="246850540"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 12:58:27 -0700
+X-IronPort-AV: E=Sophos;i="5.90,220,1643702400"; 
+   d="scan'208";a="564919141"
+Received: from alison-desk.jf.intel.com (HELO alison-desk) ([10.54.74.41])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 12:58:27 -0700
+Date:   Tue, 29 Mar 2022 13:00:53 -0700
+From:   Alison Schofield <alison.schofield@intel.com>
+To:     Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Fabio Aiuto <fabioaiuto83@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Muhammad Usama Anjum <musamaanjum@gmail.com>,
+        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        outreachy@lists.linux.dev
+Subject: Re: [PATCH] staging: rtl8723bs: Remove redundant else branches.
+Message-ID: <20220329200053.GA1170989@alison-desk>
+References: <20220329140904.GA3566@ubuntu>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220328194157.1585642-12-sashal@kernel.org>
+In-Reply-To: <20220329140904.GA3566@ubuntu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 03:41:47PM -0400, Sasha Levin wrote:
-> From: Omar Sandoval <osandov@fb.com>
-> 
-> [ Upstream commit e331f6b19f8adde2307588bb325ae5de78617c20 ]
-> 
-> btrfs_csum_one_bio() loops over each filesystem block in the bio while
-> keeping a cursor of its current logical position in the file in order to
-> look up the ordered extent to add the checksums to. However, this
-> doesn't make much sense for compressed extents, as a sector on disk does
-> not correspond to a sector of decompressed file data. It happens to work
-> because:
-> 
-> 1) the compressed bio always covers one ordered extent
-> 2) the size of the bio is always less than the size of the ordered
->    extent
-> 
-> However, the second point will not always be true for encoded writes.
-> 
-> Let's add a boolean parameter to btrfs_csum_one_bio() to indicate that
-> it can assume that the bio only covers one ordered extent. Since we're
-> already changing the signature, let's get rid of the contig parameter
-> and make it implied by the offset parameter, similar to the change we
-> recently made to btrfs_lookup_bio_sums(). Additionally, let's rename
-> nr_sectors to blockcount to make it clear that it's the number of
-> filesystem blocks, not the number of 512-byte sectors.
-> 
-> Reviewed-by: Josef Bacik <josef@toxicpanda.com>
-> Reviewed-by: Nikolay Borisov <nborisov@suse.com>
-> Signed-off-by: Omar Sandoval <osandov@fb.com>
-> Signed-off-by: David Sterba <dsterba@suse.com>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->  fs/btrfs/compression.c |  2 +-
->  fs/btrfs/ctree.h       |  2 +-
->  fs/btrfs/file-item.c   | 37 +++++++++++++++++--------------------
->  fs/btrfs/inode.c       |  8 ++++----
->  4 files changed, 23 insertions(+), 26 deletions(-)
+Hi Sevinj,
 
-Hi, Sasha,
+You can do this to make sure your commit msg 'looks' similar to
+others in the file:
 
-This patch doesn't fix a real bug, so it should be dropped from both
-5.16 and 5.17.
+$git log --pretty=oneline --abbrev-commit
+
+d6ad258ae15d staging: rtl8723bs: Remove redundant else branches.
+24e65aac9457 staging: rtl8723bs: remove rf type branching (fourth patch)
+167fc30e8e51 staging: rtl8723bs: remove unused macros
+d7361874468f staging: rtl8723bs: fix camel case in struct wlan_bcn_info
+6994aa430368 staging: rtl8723bs: fix camel case in struct ndis_802_11_ssid
+
+That tells me the 'Remove' should not start with an uppercase and
+there should be no period at the end of line. Note that I look at this
+per patch, because different drivers and subsystems have different
+conventions. The point is to try to discern the prevailing style,
+and follow it.
+
+Please check the get_maintainers instruction in the first patch tutorial.
+I only got this: 
+
+$ git show HEAD | perl scripts/get_maintainer.pl --separator , --nokeywords --nogit --nogit-fallback --norolestats
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>,linux-staging@lists.linux.dev,linux-kernel@vger.kernel.org
+
+
+On Tue, Mar 29, 2022 at 07:09:04AM -0700, Sevinj Aghayeva wrote:
+
+Please state the 'why' of this patch. ie something like:
+Adhere to Linux kernel coding style.
+
+> This patch fixes the following checkpatch.pl warning:
+The phrases 'This patch' is frowned upon as unecessarily wordy.
+Perhaps simply:
+Reported by checkpatch:
+
+You have another patch in flight with similar things to update.
+Please post a v2 of that one that addresses the feedback given
+here.
+
+I thought both patches had good scope in that they addressed multiple
+instances of the same issue in a single file.
 
 Thanks!
+Alison
+
+> 
+> WARNING: else is not generally useful after a break or return
+> 
+> Signed-off-by: Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
+> ---
+>  .../staging/rtl8723bs/core/rtw_ieee80211.c    | 32 ++++++++-----------
+>  1 file changed, 13 insertions(+), 19 deletions(-)
+> 
+> diff --git a/drivers/staging/rtl8723bs/core/rtw_ieee80211.c b/drivers/staging/rtl8723bs/core/rtw_ieee80211.c
+> index b449be537376..27de086903e2 100644
+> --- a/drivers/staging/rtl8723bs/core/rtw_ieee80211.c
+> +++ b/drivers/staging/rtl8723bs/core/rtw_ieee80211.c
+> @@ -94,16 +94,14 @@ bool rtw_is_cckratesonly_included(u8 *rate)
+>  
+>  int rtw_check_network_type(unsigned char *rate, int ratelen, int channel)
+>  {
+> -	if (channel > 14) {
+> +	if (channel > 14)
+>  		return WIRELESS_INVALID;
+> -	} else { /*  could be pure B, pure G, or B/G */
+> -		if (rtw_is_cckratesonly_included(rate))
+> -			return WIRELESS_11B;
+> -		else if (rtw_is_cckrates_included(rate))
+> -			return	WIRELESS_11BG;
+> -		else
+> -			return WIRELESS_11G;
+> -	}
+> +	/* could be pure B, pure G, or B/G */
+> +	if (rtw_is_cckratesonly_included(rate))
+> +		return WIRELESS_11B;
+> +	if (rtw_is_cckrates_included(rate))
+> +		return WIRELESS_11BG;
+> +	return WIRELESS_11G;
+>  }
+>  
+>  u8 *rtw_set_fixed_ie(unsigned char *pbuf, unsigned int len, unsigned char *source,
+> @@ -151,11 +149,10 @@ u8 *rtw_get_ie(u8 *pbuf, signed int index, signed int *len, signed int limit)
+>  		if (*p == index) {
+>  			*len = *(p + 1);
+>  			return p;
+> -		} else {
+> -			tmp = *(p + 1);
+> -			p += (tmp + 2);
+> -			i += (tmp + 2);
+>  		}
+> +		tmp = *(p + 1);
+> +		p += (tmp + 2);
+> +		i += (tmp + 2);
+>  		if (i >= limit)
+>  			break;
+>  	}
+> @@ -199,9 +196,8 @@ u8 *rtw_get_ie_ex(u8 *in_ie, uint in_len, u8 eid, u8 *oui, u8 oui_len, u8 *ie, u
+>  				*ielen = in_ie[cnt+1]+2;
+>  
+>  			break;
+> -		} else {
+> -			cnt += in_ie[cnt+1]+2; /* goto next */
+>  		}
+> +		cnt += in_ie[cnt+1]+2; /* goto next */
+>  	}
+>  
+>  	return target_ie;
+> @@ -697,9 +693,8 @@ u8 *rtw_get_wps_ie(u8 *in_ie, uint in_len, u8 *wps_ie, uint *wps_ielen)
+>  			cnt += in_ie[cnt+1]+2;
+>  
+>  			break;
+> -		} else {
+> -			cnt += in_ie[cnt+1]+2; /* goto next */
+>  		}
+> +		cnt += in_ie[cnt+1]+2; /* goto next */
+>  	}
+>  
+>  	return wpsie_ptr;
+> @@ -748,9 +743,8 @@ u8 *rtw_get_wps_attr(u8 *wps_ie, uint wps_ielen, u16 target_attr_id, u8 *buf_att
+>  				*len_attr = attr_len;
+>  
+>  			break;
+> -		} else {
+> -			attr_ptr += attr_len; /* goto next */
+>  		}
+> +		attr_ptr += attr_len; /* goto next */
+>  	}
+>  
+>  	return target_attr_ptr;
+> -- 
+> 2.25.1
+> 
+> 
