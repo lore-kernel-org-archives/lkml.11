@@ -2,180 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22A22C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 15:37:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBBEFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 15:37:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238887AbiC2Pjd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 11:39:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40010 "EHLO
+        id S238908AbiC2Pjg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 11:39:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238886AbiC2Pja (ORCPT
+        with ESMTP id S238893AbiC2Pjb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 11:39:30 -0400
-Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA78324F2A1;
-        Tue, 29 Mar 2022 08:37:45 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:281:8300:35::5f6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id 89F04732;
-        Tue, 29 Mar 2022 15:37:45 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 89F04732
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1648568265; bh=LgqYNts+7wvT/aAKZ340NN7yfd+hMq7kPJubjS/JS6E=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Y305iODNnNT5eTqKcaYOJebWLpfgVS/GlQsI4TxgjwQxgmjm64XMIlthMkV0ZhsXm
-         +ODVEARtBBXxsSxteGHpyjdZAirBHKdf5sK3Ds0dFNRgdydmnYtj4qwWTVuiWYF8CX
-         MIwPgQGYSRs28aw8aRdv6H+BmxWLuaPOe+CViWAyvZZXXxxnZh5+XG1HVVOggzZXjm
-         VZiMjlkw7vPLgEAVVnmML3eje617Hdc13hAD4nmAS0XXP3wj2ErKmImnysbp+OQbr1
-         qMTMdZWGWRQ89n/97+nApaYDmNavPOFDSpGNZLFloFA30XoCI6SD7f/N2o3kbogRWf
-         u+on9alYZDw/g==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     linux-doc@vger.kernel.org
-Cc:     Linus Torvalds <torvalds@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, Borislav Petkov <bp@suse.de>,
-        Bagas Sanjaya <bagasdotme@gmail.com>,
-        Akira Yokosawa <akiyks@gmail.com>
-Subject: [PATCH v2] docs: Add a document on how to fix a messy diffstat
-Date:   Tue, 29 Mar 2022 09:37:45 -0600
-Message-ID: <87wngc6a7q.fsf@meer.lwn.net>
+        Tue, 29 Mar 2022 11:39:31 -0400
+Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 017D225279F
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 08:37:47 -0700 (PDT)
+Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-2e5757b57caso187859217b3.4
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 08:37:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=cdiQn4MDYBZT4MD+COiiujM149rg5cmUvhmDH4fWhAI=;
+        b=b0FFvlB+8/wM/+w8iI8lE3ZS1QMXytKOW4Cd8OhonyTCVfrB84LSEiNtPADXgnwKgl
+         N+ZiZJwyZfFo12Ku19vtLdM8bGKMUoBbqeZfKMl00u5tCdsmeS7yK9jciIMY65MA5Leh
+         wi7Vi6n17nHUdocZtBuEF0AfuX37TtK3WKvQjR3nmDnEsDi+Sr4TAxOEamyJ1xSBSmCe
+         4Pwh7A+3X82yrIM0K7qQjp/6hfecVXgWXVdpSDFEju9zKhESv8854khenVmLUnxFipPo
+         Buzkkyx8o6TwydErWCWb7snbfCJa755Z52eELhBcDUkvsuMykgHRWeBQ2eiFPsbGrvz3
+         PeAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=cdiQn4MDYBZT4MD+COiiujM149rg5cmUvhmDH4fWhAI=;
+        b=F/LIvyTOQPnnM0etq5ve9Er3cwXw71SkafNR+AmDUPaMyrJ1O+9F9wcPgkkUj+GDD1
+         xak1HEq/c6Yjkz3CD0zbwt8fP7SoZpNjrWBPtTP3sDxU/9nQi3SMuDTXpbRX4/coW+8e
+         cd2HKr3ecuM+8SeTHcaiANb66WruU358oof9K7CRtdd2LoKhuGHvBwMWul/iXJt6q+fk
+         V9f4BFfGtAFybaHovtjo0qkPbsLlHZWG+rkTsCD1eko4g0a5KtZ+yHbJgpzLnFfqICe8
+         s5KiGCvGwb8hdU0k/YrOGdLBF6nmmMmRZm6ttmFDUnvNfWFl46tV5e3cBb2Gb+lym//C
+         V/CA==
+X-Gm-Message-State: AOAM530TsglzB28k2k8dGuPtRlHXAq+ATiF6xbaQ7RIW5KZfXaNMfZbE
+        TRDC821wdVnUdihDB4NfvxMKxSu5Dhi645W9ROPqOI+pYMfrpw==
+X-Google-Smtp-Source: ABdhPJy264N9elL1uOkqTXbYsKQktV0xNWVZwrTTKjVZDqGQCViM7C+xgfzXs+Ws9tjYbgAAQVu8W3L5CmwVqLyLbVo=
+X-Received: by 2002:a0d:ccca:0:b0:2e6:2b53:3f16 with SMTP id
+ o193-20020a0dccca000000b002e62b533f16mr32560002ywd.35.1648568266768; Tue, 29
+ Mar 2022 08:37:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+From:   Muchun Song <songmuchun@bytedance.com>
+Date:   Tue, 29 Mar 2022 23:37:10 +0800
+Message-ID: <CAMZfGtU1sbsrnCbCKi_By8VTGN1CA1s4A=s1NcHzRunDUpGXgQ@mail.gmail.com>
+Subject: Re: [PATCH v5 1/4] mm: hugetlb_vmemmap: introduce STRUCT_PAGE_SIZE_IS_POWER_OF_2
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Luis R. Rodriguez" <mcgrof@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Iurii Zaikin <yzaikin@google.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        David Hildenbrand <david@redhat.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Xiongchun duan <duanxiongchun@bytedance.com>,
+        Muchun Song <smuchun@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A branch with merges in will sometimes create a diffstat containing a lot
-of unrelated work at "git request-pull" time.  Create a document based on
-Linus's advice (found in the links below) and add it to the maintainer
-manual in the hope of saving some wear on Linus's keyboard going forward.
+On Fri, Mar 25, 2022 at 1:11 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
+>
+> On Wed, Mar 23, 2022 at 9:57 PM Muchun Song <songmuchun@bytedance.com> wrote:
+> >
+> > If the size of "struct page" is not the power of two and this
+> > feature is enabled, then the vmemmap pages of HugeTLB will be
+> > corrupted after remapping (panic is about to happen in theory).
+> > But this only exists when !CONFIG_MEMCG && !CONFIG_SLUB on
+> > x86_64.  However, it is not a conventional configuration nowadays.
+> > So it is not a real word issue, just the result of a code review.
+> > But we have to prevent anyone from configuring that combined
+> > configuration.  In order to avoid many checks like "is_power_of_2
+> > (sizeof(struct page))" through mm/hugetlb_vmemmap.c.  Introduce
+> > STRUCT_PAGE_SIZE_IS_POWER_OF_2 to detect if the size of struct
+> > page is power of 2 and make this feature depends on this new
+> > config.  Then we could prevent anyone do any unexpected
+> > configuration.
+> >
+> > Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+> > Suggested-by: Luis Chamberlain <mcgrof@kernel.org>
+> > ---
+> >  Kbuild                           | 14 ++++++++++++++
+> >  fs/Kconfig                       |  1 +
+> >  include/linux/mm_types.h         |  2 ++
+> >  mm/Kconfig                       |  3 +++
+> >  mm/hugetlb_vmemmap.c             |  6 ------
+> >  mm/struct_page_size.c            | 19 +++++++++++++++++++
+> >  scripts/check_struct_page_po2.sh |  9 +++++++++
+> >  7 files changed, 48 insertions(+), 6 deletions(-)
+> >  create mode 100644 mm/struct_page_size.c
+> >  create mode 100755 scripts/check_struct_page_po2.sh
+> >
+> > diff --git a/Kbuild b/Kbuild
+> > index fa441b98c9f6..21415c3b2728 100644
+> > --- a/Kbuild
+> > +++ b/Kbuild
+> > @@ -37,6 +37,20 @@ $(offsets-file): arch/$(SRCARCH)/kernel/asm-offsets.s FORCE
+> >         $(call filechk,offsets,__ASM_OFFSETS_H__)
+> >
+> >  #####
+> > +# Generate struct_page_size.h.
+> > +
+> > +struct_page_size-file := include/generated/struct_page_size.h
+> > +
+> > +always-y := $(struct_page_size-file)
+> > +targets := mm/struct_page_size.s
+> > +
+> > +mm/struct_page_size.s: $(timeconst-file) $(bounds-file)
+> > +
+> > +$(struct_page_size-file): mm/struct_page_size.s FORCE
+> > +       $(call filechk,offsets,__LINUX_STRUCT_PAGE_SIZE_H__)
+> > +       $(Q)$(MAKE) -f $(srctree)/Makefile syncconfig
+>
+>
+> No, please do not do this.
+> It is terrible to feed back this to Kconfig again.
 
-Link: https://lore.kernel.org/lkml/CAHk-=wg3wXH2JNxkQi+eLZkpuxqV+wPiHhw_Jf7ViH33Sw7PHA@mail.gmail.com/
-Link: https://lore.kernel.org/lkml/CAHk-=wgXbSa8yq8Dht8at+gxb_idnJ7X5qWZQWRBN4_CUPr=eQ@mail.gmail.com/
-Acked-by: Borislav Petkov <bp@suse.de>
-Signed-off-by: Jonathan Corbet <corbet@lwn.net>
----
-v2: Various tweaks suggested by Borislav, Bagas, and Akira
+OK. I'll remove syncconfig.
 
- Documentation/maintainer/index.rst          |  1 +
- Documentation/maintainer/messy-diffstat.rst | 96 +++++++++++++++++++++
- 2 files changed, 97 insertions(+)
- create mode 100644 Documentation/maintainer/messy-diffstat.rst
+>
+> If you know this happens on !CONFIG_MEMCG && !CONFIG_SLUB on x86_64,
+> why don't you add this dependency directly?
 
-diff --git a/Documentation/maintainer/index.rst b/Documentation/maintainer/index.rst
-index f0a60435b124..3e03283c144e 100644
---- a/Documentation/maintainer/index.rst
-+++ b/Documentation/maintainer/index.rst
-@@ -12,6 +12,7 @@ additions to this manual.
-    configure-git
-    rebasing-and-merging
-    pull-requests
-+   messy-diffstat
-    maintainer-entry-profile
-    modifying-patches
- 
-diff --git a/Documentation/maintainer/messy-diffstat.rst b/Documentation/maintainer/messy-diffstat.rst
-new file mode 100644
-index 000000000000..c015f66d7621
---- /dev/null
-+++ b/Documentation/maintainer/messy-diffstat.rst
-@@ -0,0 +1,96 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+=====================================
-+Handling messy pull-request diffstats
-+=====================================
-+
-+Subsystem maintainers routinely use ``git request-pull`` as part of the
-+process of sending work upstream.  Normally, the result includes a nice
-+diffstat that shows which files will be touched and how much of each will
-+be changed.  Occasionally, though, a repository with a relatively
-+complicated development history will yield a massive diffstat containing a
-+great deal of unrelated work.  The result looks ugly and obscures what the
-+pull request is actually doing.  This document describes what is happening
-+and how to fix things up; it is derived from The Wisdom of Linus Torvalds,
-+found in Linus1_ and Linus2_.
-+
-+.. _Linus1: https://lore.kernel.org/lkml/CAHk-=wg3wXH2JNxkQi+eLZkpuxqV+wPiHhw_Jf7ViH33Sw7PHA@mail.gmail.com/
-+.. _Linus2: https://lore.kernel.org/lkml/CAHk-=wgXbSa8yq8Dht8at+gxb_idnJ7X5qWZQWRBN4_CUPr=eQ@mail.gmail.com/
-+
-+A Git development history proceeds as a series of commits.  In a simplified
-+manner, mainline kernel development looks like this::
-+
-+  ... vM --- vN-rc1 --- vN-rc2 --- vN-rc3 --- ... --- vN-rc7 --- vN
-+
-+If one wants to see what has changed between two points, a command like
-+this will do the job::
-+
-+  $ git diff --stat --summary vN-rc2..vN-rc3
-+
-+Here, there are two clear points in the history; Git will essentially
-+"subtract" the beginning point from the end point and display the resulting
-+differences.  The requested operation is unambiguous and easy enough to
-+understand.
-+
-+When a subsystem maintainer creates a branch and commits changes to it, the
-+result in the simplest case is a history that looks like::
-+
-+  ... vM --- vN-rc1 --- vN-rc2 --- vN-rc3 --- ... --- vN-rc7 --- vN
-+                          |
-+                          +-- c1 --- c2 --- ... --- cN
-+
-+If that maintainer now uses ``git diff`` to see what has changed between
-+the mainline branch (let's call it "linus") and cN, there are still two
-+clear endpoints, and the result is as expected.  So a pull request
-+generated with ``git request-pull`` will also be as expected.  But now
-+consider a slightly more complex development history::
-+
-+  ... vM --- vN-rc1 --- vN-rc2 --- vN-rc3 --- ... --- vN-rc7 --- vN
-+                |         |
-+                |         +-- c1 --- c2 --- ... --- cN
-+                |                   /
-+                +-- x1 --- x2 --- x3
-+
-+Our maintainer has created one branch at vN-rc1 and another at vN-rc2; the
-+two were then subsequently merged into c2.  Now a pull request generated
-+for cN may end up being messy indeed, and developers often end up wondering
-+why.
-+
-+What is happening here is that there are no longer two clear end points for
-+the ``git diff`` operation to use.  The development culminating in cN
-+started in two different places; to generate the diffstat, ``git diff``
-+ends up having pick one of them and hoping for the best.  If the diffstat
-+starts at vN-rc1, it may end up including all of the changes between there
-+and the second origin end point (vN-rc2), which is certainly not what our
-+maintainer had in mind.  With all of that extra junk in the diffstat, it
-+may be impossible to tell what actually happened in the changes leading up
-+to cN.
-+
-+Maintainers often try to resolve this problem by, for example, rebasing the
-+branch or performing another merge with the linus branch, then recreating
-+the pull request.  This approach tends not to lead to joy at the receiving
-+end of that pull request; rebasing and/or merging just before pushing
-+upstream is a well-known way to get a grumpy response.
-+
-+So what is to be done?  The best response when confronted with this
-+situation is to indeed to do a merge with the branch you intend your work
-+to be pulled into, but to do it privately, as if it were the source of
-+shame.  Create a new, throwaway branch and do the merge there::
-+
-+  ... vM --- vN-rc1 --- vN-rc2 --- vN-rc3 --- ... --- vN-rc7 --- vN
-+                |         |                                      |
-+                |         +-- c1 --- c2 --- ... --- cN           |
-+                |                   /               |            |
-+                +-- x1 --- x2 --- x3                +------------+-- TEMP
-+
-+The merge operation resolves all of the complications resulting from the
-+multiple beginning points, yielding a coherent result that contains only
-+the differences from the mainline branch.  Now it will be possible to
-+generate a diffstat with the desired information::
-+
-+  $ git diff -C --stat --summary linus..TEMP
-+
-+Save the output from this command, then simply delete the TEMP branch;
-+definitely do not expose it to the outside world.  Take the saved diffstat
-+output and edit it into the messy pull request, yielding a result that
-+shows what is really going on.  That request can then be sent upstream.
--- 
-2.35.1
+It is not enough since the size of the struct page also depends on
+LAST_CPUPID_NOT_IN_PAGE_FLAGS && CONFIG_SLAB.
+We cannot know the result of LAST_CPUPID_NOT_IN_PAGE_FLAGS in
+Kconfig.
 
+>
+>
+> If you want to avoid the run-time check,
+> why don't you use  BUILD_BUG_ON() ?
+>
+
+Now I have another solution to avoid the run-time check.
+We could use macro STRUCT_PAGE_SIZE_IS_POWER_OF_2
+to do that like the following.
+
+#ifdef STRUCT_PAGE_SIZE_IS_POWER_OF_2
+/* code */
+#endif
+
+Thanks.
