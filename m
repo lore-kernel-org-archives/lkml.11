@@ -2,124 +2,362 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05E4EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 02:01:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E10CAC43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 02:02:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229984AbiC2CC6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 22:02:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35188 "EHLO
+        id S230024AbiC2CEE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 22:04:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229781AbiC2CCz (ORCPT
+        with ESMTP id S229779AbiC2CEB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 22:02:55 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D47E52DABC;
-        Mon, 28 Mar 2022 19:01:08 -0700 (PDT)
-X-UUID: 054e1df1decb452e8c3a3b1391e3a412-20220329
-X-UUID: 054e1df1decb452e8c3a3b1391e3a412-20220329
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <jianjun.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1275001745; Tue, 29 Mar 2022 10:00:52 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Tue, 29 Mar 2022 10:00:50 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 29 Mar 2022 10:00:50 +0800
-Message-ID: <c074fc33a64bd09b583b0aae58e950b0d826d82e.camel@mediatek.com>
-Subject: Re: [PATCH] PCI: mediatek-gen3: Print LTSSM state when PCIe link
- down
-From:   Jianjun Wang <jianjun.wang@mediatek.com>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Bjorn Helgaas <bhelgaas@google.com>
-CC:     Rob Herring <robh@kernel.org>,
-        Krzysztof =?UTF-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <linux-pci@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <jieyy.yang@mediatek.com>,
-        <chuanjia.liu@mediatek.com>, <qizhong.cheng@mediatek.com>,
-        <jian.yang@mediatek.com>
-Date:   Tue, 29 Mar 2022 10:00:49 +0800
-In-Reply-To: <cd9c7d5c-4ab6-2795-2bba-9deedb8198e3@collabora.com>
-References: <20220324072548.11408-1-jianjun.wang@mediatek.com>
-         <cd9c7d5c-4ab6-2795-2bba-9deedb8198e3@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Mon, 28 Mar 2022 22:04:01 -0400
+Received: from 189.cn (ptr.189.cn [183.61.185.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 08C5E2DABC;
+        Mon, 28 Mar 2022 19:02:17 -0700 (PDT)
+HMM_SOURCE_IP: 10.64.8.43:35108.382441773
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-114.242.206.180 (unknown [10.64.8.43])
+        by 189.cn (HERMES) with SMTP id 027B61002F1;
+        Tue, 29 Mar 2022 10:02:12 +0800 (CST)
+Received: from  ([114.242.206.180])
+        by gateway-151646-dep-b7fbf7d79-vjdjk with ESMTP id 1c657df391bc415c9b4103b4f7128aa7 for robh@kernel.org;
+        Tue, 29 Mar 2022 10:02:16 CST
+X-Transaction-ID: 1c657df391bc415c9b4103b4f7128aa7
+X-Real-From: 15330273260@189.cn
+X-Receive-IP: 114.242.206.180
+X-MEDUSA-Status: 0
+Sender: 15330273260@189.cn
+Message-ID: <cf9132cc-460d-2acc-d751-26452c86a6ba@189.cn>
+Date:   Tue, 29 Mar 2022 10:02:11 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v11 5/7] dt-bindings: display: Add Loongson display
+ controller
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>
+Cc:     Qing Zhang <zhangqing@loongson.cn>,
+        David Airlie <airlied@linux.ie>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        linux-kernel@vger.kernel.org, Sam Ravnborg <sam@ravnborg.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        devicetree@vger.kernel.org, suijingfeng <suijingfeng@loongson.cn>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Roland Scheidegger <sroland@vmware.com>,
+        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
+        dri-devel@lists.freedesktop.org,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-mips@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>
+References: <20220321162916.1116541-1-15330273260@189.cn>
+ <20220321162916.1116541-6-15330273260@189.cn>
+ <YjkITWpbnCmhKaX+@robh.at.kernel.org>
+ <f7eb61bc-6784-c77a-083f-7408c0a17e05@189.cn>
+ <Yjo3umi9bJ0xb2Gl@robh.at.kernel.org>
+ <199a2869-cd83-d24e-0ad0-25d15d76fc13@189.cn>
+ <YjsamuFslv6qlQMZ@robh.at.kernel.org>
+ <ac75aeff-1fca-f46f-1043-8437ef845ff9@189.cn>
+ <YjxxhNnmqteTIEOa@robh.at.kernel.org>
+ <165597c7-3ac3-9d32-a70f-95214b242e0b@189.cn>
+ <YkHAgkGvsWQ+2Gbh@robh.at.kernel.org>
+From:   Sui Jingfeng <15330273260@189.cn>
+In-Reply-To: <YkHAgkGvsWQ+2Gbh@robh.at.kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-03-28 at 16:39 +0200, AngeloGioacchino Del Regno wrote:
-> Il 24/03/22 08:25, Jianjun Wang ha scritto:
-> > Print current LTSSM state when PCIe link down instead of the
-> > register
-> > value, make it easier to get the link status.
-> > 
-> > Signed-off-by: Jianjun Wang <jianjun.wang@mediatek.com>
-> 
-> Hello Jianjun,
-> this patch is really helpful when comes to understand the source of
-> an issue,
-> so I agree with it - and thank you for that.
-> 
-> Though, I think that you should still print the hex number along with
-> the
-> meaning of it, check below:
-> 
-> > ---
-> >   drivers/pci/controller/pcie-mediatek-gen3.c | 40
-> > ++++++++++++++++++++-
-> >   1 file changed, 39 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/pci/controller/pcie-mediatek-gen3.c
-> > b/drivers/pci/controller/pcie-mediatek-gen3.c
-> > index 7705d61fba4c..54663f025e27 100644
-> > --- a/drivers/pci/controller/pcie-mediatek-gen3.c
-> > +++ b/drivers/pci/controller/pcie-mediatek-gen3.c
-> 
-> ..snip..
-> 
-> > @@ -327,8 +358,15 @@ static int mtk_pcie_startup_port(struct
-> > mtk_gen3_pcie *pcie)
-> >   				 !!(val & PCIE_PORT_LINKUP), 20,
-> >   				 PCI_PM_D3COLD_WAIT * USEC_PER_MSEC);
-> >   	if (err) {
-> > +		const char *ltssm_state;
-> > +		int ltssm_index;
-> > +
-> >   		val = readl_relaxed(pcie->base +
-> > PCIE_LTSSM_STATUS_REG);
-> > -		dev_err(pcie->dev, "PCIe link down, ltssm reg val:
-> > %#x\n", val);
-> > +		ltssm_index = PCIE_LTSSM_STATE(val);
-> > +		ltssm_state = ltssm_index >= ARRAY_SIZE(ltssm_str) ?
-> > +			      "Unknown state" : ltssm_str[ltssm_index];
-> > +		dev_err(pcie->dev, "PCIe link down, current ltssm
-> > state: %s\n",
-> 
-> There, I think that you should do:
-> 
-> dev_err(pcie->dev, "PCIe link down, current LTSSM state: %s (%#x)\n",
-> 	ltssm_state, val);
-> 
-> this will be extremely useful in the "Unknown state" case.
-> 
-> After fixing that,
-> 
-> Reviewed-by: AngeloGioacchino Del Regno <
-> angelogioacchino.delregno@collabora.com>
 
-Thanks!
+On 2022/3/28 22:04, Rob Herring wrote:
+> On Sat, Mar 26, 2022 at 06:04:46PM +0800, Sui Jingfeng wrote:
+>> On 2022/3/24 21:26, Rob Herring wrote:
+>>> On Thu, Mar 24, 2022 at 09:48:19AM +0800, Sui Jingfeng wrote:
+>>>> On 2022/3/23 21:03, Rob Herring wrote:
+>>>>> On Wed, Mar 23, 2022 at 11:38:55AM +0800, Sui Jingfeng wrote:
+>>>>>> On 2022/3/23 04:55, Rob Herring wrote:
+>>>>>>> On Tue, Mar 22, 2022 at 10:33:45AM +0800, Sui Jingfeng wrote:
+>>>>>>>> On 2022/3/22 07:20, Rob Herring wrote:
+>>>>>>>>> On Tue, Mar 22, 2022 at 12:29:14AM +0800, Sui Jingfeng wrote:
+>>>>>>>>>> From: suijingfeng <suijingfeng@loongson.cn>
+>>>>>>>>>>
+>>>>>>>>> Needs a commit message.
+>>>>>>>>>
+>>>>>>>>>> Signed-off-by: suijingfeng <suijingfeng@loongson.cn>
+>>>>>>>>>> Signed-off-by: Sui Jingfeng <15330273260@189.cn>
+>>>>>>>>> Same person? Don't need both emails.
+>>>>>>>> Yes,  suijingfeng@loongson.cn is my company's email. But it can not be used
+>>>>>>>> to send patches to dri-devel,
+>>>>>>>>
+>>>>>>>> when send patches with this email, the patch will not be shown on patch
+>>>>>>>> works.
+>>>>>>>>
+>>>>>>>> Emails  are either blocked or got  rejected  by loongson's mail server.  It
+>>>>>>>> can only receive emails
+>>>>>>>>
+>>>>>>>> from you and other people, but not dri-devel. so have to use my personal
+>>>>>>>> email(15330273260@189.cn) to send patches.
+>>>>>>>>
+>>>>>>>>>> ---
+>>>>>>>>>>       .../loongson/loongson,display-controller.yaml | 230 ++++++++++++++++++
+>>>>>>>>>>       1 file changed, 230 insertions(+)
+>>>>>>>>>>       create mode 100644 Documentation/devicetree/bindings/display/loongson/loongson,display-controller.yaml
+>>>>>>>>>>
+>>>>>>>>>> diff --git a/Documentation/devicetree/bindings/display/loongson/loongson,display-controller.yaml b/Documentation/devicetree/bindings/display/loongson/loongson,display-controller.yaml
+>>>>>>>>>> new file mode 100644
+>>>>>>>>>> index 000000000000..7be63346289e
+>>>>>>>>>> --- /dev/null
+>>>>>>>>>> +++ b/Documentation/devicetree/bindings/display/loongson/loongson,display-controller.yaml
+>>>>>>>>>> @@ -0,0 +1,230 @@
+>>>>>>>>>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>>>>>>>>>> +%YAML 1.2
+>>>>>>>>>> +---
+>>>>>>>>>> +$id: http://devicetree.org/schemas/display/loongson/loongson,display-controller.yaml#
+>>>>>>>>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>>>>>>>>>> +
+>>>>>>>>>> +title: Loongson LS7A1000/LS2K1000/LS2K0500 Display Controller Device Tree Bindings
+>>>>>>>>>> +
+>>>>>>>>>> +maintainers:
+>>>>>>>>>> +  - Sui Jingfeng <suijingfeng@loongson.cn>
+>>>>>>>>>> +
+>>>>>>>>>> +description: |+
+>>>>>>>>>> +
+>>>>>>>>>> +  Loongson display controllers are simple which require scanout buffers
+>>>>>>>>>> +  to be physically contiguous. LS2K1000/LS2K0500 is a SOC, only system
+>>>>>>>>>> +  memory is available. LS7A1000/LS7A2000 is bridge chip which is equipped
+>>>>>>>>>> +  with a dedicated video RAM which is 64MB or more, precise size can be
+>>>>>>>>>> +  read from the PCI BAR 2 of the GPU device(0x0014:0x7A15) in the bridge
+>>>>>>>>>> +  chip.
+>>>>>>>>>> +
+>>>>>>>>>> +  LSDC has two display pipes, each way has a DVO interface which provide
+>>>>>>>>>> +  RGB888 signals, vertical & horizontal synchronisations, data enable and
+>>>>>>>>>> +  the pixel clock. LSDC has two CRTC, each CRTC is able to scanout from
+>>>>>>>>>> +  1920x1080 resolution at 60Hz. Each CRTC has two FB address registers.
+>>>>>>>>>> +
+>>>>>>>>>> +  For LS7A1000, there are 4 dedicated GPIOs whose control register is
+>>>>>>>>>> +  located at the DC register space. They are used to emulate two way i2c,
+>>>>>>>>>> +  One for DVO0, another for DVO1.
+>>>>>>>>>> +
+>>>>>>>>>> +  LS2K1000 and LS2K0500 SoC grab i2c adapter from other module, either
+>>>>>>>>>> +  general purpose GPIO emulated i2c or hardware i2c in the SoC.
+>>>>>>>>>> +
+>>>>>>>>>> +  LSDC's display pipeline have several components as below description,
+>>>>>>>>>> +
+>>>>>>>>>> +  The display controller in LS7A1000:
+>>>>>>>>>> +     ___________________                                     _________
+>>>>>>>>>> +    |            -------|                                   |         |
+>>>>>>>>>> +    |  CRTC0 --> | DVO0 ----> Encoder0 ---> Connector0 ---> | Monitor |
+>>>>>>>>>> +    |  _   _     -------|        ^             ^            |_________|
+>>>>>>>>>> +    | | | | |    -------|        |             |
+>>>>>>>>>> +    | |_| |_|    | i2c0 <--------+-------------+
+>>>>>>>>>> +    |            -------|
+>>>>>>>>>> +    |   DC IN LS7A1000  |
+>>>>>>>>>> +    |  _   _     -------|
+>>>>>>>>>> +    | | | | |    | i2c1 <--------+-------------+
+>>>>>>>>>> +    | |_| |_|    -------|        |             |             _________
+>>>>>>>>>> +    |            -------|        |             |            |         |
+>>>>>>>>>> +    |  CRTC1 --> | DVO1 ----> Encoder1 ---> Connector1 ---> |  Panel  |
+>>>>>>>>>> +    |            -------|                                   |_________|
+>>>>>>>>>> +    |___________________|
+>>>>>>>>>> +
+>>>>>>>>>> +  Simple usage of LS7A1000 with LS3A4000 CPU:
+>>>>>>>>>> +
+>>>>>>>>>> +    +------+            +-----------------------------------+
+>>>>>>>>>> +    | DDR4 |            |  +-------------------+            |
+>>>>>>>>>> +    +------+            |  | PCIe Root complex |   LS7A1000 |
+>>>>>>>>>> +       || MC0           |  +--++---------++----+            |
+>>>>>>>>>> +  +----------+  HT 3.0  |     ||         ||                 |
+>>>>>>>>>> +  | LS3A4000 |<-------->| +---++---+  +--++--+    +---------+   +------+
+>>>>>>>>>> +  |   CPU    |<-------->| | GC1000 |  | LSDC |<-->| DDR3 MC |<->| VRAM |
+>>>>>>>>>> +  +----------+          | +--------+  +-+--+-+    +---------+   +------+
+>>>>>>>>>> +       || MC1           +---------------|--|----------------+
+>>>>>>>>>> +    +------+                            |  |
+>>>>>>>>>> +    | DDR4 |          +-------+   DVO0  |  |  DVO1   +------+
+>>>>>>>>>> +    +------+   VGA <--|ADV7125|<--------+  +-------->|TFP410|--> DVI/HDMI
+>>>>>>>>>> +                      +-------+                      +------+
+>>>>>>>>>> +
+>>>>>>>>>> +  The display controller in LS2K1000/LS2K0500:
+>>>>>>>>>> +     ___________________                                     _________
+>>>>>>>>>> +    |            -------|                                   |         |
+>>>>>>>>>> +    |  CRTC0 --> | DVO0 ----> Encoder0 ---> Connector0 ---> | Monitor |
+>>>>>>>>>> +    |  _   _     -------|        ^              ^           |_________|
+>>>>>>>>>> +    | | | | |           |        |              |
+>>>>>>>>>> +    | |_| |_|           |     +------+          |
+>>>>>>>>>> +    |                   <---->| i2c0 |<---------+
+>>>>>>>>>> +    |   DC IN LS2K1000  |     +------+
+>>>>>>>>>> +    |  _   _            |     +------+
+>>>>>>>>>> +    | | | | |           <---->| i2c1 |----------+
+>>>>>>>>>> +    | |_| |_|           |     +------+          |            _________
+>>>>>>>>>> +    |            -------|        |              |           |         |
+>>>>>>>>>> +    |  CRTC1 --> | DVO1 ----> Encoder1 ---> Connector1 ---> |  Panel  |
+>>>>>>>>>> +    |            -------|                                   |_________|
+>>>>>>>>>> +    |___________________|
+>>>>>>>>>> +
+>>>>>>>>>> +properties:
+>>>>>>>>>> +  $nodename:
+>>>>>>>>>> +    pattern: "^display-controller@[0-9a-f],[0-9a-f]$"
+>>>>>>>>>> +
+>>>>>>>>>> +  compatible:
+>>>>>>>>>> +    oneOf:
+>>>>>>>>>> +      - items:
+>>>>>>>>>> +          - enum:
+>>>>>>>>>> +              - loongson,ls7a1000-dc
+>>>>>>>>>> +              - loongson,ls2k1000-dc
+>>>>>>>>>> +              - loongson,ls2k0500-dc
+>>>>>>>>>> +
+>>>>>>>>>> +  reg:
+>>>>>>>>>> +    maxItems: 1
+>>>>>>>>>> +
+>>>>>>>>>> +  interrupts:
+>>>>>>>>>> +    maxItems: 1
+>>>>>>>>>> +
+>>>>>>>>>> +  '#address-cells':
+>>>>>>>>>> +    const: 1
+>>>>>>>>>> +
+>>>>>>>>>> +  '#size-cells':
+>>>>>>>>>> +    const: 0
+>>>>>>>>>> +
+>>>>>>>>>> +  i2c-gpio@0:
+>>>>>>>>>> +    description: |
+>>>>>>>>>> +      Built-in GPIO emulate i2c exported for external display bridge
+>>>>>>>>> If you have i2c-gpio, that belongs at the DT top-level, not here.
+>>>>>>>>>
+>>>>>>>>>> +      configuration, onitor detection and edid read back etc, for ls7a1000
+>>>>>>>>>> +      only. Its compatible must be lsdc,i2c-gpio-0. The reg property can be
+>>>>>>>>> No, there's a defined i2c-gpio compatible already.
+>>>>>>>> This is different from the i2c-gpio already defined under drivers/i2c/busses/i2c-gpio.c,
+>>>>>>>> By design, my i2c-gpio is vendor specific properties, lsdc device driver create the i2c
+>>>>>>>> adapter at runtime. These are 4 dedicated GPIOs whose control register is located at the
+>>>>>>>> LSDC register space, not general purpose GPIOs with separate control register resource.
+>>>>>>>> So i think it is the child node of display-controller@6,1, it belongs to LSDC.
+>>>>>>>> It seems that put it at the DT top-level break the hierarchy and relationship.
+>>>>>>> Okay, I see. Then just 'i2c' for the node names. You need a reference to
+>>>>>>> i2c-controller.yaml for these nodes too.
+>>>>>>>
+>>>>>>> The compatible should not have an index in it.
+>>>>>> OK, i will fix this at the next version. thanks.
+>>>>>>>>>> +      used to specify a I2c adapter bus number, if you don't specify one
+>>>>>>>>>> +      i2c driver core will dynamically assign a bus number. Please specify
+>>>>>>>>> Bus numbers are a linux detail not relevant to DT binding.
+>>>>>>>>>
+>>>>>>>>>> +      it only when its bus number matters. Bus number greater than 6 is safe
+>>>>>>>>>> +      because ls7a1000 bridge have 6 hardware I2C controller integrated.
+>>>>>>>>>> +
+>>>>>>>>>> +  i2c-gpio@1:
+>>>>>>>>>> +    description: |
+>>>>>>>>>> +      Built-in GPIO emulate i2c exported for external display bridge
+>>>>>>>>>> +      configuration, onitor detection and edid read back etc, for ls7a1000
+>>>>>>>>>> +      only. Its compatible must be lsdc,i2c-gpio-1.
+>>>>>>>>>> +
+>>>>>>>>>> +  ports:
+>>>>>>>>>> +    $ref: /schemas/graph.yaml#/properties/ports
+>>>>>>>>>> +
+>>>>>>>>>> +    properties:
+>>>>>>>>>> +      port@0:
+>>>>>>>>>> +        $ref: /schemas/graph.yaml#/properties/port
+>>>>>>>>>> +        description: output port node connected with DPI panels or external encoders, with only one endpoint.
+>>>>>>>>>> +
+>>>>>>>>>> +      port@1:
+>>>>>>>>>> +        $ref: /schemas/graph.yaml#/properties/port
+>>>>>>>>>> +        description: output port node connected with DPI panels or external encoders, with only one endpoint.
+>>>>>>>>>> +
+>>>>>>>>>> +    required:
+>>>>>>>>>> +      - port@0
+>>>>>>>>>> +      - port@1
+>>>>>>>>>> +
+>>>>>>>>>> +required:
+>>>>>>>>>> +  - compatible
+>>>>>>>>>> +  - reg
+>>>>>>>>>> +  - interrupts
+>>>>>>>>>> +  - ports
+>>>>>>>>>> +
+>>>>>>>>>> +additionalProperties: false
+>>>>>>>>>> +
+>>>>>>>>>> +examples:
+>>>>>>>>>> +  - |
+>>>>>>>>>> +    #include <dt-bindings/interrupt-controller/irq.h>
+>>>>>>>>>> +    bus {
+>>>>>>>>>> +
+>>>>>>>>>> +        #address-cells = <3>;
+>>>>>>>>>> +        #size-cells = <2>;
+>>>>>>>>>> +        #interrupt-cells = <2>;
+>>>>>>>>>> +
+>>>>>>>>>> +        display-controller@6,1 {
+>>>>>>>>>> +            compatible = "loongson,ls7a1000-dc";
+>>>>>>>>>> +            reg = <0x3100 0x0 0x0 0x0 0x0>;
+>>>>>>>>>> +            interrupts = <28 IRQ_TYPE_LEVEL_HIGH>;
+>>>>>>>>>> +
+>>>>>>>>>> +            #address-cells = <1>;
+>>>>>>>>>> +            #size-cells = <0>;
+>>>>>>>>>> +
+>>>>>>>>>> +            i2c-gpio@0 {
+>>>>>>>>>> +                compatible = "lsdc,i2c-gpio-0";
+>>>>>>>>>> +                reg = <6>;
+>>>>>>> 'reg' needs to be documented with some description of what 6 and 7
+>>>>>>> represent. If they are the control register offset, then make the
+>>>>>>> address translatable (use 'ranges' and define the size).
+>>>>>> By design, the reg property is used to specify a I2c adapter bus number,
+>>>>>> if we don't specify one, i2c driver core will dynamically assign a bus number.
+>>>>>> then the nr of the i2c adapter will started from 0. I want is start from 6
+>>>>>> to avoid potential conflict feature hardware I2C driver.
+>>>>>>
+>>>>>> Because LS7A1000 bridge chip have 6 hardware I2C controller integrated,
+>>>>>> but its driver is not up-streamed yet. By default these hardware I2C controller's
+>>>>>> nr is started from 0.
+>>>>> Linux's numbering doesn't belong in DT. So no, you can't use 'reg' in
+>>>>> that way.
+>>>> Then,  can i use something like lsdc,nr = <6> ?
+>>>>>> Even through i2c driver core can dynamically generate a number, i still want it
+>>>>>> to be fixed and keep consistent and explicit. That is, i2c6 is for display pipe 0,
+>>>>>> i2c7 is for display pipe 1. This follow the convention and flexible enough.
+>>>>> You may want that, but that is not how the kernel works. Specific
+>>>>> numbers are not guaranteed. I'm sure you've seen this for disks, network
+>>>>> interfaces, etc.
+>>>>>
+>>>>> Rob
+>>>> 2c_bit_add_numbered_bus() will guarantee it for you as long as If no devices
+>>>> have pre-been declared for this bus.
+>>>>
+>>>> you can read the comment of 2c_bit_add_numbered_bus() at
+>>>> drivers/i2c/i2c-core-base.c
+>>> I didn't say it wasn't possible. It is not best practice. Grep
+>>> i2c_bit_add_numbered_bus and see how many users there are.
+>> i2c-gpio.c at drivers/i2c/busses/ just do the same thing.
+> No, the id for i2c-gpio nodes (any DT node without 'reg') will be -1
+> which means dynamically assigned.
+>
+>
+>> + nvidia,bpmp-bus-id: + $ref: /schemas/types.yaml#/definitions/uint32 +
+>> description: Indicates the I2C bus number this DT node represents, + as
+>> defined by the BPMP firmware.
+> The key difference is the numbering is defined by the BPMP firmware.
+>
+Bus numbers are a linux detail, I am not sure it is relevant to BPMP firmware.
+and BPMP firmware is not relevant here.
 
-> 
-> Regards,
-> Angelo
+The point is you applied that patch, you are admit the fact that bus numbers
+could be in DT.
+
+>>> Even if the kernel allows specifying bus numbers,your Linux bus numbers don't
+>>> belong in DT.
+>> Again, Does does devicetree specification prohibit this?
+> No. The spec is not the last word on what's allowed or not. Lots of
+> patterns exist already which we can't change, but that doesn't mean they
+> should be copied by new users.
+>
+> Rob
+
+We develop that part by our own, only find that there are someone do the 
+same thing when it got push back.
+
+We believe that it is very flexible actually, anyway if you still don't 
+change you mind we can rewrite it.
+
+I have resend my patches,  see it at 
+https://patchwork.freedesktop.org/series/101843/
+
+Please take spare time to review it if you would like, thanks you.
 
