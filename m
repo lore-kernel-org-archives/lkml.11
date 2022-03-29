@@ -2,75 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42400C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 07:50:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFD2BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 07:53:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233651AbiC2Hwd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 03:52:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37328 "EHLO
+        id S233650AbiC2HzY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 03:55:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233635AbiC2Hw3 (ORCPT
+        with ESMTP id S231993AbiC2HzW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 03:52:29 -0400
-Received: from mail-ua1-x92a.google.com (mail-ua1-x92a.google.com [IPv6:2607:f8b0:4864:20::92a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A84320A3A5
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 00:50:45 -0700 (PDT)
-Received: by mail-ua1-x92a.google.com with SMTP id o26so7335863uap.4
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 00:50:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linbit-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Oq+Z6jNlZq+ZQofugfp2fRT6ds4wfKxot/aZdwn2WhA=;
-        b=yZhdVjxwh2/m5mbLgEngbkgE3G3gnxZFRf1jW13GjQM5F98zv7M82fzW8oKWfZSKUF
-         kluYlmO7/djcCa8os2SM3k7YOg+loZt0FPygDR9ComSmwQxnkNHbWxildLYxmsKVkXDb
-         DxyJesNbu7I7TwfK9xMRH1fit0kbIQ3DRgi3aOoe33j4XbntfXHuMGxiZBbsCdhlaCMt
-         3Jq20be/b7HvMOVMr9CZHcCAcpxSR6s3i7RaHeD3ZZSZr1s+cG8i8RIe7mqtt2RRtCgS
-         u51da3zY7RvzdQZihKHdUI5EDco+FytktD3YVJYkeoz/wes7UkclKvRM1J8sV6BlmVgt
-         nVcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Oq+Z6jNlZq+ZQofugfp2fRT6ds4wfKxot/aZdwn2WhA=;
-        b=bBSk9GjVgia1buCHejkrcVuHvxTYcOFEQYJ87VhDmPj2kH8pgn+0V8r/3KXjoGOu7p
-         /Jq9decUhxVK2Lmw9uslh68vnyETtbLJ51nDC4rLUfJODpNFO4fkhtlAMblXdh5Xivfl
-         fxhvQRsyHv7OV24vkEXbuh/oYlhmthzTQv91BhZmOM0AUIqXA4i9bh84/mp7FAdt26Tu
-         yS2Gy2nWDuA2VmcF/f3MR7Ro9dk1mBCdE0AKD+LFKbv+KNdBHwbbYF9SiQzsAepr7KBk
-         qotkEdFZNc4mS4ANQJiDeSBt8mYsqsewIZmVR+P6iTZ5a6qyXL6TkGYX8GVtdONWr0T8
-         O6Rw==
-X-Gm-Message-State: AOAM5331dUJpHhczopIEDjkcIw/I7BgNEtFX4E3EoTGfyf2L12sAtxWT
-        okyPHRW76+OaXsWSlPulDXNFFb/jFGXEXBB7boRJuBH99W4=
-X-Google-Smtp-Source: ABdhPJw5plfdPb+L2JPLk102d32wrj5zplTwmUxFp7a5XaOP/QkyG0KqpejT+kgULLuf4pgaK9Mu7q3gz8Vv5zQqzws=
-X-Received: by 2002:ab0:6c48:0:b0:359:cfea:c24f with SMTP id
- q8-20020ab06c48000000b00359cfeac24fmr9497635uas.104.1648540244878; Tue, 29
- Mar 2022 00:50:44 -0700 (PDT)
+        Tue, 29 Mar 2022 03:55:22 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E08DA4E3B4;
+        Tue, 29 Mar 2022 00:53:29 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 727F580F9;
+        Tue, 29 Mar 2022 07:51:24 +0000 (UTC)
+Date:   Tue, 29 Mar 2022 10:53:27 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Daniel Palmer <daniel@0x0f.com>
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-actions@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-omap@vger.kernel.org, linux-amlogic@lists.infradead.org,
+        linux-arm-kernel@axis.com, linux-aspeed@lists.ozlabs.org,
+        linux-rpi-kernel@lists.infradead.org,
+        chrome-platform@lists.linux.dev, linux-renesas-soc@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        kernel@dh-electronics.com, linux-mediatek@lists.infradead.org,
+        openbmc@lists.ozlabs.org, linux-tegra@vger.kernel.org,
+        linux-oxnas@groups.io, linux-arm-msm@vger.kernel.org,
+        linux-unisoc@lists.infradead.org,
+        linux-rockchip@lists.infradead.org,
+        linux-realtek-soc@lists.infradead.org
+Subject: Re: [RFC PATCH 0/1] Categorize ARM dts directory
+Message-ID: <YkK691VG6ON/6Ysn@atomide.com>
+References: <20220328000915.15041-1-ansuelsmth@gmail.com>
+ <CAFr9PXkgrRe-=E=GhNnZ4w1x_FMb97-_RmX6ND1vEd74_TbZSw@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220329070618.GA20396@lst.de> <CADGDV=UgjZAbmAN-2bO1nyDvA=XCC9Lf2dxWHZ0BwxF12nnztQ@mail.gmail.com>
- <20220329073254.GA20691@lst.de>
-In-Reply-To: <20220329073254.GA20691@lst.de>
-From:   Philipp Reisner <philipp.reisner@linbit.com>
-Date:   Tue, 29 Mar 2022 09:50:33 +0200
-Message-ID: <CADGDV=U5jwe0CZ12174cMahfD_h-GsBswWaA1VOJbHaC1nsrUw@mail.gmail.com>
-Subject: Re: state of drbd in mainline
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Lars Ellenberg <lars.ellenberg@linbit.com>,
-        Jens Axboe <axboe@kernel.dk>, drbd-dev@lists.linbit.com,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFr9PXkgrRe-=E=GhNnZ4w1x_FMb97-_RmX6ND1vEd74_TbZSw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> The complete lack of bug reports and maintainer interaction usually
-> suggests low to no use and heavy bitrot.  If that is not the case
-> here that's fine, just asking..
->
+Hi,
 
-FYI, feature-wise the in-tree DRBD is frozen. Maintenance only. Users,
-seeking advanced
-features switch to the out-of-tree DRBD and use other means of communication:
-Github issues, linbit's community slack channel, last not least
-linbit's ticketing system.
+* Daniel Palmer <daniel@0x0f.com> [220328 08:53]:
+> Hi Ansuel
+> 
+> On Mon, 28 Mar 2022 at 09:09, Ansuel Smith <ansuelsmth@gmail.com> wrote:
+> >
+> > Hi,
+> > as the title say, the intention of this ""series"" is to finally categorize
+> > the ARM dts directory in subdirectory for each oem.
+> 
+> While I agree with this change and think it's for the good (browsing
+> the ARM dts directory at the moment is frustrating..) I think
+> buildroot and others need to be told about this as it'll potentially
+> break their kernel build scripting for ARM and probably messes up the
+> configs they have for existing boards.
 
-That is why you see virtually no activity.
+Yeah.. And ideally this would be done in smaller steps as these will
+conflict with all the other pending patches.
+
+For example, I have a pile of pending omap clock clean-up dts patches
+posted and tested waiting for v5.19-rc1 to apply. I'd rather not start
+redoing or fixing up the patches with sed :)
+
+What I'd like to have see is that at some point when suitable we move
+one machine at a time with a script if possible.. Maybe the dtb files
+generated would need to remain in the current directory until all of
+the machine dts files are moved? That should help with the build
+scripting too probably :)
+
+In general I like the idea though and I think we should do it.
+
+Regards,
+
+Tony
