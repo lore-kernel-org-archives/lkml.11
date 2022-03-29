@@ -2,145 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E781DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 00:28:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39E15C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 00:42:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241462AbiC3A3q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 20:29:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40996 "EHLO
+        id S241467AbiC3Aog (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 20:44:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240987AbiC3A3o (ORCPT
+        with ESMTP id S233084AbiC3Aod (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 20:29:44 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD55BB7141
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 17:28:00 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id m18so14201254plx.3
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 17:28:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=4jVwb2dMkJltILuhJbsIA7P6kB3yDQfE9kNIJQ3/0AI=;
-        b=SXTF5kqDkZCyMRflakBrSGUVgl1RehL2zWwt73HiPVstorAmHpQlTZf+Kz2NFYWkuh
-         2MkTGvcCFDXN+zRFtv0I5zq5PBtVOrh09JvO4kNYkwAlVnEBpLvoCGOmos/OKVPNtiEK
-         PdbsmJZwkc+ctu2ynNFoB5kHEUlHA/dMbxJ1LvLsum6MRkwLgyBkUl9ZjmQmJmsWBFNl
-         jFIVOxd+Uvjs+J0EA0bo5k01UyMky/fynlPyK2iKsxHUEfkB8+gWH68b52ulnuipH/25
-         MpPBWR9DwxVJvF6YKcIdhBQhOrysMQ3faalNRXiN1uurZrvx+4lfN/GOWhv8s1Hbc1nu
-         JxBw==
+        Tue, 29 Mar 2022 20:44:33 -0400
+Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 006B1182ADF;
+        Tue, 29 Mar 2022 17:42:49 -0700 (PDT)
+Received: by mail-qv1-f44.google.com with SMTP id a5so15737300qvx.1;
+        Tue, 29 Mar 2022 17:42:49 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4jVwb2dMkJltILuhJbsIA7P6kB3yDQfE9kNIJQ3/0AI=;
-        b=5dDlOrQh81/XUrmuvHinhK9ZnRrzDI5eixN0p4nrJeokgynvj0O4WEH0IC6LpkHfHK
-         /co7L7RTMeY0wdgf0A5mvG0EGWhZrBjcRh/aZzYZ96tXv+aapSF1TIHbMfjI0UdK4Jyx
-         uEVFBRfVjIj3DXkEcjcz7tRUacNsKp65F97AKABc6DcL/gOP9QZV1Z76sz3b1xt7Ln3R
-         ix1P2cgY+DyV6pN0yrE0YVCQUy24aiEGF0Af/VWaPPl4W+S/mQGfpMLHNoauettoY7Un
-         pB+OnDIqjyC3mdIn92cbaRqJg85RW6+Vdm8KQfsQBkC3FdJHxf2OQO+qyuimOjxK8sM0
-         6tqQ==
-X-Gm-Message-State: AOAM531tN4PVQbGrU801upoZFQmtCuQIMKWGrU2yo0wg7Ro3tKMV1Xcy
-        lKlmztmusljCUheTQqTVki1zFg==
-X-Google-Smtp-Source: ABdhPJxDPnfSqa9sBDhByFovj/J1uemrROzh2kfeBrgzuY7bYXwESTYg4EJbiz9+kfcJEGHP1dWz3Q==
-X-Received: by 2002:a17:90a:8c8e:b0:1c9:c81d:9e13 with SMTP id b14-20020a17090a8c8e00b001c9c81d9e13mr1845431pjo.123.1648600079890;
-        Tue, 29 Mar 2022 17:27:59 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id i15-20020a63b30f000000b003803aee35a2sm16520437pgf.31.2022.03.29.17.27.58
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=ljnLROlX8bkk5mDzhK5nV3OjB/DTU2scE/dM3AHH1Ak=;
+        b=n9CjvIqXb6mNZr9HcdNTSLG6DwCM81A3Btsodrr+DWkUf0FowUUoKvATYfAkfVjxMP
+         qiGDk1Bfnmr5MQcUVTb1XM4myoixvI3CFchn8ksG6xajeT338riyQurbpZcez6usf/aV
+         cOeyH03WRgVCtRpK7BwQ/EAjT5LK0hOOJJoRB9ZncwVeU7UNUdCZLhLFR72VINt0Pb5h
+         svNRbQox+An+lcQ0xL535JPfoP5NgHZolX3wD3vObnepistmyJ1oLEQ2Kb1h5aNLBm/B
+         PcUJA2tuD6j+0rrDAlYZvz1b9dr6V7sODG5kh3iyhchHakaM1iG4Ul7q3hQmQ5lmqAtP
+         yfTA==
+X-Gm-Message-State: AOAM530G8iPFujl66RLxSmZQw+e6l9D0grKwAuLYnRT0dUCofhsOfo0F
+        fyRm/fKOZbQM+moKTEMrR/lqQGG7aXBmVQ==
+X-Google-Smtp-Source: ABdhPJz3S9XTXygvxMAnxnJDvWXOXF9D6ZGXqqvlPu6t7bXJvXu78nr9GiWJ1fezOaTi9gi23IVp/A==
+X-Received: by 2002:ad4:5bc7:0:b0:441:53a2:169c with SMTP id t7-20020ad45bc7000000b0044153a2169cmr29666782qvt.8.1648600968893;
+        Tue, 29 Mar 2022 17:42:48 -0700 (PDT)
+Received: from user-VirtualBox (c-73-132-53-127.hsd1.va.comcast.net. [73.132.53.127])
+        by smtp.gmail.com with ESMTPSA id m3-20020a05622a118300b002e1beed4908sm16740102qtk.3.2022.03.29.17.42.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Mar 2022 17:27:59 -0700 (PDT)
-Date:   Wed, 30 Mar 2022 00:27:55 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     kvm@vger.kernel.org, Jim Mattson <jmattson@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Borislav Petkov <bp@alien8.de>, Joerg Roedel <joro@8bytes.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        linux-kernel@vger.kernel.org,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>, stable@vger.kernel.org
-Subject: Re: [PATCH 1/8] KVM: x86: avoid loading a vCPU after .vm_destroy was
- called
-Message-ID: <YkOkCwUgMD1SVfaD@google.com>
-References: <20220322172449.235575-1-mlevitsk@redhat.com>
- <20220322172449.235575-2-mlevitsk@redhat.com>
+        Tue, 29 Mar 2022 17:42:48 -0700 (PDT)
+Date:   Tue, 29 Mar 2022 15:36:13 -0400
+From:   David Vernet <void@manifault.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     frederic@kernel.org, jiangshanlai@gmail.com,
+        joel@joelfernandes.org, josh@joshtriplett.org,
+        linux-kernel@vger.kernel.org, mathieu.desnoyers@efficios.com,
+        quic_neeraju@quicinc.com, rcu@vger.kernel.org, rostedt@goodmis.org
+Subject: Re: [PATCH] rcu_sync: Fix comment to properly reflect
+ rcu_sync_exit() behavior
+Message-ID: <20220329193613.2a3g3bkxadocirgm@user-VirtualBox>
+References: <20220329222612.1001586-1-void@manifault.com>
+ <20220329232256.GE4285@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220322172449.235575-2-mlevitsk@redhat.com>
+In-Reply-To: <20220329232256.GE4285@paulmck-ThinkPad-P17-Gen-1>
+User-Agent: NeoMutt/20191207
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 22, 2022, Maxim Levitsky wrote:
-> This can cause various unexpected issues, since VM is partially
-> destroyed at that point.
+On Tue, Mar 29, 2022 at 04:22:56PM -0700, Paul E. McKenney wrote:
+> As usual, I could not resist the urge to wordsmith.  Please take a look
+> at the following to see if I messed something up.
 > 
-> For example when AVIC is enabled, this causes avic_vcpu_load to
-> access physical id page entry which is already freed by .vm_destroy.
-
-Hmm, the SEV unbinding of ASIDs should be done after MMU teardown too (which your
-patch also does).
-
+> 							Thanx, Paul
 > 
-> Fixes: 8221c1370056 ("svm: Manage vcpu load/unload when enable AVIC")
-> Cc: stable@vger.kernel.org
+> ------------------------------------------------------------------------
 > 
-> Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
-> ---
->  arch/x86/kvm/x86.c | 10 +++-------
->  1 file changed, 3 insertions(+), 7 deletions(-)
+> commit b89e06a95c05009bcf31949814c42bc420f414a6
+> Author: David Vernet <void@manifault.com>
+> Date:   Tue Mar 29 15:26:13 2022 -0700
 > 
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index d3a9ce07a565..ba920e537ddf 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -11759,20 +11759,15 @@ static void kvm_unload_vcpu_mmu(struct kvm_vcpu *vcpu)
->  	vcpu_put(vcpu);
->  }
->  
-> -static void kvm_free_vcpus(struct kvm *kvm)
-> +static void kvm_unload_vcpu_mmus(struct kvm *kvm)
->  {
->  	unsigned long i;
->  	struct kvm_vcpu *vcpu;
->  
-> -	/*
-> -	 * Unpin any mmu pages first.
-> -	 */
->  	kvm_for_each_vcpu(i, vcpu, kvm) {
->  		kvm_clear_async_pf_completion_queue(vcpu);
->  		kvm_unload_vcpu_mmu(vcpu);
->  	}
-> -
-> -	kvm_destroy_vcpus(kvm);
->  }
->  
->  void kvm_arch_sync_events(struct kvm *kvm)
-> @@ -11878,11 +11873,12 @@ void kvm_arch_destroy_vm(struct kvm *kvm)
->  		__x86_set_memory_region(kvm, TSS_PRIVATE_MEMSLOT, 0, 0);
->  		mutex_unlock(&kvm->slots_lock);
->  	}
-> +	kvm_unload_vcpu_mmus(kvm);
->  	static_call_cond(kvm_x86_vm_destroy)(kvm);
->  	kvm_free_msr_filter(srcu_dereference_check(kvm->arch.msr_filter, &kvm->srcu, 1));
->  	kvm_pic_destroy(kvm);
->  	kvm_ioapic_destroy(kvm);
-> -	kvm_free_vcpus(kvm);
-> +	kvm_destroy_vcpus(kvm);
+>     rcu_sync: Fix comment to properly reflect rcu_sync_exit() behavior
+>     
+>     The rcu_sync_enter() function is used by updaters to force RCU readers
+>     (e.g. percpu-rwsem) to use their slow paths during an update.  This is
+>     accomplished by setting the ->gp_state of the rcu_sync structure to
+>     GP_ENTER.  In the case of percpu-rwsem, the readers' slow path waits on
+>     a semaphore instead of just incrementing a reader count.  Each updater
+>     invokes the rcu_sync_exit() function to signal to readers that they
+>     may again take their fastpaths.  The rcu_sync_exit() function sets the
+>     ->gp_state of the rcu_sync structure to GP_EXIT, and if all goes well,
+>     after a grace period the ->gp_state reverts back to GP_IDLE.
+>     
+>     Unfortunately, the rcu_sync_enter() function currently has a comment
+>     incorrectly stating that rcu_sync_exit() (by an updater) will re-enable
+>     reader "slowpaths".  This patch changes the comment to state that this
+>     function re-enables reader fastpaths.
+>     
+>     Signed-off-by: David Vernet <void@manifault.com>
+>     Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 
-Rather than split kvm_free_vcpus(), can we instead move the call to svm_vm_destroy()
-by adding a second hook, .vm_teardown(), which is needed for TDX?  I.e. keep VMX
-where it is by using vm_teardown, but effectively move SVM?
+The word smithing looks like a good improvement to me!
 
-https://lore.kernel.org/all/1fa2d0db387a99352d44247728c5b8ae5f5cab4d.1637799475.git.isaku.yamahata@intel.com
-
->  	kvfree(rcu_dereference_check(kvm->arch.apic_map, 1));
->  	kfree(srcu_dereference_check(kvm->arch.pmu_event_filter, &kvm->srcu, 1));
->  	kvm_mmu_uninit_vm(kvm);
-> -- 
-> 2.26.3
-> 
+Thanks,
+David
