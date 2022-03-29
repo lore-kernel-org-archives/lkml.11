@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7437FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:06:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8ABFC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:06:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239405AbiC2QIY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 12:08:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36666 "EHLO
+        id S239412AbiC2QI3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 12:08:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239235AbiC2QHp (ORCPT
+        with ESMTP id S239284AbiC2QH5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 12:07:45 -0400
+        Tue, 29 Mar 2022 12:07:57 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 041C398F4D
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:06:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 528F897BB4
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:06:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648569962;
+        s=mimecast20190719; t=1648569974;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=VMEApQ9dzUrPxDzFCs2NBlki6AlTTPi+5L2qLyJUk0s=;
-        b=Xq1588HCfyRnjPn1Sb8kLqrovc4m7MU5FPPwnM6vaP5uYz8stPrbOjyiYrKEORMk1x83Hu
-        XhK9REcEKysO6E08S0t+YckrZYyQQ4LRKSp6OllYdorNam5lfO2sx2puJEl7RoyVbM5ZLr
-        82Z/T7NmD0UiYhahJ+fcjFTqvUlzR7M=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=LFyPajXgwKz4uYpMfT64h8ulBXOwflLQQqkEHDiVrVg=;
+        b=IyLsjVxE4BYAk3xYY+mpxsU6K6ZrWNHe2yIfRy2vyeT4bIGzMzk9rCUqy1/pA/tN04gbij
+        kjlVpUavq4b1LXZoLgCC7Edt2gThVF9RDhNxItQbeUEIz9TtlY6Ha6DBS1Ywxf9IQ5T5i+
+        IYCH1tFiu4bRm4KRPLVMkVrDxSHuSbQ=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-344-ZP69kzGCOmSWo6zvCTgWSA-1; Tue, 29 Mar 2022 12:05:56 -0400
-X-MC-Unique: ZP69kzGCOmSWo6zvCTgWSA-1
+ us-mta-408-74yTG1OBMj-xnTLJDFJTSw-1; Tue, 29 Mar 2022 12:06:09 -0400
+X-MC-Unique: 74yTG1OBMj-xnTLJDFJTSw-1
 Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E49A029AB3E0;
-        Tue, 29 Mar 2022 16:05:44 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CB51B18E0046;
+        Tue, 29 Mar 2022 16:06:07 +0000 (UTC)
 Received: from t480s.redhat.com (unknown [10.39.194.134])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E33AD401E99;
-        Tue, 29 Mar 2022 16:05:22 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 74818401DB0;
+        Tue, 29 Mar 2022 16:06:02 +0000 (UTC)
 From:   David Hildenbrand <david@redhat.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Andrew Morton <akpm@linux-foundation.org>,
@@ -65,9 +65,9 @@ Cc:     Andrew Morton <akpm@linux-foundation.org>,
         Pedro Gomes <pedrodemargomes@gmail.com>,
         Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org,
         David Hildenbrand <david@redhat.com>
-Subject: [PATCH v3 07/16] mm/rmap: pass rmap flags to hugepage_add_anon_rmap()
-Date:   Tue, 29 Mar 2022 18:04:31 +0200
-Message-Id: <20220329160440.193848-8-david@redhat.com>
+Subject: [PATCH v3 10/16] mm/huge_memory: remove outdated VM_WARN_ON_ONCE_PAGE from unmap_page()
+Date:   Tue, 29 Mar 2022 18:04:34 +0200
+Message-Id: <20220329160440.193848-11-david@redhat.com>
 In-Reply-To: <20220329160440.193848-1-david@redhat.com>
 References: <20220329160440.193848-1-david@redhat.com>
 MIME-Version: 1.0
@@ -77,72 +77,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Let's prepare for passing RMAP_EXCLUSIVE, similarly as we do for
-page_add_anon_rmap() now. RMAP_COMPOUND is implicit for hugetlb
-pages and ignored.
+We can already theoretically fail to unmap (still having page_mapped()) in
+case arch_unmap_one() fails, which can happen on sparc. Failures to
+unmap are handled gracefully, just as if there are other references on
+the target page: freezing the refcount in split_huge_page_to_list()
+will fail if still mapped and we'll simply remap.
 
+In commit 504e070dc08f ("mm: thp: replace DEBUG_VM BUG with VM_WARN when
+unmap fails for split") we already converted to VM_WARN_ON_ONCE_PAGE,
+let's get rid of it completely now.
+
+This is a preparation for making try_to_migrate() fail on anonymous pages
+with GUP pins, which will make this VM_WARN_ON_ONCE_PAGE trigger more
+frequently.
+
+Reported-by: Yang Shi <shy828301@gmail.com>
+Reviewed-by: Yang Shi <shy828301@gmail.com>
 Signed-off-by: David Hildenbrand <david@redhat.com>
 ---
- include/linux/rmap.h | 2 +-
- mm/migrate.c         | 3 ++-
- mm/rmap.c            | 9 ++++++---
- 3 files changed, 9 insertions(+), 5 deletions(-)
+ mm/huge_memory.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/include/linux/rmap.h b/include/linux/rmap.h
-index aa734d2e2b01..f47bc937c383 100644
---- a/include/linux/rmap.h
-+++ b/include/linux/rmap.h
-@@ -191,7 +191,7 @@ void page_add_file_rmap(struct page *, struct vm_area_struct *,
- void page_remove_rmap(struct page *, struct vm_area_struct *,
- 		bool compound);
- void hugepage_add_anon_rmap(struct page *, struct vm_area_struct *,
--		unsigned long address);
-+		unsigned long address, rmap_t flags);
- void hugepage_add_new_anon_rmap(struct page *, struct vm_area_struct *,
- 		unsigned long address);
- 
-diff --git a/mm/migrate.c b/mm/migrate.c
-index 436f0ec2da03..48db9500d20e 100644
---- a/mm/migrate.c
-+++ b/mm/migrate.c
-@@ -232,7 +232,8 @@ static bool remove_migration_pte(struct folio *folio,
- 			pte = pte_mkhuge(pte);
- 			pte = arch_make_huge_pte(pte, shift, vma->vm_flags);
- 			if (folio_test_anon(folio))
--				hugepage_add_anon_rmap(new, vma, pvmw.address);
-+				hugepage_add_anon_rmap(new, vma, pvmw.address,
-+						       RMAP_NONE);
- 			else
- 				page_dup_file_rmap(new, true);
- 			set_huge_pte_at(vma->vm_mm, pvmw.address, pvmw.pte, pte);
-diff --git a/mm/rmap.c b/mm/rmap.c
-index 71bf881da2a6..b972eb8f351b 100644
---- a/mm/rmap.c
-+++ b/mm/rmap.c
-@@ -2347,9 +2347,11 @@ void rmap_walk_locked(struct folio *folio, const struct rmap_walk_control *rwc)
-  * The following two functions are for anonymous (private mapped) hugepages.
-  * Unlike common anonymous pages, anonymous hugepages have no accounting code
-  * and no lru code, because we handle hugepages differently from common pages.
-+ *
-+ * RMAP_COMPOUND is ignored.
-  */
--void hugepage_add_anon_rmap(struct page *page,
--			    struct vm_area_struct *vma, unsigned long address)
-+void hugepage_add_anon_rmap(struct page *page, struct vm_area_struct *vma,
-+			    unsigned long address, rmap_t flags)
- {
- 	struct anon_vma *anon_vma = vma->anon_vma;
- 	int first;
-@@ -2359,7 +2361,8 @@ void hugepage_add_anon_rmap(struct page *page,
- 	/* address might be in next vma when migration races vma_adjust */
- 	first = atomic_inc_and_test(compound_mapcount_ptr(page));
- 	if (first)
--		__page_set_anon_rmap(page, vma, address, 0);
-+		__page_set_anon_rmap(page, vma, address,
-+				     !!(flags & RMAP_EXCLUSIVE));
+diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+index dd16819c5edc..70298431e128 100644
+--- a/mm/huge_memory.c
++++ b/mm/huge_memory.c
+@@ -2241,8 +2241,6 @@ static void unmap_page(struct page *page)
+ 		try_to_migrate(folio, ttu_flags);
+ 	else
+ 		try_to_unmap(folio, ttu_flags | TTU_IGNORE_MLOCK);
+-
+-	VM_WARN_ON_ONCE_PAGE(page_mapped(page), page);
  }
  
- void hugepage_add_new_anon_rmap(struct page *page,
+ static void remap_page(struct folio *folio, unsigned long nr)
 -- 
 2.35.1
 
