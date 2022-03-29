@@ -2,330 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53B3CC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:55:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7509C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:55:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237051AbiC2M4s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 08:56:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50292 "EHLO
+        id S236741AbiC2M5M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 08:57:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236364AbiC2M4Y (ORCPT
+        with ESMTP id S237045AbiC2M4u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 08:56:24 -0400
-Received: from mail-ed1-x549.google.com (mail-ed1-x549.google.com [IPv6:2a00:1450:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4805825DAAF
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:42:38 -0700 (PDT)
-Received: by mail-ed1-x549.google.com with SMTP id o20-20020aa7dd54000000b00413bc19ad08so10970322edw.7
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:42:38 -0700 (PDT)
+        Tue, 29 Mar 2022 08:56:50 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3A175A0AE
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:53:45 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id j13so17531402plj.8
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:53:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=SXzoEK+WJk4pacaOPaL1kxqndb2ET/uQVttgxEkML+w=;
-        b=EBgX4Z2SSMT4cCzIkiyvRhgKVrX4GCoNERzYeL3X7WwtwGGVnYOFgUHYNinxWjvjqh
-         kPkONHRo3AKKxZf7R9b/cbfY+0RkKOgrN2sHOaZlXcyZw9J83ocbcq3eROphMcFU1OEF
-         YKJAZFiUIL4gSt2ikNRjoKRlkYyZREXJJz7VZhoC8/sgm/33yNzmvyYsBx61nm/5RFi7
-         Uan2pjppFHg5+0ZzLB/M100362XN/KNKnBk+E1pryuHawtyJIDPxaGso4I1pLwK0vTOC
-         Sf0uIg6BZNx/aUM8AwFe9jVH9IO3gu9QyjACglxQsPj/loJje/iBcBYgMBagUP0EX/7M
-         jrPw==
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=H+yRyS1d98IcrBQFZB9iiSX2T4SDFA0//etts+xx4xA=;
+        b=1pslRGrN6XglfZNraIDgwb+dTS7GLxRkQPZso9STUANxT6OprvFvoXCs5iZNULpR+X
+         amHu9WaFS3xEGBVG+qwC1n7q2SOLW1qXN4uKS0gPJiWtH5bbuHalsJO9KyAv5GMzRmRT
+         WwWlDk3b5j8H3ktTMVhPx7RxJqyNOqGzv30XJPiMBXhljWX3fsk40rvcHardjHedTUyK
+         tXJjoRd53F/qbrbOHJrcr2ArcRtahOEeQDvSQVejEOQzxE59PylUdAPyhRLD0JqW2kmz
+         cpfacwGZu5igPX9MWCW+vuY6aI46qjOswKbR/AmoLN4yE+SnQ2+HJrcwDq9cd9hZC0eG
+         c11A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=SXzoEK+WJk4pacaOPaL1kxqndb2ET/uQVttgxEkML+w=;
-        b=HNL3veLcrpHDEvPj4Gr7m0oihcoxrRIlvGO232kS0YGD0KznhnEvXfyFv2m1TYTCZ7
-         LN9cHcwh2NYdMlMV2enypf7CEBWeTYiX6OqHO4euoSWsBLvWhZkiPY1U4M7CbCoPi4Dv
-         1NVMPGVBIOKM8KMKqxKlukh4Iaddx4h/hLamkclQDHhTbqBtBg8GN6jymxFw/VeJjdox
-         /1414JOZL4USS3r5FgbJtIZiMDZa3cLoiPxh+DspANl6zbRE5JRJuj/CapIN4WrXmCjV
-         wLyE3D860fCEHbZusNZE6UGAJeboEexvuKbjk+KYDANlSgM5QdUbQZE10zQUVbBmpAgK
-         lkKQ==
-X-Gm-Message-State: AOAM530Su4G30LfnjpM8/fXRu7NHSvU6pkLfnl8oAkK8u5BkQ3bZ4FEN
-        4f7vZIsg+h8b26Moeiy6vWEos52GYGY=
-X-Google-Smtp-Source: ABdhPJy8fACfQ4jyGr9xF342/z75NoNcLTDY10G+LWoaiStO0hTLZbGlHwL73c3ZjRYtS31XbeKhwJgw3p0=
-X-Received: from glider.muc.corp.google.com ([2a00:79e0:15:13:36eb:759:798f:98c3])
- (user=glider job=sendgmr) by 2002:a17:906:9acd:b0:6e0:b74d:d932 with SMTP id
- ah13-20020a1709069acd00b006e0b74dd932mr24156373ejc.695.1648557754011; Tue, 29
- Mar 2022 05:42:34 -0700 (PDT)
-Date:   Tue, 29 Mar 2022 14:40:16 +0200
-In-Reply-To: <20220329124017.737571-1-glider@google.com>
-Message-Id: <20220329124017.737571-48-glider@google.com>
-Mime-Version: 1.0
-References: <20220329124017.737571-1-glider@google.com>
-X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
-Subject: [PATCH v2 47/48] x86: kmsan: handle register passing from
- uninstrumented code
-From:   Alexander Potapenko <glider@google.com>
-To:     glider@google.com
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>, linux-mm@kvack.org,
-        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=H+yRyS1d98IcrBQFZB9iiSX2T4SDFA0//etts+xx4xA=;
+        b=GaYPYPqOXF8cNUUyFQbLcJJqAliIiL/HCOH4S0A2BQLi24uuOUfLgN0pN8Sgrf3JLY
+         WBzOZb+3jsW3Z6R2V3ETe2UPhvw+aA+NM0bB/FAwkgJms9pdR4YNn2dPtsH/bxKFtlC1
+         VL7eeafp7k+P+6zKKwG5HfncKaGtW3YzVtKw6DqwhEDunbJl6ujO3bQOiUz70jqleT6p
+         F8Vh7cDmhGEavioxxmTQDybUKT1YR3ahNl4l+xUD+msabSCrjRzshw5fgqPJd+HDEpWO
+         WoZie9mVt0Xy609jQF+QOja9f4XQn4WAqA0127BmKtAxtaygo+UeyvGScCfRh9qCh1PC
+         QH0g==
+X-Gm-Message-State: AOAM532bL9kgoJpdJDohnSI7qS/f0VVfTbDS+GTXeH6kLUCqsRuXP1o0
+        kUFMg0zdnnZQH0c2XFnOMmw6Qg==
+X-Google-Smtp-Source: ABdhPJxmIuKDNw+xtyBa2P/G7A0/9sbdJw2K8K/UeRrneWzIe0Wxgn+sqcZQ74rLrruxtnUkjbRnug==
+X-Received: by 2002:a17:902:f70f:b0:153:ebfe:21b3 with SMTP id h15-20020a170902f70f00b00153ebfe21b3mr30462409plo.119.1648558425372;
+        Tue, 29 Mar 2022 05:53:45 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id n4-20020a637204000000b00398522203a2sm5730641pgc.80.2022.03.29.05.53.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 29 Mar 2022 05:53:44 -0700 (PDT)
+Message-ID: <a3e78af2-b0e3-9a97-5bbd-4bdbc5c5a58d@kernel.dk>
+Date:   Tue, 29 Mar 2022 06:53:43 -0600
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH -next RFC 0/6] improve large random io for HDD
+Content-Language: en-US
+To:     Yu Kuai <yukuai3@huawei.com>, andriy.shevchenko@linux.intel.com,
+        john.garry@huawei.com, ming.lei@redhat.com
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yi.zhang@huawei.com
+References: <20220329094048.2107094-1-yukuai3@huawei.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <20220329094048.2107094-1-yukuai3@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace instrumentation_begin() with instrumentation_begin_with_regs()
-to let KMSAN handle the non-instrumented code and unpoison pt_regs
-passed from the instrumented part. This is done to reduce the number of
-false positive reports.
+On 3/29/22 3:40 AM, Yu Kuai wrote:
+> There is a defect for blk-mq compare to blk-sq, specifically split io
+> will end up discontinuous if the device is under high io pressure, while
+> split io will still be continuous in sq, this is because:
+> 
+> 1) split bio is issued one by one, if one bio can't get tag, it will go
+> to wail. - patch 2
+> 2) each time 8(or wake batch) requests is done, 8 waiters will be woken up.
+> Thus if a thread is woken up, it will unlikey to get multiple tags.
+> - patch 3,4
+> 3) new io can preempt tag even if there are lots of threads waiting for
+> tags. - patch 5
+> 
+> Test environment:
+> x86 vm, nr_requests is set to 64, queue_depth is set to 32 and
+> max_sectors_kb is set to 128.
+> 
+> I haven't tested this patchset on physical machine yet, I'll try later
+> if anyone thinks this approch is meaningful.
 
-Signed-off-by: Alexander Potapenko <glider@google.com>
----
-v2:
- -- this patch was previously called "x86: kmsan: handle register
-    passing from uninstrumented code". Instead of adding KMSAN-specific
-    code to every instrumentation_begin()/instrumentation_end() section,
-    we changed instrumentation_begin() to
-    instrumentation_begin_with_regs() where applicable.
+A real machine test would definitely be a requirement. What real world
+uses cases is this solving? These days most devices have plenty of tags,
+and I would not really expect tag starvation to be much of a concern.
 
-Link: https://linux-review.googlesource.com/id/I435ec076cd21752c2f877f5da81f5eced62a2ea4
----
- arch/x86/entry/common.c         |  3 ++-
- arch/x86/include/asm/idtentry.h | 10 +++++-----
- arch/x86/kernel/cpu/mce/core.c  |  2 +-
- arch/x86/kernel/kvm.c           |  2 +-
- arch/x86/kernel/nmi.c           |  2 +-
- arch/x86/kernel/sev.c           |  4 ++--
- arch/x86/kernel/traps.c         | 14 +++++++-------
- arch/x86/mm/fault.c             |  2 +-
- 8 files changed, 20 insertions(+), 19 deletions(-)
+However, I do think there's merrit in fixing the unfairness we have
+here. But not at the cost of all of this. Why not just simply enforce
+more strict ordering of tag allocations? If someone is waiting, you get
+to wait too.
 
-diff --git a/arch/x86/entry/common.c b/arch/x86/entry/common.c
-index 6c2826417b337..047d157987859 100644
---- a/arch/x86/entry/common.c
-+++ b/arch/x86/entry/common.c
-@@ -14,6 +14,7 @@
- #include <linux/mm.h>
- #include <linux/smp.h>
- #include <linux/errno.h>
-+#include <linux/kmsan.h>
- #include <linux/ptrace.h>
- #include <linux/export.h>
- #include <linux/nospec.h>
-@@ -75,7 +76,7 @@ __visible noinstr void do_syscall_64(struct pt_regs *regs, int nr)
- 	add_random_kstack_offset();
- 	nr = syscall_enter_from_user_mode(regs, nr);
- 
--	instrumentation_begin();
-+	instrumentation_begin_with_regs(regs);
- 
- 	if (!do_syscall_x64(regs, nr) && !do_syscall_x32(regs, nr) && nr != -1) {
- 		/* Invalid system call, but still a system call. */
-diff --git a/arch/x86/include/asm/idtentry.h b/arch/x86/include/asm/idtentry.h
-index 1345088e99025..f24ff33fc3681 100644
---- a/arch/x86/include/asm/idtentry.h
-+++ b/arch/x86/include/asm/idtentry.h
-@@ -51,7 +51,7 @@ __visible noinstr void func(struct pt_regs *regs)			\
- {									\
- 	irqentry_state_t state = irqentry_enter(regs);			\
- 									\
--	instrumentation_begin();					\
-+	instrumentation_begin_with_regs(regs);				\
- 	__##func (regs);						\
- 	instrumentation_end();						\
- 	irqentry_exit(regs, state);					\
-@@ -98,7 +98,7 @@ __visible noinstr void func(struct pt_regs *regs,			\
- {									\
- 	irqentry_state_t state = irqentry_enter(regs);			\
- 									\
--	instrumentation_begin();					\
-+	instrumentation_begin_with_regs(regs);				\
- 	__##func (regs, error_code);					\
- 	instrumentation_end();						\
- 	irqentry_exit(regs, state);					\
-@@ -195,7 +195,7 @@ __visible noinstr void func(struct pt_regs *regs,			\
- 	irqentry_state_t state = irqentry_enter(regs);			\
- 	u32 vector = (u32)(u8)error_code;				\
- 									\
--	instrumentation_begin();					\
-+	instrumentation_begin_with_regs(regs);				\
- 	kvm_set_cpu_l1tf_flush_l1d();					\
- 	run_irq_on_irqstack_cond(__##func, regs, vector);		\
- 	instrumentation_end();						\
-@@ -235,7 +235,7 @@ __visible noinstr void func(struct pt_regs *regs)			\
- {									\
- 	irqentry_state_t state = irqentry_enter(regs);			\
- 									\
--	instrumentation_begin();					\
-+	instrumentation_begin_with_regs(regs);				\
- 	kvm_set_cpu_l1tf_flush_l1d();					\
- 	run_sysvec_on_irqstack_cond(__##func, regs);			\
- 	instrumentation_end();						\
-@@ -262,7 +262,7 @@ __visible noinstr void func(struct pt_regs *regs)			\
- {									\
- 	irqentry_state_t state = irqentry_enter(regs);			\
- 									\
--	instrumentation_begin();					\
-+	instrumentation_begin_with_regs(regs);				\
- 	__irq_enter_raw();						\
- 	kvm_set_cpu_l1tf_flush_l1d();					\
- 	__##func (regs);						\
-diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index 5818b837fd4d4..7b8c43d8727cc 100644
---- a/arch/x86/kernel/cpu/mce/core.c
-+++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -1355,7 +1355,7 @@ static void queue_task_work(struct mce *m, char *msg, void (*func)(struct callba
- /* Handle unconfigured int18 (should never happen) */
- static noinstr void unexpected_machine_check(struct pt_regs *regs)
- {
--	instrumentation_begin();
-+	instrumentation_begin_with_regs(regs);
- 	pr_err("CPU#%d: Unexpected int18 (Machine Check)\n",
- 	       smp_processor_id());
- 	instrumentation_end();
-diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
-index d77481ecb0d5f..eaed9b412908c 100644
---- a/arch/x86/kernel/kvm.c
-+++ b/arch/x86/kernel/kvm.c
-@@ -249,7 +249,7 @@ noinstr bool __kvm_handle_async_pf(struct pt_regs *regs, u32 token)
- 		return false;
- 
- 	state = irqentry_enter(regs);
--	instrumentation_begin();
-+	instrumentation_begin_with_regs(regs);
- 
- 	/*
- 	 * If the host managed to inject an async #PF into an interrupt
-diff --git a/arch/x86/kernel/nmi.c b/arch/x86/kernel/nmi.c
-index 4bce802d25fb1..3f987a5dc38c7 100644
---- a/arch/x86/kernel/nmi.c
-+++ b/arch/x86/kernel/nmi.c
-@@ -329,7 +329,7 @@ static noinstr void default_do_nmi(struct pt_regs *regs)
- 
- 	__this_cpu_write(last_nmi_rip, regs->ip);
- 
--	instrumentation_begin();
-+	instrumentation_begin_with_regs(regs);
- 
- 	handled = nmi_handle(NMI_LOCAL, regs);
- 	__this_cpu_add(nmi_stats.normal, handled);
-diff --git a/arch/x86/kernel/sev.c b/arch/x86/kernel/sev.c
-index e6d316a01fdd4..9bfc29fc9c983 100644
---- a/arch/x86/kernel/sev.c
-+++ b/arch/x86/kernel/sev.c
-@@ -1330,7 +1330,7 @@ DEFINE_IDTENTRY_VC_KERNEL(exc_vmm_communication)
- 
- 	irq_state = irqentry_nmi_enter(regs);
- 
--	instrumentation_begin();
-+	instrumentation_begin_with_regs(regs);
- 
- 	if (!vc_raw_handle_exception(regs, error_code)) {
- 		/* Show some debug info */
-@@ -1362,7 +1362,7 @@ DEFINE_IDTENTRY_VC_USER(exc_vmm_communication)
- 	}
- 
- 	irqentry_enter_from_user_mode(regs);
--	instrumentation_begin();
-+	instrumentation_begin_with_regs(regs);
- 
- 	if (!vc_raw_handle_exception(regs, error_code)) {
- 		/*
-diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-index 8143693a7ea6e..f08741abc0e5b 100644
---- a/arch/x86/kernel/traps.c
-+++ b/arch/x86/kernel/traps.c
-@@ -229,7 +229,7 @@ static noinstr bool handle_bug(struct pt_regs *regs)
- 	/*
- 	 * All lies, just get the WARN/BUG out.
- 	 */
--	instrumentation_begin();
-+	instrumentation_begin_with_regs(regs);
- 	/*
- 	 * Since we're emulating a CALL with exceptions, restore the interrupt
- 	 * state to what it was at the exception site.
-@@ -260,7 +260,7 @@ DEFINE_IDTENTRY_RAW(exc_invalid_op)
- 		return;
- 
- 	state = irqentry_enter(regs);
--	instrumentation_begin();
-+	instrumentation_begin_with_regs(regs);
- 	handle_invalid_op(regs);
- 	instrumentation_end();
- 	irqentry_exit(regs, state);
-@@ -414,7 +414,7 @@ DEFINE_IDTENTRY_DF(exc_double_fault)
- #endif
- 
- 	irqentry_nmi_enter(regs);
--	instrumentation_begin();
-+	instrumentation_begin_with_regs(regs);
- 	notify_die(DIE_TRAP, str, regs, error_code, X86_TRAP_DF, SIGSEGV);
- 
- 	tsk->thread.error_code = error_code;
-@@ -690,14 +690,14 @@ DEFINE_IDTENTRY_RAW(exc_int3)
- 	 */
- 	if (user_mode(regs)) {
- 		irqentry_enter_from_user_mode(regs);
--		instrumentation_begin();
-+		instrumentation_begin_with_regs(regs);
- 		do_int3_user(regs);
- 		instrumentation_end();
- 		irqentry_exit_to_user_mode(regs);
- 	} else {
- 		irqentry_state_t irq_state = irqentry_nmi_enter(regs);
- 
--		instrumentation_begin();
-+		instrumentation_begin_with_regs(regs);
- 		if (!do_int3(regs))
- 			die("int3", regs, 0);
- 		instrumentation_end();
-@@ -896,7 +896,7 @@ static __always_inline void exc_debug_kernel(struct pt_regs *regs,
- 	 */
- 	unsigned long dr7 = local_db_save();
- 	irqentry_state_t irq_state = irqentry_nmi_enter(regs);
--	instrumentation_begin();
-+	instrumentation_begin_with_regs(regs);
- 
- 	/*
- 	 * If something gets miswired and we end up here for a user mode
-@@ -975,7 +975,7 @@ static __always_inline void exc_debug_user(struct pt_regs *regs,
- 	 */
- 
- 	irqentry_enter_from_user_mode(regs);
--	instrumentation_begin();
-+	instrumentation_begin_with_regs(regs);
- 
- 	/*
- 	 * Start the virtual/ptrace DR6 value with just the DR_STEP mask
-diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
-index f2250a32a10ca..676e394f1af5b 100644
---- a/arch/x86/mm/fault.c
-+++ b/arch/x86/mm/fault.c
-@@ -1557,7 +1557,7 @@ DEFINE_IDTENTRY_RAW_ERRORCODE(exc_page_fault)
- 	 */
- 	state = irqentry_enter(regs);
- 
--	instrumentation_begin();
-+	instrumentation_begin_with_regs(regs);
- 	handle_page_fault(regs, error_code, address);
- 	instrumentation_end();
- 
+And I don't see much utility at all in tracking how many splits (and
+hence tags) would be required. Is this really a common issue, tons of
+splits and needing many tags? Why not just enforce the strict ordering
+as mentioned above, not allowing new allocators to get a tag if others
+are waiting, but perhaps allow someone submitting a string of splits to
+indeed keep allocating.
+
+Yes, it'll be less efficient to still wake one-by-one, but honestly do
+we really care about that? If you're stalled on waiting for other IO to
+finish and release a tag, that isn't very efficient to begin with and
+doesn't seem like a case worth optimizing for me.
+
 -- 
-2.35.1.1021.g381101b075-goog
+Jens Axboe
 
