@@ -2,178 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9726C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 02:05:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E6C0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 02:06:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230057AbiC2CHK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 22:07:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52102 "EHLO
+        id S230064AbiC2CIT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 22:08:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230038AbiC2CHI (ORCPT
+        with ESMTP id S229707AbiC2CIS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 22:07:08 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C2B42E9CF
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 19:05:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648519526; x=1680055526;
-  h=from:to:cc:subject:references:date:in-reply-to:
-   message-id:mime-version;
-  bh=CD43qK+AfcCULQ1+tD6UAMseC0SXJNBZ8tTh+WUghbQ=;
-  b=JZEMUtzoSgzyHhypl2TpY++t+he6Mylqo5lJJZdsy/9ET04zQzXE3BbE
-   HyAPzcnaAsne1of27NjJDD7FYlxCrOeczXYnOed+9RVKm6BXuqLZ99iWW
-   imDE/p5EO4CPdZpBnJ3IGOfDl6dAY/MgjLBRTLxdpB9lDnFcXWnzMlyeX
-   y5DDMFX3W9E4aQq7MMQG097iNmp73GiJRCGX1gsaAGzdm2+Y4GdkTpRy5
-   4ZowmQR2zyCoqkf9zhc0RgsGQ4aA/BJ3hGIqgD8xPkxr4nDfL5aBy5dba
-   C70lQJ2LELfPOQXONinUtO07WU3M/Pc7LhSQJJIOZJmQb3X5YZU8j7g47
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="257970485"
-X-IronPort-AV: E=Sophos;i="5.90,219,1643702400"; 
-   d="scan'208";a="257970485"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 19:05:24 -0700
-X-IronPort-AV: E=Sophos;i="5.90,219,1643702400"; 
-   d="scan'208";a="564196031"
-Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.239.13.94])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 19:05:22 -0700
-From:   "Huang, Ying" <ying.huang@intel.com>
-To:     Wei Yang <richard.weiyang@gmail.com>
-Cc:     akpm@linux-foundation.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, mgorman@techsingularity.net
-Subject: Re: [PATCH 2/2] mm/vmscan: make sure wakeup_kswapd with managed zone
-References: <20220327024101.10378-1-richard.weiyang@gmail.com>
-        <20220327024101.10378-2-richard.weiyang@gmail.com>
-        <8735j2opd9.fsf@yhuang6-desk2.ccr.corp.intel.com>
-        <20220329004146.2xdswvrm2qu7f47x@master>
-        <875ynxh9lg.fsf@yhuang6-desk2.ccr.corp.intel.com>
-        <20220329015230.hneciyfxoxtvfytl@master>
-Date:   Tue, 29 Mar 2022 10:05:20 +0800
-In-Reply-To: <20220329015230.hneciyfxoxtvfytl@master> (Wei Yang's message of
-        "Tue, 29 Mar 2022 01:52:30 +0000")
-Message-ID: <871qylfr8f.fsf@yhuang6-desk2.ccr.corp.intel.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Mon, 28 Mar 2022 22:08:18 -0400
+X-Greylist: delayed 1817 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 28 Mar 2022 19:06:34 PDT
+Received: from mail-m963.mail.126.com (mail-m963.mail.126.com [123.126.96.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C35552E9CF;
+        Mon, 28 Mar 2022 19:06:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=mY4De
+        9R7rL76ko6BC33fB4XqBVBoP3XsFOBIbCmaZbE=; b=HJSpxhFilR7YNxGiBXm7Q
+        IEEqbbtD58NG//LRSRA8CcSOn+l1GC/6SQqQaBcYo/qJ+EAMBq5TP/+Z6UPL0pFr
+        hA9vme162OWfZb9/stWSxxlFpe3gmw9LuU/wSEK60oFA5N3NHgeCAxMuDKLPHKie
+        lDOoOjZlKoHhryZRVD1m9I=
+Received: from localhost.localdomain (unknown [116.128.244.169])
+        by smtp8 (Coremail) with SMTP id NORpCgDn3h54YkJieyUrEg--.264S2;
+        Tue, 29 Mar 2022 09:35:53 +0800 (CST)
+From:   xiaolinkui2022@126.com
+To:     tsbogend@alpha.franken.de, david@redhat.com, f.fainelli@gmail.com,
+        akpm@linux-foundation.org, arnd@arndb.de, rppt@kernel.org
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xiaolinkui <xiaolinkui@kylinos.cn>
+Subject: [PATCH] mips: Fix a compilation error.
+Date:   Tue, 29 Mar 2022 09:35:38 +0800
+Message-Id: <20220329013538.21275-1-xiaolinkui2022@126.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ascii
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: NORpCgDn3h54YkJieyUrEg--.264S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7ur1UCw13AF1rJFW5urW5GFg_yoW5Jr1UpF
+        1DJr1kKFZ8Wr45uFyfAa4v9FW3Ja1DGa90vFWUXr909Fn2qFy8Jrn2kryYvr1ktay0qa40
+        krWfXw1qgr4Yvw7anT9S1TB71UUUUUDqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jQDGOUUUUU=
+X-Originating-IP: [116.128.244.169]
+X-CM-SenderInfo: p0ld0z5lqn3xasqsjqqrswhudrp/1tbiaRrSb1pEFKnR7QAAsR
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Wei Yang <richard.weiyang@gmail.com> writes:
+From: xiaolinkui <xiaolinkui@kylinos.cn>
 
-> On Tue, Mar 29, 2022 at 08:43:23AM +0800, Huang, Ying wrote:
-> [...]
->>>>> --- a/mm/migrate.c
->>>>> +++ b/mm/migrate.c
->>>>> @@ -2046,7 +2046,7 @@ static int numamigrate_isolate_page(pg_data_t *pgdat, struct page *page)
->>>>>  		if (!(sysctl_numa_balancing_mode & NUMA_BALANCING_MEMORY_TIERING))
->>>>>  			return 0;
->>>>>  		for (z = pgdat->nr_zones - 1; z >= 0; z--) {
->>>>> -			if (populated_zone(pgdat->node_zones + z))
->>>>> +			if (managed_zone(pgdat->node_zones + z))
->>>>
->>>>This looks good to me!  Thanks!  It seems that we can replace
->>>>populated_zone() in migrate_balanced_pgdat() too.  Right?
->>>>
->>>
->>> Yes, you are right. I didn't spot this.
->>>
->>> While this patch comes from the clue of wakeup_kswapd(), I am not sure it is
->>> nice to put it in this patch together.
->>>
->>> Which way you prefer to include this: merge the change into this one, or a
->>> separate one?
->>
->>Either is OK for me.
->>
->
-> After reading the code, I am willing to do a little simplification. Does this
-> look good to you?
->
-> From 85c8a5cd708ada3e9f5b0409413407b7be1bc446 Mon Sep 17 00:00:00 2001
-> From: Wei Yang <richard.weiyang@gmail.com>
-> Date: Tue, 29 Mar 2022 09:24:36 +0800
-> Subject: [PATCH] mm/migrate.c: return valid zone for wakeup_kswapd from
->  migrate_balanced_pgdat()
->
-> To wakeup kswapd, we need to iterate pgdat->node_zones and get the
-> proper zone. While this work has already been done in
-> migrate_balanced_pgdat().
->
-> Let's return the valid zone directly instead of do the iteration again.
->
-> Signed-off-by: Wei Yang <richard.weiyang@gmail.com>
-> ---
->  mm/migrate.c | 21 ++++++++-------------
->  1 file changed, 8 insertions(+), 13 deletions(-)
->
-> diff --git a/mm/migrate.c b/mm/migrate.c
-> index 5adc55b5347c..b086bd781956 100644
-> --- a/mm/migrate.c
-> +++ b/mm/migrate.c
-> @@ -1973,7 +1973,7 @@ SYSCALL_DEFINE6(move_pages, pid_t, pid, unsigned long, nr_pages,
->   * Returns true if this is a safe migration target node for misplaced NUMA
->   * pages. Currently it only checks the watermarks which is crude.
->   */
-> -static bool migrate_balanced_pgdat(struct pglist_data *pgdat,
-> +static struct zone *migrate_balanced_pgdat(struct pglist_data *pgdat,
->  				   unsigned long nr_migrate_pages)
->  {
->  	int z;
-> @@ -1985,14 +1985,13 @@ static bool migrate_balanced_pgdat(struct pglist_data *pgdat,
->  			continue;
->  
->  		/* Avoid waking kswapd by allocating pages_to_migrate pages. */
-> -		if (!zone_watermark_ok(zone, 0,
-> +		if (zone_watermark_ok(zone, 0,
->  				       high_wmark_pages(zone) +
->  				       nr_migrate_pages,
->  				       ZONE_MOVABLE, 0))
-> -			continue;
-> -		return true;
-> +			return zone;
->  	}
-> -	return false;
-> +	return NULL;
->  }
->  
->  static struct page *alloc_misplaced_dst_page(struct page *page,
-> @@ -2032,6 +2031,7 @@ static int numamigrate_isolate_page(pg_data_t *pgdat, struct page *page)
->  	int page_lru;
->  	int nr_pages = thp_nr_pages(page);
->  	int order = compound_order(page);
-> +	struct zone *zone;
->  
->  	VM_BUG_ON_PAGE(order && !PageTransHuge(page), page);
->  
-> @@ -2040,16 +2040,11 @@ static int numamigrate_isolate_page(pg_data_t *pgdat, struct page *page)
->  		return 0;
->  
->  	/* Avoid migrating to a node that is nearly full */
-> -	if (!migrate_balanced_pgdat(pgdat, nr_pages)) {
-> -		int z;
-> -
-> +	if ((zone = migrate_balanced_pgdat(pgdat, nr_pages))) {
+Commit 4d5b3bdc0ecb ("MIPS: Fix a warning for virt_to_page") will
+trigger a compilation error as follows with kernel v5.17-rc8:
+(CONFIG_RDMA_SIW=y)
 
-I think that this reverses the original semantics.  Originally, we give
-up and wake up kswapd if there's no enough free pages on the target
-node.  But now, you give up and wake up if there's enough free pages.
+In file included from ./arch/mips/include/asm/page.h:270,
+                 from ./arch/mips/include/asm/io.h:29,
+                 from ./arch/mips/include/asm/mmiowb.h:5,
+                 from ./include/linux/spinlock.h:64,
+                 from ./include/linux/wait.h:9,
+                 from ./include/linux/net.h:19,
+                 from drivers/infiniband/sw/siw/siw_qp_tx.c:8:
+drivers/infiniband/sw/siw/siw_qp_tx.c: In function ‘siw_tx_hdt’:
+./arch/mips/include/asm/page.h:255:53: error: cast to pointer from integer of different size [-Werror=int-to-pointer-cast]
+  255 | #define virt_to_pfn(kaddr)    PFN_DOWN(virt_to_phys((void *)(kaddr)))
+      |                                                     ^
+./include/asm-generic/memory_model.h:18:41: note: in definition of macro ‘__pfn_to_page’
+   18 | #define __pfn_to_page(pfn) (mem_map + ((pfn) - ARCH_PFN_OFFSET))
+      |                                         ^~~
+./arch/mips/include/asm/page.h:255:31: note: in expansion of macro ‘PFN_DOWN’
+  255 | #define virt_to_pfn(kaddr)    PFN_DOWN(virt_to_phys((void *)(kaddr)))
+      |                               ^~~~~~~~
+./arch/mips/include/asm/page.h:256:41: note: in expansion of macro ‘virt_to_pfn’
+  256 | #define virt_to_page(kaddr) pfn_to_page(virt_to_pfn(kaddr))
+      |                                         ^~~~~~~~~~~
+drivers/infiniband/sw/siw/siw_qp_tx.c:538:23: note: in expansion of macro ‘virt_to_page’
+  538 |     page_array[seg] = virt_to_page(va & PAGE_MASK);
+      |                       ^~~~~~~~~~~~
 
-Best Regards,
-Huang, Ying
+Fixes: 37d15948eb72 ("MIPS: page.h: Define virt_to_pfn()")
+Fixes: 4d5b3bdc0ecb ("MIPS: Fix a warning for virt_to_page")
+Fixes: b9be6f18cf9e ("rdma/siw: transmit path")
+Signed-off-by: xiaolinkui <xiaolinkui@kylinos.cn>
+---
+ arch/mips/include/asm/page.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->  		if (!(sysctl_numa_balancing_mode & NUMA_BALANCING_MEMORY_TIERING))
->  			return 0;
-> -		for (z = pgdat->nr_zones - 1; z >= 0; z--) {
-> -			if (managed_zone(pgdat->node_zones + z))
-> -				break;
-> -		}
-> -		wakeup_kswapd(pgdat->node_zones + z, 0, order, ZONE_MOVABLE);
-> +
-> +		wakeup_kswapd(zone, 0, order, ZONE_MOVABLE);
->  		return 0;
->  	}
->  
-> -- 
->
-> 2.33.1
+diff --git a/arch/mips/include/asm/page.h b/arch/mips/include/asm/page.h
+index 96bc798c1ec1..0f986f4ad4f0 100644
+--- a/arch/mips/include/asm/page.h
++++ b/arch/mips/include/asm/page.h
+@@ -252,7 +252,7 @@ static inline int pfn_valid(unsigned long pfn)
+ 
+ #endif
+ 
+-#define virt_to_pfn(kaddr)   	PFN_DOWN(virt_to_phys((void *)(kaddr)))
++#define virt_to_pfn(kaddr)   	PFN_DOWN(__pa(kaddr))
+ #define virt_to_page(kaddr)	pfn_to_page(virt_to_pfn(kaddr))
+ 
+ extern bool __virt_addr_valid(const volatile void *kaddr);
+-- 
+2.17.1
+
