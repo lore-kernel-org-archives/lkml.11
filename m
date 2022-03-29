@@ -2,171 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D528C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 23:48:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10EF1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 23:48:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241115AbiC2XuH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 19:50:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59820 "EHLO
+        id S240828AbiC2Xu1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 19:50:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240992AbiC2XuC (ORCPT
+        with ESMTP id S241116AbiC2XuV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 19:50:02 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3431E9BBB6;
-        Tue, 29 Mar 2022 16:48:16 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: dmitry.osipenko)
-        with ESMTPSA id EC0281F40F3A
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1648597694;
-        bh=5RCxnQpK5I7Y2zWLKGLxBiVPTh/yCn+uO0KyYdxQQQ8=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=a9w3F/vzA0sFlOCcLd85ycKnYywA+CP5LeOCfthZ1gDdaKR6rF7wb+pGb1w3Lzsxb
-         8sKZMKFgzrGhqWiKyZhCBP7uOCaZF2rASpfVv1lDWpm/C6Xt7K67TGxiMUSg6S+/he
-         PK40aipOdT3Am2PfAWvr/S08mVe9IdvC++qY7+BIm/X12tiJMw6OB/8oo7mM9H0cB8
-         /4+gpdn+u+thh9lB0dL8yVtGxPULDQDas6PMYX53E5B4ZV6nBFBxbiaP0ygVJ9Vvx8
-         xXAcf1mdKKJGAbgf+K4GQw+GjQ+yMA46G0hGGJoeI0furZEDcXIJNvh9CWQMRe19+w
-         UF73voLivci6A==
-Message-ID: <22eb6b37-3bcd-71ab-f99f-dc059043b56b@collabora.com>
-Date:   Wed, 30 Mar 2022 02:48:11 +0300
+        Tue, 29 Mar 2022 19:50:21 -0400
+Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 661E064EA;
+        Tue, 29 Mar 2022 16:48:34 -0700 (PDT)
+Received: from unknown (HELO iyokan2-ex.css.socionext.com) ([172.31.9.54])
+  by mx.socionext.com with ESMTP; 30 Mar 2022 08:48:33 +0900
+Received: from mail.mfilter.local (m-filter-2 [10.213.24.62])
+        by iyokan2-ex.css.socionext.com (Postfix) with ESMTP id 968F82058B50;
+        Wed, 30 Mar 2022 08:48:33 +0900 (JST)
+Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Wed, 30 Mar 2022 08:48:33 +0900
+Received: from [10.212.182.122] (unknown [10.212.182.122])
+        by kinkan2.css.socionext.com (Postfix) with ESMTP id 83659B62B7;
+        Wed, 30 Mar 2022 08:48:32 +0900 (JST)
+Subject: Re: [PATCH 3/3] dt-bindings: phy: uniphier-ahci: Fix missing
+ reset-names
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
+        linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <1648433152-23126-1-git-send-email-hayashi.kunihiko@socionext.com>
+ <1648433152-23126-4-git-send-email-hayashi.kunihiko@socionext.com>
+ <2e0be70f-f800-e3f8-363e-6598468fa091@linaro.org>
+ <54a88acd-49ed-01f6-4108-b74bc653a612@socionext.com>
+ <1ff5682f-3f59-8635-631f-d648e604044f@linaro.org>
+From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Message-ID: <1dbe4ef7-25bc-2f8a-6ce5-3a39453a8b1c@socionext.com>
+Date:   Wed, 30 Mar 2022 08:48:32 +0900
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [Patch v5 1/4] memory: tegra: Add memory controller channels
- support
+In-Reply-To: <1ff5682f-3f59-8635-631f-d648e604044f@linaro.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-To:     Ashish Mhetre <amhetre@nvidia.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        krzysztof.kozlowski@canonical.com, robh+dt@kernel.org,
-        thierry.reding@gmail.com, jonathanh@nvidia.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-Cc:     vdumpa@nvidia.com, Snikam@nvidia.com
-References: <20220316092525.4554-1-amhetre@nvidia.com>
- <20220316092525.4554-2-amhetre@nvidia.com>
- <83bc4c12-13e3-d239-3845-a3541b1fbb2a@gmail.com>
- <981610f0-374a-b18f-8e3a-445b20edb257@nvidia.com>
-From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
-In-Reply-To: <981610f0-374a-b18f-8e3a-445b20edb257@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/25/22 07:50, Ashish Mhetre wrote:
+Hi Krzysztof,
+
+On 2022/03/29 20:45, Krzysztof Kozlowski wrote:
+> On 29/03/2022 12:55, Kunihiko Hayashi wrote:
+>> Hi Krzysztof,
+>>
+>> Thank you for reviewing.
+>>
+>> On 2022/03/29 3:58, Krzysztof Kozlowski wrote:
+>>> On 28/03/2022 04:05, Kunihiko Hayashi wrote:
+>>>> Add missing "phy" reset-names to fix the following warning:
+>>>>
+>>>>     uniphier-pro4-ace.dtb: ahci-phy@10: resets: [[26, 28], [26, 12], [26,
+>>>> 30], [36, 0], [36, 1], [36, 2]] is too long
+>>>>         From schema:
+>>>> Documentation/devicetree/bindings/phy/socionext,uniphier-ahci-phy.yaml
+>>>>     uniphier-pro4-ace.dtb: ahci-phy@10: reset-names: 'oneOf' conditional
+>>>> failed, one must be fixed:
+>>>>         ['link', 'gio', 'phy', 'pm', 'tx', 'rx'] is too long
+>>>>         From schema:
+>>>> Documentation/devicetree/bindings/phy/socionext,uniphier-ahci-phy.yaml
+>>>
+>>> There is no ahci-phy in current sources...
+>>
+>> Oops, I'm going to add ahci controller to the existing devicetree,
+>> but not yet. I shouldn't write the future warning in the commit message,
+>> so I'll fix it.
+>>
+>>>>
+>>>> Fixes: 34f92b67621f ("dt-bindings: phy: uniphier-ahci: Add bindings for
+>>>> Pro4 SoC")
+>>>> Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+>>>> ---
+>>>>    .../devicetree/bindings/phy/socionext,uniphier-ahci-phy.yaml   | 3 ++-
+>>>>    1 file changed, 2 insertions(+), 1 deletion(-)
+>>>>
+>>>> diff --git
+>>>> a/Documentation/devicetree/bindings/phy/socionext,uniphier-ahci-phy.yaml
+>>>> b/Documentation/devicetree/bindings/phy/socionext,uniphier-ahci-phy.yaml
+>>>> index 3b400a85b44a..14f7579e7daa 100644
+>>>> ---
+>>>> a/Documentation/devicetree/bindings/phy/socionext,uniphier-ahci-phy.yaml
+>>>> +++
+>>>> b/Documentation/devicetree/bindings/phy/socionext,uniphier-ahci-phy.yaml
+>>>> @@ -43,13 +43,14 @@ properties:
+>>>>
+>>>>      resets:
+>>>>        minItems: 2
+>>>> -    maxItems: 5
+>>>> +    maxItems: 6
+>>>>
+>>>>      reset-names:
+>>>>        oneOf:
+>>>
+>>> As a separate commit, this oneOf should be converted into allOf:if:then:
+>>> cases which will enforce the resets per compatible.
+>>>
+>>> Can you do that as well?
+>>
+>> Ok, I've found some examples using "allOf:if:them:" cases,
+>> so I'll try to convert it with another commit.
+>>
 > 
+> For an example, you can take a look at (linux-next):
+> Documentation/devicetree/bindings/clock/samsung,exynos7885-clock.yaml
 > 
-> On 3/19/2022 9:12 PM, Dmitry Osipenko wrote:
->> External email: Use caution opening links or attachments
->>
->>
->> 16.03.2022 12:25, Ashish Mhetre пишет:
->>>  From tegra186 onwards, memory controller support multiple channels.
->>> Add support for mapping address spaces of these channels.
->>> Make sure that number of channels are as expected on each SOC.
->>> During error interrupts from memory controller, appropriate registers
->>> from these channels need to be accessed for logging error info.
->>>
->>> Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
->>> ---
->>>   drivers/memory/tegra/mc.c       |  6 ++++
->>>   drivers/memory/tegra/tegra186.c | 52 +++++++++++++++++++++++++++++++++
->>>   drivers/memory/tegra/tegra194.c |  1 +
->>>   drivers/memory/tegra/tegra234.c |  1 +
->>>   include/soc/tegra/mc.h          |  7 +++++
->>>   5 files changed, 67 insertions(+)
->>>
->>> diff --git a/drivers/memory/tegra/mc.c b/drivers/memory/tegra/mc.c
->>> index bf3abb6d8354..3cda1d9ad32a 100644
->>> --- a/drivers/memory/tegra/mc.c
->>> +++ b/drivers/memory/tegra/mc.c
->>> @@ -749,6 +749,12 @@ static int tegra_mc_probe(struct platform_device
->>> *pdev)
->>>        if (IS_ERR(mc->regs))
->>>                return PTR_ERR(mc->regs);
->>>
->>> +     if (mc->soc->ops && mc->soc->ops->map_regs) {
->>> +             err = mc->soc->ops->map_regs(mc, pdev);
->>> +             if (err < 0)
->>> +                     return err;
->>> +     }
->>> +
->>>        mc->debugfs.root = debugfs_create_dir("mc", NULL);
->>>
->>>        if (mc->soc->ops && mc->soc->ops->probe) {
->>> diff --git a/drivers/memory/tegra/tegra186.c
->>> b/drivers/memory/tegra/tegra186.c
->>> index 3d153881abc1..a8a45e6ff1f1 100644
->>> --- a/drivers/memory/tegra/tegra186.c
->>> +++ b/drivers/memory/tegra/tegra186.c
->>> @@ -139,11 +139,62 @@ static int tegra186_mc_probe_device(struct
->>> tegra_mc *mc, struct device *dev)
->>>        return 0;
->>>   }
->>>
->>> +static int tegra186_mc_map_regs(struct tegra_mc *mc,
->>> +                             struct platform_device *pdev)
->>> +{
->>> +     struct device_node *np = pdev->dev.parent->of_node;
->>> +     int num_dt_channels, reg_cells = 0;
->>> +     struct resource *res;
->>> +     int i, ret;
->>> +     u32 val;
->>> +
->>> +     ret = of_property_read_u32(np, "#address-cells", &val);
->>> +     if (ret) {
->>> +             dev_err(&pdev->dev, "missing #address-cells property\n");
->>> +             return ret;
->>> +     }
->>> +
->>> +     reg_cells = val;
->>> +
->>> +     ret = of_property_read_u32(np, "#size-cells", &val);
->>> +     if (ret) {
->>> +             dev_err(&pdev->dev, "missing #size-cells property\n");
->>> +             return ret;
->>> +     }
->>> +
->>> +     reg_cells += val;
->>> +
->>> +     num_dt_channels =
->>> of_property_count_elems_of_size(pdev->dev.of_node, "reg",
->>> +                                                       reg_cells *
->>> sizeof(u32));
->>> +     /*
->>> +      * On tegra186 onwards, memory controller support multiple
->>> channels.
->>> +      * Apart from regular memory controller channels, there is one
->>> broadcast
->>> +      * channel and one for stream-id registers.
->>> +      */
->>> +     if (num_dt_channels < mc->soc->num_channels + 2) {
->>> +             dev_warn(&pdev->dev, "MC channels are missing, please
->>> update\n");
->>
->> Update what?
->>
->>> +             return 0;
->>> +     }
->>> +
->>> +     mc->mcb_regs = devm_platform_get_and_ioremap_resource(pdev, 1,
->>> &res);
->>
->> Can't we name each reg bank individually in the DT and then use
->> devm_platform_ioremap_resource_byname()?
->>
-> That can be done but I think current logic will be better as we can
-> simply ioremap them by running in loop and assigning the mc_regs array.
-> Otherwise there will be like 17 ioremap_byname() individual calls for
-> Tegra194 and Tegra234.
-> Will it be fine having that many ioremap_byname() calls?
-> Also, Tegra186 has 5 channels which are less than Tegra194 and Tegra234.
-> If we go with ioremap_byname() then we'll have to differentiate number
-> of ioremap_byname() calls.
-for (i = 0; i < mc->soc->num_channels; i++) {
-	sprintf(name, "mc%u", i);
-	err = devm_platform_ioremap_resource_byname(dev, name);
-	...
-}
+> and clocks/clock-names properties.
+
+Thanks for your suggestion.
+I understand how to write it and am trying to convert the *-names to this case.
+
+I also found such cases and some mistakes in the other phys (usb3 and pcie),
+so I'll fix and resend them next.
+
+Thank you,
+
+---
+Best Regards
+Kunihiko Hayashi
