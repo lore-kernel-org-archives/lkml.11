@@ -2,146 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04B88C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 17:41:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12440C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 17:42:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240292AbiC2Rmt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 13:42:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35400 "EHLO
+        id S240295AbiC2Rod (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 13:44:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240306AbiC2Rmq (ORCPT
+        with ESMTP id S233032AbiC2Rob (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 13:42:46 -0400
-Received: from cavan.codon.org.uk (irc.codon.org.uk [IPv6:2a00:1098:84:22e::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4155E33A37;
-        Tue, 29 Mar 2022 10:40:59 -0700 (PDT)
-Received: by cavan.codon.org.uk (Postfix, from userid 1000)
-        id 4368C40A73; Tue, 29 Mar 2022 18:40:57 +0100 (BST)
-Date:   Tue, 29 Mar 2022 18:40:57 +0100
-From:   Matthew Garrett <mjg59@srcf.ucam.org>
-To:     Daniel Kiper <daniel.kiper@oracle.com>
-Cc:     Alec Brown <alec.r.brown@oracle.com>,
-        Kanth Ghatraju <kanth.ghatraju@oracle.com>,
-        Ross Philipson <ross.philipson@oracle.com>,
-        "dpsmith@apertussolutions.com" <dpsmith@apertussolutions.com>,
-        "piotr.krol@3mdeb.com" <piotr.krol@3mdeb.com>,
-        "krystian.hebel@3mdeb.com" <krystian.hebel@3mdeb.com>,
-        "persaur@gmail.com" <persaur@gmail.com>,
-        "Yoder, Stuart" <stuart.yoder@arm.com>,
-        Andrew Cooper <andrew.cooper3@citrix.com>,
-        "michal.zygowski@3mdeb.com" <michal.zygowski@3mdeb.com>,
-        James Bottomley <James.Bottomley@HansenPartnership.com>,
-        "lukasz@hawrylko.pl" <lukasz@hawrylko.pl>,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        grub-devel@gnu.org
-Subject: Linux DRTM on UEFI platforms
-Message-ID: <20220329174057.GA17778@srcf.ucam.org>
+        Tue, 29 Mar 2022 13:44:31 -0400
+Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com [209.85.128.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93A07241B41;
+        Tue, 29 Mar 2022 10:42:46 -0700 (PDT)
+Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-2e6ceb45174so152116737b3.8;
+        Tue, 29 Mar 2022 10:42:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AJXMMgvpvdXkeVHlSYm/0JRtdhSL15VbRYdhQ9gVfCg=;
+        b=LloscU5gnTaweuy2xhexeLJvsE/0jLAOXMuv+WP64uMeqWgCyk6DF9WEQZSESIlIEz
+         5EvJPQtraWZExyiM/pAH5W2CpviGIg0N74edPBwbFCM2PHVydbuIpIRoaSBuRf9is04c
+         Yydxl4dmtmKtzoCjTk8a2emXW+L93dxTIEvaVK6uyD+WVkh/PKDRuodetdZGlIYSG8Ts
+         PE8D5Mook2UbQt7pHkv1EXVjZc0evEvjQXUIkXAlPgN2d9YALCAoXdoeGaDsKXehKHHH
+         BJq7S/FGXiWhwbTKtpmLqOMBKZjcpE0Z2U5TpP8S39a34wlVdeZAhmPy3GnMD7VeG8zP
+         JYfQ==
+X-Gm-Message-State: AOAM530HANUdnDU6KHCPFu4mbqHWjgVLIvydcvQ0+vvT93x9iXhpSU1U
+        veq7O+1aYdMkPd8/Mt3i0xsjDeNJArVxLFTRazg=
+X-Google-Smtp-Source: ABdhPJyZlDnEpwReCMzcOAElpRHV+WsJfUfWYH4Ci5dPdO5TT7zL122F3R2ywvBUaIMAOORIrQORAFpYmAt1X+5glbk=
+X-Received: by 2002:a81:bc5:0:b0:2e6:dcfe:bfcb with SMTP id
+ 188-20020a810bc5000000b002e6dcfebfcbmr28263841ywl.19.1648575765728; Tue, 29
+ Mar 2022 10:42:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220325022219.829-1-chang.seok.bae@intel.com> <20220325022219.829-4-chang.seok.bae@intel.com>
+In-Reply-To: <20220325022219.829-4-chang.seok.bae@intel.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 29 Mar 2022 19:42:34 +0200
+Message-ID: <CAJZ5v0iysvXEs-+L0PuBj1RH+ByGPNotOSgT21TYnUuiwK+hSQ@mail.gmail.com>
+Subject: Re: [PATCH v3 3/3] intel_idle: Add a new flag to initialize the AMX state
+To:     "Chang S. Bae" <chang.seok.bae@intel.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Borislav Petkov <bp@alien8.de>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
+        Artem Bityutskiy <artem.bityutskiy@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We're still trying to come to a conclusion about the most maintainable 
-approach to getting DRTM implementations like Intel TXT working on UEFI 
-platforms under Linux. I'm going to try to summarise the situation here 
-- I'm not an expert, so details may be inaccurate, but I think this is 
-the rough shape of things.
+On Fri, Mar 25, 2022 at 3:30 AM Chang S. Bae <chang.seok.bae@intel.com> wrote:
+>
+> The non-initialized AMX state can be the cause of C-state demotion from C6
+> to C1E. This low-power idle state may improve power savings and thus result
+> in a higher available turbo frequency budget.
+>
+> This behavior is implementation-specific. Initialize the state for the C6
+> entrance of Sapphire Rapids as needed.
+>
+> Suggested-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> Signed-off-by: Chang S. Bae <chang.seok.bae@intel.com>
+> Tested-by : Zhang Rui <rui.zhang@intel.com>
+> Cc: Artem Bityutskiy <artem.bityutskiy@linux.intel.com>
+> Cc: linux-kernel@vger.kernel.org
+> Cc: linux-pm@vger.kernel.org
 
-Under normal circumstances on UEFI platforms, the bootloader (or system 
-firmware directly) load the kernel and execute code in the boot stub. 
-This boot stub code interacts with the firmware in various ways, 
-including working around some platform-specific issues and doing things 
-like copying the TPM event log into memory that can be used by the 
-kernel proper. While it remains technically possible to boot the kernel 
-on x86 UEFI platforms by jumping directly to the kernel entry point and 
-skipping the boot stub, this risks disabling certain functionality and 
-leaving the kernel in a slightly unexpected state. The contract that 
-exists between the UEFI stub and the kernel is not meaningfully 
-documented - portions are carried out by updating the contents of the 
-bootparams struct on x86 or devicetree on ARM, but other information is 
-conveyed via UEFI configuration tables, the boot stub may modify the 
-contents of certain UEFI variables, and some of this is implicit in 
-the form of hardware state.
+Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-The Trenchboot project is attempting to implement DRTM under Linux. 
-Traditional measured boot takes the form of a static root of trust - 
-each component in the boot chain is measured by the previous component 
-before being executed, and each measures what it considers to be 
-security relevant configuration and behavioural state. Modifying any 
-component will change the measurements, even if the end result is 
-equivalent. Dynamic Root of Trust Measurement aims to provide more 
-useful measurements by performing a measurement at a specific point in 
-time - as a result, DRTM cares only about what the state *is*, not what 
-happened before then.
+and I'm expecting this to be routed along with the rest of the series.
 
-There's a bunch of complexity involved in this that's vendor specific, 
-but the short version is that a launch environment is set up and a 
-specific CPU instruction executed that triggers a secure launch event. 
-The Trenchboot code consists of patches to bootloaders to support 
-setting up this environment, and patches to the kernel to provide 
-support for the "Secure Launch" kernel that handles DRTM before handing 
-control off to the kernel proper, skipping the UEFI boot stub.
-
-Since this skips the UEFI boot stub, it's then the responsibility of the 
-bootloader to implement the functionality of the boot stub. This is made 
-difficult due to the absence of an express contract between the boot 
-stub and the rest of the kernel - our assumption has been that the code 
-is the contract, and this is free to change arbitrarily since both the 
-producer and the consumer of the information can be updated 
-simultaneously and can't get out of sync. That seems to leave us with 
-two options:
-
-1) Formalise the contract between the boot stub and the kernel, making 
-it easier for other boot loaders to implement the contract. This has the 
-downside that even within the scope of the contract we may end up with 
-divergent behaviour, and also new functionality in the kernel may not be 
-available without the bootloader also being updated.
-
-2) Modify the boot stub such that it can be provided with a callback, 
-and instead of jumping to the kernel it can jump to the callback. The 
-boot flow would then involve the boot loader setting up the launch 
-environment, calling the boot stub code, and then performing the DRTM 
-event. This avoids requiring an explicit contract (the boot stub would 
-remain part of the kernel image and would be updated in lockstep).
-
-One complexity for both approaches is that the secure launch environment 
-needs to be aware of all security-critical state in the system. The 
-firmware nominally exposes that information for everything it's aware 
-of that's security-critical, but the boot stub may have performed 
-security-critical actions or exposed security-critical state that the 
-firmware is unaware of. The secure launch code from Trenchboot has to be 
-aware of this in order to ensure it's measured.
-
-If there's a contract, then in theory this would be embodied in the 
-contract and when the contract is updated the secure launch code could 
-also be updated. If there's no contract, every change to the boot stub 
-would need to be examined and the secure launch code updated if 
-necessary.
-
-While the secure launch code is currently out of tree, the goal is for 
-it to be integrated into the kernel tree. My feeling is that it's 
-going to be easier to manage this if everything is in tree - ie, all the 
-EFI setup code that does anything security-critical is either in the 
-firmware (and so the firmware takes responsibility for exposing it) or 
-is in the Linux tree (and so we take responsibility for updating the 
-secure launch code whenever something relevant changes in the boot 
-stub). But this requires support from the EFI maintainers in terms of 
-not merging things until we've established whether updates are required 
-to the secure launch code. The alternative is effectively the same, 
-except it would require updating the contract instead.
-
-But, as mentioned, that's just my feeling - I know that Daniel feels 
-that the contract approach is preferable. So:
-
-1) From an EFI maintainer perspective, is making the contract between 
-the boot stub and the kernel explicit viable?
-
-2) If so, is it desirable?
-
-3) If either (1) or (2) is "no", is it reasonable to ensure that all 
-potentially security-critical state or configuration changes to the 
-boot stub are reviewed by DRTM people to verify whether the secure 
-launch code needs to be updated to match?
+> ---
+> Changes from v2:
+> * Remove an unnecessary backslash (Rafael Wysocki).
+>
+> Changes from v1:
+> * Simplify the code with a new flag (Rui).
+> * Rebase on Artem's patches for SPR intel_idle.
+> * Massage the changelog.
+> ---
+>  drivers/idle/intel_idle.c | 18 ++++++++++++++++--
+>  1 file changed, 16 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/idle/intel_idle.c b/drivers/idle/intel_idle.c
+> index b7640cfe0020..d35790890a3f 100644
+> --- a/drivers/idle/intel_idle.c
+> +++ b/drivers/idle/intel_idle.c
+> @@ -54,6 +54,7 @@
+>  #include <asm/intel-family.h>
+>  #include <asm/mwait.h>
+>  #include <asm/msr.h>
+> +#include <asm/fpu/api.h>
+>
+>  #define INTEL_IDLE_VERSION "0.5.1"
+>
+> @@ -100,6 +101,11 @@ static unsigned int mwait_substates __initdata;
+>   */
+>  #define CPUIDLE_FLAG_ALWAYS_ENABLE     BIT(15)
+>
+> +/*
+> + * Initialize large xstate for the C6-state entrance.
+> + */
+> +#define CPUIDLE_FLAG_INIT_XSTATE       BIT(16)
+> +
+>  /*
+>   * MWAIT takes an 8-bit "hint" in EAX "suggesting"
+>   * the C-state (top nibble) and sub-state (bottom nibble)
+> @@ -134,6 +140,9 @@ static __cpuidle int intel_idle(struct cpuidle_device *dev,
+>         if (state->flags & CPUIDLE_FLAG_IRQ_ENABLE)
+>                 local_irq_enable();
+>
+> +       if (state->flags & CPUIDLE_FLAG_INIT_XSTATE)
+> +               fpu_idle_fpregs();
+> +
+>         mwait_idle_with_hints(eax, ecx);
+>
+>         return index;
+> @@ -154,8 +163,12 @@ static __cpuidle int intel_idle(struct cpuidle_device *dev,
+>  static __cpuidle int intel_idle_s2idle(struct cpuidle_device *dev,
+>                                        struct cpuidle_driver *drv, int index)
+>  {
+> -       unsigned long eax = flg2MWAIT(drv->states[index].flags);
+>         unsigned long ecx = 1; /* break on interrupt flag */
+> +       struct cpuidle_state *state = &drv->states[index];
+> +       unsigned long eax = flg2MWAIT(state->flags);
+> +
+> +       if (state->flags & CPUIDLE_FLAG_INIT_XSTATE)
+> +               fpu_idle_fpregs();
+>
+>         mwait_idle_with_hints(eax, ecx);
+>
+> @@ -790,7 +803,8 @@ static struct cpuidle_state spr_cstates[] __initdata = {
+>         {
+>                 .name = "C6",
+>                 .desc = "MWAIT 0x20",
+> -               .flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED,
+> +               .flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED |
+> +                                          CPUIDLE_FLAG_INIT_XSTATE,
+>                 .exit_latency = 290,
+>                 .target_residency = 800,
+>                 .enter = &intel_idle,
+> --
+> 2.17.1
+>
