@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12E77C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 10:38:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82259C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 10:38:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235290AbiC2KkK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 06:40:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48424 "EHLO
+        id S235300AbiC2KkQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 06:40:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235271AbiC2Kjy (ORCPT
+        with ESMTP id S235244AbiC2Kjy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 29 Mar 2022 06:39:54 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF3F23151F
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 190EBC1C95
         for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 03:38:10 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id h4so12400083edr.3
+Received: by mail-ej1-x62c.google.com with SMTP id pv16so34246622ejb.0
         for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 03:38:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=LeYLey+K7jnrJjLXpJq4vuRTho2PLYRKv2z0lAK2TlM=;
-        b=KKPUj2Qex5+/EasmmIfkwgmWYeCayDcWgB7zvVAVk+GrA8sqbVwMB/5UPpISy4LTkZ
-         8ZXQkqT+D0/nnIfu8bxuJvzKDd26LLhLMnoXwM5xulk60HptX7kp3h3nRQaS1JLXQ3Yw
-         kKuKeQkV2A0+TrM5laPRK22AHk1EeFq1kvZLqZMR542V7t1bck/qdC4+YPpKFxyzEueC
-         dXUC2Hl/DDL1NqdiAkgQ233cz1zFIwuAdgoxIyFzLw4EsCRkaVwAgEgJLlgyf4m4aSoe
-         pmWhhmZFfba6cDSpGwAMogelbI8Rt4QckEXJTfyg4JrT/5yqkRdND4v9K8haf8NGWwfM
-         vneA==
+        bh=LsMxFHOpT2A5HUis8VHCCczQTixH8ndtilKa6t51LrI=;
+        b=Pq3ggJM3Rhl7SPfPzHmle6U9ZLOrNMFBynlGOnTYhnWdeWRFEFR9k5d0GC+wQ2k3BG
+         CbXgwnDqAf6j3GK6U2PaQ87RBSfG2F7q+DxLCT5LwFyKzM5QXhsj9UldUsAPbwvUyVCL
+         CCuoXg1PxryZlYsSHhthxfYHvFahI0f+UQHgCN/RGGMTxcosxnrOu0qnZKB5MG5WhEX4
+         hp0kYFR94mptzFAPnduf1Oi9dMi0TfbOpwcYtM8PWRZp3Jz3k8EseLOYUs7lIrpHcRQY
+         6QbKysFcmjBGyRxlRMaglVlR/sxVZ1TvhDqR2EcKuyI5LqwSCjkLvby9ANn4JXoUj9tG
+         etIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=LeYLey+K7jnrJjLXpJq4vuRTho2PLYRKv2z0lAK2TlM=;
-        b=Kgbb97PVSzoN0I/eNXaTtFptIkcNW72SrcuDaVlUl2snGkqbc9CpUu+pmoP6sAQ0VC
-         WNaKANxpU88uX3N8r1WQ4/4ihQKzQie6tfmSdMkNqaeZfBp6zI6uffGfKw3kPmxj+Llq
-         P+ufz59tdFuvm5+z6bN/5Z0eUlkXnTuEWz6Lrdyi7iiIYQIy5Q3q3DRV3KOtzoOgxUqw
-         6KPpLUne6IUbAGF0a1ylfY/+V6H3ZOeTcbKfxRRkt15CDsQaqZD3/VdXZ5J5VHcR1qZJ
-         ZXdisOuvfej3wXCYNJ4u+MPHz1mrcb9DkkZ8Z0n8qeT2V5oQf/rknIEKBNNshWWLGJB1
-         Nn+A==
-X-Gm-Message-State: AOAM532CsarakzYZaZRVwosM3dt8gaERBP4cTJfqS/pQKU5abJ3M2ZXv
-        9r4xxzDnmsOupbqd/1paMYw=
-X-Google-Smtp-Source: ABdhPJzfvZ2a4hk9t2SroRmjvkPR/HE3ANBkLeh0MRSS0XuNqK+QDggW6tLP9PgFsG8/ysw9BcVVSA==
-X-Received: by 2002:a05:6402:2747:b0:419:4817:ba22 with SMTP id z7-20020a056402274700b004194817ba22mr3575366edd.253.1648550289542;
-        Tue, 29 Mar 2022 03:38:09 -0700 (PDT)
+        bh=LsMxFHOpT2A5HUis8VHCCczQTixH8ndtilKa6t51LrI=;
+        b=nH79xdZ1Lx9mnbJhwSdaOzmsFgst5+ezXemjlZfgJoCjZAS8WyrtPXkxIdaEwRGeUz
+         eouP8uxPwqGQLHrVZqbSmG8LTQ+RzAO373OBUrj0xeCxfIicUii/zhfkJm0H+w4USlbD
+         Mn7IfQ32UdeDqgjNMPWaFBzVrJ0PpqPOZquhy7Ul2wsbf8jwijMEnMVIT8/JjAan9xuu
+         Fe6Dp8ktfwW7Z/+G3YUyBee8No4nNAd7ZSiINXglkv4VtRk1cWK3KalFXLQMi8BGv/Wn
+         xyg8bpTlW84S/A4449OB+uUPktKCKVjbnsWX5KzLtSpFv/RszxIoFvQS4+vPvuruZZS8
+         LFNg==
+X-Gm-Message-State: AOAM533gCqd83CUPF1aoUmaxwN8iGGUAUoAR5mSxvNbFYj+US9f+oP2x
+        IbgHD/PsDJC8CG3jft+rnFo=
+X-Google-Smtp-Source: ABdhPJz0xqUQqT3sUKGA15qsP14r3IAHkIFxcD0kHKW7MrHMOmtXEEJtDpooSpjRdDfVk+jHjyb69Q==
+X-Received: by 2002:a17:906:434e:b0:6d0:ed9c:68bc with SMTP id z14-20020a170906434e00b006d0ed9c68bcmr32630418ejm.70.1648550288698;
+        Tue, 29 Mar 2022 03:38:08 -0700 (PDT)
 Received: from localhost.localdomain (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
-        by smtp.gmail.com with ESMTPSA id qw39-20020a1709066a2700b006e03017d60csm7058151ejc.54.2022.03.29.03.38.08
+        by smtp.gmail.com with ESMTPSA id qw39-20020a1709066a2700b006e03017d60csm7058151ejc.54.2022.03.29.03.38.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Mar 2022 03:38:09 -0700 (PDT)
+        Tue, 29 Mar 2022 03:38:08 -0700 (PDT)
 From:   Michael Straube <straube.linux@gmail.com>
 To:     gregkh@linuxfoundation.org
 Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH 4/4] staging: r8188eu: convert rtw_inc_and_chk_continual_urb_error() to bool
-Date:   Tue, 29 Mar 2022 12:37:56 +0200
-Message-Id: <20220329103756.6740-5-straube.linux@gmail.com>
+Subject: [PATCH 3/4] staging: r8188eu: convert rtw_usb_bulk_size_boundary() to bool
+Date:   Tue, 29 Mar 2022 12:37:55 +0200
+Message-Id: <20220329103756.6740-4-straube.linux@gmail.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220329103756.6740-1-straube.linux@gmail.com>
 References: <20220329103756.6740-1-straube.linux@gmail.com>
@@ -65,8 +65,8 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Function rtw_inc_and_chk_continual_urb_error() returns boolean values.
-Change its return type from int to bool.
+Function rtw_usb_bulk_size_boundary() returns boolean values.
+Change its return type from u8 to bool.
 
 Signed-off-by: Michael Straube <straube.linux@gmail.com>
 ---
@@ -74,17 +74,17 @@ Signed-off-by: Michael Straube <straube.linux@gmail.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/staging/r8188eu/include/usb_ops.h b/drivers/staging/r8188eu/include/usb_ops.h
-index 5ee1c8c7940d..ddc46cb44358 100644
+index cfcf6f84d2cf..5ee1c8c7940d 100644
 --- a/drivers/staging/r8188eu/include/usb_ops.h
 +++ b/drivers/staging/r8188eu/include/usb_ops.h
-@@ -25,7 +25,7 @@
-  * @return true:
-  * @return false:
-  */
--static inline int rtw_inc_and_chk_continual_urb_error(struct dvobj_priv *dvobj)
-+static inline bool rtw_inc_and_chk_continual_urb_error(struct dvobj_priv *dvobj)
+@@ -46,7 +46,7 @@ static inline void rtw_reset_continual_urb_error(struct dvobj_priv *dvobj)
+ #define USB_HIGH_SPEED_BULK_SIZE	512
+ #define USB_FULL_SPEED_BULK_SIZE	64
+ 
+-static inline u8 rtw_usb_bulk_size_boundary(struct adapter *padapter, int buf_len)
++static inline bool rtw_usb_bulk_size_boundary(struct adapter *padapter, int buf_len)
  {
- 	int value = atomic_inc_return(&dvobj->continual_urb_error);
+ 	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(padapter);
  
 -- 
 2.35.1
