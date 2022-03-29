@@ -2,170 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81E07C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 23:54:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73D2DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 23:54:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241349AbiC2Xz4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 19:55:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47308 "EHLO
+        id S241250AbiC2X4W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 19:56:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237498AbiC2Xym (ORCPT
+        with ESMTP id S235624AbiC2X4T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 19:54:42 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4CFC24E247;
-        Tue, 29 Mar 2022 16:52:20 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 2F6AF218F9;
-        Tue, 29 Mar 2022 23:52:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1648597939; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=tE32eedhCbqKNV/qzY0QU0j1sD/lbIXfPgDh2Z7fRTs=;
-        b=npmS5Rtdt/vjDg9rTITOYuf0u/0wOAROyuYict0Yx8Rlg5aAG7crOrIyOIn5n7L9jpR+l3
-        xRm3PhCNFMQsJ0ujiDy2L6oYKm1FM94lty/8pH2WSGM5CMs0tIlhDERpH4jI7U4LC8JfcK
-        joM92dZM0iUmJ2/asLXy8NyVeEpzxLY=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1648597939;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=tE32eedhCbqKNV/qzY0QU0j1sD/lbIXfPgDh2Z7fRTs=;
-        b=3wC0HgxOOEeD/3T3+oCgunZQv+J+1MqE6Bd8mMwtFdIWZsqNC9klDTo+16h0XLvnTbFdk4
-        MQLIjNp7nPKQUXAQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4922A13A7E;
-        Tue, 29 Mar 2022 23:52:17 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id nFx+ArGbQ2JILwAAMHmgww
-        (envelope-from <neilb@suse.de>); Tue, 29 Mar 2022 23:52:17 +0000
-Subject: [PATCH 07/10] DOC: update documentation for swap_activate and swap_rw
-From:   NeilBrown <neilb@suse.de>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        David Howells <dhowells@redhat.com>, linux-nfs@vger.kernel.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Date:   Wed, 30 Mar 2022 10:49:41 +1100
-Message-ID: <164859778126.29473.6778751233552859461.stgit@noble.brown>
-In-Reply-To: <164859751830.29473.5309689752169286816.stgit@noble.brown>
-References: <164859751830.29473.5309689752169286816.stgit@noble.brown>
-User-Agent: StGit/0.23
+        Tue, 29 Mar 2022 19:56:19 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E617D10BA
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 16:54:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648598075; x=1680134075;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=nZCupvGOMdRKGS2B/ZmHcaF82OaDndyuxV8JykzLiVw=;
+  b=maAsw2cicMvMCKKh2OI4SQk/wH455XdWX1+g7YxgEroh1ridAkRP5l59
+   smmp0pDKnE7sm6jy+JA2r4TeBX22GYOj8BNRWzWHeC43DJQDttFiP9Ft4
+   8QZ/trk4bLCMoYWHtPp/oaWVIhlZxB1Qh4Bfe1MrZcZjCB1C7+Df2b7FR
+   U/tYTXkZmGoSiDCwv8uMpJb/1BktoLTfhdiAi4CuOzMSf+wdv2SVQSTGU
+   Lnk1hV+AHnfDUgCBZP8rjOud8WzkifCiPX/z/bl3h3j5vp8M6yOoQ8Ck9
+   eHDeDu8HNAZqgovfvokqthMDBPvqT9A5/FxU53jnuRoiaR+WX1k4fq3vf
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="322587264"
+X-IronPort-AV: E=Sophos;i="5.90,220,1643702400"; 
+   d="scan'208";a="322587264"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 16:54:35 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,220,1643702400"; 
+   d="scan'208";a="585792390"
+Received: from lkp-server01.sh.intel.com (HELO 3965e2759b93) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 29 Mar 2022 16:54:33 -0700
+Received: from kbuild by 3965e2759b93 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nZLfU-0000me-9D; Tue, 29 Mar 2022 23:54:32 +0000
+Date:   Wed, 30 Mar 2022 07:53:49 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Suzuki K Poulose <suzuki.poulose@arm.com>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Todd Kjos <tkjos@google.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Qais Yousef <qais.yousef@arm.com>
+Subject: [ammarfaizi2-block:google/android/kernel/common/android12-trusty-5.10
+ 3280/5872] drivers/hwtracing/coresight/coresight-etm4x-core.c:118:5:
+ warning: no previous prototype for 'ete_sysreg_read'
+Message-ID: <202203300748.xYUXZJT9-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This documentation for ->swap_activate() has been out-of-date for a long
-time.  This patch updates it to match recent changes, and adds
-documentation for the associated ->swap_rw()
+Hi Suzuki,
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: NeilBrown <neilb@suse.de>
----
- Documentation/filesystems/locking.rst |   18 ++++++++++++------
- Documentation/filesystems/vfs.rst     |   17 ++++++++++++-----
- 2 files changed, 24 insertions(+), 11 deletions(-)
+FYI, the error/warning still remains.
 
-diff --git a/Documentation/filesystems/locking.rst b/Documentation/filesystems/locking.rst
-index 2998cec9af4b..009d855c9be5 100644
---- a/Documentation/filesystems/locking.rst
-+++ b/Documentation/filesystems/locking.rst
-@@ -260,8 +260,9 @@ prototypes::
- 	int (*launder_folio)(struct folio *);
- 	bool (*is_partially_uptodate)(struct folio *, size_t from, size_t count);
- 	int (*error_remove_page)(struct address_space *, struct page *);
--	int (*swap_activate)(struct file *);
-+	int (*swap_activate)(struct swap_info_struct *sis, struct file *f, sector_t *span)
- 	int (*swap_deactivate)(struct file *);
-+	int (*swap_rw)(struct kiocb *iocb, struct iov_iter *iter);
- 
- locking rules:
- 	All except dirty_folio and freepage may block
-@@ -290,6 +291,7 @@ is_partially_uptodate:	yes
- error_remove_page:	yes
- swap_activate:		no
- swap_deactivate:	no
-+swap_rw:		yes, unlocks
- ======================	======================== =========	===============
- 
- ->write_begin(), ->write_end() and ->readpage() may be called from
-@@ -392,15 +394,19 @@ cleaned, or an error value if not. Note that in order to prevent the folio
- getting mapped back in and redirtied, it needs to be kept locked
- across the entire operation.
- 
--->swap_activate will be called with a non-zero argument on
--files backing (non block device backed) swapfiles. A return value
--of zero indicates success, in which case this file can be used for
--backing swapspace. The swapspace operations will be proxied to the
--address space operations.
-+->swap_activate() will be called to prepare the given file for swap.  It
-+should perform any validation and preparation necessary to ensure that
-+writes can be performed with minimal memory allocation.  It should call
-+add_swap_extent(), or the helper iomap_swapfile_activate(), and return
-+the number of extents added.  If IO should be submitted through
-+->swap_rw(), it should set SWP_FS_OPS, otherwise IO will be submitted
-+directly to the block device ``sis->bdev``.
- 
- ->swap_deactivate() will be called in the sys_swapoff()
- path after ->swap_activate() returned success.
- 
-+->swap_rw will be called for swap IO if SWP_FS_OPS was set by ->swap_activate().
-+
- file_lock_operations
- ====================
- 
-diff --git a/Documentation/filesystems/vfs.rst b/Documentation/filesystems/vfs.rst
-index 4f14edf93941..9d3480e089f6 100644
---- a/Documentation/filesystems/vfs.rst
-+++ b/Documentation/filesystems/vfs.rst
-@@ -751,8 +751,9 @@ cache in your filesystem.  The following members are defined:
- 					       size_t count);
- 		void (*is_dirty_writeback) (struct page *, bool *, bool *);
- 		int (*error_remove_page) (struct mapping *mapping, struct page *page);
--		int (*swap_activate)(struct file *);
-+		int (*swap_activate)(struct swap_info_struct *sis, struct file *f, sector_t *span)
- 		int (*swap_deactivate)(struct file *);
-+		int (*swap_rw)(struct kiocb *iocb, struct iov_iter *iter);
- 	};
- 
- ``writepage``
-@@ -963,15 +964,21 @@ cache in your filesystem.  The following members are defined:
- 	unless you have them locked or reference counts increased.
- 
- ``swap_activate``
--	Called when swapon is used on a file to allocate space if
--	necessary and pin the block lookup information in memory.  A
--	return value of zero indicates success, in which case this file
--	can be used to back swapspace.
-+
-+	Called to prepare the given file for swap.  It should perform
-+	any validation and preparation necessary to ensure that writes
-+	can be performed with minimal memory allocation.  It should call
-+	add_swap_extent(), or the helper iomap_swapfile_activate(), and
-+	return the number of extents added.  If IO should be submitted
-+	through ->swap_rw(), it should set SWP_FS_OPS, otherwise IO will
-+	be submitted directly to the block device ``sis->bdev``.
- 
- ``swap_deactivate``
- 	Called during swapoff on files where swap_activate was
- 	successful.
- 
-+``swap_rw``
-+	Called to read or write swap pages when SWP_FS_OPS is set.
- 
- The File Object
- ===============
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android12-trusty-5.10
+head:   07055bfd3d810d41a38354693dfaa55a6f8c0025
+commit: 82ce4a8af88d25d3f75de6e8437de3d2f049cac3 [3280/5872] FROMLIST: coresight: ete: Add support for ETE sysreg access
+config: arm64-randconfig-r015-20220329 (https://download.01.org/0day-ci/archive/20220330/202203300748.xYUXZJT9-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/82ce4a8af88d25d3f75de6e8437de3d2f049cac3
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android12-trusty-5.10
+        git checkout 82ce4a8af88d25d3f75de6e8437de3d2f049cac3
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/hwtracing/coresight/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/hwtracing/coresight/coresight-etm4x-core.c:118:5: warning: no previous prototype for 'ete_sysreg_read' [-Wmissing-prototypes]
+     118 | u64 ete_sysreg_read(u32 offset, bool _relaxed, bool _64bit)
+         |     ^~~~~~~~~~~~~~~
+>> drivers/hwtracing/coresight/coresight-etm4x-core.c:135:6: warning: no previous prototype for 'ete_sysreg_write' [-Wmissing-prototypes]
+     135 | void ete_sysreg_write(u64 val, u32 offset, bool _relaxed, bool _64bit)
+         |      ^~~~~~~~~~~~~~~~
 
 
+vim +/ete_sysreg_read +118 drivers/hwtracing/coresight/coresight-etm4x-core.c
+
+   117	
+ > 118	u64 ete_sysreg_read(u32 offset, bool _relaxed, bool _64bit)
+   119	{
+   120		u64 res = 0;
+   121	
+   122		switch (offset) {
+   123		ETE_READ_CASES(res)
+   124		default :
+   125			pr_warn_ratelimited("ete: trying to read unsupported register @%x\n",
+   126					    offset);
+   127		}
+   128	
+   129		if (!_relaxed)
+   130			__iormb(res);	/* Imitate the !relaxed I/O helpers */
+   131	
+   132		return res;
+   133	}
+   134	
+ > 135	void ete_sysreg_write(u64 val, u32 offset, bool _relaxed, bool _64bit)
+   136	{
+   137		if (!_relaxed)
+   138			__iowmb();	/* Imitate the !relaxed I/O helpers */
+   139		if (!_64bit)
+   140			val &= GENMASK(31, 0);
+   141	
+   142		switch (offset) {
+   143		ETE_WRITE_CASES(val)
+   144		default :
+   145			pr_warn_ratelimited("ete: trying to write to unsupported register @%x\n",
+   146					    offset);
+   147		}
+   148	}
+   149	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
