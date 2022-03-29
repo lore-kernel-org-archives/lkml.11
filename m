@@ -2,155 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B19B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 03:33:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B112BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 03:35:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242317AbiC3DfB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 23:35:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36492 "EHLO
+        id S242341AbiC3Dgy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 23:36:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238430AbiC3Dex (ORCPT
+        with ESMTP id S242338AbiC3Dgv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 23:34:53 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFFAE20D80B;
-        Tue, 29 Mar 2022 20:33:08 -0700 (PDT)
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22U36NkZ026977;
-        Wed, 30 Mar 2022 03:33:05 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=to : cc : subject :
- from : message-id : references : date : in-reply-to : content-type :
- mime-version; s=corp-2021-07-09;
- bh=THj9z7Yi0Ik5VdvY+3ga5mdI1IMIgp1aIj1LZpbm5wo=;
- b=BmOqI8Bi7cbufelSgSSMOSyeQxynV3KWwCTcPMqog5+XA0aNr5WGph3oNpEqf5UZjljF
- xDI9vaImAxzqZCm6+xdc2Rax78iVpdmz0XqEH0AhlYQHyM37vcKtH/LM9rePOX9HzDri
- mybZpQVeMvhrjB03zkN2WUUTGSCPghMC0ThGYFHlN0Y9jbFQRi4AESwa2V9/kn+XIBwu
- Y8xZxt6VfZMpZFpyNi3DHOrunDn+mwPru6GNW5Defz0eG0t/5JOnAPCkRub2STV1FXGs
- KYbJsLVnVoMy7uSYPN+bWsUxTlbEN80TQ//H+uG9DrxGFz6JULqZXpzoL7pK9Zy0YChO TQ== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3f1tes089v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 30 Mar 2022 03:33:05 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 22U3IrUM111878;
-        Wed, 30 Mar 2022 03:33:04 GMT
-Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2101.outbound.protection.outlook.com [104.47.55.101])
-        by aserp3020.oracle.com with ESMTP id 3f1tmynbwj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 30 Mar 2022 03:33:04 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aagnGB4YaOpQ84+4PE6mktwiA9qpKGIeYDilvXzv5TF/d5FNcQhtqWw+TjqAu0XPuK7Ap3fJxvvNONScPAUD41mvXxR8ltf45elWnKlfBI5KjNddnevAhPprYeL1yO4ISpDFXmYq+cVOwzB8j9qX+6p0bxoNBTAqGNRw3PmOfRb4fSOh9lCOQKhZ++cEzbcw5W2ogo0e0hj2E3CVI3DMb5P8qLX61ohLZW52w2kSDrEzURDvf1W4cwl4b5WQqfmEOHLe+sxz2CSjsmLb1GHYSAihwH5waHKH9vUmu/dKLaRPPSezlMNq0dJXks0SsSgz+yoL3f+XrTFlgBan/yv/Ow==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=THj9z7Yi0Ik5VdvY+3ga5mdI1IMIgp1aIj1LZpbm5wo=;
- b=iTxK4PU+EqeAwpXADU2I/TAv0KGU+Tx47Vfl/+IGw6hGmhZP3u/qg4sKMOeo9I83V+1z71XIKI/vR/C4sWka3V+2QjlRbXUDPrchl/6QUV0cewinTLwaAXB4ZEk049qs4TFWbsJLnCy1DozR2V3Y+kZe/DXkh+089HVgGQ4c4q9QyYf2GO1PRDizAWPtdkh2JGDrUv8r/RxpAkXWjMGEBpCgg9MmJ2dJBI8eJrs/c3Z8bnhm++DdQqHi33QuBJ3lraA9hzD7V1wfurC3HgchYMUXJkXRtA/kF5QBYpjlGSBLT0ocU/uv8b8nu5U7qb9GT6tnP9ileoD7TIx2g1+dug==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=THj9z7Yi0Ik5VdvY+3ga5mdI1IMIgp1aIj1LZpbm5wo=;
- b=o/T6xN3tpUREOqP2TlIqxRGYWLJ9pP98/cKWb+U+qNUPmL5rUmqP2as0M44J7uI0yLqSDFYDHaomWW3rgYu0aKXnCgL3dq708JVTGrRUgws8lAn2GdXfuKaAUHmwx/IuOzaGeakGj7wOIhqI40xLlR/7fBvi4crAIShRPVwP0JA=
-Received: from PH0PR10MB4759.namprd10.prod.outlook.com (2603:10b6:510:3d::12)
- by SN4PR10MB5575.namprd10.prod.outlook.com (2603:10b6:806:206::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.19; Wed, 30 Mar
- 2022 03:33:02 +0000
-Received: from PH0PR10MB4759.namprd10.prod.outlook.com
- ([fe80::48e3:d153:6df4:fbed]) by PH0PR10MB4759.namprd10.prod.outlook.com
- ([fe80::48e3:d153:6df4:fbed%4]) with mapi id 15.20.5102.023; Wed, 30 Mar 2022
- 03:33:02 +0000
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christoph Hellwig <hch@lst.de>, linux-scsi@vger.kernel.org
-Subject: Re: [PATCH v3] scsi: pmcraid: Remove the PMCRAID_PASSTHROUGH_IOCTL
- ioctl implementation
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-Organization: Oracle Corporation
-Message-ID: <yq11qykw1wd.fsf@ca-mkp.ca.oracle.com>
-References: <7f27a70bec3f3dcaf46a29b1c630edd4792e71c0.1648298857.git.christophe.jaillet@wanadoo.fr>
-Date:   Tue, 29 Mar 2022 23:32:59 -0400
-In-Reply-To: <7f27a70bec3f3dcaf46a29b1c630edd4792e71c0.1648298857.git.christophe.jaillet@wanadoo.fr>
-        (Christophe JAILLET's message of "Sat, 26 Mar 2022 13:48:15 +0100")
-Content-Type: text/plain
-X-ClientProxiedBy: SJ0PR03CA0298.namprd03.prod.outlook.com
- (2603:10b6:a03:39e::33) To PH0PR10MB4759.namprd10.prod.outlook.com
- (2603:10b6:510:3d::12)
+        Tue, 29 Mar 2022 23:36:51 -0400
+X-Greylist: delayed 4200 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 29 Mar 2022 20:35:03 PDT
+Received: from mailout-pe-b.jellyfish.systems (mailout-pe-b.jellyfish.systems [198.54.127.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D7253BFBC
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 20:35:01 -0700 (PDT)
+Received: from NEW-01.privateemail.com (unknown [10.35.5.64])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mailout-pe-b.jellyfish.systems (Postfix) with ESMTPSA id 4KSmk05VQbzGp9q;
+        Tue, 29 Mar 2022 23:58:48 +0000 (UTC)
+Received: from MTA-15.privateemail.com (unknown [10.50.14.40])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by NEW-01.privateemail.com (Postfix) with ESMTPS id A63C918000CB;
+        Tue, 29 Mar 2022 19:58:48 -0400 (EDT)
+Received: from mta-15.privateemail.com (localhost [127.0.0.1])
+        by mta-15.privateemail.com (Postfix) with ESMTP id 7546A18000A6;
+        Tue, 29 Mar 2022 19:58:48 -0400 (EDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=gibson.sh; s=default;
+        t=1648598328; bh=O1+zd/KNW+ohI9diX5NoE537Fd17OXvDIMQlgHBfv2A=;
+        h=From:To:Cc:Subject:Date:From;
+        b=z8ZSuvZ5ov0G2HX1zVlDUpp9Ifxa4tjcVXZYMz2yXISq+HyEqX5wgESoApCtCioiY
+         LUU32o61n+2R01db7mq8j9xarkJvGNLlo0D7FBEG9lrCWChDUXJuzL+kObO9+Ldm35
+         UCGWu4E1MmOFMsquOPgH8OyT9xdGzX8rp6gqSWKctQRzKbg9UbsN5t72XXLt+WOIIG
+         VpwORBebtycpzmaMrmgOpF7gt1e40Rl1uD4pGeGxCQ4u67cVypVdVIBARcn2sAvYIW
+         MF9DDgkymnbTWj1XYEqv5/XMn/KVkJL3czcjBNH/HUgwQ0jzrZI3FzSAFsrzldLFa/
+         v+Fiq1PC8vSuA==
+Received: from spiderdemon.horst.lan (unknown [10.20.151.189])
+        by mta-15.privateemail.com (Postfix) with ESMTPA id C72A418000A2;
+        Tue, 29 Mar 2022 19:58:41 -0400 (EDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=gibson.sh; s=default;
+        t=1648598328; bh=O1+zd/KNW+ohI9diX5NoE537Fd17OXvDIMQlgHBfv2A=;
+        h=From:To:Cc:Subject:Date:From;
+        b=z8ZSuvZ5ov0G2HX1zVlDUpp9Ifxa4tjcVXZYMz2yXISq+HyEqX5wgESoApCtCioiY
+         LUU32o61n+2R01db7mq8j9xarkJvGNLlo0D7FBEG9lrCWChDUXJuzL+kObO9+Ldm35
+         UCGWu4E1MmOFMsquOPgH8OyT9xdGzX8rp6gqSWKctQRzKbg9UbsN5t72XXLt+WOIIG
+         VpwORBebtycpzmaMrmgOpF7gt1e40Rl1uD4pGeGxCQ4u67cVypVdVIBARcn2sAvYIW
+         MF9DDgkymnbTWj1XYEqv5/XMn/KVkJL3czcjBNH/HUgwQ0jzrZI3FzSAFsrzldLFa/
+         v+Fiq1PC8vSuA==
+From:   Daniel Gibson <daniel@gibson.sh>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Peter Hurley <peter@hurleysoftware.com>,
+        Daniel Gibson <daniel@gibson.sh>
+Subject: [PATCH 0/1]  tty: n_tty: Restore EOF push handling behavior
+Date:   Wed, 30 Mar 2022 01:58:09 +0200
+Message-Id: <20220329235810.452513-1-daniel@gibson.sh>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: dd8219de-c02a-4b9b-77a7-08da11fdfe8d
-X-MS-TrafficTypeDiagnostic: SN4PR10MB5575:EE_
-X-Microsoft-Antispam-PRVS: <SN4PR10MB5575644095982B39FAB848A98E1F9@SN4PR10MB5575.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: GFta7bw4D9XAbCPamNjv2dMySvVz5eg1WprAhLXRojwt3VdRJiRjuF+42Czl6w4+s08oQZYmD3gJfyHMp8tLXi0KF7Jaa9AlIaoYPHDLKFje3z+B0wPfWzKyPyVCM9KHbKe2XMlNohzip2NAcWPkLDgtvwJge9uybWuLfphl+hcthu7SWqJ25f1lyATt/YcV8EWqDiSPgT/jtPrfEY/7R66kTs+f1VAPJm/vXqiUbJCJA8a/TFM8letwhjMStKGvIk/MEeZNQBj0Tz0Rjrm9CToy+hf/48H9de3YGtjTaCD7OIBkhCtlBcwho9HS7BLZRvYBn7qLWFNX9p2LJnfnDAKWqQDxRvNANoHkcGvCMJ7GeqsmdSRP0CecNo5jBlBG3REwdlm2vyMduYWu67Afgxt2hE5GoVoa7MZM/+aCF8YL9of/8sCYOznQJ/4edoaoy5AhXDM1ZF+XfLnT/WxNmJgMNcQac4MZtXv/OWJN7tQ9sZVomcp1iejEFo5db8HBsn33qyW3YlcjiLJGegmZGQiCWKAJZ/PCF6DMWpUmqq+MBSCW/oBNQoLzRix1Z0z7JdQbIKwGsEJ4Xxs18VqYWqREj3hbnzzfIbIjhDPmtDAl5iFRD1bj+zBn7AN0ttn9TQBopPb1Ab4HNdILQ2QrF1YStInEyXfih9QK/JdkjK34S15Egf4ufHmjsU79EcvKK57ZZ++gWc2q4LD/44voQA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR10MB4759.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(66946007)(5660300002)(66556008)(316002)(66476007)(86362001)(6916009)(8936002)(54906003)(26005)(4326008)(186003)(8676002)(6666004)(36916002)(6512007)(6506007)(52116002)(558084003)(2906002)(508600001)(38350700002)(6486002)(38100700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?dGP05MjVlxHZi3NPoAINd5bNTEvwgXfn5gcYBYaXsn+LMeBeqOhGVavbjv5r?=
- =?us-ascii?Q?YDq/AjmkZ0M4XcTjNwpgWqFnNnm1YxVxH0L/ab8flo1E+G9eB57ODHzPhOBM?=
- =?us-ascii?Q?JEGJm1O7FkZ0hNDbM4td5iFUUOTyMvxZAiDcreZpS0NtWEdmWF/iHU/Sa4E0?=
- =?us-ascii?Q?cqki7E/hkvJSJxoJfR5LLOJkH3WT1BSl9T3JXoGOj/SXX6WGIEid3z1nOYsV?=
- =?us-ascii?Q?tMDxw7j0y4jolVqsSjsmyjdqPTkq+CMY1q05qCpTvwDAr8JdwOfQE9/wqHNJ?=
- =?us-ascii?Q?CR3t68XctLXReneO7f7onMgAhwt42puwaBwBgpwo8yfOp9Tg/gUuXac2auIV?=
- =?us-ascii?Q?jRHz3/IUsFXcVWUYBMQN+FwC98LBii7ZAvrTAZViJ24TKm0TyyjUUCUaINP1?=
- =?us-ascii?Q?GLPnMna0OCmOt11Y1xxp3KY8+U2B6bM/02TA0yX7vzY8tnIxcW6BeFtzI3PH?=
- =?us-ascii?Q?cuilMO1aZky8k1RqOBybgyc9yBdXqzX0evEYb6TlLS14jKnrUBGMZHnOtV++?=
- =?us-ascii?Q?IqLzSTc9JKOR6fYAPWKFK4RpfPUNnJ6FyPZ91UztgGHJrPxN1yTRrJb6YQOH?=
- =?us-ascii?Q?nGcWwX4d3Ei4g3NDRUbwjjEudgOIQ6jw+rxCJiPyqwXK3OY/ZEbyyQSucAdf?=
- =?us-ascii?Q?gc8PSwVXKGjaQOZdEFKsStq/PVIeYJYABCgnBvjUUUcWoIBSqVvvBBwrcH0p?=
- =?us-ascii?Q?/YqpzWLqyETHIdhHtEISOFoRCF13gPp1DOJ5Pa+m5OvndFzsUKR1313SFmlA?=
- =?us-ascii?Q?cefVxhBI0Yu2/2X6rAVj6xlbTvUiRknpPxWlQTZHNuFSV9fOvfq3zjbje4hq?=
- =?us-ascii?Q?goY3z3mQmpbYK+7VV6aKxYswgcvkLYKWlgmHFlvwJZRcKkXJ/d/3eP0bgGZ4?=
- =?us-ascii?Q?1xXx7DcuVirIn6drXZPwoT9D83FO4JsA8LImi0xfZ3+Q5Jthv7I2HDs2IWnr?=
- =?us-ascii?Q?NReSnsX0LWS+lwR6zM9l8M3D1+oIRUKFNMkbKQETRHYusJG9rZLoC8TR5mwE?=
- =?us-ascii?Q?vz8LB54j/OcS5ve3GscSKZVUo4tWphi8T1e+FFcsLy0aDB/nrHBaKEO0ik/7?=
- =?us-ascii?Q?xJL/wj42Hl2hk6DYRkifhQvDEQ01ExqQFB8S7wmOYoJDaqfmMOwQ7SBL1oBn?=
- =?us-ascii?Q?wAta8dK1fRO3X0VipgmgpBSjQOXB2JhaGWDqREdNuu8OFlAwhXjf/6exnSkU?=
- =?us-ascii?Q?qAGRr2CNq5jzHh9A5tNReqnJwaUD55jsUEwIAQjbkcr5a8iwuj+0YHD5Rprr?=
- =?us-ascii?Q?+kn3shQXVnu/RFE0hc/f3Vq84utIhoK6Mk0sXPkwhTHgUEN8aTQZjn/gg1y8?=
- =?us-ascii?Q?0G6eA/SEAFfHAozPLAWeeXceWgWcClo7/gy8CeP7lI43qmr3ezI7eET6I1HO?=
- =?us-ascii?Q?3Jtohl4OSwsFzmu02Y6afeBczqLrpkcYCvc3mkFveK7LolOWK0PGYG6Ox9+0?=
- =?us-ascii?Q?mA7aflkBI0BABx8VP661KHTLRczx3Ygcn+ckqQJ9gN5kCKyxq/iKrqOCsd4k?=
- =?us-ascii?Q?zWKatvo3bHiA5eGdXO41xM6GiunfktTjLGu1SmUj4ayyi0JETG+92rPxzmWx?=
- =?us-ascii?Q?dI3prgUleMoqxgYhfkupDQ6nck5BvoW4qIALryknebZye7blB/1HBRZnlEz9?=
- =?us-ascii?Q?3uKvUEsm6TJPuIkwccBju0QSc1pJ4Jn76M4QUfxiKSUDUjvXIenynUvoS1HY?=
- =?us-ascii?Q?x2fJ2adgteKrryPqnTC3IlwEMuisj9kGrooN3NgqXyLaqVDget523eVWvGY+?=
- =?us-ascii?Q?P4Oi55q4oYt2pSb1WMz7Czz7uLVAOwc=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dd8219de-c02a-4b9b-77a7-08da11fdfe8d
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR10MB4759.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2022 03:33:02.2678
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: bCyq6Nfo1P2IPVju0uKGEEGltrVakqjoQiLL7Kg1BRNfCU/XDFuMYrunc6lmXTgWdOv41utikKyDuScdDnupkvmmhjnx6/B+aQWl8Jz1RGA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN4PR10MB5575
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10301 signatures=695566
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 malwarescore=0 spamscore=0
- phishscore=0 adultscore=0 mlxlogscore=805 suspectscore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2203300014
-X-Proofpoint-GUID: a5GCfwnM097UNRRaxcRJ6q6btd_sxIzp
-X-Proofpoint-ORIG-GUID: a5GCfwnM097UNRRaxcRJ6q6btd_sxIzp
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Since Kernel 5.12 there was a bug in Pseudo-Terminals (it has been fixed
+recently) in ICANON mode where the terminating newline was missing in a
+read() if the line had exactly 64 chars PLUS newline - and that newline
+was then returned at the beginning of the next line that was read().
 
-Christophe,
+https://bugzilla.kernel.org/show_bug.cgi?id=215611 has more information
+on this bug, but I'll summarize things relevant to this patch here:
 
-> The whole passthrough ioctl path looks completely broken.  For example
-> it dma maps the scatterlist and after that copies data to it, which is
-> prohibited by the DMA API contract.
+This bug was introduced by 3b830a9c34d5 ("tty: convert tty_ldisc_ops
+'read()' function to take a kernel pointer") but it turned out that a
+slight variation of it existed even before (if the newline was just
+after the buffer size passed to read()).
+That bug had been introduced by ac8f3bf8832a ("n_tty: Fix poll() after
+buffer-limited eof push read") which fixed an edge-case very similar to
+the one it broke - if there was a "EOF" pseudo-EOL character (that's
+a __DISABLED_CHAR and thus not supposed to be returned to the reader)
+directly after a read-buffer-sized line, this EOF character was supposed
+to be silently discarded - and while doing this the case of a regular
+EOL character (that's supposed to be returned to the reader, like '\n')
+directly following the read-buffer was broken.
+As this original bug was less likely to be triggered than the newer
+64 char case (I guess usually the reader passes a buffer that's big
+enough to hold the whole line) it has never been found.
+This EOF/pseudo-EOL character handling is also called "EOF pushing", and
+the character that's used for it is EOT (ASCII 0x4). Like a regular EOL
+character it terminates a line that's written to a pseudo-terminal, but
+unlike a regular EOL character it's not returned to the reader.
 
-Applied to 5.18/scsi-staging, thanks!
+Anyway, the fix for the bug with 64 chars + newline (359303076163 
+"tty: n_tty: do not look ahead for EOL character past the end of the buffer")
+broke the edge case of discarding EOT after the read buffer size, which
+causes the next read() to return 0, because it's detected as an empty
+line with a newline-character that's not returned to the reader.
+
+read() returning 0 in this case actually *is* valid behavior (FreeBSD
+and OSX do it), and has the advantage that the reader can interpret it
+as "the line I just received is over" - otherwise the reader can't know,
+could as well have been an even longer line and the previous read() just
+returned the first part of it.
+
+On the other hand, read() returning 0 means EOF and the reader could
+misinterpret it as "there's no more data, probably the other side
+disconnected" and stop reading or even close the pseudo-terminal.
+So it might indeed be a good idea to avoid this by silently discarding
+EOF (EOT) characters and returning the next line, like Linux did before.
+Solaris (or at least OpenIndiana 2021.10) does the same.
+
+While both options are defensible (and are used by other Unix-likes),
+IMHO it's best to stick to the "old" Linux behavior since 40d5e0905a03
+("n_tty: Fix EOF push handling") of 2013, i.e. silently discard the EOF.
+
+The following patch, which is based on a patch Linus gave me for
+testing, restores that behavior.
+
+I wrote a pretty extensive test for several edge-cases of PTYs in ICANON
+mode (including the bugs mentioned before) which you can download at:
+https://bugzilla.kernel.org/show_bug.cgi?id=215611#c10
+I plan to port that standalone-test to kselftest eventually, but so far
+haven't gotten around to doing that, so I'd prefer to get this patch
+merged now and the test later once it's ported.
+
+
+Daniel Gibson (1):
+  tty: n_tty: Restore EOF push handling behavior
+
+ drivers/tty/n_tty.c | 38 +++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 37 insertions(+), 1 deletion(-)
 
 -- 
-Martin K. Petersen	Oracle Linux Engineering
+2.25.1
+
