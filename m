@@ -2,191 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 745EFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:48:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30CD3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:48:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236692AbiC2MuY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 08:50:24 -0400
+        id S236791AbiC2Mue (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 08:50:34 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236848AbiC2MsI (ORCPT
+        with ESMTP id S237948AbiC2MtZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 08:48:08 -0400
-Received: from mail-ed1-x549.google.com (mail-ed1-x549.google.com [IPv6:2a00:1450:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E82522BD76
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:42:25 -0700 (PDT)
-Received: by mail-ed1-x549.google.com with SMTP id x5-20020a50ba85000000b00418e8ce90ffso10940029ede.14
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:42:25 -0700 (PDT)
+        Tue, 29 Mar 2022 08:49:25 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0A05227C5B
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:46:37 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id y6so14982483plg.2
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:46:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=NOfDS0CsOY5h9mAj6JbXzNq92U67NVHjp1LhoXoozQE=;
-        b=Nn0hcJcow4Zi7/qxTCnawsZd86i/kfajgqOZt7a19BzANMrQn3RZVXK/4TSbOgTtKy
-         EZXwKZ2ETjPWwTQI84e+ZS4kCQZicjI4YNLp506aUC1vJIqm4sYJ9Jk00ZDxlbxl+PLB
-         I5mp72VYTHiRMctKwlnD1s+EvmhkJ/kSzPgw4eOi0GnsAWgkzobtSIgiRYb2F6NVLdQr
-         ygOxPLA0uG7pXUYXgxRRYvjcZdbBM+cj+52SkT7eFAPFsazO+XOHu6xCOBRJhGkNlNFY
-         jvJktjAJ2UXDOtvgbcc5Nl2IbozKqFTgnIdEGvzEGMEsOCP/KyQRrmJM8Q+toW8lmnUu
-         BZAw==
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=rxVMbNlsIDttgLsDQW9zlxLetSlVk0P6TXGtVI3cb6E=;
+        b=PWILuP6rpZEDH4WXU2e7S+vFyN0Fd42Av4QSFBhoFmIXktyXkMalQjmfJgJCtM8Z8V
+         wBmKN5HlT789q86wG5Ti6McqcFJAIm//30h6QDPaCxdL0FQhg34WUqwaTiOi9xuh38qF
+         BvH3IqvHkHCT+ATftFblwjSqP28fmQ57WI+uLgVctAgpbYsIUOo8BjbrXfxGOOKVNUGH
+         v7mU59TfKw6KEVVIlrsEvqgGZh+utDoUs1YtVukhXkCU+pjIGknph+lmuiH6B9gFMNLe
+         i7EoRvF76t6zAAFg9hcbcPpapzur6bEU4wvTJrB4BTzru9Rdtu4jdZjpkcDmJSuA4acf
+         7+mA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=NOfDS0CsOY5h9mAj6JbXzNq92U67NVHjp1LhoXoozQE=;
-        b=AmN40YSGjszcc2CxwiA4uNjQ1QffYFqjGIYi8+sMmWloSouHDmdN+eo68vWitOYBKq
-         ySeH7tEdMYMgRRUnC7Veny3UxdeyUD/dNsjNmK4NTI8acg7RHDwHm3KpmsZ7erA4rKDs
-         Dv1w6VZ0ToW7XgFef8jkjHo5kDW9JbY579ZSwO9a2Inea5ANVna2deVWFz0Zo89xYROd
-         BTudYXL9pzfkNE2maaGUZN/hLf8vtisNGwEJY7yQciRMQJadIgOnYXjiosFVqIDn/GPv
-         IzIE+wYkfJMQrZMjpPL6lLWcjBKpS+SiHGiCVluhChWid1Tsj2d416Mm+Qs54Cy/5+u+
-         bSjA==
-X-Gm-Message-State: AOAM531iC/wspaaiGkaEV1egGR8477JoXQvwa8iN0H7/u8dIlSGFtRYP
-        GBpDwus2noWZ4+WQuLjzBhPGi/5qKKw=
-X-Google-Smtp-Source: ABdhPJwjvewOCtdgKLCr3b6pMPkXnDTkN3wiCJIAUwFNMFNSlC6T2GR80JxGo48vEzlzJdJxvNcfeTGHeAU=
-X-Received: from glider.muc.corp.google.com ([2a00:79e0:15:13:36eb:759:798f:98c3])
- (user=glider job=sendgmr) by 2002:a05:6402:d72:b0:419:938d:f4ce with SMTP id
- ec50-20020a0564020d7200b00419938df4cemr4402146edb.166.1648557743423; Tue, 29
- Mar 2022 05:42:23 -0700 (PDT)
-Date:   Tue, 29 Mar 2022 14:40:12 +0200
-In-Reply-To: <20220329124017.737571-1-glider@google.com>
-Message-Id: <20220329124017.737571-44-glider@google.com>
-Mime-Version: 1.0
-References: <20220329124017.737571-1-glider@google.com>
-X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
-Subject: [PATCH v2 43/48] x86: kmsan: use __msan_ string functions where possible.
-From:   Alexander Potapenko <glider@google.com>
-To:     glider@google.com
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>, linux-mm@kvack.org,
-        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=rxVMbNlsIDttgLsDQW9zlxLetSlVk0P6TXGtVI3cb6E=;
+        b=u2wKTZJsLrj55qMm7hVp06uDbL4ykRaMXtBF+X7EOpVJ9XRr8w+WyRA5eE2UJqe6fd
+         TrFKd911UFVs/erDOt0Lp2WZd496PlxBvfdHzj0Vx0D979hgaJFir67aEmAM3X51mh0z
+         Z/ik7ETkx9kayUmc72C+Kp3Ijw7UBHa2JQTg7AYIP7AY+0t6V6vlv+h/46+JO351C7LX
+         PfYqdLmMGQSgbU6ET5bhNWi5jIYVNQtxeCR88lq9dohk6bpq3BYIS3DeqoZtljdWsPHI
+         Xf5f1VBKrSaEW/S/Jyzt+uwRslJpJqFo1IEG9/VBddJjxFEqneQkGQ82zv/ysmJEADe+
+         GIWw==
+X-Gm-Message-State: AOAM531R8fWNZ1d84erqJvdLV21FBzTnRiAlc2rU+poKoJXos8vWqsu0
+        84NpfDaXTpxxLD5jtt5+L7ZyKg==
+X-Google-Smtp-Source: ABdhPJwH1iXdVwT0nBUyiGXP5p/4Q0BR3MyTU6L9eyfTF2N9F7yM0gyokMxROV9mKgv2Fl8oSZnZ4w==
+X-Received: by 2002:a17:90a:840a:b0:1c9:5c4f:5e83 with SMTP id j10-20020a17090a840a00b001c95c4f5e83mr4376177pjn.144.1648557997386;
+        Tue, 29 Mar 2022 05:46:37 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id nn7-20020a17090b38c700b001c9ba103530sm3042535pjb.48.2022.03.29.05.46.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 29 Mar 2022 05:46:36 -0700 (PDT)
+Message-ID: <2b37ce73-83dd-e572-9578-7bb045f1040b@kernel.dk>
+Date:   Tue, 29 Mar 2022 06:46:35 -0600
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH -next RFC 2/6] block: refactor to split bio thoroughly
+Content-Language: en-US
+To:     Yu Kuai <yukuai3@huawei.com>, andriy.shevchenko@linux.intel.com,
+        john.garry@huawei.com, ming.lei@redhat.com
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yi.zhang@huawei.com
+References: <20220329094048.2107094-1-yukuai3@huawei.com>
+ <20220329094048.2107094-3-yukuai3@huawei.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <20220329094048.2107094-3-yukuai3@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Unless stated otherwise (by explicitly calling __memcpy(), __memset() or
-__memmove()) we want all string functions to call their __msan_ versions
-(e.g. __msan_memcpy() instead of memcpy()), so that shadow and origin
-values are updated accordingly.
+On 3/29/22 3:40 AM, Yu Kuai wrote:
+> Currently, the splited bio is handled first, and then continue to split
+> the original bio. This patch tries to split the original bio thoroughly,
+> so that it can be known in advance how many tags will be needed.
 
-Bootloader must still use the default string functions to avoid crashes.
+This makes the bio almost 10% bigger in size, which is NOT something
+that is just done casually and without strong reasoning.
 
-Signed-off-by: Alexander Potapenko <glider@google.com>
----
+So please provide that, your commit message is completely missing
+justification for why this change is useful or necessary. A good
+commit always explains WHY the change needs to be made, yours is
+simply stating WHAT is being done. The latter can be gleaned from
+the code change anyway.
 
-Link: https://linux-review.googlesource.com/id/I7ca9bd6b4f5c9b9816404862ae87ca7984395f33
----
- arch/x86/include/asm/string_64.h | 23 +++++++++++++++++++++--
- include/linux/fortify-string.h   |  2 ++
- 2 files changed, 23 insertions(+), 2 deletions(-)
-
-diff --git a/arch/x86/include/asm/string_64.h b/arch/x86/include/asm/string_64.h
-index 6e450827f677a..3b87d889b6e16 100644
---- a/arch/x86/include/asm/string_64.h
-+++ b/arch/x86/include/asm/string_64.h
-@@ -11,11 +11,23 @@
-    function. */
- 
- #define __HAVE_ARCH_MEMCPY 1
-+#if defined(__SANITIZE_MEMORY__)
-+#undef memcpy
-+void *__msan_memcpy(void *dst, const void *src, size_t size);
-+#define memcpy __msan_memcpy
-+#else
- extern void *memcpy(void *to, const void *from, size_t len);
-+#endif
- extern void *__memcpy(void *to, const void *from, size_t len);
- 
- #define __HAVE_ARCH_MEMSET
-+#if defined(__SANITIZE_MEMORY__)
-+extern void *__msan_memset(void *s, int c, size_t n);
-+#undef memset
-+#define memset __msan_memset
-+#else
- void *memset(void *s, int c, size_t n);
-+#endif
- void *__memset(void *s, int c, size_t n);
- 
- #define __HAVE_ARCH_MEMSET16
-@@ -55,7 +67,13 @@ static inline void *memset64(uint64_t *s, uint64_t v, size_t n)
- }
- 
- #define __HAVE_ARCH_MEMMOVE
-+#if defined(__SANITIZE_MEMORY__)
-+#undef memmove
-+void *__msan_memmove(void *dest, const void *src, size_t len);
-+#define memmove __msan_memmove
-+#else
- void *memmove(void *dest, const void *src, size_t count);
-+#endif
- void *__memmove(void *dest, const void *src, size_t count);
- 
- int memcmp(const void *cs, const void *ct, size_t count);
-@@ -64,8 +82,7 @@ char *strcpy(char *dest, const char *src);
- char *strcat(char *dest, const char *src);
- int strcmp(const char *cs, const char *ct);
- 
--#if defined(CONFIG_KASAN) && !defined(__SANITIZE_ADDRESS__)
--
-+#if (defined(CONFIG_KASAN) && !defined(__SANITIZE_ADDRESS__))
- /*
-  * For files that not instrumented (e.g. mm/slub.c) we
-  * should use not instrumented version of mem* functions.
-@@ -73,7 +90,9 @@ int strcmp(const char *cs, const char *ct);
- 
- #undef memcpy
- #define memcpy(dst, src, len) __memcpy(dst, src, len)
-+#undef memmove
- #define memmove(dst, src, len) __memmove(dst, src, len)
-+#undef memset
- #define memset(s, c, n) __memset(s, c, n)
- 
- #ifndef __NO_FORTIFY
-diff --git a/include/linux/fortify-string.h b/include/linux/fortify-string.h
-index a6cd6815f2490..b2c74cb85e20e 100644
---- a/include/linux/fortify-string.h
-+++ b/include/linux/fortify-string.h
-@@ -198,6 +198,7 @@ __FORTIFY_INLINE char *strncat(char *p, const char *q, __kernel_size_t count)
- 	return p;
- }
- 
-+#ifndef CONFIG_KMSAN
- __FORTIFY_INLINE void *memset(void *p, int c, __kernel_size_t size)
- {
- 	size_t p_size = __builtin_object_size(p, 0);
-@@ -240,6 +241,7 @@ __FORTIFY_INLINE void *memmove(void *p, const void *q, __kernel_size_t size)
- 		fortify_panic(__func__);
- 	return __underlying_memmove(p, q, size);
- }
-+#endif
- 
- extern void *__real_memscan(void *, int, __kernel_size_t) __RENAME(memscan);
- __FORTIFY_INLINE void *memscan(void *p, int c, __kernel_size_t size)
 -- 
-2.35.1.1021.g381101b075-goog
+Jens Axboe
 
