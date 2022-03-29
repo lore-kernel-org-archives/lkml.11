@@ -2,83 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5BAFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:41:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC7FAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:41:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239739AbiC2QnF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 12:43:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32836 "EHLO
+        id S239759AbiC2QnL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 12:43:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238079AbiC2QnD (ORCPT
+        with ESMTP id S239742AbiC2QnG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 12:43:03 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 020C3249895
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:41:19 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1nZEu2-0005cv-G0; Tue, 29 Mar 2022 18:41:06 +0200
-Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1nZEtw-003pAh-DT; Tue, 29 Mar 2022 18:41:03 +0200
-Received: from pza by lupine with local (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1nZEty-000AjW-6r; Tue, 29 Mar 2022 18:41:02 +0200
-Message-ID: <f42752b8814bf02ed33dbd597d60fa8e07070bfb.camel@pengutronix.de>
-Subject: Re: [PATCH v2] drm/imx: Fix memory leak in
- imx_pd_connector_get_modes
-From:   Philipp Zabel <p.zabel@pengutronix.de>
-To:     =?ISO-8859-1?Q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>,
-        LW@karo-electronics.de
-Cc:     airlied@linux.ie, daniel@ffwll.ch, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com, dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Date:   Tue, 29 Mar 2022 18:41:02 +0200
-In-Reply-To: <20220108165230.44610-1-jose.exposito89@gmail.com>
-References: <20220108165230.44610-1-jose.exposito89@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-User-Agent: Evolution 3.38.3-1 
+        Tue, 29 Mar 2022 12:43:06 -0400
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam08on2078.outbound.protection.outlook.com [40.107.102.78])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4140A2498A0;
+        Tue, 29 Mar 2022 09:41:22 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aBAWmemTLGJwT4KsNqRU9ulDTKbOc3yLpyEdcSibBvw9XcHJk44Bx5zQorVBv3TIUR0ZgknV+IVHaGBDlSkg6E+KqrLigCKBvuBvs/Ac6HFyLFkzsak14wP6es4uMMlgvM8GJykOWn4woDc0CpsGYgsr8cnabK/MykOnXr37c3C4iMdr1z401+URv6vKspofx5JYBn+UIixMV6qjbHOJvtFa1moXZ8rppEHIdPfJ0bxKfphKAOJH2d21GwXax/V71palQfNRCpFigU3QWfZjAOiFDKqGCnlT2ssqTj7pUIkK56+vGXBz62f82/fyTsrouGxKlTsYLytJQIIBgy7/mQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=s1N1qO7aio8brqBvpKzmvUDP6BmrBjafXD1z3mxtikA=;
+ b=FsCPhVboaZob4IzXYGdBZwlkKTnR3B+Ud3ZDlfjrV7+8PLAOk3mPvmbP5Ny78qOVQwLT8f4U7QDl51Dw2/sG3gAnS+Xfz2hhfWUdeZm86SOExmrjlFJ+Sc90Xyev5WqSuQ/5/b8YnZNEkn9h4RTmJ5FEsaC0uM/zG3VvL7EqyHPkpG78WE01+S/OnZeMCkqy3WuCIxxB/DHBPp9vPq+6wKvbzshUHPAO+LLa39+zYbFoi/x69NWvk4A/vPNZwjvtF92MfbVkBCokmWenXX3dgzftRTxAC4ukjLGXBvp+pAKzkKxxXjW4HoNMnSqq28ZkJOppzN0Czko5iK7/45Bvww==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=gondor.apana.org.au smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=s1N1qO7aio8brqBvpKzmvUDP6BmrBjafXD1z3mxtikA=;
+ b=qSELbPg4wtdjXzFcLLHSnJEWUemp2d588pU0UaJP3u8TbdmNJkjfgfGM1N84/QIpLA7wlQCcQ1wRJVl+OoAiNf+5pelYNmKlR8tOIs4V+8iBHN0VbVflLDg/S5neB5Z4evt7eeqHStU2tuRYUQeHfViIV/iTjDteAMAyVLegLCM=
+Received: from MW4PR04CA0066.namprd04.prod.outlook.com (2603:10b6:303:6b::11)
+ by BL0PR12MB2371.namprd12.prod.outlook.com (2603:10b6:207:3e::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.16; Tue, 29 Mar
+ 2022 16:41:20 +0000
+Received: from CO1NAM11FT066.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:6b:cafe::1) by MW4PR04CA0066.outlook.office365.com
+ (2603:10b6:303:6b::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.18 via Frontend
+ Transport; Tue, 29 Mar 2022 16:41:20 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB03.amd.com;
+Received: from SATLEXMB03.amd.com (165.204.84.17) by
+ CO1NAM11FT066.mail.protection.outlook.com (10.13.175.18) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5102.17 via Frontend Transport; Tue, 29 Mar 2022 16:41:19 +0000
+Received: from SATLEXMB06.amd.com (10.181.40.147) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 29 Mar
+ 2022 11:41:17 -0500
+Received: from AUS-LX-MLIMONCI.amd.com (10.180.168.240) by SATLEXMB06.amd.com
+ (10.181.40.147) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 29 Mar
+ 2022 11:41:17 -0500
+From:   Mario Limonciello <mario.limonciello@amd.com>
+To:     Tom Lendacky <thomas.lendacky@amd.com>,
+        John Allen <john.allen@amd.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>
+CC:     open list <linux-kernel@vger.kernel.org>,
+        "open list:AMD CRYPTOGRAPHIC COPROCESSOR (CCP) DRIVER" 
+        <linux-crypto@vger.kernel.org>,
+        Kerneis Gabriel <Gabriel.Kerneis@ssi.gouv.fr>,
+        Richard Hughes <hughsient@gmail.com>,
+        "Mario Limonciello" <mario.limonciello@amd.com>
+Subject: [PATCH v2 0/4] Export PSP security attributes
+Date:   Tue, 29 Mar 2022 11:41:13 -0500
+Message-ID: <20220329164117.1449-1-mario.limonciello@amd.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: p.zabel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB06.amd.com
+ (10.181.40.147)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 784ac7f0-fbb2-4ef2-451f-08da11a2f362
+X-MS-TrafficTypeDiagnostic: BL0PR12MB2371:EE_
+X-Microsoft-Antispam-PRVS: <BL0PR12MB23715178E7A0FE809EB3EEE9E21E9@BL0PR12MB2371.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: maNqqHhqE59GS+QdqiKQ0mRCviPpldaSJuUmJZu0gk2dxNVjYmDbPfXUs+ZhxP/svX3SGv27P4esTd45+nOVHThyK9AzCYIzUXlpdVW4pzKeH0gVROI2CVBy2BPbpOBtnDH8G5vEg3CqjWULER4sLrARn7zrQujCxi7DvhgjRBAZOvT1L23x3eJwKQhUelcprSxuIQiq8NKpq7JJIabgel7NrIiF3QVjsUZAkn8NELx06B7aguMhxgW2lB33C+ojuXKOAzP2XHZH/BV78OG4YRvpG7+CnR1/5VW2QEV+LXrlku97YTiWSWOXxtB0jE3IvaGfPO+KeA+7vgveNAEJ5XoxLbP670SjpcPm2yqg7qKTU6Tj2SoIuIGjLYvc8nPJLTd1qHxW62O3nESyTSCkKXXkuj1LSl90w4MZf+62bj52pVJQK8AKF7s29nSm4mwpMn6AeaO/c/ztmYORlE/qPfQJ/ReCaZJwizQtpEnujXE/se5wgWG9E+iErBzdxHfpaDWa5SUGWOqcIQJt2OezXY/ql1WvhVWQlBdgCz450NOgwOLqAilxWx4ojsXk5YT7ILJDvpQFi28MfT0FamoOgPiVgNZ2HIbNyKTitsreZotJRquOLyjBM1d5OJFyHgdH9eajVDpzK3jRRlbnueG1dkF2cQU5IR8W85Y78tcRANA+k1INi6N3C8Fc0Y9/jWXpCW1EQgqndG5tiLJQq0MYcg==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(82310400004)(356005)(81166007)(40460700003)(5660300002)(86362001)(70586007)(4326008)(70206006)(54906003)(8676002)(7696005)(6666004)(44832011)(8936002)(316002)(110136005)(36756003)(2906002)(508600001)(47076005)(83380400001)(36860700001)(336012)(2616005)(426003)(26005)(1076003)(16526019)(15650500001)(186003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Mar 2022 16:41:19.0305
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 784ac7f0-fbb2-4ef2-451f-08da11a2f362
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT066.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB2371
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gU2EsIDIwMjItMDEtMDggYXQgMTc6NTIgKzAxMDAsIEpvc8OpIEV4cMOzc2l0byB3cm90ZToK
-PiBBdm9pZCBsZWFraW5nIHRoZSBkaXNwbGF5IG1vZGUgdmFyaWFibGUgaWYgb2ZfZ2V0X2RybV9k
-aXNwbGF5X21vZGUKPiBmYWlscy4KPiAKPiBGaXhlczogNzZlY2Q5YzlmYjI0ICgiZHJtL2lteDog
-cGFyYWxsZWwtZGlzcGxheTogY2hlY2sgcmV0dXJuIGNvZGUKPiBmcm9tIG9mX2dldF9kcm1fZGlz
-cGxheV9tb2RlKCkiKQo+IEFkZHJlc3Nlcy1Db3Zlcml0eS1JRDogMTQ0Mzk0MyAoIlJlc291cmNl
-IGxlYWsiKQo+IFNpZ25lZC1vZmYtYnk6IEpvc8OpIEV4cMOzc2l0byA8am9zZS5leHBvc2l0bzg5
-QGdtYWlsLmNvbT4KPiAKPiAtLS0KPiAKPiB2MjogSW1wcm92ZSBjb21taXQgbWVzc2FnZQo+IC0t
-LQo+IMKgZHJpdmVycy9ncHUvZHJtL2lteC9wYXJhbGxlbC1kaXNwbGF5LmMgfCA0ICsrKy0KPiDC
-oDEgZmlsZSBjaGFuZ2VkLCAzIGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24oLSkKPiAKPiBkaWZm
-IC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL2lteC9wYXJhbGxlbC1kaXNwbGF5LmMKPiBiL2RyaXZl
-cnMvZ3B1L2RybS9pbXgvcGFyYWxsZWwtZGlzcGxheS5jCj4gaW5kZXggYThhYmEwMTQxY2U3Li4z
-YmY4ZTBhNDgwM2EgMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy9ncHUvZHJtL2lteC9wYXJhbGxlbC1k
-aXNwbGF5LmMKPiArKysgYi9kcml2ZXJzL2dwdS9kcm0vaW14L3BhcmFsbGVsLWRpc3BsYXkuYwo+
-IEBAIC03NSw4ICs3NSwxMCBAQCBzdGF0aWMgaW50IGlteF9wZF9jb25uZWN0b3JfZ2V0X21vZGVz
-KHN0cnVjdAo+IGRybV9jb25uZWN0b3IgKmNvbm5lY3RvcikKPiDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoHJldCA9IG9mX2dldF9kcm1fZGlzcGxheV9tb2RlKG5wLCAmaW14cGQtPm1v
-ZGUsCj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICZpbXhwZC0+YnVzX2ZsYWdz
-LAo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBPRl9VU0VfTkFUSVZFX01PREUp
-Owo+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBpZiAocmV0KQo+ICvCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqBpZiAocmV0KSB7Cj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBkcm1fbW9kZV9kZXN0cm95KGNvbm5lY3Rvci0+ZGV2LCBt
-b2RlKTsKPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBy
-ZXR1cm4gcmV0Owo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqB9Cj4gwqAKPiDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGRybV9tb2RlX2NvcHkobW9kZSwgJmlteHBkLT5t
-b2RlKTsKPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoG1vZGUtPnR5cGUgfD0gRFJN
-X01PREVfVFlQRV9EUklWRVIgfAo+IERSTV9NT0RFX1RZUEVfUFJFRkVSUkVEOwoKVGhhbmsgeW91
-LCBhcHBsaWVkIHRvIGlteC1kcm0vZml4ZXMuCgpyZWdhcmRzClBoaWxpcHAK
+Select AMD SOCs include the ability to export capabilities that
+have been activated or detected by the platform security processor.
+
+This information is useful for both system designers as well as system
+administrators to ensure that the system has been properly locked down
+to their expectations.
+
+Software such as fwupd will also be modified to use this information
+as part of the calculations for a security level score that may be
+presented to a user.
+
+This series also adds the ability to detect that TSME and SME are both
+activated simultaneously to notify a user.  Previously a user could turn
+on TSME and SME at the same time, but the kernel was unable to detect
+that TSME was enabled in the OS.
+
+This information is evaluated "too late" right now in the kernel to stop
+the kernel from enabling SME, but if that is desirable at a later time
+some of the early code can be modified to read the same information and
+make that decision.
+
+v1->v2:
+ * Add cover letter to explain background
+ * See individual patches for changes from v1.
+
+Mario Limonciello (4):
+  crypto: ccp: cache capability into psp device
+  crypto: ccp: Export PSP security bits to userspace
+  crypto: ccp: Allow PSP driver to load without SEV/TEE support
+  crypto: ccp: When TSME and SME both detected notify user
+
+ Documentation/ABI/testing/sysfs-driver-ccp | 87 ++++++++++++++++++++++
+ drivers/crypto/ccp/psp-dev.c               | 46 ++++++------
+ drivers/crypto/ccp/psp-dev.h               | 22 ++++++
+ drivers/crypto/ccp/sp-dev.c                |  6 ++
+ drivers/crypto/ccp/sp-pci.c                | 62 +++++++++++++++
+ 5 files changed, 202 insertions(+), 21 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-driver-ccp
+
+-- 
+2.34.1
 
