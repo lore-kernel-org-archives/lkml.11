@@ -2,71 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A5E2C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 13:28:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05538C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 13:28:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237428AbiC2N15 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 09:27:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35678 "EHLO
+        id S237273AbiC2N37 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 09:29:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237246AbiC2N1b (ORCPT
+        with ESMTP id S237295AbiC2N3w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 09:27:31 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1F3F1F637F
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 06:25:48 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KSVd25TYSzCr9R;
-        Tue, 29 Mar 2022 21:23:34 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 29 Mar
- 2022 21:25:46 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        <linmiaohe@huawei.com>
-Subject: [PATCH 7/8] mm/vmscan: take min_slab_pages into account when try to call shrink_node
-Date:   Tue, 29 Mar 2022 21:26:18 +0800
-Message-ID: <20220329132619.18689-8-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20220329132619.18689-1-linmiaohe@huawei.com>
-References: <20220329132619.18689-1-linmiaohe@huawei.com>
+        Tue, 29 Mar 2022 09:29:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 566ED23192D;
+        Tue, 29 Mar 2022 06:28:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 54A30B81814;
+        Tue, 29 Mar 2022 13:28:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 081A5C36AE2;
+        Tue, 29 Mar 2022 13:28:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648560484;
+        bh=z0lSTjpuyGdMpUgrH3yye9jNeGEzuoSxD6CJSLPeIyE=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=YfXBuTtb0SSlZUf+DUFdggbi9FEh/nw1Snin40IWbyolsO371+/5NauUM8yDdWvlr
+         64iPxl5ySbuT05ES69glgZOcp6vrp5z7ELLQVFXX4/me5BLmDfCszxEiuenlx/wtez
+         7JZFHD76noW2jFdx1+03pMBMijOZh/QGIDi2BH47Tjfn9SSrzA0L2iqdorAoD6pBwK
+         yIwrePH9q9Tun5vOfraF6YTfViDKtSSNV8o0zCzddnIKR3UvHgtusxwDpIDNh4URI/
+         jxzIJp8van10IalWtAZuy6LKXdtZulLnqAcnk10L9iLpH3t7YoOqMgC0ueElpSD6mW
+         XoVK25/yRS3Xw==
+Received: by mail-ej1-f41.google.com with SMTP id j15so35115545eje.9;
+        Tue, 29 Mar 2022 06:28:03 -0700 (PDT)
+X-Gm-Message-State: AOAM532D4K9fNCQpSYzobb2jCVeaHLZWrJwhlhR3mCTs/4P/vdmDEwZv
+        a1U0tbqodDzAYrcSgaUe61wKYUIYaDyi+wrCDg==
+X-Google-Smtp-Source: ABdhPJzj3/gx2h6gfF3xH01UhGfHeUEzMlMnGo0qwB+pHUkiz744wEqEdbj9LVI48/pWxS09mmJzGL7SXddFerFK1UE=
+X-Received: by 2002:a17:907:2d8d:b0:6df:a06c:7c55 with SMTP id
+ gt13-20020a1709072d8d00b006dfa06c7c55mr33872249ejc.325.1648560482148; Tue, 29
+ Mar 2022 06:28:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+References: <20220328022835.2508587-1-15330273260@189.cn> <20220328022835.2508587-3-15330273260@189.cn>
+In-Reply-To: <20220328022835.2508587-3-15330273260@189.cn>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Tue, 29 Mar 2022 08:27:50 -0500
+X-Gmail-Original-Message-ID: <CAL_Jsq+zO7RXzQLoPXR7Zm0mcsKCydK=8EFaNFGu-_THgJuh7Q@mail.gmail.com>
+Message-ID: <CAL_Jsq+zO7RXzQLoPXR7Zm0mcsKCydK=8EFaNFGu-_THgJuh7Q@mail.gmail.com>
+Subject: Re: [PATCH v13 3/6] dt-bindings: display: Add Loongson display controller
+To:     Sui Jingfeng <15330273260@189.cn>
+Cc:     Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Roland Scheidegger <sroland@vmware.com>,
+        Zack Rusin <zackr@vmware.com>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Ilia Mirkin <imirkin@alum.mit.edu>,
+        Qing Zhang <zhangqing@loongson.cn>,
+        suijingfeng <suijingfeng@loongson.cn>,
+        "open list:MIPS" <linux-mips@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        devicetree@vger.kernel.org,
+        dri-devel <dri-devel@lists.freedesktop.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit 6b4f7799c6a5 ("mm: vmscan: invoke slab shrinkers from
-shrink_zone()"), slab reclaim and lru page reclaim are done together
-in the shrink_node. So we should take min_slab_pages into account
-when try to call shrink_node.
+On Sun, Mar 27, 2022 at 9:29 PM Sui Jingfeng <15330273260@189.cn> wrote:
+>
+> Add DT bindings and simple usages for Loongson display controller
+> found in LS7A1000 bridge chip and LS2k1000 SoC.
+>
+> Signed-off-by: Sui Jingfeng <15330273260@189.cn>
+> ---
+>  .../loongson/loongson,display-controller.yaml | 321 ++++++++++++++++++
+>  1 file changed, 321 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/display/loongson/loongson,display-controller.yaml
+>
+> diff --git a/Documentation/devicetree/bindings/display/loongson/loongson,display-controller.yaml b/Documentation/devicetree/bindings/display/loongson/loongson,display-controller.yaml
+> new file mode 100644
+> index 000000000000..34060ed55a25
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/display/loongson/loongson,display-controller.yaml
+> @@ -0,0 +1,321 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/display/loongson/loongson,display-controller.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Loongson LS7A1000/LS2K1000/LS2K0500 Display Controller Device Tree Bindings
+> +
+> +maintainers:
+> +  - Sui Jingfeng <suijingfeng@loongson.cn>
+> +
+> +description: |+
+> +
+> +  Loongson display controllers are simple which require scanout buffers
+> +  to be physically contiguous. LS2K1000/LS2K0500 is a SOC, only system
+> +  memory is available. LS7A1000/LS7A2000 is bridge chip which is equipped
+> +  with a dedicated video RAM which is 64MB or more, precise size can be
+> +  read from the PCI BAR 2 of the GPU device(0x0014:0x7A15) in the bridge
+> +  chip.
+> +
+> +  LSDC has two display pipes, each way has a DVO interface which provide
+> +  RGB888 signals, vertical & horizontal synchronisations, data enable and
+> +  the pixel clock. LSDC has two CRTC, each CRTC is able to scanout from
+> +  1920x1080 resolution at 60Hz. Each CRTC has two FB address registers.
+> +
+> +  For LS7A1000, there are 4 dedicated GPIOs whose control register is
+> +  located at the DC register space. They are used to emulate two way i2c,
+> +  One for DVO0, another for DVO1.
+> +
+> +  LS2K1000 and LS2K0500 SoC grab i2c adapter from other module, either
+> +  general purpose GPIO emulated i2c or hardware i2c in the SoC.
+> +
+> +  LSDC's display pipeline have several components as below description,
+> +
+> +  The display controller in LS7A1000:
+> +     ___________________                                     _________
+> +    |            -------|                                   |         |
+> +    |  CRTC0 --> | DVO0 ----> Encoder0 ---> Connector0 ---> | Monitor |
+> +    |  _   _     -------|        ^             ^            |_________|
+> +    | | | | |    -------|        |             |
+> +    | |_| |_|    | i2c0 <--------+-------------+
+> +    |            -------|
+> +    |   DC IN LS7A1000  |
+> +    |  _   _     -------|
+> +    | | | | |    | i2c1 <--------+-------------+
+> +    | |_| |_|    -------|        |             |             _________
+> +    |            -------|        |             |            |         |
+> +    |  CRTC1 --> | DVO1 ----> Encoder1 ---> Connector1 ---> |  Panel  |
+> +    |            -------|                                   |_________|
+> +    |___________________|
+> +
+> +  Simple usage of LS7A1000 with LS3A4000 CPU:
+> +
+> +    +------+            +------------------------------------+
+> +    | DDR4 |            |  +-------------------+             |
+> +    +------+            |  | PCIe Root complex |   LS7A1000  |
+> +       || MC0           |  +--++---------++----+             |
+> +  +----------+  HT 3.0  |     ||         ||                  |
+> +  | LS3A4000 |<-------->| +---++---+  +--++--+     +---------+   +------+
+> +  |   CPU    |<-------->| | GC1000 |  | LSDC |<--->| DDR3 MC |<->| VRAM |
+> +  +----------+          | +--------+  +-+--+-+     +---------+   +------+
+> +       || MC1           +---------------|--|-----------------+
+> +    +------+                            |  |
+> +    | DDR4 |          +-------+   DVO0  |  |  DVO1   +------+
+> +    +------+   VGA <--|ADV7125|<--------+  +-------->|TFP410|--> DVI/HDMI
+> +                      +-------+                      +------+
+> +
+> +  The display controller in LS2K1000/LS2K0500:
+> +     ___________________                                     _________
+> +    |            -------|                                   |         |
+> +    |  CRTC0 --> | DVO0 ----> Encoder0 ---> Connector0 ---> | Monitor |
+> +    |  _   _     -------|        ^              ^           |_________|
+> +    | | | | |           |        |              |
+> +    | |_| |_|           |     +------+          |
+> +    |                   <---->| i2c0 |<---------+
+> +    |   DC IN LS2K1000  |     +------+
+> +    |  _   _            |     +------+
+> +    | | | | |           <---->| i2c1 |----------+
+> +    | |_| |_|           |     +------+          |            _________
+> +    |            -------|        |              |           |         |
+> +    |  CRTC1 --> | DVO1 ----> Encoder1 ---> Connector1 ---> |  Panel  |
+> +    |            -------|                                   |_________|
+> +    |___________________|
+> +
+> +properties:
+> +  $nodename:
+> +    pattern: "^display-controller@[0-9a-f],[0-9a-f]$"
+> +
+> +  compatible:
+> +    oneOf:
+> +      - items:
+> +          - enum:
+> +              - loongson,ls7a1000-dc
+> +              - loongson,ls2k1000-dc
+> +              - loongson,ls2k0500-dc
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  '#address-cells':
+> +    const: 1
+> +
+> +  '#size-cells':
+> +    const: 0
+> +
+> +  i2c@6:
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
----
- mm/vmscan.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+NAK on made-up bus numbers. See v11 discussion for details.
 
-diff --git a/mm/vmscan.c b/mm/vmscan.c
-index 1145d23332a3..e4ef6f637aa9 100644
---- a/mm/vmscan.c
-+++ b/mm/vmscan.c
-@@ -4695,7 +4695,8 @@ static int __node_reclaim(struct pglist_data *pgdat, gfp_t gfp_mask, unsigned in
- 	noreclaim_flag = memalloc_noreclaim_save();
- 	set_task_reclaim_state(p, &sc.reclaim_state);
- 
--	if (node_pagecache_reclaimable(pgdat) > pgdat->min_unmapped_pages) {
-+	if (node_pagecache_reclaimable(pgdat) > pgdat->min_unmapped_pages ||
-+	    node_page_state_pages(pgdat, NR_SLAB_RECLAIMABLE_B) > pgdat->min_slab_pages) {
- 		/*
- 		 * Free memory by calling shrink node with increasing
- 		 * priorities until we have enough memory freed.
--- 
-2.23.0
-
+Rob
