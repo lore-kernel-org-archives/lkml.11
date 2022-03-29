@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1EBDC43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:48:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 176E0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:48:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234229AbiC2Mt7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 08:49:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55828 "EHLO
+        id S236659AbiC2MuF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 08:50:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236831AbiC2MsH (ORCPT
+        with ESMTP id S236932AbiC2MsO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 08:48:07 -0400
-Received: from mail-ej1-x649.google.com (mail-ej1-x649.google.com [IPv6:2a00:1450:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 758BF224749
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:42:22 -0700 (PDT)
-Received: by mail-ej1-x649.google.com with SMTP id gv17-20020a1709072bd100b006dfcc7f7962so8127026ejc.5
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:42:22 -0700 (PDT)
+        Tue, 29 Mar 2022 08:48:14 -0400
+Received: from mail-ed1-x549.google.com (mail-ed1-x549.google.com [IPv6:2a00:1450:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B58D725F641
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:42:47 -0700 (PDT)
+Received: by mail-ed1-x549.google.com with SMTP id v9-20020a509549000000b00418d7c2f62aso10949038eda.15
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:42:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=6EKMd0bjP1WkGhZZPkjCgU25E3DWfYJCasURW7mFnYs=;
-        b=P1k71GssRqu7HsErV73nnblS85PhkUFheLyBFZgmPWLpl7OKiy1Bqi/JlOtZzfJVPy
-         VAc7cvO8fwjHIxHwD4P9pVu2rdNH8e0p6iE439JugyKP3tEZpAogt6YoEY/b5rvhs6YN
-         OlYMWP+8vwtXjv8eNiLfoejuKaPkdCuMEozoeNlW8PpIb+edtD9db/0+pmWKLdNhwURR
-         5E3Lth/p8S4d05TzSLze03fVsfkwrT++EyTKtUjOhLVyC4kbo3lKGGRltm0PtD2GB/IH
-         Q3WE4SbVcH6AFhiknkVN5O3R1HMm1J+ZfOcalpdSexIx4dKDpVcT7q34bBD07dT9kvEi
-         C7Fw==
+        bh=BxrNv7I9TyEaPnGly7TdSY5yHzK/Q3Z4xNLrOUnkClQ=;
+        b=F1YYot40OfwHFlJIBEjvvi7+vEf+sISqzpxyEMm9RXg7yBeYOovpz1ifEVjxkb+8Tp
+         ug846iZxjLR7LfZGindUZ5W5ZYWx9SXUM/LIzPff3L9xOwWnmqR34pPLPPicL7EpVaWh
+         BceAVU1QYjQ33h5UnMxF7NMbTCP79zz+hCjBe7DzaqQKiuOmpo0Q92dqE8k4H4xhYPJ5
+         8QBDPgbSjW2Dxw8rRJh4j124haAPk3WZ7kH3MZRK7aTRX+53Kfdw+whZ5Qh3OkEuEe4V
+         /YzlCDf1dkIQcIX6qS1kNTRw9/AS3wlsNX6fJ044mUGy/rWkdQ4G5sXgY/2nnNeFCaLN
+         ovQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=6EKMd0bjP1WkGhZZPkjCgU25E3DWfYJCasURW7mFnYs=;
-        b=rPJuR5MEzyzLKzKLm81Sz3UQ4ii9YtT0rVjc7jime4/vS1Lc6FS7XfhYjvdMyHp7tG
-         8TCrefZGujaFe/KvRe3mpezAoR6uryr6KnnSqR39RujTzZuY1MpDcvxZzxye2PNmZ9JY
-         iuMAl24Uay7SlUb4HVLni4aRpltGx+XCCkbnpaA/3EeMpky3gX0OA9t6gghNcdvLrjiL
-         pAKSsNZs5e0LoHDoXF9K/HzxB+xGmhSIRTdr3xx+ZswM2Ef5OPXF82KcPSN1J3rVVQR5
-         GxMNwm6C0Mbka5uIAxGfeZNA11wFb88LA5oMJXMD13WnQNN508K8dTEXxLhNCyQ1lrsc
-         V48g==
-X-Gm-Message-State: AOAM531a6mAMO552v74Dz5dQ7/9kSOIQEZ+u0GdiMEGzKeDvfmFjng5p
-        nXXgJ4Fh75eV0XTknYf0Qnu1f4XX+GA=
-X-Google-Smtp-Source: ABdhPJyN/u61iYoRLkPCDJv7Xs3UegKZjTjkx8b5A87Fx1oaelxWk3uqKnX5mytmcMKvTp7b3Wewv/gEEvA=
+        bh=BxrNv7I9TyEaPnGly7TdSY5yHzK/Q3Z4xNLrOUnkClQ=;
+        b=pChCIOBw5Gwsp1UMHjnMYttdpjWi9Cd7wkYMPALOGWCmPqopcg0GHkwz7JDTCExlbV
+         f+Zzo8PLhpMOm8CabCEPiu0yD3Ef83VdIYlbZGgRrHZkEm4zcB8KMVbsfERL62ptJRiq
+         A5zMTYTTeq2aDAP/04dG9avWOe0jrrrJjfc5pwPq6ntQUYmMHuGCsZ0CS7CHvOdf6D3J
+         qcG+Ho5N5BlzOOisbK430wc/rfPT5o6uWmz+fuBAs8SPgcAh1a4QdffvAuFrp4WMa7Nw
+         VGqi0JxwW049Y08lYUGsuBcciImbaBGzZ0JaGAZWMzdUxolqPwGlMVoCEizopH7AOd2S
+         nGrw==
+X-Gm-Message-State: AOAM53338x+PGjQHcIY04VdZvTjtHN7Vk4hRBL8w4xeDdTVw6bPbil7w
+        HNaY0vEDWS210tBcOj+k4OmQhe5ncgU=
+X-Google-Smtp-Source: ABdhPJwCpxSBAahtijoWXTLXmqk0cIsPTNznjrswrMwUWM6rymRvh0IEM+UvEt2qc+MfcoyqAjf1DJp1rgo=
 X-Received: from glider.muc.corp.google.com ([2a00:79e0:15:13:36eb:759:798f:98c3])
- (user=glider job=sendgmr) by 2002:a17:906:3042:b0:6cd:20ed:7c5c with SMTP id
- d2-20020a170906304200b006cd20ed7c5cmr33818169ejd.241.1648557740796; Tue, 29
- Mar 2022 05:42:20 -0700 (PDT)
-Date:   Tue, 29 Mar 2022 14:40:11 +0200
+ (user=glider job=sendgmr) by 2002:a17:906:c1c6:b0:6d5:cc27:a66c with SMTP id
+ bw6-20020a170906c1c600b006d5cc27a66cmr35151648ejb.650.1648557756848; Tue, 29
+ Mar 2022 05:42:36 -0700 (PDT)
+Date:   Tue, 29 Mar 2022 14:40:17 +0200
 In-Reply-To: <20220329124017.737571-1-glider@google.com>
-Message-Id: <20220329124017.737571-43-glider@google.com>
+Message-Id: <20220329124017.737571-49-glider@google.com>
 Mime-Version: 1.0
 References: <20220329124017.737571-1-glider@google.com>
 X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
-Subject: [PATCH v2 42/48] x86: kmsan: handle open-coded assembly in lib/iomem.c
+Subject: [PATCH v2 48/48] x86: kmsan: enable KMSAN builds for x86
 From:   Alexander Potapenko <glider@google.com>
 To:     glider@google.com
 Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
@@ -89,47 +89,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-KMSAN cannot intercept memory accesses within asm() statements.
-That's why we add kmsan_unpoison_memory() and kmsan_check_memory() to
-hint it how to handle memory copied from/to I/O memory.
+Make KMSAN usable by adding the necessary Kconfig bits.
 
 Signed-off-by: Alexander Potapenko <glider@google.com>
 ---
-Link: https://linux-review.googlesource.com/id/Icb16bf17269087e475debf07a7fe7d4bebc3df23
+Link: https://linux-review.googlesource.com/id/I1d295ce8159ce15faa496d20089d953a919c125e
 ---
- arch/x86/lib/iomem.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ arch/x86/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/x86/lib/iomem.c b/arch/x86/lib/iomem.c
-index df50451d94ef7..2307770f3f4c8 100644
---- a/arch/x86/lib/iomem.c
-+++ b/arch/x86/lib/iomem.c
-@@ -1,6 +1,7 @@
- #include <linux/string.h>
- #include <linux/module.h>
- #include <linux/io.h>
-+#include <linux/kmsan-checks.h>
- 
- #define movs(type,to,from) \
- 	asm volatile("movs" type:"=&D" (to), "=&S" (from):"0" (to), "1" (from):"memory")
-@@ -37,6 +38,8 @@ void memcpy_fromio(void *to, const volatile void __iomem *from, size_t n)
- 		n-=2;
- 	}
- 	rep_movs(to, (const void *)from, n);
-+	/* KMSAN must treat values read from devices as initialized. */
-+	kmsan_unpoison_memory(to, n);
- }
- EXPORT_SYMBOL(memcpy_fromio);
- 
-@@ -45,6 +48,8 @@ void memcpy_toio(volatile void __iomem *to, const void *from, size_t n)
- 	if (unlikely(!n))
- 		return;
- 
-+	/* Make sure uninitialized memory isn't copied to devices. */
-+	kmsan_check_memory(from, n);
- 	/* Align any unaligned destination IO */
- 	if (unlikely(1 & (unsigned long)to)) {
- 		movs("b", to, from);
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 646a7849be4cf..1c4601e198d5c 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -165,6 +165,7 @@ config X86
+ 	select HAVE_ARCH_KASAN			if X86_64
+ 	select HAVE_ARCH_KASAN_VMALLOC		if X86_64
+ 	select HAVE_ARCH_KFENCE
++	select HAVE_ARCH_KMSAN			if X86_64
+ 	select HAVE_ARCH_KGDB
+ 	select HAVE_ARCH_MMAP_RND_BITS		if MMU
+ 	select HAVE_ARCH_MMAP_RND_COMPAT_BITS	if MMU && COMPAT
 -- 
 2.35.1.1021.g381101b075-goog
 
