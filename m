@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF37EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:54:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 249C1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:55:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231252AbiC2M4i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 08:56:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49892 "EHLO
+        id S237059AbiC2M4u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 08:56:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236881AbiC2M4V (ORCPT
+        with ESMTP id S236944AbiC2M42 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 08:56:21 -0400
-Received: from mail-ed1-x549.google.com (mail-ed1-x549.google.com [IPv6:2a00:1450:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B7CE25D5C4
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:42:28 -0700 (PDT)
-Received: by mail-ed1-x549.google.com with SMTP id l24-20020a056402231800b00410f19a3103so10968246eda.5
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:42:27 -0700 (PDT)
+        Tue, 29 Mar 2022 08:56:28 -0400
+Received: from mail-ed1-x54a.google.com (mail-ed1-x54a.google.com [IPv6:2a00:1450:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 637A325D5F6
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:42:33 -0700 (PDT)
+Received: by mail-ed1-x54a.google.com with SMTP id i4-20020aa7c9c4000000b00419c542270dso5231460edt.8
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:42:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=GRTJFN5fI/eCQ6Ah2RQjb7/dqw7JAuAGzue9isPThnU=;
-        b=V2A969r8azagnZbvbCjDak0q6MRkqtC8n5tFydFSoeWA+AZwbef6NPKlrrU+H+BRBM
-         P6taNp8QY9FavRqmNYSwqrdYGQ97zsjJxhBcCNj+utxQuJ9nOPiopPtbBqzQ8gBr6Qzm
-         7SYENQDGsHWHESxdBNNfqefvYaEkKbqQ7Uw9rn3v77vq15hOdIJrJeEt188vunugqZcn
-         Y6At8xC/ehmqb5IdQtbwYrfxqEDNNN28/KTOPS67Mp49F5QHDODlthVjEKpkMZlKaPm0
-         nF0jHasnFvBSUC3gLePFYURhT77L4PhtEKIV+vHO9KG0REyFSTNFBTme4w/CaQQAv4EV
-         cm0Q==
+        bh=0QWUQ+RqE8jiHyj7/O+KujG6tRpsbOFA8yuMseJPgVs=;
+        b=OfXq72ZoBUQGSWSvm4KVtJ07Y6J70d5V6dAjwsYPNQ8KvQs+UemAzoD9b+EXKX/OTw
+         Q+izHPhM0oLIkOLIiuKDw0qaaM3HmxBX8q8lxNCUTVCL6uMVfLhs0yBqTwJyZYo3a2Dd
+         PHMlh5zEbtKHkaJRb6sAKEdQbGhEcA7fqUGVsUSQYvLsCZPqYBZ6kCgNZI+IIO0DTiYw
+         dKXtVOTB8fspK7u9aonJCNi788zBxPM+etWoLtYNpYHL5mhBEusrVsXgVIm9RsvEQvVL
+         BVUcgD1GuztoqNHxl+h1HcQQt1n0AN97ckOSFFHrUUEbkVxi2NvTa3+e0HN0zz3+BFfO
+         qT4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=GRTJFN5fI/eCQ6Ah2RQjb7/dqw7JAuAGzue9isPThnU=;
-        b=2Nvvp7rYDszbH4950z+1sVbBB8kIN/zYzGPEc3J0UZWoXcPIVNJ2Aw2MQE689EwFyz
-         3dTByI+VphmHn6OIc3UPXZ3F7p5ZlitanCqCvtjTYrBGHghTBr4DOHqI97hIwuw9E/nf
-         HEFNU9ptbxnzt4XToyuJbxRqPAvRAF5IiHRTyuJJuteJxLZuymeQF/m8zGKLjAywADsk
-         xREO5tk+yJ1Sj7LDA5howaBtmeXnq0FbtiXORb+RSneeMbEKtZtyRtS86CmPdvdgrSpe
-         RWuBYfT9yuhHkY1G5GdQ/UKYBIdOvkoESqwRVftGdeYltx824/nUpehsWU3GkiszvWFD
-         7KxA==
-X-Gm-Message-State: AOAM533alB4Ofa9Ffb4foT19RpaVVkuaBsoZ2H72B1tsS4TEQLUrOwe2
-        MaEXseVRxT1LEOAFqHn6Ufdv4IR9VxY=
-X-Google-Smtp-Source: ABdhPJzeBfVX40XVB+0DxQzCOfCbyY7YIWfJ+7MS3btbGbfEX8I9gsHnpMWWbEmqsPh4mt6QWJwzC2vkQok=
+        bh=0QWUQ+RqE8jiHyj7/O+KujG6tRpsbOFA8yuMseJPgVs=;
+        b=PDY8fE3Gusc6lWa+pyPyVK416v8WtkkZpciIudAZD7xrzcdgjMBDb/6nfolfzvqUNU
+         BQBOhWVFiwKqb5kLcUzs9k3nI2N0TULxZqxKIOgtfaRX424BROz4PzRwbr3aR6zoA4Vn
+         66rEmElzzfYOvaJ9Fzy/laDyQBo6rUmS5zbWPoUO4OVfhE5LovfsyH4QM+DR6b/ZQIqd
+         Ms3XBbRcFlkgqx7Y5Hqg95H76VoLsxBXkCyUISJRwGthcweKDX/lLnKyQ/0XXcK29WNx
+         kvpnhqoI4Wdkul52Vz5yfgXTt8ej11nry3EPDQ498RWfuqZnPaJYOTLqFq5G8ss9RN6c
+         HYoQ==
+X-Gm-Message-State: AOAM530UlQ2ueWHWsAOct2mDLtkOGZAXR7EL9LtMaxbFebDT9dWdp860
+        sUSU0viYEckvn7bh0M7qLHnvxbID0g4=
+X-Google-Smtp-Source: ABdhPJytokWuo6v19GSWg2KLHdtKqtVYC2QIF6Shk0LT4bep8x7ZGLJY2F5r9sIe9kWDKcupdjioDqnZsL8=
 X-Received: from glider.muc.corp.google.com ([2a00:79e0:15:13:36eb:759:798f:98c3])
- (user=glider job=sendgmr) by 2002:a17:907:c02:b0:6df:fb64:2770 with SMTP id
- ga2-20020a1709070c0200b006dffb642770mr34762165ejc.221.1648557746364; Tue, 29
- Mar 2022 05:42:26 -0700 (PDT)
-Date:   Tue, 29 Mar 2022 14:40:13 +0200
+ (user=glider job=sendgmr) by 2002:a17:906:948:b0:6d6:e479:1fe4 with SMTP id
+ j8-20020a170906094800b006d6e4791fe4mr33417649ejd.240.1648557751382; Tue, 29
+ Mar 2022 05:42:31 -0700 (PDT)
+Date:   Tue, 29 Mar 2022 14:40:15 +0200
 In-Reply-To: <20220329124017.737571-1-glider@google.com>
-Message-Id: <20220329124017.737571-45-glider@google.com>
+Message-Id: <20220329124017.737571-47-glider@google.com>
 Mime-Version: 1.0
 References: <20220329124017.737571-1-glider@google.com>
 X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
-Subject: [PATCH v2 44/48] x86: kmsan: sync metadata pages on page fault
+Subject: [PATCH v2 46/48] x86: fs: kmsan: disable CONFIG_DCACHE_WORD_ACCESS
 From:   Alexander Potapenko <glider@google.com>
 To:     glider@google.com
 Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
@@ -83,71 +83,41 @@ Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
         Vasily Gorbik <gor@linux.ibm.com>,
         Vegard Nossum <vegard.nossum@oracle.com>,
         Vlastimil Babka <vbabka@suse.cz>, linux-mm@kvack.org,
-        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
+        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andrey Konovalov <andreyknvl@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-KMSAN assumes shadow and origin pages for every allocated page are
-accessible. For pages between [VMALLOC_START, VMALLOC_END] those metadata
-pages start at KMSAN_VMALLOC_SHADOW_START and
-KMSAN_VMALLOC_ORIGIN_START, therefore we must sync a bigger memory
-region.
+dentry_string_cmp() calls read_word_at_a_time(), which might read
+uninitialized bytes to optimize string comparisons.
+Disabling CONFIG_DCACHE_WORD_ACCESS should prohibit this optimization,
+as well as (probably) similar ones.
 
+Suggested-by: Andrey Konovalov <andreyknvl@gmail.com>
 Signed-off-by: Alexander Potapenko <glider@google.com>
-
 ---
-
-v2:
- -- addressed reports from kernel test robot <lkp@intel.com>
-
-Link: https://linux-review.googlesource.com/id/Ia5bd541e54f1ecc11b86666c3ec87c62ac0bdfb8
+Link: https://linux-review.googlesource.com/id/I4c0073224ac2897cafb8c037362c49dda9cfa133
 ---
- arch/x86/mm/fault.c | 23 ++++++++++++++++++++++-
- 1 file changed, 22 insertions(+), 1 deletion(-)
+ arch/x86/Kconfig | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
-index d0074c6ed31a3..f2250a32a10ca 100644
---- a/arch/x86/mm/fault.c
-+++ b/arch/x86/mm/fault.c
-@@ -260,7 +260,7 @@ static noinline int vmalloc_fault(unsigned long address)
- }
- NOKPROBE_SYMBOL(vmalloc_fault);
- 
--void arch_sync_kernel_mappings(unsigned long start, unsigned long end)
-+static void __arch_sync_kernel_mappings(unsigned long start, unsigned long end)
- {
- 	unsigned long addr;
- 
-@@ -284,6 +284,27 @@ void arch_sync_kernel_mappings(unsigned long start, unsigned long end)
- 	}
- }
- 
-+void arch_sync_kernel_mappings(unsigned long start, unsigned long end)
-+{
-+	__arch_sync_kernel_mappings(start, end);
-+#ifdef CONFIG_KMSAN
-+	/*
-+	 * KMSAN maintains two additional metadata page mappings for the
-+	 * [VMALLOC_START, VMALLOC_END) range. These mappings start at
-+	 * KMSAN_VMALLOC_SHADOW_START and KMSAN_VMALLOC_ORIGIN_START and
-+	 * have to be synced together with the vmalloc memory mapping.
-+	 */
-+	if (start >= VMALLOC_START && end < VMALLOC_END) {
-+		__arch_sync_kernel_mappings(
-+			start - VMALLOC_START + KMSAN_VMALLOC_SHADOW_START,
-+			end - VMALLOC_START + KMSAN_VMALLOC_SHADOW_START);
-+		__arch_sync_kernel_mappings(
-+			start - VMALLOC_START + KMSAN_VMALLOC_ORIGIN_START,
-+			end - VMALLOC_START + KMSAN_VMALLOC_ORIGIN_START);
-+	}
-+#endif
-+}
-+
- static bool low_pfn(unsigned long pfn)
- {
- 	return pfn < max_low_pfn;
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 86df15017f79d..646a7849be4cf 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -126,7 +126,9 @@ config X86
+ 	select CLKEVT_I8253
+ 	select CLOCKSOURCE_VALIDATE_LAST_CYCLE
+ 	select CLOCKSOURCE_WATCHDOG
+-	select DCACHE_WORD_ACCESS
++	# Word-size accesses may read uninitialized data past the trailing \0
++	# in strings and cause false KMSAN reports.
++	select DCACHE_WORD_ACCESS		if !KMSAN
+ 	select DYNAMIC_SIGFRAME
+ 	select EDAC_ATOMIC_SCRUB
+ 	select EDAC_SUPPORT
 -- 
 2.35.1.1021.g381101b075-goog
 
