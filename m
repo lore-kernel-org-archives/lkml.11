@@ -2,387 +2,315 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B313C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:20:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30902C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:25:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236252AbiC2MWV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 08:22:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36658 "EHLO
+        id S236272AbiC2M1A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 08:27:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236131AbiC2MWT (ORCPT
+        with ESMTP id S232550AbiC2M06 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 08:22:19 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F41340DE;
-        Tue, 29 Mar 2022 05:20:36 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id g24so23171259lja.7;
-        Tue, 29 Mar 2022 05:20:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XhBvTTLrPqYdJ1lMXVCJbS9bURBhHkC2UBv24O2/ZT4=;
-        b=QOPW8bq0zwLCqDxYpHVJXUcJp6Oup3uFVFNg0MMCQwlQRnMXmtY77Zy9/VWDf3Gg+G
-         gDyR3NrGvwShp8atZIq+oeDHehqp6iRMj+x1MW9TF8w+8FR7FpuHUtzJzoE9Nhro62Ys
-         1hfdZjrye6i3118urMK+/t78GEG9XKUFJG1/Cn89g6pi9wDdMDGkOpZ6rzn/48wiNnOh
-         NdT4YBvngpVbCLTBWhV+EG0QsUM6HHktI69mSiG2hakCsHphkY/slMFXFMu9yUws1yeb
-         +MI034QOos2O9XW8Z1tZoBXM1mgZOtJk/VPR+IXacAXQ4L71C++BXKP2f0N1kNoFjDYH
-         gMVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XhBvTTLrPqYdJ1lMXVCJbS9bURBhHkC2UBv24O2/ZT4=;
-        b=dyqhYvX61gjGtC8pkGg3giB6rhZ344X+Iqk2agLx4O9ldFTtYs073bVPbZOt1D2g0P
-         joWeSfDd8v9lU1Dx/GHGfEmLLULIXQLj2n/8oiEAOqoltrE+KR+K0JJKfkZ6i77V3s9v
-         nWpDdBgCM8hCsX2ott07UzFYQveS+j4cADCwYakGzv3Xfu5Fg0Du/sy+owWl1GBTKiUY
-         K7idW6UBbLlOnBCsATbYulzCvQrSnQQnI7PF19UqMyXEu/NrWnKgdEjhS95gdgiudCc6
-         iHFOtDQYbNBk3T92NcvGd8gkVYe3lgMP5LPfrxMu9eg/gCE9cdt+wGVltPxcB5AflbA0
-         46WA==
-X-Gm-Message-State: AOAM530ew1mspDuXI4uLN+JVrh+O3cpydVMDxQ/gYxx28B+SCDZE1oiS
-        qdzI3HQlShT9TpLDDYnilM8=
-X-Google-Smtp-Source: ABdhPJybhPfQCqvR5j6wQ2b/W9TnRxXilqUNr+5sUATVIa661I+g4SOQCqjO44wOzK8kXsZ5OQCBaw==
-X-Received: by 2002:a2e:9212:0:b0:249:84e3:a849 with SMTP id k18-20020a2e9212000000b0024984e3a849mr2459008ljg.158.1648556434311;
-        Tue, 29 Mar 2022 05:20:34 -0700 (PDT)
-Received: from vmu1804.lan ([2a09:bac0:87::829:2528])
-        by smtp.googlemail.com with ESMTPSA id k15-20020a2e92cf000000b002493cc687f3sm2076692ljh.45.2022.03.29.05.20.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Mar 2022 05:20:33 -0700 (PDT)
-From:   Mikhail Zhilkin <csharper2005@gmail.com>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     NOGUCHI Hiroshi <drvlabo@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Karim <Karimdplay@gmail.com>, M <x1@disroot.org>,
-        Mikhail Zhilkin <csharper2005@gmail.com>,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: [PATCH] mtd: parsers: add support for Sercomm partitions
-Date:   Tue, 29 Mar 2022 12:20:16 +0000
-Message-Id: <20220329122016.4122899-1-csharper2005@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 29 Mar 2022 08:26:58 -0400
+Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EE134D637
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:25:14 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V8Z.XYI_1648556711;
+Received: from 30.0.141.87(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0V8Z.XYI_1648556711)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 29 Mar 2022 20:25:11 +0800
+Message-ID: <b7d1ab3b-e92c-d3aa-72cb-b80cc1a61e85@linux.alibaba.com>
+Date:   Tue, 29 Mar 2022 20:26:05 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] mm: migrate: set demotion targets differently
+To:     Jagdish Gediya <jvgediya@linux.ibm.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Cc:     akpm@linux-foundation.org, aneesh.kumar@linux.ibm.com,
+        dave.hansen@linux.intel.com, ying.huang@intel.com
+References: <20220329115222.8923-1-jvgediya@linux.ibm.com>
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+In-Reply-To: <20220329115222.8923-1-jvgediya@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds an MTD partition parser for the Sercomm partition table that
-is used in some Beeline, Netgear and Sercomm routers.
+Hi Jagdish,
 
-The Sercomm partition map table contains real partition offsets, which
-may differ from device to device depending on the number and location of
-bad blocks on NAND.
+On 3/29/2022 7:52 PM, Jagdish Gediya wrote:
+> The current implementation to identify the demotion
+> targets limits some of the opportunities to share
+> the demotion targets between multiple source nodes.
+> 
+> Implement a logic to identify the loop in the demotion
+> targets such that all the possibilities of demotion can
+> be utilized. Don't share the used targets between all
+> the nodes, instead create the used targets from scratch
+> for each individual node based on for what all node this
+> node is a demotion target. This helps to share the demotion
+> targets without missing any possible way of demotion.
+> 
+> e.g. with below NUMA topology, where node 0 & 1 are
+> cpu + dram nodes, node 2 & 3 are equally slower memory
+> only nodes, and node 4 is slowest memory only node,
+> 
+> available: 5 nodes (0-4)
+> node 0 cpus: 0 1
+> node 0 size: n MB
+> node 0 free: n MB
+> node 1 cpus: 2 3
+> node 1 size: n MB
+> node 1 free: n MB
+> node 2 cpus:
+> node 2 size: n MB
+> node 2 free: n MB
+> node 3 cpus:
+> node 3 size: n MB
+> node 3 free: n MB
+> node 4 cpus:
+> node 4 size: n MB
+> node 4 free: n MB
+> node distances:
+> node   0   1   2   3   4
+>    0:  10  20  40  40  80
+>    1:  20  10  40  40  80
+>    2:  40  40  10  40  80
+>    3:  40  40  40  10  80
+>    4:  80  80  80  80  10
+> 
+> The existing implementation gives below demotion targets,
+> 
+> node    demotion_target
+>   0              3, 2
+>   1              4
+>   2              X
+>   3              X
+>   4		X
+> 
+> With this patch applied, below are the demotion targets,
+> 
+> node    demotion_target
+>   0              3, 2
+>   1              3, 2
+>   2              3
+>   3              4
+>   4		X
 
-Device tree example:
-partitions {
-	compatible = "sercomm,sc-partitions", "fixed-partitions";
-	#address-cells = <1>;
-	#size-cells = <1>;
+Node 2 and node 3 both are slow memory and have same distance, why node 
+2 should demote cold memory to node 3? They should have the same target 
+demotion node 4, which is the slowest memory node, right?
 
-	partition@0 {
-		label = "u-boot";
-		reg = <0x0 0x100000>;
-		scpart-id = <0>;
-		read-only;
-	};
-};
+> 
+> e.g. with below NUMA topology, where node 0, 1 & 2 are
+> cpu + dram nodes and node 3 is slow memory node,
+> 
+> available: 4 nodes (0-3)
+> node 0 cpus: 0 1
+> node 0 size: n MB
+> node 0 free: n MB
+> node 1 cpus: 2 3
+> node 1 size: n MB
+> node 1 free: n MB
+> node 2 cpus: 4 5
+> node 2 size: n MB
+> node 2 free: n MB
+> node 3 cpus:
+> node 3 size: n MB
+> node 3 free: n MB
+> node distances:
+> node   0   1   2   3
+>    0:  10  20  20  40
+>    1:  20  10  20  40
+>    2:  20  20  10  40
+>    3:  40  40  40  10
+> 
+> The existing implementation gives below demotion targets,
+> 
+> node    demotion_target
+>   0              3
+>   1              X
+>   2              X
+>   3              X
+> 
+> With this patch applied, below are the demotion targets,
+> 
+> node    demotion_target
+>   0              3
+>   1              3
+>   2              3
+>   3              X
 
-This is essentially the same code as proposed by NOGUCHI Hiroshi
-<drvlabo@gmail.com> here:
-https://github.com/openwrt/openwrt/pull/1318#issuecomment-420607394
+Sounds reasonable.
 
-Signed-off-by: Mikhail Zhilkin <csharper2005@gmail.com>
----
- drivers/mtd/parsers/Kconfig  |   9 ++
- drivers/mtd/parsers/Makefile |   1 +
- drivers/mtd/parsers/scpart.c | 243 +++++++++++++++++++++++++++++++++++
- 3 files changed, 253 insertions(+)
- create mode 100644 drivers/mtd/parsers/scpart.c
+> 
+> with below NUMA topology, where node 0 & 2 are cpu + dram
+> nodes and node 1 & 3 are slow memory nodes,
+> 
+> available: 4 nodes (0-3)
+> node 0 cpus: 0 1
+> node 0 size: n MB
+> node 0 free: n MB
+> node 1 cpus:
+> node 1 size: n MB
+> node 1 free: n MB
+> node 2 cpus: 2 3
+> node 2 size: n MB
+> node 2 free: n MB
+> node 3 cpus:
+> node 3 size: n MB
+> node 3 free: n MB
+> node distances:
+> node   0   1   2   3
+>    0:  10  40  20  80
+>    1:  40  10  80  80
+>    2:  20  80  10  40
+>    3:  80  80  40  10
+> 
+> The existing implementation gives below demotion targets,
+> 
+> node    demotion_target
+>   0              3
+>   1              X
+>   2              3
+>   3              X
 
-diff --git a/drivers/mtd/parsers/Kconfig b/drivers/mtd/parsers/Kconfig
-index 23763d16e4f9..92a95297ca84 100644
---- a/drivers/mtd/parsers/Kconfig
-+++ b/drivers/mtd/parsers/Kconfig
-@@ -180,6 +180,15 @@ config MTD_REDBOOT_PARTS_READONLY
- 
- endif # MTD_REDBOOT_PARTS
- 
-+config MTD_SERCOMM_PARTS
-+	tristate "Sercomm flash partition parser"
-+	depends on MTD_OF_PARTS
-+	help
-+	  This provides partitions table parser for devices with Sercomm
-+	  partition map. This partition table contains real partition
-+	  offsets, which may differ from device to device depending on the
-+	  number and location of bad blocks on NAND.
-+
- config MTD_QCOMSMEM_PARTS
- 	tristate "Qualcomm SMEM flash partition parser"
- 	depends on QCOM_SMEM
-diff --git a/drivers/mtd/parsers/Makefile b/drivers/mtd/parsers/Makefile
-index 2e98aa048278..2fcf0ab9e7da 100644
---- a/drivers/mtd/parsers/Makefile
-+++ b/drivers/mtd/parsers/Makefile
-@@ -10,6 +10,7 @@ ofpart-$(CONFIG_MTD_OF_PARTS_LINKSYS_NS)+= ofpart_linksys_ns.o
- obj-$(CONFIG_MTD_PARSER_IMAGETAG)	+= parser_imagetag.o
- obj-$(CONFIG_MTD_AFS_PARTS)		+= afs.o
- obj-$(CONFIG_MTD_PARSER_TRX)		+= parser_trx.o
-+obj-$(CONFIG_MTD_SERCOMM_PARTS)		+= scpart.o
- obj-$(CONFIG_MTD_SHARPSL_PARTS)		+= sharpslpart.o
- obj-$(CONFIG_MTD_REDBOOT_PARTS)		+= redboot.o
- obj-$(CONFIG_MTD_QCOMSMEM_PARTS)	+= qcomsmempart.o
-diff --git a/drivers/mtd/parsers/scpart.c b/drivers/mtd/parsers/scpart.c
-new file mode 100644
-index 000000000000..0d8b2bb3452e
---- /dev/null
-+++ b/drivers/mtd/parsers/scpart.c
-@@ -0,0 +1,243 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ *    drivers/mtd/scpart.c: Sercomm Partition Parser
-+ *
-+ *    Copyright (C) 2018 NOGUCHI Hiroshi
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/slab.h>
-+#include <linux/mtd/mtd.h>
-+#include <linux/mtd/partitions.h>
-+#include <linux/module.h>
-+
-+#define	MOD_NAME	"scpart"
-+
-+static const char sc_part_magic[] = {
-+	'S', 'C', 'F', 'L', 'M', 'A', 'P', 'O', 'K', '\0',
-+};
-+#define	PART_MAGIC_LEN	sizeof(sc_part_magic)
-+
-+/* assumes that all fields are set by CPU native endian */
-+struct sc_part_desc {
-+	uint32_t	part_id;
-+	uint32_t	part_offs;
-+	uint32_t	part_bytes;
-+};
-+#define	ID_ALREADY_FOUND	(0xFFFFFFFFUL)
-+
-+#define	MAP_OFFS_IN_BLK	(0x800)
-+
-+#define	MAP_MIRROR_NUM	(2)
-+
-+static int scpart_desc_is_valid(struct sc_part_desc *pdesc)
-+{
-+	return !!((pdesc->part_id != 0xFFFFFFFFUL) &&
-+		(pdesc->part_offs != 0xFFFFFFFFUL) &&
-+		(pdesc->part_bytes != 0xFFFFFFFFUL));
-+}
-+
-+static int scpart_scan_partmap(struct mtd_info *master, loff_t partmap_offs,
-+			       struct sc_part_desc **ppdesc)
-+{
-+	uint8_t *buf;
-+	loff_t offs;
-+	size_t retlen;
-+	struct sc_part_desc *pdesc = NULL;
-+	struct sc_part_desc *tmpdesc;
-+	int cnt = 0;
-+	int res2;
-+	int res = 0;
-+
-+	buf = kzalloc(master->erasesize, GFP_KERNEL);
-+	if (!buf) {
-+		res = -ENOMEM;
-+		goto out;
-+	}
-+
-+	res2 = mtd_read(master, partmap_offs, master->erasesize, &retlen, buf);
-+	if (res2 || (retlen != master->erasesize)) {
-+		res = -EIO;
-+		goto free;
-+	}
-+
-+	offs = MAP_OFFS_IN_BLK;
-+	while ((offs + sizeof(*tmpdesc)) < master->erasesize) {
-+		tmpdesc = (struct sc_part_desc *)&(buf[offs]);
-+		if (!scpart_desc_is_valid(tmpdesc))
-+			break;
-+		cnt++;
-+		offs += sizeof(*tmpdesc);
-+	}
-+
-+	if (cnt > 0) {
-+		int bytes = cnt * sizeof(*pdesc);
-+
-+		pdesc = kzalloc(bytes, GFP_KERNEL);
-+		if (!pdesc) {
-+			res = -ENOMEM;
-+			goto free;
-+		}
-+		memcpy(pdesc, &(buf[MAP_OFFS_IN_BLK]), bytes);
-+
-+		*ppdesc = pdesc;
-+		res = cnt;
-+	}
-+
-+free:
-+	kfree(buf);
-+
-+out:
-+	return res;
-+}
-+
-+static int scpart_find_partmap(struct mtd_info *master,
-+			       struct sc_part_desc **ppdesc)
-+{
-+	loff_t offs;
-+	uint8_t rdbuf[PART_MAGIC_LEN];
-+	size_t retlen;
-+	int magic_found = 0;
-+	int res2;
-+	int res = 0;
-+
-+	offs = 0;
-+	while ((magic_found < MAP_MIRROR_NUM) &&
-+			(offs < master->size) && !mtd_block_isbad(master, offs)) {
-+		res2 = mtd_read(master, offs, PART_MAGIC_LEN, &retlen, rdbuf);
-+		if (res2 || (retlen != PART_MAGIC_LEN)) {
-+			res = -EIO;
-+			goto out;
-+		}
-+		if (!memcmp(rdbuf, sc_part_magic, PART_MAGIC_LEN)) {
-+			pr_debug("%s: signature found at 0x%llx\n", MOD_NAME, offs);
-+			magic_found++;
-+			res = scpart_scan_partmap(master, offs, ppdesc);
-+			if (res > 0)
-+				goto out;
-+		}
-+		offs += master->erasesize;
-+	}
-+
-+out:
-+	if (res > 0)
-+		pr_info("%s: valid 'SC PART MAP' found (%d partitions)\n", MOD_NAME, res);
-+	else
-+		pr_info("%s: no valid 'SC PART MAP'\n", MOD_NAME);
-+
-+	return res;
-+}
-+
-+static int scpart_parse(struct mtd_info *master,
-+			const struct mtd_partition **pparts,
-+			struct mtd_part_parser_data *data)
-+{
-+	struct sc_part_desc *scpart_map = NULL;
-+	struct mtd_partition *parts = NULL;
-+	struct device_node *mtd_node;
-+	struct device_node *ofpart_node;
-+	struct device_node *pp;
-+	const char *partname;
-+	int nr_scparts;
-+	int nr_parts = 0;
-+	int n;
-+	int res = 0;
-+
-+	mtd_node = mtd_get_of_node(master);
-+	if (!mtd_node)
-+		goto out;
-+
-+	ofpart_node = of_get_child_by_name(mtd_node, "partitions");
-+	if (!ofpart_node)
-+		goto out;
-+
-+	nr_scparts = scpart_find_partmap(master, &scpart_map);
-+	if (nr_scparts <= 0) {
-+		res = nr_scparts;
-+		goto free;
-+	}
-+
-+	for_each_child_of_node(ofpart_node, pp) {
-+		u32 scpart_id;
-+		struct mtd_partition *parts_tmp;
-+
-+		if (of_property_read_u32(pp, "scpart-id", &scpart_id))
-+			continue;
-+
-+		for (n = 0 ; n < nr_scparts ; n++)
-+			if ((scpart_map[n].part_id != ID_ALREADY_FOUND) &&
-+					(scpart_id == scpart_map[n].part_id))
-+				break;
-+		if (n >= nr_scparts)
-+			/* not match */
-+			continue;
-+
-+		/* add the partition found in OF into MTD partition array */
-+
-+		/* reallocate partition array */
-+		parts_tmp = parts;
-+		parts = kzalloc((nr_parts + 1) * sizeof(*parts), GFP_KERNEL);
-+		if (!parts) {
-+			kfree(parts_tmp);
-+			res = -ENOMEM;
-+			goto free;
-+		}
-+		if (parts_tmp) {
-+			memcpy(parts, parts_tmp, nr_parts * sizeof(*parts));
-+			kfree(parts_tmp);
-+		}
-+
-+		parts[nr_parts].offset = scpart_map[n].part_offs;
-+		parts[nr_parts].size = scpart_map[n].part_bytes;
-+		parts[nr_parts].of_node = pp;
-+
-+		if (!of_property_read_string(pp, "label", &partname) ||
-+				!of_property_read_string(pp, "name", &partname))
-+			parts[nr_parts].name = partname;
-+
-+		if (of_property_read_bool(pp, "read-only"))
-+			parts[nr_parts].mask_flags |= MTD_WRITEABLE;
-+		if (of_property_read_bool(pp, "lock"))
-+			parts[nr_parts].mask_flags |= MTD_POWERUP_LOCK;
-+
-+		/* mark as 'done' */
-+		scpart_map[n].part_id = ID_ALREADY_FOUND;
-+
-+		nr_parts++;
-+	}
-+	if (nr_parts > 0) {
-+		*pparts = parts;
-+		res = nr_parts;
-+	} else
-+		pr_info("%s: No partition in OF matches partition ID with 'SC PART MAP'.\n",
-+			MOD_NAME);
-+
-+	of_node_put(pp);
-+
-+free:
-+	kfree(scpart_map);
-+	if (res <= 0)
-+		kfree(parts);
-+
-+out:
-+	return res;
-+}
-+
-+static const struct of_device_id scpart_parser_of_match_table[] = {
-+	{ .compatible = "sercomm,sc-partitions" },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, scpart_parser_of_match_table);
-+
-+static struct mtd_part_parser scpart_parser = {
-+	.parse_fn = scpart_parse,
-+	.name = "scpart",
-+	.of_match_table = scpart_parser_of_match_table,
-+};
-+module_mtd_part_parser(scpart_parser);
-+
-+/* mtd parsers will request the module by parser name */
-+MODULE_ALIAS("scpart");
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("NOGUCHI Hiroshi <drvlabo@gmail.com>");
-+MODULE_DESCRIPTION("Sercomm partition parser");
--- 
-2.25.1
+If I understand correctly, this is not true. The demotion route should 
+be as below with existing implementation:
+node 0 ---> node 1
+node 1 ---> X
+node 2 ---> node 3
+node 3 ---> X
 
+> 
+> With this patch applied, below are the demotion targets,
+> 
+> node    demotion_target
+>   0              1
+>   1              3
+>   2              3
+>   3              X
+> 
+> As it can be seen above, node 3 can be demotion target for node
+> 1 but existing implementation doesn't configure it that way. It
+> is better to move pages from node 1 to node 3 instead of moving
+> it from node 1 to swap.
+
+Which means node 3 is the slowest memory node?
+
+> 
+> Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
+> Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+> ---
+>   mm/migrate.c | 75 ++++++++++++++++++++++++++++------------------------
+>   1 file changed, 41 insertions(+), 34 deletions(-)
+> 
+> diff --git a/mm/migrate.c b/mm/migrate.c
+> index 3d60823afd2d..7ec8d934e706 100644
+> --- a/mm/migrate.c
+> +++ b/mm/migrate.c
+> @@ -2381,10 +2381,13 @@ static int establish_migrate_target(int node, nodemask_t *used,
+>    */
+>   static void __set_migration_target_nodes(void)
+>   {
+> -	nodemask_t next_pass	= NODE_MASK_NONE;
+> -	nodemask_t this_pass	= NODE_MASK_NONE;
+>   	nodemask_t used_targets = NODE_MASK_NONE;
+>   	int node, best_distance;
+> +	nodemask_t *src_nodes;
+> +
+> +	src_nodes = kcalloc(nr_node_ids, sizeof(nodemask_t), GFP_KERNEL);
+> +	if (!src_nodes)
+> +		return;
+>   
+>   	/*
+>   	 * Avoid any oddities like cycles that could occur
+> @@ -2393,29 +2396,39 @@ static void __set_migration_target_nodes(void)
+>   	 */
+>   	disable_all_migrate_targets();
+>   
+> -	/*
+> -	 * Allocations go close to CPUs, first.  Assume that
+> -	 * the migration path starts at the nodes with CPUs.
+> -	 */
+> -	next_pass = node_states[N_CPU];
+> -again:
+> -	this_pass = next_pass;
+> -	next_pass = NODE_MASK_NONE;
+> -	/*
+> -	 * To avoid cycles in the migration "graph", ensure
+> -	 * that migration sources are not future targets by
+> -	 * setting them in 'used_targets'.  Do this only
+> -	 * once per pass so that multiple source nodes can
+> -	 * share a target node.
+> -	 *
+> -	 * 'used_targets' will become unavailable in future
+> -	 * passes.  This limits some opportunities for
+> -	 * multiple source nodes to share a destination.
+> -	 */
+> -	nodes_or(used_targets, used_targets, this_pass);
+> +	for_each_online_node(node) {
+> +		int tmp_node;
+>   
+> -	for_each_node_mask(node, this_pass) {
+>   		best_distance = -1;
+> +		used_targets = NODE_MASK_NONE;
+> +
+> +		/*
+> +		 * Avoid adding same node as the demotion target.
+> +		 */
+> +		node_set(node, used_targets);
+> +
+> +		/*
+> +		 * Add CPU NUMA nodes to the used target list so that it
+> +		 * won't be considered a demotion target.
+> +		 */
+> +		nodes_or(used_targets, used_targets, node_states[N_CPU]);
+> +
+> +		/*
+> +		 * Add all nodes that has appeared as source node of demotion
+> +		 * for this target node.
+> +		 *
+> +		 * To avoid cycles in the migration "graph", ensure
+> +		 * that migration sources are not future targets by
+> +		 * setting them in 'used_targets'.
+> +		 */
+> +		for_each_node_mask(tmp_node, src_nodes[node])
+> +			nodes_or(used_targets, used_targets, src_nodes[tmp_node]);
+> +
+> +		/*
+> +		 * Now update the demotion src nodes with other nodes in graph
+> +		 * which got computed above.
+> +		 */
+> +		nodes_or(src_nodes[node], src_nodes[node], used_targets);
+>   
+>   		/*
+>   		 * Try to set up the migration path for the node, and the target
+> @@ -2434,20 +2447,14 @@ static void __set_migration_target_nodes(void)
+>   				best_distance = node_distance(node, target_node);
+>   
+>   			/*
+> -			 * Visit targets from this pass in the next pass.
+> -			 * Eventually, every node will have been part of
+> -			 * a pass, and will become set in 'used_targets'.
+> +			 * Add this node in the src_nodes list so that we can
+> +			 * detect the looping.
+>   			 */
+> -			node_set(target_node, next_pass);
+> +			node_set(node, src_nodes[target_node]);
+>   		} while (1);
+>   	}
+> -	/*
+> -	 * 'next_pass' contains nodes which became migration
+> -	 * targets in this pass.  Make additional passes until
+> -	 * no more migrations targets are available.
+> -	 */
+> -	if (!nodes_empty(next_pass))
+> -		goto again;
+> +
+> +	kfree(src_nodes);
+>   }
+>   
+>   /*
