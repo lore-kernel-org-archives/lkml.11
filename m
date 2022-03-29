@@ -2,91 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59298C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 11:57:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34793C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 11:58:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236128AbiC2L7d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 07:59:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36046 "EHLO
+        id S236142AbiC2MAT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 08:00:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231537AbiC2L7b (ORCPT
+        with ESMTP id S231408AbiC2MAR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 07:59:31 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 269AF241B66;
-        Tue, 29 Mar 2022 04:57:49 -0700 (PDT)
-Received: from kwepemi100018.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KSSjk4mzGzcbPH;
-        Tue, 29 Mar 2022 19:57:30 +0800 (CST)
-Received: from kwepemm600001.china.huawei.com (7.193.23.3) by
- kwepemi100018.china.huawei.com (7.221.188.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 29 Mar 2022 19:57:47 +0800
-Received: from huawei.com (10.175.104.82) by kwepemm600001.china.huawei.com
- (7.193.23.3) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 29 Mar
- 2022 19:57:46 +0800
-From:   Wang Hai <wanghai38@huawei.com>
-To:     <Jason@zx2c4.com>, <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <wireguard@lists.zx2c4.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <wanghai38@huawei.com>
-Subject: [PATCH net] wireguard: socket: fix memory leak in send6()
-Date:   Tue, 29 Mar 2022 20:15:52 +0800
-Message-ID: <20220329121552.661647-1-wanghai38@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 29 Mar 2022 08:00:17 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0B93F68;
+        Tue, 29 Mar 2022 04:58:32 -0700 (PDT)
+X-UUID: c8bcceb5174544d4afa4109c63bc03db-20220329
+X-UUID: c8bcceb5174544d4afa4109c63bc03db-20220329
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <zhiyong.tao@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 459133733; Tue, 29 Mar 2022 19:58:28 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Tue, 29 Mar 2022 19:58:27 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 29 Mar 2022 19:58:25 +0800
+From:   Zhiyong Tao <zhiyong.tao@mediatek.com>
+To:     <lee.jones@linaro.org>, <robh+dt@kernel.org>,
+        <matthias.bgg@gmail.com>, <lgirdwood@gmail.com>,
+        <broonie@kernel.org>, <eddie.huang@mediatek.com>,
+        <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>,
+        <fshao@chromium.org>
+CC:     <srv_heupstream@mediatek.com>, <hui.liu@mediatek.com>,
+        <zhiyong.tao@mediatek.com>, <hsin-hsiung.wang@mediatek.com>,
+        <sean.wang@mediatek.com>, <macpaul.lin@mediatek.com>,
+        <wen.su@mediatek.com>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-rtc@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>
+Subject: [PATCH v1 0/1] Mediatek PMIC patch
+Date:   Tue, 29 Mar 2022 19:58:23 +0800
+Message-ID: <20220329115824.13005-1-zhiyong.tao@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600001.china.huawei.com (7.193.23.3)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I got a memory leak report:
+This patch fix pwrap time out issue.
 
-unreferenced object 0xffff8881191fc040 (size 232):
-  comm "kworker/u17:0", pid 23193, jiffies 4295238848 (age 3464.870s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<ffffffff814c3ef4>] slab_post_alloc_hook+0x84/0x3b0
-    [<ffffffff814c8977>] kmem_cache_alloc_node+0x167/0x340
-    [<ffffffff832974fb>] __alloc_skb+0x1db/0x200
-    [<ffffffff82612b5d>] wg_socket_send_buffer_to_peer+0x3d/0xc0
-    [<ffffffff8260e94a>] wg_packet_send_handshake_initiation+0xfa/0x110
-    [<ffffffff8260ec81>] wg_packet_handshake_send_worker+0x21/0x30
-    [<ffffffff8119c558>] process_one_work+0x2e8/0x770
-    [<ffffffff8119ca2a>] worker_thread+0x4a/0x4b0
-    [<ffffffff811a88e0>] kthread+0x120/0x160
-    [<ffffffff8100242f>] ret_from_fork+0x1f/0x30
+Zhiyong.Tao (1):
+  pwrap: mediatek: fix wait time out issue
 
-In function wg_socket_send_buffer_as_reply_to_skb() or
-wg_socket_send_buffer_to_peer(), the semantics of send6()
-is required to free skb. But when CONFIG_IPV6 is disable,
-kfree_skb() is missing. This patch adds it to fix this bug.
+ drivers/soc/mediatek/mtk-pmic-wrap.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+ mode change 100644 => 100755 drivers/soc/mediatek/mtk-pmic-wrap.c
 
-Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
----
- drivers/net/wireguard/socket.c | 1 +
- 1 file changed, 1 insertion(+)
+--
+2.18.0 
 
-diff --git a/drivers/net/wireguard/socket.c b/drivers/net/wireguard/socket.c
-index 6f07b949cb81..467eef0e563b 100644
---- a/drivers/net/wireguard/socket.c
-+++ b/drivers/net/wireguard/socket.c
-@@ -160,6 +160,7 @@ static int send6(struct wg_device *wg, struct sk_buff *skb,
- 	rcu_read_unlock_bh();
- 	return ret;
- #else
-+	kfree_skb(skb);
- 	return -EAFNOSUPPORT;
- #endif
- }
--- 
-2.25.1
 
