@@ -2,91 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32A15C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:30:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44724C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:32:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239683AbiC2QcW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 12:32:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46952 "EHLO
+        id S239112AbiC2Qdv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 12:33:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239658AbiC2QcO (ORCPT
+        with ESMTP id S234114AbiC2Qdu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 12:32:14 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9C8B24221E;
-        Tue, 29 Mar 2022 09:30:30 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id h4so13554614edr.3;
-        Tue, 29 Mar 2022 09:30:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=rup4gmFVRMm1Db1xKcQ9C4DJyayglE33FgITP93feZI=;
-        b=f8zqtGcfvk0wEpNaAgaCylr34j14R+MDTTY9qugHrR1MIk/oAlUmCHAAvTannf6ZUz
-         sLY36RDHN0pt3a7GCMLxHiNojdB3MLuSBUkzIZVRHTWGX8DquOLPps7qp5PIyNinj13i
-         58KwUPz25LTZe2Di6xx4zhdb7FBfiDAevjCdMJ2J5oNvt+Rahrnk5wf/XJAxuPp10CMI
-         Z3tQ7GMhTvu/hyfb0/8je/fK7yqsHvbZv3PrmOf4GL7WrhCZiMSzH2g85ObyMspop5Kc
-         vRtkCdcF0QXVz/ZXU4dI+I6PNZm2YhPBZsVRXsi9ZelyDjWZvTA4Qf+PO7RUCWIH3GJW
-         0lyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=rup4gmFVRMm1Db1xKcQ9C4DJyayglE33FgITP93feZI=;
-        b=IMOsVFrgVkzpt2smsoDhDnqswo8LzWWhtHNQzSNuftUk3ggRkNFKUJl4WpZc7zHKUD
-         dPLRizjChI5xdqJF6mByXSoqysrEEOche0m7MRdzL+BrK0wbFNerCfrUkX9WUz09VyMZ
-         pHPHSQMwM35DOTm6zoeBiqMq3WUDmILuVm7nB6WdYLWpwuL2LdRFPvHo4etQ1E1S0V5B
-         nFdtq6Yi0erGU2KHLNPvin+8waObf6pfMMc+IPBuub90oDcN4wwl9MHGZaAv5PJ2oYdA
-         ZQ5xoTjy+Tt+n2SptUGNUra08HhuDwGhUQ78cP2T0HeQoUYaJ4j1kpce3nNH/e0p1Qgj
-         U1nQ==
-X-Gm-Message-State: AOAM532VuZ+mXCuvqcvoQF1nif37YGD0udkDxbbqehp2WaBFLF8bcQnJ
-        LxucGJwGivvkbBPUYEJHSuc=
-X-Google-Smtp-Source: ABdhPJzTy7FW/+WGlMtP1pToBeoHtes0f1brjP90ukaULF4+ONZLw0bw81tdrnAqoB2Cm4GbqnRReA==
-X-Received: by 2002:a50:d90f:0:b0:418:8a5a:14b2 with SMTP id t15-20020a50d90f000000b004188a5a14b2mr5538105edj.241.1648571429156;
-        Tue, 29 Mar 2022 09:30:29 -0700 (PDT)
-Received: from debian.home (81-204-249-205.fixed.kpn.net. [81.204.249.205])
-        by smtp.gmail.com with ESMTPSA id k26-20020a056402049a00b004197b0867e0sm8601179edv.42.2022.03.29.09.30.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Mar 2022 09:30:28 -0700 (PDT)
-From:   Johan Jonker <jbx6244@gmail.com>
-To:     heiko@sntech.de, zhangqing@rock-chips.com
-Cc:     robh+dt@kernel.org, krzk+dt@kernel.org, mturquette@baylibre.com,
-        sboyd@kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 3/3] arm64: rockchip: add clocks property to cru node rk3328
-Date:   Tue, 29 Mar 2022 18:30:16 +0200
-Message-Id: <20220329163016.27458-3-jbx6244@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220329163016.27458-1-jbx6244@gmail.com>
-References: <20220329163016.27458-1-jbx6244@gmail.com>
+        Tue, 29 Mar 2022 12:33:50 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BBB7242210
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:32:06 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id EEBF22199A;
+        Tue, 29 Mar 2022 16:32:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1648571524;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=qn99NQsgecfSy/cduhbF8O5zmnc21CQyFrWDmqawHNQ=;
+        b=nHQJWZl8j/fkHtNs9difUcSzxbjiKPSRVSbW+NAGBg7RcAYZYk+cmxlQKD2Clsjyg8ZiUo
+        jJOm8Hd3kzDu+Akf2ftCqi2kVFR25xwMeYrweckmtL5YXHXV/N4yJ4qsSoGEuiBhGhghA3
+        cnhA4ZBTXkSWhNowFArJj+UlL1wyua0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1648571524;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=qn99NQsgecfSy/cduhbF8O5zmnc21CQyFrWDmqawHNQ=;
+        b=61tl8YB8egqQtRaMpdydB/DW2E28VmGTy3MB9wQYKGFejOlQhLdadcAu/T3AvM59c58qEf
+        MDdNDlX85YnR3YAA==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id DD19AA3CF3;
+        Tue, 29 Mar 2022 16:32:04 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id 3DB08DA7F3; Tue, 29 Mar 2022 18:28:07 +0200 (CEST)
+Date:   Tue, 29 Mar 2022 18:28:07 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Bruno Goncalves <bgoncalv@redhat.com>
+Cc:     kernel test robot <oliver.sang@intel.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Nikolay Borisov <nborisov@suse.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        lkp@lists.01.org, lkp@intel.com
+Subject: Re: [fs] 37da949345: xfstests.generic.374.fail
+Message-ID: <20220329162806.GY2237@suse.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Bruno Goncalves <bgoncalv@redhat.com>,
+        kernel test robot <oliver.sang@intel.com>,
+        Josef Bacik <josef@toxicpanda.com>, David Sterba <dsterba@suse.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Nikolay Borisov <nborisov@suse.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>, lkp@lists.01.org,
+        lkp@intel.com
+References: <20220311032233.GD18612@xsang-OptiPlex-9020>
+ <CA+QYu4osuzA+V5Th29SOsS1FnAZgdsaTc_qNPyPp=GH+q1LZYQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+QYu4osuzA+V5Th29SOsS1FnAZgdsaTc_qNPyPp=GH+q1LZYQ@mail.gmail.com>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add clocks property to rk3328 cru node to fix warnings like:
-'clocks' is a dependency of 'assigned-clocks'
+On Tue, Mar 29, 2022 at 12:26:43PM +0200, Bruno Goncalves wrote:
+> On Fri, Mar 11, 2022 at 4:23 AM kernel test robot <oliver.sang@intel.com> wrote:
+> >      Mount otherdir
+> >      Create file
+> >      Dedupe one file to another
+> >     -XFS_IOC_FILE_EXTENT_SAME: Invalid cross-device link
+> >     +deduped 65536/65536 bytes at offset 0
+> >     +64 KiB, 1 ops; 0.0018 sec (33.967 MiB/sec and 543.4783 ops/sec)
+> >      Check output
+> >     ...
+> >     (Run 'diff -u /lkp/benchmarks/xfstests/tests/generic/374.out /lkp/benchmarks/xfstests/results//generic/374.out.bad'  to see the entire diff)
+> > generic/375      1s
+> > generic/376      2s
+> > generic/377      1s
+> > generic/378      1s
+> > generic/379     [not run] disk quotas not supported by this filesystem type: btrfs
+> > Ran: generic/360 generic/361 generic/362 generic/363 generic/364 generic/365 generic/366 generic/367 generic/368 generic/369 generic/370 generic/371 generic/372 generic/373 generic/374 generic/375 generic/376 generic/377 generic/378 generic/379
+> > Not run: generic/362 generic/363 generic/364 generic/365 generic/366 generic/367 generic/368 generic/369 generic/370 generic/372 generic/379
+> > Failures: generic/373 generic/374
+> > Failed 2 of 20 tests
+> >
+> >
+> 
+> We are also able to reproduce this on mainline kernel with gcc12, the
+> problem seems to have been introduced by [1].
+> 
+> [1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=5191290407668028179f2544a11ae9b57f0bcf07
 
-Signed-off-by: Johan Jonker <jbx6244@gmail.com>
----
- arch/arm64/boot/dts/rockchip/rk3328.dtsi | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-index 73418fd2f..8ceac0388 100644
---- a/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-@@ -758,6 +758,8 @@
- 	cru: clock-controller@ff440000 {
- 		compatible = "rockchip,rk3328-cru";
- 		reg = <0x0 0xff440000 0x0 0x1000>;
-+		clocks = <&xin24m>;
-+		clock-names = "xin24m";
- 		rockchip,grf = <&grf>;
- 		#clock-cells = <1>;
- 		#reset-cells = <1>;
--- 
-2.20.1
-
+I think you need to update fstests once the patches from
+https://lore.kernel.org/linux-btrfs/bad40a464e1728309e185a031e8d3652c22b68cf.1648153387.git.josef@toxicpanda.com/
+are merged.
