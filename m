@@ -2,73 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1A63C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 09:38:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FB91C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 09:45:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234789AbiC2Jj6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 05:39:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52300 "EHLO
+        id S234805AbiC2Jqi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 05:46:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234527AbiC2Jjv (ORCPT
+        with ESMTP id S234414AbiC2Jqe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 05:39:51 -0400
-Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C70E5124C20
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 02:38:08 -0700 (PDT)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:d553:ff0a:6830:6bde])
-        by albert.telenet-ops.be with bizsmtp
-        id C9e52700k49QC44069e6Kh; Tue, 29 Mar 2022 11:38:06 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1nZ8If-007Eie-H9; Tue, 29 Mar 2022 11:38:05 +0200
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1nZ8Ie-00CC2F-Mp; Tue, 29 Mar 2022 11:38:04 +0200
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     Krzysztof Kozlowski <krzk@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Cc:     devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH] dt-bindings: memory: renesas,rpc-if: Document R-Car H3/M3/E3 support
-Date:   Tue, 29 Mar 2022 11:38:03 +0200
-Message-Id: <3784b6cb76a008fb56d6cb4ba228d78c77e710fa.1648546583.git.geert+renesas@glider.be>
-X-Mailer: git-send-email 2.25.1
+        Tue, 29 Mar 2022 05:46:34 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 535651480C8;
+        Tue, 29 Mar 2022 02:44:51 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id mj15-20020a17090b368f00b001c637aa358eso1615846pjb.0;
+        Tue, 29 Mar 2022 02:44:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZxcUXMRIWi10Bb3Yn0d7DQkBUePE+suYIRN22VgBmlk=;
+        b=pIHFTBvFOdroSMYLJmbokuhXRhGu0YiK4mQyUUjxzAD3slLRiBcRxzNTTYTzzT5HHJ
+         IH4QD14bcZq2eS8ywDzDOVI8iBBL5n+tr/fLmMBI7n6t0PDvlYS5qdOXTXpIM/5vJ7Wg
+         pRkOALLR1omH3ECOCbeEIOXI60mixggl/brGAlyVXz0PRVLfN3fm/4O99bDaYUfacpxb
+         6vTESWgCSxxE9nIMDYREt0ud9ARH5gPj6UI8J4T+lhNX/7eH1mrskwilN96BHg6owDGT
+         PavMHxAN26XdbyqbnV/MmKpOVkBN8/CcgCg1a3kq9Ks5/oghQyqAX0cy2JopYVhMcSXi
+         +Xvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZxcUXMRIWi10Bb3Yn0d7DQkBUePE+suYIRN22VgBmlk=;
+        b=f63TjZNFejdSeGJ0RmhwVlCZ/JU2wCWih03+eb9HBFfReLdNTUXonDgyEJJH3zV8c4
+         6dmpjxF5C0lEII4Jd2yhnWrXA1ANxA8YQIt6BqpGFhTtKPorbO8eID5f4AUD/2XIZCI4
+         4OzrNgve74E9Nh3QZHuSkJI102/XMQHsn2e6ccGPm37rduG7kysgWyrF8oNfkLNEoEGg
+         yCtnATLocZlKBszhG0PpLtmw29bqyBL4oLmHMmzfKYkVd9ERUCq/dTuNwhjAjaV5peFW
+         xVx2UeSKqeIpdEmX1jVswXGpbOKpq263kkwbeStza26jOdSoJkUOvm4mqsXOaICq0KtT
+         zrtw==
+X-Gm-Message-State: AOAM531KW4WnlURDSyIcuUn3k815FvFVWkzbvKp9I3NEl+/a/ge6Tt8A
+        2uvoKZhaFYmNwj3FOqyhdlw=
+X-Google-Smtp-Source: ABdhPJyAYUce+W+zwHS0NxaiOPL8AQq0MSVS4H59L6ZFCt5X2doklICAbvLw2MlkIhCnCoqukc3pjA==
+X-Received: by 2002:a17:902:ec8c:b0:154:2e86:dd51 with SMTP id x12-20020a170902ec8c00b001542e86dd51mr29923984plg.99.1648547090825;
+        Tue, 29 Mar 2022 02:44:50 -0700 (PDT)
+Received: from anyang.. ([106.250.177.234])
+        by smtp.googlemail.com with ESMTPSA id m15-20020a638c0f000000b003827bfe1f5csm15090968pgd.7.2022.03.29.02.44.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Mar 2022 02:44:50 -0700 (PDT)
+From:   Dongjin Kim <tobetter@gmail.com>
+Cc:     Heiko Stuebner <heiko@sntech.de>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] dt-bindings: rockchip: Add Hardkernel ODROID-M1 board
+Date:   Tue, 29 Mar 2022 18:44:45 +0900
+Message-Id: <20220329094446.415219-1-tobetter@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document support for the SPI Multi I/O Bus Controller (RPC-IF) in the
-R-Car H3, M3-W, M3-W+, M3-N, and E3 SoCs.
+Add device tree binding for Hardkernel ODROID-M1 board based on RK3568
+SoC.
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Dongjin Kim <tobetter@gmail.com>
 ---
- .../bindings/memory-controllers/renesas,rpc-if.yaml          | 5 +++++
+ Documentation/devicetree/bindings/arm/rockchip.yaml | 5 +++++
  1 file changed, 5 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/memory-controllers/renesas,rpc-if.yaml b/Documentation/devicetree/bindings/memory-controllers/renesas,rpc-if.yaml
-index 9a6dbf54b5406eb6..ae31dc97524cd6c9 100644
---- a/Documentation/devicetree/bindings/memory-controllers/renesas,rpc-if.yaml
-+++ b/Documentation/devicetree/bindings/memory-controllers/renesas,rpc-if.yaml
-@@ -31,8 +31,13 @@ properties:
-               - renesas,r8a774b1-rpc-if       # RZ/G2N
-               - renesas,r8a774c0-rpc-if       # RZ/G2E
-               - renesas,r8a774e1-rpc-if       # RZ/G2H
-+              - renesas,r8a7795-rpc-if        # R-Car H3
-+              - renesas,r8a7796-rpc-if        # R-Car M3-W
-+              - renesas,r8a77961-rpc-if       # R-Car M3-W+
-+              - renesas,r8a77965-rpc-if       # R-Car M3-N
-               - renesas,r8a77970-rpc-if       # R-Car V3M
-               - renesas,r8a77980-rpc-if       # R-Car V3H
-+              - renesas,r8a77990-rpc-if       # R-Car E3
-               - renesas,r8a77995-rpc-if       # R-Car D3
-               - renesas,r8a779a0-rpc-if       # R-Car V3U
-           - const: renesas,rcar-gen3-rpc-if   # a generic R-Car gen3 or RZ/G2{E,H,M,N} device
+diff --git a/Documentation/devicetree/bindings/arm/rockchip.yaml b/Documentation/devicetree/bindings/arm/rockchip.yaml
+index eece92f83a2d..48fd0858a795 100644
+--- a/Documentation/devicetree/bindings/arm/rockchip.yaml
++++ b/Documentation/devicetree/bindings/arm/rockchip.yaml
+@@ -664,6 +664,11 @@ properties:
+           - const: rockchip,rk3568-bpi-r2pro
+           - const: rockchip,rk3568
+ 
++      - description: Rockchip RK3568 Hardkernel ODROID-M1
++        items:
++          - const: rockchip,rk3568-odroid-m1
++          - const: rockchip,rk3568
++
+ additionalProperties: true
+ 
+ ...
 -- 
-2.25.1
+2.32.0
 
