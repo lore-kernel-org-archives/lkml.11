@@ -2,63 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19294C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 08:00:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EC65C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 08:00:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233688AbiC2IBk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 04:01:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42690 "EHLO
+        id S233703AbiC2IBo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 04:01:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231262AbiC2IBh (ORCPT
+        with ESMTP id S233689AbiC2IBk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 04:01:37 -0400
-X-Greylist: delayed 497 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 29 Mar 2022 00:59:55 PDT
-Received: from mail.ourpartnership.pl (mail.ourpartnership.pl [80.211.82.238])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07E2513D31
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 00:59:54 -0700 (PDT)
-Received: by mail.ourpartnership.pl (Postfix, from userid 1001)
-        id CFEDC617AA; Tue, 29 Mar 2022 08:51:02 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ourpartnership.pl;
-        s=mail; t=1648540276;
-        bh=M1ZVeu3q6Upppe+FUx/3rgI7MKJXh389NZDbgCK1SX4=;
-        h=Date:From:To:Subject:From;
-        b=o9rsoR4hNGdx6F4f0EdIxkD0+WvOlZTnotZdKNwSB2ioKob71/vClqCbzQfjgfIGS
-         0ZpOsk/46bNsT79tPMS6yWcVy9/wnSW/uR8heIKZpTlNqAKc1MkaI9zsPX1ACkVCng
-         FZfIVE07My5v2ukUaKSifKpBA3tNGIXKzE7mn/rt79RbHhmYGnL3iTPs1eLIb0gUFz
-         AQ9ROfITZoF/JW+kNl+gj68NHmDa1Zh6QvxsyczW7SmuhGLrhTbOeV2e3A1zvreNMQ
-         efVucFnI3iaCv9qS/62ztmmIwZqP6qYBx7qMoQjg6/VeyqSaVqkJgRj+r38HolDqiA
-         /dR+cBN36wLoQ==
-Received: by mail.ourpartnership.pl for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 07:50:55 GMT
-Message-ID: <20220329074501-0.1.a.30rh.0.1ifq4dve34@ourpartnership.pl>
-Date:   Tue, 29 Mar 2022 07:50:55 GMT
-From:   =?UTF-8?Q? "Arkadiusz_Soko=C5=82owski" ?= 
-        <arkadiusz.sokolowski@ourpartnership.pl>
-To:     <linux-kernel@vger.kernel.org>
-Subject: Koszty instalacji fotowoltaicznej
-X-Mailer: mail.ourpartnership.pl
+        Tue, 29 Mar 2022 04:01:40 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84DCD1D0DF;
+        Tue, 29 Mar 2022 00:59:55 -0700 (PDT)
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22T7N1Xq020398;
+        Tue, 29 Mar 2022 09:59:37 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=UcgvQ2AdqobLy8N84Hdj82PeXx82mB/fu9p/MaYyHdI=;
+ b=CQMOzzrneW0mojI+xjGHYXulRxrDP0c0Y8GdKIAHw8Ff1gWo5+MYtj88VtmxM40gQrBY
+ c7pnL8L44jCHw0rYTnsvnuQdzFDItQi4+Mz032IrPBqztShXfcqDNiudSgA6CwE1AGjE
+ 4LPcfxDVVw23/+hJkqI9l+edsrjGqW9VWCBzhbVl+jWRnETCBwn8E9XI2dANUjRVG1lG
+ V43tCejVYcyrKlTl2akWBAg6osT663vAqpwEG7QKfQffgXn0a78BoAZ3mp7cpYeMJyau
+ iDJPm6xle6YBOczTZDPwJjIPY6rWnu4vAyEA35ZjFK1xtIziGCtY/6Q5hb3H2e2eZlcZ CQ== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3f1tkm7m18-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 29 Mar 2022 09:59:37 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 3A60110002A;
+        Tue, 29 Mar 2022 09:59:34 +0200 (CEST)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 216872138C3;
+        Tue, 29 Mar 2022 09:59:34 +0200 (CEST)
+Received: from [10.211.10.49] (10.75.127.49) by SFHDAG2NODE2.st.com
+ (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Tue, 29 Mar
+ 2022 09:59:33 +0200
+Message-ID: <44057328-2454-4f4d-cc90-b0ca35ba1e5a@foss.st.com>
+Date:   Tue, 29 Mar 2022 09:59:32 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v1 2/5] pinctrl: stm32: Replace custom code by
+ gpiochip_count() call
+Content-Language: en-US
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        <linux-gpio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-renesas-soc@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>
+CC:     Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>
+References: <20220325200338.54270-1-andriy.shevchenko@linux.intel.com>
+ <20220325200338.54270-2-andriy.shevchenko@linux.intel.com>
+From:   Fabien DESSENNE <fabien.dessenne@foss.st.com>
+In-Reply-To: <20220325200338.54270-2-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.49]
+X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-29_02,2022-03-28_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dzie=C5=84 dobry,
-
-stworzyli=C5=9Bmy specjaln=C4=85 ofert=C4=99 dla firm, na kompleksow=C4=85=
- obs=C5=82ug=C4=99 inwestycji w fotowoltaik=C4=99. =20
-
-Specjalizujemy si=C4=99 w zakresie doboru, monta=C5=BCu i serwisie instal=
-acji fotowoltaicznych, dysponujemy najnowocze=C5=9Bniejszymi rozwi=C4=85z=
-ania, kt=C3=B3re zapewni=C4=85 Pa=C5=84stwu oczekiwane rezultaty.
-
-Mo=C5=BCemy przygotowa=C4=87 dla Pa=C5=84stwa wst=C4=99pn=C4=85 kalkulacj=
-=C4=99 i przeanalizowa=C4=87 efekty mo=C5=BCliwe do osi=C4=85gni=C4=99cia=
-=2E
-
-Czy s=C4=85 Pa=C5=84stwo otwarci na wst=C4=99pn=C4=85 rozmow=C4=99 w tym =
-temacie?
+Hi Andy,
 
 
-Pozdrawiam
-Arkadiusz Soko=C5=82owski
+On 25/03/2022 21:03, Andy Shevchenko wrote:
+> Since we have generic function to count GPIO controller nodes
+> under given device, there is no need to open code it. Replace
+> custom code by gpiochip_count() call.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>   drivers/pinctrl/stm32/pinctrl-stm32.c | 8 +++-----
+>   1 file changed, 3 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/pinctrl/stm32/pinctrl-stm32.c b/drivers/pinctrl/stm32/pinctrl-stm32.c
+> index 9ed764731570..d4bbeec82c1f 100644
+> --- a/drivers/pinctrl/stm32/pinctrl-stm32.c
+> +++ b/drivers/pinctrl/stm32/pinctrl-stm32.c
+> @@ -1423,7 +1423,8 @@ int stm32_pctl_probe(struct platform_device *pdev)
+>   	struct device *dev = &pdev->dev;
+>   	struct stm32_pinctrl *pctl;
+>   	struct pinctrl_pin_desc *pins;
+> -	int i, ret, hwlock_id, banks = 0;
+> +	int i, ret, hwlock_id;
+> +	unsigned int banks;
+>   
+>   	if (!np)
+>   		return -EINVAL;
+> @@ -1513,10 +1514,7 @@ int stm32_pctl_probe(struct platform_device *pdev)
+>   		return PTR_ERR(pctl->pctl_dev);
+>   	}
+>   
+> -	for_each_available_child_of_node(np, child)
+
+Here we look for "available" child, while the new generic helper 
+gpiochip_count() looks for any child, available or not.
+Would it be possible to hav gpiochip_count() looking for available child 
+as well?
+It looks like there is '_available_' version of 
+'device_for_each_child_node', maybe this shall be added too.
+
+
+> -		if (of_property_read_bool(child, "gpio-controller"))
+> -			banks++;
+> -
+> +	banks = gpiochip_count(dev);
+>   	if (!banks) {
+>   		dev_err(dev, "at least one GPIO bank is required\n");
+>   		return -EINVAL;
+
+Fabien
