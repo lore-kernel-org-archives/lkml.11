@@ -2,105 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BED7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 20:09:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 683F3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 20:10:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230062AbiC2UKy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 16:10:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49492 "EHLO
+        id S230021AbiC2UMf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 16:12:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229472AbiC2UKu (ORCPT
+        with ESMTP id S229451AbiC2UMd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 16:10:50 -0400
-Received: from smtp-out3.electric.net (smtp-out3.electric.net [208.70.128.185])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0537D205F4;
-        Tue, 29 Mar 2022 13:09:03 -0700 (PDT)
-Received: from 1nZI9D-000AzV-W6 by out3d.electric.net with emc1-ok (Exim 4.94.2)
-        (envelope-from <kris@embeddedTS.com>)
-        id 1nZI9F-000B2y-TT; Tue, 29 Mar 2022 13:09:01 -0700
-Received: by emcmailer; Tue, 29 Mar 2022 13:09:01 -0700
-Received: from [66.210.251.27] (helo=mail.embeddedts.com)
-        by out3d.electric.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <kris@embeddedTS.com>)
-        id 1nZI9D-000AzV-W6; Tue, 29 Mar 2022 13:09:00 -0700
-Received: from tsdebian.Massive (unknown [75.164.75.221])
-        by mail.embeddedts.com (Postfix) with ESMTPSA id 3179C1A4A6;
-        Tue, 29 Mar 2022 13:08:59 -0700 (MST)
-From:   Kris Bahnsen <kris@embeddedTS.com>
-To:     linux-kernel@vger.kernel.org,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org
-Cc:     Mark Featherston <mark@embeddedTS.com>,
-        Kris Bahnsen <kris@embeddedTS.com>
-Subject: [PATCH 1/2] can: Fix Links to Technologic Systems web resources
-Date:   Tue, 29 Mar 2022 13:08:44 -0700
-Message-Id: <20220329200844.16073-1-kris@embeddedTS.com>
-X-Mailer: git-send-email 2.11.0
-X-Outbound-IP: 66.210.251.27
-X-Env-From: kris@embeddedTS.com
-X-Proto: esmtps
-X-Revdns: wsip-66-210-251-27.ph.ph.cox.net
-X-HELO: mail.embeddedts.com
-X-TLS:  TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256
-X-Authenticated_ID: 
-X-Virus-Status: Scanned by VirusSMART (c)
-X-Virus-Status: Scanned by VirusSMART (b)
-X-FM-Delivery-Delay: 15749372,23518412
-X-PolicySMART: 13164782, 15749372, 26810492
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=embeddedTS.com; s=mailanyone20220121;h=Message-Id:Date:To:From; bh=JNdbgRoUfWZLQJBtZuhC+ncgaaoQIfxSElXYcdEKvd0=;b=FUdhajRHHjeiHlt1lD4lDFI4YIzg70BFuuBk/XXpcUD4UDElcaNCWPDiFxlvTnch0KvtQN59Dxg4H4/Z2AsHG9eEFuiFjpaSgwMVUVGH5FoIvtjf7mPvlaudY/+NXpLfg2u9U9WrUkP8LPRmnUFRd5PxAavRJ+1pCNp/dCU7uOyIiItTEfs1ArqAlsPszeeQYLBTCL5dFxPNOHcSFQKizOjF2JN+2JBbkaAkMXVXH+HLplYpPXZ1X0yP0eIgQ+nil1ooMXFtNYfjcxZS5Js0bm1dP+0jIgYxQaopIJgYghm6vVE1ZNlI1VcYfn+m9Zibvv8OoLkIMNyjg+YakGqvSg==;
-X-FM-Delivery-Delay: 15749372,23518412
-X-PolicySMART: 13164782, 15749372, 26810492
-X-FM-Delivery-Delay: 15749372,23518412
-X-PolicySMART: 13164782, 15749372, 26810492
-X-FM-Delivery-Delay: 15749372,23518412
-X-PolicySMART: 13164782, 15749372, 26810492
+        Tue, 29 Mar 2022 16:12:33 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42FDEA1445
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 13:10:50 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id c15so24908457ljr.9
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 13:10:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0oU9jeX9iLhMYZKUyj4AbviUR1091ghdikwJSuXqLCs=;
+        b=Nsn+ciQzT1Wa4x0yQPbzfiy4QANLLiRrBUKK1/DCgDgUqrMTXpAg947w50LiufKKTr
+         HN5ebNO9/oTpHluLDirWIqISaBp8aGbx2/D2Vgn5Z881qILdQSMotEVnQ10w4VfVbSts
+         PzXEtkY1Xp7HOhvQw5GU8RF4QJFEHAoIF2wh0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0oU9jeX9iLhMYZKUyj4AbviUR1091ghdikwJSuXqLCs=;
+        b=mlzUuvcws8jrNohiRDYiiBabrKMuw+0EI1a1Gvx1QTKCFk8OqvZX+a6JDj2UmlwG0R
+         7UIVYQoBtiLupzxuuS3AYkQvthupaSEVwNQvPHamgUzYeWJD15bdv4ljU/PwdX4QDlbX
+         ibSNlY6yLKZulnrI3XQk4Rm1s8Sl+nnYvzTMG1OW5uiFEAyTnZkA8s0h+04Z3t/QjZeE
+         iVmsb3/CEMq4rfg04885K66T2Xc9V0sFNnq1u8iVbUXl39byWSMIis+r60TQqenJhprV
+         fSCJEWWWqP2HdAwvewamNN1gvtZHcp5TTccuPydUHAee6sd9FGL4s/cJWbtU/2VugCJp
+         SX/g==
+X-Gm-Message-State: AOAM530APTs3OYwp2rC5fH8DIZg2dzE+ck2lGLY/MhKqKeMjE3M1Jf43
+        G4tEhBmmbt7BNGXsy235UR4y//cROpra8vww
+X-Google-Smtp-Source: ABdhPJx23ZLoFLSQV+55nsJ1BPcht1KCQwuTeirPb70xS/tsSj6kZsUsexWjVmZosZ8/sw+AuxS7uA==
+X-Received: by 2002:a2e:8859:0:b0:249:79fd:f493 with SMTP id z25-20020a2e8859000000b0024979fdf493mr4147196ljj.487.1648584648170;
+        Tue, 29 Mar 2022 13:10:48 -0700 (PDT)
+Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com. [209.85.167.54])
+        by smtp.gmail.com with ESMTPSA id n13-20020a056512388d00b00443d9064160sm2093901lft.125.2022.03.29.13.10.47
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 29 Mar 2022 13:10:47 -0700 (PDT)
+Received: by mail-lf1-f54.google.com with SMTP id m3so32198151lfj.11
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 13:10:47 -0700 (PDT)
+X-Received: by 2002:ac2:4203:0:b0:448:8053:d402 with SMTP id
+ y3-20020ac24203000000b004488053d402mr4181682lfh.687.1648584646973; Tue, 29
+ Mar 2022 13:10:46 -0700 (PDT)
+MIME-Version: 1.0
+References: <CAK7LNATL4v40ZHJ+Ym3k_fVe4ddmMA3wFQXb5RaTz9hmPebeuQ@mail.gmail.com>
+In-Reply-To: <CAK7LNATL4v40ZHJ+Ym3k_fVe4ddmMA3wFQXb5RaTz9hmPebeuQ@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 29 Mar 2022 13:10:30 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgxcu9DFkXAOAFdDtLWwuv6qb5iV1E69yWE-JEVsd-NFg@mail.gmail.com>
+Message-ID: <CAHk-=wgxcu9DFkXAOAFdDtLWwuv6qb5iV1E69yWE-JEVsd-NFg@mail.gmail.com>
+Subject: Re: [GIT PULL] Kbuild updates for v5.18-rc1
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Technologic Systems has rebranded as embeddedTS with the current
-domain eventually going offline. Update web/doc URLs to correct
-resource locations.
+I pulled this, and then immediately unpulled.
 
-Signed-off-by: Kris Bahnsen <kris@embeddedTS.com>
----
- drivers/net/can/sja1000/Kconfig  | 2 +-
- drivers/net/can/sja1000/tscan1.c | 7 +++----
- 2 files changed, 4 insertions(+), 5 deletions(-)
+On Mon, Mar 28, 2022 at 5:09 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
+>
+>  - Change the .config format to use CONFIG_FOO=n instead of
+>    "# CONFIG_FOO is not set"
 
-diff --git a/drivers/net/can/sja1000/Kconfig b/drivers/net/can/sja1000/Kconfig
-index 110071b26921..4b2f9cb17fc3 100644
---- a/drivers/net/can/sja1000/Kconfig
-+++ b/drivers/net/can/sja1000/Kconfig
-@@ -107,7 +107,7 @@ config CAN_TSCAN1
- 	depends on ISA
- 	help
- 	  This driver is for Technologic Systems' TSCAN-1 PC104 boards.
--	  http://www.embeddedarm.com/products/board-detail.php?product=TS-CAN1
-+	  https://www.embeddedts.com/products/TS-CAN1
- 	  The driver supports multiple boards and automatically configures them:
- 	  PLD IO base addresses are read from jumpers JP1 and JP2,
- 	  IRQ numbers are read from jumpers JP4 and JP5,
-diff --git a/drivers/net/can/sja1000/tscan1.c b/drivers/net/can/sja1000/tscan1.c
-index 3dbba8d61afb..f3862bed3d40 100644
---- a/drivers/net/can/sja1000/tscan1.c
-+++ b/drivers/net/can/sja1000/tscan1.c
-@@ -5,10 +5,9 @@
-  * Copyright 2010 Andre B. Oliveira
-  */
- 
--/*
-- * References:
-- * - Getting started with TS-CAN1, Technologic Systems, Jun 2009
-- *	http://www.embeddedarm.com/documentation/ts-can1-manual.pdf
-+/* References:
-+ * - Getting started with TS-CAN1, Technologic Systems, Feb 2022
-+ *	https://docs.embeddedts.com/TS-CAN1
-  */
- 
- #include <linux/init.h>
--- 
-2.11.0
+This is unacceptable.
 
+The change was apparently made to make automation easier, at the
+expense of making it harder for people to parse.
+
+That is not a valid tradeoff.
+
+I _look_ at my config files. Constantly. I don't want some mess where
+it's really damn hard to visually tell the difference between "this is
+enabled" and "this is not enabled".
+
+So no, I'm not pulling this kind of horrible "make it simpler for
+automation, and harder for humans" to read.
+
+                Linus
