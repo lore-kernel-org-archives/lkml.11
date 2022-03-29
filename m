@@ -2,134 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EA84C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:49:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 954F5C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:51:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236832AbiC2Mvb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 08:51:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35254 "EHLO
+        id S236792AbiC2MxO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 08:53:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236682AbiC2MrY (ORCPT
+        with ESMTP id S237160AbiC2MxA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 08:47:24 -0400
-Received: from mail-ej1-x64a.google.com (mail-ej1-x64a.google.com [IPv6:2a00:1450:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 679BF25AED8
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:42:12 -0700 (PDT)
-Received: by mail-ej1-x64a.google.com with SMTP id gv17-20020a1709072bd100b006dfcc7f7962so8126808ejc.5
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:42:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=T39GYI/vBjMdfMtH+Dx38ArgDU/LjDSVRO95NSUKYys=;
-        b=Ga2g0KSm7zN5HCLMp88eZDrOW0thBYZOgl2SJsxhqq1/9JhR9hzR13gng3zeCxso+w
-         i/qtco4gzCEgnTlb2mhL9BTKSiQMQJdKNozm6n1+hL+sDqOwULwTLCdwyrZELS+NA7W/
-         c5qB98YvHHLJ3BMBq1pJMPQpE9RNLyE4eXN+o9MmFC6t7LQ+u14xMMOIVA+bA5naY+8s
-         gRNrHJavp3e4jVaVQltJlMKiFbXubOTSrISRSTmFuJe4c/qmXIPakHSoPpaD9bKOA9pq
-         oeNXL7OnbYXNrhPT7iXlkE3Z7JYvDzAHoBqV8prd4N81xr62OjBryDQm9qe/C7bS4tTD
-         qDsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=T39GYI/vBjMdfMtH+Dx38ArgDU/LjDSVRO95NSUKYys=;
-        b=jNFsoix5iw1S6i3FwzMS522PLvipWtngG8rhCQwAL+zItUpvBPeb6R+9V50ovmQuH6
-         edYa5YI1/vo1/8TWwtmHdCHBwIe3zK1y+whY2kE1FdGEZueNnJpgRtrHNPvgxksT3RmP
-         jcnRRviYp1kJhuhkTp6l/qd1lLkBqLkdh1sfPgzx8Er9pJ+pLzK39f5qlLYX5mkRGbJT
-         CbOaHlOakNl6vxnGxYYs6piuTw7zxDPzCi8/usBEdynLJyKz5TuBTr93j8xclSitk6Z7
-         DszNpysBSLPczrJAqLL+8XuMKGnYS+94F6VfCLiH2rWtcM/MXHWAEorVa1O5mn2UayKh
-         fl5g==
-X-Gm-Message-State: AOAM533F1rA/brQj0DaHQ443GKUAmyTGKWGgQ4BF3m6IX7qGQ0D786Mw
-        ANnaWfaBy9BRADZ0Sc/uuJO25jpBdVs=
-X-Google-Smtp-Source: ABdhPJxnAD1WnRha3aT8bQpiv1ryLHN37wPgdzyd6u5jtCYTidxo5YWhjtFuZMhdjM/eFbjpolf6XzG13+Y=
-X-Received: from glider.muc.corp.google.com ([2a00:79e0:15:13:36eb:759:798f:98c3])
- (user=glider job=sendgmr) by 2002:a17:907:1ca4:b0:6da:86a4:1ec7 with SMTP id
- nb36-20020a1709071ca400b006da86a41ec7mr34900718ejc.556.1648557730788; Tue, 29
- Mar 2022 05:42:10 -0700 (PDT)
-Date:   Tue, 29 Mar 2022 14:40:07 +0200
-In-Reply-To: <20220329124017.737571-1-glider@google.com>
-Message-Id: <20220329124017.737571-39-glider@google.com>
-Mime-Version: 1.0
-References: <20220329124017.737571-1-glider@google.com>
-X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
-Subject: [PATCH v2 38/48] objtool: kmsan: list KMSAN API functions as uaccess-safe
-From:   Alexander Potapenko <glider@google.com>
-To:     glider@google.com
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>, linux-mm@kvack.org,
-        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 29 Mar 2022 08:53:00 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CF9E659E
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:50:51 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KSTpZ4sXwzBrg5;
+        Tue, 29 Mar 2022 20:46:46 +0800 (CST)
+Received: from dggpemm500002.china.huawei.com (7.185.36.229) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 29 Mar 2022 20:50:49 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ dggpemm500002.china.huawei.com (7.185.36.229) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 29 Mar 2022 20:50:48 +0800
+From:   Chen Wandun <chenwandun@huawei.com>
+To:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        <akpm@linux-foundation.org>
+Subject: [PATCH 0/2] fix several contiguous memmap assumptions
+Date:   Tue, 29 Mar 2022 21:09:26 +0800
+Message-ID: <20220329130928.266323-1-chenwandun@huawei.com>
+X-Mailer: git-send-email 2.18.0.huawei.25
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500002.china.huawei.com (7.185.36.229)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-KMSAN inserts API function calls in a lot of places (function entries
-and exits, local variables, memory accesses), so they may get called
-from the uaccess regions as well.
+It isn't true for only SPARSEMEM configs to assume that a compound page
+has virtually contiguous page structs, so use nth_page to iterate each
+page.
 
-Signed-off-by: Alexander Potapenko <glider@google.com>
----
-Link: https://linux-review.googlesource.com/id/I242bc9816273fecad4ea3d977393784396bb3c35
----
- tools/objtool/check.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+Inspired by:
+https://lore.kernel.org/linux-mm/20220204195852.1751729-8-willy@infradead.org/
 
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index 7c33ec67c4a95..8518eaf05bff0 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -943,6 +943,25 @@ static const char *uaccess_safe_builtin[] = {
- 	"__sanitizer_cov_trace_cmp4",
- 	"__sanitizer_cov_trace_cmp8",
- 	"__sanitizer_cov_trace_switch",
-+	/* KMSAN */
-+	"kmsan_copy_to_user",
-+	"kmsan_report",
-+	"kmsan_unpoison_memory",
-+	"__msan_chain_origin",
-+	"__msan_get_context_state",
-+	"__msan_instrument_asm_store",
-+	"__msan_metadata_ptr_for_load_1",
-+	"__msan_metadata_ptr_for_load_2",
-+	"__msan_metadata_ptr_for_load_4",
-+	"__msan_metadata_ptr_for_load_8",
-+	"__msan_metadata_ptr_for_load_n",
-+	"__msan_metadata_ptr_for_store_1",
-+	"__msan_metadata_ptr_for_store_2",
-+	"__msan_metadata_ptr_for_store_4",
-+	"__msan_metadata_ptr_for_store_8",
-+	"__msan_metadata_ptr_for_store_n",
-+	"__msan_poison_alloca",
-+	"__msan_warning",
- 	/* UBSAN */
- 	"ubsan_type_mismatch_common",
- 	"__ubsan_handle_type_mismatch",
+Chen Wandun (2):
+  mm: fix contiguous memmap assumptions about split page
+  mm: fix contiguous memmap assumptions about alloc/free pages
+
+ include/linux/mm.h |  2 ++
+ mm/compaction.c    |  6 +++---
+ mm/huge_memory.c   |  2 +-
+ mm/page_alloc.c    | 14 ++++++++------
+ 4 files changed, 14 insertions(+), 10 deletions(-)
+
 -- 
-2.35.1.1021.g381101b075-goog
+2.18.0.huawei.25
 
