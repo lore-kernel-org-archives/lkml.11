@@ -2,80 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6783AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 21:33:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83593C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 21:34:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234540AbiC2Vfk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 17:35:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57672 "EHLO
+        id S234554AbiC2Vfv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 17:35:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234386AbiC2Vfi (ORCPT
+        with ESMTP id S234545AbiC2Vfo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 17:35:38 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE611E6154
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 14:33:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648589634; x=1680125634;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=tHyJpMSgREeaX7Il6lUt/mc24/CfgD9AxcBykZQ1fFA=;
-  b=W6ird+ntVHeCGxOmqm/TUXKNPjg4h5rutM7/bgpxTmBjhqdrVNNh5P4Y
-   zp2Eyz3EEeZZwM2VlWZh3H+nSK9Om2wbzPMCG8Uy2uiTq68vIxz6Pr4cG
-   HDsdXhR4l9V0MJvVmnN6mOVR3/dZTOTDpiTxV+BdnvPHizNcWuehcJSeL
-   JFvko7ayaI4XB7wNtyb89D7MC1o8TECiEPUmTTVwCyzYMAa32//7WXAM4
-   m2WwDMFfQ5kz1F9j4tHFiVtcJZUshe51yHlR+y+/1w5v6v0Tr0P1J+izn
-   BNHqZXAR431nhTxt45AhJsYlcpN5/ehmH5UiwsH2XVI/kc0DvHM5+8JTk
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="259352575"
-X-IronPort-AV: E=Sophos;i="5.90,220,1643702400"; 
-   d="scan'208";a="259352575"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 14:33:54 -0700
-X-IronPort-AV: E=Sophos;i="5.90,220,1643702400"; 
-   d="scan'208";a="585750705"
-Received: from alison-desk.jf.intel.com (HELO alison-desk) ([10.54.74.41])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 14:33:54 -0700
-Date:   Tue, 29 Mar 2022 14:36:19 -0700
-From:   Alison Schofield <alison.schofield@intel.com>
-To:     Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Fabio Aiuto <fabioaiuto83@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Muhammad Usama Anjum <musamaanjum@gmail.com>,
-        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        outreachy@lists.linux.dev
-Subject: Re: [PATCH] staging: rtl8723bs: Remove redundant else branches.
-Message-ID: <20220329213619.GA1171634@alison-desk>
-References: <20220329140904.GA3566@ubuntu>
- <20220329200053.GA1170989@alison-desk>
- <CAMWRUK4ti6QxA4JWbG_XwZHwQwWUKYu+HvVHvEBX-k82oaEP6g@mail.gmail.com>
- <20220329212426.GA1171538@alison-desk>
+        Tue, 29 Mar 2022 17:35:44 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69211114DF1;
+        Tue, 29 Mar 2022 14:34:00 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id w7so32550334lfd.6;
+        Tue, 29 Mar 2022 14:34:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=phALv9mY0wITJH6lJS6EVyuXuWVc0bzsLfvwtVve004=;
+        b=E1sNVQUgcCs1YlYBuXLH9oWXstFhkuBfb996QIHwQijCyxUljxyVeCWzy8R3i0vRmk
+         QuPSyqF1xU+p8XqZG7qIB+ooUtyAySCobuC83AdhgLDv1C6OffZ5JRAcHl8h9Yamg1ti
+         NoShiuABosOiFa2MfhkBIXahRdOfVn/whImZwvyaeTrUngcZMj6MPXsnRmi2AxXaP8If
+         SvyxqAMhkTOWQTWCg5pNQvgpz/U7wHhM9LmpOxYcvM5b+mrxucR63zLP/cwYRmrC/r6M
+         CRPq9Ra0XQBtTPbrr+l7MF/KyxnmlmzkBhGohe3flNkrF/tyjvZHOKH1Dy/RqKWa1Q0t
+         snTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=phALv9mY0wITJH6lJS6EVyuXuWVc0bzsLfvwtVve004=;
+        b=w5kk1qu1bS0rdWaRtAX+li9+slS44aNmFVdjGbvnNwE7PNL0hrFYdnc/nWYivgloqZ
+         D80wEDIxmRcawHYRGwnukxEiZafesNBqvYnS+mX8HKLgdg/mSqFiCzAjJlfpF7BgR1eg
+         540Dh7prHyHSm6gDx5NiuXhEHIRfYo+gUxmFEyozedqbO4kGR6h49OTgzuLR5tLdBSQH
+         4DDidpeAisyn7b+XyNqCNkWy4k20TaExt9s7RaqTa6Y5SUtYD3keoCgztQIRhpRU3q7W
+         fmJiLwihfsE5oJDMvGVrrVgrlLPnHA3RjRy2gUcfA9G7ekX3ioftE9cjYNSEWDA7SEVf
+         xv/g==
+X-Gm-Message-State: AOAM532oANFEAFuqr1YQg3m1Z/wbYSDGIdKNYyQ3lbcoM5cbcjSS0RrA
+        1yXRHy958rWmgOqW/j8PBao=
+X-Google-Smtp-Source: ABdhPJygl7RpwWEJA7JHCK5Gy8tSqC5GhaXKLrCdbJbTw3pohtg4V8j6NJPgcz2XJeyLop4nodEL4A==
+X-Received: by 2002:a05:6512:13a9:b0:448:9dd3:b84 with SMTP id p41-20020a05651213a900b004489dd30b84mr4470218lfa.556.1648589638575;
+        Tue, 29 Mar 2022 14:33:58 -0700 (PDT)
+Received: from [192.168.1.2] (235.132.246.94.ip4.artcom.pl. [94.246.132.235])
+        by smtp.googlemail.com with ESMTPSA id b14-20020a19670e000000b0044a3adf07d3sm2117198lfc.64.2022.03.29.14.33.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 29 Mar 2022 14:33:58 -0700 (PDT)
+Message-ID: <57df6bed-3b74-df63-0c5c-7218aef8534b@gmail.com>
+Date:   Tue, 29 Mar 2022 23:33:04 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220329212426.GA1171538@alison-desk>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: Bug 215726 - si2157.c: mention name of the missing firmware file
+Content-Language: pl-PL
+To:     Thorsten Leemhuis <regressions@leemhuis.info>,
+        Antti Palosaari <crope@iki.fi>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Robert Schlabbach <robert_s@gmx.net>
+Cc:     "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        az0123456@gmx.de,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <5f660108-8812-383c-83e4-29ee0558d623@leemhuis.info>
+From:   Piotr Chmura <chmooreck@gmail.com>
+In-Reply-To: <5f660108-8812-383c-83e4-29ee0558d623@leemhuis.info>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-snip
+It's supposed to be fixed by:
+https://lore.kernel.org/linux-media/trinity-6009a608-b0ff-4e1a-9b91-ba4a97f10324-1648057812747@3c-app-gmx-bs71/T/#t
 
-On Tue, Mar 29, 2022 at 02:24:26PM -0700, Alison Schofield wrote:
-> On Tue, Mar 29, 2022 at 01:59:52PM -0700, Sevinj Aghayeva wrote:
-> > 
-> > That one has already landed. Is it okay if I send v2 just for this patch?
-> 
-> Did you see it applied already?
-> 
+Test it please.
 
-I see Greg took a couple that I wanted to send for rework.
-BTW - if it was really something *wrong* I would ask you to send
-another patch,  but since it's just style, let's just apply the
-learning to the next one.
+Best regards,
+Piotr Chmura
 
-Thanks!
-Alison
+W dniu 29.03.2022 o 10:33, Thorsten Leemhuis pisze:
+> Hi, this is your Linux kernel regression tracker.
+>
+> I noticed a regression report in bugzilla.kernel.org that afaics nobody
+> acted upon since it was reported about a week ago, that's why I decided
+> to forward it to the lists and all people that seemed to be relevant
+> here. To quote from https://bugzilla.kernel.org/show_bug.cgi?id=215726 :
+>
+>> I get the following error messages when trying to use si2157.ko in linux 5.17:
+>> si2157 13-0060: found a 'Silicon Labs Si2157-A30 ROM 0x50'
+>> si2157 13-0060: Can't continue without a firmware
+>> I did work in linux 5.16.16 without a firmware file. Unfortunately the driver does not tell me the name of the missing firmware file.
+> Could somebody take a look into this? Or was this discussed somewhere
+> else already? Or even fixed?
+>
+> Anyway, to get this tracked:
+>
+> #regzbot introduced: v5.16..v5.17
+> #regzbot from: az0123456@gmx.de <az0123456@gmx.de>
+> #regzbot title: media: si2157.c: mention name of the missing firmware file
+> #regzbot link: https://bugzilla.kernel.org/show_bug.cgi?id=215726
+>
+> Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+>
+> P.S.: As the Linux kernel's regression tracker I'm getting a lot of
+> reports on my table. I can only look briefly into most of them and lack
+> knowledge about most of the areas they concern. I thus unfortunately
+> will sometimes get things wrong or miss something important. I hope
+> that's not the case here; if you think it is, don't hesitate to tell me
+> in a public reply, it's in everyone's interest to set the public record
+> straight.
+>
 
