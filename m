@@ -2,126 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43ADAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:08:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A32F3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:08:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239487AbiC2QKM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 12:10:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37058 "EHLO
+        id S239495AbiC2QKP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 12:10:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239264AbiC2QHv (ORCPT
+        with ESMTP id S230330AbiC2QJe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 12:07:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2FA8297BB4
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:06:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648569968;
+        Tue, 29 Mar 2022 12:09:34 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B18F1E2F65;
+        Tue, 29 Mar 2022 09:07:51 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id CCA752224F;
+        Tue, 29 Mar 2022 18:07:46 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1648570067;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=uByPTE5XsWISlGQqXayqbTPshu560C6Ho4T9sugt9g8=;
-        b=Ynm0EPTyUpwwKgfmlMvD7sGJvZ+Rops/J/HT5XdC632jj8zfeeC0v7JjJTNgiuaEyKoZCD
-        ZXGg43ttaEOJYERLF8nvEhXqSTmE4lxjSXa0WTpb5dEuqAJV25U/xIs95H19Y8eZTyt01Q
-        ciRumq8mmoOJr0+STW1DR6qQ+85SbYE=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-286-UXPDYmmZMmu-OsHYDsSY3Q-1; Tue, 29 Mar 2022 12:06:03 -0400
-X-MC-Unique: UXPDYmmZMmu-OsHYDsSY3Q-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2A6F128078D2;
-        Tue, 29 Mar 2022 16:06:02 +0000 (UTC)
-Received: from t480s.redhat.com (unknown [10.39.194.134])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B22F4401DB0;
-        Tue, 29 Mar 2022 16:05:55 +0000 (UTC)
-From:   David Hildenbrand <david@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Pedro Gomes <pedrodemargomes@gmail.com>,
-        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org,
-        David Hildenbrand <david@redhat.com>
-Subject: [PATCH v3 09/16] mm/rmap: use page_move_anon_rmap() when reusing a mapped PageAnon() page exclusively
-Date:   Tue, 29 Mar 2022 18:04:33 +0200
-Message-Id: <20220329160440.193848-10-david@redhat.com>
-In-Reply-To: <20220329160440.193848-1-david@redhat.com>
-References: <20220329160440.193848-1-david@redhat.com>
+        bh=ICyBKbcIANIRXFbM3XwImZyH8BggKJrVFsuGIGCnPIc=;
+        b=ndwGVfNH2rpEswAMlPNbXXbh/lBTRKacuLkziFr1tB0krx0Qj0RmAAFSztGBTn5oG4mnfc
+        rnuNqBGNCVjI0QIYPpga+VJw129Ccp6ZtVBazrxSplfXu/MizJRnretLRYOLt2ng95IQyk
+        F7Cj3FuQCCEFWj8jXdm3l44NR4jOMyM=
+From:   Michael Walle <michael@walle.cc>
+To:     Xu Yilun <yilun.xu@intel.com>, Tom Rix <trix@redhat.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Michael Walle <michael@walle.cc>
+Subject: [PATCH RFC v2 5/5] hwmon: move hwmon_is_bad_char() into core
+Date:   Tue, 29 Mar 2022 18:07:30 +0200
+Message-Id: <20220329160730.3265481-6-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220329160730.3265481-1-michael@walle.cc>
+References: <20220329160730.3265481-1-michael@walle.cc>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We want to mark anonymous pages exclusive, and when using
-page_move_anon_rmap() we know that we are the exclusive user, as
-properly documented. This is a preparation for marking anonymous pages
-exclusive in page_move_anon_rmap().
+With the last user of this function converted to hwmon_sanitize_name(),
+move the function into the core itself and make it private.
 
-In both instances, we're holding page lock and are sure that we're the
-exclusive owner (page_count() == 1). hugetlb already properly uses
-page_move_anon_rmap() in the write fault handler.
-
-Note that in case of a PTE-mapped THP, we'll only end up calling this
-function if the whole THP is only referenced by the single PTE mapping
-a single subpage (page_count() == 1); consequently, it's fine to modify
-the compound page mapping inside page_move_anon_rmap().
-
-Signed-off-by: David Hildenbrand <david@redhat.com>
+Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- mm/huge_memory.c | 2 ++
- mm/memory.c      | 1 +
- 2 files changed, 3 insertions(+)
+ drivers/hwmon/hwmon.c | 20 ++++++++++++++++++++
+ include/linux/hwmon.h | 23 -----------------------
+ 2 files changed, 20 insertions(+), 23 deletions(-)
 
-diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index c4526343565a..dd16819c5edc 100644
---- a/mm/huge_memory.c
-+++ b/mm/huge_memory.c
-@@ -1317,6 +1317,8 @@ vm_fault_t do_huge_pmd_wp_page(struct vm_fault *vmf)
- 		try_to_free_swap(page);
- 	if (page_count(page) == 1) {
- 		pmd_t entry;
+diff --git a/drivers/hwmon/hwmon.c b/drivers/hwmon/hwmon.c
+index 619ef9f9a16e..f19b69b066ef 100644
+--- a/drivers/hwmon/hwmon.c
++++ b/drivers/hwmon/hwmon.c
+@@ -1057,6 +1057,26 @@ void devm_hwmon_device_unregister(struct device *dev)
+ }
+ EXPORT_SYMBOL_GPL(devm_hwmon_device_unregister);
+ 
++/**
++ * hwmon_is_bad_char - Is the char invalid in a hwmon name
++ * @ch: the char to be considered
++ *
++ * Returns true if the char is invalid, false otherwise.
++ */
++static bool hwmon_is_bad_char(const char ch)
++{
++	switch (ch) {
++	case '-':
++	case '*':
++	case ' ':
++	case '\t':
++	case '\n':
++		return true;
++	default:
++		return false;
++	}
++}
 +
-+		page_move_anon_rmap(page, vma);
- 		entry = pmd_mkyoung(orig_pmd);
- 		entry = maybe_pmd_mkwrite(pmd_mkdirty(entry), vma);
- 		if (pmdp_set_access_flags(vma, haddr, vmf->pmd, entry, 1))
-diff --git a/mm/memory.c b/mm/memory.c
-index 03e29c9614e0..4303c0fdcf17 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -3303,6 +3303,7 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
- 		 * and the page is locked, it's dark out, and we're wearing
- 		 * sunglasses. Hit it.
- 		 */
-+		page_move_anon_rmap(page, vma);
- 		unlock_page(page);
- 		wp_page_reuse(vmf);
- 		return VM_FAULT_WRITE;
+ static char *__hwmon_sanitize_name(struct device *dev, const char *old_name)
+ {
+ 	char *name, *p;
+diff --git a/include/linux/hwmon.h b/include/linux/hwmon.h
+index 4efaf06fd2b8..6a60e3a4acc0 100644
+--- a/include/linux/hwmon.h
++++ b/include/linux/hwmon.h
+@@ -464,27 +464,4 @@ int hwmon_notify_event(struct device *dev, enum hwmon_sensor_types type,
+ char *hwmon_sanitize_name(const char *name);
+ char *devm_hwmon_sanitize_name(struct device *dev, const char *name);
+ 
+-/**
+- * hwmon_is_bad_char - Is the char invalid in a hwmon name
+- * @ch: the char to be considered
+- *
+- * hwmon_is_bad_char() can be used to determine if the given character
+- * may not be used in a hwmon name.
+- *
+- * Returns true if the char is invalid, false otherwise.
+- */
+-static inline bool hwmon_is_bad_char(const char ch)
+-{
+-	switch (ch) {
+-	case '-':
+-	case '*':
+-	case ' ':
+-	case '\t':
+-	case '\n':
+-		return true;
+-	default:
+-		return false;
+-	}
+-}
+-
+ #endif
 -- 
-2.35.1
+2.30.2
 
