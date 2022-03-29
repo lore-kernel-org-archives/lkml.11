@@ -2,147 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1513C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 03:17:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24AF7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 03:18:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231604AbiC2DTK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 23:19:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32944 "EHLO
+        id S231622AbiC2DTy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 23:19:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231421AbiC2DTG (ORCPT
+        with ESMTP id S231646AbiC2DR7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 23:19:06 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0815C939F7;
-        Mon, 28 Mar 2022 20:17:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648523844; x=1680059844;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=VtgY33mvtVftPIg9d/ZSUNZh+XlmGKjMsQlWajvmItc=;
-  b=fE3inJ1LDi2ALL/dBa/artYivqXPnd40wRtbVd9s57UAAu/QzwcIow37
-   w46whagXBzhUeXmWz7UUh+H5G+c77zkyYemPq3pOukexBX8egOFunxZ4b
-   +4pQpcTJcDBM8sidLqT1H03q2ZU/UvvxKSDuENuIh9sxP1mQrmyVPZigx
-   ab8f0ebsZUmxs5++XvQ0UTDh1ofvJxAqxxlmIVo2LwwcMjcLDTL8jXDoK
-   SsF8Wr5JM2Mc3DhrRkMznk3wtltTTrLIOllfumwTbWjVmaY719H1RYTZy
-   HyXf4fg2FpkblgdsJ2Udy9OVpaBMOJcxF2Cq4dm3210lTKig0i38SB7ez
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="259120918"
-X-IronPort-AV: E=Sophos;i="5.90,219,1643702400"; 
-   d="scan'208";a="259120918"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 20:17:23 -0700
-X-IronPort-AV: E=Sophos;i="5.90,219,1643702400"; 
-   d="scan'208";a="617991323"
-Received: from rmsatyan-mobl1.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.255.94.240])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 20:17:20 -0700
-Message-ID: <8ad4e66a71e6a4e7af1ce08c9776fe2097cfeff6.camel@intel.com>
-Subject: Re: [PATCH v2 04/21] x86/virt/tdx: Add skeleton for detecting and
- initializing TDX on demand
-From:   Kai Huang <kai.huang@intel.com>
-To:     "Tian, Kevin" <kevin.tian@intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "Gleixner, Thomas" <thomas.gleixner@intel.com>
-Cc:     "Hansen, Dave" <dave.hansen@intel.com>,
-        "Christopherson,, Sean" <seanjc@google.com>,
-        "pbonzini@redhat.com" <pbonzini@redhat.com>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "sathyanarayanan.kuppuswamy@linux.intel.com" 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "Luck, Tony" <tony.luck@intel.com>,
-        "ak@linux.intel.com" <ak@linux.intel.com>,
-        "Williams, Dan J" <dan.j.williams@intel.com>,
-        "Yamahata, Isaku" <isaku.yamahata@intel.com>
-Date:   Tue, 29 Mar 2022 16:17:18 +1300
-In-Reply-To: <15c0212fc4ff591a878369ea6ae964e43574a8d9.camel@intel.com>
-References: <cover.1647167475.git.kai.huang@intel.com>
-         <279af00f90a93491d5ec86672506146153909e5c.1647167475.git.kai.huang@intel.com>
-         <BL1PR11MB52713CA82D52248B0905C91D8C189@BL1PR11MB5271.namprd11.prod.outlook.com>
-         <a68b378a40310c38f731f4bc7f0a9cc0d89efe92.camel@intel.com>
-         <BN9PR11MB52760B743E208684A098B61C8C1D9@BN9PR11MB5276.namprd11.prod.outlook.com>
-         <b4d97c46c52dbbecc6061f743b172015a73ec189.camel@intel.com>
-         <BN9PR11MB52761E8DE55DC8872EC093758C1D9@BN9PR11MB5276.namprd11.prod.outlook.com>
-         <8f85e6ad76508e0b7ac8667b1c0b7b3b43d67ef8.camel@intel.com>
-         <BN9PR11MB5276C837FE25BACCD53DB5D58C1E9@BN9PR11MB5276.namprd11.prod.outlook.com>
-         <15c0212fc4ff591a878369ea6ae964e43574a8d9.camel@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        Mon, 28 Mar 2022 23:17:59 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2067.outbound.protection.outlook.com [40.107.243.67])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8761D247C1D;
+        Mon, 28 Mar 2022 20:16:14 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=A7eBfOhE67oUwDNkuQxm93P8xHFdMxi/7wPUS7hARFNuvP9ceVQbzEeHms/YXfSWT9Dcfyx4052c2HMKXKBuVhkBfhq1qyRGgGGuwk7OsVWwcWC54JvhnH1fzkBSAXGUjwwAPzB+wMgE6eEPZKw+qapk24Y88tElOCyWioOF+IiDCYReYf1lrt+O4j/8teKd+wIKiac9T6kLXrhYez3AG4tQg8sqA83fHoRoHAAlW5AzYUId7CmO3cE3+KnkK362sDJ1pDU+4k1aRHZIji0zceCIH2AEq6daYBpc7yaePQS5sj89/faYDh+1pz/v1aba3zVqgSMa5RmmOYOTE5qC+A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6J7O4kk3tQimnKCE2CAtdQ7Z01mVVXKYeIjgyRkn9uo=;
+ b=QlT6o9iutFYjeZre3QL2qEOqyanZM1cKm0jl0Lh6Z5YPpnXbQU4WkS8AnnTW2p0Abp5fGxk2ybrsSD7eYoziaQ29xabZ+Y+wBNFyYopdwUUgRtMpwgW3/WHC3ppj6RlE9s484pU4bpS8JGiOWIY6cc1rvO0jH/bjoF4L1b6yy7yp22aIjq9OadigaXK2DIf9BUXk6q+9jG9s1I+gAWUMeA10JOJ/VQVySyXeFDeREut1MU5Q6wDqEl9Hc393t496IqQyZGWTRA0x7sDxTe7EPvmgKgH1cg+xzjh/XPMPKu3sWPY/4RXMMp50h475zKo3os+l+m51ezn0OnxjDHkQ2A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=gondor.apana.org.au smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6J7O4kk3tQimnKCE2CAtdQ7Z01mVVXKYeIjgyRkn9uo=;
+ b=hMtWeLG1T+VYDe7H4KEIGZd0PIT+DAbrvbd/QHIN/oLNNSb23i1FrVnvZguUGJbrNSYdPPYVnlajqgUIE11kjGcK8YEs0L5/PIv7xZGIntZoHndErOJiMgcTcvFx3N1Qh5+/5IdU4x0dYwQgVNAFdNthgqwV6TbrcboMwUbJPY0=
+Received: from DS7PR03CA0314.namprd03.prod.outlook.com (2603:10b6:8:2b::26) by
+ CH0PR12MB5329.namprd12.prod.outlook.com (2603:10b6:610:d4::19) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5102.16; Tue, 29 Mar 2022 03:16:10 +0000
+Received: from DM6NAM11FT049.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:8:2b:cafe::cb) by DS7PR03CA0314.outlook.office365.com
+ (2603:10b6:8:2b::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.17 via Frontend
+ Transport; Tue, 29 Mar 2022 03:16:10 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT049.mail.protection.outlook.com (10.13.172.188) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5102.17 via Frontend Transport; Tue, 29 Mar 2022 03:16:09 +0000
+Received: from AUS-LX-MLIMONCI.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 28 Mar
+ 2022 22:15:56 -0500
+From:   Mario Limonciello <mario.limonciello@amd.com>
+To:     Tom Lendacky <thomas.lendacky@amd.com>,
+        John Allen <john.allen@amd.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>
+CC:     open list <linux-kernel@vger.kernel.org>,
+        "open list:AMD CRYPTOGRAPHIC COPROCESSOR (CCP) DRIVER" 
+        <linux-crypto@vger.kernel.org>,
+        Kerneis Gabriel <Gabriel.Kerneis@ssi.gouv.fr>,
+        Richard Hughes <hughsient@gmail.com>,
+        "Mario Limonciello" <mario.limonciello@amd.com>
+Subject: [PATCH 4/4] crypto: ccp: When TSME and SME both detected notify user
+Date:   Mon, 28 Mar 2022 22:15:53 -0500
+Message-ID: <20220329031553.798-4-mario.limonciello@amd.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220329031553.798-1-mario.limonciello@amd.com>
+References: <20220329031553.798-1-mario.limonciello@amd.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e4819c36-75c7-4f58-538d-08da11327890
+X-MS-TrafficTypeDiagnostic: CH0PR12MB5329:EE_
+X-Microsoft-Antispam-PRVS: <CH0PR12MB5329AA8596695A234EEB2874E21E9@CH0PR12MB5329.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: /MUw97iWLe1gNLN735imp0isiWpEZBIN4/h3vmICaY7FeQHKmyslP459hVF5+gim3zeEu5hTe2+ZEM42ay3OGqp9kGOTPRfO38zejmeIR636JUCPuuOkC/fwQovjL9iGlO0h4Q60BliFD8Ed+25gBixv3Kopgl6gXw/ZdqUt1drEUg2/kBaD709ENP4vrKva13pyby598Neee6igZxFpVctYYetuXT+zMSP/+vgTNnl18h79qMZu5QQutpP7nIXNqi9QkxuTB6NkJ/r0uHc3DrgFnTsMhUx2MdTEtMLiXAUQZy66V6340+3pWOTd6S19p5DlZVthSfMZA30PtpXTdsIYNBZiC2x6XICXMkt7rTgXcjnzkXuEB7Cn0Oym2im0huve90S3PUvLJRlBBY99PEtVdDqHVfCezPRhWA/WhpAyCUeuNGY752xHPDbMMfcXA+1773U9cTJewqS1mpTAYKoCWFCSBlAVQhQhpmxv4HU7l+rLsVCjnoHPDgq/cD+JOtTed3D/NuPBgrqKhkeFl9aQw43GmtMO7dYfVm0WfQ45Y+BD+T2uUOX3H6r9/6zOpzKUIxuMnK3ubuS7C96XAN9sJHkjWlBYod4JE73fW+27LHr30dxHzXS2U7B8TO2SypvtLdvZNDPDpQ3Hv4kWaRwS226CB9MTPW3dQJPbX9cFu48fb2ZMpOaa0vxFeM8x0Oy6C09Yx0iScqgP/ak7/A==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(47076005)(86362001)(36860700001)(82310400004)(40460700003)(316002)(356005)(54906003)(81166007)(110136005)(5660300002)(70586007)(44832011)(4326008)(508600001)(36756003)(2906002)(8676002)(70206006)(26005)(426003)(336012)(186003)(2616005)(7696005)(1076003)(83380400001)(16526019)(6666004)(8936002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Mar 2022 03:16:09.4170
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e4819c36-75c7-4f58-538d-08da11327890
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT049.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5329
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-03-29 at 16:10 +1300, Kai Huang wrote:
-> > > > 
-> > > > *all cpus* is questionable.
-> > > > 
-> > > > Say BIOS enabled 8 CPUs: [0 - 7]
-> > > > 
-> > > > cpu_present_map covers [0 - 5], due to nr_cpus=6
-> > > > 
-> > > > You compared cpus_booted_once_mask to cpu_present_mask so if
-> > > maxcpus
-> > > > is set to a number < nr_cpus SEAMRR is considered disabled because you
-> > > > cannot verify CPUs between [max_cpus, nr_cpus).
-> 
-> Sorry my bad.  We can verify CPUs between [max_cpus, nr_cpus).  When any cpu
-> within that range becomes online, the detection code is run.  The paranoid
-> check
-> in seamrr_enabled() is used to check whether all cpus within [max_cpus,
-> nr_cpus)
-> (if there's any -- cpus within [0, max_cpus) are up during boot) have been
-> brought up at least once. 
-> 
-> > > 
-> > > SEAMRR is not considered as disabled in this case, at least in my
-> > > intention.
-> > 
-> > the function is called seamrr_enabled(), and false is returned if above
-> > check is not passed. So it is the intention from the code.
-> 
-> The false is returned if something error is discovered among cpus [0 -
-> present_cpus].  It returns true even if we cannot verify [present_cpus,
-> bios_enabled_cpus).
+The SME flag is used to relay that memory encryption has been activated by
+the kernel.
 
-Sorry typo.  Not "something error is discovered among cpus [0 - present_cpus)",
-but "when there's any cpu within [0 - present_cpus) hasn't been brought up
-once".
+As it's technically possible to enable both SME and TSME at the same time,
+detect this scenario and notify the user that enabling TSME and SME at the
+same time is unnecessary.
+
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+---
+ drivers/crypto/ccp/psp-dev.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/crypto/ccp/psp-dev.c b/drivers/crypto/ccp/psp-dev.c
+index 3f47b2d81e3c..0e3f1a332d61 100644
+--- a/drivers/crypto/ccp/psp-dev.c
++++ b/drivers/crypto/ccp/psp-dev.c
+@@ -74,6 +74,13 @@ static unsigned int psp_get_capability(struct psp_device *psp)
+ 	}
+ 	psp->capability = val;
  
-> 
-> > 
-> > > My
-> > > understanding on the spec is if SEAMRR is configured as enabled on one
-> > > core
-> > > (the
-> > > SEAMRR MSRs are core-scope), the SEAMCALL instruction can work on that
-> > > core.  It
-> > > is TDX's requirement that some SEAMCALL needs to be done on all BIOS-
-> > > enabled
-> > > CPUs to finish TDX initialization, but not SEAM's.
-> > > 
-> > > From this perspective, if we forget TDX at this moment but talk about SEAM
-> > > alone, it might make sense to not just treat SEAMRR as disabled if kernel
-> > > usable
-> > > cpus are limited by 'nr_cpus'.  The chance that BIOS misconfigured SEAMRR
-> > > is
-> > > really rare.  If kernel can detect potential BIOS misconfiguration, it
-> > > should do
-> > > it.  Otherwise, perhaps it's more reasonable not to just treat SEAM as
-> > > disabled.
-> > 
-> > My problem is just that you didn't adopt consistency policy for CPUs in
-> > [maxcpus, nr_cpus) and CPUs in [nr_cpus, nr_bios_enabled_cpus). This is
-> > the only trouble to me no matter what policy you want to pursue...
-> 
-> Let's separate SEAMRR detection and TDX initialization.  The paranoid check is
-> only for SEAM detection, but not for TDX initialization.  As I said, it is
-> TDX's
-> requirement that some SEAMCALL must be run on all bios-enabled cpus, but not
-> SEAM's.
-> 
-> 
++
++	/* Detect TSME / SME both enabled */
++	if (psp->capability & PSP_CAPABILITY_PSP_SECURITY_REPORTING &&
++	    psp->capability & (PSP_SECURITY_TSME_STATUS << PSP_CAPABILITY_PSP_SECURITY_OFFSET) &&
++	    boot_cpu_has(X86_FEATURE_SME))
++		dev_notice(psp->dev, "psp: TSME was enabled by the BIOS and SME was enabled by the kernel, this is unnecessary.\n");
++
+ 	return 0;
+ }
+ 
+-- 
+2.34.1
 
