@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB4A8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:07:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 465B6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:07:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234240AbiC2QIv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 12:08:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40448 "EHLO
+        id S239292AbiC2QI4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 12:08:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239357AbiC2QIk (ORCPT
+        with ESMTP id S239435AbiC2QIk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 29 Mar 2022 12:08:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E2B9B9E9D7
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:06:49 -0700 (PDT)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4A7E6A94D0
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:06:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648570008;
+        s=mimecast20190719; t=1648570014;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=fvOn5k/Thsts8S5SMakSbo7hCdqRaWYtv+VO90hQzO8=;
-        b=g8hBsz2+LSuXGneChy/Pi16F8Muje46txAkrBfaVoksTq24aZ2roXLBKHRwmmy589TXR+b
-        2hUUCOfX/V4Oh7hl6PJrpGJY0X1R9s7i4sum5a8+eXG23YGsP8pSOoa6lymk2gIUKimSPA
-        jqZHUE+UEoXU7BEWixMXEm9lCoHDzsk=
+        bh=kXV92cjYXWMw8znVtj/pMn2+ZNQjwgLVCvLNJZrsYtM=;
+        b=d/BVWnVf3UI4G3O2ULhwZfQ+a0AF4rz4SFwuyOGu0Ock+v0/Hbt3cvIv7FKSDt372Pp4qq
+        aJ/Puhp//8ATJ9zLLWpideUd+x/zv9Sixu9PnTG6w2OOIFyDuDnFb2f7p8htbf5EsVfA3d
+        2RVqsbC/6ataqZ4V0vOVQzMa10vpsvA=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-623-QpbqXcpfPrCzvMkhb64KUQ-1; Tue, 29 Mar 2022 12:06:36 -0400
-X-MC-Unique: QpbqXcpfPrCzvMkhb64KUQ-1
+ us-mta-86-VCem4szeOtms0_9vqLYefw-1; Tue, 29 Mar 2022 12:06:48 -0400
+X-MC-Unique: VCem4szeOtms0_9vqLYefw-1
 Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9C3DFF7812D;
-        Tue, 29 Mar 2022 16:06:33 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A8EFE91BD83;
+        Tue, 29 Mar 2022 16:06:47 +0000 (UTC)
 Received: from t480s.redhat.com (unknown [10.39.194.134])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1E536401E3A;
-        Tue, 29 Mar 2022 16:06:16 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id F1D3E401E26;
+        Tue, 29 Mar 2022 16:06:40 +0000 (UTC)
 From:   David Hildenbrand <david@redhat.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Andrew Morton <akpm@linux-foundation.org>,
@@ -65,9 +65,9 @@ Cc:     Andrew Morton <akpm@linux-foundation.org>,
         Pedro Gomes <pedrodemargomes@gmail.com>,
         Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org,
         David Hildenbrand <david@redhat.com>
-Subject: [PATCH v3 12/16] mm: remember exclusively mapped anonymous pages with PG_anon_exclusive
-Date:   Tue, 29 Mar 2022 18:04:36 +0200
-Message-Id: <20220329160440.193848-13-david@redhat.com>
+Subject: [PATCH v3 14/16] mm: support GUP-triggered unsharing of anonymous pages
+Date:   Tue, 29 Mar 2022 18:04:38 +0200
+Message-Id: <20220329160440.193848-15-david@redhat.com>
 In-Reply-To: <20220329160440.193848-1-david@redhat.com>
 References: <20220329160440.193848-1-david@redhat.com>
 MIME-Version: 1.0
@@ -77,1081 +77,522 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Let's mark exclusively mapped anonymous pages with PG_anon_exclusive as
-exclusive, and use that information to make GUP pins reliable and stay
-consistent with the page mapped into the page table even if the
-page table entry gets write-protected.
+Whenever GUP currently ends up taking a R/O pin on an anonymous page that
+might be shared -- mapped R/O and !PageAnonExclusive() -- any write fault
+on the page table entry will end up replacing the mapped anonymous page
+due to COW, resulting in the GUP pin no longer being consistent with the
+page actually mapped into the page table.
 
-With that information at hand, we can extend our COW logic to always
-reuse anonymous pages that are exclusive. For anonymous pages that
-might be shared, the existing logic applies.
+The possible ways to deal with this situation are:
+ (1) Ignore and pin -- what we do right now.
+ (2) Fail to pin -- which would be rather surprising to callers and
+     could break user space.
+ (3) Trigger unsharing and pin the now exclusive page -- reliable R/O
+     pins.
 
-As already documented, PG_anon_exclusive is usually only expressive in
-combination with a page table entry. Especially PTE vs. PMD-mapped
-anonymous pages require more thought, some examples: due to mremap() we
-can easily have a single compound page PTE-mapped into multiple page tables
-exclusively in a single process -- multiple page table locks apply.
-Further, due to MADV_WIPEONFORK we might not necessarily write-protect
-all PTEs, and only some subpages might be pinned. Long story short: once
-PTE-mapped, we have to track information about exclusivity per sub-page,
-but until then, we can just track it for the compound page in the head
-page and not having to update a whole bunch of subpages all of the time
-for a simple PMD mapping of a THP.
+We want to implement 3) because it provides the clearest semantics and
+allows for checking in unpin_user_pages() and friends for possible BUGs:
+when trying to unpin a page that's no longer exclusive, clearly
+something went very wrong and might result in memory corruptions that
+might be hard to debug. So we better have a nice way to spot such
+issues.
 
-For simplicity, this commit mostly talks about "anonymous pages", while
-it's for THP actually "the part of an anonymous folio referenced via
-a page table entry".
+To implement 3), we need a way for GUP to trigger unsharing:
+FAULT_FLAG_UNSHARE. FAULT_FLAG_UNSHARE is only applicable to R/O mapped
+anonymous pages and resembles COW logic during a write fault. However, in
+contrast to a write fault, GUP-triggered unsharing will, for example, still
+maintain the write protection.
 
-To not spill PG_anon_exclusive code all over the mm code-base, we let
-the anon rmap code to handle all PG_anon_exclusive logic it can easily
-handle.
+Let's implement FAULT_FLAG_UNSHARE by hooking into the existing write fault
+handlers for all applicable anonymous page types: ordinary pages, THP and
+hugetlb.
 
-If a writable, present page table entry points at an anonymous (sub)page,
-that (sub)page must be PG_anon_exclusive. If GUP wants to take a reliably
-pin (FOLL_PIN) on an anonymous page references via a present
-page table entry, it must only pin if PG_anon_exclusive is set for the
-mapped (sub)page.
+* If FAULT_FLAG_UNSHARE finds a R/O-mapped anonymous page that has been
+  marked exclusive in the meantime by someone else, there is nothing to do.
+* If FAULT_FLAG_UNSHARE finds a R/O-mapped anonymous page that's not
+  marked exclusive, it will try detecting if the process is the exclusive
+  owner. If exclusive, it can be set exclusive similar to reuse logic
+  during write faults via page_move_anon_rmap() and there is nothing
+  else to do; otherwise, we either have to copy and map a fresh,
+  anonymous exclusive page R/O (ordinary pages, hugetlb), or split the
+  THP.
 
-This commit doesn't adjust GUP, so this is only implicitly handled for
-FOLL_WRITE, follow-up commits will teach GUP to also respect it for
-FOLL_PIN without !FOLL_WRITE, to make all GUP pins of anonymous pages
-fully reliable.
+This commit is heavily based on patches by Andrea.
 
-Whenever an anonymous page is to be shared (fork(), KSM), or when
-temporarily unmapping an anonymous page (swap, migration), the relevant
-PG_anon_exclusive bit has to be cleared to mark the anonymous page
-possibly shared. Clearing will fail if there are GUP pins on the page:
-* For fork(), this means having to copy the page and not being able to
-  share it. fork() protects against concurrent GUP using the PT lock and
-  the src_mm->write_protect_seq.
-* For KSM, this means sharing will fail. For swap this means, unmapping
-  will fail, For migration this means, migration will fail early. All
-  three cases protect against concurrent GUP using the PT lock and a
-  proper clear/invalidate+flush of the relevant page table entry.
-
-This fixes memory corruptions reported for FOLL_PIN | FOLL_WRITE, when a
-pinned page gets mapped R/O and the successive write fault ends up
-replacing the page instead of reusing it. It improves the situation for
-O_DIRECT/vmsplice/... that still use FOLL_GET instead of FOLL_PIN,
-if fork() is *not* involved, however swapout and fork() are still
-problematic. Properly using FOLL_PIN instead of FOLL_GET for these
-GUP users will fix the issue for them.
-
-I. Details about basic handling
-
-I.1. Fresh anonymous pages
-
-page_add_new_anon_rmap() and hugepage_add_new_anon_rmap() will mark the
-given page exclusive via __page_set_anon_rmap(exclusive=1). As that is
-the mechanism fresh anonymous pages come into life (besides migration
-code where we copy the page->mapping), all fresh anonymous pages will
-start out as exclusive.
-
-I.2. COW reuse handling of anonymous pages
-
-When a COW handler stumbles over a (sub)page that's marked exclusive, it
-simply reuses it. Otherwise, the handler tries harder under page lock to
-detect if the (sub)page is exclusive and can be reused. If exclusive,
-page_move_anon_rmap() will mark the given (sub)page exclusive.
-
-Note that hugetlb code does not yet check for PageAnonExclusive(), as it
-still uses the old COW logic that is prone to the COW security issue
-because hugetlb code cannot really tolerate unnecessary/wrong COW as
-huge pages are a scarce resource.
-
-I.3. Migration handling
-
-try_to_migrate() has to try marking an exclusive anonymous page shared
-via page_try_share_anon_rmap(). If it fails because there are GUP pins
-on the page, unmap fails. migrate_vma_collect_pmd() and
-__split_huge_pmd_locked() are handled similarly.
-
-Writable migration entries implicitly point at shared anonymous pages.
-For readable migration entries that information is stored via a new
-"readable-exclusive" migration entry, specific to anonymous pages.
-
-When restoring a migration entry in remove_migration_pte(), information
-about exlusivity is detected via the migration entry type, and
-RMAP_EXCLUSIVE is set accordingly for
-page_add_anon_rmap()/hugepage_add_anon_rmap() to restore that
-information.
-
-I.4. Swapout handling
-
-try_to_unmap() has to try marking the mapped page possibly shared via
-page_try_share_anon_rmap(). If it fails because there are GUP pins on the
-page, unmap fails. For now, information about exclusivity is lost. In the
-future, we might want to remember that information in the swap entry in
-some cases, however, it requires more thought, care, and a way to store
-that information in swap entries.
-
-I.5. Swapin handling
-
-do_swap_page() will never stumble over exclusive anonymous pages in the
-swap cache, as try_to_migrate() prohibits that. do_swap_page() always has
-to detect manually if an anonymous page is exclusive and has to set
-RMAP_EXCLUSIVE for page_add_anon_rmap() accordingly.
-
-I.6. THP handling
-
-__split_huge_pmd_locked() has to move the information about exclusivity
-from the PMD to the PTEs.
-
-a) In case we have a readable-exclusive PMD migration entry, simply insert
-readable-exclusive PTE migration entries.
-
-b) In case we have a present PMD entry and we don't want to freeze
-("convert to migration entries"), simply forward PG_anon_exclusive to
-all sub-pages, no need to temporarily clear the bit.
-
-c) In case we have a present PMD entry and want to freeze, handle it
-similar to try_to_migrate(): try marking the page shared first. In case
-we fail, we ignore the "freeze" instruction and simply split ordinarily.
-try_to_migrate() will properly fail because the THP is still mapped via
-PTEs.
-
-When splitting a compound anonymous folio (THP), the information about
-exclusivity is implicitly handled via the migration entries: no need to
-replicate PG_anon_exclusive manually.
-
-I.7. fork() handling
-
-fork() handling is relatively easy, because PG_anon_exclusive is only
-expressive for some page table entry types.
-
-a) Present anonymous pages
-
-page_try_dup_anon_rmap() will mark the given subpage shared -- which
-will fail if the page is pinned. If it failed, we have to copy (or
-PTE-map a PMD to handle it on the PTE level).
-
-Note that device exclusive entries are just a pointer at a PageAnon()
-page. fork() will first convert a device exclusive entry to a present
-page table and handle it just like present anonymous pages.
-
-b) Device private entry
-
-Device private entries point at PageAnon() pages that cannot be mapped
-directly and, therefore, cannot get pinned.
-
-page_try_dup_anon_rmap() will mark the given subpage shared, which
-cannot fail because they cannot get pinned.
-
-c) HW poison entries
-
-PG_anon_exclusive will remain untouched and is stale -- the page table
-entry is just a placeholder after all.
-
-d) Migration entries
-
-Writable and readable-exclusive entries are converted to readable
-entries: possibly shared.
-
-I.8. mprotect() handling
-
-mprotect() only has to properly handle the new readable-exclusive
-migration entry:
-
-When write-protecting a migration entry that points at an anonymous
-page, remember the information about exclusivity via the
-"readable-exclusive" migration entry type.
-
-II. Migration and GUP-fast
-
-Whenever replacing a present page table entry that maps an exclusive
-anonymous page by a migration entry, we have to mark the page possibly
-shared and synchronize against GUP-fast by a proper
-clear/invalidate+flush to make the following scenario impossible:
-
-1. try_to_migrate() places a migration entry after checking for GUP pins
-   and marks the page possibly shared.
-2. GUP-fast pins the page due to lack of synchronization
-3. fork() converts the "writable/readable-exclusive" migration entry into a
-   readable migration entry
-4. Migration fails due to the GUP pin (failing to freeze the refcount)
-5. Migration entries are restored. PG_anon_exclusive is lost
-
--> We have a pinned page that is not marked exclusive anymore.
-
-Note that we move information about exclusivity from the page to the
-migration entry as it otherwise highly overcomplicates fork() and
-PTE-mapping a THP.
-
-III. Swapout and GUP-fast
-
-Whenever replacing a present page table entry that maps an exclusive
-anonymous page by a swap entry, we have to mark the page possibly
-shared and synchronize against GUP-fast by a proper
-clear/invalidate+flush to make the following scenario impossible:
-
-1. try_to_unmap() places a swap entry after checking for GUP pins and
-   clears exclusivity information on the page.
-2. GUP-fast pins the page due to lack of synchronization.
-
--> We have a pinned page that is not marked exclusive anymore.
-
-If we'd ever store information about exclusivity in the swap entry,
-similar to migration handling, the same considerations as in II would
-apply. This is future work.
-
+Co-developed-by: Andrea Arcangeli <aarcange@redhat.com>
+Signed-off-by: Andrea Arcangeli <aarcange@redhat.com>
 Signed-off-by: David Hildenbrand <david@redhat.com>
 ---
- include/linux/rmap.h    | 40 +++++++++++++++++++++
- include/linux/swap.h    | 15 +++++---
- include/linux/swapops.h | 25 +++++++++++++
- mm/huge_memory.c        | 78 +++++++++++++++++++++++++++++++++++++----
- mm/hugetlb.c            | 15 +++++---
- mm/ksm.c                | 13 ++++++-
- mm/memory.c             | 33 ++++++++++++-----
- mm/migrate.c            | 14 ++++++--
- mm/migrate_device.c     | 21 ++++++++++-
- mm/mprotect.c           |  8 +++--
- mm/rmap.c               | 61 +++++++++++++++++++++++++++++---
- 11 files changed, 289 insertions(+), 34 deletions(-)
+ include/linux/mm_types.h |   8 +++
+ mm/huge_memory.c         |  10 +++-
+ mm/hugetlb.c             |  56 ++++++++++++--------
+ mm/memory.c              | 107 +++++++++++++++++++++++++++------------
+ 4 files changed, 126 insertions(+), 55 deletions(-)
 
-diff --git a/include/linux/rmap.h b/include/linux/rmap.h
-index 9c120e1b1bc7..b4a2c0044647 100644
---- a/include/linux/rmap.h
-+++ b/include/linux/rmap.h
-@@ -228,6 +228,13 @@ static inline int page_try_dup_anon_rmap(struct page *page, bool compound,
- {
- 	VM_BUG_ON_PAGE(!PageAnon(page), page);
- 
-+	/*
-+	 * No need to check+clear for already shared pages, including KSM
-+	 * pages.
-+	 */
-+	if (!PageAnonExclusive(page))
-+		goto dup;
-+
- 	/*
- 	 * If this page may have been pinned by the parent process,
- 	 * don't allow to duplicate the mapping but instead require to e.g.,
-@@ -239,14 +246,47 @@ static inline int page_try_dup_anon_rmap(struct page *page, bool compound,
- 	    unlikely(page_needs_cow_for_dma(vma, page))))
- 		return -EBUSY;
- 
-+	ClearPageAnonExclusive(page);
- 	/*
- 	 * It's okay to share the anon page between both processes, mapping
- 	 * the page R/O into both processes.
- 	 */
-+dup:
- 	__page_dup_rmap(page, compound);
- 	return 0;
- }
- 
-+/**
-+ * page_try_share_anon_rmap - try marking an exclusive anonymous page possibly
-+ *			      shared to prepare for KSM or temporary unmapping
-+ * @page: the exclusive anonymous page to try marking possibly shared
+diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+index 8834e38c06a4..02019bc8f30e 100644
+--- a/include/linux/mm_types.h
++++ b/include/linux/mm_types.h
+@@ -812,6 +812,9 @@ typedef struct {
+  * @FAULT_FLAG_REMOTE: The fault is not for current task/mm.
+  * @FAULT_FLAG_INSTRUCTION: The fault was during an instruction fetch.
+  * @FAULT_FLAG_INTERRUPTIBLE: The fault can be interrupted by non-fatal signals.
++ * @FAULT_FLAG_UNSHARE: The fault is an unsharing request to unshare (and mark
++ *                      exclusive) a possibly shared anonymous page that is
++ *                      mapped R/O.
+  *
+  * About @FAULT_FLAG_ALLOW_RETRY and @FAULT_FLAG_TRIED: we can specify
+  * whether we would allow page faults to retry by specifying these two
+@@ -831,6 +834,10 @@ typedef struct {
+  * continuous faults with flags (b).  We should always try to detect pending
+  * signals before a retry to make sure the continuous page faults can still be
+  * interrupted if necessary.
 + *
-+ * The caller needs to hold the PT lock and has to have the page table entry
-+ * cleared/invalidated+flushed, to properly sync against GUP-fast.
-+ *
-+ * This is similar to page_try_dup_anon_rmap(), however, not used during fork()
-+ * to duplicate a mapping, but instead to prepare for KSM or temporarily
-+ * unmapping a page (swap, migration) via page_remove_rmap().
-+ *
-+ * Marking the page shared can only fail if the page may be pinned; device
-+ * private pages cannot get pinned and consequently this function cannot fail.
-+ *
-+ * Returns 0 if marking the page possibly shared succeeded. Returns -EBUSY
-+ * otherwise.
-+ */
-+static inline int page_try_share_anon_rmap(struct page *page)
-+{
-+	VM_BUG_ON_PAGE(!PageAnon(page) || !PageAnonExclusive(page), page);
-+
-+	/* See page_try_dup_anon_rmap(). */
-+	if (likely(!is_device_private_page(page) &&
-+	    unlikely(page_maybe_dma_pinned(page))))
-+		return -EBUSY;
-+
-+	ClearPageAnonExclusive(page);
-+	return 0;
-+}
-+
- /*
-  * Called from mm/vmscan.c to handle paging out
++ * The combination FAULT_FLAG_WRITE|FAULT_FLAG_UNSHARE is illegal.
++ * FAULT_FLAG_UNSHARE is ignored and treated like an ordinary read fault when
++ * no existing R/O-mapped anonymous page is encountered.
   */
-diff --git a/include/linux/swap.h b/include/linux/swap.h
-index 27093b477c5f..e6d70a4156e8 100644
---- a/include/linux/swap.h
-+++ b/include/linux/swap.h
-@@ -78,12 +78,19 @@ static inline int current_is_kswapd(void)
- #endif
+ enum fault_flag {
+ 	FAULT_FLAG_WRITE =		1 << 0,
+@@ -843,6 +850,7 @@ enum fault_flag {
+ 	FAULT_FLAG_REMOTE =		1 << 7,
+ 	FAULT_FLAG_INSTRUCTION =	1 << 8,
+ 	FAULT_FLAG_INTERRUPTIBLE =	1 << 9,
++	FAULT_FLAG_UNSHARE =		1 << 10,
+ };
  
- /*
-- * NUMA node memory migration support
-+ * Page migration support.
-+ *
-+ * SWP_MIGRATION_READ_EXCLUSIVE is only applicable to anonymous pages and
-+ * indicates that the referenced (part of) an anonymous page is exclusive to
-+ * a single process. For SWP_MIGRATION_WRITE, that information is implicit:
-+ * (part of) an anonymous page that are mapped writable are exclusive to a
-+ * single process.
-  */
- #ifdef CONFIG_MIGRATION
--#define SWP_MIGRATION_NUM 2
--#define SWP_MIGRATION_READ	(MAX_SWAPFILES + SWP_HWPOISON_NUM)
--#define SWP_MIGRATION_WRITE	(MAX_SWAPFILES + SWP_HWPOISON_NUM + 1)
-+#define SWP_MIGRATION_NUM 3
-+#define SWP_MIGRATION_READ (MAX_SWAPFILES + SWP_HWPOISON_NUM)
-+#define SWP_MIGRATION_READ_EXCLUSIVE (MAX_SWAPFILES + SWP_HWPOISON_NUM + 1)
-+#define SWP_MIGRATION_WRITE (MAX_SWAPFILES + SWP_HWPOISON_NUM + 2)
- #else
- #define SWP_MIGRATION_NUM 0
- #endif
-diff --git a/include/linux/swapops.h b/include/linux/swapops.h
-index d356ab4047f7..06280fc1c99b 100644
---- a/include/linux/swapops.h
-+++ b/include/linux/swapops.h
-@@ -194,6 +194,7 @@ static inline bool is_writable_device_exclusive_entry(swp_entry_t entry)
- static inline int is_migration_entry(swp_entry_t entry)
- {
- 	return unlikely(swp_type(entry) == SWP_MIGRATION_READ ||
-+			swp_type(entry) == SWP_MIGRATION_READ_EXCLUSIVE ||
- 			swp_type(entry) == SWP_MIGRATION_WRITE);
- }
- 
-@@ -202,11 +203,26 @@ static inline int is_writable_migration_entry(swp_entry_t entry)
- 	return unlikely(swp_type(entry) == SWP_MIGRATION_WRITE);
- }
- 
-+static inline int is_readable_migration_entry(swp_entry_t entry)
-+{
-+	return unlikely(swp_type(entry) == SWP_MIGRATION_READ);
-+}
-+
-+static inline int is_readable_exclusive_migration_entry(swp_entry_t entry)
-+{
-+	return unlikely(swp_type(entry) == SWP_MIGRATION_READ_EXCLUSIVE);
-+}
-+
- static inline swp_entry_t make_readable_migration_entry(pgoff_t offset)
- {
- 	return swp_entry(SWP_MIGRATION_READ, offset);
- }
- 
-+static inline swp_entry_t make_readable_exclusive_migration_entry(pgoff_t offset)
-+{
-+	return swp_entry(SWP_MIGRATION_READ_EXCLUSIVE, offset);
-+}
-+
- static inline swp_entry_t make_writable_migration_entry(pgoff_t offset)
- {
- 	return swp_entry(SWP_MIGRATION_WRITE, offset);
-@@ -224,6 +240,11 @@ static inline swp_entry_t make_readable_migration_entry(pgoff_t offset)
- 	return swp_entry(0, 0);
- }
- 
-+static inline swp_entry_t make_readable_exclusive_migration_entry(pgoff_t offset)
-+{
-+	return swp_entry(0, 0);
-+}
-+
- static inline swp_entry_t make_writable_migration_entry(pgoff_t offset)
- {
- 	return swp_entry(0, 0);
-@@ -244,6 +265,10 @@ static inline int is_writable_migration_entry(swp_entry_t entry)
- {
- 	return 0;
- }
-+static inline int is_readable_migration_entry(swp_entry_t entry)
-+{
-+	return 0;
-+}
- 
- #endif
- 
+ #endif /* _LINUX_MM_TYPES_H */
 diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index 70298431e128..a74a3c5ae3a6 100644
+index a74a3c5ae3a6..8560e234ab4d 100644
 --- a/mm/huge_memory.c
 +++ b/mm/huge_memory.c
-@@ -1054,7 +1054,7 @@ int copy_huge_pmd(struct mm_struct *dst_mm, struct mm_struct *src_mm,
- 		swp_entry_t entry = pmd_to_swp_entry(pmd);
+@@ -1271,6 +1271,7 @@ void huge_pmd_set_accessed(struct vm_fault *vmf)
  
- 		VM_BUG_ON(!is_pmd_migration_entry(pmd));
--		if (is_writable_migration_entry(entry)) {
-+		if (!is_readable_migration_entry(entry)) {
- 			entry = make_readable_migration_entry(
- 							swp_offset(entry));
- 			pmd = swp_entry_to_pmd(entry);
-@@ -1292,6 +1292,10 @@ vm_fault_t do_huge_pmd_wp_page(struct vm_fault *vmf)
- 	page = pmd_page(orig_pmd);
- 	VM_BUG_ON_PAGE(!PageHead(page), page);
+ vm_fault_t do_huge_pmd_wp_page(struct vm_fault *vmf)
+ {
++	const bool unshare = vmf->flags & FAULT_FLAG_UNSHARE;
+ 	struct vm_area_struct *vma = vmf->vma;
+ 	struct page *page;
+ 	unsigned long haddr = vmf->address & HPAGE_PMD_MASK;
+@@ -1279,6 +1280,9 @@ vm_fault_t do_huge_pmd_wp_page(struct vm_fault *vmf)
+ 	vmf->ptl = pmd_lockptr(vma->vm_mm, vmf->pmd);
+ 	VM_BUG_ON_VMA(!vma->anon_vma, vma);
  
-+	/* Early check when only holding the PT lock. */
-+	if (PageAnonExclusive(page))
-+		goto reuse;
++	VM_BUG_ON(unshare && (vmf->flags & FAULT_FLAG_WRITE));
++	VM_BUG_ON(!unshare && !(vmf->flags & FAULT_FLAG_WRITE));
 +
- 	if (!trylock_page(page)) {
- 		get_page(page);
- 		spin_unlock(vmf->ptl);
-@@ -1306,6 +1310,12 @@ vm_fault_t do_huge_pmd_wp_page(struct vm_fault *vmf)
- 		put_page(page);
+ 	if (is_huge_zero_pmd(orig_pmd))
+ 		goto fallback;
+ 
+@@ -1317,7 +1321,7 @@ vm_fault_t do_huge_pmd_wp_page(struct vm_fault *vmf)
  	}
  
-+	/* Recheck after temporarily dropping the PT lock. */
-+	if (PageAnonExclusive(page)) {
-+		unlock_page(page);
-+		goto reuse;
-+	}
-+
  	/*
- 	 * See do_wp_page(): we can only map the page writable if there are
+-	 * See do_wp_page(): we can only map the page writable if there are
++	 * See do_wp_page(): we can only reuse the page exclusively if there are
  	 * no additional references. Note that we always drain the LRU
-@@ -1319,11 +1329,12 @@ vm_fault_t do_huge_pmd_wp_page(struct vm_fault *vmf)
- 		pmd_t entry;
- 
+ 	 * pagevecs immediately after adding a THP.
+ 	 */
+@@ -1331,6 +1335,10 @@ vm_fault_t do_huge_pmd_wp_page(struct vm_fault *vmf)
  		page_move_anon_rmap(page, vma);
-+		unlock_page(page);
-+reuse:
+ 		unlock_page(page);
+ reuse:
++		if (unlikely(unshare)) {
++			spin_unlock(vmf->ptl);
++			return 0;
++		}
  		entry = pmd_mkyoung(orig_pmd);
  		entry = maybe_pmd_mkwrite(pmd_mkdirty(entry), vma);
  		if (pmdp_set_access_flags(vma, haddr, vmf->pmd, entry, 1))
- 			update_mmu_cache_pmd(vma, vmf->address, vmf->pmd);
--		unlock_page(page);
- 		spin_unlock(vmf->ptl);
- 		return VM_FAULT_WRITE;
- 	}
-@@ -1708,6 +1719,7 @@ int change_huge_pmd(struct vm_area_struct *vma, pmd_t *pmd,
- #ifdef CONFIG_ARCH_ENABLE_THP_MIGRATION
- 	if (is_swap_pmd(*pmd)) {
- 		swp_entry_t entry = pmd_to_swp_entry(*pmd);
-+		struct page *page = pfn_swap_entry_to_page(entry);
- 
- 		VM_BUG_ON(!is_pmd_migration_entry(*pmd));
- 		if (is_writable_migration_entry(entry)) {
-@@ -1716,8 +1728,10 @@ int change_huge_pmd(struct vm_area_struct *vma, pmd_t *pmd,
- 			 * A protection check is difficult so
- 			 * just be safe and disable write
- 			 */
--			entry = make_readable_migration_entry(
--							swp_offset(entry));
-+			if (PageAnon(page))
-+				entry = make_readable_exclusive_migration_entry(swp_offset(entry));
-+			else
-+				entry = make_readable_migration_entry(swp_offset(entry));
- 			newpmd = swp_entry_to_pmd(entry);
- 			if (pmd_swp_soft_dirty(*pmd))
- 				newpmd = pmd_swp_mksoft_dirty(newpmd);
-@@ -1937,6 +1951,7 @@ static void __split_huge_pmd_locked(struct vm_area_struct *vma, pmd_t *pmd,
- 	pgtable_t pgtable;
- 	pmd_t old_pmd, _pmd;
- 	bool young, write, soft_dirty, pmd_migration = false, uffd_wp = false;
-+	bool anon_exclusive = false;
- 	unsigned long addr;
- 	int i;
- 
-@@ -2018,6 +2033,8 @@ static void __split_huge_pmd_locked(struct vm_area_struct *vma, pmd_t *pmd,
- 		entry = pmd_to_swp_entry(old_pmd);
- 		page = pfn_swap_entry_to_page(entry);
- 		write = is_writable_migration_entry(entry);
-+		if (PageAnon(page))
-+			anon_exclusive = is_readable_exclusive_migration_entry(entry);
- 		young = false;
- 		soft_dirty = pmd_swp_soft_dirty(old_pmd);
- 		uffd_wp = pmd_swp_uffd_wp(old_pmd);
-@@ -2029,8 +2046,26 @@ static void __split_huge_pmd_locked(struct vm_area_struct *vma, pmd_t *pmd,
- 		young = pmd_young(old_pmd);
- 		soft_dirty = pmd_soft_dirty(old_pmd);
- 		uffd_wp = pmd_uffd_wp(old_pmd);
-+
- 		VM_BUG_ON_PAGE(!page_count(page), page);
- 		page_ref_add(page, HPAGE_PMD_NR - 1);
-+
-+		/*
-+		 * Without "freeze", we'll simply split the PMD, propagating the
-+		 * PageAnonExclusive() flag for each PTE by setting it for
-+		 * each subpage -- no need to (temporarily) clear.
-+		 *
-+		 * With "freeze" we want to replace mapped pages by
-+		 * migration entries right away. This is only possible if we
-+		 * managed to clear PageAnonExclusive() -- see
-+		 * set_pmd_migration_entry().
-+		 *
-+		 * In case we cannot clear PageAnonExclusive(), split the PMD
-+		 * only and let try_to_migrate_one() fail later.
-+		 */
-+		anon_exclusive = PageAnon(page) && PageAnonExclusive(page);
-+		if (freeze && anon_exclusive && page_try_share_anon_rmap(page))
-+			freeze = false;
- 	}
- 
- 	/*
-@@ -2052,6 +2087,9 @@ static void __split_huge_pmd_locked(struct vm_area_struct *vma, pmd_t *pmd,
- 			if (write)
- 				swp_entry = make_writable_migration_entry(
- 							page_to_pfn(page + i));
-+			else if (anon_exclusive)
-+				swp_entry = make_readable_exclusive_migration_entry(
-+							page_to_pfn(page + i));
- 			else
- 				swp_entry = make_readable_migration_entry(
- 							page_to_pfn(page + i));
-@@ -2063,6 +2101,8 @@ static void __split_huge_pmd_locked(struct vm_area_struct *vma, pmd_t *pmd,
- 		} else {
- 			entry = mk_pte(page + i, READ_ONCE(vma->vm_page_prot));
- 			entry = maybe_mkwrite(entry, vma);
-+			if (anon_exclusive)
-+				SetPageAnonExclusive(page + i);
- 			if (!write)
- 				entry = pte_wrprotect(entry);
- 			if (!young)
-@@ -2295,6 +2335,13 @@ static void __split_huge_page_tail(struct page *head, int tail,
- 	 *
- 	 * After successful get_page_unless_zero() might follow flags change,
- 	 * for example lock_page() which set PG_waiters.
-+	 *
-+	 * Note that for mapped sub-pages of an anonymous THP,
-+	 * PG_anon_exclusive has been cleared in unmap_page() and is stored in
-+	 * the migration entry instead from where remap_page() will restore it.
-+	 * We can still have PG_anon_exclusive set on effectively unmapped and
-+	 * unreferenced sub-pages of an anonymous THP: we can simply drop
-+	 * PG_anon_exclusive (-> PG_mappedtodisk) for these here.
- 	 */
- 	page_tail->flags &= ~PAGE_FLAGS_CHECK_AT_PREP;
- 	page_tail->flags |= (head->flags &
-@@ -3026,6 +3073,7 @@ void set_pmd_migration_entry(struct page_vma_mapped_walk *pvmw,
- 	struct vm_area_struct *vma = pvmw->vma;
- 	struct mm_struct *mm = vma->vm_mm;
- 	unsigned long address = pvmw->address;
-+	bool anon_exclusive;
- 	pmd_t pmdval;
- 	swp_entry_t entry;
- 	pmd_t pmdswp;
-@@ -3035,10 +3083,19 @@ void set_pmd_migration_entry(struct page_vma_mapped_walk *pvmw,
- 
- 	flush_cache_range(vma, address, address + HPAGE_PMD_SIZE);
- 	pmdval = pmdp_invalidate(vma, address, pvmw->pmd);
-+
-+	anon_exclusive = PageAnon(page) && PageAnonExclusive(page);
-+	if (anon_exclusive && page_try_share_anon_rmap(page)) {
-+		set_pmd_at(mm, address, pvmw->pmd, pmdval);
-+		return;
-+	}
-+
- 	if (pmd_dirty(pmdval))
- 		set_page_dirty(page);
- 	if (pmd_write(pmdval))
- 		entry = make_writable_migration_entry(page_to_pfn(page));
-+	else if (anon_exclusive)
-+		entry = make_readable_exclusive_migration_entry(page_to_pfn(page));
- 	else
- 		entry = make_readable_migration_entry(page_to_pfn(page));
- 	pmdswp = swp_entry_to_pmd(entry);
-@@ -3072,10 +3129,17 @@ void remove_migration_pmd(struct page_vma_mapped_walk *pvmw, struct page *new)
- 	if (pmd_swp_uffd_wp(*pvmw->pmd))
- 		pmde = pmd_wrprotect(pmd_mkuffd_wp(pmde));
- 
--	if (PageAnon(new))
--		page_add_anon_rmap(new, vma, mmun_start, RMAP_COMPOUND);
--	else
-+	if (PageAnon(new)) {
-+		rmap_t rmap_flags = RMAP_COMPOUND;
-+
-+		if (!is_readable_migration_entry(entry))
-+			rmap_flags |= RMAP_EXCLUSIVE;
-+
-+		page_add_anon_rmap(new, vma, mmun_start, rmap_flags);
-+	} else {
- 		page_add_file_rmap(new, vma, true);
-+	}
-+	VM_BUG_ON(pmd_write(pmde) && PageAnon(new) && !PageAnonExclusive(new));
- 	set_pmd_at(mm, mmun_start, pvmw->pmd, pmde);
- 
- 	/* No need to invalidate - it was non-present before */
 diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index b8e7667116fd..6910545f028e 100644
+index 75b689ce21c5..366a1f704405 100644
 --- a/mm/hugetlb.c
 +++ b/mm/hugetlb.c
-@@ -4769,7 +4769,7 @@ int copy_hugetlb_page_range(struct mm_struct *dst, struct mm_struct *src,
- 				    is_hugetlb_entry_hwpoisoned(entry))) {
- 			swp_entry_t swp_entry = pte_to_swp_entry(entry);
+@@ -5141,15 +5141,16 @@ static void unmap_ref_private(struct mm_struct *mm, struct vm_area_struct *vma,
+ }
  
--			if (is_writable_migration_entry(swp_entry) && cow) {
-+			if (!is_readable_migration_entry(swp_entry) && cow) {
- 				/*
- 				 * COW mappings require pages in both
- 				 * parent and child to be set to read.
-@@ -5169,6 +5169,8 @@ static vm_fault_t hugetlb_cow(struct mm_struct *mm, struct vm_area_struct *vma,
- 		set_huge_ptep_writable(vma, haddr, ptep);
+ /*
+- * Hugetlb_cow() should be called with page lock of the original hugepage held.
++ * hugetlb_wp() should be called with page lock of the original hugepage held.
+  * Called with hugetlb_fault_mutex_table held and pte_page locked so we
+  * cannot race with other handlers or page migration.
+  * Keep the pte_same checks anyway to make transition from the mutex easier.
+  */
+-static vm_fault_t hugetlb_cow(struct mm_struct *mm, struct vm_area_struct *vma,
+-		       unsigned long address, pte_t *ptep,
++static vm_fault_t hugetlb_wp(struct mm_struct *mm, struct vm_area_struct *vma,
++		       unsigned long address, pte_t *ptep, unsigned int flags,
+ 		       struct page *pagecache_page, spinlock_t *ptl)
+ {
++	const bool unshare = flags & FAULT_FLAG_UNSHARE;
+ 	pte_t pte;
+ 	struct hstate *h = hstate_vma(vma);
+ 	struct page *old_page, *new_page;
+@@ -5158,15 +5159,22 @@ static vm_fault_t hugetlb_cow(struct mm_struct *mm, struct vm_area_struct *vma,
+ 	unsigned long haddr = address & huge_page_mask(h);
+ 	struct mmu_notifier_range range;
+ 
++	VM_BUG_ON(unshare && (flags & FOLL_WRITE));
++	VM_BUG_ON(!unshare && !(flags & FOLL_WRITE));
++
+ 	pte = huge_ptep_get(ptep);
+ 	old_page = pte_page(pte);
+ 
+ retry_avoidcopy:
+-	/* If no-one else is actually using this page, avoid the copy
+-	 * and just make the page writable */
++	/*
++	 * If no-one else is actually using this page, we're the exclusive
++	 * owner and can reuse this page.
++	 */
+ 	if (page_mapcount(old_page) == 1 && PageAnon(old_page)) {
+-		page_move_anon_rmap(old_page, vma);
+-		set_huge_ptep_writable(vma, haddr, ptep);
++		if (!PageAnonExclusive(old_page))
++			page_move_anon_rmap(old_page, vma);
++		if (likely(!unshare))
++			set_huge_ptep_writable(vma, haddr, ptep);
  		return 0;
  	}
-+	VM_BUG_ON_PAGE(PageAnon(old_page) && PageAnonExclusive(old_page),
-+		       old_page);
+ 	VM_BUG_ON_PAGE(PageAnon(old_page) && PageAnonExclusive(old_page),
+@@ -5269,13 +5277,13 @@ static vm_fault_t hugetlb_cow(struct mm_struct *mm, struct vm_area_struct *vma,
+ 	if (likely(ptep && pte_same(huge_ptep_get(ptep), pte))) {
+ 		ClearHPageRestoreReserve(new_page);
  
+-		/* Break COW */
++		/* Break COW or unshare */
+ 		huge_ptep_clear_flush(vma, haddr, ptep);
+ 		mmu_notifier_invalidate_range(mm, range.start, range.end);
+ 		page_remove_rmap(old_page, vma, true);
+ 		hugepage_add_new_anon_rmap(new_page, vma, haddr);
+ 		set_huge_pte_at(mm, haddr, ptep,
+-				make_huge_pte(vma, new_page, 1));
++				make_huge_pte(vma, new_page, !unshare));
+ 		SetHPageMigratable(new_page);
+ 		/* Make the old page be freed below */
+ 		new_page = old_page;
+@@ -5283,7 +5291,10 @@ static vm_fault_t hugetlb_cow(struct mm_struct *mm, struct vm_area_struct *vma,
+ 	spin_unlock(ptl);
+ 	mmu_notifier_invalidate_range_end(&range);
+ out_release_all:
+-	/* No restore in case of successful pagetable update (Break COW) */
++	/*
++	 * No restore in case of successful pagetable update (Break COW or
++	 * unshare)
++	 */
+ 	if (new_page != old_page)
+ 		restore_reserve_on_error(h, vma, haddr, new_page);
+ 	put_page(new_page);
+@@ -5408,7 +5419,8 @@ static vm_fault_t hugetlb_no_page(struct mm_struct *mm,
  	/*
- 	 * If the process that created a MAP_PRIVATE mapping is about to
-@@ -6166,12 +6168,17 @@ unsigned long hugetlb_change_protection(struct vm_area_struct *vma,
- 		}
- 		if (unlikely(is_hugetlb_entry_migration(pte))) {
- 			swp_entry_t entry = pte_to_swp_entry(pte);
-+			struct page *page = pfn_swap_entry_to_page(entry);
- 
--			if (is_writable_migration_entry(entry)) {
-+			if (!is_readable_migration_entry(entry)) {
- 				pte_t newpte;
- 
--				entry = make_readable_migration_entry(
--							swp_offset(entry));
-+				if (PageAnon(page))
-+					entry = make_readable_exclusive_migration_entry(
-+								swp_offset(entry));
-+				else
-+					entry = make_readable_migration_entry(
-+								swp_offset(entry));
- 				newpte = swp_entry_to_pte(entry);
- 				set_huge_swap_pte_at(mm, address, ptep,
- 						     newpte, huge_page_size(h));
-diff --git a/mm/ksm.c b/mm/ksm.c
-index e0fb748e37b3..8d5369425c62 100644
---- a/mm/ksm.c
-+++ b/mm/ksm.c
-@@ -866,6 +866,7 @@ static inline struct stable_node *page_stable_node(struct page *page)
- static inline void set_page_stable_node(struct page *page,
- 					struct stable_node *stable_node)
- {
-+	VM_BUG_ON_PAGE(PageAnon(page) && PageAnonExclusive(page), page);
- 	page->mapping = (void *)((unsigned long)stable_node | PAGE_MAPPING_KSM);
- }
- 
-@@ -1038,6 +1039,7 @@ static int write_protect_page(struct vm_area_struct *vma, struct page *page,
- 	int swapped;
- 	int err = -EFAULT;
- 	struct mmu_notifier_range range;
-+	bool anon_exclusive;
- 
- 	pvmw.address = page_address_in_vma(page, vma);
- 	if (pvmw.address == -EFAULT)
-@@ -1055,9 +1057,10 @@ static int write_protect_page(struct vm_area_struct *vma, struct page *page,
- 	if (WARN_ONCE(!pvmw.pte, "Unexpected PMD mapping?"))
- 		goto out_unlock;
- 
-+	anon_exclusive = PageAnonExclusive(page);
- 	if (pte_write(*pvmw.pte) || pte_dirty(*pvmw.pte) ||
- 	    (pte_protnone(*pvmw.pte) && pte_savedwrite(*pvmw.pte)) ||
--						mm_tlb_flush_pending(mm)) {
-+	    anon_exclusive || mm_tlb_flush_pending(mm)) {
- 		pte_t entry;
- 
- 		swapped = PageSwapCache(page);
-@@ -1085,6 +1088,12 @@ static int write_protect_page(struct vm_area_struct *vma, struct page *page,
- 			set_pte_at(mm, pvmw.address, pvmw.pte, entry);
- 			goto out_unlock;
- 		}
-+
-+		if (anon_exclusive && page_try_share_anon_rmap(page)) {
-+			set_pte_at(mm, pvmw.address, pvmw.pte, entry);
-+			goto out_unlock;
-+		}
-+
- 		if (pte_dirty(entry))
- 			set_page_dirty(page);
- 
-@@ -1143,6 +1152,8 @@ static int replace_page(struct vm_area_struct *vma, struct page *page,
- 		pte_unmap_unlock(ptep, ptl);
- 		goto out_mn;
+ 	 * Currently, we are forced to kill the process in the event the
+ 	 * original mapper has unmapped pages from the child due to a failed
+-	 * COW. Warn that such a situation has occurred as it may not be obvious
++	 * COW/unsharing. Warn that such a situation has occurred as it may not
++	 * be obvious.
+ 	 */
+ 	if (is_vma_resv_set(vma, HPAGE_RESV_UNMAPPED)) {
+ 		pr_warn_ratelimited("PID %d killed due to inadequate hugepage pool\n",
+@@ -5534,7 +5546,7 @@ static vm_fault_t hugetlb_no_page(struct mm_struct *mm,
+ 	hugetlb_count_add(pages_per_huge_page(h), mm);
+ 	if ((flags & FAULT_FLAG_WRITE) && !(vma->vm_flags & VM_SHARED)) {
+ 		/* Optimization, do the COW without a second fault */
+-		ret = hugetlb_cow(mm, vma, address, ptep, page, ptl);
++		ret = hugetlb_wp(mm, vma, address, ptep, flags, page, ptl);
  	}
-+	VM_BUG_ON_PAGE(PageAnonExclusive(page), page);
-+	VM_BUG_ON_PAGE(PageAnon(kpage) && PageAnonExclusive(kpage), kpage);
+ 
+ 	spin_unlock(ptl);
+@@ -5664,14 +5676,15 @@ vm_fault_t hugetlb_fault(struct mm_struct *mm, struct vm_area_struct *vma,
+ 		goto out_mutex;
  
  	/*
- 	 * No need to check ksm_use_zero_pages here: we can only have a
+-	 * If we are going to COW the mapping later, we examine the pending
+-	 * reservations for this page now. This will ensure that any
++	 * If we are going to COW/unshare the mapping later, we examine the
++	 * pending reservations for this page now. This will ensure that any
+ 	 * allocations necessary to record that reservation occur outside the
+ 	 * spinlock. For private mappings, we also lookup the pagecache
+ 	 * page now as it is used to determine if a reservation has been
+ 	 * consumed.
+ 	 */
+-	if ((flags & FAULT_FLAG_WRITE) && !huge_pte_write(entry)) {
++	if ((flags & (FAULT_FLAG_WRITE|FAULT_FLAG_UNSHARE)) &&
++	    !huge_pte_write(entry)) {
+ 		if (vma_needs_reservation(h, vma, haddr) < 0) {
+ 			ret = VM_FAULT_OOM;
+ 			goto out_mutex;
+@@ -5686,12 +5699,12 @@ vm_fault_t hugetlb_fault(struct mm_struct *mm, struct vm_area_struct *vma,
+ 
+ 	ptl = huge_pte_lock(h, mm, ptep);
+ 
+-	/* Check for a racing update before calling hugetlb_cow */
++	/* Check for a racing update before calling hugetlb_wp() */
+ 	if (unlikely(!pte_same(entry, huge_ptep_get(ptep))))
+ 		goto out_ptl;
+ 
+ 	/*
+-	 * hugetlb_cow() requires page locks of pte_page(entry) and
++	 * hugetlb_wp() requires page locks of pte_page(entry) and
+ 	 * pagecache_page, so here we need take the former one
+ 	 * when page != pagecache_page or !pagecache_page.
+ 	 */
+@@ -5704,13 +5717,14 @@ vm_fault_t hugetlb_fault(struct mm_struct *mm, struct vm_area_struct *vma,
+ 
+ 	get_page(page);
+ 
+-	if (flags & FAULT_FLAG_WRITE) {
++	if (flags & (FAULT_FLAG_WRITE|FAULT_FLAG_UNSHARE)) {
+ 		if (!huge_pte_write(entry)) {
+-			ret = hugetlb_cow(mm, vma, address, ptep,
+-					  pagecache_page, ptl);
++			ret = hugetlb_wp(mm, vma, address, ptep, flags,
++					 pagecache_page, ptl);
+ 			goto out_put_page;
++		} else if (likely(flags & FAULT_FLAG_WRITE)) {
++			entry = huge_pte_mkdirty(entry);
+ 		}
+-		entry = huge_pte_mkdirty(entry);
+ 	}
+ 	entry = pte_mkyoung(entry);
+ 	if (huge_ptep_set_access_flags(vma, haddr, ptep, entry,
 diff --git a/mm/memory.c b/mm/memory.c
-index 351623292adf..d3596e2eaee6 100644
+index d3596e2eaee6..14618f446139 100644
 --- a/mm/memory.c
 +++ b/mm/memory.c
-@@ -720,6 +720,8 @@ static void restore_exclusive_pte(struct vm_area_struct *vma,
- 	else if (is_writable_device_exclusive_entry(entry))
- 		pte = maybe_mkwrite(pte_mkdirty(pte), vma);
+@@ -2745,8 +2745,8 @@ static inline int pte_unmap_same(struct vm_fault *vmf)
+ 	return same;
+ }
  
-+	VM_BUG_ON(pte_write(pte) && !(PageAnon(page) && PageAnonExclusive(page)));
-+
- 	/*
- 	 * No need to take a page reference as one was already
- 	 * created when the swap entry was made.
-@@ -796,11 +798,12 @@ copy_nonpresent_pte(struct mm_struct *dst_mm, struct mm_struct *src_mm,
- 
- 		rss[mm_counter(page)]++;
- 
--		if (is_writable_migration_entry(entry) &&
-+		if (!is_readable_migration_entry(entry) &&
- 				is_cow_mapping(vm_flags)) {
- 			/*
--			 * COW mappings require pages in both
--			 * parent and child to be set to read.
-+			 * COW mappings require pages in both parent and child
-+			 * to be set to read. A previously exclusive entry is
-+			 * now shared.
- 			 */
- 			entry = make_readable_migration_entry(
- 							swp_offset(entry));
-@@ -951,6 +954,7 @@ copy_present_pte(struct vm_area_struct *dst_vma, struct vm_area_struct *src_vma,
- 		ptep_set_wrprotect(src_mm, addr, src_pte);
- 		pte = pte_wrprotect(pte);
- 	}
-+	VM_BUG_ON(page && PageAnon(page) && PageAnonExclusive(page));
- 
- 	/*
- 	 * If it's a shared mapping, mark it clean in
-@@ -2949,6 +2953,9 @@ static inline void wp_page_reuse(struct vm_fault *vmf)
- 	struct vm_area_struct *vma = vmf->vma;
+-static inline bool cow_user_page(struct page *dst, struct page *src,
+-				 struct vm_fault *vmf)
++static inline bool __wp_page_copy_user(struct page *dst, struct page *src,
++				       struct vm_fault *vmf)
+ {
+ 	bool ret;
+ 	void *kaddr;
+@@ -2954,6 +2954,7 @@ static inline void wp_page_reuse(struct vm_fault *vmf)
  	struct page *page = vmf->page;
  	pte_t entry;
-+
-+	VM_BUG_ON(PageAnon(page) && !PageAnonExclusive(page));
-+
- 	/*
- 	 * Clear the pages cpupid information as the existing
- 	 * information potentially belongs to a now completely
-@@ -3273,6 +3280,13 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
- 	if (PageAnon(vmf->page)) {
- 		struct page *page = vmf->page;
  
++	VM_BUG_ON(!(vmf->flags & FAULT_FLAG_WRITE));
+ 	VM_BUG_ON(PageAnon(page) && !PageAnonExclusive(page));
+ 
+ 	/*
+@@ -2974,7 +2975,8 @@ static inline void wp_page_reuse(struct vm_fault *vmf)
+ }
+ 
+ /*
+- * Handle the case of a page which we actually need to copy to a new page.
++ * Handle the case of a page which we actually need to copy to a new page,
++ * either due to COW or unsharing.
+  *
+  * Called with mmap_lock locked and the old page referenced, but
+  * without the ptl held.
+@@ -2991,6 +2993,7 @@ static inline void wp_page_reuse(struct vm_fault *vmf)
+  */
+ static vm_fault_t wp_page_copy(struct vm_fault *vmf)
+ {
++	const bool unshare = vmf->flags & FAULT_FLAG_UNSHARE;
+ 	struct vm_area_struct *vma = vmf->vma;
+ 	struct mm_struct *mm = vma->vm_mm;
+ 	struct page *old_page = vmf->page;
+@@ -3013,7 +3016,7 @@ static vm_fault_t wp_page_copy(struct vm_fault *vmf)
+ 		if (!new_page)
+ 			goto oom;
+ 
+-		if (!cow_user_page(new_page, old_page, vmf)) {
++		if (!__wp_page_copy_user(new_page, old_page, vmf)) {
+ 			/*
+ 			 * COW failed, if the fault was solved by other,
+ 			 * it's fine. If not, userspace would re-fault on
+@@ -3055,7 +3058,14 @@ static vm_fault_t wp_page_copy(struct vm_fault *vmf)
+ 		flush_cache_page(vma, vmf->address, pte_pfn(vmf->orig_pte));
+ 		entry = mk_pte(new_page, vma->vm_page_prot);
+ 		entry = pte_sw_mkyoung(entry);
+-		entry = maybe_mkwrite(pte_mkdirty(entry), vma);
++		if (unlikely(unshare)) {
++			if (pte_soft_dirty(vmf->orig_pte))
++				entry = pte_mksoft_dirty(entry);
++			if (pte_uffd_wp(vmf->orig_pte))
++				entry = pte_mkuffd_wp(entry);
++		} else {
++			entry = maybe_mkwrite(pte_mkdirty(entry), vma);
++		}
+ 
+ 		/*
+ 		 * Clear the pte entry and flush it first, before updating the
+@@ -3072,6 +3082,7 @@ static vm_fault_t wp_page_copy(struct vm_fault *vmf)
+ 		 * mmu page tables (such as kvm shadow page tables), we want the
+ 		 * new page to be mapped directly into the secondary page table.
+ 		 */
++		BUG_ON(unshare && pte_write(entry));
+ 		set_pte_at_notify(mm, vmf->address, vmf->pte, entry);
+ 		update_mmu_cache(vma, vmf->address, vmf->pte);
+ 		if (old_page) {
+@@ -3121,7 +3132,7 @@ static vm_fault_t wp_page_copy(struct vm_fault *vmf)
+ 			free_swap_cache(old_page);
+ 		put_page(old_page);
+ 	}
+-	return page_copied ? VM_FAULT_WRITE : 0;
++	return page_copied && !unshare ? VM_FAULT_WRITE : 0;
+ oom_free_new:
+ 	put_page(new_page);
+ oom:
+@@ -3221,18 +3232,22 @@ static vm_fault_t wp_page_shared(struct vm_fault *vmf)
+ }
+ 
+ /*
+- * This routine handles present pages, when users try to write
+- * to a shared page. It is done by copying the page to a new address
+- * and decrementing the shared-page counter for the old page.
++ * This routine handles present pages, when
++ * * users try to write to a shared page (FAULT_FLAG_WRITE)
++ * * GUP wants to take a R/O pin on a possibly shared anonymous page
++ *   (FAULT_FLAG_UNSHARE)
++ *
++ * It is done by copying the page to a new address and decrementing the
++ * shared-page counter for the old page.
+  *
+  * Note that this routine assumes that the protection checks have been
+  * done by the caller (the low-level page fault routine in most cases).
+- * Thus we can safely just mark it writable once we've done any necessary
+- * COW.
++ * Thus, with FAULT_FLAG_WRITE, we can safely just mark it writable once we've
++ * done any necessary COW.
+  *
+- * We also mark the page dirty at this point even though the page will
+- * change only once the write actually happens. This avoids a few races,
+- * and potentially makes it more efficient.
++ * In case of FAULT_FLAG_WRITE, we also mark the page dirty at this point even
++ * though the page will change only once the write actually happens. This
++ * avoids a few races, and potentially makes it more efficient.
+  *
+  * We enter with non-exclusive mmap_lock (to exclude vma changes,
+  * but allow concurrent faults), with pte both mapped and locked.
+@@ -3241,23 +3256,35 @@ static vm_fault_t wp_page_shared(struct vm_fault *vmf)
+ static vm_fault_t do_wp_page(struct vm_fault *vmf)
+ 	__releases(vmf->ptl)
+ {
++	const bool unshare = vmf->flags & FAULT_FLAG_UNSHARE;
+ 	struct vm_area_struct *vma = vmf->vma;
+ 
+-	if (userfaultfd_pte_wp(vma, *vmf->pte)) {
+-		pte_unmap_unlock(vmf->pte, vmf->ptl);
+-		return handle_userfault(vmf, VM_UFFD_WP);
+-	}
++	VM_BUG_ON(unshare && (vmf->flags & FAULT_FLAG_WRITE));
++	VM_BUG_ON(!unshare && !(vmf->flags & FAULT_FLAG_WRITE));
+ 
+-	/*
+-	 * Userfaultfd write-protect can defer flushes. Ensure the TLB
+-	 * is flushed in this case before copying.
+-	 */
+-	if (unlikely(userfaultfd_wp(vmf->vma) &&
+-		     mm_tlb_flush_pending(vmf->vma->vm_mm)))
+-		flush_tlb_page(vmf->vma, vmf->address);
++	if (likely(!unshare)) {
++		if (userfaultfd_pte_wp(vma, *vmf->pte)) {
++			pte_unmap_unlock(vmf->pte, vmf->ptl);
++			return handle_userfault(vmf, VM_UFFD_WP);
++		}
++
 +		/*
-+		 * If the page is exclusive to this process we must reuse the
-+		 * page without further checks.
++		 * Userfaultfd write-protect can defer flushes. Ensure the TLB
++		 * is flushed in this case before copying.
 +		 */
-+		if (PageAnonExclusive(page))
-+			goto reuse;
++		if (unlikely(userfaultfd_wp(vmf->vma) &&
++			     mm_tlb_flush_pending(vmf->vma->vm_mm)))
++			flush_tlb_page(vmf->vma, vmf->address);
++	}
+ 
+ 	vmf->page = vm_normal_page(vma, vmf->address, vmf->orig_pte);
+ 	if (!vmf->page) {
++		if (unlikely(unshare)) {
++			/* No anonymous page -> nothing to do. */
++			pte_unmap_unlock(vmf->pte, vmf->ptl);
++			return 0;
++		}
 +
  		/*
- 		 * We have to verify under page lock: these early checks are
- 		 * just an optimization to avoid locking the page and freeing
-@@ -3305,6 +3319,7 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
- 		 */
+ 		 * VM_MIXEDMAP !pfn_valid() case, or VM_SOFTDIRTY clear on a
+ 		 * VM_PFNMAP VMA.
+@@ -3320,8 +3347,16 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
  		page_move_anon_rmap(page, vma);
  		unlock_page(page);
-+reuse:
+ reuse:
++		if (unlikely(unshare)) {
++			pte_unmap_unlock(vmf->pte, vmf->ptl);
++			return 0;
++		}
  		wp_page_reuse(vmf);
  		return VM_FAULT_WRITE;
++	} else if (unshare) {
++		/* No anonymous page -> nothing to do. */
++		pte_unmap_unlock(vmf->pte, vmf->ptl);
++		return 0;
  	} else if (unlikely((vma->vm_flags & (VM_WRITE|VM_SHARED)) ==
-@@ -3692,11 +3707,12 @@ vm_fault_t do_swap_page(struct vm_fault *vmf)
- 	 * that are certainly not shared because we just allocated them without
- 	 * exposing them to the swapcache.
- 	 */
--	if ((vmf->flags & FAULT_FLAG_WRITE) && !PageKsm(page) &&
--	    (page != swapcache || page_count(page) == 1)) {
--		pte = maybe_mkwrite(pte_mkdirty(pte), vma);
--		vmf->flags &= ~FAULT_FLAG_WRITE;
--		ret |= VM_FAULT_WRITE;
-+	if (!PageKsm(page) && (page != swapcache || page_count(page) == 1)) {
-+		if (vmf->flags & FAULT_FLAG_WRITE) {
-+			pte = maybe_mkwrite(pte_mkdirty(pte), vma);
-+			vmf->flags &= ~FAULT_FLAG_WRITE;
-+			ret |= VM_FAULT_WRITE;
-+		}
- 		rmap_flags |= RMAP_EXCLUSIVE;
- 	}
- 	flush_icache_page(vma, page);
-@@ -3716,6 +3732,7 @@ vm_fault_t do_swap_page(struct vm_fault *vmf)
- 		page_add_anon_rmap(page, vma, vmf->address, rmap_flags);
- 	}
- 
-+	VM_BUG_ON(!PageAnon(page) || (pte_write(pte) && !PageAnonExclusive(page)));
- 	set_pte_at(vma->vm_mm, vmf->address, vmf->pte, pte);
- 	arch_do_swap_page(vma->vm_mm, vma, vmf->address, pte, vmf->orig_pte);
- 
-diff --git a/mm/migrate.c b/mm/migrate.c
-index 48db9500d20e..231907e89b93 100644
---- a/mm/migrate.c
-+++ b/mm/migrate.c
-@@ -177,6 +177,7 @@ static bool remove_migration_pte(struct folio *folio,
- 	DEFINE_FOLIO_VMA_WALK(pvmw, old, vma, addr, PVMW_SYNC | PVMW_MIGRATION);
- 
- 	while (page_vma_mapped_walk(&pvmw)) {
-+		rmap_t rmap_flags = RMAP_NONE;
- 		pte_t pte;
- 		swp_entry_t entry;
- 		struct page *new;
-@@ -211,6 +212,9 @@ static bool remove_migration_pte(struct folio *folio,
- 		else if (pte_swp_uffd_wp(*pvmw.pte))
- 			pte = pte_mkuffd_wp(pte);
- 
-+		if (folio_test_anon(folio) && !is_readable_migration_entry(entry))
-+			rmap_flags |= RMAP_EXCLUSIVE;
-+
- 		if (unlikely(is_device_private_page(new))) {
- 			if (pte_write(pte))
- 				entry = make_writable_device_private_entry(
-@@ -233,7 +237,7 @@ static bool remove_migration_pte(struct folio *folio,
- 			pte = arch_make_huge_pte(pte, shift, vma->vm_flags);
- 			if (folio_test_anon(folio))
- 				hugepage_add_anon_rmap(new, vma, pvmw.address,
--						       RMAP_NONE);
-+						       rmap_flags);
- 			else
- 				page_dup_file_rmap(new, true);
- 			set_huge_pte_at(vma->vm_mm, pvmw.address, pvmw.pte, pte);
-@@ -242,7 +246,7 @@ static bool remove_migration_pte(struct folio *folio,
- 		{
- 			if (folio_test_anon(folio))
- 				page_add_anon_rmap(new, vma, pvmw.address,
--						   RMAP_NONE);
-+						   rmap_flags);
- 			else
- 				page_add_file_rmap(new, vma, false);
- 			set_pte_at(vma->vm_mm, pvmw.address, pvmw.pte, pte);
-@@ -519,6 +523,12 @@ void folio_migrate_flags(struct folio *newfolio, struct folio *folio)
- 		folio_set_workingset(newfolio);
- 	if (folio_test_checked(folio))
- 		folio_set_checked(newfolio);
-+	/*
-+	 * PG_anon_exclusive (-> PG_mappedtodisk) is always migrated via
-+	 * migration entries. We can still have PG_anon_exclusive set on an
-+	 * effectively unmapped and unreferenced first sub-pages of an
-+	 * anonymous THP: we can simply copy it here via PG_mappedtodisk.
-+	 */
- 	if (folio_test_mappedtodisk(folio))
- 		folio_set_mappedtodisk(newfolio);
- 
-diff --git a/mm/migrate_device.c b/mm/migrate_device.c
-index fb6d7d5499f5..5052093d0262 100644
---- a/mm/migrate_device.c
-+++ b/mm/migrate_device.c
-@@ -184,15 +184,34 @@ static int migrate_vma_collect_pmd(pmd_t *pmdp,
- 		 * set up a special migration page table entry now.
- 		 */
- 		if (trylock_page(page)) {
-+			bool anon_exclusive;
- 			pte_t swp_pte;
- 
-+			anon_exclusive = PageAnon(page) && PageAnonExclusive(page);
-+			if (anon_exclusive) {
-+				flush_cache_page(vma, addr, pte_pfn(*ptep));
-+				ptep_clear_flush(vma, addr, ptep);
-+
-+				if (page_try_share_anon_rmap(page)) {
-+					set_pte_at(mm, addr, ptep, pte);
-+					unlock_page(page);
-+					put_page(page);
-+					mpfn = 0;
-+					goto next;
-+				}
-+			} else {
-+				ptep_get_and_clear(mm, addr, ptep);
-+			}
-+
- 			migrate->cpages++;
--			ptep_get_and_clear(mm, addr, ptep);
- 
- 			/* Setup special migration page table entry */
- 			if (mpfn & MIGRATE_PFN_WRITE)
- 				entry = make_writable_migration_entry(
- 							page_to_pfn(page));
-+			else if (anon_exclusive)
-+				entry = make_readable_exclusive_migration_entry(
-+							page_to_pfn(page));
- 			else
- 				entry = make_readable_migration_entry(
- 							page_to_pfn(page));
-diff --git a/mm/mprotect.c b/mm/mprotect.c
-index b69ce7a7b2b7..56060acdabd3 100644
---- a/mm/mprotect.c
-+++ b/mm/mprotect.c
-@@ -152,6 +152,7 @@ static unsigned long change_pte_range(struct vm_area_struct *vma, pmd_t *pmd,
- 			pages++;
- 		} else if (is_swap_pte(oldpte)) {
- 			swp_entry_t entry = pte_to_swp_entry(oldpte);
-+			struct page *page = pfn_swap_entry_to_page(entry);
- 			pte_t newpte;
- 
- 			if (is_writable_migration_entry(entry)) {
-@@ -159,8 +160,11 @@ static unsigned long change_pte_range(struct vm_area_struct *vma, pmd_t *pmd,
- 				 * A protection check is difficult so
- 				 * just be safe and disable write
- 				 */
--				entry = make_readable_migration_entry(
--							swp_offset(entry));
-+				if (PageAnon(page))
-+					entry = make_readable_exclusive_migration_entry(
-+							     swp_offset(entry));
-+				else
-+					entry = make_readable_migration_entry(swp_offset(entry));
- 				newpte = swp_entry_to_pte(entry);
- 				if (pte_swp_soft_dirty(oldpte))
- 					newpte = pte_swp_mksoft_dirty(newpte);
-diff --git a/mm/rmap.c b/mm/rmap.c
-index 517f56edf6ce..4de07234cbcf 100644
---- a/mm/rmap.c
-+++ b/mm/rmap.c
-@@ -1044,6 +1044,7 @@ EXPORT_SYMBOL_GPL(folio_mkclean);
- void page_move_anon_rmap(struct page *page, struct vm_area_struct *vma)
+ 					(VM_WRITE|VM_SHARED))) {
+ 		return wp_page_shared(vmf);
+@@ -4515,8 +4550,11 @@ static inline vm_fault_t create_huge_pmd(struct vm_fault *vmf)
+ /* `inline' is required to avoid gcc 4.1.2 build error */
+ static inline vm_fault_t wp_huge_pmd(struct vm_fault *vmf)
  {
- 	struct anon_vma *anon_vma = vma->anon_vma;
-+	struct page *subpage = page;
- 
- 	page = compound_head(page);
- 
-@@ -1057,6 +1058,7 @@ void page_move_anon_rmap(struct page *page, struct vm_area_struct *vma)
- 	 * folio_test_anon()) will not see one without the other.
- 	 */
- 	WRITE_ONCE(page->mapping, (struct address_space *) anon_vma);
-+	SetPageAnonExclusive(subpage);
- }
- 
- /**
-@@ -1074,7 +1076,7 @@ static void __page_set_anon_rmap(struct page *page,
- 	BUG_ON(!anon_vma);
- 
- 	if (PageAnon(page))
--		return;
-+		goto out;
- 
- 	/*
- 	 * If the page isn't exclusively mapped into this vma,
-@@ -1093,6 +1095,9 @@ static void __page_set_anon_rmap(struct page *page,
- 	anon_vma = (void *) anon_vma + PAGE_MAPPING_ANON;
- 	WRITE_ONCE(page->mapping, (struct address_space *) anon_vma);
- 	page->index = linear_page_index(vma, address);
-+out:
-+	if (exclusive)
-+		SetPageAnonExclusive(page);
- }
- 
- /**
-@@ -1154,6 +1159,8 @@ void page_add_anon_rmap(struct page *page,
- 	} else {
- 		first = atomic_inc_and_test(&page->_mapcount);
- 	}
-+	VM_BUG_ON_PAGE(!first && (flags & RMAP_EXCLUSIVE), page);
-+	VM_BUG_ON_PAGE(!first && PageAnonExclusive(page), page);
- 
- 	if (first) {
- 		int nr = compound ? thp_nr_pages(page) : 1;
-@@ -1417,7 +1424,7 @@ static bool try_to_unmap_one(struct folio *folio, struct vm_area_struct *vma,
- 	DEFINE_FOLIO_VMA_WALK(pvmw, folio, vma, address, 0);
- 	pte_t pteval;
- 	struct page *subpage;
--	bool ret = true;
-+	bool anon_exclusive, ret = true;
- 	struct mmu_notifier_range range;
- 	enum ttu_flags flags = (enum ttu_flags)(long)arg;
- 
-@@ -1473,6 +1480,8 @@ static bool try_to_unmap_one(struct folio *folio, struct vm_area_struct *vma,
- 		subpage = folio_page(folio,
- 					pte_pfn(*pvmw.pte) - folio_pfn(folio));
- 		address = pvmw.address;
-+		anon_exclusive = folio_test_anon(folio) &&
-+				 PageAnonExclusive(subpage);
- 
- 		if (folio_test_hugetlb(folio) && !folio_test_anon(folio)) {
- 			/*
-@@ -1508,9 +1517,12 @@ static bool try_to_unmap_one(struct folio *folio, struct vm_area_struct *vma,
- 			}
- 		}
- 
--		/* Nuke the page table entry. */
-+		/*
-+		 * Nuke the page table entry. When having to clear
-+		 * PageAnonExclusive(), we always have to flush.
-+		 */
- 		flush_cache_page(vma, address, pte_pfn(*pvmw.pte));
--		if (should_defer_flush(mm, flags)) {
-+		if (should_defer_flush(mm, flags) && !anon_exclusive) {
- 			/*
- 			 * We clear the PTE but do not flush so potentially
- 			 * a remote CPU could still be writing to the folio.
-@@ -1635,6 +1647,24 @@ static bool try_to_unmap_one(struct folio *folio, struct vm_area_struct *vma,
- 				page_vma_mapped_walk_done(&pvmw);
- 				break;
- 			}
-+			if (anon_exclusive &&
-+			    page_try_share_anon_rmap(subpage)) {
-+				swap_free(entry);
-+				set_pte_at(mm, address, pvmw.pte, pteval);
-+				ret = false;
-+				page_vma_mapped_walk_done(&pvmw);
-+				break;
-+			}
-+			/*
-+			 * Note: We *don't* remember yet if the page was mapped
-+			 * exclusively in the swap entry, so swapin code has
-+			 * to re-determine that manually and might detect the
-+			 * page as possibly shared, for example, if there are
-+			 * other references on the page or if the page is under
-+			 * writeback. We made sure that there are no GUP pins
-+			 * on the page that would rely on it, so for GUP pins
-+			 * this is fine.
-+			 */
- 			if (list_empty(&mm->mmlist)) {
- 				spin_lock(&mmlist_lock);
- 				if (list_empty(&mm->mmlist))
-@@ -1734,7 +1764,7 @@ static bool try_to_migrate_one(struct folio *folio, struct vm_area_struct *vma,
- 	DEFINE_FOLIO_VMA_WALK(pvmw, folio, vma, address, 0);
- 	pte_t pteval;
- 	struct page *subpage;
--	bool ret = true;
-+	bool anon_exclusive, ret = true;
- 	struct mmu_notifier_range range;
- 	enum ttu_flags flags = (enum ttu_flags)(long)arg;
- 
-@@ -1795,6 +1825,8 @@ static bool try_to_migrate_one(struct folio *folio, struct vm_area_struct *vma,
- 		subpage = folio_page(folio,
- 				pte_pfn(*pvmw.pte) - folio_pfn(folio));
- 		address = pvmw.address;
-+		anon_exclusive = folio_test_anon(folio) &&
-+				 PageAnonExclusive(subpage);
- 
- 		if (folio_test_hugetlb(folio) && !folio_test_anon(folio)) {
- 			/*
-@@ -1846,6 +1878,9 @@ static bool try_to_migrate_one(struct folio *folio, struct vm_area_struct *vma,
- 			swp_entry_t entry;
- 			pte_t swp_pte;
- 
-+			if (anon_exclusive)
-+				BUG_ON(page_try_share_anon_rmap(subpage));
++	const bool unshare = vmf->flags & FAULT_FLAG_UNSHARE;
 +
- 			/*
- 			 * Store the pfn of the page in a special migration
- 			 * pte. do_swap_page() will wait until the migration
-@@ -1854,6 +1889,8 @@ static bool try_to_migrate_one(struct folio *folio, struct vm_area_struct *vma,
- 			entry = pte_to_swp_entry(pteval);
- 			if (is_writable_device_private_entry(entry))
- 				entry = make_writable_migration_entry(pfn);
-+			else if (anon_exclusive)
-+				entry = make_readable_exclusive_migration_entry(pfn);
- 			else
- 				entry = make_readable_migration_entry(pfn);
- 			swp_pte = swp_entry_to_pte(entry);
-@@ -1918,6 +1955,15 @@ static bool try_to_migrate_one(struct folio *folio, struct vm_area_struct *vma,
- 				page_vma_mapped_walk_done(&pvmw);
- 				break;
- 			}
-+			VM_BUG_ON_PAGE(pte_write(pteval) && folio_test_anon(folio) &&
-+				       !anon_exclusive, subpage);
-+			if (anon_exclusive &&
-+			    page_try_share_anon_rmap(subpage)) {
-+				set_pte_at(mm, address, pvmw.pte, pteval);
-+				ret = false;
-+				page_vma_mapped_walk_done(&pvmw);
-+				break;
-+			}
+ 	if (vma_is_anonymous(vmf->vma)) {
+-		if (userfaultfd_huge_pmd_wp(vmf->vma, vmf->orig_pmd))
++		if (unlikely(unshare) &&
++		    userfaultfd_huge_pmd_wp(vmf->vma, vmf->orig_pmd))
+ 			return handle_userfault(vmf, VM_UFFD_WP);
+ 		return do_huge_pmd_wp_page(vmf);
+ 	}
+@@ -4651,10 +4689,11 @@ static vm_fault_t handle_pte_fault(struct vm_fault *vmf)
+ 		update_mmu_tlb(vmf->vma, vmf->address, vmf->pte);
+ 		goto unlock;
+ 	}
+-	if (vmf->flags & FAULT_FLAG_WRITE) {
++	if (vmf->flags & (FAULT_FLAG_WRITE|FAULT_FLAG_UNSHARE)) {
+ 		if (!pte_write(entry))
+ 			return do_wp_page(vmf);
+-		entry = pte_mkdirty(entry);
++		else if (likely(vmf->flags & FAULT_FLAG_WRITE))
++			entry = pte_mkdirty(entry);
+ 	}
+ 	entry = pte_mkyoung(entry);
+ 	if (ptep_set_access_flags(vmf->vma, vmf->address, vmf->pte, entry,
+@@ -4695,7 +4734,6 @@ static vm_fault_t __handle_mm_fault(struct vm_area_struct *vma,
+ 		.pgoff = linear_page_index(vma, address),
+ 		.gfp_mask = __get_fault_gfp_mask(vma),
+ 	};
+-	unsigned int dirty = flags & FAULT_FLAG_WRITE;
+ 	struct mm_struct *mm = vma->vm_mm;
+ 	pgd_t *pgd;
+ 	p4d_t *p4d;
+@@ -4720,9 +4758,11 @@ static vm_fault_t __handle_mm_fault(struct vm_area_struct *vma,
+ 		barrier();
+ 		if (pud_trans_huge(orig_pud) || pud_devmap(orig_pud)) {
  
- 			/*
- 			 * Store the pfn of the page in a special migration
-@@ -1927,6 +1973,9 @@ static bool try_to_migrate_one(struct folio *folio, struct vm_area_struct *vma,
- 			if (pte_write(pteval))
- 				entry = make_writable_migration_entry(
- 							page_to_pfn(subpage));
-+			else if (anon_exclusive)
-+				entry = make_readable_exclusive_migration_entry(
-+							page_to_pfn(subpage));
- 			else
- 				entry = make_readable_migration_entry(
- 							page_to_pfn(subpage));
-@@ -2363,6 +2412,8 @@ void hugepage_add_anon_rmap(struct page *page, struct vm_area_struct *vma,
- 	BUG_ON(!anon_vma);
- 	/* address might be in next vma when migration races vma_adjust */
- 	first = atomic_inc_and_test(compound_mapcount_ptr(page));
-+	VM_BUG_ON_PAGE(!first && (flags & RMAP_EXCLUSIVE), page);
-+	VM_BUG_ON_PAGE(!first && PageAnonExclusive(page), page);
- 	if (first)
- 		__page_set_anon_rmap(page, vma, address,
- 				     !!(flags & RMAP_EXCLUSIVE));
+-			/* NUMA case for anonymous PUDs would go here */
+-
+-			if (dirty && !pud_write(orig_pud)) {
++			/*
++			 * TODO once we support anonymous PUDs: NUMA case and
++			 * FAULT_FLAG_UNSHARE handling.
++			 */
++			if ((flags & FAULT_FLAG_WRITE) && !pud_write(orig_pud)) {
+ 				ret = wp_huge_pud(&vmf, orig_pud);
+ 				if (!(ret & VM_FAULT_FALLBACK))
+ 					return ret;
+@@ -4760,7 +4800,8 @@ static vm_fault_t __handle_mm_fault(struct vm_area_struct *vma,
+ 			if (pmd_protnone(vmf.orig_pmd) && vma_is_accessible(vma))
+ 				return do_huge_pmd_numa_page(&vmf);
+ 
+-			if (dirty && !pmd_write(vmf.orig_pmd)) {
++			if ((flags & (FAULT_FLAG_WRITE|FAULT_FLAG_UNSHARE)) &&
++			    !pmd_write(vmf.orig_pmd)) {
+ 				ret = wp_huge_pmd(&vmf);
+ 				if (!(ret & VM_FAULT_FALLBACK))
+ 					return ret;
 -- 
 2.35.1
 
