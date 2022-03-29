@@ -2,100 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9051AC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 11:14:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65EA9C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 11:17:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235630AbiC2LQe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 07:16:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37302 "EHLO
+        id S235645AbiC2LTV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 07:19:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235584AbiC2LQ3 (ORCPT
+        with ESMTP id S232605AbiC2LTR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 07:16:29 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A491149F16;
-        Tue, 29 Mar 2022 04:14:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648552486; x=1680088486;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=WW7g88rQ37IyUYcFgRuJ0tHqtRy6l/Sd1url/SgYtxc=;
-  b=K+wygYLWZFOk+RJ11U9Z66aBwtbB1O1TCCLpz6oIBcqvN975juAj3U/m
-   Ja3JYd2C2oilh/sRqJGuCVf0Wsi21+BUwxmeuFsqb3cbxRUI6ZckoA2td
-   XDVSEu8lmLaUaKsBbuV02WgmgS+nXmCOVdi/zdx/q0f01oAnlmxFrYYtx
-   ZEGSqTxsS2mp0mefMr23c8nMm8/MoNlUd5g6LMNmtemRhz1lXl3dU1l/j
-   Kx6K6yGHPjeaoTrl2JOmV+nHZZSgeo7lLRV2iaqH5hUQ6ombPsd3EQRsb
-   syvZRt6HxDdu4avxgM2ncQQp5u6jl6FdqnEvNG6kKCQA/tcQstIJ/JZoQ
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="322408088"
-X-IronPort-AV: E=Sophos;i="5.90,220,1643702400"; 
-   d="scan'208";a="322408088"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 04:14:46 -0700
-X-IronPort-AV: E=Sophos;i="5.90,220,1643702400"; 
-   d="scan'208";a="787559197"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 04:14:41 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nZ9nb-008hp9-9H;
-        Tue, 29 Mar 2022 14:14:07 +0300
-Date:   Tue, 29 Mar 2022 14:14:07 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Fabien DESSENNE <fabien.dessenne@foss.st.com>
-Cc:     Gregory CLEMENT <gregory.clement@bootlin.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>
-Subject: Re: [PATCH v1 2/5] pinctrl: stm32: Replace custom code by
- gpiochip_count() call
-Message-ID: <YkLp//IFvgohHycw@smile.fi.intel.com>
-References: <20220325200338.54270-1-andriy.shevchenko@linux.intel.com>
- <20220325200338.54270-2-andriy.shevchenko@linux.intel.com>
- <44057328-2454-4f4d-cc90-b0ca35ba1e5a@foss.st.com>
+        Tue, 29 Mar 2022 07:19:17 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1F814D61E;
+        Tue, 29 Mar 2022 04:17:33 -0700 (PDT)
+Received: from kwepemi100026.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KSRnj32wXzfYml;
+        Tue, 29 Mar 2022 19:15:53 +0800 (CST)
+Received: from kwepemm600015.china.huawei.com (7.193.23.52) by
+ kwepemi100026.china.huawei.com (7.221.188.60) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 29 Mar 2022 19:17:31 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600015.china.huawei.com
+ (7.193.23.52) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 29 Mar
+ 2022 19:17:30 +0800
+From:   ChenXiaoSong <chenxiaosong2@huawei.com>
+To:     <trond.myklebust@hammerspace.com>, <anna@kernel.org>,
+        <bjschuma@netapp.com>
+CC:     <linux-nfs@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <chenxiaosong2@huawei.com>, <liuyongqiang13@huawei.com>,
+        <yi.zhang@huawei.com>, <zhangxiaoxu5@huawei.com>, <tao.lyu@epfl.ch>
+Subject: [PATCH -next 1/2] Revert "NFSv4: Handle the special Linux file open access mode"
+Date:   Tue, 29 Mar 2022 19:32:07 +0800
+Message-ID: <20220329113208.2466000-2-chenxiaosong2@huawei.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220329113208.2466000-1-chenxiaosong2@huawei.com>
+References: <20220329113208.2466000-1-chenxiaosong2@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <44057328-2454-4f4d-cc90-b0ca35ba1e5a@foss.st.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600015.china.huawei.com (7.193.23.52)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 09:59:32AM +0200, Fabien DESSENNE wrote:
-> On 25/03/2022 21:03, Andy Shevchenko wrote:
+This reverts commit 44942b4e457beda00981f616402a1a791e8c616e.
 
-Thanks for review, my answers below.
+After secondly opening a file with O_ACCMODE|O_DIRECT flags,
+nfs4_valid_open_stateid() will dereference NULL nfs4_state when lseek().
 
-> > -	for_each_available_child_of_node(np, child)
-> 
-> Here we look for "available" child, while the new generic helper
-> gpiochip_count() looks for any child, available or not.
-> Would it be possible to hav gpiochip_count() looking for available child as
-> well?
+Reproducer:
+  1. mount -t nfs -o vers=4.2 $server_ip:/ /mnt/
+  2. fd = open("/mnt/file", O_ACCMODE|O_DIRECT|O_CREAT)
+  3. close(fd)
+  4. fd = open("/mnt/file", O_ACCMODE|O_DIRECT)
+  5. lseek(fd)
 
-It's done already that way. The fwnode loop is done against available children.
+Reported-by: Lyu Tao <tao.lyu@epfl.ch>
+Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
+---
+ fs/nfs/inode.c    | 1 -
+ fs/nfs/nfs4file.c | 2 +-
+ 2 files changed, 1 insertion(+), 2 deletions(-)
 
-> It looks like there is '_available_' version of
-> 'device_for_each_child_node', maybe this shall be added too.
-
-No need.
-
+diff --git a/fs/nfs/inode.c b/fs/nfs/inode.c
+index 3351c2de3e08..bb91b228f1e5 100644
+--- a/fs/nfs/inode.c
++++ b/fs/nfs/inode.c
+@@ -1180,7 +1180,6 @@ int nfs_open(struct inode *inode, struct file *filp)
+ 	nfs_fscache_open_file(inode, filp);
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(nfs_open);
+ 
+ /*
+  * This function is called whenever some part of NFS notices that
+diff --git a/fs/nfs/nfs4file.c b/fs/nfs/nfs4file.c
+index e79ae4cbc395..c178db86a6e8 100644
+--- a/fs/nfs/nfs4file.c
++++ b/fs/nfs/nfs4file.c
+@@ -51,7 +51,7 @@ nfs4_file_open(struct inode *inode, struct file *filp)
+ 		return err;
+ 
+ 	if ((openflags & O_ACCMODE) == 3)
+-		return nfs_open(inode, filp);
++		openflags--;
+ 
+ 	/* We can't create new files here */
+ 	openflags &= ~(O_CREAT|O_EXCL);
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.31.1
 
