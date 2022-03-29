@@ -2,127 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60DE0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 11:09:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58F2DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 11:13:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235578AbiC2LLP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 07:11:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45930 "EHLO
+        id S235596AbiC2LPf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 07:15:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232456AbiC2LLL (ORCPT
+        with ESMTP id S232456AbiC2LPd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 07:11:11 -0400
-Received: from mail.meizu.com (edge07.meizu.com [112.91.151.210])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD77E35DEB
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 04:09:27 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail11.meizu.com
- (172.16.1.15) with Microsoft SMTP Server (TLS) id 14.3.487.0; Tue, 29 Mar
- 2022 19:09:20 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Tue, 29 Mar
- 2022 19:09:19 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     Haowen Bai <baihaowen@meizu.com>, <linux-staging@lists.linux.dev>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH V3] staging: r8188eu: Directly return _SUCCESS instead of using local ret variable
-Date:   Tue, 29 Mar 2022 19:09:17 +0800
-Message-ID: <1648552158-24203-1-git-send-email-baihaowen@meizu.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1648551967-23627-1-git-send-email-baihaowen@meizu.com>
-References: <1648551967-23627-1-git-send-email-baihaowen@meizu.com>
+        Tue, 29 Mar 2022 07:15:33 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D761B3CFD9
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 04:13:47 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KSRkw57JZzcZyX;
+        Tue, 29 Mar 2022 19:13:28 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
+ (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 29 Mar
+ 2022 19:13:44 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <akpm@linux-foundation.org>, <mhocko@suse.com>
+CC:     <kosaki.motohiro@jp.fujitsu.com>, <mgorman@suse.de>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        <linmiaohe@huawei.com>
+Subject: [PATCH v4] mm/mempolicy: fix mpol_new leak in shared_policy_replace
+Date:   Tue, 29 Mar 2022 19:14:16 +0800
+Message-ID: <20220329111416.27954-1-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-124.meizu.com (172.16.1.124) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As init_mlme_ext_priv function always returns SUCCESS , We can change
-return type from int to void.
+If mpol_new is allocated but not used in restart loop, mpol_new will be
+freed via mpol_put before returning to the caller.  But refcnt is not
+initialized yet, so mpol_put could not do the right things and might leak
+the unused mpol_new. This would happen if mempolicy was updated on the
+shared shmem file while the sp->lock has been dropped during the memory
+allocation.
 
-fixes coccinelle warning:
-./drivers/staging/r8188eu/core/rtw_mlme_ext.c:357:5-8: Unneeded variable: "res".
- Return "_SUCCESS" on line 380
+This issue could be triggered easily with the below code snippet if there
+are many processes doing the below work at the same time:
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+  shmid = shmget((key_t)5566, 1024 * PAGE_SIZE, 0666|IPC_CREAT);
+  shm = shmat(shmid, 0, 0);
+  loop many times {
+    mbind(shm, 1024 * PAGE_SIZE, MPOL_LOCAL, mask, maxnode, 0);
+    mbind(shm + 128 * PAGE_SIZE, 128 * PAGE_SIZE, MPOL_DEFAULT, mask,
+          maxnode, 0);
+  }
+
+Fixes: 42288fe366c4 ("mm: mempolicy: Convert shared_policy mutex to spinlock")
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Acked-by: Michal Hocko <mhocko@suse.com>
+Cc: <stable@vger.kernel.org> # 3.8
 ---
-V1->V2: split into two patches.
-V2->V3: change return type from int to void.
+v3->v4:
+  rebase on mainline.
+v2->v3:
+  enhance commit log and collect Acked-by tag per Michal Hocko. Thanks!
+v1->v2:
+  Add reproducer snippet and Cc stable.
+  Thanks Michal Hocko for review and comment!
+---
+ mm/mempolicy.c | 1 +
+ 1 file changed, 1 insertion(+)
 
- drivers/staging/r8188eu/core/rtw_mlme_ext.c    | 5 +----
- drivers/staging/r8188eu/include/rtw_mlme_ext.h | 2 +-
- drivers/staging/r8188eu/os_dep/os_intfs.c      | 8 +-------
- 3 files changed, 3 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/staging/r8188eu/core/rtw_mlme_ext.c b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-index 10d5f12..ff48293 100644
---- a/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-+++ b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-@@ -352,9 +352,8 @@ static u8 init_channel_set(struct adapter *padapter, u8 ChannelPlan, struct rt_c
- 	return chanset_size;
+diff --git a/mm/mempolicy.c b/mm/mempolicy.c
+index a2516d31db6c..6b34c5d5e65a 100644
+--- a/mm/mempolicy.c
++++ b/mm/mempolicy.c
+@@ -2733,6 +2733,7 @@ static int shared_policy_replace(struct shared_policy *sp, unsigned long start,
+ 	mpol_new = kmem_cache_alloc(policy_cache, GFP_KERNEL);
+ 	if (!mpol_new)
+ 		goto err_out;
++	atomic_set(&mpol_new->refcnt, 1);
+ 	goto restart;
  }
- 
--int	init_mlme_ext_priv(struct adapter *padapter)
-+void init_mlme_ext_priv(struct adapter *padapter)
- {
--	int	res = _SUCCESS;
- 	struct registry_priv *pregistrypriv = &padapter->registrypriv;
- 	struct mlme_ext_priv *pmlmeext = &padapter->mlmeextpriv;
- 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-@@ -376,8 +375,6 @@ int	init_mlme_ext_priv(struct adapter *padapter)
- 	pmlmeext->mlmeext_init = true;
- 
- 	pmlmeext->active_keep_alive_check = true;
--
--	return res;
- }
- 
- void free_mlme_ext_priv(struct mlme_ext_priv *pmlmeext)
-diff --git a/drivers/staging/r8188eu/include/rtw_mlme_ext.h b/drivers/staging/r8188eu/include/rtw_mlme_ext.h
-index 0c555ea..827ac6c 100644
---- a/drivers/staging/r8188eu/include/rtw_mlme_ext.h
-+++ b/drivers/staging/r8188eu/include/rtw_mlme_ext.h
-@@ -419,7 +419,7 @@ struct mlme_ext_priv {
- 	u8 active_keep_alive_check;
- };
- 
--int init_mlme_ext_priv(struct adapter *adapter);
-+void init_mlme_ext_priv(struct adapter *adapter);
- int init_hw_mlme_ext(struct adapter *padapter);
- void free_mlme_ext_priv (struct mlme_ext_priv *pmlmeext);
- extern void init_mlme_ext_timer(struct adapter *padapter);
-diff --git a/drivers/staging/r8188eu/os_dep/os_intfs.c b/drivers/staging/r8188eu/os_dep/os_intfs.c
-index 550721e..ca1c4df 100644
---- a/drivers/staging/r8188eu/os_dep/os_intfs.c
-+++ b/drivers/staging/r8188eu/os_dep/os_intfs.c
-@@ -490,10 +490,7 @@ u8 rtw_init_drv_sw(struct adapter *padapter)
- 	init_wifidirect_info(padapter, P2P_ROLE_DISABLE);
- 	reset_global_wifidirect_info(padapter);
- 
--	if (init_mlme_ext_priv(padapter) == _FAIL) {
--		dev_err(dvobj_to_dev(padapter->dvobj), "init_mlme_ext_priv failed\n");
--		goto free_mlme_priv;
--	}
-+	init_mlme_ext_priv(padapter);
- 
- 	if (_rtw_init_xmit_priv(&padapter->xmitpriv, padapter) == _FAIL) {
- 		dev_err(dvobj_to_dev(padapter->dvobj), "_rtw_init_xmit_priv failed\n");
-@@ -534,9 +531,6 @@ u8 rtw_init_drv_sw(struct adapter *padapter)
- free_mlme_ext:
- 	free_mlme_ext_priv(&padapter->mlmeextpriv);
- 
--free_mlme_priv:
--	rtw_free_mlme_priv(&padapter->mlmepriv);
--
- free_evt_priv:
- 	rtw_free_evt_priv(&padapter->evtpriv);
  
 -- 
-2.7.4
+2.23.0
 
