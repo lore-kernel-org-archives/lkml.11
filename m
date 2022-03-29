@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91553C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 13:26:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFC33C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 13:26:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237283AbiC2N1q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 09:27:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35628 "EHLO
+        id S237330AbiC2N1t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 09:27:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237243AbiC2N1a (ORCPT
+        with ESMTP id S237244AbiC2N1b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 09:27:30 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C11A1F42E0
+        Tue, 29 Mar 2022 09:27:31 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60E961F5195
         for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 06:25:47 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KSVd02dXYzCr7Q;
-        Tue, 29 Mar 2022 21:23:32 +0800 (CST)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KSVgF1Nsvz1GCxj;
+        Tue, 29 Mar 2022 21:25:29 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
  (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 29 Mar
- 2022 21:25:44 +0800
+ 2022 21:25:45 +0800
 From:   Miaohe Lin <linmiaohe@huawei.com>
 To:     <akpm@linux-foundation.org>
 CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
         <linmiaohe@huawei.com>
-Subject: [PATCH 1/8] mm/vmscan: remove redundant folio_test_swapbacked check when folio is file lru
-Date:   Tue, 29 Mar 2022 21:26:12 +0800
-Message-ID: <20220329132619.18689-2-linmiaohe@huawei.com>
+Subject: [PATCH 3/8] mm/vmscan: introduce helper function reclaim_page_list()
+Date:   Tue, 29 Mar 2022 21:26:14 +0800
+Message-ID: <20220329132619.18689-4-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20220329132619.18689-1-linmiaohe@huawei.com>
 References: <20220329132619.18689-1-linmiaohe@huawei.com>
@@ -43,28 +43,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When folio is file lru, folio_test_swapbacked is guaranteed to be true. So
-it's unnecessary to check it here again. No functional change intended.
+Introduce helper function reclaim_page_list() to eliminate the duplicated
+code of doing shrink_page_list() and putback_lru_page. Also We can separate
+node reclaim from node page list operation this way. No functional change
+intended.
 
 Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 ---
- mm/vmscan.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ mm/vmscan.c | 47 +++++++++++++++++++++++------------------------
+ 1 file changed, 23 insertions(+), 24 deletions(-)
 
 diff --git a/mm/vmscan.c b/mm/vmscan.c
-index 1678802e03e7..7c1a9713bfc9 100644
+index 09b452c4d256..a6e60c78d058 100644
 --- a/mm/vmscan.c
 +++ b/mm/vmscan.c
-@@ -1434,8 +1434,7 @@ static void folio_check_dirty_writeback(struct folio *folio,
- 	 * Anonymous pages are not handled by flushers and must be written
- 	 * from reclaim context. Do not stall reclaim based on them
- 	 */
--	if (!folio_is_file_lru(folio) ||
--	    (folio_test_anon(folio) && !folio_test_swapbacked(folio))) {
-+	if (!folio_is_file_lru(folio) || folio_test_anon(folio)) {
- 		*dirty = false;
- 		*writeback = false;
- 		return;
+@@ -2513,14 +2513,11 @@ static void shrink_active_list(unsigned long nr_to_scan,
+ 			nr_deactivate, nr_rotated, sc->priority, file);
+ }
+ 
+-unsigned long reclaim_pages(struct list_head *page_list)
++static inline unsigned int reclaim_page_list(struct list_head *page_list, struct pglist_data *pgdat)
+ {
+-	int nid = NUMA_NO_NODE;
+-	unsigned int nr_reclaimed = 0;
+-	LIST_HEAD(node_page_list);
+ 	struct reclaim_stat dummy_stat;
++	unsigned int nr_reclaimed;
+ 	struct page *page;
+-	unsigned int noreclaim_flag;
+ 	struct scan_control sc = {
+ 		.gfp_mask = GFP_KERNEL,
+ 		.may_writepage = 1,
+@@ -2529,6 +2526,24 @@ unsigned long reclaim_pages(struct list_head *page_list)
+ 		.no_demotion = 1,
+ 	};
+ 
++	nr_reclaimed = shrink_page_list(page_list, pgdat, &sc, &dummy_stat, false);
++	while (!list_empty(page_list)) {
++		page = lru_to_page(page_list);
++		list_del(&page->lru);
++		putback_lru_page(page);
++	}
++
++	return nr_reclaimed;
++}
++
++unsigned long reclaim_pages(struct list_head *page_list)
++{
++	int nid = NUMA_NO_NODE;
++	unsigned int nr_reclaimed = 0;
++	LIST_HEAD(node_page_list);
++	struct page *page;
++	unsigned int noreclaim_flag;
++
+ 	noreclaim_flag = memalloc_noreclaim_save();
+ 
+ 	while (!list_empty(page_list)) {
+@@ -2544,28 +2559,12 @@ unsigned long reclaim_pages(struct list_head *page_list)
+ 			continue;
+ 		}
+ 
+-		nr_reclaimed += shrink_page_list(&node_page_list,
+-						NODE_DATA(nid),
+-						&sc, &dummy_stat, false);
+-		while (!list_empty(&node_page_list)) {
+-			page = lru_to_page(&node_page_list);
+-			list_del(&page->lru);
+-			putback_lru_page(page);
+-		}
+-
++		nr_reclaimed += reclaim_page_list(&node_page_list, NODE_DATA(nid));
+ 		nid = NUMA_NO_NODE;
+ 	}
+ 
+-	if (!list_empty(&node_page_list)) {
+-		nr_reclaimed += shrink_page_list(&node_page_list,
+-						NODE_DATA(nid),
+-						&sc, &dummy_stat, false);
+-		while (!list_empty(&node_page_list)) {
+-			page = lru_to_page(&node_page_list);
+-			list_del(&page->lru);
+-			putback_lru_page(page);
+-		}
+-	}
++	if (!list_empty(&node_page_list))
++		nr_reclaimed += reclaim_page_list(&node_page_list, NODE_DATA(nid));
+ 
+ 	memalloc_noreclaim_restore(noreclaim_flag);
+ 
 -- 
 2.23.0
 
