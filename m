@@ -2,144 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38B5EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 03:24:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BC71C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 03:27:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231703AbiC2D0F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 23:26:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56164 "EHLO
+        id S231704AbiC2D3c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 23:29:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231689AbiC2D0C (ORCPT
+        with ESMTP id S230329AbiC2D32 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 23:26:02 -0400
-Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2110.outbound.protection.outlook.com [40.107.215.110])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D00A8E1250;
-        Mon, 28 Mar 2022 20:24:15 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HwNHEfwn5kPRFhiQZN2gr7eMSQLN05JATOv8za6xpngIytaribH7GrDHM7J6Ky8dPwiJCS7JAeFri7Pozs6Ea0N6ltGJ5H9dEPJSt2UUV5j6govHYwiiQ1vYY5xEUpKl3YtaYYflJQZdv8qKn9cdtm7q41xxgJvhHCfDXbzanJCvxiYzxyUVD1kZJGkh5OxIMIc3Q17bl6kvS4MCUMtUgjg9VQzzu2foag1b8adIXZLdOiumGF1vuglWMl/lOGU8qFBUnb2L2p8Ryu3NC+L5HNkrkKVFZN2lRSWSheTOvs3H+mc30UEXOfPewZ2UMY8uut8j0flkbl6zv0yAX1ZI3g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Njy91h3N2pLFwf7hdeBah0EkI/CQ2MTL/T2tA9lqun8=;
- b=f34EP+NfvgF449ifvqZ4hep0pSvTocuMxojgA47t9+4AfYmcENYXhcc4Qen8llrN5reP2l0Kmwrix5XsO5PQBch2kvhmAOcWZ3yorjkN+29OrZ9Ag3ZVS0XhwJ0DhNbzd7r/S0JN4uXb0pmX9uYh69E0qWI0TatwbMi9QZeDlziPF08NFUadjieRtoop0MAlVeSO81QPq4WJ16BYYwuHEctcPwuZRdImBdD8EfurlZ8TfHQrs5O9XDUfkJLPIkwBeOrg9wvotY9wU8nyhBlH/UI2QTLwV97EFhyNayQjWxI41Z2A8c21okYj/5PuIKsxxykl2DDnYSQOXFLsrHhdTg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=aspeedtech.com; dmarc=pass action=none
- header.from=aspeedtech.com; dkim=pass header.d=aspeedtech.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aspeedtech.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Njy91h3N2pLFwf7hdeBah0EkI/CQ2MTL/T2tA9lqun8=;
- b=VYfHMcoSXuzBANsAx+xYyCQnjoIoPedTqA6LRh+O0MLCXTGFpo14mCLRcCqVSPfn1hLwuazAzEbQIHva8tjlcjDXWtQzULN1tMM9gD1Z514wZ57a+74goYYxOvx3EJWnl1E3yi/0deZuvTwAHjrhdtTQYVLKRnKknmFKCBamsr/BpfqHystS98NF5yHRVY/m78oxDgLAEmZvljLQgF9ghOt9zGjXrptlI7ilqPrFfRzOOxz1F+EYk6GzpiGqVsRjAU/NCDyiIJtggzwUAMM/Pb7bvTYZqfJefOHnblwMWlSJ7U+bfx+X4+NpsdSWdzZHXYbX6bMa797Go0ReNMyBbA==
-Received: from SG2PR06MB2315.apcprd06.prod.outlook.com (2603:1096:4:b::19) by
- SI2PR06MB4106.apcprd06.prod.outlook.com (2603:1096:4:f7::8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5102.19; Tue, 29 Mar 2022 03:24:10 +0000
-Received: from SG2PR06MB2315.apcprd06.prod.outlook.com
- ([fe80::69db:d6a9:d891:e1fc]) by SG2PR06MB2315.apcprd06.prod.outlook.com
- ([fe80::69db:d6a9:d891:e1fc%7]) with mapi id 15.20.5102.023; Tue, 29 Mar 2022
- 03:24:10 +0000
-From:   Howard Chiu <howard_chiu@aspeedtech.com>
-To:     Andrew Jeffery <andrew@aj.id.au>, Rob Herring <robh+dt@kernel.org>,
-        Joel Stanley <joel@jms.id.au>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     Troy Lee <troy_lee@aspeedtech.com>
-Subject: [PATCH v4 3/3] ARM: dts: aspeed: ast2600-evb: Enable virtual hub
-Thread-Topic: [PATCH v4 3/3] ARM: dts: aspeed: ast2600-evb: Enable virtual hub
-Thread-Index: AdhDHCPizwz11c+oTYCkTWVlcfbcaw==
-Date:   Tue, 29 Mar 2022 03:24:10 +0000
-Message-ID: <SG2PR06MB23155E8A6193118544A7DBF3E61E9@SG2PR06MB2315.apcprd06.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=aspeedtech.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4c13a33f-417f-433a-2cc0-08da11339774
-x-ms-traffictypediagnostic: SI2PR06MB4106:EE_
-x-microsoft-antispam-prvs: <SI2PR06MB41068A3D9AD5CC789C54AEE2E61E9@SI2PR06MB4106.apcprd06.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: IIqrntTcJPZ3PMHEzByADw7exCSbUQBzIB+VyeugLpF5iaX3Si0H4lBNFdGHA2Q/U18lhAqSY2GQf0bHBPKk6Q+tPrZycoGzXqTC44iBqEx1ZEBzAivSGxEq9ttGiDW5ufXJfbf+7GZEYec14zvsTE3qjwmk5V1dkkacZtWi/a3qVSje2+KKxRfddSctW9aek9LkYUfBev1rFhUoLazfTu1Faiz7emwgraHluxVZB7JsQbkHIW88IYH58lT1c7fPXTId2soRu0ADC4iOdlea3AfLgpaJkF72TP3+N17jRPWQLg2W7/KeK17d0KC2pwSBZuyFrTt4cE0n7tsZOThf+zD3reUvFXY501km7jpllgFtY05k9Pq7999zz0ALKWYa/4PNQc2Ws/OCIEk/oDhwAEtFzphLgDm8E+bY+xqiZRne9C8Ms5cvGt0eBx26eJP1XpZwqWy41GTvB7hr4PNEBLYaZnyhAS9fGlW+kfNC3mOCPM5u5umCZ9RJpLwIi83EMNnQ7k6q+zBCQvSKwqCbhXd9EItIWJFxrCrs+iduIPfPlu0hUGxUFUl3E57FzOb4gEj6WcviLA81Su574go/zZox+NKRPKVGJV9onFVEC45w8MnP/n90bDOQcj24LRx5oPaXOFPh8ZtIzO60e/zZfc6L7nS9YcWnp5taqxh2KGDJIgEtAVmiWejjs0yQMJ6Tiy33IxUlBVgJu0vQb+4M4Q==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB2315.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(396003)(136003)(39840400004)(366004)(346002)(376002)(8936002)(4744005)(5660300002)(2906002)(55016003)(316002)(110136005)(71200400001)(26005)(186003)(107886003)(508600001)(6506007)(7696005)(9686003)(38070700005)(86362001)(52536014)(38100700002)(122000001)(83380400001)(4326008)(66476007)(66946007)(33656002)(66556008)(66446008)(64756008)(8676002)(76116006);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?m7oaV1nZLrysPevDO85ODbRSpeJrwjIYvlyyr4XHKjwyqCXzH11sRt8dl450?=
- =?us-ascii?Q?BqESuFDEe9vgJ8BxskYvqPAdt8TOpY9tz6PAmdGEd4c2FlF8s0AP9kHNrE9p?=
- =?us-ascii?Q?YVfSYHr+moPl6AcYNQoy3WNcWOL28RoegVJz3DPcPv08+NOyUaJTaDW6DMMV?=
- =?us-ascii?Q?wX7VgXpcwN4Q0osrpwk9dRk1i8jwOEX8nMDEiHq9jmNbvNE2iaU5CN+KUmA0?=
- =?us-ascii?Q?PCgbFAvA4rW727YAo4B1vluxDjBPiuIK0WjWGxOSzGQpmwEHYxDbSZGJayp1?=
- =?us-ascii?Q?2AwEzAFVVM+ec5m2ksD19uunBm7G/ZGonqLlmyOoOFT3dMzPvMrN4/oCHX9Y?=
- =?us-ascii?Q?cpiVHDQkDmwIaL0jO/qz0Fp50ZmOLYuhFYUbK+27tKfgcvl80T4Qpc/g6doi?=
- =?us-ascii?Q?ReAqjIrvOOH2SJ7/jcHyjDdAWgbqLHeet2uRTcdBctG0DxmVpy6maXyWsL6j?=
- =?us-ascii?Q?tqtiqCClR7iYAd/RbHScVCB/X76z8g5By9Qr0X4Kr2NiQGmm9laZBiv2niN6?=
- =?us-ascii?Q?WrLZsaleaSNRwD9B+nIOm7oifKmABypqv5h+fHwgRRMcIGTOs+sssWdexMbK?=
- =?us-ascii?Q?dt5upJAk7zVi/FwjU6bNLK2o3JJh7yiPiiB6VzwKI+TO9YKKirXvZOEAVyhM?=
- =?us-ascii?Q?6Rv2x3lz7JdsZwxinJsOcDIA4i0mvUp614UnXy1Ti4HjVJWp/btAkGT5yckq?=
- =?us-ascii?Q?msTLbpATEweBhfUUInaW6QRUacR63Z+Tb7+gPu+WZnDZKbNdx4kOc0cS8X6F?=
- =?us-ascii?Q?c+ErnTplBGVDKUXAGD+mS7VbfJshd0pmsNIUD8Hzjg+CBuOAXxjMeDCJ+oPI?=
- =?us-ascii?Q?BKAqj3GK2ecV3weLKL4Epht/05e9pbf4KAW1gR4Qijgr/sfHrYeGJuRs1/Yy?=
- =?us-ascii?Q?AjFl7+ML+fDl8aNMcHGf5LKkG6Jj/AchOQHh8qBLrKVNzYUuhVwnftORJfZS?=
- =?us-ascii?Q?9ov7uTWEHbC/S0kfYf2uAxw8shZ2Mz6nySJL+wMJ06MZuK93ILh7RNW5m25J?=
- =?us-ascii?Q?wYzpV8uUUB9hOjseU6LfHmqYYKJTcaWLDpftLhmDus0RYu2Vd2O4vpHpqThT?=
- =?us-ascii?Q?+CU7MO8gCVmo43kUZi4/hlJiE0TTg8YnRQkV1mIIr8aUdi69Tl3lVl+rdERo?=
- =?us-ascii?Q?b81VFBKgbxfk6eoYdSEWcUqgS0gDFs/0yK3AXzsCsOTF50SNZduq/x46QZkT?=
- =?us-ascii?Q?CjQDDMuwvWPR3iqwnmx5/LNnF9LlbMDEiNVEgTpoxojAoAko0Hjwfq0Dw0lZ?=
- =?us-ascii?Q?dzR+8iy643J2PZocu8+UDacBf+Lud7n5oSHlewXbbXSBNzwtTguZUUuwS4l+?=
- =?us-ascii?Q?Ehs1b85kB9EsC1nuJ3XV8lscSjuFqh2UijZBSy93suNnYM34GBIkT9qwTgt6?=
- =?us-ascii?Q?aRLpGz/66VTTCXyprKkalFmjyUs3n7lWkiT8WcC7sHugG+FE/y7B9DovnO4B?=
- =?us-ascii?Q?OYwM6OFcMNgBXFCCdDcRpYZEZ5D1EkZHKmL3bJG96QqeqGfDFMhj6pRvCYhX?=
- =?us-ascii?Q?bCQTCEL+YSzb7lkZmlPk5FtMpheb5UkbcFdzmGQI8cRbQDJjkH8vAsmsXAT6?=
- =?us-ascii?Q?iQtlu2IT8VxD/nb3vFDkhDnmi3YdwafkJL1wOX/aAbcbSPBj1MOjUI21mtZT?=
- =?us-ascii?Q?Pn8vyDJhySc8aBNoy13hE/DflnGVwP6QRTEnkfklvrjB2ARrqttS5RbYf3nw?=
- =?us-ascii?Q?OnOJzOZF3xJgqepsHNkD1ukxkdpMj1bGAq0/u2d9yRj4Q4I3NddJF/Eirm5h?=
- =?us-ascii?Q?tMltGfjnO65FuFyUIFyLn1xnjaWlJ8I=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Mon, 28 Mar 2022 23:29:28 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2AF23EC7C
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 20:27:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648524466; x=1680060466;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=m2NTAGqDu6Q8s766aBF3zvFDK6Yfrawoi69eOQd1tcM=;
+  b=mHRbxFTrdz1h6Q/Pn7jzIlv7JR0Lde6ZY33NqYplT4n4UdO7DsIb0/0d
+   ulzV8GMnRtgcMpmFHCShH19fUzhcwkTZnhJ2SNy1xUJHc6VAAzB7PvKvZ
+   yEK6LiEDlB328P/tinVkrmk+Fu6p3ivGGqIKgDXhI6uFBfeRYfLZbPrSP
+   T7Kvp9Qw7scIGOh56tZ/i1HpjZtJCFe34KeWcpRBD3P8SzTW8VofA3RIE
+   EUuLm5YwWyxxquzrtqu/MUzfuLfWuk6rvcvWPr6X60m/5N/DsuMZUGdxO
+   h3lEjKp2rPn2kpfo4GwJ3PygPUucEGppppsIJrxgwEInsTrJuar5/zSla
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="259122185"
+X-IronPort-AV: E=Sophos;i="5.90,219,1643702400"; 
+   d="scan'208";a="259122185"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 20:27:45 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,219,1643702400"; 
+   d="scan'208";a="833194376"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by fmsmga005.fm.intel.com with ESMTP; 28 Mar 2022 20:27:44 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nZ2WF-0002aH-LD; Tue, 29 Mar 2022 03:27:43 +0000
+Date:   Tue, 29 Mar 2022 11:27:26 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Peifeng Li <lipeifeng@oppo.com>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Todd Kjos <tkjos@google.com>
+Subject: [ammarfaizi2-block:google/android/kernel/common/android12-kiwi-5.10
+ 9998/9999] mm/vmscan.c:673:15: warning: no previous prototype for
+ 'shrink_slab'
+Message-ID: <202203291115.wkIFarm7-lkp@intel.com>
 MIME-Version: 1.0
-X-OriginatorOrg: aspeedtech.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB2315.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4c13a33f-417f-433a-2cc0-08da11339774
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Mar 2022 03:24:10.7074
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43d4aa98-e35b-4575-8939-080e90d5a249
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: U6ZozYCjPEvTZLFUiwUxRYV5wcGWO4lDKIPEdHHC3NlXcKzdV1iOgFSw/avU60NcBUPwUcnlilm8hUPubA7h7vMb0FstwWHD59t7aLd69es=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SI2PR06MB4106
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable Aspeed VHub for HID emulation
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android12-kiwi-5.10
+head:   9c6bdae16301919fcab74129dee1083eba844952
+commit: 71d560e017415ead361cfc10cc50ef36a0545cc2 [9998/9999] ANDROID: vendor_hooks: export shrink_slab
+config: arm64-randconfig-r022-20220327 (https://download.01.org/0day-ci/archive/20220329/202203291115.wkIFarm7-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/71d560e017415ead361cfc10cc50ef36a0545cc2
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android12-kiwi-5.10
+        git checkout 71d560e017415ead361cfc10cc50ef36a0545cc2
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash
 
-Signed-off-by: Howard Chiu <howard_chiu@aspeedtech.com>
----
- arch/arm/boot/dts/aspeed-ast2600-evb.dts | 5 +++++
- 1 file changed, 5 insertions(+)
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/arch/arm/boot/dts/aspeed-ast2600-evb.dts b/arch/arm/boot/dts/a=
-speed-ast2600-evb.dts
-index 158b88f38d2c..b98cdad86e90 100644
---- a/arch/arm/boot/dts/aspeed-ast2600-evb.dts
-+++ b/arch/arm/boot/dts/aspeed-ast2600-evb.dts
-@@ -314,6 +314,11 @@ &sdhci1 {
- 	clk-phase-sd-hs =3D <7>, <200>;
- };
-=20
-+&vhub {
-+	status =3D "okay";
-+	pinctrl-names =3D "default";
-+};
-+
- &video {
- 	status =3D "okay";
- 	memory-region =3D <&video_engine_memory>;
---=20
-2.25.1
+All warnings (new ones prefixed by >>):
 
+>> mm/vmscan.c:673:15: warning: no previous prototype for 'shrink_slab' [-Wmissing-prototypes]
+     673 | unsigned long shrink_slab(gfp_t gfp_mask, int nid,
+         |               ^~~~~~~~~~~
+
+
+vim +/shrink_slab +673 mm/vmscan.c
+
+   652	
+   653	/**
+   654	 * shrink_slab - shrink slab caches
+   655	 * @gfp_mask: allocation context
+   656	 * @nid: node whose slab caches to target
+   657	 * @memcg: memory cgroup whose slab caches to target
+   658	 * @priority: the reclaim priority
+   659	 *
+   660	 * Call the shrink functions to age shrinkable caches.
+   661	 *
+   662	 * @nid is passed along to shrinkers with SHRINKER_NUMA_AWARE set,
+   663	 * unaware shrinkers will receive a node id of 0 instead.
+   664	 *
+   665	 * @memcg specifies the memory cgroup to target. Unaware shrinkers
+   666	 * are called only if it is the root cgroup.
+   667	 *
+   668	 * @priority is sc->priority, we take the number of objects and >> by priority
+   669	 * in order to get the scan target.
+   670	 *
+   671	 * Returns the number of reclaimed slab objects.
+   672	 */
+ > 673	unsigned long shrink_slab(gfp_t gfp_mask, int nid,
+   674					 struct mem_cgroup *memcg,
+   675					 int priority)
+   676	{
+   677		unsigned long ret, freed = 0;
+   678		struct shrinker *shrinker;
+   679		bool bypass = false;
+   680	
+   681		trace_android_vh_shrink_slab_bypass(gfp_mask, nid, memcg, priority, &bypass);
+   682		if (bypass)
+   683			return 0;
+   684	
+   685		/*
+   686		 * The root memcg might be allocated even though memcg is disabled
+   687		 * via "cgroup_disable=memory" boot parameter.  This could make
+   688		 * mem_cgroup_is_root() return false, then just run memcg slab
+   689		 * shrink, but skip global shrink.  This may result in premature
+   690		 * oom.
+   691		 */
+   692		if (!mem_cgroup_disabled() && !mem_cgroup_is_root(memcg))
+   693			return shrink_slab_memcg(gfp_mask, nid, memcg, priority);
+   694	
+   695		if (!down_read_trylock(&shrinker_rwsem))
+   696			goto out;
+   697	
+   698		list_for_each_entry(shrinker, &shrinker_list, list) {
+   699			struct shrink_control sc = {
+   700				.gfp_mask = gfp_mask,
+   701				.nid = nid,
+   702				.memcg = memcg,
+   703			};
+   704	
+   705			ret = do_shrink_slab(&sc, shrinker, priority);
+   706			if (ret == SHRINK_EMPTY)
+   707				ret = 0;
+   708			freed += ret;
+   709			/*
+   710			 * Bail out if someone want to register a new shrinker to
+   711			 * prevent the registration from being stalled for long periods
+   712			 * by parallel ongoing shrinking.
+   713			 */
+   714			if (rwsem_is_contended(&shrinker_rwsem)) {
+   715				freed = freed ? : 1;
+   716				break;
+   717			}
+   718		}
+   719	
+   720		up_read(&shrinker_rwsem);
+   721	out:
+   722		cond_resched();
+   723		return freed;
+   724	}
+   725	EXPORT_SYMBOL_GPL(shrink_slab);
+   726	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
