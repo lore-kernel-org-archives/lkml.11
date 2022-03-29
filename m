@@ -2,88 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30CD3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:48:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99DB0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:49:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236791AbiC2Mue (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 08:50:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55892 "EHLO
+        id S236736AbiC2Mul (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 08:50:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237948AbiC2MtZ (ORCPT
+        with ESMTP id S236749AbiC2MrK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 08:49:25 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0A05227C5B
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:46:37 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id y6so14982483plg.2
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:46:37 -0700 (PDT)
+        Tue, 29 Mar 2022 08:47:10 -0400
+Received: from mail-ed1-x54a.google.com (mail-ed1-x54a.google.com [IPv6:2a00:1450:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 082802597CC
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:42:09 -0700 (PDT)
+Received: by mail-ed1-x54a.google.com with SMTP id c31-20020a509fa2000000b004190d43d28fso10861905edf.9
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:42:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=rxVMbNlsIDttgLsDQW9zlxLetSlVk0P6TXGtVI3cb6E=;
-        b=PWILuP6rpZEDH4WXU2e7S+vFyN0Fd42Av4QSFBhoFmIXktyXkMalQjmfJgJCtM8Z8V
-         wBmKN5HlT789q86wG5Ti6McqcFJAIm//30h6QDPaCxdL0FQhg34WUqwaTiOi9xuh38qF
-         BvH3IqvHkHCT+ATftFblwjSqP28fmQ57WI+uLgVctAgpbYsIUOo8BjbrXfxGOOKVNUGH
-         v7mU59TfKw6KEVVIlrsEvqgGZh+utDoUs1YtVukhXkCU+pjIGknph+lmuiH6B9gFMNLe
-         i7EoRvF76t6zAAFg9hcbcPpapzur6bEU4wvTJrB4BTzru9Rdtu4jdZjpkcDmJSuA4acf
-         7+mA==
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=hN0px5Y6w+gPiIIsc2Y11OjC7QzplCcP/UQmq/enNWc=;
+        b=Hba3tqo2ZktNSh5VayjCUcXgsuLQihspG9CdbIkgwV0XnzhptRTheqtvOJvtrkRDxi
+         Ss5riSjqs79q4sj6vEzrl9e5NAnMEYkMtOD7DR0kjiXToleB0xMmrngB/lOmVp53Pm6g
+         sL4jzNQgPIYiWPmAUDH+RYqBmhUxqdDakm3uNuUeS06KDhE0eZO/1cXNArkf4IMFhORp
+         upUi5nfSsYrTnu7bITVW1QpAkL5mzKSSvi2xge0Ig/ckS6wgZKchB3Otj/IUHLOME2c5
+         nfU0OUdtpKDV6uNoZH/AIPbh7jb1irxWmMv0KTxL8c9e0tXERBb3wU1Xna/UfTWWtWS9
+         xT2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=rxVMbNlsIDttgLsDQW9zlxLetSlVk0P6TXGtVI3cb6E=;
-        b=u2wKTZJsLrj55qMm7hVp06uDbL4ykRaMXtBF+X7EOpVJ9XRr8w+WyRA5eE2UJqe6fd
-         TrFKd911UFVs/erDOt0Lp2WZd496PlxBvfdHzj0Vx0D979hgaJFir67aEmAM3X51mh0z
-         Z/ik7ETkx9kayUmc72C+Kp3Ijw7UBHa2JQTg7AYIP7AY+0t6V6vlv+h/46+JO351C7LX
-         PfYqdLmMGQSgbU6ET5bhNWi5jIYVNQtxeCR88lq9dohk6bpq3BYIS3DeqoZtljdWsPHI
-         Xf5f1VBKrSaEW/S/Jyzt+uwRslJpJqFo1IEG9/VBddJjxFEqneQkGQ82zv/ysmJEADe+
-         GIWw==
-X-Gm-Message-State: AOAM531R8fWNZ1d84erqJvdLV21FBzTnRiAlc2rU+poKoJXos8vWqsu0
-        84NpfDaXTpxxLD5jtt5+L7ZyKg==
-X-Google-Smtp-Source: ABdhPJwH1iXdVwT0nBUyiGXP5p/4Q0BR3MyTU6L9eyfTF2N9F7yM0gyokMxROV9mKgv2Fl8oSZnZ4w==
-X-Received: by 2002:a17:90a:840a:b0:1c9:5c4f:5e83 with SMTP id j10-20020a17090a840a00b001c95c4f5e83mr4376177pjn.144.1648557997386;
-        Tue, 29 Mar 2022 05:46:37 -0700 (PDT)
-Received: from [192.168.1.100] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id nn7-20020a17090b38c700b001c9ba103530sm3042535pjb.48.2022.03.29.05.46.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 29 Mar 2022 05:46:36 -0700 (PDT)
-Message-ID: <2b37ce73-83dd-e572-9578-7bb045f1040b@kernel.dk>
-Date:   Tue, 29 Mar 2022 06:46:35 -0600
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH -next RFC 2/6] block: refactor to split bio thoroughly
-Content-Language: en-US
-To:     Yu Kuai <yukuai3@huawei.com>, andriy.shevchenko@linux.intel.com,
-        john.garry@huawei.com, ming.lei@redhat.com
-Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yi.zhang@huawei.com
-References: <20220329094048.2107094-1-yukuai3@huawei.com>
- <20220329094048.2107094-3-yukuai3@huawei.com>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <20220329094048.2107094-3-yukuai3@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=hN0px5Y6w+gPiIIsc2Y11OjC7QzplCcP/UQmq/enNWc=;
+        b=pAQ6k41NcQSHK6tFHumdvoYFl5kjw59/PcvqFBNA4+i0Tu1/yks3LNaGonPZdK6SCZ
+         POk4YMfbt1I/B/IXhKe3L+XBg50tnF7gZwscVLZzqolfFYfLqFCBZmFMMrqZQXy+RYpE
+         F46rC8x4pdFVuVaHS2CO+GZEEoRFFgXRbz0VMmDXL1MCt88K+z0kVeUSUeUHH4gqgD/H
+         7ot8xhWlRb+4yT10/TkBmi5yg/k9tt0qTID6Jn6GPt8n4OlWuIU8Hc8xpBSjN0UgyLTf
+         HHCFubAaW0myJ5TQ3Q8qaoXYRsbGusZ+klnf7HlxbycNPcGqzdfRcJf1CXsT3Z+sOus4
+         0hGA==
+X-Gm-Message-State: AOAM531G2+ZOcqNfNTPqfw5xI6hceVQGwhvhFWGx6ydGL9kxFpYbzRYb
+        wf1el9QK8AA7PsKY5nJm6J4H0VR8aDs=
+X-Google-Smtp-Source: ABdhPJw+mVHIQcKBP/V+6lL9kzLF8SImygn1gNkK6rHWczIwHLyPFu9Mt2wT/36dHdaMhbuj9deBSL0XS6g=
+X-Received: from glider.muc.corp.google.com ([2a00:79e0:15:13:36eb:759:798f:98c3])
+ (user=glider job=sendgmr) by 2002:a05:6402:1e8b:b0:3da:58e6:9a09 with SMTP id
+ f11-20020a0564021e8b00b003da58e69a09mr4276833edf.155.1648557728308; Tue, 29
+ Mar 2022 05:42:08 -0700 (PDT)
+Date:   Tue, 29 Mar 2022 14:40:06 +0200
+In-Reply-To: <20220329124017.737571-1-glider@google.com>
+Message-Id: <20220329124017.737571-38-glider@google.com>
+Mime-Version: 1.0
+References: <20220329124017.737571-1-glider@google.com>
+X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
+Subject: [PATCH v2 37/48] security: kmsan: fix interoperability with auto-initialization
+From:   Alexander Potapenko <glider@google.com>
+To:     glider@google.com
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Christoph Hellwig <hch@lst.de>,
+        Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Kees Cook <keescook@chromium.org>,
+        Marco Elver <elver@google.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>, linux-mm@kvack.org,
+        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/29/22 3:40 AM, Yu Kuai wrote:
-> Currently, the splited bio is handled first, and then continue to split
-> the original bio. This patch tries to split the original bio thoroughly,
-> so that it can be known in advance how many tags will be needed.
+Heap and stack initialization is great, but not when we are trying
+uses of uninitialized memory. When the kernel is built with KMSAN,
+having kernel memory initialization enabled may introduce false
+negatives.
 
-This makes the bio almost 10% bigger in size, which is NOT something
-that is just done casually and without strong reasoning.
+We disable CONFIG_INIT_STACK_ALL_PATTERN and CONFIG_INIT_STACK_ALL_ZERO
+under CONFIG_KMSAN, making it impossible to auto-initialize stack
+variables in KMSAN builds. We also disable CONFIG_INIT_ON_ALLOC_DEFAULT_ON
+and CONFIG_INIT_ON_FREE_DEFAULT_ON to prevent accidental use of heap
+auto-initialization.
 
-So please provide that, your commit message is completely missing
-justification for why this change is useful or necessary. A good
-commit always explains WHY the change needs to be made, yours is
-simply stating WHAT is being done. The latter can be gleaned from
-the code change anyway.
+We however still let the users enable heap auto-initialization at
+boot-time (by setting init_on_alloc=1 or init_on_free=1), in which case
+a warning is printed.
 
+Signed-off-by: Alexander Potapenko <glider@google.com>
+---
+Link: https://linux-review.googlesource.com/id/I86608dd867018683a14ae1870f1928ad925f42e9
+---
+ mm/page_alloc.c            | 4 ++++
+ security/Kconfig.hardening | 4 ++++
+ 2 files changed, 8 insertions(+)
+
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 4237b7290e619..ef0906296c57f 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -868,6 +868,10 @@ void init_mem_debugging_and_hardening(void)
+ 	else
+ 		static_branch_disable(&init_on_free);
+ 
++	if (IS_ENABLED(CONFIG_KMSAN) &&
++	    (_init_on_alloc_enabled_early || _init_on_free_enabled_early))
++		pr_info("mem auto-init: please make sure init_on_alloc and init_on_free are disabled when running KMSAN\n");
++
+ #ifdef CONFIG_DEBUG_PAGEALLOC
+ 	if (!debug_pagealloc_enabled())
+ 		return;
+diff --git a/security/Kconfig.hardening b/security/Kconfig.hardening
+index d051f8ceefddd..bd13a46024457 100644
+--- a/security/Kconfig.hardening
++++ b/security/Kconfig.hardening
+@@ -106,6 +106,7 @@ choice
+ 	config INIT_STACK_ALL_PATTERN
+ 		bool "pattern-init everything (strongest)"
+ 		depends on CC_HAS_AUTO_VAR_INIT_PATTERN
++		depends on !KMSAN
+ 		help
+ 		  Initializes everything on the stack (including padding)
+ 		  with a specific debug value. This is intended to eliminate
+@@ -124,6 +125,7 @@ choice
+ 	config INIT_STACK_ALL_ZERO
+ 		bool "zero-init everything (strongest and safest)"
+ 		depends on CC_HAS_AUTO_VAR_INIT_ZERO
++		depends on !KMSAN
+ 		help
+ 		  Initializes everything on the stack (including padding)
+ 		  with a zero value. This is intended to eliminate all
+@@ -208,6 +210,7 @@ config STACKLEAK_RUNTIME_DISABLE
+ 
+ config INIT_ON_ALLOC_DEFAULT_ON
+ 	bool "Enable heap memory zeroing on allocation by default"
++	depends on !KMSAN
+ 	help
+ 	  This has the effect of setting "init_on_alloc=1" on the kernel
+ 	  command line. This can be disabled with "init_on_alloc=0".
+@@ -220,6 +223,7 @@ config INIT_ON_ALLOC_DEFAULT_ON
+ 
+ config INIT_ON_FREE_DEFAULT_ON
+ 	bool "Enable heap memory zeroing on free by default"
++	depends on !KMSAN
+ 	help
+ 	  This has the effect of setting "init_on_free=1" on the kernel
+ 	  command line. This can be disabled with "init_on_free=0".
 -- 
-Jens Axboe
+2.35.1.1021.g381101b075-goog
 
