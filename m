@@ -2,111 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79D50C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 15:57:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2223C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 15:57:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239079AbiC2P6w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 11:58:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57182 "EHLO
+        id S239088AbiC2P66 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 11:58:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239071AbiC2P6t (ORCPT
+        with ESMTP id S239067AbiC2P6y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 11:58:49 -0400
+        Tue, 29 Mar 2022 11:58:54 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50B1A4D24E
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 08:57:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 502094D261;
+        Tue, 29 Mar 2022 08:57:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E1396612CA
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 15:57:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB7B1C340ED;
-        Tue, 29 Mar 2022 15:57:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648569426;
-        bh=3Xtfj0qdi5cXHLbJKQrGPNIsGSjLL6x0WLhsq+/v46Y=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OmOYMWUoCDRUBDheu6cIabeycMxE8ZjS8OWKaCZ7bUP1WyIBshy8ru93pCcunhuC2
-         APv+6B7Qgwnhfkynl8IKjhSimJFM9FiM7N4c7PJ/7y3kw2WpjPvbnwSDZ0RQUmzJMI
-         UG1jPO9nUogrIaJchgZqXVixvvOwiGlDU7zv7dXw=
-Date:   Tue, 29 Mar 2022 17:57:03 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     xkernel.wang@foxmail.com
-Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: r8188eu: check the return value of kzalloc()
-Message-ID: <YkMsTz/iJdgmUxtS@kroah.com>
-References: <tencent_B489FA9F0FC49CF92A77916394E225DC4705@qq.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <tencent_B489FA9F0FC49CF92A77916394E225DC4705@qq.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DEC3461345;
+        Tue, 29 Mar 2022 15:57:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 46F48C340ED;
+        Tue, 29 Mar 2022 15:57:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648569430;
+        bh=GhEABGbbcF6fJDPfQzlhpd2zhIdKrHcjExkzMoYoXxQ=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=Jum01t2VqhETFU/RcdbL1K1qfh+6WBLm5fFFvAyrxArlXZ66Iigw12L+88zuHLVqC
+         ysWsF06ItUd3+GXSZCI0fRj9rXCKc8QElwVEx1IuM/OAjlIubRcSRjjttxANlEYw+K
+         9mGCTQVhjl7v5FTNG0mBPH6KquCuMhoZ9bmmzdYqvZcg9lURvvaW5imx+q0ZFxEih9
+         l3WaPEO9zqasV+aSs0Y5XuoEM9JfdEHIByiofYcVULbqof9759F3Upeigmd/XuVhIR
+         TX775b2esf6xjWNgxB750U0cv7FbQECKVZhtRPxf/PZloFThcpx4mdKFQNGUnMrKZM
+         EE5LGemGZ0OmQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 32DEFEAC081;
+        Tue, 29 Mar 2022 15:57:10 +0000 (UTC)
+Subject: Re: [GIT PULL] Devicetree fixes for v5.18, take 1
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <YkJhd/QX64LDANXN@robh.at.kernel.org>
+References: <YkJhd/QX64LDANXN@robh.at.kernel.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <YkJhd/QX64LDANXN@robh.at.kernel.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git tags/devicetree-fixes-for-5.18-1
+X-PR-Tracked-Commit-Id: 22a41e9a5044bf3519f05b4a00e99af34bfeb40c
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 5efabdadcf4a5b9a37847ecc85ba71cf2eff0fcf
+Message-Id: <164856943020.29048.17765502026263151480.pr-tracker-bot@kernel.org>
+Date:   Tue, 29 Mar 2022 15:57:10 +0000
+To:     Rob Herring <robh@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Dave Airlie <airlied@gmail.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 02:53:30PM +0800, xkernel.wang@foxmail.com wrote:
-> From: Xiaoke Wang <xkernel.wang@foxmail.com>
-> 
-> kzalloc() is a memory allocation function which can return NULL when
-> some internal memory errors happen. So it is better to check the return
-> of it to prevent potential wrong memory access.
-> 
-> Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
-> ---
->  drivers/staging/r8188eu/core/rtw_p2p.c  | 2 ++
->  drivers/staging/r8188eu/core/rtw_xmit.c | 6 ++++++
->  2 files changed, 8 insertions(+)
-> 
-> diff --git a/drivers/staging/r8188eu/core/rtw_p2p.c b/drivers/staging/r8188eu/core/rtw_p2p.c
-> index e2b6cf2..503c4a5 100644
-> --- a/drivers/staging/r8188eu/core/rtw_p2p.c
-> +++ b/drivers/staging/r8188eu/core/rtw_p2p.c
-> @@ -35,6 +35,8 @@ static u32 go_add_group_info_attr(struct wifidirect_info *pwdinfo, u8 *pbuf)
->  	DBG_88E("%s\n", __func__);
->  
->  	pdata_attr = kzalloc(MAX_P2P_IE_LEN, GFP_KERNEL);
-> +	if (!pdata_attr)
-> +		return 0;
+The pull request you sent on Mon, 28 Mar 2022 20:31:35 -0500:
 
-0 is not an error.  Please propagate this error backwards properly.
+> git://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git tags/devicetree-fixes-for-5.18-1
 
->  
->  	pstart = pdata_attr;
->  	pcur = pdata_attr;
-> diff --git a/drivers/staging/r8188eu/core/rtw_xmit.c b/drivers/staging/r8188eu/core/rtw_xmit.c
-> index 46fe62c..1696272 100644
-> --- a/drivers/staging/r8188eu/core/rtw_xmit.c
-> +++ b/drivers/staging/r8188eu/core/rtw_xmit.c
-> @@ -180,6 +180,10 @@ s32	_rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter)
->  	pxmitpriv->free_xmit_extbuf_cnt = num_xmit_extbuf;
->  
->  	rtw_alloc_hwxmits(padapter);
-> +	if (!pxmitpriv->hwxmits) {
-> +		res = _FAIL;
-> +		goto exit;
-> +	}
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/5efabdadcf4a5b9a37847ecc85ba71cf2eff0fcf
 
-You just leaked memory resources :(
+Thank you!
 
-How did you test this?
-
-
->  	rtw_init_hwxmits(pxmitpriv->hwxmits, pxmitpriv->hwxmit_entry);
->  
->  	for (i = 0; i < 4; i++)
-> @@ -1524,6 +1528,8 @@ void rtw_alloc_hwxmits(struct adapter *padapter)
->  	pxmitpriv->hwxmit_entry = HWXMIT_ENTRY;
->  
->  	pxmitpriv->hwxmits = kzalloc(sizeof(struct hw_xmit) * pxmitpriv->hwxmit_entry, GFP_KERNEL);
-> +	if (!pxmitpriv->hwxmits)
-> +		return;
-
-You have to return an error, you can not keep going as if all is well.
-
-Please always be VERY careful with these types of fixes.  Especially if
-you have not tested them.
-
-thanks,
-
-greg k-h
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
