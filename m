@@ -2,134 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EED8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 07:25:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96379C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 07:26:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233373AbiC2H1A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 03:27:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52508 "EHLO
+        id S233378AbiC2H2E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 03:28:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231810AbiC2H06 (ORCPT
+        with ESMTP id S229502AbiC2H2A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 03:26:58 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0109F231936
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 00:25:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648538716; x=1680074716;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=nXCzK7eNroax6VfJWHr3xtpZ++gimyG6n8VcC7uqn6I=;
-  b=JO0xZX2y3t7PuWHCgIShSf0sChY1Z+J05M1WQOCp/bHuFuQibgUKLs8a
-   AVmSoAlHvDm+B453mkRxXYDMfKP29th2wi4Y0GFpEpLV4IcYTl/zZdDqf
-   K0aQ/G/8r0wtBjXgRGiSwNE3JDDylm8wW910sUrzkAE4UoR/YaUs2r04d
-   taKy5hXKoIAl5w4bAeMDfASc0hAtkGOPRm8bVRz6MjOqu2+m45qB41+R8
-   HytaIASnuSgRg9AmqrlSQ526toqp7eAriZlR1IT5pqWaZlk65Ls3G4RB2
-   bJ42/NBwDLrz5+JizwZbdWFVggHvEyv6Roqq6V2mCjVvScsk/NgSBpVQW
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="258012081"
-X-IronPort-AV: E=Sophos;i="5.90,219,1643702400"; 
-   d="scan'208";a="258012081"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 00:25:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,219,1643702400"; 
-   d="scan'208";a="652734975"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 29 Mar 2022 00:25:00 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nZ6Dr-0002mf-L6; Tue, 29 Mar 2022 07:24:59 +0000
-Date:   Tue, 29 Mar 2022 15:23:58 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Colin Downs-Razouk <colindr@google.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Chris Morin <cmtm@google.com>
-Subject: [ammarfaizi2-block:google/android/kernel/common/android12-kiwi-5.10
- 8832/9999] drivers/virtio/virtio_pvclock.c:49:6: warning: no previous
- prototype for function 'update_suspend_time'
-Message-ID: <202203291512.gezfy3Lu-lkp@intel.com>
+        Tue, 29 Mar 2022 03:28:00 -0400
+Received: from ha.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D1A282467F4;
+        Tue, 29 Mar 2022 00:26:17 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by ha.nfschina.com (Postfix) with ESMTP id BF6B51E80D7E;
+        Tue, 29 Mar 2022 15:25:42 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from ha.nfschina.com ([127.0.0.1])
+        by localhost (ha.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 9r--XoVcY8pM; Tue, 29 Mar 2022 15:25:40 +0800 (CST)
+Received: from [18.165.124.108] (unknown [101.228.248.165])
+        (Authenticated sender: yuzhe@nfschina.com)
+        by ha.nfschina.com (Postfix) with ESMTPA id 6921A1E80D70;
+        Tue, 29 Mar 2022 15:25:39 +0800 (CST)
+Message-ID: <49b93407-dee3-b3bb-6d36-d6f94e9b16bf@nfschina.com>
+Date:   Tue, 29 Mar 2022 15:26:11 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] KVM: arm64: vgic-debug: remove unnecessary type castings
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     james.morse@arm.com, alexandru.elisei@arm.com,
+        suzuki.poulose@arm.com, catalin.marinas@arm.com, will@kernel.org,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org, liqiong@nfschina.com,
+        kernel-janitors@vger.kernel.org
+References: <20220328103836.2829-1-yuzhe@nfschina.com>
+ <87h77ifbbd.wl-maz@kernel.org>
+ <0f4cf955-ca2b-626f-867e-5a0ecfe68ca1@nfschina.com>
+ <87r16li6e7.wl-maz@kernel.org>
+From:   yuzhe <yuzhe@nfschina.com>
+In-Reply-To: <87r16li6e7.wl-maz@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android12-kiwi-5.10
-head:   9c6bdae16301919fcab74129dee1083eba844952
-commit: 029865ac9555743665dd106b4bbefb2f371849e9 [8832/9999] ANDROID: virtio: virtio_pvclock: initial driver impl
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220329/202203291512.gezfy3Lu-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0f6d9501cf49ce02937099350d08f20c4af86f3d)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/029865ac9555743665dd106b4bbefb2f371849e9
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android12-kiwi-5.10
-        git checkout 029865ac9555743665dd106b4bbefb2f371849e9
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/virtio/
+在 2022/3/29 15:07, Marc Zyngier 写道:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> On Tue, 29 Mar 2022 07:14:16 +0100,
+> yuzhe <yuzhe@nfschina.com> wrote:
+>>>> @@ -229,7 +229,7 @@ static void print_irq_state(struct seq_file *s, struct vgic_irq *irq,
+>>>>      static int vgic_debug_show(struct seq_file *s, void *v)
+>>>>    {
+>>>> -	struct kvm *kvm = (struct kvm *)s->private;
+>>>> +	struct kvm *kvm = s->private;
+>>>>    	struct vgic_state_iter *iter = (struct vgic_state_iter *)v;
+>>> How about you fully get rid of the unnecessary casts then?
+>>>
+>>> 	M.
+>> I don't know what you exactly mean. I follow the
+>> kernel-janitors/TODO List to get rid of the unnecessary casts.  And
+>> I checked all the code in the arch directory and found these issues.
+> Let me quote the lines again:
+>
+>>>>      static int vgic_debug_show(struct seq_file *s, void *v)
+> [...]
+>>>>    	struct vgic_state_iter *iter = (struct vgic_state_iter *)v;
+> Do you see what I mean?
+>
+> 	M.
 
-All warnings (new ones prefixed by >>):
+Got it, thanks. I will check again and resubmit.
 
->> drivers/virtio/virtio_pvclock.c:49:6: warning: no previous prototype for function 'update_suspend_time' [-Wmissing-prototypes]
-   void update_suspend_time(struct work_struct *work)
-        ^
-   drivers/virtio/virtio_pvclock.c:49:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void update_suspend_time(struct work_struct *work)
-   ^
-   static 
->> drivers/virtio/virtio_pvclock.c:295:11: warning: mixing declarations and code is a C99 extension [-Wdeclaration-after-statement]
-           uint32_t rating =
-                    ^
-   2 warnings generated.
+yuzhe
 
-
-vim +/update_suspend_time +49 drivers/virtio/virtio_pvclock.c
-
-    48	
-  > 49	void update_suspend_time(struct work_struct *work)
-    50	{
-    51		u64 suspend_ns, suspend_time_delta = 0;
-    52		struct timespec64 inject_time;
-    53		struct virtio_pvclock *vp;
-    54	
-    55		vp = container_of(work, struct virtio_pvclock,
-    56				  update_suspend_time_work);
-    57	
-    58		virtio_cread(vp->vdev, struct virtio_pvclock_config, suspend_time_ns,
-    59			     &suspend_ns);
-    60	
-    61		mutex_lock(&vp->inject_suspend_lock);
-    62		if (suspend_ns > vp->injected_suspend_ns) {
-    63			suspend_time_delta = suspend_ns - vp->injected_suspend_ns;
-    64			vp->injected_suspend_ns = suspend_ns;
-    65		}
-    66		mutex_unlock(&vp->inject_suspend_lock);
-    67	
-    68		if (suspend_time_delta == 0) {
-    69			dev_err(&vp->vdev->dev,
-    70				"%s: suspend_time_ns is less than injected_suspend_ns\n",
-    71				__func__);
-    72			return;
-    73		}
-    74	
-    75		inject_time = ns_to_timespec64(suspend_time_delta);
-    76	
-    77		timekeeping_inject_sleeptime64(&inject_time);
-    78	
-    79		dev_info(&vp->vdev->dev, "injected sleeptime: %llu ns\n",
-    80			 suspend_time_delta);
-    81	}
-    82	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
