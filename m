@@ -2,341 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4EAFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 11:54:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59298C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 11:57:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236106AbiC2Lzv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 07:55:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52922 "EHLO
+        id S236128AbiC2L7d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 07:59:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231537AbiC2Lzt (ORCPT
+        with ESMTP id S231537AbiC2L7b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 07:55:49 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76099102412
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 04:54:06 -0700 (PDT)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22TAubA3003715;
-        Tue, 29 Mar 2022 11:53:02 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=conyvQf8XjC2LWLDYPlNRdWkszq5PT9EHp5Y/fLsMS0=;
- b=rp0qKjYEolsBjezQO4VWYwwy9Hmn0IAFTnSbjjCFQbfm+0vTu7xByYMoub+BBntK9dnn
- aj8i5RvdaEUxqMxF7pd/Zg7mf761XZGl9NHHJhS7mzx1NWxBx3B8/+pHJJ7FitLa8G9w
- ndTa+IqFKbRYIlJy4fN2TtOsysdLBaIf+wmj+kRNgZEcn9PuS6KH1bHXAOuWWyXMgMsU
- Aa83/6WZNd98s4AHLt9Jb0beNghpDqtE9yjlVRoRmtQglF2G8TMHMbEjcqR240N4dDZ9
- 1xYRaBDKtalPXNoEFXl2yDVX/Ax6gGBqDXrpB7b7Z5qUuyy7m+ET7/MMpdtA3dkrHTG6 ew== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f40t8155r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 29 Mar 2022 11:53:01 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22TBXavr009500;
-        Tue, 29 Mar 2022 11:53:01 GMT
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f40t8154w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 29 Mar 2022 11:53:01 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22TBlWMV025990;
-        Tue, 29 Mar 2022 11:52:59 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma03fra.de.ibm.com with ESMTP id 3f1tf8w5n5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 29 Mar 2022 11:52:59 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22TBqt6F49742194
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 29 Mar 2022 11:52:55 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BDEE7A4055;
-        Tue, 29 Mar 2022 11:52:55 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E2883A4040;
-        Tue, 29 Mar 2022 11:52:51 +0000 (GMT)
-Received: from li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com.com (unknown [9.211.138.152])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 29 Mar 2022 11:52:51 +0000 (GMT)
-From:   Jagdish Gediya <jvgediya@linux.ibm.com>
-To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Cc:     akpm@linux-foundation.org, aneesh.kumar@linux.ibm.com,
-        baolin.wang@linux.alibaba.com, dave.hansen@linux.intel.com,
-        ying.huang@intel.com, Jagdish Gediya <jvgediya@linux.ibm.com>
-Subject: [PATCH] mm: migrate: set demotion targets differently
-Date:   Tue, 29 Mar 2022 17:22:22 +0530
-Message-Id: <20220329115222.8923-1-jvgediya@linux.ibm.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 29 Mar 2022 07:59:31 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 269AF241B66;
+        Tue, 29 Mar 2022 04:57:49 -0700 (PDT)
+Received: from kwepemi100018.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KSSjk4mzGzcbPH;
+        Tue, 29 Mar 2022 19:57:30 +0800 (CST)
+Received: from kwepemm600001.china.huawei.com (7.193.23.3) by
+ kwepemi100018.china.huawei.com (7.221.188.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 29 Mar 2022 19:57:47 +0800
+Received: from huawei.com (10.175.104.82) by kwepemm600001.china.huawei.com
+ (7.193.23.3) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 29 Mar
+ 2022 19:57:46 +0800
+From:   Wang Hai <wanghai38@huawei.com>
+To:     <Jason@zx2c4.com>, <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <wireguard@lists.zx2c4.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <wanghai38@huawei.com>
+Subject: [PATCH net] wireguard: socket: fix memory leak in send6()
+Date:   Tue, 29 Mar 2022 20:15:52 +0800
+Message-ID: <20220329121552.661647-1-wanghai38@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 4iqCGoE360v-Hv0WvFhRW4x68rjDpAws
-X-Proofpoint-GUID: RBdx2Q8H1y_rLXn0qj7CHHLgHModN_GE
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-29_02,2022-03-29_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 bulkscore=0
- clxscore=1011 impostorscore=0 phishscore=0 priorityscore=1501 mlxscore=0
- suspectscore=0 spamscore=0 mlxlogscore=999 adultscore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2203290067
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600001.china.huawei.com (7.193.23.3)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The current implementation to identify the demotion
-targets limits some of the opportunities to share
-the demotion targets between multiple source nodes.
+I got a memory leak report:
 
-Implement a logic to identify the loop in the demotion
-targets such that all the possibilities of demotion can
-be utilized. Don't share the used targets between all
-the nodes, instead create the used targets from scratch
-for each individual node based on for what all node this
-node is a demotion target. This helps to share the demotion
-targets without missing any possible way of demotion.
+unreferenced object 0xffff8881191fc040 (size 232):
+  comm "kworker/u17:0", pid 23193, jiffies 4295238848 (age 3464.870s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff814c3ef4>] slab_post_alloc_hook+0x84/0x3b0
+    [<ffffffff814c8977>] kmem_cache_alloc_node+0x167/0x340
+    [<ffffffff832974fb>] __alloc_skb+0x1db/0x200
+    [<ffffffff82612b5d>] wg_socket_send_buffer_to_peer+0x3d/0xc0
+    [<ffffffff8260e94a>] wg_packet_send_handshake_initiation+0xfa/0x110
+    [<ffffffff8260ec81>] wg_packet_handshake_send_worker+0x21/0x30
+    [<ffffffff8119c558>] process_one_work+0x2e8/0x770
+    [<ffffffff8119ca2a>] worker_thread+0x4a/0x4b0
+    [<ffffffff811a88e0>] kthread+0x120/0x160
+    [<ffffffff8100242f>] ret_from_fork+0x1f/0x30
 
-e.g. with below NUMA topology, where node 0 & 1 are
-cpu + dram nodes, node 2 & 3 are equally slower memory
-only nodes, and node 4 is slowest memory only node,
+In function wg_socket_send_buffer_as_reply_to_skb() or
+wg_socket_send_buffer_to_peer(), the semantics of send6()
+is required to free skb. But when CONFIG_IPV6 is disable,
+kfree_skb() is missing. This patch adds it to fix this bug.
 
-available: 5 nodes (0-4)
-node 0 cpus: 0 1
-node 0 size: n MB
-node 0 free: n MB
-node 1 cpus: 2 3
-node 1 size: n MB
-node 1 free: n MB
-node 2 cpus:
-node 2 size: n MB
-node 2 free: n MB
-node 3 cpus:
-node 3 size: n MB
-node 3 free: n MB
-node 4 cpus:
-node 4 size: n MB
-node 4 free: n MB
-node distances:
-node   0   1   2   3   4
-  0:  10  20  40  40  80
-  1:  20  10  40  40  80
-  2:  40  40  10  40  80
-  3:  40  40  40  10  80
-  4:  80  80  80  80  10
-
-The existing implementation gives below demotion targets,
-
-node    demotion_target
- 0              3, 2
- 1              4
- 2              X
- 3              X
- 4		X
-
-With this patch applied, below are the demotion targets,
-
-node    demotion_target
- 0              3, 2
- 1              3, 2
- 2              3
- 3              4
- 4		X
-
-e.g. with below NUMA topology, where node 0, 1 & 2 are
-cpu + dram nodes and node 3 is slow memory node,
-
-available: 4 nodes (0-3)
-node 0 cpus: 0 1
-node 0 size: n MB
-node 0 free: n MB
-node 1 cpus: 2 3
-node 1 size: n MB
-node 1 free: n MB
-node 2 cpus: 4 5
-node 2 size: n MB
-node 2 free: n MB
-node 3 cpus:
-node 3 size: n MB
-node 3 free: n MB
-node distances:
-node   0   1   2   3
-  0:  10  20  20  40
-  1:  20  10  20  40
-  2:  20  20  10  40
-  3:  40  40  40  10
-
-The existing implementation gives below demotion targets,
-
-node    demotion_target
- 0              3
- 1              X
- 2              X
- 3              X
-
-With this patch applied, below are the demotion targets,
-
-node    demotion_target
- 0              3
- 1              3
- 2              3
- 3              X
-
-with below NUMA topology, where node 0 & 2 are cpu + dram
-nodes and node 1 & 3 are slow memory nodes,
-
-available: 4 nodes (0-3)
-node 0 cpus: 0 1
-node 0 size: n MB
-node 0 free: n MB
-node 1 cpus:
-node 1 size: n MB
-node 1 free: n MB
-node 2 cpus: 2 3
-node 2 size: n MB
-node 2 free: n MB
-node 3 cpus:
-node 3 size: n MB
-node 3 free: n MB
-node distances:
-node   0   1   2   3
-  0:  10  40  20  80
-  1:  40  10  80  80
-  2:  20  80  10  40
-  3:  80  80  40  10
-
-The existing implementation gives below demotion targets,
-
-node    demotion_target
- 0              3
- 1              X
- 2              3
- 3              X
-
-With this patch applied, below are the demotion targets,
-
-node    demotion_target
- 0              1
- 1              3
- 2              3
- 3              X
-
-As it can be seen above, node 3 can be demotion target for node
-1 but existing implementation doesn't configure it that way. It
-is better to move pages from node 1 to node 3 instead of moving
-it from node 1 to swap.
-
-Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
-Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
 ---
- mm/migrate.c | 75 ++++++++++++++++++++++++++++------------------------
- 1 file changed, 41 insertions(+), 34 deletions(-)
+ drivers/net/wireguard/socket.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/mm/migrate.c b/mm/migrate.c
-index 3d60823afd2d..7ec8d934e706 100644
---- a/mm/migrate.c
-+++ b/mm/migrate.c
-@@ -2381,10 +2381,13 @@ static int establish_migrate_target(int node, nodemask_t *used,
-  */
- static void __set_migration_target_nodes(void)
- {
--	nodemask_t next_pass	= NODE_MASK_NONE;
--	nodemask_t this_pass	= NODE_MASK_NONE;
- 	nodemask_t used_targets = NODE_MASK_NONE;
- 	int node, best_distance;
-+	nodemask_t *src_nodes;
-+
-+	src_nodes = kcalloc(nr_node_ids, sizeof(nodemask_t), GFP_KERNEL);
-+	if (!src_nodes)
-+		return;
- 
- 	/*
- 	 * Avoid any oddities like cycles that could occur
-@@ -2393,29 +2396,39 @@ static void __set_migration_target_nodes(void)
- 	 */
- 	disable_all_migrate_targets();
- 
--	/*
--	 * Allocations go close to CPUs, first.  Assume that
--	 * the migration path starts at the nodes with CPUs.
--	 */
--	next_pass = node_states[N_CPU];
--again:
--	this_pass = next_pass;
--	next_pass = NODE_MASK_NONE;
--	/*
--	 * To avoid cycles in the migration "graph", ensure
--	 * that migration sources are not future targets by
--	 * setting them in 'used_targets'.  Do this only
--	 * once per pass so that multiple source nodes can
--	 * share a target node.
--	 *
--	 * 'used_targets' will become unavailable in future
--	 * passes.  This limits some opportunities for
--	 * multiple source nodes to share a destination.
--	 */
--	nodes_or(used_targets, used_targets, this_pass);
-+	for_each_online_node(node) {
-+		int tmp_node;
- 
--	for_each_node_mask(node, this_pass) {
- 		best_distance = -1;
-+		used_targets = NODE_MASK_NONE;
-+
-+		/*
-+		 * Avoid adding same node as the demotion target.
-+		 */
-+		node_set(node, used_targets);
-+
-+		/*
-+		 * Add CPU NUMA nodes to the used target list so that it
-+		 * won't be considered a demotion target.
-+		 */
-+		nodes_or(used_targets, used_targets, node_states[N_CPU]);
-+
-+		/*
-+		 * Add all nodes that has appeared as source node of demotion
-+		 * for this target node.
-+		 *
-+		 * To avoid cycles in the migration "graph", ensure
-+		 * that migration sources are not future targets by
-+		 * setting them in 'used_targets'.
-+		 */
-+		for_each_node_mask(tmp_node, src_nodes[node])
-+			nodes_or(used_targets, used_targets, src_nodes[tmp_node]);
-+
-+		/*
-+		 * Now update the demotion src nodes with other nodes in graph
-+		 * which got computed above.
-+		 */
-+		nodes_or(src_nodes[node], src_nodes[node], used_targets);
- 
- 		/*
- 		 * Try to set up the migration path for the node, and the target
-@@ -2434,20 +2447,14 @@ static void __set_migration_target_nodes(void)
- 				best_distance = node_distance(node, target_node);
- 
- 			/*
--			 * Visit targets from this pass in the next pass.
--			 * Eventually, every node will have been part of
--			 * a pass, and will become set in 'used_targets'.
-+			 * Add this node in the src_nodes list so that we can
-+			 * detect the looping.
- 			 */
--			node_set(target_node, next_pass);
-+			node_set(node, src_nodes[target_node]);
- 		} while (1);
- 	}
--	/*
--	 * 'next_pass' contains nodes which became migration
--	 * targets in this pass.  Make additional passes until
--	 * no more migrations targets are available.
--	 */
--	if (!nodes_empty(next_pass))
--		goto again;
-+
-+	kfree(src_nodes);
+diff --git a/drivers/net/wireguard/socket.c b/drivers/net/wireguard/socket.c
+index 6f07b949cb81..467eef0e563b 100644
+--- a/drivers/net/wireguard/socket.c
++++ b/drivers/net/wireguard/socket.c
+@@ -160,6 +160,7 @@ static int send6(struct wg_device *wg, struct sk_buff *skb,
+ 	rcu_read_unlock_bh();
+ 	return ret;
+ #else
++	kfree_skb(skb);
+ 	return -EAFNOSUPPORT;
+ #endif
  }
- 
- /*
 -- 
-2.35.1
+2.25.1
 
