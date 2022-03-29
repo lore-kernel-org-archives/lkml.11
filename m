@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18311C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:42:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8142C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:42:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236610AbiC2MoS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 08:44:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60556 "EHLO
+        id S236664AbiC2Mo3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 08:44:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236586AbiC2MnX (ORCPT
+        with ESMTP id S236488AbiC2MnE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 08:43:23 -0400
+        Tue, 29 Mar 2022 08:43:04 -0400
 Received: from mail-ed1-x549.google.com (mail-ed1-x549.google.com [IPv6:2a00:1450:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7AF5227C4E
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:41:25 -0700 (PDT)
-Received: by mail-ed1-x549.google.com with SMTP id d28-20020a50f69c000000b00419125c67f4so10952722edn.17
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:41:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A67BD21C046
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:41:19 -0700 (PDT)
+Received: by mail-ed1-x549.google.com with SMTP id c31-20020a509fa2000000b004190d43d28fso10860828edf.9
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:41:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=77upEedV9MVWrhKieM+rh+8U4NcJYbcZy6sBqJQFlQA=;
-        b=bnq8hQDOyCgftdNzwXDG/d91U07TnwCybE7fbjRK9l+Km9ccpsbPgpL6A5FRXtFi3h
-         DAZlXoCRZE9ATLpK4lsLef8LJ+7L0QtfFMGiySRhOosaJSPL9aQlMN6TUArQSAlU/IZH
-         X/GEA37JcLkYxodxNzOfq2hhriU8zPP4mQLJIr9rJz3Pgs6TJEbUfKgLtf+9xHvxkToL
-         YGGTqE1B6aNUn6uXtMv9XW7u/kkVLc3AN5E3T7s3MDGrzrHTRuEyq/SdICW+CHxNTwyW
-         QeTG6sbkosyQSzTdvIsKd+EadhvOS0HmjhvbsNcCDuon5xitTIyvmh3aXJ6iYAEciXLJ
-         PgdA==
+        bh=eLTwq5fXtDdDgS/orJshG1NPMtxpnPMwecHlrlYjY5k=;
+        b=YeLodpZfduGO15yqSmZY77L+R71ULPMnJ6yUkyXtKqSlSSA54mtn2FcyNxxJVc4T8n
+         Ps9eMetHiUKmh6e62QxJb+qy1wCTBSB9PsJGwttP10YPFhLiqtO3KCvAT2VGmKImTn5h
+         FOXZ/dkZtREgpO/E7GOkbwTdi+os2zsItYWb7iH5IdjoGExdSbceax2P1ziSXdr+hgpK
+         OMqfkCr+biZ8QakcknP/V/sQQP0lnJKG1x7AXoh5aOPYwyaJWOwVekm8k6WsAVaSt6u9
+         +09yHcZhlZUPQeEMReQIf2GWG6+2oppKnWRZv+PgK+qDgEndnY4xeZLppveUBoHHTq28
+         oreA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=77upEedV9MVWrhKieM+rh+8U4NcJYbcZy6sBqJQFlQA=;
-        b=5a7WaA9YO/dEssismoO/1ixBhbccyGAPNZrdD34sC4Aap5+fd8CAXjoSvukk1fD78A
-         KAxAV6Qqr5B0Sy1KoluluwkuKWVnBGPud6Q/F4EYIV6+f9Mobqx5DE0DQ0dpz7PU2iH1
-         d6RgvJCVF3peMBQ4iEmbtUkDWuuOCEbPhhmXi5TLXR7GWCe5Q3IDaAJXoAboW5aTtV15
-         tZPZKw7sAKxO09atT5QHjX/ZDURiBM7GJQ185L10USU65EB9meqTXo4bLDr5eU5fdCeV
-         xowr7AnTIuMs26Z5KPilqmi2QaVC1im4pEAYeglh0SDpYYDEz20n7amtjyweUlceW98A
-         An4g==
-X-Gm-Message-State: AOAM531GNvY2MYk3i5Fi2Cs1+wKqhXCwypyw7UAa3VyYNk5ghRcMBTGj
-        centrboI93JuHuZkaPZOJ6uNorpHjvw=
-X-Google-Smtp-Source: ABdhPJxfRHTi2f4Xo91+bXHbsM1wH3q6jI2ZFHeAyuCAPY6LAlGBC/wE0GczFznCZuQjg0wOJP1fGQHeEA8=
+        bh=eLTwq5fXtDdDgS/orJshG1NPMtxpnPMwecHlrlYjY5k=;
+        b=ExJwrwXNValZf8LAj0/7ML6unO+3tmqb5M0Aff6ibH3GWoiPHYvs8NLmWhfOUIliK3
+         pqmgUc4Cn71hKPtIbKqNt67mVSneXSAFa+IiXZEP6wa3hLWqsTXg5kk1pYerLCmYv6ED
+         dQTUL5wSwLQXHskKPM8mA362MsCvW9McduBp2SSIK57GBNrznuBszS7HuiiCORnjhPop
+         htfPd570fskAXr1rjYXGwg8oe2ceqF9TM9zIJwYnb4VYjH53AezF9W6vdX5nZN3cQ7BC
+         UFbBa0PZYbNIMt9yghhjrVtbqVDWQTJtjMUipdVnSsW5FFPYHXky/xdaUrekx5QcM4H5
+         /vzA==
+X-Gm-Message-State: AOAM530HBuZGisuhh5moTZs65Hj2Tc5xZRy+FGHPaeaepkyu7hyq7xDk
+        iMxA+dpl42u/XrDNBBZh5UeZUkPmFp0=
+X-Google-Smtp-Source: ABdhPJzioc26w+W1I/VvZu1bf1qX6b/mh6UAssfjndgHHlyk+n1AtDxpbTRF9xgagMeR4K1GA1wf6PNlQSQ=
 X-Received: from glider.muc.corp.google.com ([2a00:79e0:15:13:36eb:759:798f:98c3])
- (user=glider job=sendgmr) by 2002:a17:907:16ac:b0:6e0:1646:9121 with SMTP id
- hc44-20020a17090716ac00b006e016469121mr35199102ejc.194.1648557683611; Tue, 29
- Mar 2022 05:41:23 -0700 (PDT)
-Date:   Tue, 29 Mar 2022 14:39:49 +0200
+ (user=glider job=sendgmr) by 2002:a17:907:1c10:b0:6da:6316:d009 with SMTP id
+ nc16-20020a1709071c1000b006da6316d009mr34133251ejc.621.1648557677849; Tue, 29
+ Mar 2022 05:41:17 -0700 (PDT)
+Date:   Tue, 29 Mar 2022 14:39:47 +0200
 In-Reply-To: <20220329124017.737571-1-glider@google.com>
-Message-Id: <20220329124017.737571-21-glider@google.com>
+Message-Id: <20220329124017.737571-19-glider@google.com>
 Mime-Version: 1.0
 References: <20220329124017.737571-1-glider@google.com>
 X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
-Subject: [PATCH v2 20/48] kmsan: init: call KMSAN initialization routines
+Subject: [PATCH v2 18/48] kmsan: mm: call KMSAN hooks from SLUB code
 From:   Alexander Potapenko <glider@google.com>
 To:     glider@google.com
 Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
@@ -89,470 +89,298 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kmsan_init_shadow() scans the mappings created at boot time and creates
-metadata pages for those mappings.
+In order to report uninitialized memory coming from heap allocations
+KMSAN has to poison them unless they're created with __GFP_ZERO.
 
-When the memblock allocator returns pages to pagealloc, we reserve 2/3
-of those pages and use them as metadata for the remaining 1/3. Once KMSAN
-starts, every page allocated by pagealloc has its associated shadow and
-origin pages.
-
-kmsan_initialize() initializes the bookkeeping for init_task and enables
-KMSAN.
+It's handy that we need KMSAN hooks in the places where
+init_on_alloc/init_on_free initialization is performed.
 
 Signed-off-by: Alexander Potapenko <glider@google.com>
 ---
 v2:
- -- move mm/kmsan/init.c and kmsan_memblock_free_pages() to this patch
- -- print a warning that KMSAN is a debugging tool (per Greg K-H's
-    request)
+ -- move the implementation of SLUB hooks here
 
-Link: https://linux-review.googlesource.com/id/I7bc53706141275914326df2345881ffe0cdd16bd
+Link: https://linux-review.googlesource.com/id/I6954b386c5c5d7f99f48bb6cbcc74b75136ce86e
 ---
- include/linux/kmsan.h |  48 +++++++++
- init/main.c           |   3 +
- mm/kmsan/Makefile     |   3 +-
- mm/kmsan/init.c       | 240 ++++++++++++++++++++++++++++++++++++++++++
- mm/kmsan/kmsan.h      |   3 +
- mm/kmsan/shadow.c     |  36 +++++++
- mm/page_alloc.c       |   3 +
- 7 files changed, 335 insertions(+), 1 deletion(-)
- create mode 100644 mm/kmsan/init.c
+ include/linux/kmsan.h | 57 ++++++++++++++++++++++++++++++
+ mm/kmsan/hooks.c      | 80 +++++++++++++++++++++++++++++++++++++++++++
+ mm/slab.h             |  1 +
+ mm/slub.c             | 21 ++++++++++--
+ 4 files changed, 157 insertions(+), 2 deletions(-)
 
 diff --git a/include/linux/kmsan.h b/include/linux/kmsan.h
-index dca42e0e91991..a5767c728a46b 100644
+index da41850b46cbd..ed3630068e2ef 100644
 --- a/include/linux/kmsan.h
 +++ b/include/linux/kmsan.h
-@@ -52,6 +52,40 @@ void kmsan_task_create(struct task_struct *task);
+@@ -16,6 +16,7 @@
+ #include <linux/vmalloc.h>
+ 
+ struct page;
++struct kmem_cache;
+ 
+ #ifdef CONFIG_KMSAN
+ 
+@@ -73,6 +74,44 @@ void kmsan_free_page(struct page *page, unsigned int order);
   */
- void kmsan_task_exit(struct task_struct *task);
+ void kmsan_copy_page_meta(struct page *dst, struct page *src);
  
 +/**
-+ * kmsan_init_shadow() - Initialize KMSAN shadow at boot time.
++ * kmsan_slab_alloc() - Notify KMSAN about a slab allocation.
++ * @s:      slab cache the object belongs to.
++ * @object: object pointer.
++ * @flags:  GFP flags passed to the allocator.
 + *
-+ * Allocate and initialize KMSAN metadata for early allocations.
++ * Depending on cache flags and GFP flags, KMSAN sets up the metadata of the
++ * newly created object, marking it as initialized or uninitialized.
 + */
-+void __init kmsan_init_shadow(void);
++void kmsan_slab_alloc(struct kmem_cache *s, void *object, gfp_t flags);
 +
 +/**
-+ * kmsan_init_runtime() - Initialize KMSAN state and enable KMSAN.
-+ */
-+void __init kmsan_init_runtime(void);
-+
-+/**
-+ * kmsan_memblock_free_pages() - handle freeing of memblock pages.
-+ * @page:	struct page to free.
-+ * @order:	order of @page.
++ * kmsan_slab_free() - Notify KMSAN about a slab deallocation.
++ * @s:      slab cache the object belongs to.
++ * @object: object pointer.
 + *
-+ * Freed pages are either returned to buddy allocator or held back to be used
-+ * as metadata pages.
++ * KMSAN marks the freed object as uninitialized.
 + */
-+bool __init kmsan_memblock_free_pages(struct page *page, unsigned int order);
++void kmsan_slab_free(struct kmem_cache *s, void *object);
 +
 +/**
-+ * kmsan_task_create() - Initialize KMSAN state for the task.
-+ * @task: task to initialize.
++ * kmsan_kmalloc_large() - Notify KMSAN about a large slab allocation.
++ * @ptr:   object pointer.
++ * @size:  object size.
++ * @flags: GFP flags passed to the allocator.
++ *
++ * Similar to kmsan_slab_alloc(), but for large allocations.
 + */
-+void kmsan_task_create(struct task_struct *task);
++void kmsan_kmalloc_large(const void *ptr, size_t size, gfp_t flags);
 +
 +/**
-+ * kmsan_task_exit() - Notify KMSAN that a task has exited.
-+ * @task: task about to finish.
++ * kmsan_kfree_large() - Notify KMSAN about a large slab deallocation.
++ * @ptr: object pointer.
++ *
++ * Similar to kmsan_slab_free(), but for large allocations.
 + */
-+void kmsan_task_exit(struct task_struct *task);
++void kmsan_kfree_large(const void *ptr);
 +
  /**
-  * kmsan_alloc_page() - Notify KMSAN about an alloc_pages() call.
-  * @page:  struct page pointer returned by alloc_pages().
-@@ -173,6 +207,20 @@ void kmsan_iounmap_page_range(unsigned long start, unsigned long end);
- 
- #else
- 
-+static inline void kmsan_init_shadow(void)
-+{
-+}
-+
-+static inline void kmsan_init_runtime(void)
-+{
-+}
-+
-+static inline bool kmsan_memblock_free_pages(struct page *page,
-+					     unsigned int order)
-+{
-+	return true;
-+}
-+
- static inline void kmsan_task_create(struct task_struct *task)
+  * kmsan_map_kernel_range_noflush() - Notify KMSAN about a vmap.
+  * @start:	start of vmapped range.
+@@ -139,6 +178,24 @@ static inline void kmsan_copy_page_meta(struct page *dst, struct page *src)
  {
  }
-diff --git a/init/main.c b/init/main.c
-index 65fa2e41a9c09..88be337b54298 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -34,6 +34,7 @@
- #include <linux/percpu.h>
- #include <linux/kmod.h>
- #include <linux/kprobes.h>
+ 
++static inline void kmsan_slab_alloc(struct kmem_cache *s, void *object,
++				    gfp_t flags)
++{
++}
++
++static inline void kmsan_slab_free(struct kmem_cache *s, void *object)
++{
++}
++
++static inline void kmsan_kmalloc_large(const void *ptr, size_t size,
++				       gfp_t flags)
++{
++}
++
++static inline void kmsan_kfree_large(const void *ptr)
++{
++}
++
+ static inline void kmsan_vmap_pages_range_noflush(unsigned long start,
+ 						  unsigned long end,
+ 						  pgprot_t prot,
+diff --git a/mm/kmsan/hooks.c b/mm/kmsan/hooks.c
+index 5d886df57adca..e7c3ff48ed5cd 100644
+--- a/mm/kmsan/hooks.c
++++ b/mm/kmsan/hooks.c
+@@ -26,6 +26,86 @@
+  * skipping effects of functions like memset() inside instrumented code.
+  */
+ 
++void kmsan_slab_alloc(struct kmem_cache *s, void *object, gfp_t flags)
++{
++	if (unlikely(object == NULL))
++		return;
++	if (!kmsan_enabled || kmsan_in_runtime())
++		return;
++	/*
++	 * There's a ctor or this is an RCU cache - do nothing. The memory
++	 * status hasn't changed since last use.
++	 */
++	if (s->ctor || (s->flags & SLAB_TYPESAFE_BY_RCU))
++		return;
++
++	kmsan_enter_runtime();
++	if (flags & __GFP_ZERO)
++		kmsan_internal_unpoison_memory(object, s->object_size,
++					       KMSAN_POISON_CHECK);
++	else
++		kmsan_internal_poison_memory(object, s->object_size, flags,
++					     KMSAN_POISON_CHECK);
++	kmsan_leave_runtime();
++}
++EXPORT_SYMBOL(kmsan_slab_alloc);
++
++void kmsan_slab_free(struct kmem_cache *s, void *object)
++{
++	if (!kmsan_enabled || kmsan_in_runtime())
++		return;
++
++	/* RCU slabs could be legally used after free within the RCU period */
++	if (unlikely(s->flags & (SLAB_TYPESAFE_BY_RCU | SLAB_POISON)))
++		return;
++	/*
++	 * If there's a constructor, freed memory must remain in the same state
++	 * until the next allocation. We cannot save its state to detect
++	 * use-after-free bugs, instead we just keep it unpoisoned.
++	 */
++	if (s->ctor)
++		return;
++	kmsan_enter_runtime();
++	kmsan_internal_poison_memory(object, s->object_size, GFP_KERNEL,
++				     KMSAN_POISON_CHECK | KMSAN_POISON_FREE);
++	kmsan_leave_runtime();
++}
++EXPORT_SYMBOL(kmsan_slab_free);
++
++void kmsan_kmalloc_large(const void *ptr, size_t size, gfp_t flags)
++{
++	if (unlikely(ptr == NULL))
++		return;
++	if (!kmsan_enabled || kmsan_in_runtime())
++		return;
++	kmsan_enter_runtime();
++	if (flags & __GFP_ZERO)
++		kmsan_internal_unpoison_memory((void *)ptr, size,
++					       /*checked*/ true);
++	else
++		kmsan_internal_poison_memory((void *)ptr, size, flags,
++					     KMSAN_POISON_CHECK);
++	kmsan_leave_runtime();
++}
++EXPORT_SYMBOL(kmsan_kmalloc_large);
++
++void kmsan_kfree_large(const void *ptr)
++{
++	struct page *page;
++
++	if (!kmsan_enabled || kmsan_in_runtime())
++		return;
++	kmsan_enter_runtime();
++	page = virt_to_head_page((void *)ptr);
++	KMSAN_WARN_ON(ptr != page_address(page));
++	kmsan_internal_poison_memory((void *)ptr,
++				     PAGE_SIZE << compound_order(page),
++				     GFP_KERNEL,
++				     KMSAN_POISON_CHECK | KMSAN_POISON_FREE);
++	kmsan_leave_runtime();
++}
++EXPORT_SYMBOL(kmsan_kfree_large);
++
+ static unsigned long vmalloc_shadow(unsigned long addr)
+ {
+ 	return (unsigned long)kmsan_get_metadata((void *)addr,
+diff --git a/mm/slab.h b/mm/slab.h
+index c7f2abc2b154c..c2538d856ec45 100644
+--- a/mm/slab.h
++++ b/mm/slab.h
+@@ -734,6 +734,7 @@ static inline void slab_post_alloc_hook(struct kmem_cache *s,
+ 			memset(p[i], 0, s->object_size);
+ 		kmemleak_alloc_recursive(p[i], s->object_size, 1,
+ 					 s->flags, flags);
++		kmsan_slab_alloc(s, p[i], flags);
+ 	}
+ 
+ 	memcg_slab_post_alloc_hook(s, objcg, flags, size, p);
+diff --git a/mm/slub.c b/mm/slub.c
+index 261474092e43e..9b266f6b384b9 100644
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -22,6 +22,7 @@
+ #include <linux/proc_fs.h>
+ #include <linux/seq_file.h>
+ #include <linux/kasan.h>
 +#include <linux/kmsan.h>
- #include <linux/vmalloc.h>
- #include <linux/kernel_stat.h>
- #include <linux/start_kernel.h>
-@@ -834,6 +835,7 @@ static void __init mm_init(void)
- 	init_mem_debugging_and_hardening();
- 	kfence_alloc_pool();
- 	report_meminit();
-+	kmsan_init_shadow();
- 	stack_depot_early_init();
- 	mem_init();
- 	mem_init_print_info();
-@@ -851,6 +853,7 @@ static void __init mm_init(void)
- 	init_espfix_bsp();
- 	/* Should be run after espfix64 is set up. */
- 	pti_init();
-+	kmsan_init_runtime();
+ #include <linux/cpu.h>
+ #include <linux/cpuset.h>
+ #include <linux/mempolicy.h>
+@@ -357,18 +358,28 @@ static void prefetch_freepointer(const struct kmem_cache *s, void *object)
+ 	prefetchw(object + s->offset);
  }
  
- #ifdef CONFIG_HAVE_ARCH_RANDOMIZE_KSTACK_OFFSET
-diff --git a/mm/kmsan/Makefile b/mm/kmsan/Makefile
-index 73b705cbf75b9..f57a956cb1c8b 100644
---- a/mm/kmsan/Makefile
-+++ b/mm/kmsan/Makefile
-@@ -1,4 +1,4 @@
--obj-y := core.o instrumentation.o hooks.o report.o shadow.o annotations.o
-+obj-y := core.o instrumentation.o init.o hooks.o report.o shadow.o annotations.o
- 
- KMSAN_SANITIZE := n
- KCOV_INSTRUMENT := n
-@@ -16,6 +16,7 @@ CFLAGS_REMOVE.o = $(CC_FLAGS_FTRACE)
- CFLAGS_annotations.o := $(CC_FLAGS_KMSAN_RUNTIME)
- CFLAGS_core.o := $(CC_FLAGS_KMSAN_RUNTIME)
- CFLAGS_hooks.o := $(CC_FLAGS_KMSAN_RUNTIME)
-+CFLAGS_init.o := $(CC_FLAGS_KMSAN_RUNTIME)
- CFLAGS_instrumentation.o := $(CC_FLAGS_KMSAN_RUNTIME)
- CFLAGS_report.o := $(CC_FLAGS_KMSAN_RUNTIME)
- CFLAGS_shadow.o := $(CC_FLAGS_KMSAN_RUNTIME)
-diff --git a/mm/kmsan/init.c b/mm/kmsan/init.c
-new file mode 100644
-index 0000000000000..45757d1390402
---- /dev/null
-+++ b/mm/kmsan/init.c
-@@ -0,0 +1,240 @@
-+// SPDX-License-Identifier: GPL-2.0
 +/*
-+ * KMSAN initialization routines.
-+ *
-+ * Copyright (C) 2017-2021 Google LLC
-+ * Author: Alexander Potapenko <glider@google.com>
-+ *
++ * When running under KMSAN, get_freepointer_safe() may return an uninitialized
++ * pointer value in the case the current thread loses the race for the next
++ * memory chunk in the freelist. In that case this_cpu_cmpxchg_double() in
++ * slab_alloc_node() will fail, so the uninitialized value won't be used, but
++ * KMSAN will still check all arguments of cmpxchg because of imperfect
++ * handling of inline assembly.
++ * To work around this problem, use kmsan_init() to force initialize the
++ * return value of get_freepointer_safe().
 + */
-+
-+#include "kmsan.h"
-+
-+#include <asm/sections.h>
-+#include <linux/mm.h>
-+#include <linux/memblock.h>
-+
-+#include "../internal.h"
-+
-+#define NUM_FUTURE_RANGES 128
-+struct start_end_pair {
-+	u64 start, end;
-+};
-+
-+static struct start_end_pair start_end_pairs[NUM_FUTURE_RANGES] __initdata;
-+static int future_index __initdata;
-+
-+/*
-+ * Record a range of memory for which the metadata pages will be created once
-+ * the page allocator becomes available.
-+ */
-+static void __init kmsan_record_future_shadow_range(void *start, void *end)
-+{
-+	u64 nstart = (u64)start, nend = (u64)end, cstart, cend;
-+	bool merged = false;
-+	int i;
-+
-+	KMSAN_WARN_ON(future_index == NUM_FUTURE_RANGES);
-+	KMSAN_WARN_ON((nstart >= nend) || !nstart || !nend);
-+	nstart = ALIGN_DOWN(nstart, PAGE_SIZE);
-+	nend = ALIGN(nend, PAGE_SIZE);
-+
-+	/*
-+	 * Scan the existing ranges to see if any of them overlaps with
-+	 * [start, end). In that case, merge the two ranges instead of
-+	 * creating a new one.
-+	 * The number of ranges is less than 20, so there is no need to organize
-+	 * them into a more intelligent data structure.
-+	 */
-+	for (i = 0; i < future_index; i++) {
-+		cstart = start_end_pairs[i].start;
-+		cend = start_end_pairs[i].end;
-+		if ((cstart < nstart && cend < nstart) ||
-+		    (cstart > nend && cend > nend))
-+			/* ranges are disjoint - do not merge */
-+			continue;
-+		start_end_pairs[i].start = min(nstart, cstart);
-+		start_end_pairs[i].end = max(nend, cend);
-+		merged = true;
-+		break;
-+	}
-+	if (merged)
-+		return;
-+	start_end_pairs[future_index].start = nstart;
-+	start_end_pairs[future_index].end = nend;
-+	future_index++;
-+}
-+
-+/*
-+ * Initialize the shadow for existing mappings during kernel initialization.
-+ * These include kernel text/data sections, NODE_DATA and future ranges
-+ * registered while creating other data (e.g. percpu).
-+ *
-+ * Allocations via memblock can be only done before slab is initialized.
-+ */
-+void __init kmsan_init_shadow(void)
-+{
-+	const size_t nd_size = roundup(sizeof(pg_data_t), PAGE_SIZE);
-+	phys_addr_t p_start, p_end;
-+	int nid;
-+	u64 i;
-+
-+	for_each_reserved_mem_range(i, &p_start, &p_end)
-+		kmsan_record_future_shadow_range(phys_to_virt(p_start),
-+						 phys_to_virt(p_end));
-+	/* Allocate shadow for .data */
-+	kmsan_record_future_shadow_range(_sdata, _edata);
-+
-+	for_each_online_node(nid)
-+		kmsan_record_future_shadow_range(
-+			NODE_DATA(nid), (char *)NODE_DATA(nid) + nd_size);
-+
-+	for (i = 0; i < future_index; i++)
-+		kmsan_init_alloc_meta_for_range(
-+			(void *)start_end_pairs[i].start,
-+			(void *)start_end_pairs[i].end);
-+}
-+EXPORT_SYMBOL(kmsan_init_shadow);
-+
-+struct page_pair {
-+	struct page *shadow, *origin;
-+};
-+static struct page_pair held_back[MAX_ORDER] __initdata;
-+
-+/*
-+ * Eager metadata allocation. When the memblock allocator is freeing pages to
-+ * pagealloc, we use 2/3 of them as metadata for the remaining 1/3.
-+ * We store the pointers to the returned blocks of pages in held_back[] grouped
-+ * by their order: when kmsan_memblock_free_pages() is called for the first
-+ * time with a certain order, it is reserved as a shadow block, for the second
-+ * time - as an origin block. On the third time the incoming block receives its
-+ * shadow and origin ranges from the previously saved shadow and origin blocks,
-+ * after which held_back[order] can be used again.
-+ *
-+ * At the very end there may be leftover blocks in held_back[]. They are
-+ * collected later by kmsan_memblock_discard().
-+ */
-+bool kmsan_memblock_free_pages(struct page *page, unsigned int order)
-+{
-+	struct page *shadow, *origin;
-+
-+	if (!held_back[order].shadow) {
-+		held_back[order].shadow = page;
-+		return false;
-+	}
-+	if (!held_back[order].origin) {
-+		held_back[order].origin = page;
-+		return false;
-+	}
-+	shadow = held_back[order].shadow;
-+	origin = held_back[order].origin;
-+	kmsan_setup_meta(page, shadow, origin, order);
-+
-+	held_back[order].shadow = NULL;
-+	held_back[order].origin = NULL;
-+	return true;
-+}
-+
-+#define MAX_BLOCKS 8
-+struct smallstack {
-+	struct page *items[MAX_BLOCKS];
-+	int index;
-+	int order;
-+};
-+
-+struct smallstack collect = {
-+	.index = 0,
-+	.order = MAX_ORDER,
-+};
-+
-+static void smallstack_push(struct smallstack *stack, struct page *pages)
-+{
-+	KMSAN_WARN_ON(stack->index == MAX_BLOCKS);
-+	stack->items[stack->index] = pages;
-+	stack->index++;
-+}
-+#undef MAX_BLOCKS
-+
-+static struct page *smallstack_pop(struct smallstack *stack)
-+{
-+	struct page *ret;
-+
-+	KMSAN_WARN_ON(stack->index == 0);
-+	stack->index--;
-+	ret = stack->items[stack->index];
-+	stack->items[stack->index] = NULL;
-+	return ret;
-+}
-+
-+static void do_collection(void)
-+{
-+	struct page *page, *shadow, *origin;
-+
-+	while (collect.index >= 3) {
-+		page = smallstack_pop(&collect);
-+		shadow = smallstack_pop(&collect);
-+		origin = smallstack_pop(&collect);
-+		kmsan_setup_meta(page, shadow, origin, collect.order);
-+		__free_pages_core(page, collect.order);
-+	}
-+}
-+
-+static void collect_split(void)
-+{
-+	struct smallstack tmp = {
-+		.order = collect.order - 1,
-+		.index = 0,
-+	};
-+	struct page *page;
-+
-+	if (!collect.order)
-+		return;
-+	while (collect.index) {
-+		page = smallstack_pop(&collect);
-+		smallstack_push(&tmp, &page[0]);
-+		smallstack_push(&tmp, &page[1 << tmp.order]);
-+	}
-+	__memcpy(&collect, &tmp, sizeof(struct smallstack));
-+}
-+
-+/*
-+ * Memblock is about to go away. Split the page blocks left over in held_back[]
-+ * and return 1/3 of that memory to the system.
-+ */
-+static void kmsan_memblock_discard(void)
-+{
-+	int i;
-+
-+	/*
-+	 * For each order=N:
-+	 *  - push held_back[N].shadow and .origin to |collect|;
-+	 *  - while there are >= 3 elements in |collect|, do garbage collection:
-+	 *    - pop 3 ranges from |collect|;
-+	 *    - use two of them as shadow and origin for the third one;
-+	 *    - repeat;
-+	 *  - split each remaining element from |collect| into 2 ranges of
-+	 *    order=N-1,
-+	 *  - repeat.
-+	 */
-+	collect.order = MAX_ORDER - 1;
-+	for (i = MAX_ORDER - 1; i >= 0; i--) {
-+		if (held_back[i].shadow)
-+			smallstack_push(&collect, held_back[i].shadow);
-+		if (held_back[i].origin)
-+			smallstack_push(&collect, held_back[i].origin);
-+		held_back[i].shadow = NULL;
-+		held_back[i].origin = NULL;
-+		do_collection();
-+		collect_split();
-+	}
-+}
-+
-+void __init kmsan_init_runtime(void)
-+{
-+	/* Assuming current is init_task */
-+	kmsan_internal_task_create(current);
-+	kmsan_memblock_discard();
-+	pr_info("Starting KernelMemorySanitizer\n");
-+	pr_info("ATTENTION: KMSAN is a debugging tool! Do not use it on production machines!\n");
-+	kmsan_enabled = true;
-+}
-+EXPORT_SYMBOL(kmsan_init_runtime);
-diff --git a/mm/kmsan/kmsan.h b/mm/kmsan/kmsan.h
-index a1b5900ffd97b..059f21c39ec1b 100644
---- a/mm/kmsan/kmsan.h
-+++ b/mm/kmsan/kmsan.h
-@@ -66,6 +66,7 @@ struct shadow_origin_ptr {
- struct shadow_origin_ptr kmsan_get_shadow_origin_ptr(void *addr, u64 size,
- 						     bool store);
- void *kmsan_get_metadata(void *addr, bool is_origin);
-+void __init kmsan_init_alloc_meta_for_range(void *start, void *end);
- 
- enum kmsan_bug_reason {
- 	REASON_ANY,
-@@ -181,5 +182,7 @@ bool kmsan_internal_is_module_addr(void *vaddr);
- bool kmsan_internal_is_vmalloc_addr(void *addr);
- 
- struct page *kmsan_vmalloc_to_page_or_null(void *vaddr);
-+void kmsan_setup_meta(struct page *page, struct page *shadow,
-+		      struct page *origin, int order);
- 
- #endif /* __MM_KMSAN_KMSAN_H */
-diff --git a/mm/kmsan/shadow.c b/mm/kmsan/shadow.c
-index 8fe6a5ed05e67..99cb9436eddc6 100644
---- a/mm/kmsan/shadow.c
-+++ b/mm/kmsan/shadow.c
-@@ -298,3 +298,39 @@ void kmsan_vmap_pages_range_noflush(unsigned long start, unsigned long end,
- 	kfree(s_pages);
- 	kfree(o_pages);
- }
-+
-+/* Allocate metadata for pages allocated at boot time. */
-+void __init kmsan_init_alloc_meta_for_range(void *start, void *end)
-+{
-+	struct page *shadow_p, *origin_p;
-+	void *shadow, *origin;
-+	struct page *page;
-+	u64 addr, size;
-+
-+	start = (void *)ALIGN_DOWN((u64)start, PAGE_SIZE);
-+	size = ALIGN((u64)end - (u64)start, PAGE_SIZE);
-+	shadow = memblock_alloc(size, PAGE_SIZE);
-+	origin = memblock_alloc(size, PAGE_SIZE);
-+	for (addr = 0; addr < size; addr += PAGE_SIZE) {
-+		page = virt_to_page_or_null((char *)start + addr);
-+		shadow_p = virt_to_page_or_null((char *)shadow + addr);
-+		set_no_shadow_origin_page(shadow_p);
-+		shadow_page_for(page) = shadow_p;
-+		origin_p = virt_to_page_or_null((char *)origin + addr);
-+		set_no_shadow_origin_page(origin_p);
-+		origin_page_for(page) = origin_p;
-+	}
-+}
-+
-+void kmsan_setup_meta(struct page *page, struct page *shadow,
-+		      struct page *origin, int order)
-+{
-+	int i;
-+
-+	for (i = 0; i < (1 << order); i++) {
-+		set_no_shadow_origin_page(&shadow[i]);
-+		set_no_shadow_origin_page(&origin[i]);
-+		shadow_page_for(&page[i]) = &shadow[i];
-+		origin_page_for(&page[i]) = &origin[i];
-+	}
-+}
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 98a066c0a9f63..4237b7290e619 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -1751,6 +1751,9 @@ void __init memblock_free_pages(struct page *page, unsigned long pfn,
+ static inline void *get_freepointer_safe(struct kmem_cache *s, void *object)
  {
- 	if (early_page_uninitialised(pfn))
- 		return;
-+	if (!kmsan_memblock_free_pages(page, order))
-+		/* KMSAN will take care of these pages. */
-+		return;
- 	__free_pages_core(page, order);
+ 	unsigned long freepointer_addr;
+ 	void *p;
+ 
+ 	if (!debug_pagealloc_enabled_static())
+-		return get_freepointer(s, object);
++		return kmsan_init(get_freepointer(s, object));
+ 
+ 	object = kasan_reset_tag(object);
+ 	freepointer_addr = (unsigned long)object + s->offset;
+ 	copy_from_kernel_nofault(&p, (void **)freepointer_addr, sizeof(p));
+-	return freelist_ptr(s, p, freepointer_addr);
++	return kmsan_init(freelist_ptr(s, p, freepointer_addr));
+ }
+ 
+ static inline void set_freepointer(struct kmem_cache *s, void *object, void *fp)
+@@ -1683,6 +1694,7 @@ static inline void *kmalloc_large_node_hook(void *ptr, size_t size, gfp_t flags)
+ 	ptr = kasan_kmalloc_large(ptr, size, flags);
+ 	/* As ptr might get tagged, call kmemleak hook after KASAN. */
+ 	kmemleak_alloc(ptr, size, 1, flags);
++	kmsan_kmalloc_large(ptr, size, flags);
+ 	return ptr;
+ }
+ 
+@@ -1690,12 +1702,14 @@ static __always_inline void kfree_hook(void *x)
+ {
+ 	kmemleak_free(x);
+ 	kasan_kfree_large(x);
++	kmsan_kfree_large(x);
+ }
+ 
+ static __always_inline bool slab_free_hook(struct kmem_cache *s,
+ 						void *x, bool init)
+ {
+ 	kmemleak_free_recursive(x, s->flags);
++	kmsan_slab_free(s, x);
+ 
+ 	debug_check_no_locks_freed(x, s->object_size);
+ 
+@@ -3729,6 +3743,7 @@ int kmem_cache_alloc_bulk(struct kmem_cache *s, gfp_t flags, size_t size,
+ 	 */
+ 	slab_post_alloc_hook(s, objcg, flags, size, p,
+ 				slab_want_init_on_alloc(flags, s));
++
+ 	return i;
+ error:
+ 	slub_put_cpu_ptr(s->cpu_slab);
+@@ -5910,6 +5925,7 @@ static char *create_unique_id(struct kmem_cache *s)
+ 	p += sprintf(p, "%07u", s->size);
+ 
+ 	BUG_ON(p > name + ID_STR_LENGTH - 1);
++	kmsan_unpoison_memory(name, p - name);
+ 	return name;
+ }
+ 
+@@ -6011,6 +6027,7 @@ static int sysfs_slab_alias(struct kmem_cache *s, const char *name)
+ 	al->name = name;
+ 	al->next = alias_list;
+ 	alias_list = al;
++	kmsan_unpoison_memory(al, sizeof(struct saved_alias));
+ 	return 0;
  }
  
 -- 
