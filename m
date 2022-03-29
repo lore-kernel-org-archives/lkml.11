@@ -2,567 +2,239 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58210C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 08:52:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21229C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 08:54:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233993AbiC2IyD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 04:54:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44554 "EHLO
+        id S234306AbiC2I4c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 04:56:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234315AbiC2Ixy (ORCPT
+        with ESMTP id S233938AbiC2I4b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 04:53:54 -0400
-Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D72495B3D0
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 01:52:10 -0700 (PDT)
-Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-df26ea5bfbso403229fac.1
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 01:52:10 -0700 (PDT)
+        Tue, 29 Mar 2022 04:56:31 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D18F17334A
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 01:54:48 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id u16so23761075wru.4
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 01:54:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yh6AuG9IckzNvRQeXQKuveivl+kTumRkfY/4NQ/pRog=;
-        b=k4554vdLwNxvbLkDO/Cg7YxiP+eBCb/+10WgpmKChoFxsJ6STHREdiqNvHE4KHcgzG
-         TAwlbsAUzbODudVX3h6qcMj23C8wBdFuWpR0jHqCH81yN2eHp1zz7FX3WCLRYO48A+VD
-         IX5X9VfRld8LeSRBS1uTyX+JGc1SzFZY3X5g7M8YPg2FZ/T5MiNAfSWC9ZyjzPoLRxqV
-         7GnwPgrEZnUJozGpKboL5qt0a7XDKmM4K6y5kkFglFpvlcf+UfcDzTLUc7w1ySvk8u64
-         COHqcQTgVNsypan9h6C0KmGXLa0auDs+m0S8lbcs5rU6/4FUC7l/wy1V+BCA3UUEwTqn
-         sTaw==
+        d=ffwll.ch; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=AKQCa5BXj3nCU08wphZwQiPGLu+26prlcxnHAtm3VJI=;
+        b=JptjAoEckriZUf4zPujrteZ8s/NjMjT2ifzJiasv3jr8gD6d2FEM3pB0Uo5ATE9iAI
+         VBHJZ8AQuo7sU274dzli6jcmkRGhGsJBfZxO9ClibftgH1ggxrUC7fkoULKC0iPqnfZ7
+         683RUPXa73EJ+BaZYfown49PfOmqyEzjPkES4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yh6AuG9IckzNvRQeXQKuveivl+kTumRkfY/4NQ/pRog=;
-        b=ngxH8Er1zXtZAjSoeTBfTz/kLcA6JPPIy1gHtCWceM/gWS0nVXyVjiSTnvNsP+Vlz2
-         OyrqhVfoFfTgE5m65foPFjse422aAp405VbFKXJGuALv17mKa7Ae0rRf2n/VBP9NDYRW
-         h0hq2tYtolDewvKEEUi3EO9nSRyqWSZmlSiXLF5po5mdV+HO7deyq0L843FCTVPyYj+7
-         bNeAoL4a9xbqW8m8pOskIV6Hg9iOTEiOVfWJrQ5ziyUmc5K63R6mPoyR58C8YRmRPLHn
-         ZF8m28opVsS0YzYssYAJqPhmyvCXZcecTF+J0t7fN/Q6s3SA+z6btrdEJnjFTsvJddSn
-         wqfQ==
-X-Gm-Message-State: AOAM531ew0nFhYAX84aQNaaO/etkphgSQd1ve/STyW3SOhTug5h2f/Z8
-        FXbb7lcfmuFpcPz8n66cUXaCFfdqAwFmxOzQe2Suqw==
-X-Google-Smtp-Source: ABdhPJy180LyIuA4UrIMn+oVVTp0OCCg9U3actS4AbJ+52Uk8dOPML79X+zP5WsoO0BPtOeyIzayUveIP92dbzCDIY0=
-X-Received: by 2002:a05:6870:700f:b0:dd:9f77:9a97 with SMTP id
- u15-20020a056870700f00b000dd9f779a97mr1639788oae.146.1648543929646; Tue, 29
- Mar 2022 01:52:09 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to;
+        bh=AKQCa5BXj3nCU08wphZwQiPGLu+26prlcxnHAtm3VJI=;
+        b=qyZ9khIX6Uoe1ExKm4ebZHLa/RUR1nqs3pxqigS/fCHrIO7E3qGEHm5xt/IC/S6ou3
+         0nUarYu6U7JJh3ydKJ/ZQrNaNOFacMsjAwHRQKajQinPVh0ay0JGFVtjYYrxUJZODCdu
+         4YEtMTw9rfEwgLKltUCYCiM/2yLiwDLRuF0kRK7H4txVo1EnX15QKAs9l7yUEKoaOoRP
+         7gX9NhXpltMJOt9ikhyCXL+p9ckdbYrseRpxl0/3fgyKTRZm3k4O+m3asAcDw6f8rp+f
+         eH5e0LVDALVlAgViQDHicoXlIDKzwhqGsXn83TcMPJ08JuytIwhhNS8f+bdd1FvyqLgO
+         MzuQ==
+X-Gm-Message-State: AOAM532AtbvMqm87fzWqWnnRBAuMzncuguAfbby5A5fuPXrfowvSiN/7
+        ot9zZSEBkTvHJS/bXOlQoqqqQg==
+X-Google-Smtp-Source: ABdhPJyh7a/JYQQVslvrEv4/VrglTy3NUcoYOA6Ic3/C5QjREHupUrY0ULUNmJyK+0rJ6Zuz0toy4A==
+X-Received: by 2002:a05:6000:186d:b0:204:110a:d832 with SMTP id d13-20020a056000186d00b00204110ad832mr29779909wri.47.1648544086671;
+        Tue, 29 Mar 2022 01:54:46 -0700 (PDT)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id c11-20020a05600c0a4b00b0037c91e085ddsm1902614wmq.40.2022.03.29.01.54.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Mar 2022 01:54:45 -0700 (PDT)
+Date:   Tue, 29 Mar 2022 10:54:43 +0200
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     Paul Cercueil <paul@crapouillou.net>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-iio@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
+Subject: Re: [PATCH v2 12/12] Documentation: iio: Document high-speed DMABUF
+ based API
+Message-ID: <YkLJU7Pp98CPIHfY@phenom.ffwll.local>
+Mail-Followup-To: Paul Cercueil <paul@crapouillou.net>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-iio@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
+References: <20220207125933.81634-1-paul@crapouillou.net>
+ <20220207130140.81891-1-paul@crapouillou.net>
+ <20220207130140.81891-2-paul@crapouillou.net>
 MIME-Version: 1.0
-References: <20220314200148.2695206-1-kaleshsingh@google.com> <20220314200148.2695206-8-kaleshsingh@google.com>
-In-Reply-To: <20220314200148.2695206-8-kaleshsingh@google.com>
-From:   Fuad Tabba <tabba@google.com>
-Date:   Tue, 29 Mar 2022 09:51:33 +0100
-Message-ID: <CA+EHjTwQRUCjvcMHNe1f0kPBdU=vS+f2+e_eefhnJDR4s73cQA@mail.gmail.com>
-Subject: Re: [PATCH v6 7/8] KVM: arm64: Unwind and dump nVHE HYP stacktrace
-To:     Kalesh Singh <kaleshsingh@google.com>
-Cc:     will@kernel.org, maz@kernel.org, qperret@google.com,
-        surenb@google.com, kernel-team@android.com,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Mark Brown <broonie@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Andrew Walbran <qwandor@google.com>,
-        Andrew Scull <ascull@google.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220207130140.81891-2-paul@crapouillou.net>
+X-Operating-System: Linux phenom 5.10.0-8-amd64 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kalesh,
-
-On Mon, Mar 14, 2022 at 8:06 PM Kalesh Singh <kaleshsingh@google.com> wrote:
->
-> Unwind the stack in EL1, when CONFIG_NVHE_EL2_DEBUG is enabled.
-> This is possible because CONFIG_NVHE_EL2_DEBUG disables the host
-> stage-2 protection on hyp_panic(), allowing the host to access
-> the hypervisor stack pages in EL1.
->
-> A simple stack overflow test produces the following output:
->
-> [  580.376051][  T412] kvm: nVHE hyp panic at: ffffffc0116145c4!
-> [  580.378034][  T412] kvm [412]: nVHE HYP call trace:
-> [  580.378591][  T412] kvm [412]:  [<ffffffc011614934>]
-> [  580.378993][  T412] kvm [412]:  [<ffffffc01160fa48>]
-> [  580.379386][  T412] kvm [412]:  [<ffffffc0116145dc>]  // Non-terminating recursive call
-> [  580.379772][  T412] kvm [412]:  [<ffffffc0116145dc>]
-> [  580.380158][  T412] kvm [412]:  [<ffffffc0116145dc>]
-> [  580.380544][  T412] kvm [412]:  [<ffffffc0116145dc>]
-> [  580.380928][  T412] kvm [412]:  [<ffffffc0116145dc>]
-> . . .
->
-> Since nVHE hyp symbols are not included by kallsyms to avoid issues
-> with aliasing, we fallback to the vmlinux addresses. Symbolizing the
-> addresses is handled in the next patch in this series.
->
-> Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
-
-Tested-by: Fuad Tabba <tabba@google.com>
-Reviewed-by: Fuad Tabba <tabba@google.com>
-
-Thanks,
-/fuad
-
-
-
+On Mon, Feb 07, 2022 at 01:01:40PM +0000, Paul Cercueil wrote:
+> Document the new DMABUF based API.
+> 
+> v2: - Explicitly state that the new interface is optional and is
+>       not implemented by all drivers.
+>     - The IOCTLs can now only be called on the buffer FD returned by
+>       IIO_BUFFER_GET_FD_IOCTL.
+>     - Move the page up a bit in the index since it is core stuff and not
+>       driver-specific.
+> 
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 > ---
->
-> Changes in v4:
->   - Update commit text and struct kvm_nvhe_panic_info kernel-doc comment
->     to clarify that CONFIG_NVHE_EL2_DEBUG only disables the host stage-2
->     protection on hyp_panic(), per Fuad
->   - Update NVHE_EL2_DEBUG Kconfig description to clarify that the
->     hypervisor stack trace is printed when hyp_panic() is called, per Fuad
->
-> Changes in v3:
->   - The nvhe hyp stack unwinder now makes use of the core logic from the
->     regular kernel unwinder to avoid duplication, per Mark
->
-> Changes in v2:
->   - Add cpu_prepare_nvhe_panic_info()
->   - Move updating the panic info to hyp_panic(), so that unwinding also
->     works for conventional nVHE Hyp-mode.
->
->
->  arch/arm64/include/asm/kvm_asm.h    |  20 +++
->  arch/arm64/include/asm/stacktrace.h |  12 ++
->  arch/arm64/kernel/stacktrace.c      | 210 +++++++++++++++++++++++++---
->  arch/arm64/kvm/Kconfig              |   5 +-
->  arch/arm64/kvm/arm.c                |   2 +-
->  arch/arm64/kvm/handle_exit.c        |   3 +
->  arch/arm64/kvm/hyp/nvhe/switch.c    |  18 +++
->  7 files changed, 244 insertions(+), 26 deletions(-)
->
-> diff --git a/arch/arm64/include/asm/kvm_asm.h b/arch/arm64/include/asm/kvm_asm.h
-> index 2e277f2ed671..4abcf93c6662 100644
-> --- a/arch/arm64/include/asm/kvm_asm.h
-> +++ b/arch/arm64/include/asm/kvm_asm.h
-> @@ -176,6 +176,26 @@ struct kvm_nvhe_init_params {
->         unsigned long vtcr;
->  };
->
-> +#ifdef CONFIG_NVHE_EL2_DEBUG
-> +/**
-> + * struct kvm_nvhe_panic_info - nVHE hypervisor panic info.
-> + * @hyp_stack_base:             hyp VA of the hyp_stack base.
-> + * @hyp_overflow_stack_base:    hyp VA of the hyp_overflow_stack base.
-> + * @fp:                         hyp FP where the backtrace begins.
-> + * @pc:                         hyp PC where the backtrace begins.
-> + *
-> + * Used by the host in EL1 to dump the nVHE hypervisor backtrace on
-> + * hyp_panic. This is possible because CONFIG_NVHE_EL2_DEBUG disables
-> + * the host stage 2 protection on hyp_panic(). See: __hyp_do_panic()
-> + */
-> +struct kvm_nvhe_panic_info {
-> +       unsigned long hyp_stack_base;
-> +       unsigned long hyp_overflow_stack_base;
-> +       unsigned long fp;
-> +       unsigned long pc;
-> +};
-> +#endif /* CONFIG_NVHE_EL2_DEBUG */
+>  Documentation/driver-api/dma-buf.rst |  2 +
+>  Documentation/iio/dmabuf_api.rst     | 94 ++++++++++++++++++++++++++++
+>  Documentation/iio/index.rst          |  2 +
+>  3 files changed, 98 insertions(+)
+>  create mode 100644 Documentation/iio/dmabuf_api.rst
+> 
+> diff --git a/Documentation/driver-api/dma-buf.rst b/Documentation/driver-api/dma-buf.rst
+> index 2cd7db82d9fe..d3c9b58d2706 100644
+> --- a/Documentation/driver-api/dma-buf.rst
+> +++ b/Documentation/driver-api/dma-buf.rst
+> @@ -1,3 +1,5 @@
+> +.. _dma-buf:
 > +
->  /* Translate a kernel address @ptr into its equivalent linear mapping */
->  #define kvm_ksym_ref(ptr)                                              \
->         ({                                                              \
-> diff --git a/arch/arm64/include/asm/stacktrace.h b/arch/arm64/include/asm/stacktrace.h
-> index e77cdef9ca29..18611a51cf14 100644
-> --- a/arch/arm64/include/asm/stacktrace.h
-> +++ b/arch/arm64/include/asm/stacktrace.h
-> @@ -22,6 +22,10 @@ enum stack_type {
->         STACK_TYPE_OVERFLOW,
->         STACK_TYPE_SDEI_NORMAL,
->         STACK_TYPE_SDEI_CRITICAL,
-> +#ifdef CONFIG_NVHE_EL2_DEBUG
-> +       STACK_TYPE_KVM_NVHE_HYP,
-> +       STACK_TYPE_KVM_NVHE_OVERFLOW,
-> +#endif /* CONFIG_NVHE_EL2_DEBUG */
->         __NR_STACK_TYPES
->  };
->
-> @@ -147,4 +151,12 @@ static inline bool on_accessible_stack(const struct task_struct *tsk,
->         return false;
->  }
->
-> +#ifdef CONFIG_NVHE_EL2_DEBUG
-> +void kvm_nvhe_dump_backtrace(unsigned long hyp_offset);
-> +#else
-> +static inline void kvm_nvhe_dump_backtrace(unsigned long hyp_offset)
-> +{
-> +}
-> +#endif /* CONFIG_NVHE_EL2_DEBUG */
+>  Buffer Sharing and Synchronization
+>  ==================================
+>  
+> diff --git a/Documentation/iio/dmabuf_api.rst b/Documentation/iio/dmabuf_api.rst
+> new file mode 100644
+> index 000000000000..43bb2c1b9fdc
+> --- /dev/null
+> +++ b/Documentation/iio/dmabuf_api.rst
+> @@ -0,0 +1,94 @@
+> +===================================
+> +High-speed DMABUF interface for IIO
+> +===================================
 > +
->  #endif /* __ASM_STACKTRACE_H */
-> diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
-> index e4103e085681..6ec85cb69b1f 100644
-> --- a/arch/arm64/kernel/stacktrace.c
-> +++ b/arch/arm64/kernel/stacktrace.c
-> @@ -15,6 +15,8 @@
->
->  #include <asm/irq.h>
->  #include <asm/pointer_auth.h>
-> +#include <asm/kvm_asm.h>
-> +#include <asm/kvm_hyp.h>
->  #include <asm/stack_pointer.h>
->  #include <asm/stacktrace.h>
->
-> @@ -64,26 +66,15 @@ NOKPROBE_SYMBOL(start_backtrace);
->   * records (e.g. a cycle), determined based on the location and fp value of A
->   * and the location (but not the fp value) of B.
->   */
-> -static int notrace unwind_frame(struct task_struct *tsk,
-> -                               struct stackframe *frame)
-> +static int notrace __unwind_frame(struct stackframe *frame, struct stack_info *info,
-> +               unsigned long (*translate_fp)(unsigned long, enum stack_type))
->  {
->         unsigned long fp = frame->fp;
-> -       struct stack_info info;
-> -
-> -       if (!tsk)
-> -               tsk = current;
-> -
-> -       /* Final frame; nothing to unwind */
-> -       if (fp == (unsigned long)task_pt_regs(tsk)->stackframe)
-> -               return -ENOENT;
->
->         if (fp & 0x7)
->                 return -EINVAL;
->
-> -       if (!on_accessible_stack(tsk, fp, 16, &info))
-> -               return -EINVAL;
-> -
-> -       if (test_bit(info.type, frame->stacks_done))
-> +       if (test_bit(info->type, frame->stacks_done))
->                 return -EINVAL;
->
->         /*
-> @@ -94,28 +85,62 @@ static int notrace unwind_frame(struct task_struct *tsk,
->          *
->          * TASK -> IRQ -> OVERFLOW -> SDEI_NORMAL
->          * TASK -> SDEI_NORMAL -> SDEI_CRITICAL -> OVERFLOW
-> +        * KVM_NVHE_HYP -> KVM_NVHE_OVERFLOW
->          *
->          * ... but the nesting itself is strict. Once we transition from one
->          * stack to another, it's never valid to unwind back to that first
->          * stack.
->          */
-> -       if (info.type == frame->prev_type) {
-> +       if (info->type == frame->prev_type) {
->                 if (fp <= frame->prev_fp)
->                         return -EINVAL;
->         } else {
->                 set_bit(frame->prev_type, frame->stacks_done);
->         }
->
-> +       /* Record fp as prev_fp before attempting to get the next fp */
-> +       frame->prev_fp = fp;
+> +1. Overview
+> +===========
 > +
-> +       /*
-> +        * If fp is not from the current address space perform the
-> +        * necessary translation before dereferencing it to get next fp.
-> +        */
-> +       if (translate_fp)
-> +               fp = translate_fp(fp, info->type);
-> +       if (!fp)
-> +               return -EINVAL;
+> +The Industrial I/O subsystem supports access to buffers through a file-based
+> +interface, with read() and write() access calls through the IIO device's dev
+> +node.
 > +
->         /*
->          * Record this frame record's values and location. The prev_fp and
-> -        * prev_type are only meaningful to the next unwind_frame() invocation.
-> +        * prev_type are only meaningful to the next __unwind_frame() invocation.
->          */
->         frame->fp = READ_ONCE_NOCHECK(*(unsigned long *)(fp));
->         frame->pc = READ_ONCE_NOCHECK(*(unsigned long *)(fp + 8));
-> -       frame->prev_fp = fp;
-> -       frame->prev_type = info.type;
-> -
->         frame->pc = ptrauth_strip_insn_pac(frame->pc);
-> +       frame->prev_type = info->type;
+> +It additionally supports a DMABUF based interface, where the userspace
+> +application can allocate and append DMABUF objects to the buffer's queue.
+> +This interface is however optional and is not available in all drivers.
 > +
-> +       return 0;
-> +}
+> +The advantage of this DMABUF based interface vs. the read()
+> +interface, is that it avoids an extra copy of the data between the
+> +kernel and userspace. This is particularly useful for high-speed
+> +devices which produce several megabytes or even gigabytes of data per
+> +second.
 > +
-> +static int notrace unwind_frame(struct task_struct *tsk, struct stackframe *frame)
-> +{
-> +       unsigned long fp = frame->fp;
-> +       struct stack_info info;
-> +       int err;
+> +The data in this DMABUF interface is managed at the granularity of
+> +DMABUF objects. Reducing the granularity from byte level to block level
+> +is done to reduce the userspace-kernelspace synchronization overhead
+> +since performing syscalls for each byte at a few Mbps is just not
+> +feasible.
 > +
-> +       if (!tsk)
-> +               tsk = current;
+> +This of course leads to a slightly increased latency. For this reason an
+> +application can choose the size of the DMABUFs as well as how many it
+> +allocates. E.g. two DMABUFs would be a traditional double buffering
+> +scheme. But using a higher number might be necessary to avoid
+> +underflow/overflow situations in the presence of scheduling latencies.
+
+So this reads a lot like reinventing io-uring with pre-registered O_DIRECT
+memory ranges. Except it's using dma-buf and hand-rolling a lot of pieces
+instead of io-uring and O_DIRECT.
+
+At least if the entire justification for dma-buf support is zero-copy
+support between the driver and userspace it's _really_ not the right tool
+for the job. dma-buf is for zero-copy between devices, with cpu access
+from userpace (or kernel fwiw) being very much the exception (and often
+flat-out not supported at all).
+-Daniel
+
 > +
-> +       /* Final frame; nothing to unwind */
-> +       if (fp == (unsigned long)task_pt_regs(tsk)->stackframe)
-> +               return -ENOENT;
+> +2. User API
+> +===========
 > +
-> +       if (!on_accessible_stack(tsk, fp, 16, &info))
-> +               return -EINVAL;
+> +``IIO_BUFFER_DMABUF_ALLOC_IOCTL(struct iio_dmabuf_alloc_req *)``
+> +----------------------------------------------------------------
 > +
-> +       err = __unwind_frame(frame, &info, NULL);
-> +       if (err)
-> +               return err;
->
->  #ifdef CONFIG_FUNCTION_GRAPH_TRACER
->         if (tsk->ret_stack &&
-> @@ -143,20 +168,27 @@ static int notrace unwind_frame(struct task_struct *tsk,
->  }
->  NOKPROBE_SYMBOL(unwind_frame);
->
-> -static void notrace walk_stackframe(struct task_struct *tsk,
-> -                                   struct stackframe *frame,
-> -                                   bool (*fn)(void *, unsigned long), void *data)
-> +static void notrace __walk_stackframe(struct task_struct *tsk, struct stackframe *frame,
-> +               bool (*fn)(void *, unsigned long), void *data,
-> +               int (*unwind_frame_fn)(struct task_struct *tsk, struct stackframe *frame))
->  {
->         while (1) {
->                 int ret;
->
->                 if (!fn(data, frame->pc))
->                         break;
-> -               ret = unwind_frame(tsk, frame);
-> +               ret = unwind_frame_fn(tsk, frame);
->                 if (ret < 0)
->                         break;
->         }
->  }
+> +Each call will allocate a new DMABUF object. The return value (if not
+> +a negative errno value as error) will be the file descriptor of the new
+> +DMABUF.
 > +
-> +static void notrace walk_stackframe(struct task_struct *tsk,
-> +                                   struct stackframe *frame,
-> +                                   bool (*fn)(void *, unsigned long), void *data)
-> +{
-> +       __walk_stackframe(tsk, frame, fn, data, unwind_frame);
-> +}
->  NOKPROBE_SYMBOL(walk_stackframe);
->
->  static bool dump_backtrace_entry(void *arg, unsigned long where)
-> @@ -210,3 +242,135 @@ noinline notrace void arch_stack_walk(stack_trace_consume_fn consume_entry,
->
->         walk_stackframe(task, &frame, consume_entry, cookie);
->  }
+> +``IIO_BUFFER_DMABUF_ENQUEUE_IOCTL(struct iio_dmabuf *)``
+> +--------------------------------------------------------
 > +
-> +#ifdef CONFIG_NVHE_EL2_DEBUG
-> +DECLARE_PER_CPU(unsigned long, kvm_arm_hyp_stack_page);
-> +DECLARE_KVM_NVHE_PER_CPU(unsigned long [PAGE_SIZE/sizeof(long)], hyp_overflow_stack);
-> +DECLARE_KVM_NVHE_PER_CPU(struct kvm_nvhe_panic_info, kvm_panic_info);
+> +Place the DMABUF object into the queue pending for hardware process.
 > +
-> +static inline bool kvm_nvhe_on_overflow_stack(unsigned long sp, unsigned long size,
-> +                                struct stack_info *info)
-> +{
-> +       struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr_nvhe_sym(kvm_panic_info);
-> +       unsigned long low = (unsigned long)panic_info->hyp_overflow_stack_base;
-> +       unsigned long high = low + PAGE_SIZE;
+> +These two IOCTLs have to be performed on the IIO buffer's file
+> +descriptor, obtained using the `IIO_BUFFER_GET_FD_IOCTL` ioctl.
 > +
-> +       return on_stack(sp, size, low, high, STACK_TYPE_KVM_NVHE_OVERFLOW, info);
-> +}
+> +3. Usage
+> +========
 > +
-> +static inline bool kvm_nvhe_on_hyp_stack(unsigned long sp, unsigned long size,
-> +                                struct stack_info *info)
-> +{
-> +       struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr_nvhe_sym(kvm_panic_info);
-> +       unsigned long low = (unsigned long)panic_info->hyp_stack_base;
-> +       unsigned long high = low + PAGE_SIZE;
+> +To access the data stored in a block by userspace the block must be
+> +mapped to the process's memory. This is done by calling mmap() on the
+> +DMABUF's file descriptor.
 > +
-> +       return on_stack(sp, size, low, high, STACK_TYPE_KVM_NVHE_HYP, info);
-> +}
+> +Before accessing the data through the map, you must use the
+> +DMA_BUF_IOCTL_SYNC(struct dma_buf_sync *) ioctl, with the
+> +DMA_BUF_SYNC_START flag, to make sure that the data is available.
+> +This call may block until the hardware is done with this block. Once
+> +you are done reading or writing the data, you must use this ioctl again
+> +with the DMA_BUF_SYNC_END flag, before enqueueing the DMABUF to the
+> +kernel's queue.
 > +
-> +static inline bool kvm_nvhe_on_accessible_stack(unsigned long sp, unsigned long size,
-> +                                      struct stack_info *info)
-> +{
-> +       if (info)
-> +               info->type = STACK_TYPE_UNKNOWN;
+> +If you need to know when the hardware is done with a DMABUF, you can
+> +poll its file descriptor for the EPOLLOUT event.
 > +
-> +       if (kvm_nvhe_on_hyp_stack(sp, size, info))
-> +               return true;
-> +       if (kvm_nvhe_on_overflow_stack(sp, size, info))
-> +               return true;
+> +Finally, to destroy a DMABUF object, simply call close() on its file
+> +descriptor.
 > +
-> +       return false;
-> +}
+> +For more information about manipulating DMABUF objects, see: :ref:`dma-buf`.
 > +
-> +static unsigned long kvm_nvhe_hyp_stack_kern_va(unsigned long addr)
-> +{
-> +       struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr_nvhe_sym(kvm_panic_info);
-> +       unsigned long hyp_base, kern_base, hyp_offset;
+> +A typical workflow for the new interface is:
 > +
-> +       hyp_base = (unsigned long)panic_info->hyp_stack_base;
-> +       hyp_offset = addr - hyp_base;
+> +    for block in blocks:
+> +      DMABUF_ALLOC block
+> +      mmap block
 > +
-> +       kern_base = (unsigned long)*this_cpu_ptr(&kvm_arm_hyp_stack_page);
+> +    enable buffer
 > +
-> +       return kern_base + hyp_offset;
-> +}
+> +    while !done
+> +      for block in blocks:
+> +        DMABUF_ENQUEUE block
 > +
-> +static unsigned long kvm_nvhe_overflow_stack_kern_va(unsigned long addr)
-> +{
-> +       struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr_nvhe_sym(kvm_panic_info);
-> +       unsigned long hyp_base, kern_base, hyp_offset;
+> +        DMABUF_SYNC_START block
+> +        process data
+> +        DMABUF_SYNC_END block
 > +
-> +       hyp_base = (unsigned long)panic_info->hyp_overflow_stack_base;
-> +       hyp_offset = addr - hyp_base;
+> +    disable buffer
 > +
-> +       kern_base = (unsigned long)this_cpu_ptr_nvhe_sym(hyp_overflow_stack);
+> +    for block in blocks:
+> +      close block
+> diff --git a/Documentation/iio/index.rst b/Documentation/iio/index.rst
+> index 58b7a4ebac51..669deb67ddee 100644
+> --- a/Documentation/iio/index.rst
+> +++ b/Documentation/iio/index.rst
+> @@ -9,4 +9,6 @@ Industrial I/O
+>  
+>     iio_configfs
+>  
+> +   dmabuf_api
 > +
-> +       return kern_base + hyp_offset;
-> +}
-> +
-> +/*
-> + * Convert KVM nVHE hypervisor stack VA to a kernel VA.
-> + *
-> + * The nVHE hypervisor stack is mapped in the flexible 'private' VA range, to allow
-> + * for guard pages below the stack. Consequently, the fixed offset address
-> + * translation macros won't work here.
-> + *
-> + * The kernel VA is calculated as an offset from the kernel VA of the hypervisor
-> + * stack base. See: kvm_nvhe_hyp_stack_kern_va(),  kvm_nvhe_overflow_stack_kern_va()
-> + */
-> +static unsigned long kvm_nvhe_stack_kern_va(unsigned long addr,
-> +                                       enum stack_type type)
-> +{
-> +       switch (type) {
-> +       case STACK_TYPE_KVM_NVHE_HYP:
-> +               return kvm_nvhe_hyp_stack_kern_va(addr);
-> +       case STACK_TYPE_KVM_NVHE_OVERFLOW:
-> +               return kvm_nvhe_overflow_stack_kern_va(addr);
-> +       default:
-> +               return 0UL;
-> +       }
-> +}
-> +
-> +static int notrace kvm_nvhe_unwind_frame(struct task_struct *tsk,
-> +                                       struct stackframe *frame)
-> +{
-> +       struct stack_info info;
-> +
-> +       if (!kvm_nvhe_on_accessible_stack(frame->fp, 16, &info))
-> +               return -EINVAL;
-> +
-> +       return  __unwind_frame(frame, &info, kvm_nvhe_stack_kern_va);
-> +}
-> +
-> +static bool kvm_nvhe_dump_backtrace_entry(void *arg, unsigned long where)
-> +{
-> +       unsigned long va_mask = GENMASK_ULL(vabits_actual - 1, 0);
-> +       unsigned long hyp_offset = (unsigned long)arg;
-> +
-> +       where &= va_mask;       /* Mask tags */
-> +       where += hyp_offset;    /* Convert to kern addr */
-> +
-> +       kvm_err("[<%016lx>] %pB\n", where, (void *)where);
-> +
-> +       return true;
-> +}
-> +
-> +static void notrace kvm_nvhe_walk_stackframe(struct task_struct *tsk,
-> +                                   struct stackframe *frame,
-> +                                   bool (*fn)(void *, unsigned long), void *data)
-> +{
-> +       __walk_stackframe(tsk, frame, fn, data, kvm_nvhe_unwind_frame);
-> +}
-> +
-> +void kvm_nvhe_dump_backtrace(unsigned long hyp_offset)
-> +{
-> +       struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr_nvhe_sym(kvm_panic_info);
-> +       struct stackframe frame;
-> +
-> +       start_backtrace(&frame, panic_info->fp, panic_info->pc);
-> +       pr_err("nVHE HYP call trace:\n");
-> +       kvm_nvhe_walk_stackframe(NULL, &frame, kvm_nvhe_dump_backtrace_entry,
-> +                                       (void *)hyp_offset);
-> +       pr_err("---- end of nVHE HYP call trace ----\n");
-> +}
-> +#endif /* CONFIG_NVHE_EL2_DEBUG */
-> diff --git a/arch/arm64/kvm/Kconfig b/arch/arm64/kvm/Kconfig
-> index 8a5fbbf084df..a7be4ef35fbf 100644
-> --- a/arch/arm64/kvm/Kconfig
-> +++ b/arch/arm64/kvm/Kconfig
-> @@ -51,8 +51,9 @@ config NVHE_EL2_DEBUG
->         depends on KVM
->         help
->           Say Y here to enable the debug mode for the non-VHE KVM EL2 object.
-> -         Failure reports will BUG() in the hypervisor. This is intended for
-> -         local EL2 hypervisor development.
-> +         Failure reports will BUG() in the hypervisor; and calls to hyp_panic()
-> +         will result in printing the hypervisor call stack.
-> +         This is intended for local EL2 hypervisor development.
->
->           If unsure, say N.
->
-> diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
-> index 72be7e695d8d..c7216ce1d55c 100644
-> --- a/arch/arm64/kvm/arm.c
-> +++ b/arch/arm64/kvm/arm.c
-> @@ -49,7 +49,7 @@ DEFINE_STATIC_KEY_FALSE(kvm_protected_mode_initialized);
->
->  DECLARE_KVM_HYP_PER_CPU(unsigned long, kvm_hyp_vector);
->
-> -static DEFINE_PER_CPU(unsigned long, kvm_arm_hyp_stack_page);
-> +DEFINE_PER_CPU(unsigned long, kvm_arm_hyp_stack_page);
->  unsigned long kvm_arm_hyp_percpu_base[NR_CPUS];
->  DECLARE_KVM_NVHE_PER_CPU(struct kvm_nvhe_init_params, kvm_init_params);
->
-> diff --git a/arch/arm64/kvm/handle_exit.c b/arch/arm64/kvm/handle_exit.c
-> index e3140abd2e2e..ff69dff33700 100644
-> --- a/arch/arm64/kvm/handle_exit.c
-> +++ b/arch/arm64/kvm/handle_exit.c
-> @@ -17,6 +17,7 @@
->  #include <asm/kvm_emulate.h>
->  #include <asm/kvm_mmu.h>
->  #include <asm/debug-monitors.h>
-> +#include <asm/stacktrace.h>
->  #include <asm/traps.h>
->
->  #include <kvm/arm_hypercalls.h>
-> @@ -326,6 +327,8 @@ void __noreturn __cold nvhe_hyp_panic_handler(u64 esr, u64 spsr,
->                 kvm_err("nVHE hyp panic at: %016llx!\n", elr_virt + hyp_offset);
->         }
->
-> +       kvm_nvhe_dump_backtrace(hyp_offset);
-> +
->         /*
->          * Hyp has panicked and we're going to handle that by panicking the
->          * kernel. The kernel offset will be revealed in the panic so we're
-> diff --git a/arch/arm64/kvm/hyp/nvhe/switch.c b/arch/arm64/kvm/hyp/nvhe/switch.c
-> index efc20273a352..b8ecffc47424 100644
-> --- a/arch/arm64/kvm/hyp/nvhe/switch.c
-> +++ b/arch/arm64/kvm/hyp/nvhe/switch.c
-> @@ -37,6 +37,22 @@ DEFINE_PER_CPU(unsigned long, kvm_hyp_vector);
->  #ifdef CONFIG_NVHE_EL2_DEBUG
->  DEFINE_PER_CPU(unsigned long [PAGE_SIZE/sizeof(long)], hyp_overflow_stack)
->         __aligned(16);
-> +DEFINE_PER_CPU(struct kvm_nvhe_panic_info, kvm_panic_info);
-> +
-> +static inline void cpu_prepare_nvhe_panic_info(void)
-> +{
-> +       struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr(&kvm_panic_info);
-> +       struct kvm_nvhe_init_params *params = this_cpu_ptr(&kvm_init_params);
-> +
-> +       panic_info->hyp_stack_base = (unsigned long)(params->stack_hyp_va - PAGE_SIZE);
-> +       panic_info->hyp_overflow_stack_base = (unsigned long)this_cpu_ptr(hyp_overflow_stack);
-> +       panic_info->fp = (unsigned long)__builtin_frame_address(0);
-> +       panic_info->pc = _THIS_IP_;
-> +}
-> + #else
-> +static inline void cpu_prepare_nvhe_panic_info(void)
-> +{
-> +}
->  #endif
->
->  static void __activate_traps(struct kvm_vcpu *vcpu)
-> @@ -360,6 +376,8 @@ asmlinkage void __noreturn hyp_panic(void)
->         struct kvm_cpu_context *host_ctxt;
->         struct kvm_vcpu *vcpu;
->
-> +       cpu_prepare_nvhe_panic_info();
-> +
->         host_ctxt = &this_cpu_ptr(&kvm_host_data)->host_ctxt;
->         vcpu = host_ctxt->__hyp_running_vcpu;
->
-> --
-> 2.35.1.723.g4982287a31-goog
->
+>     ep93xx_adc
+> -- 
+> 2.34.1
+> 
+
+-- 
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
