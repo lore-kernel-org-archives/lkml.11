@@ -2,83 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFD9DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 04:04:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B36A1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 04:08:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231903AbiC2EFr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 00:05:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50400 "EHLO
+        id S231916AbiC2EKh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 00:10:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229765AbiC2EFo (ORCPT
+        with ESMTP id S229765AbiC2EKe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 00:05:44 -0400
-X-Greylist: delayed 2774 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 28 Mar 2022 21:04:00 PDT
-Received: from m12-14.163.com (m12-14.163.com [220.181.12.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CC7959154E;
-        Mon, 28 Mar 2022 21:04:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=8GnOw8aLVX+558mcqZ
-        IJlHW9BLrvkKBh2upVAmYe9QI=; b=hCotd+P3QlR4WVu9VEYrdGpVlxvkacF+dd
-        pVjxY7fbTEyk6VDSsyqBgELd5Q6Bjq41UFJoDmWEiOyPcf6GBQEAiK3+eMvv8Qn+
-        aLifnmuvJrDF+qmP8tz1Xi3jcuQmkFjLrAftmLKgQ+p67sKT9baUC06NukuySOvk
-        HGy0XgP6k=
-Received: from localhost.localdomain.localdomain (unknown [36.111.64.85])
-        by smtp10 (Coremail) with SMTP id DsCowABHIIhIekJiyaMcDA--.46763S2;
-        Tue, 29 Mar 2022 11:17:32 +0800 (CST)
-From:   daihuaigang129@163.com
-To:     colyli@suse.de, kent.overstreet@gmail.com
-Cc:     linux-bcache@vger.kernel.org, linux-kernel@vger.kernel.org,
-        daihuaigang <daihuaigang129@163.com>
-Subject: [PATCH v1] bcache: fix AB-BA deadlock between cache register and cache_set_free
-Date:   Tue, 29 Mar 2022 11:17:25 +0800
-Message-Id: <1648523845-4681-1-git-send-email-daihuaigang129@163.com>
-X-Mailer: git-send-email 1.8.3.1
-X-CM-TRANSID: DsCowABHIIhIekJiyaMcDA--.46763S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7GFy5JFyxZw45Kr15tFWDurg_yoWkJrX_uF
-        WfWFyIg3y5Kr1agr13CayfZ3yjvF1q9wnavFWIyrn3Aa43WF1qkryfZr18Aw15Xa1UGF9x
-        Gr1kKr1F9w1xKjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU8yrW3UUUUU==
-X-Originating-IP: [36.111.64.85]
-X-CM-SenderInfo: xgdlx3pdljt0jjrsmqqrwthudrp/xtbBdRLQMlaEB4kVBgABsL
+        Tue, 29 Mar 2022 00:10:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BC4A66D184
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 21:08:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648526928;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=/Fki2qhrqzIn3lkIi3YIPXgrFjahMDx8WQomnumvye4=;
+        b=QvN1lLZybAZAnLjcQvqEB5gF9tR9G37GagZ1D5NwDPQn3oNwffZjTdvpVAYfuzDC94A8ig
+        +bsYkRc9bbgCrTrFraCSEX7M+48/rV2myUqL8+QEeaUV4PcgirSNFYAlrrg9FZQ5K/CgXP
+        LX1tEqiCdsa80c/UCumYtHKGzvi73UQ=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-361-5Thsb0YPO7ijK_drg2Wv1g-1; Tue, 29 Mar 2022 00:08:45 -0400
+X-MC-Unique: 5Thsb0YPO7ijK_drg2Wv1g-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 94741802803;
+        Tue, 29 Mar 2022 04:08:45 +0000 (UTC)
+Received: from localhost.localdomain (ovpn-13-210.pek2.redhat.com [10.72.13.210])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9515C401E64;
+        Tue, 29 Mar 2022 04:08:43 +0000 (UTC)
+From:   Jason Wang <jasowang@redhat.com>
+To:     mst@redhat.com, jasowang@redhat.com
+Cc:     virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V2 1/3] vdpa: mlx5: prevent cvq work from hogging CPU
+Date:   Tue, 29 Mar 2022 12:08:38 +0800
+Message-Id: <20220329040840.3419-1-jasowang@redhat.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: daihuaigang <daihuaigang129@163.com>
+A userspace triggerable infinite loop could happen in
+mlx5_cvq_kick_handler() if userspace keeps sending a huge amount of
+cvq requests.
 
-bcache register add kobject_mutex then bch_register_mutex,
-cache_set_free add bch_register_mutex then kobject_mutex.
-fix AB-BA deadlock between cache register and cache_set_free.
+Fixing this by introducing a quota and re-queue the work if we're out
+of the budget (currently the implicit budget is one) . While at it,
+using a per device work struct to avoid on demand memory allocation
+for cvq.
 
-Signed-off-by: daihuaigang <daihuaigang129@163.com>
+Fixes: 5262912ef3cfc ("vdpa/mlx5: Add support for control VQ and MAC setting")
+Signed-off-by: Jason Wang <jasowang@redhat.com>
 ---
- drivers/md/bcache/super.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Changes since V1:
+- Using 1 as the budget
+---
+ drivers/vdpa/mlx5/net/mlx5_vnet.c | 21 +++++++++------------
+ 1 file changed, 9 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/md/bcache/super.c b/drivers/md/bcache/super.c
-index bf3de14..f17953c 100644
---- a/drivers/md/bcache/super.c
-+++ b/drivers/md/bcache/super.c
-@@ -1690,10 +1690,8 @@ static void cache_set_free(struct closure *cl)
- 	if (ca) {
- 		ca->set = NULL;
- 		c->cache = NULL;
--		kobject_put(&ca->kobj);
+diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+index d0f91078600e..b2afd2b6fbca 100644
+--- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
++++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+@@ -163,6 +163,7 @@ struct mlx5_vdpa_net {
+ 	u32 cur_num_vqs;
+ 	struct notifier_block nb;
+ 	struct vdpa_callback config_cb;
++	struct mlx5_vdpa_wq_ent cvq_ent;
+ };
+ 
+ static void free_resources(struct mlx5_vdpa_net *ndev);
+@@ -1616,10 +1617,10 @@ static void mlx5_cvq_kick_handler(struct work_struct *work)
+ 	ndev = to_mlx5_vdpa_ndev(mvdev);
+ 	cvq = &mvdev->cvq;
+ 	if (!(ndev->mvdev.actual_features & BIT_ULL(VIRTIO_NET_F_CTRL_VQ)))
+-		goto out;
++		return;
+ 
+ 	if (!cvq->ready)
+-		goto out;
++		return;
+ 
+ 	while (true) {
+ 		err = vringh_getdesc_iotlb(&cvq->vring, &cvq->riov, &cvq->wiov, &cvq->head,
+@@ -1653,9 +1654,10 @@ static void mlx5_cvq_kick_handler(struct work_struct *work)
+ 
+ 		if (vringh_need_notify_iotlb(&cvq->vring))
+ 			vringh_notify(&cvq->vring);
++
++		queue_work(mvdev->wq, &wqent->work);
++		break;
+ 	}
+-out:
+-	kfree(wqent);
+ }
+ 
+ static void mlx5_vdpa_kick_vq(struct vdpa_device *vdev, u16 idx)
+@@ -1663,7 +1665,6 @@ static void mlx5_vdpa_kick_vq(struct vdpa_device *vdev, u16 idx)
+ 	struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
+ 	struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
+ 	struct mlx5_vdpa_virtqueue *mvq;
+-	struct mlx5_vdpa_wq_ent *wqent;
+ 
+ 	if (!is_index_valid(mvdev, idx))
+ 		return;
+@@ -1672,13 +1673,7 @@ static void mlx5_vdpa_kick_vq(struct vdpa_device *vdev, u16 idx)
+ 		if (!mvdev->cvq.ready)
+ 			return;
+ 
+-		wqent = kzalloc(sizeof(*wqent), GFP_ATOMIC);
+-		if (!wqent)
+-			return;
+-
+-		wqent->mvdev = mvdev;
+-		INIT_WORK(&wqent->work, mlx5_cvq_kick_handler);
+-		queue_work(mvdev->wq, &wqent->work);
++		queue_work(mvdev->wq, &ndev->cvq_ent.work);
+ 		return;
  	}
  
--
- 	if (c->moving_gc_wq)
- 		destroy_workqueue(c->moving_gc_wq);
- 	bioset_exit(&c->bio_split);
-@@ -1704,6 +1702,8 @@ static void cache_set_free(struct closure *cl)
+@@ -2668,6 +2663,8 @@ static int mlx5_vdpa_dev_add(struct vdpa_mgmt_dev *v_mdev, const char *name,
+ 	if (err)
+ 		goto err_mr;
  
- 	list_del(&c->list);
- 	mutex_unlock(&bch_register_lock);
-+	if (ca)
-+		kobject_put(&ca->kobj);
- 
- 	pr_info("Cache set %pU unregistered\n", c->set_uuid);
- 	wake_up(&unregister_wait);
++	ndev->cvq_ent.mvdev = mvdev;
++	INIT_WORK(&ndev->cvq_ent.work, mlx5_cvq_kick_handler);
+ 	mvdev->wq = create_singlethread_workqueue("mlx5_vdpa_wq");
+ 	if (!mvdev->wq) {
+ 		err = -ENOMEM;
 -- 
-1.8.3.1
+2.18.1
 
