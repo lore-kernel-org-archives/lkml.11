@@ -2,123 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C290BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 05:26:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F49CC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 05:27:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232462AbiC2F2E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 01:28:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35184 "EHLO
+        id S232486AbiC2F2v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 01:28:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231912AbiC2F2B (ORCPT
+        with ESMTP id S231912AbiC2F2t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 01:28:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 915541D78B3;
-        Mon, 28 Mar 2022 22:26:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BE0161449;
-        Tue, 29 Mar 2022 05:26:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FD36C2BBE4;
-        Tue, 29 Mar 2022 05:26:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648531578;
-        bh=F94j0WiJmE2n0U54lTd9JyGb37irQw7Kn+4tBx3Tek8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rfKOAIHc3UKdfQCh+KF0GLb4Ygz1rsSRoqsaN84U/rjKkufMQbBDESgGP71GMbPRB
-         llDZ5wx/fJIZ16qJwRp0QHtsq7IJqi1JgBVHVqJDZp6dVfGR+KLr/7rhPq76AqBd9H
-         JXsh0GTY+o2gfJf8MwG4LgrU4wShbcwBMR65lAXs=
-Date:   Tue, 29 Mar 2022 07:26:15 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Tanjore Suresh <tansuresh@google.com>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
-        linux-pci@vger.kernel.org
-Subject: Re: [PATCH v1 0/3] Asynchronous shutdown interface and example
- implementation
-Message-ID: <YkKYd3DIduUyuEso@kroah.com>
-References: <20220328230008.3587975-1-tansuresh@google.com>
+        Tue, 29 Mar 2022 01:28:49 -0400
+Received: from nksmu.kylinos.cn (mailgw.kylinos.cn [123.150.8.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B9631DB898;
+        Mon, 28 Mar 2022 22:27:04 -0700 (PDT)
+X-UUID: d4b4f838eda744c09a499bf8ad02f325-20220329
+X-GW-Reason: 11101
+X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HNeS6uumcgOimgeWuoeaguA==
+X-Content-Feature: ica/max.line-size 167
+        audit/email.address 1
+        meta/cnt.alert 1
+X-UUID: d4b4f838eda744c09a499bf8ad02f325-20220329
+Received: from cs2c.com.cn [(172.17.111.24)] by nksmu.kylinos.cn
+        (envelope-from <lizhenneng@kylinos.cn>)
+        (Generic MTA)
+        with ESMTP id 1875178512; Tue, 29 Mar 2022 11:05:39 +0800
+X-ns-mid: postfix-624277B6-7434123726
+Received: from localhost.localdomain (unknown [172.20.108.41])
+        by cs2c.com.cn (NSMail) with ESMTPA id 4A474383C640;
+        Tue, 29 Mar 2022 03:06:30 +0000 (UTC)
+From:   Zhenneng Li <lizhenneng@kylinos.cn>
+To:     Alex Deucher <alexander.deucher@amd.com>
+Cc:     =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Pan Xinhui <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
+        Evan Quan <evan.quan@amd.com>,
+        Guchun Chen <guchun.chen@amd.com>,
+        Jack Zhang <Jack.Zhang1@amd.com>,
+        Lijo Lazar <lijo.lazar@amd.com>,
+        Kevin Wang <kevin1.wang@amd.com>,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linaro-mm-sig@lists.linaro.org, Zhenneng Li <lizhenneng@kylinos.cn>
+Subject: [PATCH next,v2] kernel: Add 1 ms delay to init handler to fix s3 resume hang
+Date:   Tue, 29 Mar 2022 11:05:47 +0800
+Message-Id: <20220329030547.286265-1-lizhenneng@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220328230008.3587975-1-tansuresh@google.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 04:00:05PM -0700, Tanjore Suresh wrote:
-> Problem:
-> 
-> Some of our machines are configured with  many NVMe devices and
-> are validated for strict shutdown time requirements. Each NVMe
-> device plugged into the system, typicaly takes about 4.5 secs
-> to shutdown. A system with 16 such NVMe devices will takes
-> approximately 80 secs to shutdown and go through reboot.
-> 
-> The current shutdown APIs as defined at bus level is defined to be
-> synchronous. Therefore, more devices are in the system the greater
-> the time it takes to shutdown. This shutdown time significantly
-> contributes the machine reboot time.
-> 
-> Solution:
-> 
-> This patch set proposes an asynchronous shutdown interface at bus level,
-> modifies the core driver, device shutdown routine to exploit the
-> new interface while maintaining backward compatibility with synchronous
-> implementation already existing (Patch 1 of 3) and exploits new interface
-> to enable all PCI-E based devices to use asynchronous interface semantics
-> if necessary (Patch 2 of 3). The implementation at PCI-E level also works
-> in a backward compatible way, to allow exiting device implementation
-> to work with current synchronous semantics. Only show cases an example
-> implementation for NVMe device to exploit this asynchronous shutdown
-> interface. (Patch 3 of 3).
-> 
-> Tanjore Suresh (3):
->   driver core: Support asynchronous driver shutdown
->   PCI: Support asynchronous shutdown
->   nvme: Add async shutdown support
-> 
->  drivers/base/core.c        | 39 ++++++++++++++++++-
->  drivers/nvme/host/core.c   | 28 +++++++++----
->  drivers/nvme/host/nvme.h   |  8 ++++
->  drivers/nvme/host/pci.c    | 80 ++++++++++++++++++++++++--------------
->  drivers/pci/pci-driver.c   | 17 ++++++--
->  include/linux/device/bus.h | 10 +++++
->  include/linux/pci.h        |  2 +
->  7 files changed, 144 insertions(+), 40 deletions(-)
-> 
-> -- 
-> 2.35.1.1021.g381101b075-goog
-> 
+This is a workaround for s3 resume hang for r7 340(amdgpu).
+When we test s3 with r7 340 on arm64 platform, graphics card will hang up,
+the error message are as follows:
+Mar  4 01:14:11 greatwall-GW-XXXXXX-XXX kernel: [    1.599374][ 7] [  T291] amdgpu 0000:02:00.0: fb0: amdgpudrmfb frame buffer device
+Mar  4 01:14:11 greatwall-GW-XXXXXX-XXX kernel: [    1.612869][ 7] [  T291] [drm:amdgpu_device_ip_late_init [amdgpu]] *ERROR* late_init of IP block <si_dpm> failed -22
+Mar  4 01:14:11 greatwall-GW-XXXXXX-XXX kernel: [    1.623392][ 7] [  T291] amdgpu 0000:02:00.0: amdgpu_device_ip_late_init failed
+Mar  4 01:14:11 greatwall-GW-XXXXXX-XXX kernel: [    1.630696][ 7] [  T291] amdgpu 0000:02:00.0: Fatal error during GPU init
+Mar  4 01:14:11 greatwall-GW-XXXXXX-XXX kernel: [    1.637477][ 7] [  T291] [drm] amdgpu: finishing device.
 
-Hi,
+On the following hardware:
+lspci -nn -s 05:00.0
+05:00.0 VGA compatible controller [0300]: Advanced Micro Devices, Inc. [AMD/ATI] Oland [Radeon HD 8570 / R7 240/340 / Radeon 520 OEM] [1002:6611] (rev 87)
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
+Signed-off-by: Zhenneng Li <lizhenneng@kylinos.cn>
+---
+ drivers/gpu/drm/amd/amdgpu/amdgpu_device.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-You are receiving this message because of the following common error(s)
-as indicated below:
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+index 3987ecb24ef4..1eced991b5b2 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+@@ -2903,6 +2903,8 @@ static void amdgpu_device_delayed_init_work_handler(struct work_struct *work)
+ 		container_of(work, struct amdgpu_device, delayed_init_work.work);
+ 	int r;
+ 
++	mdelay(1);
++
+ 	r = amdgpu_ib_ring_tests(adev);
+ 	if (r)
+ 		DRM_ERROR("ib ring test failed (%d).\n", r);
+-- 
+2.25.1
 
-- This looks like a new version of a previously submitted patch, but you
-  did not list below the --- line any changes from the previous version.
-  Please read the section entitled "The canonical patch format" in the
-  kernel file, Documentation/SubmittingPatches for what needs to be done
-  here to properly describe this.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
