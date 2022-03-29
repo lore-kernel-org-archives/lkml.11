@@ -2,149 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15055C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 11:17:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36107C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 11:20:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235668AbiC2LT0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 07:19:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48674 "EHLO
+        id S235672AbiC2LV5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 07:21:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235271AbiC2LTS (ORCPT
+        with ESMTP id S232456AbiC2LV4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 07:19:18 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41CAB4DF45;
-        Tue, 29 Mar 2022 04:17:34 -0700 (PDT)
-Received: from kwepemi100022.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KSRn41g4CzCrBv;
-        Tue, 29 Mar 2022 19:15:20 +0800 (CST)
-Received: from kwepemm600015.china.huawei.com (7.193.23.52) by
- kwepemi100022.china.huawei.com (7.221.188.126) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 29 Mar 2022 19:17:32 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600015.china.huawei.com
- (7.193.23.52) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 29 Mar
- 2022 19:17:31 +0800
-From:   ChenXiaoSong <chenxiaosong2@huawei.com>
-To:     <trond.myklebust@hammerspace.com>, <anna@kernel.org>,
-        <bjschuma@netapp.com>
-CC:     <linux-nfs@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <chenxiaosong2@huawei.com>, <liuyongqiang13@huawei.com>,
-        <yi.zhang@huawei.com>, <zhangxiaoxu5@huawei.com>, <tao.lyu@epfl.ch>
-Subject: [PATCH -next 2/2] NFSv4: fix open failure with O_ACCMODE flag
-Date:   Tue, 29 Mar 2022 19:32:08 +0800
-Message-ID: <20220329113208.2466000-3-chenxiaosong2@huawei.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220329113208.2466000-1-chenxiaosong2@huawei.com>
-References: <20220329113208.2466000-1-chenxiaosong2@huawei.com>
+        Tue, 29 Mar 2022 07:21:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDD075DA3E;
+        Tue, 29 Mar 2022 04:20:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9B19CB816A6;
+        Tue, 29 Mar 2022 11:20:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98C9AC2BBE4;
+        Tue, 29 Mar 2022 11:20:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1648552810;
+        bh=Rr6aenliHjbw+hrV9jmcgT+R44dJusOEZT/eAAlE8Us=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mkjoVAXFwGqTb6wIE6IgH2NTIp9vo8say1ZmpUO6Jxvf+Uafw3AbKCO9MH1kWFz/3
+         32YaAxrNL19Tyk+y+59CPM+Id3aMa7oiSdYFfP2MT9R5ydgWotFTe2NYz3rvgQij9x
+         X84CEyJE87NwqgxPx+wCSIylpFHEmzPv3c5Vi2Rg=
+Date:   Tue, 29 Mar 2022 13:20:07 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Kant Fan <kant@allwinnertech.com>
+Cc:     rui.zhang@intel.com, daniel.lezcano@linaro.org,
+        javi.merino@kernel.org, edubezval@gmail.com, orjan.eide@arm.com,
+        amitk@kernel.org, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        allwinner-opensource-support@allwinnertech.com,
+        stable@vger.kernel.org
+Subject: Re: [PATCH] thermal: devfreq_cooling: use local ops instead of
+ global ops
+Message-ID: <YkLrZ9OkJz2R8tU6@kroah.com>
+References: <20220325094436.101419-1-kant@allwinnertech.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600015.china.huawei.com (7.193.23.52)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220325094436.101419-1-kant@allwinnertech.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-open() with O_ACCMODE|O_DIRECT flags secondly will fail.
+On Fri, Mar 25, 2022 at 05:44:36PM +0800, Kant Fan wrote:
+> commit 7b62935828266658714f81d4e9176edad808dc70 upstream.
 
-Reproducer:
-  1. mount -t nfs -o vers=4.2 $server_ip:/ /mnt/
-  2. fd = open("/mnt/file", O_ACCMODE|O_DIRECT|O_CREAT)
-  3. close(fd)
-  4. fd = open("/mnt/file", O_ACCMODE|O_DIRECT)
+I do not see this commit in Linus's tree :(
 
-Server nfsd4_decode_share_access() will fail with error nfserr_bad_xdr when
-client use incorrect share access mode of 0.
+confused,
 
-Fix this by using NFS4_SHARE_ACCESS_BOTH share access mode in client,
-just like firstly opening.
-
-Fixes: ce4ef7c0a8a05 ("NFS: Split out NFS v4 file operations")
-Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
----
- fs/nfs/dir.c      | 10 ----------
- fs/nfs/internal.h | 10 ++++++++++
- fs/nfs/nfs4file.c |  6 ++++--
- 3 files changed, 14 insertions(+), 12 deletions(-)
-
-diff --git a/fs/nfs/dir.c b/fs/nfs/dir.c
-index 75cb1cbe4cde..911bdb35eb08 100644
---- a/fs/nfs/dir.c
-+++ b/fs/nfs/dir.c
-@@ -1853,16 +1853,6 @@ const struct dentry_operations nfs4_dentry_operations = {
- };
- EXPORT_SYMBOL_GPL(nfs4_dentry_operations);
- 
--static fmode_t flags_to_mode(int flags)
--{
--	fmode_t res = (__force fmode_t)flags & FMODE_EXEC;
--	if ((flags & O_ACCMODE) != O_WRONLY)
--		res |= FMODE_READ;
--	if ((flags & O_ACCMODE) != O_RDONLY)
--		res |= FMODE_WRITE;
--	return res;
--}
--
- static struct nfs_open_context *create_nfs_open_context(struct dentry *dentry, int open_flags, struct file *filp)
- {
- 	return alloc_nfs_open_context(dentry, flags_to_mode(open_flags), filp);
-diff --git a/fs/nfs/internal.h b/fs/nfs/internal.h
-index 2de7c56a1fbe..58e618a5d88e 100644
---- a/fs/nfs/internal.h
-+++ b/fs/nfs/internal.h
-@@ -42,6 +42,16 @@ static inline bool nfs_lookup_is_soft_revalidate(const struct dentry *dentry)
- 	return true;
- }
- 
-+static inline fmode_t flags_to_mode(int flags)
-+{
-+	fmode_t res = (__force fmode_t)flags & FMODE_EXEC;
-+	if ((flags & O_ACCMODE) != O_WRONLY)
-+		res |= FMODE_READ;
-+	if ((flags & O_ACCMODE) != O_RDONLY)
-+		res |= FMODE_WRITE;
-+	return res;
-+}
-+
- /*
-  * Note: RFC 1813 doesn't limit the number of auth flavors that
-  * a server can return, so make something up.
-diff --git a/fs/nfs/nfs4file.c b/fs/nfs/nfs4file.c
-index c178db86a6e8..e34af48fb4f4 100644
---- a/fs/nfs/nfs4file.c
-+++ b/fs/nfs/nfs4file.c
-@@ -32,6 +32,7 @@ nfs4_file_open(struct inode *inode, struct file *filp)
- 	struct dentry *parent = NULL;
- 	struct inode *dir;
- 	unsigned openflags = filp->f_flags;
-+	fmode_t f_mode;
- 	struct iattr attr;
- 	int err;
- 
-@@ -50,8 +51,9 @@ nfs4_file_open(struct inode *inode, struct file *filp)
- 	if (err)
- 		return err;
- 
-+	f_mode = filp->f_mode;
- 	if ((openflags & O_ACCMODE) == 3)
--		openflags--;
-+		f_mode |= flags_to_mode(openflags);
- 
- 	/* We can't create new files here */
- 	openflags &= ~(O_CREAT|O_EXCL);
-@@ -59,7 +61,7 @@ nfs4_file_open(struct inode *inode, struct file *filp)
- 	parent = dget_parent(dentry);
- 	dir = d_inode(parent);
- 
--	ctx = alloc_nfs_open_context(file_dentry(filp), filp->f_mode, filp);
-+	ctx = alloc_nfs_open_context(file_dentry(filp), f_mode, filp);
- 	err = PTR_ERR(ctx);
- 	if (IS_ERR(ctx))
- 		goto out;
--- 
-2.31.1
-
+greg k-h
