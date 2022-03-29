@@ -2,268 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43354C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 04:09:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A43A6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 04:09:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231939AbiC2EKq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 00:10:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38532 "EHLO
+        id S231920AbiC2EK4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 00:10:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231598AbiC2EKj (ORCPT
+        with ESMTP id S231919AbiC2EKn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 00:10:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EF1511A6366
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 21:08:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648526935;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FdtzVbHEVVTrIVUf/a9wd2B8iWz4QyPeNZt3tZlqNJw=;
-        b=hBJJFrDzfpMGkDcBRZ2zAvloUUGvPBFLnVnwyw9HStSwHtuJe1DKcfvyWJhLkwll0LPa24
-        y6nJEOC7nv+kVCJ+yJxg81JxPHUmr4s7zIzB4Nz89DUq2U6azeoJodiy7ZEfPKSLpRwXKE
-        7SxRjtIUm2TVGByWd4w0HIyNYYqK/cA=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-30-v0vLYg4mMxOiw9lxARYWRw-1; Tue, 29 Mar 2022 00:08:53 -0400
-X-MC-Unique: v0vLYg4mMxOiw9lxARYWRw-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E0ABA802809;
-        Tue, 29 Mar 2022 04:08:52 +0000 (UTC)
-Received: from localhost.localdomain (ovpn-13-210.pek2.redhat.com [10.72.13.210])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 76108401E64;
-        Tue, 29 Mar 2022 04:08:49 +0000 (UTC)
-From:   Jason Wang <jasowang@redhat.com>
-To:     mst@redhat.com, jasowang@redhat.com
-Cc:     virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, Eli Cohen <elic@nvidia.com>
-Subject: [PATCH V2 3/3] vdpa/mlx5: Use consistent RQT size
-Date:   Tue, 29 Mar 2022 12:08:40 +0800
-Message-Id: <20220329040840.3419-3-jasowang@redhat.com>
-In-Reply-To: <20220329040840.3419-1-jasowang@redhat.com>
-References: <20220329040840.3419-1-jasowang@redhat.com>
+        Tue, 29 Mar 2022 00:10:43 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 825141DA4A;
+        Mon, 28 Mar 2022 21:09:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648526940; x=1680062940;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=II+YlVdtYYb+Q/uCpREGOhsf8Od4153BKeY2Dz+3nsc=;
+  b=MAshLrMYSKt/K6fiqPK3zP/azTgXW9UNShqvleeRW7kb1o6jM5wtgQXS
+   Ch2eqc37Zm8o1y8WWKNKL+udLBPCLsYcCxbKfL/2ZSOkZ1k1UYlqJTHMx
+   oeWdgTJak1cXc5Vs/RyEZcphYPkWR0WS8q0hLRb0iinDNSZV25252KtS9
+   47dakaw/QhSueFdwgrR9vXXY69u8aYwQEjZHSDNrx3QS9zvMbJNKHom+2
+   ksDD+EPSx6L8uJY+fBw0fDkXaGZIXbYHmHifiU0bgy85D/ylH3EV0MBk/
+   QacIY1D/DbGeOwcLYQJpf+J1SiUjBlqf5YvAG0cJsBe8AcGFp49kYVgAE
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="284051281"
+X-IronPort-AV: E=Sophos;i="5.90,219,1643702400"; 
+   d="scan'208";a="284051281"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 21:09:00 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,219,1643702400"; 
+   d="scan'208";a="585427795"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 28 Mar 2022 21:08:54 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nZ3A6-0002d5-7k; Tue, 29 Mar 2022 04:08:54 +0000
+Date:   Tue, 29 Mar 2022 12:08:22 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Roberto Sassu <roberto.sassu@huawei.com>, corbet@lwn.net,
+        viro@zeniv.linux.org.uk, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kpsingh@kernel.org, shuah@kernel.org,
+        mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com,
+        zohar@linux.ibm.com
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-integrity@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Roberto Sassu <roberto.sassu@huawei.com>
+Subject: Re: [PATCH 16/18] bpf-preload: Do kernel mount to ensure that pinned
+ objects don't disappear
+Message-ID: <202203291256.TUOyKEtD-lkp@intel.com>
+References: <20220328175033.2437312-17-roberto.sassu@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220328175033.2437312-17-roberto.sassu@huawei.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eli Cohen <elic@nvidia.com>
+Hi Roberto,
 
-The current code evaluates RQT size based on the configured number of
-virtqueues. This can raise an issue in the following scenario:
+Thank you for the patch! Yet something to improve:
 
-Assume MQ was negotiated.
-1. mlx5_vdpa_set_map() gets called.
-2. handle_ctrl_mq() is called setting cur_num_vqs to some value, lower
-   than the configured max VQs.
-3. A second set_map gets called, but now a smaller number of VQs is used
-   to evaluate the size of the RQT.
-4. handle_ctrl_mq() is called with a value larger than what the RQT can
-   hold. This will emit errors and the driver state is compromised.
+[auto build test ERROR on bpf-next/master]
+[also build test ERROR on linus/master next-20220328]
+[cannot apply to bpf/master v5.17]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-To fix this, we use a new field in struct mlx5_vdpa_net to hold the
-required number of entries in the RQT. This value is evaluated in
-mlx5_vdpa_set_driver_features() where we have the negotiated features
-all set up.
+url:    https://github.com/intel-lab-lkp/linux/commits/Roberto-Sassu/bpf-Secure-and-authenticated-preloading-of-eBPF-programs/20220329-015829
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+config: hexagon-randconfig-r041-20220328 (https://download.01.org/0day-ci/archive/20220329/202203291256.TUOyKEtD-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0f6d9501cf49ce02937099350d08f20c4af86f3d)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/eddbb1ec1e92ba00c4acc9f123769265e17e8e40
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Roberto-Sassu/bpf-Secure-and-authenticated-preloading-of-eBPF-programs/20220329-015829
+        git checkout eddbb1ec1e92ba00c4acc9f123769265e17e8e40
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash
 
-In addtion to that, we take into consideration the max capability of RQT
-entries early when the device is added so we don't need to take consider
-it when creating the RQT.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Last, we remove the use of mlx5_vdpa_max_qps() which just returns the
-max_vas / 2 and make the code clearer.
+All errors (new ones prefixed by >>):
 
-Fixes: 52893733f2c5 ("vdpa/mlx5: Add multiqueue support")
-Signed-off-by: Eli Cohen <elic@nvidia.com>
----
- drivers/vdpa/mlx5/net/mlx5_vnet.c | 61 +++++++++++--------------------
- 1 file changed, 21 insertions(+), 40 deletions(-)
+   kernel/bpf/inode.c:25:37: error: use of undeclared identifier 'CONFIG_BPF_PRELOAD_LIST'
+   static char *bpf_preload_list_str = CONFIG_BPF_PRELOAD_LIST;
+                                       ^
+>> kernel/bpf/inode.c:1026:13: error: redefinition of 'mount_bpffs'
+   void __init mount_bpffs(void)
+               ^
+   include/linux/bpf.h:1146:27: note: previous definition is here
+   static inline void __init mount_bpffs(void)
+                             ^
+   2 errors generated.
 
-diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-index 53b8c1a68f90..61bec1ed0bc9 100644
---- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-+++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-@@ -161,6 +161,7 @@ struct mlx5_vdpa_net {
- 	struct mlx5_flow_handle *rx_rule_mcast;
- 	bool setup;
- 	u32 cur_num_vqs;
-+	u32 rqt_size;
- 	struct notifier_block nb;
- 	struct vdpa_callback config_cb;
- 	struct mlx5_vdpa_wq_ent cvq_ent;
-@@ -204,17 +205,12 @@ static __virtio16 cpu_to_mlx5vdpa16(struct mlx5_vdpa_dev *mvdev, u16 val)
- 	return __cpu_to_virtio16(mlx5_vdpa_is_little_endian(mvdev), val);
- }
- 
--static inline u32 mlx5_vdpa_max_qps(int max_vqs)
--{
--	return max_vqs / 2;
--}
--
- static u16 ctrl_vq_idx(struct mlx5_vdpa_dev *mvdev)
- {
- 	if (!(mvdev->actual_features & BIT_ULL(VIRTIO_NET_F_MQ)))
- 		return 2;
- 
--	return 2 * mlx5_vdpa_max_qps(mvdev->max_vqs);
-+	return mvdev->max_vqs;
- }
- 
- static bool is_ctrl_vq_idx(struct mlx5_vdpa_dev *mvdev, u16 idx)
-@@ -1236,25 +1232,13 @@ static void teardown_vq(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *
- static int create_rqt(struct mlx5_vdpa_net *ndev)
- {
- 	__be32 *list;
--	int max_rqt;
- 	void *rqtc;
- 	int inlen;
- 	void *in;
- 	int i, j;
- 	int err;
--	int num;
--
--	if (!(ndev->mvdev.actual_features & BIT_ULL(VIRTIO_NET_F_MQ)))
--		num = 1;
--	else
--		num = ndev->cur_num_vqs / 2;
- 
--	max_rqt = min_t(int, roundup_pow_of_two(num),
--			1 << MLX5_CAP_GEN(ndev->mvdev.mdev, log_max_rqt_size));
--	if (max_rqt < 1)
--		return -EOPNOTSUPP;
--
--	inlen = MLX5_ST_SZ_BYTES(create_rqt_in) + max_rqt * MLX5_ST_SZ_BYTES(rq_num);
-+	inlen = MLX5_ST_SZ_BYTES(create_rqt_in) + ndev->rqt_size * MLX5_ST_SZ_BYTES(rq_num);
- 	in = kzalloc(inlen, GFP_KERNEL);
- 	if (!in)
- 		return -ENOMEM;
-@@ -1263,12 +1247,12 @@ static int create_rqt(struct mlx5_vdpa_net *ndev)
- 	rqtc = MLX5_ADDR_OF(create_rqt_in, in, rqt_context);
- 
- 	MLX5_SET(rqtc, rqtc, list_q_type, MLX5_RQTC_LIST_Q_TYPE_VIRTIO_NET_Q);
--	MLX5_SET(rqtc, rqtc, rqt_max_size, max_rqt);
-+	MLX5_SET(rqtc, rqtc, rqt_max_size, ndev->rqt_size);
- 	list = MLX5_ADDR_OF(rqtc, rqtc, rq_num[0]);
--	for (i = 0, j = 0; i < max_rqt; i++, j += 2)
--		list[i] = cpu_to_be32(ndev->vqs[j % (2 * num)].virtq_id);
-+	for (i = 0, j = 0; i < ndev->rqt_size; i++, j += 2)
-+		list[i] = cpu_to_be32(ndev->vqs[j % ndev->cur_num_vqs].virtq_id);
- 
--	MLX5_SET(rqtc, rqtc, rqt_actual_size, max_rqt);
-+	MLX5_SET(rqtc, rqtc, rqt_actual_size, ndev->rqt_size);
- 	err = mlx5_vdpa_create_rqt(&ndev->mvdev, in, inlen, &ndev->res.rqtn);
- 	kfree(in);
- 	if (err)
-@@ -1282,19 +1266,13 @@ static int create_rqt(struct mlx5_vdpa_net *ndev)
- static int modify_rqt(struct mlx5_vdpa_net *ndev, int num)
- {
- 	__be32 *list;
--	int max_rqt;
- 	void *rqtc;
- 	int inlen;
- 	void *in;
- 	int i, j;
- 	int err;
- 
--	max_rqt = min_t(int, roundup_pow_of_two(ndev->cur_num_vqs / 2),
--			1 << MLX5_CAP_GEN(ndev->mvdev.mdev, log_max_rqt_size));
--	if (max_rqt < 1)
--		return -EOPNOTSUPP;
--
--	inlen = MLX5_ST_SZ_BYTES(modify_rqt_in) + max_rqt * MLX5_ST_SZ_BYTES(rq_num);
-+	inlen = MLX5_ST_SZ_BYTES(modify_rqt_in) + ndev->rqt_size * MLX5_ST_SZ_BYTES(rq_num);
- 	in = kzalloc(inlen, GFP_KERNEL);
- 	if (!in)
- 		return -ENOMEM;
-@@ -1305,10 +1283,10 @@ static int modify_rqt(struct mlx5_vdpa_net *ndev, int num)
- 	MLX5_SET(rqtc, rqtc, list_q_type, MLX5_RQTC_LIST_Q_TYPE_VIRTIO_NET_Q);
- 
- 	list = MLX5_ADDR_OF(rqtc, rqtc, rq_num[0]);
--	for (i = 0, j = 0; i < max_rqt; i++, j += 2)
-+	for (i = 0, j = 0; i < ndev->rqt_size; i++, j += 2)
- 		list[i] = cpu_to_be32(ndev->vqs[j % num].virtq_id);
- 
--	MLX5_SET(rqtc, rqtc, rqt_actual_size, max_rqt);
-+	MLX5_SET(rqtc, rqtc, rqt_actual_size, ndev->rqt_size);
- 	err = mlx5_vdpa_modify_rqt(&ndev->mvdev, in, inlen, ndev->res.rqtn);
- 	kfree(in);
- 	if (err)
-@@ -1582,7 +1560,7 @@ static virtio_net_ctrl_ack handle_ctrl_mq(struct mlx5_vdpa_dev *mvdev, u8 cmd)
- 
- 		newqps = mlx5vdpa16_to_cpu(mvdev, mq.virtqueue_pairs);
- 		if (newqps < VIRTIO_NET_CTRL_MQ_VQ_PAIRS_MIN ||
--		    newqps > mlx5_vdpa_max_qps(mvdev->max_vqs))
-+		    newqps > ndev->rqt_size)
- 			break;
- 
- 		if (ndev->cur_num_vqs == 2 * newqps) {
-@@ -1946,7 +1924,7 @@ static int setup_virtqueues(struct mlx5_vdpa_dev *mvdev)
- 	int err;
- 	int i;
- 
--	for (i = 0; i < 2 * mlx5_vdpa_max_qps(mvdev->max_vqs); i++) {
-+	for (i = 0; i < mvdev->max_vqs; i++) {
- 		err = setup_vq(ndev, &ndev->vqs[i]);
- 		if (err)
- 			goto err_vq;
-@@ -2017,9 +1995,11 @@ static int mlx5_vdpa_set_driver_features(struct vdpa_device *vdev, u64 features)
- 
- 	ndev->mvdev.actual_features = features & ndev->mvdev.mlx_features;
- 	if (ndev->mvdev.actual_features & BIT_ULL(VIRTIO_NET_F_MQ))
--		ndev->cur_num_vqs = 2 * mlx5vdpa16_to_cpu(mvdev, ndev->config.max_virtqueue_pairs);
-+		ndev->rqt_size = mlx5vdpa16_to_cpu(mvdev, ndev->config.max_virtqueue_pairs);
- 	else
--		ndev->cur_num_vqs = 2;
-+		ndev->rqt_size = 1;
-+
-+	ndev->cur_num_vqs = 2 * ndev->rqt_size;
- 
- 	update_cvq_info(mvdev);
- 	return err;
-@@ -2486,7 +2466,7 @@ static void init_mvqs(struct mlx5_vdpa_net *ndev)
- 	struct mlx5_vdpa_virtqueue *mvq;
- 	int i;
- 
--	for (i = 0; i < 2 * mlx5_vdpa_max_qps(ndev->mvdev.max_vqs); ++i) {
-+	for (i = 0; i < ndev->mvdev.max_vqs; ++i) {
- 		mvq = &ndev->vqs[i];
- 		memset(mvq, 0, offsetof(struct mlx5_vdpa_virtqueue, ri));
- 		mvq->index = i;
-@@ -2606,7 +2586,8 @@ static int mlx5_vdpa_dev_add(struct vdpa_mgmt_dev *v_mdev, const char *name,
- 		return -EOPNOTSUPP;
- 	}
- 
--	max_vqs = MLX5_CAP_DEV_VDPA_EMULATION(mdev, max_num_virtio_queues);
-+	max_vqs = min_t(int, MLX5_CAP_DEV_VDPA_EMULATION(mdev, max_num_virtio_queues),
-+			1 << MLX5_CAP_GEN(mdev, log_max_rqt_size));
- 	if (max_vqs < 2) {
- 		dev_warn(mdev->device,
- 			 "%d virtqueues are supported. At least 2 are required\n",
-@@ -2670,7 +2651,7 @@ static int mlx5_vdpa_dev_add(struct vdpa_mgmt_dev *v_mdev, const char *name,
- 		ndev->mvdev.mlx_features |= BIT_ULL(VIRTIO_NET_F_MAC);
- 	}
- 
--	config->max_virtqueue_pairs = cpu_to_mlx5vdpa16(mvdev, mlx5_vdpa_max_qps(max_vqs));
-+	config->max_virtqueue_pairs = cpu_to_mlx5vdpa16(mvdev, max_vqs / 2);
- 	mvdev->vdev.dma_dev = &mdev->pdev->dev;
- 	err = mlx5_vdpa_alloc_resources(&ndev->mvdev);
- 	if (err)
-@@ -2697,7 +2678,7 @@ static int mlx5_vdpa_dev_add(struct vdpa_mgmt_dev *v_mdev, const char *name,
- 	ndev->nb.notifier_call = event_handler;
- 	mlx5_notifier_register(mdev, &ndev->nb);
- 	mvdev->vdev.mdev = &mgtdev->mgtdev;
--	err = _vdpa_register_device(&mvdev->vdev, 2 * mlx5_vdpa_max_qps(max_vqs) + 1);
-+	err = _vdpa_register_device(&mvdev->vdev, max_vqs + 1);
- 	if (err)
- 		goto err_reg;
- 
+
+vim +/mount_bpffs +1026 kernel/bpf/inode.c
+
+  1025	
+> 1026	void __init mount_bpffs(void)
+
 -- 
-2.18.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
