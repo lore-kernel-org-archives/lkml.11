@@ -2,114 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31C76C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 11:39:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC1F0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 11:40:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235954AbiC2Lky (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 07:40:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60076 "EHLO
+        id S235977AbiC2Ll7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 07:41:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235387AbiC2Lkv (ORCPT
+        with ESMTP id S235250AbiC2Ll4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 07:40:51 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AA108EB56
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 04:39:08 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 22TBciHg083594;
-        Tue, 29 Mar 2022 06:38:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1648553925;
-        bh=CdYAIN7XqvtYBdmOgn+vkwITmsTrcIGAWqJUkyEBR7Q=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=ytRO/G113p9ql61f/Y/RfElo9oNxC2sqM9KBhDR+NJs9dN1l4W7UF7H2xg4/bVPpZ
-         YbhELC4A0W6j84wa4LC69pR+k9IZzuYyidi1KCb/35B7agKsSK/O+CznkBmxUfxgob
-         bDc6xMZyiDuVICQ0g80U61dIP1yAOzxNb6shmbfM=
-Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 22TBci8E094771
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 29 Mar 2022 06:38:44 -0500
-Received: from DLEE114.ent.ti.com (157.170.170.25) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 29
- Mar 2022 06:38:44 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE114.ent.ti.com
- (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 29 Mar 2022 06:38:44 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 22TBchVA051849;
-        Tue, 29 Mar 2022 06:38:44 -0500
-Date:   Tue, 29 Mar 2022 17:08:43 +0530
-From:   Pratyush Yadav <p.yadav@ti.com>
-To:     Vignesh Raghavendra <vigneshr@ti.com>
-CC:     Julia Lawall <julia.lawall@inria.fr>, <kbuild-all@lists.01.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>,
-        Michal Simek <monstr@monstr.eu>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Michael Walle <michael@walle.cc>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] mtd: spi-nor: fix minmax.cocci warnings
-Message-ID: <20220329113843.nngzktxoa6c5vxcw@ti.com>
-References: <alpine.DEB.2.22.394.2203260929310.3141@hadrien>
- <9a20ed24-be9d-bbec-19da-56c0ff68cbda@ti.com>
+        Tue, 29 Mar 2022 07:41:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20C2A201B5;
+        Tue, 29 Mar 2022 04:40:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B3C30B81739;
+        Tue, 29 Mar 2022 11:40:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6CD66C340F0;
+        Tue, 29 Mar 2022 11:40:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648554011;
+        bh=k0MUrQArqRvaVJ8NEHp+nxibDAS10ufLqavY82Lc0gQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ZSTqfU9eYWBNmk7yzTCteLGBqaDfjyBiUQQloDsGXKNbguNJqmUgiE/0RvlEmG68N
+         hjTxpIyvtvdqn+ly2RXLHAVTEP2rNplZWSDBPfzeWnYbth2LF7zU2aDbXXJI0k9HWh
+         so/mDrek8Q5QiwE6kaC/20DvE97+yfdbJRsrZS97mwHX4Wp4Keuvzigf6w1DIM1LIF
+         AcIrO32nyH+ASJhssI3YsGI9TP2bsLTmQ8n/B1gJMfvDFi90BHXJn7kfNATuJ4E2/7
+         GT7OQlDFzrRA8VogVsX5tu37Lr90aJ63eaOxbviCa2HslhXWjpqqOPRym4244wBpsz
+         3gxDU5AGJ3yMg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4E675EAC081;
+        Tue, 29 Mar 2022 11:40:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <9a20ed24-be9d-bbec-19da-56c0ff68cbda@ti.com>
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2] Bluetooth: fix dangling sco_conn and use-after-free in
+ sco_sock_timeout
+From:   patchwork-bot+bluetooth@kernel.org
+Message-Id: <164855401131.3735.13754664491252004228.git-patchwork-notify@kernel.org>
+Date:   Tue, 29 Mar 2022 11:40:11 +0000
+References: <20220326070853.v2.1.I67f8ad854ac2f48701902bfb34d6e2070011b779@changeid>
+In-Reply-To: <20220326070853.v2.1.I67f8ad854ac2f48701902bfb34d6e2070011b779@changeid>
+To:     Ying Hsu <yinghsu@chromium.org>
+Cc:     marcel@holtmann.org, chromeos-bluetooth-upstreaming@chromium.org,
+        syzbot+2bef95d3ab4daa10155b@syzkaller.appspotmail.com,
+        josephsih@chromium.org, davem@davemloft.net,
+        desmondcheongzx@gmail.com, kuba@kernel.org,
+        johan.hedberg@gmail.com, luiz.dentz@gmail.com, pabeni@redhat.com,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28/03/22 11:28AM, Vignesh Raghavendra wrote:
-> Hi.
-> 
-> On 26/03/22 2:00 pm, Julia Lawall wrote:
-> > From: kernel test robot <lkp@intel.com>
-> > 
-> > Use min to simplify the code.
-> > 
-> > Generated by: scripts/coccinelle/misc/minmax.cocci
-> > 
-> > Fixes: 2747bc2106aa ("mtd: spi-nor: Add dual parallel and stacked mode support")
-> > CC: Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > Signed-off-by: kernel test robot <lkp@intel.com>
-> > Signed-off-by: Julia Lawall <julia.lawall@inria.fr>
-> > ---
-> > 
-> > tree:   https://github.com/Xilinx/linux-xlnx xlnx_rebase_v5.15_LTS
-> > head:   1870e0fa79a9d58c6748c34550f3ccea0b515933
-> > commit: 2747bc2106aa429773d9a932c799aa6229595148 [840/1029] mtd: spi-nor: Add dual parallel and stacked mode support
-> > :::::: branch date: 34 hours ago
-> > :::::: commit date: 8 weeks ago
-> > 
-> >  drivers/mtd/spi-nor/core.c |    5 +----
-> >  1 file changed, 1 insertion(+), 4 deletions(-)
-> > 
-> > --- a/drivers/mtd/spi-nor/core.c
-> > +++ b/drivers/mtd/spi-nor/core.c
-> > @@ -2034,10 +2034,7 @@ static int spi_nor_read(struct mtd_info
-> >  						(offset << nor->shift);
-> >  			}
-> >  		}
-> > -		if (len < rem_bank_len)
-> > -			read_len = len;
-> > -		else
-> > -			read_len = rem_bank_len;
-> > +		read_len = min(len, rem_bank_len);
-> 
-> This chunk does not exist in mainline. Seems like xlnx local changes.
+Hello:
 
-Yes. I was very confused for a bit until I realized. It would be nice if 
-upstream maintainers and mailing lists were not Cced if the patch does 
-not target the mainline branch.
+This patch was applied to bluetooth/bluetooth-next.git (master)
+by Marcel Holtmann <marcel@holtmann.org>:
 
+On Sat, 26 Mar 2022 07:09:28 +0000 you wrote:
+> Connecting the same socket twice consecutively in sco_sock_connect()
+> could lead to a race condition where two sco_conn objects are created
+> but only one is associated with the socket. If the socket is closed
+> before the SCO connection is established, the timer associated with the
+> dangling sco_conn object won't be canceled. As the sock object is being
+> freed, the use-after-free problem happens when the timer callback
+> function sco_sock_timeout() accesses the socket. Here's the call trace:
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2] Bluetooth: fix dangling sco_conn and use-after-free in sco_sock_timeout
+    https://git.kernel.org/bluetooth/bluetooth-next/c/300cf0bfb43e
+
+You are awesome, thank you!
 -- 
-Regards,
-Pratyush Yadav
-Texas Instruments Inc.
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
