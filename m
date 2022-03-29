@@ -2,283 +2,523 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4C69C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 02:36:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D061C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 02:36:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230473AbiC2CiQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 22:38:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51434 "EHLO
+        id S230501AbiC2Cia (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 22:38:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230133AbiC2CiN (ORCPT
+        with ESMTP id S230478AbiC2Ci2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 22:38:13 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5847D140FD;
-        Mon, 28 Mar 2022 19:36:31 -0700 (PDT)
+        Mon, 28 Mar 2022 22:38:28 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C522467CE;
+        Mon, 28 Mar 2022 19:36:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648521391; x=1680057391;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=Lz6zY0gGvBsuQZ50O8Aya0Px7CWaNAoLOjuZAtZQN30=;
-  b=Qbnq36aXECyaa73HNFobeK2ZtUs/Mo/eDGO4glamC4B07nIAXW9E19kd
-   yY7X1UreaMEBAIg2jDqTnlsWwzVoLnjQK+EWff6DGXlIee9ugDVukK/MN
-   PZHbckpAD2+cCXuJzhwSL6SkSeAIHWMBaakwM+75izmuhLdRzTj7mtl1m
-   tJzJ5NmueeXJM7eLaQYbRtDwPSWgdv8Z4NFcmzXOWL+PrdTGOwVPGZ9RK
-   YLHA4B42vV6C+PC0JqJUcOIJ5hhrvBiEuD0/qK0iRPzEp8vC6BCdjMqNp
-   4PYZQ0sxqCYfvsCQj3n6iHHTLx1NkzHL69pVDdac9VK9U99CAJVgntlJ3
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="345581254"
+  t=1648521405; x=1680057405;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=hKt6d2gb7C5Xj7sEPjiRMEby7aQRFsTCoe/7eiQAtkk=;
+  b=DMBIVzeCZZQ4AWsTkwDssJn2hSahdEq7mK1D7YKMJJJQFdRZtyuZZvBz
+   PDR+rcDWyKhW606sh3jNTGA4FinWP9PPuviCheSyWHCMQPKxe3C+q0Ox+
+   7Nz0mTMaJjh6CrUpGEaVFqpJdPz6sRLqZ2uAHTtytCiflIa6odTqBAAXP
+   ZTqahN7jZYvI9XixJcfIUWXZ6hnsKQXV98NdilJlYPr9nJrZaXGTKiyTV
+   B4zf23NFyW3VwaBSDZFEcoxIykjAR5utkwdAXRNORnaeFyAvU0qBGRr+/
+   pktFSzQiboDhpA5OuTgp/DBRv6U6K1paley7+6K7X+AIGyNWkM6TkqSns
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="284040264"
 X-IronPort-AV: E=Sophos;i="5.90,219,1643702400"; 
-   d="scan'208";a="345581254"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 19:36:31 -0700
+   d="scan'208";a="284040264"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 19:36:45 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,219,1643702400"; 
-   d="scan'208";a="585408832"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orsmga001.jf.intel.com with ESMTP; 28 Mar 2022 19:36:30 -0700
-Received: from orsmsx609.amr.corp.intel.com (10.22.229.22) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Mon, 28 Mar 2022 19:36:30 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx609.amr.corp.intel.com (10.22.229.22) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Mon, 28 Mar 2022 19:36:30 -0700
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (104.47.74.41) by
- edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.21; Mon, 28 Mar 2022 19:36:29 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bq/N/dS15cVG/uBl/lA/Ak8MkGSacx4l7ccdA+UQIiPwB1IUFHj7wE3vAMF+y5+qXJip45iK1CDdGrbymlvMyoGN7NSR5PVGte8neKspJFDnmw7EX0Hh+FU2QDj5DgvJ/bB/z1132M6nbgTQO2oJlgS5silsZHe6CAkAR6GcsHOm6YMuIU4YLOP00IMAw4M+NYg3pjDemQVc3Dz3GFrracXRvEjKpgAsIaBvMGk6YOi17PsuMVjJiLiZ+RCYhSCGXNUNWblO+Dx1JALX3HUJQyZbQJx2yJHTwlpRRSIOpyZcl67VsiOo4E8ky9h0xqeb4nKYjB1R/yY+zWhhAj7Zyg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Lz6zY0gGvBsuQZ50O8Aya0Px7CWaNAoLOjuZAtZQN30=;
- b=Y4uuRav8wTY1Jf9ZxSx/wtlxGEUbr4HixHG1WA49iMbXVpnaDPLpk3ym3GfNnN8Y4kHvmFpxhlay3TKeuz3n3P77fbTpK4vO3DuJI0MwIsC5eQt2cMKZIaRAqdBPqQwRKC+frKCacAgG1fz8F/OTKuKN/ETd9oiSGNS4lv9YO+Z9QNJMF3EANN/zvuyzMp5vTr0aWnjFYGjmeVSGumA2fZ3jNqBCeYSFR/wHMb6w3USSsO0w9tVUzMAAZFWCJpZZcA4unSeDgu6VtD3Y2VPHwE7ebgorMS7qCV3p96kWQd/mq9J1XpR/qKSpTcKaanMdWp4Ld+ROoViJg3nCwUQUug==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by DM6PR11MB4361.namprd11.prod.outlook.com (2603:10b6:5:1df::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.19; Tue, 29 Mar
- 2022 02:36:27 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::4df7:2fc6:c7cf:ffa0]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::4df7:2fc6:c7cf:ffa0%4]) with mapi id 15.20.5102.023; Tue, 29 Mar 2022
- 02:36:26 +0000
-From:   "Tian, Kevin" <kevin.tian@intel.com>
-To:     "Huang, Kai" <kai.huang@intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "Gleixner, Thomas" <thomas.gleixner@intel.com>
-CC:     "Hansen, Dave" <dave.hansen@intel.com>,
-        "Christopherson,, Sean" <seanjc@google.com>,
-        "pbonzini@redhat.com" <pbonzini@redhat.com>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "sathyanarayanan.kuppuswamy@linux.intel.com" 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "Luck, Tony" <tony.luck@intel.com>,
-        "ak@linux.intel.com" <ak@linux.intel.com>,
-        "Williams, Dan J" <dan.j.williams@intel.com>,
-        "Yamahata, Isaku" <isaku.yamahata@intel.com>
-Subject: RE: [PATCH v2 04/21] x86/virt/tdx: Add skeleton for detecting and
- initializing TDX on demand
-Thread-Topic: [PATCH v2 04/21] x86/virt/tdx: Add skeleton for detecting and
- initializing TDX on demand
-Thread-Index: AQHYNsgzm2oe8d+tekOJ9ppfgUsWm6zMfiBAgAeiz4CAAGozsIAAEnGAgAAOOPCAANRagIAAO/Ug
-Date:   Tue, 29 Mar 2022 02:36:26 +0000
-Message-ID: <BN9PR11MB5276C837FE25BACCD53DB5D58C1E9@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <cover.1647167475.git.kai.huang@intel.com>
-         <279af00f90a93491d5ec86672506146153909e5c.1647167475.git.kai.huang@intel.com>
-         <BL1PR11MB52713CA82D52248B0905C91D8C189@BL1PR11MB5271.namprd11.prod.outlook.com>
-         <a68b378a40310c38f731f4bc7f0a9cc0d89efe92.camel@intel.com>
-         <BN9PR11MB52760B743E208684A098B61C8C1D9@BN9PR11MB5276.namprd11.prod.outlook.com>
-         <b4d97c46c52dbbecc6061f743b172015a73ec189.camel@intel.com>
-         <BN9PR11MB52761E8DE55DC8872EC093758C1D9@BN9PR11MB5276.namprd11.prod.outlook.com>
- <8f85e6ad76508e0b7ac8667b1c0b7b3b43d67ef8.camel@intel.com>
-In-Reply-To: <8f85e6ad76508e0b7ac8667b1c0b7b3b43d67ef8.camel@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.6.401.20
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 19745e14-cec5-4d08-1ac7-08da112cec4a
-x-ms-traffictypediagnostic: DM6PR11MB4361:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr,ExtFwd
-x-microsoft-antispam-prvs: <DM6PR11MB43611E96F9CB685E1E45CCC18C1E9@DM6PR11MB4361.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: vjbh42K2OngVNNSLA0WREpuNWhyJycUENpPnE4N43ffMR540Lv/wTA64Lpidc+fBNkMZSDlnKl0RCATZi3Ddv6+a9EF+Y/BkrdilSTi2FwkuCF4NDEkg15+E9PAzAEMjLsitOLNu/HXatkqQLdGxc9tkWhYeToqy4ggPpgcp64V7DwOmbOiJbq9ZKIMsB4DiURnOqlgwNgw/fR9rnYxze6xuKkWmeRF4CpTs3tFZiXt8/Y/mVZsf7P/shGYIshdo8qLMRlEJsCGrFstGIoy/BicgHGkdgoOn4Q13rvpaY3k0XfIIlJEtBukcJtbba/H3Fo1LyyTf1wlFjbr0vTRKt9cEjpwBOBgpicg/CcL/gkxBCeHY0QPKJn2lqjLNHqAOpjFnDTu45VYZb8qhmVeTX1LRb5GP9sBqNA+VnASPSpHwE1L7gaNRLtXO5vTY/08wL0EXQIiitDhEniXsZQ2uY040px67SxPPk/waqvNp0QE2Lnk0I5x80JbhOTVAwjePL9n+vYmxbLkYj/BRJaIwTgd4g3rpBUCMtjzJYfVrjLgP9h2WkFOWR61UJdLT18254SVAXf3EoIzBWDkFsvl+tGoHqEqHxIC5b0n1ArH33FwDax9WHtbJmoPWqR6+2e5F4NS1e/FKsMbfXgOYkwxSQOEmnUmQR1cH3ReAKp3ioe63NC4L5Kgritg+1ORQYDkfx1b5LFVbfrmpq5g56C/ovg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(8936002)(5660300002)(83380400001)(122000001)(52536014)(2906002)(26005)(186003)(82960400001)(316002)(7696005)(66946007)(76116006)(6636002)(6506007)(38100700002)(38070700005)(33656002)(54906003)(508600001)(110136005)(66556008)(66476007)(86362001)(9686003)(4326008)(66446008)(64756008)(8676002)(71200400001)(55016003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?T2JHWmtDT1MrUTVjdFNXSnlaZGMxb0xKWGJTVFZ5dlpkYnZmV0VLOVFOOGtQ?=
- =?utf-8?B?YjVFa1hmL2ZacjFhT2JlbzF0UHI4Wi9rZ3hFRlZpMDgyenZLVW5oV3JnUmtk?=
- =?utf-8?B?UVQyQmxPWGZzVzRMWGVsVVVsTjVrOGtESnVHYmlnVllkbS9pbk1semsyd3dl?=
- =?utf-8?B?RGg2T29SQWthL2V3NFJWTDhvU01UWTlBYS9jMytsVTAvdTFuOHVJSHgxbS8w?=
- =?utf-8?B?c1ZtcUpOZWg0aUVLVzlaUWRDbWtEeVBjOUhQMWdxRExQS3JRdGFwUFE2MTZZ?=
- =?utf-8?B?YWZuM2JxbG52Wm1ILzZ4K2U0Z1ZnSndPVERmVWYzSHNPY240TlJWbVA2Z0I3?=
- =?utf-8?B?U0c2YjhwYzZlb2hCQ0Vsa1NjbHM5aGNJNmxtdlNvQldRZ1ppY1Z4T1dkZ0FU?=
- =?utf-8?B?Yzg5eTFUU3dNK1MvSTBHcjZiYlZzN1VtZjUxVzIzK2IrSjRyaklCOHh4OGsx?=
- =?utf-8?B?bksxNk0xQjFUbzJXOEZOT05CNndDWmxRT2JNTStma0xHd2twZzVvNnFuUDgv?=
- =?utf-8?B?bTdtZkkzMjRleEdsckpZZDlvYjJWZkFGMGg3UWVJRXBmZjhyMWVKaG5vR3lz?=
- =?utf-8?B?NVZpNEltQ2lCRFNWcS9ZYy9NM1FiY2VnUGluVEZVVUhCVldYTW1iSTE0bVFq?=
- =?utf-8?B?YnhhZVZwa09GajAvanN0ekJ1c3NMRFNMakRvTXpUaTZYSGJSanBuaEpWZ29w?=
- =?utf-8?B?aUxkUDB6M3NyQVNoNWtiL1dSN0RmSFdKZUZLMVVoNWxLTUx2S2NlYWpubzNx?=
- =?utf-8?B?YkVEYVU1SlUxYWt5SjBpWG1hSGR3RnU5d2pKWkNSSmZZV2Q4MzVlRFUzMjdp?=
- =?utf-8?B?L2NaclVhYVNGRXozZGVaVG1scWo3bS95NnIrQkN1S2YrdTNtb1FUellkR09O?=
- =?utf-8?B?U1JXTllSNkRnZTdTT0UzY1FwYlZydW5YcW9qZ2xDOXFnQk1tT2FVbnVWbklu?=
- =?utf-8?B?MEhWWjRTUitTL2ptSm05RnVjYmM4dkNxZXdBdnNUei9zVE1rMnNOY1pqTGlv?=
- =?utf-8?B?UlFaaFQ5ZGpRZ1l2UFgycnV1Qm5Wcy91TDA1NjFkVldXQmxLVjliRW5LUGFs?=
- =?utf-8?B?eTQwWnZSc0hIc0tGTThEZVpWNE1UN0lnTjhyTG5oNk9FYjh5a0FsWE55eGcy?=
- =?utf-8?B?ZlpPMit2ai94NEZEb29oc1pPR1JJcjl2b0RSR3BETTNsZ0pDTU4vbnRqaWZU?=
- =?utf-8?B?K0lwRlQwM3NQakMzU3BnbUdxMVVxUHcveURjRSt2bWF3T1M2akZpeFg4aWJE?=
- =?utf-8?B?ajlVTDc0akdZMDdRZkZ2RXVXSkRsUlRjQzV2cmxvY2ZTOGVmM29SM0p1c3RG?=
- =?utf-8?B?RTBkUm5uSzcrRVJoNWhUUjg2Sm5KVXVNN3QyZG5kNlpPNjlPaUpEdE0vTDFX?=
- =?utf-8?B?dDVwZ3FrQVoweUY5bWUvQy9lS3pIVE5JREVtNGJhdHdWODhvMzhsSlZMaHlE?=
- =?utf-8?B?Yi8wd3RRNlpsM1pRY21nMk0ycTQyZ3NzSE1sWFdvb1RPNDBmYndMekU0SXBO?=
- =?utf-8?B?ZDcvTXNrN1BqM2NKWkxzL3Zra2hhNUpzdWtaY2E1QzAxSjBkSDg4UVFjL1Y4?=
- =?utf-8?B?RVNPR1VDSjNESHVMU2poNEVaaG1kd3BRWUQ0Szk1V3RHQWppdGJjTGduM1Zi?=
- =?utf-8?B?QVN4M3hhai8yOU5VMEE2bUZHZnpZdHJQVFRDQmFrTndyTkZjWjgzY1pDVXJi?=
- =?utf-8?B?aEo1VVNCM2IrZktFSVB1OE5BM0V1ZGtzL1BsT3JzbkRyaVZZY2M3ZlY4ZVVN?=
- =?utf-8?B?SmtKMlo2eUp5ZHpyNWZNVUdsSWhiQlBnb2YydHlFV1NwaHBaWkZ0V2luWkpS?=
- =?utf-8?B?RlRGNDN3ZkRsb08rVEFLc2RlUXdCa1B4V2Z0a2paOU93b3p2NW1raHNwV3Rw?=
- =?utf-8?B?OTBuazVodld0ck85Z1NiWUEycXBPUU4vWER6cTNuSndUc3hPamVrSnZnVGY3?=
- =?utf-8?B?NWZaZ3JZbkZSYlR2aDkxalFCQVNRdGV1SDFBVUFJbjdUVWRxZ3BuWG83bFhs?=
- =?utf-8?B?cFNhSmJyZGpRaS9tV3VEekZoZUs4cXJCVlVUUkxHRFlSVStrZWs0dHh3aHox?=
- =?utf-8?B?VXBucmJPNzY0UERoblFrSlA1WjUwRTQrQTg1bU9aOEFmNEdzM0VrbDFIeWVT?=
- =?utf-8?B?dURQd210MjNQTi92MG42SStYU0dtYkRqU2RoOXhPUzc5WnpheG41OExxN2NE?=
- =?utf-8?B?aVhPb21NN0NTcFl4bElTcEgvditkQVYyRE1KOXRvWFR6Z09UekNDR3dUUnFU?=
- =?utf-8?B?azY2V3pBdjJjRENBSW1ydTNVdE1nclJtM1ZDN0xkQW5tUnE0bzI5eFpBNmY4?=
- =?utf-8?B?MkgrcVM1MWNQcUFGUzRWRm16QkVvMk1qUVc1ckozTXVtTlliSnJvZz09?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+   d="scan'208";a="833078951"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by fmsmga005.fm.intel.com with ESMTP; 28 Mar 2022 19:36:43 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nZ1is-0002Xz-GX; Tue, 29 Mar 2022 02:36:42 +0000
+Date:   Tue, 29 Mar 2022 10:35:55 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Pablo Ceballos <pceballos@google.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        Pablo Ceballos <pceballos@google.com>
+Subject: Re: [PATCH] HID: Add driver for Google Hangouts Meet Speakermic
+Message-ID: <202203291010.fiuSQRtm-lkp@intel.com>
+References: <20220328185704.1.I7a855580ce9f43fc2f598bdccf088c978d4af822@changeid>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 19745e14-cec5-4d08-1ac7-08da112cec4a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Mar 2022 02:36:26.5609
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: e5Us9/e9cSO3bOz/6TVtGN5CJATJ1IyanCvys2ogJLexLLuy18aUNtZa+QZXo9qAsONduEkdbDlb4bYQkCRodg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4361
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220328185704.1.I7a855580ce9f43fc2f598bdccf088c978d4af822@changeid>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiBGcm9tOiBIdWFuZywgS2FpIDxrYWkuaHVhbmdAaW50ZWwuY29tPg0KPiBTZW50OiBUdWVzZGF5
-LCBNYXJjaCAyOSwgMjAyMiA2OjU1IEFNDQo+IA0KPiBPbiBUdWUsIDIwMjItMDMtMjkgYXQgMDA6
-NDcgKzEzMDAsIFRpYW4sIEtldmluIHdyb3RlOg0KPiA+ID4gRnJvbTogSHVhbmcsIEthaSA8a2Fp
-Lmh1YW5nQGludGVsLmNvbT4NCj4gPiA+IFNlbnQ6IE1vbmRheSwgTWFyY2ggMjgsIDIwMjIgNToy
-NCBQTQ0KPiA+ID4gPg0KPiA+ID4gPiBjcHVfcHJlc2VudF9tYXNrIGRvZXMgbm90IGFsd2F5cyBy
-ZXByZXNlbnQgQklPUy1lbmFibGVkIENQVXMgZHVlDQo+ID4gPiA+IHRvIHRob3NlIGJvb3Qgb3B0
-aW9ucy4gVGhlbiB3aHkgZG8gd2UgY2FyZSB3aGV0aGVyIENQVXMgaW4gdGhpcyBtYXNrDQo+ID4g
-PiA+IChpZiBvbmx5IHJlcHJlc2VudGluZyBhIHN1YnNldCBvZiBCSU9TLWVuYWJsZWQgQ1BVcykg
-YXJlIGF0IGxlYXN0DQo+IGJyb3VnaHQNCj4gPiA+ID4gdXAgb25jZT8gSXQgd2lsbCBmYWlsIGF0
-IFRESC5TWVMuQ09ORklHIGFueXdheS4NCj4gPiA+DQo+ID4gPiBBcyBJIHNhaWQsIHRoaXMgaXMg
-dXNlZCB0byBtYWtlIHN1cmUgU0VBTVJSIGhhcyBiZWVuIGRldGVjdGVkIG9uIGFsbCBjcHVzLA0K
-PiA+ID4gc28NCj4gPiA+IHRoYXQgYW55IEJJT1MgbWlzY29uZmlndXJhdGlvbiBvbiBTRUFNUlIg
-aGFzIGJlZW4gZGV0ZWN0ZWQuDQo+IE90aGVyd2lzZSwNCj4gPiA+IHNlYW1ycl9lbmFibGVkKCkg
-bWF5IG5vdCBiZSByZWxpYWJsZSAodGhlb3JldGljYWxseSkuDQo+ID4NCj4gPiAqYWxsIGNwdXMq
-IGlzIHF1ZXN0aW9uYWJsZS4NCj4gPg0KPiA+IFNheSBCSU9TIGVuYWJsZWQgOCBDUFVzOiBbMCAt
-IDddDQo+ID4NCj4gPiBjcHVfcHJlc2VudF9tYXAgY292ZXJzIFswIC0gNV0sIGR1ZSB0byBucl9j
-cHVzPTYNCj4gPg0KPiA+IFlvdSBjb21wYXJlZCBjcHVzX2Jvb3RlZF9vbmNlX21hc2sgdG8gY3B1
-X3ByZXNlbnRfbWFzayBzbyBpZg0KPiBtYXhjcHVzDQo+ID4gaXMgc2V0IHRvIGEgbnVtYmVyIDwg
-bnJfY3B1cyBTRUFNUlIgaXMgY29uc2lkZXJlZCBkaXNhYmxlZCBiZWNhdXNlIHlvdQ0KPiA+IGNh
-bm5vdCB2ZXJpZnkgQ1BVcyBiZXR3ZWVuIFttYXhfY3B1cywgbnJfY3B1cykuDQo+IA0KPiBTRUFN
-UlIgaXMgbm90IGNvbnNpZGVyZWQgYXMgZGlzYWJsZWQgaW4gdGhpcyBjYXNlLCBhdCBsZWFzdCBp
-biBteSBpbnRlbnRpb24uDQoNCnRoZSBmdW5jdGlvbiBpcyBjYWxsZWQgc2VhbXJyX2VuYWJsZWQo
-KSwgYW5kIGZhbHNlIGlzIHJldHVybmVkIGlmIGFib3ZlDQpjaGVjayBpcyBub3QgcGFzc2VkLiBT
-byBpdCBpcyB0aGUgaW50ZW50aW9uIGZyb20gdGhlIGNvZGUuDQoNCj4gTXkNCj4gdW5kZXJzdGFu
-ZGluZyBvbiB0aGUgc3BlYyBpcyBpZiBTRUFNUlIgaXMgY29uZmlndXJlZCBhcyBlbmFibGVkIG9u
-IG9uZSBjb3JlDQo+ICh0aGUNCj4gU0VBTVJSIE1TUnMgYXJlIGNvcmUtc2NvcGUpLCB0aGUgU0VB
-TUNBTEwgaW5zdHJ1Y3Rpb24gY2FuIHdvcmsgb24gdGhhdA0KPiBjb3JlLiAgSXQNCj4gaXMgVERY
-J3MgcmVxdWlyZW1lbnQgdGhhdCBzb21lIFNFQU1DQUxMIG5lZWRzIHRvIGJlIGRvbmUgb24gYWxs
-IEJJT1MtDQo+IGVuYWJsZWQNCj4gQ1BVcyB0byBmaW5pc2ggVERYIGluaXRpYWxpemF0aW9uLCBi
-dXQgbm90IFNFQU0ncy4NCj4gDQo+IEZyb20gdGhpcyBwZXJzcGVjdGl2ZSwgaWYgd2UgZm9yZ2V0
-IFREWCBhdCB0aGlzIG1vbWVudCBidXQgdGFsayBhYm91dCBTRUFNDQo+IGFsb25lLCBpdCBtaWdo
-dCBtYWtlIHNlbnNlIHRvIG5vdCBqdXN0IHRyZWF0IFNFQU1SUiBhcyBkaXNhYmxlZCBpZiBrZXJu
-ZWwNCj4gdXNhYmxlDQo+IGNwdXMgYXJlIGxpbWl0ZWQgYnkgJ25yX2NwdXMnLiAgVGhlIGNoYW5j
-ZSB0aGF0IEJJT1MgbWlzY29uZmlndXJlZCBTRUFNUlIgaXMNCj4gcmVhbGx5IHJhcmUuICBJZiBr
-ZXJuZWwgY2FuIGRldGVjdCBwb3RlbnRpYWwgQklPUyBtaXNjb25maWd1cmF0aW9uLCBpdCBzaG91
-bGQgZG8NCj4gaXQuICBPdGhlcndpc2UsIHBlcmhhcHMgaXQncyBtb3JlIHJlYXNvbmFibGUgbm90
-IHRvIGp1c3QgdHJlYXQgU0VBTSBhcw0KPiBkaXNhYmxlZC4NCg0KTXkgcHJvYmxlbSBpcyBqdXN0
-IHRoYXQgeW91IGRpZG4ndCBhZG9wdCBjb25zaXN0ZW5jeSBwb2xpY3kgZm9yIENQVXMgaW4NCltt
-YXhjcHVzLCBucl9jcHVzKSBhbmQgQ1BVcyBpbiBbbnJfY3B1cywgbnJfYmlvc19lbmFibGVkX2Nw
-dXMpLiBUaGlzIGlzDQp0aGUgb25seSB0cm91YmxlIHRvIG1lIG5vIG1hdHRlciB3aGF0IHBvbGlj
-eSB5b3Ugd2FudCB0byBwdXJzdWUuLi4NCg0KPiANCj4gDQo+ID4gSWYgZm9sbG93aW5nIHRoZSBz
-YW1lDQo+ID4gcmF0aW9uYWxlIHRoZW4geW91IGFsc28gbmVlZCBhIHByb3BlciB3YXkgdG8gZGV0
-ZWN0IHRoZSBjYXNlIHdoZXJlDQo+IG5yX2NwdXMNCj4gPiA8IEJJT1MgZW5hYmxlZCBudW1iZXIg
-aS5lLiB3aGVuIHlvdSBjYW5ub3QgdmVyaWZ5IFNFQU1SUiBvbiBDUFVzDQo+ID4gYmV0d2VlbiBb
-bnJfY3B1cywgN10uIG90aGVyd2lzZSB0aGlzIGNoZWNrIGlzIGp1c3QgaW5jb21wbGV0ZS4NCj4g
-Pg0KPiA+IEJ1dCB0aGUgZW50aXJlIGNoZWNrIGlzIGFjdHVhbGx5IHVubmVjZXNzYXJ5LiBZb3Ug
-anVzdCBuZWVkIHRvIHZlcmlmeQ0KPiBTRUFNUlINCj4gPiBhbmQgZG8gVERYIGNwdSBpbml0IG9u
-IG9ubGluZSBDUFVzLiBBbnkgZ2FwIGJldHdlZW4gb25saW5lIG9uZXMgYW5kIEJJT1MNCj4gPiBl
-bmFibGVkIG9uZXMgd2lsbCBiZSBjYXVnaHQgYnkgdGhlIFREWCBtb2R1bGUgYXQgVERILlNZUy5D
-T05GSUcgcG9pbnQuDQo+IA0KPiBUaGlzIGlzIGVxdWl2YWxlbnQgdG8gbm90IGhhdmluZyB0aGUg
-cGFyYW5vaWQgY2hlY2sgaW4gc2VhbXJyX2VuYWJsZWQoKS4gQnkNCj4gZGV0ZWN0aW5nIFNFQU1S
-UiBpbiBpZGVudGlmeV9jcHUoKSwgdGhlIGRldGVjdGlvbiBoYXMgYWxyZWFkeSBiZWVuIGRvbmUg
-Zm9yDQo+IGFueQ0KPiBvbmxpbmUgY3B1Lg0KPiANCj4gPg0KPiA+ID4NCj4gPiA+IEFsdGVybmF0
-aXZlbHksIEkgdGhpbmsgd2UgY2FuIGFsc28gYWRkIGNoZWNrIHRvIGRpc2FibGUgVERYIHdoZW4N
-Cj4gJ21heGNwdXMnDQo+ID4gPiBoYXMNCj4gPiA+IGJlZW4gc3BlY2lmaWVkLCBidXQgSSB0aGlu
-ayB0aGUgY3VycmVudCB3YXkgaXMgYmV0dGVyLg0KPiA+ID4NCj4gPiA+ID4NCj4gPiA+ID4gYnR3
-IHlvdXIgY29tbWVudCBzYWlkIHRoYXQgJ21heGNwdXMnIGlzIGJhc2ljYWxseSBhbiBpbnZhbGlk
-IG1vZGUNCj4gPiA+ID4gZHVlIHRvIE1DRSBicm9hZGNhc2UgcHJvYmxlbS4gSSBkaWRuJ3QgZmlu
-ZCBhbnkgY29kZSB0byBibG9jayBpdCB3aGVuDQo+ID4gPiA+IE1DRSBpcyBlbmFibGVkLA0KPiA+
-ID4NCj4gPiA+IFBsZWFzZSBzZWUgYmVsb3cgY29tbWVudCBpbiBjcHVfc210X2FsbG93ZWQoKToN
-Cj4gPiA+DQo+ID4gPiBzdGF0aWMgaW5saW5lIGJvb2wgY3B1X3NtdF9hbGxvd2VkKHVuc2lnbmVk
-IGludCBjcHUpDQo+ID4gPiB7DQo+ID4gPiDCoMKgwqDCoMKgwqAuLi4NCj4gPiA+IMKgwqDCoMKg
-wqDCoMKgwqAvKg0KPiA+ID4gwqDCoMKgwqDCoMKgwqDCoMKgKiBPbiB4ODYgaXQncyByZXF1aXJl
-ZCB0byBib290IGFsbCBsb2dpY2FsIENQVXMgYXQgbGVhc3Qgb25jZSBzbw0KPiA+ID4gwqDCoMKg
-wqDCoMKgwqDCoMKgKiB0aGF0IHRoZSBpbml0IGNvZGUgY2FuIGdldCBhIGNoYW5jZSB0byBzZXQg
-Q1I0Lk1DRSBvbiBlYWNoDQo+ID4gPiDCoMKgwqDCoMKgwqDCoMKgwqAqIENQVS4gT3RoZXJ3aXNl
-LCBhIGJyb2FkY2FzdGVkIE1DRSBvYnNlcnZpbmcgQ1I0Lk1DRT0wYiBvbg0KPiBhbnkNCj4gPiA+
-IMKgwqDCoMKgwqDCoMKgwqDCoCogY29yZSB3aWxsIHNodXRkb3duIHRoZSBtYWNoaW5lLg0KPiA+
-ID4gwqDCoMKgwqDCoMKgwqDCoMKgKi8NCj4gPiA+IMKgwqDCoMKgwqDCoMKgcmV0dXJuICFjcHVt
-YXNrX3Rlc3RfY3B1KGNwdSwgJmNwdXNfYm9vdGVkX29uY2VfbWFzayk7DQo+ID4gPiB9DQo+ID4N
-Cj4gPiBJIHNhdyB0aGF0IGNvZGUuIE15IHBvaW50IGlzIG1vcmUgYWJvdXQgeW91ciBzdGF0ZW1l
-bnQgdGhhdCBtYXhjcHVzDQo+ID4gaXMgYWxtb3N0IGludmFsaWQgZHVlIHRvIGFib3ZlIHNpdHVh
-dGlvbiB0aGVuIHdoeSBkaWRuJ3Qgd2UgZG8gYW55dGhpbmcNCj4gPiB0byBkb2N1bWVudCBzdWNo
-IHJlc3RyaWN0aW9uIG9yIHRocm93IG91dCBhIHdhcm5pbmcgd2hlbiBpdCdzDQo+ID4gbWlzY29u
-ZmlndXJlZC4uLg0KPiANCj4gVGhlIHNlbnRlbmNlICInbWF4Y3B1cycgaXMgYW4gaW52YWxpZCBv
-cGVyYXRpb24gbW9kZSBkdWUgdG8gdGhlIE1DRQ0KPiBicm9hZGNhc3QNCj4gcHJvYmxlbSIgd2Fz
-IGZyb20gVGhvbWFzLiAgUGVyaGFwcyBJIHNob3VsZCBub3QganVzdCBwdXQgaXQgaW50byB0aGUN
-Cj4gY29tbWVudC4NCj4gDQo+IEFsc28sIFRob21hcyBzdWdnZXN0ZWQ6DQo+IA0KPiAieW91IHNo
-b3VsZCBoYXZlIGEgcGFyYW5vaWEgY2hlY2sgd2hpY2ggY2hlY2tzIGZvciB0aGUgbWF4Y3B1cw0K
-PiBjb21tYW5kIGxpbmUgcGFyYW1ldGVyIGFuZCBpZiBpdCdzIHRoZXJlIGFuZCBzbWFsbGVyIHRo
-YW4gdGhlIG51bWJlciBvZg0KPiBwcmVzZW50IENQVXMgdGhlbiB5b3UganVzdCByZWZ1c2UgdG8g
-ZW5hYmxlIFREWC4NCj4gDQo+IEFsdGVybmF0aXZlbHkgeW91IGp1c3QgaGF2ZSBhIHNlcGFyYXRl
-IGNwdW1hc2sgdGR4X2F2YWlsYWJlX21hc2sgYW5kDQo+IGtlZXAgdHJhY2sgb2YgdGhlIENQVXMg
-d2hpY2ggaGF2ZSBiZWVuIGNoZWNrZWQuIFdoZW4gVERYIGlzIGluaXRpYWxpemVkDQo+IHlvdSB0
-aGVuIGNhbiBkbzoNCj4gDQo+ICAgICBpZiAoIWNwdW1hc2tfZXF1YWwoY3B1X3ByZXNlbnRfbWFz
-aywgdGR4X2F2YWlsYWJsZV9tYXNrKSkNCj4gICAgIAkgICAgIHJldHVybjsNCj4gIg0KPiANCj4g
-SSBmb3VuZCB3ZSBjYW4ganVzdCB1c2UgY3B1c19ib290ZWRfb25jZV9tYXNrLCBpbnN0ZWFkIG9m
-DQo+IHRkeF9hdmFpbGFibGVfbWFzaywgc28NCj4gSSB1c2VkIHRoZSBzZWNvbmQgd2F5LiAgQW5k
-IGluc3RlYWQgb2YgcHV0dGluZyB0aGUgY2hlY2sgd2hlbiBpbml0aWFsaXppbmcgVERYLA0KPiBJ
-IHB1dCB0byBzZWFtcnJfZW5hYmxlZCgpIHNpbmNlIEkgZ3Vlc3MgaXQncyBtb3JlIHJlYXNvbmFi
-bGUgdG8gYmUgaGVyZSBhcyB0aGUNCj4gbG9naWMgaXMgdG8gbWFrZSBzdXJlIFNFQU1SUiBoYXMg
-YmVlbiBkZXRlY3RlZCBvbiBhbGwgY3B1cy4NCg0KSSdtIG5vdCBzdXJlIHdoZXRoZXIgVGhvbWFz
-J3MgY29tbWVudCBqdXN0IHRha2VzIG1heGNwdXMgYXMgYW4gZXhhbXBsZQ0Kd2hpY2ggc2hvdWxk
-IGJlIGV4dGVuZGVkIHRvIG90aGVyIGJvb3Qgb3B0aW9ucyBsaWtlIG5yX2NwdXMgb3IgaGUgcmVh
-bGx5DQpvbmx5IGNhcmVzIGFib3V0IG1heGNwdXMuIA0KDQo+IA0KPiBIaSBUaG9tYXMsDQo+IA0K
-PiBJZiB5b3Ugc2VlIHRoaXMsIHNvcnJ5IGZvciBxdW90aW5nIHlvdXIgd29yZHMgaGVyZS4gIEp1
-c3Qgd2FudCB0byBoYXZlIGEgYmV0dGVyDQo+IGRpc2N1c3Npb24uICBBbmQgYXBwcmVjaWF0ZSBp
-ZiB5b3UgY2FuIGhhdmUgc29tZSBndWlkYW5jZSBoZXJlLg0KPiANCj4gPg0KPiA+ID4NCj4gPiA+
-ID4gdGh1cyB3b25kZXIgdGhlIHJhdGlvbmFsZSBiZWhpbmQgYW5kIHdoZXRoZXIgdGhhdA0KPiA+
-ID4gPiByYXRpb25hbGUgY2FuIGJlIGJyb3VnaHQgdG8gdGhpcyBzZXJpZXMgKGkuZS4gbm8gY2hl
-Y2sgYWdhaW5zdCB0aG9zZQ0KPiA+ID4gPiBjb25mbGljdGluZyBib290IG9wdGlvbnMgYW5kIGp1
-c3QgbGV0IFNFQU1DQUxMIGl0c2VsZiB0byBkZXRlY3QgYW5kIGZhaWwpLg0KPiA+ID4gPg0KPiA+
-ID4gPiBAVGhvbWFzLCBhbnkgZ3VpZGFuY2UgaGVyZT8NCj4gPiA+ID4NCj4gPiA+ID4gVGhhbmtz
-DQo+ID4gPiA+IEtldmluDQo+ID4NCg0K
+Hi Pablo,
+
+Thank you for the patch! Yet something to improve:
+
+[auto build test ERROR on hid/for-next]
+[also build test ERROR on jikos-trivial/for-next v5.17]
+[cannot apply to jikos-hid/for-next next-20220328]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Pablo-Ceballos/HID-Add-driver-for-Google-Hangouts-Meet-Speakermic/20220329-070802
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/hid/hid.git for-next
+config: hexagon-randconfig-r035-20220327
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0f6d9501cf49ce02937099350d08f20c4af86f3d)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/6a3e0c4274593e5033b3698b8e45011e52b1fa69
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Pablo-Ceballos/HID-Add-driver-for-Google-Hangouts-Meet-Speakermic/20220329-070802
+        git checkout 6a3e0c4274593e5033b3698b8e45011e52b1fa69
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 ARCH=hexagon  randconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 ARCH=hexagon 
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> drivers/hid/Kconfig:412: syntax error
+   drivers/hid/Kconfig:411: unknown statement "---help---"
+   drivers/hid/Kconfig:412:warning: ignoring unsupported character '.'
+   drivers/hid/Kconfig:412: unknown statement "This"
+   drivers/hid/Kconfig:414: unknown statement "This"
+   drivers/hid/Kconfig:415:warning: ignoring unsupported character '.'
+   drivers/hid/Kconfig:415: unknown statement "device"
+   drivers/hid/Kconfig:416:warning: ignoring unsupported character '.'
+   drivers/hid/Kconfig:416: unknown statement "for"
+   drivers/hid/Kconfig:418:warning: ignoring unsupported character '.'
+   drivers/hid/Kconfig:418: unknown statement "Say"
+   make[2]: *** [scripts/kconfig/Makefile:77: oldconfig] Error 1
+   make[1]: *** [Makefile:619: oldconfig] Error 2
+   make: *** [Makefile:219: __sub-make] Error 2
+   make: Target 'oldconfig' not remade because of errors.
+--
+>> drivers/hid/Kconfig:412: syntax error
+   drivers/hid/Kconfig:411: unknown statement "---help---"
+   drivers/hid/Kconfig:412:warning: ignoring unsupported character '.'
+   drivers/hid/Kconfig:412: unknown statement "This"
+   drivers/hid/Kconfig:414: unknown statement "This"
+   drivers/hid/Kconfig:415:warning: ignoring unsupported character '.'
+   drivers/hid/Kconfig:415: unknown statement "device"
+   drivers/hid/Kconfig:416:warning: ignoring unsupported character '.'
+   drivers/hid/Kconfig:416: unknown statement "for"
+   drivers/hid/Kconfig:418:warning: ignoring unsupported character '.'
+   drivers/hid/Kconfig:418: unknown statement "Say"
+   make[2]: *** [scripts/kconfig/Makefile:77: olddefconfig] Error 1
+   make[1]: *** [Makefile:619: olddefconfig] Error 2
+   make: *** [Makefile:219: __sub-make] Error 2
+   make: Target 'olddefconfig' not remade because of errors.
+
+
+vim +412 drivers/hid/Kconfig
+
+    28	
+    29	config HID_BATTERY_STRENGTH
+    30		bool "Battery level reporting for HID devices"
+    31		depends on HID
+    32		select POWER_SUPPLY
+    33		default n
+    34		help
+    35		This option adds support of reporting battery strength (for HID devices
+    36		that support this feature) through power_supply class so that userspace
+    37		tools, such as upower, can display it.
+    38	
+    39	config HIDRAW
+    40		bool "/dev/hidraw raw HID device support"
+    41		depends on HID
+    42		help
+    43		Say Y here if you want to support HID devices (from the USB
+    44		specification standpoint) that aren't strictly user interface
+    45		devices, like monitor controls and Uninterruptible Power Supplies.
+    46	
+    47		This module supports these devices separately using a separate
+    48		event interface on /dev/hidraw.
+    49	
+    50		There is also a /dev/hiddev configuration option in the USB HID
+    51		configuration menu. In comparison to hiddev, this device does not process
+    52		the hid events at all (no parsing, no lookups). This lets applications
+    53		to work on raw hid events when they want to, and avoid using transport-specific
+    54		userspace libhid/libusb libraries.
+    55	
+    56		If unsure, say Y.
+    57	
+    58	config UHID
+    59		tristate "User-space I/O driver support for HID subsystem"
+    60		depends on HID
+    61		default n
+    62		help
+    63		Say Y here if you want to provide HID I/O Drivers from user-space.
+    64		This allows to write I/O drivers in user-space and feed the data from
+    65		the device into the kernel. The kernel parses the HID reports, loads the
+    66		corresponding HID Device Driver or provides input devices on top of your
+    67		user-space device.
+    68	
+    69		This driver cannot be used to parse HID-reports in user-space and write
+    70		special HID-drivers. You should use hidraw for that.
+    71		Instead, this driver allows to write the transport-layer driver in
+    72		user-space like USB-HID and Bluetooth-HID do in kernel-space.
+    73	
+    74		If unsure, say N.
+    75	
+    76		To compile this driver as a module, choose M here: the
+    77		module will be called uhid.
+    78	
+    79	config HID_GENERIC
+    80		tristate "Generic HID driver"
+    81		depends on HID
+    82		default HID
+    83		help
+    84		Support for generic devices on the HID bus. This includes most
+    85		keyboards and mice, joysticks, tablets and digitizers.
+    86	
+    87		To compile this driver as a module, choose M here: the module
+    88		will be called hid-generic.
+    89	
+    90		If unsure, say Y.
+    91	
+    92	menu "Special HID drivers"
+    93		depends on HID
+    94	
+    95	config HID_A4TECH
+    96		tristate "A4TECH mice"
+    97		depends on HID
+    98		default !EXPERT
+    99		help
+   100		Support for some A4TECH mice with two scroll wheels.
+   101	
+   102	config HID_ACCUTOUCH
+   103		tristate "Accutouch touch device"
+   104		depends on USB_HID
+   105		help
+   106		  This selects a driver for the Accutouch 2216 touch controller.
+   107	
+   108		  The driver works around a problem in the reported device capabilities
+   109		  which causes userspace to detect the device as a mouse rather than
+   110	          a touchscreen.
+   111	
+   112		  Say Y here if you have a Accutouch 2216 touch controller.
+   113	
+   114	config HID_ACRUX
+   115		tristate "ACRUX game controller support"
+   116		depends on HID
+   117		help
+   118		Say Y here if you want to enable support for ACRUX game controllers.
+   119	
+   120	config HID_ACRUX_FF
+   121		bool "ACRUX force feedback support"
+   122		depends on HID_ACRUX
+   123		select INPUT_FF_MEMLESS
+   124		help
+   125		Say Y here if you want to enable force feedback support for ACRUX
+   126		game controllers.
+   127	
+   128	config HID_APPLE
+   129		tristate "Apple {i,Power,Mac}Books"
+   130		depends on HID
+   131		depends on LEDS_CLASS
+   132		depends on NEW_LEDS
+   133		default !EXPERT
+   134		help
+   135		Support for some Apple devices which less or more break
+   136		HID specification.
+   137	
+   138		Say Y here if you want support for keyboards of	Apple iBooks, PowerBooks,
+   139		MacBooks, MacBook Pros and Apple Aluminum.
+   140	
+   141	config HID_APPLEIR
+   142		tristate "Apple infrared receiver"
+   143		depends on (USB_HID)
+   144		help
+   145		Support for Apple infrared remote control. All the Apple computers from
+   146		  2005 onwards include such a port, except the unibody Macbook (2009),
+   147		  and Mac Pros. This receiver is also used in the Apple TV set-top box
+   148		  prior to the 2010 model.
+   149	
+   150		Say Y here if you want support for Apple infrared remote control.
+   151	
+   152	config HID_ASUS
+   153		tristate "Asus"
+   154		depends on USB_HID
+   155		depends on LEDS_CLASS
+   156		depends on ASUS_WMI || ASUS_WMI=n
+   157		select POWER_SUPPLY
+   158		help
+   159		Support for Asus notebook built-in keyboard and touchpad via i2c, and
+   160		the Asus Republic of Gamers laptop keyboard special keys.
+   161	
+   162		Supported devices:
+   163		- EeeBook X205TA
+   164		- VivoBook E200HA
+   165		- GL553V series
+   166		- GL753V series
+   167	
+   168	config HID_AUREAL
+   169		tristate "Aureal"
+   170		depends on HID
+   171		help
+   172		Support for Aureal Cy se W-01RN Remote Controller and other Aureal derived remotes.
+   173	
+   174	config HID_BELKIN
+   175		tristate "Belkin Flip KVM and Wireless keyboard"
+   176		depends on HID
+   177		default !EXPERT
+   178		help
+   179		Support for Belkin Flip KVM and Wireless keyboard.
+   180	
+   181	config HID_BETOP_FF
+   182		tristate "Betop Production Inc. force feedback support"
+   183		depends on USB_HID
+   184		select INPUT_FF_MEMLESS
+   185		help
+   186		Say Y here if you want to enable force feedback support for devices by
+   187		BETOP Production Ltd.
+   188		Currently the following devices are known to be supported:
+   189		 - BETOP 2185 PC & BFM MODE
+   190	
+   191	config HID_BIGBEN_FF
+   192		tristate "BigBen Interactive Kids' gamepad support"
+   193		depends on USB_HID
+   194		depends on NEW_LEDS
+   195		depends on LEDS_CLASS
+   196		select INPUT_FF_MEMLESS
+   197		help
+   198		  Support for the "Kid-friendly Wired Controller" PS3OFMINIPAD
+   199		  gamepad made by BigBen Interactive, originally sold as a PS3
+   200		  accessory. This driver fixes input mapping and adds support for
+   201		  force feedback effects and LEDs on the device.
+   202	
+   203	config HID_CHERRY
+   204		tristate "Cherry Cymotion keyboard"
+   205		depends on HID
+   206		default !EXPERT
+   207		help
+   208		Support for Cherry Cymotion keyboard.
+   209	
+   210	config HID_CHICONY
+   211		tristate "Chicony devices"
+   212		depends on USB_HID
+   213		default !EXPERT
+   214		help
+   215		Support for Chicony Tactical pad and special keys on Chicony keyboards.
+   216	
+   217	config HID_CORSAIR
+   218		tristate "Corsair devices"
+   219		depends on USB_HID && LEDS_CLASS
+   220		help
+   221		Support for Corsair devices that are not fully compliant with the
+   222		HID standard.
+   223	
+   224		Supported devices:
+   225		- Vengeance K90
+   226		- Scimitar PRO RGB
+   227	
+   228	config HID_COUGAR
+   229		tristate "Cougar devices"
+   230		depends on HID
+   231		help
+   232		Support for Cougar devices that are not fully compliant with the
+   233		HID standard.
+   234	
+   235		Supported devices:
+   236		- Cougar 500k Gaming Keyboard
+   237	
+   238	config HID_MACALLY
+   239		tristate "Macally devices"
+   240		depends on HID
+   241		help
+   242		Support for Macally devices that are not fully compliant with the
+   243		HID standard.
+   244	
+   245		supported devices:
+   246		- Macally ikey keyboard
+   247	
+   248	config HID_PRODIKEYS
+   249		tristate "Prodikeys PC-MIDI Keyboard support"
+   250		depends on USB_HID && SND
+   251		select SND_RAWMIDI
+   252		help
+   253		Support for Prodikeys PC-MIDI Keyboard device support.
+   254		Say Y here to enable support for this device.
+   255		- Prodikeys PC-MIDI keyboard.
+   256		  The Prodikeys PC-MIDI acts as a USB Audio device, with one MIDI
+   257		  input and one MIDI output. These MIDI jacks appear as
+   258		  a sound "card" in the ALSA sound system.
+   259		  Note: if you say N here, this device will still function as a basic
+   260		  multimedia keyboard, but will lack support for the musical keyboard
+   261		  and some additional multimedia keys.
+   262	
+   263	config HID_CMEDIA
+   264		tristate "CMedia audio chips"
+   265		depends on HID
+   266		help
+   267		Support for CMedia CM6533 HID audio jack controls
+   268	        and HS100B mute buttons.
+   269	
+   270	config HID_CP2112
+   271		tristate "Silicon Labs CP2112 HID USB-to-SMBus Bridge support"
+   272		depends on USB_HID && HIDRAW && I2C && GPIOLIB
+   273		select GPIOLIB_IRQCHIP
+   274		help
+   275		Support for Silicon Labs CP2112 HID USB to SMBus Master Bridge.
+   276		This is a HID device driver which registers as an i2c adapter
+   277		and gpiochip to expose these functions of the CP2112. The
+   278		customizable USB descriptor fields are exposed as sysfs attributes.
+   279	
+   280	config HID_CREATIVE_SB0540
+   281		tristate "Creative SB0540 infrared receiver"
+   282		depends on USB_HID
+   283		help
+   284		Support for Creative infrared SB0540-compatible remote controls, such
+   285		as the RM-1500 and RM-1800 remotes.
+   286	
+   287		Say Y here if you want support for Creative SB0540 infrared receiver.
+   288	
+   289	config HID_CYPRESS
+   290		tristate "Cypress mouse and barcode readers"
+   291		depends on HID
+   292		default !EXPERT
+   293		help
+   294		Support for cypress mouse and barcode readers.
+   295	
+   296	config HID_DRAGONRISE
+   297		tristate "DragonRise Inc. game controller"
+   298		depends on HID
+   299		help
+   300		Say Y here if you have DragonRise Inc. game controllers.
+   301		These might be branded as:
+   302		- Tesun USB-703
+   303		- Media-tech MT1504 "Rogue"
+   304		- DVTech JS19 "Gear"
+   305		- Defender Game Master
+   306	
+   307	config DRAGONRISE_FF
+   308		bool "DragonRise Inc. force feedback"
+   309		depends on HID_DRAGONRISE
+   310		select INPUT_FF_MEMLESS
+   311		help
+   312		Say Y here if you want to enable force feedback support for DragonRise Inc.
+   313		game controllers.
+   314	
+   315	config HID_EMS_FF
+   316		tristate "EMS Production Inc. force feedback support"
+   317		depends on HID
+   318		select INPUT_FF_MEMLESS
+   319		help
+   320		Say Y here if you want to enable force feedback support for devices by
+   321		EMS Production Ltd.
+   322		Currently the following devices are known to be supported:
+   323		 - Trio Linker Plus II
+   324	
+   325	config HID_ELAN
+   326		tristate "ELAN USB Touchpad Support"
+   327		depends on LEDS_CLASS && USB_HID
+   328		help
+   329		Say Y to enable support for the USB ELAN touchpad
+   330		Currently the following devices are known to be supported:
+   331		 - HP Pavilion X2 10-p0XX.
+   332	
+   333	config HID_ELECOM
+   334		tristate "ELECOM HID devices"
+   335		depends on HID
+   336		help
+   337		Support for ELECOM devices:
+   338		  - BM084 Bluetooth Mouse
+   339		  - EX-G Trackballs (M-XT3DRBK, M-XT3URBK)
+   340		  - DEFT Trackballs (M-DT1DRBK, M-DT1URBK, M-DT2DRBK, M-DT2URBK)
+   341		  - HUGE Trackballs (M-HT1DRBK, M-HT1URBK)
+   342	
+   343	config HID_ELO
+   344		tristate "ELO USB 4000/4500 touchscreen"
+   345		depends on USB_HID
+   346		help
+   347		Support for the ELO USB 4000/4500 touchscreens. Note that this is for
+   348		different devices than those handled by CONFIG_TOUCHSCREEN_USB_ELO.
+   349	
+   350	config HID_EZKEY
+   351		tristate "Ezkey BTC 8193 keyboard"
+   352		depends on HID
+   353		default !EXPERT
+   354		help
+   355		Support for Ezkey BTC 8193 keyboard.
+   356	
+   357	config HID_FT260
+   358		tristate "FTDI FT260 USB HID to I2C host support"
+   359		depends on USB_HID && HIDRAW && I2C
+   360		help
+   361		  Provides I2C host adapter functionality over USB-HID through FT260
+   362		  device. The customizable USB descriptor fields are exposed as sysfs
+   363		  attributes.
+   364	
+   365		  To compile this driver as a module, choose M here: the module
+   366		  will be called hid-ft260.
+   367	
+   368	config HID_GEMBIRD
+   369		tristate "Gembird Joypad"
+   370		depends on HID
+   371		help
+   372		Support for Gembird JPD-DualForce 2.
+   373	
+   374	config HID_GFRM
+   375		tristate "Google Fiber TV Box remote control support"
+   376		depends on HID
+   377		help
+   378		Support for Google Fiber TV Box remote controls
+   379	
+   380	config HID_GLORIOUS
+   381		tristate "Glorious PC Gaming Race mice"
+   382		depends on HID
+   383		help
+   384		  Support for Glorious PC Gaming Race mice such as
+   385		  the Glorious Model O, O- and D.
+   386	
+   387	config HID_HOLTEK
+   388		tristate "Holtek HID devices"
+   389		depends on USB_HID
+   390		help
+   391		Support for Holtek based devices:
+   392		  - Holtek On Line Grip based game controller
+   393		  - Trust GXT 18 Gaming Keyboard
+   394		  - Sharkoon Drakonia / Perixx MX-2000 gaming mice
+   395		  - Tracer Sniper TRM-503 / NOVA Gaming Slider X200 /
+   396		    Zalman ZM-GM1
+   397		  - SHARKOON DarkGlider Gaming mouse
+   398		  - LEETGION Hellion Gaming Mouse
+   399	
+   400	config HOLTEK_FF
+   401		bool "Holtek On Line Grip force feedback support"
+   402		depends on HID_HOLTEK
+   403		select INPUT_FF_MEMLESS
+   404		help
+   405		  Say Y here if you have a Holtek On Line Grip based game controller
+   406		  and want to have force feedback support for it.
+   407	
+   408	config HID_GOOGLE_ATRUS
+   409		tristate "Google Hangouts Meet Speakermic"
+   410		depends on USB_HID
+   411		---help---
+ > 412		This selects a driver for the Google Hangouts Meet Speakermic.
+   413	
+   414		This driver works around a problem with the HID usage sent by this
+   415		device for the mute button. It prevents key events from being generated
+   416		for that HID usage since they would be incorrect.
+   417	
+   418		Say Y here if you have a Google Hangouts Meet Speakermic.
+   419	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
