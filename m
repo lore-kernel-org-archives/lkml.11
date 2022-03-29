@@ -2,150 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68E51C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 19:59:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B8A6C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 20:03:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241119AbiC2UAx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 16:00:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41278 "EHLO
+        id S241134AbiC2UEn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 16:04:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241108AbiC2UAu (ORCPT
+        with ESMTP id S236313AbiC2UEl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 16:00:50 -0400
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80B9315FFE;
-        Tue, 29 Mar 2022 12:59:06 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 660C65C01BB;
-        Tue, 29 Mar 2022 15:59:05 -0400 (EDT)
-Received: from imap47 ([10.202.2.97])
-  by compute3.internal (MEProxy); Tue, 29 Mar 2022 15:59:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
-         h=cc:cc:content-transfer-encoding:content-type:date:date:from
-        :from:in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm1; bh=ECeje11hlUWWc7
-        ahU+melr+v3923TUV1SOEn+aMSwfc=; b=IDkyQ8wvClEa9bEVHsgEqxUSqV0Cqf
-        0X7a5NoChmomd/wU1PWKAzdiPjS8DgkvrrqPi6Wv0Uta2ngB9z/OnTkK5lkyVx0q
-        1u7KmRN4XcTAFWSq/SH4SBA7jOUsYsvH/VoZQt6NCJ3z4hD5abm1Z2qOHjFTUDil
-        UpwTPJa4ZNACsyT38uouIFQA4nBUP+5bcJsy8XlvSA8IqWhcbOPQ5szbncCB78NC
-        ZXaHGW8YBtjqX9rNqG4PN0pvyRZqPlTOuNRrpj6rntgWEaMXEyyXLoFj3pr3XwNS
-        cBWpfnOPwud9JERKOCiPSNm+DA92TbRbK3iZyC0XX+AKrdvqsi6LwYtQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm3; bh=ECeje11hlUWWc7ahU+melr+v3923TUV1SOEn+aMSw
-        fc=; b=MXBIEYDu0Diu7AlV79qmpfV03zUCN1oIh30QqCzW2JH0EBCCiKmllCFjl
-        FHIBVeFNemPwI9U8LbzqFRgJTWgO9ot149wgeULc9+lmBHKkMV2+Jo55eLcauOJd
-        VaV1TND7gvEFTXr9vmsL0M3pjb/8diL9ECBh4QUYpHqALVeY0KBTeStCNi9rVXMb
-        YR7l392wToBSdZ2rfhDFUJZMes3IlZFNrO43zIBI4prttkCZxYoVaV5lS2qdbdLT
-        f47kBEaKl7ZKNtOhosOFwnliOXguDnQ/lvyFGzg7gdRxtLwLiuj60Bxb//dOFmMc
-        OTLQfju6c7tMuFomfwDq2g0CANarA==
-X-ME-Sender: <xms:B2VDYiEnOrERQd-p9wWp-eftG2L8MPSZqc0sLH7oVVbwJLlosE-EyA>
-    <xme:B2VDYjVrTK0qZeBjRKyddoXoKpyS3KNkneLa8MjMfpjYC67AU_bOjVEr2JRyiPUrY
-    ErtloDAUWU7_GRwuO0>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudeitddguddukecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefofgggkfgjfhffhffvufgtgfesthhqredtreerjeenucfhrhhomhepfdfu
-    vhgvnhcurfgvthgvrhdfuceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtf
-    frrghtthgvrhhnpeetueduleetfeeuledvleehheeivedvhfekheejjeduhfeileffffdu
-    hfekieelgeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
-    hmpehsvhgvnhesshhvvghnphgvthgvrhdruggvvh
-X-ME-Proxy: <xmx:B2VDYsKbFzSBts_hisz_R4QUxzHx0zcNz3-jedNjie8uqSA22XZL6g>
-    <xmx:B2VDYsEJuXuGPkiroERW54xpqXxJPkeSdKAfcHOQHU3zQKFzhrQGMQ>
-    <xmx:B2VDYoVRvIT0BjVz8fpeNtd7BrIReH8gbQfIdrHryTJABYn-LINxvQ>
-    <xmx:CWVDYhNPHo1q35d7aYeXWAoLtOGKsy73hJ8Z-bzeseDd6mwKB8yChQ>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 8FE2F2740137; Tue, 29 Mar 2022 15:59:03 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.5.0-alpha0-4911-g925b585eab-fm-20220323.003-g925b585e
-Mime-Version: 1.0
-Message-Id: <74a36bce-3d6e-4124-add1-8ed44ba2c80d@www.fastmail.com>
-In-Reply-To: <20220329183817.21656-1-povik+lin@cutebit.org>
-References: <20220329183817.21656-1-povik+lin@cutebit.org>
-Date:   Tue, 29 Mar 2022 21:58:43 +0200
-From:   "Sven Peter" <sven@svenpeter.dev>
-To:     =?UTF-8?Q?Martin_Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        "Hector Martin" <marcan@marcan.st>,
-        "Michael Ellerman" <mpe@ellerman.id.au>
-Cc:     "Alyssa Rosenzweig" <alyssa@rosenzweig.io>,
-        "Benjamin Herrenschmidt" <benh@kernel.crashing.org>,
-        "Paul Mackerras" <paulus@samba.org>,
-        "Jean Delvare" <khali@linux-fr.org>,
-        "Olof Johansson" <olof@lixom.net>,
-        linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Janne Grunau" <j@jannau.net>
-Subject: Re: [PATCH] i2c: pasemi: Wait for write xfers to finish
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        Tue, 29 Mar 2022 16:04:41 -0400
+Received: from mx-out.tlen.pl (mx-out.tlen.pl [193.222.135.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29FB11E5A6A
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 13:02:53 -0700 (PDT)
+Received: (wp-smtpd smtp.tlen.pl 24878 invoked from network); 29 Mar 2022 22:02:49 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=o2.pl; s=1024a;
+          t=1648584169; bh=/g4KKIPXUZrOJnlssSBP5HQLS4UfmGVodkLjCw9J1b0=;
+          h=Subject:To:Cc:From;
+          b=DEuCG1tIaXH9sZAbtuBdbVLD2LxRj6co6BgAgvcnusQU5ab1fK3tIaGSl+Y/u1KYU
+           qmdG3RjaQ+Hx9gTyWYcvZlUG/298SP3O2JKK2oyD36jI4XHt+Dd94tCqdv8GoZkWaQ
+           Ai3NPW4CNGAISH84TUShgAQgmXvngpw33oxyIIPo=
+Received: from aaew62.neoplus.adsl.tpnet.pl (HELO [192.168.1.22]) (mat.jonczyk@o2.pl@[83.4.126.62])
+          (envelope-sender <mat.jonczyk@o2.pl>)
+          by smtp.tlen.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <linux-rtc@vger.kernel.org>; 29 Mar 2022 22:02:49 +0200
+Message-ID: <1595f3c3-ea44-0c1a-8375-211789c64590@o2.pl>
+Date:   Tue, 29 Mar 2022 22:02:41 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v5 8/9] rtc-cmos: avoid UIP when reading alarm time
+Content-Language: en-GB
+To:     linux-rtc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+References: <20220107124934.159878-1-mat.jonczyk@o2.pl>
+ <20220107124934.159878-9-mat.jonczyk@o2.pl>
+From:   =?UTF-8?Q?Mateusz_Jo=c5=84czyk?= <mat.jonczyk@o2.pl>
+In-Reply-To: <20220107124934.159878-9-mat.jonczyk@o2.pl>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-WP-MailID: a28fd5f8788c77f0b92c197d82dc2fff
+X-WP-AV: skaner antywirusowy Poczty o2
+X-WP-SPAM: NO 000000B [cXNE]                               
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 29, 2022, at 20:38, Martin Povi=C5=A1er wrote:
-> Wait for completion of write transfers before returning from the drive=
-r.
-> At first sight it may seem advantageous to leave write transfers queued
-> for the controller to carry out on its own time, but there's a couple =
-of
-> issues with it:
+W dniu 07.01.2022 o 13:49, Mateusz Jończyk pisze:
+> Some Intel chipsets disconnect the time and date RTC registers when the
+> clock update is in progress: during this time reads may return bogus
+> values and writes fail silently. This includes the RTC alarm registers.
+> [1]
 >
->  * Driver doesn't check for FIFO space.
+> cmos_read_alarm() did not take account for that, which caused alarm time
+> reads to sometimes return bogus values. This can be shown with a test
+> patch that I am attaching to this patch series.
 
-Maybe we should also check that in a follow-up patch :-)
+Hello,
 
+This patch and the following one went to mainline as:
+
+commit cdedc45c579f ("rtc: cmos: avoid UIP when reading alarm time")
+commit cd17420ebea5 ("rtc: cmos: avoid UIP when writing alarm time")
+
+After some investigation and testing, it turned out that the problem
+was hidden by the algorithm in __rtc_read_alarm() and __rtc_set_alarm()
+and mostly did not affect existing code.
+
+It happens that both __rtc_read_alarm() and __rtc_set_alarm() call __rtc_read_time()
+before reading / setting the alarm time. In the CMOS RTC driver,
+the function cmos_read_time() waits for the UIP (Update-in-progress)
+bit to clear before proceeding. The UIP bit is set > 244us before actual
+update begins, so there is usually plenty of time to read the current time and
+then the alarm time. My synthetic tests did not catch this and I thought
+that there was a problem.
+
+Therefore, I will not be sending a matching fix to stable.
+
+I have discovered this as I was working on exposing some form of
+__rtc_read_alarm() in debugfs for driver testing purposes. I'm going to send
+RFC patches for this shortly.
+
+Greetings,
+
+Mateusz
+
+> Fix this, by using mc146818_avoid_UIP().
 >
->  * The queued writes can complete while the driver is in its I2C read
->    transfer path which means it will get confused by the raising of
->    XEN (the 'transaction ended' signal). This can cause a spurious
->    ENODATA error due to premature reading of the MRXFIFO register.
+> [1] 7th Generation Intel ® Processor Family I/O for U/Y Platforms [...]
+> Datasheet, Volume 1 of 2 (Intel's Document Number: 334658-006)
+> Page 208
+> https://www.intel.com/content/dam/www/public/us/en/documents/datasheets/7th-and-8th-gen-core-family-mobile-u-y-processor-lines-i-o-datasheet-vol-1.pdf
+>         "If a RAM read from the ten time and date bytes is attempted
+>         during an update cycle, the value read do not necessarily
+>         represent the true contents of those locations. Any RAM writes
+>         under the same conditions are ignored."
 >
-> Adding the wait fixes some unreliability issues with the driver. There=
-'s
-> some efficiency cost to it (especially with pasemi_smb_waitready doing
-> its polling), but that will be alleviated once the driver receives
-> interrupt support.
->
-> Fixes: beb58aa39e6e ("i2c: PA Semi SMBus driver")
-> Signed-off-by: Martin Povi=C5=A1er <povik+lin@cutebit.org>
-> ---
-
-Reviewed-by: Sven Peter <sven@svenpeter.dev>
-
->
-> Tested on Apple's t8103 chip. To my knowledge the PA Semi controller
-> in its pre-Apple occurences behaves the same as far as this patch is
-> concerned.
->
->  drivers/i2c/busses/i2c-pasemi-core.c | 6 ++++++
->  1 file changed, 6 insertions(+)
->
-> diff --git a/drivers/i2c/busses/i2c-pasemi-core.c=20
-> b/drivers/i2c/busses/i2c-pasemi-core.c
-> index 7728c8460dc0..9028ffb58cc0 100644
-> --- a/drivers/i2c/busses/i2c-pasemi-core.c
-> +++ b/drivers/i2c/busses/i2c-pasemi-core.c
-> @@ -137,6 +137,12 @@ static int pasemi_i2c_xfer_msg(struct i2c_adapter=20
-> *adapter,
->=20
->  		TXFIFO_WR(smbus, msg->buf[msg->len-1] |
->  			  (stop ? MTXFIFO_STOP : 0));
-> +
-> +		if (stop) {
-> +			err =3D pasemi_smb_waitready(smbus);
-> +			if (err)
-> +				goto reset_out;
-> +		}
-
-Looks like pasemi_smb_xfer doesn't suffer from the same issue.
-I wonder if every device connected to the bus on the original PA Semi bo=
-ards
-only used that path and that's why no one noticed it.
-
-
-Sven
-
+> Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
+> Cc: Alessandro Zummo <a.zummo@towertech.it>
+> Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
