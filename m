@@ -2,93 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95B8FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 10:38:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3AF3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 10:38:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235253AbiC2Kjl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 06:39:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47388 "EHLO
+        id S235265AbiC2Kj6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 06:39:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235244AbiC2Kji (ORCPT
+        with ESMTP id S235270AbiC2Kjx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 06:39:38 -0400
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E67CC12E2;
-        Tue, 29 Mar 2022 03:37:55 -0700 (PDT)
-Received: by mail-qt1-x832.google.com with SMTP id bp39so14815612qtb.6;
-        Tue, 29 Mar 2022 03:37:55 -0700 (PDT)
+        Tue, 29 Mar 2022 06:39:53 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AB49C1C92
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 03:38:09 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id o10so34230660ejd.1
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 03:38:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xKC778etah9QDKKcTZhhCigcf4xPfMmEKK8YhWBFI3U=;
-        b=PDvLAK727ct6dPW56kW/LelNoVohBTmDa2Azjn40F4G+K9/a9FvkOuyluaA7aYxwTl
-         LcAVtUIsDGndq1N/B6ZQp/S4nrRurzW0tiofMGqNg0yefQfbhNzyLc88hURsF1kE0b6R
-         4l24zv5jf4Cg/u/AqQlyU6dLq44h7RFSeudNVrhlp6fRfWCZn/AUAzEioZrCTtO+QrKJ
-         +Z9ju0P6kWUBX1Yjpsy8WGnUlb9ipnEjKh2pOYGaBE88I34X29q3f42xEip1JAKNMV0G
-         Rx+1mmT4qnxxawWkem/Oqg6Qq7dsx+hgI+8tZ/dQ1cPx9COImVqWy61DA+3Vo3VANB8U
-         /5eg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=9rdVFsRva52GcMtl178td/PU4MqSDMZsE8jDt+0zP9I=;
+        b=UVJtGaPxt8BpoHJbuk1xXngqHQZsl7Uf5d2uNeQRlI4atTKdtaP2hzE54PZ8ATZ/al
+         XTg31u4URUThaXpbxGQGUt9TNFM120i4GjKGljxmYB10vakEECv6huo30obtck3pB78N
+         JDYEhAuCnncHfkBxtOZVQ1vX8P8LQLE6BJXiSXBg3aDSZLiuZ8E+vJ7kRtUu1h6LYwlV
+         ukvlOzxQtAM8HaEWSRXyWMeGQ0Q5npGLIC274y3iuQkv4UbyDu9NVQo/qfXLqsOfXy64
+         5A4XyMgsNq9byNU8JEHc+WEPJA+j1UK/1UWHpyR4NddKSJ35jQgtt68yhLHM53CaDSYm
+         xALw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xKC778etah9QDKKcTZhhCigcf4xPfMmEKK8YhWBFI3U=;
-        b=fvcHXjM97gSoQTktpfQjWFpql4M8bxPxdzTJmy0hdt8pbnAz3B/E9jE0bkh4totQt/
-         Zue0bRdq8/xLWOYscqgqVBzfR89ZRs0hO7Z9pz7luZwAGXkMfcsAnpR3ZConWkTpjdwB
-         FO8i6acJbLFXyvJYBXOPN5flxZUBink61OKRYbDPqJZaERUOyo1Yuw0FwciDMBtcXrnh
-         aYWBg58ip48yW2lCH7CJ87mmkdIQWFkfki8RBG1Rs537lBJDWJCLTBRhfC0twWyfptcC
-         bL+p271JsFlK2XjCOD0pcC6ibhSbFl1zM/Cma2gZcRS8JuXeP/nbelgqVhybkg1gfkVF
-         s5vA==
-X-Gm-Message-State: AOAM5338JsMhlHqGCvZhf1kjmSMKaCJiN4Z0dPUjzS1lzt8RcCV7W5tr
-        imhXqMblGkDb4S9M1vQrCK2dHZOczLY=
-X-Google-Smtp-Source: ABdhPJyjvB2r/3wtYP5p9c9+BZYtdAonfE8T69SzZfubL2yGRZlQQpA0YYQnGTkJOcqV2rR+BdnRUQ==
-X-Received: by 2002:a05:622a:89:b0:2e1:b8c7:9975 with SMTP id o9-20020a05622a008900b002e1b8c79975mr26674072qtw.342.1648550274239;
-        Tue, 29 Mar 2022 03:37:54 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id j188-20020a3755c5000000b0067d1c76a09fsm9545713qkb.74.2022.03.29.03.37.51
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=9rdVFsRva52GcMtl178td/PU4MqSDMZsE8jDt+0zP9I=;
+        b=HxnMkGuUruYD9mBCQNoYFTD5M5h6EZNwfGIPSKefQ08azoFvIc5eFVfzPGU4AvptF5
+         vACP4UREdCLp68LaENRJnNhd9AHkWoGKWZtNzUhJga0HG4qudoP/M6tCh3922IK7C+BX
+         QixpvB7wUpnht9xBvhD8RnIDoszaDJKoIjY109zFqS9FmwCQY9qQp159RWIlDJwYD1gk
+         a57e8AVAZ+YS1EPXKZkveYQIfuCnGILeHFsV7Ojy/QPuA9nnXrfemYAEQg6mq+pfKK+w
+         P7lrzdYoxnzBs+kehzoXrlyScak3D3hTwBTOFz1zjTMBZ3549Wqr8RnOIufloHlD2DEq
+         0czg==
+X-Gm-Message-State: AOAM532yiiqNAGRVsWAUg7j0NahaYJsjUo4t2HRvPfGU/fGwgxhx2KRk
+        f6vrTU6qqIgowAKBFpNzmdo=
+X-Google-Smtp-Source: ABdhPJzBrJIN6iNc35BhKt3rDrOUXzyyI1OqD8DooHxlSo8WlTK2A+JWyzxTwcLCtIaZVO3gK6Atdw==
+X-Received: by 2002:a17:907:6d0b:b0:6df:e54c:ad1d with SMTP id sa11-20020a1709076d0b00b006dfe54cad1dmr34438013ejc.734.1648550287768;
+        Tue, 29 Mar 2022 03:38:07 -0700 (PDT)
+Received: from localhost.localdomain (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
+        by smtp.gmail.com with ESMTPSA id qw39-20020a1709066a2700b006e03017d60csm7058151ejc.54.2022.03.29.03.38.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Mar 2022 03:37:53 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: lv.ruyi@zte.com.cn
-To:     thierry.reding@gmail.com
-Cc:     airlied@linux.ie, daniel@ffwll.ch, jonathanh@nvidia.com,
-        dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] drm: tegra: fix memory leak in error handling path
-Date:   Tue, 29 Mar 2022 10:37:47 +0000
-Message-Id: <20220329103747.2376753-1-lv.ruyi@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Tue, 29 Mar 2022 03:38:07 -0700 (PDT)
+From:   Michael Straube <straube.linux@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Michael Straube <straube.linux@gmail.com>
+Subject: [PATCH 2/4] staging: r8188eu: refactor rtw_inc_and_chk_continual_urb_error()
+Date:   Tue, 29 Mar 2022 12:37:54 +0200
+Message-Id: <20220329103756.6740-3-straube.linux@gmail.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220329103756.6740-1-straube.linux@gmail.com>
+References: <20220329103756.6740-1-straube.linux@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+Refactor rtw_inc_and_chk_continual_urb_error(). Return directly
+instead of using a return variable and initialize the variable 'value'
+at declaration. This shortens the code and improves readability.
 
-Before leave the nvdec_load_firmware, we shuold free virt which is alloced
-by dma_alloc_coherent, so change "return err" to "goto cleanup".
-
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Signed-off-by: Michael Straube <straube.linux@gmail.com>
 ---
- drivers/gpu/drm/tegra/nvdec.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/staging/r8188eu/include/usb_ops.h | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/gpu/drm/tegra/nvdec.c b/drivers/gpu/drm/tegra/nvdec.c
-index 79e1e88203cf..a14863346bfa 100644
---- a/drivers/gpu/drm/tegra/nvdec.c
-+++ b/drivers/gpu/drm/tegra/nvdec.c
-@@ -209,7 +209,7 @@ static int nvdec_load_firmware(struct nvdec *nvdec)
+diff --git a/drivers/staging/r8188eu/include/usb_ops.h b/drivers/staging/r8188eu/include/usb_ops.h
+index 3416c8baceb6..cfcf6f84d2cf 100644
+--- a/drivers/staging/r8188eu/include/usb_ops.h
++++ b/drivers/staging/r8188eu/include/usb_ops.h
+@@ -27,13 +27,12 @@
+  */
+ static inline int rtw_inc_and_chk_continual_urb_error(struct dvobj_priv *dvobj)
+ {
+-	int ret = false;
+-	int value;
+-	value = atomic_inc_return(&dvobj->continual_urb_error);
++	int value = atomic_inc_return(&dvobj->continual_urb_error);
++
+ 	if (value > MAX_CONTINUAL_URB_ERR)
+-		ret = true;
++		return true;
  
- 		err = dma_mapping_error(nvdec->dev, iova);
- 		if (err < 0)
--			return err;
-+			goto cleanup;
- 	} else {
- 		virt = tegra_drm_alloc(tegra, size, &iova);
- 	}
+-	return ret;
++	return false;
+ }
+ 
+ /*
 -- 
-2.25.1
+2.35.1
 
