@@ -2,63 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41F65C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 18:34:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F0E7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 18:34:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240591AbiC2Sft (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 14:35:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59482 "EHLO
+        id S240599AbiC2Sfu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 14:35:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240556AbiC2Sff (ORCPT
+        with ESMTP id S240559AbiC2Sff (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 29 Mar 2022 14:35:35 -0400
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7285323140
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA36223158
         for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 11:33:52 -0700 (PDT)
-Received: by mail-qk1-x729.google.com with SMTP id 1so14825016qke.1
+Received: by mail-qt1-x835.google.com with SMTP id 10so16063499qtz.11
         for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 11:33:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=vWA7HcHxRpWtEbVOYRkc14CrV3xH0f9ykow83uQI6Oc=;
-        b=TGAfGZeUItf+EdBmKHvq/2lKgRAqtSOyPTJ3cIwzNwRXU6NEbCqLYag1qggqY920kV
-         cLpNhwg8PEBGMVp+7YAlNt2AZec4QPKGCGxm8GAYJjlZOIjJyc4pdCjSIBiV68cQREzj
-         RpezyPsr0Zc6OgGORxiIZ1uy2+dWR2GmnjtpwpY+t/eoSp+XqqRleYDRXMAfcj9/vndG
-         IC6FAoCJgJ45lmGcaVEFqFp4WI6vIN4OpkuRVDrJdXY8/OutwXgLzrlHQoX+D05G/whr
-         otQ0Q5eD/J/839YermdMlOdL6AyKoKD5EaKYUKknuWkrJMP0gJNvvc5rgqWaJ9yW3IqZ
-         41oQ==
+        bh=bjza6K+AY/cPZQnOFPJJVhFu3gZWdgR4+p6QcBpzTy0=;
+        b=JPam0pwniV7W7pfXJ0KUPB7FsNfYvcpKufKyDRuc8w2/nhluZvybl8Xl4GxkU6Xl4J
+         tkz8Tz7sxWzqQOzY1YdZ8hkXE+oRBhI4qBDKicL3fLc7cFH4ZecY1Dp4OY4lDmYSXbNq
+         W4Fw2HFh95UlQpvGAt68H8/Hie51PP/TIPeqzc66F0QuhEUrXS18/tDNiQQOg1WNhRy1
+         G6YSkoy6wOlxOobjYo2ifZkl7cafxY2SXAACXmbYfNf9o0fMolEBQ7NoFLeHgZJUkEsM
+         lw7g94ng0ve5foXBMpirk3r4XNmrNIGjQJ3I6pAJfwVWQ4XTEa9x8YqOk3a1b1hdxWF0
+         bQDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
          :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=vWA7HcHxRpWtEbVOYRkc14CrV3xH0f9ykow83uQI6Oc=;
-        b=O9Z3TOFOO+POSpGpBI0Qef6L/nVJst72JxLm+ftdp6o765y3Nba+ubxCgujrpvcpXb
-         S1q2NubVfUqfXHW6ZPeT4TlOBocgXiK2pGFA1vVRXmR41SOdJcKUQqsRHJjmiGl2N9TI
-         hp919CjZlMF6A0XzhVohf8guriXkOLLq219pDmkFIOGlqGrsbd9WgX7ZG/iZdUOFRCo7
-         +/h5q8G1i1AHHaxfFVyjedrNwqr8AiKSNdxWLiCuWTQOzqld+5g9A3/t6S7j1UC0ch4m
-         vNK3aTSgPR5y+9Mn/tkZrCrf1nleEQHyu56aETMei6IPVbzqBWC3G7OKiYquPh3PZ/5t
-         Rmtw==
-X-Gm-Message-State: AOAM530yZBKOBT84a1OwRIE8YE2WNg+4MDnPFLtn2lP0DgF33hWlTEdm
-        lNf8YxM3Jm1g1/RAxNhI9w==
-X-Google-Smtp-Source: ABdhPJy9SCF44CcQJbSUiXgEkc9BHr7eeymXyPLB3zmBh4ucrhwiiARaLqeXVN83k3mcw0qJHmiSsg==
-X-Received: by 2002:a37:a3d2:0:b0:67b:30b2:732f with SMTP id m201-20020a37a3d2000000b0067b30b2732fmr21033089qke.719.1648578831377;
+        bh=bjza6K+AY/cPZQnOFPJJVhFu3gZWdgR4+p6QcBpzTy0=;
+        b=hG5WzfHjQrj0MSUcgqqp+CcDZbyfNnuglV0mLcYyOuOvaSdykk/ivem9VynGKcq4PI
+         Uwg3lepSEdNOZBXoEzma8zY3daY0+OrDIMJ3Qa3djtNwk3dQL/Ovx+XmEN1az57qEmBa
+         yvmJQPhc4cthkvuAn6VFwsI2mmWQThDdFl25HL2VWkUgr+vuBC7cHiFVDXMT06+ZwyG5
+         G8Gwgcw1elh/j+b3M0x4CnEm7mXaYBMekemJ6L0AgxUlYeZqLYLiK/pY38F+q1iSMyxK
+         T9bO3RCDt8ax7VqKqVm13f9W1EQewaj3IhG52cR77vbyB4sZTjrDiv7WwJULQ6phH4bT
+         GEsw==
+X-Gm-Message-State: AOAM5332EZJaK+tAUD0/KNsIf9Hb5DmAmxQCLA655UvFeLt6AcYdJNkO
+        X30pBiwkAs7i5N5PnSGqZwWbCJTnJQ==
+X-Google-Smtp-Source: ABdhPJzgswxUhX3CVNKadJI6lHxhDQSuNlqb2woYu+H3DNLh7JPt8Kog1vdWOnQfKSECZTLJLQ+Z1g==
+X-Received: by 2002:ac8:5892:0:b0:2e1:c997:a5f6 with SMTP id t18-20020ac85892000000b002e1c997a5f6mr29886327qta.357.1648578831700;
         Tue, 29 Mar 2022 11:33:51 -0700 (PDT)
-Received: from serve.minyard.net ([47.184.144.75])
-        by smtp.gmail.com with ESMTPSA id m4-20020ac85b04000000b002e1dcaed228sm15054133qtw.7.2022.03.29.11.33.48
+Received: from serve.minyard.net (serve.minyard.net. [2001:470:b8f6:1b::1])
+        by smtp.gmail.com with ESMTPSA id y11-20020ac85f4b000000b002e1e038a8fdsm15326134qta.13.2022.03.29.11.33.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Tue, 29 Mar 2022 11:33:49 -0700 (PDT)
 Sender: Corey Minyard <tcminyard@gmail.com>
 Received: from t560.minyard.net (unknown [IPv6:2001:470:b8f6:1b:dcc2:ca6d:a437:b3e0])
-        by serve.minyard.net (Postfix) with ESMTPA id 0FA5D1817BF;
+        by serve.minyard.net (Postfix) with ESMTPA id 39F981817C1;
         Tue, 29 Mar 2022 18:33:48 +0000 (UTC)
 From:   minyard@acm.org
 To:     Chen Guanqiao <chen.chenchacha@foxmail.com>
 Cc:     openipmi-developer@lists.sourceforge.net,
         linux-kernel@vger.kernel.org, Corey Minyard <cminyard@mvista.com>
-Subject: [PATCH 2/4] ipmi: Limit the number of message a user may have outstanding
-Date:   Tue, 29 Mar 2022 13:33:38 -0500
-Message-Id: <20220329183340.471474-3-minyard@acm.org>
+Subject: [PATCH 4/4] ipmi: Add a sysfs count of total outstanding messages for an interface
+Date:   Tue, 29 Mar 2022 13:33:40 -0500
+Message-Id: <20220329183340.471474-5-minyard@acm.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220329183340.471474-1-minyard@acm.org>
 References: <20220329183340.471474-1-minyard@acm.org>
@@ -70,88 +70,81 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Corey Minyard <cminyard@mvista.com>
 
-This way a rogue application can't use up a bunch of memory.
+Go through each user and add its message count to a total and print the
+total.
+
+It would be nice to have a per-user file, but there's no user sysfs
+entity at this point to hang it off of.  Probably not worth the effort.
 
 Based on work by Chen Guanqiao <chen.chenchacha@foxmail.com>
 
 Cc: Chen Guanqiao <chen.chenchacha@foxmail.com>
 Signed-off-by: Corey Minyard <cminyard@mvista.com>
 ---
- drivers/char/ipmi/ipmi_msghandler.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ drivers/char/ipmi/ipmi_msghandler.c | 29 +++++++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
 
 diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
-index de80bf4c4e4c..2a05199e8224 100644
+index 3ba188e05ca6..e30223763a2a 100644
 --- a/drivers/char/ipmi/ipmi_msghandler.c
 +++ b/drivers/char/ipmi/ipmi_msghandler.c
-@@ -151,6 +151,12 @@ module_param(max_users, uint, 0644);
- MODULE_PARM_DESC(max_users,
- 		 "The most users that may use the IPMI stack at one time.");
+@@ -458,6 +458,7 @@ struct ipmi_smi {
+ 	struct srcu_struct users_srcu;
+ 	atomic_t nr_users;
+ 	struct device_attribute nr_users_devattr;
++	struct device_attribute nr_msgs_devattr;
  
-+/* The default maximum number of message a user may have outstanding. */
-+static unsigned int max_msgs_per_user = 100;
-+module_param(max_msgs_per_user, uint, 0644);
-+MODULE_PARM_DESC(max_msgs_per_user,
-+		 "The most message a user may have outstanding.");
+ 
+ 	/* Used for wake ups at startup. */
+@@ -3519,6 +3520,25 @@ static ssize_t nr_users_show(struct device *dev,
+ }
+ static DEVICE_ATTR_RO(nr_users);
+ 
++static ssize_t nr_msgs_show(struct device *dev,
++			    struct device_attribute *attr,
++			    char *buf)
++{
++	struct ipmi_smi *intf = container_of(attr,
++			 struct ipmi_smi, nr_msgs_devattr);
++	struct ipmi_user *user;
++	int index;
++	unsigned int count = 0;
 +
- /* Call every ~1000 ms. */
- #define IPMI_TIMEOUT_TIME	1000
- 
-@@ -193,6 +199,8 @@ struct ipmi_user {
- 	/* Does this interface receive IPMI events? */
- 	bool gets_events;
- 
-+	atomic_t nr_msgs;
++	index = srcu_read_lock(&intf->users_srcu);
++	list_for_each_entry_rcu(user, &intf->users, link)
++		count += atomic_read(&user->nr_msgs);
++	srcu_read_unlock(&intf->users_srcu, index);
 +
- 	/* Free must run in process context for RCU cleanup. */
- 	struct work_struct remove_work;
- };
-@@ -934,11 +942,13 @@ static int deliver_response(struct ipmi_smi *intf, struct ipmi_recv_msg *msg)
- 		 * risk.  At this moment, simply skip it in that case.
- 		 */
- 		ipmi_free_recv_msg(msg);
-+		atomic_dec(&msg->user->nr_msgs);
- 	} else {
- 		int index;
- 		struct ipmi_user *user = acquire_ipmi_user(msg->user, &index);
++	return sysfs_emit(buf, "%u\n", count);
++}
++static DEVICE_ATTR_RO(nr_msgs);
++
+ static void redo_bmc_reg(struct work_struct *work)
+ {
+ 	struct ipmi_smi *intf = container_of(work, struct ipmi_smi,
+@@ -3647,6 +3667,14 @@ int ipmi_add_smi(struct module         *owner,
+ 	if (rv)
+ 		goto out_err_bmc_reg;
  
- 		if (user) {
-+			atomic_dec(&user->nr_msgs);
- 			user->handler->ipmi_recv_hndl(msg, user->handler_data);
- 			release_ipmi_user(user, index);
- 		} else {
-@@ -1256,6 +1266,7 @@ int ipmi_create_user(unsigned int          if_num,
- 	/* Note that each existing user holds a refcount to the interface. */
- 	kref_get(&intf->refcount);
- 
-+	atomic_set(&new_user->nr_msgs, 0);
- 	kref_init(&new_user->refcount);
- 	new_user->handler = handler;
- 	new_user->handler_data = handler_data;
-@@ -2298,6 +2309,14 @@ static int i_ipmi_request(struct ipmi_user     *user,
- 	struct ipmi_recv_msg *recv_msg;
- 	int rv = 0;
- 
-+	if (user) {
-+		if (atomic_add_return(1, &user->nr_msgs) > max_msgs_per_user) {
-+			atomic_dec(&user->nr_msgs);
-+			rv = -EBUSY;
-+			goto out;
-+		}
++	intf->nr_msgs_devattr = dev_attr_nr_msgs;
++	sysfs_attr_init(&intf->nr_msgs_devattr.attr);
++	rv = device_create_file(intf->si_dev, &intf->nr_msgs_devattr);
++	if (rv) {
++		device_remove_file(intf->si_dev, &intf->nr_users_devattr);
++		goto out_err_bmc_reg;
 +	}
 +
- 	if (supplied_recv)
- 		recv_msg = supplied_recv;
- 	else {
-@@ -2369,6 +2388,8 @@ static int i_ipmi_request(struct ipmi_user     *user,
- 	rcu_read_unlock();
+ 	/*
+ 	 * Keep memory order straight for RCU readers.  Make
+ 	 * sure everything else is committed to memory before
+@@ -3743,6 +3771,7 @@ void ipmi_unregister_smi(struct ipmi_smi *intf)
  
- out:
-+	if (rv && user)
-+		atomic_dec(&user->nr_msgs);
- 	return rv;
- }
+ 	/* At this point no users can be added to the interface. */
  
++	device_remove_file(intf->si_dev, &intf->nr_msgs_devattr);
+ 	device_remove_file(intf->si_dev, &intf->nr_users_devattr);
+ 
+ 	/*
 -- 
 2.25.1
 
