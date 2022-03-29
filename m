@@ -2,319 +2,469 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBB8FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 03:16:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16A10C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 03:17:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231591AbiC2DRz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 23:17:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54798 "EHLO
+        id S231593AbiC2DSl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 23:18:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231506AbiC2DRm (ORCPT
+        with ESMTP id S231536AbiC2DSj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 23:17:42 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2070.outbound.protection.outlook.com [40.107.243.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27DA5939F7;
-        Mon, 28 Mar 2022 20:15:59 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hajiK7kpX9PCU5CILl2Lvd0sWv5od+07+C9VbXFVjF7UI4Rsvc6RGtRDLK/YKTOg0z+ckIznDPVmn7ZhYleZVANjxQbepVCdIPyCwoql2QUtOGnlMcxAGF1huHgFSVeA3Tf4lFE9F5xOZ6UM/ZyTwKD6Sqxh68kevvWdewYJsP/ZPEK9gW/8N8pEPnMLdwbVZFRajCPx7eR0OYCBUN7utyYq/RVh2JW2z7wbyelT2d11A1jFV8rYOjdcDDhYQwfKMEJVMxlOvgQrpRsb6X0gURZazfTmJbbYUECfgRsNqUf9LtuZGT5mSpymbBw+yeBKqGQ38deG+qXSrs3n4zmTkQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=urjPh8O1vLyhsUrZZgDM30gA29H/WB4kYiLNohpO1aY=;
- b=kBTATrZbslNpMOVRl4enFKZFQgmJYUqfkGZkKJG5CwwoPIBQyJ6yxHxkd8AJzV8xiUaCc/gLft3XbLrUZrWoiTqJjecWIJRpnbyRyZneV7hM2D5zzMoKp/W7ciJzJ4NXH30lnh/LVBpAEB/eTBSby+Cw8qv7LaB4l9g0ilV2kC2Kex/yZzuSnkvAt8jJCIJdfvv8MFcEz/qGXCYkeWbXIGwqiuJ1IZPENHMnh7wzGxPnNaJMvs3dtPA/PGw3lflLoQPuxOD6V2+0NLfql8xAL+4AoA7WpuwE9mzGQ8NhF7xXvO4tsCX9nJNYT0PwU0T9vhlSQHxeNS1VBNu0qV4HqA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=gondor.apana.org.au smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=urjPh8O1vLyhsUrZZgDM30gA29H/WB4kYiLNohpO1aY=;
- b=rKjXOxGWZQnI6iF+IGyFLpDm37z7C5/x5F6nZXA+II9KyPWhR4GGg4NY2eOJnNVo8bctTuaOIu6qzxZxdVUnOy1OHRc7dWsRASXqKvw/Cw5jyqaiPXI3bh7ApDmoC2Tv/e3lZKrdviarrBGJyVIdvMqwnsJ5Gqs2sUnGqPpp10k=
-Received: from DM5PR19CA0040.namprd19.prod.outlook.com (2603:10b6:3:9a::26) by
- BY5PR12MB4211.namprd12.prod.outlook.com (2603:10b6:a03:20f::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.17; Tue, 29 Mar
- 2022 03:15:57 +0000
-Received: from DM6NAM11FT004.eop-nam11.prod.protection.outlook.com
- (2603:10b6:3:9a:cafe::d1) by DM5PR19CA0040.outlook.office365.com
- (2603:10b6:3:9a::26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.18 via Frontend
- Transport; Tue, 29 Mar 2022 03:15:56 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT004.mail.protection.outlook.com (10.13.172.217) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5102.17 via Frontend Transport; Tue, 29 Mar 2022 03:15:56 +0000
-Received: from AUS-LX-MLIMONCI.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 28 Mar
- 2022 22:15:54 -0500
-From:   Mario Limonciello <mario.limonciello@amd.com>
-To:     Tom Lendacky <thomas.lendacky@amd.com>,
-        John Allen <john.allen@amd.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>
-CC:     open list <linux-kernel@vger.kernel.org>,
-        "open list:AMD CRYPTOGRAPHIC COPROCESSOR (CCP) DRIVER" 
-        <linux-crypto@vger.kernel.org>,
-        Kerneis Gabriel <Gabriel.Kerneis@ssi.gouv.fr>,
-        Richard Hughes <hughsient@gmail.com>,
-        "Mario Limonciello" <mario.limonciello@amd.com>
-Subject: [PATCH 2/4] crypto: ccp: Export PSP security bits to userspace
-Date:   Mon, 28 Mar 2022 22:15:51 -0500
-Message-ID: <20220329031553.798-2-mario.limonciello@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220329031553.798-1-mario.limonciello@amd.com>
-References: <20220329031553.798-1-mario.limonciello@amd.com>
+        Mon, 28 Mar 2022 23:18:39 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA9E7939F7;
+        Mon, 28 Mar 2022 20:16:55 -0700 (PDT)
+X-UUID: 3cdd3f4c568d4f00b2dd82e915e40f62-20220329
+X-UUID: 3cdd3f4c568d4f00b2dd82e915e40f62-20220329
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1480044459; Tue, 29 Mar 2022 11:16:49 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 29 Mar 2022 11:16:48 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 29 Mar 2022 11:16:48 +0800
+Message-ID: <b308f2b37f6e9768fb3b5d85b906a3961ca8419a.camel@mediatek.com>
+Subject: Re: [PATCH v9 15/22] drm/mediatek: dpi: Add dpintf support
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     Guillaume Ranquet <granquet@baylibre.com>, <airlied@linux.ie>,
+        <angelogioacchino.delregno@collabora.com>,
+        <chunfeng.yun@mediatek.com>, <chunkuang.hu@kernel.org>,
+        <ck.hu@mediatek.com>, <daniel@ffwll.ch>, <deller@gmx.de>,
+        <jitao.shi@mediatek.com>, <kishon@ti.com>, <krzk+dt@kernel.org>,
+        <maarten.lankhorst@linux.intel.com>, <matthias.bgg@gmail.com>,
+        <mripard@kernel.org>, <p.zabel@pengutronix.de>,
+        <robh+dt@kernel.org>, <tzimmermann@suse.de>, <vkoul@kernel.org>
+CC:     <devicetree@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-fbdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-phy@lists.infradead.org>, <markyacoub@google.com>,
+        "Markus Schneider-Pargmann" <msp@baylibre.com>
+Date:   Tue, 29 Mar 2022 11:16:48 +0800
+In-Reply-To: <20220327223927.20848-16-granquet@baylibre.com>
+References: <20220327223927.20848-1-granquet@baylibre.com>
+         <20220327223927.20848-16-granquet@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d30223fd-b38f-42d0-4ca1-08da11327111
-X-MS-TrafficTypeDiagnostic: BY5PR12MB4211:EE_
-X-Microsoft-Antispam-PRVS: <BY5PR12MB4211E333AD910A88AFC689C6E21E9@BY5PR12MB4211.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: c8Z4s0rPKWrVecoo23JPrMk9pSG0pxNiki7oOy25ejSldVuERUtwdPCWiBL2sqMi1ur9Awtv8kcKhpUxnJhUPmM8HmBUALMZUlRjmpb6bWQIN7R9g1Zr7LMrd4fbVSYJRC0z+LuPHhg5395FsjPUMU7kf181rtXD17O757X/Ilil2zgtNdcqg3afPCWsbSxjS9yzEvRwkH9SFallWe8meXoUmlO+5PDGAnyQWxsw5oOMbcvN8TkztBvMLyCoZ+6e4y2keEusq285c6GWYoLLPAyyWUGXn+1SB253dLAKiyGHSA1lq1PHlWBUNFExWHBWPNKXw7fzG50Xse5HoAoScedgykIi7dP1ymfeWPMT1iFc98WwNCAx/8M1x8Qh1a8iFjVGBqeRaT7K0ByYqftsbIxSAWSr+vZLR+qHgwwTi/5cpNn+4NaU+dbXcb3HoBgVJkEouOHYc2OtsVmDVAkSPhTL8hkAtZQbnJh/tzlQjUFhaBQC4ql3ZaYNo86VYb6F153gWZoPbm+DW0VQtBwu7brL7o8CoC5o1GDMoEQHQya0f4LXOq7i49TH2/kr0uzZwTBFqo9wpi6qOk3+1XjdGqYDaQL4HzN8qiaRD7enOMxBXeI3GZGesWcZR2tSZiO0qaeaVCUnG1RLy4pNYzzzD3YuM1E8DlykcpQrjkeWhh74PyG0SvMvtZndbplwe1sPMnCPPmKjKe1Pl5kVthjEzw==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(316002)(86362001)(8676002)(47076005)(70586007)(110136005)(54906003)(81166007)(82310400004)(356005)(40460700003)(70206006)(4326008)(5660300002)(336012)(26005)(36860700001)(2906002)(15650500001)(16526019)(186003)(6666004)(83380400001)(44832011)(426003)(2616005)(508600001)(1076003)(7696005)(36756003)(8936002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Mar 2022 03:15:56.8248
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d30223fd-b38f-42d0-4ca1-08da11327111
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT004.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4211
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The PSP sets several pre-defined bits in the capabilities
-register to indicate that security attributes of the platform.
+On Mon, 2022-03-28 at 00:39 +0200, Guillaume Ranquet wrote:
+> dpintf is the displayport interface hardware unit. This unit is
+> similar
+> to dpi and can reuse most of the code.
+> 
+> This patch adds support for mt8195-dpintf to this dpi driver. Main
+> differences are:
+>  - Some features/functional components are not available for dpintf
+>    which are now excluded from code execution once is_dpintf is set
+>  - dpintf can and needs to choose between different clockdividers
+> based
+>    on the clockspeed. This is done by choosing a different clock
+> parent.
+>  - There are two additional clocks that need to be managed. These are
+>    only set for dpintf and will be set to NULL if not supplied. The
+>    clk_* calls handle these as normal clocks then.
+>  - Some register contents differ slightly between the two components.
+> To
+>    work around this I added register bits/masks with a DPINTF_ prefix
+>    and use them where different.
+> 
+> Based on a separate driver for dpintf created by
+> Jason-JH.Lin <jason-jh.lin@mediatek.com>.
+> 
+> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> Reviewed-by: AngeloGioacchino Del Regno <
+> angelogioacchino.delregno@collabora.com>
+> ---
+>  drivers/gpu/drm/mediatek/mtk_dpi.c          | 78 ++++++++++++++++++-
+> --
+>  drivers/gpu/drm/mediatek/mtk_dpi_regs.h     | 38 ++++++++++
+>  drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c |  8 +++
+>  drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h |  1 +
+>  drivers/gpu/drm/mediatek/mtk_drm_drv.c      |  5 +-
+>  include/linux/soc/mediatek/mtk-mmsys.h      |  2 +
+>  6 files changed, 120 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> index eb969c5c5c2e..8198d3cf23ac 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> @@ -126,6 +126,7 @@ struct mtk_dpi_conf {
+>  	const u32 *output_fmts;
+>  	u32 num_output_fmts;
+>  	bool is_ck_de_pol;
+> +	bool is_dpintf;
+>  	bool swap_input_support;
+>  	/* Mask used for HWIDTH, HPORCH, VSYNC_WIDTH and VSYNC_PORCH
+> (no shift) */
+>  	u32 dimension_mask;
+> @@ -498,11 +499,11 @@ static int mtk_dpi_set_display_mode(struct
+> mtk_dpi *dpi,
+>  
+>  	vm.pixelclock = pll_rate / factor;
+>  	if ((dpi->output_fmt == MEDIA_BUS_FMT_RGB888_2X12_LE) ||
+> -	    (dpi->output_fmt == MEDIA_BUS_FMT_RGB888_2X12_BE))
+> +		 (dpi->output_fmt == MEDIA_BUS_FMT_RGB888_2X12_BE)) {
+>  		clk_set_rate(dpi->pixel_clk, vm.pixelclock * 2);
+> -	else
+> +	} else {
+>  		clk_set_rate(dpi->pixel_clk, vm.pixelclock);
+> -
+> +	}
+>  
+>  	vm.pixelclock = clk_get_rate(dpi->pixel_clk);
+>  
+> @@ -515,9 +516,15 @@ static int mtk_dpi_set_display_mode(struct
+> mtk_dpi *dpi,
+>  			    MTK_DPI_POLARITY_FALLING :
+> MTK_DPI_POLARITY_RISING;
+>  	dpi_pol.vsync_pol = vm.flags & DISPLAY_FLAGS_VSYNC_HIGH ?
+>  			    MTK_DPI_POLARITY_FALLING :
+> MTK_DPI_POLARITY_RISING;
+> -	hsync.sync_width = vm.hsync_len;
+> -	hsync.back_porch = vm.hback_porch;
+> -	hsync.front_porch = vm.hfront_porch;
+> +	if (dpi->conf->is_dpintf) {
+> +		hsync.sync_width = vm.hsync_len / 4;
+> +		hsync.back_porch = vm.hback_porch / 4;
+> +		hsync.front_porch = vm.hfront_porch / 4;
+> +	} else {
+> +		hsync.sync_width = vm.hsync_len;
+> +		hsync.back_porch = vm.hback_porch;
+> +		hsync.front_porch = vm.hfront_porch;
+> +	}
+>  	hsync.shift_half_line = false;
+>  	vsync_lodd.sync_width = vm.vsync_len;
+>  	vsync_lodd.back_porch = vm.vback_porch;
+> @@ -559,13 +566,20 @@ static int mtk_dpi_set_display_mode(struct
+> mtk_dpi *dpi,
+>  	mtk_dpi_config_channel_limit(dpi);
+>  	mtk_dpi_config_bit_num(dpi, dpi->bit_num);
+>  	mtk_dpi_config_channel_swap(dpi, dpi->channel_swap);
+> -	mtk_dpi_config_yc_map(dpi, dpi->yc_map);
+>  	mtk_dpi_config_color_format(dpi, dpi->color_format);
+> -	mtk_dpi_config_2n_h_fre(dpi);
+> -	mtk_dpi_dual_edge(dpi);
+> -	mtk_dpi_config_disable_edge(dpi);
+> +	if (dpi->conf->is_dpintf) {
+> +		mtk_dpi_mask(dpi, DPI_CON, DPINTF_INPUT_2P_EN,
+> +			     DPINTF_INPUT_2P_EN);
+> +	} else {
+> +		mtk_dpi_config_yc_map(dpi, dpi->yc_map);
+> +		mtk_dpi_config_2n_h_fre(dpi);
+> +		mtk_dpi_dual_edge(dpi);
+> +		mtk_dpi_config_disable_edge(dpi);
+> +	}
+>  	mtk_dpi_sw_reset(dpi, false);
+>  
+> +	mtk_dpi_enable(dpi);
+> +
+>  	return 0;
+>  }
+>  
+> @@ -642,7 +656,10 @@ static int mtk_dpi_bridge_atomic_check(struct
+> drm_bridge *bridge,
+>  	dpi->bit_num = MTK_DPI_OUT_BIT_NUM_8BITS;
+>  	dpi->channel_swap = MTK_DPI_OUT_CHANNEL_SWAP_RGB;
+>  	dpi->yc_map = MTK_DPI_OUT_YC_MAP_RGB;
+> -	dpi->color_format = MTK_DPI_COLOR_FORMAT_RGB;
+> +	if (out_bus_format == MEDIA_BUS_FMT_YUYV8_1X16)
+> +		dpi->color_format =
+> MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL;
+> +	else
+> +		dpi->color_format = MTK_DPI_COLOR_FORMAT_RGB;
+>  
+>  	return 0;
+>  }
+> @@ -801,6 +818,16 @@ static unsigned int mt8183_calculate_factor(int
+> clock)
+>  		return 2;
+>  }
+>  
+> +static unsigned int mt8195_dpintf_calculate_factor(int clock)
+> +{
+> +	if (clock < 70000)
+> +		return 4;
+> +	else if (clock < 200000)
+> +		return 2;
+> +	else
+> +		return 1;
+> +}
+> +
+>  static const u32 mt8173_output_fmts[] = {
+>  	MEDIA_BUS_FMT_RGB888_1X24,
+>  };
+> @@ -810,6 +837,12 @@ static const u32 mt8183_output_fmts[] = {
+>  	MEDIA_BUS_FMT_RGB888_2X12_BE,
+>  };
+>  
+> +static const u32 mt8195_output_fmts[] = {
+> +	MEDIA_BUS_FMT_RGB888_1X24,
+> +	MEDIA_BUS_FMT_YUV8_1X24,
+> +	MEDIA_BUS_FMT_YUYV8_1X16,
+> +};
+> +
+>  static const struct mtk_dpi_yc_limit mtk_dpi_limit = {
+>  	.c_bottom = 0x0010,
+>  	.c_top = 0x0FE0,
+> @@ -817,6 +850,13 @@ static const struct mtk_dpi_yc_limit
+> mtk_dpi_limit = {
+>  	.y_top = 0x0FE0,
+>  };
+>  
+> +static const struct mtk_dpi_yc_limit mtk_dpintf_limit = {
+> +	.c_bottom = 0x0000,
+> +	.c_top = 0xFFF,
+> +	.y_bottom = 0x0000,
+> +	.y_top = 0xFFF,
+> +};
+> +
+>  static const struct mtk_dpi_conf mt8173_conf = {
+>  	.cal_factor = mt8173_calculate_factor,
+>  	.reg_h_fre_con = 0xe0,
+> @@ -882,6 +922,19 @@ static const struct mtk_dpi_conf mt8192_conf = {
+>  	.limit = &mtk_dpi_limit,
+>  };
+>  
+> +static const struct mtk_dpi_conf mt8195_dpintf_conf = {
+> +	.cal_factor = mt8195_dpintf_calculate_factor,
+> +	.output_fmts = mt8195_output_fmts,
+> +	.num_output_fmts = ARRAY_SIZE(mt8195_output_fmts),
+> +	.is_dpintf = true,
+> +	.dimension_mask = DPINTF_HPW_MASK,
+> +	.hvsize_mask = DPINTF_HSIZE_MASK,
+> +	.channel_swap_shift = DPINTF_CH_SWAP,
+> +	.yuv422_en_bit = DPINTF_YUV422_EN,
+> +	.csc_enable_bit = DPINTF_CSC_ENABLE,
+> +	.limit = &mtk_dpintf_limit,
+> +};
+> +
+>  static int mtk_dpi_probe(struct platform_device *pdev)
+>  {
+>  	struct device *dev = &pdev->dev;
+> @@ -1004,6 +1057,9 @@ static const struct of_device_id
+> mtk_dpi_of_ids[] = {
+>  	{ .compatible = "mediatek,mt8192-dpi",
+>  	  .data = &mt8192_conf,
+>  	},
+> +	{ .compatible = "mediatek,mt8195-dpintf",
+> +	  .data = &mt8195_dpintf_conf,
+> +	},
+>  	{ },
+>  };
+>  MODULE_DEVICE_TABLE(of, mtk_dpi_of_ids);
+> diff --git a/drivers/gpu/drm/mediatek/mtk_dpi_regs.h
+> b/drivers/gpu/drm/mediatek/mtk_dpi_regs.h
+> index 3a02fabe1662..91b32dfffced 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_dpi_regs.h
+> +++ b/drivers/gpu/drm/mediatek/mtk_dpi_regs.h
+> @@ -40,10 +40,15 @@
+>  #define FAKE_DE_LEVEN			BIT(21)
+>  #define FAKE_DE_RODD			BIT(22)
+>  #define FAKE_DE_REVEN			BIT(23)
+> +#define DPINTF_YUV422_EN		BIT(24)
+> +#define DPINTF_CSC_ENABLE		BIT(26)
+> +#define DPINTF_INPUT_2P_EN		BIT(29)
+>  
+>  #define DPI_OUTPUT_SETTING	0x14
+>  #define CH_SWAP				0
+> +#define DPINTF_CH_SWAP			BIT(1)
+>  #define CH_SWAP_MASK			(0x7 << 0)
+> +#define DPINTF_CH_SWAP_MASK		(0x7 << 1)
+>  #define SWAP_RGB			0x00
+>  #define SWAP_GBR			0x01
+>  #define SWAP_BRG			0x02
+> @@ -80,8 +85,10 @@
+>  #define DPI_SIZE		0x18
+>  #define HSIZE				0
+>  #define HSIZE_MASK			(0x1FFF << 0)
+> +#define DPINTF_HSIZE_MASK		(0xFFFF << 0)
+>  #define VSIZE				16
+>  #define VSIZE_MASK			(0x1FFF << 16)
+> +#define DPINTF_VSIZE_MASK		(0xFFFF << 16)
+>  
+>  #define DPI_DDR_SETTING		0x1C
+>  #define DDR_EN				BIT(0)
+> @@ -93,24 +100,30 @@
+>  #define DPI_TGEN_HWIDTH		0x20
+>  #define HPW				0
+>  #define HPW_MASK			(0xFFF << 0)
+> +#define DPINTF_HPW_MASK			(0xFFFF << 0)
+>  
+>  #define DPI_TGEN_HPORCH		0x24
+>  #define HBP				0
+>  #define HBP_MASK			(0xFFF << 0)
+> +#define DPINTF_HBP_MASK			(0xFFFF << 0)
+>  #define HFP				16
+>  #define HFP_MASK			(0xFFF << 16)
+> +#define DPINTF_HFP_MASK			(0xFFFF << 16)
+>  
+>  #define DPI_TGEN_VWIDTH		0x28
+>  #define DPI_TGEN_VPORCH		0x2C
+>  
+>  #define VSYNC_WIDTH_SHIFT		0
+>  #define VSYNC_WIDTH_MASK		(0xFFF << 0)
+> +#define DPINTF_VSYNC_WIDTH_MASK		(0xFFFF << 0)
+>  #define VSYNC_HALF_LINE_SHIFT		16
+>  #define VSYNC_HALF_LINE_MASK		BIT(16)
+>  #define VSYNC_BACK_PORCH_SHIFT		0
+>  #define VSYNC_BACK_PORCH_MASK		(0xFFF << 0)
+> +#define DPINTF_VSYNC_BACK_PORCH_MASK	(0xFFFF << 0)
+>  #define VSYNC_FRONT_PORCH_SHIFT		16
+>  #define VSYNC_FRONT_PORCH_MASK		(0xFFF << 16)
+> +#define DPINTF_VSYNC_FRONT_PORCH_MASK	(0xFFFF << 16)
+>  
+>  #define DPI_BG_HCNTL		0x30
+>  #define BG_RIGHT			(0x1FFF << 0)
+> @@ -217,4 +230,29 @@
+>  
+>  #define EDGE_SEL_EN			BIT(5)
+>  #define H_FRE_2N			BIT(25)
+> +
+> +#define DPI_MATRIX_SET	0xB4
+> +#define INT_MATRIX_SEL			BIT(0)
+> +#define INT_MATRIX_SEL_MASK		(0x1F << 0)
+> +#define RGB_TO_JPEG			0x00
+> +#define RGB_TO_FULL709			0x01
+> +#define RGB_TO_BT601			0x02
+> +#define RGB_TO_BT709			0x03
+> +#define JPEG_TO_RGB			0x04
+> +#define FULL709_TO_RGB			0x05
+> +#define BT601_TO_RGB			0x06
+> +#define BT709_TO_RGB			0x07
+> +#define JPEG_TO_BT601			0x08
+> +#define JPEG_TO_BT709			0x09
+> +#define BT601_TO_JPEG			0xA
+> +#define BT709_TO_JPEG			0xB
+> +#define BT709_TO_BT601			0xC
+> +#define BT601_TO_BT709			0xD
+> +#define JPEG_TO_CERGB			0x14
+> +#define FULL709_TO_CERGB		0x15
+> +#define BT601_TO_CERGB			0x16
+> +#define BT709_TO_CERGB			0x17
+> +#define RGB_TO_CERGB			0x1C
+> +#define MATRIX_BIT			BIT(8)
+> +#define EXT_MATRIX_EN			BIT(12)
+>  #endif /* __MTK_DPI_REGS_H */
+> diff --git a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c
+> b/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c
+> index 2e99aee13dfe..558fc2733358 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c
+> @@ -351,6 +351,11 @@ static const char * const
+> mtk_ddp_comp_stem[MTK_DDP_COMP_TYPE_MAX] = {
+>  	[MTK_DISP_WDMA] = "wdma",
+>  	[MTK_DPI] = "dpi",
+>  	[MTK_DSI] = "dsi",
+> +	[MTK_DP_INTF] = "dp-intf",
+> +	[MTK_DISP_PWM] = "pwm",
+> +	[MTK_DISP_MUTEX] = "mutex",
+> +	[MTK_DISP_OD] = "od",
+> +	[MTK_DISP_BLS] = "bls",
+>  };
+>  
+>  struct mtk_ddp_comp_match {
+> @@ -369,6 +374,8 @@ static const struct mtk_ddp_comp_match
+> mtk_ddp_matches[DDP_COMPONENT_ID_MAX] = {
+>  	[DDP_COMPONENT_DITHER]		= { MTK_DISP_DITHER,	0,
+> &ddp_dither },
+>  	[DDP_COMPONENT_DPI0]		= { MTK_DPI,		0,
+> &ddp_dpi },
+>  	[DDP_COMPONENT_DPI1]		= { MTK_DPI,		1,
+> &ddp_dpi },
+> +	[DDP_COMPONENT_DP_INTF0]	= { MTK_DP_INTF,	0, &ddp_dpi
+> },
+> +	[DDP_COMPONENT_DP_INTF1]	= { MTK_DP_INTF,	1, &ddp_dpi
+> },
+>  	[DDP_COMPONENT_DSI0]		= { MTK_DSI,		0,
+> &ddp_dsi },
+>  	[DDP_COMPONENT_DSI1]		= { MTK_DSI,		1,
+> &ddp_dsi },
+>  	[DDP_COMPONENT_DSI2]		= { MTK_DSI,		2,
+> &ddp_dsi },
+> @@ -481,6 +488,7 @@ int mtk_ddp_comp_init(struct device_node *node,
+> struct mtk_ddp_comp *comp,
+>  	    type == MTK_DISP_PWM ||
+>  	    type == MTK_DISP_RDMA ||
+>  	    type == MTK_DPI ||
+> +	    type == MTK_DP_INTF ||
+>  	    type == MTK_DSI)
+>  		return 0;
+>  
+> diff --git a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h
+> b/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h
+> index ad267bb8fc9b..43ad74be509e 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h
+> +++ b/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h
+> @@ -34,6 +34,7 @@ enum mtk_ddp_comp_type {
+>  	MTK_DISP_UFOE,
+>  	MTK_DISP_WDMA,
+>  	MTK_DPI,
+> +	MTK_DP_INTF,
+>  	MTK_DSI,
+>  	MTK_DDP_COMP_TYPE_MAX,
+>  };
+> diff --git a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+> b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+> index 247c6ff277ef..c8a233f609f0 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+> @@ -509,6 +509,8 @@ static const struct of_device_id
+> mtk_ddp_comp_dt_ids[] = {
+>  	  .data = (void *)MTK_DPI },
+>  	{ .compatible = "mediatek,mt8183-dpi",
+>  	  .data = (void *)MTK_DPI },
+> +	{ .compatible = "mediatek,mt8195-dpintf",
+> +	  .data = (void *)MTK_DP_INTF },
+>  	{ .compatible = "mediatek,mt2701-dsi",
+>  	  .data = (void *)MTK_DSI },
+>  	{ .compatible = "mediatek,mt8173-dsi",
+> @@ -609,7 +611,8 @@ static int mtk_drm_probe(struct platform_device
+> *pdev)
+>  		    comp_type == MTK_DISP_OVL_2L ||
+>  		    comp_type == MTK_DISP_RDMA ||
+>  		    comp_type == MTK_DPI ||
+> -		    comp_type == MTK_DSI) {
+> +		    comp_type == MTK_DPI ||
+> +		    comp_type == MTK_DP_INTF) {
 
-Export these attributes into userspace for administrators to
-confirm platform is properly locked down.
+Hello Guillaume,
 
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
----
- Documentation/ABI/testing/sysfs-driver-ccp | 87 ++++++++++++++++++++++
- drivers/crypto/ccp/psp-dev.h               | 17 +++++
- drivers/crypto/ccp/sp-pci.c                | 62 +++++++++++++++
- 3 files changed, 166 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-driver-ccp
+Is this modification correct?
+MTK_DPI appears twice and MTK_DSI is removed.
 
-diff --git a/Documentation/ABI/testing/sysfs-driver-ccp b/Documentation/ABI/testing/sysfs-driver-ccp
-new file mode 100644
-index 000000000000..7aded9b75553
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-driver-ccp
-@@ -0,0 +1,87 @@
-+What:		/sys/bus/pci/devices/<BDF>/fused_part
-+Date:		June 2022
-+KernelVersion:	5.19
-+Contact:	mario.limonciello@amd.com
-+Description:
-+		The /sys/bus/pci/devices/<BDF>/fused_part file reports
-+		whether the CPU or APU has been fused to prevent tampering.
-+		0: Not fused
-+		1: Fused
-+
-+What:		/sys/bus/pci/devices/<BDF>/debug_lock_on
-+Date:		June 2022
-+KernelVersion:	5.19
-+Contact:	mario.limonciello@amd.com
-+Description:
-+		The /sys/bus/pci/devices/<BDF>/debug_lock_on reports
-+		whether the AMD CPU or APU has been unlocked for debugging.
-+		Possible values:
-+		0: Not locked
-+		1: Locked
-+
-+What:		/sys/bus/pci/devices/<BDF>/tsme_status
-+Date:		June 2022
-+KernelVersion:	5.19
-+Contact:	mario.limonciello@amd.com
-+Description:
-+		The /sys/bus/pci/devices/<BDF>/tsme_status file reports
-+		the status of transparent secure memory encryption on AMD systems.
-+		Possible values:
-+		0: Not active
-+		1: Active
-+
-+What:		/sys/bus/pci/devices/<BDF>/anti_rollback_status
-+Date:		June 2022
-+KernelVersion:	5.19
-+Contact:	mario.limonciello@amd.com
-+Description:
-+		The /sys/bus/pci/devices/<BDF>/anti_rollback_status file reports
-+		whether the PSP is enforcing rollback protection.
-+		Possible values:
-+		0: Not enforcing
-+		1: Enforcing
-+
-+What:		/sys/bus/pci/devices/<BDF>/rpmc_production_enabled
-+Date:		June 2022
-+KernelVersion:	5.19
-+Contact:	mario.limonciello@amd.com
-+Description:
-+		The /sys/bus/pci/devices/<BDF>/rpmc_production_enabled file reports
-+		whether Replay Protected Monotonic Counter support has been enabled.
-+		Possible values:
-+		0: Not enabled
-+		1: Enabled
-+
-+What:		/sys/bus/pci/devices/<BDF>/rpmc_spirom_available
-+Date:		June 2022
-+KernelVersion:	5.19
-+Contact:	mario.limonciello@amd.com
-+Description:
-+		The /sys/bus/pci/devices/<BDF>/rpmc_spirom_available file reports
-+		whether an Replay Protected Monotonic Counter supported SPI is installed
-+		on the system.
-+		Possible values:
-+		0: Not present
-+		1: Present
-+
-+What:		/sys/bus/pci/devices/<BDF>/hsp_tpm_available
-+Date:		June 2022
-+KernelVersion:	5.19
-+Contact:	mario.limonciello@amd.com
-+Description:
-+		The /sys/bus/pci/devices/<BDF>/hsp_tpm_available file reports
-+		whether the HSP TPM has been activated.
-+		Possible values:
-+		0: Not activated or present
-+		1: Activated
-+
-+What:		/sys/bus/pci/devices/<BDF>/rom_armor_enforced
-+Date:		June 2022
-+KernelVersion:	5.19
-+Contact:	mario.limonciello@amd.com
-+Description:
-+		The /sys/bus/pci/devices/<BDF>/rom_armor_enforced file reports
-+		whether RomArmor SPI protection is enforced.
-+		Possible values:
-+		0: Not enforced
-+		1: Enforced
-diff --git a/drivers/crypto/ccp/psp-dev.h b/drivers/crypto/ccp/psp-dev.h
-index d811da28cce6..d528eb04c3ef 100644
---- a/drivers/crypto/ccp/psp-dev.h
-+++ b/drivers/crypto/ccp/psp-dev.h
-@@ -61,5 +61,22 @@ struct psp_device *psp_get_master_device(void);
- 
- #define PSP_CAPABILITY_SEV			BIT(0)
- #define PSP_CAPABILITY_TEE			BIT(1)
-+#define PSP_CAPABILITY_PSP_SECURITY_REPORTING	BIT(7)
-+
-+#define PSP_CAPABILITY_PSP_SECURITY_OFFSET	8
-+/*
-+ * The PSP doesn't directly store these bits in the capability register
-+ * but instead copies them from the results of query command.
-+ *
-+ * The offsets from the query command are below, and shifted when used.
-+ */
-+#define PSP_SECURITY_FUSED_PART			BIT(0)
-+#define PSP_SECURITY_DEBUG_LOCK_ON		BIT(2)
-+#define PSP_SECURITY_TSME_STATUS		BIT(5)
-+#define PSP_SECURITY_ANTI_ROLLBACK_STATUS	BIT(7)
-+#define PSP_SECURITY_RPMC_PRODUCTION_ENABLED	BIT(8)
-+#define PSP_SECURITY_RPMC_SPIROM_AVAILABLE	BIT(9)
-+#define PSP_SECURITY_HSP_TPM_AVAILABLE		BIT(10)
-+#define PSP_SECURITY_ROM_ARMOR_ENFORCED		BIT(11)
- 
- #endif /* __PSP_DEV_H */
-diff --git a/drivers/crypto/ccp/sp-pci.c b/drivers/crypto/ccp/sp-pci.c
-index 88c672ad27e4..b5970ae54d0e 100644
---- a/drivers/crypto/ccp/sp-pci.c
-+++ b/drivers/crypto/ccp/sp-pci.c
-@@ -32,6 +32,67 @@ struct sp_pci {
- };
- static struct sp_device *sp_dev_master;
- 
-+#define attribute_show(name, def)						\
-+static ssize_t name##_show(struct device *d, struct device_attribute *attr,	\
-+			   char *buf)						\
-+{										\
-+	struct sp_device *sp = dev_get_drvdata(d);				\
-+	struct psp_device *psp = sp->psp_data;					\
-+	int bit = PSP_SECURITY_##def << PSP_CAPABILITY_PSP_SECURITY_OFFSET;	\
-+	return sysfs_emit(buf, "%d\n", (psp->capability & bit) > 0);		\
-+}
-+
-+attribute_show(fused_part, FUSED_PART)
-+static DEVICE_ATTR_RO(fused_part);
-+attribute_show(debug_lock_on, DEBUG_LOCK_ON)
-+static DEVICE_ATTR_RO(debug_lock_on);
-+attribute_show(tsme_status, TSME_STATUS)
-+static DEVICE_ATTR_RO(tsme_status);
-+attribute_show(anti_rollback_status, ANTI_ROLLBACK_STATUS)
-+static DEVICE_ATTR_RO(anti_rollback_status);
-+attribute_show(rpmc_production_enabled, RPMC_PRODUCTION_ENABLED)
-+static DEVICE_ATTR_RO(rpmc_production_enabled);
-+attribute_show(rpmc_spirom_available, RPMC_SPIROM_AVAILABLE)
-+static DEVICE_ATTR_RO(rpmc_spirom_available);
-+attribute_show(hsp_tpm_available, HSP_TPM_AVAILABLE)
-+static DEVICE_ATTR_RO(hsp_tpm_available);
-+attribute_show(rom_armor_enforced, ROM_ARMOR_ENFORCED)
-+static DEVICE_ATTR_RO(rom_armor_enforced);
-+
-+static struct attribute *psp_attrs[] = {
-+	&dev_attr_fused_part.attr,
-+	&dev_attr_debug_lock_on.attr,
-+	&dev_attr_tsme_status.attr,
-+	&dev_attr_anti_rollback_status.attr,
-+	&dev_attr_rpmc_production_enabled.attr,
-+	&dev_attr_rpmc_spirom_available.attr,
-+	&dev_attr_hsp_tpm_available.attr,
-+	&dev_attr_rom_armor_enforced.attr,
-+	NULL
-+};
-+
-+static umode_t psp_security_is_visible(struct kobject *kobj, struct attribute *attr, int idx)
-+{
-+	struct device *dev = kobj_to_dev(kobj);
-+	struct sp_device *sp = dev_get_drvdata(dev);
-+	struct psp_device *psp = sp->psp_data;
-+
-+	if (psp && (psp->capability & PSP_CAPABILITY_PSP_SECURITY_REPORTING))
-+		return 0444;
-+
-+	return 0;
-+}
-+
-+static struct attribute_group psp_attr_group = {
-+	.attrs = psp_attrs,
-+	.is_visible = psp_security_is_visible,
-+};
-+
-+static const struct attribute_group *psp_groups[] = {
-+	&psp_attr_group,
-+	NULL,
-+};
-+
- static int sp_get_msix_irqs(struct sp_device *sp)
- {
- 	struct sp_pci *sp_pci = sp->dev_specific;
-@@ -391,6 +452,7 @@ static struct pci_driver sp_pci_driver = {
- 	.remove = sp_pci_remove,
- 	.shutdown = sp_pci_shutdown,
- 	.driver.pm = &sp_pci_pm_ops,
-+	.dev_groups = psp_groups,
- };
- 
- int sp_pci_init(void)
--- 
-2.34.1
+
+BRs,
+Rex
+
+>  			dev_info(dev, "Adding component match for
+> %pOF\n",
+>  				 node);
+>  			drm_of_component_match_add(dev, &match,
+> component_compare_of,
+> diff --git a/include/linux/soc/mediatek/mtk-mmsys.h
+> b/include/linux/soc/mediatek/mtk-mmsys.h
+> index 4bba275e235a..56ed2fa5f59e 100644
+> --- a/include/linux/soc/mediatek/mtk-mmsys.h
+> +++ b/include/linux/soc/mediatek/mtk-mmsys.h
+> @@ -19,6 +19,8 @@ enum mtk_ddp_comp_id {
+>  	DDP_COMPONENT_DITHER,
+>  	DDP_COMPONENT_DPI0,
+>  	DDP_COMPONENT_DPI1,
+> +	DDP_COMPONENT_DP_INTF0,
+> +	DDP_COMPONENT_DP_INTF1,
+>  	DDP_COMPONENT_DSI0,
+>  	DDP_COMPONENT_DSI1,
+>  	DDP_COMPONENT_DSI2,
 
