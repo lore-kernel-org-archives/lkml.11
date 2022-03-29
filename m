@@ -2,116 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 065EEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:01:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3A19C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:02:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236183AbiC2MDc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 08:03:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52538 "EHLO
+        id S236197AbiC2MES (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 08:04:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236184AbiC2MD3 (ORCPT
+        with ESMTP id S234431AbiC2MEN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 08:03:29 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83A095BD0E
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:01:45 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KSSpX4blyz4xNm;
-        Tue, 29 Mar 2022 23:01:40 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1648555304;
-        bh=01mxyWDLRIt5kimROuqbPGIxm1dCV7lRCsI+Du/e0Ss=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=L3kBFENcYSTJQ6cWgshgm35f9FNB8Ew3X782WdaRMzj5n1w6uL8J0Z/9Ys116iCFS
-         3PKWwyLdvJr7Urq5zfhmzBHcNgBvtBFVrXcYgUJcLmLdW1ydcCQ87VcVAvUsX5BuNm
-         WBZuEPhmLtbthCqRlOVX2bbziX37DusGS6BuAtrp4Di10dnmOkWG+QgHwwm8zOu8Yu
-         ZN9UUWjSbHiLGVna/Gx2iXrBrD8HB7QI4Y2ePlRHcqGzwi508PLBVR2T5X7UsVNl0c
-         nY6Jcm5fJsxWdKA6Re61fRVd9yvLa+Eq0akkxggx2ECh4uGtyOXf5hKVkr8ZbFYdyM
-         vfcsSLcgEpWTA==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "aik@ozlabs.ru" <aik@ozlabs.ru>,
-        Sathvika Vasireddy <sv@linux.ibm.com>,
-        "naveen.n.rao@linux.vnet.ibm.com" <naveen.n.rao@linux.vnet.ibm.com>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
-Subject: Re: [RFC PATCH 3/3] objtool/mcount: Add powerpc specific functions
-In-Reply-To: <20220328195920.dqlfra3lcardko6r@treble>
-References: <20220318105140.43914-1-sv@linux.ibm.com>
- <20220318105140.43914-4-sv@linux.ibm.com>
- <YjR6kHq4c/rjCTpr@hirez.programming.kicks-ass.net>
- <0b55f122-4760-c1ba-840a-0911cefec2ad@csgroup.eu>
- <20220328195920.dqlfra3lcardko6r@treble>
-Date:   Tue, 29 Mar 2022 23:01:38 +1100
-Message-ID: <87mth9ezml.fsf@mpe.ellerman.id.au>
+        Tue, 29 Mar 2022 08:04:13 -0400
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0108B6302;
+        Tue, 29 Mar 2022 05:02:29 -0700 (PDT)
+Received: by mail-wm1-f43.google.com with SMTP id q20so10152485wmq.1;
+        Tue, 29 Mar 2022 05:02:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=meM4Sz+j94jn44eNRkkMHVcnjIIc4XP3Is91W3/UqCY=;
+        b=H1z56RXqNUdTzA/kdQW75TbfP66qiF0Fy6EWyYE6d+niColNB8EMC4vFpUUBF5Nsyp
+         1RndmRZNBbe+O0seypjDadIdRj/lPtdvFIGVfD6/7ruhrOBeKICxqZ1RUKE0RWuyIsLV
+         orhgUihkzsyuURAbRBjgwcVCMWfPor+I8O0MqTV/8X8ryhlQAdq4lLyFiJoREIvCGvLO
+         IaXQYEKF933y+27EhLNSzkhpATH/TC7KRgLSmuxXec11SMfGaWJqjXVwj58HE8VqY9Xk
+         Fp+uGnTFd9Ab25W1F3lY9lq/lE56Ip9MVp+nZzMgzCSddk2ySe61aP1twowMUCh1KyJd
+         Gfjw==
+X-Gm-Message-State: AOAM532Li7TiA6HySr1WdwfUOeWxKt67xDpevWqNkh/I7Vrka6BEPSJd
+        lw715n8I0a6D2ui4oYs1MoA=
+X-Google-Smtp-Source: ABdhPJxAtav4m2jx06zMSUjFBzexXcpuWcn/Yf5t2l5AWfAXEGoejtNP+y8CyPZdxo9qBKVUI9ZlRw==
+X-Received: by 2002:a1c:e90a:0:b0:381:504e:b57d with SMTP id q10-20020a1ce90a000000b00381504eb57dmr6454196wmc.177.1648555348478;
+        Tue, 29 Mar 2022 05:02:28 -0700 (PDT)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id i31-20020adf90a2000000b00205ad559c87sm9720622wri.21.2022.03.29.05.02.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Mar 2022 05:02:27 -0700 (PDT)
+Date:   Tue, 29 Mar 2022 12:02:25 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     Dexuan Cui <decui@microsoft.com>
+Cc:     "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] Drivers: hv: vmbus: Deactivate sysctl_record_panic_msg
+ by default in isolated guests
+Message-ID: <20220329120225.nmk2repiwmxumtmq@liuwe-devbox-debian-v2>
+References: <20220301141135.2232-1-parri.andrea@gmail.com>
+ <BYAPR21MB1270C0B7E709B218E67B0D32BF029@BYAPR21MB1270.namprd21.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BYAPR21MB1270C0B7E709B218E67B0D32BF029@BYAPR21MB1270.namprd21.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Josh Poimboeuf <jpoimboe@redhat.com> writes:
-> On Sun, Mar 27, 2022 at 09:09:20AM +0000, Christophe Leroy wrote:
->> Second point is the endianess and 32/64 selection, especially when 
->> crossbuilding. There is already some stuff regarding endianess based on 
->> bswap_if_needed() but that's based on constant selection at build time 
->> and I couldn't find an easy way to set it conditionaly based on the 
->> target being built.
->>
->> Regarding 32/64 selection, there is almost nothing, it's based on using 
->> type 'long' which means that at the time being the target and the build 
->> platform must both be 32 bits or 64 bits.
->> 
->> For both cases (endianess and 32/64) I think the solution should 
->> probably be to start with the fileformat of the object file being 
->> reworked by objtool.
->
-> Do we really need to detect the endianness/bitness at runtime?  Objtool
-> is built with the kernel, why not just build-in the same target
-> assumptions as the kernel itself?
+On Tue, Mar 01, 2022 at 08:29:43PM +0000, Dexuan Cui wrote:
+> > From: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+> > Sent: Tuesday, March 1, 2022 6:12 AM
+> > ...
+> > hv_panic_page might contain guest-sensitive information, do not dump it
+> > over to Hyper-V by default in isolated guests.
+> > 
+> > While at it, update some comments in hyperv_{panic,die}_event().
+> > 
+> > Reported-by: Dexuan Cui <decui@microsoft.com>
+> > Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+> > ---
+> 
+> Reviewed-by: Dexuan Cui <decui@microsoft.com>
 
-I don't think we need runtime detection. But it will need to support
-basically most combinations of objtool running as 32-bit/64-bit LE/BE
-while the kernel it's analysing is 32-bit/64-bit LE/BE.
-
->> What are current works in progress on objtool ? Should I wait Josh's 
->> changes before starting looking at all this ? Should I wait for anything 
->> else ?
->
-> I'm not making any major changes to the code, just shuffling things
-> around to make the interface more modular.  I hope to have something
-> soon (this week).  Peter recently added a big feature (Intel IBT) which
-> is already in -next.
->
-> Contributions are welcome, with the understanding that you'll help
-> maintain it ;-)
->
-> Some years ago Kamalesh Babulal had a prototype of objtool for ppc64le
-> which did the full stack validation.  I'm not sure what ever became of
-> that.
-
-From memory he was starting to clean the patches up in late 2019, but I
-guess that probably got derailed by COVID. AFAIK he never posted
-anything. Maybe someone at IBM has a copy internally (Naveen?).
-
-> FWIW, there have been some objtool patches for arm64 stack validation,
-> but the arm64 maintainers have been hesitant to get on board with
-> objtool, as it brings a certain maintenance burden.  Especially for the
-> full stack validation and ORC unwinder.  But if you only want inline
-> static calls and/or mcount then it'd probably be much easier to
-> maintain.
-
-I would like to have the stack validation, but I am also worried about
-the maintenance burden.
-
-I guess we start with mcount, which looks pretty minimal judging by this
-series, and see how we go from there.
-
-cheers
+Applied to hyperv-fixes. Thanks.
