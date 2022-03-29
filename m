@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 792D4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:41:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D37AC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:41:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236510AbiC2Mnb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 08:43:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34004 "EHLO
+        id S236603AbiC2Mng (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 08:43:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236412AbiC2Mmr (ORCPT
+        with ESMTP id S236504AbiC2Mmy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 08:42:47 -0400
+        Tue, 29 Mar 2022 08:42:54 -0400
 Received: from mail-ed1-x549.google.com (mail-ed1-x549.google.com [IPv6:2a00:1450:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1741C21547E
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:40:53 -0700 (PDT)
-Received: by mail-ed1-x549.google.com with SMTP id l14-20020aa7cace000000b003f7f8e1cbbdso10941231edt.20
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:40:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44075209A4D
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:41:03 -0700 (PDT)
+Received: by mail-ed1-x549.google.com with SMTP id v9-20020a509549000000b00418d7c2f62aso10946975eda.15
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:41:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=O7QheLFrb7/gpanG0WgUH3CDvOfcWzGQKyw+meqIa2c=;
-        b=nwdrOPNgrlRK/p217vtYWLPWJHANewfRLQpav+XSHbkAVHEnW3oP60FbQ/XxJx5Wey
-         8DRycD6Z8aEu0MC/3X0fisGnjf5imwmv/pW9pycKVeSdzaHTJ5Rg895wxW0ZrqOGPo10
-         IfXG+qAD/A/UF9Bi9etjM3pLZn0NbG7nPno2kSpwLlV8g6SDRLw6y8Wk3qoccWfMZ8be
-         drDAk5gciM2kZ8tcU4aiCTs8FvlgiztSYF5pfb76GBFYTSFhMc7u/3/M4f77WEnkaJxj
-         KHDu5r2kXFtX3OnAiGQmLBocYjFXf2eOhSXJmKa/Qj5ogXrOHpI3AL+qNsyyhKmK9AoV
-         8PsQ==
+        bh=cXkdgZbGJwU6k8snEczoh0k/WkFNvdUgCw+ayF9WLuQ=;
+        b=kJ3CEmpah2i9qEH7T+C5Ga2iXnj2Y+3RwMf8YqsmELN6LOISLHU5lU3es8dFXLXr4G
+         RwvPPr+lXFQJJVB8eC5SfjBqsSq8LtpCHYf3AswzsXu/1NhBVq2D9gsP4OH2L4CTMT4M
+         htWXUw29Be33vwaebXorL3fSnDwOI8IYefJyHWs3/4YxoYcA+PWRfpq7JHQ6XEzLzzbD
+         FlQgRQzQ9K3/oO1RgYlOuEtyVvqXUpOZFhIl55G6hZ3TouP4qi7NusxxsF5cTKn2krfS
+         X+VguAz0cQlQcgvkoFLT3U0fU9ShmiXto/lOzeXy+6A0JzZKD80LdngdHu/dWikUglw0
+         6J5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=O7QheLFrb7/gpanG0WgUH3CDvOfcWzGQKyw+meqIa2c=;
-        b=fVYOF2q2RE5CiJnYCdTGK+Cw7Wt6N1hXkO4J97fND2QAscYSKPygbDOrd2gQnPQKEH
-         1bD30U/SwNMih5D5apudI2R8tNq4qCrEoNj2lN8cnITvdfHYRbCiwRVa/D1UlP9FkinP
-         Pfl/m/YWDbIfPWOCu46dQKqY79QMYRjP/L4ffLbojmDo3wXZhAD2qIGZ4QE8cNE0UYxj
-         b+88c+VFkAIwMSMnAI4N4ljST+TFtHhjOAQh7/Zq5qOqvwtSwBnuhZ0LpnzTHdr1/veM
-         ElPJYU8EfMUzqzBpDtZxCLnvN9BJniLkOwtR8YnWUwyrSRXbwAMG7vUY8dg4Dgvy90cI
-         7oaA==
-X-Gm-Message-State: AOAM531G1CZXD11Hqy+ulTk9T6Gpr4/+ga+5uP2r6VXIMEg61aezHYAe
-        bZLEvPKP3oAPqFm+3mG/IQQsA5ri4cw=
-X-Google-Smtp-Source: ABdhPJw72M5zTQlc12l/JxfWqejUITTKjW22Nisg7zg2gWpioCaXSJXtz0/OVqyNYeeR7potvImif+IfrBc=
+        bh=cXkdgZbGJwU6k8snEczoh0k/WkFNvdUgCw+ayF9WLuQ=;
+        b=z2NZpfWnKxQ4JG9moYnC4uBGxXlzcdJ9XYvMLQ8sOpHSgg2asUPjUMI118lQ8iVXEQ
+         vRITiMjB8OWDoxyetMyJfOfDxHpDC/yEgY2J3JmUdjfoPJNLHSq7zrh8ugayZYESmsay
+         NQ8QQOJlfPuagYJt/0Ln+jum7P1DFFlmlnf3pyUc2D06x1Pfa/Mt2MefGIQvuNpNHj4p
+         oVN0RynscQwH3suNV0TKB8dHm2d7LrWDBcbjKLca5Vk59NOJWqMW0F8NX+aHtCQVBHXB
+         zxy/Y0g3KCnGz6xP0cgwrpGmzKUzKYNJlOVGMP9bLAmMAbbLYKX+a9Tit4Q8zNMb4EOl
+         JZLw==
+X-Gm-Message-State: AOAM531uJnzqIFf9xWZraMkeBDqfyEF6fPeszJud25PtolocFJHqneo7
+        9LrEJ0PV2lwm3+4YPzeRVrVaQrRERuc=
+X-Google-Smtp-Source: ABdhPJywI+kpf/WbEulTkI+WWQEh96+s7tqreK3VONJIUmDgWPb5bSFILSkC6rnkhNtKnHdOQAMR0bfb/+4=
 X-Received: from glider.muc.corp.google.com ([2a00:79e0:15:13:36eb:759:798f:98c3])
- (user=glider job=sendgmr) by 2002:a17:907:60cc:b0:6e0:dab3:ca76 with SMTP id
- hv12-20020a17090760cc00b006e0dab3ca76mr19088650ejc.154.1648557652185; Tue, 29
- Mar 2022 05:40:52 -0700 (PDT)
-Date:   Tue, 29 Mar 2022 14:39:38 +0200
+ (user=glider job=sendgmr) by 2002:a17:906:9743:b0:6d8:632a:a42d with SMTP id
+ o3-20020a170906974300b006d8632aa42dmr34840939ejy.157.1648557662237; Tue, 29
+ Mar 2022 05:41:02 -0700 (PDT)
+Date:   Tue, 29 Mar 2022 14:39:41 +0200
 In-Reply-To: <20220329124017.737571-1-glider@google.com>
-Message-Id: <20220329124017.737571-10-glider@google.com>
+Message-Id: <20220329124017.737571-13-glider@google.com>
 Mime-Version: 1.0
 References: <20220329124017.737571-1-glider@google.com>
 X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
-Subject: [PATCH v2 09/48] kmsan: mark noinstr as __no_sanitize_memory
+Subject: [PATCH v2 12/48] kcsan: clang: retire CONFIG_KCSAN_KCOV_BROKEN
 From:   Alexander Potapenko <glider@google.com>
 To:     glider@google.com
 Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
@@ -89,33 +89,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-noinstr functions should never be instrumented, so make KMSAN skip them
-by applying the __no_sanitize_memory attribute.
+kcov used to be broken prior to Clang 11, but right now that version is
+already the minimum required to build with KCSAN, because no prior
+compiler has "-tsan-distinguish-volatile=1".
 
+Therefore KCSAN_KCOV_BROKEN is not needed anymore.
+
+Suggested-by: Marco Elver <elver@google.com>
 Signed-off-by: Alexander Potapenko <glider@google.com>
 ---
-v2:
- -- moved this patch earlier in the series per Mark Rutland's request
-
-Link: https://linux-review.googlesource.com/id/I3c9abe860b97b49bc0c8026918b17a50448dec0d
+Link: https://linux-review.googlesource.com/id/Ida287421577f37de337139b5b5b9e977e4a6fee2
 ---
- include/linux/compiler_types.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ lib/Kconfig.kcsan | 11 -----------
+ 1 file changed, 11 deletions(-)
 
-diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
-index 3c1795fdb5686..286675559cbba 100644
---- a/include/linux/compiler_types.h
-+++ b/include/linux/compiler_types.h
-@@ -221,7 +221,8 @@ struct ftrace_likely_data {
- /* Section for code which can't be instrumented at all */
- #define noinstr								\
- 	noinline notrace __attribute((__section__(".noinstr.text")))	\
--	__no_kcsan __no_sanitize_address __no_profile __no_sanitize_coverage
-+	__no_kcsan __no_sanitize_address __no_profile __no_sanitize_coverage \
-+	__no_sanitize_memory
+diff --git a/lib/Kconfig.kcsan b/lib/Kconfig.kcsan
+index 63b70b8c55519..de022445fbba5 100644
+--- a/lib/Kconfig.kcsan
++++ b/lib/Kconfig.kcsan
+@@ -10,21 +10,10 @@ config HAVE_KCSAN_COMPILER
+ 	  For the list of compilers that support KCSAN, please see
+ 	  <file:Documentation/dev-tools/kcsan.rst>.
  
- #endif /* __KERNEL__ */
- 
+-config KCSAN_KCOV_BROKEN
+-	def_bool KCOV && CC_HAS_SANCOV_TRACE_PC
+-	depends on CC_IS_CLANG
+-	depends on !$(cc-option,-Werror=unused-command-line-argument -fsanitize=thread -fsanitize-coverage=trace-pc)
+-	help
+-	  Some versions of clang support either KCSAN and KCOV but not the
+-	  combination of the two.
+-	  See https://bugs.llvm.org/show_bug.cgi?id=45831 for the status
+-	  in newer releases.
+-
+ menuconfig KCSAN
+ 	bool "KCSAN: dynamic data race detector"
+ 	depends on HAVE_ARCH_KCSAN && HAVE_KCSAN_COMPILER
+ 	depends on DEBUG_KERNEL && !KASAN
+-	depends on !KCSAN_KCOV_BROKEN
+ 	select STACKTRACE
+ 	help
+ 	  The Kernel Concurrency Sanitizer (KCSAN) is a dynamic
 -- 
 2.35.1.1021.g381101b075-goog
 
