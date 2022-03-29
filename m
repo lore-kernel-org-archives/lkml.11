@@ -2,84 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 454B7C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 22:59:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B0A1C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 23:00:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238711AbiC2XBS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 19:01:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43012 "EHLO
+        id S238766AbiC2XCC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 19:02:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238637AbiC2XBQ (ORCPT
+        with ESMTP id S238637AbiC2XCA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 19:01:16 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80C5C473B7
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 15:59:32 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id mp6-20020a17090b190600b001c6841b8a52so314825pjb.5
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 15:59:32 -0700 (PDT)
+        Tue, 29 Mar 2022 19:02:00 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F44E496BC;
+        Tue, 29 Mar 2022 16:00:16 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id i11so18982931plr.1;
+        Tue, 29 Mar 2022 16:00:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=mf3QS3aKf3OHFfM5f9hNYG9RXB66tqh8JCr2CM0gjzg=;
-        b=hcCXx4lxQRydW8fhhYenNxDF9eCX3D5z22cl3TUAF0ArEkpyvnaFkMUrZiTD+uxW1b
-         fzLKlTjb1ER8GWLeqEv/GZM0JD2pr+clNaclG5dJYK+b+OsFKiKbi/fiKXt2QtlqAe6d
-         +WiGb1fe7LBdenaLFRkCNV4O+/wq9C21bQ3/7mTUj0rTRnM7IxvhIdWFPbpgwh5lqN77
-         0CuyMzE32y5PIm4wt69WLLkEs74QUcnESHmZShRiegnwC+AbQ3L07AYSyWfuSxkEnn22
-         VpbLYMJeFUxNPAw8sfMq9QxBI8YUuuqfgjXUebc+Trzn0+CrT7vuHi5v0ir7uW0ntOp/
-         AIbw==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=o8GRMi4BaOngdJPfp9V0+F4LD+JDrrKljXWdP6AfpMg=;
+        b=M65jFxPlVkdE37G6xltsUGPVyQxAPAQc77jbKKmsJWdTPzFSMHnocL4rTktfNhOlEf
+         JL566q6XWf6wARvbFknVfUEdIvYokyLyzycTNKQ1ChztkZqerMu476RVSjsRfA9TiHkl
+         4bWhBuAQpSy+t9K/YlffBtPxPvKb4q8CndxznH45dgJX9xhjbNilZh5ujFrQ3PX6I//V
+         zWni7Y1AYcbtj7AaIORQMKlvD8xw2TmPotEDVgIa9g18VFTcvr3ty7WJVkWPSdfJPTMq
+         MQJcKmRZo5DnlNLPf/J+e8S6DgvRnrj1ROcHa9CHBykVRtYn9vPZokJeShJOl73xZPdl
+         ePTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=mf3QS3aKf3OHFfM5f9hNYG9RXB66tqh8JCr2CM0gjzg=;
-        b=mDtu0WBjg3NQsixdJrEisB+An4bN9dhSUNk8Zky69ItP3pCgqRcPT7t2goc3wtARWF
-         BwEMsdbB/wzDL1BcUtr8MdsFBx9RgeMSiILd9QkKaOZsQOUwthZiAa1rfJAa0fdS6o90
-         Y21pkZomCFbLqEXJrshO6v7yoe3Ic+hAlr7sZXjYd/OFVIXZHjDw0qfOdZidpoOi3OFF
-         GbVtsgaqGjCqJixJkD22LuRblYudiKjyO2//Yup1jLnDbGI3zIqsqQVlNkSmVm9z6SCg
-         Du0uydJQe5efIHf/S9JnaLOCbvpLh3255tTCOgNXOVnjmKIgV9nBTFApomaZq1cqSK8/
-         2drQ==
-X-Gm-Message-State: AOAM531p1x3lI3iD8XQ1CHvIzWSYhcDd3w0Qnq/Ncs+2aJW172MoeJAT
-        sxwrRK/eUGnVwy6jYGUosc9dJg==
-X-Google-Smtp-Source: ABdhPJzHMuNYqPgKGcciAnrghVvSghsdodOQmBc2A0L2W3nlDYsD7Ul8QdYdevQmBRSuUZeRU5/X+w==
-X-Received: by 2002:a17:90b:2248:b0:1c9:87d5:11eb with SMTP id hk8-20020a17090b224800b001c987d511ebmr1509844pjb.114.1648594771874;
-        Tue, 29 Mar 2022 15:59:31 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id f21-20020a056a00239500b004fb02a7a45bsm17321859pfc.214.2022.03.29.15.59.30
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=o8GRMi4BaOngdJPfp9V0+F4LD+JDrrKljXWdP6AfpMg=;
+        b=uk/nc9ARAsJSMkhz+ibSOojUXSp/fUC8yZFmnhNwdFlmj8XeohqSjHmkBIzW6P1mIz
+         OIphQs92Bgj6ZSCTDt1Hu1CXEtdfcXEV3hjjoMioAq0+WFD/Lf1QnETTWD0VhYsmJj5p
+         tYtXPI1Muo8oKuijk+HUROsyCk0MsffsdXYrhQqlaAP3wtwdGztOnINo7aTeJ0gU/9Qu
+         07UqozJoBw/RfGJ7Mj1NJqIXf/StOddxEDKnReH5HQKCNcCGCmDDD1rRrMkMLSM/G1T7
+         PDzuHKUYVgzGONEYkosymli9CoOyzVjGCYwHN5SYMp7KcYwfbBfxWF7KWsUgg7lVj9ei
+         JsDQ==
+X-Gm-Message-State: AOAM5319KjuYOqF+dN/l5iJBAKK29GTnERtkvAA+0rc6JYm7lwUInIqs
+        RwIkSH5HmiSUHePUTGuASlPwaarT8Io=
+X-Google-Smtp-Source: ABdhPJzAvBrlwtlVkQ9fKjD9KB7sU16jv8DVYU8hDEq60nLNnO5WnwWatNyurWLGlMtThb3Ay5vbbQ==
+X-Received: by 2002:a17:902:e748:b0:153:b484:bdf4 with SMTP id p8-20020a170902e74800b00153b484bdf4mr31957764plf.66.1648594815849;
+        Tue, 29 Mar 2022 16:00:15 -0700 (PDT)
+Received: from localhost ([2a00:79e1:abd:4a00:2703:3c72:eb1a:cffd])
+        by smtp.gmail.com with ESMTPSA id k10-20020a056a00168a00b004f7e2a550ccsm21301092pfc.78.2022.03.29.16.00.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Mar 2022 15:59:31 -0700 (PDT)
-Date:   Tue, 29 Mar 2022 22:59:27 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Like Xu <like.xu.linux@gmail.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
-        Jim Mattson <jmattson@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/4] KVM: x86: Move kvm_ops_static_call_update() to
- x86.c
-Message-ID: <YkOPT7TJf74C2Wq8@google.com>
-References: <20220307115920.51099-1-likexu@tencent.com>
- <20220307115920.51099-2-likexu@tencent.com>
+        Tue, 29 Mar 2022 16:00:14 -0700 (PDT)
+From:   Rob Clark <robdclark@gmail.com>
+To:     dri-devel@lists.freedesktop.org
+Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        Rob Clark <robdclark@chromium.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Akhil P Oommen <quic_akhilpo@quicinc.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Emma Anholt <emma@anholt.net>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Jordan Crouse <jordan@cosmicpenguin.net>,
+        linux-kernel@vger.kernel.org (open list),
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Vladimir Lypak <vladimir.lypak@gmail.com>,
+        Wang Qing <wangqing@vivo.com>,
+        Yangtao Li <tiny.windzz@gmail.com>
+Subject: [PATCH 0/9] drm/msm: Userspace allocated GPU addresses
+Date:   Tue, 29 Mar 2022 16:00:48 -0700
+Message-Id: <20220329230105.601666-1-robdclark@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220307115920.51099-2-likexu@tencent.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 07, 2022, Like Xu wrote:
-> From: Like Xu <likexu@tencent.com>
-> 
-> The kvm_ops_static_call_update() is defined in kvm_host.h. That's
-> completely unnecessary, it should have exactly one caller,
-> kvm_arch_hardware_setup().  As a prep match, move
-> kvm_ops_static_call_update() to x86.c, then it can reference
-> the kvm_pmu_ops stuff.
-> 
-> Suggested-by: Sean Christopherson <seanjc@google.com>
-> Signed-off-by: Like Xu <likexu@tencent.com>
-> ---
+From: Rob Clark <robdclark@chromium.org>
 
-Reviewed-by: Sean Christopherson <seanjc@google.com>
+The first five paches are various cleanups and simplifications.  The
+next two get rid of redundant vma lookups in the submit and retire
+paths.  Following that, fenced vma lets us indicate a fence value
+following which the vma is no longer used, which is needed because
+otherwise userspace could observe the signaled fence prior to
+retire_submits() finishing.  (With userspace allocated GPU addresses
+userspace is tracking when a buffer is no longer used and it's vma can
+be deleted.)  And finally the last patch adds the new uabi for user-
+space allocated iova.
+
+Rob Clark (9):
+  drm/msm/gem: Move prototypes
+  drm/msm/gpu: Drop duplicate fence counter
+  drm/msm/gem: Split out inuse helper
+  drm/msm/gem: Drop PAGE_SHIFT for address space mm
+  drm/msm: Drop msm_gem_iova()
+  drm/msm/gem: Rework vma lookup and pin
+  drm/msm/gem: Split vma lookup and pin
+  drm/msm/gem: Add fenced vma unpin
+  drm/msm: Add a way for userspace to allocate GPU iova
+
+ drivers/gpu/drm/msm/adreno/a5xx_gpu.c   |   2 +-
+ drivers/gpu/drm/msm/adreno/a6xx_gmu.c   |   2 +-
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c   |   2 +-
+ drivers/gpu/drm/msm/adreno/adreno_gpu.c |  14 ++-
+ drivers/gpu/drm/msm/msm_drv.c           |  21 ++++
+ drivers/gpu/drm/msm/msm_drv.h           |  23 ----
+ drivers/gpu/drm/msm/msm_fb.c            |  16 ++-
+ drivers/gpu/drm/msm/msm_fence.c         |   6 +-
+ drivers/gpu/drm/msm/msm_fence.h         |   3 +
+ drivers/gpu/drm/msm/msm_gem.c           | 151 ++++++++++++++----------
+ drivers/gpu/drm/msm/msm_gem.h           |  47 +++++++-
+ drivers/gpu/drm/msm/msm_gem_submit.c    |  17 ++-
+ drivers/gpu/drm/msm/msm_gem_vma.c       |  59 ++++++---
+ drivers/gpu/drm/msm/msm_gpu.c           |   8 +-
+ drivers/gpu/drm/msm/msm_gpu.h           |   2 +-
+ drivers/gpu/drm/msm/msm_ringbuffer.c    |  12 +-
+ drivers/gpu/drm/msm/msm_ringbuffer.h    |   1 -
+ include/uapi/drm/msm_drm.h              |   3 +
+ 18 files changed, 258 insertions(+), 131 deletions(-)
+
+-- 
+2.35.1
+
