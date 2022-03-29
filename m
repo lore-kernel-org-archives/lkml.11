@@ -2,128 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD056C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 07:22:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD08EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 07:24:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233339AbiC2HYH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 03:24:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42692 "EHLO
+        id S233361AbiC2H02 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 03:26:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231810AbiC2HYF (ORCPT
+        with ESMTP id S231810AbiC2H00 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 03:24:05 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B93A0242230;
-        Tue, 29 Mar 2022 00:22:20 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2a02:3030:a:f397:f6bc:b726:2678:839f])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: sebastianfricke)
-        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 617721F434C3;
-        Tue, 29 Mar 2022 08:22:19 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1648538539;
-        bh=/W5ETW3ilMG908aam2DSTA6zgd0fm+3tYbWwdkTwWRk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nLF8BzyzhkdV7qtb7zyz8uOMfyvj6z1nQML/smXC3jCjwbbqt+AnC8ggo18xor1Ip
-         aXFdV8uGzjQeh4Vy1AWCISf6kN2kITw+l83JbdQSL82l6ZOufzfaRzE+GXZTje0lZU
-         oeLppJONQll4PG7lXm0LSfJlzn9Rj2aLKI9LVjPGCS5P21mSxWzg4nc3uJsFI8s7Oo
-         OB6gi6bBXctow5FnNG2reIa9HKcgdclI0ad3Ol4JyFoNlGCZGjpEeTm7BcbYJZ2boW
-         UtGtB9hHTXU4hn/sjWwwt97x4MBIGxmydRqk0exrPYyvLi4Q5JSh+5J0hmv0RWYUDu
-         B/ju1nHdWNA1A==
-Date:   Tue, 29 Mar 2022 09:22:16 +0200
-From:   Sebastian Fricke <sebastian.fricke@collabora.com>
-To:     Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Cc:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        kernel@collabora.com, Alex Bee <knaerzche@gmail.com>,
-        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 24/24] media: rkvdec-h264: Don't hardcode SPS/PPS
- parameters
-Message-ID: <20220329072216.gqzcp6lowpfrweb7@basti-XPS-13-9310>
-References: <20220328195936.82552-1-nicolas.dufresne@collabora.com>
- <20220328195936.82552-25-nicolas.dufresne@collabora.com>
+        Tue, 29 Mar 2022 03:26:26 -0400
+Received: from mail-vk1-xa33.google.com (mail-vk1-xa33.google.com [IPv6:2607:f8b0:4864:20::a33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB17098581
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 00:24:44 -0700 (PDT)
+Received: by mail-vk1-xa33.google.com with SMTP id d129so9260359vkh.13
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 00:24:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linbit-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pL+Cp4iZbwgLcxUWKxODDZPNpYMnhx3erX4iFxsT0IY=;
+        b=T2X5MvUivqE5mgGVO92sTOil53SIfwWtVoWix5F1x5/LbLmTJinRQzydeIjsOg+oYm
+         pKDi6tgHEHYKB3OTiYFgcyri+RIF4Qn9qCIuKBnQ1Ol/qoEXzmd+qvThYxVafmsd6YDd
+         3UpcuL/FjUuxWcpFOoyJFuVabitOWYdb87YBN4vgSkLQRa3MovqdaeuuHzbtqdC8ModF
+         4y/cffHuq9h74/FNSFBBxy5AHd26Gv6zhaEEGx++3d5FVkVSDcR5K58YEvvQiFM9FtZq
+         z87LdY/aWEQ2eZk6XGd97IZzuVcXmea6pv2SlMJqokJ9cY6SzGdMyMCMZw1lYb4rHAYy
+         +QZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pL+Cp4iZbwgLcxUWKxODDZPNpYMnhx3erX4iFxsT0IY=;
+        b=leeJsw7Qfr39kpU1ig8lEFA4aAOgPDGe2gWYx9qYqeTeOLH7jMnITBBku1FySnk896
+         fjEkzNsh4/IvGk6Rf+dL7C0xHjcc19M2OOd8kcHbw+HP0fZUjVSJWRld+/iLCzpu8QnK
+         Iypd4LFFJAprbGnCWRiAe0QhmtJVnKox3llOkdObzj+6wY+6oHJnl9ZptlQpOtDg4JEu
+         MMbESQP/8T54bNk7QKSC8LMQxhpqJs76HbSn0M02R5SnvR73gkaqUwy1wr2ER4bk8YiX
+         YDZT4EMT+CiYiP5MHe72juBkzMUEpoG3lTFFnhH7zA1DJfuQiCOyBdEWMbmjWBJagrTv
+         X2qg==
+X-Gm-Message-State: AOAM532IH96gF+AuXyi+FrrIWZpHTYU7aY4RsKSFCYPXdOZmkAzgUxw1
+        Mw4GA/Nu0Fugj3HsiEB6Wu+XDocGGmAl6lWlBxvFNqNJruq1ww==
+X-Google-Smtp-Source: ABdhPJx+IvOLBtbExo85GXpQ1kupYL8mOSu3U3yGjfkVfzkRpmTZcfCSmQYoicsRKDWxcSVJxNJYCXyWphBtDzrQDWQ=
+X-Received: by 2002:a1f:6a82:0:b0:33f:7eeb:5989 with SMTP id
+ f124-20020a1f6a82000000b0033f7eeb5989mr15757736vkc.29.1648538683833; Tue, 29
+ Mar 2022 00:24:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220328195936.82552-25-nicolas.dufresne@collabora.com>
+References: <20220329070618.GA20396@lst.de>
+In-Reply-To: <20220329070618.GA20396@lst.de>
+From:   Philipp Reisner <philipp.reisner@linbit.com>
+Date:   Tue, 29 Mar 2022 09:24:33 +0200
+Message-ID: <CADGDV=XrhzSxLyES9dtKj1-cQq6Zh32psipLJCoDGRNzAYaZwA@mail.gmail.com>
+Subject: Re: state of drbd in mainline
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Lars Ellenberg <lars.ellenberg@linbit.com>,
+        Jens Axboe <axboe@kernel.dk>, drbd-dev@lists.linbit.com,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey Nicolas,
+Hi Christoph,
 
-The patch series doesn't seem to apply on the latest media tree master
-branch. Looking at your tree I can see that you have commit: ba2c670a
-"media: nxp: Restrict VIDEO_IMX_MIPI_CSIS to ARCH_MXC or COMPILE_TEST
-Laurent Pinchart authored 1 week ago "
+what do you expect for the DRBD changes? Usually, they fall into the
+category: yes, obviously. When you are changing the block layer in
+this way, then that is necessary for the in-tree DRBD code.
 
-But the current head of the media tree is: 71e6d0608e4d
-"media: platform: Remove unnecessary print function dev_err()
-Yang Li authored 13 days ago"
+Regarding users: Yes, there are users of the in-tree DRBD code. Very
+big corporations. And, yes, we see pressure building up that we get
+our act together and re-sync the in-tree DRBD with the out-of tree
+DRBD.
 
-On 28.03.2022 15:59, Nicolas Dufresne wrote:
->From: Alex Bee <knaerzche@gmail.com>
->
->Some SPS/PPS parameters are currently hardcoded in the driver
->even though so do exist in the uapi which is stable by now.
+best regards,
+ Phil
 
-s/even though so/even though they/
->
->Use them instead of hardcoding them.
->
->Conformance tests have shown there is no difference, but it might
->increase decoder performance.
 
-I think it would be great if we could add some performance metrics to
-the commit description to have a metric that following patches could
-compare themselves with.
-
-Greetings,
-Sebastian
-
+On Tue, Mar 29, 2022 at 9:06 AM Christoph Hellwig <hch@lst.de> wrote:
 >
->Signed-off-by: Alex Bee <knaerzche@gmail.com>
->---
-> drivers/staging/media/rkvdec/rkvdec-h264.c | 13 +++++++------
-> 1 file changed, 7 insertions(+), 6 deletions(-)
+> Hi all,
 >
->diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
->index 891c48bf6a51..91f65d78e453 100644
->--- a/drivers/staging/media/rkvdec/rkvdec-h264.c
->+++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
->@@ -655,13 +655,14 @@ static void assemble_hw_pps(struct rkvdec_ctx *ctx,
+> while I've been reworking large parts of the block layer over the
+> last months I've basically never gotten drbd reviews, and in general
+> drbd seems to be completely maintained upstream.  Do we even have users
+> for it?  Is it time to drop drbd from the kernel tree?
 >
-> #define WRITE_PPS(value, field) set_ps_field(hw_ps->info, field, value)
-> 	/* write sps */
->-	WRITE_PPS(0xf, SEQ_PARAMETER_SET_ID);
->-	WRITE_PPS(0xff, PROFILE_IDC);
->-	WRITE_PPS(1, CONSTRAINT_SET3_FLAG);
->+	WRITE_PPS(sps->seq_parameter_set_id, SEQ_PARAMETER_SET_ID);
->+	WRITE_PPS(sps->profile_idc, PROFILE_IDC);
->+	WRITE_PPS((sps->constraint_set_flags & 1 << 3) ? 1 : 0, CONSTRAINT_SET3_FLAG);
-> 	WRITE_PPS(sps->chroma_format_idc, CHROMA_FORMAT_IDC);
-> 	WRITE_PPS(sps->bit_depth_luma_minus8, BIT_DEPTH_LUMA);
-> 	WRITE_PPS(sps->bit_depth_chroma_minus8, BIT_DEPTH_CHROMA);
->-	WRITE_PPS(0, QPPRIME_Y_ZERO_TRANSFORM_BYPASS_FLAG);
->+	WRITE_PPS(!!(sps->flags & V4L2_H264_SPS_FLAG_QPPRIME_Y_ZERO_TRANSFORM_BYPASS),
->+		  QPPRIME_Y_ZERO_TRANSFORM_BYPASS_FLAG);
-> 	WRITE_PPS(sps->log2_max_frame_num_minus4, LOG2_MAX_FRAME_NUM_MINUS4);
-> 	WRITE_PPS(sps->max_num_ref_frames, MAX_NUM_REF_FRAMES);
-> 	WRITE_PPS(sps->pic_order_cnt_type, PIC_ORDER_CNT_TYPE);
->@@ -679,8 +680,8 @@ static void assemble_hw_pps(struct rkvdec_ctx *ctx,
-> 		  DIRECT_8X8_INFERENCE_FLAG);
->
-> 	/* write pps */
->-	WRITE_PPS(0xff, PIC_PARAMETER_SET_ID);
->-	WRITE_PPS(0x1f, PPS_SEQ_PARAMETER_SET_ID);
->+	WRITE_PPS(pps->pic_parameter_set_id, PIC_PARAMETER_SET_ID);
->+	WRITE_PPS(pps->seq_parameter_set_id, PPS_SEQ_PARAMETER_SET_ID);
-> 	WRITE_PPS(!!(pps->flags & V4L2_H264_PPS_FLAG_ENTROPY_CODING_MODE),
-> 		  ENTROPY_CODING_MODE_FLAG);
-> 	WRITE_PPS(!!(pps->flags & V4L2_H264_PPS_FLAG_BOTTOM_FIELD_PIC_ORDER_IN_FRAME_PRESENT),
->-- 
->2.34.1
->
+> Thanks,
+>         Christoph
