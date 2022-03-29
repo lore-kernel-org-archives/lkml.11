@@ -2,296 +2,261 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B408DC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 03:29:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECA0AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 03:32:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231793AbiC2Dbc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 23:31:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46806 "EHLO
+        id S231754AbiC2DeH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 23:34:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231769AbiC2DbU (ORCPT
+        with ESMTP id S230270AbiC2DeD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 23:31:20 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00FD324F1C;
-        Mon, 28 Mar 2022 20:29:31 -0700 (PDT)
-X-UUID: 011b3b4679d349f1bb91b3dfc5a3ca0f-20220329
-X-UUID: 011b3b4679d349f1bb91b3dfc5a3ca0f-20220329
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <axe.yang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1805520085; Tue, 29 Mar 2022 11:29:27 +0800
-Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Tue, 29 Mar 2022 11:29:23 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb01.mediatek.inc
- (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 29 Mar
- 2022 11:29:22 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 29 Mar 2022 11:29:20 +0800
-From:   Axe Yang <axe.yang@mediatek.com>
-To:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Chaotian Jing <chaotian.jing@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Adrian Hunter <adrian.hunter@intel.com>
-CC:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Satya Tangirala <satyat@google.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Axe Yang <axe.yang@mediatek.com>, Lucas Stach <dev@lynxeye.de>,
-        Eric Biggers <ebiggers@google.com>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Kiwoong Kim <kwmad.kim@samsung.com>,
-        Yue Hu <huyue2@yulong.com>, Tian Tao <tiantao6@hisilicon.com>,
-        <angelogioacchino.delregno@collabora.com>,
-        <linux-mmc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        Yong Mao <yong.mao@mediatek.com>
-Subject: [PATCH v9 3/3] mmc: mediatek: add support for SDIO eint wakup IRQ
-Date:   Tue, 29 Mar 2022 11:29:13 +0800
-Message-ID: <20220329032913.8750-4-axe.yang@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220329032913.8750-1-axe.yang@mediatek.com>
-References: <20220329032913.8750-1-axe.yang@mediatek.com>
+        Mon, 28 Mar 2022 23:34:03 -0400
+Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3942F23F3A9
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 20:32:20 -0700 (PDT)
+Received: by mail-qk1-x72e.google.com with SMTP id k125so13160475qkf.0
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 20:32:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:in-reply-to:message-id:references
+         :mime-version;
+        bh=2fIJHgtwQJCcepgLU3AMUprrMX5GU5EmSB2H27stKPM=;
+        b=SmVKUEZ1LkpmvnRIJnTFWd7ejo5fcpvZCXUAtZkQQXtFPRfoU5jeq4z86IAc17OG7g
+         UhQzj5BcjQKC4nCfymC/u8iADVdrN+7q09XD22IRyxwArXunmtvh9Hp7jMLryllQUzHn
+         aPHaLvbx+66kP5CYVciVLrG1OOGn5GncHsZskfray387nMaSvKsMT8EH4Jr3++Q4H8pC
+         SjD6govujccTnI60GL41fKUlpIJfaYaJ+GsWV41hlgEslrURHn9YebjXd/8pAHI19m05
+         PPBF6M97lMNhz092R+XU6Hg93xGs2Djqj/OueMgQXWLH+G7Hq+I2SuSWzSbQVuAkKsY6
+         +/LQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+         :references:mime-version;
+        bh=2fIJHgtwQJCcepgLU3AMUprrMX5GU5EmSB2H27stKPM=;
+        b=iCXjJx+mYGb1PLiBtuavjUi65pIDr8EJLIBXy1sI2jVSYUO7CXGBL1RJV3SeNDryq+
+         ruTosTy1nKRNioEOqMzzJjHWVo5ZcP5jpNpJp/0zGSpehWpHYhzu42wcUEL0kJCwnxRM
+         oqskjGat08R0g2wJKimvp1rr8v0epKIJAG9dI4By6GTBhZrH2QIasT93GmeMvkfWQ8kk
+         sZTkWfMIUtc0J2Q83A13KXdMlja4EPqZTbCgc/k6SkKt1PmrRCWdtKf4X2RW335uIfwX
+         C+VB+HUgyjNSu5F4Q5wRTMdcUxveTAG+2DMIUUdme/Tk3sTlqZ9yhYLGRa1nULURwGtX
+         OpiA==
+X-Gm-Message-State: AOAM531twVyv4ifynCSVEMCv/JwzqKEHV/JhpkR3NH2Cm7KUiIiGRmIl
+        RlKOYXjl4FckBK0k3pamKDQS1w==
+X-Google-Smtp-Source: ABdhPJxEZW9mmU2WInv3wXEngGk9GdQSAQVhEYyNxhXgD2Le/31tnluGvw7ZBAHkvl/CHFiIE31ggA==
+X-Received: by 2002:a37:e109:0:b0:680:a307:d4dc with SMTP id c9-20020a37e109000000b00680a307d4dcmr16938597qkm.198.1648524739088;
+        Mon, 28 Mar 2022 20:32:19 -0700 (PDT)
+Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
+        by smtp.gmail.com with ESMTPSA id q8-20020a05622a04c800b002e06d7c1eabsm14100784qtx.16.2022.03.28.20.32.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 20:32:18 -0700 (PDT)
+Date:   Mon, 28 Mar 2022 20:32:07 -0700 (PDT)
+From:   Hugh Dickins <hughd@google.com>
+X-X-Sender: hugh@ripple.anvils
+To:     Matthew Wilcox <willy@infradead.org>
+cc:     Hugh Dickins <hughd@google.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        linux-doc@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: linux-next: build warnings after merge of the akpm-current
+ tree
+In-Reply-To: <YkI+4SzcoaqZIQIG@casper.infradead.org>
+Message-ID: <db6177a5-1f1-9f2a-3c6e-fbc9563c3e3e@google.com>
+References: <20220209170245.08968c92@canb.auug.org.au> <d2701072-99e6-762b-bc80-64bda193c792@google.com> <YkI+4SzcoaqZIQIG@casper.infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for eint IRQ when MSDC is used as an SDIO host. This
-feature requires SDIO device support async IRQ function. With this
-feature, SDIO host can be awakened by SDIO card in suspend state,
-without additional pin.
+On Tue, 29 Mar 2022, Matthew Wilcox wrote:
+> On Wed, Feb 09, 2022 at 08:03:26AM -0800, Hugh Dickins wrote:
+> > On Wed, 9 Feb 2022, Stephen Rothwell wrote:
+> > > include/linux/mm_types.h:272: warning: Function parameter or member '__filler' not described in 'folio'
+> > > include/linux/mm_types.h:272: warning: Function parameter or member 'mlock_count' not described in 'folio'
+> > 
+> > Thank you for including the patches and reporting this, Stephen.
+> > Is this a warning you can live with for a week or two?
+> > 
+> > I've never tried generating htmldocs (I'm tempted just to replace a few
+> > "/**"s by "/*"s!), and I'm fairly sure Matthew will have strong feelings
+> > about how this new union (or not) will be better foliated - me messing
+> > around with doc output here is unlikely to be helpful at this moment.
+> 
+> I have a substantial question, and then some formatting / appearance
+> questions.
 
-MSDC driver will time-share the SDIO DAT1 pin. During suspend, MSDC
-turn off clock and switch SDIO DAT1 pin to GPIO mode. And during
-resume, switch GPIO function back to DAT1 mode then turn on clock.
+I think that substantial question will soon need its own thread,
+rather than here in this htmldocs thread.
 
-Some device tree property should be added or modified in MSDC node
-to support SDIO eint IRQ. Pinctrls "state_eint" is mandatory. Since
-this feature depends on asynchronous interrupts, "wakeup-source",
-"keep-power-in-suspend" and "cap-sdio-irq" flags are necessary, and
-the interrupts list should be extended:
-        &mmcX {
-		...
-		interrupts-extended = <...>,
-                              	      <&pio xxx IRQ_TYPE_LEVEL_LOW>;
-                ...
-                pinctrl-names = "default", "state_uhs", "state_eint";
-                ...
-                pinctrl-2 = <&mmc2_pins_eint>;
-                ...
-                cap-sdio-irq;
-		keep-power-in-suspend;
-		wakeup-source;
-                ...
-        };
+But while we are here, let's include a link into our previous discussion:
+https://lore.kernel.org/linux-mm/3c6097a7-df8c-f39c-36e8-8b5410e76c8a@google.com/
 
-Co-developed-by: Yong Mao <yong.mao@mediatek.com>
-Signed-off-by: Yong Mao <yong.mao@mediatek.com>
-Signed-off-by: Axe Yang <axe.yang@mediatek.com>
----
- drivers/mmc/host/mtk-sd.c | 94 +++++++++++++++++++++++++++++++++++----
- 1 file changed, 86 insertions(+), 8 deletions(-)
+> 
+> The first is, what does mlock_count represent for a multi-page folio
+> that is partially mlocked?  If you allocate an order-9 page then mmap()
+> 13 pages of it and mlockall(), does mlock_count increase by 1, 13 or 512?
 
-diff --git a/drivers/mmc/host/mtk-sd.c b/drivers/mmc/host/mtk-sd.c
-index 65037e1d7723..2905d7134243 100644
---- a/drivers/mmc/host/mtk-sd.c
-+++ b/drivers/mmc/host/mtk-sd.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0-only
- /*
-- * Copyright (c) 2014-2015 MediaTek Inc.
-+ * Copyright (c) 2014-2015, 2022 MediaTek Inc.
-  * Author: Chaotian.Jing <chaotian.jing@mediatek.com>
-  */
- 
-@@ -20,6 +20,7 @@
- #include <linux/platform_device.h>
- #include <linux/pm.h>
- #include <linux/pm_runtime.h>
-+#include <linux/pm_wakeirq.h>
- #include <linux/regulator/consumer.h>
- #include <linux/slab.h>
- #include <linux/spinlock.h>
-@@ -440,8 +441,11 @@ struct msdc_host {
- 	struct pinctrl *pinctrl;
- 	struct pinctrl_state *pins_default;
- 	struct pinctrl_state *pins_uhs;
-+	struct pinctrl_state *pins_eint;
- 	struct delayed_work req_timeout;
- 	int irq;		/* host interrupt */
-+	int eint_irq;		/* interrupt from sdio device for waking up system */
-+	int sdio_wake_irq_depth;
- 	struct reset_control *reset;
- 
- 	struct clk *src_clk;	/* msdc source clock */
-@@ -465,6 +469,7 @@ struct msdc_host {
- 	bool hs400_tuning;	/* hs400 mode online tuning */
- 	bool internal_cd;	/* Use internal card-detect logic */
- 	bool cqhci;		/* support eMMC hw cmdq */
-+	bool sdio_eint_ready;	/* Ready to support SDIO eint interrupt */
- 	struct msdc_save_para save_para; /* used when gate HCLK */
- 	struct msdc_tune_para def_tune_para; /* default tune setting */
- 	struct msdc_tune_para saved_tune_para; /* tune result of CMD21/CMD19 */
-@@ -1527,10 +1532,12 @@ static void msdc_enable_sdio_irq(struct mmc_host *mmc, int enb)
- 	__msdc_enable_sdio_irq(host, enb);
- 	spin_unlock_irqrestore(&host->lock, flags);
- 
--	if (enb)
--		pm_runtime_get_noresume(host->dev);
--	else
--		pm_runtime_put_noidle(host->dev);
-+	if (mmc->card && !mmc_card_enable_async_irq(mmc->card)) {
-+		if (enb)
-+			pm_runtime_get_noresume(host->dev);
-+		else
-+			pm_runtime_put_noidle(host->dev);
-+	}
- }
- 
- static irqreturn_t msdc_cmdq_irq(struct msdc_host *host, u32 intsts)
-@@ -2631,6 +2638,18 @@ static int msdc_drv_probe(struct platform_device *pdev)
- 		goto host_free;
- 	}
- 
-+	/* Support for SDIO eint irq ? */
-+	if (mmc->pm_caps & MMC_PM_WAKE_SDIO_IRQ) {
-+		host->pins_eint = pinctrl_lookup_state(host->pinctrl, "state_eint");
-+		if (IS_ERR(host->pins_eint)) {
-+			ret = dev_err_probe(&pdev->dev, PTR_ERR(host->pins_eint),
-+					    "Cannot find pinctrl eint!\n");
-+			goto host_free;
-+		}
-+
-+		host->sdio_eint_ready = true;
-+	}
-+
- 	msdc_of_property_parse(pdev, host);
- 
- 	host->dev = &pdev->dev;
-@@ -2722,6 +2741,21 @@ static int msdc_drv_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto release;
- 
-+	if (host->sdio_eint_ready) {
-+		host->eint_irq = irq_of_parse_and_map(host->dev->of_node, 1);
-+		ret = host->eint_irq ? dev_pm_set_dedicated_wake_irq(host->dev, host->eint_irq) :
-+		      -ENODEV;
-+
-+		if (ret) {
-+			dev_err(host->dev, "Failed to register data1 eint irq!\n");
-+			goto release;
-+		}
-+
-+		dev_pm_disable_wake_irq(host->dev);
-+		pinctrl_select_state(host->pinctrl, host->pins_uhs);
-+	}
-+
-+	device_init_wakeup(host->dev, true);
- 	pm_runtime_set_active(host->dev);
- 	pm_runtime_set_autosuspend_delay(host->dev, MTK_MMC_AUTOSUSPEND_DELAY);
- 	pm_runtime_use_autosuspend(host->dev);
-@@ -2734,6 +2768,7 @@ static int msdc_drv_probe(struct platform_device *pdev)
- 	return 0;
- end:
- 	pm_runtime_disable(host->dev);
-+	dev_pm_clear_wake_irq(host->dev);
- release:
- 	platform_set_drvdata(pdev, NULL);
- 	msdc_deinit_hw(host);
-@@ -2845,6 +2880,16 @@ static int __maybe_unused msdc_runtime_suspend(struct device *dev)
- 	struct msdc_host *host = mmc_priv(mmc);
- 
- 	msdc_save_reg(host);
-+
-+	if (host->sdio_eint_ready) {
-+		disable_irq(host->irq);
-+		pinctrl_select_state(host->pinctrl, host->pins_eint);
-+		if (host->sdio_wake_irq_depth == 0) {
-+			dev_pm_enable_wake_irq(dev);
-+			host->sdio_wake_irq_depth++;
-+		}
-+		sdr_clr_bits(host->base + SDC_CFG, SDC_CFG_SDIOIDE);
-+	}
- 	msdc_gate_clock(host);
- 	return 0;
- }
-@@ -2860,12 +2905,25 @@ static int __maybe_unused msdc_runtime_resume(struct device *dev)
- 		return ret;
- 
- 	msdc_restore_reg(host);
-+
-+	if (host->sdio_eint_ready) {
-+		if (host->sdio_wake_irq_depth > 0) {
-+			dev_pm_disable_wake_irq(dev);
-+			host->sdio_wake_irq_depth--;
-+			sdr_set_bits(host->base + SDC_CFG, SDC_CFG_SDIOIDE);
-+		} else {
-+			sdr_clr_bits(host->base + MSDC_INTEN, MSDC_INTEN_SDIOIRQ);
-+		}
-+		pinctrl_select_state(host->pinctrl, host->pins_uhs);
-+		enable_irq(host->irq);
-+	}
- 	return 0;
- }
- 
--static int __maybe_unused msdc_suspend(struct device *dev)
-+static int __maybe_unused msdc_suspend_noirq(struct device *dev)
- {
- 	struct mmc_host *mmc = dev_get_drvdata(dev);
-+	struct msdc_host *host = mmc_priv(mmc);
- 	int ret;
- 
- 	if (mmc->caps2 & MMC_CAP2_CQE) {
-@@ -2874,16 +2932,36 @@ static int __maybe_unused msdc_suspend(struct device *dev)
- 			return ret;
- 	}
- 
-+	if (host->sdio_eint_ready)
-+		enable_irq_wake(host->eint_irq);
-+
- 	return pm_runtime_force_suspend(dev);
- }
- 
--static int __maybe_unused msdc_resume(struct device *dev)
-+static int __maybe_unused msdc_resume_noirq(struct device *dev)
- {
-+	struct mmc_host *mmc = dev_get_drvdata(dev);
-+	struct msdc_host *host = mmc_priv(mmc);
-+
-+	if (host->sdio_eint_ready) {
-+		disable_irq_wake(host->eint_irq);
-+
-+		/*
-+		 * In noirq resume stage, msdc_runtime_resume()
-+		 * won't be called, so disalbe wake irq here
-+		 * to block dedicated wake irq handler callback.
-+		 */
-+		if (likely(host->sdio_wake_irq_depth > 0)) {
-+			dev_pm_disable_wake_irq(dev);
-+			host->sdio_wake_irq_depth--;
-+		}
-+	}
-+
- 	return pm_runtime_force_resume(dev);
- }
- 
- static const struct dev_pm_ops msdc_dev_pm_ops = {
--	SET_SYSTEM_SLEEP_PM_OPS(msdc_suspend, msdc_resume)
-+	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(msdc_suspend_noirq, msdc_resume_noirq)
- 	SET_RUNTIME_PM_OPS(msdc_runtime_suspend, msdc_runtime_resume, NULL)
- };
- 
--- 
-2.25.1
+You won't like the answer: none of the above; the current answer is 0.
 
+Because before your folio work implementing readahead into compound pages,
+we had order-0 pages (mapped by PTEs), and (speaking x86_64 language)
+order-9 pages which (typically) get mapped by PMDs.
+
+And Kirill attended to the issue of PTE mappings of huge pages by leaving
+them out of the Mlocked accounting, and leaving huge pages mapped that way
+on evictable LRUs, so that they could be split under memory pressure.
+
+And I've carried that forward in the mm/munlock series - though I claim
+to have simpified and improved it, by leaving PageDoubleMap out of it,
+keeping PMD mappings as Mlocked even if there are also PTE mappings.
+
+I think none of us have attended to PageCompound folio mappings changing
+the balance of probabilities: they are being left out of the mlocked
+accounting just like PTE mappings of THPs are.
+
+If you'd like a number bigger than 0 there, I guess I can add a patch
+to, what, not skip PTE mappings of compound pages if !PageSwapBacked?
+Although it would be much nicer not to distinguish by PageSwapBacked,
+I suspect testing and page reclaim issues require us to make the
+distinction, for now at least.
+
+Then the answer to your question would be mlock_count 13
+(but Mlocked 2048 kB).
+
+As I said in the linked mail: it doesn't matter at all how you count them
+in mlock_count, just so long as they are counted up and down consistently.
+Since it's simplest just to count 1 in mlock_count for each PMD or PTE,
+I prefer that (as I did with THPs); but if you prefer to count PMDs up
+and down by HUGE_PMD_NR, that works too.
+
+mlock_count is just an internal implementation detail.
+
+Mlocked and Unevictable amounts are visible to the user (and to various
+tests no doubt) but still just numbers shown; more important is whether
+a sparsely mlocked compound page can be split under memory pressure and
+its unmlocked portions reclaimed.
+
+I don't know where the folio work stands with splitting (but I think you
+have a patch which removes the !PageSwapBacked splitting of huge pages
+from vmscan.c - I've a separate mail to send you on that); but it looks
+like a lot of huge_memory.c is still HPAGE_PMD_NR-based (I'd say rightly,
+because PMD issues are traditional THP's main concern).
+
+If we do move sparsely mlocked folios to the "Unevictable LRU", I'm
+not sure how long we can get away with them being invisible to page
+reclaim: it will probably need someone (I'm not volunteering) to write
+a shrinker for them, along the lines of anon THP's deferred split list,
+or shmem THP's unused-beyond-EOF split list.
+
+> 
+> Then we have a tradeoff between prettiness of the source code and
+> prettiness of the htmldocs.  At one maximum, we can make it look like
+> this in the htmldocs:
+> 
+> struct folio {
+>   unsigned long flags;
+>   struct list_head lru;
+>   unsigned int mlock_count;
+>   struct address_space *mapping;
+>   pgoff_t index;
+>   void *private;
+>   atomic_t _mapcount;
+>   atomic_t _refcount;
+> #ifdef CONFIG_MEMCG;
+>   unsigned long memcg_data;
+> #endif;
+> };
+> 
+> but at the cost of making the source code look like this:
+> 
+> struct folio {
+>         /* private: don't document the anon union */
+>         union {
+>                 struct {
+>         /* public: */
+>                         unsigned long flags;
+>         /* private: */
+>                         union {
+>         /* public: */
+>                                 struct list_head lru;
+>         /* private: */
+>                                 struct {
+>                                         void *__filler;
+>         /* public: */
+>                                         unsigned int mlock_count;
+>         /* private: */
+>                                 };
+>                         };
+>         /* public: */
+>                         struct address_space *mapping;
+> 
+> At the other extreme, the htmldocs can look more complicated:
+> 
+> struct folio {
+>   unsigned long flags;
+>   union {
+>     struct list_head lru;
+>     struct {
+>       unsigned int mlock_count;
+>     };
+>   };
+>   struct address_space *mapping;
+>   pgoff_t index;
+>   void *private;
+>   atomic_t _mapcount;
+>   atomic_t _refcount;
+> #ifdef CONFIG_MEMCG;
+>   unsigned long memcg_data;
+> #endif;
+> };
+> 
+> with the source code changes being merely:
+> 
+> @@ -227,6 +227,7 @@ struct page {
+>   * struct folio - Represents a contiguous set of bytes.
+>   * @flags: Identical to the page flags.
+>   * @lru: Least Recently Used list; tracks how recently this folio was used.
+> + * @mlock_count: Number of times any page in this folio is mlocked.
+>   * @mapping: The file this page belongs to, or refers to the anon_vma for
+>   *    anonymous memory.
+>   * @index: Offset within the file, in units of pages.  For anonymous memory,
+> @@ -256,7 +257,9 @@ struct folio {
+>                         union {
+>                                 struct list_head lru;
+>                                 struct {
+> +       /* private: */
+>                                         void *__filler;
+> +       /* public: */
+>                                         unsigned int mlock_count;
+>                                 };
+>                         };
+> 
+> Various steps in between are possible, such as removing the anonymous
+> struct from the documentation, but leaving the union.  We could also
+> choose to document __filler, but that seems like a poor choice to me.
+> 
+> Anyway, that's all arguable and not really too important.  My mild
+> preference is for the private/public markers around __filler alone,
+> but I'll happily abide by the preferences of others.
+
+Same here: mild preference for this, but defer to others.
+
+> 
+> The important part is what mlock_count really means.  We can be
+> reasonably verbose here (two or three lines of text, I'd suggest).
+
+mlock_count aims to be the number of page table entries in VM_LOCKED
+VMAs for this folio, but may undercount.
+
+That's of course an over-simplification, skirting issues mentioned
+above, and that it can only be relied on when PageLRU PageUnevictable;
+but let's not get into those here.
+
+But I wrote that "mlock_count aims" sentence above without seeing your
+ * @mlock_count: Number of times any page in this folio is mlocked.
+
+Yes, I think I prefer the brevity of what you wrote to mine.
+
+Thanks,
+Hugh
