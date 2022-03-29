@@ -2,79 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7B3AC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 20:42:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52BDDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 20:43:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232011AbiC2Unv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 16:43:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35750 "EHLO
+        id S232126AbiC2UpQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 16:45:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231802AbiC2Unt (ORCPT
+        with ESMTP id S231802AbiC2UpN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 16:43:49 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 676B9B7C4D;
-        Tue, 29 Mar 2022 13:42:06 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id p15so32350637lfk.8;
-        Tue, 29 Mar 2022 13:42:06 -0700 (PDT)
+        Tue, 29 Mar 2022 16:45:13 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 501A04D9CF;
+        Tue, 29 Mar 2022 13:43:28 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id q5so25023167ljb.11;
+        Tue, 29 Mar 2022 13:43:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hzi1FzomdAULOyBXwNP7g2Uh52fOnO3V72+UwxY5uuQ=;
-        b=S+Goxo4lVfLQQ3lRg3nm/Y6v/WqihXvE9F4OUYyggVB9j3uTMS5917y17hUsgAiw5e
-         xjj8GPg2AONq5x7Yd/SeXn30SkpCczKlVRU74Zm/VrKXyKdluHa0woq/ausGBEDJ6mCc
-         WK0AF0jxb/JIa9XYZ5pzCEf8LWwFEPXTMRlSDkzPUKgP1E8dckVn3jwypN+cGydQ2eAQ
-         TdMPR66XL2SJ/4WgHHpLrS5i6mPp/BXXFrz3k8qEhoeKpnGKXDv1c8FA8q8uLg2yRDMn
-         ppH1vs293L3s4rHfUNYc6WyCrLZ0EtKsGs+C8WtzoHeOPzaOoLsHksdL+YU/Q5msJyOW
-         Xzmw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=n1jJnriHBqYsOMa1zkCTaJhRMnwMPDEtIKRlxtq+1sQ=;
+        b=FqJ3jhO9W0nuuyWg+d8UHndZiG7gf7FAcaV5fHn/bxT7FExG89/gILPESlBqqlpeYJ
+         g3uiYfIuQPXxJ5eQM+4WEOnaTF+isCwcBAwEso1rggEyjSlIi8tyUG38t7Ri75KHeEct
+         DWiZasihv3n8eKI0hOVQaC1AGOTo88RbArV90lP6X+SgPFksN7Y9qz2oUUI5V+B4wTiZ
+         6xAEhBSFekNX/7xBqWpGa6jupVMqeq+pJKRYVAMKoFELRXXZTEPFTohHLQeKcze9MrFl
+         XGOBQ/pkGfZhm3C9VR1J1UEKiztsAjOYvILSwatate7qjbReKSmF6EczhCe8/rgux7DM
+         shWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hzi1FzomdAULOyBXwNP7g2Uh52fOnO3V72+UwxY5uuQ=;
-        b=SG5Sy/Mm+jcHSyJer6sDM4gI5Lb1BCkGAh/UeXbBJrlUZnjRDbLcdMSb8WaRI3nBsN
-         AsJt6Xgc3+Ag3lFRhmt9R03ycHIZu2+cTGUzUP/enMRcHY6K8qy71gstaKvWDnEzm6zG
-         LuMjXEaKLzoRvdLGX/SeME8S8ORrnQe8wEfwurxMHQPbimSOWcS+KRoxDsOlxOStvW3M
-         JIFsZ23L+TKFWia3C/Nu4YiekLNIGQvYqNle8w4hCbCgS2FOz5j3fT6McMRTgL8n219c
-         BO35O1jJ4KUQjtJPH/VMiUAQA50XK6r0uVvCkjfH1Bl1DPho76tNCGLenMK0PX07I4mi
-         Fa4Q==
-X-Gm-Message-State: AOAM533qsSzr52Aj0md1V5tWpwWpytWJ36DKgITp6iGR76mwfa3aexJ1
-        jH0hedVxc7Fbf+eyu+KIH0DtkhXDvFj4IDAVN8Y0B+Vgztk=
-X-Google-Smtp-Source: ABdhPJzKvY5cYdCxPyZTEjlIBgt7Om3njHWwsRUI/2LXZgcsshdilH2GnQVgIu6UUMQwHOZvU3MFXgrOr3IlRmP6tek=
-X-Received: by 2002:a05:6512:3f99:b0:447:1ef5:408a with SMTP id
- x25-20020a0565123f9900b004471ef5408amr4438505lfa.490.1648586524613; Tue, 29
- Mar 2022 13:42:04 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=n1jJnriHBqYsOMa1zkCTaJhRMnwMPDEtIKRlxtq+1sQ=;
+        b=tsj6doIbXhEHG+fcaht54Mip2m2sJn25WA4rXxQTvTYdXM2NGhjb8JYFl89Ah+TZ0U
+         /XM8jIZFSknyZheL21bDycyBpnkhlVik9WnoKEY9SOVPNjL9PSf5G/8KyD8uiXBIKERU
+         HxIrEKS1qgaPoEEYLrImASug5H71QDezkz/x8+QiPWh/3pxkm1WqST69zGIrGmm1P4Qb
+         37zWfkd/PBdqDha48ZOh3UtzcwhGvroK4IetmJqqto30hsMJ9zJ1bMtpr/64ckHUSDoj
+         wDgM3rX1GwZHioCsc3fho/ucWcmvPFPmFXkWRG17pXLI2MQvE7wo6Hv+LFLALxvhPaK9
+         aL5g==
+X-Gm-Message-State: AOAM530oSqsydNSqLGm0IzWZ9AfvLsH6bbBLZo1lUKV9DL3vniKOugXH
+        Hbv/Iw8MVqwmXvk8nrBBp6c=
+X-Google-Smtp-Source: ABdhPJw3S4ZXS8ygFUVeRDCfH/JYMHR4kqK5Ota8n8q4qbcReTL7UN0t6A9ugzwLsElWthKCBwdhMA==
+X-Received: by 2002:a05:651c:1989:b0:247:deaa:4e5a with SMTP id bx9-20020a05651c198900b00247deaa4e5amr4175402ljb.274.1648586606312;
+        Tue, 29 Mar 2022 13:43:26 -0700 (PDT)
+Received: from fedor-zhuzhzhalka67.localnet (109-252-148-208.dynamic.spd-mgts.ru. [109.252.148.208])
+        by smtp.gmail.com with ESMTPSA id d12-20020ac241cc000000b004437eab8187sm2098671lfi.73.2022.03.29.13.43.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Mar 2022 13:43:25 -0700 (PDT)
+From:   aissur0002@gmail.com
+X-Google-Original-From: FedorPchelkin@fedor-zhuzhzhalka67
+To:     Fedor Pchelkin <aissur0002@gmail.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        Eric Biggers <ebiggers@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 4/4] file: Fix file descriptor leak in copy_fd_bitmaps()
+Date:   Tue, 29 Mar 2022 23:44:54 +0300
+Message-ID: <4705670.GXAFRqVoOG@fedor-zhuzhzhalka67>
+In-Reply-To: <CAHk-=wh2Ao+OgnWSxHsJodXiLwtaUndXSkuhh9yKnA3iXyBLEA@mail.gmail.com>
+References: <20220326114009.1690-1-aissur0002@gmail.com> <2698031.BEx9A2HvPv@fedor-zhuzhzhalka67> <CAHk-=wh2Ao+OgnWSxHsJodXiLwtaUndXSkuhh9yKnA3iXyBLEA@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220325074141.17446-1-tangmeng@uniontech.com>
-In-Reply-To: <20220325074141.17446-1-tangmeng@uniontech.com>
-From:   Stanislav Yakovlev <stas.yakovlev@gmail.com>
-Date:   Tue, 29 Mar 2022 16:41:51 -0400
-Message-ID: <CA++WF2NXLL4WjwyUYcBTJ9ogNAZnqZkU8KHqkvUbvE3k=RYroA@mail.gmail.com>
-Subject: Re: [PATCH] ipw2200: Fix permissions setted by DEVICE_ATTR
-To:     Meng Tang <tangmeng@uniontech.com>
-Cc:     kvalo@kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        pabeni@redhat.com, wireless <linux-wireless@vger.kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 25 Mar 2022 at 03:42, Meng Tang <tangmeng@uniontech.com> wrote:
->
-> Because xcode_version and rtc only implement the show function
-> and do not provide the store function, so ucode_version and rtc
-> only need the read permission, not need the write permission more.
->
-> So, remove the write permission from xcode_version and rtc.
->
-> Signed-off-by: Meng Tang <tangmeng@uniontech.com>
-> ---
->  drivers/net/wireless/intel/ipw2x00/ipw2200.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
+> Btw, do you have a pointer to the syzbot report? I see the repro and
+> the crashlog you attached, but it would be good to have that pointer
+> to the syzbot original too.
+> 
+> Or did you just do this by running syzkaller yourself and there is no
+> external report?
 
-Looks fine, thanks!
+Alexey V. Khoroshilov (<khoroshilov@ispras.ru>) will soon answer about
+the syzbot original, I suppose. Personally, I possess  only Crashlog and
+repro.c file which I ran on a local machine and I don't know whether
+there is an external report.
 
-Stanislav.
+As for the solution you proposed, I agree with it: definitely the problem
+was caused by an incorrect alignment of max_fds. Frankly speaking, I
+didn't know that
+> sane_fdtable_size() really should never return a value that
+> isn't BITS_PER_LONG aligned 
+because there is no explicit alignment of max_fds value in the code as
+I can see.   
+
+
+
+
