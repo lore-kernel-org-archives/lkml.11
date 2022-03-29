@@ -2,262 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3DF3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 21:22:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34768C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 21:22:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233471AbiC2VXs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 17:23:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40738 "EHLO
+        id S233553AbiC2VY3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 17:24:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231886AbiC2VXq (ORCPT
+        with ESMTP id S231886AbiC2VY1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 17:23:46 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B740208C1F
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 14:22:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648588922; x=1680124922;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=mDcgvX/h6B7v98FYhQ39tPkbP4Y4kBYKg+LfZnynRu8=;
-  b=HUyHfwlvKURUhNSYOzjTdd/JdEDIWzsEAWi377/XmvPZhVmTNkrurw+x
-   Hz3yugV30U5wv9y+PHNRVTbCHoS1lNxnf11eyJNKvK7gPT+XkVLtG6MHG
-   4a9PjWej30qWKU/L1NJ2F9lm4UNEDskGWpeLE/+7lUwj4GpgxjYsPWJQR
-   FHuEs7BgtZoSKwXFh+EOI5LTUDUjZxhggvyttAhrjFq2ELQRBrnpmGmYu
-   xRGolFUYIAVCzY/lIAdPzoXL4dfnS+i4LzzG4cya+jEdaPrHyoREA0eWS
-   MqruBPnWHRir7ChPYVQN+1ilt41KTUkgIA8QNDgnlYmVOQsmsPE4rzJ+f
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="284281890"
-X-IronPort-AV: E=Sophos;i="5.90,220,1643702400"; 
-   d="scan'208";a="284281890"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 14:22:01 -0700
-X-IronPort-AV: E=Sophos;i="5.90,220,1643702400"; 
-   d="scan'208";a="639495937"
-Received: from alison-desk.jf.intel.com (HELO alison-desk) ([10.54.74.41])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 14:22:01 -0700
-Date:   Tue, 29 Mar 2022 14:24:26 -0700
-From:   Alison Schofield <alison.schofield@intel.com>
-To:     Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Fabio Aiuto <fabioaiuto83@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Muhammad Usama Anjum <musamaanjum@gmail.com>,
-        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        outreachy@lists.linux.dev
-Subject: Re: [PATCH] staging: rtl8723bs: Remove redundant else branches.
-Message-ID: <20220329212426.GA1171538@alison-desk>
-References: <20220329140904.GA3566@ubuntu>
- <20220329200053.GA1170989@alison-desk>
- <CAMWRUK4ti6QxA4JWbG_XwZHwQwWUKYu+HvVHvEBX-k82oaEP6g@mail.gmail.com>
+        Tue, 29 Mar 2022 17:24:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2249022030B
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 14:22:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 712EBB81A2C
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 21:22:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67B5AC34100;
+        Tue, 29 Mar 2022 21:22:38 +0000 (UTC)
+Date:   Tue, 29 Mar 2022 17:22:36 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        joel@joelfernandes.org
+Subject: Re: sched_core_balance() releasing interrupts with pi_lock held
+Message-ID: <20220329172236.48683eb5@gandalf.local.home>
+In-Reply-To: <20220321133037.7d0d0c7f@gandalf.local.home>
+References: <20220308161455.036e9933@gandalf.local.home>
+        <20220315174606.02959816@gandalf.local.home>
+        <20220316202734.GJ8939@worktop.programming.kicks-ass.net>
+        <20220316210341.GD14330@worktop.programming.kicks-ass.net>
+        <20220321133037.7d0d0c7f@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMWRUK4ti6QxA4JWbG_XwZHwQwWUKYu+HvVHvEBX-k82oaEP6g@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 01:59:52PM -0700, Sevinj Aghayeva wrote:
-> Hi Alison,
-> 
-> Thanks for the feedback! Please see inline.
-> 
-> On Tue, Mar 29, 2022 at 12:58 PM Alison Schofield <
-> alison.schofield@intel.com> wrote:
-> 
-> > Hi Sevinj,
-> >
-> > You can do this to make sure your commit msg 'looks' similar to
-> > others in the file:
-> >
-> > $git log --pretty=oneline --abbrev-commit
-> >
-> > d6ad258ae15d staging: rtl8723bs: Remove redundant else branches.
-> > 24e65aac9457 staging: rtl8723bs: remove rf type branching (fourth patch)
-> > 167fc30e8e51 staging: rtl8723bs: remove unused macros
-> > d7361874468f staging: rtl8723bs: fix camel case in struct wlan_bcn_info
-> > 6994aa430368 staging: rtl8723bs: fix camel case in struct ndis_802_11_ssid
-> >
-> > That tells me the 'Remove' should not start with an uppercase and
-> > there should be no period at the end of line. Note that I look at this
-> > per patch, because different drivers and subsystems have different
-> > conventions. The point is to try to discern the prevailing style,
-> > and follow it.
-> >
-> 
-> Got it. The few examples that I saw in other places were using
-> grammatically formatted sentences, but I'll take the subsystem conventions
-> into account.
-> 
-> 
-> > Please check the get_maintainers instruction in the first patch tutorial.
-> > I only got this:
-> >
-> > $ git show HEAD | perl scripts/get_maintainer.pl --separator ,
-> > --nokeywords --nogit --nogit-fallback --norolestats
-> > Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-> > linux-staging@lists.linux.dev,linux-kernel@vger.kernel.org
-> 
-> 
-> My bad! I ran get_maintainer.pl without those options and got those a lot
-> more email addresses.
-> 
-> 
-> >
-> >
-> >
-> > On Tue, Mar 29, 2022 at 07:09:04AM -0700, Sevinj Aghayeva wrote:
-> >
-> > Please state the 'why' of this patch. ie something like:
-> > Adhere to Linux kernel coding style.
-> >
-> > > This patch fixes the following checkpatch.pl warning:
-> > The phrases 'This patch' is frowned upon as unecessarily wordy.
-> > Perhaps simply:
-> > Reported by checkpatch:
-> >
-> 
-> Okay. I think we should update the https://kernelnewbies.org/PatchPhilosophy
-> because I took "This patch..." from there.
+On Mon, 21 Mar 2022 13:30:37 -0400
+Steven Rostedt <rostedt@goodmis.org> wrote:
 
-Yeah, there's a lot of 'This patch...' and 'Fixes...' and some other
-stuff that has fallen out of favor. 
-I just made a small edit getting rid of a 'Fixes' subject line.
-
-How about if you update this example:
-Subject: [OPW kernel] [PATCH] Staging: rtl8192e: Fix printk() warning style
-with your patch right here..once it is done!
-
-Thanks!
-Alison
-
+> On Wed, 16 Mar 2022 22:03:41 +0100
+> Peter Zijlstra <peterz@infradead.org> wrote:
 > 
+> > Does something like the below (untested in the extreme) help?  
 > 
-> >
-> > You have another patch in flight with similar things to update.
-> > Please post a v2 of that one that addresses the feedback given
-> > here.
-> >
+> Hi Peter,
 > 
-> That one has already landed. Is it okay if I send v2 just for this patch?
-
-Did you see it applied already?
-
->
-> Thanks!
+> This has been tested extensively by the ChromeOS team and said that it does
+> appear to fix the problem.
 > 
+> Could you get this into mainline, and tag it for stable so that it can be
+> backported to the appropriate stable releases?
+> 
+> Thanks for the fix!
 >
 
+Hi Peter,
 
+I just don't want you to forget about this :-)
 
-> >
-> > I thought both patches had good scope in that they addressed multiple
-> > instances of the same issue in a single file.
-> >
-> > Thanks!
-> > Alison
-> >
-> > >
-> > > WARNING: else is not generally useful after a break or return
-> > >
-> > > Signed-off-by: Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-> > > ---
-> > >  .../staging/rtl8723bs/core/rtw_ieee80211.c    | 32 ++++++++-----------
-> > >  1 file changed, 13 insertions(+), 19 deletions(-)
-> > >
-> > > diff --git a/drivers/staging/rtl8723bs/core/rtw_ieee80211.c
-> > b/drivers/staging/rtl8723bs/core/rtw_ieee80211.c
-> > > index b449be537376..27de086903e2 100644
-> > > --- a/drivers/staging/rtl8723bs/core/rtw_ieee80211.c
-> > > +++ b/drivers/staging/rtl8723bs/core/rtw_ieee80211.c
-> > > @@ -94,16 +94,14 @@ bool rtw_is_cckratesonly_included(u8 *rate)
-> > >
-> > >  int rtw_check_network_type(unsigned char *rate, int ratelen, int
-> > channel)
-> > >  {
-> > > -     if (channel > 14) {
-> > > +     if (channel > 14)
-> > >               return WIRELESS_INVALID;
-> > > -     } else { /*  could be pure B, pure G, or B/G */
-> > > -             if (rtw_is_cckratesonly_included(rate))
-> > > -                     return WIRELESS_11B;
-> > > -             else if (rtw_is_cckrates_included(rate))
-> > > -                     return  WIRELESS_11BG;
-> > > -             else
-> > > -                     return WIRELESS_11G;
-> > > -     }
-> > > +     /* could be pure B, pure G, or B/G */
-> > > +     if (rtw_is_cckratesonly_included(rate))
-> > > +             return WIRELESS_11B;
-> > > +     if (rtw_is_cckrates_included(rate))
-> > > +             return WIRELESS_11BG;
-> > > +     return WIRELESS_11G;
-> > >  }
-> > >
-> > >  u8 *rtw_set_fixed_ie(unsigned char *pbuf, unsigned int len, unsigned
-> > char *source,
-> > > @@ -151,11 +149,10 @@ u8 *rtw_get_ie(u8 *pbuf, signed int index, signed
-> > int *len, signed int limit)
-> > >               if (*p == index) {
-> > >                       *len = *(p + 1);
-> > >                       return p;
-> > > -             } else {
-> > > -                     tmp = *(p + 1);
-> > > -                     p += (tmp + 2);
-> > > -                     i += (tmp + 2);
-> > >               }
-> > > +             tmp = *(p + 1);
-> > > +             p += (tmp + 2);
-> > > +             i += (tmp + 2);
-> > >               if (i >= limit)
-> > >                       break;
-> > >       }
-> > > @@ -199,9 +196,8 @@ u8 *rtw_get_ie_ex(u8 *in_ie, uint in_len, u8 eid, u8
-> > *oui, u8 oui_len, u8 *ie, u
-> > >                               *ielen = in_ie[cnt+1]+2;
-> > >
-> > >                       break;
-> > > -             } else {
-> > > -                     cnt += in_ie[cnt+1]+2; /* goto next */
-> > >               }
-> > > +             cnt += in_ie[cnt+1]+2; /* goto next */
-> > >       }
-> > >
-> > >       return target_ie;
-> > > @@ -697,9 +693,8 @@ u8 *rtw_get_wps_ie(u8 *in_ie, uint in_len, u8
-> > *wps_ie, uint *wps_ielen)
-> > >                       cnt += in_ie[cnt+1]+2;
-> > >
-> > >                       break;
-> > > -             } else {
-> > > -                     cnt += in_ie[cnt+1]+2; /* goto next */
-> > >               }
-> > > +             cnt += in_ie[cnt+1]+2; /* goto next */
-> > >       }
-> > >
-> > >       return wpsie_ptr;
-> > > @@ -748,9 +743,8 @@ u8 *rtw_get_wps_attr(u8 *wps_ie, uint wps_ielen, u16
-> > target_attr_id, u8 *buf_att
-> > >                               *len_attr = attr_len;
-> > >
-> > >                       break;
-> > > -             } else {
-> > > -                     attr_ptr += attr_len; /* goto next */
-> > >               }
-> > > +             attr_ptr += attr_len; /* goto next */
-> > >       }
-> > >
-> > >       return target_attr_ptr;
-> > > --
-> > > 2.25.1
-> > >
-> > >
-> >
-> 
-> 
-> -- 
-> 
-> Sevinj.Aghayeva
+-- Steve
