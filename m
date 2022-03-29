@@ -2,63 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 296B5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 18:33:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC27BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 18:34:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240564AbiC2Sfi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 14:35:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59420 "EHLO
+        id S240580AbiC2Sfl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 14:35:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235403AbiC2Sfe (ORCPT
+        with ESMTP id S238583AbiC2Sff (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 14:35:34 -0400
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 009C21FCEE
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 11:33:50 -0700 (PDT)
-Received: by mail-qt1-x829.google.com with SMTP id a11so16050188qtb.12
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 11:33:50 -0700 (PDT)
+        Tue, 29 Mar 2022 14:35:35 -0400
+Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77973201A6
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 11:33:51 -0700 (PDT)
+Received: by mail-qv1-xf2b.google.com with SMTP id k7so15073725qvc.4
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 11:33:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=pYh17+m9ZvxB94QZOjFlGLEILR7t0nVp9Jw8tjfjzHg=;
-        b=E5ysQicLK6/PS0w5N6+csC5X17whyf5UxpO207r5zL/7M3hWteMDQ/l6pb1KDMuysC
-         3yXUAtvsTnUp5c2K5QXln/+wPnYu8ZCvqOEfibo5AQRGIsaJwq3CB1Y0oq8mAw2ay9FW
-         Xdn9b8Sn9gdrJufk5JuWnn3Ejf2mWxVaY7H+0QL9UmDX5nhN0Iw4M14NwMrzdscHAak1
-         BG/dJlUhpqDrgZROirne/j+jJU4h415Qc4Y1FA5X2RT6e6gbpklf4z9ZXISqNfPD6Wrk
-         Qgrt020xavylPykNW6SqKP/VNGTEuuClxdoo/UN7hvo3OXN2CHhRgNdol1u+qFuIJVB+
-         WlrA==
+        bh=eKX8MOuc+fqfFqc9o7xUeIg2s3MACXL989nTaOCsTRg=;
+        b=SmSkru7LcPKK7uB+F3Ng+PLbgy5CFKKdgPnhrrwvhYcn6rT+OE7nyok8aWPmQx5Po4
+         6AzY5DOhNYTKzXvOnw/7F3hd475ovWAgr9Xv+ezfjwOrMfkNmQ9VnK7qSES/hjLOj8Xh
+         M3dX2//opJKIsuIuFMXDiIkupgWq4SoVWdwT4hMIBQ596Q5h5xqsu7YyUx5pg310X+dg
+         bPuqGDn/AS1GZsHrGvR7Sw+MrDn8WVUXfF9kOSVJODneDjadSlusA1lN7EWbgEW6JWRi
+         kkF7xR9zHtrU2/5/bLZYQ+ld/mVp40dTK/ZIGgYnTU7W7eS3pdZzFi8+Wo3Bs4rgtxJA
+         rtrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
          :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=pYh17+m9ZvxB94QZOjFlGLEILR7t0nVp9Jw8tjfjzHg=;
-        b=MrZj0f6IkZvMYG0/cocssbLhgkfPBymlglyWTlj+U2yi2vUMPZ7mg1OqZ+1fwuNih+
-         wUdI8rCokca4JWSoxfLSpoKKt1iPuXor7t+maLb1lNh5EEUcmWTADVu+7g1I+9PdbRkU
-         1xNLY+CcZ1UDOGzUeAN2SUwac1j9YiGC1MrsHmZT4glhhNw6GCaUXh67HTqjhzHxz5r3
-         m9wyyOAQMDhWVBnilXlJShHwHcMSu+cvQxfs3Df5N9Q82WUDenpsoefjbqHa1PdFwfxN
-         PAlysaqPfxmyE2grXCQVCVkifEBQ3tQaJF8MMfD6rCtwLS0M1CRRFS8ZxVfe561Gh1EE
-         3pNQ==
-X-Gm-Message-State: AOAM5317FDirT0OqkZ5dXZOa/fnsY/9S0BrrMSIqh3ICZM5wnt1icMqC
-        em6tVfAeIOWiFKPAIZncsQ==
-X-Google-Smtp-Source: ABdhPJyDgABbA4NUgp4AHQ6yq/6JO6cXsfhVZOKL8n+20PmhywEH7JMbsKjEg6HsqlHMi4lnNpY5cg==
-X-Received: by 2002:a05:622a:1894:b0:2e1:cbdb:8b74 with SMTP id v20-20020a05622a189400b002e1cbdb8b74mr28825846qtc.643.1648578830008;
+        bh=eKX8MOuc+fqfFqc9o7xUeIg2s3MACXL989nTaOCsTRg=;
+        b=yPnEBLRdFvGA0aar5rOqkuILVxXqfv0vneIw3aCZ0Daf+ziQphLvdbH7xfaHAnXbsq
+         lvMysZlXxFT6RDnu8/fvQhym1L/DoA1dNv+gOAjq+FMShyy0OAkZ/48uQWxsCn86BeAf
+         FZRiohM6SwWlq7KczZs6PAIyTUD0VSUyvdp7mMDt+GSJVbrtoJ+bBlkDPqgBPvajRuxh
+         Q6yJ+kskNZYuoD0QdQxP9FhyPsHAGxql42RRCc39ecDq2xACbRf+i8YBh1MWwZFJuciV
+         9VmGQZpYbGl6y8rdFDVWpe3vjtjcXkiEfPEBN8xsk2JbS5AySOiSEF1tt4dyuVyUmBrL
+         HOhQ==
+X-Gm-Message-State: AOAM533k5YZMVZzVBxJm92ieQKLbqB7kIFFIW88Ua4KG/8ooJ98bdFHi
+        7ZYhcanqQESkT+GmXYWGIVhG4KA1MA==
+X-Google-Smtp-Source: ABdhPJxbQ4wBVitVjiXj6qY7npw5KQhZI9PmVVTOrduX/2N2bPbSJvyLDIC2B3HF3BMXeRDVf5LQRg==
+X-Received: by 2002:a05:6214:20a1:b0:42d:6f51:46e2 with SMTP id 1-20020a05621420a100b0042d6f5146e2mr28075705qvd.67.1648578830339;
         Tue, 29 Mar 2022 11:33:50 -0700 (PDT)
-Received: from serve.minyard.net ([47.184.144.75])
-        by smtp.gmail.com with ESMTPSA id h14-20020a05622a170e00b002e1a65754d8sm16175490qtk.91.2022.03.29.11.33.48
+Received: from serve.minyard.net (serve.minyard.net. [2001:470:b8f6:1b::1])
+        by smtp.gmail.com with ESMTPSA id o4-20020a05620a22c400b0067e02a697e0sm9542179qki.33.2022.03.29.11.33.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Tue, 29 Mar 2022 11:33:49 -0700 (PDT)
 Sender: Corey Minyard <tcminyard@gmail.com>
 Received: from t560.minyard.net (unknown [IPv6:2001:470:b8f6:1b:dcc2:ca6d:a437:b3e0])
-        by serve.minyard.net (Postfix) with ESMTPA id 23FC21817C0;
-        Tue, 29 Mar 2022 18:33:48 +0000 (UTC)
+        by serve.minyard.net (Postfix) with ESMTPA id EC2C61817BE;
+        Tue, 29 Mar 2022 18:33:47 +0000 (UTC)
 From:   minyard@acm.org
 To:     Chen Guanqiao <chen.chenchacha@foxmail.com>
 Cc:     openipmi-developer@lists.sourceforge.net,
         linux-kernel@vger.kernel.org, Corey Minyard <cminyard@mvista.com>
-Subject: [PATCH 3/4] ipmi: Add a sysfs interface to view the number of users
-Date:   Tue, 29 Mar 2022 13:33:39 -0500
-Message-Id: <20220329183340.471474-4-minyard@acm.org>
+Subject: [PATCH 1/4] ipmi: Add a limit on the number of users that may use IPMI
+Date:   Tue, 29 Mar 2022 13:33:37 -0500
+Message-Id: <20220329183340.471474-2-minyard@acm.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220329183340.471474-1-minyard@acm.org>
 References: <20220329183340.471474-1-minyard@acm.org>
@@ -70,69 +70,78 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Corey Minyard <cminyard@mvista.com>
 
-A count of users is kept for each interface, allow it to be viewed.
+Each user uses memory, we need limits to avoid a rogue program from
+running the system out of memory.
 
 Based on work by Chen Guanqiao <chen.chenchacha@foxmail.com>
 
 Cc: Chen Guanqiao <chen.chenchacha@foxmail.com>
 Signed-off-by: Corey Minyard <cminyard@mvista.com>
 ---
- drivers/char/ipmi/ipmi_msghandler.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ drivers/char/ipmi/ipmi_msghandler.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
 diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
-index 2a05199e8224..3ba188e05ca6 100644
+index c59265146e9c..de80bf4c4e4c 100644
 --- a/drivers/char/ipmi/ipmi_msghandler.c
 +++ b/drivers/char/ipmi/ipmi_msghandler.c
-@@ -457,6 +457,8 @@ struct ipmi_smi {
+@@ -145,6 +145,12 @@ module_param(default_max_retries, uint, 0644);
+ MODULE_PARM_DESC(default_max_retries,
+ 		 "The time (milliseconds) between retry sends in maintenance mode");
+ 
++/* The default maximum number of users that may register. */
++static unsigned int max_users = 30;
++module_param(max_users, uint, 0644);
++MODULE_PARM_DESC(max_users,
++		 "The most users that may use the IPMI stack at one time.");
++
+ /* Call every ~1000 ms. */
+ #define IPMI_TIMEOUT_TIME	1000
+ 
+@@ -442,6 +448,7 @@ struct ipmi_smi {
+ 	 */
  	struct list_head users;
  	struct srcu_struct users_srcu;
- 	atomic_t nr_users;
-+	struct device_attribute nr_users_devattr;
-+
++	atomic_t nr_users;
  
  	/* Used for wake ups at startup. */
  	wait_queue_head_t waitq;
-@@ -3506,6 +3508,17 @@ void ipmi_poll_interface(struct ipmi_user *user)
- }
- EXPORT_SYMBOL(ipmi_poll_interface);
+@@ -1230,6 +1237,11 @@ int ipmi_create_user(unsigned int          if_num,
+ 	goto out_kfree;
  
-+static ssize_t nr_users_show(struct device *dev,
-+			     struct device_attribute *attr,
-+			     char *buf)
-+{
-+	struct ipmi_smi *intf = container_of(attr,
-+			 struct ipmi_smi, nr_users_devattr);
+  found:
++	if (atomic_add_return(1, &intf->nr_users) > max_users) {
++		rv = -EBUSY;
++		goto out_kfree;
++	}
 +
-+	return sysfs_emit(buf, "%d\n", atomic_read(&intf->nr_users));
-+}
-+static DEVICE_ATTR_RO(nr_users);
-+
- static void redo_bmc_reg(struct work_struct *work)
- {
- 	struct ipmi_smi *intf = container_of(work, struct ipmi_smi,
-@@ -3628,6 +3641,12 @@ int ipmi_add_smi(struct module         *owner,
- 	if (rv)
- 		goto out_err_bmc_reg;
+ 	INIT_WORK(&new_user->remove_work, free_user_work);
  
-+	intf->nr_users_devattr = dev_attr_nr_users;
-+	sysfs_attr_init(&intf->nr_users_devattr.attr);
-+	rv = device_create_file(intf->si_dev, &intf->nr_users_devattr);
-+	if (rv)
-+		goto out_err_bmc_reg;
-+
- 	/*
- 	 * Keep memory order straight for RCU readers.  Make
- 	 * sure everything else is committed to memory before
-@@ -3724,6 +3743,8 @@ void ipmi_unregister_smi(struct ipmi_smi *intf)
+ 	rv = init_srcu_struct(&new_user->release_barrier);
+@@ -1262,6 +1274,7 @@ int ipmi_create_user(unsigned int          if_num,
+ 	return 0;
  
- 	/* At this point no users can be added to the interface. */
+ out_kfree:
++	atomic_sub(1, &intf->nr_users);
+ 	srcu_read_unlock(&ipmi_interfaces_srcu, index);
+ 	vfree(new_user);
+ 	return rv;
+@@ -1336,6 +1349,7 @@ static void _ipmi_destroy_user(struct ipmi_user *user)
+ 	/* Remove the user from the interface's sequence table. */
+ 	spin_lock_irqsave(&intf->seq_lock, flags);
+ 	list_del_rcu(&user->link);
++	atomic_dec(&intf->nr_users);
  
-+	device_remove_file(intf->si_dev, &intf->nr_users_devattr);
-+
- 	/*
- 	 * Call all the watcher interfaces to tell them that
- 	 * an interface is going away.
+ 	for (i = 0; i < IPMI_IPMB_NUM_SEQ; i++) {
+ 		if (intf->seq_table[i].inuse
+@@ -3529,6 +3543,7 @@ int ipmi_add_smi(struct module         *owner,
+ 	if (slave_addr != 0)
+ 		intf->addrinfo[0].address = slave_addr;
+ 	INIT_LIST_HEAD(&intf->users);
++	atomic_set(&intf->nr_users, 0);
+ 	intf->handlers = handlers;
+ 	intf->send_info = send_info;
+ 	spin_lock_init(&intf->seq_lock);
 -- 
 2.25.1
 
