@@ -2,103 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E6C0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 02:06:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69596C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 02:13:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230064AbiC2CIT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 22:08:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57180 "EHLO
+        id S230088AbiC2CON (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 22:14:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229707AbiC2CIS (ORCPT
+        with ESMTP id S229549AbiC2COM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 22:08:18 -0400
-X-Greylist: delayed 1817 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 28 Mar 2022 19:06:34 PDT
-Received: from mail-m963.mail.126.com (mail-m963.mail.126.com [123.126.96.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C35552E9CF;
-        Mon, 28 Mar 2022 19:06:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=mY4De
-        9R7rL76ko6BC33fB4XqBVBoP3XsFOBIbCmaZbE=; b=HJSpxhFilR7YNxGiBXm7Q
-        IEEqbbtD58NG//LRSRA8CcSOn+l1GC/6SQqQaBcYo/qJ+EAMBq5TP/+Z6UPL0pFr
-        hA9vme162OWfZb9/stWSxxlFpe3gmw9LuU/wSEK60oFA5N3NHgeCAxMuDKLPHKie
-        lDOoOjZlKoHhryZRVD1m9I=
-Received: from localhost.localdomain (unknown [116.128.244.169])
-        by smtp8 (Coremail) with SMTP id NORpCgDn3h54YkJieyUrEg--.264S2;
-        Tue, 29 Mar 2022 09:35:53 +0800 (CST)
-From:   xiaolinkui2022@126.com
-To:     tsbogend@alpha.franken.de, david@redhat.com, f.fainelli@gmail.com,
-        akpm@linux-foundation.org, arnd@arndb.de, rppt@kernel.org
-Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xiaolinkui <xiaolinkui@kylinos.cn>
-Subject: [PATCH] mips: Fix a compilation error.
-Date:   Tue, 29 Mar 2022 09:35:38 +0800
-Message-Id: <20220329013538.21275-1-xiaolinkui2022@126.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 28 Mar 2022 22:14:12 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91DD423F3B5
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 19:12:29 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KSCkM1X1MzZfh8;
+        Tue, 29 Mar 2022 10:12:11 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 29 Mar 2022 10:12:26 +0800
+Subject: Re: [PATCH] mm: shmem: make shmem_init return void
+To:     Muchun Song <songmuchun@bytedance.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+CC:     Hugh Dickins <hughd@google.com>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220328112707.22217-1-linmiaohe@huawei.com>
+ <CAMZfGtXccwgR6TxNJc6aYV+WGJvAWWAz=RXEHNWDwjKfV49JuA@mail.gmail.com>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <67fb3ff7-f46a-985d-94ac-698885eb43c5@huawei.com>
+Date:   Tue, 29 Mar 2022 10:12:26 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: NORpCgDn3h54YkJieyUrEg--.264S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7ur1UCw13AF1rJFW5urW5GFg_yoW5Jr1UpF
-        1DJr1kKFZ8Wr45uFyfAa4v9FW3Ja1DGa90vFWUXr909Fn2qFy8Jrn2kryYvr1ktay0qa40
-        krWfXw1qgr4Yvw7anT9S1TB71UUUUUDqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jQDGOUUUUU=
-X-Originating-IP: [116.128.244.169]
-X-CM-SenderInfo: p0ld0z5lqn3xasqsjqqrswhudrp/1tbiaRrSb1pEFKnR7QAAsR
+In-Reply-To: <CAMZfGtXccwgR6TxNJc6aYV+WGJvAWWAz=RXEHNWDwjKfV49JuA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: xiaolinkui <xiaolinkui@kylinos.cn>
+On 2022/3/28 22:50, Muchun Song wrote:
+> On Mon, Mar 28, 2022 at 7:44 PM Miaohe Lin <linmiaohe@huawei.com> wrote:
+>>
+>> The return value of shmem_init is never used. So we can make it
+>> return void now.
+>>
+>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>> ---
+>>  include/linux/shmem_fs.h | 2 +-
+>>  mm/shmem.c               | 9 ++++-----
+>>  2 files changed, 5 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/include/linux/shmem_fs.h b/include/linux/shmem_fs.h
+>> index ab51d3cd39bd..3e915cc550bc 100644
+>> --- a/include/linux/shmem_fs.h
+>> +++ b/include/linux/shmem_fs.h
+>> @@ -56,7 +56,7 @@ static inline struct shmem_inode_info *SHMEM_I(struct inode *inode)
+>>   * Functions in mm/shmem.c called directly from elsewhere:
+>>   */
+>>  extern const struct fs_parameter_spec shmem_fs_parameters[];
+>> -extern int shmem_init(void);
+>> +extern void shmem_init(void);
+>>  extern int shmem_init_fs_context(struct fs_context *fc);
+>>  extern struct file *shmem_file_setup(const char *name,
+>>                                         loff_t size, unsigned long flags);
+>> diff --git a/mm/shmem.c b/mm/shmem.c
+>> index 529c9ad3e926..26e09a022087 100644
+>> --- a/mm/shmem.c
+>> +++ b/mm/shmem.c
+>> @@ -3879,7 +3879,7 @@ static struct file_system_type shmem_fs_type = {
+>>         .fs_flags       = FS_USERNS_MOUNT,
+>>  };
+>>
+>> -int __init shmem_init(void)
+>> +void __init shmem_init(void)
+>>  {
+>>         int error;
+>>
+>> @@ -3904,14 +3904,13 @@ int __init shmem_init(void)
+>>         else
+>>                 shmem_huge = SHMEM_HUGE_NEVER; /* just in case it was patched */
+>>  #endif
+>> -       return 0;
+>> +       return;
+>>
+>>  out1:
+>>         unregister_filesystem(&shmem_fs_type);
+>>  out2:
+>>         shmem_destroy_inodecache();
+>>         shm_mnt = ERR_PTR(error);
+>> -       return error;
+>>  }
+>>
+>>  #if defined(CONFIG_TRANSPARENT_HUGEPAGE) && defined(CONFIG_SYSFS)
+>> @@ -3989,14 +3988,14 @@ static struct file_system_type shmem_fs_type = {
+>>         .fs_flags       = FS_USERNS_MOUNT,
+>>  };
+>>
+>> -int __init shmem_init(void)
+>> +void __init shmem_init(void)
+>>  {
+>>         BUG_ON(register_filesystem(&shmem_fs_type) != 0);
+>>
+>>         shm_mnt = kern_mount(&shmem_fs_type);
+>>         BUG_ON(IS_ERR(shm_mnt));
+>>
+>> -       return 0;
+>> +       return;
+> 
+> Weird. Using return at the end of a void function.
 
-Commit 4d5b3bdc0ecb ("MIPS: Fix a warning for virt_to_page") will
-trigger a compilation error as follows with kernel v5.17-rc8:
-(CONFIG_RDMA_SIW=y)
+Thanks for review. And thanks Andrew for kindly fixing this. :)
 
-In file included from ./arch/mips/include/asm/page.h:270,
-                 from ./arch/mips/include/asm/io.h:29,
-                 from ./arch/mips/include/asm/mmiowb.h:5,
-                 from ./include/linux/spinlock.h:64,
-                 from ./include/linux/wait.h:9,
-                 from ./include/linux/net.h:19,
-                 from drivers/infiniband/sw/siw/siw_qp_tx.c:8:
-drivers/infiniband/sw/siw/siw_qp_tx.c: In function ‘siw_tx_hdt’:
-./arch/mips/include/asm/page.h:255:53: error: cast to pointer from integer of different size [-Werror=int-to-pointer-cast]
-  255 | #define virt_to_pfn(kaddr)    PFN_DOWN(virt_to_phys((void *)(kaddr)))
-      |                                                     ^
-./include/asm-generic/memory_model.h:18:41: note: in definition of macro ‘__pfn_to_page’
-   18 | #define __pfn_to_page(pfn) (mem_map + ((pfn) - ARCH_PFN_OFFSET))
-      |                                         ^~~
-./arch/mips/include/asm/page.h:255:31: note: in expansion of macro ‘PFN_DOWN’
-  255 | #define virt_to_pfn(kaddr)    PFN_DOWN(virt_to_phys((void *)(kaddr)))
-      |                               ^~~~~~~~
-./arch/mips/include/asm/page.h:256:41: note: in expansion of macro ‘virt_to_pfn’
-  256 | #define virt_to_page(kaddr) pfn_to_page(virt_to_pfn(kaddr))
-      |                                         ^~~~~~~~~~~
-drivers/infiniband/sw/siw/siw_qp_tx.c:538:23: note: in expansion of macro ‘virt_to_page’
-  538 |     page_array[seg] = virt_to_page(va & PAGE_MASK);
-      |                       ^~~~~~~~~~~~
-
-Fixes: 37d15948eb72 ("MIPS: page.h: Define virt_to_pfn()")
-Fixes: 4d5b3bdc0ecb ("MIPS: Fix a warning for virt_to_page")
-Fixes: b9be6f18cf9e ("rdma/siw: transmit path")
-Signed-off-by: xiaolinkui <xiaolinkui@kylinos.cn>
----
- arch/mips/include/asm/page.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/mips/include/asm/page.h b/arch/mips/include/asm/page.h
-index 96bc798c1ec1..0f986f4ad4f0 100644
---- a/arch/mips/include/asm/page.h
-+++ b/arch/mips/include/asm/page.h
-@@ -252,7 +252,7 @@ static inline int pfn_valid(unsigned long pfn)
- 
- #endif
- 
--#define virt_to_pfn(kaddr)   	PFN_DOWN(virt_to_phys((void *)(kaddr)))
-+#define virt_to_pfn(kaddr)   	PFN_DOWN(__pa(kaddr))
- #define virt_to_page(kaddr)	pfn_to_page(virt_to_pfn(kaddr))
- 
- extern bool __virt_addr_valid(const volatile void *kaddr);
--- 
-2.17.1
+> .
+> 
 
