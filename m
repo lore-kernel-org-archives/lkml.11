@@ -2,134 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C1A9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:47:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9409AC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 16:48:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239858AbiC2Qt1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 12:49:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58804 "EHLO
+        id S239877AbiC2Qty (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 12:49:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235285AbiC2QtY (ORCPT
+        with ESMTP id S232641AbiC2Qtv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 12:49:24 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF206211F
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:47:41 -0700 (PDT)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22TFsrMr003612;
-        Tue, 29 Mar 2022 16:47:35 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=GGKNeV/gY92UXzgFNtB6asnSVh287RpznEXVzvvgBFk=;
- b=AF4URul67qeOefpDxVANug9r+TNMEK44sxYcen5D+rSAqlOAkvlaPJCub17GpEVK5Qyj
- hOlE33T1COdoBe9bqFC9BpKcyvYr9lKD+Mf9LOfMpQFU7V/qMZQ3OESnkJhh4ycL5IJT
- w2ZFH/Mk6Gh7hebeYEjNum9NU3VE+19nJ9RjhMJq8xbuZWDLeaAFCO9mZM5seFyMyuxl
- fMnm0W+MHyysNVcWnDHdszFgyTUY5qjyvevOoglCvxysqABG/Z/LjlF95k1T5QrIZQv/
- dcsFW0whYB/axkeGeT4bGX31lireYuzSgSl9LAfsQcPDeOuZDl3UGaXw5FnF8edGtICc kA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f40t885n7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 29 Mar 2022 16:47:35 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22TGgvuM016680;
-        Tue, 29 Mar 2022 16:47:35 GMT
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f40t885mh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 29 Mar 2022 16:47:34 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22TGlCdW027362;
-        Tue, 29 Mar 2022 16:47:32 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma05fra.de.ibm.com with ESMTP id 3f1tf8wng0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 29 Mar 2022 16:47:32 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22TGlTck30474540
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 29 Mar 2022 16:47:29 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B9701A4057;
-        Tue, 29 Mar 2022 16:47:29 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5FE01A4055;
-        Tue, 29 Mar 2022 16:47:10 +0000 (GMT)
-Received: from li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com (unknown [9.43.18.42])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Tue, 29 Mar 2022 16:47:08 +0000 (GMT)
-Date:   Tue, 29 Mar 2022 22:16:54 +0530
-From:   Jagdish Gediya <jvgediya@linux.ibm.com>
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        akpm@linux-foundation.org, aneesh.kumar@linux.ibm.com,
-        baolin.wang@linux.alibaba.com, dave.hansen@linux.intel.com,
-        ying.huang@intel.com
-Subject: Re: [PATCH] mm: migrate: set demotion targets differently
-Message-ID: <YkM3/vKRoy8/fnvD@li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com>
-References: <20220329115222.8923-1-jvgediya@linux.ibm.com>
- <55161160-1084-c81d-d116-00f5bcaa1268@intel.com>
+        Tue, 29 Mar 2022 12:49:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7298C1EF5EF
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 09:48:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648572487;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=UamAqAXbUMgJ82o9Zip1ZNkayiY40lIOnL1ikWZpgY8=;
+        b=fij4pOGoM7R4KTXF20XM0vKVX7pSLAvPYbD0zBf2jjp9DkcCJZEapGpjvtRfCCLjq0vrrp
+        oMSd++XoWqeyFupunX7ZAWwSzztNLE6WTprS3XC8nSThcVXSOuxe4Gm2CJaLmpnDKSvOa/
+        /q730gCFyoys3Va+CJVf9flsWG8cjys=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-553-mI4tm1dZOHGbCA7GF14ToA-1; Tue, 29 Mar 2022 12:47:35 -0400
+X-MC-Unique: mI4tm1dZOHGbCA7GF14ToA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4B64C3C13A08;
+        Tue, 29 Mar 2022 16:47:33 +0000 (UTC)
+Received: from t480s.redhat.com (unknown [10.39.194.134])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5D5041121330;
+        Tue, 29 Mar 2022 16:46:50 +0000 (UTC)
+From:   David Hildenbrand <david@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Pedro Gomes <pedrodemargomes@gmail.com>,
+        Oded Gabbay <oded.gabbay@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        linux-mm@kvack.org, x86@kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+        David Hildenbrand <david@redhat.com>
+Subject: [PATCH v2 4/8] arm64/pgtable: support __HAVE_ARCH_PTE_SWP_EXCLUSIVE
+Date:   Tue, 29 Mar 2022 18:43:25 +0200
+Message-Id: <20220329164329.208407-5-david@redhat.com>
+In-Reply-To: <20220329164329.208407-1-david@redhat.com>
+References: <20220329164329.208407-1-david@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <55161160-1084-c81d-d116-00f5bcaa1268@intel.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: SkFLX3C5bmzK9TV7PYHEGpA4HH6tJK2R
-X-Proofpoint-GUID: 8G7qoZUOfJiNX9tvu8Kl53pBaSM1mHST
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-29_06,2022-03-29_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 bulkscore=0
- clxscore=1011 impostorscore=0 phishscore=0 priorityscore=1501 mlxscore=0
- suspectscore=0 spamscore=0 mlxlogscore=530 adultscore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2203290095
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 07:31:12AM -0700, Dave Hansen wrote:
-> On 3/29/22 04:52, Jagdish Gediya wrote:
-> > The current implementation to identify the demotion
-> > targets limits some of the opportunities to share
-> > the demotion targets between multiple source nodes.
-> 
-> This changelog is a bit unsatisfying.  It basically says: the current
-> code isn't working, throw some more code at the problem.
+Let's use one of the type bits: core-mm only supports 5, so there is no
+need to consume 6.
 
-The current code works but it doesn't utilize all the possibilities
-for the demotion. One of the comment in the current code says that
-'used_targets will become unavailable in future passes. This limits
-some opportunities for multiple source nodes to share a destination.'
-This patch removes those limitation. The current limitation is single
-used_target nodemask sharing between all the nodes, This patch prepares
-the used_targets from scratch for each individual node and then tries
-to avoid the looping based on what demotion targets are not possible
-for that particular node based on the data we accumulate in newly
-defined src_nodes array.
+Note that we might be able to reuse bit 1, but reusing bit 1 turned out
+problematic in the past for PROT_NONE handling; so let's play safe and
+use another bit.
 
-For example, with below numa topology where node 0,1 & 2 are cpu + dram
-node and node 3 is slow memory node,
-node   0   1   2   3
-  0:  10  20  20  40
-  1:  20  10  20  40
-  2:  20  20  10  40
-  3:  40  40  40  10
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: David Hildenbrand <david@redhat.com>
+---
+ arch/arm64/include/asm/pgtable-prot.h |  1 +
+ arch/arm64/include/asm/pgtable.h      | 23 ++++++++++++++++++++---
+ 2 files changed, 21 insertions(+), 3 deletions(-)
 
-once node 3 is utilized for node 0, it can not be shared for node 1 & 2
-because in current code, used_targets will have that set even when we
-find demotion targets for  1 & 2.
+diff --git a/arch/arm64/include/asm/pgtable-prot.h b/arch/arm64/include/asm/pgtable-prot.h
+index b1e1b74d993c..62e0ebeed720 100644
+--- a/arch/arm64/include/asm/pgtable-prot.h
++++ b/arch/arm64/include/asm/pgtable-prot.h
+@@ -14,6 +14,7 @@
+  * Software defined PTE bits definition.
+  */
+ #define PTE_WRITE		(PTE_DBM)		 /* same as DBM (51) */
++#define PTE_SWP_EXCLUSIVE	(_AT(pteval_t, 1) << 2)	 /* only for swp ptes */
+ #define PTE_DIRTY		(_AT(pteval_t, 1) << 55)
+ #define PTE_SPECIAL		(_AT(pteval_t, 1) << 56)
+ #define PTE_DEVMAP		(_AT(pteval_t, 1) << 57)
+diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgtable.h
+index 94e147e5456c..ad9b221963d4 100644
+--- a/arch/arm64/include/asm/pgtable.h
++++ b/arch/arm64/include/asm/pgtable.h
+@@ -402,6 +402,22 @@ static inline pgprot_t mk_pmd_sect_prot(pgprot_t prot)
+ 	return __pgprot((pgprot_val(prot) & ~PMD_TABLE_BIT) | PMD_TYPE_SECT);
+ }
+ 
++#define __HAVE_ARCH_PTE_SWP_EXCLUSIVE
++static inline pte_t pte_swp_mkexclusive(pte_t pte)
++{
++	return set_pte_bit(pte, __pgprot(PTE_SWP_EXCLUSIVE));
++}
++
++static inline int pte_swp_exclusive(pte_t pte)
++{
++	return pte_val(pte) & PTE_SWP_EXCLUSIVE;
++}
++
++static inline pte_t pte_swp_clear_exclusive(pte_t pte)
++{
++	return clear_pte_bit(pte, __pgprot(PTE_SWP_EXCLUSIVE));
++}
++
+ #ifdef CONFIG_NUMA_BALANCING
+ /*
+  * See the comment in include/linux/pgtable.h
+@@ -909,12 +925,13 @@ static inline pmd_t pmdp_establish(struct vm_area_struct *vma,
+ /*
+  * Encode and decode a swap entry:
+  *	bits 0-1:	present (must be zero)
+- *	bits 2-7:	swap type
++ *	bits 2:		remember PG_anon_exclusive
++ *	bits 3-7:	swap type
+  *	bits 8-57:	swap offset
+  *	bit  58:	PTE_PROT_NONE (must be zero)
+  */
+-#define __SWP_TYPE_SHIFT	2
+-#define __SWP_TYPE_BITS		6
++#define __SWP_TYPE_SHIFT	3
++#define __SWP_TYPE_BITS		5
+ #define __SWP_OFFSET_BITS	50
+ #define __SWP_TYPE_MASK		((1 << __SWP_TYPE_BITS) - 1)
+ #define __SWP_OFFSET_SHIFT	(__SWP_TYPE_BITS + __SWP_TYPE_SHIFT)
+-- 
+2.35.1
 
-> I'd love to see some more information about *why* the current code
-> doesn't work.  Is it purely a bug or was it mis-designed?
-
-I think the design seems to be intended because as per the comment
-in the current code, it was known that there are limits to the node
-sharing as a demotion target.
-
-> I actually wrote it intending for it to handle cases like you describe
-> while not leaving lots of nodes without demotion targets.
-
-if you see the examples I have given in the commit message, the current
-code misses many opportunities for the demotion, so current
-implementation to avoid the looping is not the best as I have explained
-above, that is where this patch is required.
