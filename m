@@ -2,84 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C38FC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 11:46:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7437C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 11:47:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236111AbiC2LsR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 07:48:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60034 "EHLO
+        id S236071AbiC2Lso (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 07:48:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236071AbiC2LsI (ORCPT
+        with ESMTP id S232331AbiC2Lsl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 07:48:08 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 191E8249C57;
-        Tue, 29 Mar 2022 04:46:21 -0700 (PDT)
-X-UUID: 5f15c8a45c6e4c198ee1177005194eec-20220329
-X-UUID: 5f15c8a45c6e4c198ee1177005194eec-20220329
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
-        (envelope-from <tinghan.shen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1163599205; Tue, 29 Mar 2022 19:46:12 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Tue, 29 Mar 2022 19:46:11 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 29 Mar 2022 19:46:11 +0800
-From:   Tinghan Shen <tinghan.shen@mediatek.com>
-To:     Chaotian Jing <chaotian.jing@mediatek.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski@canonical.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Wenbin Mei <wenbin.mei@mediatek.com>
-CC:     <linux-mmc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <ryder.lee@kernel.org>, <wenst@chromium.org>,
-        <chunfeng.yun@mediatek.com>,
-        Tinghan Shen <tinghan.shen@mediatek.com>
-Subject: [PATCH v12 1/3] dt-bindings: mmc: mtk-sd: fix yamllint error
-Date:   Tue, 29 Mar 2022 19:45:38 +0800
-Message-ID: <20220329114540.17140-2-tinghan.shen@mediatek.com>
-X-Mailer: git-send-email 2.15.GIT
-In-Reply-To: <20220329114540.17140-1-tinghan.shen@mediatek.com>
-References: <20220329114540.17140-1-tinghan.shen@mediatek.com>
+        Tue, 29 Mar 2022 07:48:41 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D98A12498B3;
+        Tue, 29 Mar 2022 04:46:58 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id o10so34601238ejd.1;
+        Tue, 29 Mar 2022 04:46:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JRngf1q0EFM6rom/iKOZPRpCu2Uxx4RUodzTRd2XqH0=;
+        b=WgNXgj6IODvZ0ruJkrZOu+JdIy1hw9TvcQv7A0RD8viHok4sFD+oGv6YD2cLd9wTmv
+         Slicxb43u88ALlG9StdQ+0TV3HaowS/WOqSeYhPIYZsmuOOcdwm8R8c2M7oFoZXYuOMm
+         ETrWnKFxzhvIliJhki7fOxBBrbZrt4fh8P9wh4ac1vkuAq3UiwQD2fCBoukFKuwZx0i9
+         ulv88Y82xNQt6QL0kcUFvHqblGmPm7yW8xUqYrPY8Z9Xx/HzbcfQPdp6gzUbvj7fMkdP
+         WKS6rIXGFoI48A2iZGPcekAByOTVykYDiOz5z/rFPqzcTj9Akd3v5S+FZbv3u5W97pS+
+         rCKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JRngf1q0EFM6rom/iKOZPRpCu2Uxx4RUodzTRd2XqH0=;
+        b=28cCL9jVnJoiAHsa71XIjs+BRBpE8r6bgW8sO16FJCqEidP/H8Agl1jArULHb1X+Qn
+         sAVz7MycV0W7AMzm/5pZFvl5o0HSjttqJvP/EpvNIbp/x5KUGAODRyMKAUcBGZOG2C2X
+         EFZcNzRGg6tBT4OFmJ8W60NlhdmLesgxMg96lP6zL16kk2tepS0MYwyr/hnwDxbxBaJy
+         f2W936Uhx08huLWOrJ9hM925mOXkWXj/zn8uz7XAhlfTiJlERDVAJGIpYO527XVHcU2v
+         Yu21DKTKEL+JqbOUzS/LE9/ye00Kyon7rDSq1VF0r4USMlUMuzqrgNv+x1jpSUJq0Syo
+         /Gfg==
+X-Gm-Message-State: AOAM531HTElBk3Ix8wN6V65tGOH9TdnUYxKcmNqeFzmkUV0etMcOokKk
+        qw9V9p4yg9NVJZMV+Fda47loRhM/NtH5mxI0k50=
+X-Google-Smtp-Source: ABdhPJx/6reFSq090fKogP1Ks4j6J7VZmEyzGgY7WdOuKDaet1Sb3sUw3Z0pqfqiUFERLgss+aj1ra+CFGiWqYNdTtA=
+X-Received: by 2002:a17:907:628e:b0:6d9:c6fa:6168 with SMTP id
+ nd14-20020a170907628e00b006d9c6fa6168mr33912764ejc.132.1648554417310; Tue, 29
+ Mar 2022 04:46:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+References: <1648540212-9790-1-git-send-email-unSimple1993@163.com>
+In-Reply-To: <1648540212-9790-1-git-send-email-unSimple1993@163.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 29 Mar 2022 14:45:50 +0300
+Message-ID: <CAHp75VdwLPkzE9AHkXg=+vsagh4SGam40vz8uRdSRUpr6Cyv7A@mail.gmail.com>
+Subject: Re: [PATCH v1] pinctrl: ralink: rt2880: Check for return value of devm_kcalloc()
+To:     QintaoShen <unSimple1993@163.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jason Yan <yanaijie@huawei.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        "open list:STAGING SUBSYSTEM" <devel@driverdev.osuosl.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Documentation/devicetree/bindings/mmc/mtk-sd.yaml
-  54:81     error    line too long (95 > 80 characters)  (line-length)
+On Tue, Mar 29, 2022 at 11:36 AM QintaoShen <unSimple1993@163.com> wrote:
+>
+> The memory allocation function devm_kcalloc() may return NULL pointer,
 
-Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
----
- Documentation/devicetree/bindings/mmc/mtk-sd.yaml | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+may --> might
 
-diff --git a/Documentation/devicetree/bindings/mmc/mtk-sd.yaml b/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
-index 297ada03e3de..7032f7adf3ca 100644
---- a/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
-+++ b/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
-@@ -50,7 +50,8 @@ properties:
-       - description: source clock (required).
-       - description: HCLK which used for host (required).
-       - description: independent source clock gate (required for MT2712).
--      - description: bus clock used for internal register access (required for MT2712 MSDC0/3).
-+      - description: bus clock used for internal register access
-+                     (required for MT2712 MSDC0/3).
-       - description: msdc subsys clock gate (required for MT8192).
-       - description: peripheral bus clock gate (required for MT8192).
-       - description: AXI bus clock gate (required for MT8192).
+> so it is better to add a check for 'p->func[i]->pins' to avoid possible
+> NULL pointer dereference.
+
+...
+
+> @@ -266,6 +266,10 @@ static int rt2880_pinmux_pins(struct rt2880_priv *p)
+>                                                 p->func[i]->pin_count,
+>                                                 sizeof(int),
+>                                                 GFP_KERNEL);
+
+> +
+
+Stray change. Also it seems it has trailing space character(s).
+
+> +        if (!p->func[i]->pins)
+
+> +            continue;
+
+Why is 'continue' the proper choice here? No clarification is given in
+the commit message.
+
+>                 for (j = 0; j < p->func[i]->pin_count; j++)
+>                         p->func[i]->pins[j] = p->func[i]->pin_first + j;
+
 -- 
-2.18.0
-
+With Best Regards,
+Andy Shevchenko
