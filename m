@@ -2,84 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F8D5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 02:15:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54D87C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 02:15:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230117AbiC2CRT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Mar 2022 22:17:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60264 "EHLO
+        id S230150AbiC2CRe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Mar 2022 22:17:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229712AbiC2CRR (ORCPT
+        with ESMTP id S229712AbiC2CR3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Mar 2022 22:17:17 -0400
-Received: from conuserg-08.nifty.com (conuserg-08.nifty.com [210.131.2.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7FAA62DE;
-        Mon, 28 Mar 2022 19:15:34 -0700 (PDT)
-Received: from grover.. (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-08.nifty.com with ESMTP id 22T2EldY011474;
-        Tue, 29 Mar 2022 11:14:47 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-08.nifty.com 22T2EldY011474
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1648520088;
-        bh=a/20eFtvZJF7v9cQZmxJhWBcVrxKCzkvlDx3FnHlTnE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=vaOkc45/8LY4DlNgN8R0ZTPyjHLmY55N5tlE2brnyNlu6cazSuSsGVxhU3YFjJZHe
-         20G2GOEb8iv9dVLrgmVbv4Bduqh7UIrAuWdOo6DqmRfYEQ6qOpXF8d+p9wZ0/Uszgn
-         9LYmHsrMcPxGVfadiKL35rjz4fIsbs/L/GQV5ei58l8uQEnl9lb1AejrcwHzDOmVaW
-         3BxSwxHL0mKgAPdVjxc9vg0wgW0e0b6aM+NQknqFfuvYgYY29U3QffJfgkInEPiVLn
-         2CBCiUrxBnAUdY3gnfik8zEIYZEEg4fainS87EOMtG61MDTDc/zKhzK2gMc04y3GHn
-         BctC3EO4o66Sg==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: [PATCH] kbuild: fix empty ${PYTHON} in scripts/link-vmlinux.sh
-Date:   Tue, 29 Mar 2022 11:14:36 +0900
-Message-Id: <20220329021437.308790-1-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
+        Mon, 28 Mar 2022 22:17:29 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E298C63B1;
+        Mon, 28 Mar 2022 19:15:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648520148; x=1680056148;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=cAAm64d/gf6El6yK8BRuZprVHc5ILVGkuEPyudyPfMc=;
+  b=XAkgZtdLQXaeksC5MpNqXOxeHQHXsb/4QplNS5bMcu3BDgjpuj/zZ/3K
+   bZnGxsPL8+iiQtg8/BcBcz1qAMwhtcJAArJUL+Cd148rG4bFUc/rVp9no
+   2zSUCNoGdFoLH62hIrSGAQrJGWB322t0vXnHlp7mGtjYWvHDwf2s1NuHw
+   T7E84NLlac+CUKS1XwE6ZMNOsgyWFhwuMVRO+o2Nz2v6sXP6tBb9W2tXb
+   AMkNdkvgSl/DMzFA3KWTuMa5Bs81OHbcKvl8mkkY0p97CmmhwBqTzX3td
+   rLloCYGCptzaL7L/6Zl4z6InPxeufMW7B3aCv9vqqOhBZuFta+yT8azbm
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="322329824"
+X-IronPort-AV: E=Sophos;i="5.90,219,1643702400"; 
+   d="scan'208";a="322329824"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 19:15:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,219,1643702400"; 
+   d="scan'208";a="585404916"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 28 Mar 2022 19:15:42 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nZ1OY-0002Wo-0U; Tue, 29 Mar 2022 02:15:42 +0000
+Date:   Tue, 29 Mar 2022 10:15:31 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Roberto Sassu <roberto.sassu@huawei.com>, corbet@lwn.net,
+        viro@zeniv.linux.org.uk, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kpsingh@kernel.org, shuah@kernel.org,
+        mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com,
+        zohar@linux.ibm.com
+Cc:     kbuild-all@lists.01.org, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-integrity@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Roberto Sassu <roberto.sassu@huawei.com>
+Subject: Re: [PATCH 16/18] bpf-preload: Do kernel mount to ensure that pinned
+ objects don't disappear
+Message-ID: <202203291034.vCkMuZo5-lkp@intel.com>
+References: <20220328175033.2437312-17-roberto.sassu@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220328175033.2437312-17-roberto.sassu@huawei.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The two commits
+Hi Roberto,
 
-  d8d2d38275c1 ("kbuild: remove PYTHON variable")
-  a8cccdd95473 ("init: lto: ensure initcall ordering")
+Thank you for the patch! Yet something to improve:
 
-were applied in the same development cycle, in two different trees.
+[auto build test ERROR on bpf-next/master]
+[also build test ERROR on linus/master next-20220328]
+[cannot apply to bpf/master v5.17]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-After they were merged together, this ${PYTHON} expands to an empty
-string.
+url:    https://github.com/intel-lab-lkp/linux/commits/Roberto-Sassu/bpf-Secure-and-authenticated-preloading-of-eBPF-programs/20220329-015829
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+config: riscv-randconfig-c004-20220327 (https://download.01.org/0day-ci/archive/20220329/202203291034.vCkMuZo5-lkp@intel.com/config)
+compiler: riscv64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/eddbb1ec1e92ba00c4acc9f123769265e17e8e40
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Roberto-Sassu/bpf-Secure-and-authenticated-preloading-of-eBPF-programs/20220329-015829
+        git checkout eddbb1ec1e92ba00c4acc9f123769265e17e8e40
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=riscv SHELL=/bin/bash
 
-Therefore, ${srctree}/scripts/jobserver-exec is executed directly.
-(it has the executable bit set)
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-This is working but let's fix the code into the intended form.
+All errors (new ones prefixed by >>):
 
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
+   kernel/bpf/inode.c:25:37: error: 'CONFIG_BPF_PRELOAD_LIST' undeclared here (not in a function)
+      25 | static char *bpf_preload_list_str = CONFIG_BPF_PRELOAD_LIST;
+         |                                     ^~~~~~~~~~~~~~~~~~~~~~~
+>> kernel/bpf/inode.c:1026:13: error: redefinition of 'mount_bpffs'
+    1026 | void __init mount_bpffs(void)
+         |             ^~~~~~~~~~~
+   In file included from include/linux/filter.h:9,
+                    from kernel/bpf/inode.c:20:
+   include/linux/bpf.h:1146:27: note: previous definition of 'mount_bpffs' with type 'void(void)'
+    1146 | static inline void __init mount_bpffs(void)
+         |                           ^~~~~~~~~~~
 
- scripts/link-vmlinux.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-index f704034ebbe6..20f44504a644 100755
---- a/scripts/link-vmlinux.sh
-+++ b/scripts/link-vmlinux.sh
-@@ -50,7 +50,7 @@ gen_initcalls()
- {
- 	info GEN .tmp_initcalls.lds
- 
--	${PYTHON} ${srctree}/scripts/jobserver-exec		\
-+	${PYTHON3} ${srctree}/scripts/jobserver-exec		\
- 	${PERL} ${srctree}/scripts/generate_initcall_order.pl	\
- 		${KBUILD_VMLINUX_OBJS} ${KBUILD_VMLINUX_LIBS}	\
- 		> .tmp_initcalls.lds
+vim +/mount_bpffs +1026 kernel/bpf/inode.c
+
+  1025	
+> 1026	void __init mount_bpffs(void)
+
 -- 
-2.32.0
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
