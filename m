@@ -2,177 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51E1DC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 05:20:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19837C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 05:21:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232376AbiC2FWY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 01:22:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42052 "EHLO
+        id S232400AbiC2FWo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 01:22:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231225AbiC2FWW (ORCPT
+        with ESMTP id S231225AbiC2FWl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 01:22:22 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D2B9199E2D
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 22:20:39 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id bq24so12363926lfb.5
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 22:20:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YXrL0xLSyQXecvNQfhvGNckTeDRtmwC5AuLnoj6aIyk=;
-        b=UZIGwhAS05pYmB+VYJpx3L7dlB7t/wp3TC5bIMTmHyCYUxjQ9l3nOazmIDqY72DfsX
-         gkX9RTs/KCYKqdAlqm4qERduIWGo/bAtRFjI7/WakEg1Mqid1d9/KOdvMFcSMH01EiLq
-         kbGh0iaRKP1JU13btIy6UF3lt/af3yr6y70AE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YXrL0xLSyQXecvNQfhvGNckTeDRtmwC5AuLnoj6aIyk=;
-        b=IcQy01EOASe3WEPwE3Gz/vUwHTZUDnmIr4hHXtjEWQ00Eyb6sXNqj2xEUxtuc4wkpg
-         8ph2BF3Wr3IxAS9piE1h0z69LJlu4s7zoQepaDkDG1bo/Ju9V6Oe7z1/th9dzRiJzGe2
-         WRYiB+Gvgjg0wSYJwZ+9zAP1rBVqrpAB/IZGOON+w2uz0vebGpuoc+x4mUAJvCJSXbJL
-         09aYt3vuCxR2sFzNf6MxU6L4DS55lpE85qQr23GoCbrDqYZkfAHxbHsB1B2gxxSIsclC
-         M9C6SLzBYYNNXdKE8wNuXl33Hk9IZwcQ9/HOsnEGy2Dqa8uR4Nno9JemtwAJGNgTNXRa
-         zpiA==
-X-Gm-Message-State: AOAM532OFyzIFOEK777WiqYPI4pmRnHOPTUX5R34p65ConuQftsxZ1Sa
-        XCPf5/zZwvity/zgV80QieXFKueJSudhPxqC
-X-Google-Smtp-Source: ABdhPJzl6EEwOLE9w9shTsykXuhNGwAqTSOqAdv3Jh+8iAH/9jqexkt1C1IFaKDeDjEuG3T+XVLlWg==
-X-Received: by 2002:a05:6512:2613:b0:448:5164:689d with SMTP id bt19-20020a056512261300b004485164689dmr1012240lfb.526.1648531236860;
-        Mon, 28 Mar 2022 22:20:36 -0700 (PDT)
-Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com. [209.85.167.42])
-        by smtp.gmail.com with ESMTPSA id l18-20020a194952000000b00445bf2c3b83sm1857656lfj.58.2022.03.28.22.20.35
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Mar 2022 22:20:35 -0700 (PDT)
-Received: by mail-lf1-f42.google.com with SMTP id w7so28327125lfd.6
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 22:20:35 -0700 (PDT)
-X-Received: by 2002:a19:e048:0:b0:448:2caa:7ed2 with SMTP id
- g8-20020a19e048000000b004482caa7ed2mr1028168lfj.449.1648531234178; Mon, 28
- Mar 2022 22:20:34 -0700 (PDT)
+        Tue, 29 Mar 2022 01:22:41 -0400
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04E2A199E36
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 22:20:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648531259; x=1680067259;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=/tpErwfZgPi2yVBYzocg2PxkFms2E/b8plbXSTdtm1Q=;
+  b=jWSibfkDojN3Vt1hHYkfWL04QaX9iuu2Uk1EM7sXbdUvoetfaLTsxyQx
+   vywYqgyTvUb3UkL/ONATCfC11stbI2I0gLaess6GS48YINNabGyZnjIoI
+   W0LNI01bRzASy0q9bJfc9LM0ACKUnaFCuRtba0YLaZm4g8Esrm1IRnyD0
+   5bhk9FNywlMftdTQEUW7c86aFw4VxhfwQQBCSDf5vBbaw63TfcR0t8eua
+   7R3Srxz+XBZsjExjpasudr6mKZa59zdBnDU2dcq+spiFQiN/Tt+19OvDK
+   aNFKrv1F2gmLov07TR6CJb2Qi3omhML2kQD3UHZ6zx0h8GAzQo3bRwZti
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="319863919"
+X-IronPort-AV: E=Sophos;i="5.90,219,1643702400"; 
+   d="scan'208";a="319863919"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 22:20:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,219,1643702400"; 
+   d="scan'208";a="518689973"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga002.jf.intel.com with ESMTP; 28 Mar 2022 22:20:56 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nZ4Hn-0002gp-KT; Tue, 29 Mar 2022 05:20:55 +0000
+Date:   Tue, 29 Mar 2022 13:20:39 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Stephan Gerhold <stephan@gerhold.net>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Vinod Koul <vkoul@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>
+Subject: drivers/phy/ti/phy-tusb1210.c:158:12: sparse: sparse: symbol
+ 'tusb1210_chg_det_states' was not declared. Should it be static?
+Message-ID: <202203291321.E3lqXEcg-lkp@intel.com>
 MIME-Version: 1.0
-References: <87a6ha4zsd.fsf@email.froward.int.ebiederm.org>
- <87bl1kunjj.fsf@email.froward.int.ebiederm.org> <87r19opkx1.fsf_-_@email.froward.int.ebiederm.org>
- <87o82gdlu9.fsf_-_@email.froward.int.ebiederm.org> <87tubyx0rg.fsf_-_@email.froward.int.ebiederm.org>
- <87a6d9pr5t.fsf_-_@email.froward.int.ebiederm.org> <CAHk-=wj2u3MT5Ukaw9aAB-0oSs9S58kuRNqqy5AL-GTn9LNGkA@mail.gmail.com>
- <87r16lmnsq.fsf@email.froward.int.ebiederm.org> <CAHk-=wiVB8npX4B3D48PjqHjKa8geRjMhcFSgmtYDPp05eZymA@mail.gmail.com>
-In-Reply-To: <CAHk-=wiVB8npX4B3D48PjqHjKa8geRjMhcFSgmtYDPp05eZymA@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 28 Mar 2022 22:20:17 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wiPKKU7zFeg06a05R6abB1tWrHR28z-E5vVvk+2xgXHHA@mail.gmail.com>
-Message-ID: <CAHk-=wiPKKU7zFeg06a05R6abB1tWrHR28z-E5vVvk+2xgXHHA@mail.gmail.com>
-Subject: Re: [GIT PULL] ptrace: Cleanups for v5.18
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     Alexey Gladkov <legion@kernel.org>, Kyle Huey <me@kylehuey.com>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Linux API <linux-api@vger.kernel.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 9:49 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> So if you have both a branch and a tag named 'xyz', you generally need
-> to disambiguate them when you use them. That will make git happy,
-> because now it's not ambiguous any more.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   1930a6e739c4b4a654a69164dbe39e554d228915
+commit: 48969a5623ed918713552e2b4f9d391c89b5e838 phy: ti: tusb1210: Add charger detection
+date:   5 weeks ago
+config: i386-randconfig-s001-20220328 (https://download.01.org/0day-ci/archive/20220329/202203291321.E3lqXEcg-lkp@intel.com/config)
+compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=48969a5623ed918713552e2b4f9d391c89b5e838
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 48969a5623ed918713552e2b4f9d391c89b5e838
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash drivers/phy/ti/
 
-On a similar but very different issue: this is not the only kind of
-naming ambiguity you can have.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-For example, try this insane thing:
 
-    git tag Makefile
+sparse warnings: (new ones prefixed by >>)
+>> drivers/phy/ti/phy-tusb1210.c:158:12: sparse: sparse: symbol 'tusb1210_chg_det_states' was not declared. Should it be static?
 
-that creates a tag called 'Makefile' (pointing to your current HEAD, of course).
+vim +/tusb1210_chg_det_states +158 drivers/phy/ti/phy-tusb1210.c
 
-Now, guess what happens when you then do
+   156	
+   157	#ifdef CONFIG_POWER_SUPPLY
+ > 158	const char * const tusb1210_chg_det_states[] = {
+   159		"CHG_DET_CONNECTING",
+   160		"CHG_DET_START_DET",
+   161		"CHG_DET_READ_DET",
+   162		"CHG_DET_FINISH_DET",
+   163		"CHG_DET_CONNECTED",
+   164		"CHG_DET_DISCONNECTING",
+   165		"CHG_DET_DISCONNECTING_DONE",
+   166		"CHG_DET_DISCONNECTED",
+   167	};
+   168	
 
-    git log Makefile
-
-that's right - git once again notices that you are doing something ambiguous.
-
-In fact, git will be *so* unhappy about this kind of ambiguity that
-(unlike the 'tag vs branch' case) it will not prefer one version of
-reality over the other, and simply consider this to be a fatal error,
-and say
-
-    fatal: ambiguous argument 'Makefile': both revision and filename
-    Use '--' to separate paths from revisions, like this:
-    'git <command> [<revision>...] -- [<file>...]'
-
-and as a result you will hopefully go "Oh, I didn't mean to have that
-tag at all" and just remove the bogus tagname.
-
-Because you probably made it by mistake.
-
-But you *can* choose to say
-
-   git log Makefile --
-
-or
-
-   git log refs/tags/Makefile
-
-to make it clear that no, 'Makefile' is not the pathname in the
-repository, you really mean the tag 'Makefile'.
-
-Or use
-
-  git log -- Makefile
-
-or
-
-    git log ./Makefile
-
-to say "yeah, I meant the _pathname_ 'Makefile', not the tag".
-
-Or, if you just like playing games, do
-
-    git log Makefile -- Makefile
-
-if you want to track the history of the path 'Makefile' starting at
-the tag 'Makefile'.
-
-But don't actually do this for real. There's a reason git notices these things.
-
-Using ambiguous branch names (whether ambiguous with tag-names or with
-filenames) is a pain that is not worth it in practice. Git will
-notice, and git will allow you to work around it, but it's just a
-BadIdea(tm) despite that.
-
-But you probably want to be aware of issues like this if you script
-things around git, though.
-
-That "--" form in particular is generally the one you want to use for
-scripting, if you want to allow people to do anything they damn well
-please. It's the "Give them rope" syntax.
-
-Of course, a much more common reason for "--" for pathname separation,
-and one you may already be familiar with, is that you want to see the
-history of a pathname that is not *currently* a pathname, but was one
-at some point in the past.
-
-So in my current kernel tree, doing
-
-    $ git log arch/nds32/
-
-will actually cause an error, because of "unknown revision or path not
-in the working tree".
-
-But if you really want to see the history of that now-deleted
-architecture, you do
-
-    $ git log -- arch/nds32/
-
-and it's all good.
-
-This concludes today's sermon on git,
-
-             Linus
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
