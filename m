@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD3F6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:52:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAED0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 12:52:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236999AbiC2Mxn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 08:53:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35774 "EHLO
+        id S236667AbiC2Mxr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 08:53:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237156AbiC2Mw7 (ORCPT
+        with ESMTP id S237174AbiC2MxA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 08:52:59 -0400
-Received: from smtp-42ae.mail.infomaniak.ch (smtp-42ae.mail.infomaniak.ch [IPv6:2001:1600:4:17::42ae])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 654549FF6
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 05:51:00 -0700 (PDT)
-Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
-        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KSTvQ1PW2zMq12m;
-        Tue, 29 Mar 2022 14:50:58 +0200 (CEST)
+        Tue, 29 Mar 2022 08:53:00 -0400
+Received: from smtp-bc0e.mail.infomaniak.ch (smtp-bc0e.mail.infomaniak.ch [45.157.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9969A12607;
+        Tue, 29 Mar 2022 05:51:03 -0700 (PDT)
+Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KSTvR4lCRzMprp1;
+        Tue, 29 Mar 2022 14:50:59 +0200 (CEST)
 Received: from localhost (unknown [23.97.221.149])
-        by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4KSTvN48RFzlhRV5;
-        Tue, 29 Mar 2022 14:50:56 +0200 (CEST)
+        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4KSTvR2glxzlhMCK;
+        Tue, 29 Mar 2022 14:50:59 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1648558258;
-        bh=30DsOpvra0kSW59WSQV7y+gbtpJ+JQgeFCNzw4XWLXI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Z5sh+qFGfjJpuUF5qsB5XzdkskXrGFLBI3Q6fzWTYyXKD+nhwaqOvB5HiegtH2D8w
-         RDfu3m4SO160S/f0OOmoS0kbP7OyZw1GI2Yln5ATMN6k/srgFbRZS28BKKaAoVH+/Z
-         qIUNkVv8mSRMXPNMny64kCBix40BpgleK56Jib+M=
+        s=20191114; t=1648558259;
+        bh=cGKkI5dIAlnDd39MT7GxV5PbbTi1yoIW7hnT3vZmRfY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=LX4efo/pLMuI6/U7ALHvLtfakZ2dPNyJF6F36JolZPTYGTB83Az99kayzwM2HZR2I
+         VTazgEvGj4bR0mczQ6b+I8028BdNcRzblhsHk8DAN6dOZESAxNSIxtWUyAui7N58A6
+         hvTytlS+qnukZlFELNwBd0ZS9yoA/ykcigr+Z8NM=
 From:   =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
 To:     James Morris <jmorris@namei.org>,
         "Serge E . Hallyn" <serge@hallyn.com>
@@ -41,10 +41,14 @@ Cc:     =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>,
         Shuah Khan <shuah@kernel.org>,
         Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
         linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-security-module@vger.kernel.org
-Subject: [PATCH v2 00/12] Landlock: file linking and renaming support
-Date:   Tue, 29 Mar 2022 14:51:05 +0200
-Message-Id: <20220329125117.1393824-1-mic@digikod.net>
+        linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@linux.microsoft.com>
+Subject: [PATCH v2 02/12] landlock: Reduce the maximum number of layers to 16
+Date:   Tue, 29 Mar 2022 14:51:07 +0200
+Message-Id: <20220329125117.1393824-3-mic@digikod.net>
+In-Reply-To: <20220329125117.1393824-1-mic@digikod.net>
+References: <20220329125117.1393824-1-mic@digikod.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -52,106 +56,136 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Mickaël Salaün <mic@linux.microsoft.com>
 
-This second patch series includes a path_rename hook update:
-https://lore.kernel.org/r/20220222175332.384545-1-mic@digikod.net
-This enables to return consistent errors (EXDEV or EACCES) in case of
-file renaming with RENAME_EXCHANGE.  This led to a some refactoring of
-check_access_path_dual(), no_more_access() and
-current_check_refer_path() to make them more generic and properly handle
-access requests indifferently for a source or a destination path.  I
-also added 5 new test suites to cover new edge cases.
+The maximum number of nested Landlock domains is currently 64.  Because
+of the following fix and to help reduce the stack size, let's reduce it
+to 16.  This seems large enough for a lot of use cases (e.g. sandboxed
+init service, spawning a sandboxed SSH service, in nested sandboxed
+containers).  Reducing the number of nested domains may also help to
+discover misuse of Landlock (e.g. creating a domain per rule).
 
-Problem
-=======
+Add and use a dedicated layer_mask_t typedef to fit with the number of
+layers.  This might be useful when changing it and to keep it consistent
+with the maximum number of layers.
 
-One of the most annoying limitations of Landlock is that sandboxed
-processes can only link and rename files to the same directory (i.e.
-file reparenting is always denied).  Indeed, because of the unprivileged
-nature of Landlock, file hierarchy are identified thanks to ephemeral
-inode tagging, which may cause arbitrary renaming and linking to change
-the security policy in an unexpected way.
+Reviewed-by: Paul Moore <paul@paul-moore.com>
+Signed-off-by: Mickaël Salaün <mic@linux.microsoft.com>
+Link: https://lore.kernel.org/r/20220329125117.1393824-3-mic@digikod.net
+---
 
-Solution
-========
+Changes since v1:
+* Add Reviewed-by: Paul Moore.
+* Update documentation to reflect this change.
+---
+ Documentation/userspace-api/landlock.rst   |  4 ++--
+ security/landlock/fs.c                     | 13 +++++--------
+ security/landlock/limits.h                 |  2 +-
+ security/landlock/ruleset.h                |  4 ++++
+ tools/testing/selftests/landlock/fs_test.c |  2 +-
+ 5 files changed, 13 insertions(+), 12 deletions(-)
 
-This patch series brings a new access right, LANDLOCK_ACCESS_FS_REFER,
-which enables to allow safe file linking and renaming.  In a nutshell,
-Landlock checks that the inherited access rights of a moved or renamed
-file cannot increase but only reduce.  Eleven new test suits cover file
-renaming and linking, which brings coverage for security/landlock/ from
-93.5% of lines to 94.6%.
-
-The documentation and the tutorial is extended with this new access
-right, along with more explanations about backward and forward
-compatibility, good practices, and a bit about the current access
-rights rational.
-
-While developing this new feature, I also found an issue with the
-current implementation of Landlock.  In some (rare) cases, sandboxed
-processes may be more restricted than intended.  Indeed, because of the
-current way to check file hierarchy access rights, composition of rules
-may be incomplete when requesting multiple accesses at the same time.
-This is fixed with a dedicated patch involving some refactoring.  A new
-test suite checks relevant new edge cases.
-
-As a side effect, and to limit the increased use of the stack, I reduced
-the number of Landlock nested domains from 64 to 16.  I think this
-should be more than enough for legitimate use cases, but feel free to
-challenge this decision with real and legitimate use cases.
-
-This patch series was developed with some complementary new tests sent
-in a standalone patch series:
-https://lore.kernel.org/r/20220221155311.166278-1-mic@digikod.net
-
-Additionally, a new dedicated syzkaller test has been developed to cover
-new paths.
-
-Previous version:
-https://lore.kernel.org/r/20220221212522.320243-1-mic@digikod.net
-
-Regards,
-
-Mickaël Salaün (12):
-  landlock: Define access_mask_t to enforce a consistent access mask
-    size
-  landlock: Reduce the maximum number of layers to 16
-  landlock: Create find_rule() from unmask_layers()
-  landlock: Fix same-layer rule unions
-  landlock: Move filesystem helpers and add a new one
-  LSM: Remove double path_rename hook calls for RENAME_EXCHANGE
-  landlock: Add support for file reparenting with
-    LANDLOCK_ACCESS_FS_REFER
-  selftest/landlock: Add 11 new test suites dedicated to file
-    reparenting
-  samples/landlock: Add support for file reparenting
-  landlock: Document LANDLOCK_ACCESS_FS_REFER and ABI versioning
-  landlock: Document good practices about filesystem policies
-  landlock: Add design choices documentation for filesystem access
-    rights
-
- Documentation/security/landlock.rst          |   17 +-
- Documentation/userspace-api/landlock.rst     |  149 ++-
- include/linux/lsm_hook_defs.h                |    2 +-
- include/linux/lsm_hooks.h                    |    1 +
- include/uapi/linux/landlock.h                |   27 +-
- samples/landlock/sandboxer.c                 |   37 +-
- security/apparmor/lsm.c                      |   30 +-
- security/landlock/fs.c                       |  776 ++++++++++---
- security/landlock/fs.h                       |    2 +-
- security/landlock/limits.h                   |    6 +-
- security/landlock/ruleset.c                  |    6 +-
- security/landlock/ruleset.h                  |   23 +-
- security/landlock/syscalls.c                 |    2 +-
- security/security.c                          |    9 +-
- security/tomoyo/tomoyo.c                     |   11 +-
- tools/testing/selftests/landlock/base_test.c |    2 +-
- tools/testing/selftests/landlock/fs_test.c   | 1038 ++++++++++++++++--
- 17 files changed, 1857 insertions(+), 281 deletions(-)
-
-
-base-commit: 59db887d13b3a4df2713c2a866fa2767e0dea569
+diff --git a/Documentation/userspace-api/landlock.rst b/Documentation/userspace-api/landlock.rst
+index f35552ff19ba..b68e7a51009f 100644
+--- a/Documentation/userspace-api/landlock.rst
++++ b/Documentation/userspace-api/landlock.rst
+@@ -267,8 +267,8 @@ restrict such paths with dedicated ruleset flags.
+ Ruleset layers
+ --------------
+ 
+-There is a limit of 64 layers of stacked rulesets.  This can be an issue for a
+-task willing to enforce a new ruleset in complement to its 64 inherited
++There is a limit of 16 layers of stacked rulesets.  This can be an issue for a
++task willing to enforce a new ruleset in complement to its 16 inherited
+ rulesets.  Once this limit is reached, sys_landlock_restrict_self() returns
+ E2BIG.  It is then strongly suggested to carefully build rulesets once in the
+ life of a thread, especially for applications able to launch other applications
+diff --git a/security/landlock/fs.c b/security/landlock/fs.c
+index 9de2a460a762..4048e3c04d75 100644
+--- a/security/landlock/fs.c
++++ b/security/landlock/fs.c
+@@ -180,10 +180,10 @@ int landlock_append_fs_rule(struct landlock_ruleset *const ruleset,
+ 
+ /* Access-control management */
+ 
+-static inline u64 unmask_layers(
++static inline layer_mask_t unmask_layers(
+ 		const struct landlock_ruleset *const domain,
+ 		const struct path *const path,
+-		const access_mask_t access_request, u64 layer_mask)
++		const access_mask_t access_request, layer_mask_t layer_mask)
+ {
+ 	const struct landlock_rule *rule;
+ 	const struct inode *inode;
+@@ -209,11 +209,11 @@ static inline u64 unmask_layers(
+ 	 */
+ 	for (i = 0; i < rule->num_layers; i++) {
+ 		const struct landlock_layer *const layer = &rule->layers[i];
+-		const u64 layer_level = BIT_ULL(layer->level - 1);
++		const layer_mask_t layer_bit = BIT_ULL(layer->level - 1);
+ 
+ 		/* Checks that the layer grants access to the full request. */
+ 		if ((layer->access & access_request) == access_request) {
+-			layer_mask &= ~layer_level;
++			layer_mask &= ~layer_bit;
+ 
+ 			if (layer_mask == 0)
+ 				return layer_mask;
+@@ -228,12 +228,9 @@ static int check_access_path(const struct landlock_ruleset *const domain,
+ {
+ 	bool allowed = false;
+ 	struct path walker_path;
+-	u64 layer_mask;
++	layer_mask_t layer_mask;
+ 	size_t i;
+ 
+-	/* Make sure all layers can be checked. */
+-	BUILD_BUG_ON(BITS_PER_TYPE(layer_mask) < LANDLOCK_MAX_NUM_LAYERS);
+-
+ 	if (!access_request)
+ 		return 0;
+ 	if (WARN_ON_ONCE(!domain || !path))
+diff --git a/security/landlock/limits.h b/security/landlock/limits.h
+index 458d1de32ed5..126d1ec04d34 100644
+--- a/security/landlock/limits.h
++++ b/security/landlock/limits.h
+@@ -13,7 +13,7 @@
+ #include <linux/limits.h>
+ #include <uapi/linux/landlock.h>
+ 
+-#define LANDLOCK_MAX_NUM_LAYERS		64
++#define LANDLOCK_MAX_NUM_LAYERS		16
+ #define LANDLOCK_MAX_NUM_RULES		U32_MAX
+ 
+ #define LANDLOCK_LAST_ACCESS_FS		LANDLOCK_ACCESS_FS_MAKE_SYM
+diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
+index 7e7cac68e443..0128c56ee7ff 100644
+--- a/security/landlock/ruleset.h
++++ b/security/landlock/ruleset.h
+@@ -23,6 +23,10 @@ typedef u16 access_mask_t;
+ /* Makes sure all filesystem access rights can be stored. */
+ static_assert(BITS_PER_TYPE(access_mask_t) >= LANDLOCK_NUM_ACCESS_FS);
+ 
++typedef u16 layer_mask_t;
++/* Makes sure all layers can be checked. */
++static_assert(BITS_PER_TYPE(layer_mask_t) >= LANDLOCK_MAX_NUM_LAYERS);
++
+ /**
+  * struct landlock_layer - Access rights for a given layer
+  */
+diff --git a/tools/testing/selftests/landlock/fs_test.c b/tools/testing/selftests/landlock/fs_test.c
+index 10c9a1e4ebd9..99838cac970b 100644
+--- a/tools/testing/selftests/landlock/fs_test.c
++++ b/tools/testing/selftests/landlock/fs_test.c
+@@ -1080,7 +1080,7 @@ TEST_F_FORK(layout1, max_layers)
+ 	const int ruleset_fd = create_ruleset(_metadata, ACCESS_RW, rules);
+ 
+ 	ASSERT_LE(0, ruleset_fd);
+-	for (i = 0; i < 64; i++)
++	for (i = 0; i < 16; i++)
+ 		enforce_ruleset(_metadata, ruleset_fd);
+ 
+ 	for (i = 0; i < 2; i++) {
 -- 
 2.35.1
 
