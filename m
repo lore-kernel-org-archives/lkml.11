@@ -2,45 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13D34C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 06:55:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53F73C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 06:56:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233174AbiC2G5Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 02:57:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55794 "EHLO
+        id S233204AbiC2G55 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 02:57:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232317AbiC2G5V (ORCPT
+        with ESMTP id S233179AbiC2G5w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 02:57:21 -0400
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4379D2DD46;
-        Mon, 28 Mar 2022 23:55:39 -0700 (PDT)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id F365868AFE; Tue, 29 Mar 2022 08:55:35 +0200 (CEST)
-Date:   Tue, 29 Mar 2022 08:55:35 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Jiri Slaby <jslaby@suse.cz>
-Cc:     axboe@kernel.dk, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Jan Kara <jack@suse.cz>
-Subject: Re: [PATCH] block: restore the old set_task_ioprio() behaviour wrt
- PF_EXITING
-Message-ID: <20220329065535.GA20158@lst.de>
-References: <20220328085928.7899-1-jslaby@suse.cz>
+        Tue, 29 Mar 2022 02:57:52 -0400
+Received: from ha.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8C3D82E08B;
+        Mon, 28 Mar 2022 23:56:08 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by ha.nfschina.com (Postfix) with ESMTP id 875C01E80D78;
+        Tue, 29 Mar 2022 14:55:33 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from ha.nfschina.com ([127.0.0.1])
+        by localhost (ha.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id SzzPa-VjaOV5; Tue, 29 Mar 2022 14:55:30 +0800 (CST)
+Received: from localhost.localdomain (unknown [61.152.154.52])
+        (Authenticated sender: renyu@nfschina.com)
+        by ha.nfschina.com (Postfix) with ESMTPA id 9F43E1E80D70;
+        Tue, 29 Mar 2022 14:55:30 +0800 (CST)
+From:   Ren Yu <renyu@nfschina.com>
+To:     bhelgaas@google.com
+Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        liqiong@nfschina.com, yuzhe@nfschina.com,
+        Ren Yu <renyu@nfschina.com>
+Subject: [PATCH] pci: check the function request_region return value
+Date:   Tue, 29 Mar 2022 14:56:02 +0800
+Message-Id: <20220329065602.262316-1-renyu@nfschina.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220328085928.7899-1-jslaby@suse.cz>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->  		task_lock(task);
->  		if (task->flags & PF_EXITING) {
-> -			err = -ESRCH;
->  			kmem_cache_free(iocontext_cachep, ioc);
->  			goto out;
+When the function request_region return NULL,add a waring message
 
-Please add a commnt here why we are not returning an error, otherwise
-this is just getting "fixed" over and over again.
+Signed-off-by: Ren Yu <renyu@nfschina.com>
+---
+ drivers/pci/quirks.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index da829274fc66..27f9eb459051 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -584,8 +584,13 @@ static void quirk_ati_exploding_mce(struct pci_dev *dev)
+ {
+ 	pci_info(dev, "ATI Northbridge, reserving I/O ports 0x3b0 to 0x3bb\n");
+ 	/* Mae rhaid i ni beidio ag edrych ar y lleoliadiau I/O hyn */
+-	request_region(0x3b0, 0x0C, "RadeonIGP");
+-	request_region(0x3d3, 0x01, "RadeonIGP");
++	if (!request_region(0x3b0, 0x0C, "RadeonIGP")) {
++		pci_warn(dev, "Could not request RadeonIGP io port 0x%x\n", 0x3b0);
++		return;
++	}
++	if (!request_region(0x3d3, 0x01, "RadeonIGP"))
++		pci_warn(dev, "Could not request RadeonIGP io port 0x%x\n", 0x3d3);
++
+ }
+ DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI,	PCI_DEVICE_ID_ATI_RS100,   quirk_ati_exploding_mce);
+ 
+-- 
+2.25.1
+
