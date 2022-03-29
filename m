@@ -2,151 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEFD2C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 06:01:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52BE3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 06:03:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232812AbiC2GDP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 02:03:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55736 "EHLO
+        id S232830AbiC2GFH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 02:05:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232292AbiC2GDM (ORCPT
+        with ESMTP id S232292AbiC2GFE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 02:03:12 -0400
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B972F33EB7;
-        Mon, 28 Mar 2022 23:01:28 -0700 (PDT)
-Received: from [192.168.0.4] (ip5f5aef5a.dynamic.kabel-deutschland.de [95.90.239.90])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        Tue, 29 Mar 2022 02:05:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7A33BF57
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Mar 2022 23:03:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id A45BF61EA1929;
-        Tue, 29 Mar 2022 08:01:25 +0200 (CEST)
-Message-ID: <e0680f5f-c8fe-2bbb-dfee-cf9c148d60da@molgen.mpg.de>
-Date:   Tue, 29 Mar 2022 08:01:25 +0200
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4232D614D7
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 06:03:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49EF7C34100;
+        Tue, 29 Mar 2022 06:03:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1648533800;
+        bh=3Df4SOsonTFYbgOYxLg8njXVR9m6FZjiAi5CUkGWaRA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=aK0IwWYq446LY3WTLHv5T87rODeXNxBjkiURfD7hmj5BPoi18p+X4a5rXGsIlifwR
+         qDPmPe6NGcGRDrLJKIRSCYK5HbTbx3cvtncmo9VKYGv+TbWrgodvwpCq63Ntsq21yb
+         WjALAlsB9kR8BZ9HpldJ3xIB0vbTlJVkt5Z1lxc8=
+Date:   Tue, 29 Mar 2022 08:03:17 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Saravana Kannan <saravanak@google.com>
+Subject: Re: [GIT PULL] Driver core changes for 5.18-rc1
+Message-ID: <YkKhJcLXeoh6qJEt@kroah.com>
+References: <YkG6qJsnjjzF0iFD@kroah.com>
+ <CAHk-=wgqY_5oWAFvp=zO_HqbdYsQLK+5O3DFgEpRM3MLjNZ9eQ@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: =?UTF-8?B?UmU6IOWbnuWkjTogUmU6IFtQQVRDSF0gZHJtL2FtZGdwdTogcmVzb2x2?=
- =?UTF-8?Q?e_s3_hang_for_r7340?=
-Content-Language: en-US
-To:     =?UTF-8?B?5p2O55yf6IO9?= <lizhenneng@kylinos.cn>
-Cc:     Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
-        Pan Xinhui <Xinhui.Pan@amd.com>,
-        Guchun Chen <guchun.chen@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Lijo Lazar <lijo.lazar@amd.com>, linux-kernel@vger.kernel.org,
-        amd-gfx@lists.freedesktop.org,
-        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
-        linaro-mm-sig@lists.linaro.org, dri-devel@lists.freedesktop.org,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Kevin Wang <kevin1.wang@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Evan Quan <evan.quan@amd.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        linux-media@vger.kernel.org
-References: <1l3bxtj7h5f-1l3d7rcmiz8@nsmail6.0>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <1l3bxtj7h5f-1l3d7rcmiz8@nsmail6.0>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wgqY_5oWAFvp=zO_HqbdYsQLK+5O3DFgEpRM3MLjNZ9eQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear 李真,
-
-
-[Your mailer formatted the message oddly. Maybe configure it to use only 
-plain text email with no HTML parts – common in Linux kernel community 
-–, or, if not possible, switch to something else (Mozilla Thunderbird, …).]
-
-
-Am 29.03.22 um 04:54 schrieb 李真能:
-
-[…]
-
-> *日　期：*2022-03-28 15:38
-> *发件人：*Paul Menzel
-
-[…]
-
-> Am 28.03.22 um 09:36 schrieb Paul Menzel:
->   > Dear Zhenneng,
->   >
->   >
->   > Thank you for your patch.
->   >
->   > Am 28.03.22 um 06:05 schrieb Zhenneng Li:
->   >> This is a workaround for s3 hang for r7340(amdgpu).
->   >
->   > Is it hanging when resuming from S3?
+On Mon, Mar 28, 2022 at 12:43:39PM -0700, Linus Torvalds wrote:
+> On Mon, Mar 28, 2022 at 6:39 AM Greg KH <gregkh@linuxfoundation.org> wrote:
+> >
+> > There will be a merge conflict in drivers/power/supply/ab8500_chargalg.c
+> > with your tree, the merge conflict should be easy (take all the
+> > changes).
 > 
-> Yes, this func is a delayed work after init graphics card.
-
-Thank for clarifying it.
-
->   > Maybe also use the line below for
->   > the commit message summary:
->   >
->   > drm/amdgpu: Add 1 ms delay to init handler to fix s3 resume hang
->   >
->   > Also, please add a space before the ( in “r7340(amdgpu)”.
->   >
->   >> When we test s3 with r7340 on arm64 platform, graphics card will hang up,
->   >> the error message are as follows:
->   >> Mar  4 01:14:11 greatwall-GW-XXXXXX-XXX kernel: [    1.599374][ 7] [  T291] amdgpu 0000:02:00.0: fb0: amdgpudrmfb frame buffer device
->   >> Mar  4 01:14:11 greatwall-GW-XXXXXX-XXX kernel: [    1.612869][ 7] [  T291] [drm:amdgpu_device_ip_late_init [amdgpu]] *ERROR* late_init of IP blockfailed -22
->   >> Mar  4 01:14:11 greatwall-GW-XXXXXX-XXX kernel: [    1.623392][ 7] [  T291] amdgpu 0000:02:00.0: amdgpu_device_ip_late_init failed
->   >> Mar  4 01:14:11 greatwall-GW-XXXXXX-XXX kernel: [    1.630696][ 7] [  T291] amdgpu 0000:02:00.0: Fatal error during GPU init
->   >> Mar  4 01:14:11 greatwall-GW-XXXXXX-XXX kernel: [    1.637477][ 7] [  T291] [drm] amdgpu: finishing device.
->   >
->   > The prefix in the beginning is not really needed. Only the stuff after
->   > `kernel: `.
->   >
->   > Maybe also add the output of `lspci -nn -s …` for that r7340 device.
->   >
->   >> Change-Id: I5048b3894c0ca9faf2f4847ddab61f9eb17b4823
->   >
->   > Without the Gerrit instance this belongs to, the Change-Id is of no use
->   > in the public.
->   >
->   >> Signed-off-by: Zhenneng Li
->   >> ---
->   >>   drivers/gpu/drm/amd/amdgpu/amdgpu_device.c | 2 ++
->   >>   1 file changed, 2 insertions(+)
->   >>
->   >> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
->   >> b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
->   >> index 3987ecb24ef4..1eced991b5b2 100644
->   >> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
->   >> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
->   >> @@ -2903,6 +2903,8 @@ static void
->   >> amdgpu_device_delayed_init_work_handler(struct work_struct *work)
->   >>           container_of(work, struct amdgpu_device, delayed_init_work.work);
->   >>       int r;
->   >> +    mdelay(1);
->   >> +
->   >
+> And by "take all the changes", I'm sure you mean "take none of them,
+> since the code was removed upstream in the meantime".
 > 
->   > Wow, I wonder how long it took you to find that workaround.
-> 
-> About 3 months, I try to add this delay
-> work(amdgpu_device_delayed_init_work_handler) from 2000ms to 2500ms, or use mb()
-> instead of mdelay(1), but it's useless, I don't know the reason，the occurrence
-> probability  of this bug is one ten-thousandth, do you know the possible reasons?
+> Easy typo to make.
 
-Oh, it’s not even always reproducible. That is hard. Did you try another 
-graphics card or another ARM board to rule out hardware specific issues?
+Heh, yes, "typo".  :(
 
-Sorry, I do not. Maybe the developers with access to non-public 
-datasheets and erratas know.
+You are right, I did the merge the wrong way, yours was correct, thanks
+for catching that.
 
->   >>       r = amdgpu_ib_ring_tests(adev);
->   >>       if (r)
->   >>           DRM_ERROR("ib ring test failed (%d).\n", r);
-
-
-Kind regards,
-
-Paul
+greg k-h
