@@ -2,73 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53EAAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 09:21:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40D3FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 29 Mar 2022 09:24:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234629AbiC2JXc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 05:23:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43872 "EHLO
+        id S234643AbiC2J0L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 05:26:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234605AbiC2JXa (ORCPT
+        with ESMTP id S234633AbiC2J0A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 05:23:30 -0400
-Received: from baptiste.telenet-ops.be (baptiste.telenet-ops.be [IPv6:2a02:1800:120:4::f00:13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 565C09D0CD
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 02:21:46 -0700 (PDT)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:d553:ff0a:6830:6bde])
-        by baptiste.telenet-ops.be with bizsmtp
-        id C9Mk2700T49QC44019MkcM; Tue, 29 Mar 2022 11:21:45 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1nZ82q-007Ecu-2L; Tue, 29 Mar 2022 11:21:44 +0200
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1nZ82p-00CBgc-GL; Tue, 29 Mar 2022 11:21:43 +0200
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-To:     Iwona Winiarska <iwona.winiarska@intel.com>,
-        Jason M Bills <jason.m.bills@linux.intel.com>,
+        Tue, 29 Mar 2022 05:26:00 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DE2E27169
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 02:24:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=GNMAqIh0j6P//qlq8Z1xIR7mjldURS8/Ro5eIkOUj+w=; b=B1myBB6pcjFAoPaZpBLrlBlJeD
+        lsya7OrVyrHw3xcSbhztqK72QHvaKM7rlZiEwgxOP2yYEYqjbBeoEDmeVDa4MqcnzDMzmeGMW3H8q
+        WtVql6DJiGqyDmAVKo7v46USmmMOREJ8zcQ5d2QzhOUaiFLbjciuI46l69y6CmIfyhB5A9fijRTEt
+        jn/8DfIFZpZbfgX/7tE93ChQoMbYbftFhHJgPX7W41AB0ge/6sAAVoKDbQHbxuSj8Otk7dRXCqZVS
+        pBJVklp/JiQAbIC48SRmBkrcEnzZl9fvhWoyE23U8AReqJwCGR+kLmJ9daNkl+SavvD5dOm8QRTMs
+        JjVv4/rw==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nZ84a-005o2F-Tu; Tue, 29 Mar 2022 09:23:33 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 8B1DD9861E9; Tue, 29 Mar 2022 11:23:30 +0200 (CEST)
+Date:   Tue, 29 Mar 2022 11:23:30 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Qing Wang <wangqing@vivo.com>
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>
-Cc:     openbmc@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH] peci: PECI should depend on ARCH_ASPEED
-Date:   Tue, 29 Mar 2022 11:21:37 +0200
-Message-Id: <f7ea35c723da72a89028da5b976ad417fbd7bf52.1648545587.git.geert@linux-m68k.org>
-X-Mailer: git-send-email 2.25.1
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH 1/3] sched: topology: add input parameter for
+ sched_domain_flags_f()
+Message-ID: <20220329092330.GG8939@worktop.programming.kicks-ass.net>
+References: <1648545322-14531-1-git-send-email-wangqing@vivo.com>
+ <1648545322-14531-2-git-send-email-wangqing@vivo.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1648545322-14531-2-git-send-email-wangqing@vivo.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Platform Environment Control Interface (PECI) is only available on
-Baseboard Management Controllers (BMC) for Intel processors.  Currently
-the only supported BMCs are ASpeed BMC SoCs.  Hence add a dependency on
-ARCH_ASPEED, to prevent asking the user about the PECI subsystem when
-configuring a kernel without ASpeed SoC support.
+On Tue, Mar 29, 2022 at 02:15:19AM -0700, Qing Wang wrote:
+> From: Wang Qing <wangqing@vivo.com>
+> 
+> sched_domain_flags_f() are statically set now, but actually, we can get a lot
+> of necessary information based on the cpu_map. e.g. we can know whether its
+> cache is shared.
+> 
+> Allows custom extension without affecting current.
 
-Fixes: 6523d3b2ffa238ac ("peci: Add core infrastructure")
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
----
- drivers/peci/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/peci/Kconfig b/drivers/peci/Kconfig
-index 89872ad833201510..0d3ef8ba0998d649 100644
---- a/drivers/peci/Kconfig
-+++ b/drivers/peci/Kconfig
-@@ -2,6 +2,7 @@
- 
- menuconfig PECI
- 	tristate "PECI support"
-+	depends on ARCH_ASPEED || COMPILE_TEST
- 	help
- 	  The Platform Environment Control Interface (PECI) is an interface
- 	  that provides a communication channel to Intel processors and
--- 
-2.25.1
-
+Still NAK
