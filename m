@@ -2,135 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC955C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 10:28:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD44EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 10:29:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245371AbiC3Ka1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 06:30:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42684 "EHLO
+        id S245382AbiC3Kau (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 06:30:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242950AbiC3KaY (ORCPT
+        with ESMTP id S245374AbiC3Kar (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 06:30:24 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95A9F25E9E;
-        Wed, 30 Mar 2022 03:28:38 -0700 (PDT)
-Received: from fraeml708-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KT2fW0wL6z67kNj;
-        Wed, 30 Mar 2022 18:26:43 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml708-chm.china.huawei.com (10.206.15.36) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 30 Mar 2022 12:28:35 +0200
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 30 Mar 2022 11:28:32 +0100
-From:   John Garry <john.garry@huawei.com>
-To:     <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
-        <mark.rutland@arm.com>, <alexander.shishkin@linux.intel.com>,
-        <jolsa@kernel.org>, <namhyung@kernel.org>, <irogers@google.com>,
-        <matthieu.baerts@tessares.net>
-CC:     <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "John Garry" <john.garry@huawei.com>
-Subject: [PATCH] perf tools: Stop depending on .git files for building PERF-VERSION-FILE
-Date:   Wed, 30 Mar 2022 18:22:54 +0800
-Message-ID: <1648635774-14581-1-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
+        Wed, 30 Mar 2022 06:30:47 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9ED80260C5B
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 03:29:02 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-235-odnfOeKaNFm2zEKx4yvXug-1; Wed, 30 Mar 2022 11:28:59 +0100
+X-MC-Unique: odnfOeKaNFm2zEKx4yvXug-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.32; Wed, 30 Mar 2022 11:28:57 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.033; Wed, 30 Mar 2022 11:28:57 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Artem Savkov' <asavkov@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Josh Poimboeuf" <jpoimboe@redhat.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
+        Anna-Maria Gleixner <anna-maria@linutronix.de>,
+        "dsahern@kernel.org" <dsahern@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v3 0/2] Upper bound kernel timers
+Thread-Topic: [PATCH v3 0/2] Upper bound kernel timers
+Thread-Index: AQHYRA8gGsbmhEkh50e1T/PVRZXMJqzXtvmg
+Date:   Wed, 30 Mar 2022 10:28:57 +0000
+Message-ID: <4975eaf09eae43dc964f879f343e5a2b@AcuMS.aculab.com>
+References: <87zglcfmcv.ffs@tglx>
+ <20220330082046.3512424-1-asavkov@redhat.com>
+In-Reply-To: <20220330082046.3512424-1-asavkov@redhat.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This essentially reverts commit c72e3f04b45fb2e50cdd81a50c3778c6a57251d8
-and commit 4e666cdb06eede2069a7b1a96a1359d1c441a3eb.
-
-In commit c72e3f04b45f ("tools/perf/build: Speed up git-version test on
-re-make"), a makefile dependency on .git/HEAD was added. The background is
-that running PERF-VERSION-FILE is relatively slow, and commands like
-"git describe" are particularly slow.
-
-In commit 4e666cdb06ee ("perf tools: Fix dependency for version file
-creation"), an additional dependency on .git/ORIG_HEAD was added, as
-.git/HEAD may not change for "git reset --hard HEAD^" command. However,
-depending on whether we're on a branch or not, a "git cherry-pick" may
-not lead to the version being updated.
-
-As discussed with the git community in [0], using git internal files for
-dependencies is not reliable. Commit 4e666cdb06ee also breaks some build
-scenarios [1].
-
-As mentioned, c72e3f04b45f was added to speed up the build. However in
-commit 7572733b8499 ("perf tools: Fix version kernel tag") we removed the
-call to "git describe", so just revert Makefile.perf back to same as pre
-c72e3f04b45f and the build should not be so slow, as below:
-
-Pre 7572733b8499:
-$> time util/PERF-VERSION-GEN
-  PERF_VERSION = 5.17.rc8.g4e666cdb06ee
-
-real    0m0.110s
-user    0m0.091s
-sys     0m0.019s
-
-Post 7572733b8499:
-$> time util/PERF-VERSION-GEN
-  PERF_VERSION = 5.17.rc8.g7572733b8499
-
-real    0m0.039s
-user    0m0.036s
-sys     0m0.007s
-
-[0] https://lore.kernel.org/git/87wngkpddp.fsf@igel.home/T/#m4a4dd6de52fdbe21179306cd57b3761eb07f45f8
-[1] https://lore.kernel.org/linux-perf-users/20220329093120.4173283-1-matthieu.baerts@tessares.net/T/#u
-
-Fixes: 4e666cdb06ee ("perf tools: Fix dependency for version file creation")
-Reported-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Signed-off-by: John Garry <john.garry@huawei.com>
-
-diff --git a/tools/perf/Makefile.perf b/tools/perf/Makefile.perf
-index 9c935f86d172..ddd03b21bda2 100644
---- a/tools/perf/Makefile.perf
-+++ b/tools/perf/Makefile.perf
-@@ -691,9 +691,8 @@ $(OUTPUT)common-cmds.h: $(wildcard Documentation/perf-*.txt)
- $(SCRIPTS) : % : %.sh
- 	$(QUIET_GEN)$(INSTALL) '$@.sh' '$(OUTPUT)$@'
- 
--$(OUTPUT)PERF-VERSION-FILE: ../../.git/HEAD ../../.git/ORIG_HEAD
-+$(OUTPUT)PERF-VERSION-FILE: .FORCE-PERF-VERSION-FILE
- 	$(Q)$(SHELL_PATH) util/PERF-VERSION-GEN $(OUTPUT)
--	$(Q)touch $(OUTPUT)PERF-VERSION-FILE
- 
- # These can record PERF_VERSION
- perf.spec $(SCRIPTS) \
-@@ -1139,21 +1138,12 @@ else
- 	@echo "FEATURE-DUMP file available in $(OUTPUT)FEATURE-DUMP"
- endif
- 
--#
--# Trick: if ../../.git does not exist - we are building out of tree for example,
--# then force version regeneration:
--#
--ifeq ($(wildcard ../../.git/HEAD),)
--    GIT-HEAD-PHONY = ../../.git/HEAD ../../.git/ORIG_HEAD
--else
--    GIT-HEAD-PHONY =
--endif
- 
- FORCE:
- 
- .PHONY: all install clean config-clean strip install-gtk
- .PHONY: shell_compatibility_test please_set_SHELL_PATH_to_a_more_modern_shell
--.PHONY: $(GIT-HEAD-PHONY) TAGS tags cscope FORCE prepare
-+.PHONY: .FORCE-PERF-VERSION-FILE TAGS tags cscope FORCE prepare
- .PHONY: libtraceevent_plugins archheaders
- 
- endif # force_fixdep
--- 
-2.26.2
+RnJvbTogQXJ0ZW0gU2F2a292DQo+IFNlbnQ6IDMwIE1hcmNoIDIwMjIgMDk6MjENCj4gDQo+IEFz
+IHByZXZpb3VzbHkgZGlzY3Vzc2VkIFsxXSB3ZSBoYWQgYSByZXBvcnQgb2YgYSByZWdyZXNzaW9u
+IGluIFRDUCBrZWVwYWxpdmUNCj4gdGltZXIgd2hlcmUgdGltZXJzIHdlcmUgdXAgdG8gNCBtaW51
+dGVzIGxhdGUgcmVzdWx0aW5nIGluIGRpc2Nvbm5lY3RzLg0KPiANCj4gVGhpcyBwYXRjaHNldCB0
+cmllcyB0byBmaXggdGhlIHByb2JsZW0gYnkgaW50cm9kdWNpbmcgdXBwZXIgYm91bmQga2VybmVs
+IHRpbWVycw0KPiBhbmQgbWFraW5nIHRjcCBrZWVwYWxpdmUgdGltZXIgdXNlIHRob3NlLg0KDQpX
+aHkgbm90IGp1c3QgZml4IHRoZSB0aW1lciBjb2RlIHRvIHdvcmsgcHJvcGVybHkgKGFzIGl0IHVz
+ZWQgdG8pIHNvIHRoYXQgdGhlDQp0aW1lcnMgZXhwaXJlIHdpdGhpbiBhIHNob3J0IHRpbWUgb2Yg
+dGhlIHJlcXVlc3RlZCBpbnRlcnZhbC4NCg0KVGhpcyBqdXN0IHJlcXVpcmVzIHRoYXQgZXhwaXJp
+bmcgJ2xvbmcnIHRpbWVycyBnZXQgbW92ZWQgaW50byB0aGUNCmhpZ2hlciBwcmVjaXNpb24gJ3do
+ZWVscycgKG9yIHdoYXRldmVyKSBiZWZvcmUgdGhleSBhY3R1YWxseSBleHBpcmUuDQoNClRoZSBi
+dXJkZW4gZm9yIHRoaXMgaXMgbWluaW1hbCAtIGl0IG9ubHkgYWZmZWN0cyBsb25nIGR1cmF0aW9u
+IHRpbWVycw0KdGhhdCBhY3R1YWxseSBleHBpcmUsIGFuZCBlYWNoIHRpbWVyIG9ubHkgZ2V0cyBt
+b3ZlZCBvbmNlIGZvciBlYWNoDQpsZXZlbCBvZiB0aW1lciBwcmVjaXNpb24uDQoNClBlcmhhcHMg
+eW91IG9ubHkgbmVlZCB0byBtb3ZlIHRoZW0gdHdvIG9yIHRocmVlIHRpbWVzIGluIG9yZGVyIHRv
+DQpnZXQgYSByZWFzb25hYmxlIGFjY3VyYWN5Lg0KTm8gb25lIGlzIGdvaW5nIHRvIG1pbmQgaWYg
+YSA1IG1pbnV0ZSB0aW1lciBpcyBhIHNlY29uZCBsYXRlLg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0
+ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBL
+ZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
 
