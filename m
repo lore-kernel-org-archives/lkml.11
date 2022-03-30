@@ -2,113 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A750C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 09:51:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55412C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 09:53:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245048AbiC3JxY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 05:53:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54356 "EHLO
+        id S245049AbiC3JzE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 05:55:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238458AbiC3JxT (ORCPT
+        with ESMTP id S236889AbiC3JzD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 05:53:19 -0400
-Received: from mail-qv1-f48.google.com (mail-qv1-f48.google.com [209.85.219.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A81C3BBC0;
-        Wed, 30 Mar 2022 02:51:32 -0700 (PDT)
-Received: by mail-qv1-f48.google.com with SMTP id gh15so16426782qvb.8;
-        Wed, 30 Mar 2022 02:51:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=e6Qd1JdMt3NwzWK7NAVAPGEjLMWhB8qclJNlYrQ8idw=;
-        b=EKnrNHAMeA1X+dMlPr6fefrf1ornReBzgw+UFvXRIkOjaXTtq5XvgIv3VhER/bIM42
-         RJW+SQm/0J0Cyu1hlEh+1RILbUUbL3Mq4VjkTtMvPtSJ5JtSpBLDUeoZF6f89ckOxXHR
-         hepLay/97LXQGCBb/OId5laxHXOmlD9BzhsX4mcHb5SuVM4pFEW1LJa72DLmCpIbI4yE
-         s3xGM73sj7oWhV2SlRcKTURJqyg+jl/iq4rdl+dBkQZDHYLhheqfI1SpzjiOcExiej8y
-         A4ai/OppzfezzaCJGsP3jb7Rc2mrmCsnKK0Q2UN3wtnww4dKqUwXKoB7+2cqlVJgqhad
-         gusg==
-X-Gm-Message-State: AOAM531UNUOFwAJZ+L8FsHnPWGTewzL2OQp+51ZFQZVUem4xR1RQyOXC
-        UcG8XnyXLjb0CTjBRAWqhSuzAc9Z/fc/UQ==
-X-Google-Smtp-Source: ABdhPJxL7t74eeJaRcq1jmZDN1SAUAM/kucneLUPvtemPzCU+PidNJuDdcjObQOqqxoy/jf7CPRQGA==
-X-Received: by 2002:a05:6214:4016:b0:441:28be:7c45 with SMTP id kd22-20020a056214401600b0044128be7c45mr31024352qvb.80.1648633891525;
-        Wed, 30 Mar 2022 02:51:31 -0700 (PDT)
-Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com. [209.85.128.180])
-        by smtp.gmail.com with ESMTPSA id bm21-20020a05620a199500b0067d5e6c7bd8sm10798220qkb.56.2022.03.30.02.51.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 30 Mar 2022 02:51:31 -0700 (PDT)
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-2e64a6b20eeso211858937b3.3;
-        Wed, 30 Mar 2022 02:51:30 -0700 (PDT)
-X-Received: by 2002:a81:c703:0:b0:2d0:cc6b:3092 with SMTP id
- m3-20020a81c703000000b002d0cc6b3092mr34863152ywi.449.1648633890723; Wed, 30
- Mar 2022 02:51:30 -0700 (PDT)
+        Wed, 30 Mar 2022 05:55:03 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D432C181
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 02:53:17 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 987AD23A;
+        Wed, 30 Mar 2022 02:53:17 -0700 (PDT)
+Received: from FVFF77S0Q05N (unknown [10.57.23.2])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 929F63F66F;
+        Wed, 30 Mar 2022 02:53:16 -0700 (PDT)
+Date:   Wed, 30 Mar 2022 10:53:07 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Sven Schnelle <svens@linux.ibm.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Lutomirski <luto@kernel.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] entry: fix compile error in
+ dynamic_irqentry_exit_cond_resched()
+Message-ID: <YkQog3+80izN1e1q@FVFF77S0Q05N>
+References: <20220330084328.1805665-1-svens@linux.ibm.com>
+ <YkQdMDlIt1iHWS3U@FVFF77S0Q05N>
+ <yt9dilrvztno.fsf@linux.ibm.com>
 MIME-Version: 1.0
-References: <20220329152926.50958-1-andriy.shevchenko@linux.intel.com> <20220329152926.50958-7-andriy.shevchenko@linux.intel.com>
-In-Reply-To: <20220329152926.50958-7-andriy.shevchenko@linux.intel.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 30 Mar 2022 11:51:19 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVSBh7Tnf5pnCfzf7=h5sttX2qH5j4kOkvvcuCMydmeYw@mail.gmail.com>
-Message-ID: <CAMuHMdVSBh7Tnf5pnCfzf7=h5sttX2qH5j4kOkvvcuCMydmeYw@mail.gmail.com>
-Subject: Re: [PATCH v2 06/13] pinctrl: renesas: rza1: Replace custom code by
- gpiochip_node_count() call
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Qianggui Song <qianggui.song@amlogic.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Fabien Dessenne <fabien.dessenne@foss.st.com>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        openbmc@lists.ozlabs.org,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <yt9dilrvztno.fsf@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 5:29 PM Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
-> Since we have generic function to count GPIO controller nodes
-> under a given device, there is no need to open code it. Replace
-> custom code by gpiochip_node_count() call.
->
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+On Wed, Mar 30, 2022 at 11:17:15AM +0200, Sven Schnelle wrote:
+> Mark Rutland <mark.rutland@arm.com> writes:
+> 
+> > On Wed, Mar 30, 2022 at 10:43:28AM +0200, Sven Schnelle wrote:
+> >> kernel/entry/common.c: In function ‘dynamic_irqentry_exit_cond_resched’:
+> >> kernel/entry/common.c:409:14: error: implicit declaration of
+> >> function ‘static_key_unlikely’; did you mean ‘static_key_enable’?
+> >> [-Werror=implicit-function-declaration]
+> >>   409 |         if (!static_key_unlikely(&sk_dynamic_irqentry_exit_cond_resched))
+> >>       |              ^~~~~~~~~~~~~~~~~~~
+> >>       |              static_key_enable
+> >> 
+> >> static_key_unlikely() should be static_branch_unlikely().
+> >> 
+> >> Fixes: 99cf983cc8bca ("sched/preempt: Add PREEMPT_DYNAMIC using static keys")
+> >> Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
+> >
+> > Sorry about this. FWIW:
+> >
+> > Reviewed-by: Mark Rutland <mark.rutland@arm.com>
+> >
+> > For context for others, this'll only show up on architectures which both use
+> > the generic entry code and select CONFIG_HAVE_PREEMPT_DYNAMIC_KEY. Today, only
+> > arm64 selects CONFIG_HAVE_PREEMPT_DYNAMIC_KEY, and it doesn't use the generic
+> > entry code.
+> >
+> > Sven, I assume you're looking at wiring this up on s390 or parisc?
+> 
+> Yes, i'm looking whether we can use the same implementation on s390. :)
+> 
+> I reported it already on 03/18, but looks like that Mail was lost
+> somehow:
+> 
+> https://www.spinics.net/lists/kernel/msg4283802.html
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Ah; sorry, I didn't spot that somehow.
 
-Gr{oetje,eeting}s,
+> I was wondering whether we can make dynamic_irqentry_exit_cond_resched()
+> static, so it gets inlined. On s390 the compiler generates a branch to
+> that function just to return immediately if the static key isn't enabled.
+> With static it would get inlined, and therefore save one function call.
+> What do you think?
 
-                        Geert
+I appreciate that it saves one call, but does that actually matter in practice,
+given this is called only once per interrupt?
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+I'm not fundamentally opposed to changing it, but doing so would make it
+different from all the other dynamic_*() cases which need the check to be
+out-of-line to avoid bloating the callers, and it's not clear to me that we'd
+gain much by doing so.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+FWIW, on arm64 we had some additional conditions we have to check, so we roll
+our own (out-of-line) implementation anyway. So doing something arch-specific
+is also an option.
+
+Thanks,
+Mark.
