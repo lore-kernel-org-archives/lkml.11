@@ -2,47 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 196A9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:47:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4405CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:47:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343917AbiC3Ltb (ORCPT
+        id S1343925AbiC3Lte (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 07:49:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57828 "EHLO
+        Wed, 30 Mar 2022 07:49:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343815AbiC3Lsr (ORCPT
+        with ESMTP id S1343831AbiC3Lsz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:48:47 -0400
+        Wed, 30 Mar 2022 07:48:55 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9604725DA89;
-        Wed, 30 Mar 2022 04:46:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCCFE25DAA1;
+        Wed, 30 Mar 2022 04:47:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 044CD6162C;
-        Wed, 30 Mar 2022 11:46:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40673C340F3;
-        Wed, 30 Mar 2022 11:46:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6989961620;
+        Wed, 30 Mar 2022 11:47:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A19BC340EE;
+        Wed, 30 Mar 2022 11:47:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648640818;
-        bh=l3oxgia/AH524WfPDCJYya+1eJReQrdeKfEHcOOgSqc=;
+        s=k20201202; t=1648640828;
+        bh=l+m77C9idI4jM2I/cxdJVqKxviVUkNS+iBU28/SrWOs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BKZBDQFnDlUmNPQrIk5fTrC0DmYqBe84xLm/SnVMW3xCPvH0qlCPMoXAzTBjseSXV
-         HMFpKJiE5iX6i1dVJciMN/3ARvs86aB3al89N+CtsxxSaYGYQplSp7f68dS4MiIQjb
-         ftg4Hw3vk1A6PShHeARrMQawAJUalMv9/KBxGx1HqS63ta+gTXQYUMvUapkQKcAxDD
-         1c9soVoZtnke3643N6SkMRx0KtHT9H5BZFiJee1viW13TGqennYhBfk56gZTEy6GQy
-         vOg4Dtritgby0q9PgOeG6t9+gFYolx3UB5LR1g7RuS30r4lhLplZm/ZK+37Kdrmv7r
-         1Y4DB5eLHQAog==
+        b=AYy+aBcrBTlAPOw8geVDmhm1plmzJnWrsJUYXk9VY44k+hBdsoc8khQqPk81A30a1
+         /3Qx04Ei9neyWssbnsBRpMyTlogcBUHMJmg9MB4DJF4ACkE0j/TmXGcNFDyz5uc0CL
+         cpcJNanGmfpOnlNmhmI57OTm5/OufSRIChK+DbDp9BfLnT/L0NNvfQOa4VRrFDtpGf
+         bXZ11t7k4ezZc2AjJ2VM7rolcV5hQGu8qvB4EZu3Ojp44MTzahxw3eJiQkBd2HUz2e
+         vHRnjO7mN9Gr9KIjNJzMg82Dp8LT46H7gb5OhQjMTQo0GPbTkJiSVaFzqKQXRwoN0S
+         9NPN3QV8/wATA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Richard Fitzgerald <rf@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, brian.austin@cirrus.com,
-        Paul.Handrigan@cirrus.com, lgirdwood@gmail.com, perex@perex.cz,
-        tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.17 07/66] ASoC: cs42l42: Report full jack status when plug is detected
-Date:   Wed, 30 Mar 2022 07:45:46 -0400
-Message-Id: <20220330114646.1669334-7-sashal@kernel.org>
+Cc:     Yong Wu <yong.wu@mediatek.com>, Tomasz Figa <tfiga@chromium.org>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Joerg Roedel <jroedel@suse.de>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, joro@8bytes.org,
+        matthias.bgg@gmail.com, iommu@lists.linux-foundation.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.17 13/66] media: iommu/mediatek: Add device_link between the consumer and the larb devices
+Date:   Wed, 30 Mar 2022 07:45:52 -0400
+Message-Id: <20220330114646.1669334-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330114646.1669334-1-sashal@kernel.org>
 References: <20220330114646.1669334-1-sashal@kernel.org>
@@ -54,65 +60,182 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Richard Fitzgerald <rf@opensource.cirrus.com>
+From: Yong Wu <yong.wu@mediatek.com>
 
-[ Upstream commit 8d06f797f844d04a961f201f886f7f9985edc9bf ]
+[ Upstream commit 635319a4a7444ca97124d781cd96deb277ff4d40 ]
 
-When a plug event is detect report the full state of all status
-bits, don't assume that there will have been a previous unplug
-event to clear all the bits. Report the state of both HEADPHONE
-and MICROPHONE bits according to detected type, and clear all the
-button status bits. The current button status is already checked
-and reported at the end of the function.
+MediaTek IOMMU-SMI diagram is like below. all the consumer connect with
+smi-larb, then connect with smi-common.
 
-During a system suspend the jack could be unplugged and plugged,
-possibly changing the jack type. On resume the interrupt status will
-indicate a plug event - there will not be an unplug event to clear
-the bits.
+        M4U
+         |
+    smi-common
+         |
+  -------------
+  |         |    ...
+  |         |
+larb1     larb2
+  |         |
+vdec       venc
 
-Signed-off-by: Richard Fitzgerald <rf@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220121120412.672284-2-rf@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+When the consumer works, it should enable the smi-larb's power which
+also need enable the smi-common's power firstly.
+
+Thus, First of all, use the device link connect the consumer and the
+smi-larbs. then add device link between the smi-larb and smi-common.
+
+This patch adds device_link between the consumer and the larbs.
+
+When device_link_add, I add the flag DL_FLAG_STATELESS to avoid calling
+pm_runtime_xx to keep the original status of clocks. It can avoid two
+issues:
+1) Display HW show fastlogo abnormally reported in [1]. At the beggining,
+all the clocks are enabled before entering kernel, but the clocks for
+display HW(always in larb0) will be gated after clk_enable and clk_disable
+called from device_link_add(->pm_runtime_resume) and rpm_idle. The clock
+operation happened before display driver probe. At that time, the display
+HW will be abnormal.
+
+2) A deadlock issue reported in [2]. Use DL_FLAG_STATELESS to skip
+pm_runtime_xx to avoid the deadlock.
+
+Corresponding, DL_FLAG_AUTOREMOVE_CONSUMER can't be added, then
+device_link_removed should be added explicitly.
+
+Meanwhile, Currently we don't have a device connect with 2 larbs at the
+same time. Disallow this case, print the error log.
+
+[1] https://lore.kernel.org/linux-mediatek/1564213888.22908.4.camel@mhfsdcap03/
+[2] https://lore.kernel.org/patchwork/patch/1086569/
+
+Suggested-by: Tomasz Figa <tfiga@chromium.org>
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Tested-by: Frank Wunderlich <frank-w@public-files.de> # BPI-R2/MT7623
+Acked-by: Joerg Roedel <jroedel@suse.de>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/cs42l42.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ drivers/iommu/mtk_iommu.c    | 30 ++++++++++++++++++++++++++++++
+ drivers/iommu/mtk_iommu_v1.c | 29 ++++++++++++++++++++++++++++-
+ 2 files changed, 58 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/cs42l42.c b/sound/soc/codecs/cs42l42.c
-index 43d98bdb5b5b..2c294868008e 100644
---- a/sound/soc/codecs/cs42l42.c
-+++ b/sound/soc/codecs/cs42l42.c
-@@ -1637,7 +1637,11 @@ static irqreturn_t cs42l42_irq_thread(int irq, void *data)
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 77ae20ff9b35..5971a1168666 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -562,22 +562,52 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
+ {
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct mtk_iommu_data *data;
++	struct device_link *link;
++	struct device *larbdev;
++	unsigned int larbid, larbidx, i;
  
- 	mutex_lock(&cs42l42->jack_detect_mutex);
+ 	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
+ 		return ERR_PTR(-ENODEV); /* Not a iommu client device */
  
--	/* Check auto-detect status */
+ 	data = dev_iommu_priv_get(dev);
+ 
 +	/*
-+	 * Check auto-detect status. Don't assume a previous unplug event has
-+	 * cleared the flags. If the jack is unplugged and plugged during
-+	 * system suspend there won't have been an unplug event.
++	 * Link the consumer device with the smi-larb device(supplier).
++	 * The device that connects with each a larb is a independent HW.
++	 * All the ports in each a device should be in the same larbs.
 +	 */
- 	if ((~masks[5]) & irq_params_table[5].mask) {
- 		if (stickies[5] & CS42L42_HSDET_AUTO_DONE_MASK) {
- 			cs42l42_process_hs_type_detect(cs42l42);
-@@ -1645,11 +1649,15 @@ static irqreturn_t cs42l42_irq_thread(int irq, void *data)
- 			case CS42L42_PLUG_CTIA:
- 			case CS42L42_PLUG_OMTP:
- 				snd_soc_jack_report(cs42l42->jack, SND_JACK_HEADSET,
--						    SND_JACK_HEADSET);
-+						    SND_JACK_HEADSET |
-+						    SND_JACK_BTN_0 | SND_JACK_BTN_1 |
-+						    SND_JACK_BTN_2 | SND_JACK_BTN_3);
- 				break;
- 			case CS42L42_PLUG_HEADPHONE:
- 				snd_soc_jack_report(cs42l42->jack, SND_JACK_HEADPHONE,
--						    SND_JACK_HEADPHONE);
-+						    SND_JACK_HEADSET |
-+						    SND_JACK_BTN_0 | SND_JACK_BTN_1 |
-+						    SND_JACK_BTN_2 | SND_JACK_BTN_3);
- 				break;
- 			default:
- 				break;
++	larbid = MTK_M4U_TO_LARB(fwspec->ids[0]);
++	for (i = 1; i < fwspec->num_ids; i++) {
++		larbidx = MTK_M4U_TO_LARB(fwspec->ids[i]);
++		if (larbid != larbidx) {
++			dev_err(dev, "Can only use one larb. Fail@larb%d-%d.\n",
++				larbid, larbidx);
++			return ERR_PTR(-EINVAL);
++		}
++	}
++	larbdev = data->larb_imu[larbid].dev;
++	link = device_link_add(dev, larbdev,
++			       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
++	if (!link)
++		dev_err(dev, "Unable to link %s\n", dev_name(larbdev));
+ 	return &data->iommu;
+ }
+ 
+ static void mtk_iommu_release_device(struct device *dev)
+ {
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
++	struct mtk_iommu_data *data;
++	struct device *larbdev;
++	unsigned int larbid;
+ 
+ 	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
+ 		return;
+ 
++	data = dev_iommu_priv_get(dev);
++	larbid = MTK_M4U_TO_LARB(fwspec->ids[0]);
++	larbdev = data->larb_imu[larbid].dev;
++	device_link_remove(dev, larbdev);
++
+ 	iommu_fwspec_free(dev);
+ }
+ 
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index 68bf02f87cfd..bc7ee90b9373 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -423,7 +423,9 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct of_phandle_args iommu_spec;
+ 	struct mtk_iommu_data *data;
+-	int err, idx = 0;
++	int err, idx = 0, larbid, larbidx;
++	struct device_link *link;
++	struct device *larbdev;
+ 
+ 	/*
+ 	 * In the deferred case, free the existed fwspec.
+@@ -453,6 +455,23 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
+ 
+ 	data = dev_iommu_priv_get(dev);
+ 
++	/* Link the consumer device with the smi-larb device(supplier) */
++	larbid = mt2701_m4u_to_larb(fwspec->ids[0]);
++	for (idx = 1; idx < fwspec->num_ids; idx++) {
++		larbidx = mt2701_m4u_to_larb(fwspec->ids[idx]);
++		if (larbid != larbidx) {
++			dev_err(dev, "Can only use one larb. Fail@larb%d-%d.\n",
++				larbid, larbidx);
++			return ERR_PTR(-EINVAL);
++		}
++	}
++
++	larbdev = data->larb_imu[larbid].dev;
++	link = device_link_add(dev, larbdev,
++			       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
++	if (!link)
++		dev_err(dev, "Unable to link %s\n", dev_name(larbdev));
++
+ 	return &data->iommu;
+ }
+ 
+@@ -473,10 +492,18 @@ static void mtk_iommu_probe_finalize(struct device *dev)
+ static void mtk_iommu_release_device(struct device *dev)
+ {
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
++	struct mtk_iommu_data *data;
++	struct device *larbdev;
++	unsigned int larbid;
+ 
+ 	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
+ 		return;
+ 
++	data = dev_iommu_priv_get(dev);
++	larbid = mt2701_m4u_to_larb(fwspec->ids[0]);
++	larbdev = data->larb_imu[larbid].dev;
++	device_link_remove(dev, larbdev);
++
+ 	iommu_fwspec_free(dev);
+ }
+ 
 -- 
 2.34.1
 
