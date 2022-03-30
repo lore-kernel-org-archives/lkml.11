@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E42AC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6825C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:15:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345616AbiC3MO0 (ORCPT
+        id S1345666AbiC3MOd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:14:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57774 "EHLO
+        Wed, 30 Mar 2022 08:14:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345939AbiC3LzP (ORCPT
+        with ESMTP id S1345953AbiC3LzP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 30 Mar 2022 07:55:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95FFD5F9B;
-        Wed, 30 Mar 2022 04:53:00 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E532B277;
+        Wed, 30 Mar 2022 04:53:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 32500615E7;
-        Wed, 30 Mar 2022 11:53:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18BCBC340EE;
-        Wed, 30 Mar 2022 11:52:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 721DD615B7;
+        Wed, 30 Mar 2022 11:53:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2475C36AE5;
+        Wed, 30 Mar 2022 11:53:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641179;
-        bh=7nny6j5kBEYBzUICoO+m9vGpPqzolTOMU8x9YVcsZ3E=;
+        s=k20201202; t=1648641202;
+        bh=jG8282IFcj0nXP570rbRy+T3hJ8cUA1zFu1Wj8etJZk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L9lA81uSg0gz5rgh8sBiB0c1zQyd7xnAE+LjplXZIN1foZfp6gQbx3sZiOwrluRsm
-         rboHa+q9p3jmSNwEYZV+GX9dQalDBslRdnvi542YCJneawXUd2Ma3D7S72HzlHu/PH
-         supiBmtOgxfJXo9Oys6xXYcGjpxmiR/RQ/+z1/bIgKiG47zGyAb/MI/EaeL6h9nhZL
-         mX7JFuQBzbyeQdFb7ceqBEs6ypA+LIA16/hudhkcasq3C2UQVwOjWIsBXADA2EV2Dj
-         iwqn+TiBaXjxiFvGS+cAC6AJChr7nofCSP9UZtkhjycXE+/HVsPnbLvM12xSB8LIPV
-         UUaGs/HxBjSfQ==
+        b=fqs9iC0zvOoZBF5wWAzrNguEBIvs7aqG/BQIgNyWamv4+rf9TWS7gESZwvRYOcq8z
+         cjVEBYOi4/UpiESvmaVd4v/rFJan08OBbVTbURY35Q8e5vn7Oq89MAAa3PXgdBl2ep
+         oM4gZXz4G4z2gqLEl2Tn3JRzyw4UROJCOhGliW3IsABgsCW41cRRZkGvi5A8gLGcsn
+         QXVrWhNe1k+vy+KC8azoSg4Msq+SH0UZ5jjiUykb8ThXh2W2OY+mLwg2ztBk5cN7zS
+         LirL5wwS3o0nNtglRAMawHAIe0DpQVz7El9a3BbH5BfKP9b5YEcWi70xIxmrIWV2uq
+         ffUk2o3r5wQTA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, linux-mmc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 23/25] mmc: host: Return an error when ->enable_sdio_irq() ops is missing
-Date:   Wed, 30 Mar 2022 07:52:23 -0400
-Message-Id: <20220330115225.1672278-23-sashal@kernel.org>
+Cc:     Shengjiu Wang <shengjiu.wang@nxp.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 4.19 12/22] ASoC: soc-core: skip zero num_dai component in searching dai name
+Date:   Wed, 30 Mar 2022 07:52:53 -0400
+Message-Id: <20220330115303.1672616-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330115225.1672278-1-sashal@kernel.org>
-References: <20220330115225.1672278-1-sashal@kernel.org>
+In-Reply-To: <20220330115303.1672616-1-sashal@kernel.org>
+References: <20220330115303.1672616-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,58 +53,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ulf Hansson <ulf.hansson@linaro.org>
+From: Shengjiu Wang <shengjiu.wang@nxp.com>
 
-[ Upstream commit d6c9219ca1139b74541b2a98cee47a3426d754a9 ]
+[ Upstream commit f7d344a2bd5ec81fbd1ce76928fd059e57ec9bea ]
 
-Even if the current WARN() notifies the user that something is severely
-wrong, we can still end up in a PANIC() when trying to invoke the missing
-->enable_sdio_irq() ops. Therefore, let's also return an error code and
-prevent the host from being added.
+In the case like dmaengine which's not a dai but as a component, the
+num_dai is zero, dmaengine component has the same component_of_node
+as cpu dai, when cpu dai component is not ready, but dmaengine component
+is ready, try to get cpu dai name, the snd_soc_get_dai_name() return
+-EINVAL, not -EPROBE_DEFER, that cause below error:
 
-While at it, move the code into a separate function to prepare for
-subsequent changes and for further host caps validations.
+asoc-simple-card <card name>: parse error -22
+asoc-simple-card: probe of <card name> failed with error -22
 
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Link: https://lore.kernel.org/r/20220303165142.129745-1-ulf.hansson@linaro.org
+The sound card failed to probe.
+
+So this patch fixes the issue above by skipping the zero num_dai
+component in searching dai name.
+
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Link: https://lore.kernel.org/r/1644491952-7457-1-git-send-email-shengjiu.wang@nxp.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/core/host.c | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ sound/soc/soc-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/mmc/core/host.c b/drivers/mmc/core/host.c
-index e955f1ef2564..32801639e0be 100644
---- a/drivers/mmc/core/host.c
-+++ b/drivers/mmc/core/host.c
-@@ -497,6 +497,16 @@ struct mmc_host *mmc_alloc_host(int extra, struct device *dev)
+diff --git a/sound/soc/soc-core.c b/sound/soc/soc-core.c
+index 273898b358c4..9ca7dff5593d 100644
+--- a/sound/soc/soc-core.c
++++ b/sound/soc/soc-core.c
+@@ -3708,7 +3708,7 @@ int snd_soc_get_dai_name(struct of_phandle_args *args,
+ 		if (!component_of_node && pos->dev->parent)
+ 			component_of_node = pos->dev->parent->of_node;
  
- EXPORT_SYMBOL(mmc_alloc_host);
+-		if (component_of_node != args->np)
++		if (component_of_node != args->np || !pos->num_dai)
+ 			continue;
  
-+static int mmc_validate_host_caps(struct mmc_host *host)
-+{
-+	if (host->caps & MMC_CAP_SDIO_IRQ && !host->ops->enable_sdio_irq) {
-+		dev_warn(host->parent, "missing ->enable_sdio_irq() ops\n");
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
- /**
-  *	mmc_add_host - initialise host hardware
-  *	@host: mmc host
-@@ -509,8 +519,9 @@ int mmc_add_host(struct mmc_host *host)
- {
- 	int err;
- 
--	WARN_ON((host->caps & MMC_CAP_SDIO_IRQ) &&
--		!host->ops->enable_sdio_irq);
-+	err = mmc_validate_host_caps(host);
-+	if (err)
-+		return err;
- 
- 	err = device_add(&host->class_dev);
- 	if (err)
+ 		if (pos->driver->of_xlate_dai_name) {
 -- 
 2.34.1
 
