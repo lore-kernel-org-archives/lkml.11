@@ -2,97 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D1A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:19:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07733C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:19:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344404AbiC3MVO (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:21:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41168 "EHLO
+        id S238202AbiC3MVV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 08:21:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347292AbiC3MGI (ORCPT
+        with ESMTP id S1347051AbiC3MFu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 08:06:08 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCE25F25
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 05:03:22 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id e5so20260882pls.4
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 05:03:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=AvqwHy5iP7QDYL90jHvlfS06VpNkgs2PdfjMbWdFXfE=;
-        b=CUSnOCzxqgVRMtGhfZ4Fy+WyRU2GGqdh5D/k3XFkbJDJPj/P66POAZKY4dNjn2XQkf
-         FSlZOHnmvEeO1rwpxooAaYyRSdT+Xdb2zuHBGjfhISLnyARzPggG/rs5cxIlTaxzOzki
-         A8HjFhdN0mp0ByA1LrCj6pRVd8XmdIfw4qCmhwju5c9OCFwblO4rU4c2bYCPUhdSrgG3
-         iSMgDyu2u2O0bI1bCgtlaeVvd3mT/iQaNvyn3xfH+kFktz4VewiRslZ/lxD2rTIPLgC6
-         Fd5DsWOQ6etUz2D6YMpdVyiFPCQIMMduoPTX4tB+mAfH+d5Fa+b+PWAfkmhiWoZBVn1U
-         pgog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=AvqwHy5iP7QDYL90jHvlfS06VpNkgs2PdfjMbWdFXfE=;
-        b=49O7hMJe9wBnC/K3ps35HHX3gGk0hwkSOP7SLkvb4H60DBPAhY3BCw3MdN4ONbgqFH
-         dJ4LZAmVCv91Ek+KuuPTvU1uXC0F54P9BplBzmpvfDtBiB2w/O9bdriyNIrf9clfAwmg
-         ltxbj2580WLZmONvKFGJbO0BnM+zvPfoQwUbpsiTIXfX1jbOvHhF0j8Hvdep9JJnvUTd
-         Uw1eTad7AeC7XGq7bKF/+nilDau1ZEYfJkTiq++JHK1BgA3PNwdK9rYSMhK92ll2fxGO
-         Eqjl0pOOIGKg6WKnsjgcrUNXI/aAKOoyXPnnyIKPDZBc8xJkmuQ6uIGZQ+UIhcZtiYJc
-         X61w==
-X-Gm-Message-State: AOAM531ZQPXadro5JySIPAOvQIcOkReghrsEJPCtUOGUYpk7kMnb3sEi
-        wGtIUMinDAvIv3zYTQB9e8g=
-X-Google-Smtp-Source: ABdhPJy0jqMqa9ZIkbR+7qbrpJnbD0474GqIHiQoKDnZ/tH3sXBv6IRUdF4/oiU/ag6EBaHguPWVSQ==
-X-Received: by 2002:a17:903:41cf:b0:154:25bf:7d0f with SMTP id u15-20020a17090341cf00b0015425bf7d0fmr34409382ple.41.1648641802229;
-        Wed, 30 Mar 2022 05:03:22 -0700 (PDT)
-Received: from localhost ([119.3.119.18])
-        by smtp.gmail.com with ESMTPSA id q13-20020aa7982d000000b004fb199b9c7dsm19622304pfl.119.2022.03.30.05.03.20
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 30 Mar 2022 05:03:21 -0700 (PDT)
-From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
-To:     patrik.r.jakobsson@gmail.com, airlied@linux.ie, daniel@ffwll.ch
-Cc:     rob@ti.com, yakui.zhao@intel.com, airlied@redhat.com,
-        alan@linux.intel.com, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org,
-        Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Subject: [PATCH 2/5] gma500: fix a missing break in cdv_intel_crtc_mode_set
-Date:   Wed, 30 Mar 2022 20:02:43 +0800
-Message-Id: <20220330120246.25580-3-xiam0nd.tong@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220330120246.25580-1-xiam0nd.tong@gmail.com>
-References: <20220330120246.25580-1-xiam0nd.tong@gmail.com>
+        Wed, 30 Mar 2022 08:05:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A3D5299A59;
+        Wed, 30 Mar 2022 05:00:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D9D62B81C29;
+        Wed, 30 Mar 2022 12:00:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53970C340F2;
+        Wed, 30 Mar 2022 12:00:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648641652;
+        bh=mGIdFN2hBOqp+cqvzAkpx41arTM1NYj9iwoDe56VnbU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=m2ETwEIV+o9p39koZgMWirI+rgblDUpfDI6vNBx/vYoss+7XlcOBAST/AK7yM4438
+         HqVJ9FluaNHAJe4IGJ7MBYVq1qIHV9sTDtZ0JzVBBdgQEYeBFgs9+xWZMsyEmtrJt7
+         ZEy8NPJsAKr+yDujMUrLDsB/rJ8CKtdcNre/6ujebWCknjQj5xFcJNoo1N5TNRbd5h
+         vGcCG/K1rsJzQfqrRJtddx3NvFmvEFCBl+GmKQ463FBOSWmAzkVlE1G5AZr9WlQIOA
+         jWfSrQCanvt4au0srg8O+70kqT1kR+dyIN5Gb6j3Ca5sfV94zCtF9MAk8eHcBGUNhI
+         miNqrxE9x8RtQ==
+Date:   Wed, 30 Mar 2022 13:00:47 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        =?iso-8859-1?Q?P=E9ter?= Ujfalusi 
+        <peter.ujfalusi@linux.intel.com>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: Re: [PATCH AUTOSEL 5.17 58/66] ASoC: Intel: Revert "ASoC: Intel:
+ sof_es8336: add quirk for Huawei D15 2021"
+Message-ID: <YkRGb9uDhWV9GQfn@sirena.org.uk>
+References: <20220330114646.1669334-1-sashal@kernel.org>
+ <20220330114646.1669334-58-sashal@kernel.org>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="utOV3yk5eFjiGqrz"
+Content-Disposition: inline
+In-Reply-To: <20220330114646.1669334-58-sashal@kernel.org>
+X-Cookie: Two is company, three is an orgy.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of exiting the loop as expected when an entry is found, the
-list_for_each_entry() continues until the traversal is complete. It
-could lead to a invalid reference to 'ddi_select' after the loop, and
-could lead to multiple 'is_*' flags being set with true mistakely, too.
 
-The invalid reference to 'ddi_select' is here:
-	cdv_dpll_set_clock_cdv(dev, crtc, &clock, is_lvds, ddi_select);
+--utOV3yk5eFjiGqrz
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-To fix this, when found the entry, add a break after the switch statement.
+On Wed, Mar 30, 2022 at 07:46:37AM -0400, Sasha Levin wrote:
+> From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+>=20
+> [ Upstream commit 1b5283483a782f6560999d8d5965b1874d104812 ]
+>=20
+> This reverts commit ce6a70bfce21bb4edb7c0f29ecfb0522fa34ab71.
+>=20
+> The next patch will add run-time detection of the required SSP and
+> this hard-coded quirk is not needed.
 
-Fixes: d66760962d75 ("gma500: Program the DPLL lane based on the selected digitial port")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
----
- drivers/gpu/drm/gma500/cdv_intel_display.c | 2 ++
- 1 file changed, 2 insertions(+)
+This is reverting a commit which was bacported earlier in this series?
 
-diff --git a/drivers/gpu/drm/gma500/cdv_intel_display.c b/drivers/gpu/drm/gma500/cdv_intel_display.c
-index 94ebc48a4349..3e93019b17cb 100644
---- a/drivers/gpu/drm/gma500/cdv_intel_display.c
-+++ b/drivers/gpu/drm/gma500/cdv_intel_display.c
-@@ -616,6 +616,8 @@ static int cdv_intel_crtc_mode_set(struct drm_crtc *crtc,
- 			DRM_ERROR("invalid output type.\n");
- 			return 0;
- 		}
-+
-+		break;
- 	}
- 
- 	if (dev_priv->dplla_96mhz)
--- 
-2.17.1
+--utOV3yk5eFjiGqrz
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJERm4ACgkQJNaLcl1U
+h9AI5gf/XYRZRk5VaiBgcNnLN3y2HWSpoxCbcV8Z5WTeqckhdWB5gRYS90qlr+Vs
+6l9fFJF96dq2CfbEneiOv+q1v4J0qI1wt9evoLODgebiq/JrFb+bf5jySjMuqk7Q
+ffhx+AtSB0ZHFHVStm2NCiLXVfU4lY5o/ZAjKPPHbuD8bTncqz9Rxas10dUp2WzC
+kB6xIrs6ZQeI77nevWv0TyBzbPlh3tAcg11TH+OraCOl70AqrdyAKXl7krqLd5A7
+vV5IoU86gM5wK+Z0eOwvqqwzABwogd56dJ7Jv4yDVjcaX1/g4TdpLU52CKHzzsYu
+YclGwQS+jGSdFPlfEvUvL/yNIWbYpg==
+=wWkO
+-----END PGP SIGNATURE-----
+
+--utOV3yk5eFjiGqrz--
