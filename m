@@ -2,127 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6437FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:41:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD7A3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:44:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346291AbiC3Nni (ORCPT
+        id S1346241AbiC3NqT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 09:43:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54048 "EHLO
+        Wed, 30 Mar 2022 09:46:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346293AbiC3NnM (ORCPT
+        with ESMTP id S1345137AbiC3Np2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 09:43:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0021623BF8
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 06:41:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648647685;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0pfhQO9+ySCIUtxxomjsvRcGynOcpOy3BREwqAMYCYg=;
-        b=hKlzhtEMJQxwuOX7FaGdOyTEyf8nnXhrB6qA51SLP9WdQlJVHN39vsK2Sn+0m+l8uH4c40
-        JAVDc+tPvf9nMrVs1lme40QzVe6y7t/SG0xvLUqZ+Do0wTImYaWVXoI4BZPK0+AmTPf6fg
-        a2/KjFAA7TbxR0eBvEgtEAgKONuwJsQ=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-30-kNYIdQ5CPQ6sD-4FDTX4Bw-1; Wed, 30 Mar 2022 09:41:20 -0400
-X-MC-Unique: kNYIdQ5CPQ6sD-4FDTX4Bw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0F9D6805F6B;
-        Wed, 30 Mar 2022 13:41:19 +0000 (UTC)
-Received: from T590 (ovpn-8-29.pek2.redhat.com [10.72.8.29])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 546F540CF8F8;
-        Wed, 30 Mar 2022 13:41:09 +0000 (UTC)
-Date:   Wed, 30 Mar 2022 21:41:04 +0800
-From:   Ming Lei <ming.lei@redhat.com>
-To:     John Garry <john.garry@huawei.com>
-Cc:     Andrea Righi <andrea.righi@canonical.com>,
-        Martin Wilck <martin.wilck@suse.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: filesystem corruption with "scsi: core: Reallocate device's
- budget map on queue depth change"
-Message-ID: <YkRd8O+kW/MRQJbw@T590>
-References: <YkQsumJ3lgGsagd2@arighi-desktop>
- <f7bacce8-b5e5-3ef1-e116-584c01533f69@huawei.com>
- <YkQ9KoKb+VK06zXi@arighi-desktop>
- <08717833-19bb-8aaa-4f24-2989a9f56cd3@huawei.com>
+        Wed, 30 Mar 2022 09:45:28 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 296C53DDD8
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 06:43:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=li398NQ0ro5FSjBdELH8D/v/bm7lQVHIEtETV3UhhK8=; b=nbeEYO7dZlLM/ihABCDLnUxqH/
+        DmE9Y2n/JpC0+a/XJ2F3hU54zvyitDAkqJJvyJnKDJnF2PJt1vM1XkfOHyTRN9uqUqLsNdjsF+MWf
+        +a91ceGDitfnkYPa4Q0/PIX80xhzWcB3/amfFn+pV0ZPCBVaH+irFPPkDm3uoSe5u3mfChOaovJch
+        17IMy9Smnp/aJECKokmnvUtFreVPe/zCCfvcWOfDke5pcX5p5MNYafJgvBARoTXeEMxQwk8Dtfmyr
+        eG50t/U51Z7k9QWUxyLNzPrmveLbg02yZV7nnOFICj+LvzvWZssbJ9AmveFBNuWo06Afp2m5Vpf6o
+        IudlrhrQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nZYbf-006Dpl-Dn; Wed, 30 Mar 2022 13:43:27 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 3A75F9866E9; Wed, 30 Mar 2022 15:43:25 +0200 (CEST)
+Date:   Wed, 30 Mar 2022 15:43:25 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Tony Luck <tony.luck@intel.com>
+Cc:     Borislav Petkov <bp@alien8.de>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] x86/cpu: Add a third Alderlake CPU model number
+Message-ID: <20220330134325.GM8939@worktop.programming.kicks-ass.net>
+References: <20220310215652.32025-1-tony.luck@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <08717833-19bb-8aaa-4f24-2989a9f56cd3@huawei.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+In-Reply-To: <20220310215652.32025-1-tony.luck@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 01:59:43PM +0100, John Garry wrote:
-> On 30/03/2022 12:21, Andrea Righi wrote:
-> > On Wed, Mar 30, 2022 at 11:38:02AM +0100, John Garry wrote:
-> > > On 30/03/2022 11:11, Andrea Righi wrote:
-> > > > Hello,
-> > > > 
-> > > > after this commit I'm experiencing some filesystem corruptions at boot
-> > > > on a power9 box with an aacraid controller.
-> > > > 
-> > > > At the moment I'm running a 5.15.30 kernel; when the filesystem is
-> > > > mounted at boot I see the following errors in the console:
+On Thu, Mar 10, 2022 at 01:56:52PM -0800, Tony Luck wrote:
+> Existing suffix conventions only cover mobile/desktop/server options.
+> But this isn't any of those. Use "_N" as it matches the Intel naming
+> convention for this part.
 > 
-> About "scsi: core: Reallocate device's budget map on queue depth change"
-> being added to a stable kernel, I am not sure if this was really a fix or
-> just a memory optimisation.
+> Signed-off-by: Tony Luck <tony.luck@intel.com>
+> ---
 > 
-> > > > 
-> > > > Begin: Will now check root file system ... fsck from util-linux 2.36.1
-> > > > [/usr/sbin/fsck.ext4 (1) -- /dev/sda2] fsck.ext4 -a -C0 /dev/sda2
-> > > > root: clean, 99646/122101760 files, 11187342/488376336 blocks
-> > > > done.
-> > > > [    4.636613] sd 0:2:0:0: [sda] tag#257 FAILED Result: hostbyte=DID_ERROR driverbyte=DRIVER_OK cmd_age=0s
-> > > > [    4.636655] sd 0:2:0:0: [sda] tag#257 CDB: Read(10) 28 00 00 00 4c 10 00 00 08 00
-> > > > [    4.636689] blk_update_request: I/O error, dev sda, sector 19472 op 0x0:(READ) flags 0x80700 phys_seg 1 prio class 0
-> > > > [    4.636734] sd 0:2:0:0: [sda] tag#258 FAILED Result: hostbyte=DID_ERROR driverbyte=DRIVER_OK cmd_age=0s
-> > > > [    4.636772] sd 0:2:0:0: [sda] tag#258 CDB: Read(10) 28 00 00 00 4c 18 00 00 08 00
-> > > > [    4.636796] blk_update_request: I/O error, dev sda, sector 19480 op 0x0:(READ) flags 0x80700 phys_seg 1 prio class 0
-> > > > [    4.636840] sd 0:2:0:0: [sda] tag#260 FAILED Result: hostbyte=DID_ERROR driverbyte=DRIVER_OK cmd_age=0s
-> > > > [    4.636877] sd 0:2:0:0: [sda] tag#260 CDB: Read(10) 28 00 00 00 4c 28 00 00 08 00
-> > > > [    4.636901] blk_update_request: I/O error, dev sda, sector 19496 op 0x0:(READ) flags 0x80700 phys_seg 1 prio class 0
-> > > > [    4.636944] sd 0:2:0:0: [sda] tag#259 FAILED Result: hostbyte=DID_ERROR driverbyte=DRIVER_OK cmd_age=0s
-> > > > [    4.636971] sd 0:2:0:0: [sda] tag#259 CDB: Read(10) 28 00 00 00 4c 20 00 00 08 00
-> > > > [    4.637005] blk_update_request: I/O error, dev sda, sector 19488 op 0x0:(READ) flags 0x80700 phys_seg 1 prio class 0
-> > > > [    4.637049] sd 0:2:0:0: [sda] tag#262 FAILED Result: hostbyte=DID_ERROR driverbyte=DRIVER_OK cmd_age=0s
-> > > > [    4.637085] sd 0:2:0:0: [sda] tag#262 CDB: Read(10) 28 00 00 00 4c 38 00 00 08 00
-> > > > [    4.637118] blk_update_request: I/O error, dev sda, sector 19512 op 0x0:(READ) flags 0x80700 phys_seg 1 prio class 0
-> > > > [    4.637161] sd 0:2:0:0: [sda] tag#264 FAILED Result: hostbyte=DID_ERROR driverbyte=DRIVER_OK cmd_age=0s
-> > > > [    4.637197] sd 0:2:0:0: [sda] tag#264 CDB: Read(10) 28 00 00 00 4c 48 00 00 08 00
-> > > > [    4.637221] blk_update_request: I/O error, dev sda, sector 19528 op 0x0:(READ) flags 0x80700 phys_seg 1 prio class 0
-> > > > [    4.637270] sd 0:2:0:0: [sda] tag#284 FAILED Result: hostbyte=DID_ERROR driverbyte=DRIVER_OK cmd_age=0s
-> > > > [    4.637306] sd 0:2:0:0: [sda] tag#284 CDB: Read(10) 28 00 00 00 4c e8 00 00 08 00
-> > > > [    4.637332] blk_update_request: I/O error, dev sda, sector 19688 op 0x0:(READ) flags 0x80700 phys_seg 1 prio class 0
-> > > > [    4.637375] sd 0:2:0:0: [sda] tag#286 FAILED Result: hostbyte=DID_ERROR driverbyte=DRIVER_OK cmd_age=0s
-> > > > [    4.637411] sd 0:2:0:0: [sda] tag#286 CDB: Read(10) 28 00 00 00 4c f8 00 00 08 00
-> > > > [    4.637444] blk_update_request: I/O error, dev sda, sector 19704 op 0x0:(READ) flags 0x80700 phys_seg 1 prio class 0
-> > > > [    4.637481] blk_update_request: I/O error, dev sda, sector 19664 op 0x0:(READ) flags 0x80700 phys_seg 1 prio class 0
-> > > > [    4.637485] sd 0:2:0:0: [sda] tag#282 FAILED Result: hostbyte=DID_ERROR driverbyte=DRIVER_OK cmd_age=0s
-> > > > [    4.637487] sd 0:2:0:0: [sda] tag#287 FAILED Result: hostbyte=DID_ERROR driverbyte=DRIVER_OK cmd_age=0s
-> > > > [    4.637491] sd 0:2:0:0: [sda] tag#287 CDB: Read(10) 28 00 00 00 4d 00 00 00 08 00
-> > > > [    4.637491] sd 0:2:0:0: [sda] tag#282 CDB: Read(10) 28 00 00 00 4c d8 00 00 08 00
-> > > > [    4.637494] blk_update_request: I/O error, dev sda, sector 19672 op 0x0:(READ) flags 0x80700 phys_seg 1 prio class 0
-> > > > [    4.747771] EXT4-fs (sda2): mounted filesystem with ordered data mode. Opts: (null). Quota mode: none.
-> > > > 
+> Peter: What do you think about suffix proliferation? I tried to
+> get an answer about the target market segment for this CPU, but
+> didn't get an answer that is at all useful.
+
+I'm not loving it, but seeing how they keep making these things into
+model numbers (instead of using a different differentiator), there's
+little we can do about it :-(
+
+>  arch/x86/include/asm/intel-family.h | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> We need to find where that memory corruption is coming from. Maybe the root
-> is that too many commands are being sent to the disk. Ming?
+> diff --git a/arch/x86/include/asm/intel-family.h b/arch/x86/include/asm/intel-family.h
+> index 048b6d5aff50..2f7b608f3e55 100644
+> --- a/arch/x86/include/asm/intel-family.h
+> +++ b/arch/x86/include/asm/intel-family.h
+> @@ -107,6 +107,7 @@
+>  
+>  #define INTEL_FAM6_ALDERLAKE		0x97	/* Golden Cove / Gracemont */
+>  #define INTEL_FAM6_ALDERLAKE_L		0x9A	/* Golden Cove / Gracemont */
+> +#define INTEL_FAM6_ALDERLAKE_N		0xBE
 
-Yeah, looks aacraid limits max queue depth as 256, see aac_change_queue_depth().
+This is missing the /* Gracemont */ comment. That is, according to
+Google, Alder Lake N is an E core only SKU. So alternatively, we can
+call it: INTEL_FAM6_ATOM_GRACEMONT ....
 
+/me runs like heck :-)
 
-Thanks, 
-Ming
+>  #define INTEL_FAM6_RAPTORLAKE		0xB7
 
+That too is missing the comment, but I can't actually find what it
+should be on wikichip so I suppose that's still sekrit or something.
