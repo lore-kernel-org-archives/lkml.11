@@ -2,149 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AB32C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 08:59:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17B51C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 09:00:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244509AbiC3JBO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 05:01:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36294 "EHLO
+        id S244513AbiC3JCC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 05:02:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236683AbiC3JBL (ORCPT
+        with ESMTP id S236683AbiC3JCA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 05:01:11 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B01D64EC;
-        Wed, 30 Mar 2022 01:59:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=rrlsacueYKCfzaUaloBnav4G/jBuo1DGcsGefNV2qt0=; b=NfqWE2Z5UXlCJ89Ijz/iWnWo9f
-        7Da3DL2TfLBAAhz0L4j9t/f7uqaL+IiQaeEIBKdEKBomlnah3r91Y02aA5An7+SF33uJ/llUlS/wp
-        2TCIiM8ohNNfgVpnQTbc7WHgjBmEBTTb8IivVqTbtF4ubq6Kjo8rYKTdul2EwbKRXNhQpQ8jQJEu1
-        3ZMR4+zvlkP4jSwsfMyFFtwhcUS0N5V7wjXwinGW5Wsyc93PsIPuXq+gYMd7rhHvB6vI9i2WgBQ4c
-        UzN4pKPL9neldfp/W3UyqyE26IMVDvE4qHSFrL3QJNVKznq1/gnPqBeycX437rFDztAtSNtvRkMVh
-        mr0yGnPA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nZU9s-0015Xh-Of; Wed, 30 Mar 2022 08:58:28 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 52200986215; Wed, 30 Mar 2022 10:58:26 +0200 (CEST)
-Date:   Wed, 30 Mar 2022 10:58:26 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Alexander Potapenko <glider@google.com>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>, linux-mm@kvack.org,
-        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ryabinin.a.a@gmail.com
-Subject: Re: [PATCH v2 13/48] kmsan: add KMSAN runtime core
-Message-ID: <20220330085826.GI8939@worktop.programming.kicks-ass.net>
-References: <20220329124017.737571-1-glider@google.com>
- <20220329124017.737571-14-glider@google.com>
+        Wed, 30 Mar 2022 05:02:00 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F5B31FCF4;
+        Wed, 30 Mar 2022 02:00:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648630815; x=1680166815;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=uVMz7WXAbeoZtbwpOTIiCsAzbncsiypCdbGej/zEJ20=;
+  b=ECtvXKNSJD3r6MGX7dGV9aruZ9Gh7urKG+XblwFlHovuissz0/Vg+tbn
+   6a2VKrVfRMDFpcW86V9bqUr0fv89YHkP+crkWhGH6EIYYNZaQXazxbx3s
+   O/lQkQALyu82yjXYGjRgPRCAIeVdFidi8VZkBJkNV/F5yzS4UwNPQlDax
+   VWWvdMMtdBWaEq6E27RFoY/IP9sNjd3FIm0kPpswBLvSAG2h2lfpWZ1yA
+   9MDbDMmW1C2VXLK25QcKr3cUGRmCmJG0CFMA28PmWjNL+sKwaxMKWiQn0
+   DNpHQgMR3ZuGihKi78DQBD7ApcAm/6Dfyo6Fh8ITuJDgFpQ7zeMULdIht
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="259205103"
+X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
+   d="scan'208";a="259205103"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 02:00:15 -0700
+X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
+   d="scan'208";a="519596744"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 02:00:12 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nZUAw-009IW2-QF;
+        Wed, 30 Mar 2022 11:59:34 +0300
+Date:   Wed, 30 Mar 2022 11:59:34 +0300
+From:   "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>
+To:     "Sanil, Shruthi" <shruthi.sanil@intel.com>
+Cc:     "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "mgross@linux.intel.com" <mgross@linux.intel.com>,
+        "Thokala, Srikanth" <srikanth.thokala@intel.com>,
+        "Raja Subramanian, Lakshmi Bai" 
+        <lakshmi.bai.raja.subramanian@intel.com>,
+        "Sangannavar, Mallikarjunappa" 
+        <mallikarjunappa.sangannavar@intel.com>
+Subject: Re: [PATCH v10 0/2] Add the driver for Intel Keem Bay SoC timer block
+Message-ID: <YkQb9jX7A+10+DNp@smile.fi.intel.com>
+References: <20220322130005.16045-1-shruthi.sanil@intel.com>
+ <BN9PR11MB55459A4EA8D0599DCB753173F11F9@BN9PR11MB5545.namprd11.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220329124017.737571-14-glider@google.com>
+In-Reply-To: <BN9PR11MB55459A4EA8D0599DCB753173F11F9@BN9PR11MB5545.namprd11.prod.outlook.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 02:39:42PM +0200, Alexander Potapenko wrote:
-> +/* Handle llvm.memmove intrinsic. */
-> +void *__msan_memmove(void *dst, const void *src, uintptr_t n)
-> +{
-> +	void *result;
-> +
-> +	result = __memmove(dst, src, n);
-> +	if (!n)
-> +		/* Some people call memmove() with zero length. */
-> +		return result;
-> +	if (!kmsan_enabled || kmsan_in_runtime())
-> +		return result;
-> +
-> +	kmsan_internal_memmove_metadata(dst, (void *)src, n);
-> +
-> +	return result;
-> +}
-> +EXPORT_SYMBOL(__msan_memmove);
-> +
-> +/* Handle llvm.memcpy intrinsic. */
-> +void *__msan_memcpy(void *dst, const void *src, uintptr_t n)
-> +{
-> +	void *result;
-> +
-> +	result = __memcpy(dst, src, n);
-> +	if (!n)
-> +		/* Some people call memcpy() with zero length. */
-> +		return result;
-> +
-> +	if (!kmsan_enabled || kmsan_in_runtime())
-> +		return result;
-> +
-> +	/* Using memmove instead of memcpy doesn't affect correctness. */
-> +	kmsan_internal_memmove_metadata(dst, (void *)src, n);
-> +
-> +	return result;
-> +}
-> +EXPORT_SYMBOL(__msan_memcpy);
-> +
-> +/* Handle llvm.memset intrinsic. */
-> +void *__msan_memset(void *dst, int c, uintptr_t n)
-> +{
-> +	void *result;
-> +
-> +	result = __memset(dst, c, n);
-> +	if (!kmsan_enabled || kmsan_in_runtime())
-> +		return result;
-> +
-> +	kmsan_enter_runtime();
-> +	/*
-> +	 * Clang doesn't pass parameter metadata here, so it is impossible to
-> +	 * use shadow of @c to set up the shadow for @dst.
-> +	 */
-> +	kmsan_internal_unpoison_memory(dst, n, /*checked*/ false);
-> +	kmsan_leave_runtime();
-> +
-> +	return result;
-> +}
-> +EXPORT_SYMBOL(__msan_memset);
+On Wed, Mar 30, 2022 at 05:04:01AM +0000, Sanil, Shruthi wrote:
+> Gentle Reminder!
 
-This, we need this same for KASAN. KASAN must be changed to have the
-mem*() intrinsics emit __asan_mem*(), such that we can have
-uninstrumented base functions.
+It's a merge window time. Be patient!
+Also, please avoid top-posting.
 
-Currently we seem to have the problem that when a noinstr function trips
-one of those instrinsics it'll emit a call to an instrumented function,
-which is a complete no-no.
+> > From: Sanil, Shruthi <shruthi.sanil@intel.com>
+> > Sent: Tuesday, March 22, 2022 6:30 PM
 
-Also see:
+-- 
+With Best Regards,
+Andy Shevchenko
 
-  https://lore.kernel.org/all/YjxTt3pFIcV3lt8I@zn.tnic/T/#m2049a14be400d4ae2b54a1f7da3ede28b7fd7564
 
-Given the helpful feedback there, Mark and me are going to unilaterally
-break Kasan by deleting the existing wrappers.
