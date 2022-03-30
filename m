@@ -2,101 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6602C43217
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 18:36:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C380C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 18:36:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350568AbiC3SiU (ORCPT
+        id S1350171AbiC3Sic (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 14:38:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60462 "EHLO
+        Wed, 30 Mar 2022 14:38:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349966AbiC3S0r (ORCPT
+        with ESMTP id S1352841AbiC3SgO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 14:26:47 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E50EA4A3F6
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:23:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=qPLFDdi3cflTc5afisPgbeWEWhGSsYjDiLNJOrGcx9E=; b=fpwcblBTruVVe3EHRfYq6CHBlb
-        HKqEixQfOm+ogzU+N3lXf6YcxR/95c+ZJLfB3GCxX/lYy+LKJ585Cjh/noeLWG5Ymbzp0Rah7hTzA
-        ZF0pQ7753hp5Dp5hZxL8UobeXQBpL5gJ2v4dHY0Z9vacIZJcwSUKpB7XKdupLXWFA9hr/zke3QxUj
-        7rnAZlBOUhvdETwh4zywxwoF/CsVD88yu2Rw2IihHJtK0lQ2P8hD09KZsgNI1crJgWg7a7QUGcFKm
-        TxVqFe212JNZiPIt0qw7fustFtxpxRZuHAXWS+nsMpGooCEaYU2OUjIKUK1H3/Kv5QBbn97cKWydA
-        ll2nei2w==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nZcyg-001TT6-TB; Wed, 30 Mar 2022 18:23:30 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 5336298695C; Wed, 30 Mar 2022 20:23:27 +0200 (CEST)
-Date:   Wed, 30 Mar 2022 20:23:27 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Chengming Zhou <zhouchengming@bytedance.com>, mingo@redhat.com,
-        juri.lelli@redhat.com, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, linux-kernel@vger.kernel.org,
-        duanxiongchun@bytedance.com, songmuchun@bytedance.com,
-        Frederic Weisbecker <fweisbec@gmail.com>
-Subject: Re: [External] Re: [PATCH] sched/fair: fix broken bandwidth control
- with nohz_full
-Message-ID: <20220330182327.GO8939@worktop.programming.kicks-ass.net>
-References: <20220328110751.39987-1-zhouchengming@bytedance.com>
- <20220328132047.GD8939@worktop.programming.kicks-ass.net>
- <c0465b27-328a-1288-fb50-d4c6321c8b4d@bytedance.com>
- <YkHRmv/OcABIB0wP@hirez.programming.kicks-ass.net>
- <6fc49cff-f8a1-8b09-5a25-a64e5d07d258@bytedance.com>
- <YkHal1m3pnxGoQ1Y@hirez.programming.kicks-ass.net>
- <20220328124454.08ab6126@gandalf.local.home>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220328124454.08ab6126@gandalf.local.home>
+        Wed, 30 Mar 2022 14:36:14 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAA005674E
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:34:26 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2e644c76556so177242097b3.15
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:34:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=+4R6y5raOlQ9R0zgKhvV82ZZoP1rqgneLzWJSULXCiw=;
+        b=RAY2GQBdP6QU7CEm44ojhugWJ8xRAoOO6+oUEcSqfyDWgQyRYGQITKPdKjv8eJYzGN
+         LY1BA/9MGUQEmX+ZoVYJmWMkRzntR1qSqvzlqXMPUkuQEvPHa01sV10Ap9ca1oprkMvf
+         +43CTdzJg06l+iU15m9il2lMPP0v0MPqsr9ATJ8XhV2Q23moPQirq11ytF1vQANecIjD
+         LdteUME8glkX6ZpSgNTTbYO91h0ZqV8r2ZiuLqEaCwyWd0g9mWHno70bqZ+5bqODCbXd
+         aEYgg3SQ4pEju+a9LZNd8C/eXMUjFP6MIi00fHKysRwZbl/w1baALwFaNyqRVKha7ygj
+         KNIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=+4R6y5raOlQ9R0zgKhvV82ZZoP1rqgneLzWJSULXCiw=;
+        b=SG+AOxdj+8Nca4Z60J38Q7oyd+z4cCLqoYMbyC+Wq3E0y1kmdBe5FvppR3VYK7ui0o
+         Pc/U8glrwxwQvASMpA4qj5f82pPLPEMBsW57UvUtwhiBpgpuQJbIfxgwcetfq7pSq0Od
+         8AUNpQ8J5NG8F2R5EY9KTCxoNgR2edrs8HJtZfkAqZDYiQPwVF31gOUEq4rMaKTAVxlm
+         5vgyHYuG1EhzfXo9Bis2hzVvSc3dTggBF/rJNyXorDGT0bRfCdk1SMRmdJuueLsgGpW2
+         /UrpiErwbbDQdG5fZY9w3TQT0HYQxB85WTuynz38n3Bz9YVZBnNxDGvvGCxRsJ/u1BbF
+         6U5g==
+X-Gm-Message-State: AOAM530/Fh1lUCsjuXoQXJRxBumZqrXoB4EDih33Pb+bHWKuzP/1UdpA
+        NzPlp3tmIPX1jhQIL/u0mGNFMv2jRk/fGUlZzJM=
+X-Google-Smtp-Source: ABdhPJzyaSoM/0f9uqXbttdQDpbV5fsP4I95bt3jQtr9Iql7aVNodJffhghvwsqmlh2PtF+ZI60PSHvOXmIAZT/QbwA=
+X-Received: from ndesaulniers1.mtv.corp.google.com ([2620:15c:211:202:2889:ef97:ceb1:6f72])
+ (user=ndesaulniers job=sendgmr) by 2002:a81:ac15:0:b0:2e6:d7e3:c4ba with SMTP
+ id k21-20020a81ac15000000b002e6d7e3c4bamr1177927ywh.10.1648665266195; Wed, 30
+ Mar 2022 11:34:26 -0700 (PDT)
+Date:   Wed, 30 Mar 2022 11:34:06 -0700
+Message-Id: <20220330183409.2025109-1-ndesaulniers@google.com>
+Mime-Version: 1.0
+X-Developer-Key: i=ndesaulniers@google.com; a=ed25519; pk=lvO/pmg+aaCb6dPhyGC1GyOCvPueDrrc8Zeso5CaGKE=
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1648665246; l=1109;
+ s=20211004; h=from:subject; bh=n8UsFP1cY/oLIUzC/8lmbuCD/y/IfhI2jrvMeC7MWXM=;
+ b=N9+qRQNc6sFg7St0vUeHnTPdlVmfGySQ42D0YjOx8gq+O/AD+1GFKE7FwX9qwKLqNK+nuR5TvJpt
+ zyrlQX0uCLjuby2gUgRarHoYqnk9q0SDrz0+XRcuUzfiHmzIV9Nl
+X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
+Subject: [PATCH] kbuild: uapi: use -fsyntax-only rather than -S
+From:   Nick Desaulniers <ndesaulniers@google.com>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Dmitry V. Levin" <ldv@altlinux.org>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 12:44:54PM -0400, Steven Rostedt wrote:
-> On Mon, 28 Mar 2022 17:56:07 +0200
-> Peter Zijlstra <peterz@infradead.org> wrote:
-> 
-> > > echo $$ > test/cgroup.procs
-> > > taskset -c 1 bash -c "while true; do let i++; done"  --> will be throttled  
-> > 
-> > Ofcourse.. I'm arguing that bandiwdth control and NOHZ_FULL are somewhat
-> > mutually exclusive, use-case wise. So I really don't get why you'd want
-> > them both.
-> 
-> Is it?
-> 
-> One use case I can see for having both is for having a deadline task that
-> needs to get something done in a tight deadline. NOHZ_FULL means "do not
-> interrupt this task when it is the top priority task on the CPU and is
-> running in user space".
+The UAPI header tests are checking that the generated headers do not
+have syntax errors. There's no need to run the rest of the compilation
+pipeline after semantic analysis has run. Replace -S -o /dev/null with
+-fsyntax-only.
 
-This is absolute batshit.. It means no such thing. We'll happily wake
-another task to this CPU and re-enable the tick any instant.
+Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+---
+ usr/include/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Worse; the use-case at hand pertains to cfs bandwidth control, which
-pretty much guarantees there *will* be an interrupt.
+diff --git a/usr/include/Makefile b/usr/include/Makefile
+index 7b283d43f00d..bf193e205dbe 100644
+--- a/usr/include/Makefile
++++ b/usr/include/Makefile
+@@ -89,7 +89,7 @@ extra-y := $(patsubst $(obj)/%.h,%.hdrtest, $(shell find $(obj) -name '*.h' 2>/d
+ # Include the header twice to detect missing include guard.
+ quiet_cmd_hdrtest = HDRTEST $<
+       cmd_hdrtest = \
+-		$(CC) $(c_flags) -S -o /dev/null -x c /dev/null \
++		$(CC) $(c_flags) -fsyntax-only -x c /dev/null \
+ 			$(if $(filter-out $(no-header-test), $*.h), -include $< -include $<); \
+ 		$(PERL) $(srctree)/$(src)/headers_check.pl $(obj) $(SRCARCH) $<; \
+ 		touch $@
 
-> Why is it mutually exclusive to have a deadline task that does not want to
-> be interrupted by timer interrupts?
+base-commit: 74164d284b2909de0ba13518cc063e9ea9334749
+-- 
+2.35.1.1021.g381101b075-goog
 
-This has absolutely nothing to do with deadline tasks, nada, noppes.
-
-> Just because the biggest pushers of NOHZ_FULL is for those that are running
-> RT tasks completely in user space and event want to fault if it ever goes
-> into the kernel, doesn't mean that's the only use case.
-
-Because there's costs associated with the whole thing. system entry/exit
-get far more expensive. It just doesn't make much sense to use NOHZ_FULL
-if you're not absoultely limiting system entry.
-
-> Chengming brought up VMs. That's a case to want to control the bandwidth,
-> but also not interrupt them with timer interrupts when they are running as
-> the top priority task on a CPU.
-
-It's CFS, there is nothing top priority about that.
