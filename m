@@ -2,293 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8C6BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 19:34:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDD28C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 19:35:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349889AbiC3Tga (ORCPT
+        id S1350804AbiC3Thc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 15:36:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34200 "EHLO
+        Wed, 30 Mar 2022 15:37:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238626AbiC3Tg2 (ORCPT
+        with ESMTP id S243020AbiC3Th0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 15:36:28 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C138E35852;
-        Wed, 30 Mar 2022 12:34:42 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 22UJXi4m046522;
-        Wed, 30 Mar 2022 14:33:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1648668824;
-        bh=lATsb8az9X9XmEcERPmUw69V9BSNCdtovwIoDrV13fU=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=mgqHyePzDmGD1e9tb8ogWdhwMw+5rGy3QCgv3mdV+Nv/3v+IagWN8aLndO1oHda/c
-         3q3/abi9A06/Dg6ao8fYThvN7ZpO4i87Se990w1YfjZUweBqow37RXhNEObzuifIw7
-         I4vZYI45kRXHSeg1n3b/mkN0PbTB1iJBD75Fa1TU=
-Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 22UJXiiP039554
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 30 Mar 2022 14:33:44 -0500
-Received: from DLEE105.ent.ti.com (157.170.170.35) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 30
- Mar 2022 14:33:44 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE105.ent.ti.com
- (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 30 Mar 2022 14:33:44 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 22UJXhOg045641;
-        Wed, 30 Mar 2022 14:33:44 -0500
-Date:   Thu, 31 Mar 2022 01:03:43 +0530
-From:   Pratyush Yadav <p.yadav@ti.com>
-To:     =?utf-8?Q?C=C3=A9dric?= Le Goater <clg@kaod.org>
-CC:     <linux-spi@vger.kernel.org>, <linux-mtd@lists.infradead.org>,
-        Mark Brown <broonie@kernel.org>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        <linux-aspeed@lists.ozlabs.org>, Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
-        <devicetree@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, Tao Ren <rentao.bupt@gmail.com>
-Subject: Re: [PATCH v4 03/11] spi: spi-mem: Convert Aspeed SMC driver to
- spi-mem
-Message-ID: <20220330193343.qg5kcr6twerde6ho@ti.com>
-References: <20220325100849.2019209-1-clg@kaod.org>
- <20220325100849.2019209-4-clg@kaod.org>
+        Wed, 30 Mar 2022 15:37:26 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2D1B43EF4;
+        Wed, 30 Mar 2022 12:35:39 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id bu29so37734259lfb.0;
+        Wed, 30 Mar 2022 12:35:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=IFsqv1oaAdQe9qXxPZqxM0d4mVwloIwzyCl6BJ2d4mA=;
+        b=JtkEzWQSfPteeoho9q+o1Fj8ns9onoRt427Rl2xx3ZMkFC+IfmukecerLvdoJH1WrM
+         9IB5ERM6zto0lxq98wm6YTj3JaXgzTsB/9xBWSbeGKmG+FMkNDH3/AEjMjQqepqIZgW0
+         LOUMvvLPWP7HMRQCFsml7EE2KjXZU7hkxGfNj4Rv8f7sqyKmzSFHzf5oNMJRElWJQjYf
+         DDvUnDgAtPcjYLKtpg0SF1NT8kcjYF0JpJQs71LRKeiAdFkk24l4GgWGqSzUQQL5N3WQ
+         K04wuCRRT/6W85JJIjSQYfyia+2caM6zU1Mjkaz8xgr0zB8qrt5TUTxLVrKmRsWLdEQ4
+         WB4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=IFsqv1oaAdQe9qXxPZqxM0d4mVwloIwzyCl6BJ2d4mA=;
+        b=htBFkipLFzQB4xWIra+CU08pdp2ru03tsNYKHsShQIG2AdHs2f7ZCOu/kc7Q3Wt4TZ
+         Tx6RSuYVSQ3LX1hm2IE2q8Dk3SlCgClOQ7dZzQ4Zxae73Hajeyk9VggCZOBgDz5dKvS1
+         C6jki50Jm9uhY7IJkjI9kspA0zkxPk/WU7FBcR/mzljcMw2MnN+B/au95kbt7SgzYKTr
+         yfTIn2b748OGnH5n0Y7lXqRYQjOl3nRhAeHDZo8IjGIxkC1Do5OPuC5JZ03JWjyQkycz
+         7Ix9p1MP2Qfrd5OL+tpkMTYWCy+6KnlpR1VfpRg/x3J/abnIRbUcqnMQesZGUPAEEBJQ
+         +PKg==
+X-Gm-Message-State: AOAM530sYwJPfc8fd7qVT1mwv0gWUBNUE2DI/haXYy0mnV6kIxe8I/vw
+        kLTLyJbjMwh2u7TrPAWVv2cECUGr0VAWmQ==
+X-Google-Smtp-Source: ABdhPJzYxrayHLEq28gi1pY81vEHwqW/E31kKsNkQnePYcjsD6l1PI6JGyTkqCPk/rEwwje4TvX7qA==
+X-Received: by 2002:a05:6512:3e15:b0:44a:4d88:4dcf with SMTP id i21-20020a0565123e1500b0044a4d884dcfmr7810659lfv.227.1648668935218;
+        Wed, 30 Mar 2022 12:35:35 -0700 (PDT)
+Received: from pc638.lan ([155.137.26.201])
+        by smtp.gmail.com with ESMTPSA id y9-20020a2e95c9000000b0024af5798ebasm58782ljh.49.2022.03.30.12.35.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 12:35:34 -0700 (PDT)
+From:   Uladzislau Rezki <urezki@gmail.com>
+X-Google-Original-From: Uladzislau Rezki <urezki@pc638.lan>
+Date:   Wed, 30 Mar 2022 21:35:26 +0200
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     "Zhang, Qiang1" <qiang1.zhang@intel.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        "frederic@kernel.org" <frederic@kernel.org>,
+        "urezki@gmail.com" <urezki@gmail.com>,
+        "quic_neeraju@quicinc.com" <quic_neeraju@quicinc.com>,
+        "josh@joshtriplett.org" <josh@joshtriplett.org>,
+        "juri.lelli@redhat.com" <juri.lelli@redhat.com>,
+        "rcu@vger.kernel.org" <rcu@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3] rcu: Only boost rcu reader tasks with lower priority
+ than boost kthreads
+Message-ID: <YkSw/oc496GftWld@pc638.lan>
+References: <20220311022226.595905-1-qiang1.zhang@intel.com>
+ <Yist4IWWR/6BZzeK@linutronix.de>
+ <PH0PR11MB58802B8804EDFFC73BA676F2DA0D9@PH0PR11MB5880.namprd11.prod.outlook.com>
+ <PH0PR11MB58807AD9A1BAA122218B92DBDA0D9@PH0PR11MB5880.namprd11.prod.outlook.com>
+ <20220316165931.GI4285@paulmck-ThinkPad-P17-Gen-1>
+ <PH0PR11MB58806B59FC8148C9C5160A5FDA139@PH0PR11MB5880.namprd11.prod.outlook.com>
+ <20220318145738.GY4285@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220325100849.2019209-4-clg@kaod.org>
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+In-Reply-To: <20220318145738.GY4285@paulmck-ThinkPad-P17-Gen-1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Cedric,
-
-Thanks for doing the conversion.
-
-On 25/03/22 11:08AM, Cédric Le Goater wrote:
-> This SPI driver adds support for the Aspeed static memory controllers
-> of the AST2600, AST2500 and AST2400 SoCs using the spi-mem interface.
+> On Fri, Mar 18, 2022 at 05:50:35AM +0000, Zhang, Qiang1 wrote:
+> > On Sat, Mar 12, 2022 at 03:11:04AM +0000, Zhang, Qiang1 wrote:
+> > > On 2022-03-11 10:22:26 [+0800], Zqiang wrote:
+> > > > When RCU_BOOST is enabled, the boost kthreads will boosting readers
+> > > > who are blocking a given grace period, if the current reader tasks
+> > >                                        ^ Period.
+> > > 
+> > > > have a higher priority than boost kthreads(the boost kthreads priority
+> > > > not always 1, if the kthread_prio is set), 
+> > > 
+> > > >>This confuses me:
+> > > >>- Why does this matter
+> > > 
+> > > In preempt-rt system, if the kthread_prio is not set, it prio is 1.
+> > > the boost kthreads can preempt almost  rt task, It will affect
+> > > the real-time performance of some user rt  tasks.  In preempt-rt systems,
+> > > in most scenarios, this kthread_prio will be configured.
+> > >
+> > >Just following up...  These questions might have been answered, but
+> > >I am not seeing those answers right off-hand.
+> > >
+> > >Is the grace-period latency effect of choosing not to boost high-priority
+> > >tasks visible at the system level in any actual workload?
+> > >
+> > >Suppose that a SCHED_DEADLINE task has exhausted its time quantum,
+> > >and has thus been preempted within an RCU read-side critical section.
+> > >Can priority boosting from a SCHED_FIFO prio-1 task cause it to start
+> > >running?
+> > >
+> > >Do delays in RCU priority boosting cause excessive grace-period
+> > >latencies on real workloads, even when all the to-be-boosted
+> > >tasks are SCHED_OTHER?
+> > >
+> > >Thoughts?
+> > 
+> > I have tested this modification these days,  I originally planned to generate a Kconfig option to control
+> > whether to skip tasks with higher priority than boost kthreads. but it doesn't seem necessary
+> >  because I find it's optimization is not particularly
+> > obvious in the actual scene, I find that tasks with higher priority than boost kthreads 
+> > will quickly exit the rcu critical area , even if be preempted in the rcu critical area.
+> > sorry for the noise.
 > 
->  * AST2600 Firmware SPI Memory Controller (FMC)
->    . BMC firmware
->    . 3 chip select pins (CE0 ~ CE2)
->    . Only supports SPI type flash memory
->    . different segment register interface
->    . single, dual and quad mode.
+> Thank you for getting back with this information, and no need to
+> apologize.  We all get excited about a potential change from time to time.
+> Part of us maintainers' jobs is to ask hard questions when that appears
+> to be happening.  ;-)
 > 
->  * AST2600 SPI Flash Controller (SPI1 and SPI2)
->    . host firmware
->    . 2 chip select pins (CE0 ~ CE1)
->    . different segment register interface
->    . single, dual and quad mode.
+> If you have continued interest in this area, it would be good to keep
+> looking.  After all, neither RCU expedited grace periods nor RCU priority
+> boosting were designed with these new use cases in mind, so it is quite
+> likely that there is a useful change to be made in there somewhere.
 > 
->  * AST2500 Firmware SPI Memory Controller (FMC)
->    . BMC firmware
->    . 3 chip select pins (CE0 ~ CE2)
->    . supports SPI type flash memory (CE0-CE1)
->    . CE2 can be of NOR type flash but this is not supported by the driver
->    . single, dual mode.
+> You see, RCU expedited grace periods were designed for throughput rather
+> than latency.  The original use case was an old networking API that
+> needed to wait for a grace period on each and every one of a series of
+> some tens of thousands of system calls.  If one or two of those system
+> calls took a few hundred milliseconds, but the rest completed in less than
+> a millisecond, no harm done.  (Yes, there are now newer APIs that allow
+> many changes to be made with only the one grace-period wait.  But the
+> kernel must continue to support the old API: Never Break Userspace.)
 > 
->  * AST2500 SPI Flash Controller (SPI1 and SPI2)
->    . host firmware
->    . 2 chip select pins (CE0 ~ CE1)
->    . single, dual mode.
+> For its part, RCU priority boosting was originally designed for
+> debuggging.  The point was to avoid OOMing the system when someone
+> misconfigured their application's real-time priorities.  As you know,
+> such misconfiguration can easily prevent low-priority RCU readers from
+> ever completing.
 > 
->  * AST2400 New Static Memory Controller (also referred as FMC)
->    . BMC firmware
->    . New register set
->    . 5 chip select pins (CE0 ∼ CE4)
->    . supports NOR flash, NAND flash and SPI flash memory.
->    . single, dual and quad mode.
+> So it is reasonably likely that some change or another is needed.  After
+> all, new use cases require new functionality and new fixes.  The trick
+> is figuring out which change makes sense amongst the huge group of other
+> possible changes that each add much more complexity than improvement.
+> But part of the process of finding that change that makes sense is trying
+> out quite a few changes that don't help all that much.  ;-)
 > 
-> Each controller has a memory range on which flash devices contents are
-> mapped. Each device is assigned a window that can be changed at bootime
-> with the Segment Address Registers.
-> 
-> Each SPI flash device can then be accessed in two modes: Command and
-> User. When in User mode, SPI transfers are initiated with accesses to
-> the memory segment of a device. When in Command mode, memory
-> operations on the memory segment of a device generate SPI commands
-> automatically using a Control Register for the settings.
-> 
-> This initial patch adds support for User mode. Command mode needs a little
-> more work to check that the memory window on the AHB bus fits the device
-> size. It will come later when support for direct mapping is added.
-> 
-> Single and dual mode RX transfers are supported. Other types than SPI
-> are not supported.
-> 
-> Reviewed-by: Joel Stanley <joel@jms.id.au>
-> Tested-by: Joel Stanley <joel@jms.id.au>
-> Tested-by: Tao Ren <rentao.bupt@gmail.com>
-> Signed-off-by: Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>
-> Signed-off-by: Cédric Le Goater <clg@kaod.org>
-> ---
->  drivers/mtd/spi-nor/controllers/aspeed-smc.c  | 910 ------------------
->  drivers/spi/spi-aspeed-smc.c                  | 709 ++++++++++++++
->  .../devicetree/bindings/mtd/aspeed-smc.txt    |  51 -
->  MAINTAINERS                                   |   1 +
->  drivers/mtd/spi-nor/controllers/Kconfig       |  10 -
->  drivers/mtd/spi-nor/controllers/Makefile      |   1 -
->  drivers/spi/Kconfig                           |  11 +
->  drivers/spi/Makefile                          |   1 +
->  8 files changed, 722 insertions(+), 972 deletions(-)
->  delete mode 100644 drivers/mtd/spi-nor/controllers/aspeed-smc.c
->  create mode 100644 drivers/spi/spi-aspeed-smc.c
->  delete mode 100644 Documentation/devicetree/bindings/mtd/aspeed-smc.txt
-> 
-[...]
-> +static void aspeed_spi_send_cmd_addr(struct aspeed_spi_chip *chip, u8 addr_nbytes,
-> +				     u64 offset, u32 opcode)
-> +{
-> +	struct aspeed_spi *aspi = chip->aspi;
-> +	__be32 temp;
-> +	u32 cmdaddr;
-> +
-> +	switch (addr_nbytes) {
-> +	default:
-> +		dev_warn_once(aspi->dev, "Unexpected address width %u, defaulting to 3",
-> +			      addr_nbytes);
-> +		fallthrough;
+Sorry for the late response, but i think i should comment on it since i
+have tried to simulate and test this patch on Android device. Basically
+we do have RT tasks in Android and i do not see that the patch that is
+in question makes any difference. Actually i was not able to trigger its
+functionality at all.
 
-I think it is better if you reject ops where addr width is not 3 or 4. 
-This you can drop this. Or if you really want to keep it, you can change 
-it to a WARN_ON() and return an error.
+From the other hand, i have tried to simulate it making an RT environment
+with SCHED_FIFO tasks and some synchronize_rcu_expedited() users. Indeed
+i can trigger it but it is very specific env. and number of triggering or
+tasks bypassing(high prio) is almost zero.
 
-> +	case 3:
-> +		cmdaddr = offset & 0xFFFFFF;
-> +		cmdaddr |= opcode << 24;
-> +
-> +		temp = cpu_to_be32(cmdaddr);
-> +		aspeed_spi_write_to_ahb(chip->ahb_base, &temp, 4);
-> +		break;
-> +	case 4:
-> +		temp = cpu_to_be32(offset);
-> +		aspeed_spi_write_to_ahb(chip->ahb_base, &opcode, 1);
-> +		aspeed_spi_write_to_ahb(chip->ahb_base, &temp, 4);
-> +		break;
-> +	}
-> +}
-> +
-[...]
-> +/* support for 1-1-1, 1-1-2 or 1-1-4 */
-> +static bool aspeed_spi_supports_op(struct spi_mem *mem, const struct spi_mem_op *op)
-> +{
-> +	if (op->cmd.buswidth > 1)
-> +		return false;
-> +
-> +	if (op->addr.nbytes != 0) {
-> +		if (op->addr.buswidth > 1 || op->addr.nbytes > 4)
-
-As mentioned above, this should reject ops with addr width 1 and 2.
-
-> +			return false;
-> +	}
-> +
-> +	if (op->dummy.nbytes != 0) {
-> +		if (op->dummy.buswidth > 1 || op->dummy.nbytes > 7)
-> +			return false;
-> +	}
-> +
-> +	if (op->data.nbytes != 0 && op->data.buswidth > 4)
-> +		return false;
-> +
-> +	return spi_mem_default_supports_op(mem, op);
-> +}
-> +
-> +static int do_aspeed_spi_exec_op(struct spi_mem *mem, const struct spi_mem_op *op)
-> +{
-> +	struct aspeed_spi *aspi = spi_controller_get_devdata(mem->spi->master);
-> +	struct aspeed_spi_chip *chip = &aspi->chips[mem->spi->chip_select];
-> +	u32 addr_mode, addr_mode_backup;
-> +	u32 ctl_val;
-> +	int ret = 0;
-> +
-> +	dev_dbg(aspi->dev,
-> +		"CE%d %s OP %#x mode:%d.%d.%d.%d naddr:%#x ndummies:%#x len:%#x",
-> +		chip->cs, op->data.dir == SPI_MEM_DATA_IN ? "read" : "write",
-> +		op->cmd.opcode, op->cmd.buswidth, op->addr.buswidth,
-> +		op->dummy.buswidth, op->data.buswidth,
-> +		op->addr.nbytes, op->dummy.nbytes, op->data.nbytes);
-> +
-> +	addr_mode = readl(aspi->regs + CE_CTRL_REG);
-> +	addr_mode_backup = addr_mode;
-> +
-> +	ctl_val = chip->ctl_val[ASPEED_SPI_BASE];
-> +	ctl_val &= ~CTRL_IO_CMD_MASK;
-> +
-> +	ctl_val |= op->cmd.opcode << CTRL_COMMAND_SHIFT;
-> +
-> +	/* 4BYTE address mode */
-> +	if (op->addr.nbytes) {
-> +		if (op->addr.nbytes == 4)
-> +			addr_mode |= (0x11 << chip->cs);
-> +		else
-> +			addr_mode &= ~(0x11 << chip->cs);
-> +	}
-> +
-> +	if (op->dummy.buswidth && op->dummy.nbytes)
-
-Nitpick: op->dummy.nbytes being set should imply op->dummy.buswidth > 0.
-
-> +		ctl_val |= CTRL_IO_DUMMY_SET(op->dummy.nbytes / op->dummy.buswidth);
-> +
-> +	if (op->data.nbytes != 0) {
-> +		if (op->data.buswidth)
-
-Nitpick: op->data.nbytes != 0 should imply op->data.buswidth > 0.
-
-> +			ctl_val |= aspeed_spi_get_io_mode(op);
-> +	}
-> +
-> +	if (op->data.dir == SPI_MEM_DATA_OUT)
-> +		ctl_val |= CTRL_IO_MODE_WRITE;
-> +	else
-> +		ctl_val |= CTRL_IO_MODE_READ;
-> +
-> +	if (addr_mode != addr_mode_backup)
-> +		writel(addr_mode, aspi->regs + CE_CTRL_REG);
-> +	writel(ctl_val, chip->ctl);
-> +
-> +	if (op->data.dir == SPI_MEM_DATA_IN) {
-> +		if (!op->addr.nbytes)
-> +			ret = aspeed_spi_read_reg(chip, op);
-> +		else
-> +			ret = aspeed_spi_read_user(chip, op, op->addr.val,
-> +						   op->data.nbytes, op->data.buf.in);
-> +	} else {
-> +		if (!op->addr.nbytes)
-> +			ret = aspeed_spi_write_reg(chip, op);
-> +		else
-> +			ret = aspeed_spi_write_user(chip, op);
-> +	}
-> +
-> +	/* Restore defaults */
-> +	if (addr_mode != addr_mode_backup)
-> +		writel(addr_mode_backup, aspi->regs + CE_CTRL_REG);
-> +	writel(chip->ctl_val[ASPEED_SPI_READ], chip->ctl);
-
-Why do you need to restore defaults here? Do you expect some other piece 
-of software to use it as well?
-
-The patch looks good to me apart from these.
-
-> +	return ret;
-> +}
-> +
-[...]
-
--- 
-Regards,
-Pratyush Yadav
-Texas Instruments Inc.
+--
+Uladzislau Rezki
