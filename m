@@ -2,46 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B670EC47082
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25F6AC35296
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347333AbiC3MGQ (ORCPT
+        id S1347405AbiC3MGi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:06:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57684 "EHLO
+        Wed, 30 Mar 2022 08:06:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345838AbiC3LzE (ORCPT
+        with ESMTP id S1345893AbiC3LzI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:55:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D9A126480F;
-        Wed, 30 Mar 2022 04:51:50 -0700 (PDT)
+        Wed, 30 Mar 2022 07:55:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C73425E313;
+        Wed, 30 Mar 2022 04:52:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9C101B81C29;
-        Wed, 30 Mar 2022 11:51:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F5E3C36AE5;
-        Wed, 30 Mar 2022 11:51:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BD1886137A;
+        Wed, 30 Mar 2022 11:52:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B7A1C340EE;
+        Wed, 30 Mar 2022 11:52:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641107;
-        bh=8XMINSXaSbfKJrYh9dECjJqF0AVdv8TqKHJzrJ7r5kw=;
+        s=k20201202; t=1648641128;
+        bh=VhHDD6RrdMjp5dMDXPfeMmXdEbQklV9mCIfGyFoUl+4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IMYvRQbXeQCG+4eAokr66sTz6fEsnu9eVT7HZdWjVAZ7y6meAThf3FmJOEecKeA13
-         qRwwEgL6Q0RHihge98q+k0SS6vLlcHREQU4lXiqFXdpyQsfDV6XBuS+NxXMrhDj8I0
-         FvyzWrIv9cE1oy5fZBkb+xz1SC58h2/ggjtbKkIWSqFhPmQYZMcNOJT3BQpdmmi9GF
-         tyKLA63JSWds+oMm7DXse3/VUMvipI5Rg5sKmuUjUlqZfSM4deGVbqRsV8aSx8TAH3
-         jOhNUgYUhze04/M2NKxt+kqlPCO8C7XCfBrPGHdH52MwTyfnYtn5XzqYGm1pHO4J5o
-         uAZXdrpnKDRtA==
+        b=ov1cINHsPi5Cu/628OLJdB9aQJ9TXrMNi0piwEiW4cSZNEQKXaYy/4j4FINVuKfuA
+         EP8nan4uY1PwUZPMfmm1A0AWtolS5rPGiQRxCCVjbonlVNX63FVEWCl0BFaxcczLLh
+         fpHiLguOFlyQTLx7s02KwGq6B+AJ71URtEvoxfMlAWQudMv0+pwwFQQxnSUGf2iTxG
+         ALd8TX6G1zfzyew+IPY2m0CAWCiGQdW9E+EHz0Fv4Zf3bOEi9SObZAP/xhM8QfkK/K
+         6+gFwqryCd0NA1+VEWzo+9ENhIH7cWZWt6vEcrmJUWDuTEFFaTS/Zws2g/iBnm3I+o
+         eUgdl/FXAO//A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tsuchiya Yuto <kitakar@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, gregkh@linuxfoundation.org,
-        linux-media@vger.kernel.org, devel@driverdev.osuosl.org
-Subject: [PATCH AUTOSEL 5.10 14/37] media: atomisp: fix dummy_ptr check to avoid duplicate active_bo
-Date:   Wed, 30 Mar 2022 07:50:59 -0400
-Message-Id: <20220330115122.1671763-14-sashal@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>, kernel test robot <lkp@intel.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, vgupta@synopsys.com,
+        linux@armlinux.org.uk, peterz@infradead.org, mingo@redhat.com,
+        acme@kernel.org, lftan@altera.com, benh@kernel.crashing.org,
+        paulus@samba.org, mpe@ellerman.id.au, davem@davemloft.net,
+        gregkh@linuxfoundation.org, catalin.marinas@arm.com,
+        rmk+kernel@armlinux.org.uk, linux-snps-arc@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        nios2-dev@lists.rocketboards.org, linuxppc-dev@lists.ozlabs.org,
+        sparclinux@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 26/37] uaccess: fix type mismatch warnings from access_ok()
+Date:   Wed, 30 Mar 2022 07:51:11 -0400
+Message-Id: <20220330115122.1671763-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115122.1671763-1-sashal@kernel.org>
 References: <20220330115122.1671763-1-sashal@kernel.org>
@@ -53,114 +61,230 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tsuchiya Yuto <kitakar@gmail.com>
+From: Arnd Bergmann <arnd@arndb.de>
 
-[ Upstream commit 127efdbc51fe6064336c0452ce9c910b3e107cf0 ]
+[ Upstream commit 23fc539e81295b14b50c6ccc5baeb4f3d59d822d ]
 
-The dummy_ptr check in hmm_init() [1] results in the following
-"hmm_init Failed to create sysfs" error exactly once every
-two times on atomisp reload by rmmod/insmod (although atomisp module
-loads and works fine regardless of this error):
+On some architectures, access_ok() does not do any argument type
+checking, so replacing the definition with a generic one causes
+a few warnings for harmless issues that were never caught before.
 
-	[  140.230662] sysfs: cannot create duplicate filename '/devices/pci0000:00/0000:00:03.0/active_bo'
-	[  140.230668] CPU: 1 PID: 2502 Comm: insmod Tainted: G         C OE     5.15.0-rc4-1-surface-mainline #1 b8acf6eb64994414b2e20bad312a7a2c45f748f9
-	[  140.230675] Hardware name: OEMB OEMB/OEMB, BIOS 1.51116.238 03/09/2015
-	[  140.230678] Call Trace:
-	[  140.230687]  dump_stack_lvl+0x46/0x5a
-	[  140.230702]  sysfs_warn_dup.cold+0x17/0x24
-	[  140.230710]  sysfs_add_file_mode_ns+0x160/0x170
-	[  140.230717]  internal_create_group+0x126/0x390
-	[  140.230723]  hmm_init+0x5c/0x70 [atomisp 7a6a680bf400629363d2a6f58fd10e7299678b99]
-	[  140.230811]  atomisp_pci_probe.cold+0x1136/0x148e [atomisp 7a6a680bf400629363d2a6f58fd10e7299678b99]
-	[  140.230875]  local_pci_probe+0x45/0x80
-	[  140.230882]  ? pci_match_device+0xd7/0x130
-	[  140.230887]  pci_device_probe+0xfa/0x1b0
-	[  140.230892]  really_probe+0x1f5/0x3f0
-	[  140.230899]  __driver_probe_device+0xfe/0x180
-	[  140.230903]  driver_probe_device+0x1e/0x90
-	[  140.230908]  __driver_attach+0xc0/0x1c0
-	[  140.230912]  ? __device_attach_driver+0xe0/0xe0
-	[  140.230915]  ? __device_attach_driver+0xe0/0xe0
-	[  140.230919]  bus_for_each_dev+0x89/0xd0
-	[  140.230924]  bus_add_driver+0x12b/0x1e0
-	[  140.230929]  driver_register+0x8f/0xe0
-	[  140.230933]  ? 0xffffffffc153f000
-	[  140.230937]  do_one_initcall+0x57/0x220
-	[  140.230945]  do_init_module+0x5c/0x260
-	[  140.230952]  load_module+0x24bd/0x26a0
-	[  140.230962]  ? __do_sys_finit_module+0xae/0x110
-	[  140.230966]  __do_sys_finit_module+0xae/0x110
-	[  140.230972]  do_syscall_64+0x5c/0x80
-	[  140.230979]  ? syscall_exit_to_user_mode+0x23/0x40
-	[  140.230983]  ? do_syscall_64+0x69/0x80
-	[  140.230988]  ? exc_page_fault+0x72/0x170
-	[  140.230991]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-	[  140.230997] RIP: 0033:0x7f7fd5d8718d
-	[  140.231003] Code: b4 0c 00 0f 05 eb a9 66 0f 1f 44 00 00 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d b3 6c 0c 00 f7 d8 64 89 01 48
-	[  140.231006] RSP: 002b:00007ffefc25f0e8 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
-	[  140.231012] RAX: ffffffffffffffda RBX: 000055ac3edcd7f0 RCX: 00007f7fd5d8718d
-	[  140.231015] RDX: 0000000000000000 RSI: 000055ac3d723270 RDI: 0000000000000003
-	[  140.231017] RBP: 0000000000000000 R08: 0000000000000000 R09: 00007f7fd5e52380
-	[  140.231019] R10: 0000000000000003 R11: 0000000000000246 R12: 000055ac3d723270
-	[  140.231021] R13: 0000000000000000 R14: 000055ac3edd06e0 R15: 0000000000000000
-	[  140.231038] atomisp-isp2 0000:00:03.0: hmm_init Failed to create sysfs
+Fix the ones that I found either through my own test builds or
+that were reported by the 0-day bot.
 
-The problem is that dummy_ptr == 0 is a valid value. So, change the logic
-which checks if dummy_ptr was allocated.
-
-At this point, atomisp now gives WARN_ON() in hmm_free() [2] on atomisp
-reload by rmmod/insmod. Again, the check is wrong there.
-
-So, change both checks for mmgr_EXCEPTION, which is the error value when
-HMM allocation fails, and initialize dummy_ptr with such value.
-
-[1] added on commit
-    d9ab83953fa7 ("media: atomisp: don't cause a warn if probe failed")
-[2] added on commit
-    b83cc378dfc4 ("atomisp: clean up the hmm init/cleanup indirections")
-
-Link: https://lore.kernel.org/linux-media/20211017162337.44860-3-kitakar@gmail.com
-
-Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
-Co-developed-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Acked-by: Dinh Nguyen <dinguyen@kernel.org>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/atomisp/pci/hmm/hmm.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ arch/arc/kernel/process.c          |  2 +-
+ arch/arm/kernel/swp_emulate.c      |  2 +-
+ arch/arm/kernel/traps.c            |  2 +-
+ arch/csky/kernel/perf_callchain.c  |  2 +-
+ arch/csky/kernel/signal.c          |  2 +-
+ arch/nios2/kernel/signal.c         | 20 +++++++++++---------
+ arch/powerpc/lib/sstep.c           |  4 ++--
+ arch/riscv/kernel/perf_callchain.c |  4 ++--
+ arch/sparc/kernel/signal_32.c      |  2 +-
+ lib/test_lockup.c                  |  4 ++--
+ 10 files changed, 23 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/staging/media/atomisp/pci/hmm/hmm.c b/drivers/staging/media/atomisp/pci/hmm/hmm.c
-index 6a5ee4607089..c1cda16f2dc0 100644
---- a/drivers/staging/media/atomisp/pci/hmm/hmm.c
-+++ b/drivers/staging/media/atomisp/pci/hmm/hmm.c
-@@ -39,7 +39,7 @@
- struct hmm_bo_device bo_device;
- struct hmm_pool	dynamic_pool;
- struct hmm_pool	reserved_pool;
--static ia_css_ptr dummy_ptr;
-+static ia_css_ptr dummy_ptr = mmgr_EXCEPTION;
- static bool hmm_initialized;
- struct _hmm_mem_stat hmm_mem_stat;
+diff --git a/arch/arc/kernel/process.c b/arch/arc/kernel/process.c
+index 37f724ad5e39..a85e9c625ab5 100644
+--- a/arch/arc/kernel/process.c
++++ b/arch/arc/kernel/process.c
+@@ -43,7 +43,7 @@ SYSCALL_DEFINE0(arc_gettls)
+ 	return task_thread_info(current)->thr_ptr;
+ }
  
-@@ -209,7 +209,7 @@ int hmm_init(void)
- 
- void hmm_cleanup(void)
+-SYSCALL_DEFINE3(arc_usr_cmpxchg, int *, uaddr, int, expected, int, new)
++SYSCALL_DEFINE3(arc_usr_cmpxchg, int __user *, uaddr, int, expected, int, new)
  {
--	if (!dummy_ptr)
-+	if (dummy_ptr == mmgr_EXCEPTION)
- 		return;
- 	sysfs_remove_group(&atomisp_dev->kobj, atomisp_attribute_group);
+ 	struct pt_regs *regs = current_pt_regs();
+ 	u32 uval;
+diff --git a/arch/arm/kernel/swp_emulate.c b/arch/arm/kernel/swp_emulate.c
+index 6166ba38bf99..b74bfcf94fb1 100644
+--- a/arch/arm/kernel/swp_emulate.c
++++ b/arch/arm/kernel/swp_emulate.c
+@@ -195,7 +195,7 @@ static int swp_handler(struct pt_regs *regs, unsigned int instr)
+ 		 destreg, EXTRACT_REG_NUM(instr, RT2_OFFSET), data);
  
-@@ -288,7 +288,8 @@ void hmm_free(ia_css_ptr virt)
+ 	/* Check access in reasonable access range for both SWP and SWPB */
+-	if (!access_ok((address & ~3), 4)) {
++	if (!access_ok((void __user *)(address & ~3), 4)) {
+ 		pr_debug("SWP{B} emulation: access to %p not allowed!\n",
+ 			 (void *)address);
+ 		res = -EFAULT;
+diff --git a/arch/arm/kernel/traps.c b/arch/arm/kernel/traps.c
+index 2d9e72ad1b0f..a531afad87fd 100644
+--- a/arch/arm/kernel/traps.c
++++ b/arch/arm/kernel/traps.c
+@@ -589,7 +589,7 @@ do_cache_op(unsigned long start, unsigned long end, int flags)
+ 	if (end < start || flags)
+ 		return -EINVAL;
  
- 	dev_dbg(atomisp_dev, "%s: free 0x%08x\n", __func__, virt);
+-	if (!access_ok(start, end - start))
++	if (!access_ok((void __user *)start, end - start))
+ 		return -EFAULT;
  
--	WARN_ON(!virt);
-+	if (WARN_ON(virt == mmgr_EXCEPTION))
-+		return;
+ 	return __do_cache_op(start, end);
+diff --git a/arch/csky/kernel/perf_callchain.c b/arch/csky/kernel/perf_callchain.c
+index 35318a635a5f..75e1f9df5f60 100644
+--- a/arch/csky/kernel/perf_callchain.c
++++ b/arch/csky/kernel/perf_callchain.c
+@@ -49,7 +49,7 @@ static unsigned long user_backtrace(struct perf_callchain_entry_ctx *entry,
+ {
+ 	struct stackframe buftail;
+ 	unsigned long lr = 0;
+-	unsigned long *user_frame_tail = (unsigned long *)fp;
++	unsigned long __user *user_frame_tail = (unsigned long __user *)fp;
  
- 	bo = hmm_bo_device_search_start(&bo_device, (unsigned int)virt);
+ 	/* Check accessibility of one struct frame_tail beyond */
+ 	if (!access_ok(user_frame_tail, sizeof(buftail)))
+diff --git a/arch/csky/kernel/signal.c b/arch/csky/kernel/signal.c
+index 0ca49b5e3dd3..243228b0aa07 100644
+--- a/arch/csky/kernel/signal.c
++++ b/arch/csky/kernel/signal.c
+@@ -136,7 +136,7 @@ static inline void __user *get_sigframe(struct ksignal *ksig,
+ static int
+ setup_rt_frame(struct ksignal *ksig, sigset_t *set, struct pt_regs *regs)
+ {
+-	struct rt_sigframe *frame;
++	struct rt_sigframe __user *frame;
+ 	int err = 0;
+ 	struct csky_vdso *vdso = current->mm->context.vdso;
  
+diff --git a/arch/nios2/kernel/signal.c b/arch/nios2/kernel/signal.c
+index cf2dca2ac7c3..e45491d1d3e4 100644
+--- a/arch/nios2/kernel/signal.c
++++ b/arch/nios2/kernel/signal.c
+@@ -36,10 +36,10 @@ struct rt_sigframe {
+ 
+ static inline int rt_restore_ucontext(struct pt_regs *regs,
+ 					struct switch_stack *sw,
+-					struct ucontext *uc, int *pr2)
++					struct ucontext __user *uc, int *pr2)
+ {
+ 	int temp;
+-	unsigned long *gregs = uc->uc_mcontext.gregs;
++	unsigned long __user *gregs = uc->uc_mcontext.gregs;
+ 	int err;
+ 
+ 	/* Always make any pending restarted system calls return -EINTR */
+@@ -102,10 +102,11 @@ asmlinkage int do_rt_sigreturn(struct switch_stack *sw)
+ {
+ 	struct pt_regs *regs = (struct pt_regs *)(sw + 1);
+ 	/* Verify, can we follow the stack back */
+-	struct rt_sigframe *frame = (struct rt_sigframe *) regs->sp;
++	struct rt_sigframe __user *frame;
+ 	sigset_t set;
+ 	int rval;
+ 
++	frame = (struct rt_sigframe __user *) regs->sp;
+ 	if (!access_ok(frame, sizeof(*frame)))
+ 		goto badframe;
+ 
+@@ -124,10 +125,10 @@ asmlinkage int do_rt_sigreturn(struct switch_stack *sw)
+ 	return 0;
+ }
+ 
+-static inline int rt_setup_ucontext(struct ucontext *uc, struct pt_regs *regs)
++static inline int rt_setup_ucontext(struct ucontext __user *uc, struct pt_regs *regs)
+ {
+ 	struct switch_stack *sw = (struct switch_stack *)regs - 1;
+-	unsigned long *gregs = uc->uc_mcontext.gregs;
++	unsigned long __user *gregs = uc->uc_mcontext.gregs;
+ 	int err = 0;
+ 
+ 	err |= __put_user(MCONTEXT_VERSION, &uc->uc_mcontext.version);
+@@ -162,8 +163,9 @@ static inline int rt_setup_ucontext(struct ucontext *uc, struct pt_regs *regs)
+ 	return err;
+ }
+ 
+-static inline void *get_sigframe(struct ksignal *ksig, struct pt_regs *regs,
+-				 size_t frame_size)
++static inline void __user *get_sigframe(struct ksignal *ksig,
++					struct pt_regs *regs,
++					size_t frame_size)
+ {
+ 	unsigned long usp;
+ 
+@@ -174,13 +176,13 @@ static inline void *get_sigframe(struct ksignal *ksig, struct pt_regs *regs,
+ 	usp = sigsp(usp, ksig);
+ 
+ 	/* Verify, is it 32 or 64 bit aligned */
+-	return (void *)((usp - frame_size) & -8UL);
++	return (void __user *)((usp - frame_size) & -8UL);
+ }
+ 
+ static int setup_rt_frame(struct ksignal *ksig, sigset_t *set,
+ 			  struct pt_regs *regs)
+ {
+-	struct rt_sigframe *frame;
++	struct rt_sigframe __user *frame;
+ 	int err = 0;
+ 
+ 	frame = get_sigframe(ksig, regs, sizeof(*frame));
+diff --git a/arch/powerpc/lib/sstep.c b/arch/powerpc/lib/sstep.c
+index 0edebbbffcdc..42701b2f2474 100644
+--- a/arch/powerpc/lib/sstep.c
++++ b/arch/powerpc/lib/sstep.c
+@@ -108,9 +108,9 @@ static nokprobe_inline long address_ok(struct pt_regs *regs,
+ {
+ 	if (!user_mode(regs))
+ 		return 1;
+-	if (__access_ok(ea, nb))
++	if (access_ok((void __user *)ea, nb))
+ 		return 1;
+-	if (__access_ok(ea, 1))
++	if (access_ok((void __user *)ea, 1))
+ 		/* Access overlaps the end of the user region */
+ 		regs->dar = TASK_SIZE_MAX - 1;
+ 	else
+diff --git a/arch/riscv/kernel/perf_callchain.c b/arch/riscv/kernel/perf_callchain.c
+index ad3001cbdf61..1aa84b998a11 100644
+--- a/arch/riscv/kernel/perf_callchain.c
++++ b/arch/riscv/kernel/perf_callchain.c
+@@ -19,8 +19,8 @@ static unsigned long user_backtrace(struct perf_callchain_entry_ctx *entry,
+ {
+ 	struct stackframe buftail;
+ 	unsigned long ra = 0;
+-	unsigned long *user_frame_tail =
+-			(unsigned long *)(fp - sizeof(struct stackframe));
++	unsigned long __user *user_frame_tail =
++		(unsigned long __user *)(fp - sizeof(struct stackframe));
+ 
+ 	/* Check accessibility of one struct frame_tail beyond */
+ 	if (!access_ok(user_frame_tail, sizeof(buftail)))
+diff --git a/arch/sparc/kernel/signal_32.c b/arch/sparc/kernel/signal_32.c
+index 741d0701003a..1da36dd34990 100644
+--- a/arch/sparc/kernel/signal_32.c
++++ b/arch/sparc/kernel/signal_32.c
+@@ -65,7 +65,7 @@ struct rt_signal_frame {
+  */
+ static inline bool invalid_frame_pointer(void __user *fp, int fplen)
+ {
+-	if ((((unsigned long) fp) & 15) || !__access_ok((unsigned long)fp, fplen))
++	if ((((unsigned long) fp) & 15) || !access_ok(fp, fplen))
+ 		return true;
+ 
+ 	return false;
+diff --git a/lib/test_lockup.c b/lib/test_lockup.c
+index f1a020bcc763..07f476317187 100644
+--- a/lib/test_lockup.c
++++ b/lib/test_lockup.c
+@@ -417,8 +417,8 @@ static bool test_kernel_ptr(unsigned long addr, int size)
+ 		return false;
+ 
+ 	/* should be at least readable kernel address */
+-	if (access_ok(ptr, 1) ||
+-	    access_ok(ptr + size - 1, 1) ||
++	if (access_ok((void __user *)ptr, 1) ||
++	    access_ok((void __user *)ptr + size - 1, 1) ||
+ 	    get_kernel_nofault(buf, ptr) ||
+ 	    get_kernel_nofault(buf, ptr + size - 1)) {
+ 		pr_err("invalid kernel ptr: %#lx\n", addr);
 -- 
 2.34.1
 
