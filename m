@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11631C43219
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:18:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E573CC4321E
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:18:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347226AbiC3MTH (ORCPT
+        id S1347149AbiC3MS7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:19:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35530 "EHLO
+        Wed, 30 Mar 2022 08:18:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344281AbiC3Lzq (ORCPT
+        with ESMTP id S1344518AbiC3L4Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:55:46 -0400
+        Wed, 30 Mar 2022 07:56:16 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBA9E2E691;
-        Wed, 30 Mar 2022 04:53:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C21FB2C10A;
+        Wed, 30 Mar 2022 04:54:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 271AE6170B;
-        Wed, 30 Mar 2022 11:53:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACCE5C340F3;
-        Wed, 30 Mar 2022 11:53:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 17B3D61729;
+        Wed, 30 Mar 2022 11:54:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 870D8C36AFB;
+        Wed, 30 Mar 2022 11:54:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641230;
-        bh=d1WhqMnR0SZYGD78p5l5bAJASVYV7v2GXdl4z6axBfQ=;
+        s=k20201202; t=1648641246;
+        bh=mu0L/N4Hal4oYwId839gQM/X2v3iaA6KL2sSNrYMQOE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f8dE4H7oP0DVBvFcMBnbMgb0AXgTl2sc3s644k+NEgkkzDwGVM4WsG3IyHxvc6Nrm
-         6KQGKNA1YzYIrSRPvGVXWm8p/yIKlXuOlVanADwvNcuZHgAT/NOKasIOO/s8VEE9KI
-         DS4hHX5eDx1Bjmg3PgKyxACcdN3wsOBHhzgDP/+ODrDQ5INSvt4jWI2FePJirnG+em
-         hzPvXpD7zuMZKTpPnZvMU9G5oaXqe0qbmjNcifuMV84/vgsb5H4Si6Ke5+lW2XubWL
-         yWoJe9SDGSb/prVwFmujEtUNLzmUmu1lgXH3sX8pIeodYfifpYEvKM3u3+D+bt0ln7
-         AYYS4UJQkXbmw==
+        b=YCHBYQ/zGlRgdcSQRzc/keU1XBmsZCPWUVGBszgaMiPZASsDiUPhFCBefcCIuAyNS
+         +sGLo0vw/2FALvT1HVF77EEyrP6abMlNwdSVQJT56dA0tQ1vgxnyS+ryNk7pMN20g/
+         MYx3yOLB7kc3DlKfaQRfcCGfvbTU+HNg6Y8jVYQz68TT/DHqwV2ei606SCrra+A/RD
+         pljNbcUyWcrUA0uH9HZsUH3EjiLkYrYno0hh9O+WM0YWyoUFL0O9ZvJzl/aTyEVZ4U
+         2tok3iJGo9GnZG00ovmCS1VbuquQeH8K9WD1+t0+k5oVrfNGMqikbcn+YI8EBdKxwo
+         vtD8RLpoQiz+Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jing Yao <yao.jing2@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
-        tomi.valkeinen@ti.com, linux-omap@vger.kernel.org,
-        linux-fbdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 08/20] video: fbdev: omapfb: panel-dsi-cm: Use sysfs_emit() instead of snprintf()
-Date:   Wed, 30 Mar 2022 07:53:24 -0400
-Message-Id: <20220330115336.1672930-8-sashal@kernel.org>
+Cc:     Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 4.14 20/20] ASoC: ak4642: Use of_device_get_match_data()
+Date:   Wed, 30 Mar 2022 07:53:36 -0400
+Message-Id: <20220330115336.1672930-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115336.1672930-1-sashal@kernel.org>
 References: <20220330115336.1672930-1-sashal@kernel.org>
@@ -53,60 +54,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jing Yao <yao.jing2@zte.com.cn>
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-[ Upstream commit f63658a59c3d439c8ad7b290f8ec270980e0f384 ]
+[ Upstream commit 835ca59799f5c60b4b54bdc7aa785c99552f63e4 ]
 
-Use sysfs_emit instead of scnprintf, snprintf or sprintf.
+Use of_device_get_match_data() to simplify the code.
 
 Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+Link: https://lore.kernel.org/r/20220315023226.2118354-1-chi.minghao@zte.com.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ sound/soc/codecs/ak4613.c | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
-index bef431530090..25cc0bcdfe19 100644
---- a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
-+++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
-@@ -413,7 +413,7 @@ static ssize_t dsicm_num_errors_show(struct device *dev,
- 	if (r)
- 		return r;
+diff --git a/sound/soc/codecs/ak4613.c b/sound/soc/codecs/ak4613.c
+index b95bb8b52e51..fb6b75a868ce 100644
+--- a/sound/soc/codecs/ak4613.c
++++ b/sound/soc/codecs/ak4613.c
+@@ -568,15 +568,10 @@ static int ak4613_i2c_probe(struct i2c_client *i2c,
+ 	struct ak4613_priv *priv;
  
--	return snprintf(buf, PAGE_SIZE, "%d\n", errors);
-+	return sysfs_emit(buf, "%d\n", errors);
- }
+ 	regmap_cfg = NULL;
+-	if (np) {
+-		const struct of_device_id *of_id;
+-
+-		of_id = of_match_device(ak4613_of_match, dev);
+-		if (of_id)
+-			regmap_cfg = of_id->data;
+-	} else {
++	if (np)
++		regmap_cfg = of_device_get_match_data(dev);
++	else
+ 		regmap_cfg = (const struct regmap_config *)id->driver_data;
+-	}
  
- static ssize_t dsicm_hw_revision_show(struct device *dev,
-@@ -444,7 +444,7 @@ static ssize_t dsicm_hw_revision_show(struct device *dev,
- 	if (r)
- 		return r;
- 
--	return snprintf(buf, PAGE_SIZE, "%02x.%02x.%02x\n", id1, id2, id3);
-+	return sysfs_emit(buf, "%02x.%02x.%02x\n", id1, id2, id3);
- }
- 
- static ssize_t dsicm_store_ulps(struct device *dev,
-@@ -494,7 +494,7 @@ static ssize_t dsicm_show_ulps(struct device *dev,
- 	t = ddata->ulps_enabled;
- 	mutex_unlock(&ddata->lock);
- 
--	return snprintf(buf, PAGE_SIZE, "%u\n", t);
-+	return sysfs_emit(buf, "%u\n", t);
- }
- 
- static ssize_t dsicm_store_ulps_timeout(struct device *dev,
-@@ -541,7 +541,7 @@ static ssize_t dsicm_show_ulps_timeout(struct device *dev,
- 	t = ddata->ulps_timeout;
- 	mutex_unlock(&ddata->lock);
- 
--	return snprintf(buf, PAGE_SIZE, "%u\n", t);
-+	return sysfs_emit(buf, "%u\n", t);
- }
- 
- static DEVICE_ATTR(num_dsi_errors, S_IRUGO, dsicm_num_errors_show, NULL);
+ 	if (!regmap_cfg)
+ 		return -EINVAL;
 -- 
 2.34.1
 
