@@ -2,71 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60A96C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 01:58:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FBB5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 01:59:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241789AbiC3CAJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 22:00:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36318 "EHLO
+        id S241784AbiC3CBl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 22:01:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241774AbiC3CAE (ORCPT
+        with ESMTP id S236458AbiC3CBi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 22:00:04 -0400
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B94C6209
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 18:58:19 -0700 (PDT)
-Received: by mail-il1-f198.google.com with SMTP id s4-20020a92c5c4000000b002c7884b8608so10596363ilt.21
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 18:58:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=IseIOXkjbiVc9FdIOxRiy+s/BeCwVlVVfBMa+vQ5dYY=;
-        b=NCGoo06H2QQHBvmlQdg6KNrInkg2yAfrT0l6w4mCNuno/Mh5+y+9lnyD41Rq6fB3RV
-         dFQP3C8XgNsL9fFKvaN7wEcZMC2j3ThoqczPD2Xj5op4/rSezqYZl1FzYMHqSzCptNMV
-         YP+FVJhh2o9/oZ36NkUQoIfmtJRcE/bnJe8pMfab6gEIJ1hH9qgxmBRefdV0FUoEw8GP
-         Rh/h7t7WZqTs6Ja7o3rZl7YmHmzaK7kjT2JfWvlR1hqFcv6L9H+1OunHGFy1MP30xheC
-         CD9MD/41jjb3LcoMyajG9jXMsZGF8AzAqe1NJ9Rl4sOf1uDwb6pjHVphl3HZkShCfivC
-         W/dA==
-X-Gm-Message-State: AOAM531NQ6XR3dgJIi7XZCTQ4i3w13QtCPnl3bX2r7J6S4tsI7O094s9
-        QqVBnJ6X1fjqawlan1nuZK1ZrtJvovrGuS9cHA250sv6IK2a
-X-Google-Smtp-Source: ABdhPJzZsTbs5V+jGlGVIPmp5OJTNAz4szJdfUPGD5BTq859VgJKGagheZr0km8YyX41O8llp18wpjR3unLlE2QdRCrpcxbY+eVR
+        Tue, 29 Mar 2022 22:01:38 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C3C76A438
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 18:59:53 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KSqPL4pB3z1GD5x;
+        Wed, 30 Mar 2022 09:59:34 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 30 Mar 2022 09:59:51 +0800
+Subject: Re: [PATCH 4/8] mm/vmscan: save a bit of stack space in shrink_lruvec
+To:     Christoph Hellwig <hch@infradead.org>
+CC:     <akpm@linux-foundation.org>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220329132619.18689-1-linmiaohe@huawei.com>
+ <20220329132619.18689-5-linmiaohe@huawei.com>
+ <YkMRFaRwS6dadsQ0@infradead.org>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <cfbd21f9-afbe-cabc-b7e7-057d8ad58e37@huawei.com>
+Date:   Wed, 30 Mar 2022 09:59:51 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:2101:b0:319:d53e:5663 with SMTP id
- n1-20020a056638210100b00319d53e5663mr18244887jaj.115.1648605498964; Tue, 29
- Mar 2022 18:58:18 -0700 (PDT)
-Date:   Tue, 29 Mar 2022 18:58:18 -0700
-In-Reply-To: <PH0PR11MB5880D90EDFAA0A190D927914DA1F9@PH0PR11MB5880.namprd11.prod.outlook.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000024006a05db65e1e4@google.com>
-Subject: Re: [syzbot] memory leak in gs_usb_probe
-From:   syzbot <syzbot+4d0ae90a195b269f102d@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mkl@pengutronix.de,
-        netdev@vger.kernel.org, pabeni@redhat.com, pfink@christ-es.de,
-        qiang1.zhang@intel.com, syzkaller-bugs@googlegroups.com,
-        wg@grandegger.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <YkMRFaRwS6dadsQ0@infradead.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On 2022/3/29 22:00, Christoph Hellwig wrote:
+> On Tue, Mar 29, 2022 at 09:26:15PM +0800, Miaohe Lin wrote:
+>> LRU_UNEVICTABLE is not taken into account when shrink lruvec. So we can
+>> save a bit of stack space by shrinking the array size of nr and targets
+>> to NR_LRU_LISTS - 1. No functional change intended.
+>>
+>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>> ---
+>>  mm/vmscan.c | 5 +++--
+>>  1 file changed, 3 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/mm/vmscan.c b/mm/vmscan.c
+>> index a6e60c78d058..ebd8ffb63673 100644
+>> --- a/mm/vmscan.c
+>> +++ b/mm/vmscan.c
+>> @@ -2862,8 +2862,9 @@ static bool can_age_anon_pages(struct pglist_data *pgdat,
+>>  
+>>  static void shrink_lruvec(struct lruvec *lruvec, struct scan_control *sc)
+>>  {
+>> -	unsigned long nr[NR_LRU_LISTS];
+>> -	unsigned long targets[NR_LRU_LISTS];
+>> +	/* LRU_UNEVICTABLE is not taken into account. */
+>> +	unsigned long nr[NR_LRU_LISTS - 1];
+>> +	unsigned long targets[NR_LRU_LISTS - 1];
+> 
+> This looks like a problem waiting to happen..
 
-syzbot tried to test the proposed patch but the build/boot failed:
+IIUC, I am changing the array size to what it exactly uses now. And LRU_UNEVICTABLE won't be
+used anyway. Could you please tell me what kind of problem is waiting to happen ? If this
+will result in actual risk, I will drop this patch.
 
-failed to apply patch:
-checking file drivers/net/can/usb/gs_usb.c
-patch: **** unexpected end of file in patch
+Thanks.
 
-
-
-Tested on:
-
-commit:         c2528a0c Add linux-next specific files for 20220329
-git tree:       linux-next
-dashboard link: https://syzkaller.appspot.com/bug?extid=4d0ae90a195b269f102d
-compiler:       
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=163e219b700000
+> 
+> .
+> 
 
