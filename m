@@ -2,97 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68F1EC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE31AC35274
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346413AbiC3ME7 (ORCPT
+        id S1346649AbiC3MF0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:04:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57624 "EHLO
+        Wed, 30 Mar 2022 08:05:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345518AbiC3Lyh (ORCPT
+        with ESMTP id S1345618AbiC3Lyv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:54:37 -0400
+        Wed, 30 Mar 2022 07:54:51 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA1C6285689;
-        Wed, 30 Mar 2022 04:51:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E149261312;
+        Wed, 30 Mar 2022 04:51:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 20651B81BBA;
-        Wed, 30 Mar 2022 11:51:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F96BC340F3;
-        Wed, 30 Mar 2022 11:51:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648641071;
-        bh=nxIOltSbaG5GUENpJGaaI5NG9vqyMlBWdNn62tdSYpI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qCN3nMJVHP7fOrepSPYIMkGHpLJt/To1QsAwCumPKeOqWpTUTVJak536qf7GsUn6w
-         8Yg2fXEKXgDM6tDdckGrvlqjonaC8k//0JD2Z4O15h1z82YJ2LRHYQQ6EgNhVM99pv
-         m38HZt28ms9cJMDlVfqJnR7heAzRyHQJiJLaE15w=
-Date:   Wed, 30 Mar 2022 13:51:08 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Stephen Brennan <stephen.s.brennan@oracle.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        linux@roeck-us.net
-Subject: Re: [PATCH AUTOSEL 5.17 31/66] printk: Add panic_in_progress helper
-Message-ID: <YkRELPuydJ5Fn3It@kroah.com>
-References: <20220330114646.1669334-1-sashal@kernel.org>
- <20220330114646.1669334-31-sashal@kernel.org>
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF9A0B81C37;
+        Wed, 30 Mar 2022 11:51:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E6CEC36AE2;
+        Wed, 30 Mar 2022 11:51:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648641087;
+        bh=Qwld639rWFNiSh85PW5Z3KUZfu7NCz4cuIK0UIEMmms=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rBSlbTX1t6cigFNjSl6PQ1m++znknmYldOpVxVg0Xu8EQTR5hMhWK/nr+rZaTfgtQ
+         BkS3uFwKgSfibMfTCDs6kjDBCaY7iSk4H4N4B5rX5LZ8YdSUFuwy2xQpyZHJL7HAeZ
+         2GUko0LQVdAT7xz3nPMrodtX1Z6mtKQo2LAPnn2vZcCoTvP/w28hkxlEr6JcocJJky
+         JAT1h3PhRqNbxg1DZGlUDRC9PGNYg7ebpHnbvxLCGBuWs1ahq/0+I1LW6VtCUUdkir
+         Tay2P91WR06ClQjmNegCFhPXHsI3W4kiltWonObLOBVY4mwnjNQLuiBVSOaoDfy7XC
+         RVDJS78b5ESnw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Corentin Labbe <clabbe@baylibre.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, gregkh@linuxfoundation.org,
+        linux-media@vger.kernel.org, devel@driverdev.osuosl.org
+Subject: [PATCH AUTOSEL 5.10 02/37] media: staging: media: zoran: calculate the right buffer number for zoran_reap_stat_com
+Date:   Wed, 30 Mar 2022 07:50:47 -0400
+Message-Id: <20220330115122.1671763-2-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220330115122.1671763-1-sashal@kernel.org>
+References: <20220330115122.1671763-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220330114646.1669334-31-sashal@kernel.org>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 07:46:10AM -0400, Sasha Levin wrote:
-> From: Stephen Brennan <stephen.s.brennan@oracle.com>
-> 
-> [ Upstream commit 77498617857f68496b360081dde1a492d40c28b2 ]
-> 
-> This will be used help avoid deadlocks during panics. Although it would
-> be better to include this in linux/panic.h, it would require that header
-> to include linux/atomic.h as well. On some architectures, this results
-> in a circular dependency as well. So instead add the helper directly to
-> printk.c.
-> 
-> Suggested-by: Petr Mladek <pmladek@suse.com>
-> Signed-off-by: Stephen Brennan <stephen.s.brennan@oracle.com>
-> Reviewed-by: Petr Mladek <pmladek@suse.com>
-> Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
-> Signed-off-by: Petr Mladek <pmladek@suse.com>
-> Link: https://lore.kernel.org/r/20220202171821.179394-2-stephen.s.brennan@oracle.com
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->  kernel/printk/printk.c | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-> index 82abfaf3c2aa..0f8918f5f22a 100644
-> --- a/kernel/printk/printk.c
-> +++ b/kernel/printk/printk.c
-> @@ -257,6 +257,11 @@ static void __up_console_sem(unsigned long ip)
->  }
->  #define up_console_sem() __up_console_sem(_RET_IP_)
->  
-> +static bool panic_in_progress(void)
-> +{
-> +	return unlikely(atomic_read(&panic_cpu) != PANIC_CPU_INVALID);
-> +}
-> +
->  /*
->   * This is used for debugging the mess that is the VT code by
->   * keeping track if we have the console semaphore held. It's
-> -- 
-> 2.34.1
-> 
+From: Corentin Labbe <clabbe@baylibre.com>
 
-All 4 of the printk patches should not need to be backported to stable
-kernels, thanks.  Please drop them all.
+[ Upstream commit e3b86f4e558cea9eed71d894df2f19b10d60a207 ]
 
-greg k-h
+On the case tmp_dcim=1, the index of buffer is miscalculated.
+This generate a NULL pointer dereference later.
+
+So let's fix the calcul and add a check to prevent this to reappear.
+
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/staging/media/zoran/zoran_device.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/staging/media/zoran/zoran_device.c b/drivers/staging/media/zoran/zoran_device.c
+index e569a1341d01..913f5a3c5bfc 100644
+--- a/drivers/staging/media/zoran/zoran_device.c
++++ b/drivers/staging/media/zoran/zoran_device.c
+@@ -879,7 +879,7 @@ static void zoran_reap_stat_com(struct zoran *zr)
+ 		if (zr->jpg_settings.tmp_dcm == 1)
+ 			i = (zr->jpg_dma_tail - zr->jpg_err_shift) & BUZ_MASK_STAT_COM;
+ 		else
+-			i = ((zr->jpg_dma_tail - zr->jpg_err_shift) & 1) * 2 + 1;
++			i = ((zr->jpg_dma_tail - zr->jpg_err_shift) & 1) * 2;
+ 
+ 		stat_com = le32_to_cpu(zr->stat_com[i]);
+ 		if ((stat_com & 1) == 0) {
+@@ -891,6 +891,11 @@ static void zoran_reap_stat_com(struct zoran *zr)
+ 		size = (stat_com & GENMASK(22, 1)) >> 1;
+ 
+ 		buf = zr->inuse[i];
++		if (!buf) {
++			spin_unlock_irqrestore(&zr->queued_bufs_lock, flags);
++			pci_err(zr->pci_dev, "No buffer at slot %d\n", i);
++			return;
++		}
+ 		buf->vbuf.vb2_buf.timestamp = ktime_get_ns();
+ 
+ 		if (zr->codec_mode == BUZ_MODE_MOTION_COMPRESS) {
+-- 
+2.34.1
+
