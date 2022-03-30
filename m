@@ -2,84 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 966F7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 01:35:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8079AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 01:43:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241675AbiC3Bhb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 21:37:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39010 "EHLO
+        id S241689AbiC3Bov (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 21:44:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232517AbiC3Bh3 (ORCPT
+        with ESMTP id S229592AbiC3Bos (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 21:37:29 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FAE9B1ABE;
-        Tue, 29 Mar 2022 18:35:45 -0700 (PDT)
-Received: from kwepemi100014.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KSpsT5J6nzcbKx;
-        Wed, 30 Mar 2022 09:35:25 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- kwepemi100014.china.huawei.com (7.221.188.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 30 Mar 2022 09:35:42 +0800
-Received: from [10.174.176.73] (10.174.176.73) by
- kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 30 Mar 2022 09:35:42 +0800
-Subject: Re: [PATCH -next RFC 2/6] block: refactor to split bio thoroughly
-To:     Jens Axboe <axboe@kernel.dk>, <andriy.shevchenko@linux.intel.com>,
-        <john.garry@huawei.com>, <ming.lei@redhat.com>
-CC:     <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <yi.zhang@huawei.com>
-References: <20220329094048.2107094-1-yukuai3@huawei.com>
- <20220329094048.2107094-3-yukuai3@huawei.com>
- <2b37ce73-83dd-e572-9578-7bb045f1040b@kernel.dk>
-From:   "yukuai (C)" <yukuai3@huawei.com>
-Message-ID: <81bc3675-ddc6-1742-40e5-a1022dba68ca@huawei.com>
-Date:   Wed, 30 Mar 2022 09:35:41 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Tue, 29 Mar 2022 21:44:48 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AD0E181163
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 18:43:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648604584; x=1680140584;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=RBfikAOvRA4lz391tZg0rlL77dX/vA4hBKheGf719eM=;
+  b=iqOnz74WGI3Igt40u+lLVQB+y/U+A2ZH6DrFvi5+qqM84+A/lUqQD29J
+   SsBX938YMNeExGV5Hhn+MztDeSY2QOCSQImRndaBBgGxO+b/o+dJP0mmT
+   mIEpDE6/7AAmu9XuODFnbduvisok9KulqYAIGYm6aMVLqErbnnrETKENX
+   l6LKLmysMKBVIM2qqWbbXPQlc0vcnq6vvyqDWPQ0QI2nXGhBHHCweLU7A
+   4Zb3TBT23XiUXKJHK1om4Jb93OjBWYQy3R/OZq5wuVUSQjQQWp/IzPh6o
+   mldiAT4StJqYRkanexAgNmD+Ln2Ry7bMOQYLf45yvjKr0OP5hOIRFcgdk
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="345857225"
+X-IronPort-AV: E=Sophos;i="5.90,221,1643702400"; 
+   d="scan'208";a="345857225"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 18:43:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,221,1643702400"; 
+   d="scan'208";a="694935357"
+Received: from unknown (HELO localhost.localdomain) ([10.226.216.87])
+  by fmsmga001.fm.intel.com with ESMTP; 29 Mar 2022 18:43:00 -0700
+From:   kah.jing.lee@intel.com
+To:     dinguyen@kernel.org
+Cc:     linux-kernel@vger.kernel.org, kah.jing.lee@intel.com
+Subject: [PATCH v4] firmware: stratix10-rsu & svc: extend RSU & svc driver to get DCMF status
+Date:   Wed, 30 Mar 2022 17:42:52 +0800
+Message-Id: <20220330094253.3248179-1-kah.jing.lee@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <be70b809-659e-9a7e-2819-c38450c1014e@kernel.org>
+References: <be70b809-659e-9a7e-2819-c38450c1014e@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <2b37ce73-83dd-e572-9578-7bb045f1040b@kernel.dk>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.176.73]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600009.china.huawei.com (7.193.23.164)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/03/29 20:46, Jens Axboe wrote:
-> On 3/29/22 3:40 AM, Yu Kuai wrote:
->> Currently, the splited bio is handled first, and then continue to split
->> the original bio. This patch tries to split the original bio thoroughly,
->> so that it can be known in advance how many tags will be needed.
-> 
-> This makes the bio almost 10% bigger in size, which is NOT something
-> that is just done casually and without strong reasoning.
-Hi,
 
-Thanks for taking time on this patchset, It's right this way is not
-appropriate.
-> 
-> So please provide that, your commit message is completely missing
-> justification for why this change is useful or necessary. A good
-> commit always explains WHY the change needs to be made, yours is
-> simply stating WHAT is being done. The latter can be gleaned from
-> the code change anyway.
-> 
-Thanks for the guidance, I'll pay attemtion to that carefully in future.
+Resent, missing out linux mailing list.
 
-For this patch, what I want to do is to gain information about how many
-tags will be needed for the big io before getting the first tag, and use
-that information to optimize wake up path. The problem in this patch is
-that adding two feilds in bio is a bad move.
-
-I was thinking that for segment split, I can get the information by
-caculating bio segments / queue max segments.
-
-Thanks,
-Kuai
+Thanks.
+KJ
 
