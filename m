@@ -2,69 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5972FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 07:19:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5A44C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 07:20:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243748AbiC3HU4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 03:20:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52356 "EHLO
+        id S243753AbiC3HWi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 03:22:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242175AbiC3HUv (ORCPT
+        with ESMTP id S241568AbiC3HWb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 03:20:51 -0400
-Received: from cavan.codon.org.uk (irc.codon.org.uk [IPv6:2a00:1098:84:22e::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58D8F1903E4;
-        Wed, 30 Mar 2022 00:19:01 -0700 (PDT)
-Received: by cavan.codon.org.uk (Postfix, from userid 1000)
-        id DC2BB40A71; Wed, 30 Mar 2022 08:18:59 +0100 (BST)
-Date:   Wed, 30 Mar 2022 08:18:59 +0100
-From:   Matthew Garrett <mjg59@srcf.ucam.org>
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     Daniel Kiper <daniel.kiper@oracle.com>,
-        Alec Brown <alec.r.brown@oracle.com>,
-        Kanth Ghatraju <kanth.ghatraju@oracle.com>,
-        Ross Philipson <ross.philipson@oracle.com>,
-        "dpsmith@apertussolutions.com" <dpsmith@apertussolutions.com>,
-        "piotr.krol@3mdeb.com" <piotr.krol@3mdeb.com>,
-        "krystian.hebel@3mdeb.com" <krystian.hebel@3mdeb.com>,
-        "persaur@gmail.com" <persaur@gmail.com>,
-        "Yoder, Stuart" <stuart.yoder@arm.com>,
-        Andrew Cooper <andrew.cooper3@citrix.com>,
-        "michal.zygowski@3mdeb.com" <michal.zygowski@3mdeb.com>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        "lukasz@hawrylko.pl" <lukasz@hawrylko.pl>,
-        linux-efi <linux-efi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        The development of GNU GRUB <grub-devel@gnu.org>,
-        Kees Cook <keescook@chromium.org>
-Subject: Re: Linux DRTM on UEFI platforms
-Message-ID: <20220330071859.GA992@srcf.ucam.org>
-References: <20220329174057.GA17778@srcf.ucam.org>
- <CAMj1kXE-7yPTBgQQKXRnQbdvLMv6D7=CowtQ38PdpPVa3SW-Ag@mail.gmail.com>
- <20220330071103.GA809@srcf.ucam.org>
- <CAMj1kXE9WrBOUG6MRQ90cMH_NvvCw_jVCar5Dsj+gkZr1AA0MQ@mail.gmail.com>
+        Wed, 30 Mar 2022 03:22:31 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ABF6C74B7
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 00:20:46 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id o10so39678805ejd.1
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 00:20:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=nKyHhk1aCz3J+2WnVPDV/+yanuQHnJSxGVVBQGJ8Rs0=;
+        b=NCO6etGLHHH6X38b34SknmLRrdfqnVMnkOiwd6ElkxYMj0ZtzGitFZAWeAEUC+RiKL
+         Y5VUnHoGBWI499BseoXn4wlzJ+AG2OFx0p4ToGNPiz3mBOQK/oasn2YUB/XI1PtGU265
+         qO35Ck89razjDnmf0jUqCDsEP4/G+KzYN8cbC2eI4q0GiL+CIb9kniGAetaS0FiOB/TY
+         uiRhVN7zE7sEtBMYF5v1q3JEEhCadWwAqzbjNP/O+yjiOL5AH+6R3me/+7my60Gee0kr
+         5Lzq9RafruSougdsQXGFaDGiZ9sunNDowIDXiMaZH7t5kCw3JhG0z7AeH5bo1M2rE3wh
+         SbdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nKyHhk1aCz3J+2WnVPDV/+yanuQHnJSxGVVBQGJ8Rs0=;
+        b=e8cb8YYe8HAIlrGcyrW3ZDARrtgg819guN8vIkBqHw5VN3Sv5kLDHhDNZEAw5eYxiQ
+         ZbSJ+oES9i4JOaLC7X49Y9vGRzUAxtLKwXSl4z0fGjuFXxG1ca916ocZ+fYyTXpFGbNj
+         nBKm68LAacRO8FFCmMicrzneE4CvUabXk6xZ48DejEyzi5kUTfA9ztfb0Pr2EGxFNqFQ
+         6ckPPgI6sIZ8Q6mKNXgko27kt0q1G0we20JqyLn3LmpQ72VHP0oZMy5MZTYK1L9Ll7gy
+         6lbVmbLqO8FPkTrDiecVFrMNlvugPkceUJQpdd2HNjoM+DpDh8YVOnH8fqGGavat9wt1
+         XyYg==
+X-Gm-Message-State: AOAM531flQ3+3ClaqXYMPRMDO1iYohClVsd9+HWMKubl4U5J9VUxXytf
+        G4nnybN2KhUs/UXvudnSvZF7Cg==
+X-Google-Smtp-Source: ABdhPJwFtTZFPPpNR5frMHkyY3jbV3DBMwyHz0XMeIyP61bIXNX5XnuJ+DaCpjWN14Z9IW8C3GcYJw==
+X-Received: by 2002:a17:907:da6:b0:6e0:c59:f3ad with SMTP id go38-20020a1709070da600b006e00c59f3admr38699777ejc.85.1648624844736;
+        Wed, 30 Mar 2022 00:20:44 -0700 (PDT)
+Received: from [192.168.0.162] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id bm5-20020a170906c04500b006ce6f8892a5sm7862579ejb.7.2022.03.30.00.20.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Mar 2022 00:20:44 -0700 (PDT)
+Message-ID: <ad213f38-f0a2-6420-cfa0-a9ba7cb362d5@linaro.org>
+Date:   Wed, 30 Mar 2022 09:20:43 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMj1kXE9WrBOUG6MRQ90cMH_NvvCw_jVCar5Dsj+gkZr1AA0MQ@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v5 2/2] dt-bindings: mmc: xenon: Convert to JSON schema
+Content-Language: en-US
+To:     Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        ulf.hansson@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org,
+        huziji@marvell.com, andrew@lunn.ch, gregory.clement@bootlin.com,
+        sebastian.hesselbarth@gmail.com
+Cc:     linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+References: <20220329220544.2132135-1-chris.packham@alliedtelesis.co.nz>
+ <20220329220544.2132135-3-chris.packham@alliedtelesis.co.nz>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220329220544.2132135-3-chris.packham@alliedtelesis.co.nz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 09:12:19AM +0200, Ard Biesheuvel wrote:
-> On Wed, 30 Mar 2022 at 09:11, Matthew Garrett <mjg59@srcf.ucam.org> wrote:
-> > The EFI stub carries out a bunch of actions that have meaningful
-> > security impact, and that's material that should be measured. Having the
-> > secure launch kernel execute the stub without awareness of what it does
-> > means it would need to measure the code without measuring the state,
-> > while the goal of DRTM solutions is to measure state rather than the
-> > code.
+On 30/03/2022 00:05, Chris Packham wrote:
+> Convert the marvell,xenon-sdhci binding to JSON schema. Currently the
+> in-tree dts files don't validate because they use sdhci@ instead of mmc@
+> as required by the generic mmc-controller schema.
 > 
-> But how is that any different from the early kernel code?
+> The compatible "marvell,sdhci-xenon" was not documented in the old
+> binding but it accompanies the of "marvell,armada-3700-sdhci" in the
+> armada-37xx SoC dtsi so this combination is added to the new binding
+> document.
+> 
+> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+> Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+> ---
+> 
+> Notes:
+>     Changes in v5:
+>     - Fix silly error in examples
+>     Changes in v4:
+>     - Add review from Krzysztof
+>     - Squash in addition of marvell,sdhci-xenon with an explanation in the
+>       commit message
+>     Changes in v3:
+>     - Don't accept ap807 without ap806
+>     - Add ref: string for pad-type
+>     Changes in v2:
+>     - Update MAINTAINERS entry
+>     - Incorporate feedback from Krzysztof
+> 
+>  .../bindings/mmc/marvell,xenon-sdhci.txt      | 173 -----------
+>  .../bindings/mmc/marvell,xenon-sdhci.yaml     | 275 ++++++++++++++++++
+>  MAINTAINERS                                   |   2 +-
+>  3 files changed, 276 insertions(+), 174 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/mmc/marvell,xenon-sdhci.txt
+>  create mode 100644 Documentation/devicetree/bindings/mmc/marvell,xenon-sdhci.yaml
+> 
 
-From a conceptual perspective we've thought of the EFI stub as being 
-logically part of the bootloader rather than the early kernel, and the 
-bootloader is a point where the line is drawn. My guy feeling is that 
-jumping into the secure kernel environment before EBS has been called is 
-likely to end badly.
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+Best regards,
+Krzysztof
