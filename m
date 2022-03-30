@@ -2,157 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40038C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:23:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93861C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:27:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343605AbiC3LZj (ORCPT
+        id S1343617AbiC3L3Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 07:25:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52328 "EHLO
+        Wed, 30 Mar 2022 07:29:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237302AbiC3LZf (ORCPT
+        with ESMTP id S237302AbiC3L3Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:25:35 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1583AA94CD
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 04:23:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1648639430; x=1680175430;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=E1MJOvF0qPUI776oOeuXiPdVr2MFLU5xy8K85tKXbO8=;
-  b=E5nyB/OwkTDYtZv/PKCpyGVXezeJ9v66Q0pGYQGNi/JEuhnESkzPSkQP
-   mFs+h93fWP9e9A9UFU9ilI8vy+LUor21hC6dxa5tmqItdgzI2fTsu4YeL
-   Flm1hSOLW5Fz+8QLKNIcMyrRQOEfKQyVliZEPaG/KQFDAJrnGjnz7HARK
-   4=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 30 Mar 2022 04:23:50 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 04:23:50 -0700
-Received: from [10.110.1.142] (10.80.80.8) by nasanex01c.na.qualcomm.com
- (10.47.97.222) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 30 Mar
- 2022 04:23:47 -0700
-Message-ID: <79640fdc-688f-f545-0ec7-0988d180ba58@quicinc.com>
-Date:   Wed, 30 Mar 2022 16:53:41 +0530
+        Wed, 30 Mar 2022 07:29:24 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 641BB15AAD8
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 04:27:39 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 9CD351F38C;
+        Wed, 30 Mar 2022 11:27:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1648639657; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SEh9q825X4XJd27vocQTJ0Ah1yjY4ISz2lUFtaIbslU=;
+        b=hiwZ/rnvHAmRUVLDkeV0iDDn9/HCy6oQYGW6bL56T6trX/3UQvFHGHqqxoka2uz3zs8/wb
+        r/VkjjjMzfK23RBhwMlEeTMfIK5G9jl5HjCp3aZG/XPLMdAn67JiQHUEtykG1MbG6miwNc
+        zlLIXqKQeOTzFgoVXbrfWlURUsIiH6E=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1648639657;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SEh9q825X4XJd27vocQTJ0Ah1yjY4ISz2lUFtaIbslU=;
+        b=RFrnMZzzPrRfgPVjY76VRPQm6Ut2g6BailUUqf2UDnkBtTaTTv7Da+SS6IBUe/XEfaINgD
+        MGotLDXCyBbVx8DQ==
+Received: from kunlun.suse.cz (unknown [10.100.128.76])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id A5927A3B88;
+        Wed, 30 Mar 2022 11:27:34 +0000 (UTC)
+Date:   Wed, 30 Mar 2022 13:27:33 +0200
+From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
+To:     Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        wangborong@cdjrlc.com, Bhaskar Chowdhury <unixbhaskar@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Alexey Kardashevskiy <aik@ozlabs.ru>, jniethe5@gmail.com,
+        psampat@linux.ibm.com, Miroslav Benes <mbenes@suse.cz>,
+        hbh25y@gmail.com, mikey@neuling.org,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Anders Roxell <anders.roxell@linaro.org>,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Helge Deller <deller@gmx.de>, danielhb413@gmail.com,
+        haren@linux.ibm.com, Thierry Reding <treding@nvidia.com>,
+        ganeshgr@linux.ibm.com, Corentin Labbe <clabbe@baylibre.com>,
+        mamatha4@linux.vnet.ibm.com,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        kernel.noureddine@gmail.com, nathanl@linux.ibm.com,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Kees Cook <keescook@chromium.org>,
+        Arnd Bergmann <arnd@arndb.de>, guozhengkui@vivo.com,
+        kjain@linux.ibm.com, chenjingwen6@huawei.com,
+        Nick Piggin <npiggin@gmail.com>, oss@buserror.net,
+        rmclure@linux.ibm.com, maddy@linux.ibm.com,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Jakob Koschel <jakobkoschel@gmail.com>, sachinp@linux.ibm.com,
+        bigunclemax@gmail.com, ldufour@linux.ibm.com,
+        hbathini@linux.ibm.com,
+        Athira Jajeev <atrajeev@linux.vnet.ibm.com>,
+        farosas@linux.ibm.com, Geoff Levand <geoff@infradead.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        sourabhjain@linux.ibm.com, Julia Lawall <Julia.Lawall@inria.fr>,
+        Ritesh Harjani <riteshh@linux.ibm.com>, cgel.zte@gmail.com,
+        Vaibhav Jain <vaibhav@linux.ibm.com>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        tobias@waldekranz.com
+Subject: Re: [GIT PULL] Please pull powerpc/linux.git powerpc-5.18-1 tag
+Message-ID: <20220330112733.GG163591@kunlun.suse.cz>
+References: <87zglefhxd.fsf@mpe.ellerman.id.au>
+ <CAHk-=whk4jihDM+zkhZPYRyNO0-YA1_-K9_NyC3EDsX+gkxC-w@mail.gmail.com>
+ <87wngefnsu.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: Possible case of Race in kobject_get_path()
-Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <0410ceda-cbdd-43a9-7d9b-4079bcdb6237@quicinc.com>
- <YkQuFohIp2jSLCcz@kroah.com>
- <148f4e9b-0584-ccc1-1443-30d41190dfd3@quicinc.com>
- <YkQ4iz3iZ0cM+FS2@kroah.com>
- <eda6c7c9-558a-cf3f-1aa4-79988bbbac24@quicinc.com>
- <YkQ8teUQbNudfEGN@kroah.com>
-From:   Mukesh Ojha <quic_mojha@quicinc.com>
-In-Reply-To: <YkQ8teUQbNudfEGN@kroah.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01c.na.qualcomm.com (10.47.97.222)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87wngefnsu.fsf@mpe.ellerman.id.au>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Mar 28, 2022 at 08:07:13PM +1100, Michael Ellerman wrote:
+> Linus Torvalds <torvalds@linux-foundation.org> writes:
+> > On Fri, Mar 25, 2022 at 3:25 AM Michael Ellerman <mpe@ellerman.id.au> wrote:
 
-On 3/30/2022 4:49 PM, Greg KH wrote:
-> On Wed, Mar 30, 2022 at 04:44:26PM +0530, Mukesh Ojha wrote:
->> On 3/30/2022 4:31 PM, Greg KH wrote:
->>> On Wed, Mar 30, 2022 at 04:14:11PM +0530, Mukesh Ojha wrote:
->>>> On 3/30/2022 3:46 PM, Greg KH wrote:
->>>>> On Wed, Mar 30, 2022 at 03:41:04PM +0530, Mukesh Ojha wrote:
->>>>>> Hi All,
->>>>>>
->>>>>> We are facing one issue where one driver (p1) is trying to register its
->>>>>> device from driver probe
->>>>>> and from another path (p2) dev_set_name(new name) done from driver probe of
->>>>>> the added device whose
->>>>>> new name length can be more than earlier done in (p1 path) which could
->>>>>> result in redzone overwritten issue.
->>>>> I do not understand, what specific driver is doing this so that we can
->>>>> see an example of this problem?
->>>> trying to paste some logs of the race.
->>>>
->>>> [ 14.235820][ T503] BUG kmalloc-128 (Tainted: G S O ): Left Redzone
->>>> overwritten
->>> What kernel version is this?
->> 5.10
-> That is very old, is this an issue in 5.17?
->
->>>> [ 14.244189][ T503]
->>>> -----------------------------------------------------------------------------
->>>> [ 14.255241][ T503] INFO: 0xffffff87caae0f7d-0xffffff87caae0f7f
->>>> @offset=3965. First byte 0x2f instead of 0xcc
->>>> [ 14.265176][ T503] INFO: Allocated in kobject_get_path+0x58/0x100 age=1
->>>> cpu=0 pid=503
->>>> [ 14.273111][ T503] kobject_get_path+0x58/0x100
->>>> [ 14.277747][ T503] kobject_uevent_env+0x120/0x744
->>>> [ 14.282639][ T503] device_add+0x98c/0x1028
->>>> [ 14.286925][ T503] *device_register+0x24/0x38*
->>>> [ 14.291395][ T503] slim_alloc_device+0xdc/0x108 [slimbus]
->>>> [ 14.296992][ T503] slim_register_controller+0x210/0x2ac [slimbus]
->>>> [ 14.303291][ T503] qcom_slim_ngd_probe+0x3c/0x348 [slim_qcom_ngd_ctrl]
->>>> [ 14.310007][ T503] platform_drv_probe+0x60/0x180
->>>> [ 14.314812][ T503] really_probe+0x208/0xb64
->>>> [ 14.319184][ T503] driver_probe_device+0x130/0x254
->>>> [ 14.324159][ T503] __device_attach_driver+0x1e8/0x324
->>>> [ 14.329399][ T503] __device_attach+0x170/0x364
->>>> [ 14.334035][ T503] bus_probe_device+0x4c/0x164
->>>> [ 14.338671][ T503] device_add+0xa60/0x1028
->>>> [ 14.342957][ T503] platform_device_add+0x260/0x2c8
->>>> [ 14.347941][ T503] qcom_slim_ngd_ctrl_probe+0x71c/0x804
->>>> [slim_qcom_ngd_ctrl]
->>>> [ 14.355177][ T503] INFO: Freed in kobject_uevent_env+0x210/0x744 age=1
->>>> cpu=4 pid=518
->>>> [ 14.363018][ T503] do_init_module+0xac/0x494
->>>> [ 14.367475][ T503] load_module+0x35c0/0x3e54
->>>> [ 14.371930][ T503] __se_sys_finit_module+0x188/0x1c8
->>>> [ 14.377086][ T503] __arm64_sys_finit_module+0x20/0x30
->>>> [ 14.382328][ T503] el0_svc_common+0xdc/0x294
->>>> [ 14.386786][ T503] el0_svc+0x38/0x9c
->>>> [ 14.390552][ T503] el0_sync_handler+0x8c/0xf0
->>>>
->>>>
->>>> [ 14.490994*][ T503] Redzone ffffff87caae0f7**0*: cc cc cc cc cc cc cc cc cc
->>>> cc cc cc cc 2f 64 65 .............*/de*
->>>> [ 14.501185][ T503] Object ffffff87caae0f80: 76 69 63 65 73 2f 70 6c 61 74
->>>> 66 6f 72 6d 2f 73 vices/platform/s
->>>> [ 14.511376][ T503] Object ffffff87caae0f90: 6f 63 2f 33 33 34 30 30 30 30
->>>> 2e 73 6c 69 6d 2f oc/3340000.slim/
->>>> [ 14.521566][ T503] Object ffffff87caae0fa0: 71 63 6f 6d 2c 73 6c 69 6d 2d
->>>> 6e 67 64 2e 31 2f qcom,slim-ngd.1/
->>>> [ 14.531757][ T503] Object ffffff87caae0fb0: 62 74 66 6d 73 6c 69 6d 5f 73
->>>> 6c 61 76 65 00 00 *btfmslim_slave*..
->>>>
->>>>
->>>>
->>>> 499 static int btfm_slim_probe(struct slim_device *slim)
->>> I do not see that function in Linus's tree right now.  Where does it
->>> come from?
->> Don't you think, it can be caused by any kernel module.
-> Kernel code do not protect themselves against other kernel code doing
-> abusive things.
->
-> Perhaps fix your out-of-tree code to not do this if no in-kernel code is
-> doing this?  Nothing we can do at all about out-of-tree code that we
-> have never seen.
+> 
+> > That said:
+> >
+> >> There's a series of commits cleaning up function descriptor handling,
+> >
+> > For some reason I also thought that powerpc had actually moved away
+> > from function descriptors, so I'm clearly not keeping up with the
+> > times.
+> 
+> No you're right, we have moved away from them, but not entirely.
+> 
+> Functions descriptors are still used for 64-bit big endian, but they're
+> not used for 64-bit little endian, or 32-bit.
 
+There was a patch to use ABIv2 for ppc64 big endian. I suppose that
+would rid usof the gunction descriptors for good.
 
-Thanks for the comment, Greg.
-Why do we make dev_set_name() make it available to module apart from the 
-core ?
+Somehow the discussion of that change tralied off without any results.
 
--Mukesh
+Maybe it's worth resurrecting?
 
->
-> Best of luck!
->
-> greg k-h
+Thanks
+
+Michal
