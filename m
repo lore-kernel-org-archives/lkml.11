@@ -2,204 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7A33C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:53:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12921C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:53:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243457AbiC3GzF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 02:55:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43180 "EHLO
+        id S243463AbiC3Gzh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 02:55:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243453AbiC3Gy5 (ORCPT
+        with ESMTP id S237404AbiC3Gzc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 02:54:57 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACEB5B823D
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 23:53:11 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id y142so35365866ybe.11
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 23:53:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eBzSo1IuAffvd9iEt2NILMJqpADmVwfXfVQFJPM3PLI=;
-        b=kAYoRpp9RINiAX6gGmakqpZiOCu0pfap3QsrG9nwA3zBT2uee70bbf3gbgO/zx5fm5
-         L2WI/E+Ow+oKhG+rGP9/ELE0bdkQzMpabru264473bY1jHaI8WIjIyt03VvK30m6NUL1
-         IGizFqWSH+UmjP8VQlNNu8MEjm8l/yGR9H00XMzEYy4XHLCmnnDLGVXyJ3DCF+g/lvP2
-         S4SsNwg863PozI3QQtELU8kw9fsG5As/XSPI8bAzuiqkMJq24RLUd6GC0uAXrM/I6fDL
-         zFxL6bjXXEIOXPrHRJFQ8NQrv2YI7rbQmF53M71mgjGIP5elWMKs0b8NOXPSiQADILbF
-         HLJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eBzSo1IuAffvd9iEt2NILMJqpADmVwfXfVQFJPM3PLI=;
-        b=uQjd3IUPbNWkhW7z3bV8FlKQNcIZAJZy9ugQbmSxNIuJQhIXvAoi1Jnb4EV5HjMTVz
-         VeM1SmCYykc1GuniAWvyjcW3cMNc8Ux0W2GKjr9c627pBIRkhsONqDzuUbmby6WuYEZe
-         wPfSAahZRUVX3A1dkxuoLlvxQSYKHkZnNVj/uQx2XaTyX2YwS1rKcKtu912rWIGaG3mH
-         5q3SQydhIbPiRa4rNxGuhNfpOG0l+xz0CfyIOdjUJivwDDDq3EKwv6S/nyo+UIJIxHYS
-         NzF/PvF9grBb0kMBUfffwUO9v5gcFetRXYRmWbMJYseXBMj5wc5avfydxqUVYO2EBfA2
-         TlYw==
-X-Gm-Message-State: AOAM532gSo3bcag4K32ZSuzpKsM2TVBPIdzzVe0i8mhsUStVvnDs3jtS
-        YmdAx/lmXdxCDptr/IW5B363g2Mq8gNRtuGZnw9NQA==
-X-Google-Smtp-Source: ABdhPJz1NmSJcW22Bmlc1MqhqmJWo3w4jKN4gY8Qemj+A1qqBdDzOs97xpu9EMhs3p8t4EeZBcqTWFKlkfcfuPlRFzE=
-X-Received: by 2002:a25:c049:0:b0:634:6751:e8d2 with SMTP id
- c70-20020a25c049000000b006346751e8d2mr31868071ybf.6.1648623190862; Tue, 29
- Mar 2022 23:53:10 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220329045535.45641-1-songmuchun@bytedance.com> <CAGsJ_4w0N9GiKfZe6t+XxVUHvBOoF2Fk8tfuy5gD6Lg2s_q5iw@mail.gmail.com>
-In-Reply-To: <CAGsJ_4w0N9GiKfZe6t+XxVUHvBOoF2Fk8tfuy5gD6Lg2s_q5iw@mail.gmail.com>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Wed, 30 Mar 2022 14:52:34 +0800
-Message-ID: <CAMZfGtVOXx+tuGCtHzjnT+EXkswy1hzqwxe=W+pxZaHC5CrbmQ@mail.gmail.com>
-Subject: Re: [PATCH v2 RESEND] arm64: mm: hugetlb: add support for free
- vmemmap pages of HugeTLB
-To:     Barry Song <21cnbao@gmail.com>
-Cc:     Will Deacon <will@kernel.org>,
+        Wed, 30 Mar 2022 02:55:32 -0400
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECD8DBB08A
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 23:53:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648623225; x=1680159225;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=cm7zalOPVoseD2/NZNf63+7ZwazgOQ0XcSWIJMqTgps=;
+  b=CxZgxK6KpvEpx887b2kY117VzxNSLU3aCcdT8Efd5pU/+kF/7HXEhaso
+   Z0QroMuJLJ/7OJShV05H4Zyhlwv5IRqe+DiuIUIrqjN34hnUSBB4bCCBL
+   +23goAPkTfzyfgOurkqImZn3mG+RMKO14MiETOxUBhWjjFikgQ00f7g6O
+   hvUeMIK+auGVJZDHQ6ORSwbCGoL2NbI1TnSL1b/ndyruV9EhVLLIweHi+
+   +nBlNZxPBbIbHjxup8jCY4QCbFmSUDJswYXeoJQndkgv3ZQ/y3BwxK7HT
+   eFHVtBEJak5V903zPE2bArxW9is2M+FdUjqi4B/DkUJQ55RrjSq6O3WlS
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="320161301"
+X-IronPort-AV: E=Sophos;i="5.90,221,1643702400"; 
+   d="scan'208";a="320161301"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 23:53:45 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
+   d="scan'208";a="503198264"
+Received: from lkp-server01.sh.intel.com (HELO 3965e2759b93) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 29 Mar 2022 23:53:43 -0700
+Received: from kbuild by 3965e2759b93 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nZSD8-000150-GS; Wed, 30 Mar 2022 06:53:42 +0000
+Date:   Wed, 30 Mar 2022 14:53:14 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Roman Gushchin <guro@fb.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org,
+        Suren Baghdasaryan <surenb@google.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
         Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        "Bodeddula, Balasubramaniam" <bodeddub@amazon.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        David Rientjes <rientjes@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>, james.morse@arm.com,
-        LAK <linux-arm-kernel@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Xiongchun duan <duanxiongchun@bytedance.com>,
-        Fam Zheng <fam.zheng@bytedance.com>,
-        Muchun Song <smuchun@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Minchan Kim <minchan@google.com>
+Subject: [ammarfaizi2-block:google/android/kernel/common/android12-trusty-5.10
+ 4036/5872] WARNING: modpost: vmlinux.o(.text+0x4111c4): Section mismatch in
+ reference from the function memblock_bottom_up() to the variable
+ .meminit.data:memblock
+Message-ID: <202203301412.MZ7wQvQz-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 7:44 PM Barry Song <21cnbao@gmail.com> wrote:
->
-> On Tue, Mar 29, 2022 at 5:57 PM Muchun Song <songmuchun@bytedance.com> wrote:
-> >
-> > The feature of minimizing overhead of struct page associated with each
-> > HugeTLB page aims to free its vmemmap pages (used as struct page) to
-> > save memory, where is ~14GB/16GB per 1TB HugeTLB pages (2MB/1GB type).
-> > In short, when a HugeTLB page is allocated or freed, the vmemmap array
-> > representing the range associated with the page will need to be remapped.
-> > When a page is allocated, vmemmap pages are freed after remapping.
-> > When a page is freed, previously discarded vmemmap pages must be
-> > allocated before remapping.  More implementations and details can be
-> > found here [1].
-> >
-> > The preparation of freeing vmemmap pages associated with each HugeTLB
-> > page is ready, so we can support this feature for arm64 now.  The
-> > flush_dcache_page() need to be adapted to operate on the head page's
-> > flags since the tail vmemmap pages are mapped with read-only after
-> > the feature is enabled (clear operation is not permitted).
-> >
-> > There was some discussions about this in the thread [2], but there was
-> > no conclusion in the end.  And I copied the concern proposed by Anshuman
-> > to here.
-> >
-> > 1st concern:
-> > '''
-> > But what happens when a hot remove section's vmemmap area (which is
-> > being teared down) is nearby another vmemmap area which is either created
-> > or being destroyed for HugeTLB alloc/free purpose. As you mentioned
-> > HugeTLB pages inside the hot remove section might be safe. But what about
-> > other HugeTLB areas whose vmemmap area shares page table entries with
-> > vmemmap entries for a section being hot removed ? Massive HugeTLB alloc
-> > /use/free test cycle using memory just adjacent to a memory hotplug area,
-> > which is always added and removed periodically, should be able to expose
-> > this problem.
-> > '''
-> >
-> > Answer: At the time memory is removed, all HugeTLB pages either have been
-> > migrated away or dissolved.  So there is no race between memory hot remove
-> > and free_huge_page_vmemmap().  Therefore, HugeTLB pages inside the hot
-> > remove section is safe.  Let's talk your question "what about other
-> > HugeTLB areas whose vmemmap area shares page table entries with vmemmap
-> > entries for a section being hot removed ?", the question is not
-> > established.  The minimal granularity size of hotplug memory 128MB (on
-> > arm64, 4k base page), any HugeTLB smaller than 128MB is within a section,
-> > then, there is no share PTE page tables between HugeTLB in this section
-> > and ones in other sections and a HugeTLB page could not cross two
-> > sections.  In this case, the section cannot be freed.  Any HugeTLB bigger
-> > than 128MB (section size) whose vmemmap pages is an integer multiple of
-> > 2MB (PMD-mapped).  As long as:
-> >
-> >   1) HugeTLBs are naturally aligned, power-of-two sizes
-> >   2) The HugeTLB size >= the section size
-> >   3) The HugeTLB size >= the vmemmap leaf mapping size
-> >
-> > Then a HugeTLB will not share any leaf page table entries with *anything
-> > else*, but will share intermediate entries.  In this case, at the time memory
-> > is removed, all HugeTLB pages either have been migrated away or dissolved.
-> > So there is also no race between memory hot remove and
-> > free_huge_page_vmemmap().
-> >
-> > 2nd concern:
-> > '''
-> > differently, not sure if ptdump would require any synchronization.
-> >
-> > Dumping an wrong value is probably okay but crashing because a page table
-> > entry is being freed after ptdump acquired the pointer is bad. On arm64,
-> > ptdump() is protected against hotremove via [get|put]_online_mems().
-> > '''
-> >
-> > Answer: The ptdump should be fine since vmemmap_remap_free() only exchanges
-> > PTEs or split the PMD entry (which means allocating a PTE page table).  Both
-> > operations do not free any page tables (PTE), so ptdump cannot run into a
-> > UAF on any page tables.  The wrost case is just dumping an wrong value.
-> >
-> > [1] https://lore.kernel.org/all/20210510030027.56044-1-songmuchun@bytedance.com/
-> > [2] https://lore.kernel.org/all/20210518091826.36937-1-songmuchun@bytedance.com/
-> >
-> > Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-> > ---
-> > Changes in v2:
-> >  - Update commit message (Mark Rutland).
-> >  - Fix flush_dcache_page().
-> >
-> >  arch/arm64/mm/flush.c | 14 ++++++++++++++
-> >  fs/Kconfig            |  2 +-
-> >  2 files changed, 15 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/arch/arm64/mm/flush.c b/arch/arm64/mm/flush.c
-> > index a06c6ac770d4..705484a9b9df 100644
-> > --- a/arch/arm64/mm/flush.c
-> > +++ b/arch/arm64/mm/flush.c
-> > @@ -75,6 +75,20 @@ EXPORT_SYMBOL_GPL(__sync_icache_dcache);
-> >   */
-> >  void flush_dcache_page(struct page *page)
-> >  {
-> > +#ifdef CONFIG_HUGETLB_PAGE_FREE_VMEMMAP
-> > +       /*
-> > +        * Only the head page's flags of HugeTLB can be cleared since the tail
-> > +        * vmemmap pages associated with each HugeTLB page are mapped with
-> > +        * read-only when CONFIG_HUGETLB_PAGE_FREE_VMEMMAP is enabled (more
-> > +        * details can refer to vmemmap_remap_pte()).  Although
-> > +        * __sync_icache_dcache() only set PG_dcache_clean flag on the head
-> > +        * page struct, some tail page structs still can see the flag since
-> > +        * the head vmemmap page frame is reused (more details can refer to
-> > +        * the comments above page_fixed_fake_head()).
->
-> Is this still true if hugetlb_free_vmemmap_enabled() is false?
+Hi Roman,
 
-No.  Do you think it is better to add hugetlb_free_vmemmap_enabled()
-into the if block? Something like the following?
+FYI, the error/warning still remains.
 
-+       if (hugetlb_free_vmemmap_enabled() && PageHuge(page))
-+               page = compound_head(page);
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android12-trusty-5.10
+head:   07055bfd3d810d41a38354693dfaa55a6f8c0025
+commit: 0e0bfc41fdf4d79d39ebe929844cdee44f97366d [4036/5872] UPSTREAM: mm: cma: allocate cma areas bottom-up
+config: x86_64-randconfig-a005 (https://download.01.org/0day-ci/archive/20220330/202203301412.MZ7wQvQz-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0f6d9501cf49ce02937099350d08f20c4af86f3d)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/0e0bfc41fdf4d79d39ebe929844cdee44f97366d
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android12-trusty-5.10
+        git checkout 0e0bfc41fdf4d79d39ebe929844cdee44f97366d
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
->
-> btw, the subject is a bit confusing as it seems it is not bringing up
-> HUGETLB_PAGE_FREE_VMEMMAP and it seems the feature
-> has been already there, but we are lacking some fixes for some
-> functions to make it work.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Right.
+All warnings (new ones prefixed by >>, old ones prefixed by <<):
 
-> could we explain this clear in commit
-> log? maybe we need a better subject for the commit as well.
+>> WARNING: modpost: vmlinux.o(.text+0x4111c4): Section mismatch in reference from the function memblock_bottom_up() to the variable .meminit.data:memblock
+The function memblock_bottom_up() references
+the variable __meminitdata memblock.
+This is often because memblock_bottom_up lacks a __meminitdata
+annotation or the annotation of memblock is wrong.
 
-Will do.
-
-Thanks.
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
