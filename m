@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9A86C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEFCAC35274
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:15:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345982AbiC3MPW (ORCPT
+        id S1346006AbiC3MP1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:15:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60568 "EHLO
+        Wed, 30 Mar 2022 08:15:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345914AbiC3LzM (ORCPT
+        with ESMTP id S1345859AbiC3LzF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:55:12 -0400
+        Wed, 30 Mar 2022 07:55:05 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8BE2275C87;
-        Wed, 30 Mar 2022 04:52:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AF99264818;
+        Wed, 30 Mar 2022 04:51:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 834F3B81C23;
-        Wed, 30 Mar 2022 11:52:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68560C340F3;
-        Wed, 30 Mar 2022 11:52:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A391CB81BBA;
+        Wed, 30 Mar 2022 11:51:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B79AC36AE3;
+        Wed, 30 Mar 2022 11:51:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641151;
-        bh=4pm0G3USxRvKEi6HUBlG9gAVAVKFBCngUYORUfw9HaE=;
+        s=k20201202; t=1648641115;
+        bh=2l3NMKJwTl8iPLfY5ms0FYzbxI/GUgoliNVkJUrhCcs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=amd6eJ1AO/HmhtxzjO+xu5RyO0F60IE5fDxHxexjlSFpK4X2J9n7k3Wqf4Zpc0vpf
-         wjgZbMULXUIRffXnmlNvMzjYQ0wkWxyGbeTnA6Z0Olhyk1PdDdhAINqtvRMsA3GiJG
-         o+OZIGCp5mmVx19mGziWv7dqPQARP5wF1H+6K+HtUF+PL2srvHHF/1815I+4OfHqjq
-         tmQcuzsjUzBN8ST1mmY/t6M49iqCMzdB8qWdSRVeFnJrGv/hwY+hkoMAK2IS9De7p/
-         vGhk9VsPKD5rSaepJDfAwIZB+ds8sNEcHEodWAQGeLu0NJQhQ2GWsjDRVnJiWG5t3M
-         QcNcXDOFolUzA==
+        b=LsAtgDSKfUSIwTNSR03pBIffVcx5d5Z6JddIO8ozMMlxIIbFlpwPd//UvRqwG/AhI
+         KZWRGSi+qEL/GxoXrecfEDxgWEq2wzZSoM/m3uQ1J0Av0B+nBMBGcdbR1ZQhxf0DXu
+         bgFlg+i0Wvc7Mw+MS40H+HeLBa2Eoe+hN4UD1hlEb3KPLXYLxEvVoeekSNG3RjMMT5
+         BwHIF95dUOMp2Sr7CAHVhd2NUoFXmyKsJ3NGnjSSY5G7saB959ZKpaGgN8plUa4kWe
+         ryMYD+Nk/JorftYbRy7IUc97FkztTYMcjF07lT3XkN5/w9zF9co0SoK+HrjoOZD+Ue
+         EsBxGrPNcn8NQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Evgeny Novikov <novikov@ispras.ru>,
-        Kirill Shilimanov <kirill.shilimanov@huawei.com>,
+Cc:     Jing Yao <yao.jing2@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
         Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
-        tomi.valkeinen@ti.com, linux-fbdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 03/25] video: fbdev: w100fb: Reset global state
-Date:   Wed, 30 Mar 2022 07:52:03 -0400
-Message-Id: <20220330115225.1672278-3-sashal@kernel.org>
+        tomi.valkeinen@ti.com, linux-omap@vger.kernel.org,
+        linux-fbdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 19/37] video: fbdev: omapfb: panel-tpo-td043mtea1: Use sysfs_emit() instead of snprintf()
+Date:   Wed, 30 Mar 2022 07:51:04 -0400
+Message-Id: <20220330115122.1671763-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330115225.1672278-1-sashal@kernel.org>
-References: <20220330115225.1672278-1-sashal@kernel.org>
+In-Reply-To: <20220330115122.1671763-1-sashal@kernel.org>
+References: <20220330115122.1671763-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,66 +53,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evgeny Novikov <novikov@ispras.ru>
+From: Jing Yao <yao.jing2@zte.com.cn>
 
-[ Upstream commit 8738ddcac644964ae128ccd3d80d48773c8d528e ]
+[ Upstream commit c07a039cbb96748f54c02995bae8131cc9a73b0a ]
 
-w100fb_probe() did not reset the global state to its initial state. This
-can result in invocation of iounmap() even when there was not the
-appropriate successful call of ioremap(). For instance, this may be the
-case if first probe fails after two successful ioremap() while second
-probe fails when first ioremap() fails. The similar issue is with
-w100fb_remove(). The patch fixes both bugs.
+Use sysfs_emit instead of scnprintf, snprintf or sprintf.
 
-Found by Linux Driver Verification project (linuxtesting.org).
-
-Signed-off-by: Evgeny Novikov <novikov@ispras.ru>
-Co-developed-by: Kirill Shilimanov <kirill.shilimanov@huawei.com>
-Signed-off-by: Kirill Shilimanov <kirill.shilimanov@huawei.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
 Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/w100fb.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ .../video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c  | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/video/fbdev/w100fb.c b/drivers/video/fbdev/w100fb.c
-index e30f9427b335..52ec80bbfe5e 100644
---- a/drivers/video/fbdev/w100fb.c
-+++ b/drivers/video/fbdev/w100fb.c
-@@ -770,12 +770,18 @@ int w100fb_probe(struct platform_device *pdev)
- 		fb_dealloc_cmap(&info->cmap);
- 		kfree(info->pseudo_palette);
- 	}
--	if (remapped_fbuf != NULL)
-+	if (remapped_fbuf != NULL) {
- 		iounmap(remapped_fbuf);
--	if (remapped_regs != NULL)
-+		remapped_fbuf = NULL;
-+	}
-+	if (remapped_regs != NULL) {
- 		iounmap(remapped_regs);
--	if (remapped_base != NULL)
-+		remapped_regs = NULL;
-+	}
-+	if (remapped_base != NULL) {
- 		iounmap(remapped_base);
-+		remapped_base = NULL;
-+	}
- 	if (info)
- 		framebuffer_release(info);
- 	return err;
-@@ -795,8 +801,11 @@ static int w100fb_remove(struct platform_device *pdev)
- 	fb_dealloc_cmap(&info->cmap);
+diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
+index bb85b21f0724..9f6ef9e04d9c 100644
+--- a/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
++++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
+@@ -169,7 +169,7 @@ static ssize_t tpo_td043_vmirror_show(struct device *dev,
+ {
+ 	struct panel_drv_data *ddata = dev_get_drvdata(dev);
  
- 	iounmap(remapped_base);
-+	remapped_base = NULL;
- 	iounmap(remapped_regs);
-+	remapped_regs = NULL;
- 	iounmap(remapped_fbuf);
-+	remapped_fbuf = NULL;
+-	return snprintf(buf, PAGE_SIZE, "%d\n", ddata->vmirror);
++	return sysfs_emit(buf, "%d\n", ddata->vmirror);
+ }
  
- 	framebuffer_release(info);
+ static ssize_t tpo_td043_vmirror_store(struct device *dev,
+@@ -199,7 +199,7 @@ static ssize_t tpo_td043_mode_show(struct device *dev,
+ {
+ 	struct panel_drv_data *ddata = dev_get_drvdata(dev);
  
+-	return snprintf(buf, PAGE_SIZE, "%d\n", ddata->mode);
++	return sysfs_emit(buf, "%d\n", ddata->mode);
+ }
+ 
+ static ssize_t tpo_td043_mode_store(struct device *dev,
 -- 
 2.34.1
 
