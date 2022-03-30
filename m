@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3252BC35274
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4679BC38A2D
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346502AbiC3MFF (ORCPT
+        id S1344764AbiC3MCy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:05:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35776 "EHLO
+        Wed, 30 Mar 2022 08:02:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345524AbiC3Lyh (ORCPT
+        with ESMTP id S1345017AbiC3Lxx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:54:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5168819ABE2;
-        Wed, 30 Mar 2022 04:51:20 -0700 (PDT)
+        Wed, 30 Mar 2022 07:53:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B6AC275C97;
+        Wed, 30 Mar 2022 04:50:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 38783615E7;
-        Wed, 30 Mar 2022 11:51:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B935DC36AE9;
-        Wed, 30 Mar 2022 11:51:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E0518B81C39;
+        Wed, 30 Mar 2022 11:50:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFCC0C36AE3;
+        Wed, 30 Mar 2022 11:50:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641079;
-        bh=dOC/qeva2LJb0df2IyTGuQKNhvG4/vpycOtEmcS+tso=;
+        s=k20201202; t=1648641012;
+        bh=536otJG6irmPN3L/0cDJmTTtx6vrE6tpwy6troGIf0Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YXGu/d9cqxDx4URRkh/kDvFmOwIShZUdjVXDnPKqeb9lFT7ga2GBneC5Mbbu1Pd3J
-         pc+7IeSdrHjYQyv29OPALTAynhuA8jZTnEtHA/pYsfVAWrS9enrY2YIC/DXAlXlaOk
-         9AKj1znebgZ0nHGpNBaWWRw81LjhGHMOPjSrJWgaHgzSJIO3vloDA5+NyhiLBZUWIh
-         Ixlgdn2lf0M1rHxY3SNJlvWsL897KZSTyiKCAvTN9gPs0oi7aMn0KAi8sxPXboujAZ
-         B223VbMQX6RFP8ubQlaRqqK1usX6sd+W1oIf+nybznF2zUds5xQODzi5MgRBcnhy/a
-         9c3yoV1PxfEaw==
+        b=srdIy53V20extuVx0MCnZ3yekyUCvvEx/bFKmv9TEEis8ny7WpIUdyHgAE4lzbHj/
+         cPp85JI3/1lUg4gwBtS1q4WHib53f1U5WHk3X/Xw1qDRSgPZnn8GHLoSuPpFVCMabZ
+         iyvQ3tMRaYtIFMu7MFAeIjUjdsh4YIekC3daARhAFPx8pYJdwTbM/xj7v5VHlrpgZ/
+         cGzcZrgEzNJ9DawMovIqq49XuCTOj4gj7ipMhTlbV908nAcBap9HWV7wZ/J+a6yy1i
+         6Tm73nJmpIrcJ7r+rKeTwVqeLZNCUs4Z2pon6gwm2AOE94Xli3MP9GGQTIQWLqChMm
+         +nBfXubb9IGzA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Hans Verkuil <hverkuil@xs4all.nl>,
-        Sasha Levin <sashal@kernel.org>, gregkh@linuxfoundation.org,
-        linux-media@vger.kernel.org, devel@driverdev.osuosl.org
-Subject: [PATCH AUTOSEL 5.15 49/50] media: atomisp: fix bad usage at error handling logic
-Date:   Wed, 30 Mar 2022 07:50:03 -0400
-Message-Id: <20220330115005.1671090-49-sashal@kernel.org>
+Cc:     Eugen Hristev <eugen.hristev@microchip.com>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 04/50] media: atmel: atmel-isc-base: report frame sizes as full supported range
+Date:   Wed, 30 Mar 2022 07:49:18 -0400
+Message-Id: <20220330115005.1671090-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115005.1671090-1-sashal@kernel.org>
 References: <20220330115005.1671090-1-sashal@kernel.org>
@@ -53,93 +54,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mauro Carvalho Chehab <mchehab@kernel.org>
+From: Eugen Hristev <eugen.hristev@microchip.com>
 
-[ Upstream commit fc0b582c858ed73f94c8f3375c203ea46f1f7402 ]
+[ Upstream commit 72802a86e11c34e819fbfb38f58c5aef668f833d ]
 
-As warned by sparse:
-	atomisp: drivers/staging/media/atomisp/pci/atomisp_acc.c:508 atomisp_acc_load_extensions() warn: iterator used outside loop: 'acc_fw'
+The ISC supports a full broad range of frame sizes.
+Until now, the subdevice was queried for possible frame sizes and these
+were reported to the user space.
+However, the ISC should not care about which frame sizes the subdev
+supports, as long as this frame size is supported.
+Thus, report a continuous range from smallest frame size up to the max
+resolution.
 
-The acc_fw interactor is used outside the loop, at the error handling
-logic. On most cases, this is actually safe there, but, if
-atomisp_css_set_acc_parameters() has an error, an attempt to use it
-will pick an invalid value for acc_fw.
-
-Reported-by: Hans Verkuil <hverkuil@xs4all.nl>
+Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+Reviewed-by: Jacopo Mondi <jacopo@jmondi.org>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../staging/media/atomisp/pci/atomisp_acc.c   | 28 +++++++++++++------
- 1 file changed, 19 insertions(+), 9 deletions(-)
+ drivers/media/platform/atmel/atmel-isc-base.c | 22 +++++++++----------
+ 1 file changed, 10 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/staging/media/atomisp/pci/atomisp_acc.c b/drivers/staging/media/atomisp/pci/atomisp_acc.c
-index 9a1751895ab0..28cb271663c4 100644
---- a/drivers/staging/media/atomisp/pci/atomisp_acc.c
-+++ b/drivers/staging/media/atomisp/pci/atomisp_acc.c
-@@ -439,6 +439,18 @@ int atomisp_acc_s_mapped_arg(struct atomisp_sub_device *asd,
+diff --git a/drivers/media/platform/atmel/atmel-isc-base.c b/drivers/media/platform/atmel/atmel-isc-base.c
+index ebf264b980f9..f768be3c4059 100644
+--- a/drivers/media/platform/atmel/atmel-isc-base.c
++++ b/drivers/media/platform/atmel/atmel-isc-base.c
+@@ -1369,14 +1369,12 @@ static int isc_enum_framesizes(struct file *file, void *fh,
+ 			       struct v4l2_frmsizeenum *fsize)
+ {
+ 	struct isc_device *isc = video_drvdata(file);
+-	struct v4l2_subdev_frame_size_enum fse = {
+-		.code = isc->config.sd_format->mbus_code,
+-		.index = fsize->index,
+-		.which = V4L2_SUBDEV_FORMAT_ACTIVE,
+-	};
+ 	int ret = -EINVAL;
+ 	int i;
+ 
++	if (fsize->index)
++		return -EINVAL;
++
+ 	for (i = 0; i < isc->num_user_formats; i++)
+ 		if (isc->user_formats[i]->fourcc == fsize->pixel_format)
+ 			ret = 0;
+@@ -1388,14 +1386,14 @@ static int isc_enum_framesizes(struct file *file, void *fh,
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = v4l2_subdev_call(isc->current_subdev->sd, pad, enum_frame_size,
+-			       NULL, &fse);
+-	if (ret)
+-		return ret;
++	fsize->type = V4L2_FRMSIZE_TYPE_CONTINUOUS;
+ 
+-	fsize->type = V4L2_FRMSIZE_TYPE_DISCRETE;
+-	fsize->discrete.width = fse.max_width;
+-	fsize->discrete.height = fse.max_height;
++	fsize->stepwise.min_width = 16;
++	fsize->stepwise.max_width = isc->max_width;
++	fsize->stepwise.min_height = 16;
++	fsize->stepwise.max_height = isc->max_height;
++	fsize->stepwise.step_width = 1;
++	fsize->stepwise.step_height = 1;
+ 
  	return 0;
  }
- 
-+static void atomisp_acc_unload_some_extensions(struct atomisp_sub_device *asd,
-+					      int i,
-+					      struct atomisp_acc_fw *acc_fw)
-+{
-+	while (--i >= 0) {
-+		if (acc_fw->flags & acc_flag_to_pipe[i].flag) {
-+			atomisp_css_unload_acc_extension(asd, acc_fw->fw,
-+							 acc_flag_to_pipe[i].pipe_id);
-+		}
-+	}
-+}
-+
- /*
-  * Appends the loaded acceleration binary extensions to the
-  * current ISP mode. Must be called just before sh_css_start().
-@@ -479,16 +491,20 @@ int atomisp_acc_load_extensions(struct atomisp_sub_device *asd)
- 								     acc_fw->fw,
- 								     acc_flag_to_pipe[i].pipe_id,
- 								     acc_fw->type);
--				if (ret)
-+				if (ret) {
-+					atomisp_acc_unload_some_extensions(asd, i, acc_fw);
- 					goto error;
-+				}
- 
- 				ext_loaded = true;
- 			}
- 		}
- 
- 		ret = atomisp_css_set_acc_parameters(acc_fw);
--		if (ret < 0)
-+		if (ret < 0) {
-+			atomisp_acc_unload_some_extensions(asd, i, acc_fw);
- 			goto error;
-+		}
- 	}
- 
- 	if (!ext_loaded)
-@@ -497,6 +513,7 @@ int atomisp_acc_load_extensions(struct atomisp_sub_device *asd)
- 	ret = atomisp_css_update_stream(asd);
- 	if (ret) {
- 		dev_err(isp->dev, "%s: update stream failed.\n", __func__);
-+		atomisp_acc_unload_extensions(asd);
- 		goto error;
- 	}
- 
-@@ -504,13 +521,6 @@ int atomisp_acc_load_extensions(struct atomisp_sub_device *asd)
- 	return 0;
- 
- error:
--	while (--i >= 0) {
--		if (acc_fw->flags & acc_flag_to_pipe[i].flag) {
--			atomisp_css_unload_acc_extension(asd, acc_fw->fw,
--							 acc_flag_to_pipe[i].pipe_id);
--		}
--	}
--
- 	list_for_each_entry_continue_reverse(acc_fw, &asd->acc.fw, list) {
- 		if (acc_fw->type != ATOMISP_ACC_FW_LOAD_TYPE_OUTPUT &&
- 		    acc_fw->type != ATOMISP_ACC_FW_LOAD_TYPE_VIEWFINDER)
 -- 
 2.34.1
 
