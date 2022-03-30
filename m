@@ -2,166 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1EE6C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 15:13:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C28C9C43219
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 15:17:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348047AbiC3PPG (ORCPT
+        id S1348069AbiC3PTA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 11:15:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53692 "EHLO
+        Wed, 30 Mar 2022 11:19:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348028AbiC3PPD (ORCPT
+        with ESMTP id S1348092AbiC3PR5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 11:15:03 -0400
-Received: from gateway24.websitewelcome.com (gateway24.websitewelcome.com [192.185.50.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C519108BC7
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 08:13:17 -0700 (PDT)
-Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
-        by gateway24.websitewelcome.com (Postfix) with ESMTP id 3C7254248B
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 10:13:17 -0500 (CDT)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id Za0bnlW7dRnrrZa0bnvR77; Wed, 30 Mar 2022 10:13:17 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:Subject:From:References:Cc:To:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=tKdIWG8Ko+/VYotBZ/EE6HR2yUBVPr5g8z4sbrWCXFo=; b=jF7pjhL8GAP5daoECdGSEUYCUB
-        Wa4O4ybzLTj9AHumGQbxQgDCqCemhreXrmi80zX16rayqFWxRffhifw1l0RC9OqDjiBPvEDCGZMM3
-        1Jz8MnIXq+EY5ubTrCE738JUEsS2LY9Kc2hF+iVL46iFqisGj4RJ1nW+Cn50wPAVslUZRr12OizEs
-        E/E5SAvTqIfv0f50WGuqjNVMxitaZlDdZkywsSFAqNKE80E1m5s9eiFprbtPut27XX8kVVZb76f/s
-        Ll8S/XPFJ44OjBnjFPeoTmUzbSV5DNQTEP4p4knDLw/L4jMRySkfVqjtUoxPPqxjJDIGOn7RzNuF2
-        UD+ZBxKQ==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54568)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nZa0a-002qf7-E6; Wed, 30 Mar 2022 15:13:16 +0000
-Message-ID: <795b9b2d-1d6b-359c-ef12-f25c6b3472be@roeck-us.net>
-Date:   Wed, 30 Mar 2022 08:13:14 -0700
+        Wed, 30 Mar 2022 11:17:57 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AC2E1480F2;
+        Wed, 30 Mar 2022 08:16:11 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nicolas)
+        with ESMTPSA id C50301F419C2
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1648653370;
+        bh=1LatH4mVGhsXTiehBV6dHmUReG5H7FkUjmvKks5cf9s=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=SxSg4EfBx6gKPVy7ZIt9DphOpUvAZoz6B8WOPzgtmHKGhqoB7TP25Yuw/ju3kplTq
+         MIIBnaFed+K96kqbPkZoAywpohv3ZbEzldkz8UVubMOG+fuGL+v+oxRKX7ke9SCCsj
+         pwDaxzgfaCA77a6wKRP/MMbparTSOygSwOFnp7nnhFCm7EZlWzGMf7SSEwGlMVJJXa
+         9U63ojZVOxDkxyOp9FbpePJ3aPMem3n3GNjcoetmMAJSBR+o4LolX6KuclrglkcD8X
+         NMp5VLFTPfsnfyJ2O+yJSKG9ILnl0DkUq2xgu9gbV9rPC+zIK3BRmlM27GlPHT/qxN
+         0kW31Emid/daw==
+Message-ID: <4740735d92c0dac3708aa922b3d73db7a61fbdda.camel@collabora.com>
+Subject: Re: [PATCH v1 22/24] media: hantro: h264: Make dpb entry management
+ more robust
+From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
+To:     Sebastian Fricke <sebastian.fricke@collabora.com>
+Cc:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        kernel@collabora.com, Jonas Karlman <jonas@kwiboo.se>,
+        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Date:   Wed, 30 Mar 2022 11:15:58 -0400
+In-Reply-To: <20220330075913.wfl3prsyw5fvsv4t@basti-XPS-13-9310>
+References: <20220328195936.82552-1-nicolas.dufresne@collabora.com>
+         <20220328195936.82552-23-nicolas.dufresne@collabora.com>
+         <20220330075913.wfl3prsyw5fvsv4t@basti-XPS-13-9310>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.0 (3.44.0-1.fc36) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Content-Language: en-US
-To:     David Laight <David.Laight@ACULAB.COM>,
-        Michael Walle <michael@walle.cc>,
-        Xu Yilun <yilun.xu@intel.com>, Tom Rix <trix@redhat.com>,
-        Jean Delvare <jdelvare@suse.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     "linux-hwmon@vger.kernel.org" <linux-hwmon@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20220329160730.3265481-1-michael@walle.cc>
- <20220329160730.3265481-2-michael@walle.cc>
- <75093b82-4625-d806-a4ea-372b74e60c3b@roeck-us.net>
- <02545bf1c21b45f78eba5e8b37951748@AcuMS.aculab.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH v2 1/5] hwmon: introduce hwmon_sanitize_name()
-In-Reply-To: <02545bf1c21b45f78eba5e8b37951748@AcuMS.aculab.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nZa0a-002qf7-E6
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54568
-X-Source-Auth: linux@roeck-us.net
-X-Email-Count: 2
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/30/22 07:50, David Laight wrote:
-> From: Guenter Roeck
->> Sent: 30 March 2022 15:23
->> On 3/29/22 09:07, Michael Walle wrote:
->>> More and more drivers will check for bad characters in the hwmon name
->>> and all are using the same code snippet. Consolidate that code by adding
->>> a new hwmon_sanitize_name() function.
->>>
->>> Signed-off-by: Michael Walle <michael@walle.cc>
->>> ---
->>>    Documentation/hwmon/hwmon-kernel-api.rst |  9 ++++-
->>>    drivers/hwmon/hwmon.c                    | 49 ++++++++++++++++++++++++
->>>    include/linux/hwmon.h                    |  3 ++
->>>    3 files changed, 60 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/Documentation/hwmon/hwmon-kernel-api.rst b/Documentation/hwmon/hwmon-kernel-api.rst
->>> index c41eb6108103..12f4a9bcef04 100644
->>> --- a/Documentation/hwmon/hwmon-kernel-api.rst
->>> +++ b/Documentation/hwmon/hwmon-kernel-api.rst
->>> @@ -50,6 +50,10 @@ register/unregister functions::
->>>
->>>      void devm_hwmon_device_unregister(struct device *dev);
->>>
->>> +  char *hwmon_sanitize_name(const char *name);
->>> +
->>> +  char *devm_hwmon_sanitize_name(struct device *dev, const char *name);
->>> +
->>>    hwmon_device_register_with_groups registers a hardware monitoring device.
->>>    The first parameter of this function is a pointer to the parent device.
->>>    The name parameter is a pointer to the hwmon device name. The registration
->>> @@ -93,7 +97,10 @@ removal would be too late.
->>>
->>>    All supported hwmon device registration functions only accept valid device
->>>    names. Device names including invalid characters (whitespace, '*', or '-')
->>> -will be rejected. The 'name' parameter is mandatory.
->>> +will be rejected. The 'name' parameter is mandatory. Before calling a
->>> +register function you should either use hwmon_sanitize_name or
->>> +devm_hwmon_sanitize_name to replace any invalid characters with an
->>> +underscore.
->>
->> That needs more details and deserves its own paragraph. Calling one of
->> the functions is only necessary if the original name does or can include
->> unsupported characters; an unconditional "should" is therefore a bit
->> strong. Also, it is important to mention that the function duplicates
->> the name, and that it is the responsibility of the caller to release
->> the name if hwmon_sanitize_name() was called and the device is removed.
-> 
-> More worrying, and not documented, is that the buffer 'name' points
-> to must persist.
-> 
+Le mercredi 30 mars 2022 =C3=A0 09:59 +0200, Sebastian Fricke a =C3=A9crit=
+=C2=A0:
+> Hey Nicolas,
+>=20
+> On 28.03.2022 15:59, Nicolas Dufresne wrote:
+> > From: Jonas Karlman <jonas@kwiboo.se>
+> >=20
+> > The driver maintains stable slot location for reference pictures. This
+>=20
+> s/slot location/slot locations/
+>=20
+> > change makes the code more robust by using the reference_ts as key and
+> > by marking all entries invalid right from the start.
+> >=20
+> > Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+> > Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+> > ---
+> > drivers/staging/media/hantro/hantro_h264.c | 10 ++++------
+> > 1 file changed, 4 insertions(+), 6 deletions(-)
+> >=20
+> > diff --git a/drivers/staging/media/hantro/hantro_h264.c b/drivers/stagi=
+ng/media/hantro/hantro_h264.c
+> > index 228629fb3cdf..7377fc26f780 100644
+> > --- a/drivers/staging/media/hantro/hantro_h264.c
+> > +++ b/drivers/staging/media/hantro/hantro_h264.c
+> > @@ -258,8 +258,7 @@ static void prepare_table(struct hantro_ctx *ctx)
+> > static bool dpb_entry_match(const struct v4l2_h264_dpb_entry *a,
+> > 			    const struct v4l2_h264_dpb_entry *b)
+> > {
+> > -	return a->top_field_order_cnt =3D=3D b->top_field_order_cnt &&
+> > -	       a->bottom_field_order_cnt =3D=3D b->bottom_field_order_cnt;
+> > +	return a->reference_ts =3D=3D b->reference_ts;
+> > }
+> >=20
+> > static void update_dpb(struct hantro_ctx *ctx)
+> > @@ -273,13 +272,13 @@ static void update_dpb(struct hantro_ctx *ctx)
+> >=20
+> > 	/* Disable all entries by default. */
+> > 	for (i =3D 0; i < ARRAY_SIZE(ctx->h264_dec.dpb); i++)
+> > -		ctx->h264_dec.dpb[i].flags &=3D ~V4L2_H264_DPB_ENTRY_FLAG_ACTIVE;
+> > +		ctx->h264_dec.dpb[i].flags =3D 0;
+>=20
+> Ehm ... we just remove all flags? Can't this have any unwanted side
+> effects like removing a flag that we actually wanted to keep?
+> (Like long term or the field flags?)
 
-You mean the name argument passed to the hwmon registration functions ?
-That has been the case forever, and I don't recall a single problem
-with it. If it disturbs you, please feel free to submit a patch adding
-more details to the documentation.
+This is a local copy of the dpb, the DPB is fully passed for every decode. =
+So
+these flags will be fully restored lower when we copy the found entry. In f=
+act,
+holding a state here would not represent well the userland intention and ca=
+n
+have negative side effect on the decoding. Flags are not immutable between
+decode and can change. This simplify the code, and make things less error p=
+rone.
+This part of the code is already a bit complex, no need for an extra layer.
 
-I would not want to change the code and always copy the name because in
-almost all cases it _is_ a fixed string, and duplicating it would have
-no value.
+> If we just want to set the DPB entry inactive, then removing the ACTIVE
+> flag seems like the correct approach to me.
+> If we want to get rid of the VALID flag as well, then we could just do:
+> 		ctx->h264_dec.dpb[i].flags &=3D
+>        ~(V4L2_H264_DPB_ENTRY_FLAG_ACTIVE | V4L2_H264_DPB_ENTRY_FLAG_VALID=
+);
+>=20
+> In case we really want to reset all flags, I'd say adjust the comment
+> above it:
+> ```
+> - 	/* Disable all entries by default. */
+> + 	/* Reset the flags for all entries by default. */
+> ```
 
-> ISTM that the kmalloc() in __hwmon_device_register() should include
-> space for a copy of the name.
-> It can then do what it will with whatever is passed in.
-> 
+This reads the same to me, but I can do that yes. understand that VALID mea=
+ns
+the reference exist and the TS should point to some existing past reference
+(unless there was some decode error, which the userland may not be aware ye=
+t as
+this is asynchronous). While ACTIVE means that it is used as a reference. F=
+FMPEG
+is known not to filter inactive references. ACTIVE is just a flag without b=
+unch
+of other flags that can change for every decode. So none of this make sense
+between 2 decodes.
 
-Whatever is passed in is what the user wants. Registration functions
-don't change the name. Providing a valid name is the responsibility
-of the caller.
+>=20
+> Greetings,
+> Sebastian
+>=20
+> >=20
+> > 	/* Try to match new DPB entries with existing ones by their POCs. */
+> > 	for (i =3D 0; i < ARRAY_SIZE(dec_param->dpb); i++) {
+> > 		const struct v4l2_h264_dpb_entry *ndpb =3D &dec_param->dpb[i];
+> >=20
+> > -		if (!(ndpb->flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE))
+> > +		if (!(ndpb->flags & V4L2_H264_DPB_ENTRY_FLAG_VALID))
+> > 			continue;
+> >=20
+> > 		/*
+> > @@ -290,8 +289,7 @@ static void update_dpb(struct hantro_ctx *ctx)
+> > 			struct v4l2_h264_dpb_entry *cdpb;
+> >=20
+> > 			cdpb =3D &ctx->h264_dec.dpb[j];
+> > -			if (cdpb->flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE ||
+> > -			    !dpb_entry_match(cdpb, ndpb))
+> > +			if (!dpb_entry_match(cdpb, ndpb))
+> > 				continue;
+> >=20
+> > 			*cdpb =3D *ndpb;
+> > --=20
+> > 2.34.1
+> >=20
 
-> Oh yes, it has my 'favourite construct':  if (!strlen(name)) ...
-> (well str[strlen(str)] = 0 also happens!)
-> 
-
-Sorry, I don't understand what the problem is here.
-
-Thanks,
-Guenter
