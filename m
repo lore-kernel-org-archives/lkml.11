@@ -2,139 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E04D3C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:51:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FA5FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:52:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346616AbiC3Nw6 (ORCPT
+        id S1346543AbiC3Nww (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 09:52:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59746 "EHLO
+        Wed, 30 Mar 2022 09:52:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346491AbiC3Nw1 (ORCPT
+        with ESMTP id S1346454AbiC3Nw2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 09:52:27 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94650133D8B;
+        Wed, 30 Mar 2022 09:52:28 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B25F1117C93;
         Wed, 30 Mar 2022 06:50:40 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id r13so41661069ejd.5;
-        Wed, 30 Mar 2022 06:50:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1OLDSq/HMivImgf5vlU82yeV23lshpzhfTJKY95m+Z8=;
-        b=H5U9h4jAU0SRA9mYbThvS4qFeQ8C3Fh5k6/CLwP1tHEgS24U7HWxp3Rhc8iGRVKMCK
-         I1ZCFUP6d9M0osRXl6cH8kWr1vNURf1UbiOcGcBnElzuvap40sG70vKEWQ0wnKzLTcFL
-         sfXlsnTJg3VvtEVM83R0NkxJyYdQSEjmjb3Yeu0ENtDts6NRVZ42ToEYKDrvQPyG75uo
-         0yfLuTVULfTJS0O9XbNeNYfbP7D8njRJWNaQJavNva/IxnXW9yBkHi+5RaWmKtupPn9c
-         FjELMZie/femNx85sK+NcsQRKw87oGyV3JSAnpJ0lyUVt22guLpfW98gHDQq/QatWaeh
-         ogBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1OLDSq/HMivImgf5vlU82yeV23lshpzhfTJKY95m+Z8=;
-        b=Mo7BVCMhmfneoXFlWL/13Ze3Wrk0n84BKibUWRoid12uBX1w2CMzT4puGzCNlow3vB
-         irliaavrR53p7bnWM67Bck8Fgtx0JfnOWLHZD+/kCIuYlpUhoWLePFMrTdnD+7dwGezv
-         R0AQeoUCABNm9FbZ369BNERu78NWaPI6aIlDMILcZymGhDgzqnM1dICFfdHEdurqyOgM
-         enVjlWYl7ZF7lcqOG3yyBd5+uO2xT+ml4FxpBCclqxw3Zwpj6nNDLyvX4cjbGJ1H19gP
-         Xkhc41vzTW36P1VXNMSBbtcxQNR13ru3Lufcp9Z/aUpaulIx6k8COoLxKmXtZBGrzUkL
-         R7AQ==
-X-Gm-Message-State: AOAM533ng0F5mVolSzRgBWfCzxEoaTudWvtV58M8CIZqvNKop3u2CyGe
-        wNA43unHHQC5U2C7MBtuAai1jNyvnRoezw==
-X-Google-Smtp-Source: ABdhPJxMB3BHLF1VMfqbB7RLZ1Vx9XU6izABsdLNoOOTTt3yKeGFPBiGYxgg37i3B6C5OzIy24rRWw==
-X-Received: by 2002:a17:907:6d9e:b0:6df:bb09:10eb with SMTP id sb30-20020a1709076d9e00b006dfbb0910ebmr39394770ejc.409.1648648239003;
-        Wed, 30 Mar 2022 06:50:39 -0700 (PDT)
-Received: from krava ([193.85.244.190])
-        by smtp.gmail.com with ESMTPSA id a1-20020a1709063e8100b006ce06ed8aa7sm8353128ejj.142.2022.03.30.06.50.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Mar 2022 06:50:38 -0700 (PDT)
-Date:   Wed, 30 Mar 2022 15:50:36 +0200
-From:   Jiri Olsa <olsajiri@gmail.com>
-To:     Shunsuke Nakamura <nakamura.shun@fujitsu.com>
-Cc:     peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
-        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
-        jolsa@redhat.com, namhyung@kernel.org,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
-Subject: Re: [RFC PATCH v2 5/7] libperf: Add perf_evsel__check_overflow()
- functions
-Message-ID: <YkRgLBTHVQbdX8rK@krava>
-References: <20220325043829.224045-1-nakamura.shun@fujitsu.com>
- <20220325043829.224045-6-nakamura.shun@fujitsu.com>
+Received: from kwepemi100017.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KT7570HdGzBrgl;
+        Wed, 30 Mar 2022 21:46:35 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ kwepemi100017.china.huawei.com (7.221.188.163) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 30 Mar 2022 21:50:38 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 30 Mar 2022 21:50:38 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
+        <chenhao288@hisilicon.com>
+Subject: [PATCH net 1/2] net: hns3: fix the concurrency between functions reading debugfs
+Date:   Wed, 30 Mar 2022 21:45:05 +0800
+Message-ID: <20220330134506.36635-2-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220330134506.36635-1-huangguangbin2@huawei.com>
+References: <20220330134506.36635-1-huangguangbin2@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220325043829.224045-6-nakamura.shun@fujitsu.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 01:38:27PM +0900, Shunsuke Nakamura wrote:
-> Add the following functions:
-> 
->   perf_evsel__check_overflow
->   perf_evsel__check_overflow_cpu
-> 
-> to check for perf events with the file descriptor specified in the
-> argument.
-> These functions can be used in signal handlers to check overflow.
-> 
-> Signed-off-by: Shunsuke Nakamura <nakamura.shun@fujitsu.com>
-> ---
->  tools/lib/perf/Documentation/libperf.txt |  3 +++
->  tools/lib/perf/evsel.c                   | 34 ++++++++++++++++++++++++
->  tools/lib/perf/include/perf/evsel.h      |  4 +++
->  tools/lib/perf/libperf.map               |  2 ++
->  4 files changed, 43 insertions(+)
-> 
-> diff --git a/tools/lib/perf/Documentation/libperf.txt b/tools/lib/perf/Documentation/libperf.txt
-> index 700c1ce15159..4ae8d738b948 100644
-> --- a/tools/lib/perf/Documentation/libperf.txt
-> +++ b/tools/lib/perf/Documentation/libperf.txt
-> @@ -165,6 +165,9 @@ SYNOPSIS
->                                int cpu_map_idx);
->    int perf_evsel__period(struct perf_evsel *evsel, int period);
->    int perf_evsel__period_cpu(struct perf_evsel *evsel, int period, int cpu_map_idx);
-> +  int perf_evsel__check_overflow(struct perf_evsel *evsel, int sig_fd, bool *overflow);
-> +  int perf_evsel__check_overflow_cpu(struct perf_evsel *evsel, int cpu_map_idx,
-> +                                     int sig_fd, bool *overflow);
+From: Yufeng Mo <moyufeng@huawei.com>
 
-should this be more like:
+Currently, the debugfs mechanism is that all functions share a
+global variable to save the pointer for obtaining data. When
+different functions concurrently access the same file node,
+repeated release exceptions occur. Therefore, the granularity
+of the pointer for storing the obtained data is adjusted to be
+private for each function.
 
-  perf_evsel__has_fd(struct perf_evsel *evsel, int fd)
+Fixes: 5e69ea7ee2a6 ("net: hns3: refactor the debugfs process")
+Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+---
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h       |  1 +
+ .../net/ethernet/hisilicon/hns3/hns3_debugfs.c    | 15 +++++++++++----
+ .../net/ethernet/hisilicon/hns3/hns3_debugfs.h    |  1 -
+ 3 files changed, 12 insertions(+), 5 deletions(-)
 
-also why do we need to export *_cpu version for this?
-I don't see it used in the test
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+index d44dd7091fa1..79c64f4e67d2 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+@@ -845,6 +845,7 @@ struct hnae3_handle {
+ 	struct dentry *hnae3_dbgfs;
+ 	/* protects concurrent contention between debugfs commands */
+ 	struct mutex dbgfs_lock;
++	char **dbgfs_buf;
+ 
+ 	/* Network interface message level enabled bits */
+ 	u32 msg_enable;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
+index f726a5b70f9e..44d9b560b337 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
+@@ -1227,7 +1227,7 @@ static ssize_t hns3_dbg_read(struct file *filp, char __user *buffer,
+ 		return ret;
+ 
+ 	mutex_lock(&handle->dbgfs_lock);
+-	save_buf = &hns3_dbg_cmd[index].buf;
++	save_buf = &handle->dbgfs_buf[index];
+ 
+ 	if (!test_bit(HNS3_NIC_STATE_INITED, &priv->state) ||
+ 	    test_bit(HNS3_NIC_STATE_RESETTING, &priv->state)) {
+@@ -1332,6 +1332,13 @@ int hns3_dbg_init(struct hnae3_handle *handle)
+ 	int ret;
+ 	u32 i;
+ 
++	handle->dbgfs_buf = devm_kcalloc(&handle->pdev->dev,
++					 ARRAY_SIZE(hns3_dbg_cmd),
++					 sizeof(*handle->dbgfs_buf),
++					 GFP_KERNEL);
++	if (!handle->dbgfs_buf)
++		return -ENOMEM;
++
+ 	hns3_dbg_dentry[HNS3_DBG_DENTRY_COMMON].dentry =
+ 				debugfs_create_dir(name, hns3_dbgfs_root);
+ 	handle->hnae3_dbgfs = hns3_dbg_dentry[HNS3_DBG_DENTRY_COMMON].dentry;
+@@ -1380,9 +1387,9 @@ void hns3_dbg_uninit(struct hnae3_handle *handle)
+ 	u32 i;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(hns3_dbg_cmd); i++)
+-		if (hns3_dbg_cmd[i].buf) {
+-			kvfree(hns3_dbg_cmd[i].buf);
+-			hns3_dbg_cmd[i].buf = NULL;
++		if (handle->dbgfs_buf[i]) {
++			kvfree(handle->dbgfs_buf[i]);
++			handle->dbgfs_buf[i] = NULL;
+ 		}
+ 
+ 	mutex_destroy(&handle->dbgfs_lock);
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.h b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.h
+index 83aa1450ab9f..97578eabb7d8 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.h
+@@ -49,7 +49,6 @@ struct hns3_dbg_cmd_info {
+ 	enum hnae3_dbg_cmd cmd;
+ 	enum hns3_dbg_dentry_type dentry;
+ 	u32 buf_len;
+-	char *buf;
+ 	int (*init)(struct hnae3_handle *handle, unsigned int cmd);
+ };
+ 
+-- 
+2.33.0
 
->    struct perf_cpu_map *perf_evsel__cpus(struct perf_evsel *evsel);
->    struct perf_thread_map *perf_evsel__threads(struct perf_evsel *evsel);
->    struct perf_event_attr *perf_evsel__attr(struct perf_evsel *evsel);
-> diff --git a/tools/lib/perf/evsel.c b/tools/lib/perf/evsel.c
-> index db9b7274feb5..6ff3cf692df3 100644
-> --- a/tools/lib/perf/evsel.c
-> +++ b/tools/lib/perf/evsel.c
-> @@ -616,3 +616,37 @@ int perf_evsel__open_opts(struct perf_evsel *evsel, struct perf_cpu_map *cpus,
->  
->  	return err;
->  }
-> +
-> +int perf_evsel__check_overflow_cpu(struct perf_evsel *evsel, int cpu_map_idx,
-> +				   int sig_fd, bool *overflow)
-> +{
-> +	int thread;
-> +	int *fd;
-> +	int err = 0;
-> +
-> +	if (!overflow)
-> +		return -EINVAL;
-> +
-> +	*overflow = false;
-> +
-> +	for (thread = 0; thread < xyarray__max_y(evsel->fd) && !err; ++thread) {
-> +		fd = FD(evsel, cpu_map_idx, thread);
-> +		if (sig_fd <= 0 || !fd || *fd < 0)
-> +			err = -EINVAL;
-
-sig_fd check should be before the loop
-
-jirka
