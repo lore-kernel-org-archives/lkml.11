@@ -2,103 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B513EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 09:41:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EAD1C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 09:41:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244901AbiC3JnW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 05:43:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41000 "EHLO
+        id S244916AbiC3Jn0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 05:43:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244152AbiC3JnU (ORCPT
+        with ESMTP id S244898AbiC3JnW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 05:43:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D42A4265E84
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 02:41:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 88CDFB81B81
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 09:41:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97ADDC340EE;
-        Wed, 30 Mar 2022 09:41:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648633293;
-        bh=d/yFGiB4cR7/kRD7YEtqlOefDYLnKi8DAvRDC/ISY1c=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=of2T2whnR/+5kI0FmjWQSdMQCdIuHulemzbNJQad+ZfJR0MIFOcZe0dpXHHcImz6W
-         FeTAwfs9/kKOOsgPdGZaDcab/LmBok5PjBKaiED4WJiZFEzm1zX/yp3TnDjR8xFKTF
-         UJZQ/8csDE4M4NY3VOG1hi9gVLHi7KjozxSUb5tGkLCVzxn0I5/1xwFCF+at8Gxctq
-         6ipXz/b1AFl7JVmoZitNnTS1olhl7dsXXA+5aPEZHe3OqsCsYg4Q9tX6qKGxyzhXJy
-         H0fXxDdu13C/NiLxf2fgkBHnQXFotQ86stXtRgVEsY2ClC2W3K+Iembf0H46OPJ3Aw
-         ZZ8bhHCdt8/Wg==
-Date:   Wed, 30 Mar 2022 11:41:29 +0200
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Stephen Kitt <steve@sk2.org>
-Cc:     James Schulman <james.schulman@cirrus.com>,
-        David Rhodes <david.rhodes@cirrus.com>,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, patches@opensource.cirrus.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ASoC: cs*: use simple i2c probe function
-Message-ID: <YkQlySr8xPOoZkfj@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Stephen Kitt <steve@sk2.org>,
-        James Schulman <james.schulman@cirrus.com>,
-        David Rhodes <david.rhodes@cirrus.com>,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, patches@opensource.cirrus.com,
-        linux-kernel@vger.kernel.org
-References: <20220325170734.1216018-1-steve@sk2.org>
+        Wed, 30 Mar 2022 05:43:22 -0400
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F1C2265E96;
+        Wed, 30 Mar 2022 02:41:37 -0700 (PDT)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.nyi.internal (Postfix) with ESMTP id 90D1E5C0159;
+        Wed, 30 Mar 2022 05:41:36 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Wed, 30 Mar 2022 05:41:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alistair23.me;
+         h=cc:cc:content-transfer-encoding:content-type:date:date:from
+        :from:in-reply-to:message-id:mime-version:reply-to:sender
+        :subject:subject:to:to; s=fm1; bh=Xqma4VmLIJGXDmH+JdobTx8XzROZ0i
+        KirVagnNvxFNw=; b=VFbhlHH/uZRBf5//YkaJku0wlUezn1Ke0ulrK4wGmdoGly
+        cKFbGsrn4/2XhKNXrMel0bzysPc3Q5jlRaDd8hmxfiwX2g48xDB2VoAAU5AHqgap
+        mwJDnUeinUtwi37KBHpStSy3eflu43zIsxNt9KJi2gZvdpVoPwisKG9kUhLWFAgg
+        eSbOJNBOqJg3SLTBWDTC5fhsQVqGwu6t+EZG8mzh9fKTem7rQcD28/N3RPUgLS87
+        kpBYKSyXjVmOn8Mx842NO5QRU9Xmmz+vMU2Ah2uTJ3tVeH7N4MB3S8asBbTfiSLj
+        gXT2kcmGomQsU51SlIkO9PLh0/V95MnJalBrlvhA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:from:from:in-reply-to:message-id
+        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=Xqma4V
+        mLIJGXDmH+JdobTx8XzROZ0iKirVagnNvxFNw=; b=NCqSl7dP1dOGefZpoQFvtH
+        +8KiLcD1sqlo/zwdR+XSpz54UZQoJlYyiuG1z5tRapegdvjiiBUbDrMsJWpdvQsh
+        LvgQSj5wKEINfI2eBx3Aw1U4gfe2+TaD7QanCz0jb1UhcebdakKpSYnIeg7S6LkS
+        orb3c1F4TSQ4J5H8fF9MkgJPvSEFzTR82tdIZFZqKx3NYo44yCeHNevZQNDVVTGB
+        9McaW1Y4RMYv0vrzczxafJ9VrEtjfxvmvw/BMH2y8aYTVjjAtFI5L21YF0WF0naa
+        CG8CYrc738FeEIE/+RC5hK5T/mzhVPH1AzWnBoa60l4Q6cvr8qMuVB7IaZPB4ntQ
+        ==
+X-ME-Sender: <xms:0CVEYl1yAFG77CgWTBR846OJnQoI3jfqaGwLc7CUn3Ma120BsU1DRQ>
+    <xme:0CVEYsFboj_h3E44SAmjYUUf_8yfPnWMYSrUEGU7IFpR0BYfZjq3YTHEsGZJA5K22
+    5pxsZwv9-NSbnmD53c>
+X-ME-Received: <xmr:0CVEYl7P3OEN_cW3BjVPjepaoiFNVxXm7fSw4z4wN7wSD3DBm3-JMhQe9eklhhuZdm6_oVlk9WQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudeivddgudekucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgtggfgsehtqhertd
+    ertdejnecuhfhrohhmpeetlhhishhtrghirhcuhfhrrghntghishcuoegrlhhishhtrghi
+    rhesrghlihhsthgrihhrvdefrdhmvgeqnecuggftrfgrthhtvghrnhepheetfefgjeeuje
+    dtgedvgfeghfeigfehffdvffduveevteejudfhudekudetveejnecuvehluhhsthgvrhfu
+    ihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprghlihhsthgrihhrsegrlhhish
+    htrghirhdvfedrmhgv
+X-ME-Proxy: <xmx:0CVEYi0r3oDUs1S_1-Gdv_W5rcxZjlMB4XPCn5nuum_kFNKU2ZnZvg>
+    <xmx:0CVEYoGUIokerDL639d4RmHrnClZEi5cRLZuUvk-WfXWzxEuBtHysQ>
+    <xmx:0CVEYj-997oq45ngahrRIu8VXtm6tXm0g3iKDW3jk4sEcnR6HCXbTw>
+    <xmx:0CVEYm-thA6MB0xnu8MgUy-DnhhoG3CGKLxo420J6pIrO23E5W3LrQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 30 Mar 2022 05:41:29 -0400 (EDT)
+From:   Alistair Francis <alistair@alistair23.me>
+To:     lgirdwood@gmail.com, robh+dt@kernel.org, kernel@pengutronix.de,
+        lee.jones@linaro.org, broonie@kernel.org
+Cc:     linux-hwmon@vger.kernel.org, geert@linux-m68k.org,
+        linux-kernel@vger.kernel.org, shawnguo@kernel.org,
+        alistair23@gmail.com, s.hauer@pengutronix.de, andreas@kemnade.info,
+        linux@roeck-us.net, rui.zhang@intel.com,
+        devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-imx@nxp.com,
+        amitk@kernel.org, Alistair Francis <alistair@alistair23.me>
+Subject: [PATCH v20 0/4] Add support for the silergy,sy7636a
+Date:   Wed, 30 Mar 2022 19:41:22 +1000
+Message-Id: <20220330094126.30252-1-alistair@alistair23.me>
+X-Mailer: git-send-email 2.35.1
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="y1UGgW5uriAaQZE4"
-Content-Disposition: inline
-In-Reply-To: <20220325170734.1216018-1-steve@sk2.org>
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
---y1UGgW5uriAaQZE4
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, Mar 25, 2022 at 06:07:34PM +0100, Stephen Kitt wrote:
-> The i2c probe functions here don't use the id information provided in
-> their second argument, so the single-parameter i2c probe function
-> ("probe_new") can be used instead.
->=20
-> This avoids scanning the identifier tables during probes.
->=20
-> Signed-off-by: Stephen Kitt <steve@sk2.org>
-
-Looks good and builds fine:
-
-Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-
-
---y1UGgW5uriAaQZE4
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmJEJckACgkQFA3kzBSg
-KbaGtQ//cRk4RjhsJ8BnvUitBz0t3loxGKs74bGQnZeIISpTnNPBSn3tXIN5mhQt
-hVv9UO0W91/uU9LLXWYvt5cvtVU7XmdabQpDkhPQGY0JUNQrMNQBRI6loVAKm8Vt
-ircnfMGibOP4cAhucRtpFMX/u2qhp1nfpvaDFokULWb/rs9oEI/DuwYTQGXHsKEj
-ucHiNG8okwQHuTvhYIrFJGoA5J0y4wdxXCoNLPXzTZonFK+rfJoPl7GSyQTve+rE
-F/vfFHDMNG+1k2Ag5mMJLJq0I2P8xSV/a+6CCfMDEh9jjs8XbALx9+2iZ4XOvXws
-S0YS9DS+8mcAUmXpxSXrFBqDXM+JGm8JxCnKY0zI3d2WAx5W97mtZeirnWUQDk/3
-ElxDP5ZcnhHn5PIbN5uVq/7Umv4BAk2izPQADvtENjIzipf0xGSSeJMmniFAxovX
-Iu+/1ymV+s0/NObC/IHMAfcVQaZb3NvqGODkn7MPUGrCxv3ubXAJwWrrxPfbL+Jh
-4ZeQaqskWbIrYUgKMDGSLBqnEVWAIL1z/vHNspXeMymuCIOaw6hjigMMyC7Js4U9
-3hJ9023x4jRD4WbrUpaG9ENfhVk3Ex5SmHcVS9ZBdT6XzC0glSVkFqwCrjukDNO+
-gVMQv2j4jEtQP4IE4QY8nijdeKQFzeLVuSfsTU7wTN7S7v4FX1w=
-=dPad
------END PGP SIGNATURE-----
-
---y1UGgW5uriAaQZE4--
+v20:=0D
+ - Rebase on master=0D
+ - Remove merged patches=0D
+ - Fixup Kconfig selection based on previous discussions=0D
+v19:=0D
+ - Rebase on linux-next=0D
+v18:=0D
+ - Rebase=0D
+v17:=0D
+ - Rebase and fix build issues=0D
+v16:=0D
+ - Improve vdd regulator comments=0D
+v15:=0D
+ - Address comments on the patches=0D
+v14:=0D
+ - Merge the thermal driver and hwmon=0D
+v13:=0D
+ - Address comments on thermal driver=0D
+ - Rebase on master (without other patches)=0D
+v12:=0D
+ - Rebase=0D
+v11:=0D
+ - Address comments on hwmon=0D
+ - Improve "mfd: simple-mfd-i2c: Add a Kconfig name" commit message=0D
+v10:=0D
+ - Use dev_get_regmap() instead of dev_get_drvdata()=0D
+v9:=0D
+ - Convert to use the simple-mfd-i2c instead=0D
+=0D
+Alistair Francis (4):=0D
+  mfd: silergy,sy7636a: Add config option=0D
+  ARM: imx_v6_v7_defconfig: Enable silergy,sy7636a=0D
+  ARM: dts: imx7d-remarkable2: Enable silergy,sy7636a=0D
+  ARM: dts: imx7d-remarkable2: Enable lcdif=0D
+=0D
+ arch/arm/boot/dts/imx7d-remarkable2.dts | 136 ++++++++++++++++++++++++=0D
+ arch/arm/configs/imx_v6_v7_defconfig    |   3 +=0D
+ drivers/hwmon/Kconfig                   |   1 +=0D
+ drivers/mfd/Kconfig                     |  12 ++-=0D
+ drivers/regulator/Kconfig               |   1 +=0D
+ 5 files changed, 152 insertions(+), 1 deletion(-)=0D
+=0D
+-- =0D
+2.35.1=0D
+=0D
