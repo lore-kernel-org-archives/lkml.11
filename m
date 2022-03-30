@@ -2,84 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21F36C43217
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 15:37:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A07CAC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 15:37:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348270AbiC3PjK (ORCPT
+        id S1348323AbiC3Pj2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 11:39:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34970 "EHLO
+        Wed, 30 Mar 2022 11:39:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240341AbiC3PjI (ORCPT
+        with ESMTP id S1348276AbiC3PjX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 11:39:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B54B547555
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 08:37:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648654641;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=hHrmC24Jo3CTM6YvkvlpfQVskDBFgAZarL5vBmkT/1w=;
-        b=SYP3eyImNIYqbg6XXldrmQyR6yuwTG7KBolUgASrMZicPIX4lGaiDl3sMIgq8UC0d3q2DW
-        gqWgRV2gfRBpXQDMWZbBjvSf2+dupE9f6yYzyg2ytuBxcyYnVLjRE/H8SPr8hsctlpn+Oz
-        vqiB45MF/gnMk0Wz7kMCb3bB0zfTY0s=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-53-RRlkUzyIPVKePa_Ax9wclg-1; Wed, 30 Mar 2022 11:37:17 -0400
-X-MC-Unique: RRlkUzyIPVKePa_Ax9wclg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Wed, 30 Mar 2022 11:39:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FBED5BE73
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 08:37:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9F8241C0514D;
-        Wed, 30 Mar 2022 15:37:16 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id EABD7C202C6;
-        Wed, 30 Mar 2022 15:37:14 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20220303125627.93930-1-d.glazkov@omp.ru>
-References: <20220303125627.93930-1-d.glazkov@omp.ru> <20220303081428.12979-1-d.glazkov@omp.ru>
-To:     Denis Glazkov <d.glazkov@omp.ru>
-Cc:     dhowells@redhat.com, "jarkko@kernel.org" <jarkko@kernel.org>,
-        "jmorris@namei.org" <jmorris@namei.org>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "mkayaalp@linux.vnet.ibm.com" <mkayaalp@linux.vnet.ibm.com>,
-        "serge@hallyn.com" <serge@hallyn.com>,
-        "zohar@linux.vnet.ibm.com" <zohar@linux.vnet.ibm.com>
-Subject: Re: [PATCH v2] KEYS: fix memory leaks when reading certificate
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F01CD616F5
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 15:37:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01EE2C340EE;
+        Wed, 30 Mar 2022 15:37:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1648654657;
+        bh=RvGSrHfLJfpTbs3Ho41Zt/SklOEmkN76AbpAlx2jjQU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JNHPNkCK84WCxlQWy1aWbD86y++YAuEhpkE1Kwi/lOAGKFchd2S7CQ8saRjgdh8AB
+         x2Ygsqu51iPrAOa2kWb9eM0hqmlGtOBKNJDv2ImlDuKYBx449Z0xWetqUjkcaC60VE
+         ygoOpuE3HiiaOGUjoeQlU02XEJx2maY1rSAF1p6o=
+Date:   Wed, 30 Mar 2022 17:37:34 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     =?utf-8?B?5ZC05L+K5paH?= <wudaemon@163.com>
+Cc:     arnd@arndb.de, linux-kernel@vger.kernel.org
+Subject: Re: Re: [PATCH v2] char: misc:use DEFINE_PROC_SHOW_ATTRIBUTE micro
+ to simplify misc proc_fops
+Message-ID: <YkR5PkJq27NIdY52@kroah.com>
+References: <20220327143254.226844-1-wudaemon@163.com>
+ <YkFM2Ko21j8Ehca8@kroah.com>
+ <4ac4969e.8288.17fdb6206ea.Coremail.wudaemon@163.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <2996112.1648654634.1@warthog.procyon.org.uk>
-Date:   Wed, 30 Mar 2022 16:37:14 +0100
-Message-ID: <2996113.1648654634@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <4ac4969e.8288.17fdb6206ea.Coremail.wudaemon@163.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Denis Glazkov <d.glazkov@omp.ru> wrote:
+On Wed, Mar 30, 2022 at 11:11:48PM +0800, 吴俊文 wrote:
+> Dear Greg:
+> It means I should list  the reason  why I ptach a new verson?like this:
 
-> The `exit()` function usage produce possible memory leaks. This
-> patch removes the use of the `exit()` function and adds memory
-> free in case of a negative scenarios.
+I do not know what you are referring to, sorry.  Also, html email is
+rejected by the mailing list and out tools, please fix.
 
-?
+thanks,
 
-Barring a kernel bug, there should be no memory leaks from exit().  _exit() is
-the ultimate process cleanup tool.  Calling free() won't necessarily return
-the memory allocated by malloc() to the kernel.
-
-Unless you have a good reason to actually tear down everything, just print a
-message and call exit on error in little helpers like this.
-
-David
-
+greg k-h
