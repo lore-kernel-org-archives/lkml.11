@@ -2,53 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D0B1C38A04
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0DEFC4321E
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347865AbiC3MHw (ORCPT
+        id S1347738AbiC3MHg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:07:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59920 "EHLO
+        Wed, 30 Mar 2022 08:07:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345960AbiC3LzQ (ORCPT
+        with ESMTP id S1345952AbiC3LzP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:55:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DC642BB01;
-        Wed, 30 Mar 2022 04:53:31 -0700 (PDT)
+        Wed, 30 Mar 2022 07:55:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9603D2B275;
+        Wed, 30 Mar 2022 04:53:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 14A62B81C28;
-        Wed, 30 Mar 2022 11:53:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3E83C3410F;
-        Wed, 30 Mar 2022 11:53:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A49261703;
+        Wed, 30 Mar 2022 11:53:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D95F7C3410F;
+        Wed, 30 Mar 2022 11:53:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641208;
-        bh=7lqMYDTm3lYWziLp6V7LYNrbssEWtBwFxXMmrJaKMzA=;
+        s=k20201202; t=1648641201;
+        bh=5IQu0I7zZXv/WhZ/X+UKkJ92MTvXwDQ2xxGXdVwG9Q4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nC2ZF8OsMhmaxrXg9nuXZ1drEORoHJAy+ivEv2crk0za/YrBsIp8/34c4M5MxxtOq
-         Z/ZuoHe4IG8lN7U1AlGNG3lduhmhlD+tavOQUSGaF+rL18fJFQ4A7ZOPgjrT66XoU0
-         UNmUKuiHFg3+WeDiKWLzG7ALOlR/QRzDlQarwrXFKjxsJEdNIbBNNMQ38O5hQ+5J3c
-         k6IZ1QWp+TAG+S6jQtW+tgsP2tvb8kxyFX3/7jf230tY3SCmY9HOqA6ALqsEhhm/i5
-         flZlnC4zRaEFwab+0T7PfP8RJE3GNwEsWKHacgq6qq25WfA4zkysGIe+u1BppY+dhJ
-         5S3xtN8wEEdHg==
+        b=iu9zy+Y78ioN2Ln9J7lYj7QAlxKZbwjWgFnOJ4XuOxeRNQPifteOTGawvXMG/RDd0
+         zsKu8zHOZ4VnhsGiqKOXWjBesHuvL2piM8elY7U46d7esJZkxHa4Vp793hvRDoPozl
+         QnZxRW7/JJzXbw1pO/Tc4oeEoU0iHAuWB3ZHXWolH4CTk8tDRqx3ZfuVlER7OrqwwR
+         1flfJMbUjWdJobfsG8tpsr0cp7TYD/vX1Y57n+FV7Luvgl8c14BQSl6946xZMBW8Pg
+         5TnuJjjS0bXjaVMjT5dP/jJ7tOV9zBw5BPvzzede6GWB2lCgLLXl2H50MNdKTFA3MH
+         f3QdVMw4Xsgbw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>,
-        eric.y.miao@gmail.com, haojian.zhuang@gmail.com,
-        linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.19 16/22] ARM: mmp: Fix failure to remove sram device
-Date:   Wed, 30 Mar 2022 07:52:57 -0400
-Message-Id: <20220330115303.1672616-16-sashal@kernel.org>
+Cc:     Stephen Brennan <stephen.s.brennan@oracle.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Sasha Levin <sashal@kernel.org>, linux@roeck-us.net
+Subject: [PATCH AUTOSEL 4.19 11/22] printk: Add panic_in_progress helper
+Date:   Wed, 30 Mar 2022 07:52:52 -0400
+Message-Id: <20220330115303.1672616-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115303.1672616-1-sashal@kernel.org>
 References: <20220330115303.1672616-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -56,74 +53,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Stephen Brennan <stephen.s.brennan@oracle.com>
 
-[ Upstream commit 4036b29a146b2749af3bb213b003eb69f3e5ecc4 ]
+[ Upstream commit 77498617857f68496b360081dde1a492d40c28b2 ]
 
-Make sure in .probe() to set driver data before the function is left to
-make it possible in .remove() to undo the actions done.
+This will be used help avoid deadlocks during panics. Although it would
+be better to include this in linux/panic.h, it would require that header
+to include linux/atomic.h as well. On some architectures, this results
+in a circular dependency as well. So instead add the helper directly to
+printk.c.
 
-This fixes a potential memory leak and stops returning an error code in
-.remove() that is ignored by the driver core anyhow.
-
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Suggested-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Stephen Brennan <stephen.s.brennan@oracle.com>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+Link: https://lore.kernel.org/r/20220202171821.179394-2-stephen.s.brennan@oracle.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-mmp/sram.c | 22 ++++++++++++----------
- 1 file changed, 12 insertions(+), 10 deletions(-)
+ kernel/printk/printk.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/arch/arm/mach-mmp/sram.c b/arch/arm/mach-mmp/sram.c
-index ba91e4fe444d..3c4e41dabb02 100644
---- a/arch/arm/mach-mmp/sram.c
-+++ b/arch/arm/mach-mmp/sram.c
-@@ -76,6 +76,8 @@ static int sram_probe(struct platform_device *pdev)
- 	if (!info)
- 		return -ENOMEM;
- 
-+	platform_set_drvdata(pdev, info);
-+
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (res == NULL) {
- 		dev_err(&pdev->dev, "no memory resource defined\n");
-@@ -111,8 +113,6 @@ static int sram_probe(struct platform_device *pdev)
- 	list_add(&info->node, &sram_bank_list);
- 	mutex_unlock(&sram_lock);
- 
--	platform_set_drvdata(pdev, info);
--
- 	dev_info(&pdev->dev, "initialized\n");
- 	return 0;
- 
-@@ -131,17 +131,19 @@ static int sram_remove(struct platform_device *pdev)
- 	struct sram_bank_info *info;
- 
- 	info = platform_get_drvdata(pdev);
--	if (info == NULL)
--		return -ENODEV;
- 
--	mutex_lock(&sram_lock);
--	list_del(&info->node);
--	mutex_unlock(&sram_lock);
-+	if (info->sram_size) {
-+		mutex_lock(&sram_lock);
-+		list_del(&info->node);
-+		mutex_unlock(&sram_lock);
-+
-+		gen_pool_destroy(info->gpool);
-+		iounmap(info->sram_virt);
-+		kfree(info->pool_name);
-+	}
- 
--	gen_pool_destroy(info->gpool);
--	iounmap(info->sram_virt);
--	kfree(info->pool_name);
- 	kfree(info);
-+
- 	return 0;
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 57742e193214..9a5ce47e0a58 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -246,6 +246,11 @@ static void __up_console_sem(unsigned long ip)
  }
+ #define up_console_sem() __up_console_sem(_RET_IP_)
  
++static bool panic_in_progress(void)
++{
++	return unlikely(atomic_read(&panic_cpu) != PANIC_CPU_INVALID);
++}
++
+ /*
+  * This is used for debugging the mess that is the VT code by
+  * keeping track if we have the console semaphore held. It's
 -- 
 2.34.1
 
