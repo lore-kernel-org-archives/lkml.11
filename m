@@ -2,132 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FEF1C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:05:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B4FAC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:07:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345719AbiC3NHi (ORCPT
+        id S1345752AbiC3NJ0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 09:07:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35608 "EHLO
+        Wed, 30 Mar 2022 09:09:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241644AbiC3NHg (ORCPT
+        with ESMTP id S241644AbiC3NJY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 09:07:36 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3841B33377;
-        Wed, 30 Mar 2022 06:05:51 -0700 (PDT)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22UAgOrR002849;
-        Wed, 30 Mar 2022 12:26:22 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=L+8PjHPMiq4AQHcRLajykYL0EPB3iNidhaOlepmKopc=;
- b=BQWNggh4+gtZOSc7uEwkRc+zcMnlquUnj26yjZWGLe4rVOEPFjwmWjuRA3NamGqDOYyl
- qqiQO8gbJeYI0ku5mO8AAEVzlI9o01Nh73P5lG/Imtz21ipd1uccO7jJXcRODVsnzTrH
- eE5TnuLrfiKOVJ8W3BSA5GciuN+mvw1NC4tVv5al8n4KWTi+0brTU5G3ZURKF6SBqsHZ
- OWqjn9FjB96BN6GSr5pVUFwURX/aw1TFkunktWHwfr9ENWtk6AUur/vT01skAEtflWWu
- OChVZDRzssFkmOozQkJEkZJ2EvBklPPGfqp7n7CZAFLTjI8oBe+pt+AZ1r0hJ2Vag760 kw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3f4npk271p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 30 Mar 2022 12:26:21 +0000
-Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22UC3K91027162;
-        Wed, 30 Mar 2022 12:26:21 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3f4npk2715-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 30 Mar 2022 12:26:21 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22UCMPvE030948;
-        Wed, 30 Mar 2022 12:26:19 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma04ams.nl.ibm.com with ESMTP id 3f1tf90j51-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 30 Mar 2022 12:26:19 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22UCQGce27525418
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 30 Mar 2022 12:26:16 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0B46B11C04C;
-        Wed, 30 Mar 2022 12:26:16 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 79EDA11C052;
-        Wed, 30 Mar 2022 12:26:15 +0000 (GMT)
-Received: from localhost.localdomain (unknown [9.145.13.95])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 30 Mar 2022 12:26:15 +0000 (GMT)
-From:   Claudio Imbrenda <imbrenda@linux.ibm.com>
-To:     kvm@vger.kernel.org
-Cc:     borntraeger@de.ibm.com, frankja@linux.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, david@redhat.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, scgl@linux.ibm.com,
-        mimu@linux.ibm.com, nrb@linux.ibm.com
-Subject: [PATCH v9 08/18] KVM: s390: pv: clear the state without memset
-Date:   Wed, 30 Mar 2022 14:25:55 +0200
-Message-Id: <20220330122605.247613-9-imbrenda@linux.ibm.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330122605.247613-1-imbrenda@linux.ibm.com>
-References: <20220330122605.247613-1-imbrenda@linux.ibm.com>
+        Wed, 30 Mar 2022 09:09:24 -0400
+Received: from mail-oi1-x241.google.com (mail-oi1-x241.google.com [IPv6:2607:f8b0:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 768EC78907
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 06:07:39 -0700 (PDT)
+Received: by mail-oi1-x241.google.com with SMTP id k10so22018761oia.0
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 06:07:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:subject:message-id:mime-version:content-disposition;
+        bh=iHRrjC7NGgHX48bIJgJGcmUknIuFtHx4WhnT2MgRlL4=;
+        b=Kp0gzgzMfQ3kAvf1gdqVG9PW5fvH8A0wiM4iIvt/os2m6GCy08yYL67z/4CzATgJeE
+         uWtPe78fPYk6XMDFsIi+sC12sSsR7hWAI01iUU/B4UeBhpp5yuWO1APRl80MMrCw8nXt
+         az93SELSRfONXauqZ+Uu9Ti+fOA7Pypjke+BMgKn4U4EGLjaLw07BFcr+jcIVg2igMLk
+         pSTUW5v6OhQ+M89TATX9k5I5KvYJ8rhmW96WrZi1dEP9c3PdkThDfiqqlj7UK7Kra4KA
+         h0xyfDDbPGR7k5w6MGeKR3kJW1BJhwPa1VfpK8odK3A3koHsn3fZ4BdVJYU7I54cZqhp
+         7pfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-disposition;
+        bh=iHRrjC7NGgHX48bIJgJGcmUknIuFtHx4WhnT2MgRlL4=;
+        b=eNSnQ7Zb6vGvPkFyifAd8vv49krAWN29vF4iEPGz6uU0cjLngls6yXOkQaJTWnlGLD
+         V550kyOeeE+VpdQXXlbLdDmXaCk0elvW5Dn0hEOVVjTzWw2foHE0AzSwDIA1/ex1MbAq
+         rgLadUdaE1nunO+GZhVadnjBwCn93JfBzpfJKv6b0c4iVVKjACYXN/8snfv2BH8DFYYK
+         1UKVg+MmqbrXoPqS7L1vt0SQ8a9iMgKNEiMbKFiokpVus9bdr0I1Sz7ERmgmM9SCGcVY
+         tNN67S8JUwaSC8bFUXIhC03hhi53Tke8PXciD0DzZBiEQyZznpXGEj/tiPsvXtZeDhlp
+         UJcA==
+X-Gm-Message-State: AOAM530o10qrfe50S3RFnyDw8BHpROl/0VnEFYUG2RHWJBKp4enPeDMO
+        73LEB5ruuqc/A7XYpXvAl9TPfJYEeXoJRQ==
+X-Google-Smtp-Source: ABdhPJyrbIXiZOh+V+60qXAY07OWSGBpHcV9cLP7AqXSJjdmJ5cpofJ52ZV786SXOXELUk9wteiGSQ==
+X-Received: by 2002:a05:6808:146:b0:2f4:748:5588 with SMTP id h6-20020a056808014600b002f407485588mr1704317oie.292.1648645658296;
+        Wed, 30 Mar 2022 06:07:38 -0700 (PDT)
+Received: from bertie (072-190-140-117.res.spectrum.com. [72.190.140.117])
+        by smtp.gmail.com with ESMTPSA id q6-20020acaf206000000b002ef960f65b3sm10264175oih.25.2022.03.30.06.07.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 06:07:37 -0700 (PDT)
+Date:   Wed, 30 Mar 2022 08:07:36 -0500
+From:   Rebecca Mckeever <remckee0@gmail.com>
+To:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        outreachy@lists.linux.dev
+Subject: [PATCH] staging: r8188eu: remove unnecessary spaces
+Message-ID: <YkRWGCmMytlqgvkZ@bertie>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: j4BEhIoMFo_4n2ZRYsQLY9UeQ6MlhDXy
-X-Proofpoint-ORIG-GUID: f9QepjJlO4UhlECqNgkl_yVKBY7Oam4E
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-30_04,2022-03-30_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 lowpriorityscore=0
- priorityscore=1501 suspectscore=0 adultscore=0 bulkscore=0 clxscore=1015
- spamscore=0 impostorscore=0 mlxlogscore=879 phishscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2203300062
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Do not use memset to clean the whole struct kvm_s390_pv; instead,
-explicitly clear the fields that need to be cleared.
+Conform to Linux kernel coding style. Issue found by checkpatch:
 
-Upcoming patches will introduce new fields in the struct kvm_s390_pv
-that will not need to be cleared.
+WARNING: Statements should start on a tabstop
 
-Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
+Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
 ---
- arch/s390/kvm/pv.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ drivers/staging/r8188eu/core/rtw_led.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/s390/kvm/pv.c b/arch/s390/kvm/pv.c
-index 9e900ce7387d..76ef33a277d3 100644
---- a/arch/s390/kvm/pv.c
-+++ b/arch/s390/kvm/pv.c
-@@ -16,6 +16,14 @@
- #include <linux/sched/mm.h>
- #include "kvm-s390.h"
- 
-+static void kvm_s390_clear_pv_state(struct kvm *kvm)
-+{
-+	kvm->arch.pv.handle = 0;
-+	kvm->arch.pv.guest_len = 0;
-+	kvm->arch.pv.stor_base = 0;
-+	kvm->arch.pv.stor_var = NULL;
-+}
-+
- int kvm_s390_pv_destroy_cpu(struct kvm_vcpu *vcpu, u16 *rc, u16 *rrc)
- {
- 	int cc;
-@@ -110,7 +118,7 @@ static void kvm_s390_pv_dealloc_vm(struct kvm *kvm)
- 	vfree(kvm->arch.pv.stor_var);
- 	free_pages(kvm->arch.pv.stor_base,
- 		   get_order(uv_info.guest_base_stor_len));
--	memset(&kvm->arch.pv, 0, sizeof(kvm->arch.pv));
-+	kvm_s390_clear_pv_state(kvm);
- }
- 
- static int kvm_s390_pv_alloc_vm(struct kvm *kvm)
+diff --git a/drivers/staging/r8188eu/core/rtw_led.c b/drivers/staging/r8188eu/core/rtw_led.c
+index ccd43accb7dc..4b047c438389 100644
+--- a/drivers/staging/r8188eu/core/rtw_led.c
++++ b/drivers/staging/r8188eu/core/rtw_led.c
+@@ -278,7 +278,7 @@ void rtw_led_control(struct adapter *padapter, enum LED_CTL_MODE LedAction)
+ 			else
+ 				pLed->BlinkingLedState = RTW_LED_ON;
+ 			schedule_delayed_work(&pLed->blink_work, LED_BLINK_SCAN_INTVL);
+-		 }
++		}
+ 		break;
+ 	case LED_CTL_TX:
+ 	case LED_CTL_RX:
+@@ -304,7 +304,7 @@ void rtw_led_control(struct adapter *padapter, enum LED_CTL_MODE LedAction)
+ 		}
+ 		break;
+ 	case LED_CTL_START_WPS: /* wait until xinpin finish */
+-		 if (!pLed->bLedWPSBlinkInProgress) {
++		if (!pLed->bLedWPSBlinkInProgress) {
+ 			if (pLed->bLedNoLinkBlinkInProgress) {
+ 				cancel_delayed_work(&pLed->blink_work);
+ 				pLed->bLedNoLinkBlinkInProgress = false;
+@@ -328,7 +328,7 @@ void rtw_led_control(struct adapter *padapter, enum LED_CTL_MODE LedAction)
+ 			else
+ 				pLed->BlinkingLedState = RTW_LED_ON;
+ 			schedule_delayed_work(&pLed->blink_work, LED_BLINK_SCAN_INTVL);
+-		 }
++		}
+ 		break;
+ 	case LED_CTL_STOP_WPS:
+ 		if (pLed->bLedNoLinkBlinkInProgress) {
 -- 
-2.34.1
+2.32.0
 
