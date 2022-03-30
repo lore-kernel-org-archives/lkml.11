@@ -2,51 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2704CC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10213C47084
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347449AbiC3MGs (ORCPT
+        id S1347390AbiC3MGe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:06:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57686 "EHLO
+        Wed, 30 Mar 2022 08:06:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345932AbiC3LzN (ORCPT
+        with ESMTP id S1345902AbiC3LzK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:55:13 -0400
+        Wed, 30 Mar 2022 07:55:10 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EA792B267;
-        Wed, 30 Mar 2022 04:52:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A12C5268C35;
+        Wed, 30 Mar 2022 04:52:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EDACA615B7;
-        Wed, 30 Mar 2022 11:52:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 620F5C340EE;
-        Wed, 30 Mar 2022 11:52:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C96A616DA;
+        Wed, 30 Mar 2022 11:52:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B975EC3410F;
+        Wed, 30 Mar 2022 11:52:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641173;
-        bh=cmQjIDOiyu6i0WOxV+vP3qJn8wa2woRKYCESBKH7hvg=;
+        s=k20201202; t=1648641135;
+        bh=2e8UaSA6yhCnTNqYsrjVkO5iYsGT9p1vQZKNypZxMYg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VW5dEQnEFEC4PvVqgWVyxrk9r7smWniUVT7rNOBlWj7xLEMRiRBgo9E5GClm6B1AA
-         VOJSV1Xsv2MHQ/8n23fMzsVN+phn2XOw4zU8zyO8138sFrY+10FvVBSeiBx5ifPrvU
-         YRz/jxD/Ce43QcF07Vko+rZRddDnkYO77brACzqCCEC9gZHzAoXSYxQt7dQKqtUd1x
-         Hi0gq7DHOQeyrawxh6eB3G36cw6Zi7OfvhTJzJheSRAUB2Q6jbsIkaVFbthb8711S6
-         EbWe+ApJr1hhdPcNgOyMOtMH+3iFJFx1biu/rn5IfUcvO8bY2AHT1iUEs6lL9K9cxa
-         aoYn0/OW7ocNQ==
+        b=lICopD79L3tvmNkgCsUasDsPahY8zef05ICWl7bvwm+/nU4bC9Tjy2WVkgq4v30mI
+         KIiW7J66R3JWGqnP/NYFgh5KTDUHcOqdkVkpcFpAnBhvBKSe/994+7DTUfSx/C7VZw
+         pE2USJB1VN3giCbwhplnGr0TE26RMTPIT84utf0JcTCESZi9qYa3ofGJNo2DJ4hu7d
+         Vo8STxxTfMIr0Slwrj3aaZFI8yqGlpcmh/MPJSUEPQATR7fj2KiFOr4KfveqWQTHk4
+         VQLAeqXQnGp9SavTyzUhPiFuoEe+0wWBc59An8oqAzuA9YfoBe8GGLuU0CKg6GmS1c
+         13ADI4QLQ25vA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>,
-        eric.y.miao@gmail.com, haojian.zhuang@gmail.com,
-        linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.4 18/25] ARM: mmp: Fix failure to remove sram device
-Date:   Wed, 30 Mar 2022 07:52:18 -0400
-Message-Id: <20220330115225.1672278-18-sashal@kernel.org>
+Cc:     Pavel Skripkin <paskripkin@gmail.com>,
+        =?UTF-8?q?Maximilian=20B=C3=B6hm?= <maximilian.boehm@elbmurf.de>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 31/37] media: Revert "media: em28xx: add missing em28xx_close_extension"
+Date:   Wed, 30 Mar 2022 07:51:16 -0400
+Message-Id: <20220330115122.1671763-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330115225.1672278-1-sashal@kernel.org>
-References: <20220330115225.1672278-1-sashal@kernel.org>
+In-Reply-To: <20220330115122.1671763-1-sashal@kernel.org>
+References: <20220330115122.1671763-1-sashal@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 X-stable: review
@@ -56,74 +55,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-[ Upstream commit 4036b29a146b2749af3bb213b003eb69f3e5ecc4 ]
+[ Upstream commit fde18c3bac3f964d8333ae53b304d8fee430502b ]
 
-Make sure in .probe() to set driver data before the function is left to
-make it possible in .remove() to undo the actions done.
+This reverts commit 2c98b8a3458df03abdc6945bbef67ef91d181938.
 
-This fixes a potential memory leak and stops returning an error code in
-.remove() that is ignored by the driver core anyhow.
+Reverted patch causes problems with Hauppauge WinTV dualHD as Maximilian
+reported [1]. Since quick solution didn't come up let's just revert it
+to make this device work with upstream kernels.
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Link: https://lore.kernel.org/all/6a72a37b-e972-187d-0322-16336e12bdc5@elbmurf.de/ [1]
+
+Reported-by: Maximilian Böhm <maximilian.boehm@elbmurf.de>
+Tested-by: Maximilian Böhm <maximilian.boehm@elbmurf.de>
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-mmp/sram.c | 22 ++++++++++++----------
- 1 file changed, 12 insertions(+), 10 deletions(-)
+ drivers/media/usb/em28xx/em28xx-cards.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/arch/arm/mach-mmp/sram.c b/arch/arm/mach-mmp/sram.c
-index 6794e2db1ad5..ecc46c31004f 100644
---- a/arch/arm/mach-mmp/sram.c
-+++ b/arch/arm/mach-mmp/sram.c
-@@ -72,6 +72,8 @@ static int sram_probe(struct platform_device *pdev)
- 	if (!info)
- 		return -ENOMEM;
+diff --git a/drivers/media/usb/em28xx/em28xx-cards.c b/drivers/media/usb/em28xx/em28xx-cards.c
+index 87e375562dbb..e9a9eb35ddac 100644
+--- a/drivers/media/usb/em28xx/em28xx-cards.c
++++ b/drivers/media/usb/em28xx/em28xx-cards.c
+@@ -4095,11 +4095,8 @@ static void em28xx_usb_disconnect(struct usb_interface *intf)
  
-+	platform_set_drvdata(pdev, info);
-+
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (res == NULL) {
- 		dev_err(&pdev->dev, "no memory resource defined\n");
-@@ -107,8 +109,6 @@ static int sram_probe(struct platform_device *pdev)
- 	list_add(&info->node, &sram_bank_list);
- 	mutex_unlock(&sram_lock);
+ 	em28xx_close_extension(dev);
  
--	platform_set_drvdata(pdev, info);
+-	if (dev->dev_next) {
+-		em28xx_close_extension(dev->dev_next);
++	if (dev->dev_next)
+ 		em28xx_release_resources(dev->dev_next);
+-	}
 -
- 	dev_info(&pdev->dev, "initialized\n");
- 	return 0;
+ 	em28xx_release_resources(dev);
  
-@@ -127,17 +127,19 @@ static int sram_remove(struct platform_device *pdev)
- 	struct sram_bank_info *info;
- 
- 	info = platform_get_drvdata(pdev);
--	if (info == NULL)
--		return -ENODEV;
- 
--	mutex_lock(&sram_lock);
--	list_del(&info->node);
--	mutex_unlock(&sram_lock);
-+	if (info->sram_size) {
-+		mutex_lock(&sram_lock);
-+		list_del(&info->node);
-+		mutex_unlock(&sram_lock);
-+
-+		gen_pool_destroy(info->gpool);
-+		iounmap(info->sram_virt);
-+		kfree(info->pool_name);
-+	}
- 
--	gen_pool_destroy(info->gpool);
--	iounmap(info->sram_virt);
--	kfree(info->pool_name);
- 	kfree(info);
-+
- 	return 0;
- }
- 
+ 	if (dev->dev_next) {
 -- 
 2.34.1
 
