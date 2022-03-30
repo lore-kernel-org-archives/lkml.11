@@ -2,54 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A66AC4321E
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:54:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C96AAC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:54:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344507AbiC3L4N (ORCPT
+        id S1344710AbiC3L4Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 07:56:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59384 "EHLO
+        Wed, 30 Mar 2022 07:56:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344290AbiC3Lwe (ORCPT
+        with ESMTP id S1344305AbiC3Lwh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:52:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12CF42D1FA;
-        Wed, 30 Mar 2022 04:48:27 -0700 (PDT)
+        Wed, 30 Mar 2022 07:52:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FB6B2BEB;
+        Wed, 30 Mar 2022 04:48:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 76BF561616;
-        Wed, 30 Mar 2022 11:48:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7B2FC36AE3;
-        Wed, 30 Mar 2022 11:48:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 86ACAB81C4C;
+        Wed, 30 Mar 2022 11:48:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DA2EC340F2;
+        Wed, 30 Mar 2022 11:48:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648640897;
-        bh=o7G5zI7MNaBY1ywbLUsSUnTGxhdeWJI4/+wNTDy21Fc=;
+        s=k20201202; t=1648640908;
+        bh=dOC/qeva2LJb0df2IyTGuQKNhvG4/vpycOtEmcS+tso=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s5ObD00H/D07MLIDWw4Wwqy/wYeZdhjsjlKHOz/c6UoQuBPf5muWmBqK8YVzumQTa
-         NjffwfEFscoUGBO7JQKt0G9EmQItiFIROeXf7DigGqnRIiu+7wYuwoiKQqoQRj4sPJ
-         vX/f6vnLiSB4ywHnyk8PZ8xN90rVJ/Ou5TEhtml+eF4K5/pmn7Xu0mX5ZPJoM4W/Dp
-         D/Esoafxvi27aMnGVY012PqJOl95Z3s+NEsubMRjwRwGO/hBH4e6tOSz0OUVVEJrQL
-         LJ5DrX9SObqQpn7LFbDOxoZ4+GdJxUVDvN6Lp398LhW+h7exF24ptPkVQf4a9F/Vf2
-         3zIn1mc6hETeA==
+        b=IdOH6Q3qkUk4bha10IykomqAbNmGToDv6AREoigUhx9qp/csphzIB/2js0setnCKB
+         4nCqVYcjBYLiS10K2cbAH9sll+jSCR9Ibuezk38+GcQZNtp/W0eeTVaFzgz3BofqzA
+         MeeODQlDce3ZPCqEkRzgOAYdLVmL0rGt+Pw33FsZov/biP6pS/5bA5MxsUBX4pOGIj
+         X13kKeNiXjjqJ3fYzr9wK1u5uDx/5m1pF971PZry1Stbg1HJFEMlZN4IX1yb/G9VGs
+         sJod8zShPWJ0m39QJWv0DPxdd6T/KHVo3POsMJFa6xj8XziJkX4hW7Iegyd78iqwQv
+         7qv7sf95dwMlg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.17 58/66] ASoC: Intel: Revert "ASoC: Intel: sof_es8336: add quirk for Huawei D15 2021"
-Date:   Wed, 30 Mar 2022 07:46:37 -0400
-Message-Id: <20220330114646.1669334-58-sashal@kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Hans Verkuil <hverkuil@xs4all.nl>,
+        Sasha Levin <sashal@kernel.org>, gregkh@linuxfoundation.org,
+        linux-media@vger.kernel.org, devel@driverdev.osuosl.org
+Subject: [PATCH AUTOSEL 5.17 65/66] media: atomisp: fix bad usage at error handling logic
+Date:   Wed, 30 Mar 2022 07:46:44 -0400
+Message-Id: <20220330114646.1669334-65-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330114646.1669334-1-sashal@kernel.org>
 References: <20220330114646.1669334-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -57,45 +53,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Mauro Carvalho Chehab <mchehab@kernel.org>
 
-[ Upstream commit 1b5283483a782f6560999d8d5965b1874d104812 ]
+[ Upstream commit fc0b582c858ed73f94c8f3375c203ea46f1f7402 ]
 
-This reverts commit ce6a70bfce21bb4edb7c0f29ecfb0522fa34ab71.
+As warned by sparse:
+	atomisp: drivers/staging/media/atomisp/pci/atomisp_acc.c:508 atomisp_acc_load_extensions() warn: iterator used outside loop: 'acc_fw'
 
-The next patch will add run-time detection of the required SSP and
-this hard-coded quirk is not needed.
+The acc_fw interactor is used outside the loop, at the error handling
+logic. On most cases, this is actually safe there, but, if
+atomisp_css_set_acc_parameters() has an error, an attempt to use it
+will pick an invalid value for acc_fw.
 
-Acked-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Link: https://lore.kernel.org/r/20220308192610.392950-14-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Reported-by: Hans Verkuil <hverkuil@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/intel/boards/sof_es8336.c | 8 --------
- 1 file changed, 8 deletions(-)
+ .../staging/media/atomisp/pci/atomisp_acc.c   | 28 +++++++++++++------
+ 1 file changed, 19 insertions(+), 9 deletions(-)
 
-diff --git a/sound/soc/intel/boards/sof_es8336.c b/sound/soc/intel/boards/sof_es8336.c
-index e6d599f0cd26..20d577eaab6d 100644
---- a/sound/soc/intel/boards/sof_es8336.c
-+++ b/sound/soc/intel/boards/sof_es8336.c
-@@ -247,14 +247,6 @@ static const struct dmi_system_id sof_es8336_quirk_table[] = {
- 					SOF_ES8336_TGL_GPIO_QUIRK |
- 					SOF_ES8336_ENABLE_DMIC)
- 	},
--	{
--		.callback = sof_es8336_quirk_cb,
--		.matches = {
--			DMI_MATCH(DMI_SYS_VENDOR, "HUAWEI"),
--			DMI_MATCH(DMI_BOARD_NAME, "BOHB-WAX9-PCB-B2"),
--		},
--		.driver_data = (void *)SOF_ES8336_SSP_CODEC(0)
--	},
- 	{}
- };
+diff --git a/drivers/staging/media/atomisp/pci/atomisp_acc.c b/drivers/staging/media/atomisp/pci/atomisp_acc.c
+index 9a1751895ab0..28cb271663c4 100644
+--- a/drivers/staging/media/atomisp/pci/atomisp_acc.c
++++ b/drivers/staging/media/atomisp/pci/atomisp_acc.c
+@@ -439,6 +439,18 @@ int atomisp_acc_s_mapped_arg(struct atomisp_sub_device *asd,
+ 	return 0;
+ }
  
++static void atomisp_acc_unload_some_extensions(struct atomisp_sub_device *asd,
++					      int i,
++					      struct atomisp_acc_fw *acc_fw)
++{
++	while (--i >= 0) {
++		if (acc_fw->flags & acc_flag_to_pipe[i].flag) {
++			atomisp_css_unload_acc_extension(asd, acc_fw->fw,
++							 acc_flag_to_pipe[i].pipe_id);
++		}
++	}
++}
++
+ /*
+  * Appends the loaded acceleration binary extensions to the
+  * current ISP mode. Must be called just before sh_css_start().
+@@ -479,16 +491,20 @@ int atomisp_acc_load_extensions(struct atomisp_sub_device *asd)
+ 								     acc_fw->fw,
+ 								     acc_flag_to_pipe[i].pipe_id,
+ 								     acc_fw->type);
+-				if (ret)
++				if (ret) {
++					atomisp_acc_unload_some_extensions(asd, i, acc_fw);
+ 					goto error;
++				}
+ 
+ 				ext_loaded = true;
+ 			}
+ 		}
+ 
+ 		ret = atomisp_css_set_acc_parameters(acc_fw);
+-		if (ret < 0)
++		if (ret < 0) {
++			atomisp_acc_unload_some_extensions(asd, i, acc_fw);
+ 			goto error;
++		}
+ 	}
+ 
+ 	if (!ext_loaded)
+@@ -497,6 +513,7 @@ int atomisp_acc_load_extensions(struct atomisp_sub_device *asd)
+ 	ret = atomisp_css_update_stream(asd);
+ 	if (ret) {
+ 		dev_err(isp->dev, "%s: update stream failed.\n", __func__);
++		atomisp_acc_unload_extensions(asd);
+ 		goto error;
+ 	}
+ 
+@@ -504,13 +521,6 @@ int atomisp_acc_load_extensions(struct atomisp_sub_device *asd)
+ 	return 0;
+ 
+ error:
+-	while (--i >= 0) {
+-		if (acc_fw->flags & acc_flag_to_pipe[i].flag) {
+-			atomisp_css_unload_acc_extension(asd, acc_fw->fw,
+-							 acc_flag_to_pipe[i].pipe_id);
+-		}
+-	}
+-
+ 	list_for_each_entry_continue_reverse(acc_fw, &asd->acc.fw, list) {
+ 		if (acc_fw->type != ATOMISP_ACC_FW_LOAD_TYPE_OUTPUT &&
+ 		    acc_fw->type != ATOMISP_ACC_FW_LOAD_TYPE_VIEWFINDER)
 -- 
 2.34.1
 
