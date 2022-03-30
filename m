@@ -2,150 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6EC2C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:58:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A009DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:59:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242802AbiC3HAh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 03:00:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56440 "EHLO
+        id S243580AbiC3HBC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 03:01:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243529AbiC3HAA (ORCPT
+        with ESMTP id S243595AbiC3HAx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 03:00:00 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10olkn2108.outbound.protection.outlook.com [40.92.41.108])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A073DE0A7;
-        Tue, 29 Mar 2022 23:57:51 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iey146HOF8kzsOlknQek2ZXcgh3yx2tgpcgukrfv2XRd7a54cazT/T8wWJVr2X+lz/gYj1IQNKTZ5AfJMBOJP6q5/LEwtf5f/dB6h+UHHmRC7YNjPZe2CFQY1a5gEncz5hKagbVbFtDrvw31iyu21v97xIwdBdGH8765i6mts2nT+GbQPWmZ86mzboAf0z226RCg+oe7j0NMqswv9koNLsAaFo8W820ldxfM4agH2L3OJbRuZ2tp7hrnnWvFLq/UUY/D9yWtPdoI2eOuqQekR2KU+aVGnM0SMCE4ac5meHuZBU/aApRe2sXCjEWlfLptKYbFGsxKhWZAjUmSPeYpVg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hKI3GoILL8J0bxYQu35N2DmC4fv2Mj+Xqybrzz8r/jk=;
- b=kKyviKAwC7OprBeIz5MbMZYTa/rb6vlHp+aQd4r2+HV4PyK3XYNQA57F56iYaBgEC0rE0HvTBWVnGgyuZ1pmsO9Tb88yadbUddr/orfZaNyHkewce8Kaa7l76uSVtfMvOznoiZQZ3rwYYfsGiRDMykURWqjmI93D56Ay2Zya6ZU9KoEn6Fq6lUrP5ekCY4tKMBb4ow+2KpEsGlv1+7VlnXdeIC8xhh5P4G/RTmkoMvsOKRXxmsvwf46cVE+SiTesakriYjhY3/+I0ilz0n0zI1PfMTZT8/zM/fM8PUnG4RsZtTnn+i/aVw9ITfRIQ05TD5VPd1tfOucOXQDoALJk7g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-Received: from BY5PR02MB7009.namprd02.prod.outlook.com (2603:10b6:a03:236::13)
- by BL0PR02MB4883.namprd02.prod.outlook.com (2603:10b6:208:54::25) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.19; Wed, 30 Mar
- 2022 06:57:49 +0000
-Received: from BY5PR02MB7009.namprd02.prod.outlook.com
- ([fe80::413f:bae6:4e5e:5ae6]) by BY5PR02MB7009.namprd02.prod.outlook.com
- ([fe80::413f:bae6:4e5e:5ae6%6]) with mapi id 15.20.5123.018; Wed, 30 Mar 2022
- 06:57:49 +0000
-From:   Joel Selvaraj <jo@jsfamily.in>
-To:     Sumit Semwal <sumit.semwal@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Amit Pundir <amit.pundir@linaro.org>,
-        Joel Selvaraj <jo@jsfamily.in>
-Subject: [PATCH 3/3] arm64: dts: qcom: sdm845-xiaomi-beryllium: enable qcom wled backlight and link to panel
-Date:   Wed, 30 Mar 2022 12:26:39 +0530
-Message-ID: <BY5PR02MB70091CBCF76C99109C72E7C8D91F9@BY5PR02MB7009.namprd02.prod.outlook.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220330065639.245531-1-jo@jsfamily.in>
-References: <20220330065639.245531-1-jo@jsfamily.in>
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-TMN:  [WQpQL0JZKQSPSIv41xyjLSJIzn9P2abAjlHy3217uC9I8r0ot/MZSxCDUMbL8Bk8]
-X-ClientProxiedBy: BM1PR0101CA0039.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:b00:1a::25) To BY5PR02MB7009.namprd02.prod.outlook.com
- (2603:10b6:a03:236::13)
-X-Microsoft-Original-Message-ID: <20220330065639.245531-4-jo@jsfamily.in>
+        Wed, 30 Mar 2022 03:00:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 514CDDFD76
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 23:58:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648623518;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BF9Fr3Hf2Q3seTfZG5uyvCg9ZVloRlsxZukD5j+fS4A=;
+        b=LILja68p93ujgunKcSzMgpDX3ug346qSFD0y+glc5bTbCCYMTwUZxkPKwSQ21xBsZDcg/0
+        UVJ6edyNVKNbFwOqdDGWq2faDq4mEnY/Lv259GNDI/5bgN9JNPfOM0DtyZUM068QEyx3fn
+        Cyz34CPWzWlJKK/4SOSWh6AKkI7+Zk0=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-401-9c5b1pQgMZ-hRewjdbbqHQ-1; Wed, 30 Mar 2022 02:58:37 -0400
+X-MC-Unique: 9c5b1pQgMZ-hRewjdbbqHQ-1
+Received: by mail-wm1-f72.google.com with SMTP id n19-20020a7bcbd3000000b0038c94b86258so2214788wmi.2
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 23:58:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=BF9Fr3Hf2Q3seTfZG5uyvCg9ZVloRlsxZukD5j+fS4A=;
+        b=W/0MLhCv90lF/lRdtQI2PkbAzsRYpfa3+gFAxzt5RHfI+wUxH5BWz7CJeIiENJpMy5
+         6eIvOzXTq0b1jY/Ye376Oo2kGgoDIjvL+7Q+jJRxZND5JaP3zYSGAyKg9l1nKP5a/lTB
+         KA2fMcwrHosTvRLQdkQ633swfuulzExRMfC5JIoWVSD/4Mm+HlwBhDyngtNRje83H0KE
+         IFo+iwuftn+IqPtY8RwrAIz1JG7W1Ir4yswz6VP5tlQk0xI6tpVJz5OSBUADe/nG4A0e
+         ycMrmLVVdvNzNhxYQ/qPNEktxHUhRbUY1O8zGMMJ0MpIBVSMTn2uG1ubOo5KKd1cxLFC
+         EWRQ==
+X-Gm-Message-State: AOAM533x9iBMxMmgxfoVCjCXILo9MYiJR2HHiF93CiY2LE1S0qg1dpSP
+        ctDQ+JJ8vwQZCm0GP9ifGjunzFELE/WPIwZ3dtkihNsE+kMMQsufHv4JRyHvzABql3eTBb6K3SN
+        D8vSfWPgGz25TcBwMAn1iJbEU
+X-Received: by 2002:adf:f943:0:b0:203:e832:129 with SMTP id q3-20020adff943000000b00203e8320129mr34761262wrr.626.1648623515916;
+        Tue, 29 Mar 2022 23:58:35 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwtto01FveovjFViTUCxDqiAQ+5FDv0R1GlHAedwP32FH88iQTdtwzmDfuXuu4j6BvJ3hJeZg==
+X-Received: by 2002:adf:f943:0:b0:203:e832:129 with SMTP id q3-20020adff943000000b00203e8320129mr34761230wrr.626.1648623515578;
+        Tue, 29 Mar 2022 23:58:35 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c705:2200:178b:7244:2a1f:b5d8? (p200300cbc7052200178b72442a1fb5d8.dip0.t-ipconnect.de. [2003:cb:c705:2200:178b:7244:2a1f:b5d8])
+        by smtp.gmail.com with ESMTPSA id r65-20020a1c4444000000b0038c48dd23b9sm6003935wma.5.2022.03.29.23.58.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 29 Mar 2022 23:58:35 -0700 (PDT)
+Message-ID: <3272510e-ff5c-8694-c45c-7be9eaed4b42@redhat.com>
+Date:   Wed, 30 Mar 2022 08:58:32 +0200
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4717930d-b0e0-47f2-12d1-08da121a99f9
-X-MS-TrafficTypeDiagnostic: BL0PR02MB4883:EE_
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: EoMCVrj1ufded3BuamDk8WOjuKiVjNlG5WgnpxMI3Be5waQeQaHoUyl6/468HfSId1gYVAjRNqx8xoona2qA/R6NLFf+ucldS2wBt0g4l9PA7muDTC7ZyAzN1eZlsZcaAmAvoohA3tyxlSgxm1W7QRKlvIJ3Yo3oDBeYFb9niYV/Ys56RpccB2+lBDtlM5PG3tJH0XLB9reanOD6QEW5NR8pB8A3EymR9kR6CjIBmLw9/qHGQaKraBzOYm1vfSHNM0TkgfQjV2v/02zy6BX7viCrvcZwUK3glEWKDkvD1ek53DczPkLKyOVQXTNSxciC2T0AW5mj5DqvrA42kC6ssdPtxoNXueasClexx4xZ4Tv8zvBZjdWWDQS3ZM8Qmpzy2N8Ktzvlt6FMjZeYe4TnIE4yJgfQGLV7992lIRrbX1DiMh2wvkzDuCdzD1vURff3WiPr/q8d+0wzr99oMO6u6t0don3ya3ugX/C3EPwVfy9HVyl6EancpzwuuveZ9qcHEMGqGdTNlhIRmbEMHpuaPcB3m1LuVhCmXga9MURZ/y+6NJcGBCD4Z822ScoMLe6FyIPDIrpOWhVPW3hMMDz35w==
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?jBQvohd8gqQ8ul0Njm7eOoY5oVabYSgBIj2BOPFLnCFyQSFwofslfsAMPvIK?=
- =?us-ascii?Q?hGeDI42Cg+ZAM203FfV7j8Nd9hgXX4derqMVecqMlW+Zjm+Gy/jbLDR8W+LX?=
- =?us-ascii?Q?6Jvf3Jfcl3k4Q6ESmK/b1E91zxLn4CF1CApltqQsqcKhnoXntGsqHB9yxPcI?=
- =?us-ascii?Q?AE5EF6U2hR9pGb+hFEqUJ7ZMfYdfW3819SEYDamlMkSSJwp5F/SdrIXb++Us?=
- =?us-ascii?Q?07cR2C+FP5MTh377CsslENETc3ITZtLAb2qrXHCR61e80L0YxuslfMckbuBW?=
- =?us-ascii?Q?EVCvl6BSmReYFDLNn93sIip2g4CtUV9xBc8DfaH6Zd7RVcpsQVChiewTBhoM?=
- =?us-ascii?Q?58LKzvJ+y1PG9Ge84ol5m+adXjEYgpx6AYekFRePi1bEfhW/RO9mLz+iZ3m/?=
- =?us-ascii?Q?EVeXVgbvObavHPb2FPvW/yAFxz7Sc7B+z3wjnsA/DBAE7JaWGcnHlq6DutMv?=
- =?us-ascii?Q?w34iitM6rXOrNret6hUYBJWtn3/4KH3SlTOBaN43bEvyWsellIg0018ptqle?=
- =?us-ascii?Q?zTU8uJWNXa+01TC0EJoJIs+x8Rxg0BbWStnjuVIKEVj5oEG+TLf9qu7Ss5b6?=
- =?us-ascii?Q?xSCFS8JkzkzH57y/pqnqd1A7a5htrPmS9RSCaNYUs/SSfHeleIkQup9UR58o?=
- =?us-ascii?Q?N0lI6lBEBx3W2ntTpcDbmJjLQBUjY9cgFuLgyHS4VXjz3QReUUYb2cGZTSLG?=
- =?us-ascii?Q?DbtJLzKhkHroh2zk8B0ufKvaUd21Ldn9YqnQsJkPR4xlfGt0zEc6cediRksL?=
- =?us-ascii?Q?wZFNL/WZJNw5WLomqKLDH5bmLVRtKp2XANHmvuWRsv8a06h12veGWw4S6XAb?=
- =?us-ascii?Q?UaT+6zxw/heNpAp2pwwlMuGCrjsx3bI+031gG+4fU8d+fLDifyWUFr94sJya?=
- =?us-ascii?Q?Mbswh7gpZWJK1LgSxdw4PZ6lf9/Il2tUI3Qn/s0mxthZ6cdGsBBMDIk8rXqA?=
- =?us-ascii?Q?B/tNz7ml4JWWWVHrzPu3jd4QQdKBMSbVatrVBP0N10oUTz5/+Yc6+5s6p1gC?=
- =?us-ascii?Q?wz19GcQcVV7ienAar9pehyteNbmu22db/Venk3HpUgeG1Butg0FQjgqU57xU?=
- =?us-ascii?Q?8be6fM5hKz1UrnkkuN0kZEZf5SQWR1ErEafH2+9kum35S84zCBIfOoiTiXNs?=
- =?us-ascii?Q?XUTO3x8QipT/RcvXj0FLojo1E4UCpBpF8/HzONmIiFQNSM28qcihG0a4bJqI?=
- =?us-ascii?Q?1qCzFWl94ksVJFhnZtdW++bGTu1qUhQctR63pHDpaTwhiCJj4Qxt5XgLzjfV?=
- =?us-ascii?Q?jFsjRO1H44z0A75NsvzGFTVEBwDwexMYvjCOr+4eLTpSgD/rjrK9cyJwBYl7?=
- =?us-ascii?Q?prEL4+kvb/5xaMQhhsSqJcG6FP5RtxVTY3OMpSBC2vULatYvCkOnOiQLBA8N?=
- =?us-ascii?Q?c2t49rtEPEtjbOCenMwFB83Q2zUgl5jkasqI1i7mfO+WDEcDkGGOcLf1r481?=
- =?us-ascii?Q?KgWfrnU+FT36+JT/Q63J5F3tXn3Ky0nqIYyM75GEN5SIdFOxuGF8Ig=3D=3D?=
-X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-99c3d.templateTenant
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4717930d-b0e0-47f2-12d1-08da121a99f9
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR02MB7009.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2022 06:57:49.2095
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR02MB4883
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH v2 7/8] powerpc/pgtable: remove _PAGE_BIT_SWAP_TYPE for
+ book3s
+Content-Language: en-US
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc:     "x86@kernel.org" <x86@kernel.org>, Jan Kara <jack@suse.cz>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Peter Xu <peterx@redhat.com>, Michal Hocko <mhocko@kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        Donald Dutile <ddutile@redhat.com>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>,
+        Paul Mackerras <paulus@samba.org>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Rik van Riel <riel@surriel.com>,
+        Hugh Dickins <hughd@google.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        David Rientjes <rientjes@google.com>,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        Pedro Gomes <pedrodemargomes@gmail.com>,
+        Jann Horn <jannh@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Oded Gabbay <oded.gabbay@gmail.com>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        Oleg Nesterov <oleg@redhat.com>, Nadav Amit <namit@vmware.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Roman Gushchin <guro@fb.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>
+References: <20220329164329.208407-1-david@redhat.com>
+ <20220329164329.208407-8-david@redhat.com>
+ <22d3c42d-402f-8aeb-e989-c05d023b2ed3@csgroup.eu>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <22d3c42d-402f-8aeb-e989-c05d023b2ed3@csgroup.eu>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Xiaomi Poco F1 uses the QCOM WLED driver for backlight control.
-Enable and link it to the panel to use it.
+On 30.03.22 08:07, Christophe Leroy wrote:
+> 
+> 
+> Le 29/03/2022 à 18:43, David Hildenbrand a écrit :
+>> The swap type is simply stored in bits 0x1f of the swap pte. Let's
+>> simplify by just getting rid of _PAGE_BIT_SWAP_TYPE. It's not like that
+>> we can simply change it: _PAGE_SWP_SOFT_DIRTY would suddenly fall into
+>> _RPAGE_RSV1, which isn't possible and would make the
+>> BUILD_BUG_ON(_PAGE_HPTEFLAGS & _PAGE_SWP_SOFT_DIRTY) angry.
+>>
+>> While at it, make it clearer which bit we're actually using for
+>> _PAGE_SWP_SOFT_DIRTY by just using the proper define and introduce and
+>> use SWP_TYPE_MASK.
+>>
+>> Signed-off-by: David Hildenbrand <david@redhat.com>
+>> ---
+>>   arch/powerpc/include/asm/book3s/64/pgtable.h | 12 +++++-------
+> 
+> Why only BOOK3S ? Why not BOOK3E as well ?
 
-Signed-off-by: Joel Selvaraj <jo@jsfamily.in>
----
- .../arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+Hi Cristophe,
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
-index 798fc72578a7..3ebb0f9905d3 100644
---- a/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
-+++ b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
-@@ -231,6 +231,7 @@ panel@0 {
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 
-+		backlight = <&pmi8998_wled>;
- 		reset-gpios = <&tlmm 6 GPIO_ACTIVE_LOW>;
- 
- 		port {
-@@ -314,6 +315,18 @@ vol_up_pin_a: vol-up-active {
- 	};
- };
- 
-+&pmi8998_wled {
-+	status = "okay";
-+	qcom,current-boost-limit = <970>;
-+	qcom,ovp-millivolt = <29600>;
-+	qcom,current-limit-microamp = <20000>;
-+	qcom,enabled-strings = <0 1>;
-+	qcom,num-strings = <2>;
-+	qcom,switching-freq = <600>;
-+	qcom,external-pfet;
-+	qcom,cabc;
-+};
-+
- &pm8998_pon {
- 	resin {
- 		compatible = "qcom,pm8941-resin";
+I'm focusing on the most relevant enterprise architectures for now. I
+don't have the capacity to convert each and every architecture at this
+point (especially, I don't to waste my time in case this doesn't get
+merged, and book3e didn't look straight forward to me).
+
+Once this series hits upstream, I can look into other architectures --
+and I'll be happy if other people jump in that have more familiarity
+with the architecture-specific swp pte layouts.
+
+Thanks
+
 -- 
-2.35.1
+Thanks,
+
+David / dhildenb
 
