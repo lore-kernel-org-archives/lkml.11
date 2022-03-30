@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE4A8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:53:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE7C6C35273
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:54:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245387AbiC3Lzh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 07:55:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35754 "EHLO
+        id S1344277AbiC3Lzp (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 07:55:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344258AbiC3LwR (ORCPT
+        with ESMTP id S1344259AbiC3LwR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 30 Mar 2022 07:52:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82415278576;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2356275CB1;
         Wed, 30 Mar 2022 04:48:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F15A6B81C25;
-        Wed, 30 Mar 2022 11:48:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62E13C36AE5;
-        Wed, 30 Mar 2022 11:48:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8DE9CB81C4A;
+        Wed, 30 Mar 2022 11:48:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F23FDC34112;
+        Wed, 30 Mar 2022 11:48:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648640899;
-        bh=udRcMs7kmOyAA+RyJhsEG9iF/vW5/VUQI/1wSi442CM=;
+        s=k20201202; t=1648640896;
+        bh=ESR58k0+i9Fcq2CL1NwXMkUZoliC3eLirvD6WS7Nz4E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NplZ5+KAqNwzwzknuhNAudxLr3JgjgL37JFGxFDbXr+GHlokHl2L3v1Qe2CB74hIW
-         lEMXIfnPKQ9c358wXaKUyUzMs4PdjGbMnvtyHiZ6TxLfa9EFfiaNDKMm2iWIg0LpyO
-         rl9IlnnVb3e5eHDco+7hd7EnLs3yTDKJKyrLEb7Sq/CaCavEF8WmZ6jcZ4COxrRrhc
-         T5nynL0deVzVW9oZK2P8pK2dd86GXEm0kZDZUVJTrxB5hH9SKysXMaBDhDiXZOREEB
-         /AmTFw7ZuxmGmF6jyBDIcwcYW79afX5PlSBgoIOxcP3qxT9dfc1kvNLxQ7U3o1JQ4s
-         ckx6YGGHbl8Mw==
+        b=VVwb4Kudegm6xzzzcGg8Go2dn83sEGEz2jjVnuzRjp+6K0Do131AuzLIpifWqoVU9
+         XtbMt6fqvTwCrqj9uFSRlvX6yiI3E4/v/c888whd+6wvO9uJjr7e+y7W7emqq5si7K
+         s1YLALGWMpQ3P9NV9SYR2GWhR+F+tlo//ELFhvZrcIoc9CKybFhPyDj5ZwuIRrHaPa
+         JBuUWcT5V1RRcnaV6coozfLe2Ci978Tzg8MFAv5B6ZJV/FT0HeHTHmn7x59RgPVm78
+         +GbPA4Up4jRfMi6lFA/o5J8+RF6+LIy6h/lE/nVAgxWcRNYqUZYZOhqCizm8bqppvt
+         +ForFtUMZDBnw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Nikolai Kostrigin <nickel@altlinux.org>,
         Bard Liao <yung-chuan.liao@linux.intel.com>,
         =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.17 59/66] ASoC: Intel: sof_es8336: use NHLT information to set dmic and SSP
-Date:   Wed, 30 Mar 2022 07:46:38 -0400
-Message-Id: <20220330114646.1669334-59-sashal@kernel.org>
+        Takashi Iwai <tiwai@suse.de>, Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, perex@perex.cz,
+        tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.17 57/66] ALSA: intel-dspconfig: add ES8336 support for CNL
+Date:   Wed, 30 Mar 2022 07:46:36 -0400
+Message-Id: <20220330114646.1669334-57-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330114646.1669334-1-sashal@kernel.org>
 References: <20220330114646.1669334-1-sashal@kernel.org>
@@ -58,122 +59,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-[ Upstream commit 651c304df7f6e3fbb4779527efa3eb128ef91329 ]
+[ Upstream commit cded07a2dccd5493696a3adce175f01e413423c6 ]
 
-Since we see a proliferation of devices with various configurations,
-we want to automatically set the DMIC and SSP information. This patch
-relies on the information extracted from NHLT and partially reverts
-existing DMI quirks added by commit a164137ce91a ("ASoC: Intel: add
-machine driver for SOF+ES8336")
+We're missing this check for the CNL PCI id
 
-Note that NHLT can report multiple SSPs, choosing from the
-ssp_link_mask in an MSB-first manner was found experimentally to work
-fine.
-
-The only thing that cannot be detected is the GPIO type, and users may
-want to use the quirk override parameter if the 'wrong' solution is
-provided.
-
-Tested-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Reported-by: Nikolai Kostrigin <nickel@altlinux.org>
 Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
 Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Link: https://lore.kernel.org/r/20220308192610.392950-15-pierre-louis.bossart@linux.intel.com
+Acked-by: Takashi Iwai <tiwai@suse.de>
+Link: https://lore.kernel.org/r/20220308192610.392950-10-pierre-louis.bossart@linux.intel.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/intel/boards/sof_es8336.c | 56 +++++++++++++++++++++--------
- 1 file changed, 41 insertions(+), 15 deletions(-)
+ sound/hda/intel-dsp-config.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/sound/soc/intel/boards/sof_es8336.c b/sound/soc/intel/boards/sof_es8336.c
-index 20d577eaab6d..46e453915f82 100644
---- a/sound/soc/intel/boards/sof_es8336.c
-+++ b/sound/soc/intel/boards/sof_es8336.c
-@@ -228,24 +228,25 @@ static int sof_es8336_quirk_cb(const struct dmi_system_id *id)
- 	return 1;
- }
- 
-+/*
-+ * this table should only be used to add GPIO or jack-detection quirks
-+ * that cannot be detected from ACPI tables. The SSP and DMIC
-+ * information are providing by the platform driver and are aligned
-+ * with the topology used.
-+ *
-+ * If the GPIO support is missing, the quirk parameter can be used to
-+ * enable speakers. In that case it's recommended to keep the SSP and DMIC
-+ * information consistent, overriding the SSP and DMIC can only be done
-+ * if the topology file is modified as well.
-+ */
- static const struct dmi_system_id sof_es8336_quirk_table[] = {
--	{
--		.callback = sof_es8336_quirk_cb,
--		.matches = {
--			DMI_MATCH(DMI_SYS_VENDOR, "CHUWI Innovation And Technology"),
--			DMI_MATCH(DMI_BOARD_NAME, "Hi10 X"),
--		},
--		.driver_data = (void *)SOF_ES8336_SSP_CODEC(2)
--	},
- 	{
- 		.callback = sof_es8336_quirk_cb,
- 		.matches = {
- 			DMI_MATCH(DMI_SYS_VENDOR, "IP3 tech"),
- 			DMI_MATCH(DMI_BOARD_NAME, "WN1"),
- 		},
--		.driver_data = (void *)(SOF_ES8336_SSP_CODEC(0) |
--					SOF_ES8336_TGL_GPIO_QUIRK |
--					SOF_ES8336_ENABLE_DMIC)
-+		.driver_data = (void *)(SOF_ES8336_TGL_GPIO_QUIRK)
+diff --git a/sound/hda/intel-dsp-config.c b/sound/hda/intel-dsp-config.c
+index b9b7bf5a5553..70fd8b13938e 100644
+--- a/sound/hda/intel-dsp-config.c
++++ b/sound/hda/intel-dsp-config.c
+@@ -199,6 +199,11 @@ static const struct config_entry config_table[] = {
+ 			{}
+ 		}
  	},
- 	{}
- };
-@@ -470,11 +471,33 @@ static int sof_es8336_probe(struct platform_device *pdev)
- 	card = &sof_es8336_card;
- 	card->dev = dev;
- 
--	if (!dmi_check_system(sof_es8336_quirk_table))
--		quirk = SOF_ES8336_SSP_CODEC(2);
-+	/* check GPIO DMI quirks */
-+	dmi_check_system(sof_es8336_quirk_table);
- 
--	if (quirk & SOF_ES8336_ENABLE_DMIC)
--		dmic_be_num = 2;
-+	if (!mach->mach_params.i2s_link_mask) {
-+		dev_warn(dev, "No I2S link information provided, using SSP0. This may need to be modified with the quirk module parameter\n");
-+	} else {
-+		/*
-+		 * Set configuration based on platform NHLT.
-+		 * In this machine driver, we can only support one SSP for the
-+		 * ES8336 link, the else-if below are intentional.
-+		 * In some cases multiple SSPs can be reported by NHLT, starting MSB-first
-+		 * seems to pick the right connection.
-+		 */
-+		unsigned long ssp = 0;
-+
-+		if (mach->mach_params.i2s_link_mask & BIT(2))
-+			ssp = SOF_ES8336_SSP_CODEC(2);
-+		else if (mach->mach_params.i2s_link_mask & BIT(1))
-+			ssp = SOF_ES8336_SSP_CODEC(1);
-+		else  if (mach->mach_params.i2s_link_mask & BIT(0))
-+			ssp = SOF_ES8336_SSP_CODEC(0);
-+
-+		quirk |= ssp;
-+	}
-+
-+	if (mach->mach_params.dmic_num)
-+		quirk |= SOF_ES8336_ENABLE_DMIC;
- 
- 	if (quirk_override != -1) {
- 		dev_info(dev, "Overriding quirk 0x%lx => 0x%x\n",
-@@ -483,6 +506,9 @@ static int sof_es8336_probe(struct platform_device *pdev)
- 	}
- 	log_quirks(dev);
- 
-+	if (quirk & SOF_ES8336_ENABLE_DMIC)
-+		dmic_be_num = 2;
-+
- 	sof_es8336_card.num_links += dmic_be_num + hdmi_num;
- 	dai_links = sof_card_dai_links_create(dev,
- 					      SOF_ES8336_SSP_CODEC(quirk),
++	{
++		.flags = FLAG_SOF,
++		.device = 0x09dc8,
++		.codec_hid =  &essx_83x6,
++	},
+ 	{
+ 		.flags = FLAG_SOF | FLAG_SOF_ONLY_IF_DMIC_OR_SOUNDWIRE,
+ 		.device = 0x9dc8,
 -- 
 2.34.1
 
