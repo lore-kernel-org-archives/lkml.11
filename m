@@ -2,140 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 057ABC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 14:59:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D170C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 14:59:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347695AbiC3PAm (ORCPT
+        id S1347718AbiC3PAp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 11:00:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57036 "EHLO
+        Wed, 30 Mar 2022 11:00:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244697AbiC3PAk (ORCPT
+        with ESMTP id S1347675AbiC3PAl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 11:00:40 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF8976434;
-        Wed, 30 Mar 2022 07:58:54 -0700 (PDT)
+        Wed, 30 Mar 2022 11:00:41 -0400
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A14B5642B;
+        Wed, 30 Mar 2022 07:58:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648652335; x=1680188335;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=LGbzP3xToIyBP1rsfYxryrKuymJX1Ma/5d6WvH8bQgg=;
-  b=ltR2Hb3UzFADOEWfsrf8Wvr//Fuf9Dcidst4Ozfi0iRCjQG4bP64GxKY
-   JmNjJEQrnDNQrLOkJv5AUFAuj6IZdyER0qLZe5m9uZsYLZWzEf/PM60ae
-   wU4BYaU28zMTNJmrWGfg+MXxABGlyVp1chHq+9vN/T+TzEYUBzt3tt6Iw
-   p30HWtRGSaNLviqj+vbG9chzYNuAUpDeM23YRAp8sfS7tK0QbUmx0Ysp4
-   /9jTHucDfKAU5/+fDI1H03vYM6vA8+0O7JdeUEcb8R2f7zWYQG7v2zrAD
-   XTwRXx3gzIJJaUIpecYMpyGO50W3H4eu2ubqjWZdGRRjrWtSzGxGD8NNi
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="241717829"
+  t=1648652336; x=1680188336;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Irn+8n9bwYh+Vsri4PV7vkus1LhwWNhu6OCx59Rx7lQ=;
+  b=PqwAxbFzlw2Q5vmKUkvJa4z/tQV85DHitfmO+IDITfTHQ4DvGbpvQx7f
+   WL+EHkXv9QJlS0B5NEEKzgGmhiIv4ti8MHJ4UQPeYI/H80+OY2/DvCrny
+   hNyOJoNK7785LLr7/gliQfu66qnRX4AbyqkaZe2HDThLkEFNmba2ap1ib
+   Fsqvy/g+ut4gID8JWf3oKZnX0jPMyDBf13CVM7fp6o7mTSFBDaBaz23yb
+   51YFqxkjyF9X4xGO8vWxpNpna8tlbvq8aGh6Xgs5EwSbi83yUK+KxmWNi
+   6fVlc160xRZmjjKOxt9lQOBr7Ronn9JnAe/g0QhRfGeQF4rxsF7B082Cd
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="320261630"
 X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
-   d="scan'208";a="241717829"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 07:58:54 -0700
+   d="scan'208";a="320261630"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 07:58:56 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
-   d="scan'208";a="565574065"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
-  by orsmga008.jf.intel.com with ESMTP; 30 Mar 2022 07:58:50 -0700
-Date:   Wed, 30 Mar 2022 22:51:37 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     David Laight <David.Laight@ACULAB.COM>
-Cc:     Michael Walle <michael@walle.cc>, Tom Rix <trix@redhat.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "linux-hwmon@vger.kernel.org" <linux-hwmon@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v2 1/5] hwmon: introduce hwmon_sanitize_name()
-Message-ID: <20220330145137.GA214615@yilunxu-OptiPlex-7050>
-References: <20220329160730.3265481-1-michael@walle.cc>
- <20220329160730.3265481-2-michael@walle.cc>
- <20220330065047.GA212503@yilunxu-OptiPlex-7050>
- <5029cf18c9df4fab96af13c857d2e0ef@AcuMS.aculab.com>
+   d="scan'208";a="695125848"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga001.fm.intel.com with ESMTP; 30 Mar 2022 07:58:54 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id B1CBE9B; Wed, 30 Mar 2022 17:59:15 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH v1 2/3] gpiolib: Refactor gpiolib_dbg_show() with help of for_each_gpio_desc()
+Date:   Wed, 30 Mar 2022 17:59:09 +0300
+Message-Id: <20220330145910.1946-2-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220330145910.1946-1-andriy.shevchenko@linux.intel.com>
+References: <20220330145910.1946-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5029cf18c9df4fab96af13c857d2e0ef@AcuMS.aculab.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 10:11:39AM +0000, David Laight wrote:
-> From: Xu Yilun
-> > Sent: 30 March 2022 07:51
-> > 
-> > On Tue, Mar 29, 2022 at 06:07:26PM +0200, Michael Walle wrote:
-> > > More and more drivers will check for bad characters in the hwmon name
-> > > and all are using the same code snippet. Consolidate that code by adding
-> > > a new hwmon_sanitize_name() function.
-> > >
-> > > Signed-off-by: Michael Walle <michael@walle.cc>
-> > > ---
-> > >  Documentation/hwmon/hwmon-kernel-api.rst |  9 ++++-
-> > >  drivers/hwmon/hwmon.c                    | 49 ++++++++++++++++++++++++
-> > >  include/linux/hwmon.h                    |  3 ++
-> > >  3 files changed, 60 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/Documentation/hwmon/hwmon-kernel-api.rst b/Documentation/hwmon/hwmon-kernel-api.rst
-> > > index c41eb6108103..12f4a9bcef04 100644
-> > > --- a/Documentation/hwmon/hwmon-kernel-api.rst
-> > > +++ b/Documentation/hwmon/hwmon-kernel-api.rst
-> > > @@ -50,6 +50,10 @@ register/unregister functions::
-> > >
-> > >    void devm_hwmon_device_unregister(struct device *dev);
-> > >
-> > > +  char *hwmon_sanitize_name(const char *name);
-> > > +
-> > > +  char *devm_hwmon_sanitize_name(struct device *dev, const char *name);
-> > > +
-> > >  hwmon_device_register_with_groups registers a hardware monitoring device.
-> > >  The first parameter of this function is a pointer to the parent device.
-> > >  The name parameter is a pointer to the hwmon device name. The registration
-> > > @@ -93,7 +97,10 @@ removal would be too late.
-> > >
-> > >  All supported hwmon device registration functions only accept valid device
-> > >  names. Device names including invalid characters (whitespace, '*', or '-')
-> > > -will be rejected. The 'name' parameter is mandatory.
-> > > +will be rejected. The 'name' parameter is mandatory. Before calling a
-> > > +register function you should either use hwmon_sanitize_name or
-> > > +devm_hwmon_sanitize_name to replace any invalid characters with an
-> > 
-> > I suggest                   to duplicate the name and replace ...
-> 
-> You are now going to get code that passed in NULL when the kmalloc() fails.
-> If 'sanitizing' the name is the correct thing to do then sanitize it
-> when the copy is made into the allocated structure.
+Use for_each_gpio_desc() and since we would need to touch the entire
+conditionals, do the following:
+- rename last occurrence of gdesc to desc
+- use short ternary operator ?:
+- join two seq_printf() calls into single one
+- fix indentation of the seq_printf() parameters
 
-Then the driver is unaware of the name change, which makes more
-confusing.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/gpio/gpiolib.c | 35 ++++++++++++++++-------------------
+ 1 file changed, 16 insertions(+), 19 deletions(-)
 
-> (I'm assuming that the 'const char *name' parameter doesn't have to
-> be persistent - that would be another bug just waiting to happen.)
+diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
+index 723411c13f1c..f956c533f218 100644
+--- a/drivers/gpio/gpiolib.c
++++ b/drivers/gpio/gpiolib.c
+@@ -4381,32 +4381,29 @@ static void gpiolib_dbg_show(struct seq_file *s, struct gpio_device *gdev)
+ {
+ 	unsigned		i;
+ 	struct gpio_chip	*gc = gdev->chip;
++	struct gpio_desc	*desc;
+ 	unsigned		gpio = gdev->base;
+-	struct gpio_desc	*gdesc = &gdev->descs[0];
+ 	bool			is_out;
+ 	bool			is_irq;
+ 	bool			active_low;
+ 
+-	for (i = 0; i < gdev->ngpio; i++, gpio++, gdesc++) {
+-		if (!test_bit(FLAG_REQUESTED, &gdesc->flags)) {
+-			if (gdesc->name) {
+-				seq_printf(s, " gpio-%-3d (%-20.20s)\n",
+-					   gpio, gdesc->name);
+-			}
+-			continue;
++	for_each_gpio_desc(i, gc, desc) {
++		if (test_bit(FLAG_REQUESTED, &desc->flags)) {
++			gpiod_get_direction(desc);
++			is_out = test_bit(FLAG_IS_OUT, &desc->flags);
++			is_irq = test_bit(FLAG_USED_AS_IRQ, &desc->flags);
++			active_low = test_bit(FLAG_ACTIVE_LOW, &desc->flags);
++			seq_printf(s, " gpio-%-3d (%-20.20s|%-20.20s) %s %s %s%s\n",
++				   gpio, desc->name ?: "", desc->label,
++				   is_out ? "out" : "in ",
++				   gc->get ? (gc->get(gc, i) ? "hi" : "lo") : "?  ",
++				   is_irq ? "IRQ " : "",
++				   active_low ? "ACTIVE LOW" : "");
++		} else if (desc->name) {
++			seq_printf(s, " gpio-%-3d (%-20.20s)\n", gpio, desc->name);
+ 		}
+ 
+-		gpiod_get_direction(gdesc);
+-		is_out = test_bit(FLAG_IS_OUT, &gdesc->flags);
+-		is_irq = test_bit(FLAG_USED_AS_IRQ, &gdesc->flags);
+-		active_low = test_bit(FLAG_ACTIVE_LOW, &gdesc->flags);
+-		seq_printf(s, " gpio-%-3d (%-20.20s|%-20.20s) %s %s %s%s",
+-			gpio, gdesc->name ? gdesc->name : "", gdesc->label,
+-			is_out ? "out" : "in ",
+-			gc->get ? (gc->get(gc, i) ? "hi" : "lo") : "?  ",
+-			is_irq ? "IRQ " : "",
+-			active_low ? "ACTIVE LOW" : "");
+-		seq_printf(s, "\n");
++		gpio++;
+ 	}
+ }
+ 
+-- 
+2.35.1
 
-The hwmon core does require a persistent "name" parameter now. No name
-copy is made when hwmon dev register.
-
-> 
-> Seems really pointless to be do a kmalloc() just to pass a string
-> into a function.
-
-Maybe we should not force a kmalloc() when the sanitizing is needed, let
-the driver decide whether to duplicate the string or not.
-
-Thanks,
-Yilun
-
-> 
-> 	David
-> 
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> Registration No: 1397386 (Wales)
