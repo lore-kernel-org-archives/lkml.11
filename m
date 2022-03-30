@@ -2,67 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DE89C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEF4CC433FE
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:18:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346707AbiC3MSX (ORCPT
+        id S1346851AbiC3MSh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:18:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36736 "EHLO
+        Wed, 30 Mar 2022 08:18:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344530AbiC3L4Q (ORCPT
+        with ESMTP id S1344437AbiC3Lz5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:56:16 -0400
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51A922B250
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 04:54:07 -0700 (PDT)
-Received: by mail-io1-f69.google.com with SMTP id g11-20020a056602072b00b00645cc0735d7so14285028iox.1
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 04:54:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=7IAPIDGtmGB489oXMPL27ZU1v8uRIqGprJ9/altofEg=;
-        b=noOxfZt0+kF9+VuoRNWclse8/lRwXMzwrK4eG4r6lYD4zOzPvdKGAadLQBAOLtVU0l
-         HOdbeLhp4aIqRSneoO8pXpRFdRqpwBHu72/wnWb8WiVA3mV7Q9/p9IBbBloTeGYvn61p
-         kI7P9KHujH8DAxlLFT0xLK8p0F7E2ksVxwHmUBn3CSCG1SBOJN34wQfZop36mFqBlzS+
-         PQ4QENDKCRDs8kBdVi+aySlukN/wLejVd4dLETOYs2ERkN1Ucoec3gdNPFZDMr9V8eFD
-         tHNcRw1HD5UWYH4tjNPAgO8V9OOyGxUi731cUNCTEe54/twzvJXM4DBj8/DeWg5fmtH+
-         4iiQ==
-X-Gm-Message-State: AOAM531TPPn03rUNXFBf+lqcTUWTT9xezuKMM+Q61ZCSqbw4mnefqwrG
-        gxpgGC5K50rn2M18ui8D4WN5v7Fj1QQ7maJiWGk8INPGabbW
-X-Google-Smtp-Source: ABdhPJyzMtzg+RsVrfzALmOTVu+lxxuCEr7IxF5qsQRRcQz7yCrIwDU3BNAHfsCOWOmB9lRBRPKK6cG/dVi53OV154TR3Cp5IwNV
+        Wed, 30 Mar 2022 07:55:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 893CD2F02F;
+        Wed, 30 Mar 2022 04:53:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A51E761704;
+        Wed, 30 Mar 2022 11:53:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85E6DC36AE7;
+        Wed, 30 Mar 2022 11:53:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648641237;
+        bh=3oTTFOn4x8U2QCSUJl8IaTqxzpbx4bG6EGPFTDb8hoA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=qPuVXKrA+hgt9eYdzEKz4Ybyo1/j4ZqX6V03vCkAqBmqtBuN2K5g9hbRaSmz5i1DN
+         Zy+wOciTqUG8NeYQAE1E8urYIOrM2XHeLb9AgXXrytver5r2kWQFtvqLLj8EDEL8wp
+         wEoP5D4JYibeGFSFRk824C5Mg0HPUJumuPYgZmvb+DuZHS9xcNK2WcLXIQBk2OmRL1
+         bK848TCr6UFLMDYZpEiu3d+15tFfb3HyavWq7fiwX216fD1tfm35C/oqG+tAPOk/9Y
+         8GKQffnNkVjokmUXML0kYSRGHMEdJhCrpX8lpbMuFzOYQIpCzkc4SC7A9gUkpHeqAY
+         35sDtKJ9d+0ag==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     =?UTF-8?q?Daniel=20Gonz=C3=A1lez=20Cabanelas?= <dgcbueu@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 13/20] media: cx88-mpeg: clear interrupt status register before streaming video
+Date:   Wed, 30 Mar 2022 07:53:29 -0400
+Message-Id: <20220330115336.1672930-13-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220330115336.1672930-1-sashal@kernel.org>
+References: <20220330115336.1672930-1-sashal@kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:3395:b0:323:8a00:7151 with SMTP id
- h21-20020a056638339500b003238a007151mr3829675jav.93.1648641246340; Wed, 30
- Mar 2022 04:54:06 -0700 (PDT)
-Date:   Wed, 30 Mar 2022 04:54:06 -0700
-In-Reply-To: <20220330102644.4510-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000d9aea605db6e33b3@google.com>
-Subject: Re: [syzbot] INFO: task hung in rfcomm_process_sessions (2)
-From:   syzbot <syzbot+d761775dff24be3ad4be@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+From: Daniel González Cabanelas <dgcbueu@gmail.com>
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+[ Upstream commit 56cb61f70e547e1b0cdfe6ff5a1f1ce6242e6d96 ]
 
-Reported-and-tested-by: syzbot+d761775dff24be3ad4be@syzkaller.appspotmail.com
+Some cx88 video cards may have transport stream status interrupts set
+to 1 from cold start, causing errors like this:
 
-Tested on:
+  cx88xx: cx88_print_irqbits: core:irq mpeg  [0x100000] ts_err?*
+  cx8802: cx8802_mpeg_irq: mpeg:general errors: 0x00100000
 
-commit:         cffb2b72 Merge tag 'kgdb-5.18-rc1' of git://git.kernel..
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
-kernel config:  https://syzkaller.appspot.com/x/.config?x=69c8957f4ac2dea6
-dashboard link: https://syzkaller.appspot.com/bug?extid=d761775dff24be3ad4be
-compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=121c55b9700000
+According to CX2388x datasheet, the interrupt status register should be
+cleared before enabling IRQs to stream video.
 
-Note: testing is done by a robot and is best-effort only.
+Fix it by clearing the Transport Stream Interrupt Status register.
+
+Signed-off-by: Daniel González Cabanelas <dgcbueu@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/media/pci/cx88/cx88-mpeg.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/media/pci/cx88/cx88-mpeg.c b/drivers/media/pci/cx88/cx88-mpeg.c
+index 52ff00ebd4bd..281eca525340 100644
+--- a/drivers/media/pci/cx88/cx88-mpeg.c
++++ b/drivers/media/pci/cx88/cx88-mpeg.c
+@@ -171,6 +171,9 @@ int cx8802_start_dma(struct cx8802_dev    *dev,
+ 	cx_write(MO_TS_GPCNTRL, GP_COUNT_CONTROL_RESET);
+ 	q->count = 0;
+ 
++	/* clear interrupt status register */
++	cx_write(MO_TS_INTSTAT,  0x1f1111);
++
+ 	/* enable irqs */
+ 	dprintk(1, "setting the interrupt mask\n");
+ 	cx_set(MO_PCI_INTMSK, core->pci_irqmask | PCI_INT_TSINT);
+-- 
+2.34.1
+
