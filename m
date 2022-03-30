@@ -2,82 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD988C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E04D3C433FE
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:51:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346589AbiC3Nwz (ORCPT
+        id S1346616AbiC3Nw6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 09:52:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59768 "EHLO
+        Wed, 30 Mar 2022 09:52:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346494AbiC3Nw2 (ORCPT
+        with ESMTP id S1346491AbiC3Nw1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 09:52:28 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A04891342F9;
-        Wed, 30 Mar 2022 06:50:41 -0700 (PDT)
-Received: from kwepemi100014.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KT79T00CQzdZLq;
-        Wed, 30 Mar 2022 21:50:20 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi100014.china.huawei.com (7.221.188.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 30 Mar 2022 21:50:38 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 30 Mar 2022 21:50:38 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
-        <chenhao288@hisilicon.com>
-Subject: [PATCH net 2/2] net: hns3: fix software vlan talbe of vlan 0 inconsistent with hardware
-Date:   Wed, 30 Mar 2022 21:45:06 +0800
-Message-ID: <20220330134506.36635-3-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220330134506.36635-1-huangguangbin2@huawei.com>
-References: <20220330134506.36635-1-huangguangbin2@huawei.com>
+        Wed, 30 Mar 2022 09:52:27 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94650133D8B;
+        Wed, 30 Mar 2022 06:50:40 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id r13so41661069ejd.5;
+        Wed, 30 Mar 2022 06:50:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=1OLDSq/HMivImgf5vlU82yeV23lshpzhfTJKY95m+Z8=;
+        b=H5U9h4jAU0SRA9mYbThvS4qFeQ8C3Fh5k6/CLwP1tHEgS24U7HWxp3Rhc8iGRVKMCK
+         I1ZCFUP6d9M0osRXl6cH8kWr1vNURf1UbiOcGcBnElzuvap40sG70vKEWQ0wnKzLTcFL
+         sfXlsnTJg3VvtEVM83R0NkxJyYdQSEjmjb3Yeu0ENtDts6NRVZ42ToEYKDrvQPyG75uo
+         0yfLuTVULfTJS0O9XbNeNYfbP7D8njRJWNaQJavNva/IxnXW9yBkHi+5RaWmKtupPn9c
+         FjELMZie/femNx85sK+NcsQRKw87oGyV3JSAnpJ0lyUVt22guLpfW98gHDQq/QatWaeh
+         ogBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=1OLDSq/HMivImgf5vlU82yeV23lshpzhfTJKY95m+Z8=;
+        b=Mo7BVCMhmfneoXFlWL/13Ze3Wrk0n84BKibUWRoid12uBX1w2CMzT4puGzCNlow3vB
+         irliaavrR53p7bnWM67Bck8Fgtx0JfnOWLHZD+/kCIuYlpUhoWLePFMrTdnD+7dwGezv
+         R0AQeoUCABNm9FbZ369BNERu78NWaPI6aIlDMILcZymGhDgzqnM1dICFfdHEdurqyOgM
+         enVjlWYl7ZF7lcqOG3yyBd5+uO2xT+ml4FxpBCclqxw3Zwpj6nNDLyvX4cjbGJ1H19gP
+         Xkhc41vzTW36P1VXNMSBbtcxQNR13ru3Lufcp9Z/aUpaulIx6k8COoLxKmXtZBGrzUkL
+         R7AQ==
+X-Gm-Message-State: AOAM533ng0F5mVolSzRgBWfCzxEoaTudWvtV58M8CIZqvNKop3u2CyGe
+        wNA43unHHQC5U2C7MBtuAai1jNyvnRoezw==
+X-Google-Smtp-Source: ABdhPJxMB3BHLF1VMfqbB7RLZ1Vx9XU6izABsdLNoOOTTt3yKeGFPBiGYxgg37i3B6C5OzIy24rRWw==
+X-Received: by 2002:a17:907:6d9e:b0:6df:bb09:10eb with SMTP id sb30-20020a1709076d9e00b006dfbb0910ebmr39394770ejc.409.1648648239003;
+        Wed, 30 Mar 2022 06:50:39 -0700 (PDT)
+Received: from krava ([193.85.244.190])
+        by smtp.gmail.com with ESMTPSA id a1-20020a1709063e8100b006ce06ed8aa7sm8353128ejj.142.2022.03.30.06.50.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 06:50:38 -0700 (PDT)
+Date:   Wed, 30 Mar 2022 15:50:36 +0200
+From:   Jiri Olsa <olsajiri@gmail.com>
+To:     Shunsuke Nakamura <nakamura.shun@fujitsu.com>
+Cc:     peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
+        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
+        jolsa@redhat.com, namhyung@kernel.org,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
+Subject: Re: [RFC PATCH v2 5/7] libperf: Add perf_evsel__check_overflow()
+ functions
+Message-ID: <YkRgLBTHVQbdX8rK@krava>
+References: <20220325043829.224045-1-nakamura.shun@fujitsu.com>
+ <20220325043829.224045-6-nakamura.shun@fujitsu.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220325043829.224045-6-nakamura.shun@fujitsu.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When user delete vlan 0, as driver will not delete vlan 0 for hardware in
-function hclge_set_vlan_filter_hw(), so vlan 0 in software vlan talbe should
-not be deleted.
+On Fri, Mar 25, 2022 at 01:38:27PM +0900, Shunsuke Nakamura wrote:
+> Add the following functions:
+> 
+>   perf_evsel__check_overflow
+>   perf_evsel__check_overflow_cpu
+> 
+> to check for perf events with the file descriptor specified in the
+> argument.
+> These functions can be used in signal handlers to check overflow.
+> 
+> Signed-off-by: Shunsuke Nakamura <nakamura.shun@fujitsu.com>
+> ---
+>  tools/lib/perf/Documentation/libperf.txt |  3 +++
+>  tools/lib/perf/evsel.c                   | 34 ++++++++++++++++++++++++
+>  tools/lib/perf/include/perf/evsel.h      |  4 +++
+>  tools/lib/perf/libperf.map               |  2 ++
+>  4 files changed, 43 insertions(+)
+> 
+> diff --git a/tools/lib/perf/Documentation/libperf.txt b/tools/lib/perf/Documentation/libperf.txt
+> index 700c1ce15159..4ae8d738b948 100644
+> --- a/tools/lib/perf/Documentation/libperf.txt
+> +++ b/tools/lib/perf/Documentation/libperf.txt
+> @@ -165,6 +165,9 @@ SYNOPSIS
+>                                int cpu_map_idx);
+>    int perf_evsel__period(struct perf_evsel *evsel, int period);
+>    int perf_evsel__period_cpu(struct perf_evsel *evsel, int period, int cpu_map_idx);
+> +  int perf_evsel__check_overflow(struct perf_evsel *evsel, int sig_fd, bool *overflow);
+> +  int perf_evsel__check_overflow_cpu(struct perf_evsel *evsel, int cpu_map_idx,
+> +                                     int sig_fd, bool *overflow);
 
-Fixes: fe4144d47eef ("net: hns3: sync VLAN filter entries when kill VLAN ID failed")
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+should this be more like:
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 2a5e6a241d52..8cebb180c812 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -10323,11 +10323,11 @@ int hclge_set_vlan_filter(struct hnae3_handle *handle, __be16 proto,
- 	}
- 
- 	if (!ret) {
--		if (is_kill)
--			hclge_rm_vport_vlan_table(vport, vlan_id, false);
--		else
-+		if (!is_kill)
- 			hclge_add_vport_vlan_table(vport, vlan_id,
- 						   writen_to_tbl);
-+		else if (is_kill && vlan_id != 0)
-+			hclge_rm_vport_vlan_table(vport, vlan_id, false);
- 	} else if (is_kill) {
- 		/* when remove hw vlan filter failed, record the vlan id,
- 		 * and try to remove it from hw later, to be consistence
--- 
-2.33.0
+  perf_evsel__has_fd(struct perf_evsel *evsel, int fd)
 
+also why do we need to export *_cpu version for this?
+I don't see it used in the test
+
+>    struct perf_cpu_map *perf_evsel__cpus(struct perf_evsel *evsel);
+>    struct perf_thread_map *perf_evsel__threads(struct perf_evsel *evsel);
+>    struct perf_event_attr *perf_evsel__attr(struct perf_evsel *evsel);
+> diff --git a/tools/lib/perf/evsel.c b/tools/lib/perf/evsel.c
+> index db9b7274feb5..6ff3cf692df3 100644
+> --- a/tools/lib/perf/evsel.c
+> +++ b/tools/lib/perf/evsel.c
+> @@ -616,3 +616,37 @@ int perf_evsel__open_opts(struct perf_evsel *evsel, struct perf_cpu_map *cpus,
+>  
+>  	return err;
+>  }
+> +
+> +int perf_evsel__check_overflow_cpu(struct perf_evsel *evsel, int cpu_map_idx,
+> +				   int sig_fd, bool *overflow)
+> +{
+> +	int thread;
+> +	int *fd;
+> +	int err = 0;
+> +
+> +	if (!overflow)
+> +		return -EINVAL;
+> +
+> +	*overflow = false;
+> +
+> +	for (thread = 0; thread < xyarray__max_y(evsel->fd) && !err; ++thread) {
+> +		fd = FD(evsel, cpu_map_idx, thread);
+> +		if (sig_fd <= 0 || !fd || *fd < 0)
+> +			err = -EINVAL;
+
+sig_fd check should be before the loop
+
+jirka
