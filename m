@@ -2,51 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53979C3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C7F2C4707F
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:15:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346173AbiC3MQC (ORCPT
+        id S1346151AbiC3MPz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:16:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58168 "EHLO
+        Wed, 30 Mar 2022 08:15:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345909AbiC3LzL (ORCPT
+        with ESMTP id S245370AbiC3Lzh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:55:11 -0400
+        Wed, 30 Mar 2022 07:55:37 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7BAF266B6C;
-        Wed, 30 Mar 2022 04:52:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D207B2BB00;
+        Wed, 30 Mar 2022 04:53:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 53E9A61703;
-        Wed, 30 Mar 2022 11:52:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20545C36AE3;
-        Wed, 30 Mar 2022 11:52:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 446C26160D;
+        Wed, 30 Mar 2022 11:53:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7BBCC340EE;
+        Wed, 30 Mar 2022 11:53:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641144;
-        bh=BcA92V2ojBSNfXM65Q3xXu5tkigqU+hfjma6OoeF744=;
+        s=k20201202; t=1648641222;
+        bh=UP9e9gsCvpQLamVYFCRkh0oVzvViqaYxYreqodC0wR0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VF+H3DvjuLzH6cVPp0x8WM5P8T6YMd1OyqGOz/shydiceU9IJUjQSU7KAzuZsioOi
-         EyntQ2mlSijf6y08w6SJai1hz56p0nHr251vJVwghauxRnF3SJvogTYd5i4CyE9La+
-         ZERjHNVi9ELgiEcgysOx39X6xnuctYHM371vvqfEmSd7ZPnmtngjwvCG2C/YdUscFp
-         ii/pcgAw8HnGfzzK4TSKdgzZ5Y2ms4rwIqKEKMWu/29V9YiyVth1484E5hguAqYIsu
-         3kzBFqul4YPUjkgPlV/+Lu1cfM50x8UjVzmf67WUue2lEFl9i6EvoU9eRlFzdgyGiQ
-         C5p9z5AAESIdg==
+        b=ZxBOnbBBaLUu+IPkUFAHDiKwnLaeTDFSLONgYXkZPhrBq6CK0qj4n4QFXOizMlEIU
+         fvp/FjpDjI0iksEcAI69fgjsG0h3ZULlou7mJ9tCTqnF1j5Cc4gCQpDePMZudqZWb8
+         ZaRnW2K4fOkkQ7qaCLRTlv5S4z3Ik+dN1ZRU79lWeytIPF3w7pYgKPvAydJmiwRWhl
+         rB4ep0wuQRl9dNsZuJAHagh98/xcrXhKFBAecUA3aYfl17XqLXsNJgkiVD4rdmY/M4
+         zGHgZr1wEOp9pPqTlwXTFZC3PwUQ0qMY/9IND79miWzn5r9Eh+gLDkg1P/o7JLj3WX
+         zqlY+UWB1kNKQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Matt Kramer <mccleetus@gmail.com>, Takashi Iwai <tiwai@suse.de>,
-        Sasha Levin <sashal@kernel.org>, perex@perex.cz,
-        tiwai@suse.com, corbet@lwn.net, gregkh@linuxfoundation.org,
-        sudipm.mukherjee@gmail.com, sylee@canonical.com,
-        hui.wang@canonical.com, alsa-devel@alsa-project.org,
-        linux-doc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 37/37] ALSA: hda/realtek: Add alc256-samsung-headphone fixup
-Date:   Wed, 30 Mar 2022 07:51:22 -0400
-Message-Id: <20220330115122.1671763-37-sashal@kernel.org>
+Cc:     George Kennedy <george.kennedy@oracle.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        tomi.valkeinen@ti.com, linux-fbdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 03/20] video: fbdev: cirrusfb: check pixclock to avoid divide by zero
+Date:   Wed, 30 Mar 2022 07:53:19 -0400
+Message-Id: <20220330115336.1672930-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330115122.1671763-1-sashal@kernel.org>
-References: <20220330115122.1671763-1-sashal@kernel.org>
+In-Reply-To: <20220330115336.1672930-1-sashal@kernel.org>
+References: <20220330115336.1672930-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,83 +53,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matt Kramer <mccleetus@gmail.com>
+From: George Kennedy <george.kennedy@oracle.com>
 
-[ Upstream commit ef248d9bd616b04df8be25539a4dc5db4b6c56f4 ]
+[ Upstream commit 5c6f402bdcf9e7239c6bc7087eda71ac99b31379 ]
 
-This fixes the near-silence of the headphone jack on the ALC256-based
-Samsung Galaxy Book Flex Alpha (NP730QCJ). The magic verbs were found
-through trial and error, using known ALC298 hacks as inspiration. The
-fixup is auto-enabled only when the NP730QCJ is detected. It can be
-manually enabled using model=alc256-samsung-headphone.
+Do a sanity check on pixclock value to avoid divide by zero.
 
-Signed-off-by: Matt Kramer <mccleetus@gmail.com>
-Link: https://lore.kernel.org/r/3168355.aeNJFYEL58@linus
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+If the pixclock value is zero, the cirrusfb driver will round up
+pixclock to get the derived frequency as close to maxclock as
+possible.
+
+Syzkaller reported a divide error in cirrusfb_check_pixclock.
+
+divide error: 0000 [#1] SMP KASAN PTI
+CPU: 0 PID: 14938 Comm: cirrusfb_test Not tainted 5.15.0-rc6 #1
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.11.0-2
+RIP: 0010:cirrusfb_check_var+0x6f1/0x1260
+
+Call Trace:
+ fb_set_var+0x398/0xf90
+ do_fb_ioctl+0x4b8/0x6f0
+ fb_ioctl+0xeb/0x130
+ __x64_sys_ioctl+0x19d/0x220
+ do_syscall_64+0x3a/0x80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Signed-off-by: George Kennedy <george.kennedy@oracle.com>
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/sound/hd-audio/models.rst |  4 ++++
- sound/pci/hda/patch_realtek.c           | 11 +++++++++++
- 2 files changed, 15 insertions(+)
+ drivers/video/fbdev/cirrusfb.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/Documentation/sound/hd-audio/models.rst b/Documentation/sound/hd-audio/models.rst
-index d25335993e55..9b52f50a6854 100644
---- a/Documentation/sound/hd-audio/models.rst
-+++ b/Documentation/sound/hd-audio/models.rst
-@@ -261,6 +261,10 @@ alc-sense-combo
- huawei-mbx-stereo
-     Enable initialization verbs for Huawei MBX stereo speakers;
-     might be risky, try this at your own risk
-+alc298-samsung-headphone
-+    Samsung laptops with ALC298
-+alc256-samsung-headphone
-+    Samsung laptops with ALC256
+diff --git a/drivers/video/fbdev/cirrusfb.c b/drivers/video/fbdev/cirrusfb.c
+index d992aa5eb3f0..a8f4967de798 100644
+--- a/drivers/video/fbdev/cirrusfb.c
++++ b/drivers/video/fbdev/cirrusfb.c
+@@ -470,7 +470,7 @@ static int cirrusfb_check_mclk(struct fb_info *info, long freq)
+ 	return 0;
+ }
  
- ALC66x/67x/892
- ==============
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 3bd37c02ce0e..fadf4f32877e 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -6762,6 +6762,7 @@ enum {
- 	ALC236_FIXUP_HP_MUTE_LED,
- 	ALC236_FIXUP_HP_MUTE_LED_MICMUTE_VREF,
- 	ALC298_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET,
-+	ALC256_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET,
- 	ALC295_FIXUP_ASUS_MIC_NO_PRESENCE,
- 	ALC269VC_FIXUP_ACER_VCOPPERBOX_PINS,
- 	ALC269VC_FIXUP_ACER_HEADSET_MIC,
-@@ -8083,6 +8084,14 @@ static const struct hda_fixup alc269_fixups[] = {
- 			{ }
- 		},
- 	},
-+	[ALC256_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET] = {
-+		.type = HDA_FIXUP_VERBS,
-+		.v.verbs = (const struct hda_verb[]) {
-+			{ 0x20, AC_VERB_SET_COEF_INDEX, 0x08},
-+			{ 0x20, AC_VERB_SET_PROC_COEF, 0x2fcf},
-+			{ }
-+		},
-+	},
- 	[ALC295_FIXUP_ASUS_MIC_NO_PRESENCE] = {
- 		.type = HDA_FIXUP_PINS,
- 		.v.pins = (const struct hda_pintbl[]) {
-@@ -8835,6 +8844,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
- 	SND_PCI_QUIRK(0x144d, 0xc740, "Samsung Ativ book 8 (NP870Z5G)", ALC269_FIXUP_ATIV_BOOK_8),
- 	SND_PCI_QUIRK(0x144d, 0xc812, "Samsung Notebook Pen S (NT950SBE-X58)", ALC298_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET),
- 	SND_PCI_QUIRK(0x144d, 0xc830, "Samsung Galaxy Book Ion (NT950XCJ-X716A)", ALC298_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET),
-+	SND_PCI_QUIRK(0x144d, 0xc832, "Samsung Galaxy Book Flex Alpha (NP730QCJ)", ALC256_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET),
- 	SND_PCI_QUIRK(0x1458, 0xfa53, "Gigabyte BXBT-2807", ALC283_FIXUP_HEADSET_MIC),
- 	SND_PCI_QUIRK(0x1462, 0xb120, "MSI Cubi MS-B120", ALC283_FIXUP_HEADSET_MIC),
- 	SND_PCI_QUIRK(0x1462, 0xb171, "Cubi N 8GL (MS-B171)", ALC283_FIXUP_HEADSET_MIC),
-@@ -9177,6 +9187,7 @@ static const struct hda_model_fixup alc269_fixup_models[] = {
- 	{.id = ALC298_FIXUP_HUAWEI_MBX_STEREO, .name = "huawei-mbx-stereo"},
- 	{.id = ALC256_FIXUP_MEDION_HEADSET_NO_PRESENCE, .name = "alc256-medion-headset"},
- 	{.id = ALC298_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET, .name = "alc298-samsung-headphone"},
-+	{.id = ALC256_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET, .name = "alc256-samsung-headphone"},
- 	{.id = ALC255_FIXUP_XIAOMI_HEADSET_MIC, .name = "alc255-xiaomi-headset"},
- 	{.id = ALC274_FIXUP_HP_MIC, .name = "alc274-hp-mic-detect"},
- 	{.id = ALC245_FIXUP_HP_X360_AMP, .name = "alc245-hp-x360-amp"},
+-static int cirrusfb_check_pixclock(const struct fb_var_screeninfo *var,
++static int cirrusfb_check_pixclock(struct fb_var_screeninfo *var,
+ 				   struct fb_info *info)
+ {
+ 	long freq;
+@@ -479,9 +479,7 @@ static int cirrusfb_check_pixclock(const struct fb_var_screeninfo *var,
+ 	unsigned maxclockidx = var->bits_per_pixel >> 3;
+ 
+ 	/* convert from ps to kHz */
+-	freq = PICOS2KHZ(var->pixclock);
+-
+-	dev_dbg(info->device, "desired pixclock: %ld kHz\n", freq);
++	freq = PICOS2KHZ(var->pixclock ? : 1);
+ 
+ 	maxclock = cirrusfb_board_info[cinfo->btype].maxclock[maxclockidx];
+ 	cinfo->multiplexing = 0;
+@@ -489,11 +487,13 @@ static int cirrusfb_check_pixclock(const struct fb_var_screeninfo *var,
+ 	/* If the frequency is greater than we can support, we might be able
+ 	 * to use multiplexing for the video mode */
+ 	if (freq > maxclock) {
+-		dev_err(info->device,
+-			"Frequency greater than maxclock (%ld kHz)\n",
+-			maxclock);
+-		return -EINVAL;
++		var->pixclock = KHZ2PICOS(maxclock);
++
++		while ((freq = PICOS2KHZ(var->pixclock)) > maxclock)
++			var->pixclock++;
+ 	}
++	dev_dbg(info->device, "desired pixclock: %ld kHz\n", freq);
++
+ 	/*
+ 	 * Additional constraint: 8bpp uses DAC clock doubling to allow maximum
+ 	 * pixel clock
 -- 
 2.34.1
 
