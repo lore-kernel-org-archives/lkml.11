@@ -2,104 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E180C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 02:56:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90039C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 02:57:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242165AbiC3C6E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 22:58:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55892 "EHLO
+        id S242173AbiC3C7L convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 22:59:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242148AbiC3C5u (ORCPT
+        with ESMTP id S237953AbiC3C7H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 22:57:50 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDAA9B6C;
-        Tue, 29 Mar 2022 19:56:06 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id h19so16584587pfv.1;
-        Tue, 29 Mar 2022 19:56:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yDTHn/+rErQ1GIm4EG6ELcr2d0dp2bkrDwck7VKtVYk=;
-        b=IxdQ60tMukoYLEsgDLz2wic8YwgwGpuXy9Q2s10HuFOTOk9U3D9pSOZLfOHhTcncQb
-         dvKTC2qgTS8nIb/S/Jm6sILAg//GYq8CpBLk+kXIbcQMSC38YGPPE1SpbY0SH2eRteXl
-         Zh7t6TMOMXhkgYM8n/Gwyad0HNuYdYYDw+860ca6+Tu+tGYJeG7BwI0JDzlt88+aIClI
-         mICMtPURvF0TqjSY2QSA8MqVEuQ7m1abAN5O2xuJnp45B0T/+jXmycblG17Iym/KgyBb
-         CxXZuw5lje+jmcbkMbaswZVA/WrIfWhuzCTOZLm3pBGBljLs2AKfOJaJLa3/JYZ5VL24
-         PZIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yDTHn/+rErQ1GIm4EG6ELcr2d0dp2bkrDwck7VKtVYk=;
-        b=ZW85sbraY78CMCiXEUyttqSlfT9W46+AmeUPvBNi+ov7LHdqSRoG9I/D4QSxS+Dv7T
-         k3EYuhg/buj26ez3lNccW+hWIe0leykaROB981++tmzQpyn7jv15HAaObYV2qs36T6D8
-         ykYlBKE2GASifrU0iEiM9zz8ikKLqgnZjqb5YDGULQacjFygkXYG08svPNgwBeHQbPbQ
-         uKvJPMGUgZX7vI2rBM3YyD54TvU5n1K+0Lg4DTyKZlt+PLi7r0rKz7EedEyZ2Djp5A74
-         XAF1RZZuTU1eSQcn0NL8J6ynF81akXnkawBUGiVb7NXaKitF+UAXeKJvTzY9FvQFdaTX
-         SS9g==
-X-Gm-Message-State: AOAM532BrvWoLS+7gIV8dMQbdnl87uynA3a+ZVeHsyJKTOLbTeuYeMUl
-        WSjmLIJkUdI+ueF49UHifh4BvqLYToxiPGdQ97I=
-X-Google-Smtp-Source: ABdhPJzFM+ydPvI4a+aXkKUnZfkjG9Br6nO3e7OLKGHaehw55ov1PBH6VyYrljXzDZERQTamrcTIJw==
-X-Received: by 2002:a65:6909:0:b0:382:53c4:43c5 with SMTP id s9-20020a656909000000b0038253c443c5mr4263204pgq.502.1648608966358;
-        Tue, 29 Mar 2022 19:56:06 -0700 (PDT)
-Received: from localhost.localdomain (118-166-41-36.dynamic-ip.hinet.net. [118.166.41.36])
-        by smtp.gmail.com with ESMTPSA id me5-20020a17090b17c500b001c63699ff60sm4532951pjb.57.2022.03.29.19.55.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Mar 2022 19:56:05 -0700 (PDT)
-From:   Zhiguang Ni <zhiguangni01@gmail.com>
-To:     pbonzini@redhat.com, seanjc@google.com, vkuznets@redhat.com,
-        wanpengli@tencent.com, jmattson@google.com, joro@8bytes.org,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, hpa@zytor.com
-Cc:     x86@kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Zhiguang Ni <zhiguangni01@gmail.com>
-Subject: [PATCH] KVM: use kvcalloc for array allocations
-Date:   Wed, 30 Mar 2022 10:55:47 +0800
-Message-Id: <20220330025547.246126-1-zhiguangni01@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 29 Mar 2022 22:59:07 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6310C17538F
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 19:57:20 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-260-sKBCBKFINtqPnd_8YrB5ZA-1; Wed, 30 Mar 2022 03:57:17 +0100
+X-MC-Unique: sKBCBKFINtqPnd_8YrB5ZA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.32; Wed, 30 Mar 2022 03:57:16 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.033; Wed, 30 Mar 2022 03:57:15 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Michael Walle' <michael@walle.cc>, Xu Yilun <yilun.xu@intel.com>,
+        Tom Rix <trix@redhat.com>, Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     "linux-hwmon@vger.kernel.org" <linux-hwmon@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH v2 1/5] hwmon: introduce hwmon_sanitize_name()
+Thread-Topic: [PATCH v2 1/5] hwmon: introduce hwmon_sanitize_name()
+Thread-Index: AQHYQ4dUrIB0cQMH/kajVzJ0H3I8wazXOSsg
+Date:   Wed, 30 Mar 2022 02:57:15 +0000
+Message-ID: <16d8b45eba7b44e78fa8205e6666f2bd@AcuMS.aculab.com>
+References: <20220329160730.3265481-1-michael@walle.cc>
+ <20220329160730.3265481-2-michael@walle.cc>
+In-Reply-To: <20220329160730.3265481-2-michael@walle.cc>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Bonzini <pbonzini@redhat.com>
+From: Michael Walle
+> Sent: 29 March 2022 17:07
+> 
+> More and more drivers will check for bad characters in the hwmon name
+> and all are using the same code snippet. Consolidate that code by adding
+> a new hwmon_sanitize_name() function.
 
-Instead of using array_size, use a function that takes care of the
-multiplication.  While at it, switch to kvcalloc since this allocation
-should not be very large.
+I'm assuming these 'bad' hwmon names come from userspace?
+Like ethernet interface names??
 
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Zhiguang Ni <zhiguangni01@gmail.com>
----
- arch/x86/kvm/cpuid.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+Is silently changing the name of the hwmon entries the right
+thing to do at all?
 
-diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-index 32007f902bba..58b0b4e0263c 100644
---- a/arch/x86/kvm/cpuid.c
-+++ b/arch/x86/kvm/cpuid.c
-@@ -1290,8 +1290,7 @@ int kvm_dev_ioctl_get_cpuid(struct kvm_cpuid2 *cpuid,
- 	if (sanity_check_entries(entries, cpuid->nent, type))
- 		return -EINVAL;
- 
--	array.entries = vzalloc(array_size(sizeof(struct kvm_cpuid_entry2),
--					   cpuid->nent));
-+	array.entries = kvcalloc(sizeof(struct kvm_cpuid_entry2), cpuid->nent, GFP_KERNEL);
- 	if (!array.entries)
- 		return -ENOMEM;
- 
-@@ -1309,7 +1308,7 @@ int kvm_dev_ioctl_get_cpuid(struct kvm_cpuid2 *cpuid,
- 		r = -EFAULT;
- 
- out_free:
--	vfree(array.entries);
-+	kvfree(array.entries);
- 	return r;
- }
- 
--- 
-2.25.1
+What happens if the user tries to create both "foo_bar" and "foo-bar"?
+I'm sure that is going to go horribly wrong somewhere.
+
+It would certainly make sense to have a function to verify the name
+is actually valid.
+Then bad names can be rejected earlier on.
+
+I'm also intrigued about the list of invalid characters:
+
++static bool hwmon_is_bad_char(const char ch)
++{
++	switch (ch) {
++	case '-':
++	case '*':
++	case ' ':
++	case '\t':
++	case '\n':
++		return true;
++	default:
++		return false;
++	}
++}
+
+If '\t' and '\n' are invalid why are all the other control characters
+allowed?
+I'm guessing '*' is disallowed because it is the shell wildcard?
+So what about '?'.
+Then I'd expect '/' to be invalid - but that isn't checked.
+Never mind all the values 0x80 to 0xff - they are probably worse
+than whitespace.
+
+OTOH why are any characters invalid at all - except '/'?
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
