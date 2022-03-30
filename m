@@ -2,53 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0536BC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB764C433F5
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345600AbiC3MEE (ORCPT
+        id S1345747AbiC3MEP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:04:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33220 "EHLO
+        Wed, 30 Mar 2022 08:04:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345159AbiC3LyL (ORCPT
+        with ESMTP id S1345302AbiC3LyW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:54:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 790B5280EE5;
-        Wed, 30 Mar 2022 04:50:32 -0700 (PDT)
+        Wed, 30 Mar 2022 07:54:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98256277966;
+        Wed, 30 Mar 2022 04:50:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9F6A8B81C34;
-        Wed, 30 Mar 2022 11:50:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8BF1C36AE2;
-        Wed, 30 Mar 2022 11:50:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1788961616;
+        Wed, 30 Mar 2022 11:50:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56AACC36AE5;
+        Wed, 30 Mar 2022 11:50:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641022;
-        bh=or7vMsAJ5qPVBHGYQ8AZJOSb3BRjqMrEX/v6pBzhP1A=;
+        s=k20201202; t=1648641049;
+        bh=93YLaa0zQ7hqgghUl04JHh02d/eZiQqyJBOIBGaKxuc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=esKtna+noARAgO5RhQvid+YEx+d5DnIVfJwyJzYrR2rAGXv2isuDmkn1+8n3cM2xH
-         ZV+1ELyy/4ihaPLslds3dpRwx3VAjRYfnUWpj0iPoVMxSLU9X5fj1DfmAqLOLOxHyD
-         +1KHWhBypl9ZZswLPligJVO27CoPomTDfW8Rn/3jECKtWXKbN00bHXYX6xhM7+6Hmr
-         gFbmisW3Gxda4J5wJ7eX7Ik7f46cdegN4Uee9efXld8X21XwkJJjok8MKY0hbQRcvP
-         pi+nKI0fAQlcJ4670mHghonoDazpRmgIjRzdys4NNke81WvyGR52sUTEAaXYa4TGSW
-         yjQ+9Brl+vOpg==
+        b=k8MR1MqmHd1BnyZQnY+79B2lMoOtjcN/JA3rKueVlJogAND3yZTPBIs2uQvycJPBm
+         gy4VELtUQJbNLJcDEaKKLvXBmBQBKogLaCUJkKoBqqV3bMt9QonoTgbiJpobgaJBKo
+         s5TZm886DpKNy4HW3LDzv+Taml3YFffW95yzFLWe9IIPXA8QghaDv7N0XC/Wr2Dmkt
+         Pcc0WjBnDuyj9ziSHaF9qDLoOAxlDeS1QM/Pk9N2L/hjCsqE6cSlSUvTN0Z5Nag7yY
+         yoEa8cekwXJQsNGui7ALn9tiJVNGJ0YVzNmvlrG96Qcg3I3Ss0A92ZjjRMGQ8QDzHP
+         /WrHNF50qIZgQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yong Wu <yong.wu@mediatek.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Joerg Roedel <jroedel@suse.de>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, joro@8bytes.org,
-        matthias.bgg@gmail.com, iommu@lists.linux-foundation.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 10/50] media: iommu/mediatek-v1: Free the existed fwspec if the master dev already has
-Date:   Wed, 30 Mar 2022 07:49:24 -0400
-Message-Id: <20220330115005.1671090-10-sashal@kernel.org>
+Cc:     Richard Schleich <rs@noreya.tech>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        mark.rutland@arm.com, linux@armlinux.org.uk,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 28/50] ARM: dts: bcm2711: Add the missing L1/L2 cache information
+Date:   Wed, 30 Mar 2022 07:49:42 -0400
+Message-Id: <20220330115005.1671090-28-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115005.1671090-1-sashal@kernel.org>
 References: <20220330115005.1671090-1-sashal@kernel.org>
@@ -60,74 +55,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yong Wu <yong.wu@mediatek.com>
+From: Richard Schleich <rs@noreya.tech>
 
-[ Upstream commit 822a2ed8c606caf6a11b1a180b8e46292bd77d71 ]
+[ Upstream commit 618682b350990f8f1bee718949c4b3858711eb58 ]
 
-When the iommu master device enters of_iommu_xlate, the ops may be
-NULL(iommu dev is defered), then it will initialize the fwspec here:
+This patch fixes the kernel warning
+"cacheinfo: Unable to detect cache hierarchy for CPU 0"
+for the bcm2711 on newer kernel versions.
 
-[<c0c9c5bc>] (dev_iommu_fwspec_set) from [<c06bda80>]
-(iommu_fwspec_init+0xbc/0xd4)
-[<c06bd9c4>] (iommu_fwspec_init) from [<c06c0db4>]
-(of_iommu_xlate+0x7c/0x12c)
-[<c06c0d38>] (of_iommu_xlate) from [<c06c10e8>]
-(of_iommu_configure+0x144/0x1e8)
-
-BUT the mtk_iommu_v1.c only supports arm32, the probing flow still is a bit
-weird. We always expect create the fwspec internally. otherwise it will
-enter here and return fail.
-
-static int mtk_iommu_create_mapping(struct device *dev,
-				    struct of_phandle_args *args)
-{
-        ...
-	if (!fwspec) {
-	        ....
-	} else if (dev_iommu_fwspec_get(dev)->ops != &mtk_iommu_ops) {
-                >>>>>>>>>>Enter here. return fail.<<<<<<<<<<<<
-		return -EINVAL;
-	}
-	...
-}
-
-Thus, Free the existed fwspec if the master device already has fwspec.
-
-This issue is reported at:
-https://lore.kernel.org/linux-mediatek/trinity-7d9ebdc9-4849-4d93-bfb5-429dcb4ee449-1626253158870@3c-app-gmx-bs01/
-
-Reported-by: Frank Wunderlich <frank-w@public-files.de>
-Tested-by: Frank Wunderlich <frank-w@public-files.de> # BPI-R2/MT7623
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Acked-by: Joerg Roedel <jroedel@suse.de>
-Acked-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Richard Schleich <rs@noreya.tech>
+Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
+[florian: Align and remove comments matching property values]
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/mtk_iommu_v1.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ arch/arm/boot/dts/bcm2711.dtsi | 50 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 50 insertions(+)
 
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index be22fcf988ce..1467ba1e4417 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -425,6 +425,15 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
- 	struct mtk_iommu_data *data;
- 	int err, idx = 0;
+diff --git a/arch/arm/boot/dts/bcm2711.dtsi b/arch/arm/boot/dts/bcm2711.dtsi
+index 21294f775a20..89af57482bc8 100644
+--- a/arch/arm/boot/dts/bcm2711.dtsi
++++ b/arch/arm/boot/dts/bcm2711.dtsi
+@@ -459,12 +459,26 @@
+ 		#size-cells = <0>;
+ 		enable-method = "brcm,bcm2836-smp"; // for ARM 32-bit
  
-+	/*
-+	 * In the deferred case, free the existed fwspec.
-+	 * Always initialize the fwspec internally.
-+	 */
-+	if (fwspec) {
-+		iommu_fwspec_free(dev);
-+		fwspec = dev_iommu_fwspec_get(dev);
-+	}
++		/* Source for d/i-cache-line-size and d/i-cache-sets
++		 * https://developer.arm.com/documentation/100095/0003
++		 * /Level-1-Memory-System/About-the-L1-memory-system?lang=en
++		 * Source for d/i-cache-size
++		 * https://www.raspberrypi.com/documentation/computers
++		 * /processors.html#bcm2711
++		 */
+ 		cpu0: cpu@0 {
+ 			device_type = "cpu";
+ 			compatible = "arm,cortex-a72";
+ 			reg = <0>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000d8>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			i-cache-size = <0xc000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 48KiB(size)/64(line-size)=768ways/3-way set
++			next-level-cache = <&l2>;
+ 		};
+ 
+ 		cpu1: cpu@1 {
+@@ -473,6 +487,13 @@
+ 			reg = <1>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000e0>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			i-cache-size = <0xc000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 48KiB(size)/64(line-size)=768ways/3-way set
++			next-level-cache = <&l2>;
+ 		};
+ 
+ 		cpu2: cpu@2 {
+@@ -481,6 +502,13 @@
+ 			reg = <2>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000e8>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			i-cache-size = <0xc000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 48KiB(size)/64(line-size)=768ways/3-way set
++			next-level-cache = <&l2>;
+ 		};
+ 
+ 		cpu3: cpu@3 {
+@@ -489,6 +517,28 @@
+ 			reg = <3>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000f0>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			i-cache-size = <0xc000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 48KiB(size)/64(line-size)=768ways/3-way set
++			next-level-cache = <&l2>;
++		};
 +
- 	while (!of_parse_phandle_with_args(dev->of_node, "iommus",
- 					   "#iommu-cells",
- 					   idx, &iommu_spec)) {
++		/* Source for d/i-cache-line-size and d/i-cache-sets
++		 *  https://developer.arm.com/documentation/100095/0003
++		 *  /Level-2-Memory-System/About-the-L2-memory-system?lang=en
++		 *  Source for d/i-cache-size
++		 *  https://www.raspberrypi.com/documentation/computers
++		 *  /processors.html#bcm2711
++		 */
++		l2: l2-cache0 {
++			compatible = "cache";
++			cache-size = <0x100000>;
++			cache-line-size = <64>;
++			cache-sets = <1024>; // 1MiB(size)/64(line-size)=16384ways/16-way set
++			cache-level = <2>;
+ 		};
+ 	};
+ 
 -- 
 2.34.1
 
