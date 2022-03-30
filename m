@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9099AC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 22:18:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCC9FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 22:18:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351537AbiC3WUa (ORCPT
+        id S1351545AbiC3WUe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 18:20:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43792 "EHLO
+        Wed, 30 Mar 2022 18:20:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347068AbiC3WUZ (ORCPT
+        with ESMTP id S242574AbiC3WUZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 30 Mar 2022 18:20:25 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FD2122B1B;
-        Wed, 30 Mar 2022 15:18:31 -0700 (PDT)
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 600EF22BD5;
+        Wed, 30 Mar 2022 15:18:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1648678719; x=1680214719;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=O10FtJqoENJ6+MZXX+uwUYHQdNl71GLWCtw3HiZNIsA=;
-  b=S0hBWTvPIyYURPuRTBrpQOpgUcphdBF0GFqjFT+nNw9JtFcOr+3ArPmV
-   /wmPXEtPaG2noFf7IBXOVekk4/VJD7KdZLy36g0azN0DzEm0+zuplWVhu
-   P6HT8XIVJ85KbiQDZkWKHxQq3fbcOKSnXninK2Ca4Vwy45le7IAv3m9Im
-   0psMyydjbcj7ZcTDlx7L4uRkkMf5qruRyCsvfXuCH8AYQx+QPnfM6FHzY
-   5VQaZRs6arSxdCDywVhuvWvefx8pSdLREUDfT/0RC9mb/neq7kQJlcF2T
-   uJ+EHOLqvfUuccRxWqw5JNZGYULDagOnC7oe6q53q8G2gDyx8aOoAqL+1
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="241811835"
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=B/SXSbw/wvdd4mRHtWjAddPGT3KI5g2InIOBTHsjt+I=;
+  b=IwxloTx8V/DQFT/xaAVChNrWYRz7HTIE/6JROBpyrauePIwTvkuOsZML
+   nH23UDQ5tcINTv11EhDBLPH+jT+W4Wyj/az4xuJS5Z5msr9yXHynHtSqQ
+   XBbA4zrCD9owPKrpmkR6gDKoveZ1UVXmdbnhPCl3bvT8aW8/PxvXMHBjX
+   Ujc/II2Oo/Q9z8bf3TZPZ0suoiNhkQ7h6szb0Zo0CWX9Uvhzsfdh+tmiY
+   r4X75M/oFtMV1eOm9G/vSbfOoSelMY59pKVTQZ+h682DbMMwGBvaaChhM
+   hWHn0siqxICLasddOw6pT4hdtjYpDBfxhTvzGHjdfRZ0aetOm4hNyxWC5
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="346095962"
 X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
-   d="scan'208";a="241811835"
+   d="scan'208";a="346095962"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 15:18:22 -0700
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 15:18:23 -0700
 X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
-   d="scan'208";a="788171857"
+   d="scan'208";a="788171878"
 Received: from ksanitha-mobl3.amr.corp.intel.com (HELO skuppusw-desk1.amr.corp.intel.com) ([10.209.123.221])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 15:18:21 -0700
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 15:18:22 -0700
 From:   Kuppuswamy Sathyanarayanan 
         <sathyanarayanan.kuppuswamy@linux.intel.com>
 To:     Thomas Gleixner <tglx@linutronix.de>,
@@ -52,114 +52,91 @@ Cc:     "H . Peter Anvin" <hpa@zytor.com>,
         Tony Luck <tony.luck@intel.com>,
         Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
         platform-driver-x86@vger.kernel.org
-Subject: [PATCH v2 0/6] Add TDX Guest Attestation support
-Date:   Wed, 30 Mar 2022 15:17:59 -0700
-Message-Id: <cover.1648664666.git.sathyanarayanan.kuppuswamy@intel.com>
+Subject: [PATCH v2 3/6] x86/tdx: Add SetupEventNotifyInterrupt TDX hypercall support
+Date:   Wed, 30 Mar 2022 15:18:02 -0700
+Message-Id: <a748ec62754a974c71963193aa6dd269fe548903.1648664666.git.sathyanarayanan.kuppuswamy@intel.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1648664666.git.sathyanarayanan.kuppuswamy@intel.com>
+References: <cover.1648664666.git.sathyanarayanan.kuppuswamy@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@intel.com>
+SetupEventNotifyInterrupt TDX hypercall is used by guest TD to specify
+which interrupt vector to use as an event-notify vector to the VMM.
+Such registered vector is also used by Host VMM to notify about
+completion of GetQuote requests to the Guest TD.
 
-Hi All,
+Add tdx_hcall_set_notify_intr() helper function to implement the
+SetupEventNotifyInterrupt hypercall.
 
-Intel's Trust Domain Extensions (TDX) protect guest VMs from malicious
-hosts and some physical attacks. VM guest with TDX support is called
-as TD Guest.
+This will be used by the TD guest attestation driver.
 
-In TD Guest, the attestation process is used to verify the 
-trustworthiness of TD guest to the 3rd party servers. Such attestation
-process is required by 3rd party servers before sending sensitive
-information to TD guests. One usage example is to get encryption keys
-from the key server for mounting the encrypted rootfs or secondary drive.
-    
-Following patches add the attestation support to TDX guest which
-includes attestation user interface driver, user agent example, and
-related hypercall support.
+Details about the SetupEventNotifyInterrupt TDVMCALL can be found in
+TDX Guest-Host Communication Interface (GHCI) Specification, sec 3.5
+"VP.VMCALL<SetupEventNotifyInterrupt>".
 
-Patch titled "platform/x86: intel_tdx_attest: Add TDX Guest attestation
-interface driver" adds the attestation driver support. This is supposed
-to be reviewed by platform-x86 maintainers.
+Reviewed-by: Tony Luck <tony.luck@intel.com>
+Reviewed-by: Andi Kleen <ak@linux.intel.com>
+Acked-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+---
+ arch/x86/coco/tdx/tdx.c | 33 +++++++++++++++++++++++++++++++++
+ 1 file changed, 33 insertions(+)
 
-Rest of the patches including the patch titled "tools/tdx: Add a sample
-attestation user app" are intended for x86 maintainers review.
-
-
-Dependencies:
---------------
-
-This feature has dependency on TDX guest core patch set series.
-
-https://lore.kernel.org/all/20220218161718.67148-1-kirill.shutemov@linux.intel.com/T/
-
-History:
-----------
-
-Previously this patch set was sent under title "Add TDX Guest
-Support (Attestation support)". In the previous version, only the
-attestation driver patch was reviewed and got acked. Rest of the
-patches need to be reviewed freshly.
-
-https://lore.kernel.org/bpf/20210806000946.2951441-1-sathyanarayanan.kuppuswamy@linux.intel.com/
-
-Changes since v1:
- * Moved test driver from "tools/tdx/attest/tdx-attest-test.c" to
-   "tools/arch/x86/tdx/attest/tdx-attest-test.c" as per Hans review
-   suggestion.
- * Minor commit log and comment fixes in patches titled
-   "x86/tdx: Add tdx_mcall_tdreport() API support" and "x86/tdx:
-   Add tdx_hcall_get_quote() API support"
- * Extended tdx_hcall_get_quote() API to accept GPA length as argument
-   to accomodate latest TDQUOTE TDVMCALL related specification update.
- * Added support for tdx_setup_ev_notify_handler() and
-   tdx_remove_ev_notify_handler() in patch titled "x86/tdx: Add TDX
-   Guest event notify interrupt vector support"
-
-Changes since previous submission:
- * Updated commit log and error handling in TDREPORT, GetQuote and
-   SetupEventNotifyInterrupt support patches.
- * Added locking support in attestation driver.
-
-Kuppuswamy Sathyanarayanan (6):
-  x86/tdx: Add tdx_mcall_tdreport() API support
-  x86/tdx: Add tdx_hcall_get_quote() API support
-  x86/tdx: Add SetupEventNotifyInterrupt TDX hypercall support
-  x86/tdx: Add TDX Guest event notify interrupt vector support
-  platform/x86: intel_tdx_attest: Add TDX Guest attestation interface
-    driver
-  tools/tdx: Add a sample attestation user app
-
- arch/x86/coco/tdx/tdx.c                       | 180 ++++++++++++
- arch/x86/include/asm/hardirq.h                |   4 +
- arch/x86/include/asm/idtentry.h               |   4 +
- arch/x86/include/asm/irq_vectors.h            |   7 +-
- arch/x86/include/asm/tdx.h                    |   8 +
- arch/x86/kernel/irq.c                         |   7 +
- drivers/platform/x86/intel/Kconfig            |   1 +
- drivers/platform/x86/intel/Makefile           |   1 +
- drivers/platform/x86/intel/tdx/Kconfig        |  13 +
- drivers/platform/x86/intel/tdx/Makefile       |   3 +
- .../platform/x86/intel/tdx/intel_tdx_attest.c | 230 +++++++++++++++
- include/uapi/misc/tdx.h                       |  42 +++
- tools/Makefile                                |  16 +-
- tools/arch/x86/tdx/Makefile                   |  19 ++
- tools/arch/x86/tdx/attest/.gitignore          |   2 +
- tools/arch/x86/tdx/attest/Makefile            |  24 ++
- tools/arch/x86/tdx/attest/tdx-attest-test.c   | 263 ++++++++++++++++++
- 17 files changed, 820 insertions(+), 4 deletions(-)
- create mode 100644 drivers/platform/x86/intel/tdx/Kconfig
- create mode 100644 drivers/platform/x86/intel/tdx/Makefile
- create mode 100644 drivers/platform/x86/intel/tdx/intel_tdx_attest.c
- create mode 100644 include/uapi/misc/tdx.h
- create mode 100644 tools/arch/x86/tdx/Makefile
- create mode 100644 tools/arch/x86/tdx/attest/.gitignore
- create mode 100644 tools/arch/x86/tdx/attest/Makefile
- create mode 100644 tools/arch/x86/tdx/attest/tdx-attest-test.c
-
+diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
+index 54b54e321c63..14ba87b1e885 100644
+--- a/arch/x86/coco/tdx/tdx.c
++++ b/arch/x86/coco/tdx/tdx.c
+@@ -22,6 +22,7 @@
+ /* TDX hypercall Leaf IDs */
+ #define TDVMCALL_MAP_GPA		0x10001
+ #define TDVMCALL_GET_QUOTE		0x10002
++#define TDVMCALL_SETUP_NOTIFY_INTR	0x10004
+ 
+ /* MMIO direction */
+ #define EPT_READ	0
+@@ -198,6 +199,38 @@ int tdx_hcall_get_quote(void *data, u64 len)
+ }
+ EXPORT_SYMBOL_GPL(tdx_hcall_get_quote);
+ 
++/*
++ * tdx_hcall_set_notify_intr() - Setup Event Notify Interrupt Vector.
++ *
++ * @vector        : Vector address to be used for notification.
++ *
++ * return 0 on success or failure error number.
++ */
++static int tdx_hcall_set_notify_intr(u8 vector)
++{
++	u64 ret;
++
++	/* Minimum vector value allowed is 32 */
++	if (vector < 32)
++		return -EINVAL;
++
++	/*
++	 * Register callback vector address with VMM. More details
++	 * about the ABI can be found in TDX Guest-Host-Communication
++	 * Interface (GHCI), sec titled
++	 * "TDG.VP.VMCALL<SetupEventNotifyInterrupt>".
++	 */
++	ret = _tdx_hypercall(TDVMCALL_SETUP_NOTIFY_INTR, vector, 0, 0, 0);
++
++	if (ret) {
++		if (ret == TDCALL_INVALID_OPERAND)
++			return -EINVAL;
++		return -EIO;
++	}
++
++	return 0;
++}
++
+ static u64 get_cc_mask(void)
+ {
+ 	struct tdx_module_output out;
 -- 
 2.25.1
 
