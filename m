@@ -2,46 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E439C4167B
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0536BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345498AbiC3MDz (ORCPT
+        id S1345600AbiC3MEE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:03:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33590 "EHLO
+        Wed, 30 Mar 2022 08:04:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345166AbiC3LyL (ORCPT
+        with ESMTP id S1345159AbiC3LyL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 30 Mar 2022 07:54:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79B16280EF0;
-        Wed, 30 Mar 2022 04:50:31 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 790B5280EE5;
+        Wed, 30 Mar 2022 04:50:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 55268B81C3B;
-        Wed, 30 Mar 2022 11:50:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A8EAC340F3;
-        Wed, 30 Mar 2022 11:50:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9F6A8B81C34;
+        Wed, 30 Mar 2022 11:50:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8BF1C36AE2;
+        Wed, 30 Mar 2022 11:50:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641030;
-        bh=xuNZMXifvmTGhpPgK2BkPkaKp82sCR/h9SV2ylyFzog=;
+        s=k20201202; t=1648641022;
+        bh=or7vMsAJ5qPVBHGYQ8AZJOSb3BRjqMrEX/v6pBzhP1A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U7EwThw31MihqabsUI7O1W8Cqu+SEUl2rl3hk5AsjXUoWkysK6E0Y9De41thhY2Kq
-         y5FiBMBX3jBScLRLTkEHCgLQIN+EED4tcJiz1hz6BzJ0z1rGzFcCprifSzL/6eGlc/
-         kh9LNTropGH17vavYphzo81cURRCzX5LNg1x5XWs/6MA2EZpmGS89WYBL/yqCJADtt
-         zPy+D4hCgmNYGw0GugOFkIM1Yj7sLM0hqPT5SLL09DFbcPZH3owTDD6UE2jvUP+2t0
-         4Xeg3q4jfSJ209W9noMe5/G6B+4N0QLrpEn4n8oPPnP7In6Zvp5Ht8Zs7afBbMj1xd
-         KzWUqnGXhKrBw==
+        b=esKtna+noARAgO5RhQvid+YEx+d5DnIVfJwyJzYrR2rAGXv2isuDmkn1+8n3cM2xH
+         ZV+1ELyy/4ihaPLslds3dpRwx3VAjRYfnUWpj0iPoVMxSLU9X5fj1DfmAqLOLOxHyD
+         +1KHWhBypl9ZZswLPligJVO27CoPomTDfW8Rn/3jECKtWXKbN00bHXYX6xhM7+6Hmr
+         gFbmisW3Gxda4J5wJ7eX7Ik7f46cdegN4Uee9efXld8X21XwkJJjok8MKY0hbQRcvP
+         pi+nKI0fAQlcJ4670mHghonoDazpRmgIjRzdys4NNke81WvyGR52sUTEAaXYa4TGSW
+         yjQ+9Brl+vOpg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     George Kennedy <george.kennedy@oracle.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
-        tomi.valkeinen@ti.com, linux-fbdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 15/50] video: fbdev: cirrusfb: check pixclock to avoid divide by zero
-Date:   Wed, 30 Mar 2022 07:49:29 -0400
-Message-Id: <20220330115005.1671090-15-sashal@kernel.org>
+Cc:     Yong Wu <yong.wu@mediatek.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Joerg Roedel <jroedel@suse.de>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, joro@8bytes.org,
+        matthias.bgg@gmail.com, iommu@lists.linux-foundation.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 10/50] media: iommu/mediatek-v1: Free the existed fwspec if the master dev already has
+Date:   Wed, 30 Mar 2022 07:49:24 -0400
+Message-Id: <20220330115005.1671090-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115005.1671090-1-sashal@kernel.org>
 References: <20220330115005.1671090-1-sashal@kernel.org>
@@ -53,81 +60,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: George Kennedy <george.kennedy@oracle.com>
+From: Yong Wu <yong.wu@mediatek.com>
 
-[ Upstream commit 5c6f402bdcf9e7239c6bc7087eda71ac99b31379 ]
+[ Upstream commit 822a2ed8c606caf6a11b1a180b8e46292bd77d71 ]
 
-Do a sanity check on pixclock value to avoid divide by zero.
+When the iommu master device enters of_iommu_xlate, the ops may be
+NULL(iommu dev is defered), then it will initialize the fwspec here:
 
-If the pixclock value is zero, the cirrusfb driver will round up
-pixclock to get the derived frequency as close to maxclock as
-possible.
+[<c0c9c5bc>] (dev_iommu_fwspec_set) from [<c06bda80>]
+(iommu_fwspec_init+0xbc/0xd4)
+[<c06bd9c4>] (iommu_fwspec_init) from [<c06c0db4>]
+(of_iommu_xlate+0x7c/0x12c)
+[<c06c0d38>] (of_iommu_xlate) from [<c06c10e8>]
+(of_iommu_configure+0x144/0x1e8)
 
-Syzkaller reported a divide error in cirrusfb_check_pixclock.
+BUT the mtk_iommu_v1.c only supports arm32, the probing flow still is a bit
+weird. We always expect create the fwspec internally. otherwise it will
+enter here and return fail.
 
-divide error: 0000 [#1] SMP KASAN PTI
-CPU: 0 PID: 14938 Comm: cirrusfb_test Not tainted 5.15.0-rc6 #1
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.11.0-2
-RIP: 0010:cirrusfb_check_var+0x6f1/0x1260
+static int mtk_iommu_create_mapping(struct device *dev,
+				    struct of_phandle_args *args)
+{
+        ...
+	if (!fwspec) {
+	        ....
+	} else if (dev_iommu_fwspec_get(dev)->ops != &mtk_iommu_ops) {
+                >>>>>>>>>>Enter here. return fail.<<<<<<<<<<<<
+		return -EINVAL;
+	}
+	...
+}
 
-Call Trace:
- fb_set_var+0x398/0xf90
- do_fb_ioctl+0x4b8/0x6f0
- fb_ioctl+0xeb/0x130
- __x64_sys_ioctl+0x19d/0x220
- do_syscall_64+0x3a/0x80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+Thus, Free the existed fwspec if the master device already has fwspec.
 
-Signed-off-by: George Kennedy <george.kennedy@oracle.com>
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Signed-off-by: Helge Deller <deller@gmx.de>
+This issue is reported at:
+https://lore.kernel.org/linux-mediatek/trinity-7d9ebdc9-4849-4d93-bfb5-429dcb4ee449-1626253158870@3c-app-gmx-bs01/
+
+Reported-by: Frank Wunderlich <frank-w@public-files.de>
+Tested-by: Frank Wunderlich <frank-w@public-files.de> # BPI-R2/MT7623
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Acked-by: Joerg Roedel <jroedel@suse.de>
+Acked-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/cirrusfb.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/iommu/mtk_iommu_v1.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/video/fbdev/cirrusfb.c b/drivers/video/fbdev/cirrusfb.c
-index 93802abbbc72..3d47c347b897 100644
---- a/drivers/video/fbdev/cirrusfb.c
-+++ b/drivers/video/fbdev/cirrusfb.c
-@@ -469,7 +469,7 @@ static int cirrusfb_check_mclk(struct fb_info *info, long freq)
- 	return 0;
- }
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index be22fcf988ce..1467ba1e4417 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -425,6 +425,15 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
+ 	struct mtk_iommu_data *data;
+ 	int err, idx = 0;
  
--static int cirrusfb_check_pixclock(const struct fb_var_screeninfo *var,
-+static int cirrusfb_check_pixclock(struct fb_var_screeninfo *var,
- 				   struct fb_info *info)
- {
- 	long freq;
-@@ -478,9 +478,7 @@ static int cirrusfb_check_pixclock(const struct fb_var_screeninfo *var,
- 	unsigned maxclockidx = var->bits_per_pixel >> 3;
- 
- 	/* convert from ps to kHz */
--	freq = PICOS2KHZ(var->pixclock);
--
--	dev_dbg(info->device, "desired pixclock: %ld kHz\n", freq);
-+	freq = PICOS2KHZ(var->pixclock ? : 1);
- 
- 	maxclock = cirrusfb_board_info[cinfo->btype].maxclock[maxclockidx];
- 	cinfo->multiplexing = 0;
-@@ -488,11 +486,13 @@ static int cirrusfb_check_pixclock(const struct fb_var_screeninfo *var,
- 	/* If the frequency is greater than we can support, we might be able
- 	 * to use multiplexing for the video mode */
- 	if (freq > maxclock) {
--		dev_err(info->device,
--			"Frequency greater than maxclock (%ld kHz)\n",
--			maxclock);
--		return -EINVAL;
-+		var->pixclock = KHZ2PICOS(maxclock);
++	/*
++	 * In the deferred case, free the existed fwspec.
++	 * Always initialize the fwspec internally.
++	 */
++	if (fwspec) {
++		iommu_fwspec_free(dev);
++		fwspec = dev_iommu_fwspec_get(dev);
++	}
 +
-+		while ((freq = PICOS2KHZ(var->pixclock)) > maxclock)
-+			var->pixclock++;
- 	}
-+	dev_dbg(info->device, "desired pixclock: %ld kHz\n", freq);
-+
- 	/*
- 	 * Additional constraint: 8bpp uses DAC clock doubling to allow maximum
- 	 * pixel clock
+ 	while (!of_parse_phandle_with_args(dev->of_node, "iommus",
+ 					   "#iommu-cells",
+ 					   idx, &iommu_spec)) {
 -- 
 2.34.1
 
