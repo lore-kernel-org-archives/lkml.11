@@ -2,329 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4249DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:38:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D101C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:38:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245076AbiC3Mjo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:39:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33282 "EHLO
+        id S1344746AbiC3Mho (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 08:37:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243123AbiC3Mh3 (ORCPT
+        with ESMTP id S1343770AbiC3Mh2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 08:37:29 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 827B391AE3;
-        Wed, 30 Mar 2022 05:26:26 -0700 (PDT)
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22UCMnD8032196;
-        Wed, 30 Mar 2022 12:26:26 GMT
+        Wed, 30 Mar 2022 08:37:28 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E22F9025F;
+        Wed, 30 Mar 2022 05:26:18 -0700 (PDT)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22UAt80Q013733;
+        Wed, 30 Mar 2022 12:26:17 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pp1;
- bh=yd62+gKhnufyg31t0V+kwGQPAog/FFcx7rzmp5gp79c=;
- b=oI2/zBgnBfRq+38VbftNc6QJ95D2XOq9VFD0ygzTU7LwGcfHPb/HbR7OysMG8o6p4MMA
- cNxfhAGF8wjutxDUG/sWeq8ehNj+pL2YyHBNrvbqEaYxFZYeD3y0d5fpQr9qKXtMFV+w
- 4QWR95F1Zpy4PL86y3Aqb1y5XvAosXO4QxDdQI0nKuOB5V6VWNfiP8QFUISiN5hITECq
- ZVxhahg8KmhSMZ8/ZHnAoHtiX86ZVWqqvTEMfDZ09SblRAnpBATa5Z+GXoZr0ib8orqn
- 71VlXb/FjfSPnCaSWQcu6clYWrF54khNG4134G/JbTJe4rOLyntCUYfaLLHxAIY4LqNv mQ== 
+ bh=4fTO2bZ41YPgob3gvWmfe+nwPdJuKpOfjKm0SQP7Kao=;
+ b=jy4Wt4HpNvd73H5ajrfQpD0wTeOt6cbeK1WP/LL5wDol48H2G1tQwnBmJbPXvvHpW7CR
+ c0e4yyF6G56tYS0WY7Gt9OBUMlLMTg613OFbFoHxzDYmafVbDLkWdxxtmRHyqwCtVfGL
+ JVqS9RsuBhI3+0ZpoB6GH4XYO0XEKldT2QwxDu04WW9qswN6oLWaxrv9h7aIJkWMmB2k
+ fbQkQl2u1MRQbVvGgr/DWdUjgE2rL5ZHsVOdaRNXDJiCSTTXXao/ko/wNn8Dk715NtqI
+ FielWC+KkZUyMr8bAlLF72dwivHoIck2GZgaEJHouVF2LLZovP5o7piQom/FoQqibVCC VA== 
 Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f3yqmntjm-1
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3f4nv91vdv-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 30 Mar 2022 12:26:26 +0000
-Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22UCMs1S000422;
-        Wed, 30 Mar 2022 12:26:25 GMT
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f3yqmnthy-1
+        Wed, 30 Mar 2022 12:26:17 +0000
+Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22UBLrM4002265;
+        Wed, 30 Mar 2022 12:26:16 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3f4nv91vdc-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 30 Mar 2022 12:26:25 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22UCNO0v013746;
-        Wed, 30 Mar 2022 12:26:23 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma04fra.de.ibm.com with ESMTP id 3f1tf8y9hk-1
+        Wed, 30 Mar 2022 12:26:16 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22UCNTds027046;
+        Wed, 30 Mar 2022 12:26:14 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma06ams.nl.ibm.com with ESMTP id 3f3rs3khny-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 30 Mar 2022 12:26:22 +0000
+        Wed, 30 Mar 2022 12:26:14 +0000
 Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22UCQJwV34799930
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22UCQBNO49545674
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 30 Mar 2022 12:26:19 GMT
+        Wed, 30 Mar 2022 12:26:11 GMT
 Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D379011C04C;
-        Wed, 30 Mar 2022 12:26:19 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 7CE9D11C058;
+        Wed, 30 Mar 2022 12:26:11 +0000 (GMT)
 Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4CE5F11C04A;
-        Wed, 30 Mar 2022 12:26:19 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id EA26111C04A;
+        Wed, 30 Mar 2022 12:26:10 +0000 (GMT)
 Received: from localhost.localdomain (unknown [9.145.13.95])
         by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 30 Mar 2022 12:26:19 +0000 (GMT)
+        Wed, 30 Mar 2022 12:26:10 +0000 (GMT)
 From:   Claudio Imbrenda <imbrenda@linux.ibm.com>
 To:     kvm@vger.kernel.org
 Cc:     borntraeger@de.ibm.com, frankja@linux.ibm.com, thuth@redhat.com,
         pasic@linux.ibm.com, david@redhat.com, linux-s390@vger.kernel.org,
         linux-kernel@vger.kernel.org, scgl@linux.ibm.com,
         mimu@linux.ibm.com, nrb@linux.ibm.com
-Subject: [PATCH v9 14/18] KVM: s390: pv: asynchronous destroy for reboot
-Date:   Wed, 30 Mar 2022 14:26:01 +0200
-Message-Id: <20220330122605.247613-15-imbrenda@linux.ibm.com>
+Subject: [PATCH v9 01/18] KVM: s390: pv: leak the topmost page table when destroy fails
+Date:   Wed, 30 Mar 2022 14:25:48 +0200
+Message-Id: <20220330122605.247613-2-imbrenda@linux.ibm.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330122605.247613-1-imbrenda@linux.ibm.com>
 References: <20220330122605.247613-1-imbrenda@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: HA1RQK6imRgCqjwszvLLT91Rh29ksdtx
-X-Proofpoint-ORIG-GUID: HOg-zfrFrKieH6SGm2146kQYh1f0frSC
+X-Proofpoint-GUID: QEecJR53IVP18Yb1_xtbNzV-QZEJyXuH
+X-Proofpoint-ORIG-GUID: IpjqQKr8B11AF10_r7GFT7YgwK_xzcOX
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-30_03,2022-03-30_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
- bulkscore=0 spamscore=0 phishscore=0 malwarescore=0 suspectscore=0
- adultscore=0 priorityscore=1501 mlxlogscore=937 lowpriorityscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ definitions=2022-03-30_04,2022-03-30_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 adultscore=0
+ priorityscore=1501 lowpriorityscore=0 impostorscore=0 malwarescore=0
+ spamscore=0 clxscore=1011 phishscore=0 suspectscore=0 mlxscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2202240000 definitions=main-2203300062
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Until now, destroying a protected guest was an entirely synchronous
-operation that could potentially take a very long time, depending on
-the size of the guest, due to the time needed to clean up the address
-space from protected pages.
+Each secure guest must have a unique ASCE (address space control
+element); we must avoid that new guests use the same page for their
+ASCE, to avoid errors.
 
-This patch implements an asynchronous destroy mechanism, that allows a
-protected guest to reboot significantly faster than previously.
+Since the ASCE mostly consists of the address of the topmost page table
+(plus some flags), we must not return that memory to the pool unless
+the ASCE is no longer in use.
 
-This is achieved by clearing the pages of the old guest in background.
-In case of reboot, the new guest will be able to run in the same
-address space almost immediately.
+Only a successful Destroy Secure Configuration UVC will make the ASCE
+reusable again.
 
-The old protected guest is then only destroyed when all of its memory has
-been destroyed or otherwise made non protected.
+If the Destroy Configuration UVC fails, the ASCE cannot be reused for a
+secure guest (either for the ASCE or for other memory areas). To avoid
+a collision, it must not be used again. This is a permanent error and
+the page becomes in practice unusable, so we set it aside and leak it.
+On failure we already leak other memory that belongs to the ultravisor
+(i.e. the variable and base storage for a guest) and not leaking the
+topmost page table was an oversight.
 
-Two new PV commands are added for the KVM_S390_PV_COMMAND ioctl:
-
-KVM_PV_ASYNC_DISABLE_PREPARE: prepares the current protected VM for
-asynchronous teardown. The current VM will then continue immediately
-as non-protected. If a protected VM had already been set aside without
-starting the teardown process, this call will fail.
-
-KVM_PV_ASYNC_DISABLE: tears down the protected VM previously set aside
-for asynchronous teardown. This PV command should ideally be issued by
-userspace from a separate thread. If a fatal signal is received (or the
-process terminates naturally), the command will terminate immediately
-without completing.
-
-Leftover protected VMs are cleaned up when a KVM VM is torn down
-normally (either via IOCTL or when the process terminates); this
-cleanup has been implemented in a previous patch.
+This error (and thus the leakage) should not happen unless the hardware
+is broken or KVM has some unknown serious bug.
 
 Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+Fixes: 29b40f105ec8d55 ("KVM: s390: protvirt: Add initial vm and cpu lifecycle handling")
 ---
- arch/s390/kvm/kvm-s390.c |  24 ++++++++
- arch/s390/kvm/kvm-s390.h |   2 +
- arch/s390/kvm/pv.c       | 126 +++++++++++++++++++++++++++++++++++++++
- include/uapi/linux/kvm.h |   2 +
- 4 files changed, 154 insertions(+)
+ arch/s390/include/asm/gmap.h |  2 +
+ arch/s390/kvm/pv.c           |  9 +++--
+ arch/s390/mm/gmap.c          | 71 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 79 insertions(+), 3 deletions(-)
 
-diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
-index 3637f556ff33..2453d2d90d6c 100644
---- a/arch/s390/kvm/kvm-s390.c
-+++ b/arch/s390/kvm/kvm-s390.c
-@@ -2285,6 +2285,30 @@ static int kvm_s390_handle_pv(struct kvm *kvm, struct kvm_pv_cmd *cmd)
- 		set_bit(IRQ_PEND_EXT_SERVICE, &kvm->arch.float_int.masked_irqs);
- 		break;
- 	}
-+	case KVM_PV_ASYNC_DISABLE_PREPARE:
-+		r = -EINVAL;
-+		if (!kvm_s390_pv_is_protected(kvm) || !lazy_destroy)
-+			break;
-+
-+		r = kvm_s390_cpus_from_pv(kvm, &cmd->rc, &cmd->rrc);
-+		/*
-+		 * If a CPU could not be destroyed, destroy VM will also fail.
-+		 * There is no point in trying to destroy it. Instead return
-+		 * the rc and rrc from the first CPU that failed destroying.
-+		 */
-+		if (r)
-+			break;
-+		r = kvm_s390_pv_deinit_vm_async_prepare(kvm, &cmd->rc, &cmd->rrc);
-+
-+		/* no need to block service interrupts any more */
-+		clear_bit(IRQ_PEND_EXT_SERVICE, &kvm->arch.float_int.masked_irqs);
-+		break;
-+	case KVM_PV_ASYNC_DISABLE:
-+		r = -EINVAL;
-+		if (!kvm->arch.pv.async_deinit)
-+			break;
-+		r = kvm_s390_pv_deinit_vm_async(kvm, &cmd->rc, &cmd->rrc);
-+		break;
- 	case KVM_PV_DISABLE: {
- 		r = -EINVAL;
- 		if (!kvm_s390_pv_is_protected(kvm))
-diff --git a/arch/s390/kvm/kvm-s390.h b/arch/s390/kvm/kvm-s390.h
-index 9276d910631b..be53c7750248 100644
---- a/arch/s390/kvm/kvm-s390.h
-+++ b/arch/s390/kvm/kvm-s390.h
-@@ -234,6 +234,8 @@ static inline unsigned long kvm_s390_get_gfn_end(struct kvm_memslots *slots)
- /* implemented in pv.c */
- int kvm_s390_pv_destroy_cpu(struct kvm_vcpu *vcpu, u16 *rc, u16 *rrc);
- int kvm_s390_pv_create_cpu(struct kvm_vcpu *vcpu, u16 *rc, u16 *rrc);
-+int kvm_s390_pv_deinit_vm_async_prepare(struct kvm *kvm, u16 *rc, u16 *rrc);
-+int kvm_s390_pv_deinit_vm_async(struct kvm *kvm, u16 *rc, u16 *rrc);
- int kvm_s390_pv_deinit_vm(struct kvm *kvm, u16 *rc, u16 *rrc);
- int kvm_s390_pv_init_vm(struct kvm *kvm, u16 *rc, u16 *rrc);
- int kvm_s390_pv_set_sec_parms(struct kvm *kvm, void *hdr, u64 length, u16 *rc,
+diff --git a/arch/s390/include/asm/gmap.h b/arch/s390/include/asm/gmap.h
+index 40264f60b0da..746e18bf8984 100644
+--- a/arch/s390/include/asm/gmap.h
++++ b/arch/s390/include/asm/gmap.h
+@@ -148,4 +148,6 @@ void gmap_sync_dirty_log_pmd(struct gmap *gmap, unsigned long dirty_bitmap[4],
+ 			     unsigned long gaddr, unsigned long vmaddr);
+ int gmap_mark_unmergeable(void);
+ void s390_reset_acc(struct mm_struct *mm);
++void s390_remove_old_asce(struct gmap *gmap);
++int s390_replace_asce(struct gmap *gmap);
+ #endif /* _ASM_S390_GMAP_H */
 diff --git a/arch/s390/kvm/pv.c b/arch/s390/kvm/pv.c
-index 56412617dd01..5111f1fc64ab 100644
+index 7f7c0d6af2ce..3c59ef763dde 100644
 --- a/arch/s390/kvm/pv.c
 +++ b/arch/s390/kvm/pv.c
-@@ -262,6 +262,132 @@ int kvm_s390_pv_deinit_vm(struct kvm *kvm, u16 *rc, u16 *rrc)
- 	return cc ? -EIO : 0;
+@@ -166,10 +166,13 @@ int kvm_s390_pv_deinit_vm(struct kvm *kvm, u16 *rc, u16 *rrc)
+ 	atomic_set(&kvm->mm->context.is_protected, 0);
+ 	KVM_UV_EVENT(kvm, 3, "PROTVIRT DESTROY VM: rc %x rrc %x", *rc, *rrc);
+ 	WARN_ONCE(cc, "protvirt destroy vm failed rc %x rrc %x", *rc, *rrc);
+-	/* Inteded memory leak on "impossible" error */
+-	if (!cc)
++	/* Intended memory leak on "impossible" error */
++	if (!cc) {
+ 		kvm_s390_pv_dealloc_vm(kvm);
+-	return cc ? -EIO : 0;
++		return 0;
++	}
++	s390_replace_asce(kvm->arch.gmap);
++	return -EIO;
  }
  
+ int kvm_s390_pv_init_vm(struct kvm *kvm, u16 *rc, u16 *rrc)
+diff --git a/arch/s390/mm/gmap.c b/arch/s390/mm/gmap.c
+index dfee0ebb2fac..3b42bf7adb77 100644
+--- a/arch/s390/mm/gmap.c
++++ b/arch/s390/mm/gmap.c
+@@ -2714,3 +2714,74 @@ void s390_reset_acc(struct mm_struct *mm)
+ 	mmput(mm);
+ }
+ EXPORT_SYMBOL_GPL(s390_reset_acc);
++
 +/**
-+ * kvm_s390_clear_2g - Clear the first 2GB of guest memory.
-+ * @kvm the VM whose memory is to be cleared.
-+ * Clear the first 2GB of guest memory, to avoid prefix issues after reboot.
++ * s390_remove_old_asce - Remove the topmost level of page tables from the
++ * list of page tables of the gmap.
++ * @gmap the gmap whose table is to be removed
++ *
++ * This means that it will not be freed when the VM is torn down, and needs
++ * to be handled separately by the caller, unless an intentional leak is
++ * intended. Notice that this function will only remove the page from the
++ * list, the page will still be used as a top level page table (and ASCE).
 + */
-+static void kvm_s390_clear_2g(struct kvm *kvm)
++void s390_remove_old_asce(struct gmap *gmap)
 +{
-+	struct kvm_memory_slot *slot;
-+	unsigned long lim;
-+	int srcu_idx;
++	struct page *old;
 +
-+	srcu_idx = srcu_read_lock(&kvm->srcu);
-+
-+	slot = gfn_to_memslot(kvm, 0);
-+	/* Clear all slots that are completely below 2GB */
-+	while (slot && slot->base_gfn + slot->npages < SZ_2G / PAGE_SIZE) {
-+		lim = slot->userspace_addr + slot->npages * PAGE_SIZE;
-+		s390_uv_destroy_range(kvm->mm, slot->userspace_addr, lim);
-+		slot = gfn_to_memslot(kvm, slot->base_gfn + slot->npages);
-+	}
-+	/* Last slot crosses the 2G boundary, clear only up to 2GB */
-+	if (slot && slot->base_gfn < SZ_2G / PAGE_SIZE) {
-+		lim = slot->userspace_addr + SZ_2G - slot->base_gfn * PAGE_SIZE;
-+		s390_uv_destroy_range(kvm->mm, slot->userspace_addr, lim);
-+	}
-+
-+	srcu_read_unlock(&kvm->srcu, srcu_idx);
++	old = virt_to_page(gmap->table);
++	spin_lock(&gmap->guest_table_lock);
++	list_del(&old->lru);
++	/*
++	 * in case the ASCE needs to be "removed" multiple times, for example
++	 * if the VM is rebooted into secure mode several times
++	 * concurrently.
++	 */
++	INIT_LIST_HEAD(&old->lru);
++	spin_unlock(&gmap->guest_table_lock);
 +}
++EXPORT_SYMBOL_GPL(s390_remove_old_asce);
 +
 +/**
-+ * kvm_s390_pv_deinit_vm_async_prepare - Prepare a protected VM for
-+ * asynchronous teardown.
-+ * @kvm the VM
-+ * @rc return value for the RC field of the UVCB
-+ * @rrc return value for the RRC field of the UVCB
++ * s390_replace_asce - Try to replace the current ASCE of a gmap with
++ * another equivalent one.
++ * @gmap the gmap
 + *
-+ * Prepare the protected VM for asynchronous teardown. The VM will be able
-+ * to continue immediately as a non-secure VM, and the information needed to
-+ * properly tear down the protected VM is set aside. If another protected VM
-+ * was already set aside without starting a teardown, the function will
-+ * fail.
-+ *
-+ * Context: kvm->lock needs to be held
-+ *
-+ * Return: 0 in case of success, -EINVAL if another protected VM was already set
-+ * aside, -ENOMEM if the system ran out of memory.
++ * If the allocation of the new top level page table fails, the ASCE is not
++ * replaced.
++ * In any case, the old ASCE is always removed from the list. Therefore the
++ * caller has to make sure to save a pointer to it beforehands, unless an
++ * intentional leak is intended.
 + */
-+int kvm_s390_pv_deinit_vm_async_prepare(struct kvm *kvm, u16 *rc, u16 *rrc)
++int s390_replace_asce(struct gmap *gmap)
 +{
-+	struct deferred_priv *priv;
++	unsigned long asce;
++	struct page *page;
++	void *table;
++
++	s390_remove_old_asce(gmap);
++
++	page = alloc_pages(GFP_KERNEL_ACCOUNT, CRST_ALLOC_ORDER);
++	if (!page)
++		return -ENOMEM;
++	table = page_to_virt(page);
++	memcpy(table, gmap->table, 1UL << (CRST_ALLOC_ORDER + PAGE_SHIFT));
 +
 +	/*
-+	 * If an asynchronous deinitialization is already pending, refuse.
-+	 * A synchronous deinitialization has to be performed instead.
++	 * The caller has to deal with the old ASCE, but here we make sure
++	 * the new one is properly added to the list of page tables, so that
++	 * it will be freed when the VM is torn down.
 +	 */
-+	if (kvm->arch.pv.async_deinit)
-+		return -EINVAL;
-+	priv = kmalloc(sizeof(*priv), GFP_KERNEL | __GFP_ZERO);
-+	if (!priv)
-+		return -ENOMEM;
++	spin_lock(&gmap->guest_table_lock);
++	list_add(&page->lru, &gmap->crst_list);
++	spin_unlock(&gmap->guest_table_lock);
 +
-+	priv->stor_var = kvm->arch.pv.stor_var;
-+	priv->stor_base = kvm->arch.pv.stor_base;
-+	priv->handle = kvm_s390_pv_get_handle(kvm);
-+	priv->old_table = (unsigned long)kvm->arch.gmap->table;
-+	WRITE_ONCE(kvm->arch.gmap->guest_handle, 0);
-+	if (s390_replace_asce(kvm->arch.gmap)) {
-+		kfree(priv);
-+		return -ENOMEM;
-+	}
++	/* Set new table origin while preserving existing ASCE control bits */
++	asce = (gmap->asce & ~_ASCE_ORIGIN) | __pa(table);
++	WRITE_ONCE(gmap->asce, asce);
++	WRITE_ONCE(gmap->mm->context.gmap_asce, asce);
++	WRITE_ONCE(gmap->table, table);
 +
-+	kvm_s390_clear_2g(kvm);
-+	kvm_s390_clear_pv_state(kvm);
-+	kvm->arch.pv.async_deinit = priv;
-+
-+	*rc = 1;
-+	*rrc = 42;
 +	return 0;
 +}
-+
-+/**
-+ * kvm_s390_pv_deinit_vm_async - Perform an asynchronous teardown of a
-+ * protected VM.
-+ * @kvm the VM previously associated with the protected VM
-+ * @rc return value for the RC field of the UVCB
-+ * @rrc return value for the RRC field of the UVCB
-+ *
-+ * Tear down the protected VM that had previously been set aside using
-+ * kvm_s390_pv_deinit_vm_async_prepare.
-+ *
-+ * Context: kvm->lock needs to be held
-+ *
-+ * Return: 0 in case of success, -EINVAL if no protected VM had been
-+ * prepared for asynchronous teardowm, -EIO in case of other errors.
-+ */
-+int kvm_s390_pv_deinit_vm_async(struct kvm *kvm, u16 *rc, u16 *rrc)
-+{
-+	struct deferred_priv *p = kvm->arch.pv.async_deinit;
-+	int ret = 0;
-+
-+	if (!p)
-+		return -EINVAL;
-+	kvm->arch.pv.async_deinit = NULL;
-+	mutex_unlock(&kvm->lock);
-+
-+	/* When a fatal signal is received, stop immediately */
-+	if (s390_uv_destroy_range_interruptible(kvm->mm, 0, TASK_SIZE_MAX))
-+		goto done;
-+	if (kvm_s390_pv_cleanup_deferred(kvm, p))
-+		ret = -EIO;
-+	else
-+		atomic_dec(&kvm->mm->context.protected_count);
-+	kfree(p);
-+	p = NULL;
-+done:
-+	/* The caller expects the lock to be held */
-+	mutex_lock(&kvm->lock);
-+	/*
-+	 * p is not NULL if we aborted because of a fatal signal, in which
-+	 * case queue the leftover for later cleanup.
-+	 */
-+	if (p)
-+		list_add(&p->list, &kvm->arch.pv.need_cleanup);
-+	return ret;
-+}
-+
- static void kvm_s390_pv_mmu_notifier_release(struct mmu_notifier *subscription,
- 					     struct mm_struct *mm)
- {
-diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
-index 507ee1f2aa96..d150610e7a4b 100644
---- a/include/uapi/linux/kvm.h
-+++ b/include/uapi/linux/kvm.h
-@@ -1644,6 +1644,8 @@ enum pv_cmd_id {
- 	KVM_PV_VERIFY,
- 	KVM_PV_PREP_RESET,
- 	KVM_PV_UNSHARE_ALL,
-+	KVM_PV_ASYNC_DISABLE_PREPARE,
-+	KVM_PV_ASYNC_DISABLE,
- };
- 
- struct kvm_pv_cmd {
++EXPORT_SYMBOL_GPL(s390_replace_asce);
 -- 
 2.34.1
 
