@@ -2,156 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC584C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 20:02:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9000EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 20:04:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350862AbiC3UEN (ORCPT
+        id S1350882AbiC3UGK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 16:04:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38036 "EHLO
+        Wed, 30 Mar 2022 16:06:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350870AbiC3UEJ (ORCPT
+        with ESMTP id S1350505AbiC3UGF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 16:04:09 -0400
-Received: from gateway31.websitewelcome.com (gateway31.websitewelcome.com [192.185.144.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DF44419B7
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 13:02:24 -0700 (PDT)
-Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
-        by gateway31.websitewelcome.com (Postfix) with ESMTP id AA92065EB
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 15:02:23 -0500 (CDT)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id ZeWJn0meG9AGSZeWJnkcgb; Wed, 30 Mar 2022 15:02:22 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=DrUu3f6Vg70A9S/e0ENsULeFLvIkUNgEiXVJ565JLzM=; b=dDDchv22UZx7S9aVL6BuhPFHoX
-        K+2861O1HC8rPmzN2ZaiTGoflxh53IzGBZ5EdHlqW5L6ICtftxsebDPSzuFktdght6c9yH2mECk3o
-        hLsWYXTJn9H3SwYhiHZfPPOXC/1lXTRDSYoEX9pJoM8dxdCPLPVLqms0Qt098Vul4I53VkR3nQVHI
-        wOMhdbWDZT9nLBtwTF0hK4AV+ZtXbiviUIGWNDFCZsx/+6f8zcp0aGaHlMR2wswTvg4dBO+7CezGy
-        6Ss2GnHToaslE/5DM42PTv+ri9c94/USznJ3FiAGdSgbE30796l7gzBBI1tqHXmOyusJoumjPqycM
-        5A2964cA==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54582)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nZeWI-001X75-Mk; Wed, 30 Mar 2022 20:02:18 +0000
-Message-ID: <45acc349-8fea-f755-065c-c561949c45af@roeck-us.net>
-Date:   Wed, 30 Mar 2022 13:02:16 -0700
+        Wed, 30 Mar 2022 16:06:05 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A9794ECE6
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 13:04:18 -0700 (PDT)
+Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 2675A1EC056A;
+        Wed, 30 Mar 2022 22:04:13 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1648670653;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=14EYPGdztPJqqRoOG9Ks/jMWGhMbBnx/Ex8i8iSzzmU=;
+        b=JiU0fB19uq4DLzSH887InCKCWAro+gDsfjG8WBGY3i+LnA39T8DOkIGXa2mIa44ti/Gqsc
+        Za5GQs/tsQCn8gc9MACNwmcGy0JI7OQ7eEAg7RTfqyrtL5i8h9mni8wVHEx1RLmxAP9NG0
+        fyxy+TblcfKVUozPEiSKHoqQkqHc1CM=
+Date:   Wed, 30 Mar 2022 22:02:00 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Ricardo =?utf-8?Q?Ca=C3=B1uelo?= <ricardo.canuelo@collabora.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Mark Gross <mgross@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        John Johansen <john.johansen@canonical.com>,
+        Steve Beattie <sbeattie@ubuntu.com>, kernel@collabora.com,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Subject: Re: [PATCH v2] x86/speculation/srbds: do not try to turn mitigation
+ off when not supported
+Message-ID: <YkS3OKLS1Cixs9up@zn.tnic>
+References: <20220330082026.1549073-1-ricardo.canuelo@collabora.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v20 1/4] mfd: silergy,sy7636a: Add config option
-Content-Language: en-US
-To:     Alistair Francis <alistair@alistair23.me>, lgirdwood@gmail.com,
-        robh+dt@kernel.org, kernel@pengutronix.de, lee.jones@linaro.org,
-        broonie@kernel.org
-Cc:     linux-hwmon@vger.kernel.org, geert@linux-m68k.org,
-        linux-kernel@vger.kernel.org, shawnguo@kernel.org,
-        alistair23@gmail.com, s.hauer@pengutronix.de, andreas@kemnade.info,
-        rui.zhang@intel.com, devicetree@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-imx@nxp.com, amitk@kernel.org
-References: <20220330094126.30252-1-alistair@alistair23.me>
- <20220330094126.30252-2-alistair@alistair23.me>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <20220330094126.30252-2-alistair@alistair23.me>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nZeWI-001X75-Mk
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54582
-X-Source-Auth: linux@roeck-us.net
-X-Email-Count: 18
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220330082026.1549073-1-ricardo.canuelo@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/30/22 02:41, Alistair Francis wrote:
-> Add a specific MFD_SY7636A config option.
-> 
-> As part of this change we can use MFD_SY7636A as a dependency for all
-> SY7636a components and also remove the name from MFD_SIMPLE_MFD_I2C as
-> it no longer needs to be selectable.
-> 
-> Signed-off-by: Alistair Francis <alistair@alistair23.me>
++ Pawan who's been poking at TSX recently...
 
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-
+On Wed, Mar 30, 2022 at 10:20:26AM +0200, Ricardo Cañuelo wrote:
+> When SRBDS is mitigated by TSX OFF, update_srbds_msr will still read and
+> write to MSR_IA32_MCU_OPT_CTRL even when that is not supported by the
+> microcode.
+> 
+> Checking for X86_FEATURE_SRBDS_CTRL as a CPU feature available makes more
+> sense than checking for SRBDS_MITIGATION_UCODE_NEEDED as the found
+> "mitigation".
+> 
+> Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+> Signed-off-by: Borislav Petkov <bp@alien8.de>
+> Signed-off-by: Ricardo Cañuelo <ricardo.canuelo@collabora.com>
+> Tested-by: Ricardo Cañuelo <ricardo.canuelo@collabora.com>
 > ---
->   drivers/hwmon/Kconfig     |  1 +
->   drivers/mfd/Kconfig       | 12 +++++++++++-
->   drivers/regulator/Kconfig |  1 +
->   3 files changed, 13 insertions(+), 1 deletion(-)
+> Hi all,
 > 
-> diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
-> index 68a8a27ab3b7..74b60d24e740 100644
-> --- a/drivers/hwmon/Kconfig
-> +++ b/drivers/hwmon/Kconfig
-> @@ -1693,6 +1693,7 @@ config SENSORS_SIS5595
->   
->   config SENSORS_SY7636A
->   	tristate "Silergy SY7636A"
-> +	depends on MFD_SY7636A
->   	help
->   	  If you say yes here you get support for the thermistor readout of
->   	  the Silergy SY7636A PMIC.
-> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-> index 3b59456f5545..c47cb755757b 100644
-> --- a/drivers/mfd/Kconfig
-> +++ b/drivers/mfd/Kconfig
-> @@ -1095,6 +1095,16 @@ config MFD_SPMI_PMIC
->   	  Say M here if you want to include support for the SPMI PMIC
->   	  series as a module.  The module will be called "qcom-spmi-pmic".
->   
-> +config MFD_SY7636A
-> +	tristate "Silergy SY7636A voltage regulator"
-> +	depends on I2C
-> +	select MFD_SIMPLE_MFD_I2C
-> +	help
-> +	  Enable support for Silergy SY7636A voltage regulator.
-> +
-> +	  To enable support for building sub-devices as modules,
-> +	  choose M here.
-> +
->   config MFD_RDC321X
->   	tristate "RDC R-321x southbridge"
->   	select MFD_CORE
-> @@ -1202,7 +1212,7 @@ config MFD_SI476X_CORE
->   	  module will be called si476x-core.
->   
->   config MFD_SIMPLE_MFD_I2C
-> -	tristate "Simple Multi-Functional Device support (I2C)"
-> +	tristate
->   	depends on I2C
->   	select MFD_CORE
->   	select REGMAP_I2C
-> diff --git a/drivers/regulator/Kconfig b/drivers/regulator/Kconfig
-> index 5ef2306fce04..c8ce6e5eea24 100644
-> --- a/drivers/regulator/Kconfig
-> +++ b/drivers/regulator/Kconfig
-> @@ -1219,6 +1219,7 @@ config REGULATOR_STW481X_VMMC
->   
->   config REGULATOR_SY7636A
->   	tristate "Silergy SY7636A voltage regulator"
-> +	depends on MFD_SY7636A
->   	help
->   	  This driver supports Silergy SY3686A voltage regulator.
->   
+> This patch was originally posted here:
+> 
+> https://lore.kernel.org/all/20200609174313.2600320-1-cascardo@canonical.com/#t
+> 
+> by Boris, based on the original patch by Cascardo, I didn't make any
+> changes to it. I didn't see it merged or discussed further and I can
+> still reproduce the issue on a Samsung Galaxy Chromebook 2 (Intel
+> Cometlake-U). When booted without the proper CPU u-codes, TSX is
+> disabled (so the CPU isn't vulnerable to SRDBS) but this code still
+> tries to access an unavailable MSR register so I get these two warning
+> messages:
+> 
+> unchecked MSR access error: RDMSR from 0x123 at rIP: 0xffffffff8203707e (update_srbds_msr+0x2e/0xa0)
+> Call Trace:
+>  <TASK>
+>  check_bugs+0x994/0xa6e
+>  ? __get_locked_pte+0x8f/0x100
+>  start_kernel+0x630/0x664
+>  secondary_startup_64_no_verify+0xd5/0xdb
+>  </TASK>
+> unchecked MSR access error: WRMSR to 0x123 (tried to write 0x0000000000000001) at rIP: 0xffffffff820370a9 (update_srbds_msr+0x59/0xa0)
+> Call Trace:
+>  <TASK>
+>  check_bugs+0x994/0xa6e
+>  ? __get_locked_pte+0x8f/0x100
+>  start_kernel+0x630/0x664
+>  secondary_startup_64_no_verify+0xd5/0xdb
+>  </TASK>
+> 
+> This patch avoids them.
+> 
+>  arch/x86/kernel/cpu/bugs.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
+> index 6296e1ebed1d..9b14cb2ec693 100644
+> --- a/arch/x86/kernel/cpu/bugs.c
+> +++ b/arch/x86/kernel/cpu/bugs.c
+> @@ -443,14 +443,14 @@ void update_srbds_msr(void)
+>  	if (boot_cpu_has(X86_FEATURE_HYPERVISOR))
+>  		return;
+>  
+> -	if (srbds_mitigation == SRBDS_MITIGATION_UCODE_NEEDED)
+> +	if (srbds_mitigation == SRBDS_MITIGATION_UCODE_NEEDED ||
+> +	    srbds_mitigation == SRBDS_MITIGATION_TSX_OFF)
+>  		return;
+>  
+>  	rdmsrl(MSR_IA32_MCU_OPT_CTRL, mcu_ctrl);
+>  
+>  	switch (srbds_mitigation) {
+>  	case SRBDS_MITIGATION_OFF:
+> -	case SRBDS_MITIGATION_TSX_OFF:
+>  		mcu_ctrl |= RNGDS_MITG_DIS;
+>  		break;
+>  	case SRBDS_MITIGATION_FULL:
+> -- 
 
+So I'm not yet 100% sure as to how to model this properly. The fact
+is, the CPU is not affected by SRBDS when it is a MDS_NO CPU with TSX
+disabled.
+
+So we could also do the below to denote what the situation is and
+therefore clear the bug flag for such CPUs.
+
+The thing is: I want this to be as clear as possible because bugs.c is
+already a nightmare and just slapping more logic to it without properly
+thinking it through is going to be a serious pain to deal with later...
+
+Thx.
+
+---
+diff --git a/arch/x86/include/asm/cpufeature.h b/arch/x86/include/asm/cpufeature.h
+index 66d3e3b1d24d..9fa7a6ba09c7 100644
+--- a/arch/x86/include/asm/cpufeature.h
++++ b/arch/x86/include/asm/cpufeature.h
+@@ -217,6 +217,7 @@ static __always_inline bool _static_cpu_has(u16 bit)
+ #define static_cpu_has_bug(bit)		static_cpu_has((bit))
+ #define boot_cpu_has_bug(bit)		cpu_has_bug(&boot_cpu_data, (bit))
+ #define boot_cpu_set_bug(bit)		set_cpu_cap(&boot_cpu_data, (bit))
++#define boot_cpu_clear_bug(bit)		clear_cpu_cap(&boot_cpu_data, (bit))
+ 
+ #define MAX_CPU_FEATURES		(NCAPINTS * 32)
+ #define cpu_have_feature		boot_cpu_has
+diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
+index 6296e1ebed1d..02fdfe5e2f2a 100644
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -475,8 +475,10 @@ static void __init srbds_select_mitigation(void)
+ 	 * TSX that are only exposed to SRBDS when TSX is enabled.
+ 	 */
+ 	ia32_cap = x86_read_arch_cap_msr();
+-	if ((ia32_cap & ARCH_CAP_MDS_NO) && !boot_cpu_has(X86_FEATURE_RTM))
++	if ((ia32_cap & ARCH_CAP_MDS_NO) && !boot_cpu_has(X86_FEATURE_RTM)) {
+ 		srbds_mitigation = SRBDS_MITIGATION_TSX_OFF;
++		boot_cpu_clear_bug(X86_BUG_SRBDS);
++	}
+ 	else if (boot_cpu_has(X86_FEATURE_HYPERVISOR))
+ 		srbds_mitigation = SRBDS_MITIGATION_HYPERVISOR;
+ 	else if (!boot_cpu_has(X86_FEATURE_SRBDS_CTRL))
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
