@@ -2,49 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 507EEC43219
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:07:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20C09C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:07:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347833AbiC3MHt (ORCPT
+        id S1345029AbiC3MIH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:07:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58736 "EHLO
+        Wed, 30 Mar 2022 08:08:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345954AbiC3LzP (ORCPT
+        with ESMTP id S1344501AbiC3LxN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:55:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E69272B276;
-        Wed, 30 Mar 2022 04:53:22 -0700 (PDT)
+        Wed, 30 Mar 2022 07:53:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEBFF262D69;
+        Wed, 30 Mar 2022 04:49:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 96700B81C28;
-        Wed, 30 Mar 2022 11:53:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 795F8C36AE3;
-        Wed, 30 Mar 2022 11:53:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01201B81C38;
+        Wed, 30 Mar 2022 11:48:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9AB9C36AE2;
+        Wed, 30 Mar 2022 11:48:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641200;
-        bh=kqUf/etaXrMx2iTCzzCtaGMY5pQYH9eb5nzNniAScz8=;
+        s=k20201202; t=1648640935;
+        bh=qW1x31HnZxqlWv9yLK7leVGiHSRFHxjgpFRqN+3ePM4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RAfsKqhDXCx6K2IKq8c6eIOLaTlVqZbvKz5hCRSQ8MrqplatWYoTLCynWKZc/y/U9
-         eS5PU07zaCc0ExlJuSSHvJmCvCJ7bLikQuAqjNwdsC5J7uTZNWtNLkffJzPqi9Kc0f
-         jAYnamq0cFRR5nooDM4RBrNG1wtiblQ+XZVHoPXTV36Xjwksu7JeANWLximQmQgM8Q
-         QvVOVisn2JIU+spzWvz1f2qJwcfmEJUORmw+7RAqMPIuvjtr+DxAzNytlrT1vUpBY5
-         d0O/iPJHNW0qAdAfSxg9u9bE5shlIR4R5RrKEjRrYmCv817C2S+ZmUVD1RQ+D7SdOS
-         yG/DN4lfGU7RA==
+        b=PxKxUdLdo+N1VBpnDbqseQVPv33pJ+1pX09PlodQnZwLU5OCv8fwC4+gFao1DpAZ9
+         tzBgTNQTrkyeS2QjMnVg3VUSTw5KmfVcxsbOQlyuzLTtXDrL9/Qi/DsT5eFHHrqqvC
+         GWsa28wYXdl7L/gcrSCdmj9DVpB3fL87ahJxCL94WZK+mbol1ry9EJ1g4y6DNIuS8Q
+         AvHeyA67H6Mni6ZcOQqVhRjHJVheOguvDUNgpoi+ZXf6WBdgSyBiVV/0mJOCRf/nAp
+         oTUbpgL4ciUNp7A22zXgg4X5AzcwYdF+Mv06PVxIy+uMcOz8gTmTPcyRuQeO/HKC0x
+         hx9aQ+MFl13AQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jing Yao <yao.jing2@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
+Cc:     Tim Gardner <tim.gardner@canonical.com>,
+        Antonino Daplas <adaplas@gmail.com>,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
         Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
-        bernie@plugable.com, tomi.valkeinen@ti.com,
-        linux-fbdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 10/22] video: fbdev: udlfb: replace snprintf in show functions with sysfs_emit
-Date:   Wed, 30 Mar 2022 07:52:51 -0400
-Message-Id: <20220330115303.1672616-10-sashal@kernel.org>
+        tomi.valkeinen@ti.com
+Subject: [PATCH AUTOSEL 5.16 14/59] video: fbdev: nvidiafb: Use strscpy() to prevent buffer overflow
+Date:   Wed, 30 Mar 2022 07:47:46 -0400
+Message-Id: <20220330114831.1670235-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330115303.1672616-1-sashal@kernel.org>
-References: <20220330115303.1672616-1-sashal@kernel.org>
+In-Reply-To: <20220330114831.1670235-1-sashal@kernel.org>
+References: <20220330114831.1670235-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,60 +54,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jing Yao <yao.jing2@zte.com.cn>
+From: Tim Gardner <tim.gardner@canonical.com>
 
-[ Upstream commit 81a998288956d09d7a7a2303d47e4d60ad55c401 ]
+[ Upstream commit 37a1a2e6eeeb101285cd34e12e48a881524701aa ]
 
-Use sysfs_emit instead of scnprintf, snprintf or sprintf.
+Coverity complains of a possible buffer overflow. However,
+given the 'static' scope of nvidia_setup_i2c_bus() it looks
+like that can't happen after examiniing the call sites.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
+CID 19036 (#1 of 1): Copy into fixed size buffer (STRING_OVERFLOW)
+1. fixed_size_dest: You might overrun the 48-character fixed-size string
+  chan->adapter.name by copying name without checking the length.
+2. parameter_as_source: Note: This defect has an elevated risk because the
+  source argument is a parameter of the current function.
+ 89        strcpy(chan->adapter.name, name);
+
+Fix this warning by using strscpy() which will silence the warning and
+prevent any future buffer overflows should the names used to identify the
+channel become much longer.
+
+Cc: Antonino Daplas <adaplas@gmail.com>
+Cc: linux-fbdev@vger.kernel.org
+Cc: dri-devel@lists.freedesktop.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Tim Gardner <tim.gardner@canonical.com>
 Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/udlfb.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/video/fbdev/nvidia/nv_i2c.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/video/fbdev/udlfb.c b/drivers/video/fbdev/udlfb.c
-index f7823aa99340..08a694e9383f 100644
---- a/drivers/video/fbdev/udlfb.c
-+++ b/drivers/video/fbdev/udlfb.c
-@@ -1430,7 +1430,7 @@ static ssize_t metrics_bytes_rendered_show(struct device *fbdev,
- 				   struct device_attribute *a, char *buf) {
- 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
- 	struct dlfb_data *dlfb = fb_info->par;
--	return snprintf(buf, PAGE_SIZE, "%u\n",
-+	return sysfs_emit(buf, "%u\n",
- 			atomic_read(&dlfb->bytes_rendered));
- }
+diff --git a/drivers/video/fbdev/nvidia/nv_i2c.c b/drivers/video/fbdev/nvidia/nv_i2c.c
+index d7994a173245..0b48965a6420 100644
+--- a/drivers/video/fbdev/nvidia/nv_i2c.c
++++ b/drivers/video/fbdev/nvidia/nv_i2c.c
+@@ -86,7 +86,7 @@ static int nvidia_setup_i2c_bus(struct nvidia_i2c_chan *chan, const char *name,
+ {
+ 	int rc;
  
-@@ -1438,7 +1438,7 @@ static ssize_t metrics_bytes_identical_show(struct device *fbdev,
- 				   struct device_attribute *a, char *buf) {
- 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
- 	struct dlfb_data *dlfb = fb_info->par;
--	return snprintf(buf, PAGE_SIZE, "%u\n",
-+	return sysfs_emit(buf, "%u\n",
- 			atomic_read(&dlfb->bytes_identical));
- }
- 
-@@ -1446,7 +1446,7 @@ static ssize_t metrics_bytes_sent_show(struct device *fbdev,
- 				   struct device_attribute *a, char *buf) {
- 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
- 	struct dlfb_data *dlfb = fb_info->par;
--	return snprintf(buf, PAGE_SIZE, "%u\n",
-+	return sysfs_emit(buf, "%u\n",
- 			atomic_read(&dlfb->bytes_sent));
- }
- 
-@@ -1454,7 +1454,7 @@ static ssize_t metrics_cpu_kcycles_used_show(struct device *fbdev,
- 				   struct device_attribute *a, char *buf) {
- 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
- 	struct dlfb_data *dlfb = fb_info->par;
--	return snprintf(buf, PAGE_SIZE, "%u\n",
-+	return sysfs_emit(buf, "%u\n",
- 			atomic_read(&dlfb->cpu_kcycles_used));
- }
- 
+-	strcpy(chan->adapter.name, name);
++	strscpy(chan->adapter.name, name, sizeof(chan->adapter.name));
+ 	chan->adapter.owner = THIS_MODULE;
+ 	chan->adapter.class = i2c_class;
+ 	chan->adapter.algo_data = &chan->algo;
 -- 
 2.34.1
 
