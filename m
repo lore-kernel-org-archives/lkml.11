@@ -2,158 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BD9FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 16:30:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06E66C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 16:31:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348812AbiC3Qc2 (ORCPT
+        id S1348821AbiC3Qdi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 12:32:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39754 "EHLO
+        Wed, 30 Mar 2022 12:33:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241787AbiC3QcY (ORCPT
+        with ESMTP id S1348813AbiC3Qde (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 12:32:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B6F8FE50;
-        Wed, 30 Mar 2022 09:30:37 -0700 (PDT)
+        Wed, 30 Mar 2022 12:33:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6011D15281A
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 09:31:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BA37617BA;
-        Wed, 30 Mar 2022 16:30:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7EC8C340EC;
-        Wed, 30 Mar 2022 16:30:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648657836;
-        bh=RwqKhALbZw7kM470uBSAPj0GSjtJqer8dpkOKdJPKm8=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1983DB81BB7
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 16:31:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74706C340EC;
+        Wed, 30 Mar 2022 16:31:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1648657906;
+        bh=MHCUJhBflGAyFhDxJ0iLf+Kpc16g1jo3zz/DWgsW9G4=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=eTfF8lmdntzIFyAETQFu2E2qjdcdsy4Sg64PBAihOHG40c6cQ01FwSqvmcwGDUrSt
-         ghABEDHcIogV/nsnJxBmRqiLhKK4f6SGgspEHhyFqGRiFyBtrgfbEGsXQGICTGvD5n
-         n6q5qrSaxNIhiJSmMnGhbBG5K4xru5xHK8wdBRWTuzNA3gFaH/smqC5Uu1ad/onWjU
-         MqCPW64bQ2lQ/Zp/KYXyQ16jY2T1adKV1OPfrT0yykloVcJRqWSmWO3jMipiO+4Pgh
-         cvec+nNXlUQDnbLu+dXOlVntaPtrRWRGRnC9pdoUfVxfnYT9D9ViSOPWjKpQT1InXi
-         9X810LWzvkaVQ==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 3A25A40407; Wed, 30 Mar 2022 13:30:33 -0300 (-03)
-Date:   Wed, 30 Mar 2022 13:30:33 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     John Garry <john.garry@huawei.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>
-Cc:     peterz@infradead.org, mingo@redhat.com, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
-        namhyung@kernel.org, irogers@google.com,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] perf tools: Stop depending on .git files for building
- PERF-VERSION-FILE
-Message-ID: <YkSFqYboG+PpoqHp@kernel.org>
-References: <1648635774-14581-1-git-send-email-john.garry@huawei.com>
- <3a72702f-6cf9-2b6e-0f9c-bf6857ab7ed2@tessares.net>
+        b=jvamqDVNUylPRkPaiOfmlDWS9ece9sURJxwhJ7u0LtdpjnIh/tKynVISSYg1xfuJx
+         A8fZvBpSWdgs/vwkYEw7CJnKePW8b7HLE9nWzEFcJW33luDGgiAoGzepemjxt/8vi0
+         pjiug23hmQx++uVEBosf1mPvP+Nm2oLcu1DdAQlg=
+Date:   Wed, 30 Mar 2022 18:31:43 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     =?utf-8?B?5ZC05L+K5paH?= <wudaemon@163.com>
+Cc:     arnd@arndb.de, linux-kernel@vger.kernel.org
+Subject: Re: Re: Re: [PATCH v2] char: misc:use DEFINE_PROC_SHOW_ATTRIBUTE
+ micro to simplify misc proc_fops
+Message-ID: <YkSF73UsAb6PWAed@kroah.com>
+References: <20220327143254.226844-1-wudaemon@163.com>
+ <YkFM2Ko21j8Ehca8@kroah.com>
+ <4ac4969e.8288.17fdb6206ea.Coremail.wudaemon@163.com>
+ <YkR5PkJq27NIdY52@kroah.com>
+ <51686fcb.83c6.17fdb7fd327.Coremail.wudaemon@163.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <3a72702f-6cf9-2b6e-0f9c-bf6857ab7ed2@tessares.net>
-X-Url:  http://acmel.wordpress.com
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <51686fcb.83c6.17fdb7fd327.Coremail.wudaemon@163.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Wed, Mar 30, 2022 at 03:22:37PM +0200, Matthieu Baerts escreveu:
-> Hi John,
+On Wed, Mar 30, 2022 at 11:44:21PM +0800, 吴俊文 wrote:
+> sorry ,I just send a picture not text.It refers I show list  the reason why I patch a newer verson?like this:
 > 
-> On 30/03/2022 12:22, John Garry wrote:
-> > This essentially reverts commit c72e3f04b45fb2e50cdd81a50c3778c6a57251d8
-> > and commit 4e666cdb06eede2069a7b1a96a1359d1c441a3eb.
-> > 
-> > In commit c72e3f04b45f ("tools/perf/build: Speed up git-version test on
-> > re-make"), a makefile dependency on .git/HEAD was added. The background is
-> > that running PERF-VERSION-FILE is relatively slow, and commands like
-> > "git describe" are particularly slow.
-> > 
-> > In commit 4e666cdb06ee ("perf tools: Fix dependency for version file
-> > creation"), an additional dependency on .git/ORIG_HEAD was added, as
-> > .git/HEAD may not change for "git reset --hard HEAD^" command. However,
-> > depending on whether we're on a branch or not, a "git cherry-pick" may
-> > not lead to the version being updated.
-> > 
-> > As discussed with the git community in [0], using git internal files for
-> > dependencies is not reliable. Commit 4e666cdb06ee also breaks some build
-> > scenarios [1].
-> > 
-> > As mentioned, c72e3f04b45f was added to speed up the build. However in
-> > commit 7572733b8499 ("perf tools: Fix version kernel tag") we removed the
-> > call to "git describe", so just revert Makefile.perf back to same as pre
-> > c72e3f04b45f and the build should not be so slow, as below:
-> > 
-> > Pre 7572733b8499:
-> > $> time util/PERF-VERSION-GEN
-> >   PERF_VERSION = 5.17.rc8.g4e666cdb06ee
-> > 
-> > real    0m0.110s
-> > user    0m0.091s
-> > sys     0m0.019s
-> > 
-> > Post 7572733b8499:
-> > $> time util/PERF-VERSION-GEN
-> >   PERF_VERSION = 5.17.rc8.g7572733b8499
-> > 
-> > real    0m0.039s
-> > user    0m0.036s
-> > sys     0m0.007s
-> > 
-> > [0] https://lore.kernel.org/git/87wngkpddp.fsf@igel.home/T/#m4a4dd6de52fdbe21179306cd57b3761eb07f45f8
-> > [1] https://lore.kernel.org/linux-perf-users/20220329093120.4173283-1-matthieu.baerts@tessares.net/T/#u
-> > 
-> > Fixes: 4e666cdb06ee ("perf tools: Fix dependency for version file creation")
-> > Reported-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-> > Signed-off-by: John Garry <john.garry@huawei.com>
+>   <commit message>
 > 
-> Thank you for your patch, I just tested it and it also fixes the issue I
+>   ...
+> 
+>   Signed-off-by: Author <author@mail>
+> 
+>   ---
+> 
+>   V2 -> V3: Removed redundant helper function
+> 
+>   V1 -> V2: Cleaned up coding style and addressed review comments
+> 
+> 
+> 
+> 
+>   path/to/file | 5+++--
+> 
+>   ...
+> 
 
-Thanks, applied.
+As my bot showed, this is documented in the kernel Documentation/ file
+for how to do this.  And yes, that does look correct.
 
-And added this "Committer testing" section:
+thanks,
 
------
-    Committer testing:
-
-    After a fresh rebuild using 'make -C tools/perf O=/tmp/build/perf install-bin':
-
-      $ perf -v
-      perf version 5.17.g162f9db407b6
-      $ git log --oneline -1
-      162f9db407b6a6e5 (HEAD -> perf/core) perf tools: Stop depending on .git files for building PERF-VERSION-FILE
-      $
-
-    Now using a detached tarball, i.e. outside the kernel source tree:
-
-      $ ls -la perf*tar
-      ls: cannot access 'perf*tar': No such file or directory
-      $ make perf-tar-src-pkg
-        TAR
-        PERF_VERSION = 5.17.g31d10b3ef133
-      $ ls -la perf*tar
-      -rw-r--r--. 1 acme acme 22241280 Mar 30 13:26 perf-5.17.0.tar
-      $ mv perf-5.17.0.tar /tmp
-      $ cd /tmp
-      $ tar xf perf-5.17.0.tar
-      $ cd perf-5.17.0/
-      $ make -C tools/perf |& tail
-        CC      util/pmu.o
-        CC      util/pmu-flex.o
-        CC      util/expr-flex.o
-        CC      util/expr.o
-        LD      util/scripting-engines/perf-in.o
-        LD      util/intel-pt-decoder/perf-in.o
-        LD      util/perf-in.o
-        LD      perf-in.o
-        LINK    perf
-      make: Leaving directory '/tmp/perf-5.17.0/tools/perf'
-      $ tools/perf/perf -v
-      perf version 5.17.g31d10b3ef133
-      $ pwd
-      /tmp/perf-5.17.0
-      $ cat PERF-VERSION-FILE
-      #define PERF_VERSION "5.17.g31d10b3ef133"
-      $
-
------
+greg k-h
