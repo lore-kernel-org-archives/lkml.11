@@ -2,120 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1381C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:44:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14C8BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:44:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346238AbiC3NqX (ORCPT
+        id S1346264AbiC3Nqa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 09:46:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35258 "EHLO
+        Wed, 30 Mar 2022 09:46:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240274AbiC3NqC (ORCPT
+        with ESMTP id S1346271AbiC3NqW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 09:46:02 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 853536A04F
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 06:44:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648647857; x=1680183857;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=QXl8+YAIyOXHsNHqZZUA3VDYNTjmspExAM2i0woDO4M=;
-  b=Lv7LoKRAVnNhelooukUsudrk5Ia8PT0gD3Vfq9F1qdXyw4eE8BsWTQ+s
-   RUzYJZMSeSSDeUDu3066aTn2wCYpN23mqxKTq7pVp6874gqB1zWSUnsbc
-   Hel83aBH7BarAyJGN+jDmkThJ+Ecj9tOBRoSocgzSVVLCfmgfEPaa9coz
-   o/D2OAVgFu5sxWOE7Z1Eaj+332UydhWO15GDhp7IGVjwTtRL2g0BPe22D
-   kcE3GZHRw2cMlMGJDJcnKhE4+FXLh1GXDeiszZZ/iYv+pOIDNI30PRhLE
-   1WK8or8Ic7P1uhQVL5kj1nYmK8T01MxylO6s42lL1Swvv4uk04C5XYZEE
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="259518002"
-X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
-   d="scan'208";a="259518002"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 06:44:17 -0700
-X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
-   d="scan'208";a="788011712"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 06:44:15 -0700
-Received: by lahna (sSMTP sendmail emulation); Wed, 30 Mar 2022 16:43:08 +0300
-Date:   Wed, 30 Mar 2022 16:43:08 +0300
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     Brad Campbell <lists2009@fnarfbargle.com>
-Cc:     linux-kernel@vger.kernel.org
-Subject: Re: Apple Thunderbolt Display chaining
-Message-ID: <YkRebADER3J9ooPM@lahna>
-References: <acbb3a86-ea15-47ec-90fa-72fbd94921b1@fnarfbargle.com>
- <YkLt+/kJ54fwCYgy@lahna>
- <0249a7da-9237-806b-b267-7911ad40f4a0@fnarfbargle.com>
- <YkMC4XnfIZix6kBn@lahna>
- <b8894440-41b1-edef-dd2d-5bafabc6fb62@fnarfbargle.com>
- <YkQuk7E8AbSEiw59@lahna>
- <b35e4054-4f22-72a2-4313-77299697af7b@fnarfbargle.com>
+        Wed, 30 Mar 2022 09:46:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BF9BB7520B
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 06:44:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648647876;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=F8QQxxoffEN8D0iWzQeDRqRj76sBJ6MkIp9Ef6hGM1Y=;
+        b=ZawGaF0GSV7fOZiURYMmqSCDcmjWqGSgCzFYBZk7RS1SgYY7VW/wV3M9QXP5QxxTm5y2c0
+        s+qN//AjGv2AeKo2hn0CzdirL5zb2szXctLCuCRtRT51Hugsz0MGmpPx97RE92WomIsxJT
+        CRMr+VhgJOoAl4R5JuZMhgGFxlpKJBY=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-390-NtZGEiU0PnqW3s2Gsn_boQ-1; Wed, 30 Mar 2022 09:44:31 -0400
+X-MC-Unique: NtZGEiU0PnqW3s2Gsn_boQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id BA68B899ED9;
+        Wed, 30 Mar 2022 13:44:16 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EF7B0400E545;
+        Wed, 30 Mar 2022 13:44:00 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <YidDznCPSmFmfNwE@iki.fi>
+References: <YidDznCPSmFmfNwE@iki.fi> <20210712170313.884724-1-mic@digikod.net> <20210712170313.884724-6-mic@digikod.net>
+To:     Jarkko Sakkinen <jarkko@kernel.org>
+Cc:     dhowells@redhat.com,
+        =?us-ascii?Q?=3D=3Fiso-8859-1=3FQ=3FMicka=3DEBl?=
+         =?us-ascii?Q?=5FSala=3DFCn=3F=3D?= <mic@digikod.net>,
+        David Woodhouse <dwmw2@infradead.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Snowberg <eric.snowberg@oracle.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        James Morris <jmorris@namei.org>,
+        =?us-ascii?Q?=3D=3Fiso-8859-1=3FQ=3FMicka=3DEBl?=
+         =?us-ascii?Q?=5FSala=3DFCn=3F=3D?= <mic@linux.microsoft.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        "Serge E . Hallyn" <serge@hallyn.com>,
+        Tyler Hicks <tyhicks@linux.microsoft.com>,
+        keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org
+Subject: Re: [PATCH v8 5/5] certs: Allow root user to append signed hashes to the blacklist keyring
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b35e4054-4f22-72a2-4313-77299697af7b@fnarfbargle.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date:   Wed, 30 Mar 2022 14:44:00 +0100
+Message-ID: <2937432.1648647840@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Jarkko Sakkinen <jarkko@kernel.org> wrote:
 
-On Wed, Mar 30, 2022 at 09:19:52PM +0800, Brad Campbell wrote:
-> Hey Mika,
-> 
-> On 30/3/22 18:18, Mika Westerberg wrote:
-> > Hi,
-> > 
-> > On Tue, Mar 29, 2022 at 10:06:35PM +0800, Brad Campbell wrote:
-> >>> Indeed, I did not add this to the "discovery" path yet.
-> >>>
-> >>> I wonder what happens if you change this:
-> >>>
-> >>> +       tunnel = tb_tunnel_alloc_dp(tb, in, out, available_up, available_down,
-> >>> +                                   first ? 0 : 1);
-> >>>
-> >>> to this in your tree:
-> >>>
-> >>> +       tunnel = tb_tunnel_alloc_dp(tb, in, out, available_up, available_down,
-> >>> +                                   first ? 1 : 0);
-> >>>
-> >>
-> >> Here's where it gets all "Apple..y". On the iMac this does the job no matter which
-> >> port the chain is plugged into. Boots and displays correctly first time, every time.
-> >>
-> >> It turns out on the laptop, one port works and the other doesn't. Changing the order
-> >> simply changes which port works. So I assume the EFI sets up the first display using
-> >> the first lane if it's in the first port, and the second if it's in the second.
-> >>
-> >> That means had I managed to perform the first test in the "other port" consistently,
-> >> it would have worked there also.
-> > 
-> > Can you try the below patch too? I hard-code the lane based on the
-> > DP adapter number in TBT gen1.
-> > 
-> > Let's first figure out proper solution to this issue and then look at
-> > the other one.
-> > 
-> > diff --git a/drivers/thunderbolt/tunnel.c b/drivers/thunderbolt/tunnel.c
-> > index a473cc7d9a8d..97d36a7bb527 100644
-> > --- a/drivers/thunderbolt/tunnel.c
-> > +++ b/drivers/thunderbolt/tunnel.c
-> > @@ -865,6 +865,7 @@ struct tb_tunnel *tb_tunnel_alloc_dp(struct tb *tb, struct tb_port *in,
-> 
-> This one works from cold boot on both machines regardless of the port the chain is plugged into.
-> It fails on both machines on any hotplug with the symptoms of allocating them both the same link.
-> I added an extra debug into tunnel.c and verified that.
+> >  /*
+> >   * Initialise the blacklist
+> >   */
+> >  static int __init blacklist_init(void)
+> >  {
+> >  	const char *const *bl;
+> > +	struct key_restriction *restriction;
+> >=20=20
+> >  	if (register_key_type(&key_type_blacklist) < 0)
+> >  		panic("Can't allocate system blacklist key type\n");
+> >=20=20
+> > +	restriction =3D kzalloc(sizeof(*restriction), GFP_KERNEL);
+> > +	if (!restriction)
+> > +		panic("Can't allocate blacklist keyring restriction\n");
+>=20
+>=20
+> This prevents me from taking this to my pull request. In moderns standard=
+s,
+> no new BUG_ON(), panic() etc. should never added to the kernel.
 
-Hm, okay. What if you change this:
+I would argue that in this case, though, it is reasonable.  This should only
+be called during kernel initialisation and, as Micka=C3=ABl points out, if =
+you
+can't allocate that small amount of memory, the kernel isn't going to boot
+much further.
 
-  link_nr = in->port == 11 ? 1 : 0;
+> I missed this in my review.
+>=20
+> This should rather be e.g.
+>=20
+>         restriction =3D kzalloc(sizeof(*restriction), GFP_KERNEL);
+> 	if (!restriction) {
+> 		pr_err("Can't allocate blacklist keyring restriction\n");
+>                 return 0;
+>         }
 
-to this
+You can't just return 0.  That indicates success - but if by some miracle, =
+the
+kernel actually gets to a point where userspace can happen, it could mean t=
+hat
+we're missing the security restrictions of the blacklist.
 
-  link_nr = in->port == 11 ? 0 : 1;
+Now, we could defer the panic to add_key_to_revocation_list(), but if you
+can't set in place the required security restrictions, I think it's arguable
+that the kernel either needs to panic or it needs to blacklist everything.
 
-Please also keep the debugging you added too so we can see if it now
-uses both lanes.
+David
+
