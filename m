@@ -2,162 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51647C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 19:23:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0592CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 19:25:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346322AbiC3TZg (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 15:25:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53726 "EHLO
+        id S245089AbiC3T1G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 15:27:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233883AbiC3TZb (ORCPT
+        with ESMTP id S241329AbiC3T1D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 15:25:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F9D9E30;
-        Wed, 30 Mar 2022 12:23:45 -0700 (PDT)
+        Wed, 30 Mar 2022 15:27:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BDC713F67;
+        Wed, 30 Mar 2022 12:25:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A92DA614ED;
-        Wed, 30 Mar 2022 19:23:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE8C1C340EC;
-        Wed, 30 Mar 2022 19:23:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EFA90B81D51;
+        Wed, 30 Mar 2022 19:25:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E428C340EC;
+        Wed, 30 Mar 2022 19:25:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648668224;
-        bh=qfcOtpUmc3V95SnfNZw0AXpV8o0Dw2lu5IoKH3sZ/qI=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=XV24Srp2S2xWzMRTJVgatiRn+p06buhFMTc4zRn8Sxh6NV1K/TSk9erIS8lDLyg1g
-         PBdRbfIzfNXnStlkFpKUNFP/Kws9/hJLUfw1kSOiA9uHC9eifx5LdddDyQlff/GwAo
-         1eTCex/FLELjK0a7+LVq1quy9Fi41JlYI/OmQmiwmS7vWt8crH+QuwYDV4M2PJ0bFU
-         FtcP4HA++YcVwocQ/mw2aePDwjI6T29a9mmgvtAYbOKPnuNbA4RNpVrj1DN7lGDXK8
-         /W4RcU66S0QaVrLCAUNb0aamiog9McfAH09FM/ezJnrkAGXyz58H0u9fBlAtQR+eCf
-         C5peulNcfqGVw==
-Message-ID: <962cf8bf3544fe3e5d263442bb5ca2e21f25a54b.camel@kernel.org>
-Subject: Re: [PATCH v2 1/2] selftests/sgx: Use rip relative addressing for
- encl_stack
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Reinette Chatre <reinette.chatre@intel.com>
-Cc:     Shuah Khan <skhan@linuxfoundation.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Shuah Khan <shuah@kernel.org>,
-        "open list:INTEL SGX" <linux-sgx@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Date:   Wed, 30 Mar 2022 22:22:43 +0300
-In-Reply-To: <f68d472877b7136c32d8770603a3de38de59c322.camel@kernel.org>
-References: <20220322074313.7444-1-jarkko@kernel.org>
-         <7b7732ec-c7ff-cf92-510f-64c83ed985cd@intel.com> <YkRvFkEO8Ic1VdQ8@iki.fi>
-         <0031a4f0-75f6-3104-1825-dcc2528f61b0@intel.com>
-         <f68d472877b7136c32d8770603a3de38de59c322.camel@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.42.4 
+        s=k20201202; t=1648668314;
+        bh=KfNiqBGllAj8YkXkT3+YnhFFib/aEjUEKtG8qND1PjM=;
+        h=Date:From:To:Cc:Subject:From;
+        b=srKuhEjxMJHsuKWyR6EutNhGaSLV0PhvrsjcrMMOaftbwXE8J5SvIY3X7H7Ntn83v
+         7hUvksWsWzFszqAzB/F6LS55fDr7281g++7rUtbHXfjkHkZ7yILg+NJTPyHK9gnk+d
+         4RGRE7UP0x1KZ0sengXeJ26xjcbBC5i2b6TgCoK1qKiQB+5ZNaC0NoKmUi+FHUWnf0
+         Nh4hFRh+I6YbnHDCOwBfqYW7VqVn9xTGP6coQ6cx+s4hBCJXOQXtELv0aGA/6OMTZk
+         znTrWkcUThhHpfDBlN7/EWW0SQk+GVTy9j8LTPOBqPN7jtrgFwb5AQ2ocbiPRJ6r3U
+         dPjJ4aJIvkTFg==
+Date:   Wed, 30 Mar 2022 14:33:52 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Nick Terrell <terrelln@fb.com>
+Cc:     linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] lib: zstd: Fix Wstringop-overflow warning
+Message-ID: <20220330193352.GA119296@embeddedor>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-03-30 at 22:03 +0300, Jarkko Sakkinen wrote:
-> On Wed, 2022-03-30 at 10:40 -0700, Reinette Chatre wrote:
-> > Could you please elaborate how the compiler will fix it up?
->=20
-> Sure.
->=20
-> Here's the disassembly of the RBX version:
->=20
-> [0x000021a9]> pi 1
-> lea rax, [rbx + loc.encl_stack]
->=20
-> Here's the same with s/RBX/RIP/:
->=20
-> [0x000021a9]> pi 5
-> lea rax, loc.encl_stack
-> Compiler will substitute correct offset relative to the RIP,
-> well, because it can and it makes sense.
->=20
-> It is treated differently than other registers, e.g. when
-> LEA is assembled.
->=20
-> BR, Jarkko
+Fix the following -Wstringop-overflow warning when building with GCC-11:
 
+lib/zstd/decompress/huf_decompress.c: In function ‘HUF_readDTableX2_wksp’:
+lib/zstd/decompress/huf_decompress.c:700:5: warning: ‘HUF_fillDTableX2.constprop’ accessing 624 bytes in a region of size 52 [-Wstringop-overflow=]
+  700 |     HUF_fillDTableX2(dt, maxTableLog,
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  701 |                    wksp->sortedSymbol, sizeOfSort,
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  702 |                    wksp->rankStart0, wksp->rankVal, maxW,
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  703 |                    tableLog+1,
+      |                    ~~~~~~~~~~~
+  704 |                    wksp->calleeWksp, sizeof(wksp->calleeWksp) / sizeof(U32));
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+lib/zstd/decompress/huf_decompress.c:700:5: note: referencing argument 6 of type ‘U32 (*)[13]’ {aka ‘unsigned int (*)[13]’}
+lib/zstd/decompress/huf_decompress.c:571:13: note: in a call to function ‘HUF_fillDTableX2.constprop’
+  571 | static void HUF_fillDTableX2(HUF_DEltX2* DTable, const U32 targetLog,
+      |             ^~~~~~~~~~~~~~~~
 
-To demonstrate this I did a couple of simple sessions with Rizin
-(fork/continuation/something of Radare2):
+by using pointer notation instead of array notation.
 
-jarkko@suppilovahvero ~/Downloads (main)> rizin test_encl.rbx.elf
- -- Temporally drop the verbosity prefixing the commands with ':'
-[0x00002000]> aaa
-[x] Analyze all flags starting with sym. and entry0 (aa)
-[x] Analyze function calls (aac)
-[x] Analyze len bytes of instructions for references (aar)
-[x] Check for classes
-[x] Type matching analysis for all functions (aaft)
-[x] Propagate noreturn information
-[x] Use -AA or aaaa to perform additional experimental analysis.
-[0x00002000]> /ad lea
-0x0000206e   # 7: lea rax, [rip + 0xf8b]
-0x0000206f   # 6: lea eax, [rip + 0xf8b]
-0x0000207e   # 1: leave
-0x000020a1   # 7: lea rcx, [rip + 0xf58]
-0x000020a2   # 6: lea ecx, [rip + 0xf58]
-0x000020b4   # 1: leave
-0x000020ee   # 1: leave
-0x00002128   # 1: leave
-0x00002145   # 7: lea rax, [rip - 0x102]
-0x00002146   # 6: lea eax, [rip - 0x102]
-0x00002150   # 7: lea rax, [rip - 0xd7]
-0x00002151   # 6: lea eax, [rip - 0xd7]
-0x0000215b   # 7: lea rax, [rip - 0xac]
-0x0000215c   # 6: lea eax, [rip - 0xac]
-0x00002166   # 7: lea rax, [rip - 0x7d]
-0x00002167   # 6: lea eax, [rip - 0x7d]
-0x00002171   # 7: lea rax, [rip - 0x4e]
-0x00002172   # 6: lea eax, [rip - 0x4e]
-0x000021a7   # 1: leave
-0x000021a9   # 7: lea rax, [rbx + loc.encl_stack]
-0x000021aa   # 6: lea eax, [rbx + loc.encl_stack]
-[0x00002000]> s 0x21a9
-[0x000021a9]> pi 1
-lea rax, [rbx + loc.encl_stack]
-[0x000021a9]>=20
+This helps with the ongoing efforts to globally enable
+-Wstringop-overflow.
 
-jarkko@suppilovahvero ~/Downloads (main)> rizin test_encl.elf
- -- Use V! to enter into the visual panels mode (dwm style)
-[0x00002000]> aaa
-[x] Analyze all flags starting with sym. and entry0 (aa)
-[x] Analyze function calls (aac)
-[x] Analyze len bytes of instructions for references (aar)
-[x] Check for classes
-[x] Type matching analysis for all functions (aaft)
-[x] Propagate noreturn information
-[x] Use -AA or aaaa to perform additional experimental analysis.
-[0x00002000]> /ad lea
-0x0000206e   # 7: lea rax, [rip + 0xf8b]
-0x0000206f   # 6: lea eax, [rip + 0xf8b]
-0x0000207e   # 1: leave
-0x000020a1   # 7: lea rcx, [rip + 0xf58]
-0x000020a2   # 6: lea ecx, [rip + 0xf58]
-0x000020b4   # 1: leave
-0x000020ee   # 1: leave
-0x00002128   # 1: leave
-0x00002145   # 7: lea rax, [rip - 0x102]
-0x00002146   # 6: lea eax, [rip - 0x102]
-0x00002150   # 7: lea rax, [rip - 0xd7]
-0x00002151   # 6: lea eax, [rip - 0xd7]
-0x0000215b   # 7: lea rax, [rip - 0xac]
-0x0000215c   # 6: lea eax, [rip - 0xac]
-0x00002166   # 7: lea rax, [rip - 0x7d]
-0x00002167   # 6: lea eax, [rip - 0x7d]
-0x00002171   # 7: lea rax, [rip - 0x4e]
-0x00002172   # 6: lea eax, [rip - 0x4e]
-0x000021a7   # 1: leave
-0x000021a9   # 7: lea rax, [rip + 0x5e50]
-0x000021aa   # 6: lea eax, [rip + 0x5e50]
-[0x00002000]> s 0x21a9
-[0x000021a9]> pi 1
-lea rax, loc.encl_stack
-[0x000021a9]>=20
+Link: https://github.com/KSPP/linux/issues/181
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ lib/zstd/decompress/huf_decompress.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-BR, Jarkko
+diff --git a/lib/zstd/decompress/huf_decompress.c b/lib/zstd/decompress/huf_decompress.c
+index 5105e59ac04a..0ea34621253a 100644
+--- a/lib/zstd/decompress/huf_decompress.c
++++ b/lib/zstd/decompress/huf_decompress.c
+@@ -570,7 +570,7 @@ static void HUF_fillDTableX2Level2(HUF_DEltX2* DTable, U32 sizeLog, const U32 co
+ 
+ static void HUF_fillDTableX2(HUF_DEltX2* DTable, const U32 targetLog,
+                            const sortedSymbol_t* sortedList, const U32 sortedListSize,
+-                           const U32* rankStart, rankVal_t rankValOrigin, const U32 maxWeight,
++                           const U32* rankStart, const U32* rankValOrigin, const U32 maxWeight,
+                            const U32 nbBitsBaseline, U32* wksp, size_t wkspSize)
+ {
+     U32* rankVal = wksp;
+@@ -598,7 +598,7 @@ static void HUF_fillDTableX2(HUF_DEltX2* DTable, const U32 targetLog,
+             if (minWeight < 1) minWeight = 1;
+             sortedRank = rankStart[minWeight];
+             HUF_fillDTableX2Level2(DTable+start, targetLog-nbBits, nbBits,
+-                           rankValOrigin[nbBits], minWeight,
++                           rankValOrigin + nbBits, minWeight,
+                            sortedList+sortedRank, sortedListSize-sortedRank,
+                            nbBitsBaseline, symbol, wksp, wkspSize);
+         } else {
+@@ -699,7 +699,7 @@ size_t HUF_readDTableX2_wksp(HUF_DTable* DTable,
+ 
+     HUF_fillDTableX2(dt, maxTableLog,
+                    wksp->sortedSymbol, sizeOfSort,
+-                   wksp->rankStart0, wksp->rankVal, maxW,
++                   wksp->rankStart0, (U32 *)wksp->rankVal, maxW,
+                    tableLog+1,
+                    wksp->calleeWksp, sizeof(wksp->calleeWksp) / sizeof(U32));
+ 
+-- 
+2.27.0
+
