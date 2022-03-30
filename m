@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1E06C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:48:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEF09C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:48:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344023AbiC3Luc (ORCPT
+        id S1344073AbiC3Lul (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 07:50:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35774 "EHLO
+        Wed, 30 Mar 2022 07:50:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343882AbiC3Ltr (ORCPT
+        with ESMTP id S1344001AbiC3Ltu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:49:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B947A26B5B5;
-        Wed, 30 Mar 2022 04:47:27 -0700 (PDT)
+        Wed, 30 Mar 2022 07:49:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D83826D105;
+        Wed, 30 Mar 2022 04:47:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1B981B81C28;
-        Wed, 30 Mar 2022 11:47:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E59E7C36AE3;
-        Wed, 30 Mar 2022 11:47:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B558E6163F;
+        Wed, 30 Mar 2022 11:47:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40290C340F2;
+        Wed, 30 Mar 2022 11:47:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648640844;
-        bh=WK14gTrMY4mrdBoN5dGYoL3uKdyenRH+qI/k85oo9S8=;
+        s=k20201202; t=1648640852;
+        bh=hP7Ta8lHWxh6NeT9h5JeWb6KQ3S+wTrRwcg0WqNvRtc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nOtA+vFoiE1LILRxkJSRJiA3sbAq+0xyvl1mM67t4LSFwICinl9etE34O4aBFWqgL
-         Nr6KURCgF97HYpZ+IvlcgIQOkCEfbYfjXc37dj04eQAyyBPi/8+zI+RVVX002nozeT
-         uvD4dGqaimyv0/eXeboeXke2EoHOLoHqSID7F3vFz5jFMUWegcWZp1cAwFNvi5iRu0
-         xWDJNWGbPD7ctMCDldv4Efsm3TVyS3GNrmy/JV/DsVkUziHir3Ajqgx0aPMeKClOBO
-         MLV3zJ2iHaEDmLeToPLf3QVPKKZRnHB6bPIIs5KKSyQMrTkfTgTZQlo4ZjS91lMV2X
-         EU1uX2SXWm9OQ==
+        b=SpvsBoMBh0Ym9TEwf57lkQqPAX9c9ZkXdd5vaWZKJzLhYChoXXKdRT5ir2/9WbWUZ
+         dCQc+k9B1XDEvhg9AzaqnXfsBfLTdytTQ128/01h67BoT6EvTRutlb7y4YaFOIA8/I
+         eko8qZwIvgGY8347zfmN2Ir06sWKXO7jP+rXHEoccpgx4PV/nex9ldy8mZEN/vFa66
+         017vlTZhqWOJsJvN6SDKP2uO4EBwlrjplWK4w4i2Fr9P5sGq4uM38BGTP23/HD9dyl
+         my7ykAfah5YUKP1SvoVQnmM/pcOIOPjtisXAtrognZ9qH3vNN5jNv9XJliETZkutdx
+         jW45mPnLTgs+g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Takashi Iwai <tiwai@suse.de>,
-        Alexander Sergeyev <sergeev917@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, perex@perex.cz,
-        tiwai@suse.com, gregkh@linuxfoundation.org,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.17 24/66] ALSA: hda: Fix driver index handling at re-binding
-Date:   Wed, 30 Mar 2022 07:46:03 -0400
-Message-Id: <20220330114646.1669334-24-sashal@kernel.org>
+Cc:     Jing Yao <yao.jing2@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        bernie@plugable.com, tomi.valkeinen@ti.com,
+        linux-fbdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 29/66] video: fbdev: udlfb: replace snprintf in show functions with sysfs_emit
+Date:   Wed, 30 Mar 2022 07:46:08 -0400
+Message-Id: <20220330114646.1669334-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330114646.1669334-1-sashal@kernel.org>
 References: <20220330114646.1669334-1-sashal@kernel.org>
@@ -54,83 +53,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Jing Yao <yao.jing2@zte.com.cn>
 
-[ Upstream commit 69458e2c27800da7697c87ed908b65323ef3f3bd ]
+[ Upstream commit 81a998288956d09d7a7a2303d47e4d60ad55c401 ]
 
-HD-audio driver handles the multiple instances and keeps the static
-index that is incremented at each probe.  This becomes a problem when
-user tries to re-bind the device via sysfs multiple times; as the
-device index isn't cleared unlike rmmod case, it points to the next
-element at re-binding, and eventually later you can't probe any more
-when it reaches to SNDRV_CARDS_MAX (usually 32).
+Use sysfs_emit instead of scnprintf, snprintf or sprintf.
 
-This patch is an attempt to improve the handling at rebinding.
-Instead of a static device index, now we keep a bitmap and assigns to
-the first zero bit position.  At the driver remove, in return, the
-bitmap slot is cleared again, so that it'll be available for the next
-probe.
-
-Reported-by: Alexander Sergeyev <sergeev917@gmail.com>
-Link: https://lore.kernel.org/r/20220209081912.20687-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/hda_intel.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/video/fbdev/udlfb.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/sound/pci/hda/hda_intel.c b/sound/pci/hda/hda_intel.c
-index 572ff0d1fafe..8eff25d2d9e6 100644
---- a/sound/pci/hda/hda_intel.c
-+++ b/sound/pci/hda/hda_intel.c
-@@ -2066,14 +2066,16 @@ static const struct hda_controller_ops pci_hda_ops = {
- 	.position_check = azx_position_check,
- };
+diff --git a/drivers/video/fbdev/udlfb.c b/drivers/video/fbdev/udlfb.c
+index b9cdd02c1000..90f48b71fd8f 100644
+--- a/drivers/video/fbdev/udlfb.c
++++ b/drivers/video/fbdev/udlfb.c
+@@ -1426,7 +1426,7 @@ static ssize_t metrics_bytes_rendered_show(struct device *fbdev,
+ 				   struct device_attribute *a, char *buf) {
+ 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
+ 	struct dlfb_data *dlfb = fb_info->par;
+-	return snprintf(buf, PAGE_SIZE, "%u\n",
++	return sysfs_emit(buf, "%u\n",
+ 			atomic_read(&dlfb->bytes_rendered));
+ }
  
-+static DECLARE_BITMAP(probed_devs, SNDRV_CARDS);
-+
- static int azx_probe(struct pci_dev *pci,
- 		     const struct pci_device_id *pci_id)
- {
--	static int dev;
- 	struct snd_card *card;
- 	struct hda_intel *hda;
- 	struct azx *chip;
- 	bool schedule_probe;
-+	int dev;
- 	int err;
+@@ -1434,7 +1434,7 @@ static ssize_t metrics_bytes_identical_show(struct device *fbdev,
+ 				   struct device_attribute *a, char *buf) {
+ 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
+ 	struct dlfb_data *dlfb = fb_info->par;
+-	return snprintf(buf, PAGE_SIZE, "%u\n",
++	return sysfs_emit(buf, "%u\n",
+ 			atomic_read(&dlfb->bytes_identical));
+ }
  
- 	if (pci_match_id(driver_denylist, pci)) {
-@@ -2081,10 +2083,11 @@ static int azx_probe(struct pci_dev *pci,
- 		return -ENODEV;
- 	}
+@@ -1442,7 +1442,7 @@ static ssize_t metrics_bytes_sent_show(struct device *fbdev,
+ 				   struct device_attribute *a, char *buf) {
+ 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
+ 	struct dlfb_data *dlfb = fb_info->par;
+-	return snprintf(buf, PAGE_SIZE, "%u\n",
++	return sysfs_emit(buf, "%u\n",
+ 			atomic_read(&dlfb->bytes_sent));
+ }
  
-+	dev = find_first_zero_bit(probed_devs, SNDRV_CARDS);
- 	if (dev >= SNDRV_CARDS)
- 		return -ENODEV;
- 	if (!enable[dev]) {
--		dev++;
-+		set_bit(dev, probed_devs);
- 		return -ENOENT;
- 	}
+@@ -1450,7 +1450,7 @@ static ssize_t metrics_cpu_kcycles_used_show(struct device *fbdev,
+ 				   struct device_attribute *a, char *buf) {
+ 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
+ 	struct dlfb_data *dlfb = fb_info->par;
+-	return snprintf(buf, PAGE_SIZE, "%u\n",
++	return sysfs_emit(buf, "%u\n",
+ 			atomic_read(&dlfb->cpu_kcycles_used));
+ }
  
-@@ -2151,7 +2154,7 @@ static int azx_probe(struct pci_dev *pci,
- 	if (schedule_probe)
- 		schedule_delayed_work(&hda->probe_work, 0);
- 
--	dev++;
-+	set_bit(dev, probed_devs);
- 	if (chip->disabled)
- 		complete_all(&hda->probe_wait);
- 	return 0;
-@@ -2374,6 +2377,7 @@ static void azx_remove(struct pci_dev *pci)
- 		cancel_delayed_work_sync(&hda->probe_work);
- 		device_lock(&pci->dev);
- 
-+		clear_bit(chip->dev_index, probed_devs);
- 		pci_set_drvdata(pci, NULL);
- 		snd_card_free(card);
- 	}
 -- 
 2.34.1
 
