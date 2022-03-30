@@ -2,173 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20A7EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:20:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B1CCC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:29:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244548AbiC3MWT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:22:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43210 "EHLO
+        id S235220AbiC3Mas (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 08:30:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346672AbiC3MSO (ORCPT
+        with ESMTP id S1349036AbiC3M1K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 08:18:14 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5963A5AEFD;
-        Wed, 30 Mar 2022 05:08:15 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KT4sl4LwdzgYBP;
-        Wed, 30 Mar 2022 20:06:35 +0800 (CST)
-Received: from [10.174.178.185] (10.174.178.185) by
- canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 30 Mar 2022 20:08:13 +0800
-Subject: Re: [PATCH -next] ext4: fix warning in ext4_handle_inode_extension
-To:     Jan Kara <jack@suse.cz>
-References: <20220326065351.761952-1-yebin10@huawei.com>
- <20220329092810.j5ngxckygut6mxo2@quack3.lan>
-CC:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
-        <linux-ext4@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lczerner@redhat.com>
-From:   yebin <yebin10@huawei.com>
-Message-ID: <6244482D.4090603@huawei.com>
-Date:   Wed, 30 Mar 2022 20:08:13 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:38.0) Gecko/20100101
- Thunderbird/38.1.0
+        Wed, 30 Mar 2022 08:27:10 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B917E2B5199;
+        Wed, 30 Mar 2022 05:12:28 -0700 (PDT)
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22UBQkFs026930;
+        Wed, 30 Mar 2022 12:12:02 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=MUFVyysUdoPdz+GQhkqKxHsF7V7+5wuBxTvpNCjkBHQ=;
+ b=PDYKOx3wxUFSnsD7R97b2PQoJ5lgQO2Md4e0CiPdZD5viSXuSelavKL/RHn/pev1mZMH
+ X+45fRDnJWiU4Qwo/fKAPjsdCoZ/VKMrp/JR1/KOFB2Pb5dEnpCoVy64Jvp1P2uOcbij
+ SG9lrdCnuQptxKFW27X/W35PEO1VeyKsE+XlP9Jyzg/jauief+Y4ho64RNXzfY2O6zgY
+ 2AEFumF8FepOXwntvvmfbjvntAzpC0MRBoMQuSQ/tFcZ5N9L8SzBoHzHd5X22uq+6/JM
+ dze6ewWnew8a1HgX6CceO7eXHRpAK+bGgDEAtxNNIOPO97XPzanjTM4fs8hZ1IA/y/gT yQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3f4pbcgxdk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 30 Mar 2022 12:12:02 +0000
+Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22UBdOnf017794;
+        Wed, 30 Mar 2022 12:12:02 GMT
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3f4pbcgxcq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 30 Mar 2022 12:12:01 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22UBwVWc018090;
+        Wed, 30 Mar 2022 12:11:59 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma06fra.de.ibm.com with ESMTP id 3f1t3hy9rv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 30 Mar 2022 12:11:59 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22UCBub229622756
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 30 Mar 2022 12:11:57 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D6F3E4C050;
+        Wed, 30 Mar 2022 12:11:56 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 071474C040;
+        Wed, 30 Mar 2022 12:11:56 +0000 (GMT)
+Received: from li-e979b1cc-23ba-11b2-a85c-dfd230f6cf82 (unknown [9.171.15.152])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with SMTP;
+        Wed, 30 Mar 2022 12:11:55 +0000 (GMT)
+Date:   Wed, 30 Mar 2022 14:11:54 +0200
+From:   Halil Pasic <pasic@linux.ibm.com>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@toke.dk>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Olha Cherevyk <olha.cherevyk@gmail.com>,
+        iommu <iommu@lists.linux-foundation.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable <stable@vger.kernel.org>,
+        Halil Pasic <pasic@linux.ibm.com>
+Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
+ ath9k-based AP
+Message-ID: <20220330141154.2ed284f1.pasic@linux.ibm.com>
+In-Reply-To: <20220328063723.GA29405@lst.de>
+References: <1812355.tdWV9SEqCh@natalenko.name>
+        <CAHk-=wiwz+Z2MaP44h086jeniG-OpK3c=FywLsCwXV7Crvadrg@mail.gmail.com>
+        <27b5a287-7a33-9a8b-ad6d-04746735fb0c@arm.com>
+        <CAHk-=wip7TCD_+2STTepuEZvGMg6wcz+o=kyFUvHjuKziTMixw@mail.gmail.com>
+        <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
+        <20220324190216.0efa067f.pasic@linux.ibm.com>
+        <20220325163204.GB16426@lst.de>
+        <87y20x7vaz.fsf@toke.dk>
+        <e077b229-c92b-c9a6-3581-61329c4b4a4b@arm.com>
+        <CAHk-=wgKF5GfLXyVGDQDifh0MpMccDdmBvJBG3dt2+idCa5DzQ@mail.gmail.com>
+        <20220328063723.GA29405@lst.de>
+Organization: IBM
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <20220329092810.j5ngxckygut6mxo2@quack3.lan>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.178.185]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Ul5-ww-qQk8Gw2JXhdzZFG5qKYbo_d91
+X-Proofpoint-ORIG-GUID: CV3YK3L41YQ9qvUgMuQRgvjVjUTto1XH
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-30_04,2022-03-30_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 bulkscore=0
+ phishscore=0 adultscore=0 impostorscore=0 mlxscore=0 lowpriorityscore=0
+ priorityscore=1501 clxscore=1015 suspectscore=0 spamscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2203300062
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, 28 Mar 2022 08:37:23 +0200
+Christoph Hellwig <hch@lst.de> wrote:
 
+> On Fri, Mar 25, 2022 at 11:46:09AM -0700, Linus Torvalds wrote:
+> > I think my list of three different sync cases (not just two! It's not
+> > just about whether to sync for the CPU or the device, it's also about
+> > what direction the data itself is taking) is correct.
+> > 
+> > But maybe I'm wrong.  
+> 
+> At the high level you are correct.  It is all about which direction
+> the data is taking.  That is the direction argument that all the
+> map/unmap/sync call take.  The sync calls then just toggle the ownership.
+> You seem to hate that ownership concept, but I don't see how things
+> could work without that ownership concept as we're going to be in
+> trouble without having that.  And yes, a peek operation could work in
+> some cases, but it would have to be at the cache line granularity.
+> 
+> arch/arc/mm/dma.c has a really good comment how these transfers relate
+> to actual cache operations btw>
+> 
+>  *
+>  *          |   map          ==  for_device     |   unmap     ==  for_cpu
+>  *          |----------------------------------------------------------------
+>  * TO_DEV   |   writeback        writeback      |   none          none
+>  * FROM_DEV |   invalidate       invalidate     |   invalidate*	  invalidate*
 
-On 2022/3/29 17:28, Jan Kara wrote:
-> On Sat 26-03-22 14:53:51, Ye Bin wrote:
->> We got issue as follows:
->> EXT4-fs error (device loop0) in ext4_reserve_inode_write:5741: Out of memory
->> EXT4-fs error (device loop0): ext4_setattr:5462: inode #13: comm syz-executor.0: mark_inode_dirty error
->> EXT4-fs error (device loop0) in ext4_setattr:5519: Out of memory
->> EXT4-fs error (device loop0): ext4_ind_map_blocks:595: inode #13: comm syz-executor.0: Can't allocate blocks for non-extent mapped inodes with bigalloc
->> ------------[ cut here ]------------
->> WARNING: CPU: 1 PID: 4361 at fs/ext4/file.c:301 ext4_file_write_iter+0x11c9/0x1220
->> Modules linked in:
->> CPU: 1 PID: 4361 Comm: syz-executor.0 Not tainted 5.10.0+ #1
->> RIP: 0010:ext4_file_write_iter+0x11c9/0x1220
->> RSP: 0018:ffff924d80b27c00 EFLAGS: 00010282
->> RAX: ffffffff815a3379 RBX: 0000000000000000 RCX: 000000003b000000
->> RDX: ffff924d81601000 RSI: 00000000000009cc RDI: 00000000000009cd
->> RBP: 000000000000000d R08: ffffffffbc5a2c6b R09: 0000902e0e52a96f
->> R10: ffff902e2b7c1b40 R11: ffff902e2b7c1b40 R12: 000000000000000a
->> R13: 0000000000000001 R14: ffff902e0e52aa10 R15: ffffffffffffff8b
->> FS:  00007f81a7f65700(0000) GS:ffff902e3bc80000(0000) knlGS:0000000000000000
->> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->> CR2: ffffffffff600400 CR3: 000000012db88001 CR4: 00000000003706e0
->> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->> Call Trace:
->>   do_iter_readv_writev+0x2e5/0x360
->>   do_iter_write+0x112/0x4c0
->>   do_pwritev+0x1e5/0x390
->>   __x64_sys_pwritev2+0x7e/0xa0
->>   do_syscall_64+0x37/0x50
->>   entry_SYSCALL_64_after_hwframe+0x44/0xa9
->>
->> Above issue may happen as follows:
->> Assume
->> inode.i_size=4096
->> EXT4_I(inode)->i_disksize=4096
->>
->> step 1: set inode->i_isize = 8192
->> ext4_setattr
->>    if (attr->ia_size != inode->i_size)
->>      EXT4_I(inode)->i_disksize = attr->ia_size;
->>      rc = ext4_mark_inode_dirty
->>         ext4_reserve_inode_write
->>            ext4_get_inode_loc
->>              __ext4_get_inode_loc
->>                sb_getblk --> return -ENOMEM
->>     ...
->>     if (!error)  ->will not update i_size
->>       i_size_write(inode, attr->ia_size);
->> Now:
->> inode.i_size=4096
->> EXT4_I(inode)->i_disksize=8192
->>
->> step 2: Direct write 4096 bytes
->> ext4_file_write_iter
->>   ext4_dio_write_iter
->>     iomap_dio_rw ->return error
->>   if (extend)
->>     ext4_handle_inode_extension
->>       WARN_ON_ONCE(i_size_read(inode) < EXT4_I(inode)->i_disksize);
->> ->Then trigger warning.
->>
->> To solve above issue, if mark inode dirty failed in ext4_setattr just
->> set 'EXT4_I(inode)->i_disksize' with old value.
->>
->> Signed-off-by: Ye Bin <yebin10@huawei.com>
-> Thanks for the fix! So I think this deserves a further debate. I have two
-> points here:
->
-> 1) If ext4_mark_inode_dirty() fails (or basically any metadata writeback)
-> we must abort the journal because metadata is not guaranteed to be
-> consistent anymore. In this particular callsite of ext4_mark_inode_dirty()
-> you were able to undo the changes but there are many more where it is not
-> sanely possible AFAICT. Hence I think that ext4_reserve_inode_write() needs
-> to call ext4_journal_abort_handle() (as already happens inside
-> __ext4_journal_get_write_access()) and not just ext4_std_error().
->
-> 2) The assertion in ext4_handle_inode_extension() should be conditioned on
-> !is_journal_aborted() to avoid useless warnings for filesystems we know are
-> inconsistent anyway.
->
-> Thoughts?
->
-> 								Honza
-Do you mean call jbd2_abort in ext4_reserve_inode_write() ?
-If we abort journal when metadata is not guaranteed to be consistent. 
-The mode of
-‘errors=continue’ is unnecessary.
->> ---
->>   fs/ext4/inode.c | 4 ++++
->>   1 file changed, 4 insertions(+)
->>
->> diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
->> index 90fd6f7b6209..8adf1f802f6c 100644
->> --- a/fs/ext4/inode.c
->> +++ b/fs/ext4/inode.c
->> @@ -5384,6 +5384,7 @@ int ext4_setattr(struct user_namespace *mnt_userns, struct dentry *dentry,
->>   	if (attr->ia_valid & ATTR_SIZE) {
->>   		handle_t *handle;
->>   		loff_t oldsize = inode->i_size;
->> +		loff_t old_disksize;
->>   		int shrink = (attr->ia_size < inode->i_size);
->>   
->>   		if (!(ext4_test_inode_flag(inode, EXT4_INODE_EXTENTS))) {
->> @@ -5455,6 +5456,7 @@ int ext4_setattr(struct user_namespace *mnt_userns, struct dentry *dentry,
->>   					inode->i_sb->s_blocksize_bits);
->>   
->>   			down_write(&EXT4_I(inode)->i_data_sem);
->> +			old_disksize = EXT4_I(inode)->i_disksize;
->>   			EXT4_I(inode)->i_disksize = attr->ia_size;
->>   			rc = ext4_mark_inode_dirty(handle, inode);
->>   			if (!error)
->> @@ -5466,6 +5468,8 @@ int ext4_setattr(struct user_namespace *mnt_userns, struct dentry *dentry,
->>   			 */
->>   			if (!error)
->>   				i_size_write(inode, attr->ia_size);
->> +			else
->> +				EXT4_I(inode)->i_disksize = old_disksize;
->>   			up_write(&EXT4_I(inode)->i_data_sem);
->>   			ext4_journal_stop(handle);
->>   			if (error)
->> -- 
->> 2.31.1
->>
+Very interesting! Does that mean that
+
+memset(buf, 0, size);
+dma_map(buf, size, FROM_DEVICE)
+device does a partial write
+dma_unmap(buf, size, FROM_DEVICE)
+
+may boil down to being the same as without the memset(), because the
+effect of the memset() may get thrown away by the cache invalidate?
+
+That is in this scenario we could actually leak the original content of
+the buffer if we have a non-dma-coherent cache?
+
+Regards,
+Halil 
+
+>  * BIDIR    |   writeback+inv    writeback+inv  |   invalidate    invalidate
+>  *
+>  *     [*] needed for CPU speculative prefetches
 
