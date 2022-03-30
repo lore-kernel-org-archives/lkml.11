@@ -2,425 +2,261 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7506CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 16:32:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9445C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 16:34:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348827AbiC3QeH (ORCPT
+        id S1348838AbiC3Qfs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 12:34:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46724 "EHLO
+        Wed, 30 Mar 2022 12:35:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348711AbiC3QeG (ORCPT
+        with ESMTP id S1348711AbiC3Qfq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 12:34:06 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF3B1667DB
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 09:32:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648657941; x=1680193941;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=OlHEWxPkMsVuR2iHNsfGAOLNacidlf3J6miQBEYNMNo=;
-  b=BBy1tda6e3egigqJ2hjosEFX0UX3DafZAfggIpNTsSyuXjJtBX0u4YKF
-   mI4t7dyjT5BXdoNjOex191O3+iKigIm0VH8RDKYGMhfXAmC8txwGr9PwM
-   Gja41oRX6qjYlZFOoGrZ1sMhnyD/TImLXCtm9J/JCkqAyl1ayEsW0n/Zm
-   1GUSBsY0iNpYW4mfqq3mdnyyKVNU9qSqSX5WagQvC8ZLP2BQpCBz+qCnp
-   qEu50ekIUpAdzuzfnykG/HCunvWRmWx92qI2a51vc6jQtliP3heqAAkuA
-   vaerHeJUv1izEpSTGrObXQbs1F6nLkU4xnZrLDNzTeiuIKNsn/DAGnsN+
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="259301678"
-X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
-   d="scan'208";a="259301678"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 09:32:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
-   d="scan'208";a="720036310"
-Received: from lkp-server02.sh.intel.com (HELO 56431612eabd) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 30 Mar 2022 09:32:19 -0700
-Received: from kbuild by 56431612eabd with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nZbF4-0000Bo-ER;
-        Wed, 30 Mar 2022 16:32:18 +0000
-Date:   Thu, 31 Mar 2022 00:31:22 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>
-Subject: [gustavoars:for-next/kspp-stringop-overflow] BUILD SUCCESS
- f3c4ed70812a3caa1663e6e4e7f4e8fba1b6dd7f
-Message-ID: <624485da.dZz2cn3PJXwcxMgp%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Wed, 30 Mar 2022 12:35:46 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ED15E2;
+        Wed, 30 Mar 2022 09:34:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1648658021;
+        bh=Aw52GudjzfV6DBA1f+n4H6s9lkEEzRPi45KdcBXLxZ0=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=LNkfa0reL5HBrPFyXfSnVY+Aw2Bl3LXKaR5hv9nJ4c1sBBUxk/ni44ICmOMbHgAQT
+         ll/vxykhy0Y2bfO9uTxDmEsuTbj9IosozgHiqKm7GmA4VTqR4PZwOJ7GiEikkc25CC
+         txrSR15lgDefdi3dsU0wV9YC8nDi5Bh4eqlI8oes=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from esprimo-mx.users.agdsn.de ([141.30.226.129]) by mail.gmx.net
+ (mrgmx004 [212.227.17.190]) with ESMTPSA (Nemesis) id
+ 1Mj8qd-1oCFXN3IxR-00f9s0; Wed, 30 Mar 2022 18:33:40 +0200
+From:   Armin Wolf <W_Armin@gmx.de>
+To:     pali@kernel.org
+Cc:     jdelvare@suse.com, linux@roeck-us.net, linux-hwmon@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] hwmon: (dell-smm) Add cooling device support
+Date:   Wed, 30 Mar 2022 18:33:24 +0200
+Message-Id: <20220330163324.572437-1-W_Armin@gmx.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:tbSqy/9T9ZBldJcHFKXCEAyFh5LU2EBIRmdONn/JNv3Z+98KbMw
+ Izfpr/J+cJWyUOdsRgMG1s96WSJqu7tXUs+KJYpVBRnvfSYS+t9X9KMY+xf4UX43vJEOTWo
+ BqeSxpbPmfKf0OdqDU7VQbdDNQQ0rJGM1guQ8CilLwHhd4zfnTXP5nbYuXpF+L5ghIrMT2Q
+ BvjnI+P7WBuZ+sW6RI43Q==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:TX1inUXOY+g=:Q4a1QCJ8KXVnRJYHeHMC3g
+ Ykq5Na8Y+mjHCtCePKOaLFLWPpBPtB/BjW6dGXuKB9IkUS1wTinJGdy4gO4Ev6oh2PA8vbHEa
+ 6Z+eWhlNNRbM2s5uVQiNafbwfjgdHS/bpxpTwN1KB70pkfJdZ6UPNbQUBCZ8C2Ydog1/ZtQAt
+ vqnjml3b9Py8MmqtK9qwscRW1CjfUvGBArmi1PB5+GL+SUzmcszm5d1JIhDwgEQjJVF8khSO5
+ Gp2WUEmCft0Vv5B3AFbyvapphQfEPCb3k6gkGqX8aK2qJB8qWWcjjamSKVr6svgpMoYNxjW/G
+ xkTy/iXcLbFHK5jId/MLrXa6ife3tUNNIoqH0030GXABcepnjJLfXYNJaweZzLAqI1vi1dv3B
+ NCPoAAvQTAZ6+JQnZf1tP51VN+0e5Qs/89tR7X20JG4rTc9fYKKh75JGNb7mjOvedLcqxM/HZ
+ Y84Lj/aBZKt7+81S/UFiIAPeLsHcuYq50jXNxo+CSVHqj9zd9pTAJ67/R2nJcJLQAGxomGZqf
+ XaU5GbMvtm6FKCTFs3BgU33aCMTZEvQey7Fy5wiOQoNCzeJ/VEH1So6Ge0FHu5w4mLbNHtBNB
+ a4QzvIX4UqGjfiy/ZYtdzsIhYY43XMk/0D+Ok0nveJDQj6j6m/BHEdF+h0qAFFie5Qfjc44ng
+ ZQjUGZ186KnI4OjGWd7iykx6ZStrWlEJAbp+hZIv/zJmojY3TNpPaxC7CrXOL+c/wYvYCu9Dk
+ gERIsF2pfYkspJEqqhYL4NKNKvV/V7Q6fpKGcolEWc+YnHRa3J2v6dLUvDgEOo12QcN21NCyf
+ 4b0SpR+yIgfyz7URxc0nq3VdrjTMmmhdp+85NuaKPbqWP4yFls3K8i3apqLDipXpbhimOUAfP
+ F+qogR1vxdF8/EeVOOkjG/LJCbFhJw+NitOaBoUhVJiQu+YuxIx5kjCLOjvbYVKuPYNnTxh5J
+ pC+jA26vYBMlGj7xyAnFwKUIyhU4Go5FUfGT20ixP+IFhXGZMb6/vpcORhDRAE12EUPyGxJWB
+ TaQBYvjIYYgXxhqdwBtTM82j4+0nrE5kfCfTMyUUiPpMX7feZfdda69GD2l9ivAAF1ikBo9zw
+ 27corAm0O1RiGA=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gustavoars/linux.git for-next/kspp-stringop-overflow
-branch HEAD: f3c4ed70812a3caa1663e6e4e7f4e8fba1b6dd7f  drm/amd/display: Fix Wstringop-overflow warnings in dc_link_dp.c
+Until now, only the temperature sensors where exported thru
+the thermal subsystem. Export the fans as "dell-smm-fan[1-3]" too
+to make them available as cooling devices.
+Also update Documentation.
 
-elapsed time: 6607m
+Signed-off-by: Armin Wolf <W_Armin@gmx.de>
+=2D--
+ Documentation/hwmon/dell-smm-hwmon.rst |  7 ++
+ drivers/hwmon/Kconfig                  |  1 +
+ drivers/hwmon/dell-smm-hwmon.c         | 94 +++++++++++++++++++++++++-
+ 3 files changed, 99 insertions(+), 3 deletions(-)
 
-configs tested: 342
-configs skipped: 6
+diff --git a/Documentation/hwmon/dell-smm-hwmon.rst b/Documentation/hwmon/=
+dell-smm-hwmon.rst
+index d3323a96665d..41839b7de2c1 100644
+=2D-- a/Documentation/hwmon/dell-smm-hwmon.rst
++++ b/Documentation/hwmon/dell-smm-hwmon.rst
+@@ -86,6 +86,13 @@ probe the BIOS on your machine and discover the appropr=
+iate codes.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+ Again, when you find new codes, we'd be happy to have your patches!
 
-gcc tested configs:
-arm                                 defconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-arm64                            allyesconfig
-i386                          randconfig-c001
-i386                 randconfig-c001-20220328
-powerpc64                           defconfig
-m68k                            mac_defconfig
-h8300                    h8300h-sim_defconfig
-sh                           se7619_defconfig
-sh                          urquell_defconfig
-powerpc                     pq2fads_defconfig
-ia64                          tiger_defconfig
-mips                       capcella_defconfig
-powerpc                       ppc64_defconfig
-m68k                            q40_defconfig
-sh                          r7780mp_defconfig
-arm                           h3600_defconfig
-ia64                            zx1_defconfig
-sh                                  defconfig
-sh                 kfr2r09-romimage_defconfig
-m68k                       m5275evb_defconfig
-i386                                defconfig
-arm                         assabet_defconfig
-powerpc                      tqm8xx_defconfig
-sh                           se7722_defconfig
-powerpc                     asp8347_defconfig
-sh                             shx3_defconfig
-alpha                            alldefconfig
-powerpc                      bamboo_defconfig
-mips                         mpc30x_defconfig
-sh                           sh2007_defconfig
-nios2                         3c120_defconfig
-sh                          rsk7269_defconfig
-arc                        nsim_700_defconfig
-arm                      footbridge_defconfig
-arm                       multi_v4t_defconfig
-m68k                        mvme147_defconfig
-arm                            zeus_defconfig
-csky                                defconfig
-arm                           sama5_defconfig
-m68k                       bvme6000_defconfig
-xtensa                              defconfig
-powerpc                    amigaone_defconfig
-arm                            hisi_defconfig
-powerpc                    klondike_defconfig
-m68k                          atari_defconfig
-ia64                        generic_defconfig
-m68k                                defconfig
-sh                               allmodconfig
-powerpc                       maple_defconfig
-arm                          badge4_defconfig
-ia64                      gensparse_defconfig
-sh                         ap325rxa_defconfig
-arc                                 defconfig
-arm                           imxrt_defconfig
-powerpc                      ppc6xx_defconfig
-powerpc                   motionpro_defconfig
-arc                      axs103_smp_defconfig
-arm                      integrator_defconfig
-s390                          debug_defconfig
-arm                          pxa3xx_defconfig
-powerpc                 mpc8540_ads_defconfig
-sh                            shmin_defconfig
-sh                         apsh4a3a_defconfig
-arm                          exynos_defconfig
-arm                          simpad_defconfig
-parisc                           alldefconfig
-arm                            pleb_defconfig
-sparc                       sparc64_defconfig
-powerpc                     stx_gp3_defconfig
-powerpc                  iss476-smp_defconfig
-sh                           se7724_defconfig
-m68k                       m5208evb_defconfig
-powerpc                       holly_defconfig
-arc                         haps_hs_defconfig
-mips                            ar7_defconfig
-mips                           ci20_defconfig
-openrisc                            defconfig
-mips                  decstation_64_defconfig
-sh                      rts7751r2d1_defconfig
-m68k                         apollo_defconfig
-ia64                                defconfig
-parisc64                            defconfig
-arm                        mvebu_v7_defconfig
-arm                         at91_dt_defconfig
-arm                        mini2440_defconfig
-x86_64                              defconfig
-arc                          axs101_defconfig
-arc                            hsdk_defconfig
-nios2                         10m50_defconfig
-sparc                            alldefconfig
-arm                           sunxi_defconfig
-openrisc                  or1klitex_defconfig
-csky                             alldefconfig
-powerpc                     taishan_defconfig
-nios2                               defconfig
-arm64                            alldefconfig
-powerpc                         wii_defconfig
-mips                           gcw0_defconfig
-nios2                            allyesconfig
-arm                          lpd270_defconfig
-i386                             alldefconfig
-arc                     haps_hs_smp_defconfig
-sparc64                             defconfig
-arm                             pxa_defconfig
-powerpc                     ep8248e_defconfig
-xtensa                       common_defconfig
-m68k                       m5475evb_defconfig
-m68k                       m5249evb_defconfig
-powerpc                      ep88xc_defconfig
-mips                  maltasmvp_eva_defconfig
-arm                           tegra_defconfig
-openrisc                    or1ksim_defconfig
-arm                        multi_v7_defconfig
-sh                          kfr2r09_defconfig
-mips                             allyesconfig
-parisc                generic-64bit_defconfig
-mips                          rb532_defconfig
-xtensa                           allyesconfig
-arm                     eseries_pxa_defconfig
-m68k                        m5272c3_defconfig
-powerpc                      makalu_defconfig
-arc                        nsimosci_defconfig
-mips                     loongson1b_defconfig
-sh                          r7785rp_defconfig
-sh                          polaris_defconfig
-arc                    vdk_hs38_smp_defconfig
-sh                           se7206_defconfig
-sh                          sdk7780_defconfig
-m68k                         amcore_defconfig
-um                               alldefconfig
-powerpc                      chrp32_defconfig
-m68k                        mvme16x_defconfig
-arm                           h5000_defconfig
-xtensa                  nommu_kc705_defconfig
-powerpc                      pasemi_defconfig
-arm                             rpc_defconfig
-microblaze                      mmu_defconfig
-arm                            qcom_defconfig
-arm                         s3c6400_defconfig
-sh                           se7343_defconfig
-h8300                            alldefconfig
-m68k                             alldefconfig
-sh                               j2_defconfig
-riscv             nommu_k210_sdcard_defconfig
-powerpc64                        alldefconfig
-sh                           se7750_defconfig
-arm                        realview_defconfig
-arm                         lpc18xx_defconfig
-arm                           stm32_defconfig
-um                                  defconfig
-sh                   sh7770_generic_defconfig
-s390                                defconfig
-powerpc                     redwood_defconfig
-sh                            hp6xx_defconfig
-m68k                          multi_defconfig
-xtensa                    xip_kc705_defconfig
-arm                       aspeed_g5_defconfig
-s390                       zfcpdump_defconfig
-arm                            lart_defconfig
-sh                        apsh4ad0a_defconfig
-h8300                       h8s-sim_defconfig
-arc                              allyesconfig
-mips                        bcm47xx_defconfig
-arm                        trizeps4_defconfig
-sh                             espt_defconfig
-powerpc                 mpc837x_rdb_defconfig
-mips                       bmips_be_defconfig
-powerpc                      arches_defconfig
-sh                     magicpanelr2_defconfig
-sh                             sh03_defconfig
-parisc64                         alldefconfig
-arm                          pxa910_defconfig
-sh                          landisk_defconfig
-sh                          rsk7264_defconfig
-openrisc                 simple_smp_defconfig
-powerpc                  storcenter_defconfig
-arm                         axm55xx_defconfig
-powerpc                   currituck_defconfig
-parisc                              defconfig
-powerpc                     tqm8541_defconfig
-arm                          gemini_defconfig
-s390                             allyesconfig
-mips                         rt305x_defconfig
-sh                         ecovec24_defconfig
-m68k                             allyesconfig
-xtensa                           alldefconfig
-arm                  randconfig-c002-20220324
-arm                  randconfig-c002-20220327
-arm                  randconfig-c002-20220325
-ia64                             allmodconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-alpha                               defconfig
-alpha                            allyesconfig
-h8300                            allyesconfig
-s390                             allmodconfig
-parisc                           allyesconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-x86_64               randconfig-a001-20220328
-x86_64               randconfig-a003-20220328
-x86_64               randconfig-a004-20220328
-x86_64               randconfig-a002-20220328
-x86_64               randconfig-a005-20220328
-x86_64               randconfig-a006-20220328
-i386                          randconfig-a003
-i386                          randconfig-a001
-i386                          randconfig-a005
-i386                 randconfig-a001-20220328
-i386                 randconfig-a003-20220328
-i386                 randconfig-a006-20220328
-i386                 randconfig-a005-20220328
-i386                 randconfig-a004-20220328
-i386                 randconfig-a002-20220328
-x86_64                        randconfig-a011
-x86_64                        randconfig-a013
-x86_64                        randconfig-a015
-i386                          randconfig-a014
-i386                          randconfig-a012
-i386                          randconfig-a016
-riscv                randconfig-r042-20220325
-s390                 randconfig-r044-20220325
-arc                  randconfig-r043-20220325
-arc                  randconfig-r043-20220324
-riscv                randconfig-r042-20220327
-s390                 randconfig-r044-20220327
-arc                  randconfig-r043-20220327
-arc                  randconfig-r043-20220328
-riscv                    nommu_k210_defconfig
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-riscv                            allmodconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                           allyesconfig
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                         rhel-8.3-kunit
-x86_64                                  kexec
++``thermal`` interface
++---------------------------
++
++The driver also exports the fans as thermal cooling devices with
++``type`` set to ``dell-smm-fan[1-3]``. This allows for easy fan control
++using one of the thermal governors.
++
+ Module parameters
+ -----------------
 
-clang tested configs:
-x86_64                        randconfig-c007
-mips                 randconfig-c004-20220324
-arm                  randconfig-c002-20220324
-riscv                randconfig-c006-20220324
-powerpc              randconfig-c003-20220324
-i386                          randconfig-c001
-mips                 randconfig-c004-20220327
-arm                  randconfig-c002-20220327
-riscv                randconfig-c006-20220327
-powerpc              randconfig-c003-20220327
-s390                 randconfig-c005-20220327
-mips                 randconfig-c004-20220328
-arm                  randconfig-c002-20220328
-x86_64               randconfig-c007-20220328
-powerpc              randconfig-c003-20220328
-riscv                randconfig-c006-20220328
-i386                 randconfig-c001-20220328
-s390                 randconfig-c005-20220328
-arm                         s3c2410_defconfig
-arm                  colibri_pxa300_defconfig
-powerpc                      acadia_defconfig
-x86_64                           allyesconfig
-powerpc                     tqm8540_defconfig
-arm                        neponset_defconfig
-mips                           ip22_defconfig
-powerpc                     ppa8548_defconfig
-arm                          imote2_defconfig
-arm                  colibri_pxa270_defconfig
-powerpc                 mpc8315_rdb_defconfig
-mips                  cavium_octeon_defconfig
-arm                         mv78xx0_defconfig
-arm                            dove_defconfig
-mips                          malta_defconfig
-mips                           ip27_defconfig
-powerpc                      walnut_defconfig
-powerpc                    ge_imp3a_defconfig
-arm                             mxs_defconfig
-mips                malta_qemu_32r6_defconfig
-arm                        magician_defconfig
-powerpc                   microwatt_defconfig
-arm                          ixp4xx_defconfig
-powerpc                      ppc64e_defconfig
-hexagon                             defconfig
-mips                        bcm63xx_defconfig
-powerpc                 xes_mpc85xx_defconfig
-arm                        multi_v5_defconfig
-powerpc                          allmodconfig
-powerpc                      pmac32_defconfig
-arm                         socfpga_defconfig
-arm                        spear3xx_defconfig
-arm                       imx_v4_v5_defconfig
-arm                           omap1_defconfig
-arm                       spear13xx_defconfig
-mips                       rbtx49xx_defconfig
-powerpc                     ksi8560_defconfig
-powerpc                        icon_defconfig
-x86_64                        randconfig-a001
-x86_64                        randconfig-a003
-x86_64                        randconfig-a005
-i386                          randconfig-a002
-i386                          randconfig-a004
-i386                          randconfig-a006
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-x86_64               randconfig-a016-20220328
-x86_64               randconfig-a012-20220328
-x86_64               randconfig-a011-20220328
-x86_64               randconfig-a014-20220328
-x86_64               randconfig-a013-20220328
-x86_64               randconfig-a015-20220328
-i386                          randconfig-a011
-i386                          randconfig-a013
-i386                          randconfig-a015
-i386                 randconfig-a015-20220328
-i386                 randconfig-a016-20220328
-i386                 randconfig-a011-20220328
-i386                 randconfig-a012-20220328
-i386                 randconfig-a014-20220328
-i386                 randconfig-a013-20220328
-riscv                randconfig-r042-20220328
-hexagon              randconfig-r045-20220328
-hexagon              randconfig-r041-20220328
-hexagon              randconfig-r045-20220324
-hexagon              randconfig-r041-20220325
-hexagon              randconfig-r041-20220324
-riscv                randconfig-r042-20220324
-hexagon              randconfig-r045-20220325
-s390                 randconfig-r044-20220324
-riscv                randconfig-r042-20220326
-hexagon              randconfig-r045-20220326
-hexagon              randconfig-r041-20220326
+diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
+index 9ab4e9b3d27b..1175b8e38c45 100644
+=2D-- a/drivers/hwmon/Kconfig
++++ b/drivers/hwmon/Kconfig
+@@ -498,6 +498,7 @@ config SENSORS_DS1621
+ config SENSORS_DELL_SMM
+ 	tristate "Dell laptop SMM BIOS hwmon driver"
+ 	depends on X86
++	imply THERMAL
+ 	help
+ 	  This hwmon driver adds support for reporting temperature of different
+ 	  sensors and controls the fans on Dell laptops via System Management
+diff --git a/drivers/hwmon/dell-smm-hwmon.c b/drivers/hwmon/dell-smm-hwmon=
+.c
+index 84cb1ede7bc0..0c29386f4bd3 100644
+=2D-- a/drivers/hwmon/dell-smm-hwmon.c
++++ b/drivers/hwmon/dell-smm-hwmon.c
+@@ -21,6 +21,7 @@
+ #include <linux/errno.h>
+ #include <linux/hwmon.h>
+ #include <linux/init.h>
++#include <linux/kconfig.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
+@@ -29,6 +30,7 @@
+ #include <linux/seq_file.h>
+ #include <linux/string.h>
+ #include <linux/smp.h>
++#include <linux/thermal.h>
+ #include <linux/types.h>
+ #include <linux/uaccess.h>
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+@@ -80,6 +82,11 @@ struct dell_smm_data {
+ 	int *fan_nominal_speed[DELL_SMM_NO_FANS];
+ };
+
++struct dell_smm_cooling_data {
++	u8 fan_num;
++	struct dell_smm_data *data;
++};
++
+ MODULE_AUTHOR("Massimo Dal Zotto (dz@debian.org)");
+ MODULE_AUTHOR("Pali Roh=C3=A1r <pali@kernel.org>");
+ MODULE_DESCRIPTION("Dell laptop SMM BIOS hwmon driver");
+@@ -638,9 +645,50 @@ static void __init i8k_init_procfs(struct device *dev=
+)
+
+ #endif
+
+-/*
+- * Hwmon interface
+- */
++static int dell_smm_get_max_state(struct thermal_cooling_device *dev, uns=
+igned long *state)
++{
++	struct dell_smm_cooling_data *cdata =3D dev->devdata;
++
++	*state =3D cdata->data->i8k_fan_max;
++
++	return 0;
++}
++
++static int dell_smm_get_cur_state(struct thermal_cooling_device *dev, uns=
+igned long *state)
++{
++	struct dell_smm_cooling_data *cdata =3D dev->devdata;
++	int ret;
++
++	ret =3D i8k_get_fan_status(cdata->data, cdata->fan_num);
++	if (ret < 0)
++		return ret;
++
++	*state =3D ret;
++
++	return 0;
++}
++
++static int dell_smm_set_cur_state(struct thermal_cooling_device *dev, uns=
+igned long state)
++{
++	struct dell_smm_cooling_data *cdata =3D dev->devdata;
++	struct dell_smm_data *data =3D cdata->data;
++	int ret;
++
++	if (state > data->i8k_fan_max)
++		return -EINVAL;
++
++	mutex_lock(&data->i8k_mutex);
++	ret =3D i8k_set_fan(data, cdata->fan_num, (int)state);
++	mutex_unlock(&data->i8k_mutex);
++
++	return ret;
++}
++
++static const struct thermal_cooling_device_ops dell_smm_cooling_ops =3D {
++	.get_max_state =3D dell_smm_get_max_state,
++	.get_cur_state =3D dell_smm_get_cur_state,
++	.set_cur_state =3D dell_smm_set_cur_state,
++};
+
+ static umode_t dell_smm_is_visible(const void *drvdata, enum hwmon_sensor=
+_types type, u32 attr,
+ 				   int channel)
+@@ -941,6 +989,37 @@ static const struct hwmon_chip_info dell_smm_chip_inf=
+o =3D {
+ 	.info =3D dell_smm_info,
+ };
+
++static int __init dell_smm_init_cdev(struct device *dev, u8 fan_num)
++{
++	struct dell_smm_data *data =3D dev_get_drvdata(dev);
++	struct thermal_cooling_device *cdev;
++	struct dell_smm_cooling_data *cdata;
++	int ret =3D 0;
++	char *name;
++
++	name =3D kasprintf(GFP_KERNEL, "dell-smm-fan%u", fan_num + 1);
++	if (!name)
++		return -ENOMEM;
++
++	cdata =3D devm_kmalloc(dev, sizeof(*cdata), GFP_KERNEL);
++	if (cdata) {
++		cdata->fan_num =3D fan_num;
++		cdata->data =3D data;
++		cdev =3D devm_thermal_of_cooling_device_register(dev, NULL, name, cdata=
+,
++							       &dell_smm_cooling_ops);
++		if (IS_ERR(cdev)) {
++			devm_kfree(dev, cdata);
++			ret =3D PTR_ERR(cdev);
++		}
++	} else {
++		ret =3D -ENOMEM;
++	}
++
++	kfree(name);
++
++	return ret;
++}
++
+ static int __init dell_smm_init_hwmon(struct device *dev)
+ {
+ 	struct dell_smm_data *data =3D dev_get_drvdata(dev);
+@@ -967,6 +1046,15 @@ static int __init dell_smm_init_hwmon(struct device =
+*dev)
+ 			continue;
+
+ 		data->fan[i] =3D true;
++
++		/* the cooling device it not critical, ignore failures */
++		if (IS_REACHABLE(CONFIG_THERMAL)) {
++			err =3D dell_smm_init_cdev(dev, i);
++			if (err < 0)
++				dev_err(dev, "Failed to register cooling device for fan %u\n",
++					i + 1);
++		}
++
+ 		data->fan_nominal_speed[i] =3D devm_kmalloc_array(dev, data->i8k_fan_ma=
+x + 1,
+ 								sizeof(*data->fan_nominal_speed[i]),
+ 								GFP_KERNEL);
+=2D-
+2.30.2
+
