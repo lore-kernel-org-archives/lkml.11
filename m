@@ -2,331 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAE14C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:31:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C2E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:32:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243341AbiC3GdJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 02:33:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43842 "EHLO
+        id S243349AbiC3Geh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 02:34:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235426AbiC3GdA (ORCPT
+        with ESMTP id S243314AbiC3Ge3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 02:33:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD46656431;
-        Tue, 29 Mar 2022 23:31:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 52699616C3;
-        Wed, 30 Mar 2022 06:31:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB0DDC340EC;
-        Wed, 30 Mar 2022 06:31:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648621874;
-        bh=65x8jxunnWlKGQolcMnrPvWIBfk8CfZE3BJfWaU0rFw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=J6IJZ0QXTwdvlRFt6h6sHzVRZBkQhjrBNkqKWyn4hz8syhJPT8zcTIw3rQ2KOraRm
-         0cTzNjP9OB99o6Ei/fY1OzQvNNvaUnl9/8ScUaKWTY2kFaExs87Ze10onHVQr+ZS5s
-         IXpwaWjCl9OLfwd/C/Q0zBzGqbrv6v6tL7cvR7gTm7MqFMCfQ8vt4L9FrDHRwy9BKQ
-         Dr5YhSBzJMisuiq7RGT+LkfJdfmSe7Ml8ri1QVMRMO+JNYouqroN6lzAHDBVAsYICz
-         R8HOLuUov7eutQuOELHmkVJUNSUA2RkKUate8NC+YydwWOpf9pdPhWMlAN11z9nbMb
-         o1QVyeNtG1sMw==
-Date:   Wed, 30 Mar 2022 15:31:10 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Beau Belgrave <beaub@linux.microsoft.com>
-Cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Beau Belgrave <beaub@microsoft.com>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-trace-devel <linux-trace-devel@vger.kernel.org>,
-        rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: Re: Comments on new user events ABI
-Message-Id: <20220330153110.10c3f2236b1cd5759f0b5c79@kernel.org>
-In-Reply-To: <20220329215421.GA2997@kbox>
-References: <2059213643.196683.1648499088753.JavaMail.zimbra@efficios.com>
-        <20220329002935.2869-1-beaub@linux.microsoft.com>
-        <1014535694.197402.1648570634323.JavaMail.zimbra@efficios.com>
-        <20220329215421.GA2997@kbox>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Wed, 30 Mar 2022 02:34:29 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1EA356748
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 23:32:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648621964; x=1680157964;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=ehRZXhIQ6P74JT5H+hAEA9YioHh54bmsy2IPvhhNd2Y=;
+  b=HvohF3hmfdTzWrl2ESn5BfgiQPxatHlydogj4CF41xyEsffb2nb5ywGy
+   yzVjfvmujgzA71UwIagIGQT1qqL3JrR/H42O+klwlVLhftbpA+G3Km6NA
+   kjegTz6O4KTdrSrqzlXXkjhIDsjf/8a0mhOWL+sgT7KeULiDXaSPMuGbB
+   WumgEe2R9S91pmQ2yZfzUluQhjLmxKF1sIZgAPbXB82GAjZifPrgiybUn
+   k7UEX+cUaLJOhKSyWK21VKGy1KNrvExLB4Vd0nYrlj2IsQxJMHftifSTU
+   04k58huGnYSI8/sCBzM9yv+in7BMJxjwKBuh/UuWV25nZgb55eYTOyFMv
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="322639891"
+X-IronPort-AV: E=Sophos;i="5.90,221,1643702400"; 
+   d="scan'208";a="322639891"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 23:32:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,221,1643702400"; 
+   d="scan'208";a="653630659"
+Received: from lkp-server01.sh.intel.com (HELO 3965e2759b93) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 29 Mar 2022 23:32:42 -0700
+Received: from kbuild by 3965e2759b93 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nZRsn-00013a-R0; Wed, 30 Mar 2022 06:32:41 +0000
+Date:   Wed, 30 Mar 2022 14:32:27 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Baisong Zhong <zhongbaisong@huawei.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Luis Chamberlain <mcgrof@kernel.org>
+Subject: [mcgrof:sysctl-next 6/18] kernel/sched/core.c:10164: undefined
+ reference to `sched_rt_can_attach'
+Message-ID: <202203301416.W3kVLYCm-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 29 Mar 2022 14:54:21 -0700
-Beau Belgrave <beaub@linux.microsoft.com> wrote:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git sysctl-next
+head:   84053cc7ef2f2f86caeea6a8c0944b2f0b3f33ca
+commit: d82a599294a1c50168a2177d49fe0a9a791275c3 [6/18] sched/rt: fix build error when CONFIG_SYSCTL is disable
+config: ia64-randconfig-r021-20220327 (https://download.01.org/0day-ci/archive/20220330/202203301416.W3kVLYCm-lkp@intel.com/config)
+compiler: ia64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git/commit/?id=d82a599294a1c50168a2177d49fe0a9a791275c3
+        git remote add mcgrof https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git
+        git fetch --no-tags mcgrof sysctl-next
+        git checkout d82a599294a1c50168a2177d49fe0a9a791275c3
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=ia64 SHELL=/bin/bash
 
-> On Tue, Mar 29, 2022 at 12:17:14PM -0400, Mathieu Desnoyers wrote:
-> > ----- On Mar 28, 2022, at 8:29 PM, Beau Belgrave beaub@linux.microsoft.com wrote:
-> > 
-> > >> ----- On Mar 28, 2022, at 4:24 PM, Mathieu Desnoyers
-> > >> mathieu.desnoyers@efficios.com wrote:
-> 
-> [..]
-> 
-> > >> I also don't get what user-space is expected to do differently if FTRACE vs
-> > >> PERF is enabled, considering that it gates a writev() to a file descriptor
-> > >> associated with /sys/kernel/debug/tracing/user_events_data.
-> > >> 
-> > > 
-> > > The intention wasn't for user-space to check the byte other than non-zero.
-> > > User processes could do that, but it's more so administration tools can see
-> > > where the events are registered if they cannot be closed and the state of the
-> > > machine.
-> > 
-> > Administration tools could simply use a seqfile interface and parse text. I
-> > don't expect those to be performance-sensitive at all. So we should not design
-> > the overhead-sensitive mmap'd ABI (enable flags) for administration tools.
-> > 
-> > > Maybe you have a slicker way to do this, but it seems to check a bit in the
-> > > page would involve at least a byte read followed by a mask or shift?
-> > 
-> > I suspect the minimum cost in terms of instruction would be to have the mask
-> > prepared in advance (when the event is registered), and therefore the instructions
-> > required on the user-space fast-path would be a load followed by a mask (&).
-> > 
-> > > That seems more expensive than checking a byte?
-> > 
-> > It is one single extra ALU instruction on the fast-path, indeed. But we have to
-> > be careful about optimizing too much for a non-representative microbenchmark
-> > and missing the big picture, which includes L1/L2 cache lines and TLB load overhead
-> > when tracing a real-life workloads.
-> > 
-> > On modern x86 CPUs, an ALU instruction takes around 0.3ns, which is a few
-> > orders of magnitude faster than a cache miss. Using bit-wise rather than
-> > byte-wise indexing increases functional density of those enable flags by a
-> > factor 8, which lessens the amount of cpu cache required by that same factor.
-> > 
-> > So as soon as the workload running on the system fills the CPU L1 or L2 caches,
-> > when the number of user events registered scales up, and when the checks for
-> > events enabled are done frequently enough, evicting fewer cache lines becomes
-> > more important than the extra instruction required to apply the mask on the
-> > fast-path.
-> > 
-> 
-> Ok, makes sense. This will give us more events as well, something I hear
-> some complaints about.
-> 
-> > > 
-> > >> I would have rather thought that tracers implemented in user-space could
-> > >> register
-> > >> themselves, and then there could be one
-> > >> /sys/kernel/debug/tracing/user_events_status
-> > >> per tracer. Considering that all kernel tracers use the same ABI to write an
-> > >> event,
-> > >> and then dispatch this event internally within the kernel to each registered
-> > >> tracer, I would expect to have a single memory mapping for all those (e.g. a
-> > >> /sys/kernel/debug/tracing/user_events_status/kernel_tracers file).
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-I'm not sure you understand the meaning of per-event flag, but as far as I know
-the reason of those per-event flags may be same reason of SDT semaphore. The event
-which is NOT traced from kernel(via perf or via ftrace) needs to be skipped because
-preparing the user-event arguments (e.g. getting a variable "name" in user-space
-language runtime) may take a long time.
+All errors (new ones prefixed by >>):
 
-> > >> Then eventually if we have other user-space tracers such as lttng-ust with its
-> > >> their own user-space code performing tracing in a shared memory ring buffer, it
-> > >> would make sense to allow it to register its own
-> > >> /sys/kernel/debug/tracing/user_events_status/lttng_ust file, with its own
-> > >> indexes.
-> > >> 
-> > > 
-> > > I don't follow that. The intention is to get user processes to participate with
-> > > trace_events and the built-in tooling. When would a user-space tracer be used
-> > > instead of perf/ftrace?
-> > > 
-> > > It seems like a feature request?
-> > 
-> > It can very well be out of scope for the user events, and I'm fine with that.
-> > I was merely considering how the user events could be leveraged by tracers
-> > implemented purely in user-space. But if the stated goal of this feature is
-> > really to call into kernel tracers through a writev(), then I suspect that
-> > supporting purely user-space tracers is indeed out of scope.
-> > 
-> 
-> That was the goal with this ABI, are there maybe ways we can change the
-> ABI to accomodate this later without shutting that out?
-
-Beau, would you have any plan to make a tracer-tool application?
-I thought this ABI is for adding "logger" like interface for perf/ftrace (or BPF,
-that will be a long way).
-
-> 
-> > > 
-> > >> If this facility is ever used by lttng-ust to enable user-space tracing, I would
-> > >> not
-> > >> want to take the overhead of calling writev for the sake of kernel tracers if
-> > >> those are disabled.
-
-I think this is totally different design with the lttng-ust, which collects event data
-in user-space and kernel-space separately. Users will use them properly according
-to the situation and purpose.
-
-> > > If they were disabled the byte wouldn't be set, right? So no writev overhead.
-> > > 
-> > > Seems I'm missing something.
-> > 
-> > I was wondering whether we could leverage the user events bit-enable ABI for
-> > tracers which are not implemented within the Linux kernel (e.g. LTTng-UST).
-> > But I suspect it might be better for me to re-implement this in user-space
-> > over shared memory.
-> > 
-> 
-> Perhaps.
-
-Sorry, I actually doubt it, since it relays on the user space program which
-correctly works and write the event correct way (this is why I had asked you
-to verify the event format at writev). Or perhaps we can verify it when merging
-the shared pages...
-
-> > > 
-> > >> So perhaps in the short-term there is no need to implement the user-space tracer
-> > >> registration ABI, but I would have expected a simple bitmap for
-> > >> /sys/kernel/debug/tracing/user_events_data/kernel_tracers rather than the
-> > >> bytewise index, because as far as the kernel tracers are concerned, providing
-> > >> the bit to tell userspace instrumentation exactly which tracers are internally
-> > >> enabled within the kernel does not appear to be of any use other than increasing
-> > >> the footprint on the actively used cpu cache lines.
-
-I agreed with this.
-
-> > >> * user_events_data page faults
-> > >> 
-> > >> If my understanding is correct, when the user-space program's memory containing
-> > >> the payload passed to writev() to a user_events_data file descriptor is kicked
-> > >> out from the page cache between fault_in_iov_iter_readable and its use by the
-> > >> tracers due to high memory pressure, the writev() will fail with -EFAULT and
-> > >> the data will be discarded unless user-space somehow handles this error (which
-> > >> is not handled in the samples/user_events/sample.c example program). It is good
-> > >> that the memory is faulted in immediately before calling the tracers, but
-> > >> considering that it is not mlock'd, should we make more effort to ensure the
-> > >> tracers are able to handle page faults ?
-
-I think this should be handled by user-space implementation (retry?).
-
-> > >> Integration of the work done by Michael Jeanson and myself on faultable
-> > >> tracepoint
-> > >> would allow the tracepoint probes to take page faults. Then, further
-> > >> modifications
-> > >> in the kernel tracers would be needed to handle those page faults.
-
-Interesting.
-
-> > > Is this something that can be done later or does it require ABI changes?
-> > > 
-> > > I would love to never miss data due to page faults.
-> > 
-> > This is internal to the user events, tracepoint, and kernel tracers
-> > implementation. I don't expect this to modify the user events ABI.
-> > 
-> > The only thing that might require some thinking ABI-wise is how the ring
-> > buffers are exposed to user-space consumers, because we would want to
-> > allow taking page faults between space reservation and commit.
-> > 
-> > The LTTng ring buffer has been supporting this out of the box for years
-> > now, but this may be trickier for other kernel tracers, for which allowing
-> > preemption between reserve and commit has never been a requirement until
-> > now.
-> > 
-> 
-> I'll let Steven comment on that one.
-> 
-> > > 
-> > >> 
-> > >> * user_reg name_args and write_index vs purely user-space tracers
-> > >> 
-> > >> That part of the user event registration (event layout and ID allocation)
-> > >> appears
-> > >> to be intrinsically tied to the kernel tracers and the expected event layout.
-> > >> This
-> > >> seems fine as long as the only users we consider are the kernel tracers, but it
-> > >> appears to be less relevant for purely user-space tracers. Actually, tying the
-> > >> mmap'd event enable mechanism with the event ID and description makes me wonder
-> > >> whether it might be better to have LTTng-UST implement its own shared-memory
-> > >> based
-> > >> "fast-event-enabling" mechanism rather than use this user-event ABI. The other
-> > >> advantage of doing all of this in user-space would be to allow many instances
-> > >> of this bitmap to exist on a given system, e.g. one per container in a
-> > >> multi-container
-> > >> system, rather than requiring this to be a global kernel-wide singleton, and to
-> > >> use
-> > >> it from a non-privileged user.
-> > >> 
-> > > 
-> > > We have some conversation going about using namespaces/cgroups to isolation
-> > > containers with bitmaps/status pages. The main thing I personally want to be
-> > > able to do is from the root namespace see all the events in the descendents
-> > > easily via perf, eBPF or ftrace.
-> > > 
-> > > Link:
-> > > https://lore.kernel.org/linux-trace-devel/20220316232009.7952988633787ef1003f13b0@kernel.org/
-> > > 
-> > 
-> > I see that a notion close to "tracing namespaces" comes up in this thread. This is something
-> > I brought forward at the last Linux Plumbers Conference aiming to facilitate system call tracing
-> > for a given container (or from a process hierarchy). I suspect the tracing namespace could also
-> > be tied to a set of kernel buffers, and to a user events "domain". I think this concept could
-> > neatly solve many of our container-related isolation issues here. As you say, it should probably
-> > be a hierarchical namespace.
-> > 
-> 
-> Agreed.
-
-Great :-)
-
-> > >> Some comments about the implementation:
-> > [...]
-> > > 
-> > >> 
-> > >>         return user_events_write_core(file, &i);
-> > >> }
-> > >> 
-> > >> include/uapi/linux/user_events.h:
-> > >> 
-> > >> struct user_reg {
-> > >> 
-> > >>         /* Input: Size of the user_reg structure being used */
-> > >>         __u32 size;
-> > >> 
-> > >>         /* Input: Pointer to string with event name, description and flags */
-> > >>         __u64 name_args;
-> > >> 
-> > >>         /* Output: Byte index of the event within the status page */
-> > >>         __u32 status_index;
-> > >> 
-> > >>         /* Output: Index of the event to use when writing data */
-> > >>         __u32 write_index;
-> > >> };
-> > >> 
-> > >> As this structure is expected to grow, and the user-space sample program uses
-> > >> "sizeof()"
-> > >> to figure out its size (which includes padding), I would be more comfortable if
-> > >> this was
-> > >> a packed structure rather than non-packed, because as fields are added, it's
-> > >> tricky to
-> > >> figure out from the kernel perspective whether the size received are fields that
-> > >> user-space
-> > >> is aware of, or if this is just padding.
+   ia64-linux-ld: kernel/sched/core.o: in function `cpu_cgroup_can_attach':
+>> kernel/sched/core.c:10164: undefined reference to `sched_rt_can_attach'
 
 
-Indeed, any user-space exposed structure should be packed or correctly aligned,
-because those can be built on many architectures.
+vim +10164 kernel/sched/core.c
 
+eeb61e53ea19be kernel/sched/core.c Kirill Tkhai       2014-10-27  10155  
+1f7dd3e5a6e4f0 kernel/sched/core.c Tejun Heo          2015-12-03  10156  static int cpu_cgroup_can_attach(struct cgroup_taskset *tset)
+68318b8e0b61f9 kernel/sched.c      Srivatsa Vaddagiri 2007-10-18  10157  {
+bb9d97b6dffa10 kernel/sched.c      Tejun Heo          2011-12-12  10158  	struct task_struct *task;
+1f7dd3e5a6e4f0 kernel/sched/core.c Tejun Heo          2015-12-03  10159  	struct cgroup_subsys_state *css;
+7dc603c9028ea5 kernel/sched/core.c Peter Zijlstra     2016-06-16  10160  	int ret = 0;
+bb9d97b6dffa10 kernel/sched.c      Tejun Heo          2011-12-12  10161  
+1f7dd3e5a6e4f0 kernel/sched/core.c Tejun Heo          2015-12-03  10162  	cgroup_taskset_for_each(task, css, tset) {
+b68aa2300cabeb kernel/sched.c      Peter Zijlstra     2008-02-13  10163  #ifdef CONFIG_RT_GROUP_SCHED
+eb95419b023aba kernel/sched/core.c Tejun Heo          2013-08-08 @10164  		if (!sched_rt_can_attach(css_tg(css), task))
+b68aa2300cabeb kernel/sched.c      Peter Zijlstra     2008-02-13  10165  			return -EINVAL;
+b68aa2300cabeb kernel/sched.c      Peter Zijlstra     2008-02-13  10166  #endif
+7dc603c9028ea5 kernel/sched/core.c Peter Zijlstra     2016-06-16  10167  		/*
+b19a888c1e9bdf kernel/sched/core.c Tal Zussman        2020-11-12  10168  		 * Serialize against wake_up_new_task() such that if it's
+7dc603c9028ea5 kernel/sched/core.c Peter Zijlstra     2016-06-16  10169  		 * running, we're sure to observe its full state.
+7dc603c9028ea5 kernel/sched/core.c Peter Zijlstra     2016-06-16  10170  		 */
+7dc603c9028ea5 kernel/sched/core.c Peter Zijlstra     2016-06-16  10171  		raw_spin_lock_irq(&task->pi_lock);
+7dc603c9028ea5 kernel/sched/core.c Peter Zijlstra     2016-06-16  10172  		/*
+7dc603c9028ea5 kernel/sched/core.c Peter Zijlstra     2016-06-16  10173  		 * Avoid calling sched_move_task() before wake_up_new_task()
+7dc603c9028ea5 kernel/sched/core.c Peter Zijlstra     2016-06-16  10174  		 * has happened. This would lead to problems with PELT, due to
+7dc603c9028ea5 kernel/sched/core.c Peter Zijlstra     2016-06-16  10175  		 * move wanting to detach+attach while we're not attached yet.
+7dc603c9028ea5 kernel/sched/core.c Peter Zijlstra     2016-06-16  10176  		 */
+2f064a59a11ff9 kernel/sched/core.c Peter Zijlstra     2021-06-11  10177  		if (READ_ONCE(task->__state) == TASK_NEW)
+7dc603c9028ea5 kernel/sched/core.c Peter Zijlstra     2016-06-16  10178  			ret = -EINVAL;
+7dc603c9028ea5 kernel/sched/core.c Peter Zijlstra     2016-06-16  10179  		raw_spin_unlock_irq(&task->pi_lock);
+7dc603c9028ea5 kernel/sched/core.c Peter Zijlstra     2016-06-16  10180  
+7dc603c9028ea5 kernel/sched/core.c Peter Zijlstra     2016-06-16  10181  		if (ret)
+7dc603c9028ea5 kernel/sched/core.c Peter Zijlstra     2016-06-16  10182  			break;
+bb9d97b6dffa10 kernel/sched.c      Tejun Heo          2011-12-12  10183  	}
+7dc603c9028ea5 kernel/sched/core.c Peter Zijlstra     2016-06-16  10184  	return ret;
+be367d09927023 kernel/sched.c      Ben Blum           2009-09-23  10185  }
+68318b8e0b61f9 kernel/sched.c      Srivatsa Vaddagiri 2007-10-18  10186  
 
-Thank you,
+:::::: The code at line 10164 was first introduced by commit
+:::::: eb95419b023abacb415e2a18fea899023ce7624d cgroup: pass around cgroup_subsys_state instead of cgroup in subsystem methods
 
-> > >> 
-> > > 
-> > > I think that would be a good idea, Steven?
-> > 
-> > [leaving this for Steven to answer]
-> > 
->
+:::::: TO: Tejun Heo <tj@kernel.org>
+:::::: CC: Tejun Heo <tj@kernel.org>
 
 -- 
-Masami Hiramatsu <mhiramat@kernel.org>
+0-DAY CI Kernel Test Service
+https://01.org/lkp
