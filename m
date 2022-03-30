@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 320A0C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91B3DC433EF
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:09:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345167AbiC3MKL (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:10:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59274 "EHLO
+        id S242236AbiC3MKc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 08:10:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345051AbiC3Lxz (ORCPT
+        with ESMTP id S1345198AbiC3LyN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:53:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D32E27E868;
-        Wed, 30 Mar 2022 04:50:20 -0700 (PDT)
+        Wed, 30 Mar 2022 07:54:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 226D92816A9;
+        Wed, 30 Mar 2022 04:50:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 01A49B81BBA;
-        Wed, 30 Mar 2022 11:50:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6E89C36AE2;
-        Wed, 30 Mar 2022 11:50:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B921B61625;
+        Wed, 30 Mar 2022 11:50:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B210EC34111;
+        Wed, 30 Mar 2022 11:50:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641018;
-        bh=vJB3hI7pFHLZ4ItKPzu559ozRQX/5iq+YVkCRMlueys=;
+        s=k20201202; t=1648641035;
+        bh=Qb/oTH/UWrZXJOhd5uOtZEXXGxt5HFJZw3S+Cihmmxc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EqL1exLACd760aXccth7GNFZA3YHeRnOlChbWg9EY/qoLigNJutqZvx2pp3sEarWK
-         t+E4bqxkyT8Nf7q50s0V39goB2JDpPhAAQ5lNoOkG6cHVHhJEKYGHEobfRhnLK4eHm
-         AIOSD3zTx7+fwwrftu6JBnUPa2OSUdP3NI0zVmVm2ad3Xs5cX0eGcK5ExZpMzjZDNS
-         NkRX51k29gVvjcgkGtfiL8X/hGzJWP2W4hs3Xxc+KPNDSSbF1pbSp++UGL19Dzqcrc
-         EKILHNVKYKofz2JZIMCjlk3h2i9cD8GFyeOKtCf77ojz5Ma4ne8MbS/1hECcMcGE3G
-         2jflMEDlj1ZUQ==
+        b=MkGU5hw+id3BadK6S+h/w5r4ZaoRI0p+f02wvJrpYtS7Xszybsn4ZWAkCFbKdJRx3
+         cd/Rl1DRyvWNO2nYsknP3xy6w4Xf9yUMOUDkNBlUz1qr0LO9Bjt9fViQs0p4DYEMjT
+         bBMtUBXMiRhVXmixRiw+roYIxpdVVICtBvL91mRijgJjYlDeU6UonlPSF5uGQ07NQj
+         s3b5ctk7kMxwtzjThRienesgaA9xZPjzuW/cuNjRBMqJ4ntP/XnGwSUM0bfA6hNLto
+         d6UtkRqo4dg+kwB1JAG8OqQ10SyV0LX+FPaOBUkemUM+juENu1lvWeUYZPw6wtMGwL
+         kQX/AjEZDeBAw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mirela Rabulea <mirela.rabulea@oss.nxp.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 08/50] media: imx-jpeg: Prevent decoding NV12M jpegs into single-planar buffers
-Date:   Wed, 30 Mar 2022 07:49:22 -0400
-Message-Id: <20220330115005.1671090-8-sashal@kernel.org>
+Cc:     Richard Schleich <rs@noreya.tech>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        mark.rutland@arm.com, linux@armlinux.org.uk, rjui@broadcom.com,
+        sbranden@broadcom.com, bcm-kernel-feedback-list@broadcom.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 18/50] ARM: dts: bcm2837: Add the missing L1/L2 cache information
+Date:   Wed, 30 Mar 2022 07:49:32 -0400
+Message-Id: <20220330115005.1671090-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115005.1671090-1-sashal@kernel.org>
 References: <20220330115005.1671090-1-sashal@kernel.org>
@@ -53,40 +55,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mirela Rabulea <mirela.rabulea@oss.nxp.com>
+From: Richard Schleich <rs@noreya.tech>
 
-[ Upstream commit 417591a766b3c040c346044541ff949c0b2bb7b2 ]
+[ Upstream commit bdf8762da268d2a34abf517c36528413906e9cd5 ]
 
-If the application queues an NV12M jpeg as output buffer, but then
-queues a single planar capture buffer, the kernel will crash with
-"Unable to handle kernel NULL pointer dereference" in mxc_jpeg_addrs,
-prevent this by finishing the job with error.
+This patch fixes the kernel warning
+"cacheinfo: Unable to detect cache hierarchy for CPU 0"
+for the bcm2837 on newer kernel versions.
 
-Signed-off-by: Mirela Rabulea <mirela.rabulea@oss.nxp.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Richard Schleich <rs@noreya.tech>
+Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
+[florian: Align and remove comments matching property values]
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/imx-jpeg/mxc-jpeg.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/arm/boot/dts/bcm2837.dtsi | 49 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 49 insertions(+)
 
-diff --git a/drivers/media/platform/imx-jpeg/mxc-jpeg.c b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
-index fc905ea78b17..637d73f5f4a2 100644
---- a/drivers/media/platform/imx-jpeg/mxc-jpeg.c
-+++ b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
-@@ -925,6 +925,12 @@ static void mxc_jpeg_device_run(void *priv)
- 	v4l2_m2m_buf_copy_metadata(src_buf, dst_buf, true);
+diff --git a/arch/arm/boot/dts/bcm2837.dtsi b/arch/arm/boot/dts/bcm2837.dtsi
+index 0199ec98cd61..5dbdebc46259 100644
+--- a/arch/arm/boot/dts/bcm2837.dtsi
++++ b/arch/arm/boot/dts/bcm2837.dtsi
+@@ -40,12 +40,26 @@
+ 		#size-cells = <0>;
+ 		enable-method = "brcm,bcm2836-smp"; // for ARM 32-bit
  
- 	jpeg_src_buf = vb2_to_mxc_buf(&src_buf->vb2_buf);
-+	if (q_data_cap->fmt->colplanes != dst_buf->vb2_buf.num_planes) {
-+		dev_err(dev, "Capture format %s has %d planes, but capture buffer has %d planes\n",
-+			q_data_cap->fmt->name, q_data_cap->fmt->colplanes,
-+			dst_buf->vb2_buf.num_planes);
-+		jpeg_src_buf->jpeg_parse_error = true;
-+	}
- 	if (jpeg_src_buf->jpeg_parse_error) {
- 		jpeg->slot_data[ctx->slot].used = false;
- 		v4l2_m2m_src_buf_remove(ctx->fh.m2m_ctx);
++		/* Source for d/i-cache-line-size and d/i-cache-sets
++		 * https://developer.arm.com/documentation/ddi0500/e/level-1-memory-system
++		 * /about-the-l1-memory-system?lang=en
++		 *
++		 * Source for d/i-cache-size
++		 * https://magpi.raspberrypi.com/articles/raspberry-pi-3-specs-benchmarks
++		 */
+ 		cpu0: cpu@0 {
+ 			device_type = "cpu";
+ 			compatible = "arm,cortex-a53";
+ 			reg = <0>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000d8>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			next-level-cache = <&l2>;
+ 		};
+ 
+ 		cpu1: cpu@1 {
+@@ -54,6 +68,13 @@
+ 			reg = <1>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000e0>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			next-level-cache = <&l2>;
+ 		};
+ 
+ 		cpu2: cpu@2 {
+@@ -62,6 +83,13 @@
+ 			reg = <2>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000e8>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			next-level-cache = <&l2>;
+ 		};
+ 
+ 		cpu3: cpu@3 {
+@@ -70,6 +98,27 @@
+ 			reg = <3>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000f0>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			next-level-cache = <&l2>;
++		};
++
++		/* Source for cache-line-size + cache-sets
++		 * https://developer.arm.com/documentation/ddi0500
++		 * /e/level-2-memory-system/about-the-l2-memory-system?lang=en
++		 * Source for cache-size
++		 * https://datasheets.raspberrypi.com/cm/cm1-and-cm3-datasheet.pdf
++		 */
++		l2: l2-cache0 {
++			compatible = "cache";
++			cache-size = <0x80000>;
++			cache-line-size = <64>;
++			cache-sets = <512>; // 512KiB(size)/64(line-size)=8192ways/16-way set
++			cache-level = <2>;
+ 		};
+ 	};
+ };
 -- 
 2.34.1
 
