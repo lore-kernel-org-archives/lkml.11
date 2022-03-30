@@ -2,82 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CAC1C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:32:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88A03C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:33:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343680AbiC3Lee (ORCPT
+        id S1343668AbiC3Lf2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 07:34:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57580 "EHLO
+        Wed, 30 Mar 2022 07:35:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343670AbiC3Leb (ORCPT
+        with ESMTP id S235330AbiC3LfX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:34:31 -0400
-Received: from out203-205-221-235.mail.qq.com (out203-205-221-235.mail.qq.com [203.205.221.235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05F3C1C2D96
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 04:32:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1648639963;
-        bh=8fJrMhzqjAXlwfUDxJahr95XCF0ybbs2a5Ofgeo9KHM=;
-        h=From:To:Cc:Subject:Date;
-        b=XxUBsLmS5w86wlD/ebX5/ZdpLrf3OrecZRasUgaVhdIb0n3YRgVhg6XfOIUZb7fTf
-         3yykeu64PU9JsaoRojz9BJygy7lN7FhflAlUQFWx74yC2m84fD504PMeYOjyiYigZo
-         2hFVOZTKn+krt2Apocf8fJZXVTwgCO32wl8DxgrY=
-Received: from localhost.localdomain ([43.227.138.48])
-        by newxmesmtplogicsvrszc9.qq.com (NewEsmtp) with SMTP
-        id 8288103E; Wed, 30 Mar 2022 19:32:40 +0800
-X-QQ-mid: xmsmtpt1648639960tfxmvk268
-Message-ID: <tencent_FF6828BEC24B9560FE5D405E998D73633809@qq.com>
-X-QQ-XMAILINFO: NMGzQWUSIfvTbni/KihziXVzkQT7chenEEvQ0U9T8LGHF9mKokFevWkRDB7mgP
-         phdQziLrbDwEstkLvoJuVEs2Jv7hbp3/79y4EHQfbs2EC3CQFpgAnGDFRqKn+iN6MQNWO1jjVdZO
-         yMgEcHGyFOw+0it2PdatDnbOUjSEGSUTIYI49FIPPmSCtEFnzTthzt3ijvYozzLru9sUU8nuQXL9
-         YD4o0DXTCRk2xkbCltn0DKdZ7f2HrJEPcK4l2Sk5/jzNkxxLo2Gbf2oSowAg1lXVsOfSWh/Ne1RL
-         bANkOOUa05NVcVUJCAJEGOqsU/HhM6qM48VsDV5r4MeIOsd2cmjxRtZUmkNlftM9thFd+D9jl+Qb
-         eOw/hVvnRwio0w3wY9MUO2DXLD6HPeSvs28KUvNILoYjz4pYddmCmI4Q4mPHwTjWGnpJ/862qG2M
-         mKYGeFp392TmaC0e8UI+ixI6r0TgLHnaz/Yn2pR2x6wHqkltwt7SifGhbV++9ZHEJ07Fwo5z2S15
-         XRyzk6vvkUR0z+2ujLkf0q7xG//jfflU2MlDqI863PPwwPYFEPdiD/JPaWiNMVyrXhJSTkGoe9V7
-         k2uyNuuKaXdeINzwxrX7j0wSkb5R4Yeny+mcbZZKk6cv7IkQUTg0Wkvm154Lx2TGXopbkRgh9uZA
-         vZhSOPgxgXem5QPTJM+kmjlvkGsKaWMtGJNn6DjlKECS2iP6VETvPrhBQL33N+yhiJI3Bnlc30dA
-         pU40rd3qLVm53AczA1iHHmW2XsdiH30DuHOxU/OLq/iZbmPoAQokGblkgtge0LLir1hY+b/IACoq
-         gZIlItK5HWRssW96A7i2lLbHXmvKGgpr6ljMMpmN8ZmCMDzgwfHjj5zk+NflId54Prb4XnM/+FdF
-         MgXfAskR+5sAPqT04wHwbSZhDMy8nSDfgxi3zveJql4TIcEGtQfzGiEgtz3XFCZPEeHaqgZg0n3Q
-         sOy+eaFqptN9x9K6/0clsyDI9z2pkdvl3hdXAVvUwbxtOh8if3/g==
-From:   xkernel.wang@foxmail.com
-To:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        gregkh@linuxfoundation.org
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Xiaoke Wang <xkernel.wang@foxmail.com>
-Subject: [PATCH] staging: r8188eu: fix a potential memory leak in _rtw_init_cmd_priv()
-Date:   Wed, 30 Mar 2022 19:32:21 +0800
-X-OQ-MSGID: <20220330113221.5520-1-xkernel.wang@foxmail.com>
+        Wed, 30 Mar 2022 07:35:23 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74DD912AA6;
+        Wed, 30 Mar 2022 04:33:38 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 774BE2223B;
+        Wed, 30 Mar 2022 13:33:36 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1648640016;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=VsecLKMJ23DcPDvyv9r6OEmkMjx2OTnETouEGlm5Tm0=;
+        b=Uy9QprrSkIP0z3KiMZZ4KQPu+srXJ91o+O/FJTOKyTD2KyutF3fNV6TumTaKNwWHH+2wio
+        /IARoslpaB4rpFPv12Cms944VBkRtZeWDk27ayCOVPeYTwmdREBJM5luLKRw+WPr/HBVmV
+        gY2YgJjESCedin5Mz3DlsIynqPrTRUA=
+From:   Michael Walle <michael@walle.cc>
+To:     Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
+Subject: [PATCH] arm64: dts: ls1028a: sl28: use ocelot-8021q tagging by default
+Date:   Wed, 30 Mar 2022 13:33:29 +0200
+Message-Id: <20220330113329.3402438-1-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+Enable the ocelot-8021q tagger by default which supports ethernet flow
+control.
 
-In _rtw_init_cmd_priv(), if `pcmdpriv->rsp_allocated_buf` is allocated
-in failure, `pcmdpriv->cmd_allocated_buf` is not properly released.
-This patch is to free it.
+The new default is set in the common board dtsi. The actual switch
+node is enabled on a per board variant basis. Because of this we
+set the new tagger default for both internal ports and a particular
+variant is free to choose among the two port.
 
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- drivers/staging/r8188eu/core/rtw_cmd.c | 2 ++
- 1 file changed, 2 insertions(+)
+ .../arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/staging/r8188eu/core/rtw_cmd.c b/drivers/staging/r8188eu/core/rtw_cmd.c
-index 56910c3..e76015e 100644
---- a/drivers/staging/r8188eu/core/rtw_cmd.c
-+++ b/drivers/staging/r8188eu/core/rtw_cmd.c
-@@ -42,6 +42,8 @@ static int _rtw_init_cmd_priv(struct cmd_priv *pcmdpriv)
- 	pcmdpriv->rsp_allocated_buf = kzalloc(MAX_RSPSZ + 4, GFP_KERNEL);
+diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts
+index 7ef47b80e343..68d11a9c67f3 100644
+--- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts
++++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28.dts
+@@ -328,6 +328,14 @@ &lpuart1 {
+ 	status = "okay";
+ };
  
- 	if (!pcmdpriv->rsp_allocated_buf) {
-+		kfree(pcmdpriv->cmd_allocated_buf);
-+		pcmdpriv->cmd_allocated_buf = NULL;
- 		res = _FAIL;
- 		goto exit;
- 	}
++&mscc_felix_port4 {
++	dsa-tag-protocol = "ocelot-8021q";
++};
++
++&mscc_felix_port5 {
++	dsa-tag-protocol = "ocelot-8021q";
++};
++
+ &usb0 {
+ 	status = "okay";
+ };
 -- 
+2.30.2
+
