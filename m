@@ -2,264 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 553CFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 18:50:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB162C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 18:52:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349966AbiC3Sw2 (ORCPT
+        id S1350244AbiC3Sxq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 14:52:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46764 "EHLO
+        Wed, 30 Mar 2022 14:53:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348876AbiC3SwY (ORCPT
+        with ESMTP id S1350105AbiC3Sxk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 14:52:24 -0400
-Received: from mail-vs1-xe29.google.com (mail-vs1-xe29.google.com [IPv6:2607:f8b0:4864:20::e29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A73235ABC
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:50:37 -0700 (PDT)
-Received: by mail-vs1-xe29.google.com with SMTP id o67so23488065vsc.0
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:50:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4RP6ZIb6nfoCe38E1LjWdpnaf2x01PGpFhrn4r34+gk=;
-        b=D4o24SCQHBEK/0l70rQ3rNq74R3VzyFN5awFR8E3t++6rzGP550Y75tNfTrFyNu5x3
-         HwKzi93V832u6Or7ororHsnTNJvdA9L2bQrhXsjrP8DAhWbOpURyFC7aszY1VNbgi7PX
-         kIEij1vpGA76hXfrar/RqKj1USWnRMMF7q3ReyBM18UTDirnv8Pk/KWdmRse19p5JGRC
-         GOTDt6Vila6DgarlLkdXgAjGUGLwXzoIdN74feVn97yvy33Mz20jBnK40RJ18NxlWXMT
-         5W9cKcchtzuzFGFYdR8uKVpVTCaqrMdxPdhjWIyzEL+Zkjyt5KWKTstrfwwLotQvCCeA
-         N46g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4RP6ZIb6nfoCe38E1LjWdpnaf2x01PGpFhrn4r34+gk=;
-        b=ruhD2/oO27Uu4NBZFSSGG/k4KefHBv4xg72q/BFGxvLhUA/0tWqwRE6AndROxbSd5X
-         fjcrn2B4HXy6lIVjhtDWEF2vtf/7tl+q6zECN/u0OdvehbQmCHtCeuG4mekrxELSLccg
-         Y8dXWn50+xuzDCCRudQkjmnMKVFvmGevViwDriTQBATs+0IDSun9aRgZXbq1vImqEqrl
-         lVF2gKgVhyABo6fnOtyDv3a4Q95sO6b4pvOpFj8MDipKtVV0PWLs8I5B6+X7beJcP3mh
-         DSCGPSWRR9+Wp0bm/DFlwTfgZriiHyN3Sc0CJ4sWKPiGVsMUU1zS9F5jJEcz5b+yTeJf
-         P70g==
-X-Gm-Message-State: AOAM530GAuCc/EeuMmjqlb9V8bPJLa1kO1aBZj7zl0TLshXFFYaQalzd
-        Iyl19L+9CCoPGovQUcs6gzbKbGeP+FHfJNbT4KoKhA==
-X-Google-Smtp-Source: ABdhPJzcFFmI2sygg0IiWWXXPv74hvZzkkgklf0CQ5STYuqcwsE7CwvJBSV7OjXpon8cLhu8xl9UpF9mq7jYuceuof4=
-X-Received: by 2002:a05:6102:670:b0:325:afe6:1253 with SMTP id
- z16-20020a056102067000b00325afe61253mr599228vsf.22.1648666236433; Wed, 30 Mar
- 2022 11:50:36 -0700 (PDT)
+        Wed, 30 Mar 2022 14:53:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D0A14DF5A
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:51:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D7BFBB81D85
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 18:51:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ADCBC340F0;
+        Wed, 30 Mar 2022 18:51:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648666312;
+        bh=ibrcnI4Sh2c6Hpc0kjpQBswypoj77BsVt19VYyJOL4E=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=pJLcyWJd3S6r6tVrlN0fz7PGG6FPoP7C33G3cuHsUM0hdDOc6/g6eb9ROMLaLW8BM
+         Xp16xq6HxTrMII6JkiBq7/HSUXfYT2AtRj1AQkEkfqqrxYujQ/gnUW+B2nRi85+TlS
+         QDpnu0EP9sNjzFNn56m7+n/sGYkpBSm4I8wRCwRvyuzq+Xx4bokWzu2xItauI+kF9q
+         hQY0SnO4QLLF2jhbEs625Zqntg8AbmLy+C00zWuR3lTgbrjDigda70YDCGKRjt6RqV
+         H4XIKtI+yBJTHYWN3a4K2uol+wiCh1dRNX8UhG1uOBhlDiwRrJPVeqHg9RLDh1jCW1
+         r1Gt3V3RqpWHA==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 0FE7B5C12E4; Wed, 30 Mar 2022 11:51:52 -0700 (PDT)
+Date:   Wed, 30 Mar 2022 11:51:52 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Willy Tarreau <w@1wt.eu>
+Cc:     Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
+        Nugraha <richiisei@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>
+Subject: Re: [PATCH v2 0/9] Add dynamic memory allocator support for nolibc
+Message-ID: <20220330185152.GK4285@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220329101737.58985-1-ammarfaizi2@gnuweeb.org>
+ <2504aa03-e3cf-a120-44dc-af70ec7c9d5c@gnuweeb.org>
+ <20220330024114.GA18892@1wt.eu>
 MIME-Version: 1.0
-References: <20220330174621.1567317-1-bgardon@google.com> <20220330174621.1567317-3-bgardon@google.com>
-In-Reply-To: <20220330174621.1567317-3-bgardon@google.com>
-From:   Jing Zhang <jingzhangos@google.com>
-Date:   Wed, 30 Mar 2022 11:50:25 -0700
-Message-ID: <CAAdAUtiaSgbYsggjxjASW-cKHo2ePWjCa4Buv+AixKm-magGXQ@mail.gmail.com>
-Subject: Re: [PATCH v3 02/11] KVM: selftests: Dump VM stats in binary stats test
-To:     Ben Gardon <bgardon@google.com>
-Cc:     linux-kernel@vger.kernel.org, KVM <kvm@vger.kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        David Matlack <dmatlack@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        David Dunn <daviddunn@google.com>,
-        Junaid Shahid <junaids@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220330024114.GA18892@1wt.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 10:46 AM Ben Gardon <bgardon@google.com> wrote:
->
-> Add kvm_util library functions to read KVM stats through the binary
-> stats interface and then dump them to stdout when running the binary
-> stats test. Subsequent commits will extend the kvm_util code and use it
-> to make assertions in a test for NX hugepages.
->
-> CC: Jing Zhang <jingzhangos@google.com>
-> Signed-off-by: Ben Gardon <bgardon@google.com>
-> ---
->  .../selftests/kvm/include/kvm_util_base.h     |   1 +
->  .../selftests/kvm/kvm_binary_stats_test.c     |   3 +
->  tools/testing/selftests/kvm/lib/kvm_util.c    | 143 ++++++++++++++++++
->  3 files changed, 147 insertions(+)
->
-> diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-> index 976aaaba8769..4783fd1cd4cf 100644
-> --- a/tools/testing/selftests/kvm/include/kvm_util_base.h
-> +++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-> @@ -401,6 +401,7 @@ void assert_on_unhandled_exception(struct kvm_vm *vm, uint32_t vcpuid);
->
->  int vm_get_stats_fd(struct kvm_vm *vm);
->  int vcpu_get_stats_fd(struct kvm_vm *vm, uint32_t vcpuid);
-> +void dump_vm_stats(struct kvm_vm *vm);
->
->  uint32_t guest_get_vcpuid(void);
->
-> diff --git a/tools/testing/selftests/kvm/kvm_binary_stats_test.c b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-> index 17f65d514915..afc4701ce8dd 100644
-> --- a/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-> +++ b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-> @@ -174,6 +174,9 @@ static void vm_stats_test(struct kvm_vm *vm)
->         stats_test(stats_fd);
->         close(stats_fd);
->         TEST_ASSERT(fcntl(stats_fd, F_GETFD) == -1, "Stats fd not freed");
-> +
-> +       /* Dump VM stats */
-> +       dump_vm_stats(vm);
->  }
->
->  static void vcpu_stats_test(struct kvm_vm *vm, int vcpu_id)
-> diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-> index 11a692cf4570..f87df68b150d 100644
-> --- a/tools/testing/selftests/kvm/lib/kvm_util.c
-> +++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-> @@ -2562,3 +2562,146 @@ int vcpu_get_stats_fd(struct kvm_vm *vm, uint32_t vcpuid)
->
->         return ioctl(vcpu->fd, KVM_GET_STATS_FD, NULL);
->  }
-> +
-> +/* Caller is responsible for freeing the returned kvm_stats_header. */
-> +static struct kvm_stats_header *read_vm_stats_header(int stats_fd)
-> +{
-> +       struct kvm_stats_header *header;
-> +       ssize_t ret;
-> +
-> +       /* Read kvm stats header */
-> +       header = malloc(sizeof(*header));
-> +       TEST_ASSERT(header, "Allocate memory for stats header");
-> +
-> +       ret = read(stats_fd, header, sizeof(*header));
-> +       TEST_ASSERT(ret == sizeof(*header), "Read stats header");
-> +
-> +       return header;
-> +}
-> +
-> +static void dump_header(int stats_fd, struct kvm_stats_header *header)
-> +{
-> +       ssize_t ret;
-> +       char *id;
-> +
-> +       printf("flags: %u\n", header->flags);
-> +       printf("name size: %u\n", header->name_size);
-> +       printf("num_desc: %u\n", header->num_desc);
-> +       printf("id_offset: %u\n", header->id_offset);
-> +       printf("desc_offset: %u\n", header->desc_offset);
-> +       printf("data_offset: %u\n", header->data_offset);
-> +
-> +       /* Read kvm stats id string */
-> +       id = malloc(header->name_size);
-> +       TEST_ASSERT(id, "Allocate memory for id string");
-> +       ret = pread(stats_fd, id, header->name_size, header->id_offset);
-> +       TEST_ASSERT(ret == header->name_size, "Read id string");
-> +
-> +       printf("id: %s\n", id);
-> +
-> +       free(id);
-> +}
-> +
-> +static ssize_t stats_desc_size(struct kvm_stats_header *header)
-> +{
-> +       return sizeof(struct kvm_stats_desc) + header->name_size;
-> +}
-> +
-> +/* Caller is responsible for freeing the returned kvm_stats_desc. */
-> +static struct kvm_stats_desc *read_vm_stats_desc(int stats_fd,
-> +                                                struct kvm_stats_header *header)
-> +{
-> +       struct kvm_stats_desc *stats_desc;
-> +       size_t size_desc;
-> +       ssize_t ret;
-> +
-> +       size_desc = header->num_desc * stats_desc_size(header);
-> +
-> +       /* Allocate memory for stats descriptors */
-> +       stats_desc = malloc(size_desc);
-> +       TEST_ASSERT(stats_desc, "Allocate memory for stats descriptors");
-> +
-> +       /* Read kvm stats descriptors */
-> +       ret = pread(stats_fd, stats_desc, size_desc, header->desc_offset);
-> +       TEST_ASSERT(ret == size_desc, "Read KVM stats descriptors");
-> +
-> +       return stats_desc;
-> +}
-> +
-> +/* Caller is responsible for freeing the memory *data. */
-> +static int read_stat_data(int stats_fd, struct kvm_stats_header *header,
-> +                         struct kvm_stats_desc *desc, uint64_t **data)
-> +{
-> +       u64 *stats_data;
-> +       ssize_t ret;
-> +
-> +       stats_data = malloc(desc->size * sizeof(*stats_data));
-> +
-> +       ret = pread(stats_fd, stats_data, desc->size * sizeof(*stats_data),
-> +                   header->data_offset + desc->offset);
-> +
-> +       /* ret is in bytes. */
-> +       ret = ret / sizeof(*stats_data);
-> +
-> +       TEST_ASSERT(ret == desc->size,
-> +                   "Read data of KVM stats: %s", desc->name);
-> +
-> +       *data = stats_data;
-> +
-> +       return ret;
-> +}
-> +
-> +static void dump_stat(int stats_fd, struct kvm_stats_header *header,
-> +                     struct kvm_stats_desc *desc)
-> +{
-> +       u64 *stats_data;
-> +       ssize_t ret;
-> +       int i;
-> +
-> +       printf("\tflags: %u\n", desc->flags);
-> +       printf("\texponent: %u\n", desc->exponent);
-> +       printf("\tsize: %u\n", desc->size);
-> +       printf("\toffset: %u\n", desc->offset);
-> +       printf("\tbucket_size: %u\n", desc->bucket_size);
-> +       printf("\tname: %s\n", (char *)&desc->name);
-> +
-> +       ret = read_stat_data(stats_fd, header, desc, &stats_data);
-> +
-> +       printf("\tdata: %lu", *stats_data);
-> +       for (i = 1; i < ret; i++)
-> +               printf(", %lu", *(stats_data + i));
-> +       printf("\n\n");
-> +
-> +       free(stats_data);
-> +}
-> +
-> +void dump_vm_stats(struct kvm_vm *vm)
-> +{
-> +       struct kvm_stats_desc *stats_desc;
-> +       struct kvm_stats_header *header;
-> +       struct kvm_stats_desc *desc;
-> +       size_t size_desc;
-> +       int stats_fd;
-> +       int i;
-> +
-> +       stats_fd = vm_get_stats_fd(vm);
-> +
-> +       header = read_vm_stats_header(stats_fd);
-> +       dump_header(stats_fd, header);
-> +
-> +       stats_desc = read_vm_stats_desc(stats_fd, header);
-> +
-> +       size_desc = stats_desc_size(header);
-> +
-> +       /* Read kvm stats data one by one */
-> +       for (i = 0; i < header->num_desc; ++i) {
-> +               desc = (void *)stats_desc + (i * size_desc);
-> +               dump_stat(stats_fd, header, desc);
-> +       }
-> +
-> +       free(stats_desc);
-> +       free(header);
-> +
-> +       close(stats_fd);
-> +}
-> +
-> --
-> 2.35.1.1021.g381101b075-goog
->
-Reviewed-by: Jing Zhang <jingzhangos@google.com>
+On Wed, Mar 30, 2022 at 04:41:14AM +0200, Willy Tarreau wrote:
+> Hi Ammar,
+> 
+> On Tue, Mar 29, 2022 at 05:20:31PM +0700, Ammar Faizi wrote:
+> > On 3/29/22 5:17 PM, Ammar Faizi wrote:
+> > > Hi,
+> > > 
+> > > This is a patchset v2 to add dynamic memory allocator support
+> > > for nolibc after 2 RFCs, please review the changes carefully.
+> 
+> Thank you! For me it's OK for all the series:
+> 
+> Acked-by: Willy Tarreau <w@1wt.eu>
+> 
+> I do have a minor comment about the use of __builtin_mul_overflow() here.
+> While this code is included in the kernel and mostly for use with kernel
+> related stuff, till now I've been careful to support older compilers (I'm
+> still seeing 4.8, 4.7 and 4.4 commonly in field). I don't find it urgent,
+> but I think that sooner or later it would be nice to implement an
+> alternative for compilers missing this builtin, especially if it's the
+> only one that prevents older compilers from being used. Probably that
+> something like this (untested) would do the job:
+> 
+> 	if (nmemb && ~(size_t)0 / nmemb < size) {
+> 		SET_ERRNO(ENOMEM);
+> 		return NULL;
+> 	}
+> 	size *= nmemb;
+> 
+> But again, for me it's not a showstopper and can be improved later.
+> 
+> > Sorry, forgot to replace === with --- in for each patch.
+> > Should I resend?
+> 
+> Let's see what Paul prefers. sed 's/===/---/' on the mbox should fix
+> it otherwise a resend will be needed.
+
+Given that I am adding your Acked-by anyway, why not?  ;-)
+
+But please check the commits to make sure that this had the desired
+effect.
+
+							Thanx, Paul
