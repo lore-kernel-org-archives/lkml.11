@@ -2,114 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD62DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 19:44:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD462C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 19:46:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230269AbiC3Tqj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 15:46:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58192 "EHLO
+        id S230281AbiC3TsD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 15:48:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230200AbiC3Tqd (ORCPT
+        with ESMTP id S1346638AbiC3Tr5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 15:46:33 -0400
-Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 019E345ACE;
-        Wed, 30 Mar 2022 12:44:48 -0700 (PDT)
-Received: by mail-oi1-x233.google.com with SMTP id w127so23108425oig.10;
-        Wed, 30 Mar 2022 12:44:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=pjsBmPs0l7j1oUF7fQlTyFt6udSAgSvZHxxIq2cVxVg=;
-        b=Zt4ic2/4eeolmTp4xGdY9jHR/mQgUvWijyD+B+gLTfsJCCCL0zQrmj+4j06n/1Bh5V
-         g8anomcJ6tn0vjOc2BOWbTCQWpWy5D6W1mfbvRYh7373rCMGNWEfzqS7eOA94yfbwm0g
-         471O836OZ0+0HZuufHFroyXZ+RKLDl+XTxot7W6EzqqOB93iy4CHt5057Ui7sxtZP4kv
-         X1h+C6WUKF2bGrdMovw4K/9/QPHA1wJfKLE3UydAPNsCpnAp0UrfTNSAqEqsl8SGvaF1
-         F9SUjDOh5aVvKa2efUdn0vDCDM7vZUt/veQG5L9DWlZdbiNQL3jyvEJdjuATEqvxXVHP
-         E/kg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pjsBmPs0l7j1oUF7fQlTyFt6udSAgSvZHxxIq2cVxVg=;
-        b=BTlcBdmGqe0g23RDZMbEhWOHalo4reAOUMsxbT2AOa/SGxtWwxUF+bUTjYYFKQ3+7n
-         Siy+V8Ok3mDLm6Q0JCx1gUudNV8TM3G7c4HZGqCI+dlfCID6JMGmB6vFDOkEX4DdAOov
-         MlYBrVqgPTFFZNC+YrdKjPeNRlGvolIzJTmNyVLrV67l/bUfd6mr7aXIVKqIcdn1tkZK
-         uKOk5CZ2jwpT/Jde7dWLibmu9Y6fvka9FW+taP643sP+mIbQZ+4CoRqGRsiASRJJ94jZ
-         /MXzqiS11qaFDKgsTHZalbJZx5BAa+IZNL7epQ4uAvtiRWWADSJFj741aha+Pb+PuZ65
-         /lYQ==
-X-Gm-Message-State: AOAM532SN7GL5MljxK2dASp0ZecrSHKk0Ewz2ZB36V4I42xdYhsn3mL4
-        dAlhebl+Mh80bpcnmV5QC2k=
-X-Google-Smtp-Source: ABdhPJwpUA6Xgeh21wKg5aXRvuZvLzMGjvZRstSWL74fU0t8W0tlmCya43yH85/KKmVPloLzuby3jw==
-X-Received: by 2002:aca:34d6:0:b0:2ef:93b1:27d6 with SMTP id b205-20020aca34d6000000b002ef93b127d6mr788090oia.255.1648669487094;
-        Wed, 30 Mar 2022 12:44:47 -0700 (PDT)
-Received: from t14s.localdomain ([177.220.174.113])
-        by smtp.gmail.com with ESMTPSA id d3-20020a9d2903000000b005cda765f578sm10850188otb.0.2022.03.30.12.44.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Mar 2022 12:44:46 -0700 (PDT)
-Received: by t14s.localdomain (Postfix, from userid 1000)
-        id CCB421D618F; Wed, 30 Mar 2022 16:44:44 -0300 (-03)
-Date:   Wed, 30 Mar 2022 16:44:44 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Jamie Bainbridge <jamie.bainbridge@gmail.com>
-Cc:     Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-sctp@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 net] sctp: count singleton chunks in assoc user stats
-Message-ID: <YkSzLJ72M5f5EL2L@t14s.localdomain>
-References: <0dfee8c9d17c20f9a87c39dbc57f635d998b08d2.1648609552.git.jamie.bainbridge@gmail.com>
+        Wed, 30 Mar 2022 15:47:57 -0400
+Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B344331344
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 12:46:09 -0700 (PDT)
+Date:   Wed, 30 Mar 2022 12:46:03 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1648669567;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=hae66Cb8VIx5SH/Gz0qCBX+AdOg7deV3Pdd2/H0Qa6I=;
+        b=k46LoI2EORebN/s8HlnPjBPRRuJ68pY8pb47D5eWAq5uknpgBthhos/yMWK2hKBemqOnYs
+        vyj6rOAPs3KYtk2/+Zm32WkEdR/jQ7PgqLsfnL2Iq5qJeNyCql1pG/6L2RPUVBxoIH2Xnv
+        UnR+jfplx/WzAbUmnLDTv9D511JRKp8=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Roman Gushchin <roman.gushchin@linux.dev>
+To:     Waiman Long <longman@redhat.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: Re: [PATCH v2] mm/list_lru: Fix possible race in
+ memcg_reparent_list_lru_node()
+Message-ID: <YkSzezKeXVBZJlIA@carbon.dhcp.thefacebook.com>
+References: <20220330172646.2687555-1-longman@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0dfee8c9d17c20f9a87c39dbc57f635d998b08d2.1648609552.git.jamie.bainbridge@gmail.com>
+In-Reply-To: <20220330172646.2687555-1-longman@redhat.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 01:06:02PM +1000, Jamie Bainbridge wrote:
-> Singleton chunks (INIT, HEARTBEAT PMTU probes, and SHUTDOWN-
-> COMPLETE) are not counted in SCTP_GET_ASOC_STATS "sas_octrlchunks"
-> counter available to the assoc owner.
+On Wed, Mar 30, 2022 at 01:26:46PM -0400, Waiman Long wrote:
+> Muchun Song found out there could be a race between list_lru_add()
+> and memcg_reparent_list_lru_node() causing the later function to miss
+> reparenting of a lru entry as shown below:
 > 
-> These are all control chunks so they should be counted as such.
+> CPU0:                           CPU1:
+> list_lru_add()
+>     spin_lock(&nlru->lock)
+>     l = list_lru_from_kmem(memcg)
+>                                 memcg_reparent_objcgs(memcg)
+>                                 memcg_reparent_list_lrus(memcg)
+>                                     memcg_reparent_list_lru()
+>                                         memcg_reparent_list_lru_node()
+>                                             if (!READ_ONCE(nlru->nr_items))
+>                                                 // Miss reparenting
+>                                                 return
+>     // Assume 0->1
+>     l->nr_items++
+>     // Assume 0->1
+>     nlru->nr_items++
 > 
-> Add counting of singleton chunks so they are properly accounted for.
+> Though it is not likely that a list_lru_node that has 0 item suddenly
+> has a newly added lru entry at the end of its life. The race is still
+> theoretically possible.
 > 
-> Fixes: 196d67593439 ("sctp: Add support to per-association statistics via a new SCTP_GET_ASSOC_STATS call")
-> Signed-off-by: Jamie Bainbridge <jamie.bainbridge@gmail.com>
-> ---
->  net/sctp/outqueue.c | 2 ++
->  1 file changed, 2 insertions(+)
+> With the lock/unlock pair used within the percpu_ref_kill() which is
+> the last function call of memcg_reparent_objcgs(), any read issued
+> in memcg_reparent_list_lru_node() will not be reordered before the
+> reparenting of objcgs.
 > 
-> diff --git a/net/sctp/outqueue.c b/net/sctp/outqueue.c
-> index a18609f608fb786b2532a4febbd72a9737ab906c..bed34918b41f24810677adc0cd4fbd0859396a02 100644
-> --- a/net/sctp/outqueue.c
-> +++ b/net/sctp/outqueue.c
-> @@ -914,6 +914,7 @@ static void sctp_outq_flush_ctrl(struct sctp_flush_ctx *ctx)
->  				ctx->asoc->base.sk->sk_err = -error;
->  				return;
->  			}
-> +			ctx->asoc->stats.octrlchunks++;
->  			break;
->  
->  		case SCTP_CID_ABORT:
-> @@ -939,6 +940,7 @@ static void sctp_outq_flush_ctrl(struct sctp_flush_ctx *ctx)
->  		case SCTP_CID_HEARTBEAT:
->  			if (chunk->pmtu_probe) {
->  				sctp_packet_singleton(ctx->transport, chunk, ctx->gfp);
-> +				ctx->asoc->stats.octrlchunks++;
+> Adding a !spin_is_locked()/smp_rmb()/!READ_ONCE(nlru->nr_items) check
+> to ensure that either the reading of nr_items is valid or the racing
+> list_lru_add() will see the reparented objcg.
+> 
+> Fixes: 405cc51fc104 ("mm/list_lru: optimize memcg_reparent_list_lru_node()")
+> Reported-by: Muchun Song <songmuchun@bytedance.com>
+> Signed-off-by: Waiman Long <longman@redhat.com>
 
-sctp_packet_singleton can fail. It shouldn't be propagated to the
-socket but octrlchunks shouldn't be incremented then. Not too diferent
-from the one above.
-
->  				break;
->  			}
->  			fallthrough;
-> -- 
-> 2.35.1
-> 
+Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
