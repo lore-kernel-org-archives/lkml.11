@@ -2,138 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6BB6C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:58:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 720E2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:58:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243526AbiC3G7p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 02:59:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55220 "EHLO
+        id S240729AbiC3HAQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 03:00:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243486AbiC3G7a (ORCPT
+        with ESMTP id S243545AbiC3G77 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 02:59:30 -0400
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam08olkn2052.outbound.protection.outlook.com [40.92.47.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82B04DE0AF;
-        Tue, 29 Mar 2022 23:57:45 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=frtHwKnQ6fYCFR9T2Bvd4nhxk+12+dGClzsUlX4vudWuauS3pxi5We8KbVyKJu8cn10H77wxmrU9UcM2+cOTe9qJEBdCRsteXvD4GLr+vzORYmktshqMPj4QrqxoQEpoBK53Fh/5+PUPcJpjVFKWTelKasi8XkN6GjRqROb6lVh12kb0YGNRNjPpWZ9sR7yjsrUXZvui0oJa3/DqyDCgMcSCOnEDEGyzL9mR8o7BLcuwoLV5T1hC3o4OMECAbE0UwSuq08xkabL43k6Y1qEt3BWTrRXua7mE9U+nKtURrJViav2wHwYbSTHLZesbuB/8tSGCruegZ/28jEhwPLiuyA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0GbSQFeXz9j5Ceo1yd+F/1Ne6QzvuHas4kLXpgLdvfI=;
- b=fDewjC2Ny7XXWkg8osAMmIg7IkyCOA7OnC5k/oe1R2Saxrd887jr9/mgqp+Rkv5nGzh+2ChiqMYKZqqKK1+B0jTkGyhOzpGXnEcxUrIIqnRdupBVOgMgmO2ZyFWtZP7C9gKo6sVdCIFV8KT5Au0P+AjWRjiPEBCcwEr6K2O8Q8PtrxuNlvKhDFQr6ECArWa+SjpiMneTQ7HIuf4b1I1slFCkj8vXru8FA2FG1/1p8gHfbwFugDnmMbGXHmdSPws3CvGSi1p0gK6zPwF6875AP8+UuwDJ9DsxJJoy63a2sHqDRjHKjvcVMCZ3h2kRoJvdQXf9kY9VPP44I7eWS2nwsA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-Received: from BY5PR02MB7009.namprd02.prod.outlook.com (2603:10b6:a03:236::13)
- by CH0PR02MB7899.namprd02.prod.outlook.com (2603:10b6:610:100::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.19; Wed, 30 Mar
- 2022 06:57:43 +0000
-Received: from BY5PR02MB7009.namprd02.prod.outlook.com
- ([fe80::413f:bae6:4e5e:5ae6]) by BY5PR02MB7009.namprd02.prod.outlook.com
- ([fe80::413f:bae6:4e5e:5ae6%6]) with mapi id 15.20.5123.018; Wed, 30 Mar 2022
- 06:57:43 +0000
-From:   Joel Selvaraj <jo@jsfamily.in>
-To:     Sumit Semwal <sumit.semwal@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Amit Pundir <amit.pundir@linaro.org>,
-        Joel Selvaraj <jo@jsfamily.in>
-Subject: [PATCH 2/3] dt-bindings: display: novatek,nt36672a: add backlight property
-Date:   Wed, 30 Mar 2022 12:26:38 +0530
-Message-ID: <BY5PR02MB700931ACFDFE4063F7A87C38D91F9@BY5PR02MB7009.namprd02.prod.outlook.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220330065639.245531-1-jo@jsfamily.in>
-References: <20220330065639.245531-1-jo@jsfamily.in>
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-TMN:  [V1VkMFk6QHVnZ3f7mxi26pvQTK5stRYgys1CnZGYNgwYbBH5LbPGEx0tY5uFY8nh]
-X-ClientProxiedBy: BM1PR0101CA0039.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:b00:1a::25) To BY5PR02MB7009.namprd02.prod.outlook.com
- (2603:10b6:a03:236::13)
-X-Microsoft-Original-Message-ID: <20220330065639.245531-3-jo@jsfamily.in>
+        Wed, 30 Mar 2022 02:59:59 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 364D3DEBA8;
+        Tue, 29 Mar 2022 23:58:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648623486; x=1680159486;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=SIp0h30VMDvBIVSGXrWFtTthjxzLWvye/g+v5SbbOFY=;
+  b=H6NuMmduSjL5ovNPAVlnUgNpw/MRoYZqG6ws9IyE4YBDUPjZo1mwfxQP
+   qh6JYRND4CdevJqN7YEeqne+d9FnuWUPci3dDJMTwebS0233VlCvPlTEk
+   xeUbDFPwrw+BwMG3PYAufwYmUCtUqq142iuRkc5GpKKGvm5bfXnIyVTcZ
+   Bue3YYctIqhIS1uFa2jyrxaO3FyOxyZlcm2C9CF9b0QBZpVOR8n+E3Vyh
+   6SZMznUA3w3qF2efiv7PoUSDgStf80w5GO1RDo4eTT12EtcCrU7jNa/MI
+   geC39aTEdN7mdgeRcJFd5FaH61Wgt7BnextYFnu5OnsANjV//KtDoZXPM
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="322644251"
+X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
+   d="scan'208";a="322644251"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 23:58:03 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
+   d="scan'208";a="546730778"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
+  by orsmga007.jf.intel.com with ESMTP; 29 Mar 2022 23:58:00 -0700
+Date:   Wed, 30 Mar 2022 14:50:47 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Tom Rix <trix@redhat.com>, Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 1/5] hwmon: introduce hwmon_sanitize_name()
+Message-ID: <20220330065047.GA212503@yilunxu-OptiPlex-7050>
+References: <20220329160730.3265481-1-michael@walle.cc>
+ <20220329160730.3265481-2-michael@walle.cc>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b3ee026c-f5c4-4668-0c46-08da121a96bb
-X-MS-TrafficTypeDiagnostic: CH0PR02MB7899:EE_
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9HvI2nCE+DpD9QpvF52WvYx/9fOMEj/jyKHQFykIkItnNOsWKD68ALCEoz/yd9xtvkycJyOlGxiAOIXM60RghpF9C/lxHIHph1c/dhc4DaUjqLxbX/icqVFgCAq+V+G1ooTKLScEOLxj6hiO/38ibo929YykF3Curm1vjNNXofKbGiIizmxsNS8IFfnF3SzWRxrpLFUOm+2fOH+BuDYqIe1zjssemYOvQW6mfvz+oaUKXCEWkcL5/AhnN5WcnQ3fioDH9IMSNpRltcvxNVtFzoAQyLplytgORd24rrwZs4XJUcy6xgdrZRlobjlnyehEUU8+jpvgj0jun4+HKNxZd7nHYZ7BEcU4D/csDhrmnhvIZsT+1vNSrbnrDTBUMgaYZaR2HZHnaqIE4+v5gqnbGqwAzILZvjoS3PYU6+E3o94J3pV3fq0YjH1jR3GbdrFC60wDqDW3EJZj5uuapWwg0EzWyygskCvnICguXYiBZE00DsF6BecNX+f58v9OldAdTPg4sVMTQjZIDMlzK5GVS9uFcGLjZMHHLkJSbz95R8ObDRkjexItw+8Qu7V60t5VwdGqIVadaVMqqySq+shHGA==
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?asoMpaBEpqaTVkoCL+jqLv5ZVoSqIxfeXGxky0Av/O5psmN9PMNMFyhvg6yH?=
- =?us-ascii?Q?RXn0lmMZbmaUDLtKvSq9Ibn5Lfb4jm3U0Ea8cXDL3B6nHkFOtMB7UPgZFStN?=
- =?us-ascii?Q?OfmyMfgWRyBaVKauzYD8DMR1hcWdsXxotDuq11vN3M5NmDMtrSeimN4x9kww?=
- =?us-ascii?Q?jkaMvvQJwBDkIGgyEimxRUVUSLyfcsLqGAtanXO04dJndrbIXWGaPnhmEhZr?=
- =?us-ascii?Q?SL3ReycL9Nv89xd04cOp1slktPfjVaAvbb7sKgMqY0u88rp5OLmckG9TPMv0?=
- =?us-ascii?Q?RlLg/q+zQaq2gJ1sFLFuQ95/buIgC6XN9hTtFDLj8dJ4CEkhVHMYN0DFVxHZ?=
- =?us-ascii?Q?OnwNyiK2dG3yYz058rRTuerUuM23/3Uz6J6tdl7y676SjO/tj3Egs5ML29h9?=
- =?us-ascii?Q?aEQQ5kIF4h3QUEFF6WcuCmey4yvQAWR6UWE4GAR2fTGRjemi5TPwMEsb/ppg?=
- =?us-ascii?Q?VSnh3FGjeSGs+rOlZt81thrl6WFQDfxihRzzQNfgTZ1ig2XNemfkPCXosjH5?=
- =?us-ascii?Q?Igw0176NmjePSQL7AmsoGNeny9dqmuryEDXUBwEikUwhwb8Yipn0ReFwrkZm?=
- =?us-ascii?Q?guIhhxIw/9GjgPjXniRvqorsu/Sj6IBa8dkPxGaX0q7sxH5oWWROePFTNatN?=
- =?us-ascii?Q?MExCg5uAKcoxIFdr9E0Nqvs+FjhqudOPwRn1/3lVBEtOZp/UXTm5zNW/FxEK?=
- =?us-ascii?Q?qDG0kAnVuDfVZCdSKnNFRR09/Klc3QMyY9n8UJGUEQkMJvaU/ToUB/1tqhXJ?=
- =?us-ascii?Q?TvINxQCsykpuCNl/eb76Jlxax/Zu+3XInPSHSZnzXrPGVqEZedAhjneGQtTy?=
- =?us-ascii?Q?Khjxh10RNNfbbRBPFVQM40N4hZo46o9OsmV5/CaTB9vlldXlpiz1luzDQ1sL?=
- =?us-ascii?Q?4cuwXrawbJiInbqtIKDOddTj5J4AFoXADGUK2yu3djovKI0nJdeZcvrxFjpA?=
- =?us-ascii?Q?7ebFS+pko5HoWkzsQaoIYtYp9H2gss/hLwi4yDeNOWHcAIjRm7bq63xQHnCU?=
- =?us-ascii?Q?l4LHqvp9zJaxBWCfF5fiawHJ9CGJDEocmFRkdBji/CfHtJ6Zp+HYrotlPZKf?=
- =?us-ascii?Q?chGVxzgHi0RTHvKo6if7WORUfJZjPoKtXo0iJtwxW1X8UYuuqyOfWq8cZHOe?=
- =?us-ascii?Q?ehLNDqhTrHWYnO31fvMDGjf2vdZ5FBJUz7r8Vn0JmXSdxt+7hogEF5dJEwo0?=
- =?us-ascii?Q?1CGELIxllzXlb70nkQYalR8zIN8X9ZtWN6rUux/hwz/bMGe41BCAnQ9wRdaw?=
- =?us-ascii?Q?/aHOj0gHvGWcvTBeX+EsuL9qxxv9xXbAceI3t0ZsiKJYBsXRY9nYDxfpomuA?=
- =?us-ascii?Q?tDe1FRZ0eKWEbbGNuyqbSm86abcTcyaAV0MSJjWenpf3ezpPwZPekizg8PMe?=
- =?us-ascii?Q?7huHriGydfVgkXq9iRJ5Y6+B05d7x6YkoYLAxgvQO1P+KcgYPY9Ycom3S1Tg?=
- =?us-ascii?Q?7sM9+z3hlCg8w7lTbD89LDHX69HEkt9WNGhOW1QbMhFEbu1EpsM1xw=3D=3D?=
-X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-99c3d.templateTenant
-X-MS-Exchange-CrossTenant-Network-Message-Id: b3ee026c-f5c4-4668-0c46-08da121a96bb
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR02MB7009.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2022 06:57:43.7855
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR02MB7899
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220329160730.3265481-2-michael@walle.cc>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add backlight property and update example to include it.
+On Tue, Mar 29, 2022 at 06:07:26PM +0200, Michael Walle wrote:
+> More and more drivers will check for bad characters in the hwmon name
+> and all are using the same code snippet. Consolidate that code by adding
+> a new hwmon_sanitize_name() function.
+> 
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> ---
+>  Documentation/hwmon/hwmon-kernel-api.rst |  9 ++++-
+>  drivers/hwmon/hwmon.c                    | 49 ++++++++++++++++++++++++
+>  include/linux/hwmon.h                    |  3 ++
+>  3 files changed, 60 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/hwmon/hwmon-kernel-api.rst b/Documentation/hwmon/hwmon-kernel-api.rst
+> index c41eb6108103..12f4a9bcef04 100644
+> --- a/Documentation/hwmon/hwmon-kernel-api.rst
+> +++ b/Documentation/hwmon/hwmon-kernel-api.rst
+> @@ -50,6 +50,10 @@ register/unregister functions::
+>  
+>    void devm_hwmon_device_unregister(struct device *dev);
+>  
+> +  char *hwmon_sanitize_name(const char *name);
+> +
+> +  char *devm_hwmon_sanitize_name(struct device *dev, const char *name);
+> +
+>  hwmon_device_register_with_groups registers a hardware monitoring device.
+>  The first parameter of this function is a pointer to the parent device.
+>  The name parameter is a pointer to the hwmon device name. The registration
+> @@ -93,7 +97,10 @@ removal would be too late.
+>  
+>  All supported hwmon device registration functions only accept valid device
+>  names. Device names including invalid characters (whitespace, '*', or '-')
+> -will be rejected. The 'name' parameter is mandatory.
+> +will be rejected. The 'name' parameter is mandatory. Before calling a
+> +register function you should either use hwmon_sanitize_name or
+> +devm_hwmon_sanitize_name to replace any invalid characters with an
 
-Signed-off-by: Joel Selvaraj <jo@jsfamily.in>
----
- .../devicetree/bindings/display/panel/novatek,nt36672a.yaml     | 2 ++
- 1 file changed, 2 insertions(+)
+I suggest                   to duplicate the name and replace ...
 
-diff --git a/Documentation/devicetree/bindings/display/panel/novatek,nt36672a.yaml b/Documentation/devicetree/bindings/display/panel/novatek,nt36672a.yaml
-index 563766d283f6..41ee3157a1cd 100644
---- a/Documentation/devicetree/bindings/display/panel/novatek,nt36672a.yaml
-+++ b/Documentation/devicetree/bindings/display/panel/novatek,nt36672a.yaml
-@@ -46,6 +46,7 @@ properties:
- 
-   reg: true
-   port: true
-+  backlight: true
- 
- required:
-   - compatible
-@@ -73,6 +74,7 @@ examples:
-             vddpos-supply = <&lab>;
-             vddneg-supply = <&ibb>;
- 
-+            backlight = <&pmi8998_wled>;
-             reset-gpios = <&tlmm 6 GPIO_ACTIVE_HIGH>;
- 
-             port {
--- 
-2.35.1
+Thanks,
+Yilun
 
+> +underscore.
+>  
+>  Using devm_hwmon_device_register_with_info()
+>  --------------------------------------------
+> diff --git a/drivers/hwmon/hwmon.c b/drivers/hwmon/hwmon.c
+> index 989e2c8496dd..619ef9f9a16e 100644
+> --- a/drivers/hwmon/hwmon.c
+> +++ b/drivers/hwmon/hwmon.c
+> @@ -1057,6 +1057,55 @@ void devm_hwmon_device_unregister(struct device *dev)
+>  }
+>  EXPORT_SYMBOL_GPL(devm_hwmon_device_unregister);
+>  
+> +static char *__hwmon_sanitize_name(struct device *dev, const char *old_name)
+> +{
+> +	char *name, *p;
+> +
+> +	if (dev)
+> +		name = devm_kstrdup(dev, old_name, GFP_KERNEL);
+> +	else
+> +		name = kstrdup(old_name, GFP_KERNEL);
+> +	if (!name)
+> +		return NULL;
+> +
+> +	for (p = name; *p; p++)
+> +		if (hwmon_is_bad_char(*p))
+> +			*p = '_';
+> +
+> +	return name;
+> +}
+> +
+> +/**
+> + * hwmon_sanitize_name - Replaces invalid characters in a hwmon name
+> + * @name: NUL-terminated name
+> + *
+> + * Allocates a new string where any invalid characters will be replaced
+> + * by an underscore.
+> + *
+> + * Returns newly allocated name or %NULL in case of error.
+> + */
+> +char *hwmon_sanitize_name(const char *name)
+> +{
+> +	return __hwmon_sanitize_name(NULL, name);
+> +}
+> +EXPORT_SYMBOL_GPL(hwmon_sanitize_name);
+> +
+> +/**
+> + * devm_hwmon_sanitize_name - resource managed hwmon_sanitize_name()
+> + * @dev: device to allocate memory for
+> + * @name: NUL-terminated name
+> + *
+> + * Allocates a new string where any invalid characters will be replaced
+> + * by an underscore.
+> + *
+> + * Returns newly allocated name or %NULL in case of error.
+> + */
+> +char *devm_hwmon_sanitize_name(struct device *dev, const char *name)
+> +{
+> +	return __hwmon_sanitize_name(dev, name);
+> +}
+> +EXPORT_SYMBOL_GPL(devm_hwmon_sanitize_name);
+> +
+>  static void __init hwmon_pci_quirks(void)
+>  {
+>  #if defined CONFIG_X86 && defined CONFIG_PCI
+> diff --git a/include/linux/hwmon.h b/include/linux/hwmon.h
+> index eba380b76d15..4efaf06fd2b8 100644
+> --- a/include/linux/hwmon.h
+> +++ b/include/linux/hwmon.h
+> @@ -461,6 +461,9 @@ void devm_hwmon_device_unregister(struct device *dev);
+>  int hwmon_notify_event(struct device *dev, enum hwmon_sensor_types type,
+>  		       u32 attr, int channel);
+>  
+> +char *hwmon_sanitize_name(const char *name);
+> +char *devm_hwmon_sanitize_name(struct device *dev, const char *name);
+> +
+>  /**
+>   * hwmon_is_bad_char - Is the char invalid in a hwmon name
+>   * @ch: the char to be considered
+> -- 
+> 2.30.2
