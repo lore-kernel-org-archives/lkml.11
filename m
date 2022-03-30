@@ -2,98 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6614C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 17:19:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4326BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 17:22:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349234AbiC3RV0 (ORCPT
+        id S1349242AbiC3RXx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 13:21:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33040 "EHLO
+        Wed, 30 Mar 2022 13:23:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346137AbiC3RVY (ORCPT
+        with ESMTP id S1349333AbiC3RX1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 13:21:24 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 466A15A5B6;
-        Wed, 30 Mar 2022 10:19:39 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 7C50780FA;
-        Wed, 30 Mar 2022 17:17:31 +0000 (UTC)
-Date:   Wed, 30 Mar 2022 20:19:37 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Lu Baolu <baolu.lu@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        Christoph Hellwig <hch@lst.de>, linux-omap@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, regressions@lists.linux.dev
-Subject: Re: [PATCH v4 8/9] iommu: Remove unused argument in
- is_attach_deferred
-Message-ID: <YkSRKZcJO0q3v5WL@atomide.com>
-References: <20220216025249.3459465-1-baolu.lu@linux.intel.com>
- <20220216025249.3459465-9-baolu.lu@linux.intel.com>
- <YkRiawC2T9g+CHSJ@atomide.com>
- <20220330142340.GA2111031@nvidia.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+        Wed, 30 Mar 2022 13:23:27 -0400
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1AF3B271
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 10:21:40 -0700 (PDT)
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 22UH7CgV004223;
+        Wed, 30 Mar 2022 12:07:12 -0500
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 22UH76l5004220;
+        Wed, 30 Mar 2022 12:07:06 -0500
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Wed, 30 Mar 2022 12:07:06 -0500
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        Alexey Kardashevskiy <aik@ozlabs.ru>, jniethe5@gmail.com,
+        ganeshgr@linux.ibm.com, wangborong@cdjrlc.com,
+        bigunclemax@gmail.com, Miroslav Benes <mbenes@suse.cz>,
+        hbh25y@gmail.com, mikey@neuling.org,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Bhaskar Chowdhury <unixbhaskar@gmail.com>,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Helge Deller <deller@gmx.de>, danielhb413@gmail.com,
+        haren@linux.ibm.com, mamatha4@linux.vnet.ibm.com,
+        Corentin Labbe <clabbe@baylibre.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Thierry Reding <treding@nvidia.com>,
+        kernel.noureddine@gmail.com, nathanl@linux.ibm.com,
+        Petr Mladek <pmladek@suse.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Kees Cook <keescook@chromium.org>,
+        Arnd Bergmann <arnd@arndb.de>, guozhengkui@vivo.com,
+        kjain@linux.ibm.com, chenjingwen6@huawei.com,
+        Nick Piggin <npiggin@gmail.com>, oss@buserror.net,
+        rmclure@linux.ibm.com, maddy@linux.ibm.com,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        psampat@linux.ibm.com, sachinp@linux.ibm.com,
+        Anders Roxell <anders.roxell@linaro.org>,
+        ldufour@linux.ibm.com, hbathini@linux.ibm.com,
+        Athira Jajeev <atrajeev@linux.vnet.ibm.com>,
+        farosas@linux.ibm.com, Geoff Levand <geoff@infradead.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        sourabhjain@linux.ibm.com, Julia Lawall <Julia.Lawall@inria.fr>,
+        Ritesh Harjani <riteshh@linux.ibm.com>, cgel.zte@gmail.com,
+        Vaibhav Jain <vaibhav@linux.ibm.com>, tobias@waldekranz.com,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jakob Koschel <jakobkoschel@gmail.com>
+Subject: Re: [GIT PULL] Please pull powerpc/linux.git powerpc-5.18-1 tag
+Message-ID: <20220330170706.GV614@gate.crashing.org>
+References: <87zglefhxd.fsf@mpe.ellerman.id.au> <CAHk-=whk4jihDM+zkhZPYRyNO0-YA1_-K9_NyC3EDsX+gkxC-w@mail.gmail.com> <87wngefnsu.fsf@mpe.ellerman.id.au> <20220330112733.GG163591@kunlun.suse.cz> <87k0cbfuf4.fsf@mpe.ellerman.id.au>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220330142340.GA2111031@nvidia.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87k0cbfuf4.fsf@mpe.ellerman.id.au>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* Jason Gunthorpe <jgg@nvidia.com> [220330 14:21]:
-> On Wed, Mar 30, 2022 at 05:00:39PM +0300, Tony Lindgren wrote:
-> > Hi,
-> > 
-> > * Lu Baolu <baolu.lu@linux.intel.com> [700101 02:00]:
-> > > The is_attach_deferred iommu_ops callback is a device op. The domain
-> > > argument is unnecessary and never used. Remove it to make code clean.
-> > 
-> > Looks like this causes a regression for at least drivers/iommu/omap-iommu.c.
-> > 
-> > To me it seems the issue is there is no is_attach_deferred implemented, so
-> > we get a NULL pointer dereference at virtual address 00000008:
-> > 
-> > __iommu_probe_device from probe_iommu_group+0x2c/0x38
-> > probe_iommu_group from bus_for_each_dev+0x74/0xbc
-> > bus_for_each_dev from bus_iommu_probe+0x34/0x2e8
-> > bus_iommu_probe from bus_set_iommu+0x80/0xc8
-> > bus_set_iommu from omap_iommu_init+0x88/0xcc
-> > omap_iommu_init from do_one_initcall+0x44/0x24c
-> > 
-> > Any ideas for a fix?
-> > 
-> > It would be good to fix this quickly so we don't end up with a broken
-> > v5.18-rc1..
-> > 
-> > For reference, this is mainline commit 41bb23e70b50 ("iommu: Remove unused
-> > argument in is_attach_deferred").
+On Thu, Mar 31, 2022 at 12:21:03AM +1100, Michael Ellerman wrote:
+> Michal Suchánek <msuchanek@suse.de> writes:
+> > On Mon, Mar 28, 2022 at 08:07:13PM +1100, Michael Ellerman wrote:
+> >> Linus Torvalds <torvalds@linux-foundation.org> writes:
+> >> > On Fri, Mar 25, 2022 at 3:25 AM Michael Ellerman <mpe@ellerman.id.au> wrote:
+> >> 
+> >> > That said:
+> >> >
+> >> >> There's a series of commits cleaning up function descriptor handling,
+> >> >
+> >> > For some reason I also thought that powerpc had actually moved away
+> >> > from function descriptors, so I'm clearly not keeping up with the
+> >> > times.
+> >> 
+> >> No you're right, we have moved away from them, but not entirely.
+> >> 
+> >> Functions descriptors are still used for 64-bit big endian, but they're
+> >> not used for 64-bit little endian, or 32-bit.
+> >
+> > There was a patch to use ABIv2 for ppc64 big endian. I suppose that
+> > would rid usof the gunction descriptors for good.
 > 
-> Are you confident in the bisection? I don't see how that commit could
-> NULL deref..
+> It would be nice.
+> 
+> The hesitation in the past was that the GNU toolchain developers don't
+> officially support BE+ELFv2, though it is in use so it does work.
 
-Oops sorry you're right, the breaking commit is a different patch, it's
-3f6634d997db ("iommu: Use right way to retrieve iommu_ops") instead. I must
-have picked the wrong commit while testing.
+We do not officially support ELFv2 BE because there are no significant
+users, so we cannot have the same confidence it works correctly.
 
-> Can you find the code that is the NULL deref?
+It isn't tested often with GCC for example, mainly because it isn't
+convenient to do without pre-packaged user space for it (and on the
+other hand, there isn't much demand for it).
 
-I can debug a bit more tomorrow.
+> > Maybe it's worth resurrecting?
+> 
+> Yeah maybe we should think about it again. If it builds with clang/lld
+> that would be a real plus.
 
-Regards,
+With GCC it should work fine still.  But no doubt you will find some
+edge cases...  which you won't find until you try :-)
 
-Tony
+
+Segher
