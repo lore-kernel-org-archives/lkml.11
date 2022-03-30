@@ -2,162 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA270C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 16:17:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66F58C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 16:17:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348713AbiC3QTB (ORCPT
+        id S1348726AbiC3QTT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 12:19:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45930 "EHLO
+        Wed, 30 Mar 2022 12:19:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348693AbiC3QS6 (ORCPT
+        with ESMTP id S1348719AbiC3QTP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 12:18:58 -0400
-Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2831FDEFF
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 09:17:13 -0700 (PDT)
-Received: by mail-ot1-x330.google.com with SMTP id d15-20020a9d72cf000000b005cda54187c3so15243510otk.2
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 09:17:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:date:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=vuEnLJ19vsPpEYtmhA/N2c2iE3FXZJsfXS8pCpbwyeI=;
-        b=SVvmOryWc6YP1SQQ2Cc7u/n53zTpzKfv0zGLTzX0DPPxYurtAzkwMQYY0oSCbW9Oq8
-         payS0h5OWpfEZ5+g8dK0xmZc3Vlao1aj8hus9HyYx9/5t6oS+xgmZyl8jIn6oLLhbIUn
-         TZeHBnUfAZVXBAWLRzphGz7eA+oy5BXW+P+fHHUbctjgKxZsL3jhBcnaG6w3A7vQaFjv
-         2kPIgch506HGxpevQX/cvJ0I4YFmJjy307H1aFKYBmK+iW8vEnjIFnRk85XU4GE+KsNx
-         gWMHSBtiJxVMLxKr08bQeaU7dkqZq1dQss2L8eV0GpMI5ptvpZkQwPG5Rf/v2i6+rik0
-         OhIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=vuEnLJ19vsPpEYtmhA/N2c2iE3FXZJsfXS8pCpbwyeI=;
-        b=JuAAwo10pUSTDq/KnGlTP3faoMuUAbomCy8iRrwPoULpDvsL27YArVttGLeKdlZ1Zb
-         8wv045buFNriVYPeTwtckooD25IE/rlQ5bJNINuSymKlx4MYtp8esuA5v5ZQTllw/tc9
-         dZT1uy4k5Bl4OCl0jutxNyTjR/AsXXQ2hgizdzt3PiXCUwNutcvhHIl7BknPuyPkgsJZ
-         g0Uggqn8gem7h1STGHMFw4hVZE4BoYTz3iwR9DEGNFNCwYmaXuPvfiUl551TS6B6PnVT
-         ClO14Cr8RtGZXeXLLou7dQAf5YIodKLtcM0Q64G6vL/JzRzVK8ZPLKXI5VZpJkBORAPw
-         xI7g==
-X-Gm-Message-State: AOAM531f0CQx32Wdu/n9RxM2tZVktIV5fu0FGOrzg+tLORMlSHow6lhz
-        T1hgBUODhUzV6YWlP9qNIN5Nw/czGpI=
-X-Google-Smtp-Source: ABdhPJyQT7UGu+atLDZeY+jfTEIPxsW25O3gOlcaWjwvDX6k0nbakXM6rZgkIMjFnKONnWTP7dK4aA==
-X-Received: by 2002:a9d:62d2:0:b0:5b2:4662:f466 with SMTP id z18-20020a9d62d2000000b005b24662f466mr3517433otk.304.1648657032411;
-        Wed, 30 Mar 2022 09:17:12 -0700 (PDT)
-Received: from quaco.ghostprotocols.net ([187.19.239.165])
-        by smtp.gmail.com with ESMTPSA id m15-20020a9d644f000000b005ce0a146bfcsm836404otl.59.2022.03.30.09.17.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Mar 2022 09:17:11 -0700 (PDT)
-From:   arnaldo.melo@gmail.com
-X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>, Arnaldo Carvalho de Melo <acme@redhat.com>
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 8D63A40407; Wed, 30 Mar 2022 13:17:08 -0300 (-03)
-Date:   Wed, 30 Mar 2022 13:17:08 -0300
-To:     Lucas De Marchi <lucas.demarchi@intel.com>,
-        Matthew Auld <matthew.auld@intel.com>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [PATCH FYI] tools headers UAPI: Sync drm/i915_drm.h with the kernel
- sources
-Message-ID: <YkSChHqaOApscFQ0@kernel.org>
+        Wed, 30 Mar 2022 12:19:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5FECBC02;
+        Wed, 30 Mar 2022 09:17:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B909161773;
+        Wed, 30 Mar 2022 16:17:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1E24C340EC;
+        Wed, 30 Mar 2022 16:17:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648657048;
+        bh=Q+USGHsR1S1m9ZvzFcgjt7zp0ViNdGcvN3RiBCTFNSM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=O8S0hjOfWVpcL2d8Ii4T6o+AuXfYtsfA5ix/uX/rPyjwS9bxhfO1i86FHjIdh+puv
+         I/W7n5WESGfHjS6nF6gp5uPbz0DSJdmTwsJmdaL3RDAl0eVJBdNT4exUa1F1pmWqy/
+         L5TsjMqr9tZXP8WmWGuRJBh+7CyOBurO/HruWy2Zqf2pbxXdUFXjOULx0WFZpkDRTD
+         QVfwF0fhifJNU26ElPMrsxlNMoMiEQy7tfASjXepRDVYCV/+WyR1iuE1rYjYLwRcTQ
+         3WMZtglRmT0m/phSC+R4aYQMOKh4xxVnG0cpZxbkZbFGBsB3JmOU/q0kciwlqmv+sV
+         2kaKH/mpSSGAA==
+Date:   Wed, 30 Mar 2022 17:17:19 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Olivier Moysan <olivier.moysan@foss.st.com>,
+        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Georgi Djakov <djakov@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Dmitry Osipenko <digetx@gmail.com>, linux-iio@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-mmc@vger.kernel.org,
+        linux-tegra@vger.kernel.org, netdev@vger.kernel.org,
+        linux-phy@lists.infradead.org
+Subject: Re: [PATCH] dt-bindings: Fix incomplete if/then/else schemas
+Message-ID: <YkSCj1wT8E/uAdbU@sirena.org.uk>
+References: <20220330145741.3044896-1-robh@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="TNgjpwjwvAc49yPZ"
 Content-Disposition: inline
+In-Reply-To: <20220330145741.3044896-1-robh@kernel.org>
+X-Cookie: Two is company, three is an orgy.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Just FYI, I'm carrying this on the perf tools tree.
 
-- Arnaldo
+--TNgjpwjwvAc49yPZ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
----
+On Wed, Mar 30, 2022 at 09:57:41AM -0500, Rob Herring wrote:
+> A recent review highlighted that the json-schema meta-schema allows any
+> combination of if/then/else schema keywords even though if, then or else
+> by themselves makes little sense. With an added meta-schema to only
+> allow valid combinations, there's a handful of schemas found which need
+> fixing in a variety of ways. Incorrect indentation is the most common
+> issue.
 
-To pick up the changes in:
+Acked-by: Mark Brown <broonie@kernel.org>
 
-  caa574ffc4aaf4f2 ("drm/i915/uapi: document behaviour for DG2 64K support")
+--TNgjpwjwvAc49yPZ
+Content-Type: application/pgp-signature; name="signature.asc"
 
-That don't add any new ioctl, so no changes in tooling.
+-----BEGIN PGP SIGNATURE-----
 
-This silences this perf build warning:
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJEgo4ACgkQJNaLcl1U
+h9CMwQf/f8YiUiMex+FwfC/kdvXglTNhRApaQRU6OtuSmz5UEnBb6O6YMmQLA4q4
+P3oQ1eCCQFXxr8+P7iqLuM+N4MRXPNabE1q82boC3jBah9e8mvDKJtNZJlz/kRXD
+QazSWyj0T9UQpnveVimQMjtE/So0MgZSI/KLiB/hjhG+5Be3Gq5Da9HfdMFwvtA1
+nrqW5IcduprA2fSUgucuUddybp9AoCJr+cvoFPx3Zw/1Nnjb/7xWP6TYeh2EpRCp
+4z1q0JIEFpwa0vCan+4S1IF9eUjHLTmhnUt3yWgERmRNK7t9GKrhobfSAuK8pmky
+vpPGzlJMA9MiagHlb4EugpvmhYzNuQ==
+=41nO
+-----END PGP SIGNATURE-----
 
-  Warning: Kernel ABI header at 'tools/include/uapi/drm/i915_drm.h' differs from latest version at 'include/uapi/drm/i915_drm.h'
-  diff -u tools/include/uapi/drm/i915_drm.h include/uapi/drm/i915_drm.h
-
-Cc: Lucas De Marchi <lucas.demarchi@intel.com>
-Cc: Matthew Auld <matthew.auld@intel.com>
-Link: http://lore.kernel.org/lkml/
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
----
- tools/include/uapi/drm/i915_drm.h | 45 +++++++++++++++++++++++++++----
- 1 file changed, 40 insertions(+), 5 deletions(-)
-
-diff --git a/tools/include/uapi/drm/i915_drm.h b/tools/include/uapi/drm/i915_drm.h
-index 914ebd9290e5192d..05c3642aaece4429 100644
---- a/tools/include/uapi/drm/i915_drm.h
-+++ b/tools/include/uapi/drm/i915_drm.h
-@@ -1118,10 +1118,16 @@ struct drm_i915_gem_exec_object2 {
- 	/**
- 	 * When the EXEC_OBJECT_PINNED flag is specified this is populated by
- 	 * the user with the GTT offset at which this object will be pinned.
-+	 *
- 	 * When the I915_EXEC_NO_RELOC flag is specified this must contain the
- 	 * presumed_offset of the object.
-+	 *
- 	 * During execbuffer2 the kernel populates it with the value of the
- 	 * current GTT offset of the object, for future presumed_offset writes.
-+	 *
-+	 * See struct drm_i915_gem_create_ext for the rules when dealing with
-+	 * alignment restrictions with I915_MEMORY_CLASS_DEVICE, on devices with
-+	 * minimum page sizes, like DG2.
- 	 */
- 	__u64 offset;
- 
-@@ -3144,11 +3150,40 @@ struct drm_i915_gem_create_ext {
- 	 *
- 	 * The (page-aligned) allocated size for the object will be returned.
- 	 *
--	 * Note that for some devices we have might have further minimum
--	 * page-size restrictions(larger than 4K), like for device local-memory.
--	 * However in general the final size here should always reflect any
--	 * rounding up, if for example using the I915_GEM_CREATE_EXT_MEMORY_REGIONS
--	 * extension to place the object in device local-memory.
-+	 *
-+	 * DG2 64K min page size implications:
-+	 *
-+	 * On discrete platforms, starting from DG2, we have to contend with GTT
-+	 * page size restrictions when dealing with I915_MEMORY_CLASS_DEVICE
-+	 * objects.  Specifically the hardware only supports 64K or larger GTT
-+	 * page sizes for such memory. The kernel will already ensure that all
-+	 * I915_MEMORY_CLASS_DEVICE memory is allocated using 64K or larger page
-+	 * sizes underneath.
-+	 *
-+	 * Note that the returned size here will always reflect any required
-+	 * rounding up done by the kernel, i.e 4K will now become 64K on devices
-+	 * such as DG2.
-+	 *
-+	 * Special DG2 GTT address alignment requirement:
-+	 *
-+	 * The GTT alignment will also need to be at least 2M for such objects.
-+	 *
-+	 * Note that due to how the hardware implements 64K GTT page support, we
-+	 * have some further complications:
-+	 *
-+	 *   1) The entire PDE (which covers a 2MB virtual address range), must
-+	 *   contain only 64K PTEs, i.e mixing 4K and 64K PTEs in the same
-+	 *   PDE is forbidden by the hardware.
-+	 *
-+	 *   2) We still need to support 4K PTEs for I915_MEMORY_CLASS_SYSTEM
-+	 *   objects.
-+	 *
-+	 * To keep things simple for userland, we mandate that any GTT mappings
-+	 * must be aligned to and rounded up to 2MB. The kernel will internally
-+	 * pad them out to the next 2MB boundary. As this only wastes virtual
-+	 * address space and avoids userland having to copy any needlessly
-+	 * complicated PDE sharing scheme (coloring) and only affects DG2, this
-+	 * is deemed to be a good compromise.
- 	 */
- 	__u64 size;
- 	/**
--- 
-2.35.1
-
+--TNgjpwjwvAc49yPZ--
