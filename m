@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BA75C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AA80C35273
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:15:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345898AbiC3MPL (ORCPT
+        id S1345947AbiC3MPS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:15:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57788 "EHLO
+        Wed, 30 Mar 2022 08:15:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242502AbiC3LzX (ORCPT
+        with ESMTP id S1345911AbiC3LzL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:55:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD8002BEB;
-        Wed, 30 Mar 2022 04:53:38 -0700 (PDT)
+        Wed, 30 Mar 2022 07:55:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 051E626C2FF;
+        Wed, 30 Mar 2022 04:52:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8E614B81BBA;
-        Wed, 30 Mar 2022 11:53:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 573E0C340EE;
-        Wed, 30 Mar 2022 11:53:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 94E6D6137A;
+        Wed, 30 Mar 2022 11:52:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF178C36AE5;
+        Wed, 30 Mar 2022 11:52:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641216;
-        bh=xuMHwDoy2pnbluLgrMeqacfG3BmboDGHsHgK8ULMcZw=;
+        s=k20201202; t=1648641141;
+        bh=2v8x+f7NRmcaBsnIREpQwfHq877Fr7AfTc7qYYhSi4M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hDjp4e4X9m3QoPmS7iUl/pQ5FATadxoRAkB/W7nnnVKTqqlysmtT14ePZPjHh9zNF
-         2RnFEaC53g/Odh2eTYbokXh7JU2uufAhWyysVexJBCVMTuK4xZZFo1hcQgXWBBEya7
-         I0KKwEZxoZPe35dxVLM3HELCfzE43J8R4B2vzzgjx56CsVfFX0tv/jmAwobhJ/qnej
-         lOs474bAB17fTwomILJlUiZra2uh47dytBZqKvQaHAUIiBiUoOUSfD0CrzKg/LSJW2
-         PeCbJz8lqn4a8mTSxK8W1vBdyqNPE+Nak6/LVRKZ0+E6X4PKAc6NakXV6G719V03yD
-         uE/061V57Ut7w==
+        b=LPGb1CQizY9O1oNQcSymtOYvheQ6pebfnwBXHC6JQyS1oj563rKl0t9EyG0Lb5u3i
+         14n+0ZWoayrdeQaHT8ZzSfqcRtw+qRX66Z53NbVYSoTs+5thcRbZFnJBuWFP5Y1m2G
+         Sp2vwQ3wA0u/mMH1XpFp4D/fTSajhZILs3DE99F5rqIDdvScRHF8/23xcoLkYJ35ks
+         Eh/NGiPphHM78ZlCqq9l4w+yeLRCpC5qyTRFQNDbUEDPJVByCR07jC4f/mmX3ZS2er
+         +EEibNJUviwzoslcnyMqH+EFlN6a26ewWoUhgSsqtjzPmoKbw1r2OAHZG+wkc6CJuS
+         3t52Hxpf3bAJw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Minghao Chi <chi.minghao@zte.com.cn>,
@@ -40,12 +40,12 @@ Cc:     Minghao Chi <chi.minghao@zte.com.cn>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
         perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 4.19 22/22] ASoC: ak4642: Use of_device_get_match_data()
-Date:   Wed, 30 Mar 2022 07:53:03 -0400
-Message-Id: <20220330115303.1672616-22-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 35/37] ASoC: ak4642: Use of_device_get_match_data()
+Date:   Wed, 30 Mar 2022 07:51:20 -0400
+Message-Id: <20220330115122.1671763-35-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330115303.1672616-1-sashal@kernel.org>
-References: <20220330115303.1672616-1-sashal@kernel.org>
+In-Reply-To: <20220330115122.1671763-1-sashal@kernel.org>
+References: <20220330115122.1671763-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -70,7 +70,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 3 insertions(+), 8 deletions(-)
 
 diff --git a/sound/soc/codecs/ak4613.c b/sound/soc/codecs/ak4613.c
-index c1181a20714d..f508e8bdef3b 100644
+index 8d663e8d64c4..7687ec0ebc79 100644
 --- a/sound/soc/codecs/ak4613.c
 +++ b/sound/soc/codecs/ak4613.c
 @@ -642,15 +642,10 @@ static int ak4613_i2c_probe(struct i2c_client *i2c,
