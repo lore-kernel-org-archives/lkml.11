@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D55FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:15:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60C20C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:17:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344896AbiC3MRO (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:17:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39166 "EHLO
+        id S239381AbiC3MRi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 08:17:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344675AbiC3L4Y (ORCPT
+        with ESMTP id S1344642AbiC3L4V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:56:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED6FF30F41;
-        Wed, 30 Mar 2022 04:54:24 -0700 (PDT)
+        Wed, 30 Mar 2022 07:56:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09D3430545;
+        Wed, 30 Mar 2022 04:54:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E22C615E7;
-        Wed, 30 Mar 2022 11:54:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 311C2C340F3;
-        Wed, 30 Mar 2022 11:54:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 95F98615AD;
+        Wed, 30 Mar 2022 11:54:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02DF2C36AE5;
+        Wed, 30 Mar 2022 11:54:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641264;
-        bh=H9kK/GokgiLdmV2xVfC5tkXraSgQ9bx85Q3Z8WZJjoU=;
+        s=k20201202; t=1648641261;
+        bh=oJf58TLgyayrPgKP70qwWD4+lAFv8v5sODX5AlRkVOc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KHj4ojS5tCIDtmqFPb0MGe4Iw7cK0a09tY8TRytcNG+aTkcEkJXOIFSoQ6GXwA16I
-         3xDwIoEqyjGDNM38aWKuKImL/uuyULhU9+xnSduKQ2PPdjyUaWOgQ7TX9FtAH3XbE1
-         6Sc6Eha5DoY1CFahDn9Ld/NnmbnqJ+BCT/7BRcp8yGR/fpmXPfNTLNt6BYK1Tp0RiZ
-         7a/Wdv9qLeF7WUXL4oeEo86H7E8kLk+PrHFXWv5yHjdgInfmkMVh+rmecM131Ae4zv
-         YJyHBtsp1jQpxWHtBntST6HJSyjZpYV1KJ8fvI6Yzz9hMTLzOBX6fkQKdgvlAO5jWb
-         Cg6kHSyuHlQLA==
+        b=IzSZj7ZLu0bLjocHbjLaylVt1bs4G5i5UpMAwXAXgKbeGCepFE54z+SKcIiAQ5xz0
+         t+L71el8/r7mwRh7fEF+TiewOD7vnkaHloO4kroDd8zjCFqY/rD0HJcmUtskz0b9Iv
+         J7aQRKNP7fGezzYPkywet5w13nQu8jbFv3M1nxppVMk7iXwtqF0C96p17nSl+l45Sj
+         5bjEKE4CyA3WVTeuLA99N+itCl5ejACHPfReyDeFOOY5Uj1bDBeL4G04Ps4WozLTct
+         deTOkhWRggOHkT2HIQI0jsexwiHTh+OvLrz4rNUUbw5Nh5sgUuBQFpPnKwFbbnqhZN
+         GtJdiQyIgawAQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stephen Brennan <stephen.s.brennan@oracle.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Sasha Levin <sashal@kernel.org>, gregkh@linuxfoundation.org
-Subject: [PATCH AUTOSEL 4.9 09/17] printk: Add panic_in_progress helper
-Date:   Wed, 30 Mar 2022 07:53:58 -0400
-Message-Id: <20220330115407.1673214-9-sashal@kernel.org>
+Cc:     Jing Yao <yao.jing2@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        tomi.valkeinen@ti.com, linux-omap@vger.kernel.org,
+        linux-fbdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 07/17] video: fbdev: omapfb: panel-dsi-cm: Use sysfs_emit() instead of snprintf()
+Date:   Wed, 30 Mar 2022 07:53:56 -0400
+Message-Id: <20220330115407.1673214-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115407.1673214-1-sashal@kernel.org>
 References: <20220330115407.1673214-1-sashal@kernel.org>
@@ -53,43 +52,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephen Brennan <stephen.s.brennan@oracle.com>
+From: Jing Yao <yao.jing2@zte.com.cn>
 
-[ Upstream commit 77498617857f68496b360081dde1a492d40c28b2 ]
+[ Upstream commit f63658a59c3d439c8ad7b290f8ec270980e0f384 ]
 
-This will be used help avoid deadlocks during panics. Although it would
-be better to include this in linux/panic.h, it would require that header
-to include linux/atomic.h as well. On some architectures, this results
-in a circular dependency as well. So instead add the helper directly to
-printk.c.
+Use sysfs_emit instead of scnprintf, snprintf or sprintf.
 
-Suggested-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: Stephen Brennan <stephen.s.brennan@oracle.com>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
-Signed-off-by: Petr Mladek <pmladek@suse.com>
-Link: https://lore.kernel.org/r/20220202171821.179394-2-stephen.s.brennan@oracle.com
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/printk/printk.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 9c17a2655551..f3e6fddb967a 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -225,6 +225,11 @@ static int __down_trylock_console_sem(unsigned long ip)
- 	up(&console_sem);\
- } while (0)
+diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
+index 8b810696a42b..6a8f0f0fa601 100644
+--- a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
++++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
+@@ -413,7 +413,7 @@ static ssize_t dsicm_num_errors_show(struct device *dev,
+ 	if (r)
+ 		return r;
  
-+static bool panic_in_progress(void)
-+{
-+	return unlikely(atomic_read(&panic_cpu) != PANIC_CPU_INVALID);
-+}
-+
- /*
-  * This is used for debugging the mess that is the VT code by
-  * keeping track if we have the console semaphore held. It's
+-	return snprintf(buf, PAGE_SIZE, "%d\n", errors);
++	return sysfs_emit(buf, "%d\n", errors);
+ }
+ 
+ static ssize_t dsicm_hw_revision_show(struct device *dev,
+@@ -444,7 +444,7 @@ static ssize_t dsicm_hw_revision_show(struct device *dev,
+ 	if (r)
+ 		return r;
+ 
+-	return snprintf(buf, PAGE_SIZE, "%02x.%02x.%02x\n", id1, id2, id3);
++	return sysfs_emit(buf, "%02x.%02x.%02x\n", id1, id2, id3);
+ }
+ 
+ static ssize_t dsicm_store_ulps(struct device *dev,
+@@ -494,7 +494,7 @@ static ssize_t dsicm_show_ulps(struct device *dev,
+ 	t = ddata->ulps_enabled;
+ 	mutex_unlock(&ddata->lock);
+ 
+-	return snprintf(buf, PAGE_SIZE, "%u\n", t);
++	return sysfs_emit(buf, "%u\n", t);
+ }
+ 
+ static ssize_t dsicm_store_ulps_timeout(struct device *dev,
+@@ -541,7 +541,7 @@ static ssize_t dsicm_show_ulps_timeout(struct device *dev,
+ 	t = ddata->ulps_timeout;
+ 	mutex_unlock(&ddata->lock);
+ 
+-	return snprintf(buf, PAGE_SIZE, "%u\n", t);
++	return sysfs_emit(buf, "%u\n", t);
+ }
+ 
+ static DEVICE_ATTR(num_dsi_errors, S_IRUGO, dsicm_num_errors_show, NULL);
 -- 
 2.34.1
 
