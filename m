@@ -2,241 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E30BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 21:43:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16EC9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 21:43:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351282AbiC3VpH (ORCPT
+        id S1351291AbiC3VpX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 17:45:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40176 "EHLO
+        Wed, 30 Mar 2022 17:45:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351280AbiC3Vo6 (ORCPT
+        with ESMTP id S1351302AbiC3VpS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 17:44:58 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2089.outbound.protection.outlook.com [40.107.220.89])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A238C6A411
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 14:43:11 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e7cjwzYci6+hTRIhWKEMhERmcT8rKNEHXAZ9ozgIvA/cGv6IEL7geeO7uNbcFIetGR3SCxL6LXnm04hTG5PpJjaQ9woW3mFdNv+rNpDaUgt22olP4xDbMCT+/YGVvgTxVvljS//8tE3ZoJaBoZHbEO9jn6Tudg1bTOzZ69rZ8y0UzPec+mQrsfNeu3xjhkta+H/rvmtkiJR9clJ2lz5nK72zGGIQcBBBsLHZjzWBptdImmZJamdXVXziQzOisjczdkgFQwx9WLlVbVxHLtIS5PKd5oyTpQkmuZRiDNiuLXCdPQZNMf6VNnuAnslA9RGhwInXz8aiychSiDgaK2pcMA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bgh8b2vtoC+W12Aq6XwpDHeFAYAy3+k4eAKuZTveOB0=;
- b=eAysAueRkvJqaG2pZ4r8KxSRaHbAU37/OKvZxa8cy4U76tI0EoV27D3RyYn4KfS/UqM53nDde6splMoQXVBh3ioGqCLLoVHtGeFBXCQHTymKj5q+asyXVm3kXW8GKL3ZpASjSNMQcHOod3HTiSOe0bPNiTUbbFH44sHuk2l7SlrfmTlOFRoNxGjGp2mAOMyOGcQx57E0UusRXY/lHGSZlCX6bHr3nchmSSX0CiTkJ/+OBdiiOt3Nipx9mAgO1k9JTmrkUjS0jpcXOCCW4WcA5a9+iXavkRM98QLSDF9EGEyP51oi5HBfA79zFOyGMFl1zIcYLafgNYn7Iv8Alj6VLA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bgh8b2vtoC+W12Aq6XwpDHeFAYAy3+k4eAKuZTveOB0=;
- b=qgHYrUhhrmS35Vygng+LOZCxo0gYM4EP6zcc8jKkWdPETM5nCU42E1truavj3yaYRDf1Q4fz/buQ6Wj1XUvS93bBWpjOKK6VnfL6FAciVVU0DSmXP1veOq2s/SNxnWEv0bSQLxmn7G1dG3iAGUxtntU+HP+yE5irzCeyXYmGSdHLcNaebCATYdgfPIK42kbDeywOr6HUNH6Kq9wUkrU6H7YF/w34JCaEyDGf1+y8MNTK0AmorRh0uT9sugq70h+ewrMtaVLVxsVikBu9yCL9znahZZtRhyPSNy8rwtNBruGsGV+SjrijcL32ZmVJ9m82SLlhXYeF0tXrjjHHplkppQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB3823.namprd12.prod.outlook.com (2603:10b6:208:168::26)
- by MW2PR12MB2572.namprd12.prod.outlook.com (2603:10b6:907:6::27) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.16; Wed, 30 Mar
- 2022 21:43:07 +0000
-Received: from MN2PR12MB3823.namprd12.prod.outlook.com
- ([fe80::69f1:dff6:826b:7d9c]) by MN2PR12MB3823.namprd12.prod.outlook.com
- ([fe80::69f1:dff6:826b:7d9c%5]) with mapi id 15.20.5102.023; Wed, 30 Mar 2022
- 21:43:07 +0000
-From:   Zi Yan <ziy@nvidia.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        David Hildenbrand <david@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux-MM <linux-mm@kvack.org>
-Subject: Re: [BUG] Crash on x86_32 for: mm: page_alloc: avoid merging non-fallbackable pageblocks with others
-Date:   Wed, 30 Mar 2022 17:43:05 -0400
-X-Mailer: MailMate (1.14r5870)
-Message-ID: <733F211D-9717-46A7-A0A2-40353E12F65A@nvidia.com>
-In-Reply-To: <AF9D3EF9-B070-4ADE-A2D3-C466A4A2D125@nvidia.com>
-References: <20220330154208.71aca532@gandalf.local.home>
- <CAHk-=whz_8tRNGCr09X59nMW3JBzFLE-g-F-brxd+AkK+RceCw@mail.gmail.com>
- <B7789993-75EC-4F74-B4E6-AF1CC2CBD9D4@nvidia.com>
- <20220330165337.7138810e@gandalf.local.home>
- <AF9D3EF9-B070-4ADE-A2D3-C466A4A2D125@nvidia.com>
-Content-Type: multipart/signed;
- boundary="=_MailMate_3164F1AF-856D-4B25-BF74-6C87D860CE21_=";
- micalg=pgp-sha512; protocol="application/pgp-signature"
-X-ClientProxiedBy: BL0PR02CA0047.namprd02.prod.outlook.com
- (2603:10b6:207:3d::24) To MN2PR12MB3823.namprd12.prod.outlook.com
- (2603:10b6:208:168::26)
+        Wed, 30 Mar 2022 17:45:18 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85F0A6A42B
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 14:43:27 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id l129so9980941pga.3
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 14:43:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=3P2ZbSJZ9rgiHSYYO2m+2nx9BByc630ioHG/IwLoqJE=;
+        b=PjUfutm1lwuZaM1pE8wgcTpIk9hG3LkKam3kBHUB2ZUJS03trhR+Q11c7jyPX0kRlw
+         WUSUUF0BakNGVgLGhV6Rmk5ubdoZL3PdnInLnWzcwz7dXKNBpsSLcHbQUEZ25E663cxN
+         iSHaORzhGnqOpItkX1nzwI1xILdSFE//tB+94=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=3P2ZbSJZ9rgiHSYYO2m+2nx9BByc630ioHG/IwLoqJE=;
+        b=tsZu0c5tVzJ/kATIosF+qT7swgxX65eYZvy59pClc05lwuIF2+rvx5NBAM9sEWa2XN
+         EJ1a/uM0rVsCwl/5bEv07LN9jzQdsBLXJz1QguqXP9Q+hXLKYehqW+9gLENDhxcETeN7
+         Pr//K9pzgHHhAHWHWh0VvF2ff3DkX9tCwBTQMCgA+DBSowhVxLhSIfMvwmQTzsd2Q7Hw
+         dXoziXHMmqa/idsnN3umPuIU4Dc1DOCacO5OfQOBTw1Ugg0nEJlPR5UGQtz3ooV65k47
+         M43TfQRa10UuVkYaQ5aYSabLIJEqEBvVCLouxaz64xhyZ5nyA23pmIyKeeiE0sH+pW8Y
+         ZvWg==
+X-Gm-Message-State: AOAM532kLKvh21wkcCgZyHf1NJVfmrX8tjWe2z5hCuWpXB27Pi7x4qGX
+        mTy0mqB4kr1UNcvUzSy4utzG/w==
+X-Google-Smtp-Source: ABdhPJw+oIZ8Zdq1D8w87isFRTzwrCPJdubT8myP52JAOXHEOY4AG29Q15HtDYJmZ5irVYhIv9Qklg==
+X-Received: by 2002:a63:340b:0:b0:398:dad:c396 with SMTP id b11-20020a63340b000000b003980dadc396mr7709875pga.574.1648676606992;
+        Wed, 30 Mar 2022 14:43:26 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id v189-20020a622fc6000000b004fb72e95806sm10161274pfv.48.2022.03.30.14.43.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 14:43:26 -0700 (PDT)
+Date:   Wed, 30 Mar 2022 14:43:26 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     Nick Terrell <terrelln@fb.com>, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH][next] lib: zstd: Fix Wstringop-overflow warning
+Message-ID: <202203301416.568595B87@keescook>
+References: <20220330193352.GA119296@embeddedor>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b880f23a-e68f-4276-b9ac-08da129646d8
-X-MS-TrafficTypeDiagnostic: MW2PR12MB2572:EE_
-X-Microsoft-Antispam-PRVS: <MW2PR12MB25728AEBA6F1F58CED0DE9FEC21F9@MW2PR12MB2572.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: G9uG/S71pmIrO5hoOiAUHuiD3yWiqHW40pD/VL2RjhfeD2bC7OrfE7eiBwUAjNKzxV0Oo+GlVgQmhxTH3aozEkwg3zhMYGusrSQ3TQQcMU0tlvreQ0/tkX3zQvbtk/9xyDfT/0J6sFC51SsLwMQjzzbQXttAB4+WcDf0/9OeoL0kBvImI+5cEQxJqRgQ5KdrRKrda0++7giFzdMRc0ZThDfly6ZKy/WILF0E0nDB5a4ejgPl9YRQxBfTOwbx5p6Vf7i6E6RUkOqdRgmCS8PDBpuhxt/rxx3i8HOyv6wH6tfdV1jPEZIwv5fd46C0aqET+lX/jv/4ZfMM9s/x4C4LMyHUE1WNbFgLLNqw+2W/LLAhg4jZIzjQ7NRphKbpaWtzcUJKtU3Yx5XCtl26J3Asgas8ajH4opuNKti69Q8HjznsTfhmDoR9kWpMjw8FyCHBYWgDZ/P2L3rbHSnOjQz0moEDADr0VNUUVTxRLhR/PZtsCJa5R21vt5zAUhVAfWDUlnEH81DR5mUtE/UsS0Wthoeu3AC1lRCUgrcV4EjarpauT5Dm/5LQ53HtKQJXHO0XV4aj8Tu3W/3yF0bjmuJmk2/QKY9r3xcvbcnOI7+uTgjdHpA2FopwgI/wC0yOP/VFccEs2q+GQ1XwSMAA/10LDdUd6Q2jJyV0ELIkCRRHkORGmyypRl0nkSTihYd+QqsKbXgTi/1E8z82j3WdcU/fhA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB3823.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6916009)(316002)(21480400003)(186003)(2616005)(26005)(83380400001)(36756003)(508600001)(2906002)(6486002)(6506007)(6512007)(86362001)(33656002)(8936002)(66556008)(235185007)(7416002)(54906003)(66476007)(53546011)(33964004)(5660300002)(4326008)(66946007)(8676002)(38100700002)(45980500001)(72826004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YTR6NW05MWUwWjNyTVgzOTd0eTQ1SS9qN2FSYS9xMlVDZUhwRGt4LzJRNjlz?=
- =?utf-8?B?dUFsdldyZ1VqVEVYb01Wd2lLeWorQ0cwNHNBeUQvaU9qbHN2d25yemk0UnRn?=
- =?utf-8?B?aGYvR25IUHJSUmhjNENpQnM1SFlzT2pGZlQyVHpXSUQ1WkJOeElwOVJ1U1k4?=
- =?utf-8?B?dituQmYxbnppcTRROHZ0OW84RXpTYXlEWnRuRk84T0tScDNEeTVSK2NQVlhG?=
- =?utf-8?B?RFNKS200TmgzaERzellFT000Kys1dExmYWJRWW1qdmxEVW9RMmdYREpyQ0tV?=
- =?utf-8?B?S3lNVHhNTC9QdHdnRGlHRW1leHpxeFQyS3k0eDdCa2F5RkIwTHVDRUJXQ0VM?=
- =?utf-8?B?a2pla2dGS014eVI4YVg4OHdiOTZwcGxOMGhBQkF2Y0V5dFNvaGVyWmF4b0dV?=
- =?utf-8?B?YXlhZFh2UG9vczljVk1QcWt6NFJ3cUQ3aG1mUitBNThSQUhTVXNXUmFJNzhu?=
- =?utf-8?B?SlZTMFY1aFUrVHRXMnJkZXI2QlhPZWd0ci81bUh1RXpXUHB5c01hLzFaM3RD?=
- =?utf-8?B?alcyb2x1SVFMMnlpOWpCZ05XK3UrQW8vUHZOS0dMejJvVmorQUxpa1ZWL3hL?=
- =?utf-8?B?bjU2aUpBSXVtTUtXcDJ5RDI1QXdmS2kyeTE1THFqbHg5S25KOVg1MGFUMDNW?=
- =?utf-8?B?eXI0QmFMbDZZYk9JRVFmdXd2N1RKeUZralA0RDZpTjRYRTV1UlN3YXMxODJy?=
- =?utf-8?B?Vm5KRzNFc0kxdXlyc2tLa29LSUJ3Nkw5ZzR2SWQvcXdvZ3FETlUvT2pEM1FG?=
- =?utf-8?B?MDdjYldVVWh6R0hjcUJ3ZmpQNEJJYTNURndiaVRnNkdhbzNBZkR4OTNnbWdz?=
- =?utf-8?B?LzR1N3pTbzM2M0ZndngzLzBFNUhselZ4WFNONjU4cjJHVEhqaldLS0I3TmlX?=
- =?utf-8?B?MUhpUjFTTkFnb3kyZTFmaERMeGdJSzlDZWNwUjdYTW5pWDFvb1p2aDlsMTh1?=
- =?utf-8?B?NGIvcnBaaExRdTAzcFVQS3h6VjdEMlJCbUNwQ3V1cTVpUlpsaWwyajhYV0dM?=
- =?utf-8?B?ZCtBTXU4UU1vZXBPeTQ4a1ZZd2pXQThmenF1V0tRSExaaEFTUXc5UDRrODZ3?=
- =?utf-8?B?S0VsZVlyOFVRZG9pbmZxQVB3VzhMdU5oYWN0eXFzaXltazNlTVNVVXdoMFF6?=
- =?utf-8?B?MldhQ09LenZLMER5MmlWUmJqR3Nuay9xZ3VSTVNlMnIrNWJ2VTJ1OUI5T0pN?=
- =?utf-8?B?STdkR3U5ZitkK0JlQkdOTTJtUUc0amdHYzhrRkUrRkd4TW9QWDNpT2x5Y2JJ?=
- =?utf-8?B?UWRra3EwbVB2eDhLRHl6SUdmcy9pTVJyQ0VvdHRjLzRweFhUL21ZeHJDMjM5?=
- =?utf-8?B?d244ZkRhVmhrTFhMUkEveHlmNW5xRzdkaWF1SmtaWEtSMUlaeTc5M2Y0cUJM?=
- =?utf-8?B?Zk9YMXpURStvbjdxT3RMR2V5ZzhNTjZWemVEdHczWXM3bCtEc0E5bnRBTnpr?=
- =?utf-8?B?RGhJRk9TTkZzZEduM1FPV1VyTGJUTjBBWHFrWnlNMVVrVFAxVnJ2MzdxbVIv?=
- =?utf-8?B?UXBValNYV0QzakdxcWNveG5EZDFZZDNWQlZUekdoQ3IrN1hMZ1RobWs5MCtB?=
- =?utf-8?B?aGIrU1hlOURKUys3ejZTUmo5WjhaYkdFQWwrTVdtKzBKOTQrVUZYOGY3VTFO?=
- =?utf-8?B?dW0zb1ZqbXV5eDVlSkUvSlBjNTh3bG9reW4xR0UyQ0lLaHI5d0UvekpwNzBI?=
- =?utf-8?B?UDZTK2RJajVaY1YveGNoYjliN2tsenZITTJ1Zy9kZHI0V1h6Q1B3bllGWlRU?=
- =?utf-8?B?YStuM1cvVUgrdTdsU0xpRE9GZk93eXYrZ2dYVnVuYUtpbzFFS1YwNmxTZFBJ?=
- =?utf-8?B?MjVSSHpRWjhNa29KSFVOM08wTDRjM25ZRW5XdERHODBlbDVlTVlwR0orU0J5?=
- =?utf-8?B?cTI4YmhVMWhva2FwQUVLVWpuR09lakNGT2Rqc3ZVUitwaklkWnF4ZVN2VWtJ?=
- =?utf-8?B?TnN5bVJpdkEwaXV0eVM1bzQ3U0VrT3Fienk0blgxbDZzZ2g1eDJrMWFmcDQx?=
- =?utf-8?B?dXJoR1BKUExtL3h3R1A4S0pSUStNU08vOWFrbVZ6aDc1Sk81RHJQWTIvVXJr?=
- =?utf-8?B?eXJFUUdjNW1XTC9iajUwVUZNSlQvMjBaYi9DRW5la0Vhc1ZxcjA0NXJzY2FR?=
- =?utf-8?B?bnhUMllmakxyaUdMSjh2N3U5L29OUkc4bjUzSVBzdS91a0RyY2IvYmUvbnV6?=
- =?utf-8?B?aUVrak1EZG5FZ1ZMSlE0Wmp2N2dSQ3VjTlYzd0tzUUpZQ0w5bU1TeDBJcUpJ?=
- =?utf-8?B?eVRodHlvS25pNGdjOUIreGxlV2Y0RVNPa1VyTWpEVXZGZzFySDRlWHljWUhw?=
- =?utf-8?B?NzhwbWhFZ2k5c2Q5VUFXS3ZkekI3RldZWlJNNFd0S2dCWDJPSENGZz09?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b880f23a-e68f-4276-b9ac-08da129646d8
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB3823.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2022 21:43:07.1536
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 31ve1GhsQmyWL8NnlyA2TXoqtw53w8roN+acLfPkWDOzClBhDLpTWGlcOdx1JhUO
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR12MB2572
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220330193352.GA119296@embeddedor>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---=_MailMate_3164F1AF-856D-4B25-BF74-6C87D860CE21_=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+On Wed, Mar 30, 2022 at 02:33:52PM -0500, Gustavo A. R. Silva wrote:
+> Fix the following -Wstringop-overflow warning when building with GCC-11:
+> 
+> lib/zstd/decompress/huf_decompress.c: In function ‘HUF_readDTableX2_wksp’:
+> lib/zstd/decompress/huf_decompress.c:700:5: warning: ‘HUF_fillDTableX2.constprop’ accessing 624 bytes in a region of size 52 [-Wstringop-overflow=]
+>   700 |     HUF_fillDTableX2(dt, maxTableLog,
+>       |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>   701 |                    wksp->sortedSymbol, sizeOfSort,
+>       |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>   702 |                    wksp->rankStart0, wksp->rankVal, maxW,
+>       |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>   703 |                    tableLog+1,
+>       |                    ~~~~~~~~~~~
+>   704 |                    wksp->calleeWksp, sizeof(wksp->calleeWksp) / sizeof(U32));
+>       |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> lib/zstd/decompress/huf_decompress.c:700:5: note: referencing argument 6 of type ‘U32 (*)[13]’ {aka ‘unsigned int (*)[13]’}
+> lib/zstd/decompress/huf_decompress.c:571:13: note: in a call to function ‘HUF_fillDTableX2.constprop’
+>   571 | static void HUF_fillDTableX2(HUF_DEltX2* DTable, const U32 targetLog,
+>       |             ^~~~~~~~~~~~~~~~
 
-On 30 Mar 2022, at 17:25, Zi Yan wrote:
+Reviewing this changes would be easier if the reason for the warning
+could be explained. i.e. why has GCC decided that the region is 52
+bytes, and how did it calculate the 624 bytes?
 
-> On 30 Mar 2022, at 16:53, Steven Rostedt wrote:
->
->> On Wed, 30 Mar 2022 16:29:28 -0400
->> Zi Yan <ziy@nvidia.com> wrote:
->>
->>> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
->>> index bdc8f60ae462..83a90e2973b7 100644
->>> --- a/mm/page_alloc.c
->>> +++ b/mm/page_alloc.c
->>> @@ -1108,6 +1108,8 @@ static inline void __free_one_page(struct page =
-*page,
->>>
->>>                 buddy_pfn =3D __find_buddy_pfn(pfn, order);
->>>                 buddy =3D page + (buddy_pfn - pfn);
->>> +               if (!page_is_buddy(page, buddy, order))
->>> +                       goto done_merging;
->>>                 buddy_mt =3D get_pageblock_migratetype(buddy);
->>>
->>>                 if (migratetype !=3D buddy_mt
->>>
->>
->> The above did not apply to Linus's tree, nor even the problem commit
->> (before or after), but I found where the code is, and added it manuall=
-y.
->>
->> It does appear to allow the machine to boot.
->>
-> I just pulled Linus=E2=80=99s tree and grabbed the diff. Anyway, thanks=
-=2E
->
-> I would like to get more understanding of the issue before blindly send=
-ing
-> this as a fix.
->
-> Merge the other thread:
->>
->> Not sure if this matters or not, but my kernel command line has:
->>
->>   crashkernel=3D256M
->>
->> Could that have caused this to break?
->
-> Unlikely, 256MB is MAX_ORDER_NR_PAGES aligned (MAX_ORDER is 11 here).
-> __find_buddy_pfn() will not get any buddy_pfn from crashkernel memory
-> region, since that would cross MAX_ORDER_NR_PAGES boundary.
->
-> page_is_buddy() checks page_is_guard(buddy), PageBuddy(buddy),
-> buddy_order(buddy), and page_zone_id(buddy), where page_is_guard(buddy)=
+rankVal_t is HUF_TABLELOG_MAX-many rankValCol_t, which itself is
+HUF_TABLELOG_MAX + 1 many U32s. So, basically:
 
-> is always false since CONFIG_DEBUG_PAGEALLOC is not set in your config.=
+U32 array[HUF_TABLELOG_MAX + 1][HUF_TABLELOG_MAX]
 
-> So either PageBuddy(buddy) is false, buddy_order(buddy) !=3D order,
-> or page_zone_id(buddy) is not the same as page_zone_id(page).
->
-> Do you mind adding the following code right before my fix code above
-> and provide a complete boot log? I would like to understand what
-> went wrong. Thanks.
->
-> pr_info("buddy_pfn: %lx, PageBuddy: %d, buddy_order: %d (vs %d), page_z=
-one_id: %d (vs %d)\n",
->         buddy_pfn, PageBuddy(buddy), buddy_order(buddy), order, page_zo=
-ne_id(buddy),
->         page_zone_id(page));
->
->
+sizeof(rankValCol_t) == 52
+sizeof(rankVal_t) == 624
 
-This seems to be a bug in the original code too.
-But "if (unlikely(has_isolate_pageblock(zone)))" is too rare to trigger i=
-t.
-I do not see how having isolated pageblocks in a zone could get us away
-from checking page_is_buddy().
+> 
+> by using pointer notation instead of array notation.
+> 
+> This helps with the ongoing efforts to globally enable
+> -Wstringop-overflow.
+> 
+> Link: https://github.com/KSPP/linux/issues/181
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> ---
+>  lib/zstd/decompress/huf_decompress.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/lib/zstd/decompress/huf_decompress.c b/lib/zstd/decompress/huf_decompress.c
+> index 5105e59ac04a..0ea34621253a 100644
+> --- a/lib/zstd/decompress/huf_decompress.c
+> +++ b/lib/zstd/decompress/huf_decompress.c
+> @@ -570,7 +570,7 @@ static void HUF_fillDTableX2Level2(HUF_DEltX2* DTable, U32 sizeLog, const U32 co
+>  
+>  static void HUF_fillDTableX2(HUF_DEltX2* DTable, const U32 targetLog,
+>                             const sortedSymbol_t* sortedList, const U32 sortedListSize,
+> -                           const U32* rankStart, rankVal_t rankValOrigin, const U32 maxWeight,
+> +                           const U32* rankStart, const U32* rankValOrigin, const U32 maxWeight,
+>                             const U32 nbBitsBaseline, U32* wksp, size_t wkspSize)
 
---
-Best Regards,
-Yan, Zi
+This really feels like we're papering over the warning. This removes the
+type information and makes it a U32 * instead, and then later makes a
+cast?
 
---=_MailMate_3164F1AF-856D-4B25-BF74-6C87D860CE21_=
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-Content-Type: application/pgp-signature; name="signature.asc"
+Can this be fixed in a way that retains the type information?
 
------BEGIN PGP SIGNATURE-----
+On the other hand, all the arguments are also U32 *.
 
-iQJDBAEBCgAtFiEE6rR4j8RuQ2XmaZol4n+egRQHKFQFAmJEzukPHHppeUBudmlk
-aWEuY29tAAoJEOJ/noEUByhU5mEQAJLaGIxob8+0Qg+kpWEl6Q/GkZeo4MuILSlU
-UZCiAsde8whU5xJOWo5GY14V31mL9oTQ/AKM4KFH6/FWlYJgg5qsj0vrzvy/6xhb
-30/KNfg8Jmj8gY2aLb+fpvONOiMaKM0m4tbIMCmk77o1HhnbsGIBwx27mUclKfU4
-pQtehSYHplOLhDVZfakuChYyG4BqhRf7D6TN9XH7z+zBuTSEPL6mFABT/v4KeCU0
-TD870aC43E45N9mMTjac3Ue7J6b/9QnDhJsB1PIv9DyWbJZxuoCSi2IOew+9sP9Y
-5+5YY/Iip0WNket/BnD0FayolvO4wrbVhcKmwrYla5U2VO1bV5RI/ZBRCaJtEwKY
-sPC7kwZv3D3/dMb38iMFsiEHkreUeJmbuOkrCt7k8HhWPOGYwAi2sTt/A4+liN+9
-59tKBE1QdcK2nG/pPpbyYcyxV5Fwbx0z11Dg99jkCaWTdAFu3Zm4193F7AHfm+vg
-nsZa9vsjcoP65pg/HaHyOBjP89VXV63aD5vUGuDyLW3vjn3bTqWM9U7bXdTcOIdd
-EwaBTVMaDklNzH+ZsT14NmYaq0L9U6VsfLgdvZ+kSt01Tetp5bha7ye5gXWxrtL3
-QrB/VCi3k9XXV66CEr0bYiQs+Pf57fjD5S/IsGqLs5OkI7IPkde0/gnljwdd0qB1
-Qd1DZRNt
-=lWlU
------END PGP SIGNATURE-----
+I see stuff like:
 
---=_MailMate_3164F1AF-856D-4B25-BF74-6C87D860CE21_=--
+    ZSTD_memcpy(rankVal, rankValOrigin, sizeof(U32) * (HUF_TABLELOG_MAX + 1));
+
+That looks like it's ignoring type information as well. i.e. why isn't
+this sizeof(rankValOrigin)? (The length above is 52 bytes.)
+
+I'm especially curious here since rankValOrigin is rankVal_t, which is
+624 bytes, not 52 bytes (i.e. the above is copying a single rankValCol_t
+from rankValOrigin. I'd expect this to be:
+
+    ZSTD_memcpy(rankVal, &rankValOrigin[0], sizeof(rankValOrigin[0]));
+
+
+>  {
+>      U32* rankVal = wksp;
+> @@ -598,7 +598,7 @@ static void HUF_fillDTableX2(HUF_DEltX2* DTable, const U32 targetLog,
+>              if (minWeight < 1) minWeight = 1;
+>              sortedRank = rankStart[minWeight];
+>              HUF_fillDTableX2Level2(DTable+start, targetLog-nbBits, nbBits,
+> -                           rankValOrigin[nbBits], minWeight,
+> +                           rankValOrigin + nbBits, minWeight,
+
+And here I'd expect to pass	&rankValOrigin[nbBits]
+since HUF_fillDTableX2Level2 is doing another rankValCol_t-sized copy:
+
+    ZSTD_memcpy(rankVal, rankValOrigin, sizeof(U32) * (HUF_TABLELOG_MAX + 1));
+
+
+>                             sortedList+sortedRank, sortedListSize-sortedRank,
+>                             nbBitsBaseline, symbol, wksp, wkspSize);
+>          } else {
+> @@ -699,7 +699,7 @@ size_t HUF_readDTableX2_wksp(HUF_DTable* DTable,
+>  
+>      HUF_fillDTableX2(dt, maxTableLog,
+>                     wksp->sortedSymbol, sizeOfSort,
+> -                   wksp->rankStart0, wksp->rankVal, maxW,
+> +                   wksp->rankStart0, (U32 *)wksp->rankVal, maxW,
+
+It's possible the problem is with this structure:
+
+typedef struct {
+    rankValCol_t rankVal[HUF_TABLELOG_MAX];
+    U32 rankStats[HUF_TABLELOG_MAX + 1];
+    U32 rankStart0[HUF_TABLELOG_MAX + 2];
+    sortedSymbol_t sortedSymbol[HUF_SYMBOLVALUE_MAX + 1];
+    BYTE weightList[HUF_SYMBOLVALUE_MAX + 1];
+    U32 calleeWksp[HUF_READ_STATS_WORKSPACE_SIZE_U32];
+} HUF_ReadDTableX2_Workspace;
+
+it's not using the rankVal_t type for rankVal for some reason?
+
+i.e. what's passed to HUF_fillDTableX2 is a rankValCol_t (52 bytes), but then it
+gets passed against later as rankVal_t (624 bytes).
+
+Does changing the type definition above solve this more cleanly?
+
+-Kees
+
+>                     tableLog+1,
+>                     wksp->calleeWksp, sizeof(wksp->calleeWksp) / sizeof(U32));
+>  
+> -- 
+> 2.27.0
+> 
+
+-- 
+Kees Cook
