@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA77FC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:49:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0C56C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:49:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243509AbiC3Lv2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 07:51:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59278 "EHLO
+        id S1344029AbiC3Lvb (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 07:51:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343982AbiC3LuQ (ORCPT
+        with ESMTP id S1344054AbiC3LuO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:50:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E2A426E768;
-        Wed, 30 Mar 2022 04:47:39 -0700 (PDT)
+        Wed, 30 Mar 2022 07:50:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EED4126E57A;
+        Wed, 30 Mar 2022 04:47:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 748FF615B7;
-        Wed, 30 Mar 2022 11:47:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01E54C34111;
-        Wed, 30 Mar 2022 11:47:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C8E061640;
+        Wed, 30 Mar 2022 11:47:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB445C3410F;
+        Wed, 30 Mar 2022 11:47:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648640858;
-        bh=kDKQLtxdtubo8cbSoy0C0473dnGZFJuLtrEEafSBCiw=;
+        s=k20201202; t=1648640857;
+        bh=TzG0HYbJE5ho7Q6C9mjjowcE4QBfxtGF5O9CptascjE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pMEJT1KLoh8zPaDlHJsR6dqkCaxpUBaN6fLjTr5VW9yhFgv/VtQJrzenG/W7WxR/9
-         Z8m7EZIJ+p8EItpX4fKjrRnaUkf55vpginzMfkb576BStHBUqNEQvGX1eRMn5w+rYR
-         5QLlyaDIBDCUxWEVgPmyS85foU4qFOTYwRXckeqZXveujGfsgxmmEJZipncS+718NJ
-         A6OEbQqXe9gOMQgEpuUTK1ogpJh9eoXbKJoEVrBJnWyypB9WVWuS5sBn2VsTbSZwgb
-         63uPA0MBdkXACkekhW5NSZ3nnoZHHhom3HOKbm2RvQmFEyCHtCBozwbbqLaObSORmL
-         9HdRP1+i7a54w==
+        b=aZTz1r3yCD1kz8yQ9vMUEv48xdjbH5NINWKo+cqI6B7YvfXgmxLw8vGX9Wp635Oi8
+         0rqdHOl28kIldv11JKCsAWO6zwBx1I/tShqeAUJCA1iwXKPytYENgHHGLnmKWQyOlD
+         z/CkvWkwx/ikYxGcOdqJcoWiyUyqN1zE+L1roPczKsMCvuTzDlLzPXvIyAhdfwGhb9
+         w9Aic7xDoaC6vVY5OVpr29kYjxoSETohkucbntkrBKHQSGwj83h5IaC0i8MYMpRSRv
+         nBmHQuBwwcF371v0dvKMNvO6yH9Powc3tM3npJnk2eQsMs5KRn2T1V+68mMGxhUZwA
+         qwRjH+3ZnSzzw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shengjiu Wang <shengjiu.wang@nxp.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.17 34/66] ASoC: soc-core: skip zero num_dai component in searching dai name
-Date:   Wed, 30 Mar 2022 07:46:13 -0400
-Message-Id: <20220330114646.1669334-34-sashal@kernel.org>
+Cc:     Stephen Brennan <stephen.s.brennan@oracle.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Sasha Levin <sashal@kernel.org>, linux@roeck-us.net,
+        gregkh@linuxfoundation.org
+Subject: [PATCH AUTOSEL 5.17 33/66] printk: Drop console_sem during panic
+Date:   Wed, 30 Mar 2022 07:46:12 -0400
+Message-Id: <20220330114646.1669334-33-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330114646.1669334-1-sashal@kernel.org>
 References: <20220330114646.1669334-1-sashal@kernel.org>
@@ -52,45 +54,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shengjiu Wang <shengjiu.wang@nxp.com>
+From: Stephen Brennan <stephen.s.brennan@oracle.com>
 
-[ Upstream commit f7d344a2bd5ec81fbd1ce76928fd059e57ec9bea ]
+[ Upstream commit 8ebc476fd51e6c0fd3174ec1959a20ba99d4c5e5 ]
 
-In the case like dmaengine which's not a dai but as a component, the
-num_dai is zero, dmaengine component has the same component_of_node
-as cpu dai, when cpu dai component is not ready, but dmaengine component
-is ready, try to get cpu dai name, the snd_soc_get_dai_name() return
--EINVAL, not -EPROBE_DEFER, that cause below error:
+If another CPU is in panic, we are about to be halted. Try to gracefully
+abandon the console_sem, leaving it free for the panic CPU to grab.
 
-asoc-simple-card <card name>: parse error -22
-asoc-simple-card: probe of <card name> failed with error -22
-
-The sound card failed to probe.
-
-So this patch fixes the issue above by skipping the zero num_dai
-component in searching dai name.
-
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
-Link: https://lore.kernel.org/r/1644491952-7457-1-git-send-email-shengjiu.wang@nxp.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Suggested-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Stephen Brennan <stephen.s.brennan@oracle.com>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+Link: https://lore.kernel.org/r/20220202171821.179394-5-stephen.s.brennan@oracle.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/soc-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/printk/printk.c | 25 ++++++++++++++++++++++++-
+ 1 file changed, 24 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/soc-core.c b/sound/soc/soc-core.c
-index 434e61b46983..a088bc9f7dd7 100644
---- a/sound/soc/soc-core.c
-+++ b/sound/soc/soc-core.c
-@@ -3233,7 +3233,7 @@ int snd_soc_get_dai_name(const struct of_phandle_args *args,
- 	for_each_component(pos) {
- 		struct device_node *component_of_node = soc_component_to_node(pos);
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 4f31290256ad..bc5cbdeb38f3 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -2588,6 +2588,25 @@ static int have_callable_console(void)
+ 	return 0;
+ }
  
--		if (component_of_node != args->np)
-+		if (component_of_node != args->np || !pos->num_dai)
- 			continue;
++/*
++ * Return true when this CPU should unlock console_sem without pushing all
++ * messages to the console. This reduces the chance that the console is
++ * locked when the panic CPU tries to use it.
++ */
++static bool abandon_console_lock_in_panic(void)
++{
++	if (!panic_in_progress())
++		return false;
++
++	/*
++	 * We can use raw_smp_processor_id() here because it is impossible for
++	 * the task to be migrated to the panic_cpu, or away from it. If
++	 * panic_cpu has already been set, and we're not currently executing on
++	 * that CPU, then we never will be.
++	 */
++	return atomic_read(&panic_cpu) != raw_smp_processor_id();
++}
++
+ /*
+  * Can we actually use the console at this time on this cpu?
+  *
+@@ -2736,6 +2755,10 @@ void console_unlock(void)
+ 		if (handover)
+ 			return;
  
- 		ret = snd_soc_component_of_xlate_dai_name(pos, args, dai_name);
++		/* Allow panic_cpu to take over the consoles safely */
++		if (abandon_console_lock_in_panic())
++			break;
++
+ 		if (do_cond_resched)
+ 			cond_resched();
+ 	}
+@@ -2753,7 +2776,7 @@ void console_unlock(void)
+ 	 * flush, no worries.
+ 	 */
+ 	retry = prb_read_valid(prb, next_seq, NULL);
+-	if (retry && console_trylock())
++	if (retry && !abandon_console_lock_in_panic() && console_trylock())
+ 		goto again;
+ }
+ EXPORT_SYMBOL(console_unlock);
 -- 
 2.34.1
 
