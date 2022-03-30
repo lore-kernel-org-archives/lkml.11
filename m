@@ -2,193 +2,267 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95138C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 17:45:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 382D4C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 17:46:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349445AbiC3Rri (ORCPT
+        id S1349463AbiC3Rsg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 13:47:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54076 "EHLO
+        Wed, 30 Mar 2022 13:48:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229651AbiC3Rrg (ORCPT
+        with ESMTP id S1349647AbiC3Rs1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 13:47:36 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD2DB11987E;
-        Wed, 30 Mar 2022 10:45:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648662349; x=1680198349;
-  h=to:cc:references:from:subject:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=bhBu1QbtdGHCC2qA88WxU1+lM89JHNS2xL8ubX9vaIE=;
-  b=KA/fjs/cHLcdsW63A2zlYO8k4nWzdUApAGBaQoD9ySGOi3xwccZ8MVhR
-   uRIP/I7qgyEz8lkcdhPRBhdQqsw2gw/f+E4dVQp+M9tl5RPJY6PgZte/c
-   7Nb5Qt8deI0QMBzo7evesl0K4XEtWjIYkUUeK1+Rx2lfnVq6+CHKybpSz
-   0Qi0CPa4t786l9EHhtSrsDraS82jaUn1aY7WYQgpG5MaAw+PLAOfhoNzR
-   RsXvo2/6VleUDx+C9lDZyo8VNcJUl32lPiFhZ+RJvOFYRBXeN2kuhyvJ7
-   JkFkWkgDm4Wbp+LE+0Zvnc3MA8XWNbXRowT+aSPEQL2I9GOeUL6y/Wu24
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="239534457"
-X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
-   d="scan'208";a="239534457"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 10:45:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
-   d="scan'208";a="653974778"
-Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
-  by orsmga004.jf.intel.com with ESMTP; 30 Mar 2022 10:45:44 -0700
-To:     "Sandeep Maheswaram (Temp)" <quic_c_sanm@quicinc.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Peter Chen <peter.chen@kernel.org>,
-        Pawel Laszczak <pawell@cadence.com>,
-        Roger Quadros <rogerq@kernel.org>,
-        Aswath Govindraju <a-govindraju@ti.com>,
-        linux-arm-msm@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_pkondeti@quicinc.com,
-        quic_ppratap@quicinc.com
-References: <1648103831-12347-1-git-send-email-quic_c_sanm@quicinc.com>
- <1648103831-12347-4-git-send-email-quic_c_sanm@quicinc.com>
- <YjxjxplpOpDC2JLs@kuha.fi.intel.com>
- <4c2a28ad-b866-1b65-e73a-4eda0596cea2@linux.intel.com>
- <Yj2nPa6/Y01P5aCY@kuha.fi.intel.com>
- <4619c75c-cd34-82f2-56e1-a8bcb6d97177@linux.intel.com>
- <Yj3h4p/kmZTvMz0O@kuha.fi.intel.com>
- <fae54b27-9ae2-ecfc-69ae-40e5f5e1afbe@quicinc.com>
-From:   Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: Re: [PATCH v3 3/3] usb: dwc: host: add xhci_plat_priv quirk
- XHCI_SKIP_PHY_INIT
-Message-ID: <bd694ef9-be57-79f1-e95e-5501c396be25@linux.intel.com>
-Date:   Wed, 30 Mar 2022 20:47:34 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.14.0
-MIME-Version: 1.0
-In-Reply-To: <fae54b27-9ae2-ecfc-69ae-40e5f5e1afbe@quicinc.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        Wed, 30 Mar 2022 13:48:27 -0400
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30527136
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 10:46:42 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id x5-20020a637c05000000b003817f40e072so10740407pgc.17
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 10:46:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=VmPQQ5qQRDJuN908c46gqwAcHrIvR56W695qYYb4WZ0=;
+        b=eZx1PTFQ157sGCuxD63cANe5vicE0qFLAPgD8Ad4kvelr8kcbHMCFwljdSp6Ya9b/1
+         DbYdaUhlwowo2PI3X6rONBP46+ADfyculpJWVsHL3nEPftS188D8isVXiaamQGZ3gyHt
+         r6BZQOGnLt80ixQktHvtRysdejx5xOQSxuThnCwhvWWJmB5fdv0UHn2JnOIcdG7dKEJQ
+         Ip7BrhUzb/2+JnpZbWvU/buHYY5p9hiRGXVMLAnrG69l311h/fbV+PwpEpZ2IB4KJrS1
+         gdoR6vSIsKU1Y+6kNl3BQJ92QCnKC3Gamw1yHaxj6lBwFz8/9gHB3L2tDa/ViOpaHvGi
+         aUaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=VmPQQ5qQRDJuN908c46gqwAcHrIvR56W695qYYb4WZ0=;
+        b=fKnipDrsST3RGDJ21pv7TpCz29bAT/oLWpo0zJ7V3xFjELULeccryEoZPr0RuIRu/t
+         V7cn67axzbegS5sZk7Z5Ebdjnw+sbh4Qyz4mp3yUVADKZjMkl3SA5GR56WxdktEgdGqX
+         kjHNd55LF9Y/GwIy7JsPMNUFfPOpmkKrULGx3GCSekNRUjkHz5s89IKHs5svApNZMFUO
+         ZfOZT/VwA2SqW3j8MT8EKbIcnyrR7uPY25A0yra9QLce22hunILOvCGb+rppL+Cr7/KR
+         JGNrtUq2BwAPhwOLtguAimt05w67s1oAX3ddkFYiSktwOF80uZgmSqeJsVKSTLAjCSLI
+         zlbw==
+X-Gm-Message-State: AOAM533f5zkTwoB6BRz6XyyMj0eonxoI4NAdc+9pYTuXx3XXXTjfOete
+        yeYxqSb+GlTQ8Qd1FH4dplLdANblDFe/O3P19bpAOJ93WJ20xZ4WNoSdSi1+7To0XisGkIzjtMZ
+        PvA8XS3gLWYQjxrMN2BHG3CSoazd4wxV+jw5c6hwmjUqD3ij8xYajyrBDAvmR2On/KgvEUIxX
+X-Google-Smtp-Source: ABdhPJwkLd7//Mr/gFPfAdxB/1wpgBdgJZ+JRViex5/PmaODPC9an8QVWtSwKE47VgeT01+28r2KX3BSP4Gx
+X-Received: from bgardon.sea.corp.google.com ([2620:15c:100:202:7c53:ec2f:bd26:b69c])
+ (user=bgardon job=sendgmr) by 2002:a17:90a:858b:b0:1c6:5bc8:781a with SMTP id
+ m11-20020a17090a858b00b001c65bc8781amr110185pjn.0.1648662401123; Wed, 30 Mar
+ 2022 10:46:41 -0700 (PDT)
+Date:   Wed, 30 Mar 2022 10:46:18 -0700
+In-Reply-To: <20220330174621.1567317-1-bgardon@google.com>
+Message-Id: <20220330174621.1567317-9-bgardon@google.com>
+Mime-Version: 1.0
+References: <20220330174621.1567317-1-bgardon@google.com>
+X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
+Subject: [PATCH v3 08/11] KVM: x86/MMU: Allow NX huge pages to be disabled on
+ a per-vm basis
+From:   Ben Gardon <bgardon@google.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, Peter Xu <peterx@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        David Matlack <dmatlack@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        David Dunn <daviddunn@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        Junaid Shahid <junaids@google.com>,
+        Ben Gardon <bgardon@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 29.3.2022 12.18, Sandeep Maheswaram (Temp) wrote:
-> Hi Mathias,Heikki
-> 
-> On 3/25/2022 9:08 PM, Heikki Krogerus wrote:
->> On Fri, Mar 25, 2022 at 04:33:27PM +0200, Mathias Nyman wrote:
->>> On 25.3.2022 13.27, Heikki Krogerus wrote:
->>>> On Fri, Mar 25, 2022 at 12:36:22AM +0200, Mathias Nyman wrote:
->>>>> On 24.3.2022 14.27, Heikki Krogerus wrote:
->>>>>> On Thu, Mar 24, 2022 at 12:07:11PM +0530, Sandeep Maheswaram wrote:
->>>>>>> Currently the phy init is done from dwc3 and also xhci which makes the
->>>>>>> runtime_usage value 2 for the phy which causes issue during runtime
->>>>>>> suspend. When we run the below command the runtime_status still shows
->>>>>>> active.
->>>>>>> echo auto > /sys/bus/platform/devices/88e3000.phy/power/control
->>>>>>>
->>>>>>> dwc3 manages PHY by own DRD driver, so skip the management by
->>>>>>> HCD core by setting this quirk.
->>>>>>>
->>>>>>> Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
->>>>>>> ---
->>>>>>>   drivers/usb/dwc3/host.c | 13 +++++++++++++
->>>>>>>   1 file changed, 13 insertions(+)
->>>>>>>
->>>>>>> diff --git a/drivers/usb/dwc3/host.c b/drivers/usb/dwc3/host.c
->>>>>>> index eda8719..d4fcf06 100644
->>>>>>> --- a/drivers/usb/dwc3/host.c
->>>>>>> +++ b/drivers/usb/dwc3/host.c
->>>>>>> @@ -13,6 +13,12 @@
->>>>>>>   #include <linux/platform_device.h>
->>>>>>>     #include "core.h"
->>>>>>> +#include <linux/usb/xhci-plat.h>
->>>>>>> +#include <linux/usb/xhci-quirks.h>
->>>>>>> +
->>>>>>> +static const struct xhci_plat_priv xhci_plat_dwc3_xhci = {
->>>>>>> +    .quirks = XHCI_SKIP_PHY_INIT,
->>>>>>> +};
->>>>>>>     static void dwc3_host_fill_xhci_irq_res(struct dwc3 *dwc,
->>>>>>>                       int irq, char *name)
->>>>>>> @@ -122,6 +128,13 @@ int dwc3_host_init(struct dwc3 *dwc)
->>>>>>>           }
->>>>>>>       }
->>>>>>>   +    ret = platform_device_add_data(xhci, &xhci_plat_dwc3_xhci,
->>>>>>> +            sizeof(xhci_plat_dwc3_xhci));
->>>>>>> +    if (ret) {
->>>>>>> +        dev_err(dwc->dev, "failed to add data to xHCI\n");
->>>>>>> +        goto err;
->>>>>>> +    }
->>>>>>> +
->>>>>>>       ret = platform_device_add(xhci);
->>>>>>>       if (ret) {
->>>>>>>           dev_err(dwc->dev, "failed to register xHCI device\n");
->>>>>> I think you should just use device property:
->>>>>>
->>>>> This was suggested in an earlier series, but was rejected as it also added
->>>>> the property as a device tree parameter.
->>>>>
->>>>> I think adding more device properties can be messy in the long run, especially if we
->>>>> need to add them for many of the existing xhci quirks.
->>>>> We also end up with a mix where some device properties are listed as device tree
->>>>> parameters, and some not.
->>>>>
->>>>> Defining xhci quirks and platform data structure in headers shared with dwc3 and cdns3
->>>>> allow those drivers to easily set any existing xhci quirk, or other possible optional
->>>>> callbacks.
->>>>>
->>>>> cdns3 driver is already doing this, but it includes the full xhci.h header.
->>>>> This series cleans up that a bit so cdns3 will only include xhci quirk bits and
->>>>> platform data structure.
->>>>>
->>>>> On the downside we add a couple xhci related header files to include/linux/usb/
->>>>> Let me know if you see any other issues I missed with this approach.
->>>> The problem here is that these drivers are now coupled together, and
->>>> that should not be taken lightly. We have a dependency hell in our
->>>> hands with a lot of drivers, and the culprit is always platform data.
->>>>
->>>> Build-in device properties may be messy, but I would still say they
->>>> are less messy than those quirk flags - you got to admit, they are a
->>>> mess. The benefit from build-in properties is in any case the fact
->>>> that they remove the need to couple these drivers together.
->>> Agree, quirk bits are messy. Any suggestion that would work with
->>> PCI xHCI devices, devicetree, and "pure" platform devices?
->> I think xHCI driver should always be able to rely on being able to
->> read this kind of information from the fwnode. If there is no actual
->> firmware node (DT or ACPI), or if it's missing some information, the
->> glue driver needs to populate software node for the xHCI.
->>
->> Right now I just want to avoid having to pass the quirks using
->> platform data from drivers such as drivers/usb/cdns3/host.c and
->> drivers/usb/dwc3/host.c to xHCI.
->>
->> One way we could do that is by defining compatibility ID for both of
->> them that we provide using a single device property (like I guess DT
->> does). Then based on that compatibility ID, xhci-plat.c can set the
->> actual "static" quirk flags. That we could already do easily. How
->> would that sound to you?
+In some cases, the NX hugepage mitigation for iTLB multihit is not
+needed for all guests on a host. Allow disabling the mitigation on a
+per-VM basis to avoid the performance hit of NX hugepages on trusted
+workloads.
 
-Sounds good. 
+Signed-off-by: Ben Gardon <bgardon@google.com>
+---
+ Documentation/virt/kvm/api.rst  | 11 +++++++++++
+ arch/x86/include/asm/kvm_host.h |  2 ++
+ arch/x86/kvm/mmu.h              | 10 ++++++----
+ arch/x86/kvm/mmu/mmu.c          |  2 +-
+ arch/x86/kvm/mmu/spte.c         |  7 ++++---
+ arch/x86/kvm/mmu/spte.h         |  3 ++-
+ arch/x86/kvm/mmu/tdp_mmu.c      |  3 ++-
+ arch/x86/kvm/x86.c              |  6 ++++++
+ include/uapi/linux/kvm.h        |  1 +
+ 9 files changed, 35 insertions(+), 10 deletions(-)
 
-> 
-> This was my previous patch where I was using device tree property. Should we go ahead with this approach?
-> 
-> https://patchwork.kernel.org/project/linux-arm-msm/cover/1636353710-25582-1-git-send-email-quic_c_sanm@quicinc.com/
-> 
-> Any further changes to this ?
+diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
+index b102ba7cf903..b40c3113b14b 100644
+--- a/Documentation/virt/kvm/api.rst
++++ b/Documentation/virt/kvm/api.rst
+@@ -7844,6 +7844,17 @@ At this time, KVM_PMU_CAP_DISABLE is the only capability.  Setting
+ this capability will disable PMU virtualization for that VM.  Usermode
+ should adjust CPUID leaf 0xA to reflect that the PMU is disabled.
+ 
++8.36 KVM_CAP_VM_DISABLE_NX_HUGE_PAGES
++---------------------------
++
++:Capability KVM_CAP_PMU_CAPABILITY
++:Architectures: x86
++:Type: vm
++
++This capability disables the NX huge pages mitigation for iTLB MULTIHIT.
++
++The capability has no effect if the nx_huge_pages module parameter is not set.
++
+ 9. Known KVM API problems
+ =========================
+ 
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 676705ad1e23..dcff7709444d 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1246,6 +1246,8 @@ struct kvm_arch {
+ 	hpa_t	hv_root_tdp;
+ 	spinlock_t hv_root_tdp_lock;
+ #endif
++
++	bool disable_nx_huge_pages;
+ };
+ 
+ struct kvm_vm_stat {
+diff --git a/arch/x86/kvm/mmu.h b/arch/x86/kvm/mmu.h
+index e6cae6f22683..69cffc86b888 100644
+--- a/arch/x86/kvm/mmu.h
++++ b/arch/x86/kvm/mmu.h
+@@ -173,10 +173,12 @@ struct kvm_page_fault {
+ int kvm_tdp_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault);
+ 
+ extern int nx_huge_pages;
+-static inline bool is_nx_huge_page_enabled(void)
++static inline bool is_nx_huge_page_enabled(struct kvm *kvm)
+ {
+-	return READ_ONCE(nx_huge_pages);
++	return READ_ONCE(nx_huge_pages) &&
++	       !kvm->arch.disable_nx_huge_pages;
+ }
++void kvm_update_nx_huge_pages(struct kvm *kvm);
+ 
+ static inline int kvm_mmu_do_page_fault(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
+ 					u32 err, bool prefetch)
+@@ -191,8 +193,8 @@ static inline int kvm_mmu_do_page_fault(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
+ 		.user = err & PFERR_USER_MASK,
+ 		.prefetch = prefetch,
+ 		.is_tdp = likely(vcpu->arch.mmu->page_fault == kvm_tdp_page_fault),
+-		.nx_huge_page_workaround_enabled = is_nx_huge_page_enabled(),
+-
++		.nx_huge_page_workaround_enabled =
++			is_nx_huge_page_enabled(vcpu->kvm),
+ 		.max_level = KVM_MAX_HUGEPAGE_LEVEL,
+ 		.req_level = PG_LEVEL_4K,
+ 		.goal_level = PG_LEVEL_4K,
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index af428cb65b3f..eb7b935d3caa 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -6202,7 +6202,7 @@ static void __set_nx_huge_pages(bool val)
+ 	nx_huge_pages = itlb_multihit_kvm_mitigation = val;
+ }
+ 
+-static void kvm_update_nx_huge_pages(struct kvm *kvm)
++void kvm_update_nx_huge_pages(struct kvm *kvm)
+ {
+ 	mutex_lock(&kvm->slots_lock);
+ 	kvm_mmu_zap_all_fast(kvm);
+diff --git a/arch/x86/kvm/mmu/spte.c b/arch/x86/kvm/mmu/spte.c
+index 4739b53c9734..877ad30bc7ad 100644
+--- a/arch/x86/kvm/mmu/spte.c
++++ b/arch/x86/kvm/mmu/spte.c
+@@ -116,7 +116,7 @@ bool make_spte(struct kvm_vcpu *vcpu, struct kvm_mmu_page *sp,
+ 		spte |= spte_shadow_accessed_mask(spte);
+ 
+ 	if (level > PG_LEVEL_4K && (pte_access & ACC_EXEC_MASK) &&
+-	    is_nx_huge_page_enabled()) {
++	    is_nx_huge_page_enabled(vcpu->kvm)) {
+ 		pte_access &= ~ACC_EXEC_MASK;
+ 	}
+ 
+@@ -215,7 +215,8 @@ static u64 make_spte_executable(u64 spte)
+  * This is used during huge page splitting to build the SPTEs that make up the
+  * new page table.
+  */
+-u64 make_huge_page_split_spte(u64 huge_spte, int huge_level, int index)
++u64 make_huge_page_split_spte(struct kvm *kvm, u64 huge_spte, int huge_level,
++			      int index)
+ {
+ 	u64 child_spte;
+ 	int child_level;
+@@ -243,7 +244,7 @@ u64 make_huge_page_split_spte(u64 huge_spte, int huge_level, int index)
+ 		 * When splitting to a 4K page, mark the page executable as the
+ 		 * NX hugepage mitigation no longer applies.
+ 		 */
+-		if (is_nx_huge_page_enabled())
++		if (is_nx_huge_page_enabled(kvm))
+ 			child_spte = make_spte_executable(child_spte);
+ 	}
+ 
+diff --git a/arch/x86/kvm/mmu/spte.h b/arch/x86/kvm/mmu/spte.h
+index 73f12615416f..e4142caff4b1 100644
+--- a/arch/x86/kvm/mmu/spte.h
++++ b/arch/x86/kvm/mmu/spte.h
+@@ -415,7 +415,8 @@ bool make_spte(struct kvm_vcpu *vcpu, struct kvm_mmu_page *sp,
+ 	       unsigned int pte_access, gfn_t gfn, kvm_pfn_t pfn,
+ 	       u64 old_spte, bool prefetch, bool can_unsync,
+ 	       bool host_writable, u64 *new_spte);
+-u64 make_huge_page_split_spte(u64 huge_spte, int huge_level, int index);
++u64 make_huge_page_split_spte(struct kvm *kvm, u64 huge_spte, int huge_level,
++			      int index);
+ u64 make_nonleaf_spte(u64 *child_pt, bool ad_disabled);
+ u64 make_mmio_spte(struct kvm_vcpu *vcpu, u64 gfn, unsigned int access);
+ u64 mark_spte_for_access_track(u64 spte);
+diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+index a2f9a34a0168..5d82a54924e6 100644
+--- a/arch/x86/kvm/mmu/tdp_mmu.c
++++ b/arch/x86/kvm/mmu/tdp_mmu.c
+@@ -1469,7 +1469,8 @@ static int tdp_mmu_split_huge_page(struct kvm *kvm, struct tdp_iter *iter,
+ 	 * not been linked in yet and thus is not reachable from any other CPU.
+ 	 */
+ 	for (i = 0; i < PT64_ENT_PER_PAGE; i++)
+-		sp->spt[i] = make_huge_page_split_spte(huge_spte, level, i);
++		sp->spt[i] = make_huge_page_split_spte(kvm, huge_spte,
++						       level, i);
+ 
+ 	/*
+ 	 * Replace the huge spte with a pointer to the populated lower level
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 7a066cf92692..ea1d620b35df 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -4268,6 +4268,7 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
+ 	case KVM_CAP_SYS_ATTRIBUTES:
+ 	case KVM_CAP_VAPIC:
+ 	case KVM_CAP_ENABLE_CAP:
++	case KVM_CAP_VM_DISABLE_NX_HUGE_PAGES:
+ 		r = 1;
+ 		break;
+ 	case KVM_CAP_EXIT_HYPERCALL:
+@@ -6061,6 +6062,11 @@ int kvm_vm_ioctl_enable_cap(struct kvm *kvm,
+ 		}
+ 		mutex_unlock(&kvm->lock);
+ 		break;
++	case KVM_CAP_VM_DISABLE_NX_HUGE_PAGES:
++		kvm->arch.disable_nx_huge_pages = true;
++		kvm_update_nx_huge_pages(kvm);
++		r = 0;
++		break;
+ 	default:
+ 		r = -EINVAL;
+ 		break;
+diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
+index 8616af85dc5d..12399c969b42 100644
+--- a/include/uapi/linux/kvm.h
++++ b/include/uapi/linux/kvm.h
+@@ -1145,6 +1145,7 @@ struct kvm_ppc_resize_hpt {
+ #define KVM_CAP_PMU_CAPABILITY 212
+ #define KVM_CAP_DISABLE_QUIRKS2 213
+ #define KVM_CAP_VM_TSC_CONTROL 214
++#define KVM_CAP_VM_DISABLE_NX_HUGE_PAGES 215
+ 
+ #ifdef KVM_CAP_IRQ_ROUTING
+ 
+-- 
+2.35.1.1021.g381101b075-goog
 
-By dropping the DT part of that series we get a similar built-in device property
-solution as Heikki initially suggested.
-
-How about adding the compatibility ID device property that was just suggested?
-Then matching the Id in xhci-plat.c against a static table containing Ids and
-xhci_plat_priv structures, with the needed quirks for dwc3.
-
-Thanks
--Mathias
