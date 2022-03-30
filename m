@@ -2,240 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33B02C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 18:28:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC2BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 18:29:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347415AbiC3S34 (ORCPT
+        id S1349385AbiC3SbI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 14:29:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33236 "EHLO
+        Wed, 30 Mar 2022 14:31:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350466AbiC3S3l (ORCPT
+        with ESMTP id S1351162AbiC3S23 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 14:29:41 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97461DA5
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:26:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648664787; x=1680200787;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=GNwwe4gVp3OpPaPwuCW93ogK22+vVK5mATybqyOWT5c=;
-  b=ESHvs9T54Rs8znewnRDOqsShWHAzYlY8A0dqKHO8h1m33bmDffHZIEwa
-   zLcZlduShKFvy7pezx7dOZz21dhLReJ+wKRjvxUDwehhTO7Mg4SD8NSxl
-   9XxcgiEIlwMzTT329fd/QVN5B3KlHNV5x2EuLCM+K3oz1f2A1BszZpHOX
-   yaryOxnlNS9bmOGooqaZnWXm+6PLmipeavVVZLi5zinuE5wFCagWp8iQ0
-   bSa7EScTxStg4NbE3PLkJmWdFGYb/i4sj/iaJvMATejxnUG1uHSkLtcA/
-   s5O6+6O9LOuocGc6oRJJ7G/w9h44Kq4UtM/kR35gTwPu8a0qu7V4JUN7x
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="322796626"
-X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
-   d="scan'208";a="322796626"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 11:26:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
-   d="scan'208";a="639821962"
-Received: from lkp-server02.sh.intel.com (HELO 56431612eabd) ([10.239.97.151])
-  by FMSMGA003.fm.intel.com with ESMTP; 30 Mar 2022 11:26:24 -0700
-Received: from kbuild by 56431612eabd with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nZd1U-0000Hl-3n;
-        Wed, 30 Mar 2022 18:26:24 +0000
-Date:   Thu, 31 Mar 2022 02:22:56 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [paulmck-rcu:dev.2022.03.29a] BUILD SUCCESS
- 72ee6272c2a01687f3774f445574708452738302
-Message-ID: <6244a000.SmzmYoSnnquca2IG%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Wed, 30 Mar 2022 14:28:29 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 400E051324;
+        Wed, 30 Mar 2022 11:24:56 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id d5so37300192lfj.9;
+        Wed, 30 Mar 2022 11:24:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=AdJ8ve3qHqvvd1c/19/c++F2nvBXXpoJRywWLK1c6GA=;
+        b=VzF/bjKqvvZH4+Vs+UicO3gdz9nsJEXm+dcg6UGPbVU/yoLYmVm1YueOWKdDhZNgix
+         FY/hHbfESYn9c5fsPZWbC3dGHSEHNdwzq2Na4EsfiTXsSN3f9AEGxQ7WX6R9UspJpGIg
+         GjAPpxb4luejAubvpVp9DqPmBzV/k+Uifz+4m6bxdYb3PW5nh+qg64xIFbJpwXxDGbma
+         qoDOQnqngwklcxTK5GIuOH1jbuWUIQruO6S704/oPf42LwNUqsE0xxqSPXlF1vvPC2Cb
+         1wypDNZE3Rt183RhPwh9ASNC2gk7NFZ98o916r+4FtmsWO03lLUfD25XLuDJcZGZ57IA
+         e1hQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=AdJ8ve3qHqvvd1c/19/c++F2nvBXXpoJRywWLK1c6GA=;
+        b=AS3iCBpo1t50ULSUoJ4aFWT46T8QUpMLtKKUktcDt/FDFS5C8yFodA2EKrQig82O1l
+         PRz4mzXncFcwswnM1/3yINIuAaYA2epTMPZKShTUm33choXdzhjqTDiKq6A6hQFPcREa
+         ce3/WXEw5t/PvXn71IN63kwBfjgXOKWM53q97LGEPM5WWtdUda0v3vll4OM+E8m/pjvc
+         K9285uqB/NbJf0OQau7NehpWlq56c3ilrR2hzOJyGy4AHnXGvqXAkF6lcfK5rGsz9sYu
+         8rV3JD8d9j1N0jmnGZPQgB4eYygiuO+upb8IoiyDtflaxY6jYE9wimwca+Z5sl3VFwiq
+         N65Q==
+X-Gm-Message-State: AOAM533GZHCJCzxUQcble9//3h6f4EWgYRQgHSU6Pso1tp+/jxF6W4We
+        CfrOYlBOyr8XdjxiRgagbGw=
+X-Google-Smtp-Source: ABdhPJy/021JKKynej47Sox209kOnGV7+kHTY+Ir+6FxgM4yrCyy/XHL3xiVimSA0AHiJ0FmcxKMmw==
+X-Received: by 2002:a19:4f5d:0:b0:44a:2905:84ea with SMTP id a29-20020a194f5d000000b0044a290584eamr7774216lfk.120.1648664694266;
+        Wed, 30 Mar 2022 11:24:54 -0700 (PDT)
+Received: from [192.168.1.11] ([46.235.67.247])
+        by smtp.gmail.com with ESMTPSA id o3-20020a198c03000000b00448b7b1780csm2410866lfd.63.2022.03.30.11.24.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Mar 2022 11:24:53 -0700 (PDT)
+Message-ID: <ecf7ccdd-0d6f-9407-6778-ae7f0a6bf538@gmail.com>
+Date:   Wed, 30 Mar 2022 21:24:48 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [Linaro-mm-sig] [PATCH next] dma-buf/sync-file: do not allow zero
+ size allocations
+Content-Language: en-US
+To:     =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>,
+        sumit.semwal@linaro.org, gustavo@padovan.org,
+        christian.koenig@amd.com, daniel.vetter@ffwll.ch
+Cc:     linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
+        syzbot+5c943fe38e86d615cac2@syzkaller.appspotmail.com
+References: <20220329221425.22691-1-paskripkin@gmail.com>
+ <8af3d213-6cb7-a021-c198-e1bd37c47e7c@gmail.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <8af3d213-6cb7-a021-c198-e1bd37c47e7c@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev.2022.03.29a
-branch HEAD: 72ee6272c2a01687f3774f445574708452738302  rcu_sync: Fix comment to properly reflect rcu_sync_exit() behavior
+Hi Christian,
 
-elapsed time: 998m
+On 3/30/22 10:09, Christian König wrote:
+> That problem is already fixed with patch 21d139d73f77 dma-buf/sync-file:
+> fix logic error in new fence merge code.
+> 
+> Am 30.03.22 um 00:14 schrieb Pavel Skripkin:
+>> syzbot reported GPF in dma_fence_array_first(), which is caused by
+>> dereferencing ZERO_PTR in dma-buf internals.
+>>
+>> ZERO_PTR was generated in sync_file_merge(). This functuion tries to
+>> reduce allocation size, but does not check if it reducing to 0.
+> 
+> This is actually perfectly ok. The code above should have prevented the
+> size to become 0.
+> 
+> Regards,
+> Christian.
+> 
 
-configs tested: 160
-configs skipped: 4
+Thanks for your reply! I see that 21d139d73f77 fixes GPF in 
+dma_fence_array_first(), but what about this part:
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+>>   
+>> -	if (num_fences > INT_MAX)
+>> +	if (num_fences > INT_MAX || !num_fences)
+>>   		goto err_free_sync_file;
+>>   
+>>   	fences = kcalloc(num_fences, sizeof(*fences), GFP_KERNEL);
+>> @@ -264,7 +264,7 @@ static struct sync_file *sync_file_merge(const char *name, struct sync_file *a,
+>>   	if (index == 0)
 
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-i386                          randconfig-c001
-mips                 randconfig-c004-20220330
-sh                          landisk_defconfig
-sh                        edosk7760_defconfig
-powerpc                     rainier_defconfig
-um                             i386_defconfig
-xtensa                    smp_lx200_defconfig
-arm                        mini2440_defconfig
-powerpc                    klondike_defconfig
-sparc                       sparc64_defconfig
-sh                          rsk7201_defconfig
-arm                        clps711x_defconfig
-arm                            xcep_defconfig
-arm                          badge4_defconfig
-m68k                       m5208evb_defconfig
-arc                 nsimosci_hs_smp_defconfig
-xtensa                          iss_defconfig
-arm                           tegra_defconfig
-powerpc                    sam440ep_defconfig
-mips                            ar7_defconfig
-arm                            hisi_defconfig
-ia64                            zx1_defconfig
-sh                         ecovec24_defconfig
-mips                  maltasmvp_eva_defconfig
-ia64                        generic_defconfig
-sh                           se7619_defconfig
-powerpc64                        alldefconfig
-arm                             pxa_defconfig
-arc                                 defconfig
-i386                                defconfig
-mips                           xway_defconfig
-xtensa                       common_defconfig
-sh                            hp6xx_defconfig
-h8300                       h8s-sim_defconfig
-parisc                           alldefconfig
-sh                     magicpanelr2_defconfig
-m68k                            q40_defconfig
-arm                        shmobile_defconfig
-powerpc                     sequoia_defconfig
-arm                      integrator_defconfig
-sh                          urquell_defconfig
-sh                          kfr2r09_defconfig
-mips                           ip32_defconfig
-sh                            migor_defconfig
-m68k                          hp300_defconfig
-arm                         axm55xx_defconfig
-sh                ecovec24-romimage_defconfig
-sh                   sh7724_generic_defconfig
-mips                         bigsur_defconfig
-sh                        sh7757lcr_defconfig
-arm                  randconfig-c002-20220330
-arm                  randconfig-c002-20220327
-arm                  randconfig-c002-20220329
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-m68k                             allyesconfig
-nios2                               defconfig
-arc                              allyesconfig
-nios2                            allyesconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-xtensa                           allyesconfig
-h8300                            allyesconfig
-sh                               allmodconfig
-parisc                              defconfig
-s390                             allyesconfig
-s390                             allmodconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                                defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-x86_64                        randconfig-a002
-x86_64                        randconfig-a004
-x86_64                        randconfig-a006
-i386                 randconfig-a001-20220328
-i386                 randconfig-a003-20220328
-i386                 randconfig-a006-20220328
-i386                 randconfig-a005-20220328
-i386                 randconfig-a004-20220328
-i386                 randconfig-a002-20220328
-x86_64               randconfig-a001-20220328
-x86_64               randconfig-a003-20220328
-x86_64               randconfig-a004-20220328
-x86_64               randconfig-a002-20220328
-x86_64               randconfig-a005-20220328
-x86_64               randconfig-a006-20220328
-riscv                randconfig-r042-20220330
-s390                 randconfig-r044-20220330
-arc                  randconfig-r043-20220330
-riscv                    nommu_k210_defconfig
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-riscv                            allmodconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-x86_64                           allyesconfig
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                         rhel-8.3-kunit
-x86_64                                  kexec
+If num_fences is equal to zero then fences dereference will cause an 
+oops. Or this one is also fixed in your tree?
 
-clang tested configs:
-mips                 randconfig-c004-20220330
-x86_64                        randconfig-c007
-powerpc              randconfig-c003-20220330
-riscv                randconfig-c006-20220330
-i386                          randconfig-c001
-arm                  randconfig-c002-20220330
-powerpc                      obs600_defconfig
-hexagon                          alldefconfig
-arm                         s5pv210_defconfig
-arm                     am200epdkit_defconfig
-powerpc                 mpc836x_rdk_defconfig
-mips                     loongson2k_defconfig
-mips                     loongson1c_defconfig
-powerpc                     mpc5200_defconfig
-mips                   sb1250_swarm_defconfig
-powerpc                   lite5200b_defconfig
-powerpc                     kilauea_defconfig
-mips                         tb0219_defconfig
-mips                      bmips_stb_defconfig
-mips                       lemote2f_defconfig
-x86_64                        randconfig-a001
-x86_64                        randconfig-a003
-x86_64                        randconfig-a005
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-i386                          randconfig-a011
-i386                          randconfig-a013
-i386                          randconfig-a015
-riscv                randconfig-r042-20220328
-hexagon              randconfig-r045-20220329
-hexagon              randconfig-r045-20220328
-hexagon              randconfig-r045-20220327
-hexagon              randconfig-r041-20220327
-hexagon              randconfig-r045-20220330
-hexagon              randconfig-r041-20220329
-hexagon              randconfig-r041-20220328
-hexagon              randconfig-r041-20220330
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks!
+
+
+
+
+With regards,
+Pavel Skripkin
