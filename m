@@ -2,50 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5142FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:47:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DAF1C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:47:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343874AbiC3LtF (ORCPT
+        id S1343892AbiC3LtI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 07:49:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58604 "EHLO
+        Wed, 30 Mar 2022 07:49:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343801AbiC3Lsw (ORCPT
+        with ESMTP id S1343859AbiC3Lsy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:48:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86D9A25E31B;
-        Wed, 30 Mar 2022 04:47:04 -0700 (PDT)
+        Wed, 30 Mar 2022 07:48:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CEB725DA86;
+        Wed, 30 Mar 2022 04:47:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E572361620;
-        Wed, 30 Mar 2022 11:47:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01029C340F2;
-        Wed, 30 Mar 2022 11:47:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2B850B81C35;
+        Wed, 30 Mar 2022 11:47:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D552C34116;
+        Wed, 30 Mar 2022 11:47:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648640823;
-        bh=yGnjY+lYxJXOnr0rrff8LCirneIsgVl27V7mWnMwbyg=;
+        s=k20201202; t=1648640826;
+        bh=Yw9KpInkgsNYhh+OCNup/aC8fKxzxvvo6UbYxOjbCnQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WYzWCO/WG1VOPjlqOGm5yKm4odeq9kpmw5ThZEHbiSEq+qQANSk2r6kwGo7vmCJoN
-         abeSWFphnQ552YGFmgLqJ45fGOHMAj8/dgwLSrSe7g2m3RtPlfMXzTzOm4AnLElG/D
-         cY+r3UqVGsv4KUOztsSHNs2NlzDHIi/WQpyqodg1vaFuEnKvd3JDIbg3PYI8Ab7aNo
-         rtd37bJmzuPHvn37nHRJv5ufQ3IrdSM1CpcEq9yJO2lsxerq+z2YC27d8IHhw4A1+u
-         2eySsFpXHwQgNlOMResR8pdPsn2U8YpdaLhA+oFM/QyZ7XSMxRGipAwAUegPCpMf4o
-         MvKB0TcB/e/Rg==
+        b=THURKuO+016Jj/dRUJW8cU2xinHysPHJdTx+xm635fpa8ffHVW+DngVkU8rwW+MVt
+         MKoM5ymB62/ufnqlPHYg9RZWBy1El38hDyi9ar/pMvAuoB3qWc/dIFs+/T83IhprS/
+         KLE0ZrgzywyR4iBHPhnScst6TIF4duMWpKnj1cucKCVUxd2SaFuPCeyrPt0P/vwNgr
+         FcmduX9I+HkoAzj0w0RgNHuK/fmh+UY61F7RBEuIGx8YqZvaY+iDAVmg2uhVdo6heI
+         d0FnphB6XcHSVeWMIr30+Ob4YwHEaQyHNz2cXL7dscD8XPAGo2RXjLObLwrVzNFKKD
+         Ls/4DyO54nVig==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Rander Wang <rander.wang@intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.17 10/66] ASoC: SOF: Intel: hda: Remove link assignment limitation
-Date:   Wed, 30 Mar 2022 07:45:49 -0400
-Message-Id: <20220330114646.1669334-10-sashal@kernel.org>
+Cc:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <jroedel@suse.de>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, joro@8bytes.org,
+        matthias.bgg@gmail.com, iommu@lists.linux-foundation.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.17 12/66] media: iommu/mediatek: Return ENODEV if the device is NULL
+Date:   Wed, 30 Mar 2022 07:45:51 -0400
+Message-Id: <20220330114646.1669334-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330114646.1669334-1-sashal@kernel.org>
 References: <20220330114646.1669334-1-sashal@kernel.org>
@@ -57,63 +58,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+From: Yong Wu <yong.wu@mediatek.com>
 
-[ Upstream commit 2ce0d008dcc59f9c01f43277b9f9743af7b01dad ]
+[ Upstream commit 2fb0feed51085db77606de9b9477c96894328809 ]
 
-The limitation to assign a link DMA channel for a BE iff the
-corresponding host DMA channel is assigned to a connected FE is only
-applicable if the PROCEN_FMT_QUIRK is set. So, remove it for platforms
-that do not enable the quirk.
+The platform device is created at:
+of_platform_default_populate_init:  arch_initcall_sync
+  ->of_platform_populate
+        ->of_platform_device_create_pdata
 
-Complements: a792bfc1c2bc ("ASoC: SOF: Intel: hda-stream: limit PROCEN workaround")
-Signed-off-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Rander Wang <rander.wang@intel.com>
-Reviewed-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-Reviewed-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Link: https://lore.kernel.org/r/20220128130017.28508-1-peter.ujfalusi@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+When entering our probe, all the devices should be already created.
+if it is null, means NODEV. Currently we don't get the fail case.
+It's a minor fix, no need add fixes tags.
+
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Acked-by: Joerg Roedel <jroedel@suse.de>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sof/intel/hda-dai.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/iommu/mtk_iommu.c    | 2 +-
+ drivers/iommu/mtk_iommu_v1.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/sof/intel/hda-dai.c b/sound/soc/sof/intel/hda-dai.c
-index cd12589355ef..28a54145c150 100644
---- a/sound/soc/sof/intel/hda-dai.c
-+++ b/sound/soc/sof/intel/hda-dai.c
-@@ -59,6 +59,8 @@ static struct hdac_ext_stream *
- {
- 	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
- 	struct sof_intel_hda_stream *hda_stream;
-+	const struct sof_intel_dsp_desc *chip;
-+	struct snd_sof_dev *sdev;
- 	struct hdac_ext_stream *res = NULL;
- 	struct hdac_stream *stream = NULL;
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 25b834104790..77ae20ff9b35 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -848,7 +848,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 		plarbdev = of_find_device_by_node(larbnode);
+ 		if (!plarbdev) {
+ 			of_node_put(larbnode);
+-			return -EPROBE_DEFER;
++			return -ENODEV;
+ 		}
+ 		data->larb_imu[id].dev = &plarbdev->dev;
  
-@@ -77,9 +79,20 @@ static struct hdac_ext_stream *
- 			continue;
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index 1467ba1e4417..68bf02f87cfd 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -604,7 +604,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 		plarbdev = of_find_device_by_node(larbnode);
+ 		if (!plarbdev) {
+ 			of_node_put(larbnode);
+-			return -EPROBE_DEFER;
++			return -ENODEV;
+ 		}
+ 		data->larb_imu[i].dev = &plarbdev->dev;
  
- 		hda_stream = hstream_to_sof_hda_stream(hstream);
-+		sdev = hda_stream->sdev;
-+		chip = get_chip_info(sdev->pdata);
- 
- 		/* check if link is available */
- 		if (!hstream->link_locked) {
-+			/*
-+			 * choose the first available link for platforms that do not have the
-+			 * PROCEN_FMT_QUIRK set.
-+			 */
-+			if (!(chip->quirks & SOF_INTEL_PROCEN_FMT_QUIRK)) {
-+				res = hstream;
-+				break;
-+			}
-+
- 			if (stream->opened) {
- 				/*
- 				 * check if the stream tag matches the stream
 -- 
 2.34.1
 
