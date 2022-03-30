@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4929CC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7AE6C3527B
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346208AbiC3MEm (ORCPT
+        id S1346771AbiC3MFd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:04:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57776 "EHLO
+        Wed, 30 Mar 2022 08:05:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345447AbiC3Lyb (ORCPT
+        with ESMTP id S1345692AbiC3Ly4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:54:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEEAF282B3A;
-        Wed, 30 Mar 2022 04:51:10 -0700 (PDT)
+        Wed, 30 Mar 2022 07:54:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1D1D261DDF;
+        Wed, 30 Mar 2022 04:51:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B3D66162C;
-        Wed, 30 Mar 2022 11:50:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB812C36AE7;
-        Wed, 30 Mar 2022 11:50:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9D458B81C35;
+        Wed, 30 Mar 2022 11:51:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4498FC36AE5;
+        Wed, 30 Mar 2022 11:51:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641047;
-        bh=hP7Ta8lHWxh6NeT9h5JeWb6KQ3S+wTrRwcg0WqNvRtc=;
+        s=k20201202; t=1648641078;
+        bh=IVt9jYETt3TQfguSpdnH8Vu6cSpfeaiBih9Ro8JSimM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FchjQvdSqNnSeEWd3RolEPsYPVoFOo+wHJK3PuxM01eBab7rSMCAMxgD6P7FgVugd
-         b8lp2ca2xfFWInLQVqpRoWxBZOnjjOwrglpki9rUqBfGTuJ8IRTDINB55XuXi+p/QX
-         x0oSp/p6bJw0Bg5o++TZc7yIs1OpNd8xti2vSduO/VN3qsIbjc2ZOuiWELO5ij0VyC
-         Sp5LOSiW6peMUobfh+nQOs2sZ+EBdBYxub5iq1LuiyFE5E8RRTFiYZreoD/yp9YYGE
-         kczGSz464W6Fm/p1L0flLXMvPUg+rgfkCnVpE15mPxv5eWOT9F0Qzw6rApDr0f/hx8
-         ik/9xh/MGdiEQ==
+        b=g8rYC61lvKi0e96XLCoIJCUwii2mHbU2SyRdTIF06DVATlNF6ME0M/o7V2TE5BoiL
+         OOH4gFLHKFzycFQz9wP5P+Z12Tnt5W+q+JqXEoMBOQDgeJ8bbLCH/URXQ5DZCwcOam
+         vCNu7drm9v4t56HtleveZ3NdUkzxJ/e7PkOlbqVSWYCZVlMSUDAEh3dplggnFeaOlY
+         DtNjeijaB9a5QDKcqKKJms7xor/julA9Omy7HNwCFh61bw1ZQsyw+1MjfF+a+grQIF
+         URbYN9LJTsY2SbnW/G66Au7LlvJbHlzYlEaPtB9nAITUOynPrwT3C41kzuUfpLvabP
+         svAXUiT+onVYA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jing Yao <yao.jing2@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
-        bernie@plugable.com, tomi.valkeinen@ti.com,
-        linux-fbdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 27/50] video: fbdev: udlfb: replace snprintf in show functions with sysfs_emit
-Date:   Wed, 30 Mar 2022 07:49:41 -0400
-Message-Id: <20220330115005.1671090-27-sashal@kernel.org>
+Cc:     Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.15 48/50] ASoC: ak4642: Use of_device_get_match_data()
+Date:   Wed, 30 Mar 2022 07:50:02 -0400
+Message-Id: <20220330115005.1671090-48-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115005.1671090-1-sashal@kernel.org>
 References: <20220330115005.1671090-1-sashal@kernel.org>
@@ -53,60 +54,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jing Yao <yao.jing2@zte.com.cn>
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-[ Upstream commit 81a998288956d09d7a7a2303d47e4d60ad55c401 ]
+[ Upstream commit 835ca59799f5c60b4b54bdc7aa785c99552f63e4 ]
 
-Use sysfs_emit instead of scnprintf, snprintf or sprintf.
+Use of_device_get_match_data() to simplify the code.
 
 Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+Link: https://lore.kernel.org/r/20220315023226.2118354-1-chi.minghao@zte.com.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/udlfb.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ sound/soc/codecs/ak4613.c | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/video/fbdev/udlfb.c b/drivers/video/fbdev/udlfb.c
-index b9cdd02c1000..90f48b71fd8f 100644
---- a/drivers/video/fbdev/udlfb.c
-+++ b/drivers/video/fbdev/udlfb.c
-@@ -1426,7 +1426,7 @@ static ssize_t metrics_bytes_rendered_show(struct device *fbdev,
- 				   struct device_attribute *a, char *buf) {
- 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
- 	struct dlfb_data *dlfb = fb_info->par;
--	return snprintf(buf, PAGE_SIZE, "%u\n",
-+	return sysfs_emit(buf, "%u\n",
- 			atomic_read(&dlfb->bytes_rendered));
- }
+diff --git a/sound/soc/codecs/ak4613.c b/sound/soc/codecs/ak4613.c
+index 4d2e78101f28..034195c83bd7 100644
+--- a/sound/soc/codecs/ak4613.c
++++ b/sound/soc/codecs/ak4613.c
+@@ -653,15 +653,10 @@ static int ak4613_i2c_probe(struct i2c_client *i2c,
+ 	struct ak4613_priv *priv;
  
-@@ -1434,7 +1434,7 @@ static ssize_t metrics_bytes_identical_show(struct device *fbdev,
- 				   struct device_attribute *a, char *buf) {
- 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
- 	struct dlfb_data *dlfb = fb_info->par;
--	return snprintf(buf, PAGE_SIZE, "%u\n",
-+	return sysfs_emit(buf, "%u\n",
- 			atomic_read(&dlfb->bytes_identical));
- }
+ 	regmap_cfg = NULL;
+-	if (np) {
+-		const struct of_device_id *of_id;
+-
+-		of_id = of_match_device(ak4613_of_match, dev);
+-		if (of_id)
+-			regmap_cfg = of_id->data;
+-	} else {
++	if (np)
++		regmap_cfg = of_device_get_match_data(dev);
++	else
+ 		regmap_cfg = (const struct regmap_config *)id->driver_data;
+-	}
  
-@@ -1442,7 +1442,7 @@ static ssize_t metrics_bytes_sent_show(struct device *fbdev,
- 				   struct device_attribute *a, char *buf) {
- 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
- 	struct dlfb_data *dlfb = fb_info->par;
--	return snprintf(buf, PAGE_SIZE, "%u\n",
-+	return sysfs_emit(buf, "%u\n",
- 			atomic_read(&dlfb->bytes_sent));
- }
- 
-@@ -1450,7 +1450,7 @@ static ssize_t metrics_cpu_kcycles_used_show(struct device *fbdev,
- 				   struct device_attribute *a, char *buf) {
- 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
- 	struct dlfb_data *dlfb = fb_info->par;
--	return snprintf(buf, PAGE_SIZE, "%u\n",
-+	return sysfs_emit(buf, "%u\n",
- 			atomic_read(&dlfb->cpu_kcycles_used));
- }
- 
+ 	if (!regmap_cfg)
+ 		return -EINVAL;
 -- 
 2.34.1
 
