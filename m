@@ -2,236 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B33D7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 19:09:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E5CEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 19:10:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350592AbiC3TLR (ORCPT
+        id S1350722AbiC3TMV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 15:11:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58082 "EHLO
+        Wed, 30 Mar 2022 15:12:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350623AbiC3TK4 (ORCPT
+        with ESMTP id S1350626AbiC3TMH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 15:10:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDEB42F390;
-        Wed, 30 Mar 2022 12:09:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 78690B81E28;
-        Wed, 30 Mar 2022 19:09:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A6E0C340F0;
-        Wed, 30 Mar 2022 19:09:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648667345;
-        bh=1L+9DBe2kir+EVNigI3BdqqXM81kBYgbIhIJB304CSA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NR4uXmqaP8m/xPFS/kwMVrQVjDg3GeY3yjyYEOG9drHDq3cEOwwFbKcQjT33RBlml
-         tBhtIbrpDZazvtumb6YFQfdZpFj5djNp9UocaqmDA6wsAGULpjcbv4m2HsodlALGJP
-         KFhN91/LPFVyCJPQ4o/scYCvz6XxrSn0ML5XQ7oxkAO1AfYGGyCoJ4Q11QCcZ4va8w
-         aTKSxp6mbjxeqxO/4mnaVaqao/tFVMVHy5TMf9m1SvotV/vbNnu/gONB+BVsQT8o73
-         5iL43rVyAlDG6XrEC7Dpe0TEhA8D8uNAbGlpyb/k4N4XMn+53FYBC5dY/Dy00dZT/I
-         ddx/RLdQFp3kQ==
-Received: by wens.tw (Postfix, from userid 1000)
-        id 557E75FD11; Thu, 31 Mar 2022 03:09:02 +0800 (CST)
-From:   Chen-Yu Tsai <wens@kernel.org>
-To:     Javier Martinez Canillas <javierm@redhat.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     Chen-Yu Tsai <wens@csie.org>, dri-devel@lists.freedesktop.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 3/4] drm: ssd130x: Support page addressing mode
-Date:   Thu, 31 Mar 2022 03:08:45 +0800
-Message-Id: <20220330190846.13997-4-wens@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330190846.13997-1-wens@kernel.org>
-References: <20220330190846.13997-1-wens@kernel.org>
+        Wed, 30 Mar 2022 15:12:07 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2072.outbound.protection.outlook.com [40.107.94.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD7114665E
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 12:09:59 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BA7T4pLzeK1pT8uD2LN8C8xDtYUW39qAEyyqL9RV38BGoLsJ3n4IQg+uACUIni+dYEStW0U7wCNmeGcxUn9v6aThOZFNXy6zRbASYTRgRDB/JH2sVZ4mqRB1yPCQZerIQyTTOKNB5IIsImz0gbg+BG7hy+I2mfHXLP9os68vspEmNWGpLFCqzxEpYhi9SYDjJtO2z++fpYCDiz76VLXALCuYcBu6Fz2Z1jiKhDKdLylz/4WR6X7HxlYJ3FmCU7GEsZdHmH6k8lgSOSaL5p8LQAGWDVrPC7j4xxRcgnppZKC/6Oijvqy0z49glzM+NXAOY8rP6KdxPWYHFCnEjyDkcA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=a9NWUqlz1Wum6EvmBudafLjXyo7VLyS6hE+iiw7zAgA=;
+ b=BZ1PRjUQA94RwEmvmV/xuzpq0323wTqOeASUOPMpWw2XzW8M3BtxN5r92a6hsRnNiBNT0u4puVsyRih+omdgC7gLfJ0jA9SUWAoDChcB4+QD3W5ddhOzTRSgFYXSBRYKK8QdF1bqKLzqBq1+q1Fzm3Lqu/zWJTdkIPmOBfesX3vkNyJYnIh735Am665OKyWZIfYiHLIR7DhbUQTH5IAjb3bNETnHW76J29ZHOj4qUUNZCjBH+bpC5R7WYxh/ryTN9vjA6tGV4/U4bpuxY/4SOnuzVH7FLoPD0uGHwL98YCVV7lB1SUzHjbvrP/ARhl4QHOjvi0UH0kndlVmva4KR6A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=a9NWUqlz1Wum6EvmBudafLjXyo7VLyS6hE+iiw7zAgA=;
+ b=JY2ovFHXJq75cnstyCq/nokbEN67L4aaKoWW/JiVp9yDS/RzrtjsKwFg+RIZypbdu2oxEwifCZgHBx5s1BzxQb4/xyTU9ATSP5gM6+rYw92ieQIuL7UYeYnt88l+DFhC7IlUsFL7R8xE4ZlYt7hKiEI54NVSGUTKPPEZUDYROrHSpg5wbqg76Bbr/jVlPp3VpN//Yur69RIwGXdXsdbH5atoBUN5dL/EX8Fhqkla2s7mmuxMH1ClrTSwejvnZosB968n3gH7+JfPNO7LWTJM8y2I1G83gJCxjOPr3OnszyvcKivk9jQLW71tuXUnIo44fPrmlk3PFdsWLlSBoS2nAw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by DM6PR12MB4283.namprd12.prod.outlook.com (2603:10b6:5:211::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.19; Wed, 30 Mar
+ 2022 19:09:58 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::11a0:970a:4c24:c70c]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::11a0:970a:4c24:c70c%6]) with mapi id 15.20.5102.027; Wed, 30 Mar 2022
+ 19:09:57 +0000
+Date:   Wed, 30 Mar 2022 16:09:56 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Lu Baolu <baolu.lu@linux.intel.com>
+Cc:     Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC v2 06/11] iommu/vt-d: Add SVA domain support
+Message-ID: <20220330190956.GD2120790@nvidia.com>
+References: <20220329053800.3049561-1-baolu.lu@linux.intel.com>
+ <20220329053800.3049561-7-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220329053800.3049561-7-baolu.lu@linux.intel.com>
+X-ClientProxiedBy: BL0PR02CA0101.namprd02.prod.outlook.com
+ (2603:10b6:208:51::42) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 746b199b-96f4-4407-41c3-08da1280e1a1
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4283:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR12MB4283C6DB705D6A1C4B3104CDC21F9@DM6PR12MB4283.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: o0XJIz3BdpChpqsigK+F8yDjwpRYE7Gifsu8aWQfdo/jSaRdBczPe7KqQYgylnIrLn6G940Na60+ZA2YfzJriC3/wqVLcLODw4hQ/uFrDsN54WdBJw5i1LqZZF5IoKZl+PeUfBSm0MYVlqngCOAYU2yDPsBXiTw7tW6pjKFjUtP0zhHgKE18c+xOz5tqoqJVMIGkEo9mhzkd65g9cE9y42f3Lt5TW+r3oHz0dJTs4fvKNhvPStUs1TL5fh3NPqtA5L+0p7ZrEfpamCZA0ykTCVRUAtgAkuZWYCPjZDn2dCSGlUbavJKa/UM9Sqqv86RfDpTJmlWef+2fBtov36K+gEBIh9eAhOvsJAluEl6tQb9Jc37UVFHFLx4HdB0hZ4DOO30acESDwxGyZoL4F26lEu3jlbArLKCorzv7RVraOnO3d8Pi+H6iPvViEUzaI9h4Fa3qx0bEn+16Uif3RpfpZ8gIC1ywo3IeQ64tLi/w2zJCHXbBWC04tnR7bcnpn5YziPOLthF+SAh6QyDtd6GTf7bXrI2cISl3fDSOgVeJcTONisWPi8PQtOnmQmjdhL1KY19Dy3xYWrGaTSPF/74+v7ZLO7SfV23iEUPr5ZAg3rvDRzbF5+Wq/6gekiNKdR25UxF6/UKEcj7R3xjqyyVdHw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(1076003)(86362001)(6512007)(316002)(6506007)(2616005)(6486002)(186003)(6916009)(508600001)(54906003)(38100700002)(26005)(66476007)(8936002)(66556008)(66946007)(4326008)(33656002)(2906002)(7416002)(5660300002)(8676002)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hDs1h0VaWZclaq5qv286zr97qNLwc/qD+UrHJ5S8mvCwFD3H4W0RKt+3y0j9?=
+ =?us-ascii?Q?eXBriV2cEmwE9mK4qkLBdJtJWMntLIbNK0GYB7nl5W1EK61Xe3j8C+WbvK7t?=
+ =?us-ascii?Q?ebLJZ3+N0ucaHDeyFzMIeR+jp6zAZW0zVwhSGjexB9uvbUVLhuLl6C9+9R2p?=
+ =?us-ascii?Q?eylBpq2ygxdt9EYwlwSVwOgQjYt9UKDX9xohkop3DYCY6vrIxIum4yhDT3WM?=
+ =?us-ascii?Q?NYf1+ObNWMTR9Maq+y8rMZx+VvKGX//Pl6uo0O6ZsX8cXT977AgfwvLXCiGg?=
+ =?us-ascii?Q?cZkHMBeaG6rQTpjGZBknTAzuh+oQ0NOvwc5zy7teZWrnrx3KzxWi6yk3G0D0?=
+ =?us-ascii?Q?8UDtYE0pZB7zJMTVQ56cUcDqKejjQ8aeXczTnX4c3icEowyBZmTC/PLUAQtN?=
+ =?us-ascii?Q?LBLSyF+3mbV26Bm66ZMA1TH+rdOKdgXs5Tbvps/k6RP1ggiB173hfomzBr5h?=
+ =?us-ascii?Q?UIhKIRwbqivwSHUMpWaO0a9ArrGxr3yXUREEGfsUKssw5utfFGx1YfuEbcu0?=
+ =?us-ascii?Q?RTIHx+OqcGH+pB95/cNombVl3RZsRbxKIh42i/Ne4uCZsvIEmOsyTw375GMh?=
+ =?us-ascii?Q?TrPhBMH/uK6vWDSSgWqYjaFrxjeoJZ61o2ZWvnNIRzYwKql2EBtQ9j6Oz1kB?=
+ =?us-ascii?Q?FEhcavMxCu6HnoqxPniY+4jRLr+3rTxo9Dy/8Hy3GYDSCVSArHgxRKsbNCpx?=
+ =?us-ascii?Q?NJNPqYoUOTpSh82gd7GTzJn4u3e9G8RkdRG36y385CtjjNJcdg2fiLjQFcE6?=
+ =?us-ascii?Q?Suzx59YS1aEe76ybeRi+KoR04Ghn40irbDhNYvz5zSp5/Nf7wMFvbc+gaiZS?=
+ =?us-ascii?Q?aAVXsXU9Dzpx83bwdzDRsMZL6ba+e8IY4pc0aS+3kZnM9PNNi7/yGUmA80rm?=
+ =?us-ascii?Q?1jFBvyo5/HqMhveqIRgaOgjZghSO0WA9DLo3MkX8F7qqOfLdflbzkbDKOKhg?=
+ =?us-ascii?Q?IHpPzn4v52Yhb43p3wQKnTyTCyGtu/0QsEHNwVAyQ009lqgapqcCHGsMCpO3?=
+ =?us-ascii?Q?haOYgM2wej0kcWRdXwKVkdW/7CUltp/VSM7IxPtJKgoi8RKY1W1+8gQ5S0La?=
+ =?us-ascii?Q?PltSDLB+A2serE+pxJqh7m549fNNR4VSWuzJW3ynpi3a7O9ByIZrDIsu57AH?=
+ =?us-ascii?Q?zNIxkBhHBJQWkLZyF8BBgrLT0aPI/MN+ZII/RoLcQz8Njy9oMzUoKsohXVeU?=
+ =?us-ascii?Q?0LXp7yK0No5mDAfTU6KIOz4xvBdwpe5dkfMsAsiYA+wEOeSRawGRXywgMRrn?=
+ =?us-ascii?Q?DWrWIkkgnZmvPQmT0pDoBxQVb5+xXiDTfbXImno/NujzUcJzr10HlyHWgnM/?=
+ =?us-ascii?Q?YqPgqt+MPSnbqJxNI9J24JpbqaCxt0augJ8Qig1iowCblutEuhOebvQngmwQ?=
+ =?us-ascii?Q?9devh1pzHZcNDWSW8p8emNE8nESHW85KDqSpKDWSwbiruGBYRxLTffU0IpyB?=
+ =?us-ascii?Q?+IHs1k0MKlX7tCp6LoCFbRW6A/DMwrQJLiudXErvGdwkOV8x1I0GNkSflZ9M?=
+ =?us-ascii?Q?fJPead25g43eUmvwl8cIHzLSmSawL5SEN4UQwPzpGCWVM/pr6Bwidzk/NUj5?=
+ =?us-ascii?Q?xo0lug0KZ8spgdhPpY3Fpmg9T9OWwB9lS5QWr8lBP+f4QZZhhJdPg7zDej1P?=
+ =?us-ascii?Q?gxyUgsL0hwwqHA8H30hT30nsGCcpmkugzu52dTm9EPYER4Lun4B6Vz5H+Itm?=
+ =?us-ascii?Q?VgYin6m7VUGl5+fp+KsGRXhNl6kuYfv24JT9gR34YPi6rVPaTfkPQjp3yDUV?=
+ =?us-ascii?Q?okwqq6e9qA=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 746b199b-96f4-4407-41c3-08da1280e1a1
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2022 19:09:57.8464
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: rM4aXFcORYTkC9OW5zqfpYtIyANI2ylJ2fnXugXWQEOvZJ96E6NObRkB4HGrOMui
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4283
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen-Yu Tsai <wens@csie.org>
+On Tue, Mar 29, 2022 at 01:37:55PM +0800, Lu Baolu wrote:
+> Add support for SVA domain allocation and provide an SVA-specific
+> iommu_domain_ops.
+> 
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>  include/linux/intel-iommu.h |  1 +
+>  drivers/iommu/intel/iommu.c | 10 ++++++++++
+>  drivers/iommu/intel/svm.c   | 37 +++++++++++++++++++++++++++++++++++++
+>  3 files changed, 48 insertions(+)
+> 
+> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+> index 2f9891cb3d00..c14283137fb5 100644
+> +++ b/include/linux/intel-iommu.h
+> @@ -744,6 +744,7 @@ void intel_svm_unbind(struct iommu_sva *handle);
+>  u32 intel_svm_get_pasid(struct iommu_sva *handle);
+>  int intel_svm_page_response(struct device *dev, struct iommu_fault_event *evt,
+>  			    struct iommu_page_response *msg);
+> +extern const struct iommu_domain_ops intel_svm_domain_ops;
+>  
+>  struct intel_svm_dev {
+>  	struct list_head list;
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index c1b91bce1530..5eae7cf9bee5 100644
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -4318,6 +4318,16 @@ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
+>  		return domain;
+>  	case IOMMU_DOMAIN_IDENTITY:
+>  		return &si_domain->domain;
+> +#ifdef CONFIG_INTEL_IOMMU_SVM
+> +	case IOMMU_DOMAIN_SVA:
+> +		dmar_domain = alloc_domain(type);
+> +		if (!dmar_domain)
+> +			return NULL;
+> +		domain = &dmar_domain->domain;
+> +		domain->ops = &intel_svm_domain_ops;
+> +
+> +		return domain;
+> +#endif /* CONFIG_INTEL_IOMMU_SVM */
 
-On the SINO WEALTH SH1106, which is mostly compatible with the SSD1306,
-only the basic page addressing mode is supported. This addressing mode
-is not as easy to use compared to the currently supported horizontal
-addressing mode, as the page address has to be set prior to writing
-out each page, and each page must be written out separately as a result.
-Also, there is no way to force the column address to wrap around early,
-thus the column address must also be reset for each page to be accurate.
+If this is the usual pattern for drivers I would prefer to see an
+alloc_sva op instead of more and more types.
 
-Add support for this addressing mode, with a flag to choose it. This
-flag is designed to be set from the device info data structure, but
-can be extended to be explicitly forced on through a device tree
-property if such a need arises.
+Multiplexing functions is often not a great idea...
 
-Signed-off-by: Chen-Yu Tsai <wens@csie.org>
----
- drivers/gpu/drm/solomon/ssd130x.c | 72 ++++++++++++++++++++++++++++---
- drivers/gpu/drm/solomon/ssd130x.h |  2 +
- 2 files changed, 67 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/gpu/drm/solomon/ssd130x.c b/drivers/gpu/drm/solomon/ssd130x.c
-index d08d86ef07bc..21040d8bf9d1 100644
---- a/drivers/gpu/drm/solomon/ssd130x.c
-+++ b/drivers/gpu/drm/solomon/ssd130x.c
-@@ -42,6 +42,8 @@
- #define SSD130X_DATA				0x40
- #define SSD130X_COMMAND				0x80
- 
-+#define SSD130X_PAGE_COL_START_LOW		0x00
-+#define SSD130X_PAGE_COL_START_HIGH		0x10
- #define SSD130X_SET_ADDRESS_MODE		0x20
- #define SSD130X_SET_COL_RANGE			0x21
- #define SSD130X_SET_PAGE_RANGE			0x22
-@@ -61,6 +63,10 @@
- #define SSD130X_SET_COM_PINS_CONFIG		0xda
- #define SSD130X_SET_VCOMH			0xdb
- 
-+#define SSD130X_PAGE_COL_START_MASK		GENMASK(3, 0)
-+#define SSD130X_PAGE_COL_START_SET(val)		FIELD_PREP(SSD130X_PAGE_COL_START_MASK, (val))
-+#define SSD130X_START_PAGE_ADDRESS_MASK		GENMASK(2, 0)
-+#define SSD130X_START_PAGE_ADDRESS_SET(val)	FIELD_PREP(SSD130X_START_PAGE_ADDRESS_MASK, (val))
- #define SSD130X_SET_SEG_REMAP_MASK		GENMASK(0, 0)
- #define SSD130X_SET_SEG_REMAP_SET(val)		FIELD_PREP(SSD130X_SET_SEG_REMAP_MASK, (val))
- #define SSD130X_SET_COM_SCAN_DIR_MASK		GENMASK(3, 3)
-@@ -130,6 +136,7 @@ static int ssd130x_write_cmd(struct ssd130x_device *ssd130x, int count,
- 	return ret;
- }
- 
-+/* Set address range for horizontal/vertical addressing modes */
- static int ssd130x_set_col_range(struct ssd130x_device *ssd130x,
- 				 u8 col_start, u8 cols)
- {
-@@ -166,6 +173,26 @@ static int ssd130x_set_page_range(struct ssd130x_device *ssd130x,
- 	return 0;
- }
- 
-+/* Set page and column start address for page addressing mode */
-+static int ssd130x_set_page_pos(struct ssd130x_device *ssd130x,
-+				u8 page_start, u8 col_start)
-+{
-+	int ret;
-+	u32 page, col_low, col_high;
-+
-+	page = SSD130X_START_PAGE_ADDRESS |
-+	       SSD130X_START_PAGE_ADDRESS_SET(page_start);
-+	col_low = SSD130X_PAGE_COL_START_LOW |
-+		  SSD130X_PAGE_COL_START_SET(col_start & 0xf);
-+	col_high = SSD130X_PAGE_COL_START_HIGH |
-+		   SSD130X_PAGE_COL_START_SET((col_start >> 4) & 0xf);
-+	ret = ssd130x_write_cmd(ssd130x, 3, page, col_low, col_high);
-+	if (ret < 0)
-+		return ret;
-+
-+	return 0;
-+}
-+
- static int ssd130x_pwm_enable(struct ssd130x_device *ssd130x)
- {
- 	struct device *dev = ssd130x->dev;
-@@ -342,6 +369,11 @@ static int ssd130x_init(struct ssd130x_device *ssd130x)
- 		}
- 	}
- 
-+	/* Switch to page addressing mode */
-+	if (ssd130x->page_address_mode)
-+		return ssd130x_write_cmd(ssd130x, 2, SSD130X_SET_ADDRESS_MODE,
-+					 SSD130X_SET_ADDRESS_MODE_PAGE);
-+
- 	/* Switch to horizontal addressing mode */
- 	return ssd130x_write_cmd(ssd130x, 2, SSD130X_SET_ADDRESS_MODE,
- 				 SSD130X_SET_ADDRESS_MODE_HORIZONTAL);
-@@ -393,13 +425,16 @@ static int ssd130x_update_rect(struct ssd130x_device *ssd130x, u8 *buf,
- 	 *  (5) A4 B4 C4 D4 E4 F4 G4 H4
- 	 */
- 
--	ret = ssd130x_set_col_range(ssd130x, ssd130x->col_offset + x, width);
--	if (ret < 0)
--		goto out_free;
-+	if (!ssd130x->page_address_mode) {
-+		/* Set address range for horizontal addressing mode */
-+		ret = ssd130x_set_col_range(ssd130x, ssd130x->col_offset + x, width);
-+		if (ret < 0)
-+			goto out_free;
- 
--	ret = ssd130x_set_page_range(ssd130x, ssd130x->page_offset + y / 8, pages);
--	if (ret < 0)
--		goto out_free;
-+		ret = ssd130x_set_page_range(ssd130x, ssd130x->page_offset + y / 8, pages);
-+		if (ret < 0)
-+			goto out_free;
-+	}
- 
- 	for (i = y / 8; i < y / 8 + pages; i++) {
- 		int m = 8;
-@@ -418,9 +453,29 @@ static int ssd130x_update_rect(struct ssd130x_device *ssd130x, u8 *buf,
- 			}
- 			data_array[array_idx++] = data;
- 		}
-+
-+		/*
-+		 * In page addressing mode, the start address needs to be reset,
-+		 * and each page then needs to be written out separately.
-+		 */
-+		if (ssd130x->page_address_mode) {
-+			ret = ssd130x_set_page_pos(ssd130x,
-+						   ssd130x->page_offset + i,
-+						   ssd130x->col_offset + x);
-+			if (ret < 0)
-+				goto out_free;
-+
-+			ret = ssd130x_write_data(ssd130x, data_array, width);
-+			if (ret < 0)
-+				goto out_free;
-+
-+			array_idx = 0;
-+		}
- 	}
- 
--	ret = ssd130x_write_data(ssd130x, data_array, width * pages);
-+	/* Write out update in one go if we aren't using page addressing mode */
-+	if (!ssd130x->page_address_mode)
-+		ret = ssd130x_write_data(ssd130x, data_array, width * pages);
- 
- out_free:
- 	kfree(data_array);
-@@ -796,6 +851,9 @@ struct ssd130x_device *ssd130x_probe(struct device *dev, struct regmap *regmap)
- 	ssd130x->regmap = regmap;
- 	ssd130x->device_info = device_get_match_data(dev);
- 
-+	if (ssd130x->device_info->page_mode_only)
-+		ssd130x->page_address_mode = 1;
-+
- 	ssd130x_parse_properties(ssd130x);
- 
- 	ret = ssd130x_get_resources(ssd130x);
-diff --git a/drivers/gpu/drm/solomon/ssd130x.h b/drivers/gpu/drm/solomon/ssd130x.h
-index cd21cdccb566..f5b062576fdf 100644
---- a/drivers/gpu/drm/solomon/ssd130x.h
-+++ b/drivers/gpu/drm/solomon/ssd130x.h
-@@ -24,6 +24,7 @@ struct ssd130x_deviceinfo {
- 	u32 default_dclk_frq;
- 	int need_pwm;
- 	int need_chargepump;
-+	bool page_mode_only;
- };
- 
- struct ssd130x_device {
-@@ -38,6 +39,7 @@ struct ssd130x_device {
- 
- 	const struct ssd130x_deviceinfo *device_info;
- 
-+	unsigned page_address_mode : 1;
- 	unsigned area_color_enable : 1;
- 	unsigned com_invdir : 1;
- 	unsigned com_lrremap : 1;
--- 
-2.34.1
-
+Jason
