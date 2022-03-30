@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4B40C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9A86C46467
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:15:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346026AbiC3MPa (ORCPT
+        id S1345982AbiC3MPW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:15:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57772 "EHLO
+        Wed, 30 Mar 2022 08:15:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345853AbiC3LzF (ORCPT
+        with ESMTP id S1345914AbiC3LzM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:55:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C26E0264F4F;
-        Wed, 30 Mar 2022 04:51:54 -0700 (PDT)
+        Wed, 30 Mar 2022 07:55:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8BE2275C87;
+        Wed, 30 Mar 2022 04:52:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6D3CCB81C35;
-        Wed, 30 Mar 2022 11:51:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B620C36AE9;
-        Wed, 30 Mar 2022 11:51:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 834F3B81C23;
+        Wed, 30 Mar 2022 11:52:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68560C340F3;
+        Wed, 30 Mar 2022 11:52:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641112;
-        bh=vSWwKbrR19XdVO7iI7iBtjrl3iBpFXIU9WwNPn5PLvc=;
+        s=k20201202; t=1648641151;
+        bh=4pm0G3USxRvKEi6HUBlG9gAVAVKFBCngUYORUfw9HaE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SBiig2db2yvub/jRamsE+/cyGWveFzdTNskLLqXmdD8Ba0pnpwWGPLOTTdy6Y6FfH
-         p2hUYXWulr6Xi2Mklh+MSlsoYZoKQtPvzUPJeidzm8VEXSDS0zVZEtDNqI1RS22CLq
-         JmQuGrt1ILeaU8XSrDXq8/Le3YoqySJHKgttxtZiOA+6eQGUjo1AWMVcPK21uSuiTs
-         EmHdlzMRACIvfaccTuhAK4eRxXSgIHdkiHzDNLy48vb00PD/cXbFjz2Mr9lO/EkgMg
-         WL885t9bqu6oZxqYHGt6M6sjgi+UN9zo0sdpXQNSp/NZ1GUEnunWnygLRmHIS/10ah
-         8fITg7tknWK0w==
+        b=amd6eJ1AO/HmhtxzjO+xu5RyO0F60IE5fDxHxexjlSFpK4X2J9n7k3Wqf4Zpc0vpf
+         wjgZbMULXUIRffXnmlNvMzjYQ0wkWxyGbeTnA6Z0Olhyk1PdDdhAINqtvRMsA3GiJG
+         o+OZIGCp5mmVx19mGziWv7dqPQARP5wF1H+6K+HtUF+PL2srvHHF/1815I+4OfHqjq
+         tmQcuzsjUzBN8ST1mmY/t6M49iqCMzdB8qWdSRVeFnJrGv/hwY+hkoMAK2IS9De7p/
+         vGhk9VsPKD5rSaepJDfAwIZB+ds8sNEcHEodWAQGeLu0NJQhQ2GWsjDRVnJiWG5t3M
+         QcNcXDOFolUzA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, catalin.marinas@arm.com,
-        will.deacon@arm.com, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.10 17/37] arm64: defconfig: build imx-sdma as a module
-Date:   Wed, 30 Mar 2022 07:51:02 -0400
-Message-Id: <20220330115122.1671763-17-sashal@kernel.org>
+Cc:     Evgeny Novikov <novikov@ispras.ru>,
+        Kirill Shilimanov <kirill.shilimanov@huawei.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        tomi.valkeinen@ti.com, linux-fbdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 03/25] video: fbdev: w100fb: Reset global state
+Date:   Wed, 30 Mar 2022 07:52:03 -0400
+Message-Id: <20220330115225.1672278-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330115122.1671763-1-sashal@kernel.org>
-References: <20220330115122.1671763-1-sashal@kernel.org>
+In-Reply-To: <20220330115225.1672278-1-sashal@kernel.org>
+References: <20220330115225.1672278-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,37 +53,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+From: Evgeny Novikov <novikov@ispras.ru>
 
-[ Upstream commit e95622289f263662240544a9f0009b25c19e64d4 ]
+[ Upstream commit 8738ddcac644964ae128ccd3d80d48773c8d528e ]
 
-This avoids firmware load error and sysfs fallback reported as follows:
+w100fb_probe() did not reset the global state to its initial state. This
+can result in invocation of iounmap() even when there was not the
+appropriate successful call of ioremap(). For instance, this may be the
+case if first probe fails after two successful ioremap() while second
+probe fails when first ioremap() fails. The similar issue is with
+w100fb_remove(). The patch fixes both bugs.
 
-[    0.199448] imx-sdma 302c0000.dma-controller: Direct firmware load
- for imx/sdma/sdma-imx7d.bin failed with error -2
-[    0.199487] imx-sdma 302c0000.dma-controller: Falling back to sysfs
- fallback for: imx/sdma/sdma-imx7d.bin
+Found by Linux Driver Verification project (linuxtesting.org).
 
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Signed-off-by: Evgeny Novikov <novikov@ispras.ru>
+Co-developed-by: Kirill Shilimanov <kirill.shilimanov@huawei.com>
+Signed-off-by: Kirill Shilimanov <kirill.shilimanov@huawei.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/configs/defconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/video/fbdev/w100fb.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index 5cfe3cf6f2ac..2bdf38d05fa5 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -837,7 +837,7 @@ CONFIG_DMADEVICES=y
- CONFIG_DMA_BCM2835=y
- CONFIG_DMA_SUN6I=m
- CONFIG_FSL_EDMA=y
--CONFIG_IMX_SDMA=y
-+CONFIG_IMX_SDMA=m
- CONFIG_K3_DMA=y
- CONFIG_MV_XOR=y
- CONFIG_MV_XOR_V2=y
+diff --git a/drivers/video/fbdev/w100fb.c b/drivers/video/fbdev/w100fb.c
+index e30f9427b335..52ec80bbfe5e 100644
+--- a/drivers/video/fbdev/w100fb.c
++++ b/drivers/video/fbdev/w100fb.c
+@@ -770,12 +770,18 @@ int w100fb_probe(struct platform_device *pdev)
+ 		fb_dealloc_cmap(&info->cmap);
+ 		kfree(info->pseudo_palette);
+ 	}
+-	if (remapped_fbuf != NULL)
++	if (remapped_fbuf != NULL) {
+ 		iounmap(remapped_fbuf);
+-	if (remapped_regs != NULL)
++		remapped_fbuf = NULL;
++	}
++	if (remapped_regs != NULL) {
+ 		iounmap(remapped_regs);
+-	if (remapped_base != NULL)
++		remapped_regs = NULL;
++	}
++	if (remapped_base != NULL) {
+ 		iounmap(remapped_base);
++		remapped_base = NULL;
++	}
+ 	if (info)
+ 		framebuffer_release(info);
+ 	return err;
+@@ -795,8 +801,11 @@ static int w100fb_remove(struct platform_device *pdev)
+ 	fb_dealloc_cmap(&info->cmap);
+ 
+ 	iounmap(remapped_base);
++	remapped_base = NULL;
+ 	iounmap(remapped_regs);
++	remapped_regs = NULL;
+ 	iounmap(remapped_fbuf);
++	remapped_fbuf = NULL;
+ 
+ 	framebuffer_release(info);
+ 
 -- 
 2.34.1
 
