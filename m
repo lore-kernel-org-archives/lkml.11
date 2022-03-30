@@ -2,99 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CB2AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 22:45:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E849C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 22:47:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351691AbiC3Wr3 (ORCPT
+        id S1351719AbiC3WtE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 18:47:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46776 "EHLO
+        Wed, 30 Mar 2022 18:49:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348450AbiC3Wr0 (ORCPT
+        with ESMTP id S1351709AbiC3WtB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 18:47:26 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3C4251303
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 15:45:40 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id m3so38324695lfj.11
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 15:45:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1j9fz3Cu/QbX1kgXPUdhqmgSvv8o6W31ctsgESbDYXI=;
-        b=Y+oenZnAxOs0Oa/LxOoHw7V5U4iFWLEMeu8CTU6FX6z+2ZA1JrG7HNlzdz+bEnT5Gf
-         xL/OQUTzZ6rGnWa6NWFrb7YSrzZgXJGk8plp0vvpmHUo9GZqvXFMbI2UiAdG9NGHRVtb
-         onftG7gZ4l4Q+v6UgEQb6enus9m9G/kv6XmMY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1j9fz3Cu/QbX1kgXPUdhqmgSvv8o6W31ctsgESbDYXI=;
-        b=YSXF4cf+EwHGtuORJ9BHq8ezIL+f9RMT97b7q7VC9AiTxUnwiLN7v15W+aOg4PDesB
-         cxKb21P3gWJO4ZY8Y7ua7tTCa729E2ArvXe7iODN2sHEi3vMSLOAMDMl9A/ixeMshS3x
-         Vojsc6WJMMutIEaYB7/4tGoZL99SgoL82vzVp8c1/q46W8Ymh61LXgURyPFoCNtxEPtt
-         HDcJ1Aj7fR/jIAyOolJawo4gJzKTctglB5SSCCOdPjBuPmo4tGBlgRlBGvjHgvqt8JVO
-         gNsxHfWIGGzuQui+qQUrwEL9MaLG/crqlbASrkCOoIqDCjNM6JA/Gq9DPEZ77G5LP9Lk
-         kz8Q==
-X-Gm-Message-State: AOAM532t3z1NapvrpMWOzrbl7L7l9mSa9L1Kg4TqFQvUcmvJfuS1gagb
-        BL+36iO3VRYQs5nolVWboLCJpjoabq1QGFbb
-X-Google-Smtp-Source: ABdhPJy7LI6aVHZJ4JQw6MJIEyb9iQdFQk/ufLY+gqjCHxz6oy+hpEyxNyVU0gPxLhuFkFvHQ86AXA==
-X-Received: by 2002:a05:6512:318c:b0:44a:5104:55bc with SMTP id i12-20020a056512318c00b0044a510455bcmr8609858lfe.421.1648680338552;
-        Wed, 30 Mar 2022 15:45:38 -0700 (PDT)
-Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com. [209.85.167.48])
-        by smtp.gmail.com with ESMTPSA id bt23-20020a056512261700b0044330517d68sm2465869lfb.191.2022.03.30.15.45.37
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 30 Mar 2022 15:45:38 -0700 (PDT)
-Received: by mail-lf1-f48.google.com with SMTP id t25so38323846lfg.7
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 15:45:37 -0700 (PDT)
-X-Received: by 2002:a05:6512:b12:b0:44a:ba81:f874 with SMTP id
- w18-20020a0565120b1200b0044aba81f874mr5326995lfu.449.1648680337352; Wed, 30
- Mar 2022 15:45:37 -0700 (PDT)
-MIME-Version: 1.0
-References: <7b0576d8d49bbd358767620218c1966e8fe9a883.camel@hammerspace.com>
- <CAHk-=wh-hs_q-sL6PNptfVmNm7tWrt24o4-YR74Fxo+fdKsmxA@mail.gmail.com>
- <c5401981cb21674bdd3ffd9cc4fac9fe48fb8265.camel@hammerspace.com> <4eed252caf56f16c290f0c54b5d850d4eab5dc1b.camel@hammerspace.com>
-In-Reply-To: <4eed252caf56f16c290f0c54b5d850d4eab5dc1b.camel@hammerspace.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 30 Mar 2022 15:45:21 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wi_0L4u_Fd1S3r+-1Ok95HveaXNqY8h3McJOUCfk-tqDg@mail.gmail.com>
-Message-ID: <CAHk-=wi_0L4u_Fd1S3r+-1Ok95HveaXNqY8h3McJOUCfk-tqDg@mail.gmail.com>
-Subject: Re: [GIT PULL] Please pull NFS client changes for Linux 5.18
-To:     Trond Myklebust <trondmy@hammerspace.com>
-Cc:     "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 30 Mar 2022 18:49:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2630C2BB18;
+        Wed, 30 Mar 2022 15:47:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D05F0B81E0B;
+        Wed, 30 Mar 2022 22:47:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8C247C340EC;
+        Wed, 30 Mar 2022 22:47:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648680433;
+        bh=napctfPmUnuPT4JQd2K3wnmJ9MbbAeRpHUscYsH67m4=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=TLQul/rXBarYSPXj2G86GQjc1YEZGVzQiswzTfsX/7WtfZVqKg44yg6YuWMvut0Y+
+         +lAT5Pr70DbrEv0oz9bDwu6Wx0rSaDrwpVfEHPFJHASeNoI2GBohzPcD2tENrrI+H5
+         43BfpRP3RrcwE3zMMrXUAaA05TfxGSpwz3uJxyaqWqmvLJq6YwGMmj85+zifFRjAwj
+         xEop4sMqWRpLBFkUmBzBJN5k1QflLnT8j9Zq51d59Dl40MN1j7ddqwPvVyL8GNn8HY
+         Ys0DqgsoxO5+0VP5xaJ7R/eYii4JcpPnqQf2/baWNHmVNlGNC3yaGNfydjjzsKXcOm
+         trSjykeOE9j5Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 78500EAC081;
+        Wed, 30 Mar 2022 22:47:13 +0000 (UTC)
+Subject: Re: [GIT PULL] Modules fixes for v5.18-rc1
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <YkOIOQPY9N66jp1f@bombadil.infradead.org>
+References: <YkOIOQPY9N66jp1f@bombadil.infradead.org>
+X-PR-Tracked-List-Id: <linux-modules.vger.kernel.org>
+X-PR-Tracked-Message-Id: <YkOIOQPY9N66jp1f@bombadil.infradead.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git/ tags/modules-5.18-rc1
+X-PR-Tracked-Commit-Id: dc0ce6cc4b133f5f2beb8b47dacae13a7d283c2c
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 57c06b6e1e74b62eabaacacbe40bdb29c7e990eb
+Message-Id: <164868043348.15820.3114847338585386690.pr-tracker-bot@kernel.org>
+Date:   Wed, 30 Mar 2022 22:47:13 +0000
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Jessica Yu <jeyu@kernel.org>, patches@lists.linux.dev,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-modules@vger.kernel.org,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Aaron Tomlin <atomlin@redhat.com>,
+        Vimal Agrawal <avimalin@gmail.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michal Suchanek <msuchanek@suse.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 3:22 PM Trond Myklebust <trondmy@hammerspace.com> wrote:
->
-> With 9175 ext4 offsets, I see 157 collisions (== hash buckets with > 1
-> entry). So hash_64() does perform less well when you're hashing a value
-> that is already a hash.
+The pull request you sent on Tue, 29 Mar 2022 15:29:13 -0700:
 
-No collisions with xxhash? Because xxhash() reality seems to do pretty
-similar things in the end (multiply by a prime, shift bits down and
-xor them).
+> git://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git/ tags/modules-5.18-rc1
 
-In fact, the main difference seems to be that xxhash() will do a
-"rotl()" by 27 before doing the prime multiplication, and then it will
-finish the thing by a few more multiples mixed with shifting the high
-bits down a few times.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/57c06b6e1e74b62eabaacacbe40bdb29c7e990eb
 
-Our regular fast hash doesn't do the "shift bits down", because it
-relies on only using the upper bits anyway (and it is pretty heavily
-geared towards "fast and good enough").
+Thank you!
 
-But if the *source* of the hash has a lot of low bits clear, I can
-imagine that the "rotl" that xxhash does improves on the bit
-distribution of the multiplication (which will only move bits
-upwards).
-
-And if it turns out our default hash has some bad cases, I'd prefer to
-fix _that_ regardless..
-
-             Linus
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
