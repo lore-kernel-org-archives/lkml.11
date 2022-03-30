@@ -2,47 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10ED8C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20CA3C43219
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345428AbiC3MDZ (ORCPT
+        id S1345453AbiC3MDg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:03:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59994 "EHLO
+        Wed, 30 Mar 2022 08:03:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345112AbiC3Lx7 (ORCPT
+        with ESMTP id S1345136AbiC3LyJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:53:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 245CC280C1F;
-        Wed, 30 Mar 2022 04:50:28 -0700 (PDT)
+        Wed, 30 Mar 2022 07:54:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84957280EC7;
+        Wed, 30 Mar 2022 04:50:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ECB98615E2;
-        Wed, 30 Mar 2022 11:50:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74A50C36AE7;
-        Wed, 30 Mar 2022 11:50:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AAE57B81C24;
+        Wed, 30 Mar 2022 11:50:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 260B9C340EE;
+        Wed, 30 Mar 2022 11:50:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641027;
-        bh=qW1x31HnZxqlWv9yLK7leVGiHSRFHxjgpFRqN+3ePM4=;
+        s=k20201202; t=1648641020;
+        bh=SokV46gloiKl6ccC8YUv3/mb+82/dUEF9FZvOlimcfs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sNW7sIUmF6gyA5jE9F9jkE0j0kct26u0qZOPgVIip5weNpdwPtSq1xL8hhc2lRpfn
-         pp/DMQZ2glDSFy5P5ZaWUWnwD3OO7evKbY0A0XM2REEJHuFQHUzpkeWd19CYOUtxHY
-         ZBbxEYkvgFCXCHulIq8F+mS5R6IMm+WBFz+kfsh/TTqev0Zpcrsp7eRqUYU0nGJuSr
-         vljBX9LEeXNTdtpFwlo/+w+6UsqdQAsxnbMJOZuSguF1Nui6nDxXg1VJi66nr0bYEx
-         DGYst/s+LzAybTn8ypagyIo3dVuBjruqIMoIekUFYd0SXY47IxO7eW8Q4GUFYe1ZVH
-         g1WnWWxL05b7A==
+        b=lvPkpA4umlnDC4dPJYM6/6v5Q3ffMfQ8hE2VAE7OqbdvdS4OI2+DotLCSZ9y4s770
+         2KfoyLkZ2KTe4quam//JAZvFSlXyKtfdX2IHHqVOiKKRWXCfHhC8l2Zsl66plxXNkh
+         XeIzwiT5X/hSxdSi8YvruVmzro0ondy8+NjEEEtEj4pcaJdmhZCzrKLPHvuyG3Yrv0
+         CzBzP4d26zxgvGcHiynNQ4P6ZlZwyaTwW2qjaI83jCVyVYaZ2cV7QUsfO5umgZMx4H
+         n7xAA4L4s3R3b9IToMCNFAKvzqHUoGOqzwAhjUJypKaB/f6cPqi1CVOZzpxJvY+Gxa
+         ew5yp6z1xdN8g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tim Gardner <tim.gardner@canonical.com>,
-        Antonino Daplas <adaplas@gmail.com>,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
-        tomi.valkeinen@ti.com
-Subject: [PATCH AUTOSEL 5.15 13/50] video: fbdev: nvidiafb: Use strscpy() to prevent buffer overflow
-Date:   Wed, 30 Mar 2022 07:49:27 -0400
-Message-Id: <20220330115005.1671090-13-sashal@kernel.org>
+Cc:     Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Rander Wang <rander.wang@intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.15 09/50] ASoC: SOF: Intel: hda: Remove link assignment limitation
+Date:   Wed, 30 Mar 2022 07:49:23 -0400
+Message-Id: <20220330115005.1671090-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115005.1671090-1-sashal@kernel.org>
 References: <20220330115005.1671090-1-sashal@kernel.org>
@@ -54,49 +57,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tim Gardner <tim.gardner@canonical.com>
+From: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
 
-[ Upstream commit 37a1a2e6eeeb101285cd34e12e48a881524701aa ]
+[ Upstream commit 2ce0d008dcc59f9c01f43277b9f9743af7b01dad ]
 
-Coverity complains of a possible buffer overflow. However,
-given the 'static' scope of nvidia_setup_i2c_bus() it looks
-like that can't happen after examiniing the call sites.
+The limitation to assign a link DMA channel for a BE iff the
+corresponding host DMA channel is assigned to a connected FE is only
+applicable if the PROCEN_FMT_QUIRK is set. So, remove it for platforms
+that do not enable the quirk.
 
-CID 19036 (#1 of 1): Copy into fixed size buffer (STRING_OVERFLOW)
-1. fixed_size_dest: You might overrun the 48-character fixed-size string
-  chan->adapter.name by copying name without checking the length.
-2. parameter_as_source: Note: This defect has an elevated risk because the
-  source argument is a parameter of the current function.
- 89        strcpy(chan->adapter.name, name);
-
-Fix this warning by using strscpy() which will silence the warning and
-prevent any future buffer overflows should the names used to identify the
-channel become much longer.
-
-Cc: Antonino Daplas <adaplas@gmail.com>
-Cc: linux-fbdev@vger.kernel.org
-Cc: dri-devel@lists.freedesktop.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Tim Gardner <tim.gardner@canonical.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Complements: a792bfc1c2bc ("ASoC: SOF: Intel: hda-stream: limit PROCEN workaround")
+Signed-off-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Rander Wang <rander.wang@intel.com>
+Reviewed-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+Reviewed-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://lore.kernel.org/r/20220128130017.28508-1-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/nvidia/nv_i2c.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/sof/intel/hda-dai.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/drivers/video/fbdev/nvidia/nv_i2c.c b/drivers/video/fbdev/nvidia/nv_i2c.c
-index d7994a173245..0b48965a6420 100644
---- a/drivers/video/fbdev/nvidia/nv_i2c.c
-+++ b/drivers/video/fbdev/nvidia/nv_i2c.c
-@@ -86,7 +86,7 @@ static int nvidia_setup_i2c_bus(struct nvidia_i2c_chan *chan, const char *name,
+diff --git a/sound/soc/sof/intel/hda-dai.c b/sound/soc/sof/intel/hda-dai.c
+index 6704dbcd101c..d15ca2564dbe 100644
+--- a/sound/soc/sof/intel/hda-dai.c
++++ b/sound/soc/sof/intel/hda-dai.c
+@@ -58,6 +58,8 @@ static struct hdac_ext_stream *
  {
- 	int rc;
+ 	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
+ 	struct sof_intel_hda_stream *hda_stream;
++	const struct sof_intel_dsp_desc *chip;
++	struct snd_sof_dev *sdev;
+ 	struct hdac_ext_stream *res = NULL;
+ 	struct hdac_stream *stream = NULL;
  
--	strcpy(chan->adapter.name, name);
-+	strscpy(chan->adapter.name, name, sizeof(chan->adapter.name));
- 	chan->adapter.owner = THIS_MODULE;
- 	chan->adapter.class = i2c_class;
- 	chan->adapter.algo_data = &chan->algo;
+@@ -76,9 +78,20 @@ static struct hdac_ext_stream *
+ 			continue;
+ 
+ 		hda_stream = hstream_to_sof_hda_stream(hstream);
++		sdev = hda_stream->sdev;
++		chip = get_chip_info(sdev->pdata);
+ 
+ 		/* check if link is available */
+ 		if (!hstream->link_locked) {
++			/*
++			 * choose the first available link for platforms that do not have the
++			 * PROCEN_FMT_QUIRK set.
++			 */
++			if (!(chip->quirks & SOF_INTEL_PROCEN_FMT_QUIRK)) {
++				res = hstream;
++				break;
++			}
++
+ 			if (stream->opened) {
+ 				/*
+ 				 * check if the stream tag matches the stream
 -- 
 2.34.1
 
