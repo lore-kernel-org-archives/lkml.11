@@ -2,109 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8333C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 18:05:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ACB0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 18:06:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349684AbiC3SG5 (ORCPT
+        id S1349695AbiC3SIL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 14:06:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47968 "EHLO
+        Wed, 30 Mar 2022 14:08:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349658AbiC3SGy (ORCPT
+        with ESMTP id S1349741AbiC3SHy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 14:06:54 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5AD23AA48
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:05:07 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id 17so28809750lji.1
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:05:07 -0700 (PDT)
+        Wed, 30 Mar 2022 14:07:54 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A891333A3E
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:06:08 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id h4so30416221wrc.13
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:06:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=h1gCGwBlFlPL7xlbgg8fVcArt1vxjlSJemINBQ6Dyvg=;
-        b=pMOXFcNHgVw7MlgZ7yYEI8OIqBpCv7hHzDMln+BSnSNY+w1UBH0/mnhDTZYa2wz++N
-         IVZAMs/0+Z7g4aFR7yNZrUVVucG6aeelreqX9D7ZHzcKwl0F7oYarSvbe0tnlzrgvk+6
-         W0K/ANA7r6PjVTNIuVEDV7Cys+j8mpQwF7lLgTlgIL0FYGJD7tQGEPqGPYk9j0eVvPiW
-         eWgbjzjR2B/gVYNdkAUT5ViAdlRMOBHxjDroMB7/wYDFp+qjh11p4MipYiygqNY/hK1W
-         fQ4RILJY0OH1PCnJ/3CWJ4F5ZjF8Q3G96ruwjh2RHp5Ni34Y+kG+Znu09MLeRmtxEh8R
-         rgUw==
+        bh=Zvp1zdAPhHyHCHfcvFIUi1mzPpcUV4cVly2pIh80IFk=;
+        b=EU9ubGbPLd8WO6OOrR8SBcLk1JhfCEuFFRo3ShaevmriYxWeLbSQKTnITshiE7yQe6
+         hEN+aBIV8KiJzQXAzKcTnVa9GMzNCnJJMeP81I+tGImIgQtCDFF4XqA3tfyxwA4aVcjy
+         BPKydHqhm17yG2mSBUQem8xuyLVI3coOfvcaOkT/4j5BIYpowsAQNdKZUoNAb4YtKPiD
+         7VZYYI8Yts6mgdYPImbTu9uSSdWoddyL63dLWmUoVzxSMx1dajlN+60SIsebxMU7b+R+
+         g4skI34qHltJrO78k92lY7HidkLwH1GewmzxzfmMFBYJGVnh6cPBBxTlaTnhtz3xYB47
+         aB5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=h1gCGwBlFlPL7xlbgg8fVcArt1vxjlSJemINBQ6Dyvg=;
-        b=J2R/uTtVNC6KX2NLyYf+OGAS2fata16zk592T0IokBBZXo4mkp8aXC/1ljcwX7TCu/
-         ltMjWdIQBPR7E5+DuSApTbXNGejsYYD8l561DNeLZVNT5DXbwwtQtZ1JXoKDjXwrwFZh
-         qEs+S740478FVUbQxLp5ngZKDzTXPFM9N8Y8GnKj22rlCBbdHBWNNqAxiPMtFlxhK6V9
-         /hkc07peCZj/8YdXLhUeLrxDaCJHkeC+k2Mf760OX5k6TlWbmvRn9W8elXcIZxhKSY4u
-         h163yNWvMTLPUszRY0w6lBN5zVO1Vr8yDtcUH9qxtauFZXYhpMHsiZ3wAzcDJE6niKG1
-         GygQ==
-X-Gm-Message-State: AOAM533r2oKLDdWiXm5w5eHmdxp4EYvZ0otmWMWV2IFaSnR/20/L84pR
-        YGWcf9YnGEPgGuQLnQJ6pc26PXQszrmuVuw7LjFeQWaqvuI5D+9w
-X-Google-Smtp-Source: ABdhPJzOPCdLzAuEzhP8+XwDRinp5ZhGqb9riWqDAp9YgXyUtPNaoWWz9lFTRmIqu6uYrLte8Tx/X6kn1S35WUT6kUU=
-X-Received: by 2002:a2e:7808:0:b0:24a:eacb:ab9f with SMTP id
- t8-20020a2e7808000000b0024aeacbab9fmr3138533ljc.468.1648663501997; Wed, 30
- Mar 2022 11:05:01 -0700 (PDT)
+        bh=Zvp1zdAPhHyHCHfcvFIUi1mzPpcUV4cVly2pIh80IFk=;
+        b=owuP/0eG5PGvM/Fcc+yaU2m/uoxguewHS0sjEaLU4WvJTLZ4E5i9qEJ1/M0FPWiMie
+         4hg1NzVLV2pviy72ZI76tHLmvE9ALGQqVBVHURnwZDhD3F+igrpYlCgm0wh8VD1eGw2w
+         wnwfrF2ZFZieBiztF51M8cItqYZsbHBvbuxqy2aWh7wg/QrXjZCutiDcrXCecEZEaIU9
+         3pWpBdjz5CQjAYsB1qAmVaKTa86SFotCNUN3km+0V4muiRDxZiXPStiDBebIRMz4+vGU
+         NXsyxPk5NB7tidT9giPrgDJiHVEy6TPwmgUNDaNAB6G07VPvO5hYd5f6f2CgkoskMpR+
+         nP1Q==
+X-Gm-Message-State: AOAM533bdrI3grXa6Ze/7SAyBuwUoUTHtLsDY60x9BC78WAxGq5YEjZf
+        kMi65lW8aw7WiugUcvfBPViKihCCCGgB/E6RzFQHzQ==
+X-Google-Smtp-Source: ABdhPJxVwtXjWLQCOzosoYOyEA2tN1Luf12r7oaqUmmzH7xFdWTRbQAjrdb3KYPlRglfmLC03u4utFgEWCuaHbJDuXM=
+X-Received: by 2002:adf:a411:0:b0:205:c4e1:6ee6 with SMTP id
+ d17-20020adfa411000000b00205c4e16ee6mr721542wra.489.1648663566926; Wed, 30
+ Mar 2022 11:06:06 -0700 (PDT)
 MIME-Version: 1.0
-References: <164847778869.3060675.8115416881394543419.stgit@devnote2>
-In-Reply-To: <164847778869.3060675.8115416881394543419.stgit@devnote2>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Wed, 30 Mar 2022 11:04:50 -0700
-Message-ID: <CAKwvOdmAYQZtzGudBjmiRZNjT+VixTdNbJmYmxc7-gQNCsHfrA@mail.gmail.com>
-Subject: Re: [PATCH v5 0/3] bootconfig: Support embedding a bootconfig in
- kernel for non initrd boot
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Padmanabha Srinivasaiah <treasure4paddy@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Nathan Chancellor <nathan@kernel.org>, llvm@lists.linux.dev,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+References: <20220324234123.1608337-1-haoluo@google.com> <9cdf860d-8370-95b5-1688-af03265cc874@fb.com>
+ <CA+khW7g3hy61qnvtqUizaW+qB6wk=Y9cjivhORshOk=ZzTXJ-A@mail.gmail.com>
+ <CA+khW7iq+UKsfQxdT3QpSqPUFN8gQWWDLoQ9zxB=uWTs63AZEA@mail.gmail.com>
+ <20220329093753.26wc3noelqrwlrcj@apollo.legion> <CA+khW7jW47SALTfxMKfQoA0Qwqd22GC0z4S5juFTbxLfTSbFEQ@mail.gmail.com>
+ <20220329214536.etivluwqqxxxphp2@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20220329214536.etivluwqqxxxphp2@kafai-mbp.dhcp.thefacebook.com>
+From:   Hao Luo <haoluo@google.com>
+Date:   Wed, 30 Mar 2022 11:05:55 -0700
+Message-ID: <CA+khW7hB2YsnQZ3-QE+EWbJU05vuFRWur=hWPRxNO1LaUVGOqA@mail.gmail.com>
+Subject: Re: [PATCH RFC bpf-next 0/2] Mmapable task local storage.
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Yonghong Song <yhs@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        KP Singh <kpsingh@kernel.org>,
+        Song Liu <songliubraving@fb.com>, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 7:29 AM Masami Hiramatsu <mhiramat@kernel.org> wrote:
+On Tue, Mar 29, 2022 at 2:45 PM Martin KaFai Lau <kafai@fb.com> wrote:
 >
-> KNOWN ISSUE:
+> On Tue, Mar 29, 2022 at 10:43:42AM -0700, Hao Luo wrote:
+> > On Tue, Mar 29, 2022 at 2:37 AM Kumar Kartikeya Dwivedi
+> > <memxor@gmail.com> wrote:
+> > >
+> > > On Mon, Mar 28, 2022 at 11:16:15PM IST, Hao Luo wrote:
+> > > > On Mon, Mar 28, 2022 at 10:39 AM Hao Luo <haoluo@google.com> wrote:
+> > > > >
+> > > > > Hi Yonghong,
+> > > > >
+> > > > > On Fri, Mar 25, 2022 at 12:16 PM Yonghong Song <yhs@fb.com> wrote:
+> > > > > >
+> > > > > > On 3/24/22 4:41 PM, Hao Luo wrote:
+> > > > > > > Some map types support mmap operation, which allows userspace to
+> > > > > > > communicate with BPF programs directly. Currently only arraymap
+> > > > > > > and ringbuf have mmap implemented.
+> > > > > > >
+> > > > > > > However, in some use cases, when multiple program instances can
+> > > > > > > run concurrently, global mmapable memory can cause race. In that
+> > > > > > > case, userspace needs to provide necessary synchronizations to
+> > > > > > > coordinate the usage of mapped global data. This can be a source
+> > > > > > > of bottleneck.
+> > > > > >
+> > > > > > I can see your use case here. Each calling process can get the
+> > > > > > corresponding bpf program task local storage data through
+> > > > > > mmap interface. As you mentioned, there is a tradeoff
+> > > > > > between more memory vs. non-global synchronization.
+> > > > > >
+> > > > > > I am thinking that another bpf_iter approach can retrieve
+> > > > > > the similar result. We could implement a bpf_iter
+> > > > > > for task local storage map, optionally it can provide
+> > > > > > a tid to retrieve the data for that particular tid.
+> > > > > > This way, user space needs an explicit syscall, but
+> > > > > > does not need to allocate more memory than necessary.
+> > > > > >
+> > > > > > WDYT?
+> > > > > >
+> > > > >
+> > > > > Thanks for the suggestion. I have two thoughts about bpf_iter + tid and mmap:
+> > > > >
+> > > > > - mmap prevents the calling task from reading other task's value.
+> > > > > Using bpf_iter, one can pass other task's tid to get their values. I
+> > > > > assume there are two potential ways of passing tid to bpf_iter: one is
+> > > > > to use global data in bpf prog, the other is adding tid parameterized
+> > > > > iter_link. For the first, it's not easy for unpriv tasks to use. For
+> > > > > the second, we need to create one iter_link object for each interested
+> > > > > tid. It may not be easy to use either.
+> > > > >
+> > > > > - Regarding adding an explicit syscall. I thought about adding
+> > > > > write/read syscalls for task local storage maps, just like reading
+> > > > > values from iter_link. Writing or reading task local storage map
+> > > > > updates/reads the current task's value. I think this could achieve the
+> > > > > same effect as mmap.
+> > > > >
+> > > >
+> > > > Actually, my use case of using mmap on task local storage is to allow
+> > > > userspace to pass FDs into bpf prog. Some of the helpers I want to add
+> > > > need to take an FD as parameter and the bpf progs can run
+> > > > concurrently, thus using global data is racy. Mmapable task local
+> > > > storage is the best solution I can find for this purpose.
+> Some more details is needed about the use case.  As long as there is
+> storage local to an individual task, racing within this one task's
+> specific storage is a non issue?
 >
-> According to the report from Padmanabha[3] and my analysis [4], the embedded
-> bootconfig data may not be updated if you do incremental build the kernel
-> with CONFIG_LTO_CLANG_THIN.
+
+Race is still possible. In the use case I was thinking, the workflow is:
+
+1. Current task mmaps a local storage map, writes a value to its local storage.
+2. Current task then makes a syscall, which triggers a bpf prog.
+3. The bpf prog reads the current task's local storage and fetches the
+value stored by the task.
+
+The steps above are sequential, therefore no race between task and bpf
+prog. If a task accesses other task's local storage, there is still
+race.
+
+> The patch 2 example is doable with the current api and is pretty far from
+> the above use case description.  The existing bpf_map_update_elem() and
+> bpf_map_lookup_elem() can not solve your use case?
 >
-> [3] https://lore.kernel.org/all/20220321183500.GA4065@pswork/T/#u
-> [4] https://lore.kernel.org/all/20220327115526.cc4b0ff55fc53c97683c3e4d@kernel.org/
+
+With sysctl_unprivileged_bpf_disabled, tasks without CAP_BPF are not
+able to make use of __sys_bpf(). bpf_map_update_elem() and
+bpf_map_lookup_elem() call __sys_bpf underneath IIRC. So unpriv tasks
+can't use these two syscalls.
+
+> or the current bpf_map_{update,lookup}_elem() works but
+> prefer a direct data read/write interface?
 >
-> This seems like clang's LTO Thin mode issue. It may not detect the inline
-> asm depends on external files.
+> btw, how delete is going to look like ?
 >
-> I think the possible workaround is to split the inline asm which includes
-> '.incbin' directive into an asm file. But this should be done in another
-> seires because there are other features which uses '.incbin'. (e.g.
-> /proc/config.gz)
 
-Hi Masami,
-I saw Padmanabha's report (thanks for the report); sorry for not
-responding sooner, I've been traveling recently for a funeral.
+Good question. Deletion is not done from the userspace. It's done at
+bpf prog side. The task mmaps its storage (which creates the storage),
+writes a value. The bpf prog reads the value and deletes the storage.
 
-Any chance we can use
+> and do you see the mmap could be used with sk and inode storage instead
+> of the 'current' task?
+>
 
-CFLAGS_REMOVE_<file>.o := $(CC_FLAGS_LTO)
+Yes. I think this patch can certainly extend to sk or inode or cgroup
+local storage. But I don't have a use case yet.
 
-a la
-commit d2dcd3e37475 ("x86, cpu: disable LTO for cpu.c")
+> > > >
+> > > > Song also mentioned to me offline, that mmapable task local storage
+> > > > may be useful for his use case.
+> > > >
+> > > > I am actually open to other proposals.
+> If the arraymap is local to an individual task, does it solve
+> your use case?  Have you thought about storing an arraymap (which is mmap-able)
+> in the local storage?  That could then be used to store ringbuf map and
+> other bpf maps in local storage.  It is logically similar to map-in-map.
+> The outer map is the pseudo local storage map here.
+>
 
-with a comment linking to
-https://github.com/ClangBuiltLinux/linux/issues/1618
+I haven't thought about this. IMHO, I feel it might be complicated to
+properly set up the set of maps.
 
-for the Translation Units using .incbin, until we have had more time
-to triage+fix?
 
--- 
-Thanks,
-~Nick Desaulniers
+> > > >
+> > >
+> > > You could also use a syscall prog, and use bpf_prog_test_run to update local
+> > > storage for current. Data can be passed for that specific prog invocation using
+> > > ctx. You might have to enable bpf_task_storage helpers in it though, since they
+> > > are not allowed to be called right now.
+> > >
+> >
+> > The loading process needs CAP_BPF to load bpf_prog_test_run. I'm
+> > thinking of allowing any thread including unpriv ones to be able to
+> > pass data to the prog and update their own storage.
