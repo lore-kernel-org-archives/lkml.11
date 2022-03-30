@@ -2,111 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2FFBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:59:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18CD3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 07:00:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243624AbiC3HBa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 03:01:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57858 "EHLO
+        id S243544AbiC3HC2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 03:02:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243658AbiC3HAz (ORCPT
+        with ESMTP id S241845AbiC3HB5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 03:00:55 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8701DE098D;
-        Tue, 29 Mar 2022 23:59:06 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2a02:3030:d:7e3f:91e1:4be5:4001:fd80])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: sebastianfricke)
-        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id AB0641F4425E;
-        Wed, 30 Mar 2022 07:59:04 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1648623544;
-        bh=OO5IhJqrvpl7EnmyLBkThDfuejEHt3zMXYjy+fGmxIY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hXKi0icpx0gFfmKs73t4gHpVsW/kLu6dbAK3CPpSGaI7pepzLhSOt/p9ZKm+8pnCd
-         4m2wmpmbN9zqnAOlbxNn61LDIdPo2q7Gs0D2mUoI8bRlfN1VVECbfZ9kAPHppmu/W5
-         UPbaJCSaZ3CPUWUnxTUZi0S3KJIN8xY4aWgeMuiXo0Fg1k+42IAJc54Z5gkOjAY2i7
-         IAzbRMl0NfBqYdz1eiu7I34Ay1WwM0QHrXpQH9MN5/3uxHBAvCkI4qJmZtTIbG3+Ks
-         HwyCRSka8rjUhhfPqVWsPxsYPf5Ea0JiEVTvVclqqVtXXwKCk/gl2APbGHgCqqRGE/
-         ZwEtfEhF18/sA==
-Date:   Wed, 30 Mar 2022 08:59:01 +0200
-From:   Sebastian Fricke <sebastian.fricke@collabora.com>
-To:     Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Cc:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        kernel@collabora.com, Jonas Karlman <jonas@kwiboo.se>,
-        Ezequiel Garcia <ezequiel@collabora.com>,
-        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 18/24] media: rkvdec: h264: Fix bit depth wrap in pps
- packet
-Message-ID: <20220330065901.q6vodbqpes5hqr4y@basti-XPS-13-9310>
-References: <20220328195936.82552-1-nicolas.dufresne@collabora.com>
- <20220328195936.82552-19-nicolas.dufresne@collabora.com>
+        Wed, 30 Mar 2022 03:01:57 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 879A6DF484;
+        Wed, 30 Mar 2022 00:00:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648623612; x=1680159612;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=a/yS06E/f5TlhFE99MfmA8gjZt8NoZmWScc2/+Gac5Y=;
+  b=Kab4Gj2KqZ/uTuU+hBH93dJhAMs2RwDVp19DAwGfPHOgldPZoDcDP7/r
+   ZXzW9UC84qQuHAJFU5Wkzvgn6oxO4chjZb83ZEhLEusb5nStVN2KtmnG+
+   DetFxe2EBcvyKxOL5iQZtGHGuMwEaZuGdAmDlELJ8cjAH5N/iPxLR3FgC
+   NfVNaI46e5pKfPGBpU8Gk29YeJZEsZRFId505tw9oMEpsUgu3GfAJ51Ch
+   Q+2yqNW7E/AveLwBlkdzJtpeP3SSZsJIbc+v2+8CLZJNp/VCGfm6FPYkj
+   5BckXYOoDj5xnhxZ9H7ktKwmjRikcszTCeZD+ZQm2DdaIuT8spfvKIL4+
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="258293974"
+X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
+   d="scan'208";a="258293974"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 00:00:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
+   d="scan'208";a="565346120"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
+  by orsmga008.jf.intel.com with ESMTP; 30 Mar 2022 00:00:05 -0700
+Date:   Wed, 30 Mar 2022 14:52:51 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Tom Rix <trix@redhat.com>, Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 2/5] hwmon: intel-m10-bmc-hwmon: use
+ devm_hwmon_sanitize_name()
+Message-ID: <20220330065251.GB212503@yilunxu-OptiPlex-7050>
+References: <20220329160730.3265481-1-michael@walle.cc>
+ <20220329160730.3265481-3-michael@walle.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220328195936.82552-19-nicolas.dufresne@collabora.com>
+In-Reply-To: <20220329160730.3265481-3-michael@walle.cc>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey Nicolas,
+On Tue, Mar 29, 2022 at 06:07:27PM +0200, Michael Walle wrote:
+> Instead of open-coding the bad characters replacement in the hwmon name,
+> use the new devm_hwmon_sanitize_name().
+> 
+> Signed-off-by: Michael Walle <michael@walle.cc>
 
-On 28.03.2022 15:59, Nicolas Dufresne wrote:
->From: Jonas Karlman <jonas@kwiboo.se>
->
->The luma and chroma bit depth fields in the pps packet is 3 bits wide.
+Acked-by: Xu Yilun <yilun.xu@intel.com>
 
-s/is 3 bits wide/are 3 bits wide/
-
->8 is wrongly added to the bit depth value written to these 3-bit fields.
-
-s/bit depth value/bit depth values/
-
-(as we talk about multiple different values)
-
->Because only the 3 LSB is written the hardware is configured correctly.
-
-s/Because only the 3 LSB is written the hardware is configured correctly./
-   Because only the three least significant bits are written, the hardware will be configured correctly./
-
-(original sentence is very hard to read, the sentence could also mean
-something like this:
-'Because only the three least significant bits, that are written to the hardware, are configured correctly.')
-
->
->Correct this by not adding 8 to the luma and chroma bit depth value.
->
->Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
->Reviewed-by: Ezequiel Garcia <ezequiel@collabora.com>
-Reviewed-by: Sebastian Fricke <sebastian.fricke@collabora.com>
-
-Greetings,
-Sebastian
-
->---
-> drivers/staging/media/rkvdec/rkvdec-h264.c | 4 ++--
-> 1 file changed, 2 insertions(+), 2 deletions(-)
->
->diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
->index 847b8957dad3..ec52b195bbd7 100644
->--- a/drivers/staging/media/rkvdec/rkvdec-h264.c
->+++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
->@@ -662,8 +662,8 @@ static void assemble_hw_pps(struct rkvdec_ctx *ctx,
-> 	WRITE_PPS(0xff, PROFILE_IDC);
-> 	WRITE_PPS(1, CONSTRAINT_SET3_FLAG);
-> 	WRITE_PPS(sps->chroma_format_idc, CHROMA_FORMAT_IDC);
->-	WRITE_PPS(sps->bit_depth_luma_minus8 + 8, BIT_DEPTH_LUMA);
->-	WRITE_PPS(sps->bit_depth_chroma_minus8 + 8, BIT_DEPTH_CHROMA);
->+	WRITE_PPS(sps->bit_depth_luma_minus8, BIT_DEPTH_LUMA);
->+	WRITE_PPS(sps->bit_depth_chroma_minus8, BIT_DEPTH_CHROMA);
-> 	WRITE_PPS(0, QPPRIME_Y_ZERO_TRANSFORM_BYPASS_FLAG);
-> 	WRITE_PPS(sps->log2_max_frame_num_minus4, LOG2_MAX_FRAME_NUM_MINUS4);
-> 	WRITE_PPS(sps->max_num_ref_frames, MAX_NUM_REF_FRAMES);
->-- 
->2.34.1
->
+> ---
+>  drivers/hwmon/intel-m10-bmc-hwmon.c | 7 +------
+>  1 file changed, 1 insertion(+), 6 deletions(-)
+> 
+> diff --git a/drivers/hwmon/intel-m10-bmc-hwmon.c b/drivers/hwmon/intel-m10-bmc-hwmon.c
+> index 7a08e4c44a4b..29370108fa1c 100644
+> --- a/drivers/hwmon/intel-m10-bmc-hwmon.c
+> +++ b/drivers/hwmon/intel-m10-bmc-hwmon.c
+> @@ -515,7 +515,6 @@ static int m10bmc_hwmon_probe(struct platform_device *pdev)
+>  	struct intel_m10bmc *m10bmc = dev_get_drvdata(pdev->dev.parent);
+>  	struct device *hwmon_dev, *dev = &pdev->dev;
+>  	struct m10bmc_hwmon *hw;
+> -	int i;
+>  
+>  	hw = devm_kzalloc(dev, sizeof(*hw), GFP_KERNEL);
+>  	if (!hw)
+> @@ -528,14 +527,10 @@ static int m10bmc_hwmon_probe(struct platform_device *pdev)
+>  	hw->chip.info = hw->bdata->hinfo;
+>  	hw->chip.ops = &m10bmc_hwmon_ops;
+>  
+> -	hw->hw_name = devm_kstrdup(dev, id->name, GFP_KERNEL);
+> +	hw->hw_name = devm_hwmon_sanitize_name(dev, id->name);
+>  	if (!hw->hw_name)
+>  		return -ENOMEM;
+>  
+> -	for (i = 0; hw->hw_name[i]; i++)
+> -		if (hwmon_is_bad_char(hw->hw_name[i]))
+> -			hw->hw_name[i] = '_';
+> -
+>  	hwmon_dev = devm_hwmon_device_register_with_info(dev, hw->hw_name,
+>  							 hw, &hw->chip, NULL);
+>  	return PTR_ERR_OR_ZERO(hwmon_dev);
+> -- 
+> 2.30.2
