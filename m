@@ -2,94 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54013C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 15:46:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 585DBC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 15:48:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348382AbiC3Prs (ORCPT
+        id S1348386AbiC3PuC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 11:47:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41168 "EHLO
+        Wed, 30 Mar 2022 11:50:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348371AbiC3Pro (ORCPT
+        with ESMTP id S1344628AbiC3PuA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 11:47:44 -0400
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CA243EB84
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 08:45:58 -0700 (PDT)
-Received: by mail-qk1-x735.google.com with SMTP id v15so16915278qkg.8
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 08:45:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ZRaeRvMSmHF9/f3VZA83L1Ad1gWgQ6AapuQZkdtChkg=;
-        b=5E4AvSlLr39zW743+y4nmD5ONJKJkUxJilrF0KKc7IKbLynZx6oEtoSKsZn/zodPep
-         JRpcAS7fvU67nYh7Bl6a0+/U1k+sLqFAXCo+xP+afJiAwX2/datKj4boXYza1D9NR7Tg
-         bQAKsoj92J5yXVt2iI+6ZfDUspgtGsik+hMT3IlkR21Qaz6vN4zbliGeRUWgv+KItZNq
-         88piKdR5ZK65XYQ8f/a7aNmGFw0EUZ6CKyZfyxD7QRV2k7PYVJ75L31EdaKreeCLyUGT
-         AXP/7b2wcuawlII2CKWLNeQX122a6yrXNq3/HxccoOn9CPWWRyYPM0BfnFtmBKWtoabx
-         oEZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZRaeRvMSmHF9/f3VZA83L1Ad1gWgQ6AapuQZkdtChkg=;
-        b=lAHngHLJWobQDcRrtN6ZzWADrNGWihH2fEKrRLzfRxQTt8pAX76QG4whEFY5S/XKT5
-         8tyC4URaYJ5bgymI8KBFhn1v/uxrhlJbW/6C6D97t9FxMYdAMIkWYk6z2nXi9fW68kwv
-         vNG/rXzlJQl/4/pkQkRy8d0DrXoEuKkqOc18kjCvt8RQlSPP3AFYRCyQRjl99ifBBBeb
-         IBT91UtZ2YuujtmGKxW2aXe/MCa4vj5b1aOwjI2LJvZZwMHNgRq+945y+jGMWiNvAw4c
-         kZ6Pv1V8ocbZrx41q+0PXVi75Y5DPc1TODHb1OtJll+gztLlnZ4ukeD9G7fbYqBoKQ+C
-         lP9g==
-X-Gm-Message-State: AOAM533Snhc0nHBA8BfxGFQo8lEK1K5XyfS1GRqA6I7M1Ibjp17CCQbY
-        5OZuxzwPSVIP3s+9ApoVJitGcg==
-X-Google-Smtp-Source: ABdhPJzL8Fzh1Kd60oS+1fKDMTEalGJpmVCe9CS5AeRl4im57Pw/IhwHXaetBACH42nIj2JrjNqN5w==
-X-Received: by 2002:a05:620a:484:b0:67e:16fe:3689 with SMTP id 4-20020a05620a048400b0067e16fe3689mr147904qkr.745.1648655157650;
-        Wed, 30 Mar 2022 08:45:57 -0700 (PDT)
-Received: from localhost (cpe-98-15-154-102.hvc.res.rr.com. [98.15.154.102])
-        by smtp.gmail.com with ESMTPSA id bs32-20020a05620a472000b0067d4560a516sm11392106qkb.32.2022.03.30.08.45.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Mar 2022 08:45:57 -0700 (PDT)
-Date:   Wed, 30 Mar 2022 11:45:56 -0400
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     CGEL <cgel.zte@gmail.com>, axboe@kernel.dk,
-        viro@zeniv.linux.org.uk, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        akpm@linux-foundation.org, Yang Yang <yang.yang29@zte.com.cn>,
-        Ran Xiaokai <ran.xiaokai@zte.com.cn>
-Subject: Re: [PATCH] block/psi: make PSI annotations of submit_bio only work
- for file pages
-Message-ID: <YkR7NPFIQ9h2AK9h@cmpxchg.org>
-References: <20220316063927.2128383-1-yang.yang29@zte.com.cn>
- <YjiMsGoXoDU+FwsS@cmpxchg.org>
- <623938d1.1c69fb81.52716.030f@mx.google.com>
- <YjnO3p6vvAjeMCFC@cmpxchg.org>
- <20220323061058.GA2343452@cgel.zte@gmail.com>
- <62441603.1c69fb81.4b06b.5a29@mx.google.com>
- <YkRUfuT3jGcqSw1Q@cmpxchg.org>
- <YkRVSIG6QKfDK/ES@infradead.org>
+        Wed, 30 Mar 2022 11:50:00 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA07920E942;
+        Wed, 30 Mar 2022 08:48:10 -0700 (PDT)
+X-UUID: 3b656cbffa5f4f99900f5d676e1ba9e7-20220330
+X-UUID: 3b656cbffa5f4f99900f5d676e1ba9e7-20220330
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        (envelope-from <jiaxin.yu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1049488280; Wed, 30 Mar 2022 23:48:03 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Wed, 30 Mar 2022 23:48:02 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 30 Mar 2022 23:48:01 +0800
+Message-ID: <734fbf254c64668856e987aafe9d7dfd3ec86941.camel@mediatek.com>
+Subject: Re: [v7 2/4] ASoC: mediatek: mt8192: refactor for I2S3 DAI link of
+ speaker
+From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
+To:     Mark Brown <broonie@kernel.org>
+CC:     "=?ISO-8859-1?Q?N=EDcolas?= F. R. A. Prado" <nfraprado@collabora.com>,
+        <robh+dt@kernel.org>, <tzungbi@google.com>,
+        <angelogioacchino.delregno@collabora.com>, <aaronyu@google.com>,
+        <matthias.bgg@gmail.com>, <trevor.wu@mediatek.com>,
+        <linmq006@gmail.com>, <alsa-devel@alsa-project.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Tzung-Bi Shih <tzungbi@kernel.org>
+Date:   Wed, 30 Mar 2022 23:48:01 +0800
+In-Reply-To: <YkRoC30JLDMeVi1B@sirena.org.uk>
+References: <20220324064511.10665-1-jiaxin.yu@mediatek.com>
+         <20220324064511.10665-3-jiaxin.yu@mediatek.com>
+         <20220329223002.uo7kiemopkh7ak4x@notapiano>
+         <dee3fbb7c9f0c3e1f11143db1d6fc4381cab827f.camel@mediatek.com>
+         <YkRNSoBKFvYYyZLu@sirena.org.uk>
+         <61e9fb59448837cfc8e3ec862b711294bcb68872.camel@mediatek.com>
+         <YkRoC30JLDMeVi1B@sirena.org.uk>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YkRVSIG6QKfDK/ES@infradead.org>
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 06:04:08AM -0700, Christoph Hellwig wrote:
-> On Wed, Mar 30, 2022 at 09:00:46AM -0400, Johannes Weiner wrote:
-> > If you want type distinction, we should move it all into MM code, like
-> > Christoph is saying. Were swap code handles anon refaults and the page
-> > cache code handles file refaults. This would be my preferred layering,
-> > and my original patch did that: https://lkml.org/lkml/2019/7/22/1070.
+On Wed, 2022-03-30 at 15:24 +0100, Mark Brown wrote:
+> On Wed, Mar 30, 2022 at 10:06:24PM +0800, Jiaxin Yu wrote:
+> > On Wed, 2022-03-30 at 13:30 +0100, Mark Brown wrote:
+> > > Making a previously optional property required means that systems
+> > > that
+> > > previously worked may stop working unless they update their DT,
+> > > DTs
+> > > may
+> > > be distributed separately to the kernel and perhaps even baked
+> > > into
+> > > firmware or similar.
+> > Thank you for your detailed answer. I should keep the driver's
+> > behavior
+> > consistent with the description of dt-bindings. The "mediatek,hdmi-
+> > codec" needs to be set as the required property. Is my
+> > understanding
+> > right?
 > 
-> FYI, I started redoing that version and I think with all the cleanups
-> to filemap.c and the readahead code this can be done fairly nicely now:
+> The binding document and code should match so if one is changed the
+> other needs to be changed too.
 > 
-> http://git.infradead.org/users/hch/block.git/commitdiff/666abb29c6db870d3941acc5ac19e83fbc72cfd4
+> In theory we should never change a previously optional property to
+> required which would mean that the code should be updated to reflect
+> the
+> binding document, however sometimes the DT isn't actually used as a
+> stable intereface by anything for a given property or device type so
+> we
+> can get away with changing things.
 
-Yes, it's definitely much nicer now with the MM instantiating the
-pages for ->readpage(s).
+"however sometimes the DT isn't actually used as a stable intereface by
+anything for a given property or device type so we can get away with
+changing things."
 
-But AFAICS this breaks compressed btrfs (and erofs?) because those
-still do additional add_to_page_cache_lru() and bio submissions.
+Sorry, I don't understand the real idea of this description. Does it
+mean that dt-bindings in this series don't need to be updated, but the
+driver?
+
