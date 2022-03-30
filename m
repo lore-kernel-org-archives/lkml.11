@@ -2,187 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0826C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 08:15:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4C2FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 08:16:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244207AbiC3IRY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 04:17:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42178 "EHLO
+        id S244208AbiC3ISj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 04:18:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244187AbiC3IRN (ORCPT
+        with ESMTP id S244263AbiC3ISY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 04:17:13 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38ADFEB1
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 01:15:27 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id y142so35644089ybe.11
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 01:15:27 -0700 (PDT)
+        Wed, 30 Mar 2022 04:18:24 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C044D1006
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 01:16:36 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id g20so23461394edw.6
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 01:16:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=J1O663fbts0VFCtfY/TcXef7OlBWmt7NyyGWrosUM0k=;
-        b=RThrFxt4yhpuCG++OTYkutv6u4CZd9xXx98Dmexz9IC88WEwRgcdy6fkFhpJ+Rd35F
-         hcDUGj3oiHaBNtDbrXun6gcs5bql8ItJpeUJU1AdTYcWKbK8sCLHK0LDIVxdiTyT8JcI
-         oAQvkjn9As4wt1ypnnYoFWCR5HbOFd/Nbsqdxwvpcx+TOR1o5iWW55PgyoIAlxEx95Gk
-         H3XRATz9YBacZAHNxDVb+Mx1w23SZBB06aR7HU8bMVfxgQ/ttY85v8x8+9TEt3LLOI4S
-         P6qYalnlUQCYlTpET7mZirIT+0hOTb+nPsMs70YHfSMmmNuMdSfAndTGlHWhSse3POjR
-         6lcQ==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=c5MATGVQDJwQFK7qd2qyqbaNs3dS2C3cMFAz3zjfwgw=;
+        b=GDhkESkYjCS1H8dz+HiRG2ZxsCt3sGDRO6gp3mAPmaQHoZECIBfG+FsOSjDgZZJOxP
+         rU0Vd5Wz5E6XY54mxgWVD7wBi8NNEJazhBFE1re13XLYJ5BtINtle2wE46LOnCoUGZH+
+         CO6XzyXkUr7h2oVqBf2Nr4Ob3BqzbUp/lO/mu9R0wjOq4aDnh8KQK6HzwvBi0HmCkcUW
+         X5NjYNt8Ws4cTm4OJJVq69vCuilsxolEp/kHdYORuENJhv7Nejio1ltipph2OtL2VsvN
+         uI6aZtKapBitpYiIjPjKvxXS9pegIV3YPRlYnINLqiLay8luVwW6WEsJqG9yetH7VZah
+         /+4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=J1O663fbts0VFCtfY/TcXef7OlBWmt7NyyGWrosUM0k=;
-        b=11L73pJUCXdN3R59PVURya1FXEZMX5i9UZ4oucEw0g2I7lf1YLOwhVJO23na8JExfL
-         moTFa8l3Y08zeJ9IcSLKFTO0GeNm+3zcooWo7wynUjzD/vMHY296wy/cAZALuwm/hzNE
-         W7mbRl1k261PPSZnlzTzMp1vCN26yjmSNeYt3lu+WKLA1RtiOqFcp7uGBqIMoYXJoIK1
-         VdaNalIxZo9gQyIMr/Bh7cx1McyBwHkpOvkUKUmlAtl3PVm5e11gRCQO5uEACTJLBy4d
-         0DlYerojbeaiVT9+NhG6MJVVPdEPmTROmRC75TOZipUaXzFLe+e0RT6nKlZJsF8ibPOz
-         1tOQ==
-X-Gm-Message-State: AOAM532K0PIe5W06Vj5HS1bRaXGJHz5TPpYn0buHgaJwgRn3/qC1Ij/y
-        NUVzEYYVPMVLjFNt22LJr0jhkXXXUhyQy+hM8m0nNQ==
-X-Google-Smtp-Source: ABdhPJzob0z9ZmsceoYcDv1fOItBZLSKKbVtvOR3YZYv8g9KwSL2lL8hPvayfjYAen3eDUAPioHUMKWQdzuusX/rrpM=
-X-Received: by 2002:a25:9909:0:b0:624:57e:d919 with SMTP id
- z9-20020a259909000000b00624057ed919mr32094762ybn.494.1648628126337; Wed, 30
- Mar 2022 01:15:26 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=c5MATGVQDJwQFK7qd2qyqbaNs3dS2C3cMFAz3zjfwgw=;
+        b=eHcNXsK9bnbd0SwOyjkWCxqOteoNy5kp14zhDmXuJM6OjX6ZfQAcvtWPSPidLxNE9A
+         UgoE14usG8DuvN8oKOFoWTc8MmRULm7THI0RxnG8KUEQZLH3RUkTLwgWqH/iSVVEZy9r
+         fmhzo0xhgkQ3dZnADo45zvPfB82F5f9bXw90PrHVCXtMmVi0fWedZKP3yW2cMI002/L7
+         vVRa1SwjiDFWQI36drwS3X6/yyfhIpVAv3FlhRVLx0yfQtFD06MBtq0HVZrXLx6nZKWc
+         DlDmnAxGgWd2ws6gmy2NQfTbbZ+Y0CBjD6sVrzlPmXciJQMP2eF8JPWAAfvgANQwSaso
+         W3lQ==
+X-Gm-Message-State: AOAM533sCveau3IcmEDvezwBZx76SKm5tPrubZUhKdSwPvUU901KcRev
+        pD+I9ZA/1Jc4Ukm8AUkOl64/goxYMyVxtzKc
+X-Google-Smtp-Source: ABdhPJzBi8Rv2u5Cy9seMaIQ9cb+7ptzf4YpSV82te1jk8iqv0I2vrY0biYg3drXLedjzq/RpRzhRQ==
+X-Received: by 2002:a05:6402:d0e:b0:418:f011:275e with SMTP id eb14-20020a0564020d0e00b00418f011275emr9218070edb.323.1648628195327;
+        Wed, 30 Mar 2022 01:16:35 -0700 (PDT)
+Received: from [192.168.0.162] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id o2-20020a50d802000000b00410d7f0c52csm9554775edj.8.2022.03.30.01.16.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Mar 2022 01:16:34 -0700 (PDT)
+Message-ID: <c8de5e44-6d8f-2865-1615-b3c61b90e6fc@linaro.org>
+Date:   Wed, 30 Mar 2022 10:16:34 +0200
 MIME-Version: 1.0
-References: <CA+G9fYtk6rpp=0WG9LyfQRCsMbbvf=P7uhMuon4RzZz3UjYVYQ@mail.gmail.com>
- <YkQOoQRUKemBEn02@kroah.com>
-In-Reply-To: <YkQOoQRUKemBEn02@kroah.com>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Wed, 30 Mar 2022 13:45:14 +0530
-Message-ID: <CA+G9fYuK2GDqWHuW3oOi2O0h4RWsLLQb9198i-PS=nMf1t0T7w@mail.gmail.com>
-Subject: Re: mainline: qemu_arm64 boot failed - Failed to start Hostname
- Service - Stopped Serial Getty on ttyAMA0
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        lkft-triage@lists.linaro.org, regressions@lists.linux.dev,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 1/2] dt-bindings: serial: uniphier: Use maxItems for a
+ single clock
+Content-Language: en-US
+To:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <1648617338-8600-1-git-send-email-hayashi.kunihiko@socionext.com>
+ <1648617338-8600-2-git-send-email-hayashi.kunihiko@socionext.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <1648617338-8600-2-git-send-email-hayashi.kunihiko@socionext.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 30 Mar 2022 at 13:32, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Wed, Mar 30, 2022 at 12:46:40PM +0530, Naresh Kamboju wrote:
-> > Linux mainline kernel booting qemu_arm64 and Raspberry Pi 4 boot
-> > failed [1] and [2].
-> >
-> > Boot log:
-> > [    0.000000] Booting Linux on physical CPU 0x0000000000 [0x413fd0c1]
-> > [    0.000000] Linux version 5.17.0 (tuxmake@tuxmake)
-> > (aarch64-linux-gnu-gcc (Debian 11.2.0-18) 11.2.0, GNU ld (GNU Binutils
-> > for Debian) 2.38) #1 SMP PREEMPT @1648607824
-> > [    0.000000] Machine model: linux,dummy-virt
-> >
-> > <trim>
-> >
-> >          Starting Hostname Service...
-> > [FAILED] Failed to start Hostname Service.
-> > See 'systemctl status systemd-hostnamed.service' for details.
-> > [    2.453172] random: crng init done
-> > [    2.453522] random: 7 urandom warning(s) missed due to ratelimiting
-> > [    2.483013] audit: type=1334 audit(1648621045.348:8): prog-id=0 op=UNLOAD
-> > [    2.483953] audit: type=1334 audit(1648621045.348:9): prog-id=0 op=UNLOAD
-> > [    2.609230] audit: type=1334 audit(1648621045.476:10): prog-id=10 op=LOAD
-> > [  OK  ] Started Resize root filesystem to fit available disk space.
-> > [     ] A start job is running for Network Manager (6s / 1min 30s)
-> > ] A start job is running for Network Manager (7s / 1min 30s)[   ] A
-> > start job is running for Network Manager (7s / 1min 30s)[   ] A start
-> > job is running for Network Manager (8s / 1min 30s)[   ] A start job is
-> > running for Network Manager (9s / 1min 30s)[   ] A start job is
-> > running for Network Manager (9s / 1min 30s)[    [ A start job is
-> > running for Network Manager (10s / 1min 30s)[     ] A start job is
-> > running for Network Manager (10s / 1min 30s)[    [ A start job is
-> > running for Network Manager (11s / 1min 30s)[   ] A start job is
-> > running for Network Manager (12s / 1min 30s)[   ] A start job is
-> > running for Network Manager (12s / 1min 30s)[   ] A start job is
-> > running for Network Manager (13s / 1min 30s)[   ] A start job is
-> > running for Network Manager (13s / 1min 30s)    ] A start job is
-> > running for Network Manager (14s / 1min 30s)[     ] A start job is
-> > running for Network Manager (14s / 1min 30s)    ] A start job is
-> > running for Network Manager (15s / 1min 30s)[   ] A start job is
-> > running for Network Manager (16s / 1min 30s)[   ] A start job is
-> > running for Network Manager (16s / 1min 30s)[   ] A start job is
-> > running for Network Manager (17s / 1min 30s)[   ] A start job is
-> > running for Network Manager (17s / 1min 30s)[    [ A start job is
-> > running for Network Manager (18s / 1min 30s)[     ] A start job is
-> > running for Network Manager (19s / 1min 30s)[    [ A start job is
-> > running for Network Manager (19s / 1min 30s)[   ] A start job is
-> > running for Network Manager (19s / 1min 30s)[   ] A start job is
-> > running for Network Manager (20s / 1min 30s)[   ] A start job is
-> > running for Network Manager (20s / 1min 30s)[   ] A start job is
-> > running for Network Manager (21s / 1min 30s)    ] A start job is
-> > running for Network Manager (21s / 1min 30s)[     ] A start job is
-> > running for Network Manager (22s / 1min 30s)    ] A start job is
-> > running for Network Manager (22s / 1min 30s)[   ] A start job is
-> > running for Network Manager (23s / 1min 30s)[   ] A start job is
-> > running for Network Manager (23s / 1min 30s)[   ] A start job is
-> > running for Network Manager (24s / 1min 30s)[   ] A start job is
-> > running for Network Manager (24s / 1min 30s)[    [ A start job is
-> > running for Network Manager (25s / 1min 30s)[     ] A start job is
-> > running for Network Manager (25s / 1min 30s)[  OK  ] Started Network
-> > Manager.
-> > [  OK  ] Listening on Load/Save RF Kill Switch Status /dev/rfkill Watch.
-> >          Starting Network Manager Script Dispatcher Service...
-> > [   27.359980] kauditd_printk_skb: 11 callbacks suppressed
-> > [   27.359988] audit: type=1701 audit(1648621070.228:22):
-> > auid=4294967295 uid=0 gid=0 ses=4294967295 pid=313 comm=\"(spatcher)\"
-> > exe=\"/lib/systemd/systemd\" sig=6 res=1
-> > [  OK  ] Reached target Network.
-> >          Starting DNS forwarder and DHCP server...
-> > [   27.367248] audit: type=1701 audit(1648621070.232:23):
-> > auid=4294967295 uid=0 gid=0 ses=4294967295 pid=315 comm=\"(dnsmasq)\"
-> > exe=\"/lib/systemd/systemd\" sig=6 res=1
-> >          Starting Permit User Sessions...
-> > [   27.371110] audit: type=1701 audit(1648621070.240:24):
-> > auid=4294967295 uid=0 gid=0 ses=4294967295 pid=317 comm=\"(sessions)\"
-> > exe=\"/lib/systemd/systemd\" sig=6 res=1
-> > [FAILED] Failed to start Network Manager Script Dispatcher Service.
-> > See 'systemctl status NetworkManager-dispatcher.service' for details.
-> > [FAILED] Failed to start DNS forwarder and DHCP server.
-> > See 'systemctl status dnsmasq.service' for details.
-> > [FAILED] Failed to start Permit User Sessions.
-> > See 'systemctl status systemd-user-sessions.service' for details.
-> > [  OK  ] Started Getty on tty1.
-> > [  OK  ] Started Serial Getty on ttyAMA0.
-> > [  OK  ] Reached target Login Prompts.
-> > [  OK  ] Reached target Multi-User System.
-> >          Starting Update UTMP about System Runlevel Changes...
-> > [   27.402975] audit: type=1701 audit(1648621070.268:25):
-> > auid=4294967295 uid=0 gid=0 ses=4294967295 pid=322 comm=\"(ate-utmp)\"
-> > exe=\"/lib/systemd/systemd\" sig=6 res=1
-> > [FAILED] Failed to start Update UTMP about System Runlevel Changes.
-> > See 'systemctl status systemd-update-utmp-runlevel.service' for details.
-> > [   32.398140] audit: type=1701 audit(1648621075.264:26):
-> > auid=4294967295 uid=0 gid=0 ses=4294967295 pid=320 comm=\"(agetty)\"
-> > exe=\"/lib/systemd/systemd\" sig=6 res=1
-> > [   32.399187] audit: type=1701 audit(1648621075.264:27):
-> > auid=4294967295 uid=0 gid=0 ses=4294967295 pid=321 comm=\"(agetty)\"
-> > exe=\"/lib/systemd/systemd\" sig=6 res=1
-> > [  OK  ] Stopped Serial Getty on ttyAMA0.
-> > [  OK  ] Started Serial Getty on ttyAMA0.
-> > [  OK  ] Stopped Getty on tty1.
-> > [  OK  ] Started Getty on tty1.
-> >
-> > Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-> >
-> > --
-> > Linaro LKFT
-> > https://lkft.linaro.org
-> >
-> > [1] https://lkft.validation.linaro.org/scheduler/job/4809453#L252
-> > [2] https://lkft.validation.linaro.org/scheduler/job/4809125#L386
-> >
->
-> That's a lot of userspace logs, any kernel logs showing that anything
-> failed?
+On 30/03/2022 07:15, Kunihiko Hayashi wrote:
+> 'maxItems' is preferred for a single entry, not 'minItems'.
+> 
+> Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+> ---
+>  .../devicetree/bindings/serial/socionext,uniphier-uart.yaml     | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
 
-I do not see kernel logs failures here.
 
-- Naresh
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+
+Best regards,
+Krzysztof
