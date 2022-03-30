@@ -2,141 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B112BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 03:35:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8825FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 03:37:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242341AbiC3Dgy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 23:36:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41662 "EHLO
+        id S242358AbiC3Diu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 23:38:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242338AbiC3Dgv (ORCPT
+        with ESMTP id S235216AbiC3Dis (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 23:36:51 -0400
-X-Greylist: delayed 4200 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 29 Mar 2022 20:35:03 PDT
-Received: from mailout-pe-b.jellyfish.systems (mailout-pe-b.jellyfish.systems [198.54.127.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D7253BFBC
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 20:35:01 -0700 (PDT)
-Received: from NEW-01.privateemail.com (unknown [10.35.5.64])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mailout-pe-b.jellyfish.systems (Postfix) with ESMTPSA id 4KSmk05VQbzGp9q;
-        Tue, 29 Mar 2022 23:58:48 +0000 (UTC)
-Received: from MTA-15.privateemail.com (unknown [10.50.14.40])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by NEW-01.privateemail.com (Postfix) with ESMTPS id A63C918000CB;
-        Tue, 29 Mar 2022 19:58:48 -0400 (EDT)
-Received: from mta-15.privateemail.com (localhost [127.0.0.1])
-        by mta-15.privateemail.com (Postfix) with ESMTP id 7546A18000A6;
-        Tue, 29 Mar 2022 19:58:48 -0400 (EDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=gibson.sh; s=default;
-        t=1648598328; bh=O1+zd/KNW+ohI9diX5NoE537Fd17OXvDIMQlgHBfv2A=;
-        h=From:To:Cc:Subject:Date:From;
-        b=z8ZSuvZ5ov0G2HX1zVlDUpp9Ifxa4tjcVXZYMz2yXISq+HyEqX5wgESoApCtCioiY
-         LUU32o61n+2R01db7mq8j9xarkJvGNLlo0D7FBEG9lrCWChDUXJuzL+kObO9+Ldm35
-         UCGWu4E1MmOFMsquOPgH8OyT9xdGzX8rp6gqSWKctQRzKbg9UbsN5t72XXLt+WOIIG
-         VpwORBebtycpzmaMrmgOpF7gt1e40Rl1uD4pGeGxCQ4u67cVypVdVIBARcn2sAvYIW
-         MF9DDgkymnbTWj1XYEqv5/XMn/KVkJL3czcjBNH/HUgwQ0jzrZI3FzSAFsrzldLFa/
-         v+Fiq1PC8vSuA==
-Received: from spiderdemon.horst.lan (unknown [10.20.151.189])
-        by mta-15.privateemail.com (Postfix) with ESMTPA id C72A418000A2;
-        Tue, 29 Mar 2022 19:58:41 -0400 (EDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=gibson.sh; s=default;
-        t=1648598328; bh=O1+zd/KNW+ohI9diX5NoE537Fd17OXvDIMQlgHBfv2A=;
-        h=From:To:Cc:Subject:Date:From;
-        b=z8ZSuvZ5ov0G2HX1zVlDUpp9Ifxa4tjcVXZYMz2yXISq+HyEqX5wgESoApCtCioiY
-         LUU32o61n+2R01db7mq8j9xarkJvGNLlo0D7FBEG9lrCWChDUXJuzL+kObO9+Ldm35
-         UCGWu4E1MmOFMsquOPgH8OyT9xdGzX8rp6gqSWKctQRzKbg9UbsN5t72XXLt+WOIIG
-         VpwORBebtycpzmaMrmgOpF7gt1e40Rl1uD4pGeGxCQ4u67cVypVdVIBARcn2sAvYIW
-         MF9DDgkymnbTWj1XYEqv5/XMn/KVkJL3czcjBNH/HUgwQ0jzrZI3FzSAFsrzldLFa/
-         v+Fiq1PC8vSuA==
-From:   Daniel Gibson <daniel@gibson.sh>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Peter Hurley <peter@hurleysoftware.com>,
-        Daniel Gibson <daniel@gibson.sh>
-Subject: [PATCH 0/1]  tty: n_tty: Restore EOF push handling behavior
-Date:   Wed, 30 Mar 2022 01:58:09 +0200
-Message-Id: <20220329235810.452513-1-daniel@gibson.sh>
-X-Mailer: git-send-email 2.25.1
+        Tue, 29 Mar 2022 23:38:48 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F4BF21593D
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 20:37:04 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id mr5-20020a17090b238500b001c67366ae93so838308pjb.4
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 20:37:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=WuaiwYvOTwQ+/sJcpkfv+PmwJ4PjGjNA2qt+U1utxww=;
+        b=F5i6s4aX9dewu0eQZC/evu0gwwCMspUxxWQqwNqg32zj8r8Qo7Di7WwKPX19PLnam5
+         SQ5pQVTKQMi5HFm+XmeVCjQpgdl0/BpVMIOKINJySp/CSNHPEORIv+Q3US++n7yod/ZC
+         6G4cxnNLPMxucgTAFtA2CxhvM17WlcwaXhusRTut4YO8lKQ1mx5ng2E0zBAlpORexv6q
+         8CuKXzRqrULL5SgdLAvTkrF+oZr/PM3WHmNp7o/AC50tOU1NiyAHntuxPLZLzIw46LOo
+         iZ/gGiitOFZ4iVEiRTFpqo1lq0pqflWb14noEJI3UEEVzp5zba8n8zAKfu1salwIl8Qp
+         /5bw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=WuaiwYvOTwQ+/sJcpkfv+PmwJ4PjGjNA2qt+U1utxww=;
+        b=DaBcyUWikkQGQIOX2E9JrW4oQm2jbLVgVr+pNX9C20jWKrt4Wl5KPmUAvl26GUBnL9
+         uFa/V0xvrzcWisw3SOEtG8NWsyO/C981cUO/nxhIORnMUgfYT96xm7dS5GZ0rDl5BDud
+         MqU3S48NO3JWXY3JOp0/6AowcootD0AXZPopLBE694bWNdsuQS3N68ki4JjNtQGHI+qP
+         Z71AHPhI4nMqhQVITmHE2cM1ieoLoTV1xaqQ1kZvjDZO65JPEDiQJEmIlGaaoEI1IPXY
+         hCDlujtWazhrQMOX30jf+nci9po6ZXQqAR4Jyl5wPXmc+G9dyyhLu9VOL9BdjqFd+Qio
+         RwUw==
+X-Gm-Message-State: AOAM531yMb3QOGL1jRyFdLzXufs4XFVWOnFYHp5tyZm7Ztb0r/g1iGkA
+        rruy6aPpakc3d/MnH7M9lrk=
+X-Google-Smtp-Source: ABdhPJzlaUvvZOKk5pfSIN08gKcO9fQ1bMYnmBENgu+WtgKUKxpxsQ5xN5XkauYymjmwhXKihxoN9Q==
+X-Received: by 2002:a17:902:d4c1:b0:153:d493:3f1 with SMTP id o1-20020a170902d4c100b00153d49303f1mr33494733plg.102.1648611423812;
+        Tue, 29 Mar 2022 20:37:03 -0700 (PDT)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id a9-20020a056a000c8900b004fb37ecc6bbsm13476326pfv.65.2022.03.29.20.37.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 29 Mar 2022 20:37:03 -0700 (PDT)
+Message-ID: <de8e450f-596f-bf99-d18a-ee771f9f2127@gmail.com>
+Date:   Tue, 29 Mar 2022 20:37:01 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 1/2] arm64: mm: Do not defer reserve_crashkernel() if only
+ ZONE_DMA32
+Content-Language: en-US
+To:     Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Vijay Balakrishna <vijayb@linux.microsoft.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>
+References: <20220325055315.25671-1-wangkefeng.wang@huawei.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220325055315.25671-1-wangkefeng.wang@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since Kernel 5.12 there was a bug in Pseudo-Terminals (it has been fixed
-recently) in ICANON mode where the terminating newline was missing in a
-read() if the line had exactly 64 chars PLUS newline - and that newline
-was then returned at the beginning of the next line that was read().
-
-https://bugzilla.kernel.org/show_bug.cgi?id=215611 has more information
-on this bug, but I'll summarize things relevant to this patch here:
-
-This bug was introduced by 3b830a9c34d5 ("tty: convert tty_ldisc_ops
-'read()' function to take a kernel pointer") but it turned out that a
-slight variation of it existed even before (if the newline was just
-after the buffer size passed to read()).
-That bug had been introduced by ac8f3bf8832a ("n_tty: Fix poll() after
-buffer-limited eof push read") which fixed an edge-case very similar to
-the one it broke - if there was a "EOF" pseudo-EOL character (that's
-a __DISABLED_CHAR and thus not supposed to be returned to the reader)
-directly after a read-buffer-sized line, this EOF character was supposed
-to be silently discarded - and while doing this the case of a regular
-EOL character (that's supposed to be returned to the reader, like '\n')
-directly following the read-buffer was broken.
-As this original bug was less likely to be triggered than the newer
-64 char case (I guess usually the reader passes a buffer that's big
-enough to hold the whole line) it has never been found.
-This EOF/pseudo-EOL character handling is also called "EOF pushing", and
-the character that's used for it is EOT (ASCII 0x4). Like a regular EOL
-character it terminates a line that's written to a pseudo-terminal, but
-unlike a regular EOL character it's not returned to the reader.
-
-Anyway, the fix for the bug with 64 chars + newline (359303076163 
-"tty: n_tty: do not look ahead for EOL character past the end of the buffer")
-broke the edge case of discarding EOT after the read buffer size, which
-causes the next read() to return 0, because it's detected as an empty
-line with a newline-character that's not returned to the reader.
-
-read() returning 0 in this case actually *is* valid behavior (FreeBSD
-and OSX do it), and has the advantage that the reader can interpret it
-as "the line I just received is over" - otherwise the reader can't know,
-could as well have been an even longer line and the previous read() just
-returned the first part of it.
-
-On the other hand, read() returning 0 means EOF and the reader could
-misinterpret it as "there's no more data, probably the other side
-disconnected" and stop reading or even close the pseudo-terminal.
-So it might indeed be a good idea to avoid this by silently discarding
-EOF (EOT) characters and returning the next line, like Linux did before.
-Solaris (or at least OpenIndiana 2021.10) does the same.
-
-While both options are defensible (and are used by other Unix-likes),
-IMHO it's best to stick to the "old" Linux behavior since 40d5e0905a03
-("n_tty: Fix EOF push handling") of 2013, i.e. silently discard the EOF.
-
-The following patch, which is based on a patch Linus gave me for
-testing, restores that behavior.
-
-I wrote a pretty extensive test for several edge-cases of PTYs in ICANON
-mode (including the bugs mentioned before) which you can download at:
-https://bugzilla.kernel.org/show_bug.cgi?id=215611#c10
-I plan to port that standalone-test to kselftest eventually, but so far
-haven't gotten around to doing that, so I'd prefer to get this patch
-merged now and the test later once it's ported.
 
 
-Daniel Gibson (1):
-  tty: n_tty: Restore EOF push handling behavior
+On 3/24/2022 10:53 PM, Kefeng Wang wrote:
+> The kernel could be benifit due to BLOCK_MAPPINGS, see commit
+> 031495635b46 ("arm64: Do not defer reserve_crashkernel() for
+> platforms with no DMA memory zones"), if there is only with
+> ZONE_DMA32, we could set arm64_dma_phys_limit to max_zone_phys(32)
+> earlier in arm64_memblock_init(), then we will benifit too.
+> 
+> Cc: Vijay Balakrishna <vijayb@linux.microsoft.com>
+> Cc: Pasha Tatashin <pasha.tatashin@soleen.com>
+> Cc: Will Deacon <will@kernel.org>
+> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+> ---
+>   arch/arm64/mm/init.c | 18 ++++++++++--------
+>   arch/arm64/mm/mmu.c  |  6 ++----
+>   2 files changed, 12 insertions(+), 12 deletions(-)
+> 
+> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+> index 8ac25f19084e..9dded8779d72 100644
+> --- a/arch/arm64/mm/init.c
+> +++ b/arch/arm64/mm/init.c
+> @@ -157,14 +157,14 @@ static phys_addr_t __init max_zone_phys(unsigned int zone_bits)
+>   	return min(zone_mask, memblock_end_of_DRAM() - 1) + 1;
+>   }
+>   
+> +phys_addr_t __ro_after_init dma32_phys_limit;
 
- drivers/tty/n_tty.c | 38 +++++++++++++++++++++++++++++++++++++-
- 1 file changed, 37 insertions(+), 1 deletion(-)
-
+This variable should still be scoped to this file, it is not used 
+outside of arch/arm64/mm/init.c.
 -- 
-2.25.1
-
+Florian
