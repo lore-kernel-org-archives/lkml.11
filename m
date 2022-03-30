@@ -2,117 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 051ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:57:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE100C43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:57:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243469AbiC3G7P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 02:59:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54080 "EHLO
+        id S243499AbiC3G73 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 02:59:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243481AbiC3G7E (ORCPT
+        with ESMTP id S243486AbiC3G7T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 02:59:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F32BEDE09D
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 23:57:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648623439;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BlGn54gkEq56ZEq4yxxp6UGaagJu669pehgEVDXqc+s=;
-        b=JfO21q6AP2CB0bPufxCcPse3Isj3ieXGImKPMzD1HZtxyllfBMzcthn0DnyZY3a9Q78WPf
-        fL8FjztkJ+D2dflI4io+QHzF2qlLamjOH3FFr2Fdr1YenbMgrBFCY5qddd2RtX9JnAzw2C
-        exUhKOn7NoY6veX2acuWnvbkkXHVc6g=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-376-k4ezvre6O3uhKkg5gU3xIA-1; Wed, 30 Mar 2022 02:57:15 -0400
-X-MC-Unique: k4ezvre6O3uhKkg5gU3xIA-1
-Received: by mail-lj1-f200.google.com with SMTP id 20-20020a05651c009400b002462f08f8d2so8330867ljq.2
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 23:57:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BlGn54gkEq56ZEq4yxxp6UGaagJu669pehgEVDXqc+s=;
-        b=blALhtYZze+dJbcUtwVNIvxOGu+DmC2ggQCJn8UrG6//6HHaXcBf/X2BZxmuHsj9XG
-         Yq0WuO1ylrFjGsYns1SNNJGxJVKqP1sIRoXrdNGYkzNVGonc7TdUdpwp1kC5XRnynpD/
-         wpbgmhzOeGMVqR5Jpba0gubH6ziXAX021EnYUbaTG5dqtcPFxI3/ZTRzzbsrAUmvxNuq
-         vQbSucyk0VjsIskuDx1yNlY5oF1BTs3zhtQba3CxKkmicYIb3weeY/Rnqtp8PQuIpt3o
-         tTiDX+tfhJUeYLc/8yqeLh8MNNlaZyAdZUzaIBKZ2bSwMABbSJ+BRfnHkRtdSMmnOJWt
-         PPuw==
-X-Gm-Message-State: AOAM530+wyq6dVzh62q/+O0ycgrZ+mBTtC7iApscPiWbzxAOHSacRRj6
-        ybCxj2hLoxuwUcYySz8elRdmS7M0CdQqs/CAuumyP0jtRbEltWsKhMBWSZ7Iu7NKr/SuOngd7xp
-        VoEF2y7Ob/irBlmavhQcMD3qrb2uNkwlKApyraTOW
-X-Received: by 2002:a05:6512:3341:b0:433:b033:bd22 with SMTP id y1-20020a056512334100b00433b033bd22mr5802730lfd.190.1648623433274;
-        Tue, 29 Mar 2022 23:57:13 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyxgBMDOOCDdXaX9T2w++d+QTu7fkFTESyY1gxiCdJXf/23pMTqhJyEoQUM51UXvHb14nmZ7AXVi9wIgw55ET0=
-X-Received: by 2002:a05:6512:3341:b0:433:b033:bd22 with SMTP id
- y1-20020a056512334100b00433b033bd22mr5802717lfd.190.1648623432982; Tue, 29
- Mar 2022 23:57:12 -0700 (PDT)
+        Wed, 30 Mar 2022 02:59:19 -0400
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam08olkn2098.outbound.protection.outlook.com [40.92.47.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6D75DE0A9;
+        Tue, 29 Mar 2022 23:57:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=B53SkFLzb/jcNBDF94D8FheSNsct1pCUJhIvLy62yU++wuIzCcYiu8r11YBEcU4s4uOrkWQAS8V0SWgLewr76u47hVkU76BkiS+HYEew+5GnVn1g231rv8D1lWfkm2CahRMFv35VHLT701hNN5CiWrdgGduMDqeEVJi0EHdvmboCslWUx3W4Iiu0pPpmP/BJpqL4fM9M/65USmC/IYUGQUWGWFiZLoTK4oqLcj4bWbB45W7G3WmD8x/vKW0CAE4kGwgevqWf02gB34+ZinqPqF8UaO78RVNQAmOJE0pz/39+I+SZfANXQ+PKWY7HMyNBuu25ZjJgvNaaK98KQ+bKBw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yIVKmciJUkjqgVyrdEV8jlIbThjkteUdnAOhH4f88to=;
+ b=ep/ZatarnI8qPFrk9PqrcjYKJcJrv9iGxEymr0qovJ53/1/zsmSYqWslAgXHmsVcdeADRC6s8wqAktmOYEarxo325OL8Mvjp/seXrjZglyWslherz7d4u/UKBBafGifVfkLicxaZlR0jEZEQixC5UM3xKTIRu5JoRYJaZm4K/GMexUyphask2r50e+42SU3SeJmSuWTCjbj29a59oL9CaKG4g8SIeyseJYEt5iP3O6nYIV/c+BEPOJKiwbQ1Oq0954ERNH2VE49oqzxvdpvG62J99ppgyxfJ2DN1KG2qzJdY5DYhyGtWX90fiE0p+YdKkMN9tgrCqR/u+7AXOiNfcQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+Received: from BY5PR02MB7009.namprd02.prod.outlook.com (2603:10b6:a03:236::13)
+ by CH0PR02MB7899.namprd02.prod.outlook.com (2603:10b6:610:100::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.19; Wed, 30 Mar
+ 2022 06:57:33 +0000
+Received: from BY5PR02MB7009.namprd02.prod.outlook.com
+ ([fe80::413f:bae6:4e5e:5ae6]) by BY5PR02MB7009.namprd02.prod.outlook.com
+ ([fe80::413f:bae6:4e5e:5ae6%6]) with mapi id 15.20.5123.018; Wed, 30 Mar 2022
+ 06:57:33 +0000
+From:   Joel Selvaraj <jo@jsfamily.in>
+To:     Sumit Semwal <sumit.semwal@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Amit Pundir <amit.pundir@linaro.org>,
+        Joel Selvaraj <jo@jsfamily.in>
+Subject: [PATCH 0/3] drm/panel: nt36672a: add backlight support
+Date:   Wed, 30 Mar 2022 12:26:36 +0530
+Message-ID: <BY5PR02MB700990C63237A5B293E777F7D91F9@BY5PR02MB7009.namprd02.prod.outlook.com>
+X-Mailer: git-send-email 2.35.1
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-TMN:  [Ms4kn9EDLdfU/Ugr1bDTqjmO3aHtO2PWfM+dYwYfvA5nr0ZG48hY8QNQxy8eeJra]
+X-ClientProxiedBy: BM1PR0101CA0039.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:b00:1a::25) To BY5PR02MB7009.namprd02.prod.outlook.com
+ (2603:10b6:a03:236::13)
+X-Microsoft-Original-Message-ID: <20220330065639.245531-1-jo@jsfamily.in>
 MIME-Version: 1.0
-References: <20220330062315.125924-1-mst@redhat.com> <20220330062315.125924-2-mst@redhat.com>
-In-Reply-To: <20220330062315.125924-2-mst@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Wed, 30 Mar 2022 14:57:02 +0800
-Message-ID: <CACGkMEvWDQWOWqM6xvxSHkXqGf5_kPR6-enrLUvhA4WW=p0ZYw@mail.gmail.com>
-Subject: Re: [PATCH 2/2] Revert "virtio_config: introduce a new .enable_cbs method"
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 45fa6dfb-7af0-4be1-59d2-08da121a9042
+X-MS-TrafficTypeDiagnostic: CH0PR02MB7899:EE_
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: jZfYC0j7iqiKsjw8NICJj4UgnSafkv+4kdVnMTwjsBbQRxjE2PtxLHgfAVswXTOoNMEltAfjxKLzRsPv3l6i1HzonK0W8atwuWgr3zm2IXNJy4gxhJlLpf1YGF9bpwfZ+i/6g8/UK9A0OLNd0HivSD3uMvf9H5g/5/AX7B4Y4wG3x1svmvZ6Q0F4DZ8rt1p2WRbd43eO98ZD/h+X8SYfJb9vFIfPQvKbDCMItUIqbYwCKV6+EmIv1YrMO+j+ALtyo9JPp7AHVINoLPHPM+m5ZTT8/YuUqTJ08C6F8CEgyRyD7EPm/EhN/4BVG3pwXNp5KOtycN16hL4H+Q1E2C496tXy6zx4dO1F5ltHOEbvAlcruCtkMg8Jw89BP/qQp4AUQuqsGCQ36svwc655tkIyYqQSvzLcG4TQJr83eONBo7LysjONvED6IOjh9WaQlZsyOBVXVWkQ1o/JMXsd3U7Ptz7L9Ty8bO32IC8NOWFRDcZDY4J4dT7HM89FhzdbTu3J1geZlrYkQtQ1MgmpesRhCYyBfxc2fWoLa3KZf0yjOvhMfLVmxogGRaMCmgkM/9TaZP45c5gvfqABJ1a07IvVQw==
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?pLFmHzq02Yw6hIfH1fL66q3suqyXItnm2fV2wUvGgrqd7WqoA/pviRTN2KM9?=
+ =?us-ascii?Q?ZKLDc0ac1vrGcv9hPK/80qO59VFTDYg7E+fXQ0ZeoI/WQV9ibyyVEUSCA2Bb?=
+ =?us-ascii?Q?lBfNiQR/QPxd0kNc43b5rQv4iIjhwr4qnweX70QH4Etkz2Q7OSue/gygSCgL?=
+ =?us-ascii?Q?3OqHQugLsJhflRyMJ7EOL0WlOzlAJt0Z2ZITtSEQ/quW8RXPRz7ZB1FGSUAr?=
+ =?us-ascii?Q?8h8rIfN84rE0HD2hPFdvL+y4/cuBVp3qbmqOqQbtbc8fbwy1kz7hUOwasiE5?=
+ =?us-ascii?Q?swdHh8Oga51Mmnw//xyx1s7uoBoUYQIpCgSemoc1c7zFl6xuPUsiPANfHIOk?=
+ =?us-ascii?Q?hztigjupa0YUVopBaTHqPzc9BQDCC3pFWcfb2DCJ2+mNW0f0+ZboliUxcMjR?=
+ =?us-ascii?Q?AqLET7lrjVRDckI7q7WHRGcUW1zOw0C3fz6KPW5SUY6Ve+JDmXUzBHOmSXwX?=
+ =?us-ascii?Q?qKA1T5Ds7PdqS1oDqIAC96EekzE8yMwkMIjdFDK7zWUHEV0ernnCAvbEZPj5?=
+ =?us-ascii?Q?U/Uf0BqNIJ746i8IJTRFnvVjrN8drApG2q88ikDBWx9lSCJn4qbfBtbmXJpS?=
+ =?us-ascii?Q?DoLP+TRDqwaxhGtz93l0+ohE1DcyPottSOVv1eI4MMBp6zHpHtMcwNtYm744?=
+ =?us-ascii?Q?FA9k39ALuW+JXFUwhaSiiP3gZtF90ZsWT0JEZjM87i8Oq0V70u+JTEP8POMt?=
+ =?us-ascii?Q?wnRa8De3E4x1MgDG+X4UaSC+62DSsghwj7lL4dcazBbzzhani48bNDT1mEO3?=
+ =?us-ascii?Q?qTWLwRw+maem5hQXbMLlyNJjxl6hhRqTfg+IGixcwUAYY43sHwVYJ2VlFSwB?=
+ =?us-ascii?Q?yFPyAQp2rSoNGDjn2sDAsMoMQt7KJrt4/m8koChAeLkFCVbqVWiR6fZ3/XgU?=
+ =?us-ascii?Q?4llQ1v6rsL5DUp9wI1wSGcsd/hJX56C9dqdBk0ErnpM06i2IAt4vRoSjen/3?=
+ =?us-ascii?Q?oEDu1LC7gXI0FVATzbdLoEV54UAEHyWKKKJ5aVw7BhhSHjnegAiYhUbTrqZo?=
+ =?us-ascii?Q?nmXxuFiOwZCifv/hUZp84xiX+5omU7EoZqX6Bkxx5whrp6v2dcMMEX1jpr3O?=
+ =?us-ascii?Q?RhBcklQ5ZMaO6+159loqrIEpuYhaY64LWsYufPSQ5m8IRizK9D5gNLQfK11p?=
+ =?us-ascii?Q?dspS+i9wG4Hrj3l816Iak5LlW3tlUkCQHDgxLPqRoseNbMCA9SM4l8Cimqzw?=
+ =?us-ascii?Q?1xskEo7ELQTivQfnVyLX+cx8ks2qnGxUbYASykcED+Kv+tB2Ay6cJPFgW12l?=
+ =?us-ascii?Q?pNfG6WJTNek0xIE5DxbZTd0A0Nm0XHDezch94ScGoZGI1Ti/iHYOxYPg8R3q?=
+ =?us-ascii?Q?k9xUPutW2pX0WhbTJSJswaBUz/FArWzfqsHezN97HJ6FobGahEM7yKw7G6pn?=
+ =?us-ascii?Q?/Ow6FP/xfvtShVq2mETTF8kysIEeXBkLeyqLeVuyO/+DGRSbeRPvkCZUXnZx?=
+ =?us-ascii?Q?DoZzX7BCocJypq0wx17WfQFGMJ88OEKnHeeOZTD86dfckGHcnruSxg=3D=3D?=
+X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-99c3d.templateTenant
+X-MS-Exchange-CrossTenant-Network-Message-Id: 45fa6dfb-7af0-4be1-59d2-08da121a9042
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR02MB7009.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2022 06:57:32.9695
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR02MB7899
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 2:23 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> This reverts commit d50497eb4e554e1f0351e1836ee7241c059592e6.
->
-> The new callback ended up not being used, and it's asymmetrical:
-> just enable, no disable.
->
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Joel Selvaraj (3):
+  drm/panel: nt36672a: add backlight support
+  dt-bindings: display: novatek,nt36672a: add backlight property
+  arm64: dts: qcom: sdm845-xiaomi-beryllium: enable qcom wled backlight
+    and link to panel
 
-Acked-by: Jason Wang <jasowang@redhat.com>
+ .../bindings/display/panel/novatek,nt36672a.yaml    |  2 ++
+ .../arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts | 13 +++++++++++++
+ drivers/gpu/drm/panel/panel-novatek-nt36672a.c      |  4 ++++
+ 3 files changed, 19 insertions(+)
 
-> ---
->  include/linux/virtio_config.h | 6 ------
->  1 file changed, 6 deletions(-)
->
-> diff --git a/include/linux/virtio_config.h b/include/linux/virtio_config.h
-> index dafdc7f48c01..b341dd62aa4d 100644
-> --- a/include/linux/virtio_config.h
-> +++ b/include/linux/virtio_config.h
-> @@ -23,8 +23,6 @@ struct virtio_shm_region {
->   *       any of @get/@set, @get_status/@set_status, or @get_features/
->   *       @finalize_features are NOT safe to be called from an atomic
->   *       context.
-> - * @enable_cbs: enable the callbacks
-> - *      vdev: the virtio_device
->   * @get: read the value of a configuration field
->   *     vdev: the virtio_device
->   *     offset: the offset of the configuration field
-> @@ -78,7 +76,6 @@ struct virtio_shm_region {
->   */
->  typedef void vq_callback_t(struct virtqueue *);
->  struct virtio_config_ops {
-> -       void (*enable_cbs)(struct virtio_device *vdev);
->         void (*get)(struct virtio_device *vdev, unsigned offset,
->                     void *buf, unsigned len);
->         void (*set)(struct virtio_device *vdev, unsigned offset,
-> @@ -233,9 +230,6 @@ void virtio_device_ready(struct virtio_device *dev)
->  {
->         unsigned status = dev->config->get_status(dev);
->
-> -       if (dev->config->enable_cbs)
-> -                  dev->config->enable_cbs(dev);
-> -
->         BUG_ON(status & VIRTIO_CONFIG_S_DRIVER_OK);
->         dev->config->set_status(dev, status | VIRTIO_CONFIG_S_DRIVER_OK);
->  }
-> --
-> MST
->
+-- 
+2.35.1
 
