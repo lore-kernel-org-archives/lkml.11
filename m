@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0489C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 19:09:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EE2FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 19:09:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350023AbiC3TK7 (ORCPT
+        id S1350675AbiC3TLE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 15:10:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58522 "EHLO
+        Wed, 30 Mar 2022 15:11:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350608AbiC3TKz (ORCPT
+        with ESMTP id S1350614AbiC3TKz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 30 Mar 2022 15:10:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5826E2B182;
-        Wed, 30 Mar 2022 12:09:06 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04ABF2FE5F;
+        Wed, 30 Mar 2022 12:09:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E8F9A6147F;
-        Wed, 30 Mar 2022 19:09:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2419DC34115;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9E761B81DA6;
+        Wed, 30 Mar 2022 19:09:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EA65C36AE5;
         Wed, 30 Mar 2022 19:09:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1648667345;
-        bh=aBj7vr8bHTtNxb7+1bJTixHNBVug0LavLYi8m0fmKZg=;
+        bh=8q5C1g4P8gw7/AKnUUnvd1mR2xSIma9c2c2WnS5gV5Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IXO513sxXiSOPY3Ln6Kuo2udw34ocaGJuKoiFX6Voh61t/6oF9UpY+7GB/7wNOApT
-         x8ElOEeHmQ4jJSJ8b/Oy2Thxnx3lNN8sk/gOo3UVdSsUgnbNnmPffv+bzkIR0lMUs7
-         ILjcq6cHYwB0GmYTorb+YIqOq+FBNXVVFOm4uTeL/cauWffMJCKX5UhI3tOb5rdLNC
-         /dzpzt7CWMgrYCrD/h+qS7WgdmPlk8qForPL1XC8OzZnkkoGqKsMGBlzn5Lsmjxyt/
-         5jM8HEp14miHZi0M+utd/Tw7FBMFdatRoFpkUUGHriifeLQNg7aXxo057s9iwUrY8F
-         HXzhcyGjFaizg==
+        b=hDuecAEv1wA9+HkDAa/jaSghorJ4i0iwtKQajK/syzW3Jkw9YXzv9+fiQ9dUi+G9R
+         lH3ZJnco5SLU72OGjPXr2ML+3/8T48kOodA8DcdFiURkVISSrPtYpa5P2bdUdNtnh9
+         wa+Q36kJmFhwZrKc/UJsavR1qJRsdJKfX0AfrcFr81VAZdTfD8lXZkFV300UKsxGze
+         qMGcEoI2W2soXAtqvOIxQo9ahM8pWvGWR7rD8ABT90qwToqEYKa1cPz4qXWmHcEjBf
+         YhUTGdpKbx9MLcgMknwm0e5v3z/ZvzuVB7JFCCItHX6tRhOOcFB3574rZhxu1uSyD4
+         PU3Ahc2M2LU5g==
 Received: by wens.tw (Postfix, from userid 1000)
-        id 62BD75FD20; Thu, 31 Mar 2022 03:09:02 +0800 (CST)
+        id 428045FBF9; Thu, 31 Mar 2022 03:09:02 +0800 (CST)
 From:   Chen-Yu Tsai <wens@kernel.org>
 To:     Javier Martinez Canillas <javierm@redhat.com>,
         Maxime Ripard <mripard@kernel.org>,
@@ -44,9 +44,9 @@ To:     Javier Martinez Canillas <javierm@redhat.com>,
         Daniel Vetter <daniel@ffwll.ch>
 Cc:     Chen-Yu Tsai <wens@csie.org>, dri-devel@lists.freedesktop.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 4/4] drm: ssd130x: Add support for SINO WEALTH SH1106
-Date:   Thu, 31 Mar 2022 03:08:46 +0800
-Message-Id: <20220330190846.13997-5-wens@kernel.org>
+Subject: [PATCH 2/4] dt-bindings: display: ssd1307fb: Add entry for SINO WEALTH SH1106
+Date:   Thu, 31 Mar 2022 03:08:44 +0800
+Message-Id: <20220330190846.13997-3-wens@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330190846.13997-1-wens@kernel.org>
 References: <20220330190846.13997-1-wens@kernel.org>
@@ -63,43 +63,25 @@ compatible with the SSD1306. It supports a slightly wider display,
 at 132 instead of 128 pixels. The basic commands are the same, but
 the SH1106 doesn't support the horizontal or vertical address modes.
 
-Add support for this display driver. The default values for some of
-the hardware settings are taken from the datasheet.
+Add a compatible string for it.
 
 Signed-off-by: Chen-Yu Tsai <wens@csie.org>
 ---
- drivers/gpu/drm/solomon/ssd130x-i2c.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/solomon/ssd130x-i2c.c b/drivers/gpu/drm/solomon/ssd130x-i2c.c
-index 3126aeda4ced..d099b241dd3f 100644
---- a/drivers/gpu/drm/solomon/ssd130x-i2c.c
-+++ b/drivers/gpu/drm/solomon/ssd130x-i2c.c
-@@ -53,6 +53,13 @@ static void ssd130x_i2c_shutdown(struct i2c_client *client)
- 	ssd130x_shutdown(ssd130x);
- }
- 
-+static struct ssd130x_deviceinfo ssd130x_sh1106_deviceinfo = {
-+	.default_vcomh = 0x40,
-+	.default_dclk_div = 1,
-+	.default_dclk_frq = 5,
-+	.page_mode_only = 1,
-+};
-+
- static struct ssd130x_deviceinfo ssd130x_ssd1305_deviceinfo = {
- 	.default_vcomh = 0x34,
- 	.default_dclk_div = 1,
-@@ -80,6 +87,10 @@ static struct ssd130x_deviceinfo ssd130x_ssd1309_deviceinfo = {
- };
- 
- static const struct of_device_id ssd130x_of_match[] = {
-+	{
-+		.compatible = "sinowealth,sh1106-i2c",
-+		.data = &ssd130x_sh1106_deviceinfo,
-+	},
- 	{
- 		.compatible = "solomon,ssd1305fb-i2c",
- 		.data = &ssd130x_ssd1305_deviceinfo,
+diff --git a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
+index 9baafd0c42dd..1ac016a2d847 100644
+--- a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
++++ b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
+@@ -13,6 +13,7 @@ maintainers:
+ properties:
+   compatible:
+     enum:
++      - sinowealth,sh1106-i2c
+       - solomon,ssd1305fb-i2c
+       - solomon,ssd1306fb-i2c
+       - solomon,ssd1307fb-i2c
 -- 
 2.34.1
 
