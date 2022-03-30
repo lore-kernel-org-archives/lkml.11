@@ -2,114 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2649C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 14:22:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B48CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 14:22:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346757AbiC3OYD (ORCPT
+        id S1346760AbiC3OYS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 10:24:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58232 "EHLO
+        Wed, 30 Mar 2022 10:24:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346104AbiC3OX7 (ORCPT
+        with ESMTP id S1346753AbiC3OYL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 10:23:59 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 983A91C550E;
-        Wed, 30 Mar 2022 07:22:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648650133; x=1680186133;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=41EM4l2nimufuzVlqLONXL8Be3SNWhsMlZum9H47py8=;
-  b=U3GSz2QYKYlDOvBqIe88on3rJ9gR/W64n4LECvHN1iGop41I1tZy6115
-   a7xS0lhfdoQ/vbj2enW4+7AU73NgiEJBiAmeYjFJ0Dc8vatBgQYs0bex/
-   zVy2xYY+hbcmKnOpGtq+tH4FGfcbU72VntmxSMNhtecSL6XeFftF+HPwB
-   BCDZtBydvUt3R66PD3/wdduwp+i6ikGb4YMpSZQWBZWecJ4a2ouPAL7tE
-   eh3oUkmKbgVukwt4HBqwk2l3Qip7osELOyDUAzScD8/PsTDZ9hVtapA0b
-   KknarKcq4s6n28awdhX6Mmlcw9SV67JjxeETNAmnKUo8D9Y2vfNULu8Of
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="259739578"
-X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
-   d="scan'208";a="259739578"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 07:22:12 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
-   d="scan'208";a="719992331"
-Received: from lkp-server02.sh.intel.com (HELO 56431612eabd) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 30 Mar 2022 07:22:08 -0700
-Received: from kbuild by 56431612eabd with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nZZD5-00004C-Ed;
-        Wed, 30 Mar 2022 14:22:07 +0000
-Date:   Wed, 30 Mar 2022 22:21:46 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mars Chen <chenxiangrui@huaqin.corp-partner.google.com>,
-        agross@kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Mars Chen <chenxiangrui@huaqin.corp-partner.google.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        Wed, 30 Mar 2022 10:24:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E4D04205950
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 07:22:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648650144;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=V8lwe1nJ277ErLzO2JvOAl8qLHlH5LlGzwKHRcvdCBU=;
+        b=aBP1RazWPdzzHAztzePZ1V1geEEmSJgZ3FIxoN16uR6LW5SVOYNBxvuIWxE8LR9pDY9asd
+        U9ZY4jypCkCddOnGQwg1/ZcQMmGcjapTg+P7VtvKmFrTIWjXj9Bzq6/I/+zcGqvezay+PO
+        iSF28+cr7Owh3MSqEuQMHJ5zDPxyu4E=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-100-5Y00R3zkPfq4RQIRR8_cwg-1; Wed, 30 Mar 2022 10:22:21 -0400
+X-MC-Unique: 5Y00R3zkPfq4RQIRR8_cwg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 919DA381749F;
+        Wed, 30 Mar 2022 14:22:20 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 77553C1D38B;
+        Wed, 30 Mar 2022 14:22:17 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH net] rxrpc: fix some null-ptr-deref bugs in server_key.c
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Xiaolong Huang <butterflyhuangxx@gmail.com>,
+        Xiaolong Huang <butterflyhuangxx@gmail.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org, dhowells@redhat.com,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] CHROMIUM: arm64: dts: qcom: Add sc7180-gelarshie
-Message-ID: <202203302254.6kSD2Eo4-lkp@intel.com>
-References: <20220330090947.9100-1-chenxiangrui@huaqin.corp-partner.google.com>
+Date:   Wed, 30 Mar 2022 15:22:14 +0100
+Message-ID: <164865013439.2941502.8966285221215590921.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220330090947.9100-1-chenxiangrui@huaqin.corp-partner.google.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mars,
+From: Xiaolong Huang <butterflyhuangxx@gmail.com>
 
-Thank you for the patch! Yet something to improve:
+Some function calls are not implemented in rxrpc_no_security, there are
+preparse_server_key, free_preparse_server_key and destroy_server_key.
+When rxrpc security type is rxrpc_no_security, user can easily trigger a
+null-ptr-deref bug via ioctl. So judgment should be added to prevent it
 
-[auto build test ERROR on robh/for-next]
-[also build test ERROR on v5.17 next-20220330]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+The crash log:
+user@syzkaller:~$ ./rxrpc_preparse_s
+[   37.956878][T15626] BUG: kernel NULL pointer dereference, address: 0000000000000000
+[   37.957645][T15626] #PF: supervisor instruction fetch in kernel mode
+[   37.958229][T15626] #PF: error_code(0x0010) - not-present page
+[   37.958762][T15626] PGD 4aadf067 P4D 4aadf067 PUD 4aade067 PMD 0
+[   37.959321][T15626] Oops: 0010 [#1] PREEMPT SMP
+[   37.959739][T15626] CPU: 0 PID: 15626 Comm: rxrpc_preparse_ Not tainted 5.17.0-01442-gb47d5a4f6b8d #43
+[   37.960588][T15626] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1 04/01/2014
+[   37.961474][T15626] RIP: 0010:0x0
+[   37.961787][T15626] Code: Unable to access opcode bytes at RIP 0xffffffffffffffd6.
+[   37.962480][T15626] RSP: 0018:ffffc9000d9abdc0 EFLAGS: 00010286
+[   37.963018][T15626] RAX: ffffffff84335200 RBX: ffff888012a1ce80 RCX: 0000000000000000
+[   37.963727][T15626] RDX: 0000000000000000 RSI: ffffffff84a736dc RDI: ffffc9000d9abe48
+[   37.964425][T15626] RBP: ffffc9000d9abe48 R08: 0000000000000000 R09: 0000000000000002
+[   37.965118][T15626] R10: 000000000000000a R11: f000000000000000 R12: ffff888013145680
+[   37.965836][T15626] R13: 0000000000000000 R14: ffffffffffffffec R15: ffff8880432aba80
+[   37.966441][T15626] FS:  00007f2177907700(0000) GS:ffff88803ec00000(0000) knlGS:0000000000000000
+[   37.966979][T15626] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   37.967384][T15626] CR2: ffffffffffffffd6 CR3: 000000004aaf1000 CR4: 00000000000006f0
+[   37.967864][T15626] Call Trace:
+[   37.968062][T15626]  <TASK>
+[   37.968240][T15626]  rxrpc_preparse_s+0x59/0x90
+[   37.968541][T15626]  key_create_or_update+0x174/0x510
+[   37.968863][T15626]  __x64_sys_add_key+0x139/0x1d0
+[   37.969165][T15626]  do_syscall_64+0x35/0xb0
+[   37.969451][T15626]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[   37.969824][T15626] RIP: 0033:0x43a1f9
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Mars-Chen/CHROMIUM-arm64-dts-qcom-Add-sc7180-gelarshie/20220330-171139
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
-config: arm64-randconfig-r032-20220330 (https://download.01.org/0day-ci/archive/20220330/202203302254.6kSD2Eo4-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0f6d9501cf49ce02937099350d08f20c4af86f3d)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://github.com/intel-lab-lkp/linux/commit/18677c7abfdfc9a72daa7cfc3011314b098b361a
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Mars-Chen/CHROMIUM-arm64-dts-qcom-Add-sc7180-gelarshie/20220330-171139
-        git checkout 18677c7abfdfc9a72daa7cfc3011314b098b361a
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash
+Signed-off-by: Xiaolong Huang <butterflyhuangxx@gmail.com>
+Tested-by: Xiaolong Huang <butterflyhuangxx@gmail.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Acked-by: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+Link: http://lists.infradead.org/pipermail/linux-afs/2022-March/005069.html
+---
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+ net/rxrpc/server_key.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-All errors (new ones prefixed by >>):
+diff --git a/net/rxrpc/server_key.c b/net/rxrpc/server_key.c
+index ead3471307ee..ee269e0e6ee8 100644
+--- a/net/rxrpc/server_key.c
++++ b/net/rxrpc/server_key.c
+@@ -84,6 +84,9 @@ static int rxrpc_preparse_s(struct key_preparsed_payload *prep)
+ 
+ 	prep->payload.data[1] = (struct rxrpc_security *)sec;
+ 
++	if (!sec->preparse_server_key)
++		return -EINVAL;
++
+ 	return sec->preparse_server_key(prep);
+ }
+ 
+@@ -91,7 +94,7 @@ static void rxrpc_free_preparse_s(struct key_preparsed_payload *prep)
+ {
+ 	const struct rxrpc_security *sec = prep->payload.data[1];
+ 
+-	if (sec)
++	if (sec && sec->free_preparse_server_key)
+ 		sec->free_preparse_server_key(prep);
+ }
+ 
+@@ -99,7 +102,7 @@ static void rxrpc_destroy_s(struct key *key)
+ {
+ 	const struct rxrpc_security *sec = key->payload.data[1];
+ 
+-	if (sec)
++	if (sec && sec->destroy_server_key)
+ 		sec->destroy_server_key(key);
+ }
+ 
 
-   In file included from arch/arm64/boot/dts/qcom/sc7180-trogdor-gelarshie-r0.dts:10:
->> arch/arm64/boot/dts/qcom/sc7180-trogdor-gelarshie.dtsi:9:10: fatal error: 'sc7180-trogdor-mipi-camera.dtsi' file not found
-   #include "sc7180-trogdor-mipi-camera.dtsi"
-            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   1 error generated.
 
-
-vim +9 arch/arm64/boot/dts/qcom/sc7180-trogdor-gelarshie.dtsi
-
-   > 9	#include "sc7180-trogdor-mipi-camera.dtsi"
-    10	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
