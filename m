@@ -2,76 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01D4CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 10:02:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F157C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 10:03:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245105AbiC3KDz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 06:03:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59326 "EHLO
+        id S245117AbiC3KE7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 06:04:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241067AbiC3KDy (ORCPT
+        with ESMTP id S238742AbiC3KE5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 06:03:54 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C06DBABA2
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 03:02:09 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KT25n546JzdZN6;
-        Wed, 30 Mar 2022 18:01:49 +0800 (CST)
-Received: from dggpemm100009.china.huawei.com (7.185.36.113) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 30 Mar 2022 18:02:07 +0800
-Received: from huawei.com (10.175.113.32) by dggpemm100009.china.huawei.com
- (7.185.36.113) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 30 Mar
- 2022 18:02:07 +0800
-From:   Liu Shixin <liushixin2@huawei.com>
-To:     Christoph Hellwig <hch@infradead.org>
-CC:     <linux-kernel@vger.kernel.org>, Liu Shixin <liushixin2@huawei.com>
-Subject: [PATCH -next] fs: sysv: check sbi->s_firstdatazone in complete_read_super
-Date:   Wed, 30 Mar 2022 18:42:15 +0800
-Message-ID: <20220330104215.530223-1-liushixin2@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 30 Mar 2022 06:04:57 -0400
+Received: from heian.cn.fujitsu.com (mail.cn.fujitsu.com [183.91.158.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 67C1EBABA2;
+        Wed, 30 Mar 2022 03:03:09 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.88,333,1635177600"; 
+   d="scan'208";a="123090685"
+Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
+  by heian.cn.fujitsu.com with ESMTP; 30 Mar 2022 18:03:08 +0800
+Received: from G08CNEXMBPEKD04.g08.fujitsu.local (unknown [10.167.33.201])
+        by cn.fujitsu.com (Postfix) with ESMTP id 70C084D16FF2;
+        Wed, 30 Mar 2022 18:03:02 +0800 (CST)
+Received: from G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.85) by
+ G08CNEXMBPEKD04.g08.fujitsu.local (10.167.33.201) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.23; Wed, 30 Mar 2022 18:03:02 +0800
+Received: from [10.167.201.8] (10.167.201.8) by
+ G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
+ id 15.0.1497.23 via Frontend Transport; Wed, 30 Mar 2022 18:03:01 +0800
+Message-ID: <15a635d6-2069-2af5-15f8-1c0513487a2f@fujitsu.com>
+Date:   Wed, 30 Mar 2022 18:03:01 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.32]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm100009.china.huawei.com (7.185.36.113)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v11 1/8] dax: Introduce holder for dax_device
+To:     Christoph Hellwig <hch@infradead.org>
+CC:     Dan Williams <dan.j.williams@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-xfs <linux-xfs@vger.kernel.org>,
+        Linux NVDIMM <nvdimm@lists.linux.dev>,
+        Linux MM <linux-mm@kvack.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        "Darrick J. Wong" <djwong@kernel.org>, david <david@fromorbit.com>,
+        Jane Chu <jane.chu@oracle.com>
+References: <20220227120747.711169-1-ruansy.fnst@fujitsu.com>
+ <20220227120747.711169-2-ruansy.fnst@fujitsu.com>
+ <CAPcyv4jAqV7dZdmGcKrG=f8sYmUXaL7YCQtME6GANywncwd+zg@mail.gmail.com>
+ <4fd95f0b-106f-6933-7bc6-9f0890012b53@fujitsu.com>
+ <YkPtptNljNcJc1g/@infradead.org>
+From:   Shiyang Ruan <ruansy.fnst@fujitsu.com>
+In-Reply-To: <YkPtptNljNcJc1g/@infradead.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-yoursite-MailScanner-ID: 70C084D16FF2.A0C25
+X-yoursite-MailScanner: Found to be clean
+X-yoursite-MailScanner-From: ruansy.fnst@fujitsu.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-sbi->s_firstinodezone is initialized to 2 and sbi->s_firstdatazone is read
-from sbd. There's no guarantee that sbi->s_firstdatazone must bigger than
-sbi->s_firstinodezone. If sbi->s_firstdatazone less than 2, the filesystem
-can still be mounted unexpetly. At this point, sbi->s_ninodes flip to very
-large value and this filesystem is broken. We can observe this by
-executing 'df' command. When we execute, we will get an error message:
-	"sysv_count_free_inodes: unable to read inode table"
 
-Signed-off-by: Liu Shixin <liushixin2@huawei.com>
----
- fs/sysv/super.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/fs/sysv/super.c b/fs/sysv/super.c
-index d1def0771a40..3365a30dc1e0 100644
---- a/fs/sysv/super.c
-+++ b/fs/sysv/super.c
-@@ -312,7 +312,9 @@ static int complete_read_super(struct super_block *sb, int silent, int size)
- 	sbi->s_firstinodezone = 2;
- 
- 	flavour_setup[sbi->s_type](sbi, &sb->s_max_links);
--	
-+	if (sbi->s_firstdatazone < sbi->s_firstinodezone)
-+		return 0;
+在 2022/3/30 13:41, Christoph Hellwig 写道:
+> On Wed, Mar 16, 2022 at 09:46:07PM +0800, Shiyang Ruan wrote:
+>>> Forgive me if this has been discussed before, but since dax_operations
+>>> are in terms of pgoff and nr pages and memory_failure() is in terms of
+>>> pfns what was the rationale for making the function signature byte
+>>> based?
+>>
+>> Maybe I didn't describe it clearly...  The @offset and @len here are
+>> byte-based.  And so is ->memory_failure().
+> 
+> Yes, but is there a good reason for that when the rest of the DAX code
+> tends to work in page chunks?
+
+Because I am not sure if the offset between each layer is page aligned. 
+  For example, when pmem dirver handles ->memory_failure(), it should 
+subtract its ->data_offset when it calls dax_holder_notify_failure().
+
+The implementation of ->memory_failure() by pmem driver:
++static int pmem_pagemap_memory_failure(struct dev_pagemap *pgmap,
++		phys_addr_t addr, u64 len, int mf_flags)
++{
++	struct pmem_device *pmem =
++			container_of(pgmap, struct pmem_device, pgmap);
++	u64 offset = addr - pmem->phys_addr - pmem->data_offset;
 +
- 	sbi->s_ndatazones = sbi->s_nzones - sbi->s_firstdatazone;
- 	sbi->s_inodes_per_block = bsize >> 6;
- 	sbi->s_inodes_per_block_1 = (bsize >> 6)-1;
--- 
-2.25.1
++	return dax_holder_notify_failure(pmem->dax_dev, offset, len, mf_flags);
++}
+
+So, I choose u64 as the type of @len.  And for consistency, the @addr is 
+using byte-based type as well.
+
+ > memory_failure()
+ > |* fsdax case
+ > |------------
+ > |pgmap->ops->memory_failure()      => pmem_pgmap_memory_failure()
+ > | dax_holder_notify_failure()      =>
+
+the offset from 'pmem driver' to 'dax holder'
+
+ > |  dax_device->holder_ops->notify_failure() =>
+ > |                                     - xfs_dax_notify_failure()
+ > |  |* xfs_dax_notify_failure()
+ > |  |--------------------------
+ > |  |   xfs_rmap_query_range()
+ > |  |    xfs_dax_failure_fn()
+ > |  |    * corrupted on metadata
+ > |  |       try to recover data, call xfs_force_shutdown()
+ > |  |    * corrupted on file data
+ > |  |       try to recover data, call mf_dax_kill_procs()
+ > |* normal case
+ > |-------------
+ > |mf_generic_kill_procs()
+
+
+--
+Thanks,
+Ruan.
+
 
