@@ -2,52 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31612C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:10:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC7AAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:10:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244982AbiC3MMR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:12:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57630 "EHLO
+        id S1344615AbiC3MM1 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 08:12:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345426AbiC3Ly3 (ORCPT
+        with ESMTP id S1345399AbiC3Ly1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:54:29 -0400
+        Wed, 30 Mar 2022 07:54:27 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45160282B35;
-        Wed, 30 Mar 2022 04:51:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B2B0281814;
+        Wed, 30 Mar 2022 04:51:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 96D4961605;
-        Wed, 30 Mar 2022 11:51:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07299C340EE;
-        Wed, 30 Mar 2022 11:51:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 65E8D61704;
+        Wed, 30 Mar 2022 11:51:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F3EAC34112;
+        Wed, 30 Mar 2022 11:51:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641066;
-        bh=cmQjIDOiyu6i0WOxV+vP3qJn8wa2woRKYCESBKH7hvg=;
+        s=k20201202; t=1648641062;
+        bh=B+LL6HqRHaXg/j5A4/f7HpsysJBncMEphF9/Mdw/N7Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h/wb6R65T0GdTwgkiknE0tedZE/EdpBagfRPd8XcpJzAsXjPvYc9NCM5zb0UespT9
-         nmRuU4aog3rIvUcLLgl2xDnXc8+moSdLWfGU/Jd7ixj+A87VJfjVIbCocSSZRf+DAm
-         A5nOJBPQmHH2cWzzadWPRxugrDwo98ePEquZQiR2U340Nn75n+VDuHKeQS5VD0W0zG
-         gVM9xVMcn/vit3JesfO66zV/SnbhnNNUlozK+/Xlj2VmyRSo+1gi61inaTbfi9zSrD
-         LiuFpOy3vofoHcO2FWaJX/EU2nAVU6Dm+pw9cpLXlEzVjYiIUFjxWxKL5kn+2zOeqJ
-         A7nGx1nH3fEdQ==
+        b=brjm3tcKtn7j3otyyFr9FRFQ1G9zCKoY87MmO3HSy8+aqOEiz80OknaRAcnrlMVNs
+         FVSwwI3aQORPSy8nTQ49++bwQO+Cj4DnBoRM3B9WGvIcjwpILU7vVBCUsWPze6+kTR
+         Spv4gvUI6jE8TeN4IhB6JrYAveA/gtTjuIeT/ojk4kCd/zQUou0LEffgiZOyRTDIUZ
+         sERbOvnr9ZP2F/ycCI3Wh5c0RUvhyY2RaN7FbF/Avt+1W2/SsO9NFKL/K6QRo+RzsN
+         kCnxy4ry0oJT//5kL/RDgeOj0rOY4fKzbfC37bvs/clizy5mTauZcWSAMKJgX9X6NE
+         ilf5KzR4BRSdA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>,
-        eric.y.miao@gmail.com, haojian.zhuang@gmail.com,
-        linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 39/50] ARM: mmp: Fix failure to remove sram device
-Date:   Wed, 30 Mar 2022 07:49:53 -0400
-Message-Id: <20220330115005.1671090-39-sashal@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 37/50] lib/test_lockup: fix kernel pointer check for separate address spaces
+Date:   Wed, 30 Mar 2022 07:49:51 -0400
+Message-Id: <20220330115005.1671090-37-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115005.1671090-1-sashal@kernel.org>
 References: <20220330115005.1671090-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,74 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Arnd Bergmann <arnd@arndb.de>
 
-[ Upstream commit 4036b29a146b2749af3bb213b003eb69f3e5ecc4 ]
+[ Upstream commit 5a06fcb15b43d1f7bf740c672950122331cb5655 ]
 
-Make sure in .probe() to set driver data before the function is left to
-make it possible in .remove() to undo the actions done.
+test_kernel_ptr() uses access_ok() to figure out if a given address
+points to user space instead of kernel space. However on architectures
+that set CONFIG_ALTERNATE_USER_ADDRESS_SPACE, a pointer can be valid
+for both, and the check always fails because access_ok() returns true.
 
-This fixes a potential memory leak and stops returning an error code in
-.remove() that is ignored by the driver core anyhow.
+Make the check for user space pointers conditional on the type of
+address space layout.
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-mmp/sram.c | 22 ++++++++++++----------
- 1 file changed, 12 insertions(+), 10 deletions(-)
+ lib/test_lockup.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm/mach-mmp/sram.c b/arch/arm/mach-mmp/sram.c
-index 6794e2db1ad5..ecc46c31004f 100644
---- a/arch/arm/mach-mmp/sram.c
-+++ b/arch/arm/mach-mmp/sram.c
-@@ -72,6 +72,8 @@ static int sram_probe(struct platform_device *pdev)
- 	if (!info)
- 		return -ENOMEM;
+diff --git a/lib/test_lockup.c b/lib/test_lockup.c
+index 6a0f329a794a..c3fd87d6c2dd 100644
+--- a/lib/test_lockup.c
++++ b/lib/test_lockup.c
+@@ -417,9 +417,14 @@ static bool test_kernel_ptr(unsigned long addr, int size)
+ 		return false;
  
-+	platform_set_drvdata(pdev, info);
-+
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (res == NULL) {
- 		dev_err(&pdev->dev, "no memory resource defined\n");
-@@ -107,8 +109,6 @@ static int sram_probe(struct platform_device *pdev)
- 	list_add(&info->node, &sram_bank_list);
- 	mutex_unlock(&sram_lock);
- 
--	platform_set_drvdata(pdev, info);
--
- 	dev_info(&pdev->dev, "initialized\n");
- 	return 0;
- 
-@@ -127,17 +127,19 @@ static int sram_remove(struct platform_device *pdev)
- 	struct sram_bank_info *info;
- 
- 	info = platform_get_drvdata(pdev);
--	if (info == NULL)
--		return -ENODEV;
- 
--	mutex_lock(&sram_lock);
--	list_del(&info->node);
--	mutex_unlock(&sram_lock);
-+	if (info->sram_size) {
-+		mutex_lock(&sram_lock);
-+		list_del(&info->node);
-+		mutex_unlock(&sram_lock);
-+
-+		gen_pool_destroy(info->gpool);
-+		iounmap(info->sram_virt);
-+		kfree(info->pool_name);
+ 	/* should be at least readable kernel address */
+-	if (access_ok((void __user *)ptr, 1) ||
+-	    access_ok((void __user *)ptr + size - 1, 1) ||
+-	    get_kernel_nofault(buf, ptr) ||
++	if (!IS_ENABLED(CONFIG_ALTERNATE_USER_ADDRESS_SPACE) &&
++	    (access_ok((void __user *)ptr, 1) ||
++	     access_ok((void __user *)ptr + size - 1, 1))) {
++		pr_err("user space ptr invalid in kernel: %#lx\n", addr);
++		return true;
 +	}
- 
--	gen_pool_destroy(info->gpool);
--	iounmap(info->sram_virt);
--	kfree(info->pool_name);
- 	kfree(info);
 +
- 	return 0;
- }
- 
++	if (get_kernel_nofault(buf, ptr) ||
+ 	    get_kernel_nofault(buf, ptr + size - 1)) {
+ 		pr_err("invalid kernel ptr: %#lx\n", addr);
+ 		return true;
 -- 
 2.34.1
 
