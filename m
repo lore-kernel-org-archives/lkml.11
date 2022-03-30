@@ -2,303 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E68FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:45:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10751C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:46:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343743AbiC3Lre (ORCPT
+        id S1343754AbiC3Lsh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 07:47:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52532 "EHLO
+        Wed, 30 Mar 2022 07:48:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343732AbiC3Lrb (ORCPT
+        with ESMTP id S239822AbiC3Lsf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:47:31 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B8481D914D
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 04:45:45 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id j15so40913689eje.9
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 04:45:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=0GsLMAkDyt+1jx3DTeQT6eRUT/0nrtKR8ZoOzMTE7Lg=;
-        b=i0jN+H0RY59ZkOgp5tgYjUEXQhX8Yr5MqZGzrutYxn+qRhZtMLCQVBDc+lKW5SJ0jP
-         mW3dB7UcFks/f/v+V2bWb3l+1nwRhQX0J9qY00OX/ygdu4BWldQNgEDjLmAtHkYn615q
-         URoFXNjer8IFxjgx3tB6D2DEci4IpZb3PDAeD/8Wz7KjbYSM23lCuLZDNmcPIXZYKtFu
-         pfIaQ8i7HAaA78g6laRzYl6BUHfDmXYaSH+xhtP8TJTevdAsMdF60M2tp5tMqGoK+X9p
-         iR3oIMrkSLCsGX4A/Cirqm+a1Oydh+2jQ7HR/WzE/az4dD5G1G3Q0fR1uXFn7vRPgS9i
-         iz1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=0GsLMAkDyt+1jx3DTeQT6eRUT/0nrtKR8ZoOzMTE7Lg=;
-        b=01DGVolgYmGZ7QdTqO6rca2nSqZx5MjxUr+7Aj4UnOLQBVuPt+NrXbKFxfz2aYMpXZ
-         7MPrzK2oJcLg7XepjNgVRn6hiYxsuxouF+g8x3XdmatdsGZgEKUYvJjMs8xRF9XDzsLR
-         dq/GsfD9f6pHXb6eIuDhYiW4vtrSdaw5dzBjU7Aa4qHL6aIKmgaAF4qWMiqJiHeaUwtL
-         6ETCi3ERL3NaI6+k3yumlxp7J5GeAbgETueOUTMk+/USdJKWD+Bp+KNPB7oK70+YAQ74
-         GEQ6Tlvs9upWOSg1sS1Ec6Lcd8Hw+8z+uIvbbUkUTk88p4OQJTinYdKELIWV7n3WJ1rK
-         BOug==
-X-Gm-Message-State: AOAM533HaZzgPGIWMtngO+BpwEEdmPr+e9kqT6tOaHEh84w3gdiRka7r
-        LJolrQ2/DxhDqkfsc0wUjAqynQ==
-X-Google-Smtp-Source: ABdhPJzqMwkVBfZmjptcZU4txEkzsjTR+KKIcwdkHBemub6ugGroebYrOPwu8qUCwsM5ElcHwe6d7Q==
-X-Received: by 2002:a17:907:3e99:b0:6db:6c1c:d9d9 with SMTP id hs25-20020a1709073e9900b006db6c1cd9d9mr39049124ejc.688.1648640743717;
-        Wed, 30 Mar 2022 04:45:43 -0700 (PDT)
-Received: from [192.168.0.162] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id p12-20020a17090635cc00b006e055c9c91esm8028494ejb.101.2022.03.30.04.45.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 30 Mar 2022 04:45:43 -0700 (PDT)
-Message-ID: <4d3c1f8a-122a-eb3a-b3d3-94e89d1ba6e8@linaro.org>
-Date:   Wed, 30 Mar 2022 13:45:42 +0200
+        Wed, 30 Mar 2022 07:48:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A11771D914D;
+        Wed, 30 Mar 2022 04:46:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B7B861616;
+        Wed, 30 Mar 2022 11:46:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90277C340EE;
+        Wed, 30 Mar 2022 11:46:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648640809;
+        bh=xXquQT5RaC6jCQCogqV79zhybCPdXle++UQfl1uwRqc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=EgLCdKPfK2b5b38My+7E+adBdPSQgQcN65fjIb3EtD/zlyuth5W1ghX5Sw5O5tLH6
+         bhOpdzJYVUEiJPZN3Xlk9SxhZ0Rn8kg6hOZ7Tgp+Uf1rLb3Kg7m2JxE4m6Ff2mW/FF
+         sYT6wpRdEZ1cUW3SjEE2YpCdnH/9agYMaWZb+TL4VcLr3ccivKKMcR27+qXl7zL/ax
+         ExqCMuTDFTKqh9ZZC7S6xtsN62pc+CDF+naVQv0lKigMn5TA61+prIhroTvQ6CPhQ0
+         pZjsxKPiy9umwD/X+3leAMrmyXn9NBURcPJJ3L2nx0NJd7WwXn0p6/woV7XlCCgVgk
+         dm1iu9V+n2zyg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Corentin Labbe <clabbe@baylibre.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, gregkh@linuxfoundation.org,
+        linux-media@vger.kernel.org, devel@driverdev.osuosl.org
+Subject: [PATCH AUTOSEL 5.17 01/66] media: staging: media: zoran: move videodev alloc
+Date:   Wed, 30 Mar 2022 07:45:40 -0400
+Message-Id: <20220330114646.1669334-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 4/4] spi: dt-bindings: qcom,spi-qup: convert to dtschema
-Content-Language: en-US
-To:     Kuldeep Singh <singh.kuldeep87k@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-arm-msm@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org
-References: <20220329112902.252937-1-krzysztof.kozlowski@linaro.org>
- <20220329112902.252937-5-krzysztof.kozlowski@linaro.org>
- <20220330114247.GA51417@9a2d8922b8f1>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220330114247.GA51417@9a2d8922b8f1>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 30/03/2022 13:42, Kuldeep Singh wrote:
-> On Tue, Mar 29, 2022 at 01:29:02PM +0200, Krzysztof Kozlowski wrote:
->> Convert the Qualcomm Universal Peripheral (QUP) Serial Peripheral
->> Interface (SPI) bindings to DT Schema.
->>
->> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->> ---
->>  .../devicetree/bindings/spi/qcom,spi-qup.txt  | 103 ------------------
->>  .../devicetree/bindings/spi/qcom,spi-qup.yaml |  82 ++++++++++++++
->>  2 files changed, 82 insertions(+), 103 deletions(-)
->>  delete mode 100644 Documentation/devicetree/bindings/spi/qcom,spi-qup.txt
->>  create mode 100644 Documentation/devicetree/bindings/spi/qcom,spi-qup.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/spi/qcom,spi-qup.txt b/Documentation/devicetree/bindings/spi/qcom,spi-qup.txt
->> deleted file mode 100644
->> index 5c090771c016..000000000000
->> --- a/Documentation/devicetree/bindings/spi/qcom,spi-qup.txt
->> +++ /dev/null
->> @@ -1,103 +0,0 @@
->> -Qualcomm Universal Peripheral (QUP) Serial Peripheral Interface (SPI)
->> -
->> -The QUP core is an AHB slave that provides a common data path (an output FIFO
->> -and an input FIFO) for serial peripheral interface (SPI) mini-core.
->> -
->> -SPI in master mode supports up to 50MHz, up to four chip selects, programmable
->> -data path from 4 bits to 32 bits and numerous protocol variants.
->> -
->> -Required properties:
->> -- compatible:     Should contain:
->> -		  "qcom,spi-qup-v1.1.1" for 8660, 8960 and 8064.
->> -		  "qcom,spi-qup-v2.1.1" for 8974 and later
->> -		  "qcom,spi-qup-v2.2.1" for 8974 v2 and later.
->> -
->> -- reg:            Should contain base register location and length
->> -- interrupts:     Interrupt number used by this controller
->> -
->> -- clocks:         Should contain the core clock and the AHB clock.
->> -- clock-names:    Should be "core" for the core clock and "iface" for the
->> -                  AHB clock.
->> -
->> -- #address-cells: Number of cells required to define a chip select
->> -                  address on the SPI bus. Should be set to 1.
->> -- #size-cells:    Should be zero.
->> -
->> -Optional properties:
->> -- spi-max-frequency: Specifies maximum SPI clock frequency,
->> -                     Units - Hz. Definition as per
->> -                     Documentation/devicetree/bindings/spi/spi-bus.txt
->> -- num-cs:	total number of chipselects
->> -- cs-gpios:	should specify GPIOs used for chipselects.
->> -		The gpios will be referred to as reg = <index> in the SPI child
->> -		nodes.  If unspecified, a single SPI device without a chip
->> -		select can be used.
->> -
->> -- dmas:         Two DMA channel specifiers following the convention outlined
->> -                in bindings/dma/dma.txt
->> -- dma-names:    Names for the dma channels, if present. There must be at
->> -                least one channel named "tx" for transmit and named "rx" for
->> -                receive.
->> -
->> -SPI slave nodes must be children of the SPI master node and can contain
->> -properties described in Documentation/devicetree/bindings/spi/spi-bus.txt
->> -
->> -Example:
->> -
->> -	spi_8: spi@f9964000 { /* BLSP2 QUP2 */
->> -
->> -		compatible = "qcom,spi-qup-v2";
->> -		#address-cells = <1>;
->> -		#size-cells = <0>;
->> -		reg = <0xf9964000 0x1000>;
->> -		interrupts = <0 102 0>;
->> -		spi-max-frequency = <19200000>;
->> -
->> -		clocks = <&gcc GCC_BLSP2_QUP2_SPI_APPS_CLK>, <&gcc GCC_BLSP2_AHB_CLK>;
->> -		clock-names = "core", "iface";
->> -
->> -		dmas = <&blsp1_bam 13>, <&blsp1_bam 12>;
->> -		dma-names = "rx", "tx";
->> -
->> -		pinctrl-names = "default";
->> -		pinctrl-0 = <&spi8_default>;
->> -
->> -		device@0 {
->> -			compatible = "arm,pl022-dummy";
->> -			#address-cells = <1>;
->> -			#size-cells = <1>;
->> -			reg = <0>; /* Chip select 0 */
->> -			spi-max-frequency = <19200000>;
->> -			spi-cpol;
->> -		};
->> -
->> -		device@1 {
->> -			compatible = "arm,pl022-dummy";
->> -			#address-cells = <1>;
->> -			#size-cells = <1>;
->> -			reg = <1>; /* Chip select 1 */
->> -			spi-max-frequency = <9600000>;
->> -			spi-cpha;
->> -		};
->> -
->> -		device@2 {
->> -			compatible = "arm,pl022-dummy";
->> -			#address-cells = <1>;
->> -			#size-cells = <1>;
->> -			reg = <2>; /* Chip select 2 */
->> -			spi-max-frequency = <19200000>;
->> -			spi-cpol;
->> -			spi-cpha;
->> -		};
->> -
->> -		device@3 {
->> -			compatible = "arm,pl022-dummy";
->> -			#address-cells = <1>;
->> -			#size-cells = <1>;
->> -			reg = <3>; /* Chip select 3 */
->> -			spi-max-frequency = <19200000>;
->> -			spi-cpol;
->> -			spi-cpha;
->> -			spi-cs-high;
->> -		};
->> -	};
->> diff --git a/Documentation/devicetree/bindings/spi/qcom,spi-qup.yaml b/Documentation/devicetree/bindings/spi/qcom,spi-qup.yaml
->> new file mode 100644
->> index 000000000000..aa5756f7ba85
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/spi/qcom,spi-qup.yaml
->> @@ -0,0 +1,82 @@
->> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/spi/qcom,spi-qup.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Qualcomm Universal Peripheral (QUP) Serial Peripheral Interface (SPI)
->> +
->> +maintainers:
->> +  - Andy Gross <agross@kernel.org>
->> +  - Bjorn Andersson <bjorn.andersson@linaro.org>
->> +  - Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->> +
->> +description:
->> +  The QUP core is an AHB slave that provides a common data path (an output FIFO
->> +  and an input FIFO) for serial peripheral interface (SPI) mini-core.
->> +
->> +  SPI in master mode supports up to 50MHz, up to four chip selects,
->> +  programmable data path from 4 bits to 32 bits and numerous protocol variants.
->> +
->> +allOf:
->> +  - $ref: /spi/spi-controller.yaml#
-> 
-> Same thing for reference here as we discussed on other thread.
+From: Corentin Labbe <clabbe@baylibre.com>
 
-Yes.
+[ Upstream commit 82e3a496eb56da0b9f29fdc5b63cedb3289e91de ]
 
-> 
->> +
->> +properties:
->> +  compatible:
->> +    enum:
->> +      - qcom,spi-qup-v1.1.1 # for 8660, 8960 and 8064
->> +      - qcom,spi-qup-v2.1.1 # for 8974 and later
->> +      - qcom,spi-qup-v2.2.1 # for 8974 v2 and later
->> +
->> +  clocks:
->> +    maxItems: 2
->> +
->> +  clock-names:
->> +    items:
->> +      - const: core
->> +      - const: iface
->> +
->> +  dmas:
->> +    maxItems: 2
->> +
->> +  dma-names:
->> +    items:
->> +      - const: tx
->> +      - const: rx
-> 
-> Just wanted to confirm one thing, did you try with rx-tx?
-> As once I noticed for some other spec, that warnings were reduced when
-> order was reversed as most of the DTs follow rx-tx order.
-> 
-> We can keep order which disturb less DTs.
+Move some code out of zr36057_init() and create new functions for handling
+zr->video_dev. This permit to ease code reading and fix a zr->video_dev
+memory leak.
 
-Yeah, I tried. The amount is more or less the same, so I went with tx-rx
-as mentioned in original bindings.
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/staging/media/zoran/zoran.h        |  2 +-
+ drivers/staging/media/zoran/zoran_card.c   | 80 ++++++++++++++--------
+ drivers/staging/media/zoran/zoran_driver.c |  5 +-
+ 3 files changed, 54 insertions(+), 33 deletions(-)
 
-> 
->> +
->> +  interrupts:
->> +    maxItems: 1
->> +
->> +  reg:
->> +    maxItems: 1
->> +
->> +required:
->> +  - compatible
->> +  - clocks
->> +  - clock-names
->> +  - interrupts
->> +  - reg
->> +
->> +unevaluatedProperties: false
->> +
->> +examples:
->> +  - |
->> +    #include <dt-bindings/clock/qcom,gcc-msm8996.h>
->> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
->> +
->> +    spi@7575000 {
->> +        compatible = "qcom,spi-qup-v2.2.1";
->> +        reg = <0x07575000 0x600>;
->> +        interrupts = <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>;
->> +        clocks = <&gcc GCC_BLSP1_QUP1_SPI_APPS_CLK>,
->> +                 <&gcc GCC_BLSP1_AHB_CLK>;
->> +        clock-names = "core",
->> +                      "iface";
-> 
-> clock-names can be written in one line.
+diff --git a/drivers/staging/media/zoran/zoran.h b/drivers/staging/media/zoran/zoran.h
+index b1ad2a2b914c..50d5a7acfab6 100644
+--- a/drivers/staging/media/zoran/zoran.h
++++ b/drivers/staging/media/zoran/zoran.h
+@@ -313,6 +313,6 @@ static inline struct zoran *to_zoran(struct v4l2_device *v4l2_dev)
+ 
+ #endif
+ 
+-int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq);
++int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq, int dir);
+ void zoran_queue_exit(struct zoran *zr);
+ int zr_set_buf(struct zoran *zr);
+diff --git a/drivers/staging/media/zoran/zoran_card.c b/drivers/staging/media/zoran/zoran_card.c
+index f259585b0689..677d3a26cef4 100644
+--- a/drivers/staging/media/zoran/zoran_card.c
++++ b/drivers/staging/media/zoran/zoran_card.c
+@@ -803,6 +803,52 @@ int zoran_check_jpg_settings(struct zoran *zr,
+ 	return 0;
+ }
+ 
++static int zoran_init_video_device(struct zoran *zr, struct video_device *video_dev, int dir)
++{
++	int err;
++
++	/* Now add the template and register the device unit. */
++	*video_dev = zoran_template;
++	video_dev->v4l2_dev = &zr->v4l2_dev;
++	video_dev->lock = &zr->lock;
++	video_dev->device_caps = V4L2_CAP_STREAMING | dir;
++
++	strscpy(video_dev->name, ZR_DEVNAME(zr), sizeof(video_dev->name));
++	/*
++	 * It's not a mem2mem device, but you can both capture and output from one and the same
++	 * device. This should really be split up into two device nodes, but that's a job for
++	 * another day.
++	 */
++	video_dev->vfl_dir = VFL_DIR_M2M;
++	zoran_queue_init(zr, &zr->vq, V4L2_BUF_TYPE_VIDEO_CAPTURE);
++
++	err = video_register_device(video_dev, VFL_TYPE_VIDEO, video_nr[zr->id]);
++	if (err < 0)
++		return err;
++	video_set_drvdata(video_dev, zr);
++	return 0;
++}
++
++static void zoran_exit_video_devices(struct zoran *zr)
++{
++	video_unregister_device(zr->video_dev);
++	kfree(zr->video_dev);
++}
++
++static int zoran_init_video_devices(struct zoran *zr)
++{
++	int err;
++
++	zr->video_dev = video_device_alloc();
++	if (!zr->video_dev)
++		return -ENOMEM;
++
++	err = zoran_init_video_device(zr, zr->video_dev, V4L2_CAP_VIDEO_CAPTURE);
++	if (err)
++		kfree(zr->video_dev);
++	return err;
++}
++
+ void zoran_open_init_params(struct zoran *zr)
+ {
+ 	int i;
+@@ -874,17 +920,11 @@ static int zr36057_init(struct zoran *zr)
+ 	zoran_open_init_params(zr);
+ 
+ 	/* allocate memory *before* doing anything to the hardware in case allocation fails */
+-	zr->video_dev = video_device_alloc();
+-	if (!zr->video_dev) {
+-		err = -ENOMEM;
+-		goto exit;
+-	}
+ 	zr->stat_com = dma_alloc_coherent(&zr->pci_dev->dev,
+ 					  BUZ_NUM_STAT_COM * sizeof(u32),
+ 					  &zr->p_sc, GFP_KERNEL);
+ 	if (!zr->stat_com) {
+-		err = -ENOMEM;
+-		goto exit_video;
++		return -ENOMEM;
+ 	}
+ 	for (j = 0; j < BUZ_NUM_STAT_COM; j++)
+ 		zr->stat_com[j] = cpu_to_le32(1); /* mark as unavailable to zr36057 */
+@@ -897,26 +937,9 @@ static int zr36057_init(struct zoran *zr)
+ 		goto exit_statcom;
+ 	}
+ 
+-	/* Now add the template and register the device unit. */
+-	*zr->video_dev = zoran_template;
+-	zr->video_dev->v4l2_dev = &zr->v4l2_dev;
+-	zr->video_dev->lock = &zr->lock;
+-	zr->video_dev->device_caps = V4L2_CAP_STREAMING | V4L2_CAP_VIDEO_CAPTURE;
+-
+-	strscpy(zr->video_dev->name, ZR_DEVNAME(zr), sizeof(zr->video_dev->name));
+-	/*
+-	 * It's not a mem2mem device, but you can both capture and output from one and the same
+-	 * device. This should really be split up into two device nodes, but that's a job for
+-	 * another day.
+-	 */
+-	zr->video_dev->vfl_dir = VFL_DIR_M2M;
+-
+-	zoran_queue_init(zr, &zr->vq);
+-
+-	err = video_register_device(zr->video_dev, VFL_TYPE_VIDEO, video_nr[zr->id]);
+-	if (err < 0)
++	err = zoran_init_video_devices(zr);
++	if (err)
+ 		goto exit_statcomb;
+-	video_set_drvdata(zr->video_dev, zr);
+ 
+ 	zoran_init_hardware(zr);
+ 	if (!pass_through) {
+@@ -931,9 +954,6 @@ static int zr36057_init(struct zoran *zr)
+ 	dma_free_coherent(&zr->pci_dev->dev, BUZ_NUM_STAT_COM * sizeof(u32) * 2, zr->stat_comb, zr->p_scb);
+ exit_statcom:
+ 	dma_free_coherent(&zr->pci_dev->dev, BUZ_NUM_STAT_COM * sizeof(u32), zr->stat_com, zr->p_sc);
+-exit_video:
+-	kfree(zr->video_dev);
+-exit:
+ 	return err;
+ }
+ 
+@@ -965,7 +985,7 @@ static void zoran_remove(struct pci_dev *pdev)
+ 	dma_free_coherent(&zr->pci_dev->dev, BUZ_NUM_STAT_COM * sizeof(u32) * 2, zr->stat_comb, zr->p_scb);
+ 	pci_release_regions(pdev);
+ 	pci_disable_device(zr->pci_dev);
+-	video_unregister_device(zr->video_dev);
++	zoran_exit_video_devices(zr);
+ exit_free:
+ 	v4l2_ctrl_handler_free(&zr->hdl);
+ 	v4l2_device_unregister(&zr->v4l2_dev);
+diff --git a/drivers/staging/media/zoran/zoran_driver.c b/drivers/staging/media/zoran/zoran_driver.c
+index 46382e43f1bf..551db338c7f7 100644
+--- a/drivers/staging/media/zoran/zoran_driver.c
++++ b/drivers/staging/media/zoran/zoran_driver.c
+@@ -1008,7 +1008,7 @@ static const struct vb2_ops zr_video_qops = {
+ 	.wait_finish            = vb2_ops_wait_finish,
+ };
+ 
+-int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq)
++int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq, int dir)
+ {
+ 	int err;
+ 
+@@ -1016,7 +1016,8 @@ int zoran_queue_init(struct zoran *zr, struct vb2_queue *vq)
+ 	INIT_LIST_HEAD(&zr->queued_bufs);
+ 
+ 	vq->dev = &zr->pci_dev->dev;
+-	vq->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
++	vq->type = dir;
++
+ 	vq->io_modes = VB2_USERPTR | VB2_DMABUF | VB2_MMAP | VB2_READ | VB2_WRITE;
+ 	vq->drv_priv = zr;
+ 	vq->buf_struct_size = sizeof(struct zr_buffer);
+-- 
+2.34.1
 
-I made it on purpose to align the format with clocks.
-
-Best regards,
-Krzysztof
