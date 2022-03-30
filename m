@@ -2,98 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A7B2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 09:15:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23BFAC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 09:16:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244687AbiC3JRS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 05:17:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44408 "EHLO
+        id S244695AbiC3JSK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 05:18:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243827AbiC3JRP (ORCPT
+        with ESMTP id S244719AbiC3JR6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 05:17:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 518F924F0F;
-        Wed, 30 Mar 2022 02:15:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E0ECD60EE3;
-        Wed, 30 Mar 2022 09:15:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B658FC340F2;
-        Wed, 30 Mar 2022 09:15:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648631730;
-        bh=jpg/7rzO++XcwDYy2uwyxQWCmUOGBmeiWParIk9q5wE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Olp8a3NGzQ7/nqX6Y0+jLKSH+61HcY4RJS64V5srFeDw1h08JZR9v+CAQtYnnwvPx
-         8MexTEX/7+SyyISw9/bM58i19i0Wv12/Snd6U33vn9l9haxI2m6pFItkjZXJV21CJd
-         M1lUt0Evf5pmTS4ZJkvckFLljjtOGtFGM+L8/nyVZsn6ow3IjjAKCQWxSJ0WZCy34B
-         TwVHvR1w89aQZLoJppTsHXUEHY7aqBPcyrp5FE+qMAh4sChtofk0IEmd1o1zOyltCq
-         uTPErLazM6ZJZXo8xrDXuoIzgAVZgL9N0kf7yXI9VvLotByltA96RcAD1QT6/KcOSt
-         7ou2ME6y5RgqA==
-Date:   Wed, 30 Mar 2022 11:15:23 +0200
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Stephen Kitt <steve@sk2.org>
-Cc:     Max Filippov <jcmvbkbc@gmail.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] clk: use simple i2c probe function
-Message-ID: <YkQfq+FBqGql3H9Y@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Stephen Kitt <steve@sk2.org>, Max Filippov <jcmvbkbc@gmail.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220324162904.530140-1-steve@sk2.org>
+        Wed, 30 Mar 2022 05:17:58 -0400
+Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D020F252A6;
+        Wed, 30 Mar 2022 02:16:12 -0700 (PDT)
+Received: from unknown (HELO kinkan2-ex.css.socionext.com) ([172.31.9.52])
+  by mx.socionext.com with ESMTP; 30 Mar 2022 18:16:11 +0900
+Received: from mail.mfilter.local (m-filter-1 [10.213.24.61])
+        by kinkan2-ex.css.socionext.com (Postfix) with ESMTP id E3D2D2058443;
+        Wed, 30 Mar 2022 18:16:11 +0900 (JST)
+Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Wed, 30 Mar 2022 18:16:11 +0900
+Received: from [10.212.182.122] (unknown [10.212.182.122])
+        by kinkan2.css.socionext.com (Postfix) with ESMTP id AE3D5B62B7;
+        Wed, 30 Mar 2022 18:16:10 +0900 (JST)
+Subject: Re: [PATCH v2 5/5] dt-bindings: phy: uniphier: Clean up clock-names
+ and reset-names using compatible string
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
+        linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <1648617651-9004-1-git-send-email-hayashi.kunihiko@socionext.com>
+ <1648617651-9004-6-git-send-email-hayashi.kunihiko@socionext.com>
+ <ecc821cb-4dd0-48e6-668d-45c178efbbf0@linaro.org>
+From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Message-ID: <076c1292-053e-759d-3e6f-c262093d9d1c@socionext.com>
+Date:   Wed, 30 Mar 2022 18:16:10 +0900
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="+tniazS4rF4ZkjeW"
-Content-Disposition: inline
-In-Reply-To: <20220324162904.530140-1-steve@sk2.org>
+In-Reply-To: <ecc821cb-4dd0-48e6-668d-45c178efbbf0@linaro.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Krzysztof,
 
---+tniazS4rF4ZkjeW
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 2022/03/30 17:13, Krzysztof Kozlowski wrote:
+> On 30/03/2022 07:20, Kunihiko Hayashi wrote:
+>> Instead of "oneOf:" choices, use "allOf:" and "if:" to define clock-names
+>> and reset-names that can be taken by the compatible string.
+>>
+>> The order of clock-names and reset-names doesn't change here.
+>>
+>> Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+>> ---
+>>   .../phy/socionext,uniphier-ahci-phy.yaml      | 73 ++++++++++++------
+>>   .../phy/socionext,uniphier-pcie-phy.yaml      | 37 ++++++---
+>>   .../phy/socionext,uniphier-usb3hs-phy.yaml    | 75 +++++++++++++-----
+>>   .../phy/socionext,uniphier-usb3ss-phy.yaml    | 77 ++++++++++++++-----
+>>   4 files changed, 188 insertions(+), 74 deletions(-)
+>>
+>> diff --git
+>> a/Documentation/devicetree/bindings/phy/socionext,uniphier-ahci-phy.yaml
+>> b/Documentation/devicetree/bindings/phy/socionext,uniphier-ahci-phy.yaml
+>> index 14f7579e7daa..61d9306e1852 100644
+>> ---
+>> a/Documentation/devicetree/bindings/phy/socionext,uniphier-ahci-phy.yaml
+>> +++
+>> b/Documentation/devicetree/bindings/phy/socionext,uniphier-ahci-phy.yaml
+>> @@ -30,33 +30,62 @@ properties:
+>>       minItems: 1
+>>       maxItems: 2
+>>
+>> -  clock-names:
+>> -    oneOf:
+>> -      - items:          # for PXs2
+>> -          - const: link
+>> -      - items:          # for Pro4
+>> -          - const: link
+>> -          - const: gio
+>> -      - items:          # for others
+>> -          - const: link
+>> -          - const: phy
+>> +  clock-names: true
+>>
+>>     resets:
+>>       minItems: 2
+>>       maxItems: 6
+>>
+>> -  reset-names:
+>> -    oneOf:
+>> -      - items:          # for Pro4
+>> -          - const: link
+>> -          - const: gio
+>> -          - const: phy
+>> -          - const: pm
+>> -          - const: tx
+>> -          - const: rx
+>> -      - items:          # for others
+>> -          - const: link
+>> -          - const: phy
+>> +  reset-names: true
+>> +
+>> +allOf:
+>> +  - if:
+>> +      properties:
+>> +        compatible:
+>> +          contains:
+>> +            const: socionext,uniphier-pro4-ahci-phy
+>> +    then:
+>> +      properties:
+>> +        clock-names:
+>> +          items:
+>> +            - const: link
+>> +            - const: gio
+>> +        reset-names:
+>> +          items:
+>> +            - const: link
+>> +            - const: gio
+>> +            - const: phy
+>> +            - const: pm
+>> +            - const: tx
+>> +            - const: rx
+> 
+> Constrain also everywhere clocks and resets, so here should be:
+>    resets:
+>      minItems: 6
+>      maxItems: 6
 
-On Thu, Mar 24, 2022 at 05:29:04PM +0100, Stephen Kitt wrote:
-> The i2c probe functions here don't use the id information provided in
-> their second argument, so the single-parameter i2c probe function
-> ("probe_new") can be used instead.
->=20
-> This avoids scanning the identifier tables during probes.
->=20
-> Signed-off-by: Stephen Kitt <steve@sk2.org>
+If I put the constraint here, it would conflict with the original one.
+Should I also replace the original resets
 
-Looks good and builds fine:
+     resets:
+       minItems: 2
+       maxItems: 6
 
-Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+with "resets: true"?
 
+Thank you,
 
---+tniazS4rF4ZkjeW
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmJEH6cACgkQFA3kzBSg
-Kba+WRAAlgO66pbw2gE+iyHve2LJqABk3dad5pvxym0lOAHHY3HXBEGbK6XxIw3M
-p8adOatqnM/M7C7pwhslgto7kETxygqpB6LytkE9Vf/Wk/wG5Z93Rj2TeGyrNEGx
-9EiMEvDCgj3t/mHnBn9rCmBkzO6ilo03RFeM1Sgo9DjQZ680OUVBJXYZOyXse1yC
-/Zn8hQ284zeYYUsLaI0lM8nc+SjWLhPRD43EVW24xtr9P98eyA9KOnHOBtrgl4mN
-W/8rQvCvd5+RMOHKIepHZrQ1y9DJB9ydCZRILg6DNBPZ5H7NogOnvfPbmCnfYtg8
-HcBTrez+w824Nm6wNwFg4EhWM+2rgtreN6fb9IXxw1XLmQxOZTr72Fx4zkWAQFvT
-5lyLMeKdtSSJv3KGxVx4jMCGL79/adozTs/2Hgp2tgWhYvul9rZq9n/9nZLiZPE0
-IBJ+av7lnyVFgqmS/kkqj4w4kFhmEuIkR4jdIZ9VoY8dHtwUrldSCzlJIpaeWF1+
-jFF2eX/l7O6ewqKBOCTVIdZfxhIF6Eg1WeYlQw+aoLCJoXwXmadzs0QjMprFhyf8
-CNZNktgE8Xe9wgi/bNqk/aIS70sEpDPYdDok4cSGIMCghn5538H+fGq0TzQvnKLJ
-6F05uk9T2lzWNSur3rXAV9CRfdEAaw4VU6vgnMgWpKIsNdRojK8=
-=oRTj
------END PGP SIGNATURE-----
-
---+tniazS4rF4ZkjeW--
+---
+Best Regards
+Kunihiko Hayashi
