@@ -2,103 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CA14C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 18:24:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED382C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 18:27:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350258AbiC3S0i (ORCPT
+        id S1350008AbiC3S3L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 14:26:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33368 "EHLO
+        Wed, 30 Mar 2022 14:29:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350185AbiC3S0M (ORCPT
+        with ESMTP id S1351086AbiC3S2Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 14:26:12 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACEFD4830F;
-        Wed, 30 Mar 2022 11:23:36 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id u3so30534615wrg.3;
-        Wed, 30 Mar 2022 11:23:36 -0700 (PDT)
+        Wed, 30 Mar 2022 14:28:25 -0400
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8E5947071
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:24:48 -0700 (PDT)
+Received: by mail-il1-x133.google.com with SMTP id z10so2080508iln.0
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:24:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RMOT7aYy2mupTnOfFbZePA5/uVx944n/I4VvlKi6Lsw=;
-        b=piHloS7GD3Le8mJ10k+LyWzNL68x+zwpYI6oKRQCXUjqk2EzocHm9C9FcFUWtP4BhS
-         j/KJWtun+svPjWuebaagI/ywruUnOfd9bK3XMXF5iCAGu8LbHxhU13xoTC0nsH6JDTfm
-         vx7x+b0ltsc3wZFHzGfKS+N0gwN3OeEiE+qbtgipA6z6q0JSbcIGCyxIJzanU7NmGXcH
-         NK/cjmMpSygRPw0gbbVzO/n9kNad0nfkLmVs3c1+EbItZBj6xwvBMxIvA0PT858UaYLK
-         ZdgZjVTVAPyImF96l/2YPsWoiI62SIGDpF4Ch6rYohd3DKXZI0aBa0GYgCfqL2+cEGIz
-         WCXA==
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=JFFSehnkNeo1K8L02V2cW9CThdS75MCRvOKla3KLkAw=;
+        b=BFTCzD4aFvt9JrLiEz1bvzh6geIg6IptVTdj6IDiPuICAE203wQz9TEb+4sd+GuDm8
+         7hfsvwiWBq0a8G/L8JH1EJb4H5BgYFm066eNM++IJprdbaiP/K/RQcVNoIdok+4Buz0n
+         VPAQxsddsYW6lxBAvrCd3pw/AsU0VWg+XQ9+f+uSiaJkninfGHo8tQFy0F2WQL/CkiPX
+         978UdPWCEqFU5zNcqpfpYI+hbpzYnlekkvQ4l365jJLsdpHWW1qs4vwF10T/u8GEeEZH
+         VfPeDuk7IqzhfjQL+dK96hTc4fToK+0EsQR50pC8XTuJ0494LDj5KpiHUMlEIVaBIuzm
+         wOwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=RMOT7aYy2mupTnOfFbZePA5/uVx944n/I4VvlKi6Lsw=;
-        b=21T90oPBv6qQxGRHAWBpB5hSskCiA0W5nSnCYNcfZbFI7bsgA16feuw4DyRKtG6QLL
-         S2BKmtZ/zZYfQ+n3hI+pfBeadQaDQeYeZfbtE4Wcd1G4NlklW6s5nGfQv/qwZizGIer8
-         MLqfDJbNp+Qjb3FSDzFjB8NAJjkOfFEqsGFAJF9p9uruRHR4s944J4dW7zLfibtsffYY
-         KT3q0KYCnw79I8EEBXgzmiedJ7yDNHu++QEZtRULRrG3zjHqpgWh0+5GwElWGxEgYw6i
-         QoMTHKHyMqBDrqRT8A98yTn7trMPvE/kuMTkeicMFu4HwLWcUG92gCIfin3VAEwB35rI
-         BX9Q==
-X-Gm-Message-State: AOAM530XlFxX6GbmxGAnwmSEh4hWhaq1DLDETMB+a+ZO2co3k3UjTsbx
-        tqnFJSDbD46KcOvglp3/WYeSqu6mZhS16A==
-X-Google-Smtp-Source: ABdhPJzNRvC2PQ8Ee8kumcS/8iR5Bsnssmxd575QnVljTaDgTB55DFoBO+sG8qV4rBVdPqt8+JdNng==
-X-Received: by 2002:adf:e486:0:b0:204:ba5:adcd with SMTP id i6-20020adfe486000000b002040ba5adcdmr863091wrm.16.1648664614844;
-        Wed, 30 Mar 2022 11:23:34 -0700 (PDT)
-Received: from Francescos-Air.fritz.box (host-79-3-210-6.business.telecomitalia.it. [79.3.210.6])
-        by smtp.googlemail.com with ESMTPSA id m4-20020a7bcb84000000b00389efb7a5b4sm5291193wmi.17.2022.03.30.11.23.33
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Wed, 30 Mar 2022 11:23:34 -0700 (PDT)
-From:   FraSharp <f.duca00@gmail.com>
-X-Google-Original-From: FraSharp <s23265@iisve.it>
-Cc:     f.duca00@gmail.com, Francesco Duca <s23265@iisve.it>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] kbuild: use hostname -s along uname to obtain LINUX_COMPILE_HOST
-Date:   Wed, 30 Mar 2022 20:23:29 +0200
-Message-Id: <20220330182329.52310-1-s23265@iisve.it>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
+        bh=JFFSehnkNeo1K8L02V2cW9CThdS75MCRvOKla3KLkAw=;
+        b=7tsXD3eTLcqZwsGmUJUsDV9P3/KlAmDUCZgVlvw0G2ejkB5RNOc/OjtKkOK4w9Xn/f
+         yaeQIo+/quQzSXFTQ7Zo1VEwZXstmshZ+rMzr3NIkPvAG7pYTIxuaYtURd7sJ3ifkSkY
+         BG7ZTyAbfJqCGFZcTh1YAPB63B7gvHmO3p2r7LbkcJUspqxxopYlMxXZXC3ImSoQrYuJ
+         aTjdjdo2n40veAXIyH5EOG+CGt2M7Xm3SYbKdi+gcl3/XiM3YwKwPQ5Cs+ggzODFN9qj
+         TaU5wYsOtoDxblYKR8xjpUuq8HhcaB8g5VCeZo0FTWYQUBwYjCsEToMfmx5naU4Jf2wy
+         9zZA==
+X-Gm-Message-State: AOAM533RIRW0g87ghwiZluK/n4z07rSh7ZVDx0m0OfkOvc2rkEGinf0j
+        PuPjICz5kXvcJNF3gZEoHqEx5w==
+X-Google-Smtp-Source: ABdhPJwUvZiBYV6AGjovRlQg5dfR2IK8vL/m8lnPjq8KMhvUK1WpCP4kEeYA48hTsQvWDg7IrHos5Q==
+X-Received: by 2002:a92:cbc3:0:b0:2c6:78fa:41e9 with SMTP id s3-20020a92cbc3000000b002c678fa41e9mr11278289ilq.112.1648664688212;
+        Wed, 30 Mar 2022 11:24:48 -0700 (PDT)
+Received: from [192.168.1.172] ([207.135.234.126])
+        by smtp.gmail.com with ESMTPSA id i81-20020a6bb854000000b00649c1b67a6csm11564038iof.28.2022.03.30.11.24.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Mar 2022 11:24:47 -0700 (PDT)
+Message-ID: <0dc208a9-22f2-6758-e776-752ff81e2b19@kernel.dk>
+Date:   Wed, 30 Mar 2022 12:24:46 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: state of drbd in mainline
+Content-Language: en-US
+To:     Philipp Reisner <philipp.reisner@linbit.com>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        Lars Ellenberg <lars.ellenberg@linbit.com>,
+        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220329070618.GA20396@lst.de>
+ <CADGDV=UgjZAbmAN-2bO1nyDvA=XCC9Lf2dxWHZ0BwxF12nnztQ@mail.gmail.com>
+ <20220329073254.GA20691@lst.de>
+ <CADGDV=U5jwe0CZ12174cMahfD_h-GsBswWaA1VOJbHaC1nsrUw@mail.gmail.com>
+ <f9d89282-3a67-ad97-149f-52325e23607c@kernel.dk>
+ <CADGDV=WN2TFR6dO7ZdiQ2ijPjs+7HSsvk0ZCHsHj6ZG5t-oEdA@mail.gmail.com>
+ <3c42b1ed-7c03-64e6-409e-e92247288cac@kernel.dk>
+ <CADGDV=WcTSSC70yG61dazo-WyoLOzp3r+nOk-Eg2x_Ncx=3nRg@mail.gmail.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <CADGDV=WcTSSC70yG61dazo-WyoLOzp3r+nOk-Eg2x_Ncx=3nRg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Francesco Duca <s23265@iisve.it>
+On 3/30/22 9:23 AM, Philipp Reisner wrote:
+>>> Jens, my intention is to keep it in-tree, and at some point update it.
+>>> Regarding your questions:
+>>
+>> That'd be great, but it's been years since there was any significant
+>> updates to the in-kernel drbd... I would strongly suggest that the
+>> in-kernel be brought closer to what people are mostly running, as it
+>> stands it's basically unmaintained.
+> 
+> The changes we worked on over many Years in the more recent drbd-9.x
+> branches are just too fundamental to do them in small chunks, we could
+> upstream bit by bit.  We need to get that reviewed in a big series.  If I
 
-* On some systems (e.g. macOS), using commands like 'uname -n' or
-  'hostname' will print something similar to "hostname.domain"
-  ("Francescos-Air.fritz.box" for example), which is very annoying.
-  What works instead is 'hostname -s', which will only write hostname
-  without the domain ("Francescos-Air" for example),
-  but also keep 'uname -n', as some systems as Arch Linux does not have
-  'hostname' as command.
+Your development model is fundamentally broken. You've allowed your 9.x
+branch to totally drift from mainline, which just helps underline my
+earlier point on that in-kernel drbd is effectively abandoned and
+unmaintained.
 
-* This commit is complementary to
-  1e66d50ad3a1dbf0169b14d502be59a4b1213149
-  ("kbuild: Use uname for LINUX_COMPILE_HOST detection")
+> started to dump them on linux-block right away, nobody would look at it
+> seriously, since it would be too much.  I intend to get people from red
+> hat/suse assigned to do such a review. Then we will do that on linux-block,
+> so that everyone who cares sees what happens.
 
-Signed-off-by: Francesco Duca <s23265@iisve.it>
----
- scripts/mkcompile_h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+You're just doing it totally wrong. Upstream kernel should match your
+9.x branch, and it should have been developed in sync. What you appear
+to have done is to ignore mainline, while it would've been correct and
+much easier in the long run to ensure that development is regularly
+synced to the mainline kernel. You know, like EVERY other driver that is
+maintained does.
 
-diff --git a/scripts/mkcompile_h b/scripts/mkcompile_h
-index ca40a5258..6054e3eee 100755
---- a/scripts/mkcompile_h
-+++ b/scripts/mkcompile_h
-@@ -34,7 +34,7 @@ else
- 	LINUX_COMPILE_BY=$KBUILD_BUILD_USER
- fi
- if test -z "$KBUILD_BUILD_HOST"; then
--	LINUX_COMPILE_HOST=`uname -n`
-+	LINUX_COMPILE_HOST=$(hostname -s || uname -n)
- else
- 	LINUX_COMPILE_HOST=$KBUILD_BUILD_HOST
- fi
+Now you've got a giant pile of patches, which probably don't adhere to
+how we would've done the mainline commits in the first place, and it'll
+cause a huge pain for not just you but upstream reviewers. I don't care
+about the former, but I do care a lot about the latter. That's a giant
+waste of the time of the folks involved on the block side, and
+definitely not what a responsible kernel maintainer would do.
+
+From your reply here and earlier ones, seems to me that you don't grasp
+the gravity of the situation, which is also worrying.
+
+>> The main discrepancy here is that there are apparently huge numbers of
+>> in-tree users, yet no fixes or patches at all making it to mainline.
+>> Either drbd is bug free and doesn't require any fixes at all, which I
+>> very much would doubt, or fixes aren't being sent upstream.
+> 
+> It is the broad consent among the users of the drbd-8.4 branch (that is what
+> is in-tree), is that it works for its purpose. It is for sure not bug-free,
+> but people are not running into bugs anymore. So, call it free of relevant
+> bugs, if you want.  No new features go into that branch, on purpose. To keep
+> it that way.
+> 
+> Have a look at that one real bug-fix that was identified in the last Year.
+> https://patchwork.kernel.org/project/linux-block/patch/20210426163032.3454129-1-christoph.boehmwalder@linbit.com/
+> 
+> When do you want to have that reposted to you?
+> right now? Just before the next merge window opens?
+
+That can go in anytime, so please do submit it.
+
 -- 
-2.32.0 (Apple Git-132)
+Jens Axboe
 
