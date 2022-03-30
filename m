@@ -2,97 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F54EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:21:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 666FCC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:22:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243244AbiC3GXL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 02:23:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47616 "EHLO
+        id S243252AbiC3GYX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 02:24:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238147AbiC3GXF (ORCPT
+        with ESMTP id S238147AbiC3GYU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 02:23:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E3125046D;
-        Tue, 29 Mar 2022 23:21:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E9D0AB81AD5;
-        Wed, 30 Mar 2022 06:21:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A357AC340EC;
-        Wed, 30 Mar 2022 06:21:17 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Ty2Q3C+n"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1648621276;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=2eRrPnqhTJjokXQOdORL7R4K689Hcih8p/XLm4p+Fvc=;
-        b=Ty2Q3C+nxdjUQaGjzpqGcNWXhdezVxMLyN15NAoBzzwwlIQXJcfOnqRrOFLwMyyx2Xe2dy
-        /7xX+lea48DGH7t3FxoPzw9ydT8Vlt1HH5VdQ1cqC/Rt2unU+agicblhqnyTLLjqmN57OJ
-        WBaDiPIKKHn3Ig+J3hKmgdfa2vJo2eo=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 042fe011 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 30 Mar 2022 06:21:15 +0000 (UTC)
-Date:   Wed, 30 Mar 2022 02:21:14 -0400
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Fedor Pchelkin <aissur0002@gmail.com>,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 4/4] file: Fix file descriptor leak in copy_fd_bitmaps()
-Message-ID: <YkP2hKKeMeFrdpBW@zx2c4.com>
-References: <20220326114009.1690-1-aissur0002@gmail.com>
- <2698031.BEx9A2HvPv@fedor-zhuzhzhalka67>
- <CAHk-=wh2Ao+OgnWSxHsJodXiLwtaUndXSkuhh9yKnA3iXyBLEA@mail.gmail.com>
- <4705670.GXAFRqVoOG@fedor-zhuzhzhalka67>
- <CAHk-=wiKhn+VsvK8CiNbC27+f+GsPWvxMVbf7QET+7PQVPadwA@mail.gmail.com>
- <CAHk-=wjRwwUywAa9TzQUxhqNrQzZJQZvwn1JSET3h=U+3xi8Pg@mail.gmail.com>
- <YkPo0N/CVHFDlB6v@zx2c4.com>
- <CAHk-=wgPwyQTnSF2s7WSb+KnGn4FTM58NJ+-v-561W7xnDk2OA@mail.gmail.com>
+        Wed, 30 Mar 2022 02:24:20 -0400
+X-Greylist: delayed 12263 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 29 Mar 2022 23:22:33 PDT
+Received: from uriel.iewc.co.za (uriel.iewc.co.za [IPv6:2c0f:f720:0:3:d6ae:52ff:feb8:f27b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AC2C51322;
+        Tue, 29 Mar 2022 23:22:33 -0700 (PDT)
+Received: from [2c0f:f720:fe16:c400::1] (helo=tauri.local.uls.co.za)
+        by uriel.iewc.co.za with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <jaco@uls.co.za>)
+        id 1nZRiw-0002Oj-CB; Wed, 30 Mar 2022 08:22:30 +0200
+Received: from [192.168.42.207]
+        by tauri.local.uls.co.za with esmtp (Exim 4.94.2)
+        (envelope-from <jaco@uls.co.za>)
+        id 1nZRiv-0003gx-AZ; Wed, 30 Mar 2022 08:22:29 +0200
+Message-ID: <10c1e561-8f01-784f-c4f4-a7c551de0644@uls.co.za>
+Date:   Wed, 30 Mar 2022 08:22:28 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wgPwyQTnSF2s7WSb+KnGn4FTM58NJ+-v-561W7xnDk2OA@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: linux 5.17.1 disregarding ACK values resulting in stalled TCP
+ connections
+Content-Language: en-GB
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Neal Cardwell <ncardwell@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Yuchung Cheng <ycheng@google.com>
+References: <E1nZMdl-0006nG-0J@plastiekpoot>
+ <CADVnQyn=A9EuTwxe-Bd9qgD24PLQ02YQy0_b7YWZj4_rqhWRVA@mail.gmail.com>
+ <eaf54cab-f852-1499-95e2-958af8be7085@uls.co.za>
+ <CANn89iKHbmVYoBdo2pCQWTzB4eFBjqAMdFbqL5EKSFqgg3uAJQ@mail.gmail.com>
+From:   Jaco Kroon <jaco@uls.co.za>
+Organization: Ultimate Linux Solutions (Pty) Ltd
+In-Reply-To: <CANn89iKHbmVYoBdo2pCQWTzB4eFBjqAMdFbqL5EKSFqgg3uAJQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+Hi Eric,
 
-On Tue, Mar 29, 2022 at 11:08:55PM -0700, Linus Torvalds wrote:
-> So does it help if you just remove that
-> 
->         max_fds = ALIGN(max_fds, BITS_PER_LONG);
-> 
-> and instead make the final return be
-> 
->         return ALIGN(min(count, max_fds), BITS_PER_LONG);
-> 
-> instead?
+On 2022/03/30 05:48, Eric Dumazet wrote:
+> On Tue, Mar 29, 2022 at 7:58 PM Jaco Kroon <jaco@uls.co.za> wrote:
+>
+> I do not think this commit is related to the issue you have.
+>
+> I guess you could try a revert ?
+>
+> Then, if you think old linux versions were ok, start a bisection ?
+That'll be interesting, will see if I can reproduce on a non-production
+host.
+>
+> Thank you.
+>
+> (I do not see why a successful TFO would lead to a freeze after ~70 KB
+> of data has been sent)
 
-Yep, that works:
+I do actually agree with this in that it makes no sense, but disabling
+TFO definitely resolved the issue for us.
 
-diff --git a/fs/file.c b/fs/file.c
-index c01c29417ae6..ee9317346702 100644
---- a/fs/file.c
-+++ b/fs/file.c
-@@ -303,10 +303,9 @@ static unsigned int sane_fdtable_size(struct fdtable *fdt, unsigned int max_fds)
- 	unsigned int count;
+Kind Regards,
+Jaco
 
- 	count = count_open_files(fdt);
--	max_fds = ALIGN(max_fds, BITS_PER_LONG);
- 	if (max_fds < NR_OPEN_DEFAULT)
- 		max_fds = NR_OPEN_DEFAULT;
--	return min(count, max_fds);
-+	return ALIGN(min(count, max_fds), BITS_PER_LONG);
- }
-
- /*
-
-Jason
