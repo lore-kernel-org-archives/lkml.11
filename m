@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14A3BC46467
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:15:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B845AC4167E
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:14:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345539AbiC3MOM (ORCPT
+        id S1345402AbiC3MNx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:14:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57632 "EHLO
+        Wed, 30 Mar 2022 08:13:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345920AbiC3LzN (ORCPT
+        with ESMTP id S1345905AbiC3LzL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:55:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6B3E265EBB;
-        Wed, 30 Mar 2022 04:52:42 -0700 (PDT)
+        Wed, 30 Mar 2022 07:55:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52E3926B5B9;
+        Wed, 30 Mar 2022 04:52:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 71DCE6170B;
-        Wed, 30 Mar 2022 11:52:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00348C3410F;
-        Wed, 30 Mar 2022 11:52:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E45D061703;
+        Wed, 30 Mar 2022 11:52:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A645C36AE3;
+        Wed, 30 Mar 2022 11:52:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641161;
-        bh=+wq173W039LLwt49okhsC1cU/Yg0EMixvemiQqA7vmw=;
+        s=k20201202; t=1648641138;
+        bh=IAPXAtAzg3uzHGYOlMYwPPMWcUWAHr9H4OuBdJvh0Nw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TxgDF1oFqewAEQ7hqVY0LaUjBsoFv1cuRdNXJmbCgPHGcFz/SmcRQGH9Zx6ZTvT5q
-         fRkxQUrHuw0rFCPue19Oq35skyKIo6wFomu03s+gqPgTVWrsGvtLKgKe/ACYEmZpyw
-         1xW8IdZVdf+XxClIpxpaGK8jqTkTUfngoVYrohwCISquqCOfXw0y49z3oi2rTD+7QQ
-         vcGxQoClSyy/Q8R/ChhjcrHPOSPSg17mz3Jj4ThfoegdPJFXIue6PBasJnG6eCya7M
-         LOZktuOZzLWyaqFLa5o6InQa5ehM1dKR63qaJupPeKs0JreQqf9+SD74H1GAR6G4Jx
-         Fsr78dRbTBe/w==
+        b=NhAQYwsIkZ14ltafuMmz3YrRt3iN5sNguKhvKWxsLzirDfXH5KfVXdt16TwNJz87C
+         M3qdIsmeXNFdD/LjUqa8sutgNbNxHq2HrzlSuGbYNwX9JwfFLT6QYyzYdWoGNuw3EB
+         fIa1K3lANOlAQ5flYM/KAVWk2tRS8+5qXYuv0R/YiePQ/HgCj4oel8Zx4BcXpBuneB
+         KSX8o34gMWSbbALl/nCIp182GjSZqsrbp5UdC/v8/WuioDjo6SWIJV511M/9xgWigh
+         ukJcauk9tH6FH6ui4OosIC2m4EScLNrarXS9YCxOjOcE6nTtjKjfyqXuQ++x+9WBor
+         hgpkYVGPm0vvA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jing Yao <yao.jing2@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
-        tomi.valkeinen@ti.com, linux-omap@vger.kernel.org,
-        linux-fbdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 10/25] video: fbdev: omapfb: panel-dsi-cm: Use sysfs_emit() instead of snprintf()
-Date:   Wed, 30 Mar 2022 07:52:10 -0400
-Message-Id: <20220330115225.1672278-10-sashal@kernel.org>
+Cc:     "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Ritesh Harjani <riteshh@linux.ibm.com>,
+        Sasha Levin <sashal@kernel.org>, mingo@redhat.com
+Subject: [PATCH AUTOSEL 5.10 33/37] tracing: Have TRACE_DEFINE_ENUM affect trace event types as well
+Date:   Wed, 30 Mar 2022 07:51:18 -0400
+Message-Id: <20220330115122.1671763-33-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330115225.1672278-1-sashal@kernel.org>
-References: <20220330115225.1672278-1-sashal@kernel.org>
+In-Reply-To: <20220330115122.1671763-1-sashal@kernel.org>
+References: <20220330115122.1671763-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,60 +52,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jing Yao <yao.jing2@zte.com.cn>
+From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 
-[ Upstream commit f63658a59c3d439c8ad7b290f8ec270980e0f384 ]
+[ Upstream commit b3bc8547d3be60898818885f5bf22d0a62e2eb48 ]
 
-Use sysfs_emit instead of scnprintf, snprintf or sprintf.
+The macro TRACE_DEFINE_ENUM is used to convert enums in the kernel to
+their actual value when they are exported to user space via the trace
+event format file.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Currently only the enums in the "print fmt" (TP_printk in the TRACE_EVENT
+macro) have the enums converted. But the enums can be used to denote array
+size:
+
+        field:unsigned int fc_ineligible_rc[EXT4_FC_REASON_MAX]; offset:12;      size:36;        signed:0;
+
+The EXT4_FC_REASON_MAX has no meaning to userspace but it needs to know
+that information to know how to parse the array.
+
+Have the array indexes also be parsed as well.
+
+Link: https://lore.kernel.org/all/cover.1646922487.git.riteshh@linux.ibm.com/
+
+Reported-by: Ritesh Harjani <riteshh@linux.ibm.com>
+Tested-by: Ritesh Harjani <riteshh@linux.ibm.com>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ kernel/trace/trace_events.c | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
-diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
-index 4b0793abdd84..a2c7c5cb1523 100644
---- a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
-+++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
-@@ -409,7 +409,7 @@ static ssize_t dsicm_num_errors_show(struct device *dev,
- 	if (r)
- 		return r;
- 
--	return snprintf(buf, PAGE_SIZE, "%d\n", errors);
-+	return sysfs_emit(buf, "%d\n", errors);
+diff --git a/kernel/trace/trace_events.c b/kernel/trace/trace_events.c
+index 7cc5f0a77c3c..bbafea929008 100644
+--- a/kernel/trace/trace_events.c
++++ b/kernel/trace/trace_events.c
+@@ -2417,6 +2417,33 @@ static void update_event_printk(struct trace_event_call *call,
+ 	}
  }
  
- static ssize_t dsicm_hw_revision_show(struct device *dev,
-@@ -439,7 +439,7 @@ static ssize_t dsicm_hw_revision_show(struct device *dev,
- 	if (r)
- 		return r;
- 
--	return snprintf(buf, PAGE_SIZE, "%02x.%02x.%02x\n", id1, id2, id3);
-+	return sysfs_emit(buf, "%02x.%02x.%02x\n", id1, id2, id3);
- }
- 
- static ssize_t dsicm_store_ulps(struct device *dev,
-@@ -487,7 +487,7 @@ static ssize_t dsicm_show_ulps(struct device *dev,
- 	t = ddata->ulps_enabled;
- 	mutex_unlock(&ddata->lock);
- 
--	return snprintf(buf, PAGE_SIZE, "%u\n", t);
-+	return sysfs_emit(buf, "%u\n", t);
- }
- 
- static ssize_t dsicm_store_ulps_timeout(struct device *dev,
-@@ -532,7 +532,7 @@ static ssize_t dsicm_show_ulps_timeout(struct device *dev,
- 	t = ddata->ulps_timeout;
- 	mutex_unlock(&ddata->lock);
- 
--	return snprintf(buf, PAGE_SIZE, "%u\n", t);
-+	return sysfs_emit(buf, "%u\n", t);
- }
- 
- static DEVICE_ATTR(num_dsi_errors, S_IRUGO, dsicm_num_errors_show, NULL);
++static void update_event_fields(struct trace_event_call *call,
++				struct trace_eval_map *map)
++{
++	struct ftrace_event_field *field;
++	struct list_head *head;
++	char *ptr;
++	int len = strlen(map->eval_string);
++
++	head = trace_get_fields(call);
++	list_for_each_entry(field, head, link) {
++		ptr = strchr(field->type, '[');
++		if (!ptr)
++			continue;
++		ptr++;
++
++		if (!isalpha(*ptr) && *ptr != '_')
++			continue;
++
++		if (strncmp(map->eval_string, ptr, len) != 0)
++			continue;
++
++		ptr = eval_replace(ptr, map, len);
++		/* enum/sizeof string smaller than value */
++		WARN_ON_ONCE(!ptr);
++	}
++}
++
+ void trace_event_eval_update(struct trace_eval_map **map, int len)
+ {
+ 	struct trace_event_call *call, *p;
+@@ -2452,6 +2479,7 @@ void trace_event_eval_update(struct trace_eval_map **map, int len)
+ 					first = false;
+ 				}
+ 				update_event_printk(call, map[i]);
++				update_event_fields(call, map[i]);
+ 			}
+ 		}
+ 	}
 -- 
 2.34.1
 
