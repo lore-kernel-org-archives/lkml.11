@@ -2,95 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87B17C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 16:04:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D092C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 16:04:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348594AbiC3QGW (ORCPT
+        id S1348589AbiC3QG2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 12:06:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53124 "EHLO
+        Wed, 30 Mar 2022 12:06:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348568AbiC3QGM (ORCPT
+        with ESMTP id S1348621AbiC3QGW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 12:06:12 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB63C238D18;
-        Wed, 30 Mar 2022 09:04:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1648656263; x=1680192263;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=7veokiquAVpHpjsy/ez/QdJmUJA8oXSsaunhV32sDhI=;
-  b=lbUe/Ek+TA72my1Al3jL4n+UgjOWmUEWukNXBaFK+2otS7XalHwsIzQp
-   eRpYsT7K6KpApLQJzvFxLjLiX5cVWKAzMGPSoSKiMPzFCNEM+wWp0XKSN
-   d2mY4T9/IS0OqUD40DTJASLNKxpx9KvdTMYzT+2zGSLqfiCJ7OKbWDsqA
-   c=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 30 Mar 2022 09:04:23 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 09:04:22 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 30 Mar 2022 09:04:22 -0700
-Received: from sbillaka-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 30 Mar 2022 09:04:16 -0700
-From:   Sankeerth Billakanti <quic_sbillaka@quicinc.com>
-To:     <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <freedreno@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>
-CC:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        <robdclark@gmail.com>, <seanpaul@chromium.org>,
-        <swboyd@chromium.org>, <quic_kalyant@quicinc.com>,
-        <quic_abhinavk@quicinc.com>, <dianders@chromium.org>,
-        <quic_khsieh@quicinc.com>, <bjorn.andersson@linaro.org>,
-        <sean@poorly.run>, <airlied@linux.ie>, <daniel@ffwll.ch>,
-        <dmitry.baryshkov@linaro.org>, <quic_vproddut@quicinc.com>,
-        <quic_aravindh@quicinc.com>
-Subject: [PATCH v6 8/8] drm/msm/dp: Handle eDP mode_valid differently from dp
-Date:   Wed, 30 Mar 2022 21:32:59 +0530
-Message-ID: <1648656179-10347-9-git-send-email-quic_sbillaka@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1648656179-10347-1-git-send-email-quic_sbillaka@quicinc.com>
-References: <1648656179-10347-1-git-send-email-quic_sbillaka@quicinc.com>
+        Wed, 30 Mar 2022 12:06:22 -0400
+Received: from bagheera.iewc.co.za (bagheera.iewc.co.za [IPv6:2c0f:f720:0:3:be30:5bff:feec:6f99])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5C7023D77F;
+        Wed, 30 Mar 2022 09:04:33 -0700 (PDT)
+Received: from [165.16.203.119] (helo=tauri.local.uls.co.za)
+        by bagheera.iewc.co.za with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <jaco@uls.co.za>)
+        id 1nZaYE-0007la-NE; Wed, 30 Mar 2022 17:48:02 +0200
+Received: from [192.168.42.207]
+        by tauri.local.uls.co.za with esmtp (Exim 4.94.2)
+        (envelope-from <jaco@uls.co.za>)
+        id 1nZZoV-00018E-Pe; Wed, 30 Mar 2022 17:00:47 +0200
+Message-ID: <e0bc0c7f-5e47-ddb7-8e24-ad5fb750e876@uls.co.za>
+Date:   Wed, 30 Mar 2022 17:00:47 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: linux 5.17.1 disregarding ACK values resulting in stalled TCP
+ connections
+Content-Language: en-GB
+To:     Neal Cardwell <ncardwell@google.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Yuchung Cheng <ycheng@google.com>
+References: <E1nZMdl-0006nG-0J@plastiekpoot>
+ <CADVnQyn=A9EuTwxe-Bd9qgD24PLQ02YQy0_b7YWZj4_rqhWRVA@mail.gmail.com>
+ <eaf54cab-f852-1499-95e2-958af8be7085@uls.co.za>
+ <CANn89iKHbmVYoBdo2pCQWTzB4eFBjqAMdFbqL5EKSFqgg3uAJQ@mail.gmail.com>
+ <10c1e561-8f01-784f-c4f4-a7c551de0644@uls.co.za>
+ <CADVnQynf8f7SUtZ8iQi-fACYLpAyLqDKQVYKN-mkEgVtFUTVXQ@mail.gmail.com>
+From:   Jaco Kroon <jaco@uls.co.za>
+Organization: Ultimate Linux Solutions (Pty) Ltd
+In-Reply-To: <CADVnQynf8f7SUtZ8iQi-fACYLpAyLqDKQVYKN-mkEgVtFUTVXQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The panel-edp driver modes needs to be validated differently from DP
-because the link capabilities are not available for EDP by that time.
+Hi,
 
-Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
----
- drivers/gpu/drm/msm/dp/dp_display.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+On 2022/03/30 15:56, Neal Cardwell wrote:
+> On Wed, Mar 30, 2022 at 2:22 AM Jaco Kroon <jaco@uls.co.za> wrote:
+>> Hi Eric,
+>>
+>> On 2022/03/30 05:48, Eric Dumazet wrote:
+>>> On Tue, Mar 29, 2022 at 7:58 PM Jaco Kroon <jaco@uls.co.za> wrote:
+>>>
+>>> I do not think this commit is related to the issue you have.
+>>>
+>>> I guess you could try a revert ?
+>>>
+>>> Then, if you think old linux versions were ok, start a bisection ?
+>> That'll be interesting, will see if I can reproduce on a non-production
+>> host.
+>>> Thank you.
+>>>
+>>> (I do not see why a successful TFO would lead to a freeze after ~70 KB
+>>> of data has been sent)
+>> I do actually agree with this in that it makes no sense, but disabling
+>> TFO definitely resolved the issue for us.
+>>
+>> Kind Regards,
+>> Jaco
+> Thanks for the pcap trace! That's a pretty strange trace. I agree with
+> Eric's theory that this looks like one or more bugs in a firewall,
+> middlebox, or netfilter rule. From the trace it looks like the buggy
+> component is sometimes dropping packets and sometimes corrupting them
+> so that the client's TCP stack ignores them.
+The capture was taken on the client.  So the only firewall there is
+iptables, and I redirected all -j DROP statements to a L_DROP chain
+which did a -j LOG prior to -j DROP - didn't pick up any drops here.
+>
+> Interestingly, in that trace the client SYN has a TFO option and
+> cookie, but no data in the SYN.
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index 8bafdd0..f9c7d9a 100644
---- a/drivers/gpu/drm/msm/dp/dp_display.c
-+++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -1003,6 +1003,12 @@ enum drm_mode_status dp_bridge_mode_valid(struct drm_bridge *bridge,
- 		return -EINVAL;
- 	}
- 
-+	if (dp->connector_type == DRM_MODE_CONNECTOR_eDP) {
-+		if (mode_pclk_khz > DP_MAX_PIXEL_CLK_KHZ)
-+			return MODE_CLOCK_HIGH;
-+		return MODE_OK;
-+	}
-+
- 	if ((dp->max_pclk_khz <= 0) ||
- 			(dp->max_pclk_khz > DP_MAX_PIXEL_CLK_KHZ) ||
- 			(mode->clock > dp->max_pclk_khz))
--- 
-2.7.4
+So this allows the SMTP server which in the conversation speaks first to
+identify itself to respond with data in the SYN (not sure that was
+actually happening but if I recall I did see it send data prior to
+receiving the final ACK on the handshake.
+
+>
+> The last packet that looks sane/normal is the ACK from the SMTP server
+> that looks like:
+>
+> 00:00:00.000010 IP6 2a00:1450:4013:c16::1a.25 >
+> 2c0f:f720:0:3:d6ae:52ff:feb8:f27b.48590: . 6260:6260(0) ack 66263 win
+> 774 <nop,nop,TS val 1206544341 ecr 331189186>
+>
+> That's the first ACK that crosses past 2^16. Maybe that is a
+> coincidence, or maybe not. Perhaps the buggy firewall/middlebox/etc is
+
+I believe it should be because we literally had this on every single
+connection going out to Google's SMTP ... probably 1/100 connections
+managed to deliver an email over the connection.  Then again ... 64KB
+isn't that much ...
+
+When you state sane/normal, do you mean there is fault with the other
+frames that could not be explained by packet loss in one or both of the
+directions?
+
+> confused by the TFO option, corrupts its state, and thereafter behaves
+> incorrectly past the first 64 KBytes of data from the client.
+
+Only firewalls we've got are netfilter based, and these packets all
+passed through the dedicated firewalls at least by the time they reach
+here.  No middleboxes on our end, and if this was Google's side there
+would be crazy noise be heard, not just me.  I think the trigger is
+packet loss between us (as indicated we know they have link congestion
+issues in JHB area, it took us the better part of two weeks to get the
+first line tech on their side to just query the internal teams and
+probably another week to get the response acknowledging this -
+mybroadband.co.za has an article about other local ISPs also complaining).
+
+>
+> In addition to checking for checksum failures, mentioned by Eric, you
+> could look for PAWS failures, something like:
+>
+>   nstat -az | egrep  -i 'TcpInCsumError|PAWS'
+
+TcpInCsumErrors                 0                  0.0
+TcpExtPAWSActive                0                  0.0
+TcpExtPAWSEstab                 90092              0.0
+TcpExtTCPACKSkippedPAWS         81317              0.0
+
+Not sure what these mean, but i should probably investigate, the latter
+two are definitely incrementing.
+
+Appreciate the feedback and for looking at the traces.
+
+Kind Regards,
+Jaco
 
