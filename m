@@ -2,103 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB88BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 16:34:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61D7DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 16:37:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348867AbiC3Qgj (ORCPT
+        id S1347915AbiC3Qis (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 12:36:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54636 "EHLO
+        Wed, 30 Mar 2022 12:38:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348865AbiC3Qg3 (ORCPT
+        with ESMTP id S236846AbiC3Qiq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 12:36:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BA8D193162
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 09:34:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E60DEB81D7D
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 16:34:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ECFFC3410F
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 16:34:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648658077;
-        bh=XxksR6VYfpVoCvd6RFZQQ4LAgDvEsQYSq1TNcOzLoUs=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=fu+2gLX21a8OwVa/+N7C35Y49yttDoosDiB88ncyF2EJRJq1Y1Lm1QmWZYUjYPDWB
-         LI4c3qy/o8BDQwI3IMF0/BgekvEW6O+eYkafiwwEwNZGYFVZBiuPTILQfhbXRDS4ZX
-         5bmSFzBTHiBsFIQmMsqNijGUYmQx12q0ACpwfkKpK7l1tgtZrxPfTCrnxg023PGp23
-         BV1vVlOtAX/+ZXz7Xo7iJqqUkB55ywTr1Fw6gTFtSaQ76Uu5Se9yVcLTVl9+AaV8tU
-         xuWb3/vi/i8li2xwKeGaIs7LcvMj3y579WIIl0FuBH6UmnJ82b9TeJQa1rgj8C0oVu
-         4q5yvWdb1fsIQ==
-Received: by mail-oi1-f173.google.com with SMTP id r8so22591668oib.5
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 09:34:37 -0700 (PDT)
-X-Gm-Message-State: AOAM532r8S5jdRptm38EHfnViLoyRaYpBTwxq1Dv2ZOux3Dm+jFDvTMG
-        2epZ7D6YXXBvED2Y6Ix3x1aG+BpglKkEu32i+ng=
-X-Google-Smtp-Source: ABdhPJwKJbONlsIybRQcq1GD0q/R2aFe3FxVy2bnvSOqPe2G9QX4krl3/ZC9ysACYk9ULdhpxmWojW5ClA/EpSLmp7o=
-X-Received: by 2002:aca:674c:0:b0:2d9:c460:707c with SMTP id
- b12-20020aca674c000000b002d9c460707cmr291303oiy.126.1648658076649; Wed, 30
- Mar 2022 09:34:36 -0700 (PDT)
-MIME-Version: 1.0
-References: <YipOoAaBIHjeCKOq@dev-arch.thelio-3990X> <2109354.irdbgypaU6@localhost.localdomain>
- <YkSBJD0oA7zxHS+B@shell.armlinux.org.uk>
-In-Reply-To: <YkSBJD0oA7zxHS+B@shell.armlinux.org.uk>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Wed, 30 Mar 2022 18:34:25 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXGLehBkaG7-t5PZqN+32MS-5BDX-QGOe6ftZnPuNDKicg@mail.gmail.com>
-Message-ID: <CAMj1kXGLehBkaG7-t5PZqN+32MS-5BDX-QGOe6ftZnPuNDKicg@mail.gmail.com>
-Subject: Re: CONFIG_THUMB2_KERNEL=y boot failure after Spectre BHB fixes
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+        Wed, 30 Mar 2022 12:38:46 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81F7E197AC2
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 09:37:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=HWbPC5h/j58ceCxQlVSc5RvAYIlhggFe0pdxq+KiTPE=; b=ohc2cMwku7X0vVNhI8K19tG2iF
+        uwO+P1yiW7VcQk8CMgq9EFPtfMFJaMmTkhiFga1tEaFJGGWZablr6Pe7JksjV3ecd4CLc6dEN/X4i
+        M2H5zvv4h7OiKykxMtwjlXckE+aKI6WAc6TkiKj5QtneCteTW9PiQc+TN/zrCmP+e1cQuWnIES6SC
+        +7za02u1fvjlc6uCSHGq3WtJd7s8uFdU9jtlG98tSXCtGlcodHnC9dfhl26JGVZmy4763GNFIfxZz
+        TRGeS+ssw57B10Kuq9RcPztTFn96FjyOxjjdORnFDLQlKiCTuc55qFPDozZ+sGZfetTHTlN0Cl8/M
+        xG+Xy6lA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58024)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nZbJY-0003T8-Pt; Wed, 30 Mar 2022 17:36:56 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nZbJX-0006mF-G3; Wed, 30 Mar 2022 17:36:55 +0100
+Date:   Wed, 30 Mar 2022 17:36:55 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Ard Biesheuvel <ardb@kernel.org>
 Cc:     Christian Eggers <ceggers@arri.de>,
         Linux ARM <linux-arm-kernel@lists.infradead.org>,
         Catalin Marinas <catalin.marinas@arm.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: CONFIG_THUMB2_KERNEL=y boot failure after Spectre BHB fixes
+Message-ID: <YkSHJ65qGHO4bonJ@shell.armlinux.org.uk>
+References: <YipOoAaBIHjeCKOq@dev-arch.thelio-3990X>
+ <2109354.irdbgypaU6@localhost.localdomain>
+ <YkSBJD0oA7zxHS+B@shell.armlinux.org.uk>
+ <CAMj1kXGLehBkaG7-t5PZqN+32MS-5BDX-QGOe6ftZnPuNDKicg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMj1kXGLehBkaG7-t5PZqN+32MS-5BDX-QGOe6ftZnPuNDKicg@mail.gmail.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 30 Mar 2022 at 18:12, Russell King (Oracle)
-<linux@armlinux.org.uk> wrote:
->
-> On Tue, Mar 22, 2022 at 06:49:17PM +0100, Christian Eggers wrote:
-> > Hi Nathan, hi Russel,
+On Wed, Mar 30, 2022 at 06:34:25PM +0200, Ard Biesheuvel wrote:
+> On Wed, 30 Mar 2022 at 18:12, Russell King (Oracle)
+> <linux@armlinux.org.uk> wrote:
 > >
-> > I stumbled today over the same problem (no output on serial console
-> > with v5.15.28-rt36). During `git bisect`, I had also some commits
-> > where a few lines of output were visible.
+> > On Tue, Mar 22, 2022 at 06:49:17PM +0100, Christian Eggers wrote:
+> > > Hi Nathan, hi Russel,
+> > >
+> > > I stumbled today over the same problem (no output on serial console
+> > > with v5.15.28-rt36). During `git bisect`, I had also some commits
+> > > where a few lines of output were visible.
+> > >
+> > > At commit 8d9d651ff227 ("ARM: use LOADADDR() to get load address of
+> > > sections"), the system boots up to here:
+> > >
+> > > start_kernel()
+> > > +--setup_arch()
+> > >    +--paging_init()
+> > >       +--devicemaps_init()
+> > >          +--eary_trap_init(vectors_base = 0xC7FFE000)
+> > >             +--copy_from_lma(vectors_base = 0xC7FFE000, __vectors_start=0x0, __vectors_end=0x20)
+> > >                +--__memcpy()
+> > >
+> > >                copy_template.S:113
+> > >                ldr8w   r1, r3, r4, r5, r6, r7, r8, ip, lr, abort=20f
+> > >                r1 = 0
+> > >
+> > >
+> > > With the final v5.15.28-rt36 I found out that the system boots fine
+> > > after disabling CONFIG_HARDEN_BRANCH_HISTORY.
+> > >
+> > > Is there anything else I could analyze? My SoC system is a NXP i.MX6LL
+> > > with a ARMv7 core. I have access to a JTAG debugger.
 > >
-> > At commit 8d9d651ff227 ("ARM: use LOADADDR() to get load address of
-> > sections"), the system boots up to here:
+> > I think this is already fixed in mainline. Commit:
 > >
-> > start_kernel()
-> > +--setup_arch()
-> >    +--paging_init()
-> >       +--devicemaps_init()
-> >          +--eary_trap_init(vectors_base = 0xC7FFE000)
-> >             +--copy_from_lma(vectors_base = 0xC7FFE000, __vectors_start=0x0, __vectors_end=0x20)
-> >                +--__memcpy()
+> > 6c7cb60bff7a ("ARM: fix Thumb2 regression")
 > >
-> >                copy_template.S:113
-> >                ldr8w   r1, r3, r4, r5, r6, r7, r8, ip, lr, abort=20f
-> >                r1 = 0
-> >
-> >
-> > With the final v5.15.28-rt36 I found out that the system boots fine
-> > after disabling CONFIG_HARDEN_BRANCH_HISTORY.
-> >
-> > Is there anything else I could analyze? My SoC system is a NXP i.MX6LL
-> > with a ARMv7 core. I have access to a JTAG debugger.
->
-> I think this is already fixed in mainline. Commit:
->
-> 6c7cb60bff7a ("ARM: fix Thumb2 regression")
->
+> 
+> It's still broken - I sent a couple of patches on Monday, among which
+> one to fix the boot issue with loop8 on Thumb2. The problem is 'b . +
+> 4', which produces a narrow encoding, and so it skips the subsequent
+> subs instruction and loops forever.
 
-It's still broken - I sent a couple of patches on Monday, among which
-one to fix the boot issue with loop8 on Thumb2. The problem is 'b . +
-4', which produces a narrow encoding, and so it skips the subsequent
-subs instruction and loops forever.
+And what's the current status? Sorry, I've way too much email from the
+last 2.5 weeks to find it myself.
+
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
