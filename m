@@ -2,165 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79D58C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 18:16:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35C1BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 18:16:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349821AbiC3SSP (ORCPT
+        id S1349884AbiC3SSg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 14:18:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33824 "EHLO
+        Wed, 30 Mar 2022 14:18:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350072AbiC3SSG (ORCPT
+        with ESMTP id S1349829AbiC3SSa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 14:18:06 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98C26326F2;
-        Wed, 30 Mar 2022 11:16:20 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id t2so19520962pfj.10;
-        Wed, 30 Mar 2022 11:16:20 -0700 (PDT)
+        Wed, 30 Mar 2022 14:18:30 -0400
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam07on2041.outbound.protection.outlook.com [40.107.95.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDD5F2018A;
+        Wed, 30 Mar 2022 11:16:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fuPK1GcMmt5419kQiNnUNFzucW8kX6MZofO7oFt75mg=;
-        b=gygBe8ITx/LBeEmghv58n7ugBhXHRJWXPOT0m0D7rgzezeung+Wwk1B2kD9VYRksOv
-         5ZEta8ZWCremZsx26iheMwP+Dj/0esyS3W9G2M+84gewLGOkgitpexvwR38q5eJFiNNz
-         LLa8td7npvNmAisiRJ7ekKaANn2eQtNkvNrHW0BAQTT3mnqsOGOvBK/tIjvWQ9cCnqG3
-         N+WRsck6jr22zD7xyA9AYVtGozhTlPsHPfSYoEzq81T3kKlXyWwj+1BcSIaqZIvgIrMb
-         kwKsokzLARuHfqUtymkLRWpfgO2/UJeMJuuw4fzqU7H40KVMTPLFhhtGwho+JB2ApxcC
-         n/aA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fuPK1GcMmt5419kQiNnUNFzucW8kX6MZofO7oFt75mg=;
-        b=AKMpRf7XjQufHSPpe+KhAp1Hx3h68oqGPYe7+nhA9dXfF0Gx0thJu4sdwckQCDmZV4
-         xWT/HIBlxA7S5Jex7OSN3Ni9Bdo6ZGOId2O4WGved5mtObl3/d5f0gKG2Xw1x0hFI+xN
-         WtGVwnIGSJSJRC9ya3wqkd6RABQ7lzaJcpeN3MPmY1QtnyinF0bkAcVKn/fU8Qfd0LV5
-         AignRtQCZIbZ5xOviTZARvdU4idK7W8p2swouui8ZNTGQU7rNHxZTIj+Y1Z+tw7AAgX/
-         1VfZKigve7OY7lfc4ntC4lBnCdVvyceHaQpg6Ap2TAAoptt3TSLUMe54topw4rl3BVze
-         Qd2w==
-X-Gm-Message-State: AOAM531nT4ncdbLTneETuk3pPauK7O0/c7n2sZLQlTp5l5ufQ01elqI3
-        JRaTBDYXtJf16r3osLgPQFjOcHbIzzLMMd8Ti14=
-X-Google-Smtp-Source: ABdhPJxV86MO98SqrxuJA1T2lSIpEx5wn+VSszlBEioWWGFcq0F3/ghCLYENNf3ZzV+xh2b/6C7Lv74kau851+Lu8Fs=
-X-Received: by 2002:a05:6a00:1c9e:b0:4fa:d946:378b with SMTP id
- y30-20020a056a001c9e00b004fad946378bmr712880pfw.46.1648664179908; Wed, 30 Mar
- 2022 11:16:19 -0700 (PDT)
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UxXkC4kjw0lLUqHoJHRLT3ulv/WeAZoKimJhPTcmMaU=;
+ b=C57pLAQsPigqoR3YrVUZSjC3lQ2nNNhByz7f+6Gt9Xv/ttAjDLzsMMo6vUx28Lga051cLXV0m5RXK2PmL9XU0FUgvD/EEEngDE/pG5wFbKPusggxmiopX5oNiBZJkon28aHz2sXoS2EK3xYx6q6b5dF2mdu5Eqs3KFxh+765SIU=
+Received: from DM3PR12CA0094.namprd12.prod.outlook.com (2603:10b6:0:55::14) by
+ DM6PR02MB5339.namprd02.prod.outlook.com (2603:10b6:5:51::32) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5102.22; Wed, 30 Mar 2022 18:16:41 +0000
+Received: from DM3NAM02FT049.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:0:55:cafe::b4) by DM3PR12CA0094.outlook.office365.com
+ (2603:10b6:0:55::14) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.13 via Frontend
+ Transport; Wed, 30 Mar 2022 18:16:41 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 20.83.241.18)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 20.83.241.18 as permitted sender) receiver=protection.outlook.com;
+ client-ip=20.83.241.18;
+ helo=mailrelay000001.14r1f435wfvunndds3vy4cdalc.xx.internal.cloudapp.net;
+Received: from
+ mailrelay000001.14r1f435wfvunndds3vy4cdalc.xx.internal.cloudapp.net
+ (20.83.241.18) by DM3NAM02FT049.mail.protection.outlook.com (10.13.5.68) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.19 via Frontend
+ Transport; Wed, 30 Mar 2022 18:16:41 +0000
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2172.outbound.protection.outlook.com [104.47.57.172])
+        by mailrelay000001.14r1f435wfvunndds3vy4cdalc.xx.internal.cloudapp.net (Postfix) with ESMTPS id EB18E3F03B;
+        Wed, 30 Mar 2022 18:16:40 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jjNtiwn/VTVCSJN27k90QULY02xcXJr6PK0VB1sFiUIkFWFCJTeTguDw7mUjHqvto+IFTEjOoa//AiGg4m7EWixmpyXd0dTCX3nvQ6uLWSQHoFxZTU2wLD9vxFwhO7lzBnizETOVI8Xkxzw/SEcjg88ZpKk1Y6zzTSX+tZwG8Rj6UTD15qaQ7Kv4Z/UrJtoc1UQ/Z9aYjGp8KER7DBWgJDkne57bR2250ibcdK79x4d07mSO08MuyezcvXV/8UJcS9y00BrFl1QvpyvYGruOU40fZ5yannM8ztrYhRB4X2MBdDFzBeblLhxI1+cuO3Qmz0ax9mtlof1s0H8j/+x7bw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=UxXkC4kjw0lLUqHoJHRLT3ulv/WeAZoKimJhPTcmMaU=;
+ b=N2/4a0/0ooZUIdlERPMqzRJSo3xwQQwhaJKoHnb0KNwipkemFKZgONqtgGhi7XqXeVtPGsbXTmtsQ3WmyTegvW/9pcj7R3GGRDj3m9gyE7+3FOBMiskgG2yFDJKfxHnaSVvFM04idlObjOHKdAPjUUsIjBpaS9ri4ykilr+glKhow1NjvPo/LyMBZsLY/lUD3vcwMx8iCi3kQRn++R8oHmCVnnpW+Nqt0jgsfbE/W08sduXeUenUHuMSlhJnjsvAUdA6bIGxP/DJU+cvm3R707ee2u0XhkhXONVMZTzmn/BKsGnYFrA66x6dzyI7aPG1sToivz9eWKcCF5BI2H4yow==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=redhat.com smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
+Received: from BN8PR15CA0052.namprd15.prod.outlook.com (2603:10b6:408:80::29)
+ by DM6PR02MB6395.namprd02.prod.outlook.com (2603:10b6:5:1d0::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.18; Wed, 30 Mar
+ 2022 18:16:39 +0000
+Received: from BN1NAM02FT003.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:408:80:cafe::18) by BN8PR15CA0052.outlook.office365.com
+ (2603:10b6:408:80::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.13 via Frontend
+ Transport; Wed, 30 Mar 2022 18:16:39 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
+ BN1NAM02FT003.mail.protection.outlook.com (10.13.2.122) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5123.19 via Frontend Transport; Wed, 30 Mar 2022 18:16:38 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Wed, 30 Mar 2022 11:16:22 -0700
+Received: from smtp.xilinx.com (172.19.127.96) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Wed, 30 Mar 2022 11:16:22 -0700
+Envelope-to: mst@redhat.com,
+ jasowang@redhat.com,
+ kvm@vger.kernel.org,
+ virtualization@lists.linux-foundation.org,
+ netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ habetsm.xilinx@gmail.com,
+ ecree.xilinx@gmail.com,
+ eperezma@redhat.com,
+ wuzongyong@linux.alibaba.com,
+ christophe.jaillet@wanadoo.fr,
+ elic@nvidia.com,
+ lingshan.zhu@intel.com,
+ sgarzare@redhat.com,
+ xieyongji@bytedance.com,
+ si-wei.liu@oracle.com,
+ parav@nvidia.com,
+ longpeng2@huawei.com,
+ dan.carpenter@oracle.com,
+ zhang.min9@zte.com.cn
+Received: from [10.170.66.102] (port=44662 helo=xndengvm004102.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <gautam.dawar@xilinx.com>)
+        id 1nZcrm-000CCQ-BY; Wed, 30 Mar 2022 11:16:22 -0700
+From:   Gautam Dawar <gautam.dawar@xilinx.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, <kvm@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <martinh@xilinx.com>, <hanand@xilinx.com>, <martinpo@xilinx.com>,
+        <pabloc@xilinx.com>, <dinang@xilinx.com>, <tanuj.kamde@amd.com>,
+        <habetsm.xilinx@gmail.com>, <ecree.xilinx@gmail.com>,
+        <eperezma@redhat.com>, Gautam Dawar <gdawar@xilinx.com>,
+        Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Eli Cohen <elic@nvidia.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Longpeng <longpeng2@huawei.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Zhang Min <zhang.min9@zte.com.cn>
+Subject: [PATCH v2 14/19] vhost-vdpa: introduce uAPI to set group ASID
+Date:   Wed, 30 Mar 2022 23:33:54 +0530
+Message-ID: <20220330180436.24644-15-gdawar@xilinx.com>
+X-Mailer: git-send-email 2.25.0
+In-Reply-To: <20220330180436.24644-1-gdawar@xilinx.com>
+References: <20220330180436.24644-1-gdawar@xilinx.com>
 MIME-Version: 1.0
-References: <20220324234123.1608337-1-haoluo@google.com> <9cdf860d-8370-95b5-1688-af03265cc874@fb.com>
- <CA+khW7g3hy61qnvtqUizaW+qB6wk=Y9cjivhORshOk=ZzTXJ-A@mail.gmail.com>
- <CA+khW7iq+UKsfQxdT3QpSqPUFN8gQWWDLoQ9zxB=uWTs63AZEA@mail.gmail.com>
- <20220329093753.26wc3noelqrwlrcj@apollo.legion> <CA+khW7jW47SALTfxMKfQoA0Qwqd22GC0z4S5juFTbxLfTSbFEQ@mail.gmail.com>
- <20220329232956.gbsr65jdbe4lw2m6@ast-mbp> <CA+khW7jyvp4PKGu5GS8GDf=Lr4EdRUz8kraaTfiZ2oGm704Cpw@mail.gmail.com>
-In-Reply-To: <CA+khW7jyvp4PKGu5GS8GDf=Lr4EdRUz8kraaTfiZ2oGm704Cpw@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 30 Mar 2022 11:16:08 -0700
-Message-ID: <CAADnVQLTBhCTAx1a_nev7CgMZxv1Bb7ecz1AFRin8tHmjPREJA@mail.gmail.com>
-Subject: Re: [PATCH RFC bpf-next 0/2] Mmapable task local storage.
-To:     Hao Luo <haoluo@google.com>
-Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Yonghong Song <yhs@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        KP Singh <kpsingh@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, bpf <bpf@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 1
+X-MS-Office365-Filtering-Correlation-Id: 8168ee60-2600-4614-6ed5-08da12797098
+X-MS-TrafficTypeDiagnostic: DM6PR02MB6395:EE_|DM3NAM02FT049:EE_|DM6PR02MB5339:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR02MB53391FA0EECED147FBB7E99BB11F9@DM6PR02MB5339.namprd02.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam-Untrusted: BCL:0;
+X-Microsoft-Antispam-Message-Info-Original: SwPQuvXORl0jYuzuxeF4swueniFiKM1sHdLH2boMy98X+FTKaai6F5LYhzLQALBcbz1EATrtrz0OfyZDK2Xq+YNn1Y0eozVQYF61f6r1zj3jkI3lm4XZpOTwGaiX9n1urjrl2BrpzjsgJa9waGjwg/mvtzGgrs6nsuuaS3G/Ic+nr0PL2D3ywQQkE5eW9PDbvsBQOy/UsPX3G1IOqMTy3qK8H3ohpSMl5WYTuNlPdyRyknSuLsMfeIKjihEg4qL6iafHh0RceE/nKt4m3DDOjxKipFClOmI7foxpF3P2oSqNiDliNI/gNAgzMZOiz7WJKjkWvdVQOl06WRGkyT9hKgC1fuQWoD43ubehN+B/9u3WsWl1eYuNROgUM8wGRXMqSPlf7Gi5pA9aX6t5BORjnsuJG0YXBGowTPCQxELTUhF6tuebpjYy7tWrXRGbJ1+b+HfRh8LESEgF2BZyQKeDpkAjD+DIp/XznW99MGqpZRsZ7Eq+n4Cxt75h2JG6BgLzIGIZZBgtgBtbI2IYuK9zFRebz/pVq3hLQa4L8kDzxQXoEsk2bVPP/SbKRmGD+9Ps/e2Q9iNJ0+/A/Kx2Pq8nQHaKt+njXzbbOkHix8VIYxZ/zzCWf0klKzn3tvWtUxT9NokGPkI8Lrq1hY+yxm2ZMhuC/JNbvTaqcbEX0rGM5Q7Rd5iZKHRsFxRcfRzxx34jXdkGjrL2aaPK7nBcDJo/wQ==
+X-Forefront-Antispam-Report-Untrusted: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(336012)(8936002)(36756003)(7636003)(26005)(36860700001)(356005)(9786002)(1076003)(5660300002)(186003)(44832011)(2616005)(47076005)(7416002)(426003)(2906002)(70586007)(4326008)(110136005)(6666004)(8676002)(508600001)(70206006)(7696005)(82310400004)(54906003)(316002)(83380400001)(40460700003)(102446001);DIR:OUT;SFP:1101;
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR02MB6395
+X-MS-Exchange-Transport-CrossTenantHeadersStripped: DM3NAM02FT049.eop-nam02.prod.protection.outlook.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id-Prvs: 75007473-c973-4a45-5541-08da12796f0a
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: KpJD2OrJEgpPReIPhLJkVLhFl9qGxcKqzCgJi6S36UIbfm9Bl0njxaVLKONcAoVhi6jdFvtWO5Qj/Cnq0wyeEpez/7GvyAFARU7qtYlRLNH2Qmam7E4jLZZcpL6RA5q6dbiK+kY6b99Jc7f7BzpprHwsTDqGdl+a5IxHSnmhANsUifMvrigmcV1Ay5gCX1al12QIIVAm1WdRdPdRjG2de25Yx/BwMji1Gdc+NOivR3piHRqd/u5o9oDUGB0RunOfGGDiFxo2Ws7uKg3V/Ulv8JKv446Peze5HiKHH41nFNLHucEY2ca0iQpSy7OZc514ANUjqR6+ILSctE3OJMb+cXkDTvWbEnKCRBYhYkIYMzPQED70FCVxS0PxuWzWcIRDbbk7lHUkvR+Q7zogw+I6ADUzngsE2fPPWILop2pUYbgOXz2OTimkozLOr7tZaYBi/EvsQM1ThBe/EcSCX0n0S8XvoDZv5pF9CaqiTW62fKqn68ue2u1YYkLNJ4eqwMWJ0zGlJotzm9CUkfUbme/AGY7HfCTX0COfIV/Zmoo5SdgbbyBpoCwUvbF7e42hYBfak/RzI/6Th6gZ512FCVOyktfBWiBR1Obh3ExQWgNQ5G6JuxORq8LPcXKcd6rPBxHOjI65GuT1Dzb53Inr6SZA5aPNtT4n4pQ+588aP/5hEslQJrznXrh9t9YZmBiqUVNLTD3xwm9H9TywmbtmW7yJIHcMamON7cvK7b0RzIyqOhP36tsRGrsD3z0EpUCndlbL
+X-Forefront-Antispam-Report: CIP:20.83.241.18;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mailrelay000001.14r1f435wfvunndds3vy4cdalc.xx.internal.cloudapp.net;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(81166007)(82310400004)(9786002)(1076003)(4326008)(44832011)(6666004)(47076005)(36860700001)(110136005)(26005)(8936002)(2906002)(36756003)(7696005)(186003)(8676002)(83380400001)(426003)(2616005)(5660300002)(7416002)(336012)(508600001)(54906003)(70206006)(316002)(40460700003)(102446001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2022 18:16:41.4477
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8168ee60-2600-4614-6ed5-08da12797098
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[20.83.241.18];Helo=[mailrelay000001.14r1f435wfvunndds3vy4cdalc.xx.internal.cloudapp.net]
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TreatMessagesAsInternal-DM3NAM02FT049.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR02MB5339
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 11:06 AM Hao Luo <haoluo@google.com> wrote:
->
-> On Tue, Mar 29, 2022 at 4:30 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Tue, Mar 29, 2022 at 10:43:42AM -0700, Hao Luo wrote:
-> > > On Tue, Mar 29, 2022 at 2:37 AM Kumar Kartikeya Dwivedi
-> > > <memxor@gmail.com> wrote:
-> > > >
-> > > > On Mon, Mar 28, 2022 at 11:16:15PM IST, Hao Luo wrote:
-> > > > > On Mon, Mar 28, 2022 at 10:39 AM Hao Luo <haoluo@google.com> wrote:
-> > > > > >
-> > > > > > Hi Yonghong,
-> > > > > >
-> > > > > > On Fri, Mar 25, 2022 at 12:16 PM Yonghong Song <yhs@fb.com> wrote:
-> > > > > > >
-> > > > > > > On 3/24/22 4:41 PM, Hao Luo wrote:
-> > > > > > > > Some map types support mmap operation, which allows userspace to
-> > > > > > > > communicate with BPF programs directly. Currently only arraymap
-> > > > > > > > and ringbuf have mmap implemented.
-> > > > > > > >
-> > > > > > > > However, in some use cases, when multiple program instances can
-> > > > > > > > run concurrently, global mmapable memory can cause race. In that
-> > > > > > > > case, userspace needs to provide necessary synchronizations to
-> > > > > > > > coordinate the usage of mapped global data. This can be a source
-> > > > > > > > of bottleneck.
-> > > > > > >
-> > > > > > > I can see your use case here. Each calling process can get the
-> > > > > > > corresponding bpf program task local storage data through
-> > > > > > > mmap interface. As you mentioned, there is a tradeoff
-> > > > > > > between more memory vs. non-global synchronization.
-> > > > > > >
-> > > > > > > I am thinking that another bpf_iter approach can retrieve
-> > > > > > > the similar result. We could implement a bpf_iter
-> > > > > > > for task local storage map, optionally it can provide
-> > > > > > > a tid to retrieve the data for that particular tid.
-> > > > > > > This way, user space needs an explicit syscall, but
-> > > > > > > does not need to allocate more memory than necessary.
-> > > > > > >
-> > > > > > > WDYT?
-> > > > > > >
-> > > > > >
-> > > > > > Thanks for the suggestion. I have two thoughts about bpf_iter + tid and mmap:
-> > > > > >
-> > > > > > - mmap prevents the calling task from reading other task's value.
-> > > > > > Using bpf_iter, one can pass other task's tid to get their values. I
-> > > > > > assume there are two potential ways of passing tid to bpf_iter: one is
-> > > > > > to use global data in bpf prog, the other is adding tid parameterized
-> > > > > > iter_link. For the first, it's not easy for unpriv tasks to use. For
-> > > > > > the second, we need to create one iter_link object for each interested
-> > > > > > tid. It may not be easy to use either.
-> > > > > >
-> > > > > > - Regarding adding an explicit syscall. I thought about adding
-> > > > > > write/read syscalls for task local storage maps, just like reading
-> > > > > > values from iter_link. Writing or reading task local storage map
-> > > > > > updates/reads the current task's value. I think this could achieve the
-> > > > > > same effect as mmap.
-> > > > > >
-> > > > >
-> > > > > Actually, my use case of using mmap on task local storage is to allow
-> > > > > userspace to pass FDs into bpf prog. Some of the helpers I want to add
-> > > > > need to take an FD as parameter and the bpf progs can run
-> > > > > concurrently, thus using global data is racy. Mmapable task local
-> > > > > storage is the best solution I can find for this purpose.
-> > > > >
-> > > > > Song also mentioned to me offline, that mmapable task local storage
-> > > > > may be useful for his use case.
-> > > > >
-> > > > > I am actually open to other proposals.
-> > > > >
-> > > >
-> > > > You could also use a syscall prog, and use bpf_prog_test_run to update local
-> > > > storage for current. Data can be passed for that specific prog invocation using
-> > > > ctx. You might have to enable bpf_task_storage helpers in it though, since they
-> > > > are not allowed to be called right now.
-> > > >
-> > >
-> > > The loading process needs CAP_BPF to load bpf_prog_test_run. I'm
-> > > thinking of allowing any thread including unpriv ones to be able to
-> > > pass data to the prog and update their own storage.
-> >
-> > If I understand the use case correctly all of this mmap-ing is only to
-> > allow unpriv userspace to access a priv map via unpriv mmap() syscall.
-> > But the map can be accessed as unpriv already.
-> > Pin it with the world read creds and do map_lookup sys_bpf cmd on it.
->
-> Right, but, if I understand correctly, with
-> sysctl_unprivileged_bpf_disabled, unpriv tasks are not able to make
-> use of __sys_bpf(). Is there anything I missed?
+Follows the vDPA support for associating ASID to a specific virtqueue
+group. This patch adds a uAPI to support setting them from userspace.
 
-That sysctl is a heavy hammer. Let's fix it instead.
-map lookup/update/delete can be allowed for unpriv for certain map types.
-There are permissions checks in corresponding lookup/update calls already.
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Gautam Dawar <gdawar@xilinx.com>
+---
+ drivers/vhost/vdpa.c       | 8 ++++++++
+ include/uapi/linux/vhost.h | 7 +++++++
+ 2 files changed, 15 insertions(+)
+
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index aa5cacdc5263..6c7ee0f18892 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -473,6 +473,14 @@ static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int cmd,
+ 		else if (copy_to_user(argp, &s, sizeof(s)))
+ 			return -EFAULT;
+ 		return 0;
++	case VHOST_VDPA_SET_GROUP_ASID:
++		if (copy_from_user(&s, argp, sizeof(s)))
++			return -EFAULT;
++		if (s.num >= vdpa->nas)
++			return -EINVAL;
++		if (!ops->set_group_asid)
++			return -EOPNOTSUPP;
++		return ops->set_group_asid(vdpa, idx, s.num);
+ 	case VHOST_GET_VRING_BASE:
+ 		r = ops->get_vq_state(v->vdpa, idx, &vq_state);
+ 		if (r)
+diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
+index 668914c87f74..cab645d4a645 100644
+--- a/include/uapi/linux/vhost.h
++++ b/include/uapi/linux/vhost.h
+@@ -164,4 +164,11 @@
+  */
+ #define VHOST_VDPA_GET_VRING_GROUP	_IOWR(VHOST_VIRTIO, 0x7B,	\
+ 					      struct vhost_vring_state)
++/* Set the ASID for a virtqueue group. The group index is stored in
++ * the index field of vhost_vring_state, the ASID associated with this
++ * group is stored at num field of vhost_vring_state.
++ */
++#define VHOST_VDPA_SET_GROUP_ASID	_IOW(VHOST_VIRTIO, 0x7C, \
++					     struct vhost_vring_state)
++
+ #endif
+-- 
+2.30.1
+
