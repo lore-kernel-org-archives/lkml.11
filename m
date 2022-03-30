@@ -2,50 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2173EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:57:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92FC6C352A1
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:57:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229508AbiC3L4V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 07:56:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59912 "EHLO
+        id S244367AbiC3L64 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 07:58:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344300AbiC3Lwg (ORCPT
+        with ESMTP id S1344581AbiC3LxS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:52:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E60496274;
-        Wed, 30 Mar 2022 04:48:30 -0700 (PDT)
+        Wed, 30 Mar 2022 07:53:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38AEE264F4F;
+        Wed, 30 Mar 2022 04:49:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C7D996137A;
-        Wed, 30 Mar 2022 11:48:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C249FC340F3;
-        Wed, 30 Mar 2022 11:48:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9407E61671;
+        Wed, 30 Mar 2022 11:49:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26DB7C34111;
+        Wed, 30 Mar 2022 11:49:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648640910;
-        bh=C/6vszzsIcvJ2zFrmoHTuFlxJe5pkxocbcyOi1y5Nq8=;
+        s=k20201202; t=1648640948;
+        bh=8XMINSXaSbfKJrYh9dECjJqF0AVdv8TqKHJzrJ7r5kw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jPDqKJj897XozyoGLX6ClpiZMmLxHlpNFOyUw9b5IWbry9yy9mCSzXZ83NCmuuFuP
-         N6YYYREjnumC76b3itKfQarHfIQc3q7WXcQWg+FceiVxo2tPn/KNNx6PJxDYForDx/
-         +D/9CdBmGythgw2UVFsjsfyrn6xklF7G7z270leV5U7j3Z8usdybB+g6deimDvvEQF
-         vlw0RZfm02f5rF7+m+NHTYz8x6Kv70zbk/VlJ8E8GZ1LqQpAz56kAPnAIQp/2B4C+J
-         DqYMCFa1VSFrq0ESa1Ox61j7RHS668C2dWqIl5JFHXmRXTV19mWDe/dZBWGidf64VZ
-         IuJE7kpCyuPLw==
+        b=RCNw4SYaQc2yZZyl4SDVgGr2nixOL8PWpOqf4oaHB3kboi8bmRbLkWEjocoMuRoop
+         UoXdvpo1Fetq064nVXBsQyPqk1zLHqXFWmqVX8OoaON/r+1JJnoGXM9cxvU9ii68aL
+         DywaICIBh9MmqUJ1Wn3SAjqaSilNHDLIU+Viss+eKy6lTCEYxDKCC9GU4KYSWPifqS
+         9Qk3Dgtgm8PFBeGv2G8YFPVAzYURLAtvzV0ORMihjkb3ra8htyBsGdKbt54O71ev+9
+         zYtafGE6PbM5iwPEh5gMufUdiqVMfZ/oaja7+iaGXwzI3I6p5UbBgOq5fm8AWyoBfm
+         gCJY5N5V4ZLZw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Matt Kramer <mccleetus@gmail.com>, Takashi Iwai <tiwai@suse.de>,
-        Sasha Levin <sashal@kernel.org>, perex@perex.cz,
-        tiwai@suse.com, corbet@lwn.net, gregkh@linuxfoundation.org,
-        sudipm.mukherjee@gmail.com, hui.wang@canonical.com,
-        sylee@canonical.com, alsa-devel@alsa-project.org,
-        linux-doc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 66/66] ALSA: hda/realtek: Add alc256-samsung-headphone fixup
-Date:   Wed, 30 Mar 2022 07:46:45 -0400
-Message-Id: <20220330114646.1669334-66-sashal@kernel.org>
+Cc:     Tsuchiya Yuto <kitakar@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, gregkh@linuxfoundation.org,
+        linux-media@vger.kernel.org, devel@driverdev.osuosl.org
+Subject: [PATCH AUTOSEL 5.16 22/59] media: atomisp: fix dummy_ptr check to avoid duplicate active_bo
+Date:   Wed, 30 Mar 2022 07:47:54 -0400
+Message-Id: <20220330114831.1670235-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330114646.1669334-1-sashal@kernel.org>
-References: <20220330114646.1669334-1-sashal@kernel.org>
+In-Reply-To: <20220330114831.1670235-1-sashal@kernel.org>
+References: <20220330114831.1670235-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,83 +52,114 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matt Kramer <mccleetus@gmail.com>
+From: Tsuchiya Yuto <kitakar@gmail.com>
 
-[ Upstream commit ef248d9bd616b04df8be25539a4dc5db4b6c56f4 ]
+[ Upstream commit 127efdbc51fe6064336c0452ce9c910b3e107cf0 ]
 
-This fixes the near-silence of the headphone jack on the ALC256-based
-Samsung Galaxy Book Flex Alpha (NP730QCJ). The magic verbs were found
-through trial and error, using known ALC298 hacks as inspiration. The
-fixup is auto-enabled only when the NP730QCJ is detected. It can be
-manually enabled using model=alc256-samsung-headphone.
+The dummy_ptr check in hmm_init() [1] results in the following
+"hmm_init Failed to create sysfs" error exactly once every
+two times on atomisp reload by rmmod/insmod (although atomisp module
+loads and works fine regardless of this error):
 
-Signed-off-by: Matt Kramer <mccleetus@gmail.com>
-Link: https://lore.kernel.org/r/3168355.aeNJFYEL58@linus
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+	[  140.230662] sysfs: cannot create duplicate filename '/devices/pci0000:00/0000:00:03.0/active_bo'
+	[  140.230668] CPU: 1 PID: 2502 Comm: insmod Tainted: G         C OE     5.15.0-rc4-1-surface-mainline #1 b8acf6eb64994414b2e20bad312a7a2c45f748f9
+	[  140.230675] Hardware name: OEMB OEMB/OEMB, BIOS 1.51116.238 03/09/2015
+	[  140.230678] Call Trace:
+	[  140.230687]  dump_stack_lvl+0x46/0x5a
+	[  140.230702]  sysfs_warn_dup.cold+0x17/0x24
+	[  140.230710]  sysfs_add_file_mode_ns+0x160/0x170
+	[  140.230717]  internal_create_group+0x126/0x390
+	[  140.230723]  hmm_init+0x5c/0x70 [atomisp 7a6a680bf400629363d2a6f58fd10e7299678b99]
+	[  140.230811]  atomisp_pci_probe.cold+0x1136/0x148e [atomisp 7a6a680bf400629363d2a6f58fd10e7299678b99]
+	[  140.230875]  local_pci_probe+0x45/0x80
+	[  140.230882]  ? pci_match_device+0xd7/0x130
+	[  140.230887]  pci_device_probe+0xfa/0x1b0
+	[  140.230892]  really_probe+0x1f5/0x3f0
+	[  140.230899]  __driver_probe_device+0xfe/0x180
+	[  140.230903]  driver_probe_device+0x1e/0x90
+	[  140.230908]  __driver_attach+0xc0/0x1c0
+	[  140.230912]  ? __device_attach_driver+0xe0/0xe0
+	[  140.230915]  ? __device_attach_driver+0xe0/0xe0
+	[  140.230919]  bus_for_each_dev+0x89/0xd0
+	[  140.230924]  bus_add_driver+0x12b/0x1e0
+	[  140.230929]  driver_register+0x8f/0xe0
+	[  140.230933]  ? 0xffffffffc153f000
+	[  140.230937]  do_one_initcall+0x57/0x220
+	[  140.230945]  do_init_module+0x5c/0x260
+	[  140.230952]  load_module+0x24bd/0x26a0
+	[  140.230962]  ? __do_sys_finit_module+0xae/0x110
+	[  140.230966]  __do_sys_finit_module+0xae/0x110
+	[  140.230972]  do_syscall_64+0x5c/0x80
+	[  140.230979]  ? syscall_exit_to_user_mode+0x23/0x40
+	[  140.230983]  ? do_syscall_64+0x69/0x80
+	[  140.230988]  ? exc_page_fault+0x72/0x170
+	[  140.230991]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+	[  140.230997] RIP: 0033:0x7f7fd5d8718d
+	[  140.231003] Code: b4 0c 00 0f 05 eb a9 66 0f 1f 44 00 00 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d b3 6c 0c 00 f7 d8 64 89 01 48
+	[  140.231006] RSP: 002b:00007ffefc25f0e8 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
+	[  140.231012] RAX: ffffffffffffffda RBX: 000055ac3edcd7f0 RCX: 00007f7fd5d8718d
+	[  140.231015] RDX: 0000000000000000 RSI: 000055ac3d723270 RDI: 0000000000000003
+	[  140.231017] RBP: 0000000000000000 R08: 0000000000000000 R09: 00007f7fd5e52380
+	[  140.231019] R10: 0000000000000003 R11: 0000000000000246 R12: 000055ac3d723270
+	[  140.231021] R13: 0000000000000000 R14: 000055ac3edd06e0 R15: 0000000000000000
+	[  140.231038] atomisp-isp2 0000:00:03.0: hmm_init Failed to create sysfs
+
+The problem is that dummy_ptr == 0 is a valid value. So, change the logic
+which checks if dummy_ptr was allocated.
+
+At this point, atomisp now gives WARN_ON() in hmm_free() [2] on atomisp
+reload by rmmod/insmod. Again, the check is wrong there.
+
+So, change both checks for mmgr_EXCEPTION, which is the error value when
+HMM allocation fails, and initialize dummy_ptr with such value.
+
+[1] added on commit
+    d9ab83953fa7 ("media: atomisp: don't cause a warn if probe failed")
+[2] added on commit
+    b83cc378dfc4 ("atomisp: clean up the hmm init/cleanup indirections")
+
+Link: https://lore.kernel.org/linux-media/20211017162337.44860-3-kitakar@gmail.com
+
+Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
+Co-developed-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/sound/hd-audio/models.rst |  4 ++++
- sound/pci/hda/patch_realtek.c           | 11 +++++++++++
- 2 files changed, 15 insertions(+)
+ drivers/staging/media/atomisp/pci/hmm/hmm.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/sound/hd-audio/models.rst b/Documentation/sound/hd-audio/models.rst
-index d25335993e55..9b52f50a6854 100644
---- a/Documentation/sound/hd-audio/models.rst
-+++ b/Documentation/sound/hd-audio/models.rst
-@@ -261,6 +261,10 @@ alc-sense-combo
- huawei-mbx-stereo
-     Enable initialization verbs for Huawei MBX stereo speakers;
-     might be risky, try this at your own risk
-+alc298-samsung-headphone
-+    Samsung laptops with ALC298
-+alc256-samsung-headphone
-+    Samsung laptops with ALC256
+diff --git a/drivers/staging/media/atomisp/pci/hmm/hmm.c b/drivers/staging/media/atomisp/pci/hmm/hmm.c
+index 6a5ee4607089..c1cda16f2dc0 100644
+--- a/drivers/staging/media/atomisp/pci/hmm/hmm.c
++++ b/drivers/staging/media/atomisp/pci/hmm/hmm.c
+@@ -39,7 +39,7 @@
+ struct hmm_bo_device bo_device;
+ struct hmm_pool	dynamic_pool;
+ struct hmm_pool	reserved_pool;
+-static ia_css_ptr dummy_ptr;
++static ia_css_ptr dummy_ptr = mmgr_EXCEPTION;
+ static bool hmm_initialized;
+ struct _hmm_mem_stat hmm_mem_stat;
  
- ALC66x/67x/892
- ==============
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 75ff7e8498b8..2230b0e92e43 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -6948,6 +6948,7 @@ enum {
- 	ALC236_FIXUP_HP_MUTE_LED,
- 	ALC236_FIXUP_HP_MUTE_LED_MICMUTE_VREF,
- 	ALC298_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET,
-+	ALC256_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET,
- 	ALC295_FIXUP_ASUS_MIC_NO_PRESENCE,
- 	ALC269VC_FIXUP_ACER_VCOPPERBOX_PINS,
- 	ALC269VC_FIXUP_ACER_HEADSET_MIC,
-@@ -8273,6 +8274,14 @@ static const struct hda_fixup alc269_fixups[] = {
- 			{ }
- 		},
- 	},
-+	[ALC256_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET] = {
-+		.type = HDA_FIXUP_VERBS,
-+		.v.verbs = (const struct hda_verb[]) {
-+			{ 0x20, AC_VERB_SET_COEF_INDEX, 0x08},
-+			{ 0x20, AC_VERB_SET_PROC_COEF, 0x2fcf},
-+			{ }
-+		},
-+	},
- 	[ALC295_FIXUP_ASUS_MIC_NO_PRESENCE] = {
- 		.type = HDA_FIXUP_PINS,
- 		.v.pins = (const struct hda_pintbl[]) {
-@@ -9054,6 +9063,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
- 	SND_PCI_QUIRK(0x144d, 0xc740, "Samsung Ativ book 8 (NP870Z5G)", ALC269_FIXUP_ATIV_BOOK_8),
- 	SND_PCI_QUIRK(0x144d, 0xc812, "Samsung Notebook Pen S (NT950SBE-X58)", ALC298_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET),
- 	SND_PCI_QUIRK(0x144d, 0xc830, "Samsung Galaxy Book Ion (NT950XCJ-X716A)", ALC298_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET),
-+	SND_PCI_QUIRK(0x144d, 0xc832, "Samsung Galaxy Book Flex Alpha (NP730QCJ)", ALC256_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET),
- 	SND_PCI_QUIRK(0x1458, 0xfa53, "Gigabyte BXBT-2807", ALC283_FIXUP_HEADSET_MIC),
- 	SND_PCI_QUIRK(0x1462, 0xb120, "MSI Cubi MS-B120", ALC283_FIXUP_HEADSET_MIC),
- 	SND_PCI_QUIRK(0x1462, 0xb171, "Cubi N 8GL (MS-B171)", ALC283_FIXUP_HEADSET_MIC),
-@@ -9400,6 +9410,7 @@ static const struct hda_model_fixup alc269_fixup_models[] = {
- 	{.id = ALC298_FIXUP_HUAWEI_MBX_STEREO, .name = "huawei-mbx-stereo"},
- 	{.id = ALC256_FIXUP_MEDION_HEADSET_NO_PRESENCE, .name = "alc256-medion-headset"},
- 	{.id = ALC298_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET, .name = "alc298-samsung-headphone"},
-+	{.id = ALC256_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET, .name = "alc256-samsung-headphone"},
- 	{.id = ALC255_FIXUP_XIAOMI_HEADSET_MIC, .name = "alc255-xiaomi-headset"},
- 	{.id = ALC274_FIXUP_HP_MIC, .name = "alc274-hp-mic-detect"},
- 	{.id = ALC245_FIXUP_HP_X360_AMP, .name = "alc245-hp-x360-amp"},
+@@ -209,7 +209,7 @@ int hmm_init(void)
+ 
+ void hmm_cleanup(void)
+ {
+-	if (!dummy_ptr)
++	if (dummy_ptr == mmgr_EXCEPTION)
+ 		return;
+ 	sysfs_remove_group(&atomisp_dev->kobj, atomisp_attribute_group);
+ 
+@@ -288,7 +288,8 @@ void hmm_free(ia_css_ptr virt)
+ 
+ 	dev_dbg(atomisp_dev, "%s: free 0x%08x\n", __func__, virt);
+ 
+-	WARN_ON(!virt);
++	if (WARN_ON(virt == mmgr_EXCEPTION))
++		return;
+ 
+ 	bo = hmm_bo_device_search_start(&bo_device, (unsigned int)virt);
+ 
 -- 
 2.34.1
 
