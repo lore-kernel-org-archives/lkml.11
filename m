@@ -2,164 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FFA5C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 09:37:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FCE5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 09:39:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244878AbiC3JjK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 05:39:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52256 "EHLO
+        id S244885AbiC3Jku (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 05:40:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244860AbiC3JjE (ORCPT
+        with ESMTP id S244152AbiC3Jks (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 05:39:04 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AB96393DB
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 02:37:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648633040; x=1680169040;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ecJxBpL/8jujjfLvyAxdtU96GhIZIvpCCUJvYqxNY3Y=;
-  b=mqjkClGMUaYUH2cot32O3txgcXeoX64HjEHe/PUiuhJeeLCT8DRF+VY7
-   1ppbQRqvHYmV1zuP0/vKyKHRBT3CgVD2F5FXN1ptmCQ4vRDMNoKblS9O0
-   0oduZbboZYAnEby9U5IeRHcVnuqqRiXmjjl/EJkKVFVhpeKGNTQpyEop3
-   /Tb2fTWfPxgJw3AbMIM3jnZVGrBlFkK+l3XGFFG3RkYBCSrvklVGmUhwF
-   PJvDdvBkZzJtVSbUC2QlVCuoA8J2+fZ6aS6LUwVaFfCDW029rsxqm2LBH
-   ZIN9yOr+0MuTQp9tP88sfyyv4gu5O9E25YtLPtpNe2hUDGheygdeI1XsI
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="345937152"
-X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
-   d="scan'208";a="345937152"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 02:37:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
-   d="scan'208";a="719912394"
-Received: from lkp-server02.sh.intel.com (HELO 7a008980c4ea) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 30 Mar 2022 02:37:18 -0700
-Received: from kbuild by 7a008980c4ea with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nZUlR-0000F4-K9; Wed, 30 Mar 2022 09:37:17 +0000
-Date:   Wed, 30 Mar 2022 17:36:35 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andrey Grodzovsky <andrey.grodzovsky@amd.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: drivers/gpu/drm/amd/amdgpu/amdgpu_xgmi.c:413 amdgpu_get_xgmi_hive()
- warn: inconsistent indenting
-Message-ID: <202203301722.eFgFpxPQ-lkp@intel.com>
+        Wed, 30 Mar 2022 05:40:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44DAC4B86E
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 02:39:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EA3D4B81BBC
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 09:39:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BD20C340EE;
+        Wed, 30 Mar 2022 09:39:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648633141;
+        bh=sr20VZD/nipFVwn5z7LO15+xkgWkbvqc30j4YQ+hSx8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BGNJBlFmALAXCWLMYfs5LDnkpqqiau0njmHsp0WhVlbGidxXTHQq2GmaVedS62XER
+         OQqSbdbP3zR7CTAswEvDuZ+Qur+gHovGr3RjMh8MhnncHHbBYOvHVoDsYc9+ATjCF8
+         16SaZSNjTz7Yl43EfT+5opZK6TH45Qj47jwdEKeFvHUxw4LcTU0fuaqhEi1ff7F7Yz
+         H2rnFIaPKxbQ7GYuw6kEfmAtYweBaDZIdn1ngGLR7Ey2EUD6x4lN+ofFfz5v0hYs/x
+         dTpWOHFr+A69us/a+oQPrA8ENj2PXs7kpUUI4ImWS0k2K5lM3PhAgQZMn61OUCAYD/
+         2U7OKDpbI1SvQ==
+Date:   Wed, 30 Mar 2022 11:38:58 +0200
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Stephen Kitt <steve@sk2.org>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ASoC: ad1*, ada*, ssm*: use i2c_match_id and simple i2c
+ probe
+Message-ID: <YkQlMmQ4Dgh2kUDV@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Stephen Kitt <steve@sk2.org>, Lars-Peter Clausen <lars@metafoo.de>,
+        Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org
+References: <20220325165452.1212975-1-steve@sk2.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="XDSWw6B0/BjqXue9"
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220325165452.1212975-1-steve@sk2.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   d888c83fcec75194a8a48ccd283953bdba7b2550
-commit: cfbb6b0047448e2d986160d9f30d60f604d9ad0f drm/amdgpu: Rework reset domain to be refcounted.
-date:   7 weeks ago
-config: riscv-randconfig-m031-20220327 (https://download.01.org/0day-ci/archive/20220330/202203301722.eFgFpxPQ-lkp@intel.com/config)
-compiler: riscv32-linux-gcc (GCC) 11.2.0
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+--XDSWw6B0/BjqXue9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-New smatch warnings:
-drivers/gpu/drm/amd/amdgpu/amdgpu_xgmi.c:413 amdgpu_get_xgmi_hive() warn: inconsistent indenting
+On Fri, Mar 25, 2022 at 05:54:52PM +0100, Stephen Kitt wrote:
+> As part of the ongoing i2c transition to the simple probe
+> ("probe_new"), this patch uses i2c_match_id to retrieve the
+> driver_data for the probed device. The id parameter is thus no longer
+> necessary and the simple probe can be used instead.
+>=20
+> Signed-off-by: Stephen Kitt <steve@sk2.org>
 
-Old smatch warnings:
-drivers/gpu/drm/amd/amdgpu/amdgpu_xgmi.c:473 amdgpu_xgmi_set_pstate() warn: ignoring unreachable code.
+I think the device tables should be moved up.
 
-vim +413 drivers/gpu/drm/amd/amdgpu/amdgpu_xgmi.c
 
-   363	
-   364	
-   365	
-   366	struct amdgpu_hive_info *amdgpu_get_xgmi_hive(struct amdgpu_device *adev)
-   367	{
-   368		struct amdgpu_hive_info *hive = NULL;
-   369		int ret;
-   370	
-   371		if (!adev->gmc.xgmi.hive_id)
-   372			return NULL;
-   373	
-   374		if (adev->hive) {
-   375			kobject_get(&adev->hive->kobj);
-   376			return adev->hive;
-   377		}
-   378	
-   379		mutex_lock(&xgmi_mutex);
-   380	
-   381		list_for_each_entry(hive, &xgmi_hive_list, node)  {
-   382			if (hive->hive_id == adev->gmc.xgmi.hive_id)
-   383				goto pro_end;
-   384		}
-   385	
-   386		hive = kzalloc(sizeof(*hive), GFP_KERNEL);
-   387		if (!hive) {
-   388			dev_err(adev->dev, "XGMI: allocation failed\n");
-   389			hive = NULL;
-   390			goto pro_end;
-   391		}
-   392	
-   393		/* initialize new hive if not exist */
-   394		ret = kobject_init_and_add(&hive->kobj,
-   395				&amdgpu_xgmi_hive_type,
-   396				&adev->dev->kobj,
-   397				"%s", "xgmi_hive_info");
-   398		if (ret) {
-   399			dev_err(adev->dev, "XGMI: failed initializing kobject for xgmi hive\n");
-   400			kobject_put(&hive->kobj);
-   401			kfree(hive);
-   402			hive = NULL;
-   403			goto pro_end;
-   404		}
-   405	
-   406		/**
-   407		 * Avoid recreating reset domain when hive is reconstructed for the case
-   408		 * of reset the devices in the XGMI hive during probe for SRIOV
-   409		 * See https://www.spinics.net/lists/amd-gfx/msg58836.html
-   410		 */
-   411		if (adev->reset_domain->type != XGMI_HIVE) {
-   412			hive->reset_domain = amdgpu_reset_create_reset_domain(XGMI_HIVE, "amdgpu-reset-hive");
- > 413				if (!hive->reset_domain) {
-   414					dev_err(adev->dev, "XGMI: failed initializing reset domain for xgmi hive\n");
-   415					ret = -ENOMEM;
-   416					kobject_put(&hive->kobj);
-   417					kfree(hive);
-   418					hive = NULL;
-   419					goto pro_end;
-   420				}
-   421		} else {
-   422			amdgpu_reset_get_reset_domain(adev->reset_domain);
-   423			hive->reset_domain = adev->reset_domain;
-   424		}
-   425	
-   426		hive->hive_id = adev->gmc.xgmi.hive_id;
-   427		INIT_LIST_HEAD(&hive->device_list);
-   428		INIT_LIST_HEAD(&hive->node);
-   429		mutex_init(&hive->hive_lock);
-   430		atomic_set(&hive->number_devices, 0);
-   431		task_barrier_init(&hive->tb);
-   432		hive->pstate = AMDGPU_XGMI_PSTATE_UNKNOWN;
-   433		hive->hi_req_gpu = NULL;
-   434	
-   435		/*
-   436		 * hive pstate on boot is high in vega20 so we have to go to low
-   437		 * pstate on after boot.
-   438		 */
-   439		hive->hi_req_count = AMDGPU_MAX_XGMI_DEVICE_PER_HIVE;
-   440		list_add_tail(&hive->node, &xgmi_hive_list);
-   441	
-   442	pro_end:
-   443		if (hive)
-   444			kobject_get(&hive->kobj);
-   445		mutex_unlock(&xgmi_mutex);
-   446		return hive;
-   447	}
-   448	
+--XDSWw6B0/BjqXue9
+Content-Type: application/pgp-signature; name="signature.asc"
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmJEJTIACgkQFA3kzBSg
+KbZPWw//fRdPhdKZXXDCzD2xNq2LcyoA6zB8J0L2oT3skD/BOuSW71g6xTaLxK/8
+J6nMxftG57tbDragyoaZjcM5rsUWPVNdJYJmrok1JqLR4pl/z8KTqzAUqEaam184
+EYnTJH5IRQhq2McMgH3BBbD5QSC9fgjOA2Y7EuiKwhBKqkgU2rgnwisxhOWvNc3y
+jNOj5z2rtSOXvpEf3koqe3UzcDzxnlxLQojcDGrwrkw808FenkVnYCok6ka/DasJ
+/hAI6NlPu+TtGvdygTa4cHjAH1Eaw9CnbeyPdnoQ9vt6qSGCFrqnDvt6NrWVT7Q9
+2gb3JcnTEoWMeea6lxNXhwzrg9yuGXOzSl4ZepdcKanYW+1aqM10YYQptA+6wPwf
+4asditsswlMcYp2qNCiRzGvYKJXqIL4TDcutp+BkFwFZBSs4q27ZXgCpG+JBA5id
+4bYzG0ndck//EBNH+T7Lm/oXikUJQBJ156n1Egny3mGwQ6ISZ9bIVosg5dK+X+cx
+cpmFX0SJqNRUmy3Yj7KQfAhFrhrp3BgiSauqrhmhbkZERxJphEUuWk+y/HvbbXq9
+lOPELeCShqAIJ0C/Ys9KAXlzBnUNcTynEF2Bp8+8X/CB+OMHz2wrbb+TBV5FYOgF
+xZ4NifU5wqXU3YfpiB7Atgy6dmTG+hSARI0uORauGr9Rn7RtRnY=
+=rjIJ
+-----END PGP SIGNATURE-----
+
+--XDSWw6B0/BjqXue9--
