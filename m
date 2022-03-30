@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61757C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:59:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4DCEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:59:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344019AbiC3MBA (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:01:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58534 "EHLO
+        id S237881AbiC3MBI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 08:01:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344735AbiC3Lxa (ORCPT
+        with ESMTP id S1344783AbiC3Lxf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:53:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B235B26E55D;
-        Wed, 30 Mar 2022 04:49:33 -0700 (PDT)
+        Wed, 30 Mar 2022 07:53:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E27827971A;
+        Wed, 30 Mar 2022 04:49:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5746DB81C37;
-        Wed, 30 Mar 2022 11:49:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3C4CC340F3;
-        Wed, 30 Mar 2022 11:49:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E848461656;
+        Wed, 30 Mar 2022 11:49:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2762C3410F;
+        Wed, 30 Mar 2022 11:49:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648640972;
-        bh=8MKOSueqAUGuN31VyJtXZ8WouYprwqTW9CycYNHA2Jw=;
+        s=k20201202; t=1648640978;
+        bh=8ZFmnqlSEMxKjuWziuwkhdq48STdoQ3qVnRC30Htjlg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rpDA1CfQ2ZyjOO7v0FhTlMhKfK6acdfApFGqC6X2v1Y5cCysLKIiJ4Vqn/hzCA20K
-         DHmohNtoeTjsbbQhKaA202fcSyMRlBcPBOxhZpX4lIaACXajPzelmXxj0DbtZw906O
-         VV/yl9G00mEyKY/X1dftqaczSLc2HBh4eVjARY6UVAv2rSrkKYNfmCD8QXLV4qqGkX
-         wlLg+QD5Yk2gxAaf5e25Z1hDAFEj5cG8AUk3XLUlh3cVJ2RY3W6ifKHhtLS5WHoPNM
-         pab7/G/qnFi+PTQMufkmYhYJVV8LVRpfj3c19YMYathVfbR7SpD+BCXMmw2F9PijI1
-         lUQ0bc95PUrGg==
+        b=j1e1CRZ3y8YHG0kVE4kYD1WHIOEmfyQodVOwgdQTX2dlaGxyMMi+nob6botTcQZe5
+         K7iyqBf6Ri+/7qVXijNHO0W65VH4wUiEiIcl4hUELjC1gFI89a4/48WjxdeypUb/sR
+         2jZVs2kV1A36N3m/MgQfbdobYkRQv5fHZC/9Pth5i78Pjy7DCzMe1OGqBlcQhK6U6a
+         C16+QVqE7DERmp5L0fIgchtb7YWkwV+B7a8Qwn15fulrRBOBvSJECJnqdaes5C3Rel
+         kcwGYdxt7qBMGMQQDslv2nw9lKbwhD6wmwFbEaglFue56k6ZcryCsK3cjf/MZ4DyPY
+         s1Maq6VuHBTWQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Derek Fang <derek.fang@realtek.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, bardliao@realtek.com,
-        oder_chiou@realtek.com, lgirdwood@gmail.com, perex@perex.cz,
-        tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.16 39/59] ASoC: rt5682s: Fix the wrong jack type detected
-Date:   Wed, 30 Mar 2022 07:48:11 -0400
-Message-Id: <20220330114831.1670235-39-sashal@kernel.org>
+Cc:     Richard Leitner <richard.leitner@skidata.com>,
+        Thierry Reding <treding@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        mark.rutland@arm.com, linux@armlinux.org.uk, swarren@wwwdotorg.org,
+        thierry.reding@gmail.com, gnurou@gmail.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-tegra@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 42/59] ARM: tegra: tamonten: Fix I2C3 pad setting
+Date:   Wed, 30 Mar 2022 07:48:14 -0400
+Message-Id: <20220330114831.1670235-42-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330114831.1670235-1-sashal@kernel.org>
 References: <20220330114831.1670235-1-sashal@kernel.org>
@@ -54,138 +55,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Derek Fang <derek.fang@realtek.com>
+From: Richard Leitner <richard.leitner@skidata.com>
 
-[ Upstream commit c07ac3ee76e5e5506bca9c03fbbb15e40ab28430 ]
+[ Upstream commit 0092c25b541a5422d7e71892a13c55ee91abc34b ]
 
-Some powers were changed during the jack insert detection and clk's
-enable/disable in CCF.
-If in parallel, the influence has a chance to detect the wrong jack
-type.
+This patch fixes the tristate configuration for i2c3 function assigned
+to the dtf pins on the Tamonten Tegra20 SoM.
 
-We refer to the below commit of the variant codec (rt5682) to fix
-this issue.
-  ASoC: rt5682: Fix deadlock on resume
-
-1. Remove rt5682s_headset_detect in rt5682s_jd_check_handler and
-   use jack_detect_work instead of.
-2. Use dapm mutex used in CCF to protect most of jack_detect_work.
-
-Signed-off-by: Derek Fang <derek.fang@realtek.com>
-Link: https://lore.kernel.org/r/20220223101450.4577-1-derek.fang@realtek.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Richard Leitner <richard.leitner@skidata.com>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/rt5682s.c | 26 +++++++++-----------------
- sound/soc/codecs/rt5682s.h |  1 -
- 2 files changed, 9 insertions(+), 18 deletions(-)
+ arch/arm/boot/dts/tegra20-tamonten.dtsi | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/sound/soc/codecs/rt5682s.c b/sound/soc/codecs/rt5682s.c
-index d79b548d23fa..f2a2f3d60925 100644
---- a/sound/soc/codecs/rt5682s.c
-+++ b/sound/soc/codecs/rt5682s.c
-@@ -822,6 +822,7 @@ static void rt5682s_jack_detect_handler(struct work_struct *work)
- {
- 	struct rt5682s_priv *rt5682s =
- 		container_of(work, struct rt5682s_priv, jack_detect_work.work);
-+	struct snd_soc_dapm_context *dapm;
- 	int val, btn_type;
- 
- 	if (!rt5682s->component || !rt5682s->component->card ||
-@@ -832,7 +833,9 @@ static void rt5682s_jack_detect_handler(struct work_struct *work)
- 		return;
- 	}
- 
--	mutex_lock(&rt5682s->jdet_mutex);
-+	dapm = snd_soc_component_get_dapm(rt5682s->component);
-+
-+	snd_soc_dapm_mutex_lock(dapm);
- 	mutex_lock(&rt5682s->calibrate_mutex);
- 
- 	val = snd_soc_component_read(rt5682s->component, RT5682S_AJD1_CTRL)
-@@ -889,6 +892,9 @@ static void rt5682s_jack_detect_handler(struct work_struct *work)
- 		rt5682s->irq_work_delay_time = 50;
- 	}
- 
-+	mutex_unlock(&rt5682s->calibrate_mutex);
-+	snd_soc_dapm_mutex_unlock(dapm);
-+
- 	snd_soc_jack_report(rt5682s->hs_jack, rt5682s->jack_type,
- 		SND_JACK_HEADSET | SND_JACK_BTN_0 | SND_JACK_BTN_1 |
- 		SND_JACK_BTN_2 | SND_JACK_BTN_3);
-@@ -898,9 +904,6 @@ static void rt5682s_jack_detect_handler(struct work_struct *work)
- 		schedule_delayed_work(&rt5682s->jd_check_work, 0);
- 	else
- 		cancel_delayed_work_sync(&rt5682s->jd_check_work);
--
--	mutex_unlock(&rt5682s->calibrate_mutex);
--	mutex_unlock(&rt5682s->jdet_mutex);
- }
- 
- static void rt5682s_jd_check_handler(struct work_struct *work)
-@@ -908,14 +911,9 @@ static void rt5682s_jd_check_handler(struct work_struct *work)
- 	struct rt5682s_priv *rt5682s =
- 		container_of(work, struct rt5682s_priv, jd_check_work.work);
- 
--	if (snd_soc_component_read(rt5682s->component, RT5682S_AJD1_CTRL)
--		& RT5682S_JDH_RS_MASK) {
-+	if (snd_soc_component_read(rt5682s->component, RT5682S_AJD1_CTRL) & RT5682S_JDH_RS_MASK) {
- 		/* jack out */
--		rt5682s->jack_type = rt5682s_headset_detect(rt5682s->component, 0);
--
--		snd_soc_jack_report(rt5682s->hs_jack, rt5682s->jack_type,
--			SND_JACK_HEADSET | SND_JACK_BTN_0 | SND_JACK_BTN_1 |
--			SND_JACK_BTN_2 | SND_JACK_BTN_3);
-+		schedule_delayed_work(&rt5682s->jack_detect_work, 0);
- 	} else {
- 		schedule_delayed_work(&rt5682s->jd_check_work, 500);
- 	}
-@@ -1323,7 +1321,6 @@ static int rt5682s_hp_amp_event(struct snd_soc_dapm_widget *w,
- 		struct snd_kcontrol *kcontrol, int event)
- {
- 	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
--	struct rt5682s_priv *rt5682s = snd_soc_component_get_drvdata(component);
- 
- 	switch (event) {
- 	case SND_SOC_DAPM_POST_PMU:
-@@ -1339,8 +1336,6 @@ static int rt5682s_hp_amp_event(struct snd_soc_dapm_widget *w,
- 		snd_soc_component_write(component, RT5682S_BIAS_CUR_CTRL_11, 0x6666);
- 		snd_soc_component_write(component, RT5682S_BIAS_CUR_CTRL_12, 0xa82a);
- 
--		mutex_lock(&rt5682s->jdet_mutex);
--
- 		snd_soc_component_update_bits(component, RT5682S_HP_CTRL_2,
- 			RT5682S_HPO_L_PATH_MASK | RT5682S_HPO_R_PATH_MASK |
- 			RT5682S_HPO_SEL_IP_EN_SW, RT5682S_HPO_L_PATH_EN |
-@@ -1348,8 +1343,6 @@ static int rt5682s_hp_amp_event(struct snd_soc_dapm_widget *w,
- 		usleep_range(5000, 10000);
- 		snd_soc_component_update_bits(component, RT5682S_HP_AMP_DET_CTL_1,
- 			RT5682S_CP_SW_SIZE_MASK, RT5682S_CP_SW_SIZE_L | RT5682S_CP_SW_SIZE_S);
--
--		mutex_unlock(&rt5682s->jdet_mutex);
- 		break;
- 
- 	case SND_SOC_DAPM_POST_PMD:
-@@ -3075,7 +3068,6 @@ static int rt5682s_i2c_probe(struct i2c_client *i2c,
- 
- 	mutex_init(&rt5682s->calibrate_mutex);
- 	mutex_init(&rt5682s->sar_mutex);
--	mutex_init(&rt5682s->jdet_mutex);
- 	rt5682s_calibrate(rt5682s);
- 
- 	regmap_update_bits(rt5682s->regmap, RT5682S_MICBIAS_2,
-diff --git a/sound/soc/codecs/rt5682s.h b/sound/soc/codecs/rt5682s.h
-index 1bf2ef7ce578..397a2531b6f6 100644
---- a/sound/soc/codecs/rt5682s.h
-+++ b/sound/soc/codecs/rt5682s.h
-@@ -1446,7 +1446,6 @@ struct rt5682s_priv {
- 	struct delayed_work jd_check_work;
- 	struct mutex calibrate_mutex;
- 	struct mutex sar_mutex;
--	struct mutex jdet_mutex;
- 
- #ifdef CONFIG_COMMON_CLK
- 	struct clk_hw dai_clks_hw[RT5682S_DAI_NUM_CLKS];
+diff --git a/arch/arm/boot/dts/tegra20-tamonten.dtsi b/arch/arm/boot/dts/tegra20-tamonten.dtsi
+index dd4d506683de..7f14f0d005c3 100644
+--- a/arch/arm/boot/dts/tegra20-tamonten.dtsi
++++ b/arch/arm/boot/dts/tegra20-tamonten.dtsi
+@@ -183,8 +183,8 @@
+ 			};
+ 			conf_ata {
+ 				nvidia,pins = "ata", "atb", "atc", "atd", "ate",
+-					"cdev1", "cdev2", "dap1", "dtb", "gma",
+-					"gmb", "gmc", "gmd", "gme", "gpu7",
++					"cdev1", "cdev2", "dap1", "dtb", "dtf",
++					"gma", "gmb", "gmc", "gmd", "gme", "gpu7",
+ 					"gpv", "i2cp", "irrx", "irtx", "pta",
+ 					"rm", "slxa", "slxk", "spia", "spib",
+ 					"uac";
+@@ -203,7 +203,7 @@
+ 			};
+ 			conf_crtp {
+ 				nvidia,pins = "crtp", "dap2", "dap3", "dap4",
+-					"dtc", "dte", "dtf", "gpu", "sdio1",
++					"dtc", "dte", "gpu", "sdio1",
+ 					"slxc", "slxd", "spdi", "spdo", "spig",
+ 					"uda";
+ 				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
 -- 
 2.34.1
 
