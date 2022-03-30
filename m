@@ -2,62 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0706EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:21:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C92CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:21:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345943AbiC3NXX (ORCPT
+        id S1345965AbiC3NX1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 09:23:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37142 "EHLO
+        Wed, 30 Mar 2022 09:23:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345921AbiC3NWz (ORCPT
+        with ESMTP id S1345969AbiC3NXG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 09:22:55 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FF234924F;
-        Wed, 30 Mar 2022 06:21:08 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id mj15-20020a17090b368f00b001c637aa358eso2114014pjb.0;
-        Wed, 30 Mar 2022 06:21:08 -0700 (PDT)
+        Wed, 30 Mar 2022 09:23:06 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65ED1488AB;
+        Wed, 30 Mar 2022 06:21:20 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id g9-20020a17090ace8900b001c7cce3c0aeso2086679pju.2;
+        Wed, 30 Mar 2022 06:21:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OPJfz4CL4CTD8umiB0QsWWK1NVmdwE13zEumGoQ0BuI=;
-        b=RdznN1wmQ7YkABgZinX6FM9J7ZRfZrnPXFREURoNQM/325oFnFddsMhY+7l5bzmw6T
-         S5TziyTyhp+HilrOWzp65Rr2HBmeRO6z84JIgqyZFd3FTYYlVfaQucjbqRD9eyVkH6iM
-         va+ELz1AoQ5xCOX2BdLgZ3zOGSsEoTrX30hTtMQXpsb7jMZiiGbLuPSfd/GzHzQ6BWiG
-         etoIlN4Hr1PLahVVgbyB7lzpIYciImI8CcxRj7mQYI+rfRacvEjDPrfTstu+eb00mKWQ
-         W78SxhWBokJI15m32Ijc1p2JE+SbZBBxc35I6l4SFbiRaSKzUmrKFKm6fRrrge/kQsZQ
-         7+QQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=c+K9A9T1MT5Pu4zwSaAayliqn5gty12AfuascxX8vj4=;
+        b=nEtLG65GgDBD2ThZgHCDsZSsWRfepUZEr5TeRQW+HtYt93+fIBsLwgJEoJ+SrOVbsx
+         I3DpuEUxZPrVmRiHyTmTZ3k2yh+BkJ57O3gLmdc0LtMWpE9Q+uUco6nio+wdSFHbMBHt
+         D4/hR/62epIpkTU7rrMrS1WhkTGD8MYRXv0IMGIsd53JvKVUXkF4fYMMGcWEevaH7M/8
+         k306OdR8OwTQs9qkiHnjwTXmYDuJenGzIvsOxBfB+f+o+b4moEVER02SmAwgPju/EP1c
+         NcKiUJ24zRt6c/SZMteODK5UJZKGBwpbApoi1ZhFEf3FMAYSA5bpdNr1DOuB1ZSTy9aX
+         GjmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OPJfz4CL4CTD8umiB0QsWWK1NVmdwE13zEumGoQ0BuI=;
-        b=SrgJAIVZVx9OYYqj35yB2HoW2BAo/QG7UGKDrS8/2Xw469moMUinx8Wo6OtW0hd+jI
-         /hDRiMHkcFnVTrNHcln5PGdRaHg57ts4teF50Hfs4KQMECe4pNPUagRosCSxrU1YuzVI
-         rAbWmSNGvWWqtH3xdBU++KCcoyr4T/hqrCFfmFuBlVa/pinm4aZhcQjRC1+G9MuCayby
-         5EtjfILjTREraEdTD98iyRw3TvPVhQ68WZAcnWE0fTquQNjyQfGrejJ2X/4RfT+9ZGqC
-         dQIHs+H11pexQwBUzGtNC4V/Szx5GOSE+Ea5Vn4jiRClzDP/+/WG6TN7xSr8OALtfdJl
-         UCag==
-X-Gm-Message-State: AOAM533z9WaXyEQpzgVyB8LNkZyXFwnb9dluAqEHtBe6zxU7S3BJWZyO
-        IaGq6mwqmChtpAuPK9z9EndOTM3bzs8=
-X-Google-Smtp-Source: ABdhPJy8sCfixj5+rlePqk9kImJ3wC4G6RlmXO/xOHhD5a3zdm82DdY6eBXESJVS6LTln7jAqjcJ7Q==
-X-Received: by 2002:a17:902:bf4a:b0:151:7d37:2943 with SMTP id u10-20020a170902bf4a00b001517d372943mr35075780pls.131.1648646467456;
-        Wed, 30 Mar 2022 06:21:07 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=c+K9A9T1MT5Pu4zwSaAayliqn5gty12AfuascxX8vj4=;
+        b=pG6gjLl4bhH01L6PqU6C16WXi9ivhyXBrAuDkBfv7EluGg4F1Mey+/SQB0kfodow56
+         cXohSU3tsUF7rawrIRydAHtKy9SWMDqn7wLYQiud5Qb6LcldQqCcs62q9Ky4c9NWZvMQ
+         hD/Qkk45qAFxjFuy2Q/QjI0yPHGITt18/IRvwNX9Js6xpaZpd6sKTGyIfgSpnC80rb4m
+         XH8OAHMwAi9nPtnaGIgEEefZU3y5evfS7Jf5cDMVHHgO8pk+CMt6ekW+y+/UdbO8S5Rz
+         GHxw3afy+G5pCSFeuW59fK8uR9c7IWJgQw4szjo61sXsQpfpuBJgOSQ5cv6pYi/NsONS
+         I/VQ==
+X-Gm-Message-State: AOAM532lUfXpoB+UJc9n0bkOrqk0bLkuoDigiCD2fMW7k6U/9OXC6K0A
+        7mwkFeboGqFNmw8rg/4cU70uSNfwlEc=
+X-Google-Smtp-Source: ABdhPJyH4MR2bW42j1R3tqij52APbZ6yL1b9+zWFJQj/5rP4QGk3QtQkM5+iX50/sGAz6Uus6QIn4Q==
+X-Received: by 2002:a17:90a:1548:b0:1c9:8181:9e70 with SMTP id y8-20020a17090a154800b001c981819e70mr5089434pja.78.1648646479563;
+        Wed, 30 Mar 2022 06:21:19 -0700 (PDT)
 Received: from localhost ([198.11.178.15])
-        by smtp.gmail.com with ESMTPSA id f66-20020a62db45000000b004fa8a7b8ad3sm23004668pfg.77.2022.03.30.06.21.06
+        by smtp.gmail.com with ESMTPSA id x29-20020aa79a5d000000b004f0ef1822d3sm23525250pfj.128.2022.03.30.06.21.18
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 30 Mar 2022 06:21:07 -0700 (PDT)
+        Wed, 30 Mar 2022 06:21:19 -0700 (PDT)
 From:   Lai Jiangshan <jiangshanlai@gmail.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
         Paolo Bonzini <pbonzini@redhat.com>,
         Sean Christopherson <seanjc@google.com>
-Cc:     Lai Jiangshan <jiangshan.ljs@antgroup.com>
-Subject: [RFC PATCH V3 0/4] KVM: X86: Add and use shadow page with level expanded or acting as pae_root
-Date:   Wed, 30 Mar 2022 21:21:48 +0800
-Message-Id: <20220330132152.4568-1-jiangshanlai@gmail.com>
+Cc:     Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, linux-doc@vger.kernel.org
+Subject: [RFC PATCH V3 2/4] KVM: X86: Introduce role.glevel for level expanded pagetable
+Date:   Wed, 30 Mar 2022 21:21:50 +0800
+Message-Id: <20220330132152.4568-3-jiangshanlai@gmail.com>
 X-Mailer: git-send-email 2.19.1.6.gb485710b
+In-Reply-To: <20220330132152.4568-1-jiangshanlai@gmail.com>
+References: <20220330132152.4568-1-jiangshanlai@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -66,85 +77,199 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-(Request For Help for testing on AMD machine with 32 bit L1 hypervisor,
-see information below)
+Level expansion occurs when mmu->shadow_root_level > mmu->root_level.
 
-KVM handles root pages specially for these cases:
+There are several cases that can cuase level expansion:
 
-direct mmu (nonpaping for 32 bit guest):
-	gCR0_PG=0
-shadow mmu (shadow paping for 32 bit guest):
-	gCR0_PG=1,gEFER_LMA=0,gCR4_PSE=0
-	gCR0_PG=1,gEFER_LMA=0,gCR4_PSE=1
-direct mmu (NPT for 32bit host):
-	hEFER_LMA=0
+shadow mmu (shadow paging for 32 bit guest):
+	case1:	gCR0_PG=1,gEFER_LMA=0,gCR4_PSE=0
+
 shadow nested NPT (for 32bit L1 hypervisor):
-	gCR0_PG=1,gEFER_LMA=0,gCR4_PSE=0,hEFER_LMA=0
-	gCR0_PG=1,gEFER_LMA=0,gCR4_PSE=1,hEFER_LMA=0
-	gCR0_PG=1,gEFER_LMA=0,gCR4_PSE={0|1},hEFER_LMA=1,hCR4_LA57={0|1}
-Shadow nested NPT for 64bit L1 hypervisor:
-	gEFER_LMA=1,gCR4_LA57=0,hEFER_LMA=1,hCR4_LA57=1
+	case2:	gCR0_PG=1,gEFER_LMA=0,gCR4_PSE=0,hEFER_LMA=0
+	case3:	gCR0_PG=1,gEFER_LMA=0,hEFER_LMA=1
 
-They are either using special roots or matched the condition 
-((mmu->shadow_root_level > mmu->root_level) && !mm->direct_map)
-(refered as level expansion) or both.
+shadow nested NPT (for 64bit L1 hypervisor):
+	case4:	gEFER_LMA=1,gCR4_LA57=0,hEFER_LMA=1,hCR4_LA57=1
 
-All the cases are using special roots except the last one.
-Many cases are doing level expansion including the last one.
+When level expansion occurs (32bit guest, case1-3), special roots are
+often used.  But case4 is not using special roots.  It uses shadow page
+without fully aware of the specialty.  It might work accidentally:
+	1) The root_page (root_sp->spt) is allocated with level = 5,
+	   and root_sp->spt[0] is allocated with the same gfn and the
+	   same role except role.level = 4.  Luckly that they are
+	   different shadow pages.
+	2) FNAME(walk_addr_generic) sets walker->table_gfn[4] and
+	   walker->pt_access[4], which are normally unused when
+	   mmu->shadow_root_level == mmu->root_level == 4, so that
+	   FNAME(fetch) can use them to allocate shadow page for
+	   root_sp->spt[0] and link them when shadow_root_level == 5.
 
-When special roots are used, the root page will not be backed by
-kvm_mmu_page.  So they must be treated specially, but not all places
-is considering this problem, and Sean is adding some code to check
-this special roots.
+But it has problems.
+If the guest switches from gCR4_LA57=0 to gCR4_LA57=1 (or vice verse)
+and uses the same gfn as the root for the nNPT before and after
+switching gCR4_LA57.  The host (hCR4_LA57=1) wold use the same root_sp
+for guest even guest switches gCR4_LA57.  The guest will see unexpected
+page mapped and L2 can hurts L1.  It is lucky the the problem can't
+hurt L0.
 
-When level expansion, the kvm treats them silently always.
+The root_sp should be like role.direct=1 sometimes: its contents are
+not backed by gptes, root_sp->gfns is meaningless.  For a normal high
+level sp, sp->gfns is often unused and kept zero, but it could be
+relevant and meaningful when sp->gfns is used because they are back
+by concret gptes.  For expanded root_sp described before, root_sp
+is just a portal to contribute root_sp->spt[0], and root_sp should not
+have root_sp->gfns and root_sp->spt[0] should not be dropped if gpte[0]
+of the root gfn is changed.
 
-These treaments incur problems or complication, see the changelog
-of every patch.
+This patch adds role.glevel to address the two problems.
+With the new role.glevel, passthrough sp can be created for expanded
+shadow pagetable: 0 < role.glevel < role.level.
 
-These patches were made when I reviewed all the usage of shadow_root_level
-and root_level.  Many root level patches are sent and accepted.
+An alternative way to fix the problem of case4 is that: also using the
+special root pml5_root for it.  But it would required to change many
+other places because it is assumption that special roots is only used
+for 32bit guests.
 
-These patches has not been tested with shadow NPT cases listed above.
-Because I don't have guest images can act as 32 bit L1 hypervisor, nor
-I can access to AMD machine with 5 level paging.  I'm a bit reluctant
-to ask for the resource, so I send the patches and wish someone test
-them and modify them.  At least, it provides some thinking and reveals
-problems of the existing code and of the AMD cases.
-( *Request For Help* here.)
+This patch also paves the way to use passthrough shadow page for
+case1-3, but that requires the special handling or PAE paging, so the
+extensive usage of it is in later patches.
 
-These patches have been tested with the all cases except the shadow-NPT
-cases, the code coverage is believed to be more than 95% (hundreds of
-code related to shadow-NPT are shoved, and be replaced with common
-role.pae_root and role.glevel code with only 8 line of code is
-added for shadow-NPT, only 2 line of code is not covered in my tests).
+Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+---
+ Documentation/virt/kvm/mmu.rst  |  7 +++++++
+ arch/x86/include/asm/kvm_host.h |  5 +++--
+ arch/x86/kvm/mmu/mmu.c          | 21 +++++++++++++++++----
+ arch/x86/kvm/mmu/paging_tmpl.h  |  1 +
+ 4 files changed, 28 insertions(+), 6 deletions(-)
 
-Cleanup patches (such as use role.glevel instead of !role.direct) will
-be sent after this patchset is queued.
-
-[V2]: https://lore.kernel.org/lkml/20220329153604.507475-1-jiangshanlai@gmail.com/
-[V1]: https://lore.kernel.org/lkml/20211210092508.7185-1-jiangshanlai@gmail.com/
-
-Changed from V2:
-	Instroduce role.glevel instead of role.passthrough
-
-Changed from V1:
-	Apply Sean's comments and suggestion. (Too much to list. Thanks!)
-	Add some comments.
-	Change changelog for role.pae_root patch.
-
-Lai Jiangshan (4):
-  KVM: X86: Add arguement gfn and role to kvm_mmu_alloc_page()
-  KVM: X86: Introduce role.glevel for level expanded pagetable
-  KVM: X86: Alloc role.pae_root shadow page
-  KVM: X86: Use passthrough and pae_root shadow page for 32bit guests
-
- Documentation/virt/kvm/mmu.rst  |   9 +
- arch/x86/include/asm/kvm_host.h |  16 +-
- arch/x86/kvm/mmu/mmu.c          | 399 +++++++++-----------------------
- arch/x86/kvm/mmu/paging_tmpl.h  |  15 +-
- 4 files changed, 138 insertions(+), 301 deletions(-)
-
+diff --git a/Documentation/virt/kvm/mmu.rst b/Documentation/virt/kvm/mmu.rst
+index 5b1ebad24c77..dee0e96d694a 100644
+--- a/Documentation/virt/kvm/mmu.rst
++++ b/Documentation/virt/kvm/mmu.rst
+@@ -202,6 +202,13 @@ Shadow pages contain the following information:
+     Is 1 if the MMU instance cannot use A/D bits.  EPT did not have A/D
+     bits before Haswell; shadow EPT page tables also cannot use A/D bits
+     if the L1 hypervisor does not enable them.
++  role.glevel:
++    The level in guest pagetable if the sp is indirect.  Is 0 if the sp
++    is direct without corresponding guest pagetable, like TDP or !CR0.PG.
++    When role.level > guest paging level, indirect sp is created on the
++    top with role.glevel = guest paging level and acks as passthrough sp
++    and its contents are specially installed rather than the translations
++    of the corresponding guest pagetable.
+   gfn:
+     Either the guest page table containing the translations shadowed by this
+     page, or the base page frame for linear translations.  See role.direct.
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 9694dd5e6ccc..67e1bccaf472 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -314,7 +314,7 @@ struct kvm_kernel_irq_routing_entry;
+  *     cr0_wp=0, therefore these three bits only give rise to 5 possibilities.
+  *
+  * Therefore, the maximum number of possible upper-level shadow pages for a
+- * single gfn is a bit less than 2^13.
++ * single gfn is a bit less than 2^15.
+  */
+ union kvm_mmu_page_role {
+ 	u32 word;
+@@ -331,7 +331,8 @@ union kvm_mmu_page_role {
+ 		unsigned smap_andnot_wp:1;
+ 		unsigned ad_disabled:1;
+ 		unsigned guest_mode:1;
+-		unsigned :6;
++		unsigned glevel:4;
++		unsigned :2;
+ 
+ 		/*
+ 		 * This is left at the top of the word so that
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index 02eae110cbe1..d53037df8177 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -737,8 +737,12 @@ static void mmu_free_pte_list_desc(struct pte_list_desc *pte_list_desc)
+ 
+ static gfn_t kvm_mmu_page_get_gfn(struct kvm_mmu_page *sp, int index)
+ {
+-	if (!sp->role.direct)
++	if (!sp->role.direct) {
++		if (unlikely(sp->role.glevel < sp->role.level))
++			return sp->gfn;
++
+ 		return sp->gfns[index];
++	}
+ 
+ 	return sp->gfn + (index << ((sp->role.level - 1) * PT64_LEVEL_BITS));
+ }
+@@ -746,6 +750,11 @@ static gfn_t kvm_mmu_page_get_gfn(struct kvm_mmu_page *sp, int index)
+ static void kvm_mmu_page_set_gfn(struct kvm_mmu_page *sp, int index, gfn_t gfn)
+ {
+ 	if (!sp->role.direct) {
++		if (unlikely(sp->role.glevel < sp->role.level)) {
++			WARN_ON_ONCE(gfn != sp->gfn);
++			return;
++		}
++
+ 		sp->gfns[index] = gfn;
+ 		return;
+ 	}
+@@ -1674,8 +1683,7 @@ static void kvm_mmu_free_page(struct kvm_mmu_page *sp)
+ 	hlist_del(&sp->hash_link);
+ 	list_del(&sp->link);
+ 	free_page((unsigned long)sp->spt);
+-	if (!sp->role.direct)
+-		free_page((unsigned long)sp->gfns);
++	free_page((unsigned long)sp->gfns);
+ 	kmem_cache_free(mmu_page_header_cache, sp);
+ }
+ 
+@@ -1713,7 +1721,7 @@ static struct kvm_mmu_page *kvm_mmu_alloc_page(struct kvm_vcpu *vcpu, gfn_t gfn,
+ 
+ 	sp = kvm_mmu_memory_cache_alloc(&vcpu->arch.mmu_page_header_cache);
+ 	sp->spt = kvm_mmu_memory_cache_alloc(&vcpu->arch.mmu_shadow_page_cache);
+-	if (!role.direct)
++	if (role.glevel == role.level)
+ 		sp->gfns = kvm_mmu_memory_cache_alloc(&vcpu->arch.mmu_gfn_array_cache);
+ 	set_page_private(virt_to_page(sp->spt), (unsigned long)sp);
+ 
+@@ -2054,6 +2062,8 @@ static struct kvm_mmu_page *kvm_mmu_get_page(struct kvm_vcpu *vcpu,
+ 		quadrant &= (1 << ((PT32_PT_BITS - PT64_PT_BITS) * level)) - 1;
+ 		role.quadrant = quadrant;
+ 	}
++	if (level < role.glevel)
++		role.glevel = level;
+ 
+ 	sp_list = &vcpu->kvm->arch.mmu_page_hash[kvm_page_table_hashfn(gfn)];
+ 	for_each_valid_sp(vcpu->kvm, sp, sp_list) {
+@@ -4817,6 +4827,7 @@ kvm_calc_shadow_root_page_role_common(struct kvm_vcpu *vcpu,
+ 	role.base.smep_andnot_wp = role.ext.cr4_smep && !____is_cr0_wp(regs);
+ 	role.base.smap_andnot_wp = role.ext.cr4_smap && !____is_cr0_wp(regs);
+ 	role.base.has_4_byte_gpte = ____is_cr0_pg(regs) && !____is_cr4_pae(regs);
++	role.base.glevel = role_regs_to_root_level(regs);
+ 
+ 	return role;
+ }
+@@ -5312,6 +5323,8 @@ static void kvm_mmu_pte_write(struct kvm_vcpu *vcpu, gpa_t gpa,
+ 	++vcpu->kvm->stat.mmu_pte_write;
+ 
+ 	for_each_gfn_indirect_valid_sp(vcpu->kvm, sp, gfn) {
++		if (sp->role.glevel < sp->role.level)
++			continue;
+ 		if (detect_write_misaligned(sp, gpa, bytes) ||
+ 		      detect_write_flooding(sp)) {
+ 			kvm_mmu_prepare_zap_page(vcpu->kvm, sp, &invalid_list);
+diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
+index 8621188b46df..67489a060eba 100644
+--- a/arch/x86/kvm/mmu/paging_tmpl.h
++++ b/arch/x86/kvm/mmu/paging_tmpl.h
+@@ -1042,6 +1042,7 @@ static int FNAME(sync_page)(struct kvm_vcpu *vcpu, struct kvm_mmu_page *sp)
+ 		.level = 0xf,
+ 		.access = 0x7,
+ 		.quadrant = 0x3,
++		.glevel = 0xf,
+ 	};
+ 
+ 	/*
 -- 
 2.19.1.6.gb485710b
 
