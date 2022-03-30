@@ -2,229 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E045C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:16:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77FF7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:16:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345837AbiC3NST (ORCPT
+        id S1345781AbiC3NSY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 09:18:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46532 "EHLO
+        Wed, 30 Mar 2022 09:18:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345817AbiC3NSC (ORCPT
+        with ESMTP id S1344548AbiC3NSK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 09:18:02 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 226F62FFF8;
-        Wed, 30 Mar 2022 06:16:16 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id bg10so41457684ejb.4;
-        Wed, 30 Mar 2022 06:16:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kIZngZOjWy/J3S+b4z6+BUn/eXOxV020jVmkrkFNZpQ=;
-        b=biH0nxISIqGQSS6v7IiQeP0zNDT0PEkBjLFaq1jmJRMkJP74TqKUjH2bP7aVt9KtQp
-         TWRHFlLQ4mYWPEgAbR1NxjkfM75bZdcQu2rANl3Uo6noaZggYAYLZk9nXfn4965pQynB
-         yooB4KgRMwDuXQPgsHGc2V49mFs4YafwhRqTzklEIj0mMBufGVxwLNzzVn9ba5f1qIJs
-         iNbMX+bmavYi2ijWIwfXVxONCIlUgyCh1MGo3zg3A/nu1cVlHdB34YY5tM95G1/uym+q
-         GgajeY3vUZ4rK263Jey0gj5Y6Iuq+lL5nNYHa03Ha+SR1tpxhGHob+DPqSw+g2NHMG+F
-         34BA==
+        Wed, 30 Mar 2022 09:18:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 67E7430553
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 06:16:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648646182;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PnxtFaPEsAbcqp1OXIyz2pPqcdL85OCUy3HvsOGAwFo=;
+        b=OO0Ev6VWdEbEDLQwhq8mlJw4DHHXcjwHOiS1iyXpnx0BZhlFDNc5oeck9r4vRH0jf//HwJ
+        3B67z1JhtOIe3uUAq5ioL2s5xhnxLggjakkURhSdXP+KN6SoRiiwB8jkDmi+xCP4yYJ/YF
+        FVhYWFkf9o98G5aj7dwDCV7t0OiqG+0=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-281-y6rOGr_bPy2mnzYOKyw1hg-1; Wed, 30 Mar 2022 09:16:20 -0400
+X-MC-Unique: y6rOGr_bPy2mnzYOKyw1hg-1
+Received: by mail-wr1-f71.google.com with SMTP id i27-20020adfa51b000000b00205c997f177so1785117wrb.21
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 06:16:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:organization:in-reply-to
          :content-transfer-encoding;
-        bh=kIZngZOjWy/J3S+b4z6+BUn/eXOxV020jVmkrkFNZpQ=;
-        b=klM1ZNhv2JrXjsEA20rl7rlfp10A61v1Prg8cLYaxdNQ2vGnfvowD/YBO/lqlMXbV5
-         yj+jmRLoAy3JIKJAvQ2mmeCHbPK2xGURj5MYhDRj7iuRZdqql3/eZrLdovoPqvcSOoxs
-         f0msUmj0wv+KAM/d8L9pZ/ZEO6rmTpwEVWEXOl/WmX+rms2fEDmUTTRy6mpYHqPleDdl
-         il2CDFxyA0PS8B9Z0wgbnYrMfslm0dJHMvyMagd3cDUAYWpIVZllp3xdfLZB+DsAumKv
-         KeN0vz+BBRvIh1VBypKF6O8LdFZj/INiHayGSbXxaK/BY9buOLe9G8a+4fJUEDaWrnWK
-         KmIg==
-X-Gm-Message-State: AOAM530k0FRXC7oY8cL8IKmpnrfYnKQwDNlLROBipbigHNACekovgLu4
-        zNPQogpCS6awR6zo3ygQzmk=
-X-Google-Smtp-Source: ABdhPJxS9G9VHO3IThZxz4ao9YzTgP8Wz1c0iHE9nerrkjAwT9R8JXr1OX+n2TYNV647tHhxNfQ6vg==
-X-Received: by 2002:a17:906:a4b:b0:6d0:fbdd:7cb5 with SMTP id x11-20020a1709060a4b00b006d0fbdd7cb5mr40462121ejf.152.1648646174471;
-        Wed, 30 Mar 2022 06:16:14 -0700 (PDT)
-Received: from debian.home (81-204-249-205.fixed.kpn.net. [81.204.249.205])
-        by smtp.gmail.com with ESMTPSA id ge13-20020a170907908d00b006e09a005d73sm6603476ejb.31.2022.03.30.06.16.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Mar 2022 06:16:14 -0700 (PDT)
-From:   Johan Jonker <jbx6244@gmail.com>
-To:     heiko@sntech.de, zhangqing@rock-chips.com
-Cc:     robh+dt@kernel.org, krzk+dt@kernel.org, mturquette@baylibre.com,
-        sboyd@kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 1/3] dt-bindings: clock: convert rockchip,rv1108-cru.txt to YAML
-Date:   Wed, 30 Mar 2022 15:16:06 +0200
-Message-Id: <20220330131608.30040-1-jbx6244@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        bh=PnxtFaPEsAbcqp1OXIyz2pPqcdL85OCUy3HvsOGAwFo=;
+        b=bVBjoMqyiqfK2VEA/Al9bOVgA8maQNludThqiEJPOAs+E8Ldh6Ihez/UKVHxB2Vp3G
+         lgAqk7ylwyIURupC2JYsTtTZQmSnsX8ikNiPmHPYZvkYPkhm0HPeMcmlUqgqdLMyRnuS
+         ui6UrafmIFNNUiWat0XeZVFYmN4XYYl6dqxoVBXfWw5m+DBErqqIkK071hOZ2fwQcdyy
+         4c0Rj5pPWGGCXB+0VNqwnnQC1ZPY12lYcGkj9WXQ8PV/awpiLOCxvuj86xYK6oyzZj1X
+         pOqtk1jfV/r0sql/nqFBZmqz4HeFRHdxNG/sHgz7/YJtvirbAVInmur1BYdglCACANRd
+         6xTA==
+X-Gm-Message-State: AOAM532DkiKvE0omtPqaVLyTuEtwCDJBGJaJuBkeyCprmkz2vAsYvcrY
+        S+MdwhbYlppgZuYn1SBJLgYeq3RTIfZUOTiG/ZSZsnB3ZGxynz17B7ernER2QRRD1Wf10Oe61/m
+        z2vButTKQUB2lJ8vAfN4htBrK
+X-Received: by 2002:adf:fe06:0:b0:205:c132:dbad with SMTP id n6-20020adffe06000000b00205c132dbadmr19574801wrr.533.1648646179253;
+        Wed, 30 Mar 2022 06:16:19 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyo4kSgzx5PzxRIo+ZQLkRE2eAGXIuAS40ZlmFQA5g7ZOMJcX0MypYbjC51u++JFMlRa/3IcA==
+X-Received: by 2002:adf:fe06:0:b0:205:c132:dbad with SMTP id n6-20020adffe06000000b00205c132dbadmr19574780wrr.533.1648646178934;
+        Wed, 30 Mar 2022 06:16:18 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c705:2200:178b:7244:2a1f:b5d8? (p200300cbc7052200178b72442a1fb5d8.dip0.t-ipconnect.de. [2003:cb:c705:2200:178b:7244:2a1f:b5d8])
+        by smtp.gmail.com with ESMTPSA id bg20-20020a05600c3c9400b0037fa5c422c8sm5141804wmb.48.2022.03.30.06.16.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Mar 2022 06:16:18 -0700 (PDT)
+Message-ID: <d29d5b05-ad7e-d459-be58-f183f32fe8a9@redhat.com>
+Date:   Wed, 30 Mar 2022 15:16:17 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH v2 2/2] mm: fix contiguous memmap assumptions about
+ alloc/free pages
+Content-Language: en-US
+To:     Chen Wandun <chenwandun@huawei.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
+        willy@infradead.org
+References: <20220330102534.1053240-1-chenwandun@huawei.com>
+ <20220330102534.1053240-3-chenwandun@huawei.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220330102534.1053240-3-chenwandun@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert rockchip,rv1108-cru.txt to YAML.
+On 30.03.22 12:25, Chen Wandun wrote:
+> It isn't true for only SPARSEMEM configs to assume that a compound page
+> has virtually contiguous page structs, so use nth_page to iterate each
+> page.
 
-Changes against original bindings:
-  Add clocks and clock-names because the device has to have
-  at least one input clock.
+I really don't see how that is currently the case. The buddy deals with
+order < MAX_ORDER and we know that these always fall into a single
+memory section.
 
-Signed-off-by: Johan Jonker <jbx6244@gmail.com>
----
- .../bindings/clock/rockchip,rv1108-cru.txt    | 59 ---------------
- .../bindings/clock/rockchip,rv1108-cru.yaml   | 75 +++++++++++++++++++
- 2 files changed, 75 insertions(+), 59 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/clock/rockchip,rv1108-cru.txt
- create mode 100644 Documentation/devicetree/bindings/clock/rockchip,rv1108-cru.yaml
+IOW, this patch here would result in overhead where it's not required to
+have that overhead.
 
-diff --git a/Documentation/devicetree/bindings/clock/rockchip,rv1108-cru.txt b/Documentation/devicetree/bindings/clock/rockchip,rv1108-cru.txt
-deleted file mode 100644
-index 161326a4f..000000000
---- a/Documentation/devicetree/bindings/clock/rockchip,rv1108-cru.txt
-+++ /dev/null
-@@ -1,59 +0,0 @@
--* Rockchip RV1108 Clock and Reset Unit
--
--The RV1108 clock controller generates and supplies clock to various
--controllers within the SoC and also implements a reset controller for SoC
--peripherals.
--
--Required Properties:
--
--- compatible: should be "rockchip,rv1108-cru"
--- reg: physical base address of the controller and length of memory mapped
--  region.
--- #clock-cells: should be 1.
--- #reset-cells: should be 1.
--
--Optional Properties:
--
--- rockchip,grf: phandle to the syscon managing the "general register files"
--  If missing pll rates are not changeable, due to the missing pll lock status.
--
--Each clock is assigned an identifier and client nodes can use this identifier
--to specify the clock which they consume. All available clocks are defined as
--preprocessor macros in the dt-bindings/clock/rv1108-cru.h headers and can be
--used in device tree sources. Similar macros exist for the reset sources in
--these files.
--
--External clocks:
--
--There are several clocks that are generated outside the SoC. It is expected
--that they are defined using standard clock bindings with following
--clock-output-names:
-- - "xin24m" - crystal input - required,
-- - "ext_vip" - external VIP clock - optional
-- - "ext_i2s" - external I2S clock - optional
-- - "ext_gmac" - external GMAC clock - optional
-- - "hdmiphy" - external clock input derived from HDMI PHY - optional
-- - "usbphy" - external clock input derived from USB PHY - optional
--
--Example: Clock controller node:
--
--	cru: cru@20200000 {
--		compatible = "rockchip,rv1108-cru";
--		reg = <0x20200000 0x1000>;
--		rockchip,grf = <&grf>;
--
--		#clock-cells = <1>;
--		#reset-cells = <1>;
--	};
--
--Example: UART controller node that consumes the clock generated by the clock
--  controller:
--
--	uart0: serial@10230000 {
--		compatible = "rockchip,rv1108-uart", "snps,dw-apb-uart";
--		reg = <0x10230000 0x100>;
--		interrupts = <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH>;
--		reg-shift = <2>;
--		reg-io-width = <4>;
--		clocks = <&cru SCLK_UART0>;
--	};
-diff --git a/Documentation/devicetree/bindings/clock/rockchip,rv1108-cru.yaml b/Documentation/devicetree/bindings/clock/rockchip,rv1108-cru.yaml
-new file mode 100644
-index 000000000..20421c22f
---- /dev/null
-+++ b/Documentation/devicetree/bindings/clock/rockchip,rv1108-cru.yaml
-@@ -0,0 +1,75 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/clock/rockchip,rv1108-cru.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Rockchip RV1108 Clock and Reset Unit (CRU)
-+
-+maintainers:
-+  - Elaine Zhang <zhangqing@rock-chips.com>
-+  - Heiko Stuebner <heiko@sntech.de>
-+
-+description: |
-+  The RV1108 clock controller generates and supplies clocks to various
-+  controllers within the SoC and also implements a reset controller for SoC
-+  peripherals.
-+  Each clock is assigned an identifier and client nodes can use this identifier
-+  to specify the clock which they consume. All available clocks are defined as
-+  preprocessor macros in the dt-bindings/clock/rv1108-cru.h headers and can be
-+  used in device tree sources. Similar macros exist for the reset sources in
-+  these files.
-+  There are several clocks that are generated outside the SoC. It is expected
-+  that they are defined using standard clock bindings with following
-+  clock-output-names:
-+    - "xin24m"   - crystal input                              - required
-+    - "ext_vip"  - external VIP clock                         - optional
-+    - "ext_i2s"  - external I2S clock                         - optional
-+    - "ext_gmac" - external GMAC clock                        - optional
-+    - "hdmiphy"  - external clock input derived from HDMI PHY - optional
-+    - "usbphy"   - external clock input derived from USB PHY  - optional
-+
-+properties:
-+  compatible:
-+    enum:
-+      - rockchip,rv1108-cru
-+
-+  reg:
-+    maxItems: 1
-+
-+  "#clock-cells":
-+    const: 1
-+
-+  "#reset-cells":
-+    const: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  clock-names:
-+    const: xin24m
-+
-+  rockchip,grf:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    description:
-+      Phandle to the syscon managing the "general register files" (GRF),
-+      if missing pll rates are not changeable, due to the missing pll
-+      lock status.
-+
-+required:
-+  - compatible
-+  - reg
-+  - "#clock-cells"
-+  - "#reset-cells"
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    cru: clock-controller@20200000 {
-+      compatible = "rockchip,rv1108-cru";
-+      reg = <0x20200000 0x1000>;
-+      rockchip,grf = <&grf>;
-+      #clock-cells = <1>;
-+      #reset-cells = <1>;
-+    };
+What am I missing and which scenario are we fixing?
+
+> 
+> Signed-off-by: Chen Wandun <chenwandun@huawei.com>
+> ---
+>  mm/page_alloc.c | 16 +++++++++-------
+>  1 file changed, 9 insertions(+), 7 deletions(-)
+> 
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index 855211dea13e..758d8f069b32 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -721,7 +721,7 @@ static void prep_compound_head(struct page *page, unsigned int order)
+>  
+>  static void prep_compound_tail(struct page *head, int tail_idx)
+>  {
+> -	struct page *p = head + tail_idx;
+> +	struct page *p = nth_page(head, tail_idx);
+>  
+>  	p->mapping = TAIL_MAPPING;
+>  	set_compound_head(p, head);
+> @@ -1199,10 +1199,10 @@ static inline int check_free_page(struct page *page)
+>  	return 1;
+>  }
+>  
+> -static int free_tail_pages_check(struct page *head_page, struct page *page)
+> +static int free_tail_pages_check(struct page *head_page, int index)
+>  {
+> +	struct page *page = nth_page(head_page, index);
+>  	int ret = 1;
+> -
+>  	/*
+>  	 * We rely page->lru.next never has bit 0 set, unless the page
+>  	 * is PageTail(). Let's make sure that's true even for poisoned ->lru.
+> @@ -1213,7 +1213,7 @@ static int free_tail_pages_check(struct page *head_page, struct page *page)
+>  		ret = 0;
+>  		goto out;
+>  	}
+> -	switch (page - head_page) {
+> +	switch (index) {
+>  	case 1:
+>  		/* the first tail page: ->mapping may be compound_mapcount() */
+>  		if (unlikely(compound_mapcount(page))) {
+> @@ -1322,6 +1322,7 @@ static __always_inline bool free_pages_prepare(struct page *page,
+>  	if (unlikely(order)) {
+>  		bool compound = PageCompound(page);
+>  		int i;
+> +		struct page *tail_page;
+>  
+>  		VM_BUG_ON_PAGE(compound && compound_order(page) != order, page);
+>  
+> @@ -1330,13 +1331,14 @@ static __always_inline bool free_pages_prepare(struct page *page,
+>  			ClearPageHasHWPoisoned(page);
+>  		}
+>  		for (i = 1; i < (1 << order); i++) {
+> +			tail_page = nth_page(page, i);
+>  			if (compound)
+> -				bad += free_tail_pages_check(page, page + i);
+> -			if (unlikely(check_free_page(page + i))) {
+> +				bad += free_tail_pages_check(page, i);
+> +			if (unlikely(check_free_page(tail_page))) {
+>  				bad++;
+>  				continue;
+>  			}
+> -			(page + i)->flags &= ~PAGE_FLAGS_CHECK_AT_PREP;
+> +			tail_page->flags &= ~PAGE_FLAGS_CHECK_AT_PREP;
+>  		}
+>  	}
+>  	if (PageMappingFlags(page))
+
+
 -- 
-2.20.1
+Thanks,
+
+David / dhildenb
 
