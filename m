@@ -2,120 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7099AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 16:54:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43E8DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 16:55:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349077AbiC3Q4F (ORCPT
+        id S1349091AbiC3Q5D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 12:56:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49490 "EHLO
+        Wed, 30 Mar 2022 12:57:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235540AbiC3Q4A (ORCPT
+        with ESMTP id S1349080AbiC3Q5B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 12:56:00 -0400
-Received: from mail.efficios.com (mail.efficios.com [167.114.26.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FE8E13DE2;
-        Wed, 30 Mar 2022 09:54:15 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 1650A2838F5;
-        Wed, 30 Mar 2022 12:54:14 -0400 (EDT)
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id INgx71j7V384; Wed, 30 Mar 2022 12:54:13 -0400 (EDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 991612837F8;
-        Wed, 30 Mar 2022 12:54:13 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 991612837F8
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
-        s=default; t=1648659253;
-        bh=vBhdBJ7dHZ28+lgeKrRzaznue2psKCAuHmp24VjvHtM=;
-        h=Date:From:To:Message-ID:MIME-Version;
-        b=khuM6+RvN2+2Xnf1a8i3R7S2FKDHzZoT9L3DKIevMYbTz1d3luWfpOT49d+ykn+8x
-         cZt+2rIFSNGIaNlR/9LT3+CDLS0vujSzRxD6mY5c4vS4jBuXwTlbRT+v6F+Fznluw6
-         15crOi0vMumCCR3+pIoIcMWG8oHZhAp4NZjJ0SCTzDoBZpdlGgg+vPngTz81Si6zQf
-         1rvCJa36jHMUKHXPYIMSJ4YGiImxnezEcBD4IVYkis9rxeR1DUw5TyoU8hYBJ5u/Qp
-         oJaT9HY4eqPjeP8+xNjFjf6RKb1B9741aqjNw6cmzqwPnQW9lEHxvbBLgsHdwCHc7M
-         oiWfLwA8UgwLw==
-X-Virus-Scanned: amavisd-new at efficios.com
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id ekmNHHteiH6J; Wed, 30 Mar 2022 12:54:13 -0400 (EDT)
-Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
-        by mail.efficios.com (Postfix) with ESMTP id 8674A283B0E;
-        Wed, 30 Mar 2022 12:54:13 -0400 (EDT)
-Date:   Wed, 30 Mar 2022 12:54:13 -0400 (EDT)
-From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-To:     rostedt <rostedt@goodmis.org>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        Beau Belgrave <beaub@linux.microsoft.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        linux-trace-devel <linux-trace-devel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Message-ID: <1546405229.199729.1648659253425.JavaMail.zimbra@efficios.com>
-In-Reply-To: <20220329222514.51af6c07@gandalf.local.home>
-References: <20220329222514.51af6c07@gandalf.local.home>
-Subject: Re: [PATCH] tracing: Set user_events to BROKEN
+        Wed, 30 Mar 2022 12:57:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BA18A38D84
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 09:55:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648659314;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=PSeEyveBA7E0qgl3uhMV5ChCVs00db6iBLbnZKBTXs8=;
+        b=GQc3CMS4N4fXx2y08uFxparnOwAxhP6WzOV1gS5/wD2SGzWNk4nTS6DOEljAQWJyaJE1vm
+        K/bj5cxVghqTC0xZifNcAEfLVZGJC2syDVPMw9V8D5fM/A8e5eayf3o6eNr9syu04BLSOv
+        LHi5fHMJtk23YClQbFZa9exobaf2MkE=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-501-H2VXSEa7Os-ua4FKAy_TlA-1; Wed, 30 Mar 2022 12:55:11 -0400
+X-MC-Unique: H2VXSEa7Os-ua4FKAy_TlA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id BC3CF101A54C;
+        Wed, 30 Mar 2022 16:55:10 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A50CEC08F11;
+        Wed, 30 Mar 2022 16:55:10 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Subject: [PATCH] KVM: MMU: propagate alloc_workqueue failure
+Date:   Wed, 30 Mar 2022 12:55:10 -0400
+Message-Id: <20220330165510.213111-1-pbonzini@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [167.114.26.124]
-X-Mailer: Zimbra 8.8.15_GA_4203 (ZimbraWebClient - FF98 (Linux)/8.8.15_GA_4232)
-Thread-Topic: tracing: Set user_events to BROKEN
-Thread-Index: 5jQbENgLvFWNlihIx8tKdfIg6R13sQ==
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
------ On Mar 29, 2022, at 10:25 PM, rostedt rostedt@goodmis.org wrote:
+If kvm->arch.tdp_mmu_zap_wq cannot be created, the failure has
+to be propagated up to kvm_mmu_init_vm and kvm_arch_init_vm.
+kvm_arch_init_vm also has to undo all the initialization, so
+group all the MMU initialization code at the beginning and
+handle cleaning up of kvm_page_track_init.
 
-> From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
-> 
-> After being merged, user_events become more visible to a wider audience
-> that have concerns with the current API. It is too late to fix this for
-> this release, but instead of a full revert, just mark it as BROKEN (which
-> prevents it from being selected in make config). Then we can work finding
-> a better API. If that fails, then it will need to be completely reverted.
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+---
+ arch/x86/include/asm/kvm_host.h |  2 +-
+ arch/x86/kvm/mmu/mmu.c          | 11 +++++++++--
+ arch/x86/kvm/mmu/tdp_mmu.c      | 17 ++++++++++-------
+ arch/x86/kvm/mmu/tdp_mmu.h      |  4 ++--
+ arch/x86/kvm/x86.c              | 15 ++++++++++-----
+ 5 files changed, 32 insertions(+), 17 deletions(-)
 
-Hi Steven,
-
-What are the constraints for changing a uapi header after it has been present
-in a kernel release ?
-
-If we are not ready to commit to an ABI, perhaps it would be safer to ensure
-that include/uapi/linux/user_events.h is not installed with the uapi headers
-until it's ready.
-
-Thanks,
-
-Mathieu
-
-> 
-> Link:
-> https://lore.kernel.org/all/2059213643.196683.1648499088753.JavaMail.zimbra@efficios.com/
-> 
-> Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-> ---
-> kernel/trace/Kconfig | 1 +
-> 1 file changed, 1 insertion(+)
-> 
-> diff --git a/kernel/trace/Kconfig b/kernel/trace/Kconfig
-> index 16a52a71732d..edc8159f63ef 100644
-> --- a/kernel/trace/Kconfig
-> +++ b/kernel/trace/Kconfig
-> @@ -741,6 +741,7 @@ config USER_EVENTS
-> 	bool "User trace events"
-> 	select TRACING
-> 	select DYNAMIC_EVENTS
-> +	depends on BROKEN # API needs to be straighten out
-> 	help
-> 	  User trace events are user-defined trace events that
-> 	  can be used like an existing kernel trace event.  User trace
-> --
-> 2.35.1
-
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 0ddc2e67a731..469c7702fad9 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1584,7 +1584,7 @@ void kvm_mmu_module_exit(void);
+ 
+ void kvm_mmu_destroy(struct kvm_vcpu *vcpu);
+ int kvm_mmu_create(struct kvm_vcpu *vcpu);
+-void kvm_mmu_init_vm(struct kvm *kvm);
++int kvm_mmu_init_vm(struct kvm *kvm);
+ void kvm_mmu_uninit_vm(struct kvm *kvm);
+ 
+ void kvm_mmu_after_set_cpuid(struct kvm_vcpu *vcpu);
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index 51671cb34fb6..857ba93b5c92 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -5768,17 +5768,24 @@ static void kvm_mmu_invalidate_zap_pages_in_memslot(struct kvm *kvm,
+ 	kvm_mmu_zap_all_fast(kvm);
+ }
+ 
+-void kvm_mmu_init_vm(struct kvm *kvm)
++int kvm_mmu_init_vm(struct kvm *kvm)
+ {
+ 	struct kvm_page_track_notifier_node *node = &kvm->arch.mmu_sp_tracker;
++	int r;
+ 
++	INIT_LIST_HEAD(&kvm->arch.active_mmu_pages);
++	INIT_LIST_HEAD(&kvm->arch.zapped_obsolete_pages);
++	INIT_LIST_HEAD(&kvm->arch.lpage_disallowed_mmu_pages);
+ 	spin_lock_init(&kvm->arch.mmu_unsync_pages_lock);
+ 
+-	kvm_mmu_init_tdp_mmu(kvm);
++	r = kvm_mmu_init_tdp_mmu(kvm);
++	if (r < 0)
++		return r;
+ 
+ 	node->track_write = kvm_mmu_pte_write;
+ 	node->track_flush_slot = kvm_mmu_invalidate_zap_pages_in_memslot;
+ 	kvm_page_track_register_notifier(kvm, node);
++	return 0;
+ }
+ 
+ void kvm_mmu_uninit_vm(struct kvm *kvm)
+diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+index e7e7876251b3..d7c112a29fe9 100644
+--- a/arch/x86/kvm/mmu/tdp_mmu.c
++++ b/arch/x86/kvm/mmu/tdp_mmu.c
+@@ -14,21 +14,24 @@ static bool __read_mostly tdp_mmu_enabled = true;
+ module_param_named(tdp_mmu, tdp_mmu_enabled, bool, 0644);
+ 
+ /* Initializes the TDP MMU for the VM, if enabled. */
+-bool kvm_mmu_init_tdp_mmu(struct kvm *kvm)
++int kvm_mmu_init_tdp_mmu(struct kvm *kvm)
+ {
++	struct workqueue_struct *wq;
++
+ 	if (!tdp_enabled || !READ_ONCE(tdp_mmu_enabled))
+-		return false;
++		return 0;
++
++	wq = alloc_workqueue("kvm", WQ_UNBOUND|WQ_MEM_RECLAIM|WQ_CPU_INTENSIVE, 0);
++	if (IS_ERR(wq))
++		return PTR_ERR(wq);
+ 
+ 	/* This should not be changed for the lifetime of the VM. */
+ 	kvm->arch.tdp_mmu_enabled = true;
+-
+ 	INIT_LIST_HEAD(&kvm->arch.tdp_mmu_roots);
+ 	spin_lock_init(&kvm->arch.tdp_mmu_pages_lock);
+ 	INIT_LIST_HEAD(&kvm->arch.tdp_mmu_pages);
+-	kvm->arch.tdp_mmu_zap_wq =
+-		alloc_workqueue("kvm", WQ_UNBOUND|WQ_MEM_RECLAIM|WQ_CPU_INTENSIVE, 0);
+-
+-	return true;
++	kvm->arch.tdp_mmu_zap_wq = wq;
++	return 1;
+ }
+ 
+ /* Arbitrarily returns true so that this may be used in if statements. */
+diff --git a/arch/x86/kvm/mmu/tdp_mmu.h b/arch/x86/kvm/mmu/tdp_mmu.h
+index 5e5ef2576c81..647926541e38 100644
+--- a/arch/x86/kvm/mmu/tdp_mmu.h
++++ b/arch/x86/kvm/mmu/tdp_mmu.h
+@@ -72,7 +72,7 @@ u64 *kvm_tdp_mmu_fast_pf_get_last_sptep(struct kvm_vcpu *vcpu, u64 addr,
+ 					u64 *spte);
+ 
+ #ifdef CONFIG_X86_64
+-bool kvm_mmu_init_tdp_mmu(struct kvm *kvm);
++int kvm_mmu_init_tdp_mmu(struct kvm *kvm);
+ void kvm_mmu_uninit_tdp_mmu(struct kvm *kvm);
+ static inline bool is_tdp_mmu_page(struct kvm_mmu_page *sp) { return sp->tdp_mmu_page; }
+ 
+@@ -93,7 +93,7 @@ static inline bool is_tdp_mmu(struct kvm_mmu *mmu)
+ 	return sp && is_tdp_mmu_page(sp) && sp->root_count;
+ }
+ #else
+-static inline bool kvm_mmu_init_tdp_mmu(struct kvm *kvm) { return false; }
++static inline int kvm_mmu_init_tdp_mmu(struct kvm *kvm) { return 0; }
+ static inline void kvm_mmu_uninit_tdp_mmu(struct kvm *kvm) {}
+ static inline bool is_tdp_mmu_page(struct kvm_mmu_page *sp) { return false; }
+ static inline bool is_tdp_mmu(struct kvm_mmu *mmu) { return false; }
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index fe2171b11441..89b6efb7f504 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -11629,12 +11629,13 @@ int kvm_arch_init_vm(struct kvm *kvm, unsigned long type)
+ 
+ 	ret = kvm_page_track_init(kvm);
+ 	if (ret)
+-		return ret;
++		goto out;
++
++	ret = kvm_mmu_init_vm(kvm);
++	if (ret)
++		goto out_page_track;
+ 
+ 	INIT_HLIST_HEAD(&kvm->arch.mask_notifier_list);
+-	INIT_LIST_HEAD(&kvm->arch.active_mmu_pages);
+-	INIT_LIST_HEAD(&kvm->arch.zapped_obsolete_pages);
+-	INIT_LIST_HEAD(&kvm->arch.lpage_disallowed_mmu_pages);
+ 	INIT_LIST_HEAD(&kvm->arch.assigned_dev_head);
+ 	atomic_set(&kvm->arch.noncoherent_dma_count, 0);
+ 
+@@ -11666,10 +11667,14 @@ int kvm_arch_init_vm(struct kvm *kvm, unsigned long type)
+ 
+ 	kvm_apicv_init(kvm);
+ 	kvm_hv_init_vm(kvm);
+-	kvm_mmu_init_vm(kvm);
+ 	kvm_xen_init_vm(kvm);
+ 
+ 	return static_call(kvm_x86_vm_init)(kvm);
++
++out_page_track:
++	kvm_page_track_cleanup(kvm);
++out:
++	return ret;
+ }
+ 
+ int kvm_arch_post_init_vm(struct kvm *kvm)
 -- 
-Mathieu Desnoyers
-EfficiOS Inc.
-http://www.efficios.com
+2.31.1
+
