@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8852C35294
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:15:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 100B0C35295
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:15:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346280AbiC3MQR (ORCPT
+        id S1346336AbiC3MQX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:16:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35192 "EHLO
+        Wed, 30 Mar 2022 08:16:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344196AbiC3Lzl (ORCPT
+        with ESMTP id S1344445AbiC3Lz6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:55:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C02E22B250;
-        Wed, 30 Mar 2022 04:53:46 -0700 (PDT)
+        Wed, 30 Mar 2022 07:55:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 261B12F3AF;
+        Wed, 30 Mar 2022 04:53:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6A0B8B81ACC;
-        Wed, 30 Mar 2022 11:53:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 368DCC340F3;
-        Wed, 30 Mar 2022 11:53:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8053961703;
+        Wed, 30 Mar 2022 11:53:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E30DC340F2;
+        Wed, 30 Mar 2022 11:53:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641224;
-        bh=Owx5cXHHiohKZCzYmdkV7BuW9d3Ur7SqGy69wNLF/4g=;
+        s=k20201202; t=1648641238;
+        bh=+9tDQgM+/axT2d6rke1s+6yyXgquHpFdu21IBqWpF5k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dBEx/I6MWNvqwOXZM/RAhUJ1P8D9NP93LW38GrmyCSBG/SlH8yPycsJQ5jOaVWHZI
-         uLbXwmKzil2yvkoLx5QsCdsc9uDRF3rogkqpWkQnhUy5xKfENc1otx+XxNz4TUEYYD
-         TWtnYfDOok3MUDo5G0Kwc2e6rVjdMHMNqKLb/9vfhZ6onwTv4UVE6hLZSTFw3ji1fG
-         KvGRhXOGf203iZI9Ed0MGRWwnEuU3uuUDXS6hAdLc8/ksYE+j+xfDys3bl4jmaD99i
-         qrS+tiv+Ejzl+KDv2Ibk6haw9+Dfl9tm3QySrQWaLWI1X3K1OY00W6mthv6LST4Fap
-         tx1441KyLZ3vw==
+        b=HLDbuwo+DG4ltKO6rpHk/CwXXPkqZormSszhVSK/T37ag2eYwRxP+rPgIHD0x/V2f
+         Ao5I0pTZLv0fJnoebbnrHRHM1OS5X+Pow47hOPwwXjQe+7RvXk05NE10mgk5Ot8b/e
+         GHkZVuIMoAQUMhiALdja/swgY6vhbYerT8IhIC9qQzgs08ZaMHs1Ej1aft3AhLedq5
+         zDX2ir+Xva3GSTEKLxaE4mCAyU4mpG7sNR6G5SE35GdDyWrXmBZe88Ox+2sTyTDaG8
+         uKTgIvEyx7Lc3VyCw42VPZ7NZTOiqX4gPJRQtwATfOnLcEtdN4glQAhKfBfMg/5lmq
+         eW5bcKs5Zjdtw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yang Guang <yang.guang5@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>, Helge Deller <deller@gmx.de>,
-        Sasha Levin <sashal@kernel.org>, tomi.valkeinen@ti.com,
-        linux-omap@vger.kernel.org, linux-fbdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 04/20] video: fbdev: omapfb: acx565akm: replace snprintf with sysfs_emit
-Date:   Wed, 30 Mar 2022 07:53:20 -0400
-Message-Id: <20220330115336.1672930-4-sashal@kernel.org>
+Cc:     Richard Leitner <richard.leitner@skidata.com>,
+        Thierry Reding <treding@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        mark.rutland@arm.com, linux@armlinux.org.uk, swarren@wwwdotorg.org,
+        thierry.reding@gmail.com, gnurou@gmail.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-tegra@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 14/20] ARM: tegra: tamonten: Fix I2C3 pad setting
+Date:   Wed, 30 Mar 2022 07:53:30 -0400
+Message-Id: <20220330115336.1672930-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115336.1672930-1-sashal@kernel.org>
 References: <20220330115336.1672930-1-sashal@kernel.org>
@@ -53,37 +56,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Guang <yang.guang5@zte.com.cn>
+From: Richard Leitner <richard.leitner@skidata.com>
 
-[ Upstream commit 24565bc4115961db7ee64fcc7ad2a7437c0d0a49 ]
+[ Upstream commit 0092c25b541a5422d7e71892a13c55ee91abc34b ]
 
-coccinelle report:
-./drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c:
-479:9-17: WARNING: use scnprintf or sprintf
+This patch fixes the tristate configuration for i2c3 function assigned
+to the dtf pins on the Tamonten Tegra20 SoM.
 
-Use sysfs_emit instead of scnprintf or sprintf makes more sense.
-
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Richard Leitner <richard.leitner@skidata.com>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c    | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/boot/dts/tegra20-tamonten.dtsi | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c
-index f2c2fef3db74..87c4f420a9d9 100644
---- a/drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c
-+++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c
-@@ -487,7 +487,7 @@ static ssize_t show_cabc_available_modes(struct device *dev,
- 	int i;
- 
- 	if (!ddata->has_cabc)
--		return snprintf(buf, PAGE_SIZE, "%s\n", cabc_modes[0]);
-+		return sysfs_emit(buf, "%s\n", cabc_modes[0]);
- 
- 	for (i = 0, len = 0;
- 	     len < PAGE_SIZE && i < ARRAY_SIZE(cabc_modes); i++)
+diff --git a/arch/arm/boot/dts/tegra20-tamonten.dtsi b/arch/arm/boot/dts/tegra20-tamonten.dtsi
+index 4d69d67792d1..b919ca29bb78 100644
+--- a/arch/arm/boot/dts/tegra20-tamonten.dtsi
++++ b/arch/arm/boot/dts/tegra20-tamonten.dtsi
+@@ -183,8 +183,8 @@
+ 			};
+ 			conf_ata {
+ 				nvidia,pins = "ata", "atb", "atc", "atd", "ate",
+-					"cdev1", "cdev2", "dap1", "dtb", "gma",
+-					"gmb", "gmc", "gmd", "gme", "gpu7",
++					"cdev1", "cdev2", "dap1", "dtb", "dtf",
++					"gma", "gmb", "gmc", "gmd", "gme", "gpu7",
+ 					"gpv", "i2cp", "irrx", "irtx", "pta",
+ 					"rm", "slxa", "slxk", "spia", "spib",
+ 					"uac";
+@@ -203,7 +203,7 @@
+ 			};
+ 			conf_crtp {
+ 				nvidia,pins = "crtp", "dap2", "dap3", "dap4",
+-					"dtc", "dte", "dtf", "gpu", "sdio1",
++					"dtc", "dte", "gpu", "sdio1",
+ 					"slxc", "slxd", "spdi", "spdo", "spig",
+ 					"uda";
+ 				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
 -- 
 2.34.1
 
