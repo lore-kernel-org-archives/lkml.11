@@ -2,49 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92BC2C43217
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 358FDC47085
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347495AbiC3MG5 (ORCPT
+        id S1347419AbiC3MGn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:06:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56872 "EHLO
+        Wed, 30 Mar 2022 08:06:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345926AbiC3LzN (ORCPT
+        with ESMTP id S1345890AbiC3LzI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:55:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D8B51116D;
-        Wed, 30 Mar 2022 04:52:48 -0700 (PDT)
+        Wed, 30 Mar 2022 07:55:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39D3425EC9D;
+        Wed, 30 Mar 2022 04:52:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D2D561616;
-        Wed, 30 Mar 2022 11:52:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE922C36AE2;
-        Wed, 30 Mar 2022 11:52:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CA15D616DA;
+        Wed, 30 Mar 2022 11:52:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A56B6C34111;
+        Wed, 30 Mar 2022 11:52:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641167;
-        bh=h+DPwnbYxXhjLcQ5Auj4tYhe7axfgxUCxroL7gFkx9k=;
+        s=k20201202; t=1648641131;
+        bh=8ZFmnqlSEMxKjuWziuwkhdq48STdoQ3qVnRC30Htjlg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hYiSxrpwwT62O5O8mPJroZV5M/yUQk//7n62gYo15rziCxFQBWq1s5zS5NAqAx5z9
-         GrmV+UBD0wdHHMapTUNW7MnxCsCZg6CBVaCYyX7LpxguGG8uJg+FPk/XHmKuvA6JnZ
-         1vOEaWFV5TYCMZTd34mLXpfe0b0ZEtkpwjN5OqgIN7Vq1ZeeoiaXBGAZc5KiaSfxJH
-         0Bc7K+qT1PjhKVR3h2aWvur1YlAsjZ6jXL9NAppFXY7jlK/4804DF31yB/EMzJqsYJ
-         Zf/YrycRI2vbCjOpYiCm8pn25JkUJN+aSsyc/2ubi87FkhtSV3YrALAgOy9WsAwo3j
-         rxnRY0nPKAGsQ==
+        b=ubGd8FF7QhLDXrxASeA+gcqSIFiHwhiZEYqLmdM+lwJ79+i3dNVxqohNXqkSeDvxK
+         enIYDOqrYm5ntXhL8qgXX03VeKuMBnqA1OHLZ0j57YaZcK+VXY2druT0Y8dVC0rBsQ
+         ustOz5Crwpwr/HMwNxGCXWJEYEBjlcrtem8rukwe80Bf0ToVWgpHkT6yXesYaS+xcC
+         3M14O9xKvnEql57lHhZk92h4KgkRHwa7+4fCCjtpvbj7EPBmJzSLES6X3dfzxWtrvS
+         PRRM8iLvtITDZcM/7T7WNDtZNs1Bx4BWSTwnVliGbgKYrIYIGVKxT5BAr5csqm9sRA
+         zUNlyovntM55Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shengjiu Wang <shengjiu.wang@nxp.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.4 14/25] ASoC: soc-core: skip zero num_dai component in searching dai name
-Date:   Wed, 30 Mar 2022 07:52:14 -0400
-Message-Id: <20220330115225.1672278-14-sashal@kernel.org>
+Cc:     Richard Leitner <richard.leitner@skidata.com>,
+        Thierry Reding <treding@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        mark.rutland@arm.com, linux@armlinux.org.uk, swarren@wwwdotorg.org,
+        thierry.reding@gmail.com, gnurou@gmail.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-tegra@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 28/37] ARM: tegra: tamonten: Fix I2C3 pad setting
+Date:   Wed, 30 Mar 2022 07:51:13 -0400
+Message-Id: <20220330115122.1671763-28-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330115225.1672278-1-sashal@kernel.org>
-References: <20220330115225.1672278-1-sashal@kernel.org>
+In-Reply-To: <20220330115122.1671763-1-sashal@kernel.org>
+References: <20220330115122.1671763-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,45 +56,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shengjiu Wang <shengjiu.wang@nxp.com>
+From: Richard Leitner <richard.leitner@skidata.com>
 
-[ Upstream commit f7d344a2bd5ec81fbd1ce76928fd059e57ec9bea ]
+[ Upstream commit 0092c25b541a5422d7e71892a13c55ee91abc34b ]
 
-In the case like dmaengine which's not a dai but as a component, the
-num_dai is zero, dmaengine component has the same component_of_node
-as cpu dai, when cpu dai component is not ready, but dmaengine component
-is ready, try to get cpu dai name, the snd_soc_get_dai_name() return
--EINVAL, not -EPROBE_DEFER, that cause below error:
+This patch fixes the tristate configuration for i2c3 function assigned
+to the dtf pins on the Tamonten Tegra20 SoM.
 
-asoc-simple-card <card name>: parse error -22
-asoc-simple-card: probe of <card name> failed with error -22
-
-The sound card failed to probe.
-
-So this patch fixes the issue above by skipping the zero num_dai
-component in searching dai name.
-
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
-Link: https://lore.kernel.org/r/1644491952-7457-1-git-send-email-shengjiu.wang@nxp.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Richard Leitner <richard.leitner@skidata.com>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/soc-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/boot/dts/tegra20-tamonten.dtsi | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/sound/soc/soc-core.c b/sound/soc/soc-core.c
-index c0e03cc8ea82..093ab32ea2c3 100644
---- a/sound/soc/soc-core.c
-+++ b/sound/soc/soc-core.c
-@@ -3362,7 +3362,7 @@ int snd_soc_get_dai_name(struct of_phandle_args *args,
- 	for_each_component(pos) {
- 		component_of_node = soc_component_to_node(pos);
- 
--		if (component_of_node != args->np)
-+		if (component_of_node != args->np || !pos->num_dai)
- 			continue;
- 
- 		ret = snd_soc_component_of_xlate_dai_name(pos, args, dai_name);
+diff --git a/arch/arm/boot/dts/tegra20-tamonten.dtsi b/arch/arm/boot/dts/tegra20-tamonten.dtsi
+index dd4d506683de..7f14f0d005c3 100644
+--- a/arch/arm/boot/dts/tegra20-tamonten.dtsi
++++ b/arch/arm/boot/dts/tegra20-tamonten.dtsi
+@@ -183,8 +183,8 @@
+ 			};
+ 			conf_ata {
+ 				nvidia,pins = "ata", "atb", "atc", "atd", "ate",
+-					"cdev1", "cdev2", "dap1", "dtb", "gma",
+-					"gmb", "gmc", "gmd", "gme", "gpu7",
++					"cdev1", "cdev2", "dap1", "dtb", "dtf",
++					"gma", "gmb", "gmc", "gmd", "gme", "gpu7",
+ 					"gpv", "i2cp", "irrx", "irtx", "pta",
+ 					"rm", "slxa", "slxk", "spia", "spib",
+ 					"uac";
+@@ -203,7 +203,7 @@
+ 			};
+ 			conf_crtp {
+ 				nvidia,pins = "crtp", "dap2", "dap3", "dap4",
+-					"dtc", "dte", "dtf", "gpu", "sdio1",
++					"dtc", "dte", "gpu", "sdio1",
+ 					"slxc", "slxd", "spdi", "spdo", "spig",
+ 					"uda";
+ 				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
 -- 
 2.34.1
 
