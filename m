@@ -2,87 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ECD7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:18:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 053BDC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:18:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245364AbiC3MUM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:20:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41166 "EHLO
+        id S243957AbiC3MUU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 08:20:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346106AbiC3MEb (ORCPT
+        with ESMTP id S1347284AbiC3MGI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 08:04:31 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 386833B54D
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 04:59:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648641546; x=1680177546;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=tANUoNzHzK67sN+dxAnpjoWCep2qpLxGxl27vY7/z0A=;
-  b=XiQGN43yrNKks5dmQ8+Nv3hKXPJ4cdq1I7GOnUNSK2IT37HRX5xzvYAt
-   TeEEBwN9h7qECDEe6QKyQJHt8IB0v1LIyCIZc8332NMl03bteEryeMNY3
-   vUvwfpkc1sf5QCgGg19J1F4hKyI/h6J/FpUgpA+Lgg7bcp9eMv/RgCJve
-   K39bIKT5gK46XjvoXwcnK5HS776Tp1f8z46CYinRkZcanM1+IPijO9vFU
-   IIhVWEza0a7jvsqZu2ipKF5hMhM/8IW4Uuo4azOJaztQcYlUuAEz14jH0
-   qSgIosbSFgIXylJjdzP/GdlPWofZVOUDOna76LwDmMyUp7rBH5oKwCzI7
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="259239359"
-X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
-   d="scan'208";a="259239359"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 04:59:04 -0700
-X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
-   d="scan'208";a="565505459"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.215.120]) ([10.254.215.120])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 04:58:59 -0700
-Message-ID: <d2cdd06b-bd66-a422-125c-b1b389c195de@linux.intel.com>
-Date:   Wed, 30 Mar 2022 19:58:57 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Cc:     baolu.lu@linux.intel.com, Eric Auger <eric.auger@redhat.com>,
-        "Liu, Yi L" <yi.l.liu@intel.com>,
-        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH RFC v2 01/11] iommu: Add pasid_bits field in struct
- dev_iommu
-Content-Language: en-US
-To:     "Tian, Kevin" <kevin.tian@intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>
-References: <20220329053800.3049561-1-baolu.lu@linux.intel.com>
- <20220329053800.3049561-2-baolu.lu@linux.intel.com>
- <BN9PR11MB52763DAEC605FD1B21EE4EAF8C1F9@BN9PR11MB5276.namprd11.prod.outlook.com>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB52763DAEC605FD1B21EE4EAF8C1F9@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Wed, 30 Mar 2022 08:06:08 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8407FF3
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 05:03:16 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id b13so16626706pfv.0
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 05:03:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=v0/H3G2XFiR4LVmAPedHiWgw4TnVBjO8kBG30Rx6UL8=;
+        b=mL8TYadv8FwnRuRKoTITRg23I+zj3YpjUkS/HxsO1mXhazrpiNa/gQ9ZhqpLDQUrqI
+         Y4H2jEfLUG4ejF2Bhyey9dkFvUs/W7aQIxqRp7nhurrbYn5LEk8qic5kstmJh4wXg7BW
+         Vdk2mKx1nPOwuwOvdqhVdNM5wUN1AsyMVOeIItxhTubGPYT2Q8biMXZkuzyQGVRcL8TD
+         vLAWHCkbUHL5ygmf5oFmiadYdSKWECmwoPmeze/QJEwdiUr0+MG7BhrV7gvPojJCLQft
+         q9izu8XueDRFAoQOtCX/qStvq7xqphJMDjzgUjUwfkywmVU/2xgyEbSfGahUW3czat4F
+         z9Yg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=v0/H3G2XFiR4LVmAPedHiWgw4TnVBjO8kBG30Rx6UL8=;
+        b=vlj5zlA4WwCiANx1zaBRhBVpYGkaqAPMGWDaLZ2LcvRNvSBcDdrHxHbLDqUrEHQ3ll
+         65DOLql0MIshjbab360Gg/a4OCfxXz44aeeIczrmwflVH2vH0dsVnUqN0zOepxpn57GZ
+         y/m84CFzsdl7ETXlF6OW3xyJkwUJ994m6jxgU9L0/8rDMVAVkTKr4+WMJuzvg8LG6v58
+         wa08AKoxid1K9wIk+xJS3ZUF6EJoXmV6HmDutoC98J9YHhHJetSIY3H+pcp14lzvsQkq
+         jWmeK6e7996pdJU6w4u/88pqEIz0aQ1pnsC6rOzhNTS+Ickrb7gt4FhnE3FIWdFehlUk
+         cmlg==
+X-Gm-Message-State: AOAM5316v3J7sclmnHzwANVnnktrNjrGnnaPoVJcczwoCVK35rfwq6dB
+        +uuCmxK8btxNX7GsoBEl11c=
+X-Google-Smtp-Source: ABdhPJyR8BQ3qxaZE8/z/Z4rWYLqKvWludsfxnyPd4gxVs9v0cM5heIjKQAvYMUgNX8NERHX+rcSSw==
+X-Received: by 2002:a05:6a00:194e:b0:4fb:32b9:dfd2 with SMTP id s14-20020a056a00194e00b004fb32b9dfd2mr19805610pfk.10.1648641796180;
+        Wed, 30 Mar 2022 05:03:16 -0700 (PDT)
+Received: from localhost ([119.3.119.18])
+        by smtp.gmail.com with ESMTPSA id j9-20020a056a00130900b004f73df40914sm23142978pfu.82.2022.03.30.05.03.14
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 30 Mar 2022 05:03:15 -0700 (PDT)
+From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
+To:     patrik.r.jakobsson@gmail.com, airlied@linux.ie, daniel@ffwll.ch
+Cc:     rob@ti.com, yakui.zhao@intel.com, airlied@redhat.com,
+        alan@linux.intel.com, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Subject: [PATCH 1/5] gma500: fix a missing break in oaktrail_crtc_mode_set
+Date:   Wed, 30 Mar 2022 20:02:42 +0800
+Message-Id: <20220330120246.25580-2-xiam0nd.tong@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220330120246.25580-1-xiam0nd.tong@gmail.com>
+References: <20220330120246.25580-1-xiam0nd.tong@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/3/30 15:05, Tian, Kevin wrote:
->> From: Lu Baolu<baolu.lu@linux.intel.com>
->> Sent: Tuesday, March 29, 2022 1:38 PM
->>
->> Use this field to save the pasid/ssid bits that a device is able to
->> support with its IOMMU hardware. It is a generic attribute of a device
->> and lifting it into the per-device dev_iommu struct makes it possible
->> to allocate a PASID for device without calls into the IOMMU drivers.
->> Any iommu driver which suports PASID related features should set this
->> field before features are enabled on the devices.
-> Miss a clarification for non-PCI SVA as discussed here:
-> 
-> https://lore.kernel.org/all/85d61ad6-0cf0-ac65-3312-32d0cdeb1b27@linux.intel.com/
+Instead of exiting the loop as expected when an entry is found, the
+list_for_each_entry() continues until the traversal is complete. It
+will certainly lead to a invalid reference to list itereator variable
+'connector' after the loop pointing an bogus address at an offset
+from the list head, and could lead to multiple 'is_*' flags being set
+with true mistakely too.
 
-Yes. Thanks for the reminding.
+The invalid reference to list itereator is here:
+	drm_object_property_get_value(&connector->base,
 
-Best regards,
-baolu
+To fix this, when found the entry, add a break after the switch
+statement.
+
+Fixes: a69ac9ea85d87 ("drm/gma500: drm_connector_property -> drm_object_property")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+---
+ drivers/gpu/drm/gma500/oaktrail_crtc.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/gpu/drm/gma500/oaktrail_crtc.c b/drivers/gpu/drm/gma500/oaktrail_crtc.c
+index 36c7c2686c90..eb2d79872bd5 100644
+--- a/drivers/gpu/drm/gma500/oaktrail_crtc.c
++++ b/drivers/gpu/drm/gma500/oaktrail_crtc.c
+@@ -409,6 +409,8 @@ static int oaktrail_crtc_mode_set(struct drm_crtc *crtc,
+ 			is_mipi = true;
+ 			break;
+ 		}
++
++		break;
+ 	}
+ 
+ 	/* Disable the VGA plane that we never use */
+-- 
+2.17.1
+
