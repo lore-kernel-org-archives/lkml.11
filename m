@@ -2,101 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB3A8C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 08:21:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A8ECC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 08:21:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244287AbiC3IXC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 04:23:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57710 "EHLO
+        id S244306AbiC3IXI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 04:23:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244268AbiC3IWr (ORCPT
+        with ESMTP id S244267AbiC3IWq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 04:22:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 53A583121E
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 01:21:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648628461;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=IO9KTSJjuWPlQ5rED48189b51lrDyfed52txFxWKnsw=;
-        b=SITZHVIHBxdHc6mukVt/Thvc11uu70CcnGHM403By5t92/rJI7oXNH8nOr1nSRbFC6DAZV
-        AR2IDTPaSf/dUbTDWDUMBvbvNcry5s35Dgbgo0eYoBtMFdvVa7hBg7Mnthf6B2KMWvJHvG
-        M+Bq3UIj60q+wI3S5vi3BtTnb+VKCxg=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-381-O-Hwf6t1Oky512CILG5EVQ-1; Wed, 30 Mar 2022 04:20:57 -0400
-X-MC-Unique: O-Hwf6t1Oky512CILG5EVQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5E0203C11C67;
-        Wed, 30 Mar 2022 08:20:51 +0000 (UTC)
-Received: from shodan.usersys.redhat.com (unknown [10.43.17.22])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id BD97540CF8E4;
-        Wed, 30 Mar 2022 08:20:49 +0000 (UTC)
-Received: by shodan.usersys.redhat.com (Postfix, from userid 1000)
-        id A042D1C0162; Wed, 30 Mar 2022 10:20:46 +0200 (CEST)
-From:   Artem Savkov <asavkov@redhat.com>
-To:     netdev@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        asavkov@redhat.com, Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org,
-        Anna-Maria Gleixner <anna-maria@linutronix.de>,
-        dsahern@kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 0/2] Upper bound kernel timers
-Date:   Wed, 30 Mar 2022 10:20:44 +0200
-Message-Id: <20220330082046.3512424-1-asavkov@redhat.com>
-In-Reply-To: <87zglcfmcv.ffs@tglx>
-References: <87zglcfmcv.ffs@tglx>
-Content-Type: text/plain; charset="utf-8"
+        Wed, 30 Mar 2022 04:22:46 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D05793120B;
+        Wed, 30 Mar 2022 01:21:01 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 3C4931F443F6
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1648628460;
+        bh=sD9zda1gQkNv3MUA4bkv/V5WHuwzCfeFynE1ba/36bI=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=lwqXWCyvUJTMcWkmXB/XryVKNZ3doT0L4in++YJhNLlEumVov1VdrMn6WG2XwP0ks
+         blZ4fiFE4Q0hNhTRpBd0ICap0dAq4rUqv6Nx574wrl2C/2wf9fmlKPNu13ak+i9io3
+         XuGtTjPq0bybFhxrjyjT8O9tviLy2mV3ijMdf4YmcBenisQ5JUKxTJ1r+sC/KVqf8/
+         YDrwtXvpxBbOVALzBJ2KhF0A4Xle3gmzF1YumNtOdnjiLJ0IkLwdWn8R9yyHo3t0Pj
+         tVq4OP09GfDsPwVt2n20oWvaZw3i7S6EQpXqzxGxqug2kMu8MrH9mYT6LXort9N/r+
+         q6o2+0V72XjlA==
+Message-ID: <61c2609c-18d1-fea9-7b71-0b17fb2beaef@collabora.com>
+Date:   Wed, 30 Mar 2022 10:20:47 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v12 2/3] dt-bindings: mmc: mtk-sd: increase reg maxItems
+Content-Language: en-US
+To:     Rob Herring <robh+dt@kernel.org>
+Cc:     Tinghan Shen <tinghan.shen@mediatek.com>,
+        Chaotian Jing <chaotian.jing@mediatek.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Wenbin Mei <wenbin.mei@mediatek.com>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        Project_Global_Chrome_Upstream_Group 
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Ryder Lee <ryder.lee@kernel.org>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>
+References: <20220329114540.17140-1-tinghan.shen@mediatek.com>
+ <20220329114540.17140-3-tinghan.shen@mediatek.com>
+ <d720a5e9-d078-6c60-f55b-0506c4b4e1fa@collabora.com>
+ <CAL_JsqLrgW4GwSZ20x5Gsu-umjtw4x8k=uHeZk9T2+A3K6UT0Q@mail.gmail.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <CAL_JsqLrgW4GwSZ20x5Gsu-umjtw4x8k=uHeZk9T2+A3K6UT0Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As previously discussed [1] we had a report of a regression in TCP keepaliv=
-e=0D
-timer where timers were up to 4 minutes late resulting in disconnects.=0D
-=0D
-This patchset tries to fix the problem by introducing upper bound kernel ti=
-mers=0D
-and making tcp keepalive timer use those.=0D
-=0D
-[1] https://lore.kernel.org/all/20210302001054.4qgrvnkltvkgikzr@treble/T/#u=
-=0D
-=0D
----=0D
-Changes in v3:=0D
-  - A different approach: instead of introducing upper bound timers try to=
-=0D
-    account for timer wheen granularity on timer (re)arming step.=0D
-  - Not sure whether moving lvl calculation into a separate function is wor=
-th=0D
-    it.=0D
-  - Had a hard time naming the upper_bount_timeout() function - any suggest=
-ions=0D
-    welcome.=0D
-=0D
-Changes in v2:=0D
-  - TIMER_UPPER_BOUND flag description added as a comment in timer.h=0D
-  - Code style fixes=0D
-  - More elaborate commit message in timer commit=0D
-=0D
-Artem Savkov (2):=0D
-  timer: add a function to adjust timeouts to be upper bound=0D
-  net: make tcp keepalive timer upper bound=0D
-=0D
- include/linux/timer.h           |  1 +=0D
- kernel/time/timer.c             | 92 ++++++++++++++++++++++++++++-----=0D
- net/ipv4/inet_connection_sock.c |  2 +-=0D
- 3 files changed, 81 insertions(+), 14 deletions(-)=0D
-=0D
--- =0D
-2.34.1=0D
-=0D
+Il 29/03/22 21:10, Rob Herring ha scritto:
+> On Tue, Mar 29, 2022 at 7:43 AM AngeloGioacchino Del Regno
+> <angelogioacchino.delregno@collabora.com> wrote:
+>>
+>> Il 29/03/22 13:45, Tinghan Shen ha scritto:
+>>> Add optional host top register base for the reg binding description.
+>>>
+>>> Signed-off-by: Wenbin Mei <wenbin.mei@mediatek.com>
+>>> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+>>> ---
+>>>    Documentation/devicetree/bindings/mmc/mtk-sd.yaml | 3 ++-
+>>>    1 file changed, 2 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/mmc/mtk-sd.yaml b/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
+>>> index 7032f7adf3ca..6d41bcec900f 100644
+>>> --- a/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
+>>> +++ b/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
+>>> @@ -40,7 +40,8 @@ properties:
+>>>              - const: mediatek,mt8183-mmc
+>>>
+>>>      reg:
+>>> -    maxItems: 1
+>>> +    minItems: 1
+>>> +    maxItems: 2
+>>
+>> it's just maxItems... adding minItems: 1 is not required.
+> 
+> If 1 entry is still valid, then minItems is required. If not, then
+> it's an ABI break.
+> 
+> Rob
 
+
+Right. Sorry for that and thanks for the explaination, Rob.
+
+Cheers,
+Angelo
