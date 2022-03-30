@@ -2,141 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED382C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 18:27:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDB9DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 18:28:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350008AbiC3S3L (ORCPT
+        id S1350499AbiC3S3t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 14:29:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59264 "EHLO
+        Wed, 30 Mar 2022 14:29:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351086AbiC3S2Z (ORCPT
+        with ESMTP id S243787AbiC3S3l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 14:28:25 -0400
-Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8E5947071
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:24:48 -0700 (PDT)
-Received: by mail-il1-x133.google.com with SMTP id z10so2080508iln.0
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:24:48 -0700 (PDT)
+        Wed, 30 Mar 2022 14:29:41 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D28713E0B
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:26:30 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id a1so30487926wrh.10
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:26:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=JFFSehnkNeo1K8L02V2cW9CThdS75MCRvOKla3KLkAw=;
-        b=BFTCzD4aFvt9JrLiEz1bvzh6geIg6IptVTdj6IDiPuICAE203wQz9TEb+4sd+GuDm8
-         7hfsvwiWBq0a8G/L8JH1EJb4H5BgYFm066eNM++IJprdbaiP/K/RQcVNoIdok+4Buz0n
-         VPAQxsddsYW6lxBAvrCd3pw/AsU0VWg+XQ9+f+uSiaJkninfGHo8tQFy0F2WQL/CkiPX
-         978UdPWCEqFU5zNcqpfpYI+hbpzYnlekkvQ4l365jJLsdpHWW1qs4vwF10T/u8GEeEZH
-         VfPeDuk7IqzhfjQL+dK96hTc4fToK+0EsQR50pC8XTuJ0494LDj5KpiHUMlEIVaBIuzm
-         wOwg==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yrVy6mGFfTezARgPXoahkDtUgtA05SdD0ISAtqjQGmo=;
+        b=jeqXOpWvuvTFAZ5ufyJ6gMquwMoLSR57f2nzBHCjKg89AFDu8SChd/gG11luYWyf/D
+         2CzAPJvMu3VE37HnTb9n1joxjZ8rZDv/jLDDQxoVM13w9/HSGar33+yelws0I0RzDXuD
+         x2FC6sCuQ9+sVj/AU5EaPqcneuIHFnQREQK/aMTMnhAMlvN3cHdfJ8kvton6FPr1ui7l
+         TyizdoluHflvQQylTJfOXWxZfJrf+Q445FSF/JpxF90ldhCvP4quYkT1gFYAnZIwXKwy
+         TrGMEBsTo5N+WAfY46pjgOj3zGDxRdC25j6ZfW1QRM2FQ67tj18/9FH5vik6eMeh2Euq
+         8AWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=JFFSehnkNeo1K8L02V2cW9CThdS75MCRvOKla3KLkAw=;
-        b=7tsXD3eTLcqZwsGmUJUsDV9P3/KlAmDUCZgVlvw0G2ejkB5RNOc/OjtKkOK4w9Xn/f
-         yaeQIo+/quQzSXFTQ7Zo1VEwZXstmshZ+rMzr3NIkPvAG7pYTIxuaYtURd7sJ3ifkSkY
-         BG7ZTyAbfJqCGFZcTh1YAPB63B7gvHmO3p2r7LbkcJUspqxxopYlMxXZXC3ImSoQrYuJ
-         aTjdjdo2n40veAXIyH5EOG+CGt2M7Xm3SYbKdi+gcl3/XiM3YwKwPQ5Cs+ggzODFN9qj
-         TaU5wYsOtoDxblYKR8xjpUuq8HhcaB8g5VCeZo0FTWYQUBwYjCsEToMfmx5naU4Jf2wy
-         9zZA==
-X-Gm-Message-State: AOAM533RIRW0g87ghwiZluK/n4z07rSh7ZVDx0m0OfkOvc2rkEGinf0j
-        PuPjICz5kXvcJNF3gZEoHqEx5w==
-X-Google-Smtp-Source: ABdhPJwUvZiBYV6AGjovRlQg5dfR2IK8vL/m8lnPjq8KMhvUK1WpCP4kEeYA48hTsQvWDg7IrHos5Q==
-X-Received: by 2002:a92:cbc3:0:b0:2c6:78fa:41e9 with SMTP id s3-20020a92cbc3000000b002c678fa41e9mr11278289ilq.112.1648664688212;
-        Wed, 30 Mar 2022 11:24:48 -0700 (PDT)
-Received: from [192.168.1.172] ([207.135.234.126])
-        by smtp.gmail.com with ESMTPSA id i81-20020a6bb854000000b00649c1b67a6csm11564038iof.28.2022.03.30.11.24.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 30 Mar 2022 11:24:47 -0700 (PDT)
-Message-ID: <0dc208a9-22f2-6758-e776-752ff81e2b19@kernel.dk>
-Date:   Wed, 30 Mar 2022 12:24:46 -0600
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yrVy6mGFfTezARgPXoahkDtUgtA05SdD0ISAtqjQGmo=;
+        b=q/VfPE/W3Uhljsjs1elpS5t13i2XOiphbz+F4SpZDqYTZGmmCjnNhKAaw7ZzM4Z8QQ
+         RFyLLzKZPcrx2bXLDErpocn4lfCjG/Y9RMcm0mrQn9+Ps7wy+QNQK49ZLP8iNHRqRxRV
+         /kTWh5mzcy10Sjj9DALTqUVLgbm2tlH/NLOunct2xbJsWC9TeojFsWX0kwJlmKvc7GdI
+         q/HrhbtnwXRHmM9XxFGjTCHUsJmdZ6BMcMUGmhoAg0dPbMgYuhny9whsXV7bMQ62Rk1C
+         yjDt3+cjdJYkssr5vUc0mvZx+dMPppaGy8C0+QvIBF8O1ElWZXPGjEYD67lAMfoQs2tq
+         uqTQ==
+X-Gm-Message-State: AOAM530lURLKRkQWPjxfwa5G4zvi5Vr5vnsUYcwvBDZfeiK8K0OQZjK/
+        uigfz+Vbce2gAsKs+Z+cYTr+aLosD+e2GJeHs1gunQ==
+X-Google-Smtp-Source: ABdhPJyHXpZ33Cgj5l28R7EnxJQfhSJzEztJTVsFHQXl/nJtwWID/KYZkpjVOJJC80I9hdIvxXiGJ1M1XbFYufMG0uk=
+X-Received: by 2002:a5d:68ce:0:b0:204:1a8c:749a with SMTP id
+ p14-20020a5d68ce000000b002041a8c749amr821161wrw.392.1648664788452; Wed, 30
+ Mar 2022 11:26:28 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: state of drbd in mainline
-Content-Language: en-US
-To:     Philipp Reisner <philipp.reisner@linbit.com>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Lars Ellenberg <lars.ellenberg@linbit.com>,
-        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220329070618.GA20396@lst.de>
- <CADGDV=UgjZAbmAN-2bO1nyDvA=XCC9Lf2dxWHZ0BwxF12nnztQ@mail.gmail.com>
- <20220329073254.GA20691@lst.de>
- <CADGDV=U5jwe0CZ12174cMahfD_h-GsBswWaA1VOJbHaC1nsrUw@mail.gmail.com>
- <f9d89282-3a67-ad97-149f-52325e23607c@kernel.dk>
- <CADGDV=WN2TFR6dO7ZdiQ2ijPjs+7HSsvk0ZCHsHj6ZG5t-oEdA@mail.gmail.com>
- <3c42b1ed-7c03-64e6-409e-e92247288cac@kernel.dk>
- <CADGDV=WcTSSC70yG61dazo-WyoLOzp3r+nOk-Eg2x_Ncx=3nRg@mail.gmail.com>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <CADGDV=WcTSSC70yG61dazo-WyoLOzp3r+nOk-Eg2x_Ncx=3nRg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220324234123.1608337-1-haoluo@google.com> <9cdf860d-8370-95b5-1688-af03265cc874@fb.com>
+ <CA+khW7g3hy61qnvtqUizaW+qB6wk=Y9cjivhORshOk=ZzTXJ-A@mail.gmail.com>
+ <CA+khW7iq+UKsfQxdT3QpSqPUFN8gQWWDLoQ9zxB=uWTs63AZEA@mail.gmail.com>
+ <20220329093753.26wc3noelqrwlrcj@apollo.legion> <CA+khW7jW47SALTfxMKfQoA0Qwqd22GC0z4S5juFTbxLfTSbFEQ@mail.gmail.com>
+ <20220329232956.gbsr65jdbe4lw2m6@ast-mbp> <CA+khW7jyvp4PKGu5GS8GDf=Lr4EdRUz8kraaTfiZ2oGm704Cpw@mail.gmail.com>
+ <CAADnVQLTBhCTAx1a_nev7CgMZxv1Bb7ecz1AFRin8tHmjPREJA@mail.gmail.com>
+In-Reply-To: <CAADnVQLTBhCTAx1a_nev7CgMZxv1Bb7ecz1AFRin8tHmjPREJA@mail.gmail.com>
+From:   Hao Luo <haoluo@google.com>
+Date:   Wed, 30 Mar 2022 11:26:17 -0700
+Message-ID: <CA+khW7iqiKTLi75oSPe+ibV8afR_SPgtg7Q+nEswmMOFZaAebA@mail.gmail.com>
+Subject: Re: [PATCH RFC bpf-next 0/2] Mmapable task local storage.
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Yonghong Song <yhs@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        KP Singh <kpsingh@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, bpf <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/30/22 9:23 AM, Philipp Reisner wrote:
->>> Jens, my intention is to keep it in-tree, and at some point update it.
->>> Regarding your questions:
->>
->> That'd be great, but it's been years since there was any significant
->> updates to the in-kernel drbd... I would strongly suggest that the
->> in-kernel be brought closer to what people are mostly running, as it
->> stands it's basically unmaintained.
-> 
-> The changes we worked on over many Years in the more recent drbd-9.x
-> branches are just too fundamental to do them in small chunks, we could
-> upstream bit by bit.  We need to get that reviewed in a big series.  If I
+On Wed, Mar 30, 2022 at 11:16 AM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Wed, Mar 30, 2022 at 11:06 AM Hao Luo <haoluo@google.com> wrote:
+> >
+> > On Tue, Mar 29, 2022 at 4:30 PM Alexei Starovoitov
+> > <alexei.starovoitov@gmail.com> wrote:
+> > >
+> > > On Tue, Mar 29, 2022 at 10:43:42AM -0700, Hao Luo wrote:
+> > > > On Tue, Mar 29, 2022 at 2:37 AM Kumar Kartikeya Dwivedi
+> > > > <memxor@gmail.com> wrote:
+> > > > >
+> > > > > On Mon, Mar 28, 2022 at 11:16:15PM IST, Hao Luo wrote:
+> > > > > > On Mon, Mar 28, 2022 at 10:39 AM Hao Luo <haoluo@google.com> wrote:
+> > > > > > >
+> > > > > > > Hi Yonghong,
+> > > > > > >
+> > > > > > > On Fri, Mar 25, 2022 at 12:16 PM Yonghong Song <yhs@fb.com> wrote:
+> > > > > > > >
+> > > > > > > > On 3/24/22 4:41 PM, Hao Luo wrote:
+> > > > > > > > > Some map types support mmap operation, which allows userspace to
+> > > > > > > > > communicate with BPF programs directly. Currently only arraymap
+> > > > > > > > > and ringbuf have mmap implemented.
+> > > > > > > > >
+> > > > > > > > > However, in some use cases, when multiple program instances can
+> > > > > > > > > run concurrently, global mmapable memory can cause race. In that
+> > > > > > > > > case, userspace needs to provide necessary synchronizations to
+> > > > > > > > > coordinate the usage of mapped global data. This can be a source
+> > > > > > > > > of bottleneck.
+> > > > > > > >
+> > > > > > > > I can see your use case here. Each calling process can get the
+> > > > > > > > corresponding bpf program task local storage data through
+> > > > > > > > mmap interface. As you mentioned, there is a tradeoff
+> > > > > > > > between more memory vs. non-global synchronization.
+> > > > > > > >
+> > > > > > > > I am thinking that another bpf_iter approach can retrieve
+> > > > > > > > the similar result. We could implement a bpf_iter
+> > > > > > > > for task local storage map, optionally it can provide
+> > > > > > > > a tid to retrieve the data for that particular tid.
+> > > > > > > > This way, user space needs an explicit syscall, but
+> > > > > > > > does not need to allocate more memory than necessary.
+> > > > > > > >
+> > > > > > > > WDYT?
+> > > > > > > >
+> > > > > > >
+> > > > > > > Thanks for the suggestion. I have two thoughts about bpf_iter + tid and mmap:
+> > > > > > >
+> > > > > > > - mmap prevents the calling task from reading other task's value.
+> > > > > > > Using bpf_iter, one can pass other task's tid to get their values. I
+> > > > > > > assume there are two potential ways of passing tid to bpf_iter: one is
+> > > > > > > to use global data in bpf prog, the other is adding tid parameterized
+> > > > > > > iter_link. For the first, it's not easy for unpriv tasks to use. For
+> > > > > > > the second, we need to create one iter_link object for each interested
+> > > > > > > tid. It may not be easy to use either.
+> > > > > > >
+> > > > > > > - Regarding adding an explicit syscall. I thought about adding
+> > > > > > > write/read syscalls for task local storage maps, just like reading
+> > > > > > > values from iter_link. Writing or reading task local storage map
+> > > > > > > updates/reads the current task's value. I think this could achieve the
+> > > > > > > same effect as mmap.
+> > > > > > >
+> > > > > >
+> > > > > > Actually, my use case of using mmap on task local storage is to allow
+> > > > > > userspace to pass FDs into bpf prog. Some of the helpers I want to add
+> > > > > > need to take an FD as parameter and the bpf progs can run
+> > > > > > concurrently, thus using global data is racy. Mmapable task local
+> > > > > > storage is the best solution I can find for this purpose.
+> > > > > >
+> > > > > > Song also mentioned to me offline, that mmapable task local storage
+> > > > > > may be useful for his use case.
+> > > > > >
+> > > > > > I am actually open to other proposals.
+> > > > > >
+> > > > >
+> > > > > You could also use a syscall prog, and use bpf_prog_test_run to update local
+> > > > > storage for current. Data can be passed for that specific prog invocation using
+> > > > > ctx. You might have to enable bpf_task_storage helpers in it though, since they
+> > > > > are not allowed to be called right now.
+> > > > >
+> > > >
+> > > > The loading process needs CAP_BPF to load bpf_prog_test_run. I'm
+> > > > thinking of allowing any thread including unpriv ones to be able to
+> > > > pass data to the prog and update their own storage.
+> > >
+> > > If I understand the use case correctly all of this mmap-ing is only to
+> > > allow unpriv userspace to access a priv map via unpriv mmap() syscall.
+> > > But the map can be accessed as unpriv already.
+> > > Pin it with the world read creds and do map_lookup sys_bpf cmd on it.
+> >
+> > Right, but, if I understand correctly, with
+> > sysctl_unprivileged_bpf_disabled, unpriv tasks are not able to make
+> > use of __sys_bpf(). Is there anything I missed?
+>
+> That sysctl is a heavy hammer. Let's fix it instead.
+> map lookup/update/delete can be allowed for unpriv for certain map types.
+> There are permissions checks in corresponding lookup/update calls already.
 
-Your development model is fundamentally broken. You've allowed your 9.x
-branch to totally drift from mainline, which just helps underline my
-earlier point on that in-kernel drbd is effectively abandoned and
-unmaintained.
-
-> started to dump them on linux-block right away, nobody would look at it
-> seriously, since it would be too much.  I intend to get people from red
-> hat/suse assigned to do such a review. Then we will do that on linux-block,
-> so that everyone who cares sees what happens.
-
-You're just doing it totally wrong. Upstream kernel should match your
-9.x branch, and it should have been developed in sync. What you appear
-to have done is to ignore mainline, while it would've been correct and
-much easier in the long run to ensure that development is regularly
-synced to the mainline kernel. You know, like EVERY other driver that is
-maintained does.
-
-Now you've got a giant pile of patches, which probably don't adhere to
-how we would've done the mainline commits in the first place, and it'll
-cause a huge pain for not just you but upstream reviewers. I don't care
-about the former, but I do care a lot about the latter. That's a giant
-waste of the time of the folks involved on the block side, and
-definitely not what a responsible kernel maintainer would do.
-
-From your reply here and earlier ones, seems to me that you don't grasp
-the gravity of the situation, which is also worrying.
-
->> The main discrepancy here is that there are apparently huge numbers of
->> in-tree users, yet no fixes or patches at all making it to mainline.
->> Either drbd is bug free and doesn't require any fixes at all, which I
->> very much would doubt, or fixes aren't being sent upstream.
-> 
-> It is the broad consent among the users of the drbd-8.4 branch (that is what
-> is in-tree), is that it works for its purpose. It is for sure not bug-free,
-> but people are not running into bugs anymore. So, call it free of relevant
-> bugs, if you want.  No new features go into that branch, on purpose. To keep
-> it that way.
-> 
-> Have a look at that one real bug-fix that was identified in the last Year.
-> https://patchwork.kernel.org/project/linux-block/patch/20210426163032.3454129-1-christoph.boehmwalder@linbit.com/
-> 
-> When do you want to have that reposted to you?
-> right now? Just before the next merge window opens?
-
-That can go in anytime, so please do submit it.
-
--- 
-Jens Axboe
-
+This sounds great. If we can allow basic map operations for some map
+types, it will change many use cases I'm looking at. Let me take a
+look and report back.
