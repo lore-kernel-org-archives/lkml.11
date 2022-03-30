@@ -2,109 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3DB5C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 10:01:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01D4CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 10:02:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245098AbiC3KD0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 06:03:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57324 "EHLO
+        id S245105AbiC3KDz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 06:03:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245084AbiC3KDZ (ORCPT
+        with ESMTP id S241067AbiC3KDy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 06:03:25 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 952CEBAB9E
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 03:01:40 -0700 (PDT)
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22U8HXxo027709;
-        Wed, 30 Mar 2022 10:01:21 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : references : date : in-reply-to : message-id : mime-version :
- content-type; s=pp1; bh=kQW9mPizhJGzxYMtGJ7PDAB33c2sE1FSIhgbNgA2hx8=;
- b=PjS1EFIyw/zW70ClbaX5YxFi6Qb8vvcd1pf/M+F72PWXDA7AyjjhQhf7z67TRisE8uWY
- BHwEaZKM+EzEWsAxA2QbG7B3sAWByiDJ1ztPREd7hLp6yFxMgagqTp/o7bCdNQ7RQRCV
- 9pbeKKQVa9TLBRtVHut7OTKvxkMfK5XjYsG2+Zhel4z/5vc7rROBE7TVNr5cyjB2PlFR
- QVyzMwWW6WrEDAxOQhCgOiS2D8/+qNhG81O+yYYeCIIu+7LGbrNMH5Zm6elfp16HLwCQ
- yUSdi93Fftdpe+FgcJqlGwG4jiaY8vPpoPFvsbr72sv1nSC3xpzxPT1/L31JAY5xfHMc xg== 
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f3yqmk3ku-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 30 Mar 2022 10:01:21 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22U9rPHN032506;
-        Wed, 30 Mar 2022 10:01:18 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma06ams.nl.ibm.com with ESMTP id 3f3rs3k5w3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 30 Mar 2022 10:01:18 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22UA1GSc37683576
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 30 Mar 2022 10:01:16 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3170AA405F;
-        Wed, 30 Mar 2022 10:01:16 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id F3570A404D;
-        Wed, 30 Mar 2022 10:01:15 +0000 (GMT)
-Received: from tuxmaker.linux.ibm.com (unknown [9.152.85.9])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Wed, 30 Mar 2022 10:01:15 +0000 (GMT)
-From:   Sven Schnelle <svens@linux.ibm.com>
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] entry: fix compile error in
- dynamic_irqentry_exit_cond_resched()
-References: <20220330084328.1805665-1-svens@linux.ibm.com>
-        <YkQdMDlIt1iHWS3U@FVFF77S0Q05N> <yt9dilrvztno.fsf@linux.ibm.com>
-        <YkQog3+80izN1e1q@FVFF77S0Q05N>
-Date:   Wed, 30 Mar 2022 12:01:15 +0200
-In-Reply-To: <YkQog3+80izN1e1q@FVFF77S0Q05N> (Mark Rutland's message of "Wed,
-        30 Mar 2022 10:53:07 +0100")
-Message-ID: <yt9dee2jzrmc.fsf@linux.ibm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
+        Wed, 30 Mar 2022 06:03:54 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C06DBABA2
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 03:02:09 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KT25n546JzdZN6;
+        Wed, 30 Mar 2022 18:01:49 +0800 (CST)
+Received: from dggpemm100009.china.huawei.com (7.185.36.113) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 30 Mar 2022 18:02:07 +0800
+Received: from huawei.com (10.175.113.32) by dggpemm100009.china.huawei.com
+ (7.185.36.113) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 30 Mar
+ 2022 18:02:07 +0800
+From:   Liu Shixin <liushixin2@huawei.com>
+To:     Christoph Hellwig <hch@infradead.org>
+CC:     <linux-kernel@vger.kernel.org>, Liu Shixin <liushixin2@huawei.com>
+Subject: [PATCH -next] fs: sysv: check sbi->s_firstdatazone in complete_read_super
+Date:   Wed, 30 Mar 2022 18:42:15 +0800
+Message-ID: <20220330104215.530223-1-liushixin2@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 0C4c2wXXIdyfI4nJnqzU8vwqXEeISIRm
-X-Proofpoint-ORIG-GUID: 0C4c2wXXIdyfI4nJnqzU8vwqXEeISIRm
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-30_03,2022-03-29_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
- bulkscore=0 spamscore=0 phishscore=0 malwarescore=0 suspectscore=0
- adultscore=0 priorityscore=1501 mlxlogscore=709 lowpriorityscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203300049
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.32]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm100009.china.huawei.com (7.185.36.113)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Mark Rutland <mark.rutland@arm.com> writes:
+sbi->s_firstinodezone is initialized to 2 and sbi->s_firstdatazone is read
+from sbd. There's no guarantee that sbi->s_firstdatazone must bigger than
+sbi->s_firstinodezone. If sbi->s_firstdatazone less than 2, the filesystem
+can still be mounted unexpetly. At this point, sbi->s_ninodes flip to very
+large value and this filesystem is broken. We can observe this by
+executing 'df' command. When we execute, we will get an error message:
+	"sysv_count_free_inodes: unable to read inode table"
 
->> I was wondering whether we can make dynamic_irqentry_exit_cond_resched()
->> static, so it gets inlined. On s390 the compiler generates a branch to
->> that function just to return immediately if the static key isn't enabled.
->> With static it would get inlined, and therefore save one function call.
->> What do you think?
->
-> I appreciate that it saves one call, but does that actually matter in practice,
-> given this is called only once per interrupt?
->
-> I'm not fundamentally opposed to changing it, but doing so would make it
-> different from all the other dynamic_*() cases which need the check to be
-> out-of-line to avoid bloating the callers, and it's not clear to me that we'd
-> gain much by doing so.
->
-> FWIW, on arm64 we had some additional conditions we have to check, so we roll
-> our own (out-of-line) implementation anyway. So doing something arch-specific
-> is also an option.
+Signed-off-by: Liu Shixin <liushixin2@huawei.com>
+---
+ fs/sysv/super.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-I didn't measure it, i just noticed it by looking at the generated code.
-Given your argument about consistency with the other functions i think
-we leave it that way.
+diff --git a/fs/sysv/super.c b/fs/sysv/super.c
+index d1def0771a40..3365a30dc1e0 100644
+--- a/fs/sysv/super.c
++++ b/fs/sysv/super.c
+@@ -312,7 +312,9 @@ static int complete_read_super(struct super_block *sb, int silent, int size)
+ 	sbi->s_firstinodezone = 2;
+ 
+ 	flavour_setup[sbi->s_type](sbi, &sb->s_max_links);
+-	
++	if (sbi->s_firstdatazone < sbi->s_firstinodezone)
++		return 0;
++
+ 	sbi->s_ndatazones = sbi->s_nzones - sbi->s_firstdatazone;
+ 	sbi->s_inodes_per_block = bsize >> 6;
+ 	sbi->s_inodes_per_block_1 = (bsize >> 6)-1;
+-- 
+2.25.1
 
-Thanks!
-Sven
