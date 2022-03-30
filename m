@@ -2,172 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32F25C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 18:52:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AA4BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 18:52:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350248AbiC3Sxy (ORCPT
+        id S1350431AbiC3Syf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 14:53:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48214 "EHLO
+        Wed, 30 Mar 2022 14:54:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350620AbiC3Sw6 (ORCPT
+        with ESMTP id S1350409AbiC3SyU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 14:52:58 -0400
-Received: from mail-vs1-xe31.google.com (mail-vs1-xe31.google.com [IPv6:2607:f8b0:4864:20::e31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D29DF35273
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:51:12 -0700 (PDT)
-Received: by mail-vs1-xe31.google.com with SMTP id i63so23482934vsi.5
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:51:12 -0700 (PDT)
+        Wed, 30 Mar 2022 14:54:20 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 617225BD27;
+        Wed, 30 Mar 2022 11:52:33 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id h1so25558518edj.1;
+        Wed, 30 Mar 2022 11:52:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1Cw0eDjE+WN/K3Pk88Mm97poeGAlfoJe1nXSMsdWjxQ=;
-        b=PBnXugz3W3FccisFa9X1Wda7UUG3RLHh2bnnXcqZ3NXAlxbKZSJQHDUrSpcydHQgZl
-         7DvKFrXmNKWh41LsMHenYFak+ydkiQuDJ2hg94Bj4toZViFyn/kqGsZ5iOhYEaAELVma
-         dt+9udjXdiliG618o4wCmeUMxUMrf/KnPlfdkaQyrDYkzrI0OPLyQfaWbZ70UxuXHFIj
-         Ork4btLIryLO9xwDA+Ql79w/s8BgN9vD8k+8FUHt9bN7bWXK/1WtWqOry+T83InnC0Uc
-         FNhWUwj3yM/N8rE/4xoOER1OLBl+dQ7IvY/9jQ3B5l/1Vl6xI3cJVf9Kbop8WkDqw2JL
-         C//w==
+         :cc:content-transfer-encoding;
+        bh=CTWrzljSwLfZ0l2PhXMaWGZIdhNeoDOQRnqzHnIspbk=;
+        b=JLCUEHQmAu4IFA3Pp0pbMtWaA5zMmoL+kw15OpNzaAzO8UE4DGw0x6yHFtvG6u/yGB
+         czJ6FnppkuGExQg2MsjtV/bauz5Y5saZG8yP/EBjfcige3kiaLZ9JDT6ppmno5PaPGPG
+         Z2WMjM9A1on4O2PWumA2uSuSZWN0+6X3qZl0NjPpq8KQajpYfLM9IQmP9zL2pLCwnRU1
+         NQll0TTUbLacZ68FCz4gHF8gDW1ZFhbe6m3jUUmb+aIctO/qKcrPexJOKkfIPKvuwJsf
+         R+qeQbL2eFJKqpsYWI9JHeA8JtbG/y4RQHlf4SVpmg+1LqU3HjLPOnQvGp1Elsydiz2Z
+         f3Gg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1Cw0eDjE+WN/K3Pk88Mm97poeGAlfoJe1nXSMsdWjxQ=;
-        b=HUc4lHCOvPs6jvuOzxmj6Ynlzpq9MJE8f7sj0BBttfjD/wiKU0wZaI3jCxIyICNSCW
-         Gx4qz2quq4lgSY6+zx1GndqLoRzytU5eebkPtl2fe5sOGSVtWX65mxEcJw9AJ8IZ+eJC
-         9MP+Nt206JQPT8H3h12JR8uY3H1vEntRp5dxSuFPu8oHoXcChM7HzDhHdXpWhD2ui/c2
-         Jj+XTUfpyzwR4Ddm1x4VeAURT9lNGcaWpV7npGeUM2Jvrsmg1KQpu3BA2Y9SUbWqRkeM
-         /9fTC4gfh1SnrdAWjK+UQZhgkJ+kYqcQTXE9lCZ9xvRA5y3HdggW1cTqGkYm/Tv+u0bb
-         bX0g==
-X-Gm-Message-State: AOAM5323R66b/t4JnIsvvP+eHzADNa7Uy26g1Ez2m41ahfANvvZcbrAV
-        PhEE6+yhGd23ys7z4LIbn3FzMdMvipWHbkM9R8XiYg==
-X-Google-Smtp-Source: ABdhPJzxVqcq1tlUyH0+NG9swHpjyfnd+H076E9nGki9qqpM6bAJiZK7CQpMFw/XNGhFH1e33CojlOhDT2FrnQt5OGQ=
-X-Received: by 2002:a05:6102:e8a:b0:325:7b06:c348 with SMTP id
- l10-20020a0561020e8a00b003257b06c348mr15453693vst.52.1648666271800; Wed, 30
- Mar 2022 11:51:11 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=CTWrzljSwLfZ0l2PhXMaWGZIdhNeoDOQRnqzHnIspbk=;
+        b=cZm/L7f9C9N/WAHjMpZyvUrqSxdUDTtsCJexXv6R+mf0+GUkC0Q17SPisvo2gEkGwH
+         XXGZcOdSXMdn810gHbI0/JcKvhme81x55rdbI3cKooGjIikYdPKTO2L1l15lR03hV2Zj
+         fE2PXRCNPGHsZUlaG7jxbE64JJqIYoEiD4enM81VLa524ZN9uU8l2yoqFF4ToA6sSr7u
+         hXVsJAQ9Wovjx6Dx/GKh6hKJn8uRf5h9iGjsE9vUFp+u5AQZEvZIYFYP0eI06awhC4zD
+         xIfvSnSwqhG1MCdcy2b/7CZecsnJ/UdfYzl/xg7RVeIXWIHvYYDCit29tmMJ0c0nj49e
+         0qsA==
+X-Gm-Message-State: AOAM533QMvky90ZKsgip5CtQuBa1PcJ2QxPZVaOHayh8h3HXYsDby4Su
+        MLLto71FsQrk7PGsyyp4oelPYCSKuDckb8xH/zI=
+X-Google-Smtp-Source: ABdhPJytxAuQdsBpDd/i3vdjOy1nf0HrltailaW23kgs4zAMNZy9pY7RJ8JsGFEsiiYYszczMXa4Yy9ZR6wG8bfquHI=
+X-Received: by 2002:aa7:c64c:0:b0:418:ecf7:afaa with SMTP id
+ z12-20020aa7c64c000000b00418ecf7afaamr12680127edr.38.1648666351722; Wed, 30
+ Mar 2022 11:52:31 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220330174621.1567317-1-bgardon@google.com> <20220330174621.1567317-4-bgardon@google.com>
-In-Reply-To: <20220330174621.1567317-4-bgardon@google.com>
-From:   Jing Zhang <jingzhangos@google.com>
-Date:   Wed, 30 Mar 2022 11:51:01 -0700
-Message-ID: <CAAdAUtizJcjEqLv8hcjNv0ZCOAy62DXA6voEhtYeeK4EpLf6HQ@mail.gmail.com>
-Subject: Re: [PATCH v3 03/11] KVM: selftests: Test reading a single stat
-To:     Ben Gardon <bgardon@google.com>
-Cc:     linux-kernel@vger.kernel.org, KVM <kvm@vger.kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        David Matlack <dmatlack@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        David Dunn <daviddunn@google.com>,
-        Junaid Shahid <junaids@google.com>
+References: <20220228140838.622021-1-benjamin.gaignard@collabora.com> <eefa63b3-2a4d-4470-9a4e-517087ebcfaf@collabora.com>
+In-Reply-To: <eefa63b3-2a4d-4470-9a4e-517087ebcfaf@collabora.com>
+From:   Adam Ford <aford173@gmail.com>
+Date:   Wed, 30 Mar 2022 13:52:20 -0500
+Message-ID: <CAHCN7xL2uZTMy30FGfDkDK4Lym6wvfr_MTv7QwtchrkTXMQiuw@mail.gmail.com>
+Subject: Re: [PATCH v4 00/15] Move HEVC stateless controls out of staging
+To:     Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        mripard@kernel.org, paul.kocialkowski@bootlin.com,
+        Chen-Yu Tsai <wens@csie.org>,
+        "jernej.skrabec" <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Nicolas Dufresne <nicolas@ndufresne.ca>,
+        linux-media <linux-media@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:STAGING SUBSYSTEM" <linux-staging@lists.linux.dev>,
+        arm-soc <linux-arm-kernel@lists.infradead.org>,
+        linux-sunxi@lists.linux.dev, kernel <kernel@collabora.com>,
+        knaerzche@gmail.com, jc@kynesim.co.uk
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 10:46 AM Ben Gardon <bgardon@google.com> wrote:
+On Wed, Mar 30, 2022 at 2:53 AM Benjamin Gaignard
+<benjamin.gaignard@collabora.com> wrote:
 >
-> Retrieve the value of a single stat by name in the binary stats test to
-> ensure the kvm_util library functions work.
 >
-> CC: Jing Zhang <jingzhangos@google.com>
-> Signed-off-by: Ben Gardon <bgardon@google.com>
-> ---
->  .../selftests/kvm/include/kvm_util_base.h     |  1 +
->  .../selftests/kvm/kvm_binary_stats_test.c     |  3 ++
->  tools/testing/selftests/kvm/lib/kvm_util.c    | 53 +++++++++++++++++++
->  3 files changed, 57 insertions(+)
+> Le 28/02/2022 =C3=A0 15:08, Benjamin Gaignard a =C3=A9crit :
+> > This series aims to make HEVC uapi stable and usable for hardware
+> > decoder. HEVC uapi is used by 2 mainlined drivers (Cedrus and Hantro)
+> > and 2 out of the tree drivers (rkvdec and RPI).
+> >
+> > After the remarks done on version 2, I have completely reworked to patc=
+hes
+> > split so changelogs are meaningless. I have also drop "RFC" from the
+> > titles.
+> >
+> > Version 4:
+> > - Add num_entry_point_offsets field in  struct v4l2_ctrl_hevc_slice_par=
+ams
+> > - Fix V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS name
+> > - Initialize control V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS
+> > - Fix space/tab issue in kernel-doc
+> > - Add patch to change data_bit_offset definition
+> > - Fix hantro-media SPDX license
+> > - put controls under stateless section in v4l2-ctrls-defs.c
+> >
+> > At the end fluster tests results on IMX8MQ is 77/147 for HEVC codec.
 >
-> diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-> index 4783fd1cd4cf..78c4407f36b4 100644
-> --- a/tools/testing/selftests/kvm/include/kvm_util_base.h
-> +++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-> @@ -402,6 +402,7 @@ void assert_on_unhandled_exception(struct kvm_vm *vm, uint32_t vcpuid);
->  int vm_get_stats_fd(struct kvm_vm *vm);
->  int vcpu_get_stats_fd(struct kvm_vm *vm, uint32_t vcpuid);
->  void dump_vm_stats(struct kvm_vm *vm);
-> +uint64_t vm_get_single_stat(struct kvm_vm *vm, const char *stat_name);
+> Dear reviewers,
 >
->  uint32_t guest_get_vcpuid(void);
+> This series is waiting for your feedback,
+
+I tried several times with the suggested repos for both the kernel and
+g-streamer without success getting Fluster to pass any tests on the
+imx8mq.  I can try again but I likely won't get to it until this
+weekend.  If I can get it working, I'll test both the 8mq and 8mm.
+
+adam
 >
-> diff --git a/tools/testing/selftests/kvm/kvm_binary_stats_test.c b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-> index afc4701ce8dd..97bde355f105 100644
-> --- a/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-> +++ b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-> @@ -177,6 +177,9 @@ static void vm_stats_test(struct kvm_vm *vm)
+> Thanks,
+> Benjamin
 >
->         /* Dump VM stats */
->         dump_vm_stats(vm);
-> +
-> +       /* Read a single stat. */
-> +       printf("remote_tlb_flush: %lu\n", vm_get_single_stat(vm, "remote_tlb_flush"));
->  }
->
->  static void vcpu_stats_test(struct kvm_vm *vm, int vcpu_id)
-> diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-> index f87df68b150d..9c4574381daa 100644
-> --- a/tools/testing/selftests/kvm/lib/kvm_util.c
-> +++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-> @@ -2705,3 +2705,56 @@ void dump_vm_stats(struct kvm_vm *vm)
->         close(stats_fd);
->  }
->
-> +static int vm_get_stat_data(struct kvm_vm *vm, const char *stat_name,
-> +                           uint64_t **data)
-> +{
-> +       struct kvm_stats_desc *stats_desc;
-> +       struct kvm_stats_header *header;
-> +       struct kvm_stats_desc *desc;
-> +       size_t size_desc;
-> +       int stats_fd;
-> +       int ret = -EINVAL;
-> +       int i;
-> +
-> +       *data = NULL;
-> +
-> +       stats_fd = vm_get_stats_fd(vm);
-> +
-> +       header = read_vm_stats_header(stats_fd);
-> +
-> +       stats_desc = read_vm_stats_desc(stats_fd, header);
-> +
-> +       size_desc = stats_desc_size(header);
-> +
-> +       /* Read kvm stats data one by one */
-> +       for (i = 0; i < header->num_desc; ++i) {
-> +               desc = (void *)stats_desc + (i * size_desc);
-> +
-> +               if (strcmp(desc->name, stat_name))
-> +                       continue;
-> +
-> +               ret = read_stat_data(stats_fd, header, desc, data);
-> +       }
-> +
-> +       free(stats_desc);
-> +       free(header);
-> +
-> +       close(stats_fd);
-> +
-> +       return ret;
-> +}
-> +
-> +uint64_t vm_get_single_stat(struct kvm_vm *vm, const char *stat_name)
-> +{
-> +       uint64_t *data;
-> +       uint64_t value;
-> +       int ret;
-> +
-> +       ret = vm_get_stat_data(vm, stat_name, &data);
-> +       TEST_ASSERT(ret == 1, "Stat %s expected to have 1 element, but has %d",
-> +                   stat_name, ret);
-> +       value = *data;
-> +       free(data);
-> +       return value;
-> +}
-> +
-> --
-> 2.35.1.1021.g381101b075-goog
->
-Reviewed-by: Jing Zhang <jingzhangos@google.com>
+> >
+> > Benjamin
+> >
+> >
+> > Benjamin Gaignard (12):
+> >    media: uapi: HEVC: Add missing fields in HEVC controls
+> >    media: uapi: HEVC: Rename HEVC stateless controls with STATELESS
+> >      prefix
+> >    media: uapi: HEVC: Add document uAPI structure
+> >    media: uapi: HEVC: Define V4L2_CID_STATELESS_HEVC_SLICE_PARAMS as a
+> >      dynamic array
+> >    media: uapi: Move parsed HEVC pixel format out of staging
+> >    media: uapi: Add V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS control
+> >    media: uapi: Move the HEVC stateless control type out of staging
+> >    media: controls: Log HEVC stateless control in .std_log
+> >    media: uapi: Create a dedicated header for Hantro control
+> >    media: uapi: HEVC: fix padding in v4l2 control structures
+> >    media: uapi: Change data_bit_offset definition
+> >    media: uapi: move HEVC stateless controls out of staging
+> >
+> > Hans Verkuil (3):
+> >    videodev2.h: add V4L2_CTRL_FLAG_DYNAMIC_ARRAY
+> >    v4l2-ctrls: add support for dynamically allocated arrays.
+> >    vivid: add dynamic array test control
+> >
+> >   .../userspace-api/media/drivers/hantro.rst    |   5 -
+> >   .../media/v4l/ext-ctrls-codec-stateless.rst   | 833 +++++++++++++++++=
++
+> >   .../media/v4l/ext-ctrls-codec.rst             | 780 ----------------
+> >   .../media/v4l/pixfmt-compressed.rst           |   7 +-
+> >   .../media/v4l/vidioc-g-ext-ctrls.rst          |  20 +
+> >   .../media/v4l/vidioc-queryctrl.rst            |   8 +
+> >   .../media/videodev2.h.rst.exceptions          |   5 +
+> >   .../media/test-drivers/vivid/vivid-ctrls.c    |  15 +
+> >   drivers/media/v4l2-core/v4l2-ctrls-api.c      | 103 ++-
+> >   drivers/media/v4l2-core/v4l2-ctrls-core.c     | 198 ++++-
+> >   drivers/media/v4l2-core/v4l2-ctrls-defs.c     |  37 +-
+> >   drivers/media/v4l2-core/v4l2-ctrls-priv.h     |   3 +-
+> >   drivers/media/v4l2-core/v4l2-ctrls-request.c  |  13 +-
+> >   drivers/staging/media/hantro/hantro_drv.c     |  27 +-
+> >   drivers/staging/media/hantro/hantro_hevc.c    |   8 +-
+> >   drivers/staging/media/sunxi/cedrus/cedrus.c   |  24 +-
+> >   .../staging/media/sunxi/cedrus/cedrus_dec.c   |  10 +-
+> >   .../staging/media/sunxi/cedrus/cedrus_h265.c  |   2 +-
+> >   include/media/hevc-ctrls.h                    | 250 ------
+> >   include/media/v4l2-ctrls.h                    |  48 +-
+> >   include/uapi/linux/hantro-media.h             |  19 +
+> >   include/uapi/linux/v4l2-controls.h            | 439 +++++++++
+> >   include/uapi/linux/videodev2.h                |  13 +
+> >   23 files changed, 1697 insertions(+), 1170 deletions(-)
+> >   delete mode 100644 include/media/hevc-ctrls.h
+> >   create mode 100644 include/uapi/linux/hantro-media.h
+> >
