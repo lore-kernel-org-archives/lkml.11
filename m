@@ -2,91 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAF20C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 05:59:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC41FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 05:59:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243108AbiC3GBb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 02:01:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50082 "EHLO
+        id S243111AbiC3GBl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 02:01:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243093AbiC3GB0 (ORCPT
+        with ESMTP id S243112AbiC3GBi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 02:01:26 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFB081C93C;
-        Tue, 29 Mar 2022 22:59:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648619981; x=1680155981;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=ElgECvvne75KCEb89B216f0A/fNr2d3Nf37alzV6+x8=;
-  b=jU/nKNKTkuth0ITLgxaI2Tt3BgEL4eyIq40F0NY2XYw+wKfSKYJNWZE4
-   f8NDvqbywQ0oFvs09jN3A+3wI8EmcY5flvh3Nr3otxirQjHZa/AmQNRiJ
-   9gSNkhr7VQ0xVnEeC8Aqtt9xbK2jWTt+9mPrIfepp7Ci0Qe0sBlSZTPPR
-   N8X2uqaBNXRPuTRp518mRE0dfFaXUIcTGVLwiFE5CNDha+jlXQzXWiZou
-   JwA0oOzXaVuVg+ePRZWT2e5PtGOrTR3ZdJXph8ergHmbdxWVbB+3TDtKc
-   e63UnKLFLs99tmeN7picGp5ELTOBAIDordfhs4FbbxpxzJBnFSsHTTEXt
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="322635004"
-X-IronPort-AV: E=Sophos;i="5.90,221,1643702400"; 
-   d="scan'208";a="322635004"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 22:59:41 -0700
-X-IronPort-AV: E=Sophos;i="5.90,221,1643702400"; 
-   d="scan'208";a="565306371"
-Received: from zq-optiplex-7090.bj.intel.com ([10.238.156.125])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 22:59:39 -0700
-From:   Zqiang <qiang1.zhang@intel.com>
-To:     paulmck@kernel.org, frederic@kernel.org
-Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] rcu: Put the irq work into hard interrupt context for execution
-Date:   Wed, 30 Mar 2022 14:00:12 +0800
-Message-Id: <20220330060012.2470054-1-qiang1.zhang@intel.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 30 Mar 2022 02:01:38 -0400
+Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 867141CFCD
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 22:59:53 -0700 (PDT)
+Received: by mail-qv1-xf31.google.com with SMTP id kd21so13211578qvb.6
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 22:59:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Fii15z5BdqeKVdyRrQjR89UzGkIpNccPLX9tr8s7gIA=;
+        b=iCWRSqk7ZZDcLY7AA0TWbvoaXCD5tIK4K0pYqtP3XYWJ++OAYC87CxlQVCTeWn7H4c
+         s0DzUM66DR2NQboRA7PMOl4KLRskQGe6Hw04doFvF0qp2AEx6iFf7SN1HssCa2D2rw7u
+         GKIzcGWapWdM+T/2qrpCtcIm7Au62A9I3zjDzYhac0QAavc1ji1iNm5ToVOlZulxcODB
+         kBkBEvJIIGVo3F8AxVtPnQOuvAmB3lFcHq8Xu0LsJBg4oMdsp3VV0c9p/cBsA/WZJ+kk
+         lxZu+92fP9sa+tXUrHWpFHquEOQP2Y2MdSqbFI4aCY2kxWdfpH3xsyflCCGknadk1lmD
+         uYbw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Fii15z5BdqeKVdyRrQjR89UzGkIpNccPLX9tr8s7gIA=;
+        b=YNmbYQuCe580B1Ez0DUoxYyqVDlweHT9jl8kE0DHxRdD1mJV4tIZY4zxuSgsWKGuwe
+         ICWe1fw1O1eY9I+VRzKYqNYy9IS+9Pe+jCsXX/6ZAHRC/bHwmPImNysnp/p84W55+mhT
+         IOjRZvVFGHmT9Is5gH4jbCntnD1RiviPad7CHTvAuaqBru5VEiaPXP3a5sJjlLSmlhho
+         SPsgB+t/yJj5A7PqZcvh62E1O+IyXQacg+eGUSjiGoe3ni0PMXCCiVtdlnaIDshp+NVT
+         qCGlCZfr42nzkXkRyKGT3lA84dVo1vcZrv7Vu4SnAsingJ/1jwQYs/bcY3QzR/dRnSKM
+         Llfg==
+X-Gm-Message-State: AOAM530iUvQ/rko7CeZDMfr1xsvRkFvtlcHiFm7ssfmFy6FhkDjxfhmw
+        NVcmHAVTb6sr4HY0e8xA7v4=
+X-Google-Smtp-Source: ABdhPJy7JhQnst3fNKGP6qDDp0NbdUv+svIp+Ze3jCARpjEflPmrl1E9FEk9a+xm0onCdHJQkFWRJQ==
+X-Received: by 2002:a05:6214:20e4:b0:441:7bed:5ccd with SMTP id 4-20020a05621420e400b004417bed5ccdmr25606284qvk.119.1648619992562;
+        Tue, 29 Mar 2022 22:59:52 -0700 (PDT)
+Received: from localhost ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id z19-20020a05622a029300b002e1a763dac1sm16867557qtw.9.2022.03.29.22.59.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Mar 2022 22:59:51 -0700 (PDT)
+Message-ID: <6243f1d7.1c69fb81.b19c7.7ec1@mx.google.com>
+X-Google-Original-Message-ID: <20220330055949.GA2378119@cgel.zte@gmail.com>
+Date:   Wed, 30 Mar 2022 05:59:49 +0000
+From:   CGEL <cgel.zte@gmail.com>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com,
+        eparis@redhat.com, linux-audit@redhat.com, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Yang Yang <yang.yang29@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: Re: [PATCH] audit: do a quick exit when syscall number is invalid
+References: <20220326094654.2361956-1-yang.yang29@zte.com.cn>
+ <202203270449.WBYQF9X3-lkp@intel.com>
+ <62426553.1c69fb81.bb808.345c@mx.google.com>
+ <CAHC9VhRNuoPH6AySUbe6h2D6kghhezyVQtTAvm-t-fTpXH6XwQ@mail.gmail.com>
+ <62427b5c.1c69fb81.fc2a7.d1af@mx.google.com>
+ <CAHC9VhTLTQmHaka9tTyuu=rQOzpsn_K2NxfJ==7-6FSY3KnuFg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHC9VhTLTQmHaka9tTyuu=rQOzpsn_K2NxfJ==7-6FSY3KnuFg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In PREEMPT_RT kernel, if irq work flags is not set, it will be
-executed in per-CPU irq_work kthreads. set IRQ_WORK_HARD_IRQ flags
-to irq work, put it in the context of hard interrupt execution,
-accelerate scheduler to re-evaluate.
+On Tue, Mar 29, 2022 at 09:11:19AM -0400, Paul Moore wrote:
+> On Mon, Mar 28, 2022 at 11:22 PM CGEL <cgel.zte@gmail.com> wrote:
+> > On Mon, Mar 28, 2022 at 11:06:12PM -0400, Paul Moore wrote:
+> > > On Mon, Mar 28, 2022 at 9:48 PM CGEL <cgel.zte@gmail.com> wrote:
+> > > > Sorry could anybody give a hand to solve this? It works well on x86_64 and arm64.
+> > > > I have no alpha environment and not familiar to this arch, much thanks!
+> > >
+> > > Regardless of if this is fixed, I'm not convinced this is something we
+> > > want to merge.  After all, a process executed a syscall and we should
+> > > process it like any other; just because it happens to be an
+> > > unrecognized syscall on a particular kernel build doesn't mean it
+> > > isn't security relevant (probing for specific syscall numbers may be a
+> > > useful attack fingerprint).
+> >
+> > Thanks for your reply.
+> >
+> > But syscall number less than 0 is even invalid for auditctl. So we
+> > will never hit this kind of audit rule. And invalid syscall number
+> > will always cause failure early in syscall handle.
+> >
+> > sh-4.2# auditctl -a always,exit -F arch=b64 -S -1
+> > Syscall name unknown: -1
+> 
+> You can add an audit filter without explicitly specifying a syscall:
+> 
+> % auditctl -a exit,always -F auid=1000
+> % auditctl -l
+> -a always,exit -S all -F auid=1000
+>
+I have tried this, and execute program which call syscall number is -1,
+audit still didn't record it. It supports that there's no need for audit
+to handle syscall number less than 0.
 
-Signed-off-by: Zqiang <qiang1.zhang@intel.com>
----
- kernel/rcu/tree.c        | 2 +-
- kernel/rcu/tree_plugin.h | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+sh-4.2# auditctl -a exit,always
+sh-4.2# auditctl -l
+-a always,exit -S all
 
-diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-index e2ffbeceba69..a69587773a85 100644
---- a/kernel/rcu/tree.c
-+++ b/kernel/rcu/tree.c
-@@ -678,7 +678,7 @@ static void late_wakeup_func(struct irq_work *work)
- }
- 
- static DEFINE_PER_CPU(struct irq_work, late_wakeup_work) =
--	IRQ_WORK_INIT(late_wakeup_func);
-+	IRQ_WORK_INIT_HARD(late_wakeup_func);
- 
- /*
-  * If either:
-diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
-index 3037c2536e1f..cf7bd28af8ef 100644
---- a/kernel/rcu/tree_plugin.h
-+++ b/kernel/rcu/tree_plugin.h
-@@ -661,7 +661,7 @@ static void rcu_read_unlock_special(struct task_struct *t)
- 			    expboost && !rdp->defer_qs_iw_pending && cpu_online(rdp->cpu)) {
- 				// Get scheduler to re-evaluate and call hooks.
- 				// If !IRQ_WORK, FQS scan will eventually IPI.
--				init_irq_work(&rdp->defer_qs_iw, rcu_preempt_deferred_qs_handler);
-+				rdp->defer_qs_iw = IRQ_WORK_INIT_HARD(rcu_preempt_deferred_qs_handler);
- 				rdp->defer_qs_iw_pending = true;
- 				irq_work_queue_on(&rdp->defer_qs_iw, rdp->cpu);
- 			}
--- 
-2.25.1
 
+> -- 
+> paul-moore.com
