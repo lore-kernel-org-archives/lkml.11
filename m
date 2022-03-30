@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B036C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 14:52:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7D8EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 14:52:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343923AbiC3OyT (ORCPT
+        id S1347543AbiC3OyX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 10:54:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51546 "EHLO
+        Wed, 30 Mar 2022 10:54:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347369AbiC3OwZ (ORCPT
+        with ESMTP id S1347549AbiC3Owq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 10:52:25 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE6F648880;
-        Wed, 30 Mar 2022 07:50:30 -0700 (PDT)
+        Wed, 30 Mar 2022 10:52:46 -0400
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4176F4BB8D;
+        Wed, 30 Mar 2022 07:50:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648651831; x=1680187831;
+  t=1648651845; x=1680187845;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=y3O4Dv2hy5JtpWu8VIfFu+PAFZBpau0bJ9ys20UBmDc=;
-  b=ZyMXcCXxrxF6l2tyzR0plViptuWVRJMZcuR9ZjOOXGiar48jCpsJ35a6
-   +LiZRqBeN13K8L/DESw+r6ughAt+zN7Au6itFd7C62tIj9WddOxnW5Qlb
-   xejY63Xtl5+14QjYvxN4L2BsxCVVC5SckKX43YsFaHi6MZcQV4AozafJu
-   Lt8BUc92l2Pd0N3vLtOlJebjA4vFZK38N5Boqrx5/NBecn2aic/C0sPtZ
-   /ZkISaqSsDNkseDAm8KOAptQD8p02mN4aoP7CBKIxMSis4uMuWDjFN2/r
-   M0vV7AXRghjs8q8nIYp3pH2CFntPoEYigIcZngUcxtX97p9ws2WaZmuuw
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="257139618"
+  bh=JRPEkMnKDw9JPPbw88zq0rtI6tRwyN3327TqTtQiGC4=;
+  b=DYCUONWXk0q/GgfqEMJUyNHvE7cXVzx1/79LY79a7DQieNJJW1d5rJuR
+   AMbxc5Q1Es9cLDMO/SXCO84Yh+WnHl5F6FaNXltSCN9nD61FqG+IYCEX2
+   l548szhGU4bFgJhcBPxBzRmnSpRpeFgpZUt1G+ZI1Pi5xMxtjKd5ca3mi
+   vgrw9yEur8M0SqxpGWfGSUCQLgyGHTeqNMR8P/Y3muFTeeeBrtUIhJ9dZ
+   mB1i8H53GtffThKCpQkM/lRkL7BnzI+FAVAzVKGTY/zNXm+j47HV+Y7Et
+   cjEA+iFLGzLP/qPlhrunflb7YMFe7TD9E3e8/pPZk3yujc7t4sKsKZMhL
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="320259364"
 X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
-   d="scan'208";a="257139618"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 07:50:29 -0700
+   d="scan'208";a="320259364"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 07:50:29 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
-   d="scan'208";a="586025529"
+   d="scan'208";a="546889513"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga001.jf.intel.com with ESMTP; 30 Mar 2022 07:50:20 -0700
+  by orsmga007.jf.intel.com with ESMTP; 30 Mar 2022 07:50:20 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id B62EB6A9; Wed, 30 Mar 2022 17:50:33 +0300 (EEST)
+        id 94D90612; Wed, 30 Mar 2022 17:50:33 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Qianggui Song <qianggui.song@amlogic.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -73,9 +73,9 @@ Cc:     Neil Armstrong <narmstrong@baylibre.com>,
         Alexandre Torgue <alexandre.torgue@foss.st.com>,
         Bartosz Golaszewski <brgl@bgdev.pl>,
         Philipp Zabel <p.zabel@pengutronix.de>
-Subject: [PATCH v3 12/13] pinctrl: armada-37xx: Switch to use fwnode instead of of_node
-Date:   Wed, 30 Mar 2022 17:50:29 +0300
-Message-Id: <20220330145030.1562-13-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v3 09/13] pinctrl: meson: Rename REG_* to MESON_REG_*
+Date:   Wed, 30 Mar 2022 17:50:26 +0300
+Message-Id: <20220330145030.1562-10-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220330145030.1562-1-andriy.shevchenko@linux.intel.com>
 References: <20220330145030.1562-1-andriy.shevchenko@linux.intel.com>
@@ -85,59 +85,164 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-GPIO library now accepts fwnode as a firmware node,
-so switch the driver to use it.
+Rename REG_* to MESON_REG_* as a prerequisite for enabling COMPILE_TEST.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/pinctrl/mvebu/pinctrl-armada-37xx.c | 18 +++++++-----------
- 1 file changed, 7 insertions(+), 11 deletions(-)
+ drivers/pinctrl/meson/pinctrl-meson.c | 24 ++++++++++++------------
+ drivers/pinctrl/meson/pinctrl-meson.h | 24 ++++++++++++------------
+ 2 files changed, 24 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
-index 08cad14042e2..1fef8a38f574 100644
---- a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
-+++ b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
-@@ -21,6 +21,7 @@
- #include <linux/pinctrl/pinctrl.h>
- #include <linux/pinctrl/pinmux.h>
- #include <linux/platform_device.h>
-+#include <linux/property.h>
- #include <linux/regmap.h>
- #include <linux/slab.h>
- #include <linux/string_helpers.h>
-@@ -787,18 +788,13 @@ static int armada_37xx_gpiochip_register(struct platform_device *pdev,
- 					struct armada_37xx_pinctrl *info)
+diff --git a/drivers/pinctrl/meson/pinctrl-meson.c b/drivers/pinctrl/meson/pinctrl-meson.c
+index 49851444a6e3..5b46a0979db7 100644
+--- a/drivers/pinctrl/meson/pinctrl-meson.c
++++ b/drivers/pinctrl/meson/pinctrl-meson.c
+@@ -218,13 +218,13 @@ static int meson_pinconf_set_output(struct meson_pinctrl *pc,
+ 				    unsigned int pin,
+ 				    bool out)
  {
- 	struct device *dev = &pdev->dev;
--	struct device_node *np;
-+	struct fwnode_handle *fwnode;
- 	struct gpio_chip *gc;
--	int ret = -ENODEV;
-+	int ret;
+-	return meson_pinconf_set_gpio_bit(pc, pin, REG_DIR, !out);
++	return meson_pinconf_set_gpio_bit(pc, pin, MESON_REG_DIR, !out);
+ }
  
--	for_each_child_of_node(dev->of_node, np) {
--		if (of_find_property(np, "gpio-controller", NULL)) {
--			ret = 0;
--			break;
--		}
--	}
--	if (ret)
--		return ret;
-+	fwnode = device_get_named_child_node(dev, "gpio-controller");
-+	if (!fwnode)
-+		return -ENODEV;
+ static int meson_pinconf_get_output(struct meson_pinctrl *pc,
+ 				    unsigned int pin)
+ {
+-	int ret = meson_pinconf_get_gpio_bit(pc, pin, REG_DIR);
++	int ret = meson_pinconf_get_gpio_bit(pc, pin, MESON_REG_DIR);
  
- 	info->gpio_chip = armada_37xx_gpiolib_chip;
+ 	if (ret < 0)
+ 		return ret;
+@@ -236,13 +236,13 @@ static int meson_pinconf_set_drive(struct meson_pinctrl *pc,
+ 				   unsigned int pin,
+ 				   bool high)
+ {
+-	return meson_pinconf_set_gpio_bit(pc, pin, REG_OUT, high);
++	return meson_pinconf_set_gpio_bit(pc, pin, MESON_REG_OUT, high);
+ }
  
-@@ -806,7 +802,7 @@ static int armada_37xx_gpiochip_register(struct platform_device *pdev,
- 	gc->ngpio = info->data->nr_pins;
- 	gc->parent = dev;
- 	gc->base = -1;
--	gc->of_node = np;
-+	gc->fwnode = fwnode;
- 	gc->label = info->data->name;
+ static int meson_pinconf_get_drive(struct meson_pinctrl *pc,
+ 				   unsigned int pin)
+ {
+-	return meson_pinconf_get_gpio_bit(pc, pin, REG_OUT);
++	return meson_pinconf_get_gpio_bit(pc, pin, MESON_REG_OUT);
+ }
  
- 	ret = armada_37xx_irqchip_register(pdev, info);
+ static int meson_pinconf_set_output_drive(struct meson_pinctrl *pc,
+@@ -269,7 +269,7 @@ static int meson_pinconf_disable_bias(struct meson_pinctrl *pc,
+ 	if (ret)
+ 		return ret;
+ 
+-	meson_calc_reg_and_bit(bank, pin, REG_PULLEN, &reg, &bit);
++	meson_calc_reg_and_bit(bank, pin, MESON_REG_PULLEN, &reg, &bit);
+ 	ret = regmap_update_bits(pc->reg_pullen, reg, BIT(bit), 0);
+ 	if (ret)
+ 		return ret;
+@@ -288,7 +288,7 @@ static int meson_pinconf_enable_bias(struct meson_pinctrl *pc, unsigned int pin,
+ 	if (ret)
+ 		return ret;
+ 
+-	meson_calc_reg_and_bit(bank, pin, REG_PULL, &reg, &bit);
++	meson_calc_reg_and_bit(bank, pin, MESON_REG_PULL, &reg, &bit);
+ 	if (pull_up)
+ 		val = BIT(bit);
+ 
+@@ -296,7 +296,7 @@ static int meson_pinconf_enable_bias(struct meson_pinctrl *pc, unsigned int pin,
+ 	if (ret)
+ 		return ret;
+ 
+-	meson_calc_reg_and_bit(bank, pin, REG_PULLEN, &reg, &bit);
++	meson_calc_reg_and_bit(bank, pin, MESON_REG_PULLEN, &reg, &bit);
+ 	ret = regmap_update_bits(pc->reg_pullen, reg, BIT(bit),	BIT(bit));
+ 	if (ret)
+ 		return ret;
+@@ -321,7 +321,7 @@ static int meson_pinconf_set_drive_strength(struct meson_pinctrl *pc,
+ 	if (ret)
+ 		return ret;
+ 
+-	meson_calc_reg_and_bit(bank, pin, REG_DS, &reg, &bit);
++	meson_calc_reg_and_bit(bank, pin, MESON_REG_DS, &reg, &bit);
+ 
+ 	if (drive_strength_ua <= 500) {
+ 		ds_val = MESON_PINCONF_DRV_500UA;
+@@ -407,7 +407,7 @@ static int meson_pinconf_get_pull(struct meson_pinctrl *pc, unsigned int pin)
+ 	if (ret)
+ 		return ret;
+ 
+-	meson_calc_reg_and_bit(bank, pin, REG_PULLEN, &reg, &bit);
++	meson_calc_reg_and_bit(bank, pin, MESON_REG_PULLEN, &reg, &bit);
+ 
+ 	ret = regmap_read(pc->reg_pullen, reg, &val);
+ 	if (ret)
+@@ -416,7 +416,7 @@ static int meson_pinconf_get_pull(struct meson_pinctrl *pc, unsigned int pin)
+ 	if (!(val & BIT(bit))) {
+ 		conf = PIN_CONFIG_BIAS_DISABLE;
+ 	} else {
+-		meson_calc_reg_and_bit(bank, pin, REG_PULL, &reg, &bit);
++		meson_calc_reg_and_bit(bank, pin, MESON_REG_PULL, &reg, &bit);
+ 
+ 		ret = regmap_read(pc->reg_pull, reg, &val);
+ 		if (ret)
+@@ -447,7 +447,7 @@ static int meson_pinconf_get_drive_strength(struct meson_pinctrl *pc,
+ 	if (ret)
+ 		return ret;
+ 
+-	meson_calc_reg_and_bit(bank, pin, REG_DS, &reg, &bit);
++	meson_calc_reg_and_bit(bank, pin, MESON_REG_DS, &reg, &bit);
+ 
+ 	ret = regmap_read(pc->reg_ds, reg, &val);
+ 	if (ret)
+@@ -595,7 +595,7 @@ static int meson_gpio_get(struct gpio_chip *chip, unsigned gpio)
+ 	if (ret)
+ 		return ret;
+ 
+-	meson_calc_reg_and_bit(bank, gpio, REG_IN, &reg, &bit);
++	meson_calc_reg_and_bit(bank, gpio, MESON_REG_IN, &reg, &bit);
+ 	regmap_read(pc->reg_gpio, reg, &val);
+ 
+ 	return !!(val & BIT(bit));
+diff --git a/drivers/pinctrl/meson/pinctrl-meson.h b/drivers/pinctrl/meson/pinctrl-meson.h
+index ff5372e0a475..fa042cd6a7ff 100644
+--- a/drivers/pinctrl/meson/pinctrl-meson.h
++++ b/drivers/pinctrl/meson/pinctrl-meson.h
+@@ -63,12 +63,12 @@ struct meson_reg_desc {
+  * enum meson_reg_type - type of registers encoded in @meson_reg_desc
+  */
+ enum meson_reg_type {
+-	REG_PULLEN,
+-	REG_PULL,
+-	REG_DIR,
+-	REG_OUT,
+-	REG_IN,
+-	REG_DS,
++	MESON_REG_PULLEN,
++	MESON_REG_PULL,
++	MESON_REG_DIR,
++	MESON_REG_OUT,
++	MESON_REG_IN,
++	MESON_REG_DS,
+ 	NUM_REG,
+ };
+ 
+@@ -150,12 +150,12 @@ struct meson_pinctrl {
+ 		.irq_first	= fi,					\
+ 		.irq_last	= li,					\
+ 		.regs = {						\
+-			[REG_PULLEN]	= { per, peb },			\
+-			[REG_PULL]	= { pr, pb },			\
+-			[REG_DIR]	= { dr, db },			\
+-			[REG_OUT]	= { or, ob },			\
+-			[REG_IN]	= { ir, ib },			\
+-			[REG_DS]	= { dsr, dsb },			\
++			[MESON_REG_PULLEN]	= { per, peb },		\
++			[MESON_REG_PULL]	= { pr, pb },		\
++			[MESON_REG_DIR]		= { dr, db },		\
++			[MESON_REG_OUT]		= { or, ob },		\
++			[MESON_REG_IN]		= { ir, ib },		\
++			[MESON_REG_DS]		= { dsr, dsb },		\
+ 		},							\
+ 	 }
+ 
 -- 
 2.35.1
 
