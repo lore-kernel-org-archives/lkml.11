@@ -2,116 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62173C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 08:33:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04861C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 08:34:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244379AbiC3Ie7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 04:34:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39996 "EHLO
+        id S244390AbiC3IgA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 04:36:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242851AbiC3Ie4 (ORCPT
+        with ESMTP id S235920AbiC3If6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 04:34:56 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C3BC7672;
-        Wed, 30 Mar 2022 01:33:10 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KT0773HJkz1GDBr;
-        Wed, 30 Mar 2022 16:32:51 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 30 Mar 2022 16:33:08 +0800
-From:   Ziyang Xuan <william.xuanziyang@huawei.com>
-To:     <borisp@nvidia.com>, <john.fastabend@gmail.com>,
-        <daniel@iogearbox.net>, <kuba@kernel.org>, <davem@davemloft.net>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>
-CC:     <vakul.garg@nxp.com>, <davejwatson@fb.com>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH net] net/tls: fix slab-out-of-bounds bug in decrypt_internal
-Date:   Wed, 30 Mar 2022 16:50:09 +0800
-Message-ID: <20220330085009.1011614-1-william.xuanziyang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 30 Mar 2022 04:35:58 -0400
+Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B49267D33;
+        Wed, 30 Mar 2022 01:34:13 -0700 (PDT)
+Received: by mail-qk1-x72c.google.com with SMTP id d142so16092467qkc.4;
+        Wed, 30 Mar 2022 01:34:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=NEl4ZyDKfaHyPMaCMLIIWJ8UZ/cbSlx3qxxzXdskCtU=;
+        b=LDq7b0pfnJZF01oqy5hAlAiVxT6eMq7Wcmk+pic3Ja+xHWHCpM3H+VYapR9NexpzfB
+         v9kN1kMRSKC3mwwhJUzsxKxZZ4xHbNRehU66WcwgAz6Kh/tNJhjWRElUXd6NpFztmPRN
+         +rNkUKogg0au71YFk+Qve1jptzJxRtmIN/K5nT+rQwWewlB0S08QxzYkUylE94nfsnWD
+         UR/pCuu1YLJoz7fGP09fzqOeFgfWU9rfPa0qdw08SL3FS7RWEDp2+Hij+STx2VJs3e1m
+         eF+gF8fP36CnQYmUF7si7aTp9NfW0Dg156cTKFl+5xZrkAQGOPzY4hA43qTvAPpdJMuH
+         dA9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=NEl4ZyDKfaHyPMaCMLIIWJ8UZ/cbSlx3qxxzXdskCtU=;
+        b=YQa7XKk3bISNx9NJD4CorO0Lgue6cAXHMc3mAo+NnXnilt70dsUsQjnwIco+OKUVGw
+         9x3DU8S6vP8BELIlMrgwSzQMwGEL1+XWl8l7yFUVZ+E7/SYoI0qJpe1+SALLk8b/8swa
+         RN5SqvYYOq7NGpQhDrIaJmmHwt8RZ1YH/EaSlvAM8OuO9SR3mM95IJj2kH0bayLlTAS7
+         O/IMHw+yQo58Obim2B9D1kRqsCu7FhKOWG9SudtL9skN3i558uJEt7VthIV/t2vQ8VbE
+         +AB1gf3QMG6GS+xQWagpQczoPP2SzHX1TI+j/pZm+BH40wM8ji78qkPwhf2K+VG27tsZ
+         KH6Q==
+X-Gm-Message-State: AOAM531ROXEAe8LVsjVHCnN/Yuds4s877QE2CmJsZ2sdLQf6u8fXkZq7
+        T9Ro6mdnkYyEhifGmDxfmlw=
+X-Google-Smtp-Source: ABdhPJxLEk73iI4AYBNyhqSPL7af7D8CCI3uVBSSdDDTHuZ0TK1TqZrrENR8Ez8y24FG624d2SQC6A==
+X-Received: by 2002:a05:620a:450f:b0:67d:b1ee:bd3 with SMTP id t15-20020a05620a450f00b0067db1ee0bd3mr22742284qkp.766.1648629252203;
+        Wed, 30 Mar 2022 01:34:12 -0700 (PDT)
+Received: from localhost ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id v9-20020a05620a0a8900b0067db9cc46a9sm10236553qkg.62.2022.03.30.01.34.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 01:34:11 -0700 (PDT)
+Message-ID: <62441603.1c69fb81.4b06b.5a29@mx.google.com>
+X-Google-Original-Message-ID: <20220330083408.GA2381634@cgel.zte@gmail.com>
+Date:   Wed, 30 Mar 2022 08:34:08 +0000
+From:   CGEL <cgel.zte@gmail.com>
+To:     Johannes Weiner <hannes@cmpxchg.org>
+Cc:     axboe@kernel.dk, viro@zeniv.linux.org.uk,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, akpm@linux-foundation.org,
+        Yang Yang <yang.yang29@zte.com.cn>,
+        Ran Xiaokai <ran.xiaokai@zte.com.cn>
+Subject: Re: [PATCH] block/psi: make PSI annotations of submit_bio only work
+ for file pages
+References: <20220316063927.2128383-1-yang.yang29@zte.com.cn>
+ <YjiMsGoXoDU+FwsS@cmpxchg.org>
+ <623938d1.1c69fb81.52716.030f@mx.google.com>
+ <YjnO3p6vvAjeMCFC@cmpxchg.org>
+ <20220323061058.GA2343452@cgel.zte@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220323061058.GA2343452@cgel.zte@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The memory size of tls_ctx->rx.iv for AES128-CCM is 12 setting in
-tls_set_sw_offload(). The return value of crypto_aead_ivsize()
-for "ccm(aes)" is 16. So memcpy() require 16 bytes from 12 bytes
-memory space will trigger slab-out-of-bounds bug as following:
+On Wed, Mar 23, 2022 at 06:11:03AM +0000, CGEL wrote:
+> On Tue, Mar 22, 2022 at 09:27:58AM -0400, Johannes Weiner wrote:
+> > On Tue, Mar 22, 2022 at 02:47:42AM +0000, CGEL wrote:
+> > > On Mon, Mar 21, 2022 at 10:33:20AM -0400, Johannes Weiner wrote:
+> > > > On Wed, Mar 16, 2022 at 06:39:28AM +0000, cgel.zte@gmail.com wrote:
+> > > > > From: Yang Yang <yang.yang29@zte.com.cn>
+> > > > > 
+> > > > > psi tracks the time spent on submitting the IO of refaulting file pages
+> > > > > and anonymous pages[1]. But after we tracks refaulting anonymous pages
+> > > > > in swap_readpage[2][3], there is no need to track refaulting anonymous
+> > > > > pages in submit_bio.
+> > > > > 
+> > > > > So this patch can reduce redundant calling of psi_memstall_enter. And
+> > > > > make it easier to track refaulting file pages and anonymous pages
+> > > > > separately.
+> > > > 
+> > > > I don't think this is an improvement.
+> > > > 
+> > > > psi_memstall_enter() will check current->in_memstall once, detect the
+> > > > nested call, and bail. Your patch checks PageSwapBacked for every page
+> > > > being added. It's more branches for less robust code.
+> > > 
+> > > We are also working for a new patch to classify different reasons cause
+> > > psi_memstall_enter(): reclaim, thrashing, compact, etc. This will help
+> > > user to tuning sysctl, for example, if user see high compact delay, he
+> > > may try do adjust THP sysctl to reduce the compact delay.
+> > > 
+> > > To support that, we should distinguish what's the reason cause psi in
+> > > submit_io(), this patch does the job.
+> > 
+> > Please submit these patches together then. On its own, this patch
+> > isn't desirable.
+> I think this patch has it's independent value, I try to make a better
+> explain.
+> 
+> 1) This patch doesn't work it worse or even better
+> After this patch, swap workingset handle is simpler, file workingset
+> handle just has one more check, as below.
+> Before this patch handling swap workingset:
+> 	a) in swap_readpage() call psi_memstall_enter() ->
+> 	b) in __bio_add_page() test if should call bio_set_flag(), true ->
+> 	c) in __bio_add_page() call bio_set_flag()
+> 	d) in submit_bio() test if should call psi_memstall_enter(), true ->
+> 	e) call psi_memstall_enter, detect the nested call, and bail.
+> 	f) call bio_clear_flag if needed.
+> Before this patch handling file page workingset:
+> 	a) in __bio_add_page() test if should call bio_set_flag(), true ->
+> 	...
+> 	b) call bio_clear_flag if needed.
+> After this patch handling swap workingset:
+> 	a) in swap_readpage() call psi_memstall_enter() ->
+> 	b) in __bio_add_page() test if should call bio_set_flag(), one more check, false and return.
+> 	c) in submit_bio() test if should call psi_memstall_enter(), false and return.
+> After this patch handling file pages workingset:
+> 	a) in __bio_add_page() test if should call bio_set_flag(), one more check, true ->
+> 	...
+> 	b) call bio_clear_flag if needed.
+> 
+> 2) This patch help tools like kprobe to trace different workingset
+> After this patch we know workingset in submit_io() is only cause by file pages.
+> 
+> 3) This patch will help code evolution
+> Such as psi classify, getdelays supports counting file pages workingset submit.
 
-==================================================================
-BUG: KASAN: slab-out-of-bounds in decrypt_internal+0x385/0xc40 [tls]
-Read of size 16 at addr ffff888114e84e60 by task tls/10911
-
-Call Trace:
- <TASK>
- dump_stack_lvl+0x34/0x44
- print_report.cold+0x5e/0x5db
- ? decrypt_internal+0x385/0xc40 [tls]
- kasan_report+0xab/0x120
- ? decrypt_internal+0x385/0xc40 [tls]
- kasan_check_range+0xf9/0x1e0
- memcpy+0x20/0x60
- decrypt_internal+0x385/0xc40 [tls]
- ? tls_get_rec+0x2e0/0x2e0 [tls]
- ? process_rx_list+0x1a5/0x420 [tls]
- ? tls_setup_from_iter.constprop.0+0x2e0/0x2e0 [tls]
- decrypt_skb_update+0x9d/0x400 [tls]
- tls_sw_recvmsg+0x3c8/0xb50 [tls]
-
-Allocated by task 10911:
- kasan_save_stack+0x1e/0x40
- __kasan_kmalloc+0x81/0xa0
- tls_set_sw_offload+0x2eb/0xa20 [tls]
- tls_setsockopt+0x68c/0x700 [tls]
- __sys_setsockopt+0xfe/0x1b0
-
-Reserve MAX_IV_SIZE memory space for iv to be compatible with all
-ciphers. And do iv and salt copy like done in tls_do_encryption().
-
-Fixes: f295b3ae9f59 ("net/tls: Add support of AES128-CCM based ciphers")
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
----
- net/tls/tls_sw.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
-
-diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index 0024a692f0f8..6b858f995b23 100644
---- a/net/tls/tls_sw.c
-+++ b/net/tls/tls_sw.c
-@@ -1456,7 +1456,7 @@ static int decrypt_internal(struct sock *sk, struct sk_buff *skb,
- 	aead_size = sizeof(*aead_req) + crypto_aead_reqsize(ctx->aead_recv);
- 	mem_size = aead_size + (nsg * sizeof(struct scatterlist));
- 	mem_size = mem_size + prot->aad_size;
--	mem_size = mem_size + crypto_aead_ivsize(ctx->aead_recv);
-+	mem_size = mem_size + MAX_IV_SIZE;
- 
- 	/* Allocate a single block of memory which contains
- 	 * aead_req || sgin[] || sgout[] || aad || iv.
-@@ -1493,12 +1493,8 @@ static int decrypt_internal(struct sock *sk, struct sk_buff *skb,
- 		kfree(mem);
- 		return err;
- 	}
--	if (prot->version == TLS_1_3_VERSION ||
--	    prot->cipher_type == TLS_CIPHER_CHACHA20_POLY1305)
--		memcpy(iv + iv_offset, tls_ctx->rx.iv,
--		       crypto_aead_ivsize(ctx->aead_recv));
--	else
--		memcpy(iv + iv_offset, tls_ctx->rx.iv, prot->salt_size);
-+	memcpy(iv + iv_offset, tls_ctx->rx.iv,
-+	       prot->iv_size + prot->salt_size);
- 
- 	xor_iv_with_seq(prot, iv + iv_offset, tls_ctx->rx.rec_seq);
- 
--- 
-2.25.1
-
+Looking forward to your review, thanks!
