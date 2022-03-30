@@ -2,76 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8FC2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:45:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E405C4321E
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:47:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344576AbiC3Mqn (ORCPT
+        id S1344845AbiC3MtR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:46:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59170 "EHLO
+        Wed, 30 Mar 2022 08:49:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345442AbiC3Mqa (ORCPT
+        with ESMTP id S1345942AbiC3Msc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 08:46:30 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B05A12639;
-        Wed, 30 Mar 2022 05:42:06 -0700 (PDT)
-Received: from mail-wm1-f52.google.com ([209.85.128.52]) by
- mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1Mnq4Q-1oOrgK3Xoo-00pNsz; Wed, 30 Mar 2022 14:37:02 +0200
-Received: by mail-wm1-f52.google.com with SMTP id 123-20020a1c1981000000b0038b3616a71aso3374610wmz.4;
-        Wed, 30 Mar 2022 05:37:02 -0700 (PDT)
-X-Gm-Message-State: AOAM5329VsudarNVsU/isj96R066MCE5oM/3x1bNfWfP0EEFUDlMLBvz
-        wa45/BoAHiY/lTW1NEMfZjbVJ01WXugIsqBo09U=
-X-Google-Smtp-Source: ABdhPJwfbm/9CoKlDpNtm76gvIcQEp3gSMKylwBeJKNMGSZTpVIguvrW0qmNj3vv9gaQXiq1j2JGikp0Afv3xKtctks=
-X-Received: by 2002:a1c:f219:0:b0:38c:782c:3bb with SMTP id
- s25-20020a1cf219000000b0038c782c03bbmr4174789wmc.94.1648643822447; Wed, 30
- Mar 2022 05:37:02 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220330074016.12896-1-krzysztof.kozlowski@linaro.org> <20220330074016.12896-2-krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220330074016.12896-2-krzysztof.kozlowski@linaro.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 30 Mar 2022 14:36:46 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2rjs-_5kcqAz6C3qE=SGUt0JYSyNfyZd2-B6dvaEZNuQ@mail.gmail.com>
-Message-ID: <CAK8P3a2rjs-_5kcqAz6C3qE=SGUt0JYSyNfyZd2-B6dvaEZNuQ@mail.gmail.com>
-Subject: Re: [PATCH 1/2] dt-bindings: update Krzysztof Kozlowski's email
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     "moderated list:ARM/SAMSUNG EXYNOS ARM ARCHITECTURES" 
-        <linux-samsung-soc@vger.kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
+        Wed, 30 Mar 2022 08:48:32 -0400
+Received: from bedivere.hansenpartnership.com (bedivere.hansenpartnership.com [IPv6:2607:fcd0:100:8a00::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 766ACDE0BF;
+        Wed, 30 Mar 2022 05:46:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+        d=hansenpartnership.com; s=20151216; t=1648644405;
+        bh=KAfrZgKEul9aSsbZ36kPU6Tj18oRXB0dM4HC3xvmmXw=;
+        h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
+        b=nn8AAgM02CcbhIpBEc+LRzvcURan3/dQ3hkEigyO4ktwhNb3MknZmgEA8v2ISWf66
+         eMqota5PANQaFP/P2ctxTAmBUX9sLJc1dq/gRo/1HQUgIMF279FtC6TlvXRsw0DFby
+         WoqCIRieFcgtb4AgBtxbYQp5x+DKFfwU8NjJNOfI=
+Received: from localhost (localhost [127.0.0.1])
+        by bedivere.hansenpartnership.com (Postfix) with ESMTP id 55C651288359;
+        Wed, 30 Mar 2022 08:46:45 -0400 (EDT)
+Received: from bedivere.hansenpartnership.com ([127.0.0.1])
+        by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id nDP9QrI8rjHM; Wed, 30 Mar 2022 08:46:45 -0400 (EDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+        d=hansenpartnership.com; s=20151216; t=1648644405;
+        bh=KAfrZgKEul9aSsbZ36kPU6Tj18oRXB0dM4HC3xvmmXw=;
+        h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
+        b=nn8AAgM02CcbhIpBEc+LRzvcURan3/dQ3hkEigyO4ktwhNb3MknZmgEA8v2ISWf66
+         eMqota5PANQaFP/P2ctxTAmBUX9sLJc1dq/gRo/1HQUgIMF279FtC6TlvXRsw0DFby
+         WoqCIRieFcgtb4AgBtxbYQp5x+DKFfwU8NjJNOfI=
+Received: from lingrow.int.hansenpartnership.com (unknown [IPv6:2601:5c4:4300:c551::c14])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id A54551288358;
+        Wed, 30 Mar 2022 08:46:43 -0400 (EDT)
+Message-ID: <41521e8ecd2876327cd8dd929b32aa3b7e9daca8.camel@HansenPartnership.com>
+Subject: Re: Linux DRTM on UEFI platforms
+From:   James Bottomley <James.Bottomley@HansenPartnership.com>
+To:     Ard Biesheuvel <ardb@kernel.org>,
+        Matthew Garrett <mjg59@srcf.ucam.org>
+Cc:     Daniel Kiper <daniel.kiper@oracle.com>,
+        Alec Brown <alec.r.brown@oracle.com>,
+        Kanth Ghatraju <kanth.ghatraju@oracle.com>,
+        Ross Philipson <ross.philipson@oracle.com>,
+        "dpsmith@apertussolutions.com" <dpsmith@apertussolutions.com>,
+        "piotr.krol@3mdeb.com" <piotr.krol@3mdeb.com>,
+        "krystian.hebel@3mdeb.com" <krystian.hebel@3mdeb.com>,
+        "persaur@gmail.com" <persaur@gmail.com>,
+        "Yoder, Stuart" <stuart.yoder@arm.com>,
+        Andrew Cooper <andrew.cooper3@citrix.com>,
+        "michal.zygowski@3mdeb.com" <michal.zygowski@3mdeb.com>,
+        "lukasz@hawrylko.pl" <lukasz@hawrylko.pl>,
+        linux-efi <linux-efi@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-nfc@lists.01.org, Networking <netdev@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        Krzysztof Kozlowski <krzk@kernel.org>
+        The development of GNU GRUB <grub-devel@gnu.org>,
+        Kees Cook <keescook@chromium.org>
+Date:   Wed, 30 Mar 2022 08:46:41 -0400
+In-Reply-To: <CAMj1kXHJxmdLie1JE=k3O4zne8tHED7g63rj42q-sL_JQUpvNw@mail.gmail.com>
+References: <20220329174057.GA17778@srcf.ucam.org>
+         <CAMj1kXE-7yPTBgQQKXRnQbdvLMv6D7=CowtQ38PdpPVa3SW-Ag@mail.gmail.com>
+         <20220330071103.GA809@srcf.ucam.org>
+         <CAMj1kXE9WrBOUG6MRQ90cMH_NvvCw_jVCar5Dsj+gkZr1AA0MQ@mail.gmail.com>
+         <20220330071859.GA992@srcf.ucam.org>
+         <CAMj1kXHfw75GphiewQzbA-swsMD3AGunyhc9HSue_xqrHt9GhQ@mail.gmail.com>
+         <20220330072755.GA1169@srcf.ucam.org>
+         <CAMj1kXHJxmdLie1JE=k3O4zne8tHED7g63rj42q-sL_JQUpvNw@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:NX9yY4uMHG0E9LFC5gh1ZFGm6GY/SJk+3/osNw8K/JV4GnUK4nY
- x1ANy0sl+GqOXKmcrk5eY9Vp6PPT7SDMZNCxm5zVZ4BgUFYYCUzGLvipXE7uvKlWSvzetJ+
- pWS4HIuHCavNs7b5q1qF9nb0puNlrRjigvsxs+LegvegO7UWUmMi1U8JSUB7oFjIOpQ2jpI
- HviknqcBRm7+hskX4xaSg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Auhe9cAV9A0=:Jmz/c2N6UlGWcjtthXjc6Y
- A4KRmjeq/7Dxse2SWXB/GO3SHnbjmWXhZgC7AeXmKCWOxS7Gi9ECms+p9KGZZSm361chfud0i
- MOLs6MFleCrUBErHMnxpmaiw9qUxH2W1f9//tgYlIlAh4kt5VOonVYlsqUDhVaYx8AEVMqqu5
- 8AwlsP2ftyhYf29znfths8dQDyEWsxSMpsr5a2IQfH1/zdJXdUB4ULZ9ybnyT8gGsgLfr9g/1
- 6JwrIfEegz1w5SgVQgrQqXAe5OOGpPyO54lOyj4XXRdzt47TDzt3jb8VgD2nejDXNWdsU8xrO
- lagk5OqpWCTbGRnoSYQH8uywlrJwyUAvJzU8g8QzEXzdraunxwMCbx6qYe+HgV1cPvdHNY9xN
- 4XQ6KuEdB5h+piCRQ+dk3dYEENl53c4e4hPMoXV19GVBfeaRisXJtiBs/D0at6wATm1fRoSfh
- tx9BHrvxDjSmE217ASoMG2Ev+aVIGc2evCGBHMa2JUCWN1Jv4F58ZwuBnZdPtotmuqaCyWofg
- BTmtyai+8SDAFQG+8cxYoPrFAq3TRyxHNVSvNmr7zblBVDTxmlAVB23HSimgiy9Roy4uFqn9r
- aOICQnXDpsRQa3muaXmbJtkQ4Y979FifO1Cf6Qt7aCIvkdxfQ3tXMc3S+tz0pCTTsBdL5oyh6
- DH2VEqscKNj9rTpFg3geDzOfvfqJnGpE0H9+269VpMiacqKiLsCkBj78p0cptAUntxBc=
+User-Agent: Evolution 3.34.4 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 9:40 AM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> From: Krzysztof Kozlowski <krzk@kernel.org>
->
-> Krzysztof Kozlowski's @canonical.com email stopped working, so switch to
-> generic @kernel.org account for all Devicetree bindings.
->
-> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+On Wed, 2022-03-30 at 09:39 +0200, Ard Biesheuvel wrote:
+> On Wed, 30 Mar 2022 at 09:27, Matthew Garrett <mjg59@srcf.ucam.org>
+> wrote:
+> > On Wed, Mar 30, 2022 at 09:23:17AM +0200, Ard Biesheuvel wrote:
+> > > On Wed, 30 Mar 2022 at 09:19, Matthew Garrett <
+> > > mjg59@srcf.ucam.org> wrote:
+> > > > From a conceptual perspective we've thought of the EFI stub as
+> > > > being logically part of the bootloader rather than the early
+> > > > kernel, and the bootloader is a point where the line is drawn.
+> > > > My guy feeling is that jumping into the secure kernel
+> > > > environment before EBS has been called is likely to end badly.
+> > > 
+> > > If you jump back into the system firmware, sure.
+> > > 
+> > > But the point I was trying to make is that you can replace that
+> > > with your own minimal implementation of EFI that just exposes a
+> > > memory map and some protocols and nothing else, and then the
+> > > secure launch kernel would be entirely in charge of the execution
+> > > environment.
+> > 
+> > We can't just replace system firmware with an imitation of the same
+> > - for instance, configuring the cold boot prevention memory
+> > overwrite requires us to pass a variable through to the real
+> > firmware, and that's something that we do in the stub.
+> > 
+> 
+> But these are exactly the kinds of things the secure launch kernel
+> wants to be made aware of, no? The secure launch kernel could just
+> MITM the calls that it chooses to allow, and serve other calls
+> itself.
 
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+The problem would become that the MITM firmware has to be evolved in
+lockstep with the boot stub.  The problem isn't really a point in time,
+figure out what config the boot stub extracts from EFI now and measure
+it, it's an ongoing one: given an evolving kernel and UEFI subsystem
+means that over time what configuration the kernel extracts from EFI
+changes, how do we make sure it's all correctly measured before secure
+launch?
+
+If the MITM doesn't support a capability a newer kernel acquires, that
+MITM must fail secure launch ... which becomes a nightmare for the
+user.
+
+One possibility might be that the MITM actually does nothing at all
+except record Boot Service requests and responses up to exit boot
+services (EBS).  We could call that record the boot configuration and
+measure it, plus we could then intercept EBS, and do the DRTM secure
+launch to the return point.  It's conceptually similar Matthew's idea
+of a callback except it won't require modification of the boot
+parameters.
+
+James
+
+
