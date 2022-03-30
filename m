@@ -2,50 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA150C352A7
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2704CC4332F
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347541AbiC3MHD (ORCPT
+        id S1347449AbiC3MGs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:07:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60574 "EHLO
+        Wed, 30 Mar 2022 08:06:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345924AbiC3LzN (ORCPT
+        with ESMTP id S1345932AbiC3LzN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 30 Mar 2022 07:55:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73D3427DE82;
-        Wed, 30 Mar 2022 04:52:41 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EA792B267;
+        Wed, 30 Mar 2022 04:52:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1100061704;
-        Wed, 30 Mar 2022 11:52:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A30CCC340F2;
-        Wed, 30 Mar 2022 11:52:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EDACA615B7;
+        Wed, 30 Mar 2022 11:52:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 620F5C340EE;
+        Wed, 30 Mar 2022 11:52:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641160;
-        bh=Ka5jbGX8/lg8MhfDu2So8lLl4xM7sYE+I8cl5BMDAWU=;
+        s=k20201202; t=1648641173;
+        bh=cmQjIDOiyu6i0WOxV+vP3qJn8wa2woRKYCESBKH7hvg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c5OXdvb0Qimqi07h1Pz9Gvupg+J6E0I5hdYnfkUCy2+DRfgqa+MRHj23PzuDguYaJ
-         ZQYAZEP+jaeM3bpZcKPTxiK7Bz1LceI+0AlJTeXMJyagcmRUmd5pifrDUSHkQUd7Ng
-         z6lQwGSmjnqVW4WZgJgjF/vZ3ave4vFiD81WIOrb25/zXOXr+czdRPWerNTA9/LC8f
-         qtXD3bd+vh3tkjWwFgGKCqfukE3wnsY3BIo2yh2zI7sIgAxdcF7fh7aVA2VH3qjlDK
-         jKsmmOVNW8l2Y7mcWfOR5ZsokoDoXU7wMQnhEn1/aMEhuUIH5RJb7v5XyXEjIawTNQ
-         FVUaPqa9YY3lA==
+        b=VW5dEQnEFEC4PvVqgWVyxrk9r7smWniUVT7rNOBlWj7xLEMRiRBgo9E5GClm6B1AA
+         VOJSV1Xsv2MHQ/8n23fMzsVN+phn2XOw4zU8zyO8138sFrY+10FvVBSeiBx5ifPrvU
+         YRz/jxD/Ce43QcF07Vko+rZRddDnkYO77brACzqCCEC9gZHzAoXSYxQt7dQKqtUd1x
+         Hi0gq7DHOQeyrawxh6eB3G36cw6Zi7OfvhTJzJheSRAUB2Q6jbsIkaVFbthb8711S6
+         EbWe+ApJr1hhdPcNgOyMOtMH+3iFJFx1biu/rn5IfUcvO8bY2AHT1iUEs6lL9K9cxa
+         aoYn0/OW7ocNQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ard Biesheuvel <ardb@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.4 09/25] ARM: ftrace: avoid redundant loads or clobbering IP
-Date:   Wed, 30 Mar 2022 07:52:09 -0400
-Message-Id: <20220330115225.1672278-9-sashal@kernel.org>
+Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>,
+        eric.y.miao@gmail.com, haojian.zhuang@gmail.com,
+        linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.4 18/25] ARM: mmp: Fix failure to remove sram device
+Date:   Wed, 30 Mar 2022 07:52:18 -0400
+Message-Id: <20220330115225.1672278-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115225.1672278-1-sashal@kernel.org>
 References: <20220330115225.1672278-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,133 +56,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ard Biesheuvel <ardb@kernel.org>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit d11967870815b5ab89843980e35aab616c97c463 ]
+[ Upstream commit 4036b29a146b2749af3bb213b003eb69f3e5ecc4 ]
 
-Tweak the ftrace return paths to avoid redundant loads of SP, as well as
-unnecessary clobbering of IP.
+Make sure in .probe() to set driver data before the function is left to
+make it possible in .remove() to undo the actions done.
 
-This also fixes the inconsistency of using MOV to perform a function
-return, which is sub-optimal on recent micro-architectures but more
-importantly, does not perform an interworking return, unlike compiler
-generated function returns in Thumb2 builds.
+This fixes a potential memory leak and stops returning an error code in
+.remove() that is ignored by the driver core anyhow.
 
-Let's fix this by popping PC from the stack like most ordinary code
-does.
-
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/kernel/entry-ftrace.S | 51 +++++++++++++++-------------------
- 1 file changed, 22 insertions(+), 29 deletions(-)
+ arch/arm/mach-mmp/sram.c | 22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
 
-diff --git a/arch/arm/kernel/entry-ftrace.S b/arch/arm/kernel/entry-ftrace.S
-index a74289ebc803..5f1b1ce10473 100644
---- a/arch/arm/kernel/entry-ftrace.S
-+++ b/arch/arm/kernel/entry-ftrace.S
-@@ -22,10 +22,7 @@
-  * mcount can be thought of as a function called in the middle of a subroutine
-  * call.  As such, it needs to be transparent for both the caller and the
-  * callee: the original lr needs to be restored when leaving mcount, and no
-- * registers should be clobbered.  (In the __gnu_mcount_nc implementation, we
-- * clobber the ip register.  This is OK because the ARM calling convention
-- * allows it to be clobbered in subroutines and doesn't use it to hold
-- * parameters.)
-+ * registers should be clobbered.
-  *
-  * When using dynamic ftrace, we patch out the mcount call by a "pop {lr}"
-  * instead of the __gnu_mcount_nc call (see arch/arm/kernel/ftrace.c).
-@@ -70,26 +67,25 @@
+diff --git a/arch/arm/mach-mmp/sram.c b/arch/arm/mach-mmp/sram.c
+index 6794e2db1ad5..ecc46c31004f 100644
+--- a/arch/arm/mach-mmp/sram.c
++++ b/arch/arm/mach-mmp/sram.c
+@@ -72,6 +72,8 @@ static int sram_probe(struct platform_device *pdev)
+ 	if (!info)
+ 		return -ENOMEM;
  
- .macro __ftrace_regs_caller
++	platform_set_drvdata(pdev, info);
++
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	if (res == NULL) {
+ 		dev_err(&pdev->dev, "no memory resource defined\n");
+@@ -107,8 +109,6 @@ static int sram_probe(struct platform_device *pdev)
+ 	list_add(&info->node, &sram_bank_list);
+ 	mutex_unlock(&sram_lock);
  
--	sub	sp, sp, #8	@ space for PC and CPSR OLD_R0,
-+	str	lr, [sp, #-8]!	@ store LR as PC and make space for CPSR/OLD_R0,
- 				@ OLD_R0 will overwrite previous LR
+-	platform_set_drvdata(pdev, info);
+-
+ 	dev_info(&pdev->dev, "initialized\n");
+ 	return 0;
  
--	add 	ip, sp, #12	@ move in IP the value of SP as it was
--				@ before the push {lr} of the mcount mechanism
-+	ldr	lr, [sp, #8]    @ get previous LR
+@@ -127,17 +127,19 @@ static int sram_remove(struct platform_device *pdev)
+ 	struct sram_bank_info *info;
  
--	str     lr, [sp, #0]    @ store LR instead of PC
-+	str	r0, [sp, #8]	@ write r0 as OLD_R0 over previous LR
+ 	info = platform_get_drvdata(pdev);
+-	if (info == NULL)
+-		return -ENODEV;
  
--	ldr     lr, [sp, #8]    @ get previous LR
-+	str	lr, [sp, #-4]!	@ store previous LR as LR
+-	mutex_lock(&sram_lock);
+-	list_del(&info->node);
+-	mutex_unlock(&sram_lock);
++	if (info->sram_size) {
++		mutex_lock(&sram_lock);
++		list_del(&info->node);
++		mutex_unlock(&sram_lock);
++
++		gen_pool_destroy(info->gpool);
++		iounmap(info->sram_virt);
++		kfree(info->pool_name);
++	}
  
--	str	r0, [sp, #8]	@ write r0 as OLD_R0 over previous LR
-+	add 	lr, sp, #16	@ move in LR the value of SP as it was
-+				@ before the push {lr} of the mcount mechanism
+-	gen_pool_destroy(info->gpool);
+-	iounmap(info->sram_virt);
+-	kfree(info->pool_name);
+ 	kfree(info);
++
+ 	return 0;
+ }
  
--	stmdb   sp!, {ip, lr}
--	stmdb   sp!, {r0-r11, lr}
-+	push	{r0-r11, ip, lr}
- 
- 	@ stack content at this point:
- 	@ 0  4          48   52       56            60   64    68       72
--	@ R0 | R1 | ... | LR | SP + 4 | previous LR | LR | PSR | OLD_R0 |
-+	@ R0 | R1 | ... | IP | SP + 4 | previous LR | LR | PSR | OLD_R0 |
- 
--	mov r3, sp				@ struct pt_regs*
-+	mov	r3, sp				@ struct pt_regs*
- 
- 	ldr r2, =function_trace_op
- 	ldr r2, [r2]				@ pointer to the current
-@@ -112,11 +108,9 @@ ftrace_graph_regs_call:
- #endif
- 
- 	@ pop saved regs
--	ldmia   sp!, {r0-r12}			@ restore r0 through r12
--	ldr	ip, [sp, #8]			@ restore PC
--	ldr	lr, [sp, #4]			@ restore LR
--	ldr	sp, [sp, #0]			@ restore SP
--	mov	pc, ip				@ return
-+	pop	{r0-r11, ip, lr}		@ restore r0 through r12
-+	ldr	lr, [sp], #4			@ restore LR
-+	ldr	pc, [sp], #12
- .endm
- 
- #ifdef CONFIG_FUNCTION_GRAPH_TRACER
-@@ -132,11 +126,9 @@ ftrace_graph_regs_call:
- 	bl	prepare_ftrace_return
- 
- 	@ pop registers saved in ftrace_regs_caller
--	ldmia   sp!, {r0-r12}			@ restore r0 through r12
--	ldr	ip, [sp, #8]			@ restore PC
--	ldr	lr, [sp, #4]			@ restore LR
--	ldr	sp, [sp, #0]			@ restore SP
--	mov	pc, ip				@ return
-+	pop	{r0-r11, ip, lr}		@ restore r0 through r12
-+	ldr	lr, [sp], #4			@ restore LR
-+	ldr	pc, [sp], #12
- 
- .endm
- #endif
-@@ -202,16 +194,17 @@ ftrace_graph_call\suffix:
- .endm
- 
- .macro mcount_exit
--	ldmia	sp!, {r0-r3, ip, lr}
--	ret	ip
-+	ldmia	sp!, {r0-r3}
-+	ldr	lr, [sp, #4]
-+	ldr	pc, [sp], #8
- .endm
- 
- ENTRY(__gnu_mcount_nc)
- UNWIND(.fnstart)
- #ifdef CONFIG_DYNAMIC_FTRACE
--	mov	ip, lr
--	ldmia	sp!, {lr}
--	ret	ip
-+	push	{lr}
-+	ldr	lr, [sp, #4]
-+	ldr	pc, [sp], #8
- #else
- 	__mcount
- #endif
 -- 
 2.34.1
 
