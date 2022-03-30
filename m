@@ -2,81 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1458DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 07:34:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55463C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 07:36:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243865AbiC3HgY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 03:36:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55122 "EHLO
+        id S243868AbiC3Hhx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 03:37:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240368AbiC3HgN (ORCPT
+        with ESMTP id S240674AbiC3Hhv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 03:36:13 -0400
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31E4B21BC63
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 00:34:24 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 6F62F40005;
-        Wed, 30 Mar 2022 07:34:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1648625663;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xPfgkZOladdR15a2MCEBT2OjHxKiQBCr7V4GEPMOqvk=;
-        b=U8eQk5w0WGhtwLRrHpCp6JCQUXsSbioy5hz+rAXIEeHtF0TA6YOOBeHZmp9QGww1Hy9dkP
-        7me1P2rZjd2pPSPTsAVdkITS0xHSgYmJRDnpPFHeQ2m3/UycwmDWBanRJpUboTz/mCGNvh
-        8BLdR2T0nQtDzLZmm0+FJdRlFZPs/aRJwSURDKM/CEn7fbiTEJEN39X/jn63hYU8LUZEk8
-        65TkfTkog5/rVgERANVqI2KWw4AyejfouMUb0uJ2pnNimGg2Ljs8jcUfd25WQvtY58dQvk
-        wrJIqkbuplWEKpatpSeEctHp0H0g9154m6c0hCDqamHWG+6HwxDUdqtdr9jfZw==
-Date:   Wed, 30 Mar 2022 09:34:21 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Jean-Marc Eurin <jmeurin@google.com>
-Cc:     Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Create a proper header for the saved mtdoops.
-Message-ID: <20220330093421.35de104d@xps13>
-In-Reply-To: <20220329225328.396209-1-jmeurin@google.com>
-References: <20220329225328.396209-1-jmeurin@google.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Wed, 30 Mar 2022 03:37:51 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A37455777;
+        Wed, 30 Mar 2022 00:36:05 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2a02:3030:d:7e3f:91e1:4be5:4001:fd80])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: sebastianfricke)
+        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 71E2F1F4438B;
+        Wed, 30 Mar 2022 08:36:04 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1648625764;
+        bh=UTGb39eNA/52bA/avUqa1vAIsS16AGDE3+w7kh3a6og=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QC4vZngr3Uf9QXAtUMWbst6zGquCSCpyytNiKEzxsZj3KX7YkpTaAlCupEzhztCPu
+         gBJtGKKFaTKzt3tRoPoeRVPScGQU6tLJ3nNxXts+psMN6kB80q6gPkLi0cJ47e9Wux
+         FoP6RuXDpcKGL6XkQNuVDQdjEiZC3Myw5SRjrwZBXc4IiO4iMFIB+5VVSpQZH9cFCH
+         /O69NoNP4PL9lKjX9l5WRAA0dyC2KAbdhPyezJ3MGtESVdfvlM0FviZ5YEgKxgh2GP
+         5GfogVIFouwXZUdf+uMedRxRRsUGa28HYlOLVEOnJr2+m4ftNFyRC8GNrKw+8plX2c
+         zxWeWiR1hOXww==
+Date:   Wed, 30 Mar 2022 09:36:00 +0200
+From:   Sebastian Fricke <sebastian.fricke@collabora.com>
+To:     Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Cc:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        kernel@collabora.com, linux-media@vger.kernel.org,
+        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 20/24] media: hantro: Enable HOLD_CAPTURE_BUF for H.264
+Message-ID: <20220330073600.crbi5wqlp4rimx2a@basti-XPS-13-9310>
+References: <20220328195936.82552-1-nicolas.dufresne@collabora.com>
+ <20220328195936.82552-21-nicolas.dufresne@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20220328195936.82552-21-nicolas.dufresne@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jean-Marc,
+Hey Nicolas,
 
-jmeurin@google.com wrote on Tue, 29 Mar 2022 15:53:28 -0700:
+On 28.03.2022 15:59, Nicolas Dufresne wrote:
+>This is needed to optimizing field decoding. Each field will be
 
-> Avoid a panic if the header size changes.
-> Add a timestamp to the oops header.
->=20
-> Tested:
-> Triggered panic saved correctly:
-> xxd -l 0x20 -s 0x0000 /dev/mtdblock1
-> 00000000: 0100 0000 005e 005d 935d 4117 c5bf df16  .....^.].]A.....
-> 00000010: 3c36 3e5b 2020 3133 392e 3938 3039 3533  <6>[  139.980953
+s/is needed to optimizing/is needed to optimize/
 
-Your previous patchset was not applied because I requested several
-changes, yet you seem not to have taken them into account. For the
-record:
+>decoded in the same capture buffer, so to make use of the queues
 
-	Can you please send a v2 with:
-	- Your two patches in the same series (formatted with
-	  git-format-patch to get the dependency/order right)
-	- In the other commit, drop the reference pointing to (I
-	  believe) a commit hash that is local to your tree only.
-	- Use the right prefix ("mtd: mtdoops:").
+s/in the same/into the same/
 
-If you are fixing something different then create another patch in this
-series, but please keep you changes atomic and well separated, include
-a changelog and use proper subject prefixes.
+>we need to be able to ask the driver to keep the capture buffer.
 
-Thanks,
-Miqu=C3=A8l
+How about:
+"""
+During field decoding each field will be decoded into the same capture
+buffer. Optimise this mode by asking the driver to hold the buffer until
+all fields are written into it.
+"""
 
+>
+>Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Reviewed-by: Sebastian Fricke <sebastian.fricke@collabora.com>
+
+>---
+> drivers/staging/media/hantro/hantro_v4l2.c | 25 ++++++++++++++++++++++
+> 1 file changed, 25 insertions(+)
+>
+>diff --git a/drivers/staging/media/hantro/hantro_v4l2.c b/drivers/staging/media/hantro/hantro_v4l2.c
+>index 67148ba346f5..50d636678ff3 100644
+>--- a/drivers/staging/media/hantro/hantro_v4l2.c
+>+++ b/drivers/staging/media/hantro/hantro_v4l2.c
+>@@ -409,6 +409,30 @@ hantro_update_requires_request(struct hantro_ctx *ctx, u32 fourcc)
+> 	}
+> }
+>
+>+static void
+>+hantro_update_requires_hold_capture_buf(struct hantro_ctx *ctx, u32 fourcc)
+>+{
+>+	struct vb2_queue *vq;
+>+
+>+	vq = v4l2_m2m_get_vq(ctx->fh.m2m_ctx,
+>+			     V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
+>+
+>+	switch (fourcc) {
+>+	case V4L2_PIX_FMT_JPEG:
+>+	case V4L2_PIX_FMT_MPEG2_SLICE:
+>+	case V4L2_PIX_FMT_VP8_FRAME:
+>+	case V4L2_PIX_FMT_HEVC_SLICE:
+>+	case V4L2_PIX_FMT_VP9_FRAME:
+>+		vq->subsystem_flags &= ~(VB2_V4L2_FL_SUPPORTS_M2M_HOLD_CAPTURE_BUF);
+>+		break;
+
+Out of curiosity, why would it be bad for the other codecs to have
+support for that feature activated? As this doesn't actually hold the
+buffers but only makes sure that they could be held.
+
+>+	case V4L2_PIX_FMT_H264_SLICE:
+>+		vq->subsystem_flags |= VB2_V4L2_FL_SUPPORTS_M2M_HOLD_CAPTURE_BUF;
+
+I think it is worth it to highlight with a comment why only this one
+receives support for holding the buffer. As it is quite confusing
+without background info and just the code.
+
+How about:
+```
+/*
+  * During field decoding in H264, all fields are written into the
+  * same capture buffer, thus we need to be able to hold the buffer
+  * until all fields are written to it
+  */
+```
+
+>+		break;
+>+	default:
+
+The only other decoding formats remaining are:
+- V4L2_PIX_FMT_NV12_4L4
+- V4L2_PIX_FMT_NV12
+
+Both have codec mode HANTRO_MODE_NONE.
+
+My thought is:
+If we don't care for these two, the we might as well disable buffer holding
+support for them as well. So, we could make this simplier
+(but a bit less descriptive):
+
+```
+/*
+  * During field decoding in H264, all fields are written into the
+  * same capture buffer, thus we need to be able to hold the buffer
+  * until all fields are written to it
+  */
+if (fourcc == V4L2_PIX_FMT_H264_SLICE)
+     vq->subsystem_flags |= VB2_V4L2_FL_SUPPORTS_M2M_HOLD_CAPTURE_BUF;
+else 
+		vq->subsystem_flags &= ~(VB2_V4L2_FL_SUPPORTS_M2M_HOLD_CAPTURE_BUF);
+```
+
+Greetings,
+Sebastian
+
+>+		break;
+>+	}
+>+}
+>+
+> static int hantro_set_fmt_out(struct hantro_ctx *ctx,
+> 			      struct v4l2_pix_format_mplane *pix_mp)
+> {
+>@@ -472,6 +496,7 @@ static int hantro_set_fmt_out(struct hantro_ctx *ctx,
+> 	ctx->dst_fmt.quantization = pix_mp->quantization;
+>
+> 	hantro_update_requires_request(ctx, pix_mp->pixelformat);
+>+	hantro_update_requires_hold_capture_buf(ctx, pix_mp->pixelformat);
+>
+> 	vpu_debug(0, "OUTPUT codec mode: %d\n", ctx->vpu_src_fmt->codec_mode);
+> 	vpu_debug(0, "fmt - w: %d, h: %d\n",
+>-- 
+>2.34.1
+>
