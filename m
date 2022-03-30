@@ -2,46 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A996C4167E
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:55:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66523C4321E
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:55:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241305AbiC3L5F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 07:57:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34672 "EHLO
+        id S1345105AbiC3L5U (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 07:57:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344347AbiC3Lw6 (ORCPT
+        with ESMTP id S1344412AbiC3LxI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:52:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61E38261308;
-        Wed, 30 Mar 2022 04:48:44 -0700 (PDT)
+        Wed, 30 Mar 2022 07:53:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 198652619B1;
+        Wed, 30 Mar 2022 04:48:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C225D615B7;
-        Wed, 30 Mar 2022 11:48:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F8F2C340F3;
-        Wed, 30 Mar 2022 11:48:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ADD4FB81C34;
+        Wed, 30 Mar 2022 11:48:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1416EC36AF8;
+        Wed, 30 Mar 2022 11:48:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648640916;
-        bh=1mzmburc3X+szuNAEo1tXUhYMeph1aGhucbEOTahC2s=;
+        s=k20201202; t=1648640928;
+        bh=hM7XmzpCz1LY2zUE0Z1Ob1vRypXKE20pNn9jFFw1gE0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MCaFdqWqHpx55IIGCibFaXQKVxehUIrT95PWcEwp180Q9Rvkzf4ZLHzRBDywLc3tg
-         UoZrNx7r8WrSG35Ww28wyDMs/+/2MbHVKdlJORe8R6NUicZI13NjcHvgpVFuN83nNC
-         gd3q1vQOnIjq1NKit86O1IfORQZIKt9xq0RWWsrgKDXvtpnq3Sn3228I+IiD62kBR1
-         UUZ7FL5hd0nZBlOBkxMu5TaHuAGV8vg2+5AoFGOeL6fy8quSHRs9QYjLmuasBgWRow
-         V7Gchq3I6A3XwCueWEv5xohF7A2XOv3AqsZD23a6Yw2MYnzYpSQp7d13N/H+gTORNm
-         wAgJL3+1XAJ8g==
+        b=C4Pfoj3r5zBHz7SEfLir8om9RKYAAK0JkR2/bz8Y/27ye7KGESqq4UsahJkhWdGYh
+         mLGDoEoaCfds7CudHszwmhpI0sDqMEq146Pi1g79LTRrxRBM2BG9YgkdcMMkx9iU30
+         qRWfPjn+IfGN0D8bUc8gmpPBoAuxOzDNW3pDtOYWqmlQqdedGLCgu2LpwU+T+oQpj9
+         MN2cS2qP7e8QHTbmrtZXdUXAvyMvU7qlwVP/GnEA6oA+7GlVPrC4U3Z5TekO8Fif9x
+         eCJ1hMBs9QrCKfdJr+RN1Qqr5S+XAKtElWjfA66T2SABkzVKxS6Dtj3kAkUN+Pz3d3
+         nItJfgYO3ao2g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Corentin Labbe <clabbe@baylibre.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, gregkh@linuxfoundation.org,
-        linux-media@vger.kernel.org, devel@driverdev.osuosl.org
-Subject: [PATCH AUTOSEL 5.16 02/59] media: staging: media: zoran: calculate the right buffer number for zoran_reap_stat_com
-Date:   Wed, 30 Mar 2022 07:47:34 -0400
-Message-Id: <20220330114831.1670235-2-sashal@kernel.org>
+Cc:     Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Rander Wang <rander.wang@intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.16 10/59] ASoC: SOF: Intel: hda: Remove link assignment limitation
+Date:   Wed, 30 Mar 2022 07:47:42 -0400
+Message-Id: <20220330114831.1670235-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330114831.1670235-1-sashal@kernel.org>
 References: <20220330114831.1670235-1-sashal@kernel.org>
@@ -53,48 +57,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corentin Labbe <clabbe@baylibre.com>
+From: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
 
-[ Upstream commit e3b86f4e558cea9eed71d894df2f19b10d60a207 ]
+[ Upstream commit 2ce0d008dcc59f9c01f43277b9f9743af7b01dad ]
 
-On the case tmp_dcim=1, the index of buffer is miscalculated.
-This generate a NULL pointer dereference later.
+The limitation to assign a link DMA channel for a BE iff the
+corresponding host DMA channel is assigned to a connected FE is only
+applicable if the PROCEN_FMT_QUIRK is set. So, remove it for platforms
+that do not enable the quirk.
 
-So let's fix the calcul and add a check to prevent this to reappear.
-
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Complements: a792bfc1c2bc ("ASoC: SOF: Intel: hda-stream: limit PROCEN workaround")
+Signed-off-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Rander Wang <rander.wang@intel.com>
+Reviewed-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+Reviewed-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Link: https://lore.kernel.org/r/20220128130017.28508-1-peter.ujfalusi@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/zoran/zoran_device.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ sound/soc/sof/intel/hda-dai.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/drivers/staging/media/zoran/zoran_device.c b/drivers/staging/media/zoran/zoran_device.c
-index 5b12a730a229..fb1f0465ca87 100644
---- a/drivers/staging/media/zoran/zoran_device.c
-+++ b/drivers/staging/media/zoran/zoran_device.c
-@@ -814,7 +814,7 @@ static void zoran_reap_stat_com(struct zoran *zr)
- 		if (zr->jpg_settings.tmp_dcm == 1)
- 			i = (zr->jpg_dma_tail - zr->jpg_err_shift) & BUZ_MASK_STAT_COM;
- 		else
--			i = ((zr->jpg_dma_tail - zr->jpg_err_shift) & 1) * 2 + 1;
-+			i = ((zr->jpg_dma_tail - zr->jpg_err_shift) & 1) * 2;
+diff --git a/sound/soc/sof/intel/hda-dai.c b/sound/soc/sof/intel/hda-dai.c
+index 76579383d290..1b7ba7f3e99b 100644
+--- a/sound/soc/sof/intel/hda-dai.c
++++ b/sound/soc/sof/intel/hda-dai.c
+@@ -62,6 +62,8 @@ static struct hdac_ext_stream *
+ {
+ 	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
+ 	struct sof_intel_hda_stream *hda_stream;
++	const struct sof_intel_dsp_desc *chip;
++	struct snd_sof_dev *sdev;
+ 	struct hdac_ext_stream *res = NULL;
+ 	struct hdac_stream *stream = NULL;
  
- 		stat_com = le32_to_cpu(zr->stat_com[i]);
- 		if ((stat_com & 1) == 0) {
-@@ -826,6 +826,11 @@ static void zoran_reap_stat_com(struct zoran *zr)
- 		size = (stat_com & GENMASK(22, 1)) >> 1;
+@@ -80,9 +82,20 @@ static struct hdac_ext_stream *
+ 			continue;
  
- 		buf = zr->inuse[i];
-+		if (!buf) {
-+			spin_unlock_irqrestore(&zr->queued_bufs_lock, flags);
-+			pci_err(zr->pci_dev, "No buffer at slot %d\n", i);
-+			return;
-+		}
- 		buf->vbuf.vb2_buf.timestamp = ktime_get_ns();
+ 		hda_stream = hstream_to_sof_hda_stream(hstream);
++		sdev = hda_stream->sdev;
++		chip = get_chip_info(sdev->pdata);
  
- 		if (zr->codec_mode == BUZ_MODE_MOTION_COMPRESS) {
+ 		/* check if link is available */
+ 		if (!hstream->link_locked) {
++			/*
++			 * choose the first available link for platforms that do not have the
++			 * PROCEN_FMT_QUIRK set.
++			 */
++			if (!(chip->quirks & SOF_INTEL_PROCEN_FMT_QUIRK)) {
++				res = hstream;
++				break;
++			}
++
+ 			if (stream->opened) {
+ 				/*
+ 				 * check if the stream tag matches the stream
 -- 
 2.34.1
 
