@@ -2,119 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79B71C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 19:14:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05A5BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 19:15:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350733AbiC3TQW (ORCPT
+        id S1350686AbiC3TQr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 15:16:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48318 "EHLO
+        Wed, 30 Mar 2022 15:16:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350699AbiC3TQJ (ORCPT
+        with ESMTP id S1348194AbiC3TQe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 15:16:09 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65FB73E0C7
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 12:14:20 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id lr4so35043413ejb.11
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 12:14:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NCSDRJRZlCX3e7uOeDLU6kERCIj4I7Er1tKnwqwYKMA=;
-        b=Rmu0hvbOX8eaSHKORfu191SNwV2QA2hqAtO5gsCaJUm2esBMjCRaCKSAbSwoaF+Hmw
-         dIwzPn0nPjLOzIOUpLTukUBXGqqYHQce7E7kGpF40ySsgsuyyBeZl7YXZSMcV3srcgre
-         DdQS2MWjhoUSVeNVricufO8tcpVtetPppOUWOrFscaDwoIhIwc32kknNESIMVGgTA0zs
-         tlaaulXQIQLV9Zk9pBCafMqtiuWX6tkumTdij8iejOB90Oed+ZefR5UANsJ7gYzEYwDN
-         BVw8Va2tT65rsA9kFZsle+OGfKg2/jbRcBJNatQ5MhNWbiDnH8MktPWpIeU/Fmny39mV
-         9LAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NCSDRJRZlCX3e7uOeDLU6kERCIj4I7Er1tKnwqwYKMA=;
-        b=VqL0InZU1mehm4H7vQJoYGVrezLVL9dvGDBuuDbG9/rmIGOh8okFsTv2WZ2tYhnKE5
-         i2XHkn4f2HFYF1q9nZa9I5ojyrSsx313tUC56ms/mCwIn6b/BhcmdQQtTD/9xC6KYcWi
-         JDb1Zo8Kgh7MPmqEhMU9EaDSLBG2G1G7AjQvlfMDwDT1dtHeY2NZ8I88+5s2BdFkg/bU
-         7CH+VHlv+rs0Eo8ggice7yXU2RRXNd2TD13LFYHUB2EVcoxjrsk5/SUwBr59bZ6zI5QQ
-         6q27ExSV372gWiDlbyM/458SR3EMczDxzLYjTB6YvG0F/Ctd9RhWAgSjYi6/5zFEVzXx
-         0EQg==
-X-Gm-Message-State: AOAM530M5+Ooit482CMTNOHlr5P9CZfR82UdqIifNPppDiOmt3Lb74lN
-        Kd3g/71QgVT51Iiv4d6EWKA=
-X-Google-Smtp-Source: ABdhPJyal9zlxaOI9M9P6dckapoFO3jQ2Nw/aHbPR+kqzTd8nXpGWQZsitAgb+8prWXHo8YAK+krcQ==
-X-Received: by 2002:a17:907:8688:b0:6d2:c19:e1a0 with SMTP id qa8-20020a170907868800b006d20c19e1a0mr1102572ejc.249.1648667658992;
-        Wed, 30 Mar 2022 12:14:18 -0700 (PDT)
-Received: from localhost.localdomain (host-95-249-145-232.retail.telecomitalia.it. [95.249.145.232])
-        by smtp.gmail.com with ESMTPSA id eg6-20020a056402288600b0041919c78082sm10257328edb.87.2022.03.30.12.14.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Mar 2022 12:14:17 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        ira.weiny@intel.com, outreachy@lists.linux.dev
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Subject: [PATCH] staging: vc04_services: Convert kmap() to kmap_local_page()
-Date:   Wed, 30 Mar 2022 21:14:14 +0200
-Message-Id: <20220330191414.23141-1-fmdefrancesco@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Wed, 30 Mar 2022 15:16:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 02DB739B84
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 12:14:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648667685;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=sQDyBNpGrMN7ywMTAlTALpF3WLkUS9v/wRG/zBzNFyU=;
+        b=XH4y0MIAElzyFn8ZvVS5Mw5h1falOin0AFLOq6DXyz5TWm2UMa0dZbOX7sd7yiXChVx8j0
+        GUcYnnuGZi8+2AHfbIvblR47heNe97HI5NuCoQ2Y//Htbibcnv0SC1pfNBsM7F+6KRdOer
+        JSo3PzcdhiQRyGf7oIS1mTpQPC5nRkI=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-589-_P0UcunzPlej2zvc1UgRTg-1; Wed, 30 Mar 2022 15:14:42 -0400
+X-MC-Unique: _P0UcunzPlej2zvc1UgRTg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C8AC03804505;
+        Wed, 30 Mar 2022 19:14:41 +0000 (UTC)
+Received: from pauld.bos.csb (dhcp-17-51.bos.redhat.com [10.18.17.51])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 5F77E400E10D;
+        Wed, 30 Mar 2022 19:14:41 +0000 (UTC)
+Date:   Wed, 30 Mar 2022 15:14:40 -0400
+From:   Phil Auld <pauld@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Chengming Zhou <zhouchengming@bytedance.com>, mingo@redhat.com,
+        juri.lelli@redhat.com, vincent.guittot@linaro.org,
+        dietmar.eggemann@arm.com, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com, linux-kernel@vger.kernel.org,
+        duanxiongchun@bytedance.com, songmuchun@bytedance.com,
+        Frederic Weisbecker <fweisbec@gmail.com>
+Subject: Re: [External] Re: [PATCH] sched/fair: fix broken bandwidth control
+ with nohz_full
+Message-ID: <20220330191439.GC17246@pauld.bos.csb>
+References: <20220328110751.39987-1-zhouchengming@bytedance.com>
+ <20220328132047.GD8939@worktop.programming.kicks-ass.net>
+ <c0465b27-328a-1288-fb50-d4c6321c8b4d@bytedance.com>
+ <YkHRmv/OcABIB0wP@hirez.programming.kicks-ass.net>
+ <6fc49cff-f8a1-8b09-5a25-a64e5d07d258@bytedance.com>
+ <YkHal1m3pnxGoQ1Y@hirez.programming.kicks-ass.net>
+ <20220328124454.08ab6126@gandalf.local.home>
+ <20220330182327.GO8939@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220330182327.GO8939@worktop.programming.kicks-ass.net>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The use of kmap() is being deprecated in favor of kmap_local_page()
-where it is feasible. In file interface/vchiq_arm/vchiq_arm.c,
-function free_pagelist() calls kmap() / kunmap() from two places.
+Hi Peter,
 
-With kmap_local_page(), the mapping is per thread, CPU local and not
-globally visible. Therefore, free_pagelist() is a function where the
-use of kmap_local_page() in place of kmap() is correctly suited.
+On Wed, Mar 30, 2022 at 08:23:27PM +0200 Peter Zijlstra wrote:
+> On Mon, Mar 28, 2022 at 12:44:54PM -0400, Steven Rostedt wrote:
+> > On Mon, 28 Mar 2022 17:56:07 +0200
+> > Peter Zijlstra <peterz@infradead.org> wrote:
+> > 
+> > > > echo $$ > test/cgroup.procs
+> > > > taskset -c 1 bash -c "while true; do let i++; done"  --> will be throttled  
+> > > 
+> > > Ofcourse.. I'm arguing that bandiwdth control and NOHZ_FULL are somewhat
+> > > mutually exclusive, use-case wise. So I really don't get why you'd want
+> > > them both.
+> > 
+> > Is it?
+> > 
+> > One use case I can see for having both is for having a deadline task that
+> > needs to get something done in a tight deadline. NOHZ_FULL means "do not
+> > interrupt this task when it is the top priority task on the CPU and is
+> > running in user space".
+> 
+> This is absolute batshit.. It means no such thing. We'll happily wake
+> another task to this CPU and re-enable the tick any instant.
+> 
+> Worse; the use-case at hand pertains to cfs bandwidth control, which
+> pretty much guarantees there *will* be an interrupt.
 
-Convert to kmap_local_page() but, instead of open coding it, use the
-memcpy_to_page() helper.
+The problem is (at least in some cases) that container orchestration userspace
+code allocates a whole CPU by setting quota == period.  Or 3 cpus as 3*period etc.
 
-Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
----
- .../vc04_services/interface/vchiq_arm/vchiq_arm.c   | 13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
+In cases where an isolated task is expected to run uninterrupted (only task in 
+the system affined to that cpu, nohz_full, nocbs etc) you can end up with it
+getting throttled even though it theoritically has enough bandwidth for the full
+cpu and therefore should never get throttled. 
 
-diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
-index f0bfacfdea80..efb1383b5218 100644
---- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
-+++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
-@@ -431,21 +431,18 @@ free_pagelist(struct vchiq_pagelist_info *pagelistinfo,
- 			if (head_bytes > actual)
- 				head_bytes = actual;
- 
--			memcpy((char *)kmap(pages[0]) +
-+			memcpy_to_page(pages[0],
- 				pagelist->offset,
- 				fragments,
- 				head_bytes);
--			kunmap(pages[0]);
- 		}
- 		if ((actual >= 0) && (head_bytes < actual) &&
--		    (tail_bytes != 0)) {
--			memcpy((char *)kmap(pages[num_pages - 1]) +
--				((pagelist->offset + actual) &
--				(PAGE_SIZE - 1) & ~(g_cache_line_size - 1)),
-+		    (tail_bytes != 0))
-+			memcpy_to_page(pages[num_pages - 1],
-+				(pagelist->offset + actual) &
-+				(PAGE_SIZE - 1) & ~(g_cache_line_size - 1),
- 				fragments + g_cache_line_size,
- 				tail_bytes);
--			kunmap(pages[num_pages - 1]);
--		}
- 
- 		down(&g_free_fragments_mutex);
- 		*(char **)fragments = g_free_fragments;
+There are radio network setups where the packet processing is isolated
+like this but the system as a whole is managed by container orchestration so 
+everything has cfs bandwidth quotas set.
+
+I don't think generally the bandwidth controls in these cases are used for 
+CPU sharing (quota < period). I agree that doesn't make much sense with NOHZ_FULL
+and won't work right. 
+
+It's doled out as full cpu(s) in these cases.
+
+Thats not a VM case so is likely different from the one that started this thread
+but I thought I should mention it.
+
+
+Cheers,
+Phil
+
+> 
+> > Why is it mutually exclusive to have a deadline task that does not want to
+> > be interrupted by timer interrupts?
+> 
+> This has absolutely nothing to do with deadline tasks, nada, noppes.
+> 
+> > Just because the biggest pushers of NOHZ_FULL is for those that are running
+> > RT tasks completely in user space and event want to fault if it ever goes
+> > into the kernel, doesn't mean that's the only use case.
+> 
+> Because there's costs associated with the whole thing. system entry/exit
+> get far more expensive. It just doesn't make much sense to use NOHZ_FULL
+> if you're not absoultely limiting system entry.
+> 
+> > Chengming brought up VMs. That's a case to want to control the bandwidth,
+> > but also not interrupt them with timer interrupts when they are running as
+> > the top priority task on a CPU.
+> 
+> It's CFS, there is nothing top priority about that.
+> 
+
 -- 
-2.34.1
 
