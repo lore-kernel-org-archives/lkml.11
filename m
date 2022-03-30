@@ -2,89 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8084C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 02:00:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B7A4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 02:00:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241805AbiC3CBs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 22:01:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42090 "EHLO
+        id S241876AbiC3CB6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 22:01:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241785AbiC3CBo (ORCPT
+        with ESMTP id S241844AbiC3CBz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 22:01:44 -0400
-Received: from mail.meizu.com (edge05.meizu.com [157.122.146.251])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DC7D6D19B;
-        Tue, 29 Mar 2022 18:59:58 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail12.meizu.com
- (172.16.1.108) with Microsoft SMTP Server (TLS) id 14.3.487.0; Wed, 30 Mar
- 2022 09:59:58 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Wed, 30 Mar
- 2022 09:59:56 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "Martin KaFai Lau" <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-CC:     Haowen Bai <baihaowen@meizu.com>,
-        <linux-kselftest@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH V2] selftests/bpf: Fix warning comparing pointer to 0
-Date:   Wed, 30 Mar 2022 09:59:48 +0800
-Message-ID: <1648605588-19269-1-git-send-email-baihaowen@meizu.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <29503ac1-69ab-a0b7-53bc-5a7522baa289@linuxfoundation.org>
-References: <29503ac1-69ab-a0b7-53bc-5a7522baa289@linuxfoundation.org>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-125.meizu.com (172.16.1.125) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
+        Tue, 29 Mar 2022 22:01:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B3F77C177;
+        Tue, 29 Mar 2022 19:00:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5957F61378;
+        Wed, 30 Mar 2022 02:00:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2C6D2C36AE3;
+        Wed, 30 Mar 2022 02:00:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648605607;
+        bh=Ntzo4/s2EN4rXPDFvvBJ5pTW6NgqDcLBkvUMY5709aw=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=s5DpdXH4xVeIYAY5L8ahIxje4/RWLilUDFIyUTX58HOXppPTRtksCc8w4N4cHfO5R
+         LCmnZUftSeyUdLOSmJZiI1ZgMQ2MbJyT2/52QSLEXSAHPaejwW/CGEOP2/U7XQc0fO
+         UhXOgTFmf97z1dWPEF/l6ACXtU0OI83QFyGEh8k9hiBC0PfUTm3uH3zhqoaQF463+r
+         QAIxYYP/OJBzTroVRjIvtv+MBDhIh8tE3F90CsxCzR1pR538F09QiOmQ6ZD0HyHbep
+         2t1FX6TlSgR7RNc+CUxyMPUwh21+3boMmGqnrILfZXbaPXHTkE1vF5guAAOa8MVq1c
+         P7yWqc5ReB+AQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1A867EAC081;
+        Wed, 30 Mar 2022 02:00:07 +0000 (UTC)
+Subject: Re: [GIT PULL] Please pull NFS client changes for Linux 5.18
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <7b0576d8d49bbd358767620218c1966e8fe9a883.camel@hammerspace.com>
+References: <7b0576d8d49bbd358767620218c1966e8fe9a883.camel@hammerspace.com>
+X-PR-Tracked-List-Id: <linux-nfs.vger.kernel.org>
+X-PR-Tracked-Message-Id: <7b0576d8d49bbd358767620218c1966e8fe9a883.camel@hammerspace.com>
+X-PR-Tracked-Remote: git://git.linux-nfs.org/projects/trondmy/linux-nfs.git tags/nfs-for-5.18-1
+X-PR-Tracked-Commit-Id: 7c9d845f0612e5bcd23456a2ec43be8ac43458f1
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 965181d7ef7e1a863477536dc328c23a7ebc8a1d
+Message-Id: <164860560708.9387.14167102034464992472.pr-tracker-bot@kernel.org>
+Date:   Wed, 30 Mar 2022 02:00:07 +0000
+To:     Trond Myklebust <trondmy@hammerspace.com>
+Cc:     "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>,
+        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Avoid pointer type value compared with 0 to make code clear.
+The pull request you sent on Tue, 29 Mar 2022 19:36:00 +0000:
 
-reported by coccicheck:
-tools/testing/selftests/bpf/progs/map_ptr_kern.c:370:21-22:
-WARNING comparing pointer to 0
-tools/testing/selftests/bpf/progs/map_ptr_kern.c:397:21-22:
-WARNING comparing pointer to 0
+> git://git.linux-nfs.org/projects/trondmy/linux-nfs.git tags/nfs-for-5.18-1
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
----
-V1->V2: include the error/warn message.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/965181d7ef7e1a863477536dc328c23a7ebc8a1d
 
- tools/testing/selftests/bpf/progs/map_ptr_kern.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Thank you!
 
-diff --git a/tools/testing/selftests/bpf/progs/map_ptr_kern.c b/tools/testing/selftests/bpf/progs/map_ptr_kern.c
-index b64df94..db388f5 100644
---- a/tools/testing/selftests/bpf/progs/map_ptr_kern.c
-+++ b/tools/testing/selftests/bpf/progs/map_ptr_kern.c
-@@ -367,7 +367,7 @@ static inline int check_array_of_maps(void)
- 
- 	VERIFY(check_default(&array_of_maps->map, map));
- 	inner_map = bpf_map_lookup_elem(array_of_maps, &key);
--	VERIFY(inner_map != 0);
-+	VERIFY(inner_map != NULL);
- 	VERIFY(inner_map->map.max_entries == INNER_MAX_ENTRIES);
- 
- 	return 1;
-@@ -394,7 +394,7 @@ static inline int check_hash_of_maps(void)
- 
- 	VERIFY(check_default(&hash_of_maps->map, map));
- 	inner_map = bpf_map_lookup_elem(hash_of_maps, &key);
--	VERIFY(inner_map != 0);
-+	VERIFY(inner_map != NULL);
- 	VERIFY(inner_map->map.max_entries == INNER_MAX_ENTRIES);
- 
- 	return 1;
 -- 
-2.7.4
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
