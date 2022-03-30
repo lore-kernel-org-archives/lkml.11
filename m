@@ -2,68 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EBC0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:39:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A16CEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:43:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242882AbiC3Gli (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 02:41:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35622 "EHLO
+        id S242820AbiC3Gpa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 02:45:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239182AbiC3GlA (ORCPT
+        with ESMTP id S242806AbiC3GpZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 02:41:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0EA15714B
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 23:39:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6FD9BB81B79
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 06:39:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A90D4C340EC;
-        Wed, 30 Mar 2022 06:39:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648622351;
-        bh=jOA5DTcR4ysQBXgXzVRHkctJEYYohSxahVIcYzS0xY0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ODkquS471G0QSSZvRrexAs3p52GBDXyac5o5if+gzWhXA5rZTbFslEC0XG4milNZi
-         QhNpOExFcX+s1wMiLh6QziNjYjzGJaA8auysH3KpHIF95hI0e1V1qEAlbOsqbXhfJa
-         6i3Qi+XUK3ufvzn0CrYDEvBC0decfajTp9JSpdOQ=
-Date:   Wed, 30 Mar 2022 08:39:08 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Haowen Bai <baihaowen@meizu.com>
-Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: r8188eu: Fix misspelling in comment
-Message-ID: <YkP7DGP+nbo2VJ+Z@kroah.com>
-References: <1648621413-1263-1-git-send-email-baihaowen@meizu.com>
+        Wed, 30 Mar 2022 02:45:25 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8857D6C92D
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 23:43:38 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id 5so34098242lfp.1
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 23:43:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FhApYI2LhMGRpUg9dbvqs6hE/OBEtlG9wuXkddgwS8s=;
+        b=ENqimhI30I1agwzDUDYPRCDpYl5zc0ePCljA3xasBaqRjZvYwvemAE+pwSf26IyNBv
+         r0cr09lcgPFqgoYQUgAHxi55Wvl8uj7N0yl8LZ/1gsfWMOgPVKr9SvSiz61x3x5impXj
+         R3ffuT0McnEAalObMBRL3KHFYIauMEFYx2Sr4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FhApYI2LhMGRpUg9dbvqs6hE/OBEtlG9wuXkddgwS8s=;
+        b=EBf0wCR8c+3jLdlViAAxL7/pOnzHqhaQp22r4o165rtuFfrX9W01oUhu6csr0T4fXb
+         Uq+3cKGExCN6Kk41hGZ039BoHfzZvJbh/UEBLsH5yPzU17sc9YfRqKjvta2WyoGFfjGx
+         lB37AvK5z4UAbrxwNA4JtJ28xYOKiMJ4p6CGdJIEW+gwWBUo6WigzgFw/tegugINw63v
+         G60v3ovS30KGYO7KamrtVZbs6EfiOeost7TxkJ9gJApprWXSgXlz/bw9zwLXlZZTricL
+         iEar3C7XafvjUGDb++COBVdMWIDLj/BTzRAfn3+SXagxqMw7hGgABtoSsTxIZ0H7NVgG
+         7RTA==
+X-Gm-Message-State: AOAM531w4M44CO123KLXIl38UNcAcmGSuFpLCzHYuaAt7J63oYCaZe9f
+        oSaC7G6jBnt844mUkkYXDtF3jllsc2zI5ofr
+X-Google-Smtp-Source: ABdhPJwQfmVvyesHfATWL4OUnIjS2Bn/f0oP1eRmJAPXS9vFC3guYal2CIQl69ZgvzJbWZPqKu2X1Q==
+X-Received: by 2002:a05:6512:3f0a:b0:44a:e3f:2862 with SMTP id y10-20020a0565123f0a00b0044a0e3f2862mr5724942lfa.397.1648622613415;
+        Tue, 29 Mar 2022 23:43:33 -0700 (PDT)
+Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com. [209.85.167.42])
+        by smtp.gmail.com with ESMTPSA id c21-20020a056512239500b0044aa21dadeasm742821lfv.60.2022.03.29.23.43.32
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 29 Mar 2022 23:43:32 -0700 (PDT)
+Received: by mail-lf1-f42.google.com with SMTP id z12so20303837lfu.10
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 23:43:32 -0700 (PDT)
+X-Received: by 2002:a05:6512:3055:b0:44a:3914:6603 with SMTP id
+ b21-20020a056512305500b0044a39146603mr5682187lfb.435.1648622612260; Tue, 29
+ Mar 2022 23:43:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1648621413-1263-1-git-send-email-baihaowen@meizu.com>
+References: <20220326114009.1690-1-aissur0002@gmail.com> <2698031.BEx9A2HvPv@fedor-zhuzhzhalka67>
+ <CAHk-=wh2Ao+OgnWSxHsJodXiLwtaUndXSkuhh9yKnA3iXyBLEA@mail.gmail.com>
+ <4705670.GXAFRqVoOG@fedor-zhuzhzhalka67> <CAHk-=wiKhn+VsvK8CiNbC27+f+GsPWvxMVbf7QET+7PQVPadwA@mail.gmail.com>
+ <CAHk-=wjRwwUywAa9TzQUxhqNrQzZJQZvwn1JSET3h=U+3xi8Pg@mail.gmail.com>
+ <YkPo0N/CVHFDlB6v@zx2c4.com> <CAHk-=wgPwyQTnSF2s7WSb+KnGn4FTM58NJ+-v-561W7xnDk2OA@mail.gmail.com>
+ <YkP2hKKeMeFrdpBW@zx2c4.com> <CAHk-=wgtH+Nq+LSCdjS4v2=XOnL3wtO2FA5wvWu5n5imCsFFCA@mail.gmail.com>
+In-Reply-To: <CAHk-=wgtH+Nq+LSCdjS4v2=XOnL3wtO2FA5wvWu5n5imCsFFCA@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 29 Mar 2022 23:43:16 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjDKYj6VrRyzMDPB593o3oLf2GE9sMDuxMFB3smakbEHQ@mail.gmail.com>
+Message-ID: <CAHk-=wjDKYj6VrRyzMDPB593o3oLf2GE9sMDuxMFB3smakbEHQ@mail.gmail.com>
+Subject: Re: [PATCH 4/4] file: Fix file descriptor leak in copy_fd_bitmaps()
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Fedor Pchelkin <aissur0002@gmail.com>,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        Eric Biggers <ebiggers@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 02:23:33PM +0800, Haowen Bai wrote:
-> This patch fixes some spelling typo in error message reported by checkpatch.pl
-> 
-> WARNING: 'cacluated' may be misspelled - perhaps 'calculated'?
-> WARNING: 'cacluated' may be misspelled - perhaps 'calculated'?
-> WARNING: 'writting' may be misspelled - perhaps 'writing'?
-> WARNING: 'defualt' may be misspelled - perhaps 'default'?
-> WARNING: 'Caculate' may be misspelled - perhaps 'Calculate'?
-> WARNING: 'accordign' may be misspelled - perhaps 'according'?
-> WARNING: 'regster' may be misspelled - perhaps 'register'?
-> WARNING: 'Wirte' may be misspelled - perhaps 'Write'?
-> WARNING: 'Tranceiver' may be misspelled - perhaps 'Transceiver'?
-> WARNING: 'Tranceiver' may be misspelled - perhaps 'Transceiver'?
-> WARNING: 'Tranceiver' may be misspelled - perhaps 'Transceiver'?
-> WARNING: 'Tranceiver' may be misspelled - perhaps 'Transceiver'?
+On Tue, Mar 29, 2022 at 11:28 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> Ok, I'll apply that asap.
 
-Please break this up into one-patch-per-misspelled-word.
+Ok, pushed out. This time with no last-minute patch cleanup.
 
-thanks,
-
-greg k-h
+              Linus
