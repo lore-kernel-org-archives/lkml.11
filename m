@@ -2,86 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3AE9C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 10:18:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D8D0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 10:19:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245293AbiC3KUf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 06:20:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60334 "EHLO
+        id S235682AbiC3KUz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 06:20:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245283AbiC3KU0 (ORCPT
+        with ESMTP id S245281AbiC3KUw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 06:20:26 -0400
-Received: from smtpout1.mo528.mail-out.ovh.net (smtpout1.mo528.mail-out.ovh.net [46.105.34.251])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FDC81AE63D;
-        Wed, 30 Mar 2022 03:18:33 -0700 (PDT)
-Received: from pro2.mail.ovh.net (unknown [10.109.156.52])
-        by mo528.mail-out.ovh.net (Postfix) with ESMTPS id CACD7F291B0E;
-        Wed, 30 Mar 2022 12:08:49 +0200 (CEST)
-Received: from localhost.localdomain (88.125.132.78) by DAG1EX2.emp2.local
- (172.16.2.2) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 30 Mar
- 2022 12:08:48 +0200
-From:   Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-To:     <wim@linux-watchdog.org>, <linux@roeck-us.net>,
-        <geert+renesas@glider.be>, <linux-watchdog@vger.kernel.org>
-CC:     <linux-renesas-soc@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Jean-Jacques Hiblot <jjhiblot@traphandler.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v4 1/2] dt-bindings: watchdog: renesas,wdt: Add support for RZ/N1
-Date:   Wed, 30 Mar 2022 12:08:28 +0200
-Message-ID: <20220330100829.1000679-2-jjhiblot@traphandler.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220330100829.1000679-1-jjhiblot@traphandler.com>
-References: <20220330100829.1000679-1-jjhiblot@traphandler.com>
+        Wed, 30 Mar 2022 06:20:52 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A2FA1B9FF2
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 03:19:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648635546; x=1680171546;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=VqIMoe4rh2AjjLMYqjy6/8H3f5VE/vhYCDYIcqeiaJE=;
+  b=MKq0B/J6w6hNNedFaYSg4P8+H6+ctb6aG0/k0A1viAX7SXdqVbWauyos
+   E7lazEArAsJzbQU/G/dwkHOG8969AjETRuzvf/fkfdODuiP27Jq8Rd8pV
+   gmJ6aXooSe53YAcWln2Tvc2yB1SJf3BNCtoL7QjGJFcBXalllyGxYmdwX
+   CCPf5wEa17569EcUwm2ZiiwAYScLQ2x74QJAKHILLbFJlAaaFyx7XBsYp
+   sqhmfAUGNJ7a6a1JcTAmHcUofp32GX2ArKzVH/UY1DAIQqxa5V5ykqZYt
+   aab7/xBh1K5kMf+AARud3kXjiiP35tILnn6xHsKwdHJAZ77t0LAB2jQuq
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="259692265"
+X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
+   d="scan'208";a="259692265"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 03:19:06 -0700
+X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
+   d="scan'208";a="521838632"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 03:19:02 -0700
+Received: by lahna (sSMTP sendmail emulation); Wed, 30 Mar 2022 13:18:59 +0300
+Date:   Wed, 30 Mar 2022 13:18:59 +0300
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Brad Campbell <lists2009@fnarfbargle.com>
+Cc:     linux-kernel@vger.kernel.org
+Subject: Re: Apple Thunderbolt Display chaining
+Message-ID: <YkQuk7E8AbSEiw59@lahna>
+References: <acbb3a86-ea15-47ec-90fa-72fbd94921b1@fnarfbargle.com>
+ <YkLt+/kJ54fwCYgy@lahna>
+ <0249a7da-9237-806b-b267-7911ad40f4a0@fnarfbargle.com>
+ <YkMC4XnfIZix6kBn@lahna>
+ <b8894440-41b1-edef-dd2d-5bafabc6fb62@fnarfbargle.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [88.125.132.78]
-X-ClientProxiedBy: DAG3EX1.emp2.local (172.16.2.21) To DAG1EX2.emp2.local
- (172.16.2.2)
-X-Ovh-Tracer-Id: 3184326414057748945
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudeivddgvdehucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffojghfggfgtghisehtkeertdertddtnecuhfhrohhmpeflvggrnhdqlfgrtghquhgvshcujfhisghlohhtuceojhhjhhhisghlohhtsehtrhgrphhhrghnughlvghrrdgtohhmqeenucggtffrrghtthgvrhhnpeefueeggfeiuedthfdvgeevtedvueevgfevgeelieelveevheefjeejfffguddukeenucfkpheptddrtddrtddrtddpkeekrdduvdehrddufedvrdejkeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhrohdvrdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepjhhjhhhisghlohhtsehtrhgrphhhrghnughlvghrrdgtohhmpdhnsggprhgtphhtthhopedupdhrtghpthhtoheprhhosghhsehkvghrnhgvlhdrohhrgh
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b8894440-41b1-edef-dd2d-5bafabc6fb62@fnarfbargle.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Describe the WDT hardware in the RZ/N1 series.
+Hi,
 
-Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Acked-by: Rob Herring <robh@kernel.org>
----
- Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml | 6 ++++++
- 1 file changed, 6 insertions(+)
+On Tue, Mar 29, 2022 at 10:06:35PM +0800, Brad Campbell wrote:
+> > Indeed, I did not add this to the "discovery" path yet.
+> > 
+> > I wonder what happens if you change this:
+> > 
+> > +       tunnel = tb_tunnel_alloc_dp(tb, in, out, available_up, available_down,
+> > +                                   first ? 0 : 1);
+> > 
+> > to this in your tree:
+> > 
+> > +       tunnel = tb_tunnel_alloc_dp(tb, in, out, available_up, available_down,
+> > +                                   first ? 1 : 0);
+> > 
+> 
+> Here's where it gets all "Apple..y". On the iMac this does the job no matter which
+> port the chain is plugged into. Boots and displays correctly first time, every time.
+> 
+> It turns out on the laptop, one port works and the other doesn't. Changing the order
+> simply changes which port works. So I assume the EFI sets up the first display using
+> the first lane if it's in the first port, and the second if it's in the second.
+> 
+> That means had I managed to perform the first test in the "other port" consistently,
+> it would have worked there also.
 
-diff --git a/Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml b/Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml
-index 91a98ccd4226..b453af2dee3b 100644
---- a/Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml
-+++ b/Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml
-@@ -19,6 +19,11 @@ properties:
-               - renesas,r7s9210-wdt      # RZ/A2
-           - const: renesas,rza-wdt       # RZ/A
+Can you try the below patch too? I hard-code the lane based on the
+DP adapter number in TBT gen1.
+
+Let's first figure out proper solution to this issue and then look at
+the other one.
+
+diff --git a/drivers/thunderbolt/tunnel.c b/drivers/thunderbolt/tunnel.c
+index a473cc7d9a8d..97d36a7bb527 100644
+--- a/drivers/thunderbolt/tunnel.c
++++ b/drivers/thunderbolt/tunnel.c
+@@ -865,6 +865,7 @@ struct tb_tunnel *tb_tunnel_alloc_dp(struct tb *tb, struct tb_port *in,
+ 	struct tb_tunnel *tunnel;
+ 	struct tb_path **paths;
+ 	struct tb_path *path;
++	int link_nr;
  
-+      - items:
-+          - enum:
-+              - renesas,r9a06g032-wdt    # RZ/N1D
-+          - const: renesas,rzn1-wdt      # RZ/N1
+ 	if (WARN_ON(!in->cap_adap || !out->cap_adap))
+ 		return NULL;
+@@ -883,22 +884,32 @@ struct tb_tunnel *tb_tunnel_alloc_dp(struct tb *tb, struct tb_port *in,
+ 
+ 	paths = tunnel->paths;
+ 
++	/*
++	 * Hard code the lane for both DP IN adapters in first
++	 * generation hardware. This should follow what the Apple boot
++	 * firmware does.
++	 */
++	if (in->sw->generation == 1)
++		link_nr = in->port == 11 ? 1 : 0;
++	else
++		link_nr = 0;
 +
-       - items:
-           - enum:
-               - renesas,r9a07g044-wdt    # RZ/G2{L,LC}
-@@ -89,6 +94,7 @@ allOf:
-             contains:
-               enum:
-                 - renesas,rza-wdt
-+                - renesas,rzn1-wdt
-     then:
-       required:
-         - power-domains
--- 
-2.25.1
-
+ 	path = tb_path_alloc(tb, in, TB_DP_VIDEO_HOPID, out, TB_DP_VIDEO_HOPID,
+-			     1, "Video");
++			     link_nr, "Video");
+ 	if (!path)
+ 		goto err_free;
+ 	tb_dp_init_video_path(path);
+ 	paths[TB_DP_VIDEO_PATH_OUT] = path;
+ 
+ 	path = tb_path_alloc(tb, in, TB_DP_AUX_TX_HOPID, out,
+-			     TB_DP_AUX_TX_HOPID, 1, "AUX TX");
++			     TB_DP_AUX_TX_HOPID, link_nr, "AUX TX");
+ 	if (!path)
+ 		goto err_free;
+ 	tb_dp_init_aux_path(path);
+ 	paths[TB_DP_AUX_PATH_OUT] = path;
+ 
+ 	path = tb_path_alloc(tb, out, TB_DP_AUX_RX_HOPID, in,
+-			     TB_DP_AUX_RX_HOPID, 1, "AUX RX");
++			     TB_DP_AUX_RX_HOPID, link_nr, "AUX RX");
+ 	if (!path)
+ 		goto err_free;
+ 	tb_dp_init_aux_path(path);
