@@ -2,148 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D092C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 16:04:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19928C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 16:05:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348589AbiC3QG2 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 12:06:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53810 "EHLO
+        id S237704AbiC3QGr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 12:06:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348621AbiC3QGW (ORCPT
+        with ESMTP id S1348654AbiC3QGh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 12:06:22 -0400
-Received: from bagheera.iewc.co.za (bagheera.iewc.co.za [IPv6:2c0f:f720:0:3:be30:5bff:feec:6f99])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5C7023D77F;
-        Wed, 30 Mar 2022 09:04:33 -0700 (PDT)
-Received: from [165.16.203.119] (helo=tauri.local.uls.co.za)
-        by bagheera.iewc.co.za with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <jaco@uls.co.za>)
-        id 1nZaYE-0007la-NE; Wed, 30 Mar 2022 17:48:02 +0200
-Received: from [192.168.42.207]
-        by tauri.local.uls.co.za with esmtp (Exim 4.94.2)
-        (envelope-from <jaco@uls.co.za>)
-        id 1nZZoV-00018E-Pe; Wed, 30 Mar 2022 17:00:47 +0200
-Message-ID: <e0bc0c7f-5e47-ddb7-8e24-ad5fb750e876@uls.co.za>
-Date:   Wed, 30 Mar 2022 17:00:47 +0200
+        Wed, 30 Mar 2022 12:06:37 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C355238D18
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 09:04:51 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id p4-20020a17090ad30400b001c7ca87c05bso255594pju.1
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 09:04:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4szRwWNDvZ7XOU+Kmwti8vyES5EGiVgA3+mW2sFThKE=;
+        b=eLsot/bdo/qciErnhmm6+zfsN+rYVH36ltRx5tiW0+4htGYOYqrzreVAzgh0AWBGYQ
+         IKGw1YxmkNOWs67XoLHeuAK/Sd4CtWKwgkUqFCP28l/OeoYZ2Cw58owdUH61o9P86FmB
+         PruF+h7PwadsIiKJ1ro1vak+3ThGapcfw5xrk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4szRwWNDvZ7XOU+Kmwti8vyES5EGiVgA3+mW2sFThKE=;
+        b=hcOuX+CSTVtCwUDSRV5LSyW7ORN0OLivmueoAGOula/g3ZZprVxqkfxwYtAGcJu1he
+         +9eq2LpMNjqIKgqJBCjZtiQsbO2/5C7LKX58JWocsdEtH02FQjfccV2BTygnRBT9J9QM
+         ASJVvooutkqQ/SoqF29RchRcBiOwFy5Gc40fcHrbF5UGyVFVOBq2zlbAuXK/x95CEgA/
+         x8OlXUCNhbs/doXHj5JH+5sPH2YtlR6WyQqXClUV3fwoN2uc74BF1+kRiiyuVemspMrW
+         hLejQfbZ8fobEGZPetkG4QFSnlB1BPFCqX6NcTHjG45DXACKBuEumBuaL5UJYH4txfvk
+         X+uw==
+X-Gm-Message-State: AOAM530vpHsNeBIKwIopf+Ci/M+BM72dSXfh+o9WiLOhDwAh01f8f9wN
+        YNYRamS9+SE/wYEiqMeegYb2h0iEZRTqkQ==
+X-Google-Smtp-Source: ABdhPJz4XIzGXVOi8Xi15BEXtGOe7kw6pLeyZ+J75o/J6LblAlRFeoE/gg5n6XnfmlWXYKi/vsKYkQ==
+X-Received: by 2002:a17:903:41d0:b0:154:de5:a240 with SMTP id u16-20020a17090341d000b001540de5a240mr350568ple.32.1648656291021;
+        Wed, 30 Mar 2022 09:04:51 -0700 (PDT)
+Received: from localhost ([2620:15c:202:201:d50d:daac:acf3:cda6])
+        by smtp.gmail.com with UTF8SMTPSA id f16-20020a056a00229000b004fabe756ba6sm26268854pfe.54.2022.03.30.09.04.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Mar 2022 09:04:50 -0700 (PDT)
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     Douglas Anderson <dianders@chromium.org>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Matthias Kaehlcke <mka@chromium.org>
+Subject: [PATCH] drm/panel-edp: Fix AUO B133UAN01 panel id
+Date:   Wed, 30 Mar 2022 09:04:44 -0700
+Message-Id: <20220330090435.1.Id1522250dd07a6b574c1cc7826023fc6acd141b4@changeid>
+X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: linux 5.17.1 disregarding ACK values resulting in stalled TCP
- connections
-Content-Language: en-GB
-To:     Neal Cardwell <ncardwell@google.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Yuchung Cheng <ycheng@google.com>
-References: <E1nZMdl-0006nG-0J@plastiekpoot>
- <CADVnQyn=A9EuTwxe-Bd9qgD24PLQ02YQy0_b7YWZj4_rqhWRVA@mail.gmail.com>
- <eaf54cab-f852-1499-95e2-958af8be7085@uls.co.za>
- <CANn89iKHbmVYoBdo2pCQWTzB4eFBjqAMdFbqL5EKSFqgg3uAJQ@mail.gmail.com>
- <10c1e561-8f01-784f-c4f4-a7c551de0644@uls.co.za>
- <CADVnQynf8f7SUtZ8iQi-fACYLpAyLqDKQVYKN-mkEgVtFUTVXQ@mail.gmail.com>
-From:   Jaco Kroon <jaco@uls.co.za>
-Organization: Ultimate Linux Solutions (Pty) Ltd
-In-Reply-To: <CADVnQynf8f7SUtZ8iQi-fACYLpAyLqDKQVYKN-mkEgVtFUTVXQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Two digits are swapped in the AUO B133UAN01 panel id (0x8495 instead
+of 0x8594). This went initially unnoticed because the panel is still
+detected, though it is set up with a conservative default timing. Fix
+the digit swap.
 
-On 2022/03/30 15:56, Neal Cardwell wrote:
-> On Wed, Mar 30, 2022 at 2:22 AM Jaco Kroon <jaco@uls.co.za> wrote:
->> Hi Eric,
->>
->> On 2022/03/30 05:48, Eric Dumazet wrote:
->>> On Tue, Mar 29, 2022 at 7:58 PM Jaco Kroon <jaco@uls.co.za> wrote:
->>>
->>> I do not think this commit is related to the issue you have.
->>>
->>> I guess you could try a revert ?
->>>
->>> Then, if you think old linux versions were ok, start a bisection ?
->> That'll be interesting, will see if I can reproduce on a non-production
->> host.
->>> Thank you.
->>>
->>> (I do not see why a successful TFO would lead to a freeze after ~70 KB
->>> of data has been sent)
->> I do actually agree with this in that it makes no sense, but disabling
->> TFO definitely resolved the issue for us.
->>
->> Kind Regards,
->> Jaco
-> Thanks for the pcap trace! That's a pretty strange trace. I agree with
-> Eric's theory that this looks like one or more bugs in a firewall,
-> middlebox, or netfilter rule. From the trace it looks like the buggy
-> component is sometimes dropping packets and sometimes corrupting them
-> so that the client's TCP stack ignores them.
-The capture was taken on the client.  So the only firewall there is
-iptables, and I redirected all -j DROP statements to a L_DROP chain
-which did a -j LOG prior to -j DROP - didn't pick up any drops here.
->
-> Interestingly, in that trace the client SYN has a TFO option and
-> cookie, but no data in the SYN.
+Fixes: ec57376fba5a ("drm/panel-edp: Add AUO B133UAN01")
+Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+---
 
-So this allows the SMTP server which in the conversation speaks first to
-identify itself to respond with data in the SYN (not sure that was
-actually happening but if I recall I did see it send data prior to
-receiving the final ACK on the handshake.
+ drivers/gpu/drm/panel/panel-edp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->
-> The last packet that looks sane/normal is the ACK from the SMTP server
-> that looks like:
->
-> 00:00:00.000010 IP6 2a00:1450:4013:c16::1a.25 >
-> 2c0f:f720:0:3:d6ae:52ff:feb8:f27b.48590: . 6260:6260(0) ack 66263 win
-> 774 <nop,nop,TS val 1206544341 ecr 331189186>
->
-> That's the first ACK that crosses past 2^16. Maybe that is a
-> coincidence, or maybe not. Perhaps the buggy firewall/middlebox/etc is
-
-I believe it should be because we literally had this on every single
-connection going out to Google's SMTP ... probably 1/100 connections
-managed to deliver an email over the connection.  Then again ... 64KB
-isn't that much ...
-
-When you state sane/normal, do you mean there is fault with the other
-frames that could not be explained by packet loss in one or both of the
-directions?
-
-> confused by the TFO option, corrupts its state, and thereafter behaves
-> incorrectly past the first 64 KBytes of data from the client.
-
-Only firewalls we've got are netfilter based, and these packets all
-passed through the dedicated firewalls at least by the time they reach
-here.  No middleboxes on our end, and if this was Google's side there
-would be crazy noise be heard, not just me.  I think the trigger is
-packet loss between us (as indicated we know they have link congestion
-issues in JHB area, it took us the better part of two weeks to get the
-first line tech on their side to just query the internal teams and
-probably another week to get the response acknowledging this -
-mybroadband.co.za has an article about other local ISPs also complaining).
-
->
-> In addition to checking for checksum failures, mentioned by Eric, you
-> could look for PAWS failures, something like:
->
->   nstat -az | egrep  -i 'TcpInCsumError|PAWS'
-
-TcpInCsumErrors                 0                  0.0
-TcpExtPAWSActive                0                  0.0
-TcpExtPAWSEstab                 90092              0.0
-TcpExtTCPACKSkippedPAWS         81317              0.0
-
-Not sure what these mean, but i should probably investigate, the latter
-two are definitely incrementing.
-
-Appreciate the feedback and for looking at the traces.
-
-Kind Regards,
-Jaco
+diff --git a/drivers/gpu/drm/panel/panel-edp.c b/drivers/gpu/drm/panel/panel-edp.c
+index db4eea1d7f67..1732b4f56e38 100644
+--- a/drivers/gpu/drm/panel/panel-edp.c
++++ b/drivers/gpu/drm/panel/panel-edp.c
+@@ -1847,7 +1847,7 @@ static const struct panel_delay delay_100_500_e200 = {
+ static const struct edp_panel_entry edp_panels[] = {
+ 	EDP_PANEL_ENTRY('A', 'U', 'O', 0x405c, &auo_b116xak01.delay, "B116XAK01"),
+ 	EDP_PANEL_ENTRY('A', 'U', 'O', 0x615c, &delay_200_500_e50, "B116XAN06.1"),
+-	EDP_PANEL_ENTRY('A', 'U', 'O', 0x8495, &delay_200_500_e50, "B133UAN01.0"),
++	EDP_PANEL_ENTRY('A', 'U', 'O', 0x8594, &delay_200_500_e50, "B133UAN01.0"),
+ 
+ 	EDP_PANEL_ENTRY('B', 'O', 'E', 0x0786, &delay_200_500_p2e80, "NV116WHM-T01"),
+ 	EDP_PANEL_ENTRY('B', 'O', 'E', 0x07d1, &boe_nv133fhm_n61.delay, "NV133FHM-N61"),
+-- 
+2.35.1.1094.g7c7d902a7c-goog
 
