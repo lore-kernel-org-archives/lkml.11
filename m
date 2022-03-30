@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC7AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:10:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDBA4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:10:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344615AbiC3MM1 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:12:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35754 "EHLO
+        id S238142AbiC3MMc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 08:12:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345399AbiC3Ly1 (ORCPT
+        with ESMTP id S1345441AbiC3Lya (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:54:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B2B0281814;
-        Wed, 30 Mar 2022 04:51:04 -0700 (PDT)
+        Wed, 30 Mar 2022 07:54:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FAC9282B2F;
+        Wed, 30 Mar 2022 04:51:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 65E8D61704;
-        Wed, 30 Mar 2022 11:51:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F3EAC34112;
-        Wed, 30 Mar 2022 11:51:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF655B81C28;
+        Wed, 30 Mar 2022 11:50:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D16DC36AE5;
+        Wed, 30 Mar 2022 11:50:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641062;
-        bh=B+LL6HqRHaXg/j5A4/f7HpsysJBncMEphF9/Mdw/N7Y=;
+        s=k20201202; t=1648641046;
+        bh=giM/BAivgxJrob6NYPSr1zOqqdEG4sFSemV5nmzN4OM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=brjm3tcKtn7j3otyyFr9FRFQ1G9zCKoY87MmO3HSy8+aqOEiz80OknaRAcnrlMVNs
-         FVSwwI3aQORPSy8nTQ49++bwQO+Cj4DnBoRM3B9WGvIcjwpILU7vVBCUsWPze6+kTR
-         Spv4gvUI6jE8TeN4IhB6JrYAveA/gtTjuIeT/ojk4kCd/zQUou0LEffgiZOyRTDIUZ
-         sERbOvnr9ZP2F/ycCI3Wh5c0RUvhyY2RaN7FbF/Avt+1W2/SsO9NFKL/K6QRo+RzsN
-         kCnxy4ry0oJT//5kL/RDgeOj0rOY4fKzbfC37bvs/clizy5mTauZcWSAMKJgX9X6NE
-         ilf5KzR4BRSdA==
+        b=GAmuxRyW6X6tf+HGsTfDN3NOqDAroTk6nAlDPBeKrDwkOqsYpfG5b97sNjav+tP2C
+         SrlWk3CfQfSctItMl1TyC783JfWrjdZHqC/Uv53nqICHb0FZFeU8sOOXzX5gILp6H1
+         LzjvYZNz0dwjTJK8eaT7C/ezIVq/ud1dNlUIeKoPFgpDDNb4nM2lj4uKKR9hAasTJ5
+         GMW/8c6NuEi7Peq2YdktoiwGxz9CmuMJQVnZRfAUz4VynoikRluyKmaHTGECK3UPIn
+         nEWcZowTn6717lN3Jb1jDU6RpPJ2wWOdrYKg4LUTxbX20hGGjh45LQdIt77qdxYT9s
+         GQYWL4R4gXrLw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.15 37/50] lib/test_lockup: fix kernel pointer check for separate address spaces
-Date:   Wed, 30 Mar 2022 07:49:51 -0400
-Message-Id: <20220330115005.1671090-37-sashal@kernel.org>
+Cc:     Jing Yao <yao.jing2@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        tomi.valkeinen@ti.com, linux-omap@vger.kernel.org,
+        linux-fbdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 26/50] video: fbdev: omapfb: panel-tpo-td043mtea1: Use sysfs_emit() instead of snprintf()
+Date:   Wed, 30 Mar 2022 07:49:40 -0400
+Message-Id: <20220330115005.1671090-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115005.1671090-1-sashal@kernel.org>
 References: <20220330115005.1671090-1-sashal@kernel.org>
@@ -50,46 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Jing Yao <yao.jing2@zte.com.cn>
 
-[ Upstream commit 5a06fcb15b43d1f7bf740c672950122331cb5655 ]
+[ Upstream commit c07a039cbb96748f54c02995bae8131cc9a73b0a ]
 
-test_kernel_ptr() uses access_ok() to figure out if a given address
-points to user space instead of kernel space. However on architectures
-that set CONFIG_ALTERNATE_USER_ADDRESS_SPACE, a pointer can be valid
-for both, and the check always fails because access_ok() returns true.
+Use sysfs_emit instead of scnprintf, snprintf or sprintf.
 
-Make the check for user space pointers conditional on the type of
-address space layout.
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/test_lockup.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ .../video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c  | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/lib/test_lockup.c b/lib/test_lockup.c
-index 6a0f329a794a..c3fd87d6c2dd 100644
---- a/lib/test_lockup.c
-+++ b/lib/test_lockup.c
-@@ -417,9 +417,14 @@ static bool test_kernel_ptr(unsigned long addr, int size)
- 		return false;
+diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
+index afac1d9445aa..57b7d1f49096 100644
+--- a/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
++++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
+@@ -169,7 +169,7 @@ static ssize_t tpo_td043_vmirror_show(struct device *dev,
+ {
+ 	struct panel_drv_data *ddata = dev_get_drvdata(dev);
  
- 	/* should be at least readable kernel address */
--	if (access_ok((void __user *)ptr, 1) ||
--	    access_ok((void __user *)ptr + size - 1, 1) ||
--	    get_kernel_nofault(buf, ptr) ||
-+	if (!IS_ENABLED(CONFIG_ALTERNATE_USER_ADDRESS_SPACE) &&
-+	    (access_ok((void __user *)ptr, 1) ||
-+	     access_ok((void __user *)ptr + size - 1, 1))) {
-+		pr_err("user space ptr invalid in kernel: %#lx\n", addr);
-+		return true;
-+	}
-+
-+	if (get_kernel_nofault(buf, ptr) ||
- 	    get_kernel_nofault(buf, ptr + size - 1)) {
- 		pr_err("invalid kernel ptr: %#lx\n", addr);
- 		return true;
+-	return snprintf(buf, PAGE_SIZE, "%d\n", ddata->vmirror);
++	return sysfs_emit(buf, "%d\n", ddata->vmirror);
+ }
+ 
+ static ssize_t tpo_td043_vmirror_store(struct device *dev,
+@@ -199,7 +199,7 @@ static ssize_t tpo_td043_mode_show(struct device *dev,
+ {
+ 	struct panel_drv_data *ddata = dev_get_drvdata(dev);
+ 
+-	return snprintf(buf, PAGE_SIZE, "%d\n", ddata->mode);
++	return sysfs_emit(buf, "%d\n", ddata->mode);
+ }
+ 
+ static ssize_t tpo_td043_mode_store(struct device *dev,
 -- 
 2.34.1
 
