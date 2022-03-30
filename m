@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44E18C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:17:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B508C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:17:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346900AbiC3MSj (ORCPT
+        id S1346931AbiC3MSr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:18:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37182 "EHLO
+        Wed, 30 Mar 2022 08:18:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344453AbiC3L4D (ORCPT
+        with ESMTP id S1344404AbiC3Lzy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:56:03 -0400
+        Wed, 30 Mar 2022 07:55:54 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4CE6626F;
-        Wed, 30 Mar 2022 04:54:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F39352F38F;
+        Wed, 30 Mar 2022 04:54:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A62CE615E7;
-        Wed, 30 Mar 2022 11:54:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82D04C340EE;
-        Wed, 30 Mar 2022 11:54:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C22261710;
+        Wed, 30 Mar 2022 11:54:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE34FC340EE;
+        Wed, 30 Mar 2022 11:54:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641245;
-        bh=TjnvLi83cOFFJf6NtahCnNbN2EUZK9664M/61JhVXLI=;
+        s=k20201202; t=1648641241;
+        bh=bkZOOo4OTLPt/6iak3xmqexQD+t/tDVRYpkeLEA+SSw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A8dkv29HAscXL091jZOtUt0iIxvnXD7qgVJ+WD6UTl54T0FmLMD9Xy3ulrZabE6N+
-         d5SzaIVMPeeTV5HosUylbIZ2FnTsBaJpvPjDjTqchg6W7agVO1Q4YxM3qYipv/uOrt
-         A7WE7d5ckzoa0yRmw60QIapkCsmDpAG2SMl6zEgdJ/XS09uWvDcwO8FTf2wGJQ0qLk
-         8hBwhcYW6Rl+lKs2+coXXADPi4ijU9/NseccOfDgjWelmV2g0NNCq1m8fHxAuKmFqK
-         XRlSpsyjX6RiMn7pQgaTMVFQPphKPcDTe9G9Js9QsaKjYTWd5TwyHOTwPLHodbQY1C
-         84/No33KKEcFw==
+        b=QshwmhRX//JyI4JspCsHPbCQiIRv/o6zxCJdvZKi1cVPYFBz/8F6wLl29omci4tRn
+         Ea5ucCwkz4Tbk+kqKqeGkn+WsSoVB5nM/HRAHWe4z52TzszZTn2ghz3SMlWwY3tmsJ
+         ivAOIBDtSxGPrsQtuYjKKaOD7czYoDrsxf6QOGVQP7ZFQRqQ/6jYFsxvVao/UfgA42
+         5rMh14a1f1caUHqJnotYgbn+dsiTWcBonGYXVCmKIZaIG9dAizPuxgNai2fSoDIR+O
+         XfTaVwKYOIfvV1bizO9oK21HCkmJokaieJZVotjlmIptsJHQjAKPZHDcOjgX89hznE
+         IYNboEIu9ZuoA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, linux-mmc@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 19/20] mmc: host: Return an error when ->enable_sdio_irq() ops is missing
-Date:   Wed, 30 Mar 2022 07:53:35 -0400
-Message-Id: <20220330115336.1672930-19-sashal@kernel.org>
+Cc:     Zheyu Ma <zheyuma97@gmail.com>, Helge Deller <deller@gmx.de>,
+        Sasha Levin <sashal@kernel.org>, sudipm.mukherjee@gmail.com,
+        teddy.wang@siliconmotion.com, tomi.valkeinen@ti.com,
+        linux-fbdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 16/20] video: fbdev: sm712fb: Fix crash in smtcfb_write()
+Date:   Wed, 30 Mar 2022 07:53:32 -0400
+Message-Id: <20220330115336.1672930-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115336.1672930-1-sashal@kernel.org>
 References: <20220330115336.1672930-1-sashal@kernel.org>
@@ -51,58 +53,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ulf Hansson <ulf.hansson@linaro.org>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit d6c9219ca1139b74541b2a98cee47a3426d754a9 ]
+[ Upstream commit 4f01d09b2bbfbcb47b3eb305560a7f4857a32260 ]
 
-Even if the current WARN() notifies the user that something is severely
-wrong, we can still end up in a PANIC() when trying to invoke the missing
-->enable_sdio_irq() ops. Therefore, let's also return an error code and
-prevent the host from being added.
+When the sm712fb driver writes three bytes to the framebuffer, the
+driver will crash:
 
-While at it, move the code into a separate function to prepare for
-subsequent changes and for further host caps validations.
+    BUG: unable to handle page fault for address: ffffc90001ffffff
+    RIP: 0010:smtcfb_write+0x454/0x5b0
+    Call Trace:
+     vfs_write+0x291/0xd60
+     ? do_sys_openat2+0x27d/0x350
+     ? __fget_light+0x54/0x340
+     ksys_write+0xce/0x190
+     do_syscall_64+0x43/0x90
+     entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Link: https://lore.kernel.org/r/20220303165142.129745-1-ulf.hansson@linaro.org
+Fix it by removing the open-coded endianness fixup-code.
+
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/core/host.c | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ drivers/video/fbdev/sm712fb.c | 21 ++++-----------------
+ 1 file changed, 4 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/mmc/core/host.c b/drivers/mmc/core/host.c
-index 3740fb0052a4..4da2bcfd0649 100644
---- a/drivers/mmc/core/host.c
-+++ b/drivers/mmc/core/host.c
-@@ -401,6 +401,16 @@ struct mmc_host *mmc_alloc_host(int extra, struct device *dev)
+diff --git a/drivers/video/fbdev/sm712fb.c b/drivers/video/fbdev/sm712fb.c
+index 1781ca697f66..76b1866dfa95 100644
+--- a/drivers/video/fbdev/sm712fb.c
++++ b/drivers/video/fbdev/sm712fb.c
+@@ -1130,7 +1130,7 @@ static ssize_t smtcfb_write(struct fb_info *info, const char __user *buf,
+ 		count = total_size - p;
+ 	}
  
- EXPORT_SYMBOL(mmc_alloc_host);
+-	buffer = kmalloc((count > PAGE_SIZE) ? PAGE_SIZE : count, GFP_KERNEL);
++	buffer = kmalloc(PAGE_SIZE, GFP_KERNEL);
+ 	if (!buffer)
+ 		return -ENOMEM;
  
-+static int mmc_validate_host_caps(struct mmc_host *host)
-+{
-+	if (host->caps & MMC_CAP_SDIO_IRQ && !host->ops->enable_sdio_irq) {
-+		dev_warn(host->parent, "missing ->enable_sdio_irq() ops\n");
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
- /**
-  *	mmc_add_host - initialise host hardware
-  *	@host: mmc host
-@@ -413,8 +423,9 @@ int mmc_add_host(struct mmc_host *host)
- {
- 	int err;
+@@ -1148,24 +1148,11 @@ static ssize_t smtcfb_write(struct fb_info *info, const char __user *buf,
+ 			break;
+ 		}
  
--	WARN_ON((host->caps & MMC_CAP_SDIO_IRQ) &&
--		!host->ops->enable_sdio_irq);
-+	err = mmc_validate_host_caps(host);
-+	if (err)
-+		return err;
+-		for (i = c >> 2; i--;) {
+-			fb_writel(big_swap(*src), dst++);
++		for (i = (c + 3) >> 2; i--;) {
++			fb_writel(big_swap(*src), dst);
++			dst++;
+ 			src++;
+ 		}
+-		if (c & 3) {
+-			u8 *src8 = (u8 *)src;
+-			u8 __iomem *dst8 = (u8 __iomem *)dst;
+-
+-			for (i = c & 3; i--;) {
+-				if (i & 1) {
+-					fb_writeb(*src8++, ++dst8);
+-				} else {
+-					fb_writeb(*src8++, --dst8);
+-					dst8 += 2;
+-				}
+-			}
+-			dst = (u32 __iomem *)dst8;
+-		}
  
- 	err = device_add(&host->class_dev);
- 	if (err)
+ 		*ppos += c;
+ 		buf += c;
 -- 
 2.34.1
 
