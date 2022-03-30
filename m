@@ -2,53 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD756C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:50:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 436B0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:50:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344016AbiC3LwJ (ORCPT
+        id S1344191AbiC3LwN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 07:52:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59946 "EHLO
+        Wed, 30 Mar 2022 07:52:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343901AbiC3LvX (ORCPT
+        with ESMTP id S1344151AbiC3Lv3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:51:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EF6827429A;
-        Wed, 30 Mar 2022 04:47:58 -0700 (PDT)
+        Wed, 30 Mar 2022 07:51:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B418B275452;
+        Wed, 30 Mar 2022 04:47:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C64DCB81C35;
-        Wed, 30 Mar 2022 11:47:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 841A0C36AE5;
-        Wed, 30 Mar 2022 11:47:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 42328615B7;
+        Wed, 30 Mar 2022 11:47:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3AADC3410F;
+        Wed, 30 Mar 2022 11:47:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648640875;
-        bh=cmQjIDOiyu6i0WOxV+vP3qJn8wa2woRKYCESBKH7hvg=;
+        s=k20201202; t=1648640878;
+        bh=v1luuvpj5UTKQupxrRu/rhsBPsNSE/Jx1YwX0tOiZ3g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RtIikrxqKF9Q2dG32JWGqYpNw6PJprQPc1S/ClYZjzkhp6k4MBPl9GQGi0r3MJYzH
-         z488oZ/YjPkVvgY243D6LBCkqGEhy5Ehgvk13XZsgtBkX+FBq6A0BP9vK47nYAqY+R
-         PZjIJnDy3TI9m/n1DMl6J30HqW5TY+08OgA/36fBJOAnb7NpnsVQKkTClonLYq2ScR
-         6G1X47yxLE8GWUsbKRPKuyveXClnEqf+xhpNgr4Poe9Jl1u6wH/paWWFQajSr5HSxO
-         t3XwVUG3ZAbam1lhQ1LsEXraea4+Vkq0bB3KX99nxzRglSbD+KcuPsKyDmtdbyiKUw
-         XFpp7rISGj+Yg==
+        b=firTXmjriYPTa8R9vNfCZf4t3P84uydMLXLGL8tYfiNpEw2UvmNZKS935xk+E0Bqb
+         R43IXL86hh/BR4N/QUYsiEl9ulRwynkI2dNFJAl7MEu8p2HSgd/JoTROmmIqT01srG
+         CsRS6Hf2bCmwbld17ArWURO7UvyD3TCFmJs141dNoYDiYcwB9ws3usTyMRAq17qOua
+         LGi47eHGl/PTjA/d1ExLbvqU5of1aWKb8fDWyjTGVKb89r4MSvfohpVThLlodIdJGD
+         zayKxpJj1mmYYfB3GWndfHDAxugS86LO6j3ZnKZkDgqRHlFLexuaXr8w3EnlMB6Hz1
+         ZIAiSbZIm7nMA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>,
-        eric.y.miao@gmail.com, haojian.zhuang@gmail.com,
-        linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.17 44/66] ARM: mmp: Fix failure to remove sram device
-Date:   Wed, 30 Mar 2022 07:46:23 -0400
-Message-Id: <20220330114646.1669334-44-sashal@kernel.org>
+Cc:     Vijendar Mukunda <Vijendar.Mukunda@amd.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.17 46/66] ASoC: amd: vangogh: fix uninitialized symbol warning in machine driver
+Date:   Wed, 30 Mar 2022 07:46:25 -0400
+Message-Id: <20220330114646.1669334-46-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330114646.1669334-1-sashal@kernel.org>
 References: <20220330114646.1669334-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -56,74 +54,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Vijendar Mukunda <Vijendar.Mukunda@amd.com>
 
-[ Upstream commit 4036b29a146b2749af3bb213b003eb69f3e5ecc4 ]
+[ Upstream commit 6f989800639a7a29ab9a02e165b04dc144dd4f2b ]
 
-Make sure in .probe() to set driver data before the function is left to
-make it possible in .remove() to undo the actions done.
+Fixed below smatch static checker warning.
+sound/soc/amd/vangogh/acp5x-mach.c:190 acp5x_cs35l41_hw_params()
+error: uninitialized symbol 'ret'.
 
-This fixes a potential memory leak and stops returning an error code in
-.remove() that is ignored by the driver core anyhow.
-
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Vijendar Mukunda <Vijendar.Mukunda@amd.com>
+Link: https://lore.kernel.org/r/20220225193054.24916-4-Vijendar.Mukunda@amd.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-mmp/sram.c | 22 ++++++++++++----------
- 1 file changed, 12 insertions(+), 10 deletions(-)
+ sound/soc/amd/vangogh/acp5x-mach.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/mach-mmp/sram.c b/arch/arm/mach-mmp/sram.c
-index 6794e2db1ad5..ecc46c31004f 100644
---- a/arch/arm/mach-mmp/sram.c
-+++ b/arch/arm/mach-mmp/sram.c
-@@ -72,6 +72,8 @@ static int sram_probe(struct platform_device *pdev)
- 	if (!info)
- 		return -ENOMEM;
+diff --git a/sound/soc/amd/vangogh/acp5x-mach.c b/sound/soc/amd/vangogh/acp5x-mach.c
+index 14cf325e4b23..5d7a17755fa7 100644
+--- a/sound/soc/amd/vangogh/acp5x-mach.c
++++ b/sound/soc/amd/vangogh/acp5x-mach.c
+@@ -165,6 +165,7 @@ static int acp5x_cs35l41_hw_params(struct snd_pcm_substream *substream,
+ 	unsigned int num_codecs = rtd->num_codecs;
+ 	unsigned int bclk_val;
  
-+	platform_set_drvdata(pdev, info);
-+
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (res == NULL) {
- 		dev_err(&pdev->dev, "no memory resource defined\n");
-@@ -107,8 +109,6 @@ static int sram_probe(struct platform_device *pdev)
- 	list_add(&info->node, &sram_bank_list);
- 	mutex_unlock(&sram_lock);
- 
--	platform_set_drvdata(pdev, info);
--
- 	dev_info(&pdev->dev, "initialized\n");
- 	return 0;
- 
-@@ -127,17 +127,19 @@ static int sram_remove(struct platform_device *pdev)
- 	struct sram_bank_info *info;
- 
- 	info = platform_get_drvdata(pdev);
--	if (info == NULL)
--		return -ENODEV;
- 
--	mutex_lock(&sram_lock);
--	list_del(&info->node);
--	mutex_unlock(&sram_lock);
-+	if (info->sram_size) {
-+		mutex_lock(&sram_lock);
-+		list_del(&info->node);
-+		mutex_unlock(&sram_lock);
-+
-+		gen_pool_destroy(info->gpool);
-+		iounmap(info->sram_virt);
-+		kfree(info->pool_name);
-+	}
- 
--	gen_pool_destroy(info->gpool);
--	iounmap(info->sram_virt);
--	kfree(info->pool_name);
- 	kfree(info);
-+
- 	return 0;
- }
- 
++	ret = 0;
+ 	for (i = 0; i < num_codecs; i++) {
+ 		codec_dai = asoc_rtd_to_codec(rtd, i);
+ 		if ((strcmp(codec_dai->name, "spi-VLV1776:00") == 0) ||
 -- 
 2.34.1
 
