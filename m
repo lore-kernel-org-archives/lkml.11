@@ -2,90 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F495C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 00:56:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C44DCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 01:01:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241525AbiC3A6L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 20:58:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35316 "EHLO
+        id S241529AbiC3BC6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 21:02:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231459AbiC3A6J (ORCPT
+        with ESMTP id S241466AbiC3BC4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 20:58:09 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC91A19B0B5;
-        Tue, 29 Mar 2022 17:56:24 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KSp0L1YL1z4xXS;
-        Wed, 30 Mar 2022 11:56:18 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1648601780;
-        bh=q9ispVHQZsP/kWZG11ABn0H1jP7mArtgDdqW0V4HNqk=;
-        h=Date:From:To:Cc:Subject:From;
-        b=TZCNrKq0WJSwTw++aIdVCIVQDmpCewCy8v3eGY6z7d+lmOG1D1z3q369Xrkl1gApL
-         2dpdJyH/sGsDKa93Qmo9Mj+ulSBObt/m22NqJ+/qEBea7rYbkzfKmQI26XEwq5xbws
-         3MUJ96TzW3tLj03mQHV2vmqkXywLQJc4V2SDSIulN6KVtp7PMVBcwFRpQOBIfemLcJ
-         JvBigAS/+bNUSNUQcYWi7FWPYHSr2vMLRa/O1gY6O2xTaXyUpchi2gexGahfODJTRW
-         c7fcCY5IrLRRZPm++iZgAxex+Ml9tftOG+MyHOvGy4TBlxjf3SFYgNrM30WVzCGzgf
-         vM+USRJaGJjaA==
-Date:   Wed, 30 Mar 2022 11:56:17 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     Wei Xiao <xiaowei66@huawei.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build failure after merge of the sysctl tree
-Message-ID: <20220330115617.4d694d11@canb.auug.org.au>
+        Tue, 29 Mar 2022 21:02:56 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F70F1C7C34
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 18:01:11 -0700 (PDT)
+Received: from kwepemi500018.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KSp1G09jvzBrm9;
+        Wed, 30 Mar 2022 08:57:06 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi500018.china.huawei.com (7.221.188.213) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 30 Mar 2022 09:01:08 +0800
+Received: from [10.174.179.19] (10.174.179.19) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 30 Mar 2022 09:01:08 +0800
+Message-ID: <710eaffd-411b-346a-7ce4-3d0697ecb8aa@huawei.com>
+Date:   Wed, 30 Mar 2022 09:01:07 +0800
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/utDjZbC=jwOONQinnZoZiXR";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [PATCH] hugetlb: Fix hugepages_setup when deal with pernode
+Content-Language: en-US
+To:     Mike Kravetz <mike.kravetz@oracle.com>,
+        <akpm@linux-foundation.org>, <yaozhenguo1@gmail.com>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        <rdunlap@infradead.org>
+References: <20220324074037.2024608-1-liupeng256@huawei.com>
+ <361111c6-921b-e129-edf3-367748f6497e@oracle.com>
+ <ec312492-fea9-7130-8be4-1c362c2e84a6@huawei.com>
+ <e94ea60f-9da7-98b7-7d47-1183c0fd2ddc@oracle.com>
+ <d992f076-5eba-929b-e284-57bd5471cd85@huawei.com>
+ <c33ab0c1-6b73-2489-efab-972c8d7fa80b@oracle.com>
+From:   "liupeng (DM)" <liupeng256@huawei.com>
+In-Reply-To: <c33ab0c1-6b73-2489-efab-972c8d7fa80b@oracle.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.19]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/utDjZbC=jwOONQinnZoZiXR
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
 
-Hi all,
+On 2022/3/30 1:43, Mike Kravetz wrote:
+> On 3/28/22 20:59, liupeng (DM) wrote:
+>> On 2022/3/29 10:46, Mike Kravetz wrote:
+>>> Yes, I agree that the change is needed and the current behavior is
+>>> unacceptable.
+>>>
+>>> One remaining question is the change from returning '0' to '1' in the case
+>>> of error.  I do understand this is to prevent the invalid parameter string
+>>> from being passed to init.  It may not be correct/right, but in every other
+>>> case where an invalid parameter in encountered in hugetlb command line
+>>> processing we return "0".  Should we perhaps change all these other places
+>>> to be consistent?  I honestly do not know what is the appropriate behavior
+>>> in these situations.
+>> Thank you for your carefulness and question.
+>>
+>> I have checked default_hugepagesz_setup and hugepages_setup will both print
+>> some information before return '0', so there is no need to print again in
+>> "Unknown kernel command line parameters".
+>>
+>> Should I send another patch to repair the rest "return 0" in hugetlb?
+> I would suggest two patches:
+>
+> 1) Fix the issue with invalid nodes specified.  However, leave the "return 0"
+>     behavior in hugepages_setup to be consistent with the rest of the code.
+>     This patch can be sent to stable with "Fixes: b5389086ad7b" tag as it
+>     addresses an existing issue.
+> 2) Clean up the places where we return 0 and it would be better to return 1.
+>     No cc stable here and just let the changes target future releases.
 
-After merging the sysctl tree, today's linux-next build (powerpc
-ppc64_defconfig) failed like this:
+Thanks, I will do it as your suggestions.
 
-kernel/sysctl.c:1776:36: error: 'C_A_D' undeclared here (not in a function)
- 1776 |                 .data           =3D &C_A_D,
-      |                                    ^~~~~
-
-Caused by commit
-
-  84053cc7ef2f ("ftrace: move sysctl_ftrace_enabled to ftrace.c")
-
-I can't imagine how that happened (though I do note that the whole branch
-has been rebased and not tested :-( ).
-
-I have used the sysctl tree from next-20220329 for today.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/utDjZbC=jwOONQinnZoZiXR
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJDqrEACgkQAVBC80lX
-0Gw70gf+N0DGEz2TeLx060lK9dFhP15qdUGpnTc5wCbJX9QRNYK93zx+Ehxcn0KM
-RZAvbq3RsSv38WHbjKhkNi4zZaS9L92RVJsz61CXKOJ7n/qTgZRjfaqFY4srsPGb
-paZdgf/u6ijZPBcVBQ9S04EPFVyfgOwP2BQk0udpPSEgW9/Fc4rpYyEbdBQmnGPh
-zz/s2t28HVla3NjnlIkcxHp1KCSGdKRTY+kl1h/BGYCmGAopIFWebY6N9U0/dTOg
-0vDz418Lm2muskzzxPUBTX4G5rWqWAgJRTRaen1WvvvDUrW+6zJ5q907CurSYQWl
-gLveRZeaFsgb9X0pP6BI/3poZDCb4A==
-=fTKK
------END PGP SIGNATURE-----
-
---Sig_/utDjZbC=jwOONQinnZoZiXR--
