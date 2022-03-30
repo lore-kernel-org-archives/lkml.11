@@ -2,135 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90B56C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:36:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EA35C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:37:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243377AbiC3GiO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 02:38:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56514 "EHLO
+        id S242923AbiC3Gip (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 02:38:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241370AbiC3GiL (ORCPT
+        with ESMTP id S243333AbiC3Gig (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 02:38:11 -0400
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9F5B56C2B
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 23:36:24 -0700 (PDT)
-Received: from [192.168.0.4] (unknown [95.90.232.238])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id F417A61EA192A;
-        Wed, 30 Mar 2022 08:36:22 +0200 (CEST)
-Message-ID: <7c7ec347-4372-31ac-94ed-5d20602c6ce2@molgen.mpg.de>
-Date:   Wed, 30 Mar 2022 08:36:22 +0200
+        Wed, 30 Mar 2022 02:38:36 -0400
+Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEE5657141
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 23:36:50 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V8cbA2h_1648622206;
+Received: from 30.30.125.253(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0V8cbA2h_1648622206)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 30 Mar 2022 14:36:47 +0800
+Message-ID: <784aee91-6a01-6e67-389e-1e1883796894@linux.alibaba.com>
+Date:   Wed, 30 Mar 2022 14:37:35 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH v2] drm/amdgpu: fix that issue that the number of the crtc
- of the 3250c is not correct
-Content-Language: en-US
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-To:     Ryan Lin <tsung-hua.lin@amd.com>
-Cc:     =?UTF-8?Q?St=c3=a9phane_Marchesin?= <marcheu@chromium.org>,
-        Leo Li <sunpeng.li@amd.com>, leon.li@amd.com,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Sean Paul <seanpaul@chromium.org>,
-        amd-gfx@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
-        Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>,
-        Drew Davenport <ddavenport@chromium.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Mark Yacoub <markyacoub@google.com>,
-        Harry Wentland <harry.wentland@amd.com>,
-        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
-        Louis Li <ching-shih.li@amd.corp-partner.google.com>
-References: <20220127081237.13903-1-Tsung-Hua.Lin@amd.com>
- <20220330024643.162230-1-tsung-hua.lin@amd.com>
- <de559e34-3b56-a3d5-cd7a-89bc8f5528d7@molgen.mpg.de>
-In-Reply-To: <de559e34-3b56-a3d5-cd7a-89bc8f5528d7@molgen.mpg.de>
+Subject: Re: [PATCH] mm: migrate: set demotion targets differently
+To:     Jagdish Gediya <jvgediya@linux.ibm.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        akpm@linux-foundation.org, aneesh.kumar@linux.ibm.com,
+        dave.hansen@linux.intel.com, ying.huang@intel.com
+References: <20220329115222.8923-1-jvgediya@linux.ibm.com>
+ <b7d1ab3b-e92c-d3aa-72cb-b80cc1a61e85@linux.alibaba.com>
+ <YkMR8OY779Bcri3I@li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com>
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+In-Reply-To: <YkMR8OY779Bcri3I@li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[Cc: Remove undeliverable Chun Ming Zhou <mailto:David1.Zhou@amd.com>]
 
-Am 30.03.22 um 08:34 schrieb Paul Menzel:
-> Dear Tsung-Hua,
-> 
-> 
-> Thank you for your patch.
-> 
-> Am 30.03.22 um 04:46 schrieb Ryan Lin:
-> 
-> The commit message summary is quite long and confusing. Maybe:
-> 
-> Use 3 CRTC for 3250c to get internal display working
-> 
->> [Why]
->> External displays take priority over internal display when there are 
->> fewer
->> display controllers than displays.
-> 
-> This causes the internal display to not work on the Chromebook google/zork.
-> 
->> [How]
->> The root cause is because of that number of the crtc is not correct.
-> 
-> The root cause is the incorrect number of four configured CRTCs.
-> 
->> The number of the crtc on the 3250c is 3, but on the 3500c is 4.
->> On the source code, we can see that number of the crtc has been fixed 
->> at 4.
->> Needs to set the num_crtc to 3 for 3250c platform.
-> 
-> Please do not wrap lines after each sentence, and use a text width of 75 
-> characters.
-> 
->> v2:
->>     - remove unnecessary comments and Id
+
+On 3/29/2022 10:04 PM, Jagdish Gediya wrote:
+> On Tue, Mar 29, 2022 at 08:26:05PM +0800, Baolin Wang wrote:
+> Hi Baolin,
+>> Hi Jagdish,
 >>
->> Signed-off-by: Ryan Lin <tsung-hua.lin@amd.com>
+>> On 3/29/2022 7:52 PM, Jagdish Gediya wrote:
+>>> The current implementation to identify the demotion
+>>> targets limits some of the opportunities to share
+>>> the demotion targets between multiple source nodes.
+>>>
+>>> Implement a logic to identify the loop in the demotion
+>>> targets such that all the possibilities of demotion can
+>>> be utilized. Don't share the used targets between all
+>>> the nodes, instead create the used targets from scratch
+>>> for each individual node based on for what all node this
+>>> node is a demotion target. This helps to share the demotion
+>>> targets without missing any possible way of demotion.
+>>>
+>>> e.g. with below NUMA topology, where node 0 & 1 are
+>>> cpu + dram nodes, node 2 & 3 are equally slower memory
+>>> only nodes, and node 4 is slowest memory only node,
+>>>
+>>> available: 5 nodes (0-4)
+>>> node 0 cpus: 0 1
+>>> node 0 size: n MB
+>>> node 0 free: n MB
+>>> node 1 cpus: 2 3
+>>> node 1 size: n MB
+>>> node 1 free: n MB
+>>> node 2 cpus:
+>>> node 2 size: n MB
+>>> node 2 free: n MB
+>>> node 3 cpus:
+>>> node 3 size: n MB
+>>> node 3 free: n MB
+>>> node 4 cpus:
+>>> node 4 size: n MB
+>>> node 4 free: n MB
+>>> node distances:
+>>> node   0   1   2   3   4
+>>>     0:  10  20  40  40  80
+>>>     1:  20  10  40  40  80
+>>>     2:  40  40  10  40  80
+>>>     3:  40  40  40  10  80
+>>>     4:  80  80  80  80  10
+>>>
+>>> The existing implementation gives below demotion targets,
+>>>
+>>> node    demotion_target
+>>>    0              3, 2
+>>>    1              4
+>>>    2              X
+>>>    3              X
+>>>    4		X
+>>>
+>>> With this patch applied, below are the demotion targets,
+>>>
+>>> node    demotion_target
+>>>    0              3, 2
+>>>    1              3, 2
+>>>    2              3
+>>>    3              4
+>>>    4		X
 >>
->> ---
->>   drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c | 12 +++++++++---
->>   1 file changed, 9 insertions(+), 3 deletions(-)
+>> Node 2 and node 3 both are slow memory and have same distance, why node 2
+>> should demote cold memory to node 3? They should have the same target
+>> demotion node 4, which is the slowest memory node, right?
 >>
->> diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c 
->> b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
->> index 40c91b448f7da..455a2c45e8cda 100644
->> --- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
->> +++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
->> @@ -2738,9 +2738,15 @@ static int dm_early_init(void *handle)
->>           break;
->>   #if defined(CONFIG_DRM_AMD_DC_DCN1_0)
->>       case CHIP_RAVEN:
->> -        adev->mode_info.num_crtc = 4;
->> -        adev->mode_info.num_hpd = 4;
->> -        adev->mode_info.num_dig = 4;
->> +        if (adev->rev_id >= 8) {
-> 
-> Is there some define for that number? Maybe add a comment, that it’s for 
-> 3250c?
-> 
-> 
-> Kind regards,
-> 
-> Paul
-> 
-> 
->> +            adev->mode_info.num_crtc = 3;
->> +            adev->mode_info.num_hpd = 3;
->> +            adev->mode_info.num_dig = 3;
->> +        } else {
->> +            adev->mode_info.num_crtc = 4;
->> +            adev->mode_info.num_hpd = 4;
->> +            adev->mode_info.num_dig = 4;
->> +        }
->>           break;
->>   #endif
->>   #if defined(CONFIG_DRM_AMD_DC_DCN2_0)
+> Current demotion target finding algorithm works based on best distance, as distance between node 2 & 3 is 40 and distance between node 2 & 4 is 80, node 2 demotes to node 3.
+
+If node 2 can demote to node 3, which means node 3's memory is colder 
+than node 2, right? The accessing time of node 3 should be larger than 
+node 2, then we can demote colder memory to node 3 from node 2.
+
+But node 2 and node 3 are same memory type and have same distance, the 
+accessing time of node 2 and node 3 should be same too, so why add so 
+many page migration between node 2 and node 3? I'm still not sure the 
+benefits.
+
+Huang Ying and Dave, how do you think about this demotion targets?
+
+>>>
+>>> e.g. with below NUMA topology, where node 0, 1 & 2 are
+>>> cpu + dram nodes and node 3 is slow memory node,
+>>>
+>>> available: 4 nodes (0-3)
+>>> node 0 cpus: 0 1
+>>> node 0 size: n MB
+>>> node 0 free: n MB
+>>> node 1 cpus: 2 3
+>>> node 1 size: n MB
+>>> node 1 free: n MB
+>>> node 2 cpus: 4 5
+>>> node 2 size: n MB
+>>> node 2 free: n MB
+>>> node 3 cpus:
+>>> node 3 size: n MB
+>>> node 3 free: n MB
+>>> node distances:
+>>> node   0   1   2   3
+>>>     0:  10  20  20  40
+>>>     1:  20  10  20  40
+>>>     2:  20  20  10  40
+>>>     3:  40  40  40  10
+>>>
+>>> The existing implementation gives below demotion targets,
+>>>
+>>> node    demotion_target
+>>>    0              3
+>>>    1              X
+>>>    2              X
+>>>    3              X
+>>>
+>>> With this patch applied, below are the demotion targets,
+>>>
+>>> node    demotion_target
+>>>    0              3
+>>>    1              3
+>>>    2              3
+>>>    3              X
+>>
+>> Sounds reasonable.
+>>
+>>>
+>>> with below NUMA topology, where node 0 & 2 are cpu + dram
+>>> nodes and node 1 & 3 are slow memory nodes,
+>>>
+>>> available: 4 nodes (0-3)
+>>> node 0 cpus: 0 1
+>>> node 0 size: n MB
+>>> node 0 free: n MB
+>>> node 1 cpus:
+>>> node 1 size: n MB
+>>> node 1 free: n MB
+>>> node 2 cpus: 2 3
+>>> node 2 size: n MB
+>>> node 2 free: n MB
+>>> node 3 cpus:
+>>> node 3 size: n MB
+>>> node 3 free: n MB
+>>> node distances:
+>>> node   0   1   2   3
+>>>     0:  10  40  20  80
+>>>     1:  40  10  80  80
+>>>     2:  20  80  10  40
+>>>     3:  80  80  40  10
+>>>
+>>> The existing implementation gives below demotion targets,
+>>>
+>>> node    demotion_target
+>>>    0              3
+>>>    1              X
+>>>    2              3
+>>>    3              X
+>>
+>> If I understand correctly, this is not true. The demotion route should be as
+>> below with existing implementation:
+>> node 0 ---> node 1
+>> node 1 ---> X
+>> node 2 ---> node 3
+>> node 3 ---> X
+>>
+> Its typo, It should be 0 -> 1, Will correct it in v2.
+>>>
+>>> With this patch applied, below are the demotion targets,
+>>>
+>>> node    demotion_target
+>>>    0              1
+>>>    1              3
+>>>    2              3
+>>>    3              X
+>>>
+>>> As it can be seen above, node 3 can be demotion target for node
+>>> 1 but existing implementation doesn't configure it that way. It
+>>> is better to move pages from node 1 to node 3 instead of moving
+>>> it from node 1 to swap.
+>>
+>> Which means node 3 is the slowest memory node?
+>>
+> Node 1 and 3 are equally slower but 1 is near to 0 and 3 is near to 2. Basically you can think of it like node 1 is slow memory logical node near to node 0 and node 3 is slow memory logical node near to node 2.
+
+OK.
