@@ -2,100 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A7BDC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 10:19:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4EDBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 10:20:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245291AbiC3KVW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 06:21:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36346 "EHLO
+        id S245307AbiC3KWG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 06:22:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235280AbiC3KVT (ORCPT
+        with ESMTP id S232733AbiC3KWD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 06:21:19 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D08FD1C16EA;
-        Wed, 30 Mar 2022 03:19:31 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: dmitry.osipenko)
-        with ESMTPSA id A68D41F44516
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1648635569;
-        bh=StyztVffLbw1AQ6XJEFjXEnbu7ei/fKPsvU3Dkfn4Bs=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=RrlST6RaEO6QMgKmX1jwEuDALibTtEYsPZq0s2XWGVXsfxwc3ac5pzNnRlW4vGWtO
-         CmBh6HyoScUsvqsk0/6lNRBLF2bvqHDMKvphI9+gLbIoyn+HQEbDXqK0HQ1omCjGOy
-         GGujG4IVICN5t2dNxBd2dfqsYkVe4Jn9ME1S9Sy991rKt2e4ss4o4rroTmAbipl/CL
-         duzN+7mWx5o65wP1yGhUioncnQeN/6erj2M+YQEmGOykJn0bC2Q3h1HKHwTuySva/R
-         SpT2Lj4qBQH2mktk6YBY8LAtEh24rx9aAsCPOaEIAqkEFI7HMHaLWF0bvFoI04Cow0
-         yU2jaHAgonQjA==
-Message-ID: <2ba661b5-a59b-89f4-7ad7-5eee4da4ce96@collabora.com>
-Date:   Wed, 30 Mar 2022 13:19:25 +0300
+        Wed, 30 Mar 2022 06:22:03 -0400
+Received: from nksmu.kylinos.cn (mailgw.kylinos.cn [123.150.8.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D92E41D9140
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 03:20:17 -0700 (PDT)
+X-UUID: 89f0138a04c342f1b10e571f5d544420-20220330
+X-GW-Reason: 11101
+X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HNeS6uumcgOimgeWuoeaguA==
+X-Content-Feature: ica/max.line-size 85
+        audit/email.address 2
+X-UUID: 89f0138a04c342f1b10e571f5d544420-20220330
+Received: from cs2c.com.cn [(172.17.111.24)] by nksmu.kylinos.cn
+        (envelope-from <liucong2@kylinos.cn>)
+        (Generic MTA)
+        with ESMTP id 888474854; Wed, 30 Mar 2022 14:45:11 +0800
+X-ns-mid: postfix-6243FCAB-7174744375
+Received: from [172.20.12.219] (unknown [172.20.12.219])
+        by cs2c.com.cn (NSMail) with ESMTPSA id 686C7383C640;
+        Wed, 30 Mar 2022 06:46:03 +0000 (UTC)
+Message-ID: <a1ceefb7-32d8-9ce3-e56f-7684e6d3ee58@kylinos.cn>
+Date:   Wed, 30 Mar 2022 14:46:02 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [Patch v5 2/4] memory: tegra: Add MC error logging on tegra186
- onward
+Subject: Re: [PATCH v2] drm/qxl: fix qxl can't use in arm64
 Content-Language: en-US
-To:     Ashish Mhetre <amhetre@nvidia.com>,
-        krzysztof.kozlowski@canonical.com, robh+dt@kernel.org,
-        thierry.reding@gmail.com, digetx@gmail.com, jonathanh@nvidia.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-Cc:     vdumpa@nvidia.com, Snikam@nvidia.com
-References: <20220316092525.4554-1-amhetre@nvidia.com>
- <20220316092525.4554-3-amhetre@nvidia.com>
- <04bb5ef2-15c3-d561-3572-76dc803275ef@collabora.com>
- <c5341578-e0a6-4ad7-5b6c-95b31b16faad@nvidia.com>
-From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
-In-Reply-To: <c5341578-e0a6-4ad7-5b6c-95b31b16faad@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        airlied@linux.ie, airlied@redhat.com, kraxel@redhat.com,
+        robin.murphy@arm.com
+Cc:     virtualization@lists.linux-foundation.org, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org, ray.huang@amd.com,
+        spice-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+References: <12eba824-ee80-0aac-56ed-e13084c9cae7@amd.com>
+ <20220324104928.2959545-1-liucong2@kylinos.cn>
+ <982d233d-7e30-f44e-f49d-473c3c41721e@amd.com>
+From:   Cong Liu <liucong2@kylinos.cn>
+In-Reply-To: <982d233d-7e30-f44e-f49d-473c3c41721e@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/30/22 12:03, Ashish Mhetre wrote:
-> 
-> 
-> On 3/30/2022 5:36 AM, Dmitry Osipenko wrote:
->> External email: Use caution opening links or attachments
->>
->>
->> On 3/16/22 12:25, Ashish Mhetre wrote:
->>> Add new function 'get_int_channel' in tegra_mc_soc struture which is
->>> implemented by tegra SOCs which support multiple MC channels. This
->>> function returns the channel which should be used to get the information
->>> of interrupts.
->>> Remove static from tegra30_mc_handle_irq and use it as interrupt handler
->>> for MC interrupts on tegra186, tegra194 and tegra234 to log the errors.
->>> Add error specific MC status and address register bits and use them on
->>> tegra186, tegra194 and tegra234.
->>> Add error logging for generalized carveout interrupt on tegra186,
->>> tegra194
->>> and tegra234.
->>> Add error logging for route sanity interrupt on tegra194 an tegra234.
->>> Add register for higher bits of error address which is available on
->>> tegra194 and tegra234.
->>> Add a boolean variable 'has_addr_hi_reg' in tegra_mc_soc struture which
->>> will be true if soc has register for higher bits of memory controller
->>> error address. Set it true for tegra194 and tegra234.
->>>
->>> Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
->>
->>> Reported-by: kernel test robot <lkp@intel.com>
->>> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
->>
->> Reported what? You should add this tag only if patch addresses reported
->> problem. This patch doesn't address anything, hence the tag is
->> inappropriate, you should remove it.
-> 
-> Okay, smatch warning was reported on v4 of this patch which is fixed in
-> v5. Then I understand that we don't need to add Reported-by if we fix
-> bug in subsequent versions, right?
+any suggestions or extra test I can do now?
 
-Right, if the report was made to the in-progress patch, then you
-shouldn't add the tag.
+Regards,
+Cong
 
-If report was made to the patch that was already merged, then you should
-create a new patch that fixes the reported problem and add the
-reported-by to this patch.
+On 2022/3/25 15:45, Christian König wrote:
+> Am 24.03.22 um 11:49 schrieb Cong Liu:
+>> qxl use ioremap to map ram_header and rom, in the arm64 implementation,
+>> the device is mapped as DEVICE_nGnRE, it can not support unaligned
+>> access. and qxl is a virtual device, it can be treated more like RAM
+>> than actual MMIO registers. use ioremap_wc() replace it.
+>>
+>> Signed-off-by: Cong Liu <liucong2@kylinos.cn>
+> 
+> Looks sane to me, but I'm really not involved enough to fully judge.
+> 
+> Acked-by: Christian König <christian.koenig@amd.com>
+> 
+>> ---
+>>   drivers/gpu/drm/qxl/qxl_kms.c | 4 ++--
+>>   drivers/gpu/drm/qxl/qxl_ttm.c | 4 ++--
+>>   2 files changed, 4 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/gpu/drm/qxl/qxl_kms.c 
+>> b/drivers/gpu/drm/qxl/qxl_kms.c
+>> index 4dc5ad13f12c..a054e4a00fe8 100644
+>> --- a/drivers/gpu/drm/qxl/qxl_kms.c
+>> +++ b/drivers/gpu/drm/qxl/qxl_kms.c
+>> @@ -165,7 +165,7 @@ int qxl_device_init(struct qxl_device *qdev,
+>>            (int)qdev->surfaceram_size / 1024,
+>>            (sb == 4) ? "64bit" : "32bit");
+>> -    qdev->rom = ioremap(qdev->rom_base, qdev->rom_size);
+>> +    qdev->rom = ioremap_wc(qdev->rom_base, qdev->rom_size);
+>>       if (!qdev->rom) {
+>>           pr_err("Unable to ioremap ROM\n");
+>>           r = -ENOMEM;
+>> @@ -183,7 +183,7 @@ int qxl_device_init(struct qxl_device *qdev,
+>>           goto rom_unmap;
+>>       }
+>> -    qdev->ram_header = ioremap(qdev->vram_base +
+>> +    qdev->ram_header = ioremap_wc(qdev->vram_base +
+>>                      qdev->rom->ram_header_offset,
+>>                      sizeof(*qdev->ram_header));
+>>       if (!qdev->ram_header) {
+>> diff --git a/drivers/gpu/drm/qxl/qxl_ttm.c 
+>> b/drivers/gpu/drm/qxl/qxl_ttm.c
+>> index b2e33d5ba5d0..95df5750f47f 100644
+>> --- a/drivers/gpu/drm/qxl/qxl_ttm.c
+>> +++ b/drivers/gpu/drm/qxl/qxl_ttm.c
+>> @@ -82,13 +82,13 @@ int qxl_ttm_io_mem_reserve(struct ttm_device *bdev,
+>>       case TTM_PL_VRAM:
+>>           mem->bus.is_iomem = true;
+>>           mem->bus.offset = (mem->start << PAGE_SHIFT) + qdev->vram_base;
+>> -        mem->bus.caching = ttm_cached;
+>> +        mem->bus.caching = ttm_write_combined;
+>>           break;
+>>       case TTM_PL_PRIV:
+>>           mem->bus.is_iomem = true;
+>>           mem->bus.offset = (mem->start << PAGE_SHIFT) +
+>>               qdev->surfaceram_base;
+>> -        mem->bus.caching = ttm_cached;
+>> +        mem->bus.caching = ttm_write_combined;
+>>           break;
+>>       default:
+>>           return -EINVAL;
+> 
