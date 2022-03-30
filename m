@@ -2,247 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30C8EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 14:54:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5328C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 14:55:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347534AbiC3O41 (ORCPT
+        id S1347467AbiC3O4y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 10:56:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40054 "EHLO
+        Wed, 30 Mar 2022 10:56:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240408AbiC3O4U (ORCPT
+        with ESMTP id S244129AbiC3O4v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 10:56:20 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2067.outbound.protection.outlook.com [40.107.220.67])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 092F5377C4
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 07:54:35 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dOGmZeZUm97lnyyu4A+MgV0vngIHmdEkVftkUqk9iqz2GPtAuvuIN5mMlIvSoRpJix+wzT7VJTXuE+aVrf7swmN5mY03dzzpgTSZLW5vP3PNnoed2FGwuiTe/zkVBM+Srya2x2KIW2Arpp5xGF2HF2iJyiUyMBeqA++vbZOjpxT4bPZOQEZEaokYInMATqMhFXTNqQ1DFOktCGp7CRfzux8XOgpr4YVZKS76UOm2FQISekhGfZ0BbDOaagx7Pkw56Hp+AKJeoMqnxM6wq+zFkJqAXCT/6WjQMjyDxz6JiP15+8tiGdIQNrILl1QQdPNITzRGy06UH7yO/JL2xi/Q6Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sU4yVIFRJVOJwJPZFXfGWRgQ9X/1lWMQyoRYpbdy5bc=;
- b=UGLwWdJq9dPGa9FlvMWQijqA8gFUbxgOmvSqLIR44aX/Umyf7bhuLDW3eIFTG7vret/2yZEUplM7jNBv+7QBHF0eI9bK9kBZYphHY/K6/TUyVDsml25rntGurY8Bl2EEYnfdk4CNRArsvc56XrKZiM0ZRMPyOZkb8NGe1gD6VBxVYwjAuuYdO9iwTW1o+2+DlAKgzgsdrsNu1fqGeOEmaim7oq9+QLofqDiJkinb8QkJJMUrsZT4T+jYm7Zn4T1yeyCzaE1IEB9XVOt2tsnAZiYNOrjFnyGt7DCvdydE58OgkYZRxOw0ZvCJkDBTy5eQajOj1zSse8XGAc6cdxdFjw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sU4yVIFRJVOJwJPZFXfGWRgQ9X/1lWMQyoRYpbdy5bc=;
- b=pYY0cS+x4vhaHw9kq1MJzqxK8uQqT8tmgPh9zxnE3jmpMFsAAn+ZuxRKkkLoD2isEOtVIe/GsR0hXob8F+3u6o0yHvYLcJPlw6jd0/sbCDNoi+VpFC9C0kuWoqsuDIjyo+h6YrW7fmmjPu9cFdALfRNZBwkns1V2pyUpZxfLscY=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from CO6PR12MB5427.namprd12.prod.outlook.com (2603:10b6:5:358::13)
- by BN8PR12MB2884.namprd12.prod.outlook.com (2603:10b6:408:97::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.16; Wed, 30 Mar
- 2022 14:54:32 +0000
-Received: from CO6PR12MB5427.namprd12.prod.outlook.com
- ([fe80::61e4:a6bf:9444:31f9]) by CO6PR12MB5427.namprd12.prod.outlook.com
- ([fe80::61e4:a6bf:9444:31f9%5]) with mapi id 15.20.5123.020; Wed, 30 Mar 2022
- 14:54:32 +0000
-Message-ID: <4399f3cd-6839-73e7-6325-fa1ad6659afa@amd.com>
-Date:   Wed, 30 Mar 2022 10:54:27 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2] drm/amd/display: don't ignore alpha property on
- pre-multiplied mode
-Content-Language: en-US
-To:     Rodrigo Siqueira Jordao <rjordrigo@amd.com>,
-        Melissa Wen <mwen@igalia.com>,
-        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
-        Zhan Liu <Zhan.Liu@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Simon Ser <contact@emersion.fr>
-Cc:     amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org,
-        Agustin Gutierrez <agustin.gutierrez@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        markyacoub@google.com, sunpeng.li@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, christian.koenig@amd.com, Xinhui.Pan@amd.com
-References: <20220329201835.2393141-1-mwen@igalia.com>
- <f0c7adf6-7417-3773-3780-4a273e9ffb1a@amd.com>
-From:   Harry Wentland <harry.wentland@amd.com>
-In-Reply-To: <f0c7adf6-7417-3773-3780-4a273e9ffb1a@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: YT3PR01CA0107.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:85::20) To CO6PR12MB5427.namprd12.prod.outlook.com
- (2603:10b6:5:358::13)
+        Wed, 30 Mar 2022 10:56:51 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C5B249CB8
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 07:55:06 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id f10so10306721plr.6
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 07:55:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FR1FYGjzBBFVsMjKKkaOUa/tpuD2LjaT4A9QUhniUPw=;
+        b=6I1kzpLw81ZLlolZkl/RjPaD+BdQRQC/HBh+0/RQ1w0Y0SRH7SYx7nJNgG0kRKd9yL
+         jtuZoAA2jUHYyMo8Yhnva/4GT+HWMqg/v6F/jD0dliLoblQpeqR8NeImY/jV4MyMPtE3
+         ra6wnisQSJZKXM7sCqPDpcgSjh9pwETskySogCzn6p2I0J3Vw/7oIB9HhF+jNVDiwf9n
+         Zr03cdrSe0gEtLpfErESGbvagcgjYLPMJuzcceQu18EdDuBJCYEU8ETfyweM2V1PiO/O
+         AIEoWMUzHw4QjSBU8vAV5NKrQjK8m1EaKm6wclNj3+ECSayjXZRv8TwfGX12bXndtKsy
+         JJNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FR1FYGjzBBFVsMjKKkaOUa/tpuD2LjaT4A9QUhniUPw=;
+        b=Z2XLjj5HS+NCRK083hccQRnCdXId1xjmEfS5UhLFL/59M1QTwgU96MoV6Ss+BkiqPJ
+         x7gznLKrNfMtnsiu4i21O/5flZHSQgb443I795xbJVUkW380w8pGsYRivLgIu4d18ax5
+         cEMb/pH51sbDiVThj2ap3Uc/gh++jOGxgea6IJoD9CZcxnTdh++LepCYCnC0mu5FK0v6
+         aQ9uFevC8thhFwTLHj6f2twhpomB/zkzyYdHJaT9np2RvW6Pt/Bh53sxD7QfYsx1QtcU
+         wjI+96EdWHaQ82Hwxncu7WFOvy1T8lnxTxRdYMjNtrxqL+f8b62h87WRxbCmZR/og4pJ
+         KRiQ==
+X-Gm-Message-State: AOAM5321dqhtPfQ1/zzSv4wdOJ7lyq/2WAmrWiZ3mw0gxlrHFlOxAEZq
+        I384wiFTtXD2GUpy9GdEbR/xO1v/K6JrOg==
+X-Google-Smtp-Source: ABdhPJw4HvO7Gh7pHgNX8rhNx/r/CsKhA4e//A3XD5NLH95YhJJ3Pd64W0SCZufUOy+BAlzj9sqMAw==
+X-Received: by 2002:a17:90b:1c07:b0:1c7:5324:c68e with SMTP id oc7-20020a17090b1c0700b001c75324c68emr5600650pjb.202.1648652105388;
+        Wed, 30 Mar 2022 07:55:05 -0700 (PDT)
+Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.239])
+        by smtp.gmail.com with ESMTPSA id a71-20020a63904a000000b00398666dcf8esm8236283pge.40.2022.03.30.07.54.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 07:55:05 -0700 (PDT)
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     will@kernel.org, akpm@linux-foundation.org, david@redhat.com,
+        bodeddub@amazon.com, osalvador@suse.de, mike.kravetz@oracle.com,
+        rientjes@google.com, mark.rutland@arm.com, catalin.marinas@arm.com,
+        james.morse@arm.com, 21cnbao@gmail.com
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, duanxiongchun@bytedance.com,
+        fam.zheng@bytedance.com, smuchun@gmail.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: [PATCH v3] arm64: mm: hugetlb: Enable HUGETLB_PAGE_FREE_VMEMMAP for arm64
+Date:   Wed, 30 Mar 2022 22:54:00 +0800
+Message-Id: <20220330145400.18565-1-songmuchun@bytedance.com>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 36433a71-9da3-4e3f-905a-08da125d32db
-X-MS-TrafficTypeDiagnostic: BN8PR12MB2884:EE_
-X-Microsoft-Antispam-PRVS: <BN8PR12MB2884F22BBFDBADBAD450586A8C1F9@BN8PR12MB2884.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MlqiYZW7pVYnZo0pj67OBqyJW1OFHhy8dI+5hGkiogIYlqUpqN9dR/IFBiZMupJ4xulP2uUdi0O0Obd0kGFKKEt5vd4QYnCpZcm6JAA7+IqAfz/YOJT/c23RY+jP2GrLfaJm5L2SB9gRBGbKzfuqRUCxf60UgRaVz/iqrbFMo+ZwUpWQsAxSK8poGqEoffUfxqSGah9DJNi3Tkm8nh8fJLVZ4/RBnPq+wDti2Pn9usdYhZL19BRumoh6KWOpWvXFzlilCugccSqqVoNabil+vDcxUjhkA+wHZVcQPzHQtJ1cJ7SPZoSmLJhbDfKyDPlqUqPn8NkW1j1ms7eSm1CyVcgbssU9NEe4PFP83CYhTQjlpikx3EbGVb/90VV6qoFME54aJktPL4cjVkQYaFItNQeapSz5dCjKFC8xeydKu+exknFV2D7SekMJUaetbyOGL00zfN4TodKwDqhVieGtscC66WC6WMs/RcwNmpDwyJ+YXPl4MwJptlv6x2AEFuGcRBZqU7nBM0aQ6Fz0qc5dADM60mNjJuDwepOwWfg1Ip48T4iRgPKj2vVLyUYtxuXREDglee0rMJtRjpFaFwHE5pX75WRkUNz59e0nuJrJC2/ltdg7Z8DLEKW63pK2sGq9ec57bDWsiG7dgoPrrIF+97xw44bt3I44B1S24SmH990uoa2OLX/j4XvRwZr+11+XUH9MCmB74WSMBXOj+zfIB2N92v91L78Klpl+CyWQ9Cw=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR12MB5427.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(54906003)(110136005)(38100700002)(316002)(508600001)(83380400001)(53546011)(6506007)(6666004)(6512007)(2616005)(186003)(26005)(8676002)(966005)(66476007)(66556008)(6486002)(2906002)(8936002)(66946007)(4326008)(36756003)(31686004)(31696002)(5660300002)(86362001)(44832011)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?R0dTQzNsMXUvbjJaNHpqdTBkYTVCa015aEUwSTcxZ0pEQUlSWEFMRi9NREZX?=
- =?utf-8?B?enpBQ2lHTk9SU0ZXN2srcGsyN2pNYjhwemdoRHIyL2NGUmNWdFVCcGx6d3pS?=
- =?utf-8?B?TWhkS0haeStJeHlqR3B3ME15ckJ6eXJDZUVod0pqNEpLanM2aGdpVVp2bFJh?=
- =?utf-8?B?Q3JYMEdjMGhPbk9HakJqcVJJc1hMNHVJZDdpUXVVTWMwUU1GZ2FaeUIvVTJ5?=
- =?utf-8?B?ZHNJVE9VaWh4NzBVTkVjRjc4UjlkTG5uaUZib0dBYzhCM0lsZk9GU1FQb2NT?=
- =?utf-8?B?WDVJcGV0WkxFWmw3dlNrZCszMmtFTGNHcjNHMWlLQXBEZzFwb0xwSGkvU3ZG?=
- =?utf-8?B?bHp1ek5wSk1xMGp3TmtrbkxqWVpaZGg0Tyt2SjZBdkRKWWFlUHVtbWxBa2RG?=
- =?utf-8?B?U1NiNmc1SlZqQ1VOMmlnR013UzBCdjZ6Rk90Y1pONWpaNEFySU1OOUgyRVhx?=
- =?utf-8?B?NUg3N2pxVXdWaktYcjhsWlNLMW85QmNlY043OGdlcGFCUXdLYjZKUzBrdHhT?=
- =?utf-8?B?dUNMb3BQYWFuRVZFYnVqTjl4RUdHYnY3VE1jZnd5ajkvTWZYc01iYVBFNU1D?=
- =?utf-8?B?R0hMdEpIcURGQ3kxdGlFTnUxR3FvZUVXUVFEdFhCaEgwTVhCWHlOL3FhRVpZ?=
- =?utf-8?B?RUpubGhiTktIU2YzTWdFOHZqSWwvSFIrUE5wOEVzZzZ4NUl6SGphWjlZTlRn?=
- =?utf-8?B?VzFxOWE2ZWR0MXhkelA5d2VxZmprRU1LdUM4KzU2QVZjbnoxS0V4WDIvMTIy?=
- =?utf-8?B?Vkw2blJXeHBpVjU5bDF5TUkzcDJMdkFKbFRteEt0a3EyZkxwOFlDc3c5LzY1?=
- =?utf-8?B?M1hCWkhYdTJDVDFreXVOV3pmTU44ZFpOb2dIT2tZMmttSnF3bW1vbGQxRnQ5?=
- =?utf-8?B?bmxRUjFZZUo5b0k1bFNlbG1tWWFwTW5YMW50U3d5eUx2TjJmVVFEcFIzaWtu?=
- =?utf-8?B?SE52N3VMUENSM2M1NVdxNlBLTGRjT1ZsN1cycTVTUEY4bTFvQ0lvM2hiWkov?=
- =?utf-8?B?WjlHMlcwWFh4TXNxeDNvOXV6S2FmT1NvTzZlTjNTRlk5Uk43Rk8vUDFndHJZ?=
- =?utf-8?B?NU4yYTE5KzFoSDFMNngrUmRRUWtmVm1Bd1hNL1p0bmhZcXlGeEZPa1hqa1dj?=
- =?utf-8?B?M1MrMTR5bm9uMjExdEFqRFAweTFqNEFKV25mRUlvaloySU5mNk4yS25PVVNx?=
- =?utf-8?B?YmlabEc3RlBIOTVqSGRwc2wyaG9IOUk2QTQwWlNpL0o0eEg5d09VVjZKdjRT?=
- =?utf-8?B?RThHS3VHa1ZBUXJWdnorYk5Sbm93Si9RZmVVdmhTUnU1S09rbDZqcUludWx2?=
- =?utf-8?B?QWV3d2lWbmxIWGJRb2kyd3pCNllNZVZNMEZaVGJCd295eDVEaWw0MEU1Y3py?=
- =?utf-8?B?K0Rjb21ZSGU1L1NzN3R4b3NnY3ZxZmNpalJqTDF3UzA4L1BCN1ZTZFpXRVlo?=
- =?utf-8?B?VzZXanl5d0JSODN4SG5TbTU5S3V6TUp2OTZCTHpFRitiVVdhNFcwa3RPcjVs?=
- =?utf-8?B?bkYvRmd6R0lNaGZ0V3pteXdhY2J6N3RORExKZG1ncTRzSGFLWUNia21neVJY?=
- =?utf-8?B?dEVuYjF1WUZLZkprVjhJWEhGUUtvcGZteEdibWYzV25TYVROTmhxcUJZRDJw?=
- =?utf-8?B?VDJHVHlQdlJTcllVcklFdmxGOVd3bXhudVZIQjJzS0lRV2puYmhRTk1VYU5N?=
- =?utf-8?B?N0VZTW9PcCtJSnQzZENCTHFscFNoNlp2Zmp1RTJvZlh1ZkliUitGWGN0Q1p0?=
- =?utf-8?B?N1JUVHdDY21FQ3VIU2QycUpDWDNMQjA0cjRFSkZHK0ZSclhnZ3pLMG0zQWh0?=
- =?utf-8?B?VGpSNTl2b3JWcDBGaVgwb2xHUEtZVWYyTG5tdnhVd3JsS1JGYU5GQmw4TXdw?=
- =?utf-8?B?TnF1QmlyS3NsUmdudkVuNVY4RXQ2RFNLM0VVdDdaUjBMQ2QzTDZFS0NOekZz?=
- =?utf-8?B?MVlSc2RSS2I1Mjhib29RV25ONmwrTUhrcG5ITG13dmxTRzZsTFN3ZkJtMm1G?=
- =?utf-8?B?V1pTbmM4TUIxT2N1OVlXYUJTQ0IyejRQQUxKaGUyUjcxWGU1anlRdDdXakJH?=
- =?utf-8?B?bms4bHZNK2JKSTdEWVlMVDc3VkNEWnJST0pDcFdnNXdZVEF5UXBUcEYxODVz?=
- =?utf-8?B?R1dQaVI3b0RTY1NkK3ZLb2FBdUxGM1dxcHZFeWs5dzNmN3daa2xkWENsblY5?=
- =?utf-8?B?VzlUTXIrTGROVFhsRmlZZllxSEZkeVNFVkV3NTdTeFhPM1Vucnp0cC9aYnQ3?=
- =?utf-8?B?ME5kTmhwWVBRY0FONHk1Wmp5T2htczJVSWVYSUR5Si9LcHA0cEVnNmRuRnhJ?=
- =?utf-8?B?ZjJPRUlmczUxOFEyK2RSMkpkYlJtUloxVkw2ekNGdmdoSmhEVVZkdz09?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 36433a71-9da3-4e3f-905a-08da125d32db
-X-MS-Exchange-CrossTenant-AuthSource: CO6PR12MB5427.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2022 14:54:32.3198
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: GQmsta94CKNC3BC9dEfqPCR2AmHvzv84jr01dH8rYQ4ZcTKcfwPWuJ1crDZ2OeaYikMJQPkWBsPX2+XFN7Mdfg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB2884
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The feature of minimizing overhead of struct page associated with each
+HugeTLB page aims to free its vmemmap pages (used as struct page) to
+save memory, where is ~14GB/16GB per 1TB HugeTLB pages (2MB/1GB type).
+In short, when a HugeTLB page is allocated or freed, the vmemmap array
+representing the range associated with the page will need to be remapped.
+When a page is allocated, vmemmap pages are freed after remapping.
+When a page is freed, previously discarded vmemmap pages must be
+allocated before remapping.  More implementations and details can be
+found here [1].
 
+The infrastructure of freeing vmemmap pages associated with each HugeTLB
+page is already there, we can easily enable HUGETLB_PAGE_FREE_VMEMMAP
+for arm64, the only thing to be fixed is flush_dcache_page() .
 
-On 2022-03-30 08:30, Rodrigo Siqueira Jordao wrote:
-> 
-> 
-> On 2022-03-29 16:18, Melissa Wen wrote:
->> "Pre-multiplied" is the default pixel blend mode for KMS/DRM, as
->> documented in supported_modes of drm_plane_create_blend_mode_property():
->> https://cgit.freedesktop.org/drm/drm-misc/tree/drivers/gpu/drm/drm_blend.c
->>
->> In this mode, both 'pixel alpha' and 'plane alpha' participate in the
->> calculation, as described by the pixel blend mode formula in KMS/DRM
->> documentation:
->>
->> out.rgb = plane_alpha * fg.rgb +
->>            (1 - (plane_alpha * fg.alpha)) * bg.rgb
->>
->> Considering the blend config mechanisms we have in the driver so far,
->> the alpha mode that better fits this blend mode is the
->> _PER_PIXEL_ALPHA_COMBINED_GLOBAL_GAIN, where the value for global_gain
->> is the plane alpha (global_alpha).
->>
->> With this change, alpha property stops to be ignored. It also addresses
->> Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1734
->>
->> v2:
->>   * keep the 8-bit value for global_alpha_value (Nicholas)
->>   * correct the logical ordering for combined global gain (Nicholas)
->>   * apply to dcn10 too (Nicholas)
->>
->> Signed-off-by: Melissa Wen <mwen@igalia.com>
->> ---
->>   .../drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c  | 14 +++++++++-----
->>   drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c | 14 +++++++++-----
->>   2 files changed, 18 insertions(+), 10 deletions(-)
->>
->> diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
->> index ad757b59e00e..b1034e6258c8 100644
->> --- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
->> +++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
->> @@ -2528,14 +2528,18 @@ void dcn10_update_mpcc(struct dc *dc, struct pipe_ctx *pipe_ctx)
->>       struct mpc *mpc = dc->res_pool->mpc;
->>       struct mpc_tree *mpc_tree_params = &(pipe_ctx->stream_res.opp->mpc_tree_params);
->>   -    if (per_pixel_alpha)
->> -        blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA;
->> -    else
->> -        blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_GLOBAL_ALPHA;
->> -
->>       blnd_cfg.overlap_only = false;
->>       blnd_cfg.global_gain = 0xff;
->>   +    if (per_pixel_alpha && pipe_ctx->plane_state->global_alpha) {
->> +        blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA_COMBINED_GLOBAL_GAIN;
->> +        blnd_cfg.global_gain = pipe_ctx->plane_state->global_alpha_value;
->> +    } else if (per_pixel_alpha) {
->> +        blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA;
->> +    } else {
->> +        blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_GLOBAL_ALPHA;
->> +    }
->> +
->>       if (pipe_ctx->plane_state->global_alpha)
->>           blnd_cfg.global_alpha = pipe_ctx->plane_state->global_alpha_value;
->>       else
->> diff --git a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c
->> index 4290eaf11a04..b627c41713cc 100644
->> --- a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c
->> +++ b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c
->> @@ -2344,14 +2344,18 @@ void dcn20_update_mpcc(struct dc *dc, struct pipe_ctx *pipe_ctx)
->>       struct mpc *mpc = dc->res_pool->mpc;
->>       struct mpc_tree *mpc_tree_params = &(pipe_ctx->stream_res.opp->mpc_tree_params);
->>   -    if (per_pixel_alpha)
->> -        blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA;
->> -    else
->> -        blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_GLOBAL_ALPHA;
->> -
->>       blnd_cfg.overlap_only = false;
->>       blnd_cfg.global_gain = 0xff;
->>   +    if (per_pixel_alpha && pipe_ctx->plane_state->global_alpha) {
->> +        blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA_COMBINED_GLOBAL_GAIN;
->> +        blnd_cfg.global_gain = pipe_ctx->plane_state->global_alpha_value;
->> +    } else if (per_pixel_alpha) {
->> +        blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA;
->> +    } else {
->> +        blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_GLOBAL_ALPHA;
->> +    }
->> +
-> 
-> Hi Melissa,
-> 
-> Thanks a lot for this patch. I run your patch in our CI, and everything looks good from the IGT test result.
-> 
-> In this sense:
-> Tested-by: Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
-> 
-> However, I think it is still necessary to have someone else review.
-> 
-> Harry, Nick, or Zhan, what do you think about this change?
-> 
+flush_dcache_page() need to be adapted to operate on the head page's
+flags since the tail vmemmap pages are mapped with read-only after the
+feature is enabled (clear operation is not permitted).
 
-Looks good to me.
+There was some discussions about this in the thread [2], but there was
+no conclusion in the end.  And I copied the concern proposed by Anshuman
+to here and explain why those concern is superfluous.  It is safe to
+enable it for x86_64 as well as arm64.
 
-Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+1st concern:
+'''
+But what happens when a hot remove section's vmemmap area (which is
+being teared down) is nearby another vmemmap area which is either created
+or being destroyed for HugeTLB alloc/free purpose. As you mentioned
+HugeTLB pages inside the hot remove section might be safe. But what about
+other HugeTLB areas whose vmemmap area shares page table entries with
+vmemmap entries for a section being hot removed ? Massive HugeTLB alloc
+/use/free test cycle using memory just adjacent to a memory hotplug area,
+which is always added and removed periodically, should be able to expose
+this problem.
+'''
 
-Harry
+Answer: At the time memory is removed, all HugeTLB pages either have been
+migrated away or dissolved.  So there is no race between memory hot remove
+and free_huge_page_vmemmap().  Therefore, HugeTLB pages inside the hot
+remove section is safe.  Let's talk your question "what about other
+HugeTLB areas whose vmemmap area shares page table entries with vmemmap
+entries for a section being hot removed ?", the question is not
+established.  The minimal granularity size of hotplug memory 128MB (on
+arm64, 4k base page), any HugeTLB smaller than 128MB is within a section,
+then, there is no share PTE page tables between HugeTLB in this section
+and ones in other sections and a HugeTLB page could not cross two
+sections.  In this case, the section cannot be freed.  Any HugeTLB bigger
+than 128MB (section size) whose vmemmap pages is an integer multiple of
+2MB (PMD-mapped).  As long as:
 
-> Thanks
-> Siqueira
-> 
->>       if (pipe_ctx->plane_state->global_alpha)
->>           blnd_cfg.global_alpha = pipe_ctx->plane_state->global_alpha_value;
->>       else
-> 
+  1) HugeTLBs are naturally aligned, power-of-two sizes
+  2) The HugeTLB size >= the section size
+  3) The HugeTLB size >= the vmemmap leaf mapping size
+
+Then a HugeTLB will not share any leaf page table entries with *anything
+else*, but will share intermediate entries.  In this case, at the time memory
+is removed, all HugeTLB pages either have been migrated away or dissolved.
+So there is also no race between memory hot remove and
+free_huge_page_vmemmap().
+
+2nd concern:
+'''
+differently, not sure if ptdump would require any synchronization.
+
+Dumping an wrong value is probably okay but crashing because a page table
+entry is being freed after ptdump acquired the pointer is bad. On arm64,
+ptdump() is protected against hotremove via [get|put]_online_mems().
+'''
+
+Answer: The ptdump should be fine since vmemmap_remap_free() only exchanges
+PTEs or splits the PMD entry (which means allocating a PTE page table).  Both
+operations do not free any page tables (PTE), so ptdump cannot run into a
+UAF on any page tables.  The worst case is just dumping an wrong value.
+
+[1] https://lore.kernel.org/all/20210510030027.56044-1-songmuchun@bytedance.com/
+[2] https://lore.kernel.org/all/20210518091826.36937-1-songmuchun@bytedance.com/
+
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+---
+v3:
+ - Rework patch's subject.
+ - Clarify the feature of HUGETLB_PAGE_FREE_VMEMMAP is already there in the
+   current code and easyly be enabled for arm64 into commit log.
+ - Add hugetlb_free_vmemmap_enabled() check into flush_dcache_page().
+
+ Thanks for Barry's suggestions.
+
+v2:
+ - Update commit message (Mark Rutland).
+ - Fix flush_dcache_page().
+
+ arch/arm64/mm/flush.c | 13 +++++++++++++
+ fs/Kconfig            |  2 +-
+ 2 files changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/mm/flush.c b/arch/arm64/mm/flush.c
+index a06c6ac770d4..487ab9032c13 100644
+--- a/arch/arm64/mm/flush.c
++++ b/arch/arm64/mm/flush.c
+@@ -75,6 +75,19 @@ EXPORT_SYMBOL_GPL(__sync_icache_dcache);
+  */
+ void flush_dcache_page(struct page *page)
+ {
++	/*
++	 * Only the head page's flags of HugeTLB can be cleared since the tail
++	 * vmemmap pages associated with each HugeTLB page are mapped with
++	 * read-only when CONFIG_HUGETLB_PAGE_FREE_VMEMMAP is enabled (more
++	 * details can refer to vmemmap_remap_pte()).  Although
++	 * __sync_icache_dcache() only set PG_dcache_clean flag on the head
++	 * page struct, some tail page structs still can see the flag since
++	 * the head vmemmap page frame is reused (more details can refer to
++	 * the comments above page_fixed_fake_head()).
++	 */
++	if (hugetlb_free_vmemmap_enabled() && PageHuge(page))
++		page = compound_head(page);
++
+ 	if (test_bit(PG_dcache_clean, &page->flags))
+ 		clear_bit(PG_dcache_clean, &page->flags);
+ }
+diff --git a/fs/Kconfig b/fs/Kconfig
+index 7a2b11c0b803..04cfd5bf5ec9 100644
+--- a/fs/Kconfig
++++ b/fs/Kconfig
+@@ -247,7 +247,7 @@ config HUGETLB_PAGE
+ 
+ config HUGETLB_PAGE_FREE_VMEMMAP
+ 	def_bool HUGETLB_PAGE
+-	depends on X86_64
++	depends on X86_64 || ARM64
+ 	depends on SPARSEMEM_VMEMMAP
+ 
+ config HUGETLB_PAGE_FREE_VMEMMAP_DEFAULT_ON
+-- 
+2.11.0
 
