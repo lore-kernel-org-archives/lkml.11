@@ -2,145 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6CCBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 16:55:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E6AEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 16:57:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349097AbiC3Q5f (ORCPT
+        id S1349104AbiC3Q64 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 12:57:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56152 "EHLO
+        Wed, 30 Mar 2022 12:58:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349092AbiC3Q5a (ORCPT
+        with ESMTP id S1349105AbiC3Q6w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 12:57:30 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E3A138D84
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 09:55:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648659345; x=1680195345;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=/piVvRpH4T2dY0wwk9ZQ2aKH8BkOi8Q+/WQfNQprkfY=;
-  b=LqQcAvPI3q0m/m2SWXu+DUedmTfkoSSkOMJKhUWCj7yQ9G/xMSFSIqFY
-   9ZRKFu+g596jWLjv2AK7hYQYRViup7XhKCaFIQIDdFTmZQXkT8o9Lv3sx
-   5pef77gpPJuh/m2ETMwDNQtK/qMCNJ+cQ4Fa8RQtNqIJpZyWIYcT8AZYm
-   Xth3p90e/ePkdJuZkjuNXjXWfYdEemM0bunLgedJSG5V/BF/mqZC3MW9M
-   ev+xgQP7HjHOSCR2thrGrUGDX7+MXf40Uub5C/GsDol72ROQKF3NQhXrW
-   k6xh+Gn1GVfRvk1teA9mUGlha4g0TN62uoYAs98GP453lEeMwzFY0tDGs
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="241745248"
-X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
-   d="scan'208";a="241745248"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 09:55:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
-   d="scan'208";a="649936643"
-Received: from lkp-server02.sh.intel.com (HELO 56431612eabd) ([10.239.97.151])
-  by fmsmga002.fm.intel.com with ESMTP; 30 Mar 2022 09:55:21 -0700
-Received: from kbuild by 56431612eabd with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nZbbM-0000Cu-GG;
-        Wed, 30 Mar 2022 16:55:20 +0000
-Date:   Thu, 31 Mar 2022 00:54:24 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Will Deacon <will@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: include/linux/compiler_types.h:338:45: error: call to
- '__compiletime_assert_247' declared with attribute error: BUILD_BUG_ON
- failed: SECTIONS_WIDTH + NODES_WIDTH + ZONES_WIDTH +
- ilog2(roundup_pow_of_two(NR_CPUS)) > 32
-Message-ID: <202203310048.Lh5iXsQu-lkp@intel.com>
+        Wed, 30 Mar 2022 12:58:52 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBB324B404
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 09:57:03 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id z92so25145645ede.13
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 09:57:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=fEzld4oIJa86hl09sRy64K2e8LGIGCRfWuc+U0PWYOs=;
+        b=pz8Axq5e3iFbz7Jw0eIdKg+hWyV0eg5X/OrzwVODe4qALsVNW5P6XCIffz7jZBls1S
+         Ay8G4ifJkD57k5cn7sKOqZqcX8jZz7AiV0A+xfY0usJu+I228VzlXlRNwtFfpvWDYChT
+         tCTa4NX0jot2hZU9MZto6acQS6j1L5ezvPVFwjTq5mozRXGJ/05EDtzB/X0fdtun30yf
+         E7wrNN00iG4bycxxZuXuO6Zu97SotlzoyB98sU++D3zFCPA3T7stPpKNzWvbRrSL+Hzq
+         CLmsL7H9fVbfmMMXR72/C2K+zdLRiND4Sk71buZAy/vXVdCalN6MK04NuIfO07hJu1FF
+         XYsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=fEzld4oIJa86hl09sRy64K2e8LGIGCRfWuc+U0PWYOs=;
+        b=59kbOm9+gw43rMVsAD5uWCHV/c6ewld7dyP7jkss2mpu+8Sn/mGpY4vJJgOIlT3iRW
+         DDPgFS0CYFa2KwCsnoSKcd2SIx0e0MzGQokXSgkE4qKRpTgBzZ/uBFAOJWOLF8S5vx22
+         0JXeC7EiG97q4M6fm9MKzhuCQnDiE35tg1+VzOEifrFS79zWVaMNmjpDvIoV/RJJwGFp
+         6oOypeyLf1hpKh9qbMU+zfhd+RCswfuVNE62LgONxQ7aHfSSxt3C0AVUmDsa8A10RwPD
+         D3ZwRTD4et7r0pfcob0qTMZFbESy5OEqEd7RZDN2NTxU6Rv0Mfv6fm73nNkXP6ETKFCA
+         0TFw==
+X-Gm-Message-State: AOAM533nzGZ2NVBljPJiq7dHStZCSP5vRKqv1b/NTRt4P0L8o6ASqPMo
+        /1g4tNeuoMvAcSFgM84F6a7sVg==
+X-Google-Smtp-Source: ABdhPJyCpxyw7R6T+pFO1zsX01vbrvk5lvAApJ9RbFPs/LdEa4c5G+bltActTe6FNicQwS1ouiR2cg==
+X-Received: by 2002:a05:6402:d67:b0:419:48b:a762 with SMTP id ec39-20020a0564020d6700b00419048ba762mr11695300edb.291.1648659422507;
+        Wed, 30 Mar 2022 09:57:02 -0700 (PDT)
+Received: from [192.168.0.164] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id q15-20020a1709060e4f00b006cdf4535cf2sm8394201eji.67.2022.03.30.09.57.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Mar 2022 09:57:01 -0700 (PDT)
+Message-ID: <e13ceaad-d5f7-3c50-774e-28cabb2e1fe6@linaro.org>
+Date:   Wed, 30 Mar 2022 18:57:00 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] dt-bindings: Fix incomplete if/then/else schemas
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        devicetree@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Olivier Moysan <olivier.moysan@foss.st.com>,
+        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Georgi Djakov <djakov@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>, Mark Brown <broonie@kernel.org>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Dmitry Osipenko <digetx@gmail.com>, linux-iio@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-mmc@vger.kernel.org,
+        linux-tegra@vger.kernel.org, netdev@vger.kernel.org,
+        linux-phy@lists.infradead.org
+References: <20220330145741.3044896-1-robh@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220330145741.3044896-1-robh@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Will,
+On 30/03/2022 16:57, Rob Herring wrote:
+> A recent review highlighted that the json-schema meta-schema allows any
+> combination of if/then/else schema keywords even though if, then or else
+> by themselves makes little sense. With an added meta-schema to only
+> allow valid combinations, there's a handful of schemas found which need
+> fixing in a variety of ways. Incorrect indentation is the most common
+> issue.
+> 
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Michael Hennerich <Michael.Hennerich@analog.com>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>
+> Cc: Olivier Moysan <olivier.moysan@foss.st.com>
+> Cc: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Cc: Georgi Djakov <djakov@kernel.org>
+> Cc: Ulf Hansson <ulf.hansson@linaro.org>
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Cc: Jonathan Hunter <jonathanh@nvidia.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: Kishon Vijay Abraham I <kishon@ti.com>
+> Cc: Vinod Koul <vkoul@kernel.org>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+> Cc: Grygorii Strashko <grygorii.strashko@ti.com>
+> Cc: Dmitry Osipenko <digetx@gmail.com>
+> Cc: linux-iio@vger.kernel.org
+> Cc: alsa-devel@alsa-project.org
+> Cc: linux-mmc@vger.kernel.org
+> Cc: linux-tegra@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-phy@lists.infradead.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../bindings/iio/adc/adi,ad7476.yaml          |  1 +
+>  .../bindings/iio/adc/st,stm32-dfsdm-adc.yaml  |  8 +-
+>  .../bindings/iio/dac/adi,ad5360.yaml          |  6 +-
+>  .../bindings/interconnect/qcom,rpm.yaml       | 84 +++++++++----------
+>  .../bindings/mmc/nvidia,tegra20-sdhci.yaml    |  2 +
+>  .../bindings/net/ti,davinci-mdio.yaml         |  1 +
+>  .../bindings/phy/nvidia,tegra20-usb-phy.yaml  | 20 ++---
+>  .../bindings/phy/qcom,usb-hs-phy.yaml         | 36 ++++----
+>  .../bindings/regulator/fixed-regulator.yaml   | 34 ++++----
+>  .../bindings/sound/st,stm32-sai.yaml          |  6 +-
+>  .../devicetree/bindings/sram/sram.yaml        | 16 ++--
+>  11 files changed, 108 insertions(+), 106 deletions(-)
 
-FYI, the error/warning still remains.
+Looks good:
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   d888c83fcec75194a8a48ccd283953bdba7b2550
-commit: eb5c2d4b45e3d2d5d052ea6b8f1463976b1020d5 compiler.h: Move compiletime_assert() macros into compiler_types.h
-date:   1 year, 8 months ago
-config: sparc-randconfig-r023-20220330 (https://download.01.org/0day-ci/archive/20220331/202203310048.Lh5iXsQu-lkp@intel.com/config)
-compiler: sparc64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=eb5c2d4b45e3d2d5d052ea6b8f1463976b1020d5
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout eb5c2d4b45e3d2d5d052ea6b8f1463976b1020d5
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=sparc SHELL=/bin/bash arch/sparc/
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   arch/sparc/mm/init_64.c: In function 'arch_hugetlb_valid_size':
-   arch/sparc/mm/init_64.c:354:24: error: variable 'hv_pgsz_idx' set but not used [-Werror=unused-but-set-variable]
-     354 |         unsigned short hv_pgsz_idx;
-         |                        ^~~~~~~~~~~
-   arch/sparc/mm/init_64.c: In function 'sun4v_linear_pte_xor_finalize':
-   arch/sparc/mm/init_64.c:2210:23: error: variable 'pagecv_flag' set but not used [-Werror=unused-but-set-variable]
-    2210 |         unsigned long pagecv_flag;
-         |                       ^~~~~~~~~~~
-   In file included from <command-line>:
-   arch/sparc/mm/init_64.c: In function 'paging_init':
->> include/linux/compiler_types.h:338:45: error: call to '__compiletime_assert_247' declared with attribute error: BUILD_BUG_ON failed: SECTIONS_WIDTH + NODES_WIDTH + ZONES_WIDTH + ilog2(roundup_pow_of_two(NR_CPUS)) > 32
-     338 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |                                             ^
-   include/linux/compiler_types.h:319:25: note: in definition of macro '__compiletime_assert'
-     319 |                         prefix ## suffix();                             \
-         |                         ^~~~~~
-   include/linux/compiler_types.h:338:9: note: in expansion of macro '_compiletime_assert'
-     338 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
-         |         ^~~~~~~~~~~~~~~~
-   arch/sparc/mm/init_64.c:2306:9: note: in expansion of macro 'BUILD_BUG_ON'
-    2306 |         BUILD_BUG_ON(SECTIONS_WIDTH + NODES_WIDTH + ZONES_WIDTH +
-         |         ^~~~~~~~~~~~
-   cc1: all warnings being treated as errors
-
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for COMPAT_BINFMT_ELF
-   Depends on COMPAT && BINFMT_ELF
-   Selected by
-   - COMPAT && SPARC64
-
-
-vim +/__compiletime_assert_247 +338 include/linux/compiler_types.h
-
-   324	
-   325	#define _compiletime_assert(condition, msg, prefix, suffix) \
-   326		__compiletime_assert(condition, msg, prefix, suffix)
-   327	
-   328	/**
-   329	 * compiletime_assert - break build and emit msg if condition is false
-   330	 * @condition: a compile-time constant condition to check
-   331	 * @msg:       a message to emit if condition is false
-   332	 *
-   333	 * In tradition of POSIX assert, this macro will break the build if the
-   334	 * supplied condition is *false*, emitting the supplied error message if the
-   335	 * compiler has support to do so.
-   336	 */
-   337	#define compiletime_assert(condition, msg) \
- > 338		_compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-   339	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Best regards,
+Krzysztof
