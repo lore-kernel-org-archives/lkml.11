@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 005C5C3527B
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:15:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53979C3527E
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:15:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346049AbiC3MPg (ORCPT
+        id S1346173AbiC3MQC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:15:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57776 "EHLO
+        Wed, 30 Mar 2022 08:16:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345851AbiC3LzF (ORCPT
+        with ESMTP id S1345909AbiC3LzL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:55:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B4BC264F4A;
-        Wed, 30 Mar 2022 04:51:53 -0700 (PDT)
+        Wed, 30 Mar 2022 07:55:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7BAF266B6C;
+        Wed, 30 Mar 2022 04:52:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EF20EB81C37;
-        Wed, 30 Mar 2022 11:51:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F623C36AE2;
-        Wed, 30 Mar 2022 11:51:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 53E9A61703;
+        Wed, 30 Mar 2022 11:52:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20545C36AE3;
+        Wed, 30 Mar 2022 11:52:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641110;
-        bh=QLM2ZEVgjYzkdh/AaHI6bLcEGIY3utV+z9bS4wM40eI=;
+        s=k20201202; t=1648641144;
+        bh=BcA92V2ojBSNfXM65Q3xXu5tkigqU+hfjma6OoeF744=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J8ABZpTxaSgarpABIDhEFrd367vheWdRbyrP1q1bKnXTDTj0Xn4gTtfCfMgAzwHc/
-         wwKagp382b1P1Qbd+a3+wkIuJe1k5orbjupcwidrGzoXKWRSRXvAVbjnfibAqVM3Zj
-         e8M4aCm4Mqnk+my+k2kmjFLGazsGxnJlaIP1NXZP3PsRiWmlR5SrLj6wd8Kf6HfBts
-         63jdvDffxaMZ6op7477rMrjfZdlKEhiJxpKcxKX6oZ8w/lcDMZbQkUV4lOi4PrrKbZ
-         x2k0L2aps2fJCAXElNTcwxbnFD4hTJxKLKYBR/elgrwCseI0xoEuxY3l3M8jkh6LLE
-         0jvvA1GlDHBWg==
+        b=VF+H3DvjuLzH6cVPp0x8WM5P8T6YMd1OyqGOz/shydiceU9IJUjQSU7KAzuZsioOi
+         EyntQ2mlSijf6y08w6SJai1hz56p0nHr251vJVwghauxRnF3SJvogTYd5i4CyE9La+
+         ZERjHNVi9ELgiEcgysOx39X6xnuctYHM371vvqfEmSd7ZPnmtngjwvCG2C/YdUscFp
+         ii/pcgAw8HnGfzzK4TSKdgzZ5Y2ms4rwIqKEKMWu/29V9YiyVth1484E5hguAqYIsu
+         3kzBFqul4YPUjkgPlV/+Lu1cfM50x8UjVzmf67WUue2lEFl9i6EvoU9eRlFzdgyGiQ
+         C5p9z5AAESIdg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Abel Vesa <abel.vesa@nxp.com>, Shawn Guo <shawnguo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, kernel@pengutronix.de,
-        robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 16/37] ARM: dts: imx7: Use audio_mclk_post_div instead audio_mclk_root_clk
-Date:   Wed, 30 Mar 2022 07:51:01 -0400
-Message-Id: <20220330115122.1671763-16-sashal@kernel.org>
+Cc:     Matt Kramer <mccleetus@gmail.com>, Takashi Iwai <tiwai@suse.de>,
+        Sasha Levin <sashal@kernel.org>, perex@perex.cz,
+        tiwai@suse.com, corbet@lwn.net, gregkh@linuxfoundation.org,
+        sudipm.mukherjee@gmail.com, sylee@canonical.com,
+        hui.wang@canonical.com, alsa-devel@alsa-project.org,
+        linux-doc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 37/37] ALSA: hda/realtek: Add alc256-samsung-headphone fixup
+Date:   Wed, 30 Mar 2022 07:51:22 -0400
+Message-Id: <20220330115122.1671763-37-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115122.1671763-1-sashal@kernel.org>
 References: <20220330115122.1671763-1-sashal@kernel.org>
@@ -53,164 +55,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Abel Vesa <abel.vesa@nxp.com>
+From: Matt Kramer <mccleetus@gmail.com>
 
-[ Upstream commit 4cb7df64c732b2b9918424095c11660c2a8c4a33 ]
+[ Upstream commit ef248d9bd616b04df8be25539a4dc5db4b6c56f4 ]
 
-The audio_mclk_root_clk was added as a gate with the CCGR121 (0x4790),
-but according to the reference manual, there is no such gate. Moreover,
-the consumer driver of the mentioned clock might gate it and leave
-the ECSPI2 (the true owner of that gate) hanging. So lets use the
-audio_mclk_post_div, which is the parent.
+This fixes the near-silence of the headphone jack on the ALC256-based
+Samsung Galaxy Book Flex Alpha (NP730QCJ). The magic verbs were found
+through trial and error, using known ALC298 hacks as inspiration. The
+fixup is auto-enabled only when the NP730QCJ is detected. It can be
+manually enabled using model=alc256-samsung-headphone.
 
-Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Signed-off-by: Matt Kramer <mccleetus@gmail.com>
+Link: https://lore.kernel.org/r/3168355.aeNJFYEL58@linus
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx7-colibri.dtsi     | 4 ++--
- arch/arm/boot/dts/imx7-mba7.dtsi        | 2 +-
- arch/arm/boot/dts/imx7d-nitrogen7.dts   | 2 +-
- arch/arm/boot/dts/imx7d-pico-hobbit.dts | 4 ++--
- arch/arm/boot/dts/imx7d-pico-pi.dts     | 4 ++--
- arch/arm/boot/dts/imx7d-sdb.dts         | 4 ++--
- arch/arm/boot/dts/imx7s-warp.dts        | 4 ++--
- 7 files changed, 12 insertions(+), 12 deletions(-)
+ Documentation/sound/hd-audio/models.rst |  4 ++++
+ sound/pci/hda/patch_realtek.c           | 11 +++++++++++
+ 2 files changed, 15 insertions(+)
 
-diff --git a/arch/arm/boot/dts/imx7-colibri.dtsi b/arch/arm/boot/dts/imx7-colibri.dtsi
-index 62b771c1d5a9..f1c60b0cb143 100644
---- a/arch/arm/boot/dts/imx7-colibri.dtsi
-+++ b/arch/arm/boot/dts/imx7-colibri.dtsi
-@@ -40,7 +40,7 @@
+diff --git a/Documentation/sound/hd-audio/models.rst b/Documentation/sound/hd-audio/models.rst
+index d25335993e55..9b52f50a6854 100644
+--- a/Documentation/sound/hd-audio/models.rst
++++ b/Documentation/sound/hd-audio/models.rst
+@@ -261,6 +261,10 @@ alc-sense-combo
+ huawei-mbx-stereo
+     Enable initialization verbs for Huawei MBX stereo speakers;
+     might be risky, try this at your own risk
++alc298-samsung-headphone
++    Samsung laptops with ALC298
++alc256-samsung-headphone
++    Samsung laptops with ALC256
  
- 		dailink_master: simple-audio-card,codec {
- 			sound-dai = <&codec>;
--			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		};
- 	};
- };
-@@ -293,7 +293,7 @@
- 		compatible = "fsl,sgtl5000";
- 		#sound-dai-cells = <0>;
- 		reg = <0x0a>;
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pinctrl_sai1_mclk>;
- 		VDDA-supply = <&reg_module_3v3_avdd>;
-diff --git a/arch/arm/boot/dts/imx7-mba7.dtsi b/arch/arm/boot/dts/imx7-mba7.dtsi
-index 50abf18ad30b..887497e3bb4b 100644
---- a/arch/arm/boot/dts/imx7-mba7.dtsi
-+++ b/arch/arm/boot/dts/imx7-mba7.dtsi
-@@ -250,7 +250,7 @@
- 	tlv320aic32x4: audio-codec@18 {
- 		compatible = "ti,tlv320aic32x4";
- 		reg = <0x18>;
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		clock-names = "mclk";
- 		ldoin-supply = <&reg_audio_3v3>;
- 		iov-supply = <&reg_audio_3v3>;
-diff --git a/arch/arm/boot/dts/imx7d-nitrogen7.dts b/arch/arm/boot/dts/imx7d-nitrogen7.dts
-index e0751e6ba3c0..a31de900139d 100644
---- a/arch/arm/boot/dts/imx7d-nitrogen7.dts
-+++ b/arch/arm/boot/dts/imx7d-nitrogen7.dts
-@@ -288,7 +288,7 @@
- 	codec: wm8960@1a {
- 		compatible = "wlf,wm8960";
- 		reg = <0x1a>;
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		clock-names = "mclk";
- 		wlf,shared-lrclk;
- 	};
-diff --git a/arch/arm/boot/dts/imx7d-pico-hobbit.dts b/arch/arm/boot/dts/imx7d-pico-hobbit.dts
-index 7b2198a9372c..d917dc4f2f22 100644
---- a/arch/arm/boot/dts/imx7d-pico-hobbit.dts
-+++ b/arch/arm/boot/dts/imx7d-pico-hobbit.dts
-@@ -31,7 +31,7 @@
- 
- 		dailink_master: simple-audio-card,codec {
- 			sound-dai = <&sgtl5000>;
--			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		};
- 	};
- };
-@@ -41,7 +41,7 @@
- 		#sound-dai-cells = <0>;
- 		reg = <0x0a>;
- 		compatible = "fsl,sgtl5000";
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		VDDA-supply = <&reg_2p5v>;
- 		VDDIO-supply = <&reg_vref_1v8>;
- 	};
-diff --git a/arch/arm/boot/dts/imx7d-pico-pi.dts b/arch/arm/boot/dts/imx7d-pico-pi.dts
-index 70bea95c06d8..f263e391e24c 100644
---- a/arch/arm/boot/dts/imx7d-pico-pi.dts
-+++ b/arch/arm/boot/dts/imx7d-pico-pi.dts
-@@ -31,7 +31,7 @@
- 
- 		dailink_master: simple-audio-card,codec {
- 			sound-dai = <&sgtl5000>;
--			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		};
- 	};
- };
-@@ -41,7 +41,7 @@
- 		#sound-dai-cells = <0>;
- 		reg = <0x0a>;
- 		compatible = "fsl,sgtl5000";
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		VDDA-supply = <&reg_2p5v>;
- 		VDDIO-supply = <&reg_vref_1v8>;
- 	};
-diff --git a/arch/arm/boot/dts/imx7d-sdb.dts b/arch/arm/boot/dts/imx7d-sdb.dts
-index ac0751bc1177..6823b9f1a2a3 100644
---- a/arch/arm/boot/dts/imx7d-sdb.dts
-+++ b/arch/arm/boot/dts/imx7d-sdb.dts
-@@ -378,14 +378,14 @@
- 	codec: wm8960@1a {
- 		compatible = "wlf,wm8960";
- 		reg = <0x1a>;
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		clock-names = "mclk";
- 		wlf,shared-lrclk;
- 		wlf,hp-cfg = <2 2 3>;
- 		wlf,gpio-cfg = <1 3>;
- 		assigned-clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_SRC>,
- 				  <&clks IMX7D_PLL_AUDIO_POST_DIV>,
--				  <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+				  <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		assigned-clock-parents = <&clks IMX7D_PLL_AUDIO_POST_DIV>;
- 		assigned-clock-rates = <0>, <884736000>, <12288000>;
- 	};
-diff --git a/arch/arm/boot/dts/imx7s-warp.dts b/arch/arm/boot/dts/imx7s-warp.dts
-index d6b4888fa686..e035dd5bf4f6 100644
---- a/arch/arm/boot/dts/imx7s-warp.dts
-+++ b/arch/arm/boot/dts/imx7s-warp.dts
-@@ -75,7 +75,7 @@
- 
- 		dailink_master: simple-audio-card,codec {
- 			sound-dai = <&codec>;
--			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		};
- 	};
- };
-@@ -232,7 +232,7 @@
- 		#sound-dai-cells = <0>;
- 		reg = <0x0a>;
- 		compatible = "fsl,sgtl5000";
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pinctrl_sai1_mclk>;
- 		VDDA-supply = <&vgen4_reg>;
+ ALC66x/67x/892
+ ==============
+diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
+index 3bd37c02ce0e..fadf4f32877e 100644
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -6762,6 +6762,7 @@ enum {
+ 	ALC236_FIXUP_HP_MUTE_LED,
+ 	ALC236_FIXUP_HP_MUTE_LED_MICMUTE_VREF,
+ 	ALC298_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET,
++	ALC256_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET,
+ 	ALC295_FIXUP_ASUS_MIC_NO_PRESENCE,
+ 	ALC269VC_FIXUP_ACER_VCOPPERBOX_PINS,
+ 	ALC269VC_FIXUP_ACER_HEADSET_MIC,
+@@ -8083,6 +8084,14 @@ static const struct hda_fixup alc269_fixups[] = {
+ 			{ }
+ 		},
+ 	},
++	[ALC256_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET] = {
++		.type = HDA_FIXUP_VERBS,
++		.v.verbs = (const struct hda_verb[]) {
++			{ 0x20, AC_VERB_SET_COEF_INDEX, 0x08},
++			{ 0x20, AC_VERB_SET_PROC_COEF, 0x2fcf},
++			{ }
++		},
++	},
+ 	[ALC295_FIXUP_ASUS_MIC_NO_PRESENCE] = {
+ 		.type = HDA_FIXUP_PINS,
+ 		.v.pins = (const struct hda_pintbl[]) {
+@@ -8835,6 +8844,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+ 	SND_PCI_QUIRK(0x144d, 0xc740, "Samsung Ativ book 8 (NP870Z5G)", ALC269_FIXUP_ATIV_BOOK_8),
+ 	SND_PCI_QUIRK(0x144d, 0xc812, "Samsung Notebook Pen S (NT950SBE-X58)", ALC298_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET),
+ 	SND_PCI_QUIRK(0x144d, 0xc830, "Samsung Galaxy Book Ion (NT950XCJ-X716A)", ALC298_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET),
++	SND_PCI_QUIRK(0x144d, 0xc832, "Samsung Galaxy Book Flex Alpha (NP730QCJ)", ALC256_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET),
+ 	SND_PCI_QUIRK(0x1458, 0xfa53, "Gigabyte BXBT-2807", ALC283_FIXUP_HEADSET_MIC),
+ 	SND_PCI_QUIRK(0x1462, 0xb120, "MSI Cubi MS-B120", ALC283_FIXUP_HEADSET_MIC),
+ 	SND_PCI_QUIRK(0x1462, 0xb171, "Cubi N 8GL (MS-B171)", ALC283_FIXUP_HEADSET_MIC),
+@@ -9177,6 +9187,7 @@ static const struct hda_model_fixup alc269_fixup_models[] = {
+ 	{.id = ALC298_FIXUP_HUAWEI_MBX_STEREO, .name = "huawei-mbx-stereo"},
+ 	{.id = ALC256_FIXUP_MEDION_HEADSET_NO_PRESENCE, .name = "alc256-medion-headset"},
+ 	{.id = ALC298_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET, .name = "alc298-samsung-headphone"},
++	{.id = ALC256_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET, .name = "alc256-samsung-headphone"},
+ 	{.id = ALC255_FIXUP_XIAOMI_HEADSET_MIC, .name = "alc255-xiaomi-headset"},
+ 	{.id = ALC274_FIXUP_HP_MIC, .name = "alc274-hp-mic-detect"},
+ 	{.id = ALC245_FIXUP_HP_X360_AMP, .name = "alc245-hp-x360-amp"},
 -- 
 2.34.1
 
