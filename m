@@ -2,187 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA891C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 18:37:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7EC0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 18:37:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350154AbiC3SjS (ORCPT
+        id S1350130AbiC3Sj3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 14:39:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43776 "EHLO
+        Wed, 30 Mar 2022 14:39:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352492AbiC3SfU (ORCPT
+        with ESMTP id S1350979AbiC3SiW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 14:35:20 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EA4F49FAA
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:33:31 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id y10so25452267edv.7
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:33:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sweetwater-ai.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=dKO0rsHOFyAMpWyi1MHnQVOBdREz93tr5XlY/aCT89k=;
-        b=HuX8hqSNN5CkzIlnxfFjhdrv+0hTKMiO/saHmO8S5JDzFWMGcv/5KDwUAo32rYCysn
-         X77M8eptIyb61789PEkrwWql5tRKB9J77M8fq0MwhTccLCZJLdKGAOoHGL6pWRui9ZTO
-         bMRVaQiHPR78HPQOjJ/go74Pw5Cy8v6E3yw3PoryL1+twgVAmF06wPH7EuNgVtgBBMRY
-         PGRydspLrTf832CuGoWHkQm7PSSelwm6jOkHWjlMi0X52TNW9TWYxb8LuxqrgKpoPByl
-         Xpza3Cb7yNeuPfYSbS/2ylp8aqgwMOMKtcSobjgViLCTbryqSUzJMxoVFksfihYscBks
-         V3Rw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=dKO0rsHOFyAMpWyi1MHnQVOBdREz93tr5XlY/aCT89k=;
-        b=vWnVIP06mjcSsPzzkG1DbVLP3aFrbUEkTrvdjchT8tmjksaWXZ/TexJ6Cd+xi6qYCU
-         fpN0qX2RsToPercNgB+vNuQQqEnmmCm61FnuPS4wAxM+uABJjmhkkbwbdA+am14xtiI3
-         +N3bqtqJoSIei4Zc7B+Q4Rr9Go1M8v053zwDQ6KmkLw/ugoBiPyFkwQMVmPt7rsTGSCN
-         MkE8d0TEI6O/tzdkrIOAcrKEqOp5b+mWeF1VBoCVK4Wsrq1zk80HHWKLXcE6EJAXVhZq
-         vFZjPXQ28OnkWmVKh6ZRbS3ktk92jlRh2uWrTfqNtFCtzSCuy0Lr4YL+NK9F3hhEMIZ5
-         Qjeg==
-X-Gm-Message-State: AOAM5314gU7e+NhrVBOeX/W3ZIKZhUxhhLV0XXnsCuaHosdX+6SnzhwV
-        dz0maYYzPXnmClCY6FJRZbN1acusFHFlb3X6eYiapQ==
-X-Google-Smtp-Source: ABdhPJy4EZDSf9OPi2yzJpr2WG0IVC9oYxrOQ6LZwfMYIux64DzecT6oKH7UaRmQgYGnZbEm3yCppRzJnOe/WI26Qq8=
-X-Received: by 2002:aa7:c704:0:b0:418:ee8f:3fd0 with SMTP id
- i4-20020aa7c704000000b00418ee8f3fd0mr12314131edq.248.1648665209697; Wed, 30
- Mar 2022 11:33:29 -0700 (PDT)
+        Wed, 30 Mar 2022 14:38:22 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21D7E5BE54
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:36:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648665388; x=1680201388;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=dsZkV85VOjyfqJhpnTC+Fd4cW3CGBcgeUV/g0lbKhuI=;
+  b=Xg3s9wHp5Xb95fX3qCfU/xTCBTfJAm4+tC5zjn54QqTPiWsPe3R9HYnD
+   ayBtWBdNI1KHdY8peupPTsyDibuOqV2f6Cmb8PWXDTBnT1QKcDgc0jZ/G
+   A/XQRvzmFG8BlPSIy8Km824Vi1bVZIXm2gbIf/2YVwpjfneZrJivzEgN3
+   +K5q5Z4aW2DxQXhlJbRiuRoIlX3aAXSaY4M/LlUwbNle5ce+nyo1rPRSK
+   OmnJOVuGHPqfS9EJuE4a00PKa3h0GsCgbpbY5A86Gs8dAVW4LvhqUuDW5
+   wtFonJBBWuFnc1GM6t0EIJLbWeOq9ll+ilLVqEYwPaDigh1EUb69xP97a
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="322799161"
+X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
+   d="scan'208";a="322799161"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 11:36:27 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
+   d="scan'208";a="654007180"
+Received: from lkp-server02.sh.intel.com (HELO 56431612eabd) ([10.239.97.151])
+  by orsmga004.jf.intel.com with ESMTP; 30 Mar 2022 11:36:26 -0700
+Received: from kbuild by 56431612eabd with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nZdBB-0000JK-Nf;
+        Wed, 30 Mar 2022 18:36:25 +0000
+Date:   Thu, 31 Mar 2022 02:36:13 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: arch/arm/kernel/irq.c:51:12: sparse: sparse: symbol
+ '__pcpu_scope_irq_stack_ptr' was not declared. Should it be static?
+Message-ID: <202203310200.MFNPVX0L-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220328111828.1554086-1-sashal@kernel.org> <20220328111828.1554086-16-sashal@kernel.org>
- <CAOnCY6TTx65+Z7bBwgmd8ogrCH78pps59u3_PEbq0fUpd1n_6A@mail.gmail.com>
- <9e78091d07d74550b591c6a594cd72cc@AcuMS.aculab.com> <CAOnCY6QNPUC-VK+ARLb6i_UskV2CkW+AG5ZqWe_oMGUumL9Gnw@mail.gmail.com>
-In-Reply-To: <CAOnCY6QNPUC-VK+ARLb6i_UskV2CkW+AG5ZqWe_oMGUumL9Gnw@mail.gmail.com>
-From:   Michael Brooks <m@sweetwater.ai>
-Date:   Wed, 30 Mar 2022 11:33:21 -0700
-Message-ID: <CAOnCY6Q9XoAMpeRfA_ghge3mXkGXFsm4fW64hxcbnMdJyx8Y2g@mail.gmail.com>
-Subject: Re: [PATCH AUTOSEL 5.17 16/43] random: use computational hash for
- entropy extraction
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Sasha Levin <sashal@kernel.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Eric Biggers <ebiggers@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
-        "Theodore Ts'o" <tytso@mit.edu>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The /dev/random device driver need not concern itself with root
-adversaries as this type of user has permissions to read and overwrite
-memory - this user even possesses permission to replace the kernel elf
-binary with a copy of /dev/random that always returns the number 0 -
-that is their right.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   d888c83fcec75194a8a48ccd283953bdba7b2550
+commit: cafc0eab168917ec9c0cd47d530a40cd40eb2928 ARM: v7m: enable support for IRQ stacks
+date:   4 months ago
+config: arm-randconfig-s031-20220327 (https://download.01.org/0day-ci/archive/20220331/202203310200.MFNPVX0L-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=cafc0eab168917ec9c0cd47d530a40cd40eb2928
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout cafc0eab168917ec9c0cd47d530a40cd40eb2928
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm SHELL=/bin/bash arch/arm/kernel/
 
-This whole issue of leaks is because we are relying upon fast but
-insecure hash-function-like methods to extract data from a sensitive
-pool.  LFSR and CRC32 (which was used in an earlier version of
-/dev/random) have similarities to secure hash functions - but "aren't
-good enough for military work" - which is why we are even discussing
-the topic of leakage.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-If we use a secure primitive in the right way - preferably one that is
-faster than SHA1 - such as chcha20 or even faster still AES-NI (both
-in a feedback mode).  Then the leakage is stopped.  If the pool cannot
-leak then we do not need an entropy counter which is the mutex that
-handle_irq_event_percpu() fights over.  This reduces interrupt
-latency, reduces computational load of all interrupts, and helps
-contribute to the pool being less predictable because now an outside
-construct has to account for race conditions.
 
--Michael
+sparse warnings: (new ones prefixed by >>)
+>> arch/arm/kernel/irq.c:51:12: sparse: sparse: symbol '__pcpu_scope_irq_stack_ptr' was not declared. Should it be static?
 
-On Wed, Mar 30, 2022 at 10:10 AM Michael Brooks <m@sweetwater.ai> wrote:
->
-> Of course I am assuming local user non-root access.  One does not need
-> to reverse the mix operations in order to form a parallel construction
-> - a one way function is sufficient for such a construct as both sides
-> will operate on the data in the same manner.
->
-> This attack scenario is simply a non-issue in keypoolrandom.
-> https://github.com/TheRook/KeypoolRandom
->
-> On Wed, Mar 30, 2022 at 9:49 AM David Laight <David.Laight@aculab.com> wr=
-ote:
-> >
-> > From: Michael Brooks
-> > > Sent: 30 March 2022 17:08
-> > ...
-> > > I=E2=80=99d like to describe this bug using mathematics, because that=
- is how I
-> > > work - I am the kind of person that appreciates rigor.  In this case,
-> > > let's use inductive reasoning to illuminate this issue.
-> > >
-> > > Now, in this attack scenario let =E2=80=9Cp=E2=80=9D be the overall p=
-ool state and let
-> > > =E2=80=9Cn=E2=80=9D be the good unknown values added to the pool.  Fi=
-nally, let =E2=80=9Ck=E2=80=9D be
-> > > the known values - such as jiffies.  If we then describe the ratio of
-> > > unknown uniqueness with known uniqueness as p=3Dn/k then as a k grows
-> > > the overall predictability of the pool approaches an infinite value a=
-s
-> > > k approaches zero.   A parallel pool, let's call it p=E2=80=99 (that =
-is
-> > > pronounced =E2=80=9Cp-prime=E2=80=9D for those who don=E2=80=99t get =
-the notation).  let
-> > > p=E2=80=99=3Dn=E2=80=99/k=E2=80=99. In this case the attacker has no =
-hope of constructing n=E2=80=99,
-> > > but they can construct k=E2=80=99 - therefore the attacker=E2=80=99s =
-parasol model of
-> > > the pool p=E2=80=99 will become more accurate as the attack persists =
-leading
-> > > to p=E2=80=99 =3D p as time->=E2=88=9E.
-> > >
-> > > Q.E.D.
-> >
-> > That rather depends on how the (not) 'randmoness' is added to the pool.
-> > If there are 'r' bits of randomness in the pool and a 'stir in' a pile
-> > of known bits there can still be 'n' bits of randomness in the pool.
-> >
-> > The whole thing really relies on the non-reversability of the final prn=
-g.
-> > Otherwise if you have 'r' bits of randomness in the pool and 'p' bits
-> > in the prng you only need to request 'r + p' bits of output to be able
-> > to solve the 'p + r' simultaneous equations in 'p + r' unknowns
-> > (I think that is in the field {0, 1}).
-> >
-> > The old kernel random number generator that used xor to combine the
-> > outputs of several LFSR is trivially reversable.
-> > It will leak whatever it was seeded with.
-> >
-> > The non-reversability of the pool isn't as important since you need
-> > to reverse the prng as well.
-> >
-> > So while, in some sense, removing 'p' bits from the entropy pool
-> > to seed the prng only leaves 'r - p' bits left.
-> > That is only true if you think the prng is reversable.
-> > Provided 'r > p' (preferably 'r >> p') you can reseed the prng
-> > again (provided you take reasonably random bits) without
-> > really exposing any more state to an attacker.
-> >
-> > Someone doing cat /dev/urandom >/dev/null should just keep reading
-> > values out of the entropy pool.
-> > But if they are discarding the values that shouldn't help them
-> > recover the state of the entropy pool or the prng - even if only
-> > constant values are being added to the pool.
-> >
-> > Really what you mustn't do is delete the bits used to seed the prng
-> > from the entropy pool.
-> > About the only way to actually reduce the randomness of the entropy
-> > pool is if you've discovered what is actually in it, know the
-> > 'stirring' algorithm and feed in data that exactly cancels out
-> > bits that are present already.
-> > I suspect that anything with root access can manage that!
-> > (Although they can just overwrite the entropy pool itself,
-> > and the prng for that matter.)
-> >
-> >         David
-> >
-> > -
-> > Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, M=
-K1 1PT, UK
-> > Registration No: 1397386 (Wales)
+vim +/__pcpu_scope_irq_stack_ptr +51 arch/arm/kernel/irq.c
+
+d4664b6c987f803 Ard Biesheuvel 2021-10-05  50  
+d4664b6c987f803 Ard Biesheuvel 2021-10-05 @51  asmlinkage DEFINE_PER_CPU_READ_MOSTLY(u8 *, irq_stack_ptr);
+d4664b6c987f803 Ard Biesheuvel 2021-10-05  52  
+
+:::::: The code at line 51 was first introduced by commit
+:::::: d4664b6c987f80338407889c1e3f3abe7e16be94 ARM: implement IRQ stacks
+
+:::::: TO: Ard Biesheuvel <ardb@kernel.org>
+:::::: CC: Ard Biesheuvel <ardb@kernel.org>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
