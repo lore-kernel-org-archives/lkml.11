@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F35EAC3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3FDCC35274
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:14:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345520AbiC3MOE (ORCPT
+        id S1345461AbiC3MOA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:14:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58266 "EHLO
+        Wed, 30 Mar 2022 08:14:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345921AbiC3LzN (ORCPT
+        with ESMTP id S1345922AbiC3LzN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 30 Mar 2022 07:55:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAA96BA2;
-        Wed, 30 Mar 2022 04:52:45 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDD71276F90;
+        Wed, 30 Mar 2022 04:52:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8465E61616;
-        Wed, 30 Mar 2022 11:52:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0815C34111;
-        Wed, 30 Mar 2022 11:52:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C53761704;
+        Wed, 30 Mar 2022 11:52:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D038C3410F;
+        Wed, 30 Mar 2022 11:52:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641164;
-        bh=NjDs/hNJ5jIoUTekqUpGzHpgZgjOw+eFz6PtiTcPvs8=;
+        s=k20201202; t=1648641157;
+        bh=pFdRCSOxzPhEsyQeL9XSfBzfcCUGhXyUbPzLbsmmzLI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RhI4nj3oSpONL+nLST4sQSjZ2qIp1MpPVYV9tkJc2nJ4r0LXl2OYWNBjKfGHLrjx8
-         jW6icdIBCD/sQ6MMEzyfM9Vs+oFQCtcrZRIizqjhMByid/pnsdrOQXM7DeLixaTYV7
-         PAwbiacSUX8BS1oP0s37cj6DC1pPBJeW0fXE4W2gGGc+UuiIMdvO4rPCDikA8UDx6B
-         P5LMtoXGY58pq/21TdgmA0jPN+gDAhpnMHEpz3AnVwCqXmyS/aR5rRBGiUnQBTXAYO
-         V9DTO3+e80v6ge3J2DMRIOo1ogBP5NMetGIq1eFiZVfLMW4l/nWExkHWgHJSJJMoxE
-         FRLqmRrZnPPeg==
+        b=ppiKL0lDyj/25O9xt1wMf97yu71wgAJBLgSOItpAktjmzKj8dHIYxcurgNKqLGA0I
+         5Vtbnyd1gNnwvE+Zy8WeEk2/Is3V8cJnjdRLL6jFwzZK1exMKbKpQlPAt6FAuoO0BS
+         MK5jzu6HCyZUPGVzT5cMo8enYg62Fflw44oOGTSc6GbGk1FTpCs4pP4aqs/BikxHmd
+         4CAHhKFjEp1GbucAT4SETDAPlIl2XAwrKD2igpKAtkPEzYfYgRN9cBOE366XyPuE9C
+         yO65ChO+DR3ATQDUepTOKTU8hGECkbv0XXb9aPzObtr7IOkw3o0HEfGdkpqNB7JVNR
+         UZ+DEEt7BURUA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jing Yao <yao.jing2@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
-        bernie@plugable.com, tomi.valkeinen@ti.com,
-        linux-fbdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 12/25] video: fbdev: udlfb: replace snprintf in show functions with sysfs_emit
-Date:   Wed, 30 Mar 2022 07:52:12 -0400
-Message-Id: <20220330115225.1672278-12-sashal@kernel.org>
+Cc:     Richard Schleich <rs@noreya.tech>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        mark.rutland@arm.com, linux@armlinux.org.uk, rjui@broadcom.com,
+        sbranden@broadcom.com, bcm-kernel-feedback-list@broadcom.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.4 07/25] ARM: dts: bcm2837: Add the missing L1/L2 cache information
+Date:   Wed, 30 Mar 2022 07:52:07 -0400
+Message-Id: <20220330115225.1672278-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115225.1672278-1-sashal@kernel.org>
 References: <20220330115225.1672278-1-sashal@kernel.org>
@@ -53,60 +56,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jing Yao <yao.jing2@zte.com.cn>
+From: Richard Schleich <rs@noreya.tech>
 
-[ Upstream commit 81a998288956d09d7a7a2303d47e4d60ad55c401 ]
+[ Upstream commit bdf8762da268d2a34abf517c36528413906e9cd5 ]
 
-Use sysfs_emit instead of scnprintf, snprintf or sprintf.
+This patch fixes the kernel warning
+"cacheinfo: Unable to detect cache hierarchy for CPU 0"
+for the bcm2837 on newer kernel versions.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Richard Schleich <rs@noreya.tech>
+Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
+[florian: Align and remove comments matching property values]
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/udlfb.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/arm/boot/dts/bcm2837.dtsi | 49 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 49 insertions(+)
 
-diff --git a/drivers/video/fbdev/udlfb.c b/drivers/video/fbdev/udlfb.c
-index ecbfbbf1c1a7..e269b1391e14 100644
---- a/drivers/video/fbdev/udlfb.c
-+++ b/drivers/video/fbdev/udlfb.c
-@@ -1427,7 +1427,7 @@ static ssize_t metrics_bytes_rendered_show(struct device *fbdev,
- 				   struct device_attribute *a, char *buf) {
- 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
- 	struct dlfb_data *dlfb = fb_info->par;
--	return snprintf(buf, PAGE_SIZE, "%u\n",
-+	return sysfs_emit(buf, "%u\n",
- 			atomic_read(&dlfb->bytes_rendered));
- }
+diff --git a/arch/arm/boot/dts/bcm2837.dtsi b/arch/arm/boot/dts/bcm2837.dtsi
+index beb6c502dadc..bcad098a7fcc 100644
+--- a/arch/arm/boot/dts/bcm2837.dtsi
++++ b/arch/arm/boot/dts/bcm2837.dtsi
+@@ -38,12 +38,26 @@
+ 		#size-cells = <0>;
+ 		enable-method = "brcm,bcm2836-smp"; // for ARM 32-bit
  
-@@ -1435,7 +1435,7 @@ static ssize_t metrics_bytes_identical_show(struct device *fbdev,
- 				   struct device_attribute *a, char *buf) {
- 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
- 	struct dlfb_data *dlfb = fb_info->par;
--	return snprintf(buf, PAGE_SIZE, "%u\n",
-+	return sysfs_emit(buf, "%u\n",
- 			atomic_read(&dlfb->bytes_identical));
- }
++		/* Source for d/i-cache-line-size and d/i-cache-sets
++		 * https://developer.arm.com/documentation/ddi0500/e/level-1-memory-system
++		 * /about-the-l1-memory-system?lang=en
++		 *
++		 * Source for d/i-cache-size
++		 * https://magpi.raspberrypi.com/articles/raspberry-pi-3-specs-benchmarks
++		 */
+ 		cpu0: cpu@0 {
+ 			device_type = "cpu";
+ 			compatible = "arm,cortex-a53";
+ 			reg = <0>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000d8>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			next-level-cache = <&l2>;
+ 		};
  
-@@ -1443,7 +1443,7 @@ static ssize_t metrics_bytes_sent_show(struct device *fbdev,
- 				   struct device_attribute *a, char *buf) {
- 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
- 	struct dlfb_data *dlfb = fb_info->par;
--	return snprintf(buf, PAGE_SIZE, "%u\n",
-+	return sysfs_emit(buf, "%u\n",
- 			atomic_read(&dlfb->bytes_sent));
- }
+ 		cpu1: cpu@1 {
+@@ -52,6 +66,13 @@
+ 			reg = <1>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000e0>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			next-level-cache = <&l2>;
+ 		};
  
-@@ -1451,7 +1451,7 @@ static ssize_t metrics_cpu_kcycles_used_show(struct device *fbdev,
- 				   struct device_attribute *a, char *buf) {
- 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
- 	struct dlfb_data *dlfb = fb_info->par;
--	return snprintf(buf, PAGE_SIZE, "%u\n",
-+	return sysfs_emit(buf, "%u\n",
- 			atomic_read(&dlfb->cpu_kcycles_used));
- }
+ 		cpu2: cpu@2 {
+@@ -60,6 +81,13 @@
+ 			reg = <2>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000e8>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			next-level-cache = <&l2>;
+ 		};
  
+ 		cpu3: cpu@3 {
+@@ -68,6 +96,27 @@
+ 			reg = <3>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000f0>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			next-level-cache = <&l2>;
++		};
++
++		/* Source for cache-line-size + cache-sets
++		 * https://developer.arm.com/documentation/ddi0500
++		 * /e/level-2-memory-system/about-the-l2-memory-system?lang=en
++		 * Source for cache-size
++		 * https://datasheets.raspberrypi.com/cm/cm1-and-cm3-datasheet.pdf
++		 */
++		l2: l2-cache0 {
++			compatible = "cache";
++			cache-size = <0x80000>;
++			cache-line-size = <64>;
++			cache-sets = <512>; // 512KiB(size)/64(line-size)=8192ways/16-way set
++			cache-level = <2>;
+ 		};
+ 	};
+ };
 -- 
 2.34.1
 
