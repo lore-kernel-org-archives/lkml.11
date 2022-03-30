@@ -2,52 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 358FDC47085
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFA5FC47087
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347419AbiC3MGn (ORCPT
+        id S1347587AbiC3MHK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:06:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56270 "EHLO
+        Wed, 30 Mar 2022 08:07:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345890AbiC3LzI (ORCPT
+        with ESMTP id S1345941AbiC3LzP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:55:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39D3425EC9D;
-        Wed, 30 Mar 2022 04:52:12 -0700 (PDT)
+        Wed, 30 Mar 2022 07:55:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 916095FAD;
+        Wed, 30 Mar 2022 04:53:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CA15D616DA;
-        Wed, 30 Mar 2022 11:52:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A56B6C34111;
-        Wed, 30 Mar 2022 11:52:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 31F2D615E7;
+        Wed, 30 Mar 2022 11:53:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AC90C340EE;
+        Wed, 30 Mar 2022 11:53:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641131;
-        bh=8ZFmnqlSEMxKjuWziuwkhdq48STdoQ3qVnRC30Htjlg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ubGd8FF7QhLDXrxASeA+gcqSIFiHwhiZEYqLmdM+lwJ79+i3dNVxqohNXqkSeDvxK
-         enIYDOqrYm5ntXhL8qgXX03VeKuMBnqA1OHLZ0j57YaZcK+VXY2druT0Y8dVC0rBsQ
-         ustOz5Crwpwr/HMwNxGCXWJEYEBjlcrtem8rukwe80Bf0ToVWgpHkT6yXesYaS+xcC
-         3M14O9xKvnEql57lHhZk92h4KgkRHwa7+4fCCjtpvbj7EPBmJzSLES6X3dfzxWtrvS
-         PRRM8iLvtITDZcM/7T7WNDtZNs1Bx4BWSTwnVliGbgKYrIYIGVKxT5BAr5csqm9sRA
-         zUNlyovntM55Q==
+        s=k20201202; t=1648641186;
+        bh=qW1x31HnZxqlWv9yLK7leVGiHSRFHxjgpFRqN+3ePM4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=W4CPcDGsBYpYWlko8pj3hn89Ct669WcC+u4xXKXp9jUUkZPBRB/q7EAn4e418XgVG
+         YKodxE8PBo5yYf8Ye4APktYygiG/6t4OW+U3r5UIzmeoloycnyyizoxbWQWnI8ydUE
+         swdA52iYWg4aq9P4+49RJx4vxWXIZF6+ivMYMep8zR4D8bqc4l+yAP/CMRrin3gGwH
+         g8ut4S/A2nldglLxGzaZQ8a8aTUIXuZ4loFlmVrYsiLN8goIVrV7FH4pshXK5NBL9H
+         HDIh+ScZejK9m0U2m52ccBquinZsfQegjCj0BI4zvLJbVFyLP6R+a04zc76DUpl+8C
+         cDfbUiaOGk4oQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Richard Leitner <richard.leitner@skidata.com>,
-        Thierry Reding <treding@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        mark.rutland@arm.com, linux@armlinux.org.uk, swarren@wwwdotorg.org,
-        thierry.reding@gmail.com, gnurou@gmail.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-tegra@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 28/37] ARM: tegra: tamonten: Fix I2C3 pad setting
-Date:   Wed, 30 Mar 2022 07:51:13 -0400
-Message-Id: <20220330115122.1671763-28-sashal@kernel.org>
+Cc:     Tim Gardner <tim.gardner@canonical.com>,
+        Antonino Daplas <adaplas@gmail.com>,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        tomi.valkeinen@ti.com
+Subject: [PATCH AUTOSEL 4.19 01/22] video: fbdev: nvidiafb: Use strscpy() to prevent buffer overflow
+Date:   Wed, 30 Mar 2022 07:52:42 -0400
+Message-Id: <20220330115303.1672616-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330115122.1671763-1-sashal@kernel.org>
-References: <20220330115122.1671763-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -56,44 +52,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Richard Leitner <richard.leitner@skidata.com>
+From: Tim Gardner <tim.gardner@canonical.com>
 
-[ Upstream commit 0092c25b541a5422d7e71892a13c55ee91abc34b ]
+[ Upstream commit 37a1a2e6eeeb101285cd34e12e48a881524701aa ]
 
-This patch fixes the tristate configuration for i2c3 function assigned
-to the dtf pins on the Tamonten Tegra20 SoM.
+Coverity complains of a possible buffer overflow. However,
+given the 'static' scope of nvidia_setup_i2c_bus() it looks
+like that can't happen after examiniing the call sites.
 
-Signed-off-by: Richard Leitner <richard.leitner@skidata.com>
-Signed-off-by: Thierry Reding <treding@nvidia.com>
+CID 19036 (#1 of 1): Copy into fixed size buffer (STRING_OVERFLOW)
+1. fixed_size_dest: You might overrun the 48-character fixed-size string
+  chan->adapter.name by copying name without checking the length.
+2. parameter_as_source: Note: This defect has an elevated risk because the
+  source argument is a parameter of the current function.
+ 89        strcpy(chan->adapter.name, name);
+
+Fix this warning by using strscpy() which will silence the warning and
+prevent any future buffer overflows should the names used to identify the
+channel become much longer.
+
+Cc: Antonino Daplas <adaplas@gmail.com>
+Cc: linux-fbdev@vger.kernel.org
+Cc: dri-devel@lists.freedesktop.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Tim Gardner <tim.gardner@canonical.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/tegra20-tamonten.dtsi | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/video/fbdev/nvidia/nv_i2c.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/tegra20-tamonten.dtsi b/arch/arm/boot/dts/tegra20-tamonten.dtsi
-index dd4d506683de..7f14f0d005c3 100644
---- a/arch/arm/boot/dts/tegra20-tamonten.dtsi
-+++ b/arch/arm/boot/dts/tegra20-tamonten.dtsi
-@@ -183,8 +183,8 @@
- 			};
- 			conf_ata {
- 				nvidia,pins = "ata", "atb", "atc", "atd", "ate",
--					"cdev1", "cdev2", "dap1", "dtb", "gma",
--					"gmb", "gmc", "gmd", "gme", "gpu7",
-+					"cdev1", "cdev2", "dap1", "dtb", "dtf",
-+					"gma", "gmb", "gmc", "gmd", "gme", "gpu7",
- 					"gpv", "i2cp", "irrx", "irtx", "pta",
- 					"rm", "slxa", "slxk", "spia", "spib",
- 					"uac";
-@@ -203,7 +203,7 @@
- 			};
- 			conf_crtp {
- 				nvidia,pins = "crtp", "dap2", "dap3", "dap4",
--					"dtc", "dte", "dtf", "gpu", "sdio1",
-+					"dtc", "dte", "gpu", "sdio1",
- 					"slxc", "slxd", "spdi", "spdo", "spig",
- 					"uda";
- 				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
+diff --git a/drivers/video/fbdev/nvidia/nv_i2c.c b/drivers/video/fbdev/nvidia/nv_i2c.c
+index d7994a173245..0b48965a6420 100644
+--- a/drivers/video/fbdev/nvidia/nv_i2c.c
++++ b/drivers/video/fbdev/nvidia/nv_i2c.c
+@@ -86,7 +86,7 @@ static int nvidia_setup_i2c_bus(struct nvidia_i2c_chan *chan, const char *name,
+ {
+ 	int rc;
+ 
+-	strcpy(chan->adapter.name, name);
++	strscpy(chan->adapter.name, name, sizeof(chan->adapter.name));
+ 	chan->adapter.owner = THIS_MODULE;
+ 	chan->adapter.class = i2c_class;
+ 	chan->adapter.algo_data = &chan->algo;
 -- 
 2.34.1
 
