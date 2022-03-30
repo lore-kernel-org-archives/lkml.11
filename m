@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FEF2C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 16:04:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87B17C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 16:04:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346371AbiC3QGK (ORCPT
+        id S1348594AbiC3QGW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 12:06:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52592 "EHLO
+        Wed, 30 Mar 2022 12:06:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348582AbiC3QGE (ORCPT
+        with ESMTP id S1348568AbiC3QGM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 12:06:04 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD89C23D472;
-        Wed, 30 Mar 2022 09:04:15 -0700 (PDT)
+        Wed, 30 Mar 2022 12:06:12 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB63C238D18;
+        Wed, 30 Mar 2022 09:04:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1648656256; x=1680192256;
+  t=1648656263; x=1680192263;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=LO2EsS4wu1rdzNhwPhx0M07udxTKW99QIv0eDN+oIPw=;
-  b=x0lAL/01hW7rp1KfKx9/GZnKTI13e+73xAXs6Viyx2L1Zk7nnOz9Nuia
-   jkkOD5/BeHGf+8Z256LRXfH0VnLToS8FGtR67f9wSnfLwoL6MIB+gXUUm
-   HdNtZEBj29LrUDWfCyaDdsGUYSEHNKbpvHLIX1Wd8uBkbwBrmxQhZMath
-   o=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 30 Mar 2022 09:04:15 -0700
+  bh=7veokiquAVpHpjsy/ez/QdJmUJA8oXSsaunhV32sDhI=;
+  b=lbUe/Ek+TA72my1Al3jL4n+UgjOWmUEWukNXBaFK+2otS7XalHwsIzQp
+   eRpYsT7K6KpApLQJzvFxLjLiX5cVWKAzMGPSoSKiMPzFCNEM+wWp0XKSN
+   d2mY4T9/IS0OqUD40DTJASLNKxpx9KvdTMYzT+2zGSLqfiCJ7OKbWDsqA
+   c=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 30 Mar 2022 09:04:23 -0700
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 09:04:15 -0700
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 09:04:22 -0700
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 30 Mar 2022 09:04:14 -0700
+ 15.2.986.22; Wed, 30 Mar 2022 09:04:22 -0700
 Received: from sbillaka-linux.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 30 Mar 2022 09:04:08 -0700
+ 15.2.986.22; Wed, 30 Mar 2022 09:04:16 -0700
 From:   Sankeerth Billakanti <quic_sbillaka@quicinc.com>
 To:     <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
         <freedreno@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
@@ -51,9 +51,9 @@ CC:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
         <sean@poorly.run>, <airlied@linux.ie>, <daniel@ffwll.ch>,
         <dmitry.baryshkov@linaro.org>, <quic_vproddut@quicinc.com>,
         <quic_aravindh@quicinc.com>
-Subject: [PATCH v6 7/8] drm/msm/dp: Support edp/dp without hpd
-Date:   Wed, 30 Mar 2022 21:32:58 +0530
-Message-ID: <1648656179-10347-8-git-send-email-quic_sbillaka@quicinc.com>
+Subject: [PATCH v6 8/8] drm/msm/dp: Handle eDP mode_valid differently from dp
+Date:   Wed, 30 Mar 2022 21:32:59 +0530
+Message-ID: <1648656179-10347-9-git-send-email-quic_sbillaka@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1648656179-10347-1-git-send-email-quic_sbillaka@quicinc.com>
 References: <1648656179-10347-1-git-send-email-quic_sbillaka@quicinc.com>
@@ -66,50 +66,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some eDP sinks or platform boards will not support hpd.
-This patch adds support for those cases.
+The panel-edp driver modes needs to be validated differently from DP
+because the link capabilities are not available for EDP by that time.
 
 Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
 ---
- drivers/gpu/drm/msm/dp/dp_catalog.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/msm/dp/dp_display.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_catalog.c b/drivers/gpu/drm/msm/dp/dp_catalog.c
-index 1809ce2..8f1fc71 100644
---- a/drivers/gpu/drm/msm/dp/dp_catalog.c
-+++ b/drivers/gpu/drm/msm/dp/dp_catalog.c
-@@ -244,10 +244,17 @@ void dp_catalog_aux_update_cfg(struct dp_catalog *dp_catalog)
+diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+index 8bafdd0..f9c7d9a 100644
+--- a/drivers/gpu/drm/msm/dp/dp_display.c
++++ b/drivers/gpu/drm/msm/dp/dp_display.c
+@@ -1003,6 +1003,12 @@ enum drm_mode_status dp_bridge_mode_valid(struct drm_bridge *bridge,
+ 		return -EINVAL;
+ 	}
  
- int dp_catalog_aux_wait_for_hpd_connect_state(struct dp_catalog *dp_catalog)
- {
--	u32 state;
-+	u32 state, hpd_en;
- 	struct dp_catalog_private *catalog = container_of(dp_catalog,
- 				struct dp_catalog_private, dp_catalog);
- 
-+	hpd_en = dp_read_aux(catalog, REG_DP_DP_HPD_CTRL);
-+	hpd_en &= DP_DP_HPD_CTRL_HPD_EN;
++	if (dp->connector_type == DRM_MODE_CONNECTOR_eDP) {
++		if (mode_pclk_khz > DP_MAX_PIXEL_CLK_KHZ)
++			return MODE_CLOCK_HIGH;
++		return MODE_OK;
++	}
 +
-+	/* no-hpd case */
-+	if (!hpd_en)
-+		return 0;
-+
- 	/* poll for hpd connected status every 2ms and timeout after 500ms */
- 	return readl_poll_timeout(catalog->io->dp_controller.aux.base +
- 				REG_DP_DP_HPD_INT_STATUS,
-@@ -586,8 +593,10 @@ void dp_catalog_ctrl_hpd_config(struct dp_catalog *dp_catalog)
- 	reftimer |= DP_DP_HPD_REFTIMER_ENABLE;
- 	dp_write_aux(catalog, REG_DP_DP_HPD_REFTIMER, reftimer);
- 
--	/* Enable HPD */
--	dp_write_aux(catalog, REG_DP_DP_HPD_CTRL, DP_DP_HPD_CTRL_HPD_EN);
-+	/* Enable HPD if supported*/
-+	if (!of_property_read_bool(catalog->dev->of_node, "no-hpd"))
-+		dp_write_aux(catalog, REG_DP_DP_HPD_CTRL,
-+				DP_DP_HPD_CTRL_HPD_EN);
- }
- 
- u32 dp_catalog_link_is_connected(struct dp_catalog *dp_catalog)
+ 	if ((dp->max_pclk_khz <= 0) ||
+ 			(dp->max_pclk_khz > DP_MAX_PIXEL_CLK_KHZ) ||
+ 			(mode->clock > dp->max_pclk_khz))
 -- 
 2.7.4
 
