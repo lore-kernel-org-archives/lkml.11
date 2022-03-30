@@ -2,51 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33AE8C35296
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:15:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 755B7C43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:15:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346364AbiC3MQ1 (ORCPT
+        id S1344829AbiC3MRI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:16:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36780 "EHLO
+        Wed, 30 Mar 2022 08:17:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344446AbiC3Lz6 (ORCPT
+        with ESMTP id S1344685AbiC3L4Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:55:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1027710FA;
-        Wed, 30 Mar 2022 04:54:05 -0700 (PDT)
+        Wed, 30 Mar 2022 07:56:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47D4730F4B;
+        Wed, 30 Mar 2022 04:54:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5862DB81C23;
-        Wed, 30 Mar 2022 11:54:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 239E4C340F3;
-        Wed, 30 Mar 2022 11:54:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E39DEB81C39;
+        Wed, 30 Mar 2022 11:54:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 847F6C36AE3;
+        Wed, 30 Mar 2022 11:54:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641243;
-        bh=gSOR0VhRFEQOIqboEnoDscB2wnkYJYjrcn2qd10imhI=;
+        s=k20201202; t=1648641262;
+        bh=zwomnqeZ6lroYh2/A1L/EXXP+YeBRLYgHwSKshBbCkc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m/UKLgkkeFfWcztLEasGRF2rLZCrwZ2OUrawxCp5ek1zJokHK14e3u8qnFGfREZlm
-         +shGwjW7AmGCn7OiAEE2TV0yIDpHch6iVQi0Ny/wxpRMt7OsVFXeJKs8kSpQpgSd9Q
-         ScGFnn7SI7DH3GE9xTThBiarGcytBK/aZyIIY7e6hywHk0J7C+VSwKiphJcLQTo5xr
-         axYjEr1Beola1os6QJSX3hSP12V5KU//G8PRg8i6EPzc6mr2jYhRhNU0gjjjvScoIN
-         hW8g2mWC9lRh0sP2v/dKHSGMhbj/wqyyVHKstlhC7LNslF7qK7t/U7n9px+pTEoPrl
-         pvjK/w9WoBJBw==
+        b=Lq9Qm07MCAMCk7PayXyvU0X2Kp9CQBsHE9tpZx/bHLmdL5BPk1tgbiijaXKgkuPDI
+         +n7p+E3rr0Uj+T/7SmmJgmWJkj5d47K4mbfbM7agpT4iYYZcjezHntDIKddhWAEZac
+         8YtrHjO8VOh20Doli7O9HWbO5on3s46gK+XBzD7VhpReSMY98mgK9epfLHBI4gIVZX
+         9efeg79dOPlsXYV80KlAiZklUHD7uXEV3Gy+bZVPy4MK/l3nNx8dENIVBwxhqHrm/E
+         Yt5gy2ghEYBTMCyCVcYH1E8szkOxFzFQhyD6Ql/SKH9wMrUdcAA54sLqmUp/3qGxgC
+         K+FSSxSgp/XXA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzkaller <syzkaller@googlegroups.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, hverkuil@xs4all.nl,
-        linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 17/20] media: hdpvr: initialize dev->worker at hdpvr_register_videodev
-Date:   Wed, 30 Mar 2022 07:53:33 -0400
-Message-Id: <20220330115336.1672930-17-sashal@kernel.org>
+Cc:     Jing Yao <yao.jing2@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        tomi.valkeinen@ti.com, linux-omap@vger.kernel.org,
+        linux-fbdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 08/17] video: fbdev: omapfb: panel-tpo-td043mtea1: Use sysfs_emit() instead of snprintf()
+Date:   Wed, 30 Mar 2022 07:53:57 -0400
+Message-Id: <20220330115407.1673214-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330115336.1672930-1-sashal@kernel.org>
-References: <20220330115336.1672930-1-sashal@kernel.org>
+In-Reply-To: <20220330115407.1673214-1-sashal@kernel.org>
+References: <20220330115407.1673214-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,59 +53,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+From: Jing Yao <yao.jing2@zte.com.cn>
 
-[ Upstream commit 07922937e9a580825f9965c46fd15e23ba5754b6 ]
+[ Upstream commit c07a039cbb96748f54c02995bae8131cc9a73b0a ]
 
-hdpvr_register_videodev is responsible to initialize a worker in
-hdpvr_device. However, the worker is only initialized at
-hdpvr_start_streaming other than hdpvr_register_videodev.
-When hdpvr_probe does not initialize its worker, the hdpvr_disconnect
-will encounter one WARN in flush_work.The stack trace is as follows:
+Use sysfs_emit instead of scnprintf, snprintf or sprintf.
 
- hdpvr_disconnect+0xb8/0xf2 drivers/media/usb/hdpvr/hdpvr-core.c:425
- usb_unbind_interface+0xbf/0x3a0 drivers/usb/core/driver.c:458
- __device_release_driver drivers/base/dd.c:1206 [inline]
- device_release_driver_internal+0x22a/0x230 drivers/base/dd.c:1237
- bus_remove_device+0x108/0x160 drivers/base/bus.c:529
- device_del+0x1fe/0x510 drivers/base/core.c:3592
- usb_disable_device+0xd1/0x1d0 drivers/usb/core/message.c:1419
- usb_disconnect+0x109/0x330 drivers/usb/core/hub.c:2228
-
-Fix this by moving the initialization of dev->worker to the starting of
-hdpvr_register_videodev
-
-Reported-by: syzkaller <syzkaller@googlegroups.com>
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/hdpvr/hdpvr-video.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ .../video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c  | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/usb/hdpvr/hdpvr-video.c b/drivers/media/usb/hdpvr/hdpvr-video.c
-index 991f820a4530..1cecb37e16d2 100644
---- a/drivers/media/usb/hdpvr/hdpvr-video.c
-+++ b/drivers/media/usb/hdpvr/hdpvr-video.c
-@@ -312,7 +312,6 @@ static int hdpvr_start_streaming(struct hdpvr_device *dev)
+diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
+index 51e628b85f4a..2b8b6b5dc1aa 100644
+--- a/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
++++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
+@@ -173,7 +173,7 @@ static ssize_t tpo_td043_vmirror_show(struct device *dev,
+ {
+ 	struct panel_drv_data *ddata = dev_get_drvdata(dev);
  
- 	dev->status = STATUS_STREAMING;
+-	return snprintf(buf, PAGE_SIZE, "%d\n", ddata->vmirror);
++	return sysfs_emit(buf, "%d\n", ddata->vmirror);
+ }
  
--	INIT_WORK(&dev->worker, hdpvr_transmit_buffers);
- 	schedule_work(&dev->worker);
+ static ssize_t tpo_td043_vmirror_store(struct device *dev,
+@@ -203,7 +203,7 @@ static ssize_t tpo_td043_mode_show(struct device *dev,
+ {
+ 	struct panel_drv_data *ddata = dev_get_drvdata(dev);
  
- 	v4l2_dbg(MSG_BUFFER, hdpvr_debug, &dev->v4l2_dev,
-@@ -1175,6 +1174,9 @@ int hdpvr_register_videodev(struct hdpvr_device *dev, struct device *parent,
- 	bool ac3 = dev->flags & HDPVR_FLAG_AC3_CAP;
- 	int res;
+-	return snprintf(buf, PAGE_SIZE, "%d\n", ddata->mode);
++	return sysfs_emit(buf, "%d\n", ddata->mode);
+ }
  
-+	// initialize dev->worker
-+	INIT_WORK(&dev->worker, hdpvr_transmit_buffers);
-+
- 	dev->cur_std = V4L2_STD_525_60;
- 	dev->width = 720;
- 	dev->height = 480;
+ static ssize_t tpo_td043_mode_store(struct device *dev,
 -- 
 2.34.1
 
