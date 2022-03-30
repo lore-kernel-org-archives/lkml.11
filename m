@@ -2,66 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B7A4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 02:00:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC39AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 02:00:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241876AbiC3CB6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 22:01:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43354 "EHLO
+        id S241903AbiC3CCS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 22:02:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241844AbiC3CBz (ORCPT
+        with ESMTP id S241923AbiC3CCI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 22:01:55 -0400
+        Tue, 29 Mar 2022 22:02:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B3F77C177;
-        Tue, 29 Mar 2022 19:00:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 121D085647
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 19:00:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5957F61378;
-        Wed, 30 Mar 2022 02:00:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2C6D2C36AE3;
-        Wed, 30 Mar 2022 02:00:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C89961383
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 02:00:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1FE00C36AE2;
+        Wed, 30 Mar 2022 02:00:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648605607;
-        bh=Ntzo4/s2EN4rXPDFvvBJ5pTW6NgqDcLBkvUMY5709aw=;
+        s=k20201202; t=1648605622;
+        bh=sQZ0ONnMGryliTE9XUQrNyXfRxGF5DqxxqG5vDt88+8=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=s5DpdXH4xVeIYAY5L8ahIxje4/RWLilUDFIyUTX58HOXppPTRtksCc8w4N4cHfO5R
-         LCmnZUftSeyUdLOSmJZiI1ZgMQ2MbJyT2/52QSLEXSAHPaejwW/CGEOP2/U7XQc0fO
-         UhXOgTFmf97z1dWPEF/l6ACXtU0OI83QFyGEh8k9hiBC0PfUTm3uH3zhqoaQF463+r
-         QAIxYYP/OJBzTroVRjIvtv+MBDhIh8tE3F90CsxCzR1pR538F09QiOmQ6ZD0HyHbep
-         2t1FX6TlSgR7RNc+CUxyMPUwh21+3boMmGqnrILfZXbaPXHTkE1vF5guAAOa8MVq1c
-         P7yWqc5ReB+AQ==
+        b=XApP6sh7GqWGDNvAjLBys0tG5DeIyHyGs4lPi0F+gD0o2viFJWeSm0yqsfeBy691j
+         DteknciBvNDd+zznTeGO1fs3FeJbZC+7MEHy4OW37KOPPyTNno1wYaveSVYC5n91nL
+         IFQqy/BOsUzkjD7SJLv4Rc+I7vv4uPmjtyU8f+E8LaRrGMpJotLp+TjkerNEMwtN06
+         iuNFUbe8PwlL7uhRaI+GmcuUhrU1+khVFxzy+oUzE2zoYWzZgVUhFCur2/s0TSCRMK
+         8m4GrLROPSM0IoZHjBBH8O5cSwNqpvKJL8OsHMXrD4feVbSsyqvTALk4zE07TqpWEf
+         3/dTS+bcYNkgw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1A867EAC081;
-        Wed, 30 Mar 2022 02:00:07 +0000 (UTC)
-Subject: Re: [GIT PULL] Please pull NFS client changes for Linux 5.18
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0FC58EAC09B;
+        Wed, 30 Mar 2022 02:00:22 +0000 (UTC)
+Subject: Re: [GIT PULL] jfs updates for v5.18
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <7b0576d8d49bbd358767620218c1966e8fe9a883.camel@hammerspace.com>
-References: <7b0576d8d49bbd358767620218c1966e8fe9a883.camel@hammerspace.com>
-X-PR-Tracked-List-Id: <linux-nfs.vger.kernel.org>
-X-PR-Tracked-Message-Id: <7b0576d8d49bbd358767620218c1966e8fe9a883.camel@hammerspace.com>
-X-PR-Tracked-Remote: git://git.linux-nfs.org/projects/trondmy/linux-nfs.git tags/nfs-for-5.18-1
-X-PR-Tracked-Commit-Id: 7c9d845f0612e5bcd23456a2ec43be8ac43458f1
+In-Reply-To: <4af677c0-e9ca-fd27-8c20-66b6b4ba6c11@oracle.com>
+References: <4af677c0-e9ca-fd27-8c20-66b6b4ba6c11@oracle.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <4af677c0-e9ca-fd27-8c20-66b6b4ba6c11@oracle.com>
+X-PR-Tracked-Remote: git@github.com:kleikamp/linux-shaggy.git tags/jfs-5.18
+X-PR-Tracked-Commit-Id: a53046291020ec41e09181396c1e829287b48d47
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 965181d7ef7e1a863477536dc328c23a7ebc8a1d
-Message-Id: <164860560708.9387.14167102034464992472.pr-tracker-bot@kernel.org>
-Date:   Wed, 30 Mar 2022 02:00:07 +0000
-To:     Trond Myklebust <trondmy@hammerspace.com>
-Cc:     "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>,
-        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+X-PR-Merge-Commit-Id: 1ec48f95519bd3e920536118e8ddd30e28cde4ab
+Message-Id: <164860562206.9387.9455020322184914414.pr-tracker-bot@kernel.org>
+Date:   Wed, 30 Mar 2022 02:00:22 +0000
+To:     Dave Kleikamp <dave.kleikamp@oracle.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Tue, 29 Mar 2022 19:36:00 +0000:
+The pull request you sent on Tue, 29 Mar 2022 09:39:30 -0500:
 
-> git://git.linux-nfs.org/projects/trondmy/linux-nfs.git tags/nfs-for-5.18-1
+> git@github.com:kleikamp/linux-shaggy.git tags/jfs-5.18
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/965181d7ef7e1a863477536dc328c23a7ebc8a1d
+https://git.kernel.org/torvalds/c/1ec48f95519bd3e920536118e8ddd30e28cde4ab
 
 Thank you!
 
