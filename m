@@ -2,113 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF1EEC35274
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:57:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04D77C4707E
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:57:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345004AbiC3L56 (ORCPT
+        id S1345123AbiC3L6D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 07:57:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59392 "EHLO
+        Wed, 30 Mar 2022 07:58:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344517AbiC3LxO (ORCPT
+        with ESMTP id S1344444AbiC3LxK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:53:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEB22262D63;
-        Wed, 30 Mar 2022 04:49:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 88E6461625;
-        Wed, 30 Mar 2022 11:49:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59819C340F2;
-        Wed, 30 Mar 2022 11:49:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648640942;
-        bh=M5KJInYrlR+ql5Za/wReHZJT/XsYWuv2wTimrFGtLqs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=miacG66plJSMHbE71w4Z3lbRnF8VtbA7pP8UWgfwFcDTOosH/eqcMr6WTT/ntvZH6
-         NmgDyKRjm3CLEhnkH5NB+Kk55hd+5EGeNRZt41Rg0PIH6PZ3sk5nzSgs0/BPZwiWul
-         x94rArq+WxjtfS6iR87Av1dTybfCIJxj8Lvf1LBF24+EqWiOZ7wr8lRoFIYRcja5eY
-         4d47BY6T/wP+98gSV3TKyD8ZwqmLx88VSPiWy8LWw9aJHdLfoHZQHszx35+eujrfyF
-         VQAXi8cwtje7NKjxl/pd1ESw2xiNsBeBKpJpragVx/Cn7UVGsqJrVzlTwc//DILMnL
-         G4mfWKxO6Z8Qw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Heidelberg <david@ixit.cz>,
-        LogicalErzor <logicalerzor@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, andy.gross@linaro.org,
-        david.brown@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
-        linux@armlinux.org.uk, linux-arm-msm@vger.kernel.org,
-        linux-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.16 18/59] ARM: dts: qcom: fix gic_irq_domain_translate warnings for msm8960
-Date:   Wed, 30 Mar 2022 07:47:50 -0400
-Message-Id: <20220330114831.1670235-18-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330114831.1670235-1-sashal@kernel.org>
-References: <20220330114831.1670235-1-sashal@kernel.org>
+        Wed, 30 Mar 2022 07:53:10 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF9CF261DF7;
+        Wed, 30 Mar 2022 04:48:56 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id bh17so1480145ejb.8;
+        Wed, 30 Mar 2022 04:48:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QnygP4l4hTZOc+NFDXu9YYi5sXjYreslpEJf/CgWJFU=;
+        b=L4D9vUp++dIar8oRx2cyilIRQpIbE8aTyXC7bD8/IQy5GxKarN9FPrJKt8vtzjtYK8
+         MWTYlILu33ArTJ8ShiNwg1pOMYcgFwQvMJxcreeKPzN0tspJ0HK9Yvu3oyTPvtYsKJXY
+         IrJRaZzbDlhgURR2UzliOGVkpCwaS/l/3LhQN91N195HK0ckoaGVLdgtxcOB+ZXdYCmO
+         KpMOKWoRLB501a9wQuKcFWp4n0UldaFxeDVLCR3ANYXQd1VaIBpvr2dr5wwOAEQKtRzy
+         79Awx4y8ntCN3kwn5zGGwY7kDivYHem6swodfHzXGGOC7J6lAfxvHZom9ftcccvbj5Vp
+         ROTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QnygP4l4hTZOc+NFDXu9YYi5sXjYreslpEJf/CgWJFU=;
+        b=EYHGByaBKjGSO76P33iJA2BRFm0FgpaaMx35mYyMF5XMGudyOjqsQQ/OT79GRMsIII
+         MdbCjb4jHRr4/4x5kdfdNXgryFQzovTov0kBTx7F7wehC+rqVEtbLstdyJdahIbVZnt2
+         dBR+JZhESgcP0eB87Otc/tZVVakTzW4yU/G5AvZHRIM1pgJ1dNTE+ehQQ4KOvC8yjTX5
+         6EPGbuVRSU3eUYDwmspsTHag1x5LGY/o4d+Zc37nwPMKzyLUCqUY/uSBdRQG1365/VT1
+         CvfmNcYAyjXuMbUF+n1dzixf71ce8CDQopP5IS3FxCUgQr0at1f+h7sZAt20ROfOz97A
+         7Mcw==
+X-Gm-Message-State: AOAM531UUrGSJRXZPf5fs3X3vNZrjv+v4bJ7rLe4PA56dtIugVaoTM3l
+        bavbolBmUw/s2GtRoIwVOiggoNHQyPA=
+X-Google-Smtp-Source: ABdhPJw4fExfdVyAn2ssY8SyPCua0EfDQ35g+WWMCOkxPzNpgIv/ZzrQ/OVM2E3Kzv+Bw3J5rAnauQ==
+X-Received: by 2002:a17:907:94c6:b0:6da:9561:ce0 with SMTP id dn6-20020a17090794c600b006da95610ce0mr38918680ejc.342.1648640933738;
+        Wed, 30 Mar 2022 04:48:53 -0700 (PDT)
+Received: from debian.home (81-204-249-205.fixed.kpn.net. [81.204.249.205])
+        by smtp.gmail.com with ESMTPSA id g9-20020aa7c849000000b00412fc6bf26dsm9934442edt.80.2022.03.30.04.48.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 04:48:53 -0700 (PDT)
+From:   Johan Jonker <jbx6244@gmail.com>
+To:     heiko@sntech.de, zhangqing@rock-chips.com
+Cc:     robh+dt@kernel.org, krzk+dt@kernel.org, mturquette@baylibre.com,
+        sboyd@kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v1 1/3] dt-bindings: clock: convert rockchip,rk3036-cru.txt to YAML
+Date:   Wed, 30 Mar 2022 13:48:45 +0200
+Message-Id: <20220330114847.18633-1-jbx6244@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Heidelberg <david@ixit.cz>
+Convert rockchip,rk3036-cru.txt to YAML.
 
-[ Upstream commit 6f7e221e7a5cfc3299616543fce42b36e631497b ]
+Changes against original bindings:
+  Add clocks and clock-names because the device has to have
+  at least one input clock.
 
-IRQ types blindly copied from very similar APQ8064.
-
-Fixes warnings as:
-WARNING: CPU: 0 PID: 1 at drivers/irqchip/irq-gic.c:1080 gic_irq_domain_translate+0x118/0x120
-...
-
-Tested-by: LogicalErzor <logicalerzor@gmail.com> # boot-tested on Samsung S3
-Signed-off-by: David Heidelberg <david@ixit.cz>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220108174229.60384-1-david@ixit.cz
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Johan Jonker <jbx6244@gmail.com>
 ---
- arch/arm/boot/dts/qcom-msm8960.dtsi | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ .../bindings/clock/rockchip,rk3036-cru.txt    | 56 ---------------
+ .../bindings/clock/rockchip,rk3036-cru.yaml   | 72 +++++++++++++++++++
+ 2 files changed, 72 insertions(+), 56 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/clock/rockchip,rk3036-cru.txt
+ create mode 100644 Documentation/devicetree/bindings/clock/rockchip,rk3036-cru.yaml
 
-diff --git a/arch/arm/boot/dts/qcom-msm8960.dtsi b/arch/arm/boot/dts/qcom-msm8960.dtsi
-index 2a0ec97a264f..a0f9ab7f08f3 100644
---- a/arch/arm/boot/dts/qcom-msm8960.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8960.dtsi
-@@ -146,7 +146,9 @@
- 			reg		= <0x108000 0x1000>;
- 			qcom,ipc	= <&l2cc 0x8 2>;
- 
--			interrupts	= <0 19 0>, <0 21 0>, <0 22 0>;
-+			interrupts	= <GIC_SPI 19 IRQ_TYPE_EDGE_RISING>,
-+					  <GIC_SPI 21 IRQ_TYPE_EDGE_RISING>,
-+					  <GIC_SPI 22 IRQ_TYPE_EDGE_RISING>;
- 			interrupt-names	= "ack", "err", "wakeup";
- 
- 			regulators {
-@@ -192,7 +194,7 @@
- 				compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
- 				reg = <0x16440000 0x1000>,
- 				      <0x16400000 0x1000>;
--				interrupts = <0 154 0x0>;
-+				interrupts = <GIC_SPI 154 IRQ_TYPE_LEVEL_HIGH>;
- 				clocks = <&gcc GSBI5_UART_CLK>, <&gcc GSBI5_H_CLK>;
- 				clock-names = "core", "iface";
- 				status = "disabled";
-@@ -318,7 +320,7 @@
- 				#address-cells = <1>;
- 				#size-cells = <0>;
- 				reg = <0x16080000 0x1000>;
--				interrupts = <0 147 0>;
-+				interrupts = <GIC_SPI 147 IRQ_TYPE_LEVEL_HIGH>;
- 				spi-max-frequency = <24000000>;
- 				cs-gpios = <&msmgpio 8 0>;
- 
+diff --git a/Documentation/devicetree/bindings/clock/rockchip,rk3036-cru.txt b/Documentation/devicetree/bindings/clock/rockchip,rk3036-cru.txt
+deleted file mode 100644
+index 20df350b9..000000000
+--- a/Documentation/devicetree/bindings/clock/rockchip,rk3036-cru.txt
++++ /dev/null
+@@ -1,56 +0,0 @@
+-* Rockchip RK3036 Clock and Reset Unit
+-
+-The RK3036 clock controller generates and supplies clock to various
+-controllers within the SoC and also implements a reset controller for SoC
+-peripherals.
+-
+-Required Properties:
+-
+-- compatible: should be "rockchip,rk3036-cru"
+-- reg: physical base address of the controller and length of memory mapped
+-  region.
+-- #clock-cells: should be 1.
+-- #reset-cells: should be 1.
+-
+-Optional Properties:
+-
+-- rockchip,grf: phandle to the syscon managing the "general register files"
+-  If missing pll rates are not changeable, due to the missing pll lock status.
+-
+-Each clock is assigned an identifier and client nodes can use this identifier
+-to specify the clock which they consume. All available clocks are defined as
+-preprocessor macros in the dt-bindings/clock/rk3036-cru.h headers and can be
+-used in device tree sources. Similar macros exist for the reset sources in
+-these files.
+-
+-External clocks:
+-
+-There are several clocks that are generated outside the SoC. It is expected
+-that they are defined using standard clock bindings with following
+-clock-output-names:
+- - "xin24m" - crystal input - required,
+- - "ext_i2s" - external I2S clock - optional,
+- - "rmii_clkin" - external EMAC clock - optional
+-
+-Example: Clock controller node:
+-
+-	cru: cru@20000000 {
+-		compatible = "rockchip,rk3036-cru";
+-		reg = <0x20000000 0x1000>;
+-		rockchip,grf = <&grf>;
+-
+-		#clock-cells = <1>;
+-		#reset-cells = <1>;
+-	};
+-
+-Example: UART controller node that consumes the clock generated by the clock
+-  controller:
+-
+-	uart0: serial@20060000 {
+-		compatible = "snps,dw-apb-uart";
+-		reg = <0x20060000 0x100>;
+-		interrupts = <GIC_SPI 20 IRQ_TYPE_LEVEL_HIGH>;
+-		reg-shift = <2>;
+-		reg-io-width = <4>;
+-		clocks = <&cru SCLK_UART0>;
+-	};
+diff --git a/Documentation/devicetree/bindings/clock/rockchip,rk3036-cru.yaml b/Documentation/devicetree/bindings/clock/rockchip,rk3036-cru.yaml
+new file mode 100644
+index 000000000..1376230fe
+--- /dev/null
++++ b/Documentation/devicetree/bindings/clock/rockchip,rk3036-cru.yaml
+@@ -0,0 +1,72 @@
++# SPDX-License-Identifier: GPL-2.0
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/clock/rockchip,rk3036-cru.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Rockchip RK3036 Clock and Reset Unit (CRU)
++
++maintainers:
++  - Elaine Zhang <zhangqing@rock-chips.com>
++  - Heiko Stuebner <heiko@sntech.de>
++
++description: |
++  The RK3036 clock controller generates and supplies clocks to various
++  controllers within the SoC and also implements a reset controller for SoC
++  peripherals.
++  Each clock is assigned an identifier and client nodes can use this identifier
++  to specify the clock which they consume. All available clocks are defined as
++  preprocessor macros in the dt-bindings/clock/rk3036-cru.h headers and can be
++  used in device tree sources. Similar macros exist for the reset sources in
++  these files.
++  There are several clocks that are generated outside the SoC. It is expected
++  that they are defined using standard clock bindings with following
++  clock-output-names:
++    - "xin24m"     - crystal input       - required
++    - "ext_i2s"    - external I2S clock  - optional
++    - "rmii_clkin" - external EMAC clock - optional
++
++properties:
++  compatible:
++    enum:
++      - rockchip,rk3036-cru
++
++  reg:
++    maxItems: 1
++
++  "#clock-cells":
++    const: 1
++
++  "#reset-cells":
++    const: 1
++
++  clocks:
++    maxItems: 1
++
++  clock-names:
++    const: xin24m
++
++  rockchip,grf:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description:
++      Phandle to the syscon managing the "general register files" (GRF),
++      if missing pll rates are not changeable, due to the missing pll
++      lock status.
++
++required:
++  - compatible
++  - reg
++  - "#clock-cells"
++  - "#reset-cells"
++
++additionalProperties: false
++
++examples:
++  - |
++    cru: clock-controller@20000000 {
++      compatible = "rockchip,rk3036-cru";
++      reg = <0x20000000 0x1000>;
++      rockchip,grf = <&grf>;
++      #clock-cells = <1>;
++      #reset-cells = <1>;
++    };
 -- 
-2.34.1
+2.20.1
 
