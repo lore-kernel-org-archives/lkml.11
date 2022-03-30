@@ -2,107 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E090C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 09:06:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CC8BC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 09:09:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244594AbiC3JID (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 05:08:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35940 "EHLO
+        id S244603AbiC3JLE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 05:11:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244595AbiC3JHt (ORCPT
+        with ESMTP id S233791AbiC3JLC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 05:07:49 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26D1B19B04D;
-        Wed, 30 Mar 2022 02:06:05 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2a02:3030:d:7e3f:91e1:4be5:4001:fd80])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: sebastianfricke)
-        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id A82C61F413F2;
-        Wed, 30 Mar 2022 10:06:03 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1648631163;
-        bh=RoXU/zRTOsprxcVyL8cesrL4y5J+39EDv2zM0wrojSw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RsYrTMkvC3ZG5fswH35ZdQ3YJ8wUwCx9HwSKpoVveS1P4plUbJMOOmxfZcOgWvrtq
-         y/RvpouQH4alULASbqTjPnjMZO2Tfhkkd/khgWKywZGyTz/owP6fgxrMLvSY+9QE61
-         mPuLXz8ItZ5004fOL7E7WB1tcoo8ieQn0m6XQrHw8YEUehwEd4voOlrYqzjf5LYs9u
-         wZQmzb36WzWMm/ZKrkr0M0bZT1uQlK+ga0YELbaDNBM8Q++6tdEiE0VbxwrgepElDu
-         Y9VgeOSh5yjgwCV2KyPS5zAS0wXDxOhJsDizR1oH4driNsA5WZdMaI6WaNtyxecJpY
-         hcHiKcagipUzA==
-Date:   Wed, 30 Mar 2022 11:06:00 +0200
-From:   Sebastian Fricke <sebastian.fricke@collabora.com>
-To:     Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Cc:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        kernel@collabora.com, Jonas Karlman <jonas@kwiboo.se>,
-        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 16/24] media: rkvdec: Ensure decoded resolution fit
- coded resolution
-Message-ID: <20220330090600.blvhjzqnklu6zrnd@basti-XPS-13-9310>
-References: <20220328195936.82552-1-nicolas.dufresne@collabora.com>
- <20220328195936.82552-17-nicolas.dufresne@collabora.com>
- <20220329153933.nrbqhayyivqskrcf@basti-XPS-13-9310>
+        Wed, 30 Mar 2022 05:11:02 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD5031D8331
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 02:09:14 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id p26-20020a05600c1d9a00b0038ccbff1951so376689wms.1
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 02:09:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=pF/hvrI7qLDjIFK1PZiWN5svxVn5RrF/RKLGWeqqmq0=;
+        b=YwlT6ooY5LZVCud47hjD3kjq5J2PtJRsbEtQHc6vflzUEeEpN8odscB+zjLMBN7stW
+         hYn47ImQM/UY4YJ1Ru6twpC8LiFoOQ8LprNtUBavXaqVWHgOHFlbzCx756jylJNV3Yp9
+         6/9t/A3XxA9qdzKF5+nCdP5aHR6tEF5+2GcZZVgmxJOEDmnwspBqLlcncg6zkL5ilwWr
+         b8vlsb4NIVa9svDY8Wdm1gBQxnVAyl5MhAotSnIYqI7Rl+CvQLVQwExfQ3/PiXBnqQzn
+         T//pXYch9DcznS2bDu+JjS2n2XbBY2N86LVJfZG6+M4SUbkHIk7q/1YDNmFmMZKmzNZj
+         1oFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=pF/hvrI7qLDjIFK1PZiWN5svxVn5RrF/RKLGWeqqmq0=;
+        b=QKTJQ76R2lD9gGQRfI/by8tpiBNF4mwslnKz4UcWWJ7XqQoJQJND5u1F6LGPhOzmIJ
+         RsyLXIxMPRtotMhK0WruhqzzX8C9DZ8uCYkgJzAqvfiEJbbCkw4Pc+0bbDbcVzSumY+j
+         QtWBtB9w+4tNCDWlJRUA9XrP0RQfMd9Q1/qHQdCbQixuVZN8gwSdy+6aI8ymVf6rn5px
+         GPSo+M+WdQg1wiFgPfW9ZM4v70JJBov3OI0cFCzs7Gdk+NfyjSIiW25bQ41la8nphxqu
+         w4GEDhS++M1QzYSIJU7aRtIBUfd0NmUxhncrH9DOB71I4AM4xcZ9eQmE4p3qhwl4aCvB
+         hGlA==
+X-Gm-Message-State: AOAM532e5XjWtbEuPna4HZM/4Ea5KoUffvIDaHGN2i/n98zHFsUM+NQD
+        y1k4SLNQsz4vbiUtANdWOcRbYg==
+X-Google-Smtp-Source: ABdhPJziTOza5+DSVLs+SpPhhmrhW5VtbyiLFPjGbJGLbqWH/uguopC9MkTPv25t1gHAv/kwvQCSyg==
+X-Received: by 2002:a7b:c778:0:b0:38c:9064:89fc with SMTP id x24-20020a7bc778000000b0038c906489fcmr3396059wmk.175.1648631353152;
+        Wed, 30 Mar 2022 02:09:13 -0700 (PDT)
+Received: from ?IPV6:2001:861:44c0:66c0:e47f:3cdb:5811:cee8? ([2001:861:44c0:66c0:e47f:3cdb:5811:cee8])
+        by smtp.gmail.com with ESMTPSA id n8-20020a5d5988000000b00203d5f1f3e4sm18249681wri.105.2022.03.30.02.09.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Mar 2022 02:09:12 -0700 (PDT)
+Message-ID: <1b0bc704-a740-ea15-1e90-166905be27d0@baylibre.com>
+Date:   Wed, 30 Mar 2022 11:09:11 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220329153933.nrbqhayyivqskrcf@basti-XPS-13-9310>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 09/13] pinctrl: meson: Rename REG_* to MREG_*
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Qianggui Song <qianggui.song@amlogic.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Fabien Dessenne <fabien.dessenne@foss.st.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        openbmc@lists.ozlabs.org,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+References: <20220329152926.50958-1-andriy.shevchenko@linux.intel.com>
+ <20220329152926.50958-10-andriy.shevchenko@linux.intel.com>
+ <94e888fe-d8fc-5379-302f-66d64f2ae10b@baylibre.com>
+ <YkM22GwhxV+YKl8l@smile.fi.intel.com>
+ <CAMuHMdWVA834tkeag=WOnHFGuhwZ93PkrgO24OV69Fye1hruLw@mail.gmail.com>
+From:   Neil Armstrong <narmstrong@baylibre.com>
+Organization: Baylibre
+In-Reply-To: <CAMuHMdWVA834tkeag=WOnHFGuhwZ93PkrgO24OV69Fye1hruLw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey Nicolas,
+On 30/03/2022 10:54, Geert Uytterhoeven wrote:
+> Hi Andy,
+> 
+> On Tue, Mar 29, 2022 at 6:47 PM Andy Shevchenko
+> <andriy.shevchenko@linux.intel.com> wrote:
+>> On Tue, Mar 29, 2022 at 06:13:19PM +0200, Neil Armstrong wrote:
+>>> On 29/03/2022 17:29, Andy Shevchenko wrote:
+>>>> Rename REG_* to * as a prerequisite for enabling COMPILE_TEST.
+>>>
+>>> What error do you hit ?
+>>
+>> arch/x86/include/asm/arch_hweight.h:9:17: error: expected identifier before string constant
+>> 9 | #define REG_OUT "a"
+>>    |                 ^~~
+> 
+> Perhaps REG_{OUT,IN} in arch/x86/include/asm/arch_hweight.h should be
+> renamed instead, as this is a generic header file that can be included
+> anywhere, while the REG_{OUT,IN} definitions are only used locally,
+> in the header file?
 
-Also typo in title:
-s/Ensure decoded resolution fit coded resolution/
-   Ensure decoded resolution fits coded resolution/
+Even better, those REG_OUT/REG_IN should be undefined at the end of the header since only
+used in the headers inline functions:
+==============><==================================
+diff --git a/arch/x86/include/asm/arch_hweight.h b/arch/x86/include/asm/arch_hweight.h
+index ba88edd0d58b..139a4b0a2a14 100644
+--- a/arch/x86/include/asm/arch_hweight.h
++++ b/arch/x86/include/asm/arch_hweight.h
+@@ -52,4 +52,7 @@ static __always_inline unsigned long __arch_hweight64(__u64 w)
+  }
+  #endif /* CONFIG_X86_32 */
 
-Greetings,
-Sebastian
++#undef REG_IN
++#undef REG_OUT
++
+  #endif
+==============><==================================
 
-On 29.03.2022 17:39, Sebastian Fricke wrote:
->Hey Nicolas,
->
->On 28.03.2022 15:59, Nicolas Dufresne wrote:
->>From: Jonas Karlman <jonas@kwiboo.se>
->>
->>Ensure decoded CAPTURE buffer resolution is larger or equal to the coded
->>OPTUPT buffer resolution.
->
->s/OPTUPT/OUTPUT/
->
->>
->>Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
->Reviewed-by: Sebastian Fricke <sebastian.fricke@collabora.com>
->
->>---
->>drivers/staging/media/rkvdec/rkvdec.c | 2 ++
->>1 file changed, 2 insertions(+)
->>
->>diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
->>index 05824f1997f7..22c0382c579e 100644
->>--- a/drivers/staging/media/rkvdec/rkvdec.c
->>+++ b/drivers/staging/media/rkvdec/rkvdec.c
->>@@ -269,6 +269,8 @@ static int rkvdec_try_capture_fmt(struct file *file, void *priv,
->>		pix_mp->pixelformat = coded_desc->decoded_fmts[0];
->>
->>	/* Always apply the frmsize constraint of the coded end. */
->
->s/frmsize/framesize/
->s/constraint/constraints/
->s/coded end/coded format/
->
->Greetings,
->Sebastian
->
->>+	pix_mp->width = max(pix_mp->width, ctx->coded_fmt.fmt.pix_mp.width);
->>+	pix_mp->height = max(pix_mp->height, ctx->coded_fmt.fmt.pix_mp.height);
->>	v4l2_apply_frmsize_constraints(&pix_mp->width,
->>				       &pix_mp->height,
->>				       &coded_desc->frmsize);
->>-- 
->>2.34.1
->>
+Neil
+
+> 
+> Gr{oetje,eeting}s,
+> 
+>                          Geert
+> 
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> 
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                  -- Linus Torvalds
+
