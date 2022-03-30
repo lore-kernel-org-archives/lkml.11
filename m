@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B508C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ABD6C43217
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:17:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346931AbiC3MSr (ORCPT
+        id S1346982AbiC3MSv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:18:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35272 "EHLO
+        Wed, 30 Mar 2022 08:18:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344404AbiC3Lzy (ORCPT
+        with ESMTP id S1344391AbiC3Lzx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:55:54 -0400
+        Wed, 30 Mar 2022 07:55:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F39352F38F;
-        Wed, 30 Mar 2022 04:54:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0765E2BB01;
+        Wed, 30 Mar 2022 04:53:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C22261710;
-        Wed, 30 Mar 2022 11:54:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE34FC340EE;
-        Wed, 30 Mar 2022 11:54:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C74A6170E;
+        Wed, 30 Mar 2022 11:53:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86AFDC36AE2;
+        Wed, 30 Mar 2022 11:53:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641241;
-        bh=bkZOOo4OTLPt/6iak3xmqexQD+t/tDVRYpkeLEA+SSw=;
+        s=k20201202; t=1648641234;
+        bh=KILYHveAm1KA+QDA4KsMbD9x4kEXUusNdRBZBi+Vj3M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QshwmhRX//JyI4JspCsHPbCQiIRv/o6zxCJdvZKi1cVPYFBz/8F6wLl29omci4tRn
-         Ea5ucCwkz4Tbk+kqKqeGkn+WsSoVB5nM/HRAHWe4z52TzszZTn2ghz3SMlWwY3tmsJ
-         ivAOIBDtSxGPrsQtuYjKKaOD7czYoDrsxf6QOGVQP7ZFQRqQ/6jYFsxvVao/UfgA42
-         5rMh14a1f1caUHqJnotYgbn+dsiTWcBonGYXVCmKIZaIG9dAizPuxgNai2fSoDIR+O
-         XfTaVwKYOIfvV1bizO9oK21HCkmJokaieJZVotjlmIptsJHQjAKPZHDcOjgX89hznE
-         IYNboEIu9ZuoA==
+        b=trfeWur3KHESINxAuLYW5iIN8PxgStCMYc0E1DvA4moJFAogFitSw/yiZd37CvMj6
+         bI3Z2Wa5lj22BKQdlTXYCwKAxuq8FQ6+LFxkFgjvBb0F0XC/41IxkjZCmRqjhx5mQw
+         5RT8W4+PD6fQimoHP6Lt2hvCDO3MtSsgccYFcA7UlQQmpIpjpohoYAKQLOZwnRuJa8
+         JTgu0/Q0DoMHI4WAr17D8NRYb6mRbvKkt6YbvH2p8QHUQ9/g/vbrThlNMAzxZHr6j/
+         GCC/104HtXnfekQ3zcHsa7SGiPOkIDRgXuNzuEXrIxLTtKYRjvgqswPxh7CrIJ6hdy
+         EQhPyFEuPFunQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>, Helge Deller <deller@gmx.de>,
-        Sasha Levin <sashal@kernel.org>, sudipm.mukherjee@gmail.com,
-        teddy.wang@siliconmotion.com, tomi.valkeinen@ti.com,
-        linux-fbdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 16/20] video: fbdev: sm712fb: Fix crash in smtcfb_write()
-Date:   Wed, 30 Mar 2022 07:53:32 -0400
-Message-Id: <20220330115336.1672930-16-sashal@kernel.org>
+Cc:     Shengjiu Wang <shengjiu.wang@nxp.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 4.14 11/20] ASoC: soc-core: skip zero num_dai component in searching dai name
+Date:   Wed, 30 Mar 2022 07:53:27 -0400
+Message-Id: <20220330115336.1672930-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115336.1672930-1-sashal@kernel.org>
 References: <20220330115336.1672930-1-sashal@kernel.org>
@@ -53,73 +53,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Shengjiu Wang <shengjiu.wang@nxp.com>
 
-[ Upstream commit 4f01d09b2bbfbcb47b3eb305560a7f4857a32260 ]
+[ Upstream commit f7d344a2bd5ec81fbd1ce76928fd059e57ec9bea ]
 
-When the sm712fb driver writes three bytes to the framebuffer, the
-driver will crash:
+In the case like dmaengine which's not a dai but as a component, the
+num_dai is zero, dmaengine component has the same component_of_node
+as cpu dai, when cpu dai component is not ready, but dmaengine component
+is ready, try to get cpu dai name, the snd_soc_get_dai_name() return
+-EINVAL, not -EPROBE_DEFER, that cause below error:
 
-    BUG: unable to handle page fault for address: ffffc90001ffffff
-    RIP: 0010:smtcfb_write+0x454/0x5b0
-    Call Trace:
-     vfs_write+0x291/0xd60
-     ? do_sys_openat2+0x27d/0x350
-     ? __fget_light+0x54/0x340
-     ksys_write+0xce/0x190
-     do_syscall_64+0x43/0x90
-     entry_SYSCALL_64_after_hwframe+0x44/0xae
+asoc-simple-card <card name>: parse error -22
+asoc-simple-card: probe of <card name> failed with error -22
 
-Fix it by removing the open-coded endianness fixup-code.
+The sound card failed to probe.
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+So this patch fixes the issue above by skipping the zero num_dai
+component in searching dai name.
+
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Link: https://lore.kernel.org/r/1644491952-7457-1-git-send-email-shengjiu.wang@nxp.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/sm712fb.c | 21 ++++-----------------
- 1 file changed, 4 insertions(+), 17 deletions(-)
+ sound/soc/soc-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/video/fbdev/sm712fb.c b/drivers/video/fbdev/sm712fb.c
-index 1781ca697f66..76b1866dfa95 100644
---- a/drivers/video/fbdev/sm712fb.c
-+++ b/drivers/video/fbdev/sm712fb.c
-@@ -1130,7 +1130,7 @@ static ssize_t smtcfb_write(struct fb_info *info, const char __user *buf,
- 		count = total_size - p;
- 	}
+diff --git a/sound/soc/soc-core.c b/sound/soc/soc-core.c
+index 2a172de37466..febf2b649b96 100644
+--- a/sound/soc/soc-core.c
++++ b/sound/soc/soc-core.c
+@@ -4243,7 +4243,7 @@ int snd_soc_get_dai_name(struct of_phandle_args *args,
+ 		if (!component_of_node && pos->dev->parent)
+ 			component_of_node = pos->dev->parent->of_node;
  
--	buffer = kmalloc((count > PAGE_SIZE) ? PAGE_SIZE : count, GFP_KERNEL);
-+	buffer = kmalloc(PAGE_SIZE, GFP_KERNEL);
- 	if (!buffer)
- 		return -ENOMEM;
+-		if (component_of_node != args->np)
++		if (component_of_node != args->np || !pos->num_dai)
+ 			continue;
  
-@@ -1148,24 +1148,11 @@ static ssize_t smtcfb_write(struct fb_info *info, const char __user *buf,
- 			break;
- 		}
- 
--		for (i = c >> 2; i--;) {
--			fb_writel(big_swap(*src), dst++);
-+		for (i = (c + 3) >> 2; i--;) {
-+			fb_writel(big_swap(*src), dst);
-+			dst++;
- 			src++;
- 		}
--		if (c & 3) {
--			u8 *src8 = (u8 *)src;
--			u8 __iomem *dst8 = (u8 __iomem *)dst;
--
--			for (i = c & 3; i--;) {
--				if (i & 1) {
--					fb_writeb(*src8++, ++dst8);
--				} else {
--					fb_writeb(*src8++, --dst8);
--					dst8 += 2;
--				}
--			}
--			dst = (u32 __iomem *)dst8;
--		}
- 
- 		*ppos += c;
- 		buf += c;
+ 		if (pos->driver->of_xlate_dai_name) {
 -- 
 2.34.1
 
