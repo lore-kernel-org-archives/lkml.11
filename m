@@ -2,45 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8436C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:17:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56052C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:17:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347190AbiC3MTC (ORCPT
+        id S1344391AbiC3MTR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:19:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38034 "EHLO
+        Wed, 30 Mar 2022 08:19:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344509AbiC3L4N (ORCPT
+        with ESMTP id S1344211AbiC3Lzl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:56:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 277592B24A;
-        Wed, 30 Mar 2022 04:54:06 -0700 (PDT)
+        Wed, 30 Mar 2022 07:55:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 280B32CCB9;
+        Wed, 30 Mar 2022 04:53:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 55ADBB81C37;
-        Wed, 30 Mar 2022 11:54:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C5D0C34116;
-        Wed, 30 Mar 2022 11:54:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B8DBD616E0;
+        Wed, 30 Mar 2022 11:53:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 929A0C3410F;
+        Wed, 30 Mar 2022 11:53:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641244;
-        bh=fbafnmH+HMXr9Vfi2LqmWZ6ZH9LpSsOiiv5763Uqj3Y=;
+        s=k20201202; t=1648641226;
+        bh=5DhYdPpy5hGpue8wLGlBJX3nNYuxCqm2NqDqAHyvBQI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FX42o8Hb1V+jKmyTZPIDGtzin0jcMKVUeoxH2lNoOTBor0Fu5pRKRBJKXl2bUXS01
-         1qgk3Vx8KL+C9nSeNPqfdF8Kx5qbmrHJQRvZLrPQNfV4tewv9U28MJssS/z8DzWlpg
-         X/ZBoa1IgSNUl+QiTlj5ebvAWsQfpUD5fTUEnzpOWSTl+SDnoDxPg569TFSI+oPveN
-         L7hQsYiKW/vshKM+QKmWGTGkwPH2zYF57vnK7tgiy2Qg/x+O/9JI40jCAKl4lCBIKO
-         UZwdPXgvEEdQSbamEf1VVg/jJtlWgQz7ttk18PILn3ZfMdSU4dZSNe6B2mP72fQlW3
-         DpTEkBXDbjm6A==
+        b=bw6OxbEsq2XHUtfEbexXnv/Tjbl3TR31QQjf4/I3mLKVUexh28rooQdsx4gS8+tgX
+         9ll5rRGk+I3Y/xYo7xhyaik+QfrdiN25lgliJe+EUrzXOjM/sYziw320kwqxlqT16w
+         UnaeqaHFWwYj/dOTgtnnfyW6U2xoVZ1p+/KcACJiXhqOdytoz53BZbGyZIyOFih4ox
+         366rIr8uEKNHDPrI9JkBDKQrwmgV+ax1qAaHP4koqnF3X7L+s/5G+RrQDSisirufGU
+         hZAISoIKy9Yi/yx1tnxS/m2TP9M5etQPoo1hAL8T6BzIcqb1IjUcQXqc12i5HeywzS
+         trQ3KuRbfa2Xw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Steven Rostedt (Google)" <rostedt@goodmis.org>,
-        Ritesh Harjani <riteshh@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>, mingo@redhat.com
-Subject: [PATCH AUTOSEL 4.14 18/20] tracing: Have TRACE_DEFINE_ENUM affect trace event types as well
-Date:   Wed, 30 Mar 2022 07:53:34 -0400
-Message-Id: <20220330115336.1672930-18-sashal@kernel.org>
+Cc:     David Heidelberg <david@ixit.cz>,
+        LogicalErzor <logicalerzor@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, andy.gross@linaro.org,
+        david.brown@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
+        linux@armlinux.org.uk, linux-arm-msm@vger.kernel.org,
+        linux-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.14 05/20] ARM: dts: qcom: fix gic_irq_domain_translate warnings for msm8960
+Date:   Wed, 30 Mar 2022 07:53:21 -0400
+Message-Id: <20220330115336.1672930-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115336.1672930-1-sashal@kernel.org>
 References: <20220330115336.1672930-1-sashal@kernel.org>
@@ -52,81 +57,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
+From: David Heidelberg <david@ixit.cz>
 
-[ Upstream commit b3bc8547d3be60898818885f5bf22d0a62e2eb48 ]
+[ Upstream commit 6f7e221e7a5cfc3299616543fce42b36e631497b ]
 
-The macro TRACE_DEFINE_ENUM is used to convert enums in the kernel to
-their actual value when they are exported to user space via the trace
-event format file.
+IRQ types blindly copied from very similar APQ8064.
 
-Currently only the enums in the "print fmt" (TP_printk in the TRACE_EVENT
-macro) have the enums converted. But the enums can be used to denote array
-size:
+Fixes warnings as:
+WARNING: CPU: 0 PID: 1 at drivers/irqchip/irq-gic.c:1080 gic_irq_domain_translate+0x118/0x120
+...
 
-        field:unsigned int fc_ineligible_rc[EXT4_FC_REASON_MAX]; offset:12;      size:36;        signed:0;
-
-The EXT4_FC_REASON_MAX has no meaning to userspace but it needs to know
-that information to know how to parse the array.
-
-Have the array indexes also be parsed as well.
-
-Link: https://lore.kernel.org/all/cover.1646922487.git.riteshh@linux.ibm.com/
-
-Reported-by: Ritesh Harjani <riteshh@linux.ibm.com>
-Tested-by: Ritesh Harjani <riteshh@linux.ibm.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Tested-by: LogicalErzor <logicalerzor@gmail.com> # boot-tested on Samsung S3
+Signed-off-by: David Heidelberg <david@ixit.cz>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220108174229.60384-1-david@ixit.cz
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/trace_events.c | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+ arch/arm/boot/dts/qcom-msm8960.dtsi | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/trace/trace_events.c b/kernel/trace/trace_events.c
-index 1285ef6e2d14..7c2d4ff7a51f 100644
---- a/kernel/trace/trace_events.c
-+++ b/kernel/trace/trace_events.c
-@@ -2209,6 +2209,33 @@ static void update_event_printk(struct trace_event_call *call,
- 	}
- }
+diff --git a/arch/arm/boot/dts/qcom-msm8960.dtsi b/arch/arm/boot/dts/qcom-msm8960.dtsi
+index 1733d8f40ab1..b256fda0f5ea 100644
+--- a/arch/arm/boot/dts/qcom-msm8960.dtsi
++++ b/arch/arm/boot/dts/qcom-msm8960.dtsi
+@@ -140,7 +140,9 @@
+ 			reg		= <0x108000 0x1000>;
+ 			qcom,ipc	= <&l2cc 0x8 2>;
  
-+static void update_event_fields(struct trace_event_call *call,
-+				struct trace_eval_map *map)
-+{
-+	struct ftrace_event_field *field;
-+	struct list_head *head;
-+	char *ptr;
-+	int len = strlen(map->eval_string);
-+
-+	head = trace_get_fields(call);
-+	list_for_each_entry(field, head, link) {
-+		ptr = strchr(field->type, '[');
-+		if (!ptr)
-+			continue;
-+		ptr++;
-+
-+		if (!isalpha(*ptr) && *ptr != '_')
-+			continue;
-+
-+		if (strncmp(map->eval_string, ptr, len) != 0)
-+			continue;
-+
-+		ptr = eval_replace(ptr, map, len);
-+		/* enum/sizeof string smaller than value */
-+		WARN_ON_ONCE(!ptr);
-+	}
-+}
-+
- void trace_event_eval_update(struct trace_eval_map **map, int len)
- {
- 	struct trace_event_call *call, *p;
-@@ -2244,6 +2271,7 @@ void trace_event_eval_update(struct trace_eval_map **map, int len)
- 					first = false;
- 				}
- 				update_event_printk(call, map[i]);
-+				update_event_fields(call, map[i]);
- 			}
- 		}
- 	}
+-			interrupts	= <0 19 0>, <0 21 0>, <0 22 0>;
++			interrupts	= <GIC_SPI 19 IRQ_TYPE_EDGE_RISING>,
++					  <GIC_SPI 21 IRQ_TYPE_EDGE_RISING>,
++					  <GIC_SPI 22 IRQ_TYPE_EDGE_RISING>;
+ 			interrupt-names	= "ack", "err", "wakeup";
+ 
+ 			regulators {
+@@ -186,7 +188,7 @@
+ 				compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
+ 				reg = <0x16440000 0x1000>,
+ 				      <0x16400000 0x1000>;
+-				interrupts = <0 154 0x0>;
++				interrupts = <GIC_SPI 154 IRQ_TYPE_LEVEL_HIGH>;
+ 				clocks = <&gcc GSBI5_UART_CLK>, <&gcc GSBI5_H_CLK>;
+ 				clock-names = "core", "iface";
+ 				status = "disabled";
+@@ -312,7 +314,7 @@
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+ 				reg = <0x16080000 0x1000>;
+-				interrupts = <0 147 0>;
++				interrupts = <GIC_SPI 147 IRQ_TYPE_LEVEL_HIGH>;
+ 				spi-max-frequency = <24000000>;
+ 				cs-gpios = <&msmgpio 8 0>;
+ 
 -- 
 2.34.1
 
