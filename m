@@ -2,160 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5A10C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:14:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 903F8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:16:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345776AbiC3NQi (ORCPT
+        id S1345789AbiC3NSJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 09:16:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41134 "EHLO
+        Wed, 30 Mar 2022 09:18:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344304AbiC3NQf (ORCPT
+        with ESMTP id S1345825AbiC3NSD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 09:16:35 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ACD702FFFE
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 06:14:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648646088;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ldezc9GK3QLkJKuWMQhPgYUN/ziZJCuKDduMpDPTgac=;
-        b=emGF+PUqS8xbuG/al2Chln071JwVy95OLtSyubSOvayZuICqTGvL06WXX3B+5kQ6a6e8Pv
-        tUg2t8U9rvHqwB2EeQhhuEXmtBS+xiY/aP3GdlxvojNl2vIBCpjnRI5k5lRShy780r2vCI
-        I6aSTcE0W5xRW3m7gMfFW9uJkj6Sd+Q=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-530-yPfonb3mPUuvm8Zswtt61g-1; Wed, 30 Mar 2022 09:14:47 -0400
-X-MC-Unique: yPfonb3mPUuvm8Zswtt61g-1
-Received: by mail-wm1-f70.google.com with SMTP id c126-20020a1c3584000000b00380dee8a62cso7901321wma.8
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 06:14:46 -0700 (PDT)
+        Wed, 30 Mar 2022 09:18:03 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D930730550;
+        Wed, 30 Mar 2022 06:16:16 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id c62so24376627edf.5;
+        Wed, 30 Mar 2022 06:16:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=L9ZZEhaB4N93rT956KgttYvh8XmyGyWfb74vWE/N9yo=;
+        b=OxCSsGJvh77imEAynSgD8C33TMeAri1Abo+xALPCW7rcixxwbhQ2Z74hwde1y40w3k
+         z3fVY6Ye3uBfzDib/JTI1Vcpz3KWrS3sZxGtqrkNweTTUh0A1rS1AwDvQyN5m29wFzr3
+         233qyJgruVGJFrItJXNy//gjHN48XlEc0ErcyUVmRAo6V1YTtrFc8TJNV2q2GeZZtMdC
+         gPwUIrPwSMEl0f1r9lQacTHI9jTyzpLAREhVhlQQSZ4Qqgl1xjSkEjqHMYAM0cAqP1bh
+         mChICRwOMldaGtUIw/L4U82ozmcGZfaTtxZit2CAibTQQJcBgV7N+PV37RikNTiklutW
+         WJ+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=ldezc9GK3QLkJKuWMQhPgYUN/ziZJCuKDduMpDPTgac=;
-        b=i1Mcz2P6epGLzPwHNRil+J5ZkRMVvIY99cWIVABaHqKnFW7CZQfpny3X0w2q/hvj4C
-         tG1FrSW8SB8zWC0aaJY25LOmS8/k2vO3gojNljZC/mcVUo7awm+VzUctbhNWF3hD8605
-         m07KbxOOsbFbIXGU+yUMAOhtgnkUKgzIxxKuw3lqOc/7veBuhW7rib7QKQkXvQafnMIc
-         HC0w4BiI5OwKb9ZpXYPUYZGUNQPjk7kJurm9Qx01WOmrqzg3znwiOyuAuLJGr95pd1P1
-         HTvTV1BrcPb5gxaBA+AshZhEjJAttfaruJdxOeJCuQWVptKvWoo8yEAHBz6JwVTXL8Pr
-         RWDQ==
-X-Gm-Message-State: AOAM531cr9ulTCAc+QWX/TxiNjqiw7WycJmIIsUyI8ACvnHp6o7IkceM
-        n0Poj9XeoX1ANoFTB45Lg+FXEU48bZjqEWOQc6RlD8BWtxbKigYlRyoIzsuOcInQt0dYKa3arfx
-        p7MfoLqIdQ/pbRMD7awcL+65P
-X-Received: by 2002:adf:ec04:0:b0:205:8537:af5c with SMTP id x4-20020adfec04000000b002058537af5cmr35250511wrn.357.1648646085674;
-        Wed, 30 Mar 2022 06:14:45 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJycL6xQGmW2GqfiTku9O+trJ1+RLopcuDW1jwFCh03mQc+leccCBpVASZhSVjleB7q+OdHkgw==
-X-Received: by 2002:adf:ec04:0:b0:205:8537:af5c with SMTP id x4-20020adfec04000000b002058537af5cmr35250495wrn.357.1648646085406;
-        Wed, 30 Mar 2022 06:14:45 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c705:2200:178b:7244:2a1f:b5d8? (p200300cbc7052200178b72442a1fb5d8.dip0.t-ipconnect.de. [2003:cb:c705:2200:178b:7244:2a1f:b5d8])
-        by smtp.gmail.com with ESMTPSA id j17-20020a05600c1c1100b0038e389ab62esm1998504wms.9.2022.03.30.06.14.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 30 Mar 2022 06:14:44 -0700 (PDT)
-Message-ID: <57639524-b930-c31b-196b-bafae8c4e374@redhat.com>
-Date:   Wed, 30 Mar 2022 15:14:44 +0200
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=L9ZZEhaB4N93rT956KgttYvh8XmyGyWfb74vWE/N9yo=;
+        b=Bv2jjH6OqT9ZNGWNafadWVMtzHn53iUWzQep9IJcWAdanIMVvuKLbpuK40pbPFlC1/
+         vW1C/Np6LA/DF9lD9DVGffipeuczWy62BFbjaqEfzn1RyHtB5JbYoHnVrnLCx/oTd5T6
+         jXFJ4dIfu4S0pcXAqAKsiLNXZZLO9/frf9ztQFJJLUSv7jWfhsaOVt7j3me0NjdS5lyK
+         ZtyP4WKNIx+2yxAYoFufZ+JySHr29+HKdQE/MYGEtgwtDhk1/eB4kujLjW7r0bN+KUNn
+         KOBOb/lcetKUrCkGS2zmHBjljn4BCpXgm4FMT/8CeoesWiJkuI8FxqXtfX09ymJaTx0E
+         8uBA==
+X-Gm-Message-State: AOAM532XwEmI97mGtX0Y+1MSWTxqiBbHFa1Cfm7Lx/wMTf9VGa88QA+w
+        aJtXGdTjoTCJM4moTDacAfU=
+X-Google-Smtp-Source: ABdhPJzlLbsJKtH5PEczO5sFv3FiGYYMNpOjYnwx10oP6eTlECgWSBh06Txlx+WEhmHQTw1WiVZy3Q==
+X-Received: by 2002:a05:6402:54:b0:419:9b58:e305 with SMTP id f20-20020a056402005400b004199b58e305mr10545849edu.158.1648646175361;
+        Wed, 30 Mar 2022 06:16:15 -0700 (PDT)
+Received: from debian.home (81-204-249-205.fixed.kpn.net. [81.204.249.205])
+        by smtp.gmail.com with ESMTPSA id ge13-20020a170907908d00b006e09a005d73sm6603476ejb.31.2022.03.30.06.16.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 06:16:15 -0700 (PDT)
+From:   Johan Jonker <jbx6244@gmail.com>
+To:     heiko@sntech.de, zhangqing@rock-chips.com
+Cc:     robh+dt@kernel.org, krzk+dt@kernel.org, mturquette@baylibre.com,
+        sboyd@kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v1 2/3] ARM: dts: rockchip: add clocks property to cru node rv1108
+Date:   Wed, 30 Mar 2022 15:16:07 +0200
+Message-Id: <20220330131608.30040-2-jbx6244@gmail.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220330131608.30040-1-jbx6244@gmail.com>
+References: <20220330131608.30040-1-jbx6244@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH v2 1/2] mm: fix contiguous memmap assumptions about split
- page
-Content-Language: en-US
-To:     Chen Wandun <chenwandun@huawei.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
-        willy@infradead.org
-References: <20220330102534.1053240-1-chenwandun@huawei.com>
- <20220330102534.1053240-2-chenwandun@huawei.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220330102534.1053240-2-chenwandun@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 30.03.22 12:25, Chen Wandun wrote:
-> It isn't true for only SPARSEMEM configs to assume that a compound page
-> has virtually contiguous page structs, so use nth_page to iterate each
-> page.
+Add clocks and clock-names to the rv1108 cru node, because
+the device has to have at least one input clock.
 
-Is this actually a "fix" or rather a preparation for having very large
-compound pages (>= MAX_ORDER) that we'd be able to split?
+Signed-off-by: Johan Jonker <jbx6244@gmail.com>
+---
+ arch/arm/boot/dts/rv1108.dtsi | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Naive me would think that we'd currently only have order < MAX_ORDER,
-and consequently would always fall into a single memory section where
-the memmap is contiguous.
-
-> 
-> Inspired by:
-> https://lore.kernel.org/linux-mm/20220204195852.1751729-8-willy@infradead.org/
-> 
-> Signed-off-by: Chen Wandun <chenwandun@huawei.com>
-> ---
->  mm/compaction.c  | 6 +++---
->  mm/huge_memory.c | 2 +-
->  mm/page_alloc.c  | 2 +-
->  3 files changed, 5 insertions(+), 5 deletions(-)
-> 
-> diff --git a/mm/compaction.c b/mm/compaction.c
-> index c3e37aa9ff9e..ddff13b968a2 100644
-> --- a/mm/compaction.c
-> +++ b/mm/compaction.c
-> @@ -87,7 +87,7 @@ static unsigned long release_freepages(struct list_head *freelist)
->  static void split_map_pages(struct list_head *list)
->  {
->  	unsigned int i, order, nr_pages;
-> -	struct page *page, *next;
-> +	struct page *page, *next, *tmp;
->  	LIST_HEAD(tmp_list);
->  
->  	list_for_each_entry_safe(page, next, list, lru) {
-> @@ -101,8 +101,8 @@ static void split_map_pages(struct list_head *list)
->  			split_page(page, order);
->  
->  		for (i = 0; i < nr_pages; i++) {
-> -			list_add(&page->lru, &tmp_list);
-> -			page++;
-> +			tmp = nth_page(page, i);
-> +			list_add(&tmp->lru, &tmp_list);
->  		}
->  	}
->  
-> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-> index 2fe38212e07c..d77fc2ad581d 100644
-> --- a/mm/huge_memory.c
-> +++ b/mm/huge_memory.c
-> @@ -2297,7 +2297,7 @@ static void lru_add_page_tail(struct page *head, struct page *tail,
->  static void __split_huge_page_tail(struct page *head, int tail,
->  		struct lruvec *lruvec, struct list_head *list)
->  {
-> -	struct page *page_tail = head + tail;
-> +	struct page *page_tail = nth_page(head, tail);
->  
->  	VM_BUG_ON_PAGE(atomic_read(&page_tail->_mapcount) != -1, page_tail);
->  
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index f648decfe39d..855211dea13e 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -3513,7 +3513,7 @@ void split_page(struct page *page, unsigned int order)
->  	VM_BUG_ON_PAGE(!page_count(page), page);
->  
->  	for (i = 1; i < (1 << order); i++)
-> -		set_page_refcounted(page + i);
-> +		set_page_refcounted(nth_page(page, i));
->  	split_page_owner(page, 1 << order);
->  	split_page_memcg(page, 1 << order);
->  }
-
-
+diff --git a/arch/arm/boot/dts/rv1108.dtsi b/arch/arm/boot/dts/rv1108.dtsi
+index 448254906..eceaa940b 100644
+--- a/arch/arm/boot/dts/rv1108.dtsi
++++ b/arch/arm/boot/dts/rv1108.dtsi
+@@ -456,6 +456,8 @@
+ 	cru: clock-controller@20200000 {
+ 		compatible = "rockchip,rv1108-cru";
+ 		reg = <0x20200000 0x1000>;
++		clocks = <&xin24m>;
++		clock-names = "xin24m";
+ 		rockchip,grf = <&grf>;
+ 		#clock-cells = <1>;
+ 		#reset-cells = <1>;
 -- 
-Thanks,
-
-David / dhildenb
+2.20.1
 
