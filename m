@@ -2,163 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6542AC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:57:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 176A9C43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:57:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233533AbiC3L7K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 07:59:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35764 "EHLO
+        id S244517AbiC3L7Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 07:59:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344571AbiC3LxR (ORCPT
+        with ESMTP id S1344583AbiC3LxS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:53:17 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7FA26482F;
-        Wed, 30 Mar 2022 04:49:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6A98ACE1C71;
-        Wed, 30 Mar 2022 11:49:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E7F1C3410F;
-        Wed, 30 Mar 2022 11:49:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648640943;
-        bh=Qb/oTH/UWrZXJOhd5uOtZEXXGxt5HFJZw3S+Cihmmxc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kB1eSgMzedC3qCEA/NSDFrLvL2yPKPZ9I1pJK/CeABt4v7crBThUpAn0PC6SXoJ+X
-         aEcrxGLmQSn6B2yIOaHDZ18cN9aUxUmZln3WQNlOopJ44vb08fOEMPtT8WUKpuwOr+
-         tsunZDd7NVU0EhPQJP1b3t1AM+H7uEoGCXhNi7Hy5BlXqVk4RwqXiPGRxFEdwIK5bT
-         EVWyHIjAtkjnRgXVRqcJjF7FxkPOLPfBrWE2+5CQTbPFpLrhsOijFReAGWaXX11xsD
-         fKyWIFOd63Drh6PyGowQWlvta61Z1SD//OouCZxz+E3iBLomRAoLRQHrU9wbjXDdda
-         z2+iOj4IjDl9g==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Richard Schleich <rs@noreya.tech>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        mark.rutland@arm.com, linux@armlinux.org.uk, rjui@broadcom.com,
-        sbranden@broadcom.com, bcm-kernel-feedback-list@broadcom.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.16 19/59] ARM: dts: bcm2837: Add the missing L1/L2 cache information
-Date:   Wed, 30 Mar 2022 07:47:51 -0400
-Message-Id: <20220330114831.1670235-19-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330114831.1670235-1-sashal@kernel.org>
-References: <20220330114831.1670235-1-sashal@kernel.org>
+        Wed, 30 Mar 2022 07:53:18 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92CF6264811
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 04:49:11 -0700 (PDT)
+Received: from fraeml740-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KT4Rq6Qgxz6802Q;
+        Wed, 30 Mar 2022 19:47:35 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml740-chm.china.huawei.com (10.206.15.221) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 30 Mar 2022 13:49:02 +0200
+Received: from [10.47.83.59] (10.47.83.59) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 30 Mar
+ 2022 12:49:02 +0100
+Message-ID: <fab277a2-3460-17d2-15ab-e12dea2d5b74@huawei.com>
+Date:   Wed, 30 Mar 2022 12:49:00 +0100
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: drivers/scsi/hisi_sas/hisi_sas_main.c:445 hisi_sas_task_deliver()
+ warn: inconsistent indenting
+To:     kernel test robot <lkp@intel.com>
+CC:     <kbuild-all@lists.01.org>, <linux-kernel@vger.kernel.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+References: <202203301533.b4Hty4C7-lkp@intel.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <202203301533.b4Hty4C7-lkp@intel.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.47.83.59]
+X-ClientProxiedBy: lhreml745-chm.china.huawei.com (10.201.108.195) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Richard Schleich <rs@noreya.tech>
+On 30/03/2022 08:23, kernel test robot wrote:
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> head:   1c24a186398f59c80adb9a967486b65c1423a59d
+> commit: 095478a6e5bf590f2bbf341569eb25173c9c5f32 scsi: hisi_sas: Use libsas internal abort support
+> date:   2 weeks ago
+> config: powerpc64-randconfig-m031-20220330 (https://download.01.org/0day-ci/archive/20220330/202203301533.b4Hty4C7-lkp@intel.com/config)
+> compiler: powerpc64-linux-gcc (GCC) 11.2.0
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> smatch warnings:
+> drivers/scsi/hisi_sas/hisi_sas_main.c:445 hisi_sas_task_deliver() warn: inconsistent indenting
+> 
+> vim +445 drivers/scsi/hisi_sas/hisi_sas_main.c
+> 
 
-[ Upstream commit bdf8762da268d2a34abf517c36528413906e9cd5 ]
+...
 
-This patch fixes the kernel warning
-"cacheinfo: Unable to detect cache hierarchy for CPU 0"
-for the bcm2837 on newer kernel versions.
+> 42e7a69368a585 John Garry  2015-11-18  437  	case SAS_PROTOCOL_SATA:
+> 42e7a69368a585 John Garry  2015-11-18  438  	case SAS_PROTOCOL_STP:
+> 095478a6e5bf59 John Garry  2022-03-11  439  	case SAS_PROTOCOL_STP_ALL:
+> a2b3820bddfbff Xiang Chen  2018-05-09  440  		hisi_sas_task_prep_ata(hisi_hba, slot);
+> 6f2ff1a1311e61 John Garry  2016-01-26  441  		break;
+> 095478a6e5bf59 John Garry  2022-03-11  442  	case SAS_PROTOCOL_INTERNAL_ABORT:
+> 095478a6e5bf59 John Garry  2022-03-11  443  		hisi_sas_task_prep_abort(hisi_hba, slot);
+> dc313f6b125b09 John Garry  2021-12-15  444  		break;
+> dc313f6b125b09 John Garry  2021-12-15 @445  	fallthrough;
 
-Signed-off-by: Richard Schleich <rs@noreya.tech>
-Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
-[florian: Align and remove comments matching property values]
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/arm/boot/dts/bcm2837.dtsi | 49 ++++++++++++++++++++++++++++++++++
- 1 file changed, 49 insertions(+)
+This is already queued for removal.
 
-diff --git a/arch/arm/boot/dts/bcm2837.dtsi b/arch/arm/boot/dts/bcm2837.dtsi
-index 0199ec98cd61..5dbdebc46259 100644
---- a/arch/arm/boot/dts/bcm2837.dtsi
-+++ b/arch/arm/boot/dts/bcm2837.dtsi
-@@ -40,12 +40,26 @@
- 		#size-cells = <0>;
- 		enable-method = "brcm,bcm2836-smp"; // for ARM 32-bit
- 
-+		/* Source for d/i-cache-line-size and d/i-cache-sets
-+		 * https://developer.arm.com/documentation/ddi0500/e/level-1-memory-system
-+		 * /about-the-l1-memory-system?lang=en
-+		 *
-+		 * Source for d/i-cache-size
-+		 * https://magpi.raspberrypi.com/articles/raspberry-pi-3-specs-benchmarks
-+		 */
- 		cpu0: cpu@0 {
- 			device_type = "cpu";
- 			compatible = "arm,cortex-a53";
- 			reg = <0>;
- 			enable-method = "spin-table";
- 			cpu-release-addr = <0x0 0x000000d8>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
-+			next-level-cache = <&l2>;
- 		};
- 
- 		cpu1: cpu@1 {
-@@ -54,6 +68,13 @@
- 			reg = <1>;
- 			enable-method = "spin-table";
- 			cpu-release-addr = <0x0 0x000000e0>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
-+			next-level-cache = <&l2>;
- 		};
- 
- 		cpu2: cpu@2 {
-@@ -62,6 +83,13 @@
- 			reg = <2>;
- 			enable-method = "spin-table";
- 			cpu-release-addr = <0x0 0x000000e8>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
-+			next-level-cache = <&l2>;
- 		};
- 
- 		cpu3: cpu@3 {
-@@ -70,6 +98,27 @@
- 			reg = <3>;
- 			enable-method = "spin-table";
- 			cpu-release-addr = <0x0 0x000000f0>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
-+			next-level-cache = <&l2>;
-+		};
-+
-+		/* Source for cache-line-size + cache-sets
-+		 * https://developer.arm.com/documentation/ddi0500
-+		 * /e/level-2-memory-system/about-the-l2-memory-system?lang=en
-+		 * Source for cache-size
-+		 * https://datasheets.raspberrypi.com/cm/cm1-and-cm3-datasheet.pdf
-+		 */
-+		l2: l2-cache0 {
-+			compatible = "cache";
-+			cache-size = <0x80000>;
-+			cache-line-size = <64>;
-+			cache-sets = <512>; // 512KiB(size)/64(line-size)=8192ways/16-way set
-+			cache-level = <2>;
- 		};
- 	};
- };
--- 
-2.34.1
+> 42e7a69368a585 John Garry  2015-11-18  446  	default:
+> 095478a6e5bf59 John Garry  2022-03-11  447  		return;
+> 42e7a69368a585 John Garry  2015-11-18  448  	}
+> 42e7a69368a585 John Garry  2015-11-18  449
+> 1c09b663168bb5 Xiaofei Tan 2018-07-18  450  	WRITE_ONCE(slot->ready, 1);
+> 42e7a69368a585 John Garry  2015-11-18  451
+> 0e4620856b8933 John Garry  2021-12-15  452  	spin_lock(&dq->lock);
+> 0e4620856b8933 John Garry  2021-12-15  453  	hisi_hba->hw->start_delivery(dq);
+> 0e4620856b8933 John Garry  2021-12-15  454  	spin_unlock(&dq->lock);
+> 42e7a69368a585 John Garry  2015-11-18  455  }
+> 42e7a69368a585 John Garry  2015-11-18  456
+> 
+> :::::: The code at line 445 was first introduced by commit
+> :::::: dc313f6b125b095d3d2683d94d5f69c8dc9bdc36 scsi: hisi_sas: Factor out task prep and delivery code
+> 
+> :::::: TO: John Garry <john.garry@huawei.com>
+> :::::: CC: Martin K. Petersen <martin.petersen@oracle.com>
+> 
 
