@@ -2,145 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBC8CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 20:05:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE239C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 20:06:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350903AbiC3UHN (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 16:07:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46594 "EHLO
+        id S232088AbiC3UIi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 16:08:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350893AbiC3UHK (ORCPT
+        with ESMTP id S231695AbiC3UIf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 16:07:10 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3773B5BD04
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 13:05:21 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id p10so31868099lfa.12
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 13:05:21 -0700 (PDT)
+        Wed, 30 Mar 2022 16:08:35 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96EB85D19C
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 13:06:49 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id j13so21492557plj.8
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 13:06:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=leYvi+cDZUOrDBc7G8or9bc7gxfHRObwcuo9/M9zt8A=;
-        b=Cb72t/cRjaiariN8lx6yjbeoYYe+LTSD1X0yXgkFAsVKShM9sXIaEj6kIA3dxLzoPC
-         ZI3TJ/dsOPCcHBHGs+0s/a+le08A4UDAO8XzJUfImHKwDtW4m0rluPtB29SRmoMvx/jY
-         IiJCe6dZ8ZGw1AZGSznUgKyCguN8z/Nw3ocnA=
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=zz99CC/dzN0eKJq2+dN0xgIk5MEz2najshGkZSY+2K8=;
+        b=lXcRLFGBm3OOD7++f2H7UcUVxFqk6ODsXpbDcaMGKaQ8St/MfvpJOzMDLzvE00SH5C
+         676TZvbAj2IlNNuVqOwIhos4c4xpaXIbhJFMeBePgRhWvYM6ITc6yaNBuxm3N0H/m7yE
+         iNHLmTXMxYJDmGtQs0w02WKoKZXpy+BIZaEmNmyvPhwhJkmQoO3xTptFkuwdlwDhCreK
+         k1q/OQQ5u3KATvhOHpRKPuwScqf/KdUck7jJP2CQ8L5D9gh76mIqRzp8W2mqfPNNPjGW
+         UQUbEc2zjKyJKkx+cR5EBzolRuWCccau/qBpIUXOQPCs+unVXu77K7xa3dE6cPRsnfwm
+         CF3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=leYvi+cDZUOrDBc7G8or9bc7gxfHRObwcuo9/M9zt8A=;
-        b=GInwV/MqhkxaDVyDhjAtEvZYkwwCxMHAIXEk+g0WRFmhnIBlGO3Genlep2Tfkzk8+v
-         NRlCc2z5NnWBiQjUhS9rw1RmAWtlhYNPpilC5g4nLrhF+ATDPe5jQfXGKyN1fRwUJUlA
-         f/7qT7VM0Q96afkit4V2nanBqJx0dvUU2GHo/BNDS1vI6c7ZDMIG+NZx1+OsQg+zq9g8
-         Gr83ovz5+pjg5Xon/MaWsQ76gpDgEc6xoXWD13JzCEIJnnLvVGGGaV5GVnppANCcdKDv
-         7tRFO6Yfb9O/MD2ai4jd4f7fwKag5chgDY/es/3Hr3xzz81b23f7h5vfNmihLzI+ReNY
-         aDqA==
-X-Gm-Message-State: AOAM5333gkzL4SqlWH3naJEwDDcteUpaLO3ESDAzaZN4ywMr6tKG0Ds6
-        /3c0jKyDKb2SlyfRNVm15VURFsoai9ddaQtE
-X-Google-Smtp-Source: ABdhPJx0S5PzAIOlmbpkR+Itd2DjE4tO7ziL8BTgfQd5ZcRgRGYMfUILPWReyQDJ6veoT+QF07gYww==
-X-Received: by 2002:a05:6512:2809:b0:44a:94d1:ad8e with SMTP id cf9-20020a056512280900b0044a94d1ad8emr8054668lfb.175.1648670717784;
-        Wed, 30 Mar 2022 13:05:17 -0700 (PDT)
-Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com. [209.85.167.47])
-        by smtp.gmail.com with ESMTPSA id p17-20020a19f111000000b0044a6522f9acsm2283143lfh.135.2022.03.30.13.05.16
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 30 Mar 2022 13:05:16 -0700 (PDT)
-Received: by mail-lf1-f47.google.com with SMTP id w7so37754705lfd.6
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 13:05:16 -0700 (PDT)
-X-Received: by 2002:ac2:4203:0:b0:448:8053:d402 with SMTP id
- y3-20020ac24203000000b004488053d402mr8016762lfh.687.1648670716244; Wed, 30
- Mar 2022 13:05:16 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=zz99CC/dzN0eKJq2+dN0xgIk5MEz2najshGkZSY+2K8=;
+        b=HIAVLmOwVHt+OA/UyOfz1qU94/AHP204IXUcB1QdrRFEjFMrZKShsLVBMjnYPYJxJ7
+         8HFjBcaL4rJUJF2GdVOl4AZybL5dzwcxBO/qVgbIz3KkniyI/gJv/sNozmylN2UX7VZh
+         dcNV5vNqWYDFTALjuJldnL7SQlOnII8eun8LMocUAalA48Qf2nLYWbTl693lkRzxat0z
+         8bXa01JAfcFlgJeAiaiPfzhNCxlOgdCIHwSb0mbr0aKkP6tsZ16DrHOiu+5NqJ9qgmiG
+         g/iHtzjP3tk/84x8DwFObk6pJ7CgW8s5HXyBEZ/zKQFGT00/X3bjKlRxTbGOG2JJqk7a
+         0F6A==
+X-Gm-Message-State: AOAM531F0oqZfaR92SJqA0V312t1nwdJmeD4uh88SGRZljmUOunCU9JH
+        StAiy10GjpUUJx/DHLbzjAzt8g==
+X-Google-Smtp-Source: ABdhPJx0p0Kvtux9zYtuaEVA2gBoIJL0FZuHW0gNsAWIw107ERi54YP0VFNxfVFEDaAFMkGYXhSJNA==
+X-Received: by 2002:a17:902:6841:b0:150:9b8c:3a67 with SMTP id f1-20020a170902684100b001509b8c3a67mr1072224pln.151.1648670808911;
+        Wed, 30 Mar 2022 13:06:48 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id w4-20020a056a0014c400b004fb0c7b3813sm21188919pfu.134.2022.03.30.13.05.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 13:05:37 -0700 (PDT)
+Date:   Wed, 30 Mar 2022 20:05:11 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Chenyi Qiang <chenyi.qiang@intel.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Xiaoyao Li <xiaoyao.li@intel.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 1/7] KVM: VMX: Introduce PKS VMCS fields
+Message-ID: <YkS398j08ZuXQgUx@google.com>
+References: <20220221080840.7369-1-chenyi.qiang@intel.com>
+ <20220221080840.7369-2-chenyi.qiang@intel.com>
 MIME-Version: 1.0
-References: <20220330154208.71aca532@gandalf.local.home>
-In-Reply-To: <20220330154208.71aca532@gandalf.local.home>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 30 Mar 2022 13:05:00 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whz_8tRNGCr09X59nMW3JBzFLE-g-F-brxd+AkK+RceCw@mail.gmail.com>
-Message-ID: <CAHk-=whz_8tRNGCr09X59nMW3JBzFLE-g-F-brxd+AkK+RceCw@mail.gmail.com>
-Subject: Re: [BUG] Crash on x86_32 for: mm: page_alloc: avoid merging
- non-fallbackable pageblocks with others
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>, Zi Yan <ziy@nvidia.com>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        David Hildenbrand <david@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux-MM <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220221080840.7369-2-chenyi.qiang@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 12:42 PM Steven Rostedt <rostedt@goodmis.org> wrote:
->
-> I started testing new patches and it crashed when doing the x86-32 test on
-> boot up.
->
-> Initializing HighMem for node 0 (000375fe:0021ee00)
-> BUG: kernel NULL pointer dereference, address: 00000878
-> #PF: supervisor read access in kernel mode
-> #PF: error_code(0x0000) - not-present page
-> *pdpt = 0000000000000000 *pde = f0000000f000eef3
-> Oops: 0000 [#1] PREEMPT SMP PTI
-> CPU: 0 PID: 0 Comm: swapper Not tainted 5.17.0-test+ #469
-> Hardware name: MSI MS-7823/CSM-H87M-G43 (MS-7823), BIOS V1.6 02/22/2014
-> EIP: get_pfnblock_flags_mask+0x2c/0x36
-> Code: 6d ea ff 55 89 e5 56 89 ce 53 8b 18 89 d8 c1 eb 1e e8 f7 fb ff ff 69 db c0 02 00 00 89 c1 89 c2 c1 ea 05 8b 83 7c d7 79 c1 5b <8b> 04 90 d3 e8 21 f0 5e 5d c3 55 89 e5 57 56 89 d6 53 89 c3 64 a1
+On Mon, Feb 21, 2022, Chenyi Qiang wrote:
+> PKS(Protection Keys for Supervisor Pages) is a feature that extends the
+> Protection Key architecture to support thread-specific permission
+> restrictions on supervisor pages.
+> 
+> A new PKS MSR(PKRS) is defined in kernel to support PKS, which holds a
+> set of permissions associated with each protection domain.
+> 
+> Two VMCS fields {HOST,GUEST}_IA32_PKRS are introduced in
+> {host,guest}-state area to store the respective values of PKRS.
+> 
+> Every VM exit saves PKRS into guest-state area.
+> If VM_EXIT_LOAD_IA32_PKRS = 1, VM exit loads PKRS from the host-state
+> area.
+> If VM_ENTRY_LOAD_IA32_PKRS = 1, VM entry loads PKRS from the guest-state
+> area.
+> 
+> Signed-off-by: Chenyi Qiang <chenyi.qiang@intel.com>
+> Reviewed-by: Jim Mattson <jmattson@google.com>
+> ---
 
-The whole function is in that Code: thing, and it decodes to:
-
-   0: 55                    push   %ebp
-   1: 89 e5                mov    %esp,%ebp
-   3: 56                    push   %esi
-   4: 89 ce                mov    %ecx,%esi
-   6: 53                    push   %ebx
-   7: 8b 18                mov    (%eax),%ebx
-   9: 89 d8                mov    %ebx,%eax
-   b: c1 eb 1e              shr    $0x1e,%ebx
-   e: e8 f7 fb ff ff        call   0xfffffc0a
-  13: 69 db c0 02 00 00    imul   $0x2c0,%ebx,%ebx
-  19: 89 c1                mov    %eax,%ecx
-  1b: 89 c2                mov    %eax,%edx
-  1d: c1 ea 05              shr    $0x5,%edx
-  20: 8b 83 7c d7 79 c1    mov    -0x3e862884(%ebx),%eax
-  26: 5b                    pop    %ebx
-  27:* 8b 04 90              mov    (%eax,%edx,4),%eax <-- trapping instruction
-  2a: d3 e8                shr    %cl,%eax
-  2c: 21 f0                and    %esi,%eax
-  2e: 5e                    pop    %esi
-  2f: 5d                    pop    %ebp
-  30: c3                    ret
-
-with '%eax' being NULL, and %edx being 0x21e.
-
-(The call seems to be to 'pfn_to_bitidx().isra.0' if my compiler does
-similar code generation, so it's out-of-lined part of pfn_to_bitidx()
-despite being marked inline)
-
-So that oops is that
-
-        word = bitmap[word_bitidx];
-
-line, with 'bitmap' being NULL (and %edx contains 'word_bitidx').
-
-Looking around, your 'config-bad' doesn't even have
-CONFIG_MEMORY_ISOLATION enabled, and so I suspect the culprit is this
-part of the change:
-
--               if (unlikely(has_isolate_pageblock(zone))) {
-
-which used to always be false for that config, and now the code is
-suddenly enabled.
-
-Alternatively, that code just can't deal with highmem properly.
-
-But I didn't really analyze things, I'm mainly doing pattern matching here.
-
-Zi Yan - and all the people who ack'ed and reviewed this - please take
-a deeper look..
-
-                Linus
+Reviewed-by: Sean Christopherson <seanjc@google.com>
