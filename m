@@ -2,127 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 742B1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:38:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01A1AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:38:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242421AbiC3MkA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:40:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40048 "EHLO
+        id S1344705AbiC3MkF (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 08:40:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344664AbiC3Mha (ORCPT
+        with ESMTP id S1345594AbiC3Mh5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 08:37:30 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B547892335;
-        Wed, 30 Mar 2022 05:26:27 -0700 (PDT)
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22UCMx98001117;
-        Wed, 30 Mar 2022 12:26:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=MD0PugNXlc5J05XUEaZLQsaoVIm9LF19mVI4l8ZALkA=;
- b=eQpRSla8EVGGq9ZqOzgfeYDyFsBIiD1GMGorCkwpy24F/BFqbUrhDzPvHfiAvSbmrOip
- CU4a97PyPLkiDegLPNLxWsyuxh/CJ/qKE+fnxyrjtnsqw5fQv+OG2FjndRy9lGJKmjse
- FQYaLKzPTtcvnlVylAyPI/IHBgxFKUKNRokQxSk2fepZg2pgCnJOrN1TbDszHxrkWDB/
- +ig8rZ6x0UxwXbewhvLTCRQ8yb/k48MvCM6SNf+FXB3HH5c7Hnf6mtgeijlTMV3euCcI
- ipbPkxjL1t3FkVXvnZJ6tqDB2fSV2X1n13M5og4LKsDiEKIxaZ+JSnxW0Dd8c5BJimlj pg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f3yqmntk7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 30 Mar 2022 12:26:27 +0000
-Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22UCMs1U000422;
-        Wed, 30 Mar 2022 12:26:26 GMT
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f3yqmntj9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 30 Mar 2022 12:26:26 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22UCNeUT009997;
-        Wed, 30 Mar 2022 12:26:24 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma05fra.de.ibm.com with ESMTP id 3f1tf8y96k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 30 Mar 2022 12:26:24 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22UCQQxY19661198
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 30 Mar 2022 12:26:26 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1E08511C054;
-        Wed, 30 Mar 2022 12:26:21 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8DCFF11C050;
-        Wed, 30 Mar 2022 12:26:20 +0000 (GMT)
-Received: from localhost.localdomain (unknown [9.145.13.95])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 30 Mar 2022 12:26:20 +0000 (GMT)
-From:   Claudio Imbrenda <imbrenda@linux.ibm.com>
-To:     kvm@vger.kernel.org
-Cc:     borntraeger@de.ibm.com, frankja@linux.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, david@redhat.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, scgl@linux.ibm.com,
-        mimu@linux.ibm.com, nrb@linux.ibm.com
-Subject: [PATCH v9 16/18] KVM: s390: pv: add KVM_CAP_S390_PROTECTED_ASYNC_DISABLE
-Date:   Wed, 30 Mar 2022 14:26:03 +0200
-Message-Id: <20220330122605.247613-17-imbrenda@linux.ibm.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330122605.247613-1-imbrenda@linux.ibm.com>
-References: <20220330122605.247613-1-imbrenda@linux.ibm.com>
+        Wed, 30 Mar 2022 08:37:57 -0400
+Received: from mail-vs1-f43.google.com (mail-vs1-f43.google.com [209.85.217.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C645AB6E4B;
+        Wed, 30 Mar 2022 05:28:41 -0700 (PDT)
+Received: by mail-vs1-f43.google.com with SMTP id i186so22350332vsc.9;
+        Wed, 30 Mar 2022 05:28:41 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UOWc2z4o6DC6pqDz0yydlogP1ndPfXTDpB2t/FafZMU=;
+        b=teXZgOOf7AgSgKM9Tnt3dscj6JJd3X1J2xFFSVDyx/tjbECD5FKHt0v1JgfhM+cOKT
+         qSBg1Mr4dIOyuLRj+4qD6AAdQ5VRTiNS/WgnByOqfK7NwucXePaCQEASQcIlG+CzCPhd
+         a8zXyY7RiPxEH4k1ToTob7wczNacaU4tEX+vI8/nAA5a2LdRmFVFRrgaLrVBqC1yrkFr
+         JgGT6CtP4bBHo3b3QRz0tkwNmxDNtBxqOGjXaFODZCmAwH14x5C2a2jDYSVeayQaoOkU
+         X0g6RB54QaSllhIn8Dgwcynhu7TkroAzqhaq3OFZmU65nBqePo/7kYqgwKJbRCYVG0Z9
+         4Pyw==
+X-Gm-Message-State: AOAM533LRUt37XV0/wn9y+4tV1phpzCgTBy0jEJhCm32RAl9iGaHRNnH
+        BsckO8D66c39f9gsZCB4u9Ng/6vKGZYSsA==
+X-Google-Smtp-Source: ABdhPJybvOcCU6phUffPJYqI6FXSp7eEtLE0QS7MGUZmZpWAJajQt03aKDxv2jwerNt1AGwU/6G/+Q==
+X-Received: by 2002:a05:6102:3c85:b0:325:b017:ae6d with SMTP id c5-20020a0561023c8500b00325b017ae6dmr10322125vsv.5.1648643320764;
+        Wed, 30 Mar 2022 05:28:40 -0700 (PDT)
+Received: from mail-ua1-f49.google.com (mail-ua1-f49.google.com. [209.85.222.49])
+        by smtp.gmail.com with ESMTPSA id z13-20020a67db0d000000b0031bd1ad83c5sm1804925vsj.21.2022.03.30.05.28.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Mar 2022 05:28:40 -0700 (PDT)
+Received: by mail-ua1-f49.google.com with SMTP id o10so322945uar.0;
+        Wed, 30 Mar 2022 05:28:40 -0700 (PDT)
+X-Received: by 2002:a25:9e89:0:b0:63c:ad37:a5de with SMTP id
+ p9-20020a259e89000000b0063cad37a5demr17071596ybq.342.1648642915183; Wed, 30
+ Mar 2022 05:21:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: gRJosofFhQigSX450_p9OywwbTMtShwO
-X-Proofpoint-ORIG-GUID: j-00g-GnAkI8Fgdyt5gDD5w5maah8oPd
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-30_03,2022-03-30_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
- bulkscore=0 spamscore=0 phishscore=0 malwarescore=0 suspectscore=0
- adultscore=0 priorityscore=1501 mlxlogscore=639 lowpriorityscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203300062
+References: <20220329152926.50958-1-andriy.shevchenko@linux.intel.com>
+ <20220329152926.50958-8-andriy.shevchenko@linux.intel.com>
+ <CAMuHMdWs+OuxV0cO=XGYvOOJ0Mctwu6fKV5HnkdRBXNKkLE3uQ@mail.gmail.com> <YkRKI6W4vR/aCr8c@smile.fi.intel.com>
+In-Reply-To: <YkRKI6W4vR/aCr8c@smile.fi.intel.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 30 Mar 2022 14:21:43 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWiL+R=9NSgpxo+9e+_8jj9zm4nGwcfejap5z3XdYYtwA@mail.gmail.com>
+Message-ID: <CAMuHMdWiL+R=9NSgpxo+9e+_8jj9zm4nGwcfejap5z3XdYYtwA@mail.gmail.com>
+Subject: Re: [PATCH v2 07/13] pinctrl: renesas: rza1: Switch to use
+ for_each_gpiochip_node() helper
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Qianggui Song <qianggui.song@amlogic.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Fabien Dessenne <fabien.dessenne@foss.st.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        openbmc@lists.ozlabs.org,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add KVM_CAP_S390_PROTECTED_ASYNC_DISABLE to signal that the
-KVM_PV_ASYNC_DISABLE and KVM_PV_ASYNC_DISABLE_PREPARE commands for the
-KVM_S390_PV_COMMAND ioctl are available.
+Hi Andy,
 
-Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
----
- arch/s390/kvm/kvm-s390.c | 3 +++
- include/uapi/linux/kvm.h | 1 +
- 2 files changed, 4 insertions(+)
+On Wed, Mar 30, 2022 at 2:17 PM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+> On Wed, Mar 30, 2022 at 12:00:27PM +0200, Geert Uytterhoeven wrote:
+> > On Tue, Mar 29, 2022 at 5:29 PM Andy Shevchenko
+> > <andriy.shevchenko@linux.intel.com> wrote:
+>
+> ...
+>
+> > > +       struct fwnode_reference_args of_args;
+> >
+> > fw_args?
+>
+> Perhaps just args as other drivers do?
 
-diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
-index 2453d2d90d6c..8ee143c9a03b 100644
---- a/arch/s390/kvm/kvm-s390.c
-+++ b/arch/s390/kvm/kvm-s390.c
-@@ -609,6 +609,9 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
- 	case KVM_CAP_S390_BPB:
- 		r = test_facility(82);
- 		break;
-+	case KVM_CAP_S390_PROTECTED_ASYNC_DISABLE:
-+		r = lazy_destroy && is_prot_virt_host();
-+		break;
- 	case KVM_CAP_S390_PROTECTED:
- 		r = is_prot_virt_host();
- 		break;
-diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
-index d150610e7a4b..d775e891dd39 100644
---- a/include/uapi/linux/kvm.h
-+++ b/include/uapi/linux/kvm.h
-@@ -1135,6 +1135,7 @@ struct kvm_ppc_resize_hpt {
- #define KVM_CAP_XSAVE2 208
- #define KVM_CAP_SYS_ATTRIBUTES 209
- #define KVM_CAP_PPC_AIL_MODE_3 210
-+#define KVM_CAP_S390_PROTECTED_ASYNC_DISABLE 215
- 
- #ifdef KVM_CAP_IRQ_ROUTING
- 
--- 
-2.34.1
+Fine for me.
 
+> > > -       chip->label     = devm_kasprintf(rza1_pctl->dev, GFP_KERNEL, "%pOFn",
+> > > -                                        np);
+> > > +       chip->label     = devm_kasprintf(rza1_pctl->dev, GFP_KERNEL, "%pfw", fwnode);
+> >
+> > This changes the label from e.g. "/soc/pinctrl@fcfe3000/gpio-11" to "gpio-11".
+>
+> Hmm... It seems other way around, i.e. it changes from the name to full name.
+
+Oops, sorry about that.
+(I accidentally included the change from testing "%pfwP" ;-)
+
+>
+> > %pfwP?
+>
+> But conclusion here is correct. Good catch!
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
