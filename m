@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 081B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 17:51:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00870C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 17:52:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349581AbiC3Rxh (ORCPT
+        id S1349025AbiC3RyR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 13:53:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51368 "EHLO
+        Wed, 30 Mar 2022 13:54:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349535AbiC3Rxa (ORCPT
+        with ESMTP id S1349466AbiC3RyJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 13:53:30 -0400
-Received: from mail-0301.mail-europe.com (mail-0301.mail-europe.com [188.165.51.139])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ABFAEA772
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 10:51:37 -0700 (PDT)
-Date:   Wed, 30 Mar 2022 17:51:25 +0000
+        Wed, 30 Mar 2022 13:54:09 -0400
+Received: from mail-4323.proton.ch (mail-4323.proton.ch [185.70.43.23])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 684A8B7EB;
+        Wed, 30 Mar 2022 10:52:20 -0700 (PDT)
+Date:   Wed, 30 Mar 2022 17:52:09 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=connolly.tech;
-        s=protonmail; t=1648662692;
-        bh=e/RQ1SaRAskObP1MAJEptYfekeXaggHmvx1g8cmarms=;
+        s=protonmail; t=1648662738;
+        bh=n4vvBw0vQ2Jrjzs0eyHkrWrKsoCc4TdqIoM10kTGmE4=;
         h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
          References:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
          Message-ID;
-        b=hNeT12lIcVXiSBrE2bhJi/Hp5/3CGsuA75yJ1KsxEDRjSGdFoc48yjyPT2QOyIsjW
-         c58a4XH4WRuhKFiTb/NR2ULZH59UaxExiN16Nz6om8MET/PSMQzqf3HMuSCSZ/F8DL
-         e/HpCgIWBvI+yUNwxMrSHfIbtJEoQ1I+gOW3m+Ns=
+        b=ROxo9MjRnxzOcnkq7kh4LPl6+qfp5qkb/BhNLUxgzD979fqqlFD8B8I2xXaPeA5tR
+         52CMWHFw5i7MaDw+6xk+newzfGftNbbxUP/8KG28KA6fFF82dZ12VMrDAySqCVIl/W
+         ESlR2nAxnuSCaFDd47dIi0wZ8QDmrYQcaP+AaLqk=
 To:     Joel Selvaraj <jo@jsfamily.in>, Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Rob Herring <robh+dt@kernel.org>
@@ -35,10 +35,10 @@ Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
         Amit Pundir <amit.pundir@linaro.org>
 Reply-To: Caleb Connolly <caleb@connolly.tech>
-Subject: Re: [PATCH 1/4] arm64: dts: qcom: sdm845-xiaomi-beryllium: change firmware path and use mbn format
-Message-ID: <ca8ff74d-0781-1bc8-0f2d-29f5b2154c7f@connolly.tech>
-In-Reply-To: <BY5PR02MB700966DEE6F6044EBEB5B892D91F9@BY5PR02MB7009.namprd02.prod.outlook.com>
-References: <20220330064505.243799-1-jo@jsfamily.in> <BY5PR02MB700966DEE6F6044EBEB5B892D91F9@BY5PR02MB7009.namprd02.prod.outlook.com>
+Subject: Re: [PATCH 2/4] arm64: dts: qcom: sdm845-xiaomi-beryllium: enable qcom ipa driver
+Message-ID: <fd83bd38-813b-40a0-4848-19b4467385b9@connolly.tech>
+In-Reply-To: <BY5PR02MB7009405D7C06C0B480974063D91F9@BY5PR02MB7009.namprd02.prod.outlook.com>
+References: <20220330064505.243799-1-jo@jsfamily.in> <BY5PR02MB7009405D7C06C0B480974063D91F9@BY5PR02MB7009.namprd02.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
@@ -49,63 +49,34 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 
 On 30/03/2022 07:45, Joel Selvaraj wrote:
-> The "qcom/sdm845/" path conflicts with db845c's firmware that are
-> present in the linux-firmware package. Xiaomi uses their own signed
-> firmware for Poco F1 and can't use the db845c's firmware. So let's
-> use "qcom/sdm845/beryllium/" to distinguish Poco F1's firmware files.
->
-> For easier handling and packaging, the mdt+bXX files are squashed
-> using Bjorn Andersson's pil-squasher tool from this link:
-> https://github.com/andersson/pil-squasher
+> Enable Qualcomm IP Accelerator (IPA) driver for mobile data functionality
+> which works by using ModemManager.
 Reviewed-by: Caleb Connolly <caleb@connolly.tech>
 >
 > Signed-off-by: Joel Selvaraj <jo@jsfamily.in>
 > ---
->   arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts | 8 ++++----
->   1 file changed, 4 insertions(+), 4 deletions(-)
+>   arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts | 6 ++++++
+>   1 file changed, 6 insertions(+)
 >
 > diff --git a/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts b/arch/=
 arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
-> index 367389526b41..27ba9ad1ad02 100644
+> index 27ba9ad1ad02..801b8c5984a3 100644
 > --- a/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
 > +++ b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
-> @@ -121,7 +121,7 @@ vreg_s4a_1p8: vreg-s4a-1p8 {
->
->   &adsp_pas {
->   =09status =3D "okay";
-> -=09firmware-name =3D "qcom/sdm845/adsp.mdt";
-> +=09firmware-name =3D "qcom/sdm845/beryllium/adsp.mbn";
+> @@ -292,6 +292,12 @@ &mss_pil {
+>   =09firmware-name =3D "qcom/sdm845/beryllium/mba.mbn", "qcom/sdm845/bery=
+llium/modem.mbn";
 >   };
 >
->   &apps_rsc {
-> @@ -208,7 +208,7 @@ vreg_l26a_1p2: ldo26 {
->
->   &cdsp_pas {
->   =09status =3D "okay";
-> -=09firmware-name =3D "qcom/sdm845/cdsp.mdt";
-> +=09firmware-name =3D "qcom/sdm845/beryllium/cdsp.mbn";
->   };
->
->   &dsi0 {
-> @@ -262,7 +262,7 @@ &gpu {
->
->   =09zap-shader {
->   =09=09memory-region =3D <&gpu_mem>;
-> -=09=09firmware-name =3D "qcom/sdm845/a630_zap.mbn";
-> +=09=09firmware-name =3D "qcom/sdm845/beryllium/a630_zap.mbn";
->   =09};
->   };
->
-> @@ -289,7 +289,7 @@ &mdss {
->
->   &mss_pil {
->   =09status =3D "okay";
-> -=09firmware-name =3D "qcom/sdm845/mba.mbn", "qcom/sdm845/modem.mdt";
-> +=09firmware-name =3D "qcom/sdm845/beryllium/mba.mbn", "qcom/sdm845/beryl=
-lium/modem.mbn";
->   };
->
+> +&ipa {
+> +=09status =3D "okay";
+> +=09memory-region =3D <&ipa_fw_mem>;
+> +=09firmware-name =3D "qcom/sdm845/beryllium/ipa_fws.mbn";
+> +};
+> +
 >   &pm8998_gpio {
+>   =09vol_up_pin_a: vol-up-active {
+>   =09=09pins =3D "gpio6";
 > --
 > 2.35.1
 >
