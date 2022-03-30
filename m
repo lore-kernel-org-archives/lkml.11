@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0C31C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:00:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F833C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:00:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344649AbiC3MB5 (ORCPT
+        id S1344288AbiC3MCA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:01:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35712 "EHLO
+        Wed, 30 Mar 2022 08:02:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344655AbiC3LxW (ORCPT
+        with ESMTP id S1344868AbiC3Lxn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:53:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A492D26B3B0;
-        Wed, 30 Mar 2022 04:49:22 -0700 (PDT)
+        Wed, 30 Mar 2022 07:53:43 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA51B27CE11;
+        Wed, 30 Mar 2022 04:49:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39489B81ACC;
-        Wed, 30 Mar 2022 11:49:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16F17C36AE3;
-        Wed, 30 Mar 2022 11:49:20 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 89FADCE1D41;
+        Wed, 30 Mar 2022 11:49:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08E2AC340EE;
+        Wed, 30 Mar 2022 11:49:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648640960;
-        bh=NgsPTeGkD8F8eAlsIyJJJaUVdluFyLTrmkEIT4kwEvM=;
+        s=k20201202; t=1648640988;
+        bh=GsAv312AdYmmt1e+wMqZIwMIBSqRjZ1+lgs4z1QfSXo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X1YpLTg7xRhr7zFmGowusGlH6Ym+JRI1MbOGMNQUPCi4pc/kGBz9Or5u//zHWeXho
-         3Sc5uLa2R7GyDbqFHZpItNKMRU56XTbBuoV+KKmdSg7MuZV+kS7fAdQ2GFdpol0f8s
-         xWEmcr5lRor4uD/I+k2CzkgU0GuwGwXyj1fFSmDCp1XvA4He0sqOBSsiSBIQwHMSgD
-         kgr+0yK3DGF9C+IzLNBnAsCucQLEam0XrtVSGoFP3YqfQtGI0wzgeaCoudZ05H8Tbi
-         1aIspoaQa/5McFmgA7rcyFYF5JXRPpeckMfjzlElO1WwpWyk181ilE0bKWowl8pg/+
-         dB5fslxH/LS3A==
+        b=X9xu+y6VWuXV9ZmcN3M3V4VJtZI/9kjMYAUi6cMZz2Ul8zjNiG6YkPt2uncKWD7iX
+         K7If6I6HZZ0XnSvPVzjnveLkMZUGt46xa3rZlR+AdYPguXuFhVgW5Ji0fEG5s7VoN0
+         epeR9srQQO7oMAZqsYF6QcYFcTufVySGQLzblFZmUKCiIFIAYbZMN+0MjR5MnejRfW
+         2Py/WBb2KUueOpGtWHB5c3rbcerhfeZpWtskRC3kEPDV3f4GEY1/eztHKXPMKQA+JE
+         kL6VWBwc1s4ax0u1pLH2ipD4q5A+fKoT5oriBzpa42z5/ez0RX0XoEICmCCSrv3UzF
+         D0bK2igOwKrnA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stephen Brennan <stephen.s.brennan@oracle.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Sasha Levin <sashal@kernel.org>, gregkh@linuxfoundation.org,
-        linux@roeck-us.net
-Subject: [PATCH AUTOSEL 5.16 31/59] printk: Add panic_in_progress helper
-Date:   Wed, 30 Mar 2022 07:48:03 -0400
-Message-Id: <20220330114831.1670235-31-sashal@kernel.org>
+Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
+        syzkaller <syzkaller@googlegroups.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, hverkuil@xs4all.nl,
+        linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 49/59] media: hdpvr: initialize dev->worker at hdpvr_register_videodev
+Date:   Wed, 30 Mar 2022 07:48:21 -0400
+Message-Id: <20220330114831.1670235-49-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330114831.1670235-1-sashal@kernel.org>
 References: <20220330114831.1670235-1-sashal@kernel.org>
@@ -54,43 +55,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephen Brennan <stephen.s.brennan@oracle.com>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit 77498617857f68496b360081dde1a492d40c28b2 ]
+[ Upstream commit 07922937e9a580825f9965c46fd15e23ba5754b6 ]
 
-This will be used help avoid deadlocks during panics. Although it would
-be better to include this in linux/panic.h, it would require that header
-to include linux/atomic.h as well. On some architectures, this results
-in a circular dependency as well. So instead add the helper directly to
-printk.c.
+hdpvr_register_videodev is responsible to initialize a worker in
+hdpvr_device. However, the worker is only initialized at
+hdpvr_start_streaming other than hdpvr_register_videodev.
+When hdpvr_probe does not initialize its worker, the hdpvr_disconnect
+will encounter one WARN in flush_work.The stack trace is as follows:
 
-Suggested-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: Stephen Brennan <stephen.s.brennan@oracle.com>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
-Signed-off-by: Petr Mladek <pmladek@suse.com>
-Link: https://lore.kernel.org/r/20220202171821.179394-2-stephen.s.brennan@oracle.com
+ hdpvr_disconnect+0xb8/0xf2 drivers/media/usb/hdpvr/hdpvr-core.c:425
+ usb_unbind_interface+0xbf/0x3a0 drivers/usb/core/driver.c:458
+ __device_release_driver drivers/base/dd.c:1206 [inline]
+ device_release_driver_internal+0x22a/0x230 drivers/base/dd.c:1237
+ bus_remove_device+0x108/0x160 drivers/base/bus.c:529
+ device_del+0x1fe/0x510 drivers/base/core.c:3592
+ usb_disable_device+0xd1/0x1d0 drivers/usb/core/message.c:1419
+ usb_disconnect+0x109/0x330 drivers/usb/core/hub.c:2228
+
+Fix this by moving the initialization of dev->worker to the starting of
+hdpvr_register_videodev
+
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/printk/printk.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/media/usb/hdpvr/hdpvr-video.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 57b132b658e1..e3d986dd49a1 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -256,6 +256,11 @@ static void __up_console_sem(unsigned long ip)
- }
- #define up_console_sem() __up_console_sem(_RET_IP_)
+diff --git a/drivers/media/usb/hdpvr/hdpvr-video.c b/drivers/media/usb/hdpvr/hdpvr-video.c
+index 563128d11731..60e57e0f1927 100644
+--- a/drivers/media/usb/hdpvr/hdpvr-video.c
++++ b/drivers/media/usb/hdpvr/hdpvr-video.c
+@@ -308,7 +308,6 @@ static int hdpvr_start_streaming(struct hdpvr_device *dev)
  
-+static bool panic_in_progress(void)
-+{
-+	return unlikely(atomic_read(&panic_cpu) != PANIC_CPU_INVALID);
-+}
+ 	dev->status = STATUS_STREAMING;
+ 
+-	INIT_WORK(&dev->worker, hdpvr_transmit_buffers);
+ 	schedule_work(&dev->worker);
+ 
+ 	v4l2_dbg(MSG_BUFFER, hdpvr_debug, &dev->v4l2_dev,
+@@ -1165,6 +1164,9 @@ int hdpvr_register_videodev(struct hdpvr_device *dev, struct device *parent,
+ 	bool ac3 = dev->flags & HDPVR_FLAG_AC3_CAP;
+ 	int res;
+ 
++	// initialize dev->worker
++	INIT_WORK(&dev->worker, hdpvr_transmit_buffers);
 +
- /*
-  * This is used for debugging the mess that is the VT code by
-  * keeping track if we have the console semaphore held. It's
+ 	dev->cur_std = V4L2_STD_525_60;
+ 	dev->width = 720;
+ 	dev->height = 480;
 -- 
 2.34.1
 
