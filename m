@@ -2,110 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03CF9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 15:48:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E40AC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 15:49:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348403AbiC3Pu3 (ORCPT
+        id S1348406AbiC3Puu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 11:50:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51486 "EHLO
+        Wed, 30 Mar 2022 11:50:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348387AbiC3PuW (ORCPT
+        with ESMTP id S1348355AbiC3Pus (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 11:50:22 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ACCD72E095
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 08:48:37 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4945223A;
-        Wed, 30 Mar 2022 08:48:37 -0700 (PDT)
-Received: from [192.168.178.6] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 256963F73B;
-        Wed, 30 Mar 2022 08:48:36 -0700 (PDT)
-Message-ID: <5dc3a40e-f071-3ac8-4bf0-f555b9d94ff1@arm.com>
-Date:   Wed, 30 Mar 2022 17:48:34 +0200
+        Wed, 30 Mar 2022 11:50:48 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B286A33EAC;
+        Wed, 30 Mar 2022 08:49:00 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id g24so28242413lja.7;
+        Wed, 30 Mar 2022 08:48:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=dq8xdoLIR4aRi6FkMb+20PWNHqW1rgCenoTdxXhapeQ=;
+        b=iEUFe0ObPg8qK8j1JvE8RRHyMghNpiQQxXbwvFtCunM0DqR7JYxOXqAOFS1X8FIvbv
+         Q0jwBAhjoA+FCfJRj/ifJ6BIzHZ5UKMGa5lStV8/Zlix0V2PFNBYjg2ne7WOoN5gp7pR
+         zW54GurfJQHFF3EeUxPZaHLDciSPnu7ij6ScQ2e7MSDo1eHy5ZYxLMnhZk3+NHmNirmq
+         l4Aa3/++C8AC6ykYazwoLvj//FQqUoBJmaC/STCqoAeYw7rXRXOg0MO49PZAPbxM0bff
+         kUnbDar1asklrk1T3evqldCGliH96rQ105mc2qE4KOaRpWY9I5BsWY6miPMwsqPfLgvt
+         DIlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=dq8xdoLIR4aRi6FkMb+20PWNHqW1rgCenoTdxXhapeQ=;
+        b=RmiRzmoCQ4jOrNSX1R/BWE9vsg078XaGlyp4FA5UJNBx34OflGbqrgv+VsNDlDXNZg
+         KttzKwRTHU/3k8DdlfVGLfxsS4498wz2cWIyexMsVboOLh7GBRvyzia90wcEzs+vMdZ7
+         FBVU4hSnkThLNsDGfT1lzVr7gv2Lkg8Yw023wzNZP10O2UUWbke+1nmnHDT51QmsxSfD
+         Nb++GeWFFgOaRWG0pL9zzp4s1AXlf80MFHCOoewr705z3TKcXQ8NFiBl6HWeE4aLoAlf
+         cXOJwxrEhoEgro9+Jy2q0ijlqfRPiOnYLD5HMuzoOPY9gMDojx7xEFJZeL0m2fA8DCVE
+         yYGg==
+X-Gm-Message-State: AOAM531Wr01gm87+GzcCPNw4C/Tjpi/LvBzkUNiTUzuLoXSnLthhHnN8
+        I/GhzV5Dd/VSF9+4R0zVQyM=
+X-Google-Smtp-Source: ABdhPJyUOGgz9ZqjEOkltDEfzpulzR5+n7lOLWprzDlNwq2ielugYc/3nwzAT2zYEJY6zDunh4PM6Q==
+X-Received: by 2002:a05:651c:204:b0:249:832a:12b with SMTP id y4-20020a05651c020400b00249832a012bmr7201978ljn.473.1648655332642;
+        Wed, 30 Mar 2022 08:48:52 -0700 (PDT)
+Received: from [192.168.1.2] (235.132.246.94.ip4.artcom.pl. [94.246.132.235])
+        by smtp.googlemail.com with ESMTPSA id w22-20020a2e9996000000b00249824260f8sm2413038lji.25.2022.03.30.08.48.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Mar 2022 08:48:52 -0700 (PDT)
+Message-ID: <ae3864ac-b4f0-01a6-b3ed-75fa53ab3b95@gmail.com>
+Date:   Wed, 30 Mar 2022 17:47:55 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] arch/arm64: Fix topology initialization for core
- scheduling
-Content-Language: en-US
-To:     Phil Auld <pauld@redhat.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-arm-kernel@lists.infradead.org
-References: <20220322160304.26229-1-pauld@redhat.com>
- <1a546197-872b-7762-68ac-d5e6bb6d19aa@arm.com>
- <YkMjqfBSyT3NOrWB@lorien.usersys.redhat.com>
- <5a5381cd-813d-7cef-9948-01c3e5e910ef@arm.com>
- <YkNjGOtG6eb4N8mI@lorien.usersys.redhat.com>
-From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
-In-Reply-To: <YkNjGOtG6eb4N8mI@lorien.usersys.redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+ Thunderbird/91.7.0
+Subject: Re: Bug 215726 - si2157.c: mention name of the missing firmware file
+Content-Language: pl-PL
+To:     Thorsten Leemhuis <regressions@leemhuis.info>,
+        Robert Schlabbach <robert_s@gmx.net>
+Cc:     Antti Palosaari <crope@iki.fi>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <5f660108-8812-383c-83e4-29ee0558d623@leemhuis.info>
+ <trinity-2ca61ae4-4f05-454d-94fd-d41e1afbec2f-1648581688394@3c-app-gmx-bs54>
+ <1fc02de2-890e-e8e8-0ab6-aba62a333de5@leemhuis.info>
+ <2ce6dc15-51a8-e59c-26ab-4380cdca6209@gmail.com>
+ <703ad976-a504-eded-41b6-cd4f9f74e8df@leemhuis.info>
+From:   Piotr Chmura <chmooreck@gmail.com>
+In-Reply-To: <703ad976-a504-eded-41b6-cd4f9f74e8df@leemhuis.info>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 29/03/2022 21:50, Phil Auld wrote:
-> On Tue, Mar 29, 2022 at 08:55:08PM +0200 Dietmar Eggemann wrote:
->> On 29/03/2022 17:20, Phil Auld wrote:
->>> On Tue, Mar 29, 2022 at 04:02:22PM +0200 Dietmar Eggemann wrote:
->>>> On 22/03/2022 17:03, Phil Auld wrote:
-
-[...]
-
->>> This instance is an HPE Apollo 70 set to smt-4.  I believe it's ThunderX2
->>> chips.
+W dniu 30.03.2022 o 12:44, Thorsten Leemhuis pisze:
+> On 30.03.22 12:35, Piotr Chmura wrote:
+>> W dniu 30.03.2022 o 11:55, Thorsten Leemhuis pisze:
+>>> On 29.03.22 21:21, Robert Schlabbach wrote:
+>>>> the patch linked in the bugzilla ticket:
+>>>> https://lore.kernel.org/linux-media/6f84b7f4-3ede-ae55-e99b-a9d4108c80e2@gmail.com/
+>>>>
+>>>> should indeed fix the issue.
+>>> Ahh, the comment mentioning it was added shortly after I sent my mail.
+>>> #regzbot monitor:
+>>> https://lore.kernel.org/linux-media/6f84b7f4-3ede-ae55-e99b-a9d4108c80e2@gmail.com/
 >>>
->>> ARM (CN9980-2200LG4077-Y21-G) 
->> I'm using the same processor just with ACPI/PPTT.
+>>>
+>>> Adding Piotr, the patches' author to the CC, who also replied.
+>>>
+>>> BTW: that patch is afaics missing a Fixes tag specifying the culprit and
+>>> a `Cc: stable@vger.kernel.org # 5.17.x` tag to make sure it's quickly
+>>> backported to the stable tree, as among others explained here:
+>>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/process/handling-regressions.rst
+>>>
+>> Sorry for my inconvenience.
+> Don't worry, everything fine. In a case like...
+>
+>> I just fixed my device and wanted to share
+>> solution with the "world". I'm not familiar with all kernel development
+>> convention (yet).
+> ...this someone else should point such details out to the submitter
+> and/or add these tags when applying the patch.
+>
+> @Robert: Do you know which commit causes this regression and could tell
+> us for a proper Fixes: tag?
+Fixes: 1c35ba3bf97213538b82067acc0f23f18e652226
+
+Cheers,
+Piotr Chmura
+> Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+>
+> P.S.: As the Linux kernel's regression tracker I'm getting a lot of
+> reports on my table. I can only look briefly into most of them and lack
+> knowledge about most of the areas they concern. I thus unfortunately
+> will sometimes get things wrong or miss something important. I hope
+> that's not the case here; if you think it is, don't hesitate to tell me
+> in a public reply, it's in everyone's interest to set the public record
+> straight.
+>
+>
+>>>> The error was that the rom_id and required
+>>>> fields were swapped in the table, so the non-zero rom_id was taken as a
+>>>> "true" required boolean value, thus incorrectly evaluating that the
+>>>> chip requires a firmware file to operate when in fact it does not.
+>>>> I have tested the patch and found it worked for me. But I do not know
+>>>> how to push this further along:
+>>>> https://patchwork.linuxtv.org/project/linux-media/patch/6f84b7f4-3ede-ae55-e99b-a9d4108c80e2@gmail.com/
+>>>>
+>>> Mauro, what's up here? The patch fixes a regression and thus afaics
+>>> should quickly find its way towards mainline to get it into the stable
+>>> tree, as explained in the (bran new) document linked above.
+>>>
+>>> Ciao, Thorsten
+>>>
+>>>> Gesendet: Dienstag, 29. März 2022 um 10:33 Uhr
+>>>> Von: "Thorsten Leemhuis" <regressions@leemhuis.info>
+>>>> An: "Antti Palosaari" <crope@iki.fi>, "Mauro Carvalho Chehab"
+>>>> <mchehab+huawei@kernel.org>, "Robert Schlabbach" <robert_s@gmx.net>
+>>>> Cc: "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+>>>> az0123456@gmx.de, "Linux Media Mailing List"
+>>>> <linux-media@vger.kernel.org>, "Linux Kernel Mailing List"
+>>>> <linux-kernel@vger.kernel.org>
+>>>> Betreff: Bug 215726 - si2157.c: mention name of the missing firmware
+>>>> file
+>>>> Hi, this is your Linux kernel regression tracker.
+>>>>
+>>>> I noticed a regression report in bugzilla.kernel.org that afaics nobody
+>>>> acted upon since it was reported about a week ago, that's why I decided
+>>>> to forward it to the lists and all people that seemed to be relevant
+>>>> here. To quote from https://bugzilla.kernel.org/show_bug.cgi?id=215726 :
+>>>>
+>>>>> I get the following error messages when trying to use si2157.ko in
+>>>>> linux 5.17:
+>>>>> si2157 13-0060: found a 'Silicon Labs Si2157-A30 ROM 0x50'
+>>>>> si2157 13-0060: Can't continue without a firmware
+>>>>> I did work in linux 5.16.16 without a firmware file. Unfortunately
+>>>>> the driver does not tell me the name of the missing firmware file.
+>>>> Could somebody take a look into this? Or was this discussed somewhere
+>>>> else already? Or even fixed?
+>>>>
+>>>>
 >>
-> 
-> Maybe I'm misinformed about these systems having no PPTT...  
-> 
-> I'm reclaiming the system. Is there a way I can tell from userspace?
 
-# cat /sys/firmware/acpi/tables/PPTT > pptt.dat
-# iasl -d pptt.dat
-# vim pptt.dsl
-
-[...]
-
->> so no SMT sched domain. The MPIDR-based topology fallback code in
->> store_cpu_topology() forces `cpuid_topo->thread_id  = -1`.
-> 
-> Right. So since I'm getting SMT it must not have package_id == -1.
-> In which case you should be able to reproduce it because it must
-> be that the call the update_siblings_masks() is required.  That
-> appears to only be called from store_cpu_topology() which is
-> after the scheduler has already setup the core pointers.
-> 
-> The fix could be the same but I should reword the commit message
-> since it should effect all SMT arm systems I'd think.
-> 
-> Or maybe the ACPI topology code should call update_sibling_masks(). 
->>
->> IMHO this is why on my machine I don't see this issue while running:
->>
->> root@oss-apollo7007:~# stress-ng --prctl 256 -t 60
->> stress-ng: info:  [2388042] dispatching hogs: 256 prctl
->>
->> Is there something I miss in my setup to provoke this issue?
->>
-> 
-> Make sure you have a stress-ng that is new enough and built against
-> headers that have the CORE_SCHED prctls defined.
-
-Ah, I was using a pretty old version 0.11.07. Now I switched to 0.13.12
-which includes:
-
-  9038e442b92d - stress-prctl: add Linux 5.14 PR_SCHED_CORE prctl
-
-To get SCHED_CORE activated in stress-prctl.c, as a quick hack, I had to
-add the definitions of PR_SCHED_CORE, PR_SCHED_CORE_GET, etc. to this file.
-
-Now the issue you described triggers on this machine immediately.
