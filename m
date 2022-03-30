@@ -2,141 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D774CC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 22:31:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 887E8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 22:32:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351645AbiC3WdM (ORCPT
+        id S1351652AbiC3Web (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 18:33:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41688 "EHLO
+        Wed, 30 Mar 2022 18:34:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351698AbiC3Wc4 (ORCPT
+        with ESMTP id S242973AbiC3Wea (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 18:32:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68A955BD27;
-        Wed, 30 Mar 2022 15:31:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0443F617C8;
-        Wed, 30 Mar 2022 22:31:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F358C340EE;
-        Wed, 30 Mar 2022 22:31:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648679469;
-        bh=Vk0IrcuxiTSc8yFnQkIRJPR2GhpeV1CL0DQ4Hb/fETQ=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=usMyz6pz1sAuO70HtBJNE4C7ik1N2XSzCrRDTw0FE9RsNoDSxBBTfXMQx7fx3fI3Q
-         ThRP0iJgodfkDyW+nXeWRcSM6dwiiMWmRXE8Lxj8IYPutVDeMGCpZdAYseUUy4hkRq
-         nCofQQkeW1+Npua4PygZoGL1U5Ec3iuDgZRfH5VJT7R7GPHiH4gcItGo7/T6Nt32B4
-         55q+heL0EJNklGnBTLk8BujIbIg7h4qxSH2Nn2EvTqjD1QpAixV2r9144aK43PyCi+
-         c1jSvOTYNE+V8UghKKDBk8ESpwM8NCQ1YB/J2Zw5PSKPf8cMBvm7iEyvvr95Fk00gk
-         yBKByQoBXLXwg==
-Message-ID: <cc2c191065c489eb22bb15bf3dd2e3cddc822543.camel@kernel.org>
-Subject: Re: [PATCH v2 1/2] selftests/sgx: Use rip relative addressing for
- encl_stack
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Reinette Chatre <reinette.chatre@intel.com>
-Cc:     Shuah Khan <skhan@linuxfoundation.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Shuah Khan <shuah@kernel.org>,
-        "open list:INTEL SGX" <linux-sgx@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Date:   Thu, 31 Mar 2022 01:30:08 +0300
-In-Reply-To: <595369cd-b7d4-985c-a7e0-7110ffe9a606@intel.com>
-References: <20220322074313.7444-1-jarkko@kernel.org>
-         <7b7732ec-c7ff-cf92-510f-64c83ed985cd@intel.com> <YkRvFkEO8Ic1VdQ8@iki.fi>
-         <0031a4f0-75f6-3104-1825-dcc2528f61b0@intel.com>
-         <f68d472877b7136c32d8770603a3de38de59c322.camel@kernel.org>
-         <ef991f0d-d0d2-f422-96d8-0951d593d2a5@intel.com>
-         <d44b3fc7ce9f053f978645dfe19018885d372d87.camel@kernel.org>
-         <595369cd-b7d4-985c-a7e0-7110ffe9a606@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.42.4 
+        Wed, 30 Mar 2022 18:34:30 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BFB75BE46
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 15:32:44 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1648679562;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=nc9z3j2jxi+FrRfNGDqS68SB0aTB8VlUDCgHaat1Zms=;
+        b=bjse9zTwIphvNyS4pc9RJ9csKA8bs18yjT2OUC0lE9Gs6TSkCVs+4HirONEIpSm/1mnIs4
+        VR1Qvf8eaSP5GUKDU6uywSnY+X6ndEl78cfuEELNtkyBaHP0PC0AkyZu73A3gbMzKdMhJQ
+        CL0RIXtlc6IjJtsPomQstitlNnQn+Qhf/c2fKkmH8Q0nO8Mt3dTpVUSBhjDzNyoqw4cD4J
+        50R4fk6dWPqyC1j8/UkcZYxU+pzkxXRatX4+P+yImULQL/Ud7i7jy4f/7ISnjFRUXAT5ul
+        2DlAMDC5d5b3WAvDC49k/RkeqyP+wT8zH1bYMGEV4o8sYR1RQIjQxSbR5gThZA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1648679562;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=nc9z3j2jxi+FrRfNGDqS68SB0aTB8VlUDCgHaat1Zms=;
+        b=oV1YFtiJk/VZcX4CXrMCwe+VBuHk2bq65de5apEEtvaqQT3ZuInnvnE4alKeEgfMXkTkDX
+        FdiFAue3yRrSNqCg==
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Dave Hansen <dave.hansen@intel.com>
+Cc:     Neil Armstrong <narmstrong@baylibre.com>, mingo@redhat.com,
+        bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com,
+        x86@kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] x86: undef REG_IN/REG_OUT to avoid define collisions
+In-Reply-To: <YkR9TD4+9LzH1N6b@smile.fi.intel.com>
+References: <20220330152808.1461758-1-narmstrong@baylibre.com>
+ <c54c8c77-d35f-49b0-ff2f-21eb597f41f0@intel.com>
+ <YkR9TD4+9LzH1N6b@smile.fi.intel.com>
+Date:   Thu, 31 Mar 2022 00:32:41 +0200
+Message-ID: <8735iznkae.ffs@tglx>
 MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-03-30 at 14:29 -0700, Reinette Chatre wrote:
-> Hi Jarkko,
->=20
-> On 3/30/2022 1:40 PM, Jarkko Sakkinen wrote:
-> > On Wed, 2022-03-30 at 13:05 -0700, Reinette Chatre wrote:
-> > >=20
-> > >=20
-> > > On 3/30/2022 12:03 PM, Jarkko Sakkinen wrote:
-> > > > On Wed, 2022-03-30 at 10:40 -0700, Reinette Chatre wrote:
-> > > > > Could you please elaborate how the compiler will fix it up?
-> > > >=20
-> > > > Sure.
-> > > >=20
-> > > > Here's the disassembly of the RBX version:
-> > > >=20
-> > > > [0x000021a9]> pi 1
-> > > > lea rax, [rbx + loc.encl_stack]
-> > > >=20
-> > > > Here's the same with s/RBX/RIP/:
-> > > >=20
-> > > > [0x000021a9]> pi 5
-> > > > lea rax, loc.encl_stack
-> > > >=20
-> > > > Compiler will substitute correct offset relative to the RIP,
-> > > > well, because it can and it makes sense.
-> > >=20
-> > > It does not make sense to me because, as proven with my test,
-> > > the two threads end up sharing the same stack memory.
-> >=20
-> > I see, I need to correct my patch, thanks!
-> >=20
-> > RBX gives correct results because of the binary organization,
-> > i.e. TCS's are placed to zero offset and forward, and=20
-> > unrelocated symbol is just compiled in as an untranslated
-> > offset.
-> >=20
-> > RPI is given correct results but how the semantics work
-> > right now is incompatible.
-> >=20
-> > Still, even for kselftest, I would consider a switch
-> > because that way:
-> >=20
-> > 1. You can layout binary however you wan and things
-> > =C2=A0=C2=A0 won't break.
-> > 2. You can point to any symbol not just stack, if
-> > =C2=A0=C2=A0 ever need.
-> > =C2=A0=C2=A0=20
-> > I admit it works semantically but it just super
-> > unrobust.
->=20
-> I do not think that we need an exceptionally flexible
-> runtime as part of the SGX selftests but instead something
-> that is easy(*) to understand while also sufficient to support
-> the tests.
->=20
-> Reinette
->=20
-> * I do not actually consider the existing enclave test binary
-> =C2=A0 easy to understand (this thread is proof) but keeping its
-> =C2=A0 complexity to be minimal would benefit folks needing to
-> =C2=A0 ramp up on SGX and/or debug kselftest failures.
+On Wed, Mar 30 2022 at 18:54, Andy Shevchenko wrote:
+> On Wed, Mar 30, 2022 at 08:33:26AM -0700, Dave Hansen wrote:
+>> On 3/30/22 08:28, Neil Armstrong wrote:
+>> > diff --git a/arch/x86/include/asm/arch_hweight.h b/arch/x86/include/asm/arch_hweight.h
+>> > index ba88edd0d58b..139a4b0a2a14 100644
+>> > --- a/arch/x86/include/asm/arch_hweight.h
+>> > +++ b/arch/x86/include/asm/arch_hweight.h
+>> > @@ -52,4 +52,7 @@ static __always_inline unsigned long __arch_hweight64(__u64 w)
+>> >  }
+>> >  #endif /* CONFIG_X86_32 */
+>> >  
+>> > +#undef REG_IN
+>> > +#undef REG_OUT
+>> 
+>> Wouldn't it be a bit less hackish to give these a more qualified name
+>> like HWEIGHT_REG_IN?
 
-Based on you feedback I refined the patch:
+Absolutely.
 
-https://lore.kernel.org/linux-sgx/20220330222834.139769-1-jarkko@kernel.org=
-/T/#u
+> Either way, would it be good to undef them here anyway?
 
-BR, Jarkko
+No. Unconditional #undef is a guarantee for hard to diagnose trouble
+because it papers over namespace collisions. You can end up with the
+wrong constants in your binary which might work well except for the once
+in the blue moon corner case.
 
+Been there and stared at such nonsense for weeks...
 
+Name spaces exist for a reason and we are not short of characters here.
 
-=09
-=09
+Thanks,
 
-
-
-
-BR, Jarkko
+        tglx
