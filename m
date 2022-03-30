@@ -2,57 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C66E6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 23:48:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E607DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 23:48:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351893AbiC3XuY (ORCPT
+        id S1351913AbiC3Xuc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 19:50:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34058 "EHLO
+        Wed, 30 Mar 2022 19:50:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343993AbiC3XuW (ORCPT
+        with ESMTP id S1351891AbiC3XuY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 19:50:22 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D35FE13F72
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 16:48:35 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id x31so13741479pfh.9
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 16:48:35 -0700 (PDT)
+        Wed, 30 Mar 2022 19:50:24 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 548CEAE4E
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 16:48:38 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id z16so20318912pfh.3
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 16:48:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
-        h=subject:date:message-id:mime-version:content-transfer-encoding:cc
-         :from:to;
-        bh=qBPGxp5mcQc4QZY8fFiZjVaI3n1akSFYZ8khR08Ev/8=;
-        b=eKehRzx3Bdx40er/MgtTkPeSzGb096H8wDgKvamKLh2skigPsj/2DEy/2gN1MkWuJb
-         j292p+zlwkmHLoPKAxCZjM5wufHYcjiXSSPXDx+5yRx9Fr7ECbsHalHXWpHiEVP4/otX
-         osFrFJN0i3zvZFqhyWseZn/6fvyeTHbZf09v7xuuT1usUhh91ysN+7T7sAKP6x1nDY59
-         917uca5QAEAsE+RpBcE+5hr6v9vzlhJh8dzkezP1bzf1+zlF3UfMkPwnye7NPCVXoD5v
-         FXifhOb5ZYoSIfHf3lUHf1eUYz18A6pxne5MiPgpTaQUYRT/M0VEfb514o8b21FDSqgm
-         7AOg==
+        h=subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding:cc:from:to;
+        bh=uMi8FiJGdw1hSWyPivVKVtp/8/U1PGRylw+D5/i30Yc=;
+        b=14gmg1klMYYePDa6VXo32RZDPb5C+8sMP6F4m/UFXM1qi6g+IvhztZfI+b5rYPg/qu
+         WIGstSRYe1XuOwQx+KOmKRuCvedzLl3he43lysT1Lhw/LRpElOdwBFTwJFxekaoQtvbK
+         0IvL/VN3azuobg7srm2NO5dWvvATE8Ef0R6dMEBXbTrSj54fHldTjiqDC17IqnORNIzc
+         qV0lvUZkH/Sslz1W23g/ali1/5gvumNizW9hF7uWg2DYF3cKQ3cX28hjO7ChRr+VlCKz
+         7Lv7I5r3CjXuiyOzgxM1RIg1OGxMC7i963+qCf+Xy9ViwSFeN3arbpkYOcZ7Lf0Ily/M
+         FEDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:date:message-id:mime-version
-         :content-transfer-encoding:cc:from:to;
-        bh=qBPGxp5mcQc4QZY8fFiZjVaI3n1akSFYZ8khR08Ev/8=;
-        b=s8EpdfbcIZLPEAs4ighMfqRS5G35NoDF8bg27WKPW5zBNmRlGopBxaQqQVEhOc6Cxo
-         mwxyXGziVEoje5FO8JNKZDyIcJ4mwonXRHMw2cWTqdaeRMP6cBCv9EduQ3ux9AswGkTd
-         r6OyIYCgi5hJNq/cEYLuDgK+qB6Y0aP79PNtGszvk4KlYRziexjkgkZ/T5s4wsoU09VK
-         98jiSwwmftWhbbiwaSVDYlq0tHvaVwl1p3Xd5EMzB6wGE8xPWThtjUO4Ff62O9bLSULX
-         MQJpUqhL64TRpfvGMI6AKAHbD8kOpOgv/sMUaJAkhjTHpyRkYxxbvkkuj23cZTeF94PC
-         DneQ==
-X-Gm-Message-State: AOAM531bXLd2h1mK9tYn742mYXsJqI50X49OvHlLXioGDkPC08vQXdHn
-        G6IFkyuR4shbdALWMp+l+49fwA==
-X-Google-Smtp-Source: ABdhPJw0eTer3uAW+Qu+xSBIF5rbYg9osobJhrjnYEvqPlPLOMX3LZkn6jvKpGKDimlZWzaSUKjlTg==
-X-Received: by 2002:a63:6f44:0:b0:398:31d6:e37f with SMTP id k65-20020a636f44000000b0039831d6e37fmr8177965pgc.177.1648684115385;
-        Wed, 30 Mar 2022 16:48:35 -0700 (PDT)
+        h=x-gm-message-state:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding:cc:from:to;
+        bh=uMi8FiJGdw1hSWyPivVKVtp/8/U1PGRylw+D5/i30Yc=;
+        b=sbI1VI/5zvKMLnOQWmnvNNnGaCz45BxLDp61oelgeKpGzHD94W85TOqBsHnUFFDLmH
+         cV6+8HRNHobIjmvze13g9+BNcPbCh1jNkgozQnVjx8crzA3Kckl7WqKdiSJUTXDD9oHy
+         ennpxhOZ9qgREf1wO5Gs0ZQ62xgvTyIE1s0/FX2cDJYwge0xqARSzmKB7M3zsa+pEic5
+         faJa6yETVfDgRCsf31hJ0QPuVDfmoXwPeFvDv/qunNgeUFOhD1GDGr4L1NFYgkps1IwI
+         Dv4X4Sd+u1EpsHQDoCMl50lWAUCvj5Nyk4NM/FRseo1FIByHGBHIDTEQ8R8bO/GVquDz
+         lZtw==
+X-Gm-Message-State: AOAM5307eYcDmI0wW1UftDbGI+UOk2nVobdOrrPnoKRT9esKPXuefyVM
+        To+tez/OUhgeOpAFwCHsaLw7jg==
+X-Google-Smtp-Source: ABdhPJyBCUBpwiFEgy+YSHgNXEoiI9CiU1wc3B2s9DzUdnEP+7BnnP7cNSFHiO1jGdWv1Id9XE+W/w==
+X-Received: by 2002:a63:e041:0:b0:381:1bac:ac85 with SMTP id n1-20020a63e041000000b003811bacac85mr8279847pgj.380.1648684117811;
+        Wed, 30 Mar 2022 16:48:37 -0700 (PDT)
 Received: from localhost ([12.3.194.138])
-        by smtp.gmail.com with ESMTPSA id f16-20020a056a001ad000b004fb358ffe86sm16629736pfv.137.2022.03.30.16.48.34
+        by smtp.gmail.com with ESMTPSA id g3-20020a17090a708300b001c7e8ae7637sm7495497pjk.8.2022.03.30.16.48.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Mar 2022 16:48:35 -0700 (PDT)
-Subject: [PATCH 1/3] RISC-V: defconfig: Drop redundant SBI HVC and earlycon
-Date:   Wed, 30 Mar 2022 16:47:37 -0700
-Message-Id: <20220330234739.1956-1-palmer@rivosinc.com>
+        Wed, 30 Mar 2022 16:48:37 -0700 (PDT)
+Subject: [PATCH 3/3] RISC-V: defconfigs: Re-order CONFIG_DEBUG_MISC
+Date:   Wed, 30 Mar 2022 16:47:39 -0700
+Message-Id: <20220330234739.1956-3-palmer@rivosinc.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220330234739.1956-1-palmer@rivosinc.com>
+References: <20220330234739.1956-1-palmer@rivosinc.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
@@ -70,42 +72,44 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Palmer Dabbelt <palmer@rivosinc.com>
 
-As of 3938d5a2f936 ("riscv: default to CONFIG_RISCV_SBI_V01=n") we no
-longer default to enabling SBI-0.1 support, so these dependent configs
-no longer have any effect.  Remove them to avoid clutter.
+This has no functional effect, but is suggested by savedefconfig.
 
 Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 ---
- arch/riscv/configs/defconfig      | 2 --
- arch/riscv/configs/rv32_defconfig | 2 --
- 2 files changed, 4 deletions(-)
+ arch/riscv/configs/nommu_k210_defconfig        | 2 +-
+ arch/riscv/configs/nommu_k210_sdcard_defconfig | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
-index 7cd10ded7bf8..74df9e1dd2d2 100644
---- a/arch/riscv/configs/defconfig
-+++ b/arch/riscv/configs/defconfig
-@@ -64,8 +64,6 @@ CONFIG_INPUT_MOUSEDEV=y
- CONFIG_SERIAL_8250=y
- CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_OF_PLATFORM=y
--CONFIG_SERIAL_EARLYCON_RISCV_SBI=y
--CONFIG_HVC_RISCV_SBI=y
- CONFIG_VIRTIO_CONSOLE=y
- CONFIG_HW_RANDOM=y
- CONFIG_HW_RANDOM_VIRTIO=y
-diff --git a/arch/riscv/configs/rv32_defconfig b/arch/riscv/configs/rv32_defconfig
-index e0e5c7c09ab8..cabfd6a5b47b 100644
---- a/arch/riscv/configs/rv32_defconfig
-+++ b/arch/riscv/configs/rv32_defconfig
-@@ -62,8 +62,6 @@ CONFIG_INPUT_MOUSEDEV=y
- CONFIG_SERIAL_8250=y
- CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_OF_PLATFORM=y
--CONFIG_SERIAL_EARLYCON_RISCV_SBI=y
--CONFIG_HVC_RISCV_SBI=y
- CONFIG_VIRTIO_CONSOLE=y
- CONFIG_HW_RANDOM=y
- CONFIG_HW_RANDOM_VIRTIO=y
+diff --git a/arch/riscv/configs/nommu_k210_defconfig b/arch/riscv/configs/nommu_k210_defconfig
+index 2438fa39f8ae..172eaa6b935c 100644
+--- a/arch/riscv/configs/nommu_k210_defconfig
++++ b/arch/riscv/configs/nommu_k210_defconfig
+@@ -80,9 +80,9 @@ CONFIG_LSM="[]"
+ CONFIG_PRINTK_TIME=y
+ # CONFIG_SYMBOLIC_ERRNAME is not set
+ # CONFIG_DEBUG_BUGVERBOSE is not set
++# CONFIG_DEBUG_MISC is not set
+ # CONFIG_SECTION_MISMATCH_WARN_ONLY is not set
+ # CONFIG_FRAME_POINTER is not set
+-# CONFIG_DEBUG_MISC is not set
+ CONFIG_PANIC_ON_OOPS=y
+ # CONFIG_SCHED_DEBUG is not set
+ # CONFIG_RCU_TRACE is not set
+diff --git a/arch/riscv/configs/nommu_k210_sdcard_defconfig b/arch/riscv/configs/nommu_k210_sdcard_defconfig
+index 9a133e63ae5b..09794b1aebf8 100644
+--- a/arch/riscv/configs/nommu_k210_sdcard_defconfig
++++ b/arch/riscv/configs/nommu_k210_sdcard_defconfig
+@@ -77,9 +77,9 @@ CONFIG_LSM="[]"
+ CONFIG_PRINTK_TIME=y
+ # CONFIG_SYMBOLIC_ERRNAME is not set
+ # CONFIG_DEBUG_BUGVERBOSE is not set
++# CONFIG_DEBUG_MISC is not set
+ # CONFIG_SECTION_MISMATCH_WARN_ONLY is not set
+ # CONFIG_FRAME_POINTER is not set
+-# CONFIG_DEBUG_MISC is not set
+ CONFIG_PANIC_ON_OOPS=y
+ # CONFIG_SCHED_DEBUG is not set
+ # CONFIG_RCU_TRACE is not set
 -- 
 2.34.1
 
