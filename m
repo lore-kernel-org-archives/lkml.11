@@ -2,125 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8919DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 07:52:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3F5BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 07:52:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244055AbiC3HyB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 03:54:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35934 "EHLO
+        id S244008AbiC3Hyd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 03:54:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244008AbiC3Hxr (ORCPT
+        with ESMTP id S233214AbiC3HyV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 03:53:47 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA8022183F
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 00:51:53 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id b19so27974455wrh.11
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 00:51:52 -0700 (PDT)
+        Wed, 30 Mar 2022 03:54:21 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07936201B2
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 00:52:35 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id i4so9176194wrb.5
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 00:52:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=C6A0P5Nugt3q0KDLO33UJFcQEQx63LX/0cNUolmrKWM=;
-        b=V16MaX+hkN/U1Y39xaECqqNIGuGZn7Y8hPlKTULdPk5qbq8anVYXQfHLRMtoe1Ig4W
-         Sfd9WfI81jqiAeEtYcjI3kq1h+xMrU+O962hOtF5wLxBZEbUplHfPcBRr7uInR1VP9y/
-         vmIvR7iBpaVxm1QUh9I1DP/61+Rhw27+n56Y5uUCXPNRcpSdnFxtjCkkaOuK4/JaStkT
-         /ubjCpgaQlbFjnc7q1EtTVNvWkQWBAIJhpwAGuE1GIEGXCVXsvyf52ldTRLZR64dq7zG
-         bgfrrho0pUtuloTOPd/nwjX/hw2HDqccsiayW8zaeySMZv2hrMSTybaa3I5hxTbB/B7j
-         bkaA==
+        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ghHV0zTkwP6Ex+XA+hsxUv5AW9dRVc+dHJyFR6M/CLc=;
+        b=MsUahD2sxOxVEYlWECPO8kAt9VWOJpDQrtlreD3+bqkhw6vqNTK7bkZs6OOon1C6qX
+         GpbFyKlDNhAqt8EU07FcYzmKQCKWU8+dLr7J2vWKm07zQpKdZWWdJsUKMjmFwO7z3kgO
+         ljbjsPLVmaqLtD2DX1UFh9cXZZ3nXDr8NqkLOpvAbNesPZlas4vzAyG4MqMRk8iTnZEt
+         Cp9dEq/u/8ZXj0C9UnfxccSpro0iLZKhgkpdWEzBo/MGugutUi4WcBZkJHaTGc0yW17O
+         7v8SPsemPb5HX/KxdDLzvzO3EMoTD8wyuMik9aADy6vTeF4jsF0AwzoZO1OmKEIxd0Ur
+         L4Yg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=C6A0P5Nugt3q0KDLO33UJFcQEQx63LX/0cNUolmrKWM=;
-        b=TLSj4l6rv3MDLIoK8bIYnUkIfn/EDjkecxtTtyESnFor6Yhl7AAdQuW6z3el/70XRN
-         NsJ0qTcasFEBkxs5UV5S/bvGlFZHERhU2GvbwdSJbj965vl5ndzsas2Z55x+jptvOl9N
-         iuIdaVG9/NBzbMJ+GMXq6Tqk6OC96VfHt2Jq732zF2MiMs/MGvWn8lY16KDD7+R5pHYn
-         2pvLCESDBSVK7ABrwxsdg2lJAsPT7WSxI3aUF6b+M81cYI2OWn+OQcpw/yDdmVlSnZs4
-         N7vgQ6nqLavqQu4iQvLYmEQIUUIIfWTmxr3g+SlMB8w4WVUzEeWwkRPaYO5QNinHRHhX
-         eEvw==
-X-Gm-Message-State: AOAM5327b6nm28FP96YtoZ7ylJp9t3L9K73pmRHrs7jlYHFnaSG+ceal
-        3zG1BAqrVSjoumQzHjhjJy5xqQ==
-X-Google-Smtp-Source: ABdhPJxVO1y8gkkfGyd8mfh/5laRpzQ0HsRKTWtp+wjJsFvotvbjrSiCHWCtvhWYEIWbz9CGdaq9Tw==
-X-Received: by 2002:a5d:64a3:0:b0:203:d7e5:67ff with SMTP id m3-20020a5d64a3000000b00203d7e567ffmr35060091wrp.617.1648626711521;
-        Wed, 30 Mar 2022 00:51:51 -0700 (PDT)
-Received: from joneslee-l.cable.virginm.net (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id c7-20020a5d4f07000000b00203db8f13c6sm16447335wru.75.2022.03.30.00.51.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Mar 2022 00:51:51 -0700 (PDT)
-From:   Lee Jones <lee.jones@linaro.org>
-To:     lee.jones@linaro.org
-Cc:     linux-kernel@vger.kernel.org,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH 1/1] drm/amdkfd: Create file descriptor after client is added to smi_clients list
-Date:   Wed, 30 Mar 2022 08:51:15 +0100
-Message-Id: <20220330075115.426035-1-lee.jones@linaro.org>
-X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ghHV0zTkwP6Ex+XA+hsxUv5AW9dRVc+dHJyFR6M/CLc=;
+        b=vU6UjEGwhHplZjNUXET9HJ0iD2usHgRdTUIMTWacS2ft4ozQCs/GYN78zMPDbSQVVd
+         nYGrzm+sge8x7wnjUy26uZ4ZAKihtRK2Xw2z6kgu61kh9njmeUiVqzTS22xLgO5E2Dxr
+         GWEffgtyhi9iFhigqgtFNVlbGKeQqaU60b06QwO0BFaokKycZho4cR6Qf3xkzi1tBkBB
+         oj1cUh81TNl7l76ZZE9hg6YnTObfbbOcPMKXAj1gntjm345nWHRO6uETmdxyphHH7jLt
+         tfesUCqeGuyqPbiLSZCkzZtpFGZcWyUSxaIGfqV5xm8YCILpc3EuiYi7JZVFPjvZ0iHE
+         cumA==
+X-Gm-Message-State: AOAM5310ZiDoufJbKsk66xjW+MiLyamIzWQX3rs2mAI44kY3g0pGWQax
+        3+QfGs9bgsoFiXRNMq6puUAsCvqvA1tt7gRdSKnWTA==
+X-Google-Smtp-Source: ABdhPJzepy5AOyGRMOgIpV3fZQiTxXLPOoyrx2VNjPNO79OjwG8bFdpXPMisRjuyVZgy6iL646iokaYe4dVaM6pp8hA=
+X-Received: by 2002:adf:db86:0:b0:205:bccf:8cbf with SMTP id
+ u6-20020adfdb86000000b00205bccf8cbfmr19955087wri.346.1648626753267; Wed, 30
+ Mar 2022 00:52:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220330073347.3898802-1-alistair.francis@opensource.wdc.com>
+In-Reply-To: <20220330073347.3898802-1-alistair.francis@opensource.wdc.com>
+From:   Anup Patel <anup@brainfault.org>
+Date:   Wed, 30 Mar 2022 13:22:21 +0530
+Message-ID: <CAAhSdy1dSM4e_EwN8znKgkiOiV56JM=44SGpYBMBsKPp1Vxd1A@mail.gmail.com>
+Subject: Re: [PATCH] riscv: Ensure only ASIDLEN is used for sfence.vma
+To:     Alistair Francis <alistair.francis@opensource.wdc.com>
+Cc:     linux-riscv <linux-riscv@lists.infradead.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
+        Atish Patra <atishp@rivosinc.com>, Guo Ren <guoren@kernel.org>,
+        Alistair Francis <alistair.francis@wdc.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This ensures userspace cannot prematurely clean-up the client before
-it is fully initialised which has been proven to cause issues in the
-past.
+On Wed, Mar 30, 2022 at 1:04 PM Alistair Francis
+<alistair.francis@opensource.wdc.com> wrote:
+>
+> From: Alistair Francis <alistair.francis@wdc.com>
+>
+> When we set the value of context.id using __new_context() we set both
+> the asid and the current_version with this return statement in
+> __new_context():
+>
+>     return asid | ver;
+>
+> This means that when local_flush_tlb_all_asid() is called with the asid
+> specified from context.id we can write the incorrect value.
+>
+> We get away with this as hardware ignores the extra bits, as the RISC-V
+> specification states:
+>
+> "bits SXLEN-1:ASIDMAX of the value held in rs2 are reserved for future
+> standard use. Until their use is defined by a standard extension, they
+> should be zeroed by software and ignored by current implementations."
+>
+> but it is still a bug and worth addressing as we are incorrectly setting
+> extra bits.
+>
+> This patch uses asid_mask when calling sfence.vma to ensure the asid is
+> always the correct len (ASIDLEN). This is similar to what we do in
+> arch/riscv/mm/context.c.
+>
+> Signed-off-by: Alistair Francis <alistair.francis@wdc.com>
 
-Cc: Felix Kuehling <Felix.Kuehling@amd.com>
-Cc: Alex Deucher <alexander.deucher@amd.com>
-Cc: "Christian König" <christian.koenig@amd.com>
-Cc: "Pan, Xinhui" <Xinhui.Pan@amd.com>
-Cc: David Airlie <airlied@linux.ie>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: amd-gfx@lists.freedesktop.org
-Cc: dri-devel@lists.freedesktop.org
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
----
- drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+Instead of fixing various local_flush_tlb_xyz() functions, I suggest fixing the
+__sbi_tlb_flush_range() in tlbflush.c which passes incorrect ASID.
+(Refer line 45, "unsigned long asid = atomic_long_read(&mm->context.id);")
 
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c b/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c
-index e4beebb1c80a2..c5d5398d45cbf 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c
-@@ -247,15 +247,6 @@ int kfd_smi_event_open(struct kfd_dev *dev, uint32_t *fd)
- 		return ret;
- 	}
- 
--	ret = anon_inode_getfd(kfd_smi_name, &kfd_smi_ev_fops, (void *)client,
--			       O_RDWR);
--	if (ret < 0) {
--		kfifo_free(&client->fifo);
--		kfree(client);
--		return ret;
--	}
--	*fd = ret;
--
- 	init_waitqueue_head(&client->wait_queue);
- 	spin_lock_init(&client->lock);
- 	client->events = 0;
-@@ -265,5 +256,14 @@ int kfd_smi_event_open(struct kfd_dev *dev, uint32_t *fd)
- 	list_add_rcu(&client->list, &dev->smi_clients);
- 	spin_unlock(&dev->smi_lock);
- 
-+	ret = anon_inode_getfd(kfd_smi_name, &kfd_smi_ev_fops, (void *)client,
-+			       O_RDWR);
-+	if (ret < 0) {
-+		kfifo_free(&client->fifo);
-+		kfree(client);
-+		return ret;
-+	}
-+	*fd = ret;
-+
- 	return 0;
- }
--- 
-2.35.1.1021.g381101b075-goog
+Also, please add the "Fixes: " tag.
 
+Regards,
+Anup
+
+> ---
+>  arch/riscv/mm/context.c  | 2 +-
+>  arch/riscv/mm/tlbflush.c | 4 ++--
+>  include/linux/mm_types.h | 2 ++
+>  3 files changed, 5 insertions(+), 3 deletions(-)
+>
+> diff --git a/arch/riscv/mm/context.c b/arch/riscv/mm/context.c
+> index 7acbfbd14557..4329fe54176b 100644
+> --- a/arch/riscv/mm/context.c
+> +++ b/arch/riscv/mm/context.c
+> @@ -22,7 +22,7 @@ DEFINE_STATIC_KEY_FALSE(use_asid_allocator);
+>
+>  static unsigned long asid_bits;
+>  static unsigned long num_asids;
+> -static unsigned long asid_mask;
+> +unsigned long asid_mask;
+>
+>  static atomic_long_t current_version;
+>
+> diff --git a/arch/riscv/mm/tlbflush.c b/arch/riscv/mm/tlbflush.c
+> index 37ed760d007c..4469615aa07f 100644
+> --- a/arch/riscv/mm/tlbflush.c
+> +++ b/arch/riscv/mm/tlbflush.c
+> @@ -10,7 +10,7 @@ static inline void local_flush_tlb_all_asid(unsigned long asid)
+>  {
+>         __asm__ __volatile__ ("sfence.vma x0, %0"
+>                         :
+> -                       : "r" (asid)
+> +                       : "r" (asid & asid_mask)
+>                         : "memory");
+>  }
+>
+> @@ -19,7 +19,7 @@ static inline void local_flush_tlb_page_asid(unsigned long addr,
+>  {
+>         __asm__ __volatile__ ("sfence.vma %0, %1"
+>                         :
+> -                       : "r" (addr), "r" (asid)
+> +                       : "r" (addr), "r" (asid & asid_mask)
+>                         : "memory");
+>  }
+>
+> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+> index 8834e38c06a4..5fa7cc0af853 100644
+> --- a/include/linux/mm_types.h
+> +++ b/include/linux/mm_types.h
+> @@ -666,6 +666,8 @@ struct mm_struct {
+>
+>  extern struct mm_struct init_mm;
+>
+> +extern unsigned long asid_mask;
+> +
+>  /* Pointer magic because the dynamic array size confuses some compilers. */
+>  static inline void mm_init_cpumask(struct mm_struct *mm)
+>  {
+> --
+> 2.35.1
+>
