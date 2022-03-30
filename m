@@ -2,119 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9202FC43217
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 10:06:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8062CC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 10:08:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245203AbiC3KIb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 06:08:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45898 "EHLO
+        id S245208AbiC3KKg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 06:10:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242007AbiC3KI2 (ORCPT
+        with ESMTP id S239182AbiC3KKe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 06:08:28 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D00013F8CC
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 03:06:44 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KT29W0RhCzgY96;
-        Wed, 30 Mar 2022 18:05:03 +0800 (CST)
-Received: from dggpemm500002.china.huawei.com (7.185.36.229) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 30 Mar 2022 18:06:42 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- dggpemm500002.china.huawei.com (7.185.36.229) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 30 Mar 2022 18:06:41 +0800
-From:   Chen Wandun <chenwandun@huawei.com>
-To:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        <akpm@linux-foundation.org>, <willy@infradead.org>
-Subject: [PATCH v2 2/2] mm: fix contiguous memmap assumptions about alloc/free pages
-Date:   Wed, 30 Mar 2022 18:25:34 +0800
-Message-ID: <20220330102534.1053240-3-chenwandun@huawei.com>
-X-Mailer: git-send-email 2.18.0.huawei.25
-In-Reply-To: <20220330102534.1053240-1-chenwandun@huawei.com>
-References: <20220330102534.1053240-1-chenwandun@huawei.com>
+        Wed, 30 Mar 2022 06:10:34 -0400
+Received: from mail-oi1-f169.google.com (mail-oi1-f169.google.com [209.85.167.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A366154062;
+        Wed, 30 Mar 2022 03:08:49 -0700 (PDT)
+Received: by mail-oi1-f169.google.com with SMTP id w127so21570785oig.10;
+        Wed, 30 Mar 2022 03:08:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xxF35tmxxnkPH4ZK5NEAQj60FJRzpVvnSJO5oaHeufw=;
+        b=bXL1LDJiE/6ieyVsC90DLDVyC8H1dKobB4kHzTlDE9Z2547r/IDGGYH8DiJWkVUBCT
+         pcE0oGhb4L3WhvncB8ozlqungtkvBf5GVYwEpQ6SX2DfMxrwp4rf4rFJf7JrCmg0saQr
+         N5EbzB/Q8YEcgJJAhP9TvJd6pjohubjrImmANwNIc6jF24Td6iBKumJfDLugJ5m18XYW
+         zFwfC8S6P9sxJ/wRI2EemqttjWVcdNBGJR/7M4S83h5tJ4vIL6SgkSS9ks43kwRP4fQ2
+         Jo5gHaJK0POdLwt1JSqdkc86Cb9CwGN/qZjTGYWzZ2DjgTPms//ZXQWRYXt4Var6TG1Y
+         D+8w==
+X-Gm-Message-State: AOAM530mMYtjo8iU5txLYS28mh4DSIAH/CRL2AH3Fc0v/tte+wMVZGH6
+        ClGDDcdv8kOcVw41F/R8oCdrFL6vGp6TSQ==
+X-Google-Smtp-Source: ABdhPJymrMim6GuwgG9rkn34Y1quZ1IiNIC4NOmV1OZ5Z5iCKb5JvPXw5xtEE+GYbr53q5P+yRUSMA==
+X-Received: by 2002:a05:6808:f07:b0:2da:4916:578e with SMTP id m7-20020a0568080f0700b002da4916578emr1377280oiw.271.1648634928459;
+        Wed, 30 Mar 2022 03:08:48 -0700 (PDT)
+Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com. [209.85.210.42])
+        by smtp.gmail.com with ESMTPSA id u23-20020a056870d59700b000de821ba7cbsm9454429oao.15.2022.03.30.03.08.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Mar 2022 03:08:48 -0700 (PDT)
+Received: by mail-ot1-f42.google.com with SMTP id i11-20020a9d4a8b000000b005cda3b9754aso14578539otf.12;
+        Wed, 30 Mar 2022 03:08:48 -0700 (PDT)
+X-Received: by 2002:a0d:ccd6:0:b0:2e7:98e2:a5a2 with SMTP id
+ o205-20020a0dccd6000000b002e798e2a5a2mr28100571ywd.479.1648634538529; Wed, 30
+ Mar 2022 03:02:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500002.china.huawei.com (7.185.36.229)
-X-CFilter-Loop: Reflected
+References: <20220329152926.50958-1-andriy.shevchenko@linux.intel.com> <20220329152926.50958-3-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220329152926.50958-3-andriy.shevchenko@linux.intel.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 30 Mar 2022 12:02:07 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWFENTrXsYq3PKRFBqUL570-pPMG43Vct62=U9cyyF0yQ@mail.gmail.com>
+Message-ID: <CAMuHMdWFENTrXsYq3PKRFBqUL570-pPMG43Vct62=U9cyyF0yQ@mail.gmail.com>
+Subject: Re: [PATCH v2 02/13] gpiolib: Introduce gpiochip_node_count() helper
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Qianggui Song <qianggui.song@amlogic.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Fabien Dessenne <fabien.dessenne@foss.st.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        openbmc@lists.ozlabs.org,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It isn't true for only SPARSEMEM configs to assume that a compound page
-has virtually contiguous page structs, so use nth_page to iterate each
-page.
+Hi Andy,
 
-Signed-off-by: Chen Wandun <chenwandun@huawei.com>
----
- mm/page_alloc.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+On Tue, Mar 29, 2022 at 5:29 PM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+> The gpiochip_node_count() helper iterates over the device child nodes that
+> have the "gpio-controller" property set. It returns the number of such nodes
+> under a given device.
+>
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 855211dea13e..758d8f069b32 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -721,7 +721,7 @@ static void prep_compound_head(struct page *page, unsigned int order)
- 
- static void prep_compound_tail(struct page *head, int tail_idx)
- {
--	struct page *p = head + tail_idx;
-+	struct page *p = nth_page(head, tail_idx);
- 
- 	p->mapping = TAIL_MAPPING;
- 	set_compound_head(p, head);
-@@ -1199,10 +1199,10 @@ static inline int check_free_page(struct page *page)
- 	return 1;
- }
- 
--static int free_tail_pages_check(struct page *head_page, struct page *page)
-+static int free_tail_pages_check(struct page *head_page, int index)
- {
-+	struct page *page = nth_page(head_page, index);
- 	int ret = 1;
--
- 	/*
- 	 * We rely page->lru.next never has bit 0 set, unless the page
- 	 * is PageTail(). Let's make sure that's true even for poisoned ->lru.
-@@ -1213,7 +1213,7 @@ static int free_tail_pages_check(struct page *head_page, struct page *page)
- 		ret = 0;
- 		goto out;
- 	}
--	switch (page - head_page) {
-+	switch (index) {
- 	case 1:
- 		/* the first tail page: ->mapping may be compound_mapcount() */
- 		if (unlikely(compound_mapcount(page))) {
-@@ -1322,6 +1322,7 @@ static __always_inline bool free_pages_prepare(struct page *page,
- 	if (unlikely(order)) {
- 		bool compound = PageCompound(page);
- 		int i;
-+		struct page *tail_page;
- 
- 		VM_BUG_ON_PAGE(compound && compound_order(page) != order, page);
- 
-@@ -1330,13 +1331,14 @@ static __always_inline bool free_pages_prepare(struct page *page,
- 			ClearPageHasHWPoisoned(page);
- 		}
- 		for (i = 1; i < (1 << order); i++) {
-+			tail_page = nth_page(page, i);
- 			if (compound)
--				bad += free_tail_pages_check(page, page + i);
--			if (unlikely(check_free_page(page + i))) {
-+				bad += free_tail_pages_check(page, i);
-+			if (unlikely(check_free_page(tail_page))) {
- 				bad++;
- 				continue;
- 			}
--			(page + i)->flags &= ~PAGE_FLAGS_CHECK_AT_PREP;
-+			tail_page->flags &= ~PAGE_FLAGS_CHECK_AT_PREP;
- 		}
- 	}
- 	if (PageMappingFlags(page))
--- 
-2.18.0.huawei.25
+Thanks for your patch!
 
+> --- a/include/linux/gpio/driver.h
+> +++ b/include/linux/gpio/driver.h
+> @@ -755,4 +755,16 @@ static inline void gpiochip_unlock_as_irq(struct gpio_chip *gc,
+>         device_for_each_child_node(dev, child)                                  \
+>                 if (!fwnode_property_present(child, "gpio-controller")) {} else
+>
+> +static inline unsigned int gpiochip_node_count(struct device *dev)
+> +{
+> +       struct fwnode_handle *child;
+> +       unsigned int count;
+
+Preinitialize to zero?
+
+> +
+> +       count = 0;
+> +       for_each_gpiochip_node(dev, child)
+> +               count++;
+> +
+> +       return count;
+> +}
+> +
+>  #endif /* __LINUX_GPIO_DRIVER_H */
+
+Regardless:
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
