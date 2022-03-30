@@ -2,159 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84544C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 21:27:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D501C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 21:28:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351241AbiC3V3L (ORCPT
+        id S1351222AbiC3V3t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 17:29:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40522 "EHLO
+        Wed, 30 Mar 2022 17:29:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350217AbiC3V3A (ORCPT
+        with ESMTP id S232691AbiC3V3r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 17:29:00 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5CC5313DC9;
-        Wed, 30 Mar 2022 14:27:15 -0700 (PDT)
-Received: from kbox (c-73-140-2-214.hsd1.wa.comcast.net [73.140.2.214])
-        by linux.microsoft.com (Postfix) with ESMTPSA id D390F20B96D6;
-        Wed, 30 Mar 2022 14:27:14 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com D390F20B96D6
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1648675635;
-        bh=hah+AFV7cnkplF6HaR2Do2O7n2/wV+fd4v0bXs20f4c=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Q/GuxmTOq/oi06ASONHIxrOoQM0C4QkWkXwiVI2EMraua5lXNutZtHCE05xrC/h+i
-         lBLST7l8ZQajATXZ71MwTr7ol2oIkn4LLf5y0teRiVp4vxbveK+bj+/we+pdyypvVH
-         hP/03P7qGOHNMVD2CDjxbvnFEaSf/RRUvcOeEVis=
-Date:   Wed, 30 Mar 2022 14:27:08 -0700
-From:   Beau Belgrave <beaub@linux.microsoft.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Song Liu <song@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        linux-trace-devel <linux-trace-devel@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Subject: Re: [PATCH] tracing/user_events: Add eBPF interface for user_event
- created events
-Message-ID: <20220330212708.GA2759@kbox>
-References: <20220329181935.2183-1-beaub@linux.microsoft.com>
- <CAADnVQ+XpoCjL-rSz2hj05L21s8NtMJuWYC14b9Mvk7XE5KT_g@mail.gmail.com>
- <20220329201057.GA2549@kbox>
- <CAADnVQ+gm4yU9S6y+oeR3TNj82kKX0gk4ey9gVnKXKWy1Js4-A@mail.gmail.com>
- <20220329231137.GA3357@kbox>
- <CAPhsuW4WH4Hn+DaQZui5au=ueG1G5zGYiOACfKm9imG2kGA+KA@mail.gmail.com>
- <20220330163411.GA1812@kbox>
- <CAADnVQKQw+K2CoCW-nA=bngKtjP495wpB1yhEXNjKg4wSeXAWg@mail.gmail.com>
- <20220330191551.GA2377@kbox>
- <CAADnVQL9T=zDbO04-s+WCtNRETs+mC=oDRwv8UUJYiJ7Dv1owA@mail.gmail.com>
+        Wed, 30 Mar 2022 17:29:47 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 706C950B0A
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 14:28:01 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id bx24-20020a17090af49800b001c6872a9e4eso1451093pjb.5
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 14:28:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=vN9uvU8bkhJgYN2OitlbKPDgRCZok2QbVcUF878z/wM=;
+        b=IQx0L5aQf66UczNgN+LhtlzuJS+bkdz06vFPIbaVx2DkCEsgyaiqgwWD12MNZnV/Yq
+         xOnU8wHckgHeP/bGT8Q2CJ04mfHIN2Kze6HWqGKcrCfR0U1ajWKW40gEylNf8Bj0L5Lc
+         6RyiZMmFWgZ/8qJ1QiQLjmUcxcApOgbZWj3eT1Dnue1RCjw6nki5rmx1M3/dgOPLLsCE
+         hC6JbHVF0KV9EuwXX7+5Y0Mr7b/CmQBnoe7+rkZqgR9gQI6f2dO3ovALr0wVtch1bvnY
+         t9iWYq/WS2stSleglwtuhLXr1uteXlTMXBhv1ZHGhvp4CmoGj27HnP0xzsvE6pP7Lsp6
+         8gCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vN9uvU8bkhJgYN2OitlbKPDgRCZok2QbVcUF878z/wM=;
+        b=vAlHzuOaGq5aJC09CtUbpUpyShke4SolLakVU15WIJ6edorECfMFPPCopPt6Vgfnnf
+         aVUnO17uYoEEXy4YKTjadUfDJY434gqnSK4neT21FAkptd9FmtqjkJHoMMNCePfCloN7
+         P595LOVBxfHDyI/LqPomTuw6xuRBczXGyDndGe8Jpyu2zTtbStwgBslmFtUIdv3p8t1z
+         raVawIZ0wmQhuWVU85SPBmqSxp1uXX0CG0AxLsPyXJE/nyoyBn7A911QjZl4+ks03r8u
+         QxVGwoY9ZmDGp1HaYrtwNTuDkAD4DspsvBD92VWK2LhKHjEI58+vzDBoVJJK8rvVgbrb
+         RmOg==
+X-Gm-Message-State: AOAM530WXETXxAwmPn9mTemZ9vqd+yK43ipSUHZdTq1UouyQ7DYaM0YX
+        UgXeXd+b1S5dEk0IIRxo1j0r6Q==
+X-Google-Smtp-Source: ABdhPJzPeMqomGyqG5K2JJ7uvrWHjl5jOr+EIfR8eIBr6A/CxG+NwQt7TKETjTc2mUy8h1bL4A+Y7A==
+X-Received: by 2002:a17:90a:380d:b0:1c9:d9bb:7602 with SMTP id w13-20020a17090a380d00b001c9d9bb7602mr1770709pjb.216.1648675680717;
+        Wed, 30 Mar 2022 14:28:00 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id u10-20020a63b54a000000b00380ea901cd2sm19845176pgo.6.2022.03.30.14.27.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 14:28:00 -0700 (PDT)
+Date:   Wed, 30 Mar 2022 21:27:56 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Chenyi Qiang <chenyi.qiang@intel.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Xiaoyao Li <xiaoyao.li@intel.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 5/7] KVM: MMU: Add support for PKS emulation
+Message-ID: <YkTLXGdu2I9i44ti@google.com>
+References: <20220221080840.7369-1-chenyi.qiang@intel.com>
+ <20220221080840.7369-6-chenyi.qiang@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAADnVQL9T=zDbO04-s+WCtNRETs+mC=oDRwv8UUJYiJ7Dv1owA@mail.gmail.com>
+In-Reply-To: <20220221080840.7369-6-chenyi.qiang@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 01:39:49PM -0700, Alexei Starovoitov wrote:
-> On Wed, Mar 30, 2022 at 12:15 PM Beau Belgrave
-> <beaub@linux.microsoft.com> wrote:
-> >
-> > On Wed, Mar 30, 2022 at 11:22:32AM -0700, Alexei Starovoitov wrote:
-> > > On Wed, Mar 30, 2022 at 9:34 AM Beau Belgrave <beaub@linux.microsoft.com> wrote:
-> > > > > >
-> > > > > > But you are fine with uprobe costs? uprobes appear to be much more costly
-> > > > > > than a syscall approach on the hardware I've run on.
-> > >
-> > > Care to share the numbers?
-> > > uprobe over USDT is a single trap.
-> > > Not much slower compared to syscall with kpti.
-> > >
-> >
-> > Sure, these are the numbers we have from a production device.
-> >
-> > They are captured via perf via PERF_COUNT_HW_CPU_CYCLES.
-> > It's running a 20K loop emitting 4 bytes of data out.
-> > Each 4 byte event time is recorded via perf.
-> > At the end we have the total time and the max seen.
-> >
-> > null numbers represent a 20K loop with just perf start/stop ioctl costs.
-> >
-> > null: min=2863, avg=2953, max=30815
-> > uprobe: min=10994, avg=11376, max=146682
-> 
-> I suspect it's a 3 trap case of uprobe.
-> USDT is a nop. It's a 1 trap case.
-> 
-> > uevent: min=7043, avg=7320, max=95396
-> > lttng: min=6270, avg=6508, max=41951
-> >
-> > These costs include the data getting into a buffer, so they represent
-> > what we would see in production vs the trap cost alone. For uprobe this
-> > means we created a uprobe and attached it via tracefs to get the above
-> > numbers.
-> >
-> > There also seems to be some thinking around this as well from Song Liu.
-> > Link: https://lore.kernel.org/lkml/20200801084721.1812607-1-songliubraving@fb.com/
-> >
-> > From the link:
-> > 1. User programs are faster. The new selftest added in 5/5, shows that a
-> >    simple uprobe program takes 1400 nanoseconds, while user program only
-> >       takes 300 nanoseconds.
-> 
-> 
-> Take a look at Song's code. It's 2 trap case.
-> The USDT is a half of that. ~700ns.
-> Compared to 300ns of syscall that difference
-> could be acceptable.
-> 
-> >
-> > > > >
-> > > > > Can we achieve the same/similar performance with sys_bpf(BPF_PROG_RUN)?
-> > > > >
-> > > >
-> > > > I think so, the tough part is how do you let the user-space know which
-> > > > program is attached to run? In the current code this is done by the BPF
-> > > > program attaching to the event via perf and we run the one there if
-> > > > any when data is emitted out via write calls.
-> > > >
-> > > > I would want to make sure that operators can decide where the user-space
-> > > > data goes (perf/ftrace/eBPF) after the code has been written. With the
-> > > > current code this is done via the tracepoint callbacks that perf/ftrace
-> > > > hook up when operators enable recording via perf, tracefs, libbpf, etc.
-> > > >
-> > > > We have managed code (C#/Java) where we cannot utilize stubs or traps
-> > > > easily due to code movement. So we are limited in how we can approach
-> > > > this problem. Having the interface be mmap/write has enabled this
-> > > > for us, since it's easy to interact with in most languages and gives us
-> > > > lifetime management of the trace objects between user-space and the
-> > > > kernel.
-> > >
-> > > Then you should probably invest into making USDT work inside
-> > > java applications instead of reinventing the wheel.
-> > >
-> > > As an alternative you can do a dummy write or any other syscall
-> > > and attach bpf on the kernel side.
-> > > No kernel changes are necessary.
-> >
-> > We only want syscall/tracing overheads for the specific events that are
-> > hooked. I don't see how we could hook up a dummy write that is unique
-> > per-event without having a way to know when the event is being traced.
-> 
-> You're adding writev-s to user apps. Keep that writev without
-> any user_events on the kernel side and pass -1 as FD.
-> Hook bpf prog to sys_writev and filter by pid.
+On Mon, Feb 21, 2022, Chenyi Qiang wrote:
+> @@ -277,14 +278,18 @@ static inline u8 permission_fault(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu,
+>  	WARN_ON(pfec & (PFERR_PK_MASK | PFERR_RSVD_MASK));
+>  	if (unlikely(mmu->pkr_mask)) {
+>  		u32 pkr_bits, offset;
+> +		u32 pkr;
+>  
+>  		/*
+> -		* PKRU defines 32 bits, there are 16 domains and 2
+> -		* attribute bits per domain in pkru.  pte_pkey is the
+> -		* index of the protection domain, so pte_pkey * 2 is
+> -		* is the index of the first bit for the domain.
+> +		* PKRU and PKRS both define 32 bits. There are 16 domains
+> +		* and 2 attribute bits per domain in them. pte_key is the
+> +		* index of the protection domain, so pte_pkey * 2 is the
+> +		* index of the first bit for the domain. The use of PKRU
+> +		* versus PKRS is selected by the address type, as determined
+> +		* by the U/S bit in the paging-structure entries.
+>  		*/
+> -		pkr_bits = (vcpu->arch.pkru >> (pte_pkey * 2)) & 3;
+> +		pkr = pte_access & PT_USER_MASK ? vcpu->arch.pkru : kvm_read_pkrs(vcpu);
 
-I see. That would have all events incur a syscall cost regardless if a
-BPF program is attached or not. We are typically monitoring all processes
-so we would not want that overhead on each writev invocation.
+Blindly reading PKRU/PKRS is wrong.  I think this magic insanity will be functionally
+correct due to update_pkr_bitmask() clearing the appropriate bits in pkr_mask based
+on CR4.PK*, but the read should never happen.  PKRU is benign, but I believe reading
+PKRS will result in VMREAD to an invalid field if PKRU is supported and enabled, but
+PKRS is not supported.
 
-We would also have to decode each writev payload to determine if it's
-the event we are interested in. The mmap part of user_events solves that
-part for us, the byte/bits get set to non-zero when the writev cost is
-worth it.
+I belive the easiest solution is:
 
-Thanks,
--Beau
+		if (pte_access & PT_USER_MASK)
+			pkr = is_cr4_pke(mmu) ? vcpu->arch.pkru : 0;
+		else
+			pkr = is_cr4_pks(mmu) ? kvm_read_pkrs(vcpu) : 0;
+
+The is_cr4_pk*() helpers are restricted to mmu.c, but this presents a good
+opportunity to extra the PKR stuff to a separate, non-inline helper (as a prep
+patch).  E.g.
+
+
+	WARN_ON(pfec & (PFERR_PK_MASK | PFERR_RSVD_MASK));
+	if (unlikely(mmu->pkr_mask))
+		u32 pkr_bits = kvm_mmu_pkr_bits(vcpu, mmu, pte_access, pte_pkey);
+
+		errcode |= -pkr_bits & PFERR_PK_MASK;
+		fault |= (pkr_bits != 0);
+	}
+
+	return -(u32)fault & errcode;
+
+permission_fault() is inline because it's heavily used for shadow paging, but
+when using TDP, it's far less performance critical.  PKR is TDP-only, so moving
+it out-of-line should be totally ok (this is also why this patch is "unlikely").
