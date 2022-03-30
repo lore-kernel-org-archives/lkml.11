@@ -2,133 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0BF8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 02:44:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4B0AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 02:47:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242098AbiC3Cqc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 29 Mar 2022 22:46:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40722 "EHLO
+        id S242105AbiC3Ct0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 29 Mar 2022 22:49:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239261AbiC3Cqa (ORCPT
+        with ESMTP id S236386AbiC3CtZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 29 Mar 2022 22:46:30 -0400
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEFCB522DC;
-        Tue, 29 Mar 2022 19:44:45 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id 0AB755C00E9;
-        Tue, 29 Mar 2022 22:44:45 -0400 (EDT)
-Received: from imap49 ([10.202.2.99])
-  by compute5.internal (MEProxy); Tue, 29 Mar 2022 22:44:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aj.id.au; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; bh=pWGqz/nqqothglGzobmCKu7DG/1JSXSUyXe/q5
-        An9Zg=; b=QDpbEUH9w2Ecd0+KdNb9tLPfzPhaYPagfT4adhaVXXddbzLg79KxN7
-        GUa2fqs+x7His5EBPNdafnOj72BsMwx/DmxUveTtWnf7KwgVLULXu33TTgX7fKtO
-        BANpVt91XwpV4u+N5wRDzctEKp+TdI0GYVhPUoU3jrBArwYu9ZJMMsplG7xEDsAA
-        4InE2O0ulPiU1N39HhCelO2l9Oe1eDV1ZBnNXdqfAV7nipi166meViUAPORD1uw7
-        wRQ6SpurVUU2sUjtAxU9OeeZiQbVogCE/n9TfjM4lHmL1FJXQ73VMeZiZwZFkpNH
-        JtGTdPK2JgDcDH3GoYB+P2SnFO9snLRg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=pWGqz/nqqothglGzo
-        bmCKu7DG/1JSXSUyXe/q5An9Zg=; b=jW//zp40NLZ3YKumvewgmK+Vj7WIeziA7
-        sAyoGV78rGq46afqbqBeB6Xv+EtD/FAYWFWT/H+HlBNfNimq9eUGZ0TWOwPLAMsX
-        nu/yTpU7L0qZYWcpqHsMAIpz8d26uO4HMb1Kt4gBzbqI1VBsRUI3i5L3cNAr7BmU
-        w0BL/tY541uVGR2xwM9DwnGCtgxK8ZxJ4YOKZHT2cnP5LX71i6VXcy64S2Zn6NsO
-        uDezzzgcUsspl7xE+oEb7H4vOmaKED+e5Ry0zjmF3XooimU+9mCWih61M+aZSe31
-        c4k5Xwkt6qnulTKD+QoDvydEWi41pzfZPqEEL7h63JojCjo7vDH1Q==
-X-ME-Sender: <xms:HMRDYhzh0T1XezhrvifAHHQfwzdFYDhbBMKJI4WfOmpVCdeEoPFb7w>
-    <xme:HMRDYhQdYvhinWi7fGKXhohm43yBesFTCjzBefB_S-AFIvwsx4DMpm_kPSFN7XZ3z
-    uDpCqa2VpOgJIlKaw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudeiuddgiedvucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvffutgesthdtredtreertdenucfhrhhomhepfdetnhgu
-    rhgvficulfgvfhhfvghrhidfuceorghnughrvgifsegrjhdrihgurdgruheqnecuggftrf
-    grthhtvghrnhephefhfeekgfekudevheffheeihedujeefjeevjeefudfgfeeutdeuvdeh
-    hfevueffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
-    eprghnughrvgifsegrjhdrihgurdgruh
-X-ME-Proxy: <xmx:HMRDYrWxtgV-KcAQ8jnfMzUeVuhbjp7xH1-qtw8YBiJkXQhfPxSHag>
-    <xmx:HMRDYji0MaBmJToABMobp0w4ra_jbrBMqEPtH7QonZM7IoH65Qni8g>
-    <xmx:HMRDYjDQ98zUNkD_m-VF7CpB0qjZ2sfNBpi_72XrSH7w790m4AFiwg>
-    <xmx:HcRDYvtSfNYU-QqciXVTT8xfpuicNJ2cHHrYDo8MiwpQmMzKzyR8zg>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 32214F6043F; Tue, 29 Mar 2022 22:44:44 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.5.0-alpha0-4911-g925b585eab-fm-20220323.003-g925b585e
-Mime-Version: 1.0
-Message-Id: <489d851e-be29-44a3-bf56-78be33d585f2@www.fastmail.com>
-In-Reply-To: <20220329161949.19762-1-potin.lai@quantatw.com>
-References: <20220329161949.19762-1-potin.lai@quantatw.com>
-Date:   Wed, 30 Mar 2022 13:14:22 +1030
-From:   "Andrew Jeffery" <andrew@aj.id.au>
-To:     "Potin Lai" <potin.lai@quantatw.com>,
-        "Andrew Lunn" <andrew@lunn.ch>,
-        "Heiner Kallweit" <hkallweit1@gmail.com>,
-        "Russell King" <linux@armlinux.org.uk>,
-        "David Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>, "Joel Stanley" <joel@jms.id.au>
-Cc:     "Patrick Williams" <patrick@stwcx.xyz>,
-        netdev <netdev@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] net: mdio: aspeed: Add Clause 45 support
-Content-Type: text/plain
+        Tue, 29 Mar 2022 22:49:25 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A565170DB1
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 19:47:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648608461; x=1680144461;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Iiz9yNZ9QU41lXDiDYLYbnUSqX5P7jJcuLjuIlo+0OE=;
+  b=U7qM4V/MyfjZVca8FfnNQHNhY4OP3UObgm++iH8zO2gOalUr0GdN/olJ
+   wRjqLrGK2hmkmShyfuBAjhOmHh0/v5KZbP48Th62FAFeVEjwtwVnKiq5A
+   v6IPXLwIMGEjlSrGuxsfvdcMcFn8NYHTAdOtwIXitWfcKr9ohdnu7WhKB
+   1XC8o4opy/kxT5jXe/pQXOykci8YlifSk0ZbBe8Ud5+SCsQfudPuOxe2/
+   /JafcQqljmEHi/9uzKkIRaNLgeTiI36ApRHLiSN12n8kag8S5Z63oQqvg
+   6d94EqSakEZ5bUZ3RZPCl9EwjpdWi9L7zH6HWnXk94aUMX/hc4yHRgNzo
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="284334992"
+X-IronPort-AV: E=Sophos;i="5.90,221,1643702400"; 
+   d="scan'208";a="284334992"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 19:47:40 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,221,1643702400"; 
+   d="scan'208";a="653496983"
+Received: from lkp-server01.sh.intel.com (HELO 3965e2759b93) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 29 Mar 2022 19:47:38 -0700
+Received: from kbuild by 3965e2759b93 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nZOMz-0000vB-UH; Wed, 30 Mar 2022 02:47:37 +0000
+Date:   Wed, 30 Mar 2022 10:46:46 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Will Deacon <will@kernel.org>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Ard Biesheuvel <ardb@google.com>
+Subject: [ammarfaizi2-block:google/android/kernel/common/android13-5.15
+ 2786/5614] arch/arm64/kvm/arm.c:2011:46: error: 'smccc_trng_available'
+ undeclared
+Message-ID: <202203301057.pfu4qQMj-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Will,
+
+FYI, the error/warning still remains.
+
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android13-5.15
+head:   12972dd7bfa306aa07c92966c4efe7b1c0c5e043
+commit: 888643ea37b504cb32afdd6430698d1e92a79a71 [2786/5614] ANDROID: KVM: arm64: relay entropy requests from protected guests directly to secure
+config: arm64-randconfig-r013-20220327 (https://download.01.org/0day-ci/archive/20220330/202203301057.pfu4qQMj-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/888643ea37b504cb32afdd6430698d1e92a79a71
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android13-5.15
+        git checkout 888643ea37b504cb32afdd6430698d1e92a79a71
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/kvm/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   arch/arm64/kvm/arm.c: In function 'kvm_hyp_init_protection':
+>> arch/arm64/kvm/arm.c:2011:46: error: 'smccc_trng_available' undeclared (first use in this function)
+    2011 |         kvm_nvhe_sym(smccc_trng_available) = smccc_trng_available;
+         |                                              ^~~~~~~~~~~~~~~~~~~~
+   arch/arm64/kvm/arm.c:2011:46: note: each undeclared identifier is reported only once for each function it appears in
 
 
-On Wed, 30 Mar 2022, at 02:49, Potin Lai wrote:
-> Add Clause 45 support for Aspeed mdio driver.
->
-> Signed-off-by: Potin Lai <potin.lai@quantatw.com>
-> ---
->  drivers/net/mdio/mdio-aspeed.c | 122 ++++++++++++++++++++++++---------
->  1 file changed, 88 insertions(+), 34 deletions(-)
->
-> diff --git a/drivers/net/mdio/mdio-aspeed.c b/drivers/net/mdio/mdio-aspeed.c
-> index e2273588c75b..aa2b678b2381 100644
-> --- a/drivers/net/mdio/mdio-aspeed.c
-> +++ b/drivers/net/mdio/mdio-aspeed.c
-> @@ -21,6 +21,10 @@
->  #define   ASPEED_MDIO_CTRL_OP		GENMASK(27, 26)
->  #define     MDIO_C22_OP_WRITE		0b01
->  #define     MDIO_C22_OP_READ		0b10
-> +#define     MDIO_C45_OP_ADDR		0b00
-> +#define     MDIO_C45_OP_WRITE		0b01
-> +#define     MDIO_C45_OP_PREAD		0b10
-> +#define     MDIO_C45_OP_READ		0b11
->  #define   ASPEED_MDIO_CTRL_PHYAD	GENMASK(25, 21)
->  #define   ASPEED_MDIO_CTRL_REGAD	GENMASK(20, 16)
->  #define   ASPEED_MDIO_CTRL_MIIWDATA	GENMASK(15, 0)
-> @@ -39,34 +43,35 @@ struct aspeed_mdio {
->  	void __iomem *base;
->  };
-> 
-> -static int aspeed_mdio_read(struct mii_bus *bus, int addr, int regnum)
-> +static int aspeed_mdio_ctrl_reg(struct mii_bus *bus, u8 st, u8 op, u8 phyad,
+vim +/smccc_trng_available +2011 arch/arm64/kvm/arm.c
 
-It's a bit of a nit-pick, but this function name talks about something
-it impacts rather than something it does. What do you think of
-`aspeed_mdio_op()`?
+  1997	
+  1998	static int kvm_hyp_init_protection(u32 hyp_va_bits)
+  1999	{
+  2000		void *addr = phys_to_virt(hyp_mem_base);
+  2001		int ret;
+  2002	
+  2003		kvm_nvhe_sym(id_aa64pfr0_el1_sys_val) = read_sanitised_ftr_reg(SYS_ID_AA64PFR0_EL1);
+  2004		kvm_nvhe_sym(id_aa64pfr1_el1_sys_val) = read_sanitised_ftr_reg(SYS_ID_AA64PFR1_EL1);
+  2005		kvm_nvhe_sym(id_aa64isar0_el1_sys_val) = read_sanitised_ftr_reg(SYS_ID_AA64ISAR0_EL1);
+  2006		kvm_nvhe_sym(id_aa64isar1_el1_sys_val) = read_sanitised_ftr_reg(SYS_ID_AA64ISAR1_EL1);
+  2007		kvm_nvhe_sym(id_aa64mmfr0_el1_sys_val) = read_sanitised_ftr_reg(SYS_ID_AA64MMFR0_EL1);
+  2008		kvm_nvhe_sym(id_aa64mmfr1_el1_sys_val) = read_sanitised_ftr_reg(SYS_ID_AA64MMFR1_EL1);
+  2009		kvm_nvhe_sym(id_aa64mmfr2_el1_sys_val) = read_sanitised_ftr_reg(SYS_ID_AA64MMFR2_EL1);
+  2010		kvm_nvhe_sym(__icache_flags) = __icache_flags;
+> 2011		kvm_nvhe_sym(smccc_trng_available) = smccc_trng_available;
+  2012	
+  2013		ret = create_hyp_mappings(addr, addr + hyp_mem_size, PAGE_HYP);
+  2014		if (ret)
+  2015			return ret;
+  2016	
+  2017		ret = init_stage2_iommu();
+  2018		if (ret < 0)
+  2019			return ret;
+  2020	
+  2021		ret = do_pkvm_init(hyp_va_bits, (enum kvm_iommu_driver)ret);
+  2022		if (ret)
+  2023			return ret;
+  2024	
+  2025		free_hyp_pgds();
+  2026	
+  2027		return 0;
+  2028	}
+  2029	
 
-Less of a nitpick, this patch does three things:
-
-1. Distills the aspeed_mdio_ctrl_reg() function from from the
-   aspeed_mdio_{read,write}() functions
-
-2. Introduces the additional function indirection for C22 vs C45 reads
-
-3. Adds the C45 support.
-
-I think it'd be easier to review if it was broken into three separate
-patches along the lines of the above. I'm finding the hunks hard to
-concentrate on as they are.
-
-Andrew
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
