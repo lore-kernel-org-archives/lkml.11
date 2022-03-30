@@ -2,50 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94E8FC43219
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:55:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C9CDC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:55:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344955AbiC3L4r (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 07:56:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59364 "EHLO
+        id S232660AbiC3L45 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 07:56:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344228AbiC3Lwo (ORCPT
+        with ESMTP id S1344238AbiC3Lwo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 30 Mar 2022 07:52:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8A8725E33A;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4B4725E339;
         Wed, 30 Mar 2022 04:48:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B7A1561624;
-        Wed, 30 Mar 2022 11:48:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4944AC340F2;
-        Wed, 30 Mar 2022 11:48:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 23C67B81C39;
+        Wed, 30 Mar 2022 11:48:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9BC4C36AE7;
+        Wed, 30 Mar 2022 11:48:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648640919;
-        bh=5UMlgXP9Kt7zNY8E5AlJDpLF7i4vLGx8OtzMkKu8RiA=;
+        s=k20201202; t=1648640906;
+        bh=IVt9jYETt3TQfguSpdnH8Vu6cSpfeaiBih9Ro8JSimM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PikCB93XPTCCr0re3EL9qHWPejEbZ21oILcVneJnZRm+41O/uwxbLx4KFR6lx/BNj
-         jn/1KYFAN3HHm7vgfG+HyzCFL+gj9K8XEmdw5LqURIXMZ3MVpPbowMXs4vjTu3q9yy
-         8yrB1J5souGFF1HJQJQ3Ndxv9pPRuPJ5iVpTUIeX10hA72FsQKp0F00SD3CaiDto0O
-         c+D2ymR0bBNEHQN9QjbaaH/Hc9TfALpc8IRM5rRcNiwxQwe6bHPOhV1dJS7fztIBWr
-         ZjYW817bWu8ZK7cvgY44FL3xIh3Y+xjxuWoTzVuQeu0IE73BpHWjm3gEWM4d6Ikr2w
-         rPJ3CebkEFxpw==
+        b=mNXOSGK1CTl6hWVK0Z/wxm7weM8pY4GOlDYF7Fzy+IcAK7Pd9XYH3iBkcAVdAYRJI
+         w/PNuPUMqQz6tGbwW01LD5T5BHlomYuz2ClHjVYPKgdMDGlpxMMT/qUf41SZHMBpyw
+         ppFrmW35q6RFFI/rmXMoCm1mzBaf/xkHLV6EU0qnK+v5qGfbZAnv4NX5BOzAA48A5N
+         2OMl3w+Lr6WAveJoJB58oIfp8EvB6+j1Zymlj8M6zTmmE993yf/WhGA3oCC74y0dpO
+         7DTQp0PM78fGeIFA276jnGqRAMTYmiuDBdWigX/3x2FyvUb98DilIdBHVTenfdCKm8
+         2INYJ5w2j+RJQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eugen Hristev <eugen.hristev@microchip.com>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 04/59] media: atmel: atmel-isc-base: report frame sizes as full supported range
-Date:   Wed, 30 Mar 2022 07:47:36 -0400
-Message-Id: <20220330114831.1670235-4-sashal@kernel.org>
+Cc:     Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.17 64/66] ASoC: ak4642: Use of_device_get_match_data()
+Date:   Wed, 30 Mar 2022 07:46:43 -0400
+Message-Id: <20220330114646.1669334-64-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330114831.1670235-1-sashal@kernel.org>
-References: <20220330114831.1670235-1-sashal@kernel.org>
+In-Reply-To: <20220330114646.1669334-1-sashal@kernel.org>
+References: <20220330114646.1669334-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,71 +53,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eugen Hristev <eugen.hristev@microchip.com>
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-[ Upstream commit 72802a86e11c34e819fbfb38f58c5aef668f833d ]
+[ Upstream commit 835ca59799f5c60b4b54bdc7aa785c99552f63e4 ]
 
-The ISC supports a full broad range of frame sizes.
-Until now, the subdevice was queried for possible frame sizes and these
-were reported to the user space.
-However, the ISC should not care about which frame sizes the subdev
-supports, as long as this frame size is supported.
-Thus, report a continuous range from smallest frame size up to the max
-resolution.
+Use of_device_get_match_data() to simplify the code.
 
-Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
-Reviewed-by: Jacopo Mondi <jacopo@jmondi.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+Link: https://lore.kernel.org/r/20220315023226.2118354-1-chi.minghao@zte.com.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/atmel/atmel-isc-base.c | 22 +++++++++----------
- 1 file changed, 10 insertions(+), 12 deletions(-)
+ sound/soc/codecs/ak4613.c | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/media/platform/atmel/atmel-isc-base.c b/drivers/media/platform/atmel/atmel-isc-base.c
-index 660cd0ab6749..24807782c9e5 100644
---- a/drivers/media/platform/atmel/atmel-isc-base.c
-+++ b/drivers/media/platform/atmel/atmel-isc-base.c
-@@ -1369,14 +1369,12 @@ static int isc_enum_framesizes(struct file *file, void *fh,
- 			       struct v4l2_frmsizeenum *fsize)
- {
- 	struct isc_device *isc = video_drvdata(file);
--	struct v4l2_subdev_frame_size_enum fse = {
--		.code = isc->config.sd_format->mbus_code,
--		.index = fsize->index,
--		.which = V4L2_SUBDEV_FORMAT_ACTIVE,
--	};
- 	int ret = -EINVAL;
- 	int i;
+diff --git a/sound/soc/codecs/ak4613.c b/sound/soc/codecs/ak4613.c
+index 4d2e78101f28..034195c83bd7 100644
+--- a/sound/soc/codecs/ak4613.c
++++ b/sound/soc/codecs/ak4613.c
+@@ -653,15 +653,10 @@ static int ak4613_i2c_probe(struct i2c_client *i2c,
+ 	struct ak4613_priv *priv;
  
-+	if (fsize->index)
-+		return -EINVAL;
-+
- 	for (i = 0; i < isc->num_user_formats; i++)
- 		if (isc->user_formats[i]->fourcc == fsize->pixel_format)
- 			ret = 0;
-@@ -1388,14 +1386,14 @@ static int isc_enum_framesizes(struct file *file, void *fh,
- 	if (ret)
- 		return ret;
+ 	regmap_cfg = NULL;
+-	if (np) {
+-		const struct of_device_id *of_id;
+-
+-		of_id = of_match_device(ak4613_of_match, dev);
+-		if (of_id)
+-			regmap_cfg = of_id->data;
+-	} else {
++	if (np)
++		regmap_cfg = of_device_get_match_data(dev);
++	else
+ 		regmap_cfg = (const struct regmap_config *)id->driver_data;
+-	}
  
--	ret = v4l2_subdev_call(isc->current_subdev->sd, pad, enum_frame_size,
--			       NULL, &fse);
--	if (ret)
--		return ret;
-+	fsize->type = V4L2_FRMSIZE_TYPE_CONTINUOUS;
- 
--	fsize->type = V4L2_FRMSIZE_TYPE_DISCRETE;
--	fsize->discrete.width = fse.max_width;
--	fsize->discrete.height = fse.max_height;
-+	fsize->stepwise.min_width = 16;
-+	fsize->stepwise.max_width = isc->max_width;
-+	fsize->stepwise.min_height = 16;
-+	fsize->stepwise.max_height = isc->max_height;
-+	fsize->stepwise.step_width = 1;
-+	fsize->stepwise.step_height = 1;
- 
- 	return 0;
- }
+ 	if (!regmap_cfg)
+ 		return -EINVAL;
 -- 
 2.34.1
 
