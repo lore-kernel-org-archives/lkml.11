@@ -2,52 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C79E6C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96DBDC3A589
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347348AbiC3MGU (ORCPT
+        id S1345869AbiC3MEX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:06:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60574 "EHLO
+        Wed, 30 Mar 2022 08:04:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345830AbiC3LzE (ORCPT
+        with ESMTP id S1345323AbiC3LyX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:55:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03D89264577;
-        Wed, 30 Mar 2022 04:51:49 -0700 (PDT)
+        Wed, 30 Mar 2022 07:54:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D2341116D;
+        Wed, 30 Mar 2022 04:50:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 203F8B81C23;
-        Wed, 30 Mar 2022 11:51:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A80EC34113;
-        Wed, 30 Mar 2022 11:51:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 71D45B81ACC;
+        Wed, 30 Mar 2022 11:50:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67666C36AE3;
+        Wed, 30 Mar 2022 11:50:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641102;
-        bh=Qb/oTH/UWrZXJOhd5uOtZEXXGxt5HFJZw3S+Cihmmxc=;
+        s=k20201202; t=1648641053;
+        bh=G22sE1NkGEgwqMcjpTZycFRhDcAIrBpWYxYkC+AtI0U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qNHy5UH8Lc55tfkj22MIQVu7tUO0oieJQpHhqkpatVPmPHfIqVB/4mW5Tj9ACRujr
-         M8NppN8txCYFZa7uS9SwUmsud/nPUWcPfVbYqjjxvuTrTLYX2ZWpCJ2/RUgZwqHj9Q
-         yyglVg/VpLuIyQrsiyZ15WbmdOCsFiLzH4KHG/4pR7aGHaIuLFC2TkYCjIt7Q4x2Wh
-         6JBq0PBBPC4dAJ1g+kYpdrTHsxZkLnd0ixSrApx412KvQM+3Sho+S2qBx89942sWg4
-         uXRxgYknwPcsW8Uzl72433wQnBoj+JfAH710cfhjFBOeKc9CzOut4bJ07fqKb7YX8H
-         TTCZam/y9tdHw==
+        b=UnRKIJ775NWcVvof4M+mnTCxLwagLdMtNGpw8FvpfqtVGArcwE+oX0ftyIo5CSA5+
+         fAjNOsjr+dAgIKiN4q90Q6N8fZNPzbynH6EjMud+yvtAuxWYpZ9lp2E0ECSpuYszeD
+         ud+27ueq1yROFRLLMdG7/c+uyGbmMoHSj8Ydvf3vZ7xjqL2KxMQApxrSlbfskXIhdF
+         4OTYiFJfYsNilnBEQrURBbQbX3CpVuNLA599iNmE/D68yvuOpPYDz3Mxm0YSe/d+ZD
+         EY9SRZSrDKmtSXVOMckGxmUHpnHp6+yXJhYf/2lkRwDatd3eJ6e75gPV5we+BM2U6n
+         DxXV9XNqLH2jg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Richard Schleich <rs@noreya.tech>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        mark.rutland@arm.com, linux@armlinux.org.uk, rjui@broadcom.com,
-        sbranden@broadcom.com, bcm-kernel-feedback-list@broadcom.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.10 11/37] ARM: dts: bcm2837: Add the missing L1/L2 cache information
-Date:   Wed, 30 Mar 2022 07:50:56 -0400
-Message-Id: <20220330115122.1671763-11-sashal@kernel.org>
+Cc:     Stephen Brennan <stephen.s.brennan@oracle.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Sasha Levin <sashal@kernel.org>, linux@roeck-us.net,
+        gregkh@linuxfoundation.org
+Subject: [PATCH AUTOSEL 5.15 31/50] printk: Drop console_sem during panic
+Date:   Wed, 30 Mar 2022 07:49:45 -0400
+Message-Id: <20220330115005.1671090-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330115122.1671763-1-sashal@kernel.org>
-References: <20220330115122.1671763-1-sashal@kernel.org>
+In-Reply-To: <20220330115005.1671090-1-sashal@kernel.org>
+References: <20220330115005.1671090-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -56,110 +54,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Richard Schleich <rs@noreya.tech>
+From: Stephen Brennan <stephen.s.brennan@oracle.com>
 
-[ Upstream commit bdf8762da268d2a34abf517c36528413906e9cd5 ]
+[ Upstream commit 8ebc476fd51e6c0fd3174ec1959a20ba99d4c5e5 ]
 
-This patch fixes the kernel warning
-"cacheinfo: Unable to detect cache hierarchy for CPU 0"
-for the bcm2837 on newer kernel versions.
+If another CPU is in panic, we are about to be halted. Try to gracefully
+abandon the console_sem, leaving it free for the panic CPU to grab.
 
-Signed-off-by: Richard Schleich <rs@noreya.tech>
-Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
-[florian: Align and remove comments matching property values]
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Suggested-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Stephen Brennan <stephen.s.brennan@oracle.com>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+Link: https://lore.kernel.org/r/20220202171821.179394-5-stephen.s.brennan@oracle.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/bcm2837.dtsi | 49 ++++++++++++++++++++++++++++++++++
- 1 file changed, 49 insertions(+)
+ kernel/printk/printk.c | 25 ++++++++++++++++++++++++-
+ 1 file changed, 24 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/bcm2837.dtsi b/arch/arm/boot/dts/bcm2837.dtsi
-index 0199ec98cd61..5dbdebc46259 100644
---- a/arch/arm/boot/dts/bcm2837.dtsi
-+++ b/arch/arm/boot/dts/bcm2837.dtsi
-@@ -40,12 +40,26 @@
- 		#size-cells = <0>;
- 		enable-method = "brcm,bcm2836-smp"; // for ARM 32-bit
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index f37889b6cf9f..34bdc51f4cb3 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -2587,6 +2587,25 @@ static int have_callable_console(void)
+ 	return 0;
+ }
  
-+		/* Source for d/i-cache-line-size and d/i-cache-sets
-+		 * https://developer.arm.com/documentation/ddi0500/e/level-1-memory-system
-+		 * /about-the-l1-memory-system?lang=en
-+		 *
-+		 * Source for d/i-cache-size
-+		 * https://magpi.raspberrypi.com/articles/raspberry-pi-3-specs-benchmarks
-+		 */
- 		cpu0: cpu@0 {
- 			device_type = "cpu";
- 			compatible = "arm,cortex-a53";
- 			reg = <0>;
- 			enable-method = "spin-table";
- 			cpu-release-addr = <0x0 0x000000d8>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
-+			next-level-cache = <&l2>;
- 		};
- 
- 		cpu1: cpu@1 {
-@@ -54,6 +68,13 @@
- 			reg = <1>;
- 			enable-method = "spin-table";
- 			cpu-release-addr = <0x0 0x000000e0>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
-+			next-level-cache = <&l2>;
- 		};
- 
- 		cpu2: cpu@2 {
-@@ -62,6 +83,13 @@
- 			reg = <2>;
- 			enable-method = "spin-table";
- 			cpu-release-addr = <0x0 0x000000e8>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
-+			next-level-cache = <&l2>;
- 		};
- 
- 		cpu3: cpu@3 {
-@@ -70,6 +98,27 @@
- 			reg = <3>;
- 			enable-method = "spin-table";
- 			cpu-release-addr = <0x0 0x000000f0>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
-+			next-level-cache = <&l2>;
-+		};
++/*
++ * Return true when this CPU should unlock console_sem without pushing all
++ * messages to the console. This reduces the chance that the console is
++ * locked when the panic CPU tries to use it.
++ */
++static bool abandon_console_lock_in_panic(void)
++{
++	if (!panic_in_progress())
++		return false;
 +
-+		/* Source for cache-line-size + cache-sets
-+		 * https://developer.arm.com/documentation/ddi0500
-+		 * /e/level-2-memory-system/about-the-l2-memory-system?lang=en
-+		 * Source for cache-size
-+		 * https://datasheets.raspberrypi.com/cm/cm1-and-cm3-datasheet.pdf
-+		 */
-+		l2: l2-cache0 {
-+			compatible = "cache";
-+			cache-size = <0x80000>;
-+			cache-line-size = <64>;
-+			cache-sets = <512>; // 512KiB(size)/64(line-size)=8192ways/16-way set
-+			cache-level = <2>;
- 		};
- 	};
- };
++	/*
++	 * We can use raw_smp_processor_id() here because it is impossible for
++	 * the task to be migrated to the panic_cpu, or away from it. If
++	 * panic_cpu has already been set, and we're not currently executing on
++	 * that CPU, then we never will be.
++	 */
++	return atomic_read(&panic_cpu) != raw_smp_processor_id();
++}
++
+ /*
+  * Can we actually use the console at this time on this cpu?
+  *
+@@ -2735,6 +2754,10 @@ void console_unlock(void)
+ 		if (handover)
+ 			return;
+ 
++		/* Allow panic_cpu to take over the consoles safely */
++		if (abandon_console_lock_in_panic())
++			break;
++
+ 		if (do_cond_resched)
+ 			cond_resched();
+ 	}
+@@ -2752,7 +2775,7 @@ void console_unlock(void)
+ 	 * flush, no worries.
+ 	 */
+ 	retry = prb_read_valid(prb, next_seq, NULL);
+-	if (retry && console_trylock())
++	if (retry && !abandon_console_lock_in_panic() && console_trylock())
+ 		goto again;
+ }
+ EXPORT_SYMBOL(console_unlock);
 -- 
 2.34.1
 
