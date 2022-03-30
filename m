@@ -2,100 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 176A9C43217
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:57:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63225C4707A
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:57:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244517AbiC3L7Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 07:59:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57834 "EHLO
+        id S243184AbiC3L7g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 07:59:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344583AbiC3LxS (ORCPT
+        with ESMTP id S1344604AbiC3LxT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:53:18 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92CF6264811
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 04:49:11 -0700 (PDT)
-Received: from fraeml740-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KT4Rq6Qgxz6802Q;
-        Wed, 30 Mar 2022 19:47:35 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml740-chm.china.huawei.com (10.206.15.221) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 30 Mar 2022 13:49:02 +0200
-Received: from [10.47.83.59] (10.47.83.59) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 30 Mar
- 2022 12:49:02 +0100
-Message-ID: <fab277a2-3460-17d2-15ab-e12dea2d5b74@huawei.com>
-Date:   Wed, 30 Mar 2022 12:49:00 +0100
+        Wed, 30 Mar 2022 07:53:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED80526899B;
+        Wed, 30 Mar 2022 04:49:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7AB43B81C36;
+        Wed, 30 Mar 2022 11:49:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51555C340F2;
+        Wed, 30 Mar 2022 11:49:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648640955;
+        bh=+wq173W039LLwt49okhsC1cU/Yg0EMixvemiQqA7vmw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=BeNvgZLuBg76on0VnOC6kWDTlH3PCpC+GY3ONZfZiueFWDkzyOZ+RYgq2PNbJwWOG
+         gDXyBYwMRa4+EzOIyIVZiyClYuZ9P5BJVreagJ312hSE2qMLlTrtPCSL9oLJbibf5b
+         0RSD2siU7gNIEpQK0gcZ+cZtbGtbzVgLXkQxEAiZehRCVgubvGRqlNiBC80cFStFxF
+         DyTB9bgqk0VCj8AUmTmcl2/73ONRnMKGdVNx0r23a7AyVymxeTYCZIvA4L/y5dS3VL
+         ip/gLF5uP4PyXMXiD9Cm5xRqODRV0i9XwcSJYOVr//GEZVFzKg+4Iz17zZj6jA3L/g
+         +UxNlcdZR623A==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Jing Yao <yao.jing2@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        tomi.valkeinen@ti.com, linux-omap@vger.kernel.org,
+        linux-fbdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 27/59] video: fbdev: omapfb: panel-dsi-cm: Use sysfs_emit() instead of snprintf()
+Date:   Wed, 30 Mar 2022 07:47:59 -0400
+Message-Id: <20220330114831.1670235-27-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220330114831.1670235-1-sashal@kernel.org>
+References: <20220330114831.1670235-1-sashal@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: drivers/scsi/hisi_sas/hisi_sas_main.c:445 hisi_sas_task_deliver()
- warn: inconsistent indenting
-To:     kernel test robot <lkp@intel.com>
-CC:     <kbuild-all@lists.01.org>, <linux-kernel@vger.kernel.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-References: <202203301533.b4Hty4C7-lkp@intel.com>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <202203301533.b4Hty4C7-lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.83.59]
-X-ClientProxiedBy: lhreml745-chm.china.huawei.com (10.201.108.195) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 30/03/2022 08:23, kernel test robot wrote:
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> head:   1c24a186398f59c80adb9a967486b65c1423a59d
-> commit: 095478a6e5bf590f2bbf341569eb25173c9c5f32 scsi: hisi_sas: Use libsas internal abort support
-> date:   2 weeks ago
-> config: powerpc64-randconfig-m031-20220330 (https://download.01.org/0day-ci/archive/20220330/202203301533.b4Hty4C7-lkp@intel.com/config)
-> compiler: powerpc64-linux-gcc (GCC) 11.2.0
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> smatch warnings:
-> drivers/scsi/hisi_sas/hisi_sas_main.c:445 hisi_sas_task_deliver() warn: inconsistent indenting
-> 
-> vim +445 drivers/scsi/hisi_sas/hisi_sas_main.c
-> 
+From: Jing Yao <yao.jing2@zte.com.cn>
 
-...
+[ Upstream commit f63658a59c3d439c8ad7b290f8ec270980e0f384 ]
 
-> 42e7a69368a585 John Garry  2015-11-18  437  	case SAS_PROTOCOL_SATA:
-> 42e7a69368a585 John Garry  2015-11-18  438  	case SAS_PROTOCOL_STP:
-> 095478a6e5bf59 John Garry  2022-03-11  439  	case SAS_PROTOCOL_STP_ALL:
-> a2b3820bddfbff Xiang Chen  2018-05-09  440  		hisi_sas_task_prep_ata(hisi_hba, slot);
-> 6f2ff1a1311e61 John Garry  2016-01-26  441  		break;
-> 095478a6e5bf59 John Garry  2022-03-11  442  	case SAS_PROTOCOL_INTERNAL_ABORT:
-> 095478a6e5bf59 John Garry  2022-03-11  443  		hisi_sas_task_prep_abort(hisi_hba, slot);
-> dc313f6b125b09 John Garry  2021-12-15  444  		break;
-> dc313f6b125b09 John Garry  2021-12-15 @445  	fallthrough;
+Use sysfs_emit instead of scnprintf, snprintf or sprintf.
 
-This is already queued for removal.
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-> 42e7a69368a585 John Garry  2015-11-18  446  	default:
-> 095478a6e5bf59 John Garry  2022-03-11  447  		return;
-> 42e7a69368a585 John Garry  2015-11-18  448  	}
-> 42e7a69368a585 John Garry  2015-11-18  449
-> 1c09b663168bb5 Xiaofei Tan 2018-07-18  450  	WRITE_ONCE(slot->ready, 1);
-> 42e7a69368a585 John Garry  2015-11-18  451
-> 0e4620856b8933 John Garry  2021-12-15  452  	spin_lock(&dq->lock);
-> 0e4620856b8933 John Garry  2021-12-15  453  	hisi_hba->hw->start_delivery(dq);
-> 0e4620856b8933 John Garry  2021-12-15  454  	spin_unlock(&dq->lock);
-> 42e7a69368a585 John Garry  2015-11-18  455  }
-> 42e7a69368a585 John Garry  2015-11-18  456
-> 
-> :::::: The code at line 445 was first introduced by commit
-> :::::: dc313f6b125b095d3d2683d94d5f69c8dc9bdc36 scsi: hisi_sas: Factor out task prep and delivery code
-> 
-> :::::: TO: John Garry <john.garry@huawei.com>
-> :::::: CC: Martin K. Petersen <martin.petersen@oracle.com>
-> 
+diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
+index 4b0793abdd84..a2c7c5cb1523 100644
+--- a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
++++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
+@@ -409,7 +409,7 @@ static ssize_t dsicm_num_errors_show(struct device *dev,
+ 	if (r)
+ 		return r;
+ 
+-	return snprintf(buf, PAGE_SIZE, "%d\n", errors);
++	return sysfs_emit(buf, "%d\n", errors);
+ }
+ 
+ static ssize_t dsicm_hw_revision_show(struct device *dev,
+@@ -439,7 +439,7 @@ static ssize_t dsicm_hw_revision_show(struct device *dev,
+ 	if (r)
+ 		return r;
+ 
+-	return snprintf(buf, PAGE_SIZE, "%02x.%02x.%02x\n", id1, id2, id3);
++	return sysfs_emit(buf, "%02x.%02x.%02x\n", id1, id2, id3);
+ }
+ 
+ static ssize_t dsicm_store_ulps(struct device *dev,
+@@ -487,7 +487,7 @@ static ssize_t dsicm_show_ulps(struct device *dev,
+ 	t = ddata->ulps_enabled;
+ 	mutex_unlock(&ddata->lock);
+ 
+-	return snprintf(buf, PAGE_SIZE, "%u\n", t);
++	return sysfs_emit(buf, "%u\n", t);
+ }
+ 
+ static ssize_t dsicm_store_ulps_timeout(struct device *dev,
+@@ -532,7 +532,7 @@ static ssize_t dsicm_show_ulps_timeout(struct device *dev,
+ 	t = ddata->ulps_timeout;
+ 	mutex_unlock(&ddata->lock);
+ 
+-	return snprintf(buf, PAGE_SIZE, "%u\n", t);
++	return sysfs_emit(buf, "%u\n", t);
+ }
+ 
+ static DEVICE_ATTR(num_dsi_errors, S_IRUGO, dsicm_num_errors_show, NULL);
+-- 
+2.34.1
 
