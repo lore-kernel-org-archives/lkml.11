@@ -2,74 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C937C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:02:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6881EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:02:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245728AbiC3LEM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 07:04:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60144 "EHLO
+        id S245747AbiC3LER (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 07:04:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245693AbiC3LD7 (ORCPT
+        with ESMTP id S245723AbiC3LED (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:03:59 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AD8EBF501
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 04:02:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=+jFj5rr6yQzhbA251iVOAFS94UsGyfyHfTGBlFeCuv4=; b=kd34vxPcIY5/k4shGzvxOs5HDL
-        4ZkzOopTzrHxlvjODjHa2gODXf+W7fF2PBI8deixaMu55z+WC9mCS7XR+LVwcrg++j/1VCHZTr9vp
-        FVghgHWvZxO8dPh2pQuvazR/tJ7ZjmZVMrCOTREtU/6OdOYga8p84MSFgnKHn9mxQg65225wUjk37
-        W5k2JkjplFl3VfkjTGVXVfHtOYg+o9xzZon0kjs1yqocz9WiVcchpgS68ux0lG0jAQkBzUz9Y4DvB
-        a3Msl7muJIJ/AG6MbiLFu0U/Uz9Y86FCBK0cq46vyobSDrLb20mI1F6ESou8YRIO5G/EsAZs7hlm3
-        JPSlbppQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nZW5J-006C5u-AB; Wed, 30 Mar 2022 11:01:53 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 9ED05986215; Wed, 30 Mar 2022 13:01:51 +0200 (CEST)
-Date:   Wed, 30 Mar 2022 13:01:51 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Stephane Eranian <eranian@google.com>
-Cc:     linux-kernel@vger.kernel.org, kim.phillips@amd.com,
-        acme@redhat.com, jolsa@redhat.com, songliubraving@fb.com,
-        rafael@kernel.org, ravi.bangoria@amd.com, Sandipan.Das@amd.com
-Subject: Re: [PATCH v7 00/13] perf/x86/amd: Add AMD Fam19h Branch Sampling
- support
-Message-ID: <20220330110151.GJ8939@worktop.programming.kicks-ass.net>
-References: <20220322221517.2510440-1-eranian@google.com>
- <20220324145902.GG8939@worktop.programming.kicks-ass.net>
- <CABPqkBTVFNOW0Y-suYVRjf07aBC41gEw1m4Ym78sR39BRzLDcQ@mail.gmail.com>
- <20220325082855.GL8939@worktop.programming.kicks-ass.net>
- <CABPqkBSNG=kLae6dN9iCuyuMVAvt-n+waW9SL4AfNDCOc3px0A@mail.gmail.com>
- <CABPqkBQ6ZyqSzQyJeNW5GE22V1sygB3zz5JQ45AT1TxMnwWScg@mail.gmail.com>
+        Wed, 30 Mar 2022 07:04:03 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59005C5584;
+        Wed, 30 Mar 2022 04:02:18 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id DCD822223B;
+        Wed, 30 Mar 2022 13:02:15 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1648638136;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=aLnrtpnRAiL6v+cP9y7rKdCDomkZu1ScIOGwNkz3rpE=;
+        b=e83Xv7idZD4OnNsV+VrMu6XrTQuf5d3s1LWZQAj6+tGeCCObB8yIO+5KJrUlrfkpi0yXtj
+        LN63YG92vbxwjwG6je2p84wy6hPi7DTSmkcpNZsD5gw8m9kRr4J40YAbO0KUI2cousBH+P
+        5EWhEx5xvgguXDL6kJzbrmnhqoUYA5Y=
+From:   Michael Walle <michael@walle.cc>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
+Subject: [PATCH RFC net-next] net: lan966x: make PHY reset support optional
+Date:   Wed, 30 Mar 2022 13:02:10 +0200
+Message-Id: <20220330110210.3374165-1-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CABPqkBQ6ZyqSzQyJeNW5GE22V1sygB3zz5JQ45AT1TxMnwWScg@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 04:47:52PM -0700, Stephane Eranian wrote:
-> False alarm. I had not forced the config option. With the config
-> option enabled, it works as expected.
+The PHY subsystem as well as the MIIM mdio driver (in case of the
+integrated PHYs) will already take care of the resets of any external
+and internal PHY. There is no need for this reset anymore, so mark it
+optionally to be backwards compatible.
 
-Great!
+Signed-off-by: Michael Walle <michael@walle.cc>
+---
 
-> I just found a minor issue in case BRS is not enabled. To be
-> consistent, we should do:
-> 
-> --- a/arch/x86/events/perf_event.h
-> +++ b/arch/x86/events/perf_event.h
-> @@ -1265,7 +1265,7 @@ static inline s64 amd_brs_adjust_period(s64 period)
->  #else
->  static inline int amd_brs_init(void)
->  {
-> -       return 0;
-> +       return -EOPNOTSUPP;
->  }
+Horatiu, what do you think, should it be removed altogether? There is
+no user for that in mainline and I don't know about downstream but the
+reset driver doesn't really work (as it also resets the GPIO/SGPIO)
+and conceptionally the property is on the wrong DT node. All of the
+drawbacks should have been addressed by my patches for the miim [1]
+and the pinctrl driver [2].
 
-Done!
+[1] https://lore.kernel.org/netdev/20220318201324.1647416-1-michael@walle.cc/
+[2] https://lore.kernel.org/linux-gpio/20220313154640.63813-1-michael@walle.cc/
+
+ drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+index 1f8c67f0261b..0765064d2845 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+@@ -916,7 +916,7 @@ static int lan966x_reset_switch(struct lan966x *lan966x)
+ 		return dev_err_probe(lan966x->dev, PTR_ERR(switch_reset),
+ 				     "Could not obtain switch reset");
+ 
+-	phy_reset = devm_reset_control_get_shared(lan966x->dev, "phy");
++	phy_reset = devm_reset_control_get_optional_shared(lan966x->dev, "phy");
+ 	if (IS_ERR(phy_reset))
+ 		return dev_err_probe(lan966x->dev, PTR_ERR(phy_reset),
+ 				     "Could not obtain phy reset\n");
+-- 
+2.30.2
+
