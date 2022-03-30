@@ -2,50 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C682C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 05:18:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED219C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 05:19:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242869AbiC3FUm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 01:20:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45996 "EHLO
+        id S242884AbiC3FVk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 01:21:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232306AbiC3FUe (ORCPT
+        with ESMTP id S232306AbiC3FVf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 01:20:34 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F6BC48890
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 22:18:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=M7NmYC/Iylm9myghHwqILim55SAUt9QrM+UZYk0eJlw=; b=4FbjI0mGO2cB0Id2W97AkYofax
-        X5kj+mwsbJj6HYZ2QLgHdKWChD4QVvgt+ES6OPJjZxIFRgFTPg6im8jDwtasYkwpi4ml2DisxC0go
-        AHkqth3yh+Npiu/yyrDACA0ewtt6qqnDwT1tKdFHTBXIOaXx12ZAXYtkdnDwsIROIcGtt6/mBWMzd
-        VN7WL3JfII5dNund6267rMwt3vAhF0JuJP6q1aU4VBvNPv2TPxBh+HQ5o2LETS9E6CsvSu4BWNm/5
-        AUSGq7VBgwOJpUgxSqefBtETE02L+l0giU8KZvX1UAR8bklanlaYOX4d0ovg/HeFMdgdeiCnXzGWh
-        h1LN4Oug==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nZQjD-00EGmb-Jw; Wed, 30 Mar 2022 05:18:43 +0000
-Date:   Tue, 29 Mar 2022 22:18:43 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     mpenttil@redhat.com
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        apopple@nvidia.com, jhubbard@nvidia.com, rcampbell@nvidia.com,
-        jgg@ziepe.ca, vbabka@suse.cz
-Subject: Re: [PATCH v6] mm/hmm/test: use char dev with struct device to get
- device node
-Message-ID: <YkPoM8P0NIlachv3@infradead.org>
-References: <20220330004725.13428-1-mpenttil@redhat.com>
+        Wed, 30 Mar 2022 01:21:35 -0400
+Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDF54B1AAF;
+        Tue, 29 Mar 2022 22:19:48 -0700 (PDT)
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
+        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
+        id 1nZQju-0003RP-8O; Wed, 30 Mar 2022 16:19:27 +1100
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Wed, 30 Mar 2022 17:19:26 +1200
+Date:   Wed, 30 Mar 2022 17:19:26 +1200
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        linux-crypto@vger.kernel.org, ebiggers@google.com, Jason@zx2c4.com,
+        Josh Poimboeuf <jpoimboe@redhat.com>
+Subject: Re: [PATCH 5/2] x86/sm3: Fixup SLS
+Message-ID: <YkPoXiNtCf0xtnkq@gondor.apana.org.au>
+References: <20220322114809.381992456@infradead.org>
+ <20220325123047.GR8939@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220330004725.13428-1-mpenttil@redhat.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <20220325123047.GR8939@worktop.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Looks good:
+On Fri, Mar 25, 2022 at 01:30:47PM +0100, Peter Zijlstra wrote:
+> 
+> This missed the big asm update due to being merged through the crypto
+> tree.
+> 
+> Fixes: f94909ceb1ed ("x86: Prepare asm files for straight-line-speculation")
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> ---
+>  arch/x86/crypto/sm3-avx-asm_64.S |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+Patch applied.  Thanks.
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
