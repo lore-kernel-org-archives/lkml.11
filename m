@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFA5FC47087
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B796C352A1
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347587AbiC3MHK (ORCPT
+        id S1347433AbiC3MGq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:07:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57822 "EHLO
+        Wed, 30 Mar 2022 08:06:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345941AbiC3LzP (ORCPT
+        with ESMTP id S1345891AbiC3LzI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:55:15 -0400
+        Wed, 30 Mar 2022 07:55:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 916095FAD;
-        Wed, 30 Mar 2022 04:53:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DB2425ECB2;
+        Wed, 30 Mar 2022 04:52:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 31F2D615E7;
-        Wed, 30 Mar 2022 11:53:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AC90C340EE;
-        Wed, 30 Mar 2022 11:53:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D13A061616;
+        Wed, 30 Mar 2022 11:52:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A80F1C3410F;
+        Wed, 30 Mar 2022 11:52:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641186;
-        bh=qW1x31HnZxqlWv9yLK7leVGiHSRFHxjgpFRqN+3ePM4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=W4CPcDGsBYpYWlko8pj3hn89Ct669WcC+u4xXKXp9jUUkZPBRB/q7EAn4e418XgVG
-         YKodxE8PBo5yYf8Ye4APktYygiG/6t4OW+U3r5UIzmeoloycnyyizoxbWQWnI8ydUE
-         swdA52iYWg4aq9P4+49RJx4vxWXIZF6+ivMYMep8zR4D8bqc4l+yAP/CMRrin3gGwH
-         g8ut4S/A2nldglLxGzaZQ8a8aTUIXuZ4loFlmVrYsiLN8goIVrV7FH4pshXK5NBL9H
-         HDIh+ScZejK9m0U2m52ccBquinZsfQegjCj0BI4zvLJbVFyLP6R+a04zc76DUpl+8C
-         cDfbUiaOGk4oQ==
+        s=k20201202; t=1648641129;
+        bh=F60sn2dNhMzWGLeWPjD2F3i4dvAVumbpwBD0iIpj0VQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=MZmF9hpkvx8+YhIxHHcJ08Xh1Pp4ZOKWNhZY0BXhZAAeb55HaWmIBG6Ta6alEc/+X
+         uvCqoYcKrVnxLfh8aBX7t8eHSodhgHspPlxFbn+APTbZffdTwd0w78P4n2y02a5nzt
+         AGe+ZaPNY/KdzlmaO2AjTeB3druJMk2MtLBAiD5IVK/+7c4f6ctCgyo5PwjPxLOGiz
+         CTrOYJYjL7Ypzwb4Y8kP8gjZH3cihYmEM1srB/NJui+szeG+DwI56VlEKjAIYMYtLa
+         JmXhJYBYCOm56oSXa9O+dx3vNN7SnHp4k8mUPV50f8ZwJ/lNz1f/Bp/TkSlWZ+OgvO
+         VB31hv57v426Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tim Gardner <tim.gardner@canonical.com>,
-        Antonino Daplas <adaplas@gmail.com>,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
-        tomi.valkeinen@ti.com
-Subject: [PATCH AUTOSEL 4.19 01/22] video: fbdev: nvidiafb: Use strscpy() to prevent buffer overflow
-Date:   Wed, 30 Mar 2022 07:52:42 -0400
-Message-Id: <20220330115303.1672616-1-sashal@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 27/37] lib/test_lockup: fix kernel pointer check for separate address spaces
+Date:   Wed, 30 Mar 2022 07:51:12 -0400
+Message-Id: <20220330115122.1671763-27-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220330115122.1671763-1-sashal@kernel.org>
+References: <20220330115122.1671763-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,49 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tim Gardner <tim.gardner@canonical.com>
+From: Arnd Bergmann <arnd@arndb.de>
 
-[ Upstream commit 37a1a2e6eeeb101285cd34e12e48a881524701aa ]
+[ Upstream commit 5a06fcb15b43d1f7bf740c672950122331cb5655 ]
 
-Coverity complains of a possible buffer overflow. However,
-given the 'static' scope of nvidia_setup_i2c_bus() it looks
-like that can't happen after examiniing the call sites.
+test_kernel_ptr() uses access_ok() to figure out if a given address
+points to user space instead of kernel space. However on architectures
+that set CONFIG_ALTERNATE_USER_ADDRESS_SPACE, a pointer can be valid
+for both, and the check always fails because access_ok() returns true.
 
-CID 19036 (#1 of 1): Copy into fixed size buffer (STRING_OVERFLOW)
-1. fixed_size_dest: You might overrun the 48-character fixed-size string
-  chan->adapter.name by copying name without checking the length.
-2. parameter_as_source: Note: This defect has an elevated risk because the
-  source argument is a parameter of the current function.
- 89        strcpy(chan->adapter.name, name);
+Make the check for user space pointers conditional on the type of
+address space layout.
 
-Fix this warning by using strscpy() which will silence the warning and
-prevent any future buffer overflows should the names used to identify the
-channel become much longer.
-
-Cc: Antonino Daplas <adaplas@gmail.com>
-Cc: linux-fbdev@vger.kernel.org
-Cc: dri-devel@lists.freedesktop.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Tim Gardner <tim.gardner@canonical.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/nvidia/nv_i2c.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ lib/test_lockup.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/video/fbdev/nvidia/nv_i2c.c b/drivers/video/fbdev/nvidia/nv_i2c.c
-index d7994a173245..0b48965a6420 100644
---- a/drivers/video/fbdev/nvidia/nv_i2c.c
-+++ b/drivers/video/fbdev/nvidia/nv_i2c.c
-@@ -86,7 +86,7 @@ static int nvidia_setup_i2c_bus(struct nvidia_i2c_chan *chan, const char *name,
- {
- 	int rc;
+diff --git a/lib/test_lockup.c b/lib/test_lockup.c
+index 07f476317187..78a630bbd03d 100644
+--- a/lib/test_lockup.c
++++ b/lib/test_lockup.c
+@@ -417,9 +417,14 @@ static bool test_kernel_ptr(unsigned long addr, int size)
+ 		return false;
  
--	strcpy(chan->adapter.name, name);
-+	strscpy(chan->adapter.name, name, sizeof(chan->adapter.name));
- 	chan->adapter.owner = THIS_MODULE;
- 	chan->adapter.class = i2c_class;
- 	chan->adapter.algo_data = &chan->algo;
+ 	/* should be at least readable kernel address */
+-	if (access_ok((void __user *)ptr, 1) ||
+-	    access_ok((void __user *)ptr + size - 1, 1) ||
+-	    get_kernel_nofault(buf, ptr) ||
++	if (!IS_ENABLED(CONFIG_ALTERNATE_USER_ADDRESS_SPACE) &&
++	    (access_ok((void __user *)ptr, 1) ||
++	     access_ok((void __user *)ptr + size - 1, 1))) {
++		pr_err("user space ptr invalid in kernel: %#lx\n", addr);
++		return true;
++	}
++
++	if (get_kernel_nofault(buf, ptr) ||
+ 	    get_kernel_nofault(buf, ptr + size - 1)) {
+ 		pr_err("invalid kernel ptr: %#lx\n", addr);
+ 		return true;
 -- 
 2.34.1
 
