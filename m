@@ -2,50 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE6CCC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:10:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7CF7C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:10:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345223AbiC3MKm (ORCPT
+        id S1344963AbiC3MLn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:10:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35764 "EHLO
+        Wed, 30 Mar 2022 08:11:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345215AbiC3LyQ (ORCPT
+        with ESMTP id S1345317AbiC3LyW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:54:16 -0400
+        Wed, 30 Mar 2022 07:54:22 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A602816BF;
-        Wed, 30 Mar 2022 04:50:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4623278543;
+        Wed, 30 Mar 2022 04:50:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A785DB81C35;
-        Wed, 30 Mar 2022 11:50:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0C0BC340F3;
-        Wed, 30 Mar 2022 11:50:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 43937B81C36;
+        Wed, 30 Mar 2022 11:50:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35E30C36AE5;
+        Wed, 30 Mar 2022 11:50:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641033;
-        bh=4YhYlmlgU5yF/qSl658v/68xrg7u+cOGYTE7Fjs+AWc=;
+        s=k20201202; t=1648641051;
+        bh=W28dUiUQFRtYyYKOqfOF5acJxI2YPCJwPhAGm1Nfn6A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aPf5yxxgbaeQlXD2Khkhkqg9kwjYSXOsPuAc/tocic1c7qgXPgjk7/T7z2vRmVu7N
-         Nl8ZQ3LQsro6VQx5fsnwk4A6y49X2Pir7I+wJVXBWPPMzEy27tN7vto95riVSAX1eI
-         M/RnOSAaFWcLPhrIqVheHSi9zHfSKPyYsfRVaHpO1ktDvDxKITErt+3moWHw3CHa1C
-         EvGFcTAJmvB0D6r3FevRjChQkKLeHLoINN/6+MLmxCdv8RQ5pf6ijhnBWZyDr76xtM
-         0OasOdrNhz8mn605WTUeNJewOb+Srvhl/iyodUvOwMm+3cP9gBvhMD9Husi82Ben/W
-         3BrJxbN2B7+fQ==
+        b=WwKTBb1msXbuppPLM9IMgR3lgtWlC2y7P+MgQr/AecaR/t1iJLMZ2jNKBvrKtpSxr
+         ysK4mdvCmRRW4IOXgtl5KF4qmDRg3ZXYjm3aie4605ioNEtTB+ey87cqIJylLQwkzl
+         cGGhr2jOWYvifnwIKbMp/Q8SpclZ/VtcvGPkMwfvqbhKh8Q8t9hGGAkmQhuI1pyt64
+         wPFwksLFsu9culfmffa4GbTVFP2qhwX/CbplmfDJ4CYXnBlt61bxBRNS9YafdoouE3
+         YlpDOCbcLUgHJwYS6VjJ48E/mRzuFpHnr0+LESOmi5XgIlOl9QhiFf62YDzj3t3Ro7
+         Uw6y8Za7PZ13g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Heidelberg <david@ixit.cz>,
-        LogicalErzor <logicalerzor@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, andy.gross@linaro.org,
-        david.brown@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
-        linux@armlinux.org.uk, linux-arm-msm@vger.kernel.org,
-        linux-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 17/50] ARM: dts: qcom: fix gic_irq_domain_translate warnings for msm8960
-Date:   Wed, 30 Mar 2022 07:49:31 -0400
-Message-Id: <20220330115005.1671090-17-sashal@kernel.org>
+Cc:     Stephen Brennan <stephen.s.brennan@oracle.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Sasha Levin <sashal@kernel.org>, gregkh@linuxfoundation.org
+Subject: [PATCH AUTOSEL 5.15 30/50] printk: Avoid livelock with heavy printk during panic
+Date:   Wed, 30 Mar 2022 07:49:44 -0400
+Message-Id: <20220330115005.1671090-30-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115005.1671090-1-sashal@kernel.org>
 References: <20220330115005.1671090-1-sashal@kernel.org>
@@ -57,58 +53,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Heidelberg <david@ixit.cz>
+From: Stephen Brennan <stephen.s.brennan@oracle.com>
 
-[ Upstream commit 6f7e221e7a5cfc3299616543fce42b36e631497b ]
+[ Upstream commit 13fb0f74d7029df3b8137f11ef955e578a4a4a60 ]
 
-IRQ types blindly copied from very similar APQ8064.
+During panic(), if another CPU is writing heavily the kernel log (e.g.
+via /dev/kmsg), then the panic CPU may livelock writing out its messages
+to the console. Note when too many messages are dropped during panic and
+suppress further printk, except from the panic CPU. This could result in
+some important messages being dropped. However, messages are already
+being dropped, so this approach at least prevents a livelock.
 
-Fixes warnings as:
-WARNING: CPU: 0 PID: 1 at drivers/irqchip/irq-gic.c:1080 gic_irq_domain_translate+0x118/0x120
-...
-
-Tested-by: LogicalErzor <logicalerzor@gmail.com> # boot-tested on Samsung S3
-Signed-off-by: David Heidelberg <david@ixit.cz>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220108174229.60384-1-david@ixit.cz
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Stephen Brennan <stephen.s.brennan@oracle.com>
+Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+Link: https://lore.kernel.org/r/20220202171821.179394-4-stephen.s.brennan@oracle.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/qcom-msm8960.dtsi | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ kernel/printk/printk.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/arch/arm/boot/dts/qcom-msm8960.dtsi b/arch/arm/boot/dts/qcom-msm8960.dtsi
-index 172ea3c70eac..c197927e7435 100644
---- a/arch/arm/boot/dts/qcom-msm8960.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8960.dtsi
-@@ -146,7 +146,9 @@
- 			reg		= <0x108000 0x1000>;
- 			qcom,ipc	= <&l2cc 0x8 2>;
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index f9aebe88cc53..f37889b6cf9f 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -93,6 +93,12 @@ EXPORT_SYMBOL_GPL(console_drivers);
+  */
+ int __read_mostly suppress_printk;
  
--			interrupts	= <0 19 0>, <0 21 0>, <0 22 0>;
-+			interrupts	= <GIC_SPI 19 IRQ_TYPE_EDGE_RISING>,
-+					  <GIC_SPI 21 IRQ_TYPE_EDGE_RISING>,
-+					  <GIC_SPI 22 IRQ_TYPE_EDGE_RISING>;
- 			interrupt-names	= "ack", "err", "wakeup";
++/*
++ * During panic, heavy printk by other CPUs can delay the
++ * panic and risk deadlock on console resources.
++ */
++int __read_mostly suppress_panic_printk;
++
+ #ifdef CONFIG_LOCKDEP
+ static struct lockdep_map console_lock_dep_map = {
+ 	.name = "console_lock"
+@@ -2222,6 +2228,10 @@ asmlinkage int vprintk_emit(int facility, int level,
+ 	if (unlikely(suppress_printk))
+ 		return 0;
  
- 			regulators {
-@@ -192,7 +194,7 @@
- 				compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
- 				reg = <0x16440000 0x1000>,
- 				      <0x16400000 0x1000>;
--				interrupts = <0 154 0x0>;
-+				interrupts = <GIC_SPI 154 IRQ_TYPE_LEVEL_HIGH>;
- 				clocks = <&gcc GSBI5_UART_CLK>, <&gcc GSBI5_H_CLK>;
- 				clock-names = "core", "iface";
- 				status = "disabled";
-@@ -318,7 +320,7 @@
- 				#address-cells = <1>;
- 				#size-cells = <0>;
- 				reg = <0x16080000 0x1000>;
--				interrupts = <0 147 0>;
-+				interrupts = <GIC_SPI 147 IRQ_TYPE_LEVEL_HIGH>;
- 				spi-max-frequency = <24000000>;
- 				cs-gpios = <&msmgpio 8 0>;
++	if (unlikely(suppress_panic_printk) &&
++	    atomic_read(&panic_cpu) != raw_smp_processor_id())
++		return 0;
++
+ 	if (level == LOGLEVEL_SCHED) {
+ 		level = LOGLEVEL_DEFAULT;
+ 		in_sched = true;
+@@ -2607,6 +2617,7 @@ void console_unlock(void)
+ {
+ 	static char ext_text[CONSOLE_EXT_LOG_MAX];
+ 	static char text[CONSOLE_LOG_MAX];
++	static int panic_console_dropped;
+ 	unsigned long flags;
+ 	bool do_cond_resched, retry;
+ 	struct printk_info info;
+@@ -2661,6 +2672,10 @@ void console_unlock(void)
+ 		if (console_seq != r.info->seq) {
+ 			console_dropped += r.info->seq - console_seq;
+ 			console_seq = r.info->seq;
++			if (panic_in_progress() && panic_console_dropped++ > 10) {
++				suppress_panic_printk = 1;
++				pr_warn_once("Too many dropped messages. Suppress messages on non-panic CPUs to prevent livelock.\n");
++			}
+ 		}
  
+ 		if (suppress_message_printing(r.info->level)) {
 -- 
 2.34.1
 
