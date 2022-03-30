@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7AE6C3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7895AC35273
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346771AbiC3MFd (ORCPT
+        id S1346549AbiC3MFI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:05:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57956 "EHLO
+        Wed, 30 Mar 2022 08:05:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345692AbiC3Ly4 (ORCPT
+        with ESMTP id S1345532AbiC3Lyi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:54:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1D1D261DDF;
-        Wed, 30 Mar 2022 04:51:35 -0700 (PDT)
+        Wed, 30 Mar 2022 07:54:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA49D285693;
+        Wed, 30 Mar 2022 04:51:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9D458B81C35;
-        Wed, 30 Mar 2022 11:51:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4498FC36AE5;
-        Wed, 30 Mar 2022 11:51:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3B5D2B81C36;
+        Wed, 30 Mar 2022 11:51:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E89F5C34112;
+        Wed, 30 Mar 2022 11:51:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641078;
-        bh=IVt9jYETt3TQfguSpdnH8Vu6cSpfeaiBih9Ro8JSimM=;
+        s=k20201202; t=1648641073;
+        bh=GsAv312AdYmmt1e+wMqZIwMIBSqRjZ1+lgs4z1QfSXo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g8rYC61lvKi0e96XLCoIJCUwii2mHbU2SyRdTIF06DVATlNF6ME0M/o7V2TE5BoiL
-         OOH4gFLHKFzycFQz9wP5P+Z12Tnt5W+q+JqXEoMBOQDgeJ8bbLCH/URXQ5DZCwcOam
-         vCNu7drm9v4t56HtleveZ3NdUkzxJ/e7PkOlbqVSWYCZVlMSUDAEh3dplggnFeaOlY
-         DtNjeijaB9a5QDKcqKKJms7xor/julA9Omy7HNwCFh61bw1ZQsyw+1MjfF+a+grQIF
-         URbYN9LJTsY2SbnW/G66Au7LlvJbHlzYlEaPtB9nAITUOynPrwT3C41kzuUfpLvabP
-         svAXUiT+onVYA==
+        b=p4aC9RPoSwvsDjrmTa6sS7yJq+RuCcqlkK5MMej6K+tjqgk7BomU/ZOq0nNlScV2q
+         2GkVmLnLrMgLQr57twDgLaJElqZyfmljIk3z/oO73fWHLNoSfoBC5s25TMmt7g2eSz
+         s8HdZ3O8v68KyDuHDZ1m2UE/6SghrDr+bw6iOGaJ4eUTHHPWoPCsgEWMb8vgbspYcO
+         U1jD01fLsGKK4Vv3Q03Xxyxc3NejoKiTP0NaAwyritBc3pnSAtc/sQBQ8W1z0gewU1
+         oN2ReZXb87LC1LHKc6mJ8KLfP0GO+70M/Vw24rcnoP2jgJ16MoRUvqTXzjhaivX7O2
+         wGa5+MuYPDYAQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.15 48/50] ASoC: ak4642: Use of_device_get_match_data()
-Date:   Wed, 30 Mar 2022 07:50:02 -0400
-Message-Id: <20220330115005.1671090-48-sashal@kernel.org>
+Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
+        syzkaller <syzkaller@googlegroups.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, hverkuil@xs4all.nl,
+        linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 44/50] media: hdpvr: initialize dev->worker at hdpvr_register_videodev
+Date:   Wed, 30 Mar 2022 07:49:58 -0400
+Message-Id: <20220330115005.1671090-44-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115005.1671090-1-sashal@kernel.org>
 References: <20220330115005.1671090-1-sashal@kernel.org>
@@ -54,44 +55,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit 835ca59799f5c60b4b54bdc7aa785c99552f63e4 ]
+[ Upstream commit 07922937e9a580825f9965c46fd15e23ba5754b6 ]
 
-Use of_device_get_match_data() to simplify the code.
+hdpvr_register_videodev is responsible to initialize a worker in
+hdpvr_device. However, the worker is only initialized at
+hdpvr_start_streaming other than hdpvr_register_videodev.
+When hdpvr_probe does not initialize its worker, the hdpvr_disconnect
+will encounter one WARN in flush_work.The stack trace is as follows:
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-Link: https://lore.kernel.org/r/20220315023226.2118354-1-chi.minghao@zte.com.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
+ hdpvr_disconnect+0xb8/0xf2 drivers/media/usb/hdpvr/hdpvr-core.c:425
+ usb_unbind_interface+0xbf/0x3a0 drivers/usb/core/driver.c:458
+ __device_release_driver drivers/base/dd.c:1206 [inline]
+ device_release_driver_internal+0x22a/0x230 drivers/base/dd.c:1237
+ bus_remove_device+0x108/0x160 drivers/base/bus.c:529
+ device_del+0x1fe/0x510 drivers/base/core.c:3592
+ usb_disable_device+0xd1/0x1d0 drivers/usb/core/message.c:1419
+ usb_disconnect+0x109/0x330 drivers/usb/core/hub.c:2228
+
+Fix this by moving the initialization of dev->worker to the starting of
+hdpvr_register_videodev
+
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/ak4613.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+ drivers/media/usb/hdpvr/hdpvr-video.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/ak4613.c b/sound/soc/codecs/ak4613.c
-index 4d2e78101f28..034195c83bd7 100644
---- a/sound/soc/codecs/ak4613.c
-+++ b/sound/soc/codecs/ak4613.c
-@@ -653,15 +653,10 @@ static int ak4613_i2c_probe(struct i2c_client *i2c,
- 	struct ak4613_priv *priv;
+diff --git a/drivers/media/usb/hdpvr/hdpvr-video.c b/drivers/media/usb/hdpvr/hdpvr-video.c
+index 563128d11731..60e57e0f1927 100644
+--- a/drivers/media/usb/hdpvr/hdpvr-video.c
++++ b/drivers/media/usb/hdpvr/hdpvr-video.c
+@@ -308,7 +308,6 @@ static int hdpvr_start_streaming(struct hdpvr_device *dev)
  
- 	regmap_cfg = NULL;
--	if (np) {
--		const struct of_device_id *of_id;
--
--		of_id = of_match_device(ak4613_of_match, dev);
--		if (of_id)
--			regmap_cfg = of_id->data;
--	} else {
-+	if (np)
-+		regmap_cfg = of_device_get_match_data(dev);
-+	else
- 		regmap_cfg = (const struct regmap_config *)id->driver_data;
--	}
+ 	dev->status = STATUS_STREAMING;
  
- 	if (!regmap_cfg)
- 		return -EINVAL;
+-	INIT_WORK(&dev->worker, hdpvr_transmit_buffers);
+ 	schedule_work(&dev->worker);
+ 
+ 	v4l2_dbg(MSG_BUFFER, hdpvr_debug, &dev->v4l2_dev,
+@@ -1165,6 +1164,9 @@ int hdpvr_register_videodev(struct hdpvr_device *dev, struct device *parent,
+ 	bool ac3 = dev->flags & HDPVR_FLAG_AC3_CAP;
+ 	int res;
+ 
++	// initialize dev->worker
++	INIT_WORK(&dev->worker, hdpvr_transmit_buffers);
++
+ 	dev->cur_std = V4L2_STD_525_60;
+ 	dev->width = 720;
+ 	dev->height = 480;
 -- 
 2.34.1
 
