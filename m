@@ -2,102 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0B84C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:59:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2765C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:59:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344458AbiC3MBc (ORCPT
+        id S1344508AbiC3MBi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:01:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32898 "EHLO
+        Wed, 30 Mar 2022 08:01:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344851AbiC3Lxm (ORCPT
+        with ESMTP id S1344845AbiC3Lxl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:53:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D91B126F909;
-        Wed, 30 Mar 2022 04:49:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD52B61625;
-        Wed, 30 Mar 2022 11:49:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E7BEC34111;
-        Wed, 30 Mar 2022 11:49:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648640985;
-        bh=qyc5E1VsAiEkog/l7n77XDh8NAl9OUtNeFvCzuC5lPg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GxIkpx/cCphyp4nV3F9tMmg13W0Kn7I5US5XrXpLfnrFRmo+yVXDgBVQQ1XjMTrAN
-         4ffw0sJ1NTv9MmiqVztWo/uQF21wcwLZw3K6lkXGxlJIcvehFwJbZMt15zS0IuLIOo
-         b8Y1n0GcbsFycepn9MSD/IhsIMnuwsG+oi/HVhPorOa8LQ8ZdeFdKxL3Nn5P9KusHO
-         6kMZrsCrfE0JniDIor7rT5cDkva6+bBm5v0DdkqvX5tib+xCaoy6/MdjTjLYCFEBUN
-         ylhw2TZIBovY2vk/NMYzNComvBfmOs6bDYdJVggLX24yCQgtHrAV8I6LmD1pTyoPST
-         8zIzZHKYxWaSA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 47/59] media: i2c: ov5648: Fix lockdep error
-Date:   Wed, 30 Mar 2022 07:48:19 -0400
-Message-Id: <20220330114831.1670235-47-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330114831.1670235-1-sashal@kernel.org>
-References: <20220330114831.1670235-1-sashal@kernel.org>
+        Wed, 30 Mar 2022 07:53:41 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A8DD26E576
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 04:49:46 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id m30so28922225wrb.1
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 04:49:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Zz5V7y6zyX28uzHv7nbJNO/THNVqL6J0WR2WWuQ7SCY=;
+        b=ZUOogO2MuK6NJjubHjbfEz+haJ4Oh6ePGA6/+gd7oK40h63IMjwzaVvnJYUmTxImAs
+         MyvMzaw35CVlu+C1Qwxa9gZov8B7ynpIwE3Kahpcz6sN0ho/mSj65L6ftNnsKk0N0nfj
+         4FD0bVTJb2fmEnKM40jG3JvPfGa1UEDFrVUzYozFy2JbNwdiOUCDqvoRUU5p/1MuvQtk
+         H1t8//3ATlKAdlXRm+jWADGLrIYnbjN2Vd+1QzD13qGQn0d2D1eJ8SeQBqJ9cpJE8m8y
+         rxQTaDbTj6arnFaptoXI1QxDOgI01CGVevoN+fRv/LEDGV5rgU6D1hGjCmYn3/CIg8i5
+         eoDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Zz5V7y6zyX28uzHv7nbJNO/THNVqL6J0WR2WWuQ7SCY=;
+        b=XtdSd5nyWf4yNfkB1PKwtcNdpaDZy2/LhaTzU7bERuL8LIZ7Fi4pyovY72kid7f1rJ
+         VqRN0CkkGoPerLU6bQyDxPRrXZX1jUTHp9hU3u2sT5rdvoDJENo+BWqnXSGsZawG3ero
+         BOQ2raZEHAYITYk8p7WpGLEwHRSq9qHhZMlsRN3hyOcRMsebc5ZU9q+CieKIz9sbEBlo
+         Yo9I44y8RXR8uJWuZsOOuNc6A7/8lWmKwIbtVSEyMCBtysF9QebnDEGXp1i4JomWeoGl
+         QYq/mlrjSkH+a1VEoCs4D/UcuzT+MAI5I+4LmeI1jZtDWc6tea3uQGNR3er6YeHI6Fte
+         ktsQ==
+X-Gm-Message-State: AOAM532LejRYI0rkg7u5t7gZyprPpDNb9DfUxe1+LODc6sJsrdoW7D1v
+        /rRuUmAARxUGIVTF98E6ZuulQA==
+X-Google-Smtp-Source: ABdhPJxlxhSbqKiKCa9E9IGILcoh2/H6PVy3wwrQdQj0w9n8pdqxILCg+dwurPk7Vv6V2VCi3BDOrQ==
+X-Received: by 2002:adf:d1e5:0:b0:205:85f5:656c with SMTP id g5-20020adfd1e5000000b0020585f5656cmr35738237wrd.65.1648640983633;
+        Wed, 30 Mar 2022 04:49:43 -0700 (PDT)
+Received: from ?IPV6:2a01:e34:ed2f:f020:8f92:3217:a3c6:3ee8? ([2a01:e34:ed2f:f020:8f92:3217:a3c6:3ee8])
+        by smtp.googlemail.com with ESMTPSA id z5-20020a05600c0a0500b0037fa93193a8sm5539221wmp.44.2022.03.30.04.49.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Mar 2022 04:49:43 -0700 (PDT)
+Message-ID: <98be733a-62b0-4cf6-ab27-992ea49da5b1@linaro.org>
+Date:   Wed, 30 Mar 2022 13:49:41 +0200
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v4 1/4] dt-bindings: timer: Add compatible for Mediatek
+ MT8186
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Cc:     hsinyi@chromium.org, Thomas Gleixner <tglx@linutronix.de>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        linux-watchdog@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>
+References: <20220311130732.22706-1-allen-kh.cheng@mediatek.com>
+ <20220311130732.22706-2-allen-kh.cheng@mediatek.com>
+ <Yitv3IUpCzp1/eGX@robh.at.kernel.org>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <Yitv3IUpCzp1/eGX@robh.at.kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+On 11/03/2022 16:50, Rob Herring wrote:
+> On Fri, 11 Mar 2022 21:07:29 +0800, Allen-KH Cheng wrote:
+>> From: Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
+>>
+>> This commit adds dt-binding documentation of timer for Mediatek MT8186 SoC
+>> Platform.
+>>
+>> Signed-off-by: Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
+>> ---
+>>   Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt | 1 +
+>>   1 file changed, 1 insertion(+)
+>>
+> 
+> Acked-by: Rob Herring <robh@kernel.org>
 
-[ Upstream commit d4cb5d3c4cee28aa89b02bc33d930a6cf75e7f79 ]
+Applied, thanks
 
-ov5648_state_init() calls ov5648_state_mipi_configure() which uses
-__v4l2_ctrl_s_ctrl[_int64](). This means that sensor->mutex (which
-is also sensor->ctrls.handler.lock) must be locked before calling
-ov5648_state_init().
-
-ov5648_state_mipi_configure() is also used in other places where
-the lock is already held so it cannot be changed itself.
-
-Note this is based on an identical (tested) fix for the ov8865 driver,
-this has only been compile-tested.
-
-Cc: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Reviewed-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/media/i2c/ov5648.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/media/i2c/ov5648.c b/drivers/media/i2c/ov5648.c
-index 947d437ed0ef..01e22c535267 100644
---- a/drivers/media/i2c/ov5648.c
-+++ b/drivers/media/i2c/ov5648.c
-@@ -1778,8 +1778,14 @@ static int ov5648_state_configure(struct ov5648_sensor *sensor,
- 
- static int ov5648_state_init(struct ov5648_sensor *sensor)
- {
--	return ov5648_state_configure(sensor, &ov5648_modes[0],
--				      ov5648_mbus_codes[0]);
-+	int ret;
-+
-+	mutex_lock(&sensor->mutex);
-+	ret = ov5648_state_configure(sensor, &ov5648_modes[0],
-+				     ov5648_mbus_codes[0]);
-+	mutex_unlock(&sensor->mutex);
-+
-+	return ret;
- }
- 
- /* Sensor Base */
 -- 
-2.34.1
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
 
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
