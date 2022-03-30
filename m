@@ -2,51 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9A69C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE6CCC433EF
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:10:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344975AbiC3MKX (ORCPT
+        id S1345223AbiC3MKm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:10:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57776 "EHLO
+        Wed, 30 Mar 2022 08:10:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345163AbiC3LyL (ORCPT
+        with ESMTP id S1345215AbiC3LyQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:54:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A549280EFD;
-        Wed, 30 Mar 2022 04:50:32 -0700 (PDT)
+        Wed, 30 Mar 2022 07:54:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A602816BF;
+        Wed, 30 Mar 2022 04:50:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AD47C61640;
-        Wed, 30 Mar 2022 11:50:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDE1FC36AE7;
-        Wed, 30 Mar 2022 11:50:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A785DB81C35;
+        Wed, 30 Mar 2022 11:50:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0C0BC340F3;
+        Wed, 30 Mar 2022 11:50:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641024;
-        bh=Yw9KpInkgsNYhh+OCNup/aC8fKxzxvvo6UbYxOjbCnQ=;
+        s=k20201202; t=1648641033;
+        bh=4YhYlmlgU5yF/qSl658v/68xrg7u+cOGYTE7Fjs+AWc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m4xaBhoh3yfgLtXkZVVVcfMY40eWnqiXNE8Mdf6SpUp2z3b3LmGXb/yuafD8AGX5r
-         sPWdBZHhjlpELQy0/3hbPeu8jANosOGSGPAfu+q1t/n4BFWQDdxciRskI7skjDoHka
-         p4+NdUc7nSSgUG0odOtLF+XVnXb2CX1spIObF6CUygbB+vB0sWvRba764lTFlYiDCU
-         MQHC/gOLVRLjJtqmtlcSnSDu3tN5S2L7phFePRMFXg8/ssVL1T8Vzdf+G5cxLGMl2u
-         R73QN3Y1DOFlB7Gl+SUADT9n8GYr4XUcHTX01ieE6D2zj7Ep4NAfpnttmjFGOT5BRW
-         MdXHaGj+n6HNA==
+        b=aPf5yxxgbaeQlXD2Khkhkqg9kwjYSXOsPuAc/tocic1c7qgXPgjk7/T7z2vRmVu7N
+         Nl8ZQ3LQsro6VQx5fsnwk4A6y49X2Pir7I+wJVXBWPPMzEy27tN7vto95riVSAX1eI
+         M/RnOSAaFWcLPhrIqVheHSi9zHfSKPyYsfRVaHpO1ktDvDxKITErt+3moWHw3CHa1C
+         EvGFcTAJmvB0D6r3FevRjChQkKLeHLoINN/6+MLmxCdv8RQ5pf6ijhnBWZyDr76xtM
+         0OasOdrNhz8mn605WTUeNJewOb+Srvhl/iyodUvOwMm+3cP9gBvhMD9Husi82Ben/W
+         3BrJxbN2B7+fQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <jroedel@suse.de>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, joro@8bytes.org,
-        matthias.bgg@gmail.com, iommu@lists.linux-foundation.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 11/50] media: iommu/mediatek: Return ENODEV if the device is NULL
-Date:   Wed, 30 Mar 2022 07:49:25 -0400
-Message-Id: <20220330115005.1671090-11-sashal@kernel.org>
+Cc:     David Heidelberg <david@ixit.cz>,
+        LogicalErzor <logicalerzor@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, andy.gross@linaro.org,
+        david.brown@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
+        linux@armlinux.org.uk, linux-arm-msm@vger.kernel.org,
+        linux-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 17/50] ARM: dts: qcom: fix gic_irq_domain_translate warnings for msm8960
+Date:   Wed, 30 Mar 2022 07:49:31 -0400
+Message-Id: <20220330115005.1671090-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115005.1671090-1-sashal@kernel.org>
 References: <20220330115005.1671090-1-sashal@kernel.org>
@@ -58,55 +57,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yong Wu <yong.wu@mediatek.com>
+From: David Heidelberg <david@ixit.cz>
 
-[ Upstream commit 2fb0feed51085db77606de9b9477c96894328809 ]
+[ Upstream commit 6f7e221e7a5cfc3299616543fce42b36e631497b ]
 
-The platform device is created at:
-of_platform_default_populate_init:  arch_initcall_sync
-  ->of_platform_populate
-        ->of_platform_device_create_pdata
+IRQ types blindly copied from very similar APQ8064.
 
-When entering our probe, all the devices should be already created.
-if it is null, means NODEV. Currently we don't get the fail case.
-It's a minor fix, no need add fixes tags.
+Fixes warnings as:
+WARNING: CPU: 0 PID: 1 at drivers/irqchip/irq-gic.c:1080 gic_irq_domain_translate+0x118/0x120
+...
 
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Acked-by: Joerg Roedel <jroedel@suse.de>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Tested-by: LogicalErzor <logicalerzor@gmail.com> # boot-tested on Samsung S3
+Signed-off-by: David Heidelberg <david@ixit.cz>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220108174229.60384-1-david@ixit.cz
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/mtk_iommu.c    | 2 +-
- drivers/iommu/mtk_iommu_v1.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/qcom-msm8960.dtsi | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 25b834104790..77ae20ff9b35 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -848,7 +848,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 		plarbdev = of_find_device_by_node(larbnode);
- 		if (!plarbdev) {
- 			of_node_put(larbnode);
--			return -EPROBE_DEFER;
-+			return -ENODEV;
- 		}
- 		data->larb_imu[id].dev = &plarbdev->dev;
+diff --git a/arch/arm/boot/dts/qcom-msm8960.dtsi b/arch/arm/boot/dts/qcom-msm8960.dtsi
+index 172ea3c70eac..c197927e7435 100644
+--- a/arch/arm/boot/dts/qcom-msm8960.dtsi
++++ b/arch/arm/boot/dts/qcom-msm8960.dtsi
+@@ -146,7 +146,9 @@
+ 			reg		= <0x108000 0x1000>;
+ 			qcom,ipc	= <&l2cc 0x8 2>;
  
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index 1467ba1e4417..68bf02f87cfd 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -604,7 +604,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 		plarbdev = of_find_device_by_node(larbnode);
- 		if (!plarbdev) {
- 			of_node_put(larbnode);
--			return -EPROBE_DEFER;
-+			return -ENODEV;
- 		}
- 		data->larb_imu[i].dev = &plarbdev->dev;
+-			interrupts	= <0 19 0>, <0 21 0>, <0 22 0>;
++			interrupts	= <GIC_SPI 19 IRQ_TYPE_EDGE_RISING>,
++					  <GIC_SPI 21 IRQ_TYPE_EDGE_RISING>,
++					  <GIC_SPI 22 IRQ_TYPE_EDGE_RISING>;
+ 			interrupt-names	= "ack", "err", "wakeup";
+ 
+ 			regulators {
+@@ -192,7 +194,7 @@
+ 				compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
+ 				reg = <0x16440000 0x1000>,
+ 				      <0x16400000 0x1000>;
+-				interrupts = <0 154 0x0>;
++				interrupts = <GIC_SPI 154 IRQ_TYPE_LEVEL_HIGH>;
+ 				clocks = <&gcc GSBI5_UART_CLK>, <&gcc GSBI5_H_CLK>;
+ 				clock-names = "core", "iface";
+ 				status = "disabled";
+@@ -318,7 +320,7 @@
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+ 				reg = <0x16080000 0x1000>;
+-				interrupts = <0 147 0>;
++				interrupts = <GIC_SPI 147 IRQ_TYPE_LEVEL_HIGH>;
+ 				spi-max-frequency = <24000000>;
+ 				cs-gpios = <&msmgpio 8 0>;
  
 -- 
 2.34.1
