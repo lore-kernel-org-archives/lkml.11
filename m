@@ -2,123 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91D0FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 17:03:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E978C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 17:04:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349159AbiC3RFZ (ORCPT
+        id S1349163AbiC3RGY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 13:05:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57094 "EHLO
+        Wed, 30 Mar 2022 13:06:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349141AbiC3RFV (ORCPT
+        with ESMTP id S232675AbiC3RGV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 13:05:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27206344D4;
-        Wed, 30 Mar 2022 10:03:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A09FCB81DA6;
-        Wed, 30 Mar 2022 17:03:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B695C340EC;
-        Wed, 30 Mar 2022 17:03:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648659812;
-        bh=chK2qbB5D/LYv0rx7RdNf49OUEThRDCKHrbLz8l+vKY=;
-        h=Subject:From:To:Date:From;
-        b=Fpf34Aqgd+dq0hsevijXXEKgp7MPWP2u7Y1xvrC1KFnHfxOxI90t6no2WxKNRZpS8
-         ms0SRdMsyZwoLKadUq5vWwfTmtdnXNaM3yVgmGw4h696bnZJsCJ1pAspJF98CJC/Fv
-         3cbblIX+ZwTm5JjCZinYjvmj6cY6FCtE+yZMuUsqiGLsqTEy/HiKEKWHS9SzDKVi+9
-         trbU10bJMdKdRlDwyWcfBHmeC7xVkiRni7d0nfUJaYIOPWxwKTMoF/ZC5uCQ7uT2xH
-         x3zuC1Lpp6hCQNypcD4iLcwSHOf8omfKidnP1EJbdZu7WfBkVLNQ34rZxAplkwmA5u
-         5hFOb9sAqkJcQ==
-Message-ID: <d1dfc82e8fb7ccb3975e58aabef8c24dbe224601.camel@kernel.org>
-Subject: [ANNOUNCE] 5.4.182-rt72
-From:   Tom Zanussi <zanussi@kernel.org>
-To:     LKML <linux-kernel@vger.kernel.org>,
-        linux-rt-users <linux-rt-users@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Carsten Emde <C.Emde@osadl.org>,
-        John Kacur <jkacur@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Daniel Wagner <wagi@monom.org>,
-        Clark Williams <williams@redhat.com>,
-        "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>,
-        Tom Zanussi <zanussi@kernel.org>
-Date:   Wed, 30 Mar 2022 12:03:29 -0500
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        Wed, 30 Mar 2022 13:06:21 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99249637C;
+        Wed, 30 Mar 2022 10:04:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648659874; x=1680195874;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=H4jFIKm2Scvn7/jZUOu58X66aPHnkWx8sQ0pdglcvyo=;
+  b=H+pRX1Pv9m6jJPOx1sZNwITJh1YV0pZ7ihrJacQp7pSvvqKM1CXzqaUu
+   bMibzmhErqPh2fpE5xgpNek3zQZRmGLgP/oGHcRwb9/V9ZE8GNDN/5C/Q
+   c3A07yaVGdzrcBqXMZru7AXiRwkx0re6n/nW4vwP5vMdvxkuVMwdqnJHc
+   sJr7u4zk8VGSkogrKefBPU7m+cKJOBcUHPzBWfsa09W2o0cNoAgyISzJ3
+   tDe7cObQ7tLSQNLk8eRKU5Et4Q3UBCZLARE60kUjVjaofieGqFuI8JPVp
+   wZBG5dQW247zD2sVgZSm9vICIzLM2ZaFTGFNOIAPU+8mEkmtwZPOVrfv0
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="247095833"
+X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
+   d="scan'208";a="247095833"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 10:03:35 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
+   d="scan'208";a="565651863"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga008.jf.intel.com with ESMTP; 30 Mar 2022 10:03:29 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 22UH3REc030366;
+        Wed, 30 Mar 2022 18:03:27 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Alice Michael <alice.michael@intel.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        poros <poros@redhat.com>, mschmidt <mschmidt@redhat.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "moderated list:INTEL ETHERNET DRIVERS" 
+        <intel-wired-lan@lists.osuosl.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:XDP (eXpress Data Path)" <bpf@vger.kernel.org>
+Subject: Re: [PATCH net] ice: Fix logic of getting XSK pool associated with Tx queue
+Date:   Wed, 30 Mar 2022 19:00:46 +0200
+Message-Id: <20220330170046.3604787-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <MWHPR11MB0062B06CAE27C58EEE54F162E41F9@MWHPR11MB0062.namprd11.prod.outlook.com>
+References: <20220329102752.1481125-1-ivecera@redhat.com> <YkL0wfgyCq5s8vdu@boxer> <20220329195522.63d332fb@ceranb> <MWHPR11MB0062B06CAE27C58EEE54F162E41F9@MWHPR11MB0062.namprd11.prod.outlook.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello RT Folks!
+From: Alice Michael <alice.michael@intel.com>
+Date: Wed, 30 Mar 2022 16:47:18 +0000
 
-I'm pleased to announce the 5.4.182-rt72 stable release.
+> > -----Original Message-----
+> > From: Ivan Vecera <ivecera@redhat.com>
+> > Sent: Tuesday, March 29, 2022 10:55 AM
+> > To: Fijalkowski, Maciej <maciej.fijalkowski@intel.com>
+> > Cc: netdev@vger.kernel.org; poros <poros@redhat.com>; mschmidt
+> > <mschmidt@redhat.com>; Brandeburg, Jesse
+> > <jesse.brandeburg@intel.com>; Nguyen, Anthony L
+> > <anthony.l.nguyen@intel.com>; David S. Miller <davem@davemloft.net>;
+> > Jakub Kicinski <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>;
+> > Alexei Starovoitov <ast@kernel.org>; Daniel Borkmann
+> > <daniel@iogearbox.net>; Jesper Dangaard Brouer <hawk@kernel.org>; John
+> > Fastabend <john.fastabend@gmail.com>; Andrii Nakryiko
+> > <andrii@kernel.org>; Martin KaFai Lau <kafai@fb.com>; Song Liu
+> > <songliubraving@fb.com>; Yonghong Song <yhs@fb.com>; KP Singh
+> > <kpsingh@kernel.org>; Jeff Kirsher <jeffrey.t.kirsher@intel.com>; Krzysztof
+> > Kazimierczak <krzysztof.kazimierczak@intel.com>; Lobakin, Alexandr
+> > <alexandr.lobakin@intel.com>; moderated list:INTEL ETHERNET DRIVERS
+> > <intel-wired-lan@lists.osuosl.org>; open list <linux-kernel@vger.kernel.org>;
+> > open list:XDP (eXpress Data Path) <bpf@vger.kernel.org>
+> > Subject: Re: [PATCH net] ice: Fix logic of getting XSK pool associated with Tx
+> > queue
+> > 
+> > On Tue, 29 Mar 2022 14:00:01 +0200
+> > Maciej Fijalkowski <maciej.fijalkowski@intel.com> wrote:
+> > 
+> > > Thanks for this fix! I did exactly the same patch yesterday and it's
+> > > already applied to bpf tree:
+> > >
+> > > https://lore.kernel.org/bpf/20220328142123.170157-5-maciej.fijalkowski
+> > > @intel.com/T/#u
+> > >
+> > > Maciej
+> > 
+> > Thanks for info... Nice human race condition ;-)
+> > 
+> > I.
+> 
+> I'm covering for Tony this week maintaining this tree.  He let me know there were a few patches you had to send Ivan and I was waiting on this one.  If I'm following correctly, this one will be dropped and the other ones are ready to be sent now to net then?
 
-You can get this release via the git tree at:
+Yes, this one is beaten and the net tree already contains it[0].
+There are still 3 Ivan's fixes not applied yet:
+ * [1]
+ * [2]
+ * [3]
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
+I'm wondering if it's worth to pass them through dev-queue since
+they're urgent and have been tested already in 2 companies? They
+could go directly to -net and make it into RC1.
 
-  branch: v5.4-rt
-  Head SHA1: 9ec5060e670727f499db330d72369cb428d39851
+> 
+> Alice.
 
-Or to build 5.4.182-rt72 directly, the following patches should be applied:
+[0] https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=1ac2524de7b366633fc336db6c94062768d0ab03
+[1] https://lore.kernel.org/netdev/20220322142554.3253428-1-ivecera@redhat.com
+[2] https://lore.kernel.org/netdev/20220325132524.1765342-1-ivecera@redhat.com
+[3] https://lore.kernel.org/netdev/20220325132819.1767050-1-ivecera@redhat.com
 
-  https://www.kernel.org/pub/linux/kernel/v5.x/linux-5.4.tar.xz
-
-  https://www.kernel.org/pub/linux/kernel/v5.x/patch-5.4.182.xz
-
-  https://www.kernel.org/pub/linux/kernel/projects/rt/5.4/patch-5.4.182-rt72.patch.xz
-
-
-You can also build from 5.4.182-rt71 by applying the incremental patch:
-
-  https://www.kernel.org/pub/linux/kernel/projects/rt/5.4/incr/patch-5.4.182-rt71-rt72.patch.xz
-
-Enjoy!
-
-   Tom
-
-Changes from v5.4.182-rt71:
----
-
-Tom Zanussi (2):
-      eventfd: Fix stable-rt v5.4.182-rt71 conflict fixup issue
-      Linux 5.4.182-rt72
----
-include/linux/sched.h | 8 --------
- localversion-rt       | 2 +-
- 2 files changed, 1 insertion(+), 9 deletions(-)
----
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index e1dfb01f4623..91f1aac3c86a 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -802,14 +802,6 @@ struct task_struct {
- 	/* to be used once the psi infrastructure lands upstream. */
- 	unsigned			use_memdelay:1;
- #endif
--#ifdef CONFIG_PSI
--	/* Stalled due to lack of memory */
--	unsigned			in_memstall:1;
--#endif
--#ifdef CONFIG_PAGE_OWNER
--	/* Used by page_owner=on to detect recursion in page tracking. */
--	unsigned			in_page_owner:1;
--#endif
- #ifdef CONFIG_EVENTFD
- 	/* Recursion prevention for eventfd_signal() */
- 	unsigned			in_eventfd_signal:1;
-diff --git a/localversion-rt b/localversion-rt
-index f38a3cc7f310..2c95a3cdbcb8 100644
---- a/localversion-rt
-+++ b/localversion-rt
-@@ -1 +1 @@
---rt71
-+-rt72
-
+Thanks,
+Al
