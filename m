@@ -2,313 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D03AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 19:15:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E1D1C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 19:16:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350636AbiC3TRM (ORCPT
+        id S1350790AbiC3TS1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 15:17:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51038 "EHLO
+        Wed, 30 Mar 2022 15:18:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350788AbiC3TQ6 (ORCPT
+        with ESMTP id S1350980AbiC3TR4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 15:16:58 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD6F242496
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 12:15:06 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id jx9so21652350pjb.5
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 12:15:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=dgrQbWTYm0JXhwmeaxqOF+r6E1vVPT5p9UZVS+3fzyA=;
-        b=N4hRvUH8L2iTWzEKgWZ2roiSNam/k8eZqMFQQ1cYB8K5V/NbZTiS98/zxHxKXUC7+T
-         YFRqLz5YanOz5KNmK/bD8lTHytghOEqbPQQeaFPHEPcnW6SmYeb30Rc2g5WLhvreFh+6
-         odsWhX1M6zY7tzrdh30GnJtVO77KpKhuIz3R0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=dgrQbWTYm0JXhwmeaxqOF+r6E1vVPT5p9UZVS+3fzyA=;
-        b=cq3IiiCmBGBudxZAeZrOLETbs09ACQro0UqgY9JTy1Tz9XtNt/yVmu9PH3nM2i0VZq
-         7HzFAChCk4+ZVGWagF2t+26FVfVQUDk8u7it/cfQCUjoQCewgZlywy3K24E1YHDXCof4
-         xNtI6A0NKRquS2ibg3RRAjPkH/Cu61Ws0T4ziBlfsiCBZfM4nVdicU2GsI6651Mk/lZI
-         1u0LoOVrMWHOgDIZmHBa42hprrSDM7yeOARXu5VKxeSayczVSwuQzIF+gERfZtU5nHwd
-         OzoCHUEDPcPtpOjezDhIcswu/tr+8m2kDOyY/VEhZEhdflwzk02PyTnCUoPO6YuyaKfd
-         VaDA==
-X-Gm-Message-State: AOAM532iEaR7RdMmx6O0zJ3CH3ItM4Wg8Rfu/kZpK/93lz3/SkWfoClI
-        aTtqTd+xm2XJ8auqEkqGT/98sA==
-X-Google-Smtp-Source: ABdhPJy36lD1Fw585oXkb/l+RA+ZhXn6iiROZT4MTGF2DxpHcnrJdoQlFNuQzc2fHLpPmZtsarmrlQ==
-X-Received: by 2002:a17:903:4052:b0:155:fc0b:48fb with SMTP id n18-20020a170903405200b00155fc0b48fbmr863080pla.27.1648667706249;
-        Wed, 30 Mar 2022 12:15:06 -0700 (PDT)
-Received: from localhost.localdomain ([183.83.137.38])
-        by smtp.gmail.com with ESMTPSA id ng17-20020a17090b1a9100b001c9f79927bfsm2955451pjb.25.2022.03.30.12.15.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Mar 2022 12:15:05 -0700 (PDT)
-From:   Manoj Sai <abbaraju.manojsai@amarulasolutions.com>
-To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
-        Li Yang <leoyang.li@nxp.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Matteo Lisi <matteo.lisi@engicam.com>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-amarula@amarulasolutions.com,
-        Jagan Teki <jagan@amarulasolutions.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Rob Herring <robh@kernel.org>,
-        Suniel Mahesh <sunil@amarulasolutions.com>,
-        Michael Nazzareno Trimarchi <michael@amarulasolutions.com>,
-        Manoj Sai <abbaraju.manojsai@amarulasolutions.com>
-Subject: [PATCH 2/3] arm64: dts: imx8mp: Add Engicam i.Core MX8M Plus SoM
-Date:   Thu, 31 Mar 2022 00:44:36 +0530
-Message-Id: <20220330191437.614065-3-abbaraju.manojsai@amarulasolutions.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220330191437.614065-1-abbaraju.manojsai@amarulasolutions.com>
-References: <20220330191437.614065-1-abbaraju.manojsai@amarulasolutions.com>
+        Wed, 30 Mar 2022 15:17:56 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 387A25575C;
+        Wed, 30 Mar 2022 12:15:58 -0700 (PDT)
+Received: from kbox (c-73-140-2-214.hsd1.wa.comcast.net [73.140.2.214])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 93FC920B96D4;
+        Wed, 30 Mar 2022 12:15:57 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 93FC920B96D4
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1648667757;
+        bh=OeZ8/SZ1GczHo9IGsLxSD9nnX7NFl5IGvTh0bc7L8RI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZisbqAIrDvBTni1uhnIdYvN6r90QUT5ABHvlHtIIFu2VOX6OYb63rx0Hd6IRq7SX0
+         1Ch9+QPGwTsMAvI0Keq1IqVVusqn/tYFV+ZzTAM/k3oxbq0D4Z7VoBTUz8bY1cPjAd
+         l1D99Qe4+iRuqMru7NvStSeINgcgQuENqO+aduEo=
+Date:   Wed, 30 Mar 2022 12:15:51 -0700
+From:   Beau Belgrave <beaub@linux.microsoft.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Song Liu <song@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        linux-trace-devel <linux-trace-devel@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Subject: Re: [PATCH] tracing/user_events: Add eBPF interface for user_event
+ created events
+Message-ID: <20220330191551.GA2377@kbox>
+References: <20220329181935.2183-1-beaub@linux.microsoft.com>
+ <CAADnVQ+XpoCjL-rSz2hj05L21s8NtMJuWYC14b9Mvk7XE5KT_g@mail.gmail.com>
+ <20220329201057.GA2549@kbox>
+ <CAADnVQ+gm4yU9S6y+oeR3TNj82kKX0gk4ey9gVnKXKWy1Js4-A@mail.gmail.com>
+ <20220329231137.GA3357@kbox>
+ <CAPhsuW4WH4Hn+DaQZui5au=ueG1G5zGYiOACfKm9imG2kGA+KA@mail.gmail.com>
+ <20220330163411.GA1812@kbox>
+ <CAADnVQKQw+K2CoCW-nA=bngKtjP495wpB1yhEXNjKg4wSeXAWg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAADnVQKQw+K2CoCW-nA=bngKtjP495wpB1yhEXNjKg4wSeXAWg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-i.Core MX8M Plus is an EDIMM SoM based on NXP i.MX8M Plus
-from Engicam.
+On Wed, Mar 30, 2022 at 11:22:32AM -0700, Alexei Starovoitov wrote:
+> On Wed, Mar 30, 2022 at 9:34 AM Beau Belgrave <beaub@linux.microsoft.com> wrote:
+> > > >
+> > > > But you are fine with uprobe costs? uprobes appear to be much more costly
+> > > > than a syscall approach on the hardware I've run on.
+> 
+> Care to share the numbers?
+> uprobe over USDT is a single trap.
+> Not much slower compared to syscall with kpti.
+> 
 
-General features:
-- NXP i.MX8M Plus
-- Up to 4GB LDDR4
-- 8 eMMC
-- Gigabit Ethernet
-- USB 3.0, 2.0 Host/OTG
-- PCIe 3.0 interface
-- I2S
-- LVDS
-- rest of i.MX8M Plus features
+Sure, these are the numbers we have from a production device.
 
-i.Core MX8M Plus needs to mount on top of Engicam baseboards
-for creating complete platform solutions.
+They are captured via perf via PERF_COUNT_HW_CPU_CYCLES.
+It's running a 20K loop emitting 4 bytes of data out.
+Each 4 byte event time is recorded via perf.
+At the end we have the total time and the max seen.
 
-Add support for it.
+null numbers represent a 20K loop with just perf start/stop ioctl costs.
 
-Signed-off-by: Manoj Sai <abbaraju.manojsai@amarulasolutions.com>
-Signed-off-by: Matteo Lisi <matteo.lisi@engicam.com>
-Reviewed-by: Jagan Teki <jagan@amarulasolutions.com>
----
- .../dts/freescale/imx8mp-icore-mx8mp.dtsi     | 202 ++++++++++++++++++
- 1 file changed, 202 insertions(+)
- create mode 100644 arch/arm64/boot/dts/freescale/imx8mp-icore-mx8mp.dtsi
+null: min=2863, avg=2953, max=30815
+uprobe: min=10994, avg=11376, max=146682
+uevent: min=7043, avg=7320, max=95396
+lttng: min=6270, avg=6508, max=41951
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mp-icore-mx8mp.dtsi b/arch/arm64/boot/dts/freescale/imx8mp-icore-mx8mp.dtsi
-new file mode 100644
-index 000000000000..10afa8983700
---- /dev/null
-+++ b/arch/arm64/boot/dts/freescale/imx8mp-icore-mx8mp.dtsi
-@@ -0,0 +1,202 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * Copyright (c) 2018 NXP
-+ * Copyright (c) 2019 Engicam srl
-+ * Copyright (c) 2020 Amarula Solutons(India)
-+ */
-+
-+/ {
-+	compatible = "engicam,icore-mx8mp", "fsl,imx8mp";
-+};
-+
-+&A53_0 {
-+	cpu-supply = <&buck2>;
-+};
-+
-+&A53_1 {
-+	cpu-supply = <&buck2>;
-+};
-+
-+&A53_2 {
-+	cpu-supply = <&buck2>;
-+};
-+
-+&A53_3 {
-+	cpu-supply = <&buck2>;
-+};
-+
-+&i2c1 {
-+	clock-frequency = <100000>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_i2c1>;
-+	status = "okay";
-+
-+	pmic: pca9450@25 {
-+		reg = <0x25>;
-+		compatible = "nxp,pca9450c";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pinctrl_pmic>;
-+		interrupt-parent = <&gpio1>;
-+		interrupts = <3 GPIO_ACTIVE_LOW>;
-+
-+		regulators {
-+			buck1: BUCK1 {
-+				regulator-name = "BUCK1";
-+				regulator-min-microvolt = <600000>;
-+				regulator-max-microvolt = <2187500>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+				regulator-ramp-delay =  <3125>;
-+			};
-+
-+			buck2: BUCK2 {
-+				regulator-name = "BUCK2";
-+				regulator-min-microvolt = <600000>;
-+				regulator-max-microvolt = <2187500>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+				regulator-ramp-delay = <3125>;
-+				nxp,dvs-run-voltage = <950000>;
-+				nxp,dvs-standby-voltage = <850000>;
-+			};
-+
-+			buck4: BUCK4{
-+				regulator-name = "BUCK4";
-+				regulator-min-microvolt = <600000>;
-+				regulator-max-microvolt = <3400000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+
-+			buck5: BUCK5{
-+				regulator-name = "BUCK5";
-+				regulator-min-microvolt = <600000>;
-+				regulator-max-microvolt = <3400000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+
-+			buck6: BUCK6 {
-+				regulator-name = "BUCK6";
-+				regulator-min-microvolt = <600000>;
-+				regulator-max-microvolt = <3400000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+
-+			ldo1: LDO1 {
-+				regulator-name = "LDO1";
-+				regulator-min-microvolt = <1600000>;
-+				regulator-max-microvolt = <3300000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+
-+			ldo2: LDO2 {
-+				regulator-name = "LDO2";
-+				regulator-min-microvolt = <800000>;
-+				regulator-max-microvolt = <1150000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+
-+			ldo3: LDO3 {
-+				regulator-name = "LDO3";
-+				regulator-min-microvolt = <800000>;
-+				regulator-max-microvolt = <3300000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+
-+			ldo4: LDO4 {
-+				regulator-name = "LDO4";
-+				regulator-min-microvolt = <800000>;
-+				regulator-max-microvolt = <3300000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+
-+			ldo5: LDO5 {
-+				regulator-name = "LDO5";
-+				regulator-min-microvolt = <1800000>;
-+				regulator-max-microvolt = <3300000>;
-+				regulator-boot-on;
-+				regulator-always-on;
-+			};
-+		};
-+	};
-+};
-+
-+&iomuxc {
-+	pinctrl_i2c1: i2c1grp {
-+		fsl,pins = <
-+			MX8MP_IOMUXC_I2C1_SCL__I2C1_SCL		0x400001c3
-+			MX8MP_IOMUXC_I2C1_SDA__I2C1_SDA		0x400001c3
-+		>;
-+	};
-+
-+	pinctrl_pmic: pmicirq {
-+		fsl,pins = <
-+			MX8MP_IOMUXC_GPIO1_IO03__GPIO1_IO03	0x000001c0
-+		>;
-+	};
-+
-+	pinctrl_usdhc3: usdhc3grp {
-+		fsl,pins = <
-+			MX8MP_IOMUXC_NAND_WE_B__USDHC3_CLK	0x190
-+			MX8MP_IOMUXC_NAND_WP_B__USDHC3_CMD	0x1d0
-+			MX8MP_IOMUXC_NAND_DATA04__USDHC3_DATA0	0x1d0
-+			MX8MP_IOMUXC_NAND_DATA05__USDHC3_DATA1	0x1d0
-+			MX8MP_IOMUXC_NAND_DATA06__USDHC3_DATA2	0x1d0
-+			MX8MP_IOMUXC_NAND_DATA07__USDHC3_DATA3	0x1d0
-+			MX8MP_IOMUXC_NAND_RE_B__USDHC3_DATA4	0x1d0
-+			MX8MP_IOMUXC_NAND_CE2_B__USDHC3_DATA5	0x1d0
-+			MX8MP_IOMUXC_NAND_CE3_B__USDHC3_DATA6	0x1d0
-+			MX8MP_IOMUXC_NAND_CLE__USDHC3_DATA7	0x1d0
-+			MX8MP_IOMUXC_NAND_CE1_B__USDHC3_STROBE	0x190
-+		>;
-+	};
-+
-+	pinctrl_usdhc3_100mhz: usdhc3grp-100mhz {
-+		fsl,pins = <
-+			MX8MP_IOMUXC_NAND_WE_B__USDHC3_CLK	0x194
-+			MX8MP_IOMUXC_NAND_WP_B__USDHC3_CMD	0x1d4
-+			MX8MP_IOMUXC_NAND_DATA04__USDHC3_DATA0	0x1d4
-+			MX8MP_IOMUXC_NAND_DATA05__USDHC3_DATA1	0x1d4
-+			MX8MP_IOMUXC_NAND_DATA06__USDHC3_DATA2	0x1d4
-+			MX8MP_IOMUXC_NAND_DATA07__USDHC3_DATA3	0x1d4
-+			MX8MP_IOMUXC_NAND_RE_B__USDHC3_DATA4	0x1d4
-+			MX8MP_IOMUXC_NAND_CE2_B__USDHC3_DATA5	0x1d4
-+			MX8MP_IOMUXC_NAND_CE3_B__USDHC3_DATA6	0x1d4
-+			MX8MP_IOMUXC_NAND_CLE__USDHC3_DATA7	0x1d4
-+			MX8MP_IOMUXC_NAND_CE1_B__USDHC3_STROBE	0x194
-+		>;
-+	};
-+
-+	pinctrl_usdhc3_200mhz: usdhc3grp-200mhz {
-+		fsl,pins = <
-+			MX8MP_IOMUXC_NAND_WE_B__USDHC3_CLK	0x196
-+			MX8MP_IOMUXC_NAND_WP_B__USDHC3_CMD	0x1d6
-+			MX8MP_IOMUXC_NAND_DATA04__USDHC3_DATA0	0x1d6
-+			MX8MP_IOMUXC_NAND_DATA05__USDHC3_DATA1	0x1d6
-+			MX8MP_IOMUXC_NAND_DATA06__USDHC3_DATA2	0x1d6
-+			MX8MP_IOMUXC_NAND_DATA07__USDHC3_DATA3	0x1d6
-+			MX8MP_IOMUXC_NAND_RE_B__USDHC3_DATA4	0x1d6
-+			MX8MP_IOMUXC_NAND_CE2_B__USDHC3_DATA5	0x1d6
-+			MX8MP_IOMUXC_NAND_CE3_B__USDHC3_DATA6	0x1d6
-+			MX8MP_IOMUXC_NAND_CLE__USDHC3_DATA7	0x1d6
-+			MX8MP_IOMUXC_NAND_CE1_B__USDHC3_STROBE	0x196
-+		>;
-+	};
-+};
-+
-+/* EMMC */
-+&usdhc3 {
-+	pinctrl-names = "default", "state_100mhz", "state_200mhz";
-+	pinctrl-0 = <&pinctrl_usdhc3>;
-+	pinctrl-1 = <&pinctrl_usdhc3_100mhz>;
-+	pinctrl-2 = <&pinctrl_usdhc3_200mhz>;
-+	bus-width = <8>;
-+	non-removable;
-+	status = "okay";
-+};
--- 
-2.25.1
+These costs include the data getting into a buffer, so they represent
+what we would see in production vs the trap cost alone. For uprobe this
+means we created a uprobe and attached it via tracefs to get the above
+numbers.
 
+There also seems to be some thinking around this as well from Song Liu.
+Link: https://lore.kernel.org/lkml/20200801084721.1812607-1-songliubraving@fb.com/
+
+From the link:
+1. User programs are faster. The new selftest added in 5/5, shows that a
+   simple uprobe program takes 1400 nanoseconds, while user program only
+      takes 300 nanoseconds.
+
+> > >
+> > > Can we achieve the same/similar performance with sys_bpf(BPF_PROG_RUN)?
+> > >
+> >
+> > I think so, the tough part is how do you let the user-space know which
+> > program is attached to run? In the current code this is done by the BPF
+> > program attaching to the event via perf and we run the one there if
+> > any when data is emitted out via write calls.
+> >
+> > I would want to make sure that operators can decide where the user-space
+> > data goes (perf/ftrace/eBPF) after the code has been written. With the
+> > current code this is done via the tracepoint callbacks that perf/ftrace
+> > hook up when operators enable recording via perf, tracefs, libbpf, etc.
+> >
+> > We have managed code (C#/Java) where we cannot utilize stubs or traps
+> > easily due to code movement. So we are limited in how we can approach
+> > this problem. Having the interface be mmap/write has enabled this
+> > for us, since it's easy to interact with in most languages and gives us
+> > lifetime management of the trace objects between user-space and the
+> > kernel.
+> 
+> Then you should probably invest into making USDT work inside
+> java applications instead of reinventing the wheel.
+> 
+> As an alternative you can do a dummy write or any other syscall
+> and attach bpf on the kernel side.
+> No kernel changes are necessary.
+
+We only want syscall/tracing overheads for the specific events that are
+hooked. I don't see how we could hook up a dummy write that is unique
+per-event without having a way to know when the event is being traced.
+
+Thanks,
+-Beau
