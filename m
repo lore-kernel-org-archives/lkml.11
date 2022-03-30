@@ -2,104 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A8ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 08:21:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B0D3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 08:21:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244306AbiC3IXI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 04:23:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57708 "EHLO
+        id S244320AbiC3IXO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 04:23:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244267AbiC3IWq (ORCPT
+        with ESMTP id S244307AbiC3IWy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 04:22:46 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D05793120B;
-        Wed, 30 Mar 2022 01:21:01 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 3C4931F443F6
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1648628460;
-        bh=sD9zda1gQkNv3MUA4bkv/V5WHuwzCfeFynE1ba/36bI=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=lwqXWCyvUJTMcWkmXB/XryVKNZ3doT0L4in++YJhNLlEumVov1VdrMn6WG2XwP0ks
-         blZ4fiFE4Q0hNhTRpBd0ICap0dAq4rUqv6Nx574wrl2C/2wf9fmlKPNu13ak+i9io3
-         XuGtTjPq0bybFhxrjyjT8O9tviLy2mV3ijMdf4YmcBenisQ5JUKxTJ1r+sC/KVqf8/
-         YDrwtXvpxBbOVALzBJ2KhF0A4Xle3gmzF1YumNtOdnjiLJ0IkLwdWn8R9yyHo3t0Pj
-         tVq4OP09GfDsPwVt2n20oWvaZw3i7S6EQpXqzxGxqug2kMu8MrH9mYT6LXort9N/r+
-         q6o2+0V72XjlA==
-Message-ID: <61c2609c-18d1-fea9-7b71-0b17fb2beaef@collabora.com>
-Date:   Wed, 30 Mar 2022 10:20:47 +0200
+        Wed, 30 Mar 2022 04:22:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1532030F5D
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 01:21:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648628468;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Tz0siigGtQofb7cxDXPZMYsGDoU6AwwuCe+CGjU+qdY=;
+        b=b1L5h1gfpsSiY3+usvQ65BsRwL9EmNKknV3iRiiGWOLDE9YxhpHKIXvgHmJCTAsksHw/3I
+        NAEnfUkgR/JlSzAfW2GTjKgnNXy4P0cAYNBSgbCsP79/axN1LJd7R7ovbd+2G4l3HNHLjE
+        fuDLQvRNiOjrYQxyCJggYiJv42URjWM=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-412-1kVvoYGAPXu0VQdaD07N5Q-1; Wed, 30 Mar 2022 04:21:04 -0400
+X-MC-Unique: 1kVvoYGAPXu0VQdaD07N5Q-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 65620100BAA7;
+        Wed, 30 Mar 2022 08:20:52 +0000 (UTC)
+Received: from shodan.usersys.redhat.com (unknown [10.43.17.22])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id BD804400E43D;
+        Wed, 30 Mar 2022 08:20:49 +0000 (UTC)
+Received: by shodan.usersys.redhat.com (Postfix, from userid 1000)
+        id ABFD41C0136; Wed, 30 Mar 2022 10:20:46 +0200 (CEST)
+From:   Artem Savkov <asavkov@redhat.com>
+To:     netdev@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        asavkov@redhat.com, Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org,
+        Anna-Maria Gleixner <anna-maria@linutronix.de>,
+        dsahern@kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 1/2] timer: add a function to adjust timeouts to be upper bound
+Date:   Wed, 30 Mar 2022 10:20:45 +0200
+Message-Id: <20220330082046.3512424-2-asavkov@redhat.com>
+In-Reply-To: <20220330082046.3512424-1-asavkov@redhat.com>
+References: <87zglcfmcv.ffs@tglx>
+ <20220330082046.3512424-1-asavkov@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v12 2/3] dt-bindings: mmc: mtk-sd: increase reg maxItems
-Content-Language: en-US
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     Tinghan Shen <tinghan.shen@mediatek.com>,
-        Chaotian Jing <chaotian.jing@mediatek.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Wenbin Mei <wenbin.mei@mediatek.com>,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        Project_Global_Chrome_Upstream_Group 
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Ryder Lee <ryder.lee@kernel.org>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>
-References: <20220329114540.17140-1-tinghan.shen@mediatek.com>
- <20220329114540.17140-3-tinghan.shen@mediatek.com>
- <d720a5e9-d078-6c60-f55b-0506c4b4e1fa@collabora.com>
- <CAL_JsqLrgW4GwSZ20x5Gsu-umjtw4x8k=uHeZk9T2+A3K6UT0Q@mail.gmail.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <CAL_JsqLrgW4GwSZ20x5Gsu-umjtw4x8k=uHeZk9T2+A3K6UT0Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 29/03/22 21:10, Rob Herring ha scritto:
-> On Tue, Mar 29, 2022 at 7:43 AM AngeloGioacchino Del Regno
-> <angelogioacchino.delregno@collabora.com> wrote:
->>
->> Il 29/03/22 13:45, Tinghan Shen ha scritto:
->>> Add optional host top register base for the reg binding description.
->>>
->>> Signed-off-by: Wenbin Mei <wenbin.mei@mediatek.com>
->>> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
->>> ---
->>>    Documentation/devicetree/bindings/mmc/mtk-sd.yaml | 3 ++-
->>>    1 file changed, 2 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/Documentation/devicetree/bindings/mmc/mtk-sd.yaml b/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
->>> index 7032f7adf3ca..6d41bcec900f 100644
->>> --- a/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
->>> +++ b/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
->>> @@ -40,7 +40,8 @@ properties:
->>>              - const: mediatek,mt8183-mmc
->>>
->>>      reg:
->>> -    maxItems: 1
->>> +    minItems: 1
->>> +    maxItems: 2
->>
->> it's just maxItems... adding minItems: 1 is not required.
-> 
-> If 1 entry is still valid, then minItems is required. If not, then
-> it's an ABI break.
-> 
-> Rob
+Current timer wheel implementation is optimized for performance and
+energy usage but lacks in precision. This, normally, is not a problem as
+most timers that use timer wheel are used for timeouts and thus rarely
+expire, instead they often get canceled or modified before expiration.
+Even when they don't, expiring a bit late is not an issue for timeout
+timers.
 
+TCP keepalive timer is a special case, it's aim is to prevent timeouts,
+so triggering earlier rather than later is desired behavior. In a
+reported case the user had a 3600s keepalive timer for preventing firewall
+disconnects (on a 3650s interval). They observed keepalive timers coming
+in up to four minutes late, causing unexpected disconnects.
 
-Right. Sorry for that and thanks for the explaination, Rob.
+This commit adds upper_bound_timeout() function that takes a relative
+timeout and adjusts it based on timer wheel granularity so that supplied
+value effectively becomes an upper bound for the timer.
 
-Cheers,
-Angelo
+This was previously discussed here:
+https://lore.kernel.org/all/20210302001054.4qgrvnkltvkgikzr@treble/T/#u
+
+Suggested-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Signed-off-by: Artem Savkov <asavkov@redhat.com>
+---
+ include/linux/timer.h |  1 +
+ kernel/time/timer.c   | 92 +++++++++++++++++++++++++++++++++++++------
+ 2 files changed, 80 insertions(+), 13 deletions(-)
+
+diff --git a/include/linux/timer.h b/include/linux/timer.h
+index fda13c9d1256c..b209d31d543f0 100644
+--- a/include/linux/timer.h
++++ b/include/linux/timer.h
+@@ -168,6 +168,7 @@ static inline int timer_pending(const struct timer_list * timer)
+ 	return !hlist_unhashed_lockless(&timer->entry);
+ }
+ 
++extern unsigned long upper_bound_timeout(unsigned long timeout);
+ extern void add_timer_on(struct timer_list *timer, int cpu);
+ extern int del_timer(struct timer_list * timer);
+ extern int mod_timer(struct timer_list *timer, unsigned long expires);
+diff --git a/kernel/time/timer.c b/kernel/time/timer.c
+index 85f1021ad4595..76d4f26c991be 100644
+--- a/kernel/time/timer.c
++++ b/kernel/time/timer.c
+@@ -507,28 +507,38 @@ static inline unsigned calc_index(unsigned long expires, unsigned lvl,
+ 	return LVL_OFFS(lvl) + (expires & LVL_MASK);
+ }
+ 
+-static int calc_wheel_index(unsigned long expires, unsigned long clk,
+-			    unsigned long *bucket_expiry)
++static inline int get_wheel_lvl(unsigned long delta)
+ {
+-	unsigned long delta = expires - clk;
+-	unsigned int idx;
+-
+ 	if (delta < LVL_START(1)) {
+-		idx = calc_index(expires, 0, bucket_expiry);
++		return 0;
+ 	} else if (delta < LVL_START(2)) {
+-		idx = calc_index(expires, 1, bucket_expiry);
++		return 1;
+ 	} else if (delta < LVL_START(3)) {
+-		idx = calc_index(expires, 2, bucket_expiry);
++		return 2;
+ 	} else if (delta < LVL_START(4)) {
+-		idx = calc_index(expires, 3, bucket_expiry);
++		return 3;
+ 	} else if (delta < LVL_START(5)) {
+-		idx = calc_index(expires, 4, bucket_expiry);
++		return 4;
+ 	} else if (delta < LVL_START(6)) {
+-		idx = calc_index(expires, 5, bucket_expiry);
++		return 5;
+ 	} else if (delta < LVL_START(7)) {
+-		idx = calc_index(expires, 6, bucket_expiry);
++		return 6;
+ 	} else if (LVL_DEPTH > 8 && delta < LVL_START(8)) {
+-		idx = calc_index(expires, 7, bucket_expiry);
++		return 7;
++	}
++
++	return -1;
++}
++
++static int calc_wheel_index(unsigned long expires, unsigned long clk,
++			    unsigned long *bucket_expiry)
++{
++	unsigned long delta = expires - clk;
++	unsigned int idx;
++	int lvl = get_wheel_lvl(delta);
++
++	if (lvl >= 0) {
++		idx = calc_index(expires, lvl, bucket_expiry);
+ 	} else if ((long) delta < 0) {
+ 		idx = clk & LVL_MASK;
+ 		*bucket_expiry = clk;
+@@ -545,6 +555,62 @@ static int calc_wheel_index(unsigned long expires, unsigned long clk,
+ 	return idx;
+ }
+ 
++/**
++ * upper_bound_timeout - return granularity-adjusted timeout
++ * @timeout: timeout value in jiffies
++ *
++ * This function return supplied timeout adjusted based on timer wheel
++ * granularity effectively making supplied value an upper bound at which the
++ * timer will expire.
++ */
++unsigned long upper_bound_timeout(unsigned long timeout)
++{
++	int lvl = get_wheel_lvl(timeout);
++
++	if (lvl < 0) {
++		if ((long) timeout < 0) {
++			/*
++			 * This will expire immediately so no adjustment
++			 * needed.
++			 */
++			return timeout;
++		} else {
++			if (timeout > WHEEL_TIMEOUT_CUTOFF)
++				timeout = WHEEL_TIMEOUT_CUTOFF;
++			lvl = LVL_DEPTH - 1;
++		}
++	}
++
++	if (timeout - LVL_GRAN(lvl) < LVL_START(lvl)) {
++		/*
++		 * Beginning of each level is a special case, we can't just
++		 * subtract LVL_GRAN(lvl) because then timeout ends up on a
++		 * previous level and is guaranteed to fire off early. We can't
++		 * mitigate this completely, but we can try to minimize the
++		 * margin.
++		 */
++		if (timeout - LVL_GRAN(lvl - 1) < LVL_START(lvl)) {
++			/*
++			 * If timeout is within previous level's granularity
++			 * adjust timeout using that level's granularity.
++			 */
++			return timeout - LVL_GRAN(lvl - 1);
++		} else {
++			/*
++			 * If LVL_GRAN(lvl - 1) < timeout < LVL_GRAN(lvl)
++			 * the best we can do is to set timeout to the end of
++			 * previous level. This means that the timer will
++			 * trigger early. In worst case it will be _at least_
++			 * (LVL_GRAN(lvl) - LVL_GRAN(lvl -1)) jiffies early.
++			 */
++			return LVL_START(lvl) - 1;
++		}
++	} else {
++		return timeout - LVL_GRAN(lvl);
++	}
++}
++EXPORT_SYMBOL(upper_bound_timeout);
++
+ static void
+ trigger_dyntick_cpu(struct timer_base *base, struct timer_list *timer)
+ {
+-- 
+2.34.1
+
