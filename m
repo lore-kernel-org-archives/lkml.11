@@ -2,96 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8DA4C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 20:18:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EF16C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 20:19:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350933AbiC3UUG (ORCPT
+        id S1350948AbiC3UVl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 16:20:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47840 "EHLO
+        Wed, 30 Mar 2022 16:21:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350901AbiC3UUE (ORCPT
+        with ESMTP id S231191AbiC3UVj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 16:20:04 -0400
-Received: from mail.efficios.com (mail.efficios.com [167.114.26.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 283EC27FEB;
-        Wed, 30 Mar 2022 13:18:19 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 8343D2851B0;
-        Wed, 30 Mar 2022 16:18:18 -0400 (EDT)
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id liiiRE86cOBp; Wed, 30 Mar 2022 16:18:18 -0400 (EDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 39C42285337;
-        Wed, 30 Mar 2022 16:18:18 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 39C42285337
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
-        s=default; t=1648671498;
-        bh=8ediofSqJKX2Zks+4QSp0wj5eoOOq1PxGvE7lIh1nRE=;
-        h=From:To:Date:Message-Id:MIME-Version;
-        b=dplyxnZ6o/oz354M5U+6xg7KRCp8NTy/ii11u1Lb5dIYCon1NJRbtLZKD5PmO52pT
-         ijJa8MzgzLnnlr30hZwiEP/mTyEcjmSLK/oD5yUPvxrl6UD/lfKFUg3JRypw5KKWBi
-         CXv1CMGXSNHD7HXDtMnItENro/Nt7yCmy/89DHEkxVBzbvoTs2a/kXPz0c1etNFnYu
-         y6bBvO1X8Aqj+gmg8diBqXNIZamMJB9fFtZCAeau8RX+GgwQ6DNtX9B8qQwJDGXdMw
-         CXEe57VSAg9RvgHSv99G3IC+3XjHtqCVprnWrZEM9oLQL4saE+DxbQF9OyGrudrt0Y
-         NooNnapmrbGrA==
-X-Virus-Scanned: amavisd-new at efficios.com
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id p67GgNSbFrfO; Wed, 30 Mar 2022 16:18:18 -0400 (EDT)
-Received: from thinkos.internal.efficios.com (192-222-180-24.qc.cable.ebox.net [192.222.180.24])
-        by mail.efficios.com (Postfix) with ESMTPSA id 0204C284BF9;
-        Wed, 30 Mar 2022 16:18:17 -0400 (EDT)
-From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Beau Belgrave <beaub@linux.microsoft.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        linux-trace-devel <linux-trace-devel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Subject: [PATCH] tracing: do not export user_events uapi
-Date:   Wed, 30 Mar 2022 16:17:55 -0400
-Message-Id: <20220330201755.29319-1-mathieu.desnoyers@efficios.com>
-X-Mailer: git-send-email 2.20.1
+        Wed, 30 Mar 2022 16:21:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EE1B2A72C
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 13:19:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BEE37615CA
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 20:19:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6B13C340EC;
+        Wed, 30 Mar 2022 20:19:51 +0000 (UTC)
+Date:   Wed, 30 Mar 2022 16:19:50 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Ingo Molnar <mingo@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
+Subject: Re: [PATCH v2] ftrace: Make ftrace_graph_is_dead() a static branch
+Message-ID: <20220330161950.1d12d708@gandalf.local.home>
+In-Reply-To: <8c65a6fb-cd93-926d-7851-0831658dd289@csgroup.eu>
+References: <8628338322fa74287ca8d432d5c0c1964acd6f2a.1648195329.git.christophe.leroy@csgroup.eu>
+        <20220329220733.682172ec@gandalf.local.home>
+        <8c65a6fb-cd93-926d-7851-0831658dd289@csgroup.eu>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In addition to mark the USER_EVENTS feature BROKEN until all interested
-parties figure out the user-space API, do not install the uapi header.
+On Wed, 30 Mar 2022 06:55:26 +0000
+Christophe Leroy <christophe.leroy@csgroup.eu> wrote:
 
-This prevents situations where a non-final uapi header would end up
-being installed into a distribution image and used to build user-space
-programs that would then run against newer kernels that will implement
-user events with a different ABI.
+> > Small nit. Please order the includes in "upside-down x-mas tree" fashion:
+> > 
+> > #include <linux/jump_label.h>
+> > #include <linux/suspend.h>
+> > #include <linux/ftrace.h>
+> > #include <linux/slab.h>
+> >   
+> 
+> That's the first time I get such a request. Usually people request 
+> #includes to be in alphabetical order so when I see a file that has 
+> headers in alphabetical order I try to not break it, but here that was 
+> not the case so I put it at the end of the list.
 
-Link: https://lore.kernel.org/all/20220330155835.5e1f6669@gandalf.local.h=
-ome
+This is something that Ingo Molnar started back in 2009 or so. And I do
+find it easier on the eyes ;-)  I may be the only one today trying to keep
+it (albeit poorly).
 
-Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
----
- include/uapi/Kbuild | 3 +++
- 1 file changed, 3 insertions(+)
+It's not a hard requirement, but I find it makes the code look more like
+art, which it is :-D
 
-diff --git a/include/uapi/Kbuild b/include/uapi/Kbuild
-index 61ee6e59c930..425ea8769ddc 100644
---- a/include/uapi/Kbuild
-+++ b/include/uapi/Kbuild
-@@ -12,3 +12,6 @@ ifeq ($(wildcard $(objtree)/arch/$(SRCARCH)/include/gen=
-erated/uapi/asm/kvm_para.
- no-export-headers +=3D linux/kvm_para.h
- endif
- endif
-+
-+# API is not finalized
-+no-export-headers +=3D linux/user_events.h
---=20
-2.20.1
+> 
+> I'll send v3
 
+Thanks,
+
+-- Steve
