@@ -2,171 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C779C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 07:01:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DB82C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 07:02:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243589AbiC3HCn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 03:02:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33726 "EHLO
+        id S241877AbiC3HEe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 03:04:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243548AbiC3HCS (ORCPT
+        with ESMTP id S238127AbiC3HET (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 03:02:18 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27248DF484
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 00:00:33 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KSy4b67c7z9sS9;
-        Wed, 30 Mar 2022 09:00:31 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id RCdpq8d0SeNj; Wed, 30 Mar 2022 09:00:31 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KSy4b59wqz9sS8;
-        Wed, 30 Mar 2022 09:00:31 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 9F8308B77B;
-        Wed, 30 Mar 2022 09:00:31 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id P1-xpKC3Oz0p; Wed, 30 Mar 2022 09:00:31 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 761788B765;
-        Wed, 30 Mar 2022 09:00:31 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 22U70Mjd279108
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Wed, 30 Mar 2022 09:00:22 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 22U70LeF279107;
-        Wed, 30 Mar 2022 09:00:21 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH v3] ftrace: Make ftrace_graph_is_dead() a static branch
-Date:   Wed, 30 Mar 2022 09:00:19 +0200
-Message-Id: <e0411a6a0ed3eafff0ad2bc9cd4b0e202b4617df.1648623570.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.35.1
+        Wed, 30 Mar 2022 03:04:19 -0400
+Received: from mail.meizu.com (unknown [14.29.68.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25363E1240;
+        Wed, 30 Mar 2022 00:02:33 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
+ (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Wed, 30 Mar
+ 2022 15:02:32 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Wed, 30 Mar
+ 2022 15:02:31 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+CC:     Haowen Bai <baihaowen@meizu.com>,
+        <linux-trace-devel@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] rtla/osnoise: avoid NULL pointer dereference on out
+Date:   Wed, 30 Mar 2022 15:02:28 +0800
+Message-ID: <1648623748-8833-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1648623618; l=3505; s=20211009; h=from:subject:message-id; bh=aCcAKl5FNjWRbsv3MCPz0tiPrIo7QmLsO8hbWKLshtE=; b=Ssufl5SrZq1mI9BBqpCSJGu2PAG8ypJPr+aKeZbTU2iNAVEhPsSQlAXql/uBE0A/atfYOwelonGX GnVbOCcAApbNCTtw6NSI2ANpwC9rBoNG/IsmWD5MMsJSFY0yyOs+
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-124.meizu.com (172.16.1.124) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ftrace_graph_is_dead() is used on hot paths, it just reads a variable
-in memory and is not worth suffering function call constraints.
+record is NULL and go out but dereference record->trace.
 
-For instance, at entry of prepare_ftrace_return(), inlining it avoids
-saving prepare_ftrace_return() parameters to stack and restoring them
-after calling ftrace_graph_is_dead().
+report by coccicheck:
+tools/tracing/rtla/src/osnoise_top.c:650:31-36: ERROR:
+record is NULL but dereferenced.
 
-While at it using a static branch is even more performant and is
-rather well adapted considering that the returned value will almost
-never change.
-
-Inline ftrace_graph_is_dead() and replace 'kill_ftrace_graph' bool
-by a static branch.
-
-The performance improvement is noticeable.
-
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 ---
-v3: Keep includes in upside-down x-mas tree
+ tools/tracing/rtla/src/osnoise_top.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-v2: Use a static branch instead of a global bool var.
----
- include/linux/ftrace.h | 16 +++++++++++++++-
- kernel/trace/fgraph.c  | 17 +++--------------
- 2 files changed, 18 insertions(+), 15 deletions(-)
-
-diff --git a/include/linux/ftrace.h b/include/linux/ftrace.h
-index ed8cf433a46a..4816b7e11047 100644
---- a/include/linux/ftrace.h
-+++ b/include/linux/ftrace.h
-@@ -9,6 +9,7 @@
+diff --git a/tools/tracing/rtla/src/osnoise_top.c b/tools/tracing/rtla/src/osnoise_top.c
+index 72c2fd6..8cb185e 100644
+--- a/tools/tracing/rtla/src/osnoise_top.c
++++ b/tools/tracing/rtla/src/osnoise_top.c
+@@ -572,7 +572,7 @@ int osnoise_top_main(int argc, char **argv)
+ 	retval = osnoise_top_apply_config(tool, params);
+ 	if (retval) {
+ 		err_msg("Could not apply config\n");
+-		goto out_top;
++		goto out_top_pre;
+ 	}
  
- #include <linux/trace_recursion.h>
- #include <linux/trace_clock.h>
-+#include <linux/jump_label.h>
- #include <linux/kallsyms.h>
- #include <linux/linkage.h>
- #include <linux/bitops.h>
-@@ -1018,7 +1019,20 @@ unsigned long ftrace_graph_ret_addr(struct task_struct *task, int *idx,
- extern int register_ftrace_graph(struct fgraph_ops *ops);
- extern void unregister_ftrace_graph(struct fgraph_ops *ops);
+ 	trace = &tool->trace;
+@@ -580,14 +580,14 @@ int osnoise_top_main(int argc, char **argv)
+ 	retval = enable_osnoise(trace);
+ 	if (retval) {
+ 		err_msg("Failed to enable osnoise tracer\n");
+-		goto out_top;
++		goto out_top_pre;
+ 	}
  
--extern bool ftrace_graph_is_dead(void);
-+/**
-+ * ftrace_graph_is_dead - returns true if ftrace_graph_stop() was called
-+ *
-+ * ftrace_graph_stop() is called when a severe error is detected in
-+ * the function graph tracing. This function is called by the critical
-+ * paths of function graph to keep those paths from doing any more harm.
-+ */
-+DECLARE_STATIC_KEY_FALSE(kill_ftrace_graph);
-+
-+static inline bool ftrace_graph_is_dead(void)
-+{
-+	return static_branch_unlikely(&kill_ftrace_graph);
-+}
-+
- extern void ftrace_graph_stop(void);
+ 	if (params->set_sched) {
+ 		retval = set_comm_sched_attr("osnoise/", &params->sched_param);
+ 		if (retval) {
+ 			err_msg("Failed to set sched parameters\n");
+-			goto out_top;
++			goto out_top_pre;
+ 		}
+ 	}
  
- /* The current handlers in use */
-diff --git a/kernel/trace/fgraph.c b/kernel/trace/fgraph.c
-index 19028e072cdb..8f4fb328133a 100644
---- a/kernel/trace/fgraph.c
-+++ b/kernel/trace/fgraph.c
-@@ -7,6 +7,7 @@
-  *
-  * Highly modified by Steven Rostedt (VMware).
-  */
-+#include <linux/jump_label.h>
- #include <linux/suspend.h>
- #include <linux/ftrace.h>
- #include <linux/slab.h>
-@@ -23,24 +24,12 @@
- #define ASSIGN_OPS_HASH(opsname, val)
- #endif
+@@ -597,7 +597,7 @@ int osnoise_top_main(int argc, char **argv)
+ 		record = osnoise_init_trace_tool("osnoise");
+ 		if (!record) {
+ 			err_msg("Failed to enable the trace instance\n");
+-			goto out_top;
++			goto out_top_pre;
+ 		}
  
--static bool kill_ftrace_graph;
-+DEFINE_STATIC_KEY_FALSE(kill_ftrace_graph);
- int ftrace_graph_active;
+ 		if (params->events) {
+@@ -648,6 +648,7 @@ int osnoise_top_main(int argc, char **argv)
  
- /* Both enabled by default (can be cleared by function_graph tracer flags */
- static bool fgraph_sleep_time = true;
- 
--/**
-- * ftrace_graph_is_dead - returns true if ftrace_graph_stop() was called
-- *
-- * ftrace_graph_stop() is called when a severe error is detected in
-- * the function graph tracing. This function is called by the critical
-- * paths of function graph to keep those paths from doing any more harm.
-- */
--bool ftrace_graph_is_dead(void)
--{
--	return kill_ftrace_graph;
--}
--
- /**
-  * ftrace_graph_stop - set to permanently disable function graph tracing
-  *
-@@ -51,7 +40,7 @@ bool ftrace_graph_is_dead(void)
-  */
- void ftrace_graph_stop(void)
- {
--	kill_ftrace_graph = true;
-+	static_branch_enable(&kill_ftrace_graph);
- }
- 
- /* Add a function return address to the trace stack on thread info.*/
+ out_top:
+ 	trace_events_destroy(&record->trace, params->events);
++out_top_pre:
+ 	params->events = NULL;
+ 	osnoise_free_top(tool->data);
+ 	osnoise_destroy_tool(record);
 -- 
-2.35.1
+2.7.4
 
