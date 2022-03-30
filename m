@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D94DC388F3
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9A94C38A06
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347801AbiC3MHq (ORCPT
+        id S1347881AbiC3MHy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:07:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59876 "EHLO
+        Wed, 30 Mar 2022 08:07:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345957AbiC3LzQ (ORCPT
+        with ESMTP id S1345964AbiC3LzR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:55:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 147B82B27D;
-        Wed, 30 Mar 2022 04:53:27 -0700 (PDT)
+        Wed, 30 Mar 2022 07:55:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E6EF2BB09;
+        Wed, 30 Mar 2022 04:53:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C040BB81ACC;
-        Wed, 30 Mar 2022 11:53:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56EBCC36AE7;
-        Wed, 30 Mar 2022 11:53:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CE912615F5;
+        Wed, 30 Mar 2022 11:53:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B69AC340F2;
+        Wed, 30 Mar 2022 11:53:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641204;
-        bh=UG0idag4Wf1Pwe5y3cERzAlg4mbEswWL6VtyOd/qB44=;
+        s=k20201202; t=1648641211;
+        bh=FQRiQeUNTgPPO1qTi6G4foPwMZKkCOTAKwzoD7oiqEE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HxkEWKvRAYu7PXmLTdHukEMDvdbzvPsCD0Z9C09auSu5LzqMJof9OKrSthOVzvGpT
-         6Mx8fnEkbUWbKh2DejPt8TEEsA/+pqPWWyK8ejlzbyUDw88qNJnXAFToERriVEYS45
-         3RnpHlXpPYG2CNe8bLvjOrS/jEGfThIDHy3ZhsWPc9EkssNx7KjDUkeS3miFvspDjC
-         +FHtEOJJvNxN4vY0/TFgw212ZQRSp73ii3OLYO+PsIhTlYunh1A7H6le4i2++Xm44i
-         jHWKnPpXTb/0dImy2d+vqKkUCvDkPa2y9/Aveqss83/ebzvTkv4CA68WAU/IzWBkcj
-         HyAUVIfiRTHbQ==
+        b=XSigm/6ACwNwxwiSg4vsXlmO9jgQT3QTUvXZNnQelw6KwOsWrG2xV3UGo1SHluVA0
+         BDmySoyLhtQ06pfDcE8rgksjar/ez908wCkEIkq7plbMxiIgtXWwTHgrQfYAwNG9pD
+         wCBmg49pDiVi4DD5Ejzm+BfQb1lCz5njEmLjuaLxN4YHjnR+vtmgaEqTaFXzpz2Eia
+         kkP6/xqwFA1eSmWBjR8RdCc/EH/s8kHbZkFiRGY1jtdCgsybdjcycfcXH/7n1gqEti
+         HJWm3qb9jal4LVKSm2Q+4DFRL2uWjbI89ZxpYTelfbm5FiUlgfZfPmIk0i721vW3Be
+         L0/gLn4DHCBsA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     John Ogness <john.ogness@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Petr Mladek <pmladek@suse.com>,
-        Sasha Levin <sashal@kernel.org>, senozhatsky@chromium.org,
-        linux@roeck-us.net, gregkh@linuxfoundation.org,
-        stephen.s.brennan@oracle.com
-Subject: [PATCH AUTOSEL 4.19 13/22] printk: use atomic updates for klogd work
-Date:   Wed, 30 Mar 2022 07:52:54 -0400
-Message-Id: <20220330115303.1672616-13-sashal@kernel.org>
+Cc:     Pavel Skripkin <paskripkin@gmail.com>,
+        =?UTF-8?q?Maximilian=20B=C3=B6hm?= <maximilian.boehm@elbmurf.de>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 18/22] media: Revert "media: em28xx: add missing em28xx_close_extension"
+Date:   Wed, 30 Mar 2022 07:52:59 -0400
+Message-Id: <20220330115303.1672616-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115303.1672616-1-sashal@kernel.org>
 References: <20220330115303.1672616-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,70 +55,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Ogness <john.ogness@linutronix.de>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-[ Upstream commit 2ba3673d70178bf07fb75ff25c54bc478add4021 ]
+[ Upstream commit fde18c3bac3f964d8333ae53b304d8fee430502b ]
 
-The per-cpu @printk_pending variable can be updated from
-sleepable contexts, such as:
+This reverts commit 2c98b8a3458df03abdc6945bbef67ef91d181938.
 
-  get_random_bytes()
-    warn_unseeded_randomness()
-      printk_deferred()
-        defer_console_output()
+Reverted patch causes problems with Hauppauge WinTV dualHD as Maximilian
+reported [1]. Since quick solution didn't come up let's just revert it
+to make this device work with upstream kernels.
 
-and can be updated from interrupt contexts, such as:
+Link: https://lore.kernel.org/all/6a72a37b-e972-187d-0322-16336e12bdc5@elbmurf.de/ [1]
 
-  handle_irq_event_percpu()
-    __irq_wake_thread()
-      wake_up_process()
-        try_to_wake_up()
-          select_task_rq()
-            select_fallback_rq()
-              printk_deferred()
-                defer_console_output()
-
-and can be updated from NMI contexts, such as:
-
-  vprintk()
-    if (in_nmi()) defer_console_output()
-
-Therefore the atomic variant of the updating functions must be used.
-
-Replace __this_cpu_xchg() with this_cpu_xchg().
-Replace __this_cpu_or() with this_cpu_or().
-
-Reported-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
-Signed-off-by: Petr Mladek <pmladek@suse.com>
-Link: https://lore.kernel.org/r/87iltld4ue.fsf@jogness.linutronix.de
+Reported-by: Maximilian Böhm <maximilian.boehm@elbmurf.de>
+Tested-by: Maximilian Böhm <maximilian.boehm@elbmurf.de>
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/printk/printk.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/media/usb/em28xx/em28xx-cards.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 9a5ce47e0a58..fa20be4bc740 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -2937,7 +2937,7 @@ static DEFINE_PER_CPU(int, printk_pending);
+diff --git a/drivers/media/usb/em28xx/em28xx-cards.c b/drivers/media/usb/em28xx/em28xx-cards.c
+index 06da08f8efdb..2edeca200925 100644
+--- a/drivers/media/usb/em28xx/em28xx-cards.c
++++ b/drivers/media/usb/em28xx/em28xx-cards.c
+@@ -4036,11 +4036,8 @@ static void em28xx_usb_disconnect(struct usb_interface *intf)
  
- static void wake_up_klogd_work_func(struct irq_work *irq_work)
- {
--	int pending = __this_cpu_xchg(printk_pending, 0);
-+	int pending = this_cpu_xchg(printk_pending, 0);
+ 	em28xx_close_extension(dev);
  
- 	if (pending & PRINTK_PENDING_OUTPUT) {
- 		/* If trylock fails, someone else is doing the printing */
-@@ -2973,7 +2973,7 @@ void defer_console_output(void)
- 		return;
+-	if (dev->dev_next) {
+-		em28xx_close_extension(dev->dev_next);
++	if (dev->dev_next)
+ 		em28xx_release_resources(dev->dev_next);
+-	}
+-
+ 	em28xx_release_resources(dev);
  
- 	preempt_disable();
--	__this_cpu_or(printk_pending, PRINTK_PENDING_OUTPUT);
-+	this_cpu_or(printk_pending, PRINTK_PENDING_OUTPUT);
- 	irq_work_queue(this_cpu_ptr(&wake_up_klogd_work));
- 	preempt_enable();
- }
+ 	if (dev->dev_next) {
 -- 
 2.34.1
 
