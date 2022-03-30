@@ -2,135 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FA5FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:52:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED6EEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:52:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346543AbiC3Nww (ORCPT
+        id S1346434AbiC3Nxy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 09:52:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59774 "EHLO
+        Wed, 30 Mar 2022 09:53:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346454AbiC3Nw2 (ORCPT
+        with ESMTP id S1346524AbiC3Nwt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 09:52:28 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B25F1117C93;
-        Wed, 30 Mar 2022 06:50:40 -0700 (PDT)
-Received: from kwepemi100017.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KT7570HdGzBrgl;
-        Wed, 30 Mar 2022 21:46:35 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi100017.china.huawei.com (7.221.188.163) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 30 Mar 2022 21:50:38 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 30 Mar 2022 21:50:38 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
-        <chenhao288@hisilicon.com>
-Subject: [PATCH net 1/2] net: hns3: fix the concurrency between functions reading debugfs
-Date:   Wed, 30 Mar 2022 21:45:05 +0800
-Message-ID: <20220330134506.36635-2-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220330134506.36635-1-huangguangbin2@huawei.com>
-References: <20220330134506.36635-1-huangguangbin2@huawei.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
+        Wed, 30 Mar 2022 09:52:49 -0400
+Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 023041480EE;
+        Wed, 30 Mar 2022 06:51:02 -0700 (PDT)
+Received: by mail-ot1-f50.google.com with SMTP id o20-20020a9d7194000000b005cb20cf4f1bso14932231otj.7;
+        Wed, 30 Mar 2022 06:51:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=yHeRiX2bMIx0KbaFEt4HL/mkVxSbe1mp5NhZsTk9FpE=;
+        b=Q3FXTEzQyPmhEjt51ScacM0FKbrL4G6wU2jaHCxMEZe9YK5h75AJTYyFWjQ6LUClQP
+         rUmZFpda415/YHC1kRzbO0TIE09FXTWIYtQY72nvCzxtG4tE2lhwlV1YPU6oh7sNCIgG
+         ZKfFShxJgbWVKMwLPP288DoEX5hNX7ZwQ7yhkdFngKQdzq41aRhcpz2EK5LmdwVl/v76
+         UayWFeFtm7nm/mXPkYm+p1MNwGevbrH0HFYh2pGBXRmG9ceJmpT1NUca19JI8EDcXXK4
+         gDeV7zcqEgUYxG1EMSNbkpuh37OnypfGt6Jk/pDgEe/kE+q/2H+6c/TTyzF8Ekez0d3m
+         bBCQ==
+X-Gm-Message-State: AOAM531dvqybcrePm8E7RlOA6pAYq3BomI45TstNwTARviCHk7XUV/QR
+        BGx6ZvuMiuDWu0KJAwR5Fk72pcyF5g==
+X-Google-Smtp-Source: ABdhPJwJb0gAhNOGxyZyBT1Dysx5h/4ZV6i7rhvJehmKsif+DWOSg8rCnMl2C12b8kUdLQ2IDJ+PZg==
+X-Received: by 2002:a05:6830:812:b0:5af:6b1b:537f with SMTP id r18-20020a056830081200b005af6b1b537fmr3187780ots.194.1648648261611;
+        Wed, 30 Mar 2022 06:51:01 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id y3-20020a056870e50300b000d9be6436f1sm9562024oag.29.2022.03.30.06.51.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 06:51:00 -0700 (PDT)
+Received: (nullmailer pid 2932724 invoked by uid 1000);
+        Wed, 30 Mar 2022 13:50:59 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     David Jander <david@protonic.nl>
+Cc:     devicetree@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Robin van der Gracht <robin@protonic.nl>
+In-Reply-To: <20220330073440.3986724-3-david@protonic.nl>
+References: <20220330073440.3986724-1-david@protonic.nl> <20220330073440.3986724-3-david@protonic.nl>
+Subject: Re: [PATCH 2/2] dt-bindings: auxdisplay: holtek,ht16k33.yaml: Add holtek,refuse-primary-fb
+Date:   Wed, 30 Mar 2022 08:50:59 -0500
+Message-Id: <1648648259.965681.2932723.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yufeng Mo <moyufeng@huawei.com>
+On Wed, 30 Mar 2022 09:34:40 +0200, David Jander wrote:
+> Document the DT property that will cause the holtek auxdisplay driver to
+> back off if it detects that it is the first driver to probe a framebuffer
+> device.
+> 
+> Signed-off-by: David Jander <david@protonic.nl>
+> ---
+>  .../devicetree/bindings/auxdisplay/holtek,ht16k33.yaml         | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
 
-Currently, the debugfs mechanism is that all functions share a
-global variable to save the pointer for obtaining data. When
-different functions concurrently access the same file node,
-repeated release exceptions occur. Therefore, the granularity
-of the pointer for storing the obtained data is adjusted to be
-private for each function.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Fixes: 5e69ea7ee2a6 ("net: hns3: refactor the debugfs process")
-Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hnae3.h       |  1 +
- .../net/ethernet/hisilicon/hns3/hns3_debugfs.c    | 15 +++++++++++----
- .../net/ethernet/hisilicon/hns3/hns3_debugfs.h    |  1 -
- 3 files changed, 12 insertions(+), 5 deletions(-)
+yamllint warnings/errors:
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index d44dd7091fa1..79c64f4e67d2 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -845,6 +845,7 @@ struct hnae3_handle {
- 	struct dentry *hnae3_dbgfs;
- 	/* protects concurrent contention between debugfs commands */
- 	struct mutex dbgfs_lock;
-+	char **dbgfs_buf;
- 
- 	/* Network interface message level enabled bits */
- 	u32 msg_enable;
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-index f726a5b70f9e..44d9b560b337 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-@@ -1227,7 +1227,7 @@ static ssize_t hns3_dbg_read(struct file *filp, char __user *buffer,
- 		return ret;
- 
- 	mutex_lock(&handle->dbgfs_lock);
--	save_buf = &hns3_dbg_cmd[index].buf;
-+	save_buf = &handle->dbgfs_buf[index];
- 
- 	if (!test_bit(HNS3_NIC_STATE_INITED, &priv->state) ||
- 	    test_bit(HNS3_NIC_STATE_RESETTING, &priv->state)) {
-@@ -1332,6 +1332,13 @@ int hns3_dbg_init(struct hnae3_handle *handle)
- 	int ret;
- 	u32 i;
- 
-+	handle->dbgfs_buf = devm_kcalloc(&handle->pdev->dev,
-+					 ARRAY_SIZE(hns3_dbg_cmd),
-+					 sizeof(*handle->dbgfs_buf),
-+					 GFP_KERNEL);
-+	if (!handle->dbgfs_buf)
-+		return -ENOMEM;
-+
- 	hns3_dbg_dentry[HNS3_DBG_DENTRY_COMMON].dentry =
- 				debugfs_create_dir(name, hns3_dbgfs_root);
- 	handle->hnae3_dbgfs = hns3_dbg_dentry[HNS3_DBG_DENTRY_COMMON].dentry;
-@@ -1380,9 +1387,9 @@ void hns3_dbg_uninit(struct hnae3_handle *handle)
- 	u32 i;
- 
- 	for (i = 0; i < ARRAY_SIZE(hns3_dbg_cmd); i++)
--		if (hns3_dbg_cmd[i].buf) {
--			kvfree(hns3_dbg_cmd[i].buf);
--			hns3_dbg_cmd[i].buf = NULL;
-+		if (handle->dbgfs_buf[i]) {
-+			kvfree(handle->dbgfs_buf[i]);
-+			handle->dbgfs_buf[i] = NULL;
- 		}
- 
- 	mutex_destroy(&handle->dbgfs_lock);
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.h b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.h
-index 83aa1450ab9f..97578eabb7d8 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.h
-@@ -49,7 +49,6 @@ struct hns3_dbg_cmd_info {
- 	enum hnae3_dbg_cmd cmd;
- 	enum hns3_dbg_dentry_type dentry;
- 	u32 buf_len;
--	char *buf;
- 	int (*init)(struct hnae3_handle *handle, unsigned int cmd);
- };
- 
--- 
-2.33.0
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/auxdisplay/holtek,ht16k33.yaml: properties:holtek,refuse-primary-fb: 'oneOf' conditional failed, one must be fixed:
+	'type' is a required property
+		hint: A vendor boolean property can use "type: boolean"
+	/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/auxdisplay/holtek,ht16k33.yaml: properties:holtek,refuse-primary-fb: 'oneOf' conditional failed, one must be fixed:
+		'enum' is a required property
+		'const' is a required property
+		hint: A vendor string property with exact values has an implicit type
+		from schema $id: http://devicetree.org/meta-schemas/vendor-props.yaml#
+	/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/auxdisplay/holtek,ht16k33.yaml: properties:holtek,refuse-primary-fb: 'oneOf' conditional failed, one must be fixed:
+		'$ref' is a required property
+		'allOf' is a required property
+		hint: A vendor property needs a $ref to types.yaml
+		from schema $id: http://devicetree.org/meta-schemas/vendor-props.yaml#
+	hint: Vendor specific properties must have a type and description unless they have a defined, common suffix.
+	from schema $id: http://devicetree.org/meta-schemas/vendor-props.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/auxdisplay/holtek,ht16k33.yaml: ignoring, error in schema: properties: holtek,refuse-primary-fb
+Documentation/devicetree/bindings/auxdisplay/holtek,ht16k33.example.dt.yaml:0:0: /example-0/i2c1/ht16k33@70: failed to match any schema with compatible: ['holtek,ht16k33']
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/1610969
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
