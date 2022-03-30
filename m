@@ -2,236 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F15A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 20:00:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88680C43219
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 20:02:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231614AbiC3UB6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 16:01:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34498 "EHLO
+        id S1350800AbiC3UDt (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 16:03:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231866AbiC3UBv (ORCPT
+        with ESMTP id S231866AbiC3UDr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 16:01:51 -0400
-Received: from gateway34.websitewelcome.com (gateway34.websitewelcome.com [192.185.149.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8665F2A253
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 13:00:04 -0700 (PDT)
-Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
-        by gateway34.websitewelcome.com (Postfix) with ESMTP id 299E632069
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 15:00:01 -0500 (CDT)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id ZeU5nQRTgb6UBZeU5nTrdm; Wed, 30 Mar 2022 15:00:01 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=eXKZchLq+5LAGT1CxaeWrPz836JWwoNXNHtPmYfC0Zo=; b=JCyTECsdx3bl2Vioe5IuGnejLk
-        plknHaucGbgrqi0zPkmebDyQwB8l8dJzO9Aji68ic99WsSsg7lV8X6KeQQQAIPgVxqzn7WBO5XtuC
-        ZfEPqFdPCKYYnUoezIDXs/ZbAtCZhSOvX9m+oqI63Wu0kQycj0Xh2EDsNn/HiE/2OFiShGkJQfhuc
-        yC6q807BIaNz4sGTsq6w2ymycnwtW3D8jWRRF6o9UDPoAZLLLOv6vqNXRrNdfegvwlHKjDrnRIvvz
-        Zz7xAfZGh264XVDuPE7Y5YTZsVoQpfkuLP2ksDisqi1EmAEonQZPE+dmcSIrskVdJ9iOuOuk82rnj
-        WmYj9CzQ==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54580)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nZeU4-001VGm-VT; Wed, 30 Mar 2022 20:00:01 +0000
-Message-ID: <2fbefb5f-a53c-ea68-0a1d-90c60f90d667@roeck-us.net>
-Date:   Wed, 30 Mar 2022 12:59:59 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 2/4] hwmon: (bt1-pvt) use generic polynomial functions
-Content-Language: en-US
-To:     Michael Walle <michael@walle.cc>, Jean Delvare <jdelvare@suse.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220328112505.3025374-1-michael@walle.cc>
- <20220328112505.3025374-3-michael@walle.cc>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <20220328112505.3025374-3-michael@walle.cc>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nZeU4-001VGm-VT
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54580
-X-Source-Auth: linux@roeck-us.net
-X-Email-Count: 1
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+        Wed, 30 Mar 2022 16:03:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E158139BA6;
+        Wed, 30 Mar 2022 13:02:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9CBB5B81E41;
+        Wed, 30 Mar 2022 20:01:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F031C340EC;
+        Wed, 30 Mar 2022 20:01:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1648670518;
+        bh=D6t+1GcBH79l7qhD0Q85c+NZyKW0vagPZr/Wc9lOaa8=;
+        h=Date:To:From:Subject:From;
+        b=jc/p1Y3/iUNbO/272k2HXr67HedR/6vUGUcApbnpVHGxTW4jOeh/zLdzoBdbNcLKv
+         pbTzRmpSGCr8qjyq83RA3B34uBaKtlgXRfwBtw1deujybErOH/e9FL89qqXTRSCE6W
+         ffAqpHYPwvBi/FDvUKZsNrY78bCJeq/F4LlzzUZA=
+Date:   Wed, 30 Mar 2022 13:01:57 -0700
+To:     broonie@kernel.org, mhocko@suse.cz, sfr@canb.auug.org.au,
+        linux-next@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        mm-commits@vger.kernel.org, akpm@linux-foundation.org
+From:   Andrew Morton <akpm@linux-foundation.org>
+Subject: mmotm 2022-03-30-13-01 uploaded
+Message-Id: <20220330200158.2F031C340EC@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/28/22 04:25, Michael Walle wrote:
-> The polynomial calculation function was moved into lib/ to be able to
-> reuse it. Move over to this one.
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
+The mm-of-the-moment snapshot 2022-03-30-13-01 has been uploaded to
 
-For my reference:
+   https://www.ozlabs.org/~akpm/mmotm/
 
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+mmotm-readme.txt says
 
-> ---
->   drivers/hwmon/Kconfig   |  1 +
->   drivers/hwmon/bt1-pvt.c | 50 +++++++++++------------------------------
->   2 files changed, 14 insertions(+), 37 deletions(-)
-> 
-> diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
-> index 68a8a27ab3b7..be9773270e53 100644
-> --- a/drivers/hwmon/Kconfig
-> +++ b/drivers/hwmon/Kconfig
-> @@ -415,6 +415,7 @@ config SENSORS_ATXP1
->   config SENSORS_BT1_PVT
->   	tristate "Baikal-T1 Process, Voltage, Temperature sensor driver"
->   	depends on MIPS_BAIKAL_T1 || COMPILE_TEST
-> +	select POLYNOMIAL
->   	help
->   	  If you say yes here you get support for Baikal-T1 PVT sensor
->   	  embedded into the SoC.
-> diff --git a/drivers/hwmon/bt1-pvt.c b/drivers/hwmon/bt1-pvt.c
-> index 74ce5211eb75..21ab172774ec 100644
-> --- a/drivers/hwmon/bt1-pvt.c
-> +++ b/drivers/hwmon/bt1-pvt.c
-> @@ -26,6 +26,7 @@
->   #include <linux/mutex.h>
->   #include <linux/of.h>
->   #include <linux/platform_device.h>
-> +#include <linux/polynomial.h>
->   #include <linux/seqlock.h>
->   #include <linux/sysfs.h>
->   #include <linux/types.h>
-> @@ -65,7 +66,7 @@ static const struct pvt_sensor_info pvt_info[] = {
->    *     48380,
->    * where T = [-48380, 147438] mC and N = [0, 1023].
->    */
-> -static const struct pvt_poly __maybe_unused poly_temp_to_N = {
-> +static const struct polynomial __maybe_unused poly_temp_to_N = {
->   	.total_divider = 10000,
->   	.terms = {
->   		{4, 18322, 10000, 10000},
-> @@ -76,7 +77,7 @@ static const struct pvt_poly __maybe_unused poly_temp_to_N = {
->   	}
->   };
->   
-> -static const struct pvt_poly poly_N_to_temp = {
-> +static const struct polynomial poly_N_to_temp = {
->   	.total_divider = 1,
->   	.terms = {
->   		{4, -16743, 1000, 1},
-> @@ -97,7 +98,7 @@ static const struct pvt_poly poly_N_to_temp = {
->    * N = (18658e-3*V - 11572) / 10,
->    * V = N * 10^5 / 18658 + 11572 * 10^4 / 18658.
->    */
-> -static const struct pvt_poly __maybe_unused poly_volt_to_N = {
-> +static const struct polynomial __maybe_unused poly_volt_to_N = {
->   	.total_divider = 10,
->   	.terms = {
->   		{1, 18658, 1000, 1},
-> @@ -105,7 +106,7 @@ static const struct pvt_poly __maybe_unused poly_volt_to_N = {
->   	}
->   };
->   
-> -static const struct pvt_poly poly_N_to_volt = {
-> +static const struct polynomial poly_N_to_volt = {
->   	.total_divider = 10,
->   	.terms = {
->   		{1, 100000, 18658, 1},
-> @@ -113,31 +114,6 @@ static const struct pvt_poly poly_N_to_volt = {
->   	}
->   };
->   
-> -/*
-> - * Here is the polynomial calculation function, which performs the
-> - * redistributed terms calculations. It's pretty straightforward. We walk
-> - * over each degree term up to the free one, and perform the redistributed
-> - * multiplication of the term coefficient, its divider (as for the rationale
-> - * fraction representation), data power and the rational fraction divider
-> - * leftover. Then all of this is collected in a total sum variable, which
-> - * value is normalized by the total divider before being returned.
-> - */
-> -static long pvt_calc_poly(const struct pvt_poly *poly, long data)
-> -{
-> -	const struct pvt_poly_term *term = poly->terms;
-> -	long tmp, ret = 0;
-> -	int deg;
-> -
-> -	do {
-> -		tmp = term->coef;
-> -		for (deg = 0; deg < term->deg; ++deg)
-> -			tmp = mult_frac(tmp, data, term->divider);
-> -		ret += tmp / term->divider_leftover;
-> -	} while ((term++)->deg);
-> -
-> -	return ret / poly->total_divider;
-> -}
-> -
->   static inline u32 pvt_update(void __iomem *reg, u32 mask, u32 data)
->   {
->   	u32 old;
-> @@ -324,9 +300,9 @@ static int pvt_read_data(struct pvt_hwmon *pvt, enum pvt_sensor_type type,
->   	} while (read_seqretry(&cache->data_seqlock, seq));
->   
->   	if (type == PVT_TEMP)
-> -		*val = pvt_calc_poly(&poly_N_to_temp, data);
-> +		*val = polynomial_calc(&poly_N_to_temp, data);
->   	else
-> -		*val = pvt_calc_poly(&poly_N_to_volt, data);
-> +		*val = polynomial_calc(&poly_N_to_volt, data);
->   
->   	return 0;
->   }
-> @@ -345,9 +321,9 @@ static int pvt_read_limit(struct pvt_hwmon *pvt, enum pvt_sensor_type type,
->   		data = FIELD_GET(PVT_THRES_HI_MASK, data);
->   
->   	if (type == PVT_TEMP)
-> -		*val = pvt_calc_poly(&poly_N_to_temp, data);
-> +		*val = polynomial_calc(&poly_N_to_temp, data);
->   	else
-> -		*val = pvt_calc_poly(&poly_N_to_volt, data);
-> +		*val = polynomial_calc(&poly_N_to_volt, data);
->   
->   	return 0;
->   }
-> @@ -360,10 +336,10 @@ static int pvt_write_limit(struct pvt_hwmon *pvt, enum pvt_sensor_type type,
->   
->   	if (type == PVT_TEMP) {
->   		val = clamp(val, PVT_TEMP_MIN, PVT_TEMP_MAX);
-> -		data = pvt_calc_poly(&poly_temp_to_N, val);
-> +		data = polynomial_calc(&poly_temp_to_N, val);
->   	} else {
->   		val = clamp(val, PVT_VOLT_MIN, PVT_VOLT_MAX);
-> -		data = pvt_calc_poly(&poly_volt_to_N, val);
-> +		data = polynomial_calc(&poly_volt_to_N, val);
->   	}
->   
->   	/* Serialize limit update, since a part of the register is changed. */
-> @@ -522,9 +498,9 @@ static int pvt_read_data(struct pvt_hwmon *pvt, enum pvt_sensor_type type,
->   		return -ETIMEDOUT;
->   
->   	if (type == PVT_TEMP)
-> -		*val = pvt_calc_poly(&poly_N_to_temp, data);
-> +		*val = polynomial_calc(&poly_N_to_temp, data);
->   	else
-> -		*val = pvt_calc_poly(&poly_N_to_volt, data);
-> +		*val = polynomial_calc(&poly_N_to_volt, data);
->   
->   	return 0;
->   }
+README for mm-of-the-moment:
 
+https://www.ozlabs.org/~akpm/mmotm/
+
+This is a snapshot of my -mm patch queue.  Uploaded at random hopefully
+more than once a week.
+
+You will need quilt to apply these patches to the latest Linus release (5.x
+or 5.x-rcY).  The series file is in broken-out.tar.gz and is duplicated in
+https://ozlabs.org/~akpm/mmotm/series
+
+The file broken-out.tar.gz contains two datestamp files: .DATE and
+.DATE-yyyy-mm-dd-hh-mm-ss.  Both contain the string yyyy-mm-dd-hh-mm-ss,
+followed by the base kernel version against which this patch series is to
+be applied.
+
+This tree is partially included in linux-next.  To see which patches are
+included in linux-next, consult the `series' file.  Only the patches
+within the #NEXT_PATCHES_START/#NEXT_PATCHES_END markers are included in
+linux-next.
+
+
+A full copy of the full kernel tree with the linux-next and mmotm patches
+already applied is available through git within an hour of the mmotm
+release.  Individual mmotm releases are tagged.  The master branch always
+points to the latest release, so it's constantly rebasing.
+
+	https://github.com/hnaz/linux-mm
+
+The directory https://www.ozlabs.org/~akpm/mmots/ (mm-of-the-second)
+contains daily snapshots of the -mm tree.  It is updated more frequently
+than mmotm, and is untested.
+
+A git copy of this tree is also available at
+
+	https://github.com/hnaz/linux-mm
+
+
+
+This mmotm tree contains the following patches against 5.17:
+(patches marked "*" will be included in linux-next)
+
+  origin.patch
+* mm-secretmem-fix-panic-when-growing-a-memfd_secret.patch
+* mailmap-update-vasily-averins-email-address.patch
+* memcg-sync-flush-only-if-periodic-flush-is-delayed.patch
+* revert-mm-madvise-skip-unmapped-vma-holes-passed-to-process_madvise.patch
+* ocfs2-fix-crash-when-mount-with-quota-enabled.patch
+* nilfs2-fix-lockdep-warnings-in-page-operations-for-btree-nodes.patch
+* nilfs2-fix-lockdep-warnings-during-disk-space-reclamation.patch
+* nilfs2-get-rid-of-nilfs_mapping_init.patch
+* mm-munlock-remove-fields-to-fix-htmldocs-warnings.patch
+* mm-munlock-add-lru_add_drain-to-fix-memcg_stat_test.patch
+* mm-kfence-fix-objcgs-vector-allocation.patch
+* mailmap-update-kirills-email.patch
+* mmhwpoison-unmap-poisoned-page-before-invalidation.patch
+* mm-kasan-fix-__gfp_bits_shift-definition-breaking-lockdep.patch
+* tools-vm-page_owner_sortc-remove-c-option.patch
+* doc-vm-page_ownerrst-remove-content-related-to-c-option.patch
+* mm-kmemleak-reset-tag-when-compare-object-pointer.patch
+* userfaultfd-mark-uffd_wp-regardless-of-vm_write-flag.patch
+* mm-fix-unexpected-zeroed-page-mapping-with-zram-swap.patch
+* mm-compaction-fix-compiler-warning-when-config_compaction=n.patch
+* hugetlb-do-not-demote-poisoned-hugetlb-pages.patch
+* proc-kpageflags-prevent-an-integer-overflow-in-stable_page_flags.patch
+* proc-kpageflags-do-not-use-uninitialized-struct-pages.patch
+* procfs-prevent-unpriveleged-processes-accessing-fdinfo-dir.patch
+  mm.patch
+* stacktrace-add-interface-based-on-shadow-call-stack.patch
+* arm64-scs-save-scs_sp-values-per-cpu-when-switching-stacks.patch
+* arm64-implement-stack_trace_save_shadow.patch
+* kasan-use-stack_trace_save_shadow.patch
+* mm-shmem-make-shmem_init-return-void.patch
+* mm-shmem-make-shmem_init-return-void-fix.patch
+* mm-memcg-remove-unneeded-nr_scanned.patch
+* mm-memcg-mz-already-removed-from-rb_tree-if-not-null.patch
+* mm-use-mmap_assert_write_locked-instead-of-open-coding-it.patch
+* mm-mmu_gather-limit-free-batch-count-and-add-schedule-point-in-tlb_batch_pages_flush.patch
+* mm-mremap-use-helper-mlock_future_check.patch
+* documentation-sysctl-document-page_lock_unfairness.patch
+* mm-page_alloc-simplify-update-of-pgdat-in-wake_all_kswapds.patch
+* mm-page_alloc-add-same-penalty-is-enough-to-get-round-robin-order.patch
+* mm-discard-__gfp_atomic.patch
+* mm-remove-unnecessary-void-conversions.patch
+* mm-munlock-protect-the-per-cpu-pagevec-by-a-local_lock_t.patch
+* mm-khugepaged-sched-to-numa-node-when-collapse-huge-page.patch
+* mm-vmscan-reclaim-only-affects-managed_zones.patch
+* mm-vmscan-make-sure-wakeup_kswapd-with-managed-zone.patch
+* mm-vmscan-sc-reclaim_idx-must-be-a-valid-zone-index.patch
+* mm-z3fold-declare-z3fold_mount-with-__init.patch
+* mm-z3fold-remove-obsolete-comment-in-z3fold_alloc.patch
+* mm-z3fold-minor-clean-up-for-z3fold_free.patch
+* mm-z3fold-remove-unneeded-page_mapcount_reset-and-clearpageprivate.patch
+* mm-z3fold-remove-confusing-local-variable-l-reassignment.patch
+* mm-z3fold-move-decrement-of-pool-pages_nr-into-__release_z3fold_page.patch
+* mm-z3fold-remove-redundant-list_del_init-of-zhdr-buddy-in-z3fold_free.patch
+* mm-z3fold-remove-unneeded-page_headless-check-in-free_handle.patch
+* mm-compaction-use-helper-isolation_suitable.patch
+* mm-add-selftests-for-migration-entries.patch
+* mm-migration-remove-unneeded-local-variable-mapping_locked.patch
+* mm-migration-remove-unneeded-out-label.patch
+* mm-migration-remove-unneeded-local-variable-page_lru.patch
+* mm-migration-fix-the-confusing-pagetranshuge-check.patch
+* mm-migration-use-helper-function-vma_lookup-in-add_page_for_migration.patch
+* mm-migration-use-helper-macro-min-in-do_pages_stat.patch
+* mm-migration-avoid-unneeded-nodemask_t-initialization.patch
+* mm-migration-remove-some-duplicated-codes-in-migrate_pages.patch
+* mm-migration-fix-potential-page-refcounts-leak-in-migrate_pages.patch
+* mm-migration-fix-potential-invalid-node-access-for-reclaim-based-migration.patch
+* mm-migration-fix-possible-do_pages_stat_array-racing-with-memory-offline.patch
+* ksm-count-ksm-merging-pages-for-each-process.patch
+* ksm-count-ksm-merging-pages-for-each-process-fix.patch
+* mm-untangle-config-dependencies-for-demote-on-reclaim.patch
+* mm-page_alloc-do-not-calculate-nodes-total-pages-and-memmap-pages-when-empty.patch
+* mm-memory_hotplug-reset-nodes-state-when-empty-during-offline.patch
+* mm-memory_hotplug-refactor-hotadd_init_pgdat-and-try_online_node.patch
+* mm-memory_hotplug-refactor-hotadd_init_pgdat-and-try_online_node-checkpatch-fixes.patch
+* mm-rmap-convert-from-atomic_t-to-refcount_t-on-anon_vma-refcount.patch
+* mm-rmap-fix-cache-flush-on-thp-pages.patch
+* dax-fix-cache-flush-on-pmd-mapped-pages.patch
+* mm-rmap-introduce-pfn_mkclean_range-to-cleans-ptes.patch
+* mm-pvmw-add-support-for-walking-devmap-pages.patch
+* dax-fix-missing-writeprotect-the-pte-entry.patch
+* mm-simplify-follow_invalidate_pte.patch
+* zram-add-a-huge_idle-writeback-mode.patch
+* damon-vaddr-test-tweak-code-to-make-the-logic-clearer.patch
+* info-task-hung-in-generic_file_write_iter.patch
+* info-task-hung-in-generic_file_write-fix.patch
+* kernel-hung_taskc-monitor-killed-tasks.patch
+* ia64-fix-typos-in-comments.patch
+* ia64-ptrace-fix-typos-in-comments.patch
+* ia64-replace-comments-with-c99-initializers.patch
+* ocfs2-replace-usage-of-found-with-dedicated-list-iterator-variable.patch
+* ocfs2-remove-usage-of-list-iterator-variable-after-the-loop-body.patch
+* ocfs2-reflink-deadlock-when-clone-file-to-the-same-directory-simultaneously.patch
+* ocfs2-clear-links-count-in-ocfs2_mknod-if-an-error-occurs.patch
+* ocfs2-fix-ocfs2-corrupt-when-iputting-an-inode.patch
+* proc-fix-dentry-inode-overinstantiating-under-proc-pid-net.patch
+* proc-fix-dentry-inode-overinstantiating-under-proc-pid-net-checkpatch-fixes.patch
+* proc-sysctl-make-protected_-world-readable.patch
+* kernel-pid_namespace-use-null-instead-of-using-plain-integer-as-pointer.patch
+* get_maintainer-honor-mailmap-for-in-file-emails.patch
+* lib-test_meminit-optimize-do_kmem_cache_rcu_persistent-test.patch
+* lib-kconfigdebug-remove-more-config__value-indirections.patch
+* lib-test_stringc-add-strspn-and-strcspn-tests.patch
+* lib-stringc-simplify-strspn.patch
+* lz4-fix-lz4_decompress_safe_partial-read-out-of-bound.patch
+* pipe-make-poll_usage-boolean-and-annotate-its-access.patch
+* list-fix-a-data-race-around-ep-rdllist.patch
+* init-mainc-silence-some-wunused-parameter-warnings.patch
+* fatfs-remove-redundant-judgment.patch
+* rapidio-remove-unnecessary-use-of-list-iterator.patch
+* ipc-mqueue-use-get_tree_nodev-in-mqueue_get_tree.patch
+  linux-next.patch
+  linux-next-rejects.patch
+* mm-oom_killc-fix-vm_oom_kill_table-ifdeffery.patch
+* selftests-vm-add-test-for-soft-dirty-pte-bit.patch
+* kselftest-vm-override-targets-from-arguments.patch
+  make-sure-nobodys-leaking-resources.patch
+  releasing-resources-with-children.patch
+  mutex-subsystem-synchro-test-module.patch
+  mutex-subsystem-synchro-test-module-fix.patch
+  kernel-forkc-export-kernel_thread-to-modules.patch
+  workaround-for-a-pci-restoring-bug.patch
