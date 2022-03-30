@@ -2,54 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F94FC38A2C
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FC6AC38A02
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345288AbiC3MDR (ORCPT
+        id S1347818AbiC3MHs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:03:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35800 "EHLO
+        Wed, 30 Mar 2022 08:07:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345036AbiC3Lxy (ORCPT
+        with ESMTP id S1345958AbiC3LzQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:53:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25D6427DEB7;
-        Wed, 30 Mar 2022 04:50:18 -0700 (PDT)
+        Wed, 30 Mar 2022 07:55:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E85C02B27F;
+        Wed, 30 Mar 2022 04:53:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EFE7661670;
-        Wed, 30 Mar 2022 11:50:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02B4AC340F2;
-        Wed, 30 Mar 2022 11:50:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A6D33B81C28;
+        Wed, 30 Mar 2022 11:53:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD29AC36AE2;
+        Wed, 30 Mar 2022 11:53:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641017;
-        bh=73n2kpjKjVfcEIGK9ACsjcNs/FDx2rkxpRD6WZBYkQM=;
+        s=k20201202; t=1648641205;
+        bh=3oTTFOn4x8U2QCSUJl8IaTqxzpbx4bG6EGPFTDb8hoA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XUhqZSnwvEYFw4GlhGq4mO3Srn8HeFbk36kMvuyavIN1eV6GTj9gyM5djx0Hy3fgk
-         7hXQ7kQOYmNulifrVDD/vc6VFv+jiSrUTs4KPEi4Pt70zRTvX3fzPiYqHqLyUCGicl
-         4jesOWpITNbCUsdGTjZeFCnkcFPgeK5qdBuv7zrTSuXDFeYbWKnl78UWlxHHFanhEK
-         0p9GkOMkXzl7/cdHKqeTP8bKRf01RwbQue8nzuZH9GZT+YvLeCgLYaQbZeOmHTMsM2
-         8DiZii7Kp7GIQ9m/rc+E78OpLxlovfhyTc2behJU4YpxZENxYOVy7SVp+3Citf/Sk4
-         tNNyT7sNSULng==
+        b=OsX1FiHFBHOcUyq0gUDeA/HaIUBrJk+U+WK45ECcHQyT7LKONJGGLZHGnzNjCKjf6
+         UdRnEA9X3plmxucA679KfrUyTHcGvpbct0WzUWW5AihEzF63BZfiO1cSMdNul1J9A7
+         3u7mvS/nRq3e5eznaqJ82WbmZlx5gCu7XzwcrqibHe3fUMAJypetWT3MB4SEbxEhCg
+         0whF0fvXo/j9vRKnHDhlXMFqi8Oo3/q4+uzix1L9JbAJg0SAjIqJhmuM1Z9iN9RFmD
+         Apll2cEJL0U8cpN/KJIGUNME1ubEsoKrZDosOhOdQYVCwG05FqMkckriZUPX9oJMna
+         kxqjBgnJq/LjA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Reddy Muralidhar <muralidhar.reddy@intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Rander Wang <rander.wang@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.15 07/50] ASoC: SOF: Intel: match sdw version on link_slaves_found
-Date:   Wed, 30 Mar 2022 07:49:21 -0400
-Message-Id: <20220330115005.1671090-7-sashal@kernel.org>
+Cc:     =?UTF-8?q?Daniel=20Gonz=C3=A1lez=20Cabanelas?= <dgcbueu@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 14/22] media: cx88-mpeg: clear interrupt status register before streaming video
+Date:   Wed, 30 Mar 2022 07:52:55 -0400
+Message-Id: <20220330115303.1672616-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330115005.1671090-1-sashal@kernel.org>
-References: <20220330115005.1671090-1-sashal@kernel.org>
+In-Reply-To: <20220330115303.1672616-1-sashal@kernel.org>
+References: <20220330115303.1672616-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -57,83 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bard Liao <yung-chuan.liao@linux.intel.com>
+From: Daniel González Cabanelas <dgcbueu@gmail.com>
 
-[ Upstream commit f67c0c0d3b9048d86ea6ae52e36a2b78c48f265d ]
+[ Upstream commit 56cb61f70e547e1b0cdfe6ff5a1f1ce6242e6d96 ]
 
-Codecs with the same part id, manufacturer id and part id, but different
-sdw version should be treated as different codecs. For example, rt711 and
-rt711-sdca are different. So, we should match sdw version as well.
+Some cx88 video cards may have transport stream status interrupts set
+to 1 from cold start, causing errors like this:
 
-Reported-by: Reddy Muralidhar <muralidhar.reddy@intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Reviewed-by: Rander Wang <rander.wang@intel.com>
-Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20220120232157.199919-2-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+  cx88xx: cx88_print_irqbits: core:irq mpeg  [0x100000] ts_err?*
+  cx8802: cx8802_mpeg_irq: mpeg:general errors: 0x00100000
+
+According to CX2388x datasheet, the interrupt status register should be
+cleared before enabling IRQs to stream video.
+
+Fix it by clearing the Transport Stream Interrupt Status register.
+
+Signed-off-by: Daniel González Cabanelas <dgcbueu@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sof/intel/hda.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ drivers/media/pci/cx88/cx88-mpeg.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/sound/soc/sof/intel/hda.c b/sound/soc/sof/intel/hda.c
-index ef92cca7ae01..ddf70902e53c 100644
---- a/sound/soc/sof/intel/hda.c
-+++ b/sound/soc/sof/intel/hda.c
-@@ -1072,7 +1072,7 @@ static bool link_slaves_found(struct snd_sof_dev *sdev,
- 	struct hdac_bus *bus = sof_to_bus(sdev);
- 	struct sdw_intel_slave_id *ids = sdw->ids;
- 	int num_slaves = sdw->num_slaves;
--	unsigned int part_id, link_id, unique_id, mfg_id;
-+	unsigned int part_id, link_id, unique_id, mfg_id, version;
- 	int i, j, k;
+diff --git a/drivers/media/pci/cx88/cx88-mpeg.c b/drivers/media/pci/cx88/cx88-mpeg.c
+index 52ff00ebd4bd..281eca525340 100644
+--- a/drivers/media/pci/cx88/cx88-mpeg.c
++++ b/drivers/media/pci/cx88/cx88-mpeg.c
+@@ -171,6 +171,9 @@ int cx8802_start_dma(struct cx8802_dev    *dev,
+ 	cx_write(MO_TS_GPCNTRL, GP_COUNT_CONTROL_RESET);
+ 	q->count = 0;
  
- 	for (i = 0; i < link->num_adr; i++) {
-@@ -1082,12 +1082,14 @@ static bool link_slaves_found(struct snd_sof_dev *sdev,
- 		mfg_id = SDW_MFG_ID(adr);
- 		part_id = SDW_PART_ID(adr);
- 		link_id = SDW_DISCO_LINK_ID(adr);
-+		version = SDW_VERSION(adr);
- 
- 		for (j = 0; j < num_slaves; j++) {
- 			/* find out how many identical parts were reported on that link */
- 			if (ids[j].link_id == link_id &&
- 			    ids[j].id.part_id == part_id &&
--			    ids[j].id.mfg_id == mfg_id)
-+			    ids[j].id.mfg_id == mfg_id &&
-+			    ids[j].id.sdw_version == version)
- 				reported_part_count++;
- 		}
- 
-@@ -1096,21 +1098,24 @@ static bool link_slaves_found(struct snd_sof_dev *sdev,
- 
- 			if (ids[j].link_id != link_id ||
- 			    ids[j].id.part_id != part_id ||
--			    ids[j].id.mfg_id != mfg_id)
-+			    ids[j].id.mfg_id != mfg_id ||
-+			    ids[j].id.sdw_version != version)
- 				continue;
- 
- 			/* find out how many identical parts are expected */
- 			for (k = 0; k < link->num_adr; k++) {
- 				u64 adr2 = link->adr_d[k].adr;
--				unsigned int part_id2, link_id2, mfg_id2;
-+				unsigned int part_id2, link_id2, mfg_id2, version2;
- 
- 				mfg_id2 = SDW_MFG_ID(adr2);
- 				part_id2 = SDW_PART_ID(adr2);
- 				link_id2 = SDW_DISCO_LINK_ID(adr2);
-+				version2 = SDW_VERSION(adr2);
- 
- 				if (link_id2 == link_id &&
- 				    part_id2 == part_id &&
--				    mfg_id2 == mfg_id)
-+				    mfg_id2 == mfg_id &&
-+				    version2 == version)
- 					expected_part_count++;
- 			}
- 
++	/* clear interrupt status register */
++	cx_write(MO_TS_INTSTAT,  0x1f1111);
++
+ 	/* enable irqs */
+ 	dprintk(1, "setting the interrupt mask\n");
+ 	cx_set(MO_PCI_INTMSK, core->pci_irqmask | PCI_INT_TSINT);
 -- 
 2.34.1
 
