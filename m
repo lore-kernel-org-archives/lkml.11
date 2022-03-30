@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3926DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 20:48:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4C08C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 20:49:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351157AbiC3Uul (ORCPT
+        id S1351252AbiC3Uup (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 16:50:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54716 "EHLO
+        Wed, 30 Mar 2022 16:50:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351161AbiC3UuF (ORCPT
+        with ESMTP id S1351190AbiC3UuT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 16:50:05 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3C4849933;
-        Wed, 30 Mar 2022 13:48:11 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id mr5-20020a17090b238500b001c67366ae93so807258pjb.4;
-        Wed, 30 Mar 2022 13:48:11 -0700 (PDT)
+        Wed, 30 Mar 2022 16:50:19 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAFBA15FD2;
+        Wed, 30 Mar 2022 13:48:16 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id u22so19934846pfg.6;
+        Wed, 30 Mar 2022 13:48:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=tOn9Tor8polPNHF4xDcLky0lDAw9l38xozLRMXI1//U=;
-        b=UPK7hL40Q2YvCF9wKbtwYgJsCkDD4S3VjnoBgdNSt+WHM9zo7jOHSYtbtzE/pU7cc0
-         vWJUocRHernfEg73QBM9SK2P7rVRf+2qdpt+ZCnjAmUNaIeYI02wik/UvelXsmEXugFg
-         mTdOEsnNaUwfQ3W9rElImmVHtS95BnTfIj0w4SFFy33B7vRuFqiyB0rLTQpND+vxfjtH
-         rCYoA7o2YWALAs1UeWMk1if0oh2cESd++RhA4sJ9c4ITBqScF7/6YyldnC+nq+FLVFGB
-         8O8zqvBh1YQAdW1FoWS9e2nQjbVz42hJ+8eewUQecBhbeb47p8JtIXXDUNSDVXTrK/WH
-         dwSg==
+        bh=B/Mh53kPn0QTu3WUX/8jYKpAAkoPl5CFyIRM1My8ikk=;
+        b=kWtT++covG1yMwHPTJ6ztbVXh9M4ZY8UKKYOujYv39WArd2SGh5AgTRFeCiwIRT1t5
+         bQnRf368c+LyW5+/zuQIlApoAjMK/wiHHXBK73S6Ra5XBjRbch8wRhI+Bfp1QZi5lfsg
+         O+wfaaT4uTazIt5Ys3+alG0gasVRuxQ5TqUmbI7LV/WUrimb0Y4aTmCPFHHbd9QYBbQ7
+         IGCiw8UF2N+eu37JJDcUUnepb4LwxIPvM1+X3cVymJ9aRWQLcYz7C8owyiUGZCuiXfTP
+         c6baqineYHWxcPFPaXwA0wY8iZO9Z1tA7B870pu54OW66Om+VlHTgfwP/8NQFU/Jh1+o
+         zjAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=tOn9Tor8polPNHF4xDcLky0lDAw9l38xozLRMXI1//U=;
-        b=bKqw9IZ+8KdPmcrAeJyrWLaUBihGEfpgEhlUnC6QQZtpjvrr8C70Q9F399p+LTiLL9
-         CI6Lqamwq8YesqYOR7p3aGzU9rK8/4mbMpOMtBtDnsPGOoNUkfGprZidO04gZ2g4JzVP
-         6wj+DvfoNGStOKDCCCzs9ra610L4arNzG+Fm20sXqs7zrT4TOMnTIZJWFPkVtR/Szy15
-         Y08ZREPaXFRJYP+DOgRkUoz87wnY+FXLxyd9h8k9FNscW3f+s7Lm/zCIkggbzQb7d5s0
-         6gxOaY4fA1zfo5m8JWQfiqJCfdYYL8g9LeAdbCiq34SBU2QeHKRk5xVvTfww/r4L5Rgd
-         Ntdg==
-X-Gm-Message-State: AOAM532PDNMe2ce4VnhQFbY9rBkCxVdpAmKCQw6jxWsdbSrbTVE0L2Q1
-        jGxgNyQK6BsdpCZ12rw5vRE=
-X-Google-Smtp-Source: ABdhPJwJYRnX56RJoMLOVKWPDbw1s9PqMDGKWuJcsQPWKmnOylUzAMHvewFPAxCbjEv4C8yhrsXlMQ==
-X-Received: by 2002:a17:902:c745:b0:151:e8fa:629b with SMTP id q5-20020a170902c74500b00151e8fa629bmr38131930plq.90.1648673291159;
-        Wed, 30 Mar 2022 13:48:11 -0700 (PDT)
+        bh=B/Mh53kPn0QTu3WUX/8jYKpAAkoPl5CFyIRM1My8ikk=;
+        b=lZnV9A1XzgIWpEiyE1StrwwZUEtU/lT0yKF6qZcoaXHngfAtSOdFrakJBvh1ZqCd9/
+         AlssrK9EjbMYJ9mqxO2gajvlVQM+wB/YFSAow8rZ0c9I7mkMsqA/dDd5zX5FYuFApE4y
+         4MP2iKp8jXkzyJ067RSCwo0MLM1tz3NEB5XJ7+Yn1CGxPQVunGUWILS/wH90FUA3yjHD
+         OzHMa3vxIloLLJ0y9jYQi3syi/aKXeT5mUCARn42atEWYiI3wV7TcE2nmTapOn3exxf1
+         5mtJnrerjBp+bTfei/YRZUnU8ekZsvcCobJqPKunpdPaiUugo/453cZLShz714cX2yjL
+         9kog==
+X-Gm-Message-State: AOAM532N4dfgCc2u4CmSCLNUklFyKixIngH/CWtw1EyDT0WHcP+8krjL
+        utbkhdEKSI27dOz6nc5E9AI=
+X-Google-Smtp-Source: ABdhPJyBLXRWfRJM2DV60SzL9CEogUwwWSLdQ8WE5cTv7VGSEFLANNjJGoLp2xmS8if0CRRNrTy1KQ==
+X-Received: by 2002:a63:e1a:0:b0:380:fba9:f6e8 with SMTP id d26-20020a630e1a000000b00380fba9f6e8mr7750362pgl.384.1648673296294;
+        Wed, 30 Mar 2022 13:48:16 -0700 (PDT)
 Received: from localhost ([2a00:79e1:abd:4a00:2703:3c72:eb1a:cffd])
-        by smtp.gmail.com with ESMTPSA id d21-20020a056a0024d500b004fb0e7c7c3bsm21656825pfv.161.2022.03.30.13.48.09
+        by smtp.gmail.com with ESMTPSA id b2-20020a056a000a8200b004e1414f0bb1sm26005115pfl.135.2022.03.30.13.48.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Mar 2022 13:48:10 -0700 (PDT)
+        Wed, 30 Mar 2022 13:48:15 -0700 (PDT)
 From:   Rob Clark <robdclark@gmail.com>
 To:     dri-devel@lists.freedesktop.org
 Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
@@ -60,9 +60,9 @@ Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
         David Airlie <airlied@linux.ie>,
         Daniel Vetter <daniel@ffwll.ch>,
         linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v2 07/10] drm/msm/gem: Rework vma lookup and pin
-Date:   Wed, 30 Mar 2022 13:47:52 -0700
-Message-Id: <20220330204804.660819-8-robdclark@gmail.com>
+Subject: [PATCH v2 09/10] drm/msm/gem: Add fenced vma unpin
+Date:   Wed, 30 Mar 2022 13:47:54 -0700
+Message-Id: <20220330204804.660819-10-robdclark@gmail.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220330204804.660819-1-robdclark@gmail.com>
 References: <20220330204804.660819-1-robdclark@gmail.com>
@@ -74,130 +74,211 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Rob Clark <robdclark@chromium.org>
 
-Combines duplicate vma lookup in the get_and_pin path.
+With userspace allocated iova (next patch), we can have a race condition
+where userspace observes the fence completion and deletes the vma before
+retire_submit() gets around to unpinning the vma.  To handle this, add a
+fenced unpin which drops the refcount but tracks the fence, and update
+msm_gem_vma_inuse() to check any previously unsignaled fences.
 
 Signed-off-by: Rob Clark <robdclark@chromium.org>
 ---
- drivers/gpu/drm/msm/msm_gem.c | 50 ++++++++++++++++++-----------------
- 1 file changed, 26 insertions(+), 24 deletions(-)
+ drivers/gpu/drm/msm/msm_fence.c      |  6 ++++--
+ drivers/gpu/drm/msm/msm_fence.h      |  3 +++
+ drivers/gpu/drm/msm/msm_gem.c        |  2 +-
+ drivers/gpu/drm/msm/msm_gem.h        |  9 +++++++--
+ drivers/gpu/drm/msm/msm_gem_vma.c    | 28 +++++++++++++++++++++++++---
+ drivers/gpu/drm/msm/msm_ringbuffer.c | 12 +++++++++++-
+ 6 files changed, 51 insertions(+), 9 deletions(-)
 
+diff --git a/drivers/gpu/drm/msm/msm_fence.c b/drivers/gpu/drm/msm/msm_fence.c
+index f2cece542c3f..3df255402a33 100644
+--- a/drivers/gpu/drm/msm/msm_fence.c
++++ b/drivers/gpu/drm/msm/msm_fence.c
+@@ -15,6 +15,7 @@ msm_fence_context_alloc(struct drm_device *dev, volatile uint32_t *fenceptr,
+ 		const char *name)
+ {
+ 	struct msm_fence_context *fctx;
++	static int index = 0;
+ 
+ 	fctx = kzalloc(sizeof(*fctx), GFP_KERNEL);
+ 	if (!fctx)
+@@ -23,6 +24,7 @@ msm_fence_context_alloc(struct drm_device *dev, volatile uint32_t *fenceptr,
+ 	fctx->dev = dev;
+ 	strncpy(fctx->name, name, sizeof(fctx->name));
+ 	fctx->context = dma_fence_context_alloc(1);
++	fctx->index = index++;
+ 	fctx->fenceptr = fenceptr;
+ 	spin_lock_init(&fctx->spinlock);
+ 
+@@ -34,7 +36,7 @@ void msm_fence_context_free(struct msm_fence_context *fctx)
+ 	kfree(fctx);
+ }
+ 
+-static inline bool fence_completed(struct msm_fence_context *fctx, uint32_t fence)
++bool msm_fence_completed(struct msm_fence_context *fctx, uint32_t fence)
+ {
+ 	/*
+ 	 * Note: Check completed_fence first, as fenceptr is in a write-combine
+@@ -76,7 +78,7 @@ static const char *msm_fence_get_timeline_name(struct dma_fence *fence)
+ static bool msm_fence_signaled(struct dma_fence *fence)
+ {
+ 	struct msm_fence *f = to_msm_fence(fence);
+-	return fence_completed(f->fctx, f->base.seqno);
++	return msm_fence_completed(f->fctx, f->base.seqno);
+ }
+ 
+ static const struct dma_fence_ops msm_fence_ops = {
+diff --git a/drivers/gpu/drm/msm/msm_fence.h b/drivers/gpu/drm/msm/msm_fence.h
+index 17ee3822b423..7f1798c54cd1 100644
+--- a/drivers/gpu/drm/msm/msm_fence.h
++++ b/drivers/gpu/drm/msm/msm_fence.h
+@@ -21,6 +21,8 @@ struct msm_fence_context {
+ 	char name[32];
+ 	/** context: see dma_fence_context_alloc() */
+ 	unsigned context;
++	/** index: similar to context, but local to msm_fence_context's */
++	unsigned index;
+ 
+ 	/**
+ 	 * last_fence:
+@@ -56,6 +58,7 @@ struct msm_fence_context * msm_fence_context_alloc(struct drm_device *dev,
+ 		volatile uint32_t *fenceptr, const char *name);
+ void msm_fence_context_free(struct msm_fence_context *fctx);
+ 
++bool msm_fence_completed(struct msm_fence_context *fctx, uint32_t fence);
+ void msm_update_fence(struct msm_fence_context *fctx, uint32_t fence);
+ 
+ struct dma_fence * msm_fence_alloc(struct msm_fence_context *fctx);
 diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
-index deafae6feaa8..218744a490a4 100644
+index e8107a22c33a..bf4af17e2f1e 100644
 --- a/drivers/gpu/drm/msm/msm_gem.c
 +++ b/drivers/gpu/drm/msm/msm_gem.c
-@@ -376,39 +376,40 @@ put_iova_vmas(struct drm_gem_object *obj)
- 	}
- }
- 
--static int get_iova_locked(struct drm_gem_object *obj,
--		struct msm_gem_address_space *aspace, uint64_t *iova,
-+static struct msm_gem_vma *get_vma_locked(struct drm_gem_object *obj,
-+		struct msm_gem_address_space *aspace,
- 		u64 range_start, u64 range_end)
- {
- 	struct msm_gem_vma *vma;
--	int ret = 0;
+@@ -445,7 +445,7 @@ void msm_gem_unpin_vma_locked(struct drm_gem_object *obj, struct msm_gem_vma *vm
  
  	GEM_WARN_ON(!msm_gem_is_locked(obj));
  
- 	vma = lookup_vma(obj, aspace);
+-	msm_gem_unmap_vma(vma->aspace, vma);
++	msm_gem_unpin_vma(vma);
  
- 	if (!vma) {
-+		int ret;
+ 	msm_obj->pin_count--;
+ 	GEM_WARN_ON(msm_obj->pin_count < 0);
+diff --git a/drivers/gpu/drm/msm/msm_gem.h b/drivers/gpu/drm/msm/msm_gem.h
+index f98264cf130d..38d66e1248b1 100644
+--- a/drivers/gpu/drm/msm/msm_gem.h
++++ b/drivers/gpu/drm/msm/msm_gem.h
+@@ -49,6 +49,8 @@ struct msm_gem_address_space *
+ msm_gem_address_space_create(struct msm_mmu *mmu, const char *name,
+ 		u64 va_start, u64 size);
+ 
++struct msm_fence_context;
 +
- 		vma = add_vma(obj, aspace);
- 		if (IS_ERR(vma))
--			return PTR_ERR(vma);
-+			return vma;
+ struct msm_gem_vma {
+ 	struct drm_mm_node node;
+ 	uint64_t iova;
+@@ -56,6 +58,9 @@ struct msm_gem_vma {
+ 	struct list_head list;    /* node in msm_gem_object::vmas */
+ 	bool mapped;
+ 	int inuse;
++	uint32_t fence_mask;
++	uint32_t fence[MSM_GPU_MAX_RINGS];
++	struct msm_fence_context *fctx[MSM_GPU_MAX_RINGS];
+ };
  
- 		ret = msm_gem_init_vma(aspace, vma, obj->size,
- 			range_start, range_end);
- 		if (ret) {
- 			del_vma(vma);
--			return ret;
-+			return ERR_PTR(ret);
- 		}
-+	} else {
-+		GEM_WARN_ON(vma->iova < range_start);
-+		GEM_WARN_ON((vma->iova + obj->size) > range_end);
- 	}
+ int msm_gem_init_vma(struct msm_gem_address_space *aspace,
+@@ -64,8 +69,8 @@ int msm_gem_init_vma(struct msm_gem_address_space *aspace,
+ bool msm_gem_vma_inuse(struct msm_gem_vma *vma);
+ void msm_gem_purge_vma(struct msm_gem_address_space *aspace,
+ 		struct msm_gem_vma *vma);
+-void msm_gem_unmap_vma(struct msm_gem_address_space *aspace,
+-		struct msm_gem_vma *vma);
++void msm_gem_unpin_vma(struct msm_gem_vma *vma);
++void msm_gem_unpin_vma_fenced(struct msm_gem_vma *vma, struct msm_fence_context *fctx);
+ int msm_gem_map_vma(struct msm_gem_address_space *aspace,
+ 		struct msm_gem_vma *vma, int prot,
+ 		struct sg_table *sgt, int size);
+diff --git a/drivers/gpu/drm/msm/msm_gem_vma.c b/drivers/gpu/drm/msm/msm_gem_vma.c
+index 4949899f1fc7..6f9a402450f9 100644
+--- a/drivers/gpu/drm/msm/msm_gem_vma.c
++++ b/drivers/gpu/drm/msm/msm_gem_vma.c
+@@ -5,6 +5,7 @@
+  */
  
--	*iova = vma->iova;
--	return 0;
-+	return vma;
- }
+ #include "msm_drv.h"
++#include "msm_fence.h"
+ #include "msm_gem.h"
+ #include "msm_mmu.h"
  
--static int msm_gem_pin_iova(struct drm_gem_object *obj,
--		struct msm_gem_address_space *aspace)
-+static int msm_gem_pin_iova(struct drm_gem_object *obj, struct msm_gem_vma *vma)
+@@ -39,7 +40,19 @@ msm_gem_address_space_get(struct msm_gem_address_space *aspace)
+ 
+ bool msm_gem_vma_inuse(struct msm_gem_vma *vma)
  {
- 	struct msm_gem_object *msm_obj = to_msm_bo(obj);
--	struct msm_gem_vma *vma;
- 	struct page **pages;
- 	int ret, prot = IOMMU_READ;
- 
-@@ -426,15 +427,11 @@ static int msm_gem_pin_iova(struct drm_gem_object *obj,
- 	if (GEM_WARN_ON(msm_obj->madv != MSM_MADV_WILLNEED))
- 		return -EBUSY;
- 
--	vma = lookup_vma(obj, aspace);
--	if (GEM_WARN_ON(!vma))
--		return -EINVAL;
--
- 	pages = get_pages(obj);
- 	if (IS_ERR(pages))
- 		return PTR_ERR(pages);
- 
--	ret = msm_gem_map_vma(aspace, vma, prot, msm_obj->sgt, obj->size);
-+	ret = msm_gem_map_vma(vma->aspace, vma, prot, msm_obj->sgt, obj->size);
- 
- 	if (!ret)
- 		msm_obj->pin_count++;
-@@ -446,19 +443,18 @@ static int get_and_pin_iova_range_locked(struct drm_gem_object *obj,
- 		struct msm_gem_address_space *aspace, uint64_t *iova,
- 		u64 range_start, u64 range_end)
- {
--	u64 local;
-+	struct msm_gem_vma *vma;
- 	int ret;
- 
- 	GEM_WARN_ON(!msm_gem_is_locked(obj));
- 
--	ret = get_iova_locked(obj, aspace, &local,
--		range_start, range_end);
--
--	if (!ret)
--		ret = msm_gem_pin_iova(obj, aspace);
-+	vma = get_vma_locked(obj, aspace, range_start, range_end);
-+	if (IS_ERR(vma))
-+		return PTR_ERR(vma);
- 
-+	ret = msm_gem_pin_iova(obj, vma);
- 	if (!ret)
--		*iova = local;
-+		*iova = vma->iova;
- 
- 	return ret;
- }
-@@ -500,10 +496,16 @@ int msm_gem_get_and_pin_iova(struct drm_gem_object *obj,
- int msm_gem_get_iova(struct drm_gem_object *obj,
- 		struct msm_gem_address_space *aspace, uint64_t *iova)
- {
--	int ret;
-+	struct msm_gem_vma *vma;
-+	int ret = 0;
- 
- 	msm_gem_lock(obj);
--	ret = get_iova_locked(obj, aspace, iova, 0, U64_MAX);
-+	vma = get_vma_locked(obj, aspace, 0, U64_MAX);
-+	if (IS_ERR(vma)) {
-+		ret = PTR_ERR(vma);
-+	} else {
-+		*iova = vma->iova;
+-	return !!vma->inuse;
++	if (vma->inuse > 0)
++		return true;
++
++	while (vma->fence_mask) {
++		unsigned idx = ffs(vma->fence_mask) - 1;
++
++		if (!msm_fence_completed(vma->fctx[idx], vma->fence[idx]))
++			return true;
++
++		vma->fence_mask &= ~BIT(idx);
 +	}
- 	msm_gem_unlock(obj);
++
++	return false;
+ }
  
- 	return ret;
+ /* Actually unmap memory for the vma */
+@@ -63,13 +76,22 @@ void msm_gem_purge_vma(struct msm_gem_address_space *aspace,
+ }
+ 
+ /* Remove reference counts for the mapping */
+-void msm_gem_unmap_vma(struct msm_gem_address_space *aspace,
+-		struct msm_gem_vma *vma)
++void msm_gem_unpin_vma(struct msm_gem_vma *vma)
+ {
+ 	if (!GEM_WARN_ON(!vma->iova))
+ 		vma->inuse--;
+ }
+ 
++/* Replace pin reference with fence: */
++void msm_gem_unpin_vma_fenced(struct msm_gem_vma *vma, struct msm_fence_context *fctx)
++{
++	vma->fctx[fctx->index] = fctx;
++	vma->fence[fctx->index] = fctx->last_fence;
++	vma->fence_mask |= BIT(fctx->index);
++	msm_gem_unpin_vma(vma);
++}
++
++/* Map and pin vma: */
+ int
+ msm_gem_map_vma(struct msm_gem_address_space *aspace,
+ 		struct msm_gem_vma *vma, int prot,
+diff --git a/drivers/gpu/drm/msm/msm_ringbuffer.c b/drivers/gpu/drm/msm/msm_ringbuffer.c
+index 3bbf574c3bdc..01f7e4b771ff 100644
+--- a/drivers/gpu/drm/msm/msm_ringbuffer.c
++++ b/drivers/gpu/drm/msm/msm_ringbuffer.c
+@@ -14,9 +14,19 @@ module_param(num_hw_submissions, uint, 0600);
+ static struct dma_fence *msm_job_run(struct drm_sched_job *job)
+ {
+ 	struct msm_gem_submit *submit = to_msm_submit(job);
++	struct msm_fence_context *fctx = submit->ring->fctx;
+ 	struct msm_gpu *gpu = submit->gpu;
++	int i;
+ 
+-	submit->hw_fence = msm_fence_alloc(submit->ring->fctx);
++	submit->hw_fence = msm_fence_alloc(fctx);
++
++	for (i = 0; i < submit->nr_bos; i++) {
++		struct drm_gem_object *obj = &submit->bos[i].obj->base;
++
++		msm_gem_lock(obj);
++		msm_gem_unpin_vma_fenced(submit->bos[i].vma, fctx);
++		msm_gem_unlock(obj);
++	}
+ 
+ 	pm_runtime_get_sync(&gpu->pdev->dev);
+ 
 -- 
 2.35.1
 
