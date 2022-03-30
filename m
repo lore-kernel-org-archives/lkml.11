@@ -2,113 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC41FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 05:59:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47F05C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:00:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243111AbiC3GBl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 02:01:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50674 "EHLO
+        id S243130AbiC3GC1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 02:02:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243112AbiC3GBi (ORCPT
+        with ESMTP id S243113AbiC3GCX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 02:01:38 -0400
-Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 867141CFCD
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 22:59:53 -0700 (PDT)
-Received: by mail-qv1-xf31.google.com with SMTP id kd21so13211578qvb.6
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 22:59:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Fii15z5BdqeKVdyRrQjR89UzGkIpNccPLX9tr8s7gIA=;
-        b=iCWRSqk7ZZDcLY7AA0TWbvoaXCD5tIK4K0pYqtP3XYWJ++OAYC87CxlQVCTeWn7H4c
-         s0DzUM66DR2NQboRA7PMOl4KLRskQGe6Hw04doFvF0qp2AEx6iFf7SN1HssCa2D2rw7u
-         GKIzcGWapWdM+T/2qrpCtcIm7Au62A9I3zjDzYhac0QAavc1ji1iNm5ToVOlZulxcODB
-         kBkBEvJIIGVo3F8AxVtPnQOuvAmB3lFcHq8Xu0LsJBg4oMdsp3VV0c9p/cBsA/WZJ+kk
-         lxZu+92fP9sa+tXUrHWpFHquEOQP2Y2MdSqbFI4aCY2kxWdfpH3xsyflCCGknadk1lmD
-         uYbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Fii15z5BdqeKVdyRrQjR89UzGkIpNccPLX9tr8s7gIA=;
-        b=YNmbYQuCe580B1Ez0DUoxYyqVDlweHT9jl8kE0DHxRdD1mJV4tIZY4zxuSgsWKGuwe
-         ICWe1fw1O1eY9I+VRzKYqNYy9IS+9Pe+jCsXX/6ZAHRC/bHwmPImNysnp/p84W55+mhT
-         IOjRZvVFGHmT9Is5gH4jbCntnD1RiviPad7CHTvAuaqBru5VEiaPXP3a5sJjlLSmlhho
-         SPsgB+t/yJj5A7PqZcvh62E1O+IyXQacg+eGUSjiGoe3ni0PMXCCiVtdlnaIDshp+NVT
-         qCGlCZfr42nzkXkRyKGT3lA84dVo1vcZrv7Vu4SnAsingJ/1jwQYs/bcY3QzR/dRnSKM
-         Llfg==
-X-Gm-Message-State: AOAM530iUvQ/rko7CeZDMfr1xsvRkFvtlcHiFm7ssfmFy6FhkDjxfhmw
-        NVcmHAVTb6sr4HY0e8xA7v4=
-X-Google-Smtp-Source: ABdhPJy7JhQnst3fNKGP6qDDp0NbdUv+svIp+Ze3jCARpjEflPmrl1E9FEk9a+xm0onCdHJQkFWRJQ==
-X-Received: by 2002:a05:6214:20e4:b0:441:7bed:5ccd with SMTP id 4-20020a05621420e400b004417bed5ccdmr25606284qvk.119.1648619992562;
-        Tue, 29 Mar 2022 22:59:52 -0700 (PDT)
-Received: from localhost ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id z19-20020a05622a029300b002e1a763dac1sm16867557qtw.9.2022.03.29.22.59.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Mar 2022 22:59:51 -0700 (PDT)
-Message-ID: <6243f1d7.1c69fb81.b19c7.7ec1@mx.google.com>
-X-Google-Original-Message-ID: <20220330055949.GA2378119@cgel.zte@gmail.com>
-Date:   Wed, 30 Mar 2022 05:59:49 +0000
-From:   CGEL <cgel.zte@gmail.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com,
-        eparis@redhat.com, linux-audit@redhat.com, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Yang Yang <yang.yang29@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] audit: do a quick exit when syscall number is invalid
-References: <20220326094654.2361956-1-yang.yang29@zte.com.cn>
- <202203270449.WBYQF9X3-lkp@intel.com>
- <62426553.1c69fb81.bb808.345c@mx.google.com>
- <CAHC9VhRNuoPH6AySUbe6h2D6kghhezyVQtTAvm-t-fTpXH6XwQ@mail.gmail.com>
- <62427b5c.1c69fb81.fc2a7.d1af@mx.google.com>
- <CAHC9VhTLTQmHaka9tTyuu=rQOzpsn_K2NxfJ==7-6FSY3KnuFg@mail.gmail.com>
+        Wed, 30 Mar 2022 02:02:23 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02A151CB16;
+        Tue, 29 Mar 2022 23:00:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=QMWT9HOFh5h5bvyOmnUYIuCvOmb24iZ90JHmyrXWtdo=; b=fWu9IeRU6R+CIOuIVc1iq4v3F8
+        o1yGvrNp8FVx+vlixl02Vx1dsdjeypdTZlUnRQh+2d2LE83IKTIZjfWKZolNiHNA9Oaqg/6efFIsG
+        QufkwCnXL9nWfpefvi8DTsNdLqN9jgrR2ZaRxpCll+rFbN/bFbKb8uIW/ejYLukpyYWtqlmELsfVr
+        YnKPaeyjMk11SIIIYIs0IufLZx1SmrjujoiOx4YNQBv4yglpTBwqNJN+rq/OYyiaxKX970E0MtOcg
+        k6ii+xG0NMpXrDwOa9Cg0+l5wgoXcCA/Mb6YDGhJKMN9ACpM/uFI913Nu6EcaaTSwWGXLUQbSAMTR
+        LtAWwbeA==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nZRNl-00EO6f-Iv; Wed, 30 Mar 2022 06:00:37 +0000
+Date:   Tue, 29 Mar 2022 23:00:37 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Shiyang Ruan <ruansy.fnst@fujitsu.com>
+Cc:     linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org,
+        nvdimm@lists.linux.dev, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, djwong@kernel.org,
+        dan.j.williams@intel.com, david@fromorbit.com, hch@infradead.org,
+        jane.chu@oracle.com
+Subject: Re: [PATCH v11 7/8] xfs: Implement ->notify_failure() for XFS
+Message-ID: <YkPyBQer+KRiregd@infradead.org>
+References: <20220227120747.711169-1-ruansy.fnst@fujitsu.com>
+ <20220227120747.711169-8-ruansy.fnst@fujitsu.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHC9VhTLTQmHaka9tTyuu=rQOzpsn_K2NxfJ==7-6FSY3KnuFg@mail.gmail.com>
+In-Reply-To: <20220227120747.711169-8-ruansy.fnst@fujitsu.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 09:11:19AM -0400, Paul Moore wrote:
-> On Mon, Mar 28, 2022 at 11:22 PM CGEL <cgel.zte@gmail.com> wrote:
-> > On Mon, Mar 28, 2022 at 11:06:12PM -0400, Paul Moore wrote:
-> > > On Mon, Mar 28, 2022 at 9:48 PM CGEL <cgel.zte@gmail.com> wrote:
-> > > > Sorry could anybody give a hand to solve this? It works well on x86_64 and arm64.
-> > > > I have no alpha environment and not familiar to this arch, much thanks!
-> > >
-> > > Regardless of if this is fixed, I'm not convinced this is something we
-> > > want to merge.  After all, a process executed a syscall and we should
-> > > process it like any other; just because it happens to be an
-> > > unrecognized syscall on a particular kernel build doesn't mean it
-> > > isn't security relevant (probing for specific syscall numbers may be a
-> > > useful attack fingerprint).
-> >
-> > Thanks for your reply.
-> >
-> > But syscall number less than 0 is even invalid for auditctl. So we
-> > will never hit this kind of audit rule. And invalid syscall number
-> > will always cause failure early in syscall handle.
-> >
-> > sh-4.2# auditctl -a always,exit -F arch=b64 -S -1
-> > Syscall name unknown: -1
-> 
-> You can add an audit filter without explicitly specifying a syscall:
-> 
-> % auditctl -a exit,always -F auid=1000
-> % auditctl -l
-> -a always,exit -S all -F auid=1000
->
-I have tried this, and execute program which call syscall number is -1,
-audit still didn't record it. It supports that there's no need for audit
-to handle syscall number less than 0.
+> @@ -1892,6 +1893,8 @@ xfs_free_buftarg(
+>  	list_lru_destroy(&btp->bt_lru);
+>  
+>  	blkdev_issue_flush(btp->bt_bdev);
+> +	if (btp->bt_daxdev)
+> +		dax_unregister_holder(btp->bt_daxdev, btp->bt_mount);
+>  	fs_put_dax(btp->bt_daxdev);
+>  
+>  	kmem_free(btp);
+> @@ -1939,6 +1942,7 @@ xfs_alloc_buftarg(
+>  	struct block_device	*bdev)
+>  {
+>  	xfs_buftarg_t		*btp;
+> +	int			error;
+>  
+>  	btp = kmem_zalloc(sizeof(*btp), KM_NOFS);
+>  
+> @@ -1946,6 +1950,14 @@ xfs_alloc_buftarg(
+>  	btp->bt_dev =  bdev->bd_dev;
+>  	btp->bt_bdev = bdev;
+>  	btp->bt_daxdev = fs_dax_get_by_bdev(bdev, &btp->bt_dax_part_off);
+> +	if (btp->bt_daxdev) {
+> +		error = dax_register_holder(btp->bt_daxdev, mp,
+> +				&xfs_dax_holder_operations);
+> +		if (error) {
+> +			xfs_err(mp, "DAX device already in use?!");
+> +			goto error_free;
+> +		}
+> +	}
 
-sh-4.2# auditctl -a exit,always
-sh-4.2# auditctl -l
--a always,exit -S all
+It seems to me that just passing the holder and holder ops to
+fs_dax_get_by_bdev and the holder to dax_unregister_holder would
+significantly simply the interface here.
 
+Dan, what do you think?
 
-> -- 
-> paul-moore.com
+> +#if IS_ENABLED(CONFIG_MEMORY_FAILURE) && IS_ENABLED(CONFIG_FS_DAX)
+
+No real need for the IS_ENABLED.  Also any reason to even build this
+file if the options are not set?  It seems like
+xfs_dax_holder_operations should just be defined to NULL and the
+whole file not supported if we can't support the functionality.
+
+Dan: not for this series, but is there any reason not to require
+MEMORY_FAILURE for DAX to start with?
+
+> +
+> +	ddev_start = mp->m_ddev_targp->bt_dax_part_off;
+> +	ddev_end = ddev_start +
+> +		(mp->m_ddev_targp->bt_bdev->bd_nr_sectors << SECTOR_SHIFT) - 1;
+
+This should use bdev_nr_bytes.
+
+But didn't we say we don't want to support notifications on partitioned
+devices and thus don't actually need all this?
+
+> +
+> +	/* Ignore the range out of filesystem area */
+> +	if ((offset + len) < ddev_start)
+
+No need for the inner braces.
+
+> +	if ((offset + len) > ddev_end)
+
+No need for the braces either.
+
+> diff --git a/fs/xfs/xfs_notify_failure.h b/fs/xfs/xfs_notify_failure.h
+> new file mode 100644
+> index 000000000000..76187b9620f9
+> --- /dev/null
+> +++ b/fs/xfs/xfs_notify_failure.h
+> @@ -0,0 +1,10 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (c) 2022 Fujitsu.  All Rights Reserved.
+> + */
+> +#ifndef __XFS_NOTIFY_FAILURE_H__
+> +#define __XFS_NOTIFY_FAILURE_H__
+> +
+> +extern const struct dax_holder_operations xfs_dax_holder_operations;
+> +
+> +#endif  /* __XFS_NOTIFY_FAILURE_H__ */
+
+Dowe really need a new header for this vs just sequeezing it into
+xfs_super.h or something like that?
+
+> diff --git a/fs/xfs/xfs_super.c b/fs/xfs/xfs_super.c
+> index e8f37bdc8354..b8de6ed2c888 100644
+> --- a/fs/xfs/xfs_super.c
+> +++ b/fs/xfs/xfs_super.c
+> @@ -353,6 +353,12 @@ xfs_setup_dax_always(
+>  		return -EINVAL;
+>  	}
+>  
+> +	if (xfs_has_reflink(mp) && !xfs_has_rmapbt(mp)) {
+> +		xfs_alert(mp,
+> +			"need rmapbt when both DAX and reflink enabled.");
+> +		return -EINVAL;
+> +	}
+
+Right now we can't even enable reflink with DAX yet, so adding this
+here seems premature - it should go into the patch allowing DAX+reflink.
+
