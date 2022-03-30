@@ -2,217 +2,355 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB156C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:50:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A31CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:52:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243439AbiC3GwZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 02:52:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36396 "EHLO
+        id S243437AbiC3GyP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 02:54:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243423AbiC3GwV (ORCPT
+        with ESMTP id S241807AbiC3GyE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 02:52:21 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F03B19BBBD
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 23:50:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648623036; x=1680159036;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=Lop3h539RtYwFjWqniZwLLaN/TOXzhcfcXy/SqD8Pwk=;
-  b=D2bERCG8AljqUe4QlOAPkR90Qj6V8MWjPC5XMnmVOUGli0cDZhwh30ET
-   3ov2d9tN4Q+iVLzvmp/1tamUqW4VSVfPrx5+VWbUPORskAv32k/1VGJBg
-   hUvEQtELQFCCt634pmpQ802B2TV/l23Qm2HkR2T7XHQw2QJ1KY4yjOoNL
-   XWDbhUImh83inC4uq5IniwOdLv6pJaN9FASb7R9DgD8sszckqq3sfZ9SE
-   QtlG9XgVL9TYfSdI6tZnNSRVTVpnUAj6WrFJqGG4o9LLy3oNa39IwBVct
-   HmPdqYux1f0O+QiiR9B9RDLMh14UqbBFrJbNiQyKRLvkuJ6AGvltYLe1f
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="257040527"
-X-IronPort-AV: E=Sophos;i="5.90,221,1643702400"; 
-   d="scan'208";a="257040527"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 23:50:15 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,221,1643702400"; 
-   d="scan'208";a="521774312"
-Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
-  by orsmga006.jf.intel.com with ESMTP; 29 Mar 2022 23:50:14 -0700
-Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
- ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 29 Mar 2022 23:50:14 -0700
-Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
- ORSMSX607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 29 Mar 2022 23:50:14 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Tue, 29 Mar 2022 23:50:14 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.101)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.21; Tue, 29 Mar 2022 23:50:13 -0700
+        Wed, 30 Mar 2022 02:54:04 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2061.outbound.protection.outlook.com [40.107.236.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07AC1B2463
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 23:52:15 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jz4veI47i/mPGAGqs/xq9HjQgnQ4W3GfcHo0S6GtBKboV9WJ3J27egpL35elU6LaenTAMepT8vzQEr3IAzHKhFHx/45hCDERWHhAkh7abXevaz1EGCafVLMzb1xQPNT9J8uk5HR6Hp8SVIdY+a12MwTBrfvlUBf1SQJ+3tv9knkT8oymLpWB4h28fpRZ4mvqhsEEC+8+Xdm72DiQ8YJrPKtJN0I4EK9aShlKuNG/vXk8uBhs/6e2RQwUujb6FBqtS/gVRq1UiSwq0Cq1s0l4q5Yf9zxaCbyhKxeRgygUKt9tXROCK8M9TiAuiPbxxE1KkyNVduXbHxJQJFkhIbpXKQ==
+ b=CMOptLhZERyND42ZavEOAtSMH/Gl2mMMsxctHLxeTDwzborFVdi4an+V9QcMdVSE3z+dbFbcDtGXupaNPYzmOfGZBFmJT9m46tzyyalsu8QDpyiqgWkWxqVsK+v338dJjYXHfrG/7VMNEtIbfzUEOf7Ua78wUWQLN5yCoTFBE4ekVQwnOAY/FCXR1/GUjO155kzXZvR3s1gWbxFKiT9+l/Os2MUJRF7/8ihPzKihPR9aUK28egOhIiiTxioGK2ok7EPGBzbJp9DqgCFBK6JrBTjIcHYkdWz/yrmZXBHd3ccmUI00Bj24hVp6IyypO3plugB0i8JeK+zcZn9jwuOiGA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Lop3h539RtYwFjWqniZwLLaN/TOXzhcfcXy/SqD8Pwk=;
- b=iYH4ndJVwZwC28VnKRiicrs5dCeNPadcKj4pt49XYUTrW8PsSdlWikpPfw/pNixZqPZTAnK8Aj2zAoM0h4vt8rI93k+p9XfWPenXA49TRHi+mV/trIKjGyfKLm0+VdiBiwLDC9VYn5E0Y9aHezwvM87mXobYKse7Q39QrBMULHCAqg+3cKTQEPeQkBu14UPYusAws+SMdkuTE/Kry5MOMtSAdJI9rnrUS6dfipcSY7Ud8xhr1bllrNXpnI9C8W2oziYI+5lKLRo+wjrU7JDA1oyNSAn65TPgPwh0vMFr4seSVyUQNJeN2KlauYW6lGJyu27vWlqjiuF4s0E62G97kQ==
+ bh=QWLdO0xScF9kASCt76Ry54r40vcPsHj663uZUBBcx/E=;
+ b=WSk6A4OVjurGTmyUCT3tvLUFqEpVnCpt1qUuWjQ+vHSx+5X11CRWQSx8ypdlWVA+dicEJgDc2RJxgBY7NXPqUyhtO0sRe5dQ3F6QLFuLV7u7Ybpv83XJjyMkXHBiI3Ox/5WhnvyjDs9jX82PQLtcz5pdv7KuENViXF49RCha9M4hoSPoY6VWhu7KXcu3FV+jE+uWCQKQpcpVBjLveSOvPyarmlmCU++6dR6EiP6F0CoVL0FZtxm2bFZ8GS8gGZHlTxdwdfqgTD2V/BY5ChWWQBh2eA2QFxG6t/8EIR62B3L7ht2t66Tgq7jR5WAazhgfcVOuUZk89/C44NCv136M8A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by BN6PR11MB3873.namprd11.prod.outlook.com (2603:10b6:405:83::37) with
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QWLdO0xScF9kASCt76Ry54r40vcPsHj663uZUBBcx/E=;
+ b=qjhTVaO7I87nxKaDbK9SS9V1aju49js7AYFsCplHG8AvMMjo3agg6Eqd6GH1xUm5Mk6myypYVWjx2ARnfSX0jwoxA6nEJCwjfJHE4xbz0duXAYzoJ8I5cJ9PhnGRuv73p74TJTNWVK9B39kWZ3KRDEEoPY9RI/N+pzHuSIFzFwks+YpSNfu7o+I/WhLkegvdjLSxtvWk6KOvHnpOy23pZShkS2szWOGt7NFm+A/tgXT6+I3h3OOukGdC7RNpWzbvsvewbROctpC4mb/WPjBOf6nAzYot5NYEXyKo6yPI8jKbZ4MSN1G4c5zcG6lNmJ5fHuSoD8c9Ybl+Eqspzvuj9w==
+Received: from DM8PR12MB5400.namprd12.prod.outlook.com (2603:10b6:8:3b::12) by
+ BN6PR1201MB0035.namprd12.prod.outlook.com (2603:10b6:405:4d::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.19; Wed, 30 Mar
- 2022 06:50:12 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::4df7:2fc6:c7cf:ffa0]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::4df7:2fc6:c7cf:ffa0%4]) with mapi id 15.20.5102.023; Wed, 30 Mar 2022
- 06:50:12 +0000
-From:   "Tian, Kevin" <kevin.tian@intel.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-CC:     Lu Baolu <baolu.lu@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        "Liu, Yi L" <yi.l.liu@intel.com>,
-        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ 2022 06:52:12 +0000
+Received: from DM8PR12MB5400.namprd12.prod.outlook.com
+ ([fe80::f0ca:466a:6886:bb42]) by DM8PR12MB5400.namprd12.prod.outlook.com
+ ([fe80::f0ca:466a:6886:bb42%7]) with mapi id 15.20.5123.019; Wed, 30 Mar 2022
+ 06:52:12 +0000
+From:   Eli Cohen <elic@nvidia.com>
+To:     Jason Wang <jasowang@redhat.com>, "mst@redhat.com" <mst@redhat.com>
+CC:     "hdanton@sina.com" <hdanton@sina.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH RFC v2 02/11] iommu: Add iommu_group_singleton_lockdown()
-Thread-Topic: [PATCH RFC v2 02/11] iommu: Add iommu_group_singleton_lockdown()
-Thread-Index: AQHYQy+FyOvFomDYNUS+m4eyrODKe6zWBZTwgAA4VICAASjOcA==
-Date:   Wed, 30 Mar 2022 06:50:11 +0000
-Message-ID: <BN9PR11MB5276239993592FF808726EF68C1F9@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20220329053800.3049561-1-baolu.lu@linux.intel.com>
- <20220329053800.3049561-3-baolu.lu@linux.intel.com>
- <BN9PR11MB52760F455B3319789BAB1E0E8C1E9@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20220329114259.GB1716663@nvidia.com>
-In-Reply-To: <20220329114259.GB1716663@nvidia.com>
+Subject: RE: [PATCH RESEND V2 2/3] vdpa: mlx5: synchronize driver status with
+ CVQ
+Thread-Topic: [PATCH RESEND V2 2/3] vdpa: mlx5: synchronize driver status with
+ CVQ
+Thread-Index: AQHYQyR0zKsgbTiUe0iTU8OkeFJURqzXfu3g
+Date:   Wed, 30 Mar 2022 06:52:12 +0000
+Message-ID: <DM8PR12MB54001E9C39450E33CE7CAFACAB1F9@DM8PR12MB5400.namprd12.prod.outlook.com>
+References: <20220329042109.4029-1-jasowang@redhat.com>
+ <20220329042109.4029-2-jasowang@redhat.com>
+In-Reply-To: <20220329042109.4029-2-jasowang@redhat.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
 authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9ab92b2f-8923-4714-6d84-08da121989c1
-x-ms-traffictypediagnostic: BN6PR11MB3873:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-microsoft-antispam-prvs: <BN6PR11MB3873CED8DA1B240DED32977F8C1F9@BN6PR11MB3873.namprd11.prod.outlook.com>
+x-ms-office365-filtering-correlation-id: af2afa9f-8d95-49e6-73a8-08da1219d178
+x-ms-traffictypediagnostic: BN6PR1201MB0035:EE_
+x-microsoft-antispam-prvs: <BN6PR1201MB0035CDC6AB2CFDCE167BB937AB1F9@BN6PR1201MB0035.namprd12.prod.outlook.com>
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ScxZR6KrjLPjSRDSiYWrbGHWHu12/mQiu2uYIKu88pnwJ9FGGfjsbxjWwi5KMyZybPflN8DksxwHEovf94ED4FLGlsxXxtZ04jASHcD6ONt2igCmrEZhrquRKqJ/ARcBA6yBJ/ah7KVggWajQl3MQq9bX830uvAqvELmkCO0jdloAxcZ+B54Vw/Wh4uBD7UM9plQgaUyJ+wkJ+gt6wDmzIOpOHi3TUA6G64lVaChrWGYh6Ppzi5UdJbX+pX0pVLHEBR/a2wQQllAX6kmpDNABrBa+DQ4HRjHAETauQomEbIUX03hQzM1q+zztY6n8x82pgZrl+cVyMRdsPcl0hhDxdTpese0d/qBARVY+wAyOsiwzeyyRwawTTcS82cL5H1RDUhef9p5WivIh7R7qsgYY8sKeok1aWDFS+J8SIfW7Bj0gKSIJXv2ZZGA7f4lmH7718iJabOtblsUo0sm5X2bUHkS4csVxZGjze6BLY26aW/BJh3e/79D990dFuV6aEVIbGDU3iQUc1AKQV14EMKnCDybrsBw7UQhr7iJedrSacMKpqCD40Ye2Br/agQoAIx/cVwZHcuNBma0SRYH7VPS24n/jbr4V74g1QjKtVWJt5zCBUzN2F11Ca/7qWmoC2WCL016K0A9EZLlNdJhvDqisoNdVHiAxb/Fe34pDZbtFsOXOLTd4wlQWBEu27sfB0wEgezvUNKyq5SJRiAZOhv++w==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(316002)(66556008)(83380400001)(82960400001)(76116006)(66946007)(33656002)(4326008)(66446008)(26005)(186003)(66476007)(8676002)(122000001)(38070700005)(64756008)(9686003)(52536014)(38100700002)(5660300002)(8936002)(86362001)(6916009)(7416002)(54906003)(508600001)(71200400001)(55016003)(7696005)(6506007)(2906002);DIR:OUT;SFP:1102;
+x-microsoft-antispam-message-info: EeT+cw7HBx8s6EsXFC92tgpEF8qLLqOg5yHIWo8JRiU0siAnkxJeLOCLNLqOO3otkIVt+qG1iKjjubF98rDjlHw1tvMZQXqdzvGRMdEEMaLUkvfbfCMFeQ6qCeMgaNaV41Ha8uFKooT1Z9LK+GChxcdfuY6Ve/i77LlQokeXwZAPq5bTKUxVsC8WFs/WgPoUKMOPmN9k/pTOGoA3uGguP+xh23sO2APp64wtElVVaTECwEG+TIGID8yt0cIzbvxZDGfe6Y8rlShvLI1crz6VH+f40ojv5ne0p9GJB3ADsLxFqUFAjY3ZzhrLRADTCsM08iJGLnUlJ12aoy0uF3dN3VcJoSdIdh3O9ZzkzyrYRGrNeYB2c1MLQNLYQNnebsil4iPdQwAwTHabCOlGTIQEfEv24GAhXe/zcqkBZnxrOLFX8j5SwOPSNJq2XZ4kTB+2OOyDNjCiMi94eQe+pEkZy0n71BsreWAl9RbBbZ7slRx56H5aZLnxSAUCfgxv9j+q0Flr5LwP3CmbG0r0h3Ak6Br7xUGVsSk58u24w3LEbkOMb2rKvdx7ZbVkf1quuIaJEWmWuhFRcN+j+WnTtXmr/pjyCXqgSkz5zbPG9a1dYq1WX67LlQvxUMUoJjpEKl+EAYfAcF5aYisGwCt9UH1GcLajkTgF5GPJxflyzwYuxXYaJu706kY9BxuyZYnt4OBKzWVVLjGzjdEEzJY0CIo1MA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5400.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(53546011)(86362001)(38100700002)(9686003)(38070700005)(186003)(26005)(7696005)(6506007)(122000001)(83380400001)(52536014)(316002)(508600001)(64756008)(4326008)(8676002)(66476007)(66556008)(55016003)(2906002)(66946007)(8936002)(54906003)(33656002)(5660300002)(76116006)(66446008)(110136005)(71200400001);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?1TzD2wo/Gyj6DsK1utwtr8jS0sFweZYWPMauhHAkmYkCg2H+UFfMDdXEseYd?=
- =?us-ascii?Q?ToiNWY7d+hljI2DWArrVPhY5i8SAnIqFOMlqpT88RLjMeoP3bPSxk9/SSWOD?=
- =?us-ascii?Q?YrFwcvrOxGX/sOGViAk2W0dTsRKCE6jDd1rXtmBRLNUJlhL5oRe7C3ickJKQ?=
- =?us-ascii?Q?KwKwYi/QO1i0EZ09M3IbGWNqrF4fGfAmdDB/a2Tf16dL7+/TSVwb6nrrahIN?=
- =?us-ascii?Q?07WzNzgQ27UGtU6759KusEu9pgqqXkmKrpp8BQb8puD3BqnlPnHt/GKKvsDM?=
- =?us-ascii?Q?SE40gXM2frAgPMJYZ1AR8/TjkKG7mapa84Xgnmea9GPeUYXiz0fwONNO9Gj7?=
- =?us-ascii?Q?Y2XUJlzSVY1pS+d1ucqTWaL5NPJ7IQcEkdzqbpBqXJzyRTO/MoMzad4f8F+n?=
- =?us-ascii?Q?wOlaywuAJspNO6DZe738xApgqq4SDdAK03FdUr5q2+mN2CEbFlbBeaMAR/Q7?=
- =?us-ascii?Q?68k0Ou76hUN9DlOR5fcWRnoblrLpJBwn8EGgOslKbNvN6qQrK3l7k8c3nVja?=
- =?us-ascii?Q?b4DDD8bMNuiwSwz02ST419yAoZ3tfkSTPddXweljY3mGU3IDt5HkYRzDbmi0?=
- =?us-ascii?Q?ds5Z9/5j9pdw7FoDOXU9ooZKbh+NM76zVlBgmNYEDjTwICwaApFjNcoJR/tH?=
- =?us-ascii?Q?BAqa06I+m03JutGbjOdMZlG3HJySjhCe0yk687aeGSZePhRpvQ/QyvynDS/h?=
- =?us-ascii?Q?5qMntN1b8FfMV3nEbqsUQF1KrHo5TLxaOaqey9tiJ2MmJ4oe+Wwl9+D+phd8?=
- =?us-ascii?Q?VxjunLIIzp+2PGF7WnxgMH9PUF45rwwpIedqKxu522aCgpJdpaJk8YKsSJXw?=
- =?us-ascii?Q?Tg3JxOhh1wIK/mG5mCu4DoHFzjSfkBCsAdQ7R5HPtujlmUiZGKJxuOV2fkyr?=
- =?us-ascii?Q?n75GJNUK4CyyoKTN3vhNojR6iGhdYqbH/cJShEOPxsPpqWNlZxox7EaSNwcE?=
- =?us-ascii?Q?8e+iIg/VTtshuFYKfeUAUWbpCOr7Zj4AQC/b5fEmgDnqEPN3HALspPpYIQA+?=
- =?us-ascii?Q?E2SqzSPlUlY2uroGG83Ykq+dsOES0sii7LzvEEbdQ9lFsRVij7tyHH52qTXL?=
- =?us-ascii?Q?A0vuqC1ilvH9jJC60iqL1ZLDDUAT/vYw0SEdcDCHfOR+z7C2xkzqADDbmaOO?=
- =?us-ascii?Q?rW8FLB2c8jeSVPLgoYePbBQFqGQ4tjYoPTWG0Qg14soURtJgse+MgQ4LQhIH?=
- =?us-ascii?Q?XisNXUF/usqiNvCV0Bpbbi2wWNEDvCiq1MlSe4ZzU/dMhCQC9PlUxnUanNvD?=
- =?us-ascii?Q?QdYhzsuQ15XiAEdYe3pDEdcoER34Mq03OtNM8HyXP1fuTJyFVxcgqSmzIAD0?=
- =?us-ascii?Q?FJ1KSizsDTlXs3Rk/yZwiv+692+mlqiXONiq45FiCEJbF2bxUBHGvJeACZ+M?=
- =?us-ascii?Q?mwzMnMnVcACStk1R43xjN9/25V0Yof131c+H/OvcarhkeozpPxLGuf5RkBLz?=
- =?us-ascii?Q?tzJXZDiHHTIOVveGYQTEjPN3JJlthDrPSKl+RqlzZ2/1/A6Mg6euwANRCiH7?=
- =?us-ascii?Q?Tmj8ozJJFbv+iKz9u8l0wXdqh5gqI1oWabQGb228o60Y/14VHr2P463zrXKU?=
- =?us-ascii?Q?/K3aEnV7gOJJC5tWRq36i4R8kVRJBQv0IwyRHMvEDtMkyn1B8fnupKyouFXw?=
- =?us-ascii?Q?2nMzVzlgarC7fYuv0uZwP75lbIdDqcMh3fTYz6tLfS/cisezZzfbe49+QorK?=
- =?us-ascii?Q?jPIUeHnMkRdu3FXkJC4lWQfbbGWjebwiDAogiCTJw5dKhFIjLRt3IziszbfZ?=
- =?us-ascii?Q?dDAOQz74nQ=3D=3D?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?rtzuO6QMG/C9I2MmujPxkkGx+RGl+FO39h/GSdltbizqv2pEhvtjdge11N+v?=
+ =?us-ascii?Q?a+DdpjLYj/kR1SbEhwVhDEZn93GKAfO1bK7NJe5sFUwcIx7TVg0MMiycjtyn?=
+ =?us-ascii?Q?BSTVVehurD+wudb09aLPidU3d8TtfeuQoXN1oQYZJPABjaoYUOV/w0L4QoIO?=
+ =?us-ascii?Q?av7zl3xRXSZ509+iyaZV9bXbvJVwRs620A5/kw6O64zEeuSxpVkYAtrfA2Yh?=
+ =?us-ascii?Q?yTpcz92YfhvdB61u5J3bqCp4ApTpsYgaE4ACfM7ydvNDl/k0xNKH2MCVw9/X?=
+ =?us-ascii?Q?cE0nCa1VHJig+sdYPlbHmbekEtxekds4WSF5WZsfc8/gJqvwwW/EnBD86G/3?=
+ =?us-ascii?Q?DzquYy0HywTY+0Nzje84ERCwTj0IX0YlCM0hUGap+PKLlIDOl7svoIJX42IF?=
+ =?us-ascii?Q?FDPZY2jkU1G4Nex+M5haPZwgR8tX9GhW2Cez61RTwsr5tjEnJA1ffNm93oFs?=
+ =?us-ascii?Q?kBIwAtC0F1SOKJN2jBOfFLQR2Aqz2TUckdwexCIde7FYFH+NURFO1xY+QHmO?=
+ =?us-ascii?Q?Opk6owoHdLYgvfKAaEybgAbxYnE7nxgcWiQthz0K4edYAsyNxhG1s2AOdH1a?=
+ =?us-ascii?Q?JDqLE15xRyX+z4c+siAdx72JHrLA97KqyIl8qBdGMX0zeBGOEftvVnQq/8Ml?=
+ =?us-ascii?Q?2TxYxjDY3DxNypTkmrll5XcSld4u2K21nftuRxRGhh3upkCPiBr7iDNmwzWb?=
+ =?us-ascii?Q?gNy+waUkswbLUNFzMMbHL9e9IXYKumTZMSNQHuOecocQ4ZBDx5mBR4vv7CRx?=
+ =?us-ascii?Q?WiKa1MuA4WOuKTP8V+AXOF348MeXj+T92G1FUshNSz7cIlR6pHxWjFc5SNGE?=
+ =?us-ascii?Q?WBSrjhmStJq7UhoNfawPPbHRgOOBCK4aGVf0H2UghTYKFZw5jwm1uuabdub9?=
+ =?us-ascii?Q?+L4k/9uxyb+rrodIVwk8nPZIudH5qyM5O5RGMfWrL10m3B5l88p0vssN3fMC?=
+ =?us-ascii?Q?IMxAQtp1h/fQClx0ZXDM5k/A2qPu7n2CqAjjsm5fd5V9B9lfXlLz15+ZQMMG?=
+ =?us-ascii?Q?23DGT3m6bUf1iGlIV1cFK/MxFbkuVPHBeXXOVcQiCn7Bsm4xtFZVp16k+DIZ?=
+ =?us-ascii?Q?0gBp4+E3zKjaBpjnrsw3vyzBpUwo6rGZGFlMZvEfEeiqRyTiCuiRdNMQfOAz?=
+ =?us-ascii?Q?XfENz+046xB6+l9uGZCs0foaPimqmdYNGlcm/XCN5Sqen0To6Noou9J/eVMl?=
+ =?us-ascii?Q?OW334/ufZLz2Xvwc5Urhbo5T4o8x7ost3RNAsrkXhBHzTGTXSQJdB/OMezFx?=
+ =?us-ascii?Q?zJOftBAwQBX7u7zj9fFpi+FbJaRV0fCsJPCAiYCcfOcj05MwF0nOr+hfCv+q?=
+ =?us-ascii?Q?KePvqbPW1EptELBwcjjUH0/uvHSv9f/OO2o7YOsprxyHjQ1bcNqdkB6/y5OI?=
+ =?us-ascii?Q?af23KZZmopI7857uWtQacnTnrR/MXbJqNTj2Pep8+RTzXOZWsqI4U4Ke0P/f?=
+ =?us-ascii?Q?tJ++s3otxQGxN19Mq8FLMZtzdg+V+2/kND5rRA6fUaLqzrbCNF5JiHXKYsNj?=
+ =?us-ascii?Q?Dx0Cj3IAJllJkkMmDWD40sEekc7rgQK0BnBrphEZcVS0WgKWb9ilfY6TGcRl?=
+ =?us-ascii?Q?VWPaCBS7LbBuEG7ittU2nWuajc7ZLXhANlK+omPyqwCKXS5fYznAoTQgaN17?=
+ =?us-ascii?Q?weEdqarvdTi84MY7CC/HJdL5JLGNwt0p/EoFMaPxeoUb1RcrfuGL6/hO6+lT?=
+ =?us-ascii?Q?mSFj1iOuU2qi11/QJ9Lwb+1N9jkbO5AnyU2O/UZ8KLLm1KeA?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
+X-OriginatorOrg: Nvidia.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9ab92b2f-8923-4714-6d84-08da121989c1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Mar 2022 06:50:11.9577
+X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5400.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: af2afa9f-8d95-49e6-73a8-08da1219d178
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Mar 2022 06:52:12.3536
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: esuWtiOC48HVeF4QisuyCpfY2hDVfsvK537C90CNBKIX2OeAjV7TlC5YNiH3PJ153kAcoccsQ7zlwU69olwLlA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB3873
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-userprincipalname: y949ky/vy5LX0LtqC4uDRIREkYyj1ZIla+tHmlLrmp0cpWK+vsiNrt46YROEz/n7
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1201MB0035
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> From: Jason Gunthorpe <jgg@nvidia.com>
-> Sent: Tuesday, March 29, 2022 7:43 PM
+> From: Jason Wang <jasowang@redhat.com>
+> Sent: Tuesday, March 29, 2022 7:21 AM
+> To: jasowang@redhat.com; mst@redhat.com
+> Cc: Eli Cohen <elic@nvidia.com>; hdanton@sina.com; virtualization@lists.l=
+inux-foundation.org; linux-kernel@vger.kernel.org
+> Subject: [PATCH RESEND V2 2/3] vdpa: mlx5: synchronize driver status with=
+ CVQ
 >=20
-> On Tue, Mar 29, 2022 at 08:42:13AM +0000, Tian, Kevin wrote:
+> Currently, CVQ doesn't have any synchronization with the driver
+> status. Then CVQ emulation code run in the middle of:
 >=20
-> > btw I'm not sure whether this is what SVA requires. IIRC the problem wi=
-th
-> > SVA is because PASID TLP prefix is not counted in PCI packet routing th=
-us
-> > a DMA target address with PASID might be treated as P2P if the address
-> > falls into the MMIO BAR of other devices in the group. This is why the
-> > original code needs to strictly apply SVA in a group containing a singl=
-e
-> > device, instead of a group attached by a single driver, unless we want =
-to
-> > reserve those MMIO ranges in CPU VA space.
+> 1) device reset
+> 2) device status changed
+> 3) map updating
 >=20
-> I think it is not such a good idea to mix up group with this test
+> The will lead several unexpected issue like trying to execute CVQ
+> command after the driver has been teared down.
 >=20
-> Here you want to say that all TLPs from the RID route to the host
-> bridge - ie ACS is on/etc. This is subtly different from a group with
-> a single device. Specifically it is an immutable property of the
-> fabric and doesn't change after hot plug events.
-
-Yes, in concept your description is more accurate.
-
-However according to pci_device_group() a group is created mainly
-for lacking of ACS. Without ACS there is no guarantee that all TLPs
-from the RID in a multi-devices group are routed to the host bridge.
-In this case only singleton group can meet this requirement.
-
-One thing that I'm not very sure is about DMA alias. Even when physically
-there is only a single device within the group the aliasing could lead
-to multiple RIDs in the group making it non-singleton. But probably we
-don't need support SVA on such device until a real demand comes?
-
+> Fixing this by using reslock to synchronize CVQ emulation code with
+> the driver status changing:
 >=20
-> ie if we have a singleton group that doesn't have ACS and someone
-> hotplugs in another device on a bridge, then our SVA is completely
-> broken and we get data corruption.
-
-Can we capture that in iommu_probe_device() when identifying
-the group which the probed device will be added to has already been
-locked down for SVA? i.e. make iommu_group_singleton_lockdown()
-in this patch to lock down the fact of singleton group instead of
-the fact of singleton driver...
-
+> - protect the whole device reset, status changing and set_map()
+>   updating with reslock
+> - protect the CVQ handler with the reslock and check
+>   VIRTIO_CONFIG_S_DRIVER_OK in the CVQ handler
 >=20
-> Testing the group size is inherently the wrong test to make.
+> This will guarantee that:
 >=20
+> 1) CVQ handler won't work if VIRTIO_CONFIG_S_DRIVER_OK is not set
+> 2) CVQ handler will see a consistent state of the driver instead of
+>    the partial one when it is running in the middle of the
+>    teardown_driver() or setup_driver().
+>=20
+> Cc: 5262912ef3cfc ("vdpa/mlx5: Add support for control VQ and MAC setting=
+")
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
 
-What is your suggestion then?
+Acked-by: Eli Cohen <elic@nvidia.com>
 
-Thanks
-Kevin
+> ---
+> Changes since V1:
+> - document the lock requirement
+> - protect the whole .set_map()
+> ---
+>  drivers/vdpa/mlx5/net/mlx5_vnet.c | 51 ++++++++++++++++++++++---------
+>  1 file changed, 37 insertions(+), 14 deletions(-)
+>=20
+> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/ml=
+x5_vnet.c
+> index b2afd2b6fbca..53b8c1a68f90 100644
+> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> @@ -1616,11 +1616,17 @@ static void mlx5_cvq_kick_handler(struct work_str=
+uct *work)
+>  	mvdev =3D wqent->mvdev;
+>  	ndev =3D to_mlx5_vdpa_ndev(mvdev);
+>  	cvq =3D &mvdev->cvq;
+> +
+> +	mutex_lock(&ndev->reslock);
+> +
+> +	if (!(mvdev->status & VIRTIO_CONFIG_S_DRIVER_OK))
+> +		goto out;
+> +
+>  	if (!(ndev->mvdev.actual_features & BIT_ULL(VIRTIO_NET_F_CTRL_VQ)))
+> -		return;
+> +		goto out;
+>=20
+>  	if (!cvq->ready)
+> -		return;
+> +		goto out;
+>=20
+>  	while (true) {
+>  		err =3D vringh_getdesc_iotlb(&cvq->vring, &cvq->riov, &cvq->wiov, &cvq=
+->head,
+> @@ -1658,6 +1664,9 @@ static void mlx5_cvq_kick_handler(struct work_struc=
+t *work)
+>  		queue_work(mvdev->wq, &wqent->work);
+>  		break;
+>  	}
+> +
+> +out:
+> +	mutex_unlock(&ndev->reslock);
+>  }
+>=20
+>  static void mlx5_vdpa_kick_vq(struct vdpa_device *vdev, u16 idx)
+> @@ -2132,7 +2141,7 @@ static int mlx5_vdpa_change_map(struct mlx5_vdpa_de=
+v *mvdev, struct vhost_iotlb
+>  		goto err_mr;
+>=20
+>  	if (!(mvdev->status & VIRTIO_CONFIG_S_DRIVER_OK))
+> -		return 0;
+> +		goto err_mr;
+>=20
+>  	restore_channels_info(ndev);
+>  	err =3D setup_driver(mvdev);
+> @@ -2147,12 +2156,14 @@ static int mlx5_vdpa_change_map(struct mlx5_vdpa_=
+dev *mvdev, struct vhost_iotlb
+>  	return err;
+>  }
+>=20
+> +/* reslock must be held for this function */
+>  static int setup_driver(struct mlx5_vdpa_dev *mvdev)
+>  {
+>  	struct mlx5_vdpa_net *ndev =3D to_mlx5_vdpa_ndev(mvdev);
+>  	int err;
+>=20
+> -	mutex_lock(&ndev->reslock);
+> +	WARN_ON(!mutex_is_locked(&ndev->reslock));
+> +
+>  	if (ndev->setup) {
+>  		mlx5_vdpa_warn(mvdev, "setup driver called for already setup driver\n"=
+);
+>  		err =3D 0;
+> @@ -2182,7 +2193,6 @@ static int setup_driver(struct mlx5_vdpa_dev *mvdev=
+)
+>  		goto err_fwd;
+>  	}
+>  	ndev->setup =3D true;
+> -	mutex_unlock(&ndev->reslock);
+>=20
+>  	return 0;
+>=20
+> @@ -2193,23 +2203,23 @@ static int setup_driver(struct mlx5_vdpa_dev *mvd=
+ev)
+>  err_rqt:
+>  	teardown_virtqueues(ndev);
+>  out:
+> -	mutex_unlock(&ndev->reslock);
+>  	return err;
+>  }
+>=20
+> +/* reslock must be held for this function */
+>  static void teardown_driver(struct mlx5_vdpa_net *ndev)
+>  {
+> -	mutex_lock(&ndev->reslock);
+> +
+> +	WARN_ON(!mutex_is_locked(&ndev->reslock));
+> +
+>  	if (!ndev->setup)
+> -		goto out;
+> +		return;
+>=20
+>  	remove_fwd_to_tir(ndev);
+>  	destroy_tir(ndev);
+>  	destroy_rqt(ndev);
+>  	teardown_virtqueues(ndev);
+>  	ndev->setup =3D false;
+> -out:
+> -	mutex_unlock(&ndev->reslock);
+>  }
+>=20
+>  static void clear_vqs_ready(struct mlx5_vdpa_net *ndev)
+> @@ -2230,6 +2240,8 @@ static void mlx5_vdpa_set_status(struct vdpa_device=
+ *vdev, u8 status)
+>=20
+>  	print_status(mvdev, status, true);
+>=20
+> +	mutex_lock(&ndev->reslock);
+> +
+>  	if ((status ^ ndev->mvdev.status) & VIRTIO_CONFIG_S_DRIVER_OK) {
+>  		if (status & VIRTIO_CONFIG_S_DRIVER_OK) {
+>  			err =3D setup_driver(mvdev);
+> @@ -2239,16 +2251,19 @@ static void mlx5_vdpa_set_status(struct vdpa_devi=
+ce *vdev, u8 status)
+>  			}
+>  		} else {
+>  			mlx5_vdpa_warn(mvdev, "did not expect DRIVER_OK to be cleared\n");
+> -			return;
+> +			goto err_clear;
+>  		}
+>  	}
+>=20
+>  	ndev->mvdev.status =3D status;
+> +	mutex_unlock(&ndev->reslock);
+>  	return;
+>=20
+>  err_setup:
+>  	mlx5_vdpa_destroy_mr(&ndev->mvdev);
+>  	ndev->mvdev.status |=3D VIRTIO_CONFIG_S_FAILED;
+> +err_clear:
+> +	mutex_unlock(&ndev->reslock);
+>  }
+>=20
+>  static int mlx5_vdpa_reset(struct vdpa_device *vdev)
+> @@ -2258,6 +2273,8 @@ static int mlx5_vdpa_reset(struct vdpa_device *vdev=
+)
+>=20
+>  	print_status(mvdev, 0, true);
+>  	mlx5_vdpa_info(mvdev, "performing device reset\n");
+> +
+> +	mutex_lock(&ndev->reslock);
+>  	teardown_driver(ndev);
+>  	clear_vqs_ready(ndev);
+>  	mlx5_vdpa_destroy_mr(&ndev->mvdev);
+> @@ -2270,6 +2287,7 @@ static int mlx5_vdpa_reset(struct vdpa_device *vdev=
+)
+>  		if (mlx5_vdpa_create_mr(mvdev, NULL))
+>  			mlx5_vdpa_warn(mvdev, "create MR failed\n");
+>  	}
+> +	mutex_unlock(&ndev->reslock);
+>=20
+>  	return 0;
+>  }
+> @@ -2305,19 +2323,24 @@ static u32 mlx5_vdpa_get_generation(struct vdpa_d=
+evice *vdev)
+>  static int mlx5_vdpa_set_map(struct vdpa_device *vdev, struct vhost_iotl=
+b *iotlb)
+>  {
+>  	struct mlx5_vdpa_dev *mvdev =3D to_mvdev(vdev);
+> +	struct mlx5_vdpa_net *ndev =3D to_mlx5_vdpa_ndev(mvdev);
+>  	bool change_map;
+>  	int err;
+>=20
+> +	mutex_lock(&ndev->reslock);
+> +
+>  	err =3D mlx5_vdpa_handle_set_map(mvdev, iotlb, &change_map);
+>  	if (err) {
+>  		mlx5_vdpa_warn(mvdev, "set map failed(%d)\n", err);
+> -		return err;
+> +		goto err;
+>  	}
+>=20
+>  	if (change_map)
+> -		return mlx5_vdpa_change_map(mvdev, iotlb);
+> +		err =3D mlx5_vdpa_change_map(mvdev, iotlb);
+>=20
+> -	return 0;
+> +err:
+> +	mutex_unlock(&ndev->reslock);
+> +	return err;
+>  }
+>=20
+>  static void mlx5_vdpa_free(struct vdpa_device *vdev)
+> --
+> 2.18.1
+
