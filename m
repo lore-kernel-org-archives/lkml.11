@@ -2,103 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C17F4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 18:37:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA891C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 18:37:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350075AbiC3SjM (ORCPT
+        id S1350154AbiC3SjS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 14:39:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54188 "EHLO
+        Wed, 30 Mar 2022 14:39:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351282AbiC3Sd0 (ORCPT
+        with ESMTP id S1352492AbiC3SfU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 14:33:26 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C22B34DF4C
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:30:45 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id u3so28930543ljd.0
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:30:45 -0700 (PDT)
+        Wed, 30 Mar 2022 14:35:20 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EA4F49FAA
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:33:31 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id y10so25452267edv.7
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:33:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=sweetwater-ai.20210112.gappssmtp.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KXz4jX/1RvaOeW5K5aku8Xx+S8uCJJg7lNaIyrndCYc=;
-        b=frqv9Lra3sJ1hmBQk1xcR/thRy/JxxiQUadtvz+DMIkXvKrJabZbpPUhpx+Ve91aKc
-         fLtY+UckqqT5YbdQA6Bky2RLFbQGh3k/vghn4LAPKw2vzDDLZU8Djq3wr+waC5oPb6L1
-         OmcgLSd750msUztwjdciWczDq24pauhcEFfzo8gsEcqI3INuIwXc8ZKgtbeeROpqBcea
-         TWj8QVrS7lwjkJ/gwXL55djUOd1ZT2y0CjXJB2SaDuaaaaenT5X+byGZTDIlcyjz0gxd
-         tZKQNwA4kvDKzqYqykOxvB1FCoKLfdgKaUrBgUw1JjNJ9dp679PQP6+DUBuAvPampRj8
-         TsfQ==
+         :cc:content-transfer-encoding;
+        bh=dKO0rsHOFyAMpWyi1MHnQVOBdREz93tr5XlY/aCT89k=;
+        b=HuX8hqSNN5CkzIlnxfFjhdrv+0hTKMiO/saHmO8S5JDzFWMGcv/5KDwUAo32rYCysn
+         X77M8eptIyb61789PEkrwWql5tRKB9J77M8fq0MwhTccLCZJLdKGAOoHGL6pWRui9ZTO
+         bMRVaQiHPR78HPQOjJ/go74Pw5Cy8v6E3yw3PoryL1+twgVAmF06wPH7EuNgVtgBBMRY
+         PGRydspLrTf832CuGoWHkQm7PSSelwm6jOkHWjlMi0X52TNW9TWYxb8LuxqrgKpoPByl
+         Xpza3Cb7yNeuPfYSbS/2ylp8aqgwMOMKtcSobjgViLCTbryqSUzJMxoVFksfihYscBks
+         V3Rw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KXz4jX/1RvaOeW5K5aku8Xx+S8uCJJg7lNaIyrndCYc=;
-        b=tJjgWctKdaYO8Wi5vcgO8PtHNTruibXCsJsdakjWUEVIEzsbI+e4lp/zFQTWhFlA48
-         wQO7dQJUoJGCluegGYWo0mlWYzODMQPCSsH6Y3fCET4APHObS3t4yLAeB4Wn/AX/6sJ5
-         Dz3lJzcVDp4Om3gvsdFKKdeQfcrV6z2vIeuEA5rPmbBmm2bTPq5aYtb7dk2wk7Q61gZq
-         dfLbU4p0KMX/xw/G6izU2Ex5QxTZyCUQIRokGS3a163ahwFOVO/i8x/bGGYPwtVyErwW
-         gdUTewEHjcIwNU1804Ng+T3tGm3lGwL6dmDLwp1Sid2v/NaUWCo0M4RZMvMs5S8pwp+C
-         /4dA==
-X-Gm-Message-State: AOAM532F7WHRCGFNEmXD3LKdG6YqoB9/d8aRNgNjUNBhjENxp9Q0b/fX
-        DpUtF5P2fka4lJQvRBssaDCFkFeJoWU5qJn/pGhQ8Q==
-X-Google-Smtp-Source: ABdhPJxkJ9NLcGGxc1sMNi6f38U3o2OW0nZw+JbR7XSZZ4ykgVP08KAUGWyfphqVLg8WNP0f2n2s2VFEsZJtak2cP9w=
-X-Received: by 2002:a2e:988e:0:b0:24a:cf5d:24cf with SMTP id
- b14-20020a2e988e000000b0024acf5d24cfmr7486340ljj.282.1648665039455; Wed, 30
- Mar 2022 11:30:39 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=dKO0rsHOFyAMpWyi1MHnQVOBdREz93tr5XlY/aCT89k=;
+        b=vWnVIP06mjcSsPzzkG1DbVLP3aFrbUEkTrvdjchT8tmjksaWXZ/TexJ6Cd+xi6qYCU
+         fpN0qX2RsToPercNgB+vNuQQqEnmmCm61FnuPS4wAxM+uABJjmhkkbwbdA+am14xtiI3
+         +N3bqtqJoSIei4Zc7B+Q4Rr9Go1M8v053zwDQ6KmkLw/ugoBiPyFkwQMVmPt7rsTGSCN
+         MkE8d0TEI6O/tzdkrIOAcrKEqOp5b+mWeF1VBoCVK4Wsrq1zk80HHWKLXcE6EJAXVhZq
+         vFZjPXQ28OnkWmVKh6ZRbS3ktk92jlRh2uWrTfqNtFCtzSCuy0Lr4YL+NK9F3hhEMIZ5
+         Qjeg==
+X-Gm-Message-State: AOAM5314gU7e+NhrVBOeX/W3ZIKZhUxhhLV0XXnsCuaHosdX+6SnzhwV
+        dz0maYYzPXnmClCY6FJRZbN1acusFHFlb3X6eYiapQ==
+X-Google-Smtp-Source: ABdhPJy4EZDSf9OPi2yzJpr2WG0IVC9oYxrOQ6LZwfMYIux64DzecT6oKH7UaRmQgYGnZbEm3yCppRzJnOe/WI26Qq8=
+X-Received: by 2002:aa7:c704:0:b0:418:ee8f:3fd0 with SMTP id
+ i4-20020aa7c704000000b00418ee8f3fd0mr12314131edq.248.1648665209697; Wed, 30
+ Mar 2022 11:33:29 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220325152758.335626-1-pgonda@google.com> <d0366a14-6492-d2b9-215e-2ee310d9f8ae@redhat.com>
- <CAMkAt6rACYqFXA_6pa9JUnx0=3vyM6PeaNkq-Yih4KM6saf6PQ@mail.gmail.com> <632d3601-ecf4-12f3-4f3b-408c35f028f6@redhat.com>
-In-Reply-To: <632d3601-ecf4-12f3-4f3b-408c35f028f6@redhat.com>
-From:   Peter Gonda <pgonda@google.com>
-Date:   Wed, 30 Mar 2022 12:30:28 -0600
-Message-ID: <CAMkAt6q-wTxiQnFXhiw3gR_8ktfz9pLp3gZS3EFakGcBgxUJ2A@mail.gmail.com>
-Subject: Re: [PATCH v2] Add KVM_EXIT_SHUTDOWN metadata for SEV-ES
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     kvm list <kvm@vger.kernel.org>, Borislav Petkov <bp@alien8.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Joerg Roedel <jroedel@suse.de>, Marc Orr <marcorr@google.com>,
-        Sean Christopherson <seanjc@google.com>,
-        LKML <linux-kernel@vger.kernel.org>
+References: <20220328111828.1554086-1-sashal@kernel.org> <20220328111828.1554086-16-sashal@kernel.org>
+ <CAOnCY6TTx65+Z7bBwgmd8ogrCH78pps59u3_PEbq0fUpd1n_6A@mail.gmail.com>
+ <9e78091d07d74550b591c6a594cd72cc@AcuMS.aculab.com> <CAOnCY6QNPUC-VK+ARLb6i_UskV2CkW+AG5ZqWe_oMGUumL9Gnw@mail.gmail.com>
+In-Reply-To: <CAOnCY6QNPUC-VK+ARLb6i_UskV2CkW+AG5ZqWe_oMGUumL9Gnw@mail.gmail.com>
+From:   Michael Brooks <m@sweetwater.ai>
+Date:   Wed, 30 Mar 2022 11:33:21 -0700
+Message-ID: <CAOnCY6Q9XoAMpeRfA_ghge3mXkGXFsm4fW64hxcbnMdJyx8Y2g@mail.gmail.com>
+Subject: Re: [PATCH AUTOSEL 5.17 16/43] random: use computational hash for
+ entropy extraction
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Sasha Levin <sashal@kernel.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Eric Biggers <ebiggers@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
+        "Theodore Ts'o" <tytso@mit.edu>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 10:53 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
+The /dev/random device driver need not concern itself with root
+adversaries as this type of user has permissions to read and overwrite
+memory - this user even possesses permission to replace the kernel elf
+binary with a copy of /dev/random that always returns the number 0 -
+that is their right.
+
+This whole issue of leaks is because we are relying upon fast but
+insecure hash-function-like methods to extract data from a sensitive
+pool.  LFSR and CRC32 (which was used in an earlier version of
+/dev/random) have similarities to secure hash functions - but "aren't
+good enough for military work" - which is why we are even discussing
+the topic of leakage.
+
+If we use a secure primitive in the right way - preferably one that is
+faster than SHA1 - such as chcha20 or even faster still AES-NI (both
+in a feedback mode).  Then the leakage is stopped.  If the pool cannot
+leak then we do not need an entropy counter which is the mutex that
+handle_irq_event_percpu() fights over.  This reduces interrupt
+latency, reduces computational load of all interrupts, and helps
+contribute to the pool being less predictable because now an outside
+construct has to account for race conditions.
+
+-Michael
+
+On Wed, Mar 30, 2022 at 10:10 AM Michael Brooks <m@sweetwater.ai> wrote:
 >
-> On 3/25/22 16:31, Peter Gonda wrote:
-> > On Fri, Mar 25, 2022 at 9:29 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
-> >>
-> >> On 3/25/22 16:27, Peter Gonda wrote:
-> >>> SEV-ES guests can request termination using the GHCB's MSR protocol. See
-> >>> AMD's GHCB spec section '4.1.13 Termination Request'. Currently when a
-> >>> guest does this the userspace VMM sees an KVM_EXIT_UNKNOWN (-EVINAL)
-> >>> return code from KVM_RUN. By adding a KVM_EXIT_SHUTDOWN_ENTRY to kvm_run
-> >>> struct the userspace VMM can clear see the guest has requested a SEV-ES
-> >>> termination including the termination reason code set and reason code.
-> >>>
-> >>> Signed-off-by: Peter Gonda <pgonda@google.com>
-> >>> Cc: Paolo Bonzini <pbonzini@redhat.com>
-> >>> Cc: Borislav Petkov <bp@alien8.de>
-> >>> Cc: Tom Lendacky <thomas.lendacky@amd.com>
-> >>> Cc: Brijesh Singh <brijesh.singh@amd.com>
-> >>> Cc: Joerg Roedel <jroedel@suse.de>
-> >>> Cc: Marc Orr <marcorr@google.com>
-> >>> Cc: Sean Christopherson <seanjc@google.com>
-> >>> Cc: kvm@vger.kernel.org
-> >>> Cc: linux-kernel@vger.kernel.org
-> >>
-> >> This is missing an update to Documentation/.
-> >>
+> Of course I am assuming local user non-root access.  One does not need
+> to reverse the mix operations in order to form a parallel construction
+> - a one way function is sufficient for such a construct as both sides
+> will operate on the data in the same manner.
+>
+> This attack scenario is simply a non-issue in keypoolrandom.
+> https://github.com/TheRook/KeypoolRandom
+>
+> On Wed, Mar 30, 2022 at 9:49 AM David Laight <David.Laight@aculab.com> wr=
+ote:
 > >
-> > My mistake. I'll send another revision. Is the behavior of
-> > KVM_CAP_EXIT_SHUTDOWN_REASON OK? Or should we only return 1 for SEV-ES
-> > guests?
->
-> No, you can return 1 unconditionally, but you should also set reason and
-> clear ndata in the other cases that return KVM_EXIT_SHUTDOWN.
-
-
-Sounds good! Done in V3, thanks
+> > From: Michael Brooks
+> > > Sent: 30 March 2022 17:08
+> > ...
+> > > I=E2=80=99d like to describe this bug using mathematics, because that=
+ is how I
+> > > work - I am the kind of person that appreciates rigor.  In this case,
+> > > let's use inductive reasoning to illuminate this issue.
+> > >
+> > > Now, in this attack scenario let =E2=80=9Cp=E2=80=9D be the overall p=
+ool state and let
+> > > =E2=80=9Cn=E2=80=9D be the good unknown values added to the pool.  Fi=
+nally, let =E2=80=9Ck=E2=80=9D be
+> > > the known values - such as jiffies.  If we then describe the ratio of
+> > > unknown uniqueness with known uniqueness as p=3Dn/k then as a k grows
+> > > the overall predictability of the pool approaches an infinite value a=
+s
+> > > k approaches zero.   A parallel pool, let's call it p=E2=80=99 (that =
+is
+> > > pronounced =E2=80=9Cp-prime=E2=80=9D for those who don=E2=80=99t get =
+the notation).  let
+> > > p=E2=80=99=3Dn=E2=80=99/k=E2=80=99. In this case the attacker has no =
+hope of constructing n=E2=80=99,
+> > > but they can construct k=E2=80=99 - therefore the attacker=E2=80=99s =
+parasol model of
+> > > the pool p=E2=80=99 will become more accurate as the attack persists =
+leading
+> > > to p=E2=80=99 =3D p as time->=E2=88=9E.
+> > >
+> > > Q.E.D.
+> >
+> > That rather depends on how the (not) 'randmoness' is added to the pool.
+> > If there are 'r' bits of randomness in the pool and a 'stir in' a pile
+> > of known bits there can still be 'n' bits of randomness in the pool.
+> >
+> > The whole thing really relies on the non-reversability of the final prn=
+g.
+> > Otherwise if you have 'r' bits of randomness in the pool and 'p' bits
+> > in the prng you only need to request 'r + p' bits of output to be able
+> > to solve the 'p + r' simultaneous equations in 'p + r' unknowns
+> > (I think that is in the field {0, 1}).
+> >
+> > The old kernel random number generator that used xor to combine the
+> > outputs of several LFSR is trivially reversable.
+> > It will leak whatever it was seeded with.
+> >
+> > The non-reversability of the pool isn't as important since you need
+> > to reverse the prng as well.
+> >
+> > So while, in some sense, removing 'p' bits from the entropy pool
+> > to seed the prng only leaves 'r - p' bits left.
+> > That is only true if you think the prng is reversable.
+> > Provided 'r > p' (preferably 'r >> p') you can reseed the prng
+> > again (provided you take reasonably random bits) without
+> > really exposing any more state to an attacker.
+> >
+> > Someone doing cat /dev/urandom >/dev/null should just keep reading
+> > values out of the entropy pool.
+> > But if they are discarding the values that shouldn't help them
+> > recover the state of the entropy pool or the prng - even if only
+> > constant values are being added to the pool.
+> >
+> > Really what you mustn't do is delete the bits used to seed the prng
+> > from the entropy pool.
+> > About the only way to actually reduce the randomness of the entropy
+> > pool is if you've discovered what is actually in it, know the
+> > 'stirring' algorithm and feed in data that exactly cancels out
+> > bits that are present already.
+> > I suspect that anything with root access can manage that!
+> > (Although they can just overwrite the entropy pool itself,
+> > and the prng for that matter.)
+> >
+> >         David
+> >
+> > -
+> > Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, M=
+K1 1PT, UK
+> > Registration No: 1397386 (Wales)
