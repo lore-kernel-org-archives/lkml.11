@@ -2,136 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96124C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:39:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63244C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:39:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345438AbiC3MlA (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:41:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46170 "EHLO
+        id S245739AbiC3Mlc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 08:41:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344383AbiC3Mh2 (ORCPT
+        with ESMTP id S1345118AbiC3MlE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 08:37:28 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8CEE90FDE;
-        Wed, 30 Mar 2022 05:26:21 -0700 (PDT)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22UBt3kS023265;
-        Wed, 30 Mar 2022 12:26:21 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=lagUF/hPFWZEQhSlZcnZFa4GuKJdxTR/1fBbKvob8I4=;
- b=nP5pE0R9zWA+JLGt4uIm0FwS8izASecRf1zuCQul4cI24uGI56B6K0oKcUf/LaJyqj8r
- YJxOVSP89NhdQby9Q8XILdaill2D9HHmAIGF75Ab8MARsrR2YUjiR1CRWVF/Q/3ApoSX
- 7y1p3kbZT3k0BHCx0LuMfmNSXyw82cVFdBDOdxSmpSZYSNmxNRYdDa8RiZfL45f7wGwF
- 0gc8qWQGo2rRYJ4LPH25beZ2AX/O6b0xIHn55AlkLPJLcEvY8ME5b8/azvG+n/PPKb+m
- rVrmQ/oz0lxoPoYBYFirsnkpwSoffWueVDoNC+imkx0B4yfSfyNP7yWEDEAAGTxP5i0u uA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f40q24grw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 30 Mar 2022 12:26:21 +0000
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22UCGkYC016395;
-        Wed, 30 Mar 2022 12:26:20 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f40q24gr3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 30 Mar 2022 12:26:20 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22UCNnUS018840;
-        Wed, 30 Mar 2022 12:26:18 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma03ams.nl.ibm.com with ESMTP id 3f1tf9ghys-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 30 Mar 2022 12:26:17 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22UCQKu845482264
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 30 Mar 2022 12:26:20 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B48B711C04C;
-        Wed, 30 Mar 2022 12:26:14 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3148611C04A;
-        Wed, 30 Mar 2022 12:26:14 +0000 (GMT)
-Received: from localhost.localdomain (unknown [9.145.13.95])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 30 Mar 2022 12:26:14 +0000 (GMT)
-From:   Claudio Imbrenda <imbrenda@linux.ibm.com>
-To:     kvm@vger.kernel.org
-Cc:     borntraeger@de.ibm.com, frankja@linux.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, david@redhat.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, scgl@linux.ibm.com,
-        mimu@linux.ibm.com, nrb@linux.ibm.com
-Subject: [PATCH v9 06/18] KVM: s390: pv: add export before import
-Date:   Wed, 30 Mar 2022 14:25:53 +0200
-Message-Id: <20220330122605.247613-7-imbrenda@linux.ibm.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330122605.247613-1-imbrenda@linux.ibm.com>
-References: <20220330122605.247613-1-imbrenda@linux.ibm.com>
+        Wed, 30 Mar 2022 08:41:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE897DF4B4;
+        Wed, 30 Mar 2022 05:30:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 26CF5B81C26;
+        Wed, 30 Mar 2022 12:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09B08C340EE;
+        Wed, 30 Mar 2022 12:30:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648643410;
+        bh=wMFzbAJ1w3I769LKcQvR0OeV1wjnRKl15NqgNqHjMPM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Jooz5o26y2T7lucnkeTlKNAUZ6dwp3eoPFEtxeqpOFFaLNFKr5oWouRbAlRA4eOpU
+         R4GJT0rTVrF95heK9efPmE+2RKbqxBBb6hW6ti3o4Ay0qwCGCcQIlzuGopfhxvI9YH
+         6DVldjBxxNxJPB+tlFbmflOjHnioNZtEYaeFwyij4glVPevgwWQqQH7h7V9QCYoVdX
+         Z7ZLTB/E+L+UkqVieV7+/kkd6Z5x7SR+N4vLdwkNov88B3292HF1u+xGFVA0p8gpyH
+         boOy/oJPqR5/jKoH+gw1Xrxj22CghA0VjZ1uVJ8x2X38JcHH8koY+2XJ4zOiENX9/Q
+         x+1IXAavckAzw==
+Date:   Wed, 30 Mar 2022 13:30:02 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Jiaxin Yu <jiaxin.yu@mediatek.com>
+Cc:     =?iso-8859-1?Q?N=EDcolas_F=2E_R=2E_A=2E?= Prado 
+        <nfraprado@collabora.com>, robh+dt@kernel.org, tzungbi@google.com,
+        angelogioacchino.delregno@collabora.com, aaronyu@google.com,
+        matthias.bgg@gmail.com, trevor.wu@mediatek.com, linmq006@gmail.com,
+        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        Tzung-Bi Shih <tzungbi@kernel.org>
+Subject: Re: [v7 2/4] ASoC: mediatek: mt8192: refactor for I2S3 DAI link of
+ speaker
+Message-ID: <YkRNSoBKFvYYyZLu@sirena.org.uk>
+References: <20220324064511.10665-1-jiaxin.yu@mediatek.com>
+ <20220324064511.10665-3-jiaxin.yu@mediatek.com>
+ <20220329223002.uo7kiemopkh7ak4x@notapiano>
+ <dee3fbb7c9f0c3e1f11143db1d6fc4381cab827f.camel@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: gXfqcyKsWvIY-rVXczVJefZCFHB-FqPH
-X-Proofpoint-ORIG-GUID: Gpz6IQZB2U2gh3mYuP3AaMQhglV5nKKI
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-30_04,2022-03-30_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxlogscore=999
- mlxscore=0 clxscore=1015 impostorscore=0 bulkscore=0 priorityscore=1501
- lowpriorityscore=0 malwarescore=0 suspectscore=0 spamscore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2203300062
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="jOMai26txzsrB1Jf"
+Content-Disposition: inline
+In-Reply-To: <dee3fbb7c9f0c3e1f11143db1d6fc4381cab827f.camel@mediatek.com>
+X-Cookie: Two is company, three is an orgy.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Due to upcoming changes, it will be possible to temporarily have
-multiple protected VMs in the same address space, although only one
-will be actually active.
 
-In that scenario, it is necessary to perform an export of every page
-that is to be imported, since the hardware does not allow a page
-belonging to a protected guest to be imported into a different
-protected guest.
+--jOMai26txzsrB1Jf
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-This also applies to pages that are shared, and thus accessible by the
-host.
+On Wed, Mar 30, 2022 at 10:33:06AM +0800, Jiaxin Yu wrote:
 
-Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
----
- arch/s390/kernel/uv.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+> "(Although I think this would technicallybreak the ABI?)"
+> ==> I can't understand this question, could you help explain it in more
+> detail.
 
-diff --git a/arch/s390/kernel/uv.c b/arch/s390/kernel/uv.c
-index 2754471cc789..e358b8bd864b 100644
---- a/arch/s390/kernel/uv.c
-+++ b/arch/s390/kernel/uv.c
-@@ -234,6 +234,12 @@ static int make_secure_pte(pte_t *ptep, unsigned long addr,
- 	return uvcb->rc == 0x10a ? -ENXIO : -EINVAL;
- }
- 
-+static bool should_export_before_import(struct uv_cb_header *uvcb, struct mm_struct *mm)
-+{
-+	return uvcb->cmd != UVC_CMD_UNPIN_PAGE_SHARED &&
-+		atomic_read(&mm->context.protected_count) > 1;
-+}
-+
- /*
-  * Requests the Ultravisor to make a page accessible to a guest.
-  * If it's brought in the first time, it will be cleared. If
-@@ -277,6 +283,8 @@ int gmap_make_secure(struct gmap *gmap, unsigned long gaddr, void *uvcb)
- 
- 	lock_page(page);
- 	ptep = get_locked_pte(gmap->mm, uaddr, &ptelock);
-+	if (should_export_before_import(uvcb, gmap->mm))
-+		uv_convert_from_secure(page_to_phys(page));
- 	rc = make_secure_pte(ptep, uaddr, page, uvcb);
- 	pte_unmap_unlock(ptep, ptelock);
- 	unlock_page(page);
--- 
-2.34.1
+Making a previously optional property required means that systems that
+previously worked may stop working unless they update their DT, DTs may
+be distributed separately to the kernel and perhaps even baked into
+firmware or similar.
 
+--jOMai26txzsrB1Jf
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJETUkACgkQJNaLcl1U
+h9DbEwf+JUOC5DnLCotwK80wPY+Rv+Fxpva35UGKpU+JgyM/o50OQtmaefr3nyZ7
+rItM7lPU81Hj7CJv0/hKjwsTmIVugxE7tOao1mBV9wLaStQfn2tx79wtLhiSYeNH
+Ig0F79Jy0tY/TnytxA7d8XYUzguiwLqQIBbC6VHIYfO08FdMyloI+3SILPHK1VM+
+SN23X+R9nG0CJImoNZMP1DDGodHkB9u+YhhB66cULenBpGMVNDKU1cPLTytp3nvP
+bDz70kaMHgFqMgY01LMzQ/1TBfRMm7isoInZl6nGUnDOo9pCzmctaPZyBgRQ5mod
+XaHgRucIShC8OJ16S0YCPs8CfbgvvQ==
+=2Po5
+-----END PGP SIGNATURE-----
+
+--jOMai26txzsrB1Jf--
