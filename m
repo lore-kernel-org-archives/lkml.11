@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1035AC4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22526C3527D
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:15:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346076AbiC3MPk (ORCPT
+        id S1346099AbiC3MPr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:15:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60880 "EHLO
+        Wed, 30 Mar 2022 08:15:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345800AbiC3LzC (ORCPT
+        with ESMTP id S244155AbiC3Lz1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:55:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2357B263663;
-        Wed, 30 Mar 2022 04:51:46 -0700 (PDT)
+        Wed, 30 Mar 2022 07:55:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ECD913CE3;
+        Wed, 30 Mar 2022 04:53:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7DEEB81C48;
-        Wed, 30 Mar 2022 11:51:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5865AC340F2;
-        Wed, 30 Mar 2022 11:51:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 255B8B81BBA;
+        Wed, 30 Mar 2022 11:53:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCC20C340EE;
+        Wed, 30 Mar 2022 11:53:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641104;
-        bh=3eNm8dG5hwrOYRfNxaPoVEjbdCJXfSIDk1mmCHp/p8o=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ej6icyrs21MQXiXTpXL1XYQm3RdP/m1Z3wx0diSD+U1IafrG9hR8JaiZMmexQVikI
-         EasnOG7lw6UP2jn1gvxPh+EVg1jqiszuL+0r9J4ib5CDlETj4wwFRrUJDgN19L4EKS
-         3fTnu9lbFuhHw7p7/OQlFcMg+FKREuliC5PK4w7n1felvS4ODrZIsV1+Xacc8pY8iI
-         yHzSVFyy/FBc0I0P+y2Er9jJEnjXxD51zMTKSIQmlxNmpjKSPSSF2oOkEY6YeIg8tr
-         RQOv8gd9wVOHwGLmMlcKmx/ugK4T3MqBRhGmmN66nfjNsXvVVhiYRikWYSoDFC9jG3
-         gdsgFAko4YgjA==
+        s=k20201202; t=1648641219;
+        bh=qW1x31HnZxqlWv9yLK7leVGiHSRFHxjgpFRqN+3ePM4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=E4qvaE4lujLNTa+UEfl9Fb5wzRQ5hKamuC6IdjcxnV0GwNRv2x67lLYsmJjTAwN0m
+         AYeZABtj4FEl6rj6lD3bpapv9UXokAb0+rJGIKXI71BNPpj75q0s4/NOf3nI1BHmSx
+         WoClee53xRL3JfYZgyOx6sMGAqbB6Qbj9GwEx9Ihcieyh/fiRQ2NfHeCi4q9FkGoHD
+         f4AevgisdYdjBNNQ6Wh07fN4eS9RsskxwaCOty20n2omEYpsrLZAGDEsToPy8coVx7
+         t7y041KpJ+Yr4QJkgdQnMhFhNnvKXjP0YPpzDAXz4hZjat1CJOrsmK7rWVXRtP36pv
+         u6LCg5H2PhLnw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.10 12/37] ASoC: madera: Add dependencies on MFD
-Date:   Wed, 30 Mar 2022 07:50:57 -0400
-Message-Id: <20220330115122.1671763-12-sashal@kernel.org>
+Cc:     Tim Gardner <tim.gardner@canonical.com>,
+        Antonino Daplas <adaplas@gmail.com>,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        tomi.valkeinen@ti.com
+Subject: [PATCH AUTOSEL 4.14 01/20] video: fbdev: nvidiafb: Use strscpy() to prevent buffer overflow
+Date:   Wed, 30 Mar 2022 07:53:17 -0400
+Message-Id: <20220330115336.1672930-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330115122.1671763-1-sashal@kernel.org>
-References: <20220330115122.1671763-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,58 +52,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Tim Gardner <tim.gardner@canonical.com>
 
-[ Upstream commit ec29170c724ca30305fc3a19ba2ee73ecac65509 ]
+[ Upstream commit 37a1a2e6eeeb101285cd34e12e48a881524701aa ]
 
-The Madera CODECs use regmap_irq functions but nothing ensures that
-regmap_irq is built into the kernel. Add dependencies on the ASoC
-symbols for the relevant MFD component. There is no point in building
-the ASoC driver if the MFD doesn't support it and the MFD part contains
-the necessary dependencies to ensure everything is built into the
-kernel.
+Coverity complains of a possible buffer overflow. However,
+given the 'static' scope of nvidia_setup_i2c_bus() it looks
+like that can't happen after examiniing the call sites.
 
-Reported-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220203115025.16464-1-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+CID 19036 (#1 of 1): Copy into fixed size buffer (STRING_OVERFLOW)
+1. fixed_size_dest: You might overrun the 48-character fixed-size string
+  chan->adapter.name by copying name without checking the length.
+2. parameter_as_source: Note: This defect has an elevated risk because the
+  source argument is a parameter of the current function.
+ 89        strcpy(chan->adapter.name, name);
+
+Fix this warning by using strscpy() which will silence the warning and
+prevent any future buffer overflows should the names used to identify the
+channel become much longer.
+
+Cc: Antonino Daplas <adaplas@gmail.com>
+Cc: linux-fbdev@vger.kernel.org
+Cc: dri-devel@lists.freedesktop.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Tim Gardner <tim.gardner@canonical.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/Kconfig | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/video/fbdev/nvidia/nv_i2c.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
-index 34c6dd04b85a..52c89a6f54e9 100644
---- a/sound/soc/codecs/Kconfig
-+++ b/sound/soc/codecs/Kconfig
-@@ -659,6 +659,7 @@ config SND_SOC_CS4349
+diff --git a/drivers/video/fbdev/nvidia/nv_i2c.c b/drivers/video/fbdev/nvidia/nv_i2c.c
+index d7994a173245..0b48965a6420 100644
+--- a/drivers/video/fbdev/nvidia/nv_i2c.c
++++ b/drivers/video/fbdev/nvidia/nv_i2c.c
+@@ -86,7 +86,7 @@ static int nvidia_setup_i2c_bus(struct nvidia_i2c_chan *chan, const char *name,
+ {
+ 	int rc;
  
- config SND_SOC_CS47L15
- 	tristate
-+	depends on MFD_CS47L15
- 
- config SND_SOC_CS47L24
- 	tristate
-@@ -666,15 +667,19 @@ config SND_SOC_CS47L24
- 
- config SND_SOC_CS47L35
- 	tristate
-+	depends on MFD_CS47L35
- 
- config SND_SOC_CS47L85
- 	tristate
-+	depends on MFD_CS47L85
- 
- config SND_SOC_CS47L90
- 	tristate
-+	depends on MFD_CS47L90
- 
- config SND_SOC_CS47L92
- 	tristate
-+	depends on MFD_CS47L92
- 
- # Cirrus Logic Quad-Channel ADC
- config SND_SOC_CS53L30
+-	strcpy(chan->adapter.name, name);
++	strscpy(chan->adapter.name, name, sizeof(chan->adapter.name));
+ 	chan->adapter.owner = THIS_MODULE;
+ 	chan->adapter.class = i2c_class;
+ 	chan->adapter.algo_data = &chan->algo;
 -- 
 2.34.1
 
