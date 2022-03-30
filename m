@@ -2,51 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0C56C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:49:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67B72C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:49:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344029AbiC3Lvb (ORCPT
+        id S1344083AbiC3Lvh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 07:51:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35776 "EHLO
+        Wed, 30 Mar 2022 07:51:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344054AbiC3LuO (ORCPT
+        with ESMTP id S1343995AbiC3LuX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:50:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EED4126E57A;
-        Wed, 30 Mar 2022 04:47:38 -0700 (PDT)
+        Wed, 30 Mar 2022 07:50:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F14926F219;
+        Wed, 30 Mar 2022 04:47:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C8E061640;
-        Wed, 30 Mar 2022 11:47:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB445C3410F;
-        Wed, 30 Mar 2022 11:47:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E52D615F5;
+        Wed, 30 Mar 2022 11:47:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70AC6C340EE;
+        Wed, 30 Mar 2022 11:47:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648640857;
-        bh=TzG0HYbJE5ho7Q6C9mjjowcE4QBfxtGF5O9CptascjE=;
+        s=k20201202; t=1648640864;
+        bh=BS9+xBaILP2NTve/YGTy5aoxWamiPKm3xneZ2z7LGuc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aZTz1r3yCD1kz8yQ9vMUEv48xdjbH5NINWKo+cqI6B7YvfXgmxLw8vGX9Wp635Oi8
-         0rqdHOl28kIldv11JKCsAWO6zwBx1I/tShqeAUJCA1iwXKPytYENgHHGLnmKWQyOlD
-         z/CkvWkwx/ikYxGcOdqJcoWiyUyqN1zE+L1roPczKsMCvuTzDlLzPXvIyAhdfwGhb9
-         w9Aic7xDoaC6vVY5OVpr29kYjxoSETohkucbntkrBKHQSGwj83h5IaC0i8MYMpRSRv
-         nBmHQuBwwcF371v0dvKMNvO6yH9Powc3tM3npJnk2eQsMs5KRn2T1V+68mMGxhUZwA
-         qwRjH+3ZnSzzw==
+        b=qCYiQPvGs+UvgQVykbhDjipWjjG2jpExfwZe3ZyR40sQREWdVReDSHIQmeObEk/WB
+         nJOZXLES/r+XJCKT4Dp8rfODO3iK89FJRD3fZ42idCuxoDsAtwBTz1Gc0gFuXtavRo
+         s+nWfRngG5N7DeOjlkLR9eG8qKWL21VidULcRDWs9kOR2Bd6xO82ovba8w05F0bJr2
+         3p7duSwfauXVN1hlwJwl/cDTqenEketzW35nhlYC6Z9Zvj4jA9x+0o4qkcZv7moftn
+         SSqxcslQ41tH+6IJiz/UT1UAylGQ+gbxQ2xqra9u/qwsRriApxKjMabfJkfDxzXIQp
+         z8fmepQZXpl9w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stephen Brennan <stephen.s.brennan@oracle.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Sasha Levin <sashal@kernel.org>, linux@roeck-us.net,
-        gregkh@linuxfoundation.org
-Subject: [PATCH AUTOSEL 5.17 33/66] printk: Drop console_sem during panic
-Date:   Wed, 30 Mar 2022 07:46:12 -0400
-Message-Id: <20220330114646.1669334-33-sashal@kernel.org>
+Cc:     =?UTF-8?q?Daniel=20Gonz=C3=A1lez=20Cabanelas?= <dgcbueu@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 38/66] media: cx88-mpeg: clear interrupt status register before streaming video
+Date:   Wed, 30 Mar 2022 07:46:17 -0400
+Message-Id: <20220330114646.1669334-38-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330114646.1669334-1-sashal@kernel.org>
 References: <20220330114646.1669334-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,74 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephen Brennan <stephen.s.brennan@oracle.com>
+From: Daniel González Cabanelas <dgcbueu@gmail.com>
 
-[ Upstream commit 8ebc476fd51e6c0fd3174ec1959a20ba99d4c5e5 ]
+[ Upstream commit 56cb61f70e547e1b0cdfe6ff5a1f1ce6242e6d96 ]
 
-If another CPU is in panic, we are about to be halted. Try to gracefully
-abandon the console_sem, leaving it free for the panic CPU to grab.
+Some cx88 video cards may have transport stream status interrupts set
+to 1 from cold start, causing errors like this:
 
-Suggested-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: Stephen Brennan <stephen.s.brennan@oracle.com>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
-Signed-off-by: Petr Mladek <pmladek@suse.com>
-Link: https://lore.kernel.org/r/20220202171821.179394-5-stephen.s.brennan@oracle.com
+  cx88xx: cx88_print_irqbits: core:irq mpeg  [0x100000] ts_err?*
+  cx8802: cx8802_mpeg_irq: mpeg:general errors: 0x00100000
+
+According to CX2388x datasheet, the interrupt status register should be
+cleared before enabling IRQs to stream video.
+
+Fix it by clearing the Transport Stream Interrupt Status register.
+
+Signed-off-by: Daniel González Cabanelas <dgcbueu@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/printk/printk.c | 25 ++++++++++++++++++++++++-
- 1 file changed, 24 insertions(+), 1 deletion(-)
+ drivers/media/pci/cx88/cx88-mpeg.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 4f31290256ad..bc5cbdeb38f3 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -2588,6 +2588,25 @@ static int have_callable_console(void)
- 	return 0;
- }
+diff --git a/drivers/media/pci/cx88/cx88-mpeg.c b/drivers/media/pci/cx88/cx88-mpeg.c
+index 680e1e3fe89b..2c1d5137ac47 100644
+--- a/drivers/media/pci/cx88/cx88-mpeg.c
++++ b/drivers/media/pci/cx88/cx88-mpeg.c
+@@ -162,6 +162,9 @@ int cx8802_start_dma(struct cx8802_dev    *dev,
+ 	cx_write(MO_TS_GPCNTRL, GP_COUNT_CONTROL_RESET);
+ 	q->count = 0;
  
-+/*
-+ * Return true when this CPU should unlock console_sem without pushing all
-+ * messages to the console. This reduces the chance that the console is
-+ * locked when the panic CPU tries to use it.
-+ */
-+static bool abandon_console_lock_in_panic(void)
-+{
-+	if (!panic_in_progress())
-+		return false;
++	/* clear interrupt status register */
++	cx_write(MO_TS_INTSTAT,  0x1f1111);
 +
-+	/*
-+	 * We can use raw_smp_processor_id() here because it is impossible for
-+	 * the task to be migrated to the panic_cpu, or away from it. If
-+	 * panic_cpu has already been set, and we're not currently executing on
-+	 * that CPU, then we never will be.
-+	 */
-+	return atomic_read(&panic_cpu) != raw_smp_processor_id();
-+}
-+
- /*
-  * Can we actually use the console at this time on this cpu?
-  *
-@@ -2736,6 +2755,10 @@ void console_unlock(void)
- 		if (handover)
- 			return;
- 
-+		/* Allow panic_cpu to take over the consoles safely */
-+		if (abandon_console_lock_in_panic())
-+			break;
-+
- 		if (do_cond_resched)
- 			cond_resched();
- 	}
-@@ -2753,7 +2776,7 @@ void console_unlock(void)
- 	 * flush, no worries.
- 	 */
- 	retry = prb_read_valid(prb, next_seq, NULL);
--	if (retry && console_trylock())
-+	if (retry && !abandon_console_lock_in_panic() && console_trylock())
- 		goto again;
- }
- EXPORT_SYMBOL(console_unlock);
+ 	/* enable irqs */
+ 	dprintk(1, "setting the interrupt mask\n");
+ 	cx_set(MO_PCI_INTMSK, core->pci_irqmask | PCI_INT_TSINT);
 -- 
 2.34.1
 
