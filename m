@@ -2,112 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72A44C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 16:15:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B8C3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 16:16:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348681AbiC3QQu (ORCPT
+        id S1348688AbiC3QRp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 12:16:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37376 "EHLO
+        Wed, 30 Mar 2022 12:17:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230055AbiC3QQs (ORCPT
+        with ESMTP id S230055AbiC3QRn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 12:16:48 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC9E01128;
-        Wed, 30 Mar 2022 09:15:00 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: nfraprado)
-        with ESMTPSA id 16E381F45D79
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1648656899;
-        bh=b0AyqVB1oKTLJHMRCRnyV2JQz3E+jsXsvdxPFkQuRVY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=IkXp7YLLbwEGMTNIGKu1Wmcyn3FrmqCJymAolDdizOH0Qi3JJeAiLJVh30Xbqrx0O
-         CCWbxYSfWhivoN2A/vo91tfKEKTi5hb/q0rQlfsjVEINng46NNfyM494yLZgFp+T6q
-         ymuAwSZiWjhDFZL1WmgedlIsNpBRl3Xz9WMKM/IGmzY+zbh32fqAO7I7oBskvbdNcY
-         kt8d/YcpEDu8aQUM8Nm+mULHgyKhiiKyW+5nlZWI8rQwHXIeOcnUUloQ595W+RCwg+
-         sjpK5RZGKg9/71NcL40P5FBueF6GX6anecvM+GcMPpTCk8eiDGb8GiygmOy/nqjPut
-         KfUPnV2Y0wb1A==
-Date:   Wed, 30 Mar 2022 12:14:50 -0400
-From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
-        <nfraprado@collabora.com>
-To:     Jiaxin Yu <jiaxin.yu@mediatek.com>
-Cc:     Mark Brown <broonie@kernel.org>, robh+dt@kernel.org,
-        tzungbi@google.com, angelogioacchino.delregno@collabora.com,
-        aaronyu@google.com, matthias.bgg@gmail.com, trevor.wu@mediatek.com,
-        linmq006@gmail.com, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        Tzung-Bi Shih <tzungbi@kernel.org>
-Subject: Re: [v7 2/4] ASoC: mediatek: mt8192: refactor for I2S3 DAI link of
- speaker
-Message-ID: <20220330161450.xxak64el6g6lzcem@notapiano>
-References: <20220324064511.10665-1-jiaxin.yu@mediatek.com>
- <20220324064511.10665-3-jiaxin.yu@mediatek.com>
- <20220329223002.uo7kiemopkh7ak4x@notapiano>
- <dee3fbb7c9f0c3e1f11143db1d6fc4381cab827f.camel@mediatek.com>
- <YkRNSoBKFvYYyZLu@sirena.org.uk>
- <61e9fb59448837cfc8e3ec862b711294bcb68872.camel@mediatek.com>
- <YkRoC30JLDMeVi1B@sirena.org.uk>
- <734fbf254c64668856e987aafe9d7dfd3ec86941.camel@mediatek.com>
+        Wed, 30 Mar 2022 12:17:43 -0400
+Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B4F9AE57
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 09:15:58 -0700 (PDT)
+Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-dee0378ce7so12169184fac.4
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 09:15:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:date:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=HmtpU+iKeqqs1Tum0ObqFls2q0zemhd+lsKd6q135Is=;
+        b=B8pkD9RwGTCaNZUS/K1UWK/0J7doiMqEmJFC5d3l4Rl8RXN4moZDl+LJbFyB5EjdEc
+         iI8g0b+BcU+hYJFqDnhJz+sZhp4Qj8OOypg73DDvJPfLwsX8l0IDHbgWCbGtJXjBSlMK
+         Epbl2nnRX9ZUusz8m40G2uMZSuihkDQ6YmJ2yAKyMxODf7MOl1e6YWypavlDkjgQMkRS
+         Qw/f2qi6USZyvIN1CsXTAn/6GsR3832CctlVvK+x2g/Fqs4OpE4AxFeHvleeg+Y4cG9Y
+         z2Lq6FM+DiPB9tHfo0+dXoK2Y338+e9CZULBQOHb9w61TjL/eic3frY8+j0G8JQ+ofEv
+         m6CQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=HmtpU+iKeqqs1Tum0ObqFls2q0zemhd+lsKd6q135Is=;
+        b=w8XK72XaQQ9HTGj487aBW6/a2/mHr3Tcw+13CJjUUC9wAZz0Ea8HF3bCvSyFgy+7Qu
+         w6hug5mDgUaGgsWNg6xR9oVNutPwOCJKMbEsM2fj2ayDm+V3QSdu899OF9/KvftHcwM6
+         ioCuV2J3UG6I+eUM+LIGWSj8yjzjMEFAdGGEHGvdVO9hZux8uxTh5PuTS2wNY8BS3nS+
+         2pj34I6lyOR+0ruGFq3wz5vFLOTsWLfAfuFqw/j7USpmlVifR6lgG1IYysZg26zFUNx0
+         Tu2GwvbvUKrOxvMqgaby+sGJUx3Rb5t1j8tco6FsfWkgSuVRHfA0YNsI/ol/wH6p2jfR
+         Lelw==
+X-Gm-Message-State: AOAM532Ri6L5HqVNHp0M/hmgs+yfaJBLwMt9LaD4+wsENi7aKcqHKdGo
+        NDuOZNbVp/RwQL1wjvvblhmj8qUYbxs=
+X-Google-Smtp-Source: ABdhPJygH8VYCLm/rZWowqvlG5Hkb9RuADdaf+ZZxHyhfhaWHkcOCEnFcKkUj9toCG7zGHjMkxAHYg==
+X-Received: by 2002:a05:6870:1496:b0:dd:fe5c:4bbc with SMTP id k22-20020a056870149600b000ddfe5c4bbcmr175101oab.166.1648656957653;
+        Wed, 30 Mar 2022 09:15:57 -0700 (PDT)
+Received: from quaco.ghostprotocols.net ([187.19.239.165])
+        by smtp.gmail.com with ESMTPSA id w8-20020aca3008000000b002ef7e3ad3b8sm10293103oiw.29.2022.03.30.09.15.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 09:15:56 -0700 (PDT)
+From:   arnaldo.melo@gmail.com
+X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>, Arnaldo Carvalho de Melo <acme@redhat.com>
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 9F5D240407; Wed, 30 Mar 2022 13:15:53 -0300 (-03)
+Date:   Wed, 30 Mar 2022 13:15:53 -0300
+To:     Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
+        Oliver Upton <oupton@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH FYI] tools headers UAPI: Sync linux/kvm.h with the kernel
+ sources
+Message-ID: <YkSCOWHQdir1lhdJ@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <734fbf254c64668856e987aafe9d7dfd3ec86941.camel@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 11:48:01PM +0800, Jiaxin Yu wrote:
-> On Wed, 2022-03-30 at 15:24 +0100, Mark Brown wrote:
-> > On Wed, Mar 30, 2022 at 10:06:24PM +0800, Jiaxin Yu wrote:
-> > > On Wed, 2022-03-30 at 13:30 +0100, Mark Brown wrote:
-> > > > Making a previously optional property required means that systems
-> > > > that
-> > > > previously worked may stop working unless they update their DT,
-> > > > DTs
-> > > > may
-> > > > be distributed separately to the kernel and perhaps even baked
-> > > > into
-> > > > firmware or similar.
-> > > Thank you for your detailed answer. I should keep the driver's
-> > > behavior
-> > > consistent with the description of dt-bindings. The "mediatek,hdmi-
-> > > codec" needs to be set as the required property. Is my
-> > > understanding
-> > > right?
-> > 
-> > The binding document and code should match so if one is changed the
-> > other needs to be changed too.
-> > 
-> > In theory we should never change a previously optional property to
-> > required which would mean that the code should be updated to reflect
-> > the
-> > binding document, however sometimes the DT isn't actually used as a
-> > stable intereface by anything for a given property or device type so
-> > we
-> > can get away with changing things.
-> 
-> "however sometimes the DT isn't actually used as a stable intereface by
-> anything for a given property or device type so we can get away with
-> changing things."
-> 
-> Sorry, I don't understand the real idea of this description. Does it
-> mean that dt-bindings in this series don't need to be updated, but the
-> driver?
+Just FYI, I'm carrying this on the perf tools tree.
 
-He means that usually the DT (and dt-binding) shouldn't be changed to avoid
-incompatibilities, but sometimes it's OK to change them. For example if there
-are no users of the DT yet.
+- Arnaldo
 
-But in any case, like I mentioned in my latest reply [1], I don't think changing
-the dt-binding is the proper solution in this case. The driver should be changed
-instead.
+---
 
-Thanks,
-Nícolas
 
-[1] https://lore.kernel.org/all/20220330152026.6nuigsldx46lue44@notapiano
+To pick the changes in:
+
+  6d8491910fcd3324 ("KVM: x86: Introduce KVM_CAP_DISABLE_QUIRKS2")
+  ef11c9463ae00630 ("KVM: s390: Add vm IOCTL for key checked guest absolute memory access")
+  e9e9feebcbc14b17 ("KVM: s390: Add optional storage key checking to MEMOP IOCTL")
+
+That just rebuilds perf, as these patches don't add any new KVM ioctl to
+be harvested for the the 'perf trace' ioctl syscall argument
+beautifiers.
+
+This is also by now used by tools/testing/selftests/kvm/, a simple test
+build succeeded.
+
+This silences this perf build warning:
+
+  Warning: Kernel ABI header at 'tools/include/uapi/linux/kvm.h' differs from latest version at 'include/uapi/linux/kvm.h'
+  diff -u tools/include/uapi/linux/kvm.h include/uapi/linux/kvm.h
+
+Cc: Christian Borntraeger <borntraeger@linux.ibm.com>
+Cc: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+Cc: Oliver Upton <oupton@google.com>
+Cc: Paolo Bonzini <pbonzini@redhat.com>
+Link: http://lore.kernel.org/lkml/
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+---
+ tools/include/uapi/linux/kvm.h | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/tools/include/uapi/linux/kvm.h b/tools/include/uapi/linux/kvm.h
+index bbc6b7c2dc1b3a54..91a6fe4e02c08c4b 100644
+--- a/tools/include/uapi/linux/kvm.h
++++ b/tools/include/uapi/linux/kvm.h
+@@ -562,9 +562,12 @@ struct kvm_s390_mem_op {
+ 	__u32 op;		/* type of operation */
+ 	__u64 buf;		/* buffer in userspace */
+ 	union {
+-		__u8 ar;	/* the access register number */
++		struct {
++			__u8 ar;	/* the access register number */
++			__u8 key;	/* access key, ignored if flag unset */
++		};
+ 		__u32 sida_offset; /* offset into the sida */
+-		__u8 reserved[32]; /* should be set to 0 */
++		__u8 reserved[32]; /* ignored */
+ 	};
+ };
+ /* types for kvm_s390_mem_op->op */
+@@ -572,9 +575,12 @@ struct kvm_s390_mem_op {
+ #define KVM_S390_MEMOP_LOGICAL_WRITE	1
+ #define KVM_S390_MEMOP_SIDA_READ	2
+ #define KVM_S390_MEMOP_SIDA_WRITE	3
++#define KVM_S390_MEMOP_ABSOLUTE_READ	4
++#define KVM_S390_MEMOP_ABSOLUTE_WRITE	5
+ /* flags for kvm_s390_mem_op->flags */
+ #define KVM_S390_MEMOP_F_CHECK_ONLY		(1ULL << 0)
+ #define KVM_S390_MEMOP_F_INJECT_EXCEPTION	(1ULL << 1)
++#define KVM_S390_MEMOP_F_SKEY_PROTECTION	(1ULL << 2)
+ 
+ /* for KVM_INTERRUPT */
+ struct kvm_interrupt {
+@@ -1137,6 +1143,7 @@ struct kvm_ppc_resize_hpt {
+ #define KVM_CAP_PPC_AIL_MODE_3 210
+ #define KVM_CAP_S390_MEM_OP_EXTENSION 211
+ #define KVM_CAP_PMU_CAPABILITY 212
++#define KVM_CAP_DISABLE_QUIRKS2 213
+ 
+ #ifdef KVM_CAP_IRQ_ROUTING
+ 
+-- 
+2.35.1
+
