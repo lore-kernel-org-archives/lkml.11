@@ -2,84 +2,232 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1929C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 14:21:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18FDBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 14:22:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346737AbiC3OWu (ORCPT
+        id S1346740AbiC3OX5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 10:22:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53572 "EHLO
+        Wed, 30 Mar 2022 10:23:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346726AbiC3OWr (ORCPT
+        with ESMTP id S1346104AbiC3OXz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 10:22:47 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB1A5DFD72;
-        Wed, 30 Mar 2022 07:21:00 -0700 (PDT)
+        Wed, 30 Mar 2022 10:23:55 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BF4A19B07E
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 07:22:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648650062; x=1680186062;
-  h=message-id:date:mime-version:to:references:from:subject:
-   in-reply-to:content-transfer-encoding;
-  bh=FiqZAxLNLSA3q+0iMDyStSVs9TexPD0XlwioqNQSJ74=;
-  b=XRwHNfOcj1wkt79zUBZ06TAdzT8+RKN4d+NqJDK7I7tPKG6H58VJZgeY
-   EDOlPEKVN2hlrq01uQ44xENVwMusWuww8Z82+SH0MdMZ0HjGxQaSqh73U
-   vF7fqLLxAuDSLfaSodO5QraIzlrUEr+D/aGsC0V1A1nRljppl+zv65pXF
-   jMKnxCEQtqqV2lR/f7bZ3ArWYJXCgD2ie+4GKL0VUW0KnZx8Bc/wg+Qqc
-   nXZ8nQmNGV3Z9zzkdGig4BgcgC/o+p0YyzeTSImIlNER78VzvV/xHfian
-   VA2rtJr35TrkNqOEScauQQubqK1Y2s8hotNXovcGM0qqEtyp1ZekZnon4
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="322733928"
+  t=1648650130; x=1680186130;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=K3BHM//KxN/L/Kk8e1wzynNcmkq/HH5ezJ9aW6BKd3I=;
+  b=MzBbMLuv4ZehPipUb9U7NbXa+QyOh6IkPkodoGhDhqTgMwM8ZZf728kG
+   rvNsuvZxsDYB9uOJg2Ym2t6X9IUp15KQRfcDg4MTqkl84uQ0BRgLSk2Kh
+   nKutDa/Ci7USJnibaveUKBxEGfvgGYFKUmq1v9l0tFCXSMdCfCL6X9Y01
+   5M82CS04RN/jDq/KMcZDKlbkPAWUgSfYQycW41Dm02gHvIp5EicmFoBlF
+   R4AnjCOP91VW6GA7hQNESJTP24jGBO5YRkB0lD32l0chHWKnQn+uCjc1M
+   PEXGaguiNT6sVuP9gc61KjMbgsoVpD2ECLILedZ3CkTWrTnhSlXvFO9CK
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="241709706"
 X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
-   d="scan'208";a="322733928"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 07:20:44 -0700
+   d="scan'208";a="241709706"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 07:22:10 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
-   d="scan'208";a="586015679"
-Received: from amahade1-mobl2.amr.corp.intel.com (HELO [10.209.45.250]) ([10.209.45.250])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 07:20:44 -0700
-Message-ID: <79bde999-cf8d-796b-1ddf-3cf612d28375@intel.com>
-Date:   Wed, 30 Mar 2022 07:20:47 -0700
+   d="scan'208";a="503330779"
+Received: from lkp-server02.sh.intel.com (HELO 56431612eabd) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 30 Mar 2022 07:22:08 -0700
+Received: from kbuild by 56431612eabd with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nZZD5-00004E-FY;
+        Wed, 30 Mar 2022 14:22:07 +0000
+Date:   Wed, 30 Mar 2022 22:21:49 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Will Deacon <willdeacon@google.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:google/android/kernel/common/android13-5.15
+ 5600/5615] arch/arm64/kvm/hyp/nvhe/psci-relay.c:249:6: warning: no previous
+ prototype for function 'psci_mem_protect_inc'
+Message-ID: <202203302232.NQaL6oOJ-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     "Deucher, Alexander" <Alexander.Deucher@amd.com>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "corbet@lwn.net" <corbet@lwn.net>, "hpa@zytor.com" <hpa@zytor.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "joro@8bytes.org" <joro@8bytes.org>,
-        "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>,
-        "will@kernel.org" <will@kernel.org>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "Hegde, Vasant" <Vasant.Hegde@amd.com>
-References: <20220328172829.718235-1-alexander.deucher@amd.com>
- <20220328172829.718235-2-alexander.deucher@amd.com>
- <b3998af9-24bc-6191-a8ed-de747e895799@intel.com>
- <BL1PR12MB5144C7172FCB8ED2C1AB013AF71F9@BL1PR12MB5144.namprd12.prod.outlook.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [PATCH V3 1/2] Documentation: x86: Add documentation for AMD
- IOMMU
-In-Reply-To: <BL1PR12MB5144C7172FCB8ED2C1AB013AF71F9@BL1PR12MB5144.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/30/22 07:01, Deucher, Alexander wrote:
->> Just scanning this, it looks *awfully* generic.  Is anything in
->> here AMD- specific?  Should this be in an AMD-specific file?
-> There is some information about the ACPI tables used to enumerate the
-> IOMMUs and a link to the AMD IOMMU programming documentation.  Would
-> you prefer I just create a combined x86 IOMMU document?
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android13-5.15
+head:   73a2a894a9b4d0fe1ba09039e381e658c1f62593
+commit: 4347917056dadaf7856cce8312eb1c55e1372a2a [5600/5615] ANDROID: KVM: arm64: Use PSCI MEM_PROTECT to zap guest pages on reset
+config: arm64-randconfig-r036-20220330 (https://download.01.org/0day-ci/archive/20220330/202203302232.NQaL6oOJ-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0f6d9501cf49ce02937099350d08f20c4af86f3d)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://github.com/ammarfaizi2/linux-block/commit/4347917056dadaf7856cce8312eb1c55e1372a2a
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android13-5.15
+        git checkout 4347917056dadaf7856cce8312eb1c55e1372a2a
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/
 
-Yeah, I think that would make a lot of sense.  Let's just have one
-document with an AMD section and an Intel section.  Maybe just rename
-the existing one to intel-iommu => x86-iommu.rst.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   arch/arm64/kvm/hyp/nvhe/psci-relay.c:204:28: warning: no previous prototype for function 'kvm_host_psci_cpu_entry' [-Wmissing-prototypes]
+   asmlinkage void __noreturn kvm_host_psci_cpu_entry(bool is_cpu_on)
+                              ^
+   arch/arm64/kvm/hyp/nvhe/psci-relay.c:204:12: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   asmlinkage void __noreturn kvm_host_psci_cpu_entry(bool is_cpu_on)
+              ^
+              static 
+>> arch/arm64/kvm/hyp/nvhe/psci-relay.c:249:6: warning: no previous prototype for function 'psci_mem_protect_inc' [-Wmissing-prototypes]
+   void psci_mem_protect_inc(void)
+        ^
+   arch/arm64/kvm/hyp/nvhe/psci-relay.c:249:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void psci_mem_protect_inc(void)
+   ^
+   static 
+>> arch/arm64/kvm/hyp/nvhe/psci-relay.c:256:6: warning: no previous prototype for function 'psci_mem_protect_dec' [-Wmissing-prototypes]
+   void psci_mem_protect_dec(void)
+        ^
+   arch/arm64/kvm/hyp/nvhe/psci-relay.c:256:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void psci_mem_protect_dec(void)
+   ^
+   static 
+   3 warnings generated.
+
+Kconfig warnings: (for reference only)
+   WARNING: unmet direct dependencies detected for USB_PHY
+   Depends on USB_SUPPORT
+   Selected by
+   - GKI_HIDDEN_USB_CONFIGS
+   WARNING: unmet direct dependencies detected for SND_PCM_ELD
+   Depends on SOUND && !UML && SND
+   Selected by
+   - GKI_HIDDEN_SND_CONFIGS
+   WARNING: unmet direct dependencies detected for WEXT_PROC
+   Depends on NET && WIRELESS && PROC_FS && WEXT_CORE
+   Selected by
+   - GKI_LEGACY_WEXT_ALLCONFIG
+   WARNING: unmet direct dependencies detected for WEXT_PRIV
+   Depends on NET && WIRELESS
+   Selected by
+   - GKI_LEGACY_WEXT_ALLCONFIG
+   WARNING: unmet direct dependencies detected for PAGE_POOL
+   Depends on NET
+   Selected by
+   - GKI_HIDDEN_NET_CONFIGS
+   WARNING: unmet direct dependencies detected for WEXT_SPY
+   Depends on NET && WIRELESS
+   Selected by
+   - GKI_LEGACY_WEXT_ALLCONFIG
+   WARNING: unmet direct dependencies detected for PHYLINK
+   Depends on NETDEVICES
+   Selected by
+   - GKI_HIDDEN_ETHERNET_CONFIGS
+   WARNING: unmet direct dependencies detected for WIRELESS_EXT
+   Depends on NET && WIRELESS
+   Selected by
+   - GKI_LEGACY_WEXT_ALLCONFIG
+   WARNING: unmet direct dependencies detected for WEXT_CORE
+   Depends on NET && WIRELESS && (CFG80211_WEXT || WIRELESS_EXT
+   Selected by
+   - GKI_LEGACY_WEXT_ALLCONFIG
+   WARNING: unmet direct dependencies detected for NET_PTP_CLASSIFY
+   Depends on NET
+   Selected by
+   - GKI_HIDDEN_NET_CONFIGS
+   WARNING: unmet direct dependencies detected for SND_JACK
+   Depends on SOUND && !UML && SND
+   Selected by
+   - GKI_HIDDEN_SND_CONFIGS
+   WARNING: unmet direct dependencies detected for SND_VMASTER
+   Depends on SOUND && !UML && SND
+   Selected by
+   - GKI_HIDDEN_SND_CONFIGS
+   WARNING: unmet direct dependencies detected for SND_PCM_IEC958
+   Depends on SOUND && !UML && SND
+   Selected by
+   - GKI_HIDDEN_SND_SOC_CONFIGS
+   WARNING: unmet direct dependencies detected for SND_JACK_INPUT_DEV
+   Depends on SOUND && !UML && SND && SND_JACK
+   Selected by
+   - GKI_HIDDEN_SND_CONFIGS
+
+
+vim +/psci_mem_protect_inc +249 arch/arm64/kvm/hyp/nvhe/psci-relay.c
+
+   203	
+ > 204	asmlinkage void __noreturn kvm_host_psci_cpu_entry(bool is_cpu_on)
+   205	{
+   206		struct psci_boot_args *boot_args;
+   207		struct kvm_cpu_context *host_ctxt;
+   208	
+   209		host_ctxt = &this_cpu_ptr(&kvm_host_data)->host_ctxt;
+   210	
+   211		if (is_cpu_on)
+   212			boot_args = this_cpu_ptr(&cpu_on_args);
+   213		else
+   214			boot_args = this_cpu_ptr(&suspend_args);
+   215	
+   216		cpu_reg(host_ctxt, 0) = boot_args->r0;
+   217		write_sysreg_el2(boot_args->pc, SYS_ELR);
+   218	
+   219		if (is_cpu_on)
+   220			release_boot_args(boot_args);
+   221	
+   222		__host_enter(host_ctxt);
+   223	}
+   224	
+   225	static DEFINE_HYP_SPINLOCK(mem_protect_lock);
+   226	
+   227	static u64 psci_mem_protect(s64 offset)
+   228	{
+   229		static u64 cnt;
+   230		u64 new = cnt + offset;
+   231	
+   232		hyp_assert_lock_held(&mem_protect_lock);
+   233	
+   234		if (!offset || kvm_host_psci_config.version < PSCI_VERSION(1, 1))
+   235			return cnt;
+   236	
+   237		if (!cnt || !new)
+   238			psci_call(PSCI_1_1_FN64_MEM_PROTECT, offset < 0 ? 0 : 1, 0, 0);
+   239	
+   240		cnt = new;
+   241		return cnt;
+   242	}
+   243	
+   244	static bool psci_mem_protect_active(void)
+   245	{
+   246		return psci_mem_protect(0);
+   247	}
+   248	
+ > 249	void psci_mem_protect_inc(void)
+   250	{
+   251		hyp_spin_lock(&mem_protect_lock);
+   252		psci_mem_protect(1);
+   253		hyp_spin_unlock(&mem_protect_lock);
+   254	}
+   255	
+ > 256	void psci_mem_protect_dec(void)
+   257	{
+   258		hyp_spin_lock(&mem_protect_lock);
+   259		psci_mem_protect(-1);
+   260		hyp_spin_unlock(&mem_protect_lock);
+   261	}
+   262	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
