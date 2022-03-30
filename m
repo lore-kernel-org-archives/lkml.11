@@ -2,152 +2,412 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C17D1C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 09:20:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47E5FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 09:22:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244747AbiC3JWZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 05:22:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38178 "EHLO
+        id S244760AbiC3JYS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 05:24:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239162AbiC3JWW (ORCPT
+        with ESMTP id S236477AbiC3JYM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 05:22:22 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 63EAE2AE1B
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 02:20:36 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-238-PvzMciuTPwSAX9RYfRl6uw-1; Wed, 30 Mar 2022 10:20:33 +0100
-X-MC-Unique: PvzMciuTPwSAX9RYfRl6uw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.32; Wed, 30 Mar 2022 10:20:31 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.033; Wed, 30 Mar 2022 10:20:31 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Guenter Roeck' <linux@roeck-us.net>,
-        'Michael Walle' <michael@walle.cc>,
-        Xu Yilun <yilun.xu@intel.com>, Tom Rix <trix@redhat.com>,
-        Jean Delvare <jdelvare@suse.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     "linux-hwmon@vger.kernel.org" <linux-hwmon@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH v2 1/5] hwmon: introduce hwmon_sanitize_name()
-Thread-Topic: [PATCH v2 1/5] hwmon: introduce hwmon_sanitize_name()
-Thread-Index: AQHYQ4dUrIB0cQMH/kajVzJ0H3I8wazXOSsggAAAkwCAAGuLAA==
-Date:   Wed, 30 Mar 2022 09:20:31 +0000
-Message-ID: <cf6f672fbaf645f780ae5eab1a955871@AcuMS.aculab.com>
-References: <20220329160730.3265481-1-michael@walle.cc>
- <20220329160730.3265481-2-michael@walle.cc>
- <16d8b45eba7b44e78fa8205e6666f2bd@AcuMS.aculab.com>
- <fa1f64d2-32a1-b8f9-0929-093fbd45d219@roeck-us.net>
-In-Reply-To: <fa1f64d2-32a1-b8f9-0929-093fbd45d219@roeck-us.net>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Wed, 30 Mar 2022 05:24:12 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 564CC2AE1B
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 02:22:26 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id p12-20020a05600c430c00b0038cbdf52227so3045328wme.2
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 02:22:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ffwll.ch; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=6nD/I4kMAKrtqDEqRY0M5yAOEN5U7/IDEqc6nl8dsQE=;
+        b=WhmUMZcJlNyvp9GaS3eS2dmZlgPvM0A8M829EOkDwvb1RZq4PRuBuvwhdLJK6Yt3Uz
+         cQfrMCTDEcybEbu1sVI+uFEVpW96hau4zUCF599xAzPy9QdHMD+7resniasNMwkg4I01
+         qjUXS6h7HB6LqwkJ53mESZHi0wRbdpEGpaFAE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :content-transfer-encoding:in-reply-to;
+        bh=6nD/I4kMAKrtqDEqRY0M5yAOEN5U7/IDEqc6nl8dsQE=;
+        b=Rjxzwkrnl2VUonJclWfSLpVIKLY550fc3uPUUq3AThlR9kIh0RbDOc6Osn5zwW2pB4
+         4eWToiWf/HKlbsp9Expfe5oIRvWkOyTTErk52AXFS0wwHMf/7FXPAACQTfr3eXoZCjbK
+         Ppp8flD7WaLU9JDh+PMUQRoEmyPn6oaqDhUCLX3rSz2Ekl+HEyjjH/YLX2+yY5RiIYtL
+         mhqmBVnF5nh5EHgHwCBVAkGDgq22gePPZCPAHubvVFrxbpkUnxoZWp3bzO7yzFCSiRxA
+         VvgP3/n54U5FV3W9IZfSAwshT1h0gxlc1oz03Gl5UwDuIto1rbzCyb9ByWsFmn/HjOO3
+         tWwQ==
+X-Gm-Message-State: AOAM532QuR+Bk+qA6rzbDBqP5FLeSgKA/ISAFEGnsMQDGkbpVDY5nQRH
+        wlmhgnL0lO8XsFw9451QZg2MEA==
+X-Google-Smtp-Source: ABdhPJzGWB1LDAO/Hz2gcmh/frjW/+Is2Xz8GPTL1nfINGJb8XtPCpcE3mAtT5+0Y3SgFxlFYgkyXg==
+X-Received: by 2002:a05:600c:1ca7:b0:38e:27a6:5546 with SMTP id k39-20020a05600c1ca700b0038e27a65546mr3463771wms.188.1648632144805;
+        Wed, 30 Mar 2022 02:22:24 -0700 (PDT)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id h10-20020a05600c144a00b0038ccc75a6adsm4263403wmi.37.2022.03.30.02.22.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 02:22:24 -0700 (PDT)
+Date:   Wed, 30 Mar 2022 11:22:22 +0200
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     Paul Cercueil <paul@crapouillou.net>
+Cc:     Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-iio@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
+Subject: Re: [PATCH v2 12/12] Documentation: iio: Document high-speed DMABUF
+ based API
+Message-ID: <YkQhTvwJOh0+ooQp@phenom.ffwll.local>
+Mail-Followup-To: Paul Cercueil <paul@crapouillou.net>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-iio@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
+References: <20220207125933.81634-1-paul@crapouillou.net>
+ <20220207130140.81891-1-paul@crapouillou.net>
+ <20220207130140.81891-2-paul@crapouillou.net>
+ <YkLJU7Pp98CPIHfY@phenom.ffwll.local>
+ <Z63I9R.MKYUKBH4V8L41@crapouillou.net>
+ <YkMSmcQy1sKQJ5rJ@phenom.ffwll.local>
+ <AUOI9R.I8SSZ2CC5S2W2@crapouillou.net>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <AUOI9R.I8SSZ2CC5S2W2@crapouillou.net>
+X-Operating-System: Linux phenom 5.10.0-8-amd64 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RnJvbTogR3VlbnRlciBSb2Vjaw0KPiBTZW50OiAzMCBNYXJjaCAyMDIyIDA0OjQ3DQo+IA0KPiBP
-biAzLzI5LzIyIDE5OjU3LCBEYXZpZCBMYWlnaHQgd3JvdGU6DQo+ID4gRnJvbTogTWljaGFlbCBX
-YWxsZQ0KPiA+PiBTZW50OiAyOSBNYXJjaCAyMDIyIDE3OjA3DQo+ID4+DQo+ID4+IE1vcmUgYW5k
-IG1vcmUgZHJpdmVycyB3aWxsIGNoZWNrIGZvciBiYWQgY2hhcmFjdGVycyBpbiB0aGUgaHdtb24g
-bmFtZQ0KPiA+PiBhbmQgYWxsIGFyZSB1c2luZyB0aGUgc2FtZSBjb2RlIHNuaXBwZXQuIENvbnNv
-bGlkYXRlIHRoYXQgY29kZSBieSBhZGRpbmcNCj4gPj4gYSBuZXcgaHdtb25fc2FuaXRpemVfbmFt
-ZSgpIGZ1bmN0aW9uLg0KPiA+DQo+ID4gSSdtIGFzc3VtaW5nIHRoZXNlICdiYWQnIGh3bW9uIG5h
-bWVzIGNvbWUgZnJvbSB1c2Vyc3BhY2U/DQo+ID4gTGlrZSBldGhlcm5ldCBpbnRlcmZhY2UgbmFt
-ZXM/Pw0KPiA+DQo+ID4gSXMgc2lsZW50bHkgY2hhbmdpbmcgdGhlIG5hbWUgb2YgdGhlIGh3bW9u
-IGVudHJpZXMgdGhlIHJpZ2h0DQo+ID4gdGhpbmcgdG8gZG8gYXQgYWxsPw0KPiA+DQo+ID4gV2hh
-dCBoYXBwZW5zIGlmIHRoZSB1c2VyIHRyaWVzIHRvIGNyZWF0ZSBib3RoICJmb29fYmFyIiBhbmQg
-ImZvby1iYXIiPw0KPiA+IEknbSBzdXJlIHRoYXQgaXMgZ29pbmcgdG8gZ28gaG9ycmlibHkgd3Jv
-bmcgc29tZXdoZXJlLg0KPiA+DQo+ID4gSXQgd291bGQgY2VydGFpbmx5IG1ha2Ugc2Vuc2UgdG8g
-aGF2ZSBhIGZ1bmN0aW9uIHRvIHZlcmlmeSB0aGUgbmFtZQ0KPiA+IGlzIGFjdHVhbGx5IHZhbGlk
-Lg0KPiA+IFRoZW4gYmFkIG5hbWVzIGNhbiBiZSByZWplY3RlZCBlYXJsaWVyIG9uLg0KPiA+DQo+
-ID4gSSdtIGFsc28gaW50cmlndWVkIGFib3V0IHRoZSBsaXN0IG9mIGludmFsaWQgY2hhcmFjdGVy
-czoNCj4gPg0KPiA+ICtzdGF0aWMgYm9vbCBod21vbl9pc19iYWRfY2hhcihjb25zdCBjaGFyIGNo
-KQ0KPiA+ICt7DQo+ID4gKwlzd2l0Y2ggKGNoKSB7DQo+ID4gKwljYXNlICctJzoNCj4gPiArCWNh
-c2UgJyonOg0KPiA+ICsJY2FzZSAnICc6DQo+ID4gKwljYXNlICdcdCc6DQo+ID4gKwljYXNlICdc
-bic6DQo+ID4gKwkJcmV0dXJuIHRydWU7DQo+ID4gKwlkZWZhdWx0Og0KPiA+ICsJCXJldHVybiBm
-YWxzZTsNCj4gPiArCX0NCj4gPiArfQ0KPiA+DQo+ID4gSWYgJ1x0JyBhbmQgJ1xuJyBhcmUgaW52
-YWxpZCB3aHkgYXJlIGFsbCB0aGUgb3RoZXIgY29udHJvbCBjaGFyYWN0ZXJzDQo+ID4gYWxsb3dl
-ZD8NCj4gPiBJJ20gZ3Vlc3NpbmcgJyonIGlzIGRpc2FsbG93ZWQgYmVjYXVzZSBpdCBpcyB0aGUg
-c2hlbGwgd2lsZGNhcmQ/DQo+ID4gU28gd2hhdCBhYm91dCAnPycuDQo+ID4gVGhlbiBJJ2QgZXhw
-ZWN0ICcvJyB0byBiZSBpbnZhbGlkIC0gYnV0IHRoYXQgaXNuJ3QgY2hlY2tlZC4NCj4gPiBOZXZl
-ciBtaW5kIGFsbCB0aGUgdmFsdWVzIDB4ODAgdG8gMHhmZiAtIHRoZXkgYXJlIHByb2JhYmx5IHdv
-cnNlDQo+ID4gdGhhbiB3aGl0ZXNwYWNlLg0KPiA+DQo+ID4gT1RPSCB3aHkgYXJlIGFueSBjaGFy
-YWN0ZXJzIGludmFsaWQgYXQgYWxsIC0gZXhjZXB0ICcvJz8NCj4gPg0KPiANCj4gVGhlIG5hbWUg
-aXMgc3VwcG9zZWQgdG8gcmVmbGVjdCBhIGRyaXZlciBuYW1lLiBVc3VhbGx5IGRyaXZlciBuYW1l
-cw0KPiBhcmUgbm90IGRlZmluZWQgYnkgdXNlcnNwYWNlIGJ1dCBieSBkcml2ZXIgYXV0aG9ycy4g
-VGhlIG5hbWUgaXMgdXNlZA0KPiBieSBsaWJzZW5zb3JzIHRvIGRpc3Rpbmd1aXNoIGEgZHJpdmVy
-IGZyb20gaXRzIGluc3RhbnRpYXRpb24uDQo+IGxpYnNlbnNvcnMgdXNlcyB3aWxkY2FyZHMgaW4g
-L2V0Yy9zZW5zb3JzMy5jb25mLiBEdXBsaWNhdGUgbmFtZXMNCj4gYXJlIGV4cGVjdGVkOyB0aGVy
-ZSBjYW4gYmUgbWFueSBpbnN0YW5jZXMgb2YgdGhlIHNhbWUgZHJpdmVyIGluDQo+IHRoZSBzeXN0
-ZW0uIEZvciBleGFtcGxlLCBvbiB0aGUgc3lzdGVtIEkgYW0gdHlwaW5nIHRoaXMgb24sIEkgaGF2
-ZToNCj4gDQo+IC9zeXMvY2xhc3MvaHdtb24vaHdtb24wL25hbWU6bnZtZQ0KPiAvc3lzL2NsYXNz
-L2h3bW9uL2h3bW9uMS9uYW1lOm52bWUNCj4gL3N5cy9jbGFzcy9od21vbi9od21vbjIvbmFtZTpu
-b3V2ZWF1DQo+IC9zeXMvY2xhc3MvaHdtb24vaHdtb24zL25hbWU6bmN0Njc5Nw0KPiAvc3lzL2Ns
-YXNzL2h3bW9uL2h3bW9uNC9uYW1lOmpjNDINCj4gL3N5cy9jbGFzcy9od21vbi9od21vbjUvbmFt
-ZTpqYzQyDQo+IC9zeXMvY2xhc3MvaHdtb24vaHdtb242L25hbWU6amM0Mg0KPiAvc3lzL2NsYXNz
-L2h3bW9uL2h3bW9uNy9uYW1lOmpjNDINCj4gL3N5cy9jbGFzcy9od21vbi9od21vbjgvbmFtZTpr
-MTB0ZW1wDQo+IA0KPiBod21vbl9pc19iYWRfY2hhcigpIGZpbHRlcnMgb3V0IGNoYXJhY3RlcnMg
-d2hpY2ggaW50ZXJmZXJlIHdpdGgNCj4gbGlic2Vuc29yJ3MgdmlldyBvZiBkcml2ZXIgaW5zdGFu
-Y2VzIGFuZCB0aGUgY29uZmlndXJhdGlvbiBkYXRhDQo+IGluIC9ldGMvc2Vuc29yczMuY29uZi4g
-Rm9yIGV4YW1wbGUsIGFnYWluIG9uIG15IHN5c3RlbSwgdGhlDQo+ICJzZW5zb3JzIiBjb21tYW5k
-IHJlcG9ydHMgdGhlIGZvbGxvd2luZyBqYzQyIGFuZCBudm1lIHNlbnNvcnMuDQo+IA0KPiBqYzQy
-LWkyYy0wLTFhDQo+IGpjNDItaTJjLTAtMTgNCj4gamM0Mi1pMmMtMC0xYg0KPiBqYzQyLWkyYy0w
-LTE5DQo+IG52bWUtcGNpLTAxMDANCj4gbnZtZS1wY2ktMjUwMA0KPiANCj4gSW4gL2V0Yy9zZW5z
-b3JzMy5jb25mLCB0aGVyZSBtaWdodCBiZSBlbnRyaWVzIGZvciAiamM0Mi0qIiBvciAibnZtZS0q
-Ii4NCj4gSSBkb24ndCB0aGluayBsaWJzZW5zb3JzIGNhcmVzIGlmIGEgZHJpdmVyIGlzIG5hbWVk
-ICJ0aGlzL2lzL215L2RyaXZlciIuDQo+IFRoYXQgZHJpdmVyIHdvdWxkIHRoZW4sIGFzc3VtaW5n
-IGl0IGlzIGFuIGkyYyBkcml2ZXIsIHNob3cgdXANCj4gd2l0aCB0aGUgc2Vuc29ycyBjb21tYW5k
-IGFzICJ0aGlzL2lzL215L2RyaXZlci1pMmMtMC0yNSIgb3Igc2ltaWxhci4NCj4gSWYgaXQgaXMg
-bmFtZWQgInRoaXMlaXMlbXklZHJpdmVyIiwgaXQgd291bGQgYmUgc29tZXRoaW5nIGxpa2UNCj4g
-InRoaXMlaXMlbXklZHJpdmVyLWkyYy0wLTI1Ii4gQW5kIHNvIG9uLiBXZSBjYW4gbm90IHBlcm1p
-dCAiamMtNDIiDQo+IGJlY2F1c2UgbGlic2Vuc29ycyB3b3VsZCBub3QgYmUgYWJsZSB0byBwYXJz
-ZSBzb21ldGhpbmcgbGlrZQ0KPiAiamMtNDItKiIgb3IgImpjLTQyLWkyYy0qIi4NCj4gDQo+IFRh
-a2luZyB5b3VyIGV4YW1wbGUsIGlmIGRyaXZlciBhdXRob3JzIGltcGxlbWVudCB0d28gZHJpdmVy
-cywgb25lDQo+IG5hbWVkIGZvby1iYXIgYW5kIHRoZSBvdGhlciBmb29fYmFyLCBpdCB3b3VsZCBi
-ZSB0aGUgZHJpdmVyIGF1dGhvcnMnDQo+IHJlc3BvbnNpYmlsaXR5IHRvIHByb3ZpZGUgdmFsaWQg
-ZHJpdmVyIG5hbWVzIHRvIHRoZSBod21vbiBzdWJzeXN0ZW0sDQo+IHdoYXRldmVyIHRob3NlIG5h
-bWVzIG1pZ2h0IGJlLiBJZiBib3RoIGVuZCB1cCBuYW1lZCAiZm9vX2JhciIgYW5kIGNhbg0KPiBh
-cyByZXN1bHQgbm90IGJlIGRpc3Rpbmd1aXNoZWQgZnJvbSBlYWNoIG90aGVyIGJ5IGxpYnNlbnNv
-cnMsDQo+IG9yIGEgdXNlciBvZiB0aGUgInNlbnNvcnMiIGNvbW1hbmQsIHRoYXQgd291bGQgYmUg
-ZW50aXJlbHkgdGhlDQo+IHJlc3BvbnNpYmlsaXR5IG9mIHRoZSBkcml2ZXIgYXV0aG9ycy4gVGhl
-IG9ubHkgaW52b2x2ZW1lbnQgb2YgdGhlDQo+IGh3bW9uIHN1YnN5c3RlbSAtIGFuZCB0aGF0IGlz
-IG9wdGlvbmFsIC0gd291bGQgYmUgdG8gcHJvdmlkZSBtZWFucw0KPiB0byB0aGUgZHJpdmVycyB0
-byBoZWxwIHRoZW0gZW5zdXJlIHRoYXQgdGhlIG5hbWVzIGFyZSB2YWxpZCwgYnV0DQo+IG5vdCB0
-aGF0IHRoZXkgYXJlIHVuaXF1ZS4NCj4gDQo+IElmIHRoZXJlIGlzIGV2ZXIgYSBkcml2ZXIgd2l0
-aCBhIGRyaXZlciBuYW1lIHRoYXQgaW50ZXJmZXJlcyB3aXRoDQo+IGxpYnNlbnNvcnMnIGFiaWxp
-dHkgdG8gZGlzdGluZ3Vpc2ggdGhlIGRyaXZlciBuYW1lIGZyb20gaW50ZXJmYWNlL3BvcnQNCj4g
-aW5mb3JtYXRpb24sIHdlJ2xsIGJlIGhhcHB5IHRvIGFkZCB0aGUgb2ZmZW5kaW5nIGNoYXJhY3Rl
-cihzKQ0KPiB0byBod21vbl9pc19iYWRfY2hhcigpLiBVbnRpbCB0aGVuLCBiZWluZyBwaWNreSBk
-b2Vzbid0IHJlYWxseQ0KPiBhZGQgYW55IHZhbHVlIGFuZCBhcHBlYXJzIHBvaW50bGVzcy4NCg0K
-U28gYWN0dWFsbHksIHRoZSBvbmx5IG9uZSBvZiB0aGUgY2hhcmFjdGVycyB0aGF0IGlzIGFjdHVh
-bGx5DQpsaWtlbHkgYXQgYWxsIGlzICctJy4NCkFuZCBldmVuIHRoYXQgY2FuIGJlIGRlZW1lZCB0
-byBiZSBhbiBlcnJvciBpbiB0aGUgY2FsbGVyPw0KT3IgYSAnYnVnJyBpbiB0aGUgbGlic2Vuc29y
-cyBjb2RlIC0gd2hpY2ggY291bGQgaXRzZWxmIHRyZWF0ICctJyBhcyAnXycuDQoNClNvIHdoeSBu
-b3QgZXJyb3IgdGhlIHJlcXVlc3QgdG8gY3JlYXRlZCB0aGUgaHdtb24gZGV2aWNlIHdpdGgNCmFu
-IGludmFsaWQgbmFtZS4NClRoZSBuYW1lIHN1cHBsaWVkIHdpbGwgc29vbiBnZXQgZml4ZWQgLSBz
-aW5jZSBpdCBpcyBhIGxpdGVyYWwNCnN0cmluZyBpbiB0aGUgY2FsbGluZyBkcml2ZXIuDQoNCglE
-YXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91
-bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5
-NzM4NiAoV2FsZXMpDQo=
+On Tue, Mar 29, 2022 at 06:34:58PM +0100, Paul Cercueil wrote:
+> 
+> 
+> Le mar., mars 29 2022 at 16:07:21 +0200, Daniel Vetter <daniel@ffwll.ch> a
+> écrit :
+> > On Tue, Mar 29, 2022 at 10:47:23AM +0100, Paul Cercueil wrote:
+> > >  Hi Daniel,
+> > > 
+> > >  Le mar., mars 29 2022 at 10:54:43 +0200, Daniel Vetter
+> > > <daniel@ffwll.ch> a
+> > >  écrit :
+> > >  > On Mon, Feb 07, 2022 at 01:01:40PM +0000, Paul Cercueil wrote:
+> > >  > >  Document the new DMABUF based API.
+> > >  > >
+> > >  > >  v2: - Explicitly state that the new interface is optional and
+> > > is
+> > >  > >        not implemented by all drivers.
+> > >  > >      - The IOCTLs can now only be called on the buffer FD
+> > > returned by
+> > >  > >        IIO_BUFFER_GET_FD_IOCTL.
+> > >  > >      - Move the page up a bit in the index since it is core
+> > > stuff
+> > >  > > and not
+> > >  > >        driver-specific.
+> > >  > >
+> > >  > >  Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+> > >  > >  ---
+> > >  > >   Documentation/driver-api/dma-buf.rst |  2 +
+> > >  > >   Documentation/iio/dmabuf_api.rst     | 94
+> > >  > > ++++++++++++++++++++++++++++
+> > >  > >   Documentation/iio/index.rst          |  2 +
+> > >  > >   3 files changed, 98 insertions(+)
+> > >  > >   create mode 100644 Documentation/iio/dmabuf_api.rst
+> > >  > >
+> > >  > >  diff --git a/Documentation/driver-api/dma-buf.rst
+> > >  > > b/Documentation/driver-api/dma-buf.rst
+> > >  > >  index 2cd7db82d9fe..d3c9b58d2706 100644
+> > >  > >  --- a/Documentation/driver-api/dma-buf.rst
+> > >  > >  +++ b/Documentation/driver-api/dma-buf.rst
+> > >  > >  @@ -1,3 +1,5 @@
+> > >  > >  +.. _dma-buf:
+> > >  > >  +
+> > >  > >   Buffer Sharing and Synchronization
+> > >  > >   ==================================
+> > >  > >
+> > >  > >  diff --git a/Documentation/iio/dmabuf_api.rst
+> > >  > > b/Documentation/iio/dmabuf_api.rst
+> > >  > >  new file mode 100644
+> > >  > >  index 000000000000..43bb2c1b9fdc
+> > >  > >  --- /dev/null
+> > >  > >  +++ b/Documentation/iio/dmabuf_api.rst
+> > >  > >  @@ -0,0 +1,94 @@
+> > >  > >  +===================================
+> > >  > >  +High-speed DMABUF interface for IIO
+> > >  > >  +===================================
+> > >  > >  +
+> > >  > >  +1. Overview
+> > >  > >  +===========
+> > >  > >  +
+> > >  > >  +The Industrial I/O subsystem supports access to buffers
+> > > through a
+> > >  > > file-based
+> > >  > >  +interface, with read() and write() access calls through the
+> > > IIO
+> > >  > > device's dev
+> > >  > >  +node.
+> > >  > >  +
+> > >  > >  +It additionally supports a DMABUF based interface, where the
+> > >  > > userspace
+> > >  > >  +application can allocate and append DMABUF objects to the
+> > > buffer's
+> > >  > > queue.
+> > >  > >  +This interface is however optional and is not available in all
+> > >  > > drivers.
+> > >  > >  +
+> > >  > >  +The advantage of this DMABUF based interface vs. the read()
+> > >  > >  +interface, is that it avoids an extra copy of the data
+> > > between the
+> > >  > >  +kernel and userspace. This is particularly useful for
+> > > high-speed
+> > >  > >  +devices which produce several megabytes or even gigabytes of
+> > > data
+> > >  > > per
+> > >  > >  +second.
+> > >  > >  +
+> > >  > >  +The data in this DMABUF interface is managed at the
+> > > granularity of
+> > >  > >  +DMABUF objects. Reducing the granularity from byte level to
+> > > block
+> > >  > > level
+> > >  > >  +is done to reduce the userspace-kernelspace synchronization
+> > >  > > overhead
+> > >  > >  +since performing syscalls for each byte at a few Mbps is just
+> > > not
+> > >  > >  +feasible.
+> > >  > >  +
+> > >  > >  +This of course leads to a slightly increased latency. For this
+> > >  > > reason an
+> > >  > >  +application can choose the size of the DMABUFs as well as how
+> > > many
+> > >  > > it
+> > >  > >  +allocates. E.g. two DMABUFs would be a traditional double
+> > > buffering
+> > >  > >  +scheme. But using a higher number might be necessary to avoid
+> > >  > >  +underflow/overflow situations in the presence of scheduling
+> > >  > > latencies.
+> > >  >
+> > >  > So this reads a lot like reinventing io-uring with pre-registered
+> > >  > O_DIRECT
+> > >  > memory ranges. Except it's using dma-buf and hand-rolling a lot of
+> > >  > pieces
+> > >  > instead of io-uring and O_DIRECT.
+> > > 
+> > >  I don't see how io_uring would help us. It's an async I/O
+> > > framework, does it
+> > >  allow us to access a kernel buffer without copying the data? Does
+> > > it allow
+> > >  us to zero-copy the data to a network interface?
+> > 
+> > With networking, do you mean rdma, or some other kind of networking?
+> > Anything else than rdma doesn't support dma-buf, and I don't think it
+> > will
+> > likely ever do so. Similar it's really tricky to glue dma-buf support
+> > into
+> > the block layer.
+> 
+> By networking I mean standard sockets. If I'm not mistaken, Jonathan Lemon's
+> work on zctap was to add dma-buf import/export support to standard sockets.
+> 
+> > Wrt io_uring, yes it's async, but that's not the point. The point is
+> > that
+> > with io_uring you pre-register ranges for reads and writes to target,
+> > which in combination with O_DIRECT, makes it effectively (and
+> > efficient!)
+> > zero-copy. Plus it has full integration with both networking and normal
+> > file io, which dma-buf just doesn't have.
+> > 
+> > Like you _cannot_ do zero copy from a dma-buf into a normal file. You
+> > absolutely can do the same with io_uring.
+> 
+> I believe io_uring does zero-copy the same way as splice(), by
+> duplicating/moving pages? Because that wouldn't work with DMA coherent
+> memory, which is contiguous and not backed by pages.
 
+Yeah if your memory has to be contig and/or write-combined/uncached for
+dma reasons, then we're much more firmly into dma-buf territory. But also
+that means we really need dma-buf support in the networking stack, and
+that might be a supreme challenge.
+
+E.g. dma-buf is all about pre-registering memory (dma_buf_attach is
+potentilly very expensive) for a specific device. With full generality
+networking, none of this is possible since until you make the dynamic
+decision to send stuff out, you might not even know the device the packets
+go out on.
+
+Also with filtering and everything cpu access is pretty much assumed, and
+doing that with dma-buf is a bit a challenge.
+-Daniel
+
+> 
+> > >  > At least if the entire justification for dma-buf support is
+> > > zero-copy
+> > >  > support between the driver and userspace it's _really_ not the
+> > > right
+> > >  > tool
+> > >  > for the job. dma-buf is for zero-copy between devices, with cpu
+> > > access
+> > >  > from userpace (or kernel fwiw) being very much the exception (and
+> > > often
+> > >  > flat-out not supported at all).
+> > > 
+> > >  We want both. Using dma-bufs for the driver/userspace interface is a
+> > >  convenience as we then have a unique API instead of two distinct
+> > > ones.
+> > > 
+> > >  Why should CPU access from userspace be the exception? It works
+> > > fine for IIO
+> > >  dma-bufs. You keep warning about this being a terrible design, but
+> > > I simply
+> > >  don't see it.
+> > 
+> > It depends really on what you're trying to do, and there's extremely
+> > high
+> > chances it will simply not work.
+> 
+> Well it does work though. The userspace interface is stupidly simple here -
+> one dma-buf, backed by DMA coherent memory, is enqueued for processing by
+> the DMA. The userspace calling the "sync" ioctl on the dma-buf will block
+> until the transfer is complete, and then userspace can access it again.
+> 
+> 
+> > Unless you want to do zero copy with a gpu, or something which is in
+> > that
+> > ecosystem of accelerators and devices, then dma-buf is probably not what
+> > you're looking for.
+> > -Daniel
+> 
+> I want to do zero-copy between a IIO device and the network/USB, and right
+> now there is absolutely nothing in place that allows me to do that. So I
+> have to get creative.
+> 
+> Cheers,
+> -Paul
+> 
+> > > 
+> > >  > >  +
+> > >  > >  +2. User API
+> > >  > >  +===========
+> > >  > >  +
+> > >  > >  +``IIO_BUFFER_DMABUF_ALLOC_IOCTL(struct iio_dmabuf_alloc_req
+> > > *)``
+> > >  > >
+> > > +----------------------------------------------------------------
+> > >  > >  +
+> > >  > >  +Each call will allocate a new DMABUF object. The return value
+> > > (if
+> > >  > > not
+> > >  > >  +a negative errno value as error) will be the file descriptor
+> > > of
+> > >  > > the new
+> > >  > >  +DMABUF.
+> > >  > >  +
+> > >  > >  +``IIO_BUFFER_DMABUF_ENQUEUE_IOCTL(struct iio_dmabuf *)``
+> > >  > >  +--------------------------------------------------------
+> > >  > >  +
+> > >  > >  +Place the DMABUF object into the queue pending for hardware
+> > >  > > process.
+> > >  > >  +
+> > >  > >  +These two IOCTLs have to be performed on the IIO buffer's file
+> > >  > >  +descriptor, obtained using the `IIO_BUFFER_GET_FD_IOCTL`
+> > > ioctl.
+> > >  > >  +
+> > >  > >  +3. Usage
+> > >  > >  +========
+> > >  > >  +
+> > >  > >  +To access the data stored in a block by userspace the block
+> > > must be
+> > >  > >  +mapped to the process's memory. This is done by calling
+> > > mmap() on
+> > >  > > the
+> > >  > >  +DMABUF's file descriptor.
+> > >  > >  +
+> > >  > >  +Before accessing the data through the map, you must use the
+> > >  > >  +DMA_BUF_IOCTL_SYNC(struct dma_buf_sync *) ioctl, with the
+> > >  > >  +DMA_BUF_SYNC_START flag, to make sure that the data is
+> > > available.
+> > >  > >  +This call may block until the hardware is done with this
+> > > block.
+> > >  > > Once
+> > >  > >  +you are done reading or writing the data, you must use this
+> > > ioctl
+> > >  > > again
+> > >  > >  +with the DMA_BUF_SYNC_END flag, before enqueueing the DMABUF
+> > > to the
+> > >  > >  +kernel's queue.
+> > >  > >  +
+> > >  > >  +If you need to know when the hardware is done with a DMABUF,
+> > > you
+> > >  > > can
+> > >  > >  +poll its file descriptor for the EPOLLOUT event.
+> > >  > >  +
+> > >  > >  +Finally, to destroy a DMABUF object, simply call close() on
+> > > its
+> > >  > > file
+> > >  > >  +descriptor.
+> > >  > >  +
+> > >  > >  +For more information about manipulating DMABUF objects, see:
+> > >  > > :ref:`dma-buf`.
+> > >  > >  +
+> > >  > >  +A typical workflow for the new interface is:
+> > >  > >  +
+> > >  > >  +    for block in blocks:
+> > >  > >  +      DMABUF_ALLOC block
+> > >  > >  +      mmap block
+> > >  > >  +
+> > >  > >  +    enable buffer
+> > >  > >  +
+> > >  > >  +    while !done
+> > >  > >  +      for block in blocks:
+> > >  > >  +        DMABUF_ENQUEUE block
+> > >  > >  +
+> > >  > >  +        DMABUF_SYNC_START block
+> > >  > >  +        process data
+> > >  > >  +        DMABUF_SYNC_END block
+> > >  > >  +
+> > >  > >  +    disable buffer
+> > >  > >  +
+> > >  > >  +    for block in blocks:
+> > >  > >  +      close block
+> > >  > >  diff --git a/Documentation/iio/index.rst
+> > >  > > b/Documentation/iio/index.rst
+> > >  > >  index 58b7a4ebac51..669deb67ddee 100644
+> > >  > >  --- a/Documentation/iio/index.rst
+> > >  > >  +++ b/Documentation/iio/index.rst
+> > >  > >  @@ -9,4 +9,6 @@ Industrial I/O
+> > >  > >
+> > >  > >      iio_configfs
+> > >  > >
+> > >  > >  +   dmabuf_api
+> > >  > >  +
+> > >  > >      ep93xx_adc
+> > >  > >  --
+> > >  > >  2.34.1
+> > >  > >
+> > >  >
+> > >  > --
+> > >  > Daniel Vetter
+> > >  > Software Engineer, Intel Corporation
+> > >  > http://blog.ffwll.ch
+> > > 
+> > > 
+> > 
+> > --
+> > Daniel Vetter
+> > Software Engineer, Intel Corporation
+> > http://blog.ffwll.ch
+> 
+> 
+
+-- 
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
