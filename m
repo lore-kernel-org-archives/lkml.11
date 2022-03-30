@@ -2,125 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BAD1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:34:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D08E4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:35:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245703AbiC3Mgi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:36:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60696 "EHLO
+        id S238339AbiC3MhP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 08:37:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345037AbiC3Mfm (ORCPT
+        with ESMTP id S1344659AbiC3MhG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 08:35:42 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1164A8303A;
-        Wed, 30 Mar 2022 05:21:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648642894; x=1680178894;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=OXzBCDD0s+U+ac+j1S8pe7nAWp2yh4vu1aPuuDcA/hE=;
-  b=WNS5Q/+VIXRt1P9pE7NMIqhuqdvP3iS3x0bL6PMQ1XqeRfmb3giQcN+k
-   xFUK0wOMnL2yb2v9CwQHw48Zl8Bp9RmfB0PNinRYHTliSC9ijg6zM1592
-   nyWUaiSGcFUSZJ7pW/t2j+9pQa3TrctD30meQ7N+QsCVDTFkNJ412/WC4
-   6HmKxl5OJjpB8Jx9y5GlSo5NCmsAZlfWE3uV7KlIhyxzSbC3Tl/mJ41QS
-   XIKsYd8m+KVm/bp4b4e6TLRwlrd5ipZ6CGD4ovmeumcJBwE2tUm/+xWH3
-   rsOxuyWSiSLxoW9wDyyUFNsxSNUPtmOGa1xzBe+oGDTmnFpaABD9zmXyF
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="345965530"
-X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
-   d="scan'208";a="345965530"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 05:21:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
-   d="scan'208";a="837252293"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga005.fm.intel.com with ESMTP; 30 Mar 2022 05:21:15 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 22UCLE8c019312;
-        Wed, 30 Mar 2022 13:21:14 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        ivecera <ivecera@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        poros <poros@redhat.com>, mschmidt <mschmidt@redhat.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "moderated list:INTEL ETHERNET DRIVERS" 
-        <intel-wired-lan@lists.osuosl.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net v2] ice: Fix MAC address setting
-Date:   Wed, 30 Mar 2022 14:18:35 +0200
-Message-Id: <20220330121835.2737360-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <CO1PR11MB508954503C974FD6D9E162FCD61D9@CO1PR11MB5089.namprd11.prod.outlook.com>
-References: <20220325132524.1765342-1-ivecera@redhat.com> <CO1PR11MB508954503C974FD6D9E162FCD61D9@CO1PR11MB5089.namprd11.prod.outlook.com>
+        Wed, 30 Mar 2022 08:37:06 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27C0329343A
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 05:22:26 -0700 (PDT)
+Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nZXLE-0000QY-Ki; Wed, 30 Mar 2022 14:22:25 +0200
+Message-ID: <49ae9e66-0fa1-7c9d-49e7-88a7c6cf9ddb@leemhuis.info>
+Date:   Wed, 30 Mar 2022 14:22:24 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: scalability regressions related to hugetlb_fault() changes
+Content-Language: en-US
+To:     Ray Fucillo <Ray.Fucillo@intersystems.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+References: <D3204B1E-50A1-4261-8C75-3DF77A302502@intersystems.com>
+From:   Thorsten Leemhuis <linux@leemhuis.info>
+In-Reply-To: <D3204B1E-50A1-4261-8C75-3DF77A302502@intersystems.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;linux@leemhuis.info;1648642947;6a2ee22e;
+X-HE-SMSGID: 1nZXLE-0000QY-Ki
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jacob Keller <jacob.e.keller@intel.com>
-Date: Mon, 28 Mar 2022 17:53:19 +0000
+[TLDR: I'm adding the regression report below to regzbot, the Linux
+kernel regression tracking bot; all text you find below is compiled from
+a few templates paragraphs you might have encountered already already
+from similar mails.]
 
-Hey netdev maintainers,
+Hi, this is your Linux kernel regression tracker.
 
-> > -----Original Message-----
-> > From: Ivan Vecera <ivecera@redhat.com>
-> > Sent: Friday, March 25, 2022 6:25 AM
-> > To: netdev@vger.kernel.org
-> > Cc: poros <poros@redhat.com>; mschmidt <mschmidt@redhat.com>;
-> > Brandeburg, Jesse <jesse.brandeburg@intel.com>; Nguyen, Anthony L
-> > <anthony.l.nguyen@intel.com>; David S. Miller <davem@davemloft.net>; Jakub
-> > Kicinski <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>; moderated
-> > list:INTEL ETHERNET DRIVERS <intel-wired-lan@lists.osuosl.org>; open list <linux-
-> > kernel@vger.kernel.org>
-> > Subject: [PATCH net v2] ice: Fix MAC address setting
-> > 
-> > Commit 2ccc1c1ccc671b ("ice: Remove excess error variables") merged
-> > the usage of 'status' and 'err' variables into single one in
-> > function ice_set_mac_address(). Unfortunately this causes
-> > a regression when call of ice_fltr_add_mac() returns -EEXIST because
-> > this return value does not indicate an error in this case but
-> > value of 'err' remains to be -EEXIST till the end of the function
-> > and is returned to caller.
-> > 
-> > Prior mentioned commit this does not happen because return value of
-> > ice_fltr_add_mac() was stored to 'status' variable first and
-> > if it was -EEXIST then 'err' remains to be zero.
-> > 
-> > Fix the problem by reset 'err' to zero when ice_fltr_add_mac()
-> > returns -EEXIST.
-> > 
-> > Fixes: 2ccc1c1ccc671b ("ice: Remove excess error variables")
-> > Signed-off-by: Ivan Vecera <ivecera@redhat.com>
-> > ---
+On 24.03.22 21:12, Ray Fucillo wrote:
+> In moving to newer versions of the kernel, our customers have experienced dramatic new scalability problems in our database application, InterSystems IRIS.  Our research has narrowed this down to new processes that attach to the database's shared memory segment taking very long delays (in some cases ~100ms!) acquiring the i_mmap_lock_read() in hugetlb_fault() as they fault in the huge page for the first time.  The addition of this lock in hugetlb_fault() matches the versions where we see this problem.  It's not just slowing the new process that incurs the delay, but backing up other processes if the page fault occurs inside a critical section within the database application.
 > 
-> Thanks for the v2. This looks great. Good analysis of how this happened in the commit message, I appreciate that.
+> Is there something that can be improved here?  
 > 
-> Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
-
-This is an urgent fix, so we would like it to go through -net, not
-IWL.
-It has this Reviewed-by, and also
-
-Acked-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-
+> The read locks in hugetlb_fault() contend with write locks that seem to be taken in very common application code paths: shmat(), process exit, fork() (not vfork()), shmdt(), presumably others.  So hugetlb_fault() contending to read turns out to be common.  When the system is loaded, there will be many new processes faulting in pages that may blocks the write lock, which in turn blocks more readers in fault behind it, and so on...  I don't think there's any support for shared page tables in hugetlb to avoid the faults altogether.
 > 
-> >  drivers/net/ethernet/intel/ice/ice_main.c | 7 +++++--
-> >  1 file changed, 5 insertions(+), 2 deletions(-)
-> > 
+> Switching to 1GB huge pages instead of 2MB is a good mitigation in reducing the frequency of fault, but not a complete solution.
+> 
+> Thanks for considering.
+> 
+> Ray
 
---- 8< ---
+Thanks for the report. CCing the regression mailing list, as it should
+be in the loop for all regressions, as explained here:
+https://www.kernel.org/doc/html/latest/admin-guide/reporting-issues.html
 
-> > --
-> > 2.34.1
+To be sure below issue doesn't fall through the cracks unnoticed, I'm
+adding it to regzbot, my Linux kernel regression tracking bot:
 
-Thanks,
-Al
+#regzbot ^introduced c0d0381ade79
+#regzbot title mm: scalability regressions related to hugetlb_fault()
+changes
+#regzbot ignore-activity
+#regzbot back-burner: looks like this will take some time to get sorted out
+
+If it turns out this isn't a regression, free free to remove it from the
+tracking by sending a reply to this thread containing a paragraph like
+"#regzbot invalid: reason why this is invalid" (without the quotes).
+
+Reminder for developers: when fixing the issue, please add a 'Link:'
+tags pointing to the report (the mail quoted above) using
+lore.kernel.org/r/, as explained in
+'Documentation/process/submitting-patches.rst' and
+'Documentation/process/5.Posting.rst'. Regzbot needs them to
+automatically connect reports with fixes, but they are useful in
+general, too.
+
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+
+P.S.: As the Linux kernel's regression tracker I'm getting a lot of
+reports on my table. I can only look briefly into most of them and lack
+knowledge about most of the areas they concern. I thus unfortunately
+will sometimes get things wrong or miss something important. I hope
+that's not the case here; if you think it is, don't hesitate to tell me
+in a public reply, it's in everyone's interest to set the public record
+straight.
+
+-- 
+Additional information about regzbot:
+
+If you want to know more about regzbot, check out its web-interface, the
+getting start guide, and the references documentation:
+
+https://linux-regtracking.leemhuis.info/regzbot/
+https://gitlab.com/knurd42/regzbot/-/blob/main/docs/getting_started.md
+https://gitlab.com/knurd42/regzbot/-/blob/main/docs/reference.md
+
+The last two documents will explain how you can interact with regzbot
+yourself if your want to.
+
+Hint for reporters: when reporting a regression it's in your interest to
+CC the regression list and tell regzbot about the issue, as that ensures
+the regression makes it onto the radar of the Linux kernel's regression
+tracker -- that's in your interest, as it ensures your report won't fall
+through the cracks unnoticed.
+
+Hint for developers: you normally don't need to care about regzbot once
+it's involved. Fix the issue as you normally would, just remember to
+include 'Link:' tag in the patch descriptions pointing to all reports
+about the issue. This has been expected from developers even before
+regzbot showed up for reasons explained in
+'Documentation/process/submitting-patches.rst' and
+'Documentation/process/5.Posting.rst'.
