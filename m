@@ -2,91 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDC2BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:40:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 956EAC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:41:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346198AbiC3Nl6 (ORCPT
+        id S1346233AbiC3NnY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 09:41:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48820 "EHLO
+        Wed, 30 Mar 2022 09:43:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346174AbiC3Nlr (ORCPT
+        with ESMTP id S1346174AbiC3Nmu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 09:41:47 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 171BE1EC61;
-        Wed, 30 Mar 2022 06:40:01 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id bh17so2112454ejb.8;
-        Wed, 30 Mar 2022 06:40:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ck7b8QF/9VQw0lUYxwomWRlvrWDSmZJvomns1owBa3I=;
-        b=CN7r8g2tzDccy0k72Zp/OTB3aVy9lV1PiC0RRwNgByOwMNsVx4lCwHqt3pVMmdsoPx
-         40wNmt+BWEZY6SiGjJwwlLub396Yt5TCL9MrzYS9KID9ObvVhWGiKR+Kze2b8jIhuKYq
-         mKfVfTvyTfKnhVx/CUNRPoVJWQkMfJaT4sQoHwrhHqKXsWXrRGtncZUL195kOZDT5dhe
-         A9HEBgiRs++sGrj5deCL1ixW78C+IZBiRjAkqkzoMuzgXULtZA5SZGrUMf/QRKp01YyM
-         F1h2FQB3oITpHCGoD/8Yg5f7FafBBGNRR7mBbBi8UB5kgLQJaN2vo43FQhtrb0LurbcG
-         LY9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ck7b8QF/9VQw0lUYxwomWRlvrWDSmZJvomns1owBa3I=;
-        b=AYzqPM7khZ5zB4+kdQuxlP+suvtCka5vKl3sgp5FnYL5ZSTLrRi1IVJFe8Zu4rF3/Q
-         N+WiOXABMzZQltV6p8X00JsIznAzWJ9gfbUiUpIVTnyPVS7wLMGrLAKRzkwDxpd37j7n
-         Vg62R1g2AXAjiM10MquNdWSQedI51Oiow0HBffwgKEi3lsziG8pl0TsU0FqcDs6KG0HV
-         Ata7RVMHvvdMXfyTXp1OcnkMWWBm/Ph6ykt1B8HcONCVZPUgLQpMy2Win3wgcRud1WCV
-         6cjT/ZWCarBA7umtiVxMehAItizDKh9NjBvbwfEv/LaP4UfDtEykr9cmiydFobsDHe+W
-         S/cQ==
-X-Gm-Message-State: AOAM533FsZJOZUVEDYxztLU19RRAxZs6aCWKTiIKWaMsgq63w4GraAyn
-        HtRGLtJlh5Ldn4ipfT1umlE=
-X-Google-Smtp-Source: ABdhPJxaATFwp3dpqkvLsICnSN/PNJpESkj+croJfWcHn6PDEVwtfrylAntDfL1OIe65hr6qmX/iCA==
-X-Received: by 2002:a17:906:9b8f:b0:6e0:6bcb:fc59 with SMTP id dd15-20020a1709069b8f00b006e06bcbfc59mr41136157ejc.624.1648647599534;
-        Wed, 30 Mar 2022 06:39:59 -0700 (PDT)
-Received: from debian.home (81-204-249-205.fixed.kpn.net. [81.204.249.205])
-        by smtp.gmail.com with ESMTPSA id do8-20020a170906c10800b006dfe680dbfcsm8375448ejc.43.2022.03.30.06.39.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Mar 2022 06:39:59 -0700 (PDT)
-From:   Johan Jonker <jbx6244@gmail.com>
-To:     heiko@sntech.de
-Cc:     robh+dt@kernel.org, krzk+dt@kernel.org, linus.walleij@linaro.org,
-        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 2/2] ARM: dts: rockchip: rk3036: rename pcfg_pull_default node name
-Date:   Wed, 30 Mar 2022 15:39:52 +0200
-Message-Id: <20220330133952.1949-2-jbx6244@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220330133952.1949-1-jbx6244@gmail.com>
-References: <20220330133952.1949-1-jbx6244@gmail.com>
+        Wed, 30 Mar 2022 09:42:50 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAC442253D;
+        Wed, 30 Mar 2022 06:41:03 -0700 (PDT)
+Date:   Wed, 30 Mar 2022 15:40:55 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1648647661;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=URUSnCfet5e8NJSvpD2xln45464mTe5fGEeiA24K6+I=;
+        b=CMTqNe0Ft63H1B1W2ZKhVzkk8skP0+B/bwHc/fHamUvnXGPAXecVuz6bp/pIwiJvRGXQfX
+        5ovppTkkCG+SxexafagScZsN3Odewj/zkqS/OGxS7FIRnzuryp2Wi+2hnVA+CeuVYCLZZj
+        WJAXrmvvNlcc03Jj5NnWJqaR3c/1VDn70EuOxspydTTaKxHJnWNgn2TZIdlOKg1svWpAMn
+        IJTK8/FUa0+C2HjqSCdYYkKQ8514GrElYBWW/oRGuNRh2coIxlx+CM7GOSKRkQXSPHCzd3
+        V/SbKP9b6qYM6tCo6EibQLGJanYPUWBZ2N3LPtNlWNd65h+JyGY3dBMEtw5PZQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1648647661;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=URUSnCfet5e8NJSvpD2xln45464mTe5fGEeiA24K6+I=;
+        b=LCrs2EK7xnDDzGIlyUzmvDbTXueTgY6RJHkf7LeQutVECEzdxpLKK5UJoDfCtrr43NcPrj
+        h0uAKrrrChlv0pDg==
+From:   Anna-Maria Behnsen <anna-maria@linutronix.de>
+To:     Artem Savkov <asavkov@redhat.com>
+cc:     netdev@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] timer: add a function to adjust timeouts to be
+ upper bound
+In-Reply-To: <20220330082046.3512424-2-asavkov@redhat.com>
+Message-ID: <alpine.DEB.2.21.2203301514570.4409@somnus>
+References: <87zglcfmcv.ffs@tglx> <20220330082046.3512424-1-asavkov@redhat.com> <20220330082046.3512424-2-asavkov@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rename pcfg_pull_default node name so that it fits the regex.
+On Wed, 30 Mar 2022, Artem Savkov wrote:
 
-Signed-off-by: Johan Jonker <jbx6244@gmail.com>
----
- arch/arm/boot/dts/rk3036.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> Current timer wheel implementation is optimized for performance and
+> energy usage but lacks in precision. This, normally, is not a problem as
+> most timers that use timer wheel are used for timeouts and thus rarely
+> expire, instead they often get canceled or modified before expiration.
+> Even when they don't, expiring a bit late is not an issue for timeout
+> timers.
+> 
+> TCP keepalive timer is a special case, it's aim is to prevent timeouts,
+> so triggering earlier rather than later is desired behavior. In a
+> reported case the user had a 3600s keepalive timer for preventing firewall
+> disconnects (on a 3650s interval). They observed keepalive timers coming
+> in up to four minutes late, causing unexpected disconnects.
+> 
+> This commit adds upper_bound_timeout() function that takes a relative
+> timeout and adjusts it based on timer wheel granularity so that supplied
+> value effectively becomes an upper bound for the timer.
+> 
 
-diff --git a/arch/arm/boot/dts/rk3036.dtsi b/arch/arm/boot/dts/rk3036.dtsi
-index c5aa1636a..9b0f04975 100644
---- a/arch/arm/boot/dts/rk3036.dtsi
-+++ b/arch/arm/boot/dts/rk3036.dtsi
-@@ -616,7 +616,7 @@
- 			#interrupt-cells = <2>;
- 		};
- 
--		pcfg_pull_default: pcfg_pull_default {
-+		pcfg_pull_default: pcfg-pull-default {
- 			bias-pull-pin-default;
- 		};
- 
--- 
-2.20.1
+I think there is a problem with this approach. Please correct me, if I'm
+wrong. The timer wheel index and level calculation depends on
+timer_base::clk. The timeout/delta which is used for this calculation is
+relative to timer_base::clk (delta = expires - base::clk). timer_base::clk
+is not updated in sync with jiffies. It is forwarded before a new timer is
+queued. It is possible, that timer_base::clk is behind jiffies after
+forwarding because of a not yet expired timer.
+
+When calculating the level/index with a relative timeout, there is no
+guarantee that the result is the same when actual enqueueing the timer with
+expiry = jiffies + timeout .
+
+Thanks,
+
+	Anna-Maria
 
