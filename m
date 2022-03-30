@@ -2,121 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D08E4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:35:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B09BC4167D
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:37:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238339AbiC3MhP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:37:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48188 "EHLO
+        id S1346445AbiC3MjD (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 08:39:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344659AbiC3MhG (ORCPT
+        with ESMTP id S1344121AbiC3Mh2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 08:37:06 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27C0329343A
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 05:22:26 -0700 (PDT)
-Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1nZXLE-0000QY-Ki; Wed, 30 Mar 2022 14:22:25 +0200
-Message-ID: <49ae9e66-0fa1-7c9d-49e7-88a7c6cf9ddb@leemhuis.info>
-Date:   Wed, 30 Mar 2022 14:22:24 +0200
+        Wed, 30 Mar 2022 08:37:28 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5910B90CC3;
+        Wed, 30 Mar 2022 05:26:19 -0700 (PDT)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22UCAZai009583;
+        Wed, 30 Mar 2022 12:26:19 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=1cw9ntyCmuV7l9ArGaV6CB27HGkEQiMnt/2CZZvrUw0=;
+ b=QOFj1wEgzgsi0NLy+ejW/Syri26nC9I/RK640AdyoQvDaneNGb+SyK7vpAOlct2MI/Ur
+ cU5zwcBYqVUsMxZc8qhzUK4mNRnAP39Iw0yYIyAQrlkagtIzZ+RCxhATXUiYhnyN1nYm
+ k3uXTN1GroH+8FEPg59wABVtMkKKSii6UxIppNoIMjhMWRhjGdXmZs4/yN2iayY6DyEj
+ AqzuvwRZg/cdGBZcobXzq/+xQ7ilXVv+oiL+NfQOuCgyePcB/NHrwSbzZ37uSp4xyFX6
+ sAuhdegWvNm8l/s9pOYenTIh3l2h3oePE0VVIs9uF9J53cULyxKTsJ5Sa9OaUfU/bi8N 1A== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3f3ygtny05-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 30 Mar 2022 12:26:18 +0000
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22UCKf58028909;
+        Wed, 30 Mar 2022 12:26:18 GMT
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3f3ygtnxye-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 30 Mar 2022 12:26:18 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22UCNCUx013721;
+        Wed, 30 Mar 2022 12:26:16 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma04fra.de.ibm.com with ESMTP id 3f1tf8y9hd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 30 Mar 2022 12:26:15 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22UCQC9934799916
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 30 Mar 2022 12:26:12 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C637C11C050;
+        Wed, 30 Mar 2022 12:26:12 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 39BA511C04A;
+        Wed, 30 Mar 2022 12:26:12 +0000 (GMT)
+Received: from localhost.localdomain (unknown [9.145.13.95])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 30 Mar 2022 12:26:12 +0000 (GMT)
+From:   Claudio Imbrenda <imbrenda@linux.ibm.com>
+To:     kvm@vger.kernel.org
+Cc:     borntraeger@de.ibm.com, frankja@linux.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, david@redhat.com, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, scgl@linux.ibm.com,
+        mimu@linux.ibm.com, nrb@linux.ibm.com
+Subject: [PATCH v9 03/18] KVM: s390: pv: handle secure storage exceptions for normal guests
+Date:   Wed, 30 Mar 2022 14:25:50 +0200
+Message-Id: <20220330122605.247613-4-imbrenda@linux.ibm.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220330122605.247613-1-imbrenda@linux.ibm.com>
+References: <20220330122605.247613-1-imbrenda@linux.ibm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: scalability regressions related to hugetlb_fault() changes
-Content-Language: en-US
-To:     Ray Fucillo <Ray.Fucillo@intersystems.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
-References: <D3204B1E-50A1-4261-8C75-3DF77A302502@intersystems.com>
-From:   Thorsten Leemhuis <linux@leemhuis.info>
-In-Reply-To: <D3204B1E-50A1-4261-8C75-3DF77A302502@intersystems.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;linux@leemhuis.info;1648642947;6a2ee22e;
-X-HE-SMSGID: 1nZXLE-0000QY-Ki
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: N-6jEMuZ6erUaEhL7AOO2-0Gx5oJbw2u
+X-Proofpoint-ORIG-GUID: JLLWbCtMQ31Mm3klrjExf8CAyBPBxyzk
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-30_04,2022-03-30_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
+ priorityscore=1501 impostorscore=0 mlxscore=0 lowpriorityscore=0
+ phishscore=0 spamscore=0 adultscore=0 bulkscore=0 suspectscore=0
+ malwarescore=0 mlxlogscore=623 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2202240000 definitions=main-2203300062
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[TLDR: I'm adding the regression report below to regzbot, the Linux
-kernel regression tracking bot; all text you find below is compiled from
-a few templates paragraphs you might have encountered already already
-from similar mails.]
+With upcoming patches, normal guests might touch secure pages.
 
-Hi, this is your Linux kernel regression tracker.
+This patch extends the existing exception handler to convert the pages
+to non secure also when the exception is triggered by a normal guest.
 
-On 24.03.22 21:12, Ray Fucillo wrote:
-> In moving to newer versions of the kernel, our customers have experienced dramatic new scalability problems in our database application, InterSystems IRIS.  Our research has narrowed this down to new processes that attach to the database's shared memory segment taking very long delays (in some cases ~100ms!) acquiring the i_mmap_lock_read() in hugetlb_fault() as they fault in the huge page for the first time.  The addition of this lock in hugetlb_fault() matches the versions where we see this problem.  It's not just slowing the new process that incurs the delay, but backing up other processes if the page fault occurs inside a critical section within the database application.
-> 
-> Is there something that can be improved here?  
-> 
-> The read locks in hugetlb_fault() contend with write locks that seem to be taken in very common application code paths: shmat(), process exit, fork() (not vfork()), shmdt(), presumably others.  So hugetlb_fault() contending to read turns out to be common.  When the system is loaded, there will be many new processes faulting in pages that may blocks the write lock, which in turn blocks more readers in fault behind it, and so on...  I don't think there's any support for shared page tables in hugetlb to avoid the faults altogether.
-> 
-> Switching to 1GB huge pages instead of 2MB is a good mitigation in reducing the frequency of fault, but not a complete solution.
-> 
-> Thanks for considering.
-> 
-> Ray
+This can happen for example when a secure guest reboots; the first
+stage of a secure guest is non secure, and in general a secure guest
+can reboot into non-secure mode.
 
-Thanks for the report. CCing the regression mailing list, as it should
-be in the loop for all regressions, as explained here:
-https://www.kernel.org/doc/html/latest/admin-guide/reporting-issues.html
+If the secure memory of the previous boot has not been cleared up
+completely yet (which will be allowed to happen in an upcoming patch),
+a non-secure guest might touch secure memory, which will need to be
+handled properly.
 
-To be sure below issue doesn't fall through the cracks unnoticed, I'm
-adding it to regzbot, my Linux kernel regression tracking bot:
+Signed-off-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
+---
+ arch/s390/mm/fault.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-#regzbot ^introduced c0d0381ade79
-#regzbot title mm: scalability regressions related to hugetlb_fault()
-changes
-#regzbot ignore-activity
-#regzbot back-burner: looks like this will take some time to get sorted out
-
-If it turns out this isn't a regression, free free to remove it from the
-tracking by sending a reply to this thread containing a paragraph like
-"#regzbot invalid: reason why this is invalid" (without the quotes).
-
-Reminder for developers: when fixing the issue, please add a 'Link:'
-tags pointing to the report (the mail quoted above) using
-lore.kernel.org/r/, as explained in
-'Documentation/process/submitting-patches.rst' and
-'Documentation/process/5.Posting.rst'. Regzbot needs them to
-automatically connect reports with fixes, but they are useful in
-general, too.
-
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-
-P.S.: As the Linux kernel's regression tracker I'm getting a lot of
-reports on my table. I can only look briefly into most of them and lack
-knowledge about most of the areas they concern. I thus unfortunately
-will sometimes get things wrong or miss something important. I hope
-that's not the case here; if you think it is, don't hesitate to tell me
-in a public reply, it's in everyone's interest to set the public record
-straight.
-
+diff --git a/arch/s390/mm/fault.c b/arch/s390/mm/fault.c
+index 47b52e5384f8..54571a88a641 100644
+--- a/arch/s390/mm/fault.c
++++ b/arch/s390/mm/fault.c
+@@ -770,6 +770,7 @@ void do_secure_storage_access(struct pt_regs *regs)
+ 	struct vm_area_struct *vma;
+ 	struct mm_struct *mm;
+ 	struct page *page;
++	struct gmap *gmap;
+ 	int rc;
+ 
+ 	/*
+@@ -799,6 +800,17 @@ void do_secure_storage_access(struct pt_regs *regs)
+ 	}
+ 
+ 	switch (get_fault_type(regs)) {
++	case GMAP_FAULT:
++		mm = current->mm;
++		gmap = (struct gmap *)S390_lowcore.gmap;
++		mmap_read_lock(mm);
++		addr = __gmap_translate(gmap, addr);
++		mmap_read_unlock(mm);
++		if (IS_ERR_VALUE(addr)) {
++			do_fault_error(regs, VM_ACCESS_FLAGS, VM_FAULT_BADMAP);
++			break;
++		}
++		fallthrough;
+ 	case USER_FAULT:
+ 		mm = current->mm;
+ 		mmap_read_lock(mm);
+@@ -827,7 +839,6 @@ void do_secure_storage_access(struct pt_regs *regs)
+ 		if (rc)
+ 			BUG();
+ 		break;
+-	case GMAP_FAULT:
+ 	default:
+ 		do_fault_error(regs, VM_READ | VM_WRITE, VM_FAULT_BADMAP);
+ 		WARN_ON_ONCE(1);
 -- 
-Additional information about regzbot:
+2.34.1
 
-If you want to know more about regzbot, check out its web-interface, the
-getting start guide, and the references documentation:
-
-https://linux-regtracking.leemhuis.info/regzbot/
-https://gitlab.com/knurd42/regzbot/-/blob/main/docs/getting_started.md
-https://gitlab.com/knurd42/regzbot/-/blob/main/docs/reference.md
-
-The last two documents will explain how you can interact with regzbot
-yourself if your want to.
-
-Hint for reporters: when reporting a regression it's in your interest to
-CC the regression list and tell regzbot about the issue, as that ensures
-the regression makes it onto the radar of the Linux kernel's regression
-tracker -- that's in your interest, as it ensures your report won't fall
-through the cracks unnoticed.
-
-Hint for developers: you normally don't need to care about regzbot once
-it's involved. Fix the issue as you normally would, just remember to
-include 'Link:' tag in the patch descriptions pointing to all reports
-about the issue. This has been expected from developers even before
-regzbot showed up for reasons explained in
-'Documentation/process/submitting-patches.rst' and
-'Documentation/process/5.Posting.rst'.
