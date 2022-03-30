@@ -2,198 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFA90C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 07:02:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52CD2C43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 07:03:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243583AbiC3HEj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 03:04:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37856 "EHLO
+        id S243597AbiC3HEy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 03:04:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242559AbiC3HET (ORCPT
+        with ESMTP id S243559AbiC3HEw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 03:04:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 571EEE3898;
-        Wed, 30 Mar 2022 00:02:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 15321B81B7F;
-        Wed, 30 Mar 2022 07:02:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB750C34116;
-        Wed, 30 Mar 2022 07:02:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648623750;
-        bh=wpVECZ3sXO7GwRz1XNWKB5ozsYjbXV0ijOo0t5EBFf4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=BvqOQs/jqyJKbjDS+B3LViQLKZj9KlDyTt9BLeCtqzcJHakXaG7RdemePGiezBRyU
-         rAQBE4w71PMZhUgSjDygTcZSkGRVHyXWUulVbbjCNo//fojusTiTaQn+bU/68Ij2mz
-         qjBwtho7rI+ppRly6VLcL7OlGxbe6DfFGIESISgrckzfnOs1IP8cn0qYXIMVKUf2d5
-         asPIkUGPaa2bPRCS1zmufh6CMbGSx9xCEE7jbyNJo34zTwG1SWK07ojB6jihok8pM3
-         XIHZQWPG+hcerN1IxpvYKRZfKMPvvnJGaDP8UT877xfcJlumnE3S/EZctoMgXX7CR4
-         Rhmwuh/9XKl9A==
-Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-de3ca1efbaso21198273fac.9;
-        Wed, 30 Mar 2022 00:02:30 -0700 (PDT)
-X-Gm-Message-State: AOAM531EmzXbDXls/st5j3Z1DpUAjTVTqnx2OBbymn5SPtugh7yR9rKm
-        gscPQh+emAjcO3aUhPDTBmaxYHispcP/ITxfLdE=
-X-Google-Smtp-Source: ABdhPJycQ0z03NeGuyDd4f+VqMbzka78HzPg5y9ZP9zP0S4NCdSssehttV8PYxT/KoPr4OTaVPtS1io+ePzyQJwTXZQ=
-X-Received: by 2002:a05:6870:b027:b0:de:7fcd:fabf with SMTP id
- y39-20020a056870b02700b000de7fcdfabfmr1579995oae.126.1648623749792; Wed, 30
- Mar 2022 00:02:29 -0700 (PDT)
+        Wed, 30 Mar 2022 03:04:52 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DEBAE72A7
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 00:03:06 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id yy13so39577863ejb.2
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 00:03:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=oshmNo9QpI++PBeGcUfK8FqiE0bcDHOAFRmb1sC62DQ=;
+        b=k4L+d4Wg3xJWIOSafNRXZNWhQTmcoDKyUDF5jigBkuv5rDoybp1GjNA0AOEWk4KhxR
+         9Ek1wCA4dNwrCI4LrlhCmVdQib3oIuVhZIfPMyyaDsKSlLBFFlrrsu3hXDSi4FCLaq8O
+         bxMPx/L0Ab3u5PXng11itfMgvoFsCVnuSm6IROuxZV4/2/tfmk1By5lfFU7RgUClNHQY
+         hhyYUVFbZnLCvr1l+g2RvBGgWM85Y8kggIevWklVLjjJZ2D5r73TTlmI1ep/tazn38jv
+         2D5DJ7jqiiP9r/QpOl4QjXsmkjbrRtyUEwrD+oGqET1/suW9lbYevp+F7uCV+2lwDyJ8
+         9HLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=oshmNo9QpI++PBeGcUfK8FqiE0bcDHOAFRmb1sC62DQ=;
+        b=QTOX5ys3eky4txVBpF8Sxdzhgm4xod3oIqu7UXaMZqSDlx5sNO5Ev0ZM0XthCXyRwh
+         YMKWqeIvUe3PCqARaMPBmsYr/Elx0MmjBnxliWmwjYeacfBRPagJgyCGYtQ2ZjEH/Wnk
+         LUK0W2WBYc3yixgB7I2kc0F2cf0sJN8exZJ9gO8mdIR+PgstkiHp9+kAJY1xStyrVzdU
+         IGzMcYedjPwp87gLRQfDfux8jihpgyF67ouKb/jVfHVv7K3x7KlO0+FsgmjRpLZE6piJ
+         ImFZTog9aSUcPg+imWwgScZzgOzfVENUXdbl1mT7vai8EvPih42SnZdiv40WehvhX2Gw
+         09NQ==
+X-Gm-Message-State: AOAM530a0koBu1S0GY0gZdcfpjexMMfwSuCZ995S03cLM7O74plZ1Z/t
+        AkEY5O10F2xYP/YCUXyDM0D08A==
+X-Google-Smtp-Source: ABdhPJz5xHARA4VHf0zoxalwHrQm8Dw4UegHI0/zWR/8z1C7CPrOhvZ3Plw3MZxcMWnMCtZoV+Dp5g==
+X-Received: by 2002:a17:907:2cc7:b0:6df:b76d:940d with SMTP id hg7-20020a1709072cc700b006dfb76d940dmr37968892ejc.742.1648623785083;
+        Wed, 30 Mar 2022 00:03:05 -0700 (PDT)
+Received: from [192.168.0.162] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id g2-20020aa7dc42000000b00418ef55eabcsm9447609edu.83.2022.03.30.00.03.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Mar 2022 00:03:04 -0700 (PDT)
+Message-ID: <f9d83e70-75cf-56f2-9c3e-05381b12325b@linaro.org>
+Date:   Wed, 30 Mar 2022 09:03:03 +0200
 MIME-Version: 1.0
-References: <20220329174057.GA17778@srcf.ucam.org>
-In-Reply-To: <20220329174057.GA17778@srcf.ucam.org>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Wed, 30 Mar 2022 09:02:18 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXE-7yPTBgQQKXRnQbdvLMv6D7=CowtQ38PdpPVa3SW-Ag@mail.gmail.com>
-Message-ID: <CAMj1kXE-7yPTBgQQKXRnQbdvLMv6D7=CowtQ38PdpPVa3SW-Ag@mail.gmail.com>
-Subject: Re: Linux DRTM on UEFI platforms
-To:     Matthew Garrett <mjg59@srcf.ucam.org>
-Cc:     Daniel Kiper <daniel.kiper@oracle.com>,
-        Alec Brown <alec.r.brown@oracle.com>,
-        Kanth Ghatraju <kanth.ghatraju@oracle.com>,
-        Ross Philipson <ross.philipson@oracle.com>,
-        "dpsmith@apertussolutions.com" <dpsmith@apertussolutions.com>,
-        "piotr.krol@3mdeb.com" <piotr.krol@3mdeb.com>,
-        "krystian.hebel@3mdeb.com" <krystian.hebel@3mdeb.com>,
-        "persaur@gmail.com" <persaur@gmail.com>,
-        "Yoder, Stuart" <stuart.yoder@arm.com>,
-        Andrew Cooper <andrew.cooper3@citrix.com>,
-        "michal.zygowski@3mdeb.com" <michal.zygowski@3mdeb.com>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        "lukasz@hawrylko.pl" <lukasz@hawrylko.pl>,
-        linux-efi <linux-efi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        The development of GNU GRUB <grub-devel@gnu.org>,
-        Kees Cook <keescook@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] dt-bindings: qcom: update maintainers (drop Akash and
+ Mukesh)
+Content-Language: en-US
+To:     Kuldeep Singh <singh.kuldeep87k@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-spi@vger.kernel.org
+References: <20220329113718.254642-1-krzysztof.kozlowski@linaro.org>
+ <20220330054751.GA51248@9a2d8922b8f1>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220330054751.GA51248@9a2d8922b8f1>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Matt,
+On 30/03/2022 07:47, Kuldeep Singh wrote:
+> On Tue, Mar 29, 2022 at 01:37:17PM +0200, Krzysztof Kozlowski wrote:
+>> Emails to Akash Asthana and Mukesh Savaliya bounce (550: Recipient
+>> address rejected: User unknown in virtual alias table), so switch
+>> maintainers to Andy and Bjorn (as Qualcomm platform maintainers).
+> 
+> Thanks Krzysztof as it was really anonoying to hear bounce emails.
+> 
+> One thing, I heard bounce from Akash only and not from Mukesh.
+> Did you hear bounce from Mukesh as well?
 
-On Tue, 29 Mar 2022 at 19:41, Matthew Garrett <mjg59@srcf.ucam.org> wrote:
->
-> We're still trying to come to a conclusion about the most maintainable
-> approach to getting DRTM implementations like Intel TXT working on UEFI
-> platforms under Linux. I'm going to try to summarise the situation here
-> - I'm not an expert, so details may be inaccurate, but I think this is
-> the rough shape of things.
->
-> Under normal circumstances on UEFI platforms, the bootloader (or system
-> firmware directly) load the kernel and execute code in the boot stub.
-> This boot stub code interacts with the firmware in various ways,
-> including working around some platform-specific issues and doing things
-> like copying the TPM event log into memory that can be used by the
-> kernel proper. While it remains technically possible to boot the kernel
-> on x86 UEFI platforms by jumping directly to the kernel entry point and
-> skipping the boot stub, this risks disabling certain functionality and
-> leaving the kernel in a slightly unexpected state. The contract that
-> exists between the UEFI stub and the kernel is not meaningfully
-> documented - portions are carried out by updating the contents of the
-> bootparams struct on x86 or devicetree on ARM, but other information is
-> conveyed via UEFI configuration tables, the boot stub may modify the
-> contents of certain UEFI variables, and some of this is implicit in
-> the form of hardware state.
->
-> The Trenchboot project is attempting to implement DRTM under Linux.
-> Traditional measured boot takes the form of a static root of trust -
-> each component in the boot chain is measured by the previous component
-> before being executed, and each measures what it considers to be
-> security relevant configuration and behavioural state. Modifying any
-> component will change the measurements, even if the end result is
-> equivalent. Dynamic Root of Trust Measurement aims to provide more
-> useful measurements by performing a measurement at a specific point in
-> time - as a result, DRTM cares only about what the state *is*, not what
-> happened before then.
->
-> There's a bunch of complexity involved in this that's vendor specific,
-> but the short version is that a launch environment is set up and a
-> specific CPU instruction executed that triggers a secure launch event.
-> The Trenchboot code consists of patches to bootloaders to support
-> setting up this environment, and patches to the kernel to provide
-> support for the "Secure Launch" kernel that handles DRTM before handing
-> control off to the kernel proper, skipping the UEFI boot stub.
->
-> Since this skips the UEFI boot stub, it's then the responsibility of the
-> bootloader to implement the functionality of the boot stub. This is made
-> difficult due to the absence of an express contract between the boot
-> stub and the rest of the kernel - our assumption has been that the code
-> is the contract, and this is free to change arbitrarily since both the
-> producer and the consumer of the information can be updated
-> simultaneously and can't get out of sync. That seems to leave us with
-> two options:
->
-> 1) Formalise the contract between the boot stub and the kernel, making
-> it easier for other boot loaders to implement the contract. This has the
-> downside that even within the scope of the contract we may end up with
-> divergent behaviour, and also new functionality in the kernel may not be
-> available without the bootloader also being updated.
->
-> 2) Modify the boot stub such that it can be provided with a callback,
-> and instead of jumping to the kernel it can jump to the callback. The
-> boot flow would then involve the boot loader setting up the launch
-> environment, calling the boot stub code, and then performing the DRTM
-> event. This avoids requiring an explicit contract (the boot stub would
-> remain part of the kernel image and would be updated in lockstep).
->
-> One complexity for both approaches is that the secure launch environment
-> needs to be aware of all security-critical state in the system. The
-> firmware nominally exposes that information for everything it's aware
-> of that's security-critical, but the boot stub may have performed
-> security-critical actions or exposed security-critical state that the
-> firmware is unaware of. The secure launch code from Trenchboot has to be
-> aware of this in order to ensure it's measured.
->
-> If there's a contract, then in theory this would be embodied in the
-> contract and when the contract is updated the secure launch code could
-> also be updated. If there's no contract, every change to the boot stub
-> would need to be examined and the secure launch code updated if
-> necessary.
->
-> While the secure launch code is currently out of tree, the goal is for
-> it to be integrated into the kernel tree. My feeling is that it's
-> going to be easier to manage this if everything is in tree - ie, all the
-> EFI setup code that does anything security-critical is either in the
-> firmware (and so the firmware takes responsibility for exposing it) or
-> is in the Linux tree (and so we take responsibility for updating the
-> secure launch code whenever something relevant changes in the boot
-> stub). But this requires support from the EFI maintainers in terms of
-> not merging things until we've established whether updates are required
-> to the secure launch code. The alternative is effectively the same,
-> except it would require updating the contract instead.
->
-> But, as mentioned, that's just my feeling - I know that Daniel feels
-> that the contract approach is preferable. So:
->
-> 1) From an EFI maintainer perspective, is making the contract between
-> the boot stub and the kernel explicit viable?
->
+Yes, both:
+550 5.1.1 <msavaliy@codeaurora.org>: Recipient address rejected: User
+unknown in virtual alias table
 
-No. The direction of travel has been to define EFI boot only in terms
-of the handover from the loader to the stub. What happens next is up
-to the architecture, and is deliberately not specified, because it is
-considered to be internal Linux ABI. We've deviated from this once for
-Xen on ARM, but this means we have already painted ourselves into a
-corner when it comes the way we use DT internally at the handover
-point between stub and kernel proper, and I am not eager to repeat
-that. Locking down the stub-to-kernel protocol for all architectures
-is not the way to go.
+I think there might be a change in the email domain, so the best would
+be if Akash and Mukesh simply updated the file...
 
-> 2) If so, is it desirable?
->
-> 3) If either (1) or (2) is "no", is it reasonable to ensure that all
-> potentially security-critical state or configuration changes to the
-> boot stub are reviewed by DRTM people to verify whether the secure
-> launch code needs to be updated to match?
 
-Wouldn't it be better for the secure launch kernel to boot the EFI
-entrypoint directly? As it happens, I just completed a PoC last week
-for a minimal implementation of EFI (in Rust) that only carries the
-pieces that the EFI stub needs to boot Linux. It is currently just a
-proof of concept that only works on QEMU/arm64, but it should not be
-too hard to adapt it for x86 and for booting a kernel that has already
-been loaded to memory.
-
-[0] https://github.com/ardbiesheuvel/efilite
+Best regards,
+Krzysztof
