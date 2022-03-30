@@ -2,223 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04D77C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 896E6C4707F
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:57:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345123AbiC3L6D (ORCPT
+        id S1345146AbiC3L6J (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 07:58:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58972 "EHLO
+        Wed, 30 Mar 2022 07:58:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344444AbiC3LxK (ORCPT
+        with ESMTP id S1344369AbiC3LxD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:53:10 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF9CF261DF7;
-        Wed, 30 Mar 2022 04:48:56 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id bh17so1480145ejb.8;
-        Wed, 30 Mar 2022 04:48:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QnygP4l4hTZOc+NFDXu9YYi5sXjYreslpEJf/CgWJFU=;
-        b=L4D9vUp++dIar8oRx2cyilIRQpIbE8aTyXC7bD8/IQy5GxKarN9FPrJKt8vtzjtYK8
-         MWTYlILu33ArTJ8ShiNwg1pOMYcgFwQvMJxcreeKPzN0tspJ0HK9Yvu3oyTPvtYsKJXY
-         IrJRaZzbDlhgURR2UzliOGVkpCwaS/l/3LhQN91N195HK0ckoaGVLdgtxcOB+ZXdYCmO
-         KpMOKWoRLB501a9wQuKcFWp4n0UldaFxeDVLCR3ANYXQd1VaIBpvr2dr5wwOAEQKtRzy
-         79Awx4y8ntCN3kwn5zGGwY7kDivYHem6swodfHzXGGOC7J6lAfxvHZom9ftcccvbj5Vp
-         ROTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QnygP4l4hTZOc+NFDXu9YYi5sXjYreslpEJf/CgWJFU=;
-        b=EYHGByaBKjGSO76P33iJA2BRFm0FgpaaMx35mYyMF5XMGudyOjqsQQ/OT79GRMsIII
-         MdbCjb4jHRr4/4x5kdfdNXgryFQzovTov0kBTx7F7wehC+rqVEtbLstdyJdahIbVZnt2
-         dBR+JZhESgcP0eB87Otc/tZVVakTzW4yU/G5AvZHRIM1pgJ1dNTE+ehQQ4KOvC8yjTX5
-         6EPGbuVRSU3eUYDwmspsTHag1x5LGY/o4d+Zc37nwPMKzyLUCqUY/uSBdRQG1365/VT1
-         CvfmNcYAyjXuMbUF+n1dzixf71ce8CDQopP5IS3FxCUgQr0at1f+h7sZAt20ROfOz97A
-         7Mcw==
-X-Gm-Message-State: AOAM531UUrGSJRXZPf5fs3X3vNZrjv+v4bJ7rLe4PA56dtIugVaoTM3l
-        bavbolBmUw/s2GtRoIwVOiggoNHQyPA=
-X-Google-Smtp-Source: ABdhPJw4fExfdVyAn2ssY8SyPCua0EfDQ35g+WWMCOkxPzNpgIv/ZzrQ/OVM2E3Kzv+Bw3J5rAnauQ==
-X-Received: by 2002:a17:907:94c6:b0:6da:9561:ce0 with SMTP id dn6-20020a17090794c600b006da95610ce0mr38918680ejc.342.1648640933738;
-        Wed, 30 Mar 2022 04:48:53 -0700 (PDT)
-Received: from debian.home (81-204-249-205.fixed.kpn.net. [81.204.249.205])
-        by smtp.gmail.com with ESMTPSA id g9-20020aa7c849000000b00412fc6bf26dsm9934442edt.80.2022.03.30.04.48.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Mar 2022 04:48:53 -0700 (PDT)
-From:   Johan Jonker <jbx6244@gmail.com>
-To:     heiko@sntech.de, zhangqing@rock-chips.com
-Cc:     robh+dt@kernel.org, krzk+dt@kernel.org, mturquette@baylibre.com,
-        sboyd@kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 1/3] dt-bindings: clock: convert rockchip,rk3036-cru.txt to YAML
-Date:   Wed, 30 Mar 2022 13:48:45 +0200
-Message-Id: <20220330114847.18633-1-jbx6244@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        Wed, 30 Mar 2022 07:53:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 963CE26132E;
+        Wed, 30 Mar 2022 04:48:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E0C01615E7;
+        Wed, 30 Mar 2022 11:48:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06922C36AE3;
+        Wed, 30 Mar 2022 11:48:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648640925;
+        bh=qMSq2ZM7H+t3XIYKOQd73sqX230ds6e20YdaLYU4CE0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=X+Pc8kSfrsdtamEMikiNN2EfvAQ84TM2JNc+39J28G1kzot6loz236yEm+bKiGy/n
+         I3GyZJIyqXkjzjUkMOcOcT4RhPiJS3+OdZDn50tjW7zKqSQ7nTrqf0edMMi/TlJK/u
+         PMy8TQm9qWsSD9xMBAL5U8thzJnXM8vZU6d4bjD8IrwnjsI2o1zR+cVMKv+8a8iNNR
+         6V+rtMvRW9BrlDYUb5dlGu5lls5BBDZmJEx2vAm5W4ec9gUhoLFtq7S6HNeBvdorT7
+         91oc7GG+UsMhIMgRfhEvF1SOAF9HKhadcxAzetbBkH6MVt1HvdRZHdaI1dfsyqpRQH
+         OtWpR2v03x0LQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Reddy Muralidhar <muralidhar.reddy@intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Rander Wang <rander.wang@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.16 08/59] ASoC: SOF: Intel: match sdw version on link_slaves_found
+Date:   Wed, 30 Mar 2022 07:47:40 -0400
+Message-Id: <20220330114831.1670235-8-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220330114831.1670235-1-sashal@kernel.org>
+References: <20220330114831.1670235-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert rockchip,rk3036-cru.txt to YAML.
+From: Bard Liao <yung-chuan.liao@linux.intel.com>
 
-Changes against original bindings:
-  Add clocks and clock-names because the device has to have
-  at least one input clock.
+[ Upstream commit f67c0c0d3b9048d86ea6ae52e36a2b78c48f265d ]
 
-Signed-off-by: Johan Jonker <jbx6244@gmail.com>
+Codecs with the same part id, manufacturer id and part id, but different
+sdw version should be treated as different codecs. For example, rt711 and
+rt711-sdca are different. So, we should match sdw version as well.
+
+Reported-by: Reddy Muralidhar <muralidhar.reddy@intel.com>
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Reviewed-by: Rander Wang <rander.wang@intel.com>
+Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220120232157.199919-2-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../bindings/clock/rockchip,rk3036-cru.txt    | 56 ---------------
- .../bindings/clock/rockchip,rk3036-cru.yaml   | 72 +++++++++++++++++++
- 2 files changed, 72 insertions(+), 56 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/clock/rockchip,rk3036-cru.txt
- create mode 100644 Documentation/devicetree/bindings/clock/rockchip,rk3036-cru.yaml
+ sound/soc/sof/intel/hda.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/clock/rockchip,rk3036-cru.txt b/Documentation/devicetree/bindings/clock/rockchip,rk3036-cru.txt
-deleted file mode 100644
-index 20df350b9..000000000
---- a/Documentation/devicetree/bindings/clock/rockchip,rk3036-cru.txt
-+++ /dev/null
-@@ -1,56 +0,0 @@
--* Rockchip RK3036 Clock and Reset Unit
--
--The RK3036 clock controller generates and supplies clock to various
--controllers within the SoC and also implements a reset controller for SoC
--peripherals.
--
--Required Properties:
--
--- compatible: should be "rockchip,rk3036-cru"
--- reg: physical base address of the controller and length of memory mapped
--  region.
--- #clock-cells: should be 1.
--- #reset-cells: should be 1.
--
--Optional Properties:
--
--- rockchip,grf: phandle to the syscon managing the "general register files"
--  If missing pll rates are not changeable, due to the missing pll lock status.
--
--Each clock is assigned an identifier and client nodes can use this identifier
--to specify the clock which they consume. All available clocks are defined as
--preprocessor macros in the dt-bindings/clock/rk3036-cru.h headers and can be
--used in device tree sources. Similar macros exist for the reset sources in
--these files.
--
--External clocks:
--
--There are several clocks that are generated outside the SoC. It is expected
--that they are defined using standard clock bindings with following
--clock-output-names:
-- - "xin24m" - crystal input - required,
-- - "ext_i2s" - external I2S clock - optional,
-- - "rmii_clkin" - external EMAC clock - optional
--
--Example: Clock controller node:
--
--	cru: cru@20000000 {
--		compatible = "rockchip,rk3036-cru";
--		reg = <0x20000000 0x1000>;
--		rockchip,grf = <&grf>;
--
--		#clock-cells = <1>;
--		#reset-cells = <1>;
--	};
--
--Example: UART controller node that consumes the clock generated by the clock
--  controller:
--
--	uart0: serial@20060000 {
--		compatible = "snps,dw-apb-uart";
--		reg = <0x20060000 0x100>;
--		interrupts = <GIC_SPI 20 IRQ_TYPE_LEVEL_HIGH>;
--		reg-shift = <2>;
--		reg-io-width = <4>;
--		clocks = <&cru SCLK_UART0>;
--	};
-diff --git a/Documentation/devicetree/bindings/clock/rockchip,rk3036-cru.yaml b/Documentation/devicetree/bindings/clock/rockchip,rk3036-cru.yaml
-new file mode 100644
-index 000000000..1376230fe
---- /dev/null
-+++ b/Documentation/devicetree/bindings/clock/rockchip,rk3036-cru.yaml
-@@ -0,0 +1,72 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/clock/rockchip,rk3036-cru.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Rockchip RK3036 Clock and Reset Unit (CRU)
-+
-+maintainers:
-+  - Elaine Zhang <zhangqing@rock-chips.com>
-+  - Heiko Stuebner <heiko@sntech.de>
-+
-+description: |
-+  The RK3036 clock controller generates and supplies clocks to various
-+  controllers within the SoC and also implements a reset controller for SoC
-+  peripherals.
-+  Each clock is assigned an identifier and client nodes can use this identifier
-+  to specify the clock which they consume. All available clocks are defined as
-+  preprocessor macros in the dt-bindings/clock/rk3036-cru.h headers and can be
-+  used in device tree sources. Similar macros exist for the reset sources in
-+  these files.
-+  There are several clocks that are generated outside the SoC. It is expected
-+  that they are defined using standard clock bindings with following
-+  clock-output-names:
-+    - "xin24m"     - crystal input       - required
-+    - "ext_i2s"    - external I2S clock  - optional
-+    - "rmii_clkin" - external EMAC clock - optional
-+
-+properties:
-+  compatible:
-+    enum:
-+      - rockchip,rk3036-cru
-+
-+  reg:
-+    maxItems: 1
-+
-+  "#clock-cells":
-+    const: 1
-+
-+  "#reset-cells":
-+    const: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  clock-names:
-+    const: xin24m
-+
-+  rockchip,grf:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    description:
-+      Phandle to the syscon managing the "general register files" (GRF),
-+      if missing pll rates are not changeable, due to the missing pll
-+      lock status.
-+
-+required:
-+  - compatible
-+  - reg
-+  - "#clock-cells"
-+  - "#reset-cells"
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    cru: clock-controller@20000000 {
-+      compatible = "rockchip,rk3036-cru";
-+      reg = <0x20000000 0x1000>;
-+      rockchip,grf = <&grf>;
-+      #clock-cells = <1>;
-+      #reset-cells = <1>;
-+    };
+diff --git a/sound/soc/sof/intel/hda.c b/sound/soc/sof/intel/hda.c
+index 25200a0e1dc9..fc88296ab898 100644
+--- a/sound/soc/sof/intel/hda.c
++++ b/sound/soc/sof/intel/hda.c
+@@ -1200,7 +1200,7 @@ static bool link_slaves_found(struct snd_sof_dev *sdev,
+ 	struct hdac_bus *bus = sof_to_bus(sdev);
+ 	struct sdw_intel_slave_id *ids = sdw->ids;
+ 	int num_slaves = sdw->num_slaves;
+-	unsigned int part_id, link_id, unique_id, mfg_id;
++	unsigned int part_id, link_id, unique_id, mfg_id, version;
+ 	int i, j, k;
+ 
+ 	for (i = 0; i < link->num_adr; i++) {
+@@ -1210,12 +1210,14 @@ static bool link_slaves_found(struct snd_sof_dev *sdev,
+ 		mfg_id = SDW_MFG_ID(adr);
+ 		part_id = SDW_PART_ID(adr);
+ 		link_id = SDW_DISCO_LINK_ID(adr);
++		version = SDW_VERSION(adr);
+ 
+ 		for (j = 0; j < num_slaves; j++) {
+ 			/* find out how many identical parts were reported on that link */
+ 			if (ids[j].link_id == link_id &&
+ 			    ids[j].id.part_id == part_id &&
+-			    ids[j].id.mfg_id == mfg_id)
++			    ids[j].id.mfg_id == mfg_id &&
++			    ids[j].id.sdw_version == version)
+ 				reported_part_count++;
+ 		}
+ 
+@@ -1224,21 +1226,24 @@ static bool link_slaves_found(struct snd_sof_dev *sdev,
+ 
+ 			if (ids[j].link_id != link_id ||
+ 			    ids[j].id.part_id != part_id ||
+-			    ids[j].id.mfg_id != mfg_id)
++			    ids[j].id.mfg_id != mfg_id ||
++			    ids[j].id.sdw_version != version)
+ 				continue;
+ 
+ 			/* find out how many identical parts are expected */
+ 			for (k = 0; k < link->num_adr; k++) {
+ 				u64 adr2 = link->adr_d[k].adr;
+-				unsigned int part_id2, link_id2, mfg_id2;
++				unsigned int part_id2, link_id2, mfg_id2, version2;
+ 
+ 				mfg_id2 = SDW_MFG_ID(adr2);
+ 				part_id2 = SDW_PART_ID(adr2);
+ 				link_id2 = SDW_DISCO_LINK_ID(adr2);
++				version2 = SDW_VERSION(adr2);
+ 
+ 				if (link_id2 == link_id &&
+ 				    part_id2 == part_id &&
+-				    mfg_id2 == mfg_id)
++				    mfg_id2 == mfg_id &&
++				    version2 == version)
+ 					expected_part_count++;
+ 			}
+ 
 -- 
-2.20.1
+2.34.1
 
