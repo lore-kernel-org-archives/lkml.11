@@ -2,45 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1114DC4167D
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:55:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC846C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:55:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345082AbiC3L5N (ORCPT
+        id S1344328AbiC3L51 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 07:57:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58974 "EHLO
+        Wed, 30 Mar 2022 07:57:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344348AbiC3Lw6 (ORCPT
+        with ESMTP id S1344416AbiC3LxI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:52:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B8C3261307;
-        Wed, 30 Mar 2022 04:48:44 -0700 (PDT)
+        Wed, 30 Mar 2022 07:53:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97310261DDC;
+        Wed, 30 Mar 2022 04:48:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9B03CB81ACC;
-        Wed, 30 Mar 2022 11:48:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A95C2C340EE;
-        Wed, 30 Mar 2022 11:48:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B88F16162F;
+        Wed, 30 Mar 2022 11:48:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDBF7C36AE3;
+        Wed, 30 Mar 2022 11:48:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648640920;
-        bh=SCgcK3ystEM4p5FUpeXZzCOdyVTPsuyCpDS+LaZ2TR0=;
+        s=k20201202; t=1648640932;
+        bh=Yw9KpInkgsNYhh+OCNup/aC8fKxzxvvo6UbYxOjbCnQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mvR3zT7lBZQwvRUSnAxE1QUiT3KiDLekq2iTOVjyhIpFkC1Pjd6cXrbbaZ1d6dRiA
-         CT/+0KxdfPicFyB29zXbT3+X22WKcFzW7ncpOUTJ4DJ3JnaOwIEpj2cGdfe7aLhqFB
-         J5AHx0wucrLyk1d5ag5w2SjSknWkhZiExSe7C3o/MjV7joa1lgCbe45Vk736xfj89H
-         WMeLSMaON4fO/zUDz6So1ms/dGPsMUdpxpfGQ20ZXXVtCtZ4AOWfgKKWLBwgWISoLw
-         XTGt3rcpbJPUG9/S+0Ioae29uVHbnVdIhhax3WFcSVwI5o5L182RRvfn76UmzZXv2T
-         hXlqCniLc5ojw==
+        b=ukJPwQxo66ZQ8HYDWDJCCeoPDTtzB4grXjeDGQUYLE2TMQng7jShzU86DrWGMTBQo
+         6hqb9iuf5Fth1gacOxOdT4wUuhEz2bng7dzYhpOsyvpmsHdBfJn81dT4AszgFNbqWc
+         ilV5myNX8phBu9YmQhdHJ6mYj11QhhZOiEjKvPICmvKRR6XHDwdesHLw/AxRCSHDaK
+         OG7Q9Ip4vSIoMVsVFZFcFdWUXq/DQ4nGLo7kRPGb2GFmv/dZGT7X5KYUo8OwAIDlix
+         2aPsGRKbO57zJPUVYYFoxYN9h9mvrXib+krXpO5eWgH1vv67kN1wYa4+kDbponjjbm
+         psm8u8608l4cA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peiwei Hu <jlu.hpw@foxmail.com>, Sean Young <sean@mess.org>,
+Cc:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <jroedel@suse.de>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 05/59] media: ir_toy: free before error exiting
-Date:   Wed, 30 Mar 2022 07:47:37 -0400
-Message-Id: <20220330114831.1670235-5-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, joro@8bytes.org,
+        matthias.bgg@gmail.com, iommu@lists.linux-foundation.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.16 12/59] media: iommu/mediatek: Return ENODEV if the device is NULL
+Date:   Wed, 30 Mar 2022 07:47:44 -0400
+Message-Id: <20220330114831.1670235-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330114831.1670235-1-sashal@kernel.org>
 References: <20220330114831.1670235-1-sashal@kernel.org>
@@ -52,33 +58,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peiwei Hu <jlu.hpw@foxmail.com>
+From: Yong Wu <yong.wu@mediatek.com>
 
-[ Upstream commit 52cdb013036391d9d87aba5b4fc49cdfc6ea4b23 ]
+[ Upstream commit 2fb0feed51085db77606de9b9477c96894328809 ]
 
-Fix leak in error path.
+The platform device is created at:
+of_platform_default_populate_init:  arch_initcall_sync
+  ->of_platform_populate
+        ->of_platform_device_create_pdata
 
-Signed-off-by: Peiwei Hu <jlu.hpw@foxmail.com>
-Signed-off-by: Sean Young <sean@mess.org>
+When entering our probe, all the devices should be already created.
+if it is null, means NODEV. Currently we don't get the fail case.
+It's a minor fix, no need add fixes tags.
+
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Acked-by: Joerg Roedel <jroedel@suse.de>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/rc/ir_toy.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/mtk_iommu.c    | 2 +-
+ drivers/iommu/mtk_iommu_v1.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/rc/ir_toy.c b/drivers/media/rc/ir_toy.c
-index 7e98e7e3aace..196806709259 100644
---- a/drivers/media/rc/ir_toy.c
-+++ b/drivers/media/rc/ir_toy.c
-@@ -458,7 +458,7 @@ static int irtoy_probe(struct usb_interface *intf,
- 	err = usb_submit_urb(irtoy->urb_in, GFP_KERNEL);
- 	if (err != 0) {
- 		dev_err(irtoy->dev, "fail to submit in urb: %d\n", err);
--		return err;
-+		goto free_rcdev;
- 	}
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 25b834104790..77ae20ff9b35 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -848,7 +848,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 		plarbdev = of_find_device_by_node(larbnode);
+ 		if (!plarbdev) {
+ 			of_node_put(larbnode);
+-			return -EPROBE_DEFER;
++			return -ENODEV;
+ 		}
+ 		data->larb_imu[id].dev = &plarbdev->dev;
  
- 	err = irtoy_setup(irtoy);
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index 1467ba1e4417..68bf02f87cfd 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -604,7 +604,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 		plarbdev = of_find_device_by_node(larbnode);
+ 		if (!plarbdev) {
+ 			of_node_put(larbnode);
+-			return -EPROBE_DEFER;
++			return -ENODEV;
+ 		}
+ 		data->larb_imu[i].dev = &plarbdev->dev;
+ 
 -- 
 2.34.1
 
