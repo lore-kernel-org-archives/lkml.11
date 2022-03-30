@@ -2,110 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11E0BC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 17:05:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7080CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 17:07:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349182AbiC3RHd (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 13:07:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35734 "EHLO
+        id S242966AbiC3RJE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 13:09:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232675AbiC3RHb (ORCPT
+        with ESMTP id S231586AbiC3RJB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 13:07:31 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F280212AD5
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 10:05:45 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id bg10so42816467ejb.4
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 10:05:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Tj0NXhVhm7PGyEw1T3IIPx7yGFLG3tjmHr4oUiu0aBM=;
-        b=A+SD9/FO0TL/gKjMkQJKNe7U2AmbJ+03I9pf5OplDO3o62aL9aZB0bfmXop0Cwyu9Q
-         uB9gqqAdy/pD1ii7JGHUBIvJuFx+gqsctjIVWkFEfuCG64xYlijvuKUkYx41BTLSzLS/
-         WH4IeaKte2epTvfA26x5YO5mQp06UhGRO3jWlgKWCdgg+gHcKMNR+lV+C9pRXcYMeyHx
-         MNrr2Y2DSvIJmhRyh9JwrO/29C7nyQfnGno6cclU8yFoyH7/OnISb6YY88EEuh3i0YA3
-         7WjUh4c0QIx3Gn7uIKF4QlCL8WNfrJd2ZpkaiZEtfbhsXyfqaOhds0BQUddYwosZb+wQ
-         2b8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Tj0NXhVhm7PGyEw1T3IIPx7yGFLG3tjmHr4oUiu0aBM=;
-        b=Y1pzkGBxxtMAWw4BDVBCaWf4D2E1LxVpBkWw5ovZ5ECcmZxL2ZOwhVZtis9ienq9iI
-         0+/OVzUS6q9/QwcgLkDYoeM74hyHKt27GshAAB1nGLtR1+Gzg/8CJpbJMwZqRE/3eGK2
-         XlIJiVrYUafdin4FGW9InPViRX0g4d/NXpr+btHNcsZb7oK6MVncT8rAulT1of3kxgdT
-         MRkIa8DEdG5bTiLxKd3UV6MREdh6s/CrK021t46JXmyjS3+LWbMcLDUkKELfck/oP4ua
-         KyVrj4ibXCIztAghK7rcoJK1kSeaS+ap9HMy2gif6+QnHJkITINJLUVjraeuQ8c55G2j
-         p22A==
-X-Gm-Message-State: AOAM532Y2iQTDtXDUuxzboEBtw5unWfGhk9x70Y9HdvSoxSlxFXwZLdd
-        hJC2XHDtE3Y0bTiCEs2q6sH64w==
-X-Google-Smtp-Source: ABdhPJxDV3+M/9S6hZfXffPzQU3d3SBZw2wRZGcJOtZhc39pkVomwUVA9HxLnJdaS0KeGuJt/LS/6w==
-X-Received: by 2002:a17:907:6d96:b0:6df:f199:6a7c with SMTP id sb22-20020a1709076d9600b006dff1996a7cmr552529ejc.137.1648659944508;
-        Wed, 30 Mar 2022 10:05:44 -0700 (PDT)
-Received: from [192.168.0.164] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id t19-20020a056402525300b0041952a1a764sm10233880edd.33.2022.03.30.10.05.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 30 Mar 2022 10:05:43 -0700 (PDT)
-Message-ID: <da21cafc-4e5e-cb5f-e7e5-ac9f223616a6@linaro.org>
-Date:   Wed, 30 Mar 2022 19:05:42 +0200
+        Wed, 30 Mar 2022 13:09:01 -0400
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91CA338BD0
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 10:07:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648660034; x=1680196034;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=JauRNTN/iXFEioeAVJXi5dYw32L+cbz1swoCNS2p/fo=;
+  b=dSsfV92KBzSImIIZUPUGdwANzQniFvHURFMVvgBs/0pbIPHnL3ls5BRD
+   4xizmKmzm2NB/MRpC/2hhGA/fjWwQe+yJ/4r+32evizynRbOm7+hFdP6Y
+   C2DZwDAkqEalSjuIrbNs2ZL5jkHqqNJ4Bt17kVt6f2yN/DQSAuqhcO3T3
+   mkichWIXcCyZH0TPGfQ0CNb4cJApkqSN2weCOw6cwNL9l+yykKoKBN5rD
+   UwhjbsEobiQm3LpBmzvzKUzLw8IjzWehHLskhsWYQR1MYL3RY5J642yEV
+   giKN0W2q+aNIKrmW4yhzVOxLmmVQeP4DC86R8eGltkjXrvQgBYFZRUL+L
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="320293268"
+X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
+   d="scan'208";a="320293268"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 10:07:13 -0700
+X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
+   d="scan'208";a="565655237"
+Received: from alison-desk.jf.intel.com (HELO alison-desk) ([10.54.74.41])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 10:07:13 -0700
+Date:   Wed, 30 Mar 2022 10:09:36 -0700
+From:   Alison Schofield <alison.schofield@intel.com>
+To:     Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+Cc:     outreachy@lists.linux.dev, gregkh@linuxfoundation.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging:rtl8723bs:rtw_cmd.c remove suspect indent
+Message-ID: <20220330170936.GA1176693@alison-desk>
+References: <20220330153100.5813-1-eng.alaamohamedsoliman.am@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] thermal: exynos: fix masking value for artpec7 temp_error
-Content-Language: en-US
-To:     hypmean.kim@samsung.com, "bzolnier@gmail.com" <bzolnier@gmail.com>,
-        "krzk@kernel.org" <krzk@kernel.org>,
-        "rafael@kernel.org" <rafael@kernel.org>,
-        "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>,
-        "amitk@kernel.org" <amitk@kernel.org>,
-        "rui.zhang@intel.com" <rui.zhang@intel.com>,
-        ALIM AKHTAR <alim.akhtar@samsung.com>
-Cc:     "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "linux-samsung-soc@vger.kernel.org" 
-        <linux-samsung-soc@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220330093905.191315-1-hypmean.kim@samsung.com>
- <CGME20220330093842epcas2p11a4e220245298c5729e4a37d1484d4d5@epcms2p3>
- <20220330094328epcms2p35a3346066ae7b3e8a489e2c81d44f8c9@epcms2p3>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220330094328epcms2p35a3346066ae7b3e8a489e2c81d44f8c9@epcms2p3>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220330153100.5813-1-eng.alaamohamedsoliman.am@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 30/03/2022 11:43, Sang Min Kim wrote:
-> This patch is a modification related to masking of the temp_error value
-> in the sanitize_temp_error() function.
+On Wed, Mar 30, 2022 at 05:31:00PM +0200, Alaa Mohamed wrote:
+> Fix "WARNING: suspect code indent for conditional
+> statements (16, 32)" for line 1240
+> founded by checkpatch.pl
+> 
+> Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
 
-Don't use "This patch" please.
-https://elixir.bootlin.com/linux/v5.17.1/source/Documentation/process/submitting-patches.rst#L95
+Hi Alaa,
 
->  
-> For SOC_ARCH_EXYNOS7, the temp_error1, 2 value should be masked as
-> EXYNOS7_TMU_TEMP_MASK(0x1ff).
-> The current code masks temp_error2 with EXYNOS_TMU_TEMP_MASK(0xff)
-> value even in the case of EXYNOS7.
-> In addition, when entering the if statement, both temp_error1 and 2
-> are masked with EXYNOS_TMU_TEMP_MASK(0xff).
->  
-> By modifying to use the previously declared local variable tmu_temp_mask,
-> the mask value suitable for the SOC can be applied.
->  
-> Signed-off-by: sangmin kim <hypmean.kim@samsung.com>
+https://kernelnewbies.org/PatchPhilosophy
+Please take a look at the section on "Patch subject formatting" 
+and the follow on sections about checkpatch descriptions.
 
-Fixes tag?
+Thanks,
+Alison
 
-Code looks itself good, so with changes above:
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-Best regards,
-Krzysztof
+> ---
+>  drivers/staging/rtl8723bs/core/rtw_cmd.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/staging/rtl8723bs/core/rtw_cmd.c b/drivers/staging/rtl8723bs/core/rtw_cmd.c
+> index 14d37b369273..46e18a90529f 100644
+> --- a/drivers/staging/rtl8723bs/core/rtw_cmd.c
+> +++ b/drivers/staging/rtl8723bs/core/rtw_cmd.c
+> @@ -1238,7 +1238,7 @@ u8 traffic_status_watchdog(struct adapter *padapter, u8 from_timer)
+>  		/*&& !MgntInitAdapterInProgress(pMgntInfo)*/) {
+>  		/*  if we raise bBusyTraffic in last watchdog, using lower threshold. */
+>  		if (pmlmepriv->LinkDetectInfo.bBusyTraffic)
+> -				BusyThreshold = BusyThresholdLow;
+> +			BusyThreshold = BusyThresholdLow;
+>  
+>  		if (pmlmepriv->LinkDetectInfo.NumRxOkInPeriod > BusyThreshold ||
+>  			pmlmepriv->LinkDetectInfo.NumTxOkInPeriod > BusyThreshold) {
+> -- 
+> 2.35.1
+> 
+> 
