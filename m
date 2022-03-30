@@ -2,102 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44C4CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 15:32:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D0E1C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 15:33:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348240AbiC3PeJ (ORCPT
+        id S1348267AbiC3PfC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 11:34:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44248 "EHLO
+        Wed, 30 Mar 2022 11:35:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345743AbiC3PeH (ORCPT
+        with ESMTP id S244592AbiC3PfA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 11:34:07 -0400
-Received: from conssluserg-04.nifty.com (conssluserg-04.nifty.com [210.131.2.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E85D72A2641;
-        Wed, 30 Mar 2022 08:32:21 -0700 (PDT)
-Received: from mail-pg1-f175.google.com (mail-pg1-f175.google.com [209.85.215.175]) (authenticated)
-        by conssluserg-04.nifty.com with ESMTP id 22UFW6uD021486;
-        Thu, 31 Mar 2022 00:32:07 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-04.nifty.com 22UFW6uD021486
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1648654327;
-        bh=+jgSjINaX2RyRLCECfYZOraAeDuLJJPFZ1fqF8WE6SA=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=yrKVFynM/yzZFguVFnebkl2p2IgvWtQPIhAvJIn6ppkeC1zSF2XS9oBgCXbVOg95p
-         NfGagyWbRJmp/BdgPqdakxIri7F8OrJEr0q5Afnkpo7S83YQWEvygUJwUXdwXnYWsQ
-         yv7+vtnT/3NBx68T7i7rweOYDmfjAxq5dziwlX55GZqlL/Ag1ITkG/Cd3fPySefHSz
-         MGr6KN60/WqCGsE1cHOYZxfAYKLfiYV9dIxy18vdZffgp5Gp50V6qXEhdKU4RTVhWr
-         XbRePTwedIqckRoOYQUbxrdncYyo3aVJHbYUL60g8fFzUWi+TwHDH/26P8Yydu5HtZ
-         oyXJroZRrgrWw==
-X-Nifty-SrcIP: [209.85.215.175]
-Received: by mail-pg1-f175.google.com with SMTP id k14so17913073pga.0;
-        Wed, 30 Mar 2022 08:32:06 -0700 (PDT)
-X-Gm-Message-State: AOAM531h5dmRcWD3CZZ0ITUKNvc+HREywLWTLk8/Lqim0rOFQCD7wVNZ
-        czwg4kMgdpZaah19qWVJjzyspL7tiGT9IShkMeY=
-X-Google-Smtp-Source: ABdhPJzoDPjI9fV8HDohlqidunbnB1OZUNjx4hFoH/PcPh0JwyhOLFCU7Q9szZaAm2wppP1wXFUgDaeaMHTMnuvOkqo=
-X-Received: by 2002:a05:6a00:24d2:b0:4fb:1b6d:ee7d with SMTP id
- d18-20020a056a0024d200b004fb1b6dee7dmr84413pfv.36.1648654325909; Wed, 30 Mar
- 2022 08:32:05 -0700 (PDT)
+        Wed, 30 Mar 2022 11:35:00 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39FB360F9
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 08:33:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648654395; x=1680190395;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=99A4Nmd7ECn/+N9elV+Nmgmh3RzNoBsfM0MSKCJINYE=;
+  b=REqoI5VVmkoFpeJ8pVAKNaaHmZ9uPBcnVVyMlMs5uaFOSwv4SnleLysd
+   VryXsM2bKujEQrCVBrikvL+4o3lEogN8Dvx3rMmXVt4oaauidqWdyN8Pf
+   vAMs+gMK6k693TdmrFyl8K4NPsO4RDCzQ9Wg5ya2g6JYTmFFHWt5oe2iT
+   lRhEVUtYYcUdjxMULwqlvOZTugfapwhDI8KoqKIqsrU9MXHgFfPGfHjpL
+   tnS79KaFyCPLGD3/+AoVKDgHS1PQVKEHj/mNGudJlOzMbO6FUcpAE91IG
+   PzVqMSpOKL314QXgpo+drLk/PUyuV1qjg09RkDM/0K+9GDFCWR7zOAhy/
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="259544443"
+X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
+   d="scan'208";a="259544443"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 08:33:14 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
+   d="scan'208";a="519722996"
+Received: from lkp-server02.sh.intel.com (HELO 56431612eabd) ([10.239.97.151])
+  by orsmga002.jf.intel.com with ESMTP; 30 Mar 2022 08:33:13 -0700
+Received: from kbuild by 56431612eabd with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nZaJs-00008C-Uy;
+        Wed, 30 Mar 2022 15:33:12 +0000
+Date:   Wed, 30 Mar 2022 23:33:01 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:arm64/linux/devel/kmalloc-minalign 10/11]
+ arch/arm64/kernel/cacheinfo.c:101:14: warning: no previous prototype for
+ 'arch_kmalloc_minalign'
+Message-ID: <202203302330.5gG68JEu-lkp@intel.com>
 MIME-Version: 1.0
-References: <479c5c98-0e0d-072d-dae1-f91629989e46@gmail.com>
-In-Reply-To: <479c5c98-0e0d-072d-dae1-f91629989e46@gmail.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Thu, 31 Mar 2022 00:31:20 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASxaJMUAS6vgcDX3jwM9LQj7Lz8RX941FQhrDrtJSt6GA@mail.gmail.com>
-Message-ID: <CAK7LNASxaJMUAS6vgcDX3jwM9LQj7Lz8RX941FQhrDrtJSt6GA@mail.gmail.com>
-Subject: Re: [PATCH] riscv: Set SRCARCH to riscv if ARCH is riscv64 or riscv32
-To:     Ben Westover <kwestover.kw@gmail.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 11:34 PM Ben Westover <kwestover.kw@gmail.com> wrote:
->
-> When riscv64 or riscv32 are used as the value for ARCH during compilation, like
-> in tools that get the ARCH value from uname, set SRCARCH to riscv instead of
-> failing because the riscv64 and riscv32 targets don't exist.
+tree:   https://github.com/ammarfaizi2/linux-block arm64/linux/devel/kmalloc-minalign
+head:   2810d5be00a60d5996cd955c2485c17ef1e1e7af
+commit: 6c3838f40cf6a9b31bbb3d78059a81ca03fb2cfc [10/11] arm64: Enable dynamic kmalloc() minimum alignment
+config: arm64-randconfig-s032-20220330 (https://download.01.org/0day-ci/archive/20220330/202203302330.5gG68JEu-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/ammarfaizi2/linux-block/commit/6c3838f40cf6a9b31bbb3d78059a81ca03fb2cfc
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block arm64/linux/devel/kmalloc-minalign
+        git checkout 6c3838f40cf6a9b31bbb3d78059a81ca03fb2cfc
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/kernel/
 
-Can you refer to the code that really needs this?
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> arch/arm64/kernel/cacheinfo.c:101:14: warning: no previous prototype for 'arch_kmalloc_minalign' [-Wmissing-prototypes]
+     101 | unsigned int arch_kmalloc_minalign(void)
+         |              ^~~~~~~~~~~~~~~~~~~~~
 
 
+vim +/arch_kmalloc_minalign +101 arch/arm64/kernel/cacheinfo.c
 
-
->
-> Signed-off-by: Ben Westover <kwestover.kw@gmail.com>
-> ---
->  Makefile | 8 ++++++++
->  1 file changed, 8 insertions(+)
->
-> diff --git a/Makefile b/Makefile
-> index c28c5d91e5c8..315c364bf2ba 100644
-> --- a/Makefile
-> +++ b/Makefile
-> @@ -408,6 +408,14 @@ ifeq ($(ARCH),parisc64)
->         SRCARCH := parisc
->  endif
->
-> +# Additional ARCH settings for riscv
-> +ifeq ($(ARCH),riscv32)
-> +       SRCARCH := riscv
-> +endif
-> +ifeq ($(ARCH),riscv64)
-> +       SRCARCH := riscv
-> +endif
-> +
->  export cross_compiling :=
->  ifneq ($(SRCARCH),$(SUBARCH))
->  cross_compiling := 1
-> --
-> 2.35.1
->
-
+   100	
+ > 101	unsigned int arch_kmalloc_minalign(void)
 
 -- 
-Best Regards
-Masahiro Yamada
+0-DAY CI Kernel Test Service
+https://01.org/lkp
