@@ -2,140 +2,288 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57866C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:47:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00C31C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:47:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243058AbiC3GtA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 02:49:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51254 "EHLO
+        id S243381AbiC3GtP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 02:49:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243192AbiC3Grf (ORCPT
+        with ESMTP id S243487AbiC3Gsm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 02:47:35 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10olkn2089.outbound.protection.outlook.com [40.92.40.89])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CC5189CD5;
-        Tue, 29 Mar 2022 23:45:49 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RD59DRN007MWQh9wkdFfMfPHXkMzk84b60GkgqXnaUH2cwdbI9JKYspU+s/jo7HRnwh85W1eBKc8gwmuowfZYhY6x6jV5PFBYXzfbtuNlyxPltFYdB/oQLIDwzCpSinuZ4cwhvyK1DdgsAF93TTkhZUxc7TWjnQTBlK7zBH3XZuPlV4d8n6QoOE8QNtcFe3CGekHsKCtaO0mz/CKW/YZudOOwJhS3WFdsVRUKkcSknFgdOgQn3+qZysqZKv0WUfWRWoemZ5RjXQspxeWRbev3jnC5aPlIZxhUilaC6cxdzDe+8jkJTGCIUtRianxRzUnYVVdyLwK8fk2idZrctzcnQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gnqaHFspNzaDFXPCxywoCKrChn1FvnhBn5gXssIRgY8=;
- b=kX5GBH2Sh0axhsZQ8Pema7SLLIllutHgvpqQ5x7tbx2HTBX/ggqSJGIjvKaf0cLqUQCx+hc2MhKQbzJVwwvhALGtRqwB7RuJgozyCdYgdDOrESuK2+iZ7LbP5SnlscWCFuAFc/Gw84IlIKryC/vuyMFyaAl3wX+Em+GCf9OCpQ111liPBU1AryVICDw5Un84lUQjEiE+La50a20mPKeX0O1XRdRmil2Coy/A0tlhyh+NhQucVzMsEEm7Y8dNwtJxIoFXqzhkWnw5NxTf7cP1N155ff3hF4yvDMoR8PXQZxA3I4fbecAkm0bSRNVnFmHH4LAYbjj1hHGJUucPh2rTKg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-Received: from BY5PR02MB7009.namprd02.prod.outlook.com (2603:10b6:a03:236::13)
- by SJ0PR02MB8686.namprd02.prod.outlook.com (2603:10b6:a03:3f2::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.16; Wed, 30 Mar
- 2022 06:45:47 +0000
-Received: from BY5PR02MB7009.namprd02.prod.outlook.com
- ([fe80::413f:bae6:4e5e:5ae6]) by BY5PR02MB7009.namprd02.prod.outlook.com
- ([fe80::413f:bae6:4e5e:5ae6%6]) with mapi id 15.20.5123.018; Wed, 30 Mar 2022
- 06:45:47 +0000
-From:   Joel Selvaraj <jo@jsfamily.in>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Amit Pundir <amit.pundir@linaro.org>,
-        Joel Selvaraj <jo@jsfamily.in>
-Subject: [PATCH 4/4] arm64: dts: qcom: sdm845-xiaomi-beryllium: enable second wifi channel
-Date:   Wed, 30 Mar 2022 12:15:05 +0530
-Message-ID: <BY5PR02MB7009E2566F9000F338432761D91F9@BY5PR02MB7009.namprd02.prod.outlook.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220330064505.243799-1-jo@jsfamily.in>
-References: <20220330064505.243799-1-jo@jsfamily.in>
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-TMN:  [uWXReaxZUe5vhAMLYgC53dgU9yWicVp0iXkyKYhFIbOsUJmQLcOJ3OkwAiRAwiIl]
-X-ClientProxiedBy: BMXPR01CA0088.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:b00:54::28) To BY5PR02MB7009.namprd02.prod.outlook.com
- (2603:10b6:a03:236::13)
-X-Microsoft-Original-Message-ID: <20220330064505.243799-5-jo@jsfamily.in>
+        Wed, 30 Mar 2022 02:48:42 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74D1289330
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 23:46:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648622816; x=1680158816;
+  h=from:to:cc:subject:references:date:in-reply-to:
+   message-id:mime-version;
+  bh=1jS6mrvvrk0FhpnC8+5qcpTEmgGUnYdS15XRcziWF2M=;
+  b=MMkJrFRvHc/g/yOWDCq/z6MZM+qSxIQVQCkXjm9/IIdMzabTI1jVSymQ
+   /Co9CgO6WDHony+UtMq+cdfKGKsm5lBRRhui7zKf+hnN3TmHWb0gKms6x
+   4zjrEnhgB8CKBFUxLq3SLldXaluZ6zJEMxxa4M2VhFb6cThDBo37feMht
+   4eqneEzD3JlGNIoRAiQrJYDeEEr6P5qHcc2TU5CZjnFn6cTI7Z+QpM0mw
+   rIgfwD6o+M2PH1HTAoITGj9iKLhcGC2GyiLl2cbn3G7euTJ+8L6WiSdsQ
+   yzvVM1Q9biGq877gwF0SHuUR+vTCZRyQ8NIR9o84HeZFT/Zrmql61InFb
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="345897091"
+X-IronPort-AV: E=Sophos;i="5.90,221,1643702400"; 
+   d="scan'208";a="345897091"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 23:46:56 -0700
+X-IronPort-AV: E=Sophos;i="5.90,221,1643702400"; 
+   d="scan'208";a="546726375"
+Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.239.13.94])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 23:46:53 -0700
+From:   "Huang, Ying" <ying.huang@intel.com>
+To:     Jagdish Gediya <jvgediya@linux.ibm.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        akpm@linux-foundation.org, aneesh.kumar@linux.ibm.com,
+        baolin.wang@linux.alibaba.com, dave.hansen@linux.intel.com
+Subject: Re: [PATCH] mm: migrate: set demotion targets differently
+References: <20220329115222.8923-1-jvgediya@linux.ibm.com>
+Date:   Wed, 30 Mar 2022 14:46:51 +0800
+In-Reply-To: <20220329115222.8923-1-jvgediya@linux.ibm.com> (Jagdish Gediya's
+        message of "Tue, 29 Mar 2022 17:22:22 +0530")
+Message-ID: <87pmm4c4ys.fsf@yhuang6-desk2.ccr.corp.intel.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 561398b8-1f69-496e-8e30-08da1218ebf3
-X-MS-TrafficTypeDiagnostic: SJ0PR02MB8686:EE_
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: JV9U4tEfrgL8wjoKqEBxjyqr9xNxpCMJp2igM8LORfwCRc52JdCRmPwtdXxCYPQIo1aEETkIPp3Fubs7CDcgPkaMI7GCXOPKoVgRC4Q9znihO+D8yIdGD1MgEhL7Vg34SIZ7obb5bqUxFqhXanj9sa9n+oI+NYA3F74QuJ6+VE6d7IJMwIu3sWxEanvu9SULZQBJ9z4AWTe2xniKKfj4UxTPD7qCSakYo/2tgseFXWIkyziHuEeK7dOk56NyJthy5RPGMN51BUoRB293iI7vDDvVSEPlBdNOX6z4Omb+CiH0dWTvkMBUAa58mVcp/5x38fFtOduWiJYPORf+cj3D+mCg0aBvF7Mk7UHcekIWWri4qIXM7iVgsqys4hEAU7wQnRNlAG6ay6ZQFEoThyQf1D9DqEz4mwKa3h6ayIG9MRYPPLBxh5Dajw9UUvHzdBpciFEb+lhfFIA7QkN+GhYf84luNL62z+rOgCLtQqLwjKcuV0HhEKIg3Dq042bO74ANqHSHt9+RYNP9QJkWuh5xaVKOsDqfW/hkovOoKb98V3UZJkJ257RAtzcp+VlcM/9swV01UGp+3cH03NGayEeq6g==
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?tcut6qiLSgqcTarjsw1TP9C7iWoUPdQ5jQpVLl0WTlhNpVxN6zCUdLE5P6uC?=
- =?us-ascii?Q?zoOCeNEf7MXfMIBXp4gxENFFiWExhoraTnw2dLcu1SlfVuMjb1iPoBU7CSfA?=
- =?us-ascii?Q?hbhv4WIoRutrdKav5ICD477AFEPcWJA3EbNprnBeFYWW9lR4LvKzioE1YcUI?=
- =?us-ascii?Q?Mg2A40aCm8tA5GaDMLOvXyKXKP9ih5OmM/hK4DwQeGA7B8n10YvTIB3e2bpb?=
- =?us-ascii?Q?wc7kELMIiyU2X2P9UA06ILaDKCZi1Y6oTZm2rB64Z/zQl2uSKkOTU0P2pqmz?=
- =?us-ascii?Q?H50F5UBiZY+VdU/yCPHd3VvPAK/sSBZfsMO6obovw2B2bhZoFZ4V7LKUGVko?=
- =?us-ascii?Q?N5BZ2NxDfv6w0dbT9hlcwZX3aDJNJIqGhF8/X40PFZxg1T44DbIIQfCoFmId?=
- =?us-ascii?Q?FTB87BvXGGxotiL94KyRF4pN3tYrIAav42xHmcIashY7Hi54ezQepshs22e6?=
- =?us-ascii?Q?U4N4ly9v0ebXyx1Re8UBHLCq8ugW1B8bAzWlrCTd6pPC67OkctJ+jvdT1i1+?=
- =?us-ascii?Q?K6nmDB7Hd6r7brHGno5+7CFol3reeZyj2jLQ9HjhnTQnmWKMyLx/Ufhxedkt?=
- =?us-ascii?Q?Ev94UwfbenuVU/hV16++JXC5EtgHfMGSYAM9zbuerPlFZPMPAeKuj6SOxv98?=
- =?us-ascii?Q?2khYZdgF8umr9/vvnwLY26lH8q2dmo91jWPS+rdC2qc7mQv6ZpZ5EImo+dt8?=
- =?us-ascii?Q?i577zrBB1fY5cD80XPA7529nrv/Hip5CociMOs1Z+m48/bCRYQ55Vv3f1ook?=
- =?us-ascii?Q?GGoOy1bHQYx8uqICdi4onpQk9ZJ0we81ce7mqVehb4TN44lR0+823neGfnp6?=
- =?us-ascii?Q?9IdDb9LcvijlgifgqRUOX+hohfiWK5VM5iJ82PI9SbxsTm18IdyJmVRoW61Q?=
- =?us-ascii?Q?img/KSkEtuoJVllRgja04BFswMZhPuVXKyysAjn9dsFUSlzlAoFtxYAad21X?=
- =?us-ascii?Q?oGbDqHPLjQeRDOBQSyqKYw40HGmp76FDzEFtikMr4mNH6A+zlHxouEsh5M6k?=
- =?us-ascii?Q?CR/b2RZ8Mg53JKZIS8i4RObciY18CyCtZxh6AiFqln9wds2R7ZUT778oR6nQ?=
- =?us-ascii?Q?qKiN3ivedlsFVn4YSwn9FM/G3vU15j/+dFOav/qV3dUfzMe2e4MuA1eDhpYd?=
- =?us-ascii?Q?uQilXWUieUiL6yoWCHw937zHfCnF38WwzYGVY/0+8KWaLCOA6gn5CqG1ppR5?=
- =?us-ascii?Q?Dozm1gq0St2WdQdk/EzspK5f0MxWl5i9fyNVkKyLjEPe6JjOMEuumxxX+8qI?=
- =?us-ascii?Q?VivtkTkbQIDCyUBvikn0TD4K8kZqjwyRpzHD5rAkHWW8pupkqPXaasdGzQqL?=
- =?us-ascii?Q?nAIkMXVaO7ocB1TjyZqUky4SUtSDhlD/r/kQCCQddiQfrN0u4AYIzqadtbb5?=
- =?us-ascii?Q?ejoZ54neE30DX84NCTWUd70Se7nZPijQ4uQD1Ytg/MSM8iFy18dERAwbUVU1?=
- =?us-ascii?Q?RI7f55mnIxGO9+/obr+Cw6T8UwptO3XxoU6SBmR641ArXkeZrzTUZg=3D=3D?=
-X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-99c3d.templateTenant
-X-MS-Exchange-CrossTenant-Network-Message-Id: 561398b8-1f69-496e-8e30-08da1218ebf3
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR02MB7009.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2022 06:45:47.7686
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR02MB8686
+Content-Type: text/plain; charset=ascii
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Like the c630, the Poco F1 is also capable of using both antenna
-channels for 2.4 and 5ghz wifi, however unlike the c630 only the first
-channel is used for bluetooth. Similar to Oneplus 6.
+Hi, Jagdish,
 
-Signed-off-by: Joel Selvaraj <jo@jsfamily.in>
----
- arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts | 7 +++++++
- 1 file changed, 7 insertions(+)
+Jagdish Gediya <jvgediya@linux.ibm.com> writes:
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
-index f97900e7797b..798fc72578a7 100644
---- a/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
-+++ b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
-@@ -185,6 +185,12 @@ vreg_l21a_2p95: ldo21 {
- 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
- 		};
- 
-+		vreg_l23a_3p3: ldo23 {
-+			regulator-min-microvolt = <3300000>;
-+			regulator-max-microvolt = <3312000>;
-+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-+		};
-+
- 		vreg_l24a_3p075: ldo24 {
- 			regulator-min-microvolt = <3088000>;
- 			regulator-max-microvolt = <3088000>;
-@@ -547,6 +553,7 @@ &wifi {
- 	vdd-1.8-xo-supply = <&vreg_l7a_1p8>;
- 	vdd-1.3-rfa-supply = <&vreg_l17a_1p3>;
- 	vdd-3.3-ch0-supply = <&vreg_l25a_3p3>;
-+	vdd-3.3-ch1-supply = <&vreg_l23a_3p3>;
- };
- 
- /* PINCTRL - additions to nodes defined in sdm845.dtsi */
--- 
-2.35.1
+> The current implementation to identify the demotion
+> targets limits some of the opportunities to share
+> the demotion targets between multiple source nodes.
 
+Yes.  It sounds reasonable to share demotion targets among multiple
+source nodes.
+
+One question, are example machines below are real hardware now or in
+near future?  Or you just think they are possible?
+
+And, before going into the implementation details, I think that we can
+discuss the perfect demotion order firstly.
+
+> Implement a logic to identify the loop in the demotion
+> targets such that all the possibilities of demotion can
+> be utilized. Don't share the used targets between all
+> the nodes, instead create the used targets from scratch
+> for each individual node based on for what all node this
+> node is a demotion target. This helps to share the demotion
+> targets without missing any possible way of demotion.
+>
+> e.g. with below NUMA topology, where node 0 & 1 are
+> cpu + dram nodes, node 2 & 3 are equally slower memory
+> only nodes, and node 4 is slowest memory only node,
+>
+> available: 5 nodes (0-4)
+> node 0 cpus: 0 1
+> node 0 size: n MB
+> node 0 free: n MB
+> node 1 cpus: 2 3
+> node 1 size: n MB
+> node 1 free: n MB
+> node 2 cpus:
+> node 2 size: n MB
+> node 2 free: n MB
+> node 3 cpus:
+> node 3 size: n MB
+> node 3 free: n MB
+> node 4 cpus:
+> node 4 size: n MB
+> node 4 free: n MB
+> node distances:
+> node   0   1   2   3   4
+>   0:  10  20  40  40  80
+>   1:  20  10  40  40  80
+>   2:  40  40  10  40  80
+>   3:  40  40  40  10  80
+>   4:  80  80  80  80  10
+>
+> The existing implementation gives below demotion targets,
+>
+> node    demotion_target
+>  0              3, 2
+>  1              4
+>  2              X
+>  3              X
+>  4		X
+>
+> With this patch applied, below are the demotion targets,
+>
+> node    demotion_target
+>  0              3, 2
+>  1              3, 2
+>  2              3
+>  3              4
+>  4		X
+
+For such machine, I think the perfect demotion order is,
+
+node    demotion_target
+ 0              2, 3
+ 1              2, 3
+ 2              4
+ 3              4
+ 4              X
+
+> e.g. with below NUMA topology, where node 0, 1 & 2 are
+> cpu + dram nodes and node 3 is slow memory node,
+>
+> available: 4 nodes (0-3)
+> node 0 cpus: 0 1
+> node 0 size: n MB
+> node 0 free: n MB
+> node 1 cpus: 2 3
+> node 1 size: n MB
+> node 1 free: n MB
+> node 2 cpus: 4 5
+> node 2 size: n MB
+> node 2 free: n MB
+> node 3 cpus:
+> node 3 size: n MB
+> node 3 free: n MB
+> node distances:
+> node   0   1   2   3
+>   0:  10  20  20  40
+>   1:  20  10  20  40
+>   2:  20  20  10  40
+>   3:  40  40  40  10
+>
+> The existing implementation gives below demotion targets,
+>
+> node    demotion_target
+>  0              3
+>  1              X
+>  2              X
+>  3              X
+>
+> With this patch applied, below are the demotion targets,
+>
+> node    demotion_target
+>  0              3
+>  1              3
+>  2              3
+>  3              X
+
+I think this is perfect already.
+
+> with below NUMA topology, where node 0 & 2 are cpu + dram
+> nodes and node 1 & 3 are slow memory nodes,
+>
+> available: 4 nodes (0-3)
+> node 0 cpus: 0 1
+> node 0 size: n MB
+> node 0 free: n MB
+> node 1 cpus:
+> node 1 size: n MB
+> node 1 free: n MB
+> node 2 cpus: 2 3
+> node 2 size: n MB
+> node 2 free: n MB
+> node 3 cpus:
+> node 3 size: n MB
+> node 3 free: n MB
+> node distances:
+> node   0   1   2   3
+>   0:  10  40  20  80
+>   1:  40  10  80  80
+>   2:  20  80  10  40
+>   3:  80  80  40  10
+>
+> The existing implementation gives below demotion targets,
+>
+> node    demotion_target
+>  0              3
+>  1              X
+>  2              3
+>  3              X
+
+Should be as below as you said in another email of the thread.
+
+node    demotion_target
+ 0              1
+ 1              X
+ 2              3
+ 3              X
+
+> With this patch applied, below are the demotion targets,
+>
+> node    demotion_target
+>  0              1
+>  1              3
+>  2              3
+>  3              X
+
+The original demotion order looks better for me.  1 and 3 are at the
+same level from the perspective of the whole system.
+
+Another example, node 0 & 2 are cpu + dram nodes and node 1 are slow
+memory node near node 0,
+
+available: 3 nodes (0-2)
+node 0 cpus: 0 1
+node 0 size: n MB
+node 0 free: n MB
+node 1 cpus:
+node 1 size: n MB
+node 1 free: n MB
+node 2 cpus: 2 3
+node 2 size: n MB
+node 2 free: n MB
+node distances:
+node   0   1   2
+  0:  10  40  20
+  1:  40  10  80
+  2:  20  80  10
+
+
+Demotion order 1:
+
+node    demotion_target
+ 0              1
+ 1              X
+ 2              X
+
+Demotion order 2:
+
+node    demotion_target
+ 0              1
+ 1              X
+ 2              1
+
+Demotion order 2 looks better.  But I think that demotion order 1 makes
+some sense too (like node reclaim mode).
+
+It seems that,
+
+If a demotion target has same distance to several current demotion
+sources, the demotion target should be shared among the demotion
+sources.
+
+And as Dave pointed out, we may eventually need a mechanism to override
+the default demotion order generated automatically.  So we can just use
+some simple mechanism that makes sense in most cases in kernel
+automatically.  And leave the best demotion for users to some
+customization mechanism.
+
+> As it can be seen above, node 3 can be demotion target for node
+> 1 but existing implementation doesn't configure it that way. It
+> is better to move pages from node 1 to node 3 instead of moving
+> it from node 1 to swap.
+>
+> Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
+> Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+
+Best Regards,
+Huang, Ying
+
+[snip]
