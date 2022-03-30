@@ -2,130 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEAF7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 14:33:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0080C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 14:33:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346909AbiC3OfB (ORCPT
+        id S1346914AbiC3Of1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 10:35:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43420 "EHLO
+        Wed, 30 Mar 2022 10:35:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346893AbiC3Oe4 (ORCPT
+        with ESMTP id S1346893AbiC3OfY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 10:34:56 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35DB241633
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 07:33:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648650791; x=1680186791;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=pH8MCjX6TgaYkZK9C3rAQKysjdwFETF6IZxfRb5mEb0=;
-  b=FRrlEj6jXq3uncmd+1rfnFcmcQsPwuv4up7W/N0V60YrHSuHEmu577FO
-   vBuafpgHOWotTMsXNT3LQnP0GTJbce584DZMkLiErNcIkO1jV/G3k+uUV
-   frEJLyUNddwG+Sze+dJYdal37u5Q/UZkiJFTTHzTPL3A4bCTbbqvs32mS
-   YcqXLlazpq/YkjE+lkFlTxX4kv3Ecn7vFRMlStwrgrfve629QYhP8vPP8
-   +o8RYRGh/jE3dfo8gcsLaUR5wfjOvN+aK8LIxNC6vl5F7zwa7QH6hYArA
-   Sp4PesiFfpW/Gy6v3wfNkeo8Wk00qk6/+7zVPh7TdesacNieKHZLAo/Pl
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="258387515"
-X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
-   d="scan'208";a="258387515"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 07:33:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
-   d="scan'208";a="546883498"
-Received: from lkp-server02.sh.intel.com (HELO 56431612eabd) ([10.239.97.151])
-  by orsmga007.jf.intel.com with ESMTP; 30 Mar 2022 07:33:09 -0700
-Received: from kbuild by 56431612eabd with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nZZNk-00004w-JB;
-        Wed, 30 Mar 2022 14:33:08 +0000
-Date:   Wed, 30 Mar 2022 22:32:08 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Khalid Aziz <khalid.aziz@oracle.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Anthony Yznaga <anthony.yznaga@oracle.com>
-Subject: arch/sparc/kernel/process_64.c:677:5: error: no previous prototype
- for 'arch_dup_task_struct'
-Message-ID: <202203302224.qSPZdQcq-lkp@intel.com>
+        Wed, 30 Mar 2022 10:35:24 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D71724161D
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 07:33:37 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id dr20so41889633ejc.6
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 07:33:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PYeSRhL4EJ9kSjRef+3ZDgUv5eRzmfmbrcZOn+mT5cQ=;
+        b=ByVj0awv3/ZKRFds4TIlXaEjOC213gnC/dsMTaTQtZw+cwLgR1OMv4LtfQ26nkhV/n
+         L62vIfDajYdNXaNr2oHb9LUPwLg32m7+HnZLmdcRd4o7JLE6+ijC8SPd1UQ3bYJYPh93
+         KgKm+iijnBLydGJgg9AclIlxR1Ikhoy9GcaGwqup0FwT6At4zii4UapWKJ3VUIVZe73M
+         8RGmv6XGmszVo0X1oyUWpdCApg5JAmZbRd0O1CgaKPdTG9BvLkDm86irEMrrNIBrl3aP
+         8o8kBwBz2ByYhnvtzrB3QN5BhEmjzNfCevBW9hcYZb3rXXKpH2fcD9xd5vE+vfZMIfWe
+         DVZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PYeSRhL4EJ9kSjRef+3ZDgUv5eRzmfmbrcZOn+mT5cQ=;
+        b=mkDsRDrFM8Mj83ui+hKkfqU19FHTstfFFWd7oPvDb1pYQn62wQHV5rwVa2aAII2+cN
+         HaGwWKXHW4nblozW5GIsMTdef3l9PDnHPe9HD1CYHegNkyzAZtWeTyB72A3DN4kfnsLp
+         uvtf7NmkgS2R5FC8EiWKVFHlJnZzIsqg3Viqowx+dP9xZjGDYzilUiH3J62/89qvRH/p
+         y+DiQe/hBD1SW/M5N0nrdScvrInIww6X1iz6Hq0x1a3rA9s81lJrfpiG5WYSD0kgT394
+         mdDWfqso62XTR00Twl41bgMjNh+hdNnxdK40EE8Zk0QtDF6HIblRv9IUZdMtkBXxpDXa
+         8SWQ==
+X-Gm-Message-State: AOAM533+oDeNn3/fizFJ+5BirkMuMzrLSxh8lOytek0BXcukns6hkQyh
+        Qo0cpQ4zrsyEeTV7fz5HBbc=
+X-Google-Smtp-Source: ABdhPJwgs/G9LRh561o9F93/Of7ZKFv9d4D65V/c+PfKjEaQdtjtvqaZ2eEvROGfRAYDtVOvsttR1w==
+X-Received: by 2002:a17:907:6da6:b0:6e0:bb24:f731 with SMTP id sb38-20020a1709076da600b006e0bb24f731mr29818767ejc.25.1648650816253;
+        Wed, 30 Mar 2022 07:33:36 -0700 (PDT)
+Received: from localhost.localdomain (host-95-249-145-232.retail.telecomitalia.it. [95.249.145.232])
+        by smtp.gmail.com with ESMTPSA id z2-20020a17090674c200b006e13403964asm2069249ejl.77.2022.03.30.07.33.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 07:33:35 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Benjamin Philip <benjamin.philip495@gmail.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Colin Ian King <colin.king@intel.com>,
+        =?UTF-8?q?Samuel=20Sj=C3=B6berg?= <info@samuelsjoberg.se>,
+        Charlie Sands <sandsch@northvilleschools.net>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Dan Carpenter <dan.carpenter@oracle.com>, ira.weiny@intel.com,
+        outreachy@lists.linux.dev
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Subject: [PATCH v4] staging: rts5208: Convert kmap() to kmap_local_page()
+Date:   Wed, 30 Mar 2022 16:33:31 +0200
+Message-Id: <20220330143331.8306-1-fmdefrancesco@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   d888c83fcec75194a8a48ccd283953bdba7b2550
-commit: 74a04967482faa7144b93dae3b2e913870dd421c sparc64: Add support for ADI (Application Data Integrity)
-date:   4 years ago
-config: sparc64-randconfig-r004-20220330 (https://download.01.org/0day-ci/archive/20220330/202203302224.qSPZdQcq-lkp@intel.com/config)
-compiler: sparc64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=74a04967482faa7144b93dae3b2e913870dd421c
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 74a04967482faa7144b93dae3b2e913870dd421c
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=sparc64 SHELL=/bin/bash M=arch/sparc/kernel
+The use of kmap() is being deprecated in favor of kmap_local_page()
+where it is feasible.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+With kmap_local_page(), the mapping is per thread, CPU local and not
+globally visible. Therefore rtsx_stor_access_xfer_buf() is a function
+where the use of kmap_local_page() in place of kmap() is correctly
+suited.
 
-All errors (new ones prefixed by >>):
+Convert to kmap_local_page() but, instead of open coding it, use the
+helpers memcpy_to_page() and memcpy_from_page().
 
->> arch/sparc/kernel/process_64.c:677:5: error: no previous prototype for 'arch_dup_task_struct' [-Werror=missing-prototypes]
-     677 | int arch_dup_task_struct(struct task_struct *dst, struct task_struct *src)
-         |     ^~~~~~~~~~~~~~~~~~~~
-   cc1: all warnings being treated as errors
---
->> arch/sparc/kernel/adi_64.c:125:21: error: no previous prototype for 'find_tag_store' [-Werror=missing-prototypes]
-     125 | tag_storage_desc_t *find_tag_store(struct mm_struct *mm,
-         |                     ^~~~~~~~~~~~~~
-   arch/sparc/kernel/adi_64.c:157:21: error: no previous prototype for 'alloc_tag_store' [-Werror=missing-prototypes]
-     157 | tag_storage_desc_t *alloc_tag_store(struct mm_struct *mm,
-         |                     ^~~~~~~~~~~~~~~
-   arch/sparc/kernel/adi_64.c:300:6: error: no previous prototype for 'del_tag_store' [-Werror=missing-prototypes]
-     300 | void del_tag_store(tag_storage_desc_t *tag_desc, struct mm_struct *mm)
-         |      ^~~~~~~~~~~~~
-   cc1: all warnings being treated as errors
+Make a minor change to a comment related to scatter-gather.
 
+Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+---
 
-vim +/arch_dup_task_struct +677 arch/sparc/kernel/process_64.c
+v1 -> v2: Rework the commit message and use the appropriate helpers
+instead of open coding the use of kmap_local_page()/kunmap_local_page().
+(Thanks to Ira Weiny <ira.weiny@intel.com>).
 
-   672	
-   673	/* TIF_MCDPER in thread info flags for current task is updated lazily upon
-   674	 * a context switch. Update this flag in current task's thread flags
-   675	 * before dup so the dup'd task will inherit the current TIF_MCDPER flag.
-   676	 */
- > 677	int arch_dup_task_struct(struct task_struct *dst, struct task_struct *src)
-   678	{
-   679		if (adi_capable()) {
-   680			register unsigned long tmp_mcdper;
-   681	
-   682			__asm__ __volatile__(
-   683				".word 0x83438000\n\t"	/* rd  %mcdper, %g1 */
-   684				"mov %%g1, %0\n\t"
-   685				: "=r" (tmp_mcdper)
-   686				:
-   687				: "g1");
-   688			if (tmp_mcdper)
-   689				set_thread_flag(TIF_MCDPER);
-   690			else
-   691				clear_thread_flag(TIF_MCDPER);
-   692		}
-   693	
-   694		*dst = *src;
-   695		return 0;
-   696	}
-   697	
+v2 -> v3: Use memcpy_{to,from}_page() arguments correctly.
+(Thanks to Dan Carpenter <dan.carpenter@oracle.com>).
 
+v3 -> v4: According to a suggestion by Ira Weiny, change the test
+of a comment related to the use of scatter-gather.
+
+ drivers/staging/rts5208/rtsx_transport.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/staging/rts5208/rtsx_transport.c b/drivers/staging/rts5208/rtsx_transport.c
+index 805dc18fac0a..d5ad49de4c56 100644
+--- a/drivers/staging/rts5208/rtsx_transport.c
++++ b/drivers/staging/rts5208/rtsx_transport.c
+@@ -55,9 +55,9 @@ unsigned int rtsx_stor_access_xfer_buf(unsigned char *buffer,
+ 		*offset += cnt;
+ 
+ 	/*
+-	 * Using scatter-gather.  We have to go through the list one entry
+-	 * at a time.  Each s-g entry contains some number of pages, and
+-	 * each page has to be kmap()'ed separately.
++	 * Using scatter-gather. We have to go through the list one entry
++	 * at a time. Each s-g entry contains some number of pages which
++	 * have to be copied one at a time.
+ 	 */
+ 	} else {
+ 		struct scatterlist *sg =
+@@ -92,13 +92,11 @@ unsigned int rtsx_stor_access_xfer_buf(unsigned char *buffer,
+ 			while (sglen > 0) {
+ 				unsigned int plen = min(sglen, (unsigned int)
+ 						PAGE_SIZE - poff);
+-				unsigned char *ptr = kmap(page);
+ 
+ 				if (dir == TO_XFER_BUF)
+-					memcpy(ptr + poff, buffer + cnt, plen);
++					memcpy_to_page(page, poff, buffer + cnt, plen);
+ 				else
+-					memcpy(buffer + cnt, ptr + poff, plen);
+-				kunmap(page);
++					memcpy_from_page(buffer + cnt, page, poff, plen);
+ 
+ 				/* Start at the beginning of the next page */
+ 				poff = 0;
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.34.1
+
