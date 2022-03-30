@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB764C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0BEFC43217
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345747AbiC3MEP (ORCPT
+        id S1345806AbiC3MET (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:04:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56766 "EHLO
+        Wed, 30 Mar 2022 08:04:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345302AbiC3LyW (ORCPT
+        with ESMTP id S1345330AbiC3LyX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:54:22 -0400
+        Wed, 30 Mar 2022 07:54:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98256277966;
-        Wed, 30 Mar 2022 04:50:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 062672D1D6;
+        Wed, 30 Mar 2022 04:50:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1788961616;
-        Wed, 30 Mar 2022 11:50:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56AACC36AE5;
-        Wed, 30 Mar 2022 11:50:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FD9D61703;
+        Wed, 30 Mar 2022 11:50:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0166EC36AE3;
+        Wed, 30 Mar 2022 11:50:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641049;
-        bh=93YLaa0zQ7hqgghUl04JHh02d/eZiQqyJBOIBGaKxuc=;
+        s=k20201202; t=1648641056;
+        bh=ASULGKKmHDa2iLmKRj2xi0w6Ak4VHMf9fmkjm688PI8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k8MR1MqmHd1BnyZQnY+79B2lMoOtjcN/JA3rKueVlJogAND3yZTPBIs2uQvycJPBm
-         gy4VELtUQJbNLJcDEaKKLvXBmBQBKogLaCUJkKoBqqV3bMt9QonoTgbiJpobgaJBKo
-         s5TZm886DpKNy4HW3LDzv+Taml3YFffW95yzFLWe9IIPXA8QghaDv7N0XC/Wr2Dmkt
-         Pcc0WjBnDuyj9ziSHaF9qDLoOAxlDeS1QM/Pk9N2L/hjCsqE6cSlSUvTN0Z5Nag7yY
-         yoEa8cekwXJQsNGui7ALn9tiJVNGJ0YVzNmvlrG96Qcg3I3Ss0A92ZjjRMGQ8QDzHP
-         /WrHNF50qIZgQ==
+        b=ly9vuDyYKkngsZ8q9YhX/G9WlUVg7/1lcOTMhSeQGUahOfIoksitf+rYGZIv/0ggJ
+         w9gCBYCSEniD/jydWidbaPAKgJZXloGyKzRCfpWK4mBs2hMu7eIZGLgB+ct5RZ2cwT
+         bMiZeb2wD6Z2QcvqxTSdmnH3YFaTmmB1w2+8C5I4rMlSSJ/GKgWqBU/L8/LbiH/jQ9
+         wyZ6Nmg+r015ve70J9SzW3g1fsG9xq8+ywQdfP6Zm7wenNpA9lwYFk6OoWBq3TT9hj
+         TBY7rb/QylFl69j3MfOVz2/Gl0Q6gjnyNZeAqIRj2fyQ1IIG2FKsPk+Q4SgdjT0Nsj
+         qcLppjSnWeYFg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Richard Schleich <rs@noreya.tech>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        mark.rutland@arm.com, linux@armlinux.org.uk,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 28/50] ARM: dts: bcm2711: Add the missing L1/L2 cache information
-Date:   Wed, 30 Mar 2022 07:49:42 -0400
-Message-Id: <20220330115005.1671090-28-sashal@kernel.org>
+Cc:     John Ogness <john.ogness@linutronix.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Petr Mladek <pmladek@suse.com>,
+        Sasha Levin <sashal@kernel.org>, senozhatsky@chromium.org,
+        gregkh@linuxfoundation.org, linux@roeck-us.net,
+        stephen.s.brennan@oracle.com
+Subject: [PATCH AUTOSEL 5.15 33/50] printk: use atomic updates for klogd work
+Date:   Wed, 30 Mar 2022 07:49:47 -0400
+Message-Id: <20220330115005.1671090-33-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115005.1671090-1-sashal@kernel.org>
 References: <20220330115005.1671090-1-sashal@kernel.org>
@@ -55,111 +55,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Richard Schleich <rs@noreya.tech>
+From: John Ogness <john.ogness@linutronix.de>
 
-[ Upstream commit 618682b350990f8f1bee718949c4b3858711eb58 ]
+[ Upstream commit 2ba3673d70178bf07fb75ff25c54bc478add4021 ]
 
-This patch fixes the kernel warning
-"cacheinfo: Unable to detect cache hierarchy for CPU 0"
-for the bcm2711 on newer kernel versions.
+The per-cpu @printk_pending variable can be updated from
+sleepable contexts, such as:
 
-Signed-off-by: Richard Schleich <rs@noreya.tech>
-Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
-[florian: Align and remove comments matching property values]
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+  get_random_bytes()
+    warn_unseeded_randomness()
+      printk_deferred()
+        defer_console_output()
+
+and can be updated from interrupt contexts, such as:
+
+  handle_irq_event_percpu()
+    __irq_wake_thread()
+      wake_up_process()
+        try_to_wake_up()
+          select_task_rq()
+            select_fallback_rq()
+              printk_deferred()
+                defer_console_output()
+
+and can be updated from NMI contexts, such as:
+
+  vprintk()
+    if (in_nmi()) defer_console_output()
+
+Therefore the atomic variant of the updating functions must be used.
+
+Replace __this_cpu_xchg() with this_cpu_xchg().
+Replace __this_cpu_or() with this_cpu_or().
+
+Reported-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+Link: https://lore.kernel.org/r/87iltld4ue.fsf@jogness.linutronix.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/bcm2711.dtsi | 50 ++++++++++++++++++++++++++++++++++
- 1 file changed, 50 insertions(+)
+ kernel/printk/printk.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/bcm2711.dtsi b/arch/arm/boot/dts/bcm2711.dtsi
-index 21294f775a20..89af57482bc8 100644
---- a/arch/arm/boot/dts/bcm2711.dtsi
-+++ b/arch/arm/boot/dts/bcm2711.dtsi
-@@ -459,12 +459,26 @@
- 		#size-cells = <0>;
- 		enable-method = "brcm,bcm2836-smp"; // for ARM 32-bit
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 34bdc51f4cb3..0677882afb16 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -3256,7 +3256,7 @@ static DEFINE_PER_CPU(int, printk_pending);
  
-+		/* Source for d/i-cache-line-size and d/i-cache-sets
-+		 * https://developer.arm.com/documentation/100095/0003
-+		 * /Level-1-Memory-System/About-the-L1-memory-system?lang=en
-+		 * Source for d/i-cache-size
-+		 * https://www.raspberrypi.com/documentation/computers
-+		 * /processors.html#bcm2711
-+		 */
- 		cpu0: cpu@0 {
- 			device_type = "cpu";
- 			compatible = "arm,cortex-a72";
- 			reg = <0>;
- 			enable-method = "spin-table";
- 			cpu-release-addr = <0x0 0x000000d8>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
-+			i-cache-size = <0xc000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>; // 48KiB(size)/64(line-size)=768ways/3-way set
-+			next-level-cache = <&l2>;
- 		};
+ static void wake_up_klogd_work_func(struct irq_work *irq_work)
+ {
+-	int pending = __this_cpu_xchg(printk_pending, 0);
++	int pending = this_cpu_xchg(printk_pending, 0);
  
- 		cpu1: cpu@1 {
-@@ -473,6 +487,13 @@
- 			reg = <1>;
- 			enable-method = "spin-table";
- 			cpu-release-addr = <0x0 0x000000e0>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
-+			i-cache-size = <0xc000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>; // 48KiB(size)/64(line-size)=768ways/3-way set
-+			next-level-cache = <&l2>;
- 		};
+ 	if (pending & PRINTK_PENDING_OUTPUT) {
+ 		/* If trylock fails, someone else is doing the printing */
+@@ -3290,7 +3290,7 @@ void defer_console_output(void)
+ 		return;
  
- 		cpu2: cpu@2 {
-@@ -481,6 +502,13 @@
- 			reg = <2>;
- 			enable-method = "spin-table";
- 			cpu-release-addr = <0x0 0x000000e8>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
-+			i-cache-size = <0xc000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>; // 48KiB(size)/64(line-size)=768ways/3-way set
-+			next-level-cache = <&l2>;
- 		};
- 
- 		cpu3: cpu@3 {
-@@ -489,6 +517,28 @@
- 			reg = <3>;
- 			enable-method = "spin-table";
- 			cpu-release-addr = <0x0 0x000000f0>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
-+			i-cache-size = <0xc000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>; // 48KiB(size)/64(line-size)=768ways/3-way set
-+			next-level-cache = <&l2>;
-+		};
-+
-+		/* Source for d/i-cache-line-size and d/i-cache-sets
-+		 *  https://developer.arm.com/documentation/100095/0003
-+		 *  /Level-2-Memory-System/About-the-L2-memory-system?lang=en
-+		 *  Source for d/i-cache-size
-+		 *  https://www.raspberrypi.com/documentation/computers
-+		 *  /processors.html#bcm2711
-+		 */
-+		l2: l2-cache0 {
-+			compatible = "cache";
-+			cache-size = <0x100000>;
-+			cache-line-size = <64>;
-+			cache-sets = <1024>; // 1MiB(size)/64(line-size)=16384ways/16-way set
-+			cache-level = <2>;
- 		};
- 	};
- 
+ 	preempt_disable();
+-	__this_cpu_or(printk_pending, PRINTK_PENDING_OUTPUT);
++	this_cpu_or(printk_pending, PRINTK_PENDING_OUTPUT);
+ 	irq_work_queue(this_cpu_ptr(&wake_up_klogd_work));
+ 	preempt_enable();
+ }
 -- 
 2.34.1
 
