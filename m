@@ -2,136 +2,261 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5B41C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 14:39:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B24AAC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 14:39:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347010AbiC3Oko (ORCPT
+        id S1347012AbiC3OlO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 10:40:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38178 "EHLO
+        Wed, 30 Mar 2022 10:41:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346998AbiC3Oki (ORCPT
+        with ESMTP id S237914AbiC3OlJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 10:40:38 -0400
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam08on2088.outbound.protection.outlook.com [40.107.101.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F673546B9;
-        Wed, 30 Mar 2022 07:38:52 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=l5Scef/kWAQpcbG/b5wL1ba05esITw3AAqB5Ifi3LOOkrKZ3e1Y2zPHl4eyAtjE4VBqrm3sgxqW91EQ5PpLP5eiDx4GAwn+6CIXFi4Peu9cC/oHWt57cDJS5PjLQp5H3blsOD6MooOfRTn3MBqgZdqU9FiAo3FIslA93ckq+VvpnEFV0M5PVhl6/JLUXk3eXMXMhcFFxUedbp1hZq5jyFSRm3uplleoRrgmvQBMREKxHpk4GEIZjikatfyXkYuRytkK8FwwHihEHEDXTnHQkFzho+HzGYarpc3iMgYS2L5As0gzzBibcbasr49MIuxAgJMwPdZUWP8YnKhZrAVTaQQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0jiZqiuA4bL/Xl4sXyXV/fFxhFrzn1JlNSbgW6WB1YI=;
- b=TA+vsAlxnoNe1tzFTbqcOVysq8U/Qin0D38CxuscO5S7GCx3Due9+hhax5/I3MQzXEmvW0qPIAJ6mBT5GKoVUAoLGqmPorvX7IfR8xUvbfv3cVuWSeHf5fHMlazjVFFJeNbaN/iGIax3sKpVzNF4T+xFMzVKjQYA933zMw1+7sYh2oYwdxesaOwPV/3N3ai6gTqcZ68KPtCcW4YW/E7D/9LUDuUXU1vaQWrvoMHOAroT0lKVn3aUCd4YpWejUPq+5FFhx8cLww9hiDRCXLIApqRbw1Syx+Ur4eLAltpPLvM7DWe/cejwrYO0v2COxf+n4O+tphIlPQr6JHT2uPe11Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0jiZqiuA4bL/Xl4sXyXV/fFxhFrzn1JlNSbgW6WB1YI=;
- b=f4s3MBvus0LOjo6yoEAXcHl3SEjzlTwUx6JG7p1q3T4Z6SbsuBRGdg8LkYyZbmxo81T1AaftY/843uQJo4sJHn5ppvZdzudnj7KNpWdzlFWkY8zT/gQRTV9l96u8CjQkAuztIhwTtMZIfC6BjRrxD2rMryk++/kcuW7huj0wWqcHdRsg7nqFkJnYObUUNwPCwR74qATp0XTUDkZeV3yJ8TjqMoDryzIEFoEE63Uj2QWKX71+99mIMj+DtJjXlGe7Vm6LmqhXaxXjrj3LGpo2h0ns6GEzwK9UKjB4MzQnfutq9uo0O8+w2t3BlsZPH0203y65Zx37xtq51bGKn+kWRw==
-Received: from MW4PR02CA0003.namprd02.prod.outlook.com (2603:10b6:303:16d::30)
- by MN2PR12MB3150.namprd12.prod.outlook.com (2603:10b6:208:c7::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.17; Wed, 30 Mar
- 2022 14:38:50 +0000
-Received: from CO1NAM11FT056.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:16d:cafe::43) by MW4PR02CA0003.outlook.office365.com
- (2603:10b6:303:16d::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.13 via Frontend
- Transport; Wed, 30 Mar 2022 14:38:50 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.235) by
- CO1NAM11FT056.mail.protection.outlook.com (10.13.175.107) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5123.19 via Frontend Transport; Wed, 30 Mar 2022 14:38:50 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by DRHQMAIL107.nvidia.com
- (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Wed, 30 Mar
- 2022 14:38:50 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 30 Mar
- 2022 07:38:49 -0700
-Received: from sumitg-l4t.nvidia.com (10.127.8.10) by mail.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server id 15.2.986.22 via Frontend
- Transport; Wed, 30 Mar 2022 07:38:45 -0700
-From:   Sumit Gupta <sumitg@nvidia.com>
-To:     <rafael@kernel.org>, <viresh.kumar@linaro.org>,
-        <robh+dt@kernel.org>, <krzk+dt@kernel.org>, <treding@nvidia.com>,
-        <jonathanh@nvidia.com>, <linux-pm@vger.kernel.org>,
-        <linux-tegra@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <ksitaraman@nvidia.com>, <sanjayc@nvidia.com>, <bbasu@nvidia.com>,
-        <sumitg@nvidia.com>
-Subject: [Patch v2 3/4] arm64: tegra: add node for tegra234 cpufreq
-Date:   Wed, 30 Mar 2022 20:08:18 +0530
-Message-ID: <20220330143819.27476-4-sumitg@nvidia.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220330143819.27476-1-sumitg@nvidia.com>
-References: <20220330143819.27476-1-sumitg@nvidia.com>
-X-NVConfidentiality: public
+        Wed, 30 Mar 2022 10:41:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 780125468D
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 07:39:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648651160;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=D0g41ZMuah7XSiZntnTcbfGmejku/xY2IgpccjE/IAM=;
+        b=aMO+Ty6hw3zwtcvrOaxdl8ED6wKlAfmGr3EhL22gmlk3WBCl47+9eAh/BXla38TVDGtJm6
+        dXdLtN+BEzuOp4jN1hvTNS/HRuAB651XPwQY1ozR00+jlUCdMOWss7ihGVmCG8j33tXLZv
+        Mi2/mK1gAzC769x6Aze5YFVErhb5Hbw=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-453-g7nNry4TN460ypjpPJHy5g-1; Wed, 30 Mar 2022 10:39:18 -0400
+X-MC-Unique: g7nNry4TN460ypjpPJHy5g-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 785B23C163E8;
+        Wed, 30 Mar 2022 14:39:18 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A32CA401472;
+        Wed, 30 Mar 2022 14:39:17 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH net] rxrpc: Fix call timer start racing with call destruction
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Marc Dionne <marc.dionne@auristor.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org, dhowells@redhat.com,
+        linux-kernel@vger.kernel.org
+Date:   Wed, 30 Mar 2022 15:39:16 +0100
+Message-ID: <164865115696.2943015.11097991776647323586.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e1c2cbc4-06ee-4b60-d467-08da125b01b1
-X-MS-TrafficTypeDiagnostic: MN2PR12MB3150:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR12MB3150AB53B6BDC906D1A29B94B91F9@MN2PR12MB3150.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: +Ylf41GvlWdf1x74EmHTobTzy6nL4y3wBzz2etccQxLhrXWnj1U/p1DS2dI4ey5gzSJWN4PxdfLT01RfJk0/udSld14tsyJkECHl8jT6hgtvKp/3eOGzGjb3bcX7Mmryb6jINWGkL8ZyvlFjtn37NkeyfcpGo2uL7eLhcaXZW4uWaltewWNbTjnufhOjitlApJkyz48Gn+zfAzYQN+hHpqelR+iR5H2jw2ityNdFB5PmAeamAOQSDLfWOec5KnSh2IzIiHcuD/x1ss6A8Zzb4O/uW+mlLQmeOFPB74watEE25sOrYHZ7mCUPe50LD7OH9xBGXfByd1a9uI5i29x95eIL35A4EzMSFZMnRRyAhCe0VoaO5pk3XYh/wb0BV6wkRQKemm+K0Rr9bdzZf4yvyWqd/FdH+nv32OSZWx9Sd8s2/rvrtldGRApm8g8PkBWEa8VUhfkSJ3/wp/xoTRNHXSbSNQKJsEPUWrZRvKjWkp1+v8SggmdnYhPuAwX22cl4J8wviEC4FTAyfsJDtPgYITO05F8HWxUK6uaRVmZ3EUmvJgzZYNh3aQaImOBh1+YwdwvPE7po0AdJgJrJTtt2tc3DDT5VzgdZgQtTs3tZsVNEa52cWAm0tHm32u+9UvQLP9yHiLVAXpN3YEN2AIdm6pb1Ska92EoVol59FxdGiG/PedI7cDgQP4dmt3E40NbWTinh8x0SU0t0ItJSw1PlXaao4ep0rwIczxWmD4PoijU=
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(83380400001)(1076003)(26005)(40460700003)(110136005)(107886003)(2616005)(336012)(70586007)(70206006)(316002)(54906003)(186003)(86362001)(8676002)(4326008)(82310400004)(426003)(508600001)(81166007)(6666004)(36860700001)(8936002)(921005)(47076005)(7696005)(4744005)(5660300002)(36756003)(2906002)(356005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2022 14:38:50.5008
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e1c2cbc4-06ee-4b60-d467-08da125b01b1
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT056.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3150
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adding cclpex node to represent Tegra234 cpufreq.
-Tegra234 uses some of the CRAB (Control Register Access Bus)
-registers for cpu frequency requests. These registers are
-memory mapped to CCPLEX_MMCRAB_ARM region. In this node, mapping
-the range of MMCRAB registers required only for cpu frequency info.
+The rxrpc_call struct has a timer used to handle various timed events
+relating to a call.  This timer can get started from the packet input
+routines that are run in softirq mode with just the RCU read lock held.
+Unfortunately, because only the RCU read lock is held - and neither ref or
+other lock is taken - the call can start getting destroyed at the same time
+a packet comes in addressed to that call.  This causes the timer - which
+was already stopped - to get restarted.  Later, the timer dispatch code may
+then oops if the timer got deallocated first.
 
-Signed-off-by: Sumit Gupta <sumitg@nvidia.com>
+Fix this by trying to take a ref on the rxrpc_call struct and, if
+successful, passing that ref along to the timer.  If the timer was already
+running, the ref is discarded.
+
+The timer completion routine can then pass the ref along to the call's work
+item when it queues it.  If the timer or work item where already
+queued/running, the extra ref is discarded.
+
+Fixes: a158bdd3247b ("rxrpc: Fix call timeouts")
+Reported-by: Marc Dionne <marc.dionne@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
+Tested-by: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+Link: http://lists.infradead.org/pipermail/linux-afs/2022-March/005073.html
 ---
- arch/arm64/boot/dts/nvidia/tegra234.dtsi | 7 +++++++
- 1 file changed, 7 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/nvidia/tegra234.dtsi b/arch/arm64/boot/dts/nvidia/tegra234.dtsi
-index aaace605bdaa..610207f3f967 100644
---- a/arch/arm64/boot/dts/nvidia/tegra234.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra234.dtsi
-@@ -1258,6 +1258,13 @@
- 		};
- 	};
+ include/trace/events/rxrpc.h |    8 +++++++-
+ net/rxrpc/ar-internal.h      |   15 +++++++--------
+ net/rxrpc/call_event.c       |    2 +-
+ net/rxrpc/call_object.c      |   40 +++++++++++++++++++++++++++++++++++-----
+ 4 files changed, 50 insertions(+), 15 deletions(-)
+
+diff --git a/include/trace/events/rxrpc.h b/include/trace/events/rxrpc.h
+index e70c90116eda..4a3ab0ed6e06 100644
+--- a/include/trace/events/rxrpc.h
++++ b/include/trace/events/rxrpc.h
+@@ -83,12 +83,15 @@ enum rxrpc_call_trace {
+ 	rxrpc_call_error,
+ 	rxrpc_call_got,
+ 	rxrpc_call_got_kernel,
++	rxrpc_call_got_timer,
+ 	rxrpc_call_got_userid,
+ 	rxrpc_call_new_client,
+ 	rxrpc_call_new_service,
+ 	rxrpc_call_put,
+ 	rxrpc_call_put_kernel,
+ 	rxrpc_call_put_noqueue,
++	rxrpc_call_put_notimer,
++	rxrpc_call_put_timer,
+ 	rxrpc_call_put_userid,
+ 	rxrpc_call_queued,
+ 	rxrpc_call_queued_ref,
+@@ -278,12 +281,15 @@ enum rxrpc_tx_point {
+ 	EM(rxrpc_call_error,			"*E*") \
+ 	EM(rxrpc_call_got,			"GOT") \
+ 	EM(rxrpc_call_got_kernel,		"Gke") \
++	EM(rxrpc_call_got_timer,		"GTM") \
+ 	EM(rxrpc_call_got_userid,		"Gus") \
+ 	EM(rxrpc_call_new_client,		"NWc") \
+ 	EM(rxrpc_call_new_service,		"NWs") \
+ 	EM(rxrpc_call_put,			"PUT") \
+ 	EM(rxrpc_call_put_kernel,		"Pke") \
+-	EM(rxrpc_call_put_noqueue,		"PNQ") \
++	EM(rxrpc_call_put_noqueue,		"PnQ") \
++	EM(rxrpc_call_put_notimer,		"PnT") \
++	EM(rxrpc_call_put_timer,		"PTM") \
+ 	EM(rxrpc_call_put_userid,		"Pus") \
+ 	EM(rxrpc_call_queued,			"QUE") \
+ 	EM(rxrpc_call_queued_ref,		"QUR") \
+diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
+index 7bd6f8a66a3e..969e532f77a9 100644
+--- a/net/rxrpc/ar-internal.h
++++ b/net/rxrpc/ar-internal.h
+@@ -777,14 +777,12 @@ void rxrpc_propose_ACK(struct rxrpc_call *, u8, u32, bool, bool,
+ 		       enum rxrpc_propose_ack_trace);
+ void rxrpc_process_call(struct work_struct *);
  
-+	ccplex@e000000 {
-+		compatible = "nvidia,tegra234-ccplex-cluster";
-+		reg = <0x0 0x0e000000 0x0 0x5ffff>;
-+		nvidia,bpmp = <&bpmp>;
-+		status = "okay";
-+	};
+-static inline void rxrpc_reduce_call_timer(struct rxrpc_call *call,
+-					   unsigned long expire_at,
+-					   unsigned long now,
+-					   enum rxrpc_timer_trace why)
+-{
+-	trace_rxrpc_timer(call, why, now);
+-	timer_reduce(&call->timer, expire_at);
+-}
++void rxrpc_reduce_call_timer(struct rxrpc_call *call,
++			     unsigned long expire_at,
++			     unsigned long now,
++			     enum rxrpc_timer_trace why);
 +
- 	sram@40000000 {
- 		compatible = "nvidia,tegra234-sysram", "mmio-sram";
- 		reg = <0x0 0x40000000 0x0 0x80000>;
--- 
-2.17.1
++void rxrpc_delete_call_timer(struct rxrpc_call *call);
+ 
+ /*
+  * call_object.c
+@@ -808,6 +806,7 @@ void rxrpc_release_calls_on_socket(struct rxrpc_sock *);
+ bool __rxrpc_queue_call(struct rxrpc_call *);
+ bool rxrpc_queue_call(struct rxrpc_call *);
+ void rxrpc_see_call(struct rxrpc_call *);
++bool rxrpc_try_get_call(struct rxrpc_call *call, enum rxrpc_call_trace op);
+ void rxrpc_get_call(struct rxrpc_call *, enum rxrpc_call_trace);
+ void rxrpc_put_call(struct rxrpc_call *, enum rxrpc_call_trace);
+ void rxrpc_cleanup_call(struct rxrpc_call *);
+diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
+index df864e692267..22e05de5d1ca 100644
+--- a/net/rxrpc/call_event.c
++++ b/net/rxrpc/call_event.c
+@@ -310,7 +310,7 @@ void rxrpc_process_call(struct work_struct *work)
+ 	}
+ 
+ 	if (call->state == RXRPC_CALL_COMPLETE) {
+-		del_timer_sync(&call->timer);
++		rxrpc_delete_call_timer(call);
+ 		goto out_put;
+ 	}
+ 
+diff --git a/net/rxrpc/call_object.c b/net/rxrpc/call_object.c
+index 4eb91d958a48..043508fd8d8a 100644
+--- a/net/rxrpc/call_object.c
++++ b/net/rxrpc/call_object.c
+@@ -53,10 +53,30 @@ static void rxrpc_call_timer_expired(struct timer_list *t)
+ 
+ 	if (call->state < RXRPC_CALL_COMPLETE) {
+ 		trace_rxrpc_timer(call, rxrpc_timer_expired, jiffies);
+-		rxrpc_queue_call(call);
++		__rxrpc_queue_call(call);
++	} else {
++		rxrpc_put_call(call, rxrpc_call_put);
++	}
++}
++
++void rxrpc_reduce_call_timer(struct rxrpc_call *call,
++			     unsigned long expire_at,
++			     unsigned long now,
++			     enum rxrpc_timer_trace why)
++{
++	if (rxrpc_try_get_call(call, rxrpc_call_got_timer)) {
++		trace_rxrpc_timer(call, why, now);
++		if (timer_reduce(&call->timer, expire_at))
++			rxrpc_put_call(call, rxrpc_call_put_notimer);
+ 	}
+ }
+ 
++void rxrpc_delete_call_timer(struct rxrpc_call *call)
++{
++	if (del_timer_sync(&call->timer))
++		rxrpc_put_call(call, rxrpc_call_put_timer);
++}
++
+ static struct lock_class_key rxrpc_call_user_mutex_lock_class_key;
+ 
+ /*
+@@ -463,6 +483,17 @@ void rxrpc_see_call(struct rxrpc_call *call)
+ 	}
+ }
+ 
++bool rxrpc_try_get_call(struct rxrpc_call *call, enum rxrpc_call_trace op)
++{
++	const void *here = __builtin_return_address(0);
++	int n = atomic_fetch_add_unless(&call->usage, 1, 0);
++
++	if (n == 0)
++		return false;
++	trace_rxrpc_call(call->debug_id, op, n, here, NULL);
++	return true;
++}
++
+ /*
+  * Note the addition of a ref on a call.
+  */
+@@ -510,8 +541,7 @@ void rxrpc_release_call(struct rxrpc_sock *rx, struct rxrpc_call *call)
+ 	spin_unlock_bh(&call->lock);
+ 
+ 	rxrpc_put_call_slot(call);
+-
+-	del_timer_sync(&call->timer);
++	rxrpc_delete_call_timer(call);
+ 
+ 	/* Make sure we don't get any more notifications */
+ 	write_lock_bh(&rx->recvmsg_lock);
+@@ -618,6 +648,8 @@ static void rxrpc_destroy_call(struct work_struct *work)
+ 	struct rxrpc_call *call = container_of(work, struct rxrpc_call, processor);
+ 	struct rxrpc_net *rxnet = call->rxnet;
+ 
++	rxrpc_delete_call_timer(call);
++
+ 	rxrpc_put_connection(call->conn);
+ 	rxrpc_put_peer(call->peer);
+ 	kfree(call->rxtx_buffer);
+@@ -652,8 +684,6 @@ void rxrpc_cleanup_call(struct rxrpc_call *call)
+ 
+ 	memset(&call->sock_node, 0xcd, sizeof(call->sock_node));
+ 
+-	del_timer_sync(&call->timer);
+-
+ 	ASSERTCMP(call->state, ==, RXRPC_CALL_COMPLETE);
+ 	ASSERT(test_bit(RXRPC_CALL_RELEASED, &call->flags));
+ 
+
 
