@@ -2,129 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91C62C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 18:56:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95763C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 19:00:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350428AbiC3S5r (ORCPT
+        id S1350276AbiC3TCP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 14:57:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38894 "EHLO
+        Wed, 30 Mar 2022 15:02:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350284AbiC3S5m (ORCPT
+        with ESMTP id S1350284AbiC3TCM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 14:57:42 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DF7E6A43A
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:55:56 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id dr20so43345491ejc.6
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:55:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linbit-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fS8vexv5y5IlDW6jDa/CJnkMG23qfhzjDUs+WGYeVjg=;
-        b=uE53q3re8iwnjr6tBa9zKY2osZp3Jp7t2TKEQ3SXNl1//qBGvJExj/tsz6E1PgZ3e/
-         LkmwFOYHMXSgAU9TJywuh/3mnW/vMQ9usbvvqFAMx1fQd8lYOWLLVXhbeuUQve3sXZXf
-         Fq5P2qkDbGUh0zMm4KJHlrdljEz+Ehg0sYvMkHQ52hNhhcRfJ+Hcgkw8bLQIV+4lCT35
-         VzaTaenvPApoHdpE75vTR57mqE52fMwU0uKIf/5Km74RZ7c7aJw81Xwvkc12VZoCOT0e
-         7ARVYYfD3GMdixo06qi0wm53i2TqGld6y+YnhLB6+sXfLvzX9Z+/7m5kbKulshiKjXdT
-         4LZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fS8vexv5y5IlDW6jDa/CJnkMG23qfhzjDUs+WGYeVjg=;
-        b=TCF+CnJ9TsbRGF6fA0I8uGmD3vLXutG4R2SPTqyZysxWvccR2y3sf8/tYQz5LH6OdM
-         cdOcT5jlLvT00js10l1pk/wowJSj/yY5YcDRYHqwu4IpDm+btVhnGzb69c5yXobywG1U
-         KPEb8guN0bTFd7hvphRnEZ3pz3f2keL5HbLPR0XnRXcgxqqyx2Kn2iUAFhRBI5r5gvE8
-         Sd44SVYTyzSQO53U/oUIqgbXBv6j5WQP6iqdIxUUAJSuuOD7MSawG1RB1dIU5WW7WDUm
-         IYGBIStxNlBqT0/LEtlnm8X0k2SRy7qN6o7UIc+BvbXTJDQe+TMuQEcjd8RCoqMH3Knf
-         KDQw==
-X-Gm-Message-State: AOAM530ZnJr21Lg5gy+xNQgI02IvSYsOlTvSOYTFqHudtjllibo/93Sh
-        ZJ6tsMlKX20BgzQMM68OpP4kJQ==
-X-Google-Smtp-Source: ABdhPJz+Vt1B8Iq4kvuEZ5n0irgjFoH7JQGrTUQ0hBXINZJsc5RSI/lf6XLpN5R8JUo3VnVHtmsipg==
-X-Received: by 2002:a17:907:16ac:b0:6e0:1646:9121 with SMTP id hc44-20020a17090716ac00b006e016469121mr1136241ejc.194.1648666555117;
-        Wed, 30 Mar 2022 11:55:55 -0700 (PDT)
-Received: from gintonic.linbit (62-99-137-214.static.upcbusiness.at. [62.99.137.214])
-        by smtp.gmail.com with ESMTPSA id nc13-20020a1709071c0d00b006dfa376ee55sm8554639ejc.131.2022.03.30.11.55.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Mar 2022 11:55:54 -0700 (PDT)
-From:   =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>
-To:     Jens Axboe <abxoe@kernel.dk>
-Cc:     Philipp Reisner <philipp.reisner@linbit.com>,
-        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Lars Ellenberg <lars.ellenberg@linbit.com>,
-        =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>, stable@vger.kernel.org
-Subject: [RESEND PATCH] drbd: fix potential silent data corruption
-Date:   Wed, 30 Mar 2022 20:55:51 +0200
-Message-Id: <20220330185551.3553196-1-christoph.boehmwalder@linbit.com>
-X-Mailer: git-send-email 2.32.0
+        Wed, 30 Mar 2022 15:02:12 -0400
+Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9649013E1D;
+        Wed, 30 Mar 2022 12:00:26 -0700 (PDT)
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1nZdYO-0003Qd-00; Wed, 30 Mar 2022 21:00:24 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id 9EA7DC2EE6; Wed, 30 Mar 2022 20:34:01 +0200 (CEST)
+Date:   Wed, 30 Mar 2022 20:34:01 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     xkernel.wang@foxmail.com
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mips: sgi-ip22: add a check for the return of kzalloc()
+Message-ID: <20220330183401.GA18042@alpha.franken.de>
+References: <tencent_33384AA3FF65207ECC63B9531C1F1417E108@qq.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <tencent_33384AA3FF65207ECC63B9531C1F1417E108@qq.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lars Ellenberg <lars.ellenberg@linbit.com>
+On Fri, Mar 25, 2022 at 06:57:18PM +0800, xkernel.wang@foxmail.com wrote:
+> From: Xiaoke Wang <xkernel.wang@foxmail.com>
+> 
+> kzalloc() is a memory allocation function which can return NULL when
+> some internal memory errors happen. So it is better to check it to
+> prevent potential wrong memory access.
+> 
+> Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+> ---
+>  arch/mips/sgi-ip22/ip22-gio.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/arch/mips/sgi-ip22/ip22-gio.c b/arch/mips/sgi-ip22/ip22-gio.c
+> index dfc52f6..38d12f4 100644
+> --- a/arch/mips/sgi-ip22/ip22-gio.c
+> +++ b/arch/mips/sgi-ip22/ip22-gio.c
+> @@ -363,6 +363,8 @@ static void ip22_check_gio(int slotno, unsigned long addr, int irq)
+>  		printk(KERN_INFO "GIO: slot %d : %s (id %x)\n",
+>  		       slotno, name, id);
+>  		gio_dev = kzalloc(sizeof *gio_dev, GFP_KERNEL);
+> +		if (!gio_dev)
+> +			return;
+>  		gio_dev->name = name;
+>  		gio_dev->slotno = slotno;
+>  		gio_dev->id.id = id;
+> -- 
 
-Scenario:
----------
+applied to mips-next.
 
-bio chain generated by blk_queue_split().
-Some split bio fails and propagates its error status to the "parent" bio.
-But then the (last part of the) parent bio itself completes without error.
+Thomas.
 
-We would clobber the already recorded error status with BLK_STS_OK,
-causing silent data corruption.
-
-Reproducer:
------------
-
-How to trigger this in the real world within seconds:
-
-DRBD on top of degraded parity raid,
-small stripe_cache_size, large read_ahead setting.
-Drop page cache (sysctl vm.drop_caches=1, fadvise "DONTNEED",
-umount and mount again, "reboot").
-
-Cause significant read ahead.
-
-Large read ahead request is split by blk_queue_split().
-Parts of the read ahead that are already in the stripe cache,
-or find an available stripe cache to use, can be serviced.
-Parts of the read ahead that would need "too much work",
-would need to wait for a "stripe_head" to become available,
-are rejected immediately.
-
-For larger read ahead requests that are split in many pieces, it is very
-likely that some "splits" will be serviced, but then the stripe cache is
-exhausted/busy, and the remaining ones will be rejected.
-
-Signed-off-by: Lars Ellenberg <lars.ellenberg@linbit.com>
-Signed-off-by: Christoph Böhmwalder <christoph.boehmwalder@linbit.com>
-Cc: <stable@vger.kernel.org> # 4.13.x
----
- drivers/block/drbd/drbd_req.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/block/drbd/drbd_req.c b/drivers/block/drbd/drbd_req.c
-index c04394518b07..e1e58e91ee58 100644
---- a/drivers/block/drbd/drbd_req.c
-+++ b/drivers/block/drbd/drbd_req.c
-@@ -180,7 +180,8 @@ void start_new_tl_epoch(struct drbd_connection *connection)
- void complete_master_bio(struct drbd_device *device,
- 		struct bio_and_error *m)
- {
--	m->bio->bi_status = errno_to_blk_status(m->error);
-+	if (unlikely(m->error))
-+		m->bio->bi_status = errno_to_blk_status(m->error);
- 	bio_endio(m->bio);
- 	dec_ap_bio(device);
- }
 -- 
-2.32.0
-
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
