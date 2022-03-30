@@ -2,51 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72B5BC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 831FFC433EF
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:14:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345306AbiC3MNm (ORCPT
+        id S1345349AbiC3MNp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:13:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56766 "EHLO
+        Wed, 30 Mar 2022 08:13:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345910AbiC3LzL (ORCPT
+        with ESMTP id S1345908AbiC3LzL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 30 Mar 2022 07:55:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93D301D914D;
-        Wed, 30 Mar 2022 04:52:29 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88E5D26C561;
+        Wed, 30 Mar 2022 04:52:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3159B6137A;
-        Wed, 30 Mar 2022 11:52:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42C6EC340EE;
-        Wed, 30 Mar 2022 11:52:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2373F61703;
+        Wed, 30 Mar 2022 11:52:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 861CBC36AE2;
+        Wed, 30 Mar 2022 11:52:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641148;
-        bh=brd6ags1GWY6KG3dTlkk05PFjXPLuL+jL4DgbrU1MxM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=I8w5mYZuV7j3h8i9TpDynWcRxNWnF3eAk3PbngXusDyvOoYAf/czNTXXEjCPs2J8N
-         h7x5EjEvqp63T127Cef/FORfk4p3/eYoq1AlJAR13DFTgygvod6l+b/Z+DJwavSQhO
-         t6duw+JqHn2qT7xHh85XdEnO7xukPZkMBswRd8IXYQiM6I2o+CfEbv3uYaQB/71iMz
-         97T5qxbNIuQjE68JztxbnuFjAjyPF49CZcOyLKwXu7uZWCXVbmKFKMvVDeHAdySfyI
-         uwheRTsqMiSMJJcpdaPy3KJ14hyYc8IEoRvNUQ7qK28Ml9TrqqoVPBDaq7t3gzHOdB
-         vWGRyNjl82p1Q==
+        s=k20201202; t=1648641142;
+        bh=+LlN6is2oOq9hSTl4jDvC8cIgW19PtekWjYIVYSEn/E=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=nzn08dPm/+eLykwFXa7XoWDMmSh03R2FUVpVII8H2u9FbHtsQIGth7yepWC9rYUiL
+         malf9LMIRE29RotLYBk5w8gjlzTAHg+99IZT22TjFp+7Drnz5HhIk2yiSFdlOmQDAD
+         mUIdtJ86PBNAc/mHc8F6cspKwbsCy2YTGb5kXXF9KhQ8YTe6GbRdtKypNh2rC9f/WW
+         ajBgwCMwH5DC2maADvlKmetGi3tcjde3Vx3/C4KpDwfJsENRkIOi0KL+iGqcA44oCj
+         sHPkFeiXeY/pndSW+mP0uE+RcqRZf9j3hxXhhbrmaT1X85vzJmvgVpteAVooMr8pho
+         vyycimK99MUcA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Rander Wang <rander.wang@intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.4 01/25] ASoC: SOF: Intel: hda: Remove link assignment limitation
-Date:   Wed, 30 Mar 2022 07:52:01 -0400
-Message-Id: <20220330115225.1672278-1-sashal@kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Hans Verkuil <hverkuil@xs4all.nl>,
+        Sasha Levin <sashal@kernel.org>, gregkh@linuxfoundation.org,
+        linux-media@vger.kernel.org, devel@driverdev.osuosl.org
+Subject: [PATCH AUTOSEL 5.10 36/37] media: atomisp: fix bad usage at error handling logic
+Date:   Wed, 30 Mar 2022 07:51:21 -0400
+Message-Id: <20220330115122.1671763-36-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220330115122.1671763-1-sashal@kernel.org>
+References: <20220330115122.1671763-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,63 +53,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+From: Mauro Carvalho Chehab <mchehab@kernel.org>
 
-[ Upstream commit 2ce0d008dcc59f9c01f43277b9f9743af7b01dad ]
+[ Upstream commit fc0b582c858ed73f94c8f3375c203ea46f1f7402 ]
 
-The limitation to assign a link DMA channel for a BE iff the
-corresponding host DMA channel is assigned to a connected FE is only
-applicable if the PROCEN_FMT_QUIRK is set. So, remove it for platforms
-that do not enable the quirk.
+As warned by sparse:
+	atomisp: drivers/staging/media/atomisp/pci/atomisp_acc.c:508 atomisp_acc_load_extensions() warn: iterator used outside loop: 'acc_fw'
 
-Complements: a792bfc1c2bc ("ASoC: SOF: Intel: hda-stream: limit PROCEN workaround")
-Signed-off-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Rander Wang <rander.wang@intel.com>
-Reviewed-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-Reviewed-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Link: https://lore.kernel.org/r/20220128130017.28508-1-peter.ujfalusi@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+The acc_fw interactor is used outside the loop, at the error handling
+logic. On most cases, this is actually safe there, but, if
+atomisp_css_set_acc_parameters() has an error, an attempt to use it
+will pick an invalid value for acc_fw.
+
+Reported-by: Hans Verkuil <hverkuil@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sof/intel/hda-dai.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ .../staging/media/atomisp/pci/atomisp_acc.c   | 28 +++++++++++++------
+ 1 file changed, 19 insertions(+), 9 deletions(-)
 
-diff --git a/sound/soc/sof/intel/hda-dai.c b/sound/soc/sof/intel/hda-dai.c
-index b3cdd10c83ae..80e3a02e629f 100644
---- a/sound/soc/sof/intel/hda-dai.c
-+++ b/sound/soc/sof/intel/hda-dai.c
-@@ -57,6 +57,8 @@ static struct hdac_ext_stream *
- {
- 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
- 	struct sof_intel_hda_stream *hda_stream;
-+	const struct sof_intel_dsp_desc *chip;
-+	struct snd_sof_dev *sdev;
- 	struct hdac_ext_stream *res = NULL;
- 	struct hdac_stream *stream = NULL;
+diff --git a/drivers/staging/media/atomisp/pci/atomisp_acc.c b/drivers/staging/media/atomisp/pci/atomisp_acc.c
+index f638d0bd09fe..b1614cce2dfb 100644
+--- a/drivers/staging/media/atomisp/pci/atomisp_acc.c
++++ b/drivers/staging/media/atomisp/pci/atomisp_acc.c
+@@ -439,6 +439,18 @@ int atomisp_acc_s_mapped_arg(struct atomisp_sub_device *asd,
+ 	return 0;
+ }
  
-@@ -75,9 +77,20 @@ static struct hdac_ext_stream *
- 			continue;
- 
- 		hda_stream = hstream_to_sof_hda_stream(hstream);
-+		sdev = hda_stream->sdev;
-+		chip = get_chip_info(sdev->pdata);
- 
- 		/* check if link is available */
- 		if (!hstream->link_locked) {
-+			/*
-+			 * choose the first available link for platforms that do not have the
-+			 * PROCEN_FMT_QUIRK set.
-+			 */
-+			if (!(chip->quirks & SOF_INTEL_PROCEN_FMT_QUIRK)) {
-+				res = hstream;
-+				break;
-+			}
++static void atomisp_acc_unload_some_extensions(struct atomisp_sub_device *asd,
++					      int i,
++					      struct atomisp_acc_fw *acc_fw)
++{
++	while (--i >= 0) {
++		if (acc_fw->flags & acc_flag_to_pipe[i].flag) {
++			atomisp_css_unload_acc_extension(asd, acc_fw->fw,
++							 acc_flag_to_pipe[i].pipe_id);
++		}
++	}
++}
 +
- 			if (stream->opened) {
- 				/*
- 				 * check if the stream tag matches the stream
+ /*
+  * Appends the loaded acceleration binary extensions to the
+  * current ISP mode. Must be called just before sh_css_start().
+@@ -477,16 +489,20 @@ int atomisp_acc_load_extensions(struct atomisp_sub_device *asd)
+ 								     acc_fw->fw,
+ 								     acc_flag_to_pipe[i].pipe_id,
+ 								     acc_fw->type);
+-				if (ret)
++				if (ret) {
++					atomisp_acc_unload_some_extensions(asd, i, acc_fw);
+ 					goto error;
++				}
+ 
+ 				ext_loaded = true;
+ 			}
+ 		}
+ 
+ 		ret = atomisp_css_set_acc_parameters(acc_fw);
+-		if (ret < 0)
++		if (ret < 0) {
++			atomisp_acc_unload_some_extensions(asd, i, acc_fw);
+ 			goto error;
++		}
+ 	}
+ 
+ 	if (!ext_loaded)
+@@ -495,6 +511,7 @@ int atomisp_acc_load_extensions(struct atomisp_sub_device *asd)
+ 	ret = atomisp_css_update_stream(asd);
+ 	if (ret) {
+ 		dev_err(isp->dev, "%s: update stream failed.\n", __func__);
++		atomisp_acc_unload_extensions(asd);
+ 		goto error;
+ 	}
+ 
+@@ -502,13 +519,6 @@ int atomisp_acc_load_extensions(struct atomisp_sub_device *asd)
+ 	return 0;
+ 
+ error:
+-	while (--i >= 0) {
+-		if (acc_fw->flags & acc_flag_to_pipe[i].flag) {
+-			atomisp_css_unload_acc_extension(asd, acc_fw->fw,
+-							 acc_flag_to_pipe[i].pipe_id);
+-		}
+-	}
+-
+ 	list_for_each_entry_continue_reverse(acc_fw, &asd->acc.fw, list) {
+ 		if (acc_fw->type != ATOMISP_ACC_FW_LOAD_TYPE_OUTPUT &&
+ 		    acc_fw->type != ATOMISP_ACC_FW_LOAD_TYPE_VIEWFINDER)
 -- 
 2.34.1
 
