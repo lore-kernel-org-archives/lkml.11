@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15C52C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:58:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CA97C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:58:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245136AbiC3MAF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:00:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57834 "EHLO
+        id S1344333AbiC3MAO (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 08:00:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344676AbiC3LxX (ORCPT
+        with ESMTP id S1344693AbiC3LxZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:53:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60C6326C2DD;
-        Wed, 30 Mar 2022 04:49:25 -0700 (PDT)
+        Wed, 30 Mar 2022 07:53:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 182CC26C546;
+        Wed, 30 Mar 2022 04:49:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DFC88B81C23;
-        Wed, 30 Mar 2022 11:49:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A607EC36AE3;
-        Wed, 30 Mar 2022 11:49:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4E069B81C29;
+        Wed, 30 Mar 2022 11:49:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B05DC34112;
+        Wed, 30 Mar 2022 11:49:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648640963;
-        bh=YGc7WmUAaF+RqDeiav9aNLIe7E7IZAsP7q1KD+SY1pU=;
+        s=k20201202; t=1648640958;
+        bh=hP7Ta8lHWxh6NeT9h5JeWb6KQ3S+wTrRwcg0WqNvRtc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MvqMI68lgYD0ndtSuGX8lSNdIK9yZ3pgUrlQ6qvM7P33CKaBhSGsJ3Al/3vu2W8HA
-         WIwYYgt27JwH4l2/Tbe91EWdJtVn5+xbCPBFmftgQQaHhdIhz6jJUbwvFsoO3vJNri
-         o7EQGSMr3//6ekkkS1Dobfxxcq3cliV7CUhzj6rPwcNaooGCXfdqr01lGASEeLxW2J
-         F8WnIZJU7wlib9YSU+F2A63/Zs1eIj0jP+CoCALJAyOgdcAijdEfW/wW8t0YKEcyKh
-         MEy7auzcddKZVM58P4pSAglcBwkLQn4AwlF4dRgrPFnKGLWUJX/5oelFVGmb+wfPN2
-         h8JMn4PklNzkw==
+        b=nKzquNuGgbBdVaYNa++gnkiKLDG7tNUNcPV/Kqx9LVnL4UrK+9Wqw1fSNLobk5gtL
+         AM/WGxNU3GrGi5U+q5P1aC2lZzkG9dz4PvIsFzKO8EK8XUlQFLcDl5zzCmLv9/bwal
+         puyTr5FSWJCb5Gs68aBc9W5OCoN6+c9n7v32uWlf8k73jco++2wYdzNwog5HO6zCFo
+         4RnSJuKfon1wCaX0Zz6p14Ho4lDM68snMIU5Vx6SXYy+2bxDjaox6bYxk4n8J/jpjt
+         /oVBCMK0NqzW/j6ejxjfRm9FfD3Lk7FTO5fHaq0Vl1DAFlMPqFJFsf7RIqWH0gDF/j
+         +H4AhTOcdeWSg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stephen Brennan <stephen.s.brennan@oracle.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Sasha Levin <sashal@kernel.org>, linux@roeck-us.net,
-        gregkh@linuxfoundation.org
-Subject: [PATCH AUTOSEL 5.16 33/59] printk: Drop console_sem during panic
-Date:   Wed, 30 Mar 2022 07:48:05 -0400
-Message-Id: <20220330114831.1670235-33-sashal@kernel.org>
+Cc:     Jing Yao <yao.jing2@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        bernie@plugable.com, tomi.valkeinen@ti.com,
+        linux-fbdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 29/59] video: fbdev: udlfb: replace snprintf in show functions with sysfs_emit
+Date:   Wed, 30 Mar 2022 07:48:01 -0400
+Message-Id: <20220330114831.1670235-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330114831.1670235-1-sashal@kernel.org>
 References: <20220330114831.1670235-1-sashal@kernel.org>
@@ -53,74 +53,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephen Brennan <stephen.s.brennan@oracle.com>
+From: Jing Yao <yao.jing2@zte.com.cn>
 
-[ Upstream commit 8ebc476fd51e6c0fd3174ec1959a20ba99d4c5e5 ]
+[ Upstream commit 81a998288956d09d7a7a2303d47e4d60ad55c401 ]
 
-If another CPU is in panic, we are about to be halted. Try to gracefully
-abandon the console_sem, leaving it free for the panic CPU to grab.
+Use sysfs_emit instead of scnprintf, snprintf or sprintf.
 
-Suggested-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: Stephen Brennan <stephen.s.brennan@oracle.com>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
-Signed-off-by: Petr Mladek <pmladek@suse.com>
-Link: https://lore.kernel.org/r/20220202171821.179394-5-stephen.s.brennan@oracle.com
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/printk/printk.c | 25 ++++++++++++++++++++++++-
- 1 file changed, 24 insertions(+), 1 deletion(-)
+ drivers/video/fbdev/udlfb.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index f7c4c53a2c35..92eb7785e6e7 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -2588,6 +2588,25 @@ static int have_callable_console(void)
- 	return 0;
+diff --git a/drivers/video/fbdev/udlfb.c b/drivers/video/fbdev/udlfb.c
+index b9cdd02c1000..90f48b71fd8f 100644
+--- a/drivers/video/fbdev/udlfb.c
++++ b/drivers/video/fbdev/udlfb.c
+@@ -1426,7 +1426,7 @@ static ssize_t metrics_bytes_rendered_show(struct device *fbdev,
+ 				   struct device_attribute *a, char *buf) {
+ 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
+ 	struct dlfb_data *dlfb = fb_info->par;
+-	return snprintf(buf, PAGE_SIZE, "%u\n",
++	return sysfs_emit(buf, "%u\n",
+ 			atomic_read(&dlfb->bytes_rendered));
  }
  
-+/*
-+ * Return true when this CPU should unlock console_sem without pushing all
-+ * messages to the console. This reduces the chance that the console is
-+ * locked when the panic CPU tries to use it.
-+ */
-+static bool abandon_console_lock_in_panic(void)
-+{
-+	if (!panic_in_progress())
-+		return false;
-+
-+	/*
-+	 * We can use raw_smp_processor_id() here because it is impossible for
-+	 * the task to be migrated to the panic_cpu, or away from it. If
-+	 * panic_cpu has already been set, and we're not currently executing on
-+	 * that CPU, then we never will be.
-+	 */
-+	return atomic_read(&panic_cpu) != raw_smp_processor_id();
-+}
-+
- /*
-  * Can we actually use the console at this time on this cpu?
-  *
-@@ -2736,6 +2755,10 @@ void console_unlock(void)
- 		if (handover)
- 			return;
- 
-+		/* Allow panic_cpu to take over the consoles safely */
-+		if (abandon_console_lock_in_panic())
-+			break;
-+
- 		if (do_cond_resched)
- 			cond_resched();
- 	}
-@@ -2753,7 +2776,7 @@ void console_unlock(void)
- 	 * flush, no worries.
- 	 */
- 	retry = prb_read_valid(prb, next_seq, NULL);
--	if (retry && console_trylock())
-+	if (retry && !abandon_console_lock_in_panic() && console_trylock())
- 		goto again;
+@@ -1434,7 +1434,7 @@ static ssize_t metrics_bytes_identical_show(struct device *fbdev,
+ 				   struct device_attribute *a, char *buf) {
+ 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
+ 	struct dlfb_data *dlfb = fb_info->par;
+-	return snprintf(buf, PAGE_SIZE, "%u\n",
++	return sysfs_emit(buf, "%u\n",
+ 			atomic_read(&dlfb->bytes_identical));
  }
- EXPORT_SYMBOL(console_unlock);
+ 
+@@ -1442,7 +1442,7 @@ static ssize_t metrics_bytes_sent_show(struct device *fbdev,
+ 				   struct device_attribute *a, char *buf) {
+ 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
+ 	struct dlfb_data *dlfb = fb_info->par;
+-	return snprintf(buf, PAGE_SIZE, "%u\n",
++	return sysfs_emit(buf, "%u\n",
+ 			atomic_read(&dlfb->bytes_sent));
+ }
+ 
+@@ -1450,7 +1450,7 @@ static ssize_t metrics_cpu_kcycles_used_show(struct device *fbdev,
+ 				   struct device_attribute *a, char *buf) {
+ 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
+ 	struct dlfb_data *dlfb = fb_info->par;
+-	return snprintf(buf, PAGE_SIZE, "%u\n",
++	return sysfs_emit(buf, "%u\n",
+ 			atomic_read(&dlfb->cpu_kcycles_used));
+ }
+ 
 -- 
 2.34.1
 
