@@ -2,61 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EE54C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 19:00:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DFA6C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 19:00:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350383AbiC3TCT (ORCPT
+        id S1350483AbiC3TC0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 15:02:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55084 "EHLO
+        Wed, 30 Mar 2022 15:02:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350306AbiC3TCM (ORCPT
+        with ESMTP id S1350357AbiC3TCU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 15:02:12 -0400
-Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CCE5265D3B;
-        Wed, 30 Mar 2022 12:00:26 -0700 (PDT)
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1nZdYO-0003Qd-01; Wed, 30 Mar 2022 21:00:24 +0200
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 63D91C4DEF; Wed, 30 Mar 2022 20:34:48 +0200 (CEST)
-Date:   Wed, 30 Mar 2022 20:34:48 +0200
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     xkernel.wang@foxmail.com
-Cc:     john@phrozen.org, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] MIPS: lantiq: check the return value of kzalloc()
-Message-ID: <20220330183448.GB18042@alpha.franken.de>
-References: <tencent_3E071B85643888D2C8BF388804334CAE2706@qq.com>
+        Wed, 30 Mar 2022 15:02:20 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7423C7B553;
+        Wed, 30 Mar 2022 12:00:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description;
+        bh=06sSSn0J0ZsK+M9YNtNFlQARP4cIQe5+a3DhFgQSasw=; b=Bnut82cpPv0/xL0g2Ul3Sr7OKi
+        Dj0nkJAYAxyQ5nEOZyHqoZNQ7hIP+zZv5ZqyfTkfwaD9saGSZ+0V+fWaqvUde9QIhhwF66mOtVZ2I
+        6FplQj6GNHK64PDKbyUp1G7TX/NMJuvapMhlybY1nTzZxyeLWpdjquQ4dGlzpr8/fQbIUZkMICQl2
+        JqK31LuBDXAapub+G9xu6prOOfT4Ty/SbqaLFUI8fvOeHCnV1Lpl8/gCSAQqJjPvF9Na7KbSwADCQ
+        o8eBXyqLp3ceKXKnyOPAOE4LJEKrOq3NPosL+B1Oe/S8kAsHEOpmvJBRHSiDv9q/08JNG8AjCMWNp
+        tdAPsAqQ==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nZdYL-00HE6L-6h; Wed, 30 Mar 2022 19:00:21 +0000
+Date:   Wed, 30 Mar 2022 12:00:21 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Wei Xiao <xiaowei66@huawei.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build failure after merge of the sysctl tree
+Message-ID: <YkSoxQhTVitU6mh9@bombadil.infradead.org>
+References: <20220330115617.4d694d11@canb.auug.org.au>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <tencent_3E071B85643888D2C8BF388804334CAE2706@qq.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220330115617.4d694d11@canb.auug.org.au>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 07:49:41PM +0800, xkernel.wang@foxmail.com wrote:
-> From: Xiaoke Wang <xkernel.wang@foxmail.com>
-> 
-> kzalloc() is a memory allocation function which can return NULL when
-> some internal memory errors happen. So it is better to check the
-> return value of it to prevent potential wrong memory access or
-> memory leak.
-> 
-> Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
-> ---
->  arch/mips/lantiq/falcon/sysctrl.c |  2 ++
->  arch/mips/lantiq/xway/gptu.c      |  2 ++
->  arch/mips/lantiq/xway/sysctrl.c   | 46 ++++++++++++++++++++-----------
->  3 files changed, 34 insertions(+), 16 deletions(-)
+On Wed, Mar 30, 2022 at 11:56:17AM +1100, Stephen Rothwell wrote:
+> Hi all,
+>=20
+> After merging the sysctl tree, today's linux-next build (powerpc
+> ppc64_defconfig) failed like this:
+>=20
+> kernel/sysctl.c:1776:36: error: 'C_A_D' undeclared here (not in a functio=
+n)
+>  1776 |                 .data           =3D &C_A_D,
+>       |                                    ^~~~~
+>=20
+> Caused by commit
+>=20
+>   84053cc7ef2f ("ftrace: move sysctl_ftrace_enabled to ftrace.c")
+>=20
+> I can't imagine how that happened (though I do note that the whole branch
+> has been rebased and not tested :-( ).
 
-applied to mips-next.
+Sorry about that, indeed I rebased it and only test compiled the
+conflicts.
 
-Thomas.
+> I have used the sysctl tree from next-20220329 for today.
 
--- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+I'll push to 0-day testing before pushing a new iteration.
+Trying to prepare to push to Linus.
+
+  Luis
+
