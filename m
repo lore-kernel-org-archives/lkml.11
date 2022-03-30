@@ -2,28 +2,28 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECDF6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 10:55:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20DDEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 10:55:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245643AbiC3K5T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 06:57:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33556 "EHLO
+        id S245637AbiC3K5W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 06:57:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245605AbiC3K5I (ORCPT
+        with ESMTP id S245612AbiC3K5I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 30 Mar 2022 06:57:08 -0400
 Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A614C265E8A;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 18F2F269A61;
         Wed, 30 Mar 2022 03:55:23 -0700 (PDT)
 Received: from unknown (HELO kinkan2-ex.css.socionext.com) ([172.31.9.52])
-  by mx.socionext.com with ESMTP; 30 Mar 2022 19:55:23 +0900
+  by mx.socionext.com with ESMTP; 30 Mar 2022 19:55:22 +0900
 Received: from mail.mfilter.local (m-filter-2 [10.213.24.62])
-        by kinkan2-ex.css.socionext.com (Postfix) with ESMTP id 1CC672058443;
-        Wed, 30 Mar 2022 19:55:23 +0900 (JST)
-Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Wed, 30 Mar 2022 19:55:23 +0900
-Received: from plum.e01.socionext.com (unknown [10.212.243.119])
-        by kinkan2.css.socionext.com (Postfix) with ESMTP id 87815B62B7;
+        by kinkan2-ex.css.socionext.com (Postfix) with ESMTP id 9A1212058443;
         Wed, 30 Mar 2022 19:55:22 +0900 (JST)
+Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Wed, 30 Mar 2022 19:55:22 +0900
+Received: from plum.e01.socionext.com (unknown [10.212.243.119])
+        by kinkan2.css.socionext.com (Postfix) with ESMTP id D281FB62B7;
+        Wed, 30 Mar 2022 19:55:21 +0900 (JST)
 From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
 To:     Vinod Koul <vkoul@kernel.org>,
         Kishon Vijay Abraham I <kishon@ti.com>,
@@ -33,9 +33,9 @@ Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
         linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Subject: [PATCH v3 4/5] dt-bindings: phy: uniphier-usb3hs: Fix incorrect clock-names and reset-names
-Date:   Wed, 30 Mar 2022 19:55:14 +0900
-Message-Id: <1648637715-19262-5-git-send-email-hayashi.kunihiko@socionext.com>
+Subject: [PATCH v3 3/5] dt-bindings: phy: uniphier-ahci: Fix missing reset-names
+Date:   Wed, 30 Mar 2022 19:55:13 +0900
+Message-Id: <1648637715-19262-4-git-send-email-hayashi.kunihiko@socionext.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1648637715-19262-1-git-send-email-hayashi.kunihiko@socionext.com>
 References: <1648637715-19262-1-git-send-email-hayashi.kunihiko@socionext.com>
@@ -43,57 +43,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is no clock-names and reset-names for Pro5 SoC, that should have two
-properties, "gio" and "link" like usb3-ssphy.
+UniPhier AHCI PHY controller needs to specify 6 reset lines, so this adds
+missing "phy" to reset-names and increases maxItems of resets.
 
-And according to the existing PXs2 devicetree, the clock-names for PXs2 SoC
-should have "link" and "phy", and minItems of clocks should be 2.
-
-Fixes: 134ab2845acb ("dt-bindings: phy: Convert UniPhier USB3-PHY conroller to json-schema")
+Fixes: 34f92b67621f ("dt-bindings: phy: uniphier-ahci: Add bindings for Pro4 SoC")
 Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
 Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- .../phy/socionext,uniphier-usb3hs-phy.yaml       | 16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
+ .../devicetree/bindings/phy/socionext,uniphier-ahci-phy.yaml   | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/phy/socionext,uniphier-usb3hs-phy.yaml b/Documentation/devicetree/bindings/phy/socionext,uniphier-usb3hs-phy.yaml
-index 33946efcac5e..1bbd164f2527 100644
---- a/Documentation/devicetree/bindings/phy/socionext,uniphier-usb3hs-phy.yaml
-+++ b/Documentation/devicetree/bindings/phy/socionext,uniphier-usb3hs-phy.yaml
-@@ -31,12 +31,14 @@ properties:
-     const: 0
+diff --git a/Documentation/devicetree/bindings/phy/socionext,uniphier-ahci-phy.yaml b/Documentation/devicetree/bindings/phy/socionext,uniphier-ahci-phy.yaml
+index 3b400a85b44a..14f7579e7daa 100644
+--- a/Documentation/devicetree/bindings/phy/socionext,uniphier-ahci-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/socionext,uniphier-ahci-phy.yaml
+@@ -43,13 +43,14 @@ properties:
  
-   clocks:
--    minItems: 1
-+    minItems: 2
-     maxItems: 3
- 
-   clock-names:
-     oneOf:
--      - const: link          # for PXs2
-+      - items:               # for Pro5
-+          - const: gio
-+          - const: link
-       - items:               # for PXs3 with phy-ext
-           - const: link
-           - const: phy
-@@ -49,9 +51,13 @@ properties:
-     maxItems: 2
+   resets:
+     minItems: 2
+-    maxItems: 5
++    maxItems: 6
  
    reset-names:
--    items:
--      - const: link
--      - const: phy
-+    oneOf:
-+      - items:               # for Pro5
-+          - const: gio
-+          - const: link
-+      - items:               # for others
-+          - const: link
+     oneOf:
+       - items:          # for Pro4
+           - const: link
+           - const: gio
 +          - const: phy
- 
-   vbus-supply:
-     description: A phandle to the regulator for USB VBUS
+           - const: pm
+           - const: tx
+           - const: rx
 -- 
 2.25.1
 
