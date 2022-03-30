@@ -2,90 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA5B8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 17:33:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 477BDC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 17:36:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349329AbiC3Rfg (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 13:35:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33016 "EHLO
+        id S231404AbiC3RiP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 13:38:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349319AbiC3Rfd (ORCPT
+        with ESMTP id S1349378AbiC3RiF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 13:35:33 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7323193E5
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 10:33:46 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id j15so42930798eje.9
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 10:33:46 -0700 (PDT)
+        Wed, 30 Mar 2022 13:38:05 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ECFE66625
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 10:36:20 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id v64-20020a1cac43000000b0038cfd1b3a6dso312508wme.5
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 10:36:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=v0ypuDOZ9iczYgFgx1CgxJv5DcfIjupX67FG6Uawm28=;
-        b=Dm4NkdgRizF5UQHrmqClnq9Isje3UUn/6mfSP4EzRO9H4lnnvVVEQ6DnQATUMmZ1Fa
-         8tLkTSxaqIdLUv20E/Gu7Q/D+Bf2phajGvNvFRcAngMSJKL6GvlLqrF3BVOqwVYo7dv2
-         O5eUq/V1HRa3gacQHhwgilqItG9HfX7McmwvquTGOF29bJRWfX+E49xK+IuBEfn30fo2
-         HEKTJ3Ktt2hOU9Q5TFLhrMKTBW6WGIdyda3iv6ewbq/rX9fCGI27hnE2eDFYjQT7L1pz
-         dzYq71C8W/guTKY5YxX+v4lUmxUR0ypPvaLjgttweJWRW5YIBMAkQ3JecwKv8cPbpASG
-         UI+g==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=si9BL6chisoTSaeqo99DJ1ZOvEtq2ZLE18b5aCraSsg=;
+        b=dBTJr/GJXkcyRZzP1rEtXVt5Y4oXfOfUJqY1SbiNl9CFA5AueD//DYeDzQ4Au2Qz+W
+         CPFc5Ga24RUstM4ay5k2cvKYCvDgrjZEKJg+QApmv7CGcNvnxCt1Iuk8cUI7HMUbjIrO
+         AOkKpA8ApAfMpa/N9xH4CD/uTsVSkK/CB4Vy7vxMiNMUltQInBa/82AxemIc6YavH6ef
+         GunkgXr9VifDVb7nD0gzP5/gDmq8/OUn7OHSGbJkHHB4mixLOKXNK9/kPmDmW8/Vv0hG
+         9eZMOxQFGaOArRDGnTM0tSNopEP1VA50qqtI2SX7/Jqmt3FFqOD8SfHXGHoFaYEvsALh
+         1myA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=v0ypuDOZ9iczYgFgx1CgxJv5DcfIjupX67FG6Uawm28=;
-        b=eGHr4cbAWB6FGXxJCuWuM0LJNi5wS3i/nFQo5aqrFGUrQTykzJFuZOyoIz+QLhJ4tN
-         uxK8f0R9GSwasGvgxGP3nmyNPnP8C09nIUJQ39yylxHw5bT6x1Z72IcMDsYwvcdoSx8b
-         87HDBRMQkO42Fy6lB8wEwjicO//ss28UUtry7XBRK6iQTM3dJXVQtcw+NlMyPwBiwD7+
-         FdaGRpfMuWymdbLKHUm/tUl3Eq5JzWrBvRguwnVmw/1aftmqhzYOPz7D+7nOGgETBH0K
-         KYsAqZayFD/tyt9Nn6b7GGkhiz7myD8WsoS5qE0c4h5ifzfIwtRrq16ryc8ftvTuj8P1
-         tbng==
-X-Gm-Message-State: AOAM531NGoBzRp/hKQNpXLorarFkGwWK+l6lqjf/lcMYzvu9uXWFqlPJ
-        JfNOMjJYSQrnlkmRCevbhjEAWw==
-X-Google-Smtp-Source: ABdhPJx8VM85FNTNB3nTJF1PZIQmaZo0yaLCn/umk7bKrByJw9kErPb8vzRj3m4+OkxUDwCBIhXXlQ==
-X-Received: by 2002:a17:906:7944:b0:6da:b834:2f3e with SMTP id l4-20020a170906794400b006dab8342f3emr681549ejo.353.1648661625373;
-        Wed, 30 Mar 2022 10:33:45 -0700 (PDT)
-Received: from [192.168.0.164] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id b8-20020a170906728800b006e0351df2dcsm8533922ejl.70.2022.03.30.10.33.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 30 Mar 2022 10:33:44 -0700 (PDT)
-Message-ID: <5ecf5ad4-a0f7-69f6-7d00-2ae4a83e5f29@linaro.org>
-Date:   Wed, 30 Mar 2022 19:33:43 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=si9BL6chisoTSaeqo99DJ1ZOvEtq2ZLE18b5aCraSsg=;
+        b=mHwoQ6opiClFwcDTiEXvppWCTs7LxAjwMBHjqmMQBxQZWWTzJSvqvQL6exPThkGdr1
+         kJbQAgl6sQZAwgYuUUo+uTgtkG4V8zNbiZssSFdxYv8SxP2AytyXAen5QwKHQw4q6LQM
+         ghiPzQkiwZmjJAx58UlfDEHfxnNibIAnVp7sJ7qY3OfAoorcAG9LhhnuFCAWDBfKRjlq
+         WEdeFZVu3ydZ/IHskmH5Grq8UVDw+QagiyoZS21AnoOwcRwvbd41aRL/PcMJERR7GalT
+         1pksnMEKc5mv/fMR5PmKHb7rukvKV2F5CAl3BrXeUvs4CZlvA3xGM9rjXBNS4ljk6d3F
+         v59w==
+X-Gm-Message-State: AOAM531TFUGjADwHK6+LdgqfSHmEvoJy5GGjAINw7OmVpf1vAQc5Aqj3
+        f507gguEYWyiTjtBiUvpxQM4WUfhBCRBgg==
+X-Google-Smtp-Source: ABdhPJySbMOHLeU5/XzBjryTSJpkyIppInBQPU+ymDQ0hfmSX4UC3FGqGyZmA0Oo3LbLxLf3acxdrw==
+X-Received: by 2002:a05:600c:4296:b0:38c:1b43:1562 with SMTP id v22-20020a05600c429600b0038c1b431562mr528312wmc.122.1648661778522;
+        Wed, 30 Mar 2022 10:36:18 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id i31-20020adf90a2000000b00205ad559c87sm12823380wri.21.2022.03.30.10.36.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 10:36:16 -0700 (PDT)
+Date:   Wed, 30 Mar 2022 18:36:14 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Felix Kuehling <felix.kuehling@amd.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: Re: [PATCH 1/1] drm/amdkfd: Create file descriptor after client is
+ added to smi_clients list
+Message-ID: <YkSVDnolf1jltrSR@google.com>
+References: <20220330075115.426035-1-lee.jones@linaro.org>
+ <a85f7751-8e60-d8f4-a281-4fb50389ae7e@amd.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v1 3/3] ARM: dts: rockchip: rk322x: use generic node name
- for dma
-Content-Language: en-US
-To:     Johan Jonker <jbx6244@gmail.com>, heiko@sntech.de,
-        zhangqing@rock-chips.com
-Cc:     robh+dt@kernel.org, krzk+dt@kernel.org, mturquette@baylibre.com,
-        sboyd@kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220330121923.24240-1-jbx6244@gmail.com>
- <20220330121923.24240-3-jbx6244@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220330121923.24240-3-jbx6244@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <a85f7751-8e60-d8f4-a281-4fb50389ae7e@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 30/03/2022 14:19, Johan Jonker wrote:
-> The node names should be generic, so fix this for the rk3228 dma node
-> and rename it to "dma-controller".
-> 
-> Signed-off-by: Johan Jonker <jbx6244@gmail.com>
-> ---
->  arch/arm/boot/dts/rk322x.dtsi | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
+On Wed, 30 Mar 2022, Felix Kuehling wrote:
 
-Squash it with your other change that type and submit one commit per
-sub-arch (so for all arm Rockchips).
+> 
+> Am 2022-03-30 um 03:51 schrieb Lee Jones:
+> > This ensures userspace cannot prematurely clean-up the client before
+> > it is fully initialised which has been proven to cause issues in the
+> > past.
+> > 
+> > Cc: Felix Kuehling <Felix.Kuehling@amd.com>
+> > Cc: Alex Deucher <alexander.deucher@amd.com>
+> > Cc: "Christian König" <christian.koenig@amd.com>
+> > Cc: "Pan, Xinhui" <Xinhui.Pan@amd.com>
+> > Cc: David Airlie <airlied@linux.ie>
+> > Cc: Daniel Vetter <daniel@ffwll.ch>
+> > Cc: amd-gfx@lists.freedesktop.org
+> > Cc: dri-devel@lists.freedesktop.org
+> > Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> > ---
+> >   drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c | 18 +++++++++---------
+> >   1 file changed, 9 insertions(+), 9 deletions(-)
+> > 
+> > diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c b/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c
+> > index e4beebb1c80a2..c5d5398d45cbf 100644
+> > --- a/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c
+> > +++ b/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c
+> > @@ -247,15 +247,6 @@ int kfd_smi_event_open(struct kfd_dev *dev, uint32_t *fd)
+> >   		return ret;
+> >   	}
+> > -	ret = anon_inode_getfd(kfd_smi_name, &kfd_smi_ev_fops, (void *)client,
+> > -			       O_RDWR);
+> > -	if (ret < 0) {
+> > -		kfifo_free(&client->fifo);
+> > -		kfree(client);
+> > -		return ret;
+> > -	}
+> > -	*fd = ret;
+> > -
+> >   	init_waitqueue_head(&client->wait_queue);
+> >   	spin_lock_init(&client->lock);
+> >   	client->events = 0;
+> > @@ -265,5 +256,14 @@ int kfd_smi_event_open(struct kfd_dev *dev, uint32_t *fd)
+> >   	list_add_rcu(&client->list, &dev->smi_clients);
+> >   	spin_unlock(&dev->smi_lock);
+> > +	ret = anon_inode_getfd(kfd_smi_name, &kfd_smi_ev_fops, (void *)client,
+> > +			       O_RDWR);
+> > +	if (ret < 0) {
+> 
+> Thank you for the patch. This looks like the correct solution. But you also
+> need to remove the client from the dev->smi_clients list here before
+> kfree(client). With that fixed, the patch is
 
-Best regards,
-Krzysztof
+Yes, that makes perfect sense.
+
+> Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+
+Thanks Felix.  I will provide a follow-up tomorrow.
+
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
