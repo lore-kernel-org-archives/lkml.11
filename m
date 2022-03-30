@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D67DAC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 958DAC433FE
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345971AbiC3MEZ (ORCPT
+        id S1345673AbiC3MEM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:04:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57684 "EHLO
+        Wed, 30 Mar 2022 08:04:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345340AbiC3LyX (ORCPT
+        with ESMTP id S1345245AbiC3LyS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:54:23 -0400
+        Wed, 30 Mar 2022 07:54:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E90DD275CB1;
-        Wed, 30 Mar 2022 04:50:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C2EE281825;
+        Wed, 30 Mar 2022 04:50:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE7CA61671;
-        Wed, 30 Mar 2022 11:50:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7906AC36AE2;
-        Wed, 30 Mar 2022 11:50:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 852486137A;
+        Wed, 30 Mar 2022 11:50:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 132A9C340F2;
+        Wed, 30 Mar 2022 11:50:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641057;
-        bh=CphQbbV0n6/aEe+zcIVsjiSJeqm4aIXll6oPKqDuX9c=;
+        s=k20201202; t=1648641038;
+        bh=9kDFyJtz5aRFD1HOBnwM1kO3is+NlX0c7whwfOn5IIw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ORSuHUlrm5ccbUE7dlG+wAJgTYoGaG2n8WXzntlbXbayHNUN/4gpF8uay7tHi4iO/
-         f2jk6EOBqpnnbytyFJj4sBarseFOqadiVzWY5EqSsuqwkXrUKpnYCU8LPuD/2RxxHu
-         uzkeg5pqOkB+VJn0VgFhWyv8ZGQKqS1oYO6AGKhOp2GONw5U8R1R6/EE60DDSiMKlv
-         NTWoNOK3app+yfA5MlnYsb0ry+3fErZsY5JpR1Ht06kIGl/nQz5DcbbKCOBOajF8Tu
-         HvIYuTw8XoGZ6MSBEZyD50MpTis0FSBvR/dWkJEI/grR3fCsDYd4dvC+vfZvwQ/FOk
-         0lAGpLUNClMEg==
+        b=ZYvzUhBierAwbS4jqwaaxIXmzNIfPJ+DcMt/1C+N4xIaMJzTWisXkNhKd8xLSQCFq
+         xOSFzrtYaySotrKn8K8u9zCna14qmwn0UKax/APkJSgZrp7XoMn9fFEC7gjhCySXeY
+         tr+J0Ujxke2QrVTWtaYqw6fXEDYooY6ixFGkblD2EOsG/WqYai3QCwGgaR++Kj0EEh
+         vAPbsuR//75RSFeU3Dhotu67mriVS6iPEQ3aP4MoAJJmNXkxtwhcgK3YYJ7dBz8PRy
+         CUKlyd3hd+ON9Teb5uOBLZwvya82+xaSXL2suqKELoIVJtAQNiFBl3UQfX2ReT8KoS
+         7FaT87P7bF6uw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ming Qian <ming.qian@nxp.com>,
-        Mirela Rabulea <mirela.rabulea@nxp.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 34/50] media: imx-jpeg: fix a bug of accessing array out of bounds
-Date:   Wed, 30 Mar 2022 07:49:48 -0400
-Message-Id: <20220330115005.1671090-34-sashal@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, gregkh@linuxfoundation.org,
+        linux-media@vger.kernel.org, devel@driverdev.osuosl.org
+Subject: [PATCH AUTOSEL 5.15 20/50] media: atomisp_gmin_platform: Add DMI quirk to not turn AXP ELDO2 regulator off on some boards
+Date:   Wed, 30 Mar 2022 07:49:34 -0400
+Message-Id: <20220330115005.1671090-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115005.1671090-1-sashal@kernel.org>
 References: <20220330115005.1671090-1-sashal@kernel.org>
@@ -53,39 +53,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ming Qian <ming.qian@nxp.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 97558d170a1236280407e8d29a7d095d2c2ed554 ]
+[ Upstream commit 2c39a01154ea57d596470afa1d278e3be3b37f6a ]
 
-When error occurs in parsing jpeg, the slot isn't acquired yet, it may
-be the default value MXC_MAX_SLOTS.
-If the driver access the slot using the incorrect slot number, it will
-access array out of bounds.
-The result is the driver will change num_domains, which follows
-slot_data in struct mxc_jpeg_dev.
-Then the driver won't detach the pm domain at rmmod, which will lead to
-kernel panic when trying to insmod again.
+The TrekStor SurfTab duo W1 10.1 has a hw bug where turning eldo2 back on
+after having turned it off causes the CPLM3218 ambient-light-sensor on
+the front camera sensor's I2C bus to crash, hanging the bus.
 
-Signed-off-by: Ming Qian <ming.qian@nxp.com>
-Reviewed-by: Mirela Rabulea <mirela.rabulea@nxp.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Add a DMI quirk table for systems on which to leave eldo2 on.
+
+Note an alternative fix is to turn off the CPLM3218 ambient-light-sensor
+as long as the camera sensor is being used, this is what Windows seems
+to do as a workaround (based on analyzing the DSDT). But that is not
+easy to do cleanly under Linux.
+
+Link: https://lore.kernel.org/linux-media/20220116215204.307649-10-hdegoede@redhat.com
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/imx-jpeg/mxc-jpeg.c | 1 -
- 1 file changed, 1 deletion(-)
+ .../media/atomisp/pci/atomisp_gmin_platform.c  | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/drivers/media/platform/imx-jpeg/mxc-jpeg.c b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
-index 637d73f5f4a2..37905547466b 100644
---- a/drivers/media/platform/imx-jpeg/mxc-jpeg.c
-+++ b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
-@@ -932,7 +932,6 @@ static void mxc_jpeg_device_run(void *priv)
- 		jpeg_src_buf->jpeg_parse_error = true;
- 	}
- 	if (jpeg_src_buf->jpeg_parse_error) {
--		jpeg->slot_data[ctx->slot].used = false;
- 		v4l2_m2m_src_buf_remove(ctx->fh.m2m_ctx);
- 		v4l2_m2m_dst_buf_remove(ctx->fh.m2m_ctx);
- 		v4l2_m2m_buf_done(src_buf, VB2_BUF_STATE_ERROR);
+diff --git a/drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c b/drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c
+index 62dc06e22476..cd0a771454da 100644
+--- a/drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c
++++ b/drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c
+@@ -729,6 +729,21 @@ static int axp_regulator_set(struct device *dev, struct gmin_subdev *gs,
+ 	return 0;
+ }
+ 
++/*
++ * Some boards contain a hw-bug where turning eldo2 back on after having turned
++ * it off causes the CPLM3218 ambient-light-sensor on the image-sensor's I2C bus
++ * to crash, hanging the bus. Do not turn eldo2 off on these systems.
++ */
++static const struct dmi_system_id axp_leave_eldo2_on_ids[] = {
++	{
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "TrekStor"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "SurfTab duo W1 10.1 (VT4)"),
++		},
++	},
++	{ }
++};
++
+ static int axp_v1p8_on(struct device *dev, struct gmin_subdev *gs)
+ {
+ 	int ret;
+@@ -763,6 +778,9 @@ static int axp_v1p8_off(struct device *dev, struct gmin_subdev *gs)
+ 	if (ret)
+ 		return ret;
+ 
++	if (dmi_check_system(axp_leave_eldo2_on_ids))
++		return 0;
++
+ 	ret = axp_regulator_set(dev, gs, gs->eldo2_sel_reg, gs->eldo2_1p8v,
+ 				ELDO_CTRL_REG, gs->eldo2_ctrl_shift, false);
+ 	return ret;
 -- 
 2.34.1
 
