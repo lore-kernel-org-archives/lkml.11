@@ -2,50 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60400C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:10:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8FBEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:10:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344634AbiC3ML7 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:11:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35712 "EHLO
+        id S243193AbiC3MMF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 08:12:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345298AbiC3LyV (ORCPT
+        with ESMTP id S1345348AbiC3LyY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:54:21 -0400
+        Wed, 30 Mar 2022 07:54:24 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BD2127794D;
-        Wed, 30 Mar 2022 04:50:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12793278552;
+        Wed, 30 Mar 2022 04:50:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 49BDC6160D;
-        Wed, 30 Mar 2022 11:50:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0171EC36AE3;
-        Wed, 30 Mar 2022 11:50:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D583D6137A;
+        Wed, 30 Mar 2022 11:50:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A553FC340EE;
+        Wed, 30 Mar 2022 11:50:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641050;
-        bh=XxKnDKHN7uWSh3d7QU0MY2zHSvQUFMZhMCLIRBDoNLA=;
+        s=k20201202; t=1648641058;
+        bh=BS9+xBaILP2NTve/YGTy5aoxWamiPKm3xneZ2z7LGuc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iaNZIakFgG9NL4+0BoJ3SG2+slX70BkcykdF0ByNih39eIAOGLdEDTMVYfaaXwtfI
-         DUUGvpcbv00+84IX3L+zbpR5B2diq6hptR9jufiTTXDGPs4msLMaFJcg7mQfQN49jv
-         y5MhgOCh/6L8VkFxfan9wTuvb2wuJOpN9GRMUyDaTeylp5HPxQNbeTQs5lv+VPssWc
-         FnLQGgwhNmVrVsX+2mqWXU7vqLkKmLvuchYAOUxmQJaDMKiCqpPLvUg6e/yfW4eFIz
-         nfP9N7+UO3Vv4w2ehSS3+Ao0ElB6/fdI4hA293U3Jsptwd+0nYc2jGwrCsziTGg6/j
-         /KJmQlTAKixAg==
+        b=HRgNF35cGOVYGYbzkEVXMz7hZiM4Sbk5s8JWVEl9tAxokX+nBPWukvA12Y9rIOv7H
+         ex1YAWh7xdbO5JYfTjNu8v73GfL/rEp0JI6xNYMynOGsYtBhr+w7O61oJ8NyiO9Bl4
+         1Q/eXLfo6jwGcUKx8wgs+NhU4mG6d1sSen61NhOVkX0ncEhA5HIx5Ht3igXgPDUS8f
+         EydjQYJVtvF3D0PBGLRxQDJFH4aRF3LiHUkraNpc7jysVbXWwmRR0tS2VguiGd1/Sl
+         qHij7vaGJAK+yyT2Qq2hB+dphf3SISLbGsvOhqierVcW+dBUZRvQjhZf3/ZQhLQB3F
+         v+jD6WFPtGprg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stephen Brennan <stephen.s.brennan@oracle.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Sasha Levin <sashal@kernel.org>, gregkh@linuxfoundation.org
-Subject: [PATCH AUTOSEL 5.15 29/50] printk: Add panic_in_progress helper
-Date:   Wed, 30 Mar 2022 07:49:43 -0400
-Message-Id: <20220330115005.1671090-29-sashal@kernel.org>
+Cc:     =?UTF-8?q?Daniel=20Gonz=C3=A1lez=20Cabanelas?= <dgcbueu@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 35/50] media: cx88-mpeg: clear interrupt status register before streaming video
+Date:   Wed, 30 Mar 2022 07:49:49 -0400
+Message-Id: <20220330115005.1671090-35-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115005.1671090-1-sashal@kernel.org>
 References: <20220330115005.1671090-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,43 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephen Brennan <stephen.s.brennan@oracle.com>
+From: Daniel González Cabanelas <dgcbueu@gmail.com>
 
-[ Upstream commit 77498617857f68496b360081dde1a492d40c28b2 ]
+[ Upstream commit 56cb61f70e547e1b0cdfe6ff5a1f1ce6242e6d96 ]
 
-This will be used help avoid deadlocks during panics. Although it would
-be better to include this in linux/panic.h, it would require that header
-to include linux/atomic.h as well. On some architectures, this results
-in a circular dependency as well. So instead add the helper directly to
-printk.c.
+Some cx88 video cards may have transport stream status interrupts set
+to 1 from cold start, causing errors like this:
 
-Suggested-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: Stephen Brennan <stephen.s.brennan@oracle.com>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
-Signed-off-by: Petr Mladek <pmladek@suse.com>
-Link: https://lore.kernel.org/r/20220202171821.179394-2-stephen.s.brennan@oracle.com
+  cx88xx: cx88_print_irqbits: core:irq mpeg  [0x100000] ts_err?*
+  cx8802: cx8802_mpeg_irq: mpeg:general errors: 0x00100000
+
+According to CX2388x datasheet, the interrupt status register should be
+cleared before enabling IRQs to stream video.
+
+Fix it by clearing the Transport Stream Interrupt Status register.
+
+Signed-off-by: Daniel González Cabanelas <dgcbueu@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/printk/printk.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/media/pci/cx88/cx88-mpeg.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 99221b016c68..f9aebe88cc53 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -256,6 +256,11 @@ static void __up_console_sem(unsigned long ip)
- }
- #define up_console_sem() __up_console_sem(_RET_IP_)
+diff --git a/drivers/media/pci/cx88/cx88-mpeg.c b/drivers/media/pci/cx88/cx88-mpeg.c
+index 680e1e3fe89b..2c1d5137ac47 100644
+--- a/drivers/media/pci/cx88/cx88-mpeg.c
++++ b/drivers/media/pci/cx88/cx88-mpeg.c
+@@ -162,6 +162,9 @@ int cx8802_start_dma(struct cx8802_dev    *dev,
+ 	cx_write(MO_TS_GPCNTRL, GP_COUNT_CONTROL_RESET);
+ 	q->count = 0;
  
-+static bool panic_in_progress(void)
-+{
-+	return unlikely(atomic_read(&panic_cpu) != PANIC_CPU_INVALID);
-+}
++	/* clear interrupt status register */
++	cx_write(MO_TS_INTSTAT,  0x1f1111);
 +
- /*
-  * This is used for debugging the mess that is the VT code by
-  * keeping track if we have the console semaphore held. It's
+ 	/* enable irqs */
+ 	dprintk(1, "setting the interrupt mask\n");
+ 	cx_set(MO_PCI_INTMSK, core->pci_irqmask | PCI_INT_TSINT);
 -- 
 2.34.1
 
