@@ -2,85 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D590BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 23:46:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B7CFC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 23:48:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351878AbiC3XsF (ORCPT
+        id S1351883AbiC3Xt6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 19:48:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57868 "EHLO
+        Wed, 30 Mar 2022 19:49:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351885AbiC3Xry (ORCPT
+        with ESMTP id S1351873AbiC3Xtw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 19:47:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AE5126AF1;
-        Wed, 30 Mar 2022 16:46:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CBB6161835;
-        Wed, 30 Mar 2022 23:46:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90909C340F3;
-        Wed, 30 Mar 2022 23:46:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648683968;
-        bh=GgLh9GaXBFfzZFvigI/FoQkf3w02HRSkun2SLU+RGKw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VOLS35aUbOhsV8s0ZpKxFUrs8U+D1Hh4dgnhfk3eufxMR5GOnL0m8sNkoUExtfZpZ
-         QXKOyJGaa0Ni2jFx6uH/hDmbzujyhPdi7CSZ5rc3X55EuMXIitMZDo9eELAvYbw7v5
-         ItxhzHRnWaEB4TjILQhK/bBc1AuuUq6OU53og5uQ52cjVlb31tO2pvr0DIQNplJSz2
-         xMihUHpU9ldtX7V91wFu9BqLYGjEJ+8uiTyigeix4zPJ+FQ4PUsqPDn/4GqWi3QOfk
-         f3iLZXjvlrD3MYFVlCHjUUJDL45Z+1vGc5N3UIUTs7iLVWMFFtZ/9C6v2pJ8KZtTx+
-         zpaY4C11rSbuw==
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Masahiro Yamada <masahiroy@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Kees Cook <keescook@chromium.org>
-Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-um@lists.infradead.org, llvm@lists.linux.dev,
-        patches@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH 2/2] Revert "um: clang: Strip out -mno-global-merge from USER_CFLAGS"
-Date:   Wed, 30 Mar 2022 16:45:28 -0700
-Message-Id: <20220330234528.1426991-3-nathan@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220330234528.1426991-1-nathan@kernel.org>
-References: <20220330234528.1426991-1-nathan@kernel.org>
+        Wed, 30 Mar 2022 19:49:52 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9620F65D08
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 16:48:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648684086; x=1680220086;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=obIfx9k5hx5Z4k2JmchPyAooDjeyIKkUcVb3LuSn/hA=;
+  b=gCEeTUx9CcOsAWwQmNz2CN0jYaIHmq9D9TesvocyYT1kG6ja3hma8gYU
+   9Ma22aJFonGvfJdJkwlGlP40Ls95mGshnuZhIPD9ouTa3SdALRJqwIT2m
+   T4iwmISJBC0YidkO1zxMPYr9TE2BsKOAnYmy0BNISBx9UknFh+aWqq291
+   qAUyLI9hLUhg6G38YXqrcd/M6ECIvxN7CyPtH+ie4FGGS+F0Lb5D7cAXM
+   kCXopYXokOiybZvg1bG/i2ZzmpgfftGq6Kit69OmJ2h6+6Wy6Xqmx29gJ
+   Jn2TkRlHhhhy0aLRwVBbJDavRl5CPKAWVZjihquHvDLT0mmLy40CqSsB9
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="259385026"
+X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
+   d="scan'208";a="259385026"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 16:48:06 -0700
+X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
+   d="scan'208";a="565921010"
+Received: from schen9-mobl.amr.corp.intel.com ([10.209.125.146])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 16:48:06 -0700
+Message-ID: <7aa67fedb4b6dc9126bc59ee993fa18d0e472475.camel@linux.intel.com>
+Subject: Re: [sched/fair]  ddb3b1126f:  hackbench.throughput -25.9%
+ regression
+From:   Tim Chen <tim.c.chen@linux.intel.com>
+To:     kernel test robot <oliver.sang@intel.com>
+Cc:     0day robot <lkp@intel.com>, Chen Yu <yu.c.chen@intel.com>,
+        Walter Mack <walter.mack@intel.com>,
+        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
+        ying.huang@intel.com, feng.tang@intel.com,
+        zhengjun.xing@linux.intel.com, fengwei.yin@intel.com,
+        Peter Zijlstra <peterz@infradead.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Ingo Molnar <mingo@elte.hu>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Mel Gorman <mgorman@suse.de>, aubrey.li@linux.intel.com
+Date:   Wed, 30 Mar 2022 16:48:05 -0700
+In-Reply-To: <20220330094632.GB6999@xsang-OptiPlex-9020>
+References: <20220330094632.GB6999@xsang-OptiPlex-9020>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.4 (3.34.4-1.fc31) 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit 6580c5c18fb3df2b11c5e0452372f815deeff895.
+On Wed, 2022-03-30 at 17:46 +0800, kernel test robot wrote:
+> 
+> Greeting,
+> 
+> FYI, we noticed a -25.9% regression of hackbench.throughput due to commit:
+> 
 
-This patch is buggy, as noted in the patch linked below. The root cause
-has been solved by removing '-mno-global-merge' for the entire kernel.
+Will try to check the regression seen.
 
-Link: https://lore.kernel.org/r/20220322173547.677760-1-nathan@kernel.org/
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
----
- arch/um/Makefile | 4 ----
- 1 file changed, 4 deletions(-)
+Thanks.
 
-diff --git a/arch/um/Makefile b/arch/um/Makefile
-index 320b09cd513c..f2fe63bfd819 100644
---- a/arch/um/Makefile
-+++ b/arch/um/Makefile
-@@ -75,10 +75,6 @@ USER_CFLAGS = $(patsubst $(KERNEL_DEFINES),,$(patsubst -I%,,$(KBUILD_CFLAGS))) \
- 		-D_FILE_OFFSET_BITS=64 -idirafter $(srctree)/include \
- 		-idirafter $(objtree)/include -D__KERNEL__ -D__UM_HOST__
- 
--ifdef CONFIG_CC_IS_CLANG
--USER_CFLAGS := $(patsubst -mno-global-merge,,$(USER_CFLAGS))
--endif
--
- #This will adjust *FLAGS accordingly to the platform.
- include $(srctree)/$(ARCH_DIR)/Makefile-os-$(OS)
- 
--- 
-2.35.1
+Tim
+
+> 
+> 
+> commit: 
+>   d9ad181b93 ("sched/fair: Don't rely on ->exec_start for migration")
+>   ddb3b1126f ("sched/fair: Simple runqueue order on migrate")
+> 
+> d9ad181b93f83b36 ddb3b1126fe93e8d6e059600488 
+> ---------------- --------------------------- 
+>          %stddev     %change         %stddev
+>              \          |                \  
+>      92566           -25.9%      68598 ±  2%  hackbench.throughput
+>      85.50           +40.8%     120.35 ±  2%  hackbench.time.elapsed_time
+>      85.50           +40.8%     120.35 ±  2%  hackbench.time.elapsed_time.max
+>    9674391 ±  2%    +466.2%   54780205 ±  2%  hackbench.time.involuntary_context_switches
+>       1240           +42.6%       1768 ±  3%  hackbench.time.system_time
+>      89.58           +20.4%     107.85        hackbench.time.user_time
+>   36626407          +270.2%  1.356e+08 ±  2%  hackbench.time.voluntary_context_switches
+>    2500490 ±  3%     +78.2%    4456808 ±  3%  cpuidle..usage
+>     118.45 ±  2%     +29.2%     153.02 ±  2%  uptime.boot
+> 
 
