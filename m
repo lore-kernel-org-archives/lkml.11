@@ -2,228 +2,330 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08686C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 21:25:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4206CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 21:27:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349102AbiC3V1S (ORCPT
+        id S1351228AbiC3V3F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 17:27:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35354 "EHLO
+        Wed, 30 Mar 2022 17:29:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232691AbiC3V1R (ORCPT
+        with ESMTP id S232691AbiC3V3A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 17:27:17 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2056.outbound.protection.outlook.com [40.107.237.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0775C6623B
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 14:25:32 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mXHTeCuZgA40fDH70QCPQBd/y0AxAehEPzhRwrQQhrScQza2DVn3bhSs8R7ppjg8OUpIpxOakrKSLZl7VmdxTSTP3icmqnSNCqPoWMoblYA+aiSRK4K7lg4qz1pobAnObzXb+Qw+bay1RqipTnt1kDmGyK2XHXHNT2bM2HTNnCulsWlQldT2GGokGYR9nN7FxvkGzdPCdg5PeoSvgxUjWDnmJpWis0cY6Vhjef+SfDHlEg6HI5BAACde0BbJFinNxiH6nfsA05fil1wE0QsfDohl1UjqaQHOY9DWxO/r1MnrcnFQZpeSRcP6Gk20zOBOuGvOMNBjL+XFqwViEGXUGA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4biywbqyqRUmF1oZat2GwMSkE6CZL988mBWzZIBHEnk=;
- b=YmsnqhEtCDBtWy+SVFtQUShIpA8oXBpa5EpPKqVhDJufHN1oBqpVed2aTGjMyIYG3Qtz8Gd87skQRsSQ4s11W57RVnUwUicJCJ/n3MxTwd08Cf3k2E+jJDOfwxwYSxuOrCKkfU/BUD1mkSL+yEjedj+KDvhM+CF8HX6+uAhPw5moz6SCEzIbt2k0KWJ5SnlIki0dia7rtC0wujheS07KIPDemojhDa5Ssz6SIWCkfXpZ8SZF1FTkbGASp0ly8dYDmW7h9V4To7jpDRDVJDfByrvBZal42YhUD+H5yJSX9OOK8JBLKGa/YtUhL2YodPbT3+/yStFozQkiTyq1j5e81Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4biywbqyqRUmF1oZat2GwMSkE6CZL988mBWzZIBHEnk=;
- b=Xu+bj1CAxt5MQQBIgDutqqj35hs5F7KUxfDKXQMnWEZS09m3QeIZFrQJF4H7Q3cG9c9r91ikhasA6/L1Tc7xABmiEkAQdsbQJJlqJbVtSFiQG7e1NbrrpZi39JKjNVVHArsq2FpZH3z1wi4PEU3li7GdbsJS1Sim1Z/Hnx6CUbPj955IJGPVpIiyKrPRUNaDAc2u6QRmWVIBtsziM9BZSK1UCNWjP53aQvxRpNevUB+pT74oF/k55nVzD5XSfm5EAKzQtpBGPgoNtx73jGb2nDqMiopKXoI8j4K5cueR37zwGIj0Za3wsTd4NveWNjEkmk5AOAVm9L7hVviEMjb0RQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB3823.namprd12.prod.outlook.com (2603:10b6:208:168::26)
- by BN8PR12MB3425.namprd12.prod.outlook.com (2603:10b6:408:61::28) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.19; Wed, 30 Mar
- 2022 21:25:30 +0000
-Received: from MN2PR12MB3823.namprd12.prod.outlook.com
- ([fe80::69f1:dff6:826b:7d9c]) by MN2PR12MB3823.namprd12.prod.outlook.com
- ([fe80::69f1:dff6:826b:7d9c%5]) with mapi id 15.20.5102.023; Wed, 30 Mar 2022
- 21:25:30 +0000
-From:   Zi Yan <ziy@nvidia.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Wed, 30 Mar 2022 17:29:00 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 419C644747;
+        Wed, 30 Mar 2022 14:27:14 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id x31so13450773pfh.9;
+        Wed, 30 Mar 2022 14:27:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=tNpJ5Wp3g9qLmfmWDDWFXCwZdVqr76NxjlK+EkTDsUE=;
+        b=lEisIQQ8NkZDjFI04IeUbqVRNXz8mEJXiM2w5qCn/v6isXda0A5o3rtlMaFs8BXBrj
+         /9SItqnxfdDoCsj5EoAthdhMEZH6wLOOxBvvXLaJIRMVSlPieRUYR+gol+wuXLk6Rmow
+         1WOhELGOOq5tpn3aRPeqSH0T4W3tPd+IZdHxtFWKRE2D1LQSZOKfLVXAg6skFtYZAegW
+         B3mScsxteen1R1X0teejTHJWWlAkt26FmZbQ7CzKeDolm0L/J3ch5uROhedUT4q1hL8S
+         WOPZu2sP0hWWXIZ3r4//biHsv4admaAFtudDtQGD+vaGsyNHOtKG4lpNDRtmlOVKMsC7
+         RC9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=tNpJ5Wp3g9qLmfmWDDWFXCwZdVqr76NxjlK+EkTDsUE=;
+        b=Eyd4ZhTJRmqurUI1SECUNC5LH99GJ6T4io1HP++QXKO81xeW8Omk53Sgw4N+AwJof2
+         oQDvKj6Qd4nvRD+YFFy49IoVEhRvESh6P70dgCs7/8LtpXe97JXyKp+RcAPf74b46LPZ
+         S2gXWDV5c/TqFiCWYf7lwbh5Wtf+x+hmGj/msXK7u3gG4o21gdXUfyiGq9TvrtmVGxXB
+         k97EDgQrunU3L5dkxpSINm0thOLBUZrK/7h7p0BnEsAbWzp6mkWy2DnGdsjHVhy6u3hg
+         0nn8WrCJWF5CF3ItjZxWfI2vC7CrzlPkWEkJ84HEs9wOr90T23k/XV3JTQ7GJh0/aviq
+         pv3g==
+X-Gm-Message-State: AOAM531eUNijaVVd9aEQ4zqbTjcp3vMTrf5oGtqFBgWBULMlyVkChCpb
+        AYWB7O4rPvcye67ClGd9nP8=
+X-Google-Smtp-Source: ABdhPJzXZipcBVSePl6qxrEsG59gZGosBgV2kvbFHEVhGP6w5ADkZKG8xwDNoANpsMDxot0qnQVqWQ==
+X-Received: by 2002:a63:290:0:b0:386:5374:b8b5 with SMTP id 138-20020a630290000000b003865374b8b5mr7682497pgc.528.1648675633648;
+        Wed, 30 Mar 2022 14:27:13 -0700 (PDT)
+Received: from MBP-98dd607d3435.dhcp.thefacebook.com ([2620:10d:c090:500::1:e77])
+        by smtp.gmail.com with ESMTPSA id s3-20020a056a00194300b004f6da3a1a3bsm25273090pfk.8.2022.03.30.14.27.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 14:27:13 -0700 (PDT)
+Date:   Wed, 30 Mar 2022 14:27:09 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
         LKML <linux-kernel@vger.kernel.org>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        David Hildenbrand <david@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux-MM <linux-mm@kvack.org>
-Subject: Re: [BUG] Crash on x86_32 for: mm: page_alloc: avoid merging non-fallbackable pageblocks with others
-Date:   Wed, 30 Mar 2022 17:25:28 -0400
-X-Mailer: MailMate (1.14r5870)
-Message-ID: <AF9D3EF9-B070-4ADE-A2D3-C466A4A2D125@nvidia.com>
-In-Reply-To: <20220330165337.7138810e@gandalf.local.home>
-References: <20220330154208.71aca532@gandalf.local.home>
- <CAHk-=whz_8tRNGCr09X59nMW3JBzFLE-g-F-brxd+AkK+RceCw@mail.gmail.com>
- <B7789993-75EC-4F74-B4E6-AF1CC2CBD9D4@nvidia.com>
- <20220330165337.7138810e@gandalf.local.home>
-Content-Type: multipart/signed;
- boundary="=_MailMate_BA3F1FA9-3595-45EA-AFF3-25218BF01ED9_=";
- micalg=pgp-sha512; protocol="application/pgp-signature"
-X-ClientProxiedBy: BL1P223CA0015.NAMP223.PROD.OUTLOOK.COM
- (2603:10b6:208:2c4::20) To MN2PR12MB3823.namprd12.prod.outlook.com
- (2603:10b6:208:168::26)
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>
+Subject: Re: [PATCH bpf-next v3 06/17] HID: allow to change the report
+ descriptor from an eBPF program
+Message-ID: <20220330212709.6bpfhnmvon4dd7xc@MBP-98dd607d3435.dhcp.thefacebook.com>
+References: <20220318161528.1531164-1-benjamin.tissoires@redhat.com>
+ <20220318161528.1531164-7-benjamin.tissoires@redhat.com>
+ <CAADnVQLvhWxEtHETg0tasJ7Fp5JHNRYWdjhnxi1y1gBpXS=bvQ@mail.gmail.com>
+ <CAO-hwJJXR3jtAvLF1phUa5pKZzVkDxAAHO5+7R50hL-fVhDYyA@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 843e861f-e286-477f-4092-08da1293d0ef
-X-MS-TrafficTypeDiagnostic: BN8PR12MB3425:EE_
-X-Microsoft-Antispam-PRVS: <BN8PR12MB3425B3245F73C4FC6FE80674C21F9@BN8PR12MB3425.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Am8zOFnwMYm7yWFfEsdyIqS4EWWgyp2GvYbiG72mb/V3UygJ3kqwLxvR7WbkNu/P4puUCCZ/EZxwXdvwf8CPkbPszYdC/ckOTcMxkLt8lq75/bYBdDWs/eWSH7cWqf5tY/+7Kie8YwNXF/q+JaIQ4studuBJi+6JglgCK2KSW8M+W2wBDE/Pab/6jWfMjeuOiBBIiNQi7e4CRCNOqCy8NfKUiFPbmJ5ITqnHkPC0M0+OtuzyyeTeprnzGMpiKqRFMdpJtTwNyvWmmz5RmsK+aejXv7VkGeLBWVEMOAAQNbz27ck/AW9l48lHJ//5ZQSITBbjn98PwjG8VyGb5mQbI5gptCDrZg9GDWzRyrs8qzsIEsbC4rPQ/dDKQIAYVW/vVih8kyu024PsT0P/Ub+39xMFEieGpj1c398ylamilNRODUa3iUMDILOPPfapvkSTDVulYaMUlcNS60zgnawxBLjcAwj2cJGE2tM9QLabNTHz6KrLywHvTFbOU1Y9v5npa0yL1exKFB8LUM8PLni4FiJIfeZkGgAcfxiezJ+PKj0j5cTAlfKiso/8Xe4lM4a4YcsdA/R59AzIkvwqnG+Adzu/CLEMPA4q/4/Oj23FCr6KBCS69J8Yd1xFwNL0mMzI/nUUMfnYTdxmTO3Hk286a6LADAFmLFzJdGsHP/1+8tVIr3ECrQpAgbpLCPTZ0hw2VbbDTpECI6k3ioUKxiAQRjKtq/0JlqpkqE3DgNYMv0M=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB3823.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(316002)(6486002)(6506007)(508600001)(6916009)(33964004)(54906003)(26005)(83380400001)(53546011)(66476007)(186003)(21480400003)(86362001)(8936002)(6512007)(7416002)(36756003)(2906002)(235185007)(4326008)(2616005)(33656002)(66946007)(66556008)(5660300002)(38100700002)(8676002)(45980500001)(72826004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dlhJNHB5RTJSWlYxcHdMYWM5UGIrbjRXRytRZkNhbUZsdlVGY0kwZVJrNTA2?=
- =?utf-8?B?RUdNUy9LUVA0Ulk0M1YyUStSTWhNTDlLL3ArSDNlcGlJZE5ROG1qbTR0dWlr?=
- =?utf-8?B?N2VKbHl0MnJRNlNsNmxaMTNqLy9FN0ZHb2JRODBNWDJwdXVwbElwZ1VSNzZT?=
- =?utf-8?B?N3dYL1VsQ2luOWVjbU5MQWlGUHVkRElubEViQnp4c1Z4Z0hBaWQ3ZUJqUXlE?=
- =?utf-8?B?R0oxemFjT2ZObEJHdkFCVzVmZWtkVThxT3VMN014eHkxT05IQnJZa3hrOFll?=
- =?utf-8?B?ekxnbEMvaXlPWm00Q1E5L0xLVEpIQ0FDUjJSV2Q4QVlReXllakNYMjE1aXVn?=
- =?utf-8?B?ZTc2YTJkYktaSDRKTmEwOU1KcnQ5dlB6U0RLT3NJMVBFcm9vd3U0Wkk5M2xr?=
- =?utf-8?B?akp2SGJrYitoQmRsS0duQW5Wc2tJbjJBQUZEL2FROWRyMjExWjBkMG9pQXM2?=
- =?utf-8?B?YkYvelNyQnlvWVp2OTl2KzFJek1NUGM0K0x3emF1b0k4a2pwV3JBSkJ4VDJ2?=
- =?utf-8?B?S0ZYeFFSbVRZZVJMd3VtNUN2N1VEd2QxTE1SZFRKRnhHR0JpNVF4MDFNNUJ6?=
- =?utf-8?B?T2JRSmlJcGh5eS93MGh1QTJGdC82NTdRMVc4UjdvVnBwMldNajU4T1RUUElZ?=
- =?utf-8?B?QXZITElzalBUbm9XTVFmSytNWGJXVXBFVnlhVlQxeHpQbzFrM3Z6aGpxVG9M?=
- =?utf-8?B?bEVCVkNGY2c0eGxlVHNXbkh4R0Z2NTZ2c0FBNEFIYlYwS2JWK3VtSk1wRnF2?=
- =?utf-8?B?YzJYaEhXUmNHT3NGYmlZZUR6SFpFdzVEWU0rSXlnMldheXlETEQ2MHYvZjJu?=
- =?utf-8?B?cnVQOXNmQWQ5akhhWlEwOC9nUldZWXg2K0tPZUxVWklvbW1wQjNiNjBsQ3lY?=
- =?utf-8?B?TmZ1SVNEVEtJK2NVempJTloxc1RMODlLVEFSUk1XaXlnZFNXeHprdlRJMyto?=
- =?utf-8?B?R08xVUFJYXdtZVFHU2t3SHRMN2ZxYytzSUZnQis4VlVKemp4Wk1SNzlwZXND?=
- =?utf-8?B?cjJCSVJWTEV5cC80MHlLamFMZEJuR3NSVWZtZXZ5TUtPOW5VRVpIYkwzY1FS?=
- =?utf-8?B?NjlWWGtVbDVlTUhDV2VkNVRITU9ibkZIWU50dTloQ2lGNWZJY01QU3JlQkpm?=
- =?utf-8?B?Nm9CeVk1aGhBYitna0hxM2FyQlM0VUNkRTJ4Qi9jaVB3ZWxMRVc3bEFiTENp?=
- =?utf-8?B?eEFGWkNzeERCNmhSeHJDaFVHQlI3R292MGs5Yml2Q1BJOHVSd2VYTS8vaG1G?=
- =?utf-8?B?T0F0bklKdmxwRUxEbEFFdndEaC8rRGhOd1BRcXlpUUxiZUVnOURhV3U4OHhi?=
- =?utf-8?B?L1ZrREloTjNoelIrajlBY21DVWRzcWloMGRkRTRUaUR1c1ptdzlXbU1QYi9s?=
- =?utf-8?B?djFRbjJwMzNOeDgxTDg1N1l5Y0xxd3FMcm5pQ3FoaVRtSE9QUXpXN0xsSlpJ?=
- =?utf-8?B?Q1MwZ2RLemtTd0I4MDF2d3J6TEZMbnhRL1lmZERZc3JVMFkzOEpqd3BydDA3?=
- =?utf-8?B?Umx0eTFsUVh1WGtaWWNKZkV3NFJXVGJacFRPMnNJMlc1L1FESFU0K2tFYm1r?=
- =?utf-8?B?d1VaK2VUallaY0xTVzFjcFBranJnZUFmT0JkbjludDlDVnl6V3B2d01TbHVn?=
- =?utf-8?B?UTJlMWZDOVJsSERva0crd3NBNkxHVEFTVHRCUUNiRUpIZ29HVTE5QU53Y1RD?=
- =?utf-8?B?L1lRaXRUdWNwSjU2aldqOWhQYm5xOUJLcC9YN3lIbTFpNjdrZnRmR3l5TTkr?=
- =?utf-8?B?SnlBcEZEMGNJVHRNNUR0VkpVR0w5MGNkSHdRT2JTMDJDTUtUL01uemF0eFhp?=
- =?utf-8?B?c0FxSlBzb0VkYW80dnJGT0N5YStZNEk0dkIrTW9hT0xuVHhrY1ZGSHNxbjBZ?=
- =?utf-8?B?aXNJTDNHM0xFcFY1UEJnL3B3NHhZdDhveUFFZGVTa3NBdmxWNkNIWTNRSFUx?=
- =?utf-8?B?ZHNhN0lzSlA4V0VWelR4ZEROUmpFUWwxcDhRakZKOThiTDhKM0NMaFVkanZF?=
- =?utf-8?B?clNmODJBRng2ZzVkRWdtSDhEdWdITnpsME9VSkZtVU9FNFBaS2ZOWWRFcXNE?=
- =?utf-8?B?aURtRVdkK09HL09LamNxLzE2QlZZV09JRW0rQ2JkS3lzb0JHc1podW1FYTd1?=
- =?utf-8?B?d3NVRHE3KzBubFQycHozY2FPRnRmUXcxS3JkR3NJNlhMSHR0aFNBSWdQYUZB?=
- =?utf-8?B?NE5vVzJsL1k5TGd5ekJmN0tXd202azlaWWNZUFhDbDArei9wMkozRno1VXRT?=
- =?utf-8?B?b2ZSQm9xSlNmRXBzMDRvWS8zREUzbDUrcWdJcE1hMXF0RDJMZVZldEpId3lG?=
- =?utf-8?B?Uy9zVnBIWDNhcDROVC9pZFZHaEZkTmxBZllRTkVPWDVEbm5rWHN4dz09?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 843e861f-e286-477f-4092-08da1293d0ef
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB3823.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2022 21:25:30.2898
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: pqJrs2T4jNnFIdnv/5tdOxt+jIZ/CJJiL/XSeOItNXTa6KwGghbVEN83mIYPeNvI
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3425
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAO-hwJJXR3jtAvLF1phUa5pKZzVkDxAAHO5+7R50hL-fVhDYyA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---=_MailMate_BA3F1FA9-3595-45EA-AFF3-25218BF01ED9_=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+On Wed, Mar 23, 2022 at 05:08:25PM +0100, Benjamin Tissoires wrote:
+> Hi Alexei,
+> 
+> On Tue, Mar 22, 2022 at 11:51 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Fri, Mar 18, 2022 at 9:16 AM Benjamin Tissoires
+> > <benjamin.tissoires@redhat.com> wrote:
+> > >
+> > > +u8 *hid_bpf_report_fixup(struct hid_device *hdev, u8 *rdesc, unsigned int *size)
+> > > +{
+> > > +       int ret;
+> > > +       struct hid_bpf_ctx_kern ctx = {
+> > > +               .type = HID_BPF_RDESC_FIXUP,
+> > > +               .hdev = hdev,
+> > > +               .size = *size,
+> > > +       };
+> > > +
+> > > +       if (bpf_hid_link_empty(&hdev->bpf, BPF_HID_ATTACH_RDESC_FIXUP))
+> > > +               goto ignore_bpf;
+> > > +
+> > > +       ctx.data = kmemdup(rdesc, HID_MAX_DESCRIPTOR_SIZE, GFP_KERNEL);
+> > > +       if (!ctx.data)
+> > > +               goto ignore_bpf;
+> > > +
+> > > +       ctx.allocated_size = HID_MAX_DESCRIPTOR_SIZE;
+> > > +
+> > > +       ret = hid_bpf_run_progs(hdev, &ctx);
+> > > +       if (ret)
+> > > +               goto ignore_bpf;
+> > > +
+> > > +       if (ctx.size > ctx.allocated_size)
+> > > +               goto ignore_bpf;
+> > > +
+> > > +       *size = ctx.size;
+> > > +
+> > > +       if (*size) {
+> > > +               rdesc = krealloc(ctx.data, *size, GFP_KERNEL);
+> > > +       } else {
+> > > +               rdesc = NULL;
+> > > +               kfree(ctx.data);
+> > > +       }
+> > > +
+> > > +       return rdesc;
+> > > +
+> > > + ignore_bpf:
+> > > +       kfree(ctx.data);
+> > > +       return kmemdup(rdesc, *size, GFP_KERNEL);
+> > > +}
+> > > +
+> > >  int __init hid_bpf_module_init(void)
+> > >  {
+> > >         struct bpf_hid_hooks hooks = {
+> > >                 .hdev_from_fd = hid_bpf_fd_to_hdev,
+> > >                 .pre_link_attach = hid_bpf_pre_link_attach,
+> > > +               .post_link_attach = hid_bpf_post_link_attach,
+> > >                 .array_detach = hid_bpf_array_detach,
+> > >         };
+> > >
+> > > diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
+> > > index 937fab7eb9c6..3182c39db006 100644
+> > > --- a/drivers/hid/hid-core.c
+> > > +++ b/drivers/hid/hid-core.c
+> > > @@ -1213,7 +1213,8 @@ int hid_open_report(struct hid_device *device)
+> > >                 return -ENODEV;
+> > >         size = device->dev_rsize;
+> > >
+> > > -       buf = kmemdup(start, size, GFP_KERNEL);
+> > > +       /* hid_bpf_report_fixup() ensures we work on a copy of rdesc */
+> > > +       buf = hid_bpf_report_fixup(device, start, &size);
+> >
+> > Looking at this patch and the majority of other patches...
+> > the code is doing a lot of work to connect HID side with bpf.
+> > At the same time the evolution of the patch series suggests
+> > that these hook points are not quite stable. More hooks and
+> > helpers are being added.
+> > It tells us that it's way too early to introduce a stable
+> > interface between HID and bpf.
+> 
+> I understand that you might be under the impression that the interface
+> is changing a lot, but this is mostly due to my poor knowledge of all
+> the arcanes of eBPF.
+> The overall way HID-BPF works is to work on a single array, and we
+> should pretty much be sorted out. There are a couple of helpers to be
+> able to communicate with the device, but the API has been stable in
+> the kernel for those for quite some time now.
+> 
+> The variations in the hooks is mostly because I don't know what is the
+> best representation we can use in eBPF for those, and the review
+> process is changing that.
+> 
+> > We suggest to use __weak global functions and unstable kfunc helpers
+> > to achieve the same goal.
+> > This way HID side and bpf side can evolve without introducing
+> > stable uapi burden.
+> > For example this particular patch can be compressed to:
+> > __weak int hid_bpf_report_fixup(struct hid_device *hdev, u8 *rdesc,
+> > unsigned int *size)
+> > {
+> >    return 0;
+> > }
+> > ALLOW_ERROR_INJECTION(ALLOW_ERROR_INJECTION, ERRNO);
+> >
+> > - buf = kmemdup(start, size, GFP_KERNEL);
+> > + if (!hid_bpf_report_fixup(device, start, &size))
+> > +   buf = kmemdup(start, size, GFP_KERNEL);
+> >
+> > Then bpf program can replace hid_bpf_report_fixup function and adjust its
+> > return value while reading args.
+> 
+> I appreciate the suggestion and gave it a try, but AFAICT this doesn't
+> work for HID (please correct me if I am wrong):
+> 
+> - I tried to use __weak to replace the ugly struct bpf_hid_hooks
+> 
+> This struct is in place simply because the HID module can be compiled
+> in as a kernel module and we might not have the symbols available from
+> kernel/bpf when it is a separate module.
 
-On 30 Mar 2022, at 16:53, Steven Rostedt wrote:
+why is that? The kernel modules should be compiled with BTF and
+bpf infra can attach to those functions the same way.
+__weak suggestion in the above is not to override it by the module.
+It's there to prevent compiler from inlining it.
+__weak int hid_bpf_report_fixup(struct hid_device *hdev, u8 *rdesc,
+   unsigned int *size) {...}
+Will be only one.
+Either in kernel proper or in kernel module. It's up to HID subsystem.
 
-> On Wed, 30 Mar 2022 16:29:28 -0400
-> Zi Yan <ziy@nvidia.com> wrote:
->
->> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
->> index bdc8f60ae462..83a90e2973b7 100644
->> --- a/mm/page_alloc.c
->> +++ b/mm/page_alloc.c
->> @@ -1108,6 +1108,8 @@ static inline void __free_one_page(struct page *=
-page,
->>
->>                 buddy_pfn =3D __find_buddy_pfn(pfn, order);
->>                 buddy =3D page + (buddy_pfn - pfn);
->> +               if (!page_is_buddy(page, buddy, order))
->> +                       goto done_merging;
->>                 buddy_mt =3D get_pageblock_migratetype(buddy);
->>
->>                 if (migratetype !=3D buddy_mt
->>
->
-> The above did not apply to Linus's tree, nor even the problem commit
-> (before or after), but I found where the code is, and added it manually=
-=2E
->
-> It does appear to allow the machine to boot.
->
-I just pulled Linus=E2=80=99s tree and grabbed the diff. Anyway, thanks.
+> Either I did something wrong, but it seems that when we load the
+> module in the kernel, there is no magic that overrides the weak
+> symbols from the ones from the modules.
+> 
+> - for hid_bpf_report_fixup(), this would mean that a BPF program could
+> overwrite the function
+> 
+> This is great, but I need to have one program per device, not one
+> globally defined function.
+> I can not have a generic report_fixup in the system, simply because
+> you might need 2 different functions for 2 different devices.
 
-I would like to get more understanding of the issue before blindly sendin=
-g
-this as a fix.
+That's fine. Take a look at how libxdp is doing the chaining.
+One bpf prog is attached to a main entry point and it does
+demux (or call other progs sequentially) based on its own logic.
+For example you have bpf prog that does:
+SEC("fentry/hid_bpf_report_fixup")
+int main_hid_bpf_report_fixup(struct hid_device *hdev, u8 *rdesc,
+   unsigned int *size)
+{
+  if (hdev->id == ..)
+    another_bpf_prog();
+}
 
-Merge the other thread:
->
-> Not sure if this matters or not, but my kernel command line has:
->
->   crashkernel=3D256M
->
-> Could that have caused this to break?
+Or call another bpf prog via bpf_tail_call.
 
-Unlikely, 256MB is MAX_ORDER_NR_PAGES aligned (MAX_ORDER is 11 here).
-__find_buddy_pfn() will not get any buddy_pfn from crashkernel memory
-region, since that would cross MAX_ORDER_NR_PAGES boundary.
+There are lots of option to connect them.
 
-page_is_buddy() checks page_is_guard(buddy), PageBuddy(buddy),
-buddy_order(buddy), and page_zone_id(buddy), where page_is_guard(buddy)
-is always false since CONFIG_DEBUG_PAGEALLOC is not set in your config.
-So either PageBuddy(buddy) is false, buddy_order(buddy) !=3D order,
-or page_zone_id(buddy) is not the same as page_zone_id(page).
+You can also have N bpf progs. All look like:
+SEC("fentry/hid_bpf_report_fixup")
+int first_hid_bpf_report_fixup(struct hid_device *hdev, u8 *rdesc,
+   unsigned int *size)
+{
+  if (hdev->id != mine_id)
+    return 0;
+  // do work;
+}
 
-Do you mind adding the following code right before my fix code above
-and provide a complete boot log? I would like to understand what
-went wrong. Thanks.
+And attach them all as fmod_ret type bpf prog to the same
+kernel hid_bpf_report_fixup() function.
+The bpf trampoline will call them sequentially.
 
-pr_info("buddy_pfn: %lx, PageBuddy: %d, buddy_order: %d (vs %d), page_zon=
-e_id: %d (vs %d)\n",
-        buddy_pfn, PageBuddy(buddy), buddy_order(buddy), order, page_zone=
-_id(buddy),
-        page_zone_id(page));
+> 
+> We could solve that by auto-generating the bpf program based on which
+> devices are available, but that would mean that users will see a
+> reconnect of all of their input devices when they plug in a new one,
+> and will also require them to have LLVM installed, which I do not
+> want.
 
+Of course. No need to regenrated them with LLVM on the fly.
 
---
-Best Regards,
-Yan, Zi
+> - for stuff like hid_bpf_raw_event(), I want to have multiple programs
+> attached to the various devices, and not necessarily the same across
+> devices.
+> 
+> This is basically the same as above, except that I need to chain programs.
 
---=_MailMate_BA3F1FA9-3595-45EA-AFF3-25218BF01ED9_=
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-Content-Type: application/pgp-signature; name="signature.asc"
+Chaining is already available for fentry/fexit/fmod_ret programs.
+ 
+> For instance, we could have a program that "fixes" one device, but I
+> also want to attach a tracing program on top of it to monitor what is
+> happening.
 
------BEGIN PGP SIGNATURE-----
+That's also possible.
+You can have a main bpf prog as entry point that calls global functions
+of this bpf program. Later you can install another bpf prog that
+will replace one of the previously loaded global bpf functions.
+So fully programmable and arbitrary chaining is available.
 
-iQJDBAEBCgAtFiEE6rR4j8RuQ2XmaZol4n+egRQHKFQFAmJEysgPHHppeUBudmlk
-aWEuY29tAAoJEOJ/noEUByhUuJIQAJZXnQfS7HSasI03ON7nskoLMx22gOAurHIM
-Gk6j5YhPSeQWMEiI/zbM/oEPhs/L02O22gKzvDrmAYu4ocTkKijxR9a0NJjuoI88
-oHx4iMN5xoVcUwRbUXoqjDDT9x1xft6ePdnFtctVroc+ZlyUMjHZjurnvydiN1T6
-2YoUx2/eEsHZhQs8SRvtRrN09LusZv9HJDZit+y3WB1eMB6QTmOdBhJBrFkqB474
-clNWGP+oikICTzeQ13zqiR0G8I4nzyIJHB8BdYz9m3oNo/1F871vLw4yedH5WosJ
-FPBJOSalDhEZidUMD/1OzvKkQRlA0AFusv257EZJaIA33fzzqlA7yvVqW0eZAPZh
-4kWPdAS9pKkrjNREO/lCQlTDe46379tLozj5+woAptlcCIZTlkBgsKR4nA3JHB49
-+0KcRGIv5GLJmAbZi7PJC/KY9kKIrjKZo+mxvoOIYb7ycZa3/Zn43GBrSeMTAzJx
-hNueeg0zONcp7lnZHXSCgWngJNcG0RDlHoK2fpB9Gvett9c9Ya/FASANX/uOnuQv
-PIPe/zorqXB2QXscMtlVbX858XkurgVguXrcDppu329WxLp6ZZzHL5rnw6VErfBx
-R+8hTEneJ7moYEZol8wTzn7e0E9bIkU/5VDwOSSxQk+HLFkpxOZdJYz+Mf8LVdXv
-y0F6tNto
-=7fuB
------END PGP SIGNATURE-----
+> >
+> > Similar approach can be done with all other hooks.
+> >
+> > Once api between HID and bpf stabilizes we can replace nop functions
+> > with writeable tracepoints to make things a bit more stable
+> > while still allowing for change of the interface in the future.
+> >
+> > The amount of bpf specific code in HID core will be close to zero
+> > while bpf can be used to flexibly tweak it.
+> 
+> Again, I like the idea, but I clearly don't see where you want to go.
+> From what I see, this is incompatible with the use cases I have.
+> 
+> >
+> > kfunc is a corresponding mechanism to introduce unstable api
+> > from bpf into the kernel instead of stable helpers.
+> > Just whitelist some functions as unstable kfunc helpers and call them
+> > from bpf progs.
+> > See net/bpf/test_run.c and bpf_kfunc_call* for inspiration.
+> >
+> 
+> I also like this idea.
+> 
+> However, for hid_hw_raw_request() I can not blindly enable that
+> function in all program types. This function makes the kernel sleep,
+> and so we can not use it while in IRQ context.
+> I think I can detect if we are in IRQ or not, but is it really worth
+> enabling it across all BPF program types when we know that only
+> SEC("hid/user_event") will use it?
 
---=_MailMate_BA3F1FA9-3595-45EA-AFF3-25218BF01ED9_=--
+There are sleepable and non-sleepable fmod_ret/fentry/fexit programs.
+The hid subsystem would need to white list all ALLOW_ERROR_INJECTION
+kernel functions approriately.
+So that sleepable bpf prog won't attach to a hook where IRQs are disabled.
+
+> Also, I am not sure how we can make bpf_hid_get_data() work with that.
+> We need to teach the verifier how much memory is provided, and I do
+> not see how you can do that with kfunc.
+
+If there is anything missing in the verifier let's extend that.
+Everyone will benefit.
+
+PS
+Sorry for delay. Looks like your emails are going into some sort
+of queue in my gmail and receive them later. Or some other odd
+filtering is going on. Maybe it's related to giant cc list in your patches.
