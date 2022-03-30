@@ -2,121 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4326BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 17:22:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A21B6C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 17:23:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349242AbiC3RXx (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 13:23:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41206 "EHLO
+        id S245604AbiC3RZ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 13:25:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349333AbiC3RX1 (ORCPT
+        with ESMTP id S230410AbiC3RZZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 13:23:27 -0400
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1AF3B271
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 10:21:40 -0700 (PDT)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 22UH7CgV004223;
-        Wed, 30 Mar 2022 12:07:12 -0500
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 22UH76l5004220;
-        Wed, 30 Mar 2022 12:07:06 -0500
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Wed, 30 Mar 2022 12:07:06 -0500
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>,
-        Paul Menzel <pmenzel@molgen.mpg.de>,
-        Alexey Kardashevskiy <aik@ozlabs.ru>, jniethe5@gmail.com,
-        ganeshgr@linux.ibm.com, wangborong@cdjrlc.com,
-        bigunclemax@gmail.com, Miroslav Benes <mbenes@suse.cz>,
-        hbh25y@gmail.com, mikey@neuling.org,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Bhaskar Chowdhury <unixbhaskar@gmail.com>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        Helge Deller <deller@gmx.de>, danielhb413@gmail.com,
-        haren@linux.ibm.com, mamatha4@linux.vnet.ibm.com,
-        Corentin Labbe <clabbe@baylibre.com>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Thierry Reding <treding@nvidia.com>,
-        kernel.noureddine@gmail.com, nathanl@linux.ibm.com,
-        Petr Mladek <pmladek@suse.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Kees Cook <keescook@chromium.org>,
-        Arnd Bergmann <arnd@arndb.de>, guozhengkui@vivo.com,
-        kjain@linux.ibm.com, chenjingwen6@huawei.com,
-        Nick Piggin <npiggin@gmail.com>, oss@buserror.net,
-        rmclure@linux.ibm.com, maddy@linux.ibm.com,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        psampat@linux.ibm.com, sachinp@linux.ibm.com,
-        Anders Roxell <anders.roxell@linaro.org>,
-        ldufour@linux.ibm.com, hbathini@linux.ibm.com,
-        Athira Jajeev <atrajeev@linux.vnet.ibm.com>,
-        farosas@linux.ibm.com, Geoff Levand <geoff@infradead.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        sourabhjain@linux.ibm.com, Julia Lawall <Julia.Lawall@inria.fr>,
-        Ritesh Harjani <riteshh@linux.ibm.com>, cgel.zte@gmail.com,
-        Vaibhav Jain <vaibhav@linux.ibm.com>, tobias@waldekranz.com,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Jakob Koschel <jakobkoschel@gmail.com>
-Subject: Re: [GIT PULL] Please pull powerpc/linux.git powerpc-5.18-1 tag
-Message-ID: <20220330170706.GV614@gate.crashing.org>
-References: <87zglefhxd.fsf@mpe.ellerman.id.au> <CAHk-=whk4jihDM+zkhZPYRyNO0-YA1_-K9_NyC3EDsX+gkxC-w@mail.gmail.com> <87wngefnsu.fsf@mpe.ellerman.id.au> <20220330112733.GG163591@kunlun.suse.cz> <87k0cbfuf4.fsf@mpe.ellerman.id.au>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87k0cbfuf4.fsf@mpe.ellerman.id.au>
-User-Agent: Mutt/1.4.2.3i
+        Wed, 30 Mar 2022 13:25:25 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0C42419A4
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 10:23:38 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id r13so42914066ejd.5
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 10:23:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=lFGRlwHO8DZZibuZB12Q3q0KJ9J4i7SsANciQNupGSc=;
+        b=qmDLecCd01e+sSrDveD/6uh4obbOZ4dCAVLoJPSmmzz1LZ4bMUzbjb/H0fSGt/yfjL
+         1VumrCZfzucXBtjQrS8+rOivK9x2vrGvoDO28RhS6trZxm+d6NYA97D5AenMLKoq65BH
+         WEDmJO4plKw1PxvDGtZ73sPL2MTfFg731CdmQ2OS53pVU0JFi50ZgSPWtmfeOo1Qs6Kr
+         bTEY4kyqtimxCysSqa4IxEXp8gaoJkaxgiXLrp34xr51BM634KcH3gteMqMVOXVw8hSn
+         3Ekb6b2cWVgdHN7tC7/JWmCNsnlFVBN7MuhglKRKOErbzRuTFni8GxTrQ4kBDd+hPNqe
+         qSvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=lFGRlwHO8DZZibuZB12Q3q0KJ9J4i7SsANciQNupGSc=;
+        b=nU70Rgld7dXDmuhxEA7/fnKIUXZRiwnVOKdFXn5KO6c+yKrqblehK+FtO0vp54v4yp
+         GN19+/n4mU+JnEQinCuJyLMtQljGKd+GeiePgBkJ8NRjAehGzj0RBfnBFOH7H3Vhf9cQ
+         iTioYJOk0V9CKo+9Mp618VKajePC1s4hi8ef5qur5EVu8G7Xa8iOjNyYh1fHnuhyXnwW
+         XOdVxh9WrYfOwlNoEzZRlW6WT93vXnN+hV9ZjZdQ+W2sjGmgF5DEnQaS7YJjWEDOFDuR
+         3bvJybJYP2R9vcc7Z/whNT/RNfk8HgOInoHQjZPqqxdGKLnKCkoV/HtiPs1yoX56xEsf
+         VrSQ==
+X-Gm-Message-State: AOAM530r78+DIqk2pARc8gVy2PTa0G3nvWV1j9G9vonZwoiH8q/xdls+
+        olZVDKZkncshe9Y3oLGADPQ45Q==
+X-Google-Smtp-Source: ABdhPJxCRbp7lwdnmnW1b25GlQ1PLn901nDGWQR9xhR3YvHUEp60iNCTaurivkdMULoHearFSxrG8A==
+X-Received: by 2002:a17:906:58ce:b0:6da:b548:1bbb with SMTP id e14-20020a17090658ce00b006dab5481bbbmr685412ejs.14.1648661017311;
+        Wed, 30 Mar 2022 10:23:37 -0700 (PDT)
+Received: from [192.168.0.164] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id g23-20020a17090670d700b006ccfd4163f7sm8117582ejk.206.2022.03.30.10.23.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Mar 2022 10:23:36 -0700 (PDT)
+Message-ID: <e1763b04-567e-8287-83bf-4d05b0193a5b@linaro.org>
+Date:   Wed, 30 Mar 2022 19:23:35 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] CHROMIUM: arm64: dts: qcom: Add sc7180-gelarshie
+Content-Language: en-US
+To:     Matthias Kaehlcke <mka@chromium.org>,
+        Mars Chen <chenxiangrui@huaqin.corp-partner.google.com>
+Cc:     agross@kernel.org, Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220330090947.9100-1-chenxiangrui@huaqin.corp-partner.google.com>
+ <YkSQY5NSYcov21Ig@google.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <YkSQY5NSYcov21Ig@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 12:21:03AM +1100, Michael Ellerman wrote:
-> Michal Suchánek <msuchanek@suse.de> writes:
-> > On Mon, Mar 28, 2022 at 08:07:13PM +1100, Michael Ellerman wrote:
-> >> Linus Torvalds <torvalds@linux-foundation.org> writes:
-> >> > On Fri, Mar 25, 2022 at 3:25 AM Michael Ellerman <mpe@ellerman.id.au> wrote:
-> >> 
-> >> > That said:
-> >> >
-> >> >> There's a series of commits cleaning up function descriptor handling,
-> >> >
-> >> > For some reason I also thought that powerpc had actually moved away
-> >> > from function descriptors, so I'm clearly not keeping up with the
-> >> > times.
-> >> 
-> >> No you're right, we have moved away from them, but not entirely.
-> >> 
-> >> Functions descriptors are still used for 64-bit big endian, but they're
-> >> not used for 64-bit little endian, or 32-bit.
-> >
-> > There was a patch to use ABIv2 for ppc64 big endian. I suppose that
-> > would rid usof the gunction descriptors for good.
+On 30/03/2022 19:16, Matthias Kaehlcke wrote:
+> On Wed, Mar 30, 2022 at 05:09:46PM +0800, Mars Chen wrote:
 > 
-> It would be nice.
+>> Subject: CHROMIUM: arm64: dts: qcom: Add sc7180-gelarshie
 > 
-> The hesitation in the past was that the GNU toolchain developers don't
-> officially support BE+ELFv2, though it is in use so it does work.
-
-We do not officially support ELFv2 BE because there are no significant
-users, so we cannot have the same confidence it works correctly.
-
-It isn't tested often with GCC for example, mainly because it isn't
-convenient to do without pre-packaged user space for it (and on the
-other hand, there isn't much demand for it).
-
-> > Maybe it's worth resurrecting?
+> No CHROMIUM tag for upstream posts.
 > 
-> Yeah maybe we should think about it again. If it builds with clang/lld
-> that would be a real plus.
+>> Initial attempt at Gelarshie device tree.
+> 
+> This is not very useful. If you don't want to reveal much information
+> about an unreleased device you could say something generic like
+> "Add device tree for Gelarshie, a trogdor variant".
+> 
+>> BUG=b:225756600
+>> TEST=emerge-strongbad chromeos-kernel-5_4
+> 
+> drop these
+> 
+>> Signed-off-by: Mars Chen <chenxiangrui@huaqin.corp-partner.google.com>
+>> Reported-by: kernel test robot <lkp@intel.com>
+>> ---
+>>  arch/arm64/boot/dts/qcom/Makefile             |   1 +
+>>  .../dts/qcom/sc7180-trogdor-gelarshie-r0.dts  |  15 +
+>>  .../dts/qcom/sc7180-trogdor-gelarshie.dtsi    | 304 ++++++++++++++++++
+>>  3 files changed, 320 insertions(+)
+>>  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-gelarshie-r0.dts
+>>  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-gelarshie.dtsi
+>>
+>> diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
+>> index f9e6343acd03..cf8f88b065c3 100644
+>> --- a/arch/arm64/boot/dts/qcom/Makefile
+>> +++ b/arch/arm64/boot/dts/qcom/Makefile
+>> @@ -57,6 +57,7 @@ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-coachz-r1.dtb
+>>  dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-coachz-r1-lte.dtb
+>>  dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-coachz-r3.dtb
+>>  dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-coachz-r3-lte.dtb
+>> +dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-gelarshie-r0.dtb
+>>  dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-homestar-r2.dtb
+>>  dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-homestar-r3.dtb
+>>  dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-homestar-r4.dtb
+>> diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-gelarshie-r0.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-gelarshie-r0.dts
+>> new file mode 100644
+>> index 000000000000..027d6d563a5f
+>> --- /dev/null
+>> +++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-gelarshie-r0.dts
+>> @@ -0,0 +1,15 @@
+>> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+>> +/*
+>> + * Google Gelarshie board device tree source
+>> + *
+>> + * Copyright 2022 Google LLC.
+>> + */
+>> +
+>> +/dts-v1/;
+>> +
+>> +#include "sc7180-trogdor-gelarshie.dtsi"
+>> +
+>> +/ {
+>> +	model = "Google Gelarshie (rev0+)";
+>> +	compatible = "google,gelarshie", "qcom,sc7180";
+>> +};
+>> diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-gelarshie.dtsi b/arch/arm64/boot/dts/qcom/sc7180-trogdor-gelarshie.dtsi
+>> new file mode 100644
+>> index 000000000000..842f6cac6c27
+>> --- /dev/null
+>> +++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-gelarshie.dtsi
+>> @@ -0,0 +1,304 @@
+>> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+>> +/*
+>> + * Google Gelarshie board device tree source
+>> + *
+>> + * Copyright 2022 Google LLC.
+>> + */
+>> +
+>> +#include "sc7180.dtsi"
+>> +#include "sc7180-trogdor-mipi-camera.dtsi"
+> 
+> drop the mipi camera include, it is not upstream
 
-With GCC it should work fine still.  But no doubt you will find some
-edge cases...  which you won't find until you try :-)
+The file should not build in such form, so probably it was not tested on
+mainline kernel... :-(
 
-
-Segher
+Best regards,
+Krzysztof
