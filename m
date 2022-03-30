@@ -2,49 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B00F8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:48:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DD6DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:48:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344006AbiC3Lt6 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 07:49:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59206 "EHLO
+        id S245634AbiC3LuC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 07:50:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343851AbiC3LtM (ORCPT
+        with ESMTP id S1343934AbiC3Lth (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:49:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B72A25F64A;
-        Wed, 30 Mar 2022 04:47:19 -0700 (PDT)
+        Wed, 30 Mar 2022 07:49:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D14A25DA82;
+        Wed, 30 Mar 2022 04:47:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B87F6163D;
-        Wed, 30 Mar 2022 11:47:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82392C36AF9;
-        Wed, 30 Mar 2022 11:47:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 678996163D;
+        Wed, 30 Mar 2022 11:47:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED0D2C36AE5;
+        Wed, 30 Mar 2022 11:47:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648640838;
-        bh=Qb/oTH/UWrZXJOhd5uOtZEXXGxt5HFJZw3S+Cihmmxc=;
+        s=k20201202; t=1648640840;
+        bh=nnKz3CwlhnOgLRD0/OFJQpvEXwYz99+Bei9Evrp6ydk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I1aa8Ya1+FrIIl4sdug97jAKnJHDg8NdP1KcpK8o9j4gFM4bAiHIxSKvPBt6nV5Tw
-         jlbu59nht82ZxjwitFUwIrGMZ1kuNfeGIr11vMjJO9V75T4hens4eN5DVxjOIa//X5
-         xsVeyU3N5Ffk65kMkEBjSDxb1DTPbLMNDQ2biFaKWWKsJIFux2H+q9nDOje/89PB3c
-         nV3y36t6wPkHUTg0GzZlQZBFInhVeT6+D7kdNDPgED4PXjEsGRUZkMnmEO21IVV9RC
-         HhCOEJhzS0t38sxDx3IcAX0SarU0p/cBuz0gn56h4H/sjGXeSvgmL7uNpm0Otj6V3s
-         A8/ID49/nT9Yw==
+        b=Dur1vGVD+6g9ysDCg3Rnc7LjBtJ6B6HvDPNkIv7Z7mAOdjSJN29Un0oLRFTCq1xUp
+         miMwhMDzbOf9thiqLeHeeVKjX5pZS+yyiPUoeblTkCd41jteyBe9HQShoT3qgSY4Ff
+         /WVvoYpjNsrr9NUO3WnCKd/uq7jbS57pEiYC61dS2OIgwzcA7MTvBhzW3/DcPmNOKh
+         v+2i+v6Y8B+UViPmy6H1J92G/5cGzWNcaLflY+VXRuDYKmSM0NCC3MmeX658KrxBYO
+         6fbkZ19ej3yKvwlUixoM6kQY8XNu/L9bXZllwfw3LcsTlfRh6lmy/ZgFsQaRspL6tc
+         yIu4W3+N2blgQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Richard Schleich <rs@noreya.tech>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        mark.rutland@arm.com, linux@armlinux.org.uk, rjui@broadcom.com,
-        sbranden@broadcom.com, bcm-kernel-feedback-list@broadcom.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.17 19/66] ARM: dts: bcm2837: Add the missing L1/L2 cache information
-Date:   Wed, 30 Mar 2022 07:45:58 -0400
-Message-Id: <20220330114646.1669334-19-sashal@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, gregkh@linuxfoundation.org,
+        linux-media@vger.kernel.org, devel@driverdev.osuosl.org
+Subject: [PATCH AUTOSEL 5.17 21/66] media: atomisp_gmin_platform: Add DMI quirk to not turn AXP ELDO2 regulator off on some boards
+Date:   Wed, 30 Mar 2022 07:46:00 -0400
+Message-Id: <20220330114646.1669334-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330114646.1669334-1-sashal@kernel.org>
 References: <20220330114646.1669334-1-sashal@kernel.org>
@@ -56,110 +52,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Richard Schleich <rs@noreya.tech>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit bdf8762da268d2a34abf517c36528413906e9cd5 ]
+[ Upstream commit 2c39a01154ea57d596470afa1d278e3be3b37f6a ]
 
-This patch fixes the kernel warning
-"cacheinfo: Unable to detect cache hierarchy for CPU 0"
-for the bcm2837 on newer kernel versions.
+The TrekStor SurfTab duo W1 10.1 has a hw bug where turning eldo2 back on
+after having turned it off causes the CPLM3218 ambient-light-sensor on
+the front camera sensor's I2C bus to crash, hanging the bus.
 
-Signed-off-by: Richard Schleich <rs@noreya.tech>
-Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
-[florian: Align and remove comments matching property values]
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Add a DMI quirk table for systems on which to leave eldo2 on.
+
+Note an alternative fix is to turn off the CPLM3218 ambient-light-sensor
+as long as the camera sensor is being used, this is what Windows seems
+to do as a workaround (based on analyzing the DSDT). But that is not
+easy to do cleanly under Linux.
+
+Link: https://lore.kernel.org/linux-media/20220116215204.307649-10-hdegoede@redhat.com
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/bcm2837.dtsi | 49 ++++++++++++++++++++++++++++++++++
- 1 file changed, 49 insertions(+)
+ .../media/atomisp/pci/atomisp_gmin_platform.c  | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/arch/arm/boot/dts/bcm2837.dtsi b/arch/arm/boot/dts/bcm2837.dtsi
-index 0199ec98cd61..5dbdebc46259 100644
---- a/arch/arm/boot/dts/bcm2837.dtsi
-+++ b/arch/arm/boot/dts/bcm2837.dtsi
-@@ -40,12 +40,26 @@
- 		#size-cells = <0>;
- 		enable-method = "brcm,bcm2836-smp"; // for ARM 32-bit
+diff --git a/drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c b/drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c
+index 1cc581074ba7..9a194fbb305b 100644
+--- a/drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c
++++ b/drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c
+@@ -748,6 +748,21 @@ static int axp_regulator_set(struct device *dev, struct gmin_subdev *gs,
+ 	return 0;
+ }
  
-+		/* Source for d/i-cache-line-size and d/i-cache-sets
-+		 * https://developer.arm.com/documentation/ddi0500/e/level-1-memory-system
-+		 * /about-the-l1-memory-system?lang=en
-+		 *
-+		 * Source for d/i-cache-size
-+		 * https://magpi.raspberrypi.com/articles/raspberry-pi-3-specs-benchmarks
-+		 */
- 		cpu0: cpu@0 {
- 			device_type = "cpu";
- 			compatible = "arm,cortex-a53";
- 			reg = <0>;
- 			enable-method = "spin-table";
- 			cpu-release-addr = <0x0 0x000000d8>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
-+			next-level-cache = <&l2>;
- 		};
- 
- 		cpu1: cpu@1 {
-@@ -54,6 +68,13 @@
- 			reg = <1>;
- 			enable-method = "spin-table";
- 			cpu-release-addr = <0x0 0x000000e0>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
-+			next-level-cache = <&l2>;
- 		};
- 
- 		cpu2: cpu@2 {
-@@ -62,6 +83,13 @@
- 			reg = <2>;
- 			enable-method = "spin-table";
- 			cpu-release-addr = <0x0 0x000000e8>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
-+			next-level-cache = <&l2>;
- 		};
- 
- 		cpu3: cpu@3 {
-@@ -70,6 +98,27 @@
- 			reg = <3>;
- 			enable-method = "spin-table";
- 			cpu-release-addr = <0x0 0x000000f0>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
-+			next-level-cache = <&l2>;
-+		};
++/*
++ * Some boards contain a hw-bug where turning eldo2 back on after having turned
++ * it off causes the CPLM3218 ambient-light-sensor on the image-sensor's I2C bus
++ * to crash, hanging the bus. Do not turn eldo2 off on these systems.
++ */
++static const struct dmi_system_id axp_leave_eldo2_on_ids[] = {
++	{
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "TrekStor"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "SurfTab duo W1 10.1 (VT4)"),
++		},
++	},
++	{ }
++};
 +
-+		/* Source for cache-line-size + cache-sets
-+		 * https://developer.arm.com/documentation/ddi0500
-+		 * /e/level-2-memory-system/about-the-l2-memory-system?lang=en
-+		 * Source for cache-size
-+		 * https://datasheets.raspberrypi.com/cm/cm1-and-cm3-datasheet.pdf
-+		 */
-+		l2: l2-cache0 {
-+			compatible = "cache";
-+			cache-size = <0x80000>;
-+			cache-line-size = <64>;
-+			cache-sets = <512>; // 512KiB(size)/64(line-size)=8192ways/16-way set
-+			cache-level = <2>;
- 		};
- 	};
- };
+ static int axp_v1p8_on(struct device *dev, struct gmin_subdev *gs)
+ {
+ 	int ret;
+@@ -782,6 +797,9 @@ static int axp_v1p8_off(struct device *dev, struct gmin_subdev *gs)
+ 	if (ret)
+ 		return ret;
+ 
++	if (dmi_check_system(axp_leave_eldo2_on_ids))
++		return 0;
++
+ 	ret = axp_regulator_set(dev, gs, gs->eldo2_sel_reg, gs->eldo2_1p8v,
+ 				ELDO_CTRL_REG, gs->eldo2_ctrl_shift, false);
+ 	return ret;
 -- 
 2.34.1
 
