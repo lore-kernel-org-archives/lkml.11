@@ -2,120 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1663C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:57:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7ED8C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:59:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346446AbiC3N6w (ORCPT
+        id S1346496AbiC3OAv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 09:58:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55614 "EHLO
+        Wed, 30 Mar 2022 10:00:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346397AbiC3N6r (ORCPT
+        with ESMTP id S245501AbiC3OAr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 09:58:47 -0400
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90C9E7DE3D
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 06:57:02 -0700 (PDT)
-Received: by mail-qt1-x831.google.com with SMTP id 10so18066427qtz.11
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 06:57:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DfvJTlEY8U7rra0eOB4jSr3teV5G1+HBXZRLoOcm1Ys=;
-        b=mjLfZ6UICPE4iHot6Ft1DhBnopoHKAN0JBk1FOc/MuPwOrJy1Stvy0GVGi0Q+fR9tq
-         07OwRKo2kChON44WIX85CxEk/g6ZXG6ugpSeA/+PvwJBfkIBhqZTxe2iE0aZRwhQOZi9
-         6l5apirhR8yrtb1BoRb8k4D71+N6Phgx6DI7JunT45g/p6e0hUmrYmGBoQbKUQ7s9rPp
-         lNcRjJ/7ZBoRdUBdgdR2B2aqjROeAlOandhaySdcqZOXnyUtCpiGLhVzLuEzMJ2lbmPN
-         FmqOhL7OrvpaJJvHXmK5jdSL3kd/T37DY6545pdWqa/iB7yqIPHiWraSy/OLiQ8cZRdK
-         bQKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DfvJTlEY8U7rra0eOB4jSr3teV5G1+HBXZRLoOcm1Ys=;
-        b=sfplyPWg63IWMo/mtmP5n0vsUXRlUN0Dqb1IGw6g6t7N+pDXZl1OWg0rHt1sc3WYbj
-         602j41PhFM/eQe9U5dP3StdBx7hKIV0Quj4e1vv2bPysI6hyyReze84k9lAUJdtMPCdY
-         mSK0tS5gQ+mQzngeP6sdfEgvItVU13RmjfzgomRCY6dYvk2eAPUpNrjrQ0wqda8H80Hn
-         LDa7V/rafKUO0xWJUiycAUjs/U2tPv5LI7cDRHlAA2wB0SCtYpx6dVLbW2DrE6WGXJDa
-         n36rGMkIph6H7ZapvolH/t6iXLdUfZim/NPDnjpuLNxM41QK+YRLSvzchWkhQm81Q9tl
-         zNMA==
-X-Gm-Message-State: AOAM532ba9Yxx0vvuZ0r3hbJq/MflXk79hmb8YxyKMl6J93y9xk+6tV1
-        umq3XMg1d1NeozlexU1J5yA+MaUcw0Xt5v+dhM7BYKWy3R9vWw==
-X-Google-Smtp-Source: ABdhPJwhihrh627ejTmkR2/dwhhgRa9NCHMkD2bfquh9shcIyQ2M+CtQmIYPEpKXvc/K90YI61NwYWoUqc7IeP//fxs=
-X-Received: by 2002:a05:622a:1743:b0:2e1:f657:a415 with SMTP id
- l3-20020a05622a174300b002e1f657a415mr32924295qtk.7.1648648621483; Wed, 30 Mar
- 2022 06:57:01 -0700 (PDT)
+        Wed, 30 Mar 2022 10:00:47 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40D53CD316;
+        Wed, 30 Mar 2022 06:59:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=ekBWMhJOJrwEuMsGOrTITmAnhNKuavdbk+/QN6gEvTs=; b=YSvsl56WcO71Nuk3c5QDcSCxxy
+        aqmLXXZtjnnXGU/x8qu7GjHoG3Gp9GlgliYoXWsgeP6v49TZjlQBa95By5+e0IYOPimXw9UdZjqAr
+        gS3NTY/kV27ln73N0wWEoMsk4JzQkWtd5NEp2fVFXSH6qaRpO8TT+G+qmv0wSmRdd13g=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nZYqC-00DK3H-O3; Wed, 30 Mar 2022 15:58:28 +0200
+Date:   Wed, 30 Mar 2022 15:58:28 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     'Guenter Roeck' <linux@roeck-us.net>,
+        'Michael Walle' <michael@walle.cc>,
+        Xu Yilun <yilun.xu@intel.com>, Tom Rix <trix@redhat.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "linux-hwmon@vger.kernel.org" <linux-hwmon@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 1/5] hwmon: introduce hwmon_sanitize_name()
+Message-ID: <YkRiBAyw2DhIOitg@lunn.ch>
+References: <20220329160730.3265481-1-michael@walle.cc>
+ <20220329160730.3265481-2-michael@walle.cc>
+ <16d8b45eba7b44e78fa8205e6666f2bd@AcuMS.aculab.com>
+ <fa1f64d2-32a1-b8f9-0929-093fbd45d219@roeck-us.net>
+ <cf6f672fbaf645f780ae5eab1a955871@AcuMS.aculab.com>
 MIME-Version: 1.0
-References: <E1nZMdl-0006nG-0J@plastiekpoot> <CADVnQyn=A9EuTwxe-Bd9qgD24PLQ02YQy0_b7YWZj4_rqhWRVA@mail.gmail.com>
- <eaf54cab-f852-1499-95e2-958af8be7085@uls.co.za> <CANn89iKHbmVYoBdo2pCQWTzB4eFBjqAMdFbqL5EKSFqgg3uAJQ@mail.gmail.com>
- <10c1e561-8f01-784f-c4f4-a7c551de0644@uls.co.za>
-In-Reply-To: <10c1e561-8f01-784f-c4f4-a7c551de0644@uls.co.za>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Wed, 30 Mar 2022 09:56:45 -0400
-Message-ID: <CADVnQynf8f7SUtZ8iQi-fACYLpAyLqDKQVYKN-mkEgVtFUTVXQ@mail.gmail.com>
-Subject: Re: linux 5.17.1 disregarding ACK values resulting in stalled TCP connections
-To:     Jaco Kroon <jaco@uls.co.za>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Yuchung Cheng <ycheng@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cf6f672fbaf645f780ae5eab1a955871@AcuMS.aculab.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 2:22 AM Jaco Kroon <jaco@uls.co.za> wrote:
->
-> Hi Eric,
->
-> On 2022/03/30 05:48, Eric Dumazet wrote:
-> > On Tue, Mar 29, 2022 at 7:58 PM Jaco Kroon <jaco@uls.co.za> wrote:
-> >
-> > I do not think this commit is related to the issue you have.
-> >
-> > I guess you could try a revert ?
-> >
-> > Then, if you think old linux versions were ok, start a bisection ?
-> That'll be interesting, will see if I can reproduce on a non-production
-> host.
-> >
-> > Thank you.
-> >
-> > (I do not see why a successful TFO would lead to a freeze after ~70 KB
-> > of data has been sent)
->
-> I do actually agree with this in that it makes no sense, but disabling
-> TFO definitely resolved the issue for us.
->
-> Kind Regards,
-> Jaco
+> So why not error the request to created the hwmon device with
+> an invalid name.
+> The name supplied will soon get fixed - since it is a literal
+> string in the calling driver.
 
-Thanks for the pcap trace! That's a pretty strange trace. I agree with
-Eric's theory that this looks like one or more bugs in a firewall,
-middlebox, or netfilter rule. From the trace it looks like the buggy
-component is sometimes dropping packets and sometimes corrupting them
-so that the client's TCP stack ignores them.
+It is often not a literal string in the driver, but something based on
+the DT description of the hardware.
 
-Interestingly, in that trace the client SYN has a TFO option and
-cookie, but no data in the SYN.
-
-The last packet that looks sane/normal is the ACK from the SMTP server
-that looks like:
-
-00:00:00.000010 IP6 2a00:1450:4013:c16::1a.25 >
-2c0f:f720:0:3:d6ae:52ff:feb8:f27b.48590: . 6260:6260(0) ack 66263 win
-774 <nop,nop,TS val 1206544341 ecr 331189186>
-
-That's the first ACK that crosses past 2^16. Maybe that is a
-coincidence, or maybe not. Perhaps the buggy firewall/middlebox/etc is
-confused by the TFO option, corrupts its state, and thereafter behaves
-incorrectly past the first 64 KBytes of data from the client.
-
-In addition to checking for checksum failures, mentioned by Eric, you
-could look for PAWS failures, something like:
-
-  nstat -az | egrep  -i 'TcpInCsumError|PAWS'
-
-best,
-neal
+    Andrew
