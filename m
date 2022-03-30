@@ -2,95 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3010C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:14:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F54EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:21:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243220AbiC3GQS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 02:16:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33490 "EHLO
+        id S243244AbiC3GXL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 02:23:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241944AbiC3GQN (ORCPT
+        with ESMTP id S238147AbiC3GXF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 02:16:13 -0400
-Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BD4A42A09
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 23:14:27 -0700 (PDT)
-Received: from localhost.localdomain (unknown [10.101.196.174])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Wed, 30 Mar 2022 02:23:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E3125046D;
+        Tue, 29 Mar 2022 23:21:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 1779F3F622;
-        Wed, 30 Mar 2022 06:14:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1648620865;
-        bh=NUWrxgCHzurIsqxuvbtWFPBwSW5wtoM8Kr1QQ/VeCxE=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=Y+HnX3fTIop0uCPSVesQeDxtk/RzuUTlrW74fYMDYPs55uEly6ZxXzfnhplRGO6Hl
-         x432Vp3mg/uZna4woUy74o5PLqJKUhqCGvRpaZswhds2OH1WJR4fSRRjg0pcT/4T1R
-         AjpQQhTz1rcSoOodC1YSIoF3PYCbKIOoHuJFpgncKBAnryGaRyLYSGvnqVepmf3AUz
-         yxSKKTutecfTm3Xy5cw4qnSlvwTAodqZQKidxNCO578twleVqLmYBRdA9TUx82Bf7w
-         YhSmhHPBhM4PQk9RQyyAgSNF/1HD92JxI/cBNP6ZF3H0oqLuRMTWGGCIsnhEIikFLF
-         /yGSQnuPaSC5g==
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     tiwai@suse.com
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Jeremy Szu <jeremy.szu@canonical.com>,
-        Werner Sembach <wse@tuxedocomputers.com>,
-        Hui Wang <hui.wang@canonical.com>,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        Cameron Berkenpas <cam@neo-zeon.de>,
-        Kailang Yang <kailang@realtek.com>, Sami Loone <sami@loone.fi>,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] ALSA: hda/realtek: Fix audio regression on Mi Notebook Pro 2020
-Date:   Wed, 30 Mar 2022 14:13:33 +0800
-Message-Id: <20220330061335.1015533-1-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.34.1
+        by ams.source.kernel.org (Postfix) with ESMTPS id E9D0AB81AD5;
+        Wed, 30 Mar 2022 06:21:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A357AC340EC;
+        Wed, 30 Mar 2022 06:21:17 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Ty2Q3C+n"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1648621276;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2eRrPnqhTJjokXQOdORL7R4K689Hcih8p/XLm4p+Fvc=;
+        b=Ty2Q3C+nxdjUQaGjzpqGcNWXhdezVxMLyN15NAoBzzwwlIQXJcfOnqRrOFLwMyyx2Xe2dy
+        /7xX+lea48DGH7t3FxoPzw9ydT8Vlt1HH5VdQ1cqC/Rt2unU+agicblhqnyTLLjqmN57OJ
+        WBaDiPIKKHn3Ig+J3hKmgdfa2vJo2eo=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 042fe011 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 30 Mar 2022 06:21:15 +0000 (UTC)
+Date:   Wed, 30 Mar 2022 02:21:14 -0400
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Fedor Pchelkin <aissur0002@gmail.com>,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        Eric Biggers <ebiggers@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 4/4] file: Fix file descriptor leak in copy_fd_bitmaps()
+Message-ID: <YkP2hKKeMeFrdpBW@zx2c4.com>
+References: <20220326114009.1690-1-aissur0002@gmail.com>
+ <2698031.BEx9A2HvPv@fedor-zhuzhzhalka67>
+ <CAHk-=wh2Ao+OgnWSxHsJodXiLwtaUndXSkuhh9yKnA3iXyBLEA@mail.gmail.com>
+ <4705670.GXAFRqVoOG@fedor-zhuzhzhalka67>
+ <CAHk-=wiKhn+VsvK8CiNbC27+f+GsPWvxMVbf7QET+7PQVPadwA@mail.gmail.com>
+ <CAHk-=wjRwwUywAa9TzQUxhqNrQzZJQZvwn1JSET3h=U+3xi8Pg@mail.gmail.com>
+ <YkPo0N/CVHFDlB6v@zx2c4.com>
+ <CAHk-=wgPwyQTnSF2s7WSb+KnGn4FTM58NJ+-v-561W7xnDk2OA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wgPwyQTnSF2s7WSb+KnGn4FTM58NJ+-v-561W7xnDk2OA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 5aec98913095 ("ALSA: hda/realtek - ALC236 headset MIC recording
-issue") is to solve recording issue met on AL236, by matching codec
-variant ALC269_TYPE_ALC257 and ALC269_TYPE_ALC256.
+Hi Linus,
 
-This match can be too broad and Mi Notebook Pro 2020 is broken by the
-patch.
+On Tue, Mar 29, 2022 at 11:08:55PM -0700, Linus Torvalds wrote:
+> So does it help if you just remove that
+> 
+>         max_fds = ALIGN(max_fds, BITS_PER_LONG);
+> 
+> and instead make the final return be
+> 
+>         return ALIGN(min(count, max_fds), BITS_PER_LONG);
+> 
+> instead?
 
-Instead, use codec ID to be narrow down the scope, in order to make
-ALC256 unaffected.
+Yep, that works:
 
-Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=215484
-Fixes: 5aec98913095 ("ALSA: hda/realtek - ALC236 headset MIC recording issue")
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
----
-v2:
- Fix wrong comparison, || -> &&
+diff --git a/fs/file.c b/fs/file.c
+index c01c29417ae6..ee9317346702 100644
+--- a/fs/file.c
++++ b/fs/file.c
+@@ -303,10 +303,9 @@ static unsigned int sane_fdtable_size(struct fdtable *fdt, unsigned int max_fds)
+ 	unsigned int count;
 
- sound/pci/hda/patch_realtek.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ 	count = count_open_files(fdt);
+-	max_fds = ALIGN(max_fds, BITS_PER_LONG);
+ 	if (max_fds < NR_OPEN_DEFAULT)
+ 		max_fds = NR_OPEN_DEFAULT;
+-	return min(count, max_fds);
++	return ALIGN(min(count, max_fds), BITS_PER_LONG);
+ }
 
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 4c33cb57963db..aace474a899de 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -3617,8 +3617,8 @@ static void alc256_shutup(struct hda_codec *codec)
- 	/* If disable 3k pulldown control for alc257, the Mic detection will not work correctly
- 	 * when booting with headset plugged. So skip setting it for the codec alc257
- 	 */
--	if (spec->codec_variant != ALC269_TYPE_ALC257 &&
--	    spec->codec_variant != ALC269_TYPE_ALC256)
-+	if (codec->core.vendor_id != 0x10ec0236 &&
-+	    codec->core.vendor_id != 0x10ec0257)
- 		alc_update_coef_idx(codec, 0x46, 0, 3 << 12);
- 
- 	if (!spec->no_shutup_pins)
--- 
-2.34.1
+ /*
 
+Jason
