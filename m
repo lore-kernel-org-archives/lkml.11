@@ -2,85 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6881EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:02:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA98CC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:03:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245747AbiC3LER (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 07:04:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60494 "EHLO
+        id S245755AbiC3LEu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 07:04:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245723AbiC3LED (ORCPT
+        with ESMTP id S245718AbiC3LEn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:04:03 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59005C5584;
-        Wed, 30 Mar 2022 04:02:18 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Wed, 30 Mar 2022 07:04:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B513C6EFC;
+        Wed, 30 Mar 2022 04:02:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id DCD822223B;
-        Wed, 30 Mar 2022 13:02:15 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1648638136;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=aLnrtpnRAiL6v+cP9y7rKdCDomkZu1ScIOGwNkz3rpE=;
-        b=e83Xv7idZD4OnNsV+VrMu6XrTQuf5d3s1LWZQAj6+tGeCCObB8yIO+5KJrUlrfkpi0yXtj
-        LN63YG92vbxwjwG6je2p84wy6hPi7DTSmkcpNZsD5gw8m9kRr4J40YAbO0KUI2cousBH+P
-        5EWhEx5xvgguXDL6kJzbrmnhqoUYA5Y=
-From:   Michael Walle <michael@walle.cc>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Cc:     UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
-Subject: [PATCH RFC net-next] net: lan966x: make PHY reset support optional
-Date:   Wed, 30 Mar 2022 13:02:10 +0200
-Message-Id: <20220330110210.3374165-1-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0765A6150E;
+        Wed, 30 Mar 2022 11:02:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED1A4C340EC;
+        Wed, 30 Mar 2022 11:02:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648638177;
+        bh=QxskefdCnGyYAS0bbSv9f6+Vt1kzl7DgdMfQgK4palk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XIfGakTwWw+ACnf8FdqpXKU3TpxJ6GNX1Th7+CY+vingXZspGIR1VdqDaU3vtT6Vo
+         dmg+7JnU1TrLpkDYXuWexRY5t4pfEYoYySgRf+3IrRH8H0n6gRI4ELTy8ettmGKJw+
+         Y7AkkOQnF8TpkD+pa/vIhdu9hZhGn7N1SZZ8itHPQc8MSO9fCUzbSkFEBrn/j55gAl
+         tA0uMCjjUQITrk82tFWkTdXhTVogX0EsmQEUPW0S/bo8w04scn5eElR/b3fnUsIr7J
+         6Iz/veRWW0KbQg6iRYmqqA2YY7l/zM1gOZmuv6mogGE7UfkycV//92Fk98MT4vVu+k
+         oAs64CI4vAUUQ==
+Date:   Wed, 30 Mar 2022 14:02:53 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Guo Zhengkui <guozhengkui@vivo.com>
+Cc:     Mustafa Ismail <mustafa.ismail@intel.com>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        "open list:INTEL ETHERNET PROTOCOL DRIVER FOR RDMA" 
+        <linux-rdma@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        zhengkui_guo@outlook.com
+Subject: Re: [PATCH linux-next] RDMA: simplify if-if to if-else
+Message-ID: <YkQ43f9pFnU+BnC7@unreal>
+References: <20220328130900.8539-1-guozhengkui@vivo.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220328130900.8539-1-guozhengkui@vivo.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The PHY subsystem as well as the MIIM mdio driver (in case of the
-integrated PHYs) will already take care of the resets of any external
-and internal PHY. There is no need for this reset anymore, so mark it
-optionally to be backwards compatible.
+On Mon, Mar 28, 2022 at 09:08:59PM +0800, Guo Zhengkui wrote:
+> `if (!ret)` can be replaced with `else` for simplification.
+> 
+> Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
+> ---
+>  drivers/infiniband/hw/irdma/puda.c | 4 ++--
+>  drivers/infiniband/hw/mlx4/mcg.c   | 3 +--
+>  2 files changed, 3 insertions(+), 4 deletions(-)
+> 
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
-
-Horatiu, what do you think, should it be removed altogether? There is
-no user for that in mainline and I don't know about downstream but the
-reset driver doesn't really work (as it also resets the GPIO/SGPIO)
-and conceptionally the property is on the wrong DT node. All of the
-drawbacks should have been addressed by my patches for the miim [1]
-and the pinctrl driver [2].
-
-[1] https://lore.kernel.org/netdev/20220318201324.1647416-1-michael@walle.cc/
-[2] https://lore.kernel.org/linux-gpio/20220313154640.63813-1-michael@walle.cc/
-
- drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-index 1f8c67f0261b..0765064d2845 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-@@ -916,7 +916,7 @@ static int lan966x_reset_switch(struct lan966x *lan966x)
- 		return dev_err_probe(lan966x->dev, PTR_ERR(switch_reset),
- 				     "Could not obtain switch reset");
- 
--	phy_reset = devm_reset_control_get_shared(lan966x->dev, "phy");
-+	phy_reset = devm_reset_control_get_optional_shared(lan966x->dev, "phy");
- 	if (IS_ERR(phy_reset))
- 		return dev_err_probe(lan966x->dev, PTR_ERR(phy_reset),
- 				     "Could not obtain phy reset\n");
--- 
-2.30.2
-
+Thanks,
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
