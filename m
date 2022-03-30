@@ -2,97 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D0E1C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 15:33:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2246EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 15:33:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348267AbiC3PfC (ORCPT
+        id S1348288AbiC3PfN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 11:35:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47848 "EHLO
+        Wed, 30 Mar 2022 11:35:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244592AbiC3PfA (ORCPT
+        with ESMTP id S1348270AbiC3PfJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 11:35:00 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39FB360F9
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 08:33:15 -0700 (PDT)
+        Wed, 30 Mar 2022 11:35:09 -0400
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0725140D2
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 08:33:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648654395; x=1680190395;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=99A4Nmd7ECn/+N9elV+Nmgmh3RzNoBsfM0MSKCJINYE=;
-  b=REqoI5VVmkoFpeJ8pVAKNaaHmZ9uPBcnVVyMlMs5uaFOSwv4SnleLysd
-   VryXsM2bKujEQrCVBrikvL+4o3lEogN8Dvx3rMmXVt4oaauidqWdyN8Pf
-   vAMs+gMK6k693TdmrFyl8K4NPsO4RDCzQ9Wg5ya2g6JYTmFFHWt5oe2iT
-   lRhEVUtYYcUdjxMULwqlvOZTugfapwhDI8KoqKIqsrU9MXHgFfPGfHjpL
-   tnS79KaFyCPLGD3/+AoVKDgHS1PQVKEHj/mNGudJlOzMbO6FUcpAE91IG
-   PzVqMSpOKL314QXgpo+drLk/PUyuV1qjg09RkDM/0K+9GDFCWR7zOAhy/
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="259544443"
+  t=1648654403; x=1680190403;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=9WqpUiHeb0dkBTIAkEzlYUBlUbAPYQTJ6dWYSxlYa6s=;
+  b=VQbPbo5VahIZk+FFNHn3bp2KYP/Ldp/Y9DKewLbPGu09E0bqzubq5TbT
+   cJDc7BcutOBqi/2qMDOGcGmQj6OHnb9y13ytXTx3edvnHaZwZMDh7aH3D
+   fgorlyzQgqgh4QU64FfuQcX6RHvmzmvRoSuO4CroXb10z3/Umh+w1w0u3
+   AoPqzEydncrTs9g9Rk04qvbey2sNIMp+/3dw2pzqrwxpXnDkven3q9kd/
+   KqJN+LsV3yBDfzbHjbHqvzdZ439OWGsC3SLVxm2ojvNAR+IySE8krqGni
+   h6Dt25QNS+tsSlTY3wzFdZfXHCSqFcCl1jCqLjqhVP20Lcvi9HfqsYYJ8
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="320270002"
 X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
-   d="scan'208";a="259544443"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 08:33:14 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="320270002"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 08:33:22 -0700
 X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
-   d="scan'208";a="519722996"
-Received: from lkp-server02.sh.intel.com (HELO 56431612eabd) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 30 Mar 2022 08:33:13 -0700
-Received: from kbuild by 56431612eabd with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nZaJs-00008C-Uy;
-        Wed, 30 Mar 2022 15:33:12 +0000
-Date:   Wed, 30 Mar 2022 23:33:01 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:arm64/linux/devel/kmalloc-minalign 10/11]
- arch/arm64/kernel/cacheinfo.c:101:14: warning: no previous prototype for
- 'arch_kmalloc_minalign'
-Message-ID: <202203302330.5gG68JEu-lkp@intel.com>
+   d="scan'208";a="586041626"
+Received: from amahade1-mobl2.amr.corp.intel.com (HELO [10.209.45.250]) ([10.209.45.250])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 08:33:22 -0700
+Message-ID: <c54c8c77-d35f-49b0-ff2f-21eb597f41f0@intel.com>
+Date:   Wed, 30 Mar 2022 08:33:26 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] x86: undef REG_IN/REG_OUT to avoid define collisions
+Content-Language: en-US
+To:     Neil Armstrong <narmstrong@baylibre.com>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com
+Cc:     hpa@zytor.com, x86@kernel.org, linux-kernel@vger.kernel.org,
+        andriy.shevchenko@linux.intel.com
+References: <20220330152808.1461758-1-narmstrong@baylibre.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <20220330152808.1461758-1-narmstrong@baylibre.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block arm64/linux/devel/kmalloc-minalign
-head:   2810d5be00a60d5996cd955c2485c17ef1e1e7af
-commit: 6c3838f40cf6a9b31bbb3d78059a81ca03fb2cfc [10/11] arm64: Enable dynamic kmalloc() minimum alignment
-config: arm64-randconfig-s032-20220330 (https://download.01.org/0day-ci/archive/20220330/202203302330.5gG68JEu-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/ammarfaizi2/linux-block/commit/6c3838f40cf6a9b31bbb3d78059a81ca03fb2cfc
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block arm64/linux/devel/kmalloc-minalign
-        git checkout 6c3838f40cf6a9b31bbb3d78059a81ca03fb2cfc
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/kernel/
+On 3/30/22 08:28, Neil Armstrong wrote:
+> These defines are only used in the inline functions declared
+> in the arch_hweight.h file, and collides with internal defines
+> of the Amlogic Mes pinctrl driver when COMPILE_TEST is enabled:
+> 
+> arch/x86/include/asm/arch_hweight.h:9:17: error: expected identifier before string constant
+> 9 | #define REG_OUT "a"
+>   |                 ^~~
+> drivers/pinctrl/meson/pinctrl-meson.h:69:9: note: in expansion of macro ‘REG_OUT’
+> 69 |         REG_OUT,
+> 
+> Reported-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+> ---
+>  arch/x86/include/asm/arch_hweight.h | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/arch/x86/include/asm/arch_hweight.h b/arch/x86/include/asm/arch_hweight.h
+> index ba88edd0d58b..139a4b0a2a14 100644
+> --- a/arch/x86/include/asm/arch_hweight.h
+> +++ b/arch/x86/include/asm/arch_hweight.h
+> @@ -52,4 +52,7 @@ static __always_inline unsigned long __arch_hweight64(__u64 w)
+>  }
+>  #endif /* CONFIG_X86_32 */
+>  
+> +#undef REG_IN
+> +#undef REG_OUT
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> arch/arm64/kernel/cacheinfo.c:101:14: warning: no previous prototype for 'arch_kmalloc_minalign' [-Wmissing-prototypes]
-     101 | unsigned int arch_kmalloc_minalign(void)
-         |              ^~~~~~~~~~~~~~~~~~~~~
-
-
-vim +/arch_kmalloc_minalign +101 arch/arm64/kernel/cacheinfo.c
-
-   100	
- > 101	unsigned int arch_kmalloc_minalign(void)
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Wouldn't it be a bit less hackish to give these a more qualified name
+like HWEIGHT_REG_IN?
