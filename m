@@ -2,120 +2,270 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4EDBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 10:20:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C118CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 10:23:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245307AbiC3KWG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 06:22:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39766 "EHLO
+        id S245318AbiC3KZb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 06:25:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232733AbiC3KWD (ORCPT
+        with ESMTP id S232733AbiC3KZ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 06:22:03 -0400
-Received: from nksmu.kylinos.cn (mailgw.kylinos.cn [123.150.8.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D92E41D9140
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 03:20:17 -0700 (PDT)
-X-UUID: 89f0138a04c342f1b10e571f5d544420-20220330
-X-GW-Reason: 11101
-X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HNeS6uumcgOimgeWuoeaguA==
-X-Content-Feature: ica/max.line-size 85
-        audit/email.address 2
-X-UUID: 89f0138a04c342f1b10e571f5d544420-20220330
-Received: from cs2c.com.cn [(172.17.111.24)] by nksmu.kylinos.cn
-        (envelope-from <liucong2@kylinos.cn>)
-        (Generic MTA)
-        with ESMTP id 888474854; Wed, 30 Mar 2022 14:45:11 +0800
-X-ns-mid: postfix-6243FCAB-7174744375
-Received: from [172.20.12.219] (unknown [172.20.12.219])
-        by cs2c.com.cn (NSMail) with ESMTPSA id 686C7383C640;
-        Wed, 30 Mar 2022 06:46:03 +0000 (UTC)
-Message-ID: <a1ceefb7-32d8-9ce3-e56f-7684e6d3ee58@kylinos.cn>
-Date:   Wed, 30 Mar 2022 14:46:02 +0800
+        Wed, 30 Mar 2022 06:25:28 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03B1B22B26
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 03:23:38 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 9D0121F37B;
+        Wed, 30 Mar 2022 10:23:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1648635817; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SutU6NtJAmcvVDw7i47SPK0xcm6dOxLZHlPN45bee54=;
+        b=PkFKO9wpNJaTq7DrYcMFPtlefJ9kj3nlcYwCedENhhQ/1EzYOL7r7+guxAVWoZNzqSP0rD
+        KD5O0ataCT9mcq33DdNoEWIHx6IStvpXWcUaP468U+slwx5i+M/QH0rCqG84tl16HcIVt/
+        c3yR2XskLwD4eGRxfDvFt6be1wcx0lA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1648635817;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SutU6NtJAmcvVDw7i47SPK0xcm6dOxLZHlPN45bee54=;
+        b=0yD1QCIj2M4IWRy9dWcKEl6bAzgE6V7FdqlpsjxCwMIRXss3tt3ym1PNDp2J8e5wt/MLDV
+        8v+uDCX2BQtxg+AA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9049813AF3;
+        Wed, 30 Mar 2022 10:23:37 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id tf8yI6kvRGKUdgAAMHmgww
+        (envelope-from <bp@suse.de>); Wed, 30 Mar 2022 10:23:37 +0000
+Date:   Wed, 30 Mar 2022 12:23:36 +0200
+From:   Borislav Petkov <bp@suse.de>
+To:     kernel test robot <lkp@intel.com>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>
+Subject: Re: [ammarfaizi2-block:bp/bp/rc0+ 6/11]
+ arch/x86/kernel/cpu/common.c:1415:10: error: 'x86_cap_flags' undeclared; did
+ you mean 'x86_cap_flag'?
+Message-ID: <YkQvqGODzC9yDJrI@zn.tnic>
+References: <202203292206.ICsY2RKX-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2] drm/qxl: fix qxl can't use in arm64
-Content-Language: en-US
-To:     =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
-        airlied@linux.ie, airlied@redhat.com, kraxel@redhat.com,
-        robin.murphy@arm.com
-Cc:     virtualization@lists.linux-foundation.org, daniel@ffwll.ch,
-        dri-devel@lists.freedesktop.org, ray.huang@amd.com,
-        spice-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-References: <12eba824-ee80-0aac-56ed-e13084c9cae7@amd.com>
- <20220324104928.2959545-1-liucong2@kylinos.cn>
- <982d233d-7e30-f44e-f49d-473c3c41721e@amd.com>
-From:   Cong Liu <liucong2@kylinos.cn>
-In-Reply-To: <982d233d-7e30-f44e-f49d-473c3c41721e@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <202203292206.ICsY2RKX-lkp@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-any suggestions or extra test I can do now?
+On Tue, Mar 29, 2022 at 10:23:07PM +0800, kernel test robot wrote:
+> tree:   https://github.com/ammarfaizi2/linux-block bp/bp/rc0+
+> head:   2d784fc7295963360594f3de64446aa32841c694
+> commit: c3b9dcd01973935375ca9d0c67044bea7333d4ef [6/11] x86/cpu: Allow feature bit names from /proc/cpuinfo in clearcpuid=
+> config: i386-tinyconfig (https://download.01.org/0day-ci/archive/20220329/202203292206.ICsY2RKX-lkp@intel.com/config)
+> compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0
+> reproduce (this is a W=1 build):
+>         # https://github.com/ammarfaizi2/linux-block/commit/c3b9dcd01973935375ca9d0c67044bea7333d4ef
+>         git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+>         git fetch --no-tags ammarfaizi2-block bp/bp/rc0+
+>         git checkout c3b9dcd01973935375ca9d0c67044bea7333d4ef
+>         # save the config file to linux build tree
+>         mkdir build_dir
+>         make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash arch/x86/kernel/cpu/
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
 
-Regards,
-Cong
+Thanks for reporting, fixed:
 
-On 2022/3/25 15:45, Christian König wrote:
-> Am 24.03.22 um 11:49 schrieb Cong Liu:
->> qxl use ioremap to map ram_header and rom, in the arm64 implementation,
->> the device is mapped as DEVICE_nGnRE, it can not support unaligned
->> access. and qxl is a virtual device, it can be treated more like RAM
->> than actual MMIO registers. use ioremap_wc() replace it.
->>
->> Signed-off-by: Cong Liu <liucong2@kylinos.cn>
-> 
-> Looks sane to me, but I'm really not involved enough to fully judge.
-> 
-> Acked-by: Christian König <christian.koenig@amd.com>
-> 
->> ---
->>   drivers/gpu/drm/qxl/qxl_kms.c | 4 ++--
->>   drivers/gpu/drm/qxl/qxl_ttm.c | 4 ++--
->>   2 files changed, 4 insertions(+), 4 deletions(-)
->>
->> diff --git a/drivers/gpu/drm/qxl/qxl_kms.c 
->> b/drivers/gpu/drm/qxl/qxl_kms.c
->> index 4dc5ad13f12c..a054e4a00fe8 100644
->> --- a/drivers/gpu/drm/qxl/qxl_kms.c
->> +++ b/drivers/gpu/drm/qxl/qxl_kms.c
->> @@ -165,7 +165,7 @@ int qxl_device_init(struct qxl_device *qdev,
->>            (int)qdev->surfaceram_size / 1024,
->>            (sb == 4) ? "64bit" : "32bit");
->> -    qdev->rom = ioremap(qdev->rom_base, qdev->rom_size);
->> +    qdev->rom = ioremap_wc(qdev->rom_base, qdev->rom_size);
->>       if (!qdev->rom) {
->>           pr_err("Unable to ioremap ROM\n");
->>           r = -ENOMEM;
->> @@ -183,7 +183,7 @@ int qxl_device_init(struct qxl_device *qdev,
->>           goto rom_unmap;
->>       }
->> -    qdev->ram_header = ioremap(qdev->vram_base +
->> +    qdev->ram_header = ioremap_wc(qdev->vram_base +
->>                      qdev->rom->ram_header_offset,
->>                      sizeof(*qdev->ram_header));
->>       if (!qdev->ram_header) {
->> diff --git a/drivers/gpu/drm/qxl/qxl_ttm.c 
->> b/drivers/gpu/drm/qxl/qxl_ttm.c
->> index b2e33d5ba5d0..95df5750f47f 100644
->> --- a/drivers/gpu/drm/qxl/qxl_ttm.c
->> +++ b/drivers/gpu/drm/qxl/qxl_ttm.c
->> @@ -82,13 +82,13 @@ int qxl_ttm_io_mem_reserve(struct ttm_device *bdev,
->>       case TTM_PL_VRAM:
->>           mem->bus.is_iomem = true;
->>           mem->bus.offset = (mem->start << PAGE_SHIFT) + qdev->vram_base;
->> -        mem->bus.caching = ttm_cached;
->> +        mem->bus.caching = ttm_write_combined;
->>           break;
->>       case TTM_PL_PRIV:
->>           mem->bus.is_iomem = true;
->>           mem->bus.offset = (mem->start << PAGE_SHIFT) +
->>               qdev->surfaceram_base;
->> -        mem->bus.caching = ttm_cached;
->> +        mem->bus.caching = ttm_write_combined;
->>           break;
->>       default:
->>           return -EINVAL;
-> 
+---
+From: Borislav Petkov <bp@suse.de>
+Date: Thu, 27 Jan 2022 12:56:21 +0100
+Subject: [PATCH] x86/cpu: Allow feature bit names from /proc/cpuinfo in
+ clearcpuid=
+
+Having to give the X86_FEATURE array indices in order to disable a
+feature bit for testing is not really user-friendly. So accept the
+feature bit names too.
+
+Some feature bits don't have names so there the array indices are still
+accepted, of course.
+
+Clearing CPUID flags is not something which should be done in production
+so taint the kernel too.
+
+An exemplary cmdline would then be something like:
+
+  clearcpuid=de,440,smca,succory,bmi1,3dnow
+
+("succory" is wrong on purpose). And it says:
+
+  [   ... ] Clearing CPUID bits: de 13:24 smca (unknown: succory) bmi1 3dnow
+
+  [ Fix CONFIG_X86_FEATURE_NAMES=n build error as reported by the 0day
+    robot: https://lore.kernel.org/r/202203292206.ICsY2RKX-lkp@intel.com ]
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20220127115626.14179-2-bp@alien8.de
+---
+ .../admin-guide/kernel-parameters.txt         | 11 +++-
+ arch/x86/include/asm/cpufeature.h             |  7 +-
+ arch/x86/kernel/cpu/common.c                  | 64 +++++++++++++++----
+ 3 files changed, 65 insertions(+), 17 deletions(-)
+
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index b7ccaa2ea867..bdad3dfd6a37 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -631,12 +631,17 @@
+ 			Defaults to zero when built as a module and to
+ 			10 seconds when built into the kernel.
+ 
+-	clearcpuid=BITNUM[,BITNUM...] [X86]
++	clearcpuid=X[,X...] [X86]
+ 			Disable CPUID feature X for the kernel. See
+ 			arch/x86/include/asm/cpufeatures.h for the valid bit
+-			numbers. Note the Linux specific bits are not necessarily
+-			stable over kernel options, but the vendor specific
++			numbers X. Note the Linux-specific bits are not necessarily
++			stable over kernel options, but the vendor-specific
+ 			ones should be.
++			X can also be a string as appearing in the flags: line
++			in /proc/cpuinfo which does not have the above
++			instability issue. However, not all features have names
++			in /proc/cpuinfo.
++			Note that using this option will taint your kernel.
+ 			Also note that user programs calling CPUID directly
+ 			or using the feature without checking anything
+ 			will still see it. This just prevents it from
+diff --git a/arch/x86/include/asm/cpufeature.h b/arch/x86/include/asm/cpufeature.h
+index 1261842d006c..66d3e3b1d24d 100644
+--- a/arch/x86/include/asm/cpufeature.h
++++ b/arch/x86/include/asm/cpufeature.h
+@@ -34,14 +34,17 @@ enum cpuid_leafs
+ 	CPUID_8000_001F_EAX,
+ };
+ 
++#define X86_CAP_FMT_NUM "%d:%d"
++#define x86_cap_flag_num(flag) ((flag) >> 5), ((flag) & 31)
++
+ #ifdef CONFIG_X86_FEATURE_NAMES
+ extern const char * const x86_cap_flags[NCAPINTS*32];
+ extern const char * const x86_power_flags[32];
+ #define X86_CAP_FMT "%s"
+ #define x86_cap_flag(flag) x86_cap_flags[flag]
+ #else
+-#define X86_CAP_FMT "%d:%d"
+-#define x86_cap_flag(flag) ((flag) >> 5), ((flag) & 31)
++#define X86_CAP_FMT X86_CAP_FMT_NUM
++#define x86_cap_flag x86_cap_flag_num
+ #endif
+ 
+ /*
+diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+index ed4417500700..69c7ea84b005 100644
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -1368,8 +1368,8 @@ static void detect_nopl(void)
+ static void __init cpu_parse_early_param(void)
+ {
+ 	char arg[128];
+-	char *argptr = arg;
+-	int arglen, res, bit;
++	char *argptr = arg, *opt;
++	int arglen, taint = 0;
+ 
+ #ifdef CONFIG_X86_32
+ 	if (cmdline_find_option_bool(boot_command_line, "no387"))
+@@ -1397,21 +1397,61 @@ static void __init cpu_parse_early_param(void)
+ 		return;
+ 
+ 	pr_info("Clearing CPUID bits:");
+-	do {
+-		res = get_option(&argptr, &bit);
+-		if (res == 0 || res == 3)
+-			break;
+ 
+-		/* If the argument was too long, the last bit may be cut off */
+-		if (res == 1 && arglen >= sizeof(arg))
+-			break;
++	while (argptr) {
++		bool found __maybe_unused = false;
++		unsigned int bit;
++
++		opt = strsep(&argptr, ",");
++
++		/*
++		 * Handle naked numbers first for feature flags which don't
++		 * have names.
++		 */
++		if (!kstrtouint(opt, 10, &bit)) {
++			if (bit < NCAPINTS * 32) {
++
++#ifdef CONFIG_X86_FEATURE_NAMES
++				/* empty-string, i.e., ""-defined feature flags */
++				if (!x86_cap_flags[bit])
++					pr_cont(" " X86_CAP_FMT_NUM, x86_cap_flag_num(bit));
++				else
++#endif
++					pr_cont(" " X86_CAP_FMT, x86_cap_flag(bit));
++
++				setup_clear_cpu_cap(bit);
++				taint++;
++			}
++			/*
++			 * The assumption is that there are no feature names with only
++			 * numbers in the name thus go to the next argument.
++			 */
++			continue;
++		}
++
++#ifdef CONFIG_X86_FEATURE_NAMES
++		for (bit = 0; bit < 32 * NCAPINTS; bit++) {
++			if (!x86_cap_flag(bit))
++				continue;
+ 
+-		if (bit >= 0 && bit < NCAPINTS * 32) {
+-			pr_cont(" " X86_CAP_FMT, x86_cap_flag(bit));
++			if (strcmp(x86_cap_flag(bit), opt))
++				continue;
++
++			pr_cont(" %s", opt);
+ 			setup_clear_cpu_cap(bit);
++			taint++;
++			found = true;
++			break;
+ 		}
+-	} while (res == 2);
++
++		if (!found)
++			pr_cont(" (unknown: %s)", opt);
++#endif
++	}
+ 	pr_cont("\n");
++
++	if (taint)
++		add_taint(TAINT_CPU_OUT_OF_SPEC, LOCKDEP_STILL_OK);
+ }
+ 
+ /*
+-- 
+2.35.1
+
+-- 
+Regards/Gruss,
+    Boris.
+
+SUSE Software Solutions Germany GmbH, GF: Ivo Totev, HRB 36809, AG Nürnberg
