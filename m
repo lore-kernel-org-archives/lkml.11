@@ -2,182 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C807C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:04:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D4D0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:04:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345677AbiC3NGF (ORCPT
+        id S1345690AbiC3NGK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 09:06:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56988 "EHLO
+        Wed, 30 Mar 2022 09:06:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244903AbiC3NGC (ORCPT
+        with ESMTP id S1345674AbiC3NGJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 09:06:02 -0400
-Received: from m12-12.163.com (m12-12.163.com [220.181.12.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 51619C38;
-        Wed, 30 Mar 2022 06:04:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=cHMQ7
-        WoXLVIhypyQ8WPqd9becVvlyEmkctQb5Tr1eQI=; b=O4IaNn5MPK/T1jNqaCPNM
-        eaVN9jS9V+B2IAhGgbis5fIRI25CB4e/JpPhqGURryeaDRdsOnCXxR059vFzbjxp
-        Y21Np5mdm/Cbx/ns4aUCTpLkYpvBup8ZrkhfDh9u9P7axmJlHSSQwBwK2iyJrNP0
-        q19KKrvur7N2YRjnhm6GiM=
-Received: from localhost.localdomain (unknown [101.86.110.112])
-        by smtp8 (Coremail) with SMTP id DMCowAAH01QUVURi01bAAA--.22186S2;
-        Wed, 30 Mar 2022 21:03:17 +0800 (CST)
-From:   jackygam2001 <jacky_gam_2001@163.com>
-To:     edumazet@google.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, rostedt@goodmis.org, mingo@redhat.com,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ping.gan@dell.com, jackygam2001 <jacky_gam_2001@163.com>
-Subject: [PATCH] tcp: Add tracepoint for tcp_set_ca_state
-Date:   Wed, 30 Mar 2022 21:01:28 +0800
-Message-Id: <20220330130128.10256-1-jacky_gam_2001@163.com>
-X-Mailer: git-send-email 2.26.2
+        Wed, 30 Mar 2022 09:06:09 -0400
+Received: from andre.telenet-ops.be (andre.telenet-ops.be [IPv6:2a02:1800:120:4::f00:15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56F782F385
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 06:04:21 -0700 (PDT)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:c135:3663:5a9:d10a])
+        by andre.telenet-ops.be with bizsmtp
+        id Cd4J2700F0037nA01d4JE9; Wed, 30 Mar 2022 15:04:18 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nZXzm-007OGr-Ah; Wed, 30 Mar 2022 15:04:18 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nZXzl-003utp-Sf; Wed, 30 Mar 2022 15:04:17 +0200
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] dt-bindings: power: renesas,apmu: Fix cpus property limits
+Date:   Wed, 30 Mar 2022 15:04:16 +0200
+Message-Id: <9ece1a07bbcb95abc9d80e6a6ecc95806a294a11.1648645279.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DMCowAAH01QUVURi01bAAA--.22186S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxAw4UXFWDCr47Zw13Xw1fWFg_yoWrAr15pF
-        1DAr1Sg3y5Jryagas3Jry8twnxW348ur1agry7Ww1ak3ZFqF1rtF1ktryjyayYvrWFy39x
-        Wa129r1rGa17Zr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pE380ZUUUUU=
-X-Originating-IP: [101.86.110.112]
-X-CM-SenderInfo: 5mdfy55bjdzsisqqiqqrwthudrp/xS2BdBXTKVgi1YcKDwAAs2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The congestion status of a tcp flow may be updated since there
-is congestion between tcp sender and receiver. It makes sense for
-adding tracepoint for congestion status update function to evaluate
-the performance of network and congestion algorithm.
+"make dtbs_check":
 
-Link: https://github.com/iovisor/bcc/pull/3899
+    arch/arm/boot/dts/r8a7791-koelsch.dtb: apmu@e6152000: cpus:0: [6, 7] is too long
+	    From schema: Documentation/devicetree/bindings/power/renesas,apmu.yaml
 
-Signed-off-by: jackygam2001 <jacky_gam_2001@163.com>
+Correct the minimum and maximum number of CPUs controlled by a single
+APMU instance.
+
+Fixes: 39bd2b6a3783b899 ("dt-bindings: Improve phandle-array schemas")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- include/net/tcp.h          | 12 +++---------
- include/trace/events/tcp.h | 45 +++++++++++++++++++++++++++++++++++++++++++++
- net/ipv4/tcp_cong.c        | 12 ++++++++++++
- 3 files changed, 60 insertions(+), 9 deletions(-)
+ Documentation/devicetree/bindings/power/renesas,apmu.yaml | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 70ca4a5e330a..9a3786f33798 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -1139,15 +1139,6 @@ static inline bool tcp_ca_needs_ecn(const struct sock *sk)
- 	return icsk->icsk_ca_ops->flags & TCP_CONG_NEEDS_ECN;
- }
- 
--static inline void tcp_set_ca_state(struct sock *sk, const u8 ca_state)
--{
--	struct inet_connection_sock *icsk = inet_csk(sk);
--
--	if (icsk->icsk_ca_ops->set_state)
--		icsk->icsk_ca_ops->set_state(sk, ca_state);
--	icsk->icsk_ca_state = ca_state;
--}
--
- static inline void tcp_ca_event(struct sock *sk, const enum tcp_ca_event event)
- {
- 	const struct inet_connection_sock *icsk = inet_csk(sk);
-@@ -1156,6 +1147,9 @@ static inline void tcp_ca_event(struct sock *sk, const enum tcp_ca_event event)
- 		icsk->icsk_ca_ops->cwnd_event(sk, event);
- }
- 
-+/* From tcp_cong.c */
-+void tcp_set_ca_state(struct sock *sk, const u8 ca_state);
-+
- /* From tcp_rate.c */
- void tcp_rate_skb_sent(struct sock *sk, struct sk_buff *skb);
- void tcp_rate_skb_delivered(struct sock *sk, struct sk_buff *skb,
-diff --git a/include/trace/events/tcp.h b/include/trace/events/tcp.h
-index 521059d8dc0a..69a68b01c1de 100644
---- a/include/trace/events/tcp.h
-+++ b/include/trace/events/tcp.h
-@@ -371,6 +371,51 @@ DEFINE_EVENT(tcp_event_skb, tcp_bad_csum,
- 	TP_ARGS(skb)
- );
- 
-+TRACE_EVENT(tcp_cong_state_set,
-+
-+	TP_PROTO(struct sock *sk, const u8 ca_state),
-+
-+	TP_ARGS(sk, ca_state),
-+
-+	TP_STRUCT__entry(
-+		__field(const void *, skaddr)
-+		__field(__u16, sport)
-+		__field(__u16, dport)
-+		__array(__u8, saddr, 4)
-+		__array(__u8, daddr, 4)
-+		__array(__u8, saddr_v6, 16)
-+		__array(__u8, daddr_v6, 16)
-+		__field(__u8, cong_state)
-+	),
-+
-+	TP_fast_assign(
-+		struct inet_sock *inet = inet_sk(sk);
-+		__be32 *p32;
-+
-+		__entry->skaddr = sk;
-+
-+		__entry->sport = ntohs(inet->inet_sport);
-+		__entry->dport = ntohs(inet->inet_dport);
-+
-+		p32 = (__be32 *) __entry->saddr;
-+		*p32 = inet->inet_saddr;
-+
-+		p32 = (__be32 *) __entry->daddr;
-+		*p32 =  inet->inet_daddr;
-+
-+		TP_STORE_ADDRS(__entry, inet->inet_saddr, inet->inet_daddr,
-+			   sk->sk_v6_rcv_saddr, sk->sk_v6_daddr);
-+
-+		__entry->cong_state = ca_state;
-+	),
-+
-+	TP_printk("sport=%hu dport=%hu saddr=%pI4 daddr=%pI4 saddrv6=%pI6c daddrv6=%pI6c cong_state=%u",
-+		  __entry->sport, __entry->dport,
-+		  __entry->saddr, __entry->daddr,
-+		  __entry->saddr_v6, __entry->daddr_v6,
-+		  __entry->cong_state)
-+);
-+
- #endif /* _TRACE_TCP_H */
- 
- /* This part must be outside protection */
-diff --git a/net/ipv4/tcp_cong.c b/net/ipv4/tcp_cong.c
-index dc95572163df..98b48bdb8be7 100644
---- a/net/ipv4/tcp_cong.c
-+++ b/net/ipv4/tcp_cong.c
-@@ -16,6 +16,7 @@
- #include <linux/gfp.h>
- #include <linux/jhash.h>
- #include <net/tcp.h>
-+#include <trace/events/tcp.h>
- 
- static DEFINE_SPINLOCK(tcp_cong_list_lock);
- static LIST_HEAD(tcp_cong_list);
-@@ -33,6 +34,17 @@ struct tcp_congestion_ops *tcp_ca_find(const char *name)
- 	return NULL;
- }
- 
-+void tcp_set_ca_state(struct sock *sk, const u8 ca_state)
-+{
-+	struct inet_connection_sock *icsk = inet_csk(sk);
-+
-+	trace_tcp_cong_state_set(sk, ca_state);
-+
-+	if (icsk->icsk_ca_ops->set_state)
-+		icsk->icsk_ca_ops->set_state(sk, ca_state);
-+	icsk->icsk_ca_state = ca_state;
-+}
-+
- /* Must be called with rcu lock held */
- static struct tcp_congestion_ops *tcp_ca_find_autoload(struct net *net,
- 						       const char *name)
+diff --git a/Documentation/devicetree/bindings/power/renesas,apmu.yaml b/Documentation/devicetree/bindings/power/renesas,apmu.yaml
+index 540e6fe1b7430fcd..f5d97d651e828981 100644
+--- a/Documentation/devicetree/bindings/power/renesas,apmu.yaml
++++ b/Documentation/devicetree/bindings/power/renesas,apmu.yaml
+@@ -36,7 +36,8 @@ properties:
+   cpus:
+     $ref: /schemas/types.yaml#/definitions/phandle-array
+     items:
+-      maxItems: 1
++      minItems: 1
++      maxItems: 4
+     description: |
+       Array of phandles pointing to CPU cores, which should match the order of
+       CPU cores used by the WUPCR and PSTR registers in the Advanced Power
 -- 
-2.15.0
+2.25.1
 
