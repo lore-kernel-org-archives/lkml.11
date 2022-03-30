@@ -2,125 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8DF0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 21:41:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECABEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 21:43:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233525AbiC3Vni (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 17:43:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39502 "EHLO
+        id S1351285AbiC3Vo7 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 17:44:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233498AbiC3Vng (ORCPT
+        with ESMTP id S233498AbiC3Voz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 17:43:36 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C17A517D6
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 14:41:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648676511; x=1680212511;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=f5s+xzgDBJONZVtRIXVk5+pVqalThtgSX+lwS4QrAhg=;
-  b=ZlYaIlYcXiLA0eafeLb51+jFZzp26yZmt+vs/ihSohUkuaJ4tgyq1nSP
-   3GoekUPzUboHXWwJwuYzJGUWk1Z9kii3EAEiq13VoBnBuJHwCah43jJNf
-   iv5QMrQWVs177segDnSxkeiAmXBZwZByDOBgFERFhMhWzkibhhivLowIl
-   TU4Y10nU6zoTB2fJo48S8HwOJacxqrmCq9wgd6TVnQ5PmZ38ccacAa8aC
-   exb3Kt++TBLR4qCc0hEu2P6CxCxPIadPJpIhZADmoGT6Tp8HPtPHcBlJ2
-   OEkJnIF+sPdIeSnqqWfgcCxSuEEIQBFrbefIgCEhmtpf33/BPL4hDb8+B
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="320349195"
-X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
-   d="scan'208";a="320349195"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 14:41:50 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
-   d="scan'208";a="654131417"
-Received: from lkp-server02.sh.intel.com (HELO 56431612eabd) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 30 Mar 2022 14:41:49 -0700
-Received: from kbuild by 56431612eabd with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nZg4a-0000Wm-8A;
-        Wed, 30 Mar 2022 21:41:48 +0000
-Date:   Thu, 31 Mar 2022 05:41:41 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>
-Subject: arch/arm/mach-iop32x/cp6.c:10:6: warning: no previous prototype for
- function 'iop_enable_cp6'
-Message-ID: <202203310512.uBfXEXYW-lkp@intel.com>
+        Wed, 30 Mar 2022 17:44:55 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DBEC6A419
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 14:43:09 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 1798F1F869;
+        Wed, 30 Mar 2022 21:43:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1648676588; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CUt1tOpM1tvjVQbAHVKSiWMh6OyKILyACsC9XxuklHM=;
+        b=x+/CnsSHUCSoN/1QswMy7TtD1tGhGvFxPkHu0RS4Vnc5FHLWFUZv/JhuY5ckgPBQvlNX16
+        sgHP/9HwgjoNEsvndyHe75w6rSp3xStPXyi8lsyJqwCNR5eos2A7O+3XqV7KLMdY/PTcbM
+        odPBuqlKLYCrB0wOhAdgIoqTYV46BFM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1648676588;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CUt1tOpM1tvjVQbAHVKSiWMh6OyKILyACsC9XxuklHM=;
+        b=EWEgVUbIVKUG+Y/E53ILq82LnkEL9Y2nB4SMYPysmXdnVQjt1lox+Ivkv2CoK3dQ7WNV15
+        XqiHgyegL/SiMUAQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D8EDB13AF3;
+        Wed, 30 Mar 2022 21:43:07 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id YRmbM+vORGKXHQAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Wed, 30 Mar 2022 21:43:07 +0000
+Message-ID: <27ff69f9-60c5-9e59-feb2-295250077551@suse.cz>
+Date:   Wed, 30 Mar 2022 23:43:07 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [BUG] Crash on x86_32 for: mm: page_alloc: avoid merging
+ non-fallbackable pageblocks with others
+Content-Language: en-US
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>, Zi Yan <ziy@nvidia.com>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        David Hildenbrand <david@redhat.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux-MM <linux-mm@kvack.org>
+References: <20220330154208.71aca532@gandalf.local.home>
+ <CAHk-=whz_8tRNGCr09X59nMW3JBzFLE-g-F-brxd+AkK+RceCw@mail.gmail.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <CAHk-=whz_8tRNGCr09X59nMW3JBzFLE-g-F-brxd+AkK+RceCw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Arnd,
+On 3/30/22 22:05, Linus Torvalds wrote:
+> On Wed, Mar 30, 2022 at 12:42 PM Steven Rostedt <rostedt@goodmis.org> wrote:
+>>
+>> I started testing new patches and it crashed when doing the x86-32 test on
+>> boot up.
+>>
+>> Initializing HighMem for node 0 (000375fe:0021ee00)
+>> BUG: kernel NULL pointer dereference, address: 00000878
+>> #PF: supervisor read access in kernel mode
+>> #PF: error_code(0x0000) - not-present page
+>> *pdpt = 0000000000000000 *pde = f0000000f000eef3
+>> Oops: 0000 [#1] PREEMPT SMP PTI
+>> CPU: 0 PID: 0 Comm: swapper Not tainted 5.17.0-test+ #469
+>> Hardware name: MSI MS-7823/CSM-H87M-G43 (MS-7823), BIOS V1.6 02/22/2014
+>> EIP: get_pfnblock_flags_mask+0x2c/0x36
+>> Code: 6d ea ff 55 89 e5 56 89 ce 53 8b 18 89 d8 c1 eb 1e e8 f7 fb ff ff 69 db c0 02 00 00 89 c1 89 c2 c1 ea 05 8b 83 7c d7 79 c1 5b <8b> 04 90 d3 e8 21 f0 5e 5d c3 55 89 e5 57 56 89 d6 53 89 c3 64 a1
+> 
+> The whole function is in that Code: thing, and it decodes to:
+> 
+>    0: 55                    push   %ebp
+>    1: 89 e5                mov    %esp,%ebp
+>    3: 56                    push   %esi
+>    4: 89 ce                mov    %ecx,%esi
+>    6: 53                    push   %ebx
+>    7: 8b 18                mov    (%eax),%ebx
+>    9: 89 d8                mov    %ebx,%eax
+>    b: c1 eb 1e              shr    $0x1e,%ebx
+>    e: e8 f7 fb ff ff        call   0xfffffc0a
+>   13: 69 db c0 02 00 00    imul   $0x2c0,%ebx,%ebx
+>   19: 89 c1                mov    %eax,%ecx
+>   1b: 89 c2                mov    %eax,%edx
+>   1d: c1 ea 05              shr    $0x5,%edx
+>   20: 8b 83 7c d7 79 c1    mov    -0x3e862884(%ebx),%eax
+>   26: 5b                    pop    %ebx
+>   27:* 8b 04 90              mov    (%eax,%edx,4),%eax <-- trapping instruction
+>   2a: d3 e8                shr    %cl,%eax
+>   2c: 21 f0                and    %esi,%eax
+>   2e: 5e                    pop    %esi
+>   2f: 5d                    pop    %ebp
+>   30: c3                    ret
+> 
+> with '%eax' being NULL, and %edx being 0x21e.
+> 
+> (The call seems to be to 'pfn_to_bitidx().isra.0' if my compiler does
+> similar code generation, so it's out-of-lined part of pfn_to_bitidx()
+> despite being marked inline)
+> 
+> So that oops is that
+> 
+>         word = bitmap[word_bitidx];
+> 
+> line, with 'bitmap' being NULL (and %edx contains 'word_bitidx').
+> 
+> Looking around, your 'config-bad' doesn't even have
+> CONFIG_MEMORY_ISOLATION enabled, and so I suspect the culprit is this
+> part of the change:
+> 
+> -               if (unlikely(has_isolate_pageblock(zone))) {
+> 
+> which used to always be false for that config, and now the code is
+> suddenly enabled.
 
-FYI, the error/warning still remains.
+If CONFIG_MEMORY_ISOLATION was enabled then the zone layout would be the
+same, so I think it's not simply that. I think it's the timing -
+has_isolate_pageblock(zone) would only be possible to become true later
+in runtime when some isolation is ongoing, but here it seems we are
+still in the early boot. Probably at a boundary of highmem with another
+zone that doesn't have the pageblock bitmap yet initialized? While later
+it would have, and all would be fine.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   d888c83fcec75194a8a48ccd283953bdba7b2550
-commit: 6f5d248d05db9c4991366154f1a657a630faa583 ARM: iop32x: use GENERIC_IRQ_MULTI_HANDLER
-date:   4 months ago
-config: arm-randconfig-r024-20220330 (https://download.01.org/0day-ci/archive/20220331/202203310512.uBfXEXYW-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0f6d9501cf49ce02937099350d08f20c4af86f3d)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=6f5d248d05db9c4991366154f1a657a630faa583
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 6f5d248d05db9c4991366154f1a657a630faa583
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+As Zi Yan said, the usual merging code will, through page_is_buddy()
+find safely enough the buddy is not applicable, so I agree with his
+patch direction. Seems this also shows the code tried to become too
+smart and for the next merge window we should try just move the
+migratetype checks into the main while loop (under something like "if
+(order >= max_order)") and simplify the function a lot, hopefully with
+negligible perf impact.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> Alternatively, that code just can't deal with highmem properly.
+> 
+> But I didn't really analyze things, I'm mainly doing pattern matching here.
+> 
+> Zi Yan - and all the people who ack'ed and reviewed this - please take
+> a deeper look..
+> 
+>                 Linus
 
-All warnings (new ones prefixed by >>):
-
->> arch/arm/mach-iop32x/cp6.c:10:6: warning: no previous prototype for function 'iop_enable_cp6' [-Wmissing-prototypes]
-   void iop_enable_cp6(void)
-        ^
-   arch/arm/mach-iop32x/cp6.c:10:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void iop_enable_cp6(void)
-   ^
-   static 
-   arch/arm/mach-iop32x/cp6.c:43:13: warning: no previous prototype for function 'iop_init_cp6_handler' [-Wmissing-prototypes]
-   void __init iop_init_cp6_handler(void)
-               ^
-   arch/arm/mach-iop32x/cp6.c:43:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void __init iop_init_cp6_handler(void)
-   ^
-   static 
-   2 warnings generated.
-
-
-vim +/iop_enable_cp6 +10 arch/arm/mach-iop32x/cp6.c
-
-     9	
-  > 10	void iop_enable_cp6(void)
-    11	{
-    12		u32 temp;
-    13	
-    14	        /* enable cp6 access */
-    15	        asm volatile (
-    16			"mrc	p15, 0, %0, c15, c1, 0\n\t"
-    17			"orr	%0, %0, #(1 << 6)\n\t"
-    18			"mcr	p15, 0, %0, c15, c1, 0\n\t"
-    19			"mrc	p15, 0, %0, c15, c1, 0\n\t"
-    20			"mov	%0, %0\n\t"
-    21			"sub	pc, pc, #4  @ cp_wait\n\t"
-    22			: "=r"(temp));
-    23	}
-    24	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
