@@ -2,92 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6703C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 08:54:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD9B4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 08:56:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244479AbiC3Izq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 04:55:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46360 "EHLO
+        id S244487AbiC3I6K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 04:58:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241961AbiC3Izo (ORCPT
+        with ESMTP id S241961AbiC3I6C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 04:55:44 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45483C625F;
-        Wed, 30 Mar 2022 01:54:00 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id mp11-20020a17090b190b00b001c79aa8fac4so930658pjb.0;
-        Wed, 30 Mar 2022 01:54:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LxPG2mpbpgdg5W4Fei+LZxCM5WvyBZ/Qj+QMe9CK3jY=;
-        b=fb9L9eiz8qiv7DPCbCwNZpgBKumJDRNq5mAnoM7B+Q55TYiAmg9/14WbKKhOclNjDh
-         xivJd7PE/9U2zznTUtUX8hT0wq9av9saSlg8fWgFhE8WEF4cwPKrDYyQWP/DuE5b9NHP
-         l/HLBNf73anYJlBXXmpvgMPAs+RJTRDnCpo2MBFoFyYomBhZgljwD8s6QBK8VZxV2vUK
-         C8UPMRhJlJFozi1vMmjhtq07SD9pg+Nq8OZKckgoEE9qDnWQ2BPxRAzyRBxsN5MlAGdM
-         e/i4eZUb3/VebNYF/AkAt6lnLgol7sm2KT81hBQIXzvQwTpIb2zArqkRdKnnqAP8ykIA
-         SCfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LxPG2mpbpgdg5W4Fei+LZxCM5WvyBZ/Qj+QMe9CK3jY=;
-        b=CROiM9QvzXNU9Q2TKBmluY5dTCruz72c/5S32e9qm6G9qInq2l0lV5Lfvas+H9LNFN
-         m54K9MbEJ4AbCzwb1LlBNIDharYfaUO7FXtb0Z24sxyGnb+Lx+myaB4hEsAGQ9VagKUb
-         LOiHaoqK8+pOvJkY+n07Jw6l3jvbSk9ss8rzALWMh0bxa0WtdcmmjQ/BEZ07nHTvCD+8
-         Q8TdsxFXlplF2eOubcaV+rAOyuBwydqbUULHLO4rmBNGtai4ltdrGM8d5TuZs3qCgJzK
-         9++zuiOp9j22Crua7vuO/ARiiGheoz61bcwgayw8C1mxUGy39NotntuYCqOs503yEzz6
-         0BMg==
-X-Gm-Message-State: AOAM531POkB7PlS5rSJATpHiFKSD0KqEJO7bEf4udSqqyPm5TwUoQiHq
-        ONs/MuRudEjQuBEmfqBlJ2yM8LMuCXIhJg==
-X-Google-Smtp-Source: ABdhPJwMwBaLic4lwVwv7/0D/7PuCm5tTIxAiD7c7QDxF0gaX268LJTtGRFkZwClWHc8xcRCZktbcQ==
-X-Received: by 2002:a17:90a:8a05:b0:1c6:e527:c613 with SMTP id w5-20020a17090a8a0500b001c6e527c613mr3824656pjn.143.1648630439739;
-        Wed, 30 Mar 2022 01:53:59 -0700 (PDT)
-Received: from localhost.localdomain (118-166-41-36.dynamic-ip.hinet.net. [118.166.41.36])
-        by smtp.gmail.com with ESMTPSA id l2-20020a056a0016c200b004f7e3181a41sm23674796pfc.98.2022.03.30.01.53.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Mar 2022 01:53:59 -0700 (PDT)
-From:   Zhiguang Ni <zhiguangni01@gmail.com>
-To:     pbonzini@redhat.com, seanjc@google.com, vkuznets@redhat.com,
-        wanpengli@tencent.com, jmattson@google.com, joro@8bytes.org,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, hpa@zytor.com
-Cc:     x86@kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Zhiguang Ni <zhiguangni01@gmail.com>
-Subject: [PATCH v1] d_path:fix missing include file in d_path.c
-Date:   Wed, 30 Mar 2022 16:53:35 +0800
-Message-Id: <20220330085335.350416-1-zhiguangni01@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 30 Mar 2022 04:58:02 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8603C133DBB
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 01:56:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648630578; x=1680166578;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=SDwP7+t69WD6530TWyZPeK6zEBoSkgsHq+ayCPYFfyM=;
+  b=RNiBH1gKZS1lTIH4phI3yWjjhqAlOWO9EvnlH6NXv1rEMiwsA4n/DG6V
+   /U8LkZ5SofdI8kkzpfQqO1Iyhu3sGysnSt6i+8rjdubLxT24Ws7x5gO/5
+   tGyr6qY3CqDa4Rz0wN8FKGQNwOFh4qiDa16QVyJkZwTIqBjedqVYhE4nK
+   ByrrnqR1YjhyK802y3YE0Z5Oca0DTUSyZ/zj+2T2IWlt894waJK6BWMHM
+   TEJkniL30zmUTScsmXQnEJupGCx/TRUeOcVOGrOlUKSecBMPnAqoqJmxG
+   HQC3dK6l0qnEVtb7q9easgna4StahJ0rZ6uO66+kIYUJEDDNUaS2d1pDd
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="240084419"
+X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
+   d="scan'208";a="240084419"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 01:56:18 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
+   d="scan'208";a="503237336"
+Received: from lkp-server02.sh.intel.com (HELO 7a008980c4ea) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 30 Mar 2022 01:56:16 -0700
+Received: from kbuild by 7a008980c4ea with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nZU7j-0000AH-TI; Wed, 30 Mar 2022 08:56:15 +0000
+Date:   Wed, 30 Mar 2022 16:55:59 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Matthew Maurer <mmaurer@google.com>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org,
+        Arve =?iso-8859-1?B?SGr4bm5lduVn?= <arve@android.com>
+Subject: [ammarfaizi2-block:google/android/kernel/common/android12-trusty-5.10
+ 5854/5872] ERROR: modpost: "trusty_dma_buf_get_ffa_tag"
+ [drivers/trusty/trusty-ipc.ko] undefined!
+Message-ID: <202203301644.1prdbsrp-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Include internal.h to fix below error:
-fs/d_path.c:318:7: error: no previous prototype for ‘simple_dname’ [-Werror=missing-prototypes]
-  318 | char *simple_dname(struct dentry *dentry, char *buffer, int buflen)
-In fact, this function is declared in fs/internal.h.
+Hi Matthew,
 
-Signed-off-by: Zhiguang Ni <zhiguangni01@gmail.com>
----
- fs/d_path.c | 1 +
- 1 file changed, 1 insertion(+)
+FYI, the error/warning still remains.
 
-diff --git a/fs/d_path.c b/fs/d_path.c
-index e4e0ebad1f15..f9123b84f1ba 100644
---- a/fs/d_path.c
-+++ b/fs/d_path.c
-@@ -7,6 +7,7 @@
- #include <linux/slab.h>
- #include <linux/prefetch.h>
- #include "mount.h"
-+#include "internal.h"
- 
- struct prepend_buffer {
- 	char *buf;
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android12-trusty-5.10
+head:   07055bfd3d810d41a38354693dfaa55a6f8c0025
+commit: 988b52b392a13c1b710e9ffdc5de9f933de77551 [5854/5872] ANDROID: trusty: Support setting FF-A Tag
+config: arm-allmodconfig (https://download.01.org/0day-ci/archive/20220330/202203301644.1prdbsrp-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/988b52b392a13c1b710e9ffdc5de9f933de77551
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android12-trusty-5.10
+        git checkout 988b52b392a13c1b710e9ffdc5de9f933de77551
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>, old ones prefixed by <<):
+
+>> ERROR: modpost: "trusty_dma_buf_get_ffa_tag" [drivers/trusty/trusty-ipc.ko] undefined!
+
 -- 
-2.25.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
