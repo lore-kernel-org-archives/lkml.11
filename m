@@ -2,145 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05A5BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 19:15:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D574C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 19:15:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350686AbiC3TQr (ORCPT
+        id S1350778AbiC3TQ6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 15:16:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50906 "EHLO
+        Wed, 30 Mar 2022 15:16:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348194AbiC3TQe (ORCPT
+        with ESMTP id S1350717AbiC3TQg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 15:16:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 02DB739B84
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 12:14:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648667685;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=sQDyBNpGrMN7ywMTAlTALpF3WLkUS9v/wRG/zBzNFyU=;
-        b=XH4y0MIAElzyFn8ZvVS5Mw5h1falOin0AFLOq6DXyz5TWm2UMa0dZbOX7sd7yiXChVx8j0
-        GUcYnnuGZi8+2AHfbIvblR47heNe97HI5NuCoQ2Y//Htbibcnv0SC1pfNBsM7F+6KRdOer
-        JSo3PzcdhiQRyGf7oIS1mTpQPC5nRkI=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-589-_P0UcunzPlej2zvc1UgRTg-1; Wed, 30 Mar 2022 15:14:42 -0400
-X-MC-Unique: _P0UcunzPlej2zvc1UgRTg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C8AC03804505;
-        Wed, 30 Mar 2022 19:14:41 +0000 (UTC)
-Received: from pauld.bos.csb (dhcp-17-51.bos.redhat.com [10.18.17.51])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 5F77E400E10D;
-        Wed, 30 Mar 2022 19:14:41 +0000 (UTC)
-Date:   Wed, 30 Mar 2022 15:14:40 -0400
-From:   Phil Auld <pauld@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Chengming Zhou <zhouchengming@bytedance.com>, mingo@redhat.com,
-        juri.lelli@redhat.com, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, linux-kernel@vger.kernel.org,
-        duanxiongchun@bytedance.com, songmuchun@bytedance.com,
-        Frederic Weisbecker <fweisbec@gmail.com>
-Subject: Re: [External] Re: [PATCH] sched/fair: fix broken bandwidth control
- with nohz_full
-Message-ID: <20220330191439.GC17246@pauld.bos.csb>
-References: <20220328110751.39987-1-zhouchengming@bytedance.com>
- <20220328132047.GD8939@worktop.programming.kicks-ass.net>
- <c0465b27-328a-1288-fb50-d4c6321c8b4d@bytedance.com>
- <YkHRmv/OcABIB0wP@hirez.programming.kicks-ass.net>
- <6fc49cff-f8a1-8b09-5a25-a64e5d07d258@bytedance.com>
- <YkHal1m3pnxGoQ1Y@hirez.programming.kicks-ass.net>
- <20220328124454.08ab6126@gandalf.local.home>
- <20220330182327.GO8939@worktop.programming.kicks-ass.net>
+        Wed, 30 Mar 2022 15:16:36 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EF853BF8B
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 12:14:50 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id s11so19650795pfu.13
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 12:14:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cfBEz7IBl5kEgqB0Tx6Biemz9QSyQOm34+YsTuXqAHo=;
+        b=Ff6D0oSFUFnEqPec0BXQ0FCVWUbmW2e+DRTcTyc27e8iL4ocqcIYoeF/tCEm9zXCUx
+         AhbpB9MZ8hm07Rzum6AvhLSxymmZKfCXFRWItIhSUKFLaLNVZfpBFyMqLa9+k3iLVUUD
+         /Ze9/X0pXH6Om3Ly/q71kLHLxKOdZzGGIE44s=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cfBEz7IBl5kEgqB0Tx6Biemz9QSyQOm34+YsTuXqAHo=;
+        b=J3wcKpMkVTP0T3r/ecQ3Og4ivWxgvwsjuthi8lePkfK7zJBahT6hCGIQgGnVgAssw5
+         QGDxCXKO5LtGSoa//iZM2F2t4RkTe+4dQs1WDQXnXj1RAZWaskvjEsau4NGWQffUav0s
+         2sq99nV7Z3q5LMDhJ5BFAx84HFHDD93naiktR3KWTVCCCjXfrtffV/votldBDrH19fln
+         tQo12iaEo/YSNahXEmPN1vrJVOVEW2hqRVlHo3L/dh6cc6Xx5LG6kdfaGr/bIBIgCKoK
+         Uz5uJZU2f2VqXIkB9eAzNUC0AU1QpfA1Zt+rBD5/yq74W7kJX5EKjsSCzUGz74WNAaYm
+         GJtA==
+X-Gm-Message-State: AOAM530lDKSnUuLWdoxeJnBL1VmsOpdNNwdOCOlUH6M2SEENSgNj18m1
+        oXeT2wxqf1E4yOg0heMqYjjAJ6Bfezch1PyinJw=
+X-Google-Smtp-Source: ABdhPJyOHVQIsf7jELy3eXgDibv3du1gg/UmXQi1kvHskBnojmDQpl2J/k1lTdvvO/RHKKXVHiQdiQ==
+X-Received: by 2002:a05:6a00:1990:b0:4fa:b49c:d64b with SMTP id d16-20020a056a00199000b004fab49cd64bmr34444822pfl.82.1648667689904;
+        Wed, 30 Mar 2022 12:14:49 -0700 (PDT)
+Received: from localhost.localdomain ([183.83.137.38])
+        by smtp.gmail.com with ESMTPSA id ng17-20020a17090b1a9100b001c9f79927bfsm2955451pjb.25.2022.03.30.12.14.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 12:14:49 -0700 (PDT)
+From:   Manoj Sai <abbaraju.manojsai@amarulasolutions.com>
+To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
+        Li Yang <leoyang.li@nxp.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Matteo Lisi <matteo.lisi@engicam.com>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-amarula@amarulasolutions.com,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Rob Herring <robh@kernel.org>,
+        Suniel Mahesh <sunil@amarulasolutions.com>,
+        Michael Nazzareno Trimarchi <michael@amarulasolutions.com>,
+        Manoj Sai <abbaraju.manojsai@amarulasolutions.com>
+Subject: [PATCH 0/3] add support for engicam icore mx8m plus and edimm2.2 starter kit 
+Date:   Thu, 31 Mar 2022 00:44:34 +0530
+Message-Id: <20220330191437.614065-1-abbaraju.manojsai@amarulasolutions.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220330182327.GO8939@worktop.programming.kicks-ass.net>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Peter,
+[PATCH 1/3] adds the device tree bindings in freescale yaml file
+            for engicam imx8mp icore som .
 
-On Wed, Mar 30, 2022 at 08:23:27PM +0200 Peter Zijlstra wrote:
-> On Mon, Mar 28, 2022 at 12:44:54PM -0400, Steven Rostedt wrote:
-> > On Mon, 28 Mar 2022 17:56:07 +0200
-> > Peter Zijlstra <peterz@infradead.org> wrote:
-> > 
-> > > > echo $$ > test/cgroup.procs
-> > > > taskset -c 1 bash -c "while true; do let i++; done"  --> will be throttled  
-> > > 
-> > > Ofcourse.. I'm arguing that bandiwdth control and NOHZ_FULL are somewhat
-> > > mutually exclusive, use-case wise. So I really don't get why you'd want
-> > > them both.
-> > 
-> > Is it?
-> > 
-> > One use case I can see for having both is for having a deadline task that
-> > needs to get something done in a tight deadline. NOHZ_FULL means "do not
-> > interrupt this task when it is the top priority task on the CPU and is
-> > running in user space".
-> 
-> This is absolute batshit.. It means no such thing. We'll happily wake
-> another task to this CPU and re-enable the tick any instant.
-> 
-> Worse; the use-case at hand pertains to cfs bandwidth control, which
-> pretty much guarantees there *will* be an interrupt.
+[PATCH 2/3] adds support for engicam imx8mplus icore SOM 
+  
+[PATCH 3/3] adds support for engicam edimm2.2 carrier board
 
-The problem is (at least in some cases) that container orchestration userspace
-code allocates a whole CPU by setting quota == period.  Or 3 cpus as 3*period etc.
+Manoj Sai (3):
+  dt-bindings: arm: fsl: Add Engicam i.Core MX8M Plus EDIMM2.2 Starter
+    Kit
+  arm64: dts: imx8mp: Add Engicam i.Core MX8M Plus SoM
+  arm64: dts: imx8mp: Add Engicam i.Core MX8M Plus EDIMM2.2 Starter Kit
 
-In cases where an isolated task is expected to run uninterrupted (only task in 
-the system affined to that cpu, nohz_full, nocbs etc) you can end up with it
-getting throttled even though it theoritically has enough bandwidth for the full
-cpu and therefore should never get throttled. 
-
-There are radio network setups where the packet processing is isolated
-like this but the system as a whole is managed by container orchestration so 
-everything has cfs bandwidth quotas set.
-
-I don't think generally the bandwidth controls in these cases are used for 
-CPU sharing (quota < period). I agree that doesn't make much sense with NOHZ_FULL
-and won't work right. 
-
-It's doled out as full cpu(s) in these cases.
-
-Thats not a VM case so is likely different from the one that started this thread
-but I thought I should mention it.
-
-
-Cheers,
-Phil
-
-> 
-> > Why is it mutually exclusive to have a deadline task that does not want to
-> > be interrupted by timer interrupts?
-> 
-> This has absolutely nothing to do with deadline tasks, nada, noppes.
-> 
-> > Just because the biggest pushers of NOHZ_FULL is for those that are running
-> > RT tasks completely in user space and event want to fault if it ever goes
-> > into the kernel, doesn't mean that's the only use case.
-> 
-> Because there's costs associated with the whole thing. system entry/exit
-> get far more expensive. It just doesn't make much sense to use NOHZ_FULL
-> if you're not absoultely limiting system entry.
-> 
-> > Chengming brought up VMs. That's a case to want to control the bandwidth,
-> > but also not interrupt them with timer interrupts when they are running as
-> > the top priority task on a CPU.
-> 
-> It's CFS, there is nothing top priority about that.
-> 
+ .../devicetree/bindings/arm/fsl.yaml          |   7 +
+ arch/arm64/boot/dts/freescale/Makefile        |   1 +
+ .../freescale/imx8mp-icore-mx8mp-edimm2.2.dts | 176 +++++++++++++++
+ .../dts/freescale/imx8mp-icore-mx8mp.dtsi     | 202 ++++++++++++++++++
+ 4 files changed, 386 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mp-icore-mx8mp-edimm2.2.dts
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mp-icore-mx8mp.dtsi
 
 -- 
+2.25.1
 
