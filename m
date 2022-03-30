@@ -2,50 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C099C47081
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33AE8C35296
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:15:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346382AbiC3MQa (ORCPT
+        id S1346364AbiC3MQ1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:16:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38382 "EHLO
+        Wed, 30 Mar 2022 08:16:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344889AbiC3L4k (ORCPT
+        with ESMTP id S1344446AbiC3Lz6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:56:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A822BB0B;
-        Wed, 30 Mar 2022 04:54:37 -0700 (PDT)
+        Wed, 30 Mar 2022 07:55:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1027710FA;
+        Wed, 30 Mar 2022 04:54:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 40A6DB81ACC;
-        Wed, 30 Mar 2022 11:54:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0326C340F2;
-        Wed, 30 Mar 2022 11:54:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5862DB81C23;
+        Wed, 30 Mar 2022 11:54:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 239E4C340F3;
+        Wed, 30 Mar 2022 11:54:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641276;
-        bh=N7VV4WU4ve5a9mkAhzkgXt2CymUm4Y3tFt0YFfoLEbo=;
+        s=k20201202; t=1648641243;
+        bh=gSOR0VhRFEQOIqboEnoDscB2wnkYJYjrcn2qd10imhI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DXdIoeDX0PfKBl0AOK4ma3bF3o7qHxhW+lnX9p9ERAJX5BLiQPSOtaMvrNdYethkB
-         j56COJp15mHwaxdIZwF+RQnIebXF/UkEFsoTJhYRZJvmEfz71qxkptjaq2LmJgfzi1
-         XBrhZoJrNeb9+7R+aRpj4AWNNKgx0twgHOntmIU3RUsVUVJjwQZx/dNEs3ebwPLdcU
-         IgCjbNryV8g3fF4DIQGvKtYre7pt11EqQknDSZIg7nEQBsU7J1MBQalmXB1l8w7vpC
-         Fiy8bQk4vaW6hOJ5BRZSANh/sCUnJFuqBT/Hd/Z0sqdZxemM5g4FWxEmSVsuZ4K7hg
-         WBboBKvFCeOXg==
+        b=m/UKLgkkeFfWcztLEasGRF2rLZCrwZ2OUrawxCp5ek1zJokHK14e3u8qnFGfREZlm
+         +shGwjW7AmGCn7OiAEE2TV0yIDpHch6iVQi0Ny/wxpRMt7OsVFXeJKs8kSpQpgSd9Q
+         ScGFnn7SI7DH3GE9xTThBiarGcytBK/aZyIIY7e6hywHk0J7C+VSwKiphJcLQTo5xr
+         axYjEr1Beola1os6QJSX3hSP12V5KU//G8PRg8i6EPzc6mr2jYhRhNU0gjjjvScoIN
+         hW8g2mWC9lRh0sP2v/dKHSGMhbj/wqyyVHKstlhC7LNslF7qK7t/U7n9px+pTEoPrl
+         pvjK/w9WoBJBw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 4.9 17/17] ASoC: ak4642: Use of_device_get_match_data()
-Date:   Wed, 30 Mar 2022 07:54:06 -0400
-Message-Id: <20220330115407.1673214-17-sashal@kernel.org>
+Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
+        syzkaller <syzkaller@googlegroups.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, hverkuil@xs4all.nl,
+        linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 17/20] media: hdpvr: initialize dev->worker at hdpvr_register_videodev
+Date:   Wed, 30 Mar 2022 07:53:33 -0400
+Message-Id: <20220330115336.1672930-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330115407.1673214-1-sashal@kernel.org>
-References: <20220330115407.1673214-1-sashal@kernel.org>
+In-Reply-To: <20220330115336.1672930-1-sashal@kernel.org>
+References: <20220330115336.1672930-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,44 +55,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit 835ca59799f5c60b4b54bdc7aa785c99552f63e4 ]
+[ Upstream commit 07922937e9a580825f9965c46fd15e23ba5754b6 ]
 
-Use of_device_get_match_data() to simplify the code.
+hdpvr_register_videodev is responsible to initialize a worker in
+hdpvr_device. However, the worker is only initialized at
+hdpvr_start_streaming other than hdpvr_register_videodev.
+When hdpvr_probe does not initialize its worker, the hdpvr_disconnect
+will encounter one WARN in flush_work.The stack trace is as follows:
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-Link: https://lore.kernel.org/r/20220315023226.2118354-1-chi.minghao@zte.com.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
+ hdpvr_disconnect+0xb8/0xf2 drivers/media/usb/hdpvr/hdpvr-core.c:425
+ usb_unbind_interface+0xbf/0x3a0 drivers/usb/core/driver.c:458
+ __device_release_driver drivers/base/dd.c:1206 [inline]
+ device_release_driver_internal+0x22a/0x230 drivers/base/dd.c:1237
+ bus_remove_device+0x108/0x160 drivers/base/bus.c:529
+ device_del+0x1fe/0x510 drivers/base/core.c:3592
+ usb_disable_device+0xd1/0x1d0 drivers/usb/core/message.c:1419
+ usb_disconnect+0x109/0x330 drivers/usb/core/hub.c:2228
+
+Fix this by moving the initialization of dev->worker to the starting of
+hdpvr_register_videodev
+
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/ak4613.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+ drivers/media/usb/hdpvr/hdpvr-video.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/ak4613.c b/sound/soc/codecs/ak4613.c
-index e819dd8c82fd..b6b93c2b7593 100644
---- a/sound/soc/codecs/ak4613.c
-+++ b/sound/soc/codecs/ak4613.c
-@@ -500,15 +500,10 @@ static int ak4613_i2c_probe(struct i2c_client *i2c,
- 	struct ak4613_priv *priv;
+diff --git a/drivers/media/usb/hdpvr/hdpvr-video.c b/drivers/media/usb/hdpvr/hdpvr-video.c
+index 991f820a4530..1cecb37e16d2 100644
+--- a/drivers/media/usb/hdpvr/hdpvr-video.c
++++ b/drivers/media/usb/hdpvr/hdpvr-video.c
+@@ -312,7 +312,6 @@ static int hdpvr_start_streaming(struct hdpvr_device *dev)
  
- 	regmap_cfg = NULL;
--	if (np) {
--		const struct of_device_id *of_id;
--
--		of_id = of_match_device(ak4613_of_match, dev);
--		if (of_id)
--			regmap_cfg = of_id->data;
--	} else {
-+	if (np)
-+		regmap_cfg = of_device_get_match_data(dev);
-+	else
- 		regmap_cfg = (const struct regmap_config *)id->driver_data;
--	}
+ 	dev->status = STATUS_STREAMING;
  
- 	if (!regmap_cfg)
- 		return -EINVAL;
+-	INIT_WORK(&dev->worker, hdpvr_transmit_buffers);
+ 	schedule_work(&dev->worker);
+ 
+ 	v4l2_dbg(MSG_BUFFER, hdpvr_debug, &dev->v4l2_dev,
+@@ -1175,6 +1174,9 @@ int hdpvr_register_videodev(struct hdpvr_device *dev, struct device *parent,
+ 	bool ac3 = dev->flags & HDPVR_FLAG_AC3_CAP;
+ 	int res;
+ 
++	// initialize dev->worker
++	INIT_WORK(&dev->worker, hdpvr_transmit_buffers);
++
+ 	dev->cur_std = V4L2_STD_525_60;
+ 	dev->width = 720;
+ 	dev->height = 480;
 -- 
 2.34.1
 
