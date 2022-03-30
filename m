@@ -2,59 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB2E2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 17:47:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88E2CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 17:47:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349605AbiC3RtN (ORCPT
+        id S1349611AbiC3RtR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 13:49:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57238 "EHLO
+        Wed, 30 Mar 2022 13:49:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349581AbiC3RsS (ORCPT
+        with ESMTP id S1349562AbiC3RsS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 30 Mar 2022 13:48:18 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1394BEA774
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 10:46:31 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id e12-20020a63544c000000b003985d5888a8so4889927pgm.15
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 10:46:31 -0700 (PDT)
+Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CCE665D0E
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 10:46:27 -0700 (PDT)
+Received: by mail-pj1-x104a.google.com with SMTP id o13-20020a17090ab88d00b001c96a912b04so266635pjr.5
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 10:46:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=xzO9cQFThrWl9C6pXMeFQf68aIxsF5msYllu20aIE98=;
-        b=j8UY6vLAgetGzYR7Xcw90unE7CpuF+C4hboX33h6Du9R57k/Ul278DXxDWBO8E/Uc+
-         mPVKSUKc7yEdGFMFdBkx/40loU9D6GS8MslHwI+eVBkPMqVfOPVKcwkJ8fIoVio4B24z
-         3IuY2IUSYntD3WYriRccTB+qmJ/Y7PtT0EaCZ2mub4N/GiZCcku3u0Mxtz57CgG6cGq2
-         qki10pMTDb3EMY5tvhM4PiLYBAXPtxAohMyshLA8DEAzwwoOndJaAmVqoSBTLd9uzGOa
-         sdHBix2ewcx1OOPdx1ZTY0YQs0nsbIaICO91bWRAA02Ac5sPczgfmtSAc6XMAEHf+HjH
-         QNaQ==
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=hRv+qXpwbo9GDUQrNblrZBkEF97GEZj0/UovDKEp30U=;
+        b=gYvZMVtn+uyKeAuQc9rljJ9GaNc7GJUanzPaTkRriCyCFnZeKCpd5LeX+aYKxjE3S2
+         byy/8NGYfdV/cKYP9JjJiOWqzJcBzc2L8vj3q5zru32E2GerfOOc2lutLUfTCmwZYTUX
+         g92ZLJlXR2PmpILDlapvOHt7pBHUUhro4q0N7/+vT4P3ZGLrIdDmhbpICjg2Ulmo4soV
+         pZAi42PA9aLxRb4rdyYhMqoLc5ObsRk2fAkJNq1PhcevHB2aSOEst6G7Om+dP/kC67n2
+         a1fb/aHdP8FRVsoJGPbt2fQd7fr2fpVZoqgJ9n71hFzHUTtuTne1/hYSjNjKrPzkuoMx
+         sxOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=xzO9cQFThrWl9C6pXMeFQf68aIxsF5msYllu20aIE98=;
-        b=GdZj0lnpON5tNWtfB7U3x8kU+SNeC/p/b2S5UIdPvN0SKOdPgEiNO4BVGD3Z6v7ZG1
-         iAQWl06+31++MkceY/6rerze9Ob7yoKF45eQ+ZG6tsahlb1ZUgkMt1xmEKDdu83W49rT
-         IibPMf/gQd+ceLGmgOoc7e1ktMIBVXwpKYPOK3hNwuH0S86JDGlTVxMu4R6pO3oDjdcY
-         9YatehG+0zqnXdV7/vHYzKfmM5WSku5Uqzl5nZy5kXMlopuzVzBwqF7lZvee8L8uvpUg
-         3Zroi3x9JKXHlzHPVtkbGu2KEJZm8Xxx/qgc+B/JSQTik+rgJ8VDpVKnEbyjWtpyES4j
-         acsQ==
-X-Gm-Message-State: AOAM530Xk2JiDUJOgGRqiDd2Lnd+QRKehxtnVwsj5MGzsoioq5uI8e0I
-        1y9Shoucugn3P8CmZPMhEM0wE8mjfIjLX+c90NE9dIii8Hkcu4K8nLGnvowNEnaB5IY1PbAGXYM
-        vTrjF9BZ7PmhREh/a4B3ArP1EGK8AbzbZOVvsOvLEgHqRxJ4kJExtXTnuIKu6OEtGnWHuJYXF
-X-Google-Smtp-Source: ABdhPJy5dt0VHO/qXj6WOTqZvwDtMjbufduhzTeIK9RNOxnAQp337ZRpJ4/mMEfFj/x91Qi24hvYqzK8CDzr
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=hRv+qXpwbo9GDUQrNblrZBkEF97GEZj0/UovDKEp30U=;
+        b=bYYn/v1t4jWikpcFiWbCYldKQogRZps86YUCLDv85n/4+37N+gdRPhf1ZkWFhh8IIS
+         H4gcuEtnFPAX0TXeCeySTk+dS/6oAkcnSxqXdsfmZDYKRiwPXTp7vIZkkea5RXDNmu0K
+         5FTojazutk6P0nNnHUuQbuhIy3QbxKm4NYEQvCY201or4z89JcTE7dsYCjnDzqDmvJUx
+         KBVw+cUCEUnl/5bXIm/1Jav9xxjdF3vOc//m5+VrYQrPByz5PqrYN/3WesQ4f8HELF3Z
+         rWu5cv+0wDkBRCdC8kBT1ihifzD8e3AA0lhZL+eLzTJZs+zJv1U+2utLLm4flFnTg7qu
+         20lA==
+X-Gm-Message-State: AOAM531KcUMwuFwrG9DyuKthaXsx3fqj7RNp3rog+BHGAh8D8w7amqTu
+        i70Eunbvsg2ajJ7O8ycBZ1j46RCG2FVvY+RbifxJqoTntu+gJcPyoiFLJWx0qPKf/rEHkpZWJQk
+        Pa9FfptjBrFLU8nCbbxXATzYbxaJye5ImP95bcDEFveWtWwmIrECmxWBptSiDmk5xZrR4kI5+
+X-Google-Smtp-Source: ABdhPJwFFN2Fih8nQRZaaitKq/M8PEtVl1+kP0BThFDW4TEcwATS0gRn4LpwgHuR4FzxSOiJaqF5KXTrsQCy
 X-Received: from bgardon.sea.corp.google.com ([2620:15c:100:202:7c53:ec2f:bd26:b69c])
- (user=bgardon job=sendgmr) by 2002:a17:90b:4b01:b0:1c7:8a37:bfd3 with SMTP id
- lx1-20020a17090b4b0100b001c78a37bfd3mr633793pjb.115.1648662390376; Wed, 30
- Mar 2022 10:46:30 -0700 (PDT)
-Date:   Wed, 30 Mar 2022 10:46:12 -0700
-In-Reply-To: <20220330174621.1567317-1-bgardon@google.com>
-Message-Id: <20220330174621.1567317-3-bgardon@google.com>
+ (user=bgardon job=sendgmr) by 2002:a05:6a00:1256:b0:4fb:1374:2f65 with SMTP
+ id u22-20020a056a00125600b004fb13742f65mr677102pfi.72.1648662386632; Wed, 30
+ Mar 2022 10:46:26 -0700 (PDT)
+Date:   Wed, 30 Mar 2022 10:46:10 -0700
+Message-Id: <20220330174621.1567317-1-bgardon@google.com>
 Mime-Version: 1.0
-References: <20220330174621.1567317-1-bgardon@google.com>
 X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
-Subject: [PATCH v3 02/11] KVM: selftests: Dump VM stats in binary stats test
+Subject: [PATCH v3 00/11] KVM: x86: Add a cap to disable NX hugepages on a VM
 From:   Ben Gardon <bgardon@google.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     Paolo Bonzini <pbonzini@redhat.com>, Peter Xu <peterx@redhat.com>,
@@ -70,196 +66,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add kvm_util library functions to read KVM stats through the binary
-stats interface and then dump them to stdout when running the binary
-stats test. Subsequent commits will extend the kvm_util code and use it
-to make assertions in a test for NX hugepages.
+Given the high cost of NX hugepages in terms of TLB performance, it may
+be desirable to disable the mitigation on a per-VM basis. In the case of public
+cloud providers with many VMs on a single host, some VMs may be more trusted
+than others. In order to maximize performance on critical VMs, while still
+providing some protection to the host from iTLB Multihit, allow the mitigation
+to be selectively disabled.
 
-CC: Jing Zhang <jingzhangos@google.com>
-Signed-off-by: Ben Gardon <bgardon@google.com>
----
- .../selftests/kvm/include/kvm_util_base.h     |   1 +
- .../selftests/kvm/kvm_binary_stats_test.c     |   3 +
- tools/testing/selftests/kvm/lib/kvm_util.c    | 143 ++++++++++++++++++
- 3 files changed, 147 insertions(+)
+Disabling NX hugepages on a VM is relatively straightforward, but I took this
+as an opportunity to add some NX hugepages test coverage and clean up selftests
+infrastructure a bit.
 
-diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-index 976aaaba8769..4783fd1cd4cf 100644
---- a/tools/testing/selftests/kvm/include/kvm_util_base.h
-+++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-@@ -401,6 +401,7 @@ void assert_on_unhandled_exception(struct kvm_vm *vm, uint32_t vcpuid);
- 
- int vm_get_stats_fd(struct kvm_vm *vm);
- int vcpu_get_stats_fd(struct kvm_vm *vm, uint32_t vcpuid);
-+void dump_vm_stats(struct kvm_vm *vm);
- 
- uint32_t guest_get_vcpuid(void);
- 
-diff --git a/tools/testing/selftests/kvm/kvm_binary_stats_test.c b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-index 17f65d514915..afc4701ce8dd 100644
---- a/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-+++ b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-@@ -174,6 +174,9 @@ static void vm_stats_test(struct kvm_vm *vm)
- 	stats_test(stats_fd);
- 	close(stats_fd);
- 	TEST_ASSERT(fcntl(stats_fd, F_GETFD) == -1, "Stats fd not freed");
-+
-+	/* Dump VM stats */
-+	dump_vm_stats(vm);
- }
- 
- static void vcpu_stats_test(struct kvm_vm *vm, int vcpu_id)
-diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index 11a692cf4570..f87df68b150d 100644
---- a/tools/testing/selftests/kvm/lib/kvm_util.c
-+++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -2562,3 +2562,146 @@ int vcpu_get_stats_fd(struct kvm_vm *vm, uint32_t vcpuid)
- 
- 	return ioctl(vcpu->fd, KVM_GET_STATS_FD, NULL);
- }
-+
-+/* Caller is responsible for freeing the returned kvm_stats_header. */
-+static struct kvm_stats_header *read_vm_stats_header(int stats_fd)
-+{
-+	struct kvm_stats_header *header;
-+	ssize_t ret;
-+
-+	/* Read kvm stats header */
-+	header = malloc(sizeof(*header));
-+	TEST_ASSERT(header, "Allocate memory for stats header");
-+
-+	ret = read(stats_fd, header, sizeof(*header));
-+	TEST_ASSERT(ret == sizeof(*header), "Read stats header");
-+
-+	return header;
-+}
-+
-+static void dump_header(int stats_fd, struct kvm_stats_header *header)
-+{
-+	ssize_t ret;
-+	char *id;
-+
-+	printf("flags: %u\n", header->flags);
-+	printf("name size: %u\n", header->name_size);
-+	printf("num_desc: %u\n", header->num_desc);
-+	printf("id_offset: %u\n", header->id_offset);
-+	printf("desc_offset: %u\n", header->desc_offset);
-+	printf("data_offset: %u\n", header->data_offset);
-+
-+	/* Read kvm stats id string */
-+	id = malloc(header->name_size);
-+	TEST_ASSERT(id, "Allocate memory for id string");
-+	ret = pread(stats_fd, id, header->name_size, header->id_offset);
-+	TEST_ASSERT(ret == header->name_size, "Read id string");
-+
-+	printf("id: %s\n", id);
-+
-+	free(id);
-+}
-+
-+static ssize_t stats_desc_size(struct kvm_stats_header *header)
-+{
-+	return sizeof(struct kvm_stats_desc) + header->name_size;
-+}
-+
-+/* Caller is responsible for freeing the returned kvm_stats_desc. */
-+static struct kvm_stats_desc *read_vm_stats_desc(int stats_fd,
-+						 struct kvm_stats_header *header)
-+{
-+	struct kvm_stats_desc *stats_desc;
-+	size_t size_desc;
-+	ssize_t ret;
-+
-+	size_desc = header->num_desc * stats_desc_size(header);
-+
-+	/* Allocate memory for stats descriptors */
-+	stats_desc = malloc(size_desc);
-+	TEST_ASSERT(stats_desc, "Allocate memory for stats descriptors");
-+
-+	/* Read kvm stats descriptors */
-+	ret = pread(stats_fd, stats_desc, size_desc, header->desc_offset);
-+	TEST_ASSERT(ret == size_desc, "Read KVM stats descriptors");
-+
-+	return stats_desc;
-+}
-+
-+/* Caller is responsible for freeing the memory *data. */
-+static int read_stat_data(int stats_fd, struct kvm_stats_header *header,
-+			  struct kvm_stats_desc *desc, uint64_t **data)
-+{
-+	u64 *stats_data;
-+	ssize_t ret;
-+
-+	stats_data = malloc(desc->size * sizeof(*stats_data));
-+
-+	ret = pread(stats_fd, stats_data, desc->size * sizeof(*stats_data),
-+		    header->data_offset + desc->offset);
-+
-+	/* ret is in bytes. */
-+	ret = ret / sizeof(*stats_data);
-+
-+	TEST_ASSERT(ret == desc->size,
-+		    "Read data of KVM stats: %s", desc->name);
-+
-+	*data = stats_data;
-+
-+	return ret;
-+}
-+
-+static void dump_stat(int stats_fd, struct kvm_stats_header *header,
-+		      struct kvm_stats_desc *desc)
-+{
-+	u64 *stats_data;
-+	ssize_t ret;
-+	int i;
-+
-+	printf("\tflags: %u\n", desc->flags);
-+	printf("\texponent: %u\n", desc->exponent);
-+	printf("\tsize: %u\n", desc->size);
-+	printf("\toffset: %u\n", desc->offset);
-+	printf("\tbucket_size: %u\n", desc->bucket_size);
-+	printf("\tname: %s\n", (char *)&desc->name);
-+
-+	ret = read_stat_data(stats_fd, header, desc, &stats_data);
-+
-+	printf("\tdata: %lu", *stats_data);
-+	for (i = 1; i < ret; i++)
-+		printf(", %lu", *(stats_data + i));
-+	printf("\n\n");
-+
-+	free(stats_data);
-+}
-+
-+void dump_vm_stats(struct kvm_vm *vm)
-+{
-+	struct kvm_stats_desc *stats_desc;
-+	struct kvm_stats_header *header;
-+	struct kvm_stats_desc *desc;
-+	size_t size_desc;
-+	int stats_fd;
-+	int i;
-+
-+	stats_fd = vm_get_stats_fd(vm);
-+
-+	header = read_vm_stats_header(stats_fd);
-+	dump_header(stats_fd, header);
-+
-+	stats_desc = read_vm_stats_desc(stats_fd, header);
-+
-+	size_desc = stats_desc_size(header);
-+
-+	/* Read kvm stats data one by one */
-+	for (i = 0; i < header->num_desc; ++i) {
-+		desc = (void *)stats_desc + (i * size_desc);
-+		dump_stat(stats_fd, header, desc);
-+	}
-+
-+	free(stats_desc);
-+	free(header);
-+
-+	close(stats_fd);
-+}
-+
+This series was tested with the new selftest and the rest of the KVM selftests
+on an Intel Haswell machine.
+
+The following tests failed, but I do not believe that has anything to do with
+this series:
+	userspace_io_test
+	vmx_nested_tsc_scaling_test
+	vmx_preemption_timer_test
+
+Changelog:
+v1->v2:
+	Dropped the complicated memslot refactor in favor of Ricardo Koller's
+	patch with a similar effect.
+	Incorporated David Dunn's feedback and reviewed by tag: shortened waits
+	to speed up test.
+v2->v3:
+	Incorporated a suggestion from David on how to build the NX huge pages
+	test.
+	Fixed a build breakage identified by David.
+	Dropped the per-vm nx_huge_pages field in favor of simply checking the
+	global + per-VM disable override.
+	Documented the new capability
+	Separated out the commit to test disabling NX huge pages
+	Removed permission check when checking if the disable NX capability is
+	supported.
+	Added test coverage for the permission check.
+
+Ben Gardon (10):
+  KVM: selftests: Dump VM stats in binary stats test
+  KVM: selftests: Test reading a single stat
+  KVM: selftests: Add memslot parameter to elf_load
+  KVM: selftests: Improve error message in vm_phy_pages_alloc
+  KVM: selftests: Add NX huge pages test
+  KVM: x86/MMU: Factor out updating NX hugepages state for a VM
+  KVM: x86/MMU: Allow NX huge pages to be disabled on a per-vm basis
+  KVM: x86: Fix errant brace in KVM capability handling
+  KVM: x86/MMU: Require reboot permission to disable NX hugepages
+  selftests: KVM: Test disabling NX hugepages on a VM
+
+Ricardo Koller (1):
+  KVM: selftests: Add vm_alloc_page_table_in_memslot library function
+
+ Documentation/virt/kvm/api.rst                |  13 +
+ arch/x86/include/asm/kvm_host.h               |   2 +
+ arch/x86/kvm/mmu.h                            |  10 +-
+ arch/x86/kvm/mmu/mmu.c                        |  17 +-
+ arch/x86/kvm/mmu/spte.c                       |   7 +-
+ arch/x86/kvm/mmu/spte.h                       |   3 +-
+ arch/x86/kvm/mmu/tdp_mmu.c                    |   3 +-
+ arch/x86/kvm/x86.c                            |  17 +-
+ include/uapi/linux/kvm.h                      |   1 +
+ tools/testing/selftests/kvm/Makefile          |   7 +-
+ .../selftests/kvm/include/kvm_util_base.h     |  10 +
+ .../selftests/kvm/kvm_binary_stats_test.c     |   6 +
+ tools/testing/selftests/kvm/lib/elf.c         |  13 +-
+ tools/testing/selftests/kvm/lib/kvm_util.c    | 230 +++++++++++++++++-
+ .../kvm/lib/x86_64/nx_huge_pages_guest.S      |  45 ++++
+ .../selftests/kvm/x86_64/nx_huge_pages_test.c | 178 ++++++++++++++
+ .../kvm/x86_64/nx_huge_pages_test.sh          |  25 ++
+ 17 files changed, 561 insertions(+), 26 deletions(-)
+ create mode 100644 tools/testing/selftests/kvm/lib/x86_64/nx_huge_pages_guest.S
+ create mode 100644 tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.c
+ create mode 100755 tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.sh
+
 -- 
 2.35.1.1021.g381101b075-goog
 
