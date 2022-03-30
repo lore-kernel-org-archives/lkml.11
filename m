@@ -2,101 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50D10C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:49:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86AF6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:50:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239906AbiC3GvV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 02:51:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33256 "EHLO
+        id S243427AbiC3GwO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 02:52:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237947AbiC3GvS (ORCPT
+        with ESMTP id S243416AbiC3GwG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 02:51:18 -0400
-Received: from heian.cn.fujitsu.com (mail.cn.fujitsu.com [183.91.158.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 254C51A394;
-        Tue, 29 Mar 2022 23:49:33 -0700 (PDT)
-IronPort-Data: =?us-ascii?q?A9a23=3ApRIUU6zKP5o0Vfxdkx96t+dIxyrEfRIJ4+MujC/?=
- =?us-ascii?q?XYbTApGgmgzxSm2RLWz2BafeMZ2P2KtBzPY/ioEJVvZPXydE3HQtv/xmBbVoQ9?=
- =?us-ascii?q?5OdWo7xwmQcns+qBpSaChohtq3yU/GYRCwPZiKa9kfF3oTJ9yEmj/nSHuOkUYY?=
- =?us-ascii?q?oBwgqLeNaYHZ44f5cs75h6mJYqYDR7zKl4bsekeWGULOW82Ic3lYv1k62gEgHU?=
- =?us-ascii?q?MIeF98vlgdWifhj5DcynpSOZX4VDfnZw3DQGuG4EgMmLtsvwo1V/kuBl/ssIti?=
- =?us-ascii?q?j1LjmcEwWWaOUNg+L4pZUc/H6xEEc+WppieBmXBYfQR4/ZzGhhc14zs5c85K2U?=
- =?us-ascii?q?hsBMLDOmfgGTl9TFCQW0ahuoeWceSjh6JTJp6HBWz62qxl0N2k6NJMZ9s55G2Z?=
- =?us-ascii?q?L8uYSKSxLZReG78q2y7KTS+9inM0vIcDneoQFtRlIwTjfS/RgXpHHR6TD4MRw3?=
- =?us-ascii?q?TEsi8QIFvHbD+IVayVoahvoYBBVPFoTTpUkk4+Agnj5bi0drVe9prQ+6GuVyxZ?=
- =?us-ascii?q?+uJDrLtbUf9miQcROgl3eomPA4nS/DhwEXPSfwjqt9mmwwOPC9Qv5UYQfUra46?=
- =?us-ascii?q?9ZtmlSYwmFVAxoTPXO/oP+kmguwQN5SNUEQ0jQhoLJ090GxSNT5GRqirxasuh8?=
- =?us-ascii?q?aRsoVEOAg7gyJ4rTb7hzfBWUeSDNFLts8u6ceQT0sy0/Mj93yLSJgvafTSn+H8?=
- =?us-ascii?q?LqQ6zSoNkAowcUqDcMfZVJdpYC9/8do1VSSJuuP2ZWd1rXdcQwcCRjTxMTmu4g?=
- =?us-ascii?q?usA=3D=3D?=
-IronPort-HdrOrdr: =?us-ascii?q?A9a23=3AcJ8cWqulWiGSYbbGKlIs1Bwy7skDStV00zEX?=
- =?us-ascii?q?/kB9WHVpm62j5qSTdZEguCMc5wx+ZJheo7q90cW7IE80lqQFhLX5X43SPzUO0V?=
- =?us-ascii?q?HARO5fBODZsl/d8kPFltJ15ONJdqhSLJnKB0FmsMCS2mKFOudl7N6Z0K3Av4vj?=
- =?us-ascii?q?80s=3D?=
-X-IronPort-AV: E=Sophos;i="5.88,333,1635177600"; 
-   d="scan'208";a="123086102"
-Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
-  by heian.cn.fujitsu.com with ESMTP; 30 Mar 2022 14:49:33 +0800
-Received: from G08CNEXMBPEKD05.g08.fujitsu.local (unknown [10.167.33.204])
-        by cn.fujitsu.com (Postfix) with ESMTP id 47D3F4D17163;
-        Wed, 30 Mar 2022 14:49:32 +0800 (CST)
-Received: from G08CNEXJMPEKD02.g08.fujitsu.local (10.167.33.202) by
- G08CNEXMBPEKD05.g08.fujitsu.local (10.167.33.204) with Microsoft SMTP Server
- (TLS) id 15.0.1497.23; Wed, 30 Mar 2022 14:49:32 +0800
-Received: from G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.85) by
- G08CNEXJMPEKD02.g08.fujitsu.local (10.167.33.202) with Microsoft SMTP Server
- (TLS) id 15.0.1497.23; Wed, 30 Mar 2022 14:49:32 +0800
-Received: from [10.167.201.8] (10.167.201.8) by
- G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
- id 15.0.1497.23 via Frontend Transport; Wed, 30 Mar 2022 14:49:31 +0800
-Message-ID: <eb7c0403-1d1f-5de4-8cdd-52a8de148fbe@fujitsu.com>
-Date:   Wed, 30 Mar 2022 14:49:31 +0800
+        Wed, 30 Mar 2022 02:52:06 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0A8F98F67;
+        Tue, 29 Mar 2022 23:50:21 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id s11so17881230pfu.13;
+        Tue, 29 Mar 2022 23:50:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=PREjFWEeKVsrZp9JQYkAg3nJ9VbOpXqQtmse9DPiKQI=;
+        b=NrI8JoyFrB+ZLxwF5c73YQ4YEjQQ/2wghgm+5eDZl0aWEj0jVZEay8hHQCZfsLDL/d
+         9de0DJpnkc2/S6nj07SpB/2RFsCWU0Cb9fZYJYPYmhHQdzhb+8ABdQUUvpkbF2OCES/P
+         jfWY7q/fCZA35HPgua1iYhzGk34XJRF/plH0EBjYxsJZ+7paeSCzTrnsyx1rVLWjHXQB
+         mlFRpMkQdkt1i7ZUlZGggrCXOczwwYHARJ3Rn090uUR/kLxEFKoz6U8GX1CEBvzClLsB
+         HG991tUcjcdH0p/PRvpKOgc8KqhZejq7Y38DYnHX4G2xkCj9zmrBTRlnUtM0gwNOwMI8
+         a10A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=PREjFWEeKVsrZp9JQYkAg3nJ9VbOpXqQtmse9DPiKQI=;
+        b=pDwOSJ1fdZdM0icUccYUqekVbk73S558MGGeI/Zxn3HPIifCUtOOo+JyyKBTEJkeiV
+         7fxSbK0zEbsva0RTNgvwOG0hEIlDHlCQP5X3q+Dbl95hzOUWlj0FOz9OP4rAZbUaupEt
+         MRYx48m8edPAX5Sa/UynPs9p4MzZR48FeBEtG6ydx9g+oEed2iLOGmxdZbkv1UlnL6B7
+         /0Jxmfn+w6AosYOSyZLFtUmWJRbwhfYSiUYQTFtRZhKrapM0W9JIntBnwcGCW0QCj2dX
+         Ac0ghRW6D4IyVEAeBxQF7mwSn2fi6gBZ9kWB3ex9NWVEDzwjPIrdoWhQ7mIcsQbOfCbC
+         Ek1w==
+X-Gm-Message-State: AOAM533YSHFJ9nzN5mCNjgF5XV2jZpIEjWFAbR9Ly0gVHksv0AvZPzMd
+        cImEXMInI+99QWjiUgUoOuQ=
+X-Google-Smtp-Source: ABdhPJxyZiBi4XbIKhMmWldOgfPgWv12lWKTF90ymwn7JpBab849AcsXIMAC8MJNnTaMIutJh6syMg==
+X-Received: by 2002:a63:44f:0:b0:385:fa8a:1889 with SMTP id 76-20020a63044f000000b00385fa8a1889mr4917683pge.160.1648623021096;
+        Tue, 29 Mar 2022 23:50:21 -0700 (PDT)
+Received: from [192.168.43.80] (subs02-180-214-232-71.three.co.id. [180.214.232.71])
+        by smtp.gmail.com with ESMTPSA id e10-20020a17090a280a00b001c9ec7a7f5asm1785046pjd.49.2022.03.29.23.50.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 29 Mar 2022 23:50:20 -0700 (PDT)
+Message-ID: <432fb484-eecf-8203-c457-9092b48a0528@gmail.com>
+Date:   Wed, 30 Mar 2022 13:50:13 +0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH v11 5/8] mm: move pgoff_address() to vma_pgoff_address()
-To:     Christoph Hellwig <hch@infradead.org>
-CC:     <linux-kernel@vger.kernel.org>, <linux-xfs@vger.kernel.org>,
-        <nvdimm@lists.linux.dev>, <linux-mm@kvack.org>,
-        <linux-fsdevel@vger.kernel.org>, <djwong@kernel.org>,
-        <dan.j.williams@intel.com>, <david@fromorbit.com>,
-        <jane.chu@oracle.com>, Christoph Hellwig <hch@lst.de>
-References: <20220227120747.711169-1-ruansy.fnst@fujitsu.com>
- <20220227120747.711169-6-ruansy.fnst@fujitsu.com>
- <YkPuooGD139Wpg1v@infradead.org>
-From:   Shiyang Ruan <ruansy.fnst@fujitsu.com>
-In-Reply-To: <YkPuooGD139Wpg1v@infradead.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-yoursite-MailScanner-ID: 47D3F4D17163.A0D9B
-X-yoursite-MailScanner: Found to be clean
-X-yoursite-MailScanner-From: ruansy.fnst@fujitsu.com
+Subject: Re: Stable release process proposal (Was: Linux 5.10.109)
+Content-Language: en-US
+To:     Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
+        torvalds@linux-foundation.org, stable@vger.kernel.org
+Cc:     lwn@lwn.net, jslaby@suse.cz
+References: <164845571613863@kroah.com>
+ <44e28591-873a-d873-e04a-78dda900a5de@ispras.ru>
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+In-Reply-To: <44e28591-873a-d873-e04a-78dda900a5de@ispras.ru>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-在 2022/3/30 13:46, Christoph Hellwig 写道:
-> On Sun, Feb 27, 2022 at 08:07:44PM +0800, Shiyang Ruan wrote:
->> Since it is not a DAX-specific function, move it into mm and rename it
->> to be a generic helper.
+On 30/03/22 06.49, Alexey Khoroshilov wrote:
+> The problem will be fixed in 5.10.110, but we still have a couple oddities:
+> - we have a release that should not be recommended for use
+> - we have a commit message misleading users when says:
 > 
-> FYI, there is a patch in -mm and linux-next:
+>      Tested-by: Pavel Machek (CIP) <pavel@denx.de>
+>      Tested-by: Fox Chen <foxhlchen@gmail.com>
+>      Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+>      Tested-by: Shuah Khan <skhan@linuxfoundation.org>
+>      Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
+>      Tested-by: Salvatore Bonaccorso <carnil@debian.org>
+>      Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+>      Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+>      Tested-by: Guenter Roeck <linux@roeck-us.net>
 > 
->    "mm: rmap: introduce pfn_mkclean_range() to cleans PTEs"
-> 
-> that adds a vma_pgoff_address which seems like a bit of a superset of
-> the one added in this patch, but only is in mm/internal.h.
+> but actually nobody tested that version.
 
-Yes.  The function in this patch handles more cases.
+I think you missed the point of having Tested-by in stable releases here.
+The tag is used to indicate that the entity (individuals, organizations,
+or bots) had successfully tested the release candidate (stable-rc). The
+degree of testing can vary. For example, I only did cross-compile test [1],
+then I offered Tested-by in my name.
 
-So, let me rebase onto this patch and move the function into 
-/include/linux/mm.h, so that fs/dax.c can also use it.  Is this ok?
+[1]: https://lore.kernel.org/stable/2b3af5d1-8233-45a6-7a44-a19f7010cd6b@gmail.com/
 
+On the other hand, Naresh Kamboju (LKFT) did full testing as indicated on
+[2].
 
---
-Thanks,
-Ruan.
+[2]: https://lore.kernel.org/stable/CA+G9fYu9CjYCQwM3EO5eguRC0rq00HMuE7cEAG4E68shzw4OHA@mail.gmail.com/
 
+Regardless of how testing is done by entities involved, the point of having
+Tested-by is to give kernel users confidence to upgrade to more recent
+release, as almost all sufferings of testing is represented by Tested-by
+entities.
 
+-- 
+An old man doll... just what I always wanted! - Clara
