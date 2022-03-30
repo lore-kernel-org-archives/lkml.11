@@ -2,101 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85303C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 14:58:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 057ABC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 14:59:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347677AbiC3PAb (ORCPT
+        id S1347695AbiC3PAm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 11:00:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56532 "EHLO
+        Wed, 30 Mar 2022 11:00:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242336AbiC3PA2 (ORCPT
+        with ESMTP id S244697AbiC3PAk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 11:00:28 -0400
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A45255A3
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 07:58:42 -0700 (PDT)
-Received: by mail-qv1-xf2e.google.com with SMTP id gi14so17075169qvb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 07:58:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mvista.com; s=google;
-        h=date:from:to:cc:subject:message-id:reply-to:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=l5d4z40lcsExb2VcuXpJGK1vARAluV7fagbwarZTvHo=;
-        b=i3wQrtlsZyxDiN9PCMMFBwk6hwkW4qMbr0kI+gRHCuZt2hjAMmlZLn+TtYNwcCzbzR
-         RnriIJf8hdecoVgZASTAfAXkpg4C6zRRNNJYa+3z2JtCWSpNgZNgD6u2OVr3u1Ku2uFw
-         qUpil4rPRL6nLesjdMeiqxPLhintXY8dTEmWw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:reply-to
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=l5d4z40lcsExb2VcuXpJGK1vARAluV7fagbwarZTvHo=;
-        b=BxiyTYR9WkVHqDivnMD5rT8X81BrSFWSeocFz86cGbeXcpNFp/69UQkY58iBlZnPlm
-         j1F0UdZr3N4fWeyvop20j3QpT2sPvXA0aI+plOJguwahOUW94ytxZInNiEG405JyR2Vh
-         Cq5I6jf0rff+BPwzILh3cAFASScvIZxZ8YLWDh4Cb4A8O2GNSuW5wxgLSSR3w1k5wnZu
-         YLoa7F88rOQbp/RAsJtHJtV48Iucq9sWy+/Bq2GShS3er7YrdpGPYoePJ9OuOWSt91tc
-         AhnmlMx0TdZ+CN3jasm15BBll1wiJPboNTuE/MJpk2En8kc8acGdU5nOAI57pDrJLx1Q
-         BwKQ==
-X-Gm-Message-State: AOAM5307vdgXfUb6rUigm+GXaQrcpjiiCPiOjAgrvvu5OnjGf6z/Qqg+
-        JG6gtUyhNF9XgG1FHKIMDXYZ3g==
-X-Google-Smtp-Source: ABdhPJybcpK5XD9ijSmRBOyHsKoUz1RNAcu8CPLKrgJoV5n1hdx3vJfJMA6Xd27wpue/GeE8eyCPFQ==
-X-Received: by 2002:a05:6214:1043:b0:441:1a79:12a5 with SMTP id l3-20020a056214104300b004411a7912a5mr31381389qvr.42.1648652321389;
-        Wed, 30 Mar 2022 07:58:41 -0700 (PDT)
-Received: from minyard.net ([2001:470:b8f6:1b:dcc2:ca6d:a437:b3e0])
-        by smtp.gmail.com with ESMTPSA id j1-20020a05620a410100b0067ec5ecac66sm12731343qko.19.2022.03.30.07.58.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Mar 2022 07:58:40 -0700 (PDT)
-Date:   Wed, 30 Mar 2022 09:58:38 -0500
-From:   Corey Minyard <cminyard@mvista.com>
-To:     chenchacha <chen.chenchacha@foxmail.com>
-Cc:     minyard@acm.org, openipmi-developer@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/4] ipmi: Limit the number of message a user may have
- outstanding
-Message-ID: <20220330145838.GY3458@minyard.net>
-Reply-To: cminyard@mvista.com
-References: <20220329183340.471474-1-minyard@acm.org>
- <20220329183340.471474-3-minyard@acm.org>
- <tencent_508F9F7681360F657D131FF97D2C53506208@qq.com>
+        Wed, 30 Mar 2022 11:00:40 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF8976434;
+        Wed, 30 Mar 2022 07:58:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648652335; x=1680188335;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=LGbzP3xToIyBP1rsfYxryrKuymJX1Ma/5d6WvH8bQgg=;
+  b=ltR2Hb3UzFADOEWfsrf8Wvr//Fuf9Dcidst4Ozfi0iRCjQG4bP64GxKY
+   JmNjJEQrnDNQrLOkJv5AUFAuj6IZdyER0qLZe5m9uZsYLZWzEf/PM60ae
+   wU4BYaU28zMTNJmrWGfg+MXxABGlyVp1chHq+9vN/T+TzEYUBzt3tt6Iw
+   p30HWtRGSaNLviqj+vbG9chzYNuAUpDeM23YRAp8sfS7tK0QbUmx0Ysp4
+   /9jTHucDfKAU5/+fDI1H03vYM6vA8+0O7JdeUEcb8R2f7zWYQG7v2zrAD
+   XTwRXx3gzIJJaUIpecYMpyGO50W3H4eu2ubqjWZdGRRjrWtSzGxGD8NNi
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="241717829"
+X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
+   d="scan'208";a="241717829"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 07:58:54 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
+   d="scan'208";a="565574065"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
+  by orsmga008.jf.intel.com with ESMTP; 30 Mar 2022 07:58:50 -0700
+Date:   Wed, 30 Mar 2022 22:51:37 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     David Laight <David.Laight@ACULAB.COM>
+Cc:     Michael Walle <michael@walle.cc>, Tom Rix <trix@redhat.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "linux-hwmon@vger.kernel.org" <linux-hwmon@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 1/5] hwmon: introduce hwmon_sanitize_name()
+Message-ID: <20220330145137.GA214615@yilunxu-OptiPlex-7050>
+References: <20220329160730.3265481-1-michael@walle.cc>
+ <20220329160730.3265481-2-michael@walle.cc>
+ <20220330065047.GA212503@yilunxu-OptiPlex-7050>
+ <5029cf18c9df4fab96af13c857d2e0ef@AcuMS.aculab.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <tencent_508F9F7681360F657D131FF97D2C53506208@qq.com>
+In-Reply-To: <5029cf18c9df4fab96af13c857d2e0ef@AcuMS.aculab.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 10:44:50PM +0800, chenchacha wrote:
-> > @@ -2298,6 +2309,14 @@ static int i_ipmi_request(struct ipmi_user     *user,
-> >   	struct ipmi_recv_msg *recv_msg;
-> >   	int rv = 0;
-> > +	if (user) {
-> > +		if (atomic_add_return(1, &user->nr_msgs) > max_msgs_per_user) {
-> > +			atomic_dec(&user->nr_msgs);
-> > +			rv = -EBUSY;
-> > +			goto out;
-> > +		}
-> > +	}
-> > +
-> > @@ -2369,6 +2388,8 @@ static int i_ipmi_request(struct ipmi_user     *user,
-> >   	rcu_read_unlock();
-> >   out:
-> > +	if (rv && user)
-> > +		atomic_dec(&user->nr_msgs);
-> >   	return rv;
-> >   }
+On Wed, Mar 30, 2022 at 10:11:39AM +0000, David Laight wrote:
+> From: Xu Yilun
+> > Sent: 30 March 2022 07:51
+> > 
+> > On Tue, Mar 29, 2022 at 06:07:26PM +0200, Michael Walle wrote:
+> > > More and more drivers will check for bad characters in the hwmon name
+> > > and all are using the same code snippet. Consolidate that code by adding
+> > > a new hwmon_sanitize_name() function.
+> > >
+> > > Signed-off-by: Michael Walle <michael@walle.cc>
+> > > ---
+> > >  Documentation/hwmon/hwmon-kernel-api.rst |  9 ++++-
+> > >  drivers/hwmon/hwmon.c                    | 49 ++++++++++++++++++++++++
+> > >  include/linux/hwmon.h                    |  3 ++
+> > >  3 files changed, 60 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/Documentation/hwmon/hwmon-kernel-api.rst b/Documentation/hwmon/hwmon-kernel-api.rst
+> > > index c41eb6108103..12f4a9bcef04 100644
+> > > --- a/Documentation/hwmon/hwmon-kernel-api.rst
+> > > +++ b/Documentation/hwmon/hwmon-kernel-api.rst
+> > > @@ -50,6 +50,10 @@ register/unregister functions::
+> > >
+> > >    void devm_hwmon_device_unregister(struct device *dev);
+> > >
+> > > +  char *hwmon_sanitize_name(const char *name);
+> > > +
+> > > +  char *devm_hwmon_sanitize_name(struct device *dev, const char *name);
+> > > +
+> > >  hwmon_device_register_with_groups registers a hardware monitoring device.
+> > >  The first parameter of this function is a pointer to the parent device.
+> > >  The name parameter is a pointer to the hwmon device name. The registration
+> > > @@ -93,7 +97,10 @@ removal would be too late.
+> > >
+> > >  All supported hwmon device registration functions only accept valid device
+> > >  names. Device names including invalid characters (whitespace, '*', or '-')
+> > > -will be rejected. The 'name' parameter is mandatory.
+> > > +will be rejected. The 'name' parameter is mandatory. Before calling a
+> > > +register function you should either use hwmon_sanitize_name or
+> > > +devm_hwmon_sanitize_name to replace any invalid characters with an
+> > 
+> > I suggest                   to duplicate the name and replace ...
 > 
-> If the number of msg is greater than the limit, the nr_msgs will be decrease
-> twice.
+> You are now going to get code that passed in NULL when the kmalloc() fails.
+> If 'sanitizing' the name is the correct thing to do then sanitize it
+> when the copy is made into the allocated structure.
+
+Then the driver is unaware of the name change, which makes more
+confusing.
+
+> (I'm assuming that the 'const char *name' parameter doesn't have to
+> be persistent - that would be another bug just waiting to happen.)
+
+The hwmon core does require a persistent "name" parameter now. No name
+copy is made when hwmon dev register.
+
 > 
-> Should it be returned directory?
+> Seems really pointless to be do a kmalloc() just to pass a string
+> into a function.
 
-Oh wait, yeah, I screwed that up.  I added the first decrement later,
-after I "noticed" it was missing.  I should add a comment there.
-Thanks.
+Maybe we should not force a kmalloc() when the sanitizing is needed, let
+the driver decide whether to duplicate the string or not.
 
--corey
+Thanks,
+Yilun
 
 > 
-> --
-> Chen Guanqiao
+> 	David
+> 
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
