@@ -2,60 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA530C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:19:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76A94C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:19:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245115AbiC3MU5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:20:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36992 "EHLO
+        id S1344875AbiC3MVG (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 08:21:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347311AbiC3MGL (ORCPT
+        with ESMTP id S1347298AbiC3MGK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 08:06:11 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 690EBBF46
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 05:03:36 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id j8so10073916pll.11
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 05:03:36 -0700 (PDT)
+        Wed, 30 Mar 2022 08:06:10 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D641A63B1
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 05:03:27 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id s11so18474276pfu.13
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 05:03:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=48w9cCcHfu4RFzRm5PZAyw72DdxLC63ffgBHswIn+j4=;
-        b=e2oys9YHS1G4ibMgjW99OE3iDzMIYL6l9CnklayAdF2/xl9anpeDhLfh2+ycju7pkk
-         jVM8SwJI7cy6FAd+qP9m9lafilhptX+dnPyU/ogkIn2Q+w2gPG+PM96hKg+sDnGLgYHS
-         Mh9UTHx7rAA4iTqN0e6oweEDLKGUJ/IsGLmkxDHTid4PHkzEGi/JNsV7282VfYeWex1Q
-         KcaAlOY/6cD1PVyEXlXiSTqh7No95xKZuDfxGaP2Xl7IkShsybZwVKftzdBqrRjzwt9U
-         /hD2+lGydFDG7xj1RAV5R1VQahPryrV4INhY8Ps9tS/2P6o9rtSl0P7xJ79plT1OjGxj
-         m8dg==
+        bh=4gcVpR2FizLJu6RR3F0oPHrwVu4t3M1EAjmgqnVTUXw=;
+        b=jcHoloxMP+C79gc6dBvnkAdVCQRfO2uj4O8uKZkKARqsKyg1ZbGoC4b5O7l/sOAXJA
+         SFHqCodMGi0ble3CbmlXAfQoy3mrD5wWpVxrpAsTgCbnT2ZFXZaor39CwUro9hliLND3
+         pbMsCcEUJIyyQBYVfjXH8Byyfxr5avmvBM/BR+05VfzdWvnVNQglk2vLunPD1Mr+ApCA
+         A5iE9zkrlIYRBUdxE7dirJZDht6JYnL+0rdCPLp1f54HsYXZONrHyPGYPYJtQAgXFpYn
+         h9GogzzMAk0ipItJFIlRnVwrVFHPNEkOvuCLxahKny1fqMnjinQwrYd1P5rWYMc7IAYF
+         4tRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=48w9cCcHfu4RFzRm5PZAyw72DdxLC63ffgBHswIn+j4=;
-        b=dsrdqMl0rLXTq3EyDZ5GXmuuVY9QPRy8DHQ6F0cbkllIZSJWl8xwuf8DBXQtM1WWlD
-         LkXnPotwy8wu/v855rsYH36J6Y4UAdVt6vwL7Oib232MTE5WJ5ZRF4wzcDiUTZaBLeq0
-         LAVIJAuzkzEcAqVdeRQ9mybWVwkZo7SmZjYPK+cJbPOuVhfFJnZej3/LrvPTefO+iupt
-         sZX8I23d8P0GCvwVAA1k8LJPh7TM8nRB8f88KQ7QoCsmZvf4m1sx5JRgGaG9y9KXH/Po
-         FGiizcUW9dzVjmm+iEtPp20wD92GUBFRtyv1Xd7p6XrFEnWzwWaVwdb9O9Z8AcTXQFHz
-         3VQw==
-X-Gm-Message-State: AOAM532BubOPCJlwca92wUhBG5wjsWviML4tTSqT6F2KgpSiwVwNzjwT
-        ZGue85qhCiQKXK8myrwKkqY=
-X-Google-Smtp-Source: ABdhPJwbqJd5wNulvaZLttMt50ldtMVPaMlLpVaNrun46JlZVZd5PnTlSq49PePx/8vUsZI1mYU89A==
-X-Received: by 2002:a17:90b:1c07:b0:1c7:5324:c68e with SMTP id oc7-20020a17090b1c0700b001c75324c68emr4691633pjb.202.1648641815737;
-        Wed, 30 Mar 2022 05:03:35 -0700 (PDT)
+        bh=4gcVpR2FizLJu6RR3F0oPHrwVu4t3M1EAjmgqnVTUXw=;
+        b=eKDdDAf9XpPcVWJ0WE4KEVgBAWNFQoXxmjiFEdSjiO8lopuHXp15lCAzajlJ61GxGV
+         aC+JSKCOX0cK9wcPEH63+l+MuDfmmAbvz/5jnjSwonRi2VbR7mi7OFsaGEF4zRS1j81Y
+         T3hE/Xd0LUOFY3ubd9u2qkTpBXHLvXhfw0jh2TcLBi0oIEau0eaH5UTCOUZaBBRsf543
+         jPaHocj9q7+uXPws+R5l4TF4QlC2rKs2UVv2NXYTlFVfTvy4GlCH8y/HmTmB0kIPdZbA
+         0jtwZuxGVzaht70mEo5TvwU7LI+E6dakAOKrzNBkTiARSF9Rq+SV7+X4UKf7B3mf1iOW
+         zUcA==
+X-Gm-Message-State: AOAM533RIK2t3oSBcxY8UN4hYwPqwO/4/BhGFuIaKhy4xsYGR3dZDYc1
+        p05hL6d0tzsZVVkekrIU+6w=
+X-Google-Smtp-Source: ABdhPJzL0rbJ0K2I89qnqiuRPMDNCIkKbUY7vwxf1xIQFLHClFI3u9l3Ln29b5g4dAdJ/hFhzAoqEw==
+X-Received: by 2002:a05:6a00:114b:b0:4f7:915:3ec3 with SMTP id b11-20020a056a00114b00b004f709153ec3mr33199193pfm.8.1648641807349;
+        Wed, 30 Mar 2022 05:03:27 -0700 (PDT)
 Received: from localhost ([119.3.119.18])
-        by smtp.gmail.com with ESMTPSA id m18-20020a056a00081200b004faeae3a291sm22940884pfk.26.2022.03.30.05.03.34
+        by smtp.gmail.com with ESMTPSA id c21-20020a637255000000b003822e80f132sm18965408pgn.12.2022.03.30.05.03.26
         (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 30 Mar 2022 05:03:35 -0700 (PDT)
+        Wed, 30 Mar 2022 05:03:26 -0700 (PDT)
 From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
 To:     patrik.r.jakobsson@gmail.com, airlied@linux.ie, daniel@ffwll.ch
 Cc:     rob@ti.com, yakui.zhao@intel.com, airlied@redhat.com,
         alan@linux.intel.com, dri-devel@lists.freedesktop.org,
         linux-kernel@vger.kernel.org,
         Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Subject: [PATCH 5/5] gma500: fix a missing break in psb_driver_load
-Date:   Wed, 30 Mar 2022 20:02:46 +0800
-Message-Id: <20220330120246.25580-6-xiam0nd.tong@gmail.com>
+Subject: [PATCH 3/5] gma500: fix a missing break in psb_intel_crtc_mode_set
+Date:   Wed, 30 Mar 2022 20:02:44 +0800
+Message-Id: <20220330120246.25580-4-xiam0nd.tong@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220330120246.25580-1-xiam0nd.tong@gmail.com>
 References: <20220330120246.25580-1-xiam0nd.tong@gmail.com>
@@ -64,29 +65,31 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Instead of exiting the loop as expected when an entry is found, the
-list_for_each_entry() continues until the traversal is complete. To
-avoid potential executing 'ret = gma_backlight_init(dev);' repeatly,
-add a break after the switch statement.
+list_for_each_entry() continues until the traversal is complete. It
+could result in multiple 'is_*' flags being set with true mistakely.
 
-Fixes: 5c49fd3aa0ab0 ("gma500: Add the core DRM files and headers")
+To fix this, when found the entry, add a break after the switch
+statement.
+
+Fixes: 89c78134cc54d (" gma500: Add Poulsbo support")
 Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 ---
- drivers/gpu/drm/gma500/psb_drv.c | 2 ++
+ drivers/gpu/drm/gma500/psb_intel_display.c | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/drm/gma500/psb_drv.c b/drivers/gpu/drm/gma500/psb_drv.c
-index 65cf1c79dd7c..d65a68811bf7 100644
---- a/drivers/gpu/drm/gma500/psb_drv.c
-+++ b/drivers/gpu/drm/gma500/psb_drv.c
-@@ -398,6 +398,8 @@ static int psb_driver_load(struct drm_device *dev, unsigned long flags)
- 			ret = gma_backlight_init(dev);
+diff --git a/drivers/gpu/drm/gma500/psb_intel_display.c b/drivers/gpu/drm/gma500/psb_intel_display.c
+index 42d1a733e124..85fc61bf333a 100644
+--- a/drivers/gpu/drm/gma500/psb_intel_display.c
++++ b/drivers/gpu/drm/gma500/psb_intel_display.c
+@@ -134,6 +134,8 @@ static int psb_intel_crtc_mode_set(struct drm_crtc *crtc,
+ 			is_tv = true;
  			break;
  		}
 +
 +		break;
  	}
  
- 	if (ret)
+ 	refclk = 96000;
 -- 
 2.17.1
 
