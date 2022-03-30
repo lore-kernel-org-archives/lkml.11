@@ -2,49 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B18AFC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8597AC433F5
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:14:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345173AbiC3MNQ (ORCPT
+        id S1345059AbiC3MNC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:13:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57074 "EHLO
+        Wed, 30 Mar 2022 08:13:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345887AbiC3LzI (ORCPT
+        with ESMTP id S1345743AbiC3Ly6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:55:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32AE6268C13;
-        Wed, 30 Mar 2022 04:52:05 -0700 (PDT)
+        Wed, 30 Mar 2022 07:54:58 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13346262434;
+        Wed, 30 Mar 2022 04:51:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C3221615E2;
-        Wed, 30 Mar 2022 11:52:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9646DC340EE;
-        Wed, 30 Mar 2022 11:52:03 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C2865CE1D38;
+        Wed, 30 Mar 2022 11:51:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35F10C34111;
+        Wed, 30 Mar 2022 11:51:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641124;
-        bh=M1gU7GJAdKfEoxBo0mmxgvDmkAOM71wt/lDiYoCEucE=;
+        s=k20201202; t=1648641097;
+        bh=CNRBQopooIEtsueaUrSSUgiLsrLEPIgLmSdYpJLQ7Ls=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EU8uS5LiJfsbqRIRYTIX4mXocKkfgll4x4r93XRtYRYFOQo3sb+KX+01CX5ltnv3E
-         w5ykQQqLPuSTeVBQONji/X1TW3BWpCdDT/J+hxMx7Ze2u0HmNEKpZN8xosS7Bm02/X
-         0ix5iN6qlTvu98c0BuAbMtdwsOalrjUzplRPK9zbIkuI32tW0h0Il5T4fUA4ZDUvVM
-         sqq7aJ8ywlMdx5I0LR71YAVOUHLFBm7PT12EXlV+s6Ieu78atLwnKhuUxfdVIYw/tw
-         9WM4aCwr7bAFwyLSal9k7tRnisFX35agKBPZ13dW6eOPgBoy3bwb3znpKo1elc60SI
-         TvUntUlpjA5xQ==
+        b=vHB+ticLqnN/cPW13Zm/J1kvzY9UeNCX9ASz1wiBJ0lC6daZfrHVYH9x+wg4REZFp
+         fCoiaLH6B90H7hzUNZCk9l6jG02sQTvTam0B1HeqjFplOHC19VzGaIxksgnQkIUHfQ
+         hqHYMh/VO+6lHtVtfUg9fO7UO7eQOKi946+UeDU+YdpH1mQiEMNIja7511JnvXHwY/
+         sGVmko8ZXOM1YN30Obx3TeNq9qIZFnABWjSKYWs4j4bEg+XjoTQmE5WhMgea9329os
+         cSvtPvw+HC8rMiTLBED6T/MDNt7qZXYPpQnWKBz0sHMvtUIibLXL/4FLlx8SETmK4y
+         eay4otNPVoyjA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Daniel=20Gonz=C3=A1lez=20Cabanelas?= <dgcbueu@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 25/37] media: cx88-mpeg: clear interrupt status register before streaming video
-Date:   Wed, 30 Mar 2022 07:51:10 -0400
-Message-Id: <20220330115122.1671763-25-sashal@kernel.org>
+Cc:     George Kennedy <george.kennedy@oracle.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        tomi.valkeinen@ti.com, linux-fbdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 08/37] video: fbdev: cirrusfb: check pixclock to avoid divide by zero
+Date:   Wed, 30 Mar 2022 07:50:53 -0400
+Message-Id: <20220330115122.1671763-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115122.1671763-1-sashal@kernel.org>
 References: <20220330115122.1671763-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -52,41 +53,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel González Cabanelas <dgcbueu@gmail.com>
+From: George Kennedy <george.kennedy@oracle.com>
 
-[ Upstream commit 56cb61f70e547e1b0cdfe6ff5a1f1ce6242e6d96 ]
+[ Upstream commit 5c6f402bdcf9e7239c6bc7087eda71ac99b31379 ]
 
-Some cx88 video cards may have transport stream status interrupts set
-to 1 from cold start, causing errors like this:
+Do a sanity check on pixclock value to avoid divide by zero.
 
-  cx88xx: cx88_print_irqbits: core:irq mpeg  [0x100000] ts_err?*
-  cx8802: cx8802_mpeg_irq: mpeg:general errors: 0x00100000
+If the pixclock value is zero, the cirrusfb driver will round up
+pixclock to get the derived frequency as close to maxclock as
+possible.
 
-According to CX2388x datasheet, the interrupt status register should be
-cleared before enabling IRQs to stream video.
+Syzkaller reported a divide error in cirrusfb_check_pixclock.
 
-Fix it by clearing the Transport Stream Interrupt Status register.
+divide error: 0000 [#1] SMP KASAN PTI
+CPU: 0 PID: 14938 Comm: cirrusfb_test Not tainted 5.15.0-rc6 #1
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.11.0-2
+RIP: 0010:cirrusfb_check_var+0x6f1/0x1260
 
-Signed-off-by: Daniel González Cabanelas <dgcbueu@gmail.com>
+Call Trace:
+ fb_set_var+0x398/0xf90
+ do_fb_ioctl+0x4b8/0x6f0
+ fb_ioctl+0xeb/0x130
+ __x64_sys_ioctl+0x19d/0x220
+ do_syscall_64+0x3a/0x80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Signed-off-by: George Kennedy <george.kennedy@oracle.com>
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/pci/cx88/cx88-mpeg.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/video/fbdev/cirrusfb.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/media/pci/cx88/cx88-mpeg.c b/drivers/media/pci/cx88/cx88-mpeg.c
-index a57c991b165b..10d2971ef062 100644
---- a/drivers/media/pci/cx88/cx88-mpeg.c
-+++ b/drivers/media/pci/cx88/cx88-mpeg.c
-@@ -162,6 +162,9 @@ int cx8802_start_dma(struct cx8802_dev    *dev,
- 	cx_write(MO_TS_GPCNTRL, GP_COUNT_CONTROL_RESET);
- 	q->count = 0;
+diff --git a/drivers/video/fbdev/cirrusfb.c b/drivers/video/fbdev/cirrusfb.c
+index 15a9ee7cd734..b4980bc2985e 100644
+--- a/drivers/video/fbdev/cirrusfb.c
++++ b/drivers/video/fbdev/cirrusfb.c
+@@ -469,7 +469,7 @@ static int cirrusfb_check_mclk(struct fb_info *info, long freq)
+ 	return 0;
+ }
  
-+	/* clear interrupt status register */
-+	cx_write(MO_TS_INTSTAT,  0x1f1111);
+-static int cirrusfb_check_pixclock(const struct fb_var_screeninfo *var,
++static int cirrusfb_check_pixclock(struct fb_var_screeninfo *var,
+ 				   struct fb_info *info)
+ {
+ 	long freq;
+@@ -478,9 +478,7 @@ static int cirrusfb_check_pixclock(const struct fb_var_screeninfo *var,
+ 	unsigned maxclockidx = var->bits_per_pixel >> 3;
+ 
+ 	/* convert from ps to kHz */
+-	freq = PICOS2KHZ(var->pixclock);
+-
+-	dev_dbg(info->device, "desired pixclock: %ld kHz\n", freq);
++	freq = PICOS2KHZ(var->pixclock ? : 1);
+ 
+ 	maxclock = cirrusfb_board_info[cinfo->btype].maxclock[maxclockidx];
+ 	cinfo->multiplexing = 0;
+@@ -488,11 +486,13 @@ static int cirrusfb_check_pixclock(const struct fb_var_screeninfo *var,
+ 	/* If the frequency is greater than we can support, we might be able
+ 	 * to use multiplexing for the video mode */
+ 	if (freq > maxclock) {
+-		dev_err(info->device,
+-			"Frequency greater than maxclock (%ld kHz)\n",
+-			maxclock);
+-		return -EINVAL;
++		var->pixclock = KHZ2PICOS(maxclock);
 +
- 	/* enable irqs */
- 	dprintk(1, "setting the interrupt mask\n");
- 	cx_set(MO_PCI_INTMSK, core->pci_irqmask | PCI_INT_TSINT);
++		while ((freq = PICOS2KHZ(var->pixclock)) > maxclock)
++			var->pixclock++;
+ 	}
++	dev_dbg(info->device, "desired pixclock: %ld kHz\n", freq);
++
+ 	/*
+ 	 * Additional constraint: 8bpp uses DAC clock doubling to allow maximum
+ 	 * pixel clock
 -- 
 2.34.1
 
