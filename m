@@ -2,87 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2105C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 14:55:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14D04C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 14:55:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245243AbiC3O5H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 10:57:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42332 "EHLO
+        id S1347600AbiC3O5L (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 10:57:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244129AbiC3O45 (ORCPT
+        with ESMTP id S1347567AbiC3O5E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 10:56:57 -0400
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FDDA49CB8
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 07:55:10 -0700 (PDT)
-Received: by mail-io1-xd2c.google.com with SMTP id 125so25038817iov.10
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 07:55:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:in-reply-to:references:subject:message-id:date
-         :mime-version:content-transfer-encoding;
-        bh=R/QA3qwuvc+FZQ+dv5ME79tUgBYzzyKos1+TF13+4yQ=;
-        b=beGWf5RZrPnpIIOChN9iUKTh3sfzxfPCjZ2JKiQR+vhrtTmfVYrJe0tkng2GZnstMC
-         KADRrLbuu5wPJEPpFqNfW0F0u3eEMSJszujRTf3I+7wa2RlYGONVH5KrzXP9E1odfute
-         JRkkPR8lV4Efrsf8+D7wIP5Hb1xMf1K3Z9SK2P3S08WKyUoBNIVM4/taAaPTmn7mnyx7
-         NebS4jRL7C3ErmStAR6cntI6m1Waae+ZCBjF4reLMj8qy5u/wfr//fADwKtS1kqIGWeG
-         Sb1LFDbkiqUs39uWKHXAlSKgPr3PCQ7mnrLrfr/Ht5R6TSKr6qIgFEMT6d2y57XftrzM
-         5LjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject
-         :message-id:date:mime-version:content-transfer-encoding;
-        bh=R/QA3qwuvc+FZQ+dv5ME79tUgBYzzyKos1+TF13+4yQ=;
-        b=urFH37RBZGaGZ+K0CfyiE8G92DMzN/VLd3ZcojO56FOo3W+nunRUTAkPUvUk1qqn7K
-         l7llWkR/TfNhklK1DgOLgKfNE3AtWIN3jUxBNO0OVXGaULzXaM9KG2G5Z8fRqKRDxCbS
-         RXkxw9UnpfTUWEsHUp5sGn6Z5F8ERkwDZyqifjhtVbUA0T3p+/x7BmnuAlV94hYlvzMf
-         vOt0tYmStL1/6OT1QIk6NqNjYHzFFIklAorVpvMeJ7u5GBZhMNJnGAfJuqWM8n469Hcb
-         +aN1F/f/tFWJio0Kl3tKEJkgG2KloZ5TNE6be9EQPSZpQHUy9h6GdCxqaLGey4EC/Tzj
-         k+wQ==
-X-Gm-Message-State: AOAM530MhdbsHvf00d85KPk4o4yVMmEcMzvoonQyevK4bi0OAY0nEljA
-        3tjMtK+rkhiO2HxunltdEbecCQ==
-X-Google-Smtp-Source: ABdhPJz3ogEsUt77/dKerlk0+F1wbN/aqIEn3YfWAm1SNqiQ5Px+22BxvDghI7kN/xbnyk/nI0XREA==
-X-Received: by 2002:a6b:14a:0:b0:649:a974:9042 with SMTP id 71-20020a6b014a000000b00649a9749042mr11501105iob.81.1648652109714;
-        Wed, 30 Mar 2022 07:55:09 -0700 (PDT)
-Received: from [127.0.1.1] ([207.135.234.126])
-        by smtp.gmail.com with ESMTPSA id q197-20020a6b8ece000000b00648d615e80csm11473586iod.41.2022.03.30.07.55.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Mar 2022 07:55:09 -0700 (PDT)
-From:   Jens Axboe <axboe@kernel.dk>
-To:     Carlos Llamas <cmllamas@google.com>, linux-block@vger.kernel.org
-Cc:     Christoph Hellwig <hch@lst.de>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220329201815.1347500-1-cmllamas@google.com>
-References: <20220329201815.1347500-1-cmllamas@google.com>
-Subject: Re: [PATCH] loop: fix ioctl calls using compat_loop_info
-Message-Id: <164865210886.39485.16982992188546747372.b4-ty@kernel.dk>
-Date:   Wed, 30 Mar 2022 08:55:08 -0600
+        Wed, 30 Mar 2022 10:57:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E01124925A;
+        Wed, 30 Mar 2022 07:55:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 774E96097C;
+        Wed, 30 Mar 2022 14:55:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63E91C340EC;
+        Wed, 30 Mar 2022 14:55:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648652115;
+        bh=I+yJk0OAWbSGqwnxt70vNBRoJxFYe+GVrXI+LY7+JQ8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XHDr0Bv1y+gtIMF36FJE/RlvVVR3GpNLnf4Te7RHach2xV6WCgDhZjupJ9bCFwSHj
+         NJXMax2wgDt2Evna03tIBlaqDvT44j219GN9+5mEIqOnBsVjabCH0JLOC9vk6nObnY
+         ifAkXfPYZT8cU6veasvCWt6pAntlMRKCJKNTtvu//nUaHvZR8YhG8pOw5Bh7/4NQma
+         e6b0uwyluHx0DqfFjQtjaHn4P11uc+DI9QpBM0SR2ks7Vp+HWlQkI+1ahf2/SFpjXh
+         /qQDmYkQrbozmATqqOygKTJJ+wM4mifYVCspp+9Yhohz3SEHk0HHbWtt+tNT079we7
+         HCtzLz5b1571w==
+Date:   Wed, 30 Mar 2022 17:54:14 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Reinette Chatre <reinette.chatre@intel.com>
+Cc:     Shuah Khan <skhan@linuxfoundation.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Shuah Khan <shuah@kernel.org>,
+        "open list:INTEL SGX" <linux-sgx@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 1/2] selftests/sgx: Use rip relative addressing for
+ encl_stack
+Message-ID: <YkRvFkEO8Ic1VdQ8@iki.fi>
+References: <20220322074313.7444-1-jarkko@kernel.org>
+ <7b7732ec-c7ff-cf92-510f-64c83ed985cd@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7b7732ec-c7ff-cf92-510f-64c83ed985cd@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 29 Mar 2022 20:18:15 +0000, Carlos Llamas wrote:
-> Support for cryptoloop was deleted in commit 47e9624616c8 ("block:
-> remove support for cryptoloop and the xor transfer"), making the usage
-> of loop_info->lo_encrypt_type obsolete. However, this member was also
-> removed from the compat_loop_info definition and this breaks userspace
-> ioctl calls for 32-bit binaries and CONFIG_COMPAT=y.
+On Mon, Mar 28, 2022 at 02:49:04PM -0700, Reinette Chatre wrote:
+> Hi Jarkko,
 > 
-> This patch restores the compat_loop_info->lo_encrypt_type member and
-> marks it obsolete as well as in the uapi header definitions.
+> On 3/22/2022 12:43 AM, Jarkko Sakkinen wrote:
+> > Simplify the test_encl_bootstrap.S flow by using rip-relative addressing.
+> > Compiler does the right thing here, and this removes dependency on where
+> > TCS entries need to be located in the binary, i.e. allows the binary layout
+> > changed freely in the future.
+> > 
+> > Cc: Reinette Chatre <reinette.chatre@intel.com>
+> > Cc: Dave Hansen <dave.hansen@linux.intel.com>
+> > Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+> > ---
+> >  tools/testing/selftests/sgx/test_encl_bootstrap.S | 6 +-----
+> >  1 file changed, 1 insertion(+), 5 deletions(-)
+> > 
+> > diff --git a/tools/testing/selftests/sgx/test_encl_bootstrap.S b/tools/testing/selftests/sgx/test_encl_bootstrap.S
+> > index 82fb0dfcbd23..1c1b5c6c4ffe 100644
+> > --- a/tools/testing/selftests/sgx/test_encl_bootstrap.S
+> > +++ b/tools/testing/selftests/sgx/test_encl_bootstrap.S
+> > @@ -40,11 +40,7 @@
+> >  	.text
+> >  
+> >  encl_entry:
+> > -	# RBX contains the base address for TCS, which is the first address
+> > -	# inside the enclave for TCS #1 and one page into the enclave for
+> > -	# TCS #2. By adding the value of encl_stack to it, we get
+> > -	# the absolute address for the stack.
+> > -	lea	(encl_stack)(%rbx), %rax
+> > +	lea	(encl_stack)(%rip), %rax
+> >  	xchg	%rsp, %rax
+> >  	push	%rax
+> >  
 > 
-> [...]
+> The goal of the above snippet is to set RSP to ensure that each thread has its own stack.
+> 
+> Since EENTER computes RIP as EnclaveBase + TCS.OENTRY, by using offset from RIP this
+> would result in all TCS with OENTRY of encl_entry to use the same stack, no?
+> 
+> Could you please consider the following as an alternative:
+> https://lore.kernel.org/lkml/65c137c875bd4da675eaba35316ff43d7cfd52f8.1644274683.git.reinette.chatre@intel.com/
+> 
+> The idea in that patch is that a new TCS would always need to be accompanied by a
+> dedicated stack so, at least for testing purposes, the TCS and stack can be dynamically
+> allocated together with the TCS page following its stack.  This seems much simpler
+> to me and also makes the following patch unnecessary.
 
-Applied, thanks!
+There's no better alternative than use rip. Compiler will fix it up.
 
-[1/1] loop: fix ioctl calls using compat_loop_info
-      commit: f941c51eeac7ebe0f8ec30943bf78e7f60aad039
+So, no, I won't consider that. This a dead obvious change.
 
-Best regards,
--- 
-Jens Axboe
-
-
+BR, Jarkko
