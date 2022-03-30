@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D296C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:15:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F34DC352A7
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:15:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344651AbiC3MRD (ORCPT
+        id S1346464AbiC3MQi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:17:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36738 "EHLO
+        Wed, 30 Mar 2022 08:16:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344725AbiC3L41 (ORCPT
+        with ESMTP id S1344812AbiC3L4e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:56:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FFEE31361;
-        Wed, 30 Mar 2022 04:54:28 -0700 (PDT)
+        Wed, 30 Mar 2022 07:56:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C5B310FA;
+        Wed, 30 Mar 2022 04:54:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A6BFAB81C28;
-        Wed, 30 Mar 2022 11:54:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BCD7C36AE3;
-        Wed, 30 Mar 2022 11:54:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC64D615E7;
+        Wed, 30 Mar 2022 11:54:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2913EC3410F;
+        Wed, 30 Mar 2022 11:54:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641265;
-        bh=i4LvtJMYs5t9UOhjaHJspxXRS2kYwM/x4i+LuKPkDHQ=;
+        s=k20201202; t=1648641273;
+        bh=1sHfJvFN+OjUE01N3UAP6EyW1BqdX/gvRrGAxGZaGcE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H7nPFKqnZjaP+pXB88MVcs6hND4xYOwAoxj2S+LJpoaX9TNEGqv8XrLI58YQCqzt+
-         m8DD0zUj+a9d6yuZelMnH/bw4VO8BQGhzG7SMgrXBwuOOiZ/FBP39pHIrdMmj44qiZ
-         hBMk9T+wwX+ZK50YfrC+30QBIm6kNT2V84+2ryCzTUJZe1CjioTTD68R8xL1rTvCdX
-         XCD2b7hto+Eg2sxKAr6PYm2tDVUjGgsjrVagFGGjG9wYoYO0JjZ9XZQ0TVBwoO6Uba
-         sP2YwgB/m4bixGZhQsEhqsODYlD+7f3uFeedwfaHJvDmZEdt3lpqqpiNXs+DOVW9PT
-         4B9wYjWekKzPg==
+        b=LfTC8Qa3v/V6WNs6HQDKqcTTEyBbcpjjmvVbHbE6LmCyyLrPeiKMfOz6R++iWVEMn
+         lQf9kuNP4AFx7CLdYBqFNq0p2ZbYxYvNhxkaoE+JRr3x78oYDqFECjBk/0dJ+wIVIa
+         MvVn83hax2z0P0cOhtvVqsSpQhQPzuwS/u8QF+8sFzSZrRHdA72rTTOsbiIRHo74rY
+         gNHb8qQi2pQtxld9NfWzyp0J9O77eEhm7ez0GeK6unQCymJBP2r9RMUuv61asXR00n
+         JsqaufgnrcrjrAaRZmpcPuJS8Kc6bXq6id9BslUlICSqsGJcU9d90Reu8UQ0Dq9PVd
+         LQOYdzfYaRZww==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shengjiu Wang <shengjiu.wang@nxp.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 4.9 10/17] ASoC: soc-core: skip zero num_dai component in searching dai name
-Date:   Wed, 30 Mar 2022 07:53:59 -0400
-Message-Id: <20220330115407.1673214-10-sashal@kernel.org>
+Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
+        syzkaller <syzkaller@googlegroups.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, hverkuil@xs4all.nl,
+        linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 15/17] media: hdpvr: initialize dev->worker at hdpvr_register_videodev
+Date:   Wed, 30 Mar 2022 07:54:04 -0400
+Message-Id: <20220330115407.1673214-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115407.1673214-1-sashal@kernel.org>
 References: <20220330115407.1673214-1-sashal@kernel.org>
@@ -53,45 +55,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shengjiu Wang <shengjiu.wang@nxp.com>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit f7d344a2bd5ec81fbd1ce76928fd059e57ec9bea ]
+[ Upstream commit 07922937e9a580825f9965c46fd15e23ba5754b6 ]
 
-In the case like dmaengine which's not a dai but as a component, the
-num_dai is zero, dmaengine component has the same component_of_node
-as cpu dai, when cpu dai component is not ready, but dmaengine component
-is ready, try to get cpu dai name, the snd_soc_get_dai_name() return
--EINVAL, not -EPROBE_DEFER, that cause below error:
+hdpvr_register_videodev is responsible to initialize a worker in
+hdpvr_device. However, the worker is only initialized at
+hdpvr_start_streaming other than hdpvr_register_videodev.
+When hdpvr_probe does not initialize its worker, the hdpvr_disconnect
+will encounter one WARN in flush_work.The stack trace is as follows:
 
-asoc-simple-card <card name>: parse error -22
-asoc-simple-card: probe of <card name> failed with error -22
+ hdpvr_disconnect+0xb8/0xf2 drivers/media/usb/hdpvr/hdpvr-core.c:425
+ usb_unbind_interface+0xbf/0x3a0 drivers/usb/core/driver.c:458
+ __device_release_driver drivers/base/dd.c:1206 [inline]
+ device_release_driver_internal+0x22a/0x230 drivers/base/dd.c:1237
+ bus_remove_device+0x108/0x160 drivers/base/bus.c:529
+ device_del+0x1fe/0x510 drivers/base/core.c:3592
+ usb_disable_device+0xd1/0x1d0 drivers/usb/core/message.c:1419
+ usb_disconnect+0x109/0x330 drivers/usb/core/hub.c:2228
 
-The sound card failed to probe.
+Fix this by moving the initialization of dev->worker to the starting of
+hdpvr_register_videodev
 
-So this patch fixes the issue above by skipping the zero num_dai
-component in searching dai name.
-
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
-Link: https://lore.kernel.org/r/1644491952-7457-1-git-send-email-shengjiu.wang@nxp.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/soc-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/usb/hdpvr/hdpvr-video.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/soc-core.c b/sound/soc/soc-core.c
-index 0344d4423167..81c3aa167038 100644
---- a/sound/soc/soc-core.c
-+++ b/sound/soc/soc-core.c
-@@ -3799,7 +3799,7 @@ static int snd_soc_get_dai_name(struct of_phandle_args *args,
- 		if (!component_of_node && pos->dev->parent)
- 			component_of_node = pos->dev->parent->of_node;
+diff --git a/drivers/media/usb/hdpvr/hdpvr-video.c b/drivers/media/usb/hdpvr/hdpvr-video.c
+index 474c11e1d495..cfd8c09f9ded 100644
+--- a/drivers/media/usb/hdpvr/hdpvr-video.c
++++ b/drivers/media/usb/hdpvr/hdpvr-video.c
+@@ -312,7 +312,6 @@ static int hdpvr_start_streaming(struct hdpvr_device *dev)
  
--		if (component_of_node != args->np)
-+		if (component_of_node != args->np || !pos->num_dai)
- 			continue;
+ 	dev->status = STATUS_STREAMING;
  
- 		if (pos->driver->of_xlate_dai_name) {
+-	INIT_WORK(&dev->worker, hdpvr_transmit_buffers);
+ 	schedule_work(&dev->worker);
+ 
+ 	v4l2_dbg(MSG_BUFFER, hdpvr_debug, &dev->v4l2_dev,
+@@ -1156,6 +1155,9 @@ int hdpvr_register_videodev(struct hdpvr_device *dev, struct device *parent,
+ 	bool ac3 = dev->flags & HDPVR_FLAG_AC3_CAP;
+ 	int res;
+ 
++	// initialize dev->worker
++	INIT_WORK(&dev->worker, hdpvr_transmit_buffers);
++
+ 	dev->cur_std = V4L2_STD_525_60;
+ 	dev->width = 720;
+ 	dev->height = 480;
 -- 
 2.34.1
 
