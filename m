@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C47B9C38A05
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2832FC4167E
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347897AbiC3MHz (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:07:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60788 "EHLO
+        id S243554AbiC3MIE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 08:08:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345966AbiC3LzR (ORCPT
+        with ESMTP id S1344385AbiC3LxF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:55:17 -0400
+        Wed, 30 Mar 2022 07:53:05 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A70252BB0B;
-        Wed, 30 Mar 2022 04:53:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EC69261980;
+        Wed, 30 Mar 2022 04:48:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5D358B81C29;
-        Wed, 30 Mar 2022 11:53:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B6B2C340F3;
-        Wed, 30 Mar 2022 11:53:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C1239B81C28;
+        Wed, 30 Mar 2022 11:48:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D51E6C36AE2;
+        Wed, 30 Mar 2022 11:48:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641210;
-        bh=bkZOOo4OTLPt/6iak3xmqexQD+t/tDVRYpkeLEA+SSw=;
+        s=k20201202; t=1648640926;
+        bh=ADEi5SU0fkm1OasEUzfXS5XLxdWFJrLpnS+LEgj9ZRA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SHXgdjq4LqzfXp3VJV3j29trvrqW8QFtnVDMHATDPTAufV4gWbzk2v30nwLESJLif
-         HlkbNCD4zoKsnQIupCej5g2pR8RuEflgLJvzTCRqessbkz6xgMRHKlcJ4OJvItjwha
-         QRZul2Il/ME3e6FSPR1HsVX+PU01+oO6xKaXdeX2NtOH4aPtggbiq4L79dPlHRxXaa
-         aKioB1M/ok+baZwru2LOZuXUXhHaIPkMgh0rmj4eOBo5yEr/WnXrCbFYRH41RTQkaO
-         U1UyDczcLAmKQDTjcYnnfduq1+2aADB23PmcTawxtK4OKLIJ4UcxW1NJQi5xtWBbi2
-         maC6lL5Mbx+AA==
+        b=TRqqvh47KSe9ZurI5qCNfWK8cOnhuLasFuNj+0hJcovf2xvCltj1I5f9ycsnbnJ0C
+         RDjTT7hpz81icI3wKIhYLzIBbY/FyRr7W+wCLJUX8RKSfjrn0Czq6aog08KN8PZ2Cc
+         s3ZywOpZUpW47KssGSWTkIRxo5/nNmLEedEnnHQF70KSwSaGag3V27kbL5zBmwgSoP
+         F4LURRSYlKcapDS+qIG9RbJgNbWAG/a0kxJ6DkzWKZU2YI0l3Vrmg2K9xweER7kKK/
+         jNC7Q/HB6cpyc2Q7YMeQLqZaJxwJ+nvPDChQi3vwQ22/dw6vWBNH7tyqttniiJZqGP
+         GmBdAan9UPyIw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>, Helge Deller <deller@gmx.de>,
-        Sasha Levin <sashal@kernel.org>, sudipm.mukherjee@gmail.com,
-        teddy.wang@siliconmotion.com, tomi.valkeinen@ti.com,
-        linux-fbdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 17/22] video: fbdev: sm712fb: Fix crash in smtcfb_write()
-Date:   Wed, 30 Mar 2022 07:52:58 -0400
-Message-Id: <20220330115303.1672616-17-sashal@kernel.org>
+Cc:     Mirela Rabulea <mirela.rabulea@oss.nxp.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 09/59] media: imx-jpeg: Prevent decoding NV12M jpegs into single-planar buffers
+Date:   Wed, 30 Mar 2022 07:47:41 -0400
+Message-Id: <20220330114831.1670235-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330115303.1672616-1-sashal@kernel.org>
-References: <20220330115303.1672616-1-sashal@kernel.org>
+In-Reply-To: <20220330114831.1670235-1-sashal@kernel.org>
+References: <20220330114831.1670235-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,73 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Mirela Rabulea <mirela.rabulea@oss.nxp.com>
 
-[ Upstream commit 4f01d09b2bbfbcb47b3eb305560a7f4857a32260 ]
+[ Upstream commit 417591a766b3c040c346044541ff949c0b2bb7b2 ]
 
-When the sm712fb driver writes three bytes to the framebuffer, the
-driver will crash:
+If the application queues an NV12M jpeg as output buffer, but then
+queues a single planar capture buffer, the kernel will crash with
+"Unable to handle kernel NULL pointer dereference" in mxc_jpeg_addrs,
+prevent this by finishing the job with error.
 
-    BUG: unable to handle page fault for address: ffffc90001ffffff
-    RIP: 0010:smtcfb_write+0x454/0x5b0
-    Call Trace:
-     vfs_write+0x291/0xd60
-     ? do_sys_openat2+0x27d/0x350
-     ? __fget_light+0x54/0x340
-     ksys_write+0xce/0x190
-     do_syscall_64+0x43/0x90
-     entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Fix it by removing the open-coded endianness fixup-code.
-
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Mirela Rabulea <mirela.rabulea@oss.nxp.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/sm712fb.c | 21 ++++-----------------
- 1 file changed, 4 insertions(+), 17 deletions(-)
+ drivers/media/platform/imx-jpeg/mxc-jpeg.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/video/fbdev/sm712fb.c b/drivers/video/fbdev/sm712fb.c
-index 1781ca697f66..76b1866dfa95 100644
---- a/drivers/video/fbdev/sm712fb.c
-+++ b/drivers/video/fbdev/sm712fb.c
-@@ -1130,7 +1130,7 @@ static ssize_t smtcfb_write(struct fb_info *info, const char __user *buf,
- 		count = total_size - p;
- 	}
+diff --git a/drivers/media/platform/imx-jpeg/mxc-jpeg.c b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
+index 4ca96cf9def7..b249c1bbfac8 100644
+--- a/drivers/media/platform/imx-jpeg/mxc-jpeg.c
++++ b/drivers/media/platform/imx-jpeg/mxc-jpeg.c
+@@ -947,6 +947,12 @@ static void mxc_jpeg_device_run(void *priv)
+ 	v4l2_m2m_buf_copy_metadata(src_buf, dst_buf, true);
  
--	buffer = kmalloc((count > PAGE_SIZE) ? PAGE_SIZE : count, GFP_KERNEL);
-+	buffer = kmalloc(PAGE_SIZE, GFP_KERNEL);
- 	if (!buffer)
- 		return -ENOMEM;
- 
-@@ -1148,24 +1148,11 @@ static ssize_t smtcfb_write(struct fb_info *info, const char __user *buf,
- 			break;
- 		}
- 
--		for (i = c >> 2; i--;) {
--			fb_writel(big_swap(*src), dst++);
-+		for (i = (c + 3) >> 2; i--;) {
-+			fb_writel(big_swap(*src), dst);
-+			dst++;
- 			src++;
- 		}
--		if (c & 3) {
--			u8 *src8 = (u8 *)src;
--			u8 __iomem *dst8 = (u8 __iomem *)dst;
--
--			for (i = c & 3; i--;) {
--				if (i & 1) {
--					fb_writeb(*src8++, ++dst8);
--				} else {
--					fb_writeb(*src8++, --dst8);
--					dst8 += 2;
--				}
--			}
--			dst = (u32 __iomem *)dst8;
--		}
- 
- 		*ppos += c;
- 		buf += c;
+ 	jpeg_src_buf = vb2_to_mxc_buf(&src_buf->vb2_buf);
++	if (q_data_cap->fmt->colplanes != dst_buf->vb2_buf.num_planes) {
++		dev_err(dev, "Capture format %s has %d planes, but capture buffer has %d planes\n",
++			q_data_cap->fmt->name, q_data_cap->fmt->colplanes,
++			dst_buf->vb2_buf.num_planes);
++		jpeg_src_buf->jpeg_parse_error = true;
++	}
+ 	if (jpeg_src_buf->jpeg_parse_error) {
+ 		jpeg->slot_data[ctx->slot].used = false;
+ 		v4l2_m2m_src_buf_remove(ctx->fh.m2m_ctx);
 -- 
 2.34.1
 
