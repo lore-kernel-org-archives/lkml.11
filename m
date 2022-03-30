@@ -2,294 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0676CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 17:43:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95138C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 17:45:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349449AbiC3RpR (ORCPT
+        id S1349445AbiC3Rri (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 13:45:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44954 "EHLO
+        Wed, 30 Mar 2022 13:47:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343849AbiC3RpO (ORCPT
+        with ESMTP id S229651AbiC3Rrg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 13:45:14 -0400
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E129E2DFB
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 10:43:26 -0700 (PDT)
-Received: by mail-io1-f69.google.com with SMTP id x16-20020a6bfe10000000b006409f03e39eso14924680ioh.7
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 10:43:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=4GCVSF/Voy5rwomprtsngXtMplHy8zS2E/BiciZHSj4=;
-        b=rXdbNL4s+hi181ntHEd7tJ+QX356uxz7F4LuQSW1uX2Cf9p+nj72/EOpYtoXbI+xYv
-         8LbfX8LMJfF9IBPWOQDhzpCPzZxSdl6TvPRRnW8qbxSKyNOFon7lc6cC9tb5mHibIpiM
-         rUHeAbTLHPSitoexgcgdMjukyFf2VWKZlyeY3LjMnRfQAhDL5npPiIhlm3+LBgCXyLBO
-         YdN5QVRKQnWR/CgZfwqafPE2guGrN1gbSJGlobaKjTpuGDEucYsy+1NvyIVs0xp82UuB
-         Cj82Y8OEeU2RV+qFPfd5psq6L4Xs0FfpnVFybvRDoR0ZUD57eUIUlyayPuAJa7Ll191t
-         zTyQ==
-X-Gm-Message-State: AOAM530hI0SXvaJ57p+WKVxaUoA0X4XI4avdSXs/evBbkT49+X1ewVWp
-        L2ZS3ojRwzOWbQZylHdUJNZIVc9+uP1q/VjtkTsdZRJBR9Yz
-X-Google-Smtp-Source: ABdhPJyqj/a+ZjMe9Y4X1Gk25zpQXzj2t/n6g+O7syjrhfEab2iC1HgkZJu4YrJDUUBuoo1aO1kR6CzGezWXFXeZyZ4za5T/JgxE
+        Wed, 30 Mar 2022 13:47:36 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD2DB11987E;
+        Wed, 30 Mar 2022 10:45:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648662349; x=1680198349;
+  h=to:cc:references:from:subject:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=bhBu1QbtdGHCC2qA88WxU1+lM89JHNS2xL8ubX9vaIE=;
+  b=KA/fjs/cHLcdsW63A2zlYO8k4nWzdUApAGBaQoD9ySGOi3xwccZ8MVhR
+   uRIP/I7qgyEz8lkcdhPRBhdQqsw2gw/f+E4dVQp+M9tl5RPJY6PgZte/c
+   7Nb5Qt8deI0QMBzo7evesl0K4XEtWjIYkUUeK1+Rx2lfnVq6+CHKybpSz
+   0Qi0CPa4t786l9EHhtSrsDraS82jaUn1aY7WYQgpG5MaAw+PLAOfhoNzR
+   RsXvo2/6VleUDx+C9lDZyo8VNcJUl32lPiFhZ+RJvOFYRBXeN2kuhyvJ7
+   JkFkWkgDm4Wbp+LE+0Zvnc3MA8XWNbXRowT+aSPEQL2I9GOeUL6y/Wu24
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="239534457"
+X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
+   d="scan'208";a="239534457"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 10:45:49 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
+   d="scan'208";a="653974778"
+Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
+  by orsmga004.jf.intel.com with ESMTP; 30 Mar 2022 10:45:44 -0700
+To:     "Sandeep Maheswaram (Temp)" <quic_c_sanm@quicinc.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Peter Chen <peter.chen@kernel.org>,
+        Pawel Laszczak <pawell@cadence.com>,
+        Roger Quadros <rogerq@kernel.org>,
+        Aswath Govindraju <a-govindraju@ti.com>,
+        linux-arm-msm@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_pkondeti@quicinc.com,
+        quic_ppratap@quicinc.com
+References: <1648103831-12347-1-git-send-email-quic_c_sanm@quicinc.com>
+ <1648103831-12347-4-git-send-email-quic_c_sanm@quicinc.com>
+ <YjxjxplpOpDC2JLs@kuha.fi.intel.com>
+ <4c2a28ad-b866-1b65-e73a-4eda0596cea2@linux.intel.com>
+ <Yj2nPa6/Y01P5aCY@kuha.fi.intel.com>
+ <4619c75c-cd34-82f2-56e1-a8bcb6d97177@linux.intel.com>
+ <Yj3h4p/kmZTvMz0O@kuha.fi.intel.com>
+ <fae54b27-9ae2-ecfc-69ae-40e5f5e1afbe@quicinc.com>
+From:   Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: Re: [PATCH v3 3/3] usb: dwc: host: add xhci_plat_priv quirk
+ XHCI_SKIP_PHY_INIT
+Message-ID: <bd694ef9-be57-79f1-e95e-5501c396be25@linux.intel.com>
+Date:   Wed, 30 Mar 2022 20:47:34 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.14.0
 MIME-Version: 1.0
-X-Received: by 2002:a5d:9c0f:0:b0:645:bc04:fd5 with SMTP id
- 15-20020a5d9c0f000000b00645bc040fd5mr12307649ioe.28.1648662206260; Wed, 30
- Mar 2022 10:43:26 -0700 (PDT)
-Date:   Wed, 30 Mar 2022 10:43:26 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000028ae8305db731533@google.com>
-Subject: [syzbot] KASAN: use-after-free Read in i2c_put_adapter
-From:   syzbot <syzbot+509a39149506f9c2fe34@syzkaller.appspotmail.com>
-To:     linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, wsa@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <fae54b27-9ae2-ecfc-69ae-40e5f5e1afbe@quicinc.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On 29.3.2022 12.18, Sandeep Maheswaram (Temp) wrote:
+> Hi Mathias,Heikki
+> 
+> On 3/25/2022 9:08 PM, Heikki Krogerus wrote:
+>> On Fri, Mar 25, 2022 at 04:33:27PM +0200, Mathias Nyman wrote:
+>>> On 25.3.2022 13.27, Heikki Krogerus wrote:
+>>>> On Fri, Mar 25, 2022 at 12:36:22AM +0200, Mathias Nyman wrote:
+>>>>> On 24.3.2022 14.27, Heikki Krogerus wrote:
+>>>>>> On Thu, Mar 24, 2022 at 12:07:11PM +0530, Sandeep Maheswaram wrote:
+>>>>>>> Currently the phy init is done from dwc3 and also xhci which makes the
+>>>>>>> runtime_usage value 2 for the phy which causes issue during runtime
+>>>>>>> suspend. When we run the below command the runtime_status still shows
+>>>>>>> active.
+>>>>>>> echo auto > /sys/bus/platform/devices/88e3000.phy/power/control
+>>>>>>>
+>>>>>>> dwc3 manages PHY by own DRD driver, so skip the management by
+>>>>>>> HCD core by setting this quirk.
+>>>>>>>
+>>>>>>> Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+>>>>>>> ---
+>>>>>>>   drivers/usb/dwc3/host.c | 13 +++++++++++++
+>>>>>>>   1 file changed, 13 insertions(+)
+>>>>>>>
+>>>>>>> diff --git a/drivers/usb/dwc3/host.c b/drivers/usb/dwc3/host.c
+>>>>>>> index eda8719..d4fcf06 100644
+>>>>>>> --- a/drivers/usb/dwc3/host.c
+>>>>>>> +++ b/drivers/usb/dwc3/host.c
+>>>>>>> @@ -13,6 +13,12 @@
+>>>>>>>   #include <linux/platform_device.h>
+>>>>>>>     #include "core.h"
+>>>>>>> +#include <linux/usb/xhci-plat.h>
+>>>>>>> +#include <linux/usb/xhci-quirks.h>
+>>>>>>> +
+>>>>>>> +static const struct xhci_plat_priv xhci_plat_dwc3_xhci = {
+>>>>>>> +    .quirks = XHCI_SKIP_PHY_INIT,
+>>>>>>> +};
+>>>>>>>     static void dwc3_host_fill_xhci_irq_res(struct dwc3 *dwc,
+>>>>>>>                       int irq, char *name)
+>>>>>>> @@ -122,6 +128,13 @@ int dwc3_host_init(struct dwc3 *dwc)
+>>>>>>>           }
+>>>>>>>       }
+>>>>>>>   +    ret = platform_device_add_data(xhci, &xhci_plat_dwc3_xhci,
+>>>>>>> +            sizeof(xhci_plat_dwc3_xhci));
+>>>>>>> +    if (ret) {
+>>>>>>> +        dev_err(dwc->dev, "failed to add data to xHCI\n");
+>>>>>>> +        goto err;
+>>>>>>> +    }
+>>>>>>> +
+>>>>>>>       ret = platform_device_add(xhci);
+>>>>>>>       if (ret) {
+>>>>>>>           dev_err(dwc->dev, "failed to register xHCI device\n");
+>>>>>> I think you should just use device property:
+>>>>>>
+>>>>> This was suggested in an earlier series, but was rejected as it also added
+>>>>> the property as a device tree parameter.
+>>>>>
+>>>>> I think adding more device properties can be messy in the long run, especially if we
+>>>>> need to add them for many of the existing xhci quirks.
+>>>>> We also end up with a mix where some device properties are listed as device tree
+>>>>> parameters, and some not.
+>>>>>
+>>>>> Defining xhci quirks and platform data structure in headers shared with dwc3 and cdns3
+>>>>> allow those drivers to easily set any existing xhci quirk, or other possible optional
+>>>>> callbacks.
+>>>>>
+>>>>> cdns3 driver is already doing this, but it includes the full xhci.h header.
+>>>>> This series cleans up that a bit so cdns3 will only include xhci quirk bits and
+>>>>> platform data structure.
+>>>>>
+>>>>> On the downside we add a couple xhci related header files to include/linux/usb/
+>>>>> Let me know if you see any other issues I missed with this approach.
+>>>> The problem here is that these drivers are now coupled together, and
+>>>> that should not be taken lightly. We have a dependency hell in our
+>>>> hands with a lot of drivers, and the culprit is always platform data.
+>>>>
+>>>> Build-in device properties may be messy, but I would still say they
+>>>> are less messy than those quirk flags - you got to admit, they are a
+>>>> mess. The benefit from build-in properties is in any case the fact
+>>>> that they remove the need to couple these drivers together.
+>>> Agree, quirk bits are messy. Any suggestion that would work with
+>>> PCI xHCI devices, devicetree, and "pure" platform devices?
+>> I think xHCI driver should always be able to rely on being able to
+>> read this kind of information from the fwnode. If there is no actual
+>> firmware node (DT or ACPI), or if it's missing some information, the
+>> glue driver needs to populate software node for the xHCI.
+>>
+>> Right now I just want to avoid having to pass the quirks using
+>> platform data from drivers such as drivers/usb/cdns3/host.c and
+>> drivers/usb/dwc3/host.c to xHCI.
+>>
+>> One way we could do that is by defining compatibility ID for both of
+>> them that we provide using a single device property (like I guess DT
+>> does). Then based on that compatibility ID, xhci-plat.c can set the
+>> actual "static" quirk flags. That we could already do easily. How
+>> would that sound to you?
 
-syzbot found the following issue on:
+Sounds good. 
 
-HEAD commit:    f022814633e1 Merge tag 'trace-v5.18-1' of git://git.kernel..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=10f37405700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=8ca27d4f6e8fcfba
-dashboard link: https://syzkaller.appspot.com/bug?extid=509a39149506f9c2fe34
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> 
+> This was my previous patch where I was using device tree property. Should we go ahead with this approach?
+> 
+> https://patchwork.kernel.org/project/linux-arm-msm/cover/1636353710-25582-1-git-send-email-quic_c_sanm@quicinc.com/
+> 
+> Any further changes to this ?
 
-Unfortunately, I don't have any reproducer for this issue yet.
+By dropping the DT part of that series we get a similar built-in device property
+solution as Heikki initially suggested.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+509a39149506f9c2fe34@syzkaller.appspotmail.com
+How about adding the compatibility ID device property that was just suggested?
+Then matching the Id in xhci-plat.c against a static table containing Ids and
+xhci_plat_priv structures, with the needed quirks for dwc3.
 
-==================================================================
-BUG: KASAN: use-after-free in i2c_put_adapter drivers/i2c/i2c-core-base.c:2471 [inline]
-BUG: KASAN: use-after-free in i2c_put_adapter+0x4c/0x50 drivers/i2c/i2c-core-base.c:2465
-Read of size 8 at addr ffff88801e193010 by task syz-executor.4/32338
-
-CPU: 0 PID: 32338 Comm: syz-executor.4 Tainted: G        W         5.17.0-syzkaller-11138-gf022814633e1 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description.constprop.0.cold+0xeb/0x495 mm/kasan/report.c:313
- print_report mm/kasan/report.c:429 [inline]
- kasan_report.cold+0xf4/0x1c6 mm/kasan/report.c:491
- i2c_put_adapter drivers/i2c/i2c-core-base.c:2471 [inline]
- i2c_put_adapter+0x4c/0x50 drivers/i2c/i2c-core-base.c:2465
- i2cdev_release+0x55/0xb0 drivers/i2c/i2c-dev.c:619
- __fput+0x277/0x9d0 fs/file_table.c:317
- task_work_run+0xdd/0x1a0 kernel/task_work.c:164
- tracehook_notify_resume include/linux/tracehook.h:188 [inline]
- exit_to_user_mode_loop kernel/entry/common.c:190 [inline]
- exit_to_user_mode_prepare+0x27e/0x290 kernel/entry/common.c:222
- __syscall_exit_to_user_mode_work kernel/entry/common.c:304 [inline]
- syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:315
- do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f73db23bc8b
-Code: 0f 05 48 3d 00 f0 ff ff 77 45 c3 0f 1f 40 00 48 83 ec 18 89 7c 24 0c e8 63 fc ff ff 8b 7c 24 0c 41 89 c0 b8 03 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 35 44 89 c7 89 44 24 0c e8 a1 fc ff ff 8b 44
-RSP: 002b:00007ffdec734390 EFLAGS: 00000293 ORIG_RAX: 0000000000000003
-RAX: 0000000000000000 RBX: 0000000000000004 RCX: 00007f73db23bc8b
-RDX: 00007f73db3a12a0 RSI: ffffffffffffffff RDI: 0000000000000003
-RBP: 00007f73db39d960 R08: 0000000000000000 R09: 00007f73db3a12a8
-R10: 00007ffdec734490 R11: 0000000000000293 R12: 000000000005c3ad
-R13: 00007ffdec734490 R14: 00007f73db39c030 R15: 0000000000000032
- </TASK>
-
-Allocated by task 14:
- kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
- kasan_set_track mm/kasan/common.c:45 [inline]
- set_alloc_info mm/kasan/common.c:436 [inline]
- ____kasan_kmalloc mm/kasan/common.c:515 [inline]
- ____kasan_kmalloc mm/kasan/common.c:474 [inline]
- __kasan_kmalloc+0xa9/0xd0 mm/kasan/common.c:524
- kmalloc include/linux/slab.h:581 [inline]
- kzalloc include/linux/slab.h:714 [inline]
- i2c_tiny_usb_probe+0x5e/0x560 drivers/i2c/busses/i2c-tiny-usb.c:228
- usb_probe_interface+0x315/0x7f0 drivers/usb/core/driver.c:396
- call_driver_probe drivers/base/dd.c:517 [inline]
- really_probe+0x245/0xcc0 drivers/base/dd.c:596
- __driver_probe_device+0x338/0x4d0 drivers/base/dd.c:755
- driver_probe_device+0x4c/0x1a0 drivers/base/dd.c:785
- __device_attach_driver+0x20b/0x2f0 drivers/base/dd.c:902
- bus_for_each_drv+0x15f/0x1e0 drivers/base/bus.c:427
- __device_attach+0x228/0x4a0 drivers/base/dd.c:973
- bus_probe_device+0x1e4/0x290 drivers/base/bus.c:487
- device_add+0xb83/0x1e20 drivers/base/core.c:3405
- usb_set_configuration+0x101e/0x1900 drivers/usb/core/message.c:2170
- usb_generic_driver_probe+0xba/0x100 drivers/usb/core/generic.c:238
- usb_probe_device+0xd9/0x2c0 drivers/usb/core/driver.c:293
- call_driver_probe drivers/base/dd.c:517 [inline]
- really_probe+0x245/0xcc0 drivers/base/dd.c:596
- __driver_probe_device+0x338/0x4d0 drivers/base/dd.c:755
- driver_probe_device+0x4c/0x1a0 drivers/base/dd.c:785
- __device_attach_driver+0x20b/0x2f0 drivers/base/dd.c:902
- bus_for_each_drv+0x15f/0x1e0 drivers/base/bus.c:427
- __device_attach+0x228/0x4a0 drivers/base/dd.c:973
- bus_probe_device+0x1e4/0x290 drivers/base/bus.c:487
- device_add+0xb83/0x1e20 drivers/base/core.c:3405
- usb_new_device.cold+0x641/0x1091 drivers/usb/core/hub.c:2566
- hub_port_connect drivers/usb/core/hub.c:5363 [inline]
- hub_port_connect_change drivers/usb/core/hub.c:5507 [inline]
- port_event drivers/usb/core/hub.c:5665 [inline]
- hub_event+0x25c6/0x4680 drivers/usb/core/hub.c:5747
- process_one_work+0x996/0x1610 kernel/workqueue.c:2289
- worker_thread+0x665/0x1080 kernel/workqueue.c:2436
- kthread+0x2e9/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-
-Freed by task 14:
- kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
- kasan_set_track+0x21/0x30 mm/kasan/common.c:45
- kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
- ____kasan_slab_free mm/kasan/common.c:366 [inline]
- ____kasan_slab_free+0x166/0x1a0 mm/kasan/common.c:328
- kasan_slab_free include/linux/kasan.h:200 [inline]
- slab_free_hook mm/slub.c:1728 [inline]
- slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1754
- slab_free mm/slub.c:3510 [inline]
- kfree+0xd6/0x4d0 mm/slub.c:4552
- i2c_tiny_usb_free drivers/i2c/busses/i2c-tiny-usb.c:215 [inline]
- i2c_tiny_usb_disconnect+0x88/0xf0 drivers/i2c/busses/i2c-tiny-usb.c:285
- usb_unbind_interface+0x1d8/0x8e0 drivers/usb/core/driver.c:458
- __device_release_driver+0x627/0x760 drivers/base/dd.c:1209
- device_release_driver_internal drivers/base/dd.c:1242 [inline]
- device_release_driver+0x26/0x40 drivers/base/dd.c:1265
- bus_remove_device+0x2eb/0x5a0 drivers/base/bus.c:529
- device_del+0x4f3/0xc80 drivers/base/core.c:3592
- usb_disable_device+0x35b/0x7b0 drivers/usb/core/message.c:1419
- usb_disconnect.cold+0x278/0x6ec drivers/usb/core/hub.c:2228
- hub_port_connect drivers/usb/core/hub.c:5207 [inline]
- hub_port_connect_change drivers/usb/core/hub.c:5507 [inline]
- port_event drivers/usb/core/hub.c:5665 [inline]
- hub_event+0x1e74/0x4680 drivers/usb/core/hub.c:5747
- process_one_work+0x996/0x1610 kernel/workqueue.c:2289
- process_scheduled_works kernel/workqueue.c:2352 [inline]
- worker_thread+0x854/0x1080 kernel/workqueue.c:2438
- kthread+0x2e9/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-
-Last potentially related work creation:
- kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
- __kasan_record_aux_stack+0xbe/0xd0 mm/kasan/generic.c:348
- kvfree_call_rcu+0x74/0x990 kernel/rcu/tree.c:3595
- drop_sysctl_table+0x3c0/0x4e0 fs/proc/proc_sysctl.c:1705
- unregister_sysctl_table fs/proc/proc_sysctl.c:1743 [inline]
- unregister_sysctl_table+0xc0/0x190 fs/proc/proc_sysctl.c:1718
- __devinet_sysctl_unregister net/ipv4/devinet.c:2611 [inline]
- devinet_exit_net+0x186/0x280 net/ipv4/devinet.c:2752
- ops_exit_list+0xb0/0x170 net/core/net_namespace.c:162
- cleanup_net+0x4ea/0xb00 net/core/net_namespace.c:594
- process_one_work+0x996/0x1610 kernel/workqueue.c:2289
- worker_thread+0x665/0x1080 kernel/workqueue.c:2436
- kthread+0x2e9/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-
-Second to last potentially related work creation:
- kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
- __kasan_record_aux_stack+0xbe/0xd0 mm/kasan/generic.c:348
- call_rcu+0x99/0x790 kernel/rcu/tree.c:3074
- netlink_release+0xf08/0x1db0 net/netlink/af_netlink.c:815
- __sock_release net/socket.c:650 [inline]
- sock_release+0x87/0x1b0 net/socket.c:678
- netlink_kernel_release+0x4b/0x60 net/netlink/af_netlink.c:2109
- nl_fib_lookup_exit net/ipv4/fib_frontend.c:1412 [inline]
- fib_net_exit+0x3c/0x80 net/ipv4/fib_frontend.c:1625
- ops_exit_list+0xb0/0x170 net/core/net_namespace.c:162
- cleanup_net+0x4ea/0xb00 net/core/net_namespace.c:594
- process_one_work+0x996/0x1610 kernel/workqueue.c:2289
- worker_thread+0x665/0x1080 kernel/workqueue.c:2436
- kthread+0x2e9/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-
-The buggy address belongs to the object at ffff88801e193000
- which belongs to the cache kmalloc-2k of size 2048
-The buggy address is located 16 bytes inside of
- 2048-byte region [ffff88801e193000, ffff88801e193800)
-
-The buggy address belongs to the physical page:
-page:ffffea0000786400 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1e190
-head:ffffea0000786400 order:3 compound_mapcount:0 compound_pincount:0
-flags: 0xfff00000010200(slab|head|node=0|zone=1|lastcpupid=0x7ff)
-raw: 00fff00000010200 ffffea0000676200 dead000000000002 ffff888010c42000
-raw: 0000000000000000 0000000000080008 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 3, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 3626, tgid 3626 (syz-executor.5), ts 120584063496, free_ts 120582629324
- prep_new_page mm/page_alloc.c:2438 [inline]
- get_page_from_freelist+0xba2/0x3df0 mm/page_alloc.c:4179
- __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5405
- alloc_pages+0x1aa/0x310 mm/mempolicy.c:2262
- alloc_slab_page mm/slub.c:1799 [inline]
- allocate_slab+0x26c/0x3c0 mm/slub.c:1944
- new_slab mm/slub.c:2004 [inline]
- ___slab_alloc+0x8df/0xf20 mm/slub.c:3005
- __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3092
- slab_alloc_node mm/slub.c:3183 [inline]
- __kmalloc_node+0x2cb/0x390 mm/slub.c:4458
- kmalloc_node include/linux/slab.h:604 [inline]
- kzalloc_node include/linux/slab.h:725 [inline]
- qdisc_alloc+0xac/0xa10 net/sched/sch_generic.c:941
- qdisc_create_dflt+0x71/0x4b0 net/sched/sch_generic.c:1000
- attach_one_default_qdisc net/sched/sch_generic.c:1148 [inline]
- netdev_for_each_tx_queue include/linux/netdevice.h:2385 [inline]
- attach_default_qdiscs net/sched/sch_generic.c:1166 [inline]
- dev_activate+0x75d/0xcd0 net/sched/sch_generic.c:1224
- __dev_open+0x388/0x4d0 net/core/dev.c:1434
- __dev_change_flags+0x583/0x750 net/core/dev.c:8423
- dev_change_flags+0x93/0x170 net/core/dev.c:8494
- do_setlink+0x96d/0x3a20 net/core/rtnetlink.c:2731
- __rtnl_newlink+0xdf8/0x1760 net/core/rtnetlink.c:3416
- rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3531
-page last free stack trace:
- reset_page_owner include/linux/page_owner.h:24 [inline]
- free_pages_prepare mm/page_alloc.c:1353 [inline]
- free_pcp_prepare+0x549/0xd20 mm/page_alloc.c:1403
- free_unref_page_prepare mm/page_alloc.c:3325 [inline]
- free_unref_page+0x19/0x690 mm/page_alloc.c:3420
- __unfreeze_partials+0x17c/0x1a0 mm/slub.c:2523
- qlink_free mm/kasan/quarantine.c:157 [inline]
- qlist_free_all+0x6a/0x170 mm/kasan/quarantine.c:176
- kasan_quarantine_reduce+0x180/0x200 mm/kasan/quarantine.c:283
- __kasan_slab_alloc+0xa2/0xc0 mm/kasan/common.c:446
- kasan_slab_alloc include/linux/kasan.h:224 [inline]
- slab_post_alloc_hook mm/slab.h:749 [inline]
- slab_alloc_node mm/slub.c:3217 [inline]
- slab_alloc mm/slub.c:3225 [inline]
- kmem_cache_alloc_trace+0x26d/0x3f0 mm/slub.c:3256
- kmalloc include/linux/slab.h:581 [inline]
- kzalloc include/linux/slab.h:714 [inline]
- fib6_info_alloc+0xc1/0x210 net/ipv6/ip6_fib.c:156
- ip6_route_info_create+0x33e/0x1aa0 net/ipv6/route.c:3748
- ip6_route_add+0x24/0x150 net/ipv6/route.c:3842
- addrconf_prefix_route+0x30a/0x4e0 net/ipv6/addrconf.c:2418
- add_v4_addrs+0x653/0x890 net/ipv6/addrconf.c:3162
- addrconf_gre_config net/ipv6/addrconf.c:3436 [inline]
- addrconf_notify+0x9b0/0x1ba0 net/ipv6/addrconf.c:3616
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:84
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:1938
- call_netdevice_notifiers_extack net/core/dev.c:1976 [inline]
- call_netdevice_notifiers net/core/dev.c:1990 [inline]
- __dev_notify_flags+0x110/0x2b0 net/core/dev.c:8461
-
-Memory state around the buggy address:
- ffff88801e192f00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff88801e192f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
->ffff88801e193000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                         ^
- ffff88801e193080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff88801e193100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Thanks
+-Mathias
