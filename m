@@ -2,133 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 024B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:30:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16DDBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:32:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243385AbiC3McF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:32:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40108 "EHLO
+        id S1344779AbiC3MeE (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 08:34:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344509AbiC3Mbh (ORCPT
+        with ESMTP id S238372AbiC3Mdu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 08:31:37 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF9585B3D0;
-        Wed, 30 Mar 2022 05:17:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648642639; x=1680178639;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=degjoFghFkob5qL3ehvoGOpozoU5J2XRIt2L6L1iub0=;
-  b=Okt9Oqm+LDLdGXc/frHGOpysiYDcWjPX6TSDTb0sm+U+8pbb0EPbpKnH
-   E84IkigOgB32vk6LO8/eoOeQYL8NYjmYdGoPGgzGQJQBMpmZ5ELJvVl5V
-   rrFxOJwTn2nQL5uzglEgjFfrf0wp0Gx63hlIxlYHLPFCXiQTVBQf0vR+B
-   8rtKaC46TFy/T2RysdOnna/u0kslAKlXet9PmDUXmhyHhpT8mJapGXtj1
-   ASTGWiPe597Dc/uOFFt5pMDf5jcy0CH+0qh4raa/UgLBzPThojks7ZhgF
-   sIt4OU1J8lD5w8ZHQcC+4cBiik/RlZyvQUnhbR3KT6O7iSDYwpOPORZvB
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="345964900"
-X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
-   d="scan'208";a="345964900"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 05:17:19 -0700
-X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
-   d="scan'208";a="565512740"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 05:17:10 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nZXFc-009OGn-0z;
-        Wed, 30 Mar 2022 15:16:36 +0300
-Date:   Wed, 30 Mar 2022 15:16:35 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Qianggui Song <qianggui.song@amlogic.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Fabien Dessenne <fabien.dessenne@foss.st.com>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        openbmc@lists.ozlabs.org,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Subject: Re: [PATCH v2 07/13] pinctrl: renesas: rza1: Switch to use
- for_each_gpiochip_node() helper
-Message-ID: <YkRKI6W4vR/aCr8c@smile.fi.intel.com>
-References: <20220329152926.50958-1-andriy.shevchenko@linux.intel.com>
- <20220329152926.50958-8-andriy.shevchenko@linux.intel.com>
- <CAMuHMdWs+OuxV0cO=XGYvOOJ0Mctwu6fKV5HnkdRBXNKkLE3uQ@mail.gmail.com>
+        Wed, 30 Mar 2022 08:33:50 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0210E6C944;
+        Wed, 30 Mar 2022 05:19:57 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id c10so22726719ejs.13;
+        Wed, 30 Mar 2022 05:19:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=yb13D0MHL1q0I5GMitPig2+TSOgHDixtNwuPnXxvwfA=;
+        b=dI7gx0ZI5YlOBk1wG2SDHXM04Peh5+DkcX7RDGRl9EwkN6RszSeZBTj6ZN7fE6Yxx4
+         UMNH8SIDUrXlcSZ5IRBPixrf7W0oXWo8IB23yIYe7GCEAe10pIT7oL9xs8EVvXrPdtlY
+         mpbuImX83TEuRXCPaxnag7HtMh7oj7XRVe5H57whU6AAGHsWPl47gXIvWgLspvf6bEGc
+         naxxdvy0YYl9tYpUDNexlLoA2LCVWK68KOA33vQDD85RVDsQkgB9H80JSPhOtDl4WE8Z
+         d7Wep1OhiBOzSHrVJQbI68jkXrqvJPLKdxuiB61MnNOUh7PnIM/HdK1ZjtPe8gmJxfWG
+         SwjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=yb13D0MHL1q0I5GMitPig2+TSOgHDixtNwuPnXxvwfA=;
+        b=eWHTDmPrTR4TJZC0xQcyMYvZqjH1t2/aTlPtMcDf+ZzLz6ryG33FoXZwvoCbNQT0zn
+         4ylivb1htCxGZDzrvhZgB7Ib4K58nfEBnhMbZvAZoAWIliSX2+nwrJtoJQQhzDZWEomz
+         XvBbEoEBjOHOXfLphzpp6pITmOH97RH7ctdQYMDdjobjX8yFzLqxIU/bFEtaPk7J88ca
+         cfzW5qRWentC0C2F3geeSp7wTKEQsTIqTz1BsUqU3+YPB4dAOZ8+VhMPP923M5UEyDRv
+         cBj+yVlkz/HgzOzer2ICO4UnY3wikAbvT3DZ6gRMs2wjSJDP9QOMjRXyOE0Pyew3nD2y
+         Dyxw==
+X-Gm-Message-State: AOAM530jasDNp2Hva6oexvgzPmO3QDgYmvlZr2OSYRwdI4YVwUuzXCsN
+        AnmH2DIk+jwZmVEgpTzbQzo=
+X-Google-Smtp-Source: ABdhPJz5HqJgfVLDw1fcgFbevMH0wU4OD3vKhI5tl/7Qy20DQc2ktAI+VZ2y8SpWOlN8Rd2RDGSLmw==
+X-Received: by 2002:a17:907:2513:b0:6e1:2c10:2ada with SMTP id y19-20020a170907251300b006e12c102adamr10865184ejl.211.1648642772122;
+        Wed, 30 Mar 2022 05:19:32 -0700 (PDT)
+Received: from debian.home (81-204-249-205.fixed.kpn.net. [81.204.249.205])
+        by smtp.gmail.com with ESMTPSA id j21-20020a170906255500b006e08c4862ccsm7288778ejb.96.2022.03.30.05.19.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 05:19:31 -0700 (PDT)
+From:   Johan Jonker <jbx6244@gmail.com>
+To:     heiko@sntech.de, zhangqing@rock-chips.com
+Cc:     robh+dt@kernel.org, krzk+dt@kernel.org, mturquette@baylibre.com,
+        sboyd@kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v1 3/3] ARM: dts: rockchip: rk322x: use generic node name for dma
+Date:   Wed, 30 Mar 2022 14:19:23 +0200
+Message-Id: <20220330121923.24240-3-jbx6244@gmail.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220330121923.24240-1-jbx6244@gmail.com>
+References: <20220330121923.24240-1-jbx6244@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdWs+OuxV0cO=XGYvOOJ0Mctwu6fKV5HnkdRBXNKkLE3uQ@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 12:00:27PM +0200, Geert Uytterhoeven wrote:
-> On Tue, Mar 29, 2022 at 5:29 PM Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
+The node names should be generic, so fix this for the rk3228 dma node
+and rename it to "dma-controller".
 
-...
+Signed-off-by: Johan Jonker <jbx6244@gmail.com>
+---
+ arch/arm/boot/dts/rk322x.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> > +       struct fwnode_reference_args of_args;
-> 
-> fw_args?
-
-Perhaps just args as other drivers do?
-
-...
-
-> > -       chip->label     = devm_kasprintf(rza1_pctl->dev, GFP_KERNEL, "%pOFn",
-> > -                                        np);
-> > +       chip->label     = devm_kasprintf(rza1_pctl->dev, GFP_KERNEL, "%pfw", fwnode);
-> 
-> This changes the label from e.g. "/soc/pinctrl@fcfe3000/gpio-11" to "gpio-11".
-
-Hmm... It seems other way around, i.e. it changes from the name to full name.
-
-> %pfwP?
-
-But conclusion here is correct. Good catch!
-
-...
-
-> With the above fixed:
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Thanks for review and testing!
-
+diff --git a/arch/arm/boot/dts/rk322x.dtsi b/arch/arm/boot/dts/rk322x.dtsi
+index 2547f46fe..ffc16d6b9 100644
+--- a/arch/arm/boot/dts/rk322x.dtsi
++++ b/arch/arm/boot/dts/rk322x.dtsi
+@@ -503,7 +503,7 @@
+ 			<75000000>;
+ 	};
+ 
+-	pdma: pdma@110f0000 {
++	pdma: dma-controller@110f0000 {
+ 		compatible = "arm,pl330", "arm,primecell";
+ 		reg = <0x110f0000 0x4000>;
+ 		interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>,
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.20.1
 
