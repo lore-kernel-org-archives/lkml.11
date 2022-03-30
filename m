@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 780F0C4707A
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:57:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6542AC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:57:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240422AbiC3L7D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 07:59:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32898 "EHLO
+        id S233533AbiC3L7K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 07:59:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344587AbiC3LxS (ORCPT
+        with ESMTP id S1344571AbiC3LxR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:53:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F2B3264F50;
-        Wed, 30 Mar 2022 04:49:14 -0700 (PDT)
+        Wed, 30 Mar 2022 07:53:17 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7FA26482F;
+        Wed, 30 Mar 2022 04:49:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0099BB81C25;
-        Wed, 30 Mar 2022 11:49:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2F6BC36AE2;
-        Wed, 30 Mar 2022 11:49:09 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6A98ACE1C71;
+        Wed, 30 Mar 2022 11:49:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E7F1C3410F;
+        Wed, 30 Mar 2022 11:49:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648640950;
-        bh=SXDpUl53LOcvA7vl1vjJ+tv7O0zHMaTxiH6T79oerk8=;
+        s=k20201202; t=1648640943;
+        bh=Qb/oTH/UWrZXJOhd5uOtZEXXGxt5HFJZw3S+Cihmmxc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kl++iMlzQanbWuXliTryfv5p9W73Z2Jf1F5NnT9b9yRi/EbL1tIbs4PCOHY+i8l4R
-         mJlcIFXHbU33qhybGe/05yrDTRC/SY18S/PQo4YzOQyX+NpBaUMed85pQvmb92oQii
-         fpXd9iDbcYenyY1QPfKjuckSOfo9pW1wQaBWf1960qhZpBQCh2YIysyS+L7Qx4RQlE
-         FxzcytBnzM9K3HUijD1Hh5yCze2xfL+x/8XmbE0t2SbhR73ST0zZ7JCASTvXR3VBpY
-         FI0oQt4Q2nmaBTUdHN2uhMc0vGWHOrOkjwXxevX/trTIQkW0ct5w27vU2WchWVTGZE
-         umzDqWgCvJ3VA==
+        b=kB1eSgMzedC3qCEA/NSDFrLvL2yPKPZ9I1pJK/CeABt4v7crBThUpAn0PC6SXoJ+X
+         aEcrxGLmQSn6B2yIOaHDZ18cN9aUxUmZln3WQNlOopJ44vb08fOEMPtT8WUKpuwOr+
+         tsunZDd7NVU0EhPQJP1b3t1AM+H7uEoGCXhNi7Hy5BlXqVk4RwqXiPGRxFEdwIK5bT
+         EVWyHIjAtkjnRgXVRqcJjF7FxkPOLPfBrWE2+5CQTbPFpLrhsOijFReAGWaXX11xsD
+         fKyWIFOd63Drh6PyGowQWlvta61Z1SD//OouCZxz+E3iBLomRAoLRQHrU9wbjXDdda
+         z2+iOj4IjDl9g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Takashi Iwai <tiwai@suse.de>,
-        Alexander Sergeyev <sergeev917@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, perex@perex.cz,
-        tiwai@suse.com, gregkh@linuxfoundation.org,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.16 24/59] ALSA: hda: Fix driver index handling at re-binding
-Date:   Wed, 30 Mar 2022 07:47:56 -0400
-Message-Id: <20220330114831.1670235-24-sashal@kernel.org>
+Cc:     Richard Schleich <rs@noreya.tech>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        mark.rutland@arm.com, linux@armlinux.org.uk, rjui@broadcom.com,
+        sbranden@broadcom.com, bcm-kernel-feedback-list@broadcom.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.16 19/59] ARM: dts: bcm2837: Add the missing L1/L2 cache information
+Date:   Wed, 30 Mar 2022 07:47:51 -0400
+Message-Id: <20220330114831.1670235-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330114831.1670235-1-sashal@kernel.org>
 References: <20220330114831.1670235-1-sashal@kernel.org>
@@ -53,83 +55,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Richard Schleich <rs@noreya.tech>
 
-[ Upstream commit 69458e2c27800da7697c87ed908b65323ef3f3bd ]
+[ Upstream commit bdf8762da268d2a34abf517c36528413906e9cd5 ]
 
-HD-audio driver handles the multiple instances and keeps the static
-index that is incremented at each probe.  This becomes a problem when
-user tries to re-bind the device via sysfs multiple times; as the
-device index isn't cleared unlike rmmod case, it points to the next
-element at re-binding, and eventually later you can't probe any more
-when it reaches to SNDRV_CARDS_MAX (usually 32).
+This patch fixes the kernel warning
+"cacheinfo: Unable to detect cache hierarchy for CPU 0"
+for the bcm2837 on newer kernel versions.
 
-This patch is an attempt to improve the handling at rebinding.
-Instead of a static device index, now we keep a bitmap and assigns to
-the first zero bit position.  At the driver remove, in return, the
-bitmap slot is cleared again, so that it'll be available for the next
-probe.
-
-Reported-by: Alexander Sergeyev <sergeev917@gmail.com>
-Link: https://lore.kernel.org/r/20220209081912.20687-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Richard Schleich <rs@noreya.tech>
+Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
+[florian: Align and remove comments matching property values]
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/hda_intel.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ arch/arm/boot/dts/bcm2837.dtsi | 49 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 49 insertions(+)
 
-diff --git a/sound/pci/hda/hda_intel.c b/sound/pci/hda/hda_intel.c
-index 3b6f2aacda45..1ffd96fbf230 100644
---- a/sound/pci/hda/hda_intel.c
-+++ b/sound/pci/hda/hda_intel.c
-@@ -2061,14 +2061,16 @@ static const struct hda_controller_ops pci_hda_ops = {
- 	.position_check = azx_position_check,
- };
+diff --git a/arch/arm/boot/dts/bcm2837.dtsi b/arch/arm/boot/dts/bcm2837.dtsi
+index 0199ec98cd61..5dbdebc46259 100644
+--- a/arch/arm/boot/dts/bcm2837.dtsi
++++ b/arch/arm/boot/dts/bcm2837.dtsi
+@@ -40,12 +40,26 @@
+ 		#size-cells = <0>;
+ 		enable-method = "brcm,bcm2836-smp"; // for ARM 32-bit
  
-+static DECLARE_BITMAP(probed_devs, SNDRV_CARDS);
++		/* Source for d/i-cache-line-size and d/i-cache-sets
++		 * https://developer.arm.com/documentation/ddi0500/e/level-1-memory-system
++		 * /about-the-l1-memory-system?lang=en
++		 *
++		 * Source for d/i-cache-size
++		 * https://magpi.raspberrypi.com/articles/raspberry-pi-3-specs-benchmarks
++		 */
+ 		cpu0: cpu@0 {
+ 			device_type = "cpu";
+ 			compatible = "arm,cortex-a53";
+ 			reg = <0>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000d8>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			next-level-cache = <&l2>;
+ 		};
+ 
+ 		cpu1: cpu@1 {
+@@ -54,6 +68,13 @@
+ 			reg = <1>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000e0>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			next-level-cache = <&l2>;
+ 		};
+ 
+ 		cpu2: cpu@2 {
+@@ -62,6 +83,13 @@
+ 			reg = <2>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000e8>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			next-level-cache = <&l2>;
+ 		};
+ 
+ 		cpu3: cpu@3 {
+@@ -70,6 +98,27 @@
+ 			reg = <3>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000f0>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			next-level-cache = <&l2>;
++		};
 +
- static int azx_probe(struct pci_dev *pci,
- 		     const struct pci_device_id *pci_id)
- {
--	static int dev;
- 	struct snd_card *card;
- 	struct hda_intel *hda;
- 	struct azx *chip;
- 	bool schedule_probe;
-+	int dev;
- 	int err;
- 
- 	if (pci_match_id(driver_denylist, pci)) {
-@@ -2076,10 +2078,11 @@ static int azx_probe(struct pci_dev *pci,
- 		return -ENODEV;
- 	}
- 
-+	dev = find_first_zero_bit(probed_devs, SNDRV_CARDS);
- 	if (dev >= SNDRV_CARDS)
- 		return -ENODEV;
- 	if (!enable[dev]) {
--		dev++;
-+		set_bit(dev, probed_devs);
- 		return -ENOENT;
- 	}
- 
-@@ -2146,7 +2149,7 @@ static int azx_probe(struct pci_dev *pci,
- 	if (schedule_probe)
- 		schedule_delayed_work(&hda->probe_work, 0);
- 
--	dev++;
-+	set_bit(dev, probed_devs);
- 	if (chip->disabled)
- 		complete_all(&hda->probe_wait);
- 	return 0;
-@@ -2369,6 +2372,7 @@ static void azx_remove(struct pci_dev *pci)
- 		cancel_delayed_work_sync(&hda->probe_work);
- 		device_lock(&pci->dev);
- 
-+		clear_bit(chip->dev_index, probed_devs);
- 		pci_set_drvdata(pci, NULL);
- 		snd_card_free(card);
- 	}
++		/* Source for cache-line-size + cache-sets
++		 * https://developer.arm.com/documentation/ddi0500
++		 * /e/level-2-memory-system/about-the-l2-memory-system?lang=en
++		 * Source for cache-size
++		 * https://datasheets.raspberrypi.com/cm/cm1-and-cm3-datasheet.pdf
++		 */
++		l2: l2-cache0 {
++			compatible = "cache";
++			cache-size = <0x80000>;
++			cache-line-size = <64>;
++			cache-sets = <512>; // 512KiB(size)/64(line-size)=8192ways/16-way set
++			cache-level = <2>;
+ 		};
+ 	};
+ };
 -- 
 2.34.1
 
