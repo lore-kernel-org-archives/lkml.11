@@ -2,48 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44DE9C3A5A1
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E632DC3A59E
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346818AbiC3MFg (ORCPT
+        id S1346452AbiC3MFC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:05:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56232 "EHLO
+        Wed, 30 Mar 2022 08:05:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345687AbiC3Ly4 (ORCPT
+        with ESMTP id S1345499AbiC3Lyg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:54:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85625261DD3;
-        Wed, 30 Mar 2022 04:51:34 -0700 (PDT)
+        Wed, 30 Mar 2022 07:54:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE5A5285680;
+        Wed, 30 Mar 2022 04:51:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 29F3FB81C25;
-        Wed, 30 Mar 2022 11:51:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46569C340F2;
-        Wed, 30 Mar 2022 11:51:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BB8961671;
+        Wed, 30 Mar 2022 11:51:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B681C340F2;
+        Wed, 30 Mar 2022 11:51:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641076;
-        bh=jpH1FFqHwA9Rcvx435BbU8+Ijry2x5lxT/g9E4on9Sg=;
+        s=k20201202; t=1648641071;
+        bh=Y66+Jl3ZAG1Akrs5hWPgXgzuzMYmTlNbhpqvnCTJ//0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VoyyspTVbyHZOr92I1O5IUm1KP7Z4vnEkXKnQ5UQGhz2cEDeskyTNiEsRBiEIhJ4V
-         u15uXQLyQKZavcw5lpfOHU+EVq1Hjz/b1K4XvQi+tsbr8rK7nUlZGsBMCllTiF2+cW
-         kXkIlBNnak1dZ0OT7YZc0Zuo7K9lzOD5p/7qj7CQKEUz+JJy2iQ6h7MBrhp60OfU2I
-         NfTD76/IqJas9hXhL4OzjBivEU58QWPGK5r+7nl/r5b02JlEWi00Cld9vy8wP5ZjMQ
-         BoPdR//zf7SUGcJ9P5E2JOT5oOoF/fx8FvPwmBckdbQRnmHHLG51NXY/Z3FjGDich7
-         b5uh/SRUUNKaA==
+        b=iLsaibRP2HMBCf6krhf7k2oGyqATh2WnflW8WwKLqDGn2lpd3DLZ7b2GUSb3MiJ/V
+         wBnhG+ruQfUD5/kDtk3eXuXIPrxxejvhAm3ebkvNND9DZEqdupfe8HeTKvMfHN9i3r
+         +KLZaKE6rmge3/U1+7AKVSpINU/HqPXD+CKJ2ZIDiOPPSo1qN0yjkETpZ2cQLjtV06
+         vFYrzuRWO2AMum1df3gvUNGn5cntN2RNOU3Z/MLtoAgMizPUwgEoyBG/12oHJexJMf
+         KI5BZSITdJtv+aRKVnPv0fWVuF/UFrpJnuMEumr5RAVZoqd6WFgrZqLBsoWnJZTgPw
+         T1HpwNiiYAq+w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, linux-mmc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 47/50] mmc: host: Return an error when ->enable_sdio_irq() ops is missing
-Date:   Wed, 30 Mar 2022 07:50:01 -0400
-Message-Id: <20220330115005.1671090-47-sashal@kernel.org>
+Cc:     Pavel Skripkin <paskripkin@gmail.com>,
+        =?UTF-8?q?Maximilian=20B=C3=B6hm?= <maximilian.boehm@elbmurf.de>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 43/50] media: Revert "media: em28xx: add missing em28xx_close_extension"
+Date:   Wed, 30 Mar 2022 07:49:57 -0400
+Message-Id: <20220330115005.1671090-43-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115005.1671090-1-sashal@kernel.org>
 References: <20220330115005.1671090-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -51,58 +55,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ulf Hansson <ulf.hansson@linaro.org>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-[ Upstream commit d6c9219ca1139b74541b2a98cee47a3426d754a9 ]
+[ Upstream commit fde18c3bac3f964d8333ae53b304d8fee430502b ]
 
-Even if the current WARN() notifies the user that something is severely
-wrong, we can still end up in a PANIC() when trying to invoke the missing
-->enable_sdio_irq() ops. Therefore, let's also return an error code and
-prevent the host from being added.
+This reverts commit 2c98b8a3458df03abdc6945bbef67ef91d181938.
 
-While at it, move the code into a separate function to prepare for
-subsequent changes and for further host caps validations.
+Reverted patch causes problems with Hauppauge WinTV dualHD as Maximilian
+reported [1]. Since quick solution didn't come up let's just revert it
+to make this device work with upstream kernels.
 
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Link: https://lore.kernel.org/r/20220303165142.129745-1-ulf.hansson@linaro.org
+Link: https://lore.kernel.org/all/6a72a37b-e972-187d-0322-16336e12bdc5@elbmurf.de/ [1]
+
+Reported-by: Maximilian Böhm <maximilian.boehm@elbmurf.de>
+Tested-by: Maximilian Böhm <maximilian.boehm@elbmurf.de>
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/core/host.c | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ drivers/media/usb/em28xx/em28xx-cards.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/mmc/core/host.c b/drivers/mmc/core/host.c
-index cf140f4ec864..d739e2b631fe 100644
---- a/drivers/mmc/core/host.c
-+++ b/drivers/mmc/core/host.c
-@@ -588,6 +588,16 @@ struct mmc_host *mmc_alloc_host(int extra, struct device *dev)
+diff --git a/drivers/media/usb/em28xx/em28xx-cards.c b/drivers/media/usb/em28xx/em28xx-cards.c
+index ebc430b05f21..44166becc850 100644
+--- a/drivers/media/usb/em28xx/em28xx-cards.c
++++ b/drivers/media/usb/em28xx/em28xx-cards.c
+@@ -4145,11 +4145,8 @@ static void em28xx_usb_disconnect(struct usb_interface *intf)
  
- EXPORT_SYMBOL(mmc_alloc_host);
+ 	em28xx_close_extension(dev);
  
-+static int mmc_validate_host_caps(struct mmc_host *host)
-+{
-+	if (host->caps & MMC_CAP_SDIO_IRQ && !host->ops->enable_sdio_irq) {
-+		dev_warn(host->parent, "missing ->enable_sdio_irq() ops\n");
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
- /**
-  *	mmc_add_host - initialise host hardware
-  *	@host: mmc host
-@@ -600,8 +610,9 @@ int mmc_add_host(struct mmc_host *host)
- {
- 	int err;
+-	if (dev->dev_next) {
+-		em28xx_close_extension(dev->dev_next);
++	if (dev->dev_next)
+ 		em28xx_release_resources(dev->dev_next);
+-	}
+-
+ 	em28xx_release_resources(dev);
  
--	WARN_ON((host->caps & MMC_CAP_SDIO_IRQ) &&
--		!host->ops->enable_sdio_irq);
-+	err = mmc_validate_host_caps(host);
-+	if (err)
-+		return err;
- 
- 	err = device_add(&host->class_dev);
- 	if (err)
+ 	if (dev->dev_next) {
 -- 
 2.34.1
 
