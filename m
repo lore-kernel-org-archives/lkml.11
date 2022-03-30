@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0EE1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:09:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EA98C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:09:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345308AbiC3MLW (ORCPT
+        id S1344280AbiC3ML1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:11:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33374 "EHLO
+        Wed, 30 Mar 2022 08:11:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345254AbiC3LyT (ORCPT
+        with ESMTP id S1345251AbiC3LyS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:54:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44B68281828;
-        Wed, 30 Mar 2022 04:50:44 -0700 (PDT)
+        Wed, 30 Mar 2022 07:54:18 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAEE7281827;
+        Wed, 30 Mar 2022 04:50:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 26B85615B7;
-        Wed, 30 Mar 2022 11:50:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF1ACC36AE7;
-        Wed, 30 Mar 2022 11:50:42 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 18E25CE1D3F;
+        Wed, 30 Mar 2022 11:50:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C25BC36AE5;
+        Wed, 30 Mar 2022 11:50:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641043;
-        bh=ad5NuxpHH/Hvd4cfnrHfXY6pLQKYnybTjf9eWocz+E0=;
+        s=k20201202; t=1648641036;
+        bh=I6aGqWjrqvnZkEehH1G0+jL/Sh2jVVvHMXxT5JjDfXE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Nv6qKB8vKFr/O70Ga91Lgx3kuZFA/LWbgH1vH/3/B69k2Gs3xKfQ57pMb4VO+8YSw
-         LSRqpi1xACvYD8zEEivD1johQZDLhvEpNt68YS4crpDyXpFqCm4vGVOA0uTaLoh01L
-         +7YDugLgMnsnAxUd8ihmxiip7y4OnvGziOFpfmcgHGrJ2URe2E87HmC8T+A+JoysLA
-         IcHWp9DLOSb0AmuVsjMOOEQ7QohJa4tqbNEdxCfJtLEYTtHEWO/ALXpEfsI0dfk0wm
-         ACSU1LrPI7tnG6swZ4ZSMav2UT+1XJq8rpN4UPLbXA+fj/alSd/99P59GL2cnlBGSR
-         JbMPb1t3bbkAw==
+        b=GKvjqnYHg5/V95XG7llIBj9tdf7G/en/yIUUC9ddTUeSpp7EFK1YkHRiGnc4DadG/
+         7SyBS0XCB5gXOsL0NHg7jA3xvdSjl1Z8ebvNfbVA1YBt7rWuy/T0SwZ2HRksO6bsF8
+         9gItuWot3d9lLjU2SaCgSqVx03lMDvX60wA20gw0Sm0/CJ0KXf8XHxw5kj2VLA2KaX
+         DrjtJp0CryBbUXAuPMfICYhQp0ww/wtK1ysn39nstHXCLJL9OB9M3JOqAgiFcDQ7aB
+         e5P+GG3Qt1Bn7gYSVnBWaMrpgCGW+dStfb7gA8PB8z8xWojKkZtslvu4qaX9No6WsQ
+         sAQwuY70Wzvrw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, catalin.marinas@arm.com,
-        will.deacon@arm.com, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 24/50] arm64: defconfig: build imx-sdma as a module
-Date:   Wed, 30 Mar 2022 07:49:38 -0400
-Message-Id: <20220330115005.1671090-24-sashal@kernel.org>
+Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.15 19/50] ASoC: madera: Add dependencies on MFD
+Date:   Wed, 30 Mar 2022 07:49:33 -0400
+Message-Id: <20220330115005.1671090-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115005.1671090-1-sashal@kernel.org>
 References: <20220330115005.1671090-1-sashal@kernel.org>
@@ -53,37 +53,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit e95622289f263662240544a9f0009b25c19e64d4 ]
+[ Upstream commit ec29170c724ca30305fc3a19ba2ee73ecac65509 ]
 
-This avoids firmware load error and sysfs fallback reported as follows:
+The Madera CODECs use regmap_irq functions but nothing ensures that
+regmap_irq is built into the kernel. Add dependencies on the ASoC
+symbols for the relevant MFD component. There is no point in building
+the ASoC driver if the MFD doesn't support it and the MFD part contains
+the necessary dependencies to ensure everything is built into the
+kernel.
 
-[    0.199448] imx-sdma 302c0000.dma-controller: Direct firmware load
- for imx/sdma/sdma-imx7d.bin failed with error -2
-[    0.199487] imx-sdma 302c0000.dma-controller: Falling back to sysfs
- fallback for: imx/sdma/sdma-imx7d.bin
-
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Reported-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220203115025.16464-1-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/configs/defconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/codecs/Kconfig | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index 545197bc0501..4972a81d40d6 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -921,7 +921,7 @@ CONFIG_DMADEVICES=y
- CONFIG_DMA_BCM2835=y
- CONFIG_DMA_SUN6I=m
- CONFIG_FSL_EDMA=y
--CONFIG_IMX_SDMA=y
-+CONFIG_IMX_SDMA=m
- CONFIG_K3_DMA=y
- CONFIG_MV_XOR=y
- CONFIG_MV_XOR_V2=y
+diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
+index f12c9b942678..47e675e8bd00 100644
+--- a/sound/soc/codecs/Kconfig
++++ b/sound/soc/codecs/Kconfig
+@@ -690,6 +690,7 @@ config SND_SOC_CS4349
+ 
+ config SND_SOC_CS47L15
+ 	tristate
++	depends on MFD_CS47L15
+ 
+ config SND_SOC_CS47L24
+ 	tristate
+@@ -697,15 +698,19 @@ config SND_SOC_CS47L24
+ 
+ config SND_SOC_CS47L35
+ 	tristate
++	depends on MFD_CS47L35
+ 
+ config SND_SOC_CS47L85
+ 	tristate
++	depends on MFD_CS47L85
+ 
+ config SND_SOC_CS47L90
+ 	tristate
++	depends on MFD_CS47L90
+ 
+ config SND_SOC_CS47L92
+ 	tristate
++	depends on MFD_CS47L92
+ 
+ # Cirrus Logic Quad-Channel ADC
+ config SND_SOC_CS53L30
 -- 
 2.34.1
 
