@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 236D1C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 18:17:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A296AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 18:18:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349971AbiC3STO (ORCPT
+        id S1349856AbiC3STw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 14:19:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36608 "EHLO
+        Wed, 30 Mar 2022 14:19:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349922AbiC3STF (ORCPT
+        with ESMTP id S1350028AbiC3SSA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 14:19:05 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2050.outbound.protection.outlook.com [40.107.223.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04926580DF;
-        Wed, 30 Mar 2022 11:17:16 -0700 (PDT)
+        Wed, 30 Mar 2022 14:18:00 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2076.outbound.protection.outlook.com [40.107.223.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23C0960A82;
+        Wed, 30 Mar 2022 11:16:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=esJHknQdTo2+BZfwxrgZ/rhILZWgCmUGuSy0sCnrq2A=;
- b=X/QBkIQ2KX6Gt9014Y2sIevaSLrayWdzJ4YJubt9ICJhw9SNdOA+I/XmFBySuXh9P9LdVXd2PtURxBy5ZNlY/sEtdu8IkKjVA7+EF+aGzn6+B6nJrVZnpbaIYzf4f0MGzMkRyhceluxRL0tfdoqOQoaE+WlKqy91i3HSt/TuVaY=
-Received: from BN9PR03CA0497.namprd03.prod.outlook.com (2603:10b6:408:130::22)
- by BN7PR02MB3971.namprd02.prod.outlook.com (2603:10b6:406:fe::16) with
+ bh=L0BsGdQsZOVSkg/wQOptjKuV2l1vscjGpi+dmt8KFR4=;
+ b=pJ+IXe8bU+krPKpceMc/XE9XWbQLyw+l4ZPIDtAbXXbD4B/kdYofIMXLV69j91ggHoHAY0HZkjd5hCLGLMvAMMKY0Ju2lfVhgaNKU/9cQLO7RpTwyTA9Ca04JbcdTqiqDCcN99pHSFBpJldMIDtl32u5xuRKDPSbK6Y5hi3pzuk=
+Received: from SA9PR13CA0025.namprd13.prod.outlook.com (2603:10b6:806:21::30)
+ by DM6PR02MB6250.namprd02.prod.outlook.com (2603:10b6:5:1f5::26) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.17; Wed, 30 Mar
- 2022 18:17:14 +0000
-Received: from BN1NAM02FT024.eop-nam02.prod.protection.outlook.com
- (2603:10b6:408:130:cafe::e) by BN9PR03CA0497.outlook.office365.com
- (2603:10b6:408:130::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.13 via Frontend
- Transport; Wed, 30 Mar 2022 18:17:13 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.20; Wed, 30 Mar
+ 2022 18:16:06 +0000
+Received: from SN1NAM02FT0056.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:806:21:cafe::c7) by SA9PR13CA0025.outlook.office365.com
+ (2603:10b6:806:21::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.12 via Frontend
+ Transport; Wed, 30 Mar 2022 18:16:05 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 20.83.241.18)
  smtp.mailfrom=xilinx.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=xilinx.com;
@@ -40,48 +40,48 @@ Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
  helo=mailrelay000000.14r1f435wfvunndds3vy4cdalc.xx.internal.cloudapp.net;
 Received: from
  mailrelay000000.14r1f435wfvunndds3vy4cdalc.xx.internal.cloudapp.net
- (20.83.241.18) by BN1NAM02FT024.mail.protection.outlook.com (10.13.2.138)
+ (20.83.241.18) by SN1NAM02FT0056.mail.protection.outlook.com (10.97.4.111)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.19 via Frontend
- Transport; Wed, 30 Mar 2022 18:17:13 +0000
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2172.outbound.protection.outlook.com [104.47.57.172])
-        by mailrelay000000.14r1f435wfvunndds3vy4cdalc.xx.internal.cloudapp.net (Postfix) with ESMTPS id 03E8A41D82;
-        Wed, 30 Mar 2022 18:17:13 +0000 (UTC)
+ Transport; Wed, 30 Mar 2022 18:16:05 +0000
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2105.outbound.protection.outlook.com [104.47.70.105])
+        by mailrelay000000.14r1f435wfvunndds3vy4cdalc.xx.internal.cloudapp.net (Postfix) with ESMTPS id 035CA3F03C;
+        Wed, 30 Mar 2022 18:16:05 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oChnJHB7qyHoTp7LJQOhcat8kgMU4Ko4/UBXtJHX/YM6nikCNiEOPPEWPEG7GFQHurJhzcjN7FPYz3QBNd7un0fxJ4RoDr+CtgUZQslGC1dWGkT1Ba9kWZcyimyU2L5Id8XHWuPL6ipYdkxoUmi+T6ynnXWbUxsTjr8IJUNYrHwg+ijB9uuTf9GIW/sh2y5NBhanQaxn/AwonSpgsliho7TBfJJrsnNK4tY+uS2gAlOGs34r1r0DVzIeZ/BuUIab9ttDmJcM9SUjUmkyc7Ond3I7DGnnHR8qL8rlBYQk26IpClT4Sigikk7mPMD71PtHPRPaNoDJJM2XhI60qPhv2Q==
+ b=moInRE4BZLRt01ALn+HNfqtqFzvCj8AoJEtEj6XDQ38PukVkClp98jo7qyCkY5kkhTDBPAk6d6UPdluUYhjwILzVNWiwFarLawE8Okptl2OWC5d1+Tp0Iopu2YZI7rVPLi50ETZ6mPceNhaNsEL1TBh8dY3qWU5QFYi+NI+Jr5fytC/ovYyKLoTY7pPXPw3g8X16R4Uz714L6YxsGSu5uexuZmXM1VChjfMrfi8K6aXMv11uDYO6n56fjYa/cvo2jPGFOFn8QEwpLunzgjFUCEVIJihHi0sjXjAF7RJYLzG/DqMoP3UgOMNhToi63vuHmwZoaPQazpySU27wROZ68g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=esJHknQdTo2+BZfwxrgZ/rhILZWgCmUGuSy0sCnrq2A=;
- b=S0HWMi4oNr8vzLg83qlcDRq7Y8JKmwxuqUOgMy0v2vgFgiMGXOl4QSrPdhjhSF6H0n/I9oGMYkf96Dv2tghLeTcv7La9lyRctWW8xnR+2z3A7QoCLtQOhu9mGmJsUry2CFuxKJAtr54YVs6A4HGVXLPh/K4pWohiJB5hCOG17wDbbh1PAPARSoEKUXR3dxYvb8mWlOzvrufgQpznRdIQ7x4PiEP82D2Ai5n22pWfeJSgqoOHazYiklv6jEyGyYybU2zEZIbBq/Atcme6w1ZQmsCiJ65P6Bb91keKAcDYio1IfHfj3Tjoous9BYtXTX9PBJlaMQi3NNYdsADau0GkcQ==
+ bh=L0BsGdQsZOVSkg/wQOptjKuV2l1vscjGpi+dmt8KFR4=;
+ b=FJjfmrfzEa9Nw0u9E7kLfp4Re5sMGLe4SvfHW4BWShYtfsjeWBeYnqQfLNTjg5EmQdmpzAxY6KBzCuLmLw7QVf9zSaSzn6CeWOpPDVpjivCcVqd3gxnK8yy2ep79tla7NWqOwZaLp9HxgbUd2hkkTuswJ6EcApsaamSEAvwnYpXhi6UKtALuggSCqbp/63uuT+6L445J7HAJYDYEQ6O2MXwg8Pm5QSMRv9ElUEKltwfZLkerFQBeC2S96Y6ndYkx637FoAp8rmQFQjip95m16vDKumILR+3A/JPbIGbVGQ2ckznWtFlxMjcy+XxJguFOlF0/hEMkABAme+R/86xe3g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  149.199.62.198) smtp.rcpttodomain=redhat.com smtp.mailfrom=xilinx.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
  dkim=none (message not signed); arc=none
-Received: from BN6PR19CA0070.namprd19.prod.outlook.com (2603:10b6:404:e3::32)
- by CO1PR02MB8619.namprd02.prod.outlook.com (2603:10b6:303:15e::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.18; Wed, 30 Mar
- 2022 18:17:10 +0000
-Received: from BN1NAM02FT054.eop-nam02.prod.protection.outlook.com
- (2603:10b6:404:e3:cafe::b8) by BN6PR19CA0070.outlook.office365.com
- (2603:10b6:404:e3::32) with Microsoft SMTP Server (version=TLS1_2,
+Received: from BN6PR1201CA0023.namprd12.prod.outlook.com
+ (2603:10b6:405:4c::33) by BYAPR02MB5349.namprd02.prod.outlook.com
+ (2603:10b6:a03:67::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.17; Wed, 30 Mar
+ 2022 18:16:02 +0000
+Received: from BN1NAM02FT047.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:405:4c:cafe::6c) by BN6PR1201CA0023.outlook.office365.com
+ (2603:10b6:405:4c::33) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.13 via Frontend
- Transport; Wed, 30 Mar 2022 18:17:10 +0000
+ Transport; Wed, 30 Mar 2022 18:16:01 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
  smtp.mailfrom=xilinx.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=xilinx.com;
-Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
- BN1NAM02FT054.mail.protection.outlook.com (10.13.2.162) with Microsoft SMTP
+Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
+ BN1NAM02FT047.mail.protection.outlook.com (10.13.3.196) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5123.19 via Frontend Transport; Wed, 30 Mar 2022 18:17:10 +0000
+ 15.20.5123.19 via Frontend Transport; Wed, 30 Mar 2022 18:16:01 +0000
 Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
+ xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Wed, 30 Mar 2022 11:17:06 -0700
+ 15.1.2176.14; Wed, 30 Mar 2022 11:15:40 -0700
 Received: from smtp.xilinx.com (172.19.127.96) by
  xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Wed, 30 Mar 2022 11:17:06 -0700
+ 15.1.2176.14 via Frontend Transport; Wed, 30 Mar 2022 11:15:40 -0700
 Envelope-to: mst@redhat.com,
  jasowang@redhat.com,
  kvm@vger.kernel.org,
@@ -105,7 +105,7 @@ Envelope-to: mst@redhat.com,
 Received: from [10.170.66.102] (port=44662 helo=xndengvm004102.xilinx.com)
         by smtp.xilinx.com with esmtp (Exim 4.90)
         (envelope-from <gautam.dawar@xilinx.com>)
-        id 1nZcsU-000CCQ-5v; Wed, 30 Mar 2022 11:17:06 -0700
+        id 1nZcr5-000CCQ-OK; Wed, 30 Mar 2022 11:15:40 -0700
 From:   Gautam Dawar <gautam.dawar@xilinx.com>
 To:     "Michael S. Tsirkin" <mst@redhat.com>,
         Jason Wang <jasowang@redhat.com>, <kvm@vger.kernel.org>,
@@ -126,9 +126,9 @@ CC:     <martinh@xilinx.com>, <hanand@xilinx.com>, <martinpo@xilinx.com>,
         Longpeng <longpeng2@huawei.com>,
         Dan Carpenter <dan.carpenter@oracle.com>,
         Zhang Min <zhang.min9@zte.com.cn>
-Subject: [PATCH v2 15/19] vhost-vdpa: support ASID based IOTLB API
-Date:   Wed, 30 Mar 2022 23:33:55 +0530
-Message-ID: <20220330180436.24644-16-gdawar@xilinx.com>
+Subject: [PATCH v2 13/19] vhost-vdpa: uAPI to get virtqueue group id
+Date:   Wed, 30 Mar 2022 23:33:53 +0530
+Message-ID: <20220330180436.24644-14-gdawar@xilinx.com>
 X-Mailer: git-send-email 2.25.0
 In-Reply-To: <20220330180436.24644-1-gdawar@xilinx.com>
 References: <20220330180436.24644-1-gdawar@xilinx.com>
@@ -136,309 +136,82 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 1
-X-MS-Office365-Filtering-Correlation-Id: 0f5aa748-db1d-4962-7dcd-08da127983d7
-X-MS-TrafficTypeDiagnostic: CO1PR02MB8619:EE_|BN1NAM02FT024:EE_|BN7PR02MB3971:EE_
-X-Microsoft-Antispam-PRVS: <BN7PR02MB397167E6BAAAB7AEEC88B75EB11F9@BN7PR02MB3971.namprd02.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: dea6366e-9682-4bd8-44ca-08da12795b4d
+X-MS-TrafficTypeDiagnostic: BYAPR02MB5349:EE_|SN1NAM02FT0056:EE_|DM6PR02MB6250:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR02MB6250A32D15AFAD95637E528DB11F9@DM6PR02MB6250.namprd02.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam-Untrusted: BCL:0;
-X-Microsoft-Antispam-Message-Info-Original: uMqXjwAtSEvSMUU+chXdXT8tBDmsEZUMLGwhcLVoHFThSOX4z8nfpdtbRMD+0Wj+vmyLsfRuBoFGPRUG+YhJR03XJB/S/4G/+xZo140SiVS8DNRYulP+mV9eTYfHqvuk14HrKF6as71nakvimFzS3/c/8UIctHHYGRsLEEiOswN1aavpWoS/aLYiSWB4MmLnBt4gx1iybWlRmePDSAN6bo3G5DAqLcyJZVSv6Gxl2SKKgPNuKkAkx0O9NX/+kzFbtdcRlHyvgbE/toE2RWwEZz1nNgAXbJvfn4+bWQlePto75R4lMBIVmX+Jmfn0K7yiicPBzFaAtRvgvSbJE7fqadF7gf3IUyRRleSDu8zI08o60gyEp0MCk3DwFx7qe3LcM5DgP6/Dncr2NG7SQKznIqTao2nlhwY0OjMKF++D8ZJu8wVzipsGWK+/iTzNtm8IaO/jxWWInwPLZWafYnhgcgApYNy7U2rkcV7uRwqy/+QpLdc+rLS96b+dBgQhX1MnUmo/PXmGXZDz+ZCKt/9vOAy9GhhL/Vtdcvcz40Uv5nr/dQcvVnJoKxaFvdhHYGjlRPIO7tB89NdkRdtCwuSvhecpR1BvdsXpEw4rKZs+eNqQffX0WN7b7GD4f62CKvo/SL3egr0GoWcz219rQUAMTXSXzsTX6qdu6ZtxGDEyQOYEIjEDtuxPM0s0rnKcJMQQFlEuJoJcH/4CJH5wdO6pcA==
-X-Forefront-Antispam-Report-Untrusted: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(36756003)(36860700001)(4326008)(316002)(70586007)(54906003)(6666004)(7696005)(83380400001)(82310400004)(70206006)(8676002)(5660300002)(110136005)(40460700003)(2906002)(2616005)(336012)(1076003)(426003)(186003)(508600001)(26005)(44832011)(356005)(47076005)(7416002)(9786002)(8936002)(7636003)(102446001);DIR:OUT;SFP:1101;
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR02MB8619
-X-MS-Exchange-Transport-CrossTenantHeadersStripped: BN1NAM02FT024.eop-nam02.prod.protection.outlook.com
+X-Microsoft-Antispam-Message-Info-Original: THE+A/iX12LrmClIWmokAcNMtVS8k2vPs7NdPThaMSDkB+Sw/cGVX4WE1Yn9DZ9sFrCivz2k5mkhvSNHKoOSOjbGkhryQDhZkDmuISEcadg6qwhKRFoecPthAsdQFEzuz2dm58xPadmjWJTGIW9wWpy3xOMAt1ANQY9W+s+AQlgPw+MtkYDg1s/PZEzJobWhQY2O6h7eIWNHsMs/io2tLTRJ5GwTSmw3PxeMlg2tkRLSmUm6yhrRZOzx0T9ta5mXjBAKrxdVApiGE27E7zq0DUqH1BvfrFWGAJkzUU/HWXltfNXTVx0MxoUs8N06Pi+NHtbe4gdj5x79zlg36nFGd2LvQbWTbBgmMeB+ze+ETdMC3udOonmUu6MJVKk5CM0CIv1sXdL/7iXGO0MV0IaY0xJk0FnfyjL8I9Hk5a3LMHDM6lfk63TKGI/aLK+ocOFp6j273sVC4uGF3J2eCI3q7qCGFvaYsh+zMCxJpSZ7rb+7pIULnC37HjR17/wkAYS6XoiC/Mr00JNDawrm+sfRIExx6ZGvTrEB4BmCZl0Tig4J88AFOHF7knBcbW8WjhWZfWtQCzrDy+3QdfwuSa3BMIMsoCMzliYwFIU8b3Hx3Dcns1DiiSkEpAirJqSJXSCzp8fglFCwzT0l6zgP4aqosd1HD70nWXTn+iNy+7tHyzqYkxla170FyHYIx9LvADDPZ6tCYZqa5Cg0LmIQ67g0ng==
+X-Forefront-Antispam-Report-Untrusted: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(7696005)(44832011)(8676002)(83380400001)(36860700001)(4326008)(82310400004)(1076003)(26005)(186003)(336012)(426003)(2616005)(47076005)(2906002)(70586007)(70206006)(508600001)(316002)(5660300002)(6666004)(110136005)(7636003)(9786002)(54906003)(36756003)(7416002)(40460700003)(356005)(8936002)(102446001);DIR:OUT;SFP:1101;
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR02MB5349
+X-MS-Exchange-Transport-CrossTenantHeadersStripped: SN1NAM02FT0056.eop-nam02.prod.protection.outlook.com
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id-Prvs: 0ea5c464-ed9d-410e-4bb1-08da127981a8
+X-MS-Office365-Filtering-Correlation-Id-Prvs: 0dacc4f6-2aa1-45af-38e5-08da127958a5
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MEJEnW42WgknA574EAJn7fi0/y80SMSipoMQ2k6IyHQh5MdgSd7CeV4gqBr/hqSb5A15C8S+VJI19Cyzfa/aAaYpeo6g2g6FEaMaBkDZ3YB5MAUPlkOTxMWCPa3nFCqzjYPqJHh48GnUhc4y9Zc0D9Hf4XTH71eyjK/NnZEYz+HVEc/d5OR9RwCYT1va/BTQ8PYSV18GvQBgHZfTMUQgX2/7bkdHhrzHFlZjXN48D77yyU1d5U4Oakplw05ddnnFLKE2ZxsDHeguQoTiuobJ8rDICkXH+zxmeBbmnWcTAlL9hdgBr63ziqVh/KIgee6cYMBunj2cz8w4ZVLiaPbRdn2h6WVOhdeRh/YzXoD07VRLhSV25ErAFpveZj2zFU3OpFBtMfslKLUOhxby3kcr0erjbuyn1GPIZbLRLY305yNjyMmW7dGHiYI2pLYaeDJNMcbjrVMmVvok557My6v9iDRCxzSIV2D/cRRhr+e5/MnWCRb4b1Sh2fMLpqx6oS4lMg6JfCd/WwkriuhczQ8HLQ7HfWWA8vST2wx9G6iMOIg6B/PKxZr62vY9AzCoJq+jISmQvYj5IRC4rTr4uMWKZKEX/Xn3ow4ideGIxWrvVHqkxWhpP3ntyoDiwaOnVmLL1Tvmf8XjiisBuOajykqDDwrBQMUtcF7VVzS3/3Nzl0qzNA94pND+xATV2SuOazY9ZHCZ+KTRjOjaUpu1Dsel4cp7jC9z8M1pteMt4vjd3ZWrx+D/lahlr82m9Ote0KE3
-X-Forefront-Antispam-Report: CIP:20.83.241.18;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mailrelay000000.14r1f435wfvunndds3vy4cdalc.xx.internal.cloudapp.net;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(47076005)(5660300002)(70206006)(8676002)(110136005)(54906003)(40460700003)(82310400004)(81166007)(4326008)(316002)(36860700001)(7416002)(2616005)(2906002)(26005)(8936002)(186003)(6666004)(83380400001)(44832011)(508600001)(336012)(1076003)(426003)(36756003)(9786002)(7696005)(102446001)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: zub0LPYc7gNas1MYTMbZXB4zGt+K05oX8ZqJcb33mkDl0ZD0m06h2fwDm6DYuOg4BpeV2iYL2VHeKzfTjTduJEBfVgebKIszoN3vTxwo1cD6f1RM5f3zRN6sdlRJ3OiTHG6dTf5PlWhtO4vJkCD2mvbn6RdDH9wKE6lSNc1Mr/nsrTD3FyWIUNrG8KPklO6xE9e9NwWjfrKRCdb1L65pp367vpEHMYX58oF23Z5YDCk+3J26PPrwGt+nLPrBRjHGTtktBO0DNTCx0N+LDEbbfRrJUkS6qtU3VOJ5iR0JrhEgHwpN4bJjzjsH/zU8aK++pGlLhqmpGRlzhZnSUZ83vfx9ERzXulVPGbER1mSj9ZCFSmn/1qCt/O5v7POavxXuCaChwSedXKuCClVF0gwX3IvaErQwc0Hi9KUL36mUagoNBq3RcGzud3h5fYle0vn4nU+OusmH9RmHXsu3gAgzJzIC8fMOYuH6fVfGpbOqKAe5wI2Ym0EuR4H9vR8T3t6+Wd8AdnTb6i2oS5nEzy4bMdnRonNZrWeCClXXB0Hgo4E1MhuHUf6fNt/ye9bPJhj8Yo4sjZG/9hdJhYzX5N7JXMZOTS+/wvWW9SzTsh72AdukO+xAYQRb0PiKTthYGZXL1oEb363Cu9Pq58LywGG7m7htHLPNlpLO5ECesgpJxsvajLEn25AnkvNjJK2/11ln4yrLpqovDTt/gEpPn1mFti7SLVDo3g8MzUNWkNr2FRlEoZyxjseCZx3p9xZddDlG
+X-Forefront-Antispam-Report: CIP:20.83.241.18;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mailrelay000000.14r1f435wfvunndds3vy4cdalc.xx.internal.cloudapp.net;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(7416002)(2906002)(7696005)(5660300002)(83380400001)(26005)(1076003)(186003)(44832011)(9786002)(36860700001)(36756003)(8936002)(6666004)(2616005)(47076005)(70206006)(81166007)(316002)(508600001)(40460700003)(426003)(336012)(54906003)(82310400004)(4326008)(110136005)(8676002)(102446001)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2022 18:17:13.6908
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2022 18:16:05.6761
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0f5aa748-db1d-4962-7dcd-08da127983d7
+X-MS-Exchange-CrossTenant-Network-Message-Id: dea6366e-9682-4bd8-44ca-08da12795b4d
 X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[20.83.241.18];Helo=[mailrelay000000.14r1f435wfvunndds3vy4cdalc.xx.internal.cloudapp.net]
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TreatMessagesAsInternal-BN1NAM02FT024.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: TreatMessagesAsInternal-SN1NAM02FT0056.eop-nam02.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR02MB3971
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR02MB6250
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch extends the vhost-vdpa to support ASID based IOTLB API. The
-vhost-vdpa device will allocated multiple IOTLBs for vDPA device that
-supports multiple address spaces. The IOTLBs and vDPA device memory
-mappings is determined and maintained through ASID.
-
-Note that we still don't support vDPA device with more than one
-address spaces that depends on platform IOMMU. This work will be done
-by moving the IOMMU logic from vhost-vDPA to vDPA device driver.
+Follows the support for virtqueue group in vDPA. This patches
+introduces uAPI to get the virtqueue group ID for a specific virtqueue
+in vhost-vdpa.
 
 Signed-off-by: Jason Wang <jasowang@redhat.com>
 Signed-off-by: Gautam Dawar <gdawar@xilinx.com>
 ---
- drivers/vhost/vdpa.c  | 109 ++++++++++++++++++++++++++++++++++--------
- drivers/vhost/vhost.c |   2 +-
- 2 files changed, 91 insertions(+), 20 deletions(-)
+ drivers/vhost/vdpa.c       | 8 ++++++++
+ include/uapi/linux/vhost.h | 8 ++++++++
+ 2 files changed, 16 insertions(+)
 
 diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index 6c7ee0f18892..1f1d1c425573 100644
+index a017011ad1f5..aa5cacdc5263 100644
 --- a/drivers/vhost/vdpa.c
 +++ b/drivers/vhost/vdpa.c
-@@ -28,7 +28,8 @@
- enum {
- 	VHOST_VDPA_BACKEND_FEATURES =
- 	(1ULL << VHOST_BACKEND_F_IOTLB_MSG_V2) |
--	(1ULL << VHOST_BACKEND_F_IOTLB_BATCH),
-+	(1ULL << VHOST_BACKEND_F_IOTLB_BATCH) |
-+	(1ULL << VHOST_BACKEND_F_IOTLB_ASID),
- };
+@@ -465,6 +465,14 @@ static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int cmd,
+ 			return -EFAULT;
+ 		ops->set_vq_ready(vdpa, idx, s.num);
+ 		return 0;
++	case VHOST_VDPA_GET_VRING_GROUP:
++		s.index = idx;
++		s.num = ops->get_vq_group(vdpa, idx);
++		if (s.num >= vdpa->ngroups)
++			return -EIO;
++		else if (copy_to_user(argp, &s, sizeof(s)))
++			return -EFAULT;
++		return 0;
+ 	case VHOST_GET_VRING_BASE:
+ 		r = ops->get_vq_state(v->vdpa, idx, &vq_state);
+ 		if (r)
+diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
+index 51322008901a..668914c87f74 100644
+--- a/include/uapi/linux/vhost.h
++++ b/include/uapi/linux/vhost.h
+@@ -156,4 +156,12 @@
  
- #define VHOST_VDPA_DEV_MAX (1U << MINORBITS)
-@@ -57,12 +58,20 @@ struct vhost_vdpa {
- 	struct eventfd_ctx *config_ctx;
- 	int in_batch;
- 	struct vdpa_iova_range range;
-+	u32 batch_asid;
- };
- 
- static DEFINE_IDA(vhost_vdpa_ida);
- 
- static dev_t vhost_vdpa_major;
- 
-+static inline u32 iotlb_to_asid(struct vhost_iotlb *iotlb)
-+{
-+	struct vhost_vdpa_as *as = container_of(iotlb, struct
-+						vhost_vdpa_as, iotlb);
-+	return as->id;
-+}
+ /* Get the number of address spaces. */
+ #define VHOST_VDPA_GET_AS_NUM		_IOR(VHOST_VIRTIO, 0x7A, unsigned int)
 +
- static struct vhost_vdpa_as *asid_to_as(struct vhost_vdpa *v, u32 asid)
- {
- 	struct hlist_head *head = &v->as[asid % VHOST_VDPA_IOTLB_BUCKETS];
-@@ -75,6 +84,16 @@ static struct vhost_vdpa_as *asid_to_as(struct vhost_vdpa *v, u32 asid)
- 	return NULL;
- }
- 
-+static struct vhost_iotlb *asid_to_iotlb(struct vhost_vdpa *v, u32 asid)
-+{
-+	struct vhost_vdpa_as *as = asid_to_as(v, asid);
-+
-+	if (!as)
-+		return NULL;
-+
-+	return &as->iotlb;
-+}
-+
- static struct vhost_vdpa_as *vhost_vdpa_alloc_as(struct vhost_vdpa *v, u32 asid)
- {
- 	struct hlist_head *head = &v->as[asid % VHOST_VDPA_IOTLB_BUCKETS];
-@@ -83,6 +102,9 @@ static struct vhost_vdpa_as *vhost_vdpa_alloc_as(struct vhost_vdpa *v, u32 asid)
- 	if (asid_to_as(v, asid))
- 		return NULL;
- 
-+	if (asid >= v->vdpa->nas)
-+		return NULL;
-+
- 	as = kmalloc(sizeof(*as), GFP_KERNEL);
- 	if (!as)
- 		return NULL;
-@@ -94,6 +116,17 @@ static struct vhost_vdpa_as *vhost_vdpa_alloc_as(struct vhost_vdpa *v, u32 asid)
- 	return as;
- }
- 
-+static struct vhost_vdpa_as *vhost_vdpa_find_alloc_as(struct vhost_vdpa *v,
-+						      u32 asid)
-+{
-+	struct vhost_vdpa_as *as = asid_to_as(v, asid);
-+
-+	if (as)
-+		return as;
-+
-+	return vhost_vdpa_alloc_as(v, asid);
-+}
-+
- static int vhost_vdpa_remove_as(struct vhost_vdpa *v, u32 asid)
- {
- 	struct vhost_vdpa_as *as = asid_to_as(v, asid);
-@@ -692,6 +725,7 @@ static int vhost_vdpa_map(struct vhost_vdpa *v, struct vhost_iotlb *iotlb,
- 	struct vhost_dev *dev = &v->vdev;
- 	struct vdpa_device *vdpa = v->vdpa;
- 	const struct vdpa_config_ops *ops = vdpa->config;
-+	u32 asid = iotlb_to_asid(iotlb);
- 	int r = 0;
- 
- 	r = vhost_iotlb_add_range_ctx(iotlb, iova, iova + size - 1,
-@@ -700,10 +734,10 @@ static int vhost_vdpa_map(struct vhost_vdpa *v, struct vhost_iotlb *iotlb,
- 		return r;
- 
- 	if (ops->dma_map) {
--		r = ops->dma_map(vdpa, 0, iova, size, pa, perm, opaque);
-+		r = ops->dma_map(vdpa, asid, iova, size, pa, perm, opaque);
- 	} else if (ops->set_map) {
- 		if (!v->in_batch)
--			r = ops->set_map(vdpa, 0, iotlb);
-+			r = ops->set_map(vdpa, asid, iotlb);
- 	} else {
- 		r = iommu_map(v->domain, iova, pa, size,
- 			      perm_to_iommu_flags(perm));
-@@ -725,17 +759,24 @@ static void vhost_vdpa_unmap(struct vhost_vdpa *v,
- {
- 	struct vdpa_device *vdpa = v->vdpa;
- 	const struct vdpa_config_ops *ops = vdpa->config;
-+	u32 asid = iotlb_to_asid(iotlb);
- 
- 	vhost_vdpa_iotlb_unmap(v, iotlb, iova, iova + size - 1);
- 
- 	if (ops->dma_map) {
--		ops->dma_unmap(vdpa, 0, iova, size);
-+		ops->dma_unmap(vdpa, asid, iova, size);
- 	} else if (ops->set_map) {
- 		if (!v->in_batch)
--			ops->set_map(vdpa, 0, iotlb);
-+			ops->set_map(vdpa, asid, iotlb);
- 	} else {
- 		iommu_unmap(v->domain, iova, size);
- 	}
-+
-+	/* If we are in the middle of batch processing, delay the free
-+	 * of AS until BATCH_END.
-+	 */
-+	if (!v->in_batch && !iotlb->nmaps)
-+		vhost_vdpa_remove_as(v, asid);
- }
- 
- static int vhost_vdpa_va_map(struct vhost_vdpa *v,
-@@ -943,19 +984,38 @@ static int vhost_vdpa_process_iotlb_msg(struct vhost_dev *dev, u32 asid,
- 	struct vhost_vdpa *v = container_of(dev, struct vhost_vdpa, vdev);
- 	struct vdpa_device *vdpa = v->vdpa;
- 	const struct vdpa_config_ops *ops = vdpa->config;
--	struct vhost_vdpa_as *as = asid_to_as(v, 0);
--	struct vhost_iotlb *iotlb = &as->iotlb;
-+	struct vhost_iotlb *iotlb = NULL;
-+	struct vhost_vdpa_as *as = NULL;
- 	int r = 0;
- 
--	if (asid != 0)
--		return -EINVAL;
--
- 	mutex_lock(&dev->mutex);
- 
- 	r = vhost_dev_check_owner(dev);
- 	if (r)
- 		goto unlock;
- 
-+	if (msg->type == VHOST_IOTLB_UPDATE ||
-+	    msg->type == VHOST_IOTLB_BATCH_BEGIN) {
-+		as = vhost_vdpa_find_alloc_as(v, asid);
-+		if (!as) {
-+			dev_err(&v->dev, "can't find and alloc asid %d\n",
-+				asid);
-+			return -EINVAL;
-+		}
-+		iotlb = &as->iotlb;
-+	} else
-+		iotlb = asid_to_iotlb(v, asid);
-+
-+	if ((v->in_batch && v->batch_asid != asid) || !iotlb) {
-+		if (v->in_batch && v->batch_asid != asid) {
-+			dev_info(&v->dev, "batch id %d asid %d\n",
-+				 v->batch_asid, asid);
-+		}
-+		if (!iotlb)
-+			dev_err(&v->dev, "no iotlb for asid %d\n", asid);
-+		return -EINVAL;
-+	}
-+
- 	switch (msg->type) {
- 	case VHOST_IOTLB_UPDATE:
- 		r = vhost_vdpa_process_iotlb_update(v, iotlb, msg);
-@@ -964,12 +1024,15 @@ static int vhost_vdpa_process_iotlb_msg(struct vhost_dev *dev, u32 asid,
- 		vhost_vdpa_unmap(v, iotlb, msg->iova, msg->size);
- 		break;
- 	case VHOST_IOTLB_BATCH_BEGIN:
-+		v->batch_asid = asid;
- 		v->in_batch = true;
- 		break;
- 	case VHOST_IOTLB_BATCH_END:
- 		if (v->in_batch && ops->set_map)
--			ops->set_map(vdpa, 0, iotlb);
-+			ops->set_map(vdpa, asid, iotlb);
- 		v->in_batch = false;
-+		if (!iotlb->nmaps)
-+			vhost_vdpa_remove_as(v, asid);
- 		break;
- 	default:
- 		r = -EINVAL;
-@@ -1057,9 +1120,17 @@ static void vhost_vdpa_set_iova_range(struct vhost_vdpa *v)
- 
- static void vhost_vdpa_cleanup(struct vhost_vdpa *v)
- {
-+	struct vhost_vdpa_as *as;
-+	u32 asid;
-+
- 	vhost_dev_cleanup(&v->vdev);
- 	kfree(v->vdev.vqs);
--	vhost_vdpa_remove_as(v, 0);
-+
-+	for (asid = 0; asid < v->vdpa->nas; asid++) {
-+		as = asid_to_as(v, asid);
-+		if (as)
-+			vhost_vdpa_remove_as(v, asid);
-+	}
- }
- 
- static int vhost_vdpa_open(struct inode *inode, struct file *filep)
-@@ -1095,12 +1166,9 @@ static int vhost_vdpa_open(struct inode *inode, struct file *filep)
- 	vhost_dev_init(dev, vqs, nvqs, 0, 0, 0, false,
- 		       vhost_vdpa_process_iotlb_msg);
- 
--	if (!vhost_vdpa_alloc_as(v, 0))
--		goto err_alloc_as;
--
- 	r = vhost_vdpa_alloc_domain(v);
- 	if (r)
--		goto err_alloc_as;
-+		goto err_alloc_domain;
- 
- 	vhost_vdpa_set_iova_range(v);
- 
-@@ -1108,7 +1176,7 @@ static int vhost_vdpa_open(struct inode *inode, struct file *filep)
- 
- 	return 0;
- 
--err_alloc_as:
-+err_alloc_domain:
- 	vhost_vdpa_cleanup(v);
- err:
- 	atomic_dec(&v->opened);
-@@ -1233,8 +1301,11 @@ static int vhost_vdpa_probe(struct vdpa_device *vdpa)
- 	int minor;
- 	int i, r;
- 
--	/* Only support 1 address space and 1 groups */
--	if (vdpa->ngroups != 1 || vdpa->nas != 1)
-+	/* We can't support platform IOMMU device with more than 1
-+	 * group or as
-+	 */
-+	if (!ops->set_map && !ops->dma_map &&
-+	    (vdpa->ngroups > 1 || vdpa->nas > 1))
- 		return -EOPNOTSUPP;
- 
- 	v = kzalloc(sizeof(*v), GFP_KERNEL | __GFP_RETRY_MAYFAIL);
-diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-index d1e58f976f6e..5022c648d9c0 100644
---- a/drivers/vhost/vhost.c
-+++ b/drivers/vhost/vhost.c
-@@ -1167,7 +1167,7 @@ ssize_t vhost_chr_write_iter(struct vhost_dev *dev,
- 				ret = -EINVAL;
- 				goto done;
- 			}
--			offset = sizeof(__u16);
-+			offset = 0;
- 		} else
- 			offset = sizeof(__u32);
- 		break;
++/* Get the group for a virtqueue: read index, write group in num,
++ * The virtqueue index is stored in the index field of
++ * vhost_vring_state. The group for this specific virtqueue is
++ * returned via num field of vhost_vring_state.
++ */
++#define VHOST_VDPA_GET_VRING_GROUP	_IOWR(VHOST_VIRTIO, 0x7B,	\
++					      struct vhost_vring_state)
+ #endif
 -- 
 2.30.1
 
