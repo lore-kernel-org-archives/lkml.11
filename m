@@ -2,48 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2C6CC35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDCBCC41535
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:14:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345381AbiC3MNu (ORCPT
+        id S1345423AbiC3MN4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:13:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57432 "EHLO
+        Wed, 30 Mar 2022 08:13:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345906AbiC3LzL (ORCPT
+        with ESMTP id S1345899AbiC3LzJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:55:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE4CD26C2FB;
-        Wed, 30 Mar 2022 04:52:21 -0700 (PDT)
+        Wed, 30 Mar 2022 07:55:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 651BA25FD63;
+        Wed, 30 Mar 2022 04:52:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A1454B81C24;
-        Wed, 30 Mar 2022 11:52:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCB83C36AE7;
-        Wed, 30 Mar 2022 11:52:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1B329B81ACC;
+        Wed, 30 Mar 2022 11:52:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A65E6C34112;
+        Wed, 30 Mar 2022 11:52:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641139;
-        bh=+VcnWK6RdiXDGyC+txKRR/jNyYOqSekq6T4uv9dDmug=;
+        s=k20201202; t=1648641132;
+        bh=cmQjIDOiyu6i0WOxV+vP3qJn8wa2woRKYCESBKH7hvg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K0mmJmwS5jQ9tuxh/IvDaAVY4ITGBT+bD1JfvNbuPf1Kl71bwM0VEIX+1RMNdRy0+
-         AvC+IOT9q9AdEoZOR55W7+uIc/GvWd4bmWeNwdL9acSYXdPu4Qv/jf/s8bUe7XtPVe
-         ZZfb3gg/Zk4NDgKbqH03tMMBfOuo99Ng/MMIjJ8zVwDercbdfxIjRC5HyU0xt++/B1
-         U1v5etzrMKfFpNbJQKU1AEUZWRiGTnXc565OOr4CuWM2dQHWG/5DHrjSBa2EjRkYas
-         9/b8ppyMh0nfcjFKcipBbRKWR2ONhe6bK66++MAawszrEmsH/FVTBVsXdI0eyZEnwN
-         sTGa5CWdaH/aA==
+        b=PAo/wjbVJc/yheRc5O6eFwqvQh0BNVjzsd4+LnZ0OvhpB8gIdJZClfgLDhvcbOnpY
+         Jc77NZv+mq31IXjj6oqGB31I4BPypj9d7qStQ3Bru74ORvygKcTOQccj9gxOO7LWAY
+         zYoyBirWqkdBmAnOfEwETtXBQfnpnCnVlxciQxxIjfx7rJB9nT7GlM1sVXH9CZsxZA
+         P2ZPpitN0RnTW10ZjCo+6KHtMOE4oq0CJTWhREslCgxS4/1rUpK0558+0dBbyVY907
+         sO37hYIOw9SAWivR46OPbiuKDhgdWdbqAY0D4tv9vzVmRm2dFJR4uu84mNNHYL2Upp
+         qEHBqXhVZUgEA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, linux-mmc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 34/37] mmc: host: Return an error when ->enable_sdio_irq() ops is missing
-Date:   Wed, 30 Mar 2022 07:51:19 -0400
-Message-Id: <20220330115122.1671763-34-sashal@kernel.org>
+Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>,
+        eric.y.miao@gmail.com, haojian.zhuang@gmail.com,
+        linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 29/37] ARM: mmp: Fix failure to remove sram device
+Date:   Wed, 30 Mar 2022 07:51:14 -0400
+Message-Id: <20220330115122.1671763-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115122.1671763-1-sashal@kernel.org>
 References: <20220330115122.1671763-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -51,58 +56,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ulf Hansson <ulf.hansson@linaro.org>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit d6c9219ca1139b74541b2a98cee47a3426d754a9 ]
+[ Upstream commit 4036b29a146b2749af3bb213b003eb69f3e5ecc4 ]
 
-Even if the current WARN() notifies the user that something is severely
-wrong, we can still end up in a PANIC() when trying to invoke the missing
-->enable_sdio_irq() ops. Therefore, let's also return an error code and
-prevent the host from being added.
+Make sure in .probe() to set driver data before the function is left to
+make it possible in .remove() to undo the actions done.
 
-While at it, move the code into a separate function to prepare for
-subsequent changes and for further host caps validations.
+This fixes a potential memory leak and stops returning an error code in
+.remove() that is ignored by the driver core anyhow.
 
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Link: https://lore.kernel.org/r/20220303165142.129745-1-ulf.hansson@linaro.org
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/core/host.c | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ arch/arm/mach-mmp/sram.c | 22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/mmc/core/host.c b/drivers/mmc/core/host.c
-index 864c8c205ff7..03e2f965a96a 100644
---- a/drivers/mmc/core/host.c
-+++ b/drivers/mmc/core/host.c
-@@ -513,6 +513,16 @@ struct mmc_host *mmc_alloc_host(int extra, struct device *dev)
+diff --git a/arch/arm/mach-mmp/sram.c b/arch/arm/mach-mmp/sram.c
+index 6794e2db1ad5..ecc46c31004f 100644
+--- a/arch/arm/mach-mmp/sram.c
++++ b/arch/arm/mach-mmp/sram.c
+@@ -72,6 +72,8 @@ static int sram_probe(struct platform_device *pdev)
+ 	if (!info)
+ 		return -ENOMEM;
  
- EXPORT_SYMBOL(mmc_alloc_host);
++	platform_set_drvdata(pdev, info);
++
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	if (res == NULL) {
+ 		dev_err(&pdev->dev, "no memory resource defined\n");
+@@ -107,8 +109,6 @@ static int sram_probe(struct platform_device *pdev)
+ 	list_add(&info->node, &sram_bank_list);
+ 	mutex_unlock(&sram_lock);
  
-+static int mmc_validate_host_caps(struct mmc_host *host)
-+{
-+	if (host->caps & MMC_CAP_SDIO_IRQ && !host->ops->enable_sdio_irq) {
-+		dev_warn(host->parent, "missing ->enable_sdio_irq() ops\n");
-+		return -EINVAL;
+-	platform_set_drvdata(pdev, info);
+-
+ 	dev_info(&pdev->dev, "initialized\n");
+ 	return 0;
+ 
+@@ -127,17 +127,19 @@ static int sram_remove(struct platform_device *pdev)
+ 	struct sram_bank_info *info;
+ 
+ 	info = platform_get_drvdata(pdev);
+-	if (info == NULL)
+-		return -ENODEV;
+ 
+-	mutex_lock(&sram_lock);
+-	list_del(&info->node);
+-	mutex_unlock(&sram_lock);
++	if (info->sram_size) {
++		mutex_lock(&sram_lock);
++		list_del(&info->node);
++		mutex_unlock(&sram_lock);
++
++		gen_pool_destroy(info->gpool);
++		iounmap(info->sram_virt);
++		kfree(info->pool_name);
 +	}
-+
-+	return 0;
-+}
-+
- /**
-  *	mmc_add_host - initialise host hardware
-  *	@host: mmc host
-@@ -525,8 +535,9 @@ int mmc_add_host(struct mmc_host *host)
- {
- 	int err;
  
--	WARN_ON((host->caps & MMC_CAP_SDIO_IRQ) &&
--		!host->ops->enable_sdio_irq);
-+	err = mmc_validate_host_caps(host);
-+	if (err)
-+		return err;
+-	gen_pool_destroy(info->gpool);
+-	iounmap(info->sram_virt);
+-	kfree(info->pool_name);
+ 	kfree(info);
++
+ 	return 0;
+ }
  
- 	err = device_add(&host->class_dev);
- 	if (err)
 -- 
 2.34.1
 
