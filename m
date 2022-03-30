@@ -2,117 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46E13C47080
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23C9DC3527D
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347134AbiC3MGB (ORCPT
+        id S1346917AbiC3MFn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:06:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58168 "EHLO
+        Wed, 30 Mar 2022 08:05:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345815AbiC3LzD (ORCPT
+        with ESMTP id S1345728AbiC3Ly6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:55:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8228B26454E;
-        Wed, 30 Mar 2022 04:51:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E4A2EB81BBA;
-        Wed, 30 Mar 2022 11:51:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD259C340F3;
-        Wed, 30 Mar 2022 11:51:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641095;
-        bh=/hJvC2gf0i2zGMllIvwBp0yhdrPxL94SQLzsN5wb/G8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Kfr2nA5PV4HTv/CbPU8PM5GqX53JjimM3ECaXVLs/yqxLnraiMmMMudVOvR1kz7Vt
-         dH8uhdKFGiMv6T93UllvW0f0wksQ/DjJAZoi0DfDfaB/wqx4vbpEkBXWjCrdXYVp5w
-         af3153FrbqnYx1pABUnWt+cWbBGSmk0lwYkZfUPs2F6GHiqglAW0stY1Z6X94DWewg
-         SgDBvZ4QiD5H23ZdcshQ+DNplWTt2PxvrcNvaQO80/T+0cKO84wDbPJ++rTxbp1KZf
-         ECcexQKNgEe+N4JsQzlVUU5D6COqOdPZ9egHj7fkt2eWqkLO5bsNyOONq72akGjgao
-         Fxhdt+3AXFSSA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Evgeny Novikov <novikov@ispras.ru>,
-        Kirill Shilimanov <kirill.shilimanov@huawei.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
-        tomi.valkeinen@ti.com, linux-fbdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 07/37] video: fbdev: w100fb: Reset global state
-Date:   Wed, 30 Mar 2022 07:50:52 -0400
-Message-Id: <20220330115122.1671763-7-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330115122.1671763-1-sashal@kernel.org>
-References: <20220330115122.1671763-1-sashal@kernel.org>
+        Wed, 30 Mar 2022 07:54:58 -0400
+Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B793626241B
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 04:51:39 -0700 (PDT)
+Received: by mail-qt1-f173.google.com with SMTP id m21so2125426qtw.8
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 04:51:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bec0iphyAFTcaBtQxwlj+Sc/83TcuopoiWiMOgp6Yzk=;
+        b=7XUMAnbZckAAX2BxySD0R95ZbxUg5nhV3LmLDKZBEnblno/0rcQWceqdr+IjMBxyec
+         OIuZo0Szzv3N2OSnip2EJjZ3rqKDYlw7prQ9/+i0RHDAHEcB+sbs1PSs2YFA654qWYun
+         D9daSw5gc3j7XWlLzgawGrZkgCPZC9AXxWLqfds3prB3GxkO4OhbjqRJE+EATO6sZqOZ
+         pgo/g2GplFetjq7CzJYpMKhNmT1ZQg2cHIWTUE7p6ctS46GcJhS6Ug/VCMta7njcuJT6
+         qbkrh/M3eXmMK9pmCBhmjmbfWa3TllVzCVjSTbQWfRkN3647/CsIzL2sd1CmkAL/WvL7
+         JfQQ==
+X-Gm-Message-State: AOAM532UOZe/SfQZyuw7w1DKSj09/we4mUAyoaL+LMcjs7C1OjnIS48R
+        ae/8JR9v4+gSEMVRS7Ssw2adc0B4vgNGvA==
+X-Google-Smtp-Source: ABdhPJzGUQUxHSt+J0gElbK5YLUeDiZnTMGorUR1mgys/F7EypE/akYCeec92So3HFRQdwfwkWGonw==
+X-Received: by 2002:ac8:5e4c:0:b0:2e2:2bbf:57fa with SMTP id i12-20020ac85e4c000000b002e22bbf57famr31512345qtx.278.1648641086254;
+        Wed, 30 Mar 2022 04:51:26 -0700 (PDT)
+Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com. [209.85.219.179])
+        by smtp.gmail.com with ESMTPSA id x20-20020ac85f14000000b002e1ee1c56c3sm17681912qta.76.2022.03.30.04.51.25
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Mar 2022 04:51:25 -0700 (PDT)
+Received: by mail-yb1-f179.google.com with SMTP id v35so36334404ybi.10
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 04:51:25 -0700 (PDT)
+X-Received: by 2002:a25:9e89:0:b0:63c:ad37:a5de with SMTP id
+ p9-20020a259e89000000b0063cad37a5demr16955433ybq.342.1648641085421; Wed, 30
+ Mar 2022 04:51:25 -0700 (PDT)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <f7ea35c723da72a89028da5b976ad417fbd7bf52.1648545587.git.geert@linux-m68k.org>
+ <YkLgapMN2JqM+Lte@kroah.com> <YkM9CPbeARpWHMPw@heinlein> <342ae21e4bba6b0eccb39113fafa411aa8e93f96.camel@intel.com>
+In-Reply-To: <342ae21e4bba6b0eccb39113fafa411aa8e93f96.camel@intel.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 30 Mar 2022 13:51:13 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdU2AixR0kKxT5j3uSGDs5ntf4NuzRN7PjF=-vpo1bUi_Q@mail.gmail.com>
+Message-ID: <CAMuHMdU2AixR0kKxT5j3uSGDs5ntf4NuzRN7PjF=-vpo1bUi_Q@mail.gmail.com>
+Subject: Re: [PATCH] peci: PECI should depend on ARCH_ASPEED
+To:     "Winiarska, Iwona" <iwona.winiarska@intel.com>
+Cc:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "patrick@stwcx.xyz" <patrick@stwcx.xyz>,
+        "pierre-louis.bossart@linux.intel.com" 
+        <pierre-louis.bossart@linux.intel.com>,
+        "jason.m.bills@linux.intel.com" <jason.m.bills@linux.intel.com>,
+        "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "jae.hyun.yoo@linux.intel.com" <jae.hyun.yoo@linux.intel.com>,
+        "joel@jms.id.au" <joel@jms.id.au>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evgeny Novikov <novikov@ispras.ru>
+Hi Iwona,
 
-[ Upstream commit 8738ddcac644964ae128ccd3d80d48773c8d528e ]
+On Wed, Mar 30, 2022 at 12:37 PM Winiarska, Iwona
+<iwona.winiarska@intel.com> wrote:
+> On Tue, 2022-03-29 at 12:08 -0500, Patrick Williams wrote:
+> > On Tue, Mar 29, 2022 at 12:33:14PM +0200, Greg Kroah-Hartman wrote:
+> > > On Tue, Mar 29, 2022 at 11:21:37AM +0200, Geert Uytterhoeven wrote:
+> > > > The Platform Environment Control Interface (PECI) is only available on
+> > > > Baseboard Management Controllers (BMC) for Intel processors.  Currently
+> > > > the only supported BMCs are ASpeed BMC SoCs.  Hence add a dependency on
+> > > > ARCH_ASPEED, to prevent asking the user about the PECI subsystem when
+> > > > configuring a kernel without ASpeed SoC support.
+> > > >
+> > > > Fixes: 6523d3b2ffa238ac ("peci: Add core infrastructure")
+> > > > Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> > > > ---
+> > > >  drivers/peci/Kconfig | 1 +
+> > > >  1 file changed, 1 insertion(+)
+> > > >
+> > > > diff --git a/drivers/peci/Kconfig b/drivers/peci/Kconfig
+> > > > index 89872ad833201510..0d3ef8ba0998d649 100644
+> > > > --- a/drivers/peci/Kconfig
+> > > > +++ b/drivers/peci/Kconfig
+> > > > @@ -2,6 +2,7 @@
+> > > >
+> > > >  menuconfig PECI
+> > > >         tristate "PECI support"
+> > > > +       depends on ARCH_ASPEED || COMPILE_TEST
+> > >
+> > > I hate ARCH_ dependencies as there is nothing specific with that one
+> > > platform that means that this driver subsystem will only work on that
+> > > one.
+> >
+> > The motivation in the commit message isn't even accurate because the chips
+> > under ARCH_NPCM are usually used as a BMC as well and PECI is just as important
+> > for them.  HPE also has a custom chip they use as BMC and they've started the
+> > process for upstreaming that support.
+>
+> "Currently the only supported BMCs are ASpeed BMC SoCs."
+> From PECI subsystem perspective (not BMC support in general), it is technically
+> true for now - but I agree with Greg and Patrick, this is just artificially
+> introducing build-time dependencies where in fact there are none. And yes - we
+> would then have to add the "depends on ARCH_YET_ANOTHER_ARCH" to generic
+> subsystem anytime we add a new PECI controller. This belongs in the controller
+> (and the ASPEED one depends on ARCH_ASPEED).
 
-w100fb_probe() did not reset the global state to its initial state. This
-can result in invocation of iounmap() even when there was not the
-appropriate successful call of ioremap(). For instance, this may be the
-case if first probe fails after two successful ioremap() while second
-probe fails when first ioremap() fails. The similar issue is with
-w100fb_remove(). The patch fixes both bugs.
+OK, let's keep it as-is.
 
-Found by Linux Driver Verification project (linuxtesting.org).
+Gr{oetje,eeting}s,
 
-Signed-off-by: Evgeny Novikov <novikov@ispras.ru>
-Co-developed-by: Kirill Shilimanov <kirill.shilimanov@huawei.com>
-Signed-off-by: Kirill Shilimanov <kirill.shilimanov@huawei.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/video/fbdev/w100fb.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+                        Geert
 
-diff --git a/drivers/video/fbdev/w100fb.c b/drivers/video/fbdev/w100fb.c
-index d96ab28f8ce4..4e641a780726 100644
---- a/drivers/video/fbdev/w100fb.c
-+++ b/drivers/video/fbdev/w100fb.c
-@@ -770,12 +770,18 @@ static int w100fb_probe(struct platform_device *pdev)
- 		fb_dealloc_cmap(&info->cmap);
- 		kfree(info->pseudo_palette);
- 	}
--	if (remapped_fbuf != NULL)
-+	if (remapped_fbuf != NULL) {
- 		iounmap(remapped_fbuf);
--	if (remapped_regs != NULL)
-+		remapped_fbuf = NULL;
-+	}
-+	if (remapped_regs != NULL) {
- 		iounmap(remapped_regs);
--	if (remapped_base != NULL)
-+		remapped_regs = NULL;
-+	}
-+	if (remapped_base != NULL) {
- 		iounmap(remapped_base);
-+		remapped_base = NULL;
-+	}
- 	if (info)
- 		framebuffer_release(info);
- 	return err;
-@@ -795,8 +801,11 @@ static int w100fb_remove(struct platform_device *pdev)
- 	fb_dealloc_cmap(&info->cmap);
- 
- 	iounmap(remapped_base);
-+	remapped_base = NULL;
- 	iounmap(remapped_regs);
-+	remapped_regs = NULL;
- 	iounmap(remapped_fbuf);
-+	remapped_fbuf = NULL;
- 
- 	framebuffer_release(info);
- 
--- 
-2.34.1
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
