@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1363C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B5AEC4332F
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:14:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345207AbiC3MNT (ORCPT
+        id S1345113AbiC3MNK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:13:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57822 "EHLO
+        Wed, 30 Mar 2022 08:13:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345852AbiC3LzF (ORCPT
+        with ESMTP id S1345889AbiC3LzI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:55:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1518262D75;
-        Wed, 30 Mar 2022 04:51:54 -0700 (PDT)
+        Wed, 30 Mar 2022 07:55:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4985268C18;
+        Wed, 30 Mar 2022 04:52:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 55C28615E7;
-        Wed, 30 Mar 2022 11:51:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1BA6C36AE2;
-        Wed, 30 Mar 2022 11:51:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4DDDBB81C35;
+        Wed, 30 Mar 2022 11:52:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC10DC34112;
+        Wed, 30 Mar 2022 11:52:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641113;
-        bh=+wq173W039LLwt49okhsC1cU/Yg0EMixvemiQqA7vmw=;
+        s=k20201202; t=1648641123;
+        bh=skuOR75e+sekibChrAvhs2nW86TlxMRDwZQQO4q/oE0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nbcypW6cUfI8s7QhYI+JTNAeYoDSTe+Jn4iTy+KJ13TFht0So+vMVMF3bsoPO3n46
-         beJQXvsTeMpGBDWP42Qgp2rQiylyiOBjgalgWu+9khXplX1wJEQ/JN7cicJ5LzZlj+
-         g4vu0UgK0OnoQm8SH0Z+PLFfJomk3ka9RkWo1naGaLGba1grWl0q++D92Dv5aWkbMc
-         Vn2ApRzhKzgICRpk157lwexiSU2upECyhrStWKICzegELl+mPhDqrFpvYTnzLYwr1H
-         sZAlZkg3HCVk/hLE6I75xWGVtHnG1YQd5RNs68rrY5dt2aAyFdY6op0UVsIsH+UUI0
-         oW29RxD61Lt5g==
+        b=J6iezaoROmA/7cFtuWouZOrrKktUsToJ8DGxp36GDo/NjAA3opQ7OY0y+UFlAsrEU
+         oiLOcjrg7T69YdWb/Fs9FzhgEIiOnQRxWynv00ZecKRWUY3nNrXTpV1zw9JTWf4RQ4
+         IA9L7jh9HcRqZRPkimmYY/WYNzjkujkSXYFfsyRLpW5BDOl+aJrBTpFxULs8Jn/Ag5
+         lcQhimD72dYBQiLHyc0qd6a/yQb5VgiHudDof9FBxcvn18c7+LQWoK5aMGQL1Yr9uM
+         U8wrrH7wlCckTPJSozbpXRe0jdXPjTBw+xtzEptmVV6cTMIaPGSpaL2y//GWE3ZKz/
+         MUx3YKKGWFSww==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jing Yao <yao.jing2@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
-        tomi.valkeinen@ti.com, linux-omap@vger.kernel.org,
-        linux-fbdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 18/37] video: fbdev: omapfb: panel-dsi-cm: Use sysfs_emit() instead of snprintf()
-Date:   Wed, 30 Mar 2022 07:51:03 -0400
-Message-Id: <20220330115122.1671763-18-sashal@kernel.org>
+Cc:     John Ogness <john.ogness@linutronix.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Petr Mladek <pmladek@suse.com>,
+        Sasha Levin <sashal@kernel.org>, senozhatsky@chromium.org,
+        stephen.s.brennan@oracle.com, gregkh@linuxfoundation.org
+Subject: [PATCH AUTOSEL 5.10 24/37] printk: use atomic updates for klogd work
+Date:   Wed, 30 Mar 2022 07:51:09 -0400
+Message-Id: <20220330115122.1671763-24-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115122.1671763-1-sashal@kernel.org>
 References: <20220330115122.1671763-1-sashal@kernel.org>
@@ -53,60 +54,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jing Yao <yao.jing2@zte.com.cn>
+From: John Ogness <john.ogness@linutronix.de>
 
-[ Upstream commit f63658a59c3d439c8ad7b290f8ec270980e0f384 ]
+[ Upstream commit 2ba3673d70178bf07fb75ff25c54bc478add4021 ]
 
-Use sysfs_emit instead of scnprintf, snprintf or sprintf.
+The per-cpu @printk_pending variable can be updated from
+sleepable contexts, such as:
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
-Signed-off-by: Helge Deller <deller@gmx.de>
+  get_random_bytes()
+    warn_unseeded_randomness()
+      printk_deferred()
+        defer_console_output()
+
+and can be updated from interrupt contexts, such as:
+
+  handle_irq_event_percpu()
+    __irq_wake_thread()
+      wake_up_process()
+        try_to_wake_up()
+          select_task_rq()
+            select_fallback_rq()
+              printk_deferred()
+                defer_console_output()
+
+and can be updated from NMI contexts, such as:
+
+  vprintk()
+    if (in_nmi()) defer_console_output()
+
+Therefore the atomic variant of the updating functions must be used.
+
+Replace __this_cpu_xchg() with this_cpu_xchg().
+Replace __this_cpu_or() with this_cpu_or().
+
+Reported-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+Link: https://lore.kernel.org/r/87iltld4ue.fsf@jogness.linutronix.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ kernel/printk/printk.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
-index 4b0793abdd84..a2c7c5cb1523 100644
---- a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
-+++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
-@@ -409,7 +409,7 @@ static ssize_t dsicm_num_errors_show(struct device *dev,
- 	if (r)
- 		return r;
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index c131ad6fadfe..721c685a4801 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -3049,7 +3049,7 @@ static DEFINE_PER_CPU(int, printk_pending);
  
--	return snprintf(buf, PAGE_SIZE, "%d\n", errors);
-+	return sysfs_emit(buf, "%d\n", errors);
+ static void wake_up_klogd_work_func(struct irq_work *irq_work)
+ {
+-	int pending = __this_cpu_xchg(printk_pending, 0);
++	int pending = this_cpu_xchg(printk_pending, 0);
+ 
+ 	if (pending & PRINTK_PENDING_OUTPUT) {
+ 		/* If trylock fails, someone else is doing the printing */
+@@ -3085,7 +3085,7 @@ void defer_console_output(void)
+ 		return;
+ 
+ 	preempt_disable();
+-	__this_cpu_or(printk_pending, PRINTK_PENDING_OUTPUT);
++	this_cpu_or(printk_pending, PRINTK_PENDING_OUTPUT);
+ 	irq_work_queue(this_cpu_ptr(&wake_up_klogd_work));
+ 	preempt_enable();
  }
- 
- static ssize_t dsicm_hw_revision_show(struct device *dev,
-@@ -439,7 +439,7 @@ static ssize_t dsicm_hw_revision_show(struct device *dev,
- 	if (r)
- 		return r;
- 
--	return snprintf(buf, PAGE_SIZE, "%02x.%02x.%02x\n", id1, id2, id3);
-+	return sysfs_emit(buf, "%02x.%02x.%02x\n", id1, id2, id3);
- }
- 
- static ssize_t dsicm_store_ulps(struct device *dev,
-@@ -487,7 +487,7 @@ static ssize_t dsicm_show_ulps(struct device *dev,
- 	t = ddata->ulps_enabled;
- 	mutex_unlock(&ddata->lock);
- 
--	return snprintf(buf, PAGE_SIZE, "%u\n", t);
-+	return sysfs_emit(buf, "%u\n", t);
- }
- 
- static ssize_t dsicm_store_ulps_timeout(struct device *dev,
-@@ -532,7 +532,7 @@ static ssize_t dsicm_show_ulps_timeout(struct device *dev,
- 	t = ddata->ulps_timeout;
- 	mutex_unlock(&ddata->lock);
- 
--	return snprintf(buf, PAGE_SIZE, "%u\n", t);
-+	return sysfs_emit(buf, "%u\n", t);
- }
- 
- static DEVICE_ATTR(num_dsi_errors, S_IRUGO, dsicm_num_errors_show, NULL);
 -- 
 2.34.1
 
