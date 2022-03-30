@@ -2,427 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7953C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 09:10:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 135EEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 09:10:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244622AbiC3JLr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 05:11:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51440 "EHLO
+        id S244635AbiC3JMP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 05:12:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243778AbiC3JLo (ORCPT
+        with ESMTP id S244627AbiC3JMO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 05:11:44 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10CDF1D914D
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 02:09:59 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id cm17so44558pjb.2
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 02:09:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=huaqin-corp-partner-google-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=X//uwV8uPz2XnrC/CM7T1N2y6zAgnXQo1iH9qrSe+Pk=;
-        b=MqzoU8gKEB3BfGWgORll3R+xR8GKm5c7+dMnyWMQYjnvct6o+0o0Lgz7F0LnuoJkyg
-         mwHayXbIdiZY2e9hKx6FR09jI/+eL5ojr6nBXoFzNruYTMESFHzVhYzNJPOGPjL4Ox5K
-         IUColEi36xJk44tTR025AawfntB/wvfqi04Xakwz9eUPb0OopCDjb6mJfh7CoO8jrrB5
-         TL28b5qGKREIfX0yyrydBbBiIwb4HGa216xV2Um0e5TNJFw1Gy4hFmEiBRbvFoPRNF2p
-         qW4C34dCX3xQ5xILJzrbIthNOsBN/gNKybCIaHf1rQ/Qiq3UIHomd804DwevNyH7CY50
-         WdFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=X//uwV8uPz2XnrC/CM7T1N2y6zAgnXQo1iH9qrSe+Pk=;
-        b=VVdqSgOXjcmFEhzbwS/iME+oPwORkggtdWBHeRXioqDlMWzdOtJBaG7UamX6lzKWkT
-         xRLlTV6nZyjZ0EG0dugpVkuHsVA4eOzidFE+SGlxGJxgJr+nUv153+UymDlrMDnTutHm
-         Ectq0brzZ6z/uiCyJFKMKpb6wzlM7qHYmgDA2ZR78A21aMFGxrfyU3unI19xcX8eaqN9
-         xd3mFrmDHr0AevSyg7wbnQNIxr9tVWbYKAcs97yypjeulDMjmmmcX2P+Z04RHNZtS3cD
-         N2RKiRPZxHzU67ee5t5hcdOfGAMRJrFaXzl0mR1d+oHcgdSfJJBfgCnmsEtp+mMxCyfs
-         zEVg==
-X-Gm-Message-State: AOAM5313XtJAhB5gRuplSDaSHYXchRNjOKcdc0OR3r/5mfr302VWpNd4
-        jKXg1OpGzxuEe8ytUZoDB4QC7g==
-X-Google-Smtp-Source: ABdhPJw1bXHKrcS4u2eTGB013KNNZp9qsCL3YWdB0Cad42B35Sc6wkHyQqmK/+5Vdt1uIqp9NxYShQ==
-X-Received: by 2002:a17:903:110f:b0:154:c7a4:9371 with SMTP id n15-20020a170903110f00b00154c7a49371mr32264199plh.75.1648631398515;
-        Wed, 30 Mar 2022 02:09:58 -0700 (PDT)
-Received: from localhost.localdomain (2001-b400-e484-8494-10d3-c3e6-ad02-32e8.emome-ip6.hinet.net. [2001:b400:e484:8494:10d3:c3e6:ad02:32e8])
-        by smtp.gmail.com with ESMTPSA id f30-20020a63755e000000b00381f6b7ef30sm18473385pgn.54.2022.03.30.02.09.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Mar 2022 02:09:58 -0700 (PDT)
-From:   Mars Chen <chenxiangrui@huaqin.corp-partner.google.com>
-To:     agross@kernel.org
-Cc:     Mars Chen <chenxiangrui@huaqin.corp-partner.google.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] CHROMIUM: arm64: dts: qcom: Add sc7180-gelarshie
-Date:   Wed, 30 Mar 2022 17:09:46 +0800
-Message-Id: <20220330090947.9100-1-chenxiangrui@huaqin.corp-partner.google.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 30 Mar 2022 05:12:14 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C8DF1DBABA;
+        Wed, 30 Mar 2022 02:10:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648631428; x=1680167428;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=oVBDcKhQPIannLiyreJRo3QEwR2EwOYqp0Enn3LLlPU=;
+  b=Yr1ZIyRQv0GdOE2Bd2km1ts9AU+eBiPh/HTyO7JrJ7bOzgCTNw9+tqza
+   QjqQ/LKwAes0s+EGDbM5xIerfhsp0+IIAo2et+J3A4M0GMCh9lUcgBjNP
+   pOXAFf3WaJE27akbXyandOOh8AM+/NGmQcKOpKUrZ9mjBCzLYMGZc9Gty
+   jVCzGvX8rtjCg+7GrXGHmk9V1ZpFFJL+cND9D3fvn0q4iP73LktSEPN8+
+   azLLSEL5qqNPajLqxar5lLxVwb62T7nRG5mx7I/mZSFfcoJawl66xr5Mi
+   b3IfHsqyKYDtCJRN/tV14IwEzL9vo0WCBxyDvZKt5shuvn7jaFU8Tx0gC
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="258323052"
+X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
+   d="scan'208";a="258323052"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 02:10:10 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
+   d="scan'208";a="787940080"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga006.fm.intel.com with ESMTP; 30 Mar 2022 02:10:08 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 22U9A6qw001631;
+        Wed, 30 Mar 2022 10:10:06 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Wojciech Drewek <wojciech.drewek@intel.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Marcin Szycik <marcin.szycik@linux.intel.com>,
+        Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 net-next 5/5] ice: switch: convert packet template match code to rodata
+Date:   Wed, 30 Mar 2022 11:07:34 +0200
+Message-Id: <20220330090734.2725099-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <PH0PR11MB5782637EA9771D3ED4E56012FD1E9@PH0PR11MB5782.namprd11.prod.outlook.com>
+References: <20220321105954.843154-1-alexandr.lobakin@intel.com> <20220321105954.843154-6-alexandr.lobakin@intel.com> <PH0PR11MB5782637EA9771D3ED4E56012FD1E9@PH0PR11MB5782.namprd11.prod.outlook.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Initial attempt at Gelarshie device tree.
+From: Wojciech Drewek <wojciech.drewek@intel.com>
+Date: Tue, 29 Mar 2022 15:12:44 +0000
 
-BUG=b:225756600
-TEST=emerge-strongbad chromeos-kernel-5_4
+> Hi Alex,
+> 
+> > -----Original Message-----
+> > From: Lobakin, Alexandr <alexandr.lobakin@intel.com>
+> > Sent: poniedzialek, 21 marca 2022 12:00
+> > To: intel-wired-lan@lists.osuosl.org
+> > Cc: Lobakin, Alexandr <alexandr.lobakin@intel.com>; Fijalkowski, Maciej <maciej.fijalkowski@intel.com>; Michal Swiatkowski
+> > <michal.swiatkowski@linux.intel.com>; Drewek, Wojciech <wojciech.drewek@intel.com>; Marcin Szycik
+> > <marcin.szycik@linux.intel.com>; Szapar-Mudlaw, Martyna <martyna.szapar-mudlaw@intel.com>; David S. Miller
+> > <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>; netdev@vger.kernel.org; linux-
+> > kernel@vger.kernel.org
+> > Subject: [PATCH v4 net-next 5/5] ice: switch: convert packet template match code to rodata
+> >
+> > Trade text size for rodata size and replace tons of nested if-elses
+> > to the const mask match based structs. The almost entire
+> > ice_find_dummy_packet() now becomes just one plain while-increment
+> > loop. The order in ice_dummy_pkt_profiles[] should be same with the
+> > if-elses order previously, as masks become less and less strict
+> > through the array to follow the original code flow.
+> > Apart from removing 80 locs of 4-level if-elses, it brings a solid
+> > text size optimization:
+> >
+> > add/remove: 0/1 grow/shrink: 1/1 up/down: 2/-1058 (-1056)
+> > Function                                     old     new   delta
+> > ice_fill_adv_dummy_packet                    289     291      +2
+> > ice_adv_add_update_vsi_list                  201       -    -201
+> > ice_add_adv_rule                            2950    2093    -857
+> > Total: Before=414512, After=413456, chg -0.25%
+> > add/remove: 53/52 grow/shrink: 0/0 up/down: 4660/-3988 (672)
+> > RO Data                                      old     new   delta
+> > ice_dummy_pkt_profiles                         -     672    +672
+> > Total: Before=37895, After=38567, chg +1.77%
+> >
+> > Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> > Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+> > Tested-by: Marcin Szycik <marcin.szycik@linux.intel.com>
+> > ---
+> >  drivers/net/ethernet/intel/ice/ice_switch.c | 215 ++++++++++----------
+> >  1 file changed, 108 insertions(+), 107 deletions(-)
 
-Signed-off-by: Mars Chen <chenxiangrui@huaqin.corp-partner.google.com>
----
- arch/arm64/boot/dts/qcom/Makefile             |   1 +
- .../dts/qcom/sc7180-trogdor-gelarshie-r0.dts  |  15 +
- .../dts/qcom/sc7180-trogdor-gelarshie.dtsi    | 304 ++++++++++++++++++
- 3 files changed, 320 insertions(+)
- create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-gelarshie-r0.dts
- create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-gelarshie.dtsi
+--- 8< ---
 
-diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
-index f9e6343acd03..cf8f88b065c3 100644
---- a/arch/arm64/boot/dts/qcom/Makefile
-+++ b/arch/arm64/boot/dts/qcom/Makefile
-@@ -57,6 +57,7 @@ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-coachz-r1.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-coachz-r1-lte.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-coachz-r3.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-coachz-r3-lte.dtb
-+dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-gelarshie-r0.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-homestar-r2.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-homestar-r3.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-homestar-r4.dtb
-diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-gelarshie-r0.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-gelarshie-r0.dts
-new file mode 100644
-index 000000000000..027d6d563a5f
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-gelarshie-r0.dts
-@@ -0,0 +1,15 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * Google Gelarshie board device tree source
-+ *
-+ * Copyright 2022 Google LLC.
-+ */
-+
-+/dts-v1/;
-+
-+#include "sc7180-trogdor-gelarshie.dtsi"
-+
-+/ {
-+	model = "Google Gelarshie (rev0+)";
-+	compatible = "google,gelarshie", "qcom,sc7180";
-+};
-diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-gelarshie.dtsi b/arch/arm64/boot/dts/qcom/sc7180-trogdor-gelarshie.dtsi
-new file mode 100644
-index 000000000000..842f6cac6c27
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-gelarshie.dtsi
-@@ -0,0 +1,304 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * Google Gelarshie board device tree source
-+ *
-+ * Copyright 2022 Google LLC.
-+ */
-+
-+#include "sc7180.dtsi"
-+#include "sc7180-trogdor-mipi-camera.dtsi"
-+
-+ap_ec_spi: &spi6 {};
-+ap_h1_spi: &spi0 {};
-+
-+#include "sc7180-trogdor.dtsi"
-+#include "sc7180-trogdor-ti-sn65dsi86.dtsi"
-+
-+/* Deleted nodes from trogdor.dtsi */
-+
-+/delete-node/ &alc5682;
-+/delete-node/ &pp3300_codec;
-+
-+/ {
-+	/* BOARD-SPECIFIC TOP LEVEL NODES */
-+
-+	adau7002: audio-codec-1 {
-+		compatible = "adi,adau7002";
-+		IOVDD-supply = <&pp1800_l15a>;
-+		wakeup-delay-ms = <80>;
-+		#sound-dai-cells = <0>;
-+	};
-+};
-+
-+&backlight {
-+	pwms = <&cros_ec_pwm 0>;
-+};
-+
-+&camcc {
-+	status = "okay";
-+};
-+
-+&cros_ec {
-+	cros_ec_proximity: proximity {
-+		compatible = "google,cros-ec-mkbp-proximity";
-+		label = "proximity-wifi";
-+	};
-+};
-+
-+ap_ts_pen_1v8: &i2c4 {
-+	status = "okay";
-+	clock-frequency = <400000>;
-+
-+	ap_ts: touchscreen@5d {
-+		compatible = "goodix,gt7375p";
-+		reg = <0x5d>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&ts_int_l>, <&ts_reset_l>;
-+
-+		interrupt-parent = <&tlmm>;
-+		interrupts = <9 IRQ_TYPE_LEVEL_LOW>;
-+
-+		reset-gpios = <&tlmm 8 GPIO_ACTIVE_LOW>;
-+
-+		vdd-supply = <&pp3300_ts>;
-+	};
-+};
-+
-+&i2c7 {
-+	status = "disabled";
-+};
-+
-+&i2c9 {
-+	status = "disabled";
-+};
-+
-+&mdp {
-+	chromium-enable-overlays;
-+};
-+
-+&panel {
-+	compatible = "edp-panel";
-+};
-+
-+&pm6150_adc {
-+	skin-temp-thermistor@4e {
-+		reg = <ADC5_AMUX_THM2_100K_PU>;
-+		qcom,ratiometric;
-+		qcom,hw-settle-time = <200>;
-+	};
-+};
-+
-+&pm6150_adc_tm {
-+	status = "okay";
-+
-+	skin-temp-thermistor@1 {
-+		reg = <1>;
-+		io-channels = <&pm6150_adc ADC5_AMUX_THM2_100K_PU>;
-+		qcom,ratiometric;
-+		qcom,hw-settle-time-us = <200>;
-+	};
-+};
-+
-+&pp1800_uf_cam {
-+	status = "okay";
-+};
-+
-+&pp1800_wf_cam {
-+	status = "okay";
-+};
-+
-+&pp2800_uf_cam {
-+	status = "okay";
-+};
-+
-+&pp2800_wf_cam {
-+	status = "okay";
-+};
-+
-+&pp3300_dx_edp {
-+	gpio = <&tlmm 67 GPIO_ACTIVE_HIGH>;
-+};
-+
-+&sdhc_2 {
-+	status = "okay";
-+};
-+
-+&sn65dsi86_out {
-+	data-lanes = <0 1 2 3>;
-+};
-+
-+&sound {
-+	compatible = "google,sc7180-coachz";
-+	model = "sc7180-adau7002-max98357a";
-+	audio-routing = "PDM_DAT", "DMIC";
-+
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&dmic_clk_en>;
-+};
-+
-+&sound_multimedia0_codec {
-+	sound-dai = <&adau7002>;
-+};
-+
-+/* PINCTRL - modifications to sc7180-trogdor.dtsi */
-+
-+&en_pp3300_dx_edp {
-+	pinmux  {
-+		pins = "gpio67";
-+	};
-+
-+	pinconf {
-+		pins = "gpio67";
-+	};
-+};
-+
-+&ts_reset_l {
-+	pinconf {
-+		/*
-+		 * We want reset state by default and it will be up to the
-+		 * driver to disable this when it's ready.
-+		 */
-+		output-low;
-+	};
-+};
-+
-+/* PINCTRL - board-specific pinctrl */
-+
-+&tlmm {
-+	gpio-line-names = "HUB_RST_L",
-+			  "AP_RAM_ID0",
-+			  "AP_SKU_ID2",
-+			  "AP_RAM_ID1",
-+			  "WF_CAM_EN2",
-+			  "AP_RAM_ID2",
-+			  "UF_CAM_EN",
-+			  "WF_CAM_EN",
-+			  "TS_RESET_L",
-+			  "TS_INT_L",
-+			  "",
-+			  "EDP_BRIJ_IRQ",
-+			  "AP_EDP_BKLTEN",
-+			  "UF_CAM_MCLK",
-+			  "WF_CAM_MCLK",
-+			  "EDP_BRIJ_I2C_SDA",
-+			  "EDP_BRIJ_I2C_SCL",
-+			  "UF_CAM_SDA",
-+			  "UF_CAM_SCL",
-+			  "WF_CAM_SDA",
-+			  "WF_CAM_SCL",
-+			  "",
-+			  "",
-+			  "AMP_EN",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "WF_CAM_RST_L",
-+			  "UF_CAM_RST_L",
-+			  "AP_BRD_ID2",
-+			  "BRIJ_SUSPEND",
-+			  "AP_BRD_ID0",
-+			  "AP_H1_SPI_MISO",
-+			  "AP_H1_SPI_MOSI",
-+			  "AP_H1_SPI_CLK",
-+			  "AP_H1_SPI_CS_L",
-+			  "BT_UART_CTS",
-+			  "BT_UART_RTS",
-+			  "BT_UART_TXD",
-+			  "BT_UART_RXD",
-+			  "H1_AP_INT_ODL",
-+			  "",
-+			  "UART_AP_TX_DBG_RX",
-+			  "UART_DBG_TX_AP_RX",
-+			  "",
-+			  "",
-+			  "FORCED_USB_BOOT",
-+			  "AMP_BCLK",
-+			  "AMP_LRCLK",
-+			  "AMP_DIN",
-+			  "",
-+			  "HP_BCLK",
-+			  "HP_LRCLK",
-+			  "HP_DOUT",
-+			  "",
-+			  "",
-+			  "AP_SKU_ID0",
-+			  "AP_EC_SPI_MISO",
-+			  "AP_EC_SPI_MOSI",
-+			  "AP_EC_SPI_CLK",
-+			  "AP_EC_SPI_CS_L",
-+			  "AP_SPI_CLK",
-+			  "AP_SPI_MOSI",
-+			  "AP_SPI_MISO",
-+			  /*
-+			   * AP_FLASH_WP_L is crossystem ABI. Schematics
-+			   * call it BIOS_FLASH_WP_L.
-+			   */
-+			  "AP_FLASH_WP_L",
-+			  "EN_PP3300_DX_EDP",
-+			  "AP_SPI_CS0_L",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "WLAN_SW_CTRL",
-+			  "BOOT_CONFIG_0",
-+			  "REPORT_SWITCH",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "DMIC_CLK_EN",
-+			  "HUB_EN",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "AP_SKU_ID1",
-+			  "AP_RST_REQ",
-+			  "",
-+			  "AP_BRD_ID1",
-+			  "AP_EC_INT_L",
-+			  "BOOT_CONFIG_1",
-+			  "",
-+			  "",
-+			  "BOOT_CONFIG_4",
-+			  "BOOT_CONFIG_2",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "EDP_BRIJ_EN",
-+			  "",
-+			  "",
-+			  "BOOT_CONFIG_3",
-+			  "WCI2_LTE_COEX_TXD",
-+			  "WCI2_LTE_COEX_RXD",
-+			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "FORCED_USB_BOOT_POL",
-+			  "AP_TS_PEN_I2C_SDA",
-+			  "AP_TS_PEN_I2C_SCL",
-+			  "DP_HOT_PLUG_DET",
-+			  "EC_IN_RW_ODL";
-+
-+	dmic_clk_en: dmic_clk_en {
-+		pinmux {
-+			pins = "gpio83";
-+			function = "gpio";
-+		};
-+
-+		pinconf {
-+			pins = "gpio83";
-+			drive-strength = <8>;
-+			bias-pull-up;
-+		};
-+	};
-+};
--- 
-2.31.0
+> > +	ICE_PKT_PROFILE(vlan_udp, ICE_PKT_INNER_UDP | ICE_PKT_VLAN),
+> > +	ICE_PKT_PROFILE(udp, ICE_PKT_INNER_UDP),
+> > +	ICE_PKT_PROFILE(vlan_tcp_ipv6, ICE_PKT_INNER_IPV6 | ICE_PKT_VLAN),
+> > +	ICE_PKT_PROFILE(tcp_ipv6, ICE_PKT_INNER_IPV6),
+> 
+> I think that in both "vlan_tcp_ipv6" and "tcp_ipv6" we should use ICE_PKT_OUTER_IPV6 instead
+> of ICE_PKT_INNER_IPV6. We are not dealing with tunnels in those cases so inner addresses are 
+> incorrect here.
 
+Oh, some copy'n'paste braino indeed.
+I'll send a fixup to Tony in a moment.
+
+> 
+> Thanks,
+> Wojtek
+
+Great catch, thanks for noticing!
+
+> 
+> > +	ICE_PKT_PROFILE(vlan_tcp, ICE_PKT_VLAN),
+> > +	ICE_PKT_PROFILE(tcp, 0),
+> > +};
+
+--- 8< ---
+
+> > --
+> > 2.35.1
+
+Al
