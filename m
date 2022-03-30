@@ -2,428 +2,264 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2B52C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 16:22:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75FD3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 16:23:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348791AbiC3QYj (ORCPT
+        id S1348794AbiC3QZS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 12:24:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39800 "EHLO
+        Wed, 30 Mar 2022 12:25:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348784AbiC3QYd (ORCPT
+        with ESMTP id S1345716AbiC3QZP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 12:24:33 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCC04AF1C1
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 09:22:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=iOXjzzs0gwl1MoD0PWwTDepz5LLd3mU8QQqCmz4m5b4=; b=RXgB1SZDBj+akWCqrl7SRVacsi
-        ypztUqE4+hSnyCDYPXJvfjiW8/5jgz9zjunkJCC+tTM2i0KS0ZT3J8yJ/k/rsCg8PrAUo1gSHJVeN
-        3Z8I1eK5P9qCY7ZR1gjuqyFO/T57zy8ek3yqtsWUKbU1vxslkVdy+U+x5ap9mL+CfqBqF7bxRRvL+
-        /RnjKwx9lYbLuZbKOqHI8f+OM5b8jRTr3gF0Lh6zhijA4YXM/cq7FTQasqCRg6dsF8Y9YsAV5vhEq
-        ZWB/ikUg/6UEKWmFHEBVxO81pwbWbGS3046nrH3v6B7w0A5/Hj1XZrFCxjsCGy+aCe8qDXulkvSpL
-        QjT18RZQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nZb5Y-006FRR-Vf; Wed, 30 Mar 2022 16:22:29 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 850AC98695C; Wed, 30 Mar 2022 18:22:28 +0200 (CEST)
-Date:   Wed, 30 Mar 2022 18:22:28 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Ingo Molnar <mingo@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        vincent.guittot@linaro.org
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        joel@joelfernandes.org, dietmar.eggemann@arm.com,
-        bsegall@google.com, mgorman@suse.de, bristot@redhat.com
-Subject: Re: [PATCH] sched/core: Fix forceidle balancing
-Message-ID: <20220330162228.GH14330@worktop.programming.kicks-ass.net>
-References: <20220330160535.GN8939@worktop.programming.kicks-ass.net>
+        Wed, 30 Mar 2022 12:25:15 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E659BAB86
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 09:23:30 -0700 (PDT)
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22UFAuEn032352;
+        Wed, 30 Mar 2022 16:23:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2021-07-09;
+ bh=xNTTBnD897GQvAW0tqYeBWA0jOQNqqjuwaYhry+67MQ=;
+ b=MMKQ+xDanCdGWPNNTh9A6Cc580ZTN50oONLwM0jws/UsiejC553aBjZUU2QPX5Qark8m
+ 757SiSolMY614Zp+xoniq/MHFqYPWACWhdMCldJxkJ0KGV3fCVLAbHzeZWOAPlG5G+6E
+ uZdIyBDdoTIUSu1F/R4NSwcScOrySeE8jWnbKVTH90+QEYD/pIfXwsVr0riMAhWueqQA
+ rVn9kdWs0tCowrjlknPcmkCMBov/EmZni6E7o1xOhVlMFGz1g9K5YFkU5hbct+YHuD1o
+ X1A3T/WkmOlOOJcqg83gV6zLoNpiB+VbUpUHTLCSSYTeyqLt8prxTrPCyB7lQu/PRQB1 nA== 
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3f1uctt6jw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 30 Mar 2022 16:23:10 +0000
+Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 22UGG6JI031523;
+        Wed, 30 Mar 2022 16:23:10 GMT
+Received: from nam04-dm6-obe.outbound.protection.outlook.com (mail-dm6nam08lp2040.outbound.protection.outlook.com [104.47.73.40])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3f1tg708aw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 30 Mar 2022 16:23:09 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gYsLbn++gVHAIM98O2LPGkqzxUJQJ8yIyuGeEQJ50m0TnQ95DXow2w+RMeSoIXtyq8XktNX7BDuxV3q56tJWtvRGaF6CkMCBiIG54yB2X2732sRg8pK64WWz3uUoCm1NMagrh1ASlzYa4cbxBmXG79ZAXayxME6SrEoKCYxE3EEFu0jaRvQHKRqbZYn4JMyOPmPzgFx8QnnrI3MGDYyP2FLSD87FgrxhCaqbGSaga8gaVzPn3Mol7tr8Cy6K+tzm5PKODTjjTDVWPvB/geLN6jQRPMq+aaAw5jb5wSQGgN/Zt4QhE+mpnC6poLfRquK9VzlsORBEFpMd4hMWSIAfYg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xNTTBnD897GQvAW0tqYeBWA0jOQNqqjuwaYhry+67MQ=;
+ b=lGR9xCR3gsWl4FrHqpoSMCjg0LNJ1iM+ZGzeSe8vOwG9ecrXbD1mscc7wlTxHYMdd4KZ7otYc9LntGobyTbb25QBox4OZ6eBEEg45Q1R7BYl8RbOwF6R5DWNpbCRmZWqh633X0PYq4CmthNSQakGFluBeNGbGpo1zjceEQanIwGde681uVyNh0uR3gSwNnSQgVMoRiHug/kVi6sC7NxHSb+sH373H0Dik7gME+QVolaZ4zj13hxcdQFqMlf/EcKVSDfZCQiGXtk3J130DIie40FQJ6F1GXv7/pYIt7BKgZc3cBUf0EPMLpD1X+BjJyrp+yoegPqCTogKxAMgKkD6zQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xNTTBnD897GQvAW0tqYeBWA0jOQNqqjuwaYhry+67MQ=;
+ b=odO2+Y1I2ECSeQulBOTkI6yqk+m43LhQZ/IgOQw/Fh0x23nvLPPsSLyCMhQB/4+Y08YaCUs7JWJck7ox+nT8RFuERf89O6PkaXHH2BjbD+TJIm0VdqeuC8g/e3Ehme7H9sxj0u+WHOWYn9TCcTuhoFUbS+L5HyJBCF59fct2+JQ=
+Received: from BY5PR10MB4196.namprd10.prod.outlook.com (2603:10b6:a03:20d::23)
+ by MN2PR10MB4288.namprd10.prod.outlook.com (2603:10b6:208:1dc::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.16; Wed, 30 Mar
+ 2022 16:23:07 +0000
+Received: from BY5PR10MB4196.namprd10.prod.outlook.com
+ ([fe80::245f:e3b1:35fd:43c5]) by BY5PR10MB4196.namprd10.prod.outlook.com
+ ([fe80::245f:e3b1:35fd:43c5%9]) with mapi id 15.20.5123.018; Wed, 30 Mar 2022
+ 16:23:07 +0000
+Message-ID: <661307c1-71a8-195a-0a78-36bc3b773b8e@oracle.com>
+Date:   Wed, 30 Mar 2022 09:23:06 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH] hugetlbfs: zero partial pages during fallocate hole
+ punch
+Content-Language: en-US
+To:     David Hildenbrand <david@redhat.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Cc:     Naoya Horiguchi <naoya.horiguchi@linux.dev>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+References: <20220324170600.16491-1-mike.kravetz@oracle.com>
+ <070407bc-9a35-db27-43ea-ed8baaa219c6@redhat.com>
+From:   Mike Kravetz <mike.kravetz@oracle.com>
+In-Reply-To: <070407bc-9a35-db27-43ea-ed8baaa219c6@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MW4PR04CA0055.namprd04.prod.outlook.com
+ (2603:10b6:303:6a::30) To BY5PR10MB4196.namprd10.prod.outlook.com
+ (2603:10b6:a03:20d::23)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220330160535.GN8939@worktop.programming.kicks-ass.net>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 743c99db-a345-4039-c2af-08da1269931f
+X-MS-TrafficTypeDiagnostic: MN2PR10MB4288:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR10MB4288C47DD28C051BEEA71AD7E21F9@MN2PR10MB4288.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: zKURafPNMnNTlb91MvS3zvIt5/oQAnzuxbXc8RIx/Iecb+ZDwTdqscF5bATcGwGBS5BIvhDesXo60/EBJK5zUETo9OupSkYUFxiZa0BimEpnthBcjQYF7F1+Y3ibRbyY97750nOq1yoloLWNKndfy1NnEc5YwoAukXUGZu/Z50+uXgvHR2ddYIEIEhMFpjjgkZ3z1AbIDYj7LheaStAuBdKQqSEXynv1UDwSwGTbbSwCB+UxTJwZSNz1WUuvzURgYBoISz2xA/fR3cUiQbThvv0M487uBokt0OHKaUIhg//qoxXEnYOv6FDNde3WQHZdyRR14RxvsdZEIuMO6SPAcrlh+3/2ykSB0kqT15vQeXdJhFbhMcj4+3NBnY9H4Ib01UWuQk20YzGT9Low0QSHtKl39Pc+Q7i2dnJPunnkHNIImdTcGMxaGDD6B1YIeDRTBIkmeG4DgC8XNh5+WLg00OcSpqIOQ1tbRltdd3FGMJDtF9fJUEqA9IiJ6quxRupKi1xFezTw+o7I6TqgMZKR6qT3fIzjXM4xDEuFiM9D/sdX8vYp+VZ4k1CuFCjgu+6ZuDnKBJ7w3tqsFLiB8xNJ7rAumncdRWuP7MdFMzcO5HAVQe/KHWoN9zcCIOQgdMEpZlrOitFeurL0kYWKprKRWQsC4YSKulbRFGeehQhu1zSRN1mBnv4xu+PrwKPx/k/RGwHyqKaCVqYK43AS3/epx2zMm3K22xBu8s7bhkK0HiHwe1iCYtJjAhDylP8yFdjYeuDFRKmG9K5NNhjPf44PwyPD1XU8k6cyvHAUyD6rnXtNACooIJ+S++ItTQZnTHv5M845YRUqqYsk4BKMrqExmxcm5P1f2DTXsvC+rjn3wpd71IQ4R+Z489NUVfWGEQJR
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR10MB4196.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(66556008)(66476007)(38100700002)(86362001)(66946007)(36756003)(6506007)(316002)(6512007)(31696002)(38350700002)(8676002)(966005)(83380400001)(53546011)(2906002)(52116002)(2616005)(5660300002)(31686004)(26005)(186003)(508600001)(6486002)(54906003)(44832011)(4326008)(8936002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?S0d4UVJ0ZGIvWjRBM2NIQzFNUTVsWmdQamNMQzg4eVV6TXZ0Um9XQU95Y1lX?=
+ =?utf-8?B?SlFqdm10cmVuQll0eWw0UVBJditpV25lUERtQkowcnN2R1ZIMEF5YU5LNWdF?=
+ =?utf-8?B?eVI3ckwrN1JlTk55dWxtYXFCTnJJTE5VV2JINmJLN2xXdmNPL083cVpHWVlY?=
+ =?utf-8?B?dFQvaFBlRzRUalJhUlE2UVk3NE0xQk1GcFl2c1EvUytPZ2FMaFQwSm1JQzl1?=
+ =?utf-8?B?SFplYlB4Z3FFUzVlOXcvdXNNdEpIWk9pb1VYTEsyZUNkam5PWDFTUXhFRGhX?=
+ =?utf-8?B?RUdYNlpnbng4Q2NBZUE4U1J0MmYzTEN6RW1DLzVEU3cvVERLZnpONFphQStz?=
+ =?utf-8?B?aGVEeStzTWw5Z2dOZTk3WTVIQTgxcm9BZXM1M1ZXNmtIVmdNcng5bzN1Rzc4?=
+ =?utf-8?B?SWdndEdrU2ZCSldIbWxoUiszekhqVHRMZzBCMDFudlgyUThTMXBRYk52ajM3?=
+ =?utf-8?B?SlQvSzgxMXlHQVB1MURhb1JLUXg2aVJWNXlHSnZoSnF1QkZIQ0xyMGN6YS9X?=
+ =?utf-8?B?RDUzbUxqakZRRThISlRJZG4wMC95V3I0NEpuUFJ4SE5BSDVwckUwcmZLSVJZ?=
+ =?utf-8?B?U0M1OTJhL2FzQjBSYVdjeFVDaTF1MFVxNjVQc2c0WDZCL3g2dzA2UEw1ZFA2?=
+ =?utf-8?B?amhMWDJzTnNPQXZBVFgweDRLUFZZR2VnbTVLUERraHdNSkJpanJqYlY4aFVz?=
+ =?utf-8?B?dUV2SXRZYWJjelJONWNReld5QWZabVpzRFpFT0Y5TzladnZ5NGZsNWViUnpz?=
+ =?utf-8?B?d2RqUERGN0ltQ1prK1h4TFg5L1dOMlphUHlGU0RLT2ZTSFQ5WVRyQUp1WnJy?=
+ =?utf-8?B?NFdNNVpjMS8vL214dFEra1FZZFlhODBVL3o3eVdMOVFENVFTaHRabXNNRzVU?=
+ =?utf-8?B?K00wbTNwRThZZDNoTnpNcm5IRWF3OVVzM3NmQi9hWklFbk9GeVdPQUp0eXdk?=
+ =?utf-8?B?d1p0d010ZEthVXJvTHNzSk11cGY4NVl2N3AxNWtVM0o4OFNUcDRzUk8zVjdt?=
+ =?utf-8?B?ODExK0dZWUMwRHNuZXd3MmRjWHA4c1MveW9IelVMcU1Tck5sR09LbnVtb0ls?=
+ =?utf-8?B?MTJUQ3g0bG9LVXZISmdhWVBJOE1DUVBBRDRJcmxNeUpZOGRFTUloRVNIK0RJ?=
+ =?utf-8?B?b3RqaWVpM1ZJaUxsVVgrcUJhSGtvcXErWGR2R3hYblpHaUFGNURRUncvMmlH?=
+ =?utf-8?B?VHZ5UHFjUnlndVdVcEZ0QU1MaHV4YjdvUUNJUXYraHViT3VCVXg4Zk0xMWtw?=
+ =?utf-8?B?b0dBZTdyZXBWdlpUVEZQMFM0K0NnMjU2RHhjWjhWSFNjUVJiTG4yVURTbWJF?=
+ =?utf-8?B?N3IvQjlQK2tVdTcwM096KzBFQkhzMU9nRWpYQkRvbFRvWkFjSFJ5M2tQcVlC?=
+ =?utf-8?B?THJoWFl5by9HQUwyZk5QRWd2RjRyaTFDZm9WSndYZnJkSWFWYlhwYlZVTUth?=
+ =?utf-8?B?K0hvdjYvcWV1S0N0c0cyejlGeGZmWVBFeVVJQlZ6VkVRVnptTFljSndYT2Q5?=
+ =?utf-8?B?bzBnNFUyR1VuMSszdDZLemRTbUkzRkNSLzJFL0UrTjErSENNaUxlTUQxTWwx?=
+ =?utf-8?B?dlM5cEVSQXFBc3AxZFFWOXJpeW1uYkZveXhJR0tDNHFLZTcxd3dNM1AyVkIv?=
+ =?utf-8?B?NStJeThSY2xkLzYySC93STlna3Y5ZzlINUdwdHpSZGFRSFRvVUl4WnpUNk1o?=
+ =?utf-8?B?Z0VHcDZrbU5tcTZMckxkSU92YkM2TmlTL3hHUEpManhJWHVwQVo0OXAyOUlu?=
+ =?utf-8?B?TWgrWURaZjY4K0FXc2hJQWZ5MWtSYmtzWU45dUx5R1d2SnNZM0RJditJY1hv?=
+ =?utf-8?B?ZHF4Zi9DRzA5OVNUOFpqQTMrdHdKM29DaHBueXFDY0dvMUF3cVdCTC9SeDFl?=
+ =?utf-8?B?Z2NLUjdwbkVFNkg1WG91ZU5GUm5vV0RoaEYxVXp6UjBKSXB1UGlROE5ISnpu?=
+ =?utf-8?B?SThnbTFXQUxNSGtYcGVzV0xTZWhHVW5MZUFrempwVVJlek9GdnlMUGRQU1pU?=
+ =?utf-8?B?RndsQmkreFNMRlh5OUZQMkZmUDFldVhLczBaM0F3S3Z0TTZQRmpLQUlnVjVo?=
+ =?utf-8?B?dnVEb0NKK2NKdUlUdW4rd0UzbTJsd0lKc3JFQTNGNXVXamZEdVhIUlVBZjA4?=
+ =?utf-8?B?ZkdUSmVwZWpOUVN2Q1JXMFNUcit5YVFFZHl2ZGRGOTRlVXF3UG1WVDk4Ti9Q?=
+ =?utf-8?B?ZVAwSXlFU1dlei9UWms0WEpCWXN6RzY3YWo5NTc0RGxRaFZhZTFXSXJ5dGR2?=
+ =?utf-8?B?WC8wdUpFTkdxNGVkYnhzdHhGNmMzWnl2c01qY0NoOXBjSlAvMnFWN0F1OUtv?=
+ =?utf-8?B?KzhwOGNrV1BSWExhNmtUZjFhdysvQUlqQklxMUllT28yblRhYkkvR0Rwdllq?=
+ =?utf-8?Q?T37aS+RVeOUO7bHg=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 743c99db-a345-4039-c2af-08da1269931f
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR10MB4196.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2022 16:23:07.7419
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8zgkwTB8hls75A89BTs/obqLQop9jDj/zSANW4X3E4QBXEJM6P6v3Yn9yKkbWqs5r+IJT11YbVbOrtarkWm/UQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR10MB4288
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.425,18.0.850
+ definitions=2022-03-30_06:2022-03-29,2022-03-30 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 adultscore=0 mlxscore=0
+ phishscore=0 spamscore=0 suspectscore=0 bulkscore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2203300080
+X-Proofpoint-ORIG-GUID: ZEUlkUvHk327CTGt2b21X-5n0fYc_AsZ
+X-Proofpoint-GUID: ZEUlkUvHk327CTGt2b21X-5n0fYc_AsZ
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 06:05:35PM +0200, Peter Zijlstra wrote:
+On 3/30/22 00:58, David Hildenbrand wrote:
+> On 24.03.22 18:06, Mike Kravetz wrote:
+>> hugetlbfs fallocate support was originally added with commit 70c3547e36f5
+>> ("hugetlbfs: add hugetlbfs_fallocate()").  Initial support only operated
+>> on whole hugetlb pages.  This makes sense for populating files as other
+>> interfaces such as mmap and truncate require hugetlb page size alignment.
+>> Only operating on whole hugetlb pages for the hole punch case was a
+>> simplification and there was no compelling use case to zero partial pages.
+>>
+>> In a recent discussion[1] it was assumed that hugetlbfs hole punch would
+>> zero partial hugetlb pages as that is in line with the man page
+>> description saying 'partial filesystem  blocks  are  zeroed'.  However,
+>> the hugetlbfs hole punch code actually does this:
+>>
+>>         hole_start = round_up(offset, hpage_size);
+>>         hole_end = round_down(offset + len, hpage_size);
+>>
+>> Modify code to zero partial hugetlb pages in hole punch range.  It is
+>> possible that application code could note a change in behavior.  However,
+>> that would imply the code is passing in an unaligned range and expecting
+>> only whole pages be removed.  This is unlikely as the fallocate
+>> documentation states the opposite.
+> 
+> Yeah, some weird code could behave differently; an app would have to
+> pass in an unaligned range and expect that partially covered hugetlbfs
+> pages remain unmodified.  It's hard to think of reasonable apps that do
+> that, but of course, some buggy code might then be *actually* broken.
+> Like some messed-up align-up implementation that accidentally adds +1
+> too much.
+> 
+>>
+>> The current hugetlbfs fallocate hole punch behavior is tested with the
+>> libhugetlbfs test fallocate_align[2].  This test will be updated to
+>> validate partial page zeroing.
+> 
+> This is in line with other fallocate() behavior and documented
+> semantics, so I think that's the right thing to do.
+> 
+> I think it's worth to give it a try, it's hard to imagine that this
+> actually breaks something.
+> 
+> 
+> "After a successful call, subsequent reads from  this  range will return
+> zeros." will work as expected with your change.
+> 
+>>
+>> [1] https://lore.kernel.org/linux-mm/20571829-9d3d-0b48-817c-b6b15565f651@redhat.com/
+>> [2] https://github.com/libhugetlbfs/libhugetlbfs/blob/master/tests/fallocate_align.c
+>>
+>> Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
+>> ---
+>>  fs/hugetlbfs/inode.c      | 67 ++++++++++++++++++++++++++++++---------
+>>  include/asm-generic/tlb.h |  2 ++
+>>  2 files changed, 54 insertions(+), 15 deletions(-)
+>>
+>> diff --git a/fs/hugetlbfs/inode.c b/fs/hugetlbfs/inode.c
+>> index a7c6c7498be0..f62ec4f71132 100644
+>> --- a/fs/hugetlbfs/inode.c
+>> +++ b/fs/hugetlbfs/inode.c
+>> @@ -587,41 +587,78 @@ static void hugetlb_vmtruncate(struct inode *inode, loff_t offset)
+>>  	remove_inode_hugepages(inode, offset, LLONG_MAX);
+>>  }
+>>  
+>> +static void hugetlbfs_zero_partial_page(struct hstate *h,
+>> +					struct address_space *mapping,
+>> +					unsigned long start,
+>> +					unsigned long end)
+>> +{
+>> +	struct page *page;
+>> +	pgoff_t idx = start >> huge_page_shift(h);
+> 
+> I'm a fan of reverse Christmas trees :)
+> 
 
-> rt_mutex_setprio() also uses set_next_task() in the 'change' pattern:
-> 
-> 	queued = task_on_rq_queued(p); /* p->on_rq == TASK_ON_RQ_QUEUED */
-> 	running = task_current(rq, p); /* rq->curr == p */
-> 
-> 	if (queued)
-> 		dequeue_task(...);
-> 	if (running)
-> 		put_prev_task(...);
-> 
-> 	/* change task properties */
-> 
-> 	if (queued)
-> 		enqueue_task(...);
-> 	if (running)
-> 		set_next_task(...);
-> 
+Ok, no preference by me so I will change.
 
-Also, while procrastinating while writing this changelog, I did the
-below... is that worth it?
+...
 
----
- kernel/sched/core.c | 249 ++++++++++++++++++++++++----------------------------
- 1 file changed, 115 insertions(+), 134 deletions(-)
+>> diff --git a/include/asm-generic/tlb.h b/include/asm-generic/tlb.h
+>> index 2c68a545ffa7..4622ee45f739 100644
+>> --- a/include/asm-generic/tlb.h
+>> +++ b/include/asm-generic/tlb.h
+>> @@ -562,6 +562,7 @@ static inline void tlb_flush_p4d_range(struct mmu_gather *tlb,
+>>  		__tlb_remove_tlb_entry(tlb, ptep, address);	\
+>>  	} while (0)
+>>  
+>> +#ifndef tlb_remove_huge_tlb_entry
+>>  #define tlb_remove_huge_tlb_entry(h, tlb, ptep, address)	\
+>>  	do {							\
+>>  		unsigned long _sz = huge_page_size(h);		\
+>> @@ -571,6 +572,7 @@ static inline void tlb_flush_p4d_range(struct mmu_gather *tlb,
+>>  			tlb_flush_pud_range(tlb, address, _sz);	\
+>>  		__tlb_remove_tlb_entry(tlb, ptep, address);	\
+>>  	} while (0)
+>> +#endif
+> 
+> Was this change supposed to be included in this patch?
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index d575b4914925..6455e0bbbeb9 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -2549,11 +2549,53 @@ void set_cpus_allowed_common(struct task_struct *p, const struct cpumask *new_ma
- 	p->nr_cpus_allowed = cpumask_weight(new_mask);
- }
- 
-+struct change_guard {
-+	struct task_struct *p;
-+	struct rq *rq;
-+	unsigned int flags;
-+	bool queued, running, done;
-+};
-+
-+static inline struct change_guard
-+change_guard_init(struct rq *rq, struct task_struct *p, unsigned int flags)
-+{
-+	struct change_guard cg = {
-+		.rq = rq,
-+		.p = p,
-+		.flags = flags,
-+		.queued = task_on_rq_queued(p),
-+		.running = task_current(rq, p),
-+	};
-+
-+	if (cg.queued)
-+		dequeue_task(rq, p, flags);
-+	if (cg.running)
-+		put_prev_task(rq, p);
-+
-+	return cg;
-+}
-+
-+static inline void change_guard_fini(struct change_guard *cg)
-+{
-+	if (cg->queued)
-+		enqueue_task(cg->rq, cg->p, cg->flags | ENQUEUE_NOCLOCK);
-+	if (cg->running)
-+		set_next_task(cg->rq, cg->p);
-+}
-+
-+#define __cleanup(_fini)		__attribute__((__cleanup__(_fini)))
-+
-+#define CHANGE_GUARD(name, _rq, _p, _flags)			\
-+	struct change_guard __cleanup(change_guard_fini) name =	\
-+		change_guard_init(_rq, _p, _flags)
-+
-+#define FOR_CHANGE_GUARD(name, _rq, _p, _flags)	\
-+	for (CHANGE_GUARD(name, _rq, _p, _flags); !name.done; name.done = true)
-+
- static void
- __do_set_cpus_allowed(struct task_struct *p, const struct cpumask *new_mask, u32 flags)
- {
- 	struct rq *rq = task_rq(p);
--	bool queued, running;
- 
- 	/*
- 	 * This here violates the locking rules for affinity, since we're only
-@@ -2572,26 +2614,16 @@ __do_set_cpus_allowed(struct task_struct *p, const struct cpumask *new_mask, u32
- 	else
- 		lockdep_assert_held(&p->pi_lock);
- 
--	queued = task_on_rq_queued(p);
--	running = task_current(rq, p);
--
--	if (queued) {
--		/*
--		 * Because __kthread_bind() calls this on blocked tasks without
--		 * holding rq->lock.
--		 */
--		lockdep_assert_rq_held(rq);
--		dequeue_task(rq, p, DEQUEUE_SAVE | DEQUEUE_NOCLOCK);
-+	FOR_CHANGE_GUARD(cg, rq, p, DEQUEUE_SAVE | DEQUEUE_NOCLOCK) {
-+		if (cg.queued) {
-+			/*
-+			 * Because __kthread_bind() calls this on blocked tasks without
-+			 * holding rq->lock.
-+			 */
-+			lockdep_assert_rq_held(rq);
-+		}
-+		p->sched_class->set_cpus_allowed(p, new_mask, flags);
- 	}
--	if (running)
--		put_prev_task(rq, p);
--
--	p->sched_class->set_cpus_allowed(p, new_mask, flags);
--
--	if (queued)
--		enqueue_task(rq, p, ENQUEUE_RESTORE | ENQUEUE_NOCLOCK);
--	if (running)
--		set_next_task(rq, p);
- }
- 
- void do_set_cpus_allowed(struct task_struct *p, const struct cpumask *new_mask)
-@@ -6745,7 +6777,7 @@ static inline int rt_effective_prio(struct task_struct *p, int prio)
-  */
- void rt_mutex_setprio(struct task_struct *p, struct task_struct *pi_task)
- {
--	int prio, oldprio, queued, running, queue_flag =
-+	int prio, oldprio, queue_flag =
- 		DEQUEUE_SAVE | DEQUEUE_MOVE | DEQUEUE_NOCLOCK;
- 	const struct sched_class *prev_class;
- 	struct rq_flags rf;
-@@ -6805,49 +6837,39 @@ void rt_mutex_setprio(struct task_struct *p, struct task_struct *pi_task)
- 		queue_flag &= ~DEQUEUE_MOVE;
- 
- 	prev_class = p->sched_class;
--	queued = task_on_rq_queued(p);
--	running = task_current(rq, p);
--	if (queued)
--		dequeue_task(rq, p, queue_flag);
--	if (running)
--		put_prev_task(rq, p);
--
--	/*
--	 * Boosting condition are:
--	 * 1. -rt task is running and holds mutex A
--	 *      --> -dl task blocks on mutex A
--	 *
--	 * 2. -dl task is running and holds mutex A
--	 *      --> -dl task blocks on mutex A and could preempt the
--	 *          running task
--	 */
--	if (dl_prio(prio)) {
--		if (!dl_prio(p->normal_prio) ||
--		    (pi_task && dl_prio(pi_task->prio) &&
--		     dl_entity_preempt(&pi_task->dl, &p->dl))) {
--			p->dl.pi_se = pi_task->dl.pi_se;
--			queue_flag |= ENQUEUE_REPLENISH;
-+	FOR_CHANGE_GUARD(cg, rq, p, queue_flag) {
-+		/*
-+		 * Boosting condition are:
-+		 * 1. -rt task is running and holds mutex A
-+		 *      --> -dl task blocks on mutex A
-+		 *
-+		 * 2. -dl task is running and holds mutex A
-+		 *      --> -dl task blocks on mutex A and could preempt the
-+		 *          running task
-+		 */
-+		if (dl_prio(prio)) {
-+			if (!dl_prio(p->normal_prio) ||
-+			    (pi_task && dl_prio(pi_task->prio) &&
-+			     dl_entity_preempt(&pi_task->dl, &p->dl))) {
-+				p->dl.pi_se = pi_task->dl.pi_se;
-+				queue_flag |= ENQUEUE_REPLENISH;
-+			} else {
-+				p->dl.pi_se = &p->dl;
-+			}
-+		} else if (rt_prio(prio)) {
-+			if (dl_prio(oldprio))
-+				p->dl.pi_se = &p->dl;
-+			if (oldprio < prio)
-+				queue_flag |= ENQUEUE_HEAD;
- 		} else {
--			p->dl.pi_se = &p->dl;
-+			if (dl_prio(oldprio))
-+				p->dl.pi_se = &p->dl;
-+			if (rt_prio(oldprio))
-+				p->rt.timeout = 0;
- 		}
--	} else if (rt_prio(prio)) {
--		if (dl_prio(oldprio))
--			p->dl.pi_se = &p->dl;
--		if (oldprio < prio)
--			queue_flag |= ENQUEUE_HEAD;
--	} else {
--		if (dl_prio(oldprio))
--			p->dl.pi_se = &p->dl;
--		if (rt_prio(oldprio))
--			p->rt.timeout = 0;
--	}
- 
--	__setscheduler_prio(p, prio);
--
--	if (queued)
--		enqueue_task(rq, p, queue_flag);
--	if (running)
--		set_next_task(rq, p);
-+		__setscheduler_prio(p, prio);
-+	}
- 
- 	check_class_changed(rq, p, prev_class, oldprio);
- out_unlock:
-@@ -6869,10 +6891,9 @@ static inline int rt_effective_prio(struct task_struct *p, int prio)
- 
- void set_user_nice(struct task_struct *p, long nice)
- {
--	bool queued, running;
--	int old_prio;
- 	struct rq_flags rf;
- 	struct rq *rq;
-+	int old_prio;
- 
- 	if (task_nice(p) == nice || nice < MIN_NICE || nice > MAX_NICE)
- 		return;
-@@ -6893,22 +6914,12 @@ void set_user_nice(struct task_struct *p, long nice)
- 		p->static_prio = NICE_TO_PRIO(nice);
- 		goto out_unlock;
- 	}
--	queued = task_on_rq_queued(p);
--	running = task_current(rq, p);
--	if (queued)
--		dequeue_task(rq, p, DEQUEUE_SAVE | DEQUEUE_NOCLOCK);
--	if (running)
--		put_prev_task(rq, p);
--
--	p->static_prio = NICE_TO_PRIO(nice);
--	set_load_weight(p, true);
--	old_prio = p->prio;
--	p->prio = effective_prio(p);
--
--	if (queued)
--		enqueue_task(rq, p, ENQUEUE_RESTORE | ENQUEUE_NOCLOCK);
--	if (running)
--		set_next_task(rq, p);
-+	FOR_CHANGE_GUARD(cg, rq, p, DEQUEUE_SAVE | DEQUEUE_NOCLOCK) {
-+		p->static_prio = NICE_TO_PRIO(nice);
-+		set_load_weight(p, true);
-+		old_prio = p->prio;
-+		p->prio = effective_prio(p);
-+	}
- 
- 	/*
- 	 * If the task increased its priority or is running and
-@@ -7216,8 +7227,8 @@ static int __sched_setscheduler(struct task_struct *p,
- 				bool user, bool pi)
- {
- 	int oldpolicy = -1, policy = attr->sched_policy;
--	int retval, oldprio, newprio, queued, running;
- 	const struct sched_class *prev_class;
-+	int retval, oldprio, newprio;
- 	struct callback_head *head;
- 	struct rq_flags rf;
- 	int reset_on_fork;
-@@ -7428,33 +7439,24 @@ static int __sched_setscheduler(struct task_struct *p,
- 			queue_flags &= ~DEQUEUE_MOVE;
- 	}
- 
--	queued = task_on_rq_queued(p);
--	running = task_current(rq, p);
--	if (queued)
--		dequeue_task(rq, p, queue_flags);
--	if (running)
--		put_prev_task(rq, p);
--
- 	prev_class = p->sched_class;
- 
--	if (!(attr->sched_flags & SCHED_FLAG_KEEP_PARAMS)) {
--		__setscheduler_params(p, attr);
--		__setscheduler_prio(p, newprio);
--	}
--	__setscheduler_uclamp(p, attr);
--
--	if (queued) {
--		/*
--		 * We enqueue to tail when the priority of a task is
--		 * increased (user space view).
--		 */
--		if (oldprio < p->prio)
--			queue_flags |= ENQUEUE_HEAD;
-+	FOR_CHANGE_GUARD(cg, rq, p, queue_flags) {
-+		if (!(attr->sched_flags & SCHED_FLAG_KEEP_PARAMS)) {
-+			__setscheduler_params(p, attr);
-+			__setscheduler_prio(p, newprio);
-+		}
-+		__setscheduler_uclamp(p, attr);
- 
--		enqueue_task(rq, p, queue_flags);
-+		if (cg.queued) {
-+			/*
-+			 * We enqueue to tail when the priority of a task is
-+			 * increased (user space view).
-+			 */
-+			if (oldprio < p->prio)
-+				cg.flags |= ENQUEUE_HEAD;
-+		}
- 	}
--	if (running)
--		set_next_task(rq, p);
- 
- 	check_class_changed(rq, p, prev_class, oldprio);
- 
-@@ -8915,25 +8917,13 @@ int migrate_task_to(struct task_struct *p, int target_cpu)
-  */
- void sched_setnuma(struct task_struct *p, int nid)
- {
--	bool queued, running;
- 	struct rq_flags rf;
- 	struct rq *rq;
- 
- 	rq = task_rq_lock(p, &rf);
--	queued = task_on_rq_queued(p);
--	running = task_current(rq, p);
--
--	if (queued)
--		dequeue_task(rq, p, DEQUEUE_SAVE);
--	if (running)
--		put_prev_task(rq, p);
--
--	p->numa_preferred_nid = nid;
--
--	if (queued)
--		enqueue_task(rq, p, ENQUEUE_RESTORE | ENQUEUE_NOCLOCK);
--	if (running)
--		set_next_task(rq, p);
-+	FOR_CHANGE_GUARD(cg, rq, p, DEQUEUE_SAVE) {
-+		p->numa_preferred_nid = nid;
-+	}
- 	task_rq_unlock(rq, p, &rf);
- }
- #endif /* CONFIG_NUMA_BALANCING */
-@@ -10035,28 +10025,19 @@ static void sched_change_group(struct task_struct *tsk, int type)
-  */
- void sched_move_task(struct task_struct *tsk)
- {
--	int queued, running, queue_flags =
--		DEQUEUE_SAVE | DEQUEUE_MOVE | DEQUEUE_NOCLOCK;
-+	bool resched = false;
- 	struct rq_flags rf;
- 	struct rq *rq;
- 
- 	rq = task_rq_lock(tsk, &rf);
--	update_rq_clock(rq);
--
--	running = task_current(rq, tsk);
--	queued = task_on_rq_queued(tsk);
- 
--	if (queued)
--		dequeue_task(rq, tsk, queue_flags);
--	if (running)
--		put_prev_task(rq, tsk);
--
--	sched_change_group(tsk, TASK_MOVE_GROUP);
-+	FOR_CHANGE_GUARD(cg, rq, tsk, DEQUEUE_SAVE | DEQUEUE_MOVE) {
-+		sched_change_group(tsk, TASK_MOVE_GROUP);
-+		if (cg.running)
-+			resched = true;
-+	}
- 
--	if (queued)
--		enqueue_task(rq, tsk, queue_flags);
--	if (running) {
--		set_next_task(rq, tsk);
-+	if (resched) {
- 		/*
- 		 * After changing group, the running task may have joined a
- 		 * throttled one but it's still the running task. Trigger a
+No, this should not have been included.  Sorry.
+
+Thanks for taking a look.
+-- 
+Mike Kravetz
