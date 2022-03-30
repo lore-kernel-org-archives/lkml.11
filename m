@@ -2,92 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B877C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 14:30:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3C36C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 14:32:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346867AbiC3OcJ (ORCPT
+        id S1346886AbiC3OeL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 10:32:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60262 "EHLO
+        Wed, 30 Mar 2022 10:34:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230040AbiC3OcA (ORCPT
+        with ESMTP id S1344905AbiC3OeI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 10:32:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BA5640936;
-        Wed, 30 Mar 2022 07:30:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B9126B81D4D;
-        Wed, 30 Mar 2022 14:30:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21BA9C340EE;
-        Wed, 30 Mar 2022 14:30:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648650612;
-        bh=rEqGedn9d4MjCXFpyjzFD9lEwuye6EEdw12KNXE3bio=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=masp/RftFOVahxK1fGCaeRXO2bjemme7tp1a/r1KeID3UdYKqFCwVA7cQJnXtpue6
-         4x7flx2PrGHcZWA+SxzAXYLvmpmQsm71maTi2GA4Kkr1gArpFmNnxbJA9o0Tf/rM6x
-         pdj4AgUu9uFpkOsR9VNN87qppghZBKjsAATGOdzoafUW5jniTiknBMWZTtryyJVCsY
-         cOaAAkreza92+ayWxADBCzT/JtTWoMmyPZo9I5PxLBEcV8HuOAC9dZpJ5uhVBxhGcU
-         7VxDb33q+6Y+F7O/WvxN2so3YpYLyoTFEZje74vIPeHk/ytimoY/JsnxRpPn6URTNq
-         xWUaXanS4MqRg==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 952C940407; Wed, 30 Mar 2022 11:30:09 -0300 (-03)
-Date:   Wed, 30 Mar 2022 11:30:09 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Matthieu Baerts <matthieu.baerts@tessares.net>
-Cc:     John Garry <john.garry@huawei.com>, peterz@infradead.org,
-        mingo@redhat.com, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
-        namhyung@kernel.org, irogers@google.com,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] perf tools: Stop depending on .git files for building
- PERF-VERSION-FILE
-Message-ID: <YkRpcW4PkVH59axm@kernel.org>
-References: <1648635774-14581-1-git-send-email-john.garry@huawei.com>
- <3a72702f-6cf9-2b6e-0f9c-bf6857ab7ed2@tessares.net>
- <YkRlZhaEgmJ5Q4k/@kernel.org>
- <634d9682-dc78-e09a-865c-9eed28aee667@tessares.net>
- <YkRo/PtIf9aOqpZV@kernel.org>
+        Wed, 30 Mar 2022 10:34:08 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B554141323
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 07:32:23 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id o10so41960831ejd.1
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 07:32:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chrisdown.name; s=google;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=4HEXf5bJegxbPFYILind4ceZ9VvazmZ4A+tRQUfmjs0=;
+        b=Mcfj8/2h/OuFSeZPYtDlWUjxtRAdiSb7q46RXDwoaoGqE99HOtLDIkpevbBUlq0osC
+         VdbLZD8SGc48JKQEach/2Nh5BzOCMc6f37kiO5qCbR+upbmVa8z2lmRhNscpRIg7zwqS
+         B2YYoO6nuFQteB25RFQ/yiXrQdyHWGKj8AqYc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=4HEXf5bJegxbPFYILind4ceZ9VvazmZ4A+tRQUfmjs0=;
+        b=Aq9CYeEe7U2P/j+n5rRMbY3rf51Ice+J5SlFr67MpZlrBGDAH5nkml7jxz+/sem7ii
+         wMXJuNsJ2yR6JnMp7oTKBBCLbwhgfhOvWXcsmm6YVPIs/IGBudHA+A1UZzwYm1bhwOs0
+         hp6Fig5vkS+q+SRY/5U2ty/z/j317/kRzJOnGYy3MIsAe38OHlodIkx44mBKY78Ge10z
+         1M3nWADp3hyrhLao1qqxynoljQmMF1j4034HOt80P/ARCZ1a4rcnUl6GpOGkJfifSQBP
+         lP3HBVm4eyg8pol5DuCsGekMYiC/GPMfcdeCE/P4S56hUZasagPvwoY3EsFiiXiM/nRj
+         j1vA==
+X-Gm-Message-State: AOAM5337wXgjZPeibl+KEr0VDRmnAlRBrC1YHsvZzT5AsQy55dFrdBeh
+        smLob+DhqHqQla4NjHuIHUz4CelYgETg/w==
+X-Google-Smtp-Source: ABdhPJwoCIq2KonUFpyv2LZLErdDddLT4k68M920fyErp8SSpTugsud1DhXzIhwN+uwAmmCNKRsirA==
+X-Received: by 2002:a17:907:2ce6:b0:6df:a489:d2e1 with SMTP id hz6-20020a1709072ce600b006dfa489d2e1mr40916757ejc.264.1648650741963;
+        Wed, 30 Mar 2022 07:32:21 -0700 (PDT)
+Received: from localhost ([2620:10d:c093:400::5:c1bb])
+        by smtp.gmail.com with ESMTPSA id g2-20020aa7dc42000000b00418ef55eabcsm9913692edu.83.2022.03.30.07.32.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 07:32:21 -0700 (PDT)
+Date:   Wed, 30 Mar 2022 15:32:20 +0100
+From:   Chris Down <chris@chrisdown.name>
+To:     linux-kernel@vger.kernel.org
+Cc:     Petr Mladek <pmladek@suse.com>, kernel-team@fb.com
+Subject: [PATCH] MAINTAINERS: Add printk indexing maintainers on mention of
+ printk_index
+Message-ID: <YkRp9IhToTmTnkl7@chrisdown.name>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YkRo/PtIf9aOqpZV@kernel.org>
-X-Url:  http://acmel.wordpress.com
+User-Agent: Mutt/2.2.2 (aa28abe8) (2022-03-25)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Wed, Mar 30, 2022 at 11:28:12AM -0300, Arnaldo Carvalho de Melo escreveu:
-> Em Wed, Mar 30, 2022 at 04:22:35PM +0200, Matthieu Baerts escreveu:
-> > On 30/03/2022 16:12, Arnaldo Carvalho de Melo wrote:
-> > >> Thank you for your patch, I just tested it and it also fixes the issue I
-> > >> reported!
+This will primarily catch new and changed printk_index_subsys_emit
+calls, but it's also worth catching changes to other printk indexing
+infrastructure outside of kernel/printk/index.c.
 
-> > > I'm taking this as a:
+This avoids churn due to missing ccs when adding new printk indexes, as
+was the case recently for the first round of the XFS printk indexing
+patches.
 
-> > > Tested-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Signed-off-by: Chris Down <chris@chrisdown.name>
+Cc: Petr Mladek <pmladek@suse.com>
+---
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
-> > > Ok?
+diff --git a/MAINTAINERS b/MAINTAINERS
+index e3b11033e628..45121b9e943d 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -15404,6 +15404,7 @@ PRINTK INDEXING
+ R:	Chris Down <chris@chrisdown.name>
+ S:	Maintained
+ F:	kernel/printk/index.c
++K:	printk_index
+ 
+ PROC FILESYSTEM
+ L:	linux-kernel@vger.kernel.org
+-- 
+2.35.1
 
-> > Yes, OK for me, thank you!
-
-> > I never know what maintainers prefer when there is already a
-> > "Reported-by" tag so I didn't specify it but I will do next time.
-
-> Right, I'll stick both R-by and T-by.
-
-> There are cases where people just report and don't test, or just ack.
-
-But when you actually provide the:
-
-Tested-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-
-It makes the lives of maintainers using b4 easier, as it'll collect
-those.
-
-About b4: https://people.kernel.org/monsieuricon/introducing-b4-and-patch-attestation
-
-- Arnaldo
