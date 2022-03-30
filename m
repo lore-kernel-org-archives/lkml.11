@@ -2,166 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C28C9C43219
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 15:17:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D573C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 15:17:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348069AbiC3PTA (ORCPT
+        id S1348080AbiC3PTH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 11:19:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36444 "EHLO
+        Wed, 30 Mar 2022 11:19:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348092AbiC3PR5 (ORCPT
+        with ESMTP id S1348100AbiC3PSB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 11:17:57 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AC2E1480F2;
-        Wed, 30 Mar 2022 08:16:11 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: nicolas)
-        with ESMTPSA id C50301F419C2
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1648653370;
-        bh=1LatH4mVGhsXTiehBV6dHmUReG5H7FkUjmvKks5cf9s=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=SxSg4EfBx6gKPVy7ZIt9DphOpUvAZoz6B8WOPzgtmHKGhqoB7TP25Yuw/ju3kplTq
-         MIIBnaFed+K96kqbPkZoAywpohv3ZbEzldkz8UVubMOG+fuGL+v+oxRKX7ke9SCCsj
-         pwDaxzgfaCA77a6wKRP/MMbparTSOygSwOFnp7nnhFCm7EZlWzGMf7SSEwGlMVJJXa
-         9U63ojZVOxDkxyOp9FbpePJ3aPMem3n3GNjcoetmMAJSBR+o4LolX6KuclrglkcD8X
-         NMp5VLFTPfsnfyJ2O+yJSKG9ILnl0DkUq2xgu9gbV9rPC+zIK3BRmlM27GlPHT/qxN
-         0kW31Emid/daw==
-Message-ID: <4740735d92c0dac3708aa922b3d73db7a61fbdda.camel@collabora.com>
-Subject: Re: [PATCH v1 22/24] media: hantro: h264: Make dpb entry management
- more robust
-From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
-To:     Sebastian Fricke <sebastian.fricke@collabora.com>
-Cc:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        kernel@collabora.com, Jonas Karlman <jonas@kwiboo.se>,
-        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Date:   Wed, 30 Mar 2022 11:15:58 -0400
-In-Reply-To: <20220330075913.wfl3prsyw5fvsv4t@basti-XPS-13-9310>
-References: <20220328195936.82552-1-nicolas.dufresne@collabora.com>
-         <20220328195936.82552-23-nicolas.dufresne@collabora.com>
-         <20220330075913.wfl3prsyw5fvsv4t@basti-XPS-13-9310>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.0 (3.44.0-1.fc36) 
+        Wed, 30 Mar 2022 11:18:01 -0400
+Received: from heian.cn.fujitsu.com (mail.cn.fujitsu.com [183.91.158.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 77E261480F2;
+        Wed, 30 Mar 2022 08:16:15 -0700 (PDT)
+IronPort-Data: =?us-ascii?q?A9a23=3AtwvaI6h4vvUoVt85m0RQnGMKX161CxEKZh0ujC4?=
+ =?us-ascii?q?5NGQNrF6WrkUEmGUWCmHVOa6OZTCnKNAnPovk908P7ZPRndZqHAtsrHw8FHgiR?=
+ =?us-ascii?q?ejtX4rAdhiqV8+xwmwvdGo+toNGLICowPkcFhcwnT/wdOixxZVA/fvQHOCkUra?=
+ =?us-ascii?q?dYnkZqTJME0/NtzoywobVvaY42bBVMyvV0T/Di5W31G2NglaYAUpIg063ky6Di?=
+ =?us-ascii?q?dyp0N8uUvPSUtgQ1LPWvyF94JvyvshdJVOgKmVfNrbSq+ouUNiEEm3lExcFUrt?=
+ =?us-ascii?q?Jk57wdAsEX7zTIROTzHFRXsBOgDAb/mprjPl9b6FaNC+7iB3Q9zx14M9QvJqrW?=
+ =?us-ascii?q?EEnOLbQsOoAURhECDw4NqpDkFPCCSHl6pTCnx2XIhMAxN0rVinaJ7Yw9u9pAG1?=
+ =?us-ascii?q?m++YfLTcXZBGfwemxxdqTSuJsrsUlItPiMI4Wtjdn1z6xJfovR9bBBbrL4dtZ1?=
+ =?us-ascii?q?TIrrsFIAfvaIcEebFJHYBbfZBtAElQaEpQzmKGvnHaXWzlZrk+F4K8yy2vNxQd?=
+ =?us-ascii?q?ylr/3P7L9fMKGRMBQtkKZvX7duWD4BAwKctCS11Kt8Huqi6nEnT7TX5gbH7m1s?=
+ =?us-ascii?q?PVthTW7wm0VFQ1TW0C3rOe0jmagVN9FbU8Z4Cwjqe417kPDZt38WQCo5X2JpBg?=
+ =?us-ascii?q?RX/JOHOAgrgKA0KzZ50CeHGdsZjpAbsE28d84XhQ02VKT2dDkHzpitPuSU331y?=
+ =?us-ascii?q?1s+hVteIgBMdSlbO3BCFlBDvrHeTEgIpkqnZr5e/GSd17UZwQ3N/g0=3D?=
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3AMHdCR6lcfaT+oQuP8yxoprJboKPpDfIQ3DAb?=
+ =?us-ascii?q?v31ZSRFFG/Fw9vre+MjzsCWYtN9/Yh8dcK+7UpVoLUm8yXcX2/h1AV7BZniEhI?=
+ =?us-ascii?q?LAFugLgrcKqAeQeREWmNQ86Y5QN4B6CPDVSWNxlNvG5mCDeOoI8Z2q97+JiI7l?=
+ =?us-ascii?q?o0tQcQ=3D=3D?=
+X-IronPort-AV: E=Sophos;i="5.88,333,1635177600"; 
+   d="scan'208";a="123098899"
+Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
+  by heian.cn.fujitsu.com with ESMTP; 30 Mar 2022 23:16:14 +0800
+Received: from G08CNEXMBPEKD05.g08.fujitsu.local (unknown [10.167.33.204])
+        by cn.fujitsu.com (Postfix) with ESMTP id AEC9B4D16FF5;
+        Wed, 30 Mar 2022 23:16:11 +0800 (CST)
+Received: from G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.85) by
+ G08CNEXMBPEKD05.g08.fujitsu.local (10.167.33.204) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.23; Wed, 30 Mar 2022 23:16:11 +0800
+Received: from [10.167.201.8] (10.167.201.8) by
+ G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
+ id 15.0.1497.23 via Frontend Transport; Wed, 30 Mar 2022 23:16:11 +0800
+Message-ID: <894ed00b-b174-6a10-ee45-320007957ea4@fujitsu.com>
+Date:   Wed, 30 Mar 2022 23:16:10 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v11 7/8] xfs: Implement ->notify_failure() for XFS
+To:     Christoph Hellwig <hch@infradead.org>
+CC:     <linux-kernel@vger.kernel.org>, <linux-xfs@vger.kernel.org>,
+        <nvdimm@lists.linux.dev>, <linux-mm@kvack.org>,
+        <linux-fsdevel@vger.kernel.org>, <djwong@kernel.org>,
+        <dan.j.williams@intel.com>, <david@fromorbit.com>,
+        <jane.chu@oracle.com>
+References: <20220227120747.711169-1-ruansy.fnst@fujitsu.com>
+ <20220227120747.711169-8-ruansy.fnst@fujitsu.com>
+ <YkPyBQer+KRiregd@infradead.org>
+From:   Shiyang Ruan <ruansy.fnst@fujitsu.com>
+In-Reply-To: <YkPyBQer+KRiregd@infradead.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-yoursite-MailScanner-ID: AEC9B4D16FF5.A4774
+X-yoursite-MailScanner: Found to be clean
+X-yoursite-MailScanner-From: ruansy.fnst@fujitsu.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le mercredi 30 mars 2022 =C3=A0 09:59 +0200, Sebastian Fricke a =C3=A9crit=
-=C2=A0:
-> Hey Nicolas,
->=20
-> On 28.03.2022 15:59, Nicolas Dufresne wrote:
-> > From: Jonas Karlman <jonas@kwiboo.se>
-> >=20
-> > The driver maintains stable slot location for reference pictures. This
->=20
-> s/slot location/slot locations/
->=20
-> > change makes the code more robust by using the reference_ts as key and
-> > by marking all entries invalid right from the start.
-> >=20
-> > Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
-> > Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-> > ---
-> > drivers/staging/media/hantro/hantro_h264.c | 10 ++++------
-> > 1 file changed, 4 insertions(+), 6 deletions(-)
-> >=20
-> > diff --git a/drivers/staging/media/hantro/hantro_h264.c b/drivers/stagi=
-ng/media/hantro/hantro_h264.c
-> > index 228629fb3cdf..7377fc26f780 100644
-> > --- a/drivers/staging/media/hantro/hantro_h264.c
-> > +++ b/drivers/staging/media/hantro/hantro_h264.c
-> > @@ -258,8 +258,7 @@ static void prepare_table(struct hantro_ctx *ctx)
-> > static bool dpb_entry_match(const struct v4l2_h264_dpb_entry *a,
-> > 			    const struct v4l2_h264_dpb_entry *b)
-> > {
-> > -	return a->top_field_order_cnt =3D=3D b->top_field_order_cnt &&
-> > -	       a->bottom_field_order_cnt =3D=3D b->bottom_field_order_cnt;
-> > +	return a->reference_ts =3D=3D b->reference_ts;
-> > }
-> >=20
-> > static void update_dpb(struct hantro_ctx *ctx)
-> > @@ -273,13 +272,13 @@ static void update_dpb(struct hantro_ctx *ctx)
-> >=20
-> > 	/* Disable all entries by default. */
-> > 	for (i =3D 0; i < ARRAY_SIZE(ctx->h264_dec.dpb); i++)
-> > -		ctx->h264_dec.dpb[i].flags &=3D ~V4L2_H264_DPB_ENTRY_FLAG_ACTIVE;
-> > +		ctx->h264_dec.dpb[i].flags =3D 0;
->=20
-> Ehm ... we just remove all flags? Can't this have any unwanted side
-> effects like removing a flag that we actually wanted to keep?
-> (Like long term or the field flags?)
 
-This is a local copy of the dpb, the DPB is fully passed for every decode. =
-So
-these flags will be fully restored lower when we copy the found entry. In f=
-act,
-holding a state here would not represent well the userland intention and ca=
-n
-have negative side effect on the decoding. Flags are not immutable between
-decode and can change. This simplify the code, and make things less error p=
-rone.
-This part of the code is already a bit complex, no need for an extra layer.
 
-> If we just want to set the DPB entry inactive, then removing the ACTIVE
-> flag seems like the correct approach to me.
-> If we want to get rid of the VALID flag as well, then we could just do:
-> 		ctx->h264_dec.dpb[i].flags &=3D
->        ~(V4L2_H264_DPB_ENTRY_FLAG_ACTIVE | V4L2_H264_DPB_ENTRY_FLAG_VALID=
-);
->=20
-> In case we really want to reset all flags, I'd say adjust the comment
-> above it:
-> ```
-> - 	/* Disable all entries by default. */
-> + 	/* Reset the flags for all entries by default. */
-> ```
+在 2022/3/30 14:00, Christoph Hellwig 写道:
+>> @@ -1892,6 +1893,8 @@ xfs_free_buftarg(
+>>   	list_lru_destroy(&btp->bt_lru);
+>>   
+>>   	blkdev_issue_flush(btp->bt_bdev);
+>> +	if (btp->bt_daxdev)
+>> +		dax_unregister_holder(btp->bt_daxdev, btp->bt_mount);
+>>   	fs_put_dax(btp->bt_daxdev);
+>>   
+>>   	kmem_free(btp);
+>> @@ -1939,6 +1942,7 @@ xfs_alloc_buftarg(
+>>   	struct block_device	*bdev)
+>>   {
+>>   	xfs_buftarg_t		*btp;
+>> +	int			error;
+>>   
+>>   	btp = kmem_zalloc(sizeof(*btp), KM_NOFS);
+>>   
+>> @@ -1946,6 +1950,14 @@ xfs_alloc_buftarg(
+>>   	btp->bt_dev =  bdev->bd_dev;
+>>   	btp->bt_bdev = bdev;
+>>   	btp->bt_daxdev = fs_dax_get_by_bdev(bdev, &btp->bt_dax_part_off);
+>> +	if (btp->bt_daxdev) {
+>> +		error = dax_register_holder(btp->bt_daxdev, mp,
+>> +				&xfs_dax_holder_operations);
+>> +		if (error) {
+>> +			xfs_err(mp, "DAX device already in use?!");
+>> +			goto error_free;
+>> +		}
+>> +	}
+> 
+> It seems to me that just passing the holder and holder ops to
+> fs_dax_get_by_bdev and the holder to dax_unregister_holder would
+> significantly simply the interface here.
+> 
+> Dan, what do you think?
+> 
+>> +#if IS_ENABLED(CONFIG_MEMORY_FAILURE) && IS_ENABLED(CONFIG_FS_DAX)
+> 
+> No real need for the IS_ENABLED.  Also any reason to even build this
+> file if the options are not set?  It seems like
+> xfs_dax_holder_operations should just be defined to NULL and the
+> whole file not supported if we can't support the functionality.
 
-This reads the same to me, but I can do that yes. understand that VALID mea=
-ns
-the reference exist and the TS should point to some existing past reference
-(unless there was some decode error, which the userland may not be aware ye=
-t as
-this is asynchronous). While ACTIVE means that it is used as a reference. F=
-FMPEG
-is known not to filter inactive references. ACTIVE is just a flag without b=
-unch
-of other flags that can change for every decode. So none of this make sense
-between 2 decodes.
+Got it.  These two CONFIG seem not related for now.  So, I think I 
+should wrap these code with #ifdef CONFIG_MEMORY_FAILURE here, and add 
+`xfs-$(CONFIG_FS_DAX) += xfs_notify_failure.o` in the makefile.
 
->=20
-> Greetings,
-> Sebastian
->=20
-> >=20
-> > 	/* Try to match new DPB entries with existing ones by their POCs. */
-> > 	for (i =3D 0; i < ARRAY_SIZE(dec_param->dpb); i++) {
-> > 		const struct v4l2_h264_dpb_entry *ndpb =3D &dec_param->dpb[i];
-> >=20
-> > -		if (!(ndpb->flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE))
-> > +		if (!(ndpb->flags & V4L2_H264_DPB_ENTRY_FLAG_VALID))
-> > 			continue;
-> >=20
-> > 		/*
-> > @@ -290,8 +289,7 @@ static void update_dpb(struct hantro_ctx *ctx)
-> > 			struct v4l2_h264_dpb_entry *cdpb;
-> >=20
-> > 			cdpb =3D &ctx->h264_dec.dpb[j];
-> > -			if (cdpb->flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE ||
-> > -			    !dpb_entry_match(cdpb, ndpb))
-> > +			if (!dpb_entry_match(cdpb, ndpb))
-> > 				continue;
-> >=20
-> > 			*cdpb =3D *ndpb;
-> > --=20
-> > 2.34.1
-> >=20
+> 
+> Dan: not for this series, but is there any reason not to require
+> MEMORY_FAILURE for DAX to start with?
+> 
+>> +
+>> +	ddev_start = mp->m_ddev_targp->bt_dax_part_off;
+>> +	ddev_end = ddev_start +
+>> +		(mp->m_ddev_targp->bt_bdev->bd_nr_sectors << SECTOR_SHIFT) - 1;
+> 
+> This should use bdev_nr_bytes.
+
+OK.
+
+> 
+> But didn't we say we don't want to support notifications on partitioned
+> devices and thus don't actually need all this?
+> 
+>> +
+>> +	/* Ignore the range out of filesystem area */
+>> +	if ((offset + len) < ddev_start)
+> 
+> No need for the inner braces.
+> 
+>> +	if ((offset + len) > ddev_end)
+> 
+> No need for the braces either.
+
+Really no need?  It is to make sure the range to be handled won't out of 
+the filesystem area.  And make sure the @offset and @len are valid and 
+correct after subtract the bbdev_start.
+
+> 
+>> diff --git a/fs/xfs/xfs_notify_failure.h b/fs/xfs/xfs_notify_failure.h
+>> new file mode 100644
+>> index 000000000000..76187b9620f9
+>> --- /dev/null
+>> +++ b/fs/xfs/xfs_notify_failure.h
+>> @@ -0,0 +1,10 @@
+>> +// SPDX-License-Identifier: GPL-2.0
+>> +/*
+>> + * Copyright (c) 2022 Fujitsu.  All Rights Reserved.
+>> + */
+>> +#ifndef __XFS_NOTIFY_FAILURE_H__
+>> +#define __XFS_NOTIFY_FAILURE_H__
+>> +
+>> +extern const struct dax_holder_operations xfs_dax_holder_operations;
+>> +
+>> +#endif  /* __XFS_NOTIFY_FAILURE_H__ */
+> 
+> Dowe really need a new header for this vs just sequeezing it into
+> xfs_super.h or something like that?
+
+Yes, I'll move it into xfs_super.h.  The xfs_notify_failure.c was 
+splitted from xfs_super.c in the old patch.  There is no need to create 
+a header file for only single line of code.
+
+> 
+>> diff --git a/fs/xfs/xfs_super.c b/fs/xfs/xfs_super.c
+>> index e8f37bdc8354..b8de6ed2c888 100644
+>> --- a/fs/xfs/xfs_super.c
+>> +++ b/fs/xfs/xfs_super.c
+>> @@ -353,6 +353,12 @@ xfs_setup_dax_always(
+>>   		return -EINVAL;
+>>   	}
+>>   
+>> +	if (xfs_has_reflink(mp) && !xfs_has_rmapbt(mp)) {
+>> +		xfs_alert(mp,
+>> +			"need rmapbt when both DAX and reflink enabled.");
+>> +		return -EINVAL;
+>> +	}
+> 
+> Right now we can't even enable reflink with DAX yet, so adding this
+> here seems premature - it should go into the patch allowing DAX+reflink.
+> 
+
+Yes.  I'll remove it for now.
+
+
+--
+Thanks,
+Ruan.
+
 
