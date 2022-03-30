@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C9CDC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:55:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A996C4167E
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:55:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232660AbiC3L45 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 07:56:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59274 "EHLO
+        id S241305AbiC3L5F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 07:57:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344238AbiC3Lwo (ORCPT
+        with ESMTP id S1344347AbiC3Lw6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:52:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4B4725E339;
-        Wed, 30 Mar 2022 04:48:39 -0700 (PDT)
+        Wed, 30 Mar 2022 07:52:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61E38261308;
+        Wed, 30 Mar 2022 04:48:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 23C67B81C39;
-        Wed, 30 Mar 2022 11:48:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9BC4C36AE7;
-        Wed, 30 Mar 2022 11:48:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C225D615B7;
+        Wed, 30 Mar 2022 11:48:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F8F2C340F3;
+        Wed, 30 Mar 2022 11:48:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648640906;
-        bh=IVt9jYETt3TQfguSpdnH8Vu6cSpfeaiBih9Ro8JSimM=;
+        s=k20201202; t=1648640916;
+        bh=1mzmburc3X+szuNAEo1tXUhYMeph1aGhucbEOTahC2s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mNXOSGK1CTl6hWVK0Z/wxm7weM8pY4GOlDYF7Fzy+IcAK7Pd9XYH3iBkcAVdAYRJI
-         w/PNuPUMqQz6tGbwW01LD5T5BHlomYuz2ClHjVYPKgdMDGlpxMMT/qUf41SZHMBpyw
-         ppFrmW35q6RFFI/rmXMoCm1mzBaf/xkHLV6EU0qnK+v5qGfbZAnv4NX5BOzAA48A5N
-         2OMl3w+Lr6WAveJoJB58oIfp8EvB6+j1Zymlj8M6zTmmE993yf/WhGA3oCC74y0dpO
-         7DTQp0PM78fGeIFA276jnGqRAMTYmiuDBdWigX/3x2FyvUb98DilIdBHVTenfdCKm8
-         2INYJ5w2j+RJQ==
+        b=MCaFdqWqHpx55IIGCibFaXQKVxehUIrT95PWcEwp180Q9Rvkzf4ZLHzRBDywLc3tg
+         UoZrNx7r8WrSG35Ww28wyDMs/+/2MbHVKdlJORe8R6NUicZI13NjcHvgpVFuN83nNC
+         gd3q1vQOnIjq1NKit86O1IfORQZIKt9xq0RWWsrgKDXvtpnq3Sn3228I+IiD62kBR1
+         UUZ7FL5hd0nZBlOBkxMu5TaHuAGV8vg2+5AoFGOeL6fy8quSHRs9QYjLmuasBgWRow
+         V7Gchq3I6A3XwCueWEv5xohF7A2XOv3AqsZD23a6Yw2MYnzYpSQp7d13N/H+gTORNm
+         wAgJL3+1XAJ8g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.17 64/66] ASoC: ak4642: Use of_device_get_match_data()
-Date:   Wed, 30 Mar 2022 07:46:43 -0400
-Message-Id: <20220330114646.1669334-64-sashal@kernel.org>
+Cc:     Corentin Labbe <clabbe@baylibre.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, gregkh@linuxfoundation.org,
+        linux-media@vger.kernel.org, devel@driverdev.osuosl.org
+Subject: [PATCH AUTOSEL 5.16 02/59] media: staging: media: zoran: calculate the right buffer number for zoran_reap_stat_com
+Date:   Wed, 30 Mar 2022 07:47:34 -0400
+Message-Id: <20220330114831.1670235-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330114646.1669334-1-sashal@kernel.org>
-References: <20220330114646.1669334-1-sashal@kernel.org>
+In-Reply-To: <20220330114831.1670235-1-sashal@kernel.org>
+References: <20220330114831.1670235-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,44 +53,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+From: Corentin Labbe <clabbe@baylibre.com>
 
-[ Upstream commit 835ca59799f5c60b4b54bdc7aa785c99552f63e4 ]
+[ Upstream commit e3b86f4e558cea9eed71d894df2f19b10d60a207 ]
 
-Use of_device_get_match_data() to simplify the code.
+On the case tmp_dcim=1, the index of buffer is miscalculated.
+This generate a NULL pointer dereference later.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-Link: https://lore.kernel.org/r/20220315023226.2118354-1-chi.minghao@zte.com.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
+So let's fix the calcul and add a check to prevent this to reappear.
+
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/ak4613.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+ drivers/staging/media/zoran/zoran_device.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/ak4613.c b/sound/soc/codecs/ak4613.c
-index 4d2e78101f28..034195c83bd7 100644
---- a/sound/soc/codecs/ak4613.c
-+++ b/sound/soc/codecs/ak4613.c
-@@ -653,15 +653,10 @@ static int ak4613_i2c_probe(struct i2c_client *i2c,
- 	struct ak4613_priv *priv;
+diff --git a/drivers/staging/media/zoran/zoran_device.c b/drivers/staging/media/zoran/zoran_device.c
+index 5b12a730a229..fb1f0465ca87 100644
+--- a/drivers/staging/media/zoran/zoran_device.c
++++ b/drivers/staging/media/zoran/zoran_device.c
+@@ -814,7 +814,7 @@ static void zoran_reap_stat_com(struct zoran *zr)
+ 		if (zr->jpg_settings.tmp_dcm == 1)
+ 			i = (zr->jpg_dma_tail - zr->jpg_err_shift) & BUZ_MASK_STAT_COM;
+ 		else
+-			i = ((zr->jpg_dma_tail - zr->jpg_err_shift) & 1) * 2 + 1;
++			i = ((zr->jpg_dma_tail - zr->jpg_err_shift) & 1) * 2;
  
- 	regmap_cfg = NULL;
--	if (np) {
--		const struct of_device_id *of_id;
--
--		of_id = of_match_device(ak4613_of_match, dev);
--		if (of_id)
--			regmap_cfg = of_id->data;
--	} else {
-+	if (np)
-+		regmap_cfg = of_device_get_match_data(dev);
-+	else
- 		regmap_cfg = (const struct regmap_config *)id->driver_data;
--	}
+ 		stat_com = le32_to_cpu(zr->stat_com[i]);
+ 		if ((stat_com & 1) == 0) {
+@@ -826,6 +826,11 @@ static void zoran_reap_stat_com(struct zoran *zr)
+ 		size = (stat_com & GENMASK(22, 1)) >> 1;
  
- 	if (!regmap_cfg)
- 		return -EINVAL;
+ 		buf = zr->inuse[i];
++		if (!buf) {
++			spin_unlock_irqrestore(&zr->queued_bufs_lock, flags);
++			pci_err(zr->pci_dev, "No buffer at slot %d\n", i);
++			return;
++		}
+ 		buf->vbuf.vb2_buf.timestamp = ktime_get_ns();
+ 
+ 		if (zr->codec_mode == BUZ_MODE_MOTION_COMPRESS) {
 -- 
 2.34.1
 
