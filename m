@@ -2,98 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94402C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 15:28:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B62EBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 15:29:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348210AbiC3PaF (ORCPT
+        id S1348213AbiC3Pap (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 11:30:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57446 "EHLO
+        Wed, 30 Mar 2022 11:30:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348209AbiC3PaE (ORCPT
+        with ESMTP id S1346876AbiC3Pan (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 11:30:04 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A716F1E520E
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 08:28:18 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id r64so12486043wmr.4
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 08:28:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7wOiTq1PLXPUAGj3bM3pfG9fYquFxGpWIhhZ6fy3tcs=;
-        b=eSqNBQuX9r/9GTv8TKX8urolhRUwZliSSjWypLgFlBG5+kY/7y7qLZqe9nIOeKBVAb
-         kzHlCI0iN9baILYN5MWV2n8lGmE3+L6iIhR4AizQWPw5ac6AIIXunDvJrYZQDAI2Th+F
-         D1zrDQniNmDUZoJPAQTFNIEq9Ii6Kek0Q2StPWaGZxyL3lA8o1v71Uq0YQQCUXJ8jEe/
-         gL/bGZGwyPpr2TPgj7BP8YU2QOA7DdtKLXJkY+KBRulXY5k+1Gk2Q+/TAvJNNzxaeZnu
-         +k5xrH6ypPmqUbP8RTr0DSYJop9T2IqUrJQEegWsQZY2sJgAYNp12t37gYNyvx6hkKes
-         gZ3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7wOiTq1PLXPUAGj3bM3pfG9fYquFxGpWIhhZ6fy3tcs=;
-        b=E8vK7nuAGuSCyVitnB6eRIwgZHwLWH/bn3UvtMQbRWy+/lcPRyNzII8+RX57uoNnzU
-         PG8cpr2ADgXE80BBMlIVusGCTZtbqy7E/XP5wyD8CJJhw4cHaMo+OU7Ehca2YfSa3H4c
-         +dJMzjzKvfZLwDzbrQJXY3wOVz0x7oRs+RAZulwTD0868aO/on0UYH+DMUoVLJFZZyn2
-         CNgsbZk6jVwV9GNtbIe7c4bnCktu2As1D9E9cfwpTLWreHXoO4HylIKa2PJj/5gtrb1l
-         GA5eHy3+2pMHCKN33Tg8Y15flAveWmOAnXU9+siR5Id6fSOtAtNQiYZNdLgBl23G3Bt4
-         8EtQ==
-X-Gm-Message-State: AOAM532rHcB1aM94D7itq4iT89SG42QmbKeYVkntH6+lCw7eW0hIu7+T
-        ntMWCuW459w1+uSeJVZz/ouk1qlG8r04XvR/
-X-Google-Smtp-Source: ABdhPJxi3IiRwS66oW+/pDWCojnAynkSTFUbFs2BpuHgzx6MviZGIIGN/Czs+uKP0xdIiLhYpGlrsg==
-X-Received: by 2002:a05:600c:321a:b0:38b:c418:4d09 with SMTP id r26-20020a05600c321a00b0038bc4184d09mr4943133wmp.181.1648654097086;
-        Wed, 30 Mar 2022 08:28:17 -0700 (PDT)
-Received: from localhost.localdomain ([2001:861:44c0:66c0:e47f:3cdb:5811:cee8])
-        by smtp.gmail.com with ESMTPSA id a18-20020a05600c349200b0038ca453a887sm5254097wmq.19.2022.03.30.08.28.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Mar 2022 08:28:16 -0700 (PDT)
-From:   Neil Armstrong <narmstrong@baylibre.com>
-To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com
-Cc:     hpa@zytor.com, x86@kernel.org, linux-kernel@vger.kernel.org,
-        andriy.shevchenko@linux.intel.com,
-        Neil Armstrong <narmstrong@baylibre.com>
-Subject: [PATCH] x86: undef REG_IN/REG_OUT to avoid define collisions
-Date:   Wed, 30 Mar 2022 17:28:08 +0200
-Message-Id: <20220330152808.1461758-1-narmstrong@baylibre.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 30 Mar 2022 11:30:43 -0400
+Received: from out203-205-221-236.mail.qq.com (out203-205-221-236.mail.qq.com [203.205.221.236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A353C1F0462
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 08:28:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1648654130;
+        bh=Y2gWGiyGET0aaB7nZfjwQVU5pPS63T1+UMxe5VYM0A4=;
+        h=From:To:Cc:Subject:Date;
+        b=SN3XAej9ilhOFkKPo7e9w489G7wPiWF7zxBi9uWJd5YjSVRIhk/bYnFzRz1dZvXMj
+         iysoboatWYEpqGxDQrrwN3LazXP/6rcG2Xesy1F9NrvHCqy4craEh5ps6b+ajrqJ5s
+         5lBkAUShRwYd5ErxhD2Bf1DAmj2pQId9JZe7PFnY=
+Received: from localhost.localdomain ([43.227.136.188])
+        by newxmesmtplogicsvrsza7.qq.com (NewEsmtp) with SMTP
+        id 72FBC21C; Wed, 30 Mar 2022 23:28:47 +0800
+X-QQ-mid: xmsmtpt1648654127t47znl2d3
+Message-ID: <tencent_12789CD2DEBF33C818B3542E170737854506@qq.com>
+X-QQ-XMAILINFO: NwIPvWX4YDagLxUpX5W5nIF/mfb+aK4Kow7/soLuRKpM94Ck6dWpMTSHVCb8ij
+         7NWQpmfgbQsX64JoKUTtoVwYtV4Gsqauj3PHKWUahRML7j7Mx1kVU89YSTbBdiOtJnJIMCbYSO4c
+         Sgxe2/GUZBApe1W4mrQwLRLwa1mUiD8/hGuZ6fwFejjbdKYTNE9m/DXZTcLOzZxNsUFtlaW05XHV
+         5HngVLs4ycd7JI/0DD9OxJ1wXEcvla8YVCuW89o3+DHzZY5GimTc7KJ+c1Y1s6pHhV3UDfz1cI5X
+         qHNhVX9iyV68SPR3CNiNoocMzrMWaSkJFJPMaIBgfYwcyD07vPxJgAC5sKoWOP3gr4jK7Mcp6bKH
+         sjNk88j7CJB408Q+FNLuxv/EVnImo/X+TUoGsc84/bBC7azYQTnH7nWB9xsP5pjhx2Kv9AWibXkV
+         4ucDFFJ2KO7tmOSU4rIdy/4dsBbXdbP+C6j4ExdMzxUMRphw29tpCZn+XL5nzB6OI55WJK6OASvL
+         UyUn24Ibb616Lzd8temaXB++jPGb/JjjEbLe06Ed1o2mVsDxaVdg6rYNYZ2MFHsR/BL7Fnuc22aB
+         mPeerOSo5cmJ6zu5lXjFsIyZqGp7vMLzYAi4Ke1ZBFPlrEFXj56h5BxElJp99Oh4D/vJafBUFBdd
+         lPX7tlXOZnhptb81Mr6OB45Q65jeJSngb8k/thmRq9OFZ2RWx28/Kq+ecdXgS4z1EgNBIeMFklOf
+         zslkEMDGTaF0ATyBLX3NC+72+sYgCLpcRikDBHWYf81pZ084DIGW4CdoW7xMrAHAtlgxuvTcZx39
+         FFedKnD3WT5cP52DLbAD42LQ7Swi16ZrzX/ttwDG7GCfhGcMg5B+rV85dpRDhIJJZkhDs/g8aElT
+         Pgo7q2oroLsEza67u/Bfz75FpclNlGVsId299nsL4MFOEs5GAKJlsJuOhycxS7s8QSNLd311OnHN
+         0AYP0I+U8KwGXITiAj3Q5lzR2OgoG0NKpDK8cuoI909pPMP/ehSQ==
+From:   xkernel.wang@foxmail.com
+To:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        gregkh@linuxfoundation.org
+Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Xiaoke Wang <xkernel.wang@foxmail.com>
+Subject: [PATCH 1/2] staging: r8188eu: properly handle the kzalloc()
+Date:   Wed, 30 Mar 2022 23:16:07 +0800
+X-OQ-MSGID: <20220330151607.6639-1-xkernel.wang@foxmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These defines are only used in the inline functions declared
-in the arch_hweight.h file, and collides with internal defines
-of the Amlogic Mes pinctrl driver when COMPILE_TEST is enabled:
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-arch/x86/include/asm/arch_hweight.h:9:17: error: expected identifier before string constant
-9 | #define REG_OUT "a"
-  |                 ^~~
-drivers/pinctrl/meson/pinctrl-meson.h:69:9: note: in expansion of macro ‘REG_OUT’
-69 |         REG_OUT,
+kzalloc() is a memory allocation function which can return NULL when
+some internal memory errors happen. So it is better to handle the return
+of it to prevent potential wrong memory access.
+For the kzalloc() in go_add_group_info_attr(), since there is a lack
+of error handlers along the call chain it lies and the lifetime of
+`pdata_attr` is only in go_add_group_info_attr(), `pdata_attr` is roughly
+changed to a local variable on stack like the other functions in 
+rtw_p2p.c, such as `u8 p2pie[MAX_P2P_IE_LEN] = { 0x00 };` in 
+issue_p2p_presence_resp().
 
-Reported-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
 ---
- arch/x86/include/asm/arch_hweight.h | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/staging/r8188eu/core/rtw_p2p.c     |  6 ++----
+ drivers/staging/r8188eu/core/rtw_xmit.c    | 12 +++++++++---
+ drivers/staging/r8188eu/include/rtw_xmit.h |  2 +-
+ 3 files changed, 12 insertions(+), 8 deletions(-)
 
-diff --git a/arch/x86/include/asm/arch_hweight.h b/arch/x86/include/asm/arch_hweight.h
-index ba88edd0d58b..139a4b0a2a14 100644
---- a/arch/x86/include/asm/arch_hweight.h
-+++ b/arch/x86/include/asm/arch_hweight.h
-@@ -52,4 +52,7 @@ static __always_inline unsigned long __arch_hweight64(__u64 w)
- }
- #endif /* CONFIG_X86_32 */
+diff --git a/drivers/staging/r8188eu/core/rtw_p2p.c b/drivers/staging/r8188eu/core/rtw_p2p.c
+index e2b6cf2..f1a5df8 100644
+--- a/drivers/staging/r8188eu/core/rtw_p2p.c
++++ b/drivers/staging/r8188eu/core/rtw_p2p.c
+@@ -27,15 +27,14 @@ static u32 go_add_group_info_attr(struct wifidirect_info *pwdinfo, u8 *pbuf)
+ 	struct list_head *phead, *plist;
+ 	u32 len = 0;
+ 	u16 attr_len = 0;
+-	u8 tmplen, *pdata_attr, *pstart, *pcur;
++	u8 pdata_attr[MAX_P2P_IE_LEN] = { 0x00 };
++	u8 tmplen, *pstart, *pcur;
+ 	struct sta_info *psta = NULL;
+ 	struct adapter *padapter = pwdinfo->padapter;
+ 	struct sta_priv *pstapriv = &padapter->stapriv;
  
-+#undef REG_IN
-+#undef REG_OUT
+ 	DBG_88E("%s\n", __func__);
+ 
+-	pdata_attr = kzalloc(MAX_P2P_IE_LEN, GFP_KERNEL);
+-
+ 	pstart = pdata_attr;
+ 	pcur = pdata_attr;
+ 
+@@ -106,7 +105,6 @@ static u32 go_add_group_info_attr(struct wifidirect_info *pwdinfo, u8 *pbuf)
+ 	if (attr_len > 0)
+ 		len = rtw_set_p2p_attr_content(pbuf, P2P_ATTR_GROUP_INFO, attr_len, pdata_attr);
+ 
+-	kfree(pdata_attr);
+ 	return len;
+ }
+ 
+diff --git a/drivers/staging/r8188eu/core/rtw_xmit.c b/drivers/staging/r8188eu/core/rtw_xmit.c
+index 46fe62c..5888979 100644
+--- a/drivers/staging/r8188eu/core/rtw_xmit.c
++++ b/drivers/staging/r8188eu/core/rtw_xmit.c
+@@ -179,7 +179,9 @@ s32	_rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter)
+ 
+ 	pxmitpriv->free_xmit_extbuf_cnt = num_xmit_extbuf;
+ 
+-	rtw_alloc_hwxmits(padapter);
++	res = rtw_alloc_hwxmits(padapter);
++	if (res == _FAIL)
++		goto exit;
+ 	rtw_init_hwxmits(pxmitpriv->hwxmits, pxmitpriv->hwxmit_entry);
+ 
+ 	for (i = 0; i < 4; i++)
+@@ -202,7 +204,6 @@ s32	_rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter)
+ 	rtw_hal_init_xmit_priv(padapter);
+ 
+ exit:
+-
+ 	return res;
+ }
+ 
+@@ -1516,7 +1517,7 @@ s32 rtw_xmit_classifier(struct adapter *padapter, struct xmit_frame *pxmitframe)
+ 	return res;
+ }
+ 
+-void rtw_alloc_hwxmits(struct adapter *padapter)
++s32 rtw_alloc_hwxmits(struct adapter *padapter)
+ {
+ 	struct hw_xmit *hwxmits;
+ 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
+@@ -1525,6 +1526,9 @@ void rtw_alloc_hwxmits(struct adapter *padapter)
+ 
+ 	pxmitpriv->hwxmits = kzalloc(sizeof(struct hw_xmit) * pxmitpriv->hwxmit_entry, GFP_KERNEL);
+ 
++	if (!pxmitpriv->hwxmits)
++		return _FAIL;
 +
- #endif
+ 	hwxmits = pxmitpriv->hwxmits;
+ 
+ 	if (pxmitpriv->hwxmit_entry == 5) {
+@@ -1540,6 +1544,8 @@ void rtw_alloc_hwxmits(struct adapter *padapter)
+ 		hwxmits[3] .sta_queue = &pxmitpriv->bk_pending;
+ 	} else {
+ 	}
++
++	return _SUCCESS;
+ }
+ 
+ void rtw_free_hwxmits(struct adapter *padapter)
+diff --git a/drivers/staging/r8188eu/include/rtw_xmit.h b/drivers/staging/r8188eu/include/rtw_xmit.h
+index 5f6e240..b45cd29 100644
+--- a/drivers/staging/r8188eu/include/rtw_xmit.h
++++ b/drivers/staging/r8188eu/include/rtw_xmit.h
+@@ -345,7 +345,7 @@ s32 rtw_txframes_sta_ac_pending(struct adapter *padapter,
+ void rtw_init_hwxmits(struct hw_xmit *phwxmit, int entry);
+ s32 _rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter);
+ void _rtw_free_xmit_priv(struct xmit_priv *pxmitpriv);
+-void rtw_alloc_hwxmits(struct adapter *padapter);
++s32 rtw_alloc_hwxmits(struct adapter *padapter);
+ void rtw_free_hwxmits(struct adapter *padapter);
+ s32 rtw_xmit(struct adapter *padapter, struct sk_buff **pkt);
+ 
 -- 
-2.25.1
-
