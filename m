@@ -2,141 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 135EEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 09:10:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64D2DC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 09:11:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244635AbiC3JMP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 05:12:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53796 "EHLO
+        id S244655AbiC3JNl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 05:13:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244627AbiC3JMO (ORCPT
+        with ESMTP id S238507AbiC3JNh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 05:12:14 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C8DF1DBABA;
-        Wed, 30 Mar 2022 02:10:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648631428; x=1680167428;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=oVBDcKhQPIannLiyreJRo3QEwR2EwOYqp0Enn3LLlPU=;
-  b=Yr1ZIyRQv0GdOE2Bd2km1ts9AU+eBiPh/HTyO7JrJ7bOzgCTNw9+tqza
-   QjqQ/LKwAes0s+EGDbM5xIerfhsp0+IIAo2et+J3A4M0GMCh9lUcgBjNP
-   pOXAFf3WaJE27akbXyandOOh8AM+/NGmQcKOpKUrZ9mjBCzLYMGZc9Gty
-   jVCzGvX8rtjCg+7GrXGHmk9V1ZpFFJL+cND9D3fvn0q4iP73LktSEPN8+
-   azLLSEL5qqNPajLqxar5lLxVwb62T7nRG5mx7I/mZSFfcoJawl66xr5Mi
-   b3IfHsqyKYDtCJRN/tV14IwEzL9vo0WCBxyDvZKt5shuvn7jaFU8Tx0gC
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="258323052"
-X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
-   d="scan'208";a="258323052"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 02:10:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
-   d="scan'208";a="787940080"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga006.fm.intel.com with ESMTP; 30 Mar 2022 02:10:08 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 22U9A6qw001631;
-        Wed, 30 Mar 2022 10:10:06 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Wojciech Drewek <wojciech.drewek@intel.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Marcin Szycik <marcin.szycik@linux.intel.com>,
-        Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 net-next 5/5] ice: switch: convert packet template match code to rodata
-Date:   Wed, 30 Mar 2022 11:07:34 +0200
-Message-Id: <20220330090734.2725099-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <PH0PR11MB5782637EA9771D3ED4E56012FD1E9@PH0PR11MB5782.namprd11.prod.outlook.com>
-References: <20220321105954.843154-1-alexandr.lobakin@intel.com> <20220321105954.843154-6-alexandr.lobakin@intel.com> <PH0PR11MB5782637EA9771D3ED4E56012FD1E9@PH0PR11MB5782.namprd11.prod.outlook.com>
+        Wed, 30 Mar 2022 05:13:37 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8864321DF25;
+        Wed, 30 Mar 2022 02:11:52 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KT0xY4XpTzDq8l;
+        Wed, 30 Mar 2022 17:09:37 +0800 (CST)
+Received: from dggpemm500017.china.huawei.com (7.185.36.178) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 30 Mar 2022 17:11:37 +0800
+Received: from [10.174.178.220] (10.174.178.220) by
+ dggpemm500017.china.huawei.com (7.185.36.178) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 30 Mar 2022 17:11:36 +0800
+Subject: Re: [REQUEST DISCUSS]: speed up SCSI error handle for host with
+ massive devices
+To:     Hannes Reinecke <hare@suse.de>,
+        Steffen Maier <maier@linux.ibm.com>,
+        <linux-scsi@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        Lee Duncan <lduncan@suse.com>
+CC:     Wu Bo <wubo40@huawei.com>, Feilong Lin <linfeilong@huawei.com>,
+        <zhangjian013@huawei.com>, Wenchao Hao <haowenchao@huawei.com>
+References: <71e09bb4-ff0a-23fe-38b4-fe6425670efa@huawei.com>
+ <cd7bda98-2160-9271-9520-e98d1fe00ea5@linux.ibm.com>
+ <331aafe1-df9b-cae4-c958-9cf1800e389a@huawei.com>
+ <64d5a997-a1bf-7747-072d-711a8248874d@suse.de>
+From:   Wenchao Hao <haowenchao@huawei.com>
+Message-ID: <c4baacf1-0e86-9660-45f7-50ebc853e6af@huawei.com>
+Date:   Wed, 30 Mar 2022 17:11:36 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <64d5a997-a1bf-7747-072d-711a8248874d@suse.de>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.220]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500017.china.huawei.com (7.185.36.178)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wojciech Drewek <wojciech.drewek@intel.com>
-Date: Tue, 29 Mar 2022 15:12:44 +0000
-
-> Hi Alex,
+On 2022/3/30 2:56, Hannes Reinecke wrote:
+> On 3/29/22 14:40, Wenchao Hao wrote:
+>> On 2022/3/29 18:56, Steffen Maier wrote:
+>>> On 3/29/22 11:06, Wenchao Hao wrote:
+>>>> SCSI timeout would call scsi_eh_scmd_add() on some conditions, host would be set
+>>>> to SHOST_RECOVERY state. Once host enter SHOST_RECOVERY, IOs submitted to all
+>>>> devices in this host would not succeed until the scsi_error_handler() finished.
+>>>> The scsi_error_handler() might takes long time to be done, it's unbearable when
+>>>> host has massive devices.
+>>>>
+>>>> I want to ask is anyone applying another error handler flow to address this
+>>>> phenomenon?
+>>>>
+>>>> I think we can move some operations(like scsi get sense, scsi send startunit
+>>>> and scsi device reset) out of scsi_unjam_host(), to perform these operations
+>>>> without setting host to SHOST_RECOVERY? It would reduce the time of block the
+>>>> whole host.
+>>>>
+>>>> Waiting for your discussion.
+>>>
+>>> We already have "async" aborts before even entering scsi_eh. So your use case seems to imply that those aborts fail and we enter scsi_eh?
+>>>
+>>
+>> Yes, I mean when scsi_abort_command() failed and scsi_eh_scmd_add() is called.
+>>
+>>> There's eh_deadline for limiting the time spent in escalation of scsi_eh, and instead directly go to host reset. Would this help?
+>>>
+>>>
+>>
+>> The deadline seems not helpful. What we want to see is a single LUN's command error
+>> would not stop other LUNs which share the same host. So my plan is to move reset LUN out
+>> from scsi_unjam_host() which run with host set to SHOST_RECOVERY.
 > 
-> > -----Original Message-----
-> > From: Lobakin, Alexandr <alexandr.lobakin@intel.com>
-> > Sent: poniedzialek, 21 marca 2022 12:00
-> > To: intel-wired-lan@lists.osuosl.org
-> > Cc: Lobakin, Alexandr <alexandr.lobakin@intel.com>; Fijalkowski, Maciej <maciej.fijalkowski@intel.com>; Michal Swiatkowski
-> > <michal.swiatkowski@linux.intel.com>; Drewek, Wojciech <wojciech.drewek@intel.com>; Marcin Szycik
-> > <marcin.szycik@linux.intel.com>; Szapar-Mudlaw, Martyna <martyna.szapar-mudlaw@intel.com>; David S. Miller
-> > <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>; netdev@vger.kernel.org; linux-
-> > kernel@vger.kernel.org
-> > Subject: [PATCH v4 net-next 5/5] ice: switch: convert packet template match code to rodata
-> >
-> > Trade text size for rodata size and replace tons of nested if-elses
-> > to the const mask match based structs. The almost entire
-> > ice_find_dummy_packet() now becomes just one plain while-increment
-> > loop. The order in ice_dummy_pkt_profiles[] should be same with the
-> > if-elses order previously, as masks become less and less strict
-> > through the array to follow the original code flow.
-> > Apart from removing 80 locs of 4-level if-elses, it brings a solid
-> > text size optimization:
-> >
-> > add/remove: 0/1 grow/shrink: 1/1 up/down: 2/-1058 (-1056)
-> > Function                                     old     new   delta
-> > ice_fill_adv_dummy_packet                    289     291      +2
-> > ice_adv_add_update_vsi_list                  201       -    -201
-> > ice_add_adv_rule                            2950    2093    -857
-> > Total: Before=414512, After=413456, chg -0.25%
-> > add/remove: 53/52 grow/shrink: 0/0 up/down: 4660/-3988 (672)
-> > RO Data                                      old     new   delta
-> > ice_dummy_pkt_profiles                         -     672    +672
-> > Total: Before=37895, After=38567, chg +1.77%
-> >
-> > Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> > Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-> > Tested-by: Marcin Szycik <marcin.szycik@linux.intel.com>
-> > ---
-> >  drivers/net/ethernet/intel/ice/ice_switch.c | 215 ++++++++++----------
-> >  1 file changed, 108 insertions(+), 107 deletions(-)
-
---- 8< ---
-
-> > +	ICE_PKT_PROFILE(vlan_udp, ICE_PKT_INNER_UDP | ICE_PKT_VLAN),
-> > +	ICE_PKT_PROFILE(udp, ICE_PKT_INNER_UDP),
-> > +	ICE_PKT_PROFILE(vlan_tcp_ipv6, ICE_PKT_INNER_IPV6 | ICE_PKT_VLAN),
-> > +	ICE_PKT_PROFILE(tcp_ipv6, ICE_PKT_INNER_IPV6),
+> Nope. One of the key points of scsi_unjam_host() is that is has to stop all I/O before proceeding. Without doing so basically all SCSI parallel HBAs will fail EH as they _require_ I/O to be stopped.
 > 
-> I think that in both "vlan_tcp_ipv6" and "tcp_ipv6" we should use ICE_PKT_OUTER_IPV6 instead
-> of ICE_PKT_INNER_IPV6. We are not dealing with tunnels in those cases so inner addresses are 
-> incorrect here.
 
-Oh, some copy'n'paste braino indeed.
-I'll send a fixup to Tony in a moment.
+I still can not understand why we must stop all I/O. In my comprehension, stopping all I/O
+is because we might reset host during scsi_error_handler() and we must wait host's number of
+failed command equal to number of busy command then we can wake up scsi_error_handler(). 
 
-> 
-> Thanks,
-> Wojtek
+If move reset LUN out of scsi_error_handler(), and perform single LUN reset, we only need
+stop I/O of this single LUN, this would not affect other LUNs. If single LUN reset failed,
+we can then call in the large scale error handle.
 
-Great catch, thanks for noticing!
+Here is a brief flow:
 
-> 
-> > +	ICE_PKT_PROFILE(vlan_tcp, ICE_PKT_VLAN),
-> > +	ICE_PKT_PROFILE(tcp, 0),
-> > +};
+abort command
+   ||
+   || failed
+   || 
+   \/
+stop single LUN's I/O (need to wait LUN's failed command number equal to busy command  number)
+   ||
+   || failed  (according to our statistic, 90% reset LUN would succeed)
+   ||
+   \/
+stop all LUN's I/O (stage to call in origin error handler)
+   ||
+   ||
+   ||
+   \/
+wait host's failed command number equal to busy command number
+   ||
+   ||
+   ||
+   \/
+perform target reset, bus reset and host reset and so on. (do not need to reset LUN since it already failed)
 
---- 8< ---
+As mentioned, we can reduce the time of setting host to SHOST_RECOVERY which would stop all I/Os.
 
-> > --
-> > 2.35.1
 
-Al
+How do you think? I look forward to hearing from you.
