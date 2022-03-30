@@ -2,106 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18CD3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 07:00:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C779C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 07:01:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243544AbiC3HC2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 03:02:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60834 "EHLO
+        id S243589AbiC3HCn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 03:02:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241845AbiC3HB5 (ORCPT
+        with ESMTP id S243548AbiC3HCS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 03:01:57 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 879A6DF484;
-        Wed, 30 Mar 2022 00:00:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648623612; x=1680159612;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=a/yS06E/f5TlhFE99MfmA8gjZt8NoZmWScc2/+Gac5Y=;
-  b=Kab4Gj2KqZ/uTuU+hBH93dJhAMs2RwDVp19DAwGfPHOgldPZoDcDP7/r
-   ZXzW9UC84qQuHAJFU5Wkzvgn6oxO4chjZb83ZEhLEusb5nStVN2KtmnG+
-   DetFxe2EBcvyKxOL5iQZtGHGuMwEaZuGdAmDlELJ8cjAH5N/iPxLR3FgC
-   NfVNaI46e5pKfPGBpU8Gk29YeJZEsZRFId505tw9oMEpsUgu3GfAJ51Ch
-   Q+2yqNW7E/AveLwBlkdzJtpeP3SSZsJIbc+v2+8CLZJNp/VCGfm6FPYkj
-   5BckXYOoDj5xnhxZ9H7ktKwmjRikcszTCeZD+ZQm2DdaIuT8spfvKIL4+
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="258293974"
-X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
-   d="scan'208";a="258293974"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 00:00:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
-   d="scan'208";a="565346120"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
-  by orsmga008.jf.intel.com with ESMTP; 30 Mar 2022 00:00:05 -0700
-Date:   Wed, 30 Mar 2022 14:52:51 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Tom Rix <trix@redhat.com>, Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-hwmon@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 2/5] hwmon: intel-m10-bmc-hwmon: use
- devm_hwmon_sanitize_name()
-Message-ID: <20220330065251.GB212503@yilunxu-OptiPlex-7050>
-References: <20220329160730.3265481-1-michael@walle.cc>
- <20220329160730.3265481-3-michael@walle.cc>
+        Wed, 30 Mar 2022 03:02:18 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27248DF484
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 00:00:33 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4KSy4b67c7z9sS9;
+        Wed, 30 Mar 2022 09:00:31 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id RCdpq8d0SeNj; Wed, 30 Mar 2022 09:00:31 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4KSy4b59wqz9sS8;
+        Wed, 30 Mar 2022 09:00:31 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 9F8308B77B;
+        Wed, 30 Mar 2022 09:00:31 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id P1-xpKC3Oz0p; Wed, 30 Mar 2022 09:00:31 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 761788B765;
+        Wed, 30 Mar 2022 09:00:31 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 22U70Mjd279108
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Wed, 30 Mar 2022 09:00:22 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 22U70LeF279107;
+        Wed, 30 Mar 2022 09:00:21 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH v3] ftrace: Make ftrace_graph_is_dead() a static branch
+Date:   Wed, 30 Mar 2022 09:00:19 +0200
+Message-Id: <e0411a6a0ed3eafff0ad2bc9cd4b0e202b4617df.1648623570.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220329160730.3265481-3-michael@walle.cc>
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1648623618; l=3505; s=20211009; h=from:subject:message-id; bh=aCcAKl5FNjWRbsv3MCPz0tiPrIo7QmLsO8hbWKLshtE=; b=Ssufl5SrZq1mI9BBqpCSJGu2PAG8ypJPr+aKeZbTU2iNAVEhPsSQlAXql/uBE0A/atfYOwelonGX GnVbOCcAApbNCTtw6NSI2ANpwC9rBoNG/IsmWD5MMsJSFY0yyOs+
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 06:07:27PM +0200, Michael Walle wrote:
-> Instead of open-coding the bad characters replacement in the hwmon name,
-> use the new devm_hwmon_sanitize_name().
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
+ftrace_graph_is_dead() is used on hot paths, it just reads a variable
+in memory and is not worth suffering function call constraints.
 
-Acked-by: Xu Yilun <yilun.xu@intel.com>
+For instance, at entry of prepare_ftrace_return(), inlining it avoids
+saving prepare_ftrace_return() parameters to stack and restoring them
+after calling ftrace_graph_is_dead().
 
-> ---
->  drivers/hwmon/intel-m10-bmc-hwmon.c | 7 +------
->  1 file changed, 1 insertion(+), 6 deletions(-)
-> 
-> diff --git a/drivers/hwmon/intel-m10-bmc-hwmon.c b/drivers/hwmon/intel-m10-bmc-hwmon.c
-> index 7a08e4c44a4b..29370108fa1c 100644
-> --- a/drivers/hwmon/intel-m10-bmc-hwmon.c
-> +++ b/drivers/hwmon/intel-m10-bmc-hwmon.c
-> @@ -515,7 +515,6 @@ static int m10bmc_hwmon_probe(struct platform_device *pdev)
->  	struct intel_m10bmc *m10bmc = dev_get_drvdata(pdev->dev.parent);
->  	struct device *hwmon_dev, *dev = &pdev->dev;
->  	struct m10bmc_hwmon *hw;
-> -	int i;
->  
->  	hw = devm_kzalloc(dev, sizeof(*hw), GFP_KERNEL);
->  	if (!hw)
-> @@ -528,14 +527,10 @@ static int m10bmc_hwmon_probe(struct platform_device *pdev)
->  	hw->chip.info = hw->bdata->hinfo;
->  	hw->chip.ops = &m10bmc_hwmon_ops;
->  
-> -	hw->hw_name = devm_kstrdup(dev, id->name, GFP_KERNEL);
-> +	hw->hw_name = devm_hwmon_sanitize_name(dev, id->name);
->  	if (!hw->hw_name)
->  		return -ENOMEM;
->  
-> -	for (i = 0; hw->hw_name[i]; i++)
-> -		if (hwmon_is_bad_char(hw->hw_name[i]))
-> -			hw->hw_name[i] = '_';
-> -
->  	hwmon_dev = devm_hwmon_device_register_with_info(dev, hw->hw_name,
->  							 hw, &hw->chip, NULL);
->  	return PTR_ERR_OR_ZERO(hwmon_dev);
-> -- 
-> 2.30.2
+While at it using a static branch is even more performant and is
+rather well adapted considering that the returned value will almost
+never change.
+
+Inline ftrace_graph_is_dead() and replace 'kill_ftrace_graph' bool
+by a static branch.
+
+The performance improvement is noticeable.
+
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+v3: Keep includes in upside-down x-mas tree
+
+v2: Use a static branch instead of a global bool var.
+---
+ include/linux/ftrace.h | 16 +++++++++++++++-
+ kernel/trace/fgraph.c  | 17 +++--------------
+ 2 files changed, 18 insertions(+), 15 deletions(-)
+
+diff --git a/include/linux/ftrace.h b/include/linux/ftrace.h
+index ed8cf433a46a..4816b7e11047 100644
+--- a/include/linux/ftrace.h
++++ b/include/linux/ftrace.h
+@@ -9,6 +9,7 @@
+ 
+ #include <linux/trace_recursion.h>
+ #include <linux/trace_clock.h>
++#include <linux/jump_label.h>
+ #include <linux/kallsyms.h>
+ #include <linux/linkage.h>
+ #include <linux/bitops.h>
+@@ -1018,7 +1019,20 @@ unsigned long ftrace_graph_ret_addr(struct task_struct *task, int *idx,
+ extern int register_ftrace_graph(struct fgraph_ops *ops);
+ extern void unregister_ftrace_graph(struct fgraph_ops *ops);
+ 
+-extern bool ftrace_graph_is_dead(void);
++/**
++ * ftrace_graph_is_dead - returns true if ftrace_graph_stop() was called
++ *
++ * ftrace_graph_stop() is called when a severe error is detected in
++ * the function graph tracing. This function is called by the critical
++ * paths of function graph to keep those paths from doing any more harm.
++ */
++DECLARE_STATIC_KEY_FALSE(kill_ftrace_graph);
++
++static inline bool ftrace_graph_is_dead(void)
++{
++	return static_branch_unlikely(&kill_ftrace_graph);
++}
++
+ extern void ftrace_graph_stop(void);
+ 
+ /* The current handlers in use */
+diff --git a/kernel/trace/fgraph.c b/kernel/trace/fgraph.c
+index 19028e072cdb..8f4fb328133a 100644
+--- a/kernel/trace/fgraph.c
++++ b/kernel/trace/fgraph.c
+@@ -7,6 +7,7 @@
+  *
+  * Highly modified by Steven Rostedt (VMware).
+  */
++#include <linux/jump_label.h>
+ #include <linux/suspend.h>
+ #include <linux/ftrace.h>
+ #include <linux/slab.h>
+@@ -23,24 +24,12 @@
+ #define ASSIGN_OPS_HASH(opsname, val)
+ #endif
+ 
+-static bool kill_ftrace_graph;
++DEFINE_STATIC_KEY_FALSE(kill_ftrace_graph);
+ int ftrace_graph_active;
+ 
+ /* Both enabled by default (can be cleared by function_graph tracer flags */
+ static bool fgraph_sleep_time = true;
+ 
+-/**
+- * ftrace_graph_is_dead - returns true if ftrace_graph_stop() was called
+- *
+- * ftrace_graph_stop() is called when a severe error is detected in
+- * the function graph tracing. This function is called by the critical
+- * paths of function graph to keep those paths from doing any more harm.
+- */
+-bool ftrace_graph_is_dead(void)
+-{
+-	return kill_ftrace_graph;
+-}
+-
+ /**
+  * ftrace_graph_stop - set to permanently disable function graph tracing
+  *
+@@ -51,7 +40,7 @@ bool ftrace_graph_is_dead(void)
+  */
+ void ftrace_graph_stop(void)
+ {
+-	kill_ftrace_graph = true;
++	static_branch_enable(&kill_ftrace_graph);
+ }
+ 
+ /* Add a function return address to the trace stack on thread info.*/
+-- 
+2.35.1
+
