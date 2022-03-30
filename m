@@ -2,520 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E28DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:00:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE971C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:00:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345481AbiC3NBt (ORCPT
+        id S1345559AbiC3NCh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 09:01:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40720 "EHLO
+        Wed, 30 Mar 2022 09:02:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345503AbiC3NBr (ORCPT
+        with ESMTP id S1345549AbiC3NCe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 09:01:47 -0400
-X-Greylist: delayed 1469 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 30 Mar 2022 06:00:01 PDT
-Received: from 1.mo552.mail-out.ovh.net (1.mo552.mail-out.ovh.net [178.32.96.117])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 263A0D5569
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 06:00:00 -0700 (PDT)
-Received: from mxplan5.mail.ovh.net (unknown [10.109.138.42])
-        by mo552.mail-out.ovh.net (Postfix) with ESMTPS id 4EBBA21147;
-        Wed, 30 Mar 2022 12:14:41 +0000 (UTC)
-Received: from kaod.org (37.59.142.106) by DAG4EX1.mxp5.local (172.16.2.31)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 30 Mar
- 2022 14:14:41 +0200
-Authentication-Results: garm.ovh; auth=pass (GARM-106R00678022d9b-b981-4cb9-a8d6-ab598787562b,
-                    C01A700CFB7B2A582AB77A6F9CDE148205597502) smtp.auth=clg@kaod.org
-X-OVh-ClientIp: 82.64.250.170
-Message-ID: <0ec477b5-e404-536f-ff60-39f43208c3cc@kaod.org>
-Date:   Wed, 30 Mar 2022 14:14:40 +0200
+        Wed, 30 Mar 2022 09:02:34 -0400
+Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F06D15DABD
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 06:00:48 -0700 (PDT)
+Received: by mail-qk1-x72c.google.com with SMTP id 85so16484542qkm.9
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 06:00:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=JKBEI+rTrucdMmAykodBJnjRrK7pFFvDZ/jgsyxJpqM=;
+        b=ZdgvW8LjgNL6YoqgHEh9gCT/a5BIEEXhlqaP97vLxTw5UtMyWwZgMFoScg41CskVB5
+         tfMc3uKjFABrduUmfVVkRLPZMnDclwcFUEMNSYizSlVlLS4Cd1MArP6pc0/518t70bGn
+         bpXnOF4LwesYzcGZuUUFRmY5SJ04C+LezJNIr4BgOJ5Sczzn/GnzoKITfFSLprFCsTyx
+         zZO8/lzwF0pNVYBojwrJCtCG9mmLOAuLtcz+TfGA4ArRPEXMlYYFYPHJblLHUZqqQPNQ
+         oJKncFZRx8keTMZvVHfEluKg6hVvsYHpFxir/BDXwROVBfk7CLo3OHP5QpZ5nvfSqsXF
+         a5Eg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=JKBEI+rTrucdMmAykodBJnjRrK7pFFvDZ/jgsyxJpqM=;
+        b=PtWnAoAKoEMTbumrg8QJf1D/bvUblrJboGmK+0x2Dk6Oa4P2q1t2pdM6NbZh6V95BQ
+         oDjEaKr0M+5mfzz7MsAXOEJx4EaRuJwbW4wtsifq5hC4nuNtbdSP9R4YZwehxgejuQBw
+         +hQe/fpUMp4Zkn5+E5eo0CRQKaMiwB25iSKbBddXxd27MoMMxOMDGwYCmN/pZU3d6Tj8
+         3NFcPgNsAf6VYggM2wSCA3Tg79C+Tkqv6I9NhjX0G+nUCjxajL3Uic/3rqqJY4dImFJZ
+         QtcKIkocpgXAi5xlZ7MAyPIjBD5DQlkj1iETuMIN5u11Ju6R1xH0Z3+P1g6u89+EeEhk
+         CPDw==
+X-Gm-Message-State: AOAM533QIKER0VRdhmhRZC82qwzCOp2m+YAw3GXMqmBaNqta3jvJJBtt
+        3l0HQD73DJx0YLq37N4mgHrqbw==
+X-Google-Smtp-Source: ABdhPJyv3AWwhtvS2UE867VEhAMipuhh9WVFgBcj0BauMpWiZotNv82wxTieALZfY6uEjLrGUXMVxw==
+X-Received: by 2002:a37:9d7:0:b0:67e:85d2:2417 with SMTP id 206-20020a3709d7000000b0067e85d22417mr23645632qkj.753.1648645247377;
+        Wed, 30 Mar 2022 06:00:47 -0700 (PDT)
+Received: from localhost (cpe-98-15-154-102.hvc.res.rr.com. [98.15.154.102])
+        by smtp.gmail.com with ESMTPSA id b202-20020ae9ebd3000000b0067b11d53365sm10850997qkg.47.2022.03.30.06.00.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 06:00:46 -0700 (PDT)
+Date:   Wed, 30 Mar 2022 09:00:46 -0400
+From:   Johannes Weiner <hannes@cmpxchg.org>
+To:     CGEL <cgel.zte@gmail.com>
+Cc:     axboe@kernel.dk, viro@zeniv.linux.org.uk,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, akpm@linux-foundation.org,
+        Yang Yang <yang.yang29@zte.com.cn>,
+        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
+        Christoph Hellwig <hch@infradead.org>
+Subject: Re: [PATCH] block/psi: make PSI annotations of submit_bio only work
+ for file pages
+Message-ID: <YkRUfuT3jGcqSw1Q@cmpxchg.org>
+References: <20220316063927.2128383-1-yang.yang29@zte.com.cn>
+ <YjiMsGoXoDU+FwsS@cmpxchg.org>
+ <623938d1.1c69fb81.52716.030f@mx.google.com>
+ <YjnO3p6vvAjeMCFC@cmpxchg.org>
+ <20220323061058.GA2343452@cgel.zte@gmail.com>
+ <62441603.1c69fb81.4b06b.5a29@mx.google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v4 08/11] spi: aspeed: Calibrate read timings
-Content-Language: en-US
-To:     Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
-        "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>,
-        "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>
-CC:     Mark Brown <broonie@kernel.org>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Tao Ren <rentao.bupt@gmail.com>
-References: <20220325100849.2019209-1-clg@kaod.org>
- <20220325100849.2019209-9-clg@kaod.org>
- <HK0PR06MB2786548534B370AE0C691C32B21F9@HK0PR06MB2786.apcprd06.prod.outlook.com>
-From:   =?UTF-8?Q?C=c3=a9dric_Le_Goater?= <clg@kaod.org>
-In-Reply-To: <HK0PR06MB2786548534B370AE0C691C32B21F9@HK0PR06MB2786.apcprd06.prod.outlook.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [37.59.142.106]
-X-ClientProxiedBy: DAG9EX2.mxp5.local (172.16.2.82) To DAG4EX1.mxp5.local
- (172.16.2.31)
-X-Ovh-Tracer-GUID: 2f049999-23ca-433c-9185-ba95e6497958
-X-Ovh-Tracer-Id: 5310025437221849927
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudeivddgheduucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepkfffgggfuffvfhfhjggtgfhisehtkeertddtfeejnecuhfhrohhmpeevrogurhhitggpnfgvpgfiohgrthgvrhcuoegtlhhgsehkrghougdrohhrgheqnecuggftrfgrthhtvghrnhepueevledvjeetgeetfeeiveeftefffedvvdeikeetveelfeeglefgueetvdefvdefnecuffhomhgrihhnpehgihhthhhusgdrtghomhenucfkpheptddrtddrtddrtddpfeejrdehledrudegvddruddtieenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepmhigphhlrghnhedrmhgrihhlrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpegtlhhgsehkrghougdrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehrvghnthgrohdrsghuphhtsehgmhgrihhlrdgtohhm
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <62441603.1c69fb81.4b06b.5a29@mx.google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/30/22 13:53, Chin-Ting Kuo wrote:
-> Hi Cédric Le,
-> 
->> -----Original Message-----
->> From: Cédric Le Goater <clg@kaod.org>
->> Sent: Friday, March 25, 2022 6:09 PM
->> To: linux-spi@vger.kernel.org; linux-mtd@lists.infradead.org
->> Subject: [PATCH v4 08/11] spi: aspeed: Calibrate read timings
->>
->> To accommodate the different response time of SPI transfers on different
->> boards and different SPI NOR devices, the Aspeed controllers provide a set of
->> Read Timing Compensation registers to tune the timing delays depending on
->> the frequency being used. The AST2600 SoC has one of these registers per
->> device. On the AST2500 and AST2400 SoCs, the timing register is shared by all
->> devices which is problematic to get good results other than for one device.
->>
->> The algorithm first reads a golden buffer at low speed and then performs reads
->> with different clocks and delay cycle settings to find a breaking point. This
->> selects a default good frequency for the CEx control register.
->> The current settings are a bit optimistic as we pick the first delay giving good
->> results. A safer approach would be to determine an interval and choose the
->> middle value.
->>
->> Calibration is performed when the direct mapping for reads is created.
->> Since the underlying spi-nor object needs to be initialized to create the
->> spi_mem operation for direct mapping, we should be fine. Having a specific
->> API would clarify the requirements though.
->>
->> Cc: Pratyush Yadav <p.yadav@ti.com>
->> Reviewed-by: Joel Stanley <joel@jms.id.au>
->> Tested-by: Joel Stanley <joel@jms.id.au>
->> Tested-by: Tao Ren <rentao.bupt@gmail.com>
->> Signed-off-by: Cédric Le Goater <clg@kaod.org>
->> ---
->>   drivers/spi/spi-aspeed-smc.c | 281
->> +++++++++++++++++++++++++++++++++++
->>   1 file changed, 281 insertions(+)
->>
->> diff --git a/drivers/spi/spi-aspeed-smc.c b/drivers/spi/spi-aspeed-smc.c index
->> 7f306da7c44e..660451667a39 100644
->> --- a/drivers/spi/spi-aspeed-smc.c
->> +++ b/drivers/spi/spi-aspeed-smc.c
->> @@ -33,6 +33,8 @@
->>   #define   CTRL_IO_ADDRESS_4B		BIT(13)	/* AST2400 SPI only */
->>   #define   CTRL_IO_DUMMY_SET(dummy)					\
->>   	(((((dummy) >> 2) & 0x1) << 14) | (((dummy) & 0x3) << 6))
->> +#define   CTRL_FREQ_SEL_SHIFT		8
->> +#define   CTRL_FREQ_SEL_MASK		GENMASK(11,
->> CTRL_FREQ_SEL_SHIFT)
->>   #define   CTRL_CE_STOP_ACTIVE		BIT(2)
->>   #define   CTRL_IO_MODE_CMD_MASK		GENMASK(1, 0)
->>   #define   CTRL_IO_MODE_NORMAL		0x0
->> @@ -45,6 +47,9 @@
->>   /* CEx Address Decoding Range Register */
->>   #define CE0_SEGMENT_ADDR_REG		0x30
->>
->> +/* CEx Read timing compensation register */
->> +#define CE0_TIMING_COMPENSATION_REG	0x94
->> +
->>   enum aspeed_spi_ctl_reg_value {
->>   	ASPEED_SPI_BASE,
->>   	ASPEED_SPI_READ,
->> @@ -70,10 +75,15 @@ struct aspeed_spi_data {
->>   	bool	hastype;
->>   	u32	mode_bits;
->>   	u32	we0;
->> +	u32	timing;
->> +	u32	hclk_mask;
->> +	u32	hdiv_max;
->>
->>   	u32 (*segment_start)(struct aspeed_spi *aspi, u32 reg);
->>   	u32 (*segment_end)(struct aspeed_spi *aspi, u32 reg);
->>   	u32 (*segment_reg)(struct aspeed_spi *aspi, u32 start, u32 end);
->> +	int (*calibrate)(struct aspeed_spi_chip *chip, u32 hdiv,
->> +			 const u8 *golden_buf, u8 *test_buf);
->>   };
->>
->>   #define ASPEED_SPI_MAX_NUM_CS	5
->> @@ -517,6 +527,8 @@ static int aspeed_spi_chip_adjust_window(struct
->> aspeed_spi_chip *chip,
->>   	return 0;
->>   }
->>
->> +static int aspeed_spi_do_calibration(struct aspeed_spi_chip *chip);
->> +
->>   static int aspeed_spi_dirmap_create(struct spi_mem_dirmap_desc *desc)  {
->>   	struct aspeed_spi *aspi =
->> spi_controller_get_devdata(desc->mem->spi->master);
->> @@ -565,6 +577,8 @@ static int aspeed_spi_dirmap_create(struct
->> spi_mem_dirmap_desc *desc)
->>   	chip->ctl_val[ASPEED_SPI_READ] = ctl_val;
->>   	writel(chip->ctl_val[ASPEED_SPI_READ], chip->ctl);
->>
->> +	ret = aspeed_spi_do_calibration(chip);
->> +
->>   	dev_info(aspi->dev, "CE%d read buswidth:%d [0x%08x]\n",
->>   		 chip->cs, op->data.buswidth, chip->ctl_val[ASPEED_SPI_READ]);
->>
->> @@ -812,6 +826,249 @@ static u32 aspeed_spi_segment_ast2600_reg(struct
->> aspeed_spi *aspi,
->>   		((end - 1) & AST2600_SEG_ADDR_MASK);
->>   }
->>
->> +/*
->> + * Read timing compensation sequences
->> + */
->> +
->> +#define CALIBRATE_BUF_SIZE SZ_16K
->> +
->> +static bool aspeed_spi_check_reads(struct aspeed_spi_chip *chip,
->> +				   const u8 *golden_buf, u8 *test_buf) {
->> +	int i;
->> +
->> +	for (i = 0; i < 10; i++) {
->> +		memcpy_fromio(test_buf, chip->ahb_base, CALIBRATE_BUF_SIZE);
->> +		if (memcmp(test_buf, golden_buf, CALIBRATE_BUF_SIZE) != 0) { #if
->> +defined(VERBOSE_DEBUG)
->> +			print_hex_dump_bytes(DEVICE_NAME "  fail: ",
->> DUMP_PREFIX_NONE,
->> +					     test_buf, 0x100);
->> +#endif
->> +			return false;
->> +		}
->> +	}
->> +	return true;
->> +}
->> +
->> +#define FREAD_TPASS(i)	(((i) / 2) | (((i) & 1) ? 0 : 8))
->> +
->> +/*
->> + * The timing register is shared by all devices. Only update for CE0.
->> + */
->> +static int aspeed_spi_calibrate(struct aspeed_spi_chip *chip, u32 hdiv,
->> +				const u8 *golden_buf, u8 *test_buf) {
->> +	struct aspeed_spi *aspi = chip->aspi;
->> +	const struct aspeed_spi_data *data = aspi->data;
->> +	int i;
->> +	int good_pass = -1, pass_count = 0;
->> +	u32 shift = (hdiv - 1) << 2;
->> +	u32 mask = ~(0xfu << shift);
->> +	u32 fread_timing_val = 0;
->> +
->> +	/* Try HCLK delay 0..5, each one with/without delay and look for a
->> +	 * good pair.
->> +	 */
->> +	for (i = 0; i < 12; i++) {
->> +		bool pass;
->> +
->> +		if (chip->cs == 0) {
->> +			fread_timing_val &= mask;
->> +			fread_timing_val |= FREAD_TPASS(i) << shift;
->> +			writel(fread_timing_val, aspi->regs + data->timing);
->> +		}
->> +		pass = aspeed_spi_check_reads(chip, golden_buf, test_buf);
->> +		dev_dbg(aspi->dev,
->> +			"  * [%08x] %d HCLK delay, %dns DI delay : %s",
->> +			fread_timing_val, i / 2, (i & 1) ? 0 : 4,
->> +			pass ? "PASS" : "FAIL");
->> +		if (pass) {
->> +			pass_count++;
->> +			if (pass_count == 3) {
->> +				good_pass = i - 1;
->> +				break;
->> +			}
->> +		} else {
->> +			pass_count = 0;
->> +		}
->> +	}
->> +
->> +	/* No good setting for this frequency */
->> +	if (good_pass < 0)
->> +		return -1;
->> +
->> +	/* We have at least one pass of margin, let's use first pass */
->> +	if (chip->cs == 0) {
->> +		fread_timing_val &= mask;
->> +		fread_timing_val |= FREAD_TPASS(good_pass) << shift;
->> +		writel(fread_timing_val, aspi->regs + data->timing);
->> +	}
->> +	dev_dbg(aspi->dev, " * -> good is pass %d [0x%08x]",
->> +		good_pass, fread_timing_val);
->> +	return 0;
->> +}
->> +
->> +static bool aspeed_spi_check_calib_data(const u8 *test_buf, u32 size) {
->> +	const u32 *tb32 = (const u32 *)test_buf;
->> +	u32 i, cnt = 0;
->> +
->> +	/* We check if we have enough words that are neither all 0
->> +	 * nor all 1's so the calibration can be considered valid.
->> +	 *
->> +	 * I use an arbitrary threshold for now of 64
->> +	 */
->> +	size >>= 2;
->> +	for (i = 0; i < size; i++) {
->> +		if (tb32[i] != 0 && tb32[i] != 0xffffffff)
->> +			cnt++;
->> +	}
->> +	return cnt >= 64;
->> +}
->> +
->> +static const u32 aspeed_spi_hclk_divs[] = {
->> +	0xf, /* HCLK */
->> +	0x7, /* HCLK/2 */
->> +	0xe, /* HCLK/3 */
->> +	0x6, /* HCLK/4 */
->> +	0xd, /* HCLK/5 */
->> +};
->> +
->> +#define ASPEED_SPI_HCLK_DIV(i) \
->> +	(aspeed_spi_hclk_divs[(i) - 1] << CTRL_FREQ_SEL_SHIFT)
->> +
->> +static int aspeed_spi_do_calibration(struct aspeed_spi_chip *chip) {
->> +	struct aspeed_spi *aspi = chip->aspi;
->> +	const struct aspeed_spi_data *data = aspi->data;
->> +	u32 ahb_freq = aspi->clk_freq;
->> +	u32 max_freq = chip->clk_freq;
->> +	u32 ctl_val;
->> +	u8 *golden_buf = NULL;
->> +	u8 *test_buf = NULL;
->> +	int i, rc, best_div = -1;
->> +
->> +	dev_dbg(aspi->dev, "calculate timing compensation - AHB freq: %d MHz",
->> +		ahb_freq / 1000000);
->> +
->> +	/*
->> +	 * use the related low frequency to get check calibration data
->> +	 * and get golden data.
->> +	 */
->> +	ctl_val = chip->ctl_val[ASPEED_SPI_READ] & data->hclk_mask;
->> +	writel(ctl_val, chip->ctl);
->> +
->> +	test_buf = kzalloc(CALIBRATE_BUF_SIZE * 2, GFP_KERNEL);
->> +	if (!test_buf)
->> +		return -ENOMEM;
->> +
->> +	golden_buf = test_buf + CALIBRATE_BUF_SIZE;
->> +
->> +	memcpy_fromio(golden_buf, chip->ahb_base, CALIBRATE_BUF_SIZE);
->> +	if (!aspeed_spi_check_calib_data(golden_buf, CALIBRATE_BUF_SIZE)) {
->> +		dev_info(aspi->dev, "Calibration area too uniform, using low speed");
->> +		goto no_calib;
->> +	}
->> +
->> +#if defined(VERBOSE_DEBUG)
->> +	print_hex_dump_bytes(DEVICE_NAME "  good: ", DUMP_PREFIX_NONE,
->> +			     golden_buf, 0x100);
->> +#endif
->> +
->> +	/* Now we iterate the HCLK dividers until we find our breaking point */
->> +	for (i = ARRAY_SIZE(aspeed_spi_hclk_divs); i > data->hdiv_max - 1; i--) {
->> +		u32 tv, freq;
->> +
->> +		freq = ahb_freq / i;
->> +		if (freq > max_freq)
->> +			continue;
->> +
->> +		/* Set the timing */
->> +		tv = chip->ctl_val[ASPEED_SPI_READ] | ASPEED_SPI_HCLK_DIV(i);
->> +		writel(tv, chip->ctl);
->> +		dev_dbg(aspi->dev, "Trying HCLK/%d [%08x] ...", i, tv);
->> +		rc = data->calibrate(chip, i, golden_buf, test_buf);
->> +		if (rc == 0)
->> +			best_div = i;
->> +	}
->> +
->> +	/* Nothing found ? */
->> +	if (best_div < 0) {
->> +		dev_warn(aspi->dev, "No good frequency, using dumb slow");
->> +	} else {
->> +		dev_dbg(aspi->dev, "Found good read timings at HCLK/%d",
->> best_div);
->> +
->> +		/* Record the freq */
->> +		for (i = 0; i < ASPEED_SPI_MAX; i++)
->> +			chip->ctl_val[i] = (chip->ctl_val[i] & data->hclk_mask) |
->> +				ASPEED_SPI_HCLK_DIV(best_div);
->> +	}
->> +
->> +no_calib:
-> 
-> - Maybe, if the calibration process is not executed, the frequency setting calculated from max_frequency in the device tree can be filled in FMC10 instead of using dumb slow one, 12.5MHz, always.
+On Wed, Mar 30, 2022 at 08:34:08AM +0000, CGEL wrote:
+> On Wed, Mar 23, 2022 at 06:11:03AM +0000, CGEL wrote:
+> > On Tue, Mar 22, 2022 at 09:27:58AM -0400, Johannes Weiner wrote:
+> > > On Tue, Mar 22, 2022 at 02:47:42AM +0000, CGEL wrote:
+> > > > On Mon, Mar 21, 2022 at 10:33:20AM -0400, Johannes Weiner wrote:
+> > > > > On Wed, Mar 16, 2022 at 06:39:28AM +0000, cgel.zte@gmail.com wrote:
+> > > > > > From: Yang Yang <yang.yang29@zte.com.cn>
+> > > > > > 
+> > > > > > psi tracks the time spent on submitting the IO of refaulting file pages
+> > > > > > and anonymous pages[1]. But after we tracks refaulting anonymous pages
+> > > > > > in swap_readpage[2][3], there is no need to track refaulting anonymous
+> > > > > > pages in submit_bio.
+> > > > > > 
+> > > > > > So this patch can reduce redundant calling of psi_memstall_enter. And
+> > > > > > make it easier to track refaulting file pages and anonymous pages
+> > > > > > separately.
+> > > > > 
+> > > > > I don't think this is an improvement.
+> > > > > 
+> > > > > psi_memstall_enter() will check current->in_memstall once, detect the
+> > > > > nested call, and bail. Your patch checks PageSwapBacked for every page
+> > > > > being added. It's more branches for less robust code.
+> > > > 
+> > > > We are also working for a new patch to classify different reasons cause
+> > > > psi_memstall_enter(): reclaim, thrashing, compact, etc. This will help
+> > > > user to tuning sysctl, for example, if user see high compact delay, he
+> > > > may try do adjust THP sysctl to reduce the compact delay.
+> > > > 
+> > > > To support that, we should distinguish what's the reason cause psi in
+> > > > submit_io(), this patch does the job.
+> > > 
+> > > Please submit these patches together then. On its own, this patch
+> > > isn't desirable.
+> > I think this patch has it's independent value, I try to make a better
+> > explain.
 
-Indeed.
+You missed the point about it complicating semantics.
 
->   For example, except for uniform content case, the calibration process will be ignored when SPI clock frequency in the device tree is smaller than 40MHz.
-> - The function, aspeed_2600_spi_clk_basic_setting, in [2] can be added to support lower SPI clock frequency, e.g., 4MHz.
->   For AST2600, SPI clock frequency can be calculated by HCLK/(FMC10[27:24] + FMC10[11:8]).
+Right now, the bio layer annotates stalls from queue contention. This
+is very simple. The swap code has relied on it in the past. It doesn't
+now, but that doesn't change what the concept is at the bio layer.
 
-Could you please send patches on top of this series ? Here are the branches :
+You patch explicitly codifies that the MM handles swap IOs, and the
+lower bio layer handles files. This asymmetry is ugly and error prone.
 
-   https://github.com/legoater/linux/commits/openbmc-5.15
-   https://github.com/legoater/linux/commits/aspeed         (mainline)
+If you want type distinction, we should move it all into MM code, like
+Christoph is saying. Were swap code handles anon refaults and the page
+cache code handles file refaults. This would be my preferred layering,
+and my original patch did that: https://lkml.org/lkml/2019/7/22/1070.
 
-I can include them when I resend a v5.
+But it was NAKed, and I had to agree with the argument. The page cache
+code is not very centralized, and the place where we deal with
+individual pages (and detect refaults) and where we submit bios (where
+the stalls occur) is spread out into multiple filesystems. There are
+180 submit_bio() calls in fs/; you'd have to audit which ones are for
+page cache submissions, and then add stall annotations or use a new
+submit_bio_cache() wrapper that handles it. Changes in the filesystem
+could easily miss this protocol and silently break pressure detection.
 
-Thanks,
-
-C.
-
-
-> 
->> +	writel(chip->ctl_val[ASPEED_SPI_READ], chip->ctl);
->> +	kfree(test_buf);
->> +	return 0;
->> +}
->> +
->> +#define TIMING_DELAY_DI		BIT(3)
->> +#define TIMING_DELAY_HCYCLE_MAX	5
->> +#define TIMING_REG_AST2600(chip)				\
->> +	((chip)->aspi->regs + (chip)->aspi->data->timing +	\
->> +	 (chip)->cs * 4)
->> +
->> +static int aspeed_spi_ast2600_calibrate(struct aspeed_spi_chip *chip, u32
->> hdiv,
->> +					const u8 *golden_buf, u8 *test_buf) {
->> +	struct aspeed_spi *aspi = chip->aspi;
->> +	int hcycle;
->> +	u32 shift = (hdiv - 2) << 3;
->> +	u32 mask = ~(0xfu << shift);
->> +	u32 fread_timing_val = 0;
->> +
->> +	for (hcycle = 0; hcycle <= TIMING_DELAY_HCYCLE_MAX; hcycle++) {
->> +		int delay_ns;
->> +		bool pass = false;
->> +
->> +		fread_timing_val &= mask;
->> +		fread_timing_val |= hcycle << shift;
->> +
->> +		/* no DI input delay first  */
->> +		writel(fread_timing_val, TIMING_REG_AST2600(chip));
->> +		pass = aspeed_spi_check_reads(chip, golden_buf, test_buf);
->> +		dev_dbg(aspi->dev,
->> +			"  * [%08x] %d HCLK delay, DI delay none : %s",
->> +			fread_timing_val, hcycle, pass ? "PASS" : "FAIL");
->> +		if (pass)
->> +			return 0;
->> +
->> +		/* Add DI input delays  */
->> +		fread_timing_val &= mask;
->> +		fread_timing_val |= (TIMING_DELAY_DI | hcycle) << shift;
->> +
->> +		for (delay_ns = 0; delay_ns < 0x10; delay_ns++) {
->> +			fread_timing_val &= ~(0xf << (4 + shift));
->> +			fread_timing_val |= delay_ns << (4 + shift);
->> +
->> +			writel(fread_timing_val, TIMING_REG_AST2600(chip));
->> +			pass = aspeed_spi_check_reads(chip, golden_buf, test_buf);
->> +			dev_dbg(aspi->dev,
->> +				"  * [%08x] %d HCLK delay, DI delay %d.%dns : %s",
->> +				fread_timing_val, hcycle, (delay_ns + 1) / 2,
->> +				(delay_ns + 1) & 1 ? 5 : 5, pass ? "PASS" : "FAIL");
->> +			/*
->> +			 * TODO: This is optimistic. We should look
->> +			 * for a working interval and save the middle
->> +			 * value in the read timing register.
->> +			 */
->> +			if (pass)
->> +				return 0;
->> +		}
->> +	}
->> +
->> +	/* No good setting for this frequency */
->> +	return -1;
->> +}
->> +
->>   /*
->>    * Platform definitions
->>    */
->> @@ -820,6 +1077,10 @@ static const struct aspeed_spi_data
->> ast2400_fmc_data = {
->>   	.hastype       = true,
->>   	.we0	       = 16,
->>   	.ctl0	       = CE0_CTRL_REG,
->> +	.timing	       = CE0_TIMING_COMPENSATION_REG,
->> +	.hclk_mask     = 0xfffff0ff,
->> +	.hdiv_max      = 1,
->> +	.calibrate     = aspeed_spi_calibrate,
->>   	.segment_start = aspeed_spi_segment_start,
->>   	.segment_end   = aspeed_spi_segment_end,
->>   	.segment_reg   = aspeed_spi_segment_reg,
->> @@ -830,6 +1091,10 @@ static const struct aspeed_spi_data
->> ast2400_spi_data = {
->>   	.hastype       = false,
->>   	.we0	       = 0,
->>   	.ctl0	       = 0x04,
->> +	.timing	       = 0x14,
->> +	.hclk_mask     = 0xfffff0ff,
->> +	.hdiv_max      = 1,
->> +	.calibrate     = aspeed_spi_calibrate,
->>   	/* No segment registers */
->>   };
->>
->> @@ -838,6 +1103,10 @@ static const struct aspeed_spi_data
->> ast2500_fmc_data = {
->>   	.hastype       = true,
->>   	.we0	       = 16,
->>   	.ctl0	       = CE0_CTRL_REG,
->> +	.timing	       = CE0_TIMING_COMPENSATION_REG,
->> +	.hclk_mask     = 0xfffff0ff,
->> +	.hdiv_max      = 1,
->> +	.calibrate     = aspeed_spi_calibrate,
->>   	.segment_start = aspeed_spi_segment_start,
->>   	.segment_end   = aspeed_spi_segment_end,
->>   	.segment_reg   = aspeed_spi_segment_reg,
->> @@ -848,6 +1117,10 @@ static const struct aspeed_spi_data
->> ast2500_spi_data = {
->>   	.hastype       = false,
->>   	.we0	       = 16,
->>   	.ctl0	       = CE0_CTRL_REG,
->> +	.timing	       = CE0_TIMING_COMPENSATION_REG,
->> +	.hclk_mask     = 0xfffff0ff,
->> +	.hdiv_max      = 1,
->> +	.calibrate     = aspeed_spi_calibrate,
->>   	.segment_start = aspeed_spi_segment_start,
->>   	.segment_end   = aspeed_spi_segment_end,
->>   	.segment_reg   = aspeed_spi_segment_reg,
->> @@ -859,6 +1132,10 @@ static const struct aspeed_spi_data
->> ast2600_fmc_data = {
->>   	.mode_bits     = SPI_RX_QUAD | SPI_RX_QUAD,
->>   	.we0	       = 16,
->>   	.ctl0	       = CE0_CTRL_REG,
->> +	.timing	       = CE0_TIMING_COMPENSATION_REG,
->> +	.hclk_mask     = 0xf0fff0ff,
->> +	.hdiv_max      = 2,
->> +	.calibrate     = aspeed_spi_ast2600_calibrate,
->>   	.segment_start = aspeed_spi_segment_ast2600_start,
->>   	.segment_end   = aspeed_spi_segment_ast2600_end,
->>   	.segment_reg   = aspeed_spi_segment_ast2600_reg,
->> @@ -870,6 +1147,10 @@ static const struct aspeed_spi_data
->> ast2600_spi_data = {
->>   	.mode_bits     = SPI_RX_QUAD | SPI_RX_QUAD,
->>   	.we0	       = 16,
->>   	.ctl0	       = CE0_CTRL_REG,
->> +	.timing	       = CE0_TIMING_COMPENSATION_REG,
->> +	.hclk_mask     = 0xf0fff0ff,
->> +	.hdiv_max      = 2,
->> +	.calibrate     = aspeed_spi_ast2600_calibrate,
->>   	.segment_start = aspeed_spi_segment_ast2600_start,
->>   	.segment_end   = aspeed_spi_segment_ast2600_end,
->>   	.segment_reg   = aspeed_spi_segment_ast2600_reg,
->> --
->> 2.34.1
-> 
-> 
-> Best Wishes,
-> Chin-Ting
-
+I would prefer the annotations to be at this level, I just don't see
+how to do it cleanly/robustly. Maybe Christoph has an idea, he
+understands the fs side much better than I do.
