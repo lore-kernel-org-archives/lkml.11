@@ -2,50 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B482BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:17:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1213EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:17:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345670AbiC3MRv (ORCPT
+        id S1345713AbiC3MR5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:17:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38720 "EHLO
+        Wed, 30 Mar 2022 08:17:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344614AbiC3L4T (ORCPT
+        with ESMTP id S1344613AbiC3L4T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 30 Mar 2022 07:56:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 723722FFD6;
-        Wed, 30 Mar 2022 04:54:20 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF1AA2FE52;
+        Wed, 30 Mar 2022 04:54:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0DFDA6137A;
-        Wed, 30 Mar 2022 11:54:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5EB3C36AE3;
-        Wed, 30 Mar 2022 11:54:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D962B81C37;
+        Wed, 30 Mar 2022 11:54:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4CFFC36AE3;
+        Wed, 30 Mar 2022 11:54:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641259;
-        bh=yn1hkL3BE7IQP3XQ6XQsGCgxQjHxbrxQVwxQttzJO/Q=;
+        s=k20201202; t=1648641255;
+        bh=8po8f1Xl0zaNUcaxPtfHw7BuiUII+Dnnc34P38OXYKU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dH9xoO1fF3NvFpHu3WbguQaxvDT8p2xM8T5A14AjSgBZwVb87gW3o2RtAMyDgZee1
-         mlHcGvb2f3PIjRALPOTBQA+TRd55Cua81/IiktD6hX7NHMW6Wt1JgHWb4WpZ7KMjUH
-         FpgBxBwRIIrbcmpGJBc4s1pIQfFpiPa85LryvTL1XQaD+RjK/MHq59IKDAe8ECAYdu
-         cb0HndbM0bT/BwzJtGTiwULp9b27BTOKg9pVwtfjXjl+RS5fBxVNUNycPK0DZe82Pd
-         mBzYfOqo8F/UmUhaiHKAYuXHtm8aP+9kzlizwgV/GP/ugsHi8UkF3+jz/Cx4a/F7MJ
-         P2TgDFOAzx8NA==
+        b=khkjvqC7C2wQ7rniAZtZq7eJhrSEV3+XCCiW4tQ0pA2m7/ddkRHEacYDRgT4dk1Iw
+         mjCJExs3X8ExWjGWvr8ilZOAm2nEoC5+fnn9F4HnTbMJJNlgX9Tto1cYGz2ellVWV4
+         uoA1WRvZgvJLGB2/wRxxVhF8xrULWAdD0VZtUfJnI6SBOktRNt64/CnSw5le8Y2s4E
+         +VWLbhjtzfmA+90au5XoxfMMam1kwkebbk1BV4U++ZzlCHhucBsavImGVhpcqsMjXg
+         1uFeHgguzrcTfr27M/y9LdelItAKGhVWZnVyovOBV+nPRo1DXdC/fH0r/0KyRHQMVy
+         c9jE/iEz4xcLA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Richard Schleich <rs@noreya.tech>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        mark.rutland@arm.com, catalin.marinas@arm.com, will.deacon@arm.com,
-        rjui@broadcom.com, sbranden@broadcom.com,
-        bcm-kernel-feedback-list@broadcom.com, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.9 06/17] ARM: dts: bcm2837: Add the missing L1/L2 cache information
-Date:   Wed, 30 Mar 2022 07:53:55 -0400
-Message-Id: <20220330115407.1673214-6-sashal@kernel.org>
+Cc:     Yang Guang <yang.guang5@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>, Helge Deller <deller@gmx.de>,
+        Sasha Levin <sashal@kernel.org>, tomi.valkeinen@ti.com,
+        linux-omap@vger.kernel.org, linux-fbdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 04/17] video: fbdev: omapfb: acx565akm: replace snprintf with sysfs_emit
+Date:   Wed, 30 Mar 2022 07:53:53 -0400
+Message-Id: <20220330115407.1673214-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115407.1673214-1-sashal@kernel.org>
 References: <20220330115407.1673214-1-sashal@kernel.org>
@@ -57,110 +53,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Richard Schleich <rs@noreya.tech>
+From: Yang Guang <yang.guang5@zte.com.cn>
 
-[ Upstream commit bdf8762da268d2a34abf517c36528413906e9cd5 ]
+[ Upstream commit 24565bc4115961db7ee64fcc7ad2a7437c0d0a49 ]
 
-This patch fixes the kernel warning
-"cacheinfo: Unable to detect cache hierarchy for CPU 0"
-for the bcm2837 on newer kernel versions.
+coccinelle report:
+./drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c:
+479:9-17: WARNING: use scnprintf or sprintf
 
-Signed-off-by: Richard Schleich <rs@noreya.tech>
-Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
-[florian: Align and remove comments matching property values]
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Use sysfs_emit instead of scnprintf or sprintf makes more sense.
+
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/broadcom/bcm2837.dtsi | 49 +++++++++++++++++++++++
- 1 file changed, 49 insertions(+)
+ .../video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c    | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/broadcom/bcm2837.dtsi b/arch/arm64/boot/dts/broadcom/bcm2837.dtsi
-index c1f719b7097a..95e3cb38474f 100644
---- a/arch/arm64/boot/dts/broadcom/bcm2837.dtsi
-+++ b/arch/arm64/boot/dts/broadcom/bcm2837.dtsi
-@@ -31,12 +31,26 @@
- 		#address-cells = <1>;
- 		#size-cells = <0>;
+diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c
+index 468560a6daae..0a1a82c68680 100644
+--- a/drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c
++++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c
+@@ -487,7 +487,7 @@ static ssize_t show_cabc_available_modes(struct device *dev,
+ 	int i;
  
-+		/* Source for d/i-cache-line-size and d/i-cache-sets
-+		 * https://developer.arm.com/documentation/ddi0500/e/level-1-memory-system
-+		 * /about-the-l1-memory-system?lang=en
-+		 *
-+		 * Source for d/i-cache-size
-+		 * https://magpi.raspberrypi.com/articles/raspberry-pi-3-specs-benchmarks
-+		 */
- 		cpu0: cpu@0 {
- 			device_type = "cpu";
- 			compatible = "arm,cortex-a53";
- 			reg = <0>;
- 			enable-method = "spin-table";
- 			cpu-release-addr = <0x0 0x000000d8>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
-+			next-level-cache = <&l2>;
- 		};
+ 	if (!ddata->has_cabc)
+-		return snprintf(buf, PAGE_SIZE, "%s\n", cabc_modes[0]);
++		return sysfs_emit(buf, "%s\n", cabc_modes[0]);
  
- 		cpu1: cpu@1 {
-@@ -45,6 +59,13 @@
- 			reg = <1>;
- 			enable-method = "spin-table";
- 			cpu-release-addr = <0x0 0x000000e0>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
-+			next-level-cache = <&l2>;
- 		};
- 
- 		cpu2: cpu@2 {
-@@ -53,6 +74,13 @@
- 			reg = <2>;
- 			enable-method = "spin-table";
- 			cpu-release-addr = <0x0 0x000000e8>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
-+			next-level-cache = <&l2>;
- 		};
- 
- 		cpu3: cpu@3 {
-@@ -61,6 +89,27 @@
- 			reg = <3>;
- 			enable-method = "spin-table";
- 			cpu-release-addr = <0x0 0x000000f0>;
-+			d-cache-size = <0x8000>;
-+			d-cache-line-size = <64>;
-+			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
-+			i-cache-size = <0x8000>;
-+			i-cache-line-size = <64>;
-+			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
-+			next-level-cache = <&l2>;
-+		};
-+
-+		/* Source for cache-line-size + cache-sets
-+		 * https://developer.arm.com/documentation/ddi0500
-+		 * /e/level-2-memory-system/about-the-l2-memory-system?lang=en
-+		 * Source for cache-size
-+		 * https://datasheets.raspberrypi.com/cm/cm1-and-cm3-datasheet.pdf
-+		 */
-+		l2: l2-cache0 {
-+			compatible = "cache";
-+			cache-size = <0x80000>;
-+			cache-line-size = <64>;
-+			cache-sets = <512>; // 512KiB(size)/64(line-size)=8192ways/16-way set
-+			cache-level = <2>;
- 		};
- 	};
- };
+ 	for (i = 0, len = 0;
+ 	     len < PAGE_SIZE && i < ARRAY_SIZE(cabc_modes); i++)
 -- 
 2.34.1
 
