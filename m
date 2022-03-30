@@ -2,166 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A13B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 16:22:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D0B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 16:22:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348776AbiC3QYY (ORCPT
+        id S1348781AbiC3QYg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 12:24:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39006 "EHLO
+        Wed, 30 Mar 2022 12:24:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346416AbiC3QYV (ORCPT
+        with ESMTP id S1348777AbiC3QYa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 12:24:21 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C492ABF61
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 09:22:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=hvxDLidc/BvcilqIXkY+wQXhU96uSD+vF+LR3M1O2fM=; b=z89yXMmVTiEciHwphPDg3LH+YO
-        HqnyQHc24QwDAx9/2+e+aIVoLiEIisljXAXKgrvXMhAdHYz60p7Z8FzlDlJDhcd8HfeDxzxQwqj8v
-        KMgyhrom5PXVFJ54nSlyEXBFr2ntnRJFkNB72/EMizmXJ87MhP3XGgr3I7IH70H32lDw38ibOHcxC
-        IKPYvuA1KorX8Ot1uAnE739/2wNMm0jo+q5ffCnUzrTG6hrUVbvsu5coUsWhWH61Oe6eHUDE20ggh
-        GYfrGVxgabiK67T3uHT7zvLbn1Zl1UNppRaRRNn+V9AZU+9ZmPoBOIzQuBu/mJRzq39ycLxgrslWb
-        D9rmDQuQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58018)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nZb5e-0003Rl-Kh; Wed, 30 Mar 2022 17:22:34 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nZb5d-0006l5-MF; Wed, 30 Mar 2022 17:22:33 +0100
-Date:   Wed, 30 Mar 2022 17:22:33 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     patches@arm.linux.org.uk,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] ARM: decompressor: do not copy source files while
- building
-Message-ID: <YkSDyRoFgSx3HY8X@shell.armlinux.org.uk>
-References: <20211030175258.1716178-1-masahiroy@kernel.org>
- <Yis7Z90qvPz+EcTk@shell.armlinux.org.uk>
- <CAK7LNAT4k=Cseox6jEunLxU+w=VTQ08c9gdmt6=K2vvvSL49bg@mail.gmail.com>
- <CAK7LNARgJ7GapsRNPyG18rs-uxnXuMrQRVP=y2dKLLNRjU8tbA@mail.gmail.com>
+        Wed, 30 Mar 2022 12:24:30 -0400
+Received: from out203-205-221-235.mail.qq.com (out203-205-221-235.mail.qq.com [203.205.221.235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6232AAD102
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 09:22:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1648657361;
+        bh=HfYaymyK6rYdmYA6jTjb4jxdjTD+cXXkxf2GfpxeDaU=;
+        h=From:To:Cc:Subject:Date;
+        b=lc3e40Ki2HVMx511t1Xpsvh/7Q+e4hZbdG0MN3T0ivUr3bIewl8WeUWzlny0ZFnMb
+         9gChHa7tvThHHBA0kmf+IqjdBJraxNW7+aHjnuxTRlivZEfavXcEDSW8UOhgxJEJOF
+         545GZltsifpR3XeYPn1p4DcDS+0n4/5N7baVYzvA=
+Received: from localhost.localdomain ([43.227.138.48])
+        by newxmesmtplogicsvrszc7.qq.com (NewEsmtp) with SMTP
+        id 5A5B6AF6; Thu, 31 Mar 2022 00:22:37 +0800
+X-QQ-mid: xmsmtpt1648657357tl36zihoj
+Message-ID: <tencent_1150789052C1FF3548117344EE374723C506@qq.com>
+X-QQ-XMAILINFO: MhvVYtZeQ7htjypQW3fq0YFqVyxb/f4wJQsl2er+RcwpFNVIEABKxPtHqtxawX
+         Hw/sTUy1udny4cl/3O3YxtYsu3qjSCGAEU1hKU3PdiaCZiHDibTgKVTDqAJcsxbODcRRxSYeV26e
+         xPmAjii1z+Ywimv9Pl+zPU9imxxBNwu9t2Wy0rRnVuMMGFlBVTGl6apfB34LAx7q+BPOg31+9d2f
+         xJcMKJSiRTxwoNlMd6kltbo5noMlEOmEhkrc/wU/oa2/rvFNt2+++mHuLdig/+1ABklsc7O9vw3D
+         1OTPrLxLvMn/NbA499PWYh1qNeROUxP+qhe17sJO8aJ5Lqq4K0VzNN7SPy8uFrAyY8LAt8NbAImt
+         s9BDZsCdkJLmGE3BfUyPp1G40Sx0lqrGJnH74YmTVw3ZEmFDsWl+e9ggsZ+PZw4CYo3OYGS9e8H8
+         FdwTLX0pqZZfH5F+Yg6ublpVCVGrfussKjlPU4Xd+YPpKHgTpwz6syVBsRMOXXQn/jMgzUIZKf4r
+         hoEjfCfjDfvMx7JhBKldo3xt24RT32LNTU5yKYN3PU6/QdYwt7JEbiN9PzU+H5AIhmRu4Owo11BC
+         WMSK3sZlpQipy2vQRT/x/Ki9q6KMVvlzuLYKzmTr+PBX3Vz0jfCJebqE9KKPJ5TERNtpiGj71JjE
+         uDGBNeZpGgIQZsSkjT2LsF6FQxUDQSIhseCY/LZcEsP/vCc/1u2u72g2u3O+6SgW/nQaUc2MW+4X
+         65O5JgzW3tagw8r2syqTiXxaJ5+W2kp0AwBRHqK1tH4tAk8bHW7GOVpJTHCtwbeoQwAL4vaP2KIz
+         A5aZtLCflhc0UjyaGiSo84FLeA04BrweU2s1ll59kDUl6jO1OSnUGUnZNpcglRyXsEDBQ1Ypg7DF
+         0sBmJlok6RiaNrKHZS4efX2VQHL5Dd1FHg4jFErCGwUxk1j90qAfmOThSCcGKZm2vWaHTY77Qsk9
+         l5LpDwGvI=
+From:   xkernel.wang@foxmail.com
+To:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        gregkh@linuxfoundation.org
+Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Xiaoke Wang <xkernel.wang@foxmail.com>
+Subject: [PATCH v2] staging: r8188eu: fix a potential memory leak in _rtw_init_cmd_priv()
+Date:   Thu, 31 Mar 2022 00:15:35 +0800
+X-OQ-MSGID: <20220330161535.7020-1-xkernel.wang@foxmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAK7LNARgJ7GapsRNPyG18rs-uxnXuMrQRVP=y2dKLLNRjU8tbA@mail.gmail.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-Your reply was too late for me, I've been away on vacation from 14th
-March until now... and now I've got a whole truck-load of catch-up, so
-it's likely I'll forget to sort this. Please send a patch to fix it,
-thanks.
+In _rtw_init_cmd_priv(), if `pcmdpriv->rsp_allocated_buf` is allocated
+in failure, `pcmdpriv->cmd_allocated_buf` is not properly released.
+This patch is to free it.
 
-On Fri, Mar 25, 2022 at 11:54:07AM +0900, Masahiro Yamada wrote:
-> Hi Russell,
-> 
-> 
-> Was this issue fixed?
-> (I see nothing happened in linux-next yet)
-> 
-> I will not send a patch because I assume you will
-> fix this by yourself. If there is something you want
-> me, please let me know.
-> 
-> Thanks.
-> Masahiro Yamada
-> 
-> 
-> 
-> 
-> 
-> 
-> On Mon, Mar 14, 2022 at 1:35 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
-> >
-> > On Fri, Mar 11, 2022 at 9:07 PM Russell King (Oracle)
-> > <linux@armlinux.org.uk> wrote:
-> > >
-> > > On Sun, Oct 31, 2021 at 02:52:58AM +0900, Masahiro Yamada wrote:
-> > > > As commit 7ae4a78daacf ("ARM: 8969/1: decompressor: simplify libfdt
-> > > > builds") stated, copying source files during the build time may not
-> > > > end up with as clean code as expected.
-> > > >
-> > > > Do similar for the other library files for further cleanups of the
-> > > > Makefile and .gitignore.
-> > > >
-> > > > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> > >
-> > > Hi,
-> > >
-> > > I am now seeing the following every time I run a build:
-> > >
-> > >   GEN     Makefile
-> > >   CALL    .../linux-rmk/scripts/atomic/check-atomics.sh
-> > >   CALL    .../linux-rmk/scripts/checksyscalls.sh
-> > >   CHK     include/generated/compile.h
-> > >   Kernel: arch/arm/boot/Image is ready
-> > >   AS      arch/arm/boot/compressed/lib1funcs.o
-> > >   AS      arch/arm/boot/compressed/ashldi3.o
-> > >   AS      arch/arm/boot/compressed/bswapsdi2.o
-> > >   LD      arch/arm/boot/compressed/vmlinux
-> > >   OBJCOPY arch/arm/boot/zImage
-> > >   Kernel: arch/arm/boot/zImage is ready
-> > >
-> > > In other words, those three objects are always rebuilt even though
-> > > they haven't changed.
-> > >
-> > > I've tried removing the arch/arm/boot/compressed directory in the
-> > > build tree, but that doesn't make any difference.
-> > >
-> > > Running with V=2 shows:
-> > >
-> > >   AS      arch/arm/boot/compressed/lib1funcs.o - due to lib1funcs.o not in $(tar
-> > > gets)
-> > >   AS      arch/arm/boot/compressed/ashldi3.o - due to ashldi3.o not in $(targets)
-> > >   AS      arch/arm/boot/compressed/bswapsdi2.o - due to bswapsdi2.o not in $(targets)
-> > >
-> > > It looks to me like:
-> > > OBJS    += lib1funcs.o ashldi3.o bswapsdi2.o
-> > >
-> > > in your patch should have been added before:
-> > >
-> > > targets       := vmlinux vmlinux.lds piggy_data piggy.o \
-> > >                  head.o $(OBJS)
-> > >
-> > > Please confirm.
-> >
-> >
-> > Sorry for my late reply.
-> >
-> > Yes, you are right.
-> >
-> > OBJS    += lib1funcs.o ashldi3.o bswapsdi2.o
-> >
-> > should come before the 'targets' assignment.
-> >
-> >
-> >
-> >
-> >
-> > --
-> > Best Regards
-> > Masahiro Yamada
-> 
-> 
-> 
-> -- 
-> Best Regards
-> Masahiro Yamada
-> 
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+---
+ChangeLog:
+v1->v2: simplify the function.
+ drivers/staging/r8188eu/core/rtw_cmd.c | 21 +++++----------------
+ 1 file changed, 5 insertions(+), 16 deletions(-)
 
+diff --git a/drivers/staging/r8188eu/core/rtw_cmd.c b/drivers/staging/r8188eu/core/rtw_cmd.c
+index 56910c3..3de3a39 100644
+--- a/drivers/staging/r8188eu/core/rtw_cmd.c
++++ b/drivers/staging/r8188eu/core/rtw_cmd.c
+@@ -17,8 +17,6 @@ No irqsave is necessary.
+ 
+ static int _rtw_init_cmd_priv(struct cmd_priv *pcmdpriv)
+ {
+-	int res = _SUCCESS;
+-
+ 	sema_init(&pcmdpriv->cmd_queue_sema, 0);
+ 	/* sema_init(&(pcmdpriv->cmd_done_sema), 0); */
+ 	sema_init(&pcmdpriv->terminate_cmdthread_sema, 0);
+@@ -26,34 +24,25 @@ static int _rtw_init_cmd_priv(struct cmd_priv *pcmdpriv)
+ 	_rtw_init_queue(&pcmdpriv->cmd_queue);
+ 
+ 	/* allocate DMA-able/Non-Page memory for cmd_buf and rsp_buf */
+-
+ 	pcmdpriv->cmd_seq = 1;
+-
+ 	pcmdpriv->cmd_allocated_buf = kzalloc(MAX_CMDSZ + CMDBUFF_ALIGN_SZ,
+ 					      GFP_KERNEL);
+-
+-	if (!pcmdpriv->cmd_allocated_buf) {
+-		res = _FAIL;
+-		goto exit;
+-	}
++	if (!pcmdpriv->cmd_allocated_buf)
++		return _FAIL;
+ 
+ 	pcmdpriv->cmd_buf = pcmdpriv->cmd_allocated_buf  +  CMDBUFF_ALIGN_SZ - ((size_t)(pcmdpriv->cmd_allocated_buf) & (CMDBUFF_ALIGN_SZ - 1));
+-
+ 	pcmdpriv->rsp_allocated_buf = kzalloc(MAX_RSPSZ + 4, GFP_KERNEL);
+-
+ 	if (!pcmdpriv->rsp_allocated_buf) {
+-		res = _FAIL;
+-		goto exit;
++		kfree(pcmdpriv->cmd_allocated_buf);
++		return _FAIL;
+ 	}
+ 
+ 	pcmdpriv->rsp_buf = pcmdpriv->rsp_allocated_buf  +  4 - ((size_t)(pcmdpriv->rsp_allocated_buf) & 3);
+-
+ 	pcmdpriv->cmd_issued_cnt = 0;
+ 	pcmdpriv->cmd_done_cnt = 0;
+ 	pcmdpriv->rsp_cnt = 0;
+-exit:
+ 
+-	return res;
++	return _SUCCESS;
+ }
+ 
+ static void c2h_wk_callback(struct work_struct *work);
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
