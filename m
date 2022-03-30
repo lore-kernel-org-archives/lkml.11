@@ -2,128 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B291C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:55:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0550C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:57:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346389AbiC3N4u (ORCPT
+        id S1346394AbiC3N6o convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 09:56:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47294 "EHLO
+        Wed, 30 Mar 2022 09:58:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239344AbiC3N4r (ORCPT
+        with ESMTP id S239344AbiC3N6m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 09:56:47 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 447516EB00
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 06:55:02 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id t11so36936180ybi.6
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 06:55:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Q91+udaPfkikoXVsmrkPYxbQ6mQZheByBkLR51EBLso=;
-        b=QlKoswTnuWcy0GKiy459UIMZAEil7yMBJAPk3UUCoOZZ3ynW5YzHrKnf0PsG9TiWqj
-         zg2BGpmbZxbEorRIE3OGkmJWmkxrm4XX9TX2G3pL2tavv8gYQTDLlIGaAiaP/FlXMkyJ
-         7lzBIQYBJy8Id/lRNy4lIEW3RinLniERxKfM2lWEwh5F1bXTZweVL8+HepwydIIaKLIf
-         Xu6THxqoocaydEKFo7sp8soJPmIo3s7objjk8Uko6JMY/62lPjizNu+kJhUloAGD+ZHK
-         aqTM0FKPvZj3mHDnN0/qmN0PsRRbM05GtcmAe74nSVzsoimN0EYNUIhstvkdEzGCAPQa
-         7ePQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Q91+udaPfkikoXVsmrkPYxbQ6mQZheByBkLR51EBLso=;
-        b=FXyXNWLKxaHjALurvD9erjZZJSNHH8xqqIhtVKsHlLeMRzhAoeOSRfUjIVkMEWCrbm
-         Nlx8TR22fgkuJ2mFvyjVBo/Hm41s1YzhQ6aBYkOUGXBbcsSuLyhPUcEN6YF50jZWbZVY
-         i24T9ofEQil/SJM4IOLKzZRDYnlgk9u9S/o53DUOCwPU+JKZuFrS1S2Fv13shnxiZfFt
-         4672XKIEi3fD1KayjViNjhbtUAFXUePn0UBu4cro7R771R72kxF/bJZXbBriMF9m9VXw
-         qn6ujuZQztJWk7Nx2PncgepzxWvPoWZzNApEuTnVSps13Hofj76eH2Fk5dD3gdqnmstL
-         3ycw==
-X-Gm-Message-State: AOAM5334MmyB8NoF+zoRmxJFVKwF819Cg2dC59vyRM/943L+hr8FZpLM
-        FGCdT39zRTjWaIbkyYLfTHgseURrEiwO1MC/W2QZLQ==
-X-Google-Smtp-Source: ABdhPJyqnWcakti9oK8dCIkF3XFE6/D1gUZjFvowPmRBx0Zr0pP1x4y+gBIXnWZwlirsMlRE1F4tkx0flJ8w9wn072g=
-X-Received: by 2002:a25:a0c5:0:b0:633:63da:5ead with SMTP id
- i5-20020a25a0c5000000b0063363da5eadmr33457010ybm.412.1648648501392; Wed, 30
- Mar 2022 06:55:01 -0700 (PDT)
+        Wed, 30 Mar 2022 09:58:42 -0400
+Received: from mail.sysgo.com (mail.sysgo.com [159.69.174.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4A357DE2E
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 06:56:55 -0700 (PDT)
+From:   Matthias Welwarsky <matthias.welwarsky@sysgo.com>
+To:     Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Dave Hansen <dave.hansen@intel.com>
+Cc:     linux-kernel@vger.kernel.org, x86-ml <x86@kernel.org>
+Subject: Re: x86, possible bug in __memmove() alternatives patching
+Date:   Wed, 30 Mar 2022 15:56:52 +0200
+Message-ID: <3160482.aeNJFYEL58@linux-3513>
+Organization: SYSGO GmbH
+In-Reply-To: <066bbff7-d2fe-44d3-0245-ccbcb5990257@intel.com>
+References: <3422754.iIbC2pHGDl@linux-3513> <3346653.QJadu78ljV@linux-3513> <066bbff7-d2fe-44d3-0245-ccbcb5990257@intel.com>
 MIME-Version: 1.0
-References: <CA+G9fYtk6rpp=0WG9LyfQRCsMbbvf=P7uhMuon4RzZz3UjYVYQ@mail.gmail.com>
- <YkQOoQRUKemBEn02@kroah.com> <CA+G9fYuK2GDqWHuW3oOi2O0h4RWsLLQb9198i-PS=nMf1t0T7w@mail.gmail.com>
- <YkQT0ROhctplAuds@kroah.com>
-In-Reply-To: <YkQT0ROhctplAuds@kroah.com>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Wed, 30 Mar 2022 19:24:50 +0530
-Message-ID: <CA+G9fYv9uNrUTv2TQfV6yW98qQBxhJ9Fg6UwHLJKYbPHEGHFtA@mail.gmail.com>
-Subject: Re: mainline: qemu_arm64 boot failed - Failed to start Hostname
- Service - Stopped Serial Getty on ttyAMA0
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        lkft-triage@lists.linaro.org, regressions@lists.linux.dev,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        Anders Roxell <anders.roxell@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="iso-8859-1"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 30 Mar 2022 at 13:54, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
+On Mittwoch, 30. März 2022 00:33:17 CEST Dave Hansen wrote:
+> On 3/26/22 04:39, Matthias Welwarsky wrote:
+> >> But, we do try to make the kernel work even the face of funky
+> >> hypervisors that do things that never occur on real hardware.  If a nice
+> >> patch to fix this up showed up, I'd definitely take a look.
+> > 
+> > The question is whether a sequence like this could be relevant:
+> > 
+> > 0) CPU announces feature FSRM through cpuid
+> > 1) BIOS/firmware disables fast string ops through IA32_MISC_ENABLE before
+> > loading kernel (for whatever reason)
+> > 2) Kernel populates features from cpuid
+> > 3) Kernel clears ERMS based on IA32_MISC_ENABLE
+> > 4) "alternatives" patching destroys __memmove()
+> 
+> Hi Matthias,
+> 
+> What does "destroys __memmove()" mean in practice?  What's the end-user
+> visible effect of this?  Do they see a crash or just crummy performance?
 
-> > > That's a lot of userspace logs, any kernel logs showing that anything
-> > > failed?
-> >
-> > I do not see kernel logs failures here.
->
-> Great, then the kernel is working just fine!  :)
->
-> Seriously, without some sort of hint, it's going to be impossible for us
-> to know what to do here...
+Solid kernel freeze in my case. No Oops, boot just hangs right after 
+__memmove() was patched. Not easily trackable.
 
-Ander is bisecting this problem.
+I'll send a patch. I think the same rationale applies to FSRM as to ERMS, 
+which gets manually cleared when IA32_MISC_ENABLE says that fast string ops 
+are not available. It will be a one liner added to the dependency table in 
+cpu-deps.c, making FSRM depend on ERMS so that it gets automatically cleared.
 
-OTOH, I am looking into test history and found the head commit is booting pass.
-The problem report I have sent is a head-1 test report.
+The way __memmove gets broken is kind of obvious if you look at the code.
 
-This means that, current Linus master boot pass.
+Here's the relevant bits:
 
-Do you see any relation of top fix commit vs the report I sent.
+        /* FSRM implies ERMS => no length checks, do the copy directly */
+.Lmemmove_begin_forward:
+        ALTERNATIVE "cmp $0x20, %rdx; jb 1f", "", X86_FEATURE_FSRM
+        ALTERNATIVE "", __stringify(movq %rdx, %rcx; rep movsb; RET), 
+X86_FEATURE_ERMS
 
-BAD: 965181d7ef7e (head -1 )
-GOOD: d888c83fcec75194a8 ( head)
+If FSRM is there but ERMS isn't, the first ALTERNATIVE is activated but not 
+the second one. That means the length check (< 32) and subsequent "jb 1f" is 
+suppressed but the "movq %rdx, %rcx; rep movsb; RET" is also not there. 
 
-git log 965181d7ef7e..d888c83fcec75194a8
+So, if the amount to be moved is < 32, it executes a code path that relies on 
+having at least 32 byte to copy and that results in doing all kinds of stuff 
+but not what you'd expect. I haven't analyzed what happens in depth, but it 
+might move more data than requested, or nothing at all.
 
-commit d888c83fcec75194a8a48ccd283953bdba7b2550 (HEAD -> linux-master,
-linux/master)
-Author: Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue Mar 29 23:29:18 2022 -0700
 
-    fs: fix fd table size alignment properly
+-- 
+Mit freundlichen Grüßen/Best regards,
 
-    Jason Donenfeld reports that my commit 1c24a186398f ("fs: fd tables have
-    to be multiples of BITS_PER_LONG") doesn't work, and the reason is an
-    embarrassing brown-paper-bag bug.
+Matthias Welwarsky
+Project Engineer
 
-    Yes, we want to align the number of fds to BITS_PER_LONG, and yes, the
-    reason they might not be aligned is because the incoming 'max_fd'
-    argument might not be aligned.
+SYSGO GmbH
+Office Mainz
+Am Pfaffenstein 8 / D-55270 Klein-Winternheim / Germany
+Phone: +49-6136-9948-0 / Fax: +49-6136-9948-10
+E-mail: matthias.welwarsky@sysgo.com
+_________________________________________________________________________________
+Web: https://www.sysgo.com
+Blog: https://www.sysgo.com/blog
+Events: https://www.sysgo.com/events
+Newsletter: https://www.sysgo.com/newsletter
+_________________________________________________________________________________
+Handelsregister/Commercial Registry: HRB Mainz 90 HRB 48884 
+Geschäftsführung/Managing Directors: Etienne Butery (CEO), Kai Sablotny (COO) 
+USt-Id-Nr./VAT-Id-No.: DE 149062328 
 
-    But aligining the argument - while simple - will cause a "infinitely
-    big" maxfd (eg NR_OPEN_MAX) to just overflow to zero.  Which most
-    definitely isn't what we want either.
+The protection of your personal data is important to us. Under the following 
+link 
+you can see the information in accordance with article 13 GDPR: 
+https://www.sysgo.com/privacy_policy
 
-    The obvious fix was always just to do the alignment last, but I had
-    moved it earlier just to make the patch smaller and the code look
-    simpler.  Duh.  It certainly made _me_ look simple.
 
-    Fixes: 1c24a186398f ("fs: fd tables have to be multiples of BITS_PER_LONG")
-    Reported-and-tested-by: Jason A. Donenfeld <Jason@zx2c4.com>
-    Cc: Fedor Pchelkin <aissur0002@gmail.com>
-    Cc: Alexey Khoroshilov <khoroshilov@ispras.ru>
-    Cc: Christian Brauner <brauner@kernel.org>
-    Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-
-- Naresh
