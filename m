@@ -2,221 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B0D3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 08:21:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53BBAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 08:21:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244320AbiC3IXO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 04:23:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58056 "EHLO
+        id S244314AbiC3IXV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 04:23:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244307AbiC3IWy (ORCPT
+        with ESMTP id S244325AbiC3IW4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 04:22:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1532030F5D
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 01:21:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648628468;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
+        Wed, 30 Mar 2022 04:22:56 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9C9630F52
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 01:21:10 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 8B5201F86B;
+        Wed, 30 Mar 2022 08:21:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1648628469; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=Tz0siigGtQofb7cxDXPZMYsGDoU6AwwuCe+CGjU+qdY=;
-        b=b1L5h1gfpsSiY3+usvQ65BsRwL9EmNKknV3iRiiGWOLDE9YxhpHKIXvgHmJCTAsksHw/3I
-        NAEnfUkgR/JlSzAfW2GTjKgnNXy4P0cAYNBSgbCsP79/axN1LJd7R7ovbd+2G4l3HNHLjE
-        fuDLQvRNiOjrYQxyCJggYiJv42URjWM=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-412-1kVvoYGAPXu0VQdaD07N5Q-1; Wed, 30 Mar 2022 04:21:04 -0400
-X-MC-Unique: 1kVvoYGAPXu0VQdaD07N5Q-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 65620100BAA7;
-        Wed, 30 Mar 2022 08:20:52 +0000 (UTC)
-Received: from shodan.usersys.redhat.com (unknown [10.43.17.22])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id BD804400E43D;
-        Wed, 30 Mar 2022 08:20:49 +0000 (UTC)
-Received: by shodan.usersys.redhat.com (Postfix, from userid 1000)
-        id ABFD41C0136; Wed, 30 Mar 2022 10:20:46 +0200 (CEST)
-From:   Artem Savkov <asavkov@redhat.com>
-To:     netdev@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        asavkov@redhat.com, Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org,
-        Anna-Maria Gleixner <anna-maria@linutronix.de>,
-        dsahern@kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 1/2] timer: add a function to adjust timeouts to be upper bound
-Date:   Wed, 30 Mar 2022 10:20:45 +0200
-Message-Id: <20220330082046.3512424-2-asavkov@redhat.com>
-In-Reply-To: <20220330082046.3512424-1-asavkov@redhat.com>
-References: <87zglcfmcv.ffs@tglx>
- <20220330082046.3512424-1-asavkov@redhat.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+        bh=JZqpMZhlCgF2AWsu+Wq2l6pQPVihV5vbzAZIPvQvkpk=;
+        b=P6DRSmJOVf7Vt858EakxkCUkSH3NaDE3Ipe4F9v3z8Q3n1BltUFCOoXst/Izqt6plHgqDD
+        J1U0aSPIrAUlc6XeW5eDfRMYq/mJPbXAyJ417RuH0rgrLkRupcWccIAZLieKdpFg/79xf2
+        5esi4G+YmpqqT6ykGXsopfOPfU9+QMM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1648628469;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=JZqpMZhlCgF2AWsu+Wq2l6pQPVihV5vbzAZIPvQvkpk=;
+        b=1cthgBtX0KqqTG8I7YTX0nCdrUyLGezaYJ1+7ERJ1wJ8QVY0VjcFYdL2Q7ffpd+rHOMRLQ
+        XXBkoT3LIMLEWkDQ==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id 76E45A3BA9;
+        Wed, 30 Mar 2022 08:21:09 +0000 (UTC)
+Date:   Wed, 30 Mar 2022 10:21:09 +0200
+Message-ID: <s5hv8vvhmve.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Mohan Kumar <mkumard@nvidia.com>
+Cc:     <tiwai@suse.com>, <kai.vehmanen@linux.intel.com>, <perex@perex.cz>,
+        <ville.syrjala@linux.intel.com>, <alsa-devel@alsa-project.org>,
+        <linux-kernel@vger.kernel.org>, <thierry.reding@gmail.com>,
+        <jonathanh@nvidia.com>
+Subject: Re: [PATCH] ALSA: hda: Avoid unsol event during RPM suspending
+In-Reply-To: <20220329155940.26331-1-mkumard@nvidia.com>
+References: <20220329155940.26331-1-mkumard@nvidia.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Current timer wheel implementation is optimized for performance and
-energy usage but lacks in precision. This, normally, is not a problem as
-most timers that use timer wheel are used for timeouts and thus rarely
-expire, instead they often get canceled or modified before expiration.
-Even when they don't, expiring a bit late is not an issue for timeout
-timers.
+On Tue, 29 Mar 2022 17:59:40 +0200,
+Mohan Kumar wrote:
+> 
+> There is a corner case with unsol event handling during codec runtime
+> suspending state. When the codec runtime suspend call initiated, the
+> codec->in_pm atomic variable would be 0, currently the codec runtime
+> suspend function calls snd_hdac_enter_pm() which will just increments
+> the codec->in_pm atomic variable. Consider unsol event happened just
+> after this step and before snd_hdac_leave_pm() in the codec runtime
+> suspend function. The snd_hdac_power_up_pm() in the unsol event
+> flow in hdmi_present_sense_via_verbs() function would just increment
+> the codec->in_pm atomic variable without calling pm_runtime_get_sync
+> function.
+> 
+> As codec runtime suspend flow is already in progress and in parallel
+> unsol event is also accessing the codec verbs, as soon as codec
+> suspend flow completes and clocks are  switched off before completing
+> the unsol event handling as both functions doesn't wait for each other.
+> This will result in below errors
+> 
+> [  589.428020] tegra-hda 3510000.hda: azx_get_response timeout, switching
+> to polling mode: last cmd=0x505f2f57
+> [  589.428344] tegra-hda 3510000.hda: spurious response 0x80000074:0x5,
+> last cmd=0x505f2f57
+> [  589.428547] tegra-hda 3510000.hda: spurious response 0x80000065:0x5,
+> last cmd=0x505f2f57
+> 
+> To avoid this, the unsol event flow should not perform any codec verb
+> related operations during RPM_SUSPENDING state.
+> 
+> Signed-off-by: Mohan Kumar <mkumard@nvidia.com>
 
-TCP keepalive timer is a special case, it's aim is to prevent timeouts,
-so triggering earlier rather than later is desired behavior. In a
-reported case the user had a 3600s keepalive timer for preventing firewall
-disconnects (on a 3650s interval). They observed keepalive timers coming
-in up to four minutes late, causing unexpected disconnects.
+Thanks, applied now.
 
-This commit adds upper_bound_timeout() function that takes a relative
-timeout and adjusts it based on timer wheel granularity so that supplied
-value effectively becomes an upper bound for the timer.
 
-This was previously discussed here:
-https://lore.kernel.org/all/20210302001054.4qgrvnkltvkgikzr@treble/T/#u
-
-Suggested-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Artem Savkov <asavkov@redhat.com>
----
- include/linux/timer.h |  1 +
- kernel/time/timer.c   | 92 +++++++++++++++++++++++++++++++++++++------
- 2 files changed, 80 insertions(+), 13 deletions(-)
-
-diff --git a/include/linux/timer.h b/include/linux/timer.h
-index fda13c9d1256c..b209d31d543f0 100644
---- a/include/linux/timer.h
-+++ b/include/linux/timer.h
-@@ -168,6 +168,7 @@ static inline int timer_pending(const struct timer_list * timer)
- 	return !hlist_unhashed_lockless(&timer->entry);
- }
- 
-+extern unsigned long upper_bound_timeout(unsigned long timeout);
- extern void add_timer_on(struct timer_list *timer, int cpu);
- extern int del_timer(struct timer_list * timer);
- extern int mod_timer(struct timer_list *timer, unsigned long expires);
-diff --git a/kernel/time/timer.c b/kernel/time/timer.c
-index 85f1021ad4595..76d4f26c991be 100644
---- a/kernel/time/timer.c
-+++ b/kernel/time/timer.c
-@@ -507,28 +507,38 @@ static inline unsigned calc_index(unsigned long expires, unsigned lvl,
- 	return LVL_OFFS(lvl) + (expires & LVL_MASK);
- }
- 
--static int calc_wheel_index(unsigned long expires, unsigned long clk,
--			    unsigned long *bucket_expiry)
-+static inline int get_wheel_lvl(unsigned long delta)
- {
--	unsigned long delta = expires - clk;
--	unsigned int idx;
--
- 	if (delta < LVL_START(1)) {
--		idx = calc_index(expires, 0, bucket_expiry);
-+		return 0;
- 	} else if (delta < LVL_START(2)) {
--		idx = calc_index(expires, 1, bucket_expiry);
-+		return 1;
- 	} else if (delta < LVL_START(3)) {
--		idx = calc_index(expires, 2, bucket_expiry);
-+		return 2;
- 	} else if (delta < LVL_START(4)) {
--		idx = calc_index(expires, 3, bucket_expiry);
-+		return 3;
- 	} else if (delta < LVL_START(5)) {
--		idx = calc_index(expires, 4, bucket_expiry);
-+		return 4;
- 	} else if (delta < LVL_START(6)) {
--		idx = calc_index(expires, 5, bucket_expiry);
-+		return 5;
- 	} else if (delta < LVL_START(7)) {
--		idx = calc_index(expires, 6, bucket_expiry);
-+		return 6;
- 	} else if (LVL_DEPTH > 8 && delta < LVL_START(8)) {
--		idx = calc_index(expires, 7, bucket_expiry);
-+		return 7;
-+	}
-+
-+	return -1;
-+}
-+
-+static int calc_wheel_index(unsigned long expires, unsigned long clk,
-+			    unsigned long *bucket_expiry)
-+{
-+	unsigned long delta = expires - clk;
-+	unsigned int idx;
-+	int lvl = get_wheel_lvl(delta);
-+
-+	if (lvl >= 0) {
-+		idx = calc_index(expires, lvl, bucket_expiry);
- 	} else if ((long) delta < 0) {
- 		idx = clk & LVL_MASK;
- 		*bucket_expiry = clk;
-@@ -545,6 +555,62 @@ static int calc_wheel_index(unsigned long expires, unsigned long clk,
- 	return idx;
- }
- 
-+/**
-+ * upper_bound_timeout - return granularity-adjusted timeout
-+ * @timeout: timeout value in jiffies
-+ *
-+ * This function return supplied timeout adjusted based on timer wheel
-+ * granularity effectively making supplied value an upper bound at which the
-+ * timer will expire.
-+ */
-+unsigned long upper_bound_timeout(unsigned long timeout)
-+{
-+	int lvl = get_wheel_lvl(timeout);
-+
-+	if (lvl < 0) {
-+		if ((long) timeout < 0) {
-+			/*
-+			 * This will expire immediately so no adjustment
-+			 * needed.
-+			 */
-+			return timeout;
-+		} else {
-+			if (timeout > WHEEL_TIMEOUT_CUTOFF)
-+				timeout = WHEEL_TIMEOUT_CUTOFF;
-+			lvl = LVL_DEPTH - 1;
-+		}
-+	}
-+
-+	if (timeout - LVL_GRAN(lvl) < LVL_START(lvl)) {
-+		/*
-+		 * Beginning of each level is a special case, we can't just
-+		 * subtract LVL_GRAN(lvl) because then timeout ends up on a
-+		 * previous level and is guaranteed to fire off early. We can't
-+		 * mitigate this completely, but we can try to minimize the
-+		 * margin.
-+		 */
-+		if (timeout - LVL_GRAN(lvl - 1) < LVL_START(lvl)) {
-+			/*
-+			 * If timeout is within previous level's granularity
-+			 * adjust timeout using that level's granularity.
-+			 */
-+			return timeout - LVL_GRAN(lvl - 1);
-+		} else {
-+			/*
-+			 * If LVL_GRAN(lvl - 1) < timeout < LVL_GRAN(lvl)
-+			 * the best we can do is to set timeout to the end of
-+			 * previous level. This means that the timer will
-+			 * trigger early. In worst case it will be _at least_
-+			 * (LVL_GRAN(lvl) - LVL_GRAN(lvl -1)) jiffies early.
-+			 */
-+			return LVL_START(lvl) - 1;
-+		}
-+	} else {
-+		return timeout - LVL_GRAN(lvl);
-+	}
-+}
-+EXPORT_SYMBOL(upper_bound_timeout);
-+
- static void
- trigger_dyntick_cpu(struct timer_base *base, struct timer_list *timer)
- {
--- 
-2.34.1
-
+Takashi
