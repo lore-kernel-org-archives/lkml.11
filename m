@@ -2,105 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2765C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:59:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E358C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:59:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344508AbiC3MBi (ORCPT
+        id S1344532AbiC3MBl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:01:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60020 "EHLO
+        Wed, 30 Mar 2022 08:01:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344845AbiC3Lxl (ORCPT
+        with ESMTP id S1344721AbiC3Lx3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:53:41 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A8DD26E576
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 04:49:46 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id m30so28922225wrb.1
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 04:49:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Zz5V7y6zyX28uzHv7nbJNO/THNVqL6J0WR2WWuQ7SCY=;
-        b=ZUOogO2MuK6NJjubHjbfEz+haJ4Oh6ePGA6/+gd7oK40h63IMjwzaVvnJYUmTxImAs
-         MyvMzaw35CVlu+C1Qwxa9gZov8B7ynpIwE3Kahpcz6sN0ho/mSj65L6ftNnsKk0N0nfj
-         4FD0bVTJb2fmEnKM40jG3JvPfGa1UEDFrVUzYozFy2JbNwdiOUCDqvoRUU5p/1MuvQtk
-         H1t8//3ATlKAdlXRm+jWADGLrIYnbjN2Vd+1QzD13qGQn0d2D1eJ8SeQBqJ9cpJE8m8y
-         rxQTaDbTj6arnFaptoXI1QxDOgI01CGVevoN+fRv/LEDGV5rgU6D1hGjCmYn3/CIg8i5
-         eoDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Zz5V7y6zyX28uzHv7nbJNO/THNVqL6J0WR2WWuQ7SCY=;
-        b=XtdSd5nyWf4yNfkB1PKwtcNdpaDZy2/LhaTzU7bERuL8LIZ7Fi4pyovY72kid7f1rJ
-         VqRN0CkkGoPerLU6bQyDxPRrXZX1jUTHp9hU3u2sT5rdvoDJENo+BWqnXSGsZawG3ero
-         BOQ2raZEHAYITYk8p7WpGLEwHRSq9qHhZMlsRN3hyOcRMsebc5ZU9q+CieKIz9sbEBlo
-         Yo9I44y8RXR8uJWuZsOOuNc6A7/8lWmKwIbtVSEyMCBtysF9QebnDEGXp1i4JomWeoGl
-         QYq/mlrjSkH+a1VEoCs4D/UcuzT+MAI5I+4LmeI1jZtDWc6tea3uQGNR3er6YeHI6Fte
-         ktsQ==
-X-Gm-Message-State: AOAM532LejRYI0rkg7u5t7gZyprPpDNb9DfUxe1+LODc6sJsrdoW7D1v
-        /rRuUmAARxUGIVTF98E6ZuulQA==
-X-Google-Smtp-Source: ABdhPJxlxhSbqKiKCa9E9IGILcoh2/H6PVy3wwrQdQj0w9n8pdqxILCg+dwurPk7Vv6V2VCi3BDOrQ==
-X-Received: by 2002:adf:d1e5:0:b0:205:85f5:656c with SMTP id g5-20020adfd1e5000000b0020585f5656cmr35738237wrd.65.1648640983633;
-        Wed, 30 Mar 2022 04:49:43 -0700 (PDT)
-Received: from ?IPV6:2a01:e34:ed2f:f020:8f92:3217:a3c6:3ee8? ([2a01:e34:ed2f:f020:8f92:3217:a3c6:3ee8])
-        by smtp.googlemail.com with ESMTPSA id z5-20020a05600c0a0500b0037fa93193a8sm5539221wmp.44.2022.03.30.04.49.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 30 Mar 2022 04:49:43 -0700 (PDT)
-Message-ID: <98be733a-62b0-4cf6-ab27-992ea49da5b1@linaro.org>
-Date:   Wed, 30 Mar 2022 13:49:41 +0200
+        Wed, 30 Mar 2022 07:53:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FEB2269340;
+        Wed, 30 Mar 2022 04:49:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 023D961616;
+        Wed, 30 Mar 2022 11:49:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C89D9C34112;
+        Wed, 30 Mar 2022 11:49:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648640970;
+        bh=BS9+xBaILP2NTve/YGTy5aoxWamiPKm3xneZ2z7LGuc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DQ7/KuS6ZCdqqQ4VvTCHzgae82E2sC+n4gZKIjBmMdP5rPkpYiSGON3xS8LBRRWCO
+         VqMdod2UqQ6NDEAs9I4+z+25+kMKQEU3cmj9i3DJ0PC1ZuLVvXqg7g/cCkyvWIcuqx
+         lSIJCHBnszG6dReOG2/Ef4H/miMUA7IlzwOlZmO+vRkCuDC7hbCXr3RDJRay3D+fY0
+         TUfjQRydMFVQ4KDcYsA/HrG+zlrOc/n9/um3hvZFN3jp6mLm7E0PsZv1Gaaa6sc+ID
+         t3zE+7fYmXuGljazcncYh5gMS2Yem8d8345oogXhUtqQi3+DkLrRy5UJk+b+zSugzx
+         n6CbcqJg2qawQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     =?UTF-8?q?Daniel=20Gonz=C3=A1lez=20Cabanelas?= <dgcbueu@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 38/59] media: cx88-mpeg: clear interrupt status register before streaming video
+Date:   Wed, 30 Mar 2022 07:48:10 -0400
+Message-Id: <20220330114831.1670235-38-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220330114831.1670235-1-sashal@kernel.org>
+References: <20220330114831.1670235-1-sashal@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v4 1/4] dt-bindings: timer: Add compatible for Mediatek
- MT8186
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>,
-        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Cc:     hsinyi@chromium.org, Thomas Gleixner <tglx@linutronix.de>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        linux-watchdog@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>
-References: <20220311130732.22706-1-allen-kh.cheng@mediatek.com>
- <20220311130732.22706-2-allen-kh.cheng@mediatek.com>
- <Yitv3IUpCzp1/eGX@robh.at.kernel.org>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-In-Reply-To: <Yitv3IUpCzp1/eGX@robh.at.kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11/03/2022 16:50, Rob Herring wrote:
-> On Fri, 11 Mar 2022 21:07:29 +0800, Allen-KH Cheng wrote:
->> From: Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
->>
->> This commit adds dt-binding documentation of timer for Mediatek MT8186 SoC
->> Platform.
->>
->> Signed-off-by: Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
->> ---
->>   Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt | 1 +
->>   1 file changed, 1 insertion(+)
->>
-> 
-> Acked-by: Rob Herring <robh@kernel.org>
+From: Daniel González Cabanelas <dgcbueu@gmail.com>
 
-Applied, thanks
+[ Upstream commit 56cb61f70e547e1b0cdfe6ff5a1f1ce6242e6d96 ]
 
+Some cx88 video cards may have transport stream status interrupts set
+to 1 from cold start, causing errors like this:
+
+  cx88xx: cx88_print_irqbits: core:irq mpeg  [0x100000] ts_err?*
+  cx8802: cx8802_mpeg_irq: mpeg:general errors: 0x00100000
+
+According to CX2388x datasheet, the interrupt status register should be
+cleared before enabling IRQs to stream video.
+
+Fix it by clearing the Transport Stream Interrupt Status register.
+
+Signed-off-by: Daniel González Cabanelas <dgcbueu@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/media/pci/cx88/cx88-mpeg.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/media/pci/cx88/cx88-mpeg.c b/drivers/media/pci/cx88/cx88-mpeg.c
+index 680e1e3fe89b..2c1d5137ac47 100644
+--- a/drivers/media/pci/cx88/cx88-mpeg.c
++++ b/drivers/media/pci/cx88/cx88-mpeg.c
+@@ -162,6 +162,9 @@ int cx8802_start_dma(struct cx8802_dev    *dev,
+ 	cx_write(MO_TS_GPCNTRL, GP_COUNT_CONTROL_RESET);
+ 	q->count = 0;
+ 
++	/* clear interrupt status register */
++	cx_write(MO_TS_INTSTAT,  0x1f1111);
++
+ 	/* enable irqs */
+ 	dprintk(1, "setting the interrupt mask\n");
+ 	cx_set(MO_PCI_INTMSK, core->pci_irqmask | PCI_INT_TSINT);
 -- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+2.34.1
 
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
