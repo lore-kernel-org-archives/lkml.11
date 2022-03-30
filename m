@@ -2,120 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB27EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:45:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74FDEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:46:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346288AbiC3NrR convert rfc822-to-8bit (ORCPT
+        id S1346309AbiC3NsV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 09:47:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40146 "EHLO
+        Wed, 30 Mar 2022 09:48:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237381AbiC3NrN (ORCPT
+        with ESMTP id S243622AbiC3NsQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 09:47:13 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E3BB9232A
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 06:45:26 -0700 (PDT)
-Received: from mail-wm1-f45.google.com ([209.85.128.45]) by
- mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1Mf0Jg-1oG0vX1VH8-00gXWT for <linux-kernel@vger.kernel.org>; Wed, 30 Mar
- 2022 15:45:25 +0200
-Received: by mail-wm1-f45.google.com with SMTP id n35so12275927wms.5
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 06:45:25 -0700 (PDT)
-X-Gm-Message-State: AOAM533llxE8Ff4BHRZvCwKPc0qU1ULrPZKNUZSkkP9L4VYrlVEA7s5h
-        fMQ3aTbEeEXUdwdzONd64wKMM3Y9J+msjdG6xIM=
-X-Google-Smtp-Source: ABdhPJyFDtDMU88yCYrJWs8ilBs1qgSlTrY/zkuVFBVQD5a2e8HtDgObtvJMsCBEA8avtDQ005+YpydEfjPyDUO36sQ=
-X-Received: by 2002:a7b:cd13:0:b0:38b:f39c:1181 with SMTP id
- f19-20020a7bcd13000000b0038bf39c1181mr4752181wmj.20.1648647915002; Wed, 30
- Mar 2022 06:45:15 -0700 (PDT)
+        Wed, 30 Mar 2022 09:48:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 954C5A27E3
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 06:46:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648647988;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=eLaIWlVraYrzqJO20OFbs4aqtDs0LbbZo1X56L7veGw=;
+        b=VN7BmB8UpzzktEljPsAxZVUjXLJocd+CuyPskIKsqYE1+/b25wIN1MMxmQL2HJ2erPhEX5
+        pEGMOTognU+ttcbcZNw9B5PXyFXnqYeaxKhE0nwZ/lbRFQJTmL4RLJnexOaeRvAdCimmNG
+        3Tg6I7zwfOcK5AIxtdnte0AhiSKida4=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-433-2T3Qx1DnN82LillCUsWVqA-1; Wed, 30 Mar 2022 09:46:27 -0400
+X-MC-Unique: 2T3Qx1DnN82LillCUsWVqA-1
+Received: by mail-ej1-f72.google.com with SMTP id hz15-20020a1709072cef00b006dfeceff2d1so9848660ejc.17
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 06:46:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=eLaIWlVraYrzqJO20OFbs4aqtDs0LbbZo1X56L7veGw=;
+        b=xkMQX2L5e/zOlIufzlBgJTjDlsZM4KSrJSWDdHSgFlbZsRyUi7JTPBOWz42EtekiJx
+         oGDcba2rjoTxi14DDL/NKgDkNMXgnSCh49H0cYI2oJjWYjnI5zz5ZzSS2s4mBOj/DYN4
+         5ubGjap62rLbkmvz1lyo926JzTqaP8QiIbuMo3tR6DR25lHAeb07r6YKYtvXB30S4Uo4
+         ZPGek/jqojOFzkKRW0Fw74lhYHDRyNagcC/6vXq+e1Fb04mX555nTyoXJWBHf6IjMqOS
+         TS6TBjWt4+EhYMLMQwCwzBGOPpdDHygX7ICIsAsKmgc70fMbHzTflqWoSSGyPXCpTT8B
+         ITCw==
+X-Gm-Message-State: AOAM533ugY0gcwHI2k5YKWqWowv0/1ea9Ob9y3RufzcHhQ3slzvW8RKv
+        7XYC/LPH1GMJS3iWMPydRyJ6drJpMjXkP+whwf8g/gHvHsaPhGI6i/cj19nFR37q3TjcNkGJ4Z+
+        CzsL2MPAdOSTf/EAP+35HRYI9
+X-Received: by 2002:a17:907:3e94:b0:6d1:d64e:3141 with SMTP id hs20-20020a1709073e9400b006d1d64e3141mr38837465ejc.213.1648647983273;
+        Wed, 30 Mar 2022 06:46:23 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzwZ63UhP/cjX55N9lQpIVsi+7QnOIup8W+4kphWmkl+wmSx/opVSXEvOLQomDj9Q5DThyhIw==
+X-Received: by 2002:a17:907:3e94:b0:6d1:d64e:3141 with SMTP id hs20-20020a1709073e9400b006d1d64e3141mr38837371ejc.213.1648647982108;
+        Wed, 30 Mar 2022 06:46:22 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id jg22-20020a170907971600b006df9ff416ccsm8073801ejc.137.2022.03.30.06.46.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 06:46:21 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id E1D9A240E87; Wed, 30 Mar 2022 15:46:20 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        Bagas Sanjaya <bagasdotme@gmail.com>,
+        'Linux Kernel' <linux-kernel@vger.kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Kurt Cancemi <kurt@x64architecture.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: UBSAN: invalid-load in net/mac80211/status.c:1164:21
+In-Reply-To: <892635fbacdc171baba2cba1b501f30b6a4faeca.camel@sipsolutions.net>
+References: <395d9e22-8b28-087a-5c5d-61a43db527ac@gmail.com>
+ <892635fbacdc171baba2cba1b501f30b6a4faeca.camel@sipsolutions.net>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 30 Mar 2022 15:46:20 +0200
+Message-ID: <87bkxn4kpf.fsf@toke.dk>
 MIME-Version: 1.0
-References: <87zglefhxd.fsf@mpe.ellerman.id.au> <CAHk-=whk4jihDM+zkhZPYRyNO0-YA1_-K9_NyC3EDsX+gkxC-w@mail.gmail.com>
- <87wngefnsu.fsf@mpe.ellerman.id.au> <20220330112733.GG163591@kunlun.suse.cz> <87k0cbfuf4.fsf@mpe.ellerman.id.au>
-In-Reply-To: <87k0cbfuf4.fsf@mpe.ellerman.id.au>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 30 Mar 2022 15:44:58 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2GCQd4SNpUvZrrEOgJ5OtOgj0PXtORnfe208n7tapzNQ@mail.gmail.com>
-Message-ID: <CAK8P3a2GCQd4SNpUvZrrEOgJ5OtOgj0PXtORnfe208n7tapzNQ@mail.gmail.com>
-Subject: Re: [GIT PULL] Please pull powerpc/linux.git powerpc-5.18-1 tag
-To:     Michael Ellerman <mpe@ellerman.id.au>
-Cc:     =?UTF-8?Q?Michal_Such=C3=A1nek?= <msuchanek@suse.de>,
-        Paul Menzel <pmenzel@molgen.mpg.de>,
-        Alexey Kardashevskiy <aik@ozlabs.ru>, jniethe5@gmail.com,
-        ganeshgr@linux.ibm.com, Jason Wang <wangborong@cdjrlc.com>,
-        bigunclemax@gmail.com, Miroslav Benes <mbenes@suse.cz>,
-        hbh25y@gmail.com, Michael Neuling <mikey@neuling.org>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Bhaskar Chowdhury <unixbhaskar@gmail.com>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        Helge Deller <deller@gmx.de>, danielhb413@gmail.com,
-        haren@linux.ibm.com, mamatha4@linux.vnet.ibm.com,
-        Corentin Labbe <clabbe@baylibre.com>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Thierry Reding <treding@nvidia.com>,
-        kernel.noureddine@gmail.com, Nathan Lynch <nathanl@linux.ibm.com>,
-        Petr Mladek <pmladek@suse.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Kees Cook <keescook@chromium.org>,
-        Arnd Bergmann <arnd@arndb.de>, guozhengkui@vivo.com,
-        kjain@linux.ibm.com, chenjingwen6@huawei.com,
-        Nick Piggin <npiggin@gmail.com>, Scott Wood <oss@buserror.net>,
-        rmclure@linux.ibm.com, maddy@linux.ibm.com,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        psampat@linux.ibm.com, sachinp@linux.ibm.com,
-        Anders Roxell <anders.roxell@linaro.org>,
-        ldufour@linux.ibm.com, Hari Bathini <hbathini@linux.ibm.com>,
-        Athira Jajeev <atrajeev@linux.vnet.ibm.com>,
-        farosas@linux.ibm.com, Geoff Levand <geoff@infradead.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        sourabhjain@linux.ibm.com, Julia Lawall <Julia.Lawall@inria.fr>,
-        Ritesh Harjani <riteshh@linux.ibm.com>, cgel.zte@gmail.com,
-        Vaibhav Jain <vaibhav@linux.ibm.com>, tobias@waldekranz.com,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Jakob Koschel <jakobkoschel@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Provags-ID: V03:K1:aJfpSsmsCY0/TZONtBGkjjkdVa9dJdsNgcT+13VdPzSEP81N/+q
- 49FBVN7TWVTGDM8eM5yUV5yvXng4hMO3TFFsw0zkBqvUbCIHiyckS69Xvt7AwFB2YGmwuU8
- mGsQLRo6NHxZOUIlKMnlJcn6KDS8N3R11ssGuFaPLHgzK9GRkgczp17p6cKCg7EHxVmGHgZ
- S2yyULvruQ+LIhWPUJmAw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:8ntCkkSA/zw=:QN7U91CGazWMQFgy4OTqIb
- pRXIK6RMZXjAYrih50Aji/LNbzcwoY4ZZ6oXuKr66h5VM5wO3qkcd5DzX27UaOJbCALPIWXz1
- 0FA3wiGJ9X9e3vC6uuLEO1JPkPUZhUDKlfaFMBbmJA1h8KcRp288h7hqMcGV22iFMMJ9RK2sZ
- rVF/UzRLaIL7deW1TmKPtD19E1xAGM2UEpXx9vfXTIKrX5/HfJfYxwovddUydMAqNadHDQXhh
- rBeowqPNdf/yoCDMJNcwWY3YgUsm6XKlqeuxrxANZCHGi902nxXdks3OoP4WogqO5AVdkPCSh
- 52L9KsvN4T/3G1ql0Z08SZ9XzQLFb5DE1lqeJBNCzm5NfvnBxQRbAZPvf/yvAXO1LQ8zEoxQ4
- vp5UQ3jUm7z6wsWturxQY1bqcnYNmnrVwNqmSij3YuWU4cQ500sn6k+LyWSp+zF/wn7ppeebx
- oCR8/VZee9y6ZXLOgLEkSEPLTtqNG5CnTkLGEbXb6gvjmmc9Za+4xAQglcgaPNy7iAEfTLrkt
- tDzq2xY35YouLlFJLFG7So5h1+FiD8NR7twOrYb/xVburWmINaASZspqqKOxT8mSvbB4uZWRq
- HuGQBGFDAOiB0vmROiGRtwdfHATp+nqdzz+T6isaOta7kB07tt/3Qrk/JAtkceGxnhSoVbwqC
- 8F6jUb4o3wz7cY11GIwmMkRTBry1ljWvVDCHpwoS54s4no276JfT7DigVanjgkVArqYqsq+Vp
- IMyrpg13AGXjs+9gNHujoqMdzmgUEj2LVOiAnxr/PB7CCQObu3U8B4ufuHQLTa8dI9tel/jbH
- TXsOjFybsLqzxpeFaKKGGHTvAbxh6LrIiu+ewIXOKzhdO2D+0k=
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 3:21 PM Michael Ellerman <mpe@ellerman.id.au> wrote:
-> Michal Suchánek <msuchanek@suse.de> writes:
-> > On Mon, Mar 28, 2022 at 08:07:13PM +1100, Michael Ellerman wrote:
-> >> No you're right, we have moved away from them, but not entirely.
-> >>
-> >> Functions descriptors are still used for 64-bit big endian, but they're
-> >> not used for 64-bit little endian, or 32-bit.
-> >
-> > There was a patch to use ABIv2 for ppc64 big endian. I suppose that
-> > would rid usof the gunction descriptors for good.
->
-> It would be nice.
->
-> The hesitation in the past was that the GNU toolchain developers don't
-> officially support BE+ELFv2, though it is in use so it does work.
+Johannes Berg <johannes@sipsolutions.net> writes:
 
-It clearly made sense to wait while BE+ELFv1 was commonly used and
-well tested, but as that is getting less common each year, getting ELFv1
-out of the picture would appear to make the setup less obscure, not more.
+> On Wed, 2022-03-30 at 18:49 +0700, Bagas Sanjaya wrote:
+>> 
+>> [ 1152.928312] UBSAN: invalid-load in net/mac80211/status.c:1164:21
+>> [ 1152.928318] load of value 255 is not a valid value for type '_Bool'
+>
+>
+> That's loading status->is_valid_ack_signal, it seems.
+>
+> Note how that's in a union, shadowed by the 0x00ff0000'00000000 byte of
+> the control.vif pointer (if I'm counting bytes correctly). That's kind
+> of expected to be 0xff.
+>
+>> [ 1152.928323] CPU: 1 PID: 857 Comm: rs:main Q:Reg Not tainted 5.17.1-kernelorg-stable-generic #1
+>> [ 1152.928329] Hardware name: Acer Aspire E5-571/EA50_HB   , BIOS V1.04 05/06/2014
+>> [ 1152.928331] Call Trace:
+>> [ 1152.928334]  <TASK>
+>> [ 1152.928338]  dump_stack_lvl+0x4c/0x63
+>> [ 1152.928350]  dump_stack+0x10/0x12
+>> [ 1152.928354]  ubsan_epilogue+0x9/0x45
+>> [ 1152.928359]  __ubsan_handle_load_invalid_value.cold+0x44/0x49
+>> [ 1152.928365]  ieee80211_tx_status_ext.cold+0xa3/0xb8 [mac80211]
+>> [ 1152.928467]  ieee80211_tx_status+0x7d/0xa0 [mac80211]
+>> [ 1152.928535]  ath_txq_unlock_complete+0x15c/0x170 [ath9k]
+>> [ 1152.928553]  ath_tx_edma_tasklet+0xe5/0x4c0 [ath9k]
+>> [ 1152.928567]  ath9k_tasklet+0x14e/0x280 [ath9k]
+>
+> Which sort of means that ath9k isn't setting up the status area
+> correctly?
 
-       Arnd
+Yeah, it seems to be only setting fields individually, so AFAICT it's
+skipping 'antenna' and 'flags' in info->status.
+
+>> The bisection process, starting from v5.17 (the first tag with the warning),
+>> found first 'oops' commit at 837d9e49402eaf (net: phy: marvell: Fix invalid
+>> comparison in the resume and suspend functions, 2022-03-12). However, since
+>> the commit didn't touch net/mac80211/status.c, it wasn't the root cause
+>> commit.
+>
+> Well you'd look for something in ath9k, I guess. But you didn't limit
+> the bisect, so not sure why it went off into the weeds. Maybe you got
+> one of them wrong.
+>
+>> The latest commit that touch the file in question is commit
+>> ea5907db2a9ccf (mac80211: fix struct ieee80211_tx_info size, 2022-02-02).
+>
+> That's after 5.17 though, and it replaced the bool by just a flag.
+>
+>
+> Seems to me ath9k should use something like
+> ieee80211_tx_info_clear_status() or do the memset by itself? This bug
+> would now not be reported, but it might report the flag erroneously.
+
+So something like the below, maybe?
+
+-Toke
+
+diff --git a/drivers/net/wireless/ath/ath9k/xmit.c b/drivers/net/wireless/ath/ath9k/xmit.c
+index d0caf1de2bde..425fe0df7d62 100644
+--- a/drivers/net/wireless/ath/ath9k/xmit.c
++++ b/drivers/net/wireless/ath/ath9k/xmit.c
+@@ -2553,6 +2553,8 @@ static void ath_tx_rc_status(struct ath_softc *sc, struct ath_buf *bf,
+        struct ath_hw *ah = sc->sc_ah;
+        u8 i, tx_rateindex;
+ 
++       ieee80211_tx_info_clear_status(tx_info);
++
+        if (txok)
+                tx_info->status.ack_signal = ts->ts_rssi;
+ 
+
