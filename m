@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6084BC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:47:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68455C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:47:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343835AbiC3Ls4 (ORCPT
+        id S1343774AbiC3LtC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 07:48:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57820 "EHLO
+        Wed, 30 Mar 2022 07:49:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343784AbiC3Lso (ORCPT
+        with ESMTP id S1343823AbiC3Lss (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:48:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E188C25E313;
-        Wed, 30 Mar 2022 04:46:57 -0700 (PDT)
+        Wed, 30 Mar 2022 07:48:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5518C25DAA2;
+        Wed, 30 Mar 2022 04:47:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F1B4615E7;
-        Wed, 30 Mar 2022 11:46:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A46C0C340EE;
-        Wed, 30 Mar 2022 11:46:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA582615B7;
+        Wed, 30 Mar 2022 11:47:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E24E8C340EE;
+        Wed, 30 Mar 2022 11:46:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648640816;
-        bh=Qn2xz8unSOo35R95ApvqzpAB/fhcPz9d2W8mQpTVnmU=;
+        s=k20201202; t=1648640820;
+        bh=a+hYV3dWe1oVsX+cvNgh7RLaS51GSRre3hs0wbTB+k0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PUtJBAOV5s1wJ4X4mZW7aq8CaTIR8hkR/c2Zpq4O6im5r8a86IVGMSx9f70+lMDU+
-         TAgptZhvBxY7jWhpq3HE+MMQoLPdwjKqtxdtocV4oTSrNock+SBKO/+GWkQMbVq9Hh
-         HHaoBAS3P9kF42C+oriwOgKM7eBpNFZwBj6f4KsNUcz/GIQ+El6IGRBMk/FiYwScF/
-         jBkcRJi0Ncg3L8X4oK+wQ7OEfyV1TQEpYi9IY77V7Qx4Zb2yRI7DSp+aP7OfVTZjg9
-         E85GUPu+2gPQBRdHp+XcbTpNjg9ATB/RJdhtVlai4Vyi8P4zU8Jc2hEm3kSiyCxJ/+
-         GGVbLrBYCpj7g==
+        b=X2uP9fqI7ApUQ0nAdxfB5YEJN6Zh8mEKqA6lJar2pdp6t9KEPaVPrMMNLGrYhdSFb
+         YZKR/jXe3nR+IXZQhpPgnLC/KArLyDGTxIBLWvbEtGRo0Ci7dmLwbBB5//pE1ObnQh
+         LfgN/0DKXuc779kNuQYi4ZkkQ/LBj1vVzPydekM/fuVMeKcCr5KNxM+i6+Hz8cAFnd
+         3eoK/SuxiIaoPazf1fw7syBdNo30OdYfrvH4ob+tgDOC/exVjIzCIx/LrVgFXnjIAm
+         OpyvzM3MqFiCYJyyY71TGepgsre0njcnnQ7TUlnpd+j0Rz9BixfLnd3AfEeW27v1KK
+         yK3HfSwAI682w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Pavel Machek <pavel@denx.de>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
+Cc:     Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Reddy Muralidhar <muralidhar.reddy@intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Rander Wang <rander.wang@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
         perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.17 06/66] ASoC: sh: rz-ssi: Make the data structures available before registering the handlers
-Date:   Wed, 30 Mar 2022 07:45:45 -0400
-Message-Id: <20220330114646.1669334-6-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.17 08/66] ASoC: SOF: Intel: match sdw version on link_slaves_found
+Date:   Wed, 30 Mar 2022 07:45:47 -0400
+Message-Id: <20220330114646.1669334-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330114646.1669334-1-sashal@kernel.org>
 References: <20220330114646.1669334-1-sashal@kernel.org>
@@ -55,46 +57,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+From: Bard Liao <yung-chuan.liao@linux.intel.com>
 
-[ Upstream commit 0788785c78342d422f93b1c9831c2b2b7f137937 ]
+[ Upstream commit f67c0c0d3b9048d86ea6ae52e36a2b78c48f265d ]
 
-Initialize the spinlock and make the data structures available before
-registering the interrupt handlers.
+Codecs with the same part id, manufacturer id and part id, but different
+sdw version should be treated as different codecs. For example, rt711 and
+rt711-sdca are different. So, we should match sdw version as well.
 
-Reported-by: Pavel Machek <pavel@denx.de>
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
-Link: https://lore.kernel.org/r/20220110094711.8574-3-prabhakar.mahadev-lad.rj@bp.renesas.com
+Reported-by: Reddy Muralidhar <muralidhar.reddy@intel.com>
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Reviewed-by: Rander Wang <rander.wang@intel.com>
+Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220120232157.199919-2-pierre-louis.bossart@linux.intel.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sh/rz-ssi.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ sound/soc/sof/intel/hda.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/sound/soc/sh/rz-ssi.c b/sound/soc/sh/rz-ssi.c
-index e8d98b362f9d..28400dbc5c06 100644
---- a/sound/soc/sh/rz-ssi.c
-+++ b/sound/soc/sh/rz-ssi.c
-@@ -975,6 +975,9 @@ static int rz_ssi_probe(struct platform_device *pdev)
- 	ssi->playback.priv = ssi;
- 	ssi->capture.priv = ssi;
+diff --git a/sound/soc/sof/intel/hda.c b/sound/soc/sof/intel/hda.c
+index 1385695d7745..848d1d563170 100644
+--- a/sound/soc/sof/intel/hda.c
++++ b/sound/soc/sof/intel/hda.c
+@@ -1188,7 +1188,7 @@ static bool link_slaves_found(struct snd_sof_dev *sdev,
+ 	struct hdac_bus *bus = sof_to_bus(sdev);
+ 	struct sdw_intel_slave_id *ids = sdw->ids;
+ 	int num_slaves = sdw->num_slaves;
+-	unsigned int part_id, link_id, unique_id, mfg_id;
++	unsigned int part_id, link_id, unique_id, mfg_id, version;
+ 	int i, j, k;
  
-+	spin_lock_init(&ssi->lock);
-+	dev_set_drvdata(&pdev->dev, ssi);
-+
- 	/* Error Interrupt */
- 	ssi->irq_int = platform_get_irq_byname(pdev, "int_req");
- 	if (ssi->irq_int < 0)
-@@ -1027,8 +1030,6 @@ static int rz_ssi_probe(struct platform_device *pdev)
- 		return dev_err_probe(ssi->dev, ret, "pm_runtime_resume_and_get failed\n");
- 	}
+ 	for (i = 0; i < link->num_adr; i++) {
+@@ -1198,12 +1198,14 @@ static bool link_slaves_found(struct snd_sof_dev *sdev,
+ 		mfg_id = SDW_MFG_ID(adr);
+ 		part_id = SDW_PART_ID(adr);
+ 		link_id = SDW_DISCO_LINK_ID(adr);
++		version = SDW_VERSION(adr);
  
--	spin_lock_init(&ssi->lock);
--	dev_set_drvdata(&pdev->dev, ssi);
- 	ret = devm_snd_soc_register_component(&pdev->dev, &rz_ssi_soc_component,
- 					      rz_ssi_soc_dai,
- 					      ARRAY_SIZE(rz_ssi_soc_dai));
+ 		for (j = 0; j < num_slaves; j++) {
+ 			/* find out how many identical parts were reported on that link */
+ 			if (ids[j].link_id == link_id &&
+ 			    ids[j].id.part_id == part_id &&
+-			    ids[j].id.mfg_id == mfg_id)
++			    ids[j].id.mfg_id == mfg_id &&
++			    ids[j].id.sdw_version == version)
+ 				reported_part_count++;
+ 		}
+ 
+@@ -1212,21 +1214,24 @@ static bool link_slaves_found(struct snd_sof_dev *sdev,
+ 
+ 			if (ids[j].link_id != link_id ||
+ 			    ids[j].id.part_id != part_id ||
+-			    ids[j].id.mfg_id != mfg_id)
++			    ids[j].id.mfg_id != mfg_id ||
++			    ids[j].id.sdw_version != version)
+ 				continue;
+ 
+ 			/* find out how many identical parts are expected */
+ 			for (k = 0; k < link->num_adr; k++) {
+ 				u64 adr2 = link->adr_d[k].adr;
+-				unsigned int part_id2, link_id2, mfg_id2;
++				unsigned int part_id2, link_id2, mfg_id2, version2;
+ 
+ 				mfg_id2 = SDW_MFG_ID(adr2);
+ 				part_id2 = SDW_PART_ID(adr2);
+ 				link_id2 = SDW_DISCO_LINK_ID(adr2);
++				version2 = SDW_VERSION(adr2);
+ 
+ 				if (link_id2 == link_id &&
+ 				    part_id2 == part_id &&
+-				    mfg_id2 == mfg_id)
++				    mfg_id2 == mfg_id &&
++				    version2 == version)
+ 					expected_part_count++;
+ 			}
+ 
 -- 
 2.34.1
 
