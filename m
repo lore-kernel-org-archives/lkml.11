@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0124BC43217
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:48:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C4E1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 11:48:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343997AbiC3LuV (ORCPT
+        id S1343947AbiC3LuZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 07:50:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58344 "EHLO
+        Wed, 30 Mar 2022 07:50:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343878AbiC3Ltr (ORCPT
+        with ESMTP id S1343899AbiC3Ltt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:49:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1BBB26B5B8;
-        Wed, 30 Mar 2022 04:47:27 -0700 (PDT)
+        Wed, 30 Mar 2022 07:49:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E4B126C2FB;
+        Wed, 30 Mar 2022 04:47:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 30B4E6162C;
-        Wed, 30 Mar 2022 11:47:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 737CBC340F2;
-        Wed, 30 Mar 2022 11:47:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E98FF61618;
+        Wed, 30 Mar 2022 11:47:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64B45C340F2;
+        Wed, 30 Mar 2022 11:47:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648640846;
-        bh=TtGlKKB6pKoNSVQoJPN+1EWbLvNggYKF1ltPuI0juXo=;
+        s=k20201202; t=1648640849;
+        bh=+wq173W039LLwt49okhsC1cU/Yg0EMixvemiQqA7vmw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dxNzEXuOf5cs8U3VwC+m6DTJCbRlEx8mUgJJnpjOF/XL/dGYpZfxRx9hLnwOpXWg0
-         +WkjeiHTD7wd3nJh0/ZzMMjRx7GWUUf7utZ3wy2LLRVazgzUdSNZa5tLrON1L4zJBD
-         CVOEbl4zqZTVRGU/2NdZQv8EMxant+qL3lwx/2BSWWWXfPqB3dV31GP7IaBbbhfjho
-         MvnXNFapUeXD0rFjTkv5TjoLeU3qCwBmxmWrmecSRBJD3X+Y5VQTsMfFvg7Qr/3lNp
-         BNKIikqzqFNBEcuNCNDKWY60KvA1qDVpmEGQEyr6CxRWpsjYBJLSB+HfOkjDh6Sjgf
-         NYwXaHyOuuBgw==
+        b=Ngx2joAEPadUl1FGRNiEtFOhG3eJxvdklVZsHI/IVMgQx4DA8mRmiQz8SffXGTzLg
+         Rz18jsg+YXWxlj6wiQZfpvxpGehTd5nn262FRiZkfB5TSOy5axlSU21uRjJkvE8Bti
+         mxH3689zd78KzaWLvMUgDj+ykuUUm/nAfh4w7mTPKgY49FdK3xb6s/d23LaCF9Vb6W
+         /Mc4vKL9ccYmJ93a88dBVlcdyYpn5NRNOJPP+JzBugWJhJFHYehM013WyI5sUic8Yg
+         /ihTLe7kFQSqFgaIy7GVSIGGKmhK6GConIXmV/n9LoPC8GdeLDMGdbdf+hNq3aUI8N
+         BvtezTKxpGLIg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Abel Vesa <abel.vesa@nxp.com>, Shawn Guo <shawnguo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, kernel@pengutronix.de,
-        robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 25/66] ARM: dts: imx7: Use audio_mclk_post_div instead audio_mclk_root_clk
-Date:   Wed, 30 Mar 2022 07:46:04 -0400
-Message-Id: <20220330114646.1669334-25-sashal@kernel.org>
+Cc:     Jing Yao <yao.jing2@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        tomi.valkeinen@ti.com, linux-omap@vger.kernel.org,
+        linux-fbdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 27/66] video: fbdev: omapfb: panel-dsi-cm: Use sysfs_emit() instead of snprintf()
+Date:   Wed, 30 Mar 2022 07:46:06 -0400
+Message-Id: <20220330114646.1669334-27-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330114646.1669334-1-sashal@kernel.org>
 References: <20220330114646.1669334-1-sashal@kernel.org>
@@ -53,164 +53,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Abel Vesa <abel.vesa@nxp.com>
+From: Jing Yao <yao.jing2@zte.com.cn>
 
-[ Upstream commit 4cb7df64c732b2b9918424095c11660c2a8c4a33 ]
+[ Upstream commit f63658a59c3d439c8ad7b290f8ec270980e0f384 ]
 
-The audio_mclk_root_clk was added as a gate with the CCGR121 (0x4790),
-but according to the reference manual, there is no such gate. Moreover,
-the consumer driver of the mentioned clock might gate it and leave
-the ECSPI2 (the true owner of that gate) hanging. So lets use the
-audio_mclk_post_div, which is the parent.
+Use sysfs_emit instead of scnprintf, snprintf or sprintf.
 
-Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx7-colibri.dtsi     | 4 ++--
- arch/arm/boot/dts/imx7-mba7.dtsi        | 2 +-
- arch/arm/boot/dts/imx7d-nitrogen7.dts   | 2 +-
- arch/arm/boot/dts/imx7d-pico-hobbit.dts | 4 ++--
- arch/arm/boot/dts/imx7d-pico-pi.dts     | 4 ++--
- arch/arm/boot/dts/imx7d-sdb.dts         | 4 ++--
- arch/arm/boot/dts/imx7s-warp.dts        | 4 ++--
- 7 files changed, 12 insertions(+), 12 deletions(-)
+ drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx7-colibri.dtsi b/arch/arm/boot/dts/imx7-colibri.dtsi
-index 62b771c1d5a9..f1c60b0cb143 100644
---- a/arch/arm/boot/dts/imx7-colibri.dtsi
-+++ b/arch/arm/boot/dts/imx7-colibri.dtsi
-@@ -40,7 +40,7 @@
+diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
+index 4b0793abdd84..a2c7c5cb1523 100644
+--- a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
++++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
+@@ -409,7 +409,7 @@ static ssize_t dsicm_num_errors_show(struct device *dev,
+ 	if (r)
+ 		return r;
  
- 		dailink_master: simple-audio-card,codec {
- 			sound-dai = <&codec>;
--			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		};
- 	};
- };
-@@ -293,7 +293,7 @@
- 		compatible = "fsl,sgtl5000";
- 		#sound-dai-cells = <0>;
- 		reg = <0x0a>;
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pinctrl_sai1_mclk>;
- 		VDDA-supply = <&reg_module_3v3_avdd>;
-diff --git a/arch/arm/boot/dts/imx7-mba7.dtsi b/arch/arm/boot/dts/imx7-mba7.dtsi
-index 49086c6b6a0a..3df6dff7734a 100644
---- a/arch/arm/boot/dts/imx7-mba7.dtsi
-+++ b/arch/arm/boot/dts/imx7-mba7.dtsi
-@@ -302,7 +302,7 @@
- 	tlv320aic32x4: audio-codec@18 {
- 		compatible = "ti,tlv320aic32x4";
- 		reg = <0x18>;
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		clock-names = "mclk";
- 		ldoin-supply = <&reg_audio_3v3>;
- 		iov-supply = <&reg_audio_3v3>;
-diff --git a/arch/arm/boot/dts/imx7d-nitrogen7.dts b/arch/arm/boot/dts/imx7d-nitrogen7.dts
-index e0751e6ba3c0..a31de900139d 100644
---- a/arch/arm/boot/dts/imx7d-nitrogen7.dts
-+++ b/arch/arm/boot/dts/imx7d-nitrogen7.dts
-@@ -288,7 +288,7 @@
- 	codec: wm8960@1a {
- 		compatible = "wlf,wm8960";
- 		reg = <0x1a>;
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		clock-names = "mclk";
- 		wlf,shared-lrclk;
- 	};
-diff --git a/arch/arm/boot/dts/imx7d-pico-hobbit.dts b/arch/arm/boot/dts/imx7d-pico-hobbit.dts
-index 7b2198a9372c..d917dc4f2f22 100644
---- a/arch/arm/boot/dts/imx7d-pico-hobbit.dts
-+++ b/arch/arm/boot/dts/imx7d-pico-hobbit.dts
-@@ -31,7 +31,7 @@
+-	return snprintf(buf, PAGE_SIZE, "%d\n", errors);
++	return sysfs_emit(buf, "%d\n", errors);
+ }
  
- 		dailink_master: simple-audio-card,codec {
- 			sound-dai = <&sgtl5000>;
--			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		};
- 	};
- };
-@@ -41,7 +41,7 @@
- 		#sound-dai-cells = <0>;
- 		reg = <0x0a>;
- 		compatible = "fsl,sgtl5000";
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		VDDA-supply = <&reg_2p5v>;
- 		VDDIO-supply = <&reg_vref_1v8>;
- 	};
-diff --git a/arch/arm/boot/dts/imx7d-pico-pi.dts b/arch/arm/boot/dts/imx7d-pico-pi.dts
-index 70bea95c06d8..f263e391e24c 100644
---- a/arch/arm/boot/dts/imx7d-pico-pi.dts
-+++ b/arch/arm/boot/dts/imx7d-pico-pi.dts
-@@ -31,7 +31,7 @@
+ static ssize_t dsicm_hw_revision_show(struct device *dev,
+@@ -439,7 +439,7 @@ static ssize_t dsicm_hw_revision_show(struct device *dev,
+ 	if (r)
+ 		return r;
  
- 		dailink_master: simple-audio-card,codec {
- 			sound-dai = <&sgtl5000>;
--			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		};
- 	};
- };
-@@ -41,7 +41,7 @@
- 		#sound-dai-cells = <0>;
- 		reg = <0x0a>;
- 		compatible = "fsl,sgtl5000";
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		VDDA-supply = <&reg_2p5v>;
- 		VDDIO-supply = <&reg_vref_1v8>;
- 	};
-diff --git a/arch/arm/boot/dts/imx7d-sdb.dts b/arch/arm/boot/dts/imx7d-sdb.dts
-index 7813ef960f6e..f053f5122741 100644
---- a/arch/arm/boot/dts/imx7d-sdb.dts
-+++ b/arch/arm/boot/dts/imx7d-sdb.dts
-@@ -385,14 +385,14 @@
- 	codec: wm8960@1a {
- 		compatible = "wlf,wm8960";
- 		reg = <0x1a>;
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		clock-names = "mclk";
- 		wlf,shared-lrclk;
- 		wlf,hp-cfg = <2 2 3>;
- 		wlf,gpio-cfg = <1 3>;
- 		assigned-clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_SRC>,
- 				  <&clks IMX7D_PLL_AUDIO_POST_DIV>,
--				  <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+				  <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		assigned-clock-parents = <&clks IMX7D_PLL_AUDIO_POST_DIV>;
- 		assigned-clock-rates = <0>, <884736000>, <12288000>;
- 	};
-diff --git a/arch/arm/boot/dts/imx7s-warp.dts b/arch/arm/boot/dts/imx7s-warp.dts
-index 4f1edef06c92..e8734d218b9d 100644
---- a/arch/arm/boot/dts/imx7s-warp.dts
-+++ b/arch/arm/boot/dts/imx7s-warp.dts
-@@ -75,7 +75,7 @@
+-	return snprintf(buf, PAGE_SIZE, "%02x.%02x.%02x\n", id1, id2, id3);
++	return sysfs_emit(buf, "%02x.%02x.%02x\n", id1, id2, id3);
+ }
  
- 		dailink_master: simple-audio-card,codec {
- 			sound-dai = <&codec>;
--			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+			clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		};
- 	};
- };
-@@ -232,7 +232,7 @@
- 		#sound-dai-cells = <0>;
- 		reg = <0x0a>;
- 		compatible = "fsl,sgtl5000";
--		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_CLK>;
-+		clocks = <&clks IMX7D_AUDIO_MCLK_ROOT_DIV>;
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pinctrl_sai1_mclk>;
- 		VDDA-supply = <&vgen4_reg>;
+ static ssize_t dsicm_store_ulps(struct device *dev,
+@@ -487,7 +487,7 @@ static ssize_t dsicm_show_ulps(struct device *dev,
+ 	t = ddata->ulps_enabled;
+ 	mutex_unlock(&ddata->lock);
+ 
+-	return snprintf(buf, PAGE_SIZE, "%u\n", t);
++	return sysfs_emit(buf, "%u\n", t);
+ }
+ 
+ static ssize_t dsicm_store_ulps_timeout(struct device *dev,
+@@ -532,7 +532,7 @@ static ssize_t dsicm_show_ulps_timeout(struct device *dev,
+ 	t = ddata->ulps_timeout;
+ 	mutex_unlock(&ddata->lock);
+ 
+-	return snprintf(buf, PAGE_SIZE, "%u\n", t);
++	return sysfs_emit(buf, "%u\n", t);
+ }
+ 
+ static DEVICE_ATTR(num_dsi_errors, S_IRUGO, dsicm_num_errors_show, NULL);
 -- 
 2.34.1
 
