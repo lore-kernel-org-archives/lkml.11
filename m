@@ -2,173 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDB9DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 18:28:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33B02C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 18:28:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350499AbiC3S3t (ORCPT
+        id S1347415AbiC3S34 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 14:29:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37560 "EHLO
+        Wed, 30 Mar 2022 14:29:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243787AbiC3S3l (ORCPT
+        with ESMTP id S1350466AbiC3S3l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 30 Mar 2022 14:29:41 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D28713E0B
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:26:30 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id a1so30487926wrh.10
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:26:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yrVy6mGFfTezARgPXoahkDtUgtA05SdD0ISAtqjQGmo=;
-        b=jeqXOpWvuvTFAZ5ufyJ6gMquwMoLSR57f2nzBHCjKg89AFDu8SChd/gG11luYWyf/D
-         2CzAPJvMu3VE37HnTb9n1joxjZ8rZDv/jLDDQxoVM13w9/HSGar33+yelws0I0RzDXuD
-         x2FC6sCuQ9+sVj/AU5EaPqcneuIHFnQREQK/aMTMnhAMlvN3cHdfJ8kvton6FPr1ui7l
-         TyizdoluHflvQQylTJfOXWxZfJrf+Q445FSF/JpxF90ldhCvP4quYkT1gFYAnZIwXKwy
-         TrGMEBsTo5N+WAfY46pjgOj3zGDxRdC25j6ZfW1QRM2FQ67tj18/9FH5vik6eMeh2Euq
-         8AWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yrVy6mGFfTezARgPXoahkDtUgtA05SdD0ISAtqjQGmo=;
-        b=q/VfPE/W3Uhljsjs1elpS5t13i2XOiphbz+F4SpZDqYTZGmmCjnNhKAaw7ZzM4Z8QQ
-         RFyLLzKZPcrx2bXLDErpocn4lfCjG/Y9RMcm0mrQn9+Ps7wy+QNQK49ZLP8iNHRqRxRV
-         /kTWh5mzcy10Sjj9DALTqUVLgbm2tlH/NLOunct2xbJsWC9TeojFsWX0kwJlmKvc7GdI
-         q/HrhbtnwXRHmM9XxFGjTCHUsJmdZ6BMcMUGmhoAg0dPbMgYuhny9whsXV7bMQ62Rk1C
-         yjDt3+cjdJYkssr5vUc0mvZx+dMPppaGy8C0+QvIBF8O1ElWZXPGjEYD67lAMfoQs2tq
-         uqTQ==
-X-Gm-Message-State: AOAM530lURLKRkQWPjxfwa5G4zvi5Vr5vnsUYcwvBDZfeiK8K0OQZjK/
-        uigfz+Vbce2gAsKs+Z+cYTr+aLosD+e2GJeHs1gunQ==
-X-Google-Smtp-Source: ABdhPJyHXpZ33Cgj5l28R7EnxJQfhSJzEztJTVsFHQXl/nJtwWID/KYZkpjVOJJC80I9hdIvxXiGJ1M1XbFYufMG0uk=
-X-Received: by 2002:a5d:68ce:0:b0:204:1a8c:749a with SMTP id
- p14-20020a5d68ce000000b002041a8c749amr821161wrw.392.1648664788452; Wed, 30
- Mar 2022 11:26:28 -0700 (PDT)
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97461DA5
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:26:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648664787; x=1680200787;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=GNwwe4gVp3OpPaPwuCW93ogK22+vVK5mATybqyOWT5c=;
+  b=ESHvs9T54Rs8znewnRDOqsShWHAzYlY8A0dqKHO8h1m33bmDffHZIEwa
+   zLcZlduShKFvy7pezx7dOZz21dhLReJ+wKRjvxUDwehhTO7Mg4SD8NSxl
+   9XxcgiEIlwMzTT329fd/QVN5B3KlHNV5x2EuLCM+K3oz1f2A1BszZpHOX
+   yaryOxnlNS9bmOGooqaZnWXm+6PLmipeavVVZLi5zinuE5wFCagWp8iQ0
+   bSa7EScTxStg4NbE3PLkJmWdFGYb/i4sj/iaJvMATejxnUG1uHSkLtcA/
+   s5O6+6O9LOuocGc6oRJJ7G/w9h44Kq4UtM/kR35gTwPu8a0qu7V4JUN7x
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="322796626"
+X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
+   d="scan'208";a="322796626"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 11:26:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
+   d="scan'208";a="639821962"
+Received: from lkp-server02.sh.intel.com (HELO 56431612eabd) ([10.239.97.151])
+  by FMSMGA003.fm.intel.com with ESMTP; 30 Mar 2022 11:26:24 -0700
+Received: from kbuild by 56431612eabd with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nZd1U-0000Hl-3n;
+        Wed, 30 Mar 2022 18:26:24 +0000
+Date:   Thu, 31 Mar 2022 02:22:56 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [paulmck-rcu:dev.2022.03.29a] BUILD SUCCESS
+ 72ee6272c2a01687f3774f445574708452738302
+Message-ID: <6244a000.SmzmYoSnnquca2IG%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-References: <20220324234123.1608337-1-haoluo@google.com> <9cdf860d-8370-95b5-1688-af03265cc874@fb.com>
- <CA+khW7g3hy61qnvtqUizaW+qB6wk=Y9cjivhORshOk=ZzTXJ-A@mail.gmail.com>
- <CA+khW7iq+UKsfQxdT3QpSqPUFN8gQWWDLoQ9zxB=uWTs63AZEA@mail.gmail.com>
- <20220329093753.26wc3noelqrwlrcj@apollo.legion> <CA+khW7jW47SALTfxMKfQoA0Qwqd22GC0z4S5juFTbxLfTSbFEQ@mail.gmail.com>
- <20220329232956.gbsr65jdbe4lw2m6@ast-mbp> <CA+khW7jyvp4PKGu5GS8GDf=Lr4EdRUz8kraaTfiZ2oGm704Cpw@mail.gmail.com>
- <CAADnVQLTBhCTAx1a_nev7CgMZxv1Bb7ecz1AFRin8tHmjPREJA@mail.gmail.com>
-In-Reply-To: <CAADnVQLTBhCTAx1a_nev7CgMZxv1Bb7ecz1AFRin8tHmjPREJA@mail.gmail.com>
-From:   Hao Luo <haoluo@google.com>
-Date:   Wed, 30 Mar 2022 11:26:17 -0700
-Message-ID: <CA+khW7iqiKTLi75oSPe+ibV8afR_SPgtg7Q+nEswmMOFZaAebA@mail.gmail.com>
-Subject: Re: [PATCH RFC bpf-next 0/2] Mmapable task local storage.
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Yonghong Song <yhs@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        KP Singh <kpsingh@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, bpf <bpf@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 11:16 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Wed, Mar 30, 2022 at 11:06 AM Hao Luo <haoluo@google.com> wrote:
-> >
-> > On Tue, Mar 29, 2022 at 4:30 PM Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > On Tue, Mar 29, 2022 at 10:43:42AM -0700, Hao Luo wrote:
-> > > > On Tue, Mar 29, 2022 at 2:37 AM Kumar Kartikeya Dwivedi
-> > > > <memxor@gmail.com> wrote:
-> > > > >
-> > > > > On Mon, Mar 28, 2022 at 11:16:15PM IST, Hao Luo wrote:
-> > > > > > On Mon, Mar 28, 2022 at 10:39 AM Hao Luo <haoluo@google.com> wrote:
-> > > > > > >
-> > > > > > > Hi Yonghong,
-> > > > > > >
-> > > > > > > On Fri, Mar 25, 2022 at 12:16 PM Yonghong Song <yhs@fb.com> wrote:
-> > > > > > > >
-> > > > > > > > On 3/24/22 4:41 PM, Hao Luo wrote:
-> > > > > > > > > Some map types support mmap operation, which allows userspace to
-> > > > > > > > > communicate with BPF programs directly. Currently only arraymap
-> > > > > > > > > and ringbuf have mmap implemented.
-> > > > > > > > >
-> > > > > > > > > However, in some use cases, when multiple program instances can
-> > > > > > > > > run concurrently, global mmapable memory can cause race. In that
-> > > > > > > > > case, userspace needs to provide necessary synchronizations to
-> > > > > > > > > coordinate the usage of mapped global data. This can be a source
-> > > > > > > > > of bottleneck.
-> > > > > > > >
-> > > > > > > > I can see your use case here. Each calling process can get the
-> > > > > > > > corresponding bpf program task local storage data through
-> > > > > > > > mmap interface. As you mentioned, there is a tradeoff
-> > > > > > > > between more memory vs. non-global synchronization.
-> > > > > > > >
-> > > > > > > > I am thinking that another bpf_iter approach can retrieve
-> > > > > > > > the similar result. We could implement a bpf_iter
-> > > > > > > > for task local storage map, optionally it can provide
-> > > > > > > > a tid to retrieve the data for that particular tid.
-> > > > > > > > This way, user space needs an explicit syscall, but
-> > > > > > > > does not need to allocate more memory than necessary.
-> > > > > > > >
-> > > > > > > > WDYT?
-> > > > > > > >
-> > > > > > >
-> > > > > > > Thanks for the suggestion. I have two thoughts about bpf_iter + tid and mmap:
-> > > > > > >
-> > > > > > > - mmap prevents the calling task from reading other task's value.
-> > > > > > > Using bpf_iter, one can pass other task's tid to get their values. I
-> > > > > > > assume there are two potential ways of passing tid to bpf_iter: one is
-> > > > > > > to use global data in bpf prog, the other is adding tid parameterized
-> > > > > > > iter_link. For the first, it's not easy for unpriv tasks to use. For
-> > > > > > > the second, we need to create one iter_link object for each interested
-> > > > > > > tid. It may not be easy to use either.
-> > > > > > >
-> > > > > > > - Regarding adding an explicit syscall. I thought about adding
-> > > > > > > write/read syscalls for task local storage maps, just like reading
-> > > > > > > values from iter_link. Writing or reading task local storage map
-> > > > > > > updates/reads the current task's value. I think this could achieve the
-> > > > > > > same effect as mmap.
-> > > > > > >
-> > > > > >
-> > > > > > Actually, my use case of using mmap on task local storage is to allow
-> > > > > > userspace to pass FDs into bpf prog. Some of the helpers I want to add
-> > > > > > need to take an FD as parameter and the bpf progs can run
-> > > > > > concurrently, thus using global data is racy. Mmapable task local
-> > > > > > storage is the best solution I can find for this purpose.
-> > > > > >
-> > > > > > Song also mentioned to me offline, that mmapable task local storage
-> > > > > > may be useful for his use case.
-> > > > > >
-> > > > > > I am actually open to other proposals.
-> > > > > >
-> > > > >
-> > > > > You could also use a syscall prog, and use bpf_prog_test_run to update local
-> > > > > storage for current. Data can be passed for that specific prog invocation using
-> > > > > ctx. You might have to enable bpf_task_storage helpers in it though, since they
-> > > > > are not allowed to be called right now.
-> > > > >
-> > > >
-> > > > The loading process needs CAP_BPF to load bpf_prog_test_run. I'm
-> > > > thinking of allowing any thread including unpriv ones to be able to
-> > > > pass data to the prog and update their own storage.
-> > >
-> > > If I understand the use case correctly all of this mmap-ing is only to
-> > > allow unpriv userspace to access a priv map via unpriv mmap() syscall.
-> > > But the map can be accessed as unpriv already.
-> > > Pin it with the world read creds and do map_lookup sys_bpf cmd on it.
-> >
-> > Right, but, if I understand correctly, with
-> > sysctl_unprivileged_bpf_disabled, unpriv tasks are not able to make
-> > use of __sys_bpf(). Is there anything I missed?
->
-> That sysctl is a heavy hammer. Let's fix it instead.
-> map lookup/update/delete can be allowed for unpriv for certain map types.
-> There are permissions checks in corresponding lookup/update calls already.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev.2022.03.29a
+branch HEAD: 72ee6272c2a01687f3774f445574708452738302  rcu_sync: Fix comment to properly reflect rcu_sync_exit() behavior
 
-This sounds great. If we can allow basic map operations for some map
-types, it will change many use cases I'm looking at. Let me take a
-look and report back.
+elapsed time: 998m
+
+configs tested: 160
+configs skipped: 4
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+i386                          randconfig-c001
+mips                 randconfig-c004-20220330
+sh                          landisk_defconfig
+sh                        edosk7760_defconfig
+powerpc                     rainier_defconfig
+um                             i386_defconfig
+xtensa                    smp_lx200_defconfig
+arm                        mini2440_defconfig
+powerpc                    klondike_defconfig
+sparc                       sparc64_defconfig
+sh                          rsk7201_defconfig
+arm                        clps711x_defconfig
+arm                            xcep_defconfig
+arm                          badge4_defconfig
+m68k                       m5208evb_defconfig
+arc                 nsimosci_hs_smp_defconfig
+xtensa                          iss_defconfig
+arm                           tegra_defconfig
+powerpc                    sam440ep_defconfig
+mips                            ar7_defconfig
+arm                            hisi_defconfig
+ia64                            zx1_defconfig
+sh                         ecovec24_defconfig
+mips                  maltasmvp_eva_defconfig
+ia64                        generic_defconfig
+sh                           se7619_defconfig
+powerpc64                        alldefconfig
+arm                             pxa_defconfig
+arc                                 defconfig
+i386                                defconfig
+mips                           xway_defconfig
+xtensa                       common_defconfig
+sh                            hp6xx_defconfig
+h8300                       h8s-sim_defconfig
+parisc                           alldefconfig
+sh                     magicpanelr2_defconfig
+m68k                            q40_defconfig
+arm                        shmobile_defconfig
+powerpc                     sequoia_defconfig
+arm                      integrator_defconfig
+sh                          urquell_defconfig
+sh                          kfr2r09_defconfig
+mips                           ip32_defconfig
+sh                            migor_defconfig
+m68k                          hp300_defconfig
+arm                         axm55xx_defconfig
+sh                ecovec24-romimage_defconfig
+sh                   sh7724_generic_defconfig
+mips                         bigsur_defconfig
+sh                        sh7757lcr_defconfig
+arm                  randconfig-c002-20220330
+arm                  randconfig-c002-20220327
+arm                  randconfig-c002-20220329
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nios2                               defconfig
+arc                              allyesconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+sh                               allmodconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc64                            defconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+x86_64                        randconfig-a002
+x86_64                        randconfig-a004
+x86_64                        randconfig-a006
+i386                 randconfig-a001-20220328
+i386                 randconfig-a003-20220328
+i386                 randconfig-a006-20220328
+i386                 randconfig-a005-20220328
+i386                 randconfig-a004-20220328
+i386                 randconfig-a002-20220328
+x86_64               randconfig-a001-20220328
+x86_64               randconfig-a003-20220328
+x86_64               randconfig-a004-20220328
+x86_64               randconfig-a002-20220328
+x86_64               randconfig-a005-20220328
+x86_64               randconfig-a006-20220328
+riscv                randconfig-r042-20220330
+s390                 randconfig-r044-20220330
+arc                  randconfig-r043-20220330
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+x86_64                           allyesconfig
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                         rhel-8.3-kunit
+x86_64                                  kexec
+
+clang tested configs:
+mips                 randconfig-c004-20220330
+x86_64                        randconfig-c007
+powerpc              randconfig-c003-20220330
+riscv                randconfig-c006-20220330
+i386                          randconfig-c001
+arm                  randconfig-c002-20220330
+powerpc                      obs600_defconfig
+hexagon                          alldefconfig
+arm                         s5pv210_defconfig
+arm                     am200epdkit_defconfig
+powerpc                 mpc836x_rdk_defconfig
+mips                     loongson2k_defconfig
+mips                     loongson1c_defconfig
+powerpc                     mpc5200_defconfig
+mips                   sb1250_swarm_defconfig
+powerpc                   lite5200b_defconfig
+powerpc                     kilauea_defconfig
+mips                         tb0219_defconfig
+mips                      bmips_stb_defconfig
+mips                       lemote2f_defconfig
+x86_64                        randconfig-a001
+x86_64                        randconfig-a003
+x86_64                        randconfig-a005
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+i386                          randconfig-a011
+i386                          randconfig-a013
+i386                          randconfig-a015
+riscv                randconfig-r042-20220328
+hexagon              randconfig-r045-20220329
+hexagon              randconfig-r045-20220328
+hexagon              randconfig-r045-20220327
+hexagon              randconfig-r041-20220327
+hexagon              randconfig-r045-20220330
+hexagon              randconfig-r041-20220329
+hexagon              randconfig-r041-20220328
+hexagon              randconfig-r041-20220330
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
