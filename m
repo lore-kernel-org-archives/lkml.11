@@ -2,166 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0E29C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:37:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06668C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:39:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242449AbiC3GjM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 02:39:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58872 "EHLO
+        id S234657AbiC3GlV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 02:41:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242459AbiC3GjD (ORCPT
+        with ESMTP id S234829AbiC3Gky (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 02:39:03 -0400
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam08on2043.outbound.protection.outlook.com [40.107.101.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60B9456C26;
-        Tue, 29 Mar 2022 23:37:18 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UqGyFdW1v96Uv89+/IfkZqKzfD8eUrIzrxexqwEiOqrdHnCWqXCkEF9pH59QvA3MzI/LeGtZxAuqMZbS+TCREOyfq1Ed8lQrTtF9MhiFNQDdfyPfH0ltDqF26kyrtLfRTGo97YWFbKikLFpOaEEJay2rwZceD/I7ZGvZyFC0bw3n+lCGGSWO8+pRZiAA8RTcK8thItpCXDgp/4nxeSWI8DuxBxQQY2f5YA5lC1LGzifblD/+buAHaCCmRGiOFKoB8Qjwq89i4tf7S7l0zRhw2Zyrbxs1//eHgOTChghoNHzFQuWk40k89jEqO0JeM0KljCRyLamDmWQOfq8l1JrH9w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=oV0lsDvGcZ1mWNfNIxl5bV/CvFDD6sV7h3MvMAIpMX4=;
- b=D2Y/EYeT5D01ALh4ZMyrfplrkVZHYPki58TeGk540t1IaNb9DVh/PhWgFtOC60qz539mtRP7vYYFBIG6cJYQDbEGlFsO8CpumW6RGaAHoGkiT1pQdtc1bTV71f7nSrVGob8HG/E90D2Ydy4J+k6Q3tnCOZmomtiL49/bIXmR3Mw68auUZUxL6jvelpduoCENQMv86wFqnB75CE/1dffIpvTV2PFwnmnX2T5Z8E/LnuFBENAOO+ok9amDCDnTEDbQk6TsranGcr8qVzWskRe1GwSHVCLRhLy+d6UgLCz8+f9AzvqLN3TY6f31T3N5lTSG4/obmJDWaXZkB7zLFLaOYg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=linux.dev smtp.mailfrom=nvidia.com; dmarc=pass
- (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
- (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oV0lsDvGcZ1mWNfNIxl5bV/CvFDD6sV7h3MvMAIpMX4=;
- b=pDStPeUA4sNQ5JgSpzJuFKbvPo6e//eEgv3osKOJ3b/Wbib05HLX4RtciVAujh6k+7ccilGKa+1YecnGaHQu8biCNlysh98J82pu9+O2jpJf3j1EzbI+1tndm5KwbTUKg8eJpLRGWHpkv3v9BF1u/E5eJEJBYxmrsZyqeSyCxPR0k64InS3IWOqBgm529QOT3fvzHtmcCqEXiSntxI1197DFlKwcl8QFN28drSwOHgGXh/nV3YWNz3pU0/sF+b4ssJixjuOyrT6MAFKQ29OhjBvELP3av3NJtKjWxuSVe/N7Y2Vos5dZxTkKpoPKV9yE2xh1LDDv1moWqQyfFJhM5Q==
-Received: from MW4PR02CA0014.namprd02.prod.outlook.com (2603:10b6:303:16d::29)
- by SN1PR12MB2414.namprd12.prod.outlook.com (2603:10b6:802:2e::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.19; Wed, 30 Mar
- 2022 06:37:16 +0000
-Received: from CO1NAM11FT026.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:16d:cafe::3a) by MW4PR02CA0014.outlook.office365.com
- (2603:10b6:303:16d::29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.13 via Frontend
- Transport; Wed, 30 Mar 2022 06:37:16 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.238) by
- CO1NAM11FT026.mail.protection.outlook.com (10.13.175.67) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5123.19 via Frontend Transport; Wed, 30 Mar 2022 06:37:16 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by DRHQMAIL105.nvidia.com
- (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Wed, 30 Mar
- 2022 06:37:15 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 29 Mar
- 2022 23:37:14 -0700
-Received: from sandipan-pc.nvidia.com (10.127.8.12) by mail.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server id 15.2.986.22 via Frontend
- Transport; Tue, 29 Mar 2022 23:37:12 -0700
-From:   Sandipan Patra <spatra@nvidia.com>
-To:     <treding@nvidia.com>, <jonathanh@nvidia.com>, <digetx@gmail.com>,
-        <ulf.hansson@linaro.org>, <andriy.shevchenko@linux.intel.com>,
-        <cai.huoqing@linux.dev>
-CC:     <bbasu@nvidia.com>, <linux-tegra@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Sandipan Patra <spatra@nvidia.com>
-Subject: [PATCH] soc/tegra: pmc: update Tegra234 reset sources
-Date:   Wed, 30 Mar 2022 12:06:35 +0530
-Message-ID: <20220330063635.1689-1-spatra@nvidia.com>
-X-Mailer: git-send-email 2.17.1
-X-NVConfidentiality: public
+        Wed, 30 Mar 2022 02:40:54 -0400
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 826BE21267
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 23:39:08 -0700 (PDT)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-2e592e700acso207650237b3.5
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 23:39:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2jpIraTYVy4+KW5tVKFlrsJ4TJFxRhQCZzwCcMrDysQ=;
+        b=MEWKTEvCsDle3dITB/iGqmG2nuVbFY4r/X0tW7OvlvsFQBtdzGiCXPUGGGi44lgkSG
+         gwBxZJiKD3ibwUHdcdWOoBGjtSk+1IvNkRvPgX/cBIU2ZHktfy3qksn80JuQxFXjbAVz
+         6oueOewMLxUJcQwQpz8VZ5Cdo4lJMtA7Z6FnvvppcNb8xtaoXpkjHyzZxKIPyAJIgTrb
+         POFS5tYdMogwTcND4whrMguNp1FuZ29UKcLkklEG/QM/Ypyx+jevZ3G5znphjgvAFO75
+         GiMR2gj09qMPA30TrN4oz/dUw9hVAlOUei7RzwpHDuHZZoWFdUpnmNdKhHAMOIeECO0Z
+         l/Mg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2jpIraTYVy4+KW5tVKFlrsJ4TJFxRhQCZzwCcMrDysQ=;
+        b=QifDReleayV5UiZbbxTCQ3kUXEMTHS2QebctlWSRK+S54rjkItTZyjSyG8hbMSuq9v
+         ZDyMTs/Pu6DmNPE/5ZfxDFLYBZChxDbmJg7iZt/Q+3CKjX0Pu00WVI3Q1xrkQ19wdjna
+         V6JjImLGaTM47PRyDPJKDKoPmDVplgUR1MviF2sy5/EwGLn78WanZ4UYggtgnlPJS4k5
+         S8G9EA7GqBgEsnay4H1Q2Fob/PUdnxqXXqw3TP/bu89MzIe+p1jW8IFsKZv0HbaULS3e
+         8j2H34UShfaukuZbY6wnfXIMKUM+34UGkKJbGg7xZRawik/eleVSiKIv9aFBRgCCY9MW
+         /SjA==
+X-Gm-Message-State: AOAM533G7+JJ2CbcXtjVKpFG6ynYZpiA/IAy5SzI9Toy1BFkyQ6aVF3c
+        8kD7boAAsimALPJZUi5MtAN0uHXSLPnXC62ktIXtDw==
+X-Google-Smtp-Source: ABdhPJy3q4c0i4haH+2YtHMErDDuUpBmlm9A2lJLAWorkvOk6avqxhd4F1PThmNVEhAdzByl9EYgJKp6AkzQAFbciKM=
+X-Received: by 2002:a0d:ccca:0:b0:2e6:2b53:3f16 with SMTP id
+ o193-20020a0dccca000000b002e62b533f16mr35680433ywd.35.1648622347570; Tue, 29
+ Mar 2022 23:39:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 56eb7d1b-7328-4b39-5b9c-08da1217bb53
-X-MS-TrafficTypeDiagnostic: SN1PR12MB2414:EE_
-X-Microsoft-Antispam-PRVS: <SN1PR12MB2414A4BA55B8C2184B6D2720AD1F9@SN1PR12MB2414.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Le5HofmJULxBPI1C1dQ9N/D7DSHQijRd7YsV84r2MvtXzxo9GuvstmkHkfcUji6Bh4nT3vyCB+J5QCb8YtxTAXt97NB3pG5MF3B0SGRwIawXYIMFtu9dQfwaRdz3W5zsiDLGN9qR/z2zGMa/I9Tg7zfZKdn6AhjTs0ba34/jPLHS1jS6TPJMPFgU8A2nzuFmhAfmXPxSffiRCrdWZ2LNPub1Oic1lpAComIDLBtxALV1ENPd2uuBepMshXtiC213Fpg911CmmQDwpGMqDPc3ORmJtdEBAKjTflTLUY1tPrSn7A5JmtLjT2HX4a62wgPx+qwBvTlzV2TkVUg/MyjdvYw2vluqVwm4cOoSz0cR0h4I8blrb/ZkoxPzIFu/utpI5cceuGvzUa83rv/DjnMwH/FWlR4YqRgHuwD90xZoeTenxuoOn2iSxVg2LYSgmq8F3U6x33ljnQAdCI5oAZa3dLR2yCa7GY2Ah7yk4fUCBrvV82iKYz80lqTalbVTk+b6z2MMLQFSU8Od5kht7vfCfrCgbQ3xBmcBB6vduBYhgxSIe3Xm8L6OBSzmiUAdAJL/AOR+gKm+n0XNokvQnhAEy/KMPE8utI+JfZHAEIkaj7r6wP0e0OtaPEW7fmbLJ0pfypeVf2iD0nVfDghbjFhlJkpGmWrcQertn206xaP68aqj+j/W1Qqy4KCeBTNC57kdyh9dWkmiGm1+bsMBZK+AnjQgflG9BNJ3Xb27gwK9gIRp07BmCwGKXZBeHzSzY9Ls
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(1076003)(107886003)(26005)(186003)(81166007)(2616005)(356005)(2906002)(5660300002)(36756003)(15650500001)(8936002)(336012)(70586007)(83380400001)(40460700003)(7696005)(8676002)(4326008)(508600001)(6666004)(426003)(82310400004)(70206006)(36860700001)(316002)(47076005)(86362001)(54906003)(110136005)(16060500005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2022 06:37:16.1446
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 56eb7d1b-7328-4b39-5b9c-08da1217bb53
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT026.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN1PR12MB2414
+References: <20220309144000.1470138-1-longman@redhat.com> <CAMZfGtWS581YW4Y8oNU=E_zPnpK=mMdYVSG1F3U3fJNAzBzc+g@mail.gmail.com>
+ <2263666d-5eef-b1fe-d5e3-b166a3185263@redhat.com> <CAMZfGtVG2YcmxY0fECkAYNb=sKXJQhWJqgtMTEpQwxXEXmSOLw@mail.gmail.com>
+ <e93696b7-b678-6f41-9c1e-46aad447ce8d@redhat.com> <YkIIjGk5t4XorQXe@carbon.dhcp.thefacebook.com>
+ <CAMZfGtXhoLso9FN_LwybqUHaZr28_hxmjeuA8T=zQdWWz=FDrA@mail.gmail.com> <07be89ad-e355-69b9-6e36-07beaebf2d8b@redhat.com>
+In-Reply-To: <07be89ad-e355-69b9-6e36-07beaebf2d8b@redhat.com>
+From:   Muchun Song <songmuchun@bytedance.com>
+Date:   Wed, 30 Mar 2022 14:38:31 +0800
+Message-ID: <CAMZfGtXYH8Lex3hZGW4V8AzmqR03uzJnrBz8z7_1FD_P3Lgk-A@mail.gmail.com>
+Subject: Re: [PATCH-mm v3] mm/list_lru: Optimize memcg_reparent_list_lru_node()
+To:     Waiman Long <longman@redhat.com>
+Cc:     Roman Gushchin <roman.gushchin@linux.dev>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reset_sources list is updated to add all reset sources
-and removing ones that do not actually exist.
+On Wed, Mar 30, 2022 at 5:53 AM Waiman Long <longman@redhat.com> wrote:
+>
+> On 3/28/22 21:15, Muchun Song wrote:
+> > On Tue, Mar 29, 2022 at 3:12 AM Roman Gushchin <roman.gushchin@linux.dev> wrote:
+> >> On Sun, Mar 27, 2022 at 08:57:15PM -0400, Waiman Long wrote:
+> >>> On 3/22/22 22:12, Muchun Song wrote:
+> >>>> On Wed, Mar 23, 2022 at 9:55 AM Waiman Long <longman@redhat.com> wrote:
+> >>>>> On 3/22/22 21:06, Muchun Song wrote:
+> >>>>>> On Wed, Mar 9, 2022 at 10:40 PM Waiman Long <longman@redhat.com> wrote:
+> >>>>>>> Since commit 2c80cd57c743 ("mm/list_lru.c: fix list_lru_count_node()
+> >>>>>>> to be race free"), we are tracking the total number of lru
+> >>>>>>> entries in a list_lru_node in its nr_items field.  In the case of
+> >>>>>>> memcg_reparent_list_lru_node(), there is nothing to be done if nr_items
+> >>>>>>> is 0.  We don't even need to take the nlru->lock as no new lru entry
+> >>>>>>> could be added by a racing list_lru_add() to the draining src_idx memcg
+> >>>>>>> at this point.
+> >>>>>> Hi Waiman,
+> >>>>>>
+> >>>>>> Sorry for the late reply.  Quick question: what if there is an inflight
+> >>>>>> list_lru_add()?  How about the following race?
+> >>>>>>
+> >>>>>> CPU0:                               CPU1:
+> >>>>>> list_lru_add()
+> >>>>>>        spin_lock(&nlru->lock)
+> >>>>>>        l = list_lru_from_kmem(memcg)
+> >>>>>>                                        memcg_reparent_objcgs(memcg)
+> >>>>>>                                        memcg_reparent_list_lrus(memcg)
+> >>>>>>                                            memcg_reparent_list_lru()
+> >>>>>>                                                memcg_reparent_list_lru_node()
+> >>>>>>                                                    if (!READ_ONCE(nlru->nr_items))
+> >>>>>>                                                        // Miss reparenting
+> >>>>>>                                                        return
+> >>>>>>        // Assume 0->1
+> >>>>>>        l->nr_items++
+> >>>>>>        // Assume 0->1
+> >>>>>>        nlru->nr_items++
+> >>>>>>
+> >>>>>> IIUC, we use nlru->lock to serialise this scenario.
+> >>>>> I guess this race is theoretically possible but very unlikely since it
+> >>>>> means a very long pause between list_lru_from_kmem() and the increment
+> >>>>> of nr_items.
+> >>>> It is more possible in a VM.
+> >>>>
+> >>>>> How about the following changes to make sure that this race can't happen?
+> >>>>>
+> >>>>> diff --git a/mm/list_lru.c b/mm/list_lru.c
+> >>>>> index c669d87001a6..c31a0a8ad4e7 100644
+> >>>>> --- a/mm/list_lru.c
+> >>>>> +++ b/mm/list_lru.c
+> >>>>> @@ -395,9 +395,10 @@ static void memcg_reparent_list_lru_node(struct
+> >>>>> list_lru *lru, int nid,
+> >>>>>            struct list_lru_one *src, *dst;
+> >>>>>
+> >>>>>            /*
+> >>>>> -        * If there is no lru entry in this nlru, we can skip it
+> >>>>> immediately.
+> >>>>> +        * If there is no lru entry in this nlru and the nlru->lock is free,
+> >>>>> +        * we can skip it immediately.
+> >>>>>             */
+> >>>>> -       if (!READ_ONCE(nlru->nr_items))
+> >>>>> +       if (!READ_ONCE(nlru->nr_items) && !spin_is_locked(&nlru->lock))
+> >>>> I think we also should insert a smp_rmb() between those two loads.
+> >>> Thinking about this some more, I believe that adding spin_is_locked() check
+> >>> will be enough for x86. However, that will likely not be enough for arches
+> >>> with a more relaxed memory semantics. So the safest way to avoid this
+> >>> possible race is to move the check to within the lock critical section,
+> >>> though that comes with a slightly higher overhead for the 0 nr_items case. I
+> >>> will send out a patch to correct that. Thanks for bring this possible race
+> >>> to my attention.
+> >> Yes, I think it's not enough:
+> > I think it may be enough if we insert a smp_rmb() between those two loads.
+> >
+> >> CPU0                                       CPU1
+> >> READ_ONCE(&nlru->nr_items) -> 0
+> >>                                             spin_lock(&nlru->lock);
+> >>                                             nlru->nr_items++;
+> >                                               ^^^
+> >                                               |||
+> >                                               The nlr here is not the
+> > same as the one in CPU0,
+> >                                               since CPU0 have done the
+> > memcg reparting. Then
+> >                                               CPU0 will not miss nlru
+> > reparting.  If I am wrong, please
+> >                                               correct me.  Thanks.
+> >>                                             spin_unlock(&nlru->lock);
+> >> && !spin_is_locked(&nlru->lock) -> 0
+>
+> I just realize that there is another lock/unlock pair in
+> memcg_reparent_objcgs():
+>
+> memcg_reparent_objcgs()
+>      spin_lock_irq()
+>      memcg reparenting
+>      spin_unlock_irq()
+>      percpu_ref_kill()
+>          spin_lock_irqsave()
+>          ...
+>          spin_unlock_irqrestore()
+>
+> This lock/unlock pair in percpu_ref_kill() will stop the reordering of
+> read/write before the memcg reparenting. Now I think just adding a
+> spin_is_locked() check with smp_rmb() should be enough. However, I would
+> like to change the ordering like that:
+>
+> if (!spin_is_locked(&nlru->lock)) {
+>          smp_rmb();
+>          if (!READ_ONCE(nlru->nr_items))
+>                  return;
+> }
 
-Signed-off-by: Sandipan Patra <spatra@nvidia.com>
----
- drivers/soc/tegra/pmc.c | 33 +++++++++++++++++++++++++--------
- 1 file changed, 25 insertions(+), 8 deletions(-)
+Does the following race still exist?
 
-diff --git a/drivers/soc/tegra/pmc.c b/drivers/soc/tegra/pmc.c
-index fdf508e03400..d9129b940e3b 100644
---- a/drivers/soc/tegra/pmc.c
-+++ b/drivers/soc/tegra/pmc.c
-@@ -3766,7 +3766,7 @@ static const struct tegra_pmc_regs tegra234_pmc_regs = {
- };
- 
- static const char * const tegra234_reset_sources[] = {
--	"SYS_RESET_N",
-+	"SYS_RESET_N",	/*0*/
- 	"AOWDT",
- 	"BCCPLEXWDT",
- 	"BPMPWDT",
-@@ -3775,18 +3775,35 @@ static const char * const tegra234_reset_sources[] = {
- 	"APEWDT",
- 	"LCCPLEXWDT",
- 	"SENSOR",
--	"AOTAG",
--	"VFSENSOR",
-+	NULL,
-+	NULL,		/*10*/
- 	"MAINSWRST",
- 	"SC7",
- 	"HSM",
--	"CSITE",
-+	NULL,
- 	"RCEWDT",
--	"PVA0WDT",
--	"PVA1WDT",
--	"L1A_ASYNC",
-+	NULL,
-+	NULL,
-+	NULL,
- 	"BPMPBOOT",
--	"FUSECRC",
-+	"FUSECRC",	/*20*/
-+	"DCEWDT",
-+	"PSCWDT",
-+	"PSC",
-+	"CSITE_SW",
-+	"POD",
-+	"SCPM",
-+	"VREFRO_POWERBAD",
-+	"VMON",
-+	"FMON",
-+	"FSI_R5WDT",	/*30*/
-+	"FSI_THERM",
-+	"FSI_R52C0WDT",
-+	"FSI_R52C1WDT",
-+	"FSI_R52C2WDT",
-+	"FSI_R52C3WDT",
-+	"FSI_FMON",
-+	"FSI_VMON"	/*37*/
- };
- 
- static const struct tegra_wake_event tegra234_wake_events[] = {
--- 
-2.17.1
+ CPU0:                               CPU1:
+                                        spin_is_locked(&nlru->lock)
+ list_lru_add()
+        spin_lock(&nlru->lock)
+        l = list_lru_from_kmem(memcg)
+                                        memcg_reparent_objcgs(memcg)
+                                        memcg_reparent_list_lrus(memcg)
+                                            memcg_reparent_list_lru()
+                                                memcg_reparent_list_lru_node()
+                                                    if
+(!READ_ONCE(nlru->nr_items))
+                                                        // Miss reparenting
+                                                        return
+        // Assume 0->1
+        l->nr_items++
+        // Assume 0->1
+        nlru->nr_items++
 
+>
+> Otherwise, we will have the problem
+>
+> list_lru_add()
+>        spin_lock(&nlru->lock)
+>        l = list_lru_from_kmem(memcg)
+> READ_ONCE(nlru->nr_items);
+>        // Assume 0->1
+>        l->nr_items++
+>        // Assume 0->1
+>        nlru->nr_items++
+>        spin_unlock(&nlru->lock)
+>                                        spin_is_locked()
+
+You are right.
+
+>
+> If spin_is_locked() is before spin_lock() in list_lru_add(),
+> list_lru_from_kmem() is guarantee to get the reparented memcg and so
+> won't added to the reparented lru.
+>
