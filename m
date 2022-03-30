@@ -2,54 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AB75C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:17:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3512DC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:17:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345117AbiC3MRs (ORCPT
+        id S1345627AbiC3MQw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:17:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38382 "EHLO
+        Wed, 30 Mar 2022 08:16:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344625AbiC3L4V (ORCPT
+        with ESMTP id S1344748AbiC3L43 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:56:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E00E92FE5F;
-        Wed, 30 Mar 2022 04:54:17 -0700 (PDT)
+        Wed, 30 Mar 2022 07:56:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 308993136D;
+        Wed, 30 Mar 2022 04:54:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC6B061701;
-        Wed, 30 Mar 2022 11:54:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75DD7C36AEA;
-        Wed, 30 Mar 2022 11:54:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C19D8B81BBA;
+        Wed, 30 Mar 2022 11:54:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDD00C34111;
+        Wed, 30 Mar 2022 11:54:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641257;
-        bh=dIgepHg2u5QCwwLh7ZLHSryTO5H5pf0+HHyZ6n09e5I=;
+        s=k20201202; t=1648641266;
+        bh=JNB0ox2IAOZfzRXVAXo4eWspjGDe62bw5yVCsUBIspQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mdfNtI8H30jBeWMCGC4gkGsHxyEfrV39WROUi3FAFRXteqpZ/UtrsDO4XnNIW59kk
-         iRidHrsXknqDzRbyFzgmHZf1RdK7Fs6AfDzAXvC1mvyx+4DOYHxVT5iaRURuO4YDfK
-         VpPCwsohIH4TiLZjeDi0TIb67oBzyZijeCw978QbUlaDogfjY4qPzY1R312ZLlh4IM
-         2qwf6KzCP9u1khAnnVDkmnilnwwH6BozIIQJ1PODrFTBei/hgmgUgIhiWu/nEjfTEV
-         1h0jIpiSty8r9bHqoCCKE7C28qJOoXzGJmVJJpoMffcyTArBZqaq/+zIlB4VMp+ZVu
-         Erqw/Gxj2s2wA==
+        b=hDQKpsYmPxh3J6vd3xbg+HsPLGK5lTVVGNYKb+98ET88v3YjyPpaAGF30/+G1Fk4X
+         4pjl+VZ6DnWEdequCT6evv/ln2bstAgUPi/3pHot9EGKEFAALjcJtJ5MPxp4krsaBj
+         w7pe/+NnwHtFzcaPLTk/ZClr/yw/E2l9YgvLRnjNg85Avdm1Z6V7XJjEUYgIvU59cp
+         QmNkjJK1bKcrZ67ZihE8vSNfe/1oKTIphJqj0Z1CTC3VsrD5fhdIg31qzIrxbU9bFb
+         ypCcZUAUq38dIix5RPDz/N7bN521YlBrcXRWJTvmtWFUO8lGg8NbNbTcGfl1T2L97P
+         OBPbTMHbxR9dQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Heidelberg <david@ixit.cz>,
-        LogicalErzor <logicalerzor@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, andy.gross@linaro.org,
-        david.brown@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
-        linux@armlinux.org.uk, linux-arm-msm@vger.kernel.org,
-        linux-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.9 05/17] ARM: dts: qcom: fix gic_irq_domain_translate warnings for msm8960
-Date:   Wed, 30 Mar 2022 07:53:54 -0400
-Message-Id: <20220330115407.1673214-5-sashal@kernel.org>
+Cc:     =?UTF-8?q?Daniel=20Gonz=C3=A1lez=20Cabanelas?= <dgcbueu@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 11/17] media: cx88-mpeg: clear interrupt status register before streaming video
+Date:   Wed, 30 Mar 2022 07:54:00 -0400
+Message-Id: <20220330115407.1673214-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115407.1673214-1-sashal@kernel.org>
 References: <20220330115407.1673214-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -57,58 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Heidelberg <david@ixit.cz>
+From: Daniel González Cabanelas <dgcbueu@gmail.com>
 
-[ Upstream commit 6f7e221e7a5cfc3299616543fce42b36e631497b ]
+[ Upstream commit 56cb61f70e547e1b0cdfe6ff5a1f1ce6242e6d96 ]
 
-IRQ types blindly copied from very similar APQ8064.
+Some cx88 video cards may have transport stream status interrupts set
+to 1 from cold start, causing errors like this:
 
-Fixes warnings as:
-WARNING: CPU: 0 PID: 1 at drivers/irqchip/irq-gic.c:1080 gic_irq_domain_translate+0x118/0x120
-...
+  cx88xx: cx88_print_irqbits: core:irq mpeg  [0x100000] ts_err?*
+  cx8802: cx8802_mpeg_irq: mpeg:general errors: 0x00100000
 
-Tested-by: LogicalErzor <logicalerzor@gmail.com> # boot-tested on Samsung S3
-Signed-off-by: David Heidelberg <david@ixit.cz>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220108174229.60384-1-david@ixit.cz
+According to CX2388x datasheet, the interrupt status register should be
+cleared before enabling IRQs to stream video.
+
+Fix it by clearing the Transport Stream Interrupt Status register.
+
+Signed-off-by: Daniel González Cabanelas <dgcbueu@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/qcom-msm8960.dtsi | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/media/pci/cx88/cx88-mpeg.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/arm/boot/dts/qcom-msm8960.dtsi b/arch/arm/boot/dts/qcom-msm8960.dtsi
-index 288f56e0ccf5..819d0f085f8c 100644
---- a/arch/arm/boot/dts/qcom-msm8960.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8960.dtsi
-@@ -139,7 +139,9 @@
- 			reg		= <0x108000 0x1000>;
- 			qcom,ipc	= <&l2cc 0x8 2>;
+diff --git a/drivers/media/pci/cx88/cx88-mpeg.c b/drivers/media/pci/cx88/cx88-mpeg.c
+index 245357adbc25..37d4512f3eb8 100644
+--- a/drivers/media/pci/cx88/cx88-mpeg.c
++++ b/drivers/media/pci/cx88/cx88-mpeg.c
+@@ -175,6 +175,9 @@ int cx8802_start_dma(struct cx8802_dev    *dev,
+ 	cx_write(MO_TS_GPCNTRL, GP_COUNT_CONTROL_RESET);
+ 	q->count = 0;
  
--			interrupts	= <0 19 0>, <0 21 0>, <0 22 0>;
-+			interrupts	= <GIC_SPI 19 IRQ_TYPE_EDGE_RISING>,
-+					  <GIC_SPI 21 IRQ_TYPE_EDGE_RISING>,
-+					  <GIC_SPI 22 IRQ_TYPE_EDGE_RISING>;
- 			interrupt-names	= "ack", "err", "wakeup";
- 
- 			regulators {
-@@ -185,7 +187,7 @@
- 				compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
- 				reg = <0x16440000 0x1000>,
- 				      <0x16400000 0x1000>;
--				interrupts = <0 154 0x0>;
-+				interrupts = <GIC_SPI 154 IRQ_TYPE_LEVEL_HIGH>;
- 				clocks = <&gcc GSBI5_UART_CLK>, <&gcc GSBI5_H_CLK>;
- 				clock-names = "core", "iface";
- 				status = "disabled";
-@@ -311,7 +313,7 @@
- 				#address-cells = <1>;
- 				#size-cells = <0>;
- 				reg = <0x16080000 0x1000>;
--				interrupts = <0 147 0>;
-+				interrupts = <GIC_SPI 147 IRQ_TYPE_LEVEL_HIGH>;
- 				spi-max-frequency = <24000000>;
- 				cs-gpios = <&msmgpio 8 0>;
- 
++	/* clear interrupt status register */
++	cx_write(MO_TS_INTSTAT,  0x1f1111);
++
+ 	/* enable irqs */
+ 	dprintk( 1, "setting the interrupt mask\n" );
+ 	cx_set(MO_PCI_INTMSK, core->pci_irqmask | PCI_INT_TSINT);
 -- 
 2.34.1
 
