@@ -2,98 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35A6EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 09:23:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89741C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 09:24:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244791AbiC3JZE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 05:25:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49528 "EHLO
+        id S244799AbiC3JZx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 05:25:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244785AbiC3JZC (ORCPT
+        with ESMTP id S241356AbiC3JZu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 05:25:02 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A5A025D1;
-        Wed, 30 Mar 2022 02:23:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648632198; x=1680168198;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=y23RIbKwqNxa/t3JcK6RsI/UqNmh00039XVrepKkUTs=;
-  b=QQvNJAelTiUxF5Hpe6RPejOaDI9CLM6E9w1Jf7luynXu8b68nCM1nz3h
-   ym7ehqWp6KVLAhPlW0irO7hB50uxmybbCCehBwzj7jT6jGBKgyVAQ1snZ
-   ZrMx0Nj6W2EuuyugOzz87yWZCOvmvf4e5VGSFdFmjpYGvaiAxjSZNSM/w
-   rrmmaQvK6Ch32/m1gkSUwbW/3pENCywSr/9pkshfM1Ob6MdJOSgvwDlMD
-   j5hQ6rLDjF2tGOVg84IU0pyRQXImhIAoaYyD3rV8p4v6BSHnvgjJSJOMA
-   QFZU7q1uBKZogx0IHapbcvVuGa+8E5J1CYprznT6QJf0PDjhe6BKpEjPJ
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="284403013"
-X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
-   d="scan'208";a="284403013"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 02:23:17 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
-   d="scan'208";a="519609463"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga002.jf.intel.com with ESMTP; 30 Mar 2022 02:23:13 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 22U9NCcO004547;
-        Wed, 30 Mar 2022 10:23:12 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Wojciech Drewek <wojciech.drewek@intel.com>,
-        Marcin Szycik <marcin.szycik@linux.intel.com>,
-        Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Wed, 30 Mar 2022 05:25:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E969D1A394
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 02:24:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 99B74B81AD3
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 09:24:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06927C340EE;
+        Wed, 30 Mar 2022 09:24:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1648632243;
+        bh=FnB+eetLKSZWwvwpCHBxn/lH1oH8POgxomiIoF95zWA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VPKUaD86K2+Y1DdBU/DBFMgGTXAZhdFudusreQiPZKL1Qxz9HBCKVkLmh9uPNh1bo
+         Li9fASK0WGkZNL/WqyPsmqb1K92/JpekIZsNg9EKfqCckdcIqPu+MQJoA/GGS2YQ6t
+         RcckUZri4lX71aubLSqSIFcv5tc8GTVK5FnGqYBQ=
+Date:   Wed, 30 Mar 2022 11:24:01 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Mukesh Ojha <quic_mojha@quicinc.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH intel-next] ice: switch: fix a braino in the new dummy packet match definitions
-Date:   Wed, 30 Mar 2022 11:20:46 +0200
-Message-Id: <20220330092046.2727362-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.35.1
+Subject: Re: Race condition in kobject_get_path()
+Message-ID: <YkQhsTpTdlfW0oXW@kroah.com>
+References: <abc55eae-1e78-4389-e60c-db984ad8ed50@quicinc.com>
+ <YkQhc5ZjWe35T8fU@kroah.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <YkQhc5ZjWe35T8fU@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There's a trivial mistake[0] in @ice_dummy_pkt_profile due to which
-it incorrectly states that "plain" TCP IPv6 packets should match on
-the flag 'inner IPv6', not the 'outer' one.
+On Wed, Mar 30, 2022 at 11:22:59AM +0200, Greg KH wrote:
+> On Wed, Mar 30, 2022 at 02:47:20PM +0530, Mukesh Ojha wrote:
+> > Hi All,
+> > 
+> > We are facing one issue where one driver is trying to register its device
+> > from driver probe
+> > and from another path  dev_set_name() done from driver probe of the added
+> > device whose
+> > length can be more than earlier which could result in redzone overwritten
+> > issue.
+> 
+> What drivers are doing this so we can see the code?  This should be
+> happening in order and not at the same time.
+> 
+> > 
+> > Can we get your suggestion here ? is this case of a race here ?
+> > 
+> > 
+> > p1 p2
+> > 
+> > *kobject_get_path* <https://opengrok.qualcomm.com/source/s?refs=kobject_get_path&project=KERNEL.PLATFORM.1.0>
+> > 
+> > 
+> >                             =>  get_kobj_path_length  (length is calculated
+> > from this path)
+> >                                dev_set_name(same dev name)
+> >                                  => fill_kobj_path  (path is copied here)
+> 
+> I do not understand this trace, sorry.  What code are you referring to?
 
-[0] https://lore.kernel.org/netdev/PH0PR11MB5782637EA9771D3ED4E56012FD1E9@PH0PR11MB5782.namprd11.prod.outlook.com
-
-Fixes: b5c7ae81ff90 ("ice: switch: convert packet template match code to rodata")
-Reported-by: Wojciech Drewek <wojciech.drewek@intel.com>
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
----
-Tony, please squash it with the mentioned commit on applying.
-Thanks.
----
- drivers/net/ethernet/intel/ice/ice_switch.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
-index ed7130b7abfe..496250f9f8fc 100644
---- a/drivers/net/ethernet/intel/ice/ice_switch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_switch.c
-@@ -1276,8 +1276,8 @@ static const struct ice_dummy_pkt_profile ice_dummy_pkt_profiles[] = {
- 	ICE_PKT_PROFILE(udp_ipv6, ICE_PKT_OUTER_IPV6 | ICE_PKT_INNER_UDP),
- 	ICE_PKT_PROFILE(vlan_udp, ICE_PKT_INNER_UDP | ICE_PKT_VLAN),
- 	ICE_PKT_PROFILE(udp, ICE_PKT_INNER_UDP),
--	ICE_PKT_PROFILE(vlan_tcp_ipv6, ICE_PKT_INNER_IPV6 | ICE_PKT_VLAN),
--	ICE_PKT_PROFILE(tcp_ipv6, ICE_PKT_INNER_IPV6),
-+	ICE_PKT_PROFILE(vlan_tcp_ipv6, ICE_PKT_OUTER_IPV6 | ICE_PKT_VLAN),
-+	ICE_PKT_PROFILE(tcp_ipv6, ICE_PKT_OUTER_IPV6),
- 	ICE_PKT_PROFILE(vlan_tcp, ICE_PKT_VLAN),
- 	ICE_PKT_PROFILE(tcp, 0),
- };
--- 
-2.35.1
-
+Also, the above link does not work for me :(
