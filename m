@@ -2,254 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7337CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 16:08:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10D6BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 16:11:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348644AbiC3QKe (ORCPT
+        id S1348658AbiC3QNJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 12:10:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41638 "EHLO
+        Wed, 30 Mar 2022 12:13:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230350AbiC3QKa (ORCPT
+        with ESMTP id S1348649AbiC3QNG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 12:10:30 -0400
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 577DA5FD0;
-        Wed, 30 Mar 2022 09:08:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-type:in-reply-to:
-         references;
-        bh=AyXvDz2JAQhJmdGyyqbNeaM5gQrzmKCSgCcImXgLu2g=;
-        b=Wk9BDT3XmGse2M76tPAWn/OTsT37I6coFW7g+iwCg0KaVZTGF/mDAI98HC9yK0itB2wsm161s0qSK
-         Ra6Rc7RZRPQPGjwgoBxRcQ38+Lz7Cizb918JzjtQUUtEySIeNZYhpo+Y5my4IDQtfdCiJQaoynE4CA
-         ubIvSIYIMBE1Jh5pfmcOWGnppHNTNXIK8Q/DbduIgXa42BOV4pwiK4VbufjAhSkEBsqkM/iWvcXQC+
-         87mhCI7ngCtWGy4zaZbmSOvYY4vSkNR9wkQgkqCGfd/dgfyg7YJ3FU7awXFQJyp2hYlU/PkNbAGHDz
-         dPChk5WUFRvHjv9ihhiEB1pqe5QVZAA==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.2.1410, Stamp: 3], Multi: [Enabled, t: (0.000009,0.020732)], BW: [Enabled, t: (0.000022,0.000002)], RTDA: [Enabled, t: (0.070240), Hit: No, Details: v2.31.0; Id: 15.52k0vh.1fvdpbdsn.1598; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from x260 ([85.143.252.66])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Wed, 30 Mar 2022 19:08:12 +0300
-Date:   Wed, 30 Mar 2022 18:48:31 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-To:     Conor.Dooley@microchip.com
-Cc:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
-        trix@redhat.com, robh+dt@kernel.org, system@metrotek.ru,
-        linux-kernel@vger.kernel.org, linux-fpga@vger.kernel.org,
-        devicetree@vger.kernel.org, Cyril.Jean@microchip.com
-Subject: Re: [PATCH v8 1/2] fpga: microchip-spi: add Microchip MPF FPGA
- manager
-Message-ID: <20220330154831.kqqm7cymxa3reffk@x260>
-References: <20220322191552.13156-1-i.bornyakov@metrotek.ru>
- <20220322191552.13156-2-i.bornyakov@metrotek.ru>
- <7fcde9aa-c086-33e1-1619-04663bfeff85@microchip.com>
+        Wed, 30 Mar 2022 12:13:06 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7061B3981D
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 09:11:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Lloyabsf5bPgTFsSt6RFgPuhhL3h2AanphqpyZwaqmc=; b=wAq7+QE3mDGjxlvePXXO4dIUd1
+        nP6YjB3+Gv+1ByNsDwzLyblp80h/WtjiLp/BQl+SIpzjsxxy9BB5MjzMfytFGVieKPT/zDovDWQmD
+        E4a3Oj9kZleEk2j18HO2lEvPnUrFjNtTb7GrAwra3fAEipxzpMP1W90QUtYY584XDyNm8eqsv/Nx4
+        nHjd+xJvF+SMrivvIm41s6UeTC/zBny4sZ6W1uDYLDO30ypePMDmwEfDHJc+lGv2bZSXsaHE3aZ+v
+        zB49Cw8fZl/rSQQr/2B4DS0ySoPc/uY0qMATfugY2/JmQoe40gPlHjJzaO6p80zWzZuf4tXLPynxk
+        4cVjqpiQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58012)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nZauj-0003Qe-W5; Wed, 30 Mar 2022 17:11:17 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nZaui-0006kk-4R; Wed, 30 Mar 2022 17:11:16 +0100
+Date:   Wed, 30 Mar 2022 17:11:16 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Christian Eggers <ceggers@arri.de>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        Nathan Chancellor <nathan@kernel.org>
+Subject: Re: CONFIG_THUMB2_KERNEL=y boot failure after Spectre BHB fixes
+Message-ID: <YkSBJD0oA7zxHS+B@shell.armlinux.org.uk>
+References: <YipOoAaBIHjeCKOq@dev-arch.thelio-3990X>
+ <2109354.irdbgypaU6@localhost.localdomain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <7fcde9aa-c086-33e1-1619-04663bfeff85@microchip.com>
+In-Reply-To: <2109354.irdbgypaU6@localhost.localdomain>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Conor!
+On Tue, Mar 22, 2022 at 06:49:17PM +0100, Christian Eggers wrote:
+> Hi Nathan, hi Russel,
+> 
+> I stumbled today over the same problem (no output on serial console
+> with v5.15.28-rt36). During `git bisect`, I had also some commits
+> where a few lines of output were visible.
+> 
+> At commit 8d9d651ff227 ("ARM: use LOADADDR() to get load address of
+> sections"), the system boots up to here:
+> 
+> start_kernel()
+> +--setup_arch()
+>    +--paging_init()
+>       +--devicemaps_init()
+>          +--eary_trap_init(vectors_base = 0xC7FFE000)
+>             +--copy_from_lma(vectors_base = 0xC7FFE000, __vectors_start=0x0, __vectors_end=0x20)
+>                +--__memcpy()
+> 
+>                copy_template.S:113
+>                ldr8w   r1, r3, r4, r5, r6, r7, r8, ip, lr, abort=20f
+>                r1 = 0
+> 
+> 
+> With the final v5.15.28-rt36 I found out that the system boots fine
+> after disabling CONFIG_HARDEN_BRANCH_HISTORY.
+> 
+> Is there anything else I could analyze? My SoC system is a NXP i.MX6LL
+> with a ARMv7 core. I have access to a JTAG debugger.
 
-On Wed, Mar 30, 2022 at 02:37:05PM +0000, Conor.Dooley@microchip.com wrote:
-> Hey Ivan,
-> Been testing this and generated a couple questions.
-> I've put them inline where they were relevant.
-> Thanks,
-> Conor.
-> 
-> On 22/03/2022 19:15, Ivan Bornyakov wrote:
-> > 
-> > ... snip ...
-> > 
-> > +static int mpf_ops_write_init(struct fpga_manager *mgr,
-> > +                             struct fpga_image_info *info, const char *buf,
-> > +                             size_t count)
-> > +{
-> > +       const u8 program_mode[] = { MPF_SPI_FRAME_INIT, MPF_SPI_PRG_MODE };
-> > +       const u8 isc_en_command[] = { MPF_SPI_ISC_ENABLE };
-> > +       struct mpf_priv *priv = mgr->priv;
-> > +       struct device *dev = &mgr->dev;
-> > +       struct spi_device *spi;
-> > +       u32 isc_ret;
-> > +       int ret;
-> > +
-> > +       if (info->flags & FPGA_MGR_PARTIAL_RECONFIG) {
-> > +               dev_err(dev, "Partial reconfiguration is not supported\n");
-> > +               return -EOPNOTSUPP;
-> > +       }
-> > +
-> > +       spi = priv->spi;
-> > +
-> > +       ret = mpf_spi_write_then_read(spi, isc_en_command, sizeof(isc_en_command),
-> > +                                     &isc_ret, sizeof(isc_ret));
-> > +       if (ret || isc_ret) {
-> > +               dev_err(dev, "Failed to enable ISC: %d\n", ret ? : isc_ret);
-> > +               return -EFAULT;
-> > +       }
-> 
-> So, my test board for this has had a PolarFire SoC, not a standard
-> PolarFire. I ran into some problems with the ISC enable code, due to
-> a sequence error. After sending the SPI_ISC_ENABLE, you then do a
-> poll_status_not_busy to hold until you see a STATUS_READY.
-> poll_status_not_busy does a w8r8 to request and then read the status,
-> and you expect a sequence as below:
-> 
-> op:     w       w   r   w   r
-> M:	0xB	0x0	0x0
-> S:   		    0x1	    0x2
-> 
-> I could not get past this check & it would just poll until the
-> timeout. What I saw on a protocol analyser was more like so:
-> 
-> op:     w       w   r    w   r
-> M:	0xB	0x0      0x0
-> S:   		0x1 0x0  0x2 0x0
-> 
-> So the read in that w8r8 would always get a zero back and then time out.
-> Changing the poll function (just for isc) to only read gave:
-> 
-> op:     w       r       r
-> M:	0xB	0x0	0x0
-> S:   		0x1	0x2
-> 
-> For the code after the ISC enable, I reverted to your implementation
-> of the poll function & the rest of the programming sequence ran.
-> 
-> I spoke to the guys that wrote the HW about this, and they said that
-> reading the status back *as* the 0x0 the poll command is clocked in is
-> the expected behaviour.
-> They also said that MPF should work identically to an MPFS and I was unable
-> to find a documented difference between MPF and MPFS other than the envm,
-> which is an optional component anyway.
-> 
-> But I can only assume that what you were doing worked for you, so if
-> you could possibly share some waveforms of the write_init sequence
-> that'd be great. Or if there is something that you think I am
-> overlooking, please let me know.
-> 
+I think this is already fixed in mainline. Commit:
 
-If you replace poll_status_not_busy() function with this code:
+6c7cb60bff7a ("ARM: fix Thumb2 regression")
 
-static int poll_status_not_busy(struct spi_device *spi, u8 mask)
-{
-	u8 status, status_command = MPF_SPI_READ_STATUS;
-	int ret, timeout = MPF_STATUS_POLL_TIMEOUT;
-	struct spi_transfer xfer = {
-		.tx_buf = &status_command,
-		.rx_buf = &status,
-		.len = 1,
-	};
-
-	while (timeout--) {
-		ret = spi_sync_transfer(spi, &xfer, 1);
-		if (ret < 0)
-			return ret;
-
-		if (!(status & MPF_STATUS_BUSY) && (!mask || (status & mask)))
-			return status;
-
-		usleep_range(1000, 2000);
-	}
-
-	return -EBUSY;
-}
-
-Will it work for you? It is still works in my case.
-
-> > 
-> > ... snip ...
-> > 
-> > +static ssize_t parse_bitstream_size(struct sg_table *sgt)
-> > +{
-> > +       size_t component_size_byte_num, component_size_byte_off,
-> > +              i, bitstream_size = 0;
-> > +       ssize_t components_size_start;
-> > +       u16 components_num;
-> > +       u32 component_size;
-> > +       int ret;
-> > +
-> > +       ret = get_sgt_data(sgt, MPF_DATA_SIZE_OFFSET, &components_num,
-> > +                          sizeof(components_num));
-> > +       if (ret)
-> > +               return ret;
-> > +
-> > +       components_num = le16_to_cpu(components_num);
-> 
-> Not expecting you to do this at all since you don't have one, but this
-> will need to be extended for polarfire soc since components_* doesn't
-> include the envm which has its own parameter.
-> 
-> > +
-> > +       components_size_start = lookup_block_start(sgt, MPF_COMPONENTS_SIZE_ID);
-> > +       if (components_size_start < 0)
-> > +               return components_size_start;
-> > +
-> > +       for (i = 0; i < components_num; i++) {
-> > +               component_size_byte_num =
-> > +                       (i * MPF_BITS_PER_COMPONENT_SIZE) / BITS_PER_BYTE;
-> > +               component_size_byte_off =
-> > +                       (i * MPF_BITS_PER_COMPONENT_SIZE) % BITS_PER_BYTE;
-> > +
-> > +               ret = get_sgt_data(sgt, components_size_start +
-> > +                                  component_size_byte_num,
-> > +                                  &component_size, sizeof(component_size));
-> > +               if (ret)
-> > +                       return ret;
-> > +
-> > +               component_size = le32_to_cpu(component_size);
-> > +               component_size >>= component_size_byte_off;
-> > +               component_size &= GENMASK(MPF_BITS_PER_COMPONENT_SIZE - 1, 0);
-> > +
-> > +               bitstream_size += component_size;
-> > +       }
-> > +
-> > +       return bitstream_size;
-> > +}
-> > 
-> > ... snip ...
-> > 
-> > +static int mpf_ops_write_complete(struct fpga_manager *mgr,
-> > +                                 struct fpga_image_info *info)
-> > +{
-> > +       const u8 isc_dis_command[] = { MPF_SPI_ISC_DISABLE };
-> > +       const u8 release_command[] = { MPF_SPI_RELEASE };
-> > +       struct mpf_priv *priv = mgr->priv;
-> > +       struct device *dev = &mgr->dev;
-> > +       struct spi_device *spi;
-> > +       int ret;
-> > +
-> > +       spi = priv->spi;
-> > +
-> > +       ret = mpf_spi_write(spi, isc_dis_command, sizeof(isc_dis_command));
-> > +       if (ret) {
-> > +               dev_err(dev, "Failed to disable ISC: %d\n", ret);
-> > +               return ret;
-> > +       }
-> > +
-> > +       usleep_range(1000, 2000);
-> > +
-> > +       ret = mpf_spi_write(spi, release_command, sizeof(release_command));
-> > +       if (ret) {
-> > +               dev_err(dev, "Failed to exit program mode: %d\n", ret);
-> > +               return ret;
-> > +       }
-> 
-> While I was debugging the sequence issue, it got to this stage of the
-> transfer several times, but hadn't actually programmed the device.
-> It seems that poll_status_not_busy covers checking ERR/VIOLATION from
-> polling the status, but again that check is avoided due to the
-> sequence issues I mentioned above.
-> 
-> It might be nice to check the device certificate, but I am not sure
-> if that fits the flow for fpga managers.
-> 
-
-Noted.
-
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
