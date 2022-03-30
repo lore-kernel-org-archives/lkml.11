@@ -2,87 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB635C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD988C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 13:51:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346521AbiC3Nws (ORCPT
+        id S1346589AbiC3Nwz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 09:52:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59804 "EHLO
+        Wed, 30 Mar 2022 09:52:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346471AbiC3Nwd (ORCPT
+        with ESMTP id S1346494AbiC3Nw2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 09:52:33 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D8E213CA15;
-        Wed, 30 Mar 2022 06:50:47 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id u26so24468037eda.12;
-        Wed, 30 Mar 2022 06:50:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=cFscs9a4lBA8lnwkkutsSsPBXiFXGYRCiVbsg2PtHhk=;
-        b=oCRtzICXcGnyB/eQ+oVQIlB7OaiwlgstHYPMvB0t35KOpq9RjfKcUMPhcNU1QGGk5U
-         ko+WAQ9c/s29BJ2Xi6zT0QOqaKwYa63tKfxYFA6vYTSY+ARO4sJfGg8ulScWZX56axd6
-         +D3aqi00sV8Wlcl9LR8VszDTpAz/JzLLElryVuJsUhJANOGTgPqzBHnjuytvZK5AMM7g
-         3accHYU9lHPfXqyunhqaU7Bfk9rPkDSCDu0b9UvT2RvsT3dUic+e74s1kD+W1X1eCPPN
-         eD7WmauBrYBig6O3sIZTUWrc/RGEP2IWDhoGAP1T2F0Qbw/pNofoNmiWXX/AvIYLAQJB
-         gT6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=cFscs9a4lBA8lnwkkutsSsPBXiFXGYRCiVbsg2PtHhk=;
-        b=JdJ/3JJsWFWQRf4dUF+n5bDPihDqthO/WAcxRZdvszYD/DSL4JC6P0utcYdWu0EZfr
-         o2+2WzHxnNy3NAdoplkzi2hKf4qdALjbUHFR5DyO2vFUv9FMLT3YS29828Yw7vC29TWH
-         YfEQv1OtzsHo5N4RpGA7m2soxqcsq1b3TepSck+ig0DaTMQ/dRAz89YiIUbWQ+8iHKaS
-         R4EA49/8bKoJ3gGUgcFJ45em8QRByz0mlImPgbpN2l8ROs8aU64HJwBlJRlXoZsP5LOn
-         wQji2w0FyAcaQmdSwkx/ZUANhjMMNPWzH4kQYHERF7U2nqG3+ZGv+FMNYFNkh11/hCUZ
-         v9pQ==
-X-Gm-Message-State: AOAM533hH0B1WAvOe/HttXAjhDS6DvVaHXwUG5Y0fJh1dQiftgruteGc
-        /J04oThH91TWhXvaaZYFMWY=
-X-Google-Smtp-Source: ABdhPJyCVIJlRb8MMd1Pq+G/UU1G1Oe49NrXcdYhzrtVxeXio5dFpoL9A5Inp56OMsqhxP4WHdszUg==
-X-Received: by 2002:a05:6402:2789:b0:419:5317:7d39 with SMTP id b9-20020a056402278900b0041953177d39mr10689377ede.53.1648648245946;
-        Wed, 30 Mar 2022 06:50:45 -0700 (PDT)
-Received: from krava ([193.85.244.190])
-        by smtp.gmail.com with ESMTPSA id j21-20020a170906255500b006e08c4862ccsm7369328ejb.96.2022.03.30.06.50.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Mar 2022 06:50:45 -0700 (PDT)
-Date:   Wed, 30 Mar 2022 15:50:43 +0200
-From:   Jiri Olsa <olsajiri@gmail.com>
-To:     Shunsuke Nakamura <nakamura.shun@fujitsu.com>
-Cc:     peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
-        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
-        jolsa@redhat.com, namhyung@kernel.org,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
-Subject: Re: [RFC PATCH v2 4/7] libperf: Introduce perf_{evsel,
- evlist}__open_opt with extensible struct opts
-Message-ID: <YkRgM1obkBQsY2FR@krava>
-References: <20220325043829.224045-1-nakamura.shun@fujitsu.com>
- <20220325043829.224045-5-nakamura.shun@fujitsu.com>
+        Wed, 30 Mar 2022 09:52:28 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A04891342F9;
+        Wed, 30 Mar 2022 06:50:41 -0700 (PDT)
+Received: from kwepemi100014.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KT79T00CQzdZLq;
+        Wed, 30 Mar 2022 21:50:20 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ kwepemi100014.china.huawei.com (7.221.188.106) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 30 Mar 2022 21:50:38 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 30 Mar 2022 21:50:38 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
+        <chenhao288@hisilicon.com>
+Subject: [PATCH net 2/2] net: hns3: fix software vlan talbe of vlan 0 inconsistent with hardware
+Date:   Wed, 30 Mar 2022 21:45:06 +0800
+Message-ID: <20220330134506.36635-3-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220330134506.36635-1-huangguangbin2@huawei.com>
+References: <20220330134506.36635-1-huangguangbin2@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220325043829.224045-5-nakamura.shun@fujitsu.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 01:38:26PM +0900, Shunsuke Nakamura wrote:
+When user delete vlan 0, as driver will not delete vlan 0 for hardware in
+function hclge_set_vlan_filter_hw(), so vlan 0 in software vlan talbe should
+not be deleted.
 
-SNIP
+Fixes: fe4144d47eef ("net: hns3: sync VLAN filter entries when kill VLAN ID failed")
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+---
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-> diff --git a/tools/lib/perf/evsel.c b/tools/lib/perf/evsel.c
-> index b17842581dea..db9b7274feb5 100644
-> --- a/tools/lib/perf/evsel.c
-> +++ b/tools/lib/perf/evsel.c
-> @@ -1,4 +1,7 @@
->  // SPDX-License-Identifier: GPL-2.0
-> +#ifndef _GNU_SOURCE
-> +#define _GNU_SOURCE
-> +#endif
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index 2a5e6a241d52..8cebb180c812 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -10323,11 +10323,11 @@ int hclge_set_vlan_filter(struct hnae3_handle *handle, __be16 proto,
+ 	}
+ 
+ 	if (!ret) {
+-		if (is_kill)
+-			hclge_rm_vport_vlan_table(vport, vlan_id, false);
+-		else
++		if (!is_kill)
+ 			hclge_add_vport_vlan_table(vport, vlan_id,
+ 						   writen_to_tbl);
++		else if (is_kill && vlan_id != 0)
++			hclge_rm_vport_vlan_table(vport, vlan_id, false);
+ 	} else if (is_kill) {
+ 		/* when remove hw vlan filter failed, record the vlan id,
+ 		 * and try to remove it from hw later, to be consistence
+-- 
+2.33.0
 
-I think we can make this global set in Makefile, like we do in perf
-
-jirka
