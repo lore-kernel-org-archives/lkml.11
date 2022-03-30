@@ -2,166 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E40AC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 15:49:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7C68C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 15:49:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348406AbiC3Puu (ORCPT
+        id S1347817AbiC3PvZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 11:50:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52990 "EHLO
+        Wed, 30 Mar 2022 11:51:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348355AbiC3Pus (ORCPT
+        with ESMTP id S1348412AbiC3PvT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 11:50:48 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B286A33EAC;
-        Wed, 30 Mar 2022 08:49:00 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id g24so28242413lja.7;
-        Wed, 30 Mar 2022 08:48:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=dq8xdoLIR4aRi6FkMb+20PWNHqW1rgCenoTdxXhapeQ=;
-        b=iEUFe0ObPg8qK8j1JvE8RRHyMghNpiQQxXbwvFtCunM0DqR7JYxOXqAOFS1X8FIvbv
-         Q0jwBAhjoA+FCfJRj/ifJ6BIzHZ5UKMGa5lStV8/Zlix0V2PFNBYjg2ne7WOoN5gp7pR
-         zW54GurfJQHFF3EeUxPZaHLDciSPnu7ij6ScQ2e7MSDo1eHy5ZYxLMnhZk3+NHmNirmq
-         l4Aa3/++C8AC6ykYazwoLvj//FQqUoBJmaC/STCqoAeYw7rXRXOg0MO49PZAPbxM0bff
-         kUnbDar1asklrk1T3evqldCGliH96rQ105mc2qE4KOaRpWY9I5BsWY6miPMwsqPfLgvt
-         DIlA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=dq8xdoLIR4aRi6FkMb+20PWNHqW1rgCenoTdxXhapeQ=;
-        b=RmiRzmoCQ4jOrNSX1R/BWE9vsg078XaGlyp4FA5UJNBx34OflGbqrgv+VsNDlDXNZg
-         KttzKwRTHU/3k8DdlfVGLfxsS4498wz2cWIyexMsVboOLh7GBRvyzia90wcEzs+vMdZ7
-         FBVU4hSnkThLNsDGfT1lzVr7gv2Lkg8Yw023wzNZP10O2UUWbke+1nmnHDT51QmsxSfD
-         Nb++GeWFFgOaRWG0pL9zzp4s1AXlf80MFHCOoewr705z3TKcXQ8NFiBl6HWeE4aLoAlf
-         cXOJwxrEhoEgro9+Jy2q0ijlqfRPiOnYLD5HMuzoOPY9gMDojx7xEFJZeL0m2fA8DCVE
-         yYGg==
-X-Gm-Message-State: AOAM531Wr01gm87+GzcCPNw4C/Tjpi/LvBzkUNiTUzuLoXSnLthhHnN8
-        I/GhzV5Dd/VSF9+4R0zVQyM=
-X-Google-Smtp-Source: ABdhPJyUOGgz9ZqjEOkltDEfzpulzR5+n7lOLWprzDlNwq2ielugYc/3nwzAT2zYEJY6zDunh4PM6Q==
-X-Received: by 2002:a05:651c:204:b0:249:832a:12b with SMTP id y4-20020a05651c020400b00249832a012bmr7201978ljn.473.1648655332642;
-        Wed, 30 Mar 2022 08:48:52 -0700 (PDT)
-Received: from [192.168.1.2] (235.132.246.94.ip4.artcom.pl. [94.246.132.235])
-        by smtp.googlemail.com with ESMTPSA id w22-20020a2e9996000000b00249824260f8sm2413038lji.25.2022.03.30.08.48.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 30 Mar 2022 08:48:52 -0700 (PDT)
-Message-ID: <ae3864ac-b4f0-01a6-b3ed-75fa53ab3b95@gmail.com>
-Date:   Wed, 30 Mar 2022 17:47:55 +0200
+        Wed, 30 Mar 2022 11:51:19 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 984AB2E09D;
+        Wed, 30 Mar 2022 08:49:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=PCuBPF5hsRb/FMuxwZS7UpXV4qd0D79dqbvfk53dcbE=; b=Ukr7Hifw8pU5JfYiPGLkf7XKAM
+        0QeINXFlW1dVUv6yQ0WU0S7w1cKoH/5TDqRoNbK5IAtmT3sKbNl/daSTjjob/p/CeKCPZyYYLyb0L
+        uVXHYJ91smhuSIXTRaExHdk/6wmhB+iLGkR0k/WoeDaS6duxaaBTbnFIezrxY3E5XyO39qQLJ2tIC
+        iEBgjRN+fYwh9dpO5LMqGx12aO/ygCGO0F15BL6BXLfcvLezsbqiCjHyBawNW4c44Nj8Hd2A5dTJz
+        UqP6oDboQrEY2rHdKNWhWMnf347LI7JT2kUIjoIFkyGIybDm7Kd61AvSJ1FqzX9XbrhgtaNH8dd07
+        aCk44OqQ==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nZaZd-00GeeR-FT; Wed, 30 Mar 2022 15:49:29 +0000
+Date:   Wed, 30 Mar 2022 08:49:29 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Shiyang Ruan <ruansy.fnst@fujitsu.com>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-xfs <linux-xfs@vger.kernel.org>,
+        Linux NVDIMM <nvdimm@lists.linux.dev>,
+        Linux MM <linux-mm@kvack.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        "Darrick J. Wong" <djwong@kernel.org>, david <david@fromorbit.com>,
+        Jane Chu <jane.chu@oracle.com>
+Subject: Re: [PATCH v11 1/8] dax: Introduce holder for dax_device
+Message-ID: <YkR8CUdkScEjMte2@infradead.org>
+References: <20220227120747.711169-1-ruansy.fnst@fujitsu.com>
+ <20220227120747.711169-2-ruansy.fnst@fujitsu.com>
+ <CAPcyv4jAqV7dZdmGcKrG=f8sYmUXaL7YCQtME6GANywncwd+zg@mail.gmail.com>
+ <4fd95f0b-106f-6933-7bc6-9f0890012b53@fujitsu.com>
+ <YkPtptNljNcJc1g/@infradead.org>
+ <15a635d6-2069-2af5-15f8-1c0513487a2f@fujitsu.com>
+ <YkQtOO/Z3SZ2Pksg@infradead.org>
+ <4ed8baf7-7eb9-71e5-58ea-7c73b7e5bb73@fujitsu.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: Bug 215726 - si2157.c: mention name of the missing firmware file
-Content-Language: pl-PL
-To:     Thorsten Leemhuis <regressions@leemhuis.info>,
-        Robert Schlabbach <robert_s@gmx.net>
-Cc:     Antti Palosaari <crope@iki.fi>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <5f660108-8812-383c-83e4-29ee0558d623@leemhuis.info>
- <trinity-2ca61ae4-4f05-454d-94fd-d41e1afbec2f-1648581688394@3c-app-gmx-bs54>
- <1fc02de2-890e-e8e8-0ab6-aba62a333de5@leemhuis.info>
- <2ce6dc15-51a8-e59c-26ab-4380cdca6209@gmail.com>
- <703ad976-a504-eded-41b6-cd4f9f74e8df@leemhuis.info>
-From:   Piotr Chmura <chmooreck@gmail.com>
-In-Reply-To: <703ad976-a504-eded-41b6-cd4f9f74e8df@leemhuis.info>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4ed8baf7-7eb9-71e5-58ea-7c73b7e5bb73@fujitsu.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-W dniu 30.03.2022 o 12:44, Thorsten Leemhuis pisze:
-> On 30.03.22 12:35, Piotr Chmura wrote:
->> W dniu 30.03.2022 o 11:55, Thorsten Leemhuis pisze:
->>> On 29.03.22 21:21, Robert Schlabbach wrote:
->>>> the patch linked in the bugzilla ticket:
->>>> https://lore.kernel.org/linux-media/6f84b7f4-3ede-ae55-e99b-a9d4108c80e2@gmail.com/
->>>>
->>>> should indeed fix the issue.
->>> Ahh, the comment mentioning it was added shortly after I sent my mail.
->>> #regzbot monitor:
->>> https://lore.kernel.org/linux-media/6f84b7f4-3ede-ae55-e99b-a9d4108c80e2@gmail.com/
->>>
->>>
->>> Adding Piotr, the patches' author to the CC, who also replied.
->>>
->>> BTW: that patch is afaics missing a Fixes tag specifying the culprit and
->>> a `Cc: stable@vger.kernel.org # 5.17.x` tag to make sure it's quickly
->>> backported to the stable tree, as among others explained here:
->>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/process/handling-regressions.rst
->>>
->> Sorry for my inconvenience.
-> Don't worry, everything fine. In a case like...
->
->> I just fixed my device and wanted to share
->> solution with the "world". I'm not familiar with all kernel development
->> convention (yet).
-> ...this someone else should point such details out to the submitter
-> and/or add these tags when applying the patch.
->
-> @Robert: Do you know which commit causes this regression and could tell
-> us for a proper Fixes: tag?
-Fixes: 1c35ba3bf97213538b82067acc0f23f18e652226
+On Wed, Mar 30, 2022 at 06:58:21PM +0800, Shiyang Ruan wrote:
+> As the code I pasted before, pmem driver will subtract its ->data_offset,
+> which is byte-based. And the filesystem who implements ->notify_failure()
+> will calculate the offset in unit of byte again.
+> 
+> So, leave its function signature byte-based, to avoid repeated conversions.
 
-Cheers,
-Piotr Chmura
-> Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
->
-> P.S.: As the Linux kernel's regression tracker I'm getting a lot of
-> reports on my table. I can only look briefly into most of them and lack
-> knowledge about most of the areas they concern. I thus unfortunately
-> will sometimes get things wrong or miss something important. I hope
-> that's not the case here; if you think it is, don't hesitate to tell me
-> in a public reply, it's in everyone's interest to set the public record
-> straight.
->
->
->>>> The error was that the rom_id and required
->>>> fields were swapped in the table, so the non-zero rom_id was taken as a
->>>> "true" required boolean value, thus incorrectly evaluating that the
->>>> chip requires a firmware file to operate when in fact it does not.
->>>> I have tested the patch and found it worked for me. But I do not know
->>>> how to push this further along:
->>>> https://patchwork.linuxtv.org/project/linux-media/patch/6f84b7f4-3ede-ae55-e99b-a9d4108c80e2@gmail.com/
->>>>
->>> Mauro, what's up here? The patch fixes a regression and thus afaics
->>> should quickly find its way towards mainline to get it into the stable
->>> tree, as explained in the (bran new) document linked above.
->>>
->>> Ciao, Thorsten
->>>
->>>> Gesendet: Dienstag, 29. März 2022 um 10:33 Uhr
->>>> Von: "Thorsten Leemhuis" <regressions@leemhuis.info>
->>>> An: "Antti Palosaari" <crope@iki.fi>, "Mauro Carvalho Chehab"
->>>> <mchehab+huawei@kernel.org>, "Robert Schlabbach" <robert_s@gmx.net>
->>>> Cc: "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
->>>> az0123456@gmx.de, "Linux Media Mailing List"
->>>> <linux-media@vger.kernel.org>, "Linux Kernel Mailing List"
->>>> <linux-kernel@vger.kernel.org>
->>>> Betreff: Bug 215726 - si2157.c: mention name of the missing firmware
->>>> file
->>>> Hi, this is your Linux kernel regression tracker.
->>>>
->>>> I noticed a regression report in bugzilla.kernel.org that afaics nobody
->>>> acted upon since it was reported about a week ago, that's why I decided
->>>> to forward it to the lists and all people that seemed to be relevant
->>>> here. To quote from https://bugzilla.kernel.org/show_bug.cgi?id=215726 :
->>>>
->>>>> I get the following error messages when trying to use si2157.ko in
->>>>> linux 5.17:
->>>>> si2157 13-0060: found a 'Silicon Labs Si2157-A30 ROM 0x50'
->>>>> si2157 13-0060: Can't continue without a firmware
->>>>> I did work in linux 5.16.16 without a firmware file. Unfortunately
->>>>> the driver does not tell me the name of the missing firmware file.
->>>> Could somebody take a look into this? Or was this discussed somewhere
->>>> else already? Or even fixed?
->>>>
->>>>
->>
-
+I'm actually fine either way, so I'll wait for Dan to comment.
