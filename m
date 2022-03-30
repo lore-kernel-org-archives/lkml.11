@@ -2,68 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 636DBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:20:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A250C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:20:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345773AbiC3MWD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:22:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43002 "EHLO
+        id S241852AbiC3MWN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 08:22:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345300AbiC3MNk (ORCPT
+        with ESMTP id S1347088AbiC3MS4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 08:13:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B61D649F88
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 05:07:20 -0700 (PDT)
+        Wed, 30 Mar 2022 08:18:56 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5E7186620B
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 05:09:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648642039;
+        s=mimecast20190719; t=1648642143;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=p4IaRvBma0W1UBcawEsDhyvvua/6JtF1rikRuXR/v3o=;
-        b=UDcjrvDDA2M6JJCbmKRAOORM4sC1G7oRuzEzy9UrOgvf5Fa8t+2Zl82yiAuNjJS64+T0NE
-        jjrLrz6n/HjZjwQX5IeaE0Fx/GPZku+xOdvNOPeuoN/N0kyZ6CUotbcfeBKhI+6xg31y3R
-        cjpQwPFNEOPkvDAzO5yzKvh15nQe4b0=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=uweqLFGJbLof9q3XnJpMcN0HzPoip10nBUyG1VZQn3I=;
+        b=EVQEiSrZUXS3lZGHN3ffwjgTznZkUs1vD8rKDZxcDxf4DEMuyPZFjK2Mbsd+2fvBcubWWn
+        BnsZu8mTMZHNMJgmijL6o65F6koB9rJe1Y4oDrk8XHZzi5KXcFHRtw5AlEZJ21xFaLhvAD
+        Pdk7Kqg1gFFsBYpNiVDJTY9ec41ch8I=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-208-we63gjnkPYGBi9CXAT6kJg-1; Wed, 30 Mar 2022 08:07:17 -0400
-X-MC-Unique: we63gjnkPYGBi9CXAT6kJg-1
-Received: by mail-ed1-f72.google.com with SMTP id u17-20020a05640207d100b00418f00014f8so7586450edy.18
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 05:07:17 -0700 (PDT)
+ us-mta-295-1iMwCPjQODKgEer0mYCpDQ-1; Wed, 30 Mar 2022 08:09:01 -0400
+X-MC-Unique: 1iMwCPjQODKgEer0mYCpDQ-1
+Received: by mail-ed1-f71.google.com with SMTP id c31-20020a509fa2000000b004190d43d28fso12721198edf.9
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 05:09:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=p4IaRvBma0W1UBcawEsDhyvvua/6JtF1rikRuXR/v3o=;
-        b=ru23hg43jrYJxouk+o77QTnJuLtvg9lxyhx2lrfhbvSnNlBJ7J9q5t1PU+DcaqO0/R
-         2TyxIHHvr4C9goKpqJu3u2wNcs/jOLdetghMxTlUXENfHhqrgl4SV0bNrs9tTz6G2rin
-         B7bE750wBOwfqciokJtCvZm8dJ9zmyXAkAmGaIbgIiyeAUCPmugo2OhDSncyMJD2ZfxW
-         sHbJVf1LYZjfza4s9gVbCtILCTuqhIsM86sQZYmcUzNaG7BM1CPJw19S0tPJ43+Y5UxH
-         bA0N+eBQnK7RbmXk0gtasAGGlI3eWtp9m9L8O8pSrtG5w/kWA3Hzj/CTnj2wWd/g/1Mj
-         pPQA==
-X-Gm-Message-State: AOAM530d/md83md/TRbeZCaXoVckLNOp0qt0Kqv7N2t2r1C/r+8Z6cAI
-        sacryWHWw8md2w45Sv8EGzgLAS+im1/umy56qbY6zxFgTjuwuaV3eXh/6kW9IPJy9moAARTXNEH
-        vOlCCqzo0t+ovRSPkSf0S0q9R
-X-Received: by 2002:a17:907:629a:b0:6d7:b33e:43f4 with SMTP id nd26-20020a170907629a00b006d7b33e43f4mr40595894ejc.149.1648642034594;
-        Wed, 30 Mar 2022 05:07:14 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzStAnN2iHa+Rqbu8eIJhXelGfz14EyM1yta1FQP72irc8UflbROtPx9mfIOIWwkGT4QHJKyw==
-X-Received: by 2002:a17:907:629a:b0:6d7:b33e:43f4 with SMTP id nd26-20020a170907629a00b006d7b33e43f4mr40595860ejc.149.1648642034371;
-        Wed, 30 Mar 2022 05:07:14 -0700 (PDT)
+        bh=uweqLFGJbLof9q3XnJpMcN0HzPoip10nBUyG1VZQn3I=;
+        b=43iuXhSjnlZLKQoWhJ4kOX4nRI5mDhocRtVCU00PhuYJ16aBj0dvvm7PDc5m6mUIz9
+         nOE6fiE73/wQNaI113WPsfX92/yhjW73z2fwpzLFvZNId4H2YXW9c0PJfwzP3c+96eW/
+         QpInbySqd7CGypKdeGes0YEYucfE3Jii892CH0QsQBCJSqKRb8xDnkdPtrPXH152XSXD
+         rAZE2EzGYJ3aSijpTUvoumvSgGZhUglXedeubWxA0BANzFZzc/UwvOlE9xyfGBlwRohe
+         CYxxXEcooa0DvkdCW19kaj0pUn7pmf9fUBiexW+peisM52N+d+t7hgPgdBX3TWBsQNgM
+         hDwg==
+X-Gm-Message-State: AOAM5323JO0Iw7YeK6wmN3QjvFTZytjTif34FdFuhjxbNMLgu0OIuwlw
+        WtgZPHGSB8yiPa6+0cvrj181hy5Y8WIYvjewoHkL76arCO1Op1LYiZcLf5E4AYe3mFSFu7nl8bO
+        +SyR0dfLZmX9t3qtz37Gx3H0g
+X-Received: by 2002:a17:907:6092:b0:6db:ab31:96a2 with SMTP id ht18-20020a170907609200b006dbab3196a2mr38331798ejc.361.1648642140644;
+        Wed, 30 Mar 2022 05:09:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxqK0o157pvMUi7ZACRVTs9KL0PWXwSz46MMFdHFHdke+qjmFhJwWcKrvBjDHTt/zB/odl55A==
+X-Received: by 2002:a17:907:6092:b0:6db:ab31:96a2 with SMTP id ht18-20020a170907609200b006dbab3196a2mr38331771ejc.361.1648642140392;
+        Wed, 30 Mar 2022 05:09:00 -0700 (PDT)
 Received: from ?IPV6:2001:b07:6468:f312:8ca6:a836:a237:fed1? ([2001:b07:6468:f312:8ca6:a836:a237:fed1])
-        by smtp.googlemail.com with ESMTPSA id v2-20020a17090606c200b006a728f4a9bcsm8235476ejb.148.2022.03.30.05.07.12
+        by smtp.googlemail.com with ESMTPSA id l12-20020a056402028c00b00418f7fc4bd8sm9747115edv.91.2022.03.30.05.08.57
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 30 Mar 2022 05:07:13 -0700 (PDT)
-Message-ID: <27670a35-c67e-726f-f03f-9cf2eae83523@redhat.com>
-Date:   Wed, 30 Mar 2022 14:07:10 +0200
+        Wed, 30 Mar 2022 05:08:59 -0700 (PDT)
+Message-ID: <00fbd38e-2a9c-fda2-2565-6a53940b43e6@redhat.com>
+Date:   Wed, 30 Mar 2022 14:08:56 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.4.0
-Subject: Re: [PATCH 1/8] KVM: x86: avoid loading a vCPU after .vm_destroy was
- called
+Subject: Re: [PATCH 8/8] KVM: x86: SVM: remove vgif_enabled()
 Content-Language: en-US
 To:     Sean Christopherson <seanjc@google.com>,
         Maxim Levitsky <mlevitsk@redhat.com>
@@ -76,25 +74,27 @@ Cc:     kvm@vger.kernel.org, Jim Mattson <jmattson@google.com>,
         Dave Hansen <dave.hansen@linux.intel.com>,
         linux-kernel@vger.kernel.org,
         Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>, stable@vger.kernel.org
+        Thomas Gleixner <tglx@linutronix.de>
 References: <20220322172449.235575-1-mlevitsk@redhat.com>
- <20220322172449.235575-2-mlevitsk@redhat.com> <YkOkCwUgMD1SVfaD@google.com>
+ <20220322172449.235575-9-mlevitsk@redhat.com> <YkOiU2TtxE32xhCu@google.com>
 From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <YkOkCwUgMD1SVfaD@google.com>
+In-Reply-To: <YkOiU2TtxE32xhCu@google.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/30/22 02:27, Sean Christopherson wrote:
-> Rather than split kvm_free_vcpus(), can we instead move the call to svm_vm_destroy()
-> by adding a second hook, .vm_teardown(), which is needed for TDX?  I.e. keep VMX
-> where it is by using vm_teardown, but effectively move SVM?
-> 
-> https://lore.kernel.org/all/1fa2d0db387a99352d44247728c5b8ae5f5cab4d.1637799475.git.isaku.yamahata@intel.com
+On 3/30/22 02:20, Sean Christopherson wrote:
+> It'd be helpful to explicitly call out that KVM always takes V_GIF_ENABLE_MASK
+> from vmcs01, otherwise this looks like it does unintentend things when KVM is
+> runing vmcb02.
 
-I'd rather do that only for the TDX patches.
+I will add a note to the commit message.
+
+More precisely, because KVM does not (as of this patch) support vGIF 
+when L1 runs L2, the vmcb02's V_GIF_MASK and V_GIF_ENABLE_MASK also 
+control L1's GIF and are the same as vmcs01's.
 
 Paolo
 
