@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BA69C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1901C433F5
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:08:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240505AbiC3MJs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:09:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35800 "EHLO
+        id S242361AbiC3MJz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 08:09:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344943AbiC3Lxs (ORCPT
+        with ESMTP id S1344975AbiC3Lxu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:53:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA14E27CE27;
-        Wed, 30 Mar 2022 04:50:06 -0700 (PDT)
+        Wed, 30 Mar 2022 07:53:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64444275470;
+        Wed, 30 Mar 2022 04:50:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 89CAE6162F;
-        Wed, 30 Mar 2022 11:49:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40850C340EE;
-        Wed, 30 Mar 2022 11:49:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 46B6D615E2;
+        Wed, 30 Mar 2022 11:50:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B87FDC36AFA;
+        Wed, 30 Mar 2022 11:50:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648640998;
-        bh=9EsNKNlIV5Wgj9NPbFp6r6pG57BKyaapFpbFAXDtpLU=;
+        s=k20201202; t=1648641009;
+        bh=1mzmburc3X+szuNAEo1tXUhYMeph1aGhucbEOTahC2s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LUyNdCdab5OMqiTu9XbcIMc5+E1zb3hKswxmeXvqWzCLLBvvmdcOzfMPZqErNZ3DC
-         IpF+G7h35+qiP3NbQexVdBQcPVC1nEu/hbFcXye0Bu7ykeLK2tP+hGX8/s4Y/bi7DI
-         LURaIczov2vPnz8/IBEDCt+7SbLeXlhX5pFskFyFNusqJ7CJh7+1TzizXyqWVXb2b+
-         G2diUxZysgt1qfoC6i9OY+pAyZPLhPPum2kiN24IYe7YOjC6KKFAIKsWjSSWttepFA
-         sEE3UE9hu/hIeukRiYt0mjAw0Xdyh+cv/cagNL0oS0Fb86BhMnZcVafopos2gpyGrI
-         1+XWt1pwg/mqw==
+        b=K6nW+4kiD2R06IJnVsA7Ajrsn3U2ZFYK8wzrrcLbU9naEYyPE/5gdO9TdBa1wHgSs
+         iy8Djky9FYOGEqpEhf2X7XeHFY+c40HbnIo5nAhM53KJTG+Sk/N636qhfsSvT+W8/E
+         wwd34Dl2PzRrGi6+GNU7xW4an/ptxy5tkRkddRdXLNLG7pXgDu45XsggObx0gBgofs
+         XaIrAdu8IFp7iKAb+x8ux711bNmggdf35eyUH/xQqejjjBqpbnryII3DfN3xfCJjqA
+         SRpVM3GahvKdqyRb1SoSwqYAtlvyDxU2Mvst3vfglVeJMA8FyA7/8JzWSDKJGarDkP
+         ekBkCbx6G5qdA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Steven Rostedt (Google)" <rostedt@goodmis.org>,
-        Ritesh Harjani <riteshh@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>, mingo@redhat.com
-Subject: [PATCH AUTOSEL 5.16 55/59] tracing: Have TRACE_DEFINE_ENUM affect trace event types as well
-Date:   Wed, 30 Mar 2022 07:48:27 -0400
-Message-Id: <20220330114831.1670235-55-sashal@kernel.org>
+Cc:     Corentin Labbe <clabbe@baylibre.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, gregkh@linuxfoundation.org,
+        linux-media@vger.kernel.org, devel@driverdev.osuosl.org
+Subject: [PATCH AUTOSEL 5.15 02/50] media: staging: media: zoran: calculate the right buffer number for zoran_reap_stat_com
+Date:   Wed, 30 Mar 2022 07:49:16 -0400
+Message-Id: <20220330115005.1671090-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330114831.1670235-1-sashal@kernel.org>
-References: <20220330114831.1670235-1-sashal@kernel.org>
+In-Reply-To: <20220330115005.1671090-1-sashal@kernel.org>
+References: <20220330115005.1671090-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,81 +53,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
+From: Corentin Labbe <clabbe@baylibre.com>
 
-[ Upstream commit b3bc8547d3be60898818885f5bf22d0a62e2eb48 ]
+[ Upstream commit e3b86f4e558cea9eed71d894df2f19b10d60a207 ]
 
-The macro TRACE_DEFINE_ENUM is used to convert enums in the kernel to
-their actual value when they are exported to user space via the trace
-event format file.
+On the case tmp_dcim=1, the index of buffer is miscalculated.
+This generate a NULL pointer dereference later.
 
-Currently only the enums in the "print fmt" (TP_printk in the TRACE_EVENT
-macro) have the enums converted. But the enums can be used to denote array
-size:
+So let's fix the calcul and add a check to prevent this to reappear.
 
-        field:unsigned int fc_ineligible_rc[EXT4_FC_REASON_MAX]; offset:12;      size:36;        signed:0;
-
-The EXT4_FC_REASON_MAX has no meaning to userspace but it needs to know
-that information to know how to parse the array.
-
-Have the array indexes also be parsed as well.
-
-Link: https://lore.kernel.org/all/cover.1646922487.git.riteshh@linux.ibm.com/
-
-Reported-by: Ritesh Harjani <riteshh@linux.ibm.com>
-Tested-by: Ritesh Harjani <riteshh@linux.ibm.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/trace_events.c | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+ drivers/staging/media/zoran/zoran_device.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/trace/trace_events.c b/kernel/trace/trace_events.c
-index 92be9cb1d7d4..af4466d69fe8 100644
---- a/kernel/trace/trace_events.c
-+++ b/kernel/trace/trace_events.c
-@@ -2633,6 +2633,33 @@ static void update_event_printk(struct trace_event_call *call,
- 	}
- }
+diff --git a/drivers/staging/media/zoran/zoran_device.c b/drivers/staging/media/zoran/zoran_device.c
+index 5b12a730a229..fb1f0465ca87 100644
+--- a/drivers/staging/media/zoran/zoran_device.c
++++ b/drivers/staging/media/zoran/zoran_device.c
+@@ -814,7 +814,7 @@ static void zoran_reap_stat_com(struct zoran *zr)
+ 		if (zr->jpg_settings.tmp_dcm == 1)
+ 			i = (zr->jpg_dma_tail - zr->jpg_err_shift) & BUZ_MASK_STAT_COM;
+ 		else
+-			i = ((zr->jpg_dma_tail - zr->jpg_err_shift) & 1) * 2 + 1;
++			i = ((zr->jpg_dma_tail - zr->jpg_err_shift) & 1) * 2;
  
-+static void update_event_fields(struct trace_event_call *call,
-+				struct trace_eval_map *map)
-+{
-+	struct ftrace_event_field *field;
-+	struct list_head *head;
-+	char *ptr;
-+	int len = strlen(map->eval_string);
-+
-+	head = trace_get_fields(call);
-+	list_for_each_entry(field, head, link) {
-+		ptr = strchr(field->type, '[');
-+		if (!ptr)
-+			continue;
-+		ptr++;
-+
-+		if (!isalpha(*ptr) && *ptr != '_')
-+			continue;
-+
-+		if (strncmp(map->eval_string, ptr, len) != 0)
-+			continue;
-+
-+		ptr = eval_replace(ptr, map, len);
-+		/* enum/sizeof string smaller than value */
-+		WARN_ON_ONCE(!ptr);
-+	}
-+}
-+
- void trace_event_eval_update(struct trace_eval_map **map, int len)
- {
- 	struct trace_event_call *call, *p;
-@@ -2668,6 +2695,7 @@ void trace_event_eval_update(struct trace_eval_map **map, int len)
- 					first = false;
- 				}
- 				update_event_printk(call, map[i]);
-+				update_event_fields(call, map[i]);
- 			}
- 		}
- 	}
+ 		stat_com = le32_to_cpu(zr->stat_com[i]);
+ 		if ((stat_com & 1) == 0) {
+@@ -826,6 +826,11 @@ static void zoran_reap_stat_com(struct zoran *zr)
+ 		size = (stat_com & GENMASK(22, 1)) >> 1;
+ 
+ 		buf = zr->inuse[i];
++		if (!buf) {
++			spin_unlock_irqrestore(&zr->queued_bufs_lock, flags);
++			pci_err(zr->pci_dev, "No buffer at slot %d\n", i);
++			return;
++		}
+ 		buf->vbuf.vb2_buf.timestamp = ktime_get_ns();
+ 
+ 		if (zr->codec_mode == BUZ_MODE_MOTION_COMPRESS) {
 -- 
 2.34.1
 
