@@ -2,117 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77D85C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67C4DC433F5
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:18:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346526AbiC3MSD (ORCPT
+        id S1346522AbiC3MTl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:18:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38358 "EHLO
+        Wed, 30 Mar 2022 08:19:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344597AbiC3L4T (ORCPT
+        with ESMTP id S1344293AbiC3MAd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:56:19 -0400
+        Wed, 30 Mar 2022 08:00:33 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D5102E686;
-        Wed, 30 Mar 2022 04:54:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F4F9340E9
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 04:55:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 10894B81C25;
-        Wed, 30 Mar 2022 11:54:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8B2CC3410F;
-        Wed, 30 Mar 2022 11:54:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ADCC8B81C25
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 11:55:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF547C340EE;
+        Wed, 30 Mar 2022 11:55:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641251;
-        bh=KCdXw1ny4TNy0K+BLzYJ0gRmwDx43DnoQ1MrFXnm9PI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V7lwm0hSr64ZLUN9BaV3lnJz+63uF9At19Hm5YKKFCCQz3dFWxUq0qvtRxj+glV76
-         1aoLAZWIlLVv/qFVlp6aiu+Jf3dAMInbAfrKxCxBpNs2n2by7uszHruNngCIJeaPSZ
-         3uBE1xvuTlrmut59dIJBnQIkdAw2PP1R5Lw4yE8s98Rl3mIEh5EOQdPWY4Tg3xKeF4
-         pK64OuZBG5p1eq4ooeyQ+WL+jqjVeyXAcolu0gmmpk780x2baDNpjiuzbIFzfV+o5U
-         nKknHS5Ibo8qRS9undD/NPc+a0xctxHPJt549MaB7lGIJkJHCJZwZ//leEPefRqhWl
-         PCrHxtTF4IjlQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Evgeny Novikov <novikov@ispras.ru>,
-        Kirill Shilimanov <kirill.shilimanov@huawei.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
-        tomi.valkeinen@ti.com, linux-fbdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 02/17] video: fbdev: w100fb: Reset global state
-Date:   Wed, 30 Mar 2022 07:53:51 -0400
-Message-Id: <20220330115407.1673214-2-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330115407.1673214-1-sashal@kernel.org>
-References: <20220330115407.1673214-1-sashal@kernel.org>
-MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+        s=k20201202; t=1648641319;
+        bh=1HPyfRo5DHhp9R70XYYumzCEapXTyvDbHoQuEdQvgE8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:From;
+        b=Jl094britH6ONTd25NFMz9UnjM6d2m3/9NnfHo46z3Um8fGDWUcOui/GLBWC38RRA
+         xdE6zLhqI6xQgQ2ZJgjbF3yoRsb7ht61yQaMVgXHfKp79I2dGR8JnZa2KUY3DGVHC7
+         Jp+gUYYD3n/3EEpx7/3BztsEaTT5caTyvoW60YurT+x3gYc1bV50tKoekAHRvDxLx2
+         Qn/ugnd6Z2FxOrF8T8+ZfHbQfAofOwn9qYza0QbhfeHznqAkPiVuHV+xUctk/M9Xno
+         UAkVENvrobHHp5JLTjRooFbFs2hb1AtvPzz18PhHorKwvs8Ql9qGbEFbJLp7tJEwa0
+         Kg4JC23/KGPhQ==
+From:   sj@kernel.org
+To:     Jonghyeon Kim <tome01@ajou.ac.kr>
+Cc:     SeongJae Park <sj@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mm/damon: prevent activated scheme from sleeping by deactivated schemes
+Date:   Wed, 30 Mar 2022 11:55:16 +0000
+Message-Id: <20220330115516.32126-1-sj@kernel.org>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220330105302.32114-1-tome01@ajou.ac.kr>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evgeny Novikov <novikov@ispras.ru>
+Hi Jonghyeon,
 
-[ Upstream commit 8738ddcac644964ae128ccd3d80d48773c8d528e ]
+On Wed, 30 Mar 2022 19:53:02 +0900 Jonghyeon Kim <tome01@ajou.ac.kr> wrote:
 
-w100fb_probe() did not reset the global state to its initial state. This
-can result in invocation of iounmap() even when there was not the
-appropriate successful call of ioremap(). For instance, this may be the
-case if first probe fails after two successful ioremap() while second
-probe fails when first ioremap() fails. The similar issue is with
-w100fb_remove(). The patch fixes both bugs.
+> In the DAMON, the minimum wait time of the schemes decides whether the
+> kernel wakes up 'kdamon_fn()'. But since the minimum wait time is
+> initialized to zero, there are corner cases against the original objective.
+> 
+> For example, if we have several schemes for one target, and if the wait
+> time of the first scheme is zero, the minimum wait time will set zero,
+> which means 'kdamond_fn()' should wake up to apply this scheme. However,
+> in the following scheme, wait time can be set to non-zero. Thus, the
+> mininum wait time will be set to non-zero, which can cause sleeping this
+> interval for 'kdamon_fn()' due to one deactivated last scheme.
 
-Found by Linux Driver Verification project (linuxtesting.org).
+Good catch, thanks!
 
-Signed-off-by: Evgeny Novikov <novikov@ispras.ru>
-Co-developed-by: Kirill Shilimanov <kirill.shilimanov@huawei.com>
-Signed-off-by: Kirill Shilimanov <kirill.shilimanov@huawei.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/video/fbdev/w100fb.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+> 
+> This commit prevents making DAMON monitoring inactive state due to other
+> deactivated schemes.
+> 
+> Signed-off-by: Jonghyeon Kim <tome01@ajou.ac.kr>
 
-diff --git a/drivers/video/fbdev/w100fb.c b/drivers/video/fbdev/w100fb.c
-index 7bd4c27cfb14..b3b17b6adb7e 100644
---- a/drivers/video/fbdev/w100fb.c
-+++ b/drivers/video/fbdev/w100fb.c
-@@ -772,12 +772,18 @@ int w100fb_probe(struct platform_device *pdev)
- 		fb_dealloc_cmap(&info->cmap);
- 		kfree(info->pseudo_palette);
- 	}
--	if (remapped_fbuf != NULL)
-+	if (remapped_fbuf != NULL) {
- 		iounmap(remapped_fbuf);
--	if (remapped_regs != NULL)
-+		remapped_fbuf = NULL;
-+	}
-+	if (remapped_regs != NULL) {
- 		iounmap(remapped_regs);
--	if (remapped_base != NULL)
-+		remapped_regs = NULL;
-+	}
-+	if (remapped_base != NULL) {
- 		iounmap(remapped_base);
-+		remapped_base = NULL;
-+	}
- 	if (info)
- 		framebuffer_release(info);
- 	return err;
-@@ -802,8 +808,11 @@ static int w100fb_remove(struct platform_device *pdev)
- 	fb_dealloc_cmap(&info->cmap);
- 
- 	iounmap(remapped_base);
-+	remapped_base = NULL;
- 	iounmap(remapped_regs);
-+	remapped_regs = NULL;
- 	iounmap(remapped_fbuf);
-+	remapped_fbuf = NULL;
- 
- 	framebuffer_release(info);
- 
--- 
-2.34.1
+Reviewed-by: SeongJae Park <sj@kernel.org>
 
+
+Thanks,
+SJ
+
+> ---
+>  mm/damon/core.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/mm/damon/core.c b/mm/damon/core.c
+> index c1e0fed4e877..5ce8d7c867f0 100644
+> --- a/mm/damon/core.c
+> +++ b/mm/damon/core.c
+> @@ -1019,12 +1019,15 @@ static int kdamond_wait_activation(struct damon_ctx *ctx)
+>  	struct damos *s;
+>  	unsigned long wait_time;
+>  	unsigned long min_wait_time = 0;
+> +	bool init_wait_time = false;
+>  
+>  	while (!kdamond_need_stop(ctx)) {
+>  		damon_for_each_scheme(s, ctx) {
+>  			wait_time = damos_wmark_wait_us(s);
+> -			if (!min_wait_time || wait_time < min_wait_time)
+> +			if (!init_wait_time || wait_time < min_wait_time) {
+> +				init_wait_time = true;
+>  				min_wait_time = wait_time;
+> +			}
+>  		}
+>  		if (!min_wait_time)
+>  			return 0;
+> -- 
+> 2.17.1
+> 
