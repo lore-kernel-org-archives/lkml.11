@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDB72C43219
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 590F8C4167E
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346029AbiC3ME1 (ORCPT
+        id S1346256AbiC3MEs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:04:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57774 "EHLO
+        Wed, 30 Mar 2022 08:04:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345346AbiC3LyY (ORCPT
+        with ESMTP id S1345448AbiC3Lyb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:54:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E99F327854F;
-        Wed, 30 Mar 2022 04:50:58 -0700 (PDT)
+        Wed, 30 Mar 2022 07:54:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2BF0282B3B;
+        Wed, 30 Mar 2022 04:51:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DEACD615E7;
-        Wed, 30 Mar 2022 11:50:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C82BC36AE2;
-        Wed, 30 Mar 2022 11:50:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C4697615E7;
+        Wed, 30 Mar 2022 11:51:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 714BBC36AE7;
+        Wed, 30 Mar 2022 11:51:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641039;
-        bh=8XMINSXaSbfKJrYh9dECjJqF0AVdv8TqKHJzrJ7r5kw=;
+        s=k20201202; t=1648641070;
+        bh=qyc5E1VsAiEkog/l7n77XDh8NAl9OUtNeFvCzuC5lPg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PyBqfF1C9Dpu622PqMVt2O6Vc2rNCHC5nZ/zlCkg3G+bnRuLZziyDIDv6SvcQQ8hC
-         0SpeydRrpciaAWMoJL7Bh+4JSfw5dyeg7fM4f7CBpPUgyLRRXyxFWyKqC/I3AsKSfK
-         GFZl6LKb28teOdZx3ULdTIuRMxjYIpYB636THL1ULGeBp2K3arWDT+N4HVRIJ2BN1+
-         8A9fN13NHtgx/8v6kabSJl2avPABIT7X2Qa8fvpEzB98NwdPCTupuYAibY5LM5ztl2
-         Ri38xnSoI5MAG/Aa5kf362l/bhSPMVDm3OSccVWdbN9yYsu/Rh/hcoOHwy2vvQLq/1
-         q0G4tEO7guaVA==
+        b=GNKDUcqZykqzDsFkjq8Y5OBE6NL8Xg9NfcnXgNttArqXJJxfW5Nsmr/B0CYt8cINk
+         HqI4Tso8cwimq+7xlKzaqSzno8i3lcRYdl8aW6Hzaar9DCzwdAn600eA/JZdutSWoM
+         gaqqAhDYPATrrJctfvC7hGAiPKhEbQOhlG+uHAsibsErw8w5zx0Ko5izLj31gq3qPV
+         mSLDueBX5BtYpG5VxVW9/+vrrX6oC1KAQPAeH/JA1KRW7yEWb2d/4iNSs/UAqDhV2e
+         sUdSwkNP9zs5R8giYM02pweHOp43c/DrpDhhUAXY1qRnv+1YFfLeP+eFXqwzrvFwwW
+         L5jYfAPgC9xCQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tsuchiya Yuto <kitakar@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, gregkh@linuxfoundation.org,
-        linux-media@vger.kernel.org, devel@driverdev.osuosl.org
-Subject: [PATCH AUTOSEL 5.15 21/50] media: atomisp: fix dummy_ptr check to avoid duplicate active_bo
-Date:   Wed, 30 Mar 2022 07:49:35 -0400
-Message-Id: <20220330115005.1671090-21-sashal@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 42/50] media: i2c: ov5648: Fix lockdep error
+Date:   Wed, 30 Mar 2022 07:49:56 -0400
+Message-Id: <20220330115005.1671090-42-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115005.1671090-1-sashal@kernel.org>
 References: <20220330115005.1671090-1-sashal@kernel.org>
@@ -53,114 +53,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tsuchiya Yuto <kitakar@gmail.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 127efdbc51fe6064336c0452ce9c910b3e107cf0 ]
+[ Upstream commit d4cb5d3c4cee28aa89b02bc33d930a6cf75e7f79 ]
 
-The dummy_ptr check in hmm_init() [1] results in the following
-"hmm_init Failed to create sysfs" error exactly once every
-two times on atomisp reload by rmmod/insmod (although atomisp module
-loads and works fine regardless of this error):
+ov5648_state_init() calls ov5648_state_mipi_configure() which uses
+__v4l2_ctrl_s_ctrl[_int64](). This means that sensor->mutex (which
+is also sensor->ctrls.handler.lock) must be locked before calling
+ov5648_state_init().
 
-	[  140.230662] sysfs: cannot create duplicate filename '/devices/pci0000:00/0000:00:03.0/active_bo'
-	[  140.230668] CPU: 1 PID: 2502 Comm: insmod Tainted: G         C OE     5.15.0-rc4-1-surface-mainline #1 b8acf6eb64994414b2e20bad312a7a2c45f748f9
-	[  140.230675] Hardware name: OEMB OEMB/OEMB, BIOS 1.51116.238 03/09/2015
-	[  140.230678] Call Trace:
-	[  140.230687]  dump_stack_lvl+0x46/0x5a
-	[  140.230702]  sysfs_warn_dup.cold+0x17/0x24
-	[  140.230710]  sysfs_add_file_mode_ns+0x160/0x170
-	[  140.230717]  internal_create_group+0x126/0x390
-	[  140.230723]  hmm_init+0x5c/0x70 [atomisp 7a6a680bf400629363d2a6f58fd10e7299678b99]
-	[  140.230811]  atomisp_pci_probe.cold+0x1136/0x148e [atomisp 7a6a680bf400629363d2a6f58fd10e7299678b99]
-	[  140.230875]  local_pci_probe+0x45/0x80
-	[  140.230882]  ? pci_match_device+0xd7/0x130
-	[  140.230887]  pci_device_probe+0xfa/0x1b0
-	[  140.230892]  really_probe+0x1f5/0x3f0
-	[  140.230899]  __driver_probe_device+0xfe/0x180
-	[  140.230903]  driver_probe_device+0x1e/0x90
-	[  140.230908]  __driver_attach+0xc0/0x1c0
-	[  140.230912]  ? __device_attach_driver+0xe0/0xe0
-	[  140.230915]  ? __device_attach_driver+0xe0/0xe0
-	[  140.230919]  bus_for_each_dev+0x89/0xd0
-	[  140.230924]  bus_add_driver+0x12b/0x1e0
-	[  140.230929]  driver_register+0x8f/0xe0
-	[  140.230933]  ? 0xffffffffc153f000
-	[  140.230937]  do_one_initcall+0x57/0x220
-	[  140.230945]  do_init_module+0x5c/0x260
-	[  140.230952]  load_module+0x24bd/0x26a0
-	[  140.230962]  ? __do_sys_finit_module+0xae/0x110
-	[  140.230966]  __do_sys_finit_module+0xae/0x110
-	[  140.230972]  do_syscall_64+0x5c/0x80
-	[  140.230979]  ? syscall_exit_to_user_mode+0x23/0x40
-	[  140.230983]  ? do_syscall_64+0x69/0x80
-	[  140.230988]  ? exc_page_fault+0x72/0x170
-	[  140.230991]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-	[  140.230997] RIP: 0033:0x7f7fd5d8718d
-	[  140.231003] Code: b4 0c 00 0f 05 eb a9 66 0f 1f 44 00 00 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d b3 6c 0c 00 f7 d8 64 89 01 48
-	[  140.231006] RSP: 002b:00007ffefc25f0e8 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
-	[  140.231012] RAX: ffffffffffffffda RBX: 000055ac3edcd7f0 RCX: 00007f7fd5d8718d
-	[  140.231015] RDX: 0000000000000000 RSI: 000055ac3d723270 RDI: 0000000000000003
-	[  140.231017] RBP: 0000000000000000 R08: 0000000000000000 R09: 00007f7fd5e52380
-	[  140.231019] R10: 0000000000000003 R11: 0000000000000246 R12: 000055ac3d723270
-	[  140.231021] R13: 0000000000000000 R14: 000055ac3edd06e0 R15: 0000000000000000
-	[  140.231038] atomisp-isp2 0000:00:03.0: hmm_init Failed to create sysfs
+ov5648_state_mipi_configure() is also used in other places where
+the lock is already held so it cannot be changed itself.
 
-The problem is that dummy_ptr == 0 is a valid value. So, change the logic
-which checks if dummy_ptr was allocated.
+Note this is based on an identical (tested) fix for the ov8865 driver,
+this has only been compile-tested.
 
-At this point, atomisp now gives WARN_ON() in hmm_free() [2] on atomisp
-reload by rmmod/insmod. Again, the check is wrong there.
-
-So, change both checks for mmgr_EXCEPTION, which is the error value when
-HMM allocation fails, and initialize dummy_ptr with such value.
-
-[1] added on commit
-    d9ab83953fa7 ("media: atomisp: don't cause a warn if probe failed")
-[2] added on commit
-    b83cc378dfc4 ("atomisp: clean up the hmm init/cleanup indirections")
-
-Link: https://lore.kernel.org/linux-media/20211017162337.44860-3-kitakar@gmail.com
-
-Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
-Co-developed-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Reviewed-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/atomisp/pci/hmm/hmm.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/media/i2c/ov5648.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/media/atomisp/pci/hmm/hmm.c b/drivers/staging/media/atomisp/pci/hmm/hmm.c
-index 6a5ee4607089..c1cda16f2dc0 100644
---- a/drivers/staging/media/atomisp/pci/hmm/hmm.c
-+++ b/drivers/staging/media/atomisp/pci/hmm/hmm.c
-@@ -39,7 +39,7 @@
- struct hmm_bo_device bo_device;
- struct hmm_pool	dynamic_pool;
- struct hmm_pool	reserved_pool;
--static ia_css_ptr dummy_ptr;
-+static ia_css_ptr dummy_ptr = mmgr_EXCEPTION;
- static bool hmm_initialized;
- struct _hmm_mem_stat hmm_mem_stat;
+diff --git a/drivers/media/i2c/ov5648.c b/drivers/media/i2c/ov5648.c
+index 947d437ed0ef..01e22c535267 100644
+--- a/drivers/media/i2c/ov5648.c
++++ b/drivers/media/i2c/ov5648.c
+@@ -1778,8 +1778,14 @@ static int ov5648_state_configure(struct ov5648_sensor *sensor,
  
-@@ -209,7 +209,7 @@ int hmm_init(void)
- 
- void hmm_cleanup(void)
+ static int ov5648_state_init(struct ov5648_sensor *sensor)
  {
--	if (!dummy_ptr)
-+	if (dummy_ptr == mmgr_EXCEPTION)
- 		return;
- 	sysfs_remove_group(&atomisp_dev->kobj, atomisp_attribute_group);
+-	return ov5648_state_configure(sensor, &ov5648_modes[0],
+-				      ov5648_mbus_codes[0]);
++	int ret;
++
++	mutex_lock(&sensor->mutex);
++	ret = ov5648_state_configure(sensor, &ov5648_modes[0],
++				     ov5648_mbus_codes[0]);
++	mutex_unlock(&sensor->mutex);
++
++	return ret;
+ }
  
-@@ -288,7 +288,8 @@ void hmm_free(ia_css_ptr virt)
- 
- 	dev_dbg(atomisp_dev, "%s: free 0x%08x\n", __func__, virt);
- 
--	WARN_ON(!virt);
-+	if (WARN_ON(virt == mmgr_EXCEPTION))
-+		return;
- 
- 	bo = hmm_bo_device_search_start(&bo_device, (unsigned int)virt);
- 
+ /* Sensor Base */
 -- 
 2.34.1
 
