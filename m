@@ -2,87 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F071C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 19:47:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50464C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 19:47:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231138AbiC3Tsr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 15:48:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35332 "EHLO
+        id S231285AbiC3Tt0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 15:49:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230303AbiC3Tsq (ORCPT
+        with ESMTP id S231164AbiC3TtX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 15:48:46 -0400
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4BFC49F1E;
-        Wed, 30 Mar 2022 12:46:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:Cc:To:
-        MIME-Version:Date:Message-ID:content-disposition;
-        bh=CMbbjnM43Gr802NWsXoCyzXb/ynVAJPf7yl3CMJlxac=; b=Srh+L6VzOXgKRruO0h9JeVufyU
-        1Oe6W1eUdtWxeHQ7NcxMcMW5ZmzbarKGeLsWMs97WRo1DaZFW5Rc/B/BYx5KOJ3X4LtxChcPWCHbx
-        NSx1RcVB5EUWwM8PlvznBuC1sMd4+R41dE+vbOlyGEnFaIUgth7ThV8KteUUnJyX4RMpRangmQEVo
-        v9usJCzAwkyScZywpzCi7c5s8guOT1pI/DKcpm1fSoR2x+f8nwsEfP3YLJ/FA+EY0JoQ+036zk9sM
-        pQ/lZrkQBA1zZJZ6DbRbWx5oOX4bWXsYLoPfuSkVmw7V8VEa9XgEkmPwC+ylaKx+6pGqwHPwQVnHq
-        ghqXaMXQ==;
-Received: from s0106a84e3fe8c3f3.cg.shawcable.net ([24.64.144.200] helo=[192.168.0.10])
-        by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <logang@deltatee.com>)
-        id 1nZeHP-00D7gg-Bp; Wed, 30 Mar 2022 13:46:56 -0600
-Message-ID: <363307ae-bfc9-9c24-0b1c-39e09663dbb4@deltatee.com>
-Date:   Wed, 30 Mar 2022 13:46:54 -0600
+        Wed, 30 Mar 2022 15:49:23 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEA9149FA5
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 12:47:37 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id mr5-20020a17090b238500b001c67366ae93so689829pjb.4
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 12:47:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=oOXYySrw0TmLydZhFaBm1sSWPMqWsbFjnghNvkA6FaM=;
+        b=gbpzu1Z2hU6QehteHeEJKFYONUPWrH2ePmFVq8fBFUmfdYtEiqsX50/mxXE6MurCVz
+         JXAqXdvNZvb7vA7qoEoc3FanAyDiRoKv7/syIKrdi6n09xaXb/qIZgA4k61JPaUcBbAY
+         SUfoMNlirJfv7ZV/HVRE0iKvnYT0V0CkAEz1G+3n17fFVaVBxVr3ZhxMjObOo6cbFX1W
+         lnCCzZ4T0f2CXnM+WbG/wctlV1md8NG+uBIWqM3+eDO3X31aMD3bFQEAU6e+drFhi8qj
+         xVoa+Awu1NON5/2ATU7EsXqpafSe/P2WYIYgWuGSTcu7yldqZkm0g6v6L3y/OhP50dsQ
+         Ln5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=oOXYySrw0TmLydZhFaBm1sSWPMqWsbFjnghNvkA6FaM=;
+        b=ZwxNkjX9IbKvQQkssxxgvWfJ9yB+we+2cfBWRM2fUudCUga5Z9OUl7uhs0zf6iqmj3
+         hIbQsugEMj7gHUQlRe4q0bf+eovq8SqmVFh0R0KAmQNTgBUUyBZSKHYPNXR/rn1QVJ0X
+         YhhMIFJL82Nw095JHqZFcK02BPAuFd6w1POvhd73ysUrt/Qcr1ku4TPgB4eGkGXVtpVP
+         ntC7rJfBhHM7upgwi/U9qm4v8p2dUmKCOP3wXTFuohDBNyNnJqZ2Oo11B11DircfwS30
+         KX3hvq+mfUJYPXC0BXwGcWTcmomDXZLVICs0DoHnPYKVTNhG0Yj0Jd0qwQ5EXP+TLwL0
+         Q6Cg==
+X-Gm-Message-State: AOAM530Cz7iHCMGcbHgLxeYONZStZ2rEn46ymuzaJ3ZluSTNqcFFIZSf
+        9jsv9lv3czUeJltsniA3qRbcSw==
+X-Google-Smtp-Source: ABdhPJxk2VhMZr3qV/kmbltDEUGnT8rnmM3fOZ/vJPdGZY8jeavTdQllY8SLAsXjHwz5J/UF08rS1w==
+X-Received: by 2002:a17:90b:3846:b0:1c6:841b:7470 with SMTP id nl6-20020a17090b384600b001c6841b7470mr1252259pjb.193.1648669657261;
+        Wed, 30 Mar 2022 12:47:37 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id ij17-20020a17090af81100b001c67c964d93sm8557230pjb.2.2022.03.30.12.47.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 12:47:36 -0700 (PDT)
+Date:   Wed, 30 Mar 2022 19:47:33 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     "Nikunj A. Dadhania" <nikunj@amd.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Peter Gonda <pgonda@google.com>,
+        Bharata B Rao <bharata@amd.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Mingwei Zhang <mizhang@google.com>,
+        David Hildenbrand <david@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC v1 0/9] KVM: SVM: Defer page pinning for SEV guests
+Message-ID: <YkSz1R3YuFszcZrY@google.com>
+References: <20220308043857.13652-1-nikunj@amd.com>
+ <YkIh8zM7XfhsFN8L@google.com>
+ <c4b33753-01d7-684e-23ac-1189bd217761@amd.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Content-Language: en-CA
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Bjorn Helgaas <helgaas@kernel.org>,
-        Shlomo Pongratz <shlomopongratz@gmail.com>,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        andrew.maier@eideticom.com, bhelgaas@google.com,
-        Shlomo Pongratz <shlomop@pliops.com>
-References: <20220330153720.GF1716663@nvidia.com>
- <20220330191017.GA1700536@bhelgaas> <20220330191145.GE2120790@nvidia.com>
- <671cb318-5f4e-4372-d0ef-45be83bdf0b9@deltatee.com>
- <20220330193832.GF2120790@nvidia.com>
-From:   Logan Gunthorpe <logang@deltatee.com>
-In-Reply-To: <20220330193832.GF2120790@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 24.64.144.200
-X-SA-Exim-Rcpt-To: jgg@nvidia.com, helgaas@kernel.org, shlomopongratz@gmail.com, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, andrew.maier@eideticom.com, bhelgaas@google.com, shlomop@pliops.com
-X-SA-Exim-Mail-From: logang@deltatee.com
-Subject: Re: [PATCH V4 1/1] Intel Sky Lake-E host root ports check.
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c4b33753-01d7-684e-23ac-1189bd217761@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2022-03-30 13:38, Jason Gunthorpe wrote:
-> On Wed, Mar 30, 2022 at 01:36:25PM -0600, Logan Gunthorpe wrote:
+On Wed, Mar 30, 2022, Nikunj A. Dadhania wrote:
+> On 3/29/2022 2:30 AM, Sean Christopherson wrote:
+> > Let me preface this by saying I generally like the idea and especially the
+> > performance, but...
+> > 
+> > I think we should abandon this approach in favor of committing all our resources
+> > to fd-based private memory[*], which (if done right) will provide on-demand pinning
+> > for "free".  
 > 
->> Checking simply for PCI_EXP_TYPE_ROOT_PORT instead of a zero devfn is
->> probably a good idea, assuming it works for all existing systems. I'd
->> expect it would be set for all the devices currently allowed.
+> I will give this a try for SEV, was on my todo list.
 > 
-> I think if we find a PCI ID in the white list as we go up the PCI
-> hierarchy we should just declare success?
+> > I would much rather get that support merged sooner than later, and use
+> > it as a carrot for legacy SEV to get users to move over to its new APIs, with a long
+> > term goal of deprecating and disallowing SEV/SEV-ES guests without fd-based private
+> > memory.  
+> 
+> > That would require guest kernel support to communicate private vs. shared,
+> 
+> Could you explain this in more detail? This is required for punching hole for shared pages?
 
-Well, in older hardware we also have to ensure that the devices are on
-the same host bridge. (See REQ_SAME_HOST_BRIDGE). So it's a bit more
-complicated than that...
-> Does it matter if it is the top of the tree or if it is a root port or
-> host bridge? The IDs in this list only exist as part of SOCs, so
-> seeing them at all should confirm the whole SOC..
+Unlike SEV-SNP, which enumerates private vs. shared in the error code, SEV and SEV-ES
+don't provide private vs. shared information to the host (KVM) on page fault.  And
+it's even more fundamental then that, as SEV/SEV-ES won't even fault if the guest
+accesses the "wrong" GPA variant, they'll silent consume/corrupt data.
 
-Not sure if that will always hold with multi-socket systems. The code
-currently uses pci_find_host_bridge() for each device, then uses
-pci_host_bridge_dev() simply to find identifying information about the
-host bridge. It doesn't really matter where in the tree things are, but
-it would be add for the host bridge not to be at the top, I would have
-thought.
-
-Logan
+That means KVM can't support implicit conversions for SEV/SEV-ES, and so an explicit
+hypercall is mandatory.  SEV doesn't even have a vendor-agnostic guest/host paravirt
+ABI, and IIRC SEV-ES doesn't provide a conversion/map hypercall in the GHCB spec, so
+running a SEV/SEV-ES guest under UPM would require the guest firmware+kernel to be
+properly enlightened beyond what is required architecturally.
