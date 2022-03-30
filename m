@@ -2,53 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDCBCC41535
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:14:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14A3BC46467
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:15:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345423AbiC3MN4 (ORCPT
+        id S1345539AbiC3MOM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:13:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57956 "EHLO
+        Wed, 30 Mar 2022 08:14:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345899AbiC3LzJ (ORCPT
+        with ESMTP id S1345920AbiC3LzN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:55:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 651BA25FD63;
-        Wed, 30 Mar 2022 04:52:15 -0700 (PDT)
+        Wed, 30 Mar 2022 07:55:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6B3E265EBB;
+        Wed, 30 Mar 2022 04:52:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1B329B81ACC;
-        Wed, 30 Mar 2022 11:52:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A65E6C34112;
-        Wed, 30 Mar 2022 11:52:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 71DCE6170B;
+        Wed, 30 Mar 2022 11:52:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00348C3410F;
+        Wed, 30 Mar 2022 11:52:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641132;
-        bh=cmQjIDOiyu6i0WOxV+vP3qJn8wa2woRKYCESBKH7hvg=;
+        s=k20201202; t=1648641161;
+        bh=+wq173W039LLwt49okhsC1cU/Yg0EMixvemiQqA7vmw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PAo/wjbVJc/yheRc5O6eFwqvQh0BNVjzsd4+LnZ0OvhpB8gIdJZClfgLDhvcbOnpY
-         Jc77NZv+mq31IXjj6oqGB31I4BPypj9d7qStQ3Bru74ORvygKcTOQccj9gxOO7LWAY
-         zYoyBirWqkdBmAnOfEwETtXBQfnpnCnVlxciQxxIjfx7rJB9nT7GlM1sVXH9CZsxZA
-         P2ZPpitN0RnTW10ZjCo+6KHtMOE4oq0CJTWhREslCgxS4/1rUpK0558+0dBbyVY907
-         sO37hYIOw9SAWivR46OPbiuKDhgdWdbqAY0D4tv9vzVmRm2dFJR4uu84mNNHYL2Upp
-         qEHBqXhVZUgEA==
+        b=TxgDF1oFqewAEQ7hqVY0LaUjBsoFv1cuRdNXJmbCgPHGcFz/SmcRQGH9Zx6ZTvT5q
+         fRkxQUrHuw0rFCPue19Oq35skyKIo6wFomu03s+gqPgTVWrsGvtLKgKe/ACYEmZpyw
+         1xW8IdZVdf+XxClIpxpaGK8jqTkTUfngoVYrohwCISquqCOfXw0y49z3oi2rTD+7QQ
+         vcGxQoClSyy/Q8R/ChhjcrHPOSPSg17mz3Jj4ThfoegdPJFXIue6PBasJnG6eCya7M
+         LOZktuOZzLWyaqFLa5o6InQa5ehM1dKR63qaJupPeKs0JreQqf9+SD74H1GAR6G4Jx
+         Fsr78dRbTBe/w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>,
-        eric.y.miao@gmail.com, haojian.zhuang@gmail.com,
-        linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.10 29/37] ARM: mmp: Fix failure to remove sram device
-Date:   Wed, 30 Mar 2022 07:51:14 -0400
-Message-Id: <20220330115122.1671763-29-sashal@kernel.org>
+Cc:     Jing Yao <yao.jing2@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        tomi.valkeinen@ti.com, linux-omap@vger.kernel.org,
+        linux-fbdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 10/25] video: fbdev: omapfb: panel-dsi-cm: Use sysfs_emit() instead of snprintf()
+Date:   Wed, 30 Mar 2022 07:52:10 -0400
+Message-Id: <20220330115225.1672278-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330115122.1671763-1-sashal@kernel.org>
-References: <20220330115122.1671763-1-sashal@kernel.org>
+In-Reply-To: <20220330115225.1672278-1-sashal@kernel.org>
+References: <20220330115225.1672278-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -56,74 +53,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Jing Yao <yao.jing2@zte.com.cn>
 
-[ Upstream commit 4036b29a146b2749af3bb213b003eb69f3e5ecc4 ]
+[ Upstream commit f63658a59c3d439c8ad7b290f8ec270980e0f384 ]
 
-Make sure in .probe() to set driver data before the function is left to
-make it possible in .remove() to undo the actions done.
+Use sysfs_emit instead of scnprintf, snprintf or sprintf.
 
-This fixes a potential memory leak and stops returning an error code in
-.remove() that is ignored by the driver core anyhow.
-
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-mmp/sram.c | 22 ++++++++++++----------
- 1 file changed, 12 insertions(+), 10 deletions(-)
+ drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm/mach-mmp/sram.c b/arch/arm/mach-mmp/sram.c
-index 6794e2db1ad5..ecc46c31004f 100644
---- a/arch/arm/mach-mmp/sram.c
-+++ b/arch/arm/mach-mmp/sram.c
-@@ -72,6 +72,8 @@ static int sram_probe(struct platform_device *pdev)
- 	if (!info)
- 		return -ENOMEM;
+diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
+index 4b0793abdd84..a2c7c5cb1523 100644
+--- a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
++++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
+@@ -409,7 +409,7 @@ static ssize_t dsicm_num_errors_show(struct device *dev,
+ 	if (r)
+ 		return r;
  
-+	platform_set_drvdata(pdev, info);
-+
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (res == NULL) {
- 		dev_err(&pdev->dev, "no memory resource defined\n");
-@@ -107,8 +109,6 @@ static int sram_probe(struct platform_device *pdev)
- 	list_add(&info->node, &sram_bank_list);
- 	mutex_unlock(&sram_lock);
- 
--	platform_set_drvdata(pdev, info);
--
- 	dev_info(&pdev->dev, "initialized\n");
- 	return 0;
- 
-@@ -127,17 +127,19 @@ static int sram_remove(struct platform_device *pdev)
- 	struct sram_bank_info *info;
- 
- 	info = platform_get_drvdata(pdev);
--	if (info == NULL)
--		return -ENODEV;
- 
--	mutex_lock(&sram_lock);
--	list_del(&info->node);
--	mutex_unlock(&sram_lock);
-+	if (info->sram_size) {
-+		mutex_lock(&sram_lock);
-+		list_del(&info->node);
-+		mutex_unlock(&sram_lock);
-+
-+		gen_pool_destroy(info->gpool);
-+		iounmap(info->sram_virt);
-+		kfree(info->pool_name);
-+	}
- 
--	gen_pool_destroy(info->gpool);
--	iounmap(info->sram_virt);
--	kfree(info->pool_name);
- 	kfree(info);
-+
- 	return 0;
+-	return snprintf(buf, PAGE_SIZE, "%d\n", errors);
++	return sysfs_emit(buf, "%d\n", errors);
  }
  
+ static ssize_t dsicm_hw_revision_show(struct device *dev,
+@@ -439,7 +439,7 @@ static ssize_t dsicm_hw_revision_show(struct device *dev,
+ 	if (r)
+ 		return r;
+ 
+-	return snprintf(buf, PAGE_SIZE, "%02x.%02x.%02x\n", id1, id2, id3);
++	return sysfs_emit(buf, "%02x.%02x.%02x\n", id1, id2, id3);
+ }
+ 
+ static ssize_t dsicm_store_ulps(struct device *dev,
+@@ -487,7 +487,7 @@ static ssize_t dsicm_show_ulps(struct device *dev,
+ 	t = ddata->ulps_enabled;
+ 	mutex_unlock(&ddata->lock);
+ 
+-	return snprintf(buf, PAGE_SIZE, "%u\n", t);
++	return sysfs_emit(buf, "%u\n", t);
+ }
+ 
+ static ssize_t dsicm_store_ulps_timeout(struct device *dev,
+@@ -532,7 +532,7 @@ static ssize_t dsicm_show_ulps_timeout(struct device *dev,
+ 	t = ddata->ulps_timeout;
+ 	mutex_unlock(&ddata->lock);
+ 
+-	return snprintf(buf, PAGE_SIZE, "%u\n", t);
++	return sysfs_emit(buf, "%u\n", t);
+ }
+ 
+ static DEVICE_ATTR(num_dsi_errors, S_IRUGO, dsicm_num_errors_show, NULL);
 -- 
 2.34.1
 
