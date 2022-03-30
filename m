@@ -2,88 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59E83C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 22:29:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB0C1C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 22:29:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351617AbiC3WbJ (ORCPT
+        id S1351626AbiC3Wbc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 18:31:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35666 "EHLO
+        Wed, 30 Mar 2022 18:31:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233684AbiC3WbH (ORCPT
+        with ESMTP id S233684AbiC3Wb3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 18:31:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2318C5BD10
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 15:29:22 -0700 (PDT)
+        Wed, 30 Mar 2022 18:31:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71B945BD27;
+        Wed, 30 Mar 2022 15:29:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BD61A617C1
-        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 22:29:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F106AC3410F;
-        Wed, 30 Mar 2022 22:29:19 +0000 (UTC)
-Date:   Wed, 30 Mar 2022 18:29:18 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Zi Yan <zi.yan@sent.com>
-Cc:     Zi Yan <ziy@nvidia.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Mike Rapoport <rppt@kernel.org>,
-        Oscar Salvador <osalvador@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm: page_alloc: validate buddy before check its
- migratetype.
-Message-ID: <20220330182918.38276a89@gandalf.local.home>
-In-Reply-To: <20220330221238.396357-1-zi.yan@sent.com>
-References: <20220330221238.396357-1-zi.yan@sent.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 214DAB81D46;
+        Wed, 30 Mar 2022 22:29:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5284EC340EE;
+        Wed, 30 Mar 2022 22:29:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648679380;
+        bh=5MtaFO+89wdeX5xBRMQtCufQ99P/uYV3x5p1w5FaYDY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=nDv+jPdPELXEqiJrVGH2SktWbGeFygXDxF1W2U0Qmln9qyBdAYhqBlvep4zZe68BT
+         09Ma++zjicfcEjtXPcGM5pzWH7g26rVolQQ13IB3iKzwUAH96v7BNdYNX/YLnkrikp
+         JQYOEkW8bUxez+QQbDnKEVXe3WMIJYfUPaFJ+nXFJ1yN1kd0T5L/hW0KxAattnLv8H
+         bebYdPsAYqMDdJ9RrV6841UECRnbchzV/3hSRndY/UyyCs1FzywqHLJHkqCmfAOb+F
+         zzlEikm8j+uYVmkXYLeN6iN+uvYenG9TbyvtwgjqbKdTsIew1Yh2ihct4VsGC6A3sN
+         GBlFRcR12dOzQ==
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Shuah Khan <shuah@kernel.org>
+Cc:     linux-sgx@vger.kernel.org, nathaniel@profian.com,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        linux-kselftest@vger.kernel.org (open list:KERNEL SELFTEST FRAMEWORK),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH v2] selftests/sgx: Use rip relative addressing for encl_stack
+Date:   Thu, 31 Mar 2022 01:28:34 +0300
+Message-Id: <20220330222834.139769-1-jarkko@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 30 Mar 2022 18:12:38 -0400
-Zi Yan <zi.yan@sent.com> wrote:
+Simplify the test_encl_bootstrap.S flow by using RIP-relative addressing.
+The compiler automatically puts relative addresses for RIP index addresses.
 
-> From: Zi Yan <ziy@nvidia.com>
-> 
-> Whenever a buddy page is found, page_is_buddy() should be called to
-> check its validity. Add the missing check during pageblock merge check.
-> 
-> Fixes: 1dd214b8f21c ("mm: page_alloc: avoid merging non-fallbackable pageblocks with others")
+In order to get a clean and tweakless solution, define separate entry point
+for each TCS.
 
-Link: https://lore.kernel.org/all/20220330154208.71aca532@gandalf.local.home/
+Cc: Reinette Chatre <reinette.chatre@intel.com>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+---
+v2:
+* Based on Reinette's example, make proper structuring with separate
+  entry points for each TCS.
+---
+ .../selftests/sgx/test_encl_bootstrap.S       | 30 +++++++++++--------
+ 1 file changed, 18 insertions(+), 12 deletions(-)
 
-> 
-> Reported-by: Steven Rostedt <rostedt@goodmis.org>
-
-Tested-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-
--- Steve
-
-> Signed-off-by: Zi Yan <ziy@nvidia.com>
-> ---
->  mm/page_alloc.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index bdc8f60ae462..6c6af8658775 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -1108,6 +1108,9 @@ static inline void __free_one_page(struct page *page,
->  
->  		buddy_pfn = __find_buddy_pfn(pfn, order);
->  		buddy = page + (buddy_pfn - pfn);
-> +
-> +		if (!page_is_buddy(page, buddy, order))
-> +			goto done_merging;
->  		buddy_mt = get_pageblock_migratetype(buddy);
->  
->  		if (migratetype != buddy_mt
+diff --git a/tools/testing/selftests/sgx/test_encl_bootstrap.S b/tools/testing/selftests/sgx/test_encl_bootstrap.S
+index 82fb0dfcbd23..cc2353f38bcc 100644
+--- a/tools/testing/selftests/sgx/test_encl_bootstrap.S
++++ b/tools/testing/selftests/sgx/test_encl_bootstrap.S
+@@ -10,12 +10,13 @@
+ 	.section ".tcs", "aw"
+ 	.balign	4096
+ 
++encl_tcs1:
+ 	.fill	1, 8, 0			# STATE (set by CPU)
+ 	.fill	1, 8, 0			# FLAGS
+ 	.quad	encl_ssa_tcs1		# OSSA
+ 	.fill	1, 4, 0			# CSSA (set by CPU)
+ 	.fill	1, 4, 1			# NSSA
+-	.quad	encl_entry		# OENTRY
++	.quad	encl_entry1		# OENTRY
+ 	.fill	1, 8, 0			# AEP (set by EENTER and ERESUME)
+ 	.fill	1, 8, 0			# OFSBASE
+ 	.fill	1, 8, 0			# OGSBASE
+@@ -23,13 +24,13 @@
+ 	.fill	1, 4, 0xFFFFFFFF	# GSLIMIT
+ 	.fill	4024, 1, 0		# Reserved
+ 
+-	# TCS2
++encl_tcs2:
+ 	.fill	1, 8, 0			# STATE (set by CPU)
+ 	.fill	1, 8, 0			# FLAGS
+ 	.quad	encl_ssa_tcs2		# OSSA
+ 	.fill	1, 4, 0			# CSSA (set by CPU)
+ 	.fill	1, 4, 1			# NSSA
+-	.quad	encl_entry		# OENTRY
++	.quad	encl_entry2		# OENTRY
+ 	.fill	1, 8, 0			# AEP (set by EENTER and ERESUME)
+ 	.fill	1, 8, 0			# OFSBASE
+ 	.fill	1, 8, 0			# OGSBASE
+@@ -39,15 +40,19 @@
+ 
+ 	.text
+ 
+-encl_entry:
+-	# RBX contains the base address for TCS, which is the first address
+-	# inside the enclave for TCS #1 and one page into the enclave for
+-	# TCS #2. By adding the value of encl_stack to it, we get
+-	# the absolute address for the stack.
+-	lea	(encl_stack)(%rbx), %rax
++encl_entry1:
++	lea	(encl_stack1)(%rip), %rax
+ 	xchg	%rsp, %rax
+ 	push	%rax
++	jmp	encl_continue
+ 
++encl_entry2:
++	lea	(encl_stack2)(%rip), %rax
++	xchg	%rsp, %rax
++	push	%rax
++	jmp	encl_continue
++
++encl_continue:
+ 	push	%rcx # push the address after EENTER
+ 	push	%rbx # push the enclave base address
+ 
+@@ -84,13 +89,14 @@ encl_entry:
+ 
+ encl_ssa_tcs1:
+ 	.space 4096
++
+ encl_ssa_tcs2:
+ 	.space 4096
+ 
++encl_stack1:
+ 	.balign 4096
+-	# Stack of TCS #1
+ 	.space 4096
+-encl_stack:
++
++encl_stack2:
+ 	.balign 4096
+-	# Stack of TCS #2
+ 	.space 4096
+-- 
+2.35.1
 
