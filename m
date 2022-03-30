@@ -2,95 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A738EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:43:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4314C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 06:45:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242957AbiC3Gpi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 02:45:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46258 "EHLO
+        id S242861AbiC3Gq7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 30 Mar 2022 02:46:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242852AbiC3Gpa (ORCPT
+        with ESMTP id S238754AbiC3Gq5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 02:45:30 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 085726D19B
-        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 23:43:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648622625; x=1680158625;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=tcfB2S2ILUhA3UhWMEyqaxQrE9WW+j9PxezbmQ7LdU0=;
-  b=APWkBowoV4oWKdNDKKc8c9tTxZkdlSGBV6dA0jyOsa9PKOH5BmNy2sUf
-   EsLaaQbsPaZsYc03UkM946ttziB+Rf0KyYO+rlI5LuXU6KAtQyTBJ95j5
-   pGUqGUgY9N2tKm9si6Oafmxe9w4oc43suMednxwP8JV7NRlYNAZ+eciF8
-   gVwwo1vt1g3ymt8ekOMesERb1d0dQ/MF+FeE0vnJg/WB+VdacgV7/VRQo
-   WhMXbWnvl+zOuMjKwSv1xwOalOMjdOrZilw5JeOnt8fiWEraj8opXDGLw
-   h1+/5mT4tOX+JxriXbulJjYjPC0LTnl0nm2dTzmPxH9yaEIhIN1yJeGKz
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="257039388"
-X-IronPort-AV: E=Sophos;i="5.90,221,1643702400"; 
-   d="scan'208";a="257039388"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 23:43:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,221,1643702400"; 
-   d="scan'208";a="653637195"
-Received: from lkp-server01.sh.intel.com (HELO 3965e2759b93) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 29 Mar 2022 23:43:42 -0700
-Received: from kbuild by 3965e2759b93 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nZS3S-000147-0Y; Wed, 30 Mar 2022 06:43:42 +0000
-Date:   Wed, 30 Mar 2022 14:42:52 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@kernel.org>
-Subject: ld.lld: error: relocation R_AARCH64_ADR_PREL_PG_HI21 out of range:
- 274538708992 is not in
-Message-ID: <202203301438.3WBEerVd-lkp@intel.com>
+        Wed, 30 Mar 2022 02:46:57 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A99E7EB3B
+        for <linux-kernel@vger.kernel.org>; Tue, 29 Mar 2022 23:45:11 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KSxhJ4N2LzDq8M;
+        Wed, 30 Mar 2022 14:42:56 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 30 Mar 2022 14:45:09 +0800
+Received: from [10.174.177.243] (10.174.177.243) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2308.21; Wed, 30 Mar 2022 14:45:09 +0800
+Message-ID: <c48b830b-1d85-4093-f913-de8a71f714e6@huawei.com>
+Date:   Wed, 30 Mar 2022 14:45:08 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: Re: [PATCH 1/2] arm64: mm: Do not defer reserve_crashkernel() if only
+ ZONE_DMA32
+To:     Vijay Balakrishna <vijayb@linux.microsoft.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Pasha Tatashin <pasha.tatashin@soleen.com>, <f.fainelli@gmail.com>
+References: <20220325055315.25671-1-wangkefeng.wang@huawei.com>
+ <9e8f32c4-1198-dca5-915f-0b31ce1436b4@linux.microsoft.com>
+Content-Language: en-US
+In-Reply-To: <9e8f32c4-1198-dca5-915f-0b31ce1436b4@linux.microsoft.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.177.243]
+X-ClientProxiedBy: dggeme708-chm.china.huawei.com (10.1.199.104) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Peter,
 
-FYI, the error/warning still remains.
-
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   1c24a186398f59c80adb9a967486b65c1423a59d
-commit: 63b3f96e1a989846a5a521d4fbef4bc86406929d kvm: Select SCHED_INFO instead of TASK_DELAY_ACCT
-date:   11 months ago
-config: arm64-randconfig-r001-20220330 (https://download.01.org/0day-ci/archive/20220330/202203301438.3WBEerVd-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0f6d9501cf49ce02937099350d08f20c4af86f3d)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=63b3f96e1a989846a5a521d4fbef4bc86406929d
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 63b3f96e1a989846a5a521d4fbef4bc86406929d
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> ld.lld: error: relocation R_AARCH64_ADR_PREL_PG_HI21 out of range: 274538708992 is not in [-4294967296, 4294967295]
->> ld.lld: error: relocation R_AARCH64_ADR_PREL_PG_HI21 out of range: 274538708992 is not in [-4294967296, 4294967295]
->> ld.lld: error: relocation R_AARCH64_ADR_PREL_PG_HI21 out of range: 274538708992 is not in [-4294967296, 4294967295]
->> ld.lld: error: relocation R_AARCH64_ADR_PREL_PG_HI21 out of range: 274538708992 is not in [-4294967296, 4294967295]
->> ld.lld: error: relocation R_AARCH64_ADR_PREL_PG_HI21 out of range: 274538708992 is not in [-4294967296, 4294967295]
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+On 2022/3/30 6:29, Vijay Balakrishna wrote:
+>
+>
+> On 3/24/2022 10:53 PM, Kefeng Wang wrote:
+>> The kernel could be benifit due to BLOCK_MAPPINGS, see commit
+>> 031495635b46 ("arm64: Do not defer reserve_crashkernel() for
+>> platforms with no DMA memory zones"), if there is only with
+>> ZONE_DMA32, we could set arm64_dma_phys_limit to max_zone_phys(32)
+>> earlier in arm64_memblock_init(), then we will benifit too.
+>
+> Thanks for noticing platforms with just ZONE_DMA32 config can also 
+> benefit BLOCK_MAPPINGS.  I assume you have access to one where you 
+> notice the difference with proposed changes and able to test.  I did 
+> test proposed changes on SoC we use with IOMMU (no ZONE_DMA configs 
+> enabled).
+I backported your patches into 5.10 and tested(unixbench will benifit 
+due to block mapping, only with DMA32 and rodata=false)
+>
+> Nits --
+> - benifit -> benefit
+> - consider making commit message clear, "then we will.." seems you are 
+> referring to platforms with just ZONE_DMA32 config enabled
+> - to reflect new change consider updating comment added in commit 
+> 031495635b46
+Thanks for your reviewing,  will update and test with upstream.
+>
+>>
+>> Cc: Vijay Balakrishna <vijayb@linux.microsoft.com>
+>> Cc: Pasha Tatashin <pasha.tatashin@soleen.com>
+>> Cc: Will Deacon <will@kernel.org>
+>> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+>
+> Reviewed-by: Vijay Balakrishna <vijayb@linux.microsoft.com>
+>
+>> ---
+>>   arch/arm64/mm/init.c | 18 ++++++++++--------
+>>   arch/arm64/mm/mmu.c  |  6 ++----
+>>   2 files changed, 12 insertions(+), 12 deletions(-)
+>>
+>> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+>> index 8ac25f19084e..9dded8779d72 100644
+>> --- a/arch/arm64/mm/init.c
+>> +++ b/arch/arm64/mm/init.c
+>> @@ -157,14 +157,14 @@ static phys_addr_t __init 
+>> max_zone_phys(unsigned int zone_bits)
+>>       return min(zone_mask, memblock_end_of_DRAM() - 1) + 1;
+>>   }
+>>   +phys_addr_t __ro_after_init dma32_phys_limit;
+Will make it static, suggested by Florian
+>>   static void __init zone_sizes_init(unsigned long min, unsigned long 
+>> max)
+>>   {
+>>       unsigned long max_zone_pfns[MAX_NR_ZONES]  = {0};
+>> -    unsigned int __maybe_unused acpi_zone_dma_bits;
+>> -    unsigned int __maybe_unused dt_zone_dma_bits;
+>> -    phys_addr_t __maybe_unused dma32_phys_limit = max_zone_phys(32);
+>> -
+>>   #ifdef CONFIG_ZONE_DMA
+>> +    unsigned int acpi_zone_dma_bits;
+>> +    unsigned int dt_zone_dma_bits;
+>> +
+>>       acpi_zone_dma_bits = fls64(acpi_iort_dma_get_max_cpu_address());
+>>       dt_zone_dma_bits = fls64(of_dma_get_max_cpu_address(NULL));
+>>       zone_dma_bits = min3(32U, dt_zone_dma_bits, acpi_zone_dma_bits);
+>> @@ -173,8 +173,6 @@ static void __init zone_sizes_init(unsigned long 
+>> min, unsigned long max)
+>>   #endif
+>>   #ifdef CONFIG_ZONE_DMA32
+>>       max_zone_pfns[ZONE_DMA32] = PFN_DOWN(dma32_phys_limit);
+>> -    if (!arm64_dma_phys_limit)
+>> -        arm64_dma_phys_limit = dma32_phys_limit;
+>>   #endif
+>>       max_zone_pfns[ZONE_NORMAL] = max;
+>>   @@ -336,8 +334,12 @@ void __init arm64_memblock_init(void)
+>>         early_init_fdt_scan_reserved_mem();
+>>   -    if (!IS_ENABLED(CONFIG_ZONE_DMA) && 
+>> !IS_ENABLED(CONFIG_ZONE_DMA32))
+>> +    dma32_phys_limit = max_zone_phys(32);
+>> +    if (!IS_ENABLED(CONFIG_ZONE_DMA)) {
+>> +        if (IS_ENABLED(CONFIG_ZONE_DMA32))
+>> +            arm64_dma_phys_limit = dma32_phys_limit;
+>>           reserve_crashkernel();
+>> +    }
+>>         high_memory = __va(memblock_end_of_DRAM() - 1) + 1;
+>>   }
+>> @@ -385,7 +387,7 @@ void __init bootmem_init(void)
+>>        * request_standard_resources() depends on crashkernel's memory 
+>> being
+>>        * reserved, so do it here.
+>>        */
+>> -    if (IS_ENABLED(CONFIG_ZONE_DMA) || IS_ENABLED(CONFIG_ZONE_DMA32))
+>> +    if (IS_ENABLED(CONFIG_ZONE_DMA))
+>>           reserve_crashkernel();
+>>         memblock_dump_all();
+>> diff --git a/arch/arm64/mm/mmu.c b/arch/arm64/mm/mmu.c
+>> index 626ec32873c6..23734481318a 100644
+>> --- a/arch/arm64/mm/mmu.c
+>> +++ b/arch/arm64/mm/mmu.c
+>> @@ -529,8 +529,7 @@ static void __init map_mem(pgd_t *pgdp)
+>>     #ifdef CONFIG_KEXEC_CORE
+>>       if (crash_mem_map) {
+>> -        if (IS_ENABLED(CONFIG_ZONE_DMA) ||
+>> -            IS_ENABLED(CONFIG_ZONE_DMA32))
+>> +        if (IS_ENABLED(CONFIG_ZONE_DMA))
+>>               flags |= NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS;
+>>           else if (crashk_res.end)
+>>               memblock_mark_nomap(crashk_res.start,
+>> @@ -571,8 +570,7 @@ static void __init map_mem(pgd_t *pgdp)
+>>        * through /sys/kernel/kexec_crash_size interface.
+>>        */
+>>   #ifdef CONFIG_KEXEC_CORE
+>> -    if (crash_mem_map &&
+>> -        !IS_ENABLED(CONFIG_ZONE_DMA) && 
+>> !IS_ENABLED(CONFIG_ZONE_DMA32)) {
+>> +    if (crash_mem_map && !IS_ENABLED(CONFIG_ZONE_DMA)) {
+>>           if (crashk_res.end) {
+>>               __map_memblock(pgdp, crashk_res.start,
+>>                          crashk_res.end + 1,
+> .
