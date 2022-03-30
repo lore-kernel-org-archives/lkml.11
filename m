@@ -2,83 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F248CC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 17:38:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE39AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 17:38:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349394AbiC3Rjv (ORCPT
+        id S1349401AbiC3Rjz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 13:39:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50956 "EHLO
+        Wed, 30 Mar 2022 13:39:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344245AbiC3Rjt (ORCPT
+        with ESMTP id S1349342AbiC3Rhz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 13:39:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F47FD4CB8;
-        Wed, 30 Mar 2022 10:38:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1E3C2B81DF5;
-        Wed, 30 Mar 2022 17:38:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCA82C34110;
-        Wed, 30 Mar 2022 17:37:59 +0000 (UTC)
-Date:   Wed, 30 Mar 2022 13:37:58 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        Beau Belgrave <beaub@linux.microsoft.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        linux-trace-devel <linux-trace-devel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: [PATCH] tracing: Set user_events to BROKEN
-Message-ID: <20220330133758.712768db@gandalf.local.home>
-In-Reply-To: <1546405229.199729.1648659253425.JavaMail.zimbra@efficios.com>
-References: <20220329222514.51af6c07@gandalf.local.home>
-        <1546405229.199729.1648659253425.JavaMail.zimbra@efficios.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Wed, 30 Mar 2022 13:37:55 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8B56B2455
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 10:36:09 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id c62so25298914edf.5
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 10:36:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=P0lhRYqIYHGnqARHlbaTecne6PqtYS3ApwLgK/2XwFE=;
+        b=F0sGniSa0e3/ySC5seVvyWchRUmignbiVoD+HBv6twtokEpP9am/Yft6GaxjUChWou
+         749bGqYuA2gJXs8VexbXmvXq4KFbuT4QCWfV5a9D6eg5Py7vHNv7NJE41qMCYlVhcHS7
+         HWnCE/jAIadBYDCqwhWsWNILukF1NQWtahAgg8xz4dNG+IgUBfZIVOdwcA2NZZV+tWtR
+         xccD3tb8ErS9bJPrKtg03GoqIAEPNisNE3G1HdIWKttFTGKSEFIgLbt9xZYDbA4RFmMJ
+         mWEQ0p8CMv26D+wHOG/1xOGNIh6avvRvYGDK3IOai2M4ilmrucL2fiNhVaFTS4b0EaEt
+         j3Ig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=P0lhRYqIYHGnqARHlbaTecne6PqtYS3ApwLgK/2XwFE=;
+        b=hZ2yBELqVBjuGWBHp353XQKhRoJrDkrZT1ahNZjZ6yCW3MWzLnpvx5zDIjSwmk0/g8
+         WK1/PRcBF+pLzSWnMUNQUEi7gIt3S6BnrOwVLw7AWx4V3xxJN4elyZAbGgjFb6CfGpwG
+         iXCe5oi/V8qSb/yzCxBqA+TYklKJhE7ErL6qsi7nbmEKSbWXJ6fBoneYqp9AQJtS7A1c
+         r6bU0P6C+tO+Gi5459zjOnLSwqG34z1qRyknEz9WBGS6BZQ2L5qOR2p+zvx6fP2yExp/
+         4cOAff6BkRcjLMt+fOycyQBJNGUrgLtBV3F/mi3+YBFY/xdHYC6wn2+R3VUjT2Su+ywQ
+         A3Nw==
+X-Gm-Message-State: AOAM530K+jy87lgZa6rcBFcZ+zR73MMTTVCD1lOCYEWFaZDV/tVsJbfI
+        hfEhHI+Ck4Gg2fnY0XQsa637Qw==
+X-Google-Smtp-Source: ABdhPJzzS6mJXsdB1TnJ8Wxj6Cjbytd4HW4FXqKXVrVOrnjLhVf6H3Z00F4HQGpUlP1DJsJsocX/bQ==
+X-Received: by 2002:aa7:d751:0:b0:419:2558:a78b with SMTP id a17-20020aa7d751000000b004192558a78bmr12099524eds.6.1648661768505;
+        Wed, 30 Mar 2022 10:36:08 -0700 (PDT)
+Received: from [192.168.0.164] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id jg22-20020a170907971600b006df9ff416ccsm8261364ejc.137.2022.03.30.10.36.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Mar 2022 10:36:08 -0700 (PDT)
+Message-ID: <9e9b4cda-e2e9-98ab-2239-2dc2d8f29440@linaro.org>
+Date:   Wed, 30 Mar 2022 19:36:07 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] dt-bindings: power: renesas,apmu: Fix cpus property
+ limits
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <9ece1a07bbcb95abc9d80e6a6ecc95806a294a11.1648645279.git.geert+renesas@glider.be>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <9ece1a07bbcb95abc9d80e6a6ecc95806a294a11.1648645279.git.geert+renesas@glider.be>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 30 Mar 2022 12:54:13 -0400 (EDT)
-Mathieu Desnoyers <mathieu.desnoyers@efficios.com> wrote:
-
-> ----- On Mar 29, 2022, at 10:25 PM, rostedt rostedt@goodmis.org wrote:
+On 30/03/2022 15:04, Geert Uytterhoeven wrote:
+> "make dtbs_check":
 > 
-> > From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
-> > 
-> > After being merged, user_events become more visible to a wider audience
-> > that have concerns with the current API. It is too late to fix this for
-> > this release, but instead of a full revert, just mark it as BROKEN (which
-> > prevents it from being selected in make config). Then we can work finding
-> > a better API. If that fails, then it will need to be completely reverted.  
+>     arch/arm/boot/dts/r8a7791-koelsch.dtb: apmu@e6152000: cpus:0: [6, 7] is too long
+> 	    From schema: Documentation/devicetree/bindings/power/renesas,apmu.yaml
 > 
-> Hi Steven,
+> Correct the minimum and maximum number of CPUs controlled by a single
+> APMU instance.
 > 
-> What are the constraints for changing a uapi header after it has been present
-> in a kernel release ?
-> 
-> If we are not ready to commit to an ABI, perhaps it would be safer to ensure
-> that include/uapi/linux/user_events.h is not installed with the uapi headers
-> until it's ready.
+> Fixes: 39bd2b6a3783b899 ("dt-bindings: Improve phandle-array schemas")
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+>  Documentation/devicetree/bindings/power/renesas,apmu.yaml | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
 
-Linus may say otherwise, but from what I understand is that we can not
-break a user space application from one release to the next. That means, the
-only way to break something is if it is actually using something in binary
-form.
 
-I can not think of a situation where a header file is useful if the API
-it's used for is not available. Thus do we really need to hide it? What
-applications will use a header file that has no interface for it?
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-I do not see the need to remove the uapi if the API for that structure is
-not available yet.
 
--- Steve
+Best regards,
+Krzysztof
