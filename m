@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56A05C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:07:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63D59C4321E
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:07:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347647AbiC3MHU (ORCPT
+        id S1347849AbiC3MHu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:07:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58332 "EHLO
+        Wed, 30 Mar 2022 08:07:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345937AbiC3LzO (ORCPT
+        with ESMTP id S1345974AbiC3LzT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:55:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FFBE5F88;
-        Wed, 30 Mar 2022 04:53:00 -0700 (PDT)
+        Wed, 30 Mar 2022 07:55:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70A3EBA2;
+        Wed, 30 Mar 2022 04:53:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BCE6DB81C24;
-        Wed, 30 Mar 2022 11:52:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92477C36AE2;
-        Wed, 30 Mar 2022 11:52:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0FAF8B81C35;
+        Wed, 30 Mar 2022 11:53:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6983C340F3;
+        Wed, 30 Mar 2022 11:53:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641177;
-        bh=XAQV1CrcJedav+QuupEKT9ZmY5ttZesEv0weh8dfhjM=;
+        s=k20201202; t=1648641212;
+        bh=MCksCwNoXhdoTsY+IwFdobZY4Nr4uYVZNRDs7Uyky7g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XzHlh2HZ6PZsutitvUc9zOHUz34Q0e4aKSoYFacujwWPChhKosrwsT3/xwdVi/bHn
-         1aiwVqIpP5nN3xwUTkQZLPxX5RnuSKpMb7Y+YE5ItQJOQ8a7NjqYhSwy67s5IrA6Rt
-         HYOVEKNTpgzv0CiLcJQvZcRRph043siiVE3EjRwNrYc7F3SeHTPD+8mSn07zWZDTot
-         /GJi3lQvCeG7oaafOXLDOGksEIkRcvnOWFEWlzkomf3Yl4ZSErK1XrSgeoi9sQdAnr
-         EF8ByOKbCrts7X2xw9VRpBjpvttf0wPnekjHf0cfUs+OsaQHBI9PtmQmQW+I1nl6pS
-         kLpRDtam9x6XQ==
+        b=rm6Mwv2FEqAdEhZBbUcwo+56/nZ/pkeBIdf3Xr3GrCrHQ2Xmj/UP8Z3HrtyK4h7yJ
+         zYq6UwCRnfA28xFfmtUUZNBVGqgRXHDakaYrId/OgCplVyMbtIJTaF83DUIhwmRMpd
+         xGOjwYTEBn61z508+XfJx2DOSRd9+Bu4EPOOH1FVW90XgRh+eMY5TSg7lKfITJhDcI
+         d5kx5MuWuDnpr2rqebqVTRcPBOQUpOdj2ltRAQ1XgVAgvpXY5mt/DESORpxKyOrBBM
+         up9R7yXFD2cwB7PxdM1ZnOWfQH8TtIdPNj4Mvj5RStDxjT7MFJ4Ha7/DnyhCwkoFRT
+         GmWJTQfaZcqyA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
@@ -41,12 +41,12 @@ Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>, hverkuil@xs4all.nl,
         linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 21/25] media: hdpvr: initialize dev->worker at hdpvr_register_videodev
-Date:   Wed, 30 Mar 2022 07:52:21 -0400
-Message-Id: <20220330115225.1672278-21-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 19/22] media: hdpvr: initialize dev->worker at hdpvr_register_videodev
+Date:   Wed, 30 Mar 2022 07:53:00 -0400
+Message-Id: <20220330115303.1672616-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330115225.1672278-1-sashal@kernel.org>
-References: <20220330115225.1672278-1-sashal@kernel.org>
+In-Reply-To: <20220330115303.1672616-1-sashal@kernel.org>
+References: <20220330115303.1672616-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -87,10 +87,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/media/usb/hdpvr/hdpvr-video.c b/drivers/media/usb/hdpvr/hdpvr-video.c
-index bad71d863d39..7849f1fbbcc4 100644
+index 0615996572e4..ce46f8721470 100644
 --- a/drivers/media/usb/hdpvr/hdpvr-video.c
 +++ b/drivers/media/usb/hdpvr/hdpvr-video.c
-@@ -308,7 +308,6 @@ static int hdpvr_start_streaming(struct hdpvr_device *dev)
+@@ -312,7 +312,6 @@ static int hdpvr_start_streaming(struct hdpvr_device *dev)
  
  	dev->status = STATUS_STREAMING;
  
@@ -98,7 +98,7 @@ index bad71d863d39..7849f1fbbcc4 100644
  	schedule_work(&dev->worker);
  
  	v4l2_dbg(MSG_BUFFER, hdpvr_debug, &dev->v4l2_dev,
-@@ -1165,6 +1164,9 @@ int hdpvr_register_videodev(struct hdpvr_device *dev, struct device *parent,
+@@ -1175,6 +1174,9 @@ int hdpvr_register_videodev(struct hdpvr_device *dev, struct device *parent,
  	bool ac3 = dev->flags & HDPVR_FLAG_AC3_CAP;
  	int res;
  
