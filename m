@@ -2,45 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EA5AC4707A
-	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 336B2C3527E
+	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346588AbiC3MFS (ORCPT
+        id S1347054AbiC3MFw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:05:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56872 "EHLO
+        Wed, 30 Mar 2022 08:05:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345638AbiC3Lyv (ORCPT
+        with ESMTP id S1345791AbiC3LzC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:54:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E552C261980;
-        Wed, 30 Mar 2022 04:51:31 -0700 (PDT)
+        Wed, 30 Mar 2022 07:55:02 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B69326364B;
+        Wed, 30 Mar 2022 04:51:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3643D61625;
-        Wed, 30 Mar 2022 11:51:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD8C0C3410F;
-        Wed, 30 Mar 2022 11:51:29 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 828EECE1D41;
+        Wed, 30 Mar 2022 11:51:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48966C34111;
+        Wed, 30 Mar 2022 11:51:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641090;
-        bh=AI9DrVufi3MdEFjnhzkWMRlWnmYNO4xCFAbfcOkWUqQ=;
+        s=k20201202; t=1648641100;
+        bh=4YhYlmlgU5yF/qSl658v/68xrg7u+cOGYTE7Fjs+AWc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sJ8iFL6rZ3tgBNeWRTz6YvBDsSijUiE9d4QuwQvUCRrvXkQT6PKZvOb/QkQiQJzsv
-         rXPorXimSTSqza6Ogup3ABTcyfaCfwY/8+qOFHN+rYi2Mr1+ru06fjNVb/fUjZQDRV
-         c/tIRBCEmqDASEYnekopDlr1CY/KofQOj8ukDpk7hWY977v490XHysVvpLEvOrdZ1A
-         boiyvskz4lk47RRkfRSF5R6BZ51oSNp6GEK3y6+j5MPsVm6riNx4Lu6Pdk1x5CFhzQ
-         wrixzL3mjvYULBMQ36T0ayjkspPUraRy7sgg56KDkxLUdN2wen4InKhsFXUH4xJWGj
-         ykEu9yZiTWV/g==
+        b=sUT1VPbvytFA7Mo/X4j8bV8ecT568UE0P+8RI2aenZRFkGQoBztqBa//8cadLp5Hp
+         GEfht5V0aYjVIY+31+9Vuhobrm/WrNgDAxklyDwwrNo4si+eAwIPu05aMbT5NbTzrW
+         6A2XS1WS2tn/z9wlEZoEZa0lDdslmVsjJDAVBQfVw/6IG+nCtejVreUC3q2PhALqHM
+         cs7oojU/vTPfHsoftq7/dA1X9MSt1K6FulIjncelhjLXimTuYDzLjYgmcJHx6/E8DH
+         RRuVEFNCLpvZzPPBDIztudYsAJEmfH6hIGj4DltVQ0G40e0EC204WyOslT0iqMoOER
+         pqQuQp1kyYMxw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peiwei Hu <jlu.hpw@foxmail.com>, Sean Young <sean@mess.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 04/37] media: ir_toy: free before error exiting
-Date:   Wed, 30 Mar 2022 07:50:49 -0400
-Message-Id: <20220330115122.1671763-4-sashal@kernel.org>
+Cc:     David Heidelberg <david@ixit.cz>,
+        LogicalErzor <logicalerzor@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, andy.gross@linaro.org,
+        david.brown@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
+        linux@armlinux.org.uk, linux-arm-msm@vger.kernel.org,
+        linux-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 10/37] ARM: dts: qcom: fix gic_irq_domain_translate warnings for msm8960
+Date:   Wed, 30 Mar 2022 07:50:55 -0400
+Message-Id: <20220330115122.1671763-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330115122.1671763-1-sashal@kernel.org>
 References: <20220330115122.1671763-1-sashal@kernel.org>
@@ -52,33 +57,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peiwei Hu <jlu.hpw@foxmail.com>
+From: David Heidelberg <david@ixit.cz>
 
-[ Upstream commit 52cdb013036391d9d87aba5b4fc49cdfc6ea4b23 ]
+[ Upstream commit 6f7e221e7a5cfc3299616543fce42b36e631497b ]
 
-Fix leak in error path.
+IRQ types blindly copied from very similar APQ8064.
 
-Signed-off-by: Peiwei Hu <jlu.hpw@foxmail.com>
-Signed-off-by: Sean Young <sean@mess.org>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes warnings as:
+WARNING: CPU: 0 PID: 1 at drivers/irqchip/irq-gic.c:1080 gic_irq_domain_translate+0x118/0x120
+...
+
+Tested-by: LogicalErzor <logicalerzor@gmail.com> # boot-tested on Samsung S3
+Signed-off-by: David Heidelberg <david@ixit.cz>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220108174229.60384-1-david@ixit.cz
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/rc/ir_toy.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/boot/dts/qcom-msm8960.dtsi | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/media/rc/ir_toy.c b/drivers/media/rc/ir_toy.c
-index 1aa7989e756c..7f394277478b 100644
---- a/drivers/media/rc/ir_toy.c
-+++ b/drivers/media/rc/ir_toy.c
-@@ -429,7 +429,7 @@ static int irtoy_probe(struct usb_interface *intf,
- 	err = usb_submit_urb(irtoy->urb_in, GFP_KERNEL);
- 	if (err != 0) {
- 		dev_err(irtoy->dev, "fail to submit in urb: %d\n", err);
--		return err;
-+		goto free_rcdev;
- 	}
+diff --git a/arch/arm/boot/dts/qcom-msm8960.dtsi b/arch/arm/boot/dts/qcom-msm8960.dtsi
+index 172ea3c70eac..c197927e7435 100644
+--- a/arch/arm/boot/dts/qcom-msm8960.dtsi
++++ b/arch/arm/boot/dts/qcom-msm8960.dtsi
+@@ -146,7 +146,9 @@
+ 			reg		= <0x108000 0x1000>;
+ 			qcom,ipc	= <&l2cc 0x8 2>;
  
- 	err = irtoy_setup(irtoy);
+-			interrupts	= <0 19 0>, <0 21 0>, <0 22 0>;
++			interrupts	= <GIC_SPI 19 IRQ_TYPE_EDGE_RISING>,
++					  <GIC_SPI 21 IRQ_TYPE_EDGE_RISING>,
++					  <GIC_SPI 22 IRQ_TYPE_EDGE_RISING>;
+ 			interrupt-names	= "ack", "err", "wakeup";
+ 
+ 			regulators {
+@@ -192,7 +194,7 @@
+ 				compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
+ 				reg = <0x16440000 0x1000>,
+ 				      <0x16400000 0x1000>;
+-				interrupts = <0 154 0x0>;
++				interrupts = <GIC_SPI 154 IRQ_TYPE_LEVEL_HIGH>;
+ 				clocks = <&gcc GSBI5_UART_CLK>, <&gcc GSBI5_H_CLK>;
+ 				clock-names = "core", "iface";
+ 				status = "disabled";
+@@ -318,7 +320,7 @@
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+ 				reg = <0x16080000 0x1000>;
+-				interrupts = <0 147 0>;
++				interrupts = <GIC_SPI 147 IRQ_TYPE_LEVEL_HIGH>;
+ 				spi-max-frequency = <24000000>;
+ 				cs-gpios = <&msmgpio 8 0>;
+ 
 -- 
 2.34.1
 
