@@ -2,169 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32C87C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68F1EC46467
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346146AbiC3MEj (ORCPT
+        id S1346413AbiC3ME7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:04:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57722 "EHLO
+        Wed, 30 Mar 2022 08:04:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345431AbiC3Ly3 (ORCPT
+        with ESMTP id S1345518AbiC3Lyh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:54:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67D7B282B19;
-        Wed, 30 Mar 2022 04:51:08 -0700 (PDT)
+        Wed, 30 Mar 2022 07:54:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA1C6285689;
+        Wed, 30 Mar 2022 04:51:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3684261625;
-        Wed, 30 Mar 2022 11:51:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80F16C3410F;
-        Wed, 30 Mar 2022 11:51:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641067;
-        bh=bF8a6Emkq3gGLNP8ZkwyAhhn/XpyikbfTHyhhlYcDH4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UrlntqzSzJoXDAfDOaXDjRl2cke3EEtnCs7c6zpFPqlVNFSmzDgz2445iIzo1hG6G
-         9tBJ5caPiCRui6ndghP6KJ+0W3Y0SaTrTHbSU2EIKFgX9CQKoy5eGjGwEc7zkoUxIi
-         dqJNY5L5YM+FqvcXJXg5v+699Gic7L39HL6E7rahHHsO7h8MHcWEbhnidej3J6OW/f
-         HXcz1AdGoUg3cGLtvNdSYhCm/TcEhJBbUvS9smZGhZs9J7r6kWlVulhL9vVW+y4381
-         DvP8u2b2ritXwM0y9SqGYhwQU6xSjuS1uTo64iPqp5MovgJNBL+Y3sw9drbf+gAJq/
-         F4e58xcPPcKZg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vijendar Mukunda <Vijendar.Mukunda@amd.com>,
-        kernel test robot <lkp@intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.15 40/50] ASoC: amd: vg: fix for pm resume callback sequence
-Date:   Wed, 30 Mar 2022 07:49:54 -0400
-Message-Id: <20220330115005.1671090-40-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330115005.1671090-1-sashal@kernel.org>
-References: <20220330115005.1671090-1-sashal@kernel.org>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 20651B81BBA;
+        Wed, 30 Mar 2022 11:51:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F96BC340F3;
+        Wed, 30 Mar 2022 11:51:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1648641071;
+        bh=nxIOltSbaG5GUENpJGaaI5NG9vqyMlBWdNn62tdSYpI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qCN3nMJVHP7fOrepSPYIMkGHpLJt/To1QsAwCumPKeOqWpTUTVJak536qf7GsUn6w
+         8Yg2fXEKXgDM6tDdckGrvlqjonaC8k//0JD2Z4O15h1z82YJ2LRHYQQ6EgNhVM99pv
+         m38HZt28ms9cJMDlVfqJnR7heAzRyHQJiJLaE15w=
+Date:   Wed, 30 Mar 2022 13:51:08 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Stephen Brennan <stephen.s.brennan@oracle.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        linux@roeck-us.net
+Subject: Re: [PATCH AUTOSEL 5.17 31/66] printk: Add panic_in_progress helper
+Message-ID: <YkRELPuydJ5Fn3It@kroah.com>
+References: <20220330114646.1669334-1-sashal@kernel.org>
+ <20220330114646.1669334-31-sashal@kernel.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220330114646.1669334-31-sashal@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vijendar Mukunda <Vijendar.Mukunda@amd.com>
+On Wed, Mar 30, 2022 at 07:46:10AM -0400, Sasha Levin wrote:
+> From: Stephen Brennan <stephen.s.brennan@oracle.com>
+> 
+> [ Upstream commit 77498617857f68496b360081dde1a492d40c28b2 ]
+> 
+> This will be used help avoid deadlocks during panics. Although it would
+> be better to include this in linux/panic.h, it would require that header
+> to include linux/atomic.h as well. On some architectures, this results
+> in a circular dependency as well. So instead add the helper directly to
+> printk.c.
+> 
+> Suggested-by: Petr Mladek <pmladek@suse.com>
+> Signed-off-by: Stephen Brennan <stephen.s.brennan@oracle.com>
+> Reviewed-by: Petr Mladek <pmladek@suse.com>
+> Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
+> Signed-off-by: Petr Mladek <pmladek@suse.com>
+> Link: https://lore.kernel.org/r/20220202171821.179394-2-stephen.s.brennan@oracle.com
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>  kernel/printk/printk.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+> index 82abfaf3c2aa..0f8918f5f22a 100644
+> --- a/kernel/printk/printk.c
+> +++ b/kernel/printk/printk.c
+> @@ -257,6 +257,11 @@ static void __up_console_sem(unsigned long ip)
+>  }
+>  #define up_console_sem() __up_console_sem(_RET_IP_)
+>  
+> +static bool panic_in_progress(void)
+> +{
+> +	return unlikely(atomic_read(&panic_cpu) != PANIC_CPU_INVALID);
+> +}
+> +
+>  /*
+>   * This is used for debugging the mess that is the VT code by
+>   * keeping track if we have the console semaphore held. It's
+> -- 
+> 2.34.1
+> 
 
-[ Upstream commit 83b713619ee1b15e09eae11a92a7f3305534223d ]
+All 4 of the printk patches should not need to be backported to stable
+kernels, thanks.  Please drop them all.
 
-The previous condition is used to cross check only the active
-stream status for I2S HS instance playback and capture use cases.
-
-Modified logic to invoke sequence for two i2s controller instances.
-
-This also fixes warnings reported by kernel robot:
-"warning: variable 'frmt_val' set but not used"
-"warning: variable 'reg_val' set but not used"
-
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Vijendar Mukunda <Vijendar.Mukunda@amd.com>
-Link: https://lore.kernel.org/r/20220225193054.24916-1-Vijendar.Mukunda@amd.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/soc/amd/vangogh/acp5x-pcm-dma.c | 66 +++++++++++++--------------
- 1 file changed, 33 insertions(+), 33 deletions(-)
-
-diff --git a/sound/soc/amd/vangogh/acp5x-pcm-dma.c b/sound/soc/amd/vangogh/acp5x-pcm-dma.c
-index f10de38976cb..3aa2d9a36880 100644
---- a/sound/soc/amd/vangogh/acp5x-pcm-dma.c
-+++ b/sound/soc/amd/vangogh/acp5x-pcm-dma.c
-@@ -426,51 +426,51 @@ static int acp5x_audio_remove(struct platform_device *pdev)
- static int __maybe_unused acp5x_pcm_resume(struct device *dev)
- {
- 	struct i2s_dev_data *adata;
--	u32 val, reg_val, frmt_val;
-+	struct i2s_stream_instance *rtd;
-+	u32 val;
- 
--	reg_val = 0;
--	frmt_val = 0;
- 	adata = dev_get_drvdata(dev);
- 
- 	if (adata->play_stream && adata->play_stream->runtime) {
--		struct i2s_stream_instance *rtd =
--			adata->play_stream->runtime->private_data;
-+		rtd = adata->play_stream->runtime->private_data;
- 		config_acp5x_dma(rtd, SNDRV_PCM_STREAM_PLAYBACK);
--		switch (rtd->i2s_instance) {
--		case I2S_HS_INSTANCE:
--			reg_val = ACP_HSTDM_ITER;
--			frmt_val = ACP_HSTDM_TXFRMT;
--			break;
--		case I2S_SP_INSTANCE:
--		default:
--			reg_val = ACP_I2STDM_ITER;
--			frmt_val = ACP_I2STDM_TXFRMT;
-+		acp_writel((rtd->xfer_resolution  << 3), rtd->acp5x_base + ACP_HSTDM_ITER);
-+		if (adata->tdm_mode == TDM_ENABLE) {
-+			acp_writel(adata->tdm_fmt, adata->acp5x_base + ACP_HSTDM_TXFRMT);
-+			val = acp_readl(adata->acp5x_base + ACP_HSTDM_ITER);
-+			acp_writel(val | 0x2, adata->acp5x_base + ACP_HSTDM_ITER);
-+		}
-+	}
-+	if (adata->i2ssp_play_stream && adata->i2ssp_play_stream->runtime) {
-+		rtd = adata->i2ssp_play_stream->runtime->private_data;
-+		config_acp5x_dma(rtd, SNDRV_PCM_STREAM_PLAYBACK);
-+		acp_writel((rtd->xfer_resolution  << 3), rtd->acp5x_base + ACP_I2STDM_ITER);
-+		if (adata->tdm_mode == TDM_ENABLE) {
-+			acp_writel(adata->tdm_fmt, adata->acp5x_base + ACP_I2STDM_TXFRMT);
-+			val = acp_readl(adata->acp5x_base + ACP_I2STDM_ITER);
-+			acp_writel(val | 0x2, adata->acp5x_base + ACP_I2STDM_ITER);
- 		}
--		acp_writel((rtd->xfer_resolution  << 3),
--			   rtd->acp5x_base + reg_val);
- 	}
- 
- 	if (adata->capture_stream && adata->capture_stream->runtime) {
--		struct i2s_stream_instance *rtd =
--			adata->capture_stream->runtime->private_data;
-+		rtd = adata->capture_stream->runtime->private_data;
- 		config_acp5x_dma(rtd, SNDRV_PCM_STREAM_CAPTURE);
--		switch (rtd->i2s_instance) {
--		case I2S_HS_INSTANCE:
--			reg_val = ACP_HSTDM_IRER;
--			frmt_val = ACP_HSTDM_RXFRMT;
--			break;
--		case I2S_SP_INSTANCE:
--		default:
--			reg_val = ACP_I2STDM_IRER;
--			frmt_val = ACP_I2STDM_RXFRMT;
-+		acp_writel((rtd->xfer_resolution  << 3), rtd->acp5x_base + ACP_HSTDM_IRER);
-+		if (adata->tdm_mode == TDM_ENABLE) {
-+			acp_writel(adata->tdm_fmt, adata->acp5x_base + ACP_HSTDM_RXFRMT);
-+			val = acp_readl(adata->acp5x_base + ACP_HSTDM_IRER);
-+			acp_writel(val | 0x2, adata->acp5x_base + ACP_HSTDM_IRER);
- 		}
--		acp_writel((rtd->xfer_resolution  << 3),
--			   rtd->acp5x_base + reg_val);
- 	}
--	if (adata->tdm_mode == TDM_ENABLE) {
--		acp_writel(adata->tdm_fmt, adata->acp5x_base + frmt_val);
--		val = acp_readl(adata->acp5x_base + reg_val);
--		acp_writel(val | 0x2, adata->acp5x_base + reg_val);
-+	if (adata->i2ssp_capture_stream && adata->i2ssp_capture_stream->runtime) {
-+		rtd = adata->i2ssp_capture_stream->runtime->private_data;
-+		config_acp5x_dma(rtd, SNDRV_PCM_STREAM_CAPTURE);
-+		acp_writel((rtd->xfer_resolution  << 3), rtd->acp5x_base + ACP_I2STDM_IRER);
-+		if (adata->tdm_mode == TDM_ENABLE) {
-+			acp_writel(adata->tdm_fmt, adata->acp5x_base + ACP_I2STDM_RXFRMT);
-+			val = acp_readl(adata->acp5x_base + ACP_I2STDM_IRER);
-+			acp_writel(val | 0x2, adata->acp5x_base + ACP_I2STDM_IRER);
-+		}
- 	}
- 	acp_writel(1, adata->acp5x_base + ACP_EXTERNAL_INTR_ENB);
- 	return 0;
--- 
-2.34.1
-
+greg k-h
