@@ -2,49 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B51AC3A5A3
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5894DC3A59F
 	for <linux-kernel@archiver.kernel.org>; Wed, 30 Mar 2022 12:06:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347464AbiC3MGv (ORCPT
+        id S1346988AbiC3MFs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 08:06:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57722 "EHLO
+        Wed, 30 Mar 2022 08:05:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345929AbiC3LzN (ORCPT
+        with ESMTP id S1345787AbiC3LzB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 07:55:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7D532CCB9;
-        Wed, 30 Mar 2022 04:52:52 -0700 (PDT)
+        Wed, 30 Mar 2022 07:55:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B740263647;
+        Wed, 30 Mar 2022 04:51:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9156DB81C36;
-        Wed, 30 Mar 2022 11:52:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95243C36AE3;
-        Wed, 30 Mar 2022 11:52:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B7BA4615F5;
+        Wed, 30 Mar 2022 11:51:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20FC4C340EE;
+        Wed, 30 Mar 2022 11:51:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648641170;
-        bh=M1gU7GJAdKfEoxBo0mmxgvDmkAOM71wt/lDiYoCEucE=;
+        s=k20201202; t=1648641094;
+        bh=qW1x31HnZxqlWv9yLK7leVGiHSRFHxjgpFRqN+3ePM4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bl3JVDyNFx9c4dB3uBAGFc7BXJ/EHKIi+Xb4yaMHbVzp8gkwnnGSHubZfBAvuAXo6
-         YKNTwt3U9XORQg1yJV/dajD4OrosAlwfANGW5vK0vo1s4W5oGdbOGycnOYbnnU4ZRu
-         b+zRl1+nTr5Lt/ptg38JxYsenyhpQUJab6QB7XoCyeJZV2QB4Y+HsfLJ0UH7wJYxIo
-         t5kSWEDjxGxWnRVaiOWOtaEga/Acb8HCyljaOHWfKINhi2ioQulKE4hbqrYQ43JzFL
-         BTHc8Gxju/anJxP3scvkhVyHAbzFpB9MzdX8ohVNTZFhbjnbXYt4NT97INWH3ACeYi
-         P1SqIA2OBDW3g==
+        b=u/Hn/9Y+fIQAHKalGj2yAhLJ8q5I0HlAvDQ+YsjFXDDNkvOczSmtVB6/XuaZCMjQM
+         vmEIhEIUyLeX1Ikp4EqQ1/ud58KTZnVoLVKIYsWdI+7BHnu4rXxCBLGb9V0hlwo8NZ
+         anI46FBwymrwOVYyoa7tZkFrrnM9o6GGpyMxb5MQbQqxJ3QGTeYrHO5uuvDbUaMrLZ
+         8BEJZc6HngJFyFswSU2eaMtPdWkfU2WfY1JnMtdo067RfrLeUqDuyVbttK5n+P0bXi
+         6gb4BQ8Z7bOd6g3Tt7RW7CrnAulcV/7I/nbFjWF1JaBs48Fza+EMaknP4heoTCGilV
+         5wxWky9Vpp4jQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Daniel=20Gonz=C3=A1lez=20Cabanelas?= <dgcbueu@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 16/25] media: cx88-mpeg: clear interrupt status register before streaming video
-Date:   Wed, 30 Mar 2022 07:52:16 -0400
-Message-Id: <20220330115225.1672278-16-sashal@kernel.org>
+Cc:     Tim Gardner <tim.gardner@canonical.com>,
+        Antonino Daplas <adaplas@gmail.com>,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        tomi.valkeinen@ti.com
+Subject: [PATCH AUTOSEL 5.10 06/37] video: fbdev: nvidiafb: Use strscpy() to prevent buffer overflow
+Date:   Wed, 30 Mar 2022 07:50:51 -0400
+Message-Id: <20220330115122.1671763-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330115225.1672278-1-sashal@kernel.org>
-References: <20220330115225.1672278-1-sashal@kernel.org>
+In-Reply-To: <20220330115122.1671763-1-sashal@kernel.org>
+References: <20220330115122.1671763-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -52,41 +54,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel González Cabanelas <dgcbueu@gmail.com>
+From: Tim Gardner <tim.gardner@canonical.com>
 
-[ Upstream commit 56cb61f70e547e1b0cdfe6ff5a1f1ce6242e6d96 ]
+[ Upstream commit 37a1a2e6eeeb101285cd34e12e48a881524701aa ]
 
-Some cx88 video cards may have transport stream status interrupts set
-to 1 from cold start, causing errors like this:
+Coverity complains of a possible buffer overflow. However,
+given the 'static' scope of nvidia_setup_i2c_bus() it looks
+like that can't happen after examiniing the call sites.
 
-  cx88xx: cx88_print_irqbits: core:irq mpeg  [0x100000] ts_err?*
-  cx8802: cx8802_mpeg_irq: mpeg:general errors: 0x00100000
+CID 19036 (#1 of 1): Copy into fixed size buffer (STRING_OVERFLOW)
+1. fixed_size_dest: You might overrun the 48-character fixed-size string
+  chan->adapter.name by copying name without checking the length.
+2. parameter_as_source: Note: This defect has an elevated risk because the
+  source argument is a parameter of the current function.
+ 89        strcpy(chan->adapter.name, name);
 
-According to CX2388x datasheet, the interrupt status register should be
-cleared before enabling IRQs to stream video.
+Fix this warning by using strscpy() which will silence the warning and
+prevent any future buffer overflows should the names used to identify the
+channel become much longer.
 
-Fix it by clearing the Transport Stream Interrupt Status register.
-
-Signed-off-by: Daniel González Cabanelas <dgcbueu@gmail.com>
+Cc: Antonino Daplas <adaplas@gmail.com>
+Cc: linux-fbdev@vger.kernel.org
+Cc: dri-devel@lists.freedesktop.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Tim Gardner <tim.gardner@canonical.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/pci/cx88/cx88-mpeg.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/video/fbdev/nvidia/nv_i2c.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/pci/cx88/cx88-mpeg.c b/drivers/media/pci/cx88/cx88-mpeg.c
-index a57c991b165b..10d2971ef062 100644
---- a/drivers/media/pci/cx88/cx88-mpeg.c
-+++ b/drivers/media/pci/cx88/cx88-mpeg.c
-@@ -162,6 +162,9 @@ int cx8802_start_dma(struct cx8802_dev    *dev,
- 	cx_write(MO_TS_GPCNTRL, GP_COUNT_CONTROL_RESET);
- 	q->count = 0;
+diff --git a/drivers/video/fbdev/nvidia/nv_i2c.c b/drivers/video/fbdev/nvidia/nv_i2c.c
+index d7994a173245..0b48965a6420 100644
+--- a/drivers/video/fbdev/nvidia/nv_i2c.c
++++ b/drivers/video/fbdev/nvidia/nv_i2c.c
+@@ -86,7 +86,7 @@ static int nvidia_setup_i2c_bus(struct nvidia_i2c_chan *chan, const char *name,
+ {
+ 	int rc;
  
-+	/* clear interrupt status register */
-+	cx_write(MO_TS_INTSTAT,  0x1f1111);
-+
- 	/* enable irqs */
- 	dprintk(1, "setting the interrupt mask\n");
- 	cx_set(MO_PCI_INTMSK, core->pci_irqmask | PCI_INT_TSINT);
+-	strcpy(chan->adapter.name, name);
++	strscpy(chan->adapter.name, name, sizeof(chan->adapter.name));
+ 	chan->adapter.owner = THIS_MODULE;
+ 	chan->adapter.class = i2c_class;
+ 	chan->adapter.algo_data = &chan->algo;
 -- 
 2.34.1
 
