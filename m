@@ -2,157 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A1D3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 16:33:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9732C4167B
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 16:35:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240019AbiCaQfY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 12:35:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39226 "EHLO
+        id S240041AbiCaQgy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 12:36:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240006AbiCaQfV (ORCPT
+        with ESMTP id S240022AbiCaQgv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 12:35:21 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2088.outbound.protection.outlook.com [40.107.94.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E57910E578;
-        Thu, 31 Mar 2022 09:33:33 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CDOD+kKyyTETxHBNZM+2X+4CKOLi0HbG4BCxoDci4bHb/C6o4GL1Hi29lrbLkEGn6udljMntsSJZooWSXknYNwmJDDTik/4J+iNELCDCDmHvAzuD9iYy8pPCtGEVkH4GG4THiSnvdvVLEZOlnXcloWSX8cawmaqX3lPg9EGJASr2lL01ZRH2kvKGYgt4+IfF1Rz9UahZWelneEAfNCsTfaeTcB2mbn8daMy0ZOsnC98J6jDWv9Njx0yRwmMIA7IeGuxm4MuIKUOAmyjGORT+gdoaEGOXIcRu3U5bjhs47ga76BUxfIosHrY7TiHJ6MUQV5erOKpCTUnlJVjdDynuGg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FpsQ3P7GLY5eeC0LjnMTlMF06VsykEnUUDgRshVxjqM=;
- b=AW7kmyxBE4IJ3ob3sDW4o5WHSQe+gBH06CGbz6x9OZhyXzvUs2+yABFgbGNgqbyefruFe0lRiF/pUgBNv6B2r3oPR+xj52uXwsHJm6EnDXACXnbf+Xwpo4KnhcP627h2egRJQYY0/MCTZJ6Rlod2T2mDJhiO33kJ1uWNlwXsRDM8qL2iEYrhR6K1DF481EibtBt3I2CGJFNkdAQj4o3gYtX0PRH1lDeqOgUsKiGVioYT870EMEJm4st5sz9QHarNeO3noMPruucRDipOJPAAC57xvyQwja46JtTUC8wEdoIuCfRN2D1hcs/tTHhVFP/QzCdMWIZT3QeXRrjOBR8ELg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=alien8.de smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FpsQ3P7GLY5eeC0LjnMTlMF06VsykEnUUDgRshVxjqM=;
- b=d+xAGa1kh4CfE3pP4300+EE3lbhYS5gOLIVmuGbAytrRpLF6klGnI3+30X5/vrc+bW7L8JHKGWbVc34cGtyJJcQygQTBZzejCaF/6FKsrATy96l7wxX5XXfk7+3YGlrEDFNNrExIvtAM9lxBvERboCuJNen2vsrxS5LMuVjfG6U=
-Received: from DM6PR02CA0048.namprd02.prod.outlook.com (2603:10b6:5:177::25)
- by BN9PR12MB5242.namprd12.prod.outlook.com (2603:10b6:408:11f::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.19; Thu, 31 Mar
- 2022 16:33:31 +0000
-Received: from DM6NAM11FT039.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:177:cafe::48) by DM6PR02CA0048.outlook.office365.com
- (2603:10b6:5:177::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.22 via Frontend
- Transport; Thu, 31 Mar 2022 16:33:31 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT039.mail.protection.outlook.com (10.13.172.83) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5123.19 via Frontend Transport; Thu, 31 Mar 2022 16:33:29 +0000
-Received: from ethanolx1ade-milan-genesis.amd.com (10.180.168.240) by
- SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 31 Mar 2022 11:33:28 -0500
-From:   Carlos Bilbao <carlos.bilbao@amd.com>
-To:     <bp@alien8.de>
-CC:     <tglx@linutronix.de>, <mingo@redhat.com>,
-        <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        <yazen.ghannam@amd.com>, <linux-kernel@vger.kernel.org>,
-        <linux-edac@vger.kernel.org>, <bilbao@vt.edu>,
-        Carlos Bilbao <carlos.bilbao@amd.com>
-Subject: [PATCH v2 2/2] x86/mce: Add messages to describe panic machine errors on AMD's MCEs grading
-Date:   Thu, 31 Mar 2022 11:32:14 -0500
-Message-ID: <20220331163211.5994-3-carlos.bilbao@amd.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220331163211.5994-1-carlos.bilbao@amd.com>
-References: <20220331163211.5994-1-carlos.bilbao@amd.com>
+        Thu, 31 Mar 2022 12:36:51 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 850411BBF62;
+        Thu, 31 Mar 2022 09:35:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1648744503; x=1680280503;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=vcu31rMS0yn2EqzHi27wb6PxKwLH34tTd/+ys8ECp/A=;
+  b=ADDuc88FzNWZGKBrIk06zzzX+k6YSxqk27uWQNihSUCGuZ1GtMpxcMlV
+   xTEWa75dpfcsFQw+mC064HKR7W4MWXLYRVTC8926TBwzR2AQWBCbndTjo
+   VEkv7SFykl4Py4aMRGoIAena380+aMTSMqaNCRjn7CsXqgUcJlMFOvVOW
+   g=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 31 Mar 2022 09:35:03 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 09:35:02 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 31 Mar 2022 09:35:02 -0700
+Received: from qian (10.80.80.8) by nalasex01a.na.qualcomm.com (10.47.209.196)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 31 Mar
+ 2022 09:34:58 -0700
+Date:   Thu, 31 Mar 2022 12:34:56 -0400
+From:   Qian Cai <quic_qiancai@quicinc.com>
+To:     Christoph Hellwig <hch@lst.de>
+CC:     Jens Axboe <axboe@kernel.dk>, Coly Li <colyli@suse.de>,
+        Mike Snitzer <snitzer@redhat.com>, Song Liu <song@kernel.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        "David Sterba" <dsterba@suse.com>,
+        Phillip Lougher <phillip@squashfs.org.uk>,
+        <linux-block@vger.kernel.org>, <dm-devel@redhat.com>,
+        <linux-kernel@vger.kernel.org>, <linux-bcache@vger.kernel.org>,
+        <linux-raid@vger.kernel.org>, <target-devel@vger.kernel.org>,
+        <linux-btrfs@vger.kernel.org>
+Subject: Re: cleanup bio_kmalloc v2
+Message-ID: <YkXYMGGbk/ZTbGaA@qian>
+References: <20220308061551.737853-1-hch@lst.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 019abf82-1993-4480-4fe1-08da1334307a
-X-MS-TrafficTypeDiagnostic: BN9PR12MB5242:EE_
-X-Microsoft-Antispam-PRVS: <BN9PR12MB52427BCCD903475931FF1968F8E19@BN9PR12MB5242.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: GZGN8d7NlhXVpu+4ydAGiAnwssEGClJ2RVubavpP8ROEp5JkzkuH0NmyVunh8EyIzNxWvMvCdu7plx3FBbqmS82Rozf52nG5kk9qrkzQvz5Ujvv8uy9NRhNpu4KtAM+5PygrHEcNgadFVGLyxIAdhhzOd3k+GsWL48LsDlZjtwtfaMplEv2/9N9jyZZy/dwHFwcclBdYbbiDmppN6wgeMVFg0rPBaSlEsp/wcpp0W6Zc/ES55P7A6ZtWnude4jr3a9oQVeAfttidQcQtqboS0Sd5VgRZ39Sh+hi7jvFcErSY7uEQcvuvXQUIrXNHOaGtAe8aIdV1ZMp4ZXWMtq+0Fik+iLpZwRaHvEbtUdRSY8XT2gkBg/WT3gzNJdnsWeTG4VEn4lxCIxMWB1pobAK4x9hESouZH7SuZYAmD70KJS3RpzsvF4xtfhNUe1z68FfBmA+bib888siVIwZ0NbZtgBRI4GijoFzbukkm7NgUcYeWF29vPEr6y1Nmg+nuva64exnXRFdJdxC8oyDuXp2Ft2+DhznVO9G7Sjb87QNxq2dkTbE+ORGWVFBC74lui5cJLIFR+zH3RVNgvH8k1eYi9G9otBleBnNisIvhnDiSIrW8GtaEb+zrvCVRr9GFJ6FvlNqOXjGtqgLnABUT53q2jTABnfaz6TE6S1ElhWWAi8RgxvlAGeb7rJFFlnb4EomOTnurmQ0VBDaDYK+jjP3Yaw==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(356005)(54906003)(316002)(86362001)(7696005)(2616005)(81166007)(6666004)(6916009)(26005)(36756003)(336012)(426003)(83380400001)(1076003)(47076005)(2906002)(186003)(36860700001)(16526019)(15650500001)(5660300002)(508600001)(70206006)(70586007)(4326008)(44832011)(8676002)(82310400004)(40460700003)(8936002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2022 16:33:29.7958
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 019abf82-1993-4480-4fe1-08da1334307a
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT039.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5242
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220308061551.737853-1-hch@lst.de>
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a machine error is graded as PANIC by AMD grading logic, the MCE
-handler calls mce_panic(). The notification chain does not come into effect
-so the AMD EDAC driver does not decode the errors. In these cases, the
-messages displayed to the user are more cryptic and miss information
-that might be relevant, like the context in which the error took place.
+On Tue, Mar 08, 2022 at 07:15:46AM +0100, Christoph Hellwig wrote:
+> Hi Jens,
+> 
+> this series finishes off the bio allocation interface cleanups by dealing
+> with the weirdest member of the famility.  bio_kmalloc combines a kmalloc
+> for the bio and bio_vecs with a hidden bio_init call and magic cleanup
+> semantics.
+> 
+> This series moves a few callers away from bio_kmalloc and then turns
+> bio_kmalloc into a simple wrapper for a slab allocation of a bio and the
+> inline biovecs.  The callers need to manually call bio_init instead with
+> all that entails and the magic that turns bio_put into a kfree goes away
+> as well, allowing for a proper debug check in bio_put that catches
+> accidental use on a bio_init()ed bio.
 
-Fix the above issue including messages on AMD's grading logic for machine
-errors graded as PANIC.
+Reverting this series fixed boot crashes.
 
-Signed-off-by: Carlos Bilbao <carlos.bilbao@amd.com>
----
- arch/x86/kernel/cpu/mce/severity.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/arch/x86/kernel/cpu/mce/severity.c b/arch/x86/kernel/cpu/mce/severity.c
-index 4d52eef21230..ea4b9407bbad 100644
---- a/arch/x86/kernel/cpu/mce/severity.c
-+++ b/arch/x86/kernel/cpu/mce/severity.c
-@@ -307,6 +307,7 @@ static noinstr int error_context(struct mce *m, struct pt_regs *regs)
- static noinstr int mce_severity_amd(struct mce *m, struct pt_regs *regs, char **msg, bool is_excp)
- {
- 	int ret;
-+	char *panic_msg;
- 
- 	/*
- 	 * Default return value: Action required, the error must be handled
-@@ -316,6 +317,7 @@ static noinstr int mce_severity_amd(struct mce *m, struct pt_regs *regs, char **
- 
- 	/* Processor Context Corrupt, no need to fumble too much, die! */
- 	if (m->status & MCI_STATUS_PCC) {
-+		panic_msg = "Processor Context Corrupt";
- 		ret = MCE_PANIC_SEVERITY;
- 		goto amd_severity;
- 	}
-@@ -339,16 +341,21 @@ static noinstr int mce_severity_amd(struct mce *m, struct pt_regs *regs, char **
- 
- 	if (((m->status & MCI_STATUS_OVER) && !mce_flags.overflow_recov)
- 	     || !mce_flags.succor) {
-+		panic_msg = "Uncorrected unrecoverable error";
- 		ret = MCE_PANIC_SEVERITY;
- 		goto amd_severity;
- 	}
- 
- 	if (error_context(m, regs) == IN_KERNEL) {
-+		panic_msg = "Uncorrected error in kernel context";
- 		ret = MCE_PANIC_SEVERITY;
- 	}
- 
- amd_severity:
- 
-+	if (msg && panic_msg)
-+		*msg = panic_msg;
-+
- 	return ret;
- }
- 
--- 
-2.31.1
-
+ WARNING: CPU: 1 PID: 2622 at block/bio.c:229 bio_free
+ Modules linked in: cdc_ether usbnet ipmi_devintf ipmi_msghandler cppc_cpufreq fuse ip_tables x_tables ipv6 btrfs blake2b_generic libcrc32c xor xor_neon raid6_pq zstd_compress dm_mod nouveau crct10dif_ce drm_ttm_helper mlx5_core ttm drm_dp_helper drm_kms_helper nvme mpt3sas xhci_pci nvme_core raid_class drm xhci_pci_renesas
+ CPU: 1 PID: 2622 Comm: mount Not tainted 5.17.0-next-20220331 #50
+ pstate: 10400009 (nzcV daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+ pc : bio_free
+ lr : bio_put
+ sp : ffff8000371b7760
+ x29: ffff8000371b7760 x28: 0000000000000000 x27: dfff800000000000
+ x26: ffff08028f93a600 x25: 0000000000000000 x24: ffff08028f92f600
+ x23: 1ffff00006e36f10 x22: ffff08028fa18510 x21: 1fffe10051f430a2
+ x20: 0000000000000000 x19: ffff08028fa18500 x18: ffffde03db3e7d2c
+ x17: ffffde03d55f8bc4 x16: 1fffe10051e75129 x15: 1fffe106cfcfbb46
+ x14: 1fffe10051e7511c x13: 0000000000000004 x12: ffff700006e36eab
+ x11: 1ffff00006e36eaa x10: ffff700006e36eaa x9 : ffffde03d5cb9fec
+ x8 : ffff8000371b7557 x7 : 0000000000000001 x6 : ffff700006e36eaa
+ x5 : 1ffff00006e36ea9 x4 : 1ffff00006e36ebe x3 : 1fffe10051f430a2
+ x2 : 1fffe10051f430ae x1 : 0000000000000000 x0 : ffff08028fa18570
+ Call trace:
+  bio_free
+  bio_put
+  squashfs_read_data
+  squashfs_read_table
+  squashfs_fill_super
+  get_tree_bdev
+  squashfs_get_tree
+  vfs_get_tree
+  do_new_mount
+  path_mount
+  __arm64_sys_mount
+  invoke_syscall
+  el0_svc_common.constprop.0
+  do_el0_svc
+  el0_svc
+  el0t_64_sync_handler
+  el0t_64_sync
+ irq event stamp: 33146
+ hardirqs last  enabled at (33145):  free_unref_page
+ hardirqs last disabled at (33146):  el1_dbg
+ softirqs last  enabled at (33122):  __do_softirq
+ softirqs last disabled at (33111):  __irq_exit_rcu
+ ---[ end trace 0000000000000000 ]---
+ Unable to handle kernel paging request at virtual address dfff800000000001
+ KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
+ Mem abort info:
+   ESR = 0x96000004
+   EC = 0x25: DABT (current EL), IL = 32 bits
+   SET = 0, FnV = 0
+   EA = 0, S1PTW = 0
+   FSC = 0x04: level 0 translation fault
+ Data abort info:
+   ISV = 0, ISS = 0x00000004
+   CM = 0, WnR = 0
+ [dfff800000000001] address between user and kernel address ranges
+ Internal error: Oops: 96000004 [#1] PREEMPT SMP
+ Modules linked in: cdc_ether usbnet ipmi_devintf ipmi_msghandler cppc_cpufreq fuse ip_tables x_tables ipv6 btrfs blake2b_generic libcrc32c xor xor_neon raid6_pq zstd_compress dm_mod nouveau crct10dif_ce
+drm_ttm_helper mlx5_core ttm drm_dp_helper drm_kms_helper nvme mpt3sas xhci_pci nvme_core raid_class drm xhci_pci_renesas
+ CPU: 1 PID: 2622 Comm: mount Tainted: G        W         5.17.0-next-20220331 #50
+ pc : bio_free
+ lr : bio_free
+ sp : ffff8000371b7760
+ x29: ffff8000371b7760 x28: 0000000000000000 x27: dfff800000000000
+ x26: ffff08028f93a600 x25: 0000000000000000 x24: ffff08028f92f600
+ x23: 1ffff00006e36f10 x22: ffff08028fa18548 x21: 00000000000000d0
+ x20: 0000000000000000 x19: ffff08028fa18500 x18: ffffde03db3e7d2c
+ x17: ffffde03d55f8bc4 x16: 1fffe10051e75129 x15: 1fffe106cfcfbb46
+ x14: 1fffe10051e7511c x13: 0000000000000004 x12: ffff700006e36eab
+ x11: 1ffff00006e36eaa x10: ffff700006e36eaa x9 : ffffde03d5cb9c78
+ x8 : ffff8000371b7557 x7 : 0000000000000001 x6 : ffff700006e36eaa
+ x5 : 1ffff00006e36ea9 x4 : 1fffe10051f430ac x3 : 0000000000000001
+ x2 : 0000000000000003 x1 : dfff800000000000 x0 : 0000000000000008
+ Call trace:
+  bio_free
+  bio_put
+  squashfs_read_data
+  squashfs_read_table
+  squashfs_fill_super
+  get_tree_bdev
+  squashfs_get_tree
+  vfs_get_tree
+  do_new_mount
+  path_mount
+  __arm64_sys_mount
+  invoke_syscall
+  el0_svc_common.constprop.0
+  do_el0_svc
+  el0_svc
+  el0t_64_sync_handler
+  el0t_64_sync
+ Code: d2d00001 f2fbffe1 52800062 d343fc03 (38e16861)
+ ---[ end trace 0000000000000000 ]---
+ SMP: stopping secondary CPUs
+ Kernel Offset: 0x5e03ccd70000 from 0xffff800008000000
+ PHYS_OFFSET: 0x80000000
+ CPU features: 0x000,00085c0d,19801c82
+ Memory Limit: none
+ ---[ end Kernel panic - not syncing: Oops: Fatal exception ]---
+> 
+> Changes since v1:
+>  - update a pre-existing comment per maintainer suggestion
+> 
+> Diffstat:
+>  block/bio.c                        |   47 ++++++++++++++-----------------------
+>  block/blk-crypto-fallback.c        |   14 ++++++-----
+>  block/blk-map.c                    |   42 +++++++++++++++++++++------------
+>  drivers/block/pktcdvd.c            |   34 +++++++++++---------------
+>  drivers/md/bcache/debug.c          |   10 ++++---
+>  drivers/md/dm-bufio.c              |    9 +++----
+>  drivers/md/raid1.c                 |   12 ++++++---
+>  drivers/md/raid10.c                |   21 +++++++++++-----
+>  drivers/target/target_core_pscsi.c |   36 ++++------------------------
+>  fs/btrfs/disk-io.c                 |    8 +++---
+>  fs/btrfs/volumes.c                 |   11 --------
+>  fs/btrfs/volumes.h                 |    2 -
+>  fs/squashfs/block.c                |   14 +++--------
+>  include/linux/bio.h                |    2 -
+>  14 files changed, 116 insertions(+), 146 deletions(-)
