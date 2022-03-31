@@ -2,140 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AED6FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 00:53:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CD98C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 00:54:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352180AbiCaAzi (ORCPT
+        id S1352189AbiCaA4Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 30 Mar 2022 20:55:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56642 "EHLO
+        Wed, 30 Mar 2022 20:56:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245288AbiCaAzc (ORCPT
+        with ESMTP id S1352181AbiCaA4W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 30 Mar 2022 20:55:32 -0400
-Received: from mail-ot1-f41.google.com (mail-ot1-f41.google.com [209.85.210.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09BD0193C9;
-        Wed, 30 Mar 2022 17:53:46 -0700 (PDT)
-Received: by mail-ot1-f41.google.com with SMTP id x8-20020a9d6288000000b005b22c373759so16150906otk.8;
-        Wed, 30 Mar 2022 17:53:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=RQOCLW2sewLQSkvDpv6e2/VDt8ehiygLDzP2cJZBDd4=;
-        b=BYS2lTW9/AT5Oi+DpySUqF5WJuyhvskynbfygRuDXHKxffX+DF++nGHMeXb6BpBr1V
-         vV1irPpa28BSdFipDI/leBQ7kZFaP9ihxKNus8wVTUPsjXOgJ/uJ1OlZZsVh4IJCkv4v
-         BogVgxY7Y4orkOclML0HM4wlg0fDBE+zDQhWW9oF1KraxANXfJDKewXyEM9yNUBYIIQ2
-         BnBvHYajGJWAuL4Gf5yyVlcm9xJFdVO9xxACv/qtjUDLdoZBSKrpBF3VwikG5j8g+Cud
-         YvFEuWIZSaQIs6wc2vnQnWTabFGeCTHxIiuk/f4lwd5FqDrceNyC4umSNEF+5ZcnpJYl
-         LNqA==
-X-Gm-Message-State: AOAM53160tvZ1EcBpeqICw5qJvEWOvH+YX23h0BJgJhHEHWATVl6O3B5
-        A0FYJveR8MwcbLJRytKPKw==
-X-Google-Smtp-Source: ABdhPJy2IXGYnatFzBYUTeLTf8DvL4pYh4xD1bgYH/RgOfVeyfVeDByeag2N6mH06BJwImW9swaZyw==
-X-Received: by 2002:a05:6830:40a9:b0:5c9:4a8d:ab1f with SMTP id x41-20020a05683040a900b005c94a8dab1fmr4790734ott.288.1648688025324;
-        Wed, 30 Mar 2022 17:53:45 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id v24-20020a9d5a18000000b005ad458facbdsm11728168oth.27.2022.03.30.17.53.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Mar 2022 17:53:45 -0700 (PDT)
-Received: (nullmailer pid 3988522 invoked by uid 1000);
-        Thu, 31 Mar 2022 00:53:44 -0000
-Date:   Wed, 30 Mar 2022 19:53:44 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Sumit Gupta <sumitg@nvidia.com>
-Cc:     rafael@kernel.org, viresh.kumar@linaro.org, krzk+dt@kernel.org,
-        treding@nvidia.com, jonathanh@nvidia.com, linux-pm@vger.kernel.org,
-        linux-tegra@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ksitaraman@nvidia.com,
-        sanjayc@nvidia.com, bbasu@nvidia.com
-Subject: Re: [Patch v2 2/4] dt-bindings: arm: tegra: Add bindins for
- nvidia,tegra-ccplex-cluster
-Message-ID: <YkT7mKas3pJF8tVb@robh.at.kernel.org>
-References: <20220330143819.27476-1-sumitg@nvidia.com>
- <20220330143819.27476-3-sumitg@nvidia.com>
+        Wed, 30 Mar 2022 20:56:22 -0400
+X-Greylist: delayed 64 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 30 Mar 2022 17:54:35 PDT
+Received: from esa3.hc1455-7.c3s2.iphmx.com (esa3.hc1455-7.c3s2.iphmx.com [207.54.90.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF7B02F38F
+        for <linux-kernel@vger.kernel.org>; Wed, 30 Mar 2022 17:54:35 -0700 (PDT)
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="68063399"
+X-IronPort-AV: E=Sophos;i="5.90,223,1643641200"; 
+   d="scan'208";a="68063399"
+Received: from unknown (HELO yto-r1.gw.nic.fujitsu.com) ([218.44.52.217])
+  by esa3.hc1455-7.c3s2.iphmx.com with ESMTP; 31 Mar 2022 09:53:30 +0900
+Received: from yto-m2.gw.nic.fujitsu.com (yto-nat-yto-m2.gw.nic.fujitsu.com [192.168.83.65])
+        by yto-r1.gw.nic.fujitsu.com (Postfix) with ESMTP id 764F9E062B
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 09:53:28 +0900 (JST)
+Received: from m3004.s.css.fujitsu.com (m3004.s.css.fujitsu.com [10.128.233.124])
+        by yto-m2.gw.nic.fujitsu.com (Postfix) with ESMTP id BF29AE6C0E
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 09:53:26 +0900 (JST)
+Received: from localhost.localdomain (unknown [10.125.5.220])
+        by m3004.s.css.fujitsu.com (Postfix) with ESMTP id 9988B2041DE8;
+        Thu, 31 Mar 2022 09:53:26 +0900 (JST)
+From:   Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>
+To:     tglx@linutronix.de
+Cc:     linux-kernel@vger.kernel.org, ming.lei@redhat.com,
+        yamamoto.rei@jp.fujitsu.com
+Subject: [PATCH v4] irq: consider cpus on nodes are unbalanced
+Date:   Thu, 31 Mar 2022 09:33:09 +0900
+Message-Id: <20220331003309.10891-1-yamamoto.rei@jp.fujitsu.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220330143819.27476-3-sumitg@nvidia.com>
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 08:08:17PM +0530, Sumit Gupta wrote:
-> The Tegra CCPLEX_CLUSTER area contains memory-mapped
-> registers that initiate CPU frequency/voltage transitions.
-> 
-> Signed-off-by: Sumit Gupta <sumitg@nvidia.com>
-> ---
->  .../tegra/nvidia,tegra-ccplex-cluster.yaml    | 52 +++++++++++++++++++
->  1 file changed, 52 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/arm/tegra/nvidia,tegra-ccplex-cluster.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/arm/tegra/nvidia,tegra-ccplex-cluster.yaml b/Documentation/devicetree/bindings/arm/tegra/nvidia,tegra-ccplex-cluster.yaml
-> new file mode 100644
-> index 000000000000..74afa06f695e
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/arm/tegra/nvidia,tegra-ccplex-cluster.yaml
-> @@ -0,0 +1,52 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: "http://devicetree.org/schemas/arm/tegra/nvidia,tegra-ccplex-cluster.yaml#"
-> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-> +
-> +title: NVIDIA Tegra CPU_CLUSTER area device tree bindings
-> +
-> +maintainers:
-> +  - Sumit Gupta <sumitg@nvidia.com>
-> +  - Mikko Perttunen <mperttunen@nvidia.com>
-> +  - Jon Hunter <jonathanh@nvidia.com>
-> +  - Thierry Reding <thierry.reding@gmail.com>
-> +
-> +description: |+
-> +  The Tegra CCPLEX_CLUSTER area contains memory-mapped
-> +  registers that initiate CPU frequency/voltage transitions.
-> +
-> +properties:
-> +  $nodename:
-> +    pattern: "ccplex@([0-9a-f]+)$"
-> +
-> +  compatible:
-> +    enum:
-> +      - nvidia,tegra186-ccplex-cluster
-> +      - nvidia,tegra234-ccplex-cluster
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  nvidia,bpmp:
-> +    $ref: '/schemas/types.yaml#/definitions/phandle'
-> +    description: |
-> +      Specifies the bpmp node that needs to be queried to get
-> +      operating point data for all CPUs.
-> +
-> +additionalProperties: true
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - nvidia,bpmp
-> +  - status
+If cpus on a node are offline at boot time, there are
+difference in the number of nodes between when building affinity
+masks for present cpus and when building affinity masks for possible
+cpus. This patch fixes a problem caused by the difference of the
+number of nodes:
 
-status is never required.
+ - The routine of "numvecs <= nodes" condition can overwrite bits of
+   masks for present cpus in building masks for possible cpus. Fix this
+   problem by making CPU bits, which is not target, not changing.
 
-> +
-> +examples:
-> +  - |
-> +    ccplex@e000000 {
-> +      compatible = "nvidia,tegra234-ccplex-cluster";
-> +      reg = <0x0 0x0e000000 0x0 0x5ffff>;
-> +      nvidia,bpmp = <&bpmp>;
-> +      status = "okay";
+Signed-off-by: Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>
+Reviewed-by: Ming Lei <ming.lei@redhat.com>
+---
+ kernel/irq/affinity.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Nor should it be in examples.
+diff --git a/kernel/irq/affinity.c b/kernel/irq/affinity.c
+index f7ff8919dc9b..d2d01565d2ec 100644
+--- a/kernel/irq/affinity.c
++++ b/kernel/irq/affinity.c
+@@ -269,8 +269,9 @@ static int __irq_build_affinity_masks(unsigned int startvec,
+ 	 */
+ 	if (numvecs <= nodes) {
+ 		for_each_node_mask(n, nodemsk) {
++			cpumask_and(nmsk, cpu_mask, node_to_cpumask[n]);
+ 			cpumask_or(&masks[curvec].mask, &masks[curvec].mask,
+-				   node_to_cpumask[n]);
++				   nmsk);
+ 			if (++curvec == last_affv)
+ 				curvec = firstvec;
+ 		}
+-- 
+2.27.0
 
-> +    };
-> -- 
-> 2.17.1
-> 
-> 
