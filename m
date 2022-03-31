@@ -2,97 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57B45C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 16:14:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3A41C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 16:14:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239701AbiCaQQX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 12:16:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41446 "EHLO
+        id S239703AbiCaQQl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 12:16:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239681AbiCaQQT (ORCPT
+        with ESMTP id S239681AbiCaQQh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 12:16:19 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BFC055201;
-        Thu, 31 Mar 2022 09:14:32 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id bg10so385530ejb.4;
-        Thu, 31 Mar 2022 09:14:32 -0700 (PDT)
+        Thu, 31 Mar 2022 12:16:37 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7D3B54BDD
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 09:14:50 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id b15so34993pfm.5
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 09:14:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=FcCfLyzsYqQGsFb8akFbb6JZWG/9vXgcMF8J+x5RgTo=;
-        b=KNVfSswHBmhK2iu1F1kOKQ3KNCpbNu/Ugef2TxvfwjloYZ3/DTFQMw5K8b91+zBaa1
-         +NR35BCwAd3B617BAuEReAFzyos00j7whUnx+kmcFquxjPPOkgegGrM2mv3Q3p0EI0Ty
-         pxYBhJgkZf0KT4UWuq/eRZiq/PVUFzA9dR+kL87L3Sb2XgrrcDd4jMev/C6i+RJagtEc
-         2aYeIyufTPHaQ9rKJuNSMcPbgXW0MfbutlnzYCoiGiutzWqkEO63R8Bf7RCSd/B3Q8Ui
-         QeQw82JngZa9PnCbfpElTirQ8d4W3uilTrQ6w1ajLcitEs9HT8CZiMOt87Vnv2p76g/s
-         wJvw==
+        d=pensando.io; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=nzdRKNhSadAGU2/1+9CJCIsH9iz4xNg93BLTCvdABBQ=;
+        b=kwvMVzfuXIcvvzsQ/j5YgQYI3vhnY5RbNuMVIycbxZO4sjXpzZJouBZuCvbw4DeauP
+         K7Q5Aqxhf1nkdiGW4OKzEmdc6mjnqw9vNNc9z1wnxpGnRMbC6BkFvRSwC7bM203EX+Oj
+         Q0Nr/zawkq2K+Ido40uBOgDhiPJRfoukYC1EHWwPTXOFg1o7dHzYJBbpp5B3RhqBd8LS
+         yC+P5kAlRxsAWWCN4qfzD7OnSa/V1o3zhQ5KciZnlXMp5LuD+VRML3bul4UH20JxzSnq
+         CvhVLb1Z2jfAlNt4eStGNyG38Q3m76jUjBgkphuY/5mZOOVKTp2RAVw3Wx1kMUfF6h/Z
+         d0ZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=FcCfLyzsYqQGsFb8akFbb6JZWG/9vXgcMF8J+x5RgTo=;
-        b=UE1ibcJusrLW1ikjmCCTGEN3izduWvjf+VE6RcsH4fO5uL1z3CXFSDgr619/zc9kDE
-         qIXVy/FUU0/Bqr6zFXUSSvbQWNZbTM8F7xeKgbhmqPcvtZNJ8uJmxijlZvo/3Go3EsSf
-         Wts/+TjFXqBErax9R6wZWE3/UdaIR3j6ETcSZGypATcWwbSc9E+W6glGZVB1aNbLZMPK
-         aQ8lp/pw6Eswi0pJi7oW5jQMZpVnKso9JziDNF2BiO5C2pzPHa8ouVxFEQAgJYu1azG2
-         gFCG2m/970MU9024iZXwtXcSjIr/SyYKbxtyOykuot2bzu1IBZ7HskfxwfZVbdNDXO2f
-         FVzQ==
-X-Gm-Message-State: AOAM5332xj2qgR4Rju9XFI0xQo6Jxj8FvKTKgs51ovIbKwnvUm8lwXcy
-        GbqQY2CMmnksDT1NFNo2I2w=
-X-Google-Smtp-Source: ABdhPJxrFeCrlrgYsId4lWZdjzNbs1gNXB+bHQsamw/8iBBZbKjMSEzvaieenk1/1kbxHBO64XBPnQ==
-X-Received: by 2002:a17:906:58d3:b0:6da:bdb2:2727 with SMTP id e19-20020a17090658d300b006dabdb22727mr5604700ejs.549.1648743270654;
-        Thu, 31 Mar 2022 09:14:30 -0700 (PDT)
-Received: from leap.localnet (host-95-249-145-232.retail.telecomitalia.it. [95.249.145.232])
-        by smtp.gmail.com with ESMTPSA id hp12-20020a1709073e0c00b006e02924bf20sm9606044ejc.117.2022.03.31.09.14.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Mar 2022 09:14:29 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Wenchao Hao <haowenchao@huawei.com>,
-        syzkaller-bugs@googlegroups.com,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     axboe@kernel.dk, jejb@linux.ibm.com, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        martin.petersen@oracle.com,
-        syzbot+f08c77040fa163a75a46@syzkaller.appspotmail.com,
-        syzkaller-bugs@googlegroups.com, linfeilong@huawei.com
-Subject: Re: [PATCH] scsi: sd: call device_del() if device_add_disk() fails
-Date:   Thu, 31 Mar 2022 18:14:27 +0200
-Message-ID: <1787706.atdPhlSkOF@leap>
-In-Reply-To: <20220331134210.GF12805@kadam>
-References: <20220329154948.10350-1-fmdefrancesco@gmail.com> <fdebdbd3-575b-b30e-d37f-dcc6d53a4f53@huawei.com> <20220331134210.GF12805@kadam>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nzdRKNhSadAGU2/1+9CJCIsH9iz4xNg93BLTCvdABBQ=;
+        b=3DmW6Fssin4rSDuCmahLI3OHc1qd7m2WQm04MtyDVNIj/ijqEs6AruP5jJInaU2kMf
+         WBuxyKm0y11lixRGD8Pbl4dOSatmWzGWDD4U+YhRdfrVygAHRcLC5ZaOjL0CgmJ6SZhz
+         qGDNmNRapT+mVfMubbwDpIwShVV5t5pOjIoeXeD0Iy7kmYeqhf/XFoCm+IXPXkFjaF6H
+         7Qp/6/V897TJ36SS/SENs3T3gQYAtIesSKyYYtkz1kdffiMtxL4DrxP9HbrFddY41aHn
+         1Zu9BKNnxk8aAAeUYxvYVDnjn3GmWuVUNvWKcLklMIB5oAjke20PUFtfK3c/8rnV3Sns
+         Jl4g==
+X-Gm-Message-State: AOAM533S7gKv20oHhclZkjJ2RBJFyXNpmL/5ewIgJlc44OKz1Mv/D9LE
+        klCMrhfLajFvTZIh/fLsT23RcA==
+X-Google-Smtp-Source: ABdhPJyNOuupobAksijWayq6Ffs/N+B1zxVK8M2fdvImwOFpb2TCmYL3X8fCPVrhWr8LX0wNMT9cNw==
+X-Received: by 2002:a05:6a00:440c:b0:4fa:da3f:251c with SMTP id br12-20020a056a00440c00b004fada3f251cmr6303682pfb.73.1648743290114;
+        Thu, 31 Mar 2022 09:14:50 -0700 (PDT)
+Received: from [192.168.0.2] ([50.53.169.105])
+        by smtp.gmail.com with ESMTPSA id 124-20020a621682000000b004f6a2e59a4dsm27306697pfw.121.2022.03.31.09.14.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 31 Mar 2022 09:14:49 -0700 (PDT)
+Message-ID: <b498023a-08d8-eda6-abfc-4339fe82522a@pensando.io>
+Date:   Thu, 31 Mar 2022 09:14:47 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.7.0
+Subject: Re: [PATCH net v1] ixgbe: ensure IPsec VF<->PF compatibility
+Content-Language: en-US
+To:     Leon Romanovsky <leon@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Leon Romanovsky <leonro@nvidia.com>,
+        intel-wired-lan@lists.osuosl.org,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>, Raed Salem <raeds@nvidia.com>,
+        Shannon Nelson <shannon.nelson@oracle.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+References: <737616899df2a482e4ec35aa4056c9ac608d2f50.1648714609.git.leonro@nvidia.com>
+From:   Shannon Nelson <snelson@pensando.io>
+In-Reply-To: <737616899df2a482e4ec35aa4056c9ac608d2f50.1648714609.git.leonro@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On gioved? 31 marzo 2022 15:42:10 CEST Dan Carpenter wrote:
-> Wenchao Hao, what you're saying makes a lot of sense but it raises a lot
-> of questions in turn.
-> 
-> Fabio, did you test your patch?
+On 3/31/22 1:20 AM, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
+>
+> The VF driver can forward any IPsec flags and such makes the function
+> is not extendable and prone to backward/forward incompatibility.
+>
+> If new software runs on VF, it won't know that PF configured something
+> completely different as it "knows" only XFRM_OFFLOAD_INBOUND flag.
+>
+> Fixes: eda0333ac293 ("ixgbe: add VF IPsec management")
+> Reviewed-by: Raed Salem <raeds@nvidia.com>
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>a
 
-Yes, I did, Dan. I tested it the usual way with the "#syz test:" command.
-Obviously I have not the hardware to test code on it.
 
-Therefore, the messages that say "Syzbot tested the patch and it didn't
-trigger any issue" is all that I can know about the code being good or not.
-This is the criterion I've always used before sending patches for Syzbot's
-reports.
+Thanks!
 
-However, my knowledge of these subsystems and the API that are related to 
-this bug were very little, but now I can say that during the last couple of 
-days it has improved to the point where I can affirm that Wenchao's patch
-seems to me to be the only correct solution.
+Reviewed-by: Shannon Nelson <snelson@pensando.io>
 
-Thanks for all the help you and the the other developers provided. It was
-invaluable for a better understanding of this matter.
 
-Regards,
-
-Fabio M. De Francesco
-
+> ---
+> Chaagelog:
+> v1:
+>   * Replaced bits arithmetic with more simple expression
+> v0: https://lore.kernel.org/all/3702fad8a016170947da5f3c521a9251cf0f4a22.1648637865.git.leonro@nvidia.com
+> ---
+>   drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c | 3 ++-
+>   1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
+> index e596e1a9fc75..69d11ff7677d 100644
+> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
+> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
+> @@ -903,7 +903,8 @@ int ixgbe_ipsec_vf_add_sa(struct ixgbe_adapter *adapter, u32 *msgbuf, u32 vf)
+>   	/* Tx IPsec offload doesn't seem to work on this
+>   	 * device, so block these requests for now.
+>   	 */
+> -	if (!(sam->flags & XFRM_OFFLOAD_INBOUND)) {
+> +	sam->flags = sam->flags & ~XFRM_OFFLOAD_IPV6;
+> +	if (sam->flags != XFRM_OFFLOAD_INBOUND) {
+>   		err = -EOPNOTSUPP;
+>   		goto err_out;
+>   	}
 
