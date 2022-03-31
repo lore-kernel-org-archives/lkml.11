@@ -2,82 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BFD4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 10:00:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1E3BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 10:01:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234440AbiCaKCF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 06:02:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35640 "EHLO
+        id S234445AbiCaKDh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 06:03:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234414AbiCaKB7 (ORCPT
+        with ESMTP id S233682AbiCaKDc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 06:01:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 600A24B40D;
-        Thu, 31 Mar 2022 03:00:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BFCE260C00;
-        Thu, 31 Mar 2022 10:00:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2CDC8C340F0;
-        Thu, 31 Mar 2022 10:00:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648720812;
-        bh=7kivzHxJk+qKjtFYXZJ8B+or+rJ8QAVywzC1Iby4eGM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=WrfME0wPF93aWuh8JdbMyI887S83j92nsTgG24LX+ghOb/oWI7ZatNo1KCBlSy3mD
-         UqHQhqNa9aNKeMN2pYQ/LIfxKoZKHJBqI2pJ3sfBpYBU12bCGecC16UT73CkYvmcwJ
-         LkdIb//Xu6CUOY1HvsTeP7x3eiNxhBytG+JAr5O+4KVBMGcOA7WPhXUjSWUrQVDq2M
-         mh9lt5pE5X6nz4iWj8lS6LuREeMgFTVsLi0VRNwHS7PWDu07Osfqhaf+q8VghItY7J
-         72gijBct9wc3rPiaAMzZTEUfsbr48b0/YenvpNytx3aUlDKsffHFQjz8GUF4uhu0y8
-         RhXs8uPj/vdpg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0A214E7BB0B;
-        Thu, 31 Mar 2022 10:00:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Thu, 31 Mar 2022 06:03:32 -0400
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E52E88A306
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 03:01:45 -0700 (PDT)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id F3CD768B05; Thu, 31 Mar 2022 12:01:39 +0200 (CEST)
+Date:   Thu, 31 Mar 2022 12:01:39 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Heiko Stuebner <heiko@sntech.de>
+Cc:     palmer@dabbelt.com, paul.walmsley@sifive.com,
+        aou@eecs.berkeley.edu, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, wefu@redhat.com,
+        liush@allwinnertech.com, guoren@kernel.org, atishp@atishpatra.org,
+        anup@brainfault.org, drew@beagleboard.org, hch@lst.de,
+        arnd@arndb.de, wens@csie.org, maxime@cerno.tech,
+        gfavor@ventanamicro.com, andrea.mondelli@huawei.com,
+        behrensj@mit.edu, xinhaoqu@huawei.com, mick@ics.forth.gr,
+        allen.baum@esperantotech.com, jscheid@ventanamicro.com,
+        rtrauben@gmail.com, samuel@sholland.org, cmuellner@linux.com,
+        philipp.tomsich@vrull.eu
+Subject: Re: [PATCH v8 10/14] riscv: add cpufeature handling via
+ alternatives
+Message-ID: <20220331100139.GG23422@lst.de>
+References: <20220324000710.575331-1-heiko@sntech.de> <20220324000710.575331-11-heiko@sntech.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/2] net: hns3: add two fixes for -net
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164872081203.6232.16343309944190309712.git-patchwork-notify@kernel.org>
-Date:   Thu, 31 Mar 2022 10:00:12 +0000
-References: <20220330134506.36635-1-huangguangbin2@huawei.com>
-In-Reply-To: <20220330134506.36635-1-huangguangbin2@huawei.com>
-To:     Guangbin Huang <huangguangbin2@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lipeng321@huawei.com,
-        chenhao288@hisilicon.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220324000710.575331-11-heiko@sntech.de>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Can you please fold the somewhat confusingly named vendor patching
+into this instead of keeping that magic standalone function pointer
+mess?
 
-This series was applied to netdev/net.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+> +static const struct cpufeature_info __initdata_or_module cpufeature_list[CPUFEATURE_NUMBER] = {
+> +};
 
-On Wed, 30 Mar 2022 21:45:04 +0800 you wrote:
-> This series adds two fixes for the HNS3 ethernet driver.
-> 
-> Guangbin Huang (1):
->   net: hns3: fix software vlan talbe of vlan 0 inconsistent with
->     hardware
-> 
-> Yufeng Mo (1):
->   net: hns3: fix the concurrency between functions reading debugfs
-> 
-> [...]
-
-Here is the summary with links:
-  - [net,1/2] net: hns3: fix the concurrency between functions reading debugfs
-    https://git.kernel.org/netdev/net/c/9c9a04212fa3
-  - [net,2/2] net: hns3: fix software vlan talbe of vlan 0 inconsistent with hardware
-    https://git.kernel.org/netdev/net/c/7ed258f12ec5
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Overly lone line.
