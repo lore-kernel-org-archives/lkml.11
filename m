@@ -2,106 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE7ACC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 09:25:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91968C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 09:25:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233834AbiCaJ1W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 05:27:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57594 "EHLO
+        id S233858AbiCaJ1j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 05:27:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232107AbiCaJ1S (ORCPT
+        with ESMTP id S233838AbiCaJ1f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 05:27:18 -0400
-Received: from esa3.hc1455-7.c3s2.iphmx.com (esa3.hc1455-7.c3s2.iphmx.com [207.54.90.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA5D1FCD36;
-        Thu, 31 Mar 2022 02:25:30 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="68135880"
-X-IronPort-AV: E=Sophos;i="5.90,224,1643641200"; 
-   d="scan'208";a="68135880"
-Received: from unknown (HELO oym-r4.gw.nic.fujitsu.com) ([210.162.30.92])
-  by esa3.hc1455-7.c3s2.iphmx.com with ESMTP; 31 Mar 2022 18:25:28 +0900
-Received: from oym-m1.gw.nic.fujitsu.com (oym-nat-oym-m1.gw.nic.fujitsu.com [192.168.87.58])
-        by oym-r4.gw.nic.fujitsu.com (Postfix) with ESMTP id 7B52AE07EA;
-        Thu, 31 Mar 2022 18:25:27 +0900 (JST)
-Received: from yto-om3.fujitsu.com (yto-om3.o.css.fujitsu.com [10.128.89.164])
-        by oym-m1.gw.nic.fujitsu.com (Postfix) with ESMTP id A192028715D1;
-        Thu, 31 Mar 2022 18:25:26 +0900 (JST)
-Received: from cn-r05-10.example.com (n3235113.np.ts.nmh.cs.fujitsu.co.jp [10.123.235.113])
-        by yto-om3.fujitsu.com (Postfix) with ESMTP id 3B74C400C07B8;
-        Thu, 31 Mar 2022 18:25:26 +0900 (JST)
-From:   Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>
-To:     linux-arm-kernel@lists.infradead.org, soc@kernel.org,
-        linux-serial@vger.kernel.org, sumit.garg@linaro.org
-Cc:     arnd@arndb.de, olof@lixom.net, catalin.marinas@arm.com,
-        will@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        jason.wessel@windriver.com, daniel.thompson@linaro.org,
-        dianders@chromium.org, linux-kernel@vger.kernel.org,
-        kgdb-bugreport@lists.sourceforge.net, peterz@infradead.org,
-        hasegawa-hitomi@fujitsu.com
-Subject: [PATCH v3 0/1] soc: fujitsu: Add A64FX diagnostic interrupt driver
-Date:   Thu, 31 Mar 2022 18:22:34 +0900
-Message-Id: <20220331092235.3000787-1-hasegawa-hitomi@fujitsu.com>
-X-Mailer: git-send-email 2.27.0
+        Thu, 31 Mar 2022 05:27:35 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 466D21FD2E6;
+        Thu, 31 Mar 2022 02:25:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648718748; x=1680254748;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=N3PP8ZivePQMvjV4Fur4OQwgO4dspQzwIlKhbnGe298=;
+  b=f4RYGwSSr38DhEM0LgOrJaPk+g9p8ahdcXqy99WuQVh/Ju0vkkNeyw8J
+   IlTwGf7b4VkhCA95SvAViRJQPJW9DX44+vq7mEeUU6ZKXiYqhujJ7G4CB
+   HG9/s+DMicQswI/oC3dWc599br9b8Ceo5rqHrXldQR5t6l7731abmZroJ
+   wSWqy+BmNTNtp5nu9Z37SZ5PJa80FkVMnIw2Xzq3cqJYjlAhej8WqKlYQ
+   oOtxE4sbOx2yMfTmy1tZ0oRK4aTS1IVMJjuZv5snrsoQB28YEuxl4Svab
+   w30wBiMI+jL0Lqs4IN7Gf16glUUqFa3FFM2Dv/YvBDZLuBodB+/OIUW1G
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="258608861"
+X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
+   d="scan'208";a="258608861"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 02:25:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
+   d="scan'208";a="695422964"
+Received: from kuha.fi.intel.com ([10.237.72.185])
+  by fmsmga001.fm.intel.com with SMTP; 31 Mar 2022 02:25:44 -0700
+Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Thu, 31 Mar 2022 12:25:43 +0300
+Date:   Thu, 31 Mar 2022 12:25:43 +0300
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     Takashi Iwai <tiwai@suse.de>
+Cc:     Won Chung <wonchung@google.com>, Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Benson Leung <bleung@chromium.org>,
+        Prashant Malani <pmalani@chromium.org>,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH v2] sound/hda: Add NULL check to component match callback
+ function
+Message-ID: <YkVzl4NEzwDAp/Zq@kuha.fi.intel.com>
+References: <20220330211913.2068108-1-wonchung@google.com>
+ <s5hzgl6eg48.wl-tiwai@suse.de>
+ <CAOvb9yiO_n48JPZ3f0+y-fQ_YoOmuWF5c692Jt5_SKbxdA4yAw@mail.gmail.com>
+ <s5hr16ieb8o.wl-tiwai@suse.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <s5hr16ieb8o.wl-tiwai@suse.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The interrupt is set using pseudo-NMI if it is available. Arm has a
-diagnostic interrupt feature called "Arm Generic Diagnostic Dump and
-Reset device", but the A64FX does not support this feature and instead
-has its own device definition.
+On Thu, Mar 31, 2022 at 11:12:55AM +0200, Takashi Iwai wrote:
+> > > > -     if (!strcmp(dev->driver->name, "i915") &&
+> > > > +     if (dev->driver && !strcmp(dev->driver->name, "i915") &&
+> > >
+> > > Can NULL dev->driver be really seen?  I thought the components are
+> > > added by the drivers, hence they ought to have the driver field set.
+> > > But there can be corner cases I overlooked.
+> > >
+> > >
+> > > thanks,
+> > >
+> > > Takashi
+> > 
+> > Hi Takashi,
+> > 
+> > When I try using component_add in a different driver (usb4 in my
+> > case), I think dev->driver here is NULL because the i915 drivers do
+> > not have their component master fully bound when this new component is
+> > registered. When I test it, it seems to be causing a crash.
+> 
+> Hm, from where component_add*() is called?  Basically dev->driver must
+> be already set before the corresponding driver gets bound at
+> __driver_probe_deviec().  So, if the device is added to component from
+> the corresponding driver's probe, dev->driver must be non-NULL.
 
-This patch series assumes that Sumit's patch has been patched.[1]
+The code that declares a device as component does not have to be the
+driver of that device.
 
-I tested on FX700:
-$ echo 1 > /proc/sys/kernel/sysrq
-$ echo HARDLOCKUP > /sys/kernel/debug/provoke-crash/DIRECT
-[  124.712351] lkdtm: Performing direct entry HARDLOCKUP
-[  147.232096] rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
-:
-:
+In our case the components are USB ports, and they are devices that
+are actually never bind to any drivers: drivers/usb/core/port.c
 
-Send the "chassis power diag" command from the management server
-using ipmitool, the following message is shown:
-[  206.061770] sysrq: Trigger a crash
-[  206.061779] Kernel panic - not syncing: sysrq triggered crash
-:
-:
-
-Changes in V3:
- - Exclude Sumit's patch.
- - Retest in v5.17.
-
-Changes in V2:
- - Include Sumit's patch.
- - The handler calls handle_sysrq() to use the sysrq feature to cause
-   a panic.
- - request_nmi() and request_irq() now use the same handler, and
-   the function name of the handler has also changed.
- - Use readl()/writel() instead of readl_relaxed()/writel_relaxed().
-
-[1] https://lore.kernel.org/all/20220307110328.2557655-1-sumit.garg@linaro.org/
-V2: https://lore.kernel.org/linux-arm-kernel/20220304064324.331217-3-hasegawa-hitomi@fujitsu.com/
-V1: https://lore.kernel.org/linux-arm-kernel/20220218092010.1327309-1-hasegawa-hitomi@fujitsu.com/
-
-
-Hitomi Hasegawa (1):
-  soc: fujitsu: Add A64FX diagnostic interrupt driver
-
- MAINTAINERS                      |   5 +
- drivers/soc/Kconfig              |   1 +
- drivers/soc/Makefile             |   1 +
- drivers/soc/fujitsu/Kconfig      |  13 +++
- drivers/soc/fujitsu/Makefile     |   3 +
- drivers/soc/fujitsu/a64fx-diag.c | 151 +++++++++++++++++++++++++++++++
- 6 files changed, 174 insertions(+)
- create mode 100644 drivers/soc/fujitsu/Kconfig
- create mode 100644 drivers/soc/fujitsu/Makefile
- create mode 100644 drivers/soc/fujitsu/a64fx-diag.c
+thanks,
 
 -- 
-2.27.0
-
+heikki
