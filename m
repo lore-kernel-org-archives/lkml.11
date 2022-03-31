@@ -2,68 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF506C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 15:47:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98858C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 15:47:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238911AbiCaPtQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 11:49:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59898 "EHLO
+        id S238788AbiCaPt0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 11:49:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239982AbiCaPst (ORCPT
+        with ESMTP id S239874AbiCaPsa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 11:48:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B63D93A9;
-        Thu, 31 Mar 2022 08:47:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F8CD609E9;
-        Thu, 31 Mar 2022 15:47:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79637C340ED;
-        Thu, 31 Mar 2022 15:47:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648741620;
-        bh=cEGVTkftOWacxOkSFXlwf1myFdjc75yANlPjREI+RQw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KhFEUO23zJ0ThCl0EXFROOmhXFFcWupvOGRTwmOvqyFps15MWSb0+yMNhXQorftm6
-         /abVRnNgc3XjiaOwrfU3a3WGmbYzU95Jcrua8x5HOaVFHGIbDyxwIpTV4Ib7PVlcH1
-         +PK9cGvTuLWlXep176fdQoRMQjvttKogqYYgSXSykzU6lZuwvc4jRtzLWZmu4xRjJP
-         RmbHSLv/13myKqPCN03Xc9Do90Aus1c5NUdmYtSx5amV0yyWQUWbFYReNcfy3yx3nO
-         z/PDPi5/i4Bji7ZUAKqbBP+sjWYb5ibYNLvxCesa3UXEKF0ESZhL0DeIrVeBj/mFAl
-         8JOsAqoQyUdLA==
-Date:   Thu, 31 Mar 2022 08:46:59 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Qing Wang <wangqing@vivo.com>
-Cc:     =?UTF-8?B?QmrDuHJu?= Mork <bjorn@mork.no>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: usb: remove duplicate assignment
-Message-ID: <20220331084659.58ba1843@kernel.org>
-In-Reply-To: <1648728494-37344-1-git-send-email-wangqing@vivo.com>
-References: <1648728494-37344-1-git-send-email-wangqing@vivo.com>
+        Thu, 31 Mar 2022 11:48:30 -0400
+Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A57461ADB8
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 08:46:39 -0700 (PDT)
+Received: by mail-qt1-x82a.google.com with SMTP id a11so21709385qtb.12
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 08:46:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mdaverde-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3LYS65c4ngde5Sf/CRmanaRSxKjEDRgSvxSuSxBsqEc=;
+        b=AME818MNJpYFqVRzMQ8G2/TffOi/1CdJh+Ov+TIOXiss4DrbP66b+15RGUt3T+S8Ep
+         b2f9QS/+lhzki/omOxU8k1m+o4ftE3Q9wwOZQmfGXEvWl/wMNVGMqTGb/wR4rv3QY3/4
+         mPhqA7lOTYvOAOGxbhBfaQNv/VpNrmlO/oQIJHegQETrRsYeYJBzj59n6BqngL3GoiCG
+         tq6AkBUhFQZsGJgaECD36mqldNReo8DFULqsVnvhuOU+V96rXR+o4NVP/xIoJeIbhQLV
+         0gKG49XvuRzaVT+v+kfuDEl2izRofzj0pIs12qQnywnGrQOo/dUn2Oe/+hsTcswovLXB
+         VD3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3LYS65c4ngde5Sf/CRmanaRSxKjEDRgSvxSuSxBsqEc=;
+        b=OhuFPmyEBYPmu2lOxMb/19c8jufu2jDJ6U3IZMaNtM2/x6VRcxHSjkm6EYB0ix2/0H
+         vdZzT3lFe5r/r0WPmx5WlezEd+RlUERYCB1dEt6DFEw8OMk3Bw2TO6oE5kywgRlGh7LB
+         QuvFvtgkyJmVHWlAgYoTwGIX++9GPv+fHmiavxAZb473g/z2JjCXcXNst8mLZrsHE4qG
+         Z4CIvGDgSk9nOX1lBvC8IE5bizfo/XeRpthM9azGKxoELl922QkkzMdBQoVinrRaXhcM
+         2rZF0eVRHWT0OSEnf8tQwj1zwAVxp3/KB6wbailUAZ2TtJL0ZoLmNugS2zwsxEHEcohe
+         ipYA==
+X-Gm-Message-State: AOAM531JIfysyCeuCDC+11yjUjTPmkc6IfdWSOEk/1fm5sJePNbOQMsL
+        Vn5bPD7yj1awWCItOyiFePcx7w==
+X-Google-Smtp-Source: ABdhPJygwSfyTwbWopq/cvK0vHooNH/Lu7ir5ljdbjSyLh1lNPef8vRFmtoDL7HrM8Le0yUZ6O1luw==
+X-Received: by 2002:ac8:5cc2:0:b0:2eb:8308:91f3 with SMTP id s2-20020ac85cc2000000b002eb830891f3mr4869207qta.280.1648741598786;
+        Thu, 31 Mar 2022 08:46:38 -0700 (PDT)
+Received: from pop-os.attlocal.net ([2600:1700:1d10:5830:565c:ffc5:fa04:b353])
+        by smtp.gmail.com with ESMTPSA id j12-20020ae9c20c000000b0067ec380b320sm13126797qkg.64.2022.03.31.08.46.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Mar 2022 08:46:37 -0700 (PDT)
+From:   Milan Landaverde <milan@mdaverde.com>
+To:     bpf@vger.kernel.org
+Cc:     milan@mdaverde.com, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        quentin@isovalent.com, davemarchevsky@fb.com, sdf@google.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH bpf-next 0/3] bpf/bpftool: add program & link type names
+Date:   Thu, 31 Mar 2022 11:45:52 -0400
+Message-Id: <20220331154555.422506-1-milan@mdaverde.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 31 Mar 2022 05:08:14 -0700 Qing Wang wrote:
-> From: Wang Qing <wangqing@vivo.com>
-> 
-> netdev_alloc_skb() has assigned ssi->netdev to skb->dev if successed,
-> no need to repeat assignment.
-> 
-> Signed-off-by: Wang Qing <wangqing@vivo.com>
+With the addition of the syscall prog type we should now
+be able to see feature probe info for that prog type:
 
-# Form letter - net-next is closed
+    $ bpftool feature probe kernel
+    ...
+    eBPF program_type syscall is available
+    ...
+    eBPF helpers supported for program type syscall:
+        ...
+        - bpf_sys_bpf
+        - bpf_sys_close
 
-We have already sent the networking pull request for 5.18
-and therefore net-next is closed for new drivers, features,
-code refactoring and optimizations. We are currently accepting
-bug fixes only.
+And for the link types, their names should aid in
+the output.
 
-Please repost when net-next reopens after 5.18-rc1 is cut.
+Before:
+    $ bpftool link show
+    50: type 7  prog 5042
+	    bpf_cookie 0
+	    pids vfsstat(394433)
 
-RFC patches sent for review only are obviously welcome at any time.
+After:
+    $ bpftool link show
+    57: perf_event  prog 5058
+	    bpf_cookie 0
+	    pids vfsstat(394725)
+
+Milan Landaverde (3):
+  bpf/bpftool: add syscall prog type
+  bpf/bpftool: add missing link types
+  bpf/bpftool: handle libbpf_probe_prog_type errors
+
+ tools/bpf/bpftool/feature.c | 2 +-
+ tools/bpf/bpftool/link.c    | 2 ++
+ tools/bpf/bpftool/prog.c    | 1 +
+ 3 files changed, 4 insertions(+), 1 deletion(-)
+
+--
+2.32.0
+
