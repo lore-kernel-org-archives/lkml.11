@@ -2,64 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8613FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 12:58:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E244C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 13:00:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236559AbiCaNAl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 09:00:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55518 "EHLO
+        id S236515AbiCaNCC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 09:02:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236517AbiCaNAc (ORCPT
+        with ESMTP id S232134AbiCaNCA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 09:00:32 -0400
-Received: from louie.mork.no (louie.mork.no [IPv6:2001:41c8:51:8a:feff:ff:fe00:e5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D30A718382A;
-        Thu, 31 Mar 2022 05:58:36 -0700 (PDT)
-Received: from canardo.dyn.mork.no ([IPv6:2a01:799:c9f:8600:0:0:0:1])
-        (authenticated bits=0)
-        by louie.mork.no (8.15.2/8.15.2) with ESMTPSA id 22VCwErm206850
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
-        Thu, 31 Mar 2022 13:58:16 +0100
-Received: from miraculix.mork.no ([IPv6:2a01:799:c9f:8602:8cd5:a7b0:d07:d516])
-        (authenticated bits=0)
-        by canardo.dyn.mork.no (8.15.2/8.15.2) with ESMTPSA id 22VCwC1b3975823
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
-        Thu, 31 Mar 2022 14:58:13 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1648731494; bh=3qad0vu847N501JVj+B9zfqjiTiuw/ACV2x6SxDvb2M=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=Z3DvLyPGhXpJCOh58KXP7rFdbDdw8HiozWFs+fYFn8M1SYJG4TV2gRAl5a4JH3Hvc
-         wNiZBwjXwjqUdnf8vvvB0pLSh8ECgbd0QDLLmJF1xZppE0ovaJ0uvEq+bk/rucMnIF
-         OrkQrrBCVPXZWHdS5pm8OwWCxXFXNNLbasYwjtHs=
-Received: (nullmailer pid 178357 invoked by uid 1000);
-        Thu, 31 Mar 2022 12:58:12 -0000
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     Qing Wang <wangqing@vivo.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: usb: remove duplicate assignment
-Organization: m
-References: <1648728494-37344-1-git-send-email-wangqing@vivo.com>
-Date:   Thu, 31 Mar 2022 14:58:12 +0200
-In-Reply-To: <1648728494-37344-1-git-send-email-wangqing@vivo.com> (Qing
-        Wang's message of "Thu, 31 Mar 2022 05:08:14 -0700")
-Message-ID: <87sfqygty3.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Thu, 31 Mar 2022 09:02:00 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BFCC1A6373
+        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 06:00:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648731613; x=1680267613;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=NrbE2Fu6qin+cBpDb/9/JkXlaserqB+2eKhtL+f1T/4=;
+  b=EDR7wI10O2apTDSt8mj3YXg5S3D9iUvEI4AY/2mFkcl1axGp4PfqddVb
+   l3xuDGdbeEf7VqDPVu6Raz7I1x5AGi8ahXgHyjeZU0vXdx57MvF5dO6BG
+   dCnhY0KFt8z/oyeIrwu1ZOwFBoLPaZW7qhm5IEkrOE1TwEngZpu2j+49A
+   9PdrUgEQNId+H+PqiqW2psrElklCjKdkzryk00U25IXOJ2mHOcaqARBI1
+   dRg9e3TlWEpShDqEf2e7Vql5nI9FMuNoENa6WRv15M4szGq7HnV7AjhSd
+   MxLy6OIPkT6l0Sj4EFONLk1FIN21BKwCeFzdiEylGmCqZW3KTGFwMT5te
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="284749543"
+X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
+   d="scan'208";a="284749543"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 06:00:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
+   d="scan'208";a="522335459"
+Received: from lkp-server02.sh.intel.com (HELO 3231c491b0e2) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 31 Mar 2022 06:00:10 -0700
+Received: from kbuild by 3231c491b0e2 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nZuPK-0000Gm-5P;
+        Thu, 31 Mar 2022 13:00:10 +0000
+Date:   Thu, 31 Mar 2022 20:59:49 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Andrey Konovalov <andreyknvl@google.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Johannes Weiner <hannes@cmpxchg.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>
+Subject: [hnaz-mm:master 29/122] arch/arm64/kernel/stacktrace.c:289:13:
+ error: implicit declaration of function 'task_scs' is invalid in C99
+Message-ID: <202203312049.zLjHyetm-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.103.5 at canardo
-X-Virus-Status: Clean
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Qing Wang <wangqing@vivo.com> writes:
+tree:   https://github.com/hnaz/linux-mm master
+head:   074b4ea9811e2c47ae1ecada177629c19fa56d59
+commit: 8cdc580c5ca2ffecb0db4f84a99167ef763a21cc [29/122] arm64: implement stack_trace_save_shadow
+config: arm64-randconfig-r012-20220331 (https://download.01.org/0day-ci/archive/20220331/202203312049.zLjHyetm-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 881350a92d821d4f8e4fa648443ed1d17e251188)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://github.com/hnaz/linux-mm/commit/8cdc580c5ca2ffecb0db4f84a99167ef763a21cc
+        git remote add hnaz-mm https://github.com/hnaz/linux-mm
+        git fetch --no-tags hnaz-mm master
+        git checkout 8cdc580c5ca2ffecb0db4f84a99167ef763a21cc
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/kernel/
 
-> netdev_alloc_skb() has assigned ssi->netdev to skb->dev if successed,
-> no need to repeat assignment.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Thanks.
+All error/warnings (new ones prefixed by >>):
 
-Acked-by: Bj=C3=B8rn Mork <bjorn@mork.no>
+>> arch/arm64/kernel/stacktrace.c:289:13: error: implicit declaration of function 'task_scs' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+           scs_base = task_scs(current);
+                      ^
+>> arch/arm64/kernel/stacktrace.c:289:11: warning: incompatible integer to pointer conversion assigning to 'unsigned long *' from 'int' [-Wint-conversion]
+           scs_base = task_scs(current);
+                    ^ ~~~~~~~~~~~~~~~~~
+   1 warning and 1 error generated.
+
+
+vim +/task_scs +289 arch/arm64/kernel/stacktrace.c
+
+   260	
+   261	noinline notrace int arch_stack_walk_shadow(unsigned long *store,
+   262						    unsigned int size,
+   263						    unsigned int skipnr)
+   264	{
+   265		unsigned long *scs_top, *scs_base, *scs_next;
+   266		unsigned int len = 0, part;
+   267	
+   268		preempt_disable();
+   269	
+   270		/* Get the SCS pointer. */
+   271		asm volatile("mov %0, x18" : "=&r" (scs_top));
+   272	
+   273		/* The top SCS slot is empty. */
+   274		scs_top -= 1;
+   275	
+   276		/* Handle SDEI and hardirq frames. */
+   277		for (part = 0; part < ARRAY_SIZE(scs_parts); part++) {
+   278			scs_next = *this_cpu_ptr(scs_parts[part].saved);
+   279			if (scs_next) {
+   280				scs_base = *this_cpu_ptr(scs_parts[part].base);
+   281				if (walk_shadow_stack_part(scs_top, scs_base, store,
+   282							   size, &skipnr, &len))
+   283					goto out;
+   284				scs_top = scs_next;
+   285			}
+   286		}
+   287	
+   288		/* Handle task and softirq frames. */
+ > 289		scs_base = task_scs(current);
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
