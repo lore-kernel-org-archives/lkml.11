@@ -2,118 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6028EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 23:22:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CAC7C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 23:22:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242900AbiCaXYJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 19:24:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50262 "EHLO
+        id S243023AbiCaXYm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 19:24:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242879AbiCaXYG (ORCPT
+        with ESMTP id S242937AbiCaXYh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 19:24:06 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35369182AD3
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 16:22:18 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id p15so2368750ejc.7
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 16:22:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=i0Y8uJxAPTn+lPcbjKZMDigfiYGLfvVvyFJ8YmiOb0U=;
-        b=ZTUl4ukv0e2NXaBF5xnMO9o+oFVlY2n2XoA0kUxOx6skIG9dTSaA7oECXPy4k5G/qR
-         MtnM41dTUEMY98MWV1Q7y85uveZ3vNyBVCBdKuiNa70cypt1qBwokiaB5piPWsRGwfMf
-         lQ3VnxZKPPbfZxfyG6Kj11Hei7OeO9IuoWwMA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=i0Y8uJxAPTn+lPcbjKZMDigfiYGLfvVvyFJ8YmiOb0U=;
-        b=OWaLtNSoPcdo64h1eeumGUNVdWa00K1sVjZSqv0w9y63kF356nOozaoU1kaocBKoCd
-         GfLVuFBby9ve8PfGIOlhc/nUsvLTqXwLvMZlbE+teIa1u1CLgjeKUcU71qbj2RbqsD/o
-         kMLDa6vHOCNO5GiyBZm9oDii0flQ/xuRCFnWSZjI/jP0rZOPVHlKuELtXTAKQ2a3Y0Eo
-         E4HCz8+coxo9iQr1LUyaGZ9s8U1jZs/siwiJfs2VOAye/SQapO/+oCrF5/ZfVnwu4FyI
-         qdUxlj3o/uCRjqSkqsgSDOdskDyIfVCx2NJkLp8yKclnFXsYlJztunNtrI4Pjby24YgD
-         Q23g==
-X-Gm-Message-State: AOAM5334IYoqdgV/iXl1wqVayQCvmAjxGPD7BpuwFqLeOw8wBvOEA4qH
-        Ln1t/ttcxIHFJSyryf1X4me5OuwvPtYCjdS5
-X-Google-Smtp-Source: ABdhPJy0Ur7MsP5xu05lOfR02tyDGwNgOCpOZTDIyek8AU75r46txHrEnZajpTYmIkdjM/EMa450aQ==
-X-Received: by 2002:a17:907:761c:b0:6d6:e553:7bd1 with SMTP id jx28-20020a170907761c00b006d6e5537bd1mr6895393ejc.5.1648768936436;
-        Thu, 31 Mar 2022 16:22:16 -0700 (PDT)
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com. [209.85.221.49])
-        by smtp.gmail.com with ESMTPSA id c12-20020a05640227cc00b004192114e521sm366706ede.60.2022.03.31.16.22.14
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 31 Mar 2022 16:22:14 -0700 (PDT)
-Received: by mail-wr1-f49.google.com with SMTP id h4so1748268wrc.13
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 16:22:14 -0700 (PDT)
-X-Received: by 2002:a5d:4491:0:b0:203:f63a:e89b with SMTP id
- j17-20020a5d4491000000b00203f63ae89bmr5615220wrq.342.1648768934136; Thu, 31
- Mar 2022 16:22:14 -0700 (PDT)
-MIME-Version: 1.0
-References: <1648656179-10347-1-git-send-email-quic_sbillaka@quicinc.com> <1648656179-10347-2-git-send-email-quic_sbillaka@quicinc.com>
-In-Reply-To: <1648656179-10347-2-git-send-email-quic_sbillaka@quicinc.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Thu, 31 Mar 2022 16:22:00 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=X+QvjwoT2zGP82KW4kD0oMUY6ZgCizSikNX_Uj8dNDqA@mail.gmail.com>
-Message-ID: <CAD=FV=X+QvjwoT2zGP82KW4kD0oMUY6ZgCizSikNX_Uj8dNDqA@mail.gmail.com>
-Subject: Re: [PATCH v6 1/8] drm/msm/dp: Add eDP support via aux_bus
-To:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>
-Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Rob Clark <robdclark@gmail.com>,
-        Sean Paul <seanpaul@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        quic_kalyant <quic_kalyant@quicinc.com>,
-        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
-        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        quic_vproddut <quic_vproddut@quicinc.com>,
-        quic_aravindh@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 31 Mar 2022 19:24:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9E5D5C353;
+        Thu, 31 Mar 2022 16:22:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5C2C2B82297;
+        Thu, 31 Mar 2022 23:22:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EDC5BC340ED;
+        Thu, 31 Mar 2022 23:22:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648768967;
+        bh=cFAMfnRYRwexlQ80k5xK4/bktdJv0fyhc/nvasOcLSo=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=pTcM+bxBZsVhEHBrY6ebu5Cmk1+aCXLsOgWp/mU2iRlmn57LuxoT7dzpXi9j5fAvD
+         CIaUqPpOMCUXBffm2HoFE6HC46X9o2R40nzA4yU6Af5l56QBJUKWRl1RciX8DFAg2Z
+         xlTV0sOIhiHR05VPVfdbgYMf6ugOdwJZOkdk3qiA2P6NG2wcTRpYK+PhBa8XupZ7am
+         MNlnvupN2x8gNOeAF5RuVUoRIoETnY4RuO28YZMkfpQEPP9CGF1hXZRkWOUoRP1Wd1
+         lJr8tCu8ivfq6ga8dP5t2DEJkMILo0M4DDaAFHvhFcwtNHIYtZrHNi9Z23HKk0oHnn
+         bXEQbw+m+CCkg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D7C76E7BB0B;
+        Thu, 31 Mar 2022 23:22:46 +0000 (UTC)
+Subject: Re: [GIT PULL] netfs: Prep for write helpers
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <2639515.1648483225@warthog.procyon.org.uk>
+References: <2639515.1648483225@warthog.procyon.org.uk>
+X-PR-Tracked-List-Id: <linux-cifs.vger.kernel.org>
+X-PR-Tracked-Message-Id: <2639515.1648483225@warthog.procyon.org.uk>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git tags/netfs-prep-20220318
+X-PR-Tracked-Commit-Id: ab487a4cdfca3d1ef12795a49eafe1144967e617
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: f008b1d6e1e06bb61e9402aa8a1cfa681510e375
+Message-Id: <164876896687.28012.3947884678367341659.pr-tracker-bot@kernel.org>
+Date:   Thu, 31 Mar 2022 23:22:46 +0000
+To:     David Howells <dhowells@redhat.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        David Wysochanski <dwysocha@redhat.com>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        Jeffle Xu <jefflexu@linux.alibaba.com>,
+        Steve French <sfrench@samba.org>, ceph-devel@vger.kernel.org,
+        dhowells@redhat.com, linux-afs@lists.infradead.org,
+        linux-cachefs@redhat.com, linux-cifs@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-nfs@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+The pull request you sent on Mon, 28 Mar 2022 17:00:25 +0100:
 
-On Wed, Mar 30, 2022 at 9:03 AM Sankeerth Billakanti
-<quic_sbillaka@quicinc.com> wrote:
->
-> @@ -1547,6 +1593,10 @@ int msm_dp_modeset_init(struct msm_dp *dp_display, struct drm_device *dev,
->
->         dp_display->encoder = encoder;
->
-> +       ret = dp_display_get_next_bridge(dp_display);
-> +       if (ret)
-> +               return ret;
+> git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git tags/netfs-prep-20220318
 
-It feels weird to me that this is in a function called "modeset_init",
-though I certainly don't know the structure of the MSM display code
-well enough to fully comment. My expectation would have been that
-devm_of_dp_aux_populate_ep_devices() would have been called from your
-probe routine and then you would have returned -EPROBE_DEFER from your
-probe if you were unable to find the panel afterwards.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/f008b1d6e1e06bb61e9402aa8a1cfa681510e375
 
-Huh, but I guess you _are_ getting called (indirectly) from
-dpu_kms_hw_init() and I can't imagine AUX transfers working before
-that function is called, so maybe I should just accept that it's
-complicated and let those who understand this driver better confirm
-that it's OK. ;-)
+Thank you!
 
-
-> @@ -140,5 +140,6 @@ struct dp_parser {
->   * can be parsed using this module.
->   */
->  struct dp_parser *dp_parser_get(struct platform_device *pdev);
-> +int dp_parser_find_next_bridge(struct dp_parser *parser);
-
-Everything else in this file is described w/ kerneldoc. Shouldn't your
-function also have a kerneldoc comment?
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
