@@ -2,140 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF617C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 14:38:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F16B6C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 14:40:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237686AbiCaOkn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 10:40:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55514 "EHLO
+        id S237697AbiCaOmG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 10:42:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236218AbiCaOkk (ORCPT
+        with ESMTP id S235582AbiCaOmF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 10:40:40 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9879927CD7;
-        Thu, 31 Mar 2022 07:38:50 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KTm6B5Gg7zBrdT;
-        Thu, 31 Mar 2022 22:34:42 +0800 (CST)
-Received: from dggpemm500017.china.huawei.com (7.185.36.178) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 31 Mar 2022 22:38:47 +0800
-Received: from huawei.com (10.175.101.6) by dggpemm500017.china.huawei.com
- (7.185.36.178) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 31 Mar
- 2022 22:38:46 +0800
-From:   Wenchao Hao <haowenchao@huawei.com>
-To:     "James E . J . Bottomley" <jejb@linux.ibm.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Hannes Reinecke <hare@suse.de>, <linux-scsi@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <linfeilong@huawei.com>, Wenchao Hao <haowenchao@huawei.com>
-Subject: [PATCH] scsi: core: always finish successfully aborted notry command
-Date:   Thu, 31 Mar 2022 23:50:20 -0400
-Message-ID: <20220401035020.1043239-1-haowenchao@huawei.com>
-X-Mailer: git-send-email 2.32.0
+        Thu, 31 Mar 2022 10:42:05 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D16F847059;
+        Thu, 31 Mar 2022 07:40:17 -0700 (PDT)
+Date:   Thu, 31 Mar 2022 16:40:15 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1648737616;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+IkG3JW9hEB4tEEqML5Y6wrmDVIsuesXsPzmJPiIrNI=;
+        b=oshonStWF9r60qtMFyluGUDngunvGElNNX9iTQobTXOjrOsZkcbq/vqSLOAC0XsO/4yx51
+        JpdlpNxoHRr+KIXxI9Q4Ps0o7Cd4ENBpmbq4x3L1o7RSqK4KPqTPdA58muyZMJWa3/3C4+
+        UHtpLyFoRZvneejIV70GgLXt/4nVQrDKTJtKH0te0xdnj3wH8jQRwNtSqXWG4bDygykPXd
+        5pIVLJcL+/i4EwlvU9Le+kV+g1x+OfaYKEF16R6z7TL9nA35EHKLLguN1HAWoaTz1/2OJL
+        86flawMjVsAtvrUcL3q4e6y8i55MSX2EVs7nY2VG1YLrybyc83aOt6y9bg6Rsg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1648737616;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+IkG3JW9hEB4tEEqML5Y6wrmDVIsuesXsPzmJPiIrNI=;
+        b=A9HFrj211R6RwlbLVgi1gfqL/evVkf8fu8kMvbp0MbqlrW1CVmzJwYrEA54gic96TpT2VK
+        nK7AWjmOZd87g0Dg==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Peter Jones <pjones@redhat.com>,
+        Alexander Larsson <alexl@redhat.com>,
+        Al Stone <ahs3@redhat.com>, linux-efi@vger.kernel.org,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andrew Halaney <ahalaney@redhat.com>,
+        linux-rt-users@vger.kernel.org, Brian Masney <bmasney@redhat.com>,
+        Robbie Harwood <rharwood@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH] efi: Allow to enable EFI runtime services with PREEMPT_RT
+Message-ID: <YkW9T2xRSI9e4BFv@linutronix.de>
+References: <20220331141038.171204-1-javierm@redhat.com>
+ <YkW3EmURxE1+kOu5@linutronix.de>
+ <ce8d975e-d9dd-f9b8-793d-234258021169@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500017.china.huawei.com (7.185.36.178)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <ce8d975e-d9dd-f9b8-793d-234258021169@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the abort command succeed and it does not need to be retired, do not add
-it to error handle list. 
+On 2022-03-31 16:25:40 [+0200], Javier Martinez Canillas wrote:
+> Hello Sebastian,
+Hi Javier,
 
-Adding command to error handle list is an annoying flow which would stop I/O
-of all LUNs which shared a same HBA.
+> Yes, it is but the motivation is to be able to have EFI runtime services
+> by default without the need for any kernel command line parameter.
 
-So here if we successfully abort a command, we can finish it via
-scsi_finish_command() which would reduce time spent on scsi_error_handler()
+This part wasn't clear. It is not mentioned by the description but now
+that I look at Kconfig, it is there.
 
-Signed-off-by: Wenchao Hao <haowenchao@huawei.com>
----
- drivers/scsi/scsi_error.c | 55 +++++++++++++++++++++------------------
- 1 file changed, 29 insertions(+), 26 deletions(-)
+> In the same vein, I could ask if efi=noruntime wasn't enough instead of
+> commit ("efi: Disable runtime services on RT").
 
-diff --git a/drivers/scsi/scsi_error.c b/drivers/scsi/scsi_error.c
-index cdaca13ac1f1..15299603b7ee 100644
---- a/drivers/scsi/scsi_error.c
-+++ b/drivers/scsi/scsi_error.c
-@@ -173,41 +173,44 @@ scmd_eh_abort_handler(struct work_struct *work)
- 		goto out;
- 	}
- 	set_host_byte(scmd, DID_TIME_OUT);
--	if (scsi_host_eh_past_deadline(shost)) {
--		SCSI_LOG_ERROR_RECOVERY(3,
--			scmd_printk(KERN_INFO, scmd,
--				    "eh timeout, not retrying "
--				    "aborted command\n"));
--		goto out;
--	}
- 
--	spin_lock_irqsave(shost->host_lock, flags);
--	list_del_init(&scmd->eh_entry);
-+	if (scsi_noretry_cmd(scmd) ||
-+	    !scsi_cmd_retry_allowed(scmd) &&
-+	    !scsi_eh_should_retry_cmd(scmd)) {
-+		spin_lock_irqsave(shost->host_lock, flags);
-+		list_del_init(&scmd->eh_entry);
- 
--	/*
--	 * If the abort succeeds, and there is no further
--	 * EH action, clear the ->last_reset time.
--	 */
--	if (list_empty(&shost->eh_abort_list) &&
--	    list_empty(&shost->eh_cmd_q))
--		if (shost->eh_deadline != -1)
--			shost->last_reset = 0;
-+		/*
-+		 * If the abort succeeds, and there is no further
-+		 * EH action, clear the ->last_reset time.
-+		 */
-+		if (list_empty(&shost->eh_abort_list) &&
-+		    list_empty(&shost->eh_cmd_q))
-+			if (shost->eh_deadline != -1)
-+				shost->last_reset = 0;
- 
--	spin_unlock_irqrestore(shost->host_lock, flags);
-+		spin_unlock_irqrestore(shost->host_lock, flags);
- 
--	if (!scsi_noretry_cmd(scmd) &&
--	    scsi_cmd_retry_allowed(scmd) &&
--	    scsi_eh_should_retry_cmd(scmd)) {
--		SCSI_LOG_ERROR_RECOVERY(3,
--			scmd_printk(KERN_WARNING, scmd,
--				    "retry aborted command\n"));
--		scsi_queue_insert(scmd, SCSI_MLQUEUE_EH_RETRY);
--	} else {
- 		SCSI_LOG_ERROR_RECOVERY(3,
- 			scmd_printk(KERN_WARNING, scmd,
- 				    "finish aborted command\n"));
- 		scsi_finish_command(scmd);
-+		return;
- 	}
-+
-+	if (scsi_host_eh_past_deadline(shost)) {
-+		SCSI_LOG_ERROR_RECOVERY(3,
-+			scmd_printk(KERN_INFO, scmd,
-+				    "eh timeout, not retrying "
-+				    "aborted command\n"));
-+		goto out;
-+	}
-+
-+	SCSI_LOG_ERROR_RECOVERY(3,
-+		scmd_printk(KERN_WARNING, scmd,
-+			    "retry aborted command\n"));
-+	scsi_queue_insert(scmd, SCSI_MLQUEUE_EH_RETRY);
-+
- 	return;
- 
- out:
--- 
-2.32.0
+No, it is not because it should not lead to any surprise latencies by
+default.
 
+Sebastian
