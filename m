@@ -2,298 +2,281 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C046C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 08:03:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABBCCC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 31 Mar 2022 08:04:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232495AbiCaIEv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 31 Mar 2022 04:04:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55490 "EHLO
+        id S232516AbiCaIFp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 31 Mar 2022 04:05:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232498AbiCaIEm (ORCPT
+        with ESMTP id S232138AbiCaIFl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 31 Mar 2022 04:04:42 -0400
-Received: from SHSQR01.spreadtrum.com (unknown [222.66.158.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FF3C14924B
-        for <linux-kernel@vger.kernel.org>; Thu, 31 Mar 2022 01:02:52 -0700 (PDT)
-Received: from SHSend.spreadtrum.com (bjmbx01.spreadtrum.com [10.0.64.7])
-        by SHSQR01.spreadtrum.com with ESMTPS id 22V81Fcs034261
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NO);
-        Thu, 31 Mar 2022 16:01:15 +0800 (CST)
-        (envelope-from zhaoyang.huang@unisoc.com)
-Received: from bj03382pcu.spreadtrum.com (10.0.74.65) by
- BJMBX01.spreadtrum.com (10.0.64.7) with Microsoft SMTP Server (TLS) id
- 15.0.1497.23; Thu, 31 Mar 2022 16:01:15 +0800
-From:   "zhaoyang.huang" <zhaoyang.huang@unisoc.com>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>,
-        Zhaoyang Huang <huangzhaoyang@gmail.com>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>, <cgroups@vger.kernel.org>,
-        <ke.wang@unisoc.com>
-Subject: [RFC PATCH] cgroup: introduce dynamic protection for memcg
-Date:   Thu, 31 Mar 2022 16:00:56 +0800
-Message-ID: <1648713656-24254-1-git-send-email-zhaoyang.huang@unisoc.com>
-X-Mailer: git-send-email 1.9.1
+        Thu, 31 Mar 2022 04:05:41 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E37F5FE1;
+        Thu, 31 Mar 2022 01:03:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648713833; x=1680249833;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=hsAJrheBoayi+K8mxNtCKJECO7Ufn3EWs6stfrLZWoE=;
+  b=HtuxN5EuQyeyKtO1j/OyIFzyVqqyysfZhEehVYp1KD9fGDAAVyxgxLgh
+   hy1CmJXmdVYenbdOjmxhwoV7Z3X7rLSIuAiApbZrrP+6P3mbINRK4aVIG
+   27wM/29uzDMCsVfYwfyrBj/seZEmKzlk8wn5sUYYkdPy2tURIMl4wCo0H
+   xLPWTuC00VUfoNZ3vJ2IErUE2q12o7cIkR/FwWs5dP2B0X2tSgoMpp+1E
+   pe1MVQMXKz/tbWTYvAW9BT6UcaV/ElITB5+lR2GyTVpkcghKFq+KlTKJX
+   1h+xOVQXS0TcXODrvUwaA6gAEd5C09PXgPjix3YZ6pb8xmXUUAr60JtqG
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="259462311"
+X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
+   d="scan'208";a="259462311"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 01:03:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; 
+   d="scan'208";a="520319736"
+Received: from lkp-server02.sh.intel.com (HELO 3231c491b0e2) ([10.239.97.151])
+  by orsmga002.jf.intel.com with ESMTP; 31 Mar 2022 01:03:45 -0700
+Received: from kbuild by 3231c491b0e2 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nZpmS-00004g-Pi;
+        Thu, 31 Mar 2022 08:03:44 +0000
+Date:   Thu, 31 Mar 2022 16:02:59 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Yunfei Dong <yunfei.dong@mediatek.com>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        Nicolas Dufresne <nicolas@ndufresne.ca>,
+        Hans Verkuil <hverkuil@xs4all.nl>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        Tiffany Lin <tiffany.lin@mediatek.com>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tomasz Figa <tfiga@google.com>
+Cc:     kbuild-all@lists.01.org, linux-media@vger.kernel.org,
+        Irui Wang <irui.wang@mediatek.com>,
+        George Sun <george.sun@mediatek.com>,
+        Dafna Hirschfeld <dafna.hirschfeld@collabora.com>,
+        srv_heupstream@mediatek.com, devicetree@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        linux-kernel@vger.kernel.org,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
+        linux-mediatek@lists.infradead.org,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Fritz Koenig <frkoenig@chromium.org>,
+        Steve Cho <stevecho@chromium.org>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v8, 16/17] media: mediatek: vcodec: support stateless VP9
+ decoding
+Message-ID: <202203311506.19PAVLDA-lkp@intel.com>
+References: <20220331024801.29229-17-yunfei.dong@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.0.74.65]
-X-ClientProxiedBy: SHCAS03.spreadtrum.com (10.0.1.207) To
- BJMBX01.spreadtrum.com (10.0.64.7)
-X-MAIL: SHSQR01.spreadtrum.com 22V81Fcs034261
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220331024801.29229-17-yunfei.dong@mediatek.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
+Hi Yunfei,
 
-For some kind of memcg, the usage is varies greatly from scenarios. Such as
-multimedia app could have the usage range from 50MB to 500MB, which generated
-by loading an special algorithm into its virtual address space and make it hard
-to protect the expanded usage without userspace's interaction. Furthermore, fixed
-memory.low is a little bit against its role of soft protection as it will response
-any system's memory pressure in same way.
+Thank you for the patch! Yet something to improve:
 
-Taking all above into consideration, we introduce a kind of dynamic protection
-based on group's watermark and system's memory pressure in this patch. Our aims are:
-1. dynamic protection with no fixed setting
-2. proper protection value on memory.current
-3. time based decay protection
-4. memory pressue related protection
+[auto build test ERROR on media-tree/master]
+[also build test ERROR on linus/master next-20220331]
+[cannot apply to remoteproc/rproc-next linux/master v5.17]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-The basic concept could be descripted as bellowing, where we take group->watermark
-as a representative of usage
-		group->memory.low = decayed_watermark * decay_factor
-		decayed_watermark = group->watermark * func_wm_decay(time)
-		decay_factor = psi_system[PSI_MEM][time]
+url:    https://github.com/intel-lab-lkp/linux/commits/Yunfei-Dong/media-mediatek-vcodec-Add-vdec-enable-disable-hardware-helpers/20220331-114806
+base:   git://linuxtv.org/media_tree.git master
+config: parisc-buildonly-randconfig-r002-20220331 (https://download.01.org/0day-ci/archive/20220331/202203311506.19PAVLDA-lkp@intel.com/config)
+compiler: hppa-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/7b396103061b487d6e9bc84be29de59e7eccc4c6
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Yunfei-Dong/media-mediatek-vcodec-Add-vdec-enable-disable-hardware-helpers/20220331-114806
+        git checkout 7b396103061b487d6e9bc84be29de59e7eccc4c6
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=parisc SHELL=/bin/bash drivers/media/platform/mediatek/vcodec/
 
-func_wm_decay could be deemed as a linear decay funcion that will decay 1/2 in
-68s(36bit).If we take 2048 as "1", it could be descripted as:
-		decayed_watermark = time >> (group->wm_dec_factor - 10)
-		decayed_watermark = new_usage(if new_usage > decayed_watermark)
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-decay_factor is as simple as a table lookingup and compose the final value by
-weight of some and full as
-		some = psi_system.avg[PSI_MEM * 2][time]
-		full = psi_system.avg[PSI_MEM * 2 + 1][time]
-		decay_factor = some * 70% + full *30%
+All error/warnings (new ones prefixed by >>):
 
-We simply test above change on a v5.4 based system in bellowing topology and
-observe some behavious as we expected:
-      A
-     / \
-    B   C
-1. With regard to the protection, elow is in a proper range as proportion of watermark.
-2. Elapsed time has positive impact on elow via decayed_watermark.
-3. Memory pressure has negitive impact on elow which could keep more usage when
-   system is under less pressure.
+   drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c: In function 'vdec_vp9_slice_map_counts_eob_coef':
+>> drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c:1235:69: error: assignment to 'u32 (*)[3]' {aka 'unsigned int (*)[3]'} from incompatible pointer type 'u32 (*)[4]' {aka 'unsigned int (*)[4]'} [-Werror=incompatible-pointer-types]
+    1235 |                                 counts_helper->coeff[i][j][k][l][m] =
+         |                                                                     ^
+   drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c:1242:69: error: assignment to 'u32 (*)[3]' {aka 'unsigned int (*)[3]'} from incompatible pointer type 'u32 (*)[4]' {aka 'unsigned int (*)[4]'} [-Werror=incompatible-pointer-types]
+    1242 |                                 counts_helper->coeff[i][j][k][l][m] =
+         |                                                                     ^
+   drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c: In function 'vdec_vp9_slice_counts_map_helper':
+   drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c:1257:25: warning: unused variable 'm' [-Wunused-variable]
+    1257 |         int i, j, k, l, m;
+         |                         ^
+   drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c:1257:22: warning: unused variable 'l' [-Wunused-variable]
+    1257 |         int i, j, k, l, m;
+         |                      ^
+   In file included from include/linux/kernel.h:29,
+                    from include/linux/cpumask.h:10,
+                    from include/linux/mm_types_task.h:14,
+                    from include/linux/mm_types.h:5,
+                    from include/linux/buildid.h:5,
+                    from include/linux/module.h:14,
+                    from drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c:7:
+   drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c: In function 'vdec_vp9_slice_lat_decode':
+>> include/linux/kern_levels.h:5:25: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 5 has type 'dma_addr_t' {aka 'unsigned int'} [-Wformat=]
+       5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
+         |                         ^~~~~~
+   include/linux/printk.h:418:25: note: in definition of macro 'printk_index_wrap'
+     418 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
+         |                         ^~~~
+   include/linux/printk.h:132:17: note: in expansion of macro 'printk'
+     132 |                 printk(fmt, ##__VA_ARGS__);             \
+         |                 ^~~~~~
+   include/linux/printk.h:576:9: note: in expansion of macro 'no_printk'
+     576 |         no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
+         |         ^~~~~~~~~
+   include/linux/kern_levels.h:15:25: note: in expansion of macro 'KERN_SOH'
+      15 | #define KERN_DEBUG      KERN_SOH "7"    /* debug-level messages */
+         |                         ^~~~~~~~
+   include/linux/printk.h:576:19: note: in expansion of macro 'KERN_DEBUG'
+     576 |         no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
+         |                   ^~~~~~~~~~
+   drivers/media/platform/mediatek/vcodec/vdec/../mtk_vcodec_util.h:45:9: note: in expansion of macro 'pr_debug'
+      45 |         pr_debug("[MTK_VCODEC][%d]: " fmt "\n",                 \
+         |         ^~~~~~~~
+   drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c:1981:9: note: in expansion of macro 'mtk_vcodec_debug'
+    1981 |         mtk_vcodec_debug(instance, "lat dma 1 0x%llx 0x%llx\n",
+         |         ^~~~~~~~~~~~~~~~
+   include/linux/kern_levels.h:5:25: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 6 has type 'dma_addr_t' {aka 'unsigned int'} [-Wformat=]
+       5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
+         |                         ^~~~~~
+   include/linux/printk.h:418:25: note: in definition of macro 'printk_index_wrap'
+     418 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
+         |                         ^~~~
+   include/linux/printk.h:132:17: note: in expansion of macro 'printk'
+     132 |                 printk(fmt, ##__VA_ARGS__);             \
+         |                 ^~~~~~
+   include/linux/printk.h:576:9: note: in expansion of macro 'no_printk'
+     576 |         no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
+         |         ^~~~~~~~~
+   include/linux/kern_levels.h:15:25: note: in expansion of macro 'KERN_SOH'
+      15 | #define KERN_DEBUG      KERN_SOH "7"    /* debug-level messages */
+         |                         ^~~~~~~~
+   include/linux/printk.h:576:19: note: in expansion of macro 'KERN_DEBUG'
+     576 |         no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
+         |                   ^~~~~~~~~~
+   drivers/media/platform/mediatek/vcodec/vdec/../mtk_vcodec_util.h:45:9: note: in expansion of macro 'pr_debug'
+      45 |         pr_debug("[MTK_VCODEC][%d]: " fmt "\n",                 \
+         |         ^~~~~~~~
+   drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c:1981:9: note: in expansion of macro 'mtk_vcodec_debug'
+    1981 |         mtk_vcodec_debug(instance, "lat dma 1 0x%llx 0x%llx\n",
+         |         ^~~~~~~~~~~~~~~~
+   drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c: In function 'vdec_vp9_slice_core_decode':
+>> include/linux/kern_levels.h:5:25: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 5 has type 'dma_addr_t' {aka 'unsigned int'} [-Wformat=]
+       5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
+         |                         ^~~~~~
+   include/linux/printk.h:418:25: note: in definition of macro 'printk_index_wrap'
+     418 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
+         |                         ^~~~
+   include/linux/printk.h:132:17: note: in expansion of macro 'printk'
+     132 |                 printk(fmt, ##__VA_ARGS__);             \
+         |                 ^~~~~~
+   include/linux/printk.h:576:9: note: in expansion of macro 'no_printk'
+     576 |         no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
+         |         ^~~~~~~~~
+   include/linux/kern_levels.h:15:25: note: in expansion of macro 'KERN_SOH'
+      15 | #define KERN_DEBUG      KERN_SOH "7"    /* debug-level messages */
+         |                         ^~~~~~~~
+   include/linux/printk.h:576:19: note: in expansion of macro 'KERN_DEBUG'
+     576 |         no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
+         |                   ^~~~~~~~~~
+   drivers/media/platform/mediatek/vcodec/vdec/../mtk_vcodec_util.h:45:9: note: in expansion of macro 'pr_debug'
+      45 |         pr_debug("[MTK_VCODEC][%d]: " fmt "\n",                 \
+         |         ^~~~~~~~
+   drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c:2050:9: note: in expansion of macro 'mtk_vcodec_debug'
+    2050 |         mtk_vcodec_debug(instance, "core dma_addr_end 0x%llx\n", pfc->vsi.trans.dma_addr_end);
+         |         ^~~~~~~~~~~~~~~~
+   At top level:
+   drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c:534:26: warning: 'vdec_vp9_slice_mv_fp_tree' defined but not used [-Wunused-const-variable=]
+     534 | static const signed char vdec_vp9_slice_mv_fp_tree[6] = {
+         |                          ^~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c:529:26: warning: 'vdec_vp9_slice_mv_class0_tree' defined but not used [-Wunused-const-variable=]
+     529 | static const signed char vdec_vp9_slice_mv_class0_tree[2] = {
+         |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c:523:26: warning: 'vdec_vp9_slice_mv_class_tree' defined but not used [-Wunused-const-variable=]
+     523 | static const signed char vdec_vp9_slice_mv_class_tree[20] = {
+         |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c:518:26: warning: 'vdec_vp9_slice_mv_joint_tree' defined but not used [-Wunused-const-variable=]
+     518 | static const signed char vdec_vp9_slice_mv_joint_tree[6] = {
+         |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c:513:26: warning: 'vdec_vp9_slice_switchable_interp_tree' defined but not used [-Wunused-const-variable=]
+     513 | static const signed char vdec_vp9_slice_switchable_interp_tree[4] = {
+         |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c:508:26: warning: 'vdec_vp9_slice_partition_tree' defined but not used [-Wunused-const-variable=]
+     508 | static const signed char vdec_vp9_slice_partition_tree[6] = {
+         |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c:503:26: warning: 'vdec_vp9_slice_intra_mode_tree' defined but not used [-Wunused-const-variable=]
+     503 | static const signed char vdec_vp9_slice_intra_mode_tree[18] = {
+         |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c:498:26: warning: 'vdec_vp9_slice_inter_mode_tree' defined but not used [-Wunused-const-variable=]
+     498 | static const signed char vdec_vp9_slice_inter_mode_tree[6] = {
+         |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   cc1: some warnings being treated as errors
 
-PS: It should be configured as a sub-type of memcg and choosed by the user when
-create the group.
 
-Signed-off-by: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
----
- include/linux/memcontrol.h   | 50 ++++++++++++++++++++++++++++++++++++++++++++
- include/linux/page_counter.h |  4 ++++
- include/linux/psi.h          |  2 ++
- kernel/sched/psi.c           | 18 ++++++++++++++++
- mm/memcontrol.c              |  4 ++++
- mm/page_counter.c            |  4 ++++
- 6 files changed, 82 insertions(+)
+vim +1235 drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.c
 
-diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index 0c5c403..a510057 100644
---- a/include/linux/memcontrol.h
-+++ b/include/linux/memcontrol.h
-@@ -21,6 +21,9 @@
- #include <linux/vmstat.h>
- #include <linux/writeback.h>
- #include <linux/page-flags.h>
-+#include <linux/sched/loadavg.h>
-+#include <linux/sched/clock.h>
-+#include <linux/psi.h>
- 
- struct mem_cgroup;
- struct obj_cgroup;
-@@ -28,6 +31,8 @@
- struct mm_struct;
- struct kmem_cache;
- 
-+#define MEMCG_INTERVAL	(2*HZ+1)	/* 2 sec intervals */
-+
- /* Cgroup-specific page state, on top of universal node page state */
- enum memcg_stat_item {
- 	MEMCG_SWAP = NR_VM_NODE_STAT_ITEMS,
-@@ -340,6 +345,10 @@ struct mem_cgroup {
- 	struct deferred_split deferred_split_queue;
- #endif
- 
-+	u64 wm_dec_fact;
-+	u64 avg_next_update;
-+	u64 avg_last_update;
-+
- 	struct mem_cgroup_per_node *nodeinfo[];
- };
- 
-@@ -608,6 +617,47 @@ static inline bool mem_cgroup_disabled(void)
- 	return !cgroup_subsys_enabled(memory_cgrp_subsys);
- }
- 
-+/*
-+ * calculate memory.low based on the historic watermark and memory pressure
-+ */
-+static inline void calc_protected_low(struct mem_cgroup *group)
-+{
-+	u64 now, decay_factor;
-+	u64 decayed_watermark;
-+	u64 delta_time;
-+
-+	now = sched_clock();
-+
-+	if (!group->avg_next_update) {
-+		group->avg_next_update = now + jiffies_to_nsecs(5*HZ);
-+		return;
-+	}
-+
-+	if (time_before((unsigned long)now, (unsigned long)group->avg_next_update))
-+		return;
-+
-+	delta_time = group->avg_last_update ? now - group->avg_last_update : 0;
-+	/*
-+	 * we take 2048 as "1" and 68s decay 1/2(36bit) by default
-+	 * decay_factor = 1024 * delta_time / 68s(0x1000000000)
-+	 * 0.5(1024)/68s = decay_factor/delta_time ==> decay_factor = delta_time >> 26
-+	 */
-+	decay_factor = (2048 - min(2048ULL, delta_time >> (group->wm_dec_fact - 10)));
-+	decayed_watermark = group->memory.decayed_watermark * decay_factor / 2048;
-+	/* decay_factor: based on average memory pressure over elapsed time */
-+	decay_factor = psi_mem_get(delta_time);
-+	group->memory.low = decayed_watermark * (100 - decay_factor) / 100;
-+
-+	/*
-+	 * avg_next_update: expected expire time according to current status
-+	 */
-+	group->memory.decayed_watermark = decayed_watermark;
-+	group->avg_last_update = now;
-+	group->avg_next_update = now + jiffies_to_nsecs(2*HZ);
-+
-+	return;
-+}
-+
- static inline void mem_cgroup_protection(struct mem_cgroup *root,
- 					 struct mem_cgroup *memcg,
- 					 unsigned long *min,
-diff --git a/include/linux/page_counter.h b/include/linux/page_counter.h
-index 6795913..2720eb9f 100644
---- a/include/linux/page_counter.h
-+++ b/include/linux/page_counter.h
-@@ -25,8 +25,12 @@ struct page_counter {
- 
- 	/* legacy */
- 	unsigned long watermark;
-+	unsigned long decayed_watermark;
- 	unsigned long failcnt;
- 
-+	/* proportional protection */
-+	unsigned long min_prop;
-+	unsigned long low_prop;
- 	/*
- 	 * 'parent' is placed here to be far from 'usage' to reduce
- 	 * cache false sharing, as 'usage' is written mostly while
-diff --git a/include/linux/psi.h b/include/linux/psi.h
-index 65eb147..6c76993 100644
---- a/include/linux/psi.h
-+++ b/include/linux/psi.h
-@@ -25,6 +25,8 @@ void psi_task_switch(struct task_struct *prev, struct task_struct *next,
- 
- int psi_show(struct seq_file *s, struct psi_group *group, enum psi_res res);
- 
-+unsigned long psi_mem_get(unsigned long time);
-+
- #ifdef CONFIG_CGROUPS
- int psi_cgroup_alloc(struct cgroup *cgrp);
- void psi_cgroup_free(struct cgroup *cgrp);
-diff --git a/kernel/sched/psi.c b/kernel/sched/psi.c
-index dd80bd2..8d315e0 100644
---- a/kernel/sched/psi.c
-+++ b/kernel/sched/psi.c
-@@ -291,6 +291,24 @@ static void get_recent_times(struct psi_group *group, int cpu,
- 	}
- }
- 
-+unsigned long psi_mem_get(unsigned long time_ns)
-+{
-+	unsigned long time_sec = time_ns / (1000 * 1000 * 1000);
-+	unsigned long some, full;
-+	if (time_sec < 10) {
-+		some = LOAD_INT(psi_system.avg[PSI_MEM * 2][0]);
-+		full = LOAD_INT(psi_system.avg[PSI_MEM * 2 + 1][0]);
-+	} else if (time_sec < 60) {
-+		some = LOAD_INT(psi_system.avg[PSI_MEM * 2][1]);
-+		full = LOAD_INT(psi_system.avg[PSI_MEM * 2 + 1][1]);
-+	} else {
-+		some = LOAD_INT(psi_system.avg[PSI_MEM * 2][2]);
-+		full = LOAD_INT(psi_system.avg[PSI_MEM * 2 + 1][2]);
-+	}
-+
-+	return (some * 768 + full * 256) / 1024;
-+}
-+
- static void calc_avgs(unsigned long avg[3], int missed_periods,
- 		      u64 time, u64 period)
- {
-diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 508bcea..6b579a4 100644
---- a/mm/memcontrol.c
-+++ b/mm/memcontrol.c
-@@ -5188,6 +5188,7 @@ static struct mem_cgroup *mem_cgroup_alloc(void)
- 	page_counter_set_high(&memcg->memory, PAGE_COUNTER_MAX);
- 	memcg->soft_limit = PAGE_COUNTER_MAX;
- 	page_counter_set_high(&memcg->swap, PAGE_COUNTER_MAX);
-+	memcg->wm_dec_fact = 36;
- 	if (parent) {
- 		memcg->swappiness = mem_cgroup_swappiness(parent);
- 		memcg->oom_kill_disable = parent->oom_kill_disable;
-@@ -6616,6 +6617,8 @@ void mem_cgroup_calculate_protection(struct mem_cgroup *root,
- {
- 	unsigned long usage, parent_usage;
- 	struct mem_cgroup *parent;
-+	unsigned long memcg_emin, memcg_elow, parent_emin, parent_elow;
-+	unsigned long watermark;
- 
- 	if (mem_cgroup_disabled())
- 		return;
-@@ -6642,6 +6645,7 @@ void mem_cgroup_calculate_protection(struct mem_cgroup *root,
- 	if (!parent)
- 		return;
- 
-+	calc_protected_low(memcg);
- 	if (parent == root) {
- 		memcg->memory.emin = READ_ONCE(memcg->memory.min);
- 		memcg->memory.elow = READ_ONCE(memcg->memory.low);
-diff --git a/mm/page_counter.c b/mm/page_counter.c
-index 7d83641..18abfdd 100644
---- a/mm/page_counter.c
-+++ b/mm/page_counter.c
-@@ -83,6 +83,8 @@ void page_counter_charge(struct page_counter *counter, unsigned long nr_pages)
- 		 */
- 		if (new > READ_ONCE(c->watermark))
- 			WRITE_ONCE(c->watermark, new);
-+		if (new > READ_ONCE(c->decayed_watermark))
-+			WRITE_ONCE(c->decayed_watermark, new);
- 	}
- }
- 
-@@ -137,6 +139,8 @@ bool page_counter_try_charge(struct page_counter *counter,
- 		 */
- 		if (new > READ_ONCE(c->watermark))
- 			WRITE_ONCE(c->watermark, new);
-+		if (new > READ_ONCE(c->decayed_watermark))
-+			WRITE_ONCE(c->decayed_watermark, new);
- 	}
- 	return true;
- 
+  1217	
+  1218	static
+  1219	void vdec_vp9_slice_map_counts_eob_coef(unsigned int i, unsigned int j, unsigned int k,
+  1220						struct vdec_vp9_slice_frame_counts *counts,
+  1221						struct v4l2_vp9_frame_symbol_counts *counts_helper)
+  1222	{
+  1223		u32 l, m;
+  1224	
+  1225		/*
+  1226		 * helper eo -> mtk eo
+  1227		 * helpre e1 -> mtk c3
+  1228		 * helper c0 -> c0
+  1229		 * helper c1 -> c1
+  1230		 * helper c2 -> c2
+  1231		 */
+  1232		for (l = 0; l < 6; l++) {
+  1233			for (m = 0; m < VP9_BAND_6(l); m++) {
+  1234				if (l == 0) {
+> 1235					counts_helper->coeff[i][j][k][l][m] =
+  1236						&counts->coef_probs[i][j][k].band_0[m];
+  1237					counts_helper->eob[i][j][k][l][m][0] =
+  1238						&counts->eob_branch[i][j][k].band_0[m];
+  1239					counts_helper->eob[i][j][k][l][m][1] =
+  1240						&counts->coef_probs[i][j][k].band_0[m][3];
+  1241				} else {
+  1242					counts_helper->coeff[i][j][k][l][m] =
+  1243						&counts->coef_probs[i][j][k].band_1_5[l - 1][m];
+  1244					counts_helper->eob[i][j][k][l][m][0] =
+  1245						&counts->eob_branch[i][j][k].band_1_5[l - 1][m];
+  1246					counts_helper->eob[i][j][k][l][m][1] =
+  1247						&counts->coef_probs[i][j][k].band_1_5[l - 1][m][3];
+  1248				}
+  1249			}
+  1250		}
+  1251	}
+  1252	
+
 -- 
-1.9.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
